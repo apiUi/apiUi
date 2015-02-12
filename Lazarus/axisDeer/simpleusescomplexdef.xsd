@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://tragetnamespace.jb" targetNamespace="http://tragetnamespace.jb" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="MyFirstCompexType" abstract="true">
+		<xs:sequence>
+			<xs:element name="Elmnt" form="unqualified" minOccurs="0" maxOccurs="12">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="2"/>
+						<xs:pattern value="A"/>
+						<xs:pattern value="AB"/>
+						<xs:pattern value="AC"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="usesComplexType" type="tns:MyFirstCompexType" abstract="true"/>
+</xs:schema>

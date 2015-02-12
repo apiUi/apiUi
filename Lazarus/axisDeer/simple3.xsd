@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://janbo.nl" targetNamespace="http://janbo.nl" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="sElement" type="tns:sElementType"/>
+	<xs:complexType name="sElementType">
+		<xs:sequence>
+			<xs:element name="d1" type="xs:date"/>
+			<xs:element name="s1" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="sSimpelst">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="02"/>
+				<xs:maxLength value="6"/>
+				<xs:whiteSpace value="collapse"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+</xs:schema>

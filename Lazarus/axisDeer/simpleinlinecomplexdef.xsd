@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://tragetnamespace.jb" targetNamespace="http://tragetnamespace.jb" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:attribute name="existingAttribute" type="xs:date"/>
+	<xs:element name="inlineComplexDefElmnt">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="s1" type="xs:boolean" maxOccurs="3"/>
+			</xs:sequence>
+			<xs:attribute name="MyFirstAttribute" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="20"/>
+						<xs:maxLength value="30"/>
+						<xs:pattern value="AAAAAAAAAAAAAAAAAAAA"/>
+						<xs:pattern value="BBBBBBBBBBBBBBBBBBBBBBB"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,7 @@
+<ns1:SiebelMessage xmlns:ns1="http://www.rabobank.nl/crm/siebel" RB_Username="jammer">
+  <ns1:RBQueryCustomerRQ>
+    <ns1:Customer>
+      <ns1:CustomerId>12</ns1:CustomerId>
+    </ns1:Customer>
+  </ns1:RBQueryCustomerRQ>
+</ns1:SiebelMessage>

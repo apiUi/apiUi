@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://tragetnamespace.jb" targetNamespace="http://tragetnamespace.jb" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="MySecondSimpeType">
+		<xs:restriction base="tns:MyFirstSimpleType">
+			<xs:enumeration value="en01">
+				<xs:annotation>
+					<xs:documentation source="ANNO01"/>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="en02">
+				<xs:annotation>
+					<xs:documentation>ANNO02</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="MySecondComplexType">
+		<xs:choice>
+			<xs:element name="first" type="tns:MyFirstSimpleType"/>
+			<xs:element name="second" type="tns:MySecondComplexType"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="MyFirstCompexType" abstract="true">
+		<xs:sequence>
+			<xs:element name="Elmnt" form="unqualified" minOccurs="0" maxOccurs="12">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="tns:MyFirstSimpleType">
+							<xs:attribute name="myOtherAttribute">
+								<xs:annotation>
+									<xs:documentation>annotatie</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+							<xs:attribute name="yetAnother"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="MyFirstSimpleType">
+		<xs:annotation>
+			<xs:appinfo>bla</xs:appinfo>
+			<xs:documentation>blo</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="23"/>
+			<xs:pattern value="[a-z]{2}[0-9]{1}.*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="inlineComplexDefElmnt">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="s1" type="xs:boolean" maxOccurs="3"/>
+				<xs:element name="s2" type="xs:date"/>
+			</xs:sequence>
+			<xs:attribute name="MyFirstAttribute" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="20"/>
+						<xs:maxLength value="30"/>
+						<xs:pattern value="AAAAAAAAAAAAAAAAAAAA"/>
+						<xs:pattern value="BBBBBBBBBBBBBBBBBBBBBBB"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="MySecondAttribute" type="xs:anySimpleType" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="usesComplexType" type="tns:MyFirstCompexType" abstract="true"/>
+	<xs:element name="refsAnotherElemnt">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:inlineComplexDefElmnt" id="as"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="zooitje">
+		<xs:sequence>
+			<xs:sequence>
+				<xs:element name="a" type="xs:boolean"/>
+				<xs:element name="b" type="xs:boolean"/>
+			</xs:sequence>
+			<xs:choice>
+				<xs:element name="c" type="xs:base64Binary"/>
+				<xs:element name="d" type="xs:dateTime"/>
+			</xs:choice>
+			<xs:sequence>
+				<xs:element name="e" type="xs:integer"/>
+				<xs:element name="f" type="xs:string"/>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="zElement">
+		<xs:annotation>
+			<xs:documentation>belangrijk</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:annotation>
+					<xs:documentation>1Cmmnt</xs:documentation>
+				</xs:annotation>
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation>11Cmmnt</xs:documentation>
+					</xs:annotation>
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation>111cm</xs:documentation>
+						</xs:annotation>
+						<xs:element name="a" type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>commnta</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="b">
+							<xs:annotation>
+								<xs:documentation>commntb</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:boolean">
+										<xs:attribute name="bb1" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>commntbb1</xs:documentation>
+											</xs:annotation>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:sequence>
+				<xs:choice>
+					<xs:annotation>
+						<xs:documentation>12cmnt</xs:documentation>
+					</xs:annotation>
+					<xs:element name="d" type="xs:base64Binary"/>
+					<xs:element name="e" type="xs:boolean"/>
+				</xs:choice>
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation>13cmmnt</xs:documentation>
+					</xs:annotation>
+					<xs:element name="f" type="xs:boolean"/>
+					<xs:element name="g">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:boolean">
+									<xs:attribute name="gg" type="xs:string"/>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:sequence>
+			<xs:attribute name="a1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>commenta1</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

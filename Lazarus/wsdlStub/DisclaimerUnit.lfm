@@ -1,0 +1,156 @@
+object DisclaimerForm: TDisclaimerForm
+  Left = 343
+  Top = 204
+  BorderStyle = bsDialog
+  Caption = ' - Disclaimer of Warranty'
+  ClientHeight = 351
+  ClientWidth = 405
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  Position = poScreenCenter
+  PixelsPerInch = 96
+  object Panel1: TPanel
+    Left = 49
+    Top = 0
+    Width = 356
+    Height = 351
+    Align = alClient
+    BevelInner = bvRaised
+    BevelOuter = bvLowered
+    ParentColor = True
+    TabOrder = 0
+    object Panel3: TPanel
+      Left = 0
+      Top = 297
+      Width = 352
+      Height = 50
+      Align = alBottom
+      TabOrder = 0
+      object OKButton: TButton
+        Left = 226
+        Top = 11
+        Width = 75
+        Height = 25
+        Caption = '&OK'
+        Default = True
+        Enabled = False
+        ModalResult = 1
+        TabOrder = 0
+      end
+      object DisclaimerAcceptedCheckBox: TCheckBox
+        Left = 14
+        Top = 15
+        Width = 81
+        Height = 17
+        Caption = 'I &Accept'
+        TabOrder = 1
+        OnClick = DisclaimerAcceptedCheckBoxClick
+      end
+    end
+    object Panel4: TPanel
+      Left = 0
+      Top = 0
+      Width = 352
+      Height = 297
+      Align = alClient
+      BorderWidth = 3
+      Caption = 'Panel4'
+      TabOrder = 1
+      object Memo1: TMemo
+        Left = 2
+        Top = 2
+        Width = 344
+        Height = 289
+        Align = alClient
+        Lines.Strings = (
+          'Disclaimer of Warranty'
+          ''
+          'THIS SOFTWARE AND THE ACCOMPANYING FILES ARE '
+          'PROVIDED TO YOU "AS IS" AND WITHOUT ANY '
+          'WARRANTIES. ALL RISKS AND LOSSES ASSOCIATED WITH '
+          'IT''S USE ARE ASSUMED BY YOU. IN NO EVENT SHALL THE '
+          'AUTHOR BE HELD RESPONSIBLE OR ACCOUNTABLE FOR '
+          'DAMAGE DUE TO THE USE OF THIS SOFTWARE.'
+          ''
+          'The program is thoroughly tested in an Security Services '
+          
+            'environment, however, no warranty of fitness for any environment' +
+            ' is '
+          'offered.'
+          ''
+          'SUPPORT:'
+          
+            'Support of any kind is not guaranteed. I will try to address all' +
+            ' '
+          'problems that are reported to me and I will try to answer all '
+          
+            'questions. I made this product in my spare time and I do support' +
+            ' it in '
+          
+            'my spare time, so you must understand that I can''t guarantee tha' +
+            't all '
+          'problems that may arise will be solved.  ')
+        ParentColor = True
+        ReadOnly = True
+        ScrollBars = ssVertical
+        TabOrder = 0
+      end
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 0
+    Width = 49
+    Height = 351
+    Align = alLeft
+    BevelInner = bvLowered
+    TabOrder = 1
+    object Panel5: TPanel
+      Left = 0
+      Top = 0
+      Width = 45
+      Height = 347
+      Align = alClient
+      BorderWidth = 3
+      TabOrder = 0
+      object ProgramIcon: TImage
+        Left = 6
+        Top = 6
+        Width = 32
+        Height = 32
+        Picture.Data = {
+          055449636F6E0000010001002020100000000000E80200001600000028000000
+          2000000040000000010004000000000080020000000000000000000000000000
+          0000000000000000000080000080000000808000800000008000800080800000
+          C0C0C000808080000000FF0000FF000000FFFF00FF000000FF00FF00FFFF0000
+          FFFFFF0000000000000000000000000000000000080000000000000000000000
+          0000000008FFFFFFFFFFFFFFFFFFFFFFFFFFFF0068FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFF0668FFFFFFFFFFFFFFFFFFFFFFFFFFFF0668FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFF0668FFFFFFFFFFFFFF000000000000FF0668FFFFFFFFFFFFF8F7777777
+          77770F0608FFFFFAAAAAAAF8F777777779970F0008FFFFAFFFFFFFF8FFFFFFFF
+          FFFF0F0008FFAAAAAFFFFFF88800000000888F0008FFFAAAFFFFFFFFFF8FFFFF
+          F0FFFF0008FFFFAFFFFFFFFFFF8F4444F0FFFF0008FFFFFFFFFFFFFFFF8F4444
+          F0FFFF0008F7000007FFFFFFFF8F4444F0FFFF0008F8999990FFFFFFFF8FFFFF
+          F0FFFF0008F8999990FFFFFFFF78888888FFFF0008F8999990FFFFFFFFFFFFFF
+          9FFFFF0008F8777770FFFFF999FFFFF999FFFF0008F8999990FFFF99999FFF99
+          999FFF0008F8999990FFF9909099FFFF9FFFFF0008F8999990FFF9990999FFFF
+          9FFFFF0008F8777770FFF9909099FFFF9FFFFF0008F8999990F99F99999F9999
+          FFFFFF0008F7888887FFFFF999FFFFFFFFFFFF0008FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFF0008FFFFFFFFFFFFFFFFFFFFFFFFFFFF0008FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFF00080000000000000000000000000000000870CCCCCCCCCCCCCCCCCCCC
+          CC07070008888888888888888888888888888880000000000000000000000000
+          00000000FFFFFFFF800000018000000100000000000000000000000000000000
+          0000000080000001800000018000000180000001800000018000000180000001
+          8000000180000001800000018000000180000001800000018000000180000001
+          8000000180000001800000018000000180000001800000018000000180000001
+          FFFFFFFF}
+        Proportional = True
+        Stretch = True
+      end
+    end
+  end
+end

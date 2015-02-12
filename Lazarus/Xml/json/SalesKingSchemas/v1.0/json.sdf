@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 12/13/2012 8:38:57 PM: Generated with stubStudio 5.0.1.2890 by Jan -->
+<ServiceDefinitions>
+  <Service>
+    <Json>
+      <Name>orderService</Name>
+      <Schema>
+        <Name>order</Name>
+        <DescriptionFile>C:\JanBo\Sources\2011\Xmlz\json\SalesKingSchemas\v1.0\order.json</DescriptionFile>
+        <Operation>
+          <Name>getOrder</Name>
+          <Method>GET</Method>
+          <HttpDocument>/order/\d+</HttpDocument>
+        </Operation>
+        <Operation>
+          <Name>putOrder</Name>
+          <Method>PUT</Method>
+          <HttpDocument>/order/\d+</HttpDocument>
+        </Operation>
+      </Schema>
+    </Json>
+  </Service>
+</ServiceDefinitions>

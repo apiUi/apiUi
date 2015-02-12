@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="8">
+      <Unit0>
+        <Filename Value="test.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="test"/>
+        <UsageCount Value="20"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="testunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="testunit"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="18"/>
+        <CursorPos X="43" Y="37"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="stdvcl.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="StdVCL"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="18" Y="255"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="Word_TLB.pas"/>
+        <UnitName Value="Word_TLB"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="8039"/>
+        <CursorPos X="20" Y="8050"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="Office_TLB.pas"/>
+        <UnitName Value="Office_TLB"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="148"/>
+        <CursorPos X="42" Y="160"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="VBIDE_TLB.pas"/>
+        <UnitName Value="VBIDE_TLB"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="wrdFunctionz.pas"/>
+        <UnitName Value="wrdFunctionz"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="66"/>
+        <CursorPos X="16" Y="42"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\inc\variants.pp"/>
+        <UnitName Value="variants"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="133"/>
+        <CursorPos X="14" Y="152"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit7>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="7548" Column="42" TopLine="7529"/>
+      </Position1>
+      <Position2>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="8058" Column="34" TopLine="8038"/>
+      </Position2>
+      <Position3>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="8123" Column="34" TopLine="8103"/>
+      </Position3>
+      <Position4>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="8179" Column="39" TopLine="8159"/>
+      </Position4>
+      <Position5>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="8705" Column="35" TopLine="8686"/>
+      </Position5>
+      <Position6>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="8922" Column="35" TopLine="8902"/>
+      </Position6>
+      <Position7>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="15713" Column="34" TopLine="15693"/>
+      </Position7>
+      <Position8>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="15714" Column="35" TopLine="15694"/>
+      </Position8>
+      <Position9>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position9>
+      <Position10>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="2656" Column="35" TopLine="2636"/>
+      </Position10>
+      <Position11>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="3092" Column="17" TopLine="3077"/>
+      </Position11>
+      <Position12>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position12>
+      <Position13>
+        <Filename Value="Word_TLB.pas"/>
+        <Caret Line="147" Column="46" TopLine="127"/>
+      </Position13>
+      <Position14>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="220" Column="83" TopLine="210"/>
+      </Position14>
+      <Position15>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="224" Column="1" TopLine="208"/>
+      </Position15>
+      <Position16>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="220" Column="82" TopLine="208"/>
+      </Position16>
+      <Position17>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="212" Column="1" TopLine="208"/>
+      </Position17>
+      <Position18>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="220" Column="87" TopLine="209"/>
+      </Position18>
+      <Position19>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="212" Column="1" TopLine="208"/>
+      </Position19>
+      <Position20>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="220" Column="83" TopLine="209"/>
+      </Position20>
+      <Position21>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="212" Column="1" TopLine="208"/>
+      </Position21>
+      <Position22>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="220" Column="92" TopLine="202"/>
+      </Position22>
+      <Position23>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="222" Column="21" TopLine="208"/>
+      </Position23>
+      <Position24>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="223" Column="1" TopLine="208"/>
+      </Position24>
+      <Position25>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="225" Column="1" TopLine="208"/>
+      </Position25>
+      <Position26>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="228" Column="1" TopLine="209"/>
+      </Position26>
+      <Position27>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="222" Column="36" TopLine="209"/>
+      </Position27>
+      <Position28>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="228" Column="1" TopLine="209"/>
+      </Position28>
+      <Position29>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="223" Column="41" TopLine="202"/>
+      </Position29>
+      <Position30>
+        <Filename Value="wrdFunctionz.pas"/>
+        <Caret Line="222" Column="1" TopLine="219"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="3">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="wrdFunctionz.pas"/>
+        <Line Value="225"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="wrdFunctionz.pas"/>
+        <Line Value="228"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="wrdFunctionz.pas"/>
+        <Line Value="222"/>
+      </Item3>
+    </BreakPoints>
+  </Debugging>
+  <EditorMacros Count="0"/>
+</CONFIG>

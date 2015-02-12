@@ -1,0 +1,51 @@
+object ShowMemoDlg: TShowMemoDlg
+  Left = 293
+  Height = 300
+  Top = 127
+  Width = 435
+  ActiveControl = OkButton
+  Caption = 'ShowMemoDlg'
+  ClientHeight = 300
+  ClientWidth = 435
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnShow = FormShow
+  LCLVersion = '1.2.6.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 225
+    Top = 0
+    Width = 435
+    Align = alTop
+    BorderWidth = 10
+    Caption = 'Panel1'
+    ClientHeight = 225
+    ClientWidth = 435
+    TabOrder = 0
+    object Memo: TMemo
+      Left = 11
+      Height = 203
+      Top = 11
+      Width = 413
+      Align = alClient
+      Lines.Strings = (
+        'Memo1'
+      )
+      ReadOnly = True
+      TabOrder = 0
+      TabStop = False
+    end
+  end
+  object OkButton: TButton
+    Left = 163
+    Height = 25
+    Top = 241
+    Width = 75
+    Cancel = True
+    Caption = '&Ok'
+    Default = True
+    ModalResult = 1
+    TabOrder = 1
+  end
+end

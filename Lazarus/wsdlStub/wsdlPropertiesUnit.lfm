@@ -1,0 +1,86 @@
+object wsdlPropertiesForm: TwsdlPropertiesForm
+  Left = 0
+  Top = 0
+  Caption = 'wsdl Properties'
+  ClientHeight = 251
+  ClientWidth = 497
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  PixelsPerInch = 96
+  object Panel1: TPanel
+    Left = 0
+    Top = 189
+    Width = 497
+    Height = 62
+    Align = alBottom
+    TabOrder = 0
+    object Button1: TButton
+      Left = 22
+      Top = 18
+      Width = 75
+      Height = 25
+      Caption = '&OK'
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object Button2: TButton
+      Left = 134
+      Top = 19
+      Width = 75
+      Height = 25
+      Cancel = True
+      Caption = '&Cancel'
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 0
+    Width = 497
+    Height = 189
+    Align = alClient
+    BorderWidth = 2
+    Caption = 'Panel2'
+    TabOrder = 1
+    object PageControl1: TPageControl
+      Left = 1
+      Top = 1
+      Width = 491
+      Height = 183
+      ActivePage = WsdlTabSheet
+      Align = alClient
+      TabOrder = 0
+      object WsdlTabSheet: TTabSheet
+        Caption = 'WSDL'
+        ImageIndex = 4
+        object Label1: TLabel
+          Left = 288
+          Top = 29
+          Width = 179
+          Height = 13
+          Caption = '(-1 = Use value from Project options)'
+        end
+        object ElementsWhenRepeatableEdit: TLabeledEdit
+          Left = 233
+          Top = 26
+          Width = 49
+          Height = 21
+          EditLabel.Width = 218
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Addressable XML elements when Repeatable:'
+          LabelPosition = lpLeft
+          TabOrder = 0
+        end
+      end
+    end
+  end
+end

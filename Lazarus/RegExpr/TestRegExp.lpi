@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="TestRegExp"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <BuildNr Value="1"/>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="3">
+      <Item1>
+        <PackageName Value="virtualtreeview_package"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="SynEdit"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+    </RequiredPackages>
+    <Units Count="4">
+      <Unit0>
+        <Filename Value="TestRegExp.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TestRegExp"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="testform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TestForm"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="Source\RegExpr.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RegExpr"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FormIniFilez"/>
+      </Unit3>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="TestRegExp"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="Source;..\Utils"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <MsgFileName Value=""/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="4">
+      <Item1>
+        <Name Value="EAbort"/>
+        <Enabled Value="False"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+        <Enabled Value="False"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+        <Enabled Value="False"/>
+      </Item3>
+      <Item4>
+        <Name Value="ERegistryException"/>
+        <Enabled Value="False"/>
+      </Item4>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,4 @@
+* Converting file C:\JanBo\Sources\Lazarus\StompInterface\StompInterface.pas *
+Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+* Fixing used units for file C:\JanBo\Sources\Lazarus\StompInterface\StompInterface.pas *
+Conversion Ready.

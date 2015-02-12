@@ -1,0 +1,639 @@
+<definitions name="CrossChannel" targetNamespace="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/BerekenenBrutoJaarinkomen/v1" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/BerekenenBrutoJaarinkomen/v1" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing">
+	<wsdl:types>
+		<xs:schema elementFormDefault="qualified" targetNamespace="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/BerekenenBrutoJaarinkomen/v1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:import namespace="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/v1"/>
+			<xs:element name="BerekenBrutoInkomenJaar">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" maxOccurs="1" name="request">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element minOccurs="0" maxOccurs="unbounded" name="PersoonsInkomen" type="tns:PersoonsInkomen"/>
+								</xs:sequence>
+								<xs:attribute name="RekenDat" type="xs:date" use="required"/>
+								<xs:attribute name="RekenJAant" type="xs:int" use="required"/>
+								<xs:attribute name="SchemaVersienummer" type="xs:decimal" use="required"/>
+								<xs:attribute name="BerekeningTypeCd" type="tns:BerekeningTypeCd" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:complexType name="PersoonsInkomen">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="1" name="Persoon" type="q1:Persoon" xmlns:q1="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/v1"/>
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="Inkomen" type="q2:Onderwerp" xmlns:q2="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/v1"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="BerekeningTypeCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Boekjaar"/>
+					<xs:enumeration value="Kalenderjaar"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="BerekenBrutoInkomenJaarResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" maxOccurs="1" name="BerekenBrutoInkomenJaarResult">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element minOccurs="0" maxOccurs="unbounded" name="PersoonBrutoInkomen" type="tns:PersoonBrutoInkomen"/>
+								</xs:sequence>
+								<xs:attribute name="SchemaVersienummer" type="xs:decimal" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:complexType name="PersoonBrutoInkomen">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="LeeftijdPerJaar" type="tns:LeeftijdPerJaar"/>
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="InkomenstenbronBrutoInkomen" type="tns:InkomstenbronBrutoInkomen"/>
+				</xs:sequence>
+				<xs:attribute name="RefId" type="xs:int" use="required"/>
+			</xs:complexType>
+			<xs:complexType name="LeeftijdPerJaar">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Leeftijd" type="xs:int"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="JaarInfo" type="tns:JaarType"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="JaarType">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="JaarIndex" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="BerekeningTypeCd" type="tns:BerekeningTypeCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="InkomstenbronBrutoInkomen">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="BrutoInkomenPerJaar" type="tns:BrutoInkomenPerJaar"/>
+				</xs:sequence>
+				<xs:attribute name="RefId" type="xs:int"/>
+				<xs:attribute name="InkomstenbronCd" type="q3:InkomstbronCd" use="required" xmlns:q3="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/v1"/>
+			</xs:complexType>
+			<xs:complexType name="BrutoInkomenPerJaar">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jbedr" type="xs:int"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="JaarInfo" type="tns:JaarType"/>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:schema>
+		<xs:schema elementFormDefault="qualified" targetNamespace="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/v1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/v1">
+			<xs:complexType name="Persoon">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="GeboorteDat" type="xs:date"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="BuitenlandJAant" nillable="true" type="xs:int"/>
+				</xs:sequence>
+				<xs:attribute name="RefId" type="xs:int" use="required"/>
+			</xs:complexType>
+			<xs:complexType name="Onderwerp">
+				<xs:sequence>
+					<xs:choice minOccurs="1" maxOccurs="1">
+						<xs:element minOccurs="0" maxOccurs="1" name="TeBetalenAlimentatie" type="tns:TeBetalenAlimentatie"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="InkomstenVroegereArbeid" type="tns:InkomstenVroegereArbeid"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="PeriodiekeUitkering" type="tns:PeriodiekeUitkering"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="Lijfrenteverzekering" type="tns:Lijfrenteverzekering"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="PrepensioenEnVut" type="tns:PrepensioenEnVut"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="PensioenAanspraak" type="tns:PensioenAanspraak"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="TeOntvangenAlimentatie" type="tns:TeOntvangenAlimentatie"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="DienstbetrekkingFlexwerker" type="tns:DienstbetrekkingFlexwerker"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="Dienstbetrekking" type="tns:Dienstbetrekking"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="HuurInkomsten" type="tns:HuurInkomsten"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="IBOnderneming" type="tns:IBOnderneming"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="InkomstenAow" type="tns:InkomstenAow"/>
+					</xs:choice>
+				</xs:sequence>
+				<xs:attribute name="RefId" type="xs:int" use="required"/>
+			</xs:complexType>
+			<xs:complexType name="TeBetalenAlimentatie">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Alimentatie" type="tns:PeriodiekGegeven"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PeriodiekGegeven">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="Periodiek" type="tns:Periodiek"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WaardevastInd" nillable="true" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Periodiek">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Periode" nillable="true" type="tns:Periode"/>
+					<xs:choice minOccurs="1" maxOccurs="1">
+						<xs:element minOccurs="1" maxOccurs="1" name="WaardeInt" type="xs:int"/>
+						<xs:element minOccurs="1" maxOccurs="1" name="WaardePerc" type="xs:decimal"/>
+						<xs:element minOccurs="1" maxOccurs="1" name="WaardeBool" type="xs:boolean"/>
+						<xs:element minOccurs="1" maxOccurs="1" name="WaardeBedr" type="xs:int"/>
+					</xs:choice>
+					<xs:element minOccurs="1" maxOccurs="1" name="ToenameBedr" nillable="true" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="ToenamePerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="VervaltermijnCd" nillable="true" type="tns:VervaltermijnCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Periode">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="StartDat" type="xs:date"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="EindDat" type="xs:date"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="VervaltermijnCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Maand"/>
+					<xs:enumeration value="Kwartaal"/>
+					<xs:enumeration value="HalfJaar"/>
+					<xs:enumeration value="Jaar"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="InkomstenVroegereArbeid">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Inkomsten" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="HypotheekBerekeningOnderdeelInd" nillable="true" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PeriodiekeUitkering">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Uitkering" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="TeOntvangenAlimentatie2005Ind" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="HypotheekBerekeningOnderdeelInd" nillable="true" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Lijfrenteverzekering">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Periode" type="tns:Periode"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="FiscKaderCd" type="tns:LijfrenteverzekeringFiscKaderCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteverzekeringPremie" nillable="true" type="tns:LijfrenteverzekeringPremie"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="KoopsomPeriodiekGegeven" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="TussenWaarde" nillable="true" type="tns:Tussenwaarde"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Opbouw" type="tns:LijfrenteOpbouw"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PremieStoptBijAoInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Overlijdensdekking" nillable="true" type="tns:Overlijdensdekking"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteverzekeringUitkering" nillable="true" type="tns:LijfrenteverzekeringUitkering"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="HypotheekBerekeningOnderdeelInd" nillable="true" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="LijfrenteverzekeringFiscKaderCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="PrebredeHerwaardering"/>
+					<xs:enumeration value="BredeHerwaardering"/>
+					<xs:enumeration value="IB2001voor2006"/>
+					<xs:enumeration value="IB2001vanaf2006"/>
+					<xs:enumeration value="Vanaf2014"/>
+					<xs:enumeration value="Stamrecht"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="LijfrenteverzekeringPremie">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="JPremBedr" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PrembtlIngangsDat" type="xs:date"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PrembtlEindDat" type="xs:date"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Tussenwaarde">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Bedr" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Dat" type="xs:date"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LijfrenteOpbouw">
+				<xs:sequence>
+					<xs:choice minOccurs="1" maxOccurs="1">
+						<xs:element minOccurs="0" maxOccurs="1" name="Berekenen" type="tns:LijfrenteOpbouwBerekenen"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="ZelfOpgeven" type="tns:LijfrenteOpbouwZelfOpgeven"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LijfrenteOpbouwBerekenen">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="RendementPerc" type="xs:decimal"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LijfrenteOpbouwZelfOpgeven">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="EindwaardeBedr" type="xs:int"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Overlijdensdekking">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteOverlijdensdekkingCd" type="tns:LijfrenteOverlijdensdekkingCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteMinOvrldndekkingBedr" nillable="true" type="xs:int"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="LijfrenteOverlijdensdekkingCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Nee"/>
+					<xs:enumeration value="90%"/>
+					<xs:enumeration value="100%"/>
+					<xs:enumeration value="110%"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="LijfrenteverzekeringUitkering">
+				<xs:sequence>
+					<xs:choice minOccurs="1" maxOccurs="1">
+						<xs:element minOccurs="0" maxOccurs="1" name="LijfrenteverzekeringAfbouwZelfOpgevenBancair" type="tns:LijfrenteverzekeringAfbouwZelfOpgevenBancair"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="LijfrenteverzekeringAfbouwZelfOpgevenVerzekerd" type="tns:LijfrenteverzekeringAfbouwZelfOpgevenVerzekerd"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="LijfrenteverzekeringAfbouwBerekenenBancair" type="tns:LijfrenteverzekeringAfbouwBerekenenBancair"/>
+						<xs:element minOccurs="0" maxOccurs="1" name="LijfrenteverzekeringAfbouwBerekenenVerzekerd" type="tns:LijfrenteverzekeringAfbouwBerekenenVerzekerd"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LijfrenteverzekeringAfbouwZelfOpgevenBancair">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringDuurJAant" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringBedr" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringRekenrntPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringStijgingPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OvgLijfrenteUitkOpLangstlvndPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="NabestaandenLijfrenteDuurUitkering" nillable="true" type="tns:LijfrenteUitkeringDuurCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LijfrenteUitkeringDuurCd">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="UitkeringsDuurCd" nillable="true" type="tns:UitkeringsduurCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="JAant" nillable="true" type="xs:int"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="UitkeringsduurCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Eenmalig"/>
+					<xs:enumeration value="Levenslang"/>
+					<xs:enumeration value="VastePeriode"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="LijfrenteverzekeringAfbouwZelfOpgevenVerzekerd">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringDuurCd" nillable="true" type="tns:LijfrenteUitkeringDuurCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringBedr" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringRekenrntPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringStijgingPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OvgLijfrenteUitkOpLangstlvndPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="NabestaandenLijfrenteDuurUitkering" nillable="true" type="tns:LijfrenteUitkeringDuurCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LijfrenteverzekeringAfbouwBerekenenBancair">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringDuurJAant" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringRekenrntPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringStijgingPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OvgLijfrenteUitkOpLangstlvndPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="NabestaandenLijfrenteDuurUitkering" nillable="true" type="tns:LijfrenteUitkeringDuurCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LijfrenteverzekeringAfbouwBerekenenVerzekerd">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringDuurCd" nillable="true" type="tns:LijfrenteUitkeringDuurCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringRekenrntPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LijfrenteUitkeringStijgingPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OvgLijfrenteUitkOpLangstlvndPerc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="NabestaandenLijfrenteDuurUitkering" nillable="true" type="tns:LijfrenteUitkeringDuurCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PrepensioenEnVut">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Inkomsten" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="StoptBijAoInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Uitk2006Zieknfnds2005CombiInd" nillable="true" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PensioenAanspraak">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PensioenIngangsDat" nillable="true" type="xs:date"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OuderdomsPensBedr" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PPVoorPD" nillable="true" type="tns:BedrOfPerc"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PPNaPD" nillable="true" type="tns:BedrOfPerc"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WzPVoorPD" nillable="true" type="tns:BedrOfPerc"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WzPVoorPDTotLftdJAant" nillable="true" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OPPPWzPWaardevastVoorPDInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OPPPWaardevastNaPDInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Pensioenaangroei" type="tns:PeriodiekGegeven"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="BedrOfPerc">
+				<xs:sequence>
+					<xs:choice minOccurs="1" maxOccurs="1">
+						<xs:element minOccurs="1" maxOccurs="1" name="Bedr" type="xs:int"/>
+						<xs:element minOccurs="1" maxOccurs="1" name="Perc" type="xs:decimal"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TeOntvangenAlimentatie">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Inkomsten" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="TeOntvangenAlimentatie2005Ind" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="HypotheekBerekeningOnderdeelInd" nillable="true" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DienstbetrekkingFlexwerker">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Periode" nillable="true" type="tns:Periode"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="BrutoSalaris" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="BrutoInkomenEenJaarGeledenBedr" nillable="true" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="BrutoInkomenTweeJaarGeledenBedr" nillable="true" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="BrutoInkomenDrieJaarGeledenBedr" nillable="true" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="IncidenteelSalaris" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AutoEigenBijdrage" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AutoBijtelling" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PensioenUpo" nillable="true" type="tns:PensioenUpo"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LoondoorbetalingBijZiekte" nillable="true" type="tns:LoondoorbetalingBijZiekte"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AanvullingsverzekeringenWia" nillable="true" type="tns:AanvullingsverzekeringenWia"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PensioenBijAoOpBasisVanUpo" nillable="true" type="tns:PensioenBijAoOpBasisVanUpo"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AnwHiaatverzekeringViaWerkgever" nillable="true" type="tns:AnwHiaatverzekeringViaWerkgever"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PensioenUpo">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="1" name="PensioenBijdrageWerknemer" type="tns:PeriodiekGegeven"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LoondoorbetalingBijZiekte">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar1Kwartaal1Perc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar1Kwartaal2Perc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar1Kwartaal3Perc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar1Kwartaal4Perc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar2Kwartaal1Perc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar2Kwartaal2Perc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar2Kwartaal3Perc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Jaar2Kwartaal4Perc" nillable="true" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LoondoorbetalingGrondslagCd" nillable="true" type="tns:LoondoorbetalingGrondslagCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="LoondoorbetalingGrondslagCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Salaris"/>
+					<xs:enumeration value="DagloonMax"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="AanvullingsverzekeringenWia">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="WgaHiaatBasis" nillable="true" type="tns:AanvullingsverzekeringBasis"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WgaHiaatUitgebreid" nillable="true" type="tns:AanvullingsverzekeringBasis"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WiaVastAanvulling" nillable="true" type="tns:AanvullingsverzekeringVasteWiaAanvulling"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WiaInkomensaanvulling" nillable="true" type="tns:AanvullingsverzekeringWiaInkomensaanvulling"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WiaExcedent" nillable="true" type="tns:AanvullingsverzekeringWiaExcedent"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AanvullingsverzekeringBasis">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="WiaUitkeringsduurCd" nillable="true" type="tns:WiaUitkeringsduurCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WaardevastInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Premie" type="tns:PeriodiekGegeven"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="WiaUitkeringsduurCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="5jaar"/>
+					<xs:enumeration value="10jaar"/>
+					<xs:enumeration value="TotLeeftijdAow"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="AanvullingsverzekeringVasteWiaAanvulling">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="WiaUitkeringsduurCd" nillable="true" type="tns:WiaUitkeringsduurCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WaardevastInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="PremiePeriodiekGegeven" type="tns:PeriodiekGegeven"/>
+					<xs:choice minOccurs="1" maxOccurs="1">
+						<xs:element minOccurs="0" maxOccurs="1" name="DekkingsPercentageGrondslag" type="tns:AanvullingsverzekeringVastWiaPercGrondslag"/>
+						<xs:element minOccurs="1" maxOccurs="1" name="DekkingsBedr" type="xs:int"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AanvullingsverzekeringVastWiaPercGrondslag">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="DekkingsPerc" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AoGrondslagCd" nillable="true" type="tns:AoGrondslagCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="AoGrondslagCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="TotMaxDagloon"/>
+					<xs:enumeration value="VanafMaxDagloon"/>
+					<xs:enumeration value="Beide"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="AanvullingsverzekeringWiaInkomensaanvulling">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="WiaUitkeringsduurCd" nillable="true" type="tns:WiaUitkeringsduurCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WaardevastInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="PremiePeriodiekGegeven" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="DekkingsPerc" type="xs:decimal"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AanvullingsverzekeringWiaExcedent">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="WiaUitkeringsduurCd" type="tns:WiaUitkeringsduurCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WaardevastInd" type="xs:boolean"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="PremiePeriodiekGegeven" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="DekkingsPerc" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="MaxVerzekerdBedr" type="xs:int"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PensioenBijAoOpBasisVanUpo">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="PensioenAoVolledigBedr" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WiaMeegenomenInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WaardevastInd" nillable="true" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AnwHiaatverzekeringViaWerkgever">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="1" name="PremiePeriodiekGegeven" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AnwDekkingCd" nillable="true" type="tns:AnwDekkingCd"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="VerzekerdBedr" nillable="true" type="xs:int"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="AnwDekkingCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="DirectNaOverlijden"/>
+					<xs:enumeration value="JongsteKind18"/>
+					<xs:enumeration value="VastBedrag"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="Dienstbetrekking">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Periode" nillable="true" type="tns:Periode"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="BrutoSalaris" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="MinderWerkenBijOverlijden" nillable="true" type="tns:MinderWerkenBijOverlijden"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="IncidenteelSalaris" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AutoEigenBijdrage" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AutoBijtelling" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PensioenUpo" nillable="true" type="tns:PensioenUpo"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="LoondoorbetalingBijZiekte" nillable="true" type="tns:LoondoorbetalingBijZiekte"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AanvullingsverzekeringenWia" nillable="true" type="tns:AanvullingsverzekeringenWia"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="PensioenBijAoOpBasisVanUpo" nillable="true" type="tns:PensioenBijAoOpBasisVanUpo"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AnwHiaatverzekeringViaWerkgever" nillable="true" type="tns:AnwHiaatverzekeringViaWerkgever"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="MinderWerkenBijOverlijden">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="WerkenNaOverlijdenAnderPerc" type="xs:decimal"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="WerkenNuPerc" type="xs:decimal"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="HuurInkomsten">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Inkomsten" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="StoptBijOverlijdenInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="StoptBijAoInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="StoptBijWwInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="CijferbladWeergaveCd" nillable="true" type="tns:CijferbladWeergaveCd"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="CijferbladWeergaveCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="VermogensInkomsten"/>
+					<xs:enumeration value="BrutoInkomsten"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="IBOnderneming">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OprichtingJr" nillable="true" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="StakingJr" nillable="true" type="xs:int"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Winst" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OndernemingsVermogenStandBedr" nillable="true" type="xs:int"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="OntrekkingPrive" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="AutoBijtelling" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="StakenBijOverlijdenAnderInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="StakenBijAoInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="StakenBijAoAnderInd" nillable="true" type="xs:boolean"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="Goodwill" nillable="true" type="tns:PeriodiekGegeven"/>
+					<xs:element minOccurs="1" maxOccurs="1" name="GeruisloosInbrengenBijStakingInd" nillable="true" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="InkomstenAow">
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="1" name="Omschrijving" nillable="true" type="xs:string"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="Inkomsten" type="tns:PeriodiekGegeven"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="InkomstbronCd">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ExterneBron"/>
+					<xs:enumeration value="AOW"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:schema>
+		<xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/">
+			<xs:element name="anyType" nillable="true" type="xs:anyType"/>
+			<xs:element name="anyURI" nillable="true" type="xs:anyURI"/>
+			<xs:element name="base64Binary" nillable="true" type="xs:base64Binary"/>
+			<xs:element name="boolean" nillable="true" type="xs:boolean"/>
+			<xs:element name="byte" nillable="true" type="xs:byte"/>
+			<xs:element name="dateTime" nillable="true" type="xs:dateTime"/>
+			<xs:element name="decimal" nillable="true" type="xs:decimal"/>
+			<xs:element name="double" nillable="true" type="xs:double"/>
+			<xs:element name="float" nillable="true" type="xs:float"/>
+			<xs:element name="int" nillable="true" type="xs:int"/>
+			<xs:element name="long" nillable="true" type="xs:long"/>
+			<xs:element name="QName" nillable="true" type="xs:QName"/>
+			<xs:element name="short" nillable="true" type="xs:short"/>
+			<xs:element name="string" nillable="true" type="xs:string"/>
+			<xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte"/>
+			<xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt"/>
+			<xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong"/>
+			<xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort"/>
+			<xs:element name="char" nillable="true" type="tns:char"/>
+			<xs:simpleType name="char">
+				<xs:restriction base="xs:int"/>
+			</xs:simpleType>
+			<xs:element name="duration" nillable="true" type="tns:duration"/>
+			<xs:simpleType name="duration">
+				<xs:restriction base="xs:duration">
+					<xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?"/>
+					<xs:minInclusive value="-P10675199DT2H48M5.4775808S"/>
+					<xs:maxInclusive value="P10675199DT2H48M5.4775807S"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="guid" nillable="true" type="tns:guid"/>
+			<xs:simpleType name="guid">
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:attribute name="FactoryType" type="xs:QName"/>
+			<xs:attribute name="Id" type="xs:ID"/>
+			<xs:attribute name="Ref" type="xs:IDREF"/>
+		</xs:schema>
+		<xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Omniplan.XCH.CrossChannelService" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/Omniplan.XCH.CrossChannelService">
+			<xs:import namespace="http://schemas.datacontract.org/2004/07/System.Web.Services.Protocols"/>
+			<xs:complexType name="FaultExceptionContainer">
+				<xs:complexContent mixed="false">
+					<xs:extension base="q1:SoapException" xmlns:q1="http://schemas.datacontract.org/2004/07/System.Web.Services.Protocols"/>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:element name="FaultExceptionContainer" nillable="true" type="tns:FaultExceptionContainer"/>
+		</xs:schema>
+		<xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/System.Web.Services.Protocols" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/System.Web.Services.Protocols">
+			<xs:import namespace="http://schemas.datacontract.org/2004/07/System"/>
+			<xs:complexType name="SoapException">
+				<xs:complexContent mixed="false">
+					<xs:extension base="q1:SystemException" xmlns:q1="http://schemas.datacontract.org/2004/07/System"/>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:element name="SoapException" nillable="true" type="tns:SoapException"/>
+		</xs:schema>
+		<xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/System" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/System" xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/">
+			<xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+			<xs:complexType name="SystemException">
+				<xs:complexContent mixed="false">
+					<xs:extension base="tns:Exception"/>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:element name="SystemException" nillable="true" type="tns:SystemException"/>
+			<xs:complexType name="Exception">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##local" processContents="skip"/>
+				</xs:sequence>
+				<xs:attribute ref="ser:FactoryType"/>
+			</xs:complexType>
+			<xs:element name="Exception" nillable="true" type="tns:Exception"/>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="ICrossChannel_BerekenBrutoInkomenJaar_InputMessage">
+		<wsdl:part name="parameters" element="tns:BerekenBrutoInkomenJaar"/>
+	</wsdl:message>
+	<wsdl:message name="ICrossChannel_BerekenBrutoInkomenJaar_OutputMessage">
+		<wsdl:part name="parameters" element="tns:BerekenBrutoInkomenJaarResponse"/>
+	</wsdl:message>
+	<wsdl:message name="ICrossChannel_BerekenBrutoInkomenJaar_FaultExceptionContainerFault_FaultMessage">
+		<wsdl:part name="detail" element="q1:FaultExceptionContainer" xmlns:q1="http://schemas.datacontract.org/2004/07/Omniplan.XCH.CrossChannelService"/>
+	</wsdl:message>
+	<wsdl:portType name="ICrossChannel">
+		<wsdl:operation name="BerekenBrutoInkomenJaar">
+			<wsdl:input wsaw:Action="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/BerekenenBrutoJaarinkomen/v1/ICrossChannel/BerekenBrutoInkomenJaar" message="tns:ICrossChannel_BerekenBrutoInkomenJaar_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/BerekenenBrutoJaarinkomen/v1/ICrossChannel/BerekenBrutoInkomenJaarResponse" message="tns:ICrossChannel_BerekenBrutoInkomenJaar_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/BerekenenBrutoJaarinkomen/v1/ICrossChannel/BerekenBrutoInkomenJaarFaultExceptionContainerFault" name="FaultExceptionContainerFault" message="tns:ICrossChannel_BerekenBrutoInkomenJaar_FaultExceptionContainerFault_FaultMessage"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="BasicHttpBinding_ICrossChannel" type="tns:ICrossChannel">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="BerekenBrutoInkomenJaar">
+			<soap:operation soapAction="http://www.rabobank.nl/Distributie/Advies/Adviesplanner/BerekenenBrutoJaarinkomen/v1/ICrossChannel/BerekenBrutoInkomenJaar" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="FaultExceptionContainerFault">
+				<soap:fault use="literal" name="FaultExceptionContainerFault" namespace=""/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="CrossChannel">
+		<wsdl:port name="BasicHttpBinding_ICrossChannel" binding="tns:BasicHttpBinding_ICrossChannel">
+			<soap:address location="http://adviesplanner-berekenen-pa.rabobank.nl/CrossChannel.svc"/>
+		</wsdl:port>
+	</wsdl:service>
+</definitions>

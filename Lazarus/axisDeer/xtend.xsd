@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="xtend20">
+		<xs:complexContent>
+			<xs:extension base="xtend10">
+				<xs:sequence>
+					<xs:element name="element10-03" type="xs:string"/>
+				</xs:sequence>
+				<xs:attribute name="attr10-03" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="xtend10">
+		<xs:complexContent>
+			<xs:extension base="baseType10">
+				<xs:sequence>
+					<xs:element name="element10-02" type="xs:string"/>
+				</xs:sequence>
+				<xs:attribute name="attr10-02" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="baseType10">
+		<xs:sequence>
+			<xs:element name="element10-01" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="attr10-01" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:element name="b10" type="baseType10">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="x10" type="xtend10"/>
+	<xs:element name="x20" type="xtend20"/>
+</xs:schema>

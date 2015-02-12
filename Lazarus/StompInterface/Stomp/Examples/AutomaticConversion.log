@@ -1,0 +1,9 @@
+* Converting file C:\JanBo\Sources\Lazarus\StompInterface\Stomp\Examples\MainFormClient.pas *
+Fixed character case of unit "stompclient" to "StompClient".
+Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+* Repairing form file C:\JanBo\Sources\Lazarus\StompInterface\Stomp\Examples\MainFormClient.lfm *
+Removed property "TextHeight".
+Removed property "DesignSize".
+Removed property "OldCreateOrder".
+* Fixing used units for file C:\JanBo\Sources\Lazarus\StompInterface\Stomp\Examples\MainFormClient.pas *
+Conversion Ready.

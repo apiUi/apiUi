@@ -1,0 +1,501 @@
+object LogFilterForm: TLogFilterForm
+  Left = 0
+  Top = 0
+  Width = 465
+  Height = 579
+  AutoScroll = True
+  Caption = 'LogFilterForm'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  Position = poDesigned
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  PixelsPerInch = 96
+  object FilteringPanel: TPanel
+    Left = 0
+    Top = 0
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 0
+    object EnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 11
+      Width = 97
+      Height = 17
+      Caption = 'Filtering Enabled'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+  end
+  object ActionPanel: TPanel
+    Left = 0
+    Top = 205
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 5
+    object ActionEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 10
+      Width = 57
+      Height = 17
+      Caption = 'Action'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object ActionEqualsCombo: TComboBox
+      Left = 80
+      Top = 8
+      Width = 75
+      Height = 21
+      ItemIndex = 0
+      TabOrder = 1
+      Text = 'Is'
+      Items.Strings = (
+        'Is'
+        'Is Not')
+    end
+    object ActionsCombo: TComboBox
+      Left = 179
+      Top = 9
+      Width = 145
+      Height = 21
+      TabOrder = 2
+      Text = 'Stub'
+      Items.Strings = (
+        'Stub'
+        'Forward'
+        'Redirect'
+        'Request')
+    end
+  end
+  object ServicePanel: TPanel
+    Left = 0
+    Top = 41
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 1
+    object ServiceEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 10
+      Width = 76
+      Height = 17
+      Caption = 'Service'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object ServiceEqualsCombo: TComboBox
+      Left = 80
+      Top = 8
+      Width = 75
+      Height = 21
+      ItemIndex = 0
+      TabOrder = 1
+      Text = 'Is'
+      Items.Strings = (
+        'Is'
+        'Is Not')
+    end
+    object ServiceEdit: TEdit
+      Left = 178
+      Top = 6
+      Width = 145
+      Height = 21
+      TabOrder = 2
+    end
+    object ServiceRegExpCheckBox: TCheckBox
+      Left = 331
+      Top = 8
+      Width = 116
+      Height = 17
+      Caption = 'Regular expression'
+      TabOrder = 3
+    end
+  end
+  object OperationPanel: TPanel
+    Left = 0
+    Top = 82
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 2
+    object OperationEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 9
+      Width = 65
+      Height = 17
+      Caption = 'Operation'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object OperationEqualsCombo: TComboBox
+      Left = 80
+      Top = 8
+      Width = 75
+      Height = 21
+      ItemIndex = 0
+      TabOrder = 1
+      Text = 'Is'
+      Items.Strings = (
+        'Is'
+        'Is Not')
+    end
+    object OperationEdit: TEdit
+      Left = 178
+      Top = 6
+      Width = 145
+      Height = 21
+      TabOrder = 2
+    end
+    object OperationRegExpCheckBox: TCheckBox
+      Left = 331
+      Top = 8
+      Width = 116
+      Height = 17
+      Caption = 'Regular expression'
+      TabOrder = 3
+    end
+  end
+  object CorrelationPanel: TPanel
+    Left = 0
+    Top = 123
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 3
+    object CorrelationEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 10
+      Width = 73
+      Height = 17
+      Caption = 'Correlation'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object CorrelationEqualsCombo: TComboBox
+      Left = 80
+      Top = 8
+      Width = 75
+      Height = 21
+      ItemIndex = 0
+      TabOrder = 1
+      Text = 'Is'
+      Items.Strings = (
+        'Is'
+        'Is Not')
+    end
+    object CorrelationEdit: TEdit
+      Left = 178
+      Top = 6
+      Width = 145
+      Height = 21
+      TabOrder = 2
+    end
+    object CorrelationRegExpCheckBox: TCheckBox
+      Left = 331
+      Top = 8
+      Width = 116
+      Height = 17
+      Caption = 'Regular expression'
+      TabOrder = 3
+    end
+  end
+  object ButtonPanel: TPanel
+    Left = 0
+    Top = 492
+    Width = 457
+    Height = 60
+    Align = alTop
+    TabOrder = 7
+    object Button1: TButton
+      Left = 6
+      Top = 16
+      Width = 97
+      Height = 25
+      Caption = '&Ok'
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object Button2: TButton
+      Left = 331
+      Top = 16
+      Width = 75
+      Height = 25
+      Cancel = True
+      Caption = '&Cancel'
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+  object ValidationPanel: TPanel
+    Left = 0
+    Top = 328
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 6
+    object ValidationErrorEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 10
+      Width = 169
+      Height = 17
+      Caption = 'XML-Schema validation error on'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object RequestValidationCheckBox: TCheckBox
+      Left = 179
+      Top = 2
+      Width = 97
+      Height = 17
+      Caption = 'Request'
+      TabOrder = 1
+    end
+    object ReplyValidationCheckBox: TCheckBox
+      Left = 179
+      Top = 19
+      Width = 97
+      Height = 17
+      Caption = 'Reply'
+      TabOrder = 2
+    end
+  end
+  object ExceptionPanel: TPanel
+    Left = 0
+    Top = 164
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 4
+    object ExceptionEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 10
+      Width = 76
+      Height = 17
+      Caption = 'Exception'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object ExceptionEqualsCombo: TComboBox
+      Left = 80
+      Top = 8
+      Width = 75
+      Height = 21
+      ItemIndex = 0
+      TabOrder = 1
+      Text = 'Is'
+      Items.Strings = (
+        'Is'
+        'Is Not')
+    end
+    object ExceptionEdit: TEdit
+      Left = 178
+      Top = 6
+      Width = 145
+      Height = 21
+      TabOrder = 2
+    end
+    object ExceptionRegExpCheckBox: TCheckBox
+      Left = 331
+      Top = 8
+      Width = 116
+      Height = 17
+      Caption = 'Regular expression'
+      TabOrder = 3
+    end
+  end
+  object MiMPanel: TPanel
+    Left = 0
+    Top = 369
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 8
+    object MiMEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 10
+      Width = 169
+      Height = 17
+      Caption = 'Man-in-the-middle changes'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object RequestMiMCheckBox: TCheckBox
+      Left = 179
+      Top = 2
+      Width = 97
+      Height = 17
+      Caption = 'Request'
+      TabOrder = 1
+    end
+    object ReplyMiMCheckBox: TCheckBox
+      Left = 179
+      Top = 19
+      Width = 97
+      Height = 17
+      Caption = 'Reply'
+      TabOrder = 2
+    end
+  end
+  object ReqPanel: TPanel
+    Left = 0
+    Top = 246
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 9
+    object RequestEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 11
+      Width = 63
+      Height = 17
+      Caption = 'Request'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object RequestEqualsComboBox: TComboBox
+      Left = 80
+      Top = 8
+      Width = 75
+      Height = 21
+      TabOrder = 1
+      Text = 'Like'
+      Items.Strings = (
+        'Contains'
+        'Not contains')
+    end
+    object RequestEdit: TEdit
+      Left = 179
+      Top = 8
+      Width = 145
+      Height = 21
+      TabOrder = 2
+    end
+    object CheckBox1: TCheckBox
+      Left = 332
+      Top = 9
+      Width = 116
+      Height = 17
+      Caption = 'Regular expression'
+      Checked = True
+      Enabled = False
+      State = cbChecked
+      TabOrder = 3
+    end
+  end
+  object RpyPanel: TPanel
+    Left = 0
+    Top = 287
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 10
+    object ReplyEnabledCheckBox: TCheckBox
+      Left = 6
+      Top = 10
+      Width = 72
+      Height = 17
+      Caption = 'Reply'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object ReplyEqualsComboBox: TComboBox
+      Left = 79
+      Top = 7
+      Width = 76
+      Height = 21
+      TabOrder = 1
+      Text = 'Like'
+      Items.Strings = (
+        'Contains'
+        'Not contains')
+    end
+    object ReplyEdit: TEdit
+      Left = 179
+      Top = 8
+      Width = 145
+      Height = 21
+      TabOrder = 2
+    end
+    object CheckBox2: TCheckBox
+      Left = 332
+      Top = 10
+      Width = 119
+      Height = 17
+      Caption = 'Regular expression'
+      Checked = True
+      Enabled = False
+      State = cbChecked
+      TabOrder = 3
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 410
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 11
+    object UnexpectedValuesCheckBox: TCheckBox
+      Left = 6
+      Top = 10
+      Width = 161
+      Height = 17
+      Caption = 'Unexpected values'
+      TabOrder = 0
+      OnClick = SetEnabled
+    end
+    object RemarksCheckBox: TCheckBox
+      Left = 178
+      Top = 10
+      Width = 161
+      Height = 17
+      Caption = 'Remarks'
+      TabOrder = 1
+      OnClick = SetEnabled
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 451
+    Width = 457
+    Height = 41
+    Align = alTop
+    TabOrder = 12
+    object MatchStyleCombo: TComboBox
+      Left = 6
+      Top = 9
+      Width = 99
+      Height = 21
+      ItemIndex = 0
+      TabOrder = 0
+      Text = 'Match all'
+      Items.Strings = (
+        'Match all'
+        'Match any')
+    end
+    object FilterStyleCombo: TComboBox
+      Left = 178
+      Top = 8
+      Width = 145
+      Height = 21
+      ItemIndex = 0
+      TabOrder = 1
+      Text = 'Show matching'
+      Items.Strings = (
+        'Show matching'
+        'Show non matching'
+        'Highlight matching'
+        'Highlight non matching'
+        '')
+    end
+  end
+end

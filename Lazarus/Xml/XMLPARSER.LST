@@ -1,0 +1,345 @@
+
+state 0:
+
+	$accept : _ start $end
+	$$1 : _	(1)
+
+	.	reduce 1
+
+	$$1	goto 1
+	start	goto 2
+
+state 1:
+
+	start : $$1 _ OptionalXmlSpecs
+	OptionalXmlSpecs : _	(3)
+	OptionalIgnoredSpace : _	(5)
+
+	_VALUE	shift 5
+	$end	reduce 3
+	_CDATATAG	reduce 5
+	_TAG	reduce 5
+	.	error
+
+	OptionalIgnoredSpace	goto 3
+	OptionalXmlSpecs	goto 4
+
+state 2:
+
+	$accept : start _ $end
+
+	$end	accept
+	.	error
+
+state 3:
+
+	OptionalXmlSpecs : OptionalIgnoredSpace _ XmlSpecs OptionalIgnoredSpace
+	$$2 : _	(9)
+
+	.	reduce 9
+
+	$$2	goto 6
+	XmlSpec	goto 7
+	XmlSpecs	goto 8
+
+state 4:
+
+	start : $$1 OptionalXmlSpecs _	(2)
+
+	.	reduce 2
+
+state 5:
+
+	OptionalIgnoredSpace : _VALUE _	(6)
+
+	.	reduce 6
+
+state 6:
+
+	XmlSpec : $$2 _ TagSpec
+
+	_CDATATAG	shift 10
+	_TAG	shift 11
+	.	error
+
+	TagSpec	goto 9
+
+state 7:
+
+	XmlSpecs : XmlSpec _	(7)
+
+	.	reduce 7
+
+state 8:
+
+	OptionalXmlSpecs : OptionalIgnoredSpace XmlSpecs _ OptionalIgnoredSpace
+	XmlSpecs : XmlSpecs _ XmlSpec
+	OptionalIgnoredSpace : _	(5)
+	$$2 : _	(9)
+
+	_VALUE	shift 5
+	$end	reduce 5
+	_CDATATAG	reduce 9
+	_TAG	reduce 9
+	.	error
+
+	$$2	goto 6
+	XmlSpec	goto 12
+	OptionalIgnoredSpace	goto 13
+
+state 9:
+
+	XmlSpec : $$2 TagSpec _	(10)
+
+	.	reduce 10
+
+state 10:
+
+	TagSpec : _CDATATAG _ OptionalCDatas _CDATAENDTAG
+	OptionalCDatas : _	(29)
+
+	_CDATA	shift 17
+	_CDATAENDTAG	reduce 29
+	.	error
+
+	CData	goto 14
+	CDatas	goto 15
+	OptionalCDatas	goto 16
+
+state 11:
+
+	TagSpec : _TAG _ $$3 OptionalAttributes eTagSpec
+	$$3 : _	(11)
+
+	.	reduce 11
+
+	$$3	goto 18
+
+state 12:
+
+	XmlSpecs : XmlSpecs XmlSpec _	(8)
+
+	.	reduce 8
+
+state 13:
+
+	OptionalXmlSpecs : OptionalIgnoredSpace XmlSpecs OptionalIgnoredSpace _	(4)
+
+	.	reduce 4
+
+state 14:
+
+	CDatas : CData _	(31)
+
+	.	reduce 31
+
+state 15:
+
+	OptionalCDatas : CDatas _	(30)
+	CDatas : CDatas _ CData
+
+	_CDATA	shift 17
+	_CDATAENDTAG	reduce 30
+	.	error
+
+	CData	goto 19
+
+state 16:
+
+	TagSpec : _CDATATAG OptionalCDatas _ _CDATAENDTAG
+
+	_CDATAENDTAG	shift 20
+	.	error
+
+state 17:
+
+	CData : _CDATA _	(33)
+
+	.	reduce 33
+
+state 18:
+
+	TagSpec : _TAG $$3 _ OptionalAttributes eTagSpec
+	OptionalAttributes : _	(16)
+
+	_ATTRIBUTENAME	shift 24
+	_EMPTYENDTAG	reduce 16
+	_ENDTAG	reduce 16
+	.	error
+
+	Attribute	goto 21
+	Attributes	goto 22
+	OptionalAttributes	goto 23
+
+state 19:
+
+	CDatas : CDatas CData _	(32)
+
+	.	reduce 32
+
+state 20:
+
+	TagSpec : _CDATATAG OptionalCDatas _CDATAENDTAG _	(13)
+
+	.	reduce 13
+
+state 21:
+
+	Attributes : Attribute _	(18)
+
+	.	reduce 18
+
+state 22:
+
+	OptionalAttributes : Attributes _	(17)
+	Attributes : Attributes _ Attribute
+
+	_ATTRIBUTENAME	shift 24
+	_EMPTYENDTAG	reduce 17
+	_ENDTAG	reduce 17
+	.	error
+
+	Attribute	goto 25
+
+state 23:
+
+	TagSpec : _TAG $$3 OptionalAttributes _ eTagSpec
+
+	_EMPTYENDTAG	shift 27
+	_ENDTAG	shift 28
+	.	error
+
+	eTagSpec	goto 26
+
+state 24:
+
+	Attribute : _ATTRIBUTENAME _ _IS _ATTRIBUTEVALUE
+
+	_IS	shift 29
+	.	error
+
+state 25:
+
+	Attributes : Attributes Attribute _	(19)
+
+	.	reduce 19
+
+state 26:
+
+	TagSpec : _TAG $$3 OptionalAttributes eTagSpec _	(12)
+
+	.	reduce 12
+
+state 27:
+
+	eTagSpec : _EMPTYENDTAG _	(15)
+
+	.	reduce 15
+
+state 28:
+
+	eTagSpec : _ENDTAG _ OptionalValues _SLASHTAG _ENDTAG
+	OptionalValues : _	(21)
+	$$4 : _	(27)
+
+	_VALUE	shift 35
+	_SLASHTAG	reduce 21
+	_CDATATAG	reduce 27
+	_TAG	reduce 27
+	.	error
+
+	$$4	goto 30
+	SubXmlSpec	goto 31
+	Value	goto 32
+	Values	goto 33
+	OptionalValues	goto 34
+
+state 29:
+
+	Attribute : _ATTRIBUTENAME _IS _ _ATTRIBUTEVALUE
+
+	_ATTRIBUTEVALUE	shift 36
+	.	error
+
+state 30:
+
+	SubXmlSpec : $$4 _ XmlSpec
+	$$2 : _	(9)
+
+	.	reduce 9
+
+	$$2	goto 6
+	XmlSpec	goto 37
+
+state 31:
+
+	Value : SubXmlSpec _	(26)
+
+	.	reduce 26
+
+state 32:
+
+	Values : Value _	(23)
+
+	.	reduce 23
+
+state 33:
+
+	OptionalValues : Values _	(22)
+	Values : Values _ Value
+	$$4 : _	(27)
+
+	_VALUE	shift 35
+	_SLASHTAG	reduce 22
+	_CDATATAG	reduce 27
+	_TAG	reduce 27
+	.	error
+
+	$$4	goto 30
+	SubXmlSpec	goto 31
+	Value	goto 38
+
+state 34:
+
+	eTagSpec : _ENDTAG OptionalValues _ _SLASHTAG _ENDTAG
+
+	_SLASHTAG	shift 39
+	.	error
+
+state 35:
+
+	Value : _VALUE _	(25)
+
+	.	reduce 25
+
+state 36:
+
+	Attribute : _ATTRIBUTENAME _IS _ATTRIBUTEVALUE _	(20)
+
+	.	reduce 20
+
+state 37:
+
+	SubXmlSpec : $$4 XmlSpec _	(28)
+
+	.	reduce 28
+
+state 38:
+
+	Values : Values Value _	(24)
+
+	.	reduce 24
+
+state 39:
+
+	eTagSpec : _ENDTAG OptionalValues _SLASHTAG _ _ENDTAG
+
+	_ENDTAG	shift 40
+	.	error
+
+state 40:
+
+	eTagSpec : _ENDTAG OptionalValues _SLASHTAG _ENDTAG _	(14)
+
+	.	reduce 14
+

@@ -1,0 +1,4 @@
+* Converting file C:\JanBo\Sources\Lazarus\Xml\IpmScanner\IPMPARSER.PAS *
+Fixed unit name from IpmParser to IPMPARSER.
+* Fixing used units for file C:\JanBo\Sources\Lazarus\Xml\IpmScanner\IPMPARSER.PAS *
+Conversion Ready.

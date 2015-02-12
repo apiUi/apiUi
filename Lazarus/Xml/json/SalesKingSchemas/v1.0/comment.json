@@ -1,0 +1,109 @@
+{ "type":"object",
+  "title": "comment",
+  "description":"An comment in SK must always be related to an object.",
+  "properties":{
+    "id":{
+      "description":"Unique identifier - UUID",
+      "identity":true,
+      "readonly":true,
+      "type":"string",
+      "maxLength": 22,
+      "minLength":22
+    },
+    "text":{
+      "description": "The comment himself.",
+      "required":true,
+      "type":"string"
+    },
+    "related_object_type":{
+      "description": "Object type of the comments parent. Is the camelcased base class name: Document for invoice, credit_note,.., Contact for client",
+      "required":true,
+      "type":"string"
+    },
+    "related_object_id":{
+      "description": "uuid of the comments parent object.",
+      "required":true,
+      "type":"string",
+      "maxLength": 22,
+      "minLength":22
+    },
+    "created_at":{
+      "description": "Date the object was created in SK. Never changes afterwards",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    },
+    "updated_at":{
+      "description": "Date the object was edited in SK.",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    },
+    "team_id":{
+      "description": "A team uuid. If set only the team and its parent teams can see the record.",
+      "type":"string",
+      "maxLength": 22,
+      "minLength":22
+    }
+  },
+   "links":[
+    { "rel": "self",
+      "href": "comments/{id}"
+    },
+    { "rel": "instances",
+      "href": "comments",
+      "properties" : {
+        "page":{
+          "title" : "Page",
+          "description": "In paginated results set the page to look for",
+          "type":"number"
+        },
+        "per_page":{
+          "title" : "Per page",
+          "description": "Results per page. Default is 10, max is 100",
+          "type":"number"
+        },
+        "filter[q]":{
+          "title" : "Search",
+          "description": "Search in text",
+          "type":"string"
+        },
+        "filter[from]":{
+          "title" : "From date",
+          "description": "All objects with a date after the date",
+          "format" : "date",
+          "type" : "string"
+        },
+        "filter[to]":{
+          "title" : "To date",
+          "description": "All objects with date before the date",
+          "format" : "date",
+          "type" : "string"
+        },
+        "sort_by":{
+          "title" : "Sort by",
+          "description": "Sort the results by the given field => number",
+          "enum":["created_at", "updated_at"],
+          "type": "string"
+        },
+        "sort":{
+          "title" : "Sort",
+          "enum":["ASC","DESC"],
+          "description": "Sort the results in ASC or DESC"
+        }
+      }
+    },
+    { "rel": "destroy",
+      "href": "comments/{id}",
+      "method": "DELETE"
+    },
+    { "rel": "update",
+      "href": "comments/{id}",
+      "method": "PUT"
+    },
+    { "rel": "create",
+      "href": "comments",
+      "method": "POST"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="simple01-100">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="01"/>
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="simple02-100">
+		<xs:restriction base="simple01-100">
+			<xs:minLength value="02"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="simple01-99">
+		<xs:restriction base="simple01-100">
+			<xs:maxLength value="99"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="simple02-99">
+		<xs:restriction base="simple01-100">
+			<xs:minLength value="02"/>
+			<xs:maxLength value="99"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="s01-100" type="simple01-100"/>
+	<xs:element name="s02-100" type="simple02-100"/>
+	<xs:element name="s01-99" type="simple01-99"/>
+	<xs:element name="s02-99">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="simple02-99">
+					<xs:attribute name="attr02-99" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

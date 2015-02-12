@@ -1,0 +1,111 @@
+object FindDlg: TFindDlg
+  Left = 295
+  Height = 226
+  Top = 173
+  Width = 310
+  BorderStyle = bsDialog
+  Caption = 'Find Tag'
+  ClientHeight = 226
+  ClientWidth = 310
+  Color = clBtnFace
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  ParentFont = True
+  Position = poScreenCenter
+  LCLVersion = '1.2.6.0'
+  object Label1: TLabel
+    Left = 18
+    Height = 13
+    Top = 18
+    Width = 56
+    Caption = '&Text to find'
+    FocusControl = SearchEdit
+    ParentColor = False
+  end
+  object OKBtn: TButton
+    Left = 76
+    Height = 25
+    Top = 190
+    Width = 75
+    Caption = '&OK'
+    Default = True
+    ModalResult = 1
+    TabOrder = 4
+  end
+  object CancelBtn: TButton
+    Left = 156
+    Height = 25
+    Top = 190
+    Width = 75
+    Cancel = True
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 5
+  end
+  object SearchEdit: TEdit
+    Left = 76
+    Height = 21
+    Hint = 'Enter text to find (with wildcards)'
+    Top = 15
+    Width = 189
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 0
+  end
+  object SearchInRadioGroup: TRadioGroup
+    Left = 76
+    Height = 40
+    Top = 72
+    Width = 189
+    AutoFill = True
+    Caption = 'Search in'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 2
+    ClientHeight = 22
+    ClientWidth = 185
+    Columns = 2
+    ItemIndex = 0
+    Items.Strings = (
+      '&Tag'
+      '&Value'
+    )
+    TabOrder = 2
+  end
+  object ScopeRadioGroup: TRadioGroup
+    Left = 76
+    Height = 70
+    Top = 114
+    Width = 189
+    AutoFill = True
+    Caption = 'Scope'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 52
+    ClientWidth = 185
+    ItemIndex = 1
+    Items.Strings = (
+      '&From current object'
+      '&Entire scope'
+    )
+    TabOrder = 3
+  end
+  object RegularExpressionCheckBox: TCheckBox
+    Left = 75
+    Height = 17
+    Top = 42
+    Width = 112
+    Caption = 'Regular expression'
+    TabOrder = 1
+  end
+end

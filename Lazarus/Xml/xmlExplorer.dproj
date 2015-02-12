@@ -1,0 +1,172 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{84683B52-04F7-48F5-A6C1-8DF123C9FF3B}</ProjectGuid>
+			<MainSource>xmlExplorer.dpr</MainSource>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+			<ProjectVersion>12.0</ProjectVersion>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_StringChecks>off</DCC_StringChecks>
+			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<DCC_UsePackage>rtl;vclx;vcl;dbrtl;vcldb;dbxcds;dbexpress;IntrawebDB_72_90;Intraweb_72_90;xmlrtl;vclie;inet;inetdbbde;inetdbxpress;indy;VclSmp;dsnap;soaprtl;bdertl;webdsnap;vclactnband;vclshlctrls;MQ;adortl;P4sql;vcldbx;VirtualTreesD9;Word;dsnapcon;inetdb;websnap;teeui;teedb;tee;vclib;ibxpress</DCC_UsePackage>
+			<DCC_DependencyCheckOutputName>xmlExplorer.exe</DCC_DependencyCheckOutputName>
+			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
+			<DCC_Platform>x86</DCC_Platform>
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+			<DCC_N>true</DCC_N>
+			<DCC_S>false</DCC_S>
+			<DCC_K>false</DCC_K>
+			<DCC_E>false</DCC_E>
+			<DCC_F>false</DCC_F>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_DebugInformation>false</DCC_DebugInformation>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<ItemGroup>
+			<DelphiCompile Include="xmlExplorer.dpr">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="xmlExplorerUnit.pas">
+				<Form>xmlExplorerForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\IpmGun\igGlobals.pas"/>
+			<DCCReference Include="..\RegExpr\RegExpr.pas"/>
+			<DCCReference Include="..\IpmGun\ShowHtmlUnit.pas">
+				<Form>ShowHtmlForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\Library\WebBrowser\WebBrowserWrapperUnit.pas"/>
+			<DCCReference Include="..\IpmGun\ChooseStringUnit.pas">
+				<Form>ChooseStringForm</Form>
+			</DCCReference>
+			<DCCReference Include="xsdDateTimeFormUnit.pas">
+				<Form>xsdDateTimeForm</Form>
+			</DCCReference>
+			<DCCReference Include="ShowXmlUnit.pas">
+				<Form>ShowXmlForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\IpmGun\ipmInfoUnit.pas">
+				<Form>ipmInfoForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\IpmGun\ShowPdfFileUnit.pas"/>
+			<DCCReference Include="..\IpmGun\Ipmz.pas"/>
+			<DCCReference Include="..\IpmGun\ErrorFound.pas">
+				<Form>ErrorFoundDlg</Form>
+			</DCCReference>
+			<DCCReference Include="..\IpmGun\IpmScanner\IpmAnalyser.pas"/>
+			<DCCReference Include="..\IpmGun\IpmScanner\IPMPARSER.PAS"/>
+			<DCCReference Include="..\IpmGun\IpmScanner\IPMSCANNER.PAS"/>
+			<DCCReference Include="..\IpmGun\FindRegExpDialog.pas">
+				<Form>FindDlg</Form>
+			</DCCReference>
+			<DCCReference Include="Xmlz.pas"/>
+			<DCCReference Include="forceMsXml6.pas"/>
+			<DCCReference Include="..\IpmGun\IpmGunLicense.pas"/>
+			<DCCReference Include="..\IpmGun\IpmGunLicenseUnit.pas">
+				<Form>IpmGunLicenseForm</Form>
+			</DCCReference>
+			<DCCReference Include="ShowStringListUnit.pas">
+				<Form>ShowStringListForm</Form>
+			</DCCReference>
+			<DCCReference Include="FilterDialog.pas">
+				<Form>FilterDlg</Form>
+			</DCCReference>
+			<DCCReference Include="ShowRtfUnit.pas">
+				<Form>ShowRtfForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\IpmGun\FormIniFilez.pas"/>
+			<DCCReference Include="..\Library\Hash\HashUtilz.pas"/>
+			<DCCReference Include="A2BXmlz.pas"/>
+			<DCCReference Include="ShowA2BXmlUnit.pas">
+				<Form>ShowA2BXmlForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\Library\A2BStringList\Diff_ONP.pas"/>
+			<DCCReference Include="OpenTwoFoldersUnit.pas">
+				<Form>OpenTwoFoldersForm</Form>
+			</DCCReference>
+			<DCCReference Include="ShowFolderDifferencesUnit.pas">
+				<Form>ShowFolderDifferencesForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\IpmGun\dualListUnit.pas">
+				<Form>dualListForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\Library\vstUtils\vstUtils.pas"/>
+			<DCCReference Include="json\jsonAnalyser.pas"/>
+			<DCCReference Include="json\JSONPARSER.PAS"/>
+			<DCCReference Include="json\JSONSCANNER.PAS"/>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Source>
+						<Source Name="MainSource">xmlExplorer.dpr</Source>
+					</Source>
+					<Parameters>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">True</VersionInfo>
+						<VersionInfo Name="MajorVer">3</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">1</VersionInfo>
+						<VersionInfo Name="Build">170</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1033</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">3.0.1.170</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">2.0</VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">Jan Bouwman</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription">XML Explorer</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName">xmlExplorer</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalCopyright">Jan Bouwman</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+					</VersionInfoKeys>
+				</Delphi.Personality>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>

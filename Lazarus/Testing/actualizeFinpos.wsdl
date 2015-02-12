@@ -1,0 +1,38 @@
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="http://www.rabobank.nl/distributie/advies/actualizeFinpos/1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:ns="http://www.rabobank.nl/distributie/advies/adviesplanner/1" name="actualizeFinposService" targetNamespace="http://www.rabobank.nl/distributie/advies/actualizeFinpos/1">
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://www.rabobank.nl/distributie/advies/actualizeFinpos/1/Imports">
+			<xsd:import schemaLocation="actualizeFinpos.xsd" namespace="http://www.rabobank.nl/distributie/advies/actualizeFinpos/1"/>
+			<xsd:import schemaLocation="onderwerp.xsd" namespace="http://www.rabobank.nl/distributie/advies/adviesplanner/1"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="IactualizeFinposService_actualizeFinpos_InputMessage">
+		<wsdl:part name="parameters" element="tns:actualizeFinposRequest"/>
+	</wsdl:message>
+	<wsdl:message name="IactualizeFinposService_actualizeFinpos_OutputMessage">
+		<wsdl:part name="parameters" element="tns:actualizeFinposResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="IactualizeFinposService">
+		<wsdl:operation name="actualizeFinpos">
+			<wsdl:input message="tns:IactualizeFinposService_actualizeFinpos_InputMessage" wsaw:Action="http://www.rabobank.nl/distributie/advies/actualizeFinpos/1/IactualizeFinposService/actualizeFinpos"/>
+			<wsdl:output message="tns:IactualizeFinposService_actualizeFinpos_OutputMessage" wsaw:Action="http://www.rabobank.nl/distributie/advies/actualizeFinpos/1/IactualizeFinposService/actualizeFinposResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="BasicHttpBinding_IactualizeFinposService" type="tns:IactualizeFinposService">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="actualizeFinpos">
+			<soap:operation soapAction="http://www.rabobank.nl/distributie/advies/actualizeFinpos/1/IactualizeFinposService/actualizeFinpos" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="actualizeFinposService">
+		<wsdl:port name="BasicHttpBinding_IactualizeFinposService" binding="tns:BasicHttpBinding_IactualizeFinposService">
+			<soap:address location="http://localhost:3239/actualizeFinpos.svc"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

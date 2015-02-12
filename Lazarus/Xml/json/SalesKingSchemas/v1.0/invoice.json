@@ -1,0 +1,285 @@
+{ "type":"object",
+  "title": "invoice",
+  "description": "An invoice",
+  "properties":{
+    "id":{
+      "description":"Unique identifier - UUID",
+      "identity":true,
+      "readonly":true,
+      "type":"string",
+      "maxLength": 22,
+      "minLength": 22
+    },
+    "number":{
+      "description": "Unique number assigned by SK invoice number schema. Auto-assigned when invoice is opened. Required unless doc status is draft.",
+      "type":"string",
+      "maxLength": 50
+    },
+    "address_field":{
+      "description": "Receiver address, normally shown in envelope window. Defaults to client address_field if empty and client_id given.",
+      "type":"string"
+    },
+    "date":{
+      "description": "Date the invoice is issued. Automatically set when invoice is opened. Required for non-draft documents.",
+      "format":"date",
+      "type":"string"
+    },
+    "due_days":{
+      "description": "Used to calculate the due date of the document. Useless if date and due date are present.",
+      "type":"integer"
+    },
+    "due_date":{
+      "description": "Auto-calculated from date + due days if empty and the document is opened.",
+      "format":"date",
+      "type":"string"
+    },
+    "status":{
+      "description": "Defaults to draft for new documents, unless otherwise stated. For new documents with status 'open' or 'closed' or doc where the status changes away from draft, following fields are set if empty: number(next in number schema), date(today), due date(due_days must be given). Only draft documents can be deleted.",
+      "default":"draft",
+      "enum":["draft","open","closed"],
+      "type":"string"
+    },
+    "external_ref":{
+      "description": "Some external reference, whatever this may be.",
+      "type":"string",
+      "maxLength": 255
+    },
+    "payment_method":{
+      "description": "How the document is being payed. Used in new payments.",
+      "enum":["cash","bank_transfer","credit_card","paypal","direct_debit","cheque", "moneybookers", "premium_sms"],
+      "type":"string"
+    },
+    "title":{
+      "description": "The headline of a document. Use SK placeholders to prevent excessive typing e.g. 'Your invoice [number]'",
+      "type":"string",
+      "maxLength": 255
+    },
+    "notes_before":{
+      "description": "Notes shown before the line items. Normally contains salutation and other introductional information. SK placeholders can be used.",
+      "type":"string",
+      "format":"text"
+    },
+    "notes_after":{
+      "description": "Notes shown after the line items. Can contain information about payments, bank account or a thank-you message. SK placeholders can be used.",
+      "type":"string",
+      "format":"text"
+    },
+    "tag_list":{
+      "description": "Space separated list of tags. Are split and saved as Tag objects on create, update.",
+      "type":"string"
+    },
+    "language":{
+      "description": "Should be a valid language short-code: de-DE, fr, en-GB; like defined in your account language menu. When the document is emailed or printed, a localized version of a multi-language template(email, pdf) will be used if available. Defaults to the clients language, if empty and a client is assigned.",
+      "type":"string",
+      "maxLength": 10
+    },
+    "archived_pdf":{
+      "description": "Archived PDF version of the document. Is created when an document is printed and archived. A document can have multiple archived versions. This only returns the most recent one. ",
+      "readonly":true,
+      "type":"object",
+      "properties":{"$ref":"./attachment.json#properties"}
+    },
+    "client":{
+      "description": "The client for the document. New documents cannot create a client, use client_id field to set it.",
+      "readonly":true,
+      "type":"object",
+      "properties":{"$ref":"./client.json#properties"}
+    },
+    "client_id":{
+      "description": "The clients uuid. If a new client is assigned its language, address field, due days and cash discount are used if those fields are not set.",
+      "type":"string",
+      "maxLength": 22,
+      "minLength": 22
+    },
+    "team_id":{
+      "description": "A team uuid. If set only the team and its parent teams can see the record.",
+      "type":"string",
+      "maxLength": 22,
+      "minLength": 22
+    },
+    "line_items":{
+      "description": "Line items for the document",
+      "type":"array",
+      "properties":{"$ref":"./line_item.json#properties"}
+    },
+    "created_at":{
+      "description": "Date the object was created in SK. Never changes afterwards.",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    },
+    "updated_at":{
+      "description": "Date the object was edited in SK.",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    },
+    "lock_version":{
+      "description": "Auto-incremented to prevent concurrent updates. First save wins and increments version. ",
+      "type":"integer"
+    },
+    "price_total":{
+      "description": "Deprecated use net_total_base_raw",
+      "readonly":true,
+      "type":"number"
+    },
+    "price_tax":{
+      "description": "Deprecated: use tax_total",
+      "readonly":true,
+      "type":"number"
+    },
+    "gross_total":{
+      "description": "Gross total of all line items, 2 decimals places",
+      "readonly":true,
+      "type":"number"
+    },
+    "tax_total":{
+      "description": "Tax total, 2 decimals places",
+      "readonly":true,
+      "type":"number"
+    },
+    "net_total":{
+      "description": "Net total, 2 decimals places",
+      "readonly":true,
+      "type":"number"
+    },
+    "net_total_base":{
+      "description": "Net total, 6 decimal places incl. discount",
+      "readonly":true,
+      "type":"number"
+    }
+  },
+  "links":[
+    { "rel": "self",
+      "href": "invoices/{id}"
+    },
+    { "rel": "instances",
+      "href": "invoices",
+      "properties" : {
+        "page":{
+          "title" : "Page",
+          "description": "In paginated results set the page to look for",
+          "type":"number"
+        },
+        "per_page":{
+          "title" : "Per page",
+          "description": "Results per page. Default is 10, max is 100",
+          "type":"number"
+        },
+        "filter[q]":{
+          "title" : "Search",
+          "description": "Search in title, number, address field",
+          "type":"string"
+        },
+        "filter[number]":{
+          "title" : "Number",
+          "description": "Find by exact number",
+          "type":"string"
+        },
+        "filter[tags]":{
+          "title" : "Tags",
+          "description": "Filter by a space delimited list of tags",
+          "type":"string"
+        },
+        "filter[from]":{
+          "title" : "From date",
+          "description": "Objects with a date after the date",
+          "format" : "date",
+          "type" : "string"
+        },
+        "filter[to]":{
+          "title" : "To date",
+          "description": "Objects with date before the date",
+          "format" : "date",
+          "type" : "string"
+        },
+        "filter[languages]":{
+          "title" : "Languages",
+          "description": "A list of language codes, comma separated",
+          "type" : "string"
+        },
+        "filter[client_ids]":{
+          "title" : "Clients",
+          "description": "A single or a list of client uuids, comma separated",
+          "type" : "string"
+        },
+        "filter[ids]":{
+          "title" : "Documents",
+          "description": "A single or a list of document uuids, comma separated",
+          "type" : "string"
+        },
+        "filter[creator_ids]":{
+          "title" : "Creator",
+          "description": "Objects created by the given users uuids, comma separated",
+          "type" : "string"
+        },
+        "sort_by":{
+          "title" : "Sort by",
+          "description": "Sort the results by the given field => number",
+          "enum":["title", "number", "created_at", "updated_at", "client_id", "price_total", "price_tax", "date", "due_date"],
+          "type": "string"
+        },
+        "sort":{
+          "title" : "Sort",
+          "enum":["ASC","DESC"],
+          "description": "Sort the results in ASC or DESC"
+        }
+      }
+    },
+    { "rel": "destroy",
+      "href": "invoices/{id}",
+      "method": "DELETE"
+    },
+    { "rel": "update",
+      "href": "invoices/{id}",
+      "method": "PUT"
+    },
+    { "rel": "create",
+      "href": "invoices",
+      "method": "POST",
+      "properties" : {
+        "source" : {
+          "title" : "Source document id",
+          "description": "Copies the source document(excl. number,date) and returns a new draft document. If the source is an Estimate or Order only line_items, client & tags are copied, so you can pass in additional fields.",
+          "type" : "string"
+        },
+        "cancel" : {
+          "title" : "Cancel an invoice",
+          "description": "Cancelling a document copies the source and negates its line item values. A source id must be set.",
+          "dependencies": ["source"],
+          "type":"boolean"
+        }
+      }
+    },
+    { "rel": "attachments",
+      "href": "invoices/{id}/attachments"
+    },
+    { "rel": "payments",
+      "href": "invoices/{id}/payments"
+    },
+    { "rel": "payment_reminders",
+      "href": "invoices/{id}/payment_reminders"
+    },
+    { "rel": "comments",
+      "href": "invoices/{id}/comments"
+    },
+    { "rel": "emails",
+      "href": "invoices/{id}/emails"
+    },
+    { "rel": "print",
+      "href": "invoices/{id}/print",
+      "method": "POST",
+      "properties" : {
+        "template_id" : {
+          "title" : "PDF template used for printing",
+          "description": "UUID of a pdf template used to print the document. MUST be present",
+          "required":true
+        },
+        "base64" : {
+          "title" : "Return the created pdf base64 encoded",
+          "description": "If set(any val) the new pdf is returned inside the attachment JSON within 'base64' key. Ommit to save traffic."
+        }
+      }
+    }
+  ]
+}

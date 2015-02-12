@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 2010-11-20 23:56:39: Generated with IpmGun 8.2.0.150 by Bouwman -->
+<stompHeader h="JanBo" b="Ookzo">
+  <expiration></expiration>
+  <persistent></persistent>
+  <priority>4</priority>
+  <priority>3</priority>
+  <priority>2</priority>
+  <priority>1</priority>
+  <nieuw>newvalue</nieuw>
+  <destination>a</destination>
+</stompHeader>

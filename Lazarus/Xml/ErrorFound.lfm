@@ -1,0 +1,108 @@
+object ErrorFoundDlg: TErrorFoundDlg
+  Left = 279
+  Height = 191
+  Top = 205
+  Width = 698
+  BorderStyle = bsDialog
+  Caption = 'IpmGun: Error detected'
+  ClientHeight = 191
+  ClientWidth = 698
+  Color = clBtnFace
+  ParentFont = True
+  Position = poScreenCenter
+  LCLVersion = '1.2.6.0'
+  object Bevel1: TBevel
+    Left = 8
+    Height = 129
+    Top = 8
+    Width = 675
+    Shape = bsFrame
+  end
+  object Label1: TLabel
+    Left = 71
+    Height = 13
+    Top = 24
+    Width = 20
+    Caption = 'File:'
+    ParentColor = False
+  end
+  object LineNumberLabel: TLabel
+    Left = 32
+    Height = 13
+    Top = 49
+    Width = 59
+    Caption = 'Linenumber:'
+    ParentColor = False
+  end
+  object ColumnNumberLabel: TLabel
+    Left = 15
+    Height = 13
+    Top = 73
+    Width = 76
+    Caption = 'ColumnNumber:'
+    ParentColor = False
+  end
+  object TokenStringLabel: TLabel
+    Left = 29
+    Height = 13
+    Top = 97
+    Width = 61
+    Caption = 'TokenString:'
+    ParentColor = False
+  end
+  object OKBtn: TButton
+    Left = 91
+    Height = 25
+    Top = 148
+    Width = 75
+    Caption = 'OK'
+    Default = True
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object FileNameEdit: TEdit
+    Left = 93
+    Height = 21
+    Top = 21
+    Width = 578
+    ParentColor = True
+    ReadOnly = True
+    TabOrder = 1
+  end
+  object LineNumberEdit: TEdit
+    Left = 93
+    Height = 21
+    Top = 46
+    Width = 100
+    ParentColor = True
+    ReadOnly = True
+    TabOrder = 2
+  end
+  object ColumnNumberEdit: TEdit
+    Left = 93
+    Height = 21
+    Top = 70
+    Width = 100
+    ParentColor = True
+    ReadOnly = True
+    TabOrder = 3
+  end
+  object TokenStringEdit: TEdit
+    Left = 93
+    Height = 21
+    Top = 94
+    Width = 578
+    ParentColor = True
+    ReadOnly = True
+    TabOrder = 4
+  end
+  object EditButton: TButton
+    Left = 177
+    Height = 25
+    Top = 148
+    Width = 75
+    Caption = '&Edit file'
+    OnClick = EditButtonClick
+    TabOrder = 5
+  end
+end

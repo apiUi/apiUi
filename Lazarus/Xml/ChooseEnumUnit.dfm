@@ -1,0 +1,75 @@
+object ChooseEnumForm: TChooseEnumForm
+  Left = 218
+  Top = 138
+  Width = 410
+  Height = 298
+  Caption = 'ChooseEnumForm'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 402
+    Height = 211
+    Align = alClient
+    BorderWidth = 4
+    Caption = 'Panel1'
+    TabOrder = 0
+    object ListView: TListView
+      Left = 5
+      Top = 5
+      Width = 392
+      Height = 201
+      Align = alClient
+      Columns = <
+        item
+          Caption = 'Value'
+        end
+        item
+          Caption = 'Annotation'
+        end>
+      TabOrder = 0
+      ViewStyle = vsReport
+      OnDblClick = ChooseClick
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 211
+    Width = 402
+    Height = 60
+    Align = alBottom
+    BorderWidth = 4
+    TabOrder = 1
+    object Button1: TButton
+      Left = 46
+      Top = 20
+      Width = 75
+      Height = 25
+      Caption = '&Ok'
+      Default = True
+      TabOrder = 0
+      OnClick = ChooseClick
+    end
+    object Button2: TButton
+      Left = 132
+      Top = 20
+      Width = 75
+      Height = 25
+      Cancel = True
+      Caption = '&Cancel'
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+end

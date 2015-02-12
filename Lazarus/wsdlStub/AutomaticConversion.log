@@ -1,0 +1,18 @@
+* Converting file C:\JanBo\Sources\Lazarus\wsdlStub\wsaConfigUnit.pas *
+Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+* Repairing form file C:\JanBo\Sources\Lazarus\wsdlStub\wsaConfigUnit.lfm *
+Removed property "Alignment".
+Removed property "Alignment".
+Removed property "Alignment".
+Removed property "TextHeight".
+Removed property "OldCreateOrder".
+Changed Top coord of TCheckBox from "125" to "111" inside TGroupBox.
+Changed Left coord of TCheckBox from "36" to "34" inside TGroupBox.
+Changed Top coord of TComboBox from "63" to "49" inside TGroupBox.
+Changed Left coord of TComboBox from "162" to "160" inside TGroupBox.
+Changed Top coord of TCheckBox from "65" to "51" inside TGroupBox.
+Changed Left coord of TCheckBox from "57" to "55" inside TGroupBox.
+Changed Top coord of TCheckBox from "32" to "18" inside TGroupBox.
+Changed Left coord of TCheckBox from "67" to "65" inside TGroupBox.
+* Fixing used units for file C:\JanBo\Sources\Lazarus\wsdlStub\wsaConfigUnit.pas *
+Conversion Ready.

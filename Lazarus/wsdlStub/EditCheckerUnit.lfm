@@ -1,0 +1,163 @@
+object EditCheckerForm: TEditCheckerForm
+  Left = 272
+  Top = 171
+  Anchors = []
+  Caption = 'Condition Expression'
+  ClientHeight = 182
+  ClientWidth = 773
+  Color = clBtnFace
+  ParentFont = True
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  PixelsPerInch = 96
+  object TopPanel: TPanel
+    Left = 0
+    Top = 0
+    Width = 773
+    Height = 41
+    Align = alTop
+    TabOrder = 0
+    OnResize = TopPanelResize
+    object Label1: TLabel
+      Left = 4
+      Top = 13
+      Width = 42
+      Height = 13
+      Caption = 'Element:'
+      FocusControl = ElementNameEdit
+    end
+    object ElementNameEdit: TEdit
+      Left = 52
+      Top = 9
+      Width = 715
+      Height = 21
+      ParentColor = True
+      ReadOnly = True
+      TabOrder = 0
+    end
+  end
+  object Panel3: TPanel
+    Left = 0
+    Top = 41
+    Width = 773
+    Height = 100
+    Align = alClient
+    BevelInner = bvRaised
+    BorderWidth = 3
+    Caption = 'Panel3'
+    TabOrder = 1
+    object ScriptMemo: TMemo
+      Left = 3
+      Top = 23
+      Width = 763
+      Height = 51
+      Align = alClient
+      BorderStyle = bsNone
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Courier New'
+      Font.Style = []
+      ParentFont = False
+      PopupMenu = MemoPopUpMenu
+      ScrollBars = ssHorizontal
+      TabOrder = 0
+      WordWrap = False
+      OnChange = ScriptMemoChange
+    end
+    object StatusBar: TStatusBar
+      Left = 3
+      Top = 74
+      Width = 763
+      Height = 19
+      Panels = <>
+      SimplePanel = True
+    end
+    object Memo1: TMemo
+      Left = 3
+      Top = 3
+      Width = 763
+      Height = 20
+      TabStop = False
+      Align = alTop
+      BorderStyle = bsNone
+      Lines.Strings = (
+        'Include this element only in case:'
+      )
+      ReadOnly = True
+      TabOrder = 2
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 141
+    Width = 773
+    Height = 41
+    Align = alBottom
+    TabOrder = 2
+    object OKBtn: TButton
+      Left = 89
+      Top = 7
+      Width = 75
+      Height = 25
+      Caption = 'OK'
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+      OnClick = OKBtnClick
+    end
+    object CancelBtn: TButton
+      Left = 175
+      Top = 7
+      Width = 75
+      Height = 25
+      Cancel = True
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 1
+      OnClick = CancelBtnClick
+    end
+    object CheckButton: TButton
+      Left = 2
+      Top = 7
+      Width = 75
+      Height = 25
+      Caption = '&Check'
+      TabOrder = 2
+      OnClick = CheckButtonClick
+    end
+  end
+  object MemoPopUpMenu: TPopupMenu
+    OnPopup = MemoPopUpMenuPopup
+    Left = 224
+    Top = 96
+    object IpmFieldMenuItem: TMenuItem
+      Caption = 'Xml Element'
+      OnClick = IpmFieldMenuItemClick
+    end
+    object DbNameMenuItem: TMenuItem
+      Caption = 'Table or Column Name'
+      Enabled = False
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object SelectFunctionMenuItem: TMenuItem
+      Caption = 'Function'
+      OnClick = SelectFunctionMenuItemClick
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object Grammar1: TMenuItem
+      Caption = 'Script language grammar'
+      OnClick = Grammar1Click
+    end
+    object EmbeddedSQLMenuItem: TMenuItem
+      Caption = 'Help on Embedded SQL'
+      OnClick = EmbeddedSQLMenuItemClick
+    end
+  end
+end

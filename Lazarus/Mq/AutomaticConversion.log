@@ -1,0 +1,5 @@
+* Converting file C:\JanBo\Sources\Lazarus\Mq\MQRfh2Api.pas *
+Fixed character case of unit "MqApi" to "MQAPI".
+Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+* Fixing used units for file C:\JanBo\Sources\Lazarus\Mq\MQRfh2Api.pas *
+Conversion Ready.

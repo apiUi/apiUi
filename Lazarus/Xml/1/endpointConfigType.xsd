@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by BouwmanJW (EMBRACE) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="endpointConfigDef" targetNamespace="endpointConfigDef" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="nameValuePairType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Value" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="FileNameType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="sslVersionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SSL Version 3"/>
+			<xs:enumeration value="TLS Version 1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="contentEncodingType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="none"/>
+			<xs:enumeration value="deflate"/>
+			<xs:enumeration value="gzip"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="httpType">
+		<xs:sequence>
+			<xs:element name="Address" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>e.g. http://localhost:6060/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ContentEncoding" type="tns:contentEncodingType" minOccurs="0"/>
+			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="httpsType">
+		<xs:sequence>
+			<xs:element name="Address" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ContentEncoding" type="tns:contentEncodingType" minOccurs="0"/>
+			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+			<xs:element name="SSL">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Version" type="tns:sslVersionType"/>
+						<xs:element name="CertificateFile" type="tns:FileNameType"/>
+						<xs:element name="KeyFile" type="tns:FileNameType"/>
+						<xs:element name="RootCertificateFile" type="tns:FileNameType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mqType">
+		<xs:sequence>
+			<xs:element name="putRequest">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Manager" type="xs:string"/>
+						<xs:element name="Queue" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getRequest" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Manager" type="xs:string"/>
+						<xs:element name="Queue" type="xs:string"/>
+						<xs:element name="Timeout" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="mqHeader" type="tns:mqHeaderType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mqHeaderType">
+		<xs:sequence>
+			<xs:element name="mqmd" type="tns:mqmdType" minOccurs="0"/>
+			<xs:element name="Rfh" type="tns:RfhType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="jmsType">
+		<xs:sequence>
+			<xs:element name="Dst" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSDestination </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Exp" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSExpiration </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Pri" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSPriority </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Dlv" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSDeliveryMode</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Cid" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSCorrelationID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Rto" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSReplyTo</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Tms" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSTimestamp</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Gid" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSXGroupID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Seq" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSXGroupSeq</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mcdType">
+		<xs:sequence>
+			<xs:element name="Msd" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="jms_none|jms_text|jms_bytes|jms_map|jms_stream|jms_object"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Type" minOccurs="0"/>
+			<xs:element name="Set" minOccurs="0"/>
+			<xs:element name="Fmt" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RfhType">
+		<xs:sequence>
+			<xs:element name="StrucId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>MQRFH_STRUC_ID (value: "RFH ")</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="RFH "/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Version" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>MQRFH_VERSION_2 (value: 2)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:long">
+						<xs:pattern value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="StrucLength" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Derived field: Total length of MQRFH2, including the NameValueData fields. 
+The value set into StrucLength must be a multiple of 4 (the data in the NameValueData fields can be padded with space characters to achieve this).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Encoding" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Encoding of any numeric data in the portion of the message following the MQRFH2 (the next header, or the message data following this header).</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CodedCharSetId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Representation of any character data in the portion of the message following the MQRFH2 (the next header, or the message data following this header)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Format" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Format name for the portion of the message following the MQRFH2</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Flags" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>MQRFH_NO_FLAGS =0. No flags set</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:long">
+						<xs:pattern value="0"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="NameValueCCSID" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The coded character set identifier (CCSID) for the NameValueData character strings contained in this header. The NameValueData can be coded in a character set that differs from the other character strings that are contained in the header (StrucID and Format). 
+If the NameValueCCSID is a 2-byte Unicode CCSID (1200, 13488, or 17584), the byte order of the Unicode is the same as the byte ordering of the numeric fields in the MQRFH2. (For example, Version, StrucLength, and NameValueCCSID itself.)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="1200"/>
+						<xs:pattern value="1208"/>
+						<xs:pattern value="13488"/>
+						<xs:pattern value="17584"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="mcd" type="tns:mcdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This contains properties that describe the shape or format of the message. For example, the Msd property identifies the message as being Text, Bytes, Stream, Map, Object, or null. This folder is always present in a JMS MQRFH2</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="jms" type="tns:jmsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is used to transport JMS header fields, and JMSX properties that cannot be fully expressed in the MQMD. This folder is always present in a JMS MQRFH2</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="usr" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is used to transport any application-defined properties associated with the message. This folder is present only if the application has set some application-defined properties</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="target" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="mqext" type="xs:anyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is used to transport IBM® defined properties that are used only by WebSphere Application Server. This folder is present only if the application has set at least one of these properties. 
+</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mqmdType">
+		<xs:sequence>
+			<xs:element name="StrucId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Structure identifier</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="4"/>
+						<xs:enumeration value="MD  "/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Version" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Structure version number</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:long">
+						<xs:enumeration value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Report" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Options for report messages</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:long">
+						<xs:enumeration value="0">
+							<xs:annotation>
+								<xs:documentation>MQRO_COPY_MSG_ID_TO_CORREL_ID</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="64">
+							<xs:annotation>
+								<xs:documentation>MQRO_PASS_CORREL_ID</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="128">
+							<xs:annotation>
+								<xs:documentation>MQRO_PASS_MSG_ID</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MsgType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Message type</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:long">
+						<xs:enumeration value="1">
+							<xs:annotation>
+								<xs:documentation>MQMT_SYSTEM_FIRST, MQMT_REQUEST</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="2">
+							<xs:annotation>
+								<xs:documentation>MQMT_REPLY</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="4">
+							<xs:annotation>
+								<xs:documentation>MQMT_REPORT</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="8">
+							<xs:annotation>
+								<xs:documentation>MQMT_DATAGRAM</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="65535">
+							<xs:annotation>
+								<xs:documentation>MQMT_SYSTEM_LAST</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="65536">
+							<xs:annotation>
+								<xs:documentation>MQMT_APPL_FIRST</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="999999999">
+							<xs:annotation>
+								<xs:documentation>MQMT_APPL_LAST</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Expiry" type="xs:long" minOccurs="0"/>
+			<xs:element name="Feedback" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Feedback or reason code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Encoding" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Numeric encoding of message data</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CodedCharSetId" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Character set identifier of message data</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Format" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Format name of message data</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="8"/>
+						<xs:enumeration value="MQHRF2  ">
+							<xs:annotation>
+								<xs:documentation>Requires RFH header</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="MQSTR   ">
+							<xs:annotation>
+								<xs:documentation>Default</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Priority" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Message priority</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Persistence" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Message persistence</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:long">
+						<xs:enumeration value="0">
+							<xs:annotation>
+								<xs:documentation>MQPER_NOT_PERSISTENT</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="1">
+							<xs:annotation>
+								<xs:documentation>MQPER_PERSISTENT</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="2">
+							<xs:annotation>
+								<xs:documentation>MQPER_PERSISTENCE_AS_Q_DEF</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MsgId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Message identifier</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="24"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CorrelId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Correlation identifier</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="24"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="BackoutCount" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Backout counter</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReplyToQ" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of reply queue</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="48"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ReplyToQMgr" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of reply queue manager</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="48"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="UserIdentifier" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>User identifier</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="12"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AccountingToken" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Accounting token</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="32"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ApplIdentityData" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Application data relating to identity</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="32"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PutApplType" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Type of application that put the message</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PutApplName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of application that put the message</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="28"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PutDate" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date when message was put</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="8"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PutTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Time when message was put</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="8"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ApplOriginData" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Application data relating to origin</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="4"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GroupId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Group identifier (Version 2+)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="24"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MsgSeqNumber" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sequence number of logical message within group (Version 2+)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Offset" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offset of data in physical message from start of logical message (version 2+)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MsgFlags" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Message flags (Version 2+)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OriginalLength" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Length of original message (Version 2+)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="stompInterfaceType">
+		<xs:sequence>
+			<xs:element name="Host" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The address of the server where the stomp broker is running</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Port" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The prort to which the stomp broker is listening; Default = 61613</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ClientId" type="xs:string" minOccurs="0"/>
+			<xs:element name="Timeout" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>Number of seconds to wait for response</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="stompHeader" type="tns:stompHeaderType"/>
+			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+			<xs:element name="ReplyBodyPostFix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>WORKAROUND
+Default "" (empty string)
+
+Specified string is appended to the message body on receiving a reply, is a workaround because current STOMP implementation looses last byte;
+Obviously, this will only help in cases you know what that last byte would be.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RequestBodyPostFix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>WORKAROUND
+Default "" (empty string)
+
+Specified string is appended to the message body on sending a request, is a workaround because current STOMP implementation looses last byte;</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="stompHeaderType">
+		<xs:sequence>
+			<xs:element name="correlation-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="destination" type="xs:string"/>
+			<xs:element name="expiration" type="xs:integer" minOccurs="0"/>
+			<xs:element name="group" type="xs:string" minOccurs="0"/>
+			<xs:element name="message-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="persistent" type="tns:stompPersistentType" minOccurs="0"/>
+			<xs:element name="priority" type="xs:integer" minOccurs="0"/>
+			<xs:element name="redelivered" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="reply-to" type="xs:string"/>
+			<xs:element name="sequence" type="xs:integer" minOccurs="0"/>
+			<xs:element name="timestamp" type="xs:string" minOccurs="0"/>
+			<xs:element name="type" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="stompPersistentType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="True"/>
+			<xs:enumeration value="False"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="smtpConfigType">
+		<xs:sequence>
+			<xs:element name="Host" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>DNS name or IP affress</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Port" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Port number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="customHeadersType">
+		<xs:sequence>
+			<xs:element name="Header" type="tns:nameValuePairType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="tacoConfigType">
+		<xs:sequence>
+			<xs:element name="Host" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>DNS name or IP affress</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Port" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Port number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="messageBroker" type="tns:tacoMessageBrokerType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="tacoMessageBrokerType">
+		<xs:choice>
+			<xs:element name="Pathsend" type="tns:tacoPathsendType"/>
+			<xs:element name="Mq" type="tns:tacoMqType"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="tacoPathsendType">
+		<xs:sequence>
+			<xs:element name="Monitor" type="xs:string"/>
+			<xs:element name="Server" type="xs:string"/>
+			<xs:element name="TMF" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="No">
+							<xs:annotation>
+								<xs:documentation>Do not use the Transaction Moinotor Facility</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="Commit">
+							<xs:annotation>
+								<xs:documentation>Commit transaction</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="Abort">
+							<xs:annotation>
+								<xs:documentation>Abort transaction</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="tacoMqType">
+		<xs:choice>
+			<xs:element name="RequestReply">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Manager" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PutQueue" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The name of the queue to put the message</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ReplyToQueue" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The name of the queue where the MQ serviceproducer should put its reply</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="GetQueue" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The name of the queue where the Tandem server will try to get the reply</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Timeout" type="xs:int">
+							<xs:annotation>
+								<xs:documentation>The number of seconds the Tandem server should wait for a reply</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="FireAndForget">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Manager" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PutQueue" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The name of the queue to put the message</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="endpointConfigType">
+		<xs:choice>
+			<xs:element name="Http" type="tns:httpType">
+				<xs:annotation>
+					<xs:documentation>Hypertext Transfer Protocol
+Functions as a request-response protocol in the client-server configurations.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Https" type="tns:httpsType"/>
+			<xs:element name="Mq" type="tns:mqType">
+				<xs:annotation>
+					<xs:documentation>IBM(C) Websphere MQ
+Requires either MQ Local Client or MQ Local Server</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Stomp" type="tns:stompInterfaceType">
+				<xs:annotation>
+					<xs:documentation>Simple Text Oriented Messaging Protocol
+Provides an interoperable format so clients can communicate with any STOMP message broker.
+Often used with Active MQ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Taco" type="tns:tacoConfigType">
+				<xs:annotation>
+					<xs:documentation>Tandem Communication
+Requiers a server program running on the Tandem that understands the TaCo protocol.
+Specify Username / Password at the Service Options</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Smtp" type="tns:smtpConfigType">
+				<xs:annotation>
+					<xs:documentation>Simple Mail Transfer Protocol
+Internet standard for electronic mail transmission across IP networks</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

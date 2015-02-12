@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.incinc.jb" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.incinc.jb" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="included0101">
+		<xs:sequence>
+			<xs:element name="elmnt0101">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="attr0101" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

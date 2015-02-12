@@ -1,0 +1,31 @@
+object Form1: TForm1
+  Left = 453
+  Height = 240
+  Top = 185
+  Width = 320
+  Caption = 'Form1'
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '1.2.6.0'
+  object Button1: TButton
+    Left = 98
+    Height = 25
+    Top = 49
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object VirtualStringTree1: TVirtualStringTree
+    Left = 69
+    Height = 100
+    Top = 116
+    Width = 200
+    DefaultText = 'Node'
+    Header.AutoSizeIndex = 0
+    Header.Columns = <>
+    Header.DefaultHeight = 17
+    Header.MainColumn = -1
+    TabOrder = 1
+  end
+end

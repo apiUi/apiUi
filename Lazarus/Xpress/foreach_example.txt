@@ -1,0 +1,17 @@
+for each Rpy.RaadplegenProductenBijKlantenResponseMessage.RaadplegenProductenBijKlanten_Rpy.KlantenLijst.Klant k do
+{
+  if k.KlantId = '12' then
+  {
+    for each k.ProductenLijst.Product p do
+    {
+      if p.ProductAdminCode = '01' then
+      {
+        p.ProductTypeCode := '12';
+        p.ProductNaam := 'Pakket overeenkomst';
+      }
+    } 
+  }
+}
+
+_ALIAS
+_EACH

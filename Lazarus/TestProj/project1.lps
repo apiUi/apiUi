@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="project1.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="project1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="25"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="unit1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="35"/>
+        <CursorPos X="3" Y="42"/>
+        <UsageCount Value="25"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\Xml\xmlzconsts.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="xmlzConsts"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="100"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="24"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <UnitName Value="xmlio"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="16"/>
+        <CursorPos X="33" Y="21"/>
+        <UsageCount Value="13"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <UnitName Value="Xmlz"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1300"/>
+        <CursorPos X="27" Y="1315"/>
+        <UsageCount Value="13"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\Utils\HashUtilz.pas"/>
+        <UnitName Value="HashUtilz"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="6" Y="11"/>
+        <UsageCount Value="13"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <UnitName Value="Xsdz"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1102"/>
+        <CursorPos X="32" Y="1115"/>
+        <UsageCount Value="13"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\StompInterface\Stomp\StompTypes.pas"/>
+        <UnitName Value="StompTypes"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="509"/>
+        <CursorPos X="90" Y="519"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\StompInterface\Stomp\testunit.pas"/>
+        <UnitName Value="testunit"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit8>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
+  </ProjectSession>
+  <EditorMacros Count="0"/>
+</CONFIG>

@@ -1,0 +1,127 @@
+{ "type":"object",
+  "title": "payment",
+  "description":"An payment in SK must always be related to an object.",
+  "properties":{
+    "id":{
+      "description":"Unique identifier - UUID",
+      "identity":true,
+      "readonly":true,
+      "type":"string",
+      "maxLength": 22,
+      "minLength":22
+    },
+    "amount":{
+      "description": "The payment amount",
+      "required":true,
+      "type":"number"
+    },
+    "external_ref":{
+      "description": "Reference number f.ex. issued by the bank.",
+      "type":"string",
+      "maxLength": 255
+    },
+    "date":{
+      "description": "Date the payment was made.",
+      "required":true,
+      "format":"date",
+      "type":"string"
+    },
+    "method":{
+      "description": "DEPRECATED use payment_method. Kicked at beginning of 08.2012"
+    },
+    "payment_method":{
+      "description": "How the payment was made.",
+      "enum":["cash","bank_transfer","credit_card","paypal","direct_debit","cheque", "moneybookers", "premium_sms"],
+      "type":"string"
+    },
+    "related_object_type":{
+      "description": "Object type of the payments parent. Is the camel-cased base class name: Document for invoice, credit_note,.., Contact for client",
+      "required":true,
+      "type":"string"
+    },
+    "related_object_id":{
+      "description": "uuid of the payments parent object.",
+      "required":true,
+      "type":"string",
+      "maxLength": 22,
+      "minLength":22
+    },
+    "team_id":{
+      "description": "A team uuid. If set only the team and its parent teams can see the record.",
+      "type":"string",
+      "maxLength": 22,
+      "minLength":22
+    },
+    "created_at":{
+      "description": "Date the object was created in SK. Never changes afterwards",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    }
+  },
+   "links":[
+    { "rel": "self",
+      "href": "payments/{id}"
+    },
+    { "rel": "instances",
+      "href": "payments",
+      "properties" : {
+        "page":{
+          "title" : "Page",
+          "description": "In paginated results set the page to look for",
+          "type":"number"
+        },
+        "per_page":{
+          "title" : "Per page",
+          "description": "Results per page. Default is 10, max is 100",
+          "type":"number"
+        },
+        "filter[q]":{
+          "title" : "Search",
+          "description": "Search in title, number, address field",
+          "type":"string"
+        },
+        "filter[from]":{
+          "title" : "From date",
+          "description": "All objects with a date after the date",
+          "format" : "date",
+          "type" : "string"
+
+        },
+        "filter[to]":{
+          "title" : "To date",
+          "description": "All objects with date before the date",
+          "format" : "date",
+          "type" : "string"
+        },
+        "sort_by":{
+          "title" : "Sort by",
+          "description": "Sort the results by the given field => number",
+          "enum":["amount","created_at", "updated_at"],
+          "type": "string"
+        },
+        "sort":{
+          "title" : "Sort",
+          "enum":["ASC","DESC"],
+          "description": "Sort the results in ASC or DESC"
+        }
+      }
+    },
+    { "rel": "destroy",
+      "href": "payments/{id}",
+      "method": "DELETE"
+    },
+    { "rel": "create",
+      "href": "payments",
+      "method": "POST",
+      "properties" : {
+        "new_doc_status":{
+          "title" : "New status for document",
+          "description": "Convenience method to close a document with a payment.",
+          "enum": ["open","closed"],
+          "type":"string"
+        }
+      }
+    }
+  ]
+}

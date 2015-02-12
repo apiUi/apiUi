@@ -1,0 +1,4 @@
+* Converting file C:\JanBo\Sources\Lazarus\Utils\VBIDE_TLB.pas *
+Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+* Fixing used units for file C:\JanBo\Sources\Lazarus\Utils\VBIDE_TLB.pas *
+Conversion Ready.

@@ -1,0 +1,144 @@
+object Form5: TForm5
+  Left = 82
+  Height = 462
+  Top = 151
+  Width = 788
+  Caption = 'Delphi Stomp Client - CHAT DEMO - www.danieleteti.it'
+  ClientHeight = 462
+  ClientWidth = 788
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.2.6.0'
+  object Label1: TLabel
+    Left = 77
+    Height = 13
+    Top = 14
+    Width = 28
+    Caption = 'PutQ:'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 205
+    Height = 13
+    Top = 14
+    Width = 29
+    Caption = 'GetQ:'
+    ParentColor = False
+  end
+  object Edit1: TEdit
+    Left = 9
+    Height = 21
+    Top = 10
+    Width = 62
+    TabOrder = 0
+    Text = 'localhost'
+  end
+  object PutQEdit: TEdit
+    Left = 107
+    Height = 21
+    Top = 10
+    Width = 62
+    TabOrder = 1
+    Text = 'Q1'
+  end
+  object EnterButton: TButton
+    Left = 404
+    Height = 25
+    Top = 8
+    Width = 66
+    Caption = 'Connect'
+    OnClick = EnterButtonClick
+    TabOrder = 4
+  end
+  object SenderEdit: TEdit
+    Left = 304
+    Height = 21
+    Top = 10
+    Width = 94
+    TabOrder = 3
+    Text = 'Jan_Bouwman'
+  end
+  object ReceivedMemo: TMemo
+    Left = 9
+    Height = 314
+    Top = 39
+    Width = 763
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = clMenuBar
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clHotLight
+    Font.Height = -12
+    Font.Name = 'Courier New'
+    ParentFont = False
+    ReadOnly = True
+    ScrollBars = ssBoth
+    TabOrder = 5
+  end
+  object SendMemo: TMemo
+    Left = 8
+    Height = 68
+    Top = 359
+    Width = 658
+    Anchors = [akLeft, akRight, akBottom]
+    Enabled = False
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Courier New'
+    Font.Style = [fsBold]
+    OnKeyUp = SendMemoKeyUp
+    ParentFont = False
+    TabOrder = 6
+  end
+  object SendButton: TButton
+    Left = 672
+    Height = 68
+    Top = 359
+    Width = 100
+    Anchors = [akRight, akBottom]
+    Caption = 'Send'
+    Enabled = False
+    OnClick = SendButtonClick
+    TabOrder = 7
+  end
+  object GetQEdit: TEdit
+    Left = 235
+    Height = 21
+    Top = 11
+    Width = 49
+    TabOrder = 2
+    Text = 'Q2'
+  end
+  object DisconnectButton: TButton
+    Left = 479
+    Height = 25
+    Top = 8
+    Width = 66
+    Caption = 'Disconnect'
+    Enabled = False
+    OnClick = DisconnectButtonClick
+    TabOrder = 8
+  end
+  object ExchangeButton: TButton
+    Left = 177
+    Height = 17
+    Top = 13
+    Width = 24
+    Caption = '<>'
+    OnClick = ExchangeButtonClick
+    TabOrder = 9
+  end
+  object ClearButton: TButton
+    Left = 552
+    Height = 25
+    Top = 8
+    Width = 35
+    Caption = 'Clear'
+    OnClick = ClearButtonClick
+    TabOrder = 10
+  end
+end

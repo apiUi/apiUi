@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="endpointConfigDef" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="endpointConfigDef" schemaLocation="endpointConfigType.xsd"/>
+	<xs:element name="mqHeader" type="tns:mqHeaderType">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="6">
+      <Unit0>
+        <Filename Value="httpFolderPoster.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="httpFolderPoster"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="257"/>
+        <CursorPos X="65" Y="271"/>
+        <FoldState Value=" T7lLJ7m"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="545"/>
+        <CursorPos X="25" Y="563"/>
+        <UsageCount Value="11"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="18"/>
+        <CursorPos X="10" Y="29"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\lazarus\components\Indy10\Lib\Protocols\IdCompressorZLib.pas"/>
+        <UnitName Value="IdCompressorZLib"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="247"/>
+        <CursorPos X="79" Y="261"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\Xpress\Bind.pas"/>
+        <UnitName Value="Bind"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
+        <UnitName Value="indylaz"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="3" Y="10"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
+        <Caret Line="10" Column="3" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="httpFolderPoster.lpr"/>
+        <Caret Line="285" Column="39" TopLine="39"/>
+      </Position3>
+      <Position4>
+        <Filename Value="httpFolderPoster.lpr"/>
+        <Caret Line="98" Column="3" TopLine="88"/>
+      </Position4>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="2">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="httpFolderPoster.lpr"/>
+        <Line Value="229"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="httpFolderPoster.lpr"/>
+        <Line Value="238"/>
+      </Item2>
+    </BreakPoints>
+  </Debugging>
+  <EditorMacros Count="0"/>
+</CONFIG>

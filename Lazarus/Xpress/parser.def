@@ -1,0 +1,333 @@
+const DF = 257;
+const DFS = 258;
+const DFX = 259;
+const FRAME_ = 260;
+const SFD = 261;
+const SFDS = 262;
+const SFS = 263;
+const SFSS = 264;
+const SFSSS = 265;
+const SFSSSS = 266;
+const SFSXX = 267;
+const SFV = 268;
+const SFX = 269;
+const SFOV = 270;
+const VFV = 271;
+const VFS = 272;
+const VFSS = 273;
+const VFSX = 274;
+const VFSSS = 275;
+const VFSSX = 276;
+const VFSSSS = 277;
+const VFX = 278;
+const VFD = 279;
+const VFOV = 280;
+const VFOS = 281;
+const VFOSS = 282;
+const VFOSX = 283;
+const VFOSSS = 284;
+const VFOSSX = 285;
+const VFOSSSS = 286;
+const VFOX = 287;
+const VFOD = 288;
+const VFG = 289;
+const VFGG = 290;
+const VFGGG = 291;
+const VFGGGG = 292;
+const XFD = 293;
+const XFG = 294;
+const XFGG = 295;
+const XFS = 296;
+const XFSX = 297;
+const XFV = 298;
+const XFX = 299;
+const XFXX = 300;
+const XFFRAME = 301;
+const XFOV = 302;
+const XFOX = 303;
+const XFOXX = 304;
+const BFLD = 305;
+const DFLD = 306;
+const SFLD = 307;
+const IFLD = 308;
+const XFLD = 309;
+const GFLD = 310;
+const PFLD = 311;
+const _NOID = 312;
+const _DYNFLD = 313;
+const _ALIAS = 314;
+const _AMPERSAND = 315;
+const _AND = 316;
+const _ARRAY = 317;
+const _AS_DYNFLD = 318;
+const _AS_FIELDID = 319;
+const _ASSIGNMENT = 320;
+const _BEGIN = 321;
+const _BEGIN_LAYOUT = 322;
+const _LOOP = 323;
+const _CASE = 324;
+const _CHARACTER_STRING = 325;
+const _COLON = 326;
+const _COMMA = 327;
+const _COMMENT = 328;
+const _CONST = 329;
+const _DATETIME = 330;
+const _DAYS = 331;
+const _DECLARE = 332;
+const _DIGSEQ = 333;
+const _DIV = 334;
+const _DO = 335;
+const _DOT = 336;
+const _DOTDOT = 337;
+const _DOWNTO = 338;
+const _EACH = 339;
+const _ELSE = 340;
+const _END = 341;
+const _EQUAL = 342;
+const _EVALUATE = 343;
+const _EXEC_SQL = 344;
+const _EXEC_SQLEXEC = 345;
+const _EXEC_SQLINSERT = 346;
+const _EXEC_SQLSELECT = 347;
+const _EXEC_YAG = 348;
+const _EXTERNAL = 349;
+const _FIELDID = 350;
+const _FILE = 351;
+const _FLOAT = 352;
+const _FOR = 353;
+const _FOREACH = 354;
+const _FORWARD = 355;
+const _FRAME = 356;
+const _FUNCTION = 357;
+const _GE = 358;
+const _GOTO = 359;
+const _GT = 360;
+const _IDENTIFIER = 361;
+const _IF = 362;
+const _IN = 363;
+const _INTEGER = 364;
+const _LABEL = 365;
+const _LAYOUT_FIELD = 366;
+const _LAYOUT_TOKEN = 367;
+const _LBRAC = 368;
+const _LE = 369;
+const _LPAREN = 370;
+const _LT = 371;
+const _MINUS = 372;
+const _MOD = 373;
+const _MONTHS = 374;
+const _NEW = 375;
+const _NEWLINE = 376;
+const _NIL = 377;
+const _NOT = 378;
+const _NOTEQUAL = 379;
+const _OF = 380;
+const _OR = 381;
+const _OTHERWISE = 382;
+const _PACKED = 383;
+const _PLUS = 384;
+const _POINTER = 385;
+const _PROCEDURE = 386;
+const _PROGRAM = 387;
+const _RBRAC = 388;
+const _REALNUMBER = 389;
+const _RECORD = 390;
+const _REPEAT = 391;
+const _RPAREN = 392;
+const _SEMICOLON = 393;
+const _SET = 394;
+const _SLASH = 395;
+const _SQLEXEC = 396;
+const _SQLPARAM_FIELD = 397;
+const _SQLSELECT = 398;
+const _SQLTOKEN = 399;
+const _SPACE = 400;
+const _STAR = 401;
+const _STARSTAR = 402;
+const _STRING = 403;
+const _THEN = 404;
+const _TO = 405;
+const _TYPE = 406;
+const _UNTIL = 407;
+const _UPARROW = 408;
+const _VAR = 409;
+const _VOID = 410;
+const VOIDFUNCTION_ = 411;
+const _WEEKS = 412;
+const _WHILE = 413;
+const _WHITESPACE = 414;
+const _WITH = 415;
+const _WITHDO = 416;
+const _WITHNEWDO = 417;
+const _YAG = 418;
+const _YEARS = 419;
+const _ILLEGAL = 420;
+const UMINUS = 421;
+
+TokenNames: array [256+1..UMINUS] of String =
+( 'DF'
+, 'DFS'
+, 'DFX'
+, 'FRAME_'
+, 'SFD'
+, 'SFDS'
+, 'SFS'
+, 'SFSS'
+, 'SFSSS'
+, 'SFSSSS'
+, 'SFSXX'
+, 'SFV'
+, 'SFX'
+, 'SFOV'
+, 'VFV'
+, 'VFS'
+, 'VFSS'
+, 'VFSX'
+, 'VFSSS'
+, 'VFSSX'
+, 'VFSSSS'
+, 'VFX'
+, 'VFD'
+, 'VFOV'
+, 'VFOS'
+, 'VFOSS'
+, 'VFOSX'
+, 'VFOSSS'
+, 'VFOSSX'
+, 'VFOSSSS'
+, 'VFOX'
+, 'VFOD'
+, 'VFG'
+, 'VFGG'
+, 'VFGGG'
+, 'VFGGGG'
+, 'XFD'
+, 'XFG'
+, 'XFGG'
+, 'XFS'
+, 'XFSX'
+, 'XFV'
+, 'XFX'
+, 'XFXX'
+, 'XFFRAME'
+, 'XFOV'
+, 'XFOX'
+, 'XFOXX'
+, 'BFLD'
+, 'DFLD'
+, 'SFLD'
+, 'IFLD'
+, 'XFLD'
+, 'GFLD'
+, 'PFLD'
+, '_NOID'
+, '_DYNFLD'
+, '_ALIAS'
+, '_AMPERSAND'
+, '_AND'
+, '_ARRAY'
+, '_AS_DYNFLD'
+, '_AS_FIELDID'
+, '_ASSIGNMENT'
+, '_BEGIN'
+, '_BEGIN_LAYOUT'
+, '_LOOP'
+, '_CASE'
+, '_CHARACTER_STRING'
+, '_COLON'
+, '_COMMA'
+, '_COMMENT'
+, '_CONST'
+, '_DATETIME'
+, '_DAYS'
+, '_DECLARE'
+, '_DIGSEQ'
+, '_DIV'
+, '_DO'
+, '_DOT'
+, '_DOTDOT'
+, '_DOWNTO'
+, '_EACH'
+, '_ELSE'
+, '_END'
+, '_EQUAL'
+, '_EVALUATE'
+, '_EXEC_SQL'
+, '_EXEC_SQLEXEC'
+, '_EXEC_SQLINSERT'
+, '_EXEC_SQLSELECT'
+, '_EXEC_YAG'
+, '_EXTERNAL'
+, '_FIELDID'
+, '_FILE'
+, '_FLOAT'
+, '_FOR'
+, '_FOREACH'
+, '_FORWARD'
+, '_FRAME'
+, '_FUNCTION'
+, '_GE'
+, '_GOTO'
+, '_GT'
+, '_IDENTIFIER'
+, '_IF'
+, '_IN'
+, '_INTEGER'
+, '_LABEL'
+, '_LAYOUT_FIELD'
+, '_LAYOUT_TOKEN'
+, '_LBRAC'
+, '_LE'
+, '_LPAREN'
+, '_LT'
+, '_MINUS'
+, '_MOD'
+, '_MONTHS'
+, '_NEW'
+, '_NEWLINE'
+, '_NIL'
+, '_NOT'
+, '_NOTEQUAL'
+, '_OF'
+, '_OR'
+, '_OTHERWISE'
+, '_PACKED'
+, '_PLUS'
+, '_POINTER'
+, '_PROCEDURE'
+, '_PROGRAM'
+, '_RBRAC'
+, '_REALNUMBER'
+, '_RECORD'
+, '_REPEAT'
+, '_RPAREN'
+, '_SEMICOLON'
+, '_SET'
+, '_SLASH'
+, '_SQLEXEC'
+, '_SQLPARAM_FIELD'
+, '_SQLSELECT'
+, '_SQLTOKEN'
+, '_SPACE'
+, '_STAR'
+, '_STARSTAR'
+, '_STRING'
+, '_THEN'
+, '_TO'
+, '_TYPE'
+, '_UNTIL'
+, '_UPARROW'
+, '_VAR'
+, '_VOID'
+, 'VOIDFUNCTION_'
+, '_WEEKS'
+, '_WHILE'
+, '_WHITESPACE'
+, '_WITH'
+, '_WITHDO'
+, '_WITHNEWDO'
+, '_YAG'
+, '_YEARS'
+, '_ILLEGAL'
+, 'UMINUS'
+);

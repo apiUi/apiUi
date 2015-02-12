@@ -1,0 +1,85 @@
+object messagesFromDiskForm: TmessagesFromDiskForm
+  Left = 229
+  Height = 168
+  Top = 166
+  Width = 560
+  Caption = 'Read message(s) from diskfile(s)'
+  ClientHeight = 168
+  ClientWidth = 560
+  Color = clBtnFace
+  Font.Color = clBlack
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '1.2.6.0'
+  object Label1: TLabel
+    Left = 141
+    Height = 13
+    Top = 70
+    Width = 187
+    Caption = '(separates correlation fields in flenames)'
+    ParentColor = False
+  end
+  object Button1: TButton
+    Left = 89
+    Height = 25
+    Top = 110
+    Width = 75
+    Caption = '&Ok'
+    Default = True
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object Button2: TButton
+    Left = 217
+    Height = 25
+    Top = 110
+    Width = 75
+    Cancel = True
+    Caption = '&Cancel'
+    ModalResult = 2
+    TabOrder = 1
+  end
+  object FileNamesEdit: TLabeledEdit
+    Left = 89
+    Height = 21
+    Top = 29
+    Width = 448
+    EditLabel.AnchorSideTop.Control = FileNamesEdit
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = FileNamesEdit
+    EditLabel.AnchorSideBottom.Control = FileNamesEdit
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 62
+    EditLabel.Height = 13
+    EditLabel.Top = 33
+    EditLabel.Width = 24
+    EditLabel.Caption = 'Files:'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    ParentColor = True
+    ReadOnly = True
+    TabOrder = 2
+  end
+  object SeparatorEdit: TLabeledEdit
+    Left = 89
+    Height = 21
+    Top = 66
+    Width = 48
+    EditLabel.AnchorSideTop.Control = SeparatorEdit
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = SeparatorEdit
+    EditLabel.AnchorSideBottom.Control = SeparatorEdit
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 12
+    EditLabel.Height = 13
+    EditLabel.Top = 70
+    EditLabel.Width = 74
+    EditLabel.Caption = 'Field Separator:'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 3
+  end
+end

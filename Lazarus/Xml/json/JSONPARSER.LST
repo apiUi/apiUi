@@ -1,0 +1,363 @@
+
+state 0:
+
+	$accept : _ start $end
+	$$1 : _	(1)
+
+	.	reduce 1
+
+	$$1	goto 1
+	start	goto 2
+
+state 1:
+
+	start : $$1 _ OptionalJsonObjects
+	OptionalJsonObjects : _	(3)
+	OptionalIgnoredSpace : _	(5)
+
+	$end	reduce 3
+	_LEFT_CURLY_BRACKET	reduce 5
+	.	error
+
+	_VALUE	goto 3
+	OptionalIgnoredSpace	goto 4
+	OptionalJsonObjects	goto 5
+
+state 2:
+
+	$accept : start _ $end
+
+	$end	accept
+	.	error
+
+state 3:
+
+	OptionalIgnoredSpace : _VALUE _	(6)
+
+	.	reduce 6
+
+state 4:
+
+	OptionalJsonObjects : OptionalIgnoredSpace _ JsonObjects OptionalIgnoredSpace
+
+	_LEFT_CURLY_BRACKET	shift 8
+	.	error
+
+	JsonObject	goto 6
+	JsonObjects	goto 7
+
+state 5:
+
+	start : $$1 OptionalJsonObjects _	(2)
+
+	.	reduce 2
+
+state 6:
+
+	JsonObjects : JsonObject _	(7)
+
+	.	reduce 7
+
+state 7:
+
+	OptionalJsonObjects : OptionalIgnoredSpace JsonObjects _ OptionalIgnoredSpace
+	JsonObjects : JsonObjects _ JsonObject
+	OptionalIgnoredSpace : _	(5)
+
+	_LEFT_CURLY_BRACKET	shift 8
+	$end	reduce 5
+	.	error
+
+	JsonObject	goto 9
+	_VALUE	goto 3
+	OptionalIgnoredSpace	goto 10
+
+state 8:
+
+	JsonObject : _LEFT_CURLY_BRACKET _ $$2 Object $$3 _RIGHT_CURLY_BRACKET
+	$$2 : _	(9)
+
+	.	reduce 9
+
+	$$2	goto 11
+
+state 9:
+
+	JsonObjects : JsonObjects JsonObject _	(8)
+
+	.	reduce 8
+
+state 10:
+
+	OptionalJsonObjects : OptionalIgnoredSpace JsonObjects OptionalIgnoredSpace _	(4)
+
+	.	reduce 4
+
+state 11:
+
+	JsonObject : _LEFT_CURLY_BRACKET $$2 _ Object $$3 _RIGHT_CURLY_BRACKET
+	OptionalListOfMembers : _	(13)
+	$$4 : _	(17)
+
+	_RIGHT_CURLY_BRACKET	reduce 13
+	_STRING	reduce 17
+	.	error
+
+	$$4	goto 12
+	Member	goto 13
+	ListOfMembers	goto 14
+	OptionalListOfMembers	goto 15
+	Object	goto 16
+
+state 12:
+
+	Member : $$4 _ NameValuePair
+
+	_STRING	shift 18
+	.	error
+
+	NameValuePair	goto 17
+
+state 13:
+
+	ListOfMembers : Member _	(15)
+
+	.	reduce 15
+
+state 14:
+
+	OptionalListOfMembers : ListOfMembers _	(14)
+	ListOfMembers : ListOfMembers _ _COMMA Member
+
+	_COMMA	shift 19
+	_RIGHT_CURLY_BRACKET	reduce 14
+	.	error
+
+state 15:
+
+	Object : OptionalListOfMembers _	(12)
+
+	.	reduce 12
+
+state 16:
+
+	JsonObject : _LEFT_CURLY_BRACKET $$2 Object _ $$3 _RIGHT_CURLY_BRACKET
+	$$3 : _	(10)
+
+	.	reduce 10
+
+	$$3	goto 20
+
+state 17:
+
+	Member : $$4 NameValuePair _	(18)
+
+	.	reduce 18
+
+state 18:
+
+	NameValuePair : _STRING _ _COLON $$5 Value
+
+	_COLON	shift 21
+	.	error
+
+state 19:
+
+	ListOfMembers : ListOfMembers _COMMA _ Member
+	$$4 : _	(17)
+
+	.	reduce 17
+
+	$$4	goto 12
+	Member	goto 22
+
+state 20:
+
+	JsonObject : _LEFT_CURLY_BRACKET $$2 Object $$3 _ _RIGHT_CURLY_BRACKET
+
+	_RIGHT_CURLY_BRACKET	shift 23
+	.	error
+
+state 21:
+
+	NameValuePair : _STRING _COLON _ $$5 Value
+	$$5 : _	(19)
+
+	.	reduce 19
+
+	$$5	goto 24
+
+state 22:
+
+	ListOfMembers : ListOfMembers _COMMA Member _	(16)
+
+	.	reduce 16
+
+state 23:
+
+	JsonObject : _LEFT_CURLY_BRACKET $$2 Object $$3 _RIGHT_CURLY_BRACKET _	(11)
+
+	.	reduce 11
+
+state 24:
+
+	NameValuePair : _STRING _COLON $$5 _ Value
+
+	_LEFT_SQUARE_BRACKET	shift 28
+	_LEFT_CURLY_BRACKET	shift 8
+	_STRING	shift 29
+	_NUMBER	shift 30
+	_FALSE	shift 31
+	_NULL	shift 32
+	_TRUE	shift 33
+	.	error
+
+	JsonArray	goto 25
+	Value	goto 26
+	JsonObject	goto 27
+
+state 25:
+
+	Value : JsonArray _	(24)
+
+	.	reduce 24
+
+state 26:
+
+	NameValuePair : _STRING _COLON $$5 Value _	(20)
+
+	.	reduce 20
+
+state 27:
+
+	Value : JsonObject _	(23)
+
+	.	reduce 23
+
+state 28:
+
+	JsonArray : _LEFT_SQUARE_BRACKET _ $$6 optionalArrayValues _RIGHT_SQUARE_BRACKET
+	$$6 : _	(28)
+
+	.	reduce 28
+
+	$$6	goto 34
+
+state 29:
+
+	Value : _STRING _	(21)
+
+	.	reduce 21
+
+state 30:
+
+	Value : _NUMBER _	(22)
+
+	.	reduce 22
+
+state 31:
+
+	Value : _FALSE _	(26)
+
+	.	reduce 26
+
+state 32:
+
+	Value : _NULL _	(27)
+
+	.	reduce 27
+
+state 33:
+
+	Value : _TRUE _	(25)
+
+	.	reduce 25
+
+state 34:
+
+	JsonArray : _LEFT_SQUARE_BRACKET $$6 _ optionalArrayValues _RIGHT_SQUARE_BRACKET
+	optionalArrayValues : _	(30)
+	$$7 : _	(34)
+
+	_RIGHT_SQUARE_BRACKET	reduce 30
+	_LEFT_SQUARE_BRACKET	reduce 34
+	_LEFT_CURLY_BRACKET	reduce 34
+	_STRING	reduce 34
+	_NUMBER	reduce 34
+	_FALSE	reduce 34
+	_NULL	reduce 34
+	_TRUE	reduce 34
+	.	error
+
+	$$7	goto 35
+	ArrayValue	goto 36
+	ArrayValues	goto 37
+	optionalArrayValues	goto 38
+
+state 35:
+
+	ArrayValue : $$7 _ Value
+
+	_LEFT_SQUARE_BRACKET	shift 28
+	_LEFT_CURLY_BRACKET	shift 8
+	_STRING	shift 29
+	_NUMBER	shift 30
+	_FALSE	shift 31
+	_NULL	shift 32
+	_TRUE	shift 33
+	.	error
+
+	JsonArray	goto 25
+	Value	goto 39
+	JsonObject	goto 27
+
+state 36:
+
+	ArrayValues : ArrayValue _	(32)
+
+	.	reduce 32
+
+state 37:
+
+	optionalArrayValues : ArrayValues _	(31)
+	ArrayValues : ArrayValues _ _COMMA ArrayValue
+
+	_COMMA	shift 40
+	_RIGHT_SQUARE_BRACKET	reduce 31
+	.	error
+
+state 38:
+
+	JsonArray : _LEFT_SQUARE_BRACKET $$6 optionalArrayValues _ _RIGHT_SQUARE_BRACKET
+
+	_RIGHT_SQUARE_BRACKET	shift 41
+	.	error
+
+state 39:
+
+	ArrayValue : $$7 Value _	(35)
+
+	.	reduce 35
+
+state 40:
+
+	ArrayValues : ArrayValues _COMMA _ ArrayValue
+	$$7 : _	(34)
+
+	.	reduce 34
+
+	$$7	goto 35
+	ArrayValue	goto 42
+
+state 41:
+
+	JsonArray : _LEFT_SQUARE_BRACKET $$6 optionalArrayValues _RIGHT_SQUARE_BRACKET _	(29)
+
+	.	reduce 29
+
+state 42:
+
+	ArrayValues : ArrayValues _COMMA ArrayValue _	(33)
+
+	.	reduce 33
+

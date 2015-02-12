@@ -1,0 +1,194 @@
+{ "type":"object",
+  "title": "document",
+  "description": "This resource is readonly and serves as a convenient way to query documents independent of their type(invoice, order,..). The specific document type is set in each object in the result-set.",
+  "properties":{
+    "id":{
+      "description":"Unique identifier - UUID",
+      "identity":true,
+      "readonly":true,
+      "type":"string",
+      "maxLength": 22,
+      "minLength": 22
+    },
+    "object_type":{
+      "description": "The specific type of the document",
+      "type":"string"
+    },
+    "number":{
+      "description": "Unique number assigned by a user or automatic by the object's number schema.",
+      "type":"string",
+      "maxLength": 50
+    },
+    "address_field":{
+      "description": "Receiver address, normally shown in envelope window. Defaults to client address_field.",
+      "type":"string"
+    },
+    "date":{
+      "description": "Date the document is issued. Automatically set when document is opened. Required for non-draft documents.",
+      "format":"date",
+      "type":"string"
+    },
+    "external_ref":{
+      "description": "Some external reference, whatever this may be.",
+      "type":"string",
+      "maxLength": 255
+    },
+    "title":{
+      "description": "The headline of a document. Use SK placeholders to prevent excessive typing e.g. 'Your invoice [number]'",
+      "type":"string",
+      "maxLength": 255
+    },
+    "notes_before":{
+      "description": "Notes shown before the line items. Normally contains salutation and other introductional information. SK placeholders can be used.",
+      "type":"string",
+      "format":"text"
+    },
+    "notes_after":{
+      "description": "Notes shown after the line items. Can contain information about payments, bank account or a thank-you message. SK placeholders can be used.",
+      "type":"string",
+      "format":"text"
+    },
+    "tag_list":{
+      "description": "Space separated list of tags. Are split and saved as Tag objects on create, update.",
+      "type":"string"
+    },
+    "client_id":{
+      "description": "The clients uuid",
+      "type":"string",
+      "required":true,
+      "maxLength": 22,
+      "minLength":22
+    },
+    "team_id":{
+      "description": "A team uuid. If set only the team and its parent teams can see the record.",
+      "type":"string"
+    },
+    "line_items":{
+      "description": "Line items for the document",
+      "type":"array",
+      "properties":{"$ref":"./line_items.json#properties"}
+    },
+    "created_at":{
+      "description": "Date the object was created in SK. Never changes afterwards.",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    },
+    "updated_at":{
+      "description": "Date the object was edited in SK.",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    },
+    "gross_total":{
+      "description": "Gross total of all line items, 2 decimals places",
+      "readonly":true,
+      "type":"number"
+    },
+    "tax_total":{
+      "description": "Tax total, 2 decimals places",
+      "readonly":true,
+      "type":"number"
+    },
+    "net_total":{
+      "description": "Net total, 2 decimals places",
+      "readonly":true,
+      "type":"number"
+    },
+    "net_total_base":{
+      "description": "Net total, 6 decimal places incl. discount",
+      "readonly":true,
+      "type":"number"
+    }
+  },
+  "links":[
+    { "rel": "self",
+      "href": "documents/{id}"
+    },
+    { "rel": "instances",
+      "href": "documents",
+      "properties" : {
+        "page":{
+          "title" : "Page",
+          "description": "In paginated results set the page to look for",
+          "type":"number"
+        },
+        "per_page":{
+          "title" : "Per page",
+          "description": "Results per page. Default is 10, max is 100",
+          "type":"number"
+        },
+        "filter[q]":{
+          "title" : "Search",
+          "description": "Search in title, number, address field",
+          "type":"string"
+        },
+        "filter[number]":{
+          "title" : "Number",
+          "description": "Find by exact number",
+          "type":"string"
+        },
+        "filter[tags]":{
+          "title" : "Tags",
+          "description": "Filter by a space delimited list of tags",
+          "type":"string"
+        },
+        "filter[from]":{
+          "title" : "From date",
+          "description": "Objects with a date after the date",
+          "format" : "date",
+          "type" : "string"
+        },
+        "filter[to]":{
+          "title" : "To date",
+          "description": "Objects with date before the date",
+          "format" : "date",
+          "type" : "string"
+        },
+        "filter[created_at_from]":{
+          "title" : "From date",
+          "description": "Objects with a creation date after the date, including given datetime. ISO 8601 format YYY-MM-DDThh:mm:ss+z",
+          "format" : "date-time",
+          "type" : "string"
+        },
+        "filter[created_at_to]":{
+          "title" : "To date",
+          "description": "Objects with a creation date before the date, including given datetime. ISO 8601 format YYY-MM-DDThh:mm:ss+z",
+          "format" : "date-time",
+          "type" : "string"
+        },
+        "filter[languages]":{
+          "title" : "Languages",
+          "description": "A list of language codes, comma separated",
+          "type" : "string"
+        },
+        "filter[client_ids]":{
+          "title" : "Clients",
+          "description": "A single or a list of client uuids, comma separated",
+          "type" : "string"
+        },
+        "filter[ids]":{
+          "title" : "Documents",
+          "description": "A single or a list of document uuids, comma separated",
+          "type" : "string"
+        },
+        "filter[creator_ids]":{
+          "title" : "Creator",
+          "description": "Objects created by the given users uuids, comma separated",
+          "type" : "string"
+        },
+        "sort_by":{
+          "title" : "Sort by",
+          "description": "Sort the results by the given field => number",
+          "enum":["title", "number", "created_at", "updated_at", "client_id", "price_total", "price_tax", "date", "due_date"],
+          "type": "string"
+        },
+        "sort":{
+          "title" : "Sort",
+          "enum":["ASC","DESC"],
+          "description": "Sort the results in ASC or DESC"
+        }
+      }
+    }
+  ]
+}

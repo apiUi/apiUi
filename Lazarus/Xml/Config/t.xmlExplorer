@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 8/12/2013 10:08:22 PM: Generated with xmlExplorer 3.0.1.120 by Jan -->
+<xmlExplorerConfig>
+  <RecordDescriptors></RecordDescriptors>
+  <CompareSpecs>
+    <IgnoreOrderOfElements>true</IgnoreOrderOfElements>
+    <OrderGroup>
+      <RecurringGroup>*.LegalRepresentative</RecurringGroup>
+      <SortKeys>
+        <Element>LegalRepresentative.CustomerId</Element>
+      </SortKeys>
+    </OrderGroup>
+    <OrderGroup>
+      <RecurringGroup>x.a.b</RecurringGroup>
+      <SortKeys>
+        <Element>b</Element>
+      </SortKeys>
+    </OrderGroup>
+    <IgnoreDifferences>
+      <Element>CustomerId</Element>
+    </IgnoreDifferences>
+  </CompareSpecs>
+</xmlExplorerConfig>

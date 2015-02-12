@@ -1,0 +1,36 @@
+object Form1: TForm1
+  Left = 456
+  Height = 240
+  Top = 193
+  Width = 320
+  Caption = 'Form1'
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '1.2.6.0'
+  object Button1: TButton
+    Left = 122
+    Height = 25
+    Top = 44
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object FileNameEdit1: TFileNameEdit
+    Left = 16
+    Height = 21
+    Top = 208
+    Width = 272
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    MaxLength = 0
+    TabOrder = 1
+  end
+  object OpenDialog1: TOpenDialog
+    left = 232
+    top = 16
+  end
+end

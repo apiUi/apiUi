@@ -1,0 +1,109 @@
+object EditListValuesForm: TEditListValuesForm
+  Left = 272
+  Top = 171
+  Anchors = []
+  Caption = 'Edit list of values'
+  ClientHeight = 343
+  ClientWidth = 675
+  Color = clBtnFace
+  ParentFont = True
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  PixelsPerInch = 96
+  object Panel3: TPanel
+    Left = 0
+    Top = 0
+    Width = 675
+    Height = 302
+    Align = alClient
+    BorderWidth = 3
+    Caption = 'Panel3'
+    TabOrder = 0
+    object StatusBar: TStatusBar
+      Left = 2
+      Top = 277
+      Width = 667
+      Height = 19
+      Panels = <>
+      SimplePanel = True
+    end
+    object ToolBar1: TToolBar
+      Left = 2
+      Top = 2
+      Width = 667
+      Height = 29
+      Caption = 'ToolBar1'
+      TabOrder = 1
+    end
+    object ValueListEditor: TValueListEditor
+      Left = 2
+      Top = 31
+      Width = 667
+      Height = 246
+      Align = alClient
+      KeyOptions = [keyEdit, keyAdd, keyDelete, keyUnique]
+      TabOrder = 2
+      ColWidths = (
+        150
+        511
+      )
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 302
+    Width = 675
+    Height = 41
+    Align = alBottom
+    TabOrder = 1
+    object OKBtn: TButton
+      Left = 9
+      Top = 7
+      Width = 75
+      Height = 25
+      Caption = 'OK'
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object CancelBtn: TButton
+      Left = 95
+      Top = 7
+      Width = 75
+      Height = 25
+      Cancel = True
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 1
+      OnClick = CancelBtnClick
+    end
+  end
+  object MemoPopUpMenu: TPopupMenu
+    OnPopup = MemoPopUpMenuPopup
+    Left = 96
+    Top = 104
+    object IpmFieldMenuItem: TMenuItem
+      Caption = 'Xml Element'
+    end
+    object DbNameMenuItem: TMenuItem
+      Caption = 'Table or Column Name'
+      Enabled = False
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object SelectFunctionMenuItem: TMenuItem
+      Caption = 'Function'
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object Grammar1: TMenuItem
+      Caption = 'Script language grammar'
+    end
+    object EmbeddedSQLMenuItem: TMenuItem
+      Caption = 'Help on Embedded SQL'
+    end
+  end
+end

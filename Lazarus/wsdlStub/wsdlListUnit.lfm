@@ -1,0 +1,169 @@
+object wsdlListForm: TwsdlListForm
+  Left = 271
+  Top = 250
+  Caption = 'List of Wsdls to stub'
+  ClientHeight = 321
+  ClientWidth = 844
+  Color = clBtnFace
+  ParentFont = True
+  ShowHint = True
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  PixelsPerInch = 96
+  object Panel1: TPanel
+    Left = 0
+    Top = 264
+    Width = 844
+    Height = 57
+    Align = alBottom
+    BorderWidth = 3
+    TabOrder = 0
+    object OKBtn: TButton
+      Left = 11
+      Top = 12
+      Width = 75
+      Height = 25
+      Action = OKAction
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object AddButton: TButton
+      Left = 105
+      Top = 12
+      Width = 75
+      Height = 25
+      Action = AddAction
+      TabOrder = 1
+    end
+    object DeleteButton: TButton
+      Left = 606
+      Top = 12
+      Width = 75
+      Height = 25
+      Action = DeleteAction
+      TabOrder = 6
+    end
+    object EditSdfButton: TButton
+      Left = 201
+      Top = 12
+      Width = 75
+      Height = 25
+      Action = EditAction
+      TabOrder = 2
+    end
+    object NewSdfButton: TButton
+      Left = 282
+      Top = 12
+      Width = 75
+      Height = 25
+      Action = NewAction
+      TabOrder = 3
+    end
+    object ExtraXsdsButton: TButton
+      Left = 386
+      Top = 12
+      Width = 75
+      Height = 25
+      Action = ExtraXSDAction
+      TabOrder = 4
+    end
+    object PropertiesButton: TButton
+      Left = 489
+      Top = 12
+      Width = 75
+      Height = 25
+      Action = PropertiesAction
+      TabOrder = 5
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 0
+    Width = 844
+    Height = 264
+    Align = alClient
+    BorderWidth = 3
+    Caption = 'Panel2'
+    TabOrder = 1
+    object ListView: TListView
+      Left = 2
+      Top = 2
+      Width = 836
+      Height = 256
+      Align = alClient
+      Columns = <
+        item
+          Caption = 'Wsdl location'
+        end>
+      HideSelection = False
+      ReadOnly = True
+      RowSelect = True
+      PopupMenu = ListViewPopupMenu
+      TabOrder = 0
+      ViewStyle = vsReport
+    end
+  end
+  object ActionList1: TActionList
+    Left = 296
+    Top = 32
+    object DeleteAction: TAction
+      Caption = '&Delete...'
+      Hint = 'Remove service description'
+      OnExecute = DeleteActionExecute
+      OnUpdate = DeleteActionUpdate
+    end
+    object AddAction: TAction
+      Caption = '&Add...'
+      Hint = 'Add a service description file'
+      OnExecute = AddActionExecute
+      OnUpdate = AddActionUpdate
+    end
+    object OKAction: TAction
+      Caption = '&Close'
+      Hint = 'Close'
+      OnUpdate = OKActionUpdate
+    end
+    object EditAction: TAction
+      Caption = 'Edit SDF...'
+      Hint = 'Edit service description file'
+      OnExecute = EditActionExecute
+      OnUpdate = EditActionUpdate
+    end
+    object NewAction: TAction
+      Caption = 'New SDF...'
+      Hint = 'Create a new service description file'
+      OnExecute = NewActionExecute
+    end
+    object ExtraXSDAction: TAction
+      Caption = 'Extra &XSDs...'
+      Hint = 'Maintain a list of extra import XSDs'
+      OnExecute = ExtraXSDActionExecute
+      OnUpdate = ExtraXSDActionUpdate
+    end
+    object PropertiesAction: TAction
+      Caption = 'Properties...'
+      OnExecute = PropertiesActionExecute
+      OnUpdate = PropertiesActionUpdate
+    end
+    object CopyFileNameAction: TAction
+      Caption = 'Copy File Name'
+      OnExecute = CopyFileNameActionExecute
+      OnUpdate = CopyFileNameActionUpdate
+    end
+  end
+  object SaveDialog: TSaveDialog
+    DefaultExt = 'sdf'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Left = 376
+    Top = 32
+  end
+  object ListViewPopupMenu: TPopupMenu
+    Left = 472
+    Top = 32
+    object CopyFileNameAction1: TMenuItem
+      Action = CopyFileNameAction
+    end
+  end
+end

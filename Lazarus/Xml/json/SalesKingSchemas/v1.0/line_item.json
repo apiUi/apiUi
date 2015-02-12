@@ -1,0 +1,79 @@
+{ "type":"object",
+  "title": "line_item",
+  "description": "A line item for a document",
+  "properties":{
+    "id":{
+      "description":"Unique identifier - UUID",
+      "identity":true,
+      "readonly":true,
+      "type":"string",
+      "maxLength": 22,
+      "minLength":22
+    },
+    "position":{
+      "description": "Required since items are sorted by position.",
+      "type":"integer",
+      "required":true
+    },
+    "name":{
+      "description": "The name of an item",
+      "type":"string",
+      "maxLength": 50
+    },
+    "description":{
+      "description": "Item description",
+      "type":"string",
+      "format": "text"
+    },
+    "price_single":{
+      "description": "Net price of a single item",
+      "type":"number"
+    },
+    "tax":{
+      "description": "Tax percent for a single item.",
+      "type":"number"
+    },
+    "discount":{
+      "description": "Discount in percent applied to the items net total. Can also be negative if you want to add additional charges.",
+      "type":"number"
+    },
+    "quantity_unit":{
+      "description": "Quantity unit: kg, days, month.",
+      "type":"string",
+      "maxLength": 30
+    },
+    "quantity":{
+      "description": "Quantity of the item. Must be >= 0",
+      "type":"number",
+      "minimum":0,
+      "required":true
+    },
+    "product_id":{
+      "description": "A uuid of a product, referenced in this item. This makes it easier to track a products turnover and list the documents it is used on. Also see use_product",
+      "type":"string",
+      "maxLength": 22,
+      "minLength":22
+    },
+    "use_product":{
+      "description": "If set and product_id is present, the products name, description, quantity, unit, price are copied if the according item fields are missing.",
+      "type":"boolean"
+    },
+    "created_at":{
+      "description": "Date the object was created in SK. Never changes afterwards",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    },
+    "updated_at":{
+      "description": "Date the object was edited in SK.",
+      "format":"date-time",
+      "readonly":true,
+      "type":"string"
+    },
+    "_destroy":{
+      "description": "When set an existing item will be deleted. This switch is used for items passed-in nested inside their parent object(a document), which is default as long as there is no line item endpoint available.",
+      "type":"boolean"
+    }
+  },
+  "links":[]
+}

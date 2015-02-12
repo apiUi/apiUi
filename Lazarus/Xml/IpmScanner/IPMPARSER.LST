@@ -1,0 +1,762 @@
+
+state 0:
+
+	$accept : _ start $end
+	$$1 : _	(1)
+
+	.	reduce 1
+
+	$$1	goto 1
+	start	goto 2
+
+state 1:
+
+	start : $$1 _ OptionalIpmSpecs
+	OptionalIpmSpecs : _	(3)
+	$$2 : _	(7)
+
+	$end	reduce 3
+	_INTEGER	reduce 7
+	.	error
+
+	$$2	goto 3
+	IpmSpec	goto 4
+	IpmSpecs	goto 5
+	OptionalIpmSpecs	goto 6
+
+state 2:
+
+	$accept : start _ $end
+
+	$end	accept
+	.	error
+
+state 3:
+
+	IpmSpec : $$2 _ IpmClause
+
+	_INTEGER	shift 8
+	.	error
+
+	IpmClause	goto 7
+
+state 4:
+
+	IpmSpecs : IpmSpec _	(5)
+
+	.	reduce 5
+
+state 5:
+
+	OptionalIpmSpecs : IpmSpecs _	(4)
+	IpmSpecs : IpmSpecs _ IpmSpec
+	$$2 : _	(7)
+
+	$end	reduce 4
+	_INTEGER	reduce 7
+	.	error
+
+	$$2	goto 3
+	IpmSpec	goto 9
+
+state 6:
+
+	start : $$1 OptionalIpmSpecs _	(2)
+
+	.	reduce 2
+
+state 7:
+
+	IpmSpec : $$2 IpmClause _	(8)
+
+	.	reduce 8
+
+state 8:
+
+	IpmClause : _INTEGER _ _NOID OptionalAttributes _TERMINATOR OptionalConditionNames
+	IpmClause : _INTEGER _ OptionalAttributes _TERMINATOR OptionalConditionNames
+	OptionalAttributes : _	(11)
+
+	_COMP	shift 13
+	_DISPLAY	shift 14
+	_NATIVE_2	shift 15
+	_NATIVE_4	shift 16
+	_NATIVE_8	shift 17
+	_NOID	shift 18
+	_OCCURS	shift 19
+	_PICTURE	shift 20
+	_REDEFINES	shift 21
+	_SIGN	shift 22
+	_USAGE	shift 23
+	_TERMINATOR	reduce 11
+	.	error
+
+	Attribute	goto 10
+	Attributes	goto 11
+	OptionalAttributes	goto 12
+
+state 9:
+
+	IpmSpecs : IpmSpecs IpmSpec _	(6)
+
+	.	reduce 6
+
+state 10:
+
+	Attributes : Attribute _	(13)
+
+	.	reduce 13
+
+state 11:
+
+	OptionalAttributes : Attributes _	(12)
+	Attributes : Attributes _ Attribute
+
+	_COMP	shift 13
+	_DISPLAY	shift 14
+	_NATIVE_2	shift 15
+	_NATIVE_4	shift 16
+	_NATIVE_8	shift 17
+	_OCCURS	shift 19
+	_PICTURE	shift 20
+	_REDEFINES	shift 21
+	_SIGN	shift 22
+	_USAGE	shift 23
+	_TERMINATOR	reduce 12
+	.	error
+
+	Attribute	goto 24
+
+state 12:
+
+	IpmClause : _INTEGER OptionalAttributes _ _TERMINATOR OptionalConditionNames
+
+	_TERMINATOR	shift 25
+	.	error
+
+state 13:
+
+	Attribute : _COMP _	(16)
+
+	.	reduce 16
+
+state 14:
+
+	Attribute : _DISPLAY _	(17)
+
+	.	reduce 17
+
+state 15:
+
+	Attribute : _NATIVE_2 _	(18)
+
+	.	reduce 18
+
+state 16:
+
+	Attribute : _NATIVE_4 _	(19)
+
+	.	reduce 19
+
+state 17:
+
+	Attribute : _NATIVE_8 _	(20)
+
+	.	reduce 20
+
+state 18:
+
+	IpmClause : _INTEGER _NOID _ OptionalAttributes _TERMINATOR OptionalConditionNames
+	OptionalAttributes : _	(11)
+
+	_COMP	shift 13
+	_DISPLAY	shift 14
+	_NATIVE_2	shift 15
+	_NATIVE_4	shift 16
+	_NATIVE_8	shift 17
+	_OCCURS	shift 19
+	_PICTURE	shift 20
+	_REDEFINES	shift 21
+	_SIGN	shift 22
+	_USAGE	shift 23
+	_TERMINATOR	reduce 11
+	.	error
+
+	Attribute	goto 10
+	Attributes	goto 11
+	OptionalAttributes	goto 26
+
+state 19:
+
+	Attribute : _OCCURS _ OccursPhrases
+
+	_DEPENDING	shift 29
+	_INDEXED	shift 30
+	_INTEGER	shift 31
+	.	error
+
+	OccursPhrase	goto 27
+	OccursPhrases	goto 28
+
+state 20:
+
+	Attribute : _PICTURE _ OptionalIs _PICTURECLAUSE
+	OptionalIs : _	(33)
+
+	_IS	shift 33
+	_PICTURECLAUSE	reduce 33
+	.	error
+
+	OptionalIs	goto 32
+
+state 21:
+
+	Attribute : _REDEFINES _ _NOID
+
+	_NOID	shift 34
+	.	error
+
+state 22:
+
+	Attribute : _SIGN _ OptionalLeadingTrailing OptionalSeparate
+	OptionalLeadingTrailing : _	(35)
+
+	_LEADING	shift 36
+	_TRAILING	shift 37
+	_COMP	reduce 35
+	_DISPLAY	reduce 35
+	_NATIVE_2	reduce 35
+	_NATIVE_4	reduce 35
+	_NATIVE_8	reduce 35
+	_OCCURS	reduce 35
+	_PICTURE	reduce 35
+	_REDEFINES	reduce 35
+	_SEPARATE	reduce 35
+	_SIGN	reduce 35
+	_TERMINATOR	reduce 35
+	_USAGE	reduce 35
+	.	error
+
+	OptionalLeadingTrailing	goto 35
+
+state 23:
+
+	Attribute : _USAGE _	(15)
+
+	.	reduce 15
+
+state 24:
+
+	Attributes : Attributes Attribute _	(14)
+
+	.	reduce 14
+
+state 25:
+
+	IpmClause : _INTEGER OptionalAttributes _TERMINATOR _ OptionalConditionNames
+	OptionalConditionNames : _	(49)
+
+	_CONDITIONLEVEL	shift 41
+	$end	reduce 49
+	_INTEGER	reduce 49
+	.	error
+
+	ConditionName	goto 38
+	ConditionNames	goto 39
+	OptionalConditionNames	goto 40
+
+state 26:
+
+	IpmClause : _INTEGER _NOID OptionalAttributes _ _TERMINATOR OptionalConditionNames
+
+	_TERMINATOR	shift 42
+	.	error
+
+state 27:
+
+	OccursPhrases : OccursPhrase _	(25)
+
+	.	reduce 25
+
+state 28:
+
+	Attribute : _OCCURS OccursPhrases _	(22)
+	OccursPhrases : OccursPhrases _ OccursPhrase
+
+	_DEPENDING	shift 29
+	_INDEXED	shift 30
+	_INTEGER	shift 31
+	_COMP	reduce 22
+	_DISPLAY	reduce 22
+	_NATIVE_2	reduce 22
+	_NATIVE_4	reduce 22
+	_NATIVE_8	reduce 22
+	_OCCURS	reduce 22
+	_PICTURE	reduce 22
+	_REDEFINES	reduce 22
+	_SIGN	reduce 22
+	_TERMINATOR	reduce 22
+	_USAGE	reduce 22
+	.	error
+
+	OccursPhrase	goto 43
+
+state 29:
+
+	OccursPhrase : _DEPENDING _ OptionalOn DataName
+	OptionalOn : _	(38)
+
+	_ON	shift 45
+	_NOID	reduce 38
+	.	error
+
+	OptionalOn	goto 44
+
+state 30:
+
+	OccursPhrase : _INDEXED _ OptionalBy DataName
+	OptionalBy : _	(31)
+
+	_BY	shift 47
+	_NOID	reduce 31
+	.	error
+
+	OptionalBy	goto 46
+
+state 31:
+
+	OccursPhrase : _INTEGER _ OptionalTimes
+	OccursPhrase : _INTEGER _ _TO _INTEGER OptionalTimes
+	OptionalTimes : _	(42)
+
+	_TIMES	shift 49
+	_TO	shift 50
+	_COMP	reduce 42
+	_DEPENDING	reduce 42
+	_DISPLAY	reduce 42
+	_INDEXED	reduce 42
+	_INTEGER	reduce 42
+	_NATIVE_2	reduce 42
+	_NATIVE_4	reduce 42
+	_NATIVE_8	reduce 42
+	_OCCURS	reduce 42
+	_PICTURE	reduce 42
+	_REDEFINES	reduce 42
+	_SIGN	reduce 42
+	_TERMINATOR	reduce 42
+	_USAGE	reduce 42
+	.	error
+
+	OptionalTimes	goto 48
+
+state 32:
+
+	Attribute : _PICTURE OptionalIs _ _PICTURECLAUSE
+
+	_PICTURECLAUSE	shift 51
+	.	error
+
+state 33:
+
+	OptionalIs : _IS _	(34)
+
+	.	reduce 34
+
+state 34:
+
+	Attribute : _REDEFINES _NOID _	(24)
+
+	.	reduce 24
+
+state 35:
+
+	Attribute : _SIGN OptionalLeadingTrailing _ OptionalSeparate
+	OptionalSeparate : _	(40)
+
+	_SEPARATE	shift 53
+	_COMP	reduce 40
+	_DISPLAY	reduce 40
+	_NATIVE_2	reduce 40
+	_NATIVE_4	reduce 40
+	_NATIVE_8	reduce 40
+	_OCCURS	reduce 40
+	_PICTURE	reduce 40
+	_REDEFINES	reduce 40
+	_SIGN	reduce 40
+	_TERMINATOR	reduce 40
+	_USAGE	reduce 40
+	.	error
+
+	OptionalSeparate	goto 52
+
+state 36:
+
+	OptionalLeadingTrailing : _LEADING _	(36)
+
+	.	reduce 36
+
+state 37:
+
+	OptionalLeadingTrailing : _TRAILING _	(37)
+
+	.	reduce 37
+
+state 38:
+
+	ConditionNames : ConditionName _	(51)
+
+	.	reduce 51
+
+state 39:
+
+	OptionalConditionNames : ConditionNames _	(50)
+	ConditionNames : ConditionNames _ ConditionName
+
+	_CONDITIONLEVEL	shift 41
+	$end	reduce 50
+	_INTEGER	reduce 50
+	.	error
+
+	ConditionName	goto 54
+
+state 40:
+
+	IpmClause : _INTEGER OptionalAttributes _TERMINATOR OptionalConditionNames _	(10)
+
+	.	reduce 10
+
+state 41:
+
+	ConditionName : _CONDITIONLEVEL _ _NOID _VALUE OptionalIs ConditionValues _TERMINATOR
+
+	_NOID	shift 55
+	.	error
+
+state 42:
+
+	IpmClause : _INTEGER _NOID OptionalAttributes _TERMINATOR _ OptionalConditionNames
+	OptionalConditionNames : _	(49)
+
+	_CONDITIONLEVEL	shift 41
+	$end	reduce 49
+	_INTEGER	reduce 49
+	.	error
+
+	ConditionName	goto 38
+	ConditionNames	goto 39
+	OptionalConditionNames	goto 56
+
+state 43:
+
+	OccursPhrases : OccursPhrases OccursPhrase _	(26)
+
+	.	reduce 26
+
+state 44:
+
+	OccursPhrase : _DEPENDING OptionalOn _ DataName
+
+	_NOID	shift 59
+	.	error
+
+	ElementaryDataName	goto 57
+	DataName	goto 58
+
+state 45:
+
+	OptionalOn : _ON _	(39)
+
+	.	reduce 39
+
+state 46:
+
+	OccursPhrase : _INDEXED OptionalBy _ DataName
+
+	_NOID	shift 59
+	.	error
+
+	ElementaryDataName	goto 57
+	DataName	goto 60
+
+state 47:
+
+	OptionalBy : _BY _	(32)
+
+	.	reduce 32
+
+state 48:
+
+	OccursPhrase : _INTEGER OptionalTimes _	(27)
+
+	.	reduce 27
+
+state 49:
+
+	OptionalTimes : _TIMES _	(43)
+
+	.	reduce 43
+
+state 50:
+
+	OccursPhrase : _INTEGER _TO _ _INTEGER OptionalTimes
+
+	_INTEGER	shift 61
+	.	error
+
+state 51:
+
+	Attribute : _PICTURE OptionalIs _PICTURECLAUSE _	(23)
+
+	.	reduce 23
+
+state 52:
+
+	Attribute : _SIGN OptionalLeadingTrailing OptionalSeparate _	(21)
+
+	.	reduce 21
+
+state 53:
+
+	OptionalSeparate : _SEPARATE _	(41)
+
+	.	reduce 41
+
+state 54:
+
+	ConditionNames : ConditionNames ConditionName _	(52)
+
+	.	reduce 52
+
+state 55:
+
+	ConditionName : _CONDITIONLEVEL _NOID _ _VALUE OptionalIs ConditionValues _TERMINATOR
+
+	_VALUE	shift 62
+	.	error
+
+state 56:
+
+	IpmClause : _INTEGER _NOID OptionalAttributes _TERMINATOR OptionalConditionNames _	(9)
+
+	.	reduce 9
+
+state 57:
+
+	DataName : ElementaryDataName _	(44)
+
+	.	reduce 44
+
+state 58:
+
+	OccursPhrase : _DEPENDING OptionalOn DataName _	(29)
+	DataName : DataName _ InOrOf ElementaryDataName
+
+	_IN	shift 64
+	_OF	shift 65
+	_COMP	reduce 29
+	_DEPENDING	reduce 29
+	_DISPLAY	reduce 29
+	_INDEXED	reduce 29
+	_INTEGER	reduce 29
+	_NATIVE_2	reduce 29
+	_NATIVE_4	reduce 29
+	_NATIVE_8	reduce 29
+	_OCCURS	reduce 29
+	_PICTURE	reduce 29
+	_REDEFINES	reduce 29
+	_SIGN	reduce 29
+	_TERMINATOR	reduce 29
+	_USAGE	reduce 29
+	.	error
+
+	InOrOf	goto 63
+
+state 59:
+
+	ElementaryDataName : _NOID _	(46)
+
+	.	reduce 46
+
+state 60:
+
+	OccursPhrase : _INDEXED OptionalBy DataName _	(30)
+	DataName : DataName _ InOrOf ElementaryDataName
+
+	_IN	shift 64
+	_OF	shift 65
+	_COMP	reduce 30
+	_DEPENDING	reduce 30
+	_DISPLAY	reduce 30
+	_INDEXED	reduce 30
+	_INTEGER	reduce 30
+	_NATIVE_2	reduce 30
+	_NATIVE_4	reduce 30
+	_NATIVE_8	reduce 30
+	_OCCURS	reduce 30
+	_PICTURE	reduce 30
+	_REDEFINES	reduce 30
+	_SIGN	reduce 30
+	_TERMINATOR	reduce 30
+	_USAGE	reduce 30
+	.	error
+
+	InOrOf	goto 63
+
+state 61:
+
+	OccursPhrase : _INTEGER _TO _INTEGER _ OptionalTimes
+	OptionalTimes : _	(42)
+
+	_TIMES	shift 49
+	_COMP	reduce 42
+	_DEPENDING	reduce 42
+	_DISPLAY	reduce 42
+	_INDEXED	reduce 42
+	_INTEGER	reduce 42
+	_NATIVE_2	reduce 42
+	_NATIVE_4	reduce 42
+	_NATIVE_8	reduce 42
+	_OCCURS	reduce 42
+	_PICTURE	reduce 42
+	_REDEFINES	reduce 42
+	_SIGN	reduce 42
+	_TERMINATOR	reduce 42
+	_USAGE	reduce 42
+	.	error
+
+	OptionalTimes	goto 66
+
+state 62:
+
+	ConditionName : _CONDITIONLEVEL _NOID _VALUE _ OptionalIs ConditionValues _TERMINATOR
+	OptionalIs : _	(33)
+
+	_IS	shift 33
+	_INTEGER	reduce 33
+	_STRING	reduce 33
+	.	error
+
+	OptionalIs	goto 67
+
+state 63:
+
+	DataName : DataName InOrOf _ ElementaryDataName
+
+	_NOID	shift 59
+	.	error
+
+	ElementaryDataName	goto 68
+
+state 64:
+
+	InOrOf : _IN _	(47)
+
+	.	reduce 47
+
+state 65:
+
+	InOrOf : _OF _	(48)
+
+	.	reduce 48
+
+state 66:
+
+	OccursPhrase : _INTEGER _TO _INTEGER OptionalTimes _	(28)
+
+	.	reduce 28
+
+state 67:
+
+	ConditionName : _CONDITIONLEVEL _NOID _VALUE OptionalIs _ ConditionValues _TERMINATOR
+
+	_INTEGER	shift 71
+	_STRING	shift 72
+	.	error
+
+	ConditionValue	goto 69
+	ConditionValues	goto 70
+
+state 68:
+
+	DataName : DataName InOrOf ElementaryDataName _	(45)
+
+	.	reduce 45
+
+state 69:
+
+	ConditionValues : ConditionValue _	(54)
+	ConditionValue : ConditionValue _ _THROUGH ConditionValue
+
+	_THROUGH	shift 73
+	_INTEGER	reduce 54
+	_STRING	reduce 54
+	_TERMINATOR	reduce 54
+	.	error
+
+state 70:
+
+	ConditionName : _CONDITIONLEVEL _NOID _VALUE OptionalIs ConditionValues _ _TERMINATOR
+	ConditionValues : ConditionValues _ ConditionValue
+
+	_INTEGER	shift 71
+	_STRING	shift 72
+	_TERMINATOR	shift 75
+	.	error
+
+	ConditionValue	goto 74
+
+state 71:
+
+	ConditionValue : _INTEGER _	(57)
+
+	.	reduce 57
+
+state 72:
+
+	ConditionValue : _STRING _	(56)
+
+	.	reduce 56
+
+state 73:
+
+	ConditionValue : ConditionValue _THROUGH _ ConditionValue
+
+	_INTEGER	shift 71
+	_STRING	shift 72
+	.	error
+
+	ConditionValue	goto 76
+
+state 74:
+
+	ConditionValues : ConditionValues ConditionValue _	(55)
+	ConditionValue : ConditionValue _ _THROUGH ConditionValue
+
+	_THROUGH	shift 73
+	_INTEGER	reduce 55
+	_STRING	reduce 55
+	_TERMINATOR	reduce 55
+	.	error
+
+state 75:
+
+	ConditionName : _CONDITIONLEVEL _NOID _VALUE OptionalIs ConditionValues _TERMINATOR _	(53)
+
+	.	reduce 53
+
+state 76:
+
+	*** conflicts:
+
+	shift 73, reduce 58 on _THROUGH
+
+	ConditionValue : ConditionValue _THROUGH ConditionValue _	(58)
+	ConditionValue : ConditionValue _ _THROUGH ConditionValue
+
+	_THROUGH	shift 73
+	_INTEGER	reduce 58
+	_STRING	reduce 58
+	_TERMINATOR	reduce 58
+	.	error
+
+1 shift/reduce conflicts.

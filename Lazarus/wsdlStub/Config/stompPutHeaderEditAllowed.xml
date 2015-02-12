@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 2010-11-20 23:56:39: Generated with IpmGun 8.2.0.150 by Bouwman -->
+<stompHeader>
+  <destination></destination>
+  <expiration></expiration>
+  <persistent></persistent>
+  <priority></priority>
+  <reply-to></reply-to>
+</stompHeader>

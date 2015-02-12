@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 2010-05-13 18:35:00: Generated with IpmGun by BouwmanJW -->
+<mqHeader>
+  <mqmd>
+    <Report></Report>
+    <MsgType></MsgType>
+    <Expiry></Expiry>
+    <Feedback></Feedback>
+    <Encoding></Encoding>
+    <CodedCharSetId></CodedCharSetId>
+    <Format></Format>
+    <Priority></Priority>
+    <Persistence></Persistence>
+    <ReplyToQ></ReplyToQ>
+    <ReplyToQMgr></ReplyToQMgr>
+  </mqmd>
+  <Rfh>
+    <Encoding></Encoding>
+    <CodedCharSetId></CodedCharSetId>
+    <Format></Format>
+    <Flags></Flags>
+    <NameValueCCSID></NameValueCCSID>
+    <mcd>
+      <Msd></Msd>
+      <Set></Set>
+      <Type></Type>
+      <Fmt></Fmt>
+    </mcd>
+    <jms>
+      <Dst></Dst>
+      <Exp></Exp>
+      <Pri></Pri>
+      <Dlv></Dlv>
+      <Cid></Cid>
+      <Rto></Rto>
+    </jms>
+    <usr>
+      <targetService></targetService>
+    </usr>
+  </Rfh>
+</mqHeader>

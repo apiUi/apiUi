@@ -1,0 +1,11 @@
+* Converting file C:\JanBo\Sources\Lazarus\Xml\ShowExpectedXml.pas *
+Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+* Repairing form file C:\JanBo\Sources\Lazarus\Xml\ShowExpectedXml.lfm *
+Removed property "Columns".
+Removed property "CustomCheckImages".
+Removed property "TextHeight".
+Removed property "OldCreateOrder".
+Changed Top coord of TVirtualStringTree from "4" to "2" inside TPanel.
+Changed Left coord of TVirtualStringTree from "4" to "2" inside TPanel.
+* Fixing used units for file C:\JanBo\Sources\Lazarus\Xml\ShowExpectedXml.pas *
+Conversion Ready.

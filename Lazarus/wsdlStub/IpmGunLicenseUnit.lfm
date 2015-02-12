@@ -1,0 +1,100 @@
+object IpmGunLicenseForm: TIpmGunLicenseForm
+  Left = 266
+  Top = 139
+  BorderStyle = bsDialog
+  Caption = 'IpmGun - License information'
+  ClientHeight = 181
+  ClientWidth = 427
+  Color = clBtnFace
+  ParentFont = True
+  PixelsPerInch = 96
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 427
+    Height = 147
+    Align = alClient
+    BevelOuter = bvNone
+    BorderWidth = 5
+    ParentColor = True
+    TabOrder = 0
+    object CompanyEdit: TLabeledEdit
+      Left = 73
+      Top = 11
+      Width = 310
+      Height = 21
+      EditLabel.Width = 47
+      EditLabel.Height = 13
+      EditLabel.Caption = '&Company:'
+      LabelPosition = lpLeft
+      TabOrder = 0
+    end
+    object LicenseDateEdit: TLabeledEdit
+      Left = 73
+      Top = 39
+      Width = 310
+      Height = 21
+      EditLabel.Width = 64
+      EditLabel.Height = 13
+      EditLabel.Caption = '&License date:'
+      LabelPosition = lpLeft
+      TabOrder = 1
+    end
+    object BaseEdit: TLabeledEdit
+      Left = 73
+      Top = 67
+      Width = 310
+      Height = 21
+      EditLabel.Width = 54
+      EditLabel.Height = 13
+      EditLabel.Caption = '&BaseString:'
+      LabelPosition = lpLeft
+      ParentColor = True
+      ReadOnly = True
+      TabOrder = 2
+    end
+    object LicenseEdit: TLabeledEdit
+      Left = 73
+      Top = 96
+      Width = 310
+      Height = 21
+      TabStop = False
+      EditLabel.Width = 64
+      EditLabel.Height = 13
+      EditLabel.Caption = 'License&String'
+      LabelPosition = lpLeft
+      TabOrder = 3
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 147
+    Width = 427
+    Height = 34
+    Align = alBottom
+    BevelOuter = bvNone
+    ParentColor = True
+    TabOrder = 1
+    object OKBtn: TButton
+      Left = 72
+      Top = 0
+      Width = 75
+      Height = 25
+      Caption = 'OK'
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+      OnClick = OKBtnClick
+    end
+    object CancelBtn: TButton
+      Left = 152
+      Top = 0
+      Width = 75
+      Height = 25
+      Cancel = True
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+end
