@@ -2987,6 +2987,7 @@ begin
   fLock := SyncObjs.TCriticalSection.Create;
   if Assigned (aWsdl) then
   begin
+    Wsdl := aWsdl;
     InputHeaders := TWsdlHeaders.Create;
     OutputHeaders := TWsdlHeaders.Create;
     reqXsd := TXsd.Create(aWsdl.XsdDescr);
