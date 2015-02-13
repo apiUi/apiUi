@@ -70,6 +70,10 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <UseValgrind Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -84,7 +88,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="5">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -97,6 +101,9 @@
       <Item4>
         <Name Value="ERegistryException"/>
       </Item4>
+      <Item5>
+        <Name Value="EDatabaseError"/>
+      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>

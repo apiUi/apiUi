@@ -259,7 +259,7 @@ type
     procedure Clean;
     function ProjectDesignAsString (aMainFileName: String): String;
 {}
-    function ExceptionStackListString: String;
+    function ExceptionStackListString(E: Exception): String;
 {}
     function SendOperationMessage ( aOperation: TWsdlOperation
                          ; aMessage: String
@@ -5986,7 +5986,7 @@ begin
       except
         on e: exception do
         begin
-          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString;
+          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
           exit;
         end;
@@ -6000,7 +6000,7 @@ begin
       except
         on e: exception do
         begin
-          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString;
+          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
           exit;
         end;
@@ -6014,7 +6014,7 @@ begin
       except
         on e: exception do
         begin
-          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString;
+          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
           exit;
         end;
@@ -6082,12 +6082,12 @@ begin
   end;
 end;
 
-function TWsdlProject.ExceptionStackListString: String;
+function TWsdlProject.ExceptionStackListString(E: Exception): String;
+{$ifndef FPC}
 var
   str:TStrings;
 begin
   result := '';
-  {$ifndef FPC}
   str := TStringList.Create;
   try
     jclDebug.JclLastExceptStackListToStrings(str, True, True, True);
@@ -6095,7 +6095,22 @@ begin
   finally
     str.free;
   end;
-  {$endif}
+{$else}
+var
+  I: Integer;
+  Frames: PPointer;
+begin
+  result := 'Program exception! ' + LineEnding +
+    'Stacktrace:' + LineEnding + LineEnding;
+  if E <> nil then begin
+    result := result + 'Exception class: ' + E.ClassName + LineEnding +
+    'Message: ' + E.Message + LineEnding;
+  end;
+  result := result + BackTraceStrFunc(ExceptAddr);
+  Frames := ExceptFrames;
+  for I := 0 to ExceptFrameCount - 1 do
+    result := result + LineEnding + BackTraceStrFunc(Frames[I]);
+{$endif}
 end;
 
 procedure TWsdlProject.SMTPServerMailFrom(ASender: TIdSMTPServerContext;
@@ -6462,7 +6477,7 @@ begin
       except
         on e: exception do
         begin
-          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString;
+          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
         end;
       end;

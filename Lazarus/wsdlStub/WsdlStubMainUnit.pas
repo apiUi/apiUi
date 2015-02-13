@@ -1234,7 +1234,7 @@ begin
   try
     if aException then
       se.allExceptions.AddEvent(TExceptionLog.Create(Msg
-          { } + #10#13 + se.ExceptionStackListString { } ))
+          { } + #10#13 + se.ExceptionStackListString(nil) { } ))
     else
       se.allExceptions.AddEvent(TExceptionLog.Create(Msg));
     xLog := se.allExceptions.EventItems[se.allExceptions.Count - 1];
@@ -3018,7 +3018,7 @@ begin
     end;
   except
     on E: Exception do
-      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString;
+      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString(e);
   end;
 end;
 
@@ -3048,7 +3048,7 @@ begin
   except
     on E: Exception do
     begin
-      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString;
+      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString(e);
       if aDoRaiseExceptions then
         raise Exception.Create(result);
     end;
@@ -3083,7 +3083,7 @@ begin
     end;
   except
     on E: Exception do
-      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString;
+      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString(e);
   end;
 end;
 
@@ -8896,11 +8896,11 @@ begin
   if AnsiStartsText('System Error.  Code: 1400.', E.Message) then
     exit; // no idea, no impact
   { }
-  s := se.ExceptionStackListString;
+  s := se.ExceptionStackListString (E);
   { }
   if MessageDlg(E.Message + #10#13#10#13 + 'Show stack trace?', mtError,
     [mbNo, mbYes], 0) = mrYes then
-    ShowInfoForm('Exception details', E.Message + #10#13#10#13 + s);
+    ShowText('Exception details', E.Message + #10#13#10#13 + s);
 end;
 
 procedure TMainForm.LogDisplayedColumnsAddClick(Sender: TObject);

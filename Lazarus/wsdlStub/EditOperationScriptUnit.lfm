@@ -665,6 +665,21 @@ object EditOperationScriptForm: TEditOperationScriptForm
     EntityAttri.FrameEdges = sfeAround
     VariableAttri.FrameEdges = sfeAround
     DotAttri.FrameEdges = sfeAround
+    KeyWords.Strings = (
+      'AND'
+      'DO'
+      'EACH'
+      'ELSE'
+      'FOR'
+      'IF'
+      'NEW'
+      'NOT'
+      'OR'
+      'THEN'
+      'WHEN'
+      'WHILE'
+      'WITH'
+    )
     NumberAttri.FrameEdges = sfeAround
     PreprocessorAttri.FrameEdges = sfeAround
     SpaceAttri.FrameEdges = sfeAround
