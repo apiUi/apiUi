@@ -1792,6 +1792,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
       if Name = tagService then
       begin
         Srvc := TWsdlService.Create;
+        Srvc.DescriptionType := ipmDTWsdl;
         Srvc.Name := AttributeValueByTag[xmlzConsts.tagName];
         Services.AddObject(Srvc.Name, Srvc);
         for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do

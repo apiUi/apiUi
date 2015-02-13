@@ -535,12 +535,18 @@ end;
 
 function TFormIniFile.DecryptPassword(aPassword: AnsiString): AnsiString;
 begin
-  result :=  SimpleEncrypt(DecodeStringBase64(aPassword));
+  if aPassword <> '' then
+    result :=  SimpleEncrypt(DecodeStringBase64(aPassword))
+  else
+    result := '';
 end;
 
 function TFormIniFile.EncryptPassword(aPassword: AnsiString): AnsiString;
 begin
-  result := EncodeStringBase64 (SimpleEncrypt(aPassword));
+  if aPassword = '' then
+    result := EncodeStringBase64 (SimpleEncrypt(aPassword))
+  else
+    result := '';
 end;
 
 end.
