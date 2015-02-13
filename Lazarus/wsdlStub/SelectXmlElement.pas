@@ -168,6 +168,7 @@ begin
           end;
         end;
       end;
+      rChild.Collapse(True);
     end;
     if doShowRpy then
     begin
@@ -192,6 +193,7 @@ begin
           end;
         end;
       end;
+      rChild.Collapse(True);
     end;
     ShowXmls (selfBind, 'Self');
     if Assigned (WsdlOperation) then
@@ -316,6 +318,7 @@ begin
       Captions.Add((aBind as TXml).FullCaption + '.' + (aBind as TXml).Attributes.XmlAttributes[x].Name);
     end;
   end;
+  xChild.Collapse(True);
 end;
 
 procedure TSelectXmlElementForm.OKActionExecute(Sender: TObject);

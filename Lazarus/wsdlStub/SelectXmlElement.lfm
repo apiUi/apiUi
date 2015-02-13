@@ -1,54 +1,60 @@
 object SelectXmlElementForm: TSelectXmlElementForm
   Left = 194
+  Height = 278
   Top = 111
+  Width = 381
   Caption = 'Select Xml Element'
   ClientHeight = 278
   ClientWidth = 381
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  PixelsPerInch = 96
+  LCLVersion = '1.2.6.0'
   object TreeViewPanel: TPanel
     Left = 0
+    Height = 232
     Top = 0
     Width = 381
-    Height = 232
     Align = alClient
     BorderWidth = 3
+    ClientHeight = 232
+    ClientWidth = 381
     TabOrder = 0
     object TreeView: TTreeView
-      Left = 2
-      Top = 2
-      Width = 373
+      Left = 4
       Height = 224
+      Top = 4
+      Width = 373
       Align = alClient
       AutoExpand = True
+      DefaultItemHeight = 16
       DragCursor = crMultiDrag
       DragMode = dmAutomatic
       HideSelection = False
       Indent = 19
       ReadOnly = True
       TabOrder = 0
+      Options = [tvoAutoExpand, tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
     end
   end
   object Panel1: TPanel
     Left = 0
+    Height = 46
     Top = 232
     Width = 381
-    Height = 46
     Align = alBottom
+    ClientHeight = 46
+    ClientWidth = 381
     TabOrder = 1
     object ThreadButton: TButton
       Left = 8
+      Height = 25
       Top = 8
       Width = 75
-      Height = 25
       Action = OKAction
       Caption = '&Thread'
       Default = True
@@ -57,9 +63,9 @@ object SelectXmlElementForm: TSelectXmlElementForm
     end
     object Button2: TButton
       Left = 293
+      Height = 25
       Top = 8
       Width = 75
-      Height = 25
       Cancel = True
       Caption = '&Cancel'
       ModalResult = 2
@@ -67,22 +73,22 @@ object SelectXmlElementForm: TSelectXmlElementForm
     end
     object ElementButton: TButton
       Left = 98
+      Height = 25
       Top = 8
       Width = 75
-      Height = 25
       Caption = '&Element'
       ModalResult = 1
-      TabOrder = 2
       OnClick = ElementButtonClick
+      TabOrder = 2
     end
   end
   object ActionList1: TActionList
-    Left = 120
-    Top = 80
+    left = 120
+    top = 80
     object OKAction: TAction
       Caption = '&Ok'
       OnExecute = OKActionExecute
       OnUpdate = OKActionUpdate
     end
   end
-end
+end

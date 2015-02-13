@@ -386,8 +386,8 @@ type
   TWsdlMsgDescr = class(TObject)
     private
     public
-      Name, NameSpace: String;
       Xsd: TXsd;
+      Name, NameSpace: String;
       Parts: TWsdlParts;
       constructor Create (aWsdl: TWsdl);
       destructor Destroy; override;
@@ -1839,6 +1839,7 @@ begin
     TargetNamespace := xXml.Attributes.ValueByTag[tagTargetNamespace];
 
     _LoadFromXml (xXml, FileName);
+    XsdDescr.Finalise;
 
     xXsds := TXsdList.Create;
     xXsds.Sorted := True;
@@ -1846,8 +1847,13 @@ begin
     for x := 0 to XsdDescr.TypeDef.ElementDefs.Count - 1 do with XsdDescr.TypeDef.ElementDefs do
       xXsds.AddObject(Xsds[x].ElementNameSpace + ':' + Xsds[x].ElementName, Xsds[x]);
     for m := 0 to fMssgs.Count - 1 do with fMssgs.Messages[m] do
-      for p := 0 to Parts.Count - 1 do with Parts.Parts[p] do
-        LinkToXsd(xXsds, self);
+    begin
+      for p := 0 to Parts.Count - 1 do
+      begin
+        Parts.Parts[p].LinkToXsd(xXsds, self);
+        Xsd.sType.AddXsd(Parts.Parts[p].Xsd);
+      end;
+    end;
     FreeAndNil(xXsds);
     for o := 0 to fOpers.Count - 1 do with fOpers.Operations[o] do
     begin
@@ -1881,6 +1887,9 @@ begin
           reqTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
           reqXsd.sType.AddXsd(Mssg.Parts.Parts[0].Xsd)
         end;
+        bindRefId := 0;
+        reqBind := TXml.Create (0, reqXsd);
+        reqBind.Name := Mssg.Name;
       end;
 
       for h := 0 to OutputHeaders.Count - 1 do with OutputHeaders.Headers[h] do
@@ -1903,6 +1912,9 @@ begin
           rpyTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
           rpyXsd.sType.AddXsd(Mssg.Parts.Parts[0].Xsd);
         end;
+        bindRefId := 0;
+        rpyBind := TXml.Create (0, rpyXsd);
+        rpyBind.Name := Mssg.Name;
       end;
 
       if Assigned (FaultMessages) then
@@ -1914,23 +1926,18 @@ begin
           if not fMssgs.Find (MessageName, f) then
             raise Exception.CreateFmt('Faultmessage %s not found for soapfault %s', [MessageName, FaultName]);
           FaultMessages.Objects[m] := fMssgs.Messages[f];
-          FaultXsd.sType.AddXsd(FaultMessages.Messages[m].Xsd);
+          fMssgs.Messages[f].Xsd.ElementName:=FaultName;
+          fMssgs.Messages[f].Name:=FaultName;
+          FaultXsd.sType.AddXsd(fMssgs.Messages[f].Xsd);
         end;
+        bindRefId := 0;
+        fltBind := TXml.Create (0, FaultXsd);
+        fltBind.Name := 'Faults';
       end;
-      bindRefId := 0;
-      reqBind := TXml.Create (0, reqXsd);
-      reqBind.Name := reqTagName;
-      bindRefId := 0;
-      rpyBind := TXml.Create (0, rpyXsd);
-      rpyBind.Name := rpyTagName;
-      bindRefId := 0;
-      fltBind := TXml.Create (0, FaultXsd);
-      fltBind.Name := 'Faults';
     end;
   finally
     xXml.Free;
   end;
-  XsdDescr.Finalise;
   fOpers.ClearListOnly;
   fMssgs.ClearListOnly;
 end;

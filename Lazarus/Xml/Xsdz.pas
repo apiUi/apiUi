@@ -423,6 +423,7 @@ end;
 
 function TXsdDataType.AddXsd(aChildXsd: TXsd): TXsd;
 begin
+  result := aChildXsd;
   if not Assigned(self) then
     raise Exception.Create('TXsdDataType.AddXsd(aChildXsd: TXsd): nil self');
   if Assigned(aChildXsd) then
