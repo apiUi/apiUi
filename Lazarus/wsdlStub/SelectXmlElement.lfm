@@ -1,7 +1,7 @@
 object SelectXmlElementForm: TSelectXmlElementForm
-  Left = 194
+  Left = 380
   Height = 278
-  Top = 111
+  Top = 167
   Width = 381
   Caption = 'Select Xml Element'
   ClientHeight = 278

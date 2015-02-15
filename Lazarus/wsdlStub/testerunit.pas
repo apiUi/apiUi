@@ -6,7 +6,7 @@ interface
 
 uses
   Classes , SysUtils , FileUtil , Forms , Controls , Graphics , Dialogs ,
-  StdCtrls, Wsdlz, WsdlProjectz, wsdlStubMainUnit ;
+  StdCtrls, Wsdlz, WsdlProjectz, wsdlStubMainUnit , sqldb , odbcconn ;
 
 type
 
@@ -14,6 +14,9 @@ type
 
   TForm1 = class(TForm )
     Button1 : TButton ;
+    ODBCConnection1 : TODBCConnection ;
+    SQLConnector1 : TSQLConnector ;
+    SQLQuery1 : TSQLQuery ;
     procedure Button1Click (Sender : TObject );
   private
     { private declarations }

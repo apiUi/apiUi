@@ -1816,6 +1816,7 @@ var
   Mssg: TWsdlMsgDescr;
   xXsds: TXsdList;
 begin
+  isSoapService := True;
   XsdDescr.Clear;
   fStrs.Clear;
   fMssgs.ClearListOnly;
@@ -3097,7 +3098,7 @@ begin
   begin
     if Assigned (FaultMessages) then
     begin
-      FaultMessages.Clear;
+      FaultMessages.ClearListOnly;
       FreeAndNil(FaultMessages);
     end;
     if Assigned (InputHeaders) then

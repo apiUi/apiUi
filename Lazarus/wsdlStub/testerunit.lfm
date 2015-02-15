@@ -16,4 +16,36 @@ object Form1: TForm1
     OnClick = Button1Click
     TabOrder = 0
   end
+  object SQLConnector1: TSQLConnector
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = False
+    Params.Strings = (
+      'DRIVER=Microsoft Access Driver (*.mdb, *.accdb)'
+      'DBQ=C:\JanBo\Sources\2011\appLog2Log4J\applog.accdb'
+    )
+    LogEvents = []
+    ConnectorType = 'ODBC'
+    left = 56
+    top = 160
+  end
+  object SQLQuery1: TSQLQuery
+    FieldDefs = <>
+    Database = ODBCConnection1
+    Params = <>
+    left = 148
+    top = 168
+  end
+  object ODBCConnection1: TODBCConnection
+    Connected = True
+    LoginPrompt = False
+    KeepConnection = False
+    Params.Strings = (
+      'DBQ=C:\JanBo\Sources\2011\appLog2Log4J\applog.accdb'
+    )
+    LogEvents = []
+    Driver = 'Microsoft Access Driver (*.mdb, *.accdb)'
+    left = 342
+    top = 60
+  end
 end

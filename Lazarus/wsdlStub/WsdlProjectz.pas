@@ -1160,11 +1160,7 @@ begin
   ignoreDifferencesOn.Free;
   ignoreCoverageOn.Clear;
   ignoreCoverageOn.Free;
-  try
-    FreeAndNil (webserviceWsdl);
-     { TODO -oJanBo : ??Why debug break?? }
-  except
-  end;
+  FreeAndNil (webserviceWsdl);
   FreeAndNil (webserviceXsdDescr);
   FreeAndNil (wsaXsdDescr);
   FreeAndNil (swiftMTXsdDescr);
@@ -6327,7 +6323,7 @@ begin
                 dXml := oXml.FindUQXml('Body.regressionReportReq.referenceFileName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find filename to use in request');
-                oXml := MessagesRegressionReportAsXml (dXml.Value);
+                oXml := MessagesRegressionReportAsXml (ExpandRelativeFileName(projectFileName,dXml.Value));
                 oXml.Name := (oOperation.rpyBind as TXml).Items.XmlItems[0].Name;
                 try
                   (oOperation.rpyBind as TXml).Items.XmlItems[0].ResetValues;
@@ -6355,7 +6351,7 @@ begin
                 dXml := oXml.FindUQXml('Body.saveLogsToFileReq.fileName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find filename to use in request');
-                SaveMessagesLog(dXml.Value);
+                SaveMessagesLog(ExpandRelativeFileName(projectFileName, dXml.Value));
               end;
               if xOperId = 'sendAllRequestsReq' then
               begin

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 389
+  Left = 329
   Height = 593
-  Top = 178
+  Top = 103
   Width = 951
   Caption = 'MainForm'
   ClientHeight = 574
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 315
+    Top = 400
     Width = 951
     Align = alBottom
     ResizeAnchor = akBottom
@@ -184,25 +184,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 286
+    Height = 371
     Top = 29
     Width = 951
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 286
+    ClientHeight = 371
     ClientWidth = 951
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
-      Height = 280
+      Height = 365
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
       Left = 808
-      Height = 280
+      Height = 365
       Top = 3
       Width = 5
       Align = alRight
@@ -211,18 +211,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 280
+      Height = 365
       Top = 3
       Width = 202
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 280
+      ClientHeight = 365
       ClientWidth = 202
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 211
+        Top = 296
         Width = 196
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -289,7 +289,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 208
+        Height = 293
         Top = 3
         Width = 196
         Align = alClient
@@ -320,7 +320,7 @@ object MainForm: TMainForm
       object ScriptButtonsPanel: TPanel
         Left = 3
         Height = 37
-        Top = 240
+        Top = 325
         Width = 196
         Align = alBottom
         Caption = 'ScriptButtonsPanel'
@@ -363,13 +363,13 @@ object MainForm: TMainForm
     end
     object XsdPanel: TPanel
       Left = 813
-      Height = 280
+      Height = 365
       Top = 3
       Width = 135
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 280
+      ClientHeight = 365
       ClientWidth = 135
       TabOrder = 1
       object Splitter6: TSplitter
@@ -385,7 +385,7 @@ object MainForm: TMainForm
         Cursor = crVSplit
         Left = 4
         Height = 5
-        Top = 206
+        Top = 291
         Width = 127
         Align = alBottom
         ResizeAnchor = akBottom
@@ -402,7 +402,7 @@ object MainForm: TMainForm
       end
       object InWsdlPropertiesListView: TListView
         Left = 4
-        Height = 128
+        Height = 213
         Top = 78
         Width = 127
         Align = alClient
@@ -422,7 +422,7 @@ object MainForm: TMainForm
       object DataTypeDocumentationMemo: TMemo
         Left = 4
         Height = 65
-        Top = 211
+        Top = 296
         Width = 127
         Align = alBottom
         ParentColor = True
@@ -433,11 +433,11 @@ object MainForm: TMainForm
     end
     object Panel6: TPanel
       Left = 210
-      Height = 280
+      Height = 365
       Top = 3
       Width = 598
       Align = alClient
-      ClientHeight = 280
+      ClientHeight = 365
       ClientWidth = 598
       TabOrder = 2
       object Splitter10: TSplitter
@@ -806,7 +806,7 @@ object MainForm: TMainForm
       end
       object DetailPageControl: TPageControl
         Left = 1
-        Height = 43
+        Height = 128
         Top = 219
         Width = 596
         ActivePage = XmlSheet
@@ -815,11 +815,11 @@ object MainForm: TMainForm
         TabOrder = 4
         object XmlSheet: TTabSheet
           Caption = 'XmlSheet'
-          ClientHeight = 17
+          ClientHeight = 102
           ClientWidth = 588
           object InWsdlTreeView: TVirtualStringTree
             Left = 0
-            Height = 17
+            Height = 102
             Top = 0
             Width = 588
             Align = alClient
@@ -832,6 +832,7 @@ object MainForm: TMainForm
                 Text = 'Tag'
               end            
               item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
                 Position = 1
                 Width = 23
               end            
@@ -894,7 +895,7 @@ object MainForm: TMainForm
       object StatusPanel: TPanel
         Left = 1
         Height = 17
-        Top = 262
+        Top = 347
         Width = 596
         Align = alBottom
         Alignment = taLeftJustify
@@ -905,16 +906,16 @@ object MainForm: TMainForm
   end
   object LogPanel: TPanel
     Left = 0
-    Height = 254
-    Top = 320
+    Height = 169
+    Top = 405
     Width = 951
     Align = alBottom
-    ClientHeight = 254
+    ClientHeight = 169
     ClientWidth = 951
     TabOrder = 1
     object DownPageControl: TPageControl
       Left = 1
-      Height = 252
+      Height = 167
       Top = 1
       Width = 949
       ActivePage = ExceptionTabSheet
@@ -1416,7 +1417,7 @@ object MainForm: TMainForm
       end
       object ExceptionTabSheet: TTabSheet
         Caption = 'Notifications'
-        ClientHeight = 225
+        ClientHeight = 140
         ClientWidth = 941
         Font.Color = clWindowText
         Font.Height = -11
@@ -1425,24 +1426,24 @@ object MainForm: TMainForm
         ParentFont = False
         object Splitter8: TSplitter
           Left = 185
-          Height = 225
+          Height = 140
           Top = 0
           Width = 5
         end
         object Panel8: TPanel
           Left = 0
-          Height = 225
+          Height = 140
           Top = 0
           Width = 185
           Align = alLeft
           Caption = 'Panel8'
-          ClientHeight = 225
+          ClientHeight = 140
           ClientWidth = 185
           TabOrder = 0
           object ExceptionStatusBar: TStatusBar
             Left = 1
             Height = 20
-            Top = 204
+            Top = 119
             Width = 183
             Panels = <            
               item
@@ -1452,7 +1453,7 @@ object MainForm: TMainForm
           end
           object ExceptionsVTS: TVirtualStringTree
             Left = 1
-            Height = 203
+            Height = 118
             Top = 1
             Width = 183
             Align = alClient
@@ -1490,7 +1491,7 @@ object MainForm: TMainForm
         end
         object ToolBar3: TToolBar
           Left = 911
-          Height = 225
+          Height = 140
           Top = 0
           Width = 30
           Align = alRight
@@ -1506,7 +1507,7 @@ object MainForm: TMainForm
         end
         object ExceptionMemo: TMemo
           Left = 190
-          Height = 225
+          Height = 140
           Top = 0
           Width = 721
           Align = alClient

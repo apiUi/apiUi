@@ -72,7 +72,6 @@
     <Linking>
       <Debugging>
         <UseValgrind Value="True"/>
-        <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
         <Win32>
@@ -88,25 +87,33 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="6">
+    <Exceptions Count="7">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>
+        <Enabled Value="False"/>
       </Item2>
       <Item3>
         <Name Value="EFOpenError"/>
+        <Enabled Value="False"/>
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>
       </Item4>
       <Item5>
         <Name Value="EDatabaseError"/>
+        <Enabled Value="False"/>
       </Item5>
       <Item6>
         <Name Value="Exception"/>
+        <Enabled Value="False"/>
       </Item6>
+      <Item7>
+        <Name Value="EIdSocketError"/>
+        <Enabled Value="False"/>
+      </Item7>
     </Exceptions>
   </Debugging>
 </CONFIG>

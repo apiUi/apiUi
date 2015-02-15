@@ -192,8 +192,8 @@ var
   st, x: Integer;
 begin
   st := 0;
-  for x := 0 to LineNumber - 1 do
-    st := ST + Length (ScriptMemo.Lines.Strings[x]) + 1;
+  for x := 0 to LineNumber - 2 do
+    st := ST + Length (ScriptMemo.Lines.Strings[x]) + 2;
   ScriptMemo.SelStart := st + ColumnNumber;
   ScriptMemo.SelEnd := ScriptMemo.SelStart + Length (TokenString);
   StatusBar.SimpleText := Data;

@@ -1,6 +1,6 @@
 unit FormIniFilez;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
@@ -67,8 +67,6 @@ end;
 
 type
   THackSplitter = class (TSplitter)
-private
-  function FindControl: TControl;
 public
   procedure Save (aIniFile: TFormIniFile);
   procedure Restore (aIniFile: TFormIniFile);
@@ -105,16 +103,11 @@ destructor TFormIniFile.Destroy;
 begin
   if Assigned (fForm) then
   begin
-    fOpenKeys;
-    try
-      WriteInteger ('Top', fForm.Top);
-      WriteInteger ('Left', fForm.Left);
-      WriteInteger ('Height', fForm.Height);
-      WriteInteger ('Width', fForm.Width);
-      WriteBool ('wsMaximized', (fForm.WindowState = wsMaximized));
-    finally
-      fCloseKeys;
-    end;
+    IntegerByName['FormTop'] := fForm.Top;
+    IntegerByName['FormLeft'] := fForm.Left;
+    IntegerByName['FormHeight'] := fForm.Height;
+    IntegerByName['FormWidth'] := fForm.Width;
+    BooleanByName['FormMaximized'] := (fForm.WindowState = wsMaximized);
   end;
   inherited;
 end;
@@ -126,9 +119,7 @@ procedure TFormIniFile.Save;
     x: Integer;
   begin
     for x := 0 to aControl.Columns.Count - 1 do
-      WriteInteger ( aControl.Name + ':Width0' + IntToStr (x)
-                   , aControl.Columns [x].Width
-                   );
+      IntegerByName[aControl.Name + ':Width0' + IntToStr (x)] := aControl.Columns [x].Width;
   end;
 
   procedure _SaveTreeView (aControl: TVirtualStringTree);
@@ -136,9 +127,7 @@ procedure TFormIniFile.Save;
     x: Integer;
   begin
     for x := 0 to aControl.Header.Columns.Count - 1 do
-      WriteInteger ( aControl.Name + ':Width0' + IntToStr (x)
-                   , aControl.Header.Columns [x].Width
-                   );
+      IntegerByName[aControl.Name + ':Width0' + IntToStr (x)] := aControl.Header.Columns[x].Width;
   end;
 
   procedure _Save (aCntrl: THackControl);
@@ -151,30 +140,23 @@ procedure TFormIniFile.Save;
       WinControl := aCntrl as TWinControl;
       if (WinControl is TCustomListView) then
         _SaveListView (WinControl as TListView);
-
+      if WinControl is TSplitter then
+        THackSplitter(WinControl).Save (self);
       if (WinControl is TCustomVirtualStringTree) then
         _SaveTreeView (WinControl as TVirtualStringTree);
 
       for i := 0 to aCntrl.ControlCount  - 1 do
       begin
         if aCntrl.Controls [i] is TWinControl then
-          _Save (THackControl(aCntrl.Controls [i]))
-        else
-          if aCntrl.Controls [i] is TSplitter then
-            THackSplitter(aCntrl.Controls [i]).Save (self);
+          _Save (THackControl(aCntrl.Controls [i]));
       end;
     end;
   end;
 var
   x: Integer;
 begin
-  fOpenKeys;
-  try
-    for x := 0 to fForm.ControlCount - 1 do
-      _Save (THackControl (fForm.Controls[x]));
-  finally
-    fCloseKeys;
-  end;
+  for x := 0 to fForm.ControlCount - 1 do
+    _Save (THackControl (fForm.Controls[x]));
 end;
 
 
@@ -185,7 +167,7 @@ procedure TFormIniFile.Restore;
     x: Integer;
   begin
     for x := 0 to aControl.Columns.Count - 1 do
-      try aControl.Columns [x].Width := ReadInteger (aControl.Name + ':Width0' + IntToStr (x)); except end;
+      aControl.Columns [x].Width := IntegerByNameDef[aControl.Name + ':Width0' + IntToStr (x),aControl.Columns [x].Width];
   end;
 
   procedure _RestoreTreeView (aControl: TVirtualStringTree);
@@ -193,7 +175,7 @@ procedure TFormIniFile.Restore;
     x: Integer;
   begin
     for x := 0 to aControl.Header.Columns.Count - 1 do
-      try aControl.Header.Columns [x].Width := ReadInteger (aControl.Name + ':Width0' + IntToStr (x)); except end;
+      aControl.Header.Columns [x].Width := IntegerByNameDef[aControl.Name + ':Width0' + IntToStr (x), aControl.Header.Columns [x].Width];
   end;
 
   procedure _Restore (aCntrl: THackControl);
@@ -206,6 +188,8 @@ procedure TFormIniFile.Restore;
       WinControl := aCntrl as TWinControl;
       if (WinControl is TCustomListView) then
         _RestoreListView (WinControl as TListView);
+      if WinControl is TSplitter then
+        THackSplitter(WinControl).Restore (self);
 
       if (WinControl is TCustomVirtualStringTree) then
         _RestoreTreeView (WinControl as TVirtualStringTree);
@@ -213,101 +197,49 @@ procedure TFormIniFile.Restore;
       for i := 0 to aCntrl.ControlCount  - 1 do
       begin
         if aCntrl.Controls [i] is TWinControl then
-          _Restore (THackControl(aCntrl.Controls [i]))
-        else
-          if aCntrl.Controls [i] is TSplitter then
-            THackSplitter(aCntrl.Controls [i]).Restore (self);
+          _Restore (THackControl(aCntrl.Controls [i]));
       end;
     end;
   end;
 var
   x: Integer;
 begin
-  fOpenKeys;
-  try
-    for x := 0 to fForm.ControlCount - 1 do
-      _Restore (THackControl (fForm.Controls[x]));
-  finally
-    fCloseKeys;
-  end;
-end;
-
-function THackSplitter.FindControl: TControl;
-// Copied from TSplitter; should be a better way to reach private fies
-var
-  P: TPoint;
-  I: Integer;
-  R: TRect;
-begin
-  Result := nil;
-  P := Point(Left, Top);
-  case Align of
-    alLeft: Dec(P.X);
-    alRight: Inc(P.X, Width);
-    alTop: Dec(P.Y);
-    alBottom: Inc(P.Y, Height);
-  else
-    Exit;
-  end;
-  for I := 0 to Parent.ControlCount - 1 do
-  begin
-    Result := Parent.Controls[I];
-    if Result.Visible and Result.Enabled then
-    begin
-      R := Result.BoundsRect;
-      if (R.Right - R.Left) = 0 then
-        if Align in [alTop, alLeft] then
-          Dec(R.Left)
-        else
-          Inc(R.Right);
-      if (R.Bottom - R.Top) = 0 then
-        if Align in [alTop, alLeft] then
-          Dec(R.Top)
-        else
-          Inc(R.Bottom);
-      if PtInRect(R, P) then Exit;
-    end;
-  end;
-  Result := nil;
+  for x := 0 to fForm.ControlCount - 1 do
+    _Restore (THackControl (fForm.Controls[x]));
 end;
 
 procedure THackSplitter.Restore(aIniFile: TFormIniFile);
 var
   xControl: TControl;
 begin
-  xControl := FindControl;
+  xControl := FindAlignControl;
   if Assigned (xControl) then
   begin
-    aIniFile.OpenKey(aIniFile.fName + ':' + xControl.Name, True);
-    try
-      if Align in [alTop, alBottom] then
-      begin
-        try
-          xControl.Height :=
-            Max ( 1   // in case zero, it is not possible to succesfully enlarge it with the sibling splitter
-                , aIniFile.ReadInteger ('Height')
-                );
-        except
-        end;
+    if Align in [alTop, alBottom] then
+    begin
+      try
+        xControl.Height :=
+          Max ( 1   // in case zero, it is not possible to succesfully enlarge it with the sibling splitter
+              , aIniFile.IntegerByNameDef[xControl.Name + 'Height',xControl.Height]
+              );
+      except
       end;
-      if Align in [alLeft] then
-      begin
-        try
-          xControl.Width := aIniFile.ReadInteger ('Width');
-        except
-        end;
-        xControl.Width :=
-          min ( xControl.Width, xControl.Parent.Width - 20); //just in case current screen is samller then last one used
+    end;
+    if Align in [alLeft] then
+    begin
+      try
+        xControl.Width := aIniFile.IntegerByNameDef[xControl.Name + 'Width',xControl.Width];
+      except
       end;
-      if Align in [alRight] then
-      begin
-        try
-          xControl.Width := aIniFile.ReadInteger ('Width');
-        except
-        end;
+      xControl.Width :=
+        min ( xControl.Width, xControl.Parent.Width - 20); //just in case current screen is samller then last one used
+    end;
+    if Align in [alRight] then
+    begin
+      try
+        xControl.Width := aIniFile.IntegerByNameDef[xControl.Name + 'Width', xControl.Width];
+      except
       end;
-    finally
-      aIniFile.CloseKey;
     end;
   end; // Assigned (xControl)
 end;
@@ -316,25 +248,16 @@ procedure THackSplitter.Save(aIniFile: TFormIniFile);
 var
   xControl: TControl;
 begin
-  xControl := FindControl;
+  xControl := FindAlignControl;
   if Assigned (xControl) then
   begin
-    aIniFile.OpenKey(aIniFile.fName + ':' + xControl.Name, True);
-    try
-      if Align in [alTop, alBottom] then
-      begin
-        aIniFile.WriteInteger ( 'Height'
-                              , xControl.Height
-                              );
-      end;
-      if Align in [alLeft, alRight] then
-      begin
-        aIniFile.WriteInteger ( 'Width'
-                              , xControl.Width
-                              );
-      end;
-    finally
-      aIniFile.CloseKey;
+    if Align in [alTop, alBottom] then
+    begin
+      aIniFile.IntegerByName[xControl.Name + 'Height'] := xControl.Height;
+    end;
+    if Align in [alLeft, alRight] then
+    begin
+      aIniFile.IntegerByName[xControl.Name + 'Width'] := xControl.Width;
     end;
   end; // if Assigned (xControl)
 end;
@@ -438,33 +361,28 @@ var
 begin
   if Assigned (fForm) then
   begin
-    fOpenKeys;
-    try
-      if initScreenPos then
-      begin
-        fForm.Position := poDesigned;
-        try
-          x := Min(ReadInteger ('Top'), Screen.Height - 100);
-        except
-          x := fForm.Top;
-        end;
-        fForm.Top := x;
-        try
-          x := Min(ReadInteger ('Left'), Screen.Width - 100);
-        except
-          x := fForm.Left;
-        end;
-        fForm.Left := x;
-      end;
-      try fForm.Height := ReadInteger ('Height'); except end;
-      try fForm.Width := ReadInteger ('Width'); except end;
+    if initScreenPos then
+    begin
+      fForm.Position := poDesigned;
       try
-        if ReadBool ('wsMaximized') = True then
-          fForm.WindowState := wsMaximized;
+        x := Min(IntegerByName['FormTop'], Screen.Height - 100);
       except
+        x := fForm.Top;
       end;
-    finally
-      fCloseKeys;
+      fForm.Top := x;
+      try
+        x := Min(IntegerByName['FormLeft'], Screen.Width - 100);
+      except
+        x := fForm.Left;
+      end;
+      fForm.Left := x;
+    end;
+    fForm.Height := IntegerByNameDef['FormHeight', fForm.Height];
+    fForm.Width := IntegerByNameDef['FormWidth', fForm.Width];
+    try
+      if BooleanByName['FormMaximized'] then
+        fForm.WindowState := wsMaximized;
+    except
     end;
   end;
 end;
@@ -505,6 +423,7 @@ end;
 
 function TFormIniFile.getIntegerByNameDef(Index: String; Default: Integer): Integer;
 begin
+  result := Default;
   fOpenKeys;
   try
     OpenKey('Integers', True);
