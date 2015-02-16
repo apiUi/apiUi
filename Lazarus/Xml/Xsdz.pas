@@ -10,7 +10,6 @@
 // TODO Attributes binnen TypeDefs
 // global Attributes and referencing globalAttributes (no type... refereneces...)
 // ..
-{.$define XMLDOM}
 {$mode DELPHI}
 
 unit Xsdz;
@@ -23,12 +22,6 @@ uses Classes
    , xmlzConsts
    , FileUtil
    , XmlIO
-   {$ifdef XMLDOM}
-   , XmlDom
-   , XmlDoc
-   , XmlSchema
-   , XMLValidate
-   {$endif}
    ;
 
 type
@@ -303,25 +296,10 @@ uses SysUtils
 
 function ValidateXml(aCaption, aXmlString: String;
   aSchemaLocation, aNameSpace: WideString; var aMessage: String): Boolean;
-  {$ifdef XMLDOM}
-var
-  Doc: IXMLDocument;
-  {$endif}
 begin
   aMessage := 'Document validated without errors.';
   result := True;
-  {$ifdef XMLDOM}
-  try
-    Doc := LoadXMLData(aXmlString);
-    ValidateXMLDoc(Doc, aSchemaLocation, aNameSpace);
-  except
-    on E: Exception do
-    begin
-      aMessage := aCaption + ' ' + E.Message;
-      result := False;
-    end;
-  end;
-  {$endif}
+  { TODO : Realize XML validation }
 end;
 
 function NameWithoutPrefix(aName: String): String;
@@ -1954,39 +1932,20 @@ function TXsdDataType.IsValidXml(aXml: TObject; var aMessage: String): Boolean;
 var
   xXml: TXml;
   xMessage: String;
-  {$ifdef XMLDOM}
-  Doc: IXMLDocument;
-  {$endif}
 begin
   xXml := aXml as TXml;
   aMessage := 'Value validated without errors.';
   result := True;
-  {$ifdef XMLDOM}
-  try
-    Doc := LoadXMLData(xXml.AsText(False, 0, True, False));
-    ValidateXMLDoc(Doc,
-      LoadXMLSchemaStr(SchemaAsText(xXml.TagName)).SchemaDef.SchemaDoc);
-  except
-    on E: Exception do
-    begin
-      aMessage := 'Invalide XML: "' + xXml.TagName + '" ' + E.Message;
-      result := False;
-    end;
-  end;
-  {$endif}
-end;
+{ TODO : XML schema validation
+ }end;
 
 function TXsdDataType.IsValidValue(aName, aValue: String;
   var aMessage: String): Boolean;
 var
   xMessage: String;
-  {$ifdef XMLDOM}
-  Doc: IXMLDocument;
-  {$endif}
 begin
   aMessage := 'Value validated without errors.';
   result := True;
-  {$ifdef XMLDOM}
   if Name = 'FileNameType' then
   begin
     if not FileExists(aValue) then
@@ -1997,11 +1956,10 @@ begin
     exit;
   end;
   try
-    Doc := LoadXMLData('<?xml version="1.0" encoding="UTF-8"?><' + aName +
-        ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >' +
-        xmlEncodeXml(StringReplace(aValue, #$D#$A, '@@', [rfReplaceAll])) + '</' + aName + '>');
-    ValidateXMLDoc(Doc,
-      LoadXMLSchemaStr(SchemaAsText(aName)).SchemaDef.SchemaDoc);
+    if (MaxLength <> '')
+    and (System.Length (aValue) > StrToInt(MaxLength)) then
+      raise Exception.CreateFmt('Exceeds maximum length [%s]', [MaxLength]);
+  { TODO : is valid value against schema }
   except
     on E: Exception do
     begin
@@ -2009,7 +1967,6 @@ begin
       result := False;
     end;
   end;
-  {$endif}
 end;
 
 function TXsdDataType.getUniqueId: String;

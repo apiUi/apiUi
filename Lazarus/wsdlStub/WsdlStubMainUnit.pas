@@ -12,7 +12,7 @@ uses
 {$IFnDEF FPC}
   AdoDb, Windows,
 {$ELSE}
-  sqldb, LCLIntf, LCLType,
+  sqldb , odbcconn, LCLIntf, LCLType,
 {$ENDIF}
   Messages
    , SysUtils
@@ -68,6 +68,8 @@ type
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
     ShowReplyHeaderAsXmlButton : TToolButton ;
+    SqlConnector : TSQLConnector ;
+    SQLTransaction : TSQLTransaction ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -124,7 +126,6 @@ type
     License1: TMenuItem;
     About1: TMenuItem;
     HelpAction: TAction;
-    ADOConnection: TSQLConnector;
     Qry: TSQLQuery;
     runScriptAction: TAction;
     WsdlComboBox: TComboBox;
@@ -1948,9 +1949,13 @@ var
   xChanged: Boolean;
   xBind: TCustomBindable;
 begin
-  if ((Sender = GridView) and (inImageArea)) or
-    ((Sender = InWsdlTreeView) and (InWsdlTreeView.FocusedColumn =
-        treeButtonColumn)) then
+  if (    (Sender = GridView)
+      and (inImageArea)
+     )
+  or (    (Sender = InWsdlTreeView)
+      and (InWsdlTreeView.FocusedColumn = treeButtonColumn)
+     )
+  then
   begin
     xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
     if xmlUtil.isExtendAdviced(xBind) then
@@ -3389,7 +3394,7 @@ var
     OpenLogUsageDatabase;
     LogUsage(WindowsUserName);
     ValidateLicense;
-    ADOConnection.Connected := False;
+    SqlConnector.Connected := False;
     SetLogUsageTimer;
   end;
 
@@ -3422,8 +3427,9 @@ var
 begin
   xUpdated := Now;
   xUsageDate := sysutils.Date;
-  if (aUserName <> 'Jan') and (aUserName <> 'Bouwman') then
+  if (aUserName <> 'JanBo') and (aUserName <> 'Bouwman') then
   begin
+    SqlConnector.Transaction.StartTransaction;
     try
       try
         Qry.SQL.Clear;
@@ -3486,7 +3492,8 @@ begin
           end;
         end; { try to update UsageDates when insert failed }
       end; { try to insert UsageDates }
-    except
+    finally
+      SqlConnector.Transaction.Commit;
     end; // try
   end; { if user <> JAN BOUWMAN }
 end;
@@ -3503,19 +3510,19 @@ begin
     licenseDbName := ExtractFilePath(ParamStr(0)) + '\Database\wsdlStub.mdb';
   licenseDbName := ExpandUNCFileNameUTF8(licenseDbName); { *Converted from ExpandUNCFileName* }
   result := False;
-{$ifndef fpc}
   try
+    SqlConnector.ConnectorType := 'ODBC';
+    SqlConnector.DatabaseName := 'MS Access Database';
     try
-      ADOConnection.Connected := False;
+      SqlConnector.Connected := False;
     except
     end;
-    ADOConnection.ConnectionString := Format(ConnStr, [Provider, DataProvider,
-      licenseDbName]);
-    ADOConnection.Connected := True;
-    result := True;
+    SqlConnector.Params.Values['Dbq'] := licenseDbName;
+//  SqlConnector.Params.Values['Uid'] := 'admin';
+    SqlConnector.Connected := True;
+    result := SqlConnector.Connected;
   except
   end;
-{$endif}
 end;
 
 
@@ -3552,9 +3559,6 @@ var
   ymd: Integer;
   xLicenseDate: TDateTime;
 begin
-  se.Licensed := True;
-  Exit;
-  { TODO -oJanBo : Licence implementation }
   se.Licensed := False;
   ErrorReadingLicenseInfo := False;
   try
@@ -3706,7 +3710,7 @@ begin
           end;
         end;
       finally
-        ADOConnection.Connected := False;
+        SqlConnector.Connected := False;
       end;
     end;
   finally
@@ -11362,7 +11366,7 @@ begin
         if OpenLogUsageDatabase then
           LogUsage(WindowsUserName);
       finally
-        ADOConnection.Connected := False;
+        SqlConnector.Connected := False;
       end;
     except
     end;

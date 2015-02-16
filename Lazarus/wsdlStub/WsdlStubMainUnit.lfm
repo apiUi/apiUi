@@ -6831,8 +6831,8 @@ object MainForm: TMainForm
     end
   end
   object TreeviewImageList: TImageList
-    left = 304
-    top = 360
+    left = 264
+    top = 320
     Bitmap = {
       4C691F0000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8485,18 +8485,13 @@ object MainForm: TMainForm
     left = 216
     top = 360
   end
-  object ADOConnection: TSQLConnector
-    Connected = False
-    LoginPrompt = False
-    KeepConnection = False
-    LogEvents = []
-    left = 104
-    top = 112
-  end
   object Qry: TSQLQuery
     FieldDefs = <>
+    Database = SqlConnector
+    Transaction = SQLTransaction
     Params = <>
-    left = 112
+    UsePrimaryKeyAsKey = False
+    left = 472
     top = 168
   end
   object LogPopupMenu: TPopupMenu
@@ -9004,5 +8999,20 @@ object MainForm: TMainForm
     OnTimer = RefreshLogTimerTimer
     left = 72
     top = 176
+  end
+  object SqlConnector: TSQLConnector
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = False
+    Transaction = SQLTransaction
+    LogEvents = []
+    left = 408
+    top = 168
+  end
+  object SQLTransaction: TSQLTransaction
+    Active = False
+    Database = SqlConnector
+    left = 440
+    top = 168
   end
 end

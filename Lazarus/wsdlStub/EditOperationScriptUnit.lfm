@@ -1,7 +1,7 @@
 object EditOperationScriptForm: TEditOperationScriptForm
-  Left = 410
+  Left = 397
   Height = 381
-  Top = 84
+  Top = 154
   Width = 675
   Anchors = []
   Caption = 'Edit script'
@@ -72,8 +72,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
       Width = 667
       Panels = <>
     end
-    inline ScriptMemo: TSynMemo
-      Cursor = crIBeam
+    inline ScriptEdit: TSynEdit
       Left = 4
       Height = 271
       Top = 4
@@ -89,6 +88,8 @@ object EditOperationScriptForm: TEditOperationScriptForm
       TabOrder = 1
       Gutter.Width = 57
       Gutter.MouseActions = <>
+      RightGutter.Width = 0
+      RightGutter.MouseActions = <>
       Highlighter = SynAnySyn1
       Keystrokes = <      
         item
@@ -512,10 +513,12 @@ object EditOperationScriptForm: TEditOperationScriptForm
           ShortCut = 57379
         end>
       MouseActions = <>
+      MouseTextActions = <>
       MouseSelActions = <>
       Lines.Strings = (
-        'ScriptMemo'
+        'ScriptEdit'
       )
+      VisibleSpecialChars = [vscSpace, vscTabAtLast]
       SelectedColor.FrameEdges = sfeAround
       SelectedColor.BackPriority = 50
       SelectedColor.ForePriority = 50
@@ -524,6 +527,23 @@ object EditOperationScriptForm: TEditOperationScriptForm
       SelectedColor.ItalicPriority = 50
       SelectedColor.UnderlinePriority = 50
       SelectedColor.StrikeOutPriority = 50
+      IncrementColor.FrameEdges = sfeAround
+      HighlightAllColor.FrameEdges = sfeAround
+      BracketHighlightStyle = sbhsBoth
+      BracketMatchColor.Background = clNone
+      BracketMatchColor.Foreground = clNone
+      BracketMatchColor.FrameEdges = sfeAround
+      BracketMatchColor.Style = [fsBold]
+      FoldedCodeColor.Background = clNone
+      FoldedCodeColor.Foreground = clGray
+      FoldedCodeColor.FrameColor = clGray
+      FoldedCodeColor.FrameEdges = sfeAround
+      MouseLinkColor.Background = clNone
+      MouseLinkColor.Foreground = clBlue
+      MouseLinkColor.FrameEdges = sfeAround
+      LineHighlightColor.Background = clNone
+      LineHighlightColor.Foreground = clNone
+      LineHighlightColor.FrameEdges = sfeAround
       inline SynLeftGutterPartList1: TSynGutterPartList
         object SynGutterMarks1: TSynGutterMarks
           Width = 24
@@ -691,5 +711,9 @@ object EditOperationScriptForm: TEditOperationScriptForm
     ActiveDot = False
     left = 247
     top = 142
+  end
+  object FindDialog1: TFindDialog
+    left = 125
+    top = 104
   end
 end

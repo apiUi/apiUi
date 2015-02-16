@@ -20,7 +20,7 @@ uses
   , Xmlz
   , Menus
   , FormIniFilez
-  , WsdlProjectz , SynHighlighterAny , SynMemo
+  , WsdlProjectz , SynHighlighterAny , SynMemo , SynEdit
   ;
 
 type
@@ -28,8 +28,9 @@ type
   { TEditOperationScriptForm }
 
   TEditOperationScriptForm = class(TForm)
+    FindDialog1 : TFindDialog ;
     SynAnySyn1 : TSynAnySyn ;
-    ScriptMemo : TSynMemo ;
+    ScriptEdit : TSynEdit ;
     TopPanel: TPanel;
     Label1: TLabel;
     ScriptNameEdit: TEdit;
@@ -53,7 +54,7 @@ type
     N3: TMenuItem;
     ShowTokens1: TMenuItem;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure ScriptMemoChange(Sender: TObject);
+    procedure ScriptEditChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure OKBtnClick(Sender: TObject);
     procedure CheckButtonClick(Sender: TObject);
@@ -151,8 +152,8 @@ begin
       end;
     end;
   end;
-  ScriptMemo.ParentColor := ScriptMemo.ReadOnly;
-  ScriptMemo.SetFocus;
+  ScriptEdit.ParentColor := ScriptEdit.ReadOnly;
+  ScriptEdit.SetFocus;
   fScriptChanged := False;
 end;
 
@@ -166,7 +167,7 @@ begin
   try
     if After then
     begin
-      WsdlOperation.AfterScriptLines.Text := ScriptMemo.Text;
+      WsdlOperation.AfterScriptLines.Text := ScriptEdit.Text;
       try
         WsdlOperation.PrepareAfter;
       except
@@ -174,7 +175,7 @@ begin
     end
     else
     begin
-      WsdlOperation.BeforeScriptLines.Text := ScriptMemo.Text;
+      WsdlOperation.BeforeScriptLines.Text := ScriptEdit.Text;
       try
         WsdlOperation.PrepareBefore;
       except
@@ -193,9 +194,9 @@ var
 begin
   st := 0;
   for x := 0 to LineNumber - 2 do
-    st := ST + Length (ScriptMemo.Lines.Strings[x]) + 2;
-  ScriptMemo.SelStart := st + ColumnNumber;
-  ScriptMemo.SelEnd := ScriptMemo.SelStart + Length (TokenString);
+    st := ST + Length (ScriptEdit.Lines.Strings[x]) + 2;
+  ScriptEdit.SelStart := st + ColumnNumber;
+  ScriptEdit.SelEnd := ScriptEdit.SelStart + Length (TokenString);
   StatusBar.SimpleText := Data;
 end;
 
@@ -213,7 +214,7 @@ begin
     if After then
     begin
       SwapScriptLines := WsdlOperation.AfterScriptLines.Text;
-      WsdlOperation.AfterScriptLines.Text := ScriptMemo.Lines.Text;
+      WsdlOperation.AfterScriptLines.Text := ScriptEdit.Lines.Text;
       try
         WsdlOperation.PrepareAfter;
       finally
@@ -223,7 +224,7 @@ begin
     else
     begin
       SwapScriptLines := WsdlOperation.BeforeScriptLines.Text;
-      WsdlOperation.BeforeScriptLines.Text := ScriptMemo.Lines.Text;
+      WsdlOperation.BeforeScriptLines.Text := ScriptEdit.Lines.Text;
       try
         WsdlOperation.PrepareBefore;
       finally
@@ -243,7 +244,7 @@ begin
     SelectDbNameForm.DataBase := _WsdlDbsConnection;
     SelectDbNameForm.ShowModal;
     if SelectDbNameForm.ModalResult = mrOk then
-      ScriptMemo.SelText := SelectDbNameForm.SelectedDbName;
+      ScriptEdit.SelText := SelectDbNameForm.SelectedDbName;
   finally
     FreeAndNil (SelectDbNameForm);
   end;
@@ -263,7 +264,7 @@ begin
     SelectItemForm.ShowModal;
     if SelectItemForm.ModalResult = mrOk then
     begin
-      ScriptMemo.SelText := '''' + SelectItemForm.SelectedItem + '''';
+      ScriptEdit.SelText := '''' + SelectItemForm.SelectedItem + '''';
     end;
   finally
     FreeAndNil (SelectItemForm);
@@ -293,7 +294,7 @@ begin
     if SelectXmlElementForm.ModalResult = mrOk then
     begin
       LastCaption := SelectXmlElementForm.SelectedCaption;
-      ScriptMemo.SelText := LastCaption;
+      ScriptEdit.SelText := LastCaption;
     end;
   finally
     FreeAndNil (SelectXmlElementForm);
@@ -313,7 +314,7 @@ begin
     SelectItemForm.ShowModal;
     if SelectItemForm.ModalResult = mrOk then
     begin
-      ScriptMemo.SelText := SelectItemForm.SelectedItem;
+      ScriptEdit.SelText := SelectItemForm.SelectedItem;
     end;
   finally
     FreeAndNil (SelectItemForm);
@@ -341,10 +342,10 @@ begin
                                     )
                                );
 }
-  IpmFieldMenuItem.Enabled := (not ScriptMemo.ReadOnly);
-  SelectFunctionMenuItem.Enabled := (not ScriptMemo.ReadOnly);
+  IpmFieldMenuItem.Enabled := (not ScriptEdit.ReadOnly);
+  SelectFunctionMenuItem.Enabled := (not ScriptEdit.ReadOnly);
   DbNameMenuItem.Enabled := _WsdlDbsConnection.Connected
-                        and (not ScriptMemo.ReadOnly);
+                        and (not ScriptEdit.ReadOnly);
 
 end;
 
@@ -411,9 +412,9 @@ procedure TEditOperationScriptForm.setWsdlOperation(const Value: TWsdlOperation)
 begin
   fWsdlOperation := Value;
   if After then
-    ScriptMemo.Lines.Text := fWsdlOperation.AfterScriptLines.Text
+    ScriptEdit.Lines.Text := fWsdlOperation.AfterScriptLines.Text
   else
-    ScriptMemo.Lines.Text := fWsdlOperation.BeforeScriptLines.Text;
+    ScriptEdit.Lines.Text := fWsdlOperation.BeforeScriptLines.Text;
 end;
 
 procedure TEditOperationScriptForm.ShowTokens1Click(Sender: TObject);
@@ -431,17 +432,17 @@ begin
   begin
     BeforeOrAfterEdit.Text := 'After';
     if Assigned (fWsdlOperation) then
-      ScriptMemo.Lines.Text := fWsdlOperation.AfterScriptLines.Text;
+      ScriptEdit.Lines.Text := fWsdlOperation.AfterScriptLines.Text;
   end
   else
   begin
     BeforeOrAfterEdit.Text := 'Before';
     if Assigned (fWsdlOperation) then
-      ScriptMemo.Lines.Text := fWsdlOperation.BeforeScriptLines.Text;
+      ScriptEdit.Lines.Text := fWsdlOperation.BeforeScriptLines.Text;
   end;
 end;
 
-procedure TEditOperationScriptForm.ScriptMemoChange(Sender: TObject);
+procedure TEditOperationScriptForm.ScriptEditChange(Sender: TObject);
 begin
   fScriptChanged := True;
 end;

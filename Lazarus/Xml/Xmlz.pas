@@ -376,44 +376,16 @@ uses
   SysUtils
    , StrUtils
    , Types
+   , XmlzConsts
    , XmlAnalyser
 {$ifdef JSON}
    , JsonAnalyser
-{$endif}
-{$ifdef XMLDOM}
-   , XMLSchema
-   , XsBuiltIns
 {$endif}
    , RegExpr
    , xmlio
    , HashUtilz
    , VersionSupport
    ;
-
-
-{$ifdef XMLDOM}
-function XmlToDateTime(const Value: String): TDateTime;
-begin
-  with TXSDateTime.Create() do
-  try
-    XSToNative (Value);
-    Result := AsDateTime; // convert to TDateTime
-  finally
-    Free();
-  end;
-end;
-
-function DateTimeToXml(const Value: TDateTime): string;
-begin
-  with TXSDateTime.Create() do
-  try
-    AsDateTime := Value; // convert from TDateTime
-    Result := NativeToXS; // convert to WideString
-  finally
-    Free();
-  end;
-end;
-{$endif}
 
 function textToHtml (aString: String): String;
   function _docLink (aString: String): TXml;
@@ -691,7 +663,6 @@ begin
   if (Items.Count > 0)
   or (not Assigned (TypeDef))
   then Exit;
-{$ifdef XMLDOM}
   maxElm := TypeDef.xsdDescr.xsdElementsWhenRepeatable;
   curDepth := TypeDef._DepthBillOfMaterial;
   TypeDef.xsdDescr.xsdElementsWhenRepeatable := 1;
@@ -704,8 +675,6 @@ begin
     TypeDef.xsdDescr.xsdElementsWhenRepeatable := maxElm;
     TypeDef._DepthBillOfMaterial := curDepth;
   end;
-{$endif}
-
 end;
 
 procedure TXml.ResolveNameSpaces;
@@ -1197,7 +1166,6 @@ function TXml.StreamXML ( aUseNameSpaces: Boolean
                         ): String;
 var
   aLineNo: Integer;
-  {$ifdef XMLDOM}
   procedure _setUsedNameSpaces (aXml: TXml);
     procedure __setUsedNs (aXml: TXml);
     var
@@ -1223,7 +1191,6 @@ var
       Xsd.xsdDescr.NameSpaceList.Objects[x] := Pointer (0);
     __setUsedNs (aXml);
   end;
-  {$endif}
 
   function _doEncode (aXml: TXml): Boolean;
   begin
@@ -1249,7 +1216,6 @@ var
                or (xsdFormDefault = xsdFDQualified)
               )
   end;
-  {$ifdef XMLDOM}
   function _PrefixedTagname (aXml: TXml): string;
   var
     xParent: TXml;
@@ -1275,10 +1241,10 @@ var
     and Assigned ((aXml.Parent as TXml).Xsd) then
       xPNameSpace := (aXml.Parent as TXml).Xsd.ElementNameSpace
     else
-      xPNameSpace := XMLSchemaURI;
+      xPNameSpace := scXMLSchemaURI;
     xNameSpace := aXml.TypeDef.NameSpace;
     xXsd := aXml.Xsd;
-    if xNameSpace = XMLSchemaURI then
+    if xNameSpace = scXMLSchemaURI then
     begin
       xNameSpace := xPNameSpace;
       if Assigned (aXml.Parent) then
@@ -1320,16 +1286,6 @@ var
         result := result + aXml.TypeDef.XsiNameSpaceAttribute;
     end;
   end;
-  {$else}
-  function _PrefixedTagname (aXml: TXml): string;
-  begin
-    result := aXml.TagName;
-  end;
-  function _xmlNsStrings (aXml: TXml; aDoEncode: Boolean): String;
-  begin
-    result := '';
-  end;
-  {$endif}
   function _StreamXML(aXml: TXml; aIndent: Integer; OnlyWhenChecked: Boolean; Encoded: Boolean): String;
   var
     x: Integer;
@@ -2125,19 +2081,13 @@ begin
       for xChildIndex := 0 to xDataType.ElementDefs.Count - 1 do
       begin
         minOccurs := StrToIntDef (xDataType.ElementDefs.Xsds [xChildIndex].minOccurs, 1);
-        {$ifdef XMLDOM}
         if xDataType.ElementDefs.Xsds [xChildIndex].maxOccurs = 'unbounded' then
           maxOccurs := aXsd.XsdDescr.xsdElementsWhenRepeatable
         else
-        {$endif}
           maxOccurs := StrToIntDef (xDataType.ElementDefs.Xsds [xChildIndex].maxOccurs, 1);
         if minOccurs < 1 then
           minOccurs := 1; {Create xml even if optional}
-        {$ifdef XMLDOM}
         xOccurs := aXsd.XsdDescr.xsdElementsWhenRepeatable;
-        {$else}
-        xOccurs := 1;
-        {$endif}
         if minOccurs > xOccurs then
           xOccurs := minOccurs;
         if maxOccurs < xOccurs then
