@@ -37,9 +37,9 @@ type
     function GetDataBase: TADOConnection;
     procedure SetDataBase (aDataBase: TADOConnection);
     {$else}
-    fDataBase: TSQLConnection;
-    function GetDataBase: TSQLConnection;
-    procedure SetDataBase (aDataBase: TSQLConnection);
+    fDataBase: TSQLConnector;
+    function GetDataBase: TSQLConnector;
+    procedure SetDataBase (aDataBase: TSQLConnector);
     {$endif}
     procedure ViewIpmItem (aTreeView: TTreeView; aNode: TTreeNode; aIpmItem: TIpmItem);
   public
@@ -47,7 +47,7 @@ type
     {$ifndef fpc}
     property DataBase: TADOConnection read GetDataBase write SetDataBase;
     {$else}
-    property DataBase: TSQLConnection read GetDataBase write SetDataBase;
+    property DataBase: TSQLConnector read GetDataBase write SetDataBase;
     {$endif}
   end;
 
@@ -93,7 +93,12 @@ begin
   begin
     ColumnList := TStringList.Create;
     try
-      DataBase.GetFieldNames(Node.Text, ColumnList);
+      DataBase.Transaction.StartTransaction;
+      try
+        DataBase.GetFieldNames(Node.Text, ColumnList);
+      finally
+        DataBase.Transaction.EndTransaction;
+      end;
       for y := 0 to ColumnList.Count - 1 do
       begin
         TreeView.Items.AddChild (Node, ColumnList.Strings [y]);
@@ -113,14 +118,22 @@ var
   TableList: TStrings;
 begin
   TableList := TStringList.Create;
+  TreeView.BeginUpdate;
   try
     TreeView.Items.Clear;
-    DataBase.GetTableNames(TableList, False);
+    DataBase.Transaction.Rollback;
+    DataBase.Transaction.StartTransaction;
+    try
+      DataBase.GetTableNames(TableList, False);
+    finally
+      DataBase.Transaction.EndTransaction;
+    end;
     for x := 0 to TableList.Count - 1 do
     begin
       xChild := TreeView.Items.AddChild (nil, TableList.Strings [x]);
     end;
   finally
+    TreeView.EndUpdate;
     TableList.Clear;
     TableList.Free;
   end;
@@ -145,12 +158,12 @@ begin
   IniFile.Free;
 end;
 
-function TSelectDbNameForm.GetDataBase: {$ifndef fpc}TADOConnection{$else}TSQLConnection{$endif};
+function TSelectDbNameForm.GetDataBase: TSQLConnector;
 begin
   result := fDataBase;
 end;
 
-procedure TSelectDbNameForm.SetDataBase(aDataBase:  {$ifndef fpc}TADOConnection{$else}TSQLConnection{$endif});
+procedure TSelectDbNameForm.SetDataBase(aDataBase: TSQLConnector);
 begin
   fDataBase := aDataBase;
 end;

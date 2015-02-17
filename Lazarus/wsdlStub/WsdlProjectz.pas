@@ -159,7 +159,7 @@ type
     procedure InitSpecialWsdls;
   public
     doCloneOperations: Boolean;
-    DbsConnectionString, DbsPassword: String;
+    DbsDatabaseName, DbsType, DbsParams, DbsPassword: String;
     FreeFormatWsdl, XsdWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
@@ -1630,7 +1630,9 @@ begin
   with result.AddXml (TXml.CreateAsString('DatabaseConnection', '')) do
   begin
     AddXml (TXml.CreateAsBoolean('Enabled', _WsdlDbsEnabled));
-    AddXml (TXml.CreateAsString('ConnectionString', DbsConnectionString));
+    AddXml (TXml.CreateAsString('Type', DbsType));
+    AddXml (TXml.CreateAsString('DatabaseName', DbsDatabaseName));
+    AddXml (TXml.CreateAsString('Params', DbsParams));
     AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(DbsPassword)))
   end;
 end;
@@ -2380,11 +2382,11 @@ var
   xXml, yXml: TXml;
 begin
   _WsdlDbsEnabled := False;
-  DbsConnectionString := '';
+  DbsType := '';
+  DbsDatabaseName := '';
+  DbsParams := '';
   DbsPassword := '';
-    {$IFnDEF FPC}
-  _WsdlDbsAdoConnection.LoginPrompt := False;
-    {$endif}
+  _WsdlDbsConnector.LoginPrompt := False;
   if Assigned (aXml) then {BEGIN 3.6 style}
   begin
     unknownOperation.StubAction := TStubAction (StrToIntDef (aXml.Items.XmlValueByTag ['notStubbedOperationAction'], 0));
@@ -2894,13 +2896,13 @@ var
 begin
   if not Assigned (aXml) then Exit;
   if aXml.Name <> 'projectOptions' then raise Exception.Create('ProjectOptionsFromXml illegal XML' + aXml.Text);
-    {$IFnDEF FPC}
-  _WsdlDbsAdoConnection.Connected := False;
+  _WsdlDbsConnector.Connected := False;
+  _WsdlDbsConnector.LoginPrompt := False;
   _WsdlDbsEnabled := False;
-  DbsConnectionString := '';
+  DbsType := '';
+  DbsDatabaseName := '';
+  DbsParams := '';
   DbsPassword := '';
-  _WsdlDbsAdoConnection.LoginPrompt := False;
-    {$endif}
   wrdFunctionz.wrdDetectFormatChanges := False;
   wrdFunctionz.wrdNewDocumentAsReference := False;
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
@@ -2965,8 +2967,21 @@ begin
     if Assigned (xXml) then
     begin
       _WsdlDbsEnabled := xXml.Items.XmlCheckedBooleanByTagDef['Enabled', _WsdlDbsEnabled];
-      DbsConnectionString := xXml.Items.XmlCheckedValueByTagDef['ConnectionString', DbsConnectionString];
+      DbsType := xXml.Items.XmlCheckedValueByTagDef['Type', DbsType];
+      DbsDatabaseName := xXml.Items.XmlCheckedValueByTagDef['DatabaseName', DbsDatabaseName];
+      DbsParams := xXml.Items.XmlCheckedValueByTagDef['Params', DbsParams];
       DbsPassword := xmlz.DecryptString(xXml.Items.XmlCheckedValueByTag['Password']);
+      with _WsdlDbsConnector do
+      begin
+        ConnectorType := DbsType;
+        DatabaseName := DbsDatabaseName;
+        Params.Text := ReplaceStrings( DbsParams
+                                     , '%pwd%'
+                                     , DbsPassword
+                                     , false
+                                     , false
+                                     );
+      end;
     end;
   end;
 end;

@@ -25,6 +25,7 @@ String             (\"[^\"]*\")|(\'[^\']*\')
                                 return (_CDATATAG);
                               end;
 <InitState>{XmlComment}       begin
+                                popState := InitState;
                                 start (IgnoreState);
                                 return (_IGNORE);
                               end;
@@ -42,6 +43,11 @@ String             (\"[^\"]*\")|(\'[^\']*\')
 <InitState>{EscapeChar}       return (_ESCAPECHAR);
 <InitState>.                  return (_VALUE);
 
+<ValueState>{XmlComment}       begin
+                                popState := ValueState;
+                                start (IgnoreState);
+                                return (_IGNORE);
+                              end;
 <ValueState>{CData}           begin
                                 start (CDataState);
                                 return (_CDATATAG);
@@ -69,7 +75,7 @@ String             (\"[^\"]*\")|(\'[^\']*\')
                                 return (_IGNORE);
                               end;
 <IgnoreState>{EndXmlComment}  begin
-                                start (InitState);
+                                start (popState);
                                 return (_IGNORE);
                               end;
 <IgnoreState>.                return (_IGNORE);

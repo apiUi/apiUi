@@ -1,4 +1,4 @@
-{$define no_ADO}
+{$mode delphi}
 unit Express;
 
 interface
@@ -7,14 +7,8 @@ uses Bind
    , ParserClasses
    , Parser
    , CustParser, Scanner, CustScanner
-   {$IFnDEF FPC}
-   , AdoDb
-   {$ELSE}
    , sqldb
-   {$ENDIF}
-  {$ifdef ADO}
    , XpQuery
-   {$endif}
 ;
 
 const
@@ -36,11 +30,9 @@ private
   Parser: TParser;
   Blocks: TStringList;
   ObjList: TParserClassList;
-  FDatabase: {$IFnDEF FPC}TADOConnection{$ELSE}TSQLConnection{$ENDIF};
-  {$ifdef ADO}
+  FDatabase: TSQLConnection;
   XpQueryList: TXpQueryList;
   fXpLoopQuery: TXpQuery;
-  {$endif}
   FOnError: TOnErrorEvent;
   FOnHaveData: TOnHaveDataEvent;
   FOnNeedData: TOnNeedDataEvent;
@@ -98,16 +90,14 @@ private
     procedure setScriptText(const Value: String);
     procedure SetOnGetAbortPressed(const Value: TBooleanFunction);
 published
-  property Database: {$IFnDEF FPC}TADOConnection{$ELSE}TSQLConnection{$ENDIF} read fDatabase write fDatabase;
+  property Database: TSQLConnection read fDatabase write fDatabase;
   property OnHaveData: TOnHaveDataEvent read FOnHaveData write FOnHaveData;
   property OnNeedData: TOnNeedDataEvent read FOnNeedData write FOnNeedData;
   property OnError: TOnErrorEvent read FOnError write FOnError;
   property ScriptText: String read getScriptText write setScriptText;
 public
   uwaString: String;
-  {$ifdef ADO}
   property uwaLoopQry: TXpQuery read fXpLoopQuery;
-  {$endif}
   property FunctionProtoTypes: TStringList read fFunctionProtoTypes;
   property SqlUsed: Boolean read GetSqlUsed;
   property ScannedItems: YYSType read LexicalList;
@@ -330,7 +320,7 @@ begin
   Xpress.FirstData := True;
   try
     Xpress.OnError := OnError;
-    Xpress.fOnNeedData := @Xpress.PassString;
+    Xpress.fOnNeedData := Xpress.PassString;
     XPress.BindList := BindList;
     Xpress.Prepare;
     Xpress.Execute;
@@ -417,7 +407,7 @@ end;
 procedure TExpress.setScriptText(const Value: String);
 begin
   fTextLines.Text := Value;
-  fOnNeedData := @PassText;
+  fOnNeedData := PassText;
   fTextLineNo := 0;
 end;
 
@@ -429,80 +419,55 @@ end;
 procedure TExpress.CreateQuery ( Sender:TObject
                                ; var Query: TObject
                                );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
 begin
   Qry := TXpQuery.Create (self);
-  Qry.Connection := Database;
+  Qry.DataBase := Database;
 {  Qry.UniDirectional := True; }
   Qry.InsertValuesString := 'values';
   Qry.InsertValuesSeparator := '(';
   Query := Qry as TObject;
   XpQueryList.AddObject ('', Qry);
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.HaveSqlToken ( Sender:TObject
                                 ; Query: TObject
                                 ; Str: String
                                 );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
 begin
   Qry := Query as TXpQuery;
   Qry.SqlStrings.Add (Str);
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.HaveSqlBind ( Sender:TObject
                                ; Query: TObject
                                ; Bind: TBind
                                );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
 begin
   Qry := Query as TXpQuery;
   Qry.BindList.AddObject ('', Bind);
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.HaveSqlParam ( Sender:TObject
                                 ; Query: TObject
                                 ; Param: TBind
                                 );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
 begin
   Qry := Query as TXpQuery;
   Qry.ParamList.AddObject ('', Param);
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.HaveSqlInsertParam ( Sender:TObject
                                 ; Query: TObject
                                 ; Param: TBind
                                 );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
 begin
@@ -513,60 +478,57 @@ begin
                           + '?';
   Qry.InsertValuesSeparator := ',';
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.NeedSqlExec ( Sender:TObject
                                ; Query: TObject
                                );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
+  xTransaction: TSQLTransaction;
   x: Integer;
   Bindable: TCustomBindable;
 begin
   Qry := Query as TXpQuery;
   for x := 0 to Qry.ParamList.Count - 1 do
   begin
-    if (x < Qry.Parameters.Count) then {just to make sure}
+    if (x < Qry.Params.Count) then {just to make sure}
     begin
       if (Qry.ParamList.Binds [x].BindsAnObject)
       then
       begin
         Bindable := TCustomBindable (Qry.ParamList.Binds [x].yy.yyPointer);
         case Qry.ParamList.Binds [x].Token of
-          DFLD: Qry.Parameters.Items [x].Value := Bindable.GetDateTimeData;
-          SFLD: Qry.Parameters.Items [x].Value := Bindable.GetStringData;
-          IFLD: Qry.Parameters.Items [x].Value := Bindable.GetIntegerData;
-          XFLD: Qry.Parameters.Items [x].Value := Bindable.GetExtendedData;
+          DFLD: Qry.Params.Items [x].Value := Bindable.GetDateTimeData;
+          SFLD: Qry.Params.Items [x].Value := Bindable.GetStringData;
+          IFLD: Qry.Params.Items [x].Value := Bindable.GetIntegerData;
+          XFLD: Qry.Params.Items [x].Value := Bindable.GetExtendedData;
         end;
       end
       else
       begin
         case Qry.ParamList.Binds [x].Token of
-          DFLD: Qry.Parameters.Items [x].Value := PTDateTime (Qry.ParamList.Binds [x].yy.yyPointer)^;
-          SFLD: Qry.Parameters.Items [x].Value := PString (Qry.ParamList.Binds [x].yy.yyPointer)^;
-          IFLD: Qry.Parameters.Items [x].Value := PInteger (Qry.ParamList.Binds [x].yy.yyPointer)^;
-          XFLD: Qry.Parameters.Items [x].Value := PExtended (Qry.ParamList.Binds [x].yy.yyPointer)^;
+          DFLD: Qry.Params.Items [x].Value := PTDateTime (Qry.ParamList.Binds [x].yy.yyPointer)^;
+          SFLD: Qry.Params.Items [x].Value := PString (Qry.ParamList.Binds [x].yy.yyPointer)^;
+          IFLD: Qry.Params.Items [x].Value := PInteger (Qry.ParamList.Binds [x].yy.yyPointer)^;
+          XFLD: Qry.Params.Items [x].Value := PExtended (Qry.ParamList.Binds [x].yy.yyPointer)^;
         end;
       end;
     end;
   end;
-  Qry.ExecSQL;
+  xTransaction := TSQLTransaction.Create(nil);
+  xTransaction.DataBase := Qry.Database;
+  Qry.Transaction := xTransaction;
+  try
+    Qry.ExecSQL;
+  finally
+    xTransaction.Commit;
+    xTransaction.Free;
+  end;
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.NeedSqlOpen ( Sender:TObject
                                ; Query: TObject
                                );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
   x: Integer;
@@ -574,11 +536,11 @@ var
 begin
   Qry := Query as TXpQuery;
 {
-  if (Qry.Parameters.Count <> Qry.ParamList.Count) then
+  if (Qry.Params.Count <> Qry.ParamList.Count) then
     raise Exception.Create ('Number of actual params does not match number of required params');
 }
-  if not Qry.Connection.Connected then
-    Qry.Connection.Connected := True;
+  if not Qry.DataBase.Connected then
+    Qry.DataBase.Connected := True;
   Qry.SQL.Text := Qry.SqlStrings.Text;
   for x := 0 to Qry.ParamList.Count - 1 do
   begin
@@ -586,19 +548,19 @@ begin
     begin
       Bindable := TCustomBindable (Qry.BindList.Binds [x].yy.yyPointer);
       case Qry.ParamList.Binds [x].Token of
-        DFLD: Qry.Parameters.Items [x].Value := Bindable.GetDateTimeData;
-        SFLD: Qry.Parameters.Items [x].Value := Bindable.GetStringData;
-        IFLD: Qry.Parameters.Items [x].Value := Bindable.GetIntegerData;
-        XFLD: Qry.Parameters.Items [x].Value := Bindable.GetExtendedData;
+        DFLD: Qry.Params.Items [x].Value := Bindable.GetDateTimeData;
+        SFLD: Qry.Params.Items [x].Value := Bindable.GetStringData;
+        IFLD: Qry.Params.Items [x].Value := Bindable.GetIntegerData;
+        XFLD: Qry.Params.Items [x].Value := Bindable.GetExtendedData;
       end;
     end
     else
     begin
       case Qry.ParamList.Binds [x].Token of
-        DFLD: Qry.Parameters.Items [x].Value := PTDateTime (Qry.ParamList.Binds [x].yy.yyPointer)^;
-        SFLD: Qry.Parameters.Items [x].Value := PString (Qry.ParamList.Binds [x].yy.yyPointer)^;
-        IFLD: Qry.Parameters.Items [x].Value := PInteger (Qry.ParamList.Binds [x].yy.yyPointer)^;
-        XFLD: Qry.Parameters.Items [x].Value := PExtended (Qry.ParamList.Binds [x].yy.yyPointer)^;
+        DFLD: Qry.Params.Items [x].Value := PTDateTime (Qry.ParamList.Binds [x].yy.yyPointer)^;
+        SFLD: Qry.Params.Items [x].Value := PString (Qry.ParamList.Binds [x].yy.yyPointer)^;
+        IFLD: Qry.Params.Items [x].Value := PInteger (Qry.ParamList.Binds [x].yy.yyPointer)^;
+        XFLD: Qry.Params.Items [x].Value := PExtended (Qry.ParamList.Binds [x].yy.yyPointer)^;
       end;
     end;
   end;
@@ -614,33 +576,21 @@ begin
     raise Exception.Create ('Number of retrieved columns does not match number of program variables');
   Qry.QueryVerb := xqvSelect;
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.NeedSqlClose ( Sender: TObject
                                 ; Query: TObject
                                 );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
 begin
   Qry := Query as TXpQuery;
   Qry.Close;
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.NeedNextSqlRow ( Sender: TObject
                                   ; Query: TObject
                                   ; var MoreData: Boolean
                                   );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
   x: Integer;
@@ -682,17 +632,11 @@ begin
     end;
   end;
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.NeedFirstSqlRow ( Sender: TObject
                                    ; Query: TObject
                                    ; var MoreData: Boolean
                                    );
-{$ifdef ADO}
 var
   Qry: TXpQuery;
   x: Integer;
@@ -728,14 +672,8 @@ begin
     end;
   end;
 end;
-{$else}
-begin
-
-end;
-{$endif}
 
 procedure TExpress.FinishInsertQuery(Sender, Query: TObject);
-{$ifdef ADO}
 var
   Qry: TXpQuery;
 begin
@@ -743,12 +681,6 @@ begin
   Qry.SqlStrings.Add (Qry.InsertValuesString + ')');
   Qry.QueryVerb := xqvInsert;
 end;
-{$else}
-begin
-
-end;
-{$endif}
-
 
 function TExpress.getContext: TObject;
 begin
@@ -1137,9 +1069,7 @@ end;
 procedure TExpress.Prepare;
 begin
   try
-    {$ifdef ADO}
     XpQueryList.Clear;
-    {$endif}
     with Blocks do
       while Count  > 0 do
       begin
@@ -1159,7 +1089,7 @@ begin
     end;
     ClearLexicalList;
     fTextLineNo := 0;
-    Scanner.OnToken := @OnToken;
+    Scanner.OnToken := OnToken;
     StackIndex := 0;
     ScannerState := InitialState;
     Scanner.Execute;
@@ -1319,10 +1249,8 @@ procedure TExpress.Execute;
 var
   x: Integer;
 begin
-  {$ifdef ADO}
   for x := 0 to XpQueryList.Count - 1 do
     XpQueryList.XpQueries [x].xpPrep;
-  {$endif}
   for x := 0 to ObjList.Count - 1 do
     ObjList.Objects [x].Init;
   LexItem := LexicalList;
@@ -1332,13 +1260,11 @@ begin
     currBlock.InitBinds;
     Parser.Execute;
   except
-    {$ifdef ADO}
     for x := 0 to XpQueryList.Count - 1 do
       try
         XpQueryList.XpQueries [x].Close;
       except
       end;
-    {$endif}
     raise;
   end;
 end;
@@ -1428,39 +1354,37 @@ constructor TExpress.Create (AComponent: TComponent);
 begin
   inherited Create (AComponent);
   fTextLines := TStringList.Create;
-  fOnNeedData := @PassText;
+  fOnNeedData := PassText;
   fFunctionProtoTypes := TStringList.Create;
   fFunctionProtoTypes.Sorted := True;
   fFunctionProtoTypes.Duplicates := dupError;
   fFunctionProtoTypes.CaseSensitive := False;
-  {$ifdef ADO}
   XpQueryList := TXpQueryList.Create;
-  {$endif}
   Blocks := TStringList.Create;
   ObjList := TParserClassList.Create;
   Scanner := TScanner.Create;
-  Scanner.OnNeedData := @ScannerNeedsData;
-  Scanner.OnError := @ScannerError;
+  Scanner.OnNeedData := ScannerNeedsData;
+  Scanner.OnError := ScannerError;
   Parser := TParser.Create;
   Parser.OnGetAbortPressed := OnGetAbortPressed;
-  Parser.OnPutData := @PutData;
-  Parser.OnGetData := @GetData;
-  Parser.OnGetObject := @GetObject;
-  Parser.OnHaveData := @HaveData;
-  Parser.OnError := @ExpressError;
-  Parser.OnEvaluateString := @EvaluateString;
-  Parser.OnStoreObject := @StoreObject;
-  Parser.OnCreateQuery := @CreateQuery;
-  Parser.OnHaveSqlToken := @HaveSqlToken;
-  Parser.OnHaveSqlBind := @HaveSqlBind;
-  Parser.OnHaveSqlParam := @HaveSqlParam;
-  Parser.OnHaveSqlInsertParam := @HaveSqlInsertParam;
-  Parser.OnNeedSqlExec := @NeedSqlExec;
-  Parser.OnNeedSqlOpen := @NeedSqlOpen;
-  Parser.OnNeedSqlClose := @NeedSqlClose;
-  Parser.OnNeedSqlNextRow := @NeedNextSqlRow;
-  Parser.OnNeedSqlFirstRow := @NeedFirstSqlRow;
-  Parser.OnFinshInsertQuery := @FinishInsertQuery;
+  Parser.OnPutData := PutData;
+  Parser.OnGetData := GetData;
+  Parser.OnGetObject := GetObject;
+  Parser.OnHaveData := HaveData;
+  Parser.OnError := ExpressError;
+  Parser.OnEvaluateString := EvaluateString;
+  Parser.OnStoreObject := StoreObject;
+  Parser.OnCreateQuery := CreateQuery;
+  Parser.OnHaveSqlToken := HaveSqlToken;
+  Parser.OnHaveSqlBind := HaveSqlBind;
+  Parser.OnHaveSqlParam := HaveSqlParam;
+  Parser.OnHaveSqlInsertParam := HaveSqlInsertParam;
+  Parser.OnNeedSqlExec := NeedSqlExec;
+  Parser.OnNeedSqlOpen := NeedSqlOpen;
+  Parser.OnNeedSqlClose := NeedSqlClose;
+  Parser.OnNeedSqlNextRow := NeedNextSqlRow;
+  Parser.OnNeedSqlFirstRow := NeedFirstSqlRow;
+  Parser.OnFinshInsertQuery := FinishInsertQuery;
   LexicalList:= nil;
   BindList := TBindList.Create;
   BindList.Sorted := True;
@@ -1480,10 +1404,8 @@ begin
   Scanner.Free;
   ClearLexicalList;
   LexicalList.Free;
-  {$ifdef ADO}
   XpQueryList.Clear;
   XpQueryList.Free;
-  {$endif}
   with ObjList do
   begin
     while Count > 0 do

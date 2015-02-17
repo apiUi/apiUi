@@ -3427,7 +3427,7 @@ var
 begin
   xUpdated := Now;
   xUsageDate := sysutils.Date;
-  if (aUserName <> 'JanBo') and (aUserName <> 'Bouwman') then
+  if (aUserName <> 'Jan') and (aUserName <> 'Bouwman') then
   begin
     SqlConnector.Transaction.StartTransaction;
     try

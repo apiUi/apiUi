@@ -6,7 +6,7 @@ unit Wsdlz;
 
 interface
 
-uses {$IFnDEF FPC}AdoDb{$ELSE}sqldb{$ENDIF}
+uses sqldb
    , Classes
    , ParserClasses
    , Variants
@@ -563,7 +563,13 @@ var
   _OnBeginUpdate, _OnEndUpdate: TProcedure;
   _ipmGun: Boolean;
   _WsdlDbsEnabled: Boolean;
-  _WsdlDbsConnection: {$IFnDEF FPC} TADOConnection; {$ELSE} TSQLConnection; {$ENDIF}
+  _WsdlDbsConnector: TSQLConnector;
+  _WsdlDbsTransaction: TSQLTransaction;
+  _WsdlDbsConnectorType: String;
+  _WsdlDbsDatabaseName: String;
+  _WsdlDbsParams: String;
+  _WsdlDbsPassword: String;
+
   UILock: TCriticalSection;
   EnvVarLock: TCriticalSection;
   OnNotify: TOnStringEvent;
@@ -815,28 +821,17 @@ end;
 function dbLookUp (aTable, aValueColumn, aReferenceColumn, aReferenceValue: String): String;
 begin
   result := '';
-  if not _WsdlDbsConnection.Connected then
+  if not _WsdlDbsConnector.Connected then
     raise Exception.Create('No database connected');
-  {$IFnDEF FPC}
-  with TADOQuery.Create(nil) do
-  {$ELSE}
   with TSQLQuery.Create(nil) do
-  {$ENDIF}
   try
-    {$IFnDEF FPC}
-    Connection := _WsdlDbsConnection;
-    {$ELSE}
-    Database := _WsdlDbsConnection;
-    {$ENDIF}
+    Database := _WsdlDbsConnector;
+    UsePrimaryKeyAsKey := False;
     SQL.Clear;
     SQL.Add('Select ' + aValueColumn);
     SQL.Add('from ' + aTable);
     SQL.Add('where ' + aReferenceColumn + '= :ReferenceValue');
-    {$IFnDEF FPC}
-    Parameters.ParamValues ['ReferenceValue'] := aReferenceValue;
-    {$ELSE}
     Params.ParamValues ['ReferenceValue'] := aReferenceValue;
-    {$ENDIF}
     Open;
     while not EOF do
     begin
@@ -3297,7 +3292,7 @@ begin
 //      fExpress.OnError := ExpressError;
 //      fExpress.OnHaveData := HaveData;
       fLineNumber := 0;
-      fExpressBefore.Database := _WsdlDbsConnection;
+      fExpressBefore.Database := _WsdlDbsConnector;
       reqBind.Bind ('Req', fExpressBefore, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
       rpyBind.Bind ('Rpy', fExpressBefore, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
       for x := 0 to invokeList.Count - 1 do
@@ -3428,7 +3423,7 @@ begin
 //      fExpress.OnError := ExpressError;
 //      fExpress.OnHaveData := HaveData;
     fLineNumber := 0;
-    fExpressAfter.Database := _WsdlDbsConnection;
+    fExpressAfter.Database := _WsdlDbsConnector;
     reqBind.Bind ('Req', fExpressAfter, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
     rpyBind.Bind ('Rpy', fExpressAfter, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
     for x := 0 to invokeList.Count - 1 do
@@ -5007,7 +5002,7 @@ begin
       fExpressChecker.OnNeedData := NeedStamperData;
       fExpressChecker.OnError := fOnError;
       fLineNumber := 0;
-      fExpressChecker.Database := _WsdlDbsConnection;
+      fExpressChecker.Database := _WsdlDbsConnector;
       aBind.Bind ('', fExpressChecker, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
       fExpressChecker.BindBoolean('Bind_.Checker', aBind.fChecked);
       BindCheckerFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
@@ -5063,7 +5058,7 @@ begin
 //      fExpress.OnError := ExpressError;
 //      fExpress.OnHaveData := HaveData;
     fLineNumber := 0;
-    fExpressStamper.Database := _WsdlDbsConnection;
+    fExpressStamper.Database := _WsdlDbsConnector;
     if Assigned (reqBind) then
       reqBind.Bind ('Req', fExpressStamper, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
     if Assigned (rpyBind) then
@@ -5945,7 +5940,10 @@ initialization
   allOperationsRpy := TWsdlOperations.Create;
   allOperationsRpy.Sorted := True;
   allOperationsRpy.Duplicates := dupError;
-  _WsdlDbsConnection := {$IFnDEF FPC}TADOConnection{$ELSE}TSQLConnection{$ENDIF}.Create(nil);
+  _WsdlDbsConnector := TSQLConnector.Create(nil);
+  _WsdlDbsTransaction := TSQLTransaction.Create(nil);
+  _WsdlDbsTransaction.DataBase := _WsdlDbsConnector;
+  _WsdlDbsConnector.Transaction := _WsdlDbsTransaction; // linked to each other...
   UILock := SyncObjs.TCriticalSection.Create;
   EnvVarLock := SyncObjs.TCriticalSection.Create;
   doUILock := True;
@@ -5957,7 +5955,7 @@ finalization
   allOperations.Free;
   allOperationsRpy.ClearListOnly;
   allOperationsRpy.Free;
-  _WsdlDbsConnection.Free;
+  _WsdlDbsConnector.Free;
   UILock.Free;
   EnvVarLock.Free;
 end.

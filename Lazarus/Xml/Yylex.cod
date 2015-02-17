@@ -15,6 +15,9 @@ public
   function yylex: Integer; override;
 end;
 
+var
+  popState: Integer;
+
 implementation
 %%
 

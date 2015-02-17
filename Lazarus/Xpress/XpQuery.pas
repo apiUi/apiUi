@@ -2,12 +2,12 @@ unit XpQuery;
 
 interface
 
-uses Classes, Bind, ADOdb
+uses Classes, Bind, sqldb
   ;
 
 type TXpQueryVerb = (xqvSelect, xqvInsert, xqvUpdate, xqvDelete);
 
-type TXpQuery = class (TADOQuery)
+type TXpQuery = class (TSqlQuery)
 public
   QueryVerb: TXpQueryVerb;
   SqlStrings: TStringList;
@@ -34,6 +34,8 @@ implementation
 constructor TXpQuery.Create (AComponent: TComponent);
 begin
   inherited Create (AComponent);
+  UsePrimaryKeyAsKey := False;
+  ParseSQL := False;
   SqlStrings := TStringList.Create;
   BindList := TBindList.Create;
   ParamList := TBindList.Create;
@@ -64,10 +66,10 @@ end;
 
 procedure TXpQuery.xpPrep;
 begin
-  if not Connection.Connected then
-    Connection.Connected := True;
+  if not DataBase.Connected then
+    DataBase.Connected := True;
   SQL.Text := SqlStrings.Text;
-  Prepared := True;
+  Prepare;
 end;
 
 end.

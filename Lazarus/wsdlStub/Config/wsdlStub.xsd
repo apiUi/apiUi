@@ -799,11 +799,27 @@ See also doc://TipsAndTricks/HowToDbLookUp.htm</xs:documentation>
 When "true" wsdlStub will try to connect the database when wsdlStub gets activated</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="ConnectionString" type="xs:string" minOccurs="0">
+							<xs:element name="Type">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="MSSQLServer"/>
+										<xs:enumeration value="ODBC"/>
+										<xs:enumeration value="Oracle"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="DatabaseName" type="xs:string">
 								<xs:annotation>
-									<xs:documentation>A string that specifies the means of connecting to a data source. Most commonly used for database connections but also for spreadsheets or text files. May include the name of the driver, server and database, user name and password.
-Visit http://www.connectionstrings.com for more information on connectionstrings and lots of examples.
-You can avoid to have your password readable in a file by replacing it by %pwd% and enter your password in a separate parameter. Then your password will be encripted.</xs:documentation>
+									<xs:documentation>In case of ODBC and working without DSN, specify the name of the ODBC driver; e.g.: MS Access Database</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Params" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>A string that contains name/value pairs, separated by semicolons. E.g:
+DBQ=C:\yourFolder\yourAccesDb.mdb;Uid=Admin;Pwd=%pwd%
+
+
+You can avoid having your password readable in a file by replacing it by %pwd% and enter your password in the Password parameter. Then your password will be encripted.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="Password" type="passwordType" minOccurs="0">

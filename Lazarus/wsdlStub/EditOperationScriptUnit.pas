@@ -139,11 +139,11 @@ procedure TEditOperationScriptForm.FormShow(Sender: TObject);
 var
   x: Integer;
 begin
-  wasConnected := _WsdlDbsConnection.Connected;
+  wasConnected := _WsdlDbsConnector.Connected;
   if _WsdlDbsEnabled then
   begin
     try
-      _WsdlDbsConnection.Connected := True;
+      _WsdlDbsConnector.Connected := True;
       StatusBar.SimpleText := 'Database connected';
     except
       on E: Exception do
@@ -241,7 +241,7 @@ procedure TEditOperationScriptForm.DbNameMenuItemClick(Sender: TObject);
 begin
   Application.CreateForm(TSelectDbNameForm,SelectDbNameForm);
   try
-    SelectDbNameForm.DataBase := _WsdlDbsConnection;
+    SelectDbNameForm.DataBase := _WsdlDbsConnector;
     SelectDbNameForm.ShowModal;
     if SelectDbNameForm.ModalResult = mrOk then
       ScriptEdit.SelText := SelectDbNameForm.SelectedDbName;
@@ -344,7 +344,7 @@ begin
 }
   IpmFieldMenuItem.Enabled := (not ScriptEdit.ReadOnly);
   SelectFunctionMenuItem.Enabled := (not ScriptEdit.ReadOnly);
-  DbNameMenuItem.Enabled := _WsdlDbsConnection.Connected
+  DbNameMenuItem.Enabled := _WsdlDbsConnector.Connected
                         and (not ScriptEdit.ReadOnly);
 
 end;
@@ -450,7 +450,7 @@ end;
 procedure TEditOperationScriptForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   try
-    _WsdlDbsConnection.Connected := wasConnected;
+    _WsdlDbsConnector.Connected := wasConnected;
   except
   end;
 end;
