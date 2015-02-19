@@ -447,7 +447,7 @@ var
     wsaXsdFileName: String;
     mqPutHeaderEditAllowedFileName: String;
     stompPutHeaderEditAllowedFileName: String;
-    licenseDbName: String;
+    licenseDatabaseName, licenseOdbcDriver: String;
     MasterPortNumber: Integer;
     wsaXsdDescr: TXsdDescr;
     swiftMTXsdDescr: TXsdDescr;
@@ -831,7 +831,11 @@ begin
     _swiftMTXsdFileName := iniXml.Items.XmlValueByTag ['swiftMTXsd'];
     mqPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed'];
     stompPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed'];
-    licenseDbName := iniXml.Items.XmlValueByTag['licenseDatabase'];
+    if Assigned (iniXml.ItemByTag['licenseDatabase']) then with iniXml.ItemByTag['licenseDatabase'].Items do
+    begin
+      licenseOdbcDriver := XmlValueByTagDef['OdbcDriver', 'Microsoft Access Driver'];
+      licenseDatabaseName := XmlValueByTagDef['DatabaseName', ''];
+    end;
     MasterPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdElementsWhenRepeatable := defaultXsdElementsWhenRepeatable;
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;

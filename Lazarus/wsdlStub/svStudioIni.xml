@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!-- 17-6-2007 11:07:37: Generated with IpmGun by Bouwman 
-
--->
 <wsdlStubIni>
-  <licenseDatabase>C:\JanBo\SOURCES\2011\wsdlStub\Data\wsdlStubLicense.mdb</licenseDatabase>
+  <licenseDatabase>
+	  <OdbcDriver>MS Access Database</OdbcDriver>
+	  <DatabaseName>C:\JanBo\SOURCES\2011\wsdlStub\Data\wsdlStubLicense.mdb</DatabaseName>
+  </licenseDatabase>
   <indexWsdlsHtml>Config\wsdlIndex.html</indexWsdlsHtml>
   <indexHtml>Config\index.html</indexHtml>
   <wsdlStubWebServiceWsdl>Config\wsdlStubWebService.wsdl</wsdlStubWebServiceWsdl>

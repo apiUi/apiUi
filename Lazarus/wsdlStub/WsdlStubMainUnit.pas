@@ -3376,33 +3376,16 @@ begin
 end;
 
 procedure TMainForm.wsdlStubInitialise;
-var
-  X: Integer;
-  Xml, xXml: TXml;
-  xxsd: TXsd;
-  xIniFileName: String;
-  procedure LogUsageAndLicense;
-  {
-    Log UsageNames and UsageDates
-    Per table:
-    try to insert
-    if failes (duplicate key??) try to update
-    }
+begin
+  se.Licensed := False;
+  WindowsUserName := getUserName;
+  if licenseDatabaseName <> '' then
   begin
-    WindowsUserName := getUserName;
-    licenseDbName := ExpandUNCFileNameUTF8(licenseDbName); { *Converted from ExpandUNCFileName* }
     OpenLogUsageDatabase;
     LogUsage(WindowsUserName);
     ValidateLicense;
     SqlConnector.Connected := False;
     SetLogUsageTimer;
-  end;
-
-begin
-  se.Licensed := False;
-  if licenseDbName <> '' then
-  begin
-    LogUsageAndLicense;
   end;
   ConfigListenersAction.Hint := hintStringFromXsd('Configure listeners (',
     ', ', ')', listenersConfigXsd);
@@ -3499,26 +3482,16 @@ begin
 end;
 
 function TMainForm.OpenLogUsageDatabase: Boolean;
-const
-  ConnStr = 'Provider=%s;Data Provider=%s;Data Source=%s';
-const
-  Provider = 'MSDataShape.1';
-const
-  DataProvider = 'Microsoft.Jet.OLEDB.4.0';
 begin
-  if licenseDbName = '' then
-    licenseDbName := ExtractFilePath(ParamStr(0)) + '\Database\wsdlStub.mdb';
-  licenseDbName := ExpandUNCFileNameUTF8(licenseDbName); { *Converted from ExpandUNCFileName* }
   result := False;
   try
-    SqlConnector.ConnectorType := 'ODBC';
-    SqlConnector.DatabaseName := 'MS Access Database';
     try
       SqlConnector.Connected := False;
     except
     end;
-    SqlConnector.Params.Values['Dbq'] := licenseDbName;
-//  SqlConnector.Params.Values['Uid'] := 'admin';
+    SqlConnector.ConnectorType := 'ODBC';
+    SqlConnector.DatabaseName := licenseOdbcDriver;
+    SqlConnector.Params.Values['DBQ'] := licenseDatabaseName;
     SqlConnector.Connected := True;
     result := SqlConnector.Connected;
   except
@@ -3574,10 +3547,17 @@ begin
       Qry.Next;
     end;
     Qry.Close;
-    se.Licensed := (validateIpmLicense(xCompanyName + xLicenseExpirationDate +
-          generateIpmLicense(licenseDbName), xLicenseString)) and
-      ((AnsiStartsStr('\\', licenseDbName)) or (WindowsUserName = 'Jan') or
-        (WindowsUserName = 'Bouwman') or (WindowsUserName = 'BouwmanJW'));
+    se.Licensed := (validateIpmLicense( xCompanyName
+                                      + xLicenseExpirationDate
+                                      + generateIpmLicense(licenseDatabaseName)
+                                      , xLicenseString
+                                      )
+                   )
+               and (   (AnsiStartsStr('\\', licenseDatabaseName))
+                    or (WindowsUserName = 'Jan')
+                    or (WindowsUserName = 'Bouwman')
+                    or (WindowsUserName = 'BouwmanJW')
+                   );
   except
     on E: Exception do
     begin
@@ -3683,7 +3663,7 @@ begin
     IpmGunLicenseForm.Caption := '' + _progName + ' - License information';
     IpmGunLicenseForm.Company := xCompanyName;
     IpmGunLicenseForm.LicenseExpirationDate := xLicenseExpirationDate;
-    IpmGunLicenseForm.DbName := licenseDbName;
+    IpmGunLicenseForm.DbName := licenseDatabaseName;
     IpmGunLicenseForm.ShowModal;
     if IpmGunLicenseForm.ModalResult = mrOk then
     begin

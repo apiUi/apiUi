@@ -7832,8 +7832,8 @@ object MainForm: TMainForm
   object WsdlPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = WsdlPopupMenuPopup
-    left = 328
-    top = 360
+    left = 336
+    top = 440
     object WsdlItemAddMenuItem: TMenuItem
       Caption = 'Add occurrence'
       Bitmap.Data = {
@@ -8497,8 +8497,8 @@ object MainForm: TMainForm
   object LogPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = LogPopupMenuPopup
-    left = 328
-    top = 392
+    left = 296
+    top = 440
     object DisplayedcolumnMenuItem: TMenuItem
       Caption = 'Displayed column...'
       Bitmap.Data = {
@@ -8769,8 +8769,8 @@ object MainForm: TMainForm
     top = 56
   end
   object GridPopupMenu: TPopupMenu
-    left = 320
-    top = 184
+    left = 368
+    top = 440
     object Revalidatemessages2: TMenuItem
       Action = EnableMessageAction
     end
@@ -8792,8 +8792,8 @@ object MainForm: TMainForm
   end
   object OperationsPopupMenu: TPopupMenu
     Images = mainImageList
-    left = 168
-    top = 40
+    left = 416
+    top = 440
     object MaintainlistofWSDLfiles1: TMenuItem
       Action = OpenWsdlAction
       Bitmap.Data = {

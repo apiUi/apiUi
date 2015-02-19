@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="46">
+    <Units Count="47">
       <Unit0>
         <Filename Value="axisDeer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -82,7 +82,7 @@
       <Unit8>
         <Filename Value="..\Xml\Xsdz.pas"/>
         <UnitName Value="Xsdz"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1005"/>
         <CursorPos X="1" Y="1017"/>
@@ -119,7 +119,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CHILDWIN"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
@@ -145,7 +144,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="OpenXsdUnit"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="170"/>
         <CursorPos X="3" Y="170"/>
@@ -274,7 +273,7 @@
       <Unit30>
         <Filename Value="..\Xml\xmlio.pas"/>
         <UnitName Value="xmlio"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="186"/>
         <CursorPos X="1" Y="195"/>
@@ -399,6 +398,17 @@
         <CursorPos X="63" Y="19"/>
         <UsageCount Value="11"/>
       </Unit45>
+      <Unit46>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <UnitName Value="igGlobals"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="6"/>
+        <CursorPos X="65" Y="11"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit46>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
@@ -406,123 +416,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="958" Column="1" TopLine="946"/>
+        <Caret Line="974" Column="1" TopLine="963"/>
       </Position1>
       <Position2>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="974" Column="1" TopLine="963"/>
+        <Caret Line="958" Column="1" TopLine="946"/>
       </Position2>
       <Position3>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="958" Column="1" TopLine="946"/>
+        <Caret Line="974" Column="1" TopLine="963"/>
       </Position3>
       <Position4>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="974" Column="1" TopLine="963"/>
+        <Caret Line="958" Column="1" TopLine="946"/>
       </Position4>
       <Position5>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="958" Column="1" TopLine="946"/>
+        <Caret Line="974" Column="1" TopLine="963"/>
       </Position5>
       <Position6>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="974" Column="1" TopLine="963"/>
+        <Caret Line="958" Column="1" TopLine="946"/>
       </Position6>
       <Position7>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="958" Column="1" TopLine="946"/>
-      </Position7>
-      <Position8>
         <Filename Value="OpenXsdUnit.pas"/>
         <Caret Line="170" Column="3" TopLine="170"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="255" Column="29" TopLine="246"/>
       </Position8>
       <Position9>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="255" Column="29" TopLine="246"/>
+        <Caret Line="1023" Column="35" TopLine="1012"/>
       </Position9>
       <Position10>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="1023" Column="35" TopLine="1012"/>
+        <Caret Line="254" Column="29" TopLine="244"/>
       </Position10>
       <Position11>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="254" Column="29" TopLine="244"/>
+        <Caret Line="986" Column="23" TopLine="967"/>
       </Position11>
       <Position12>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="986" Column="23" TopLine="967"/>
+        <Caret Line="1012" Column="6" TopLine="1000"/>
       </Position12>
       <Position13>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="1012" Column="6" TopLine="1000"/>
+        <Caret Line="982" Column="46" TopLine="950"/>
       </Position13>
       <Position14>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="982" Column="46" TopLine="950"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position14>
       <Position15>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="174" Column="13" TopLine="151"/>
       </Position15>
       <Position16>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="174" Column="13" TopLine="151"/>
+        <Caret Line="1010" Column="1" TopLine="965"/>
       </Position16>
       <Position17>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="1010" Column="1" TopLine="965"/>
+        <Caret Line="969" Column="54" TopLine="954"/>
       </Position17>
       <Position18>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="969" Column="54" TopLine="954"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position18>
       <Position19>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="988" Column="60" TopLine="980"/>
       </Position19>
       <Position20>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="988" Column="60" TopLine="980"/>
+        <Filename Value="OpenXsdUnit.pas"/>
+        <Caret Line="170" Column="3" TopLine="154"/>
       </Position20>
       <Position21>
         <Filename Value="OpenXsdUnit.pas"/>
-        <Caret Line="170" Column="3" TopLine="154"/>
+        <Caret Line="47" Column="38" TopLine="25"/>
       </Position21>
       <Position22>
         <Filename Value="OpenXsdUnit.pas"/>
-        <Caret Line="47" Column="38" TopLine="25"/>
+        <Caret Line="170" Column="3" TopLine="170"/>
       </Position22>
       <Position23>
-        <Filename Value="OpenXsdUnit.pas"/>
-        <Caret Line="170" Column="3" TopLine="170"/>
-      </Position23>
-      <Position24>
         <Filename Value="..\Xml\Xsdz.pas"/>
         <Caret Line="255" Column="14" TopLine="245"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="195" Column="1" TopLine="186"/>
       </Position24>
       <Position25>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="195" Column="1" TopLine="186"/>
+        <Caret Line="201" Column="1" TopLine="186"/>
       </Position25>
       <Position26>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="201" Column="1" TopLine="186"/>
+        <Caret Line="203" Column="1" TopLine="186"/>
       </Position26>
       <Position27>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="203" Column="1" TopLine="186"/>
-      </Position27>
-      <Position28>
         <Filename Value="..\Xml\Xsdz.pas"/>
         <Caret Line="1017" Column="1" TopLine="1005"/>
+      </Position27>
+      <Position28>
+        <Filename Value="Main.pas"/>
+        <Caret Line="179" Column="3" TopLine="175"/>
       </Position28>
       <Position29>
         <Filename Value="Main.pas"/>
-        <Caret Line="179" Column="3" TopLine="175"/>
+        <Caret Line="150" Column="3" TopLine="145"/>
       </Position29>
       <Position30>
-        <Filename Value="Main.pas"/>
-        <Caret Line="150" Column="3" TopLine="145"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

@@ -85,7 +85,7 @@ constructor TFormIniFile.Create(aForm: TForm);
 begin
   inherited Create;
   fForm := aForm;
-  fKey := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '.ini');
+  fKey := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '') + 'Ini';
   if Assigned (aForm) then fName := aForm.Name;
   Initialize (True);
 end;
