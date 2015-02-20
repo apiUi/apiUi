@@ -12,18 +12,23 @@ uses
 {$ELSE}
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
-  SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ComCtrls, ExtCtrls, VirtualTrees, Bind, Xmlz, Ipmz, Dialogs,
-  FormIniFilez, ToolWin, ActnList, Menus, ImgList
+  SysUtils , Classes , Graphics , Forms , Controls , StdCtrls , Buttons ,
+  ComCtrls , ExtCtrls , VirtualTrees , RichBox , Bind , Xmlz , Ipmz , Dialogs ,
+  FormIniFilez , ToolWin , ActnList , Menus , ImgList
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  , Express
+  , Express , IpHtml , Ipfilebroker , SynEdit
   ;
 
 type
+
+  { TShowXmlForm }
+
   TShowXmlForm = class(TForm)
+    Button1 : TButton ;
+    DocumentationEdit : TlzRichEdit ;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -96,6 +101,7 @@ type
     CleanAction: TAction;
     CleanActionMenuItem: TMenuItem;
     ZoomasAssignment1: TMenuItem;
+    procedure Button1Click (Sender : TObject );
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure ViewinTreeMenuItemClick(Sender: TObject);
     procedure EditInPopUpMenuItemClick(Sender: TObject);
@@ -842,7 +848,7 @@ begin
   except
   end;
   try
-//  xmlUtil.ListXsdDocumentation(XsdDocBrowser, xBind, False, False);
+    xmlUtil.ListXsdDocumentation(DocumentationEdit, xBind, False, False);
   except
   end;
   TreeView.Invalidate;
@@ -1890,6 +1896,10 @@ end;
 procedure TShowXmlForm.ZoomMenuItemClick(Sender: TObject);
 begin
   xmlUtil.presentString(SelectedBind.FullCaption, SelectedBind.Value);
+end;
+
+procedure TShowXmlForm .Button1Click (Sender : TObject );
+begin
 end;
 
 { TPasswordEditLink }

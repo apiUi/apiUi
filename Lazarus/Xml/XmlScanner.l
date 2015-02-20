@@ -60,7 +60,7 @@ String             (\"[^\"]*\")|(\'[^\']*\')
                                 start (AttributeState);
                                 return (_TAG);
                               end;
-<ValueState>{NewLine}         return (_IGNORE);
+<ValueState>{NewLine}         return (_VALUE);
 <ValueState>{EscapeChar}      return (_ESCAPECHAR);
 <ValueState>.                 return (_VALUE);
 

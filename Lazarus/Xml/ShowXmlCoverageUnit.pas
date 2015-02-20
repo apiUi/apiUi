@@ -583,7 +583,8 @@ begin
   Sender.Selected [Sender.FocusedNode] := True;
   xBind := SelectedBind;
   try XmlUtil.ListXsdProperties(XsdPropertiesListView, xBind); except end;
-  try XmlUtil.ListXsdDocumentation(DocumentationMemo, xBind, False, False); except end;
+  { TODO : adjust }
+//  try XmlUtil.ListXsdDocumentation(DocumentationMemo, xBind, False, False); except end;
   TreeView.Invalidate;
 end;
 

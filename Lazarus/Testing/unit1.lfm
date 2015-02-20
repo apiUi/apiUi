@@ -1,17 +1,17 @@
 object Form1: TForm1
   Left = 301
-  Height = 433
+  Height = 490
   Top = 134
   Width = 863
   Caption = 'Form1'
-  ClientHeight = 433
+  ClientHeight = 490
   ClientWidth = 863
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '1.2.6.0'
   inline SynEdit1: TSynEdit
     Left = 29
-    Height = 366
+    Height = 380
     Top = 20
     Width = 779
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -22,6 +22,7 @@ object Form1: TForm1
     ParentColor = False
     ParentFont = False
     TabOrder = 0
+    OnMouseMove = SynEdit1MouseMove
     Gutter.Width = 57
     Gutter.MouseActions = <>
     RightGutter.Width = 0
@@ -521,7 +522,7 @@ object Form1: TForm1
   object FileNameEdit: TFileNameEdit
     Left = 29
     Height = 21
-    Top = 402
+    Top = 459
     Width = 779
     OnAcceptFileName = FileNameEditAcceptFileName
     FilterIndex = 0
@@ -531,5 +532,13 @@ object Form1: TForm1
     Anchors = [akLeft, akRight, akBottom]
     MaxLength = 0
     TabOrder = 1
+  end
+  object Edit1: TEdit
+    Left = 29
+    Height = 21
+    Top = 421
+    Width = 779
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 2
   end
 end

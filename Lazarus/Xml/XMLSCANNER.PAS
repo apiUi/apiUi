@@ -90,7 +90,7 @@ begin
                                 return (_TAG);
                               end;
   14:
-                              return (_IGNORE);
+                              return (_VALUE);
   15:
                               return (_ESCAPECHAR);
   16:

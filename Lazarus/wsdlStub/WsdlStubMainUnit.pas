@@ -38,7 +38,7 @@ uses
    , ExtCtrls
    , FormIniFilez
    , Menus
-   , VirtualTrees , FileUtil
+   , VirtualTrees , FileUtil , RichBox
    , Bind
    , mqInterface
    , MQAPI
@@ -63,6 +63,7 @@ type
   TMainForm = class(TForm)
     DesignPanel: TPanel;
     alGeneral: TActionList;
+    DataTypeDocumentationMemo : TlzRichEdit ;
     ReplyHeadersToolBar : TToolBar ;
     ReplyHeadersToolButton : TToolButton ;
     ScriptPanel: TPanel;
@@ -88,7 +89,6 @@ type
     TreeviewImageList: TImageList;
     InWsdlPropertiesListView: TListView;
     Splitter4: TSplitter;
-    DataTypeDocumentationMemo: TMemo;
     WsdlPopupMenu: TPopupMenu;
     WsdlItemAddMenuItem: TMenuItem;
     N2: TMenuItem;
@@ -966,8 +966,6 @@ type
     procedure LogServerException(const Msg: String; aException: Boolean);
     function HttpActiveHint: String;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
-    procedure UseIpmStub(aMonitor: String; aServer: String; aStubCase: String;
-      aIpm: String);
     procedure WsdlPopulateServices(aWsdl: TWsdl);
     procedure WsdlPopulateOperations(aService: TWsdlService);
     procedure FillInWsdlEdits;
@@ -1315,26 +1313,6 @@ end;
 procedure TMainForm.FreeFormatsActionUpdate(Sender: TObject);
 begin
   FreeFormatsAction.Enabled := not se.IsActive;
-end;
-
-procedure TMainForm.UseIpmStub(aMonitor, aServer, aStubCase, aIpm: String);
-var
-  XmlStringList: TStringList;
-begin
-  XmlStringList := TStringList.Create;
-  XmlStringList.Add('<GetStubCase>');
-  XmlStringList.Add('  <StubCaseFileName>' + aStubCase + '</StubCaseFileName>');
-  XmlStringList.Add('  <Monitor>' + aMonitor + '</Monitor>');
-  XmlStringList.Add('  <Server>' + aServer + '</Server>');
-  XmlStringList.Add('</GetStubCase>');
-  SendString := '<XML><' + IntToStr(Length(XmlStringList.Text))
-    + '>' + XmlStringList.Text + '<IPM><' + IntToStr(Length(aIpm))
-    + '>' + aIpm + '<END-OF-DATA>';
-  try
-    HostResponse := ''; // Possibly more reads required
-  finally
-    XmlStringList.Free;
-  end;
 end;
 
 procedure TMainForm.OpenWsdlActionUpdate(Sender: TObject);
@@ -2362,8 +2340,9 @@ begin
   else
     StatusPanel.Caption := xBind.FullCaption;
   try
-    xmlUtil.ListXsdDocumentation(DataTypeDocumentationMemo, xBind, False,
-      False);
+  { TODO : adjust }
+//    xmlUtil.ListXsdDocumentation(DataTypeDocumentationMemo, xBind, False,
+  //    False);
   except
   end;
   { }{
@@ -2659,6 +2638,11 @@ begin
     aTreeView.FullExpand(aNode);
 end;
 
+procedure TMainForm .ShowInfoForm (aCaption : String ; aInfoString : String );
+begin
+
+end;
+
 procedure TMainForm.FullExpand1Click(Sender: TObject);
 begin
   if Assigned(InWsdlTreeView.FocusedNode) then
@@ -2684,11 +2668,6 @@ begin
     InWsdlTreeViewNewText(InWsdlTreeView, InWsdlTreeView.FocusedNode,
       treeValueColumn, xmlUtil.NewValue);
   end;
-end;
-
-procedure TMainForm.ShowInfoForm(aCaption, aInfoString: String);
-begin
-  xmlUtilz.ShowText(aCaption, aInfoString);
 end;
 
 procedure TMainForm.XmlZoomValueAsXMLMenuItemClick(Sender: TObject);
@@ -3408,6 +3387,9 @@ var
   xUpdated: TDateTime;
   xUsageDate: TDateTime;
 begin
+{ TODO : repair }
+  exit;
+
   xUpdated := Now;
   xUsageDate := sysutils.Date;
   if (aUserName <> 'Jan') and (aUserName <> 'Bouwman') then
@@ -3483,6 +3465,9 @@ end;
 
 function TMainForm.OpenLogUsageDatabase: Boolean;
 begin
+{ TODO : repair }
+result:=true;
+exit;
   result := False;
   try
     try
@@ -3532,6 +3517,9 @@ var
   ymd: Integer;
   xLicenseDate: TDateTime;
 begin
+{ TODO : repair }
+se.Licensed := true;
+exit;
   se.Licensed := False;
   ErrorReadingLicenseInfo := False;
   try

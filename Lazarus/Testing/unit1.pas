@@ -13,12 +13,15 @@ type
   { TForm1 }
 
   TForm1 = class(TForm )
+    Edit1 : TEdit ;
     FileNameEdit : TFileNameEdit ;
     SynEdit1 : TSynEdit ;
     procedure FileNameEditAcceptFileName (Sender : TObject ;
       var Value : String );
     procedure FormCreate (Sender : TObject );
     procedure FormDestroy (Sender : TObject );
+    procedure SynEdit1MouseMove (Sender : TObject ; Shift : TShiftState ; X ,
+      Y : Integer );
   private
     IniFile: TFormIniFile;
   public
@@ -54,6 +57,19 @@ begin
   IniFile.StringByName['FileName']:=FileNameEdit.Text;
   IniFile.Save;
   IniFile.Free;
+end;
+
+procedure TForm1 .SynEdit1MouseMove (Sender : TObject ; Shift : TShiftState ;
+  X , Y : Integer );
+var
+  P, L: TPoint;
+  s: String;
+begin
+  P.x := X;
+  P.y := Y;
+  L := SynEdit1.PixelsToRowColumn(P);
+  s := SynEdit1.GetWordAtRowCol(L);
+  Edit1.Text := Format ('%s [%d:%d]', [s, L.x, L.y]);
 end;
 
 end.

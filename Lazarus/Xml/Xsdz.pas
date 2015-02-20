@@ -2368,7 +2368,11 @@ procedure TXsdDescr.Finalise;
           begin
             refXsd := FindElement(_RefNameSpace, _RefElementName);
             if Assigned (refXsd) then
-              sType := refXsd.sType
+            begin
+              sType := refXsd.sType;
+              for y := 0 to refXsd.Documentation.Count - 1 do
+                Documentation.Add(refXsd.Documentation.Strings[y]);
+            end
             else
               raise Exception.CreateFmt
                      ( 'Coud not find datatype (%s:%s) on element (%s:%s)'
