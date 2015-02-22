@@ -1,10 +1,10 @@
 object ShowXmlForm: TShowXmlForm
   Left = 505
-  Height = 452
+  Height = 446
   Top = 173
   Width = 672
   Caption = 'XML Data'
-  ClientHeight = 452
+  ClientHeight = 446
   ClientWidth = 672
   Color = clBtnFace
   OnCreate = FormCreate
@@ -15,17 +15,17 @@ object ShowXmlForm: TShowXmlForm
   LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
-    Height = 386
+    Height = 380
     Top = 29
     Width = 672
     Align = alClient
     BorderWidth = 3
-    ClientHeight = 386
+    ClientHeight = 380
     ClientWidth = 672
     TabOrder = 0
     object Splitter1: TSplitter
       Left = 424
-      Height = 378
+      Height = 372
       Top = 4
       Width = 5
       Align = alRight
@@ -33,7 +33,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object TreeView: TVirtualStringTree
       Left = 4
-      Height = 378
+      Height = 372
       Top = 4
       Width = 420
       Align = alClient
@@ -89,11 +89,11 @@ object ShowXmlForm: TShowXmlForm
     end
     object Panel2: TPanel
       Left = 429
-      Height = 378
+      Height = 372
       Top = 4
       Width = 239
       Align = alRight
-      ClientHeight = 378
+      ClientHeight = 372
       ClientWidth = 239
       TabOrder = 1
       object Splitter2: TSplitter
@@ -127,7 +127,7 @@ object ShowXmlForm: TShowXmlForm
       end
       object DocumentationEdit: TlzRichEdit
         Left = 1
-        Height = 267
+        Height = 261
         Top = 110
         Width = 237
         DefaultExtension = '.rtf'
@@ -137,6 +137,8 @@ object ShowXmlForm: TShowXmlForm
         Lines.Strings = (
           'DocumentationEdit'
         )
+        OnMouseDown = DocumentationEditMouseDown
+        OnMouseMove = DocumentationEditMouseMove
         ParentColor = True
         ParentFont = False
         ReadOnly = True
@@ -227,20 +229,19 @@ object ShowXmlForm: TShowXmlForm
       Top = 2
       Action = ToggleHideXmlNsAction
     end
-    object Button1: TButton
+    object Edit1: TEdit
       Left = 225
-      Height = 22
+      Height = 21
       Top = 2
-      Width = 75
-      Caption = 'Button1'
-      OnClick = Button1Click
+      Width = 183
       TabOrder = 0
+      Text = 'Edit1'
     end
   end
   object Panel3: TPanel
     Left = 0
     Height = 37
-    Top = 415
+    Top = 409
     Width = 672
     Align = alBottom
     ClientHeight = 37

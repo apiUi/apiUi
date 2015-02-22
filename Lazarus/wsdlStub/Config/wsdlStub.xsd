@@ -533,7 +533,11 @@ Internet standard protocol for e-mail clients to retrieve e-mail from a server.<
 		<xs:annotation>
 			<xs:documentation>Project options;
 
-For an overview of all options visit: doc://wsdlStub_projectOptions_hlp.htm </xs:documentation>
+For an overview of all options visit: doc://wsdlStub_projectOptions_hlp.htm 
+Project options;
+
+For an overview of all options visit: doc://wsdlStub_projectOptions_hlp.htm 
+</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>

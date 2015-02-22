@@ -20,8 +20,8 @@ uses SysUtils
    ;
 
 resourcestring
-//S_REGEXP_LINK = '(?i)(FTP|HTTP|FILE|DOC)://([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*(\?[a-z0-9=&]+)?';
-  S_REGEXP_LINK = '(?i)(FILE)://[a-z]([_:/a-z0-9\.])+';
+  S_REGEXP_LINK = '(?i)(FTP|HTTP|FILE|DOC)://([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*(\?[a-z0-9=&]+)?';
+//S_REGEXP_LINK = '(?i)(FILE)://[a-z]([_:/a-z0-9\.])+';
 type
   TOnHaveDir = function ( Path: String
                         ): Boolean of Object;

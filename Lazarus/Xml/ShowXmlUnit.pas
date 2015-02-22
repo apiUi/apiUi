@@ -27,8 +27,8 @@ type
   { TShowXmlForm }
 
   TShowXmlForm = class(TForm)
-    Button1 : TButton ;
     DocumentationEdit : TlzRichEdit ;
+    Edit1 : TEdit ;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -102,6 +102,10 @@ type
     CleanActionMenuItem: TMenuItem;
     ZoomasAssignment1: TMenuItem;
     procedure Button1Click (Sender : TObject );
+    procedure DocumentationEditMouseDown (Sender : TObject ;
+      Button : TMouseButton ; Shift : TShiftState ; X , Y : Integer );
+    procedure DocumentationEditMouseMove (Sender : TObject ;
+      Shift : TShiftState ; X , Y : Integer );
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure ViewinTreeMenuItemClick(Sender: TObject);
     procedure EditInPopUpMenuItemClick(Sender: TObject);
@@ -849,6 +853,7 @@ begin
   end;
   try
     xmlUtil.ListXsdDocumentation(DocumentationEdit, xBind, False, False);
+    MemoShowLinks(DocumentationEdit);
   except
   end;
   TreeView.Invalidate;
@@ -1068,6 +1073,7 @@ begin
   doHideNodes := IniFile.BooleanByNameDef['doHideNodes', True];
   doHideXmlNs := IniFile.BooleanByNameDef['doHideXmlNs', True];
   RevalidateXmlTreeView(TreeView);
+  TreeViewFocusChanged(TreeView, TreeView.FocusedNode, TreeView.FocusedColumn);
 end;
 
 procedure TShowXmlForm.genDocumentaionActionExecute(Sender: TObject);
@@ -1900,6 +1906,26 @@ end;
 
 procedure TShowXmlForm .Button1Click (Sender : TObject );
 begin
+end;
+
+procedure TShowXmlForm .DocumentationEditMouseDown (Sender : TObject ;
+  Button : TMouseButton ; Shift : TShiftState ; X , Y : Integer );
+begin
+end;
+
+procedure TShowXmlForm .DocumentationEditMouseMove (Sender : TObject ;
+  Shift : TShiftState ; X , Y : Integer );
+var
+  i, z: Integer;
+  Pt: TPoint;
+  s: string;
+  Rslt: Boolean;
+  rx: TRegExpr;
+begin
+  Pt := Point(X, Y);
+  Edit1.Text := Format ('%d:%d', [X, Y]);
+
+//igGlobals.MemoMouseMove(DocumentationEdit, X, Y);
 end;
 
 { TPasswordEditLink }
