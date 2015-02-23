@@ -6,6 +6,7 @@ unit WsdlStubMainUnit;
 {$ENDIF}
 
 // 20111017 Under Subversion
+{ TODO : Zorgen dat het ook werkt bij andere shortdate formats (windows) }
 interface
 
 uses

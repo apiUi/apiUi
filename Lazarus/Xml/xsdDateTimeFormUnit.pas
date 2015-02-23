@@ -17,6 +17,9 @@ uses
 
 type TdtFormat = (dtfDateTime, dtfDate);
 type
+
+  { TxsdDateTimeForm }
+
   TxsdDateTimeForm = class(TForm)
     OKButton: TButton;
     TimeZoneEdir: TBevel;
@@ -41,7 +44,7 @@ type
     fdtFormat: TdtFormat;
     fXsdDateTime: String;
     procedure setDtFormat(const Value: TdtFormat);
-    procedure setXsdDateTime(const Value: String);
+    procedure setXsdDateTime(Value: String);
   public
     property dtFormat: TdtFormat read fdtFormat write setDtFormat;
     property xsdDateTime: String read fXsdDateTime write setXsdDateTime;
@@ -79,7 +82,7 @@ begin
     MonthComboBox.Items.Add(LongMonthNames [x]);
 end;
 
-procedure TxsdDateTimeForm.setXsdDateTime(const Value: String);
+procedure TxsdDateTimeForm.setXsdDateTime(Value: String);
 var
   x: Integer;
   rx: TRegExpr;
@@ -87,6 +90,13 @@ var
   eeyy, mm, dd: Word;
   part: Integer;
 begin
+  if Value = '' then
+  begin
+    if dtFormat = dtfDateTime then
+      Value := xsdFormatDateTime(Now, nil)
+    else
+      Value := xsdFormatDate(Now, nil);
+  end;
   DecodeDate(now, eeyy, mm, dd);
   TimeEdit.Text := '00:00:00.000';
   TimeZoneEdit.Text := '';
@@ -155,20 +165,31 @@ begin
     rx.Free;
     yearedit.Text := IntToStr (eeyy);
     MonthComboBox.ItemIndex := mm - 1;
-    Calendar.Date := Value;
+    Calendar.Date := Copy (Value, 1, 10);
   end;
 end;
 
 procedure TxsdDateTimeForm.MonthComboBoxChange(Sender: TObject);
+var
+  eeyy, mm, dd: Word;
 begin
-//  Calendar.Month := MonthComboBox.ItemIndex + 1;
+  try
+    DecodeDate(Calendar.DateTime, eeyy, mm,dd);
+    mm := MonthComboBox.ItemIndex + 1;
+    Calendar.DateTime := EncodeDate(eeyy, mm, dd);
+  except
+  end;
 end;
 
 procedure TxsdDateTimeForm.YearEditChange(Sender: TObject);
+var
+  eeyy, mm, dd: Word;
 begin
   if Length (YearEdit.Text) = 4 then
     try
-//      Calendar.Year := StrToInt (YearEdit.Text);
+      DecodeDate(Calendar.DateTime, eeyy, mm,dd);
+      eeyy := StrToIntDef (YearEdit.Text, 0);
+      Calendar.DateTime := EncodeDate(eeyy, mm, dd);
     except
     end;
 end;
@@ -183,7 +204,6 @@ begin
   yearedit.Text := IntToStr (eeyy);
   MonthComboBox.ItemIndex := mm - 1;
   Calendar.DateTime := Now;
-{
   t := '';
   if hh < 10 then t := t + '0';
   t := t + IntToStr (hh) + ':';
@@ -193,7 +213,6 @@ begin
   t := t + IntToStr (ss) + '.';
   t := t + IntToStr (ms);
   TimeEdit.Text := t;
-}
   OkButton.OnClick (nil);
 end;
 
@@ -276,7 +295,10 @@ begin
     rx.Free;
   end;
   {$else}
-  fXsdDateTime := xsdFormatDateTime(Calendar.DateTime, nil);
+  if dtFormat = dtfDate then
+    fXsdDateTime := xsdFormatDate(Calendar.DateTime, nil)
+  else
+    fXsdDateTime := xsdFormatDate(Calendar.DateTime) + 'T' + TimeEdit.Text;
   ModalResult := mrOK;
   {$endif}
 end;
@@ -293,6 +315,7 @@ procedure TxsdDateTimeForm.FormDestroy(Sender: TObject);
 begin
   IniFile.Free;
 end;
+
 
 end.
 
