@@ -1,3 +1,6 @@
+{$ifdef fpc}
+  {$mode Delphi}
+{$endif}
 unit Parser;
 
 interface

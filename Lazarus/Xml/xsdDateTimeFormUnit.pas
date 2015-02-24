@@ -32,6 +32,9 @@ type
     TimeEdit: TLabeledEdit;
     TimeZoneEdit: TLabeledEdit;
     Button2: TButton;
+    procedure CalendarChange (Sender : TObject );
+    procedure CalendarMonthChanged (Sender : TObject );
+    procedure CalendarYearChanged (Sender : TObject );
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
@@ -165,7 +168,7 @@ begin
     rx.Free;
     yearedit.Text := IntToStr (eeyy);
     MonthComboBox.ItemIndex := mm - 1;
-    Calendar.Date := Copy (Value, 1, 10);
+    Calendar.DateTime := EncodeDate(eeyy, mm, dd);
   end;
 end;
 
@@ -231,76 +234,11 @@ var
   iValue: Integer;
 begin
   ModalResult := mrNone;
-{$ifdef NOTDEF}
-  rx := TRegExpr.Create;
-  try
-    rx.Expression := '[0-9]{4}';
-    if not rx.Exec(YearEdit.Text) then
-    begin
-      YearEdit.SetFocus;
-      raise Exception.Create('Illegal format');
-    end;
-    if (MonthComboBox.ItemIndex < 0 ) then
-    begin
-      MonthComboBox.SetFocus;
-      raise Exception.Create('Illegal value');
-    end;
-    rValue := YearEdit.Text + '-';
-    if Calendar.Month < 10 then
-      rValue := rValue + '0';
-    rValue := rValue + IntToStr (Calendar.Month) + '-';
-    if Calendar.Day < 10 then
-      rValue := rValue + '0';
-    rValue := rValue + IntToStr (Calendar.Day);
-    rx.Expression := dregexp;
-    if not rx.Exec(rValue) then
-      raise Exception.Create('Illegal date: ' + rValue);
-    if dtFormat = dtfDateTime then
-    begin
-      rx.Expression := tregexp;
-      if not rx.Exec(TimeEdit.Text) then
-      begin
-        TimeEdit.SetFocus;
-        raise Exception.Create('Illegal value');
-      end;
-//      00:00:00
-//      12345678
-      if StrToInt (Copy (TimeEdit.Text, 1, 2)) > 23 then
-      begin
-        TimeEdit.SetFocus;
-        raise Exception.Create('Illegal value');
-      end;
-      if StrToInt (Copy (TimeEdit.Text, 4, 2)) > 59 then
-      begin
-        TimeEdit.SetFocus;
-        raise Exception.Create('Illegal value');
-      end;
-      if StrToInt (Copy (TimeEdit.Text, 7, 2)) > 59 then
-      begin
-        TimeEdit.SetFocus;
-        raise Exception.Create('Illegal value');
-      end;
-      rValue := rValue + 'T' + TimeEdit.Text;
-      rx.Expression := zregexp;
-      if not rx.Exec(TimeZoneEdit.Text) then
-      begin
-        TimeZoneEdit.SetFocus;
-        raise Exception.Create('Illegal value');
-      end;
-      rValue := rValue + TimeZoneEdit.Text;
-    end;
-    fXsdDateTime := rValue;
-    ModalResult := mrOK;
-  finally
-    rx.Free;
-  end;
-  {$else}
   if dtFormat = dtfDate then
     fXsdDateTime := xsdFormatDate(Calendar.DateTime, nil)
   else
     fXsdDateTime := xsdFormatDate(Calendar.DateTime) + 'T' + TimeEdit.Text;
   ModalResult := mrOK;
-  {$endif}
 end;
 
 procedure TxsdDateTimeForm.FormShow(Sender: TObject);
@@ -314,6 +252,41 @@ end;
 procedure TxsdDateTimeForm.FormDestroy(Sender: TObject);
 begin
   IniFile.Free;
+end;
+
+procedure TxsdDateTimeForm .CalendarChange (Sender : TObject );
+begin
+
+end;
+
+procedure TxsdDateTimeForm .CalendarMonthChanged (Sender : TObject );
+var
+  swapEvent: TNotifyEvent;
+begin
+  swapEvent := MonthComboBox.OnChange;
+  try
+    try
+      MonthComboBox.ItemIndex := StrToInt (FormatDateTime('mm', Calendar.DateTime)) - 1;
+    except
+    end;
+  finally
+    MonthComboBox.OnChange := swapEvent;
+  end;
+end;
+
+procedure TxsdDateTimeForm .CalendarYearChanged (Sender : TObject );
+var
+  swapEvent: TNotifyEvent;
+begin
+  swapEvent := YearEdit.OnChange;
+  try
+    try
+      YearEdit.Text := FormatDateTime('yyyy', Calendar.DateTime);
+    except
+    end;
+  finally
+    YearEdit.OnChange := swapEvent;
+  end;
 end;
 
 

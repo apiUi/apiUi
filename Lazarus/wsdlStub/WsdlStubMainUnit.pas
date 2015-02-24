@@ -2341,17 +2341,9 @@ begin
   else
     StatusPanel.Caption := xBind.FullCaption;
   try
-  { TODO : adjust }
-//    xmlUtil.ListXsdDocumentation(DataTypeDocumentationMemo, xBind, False,
-  //    False);
+    xmlUtil.ListXsdDocumentation(DataTypeDocumentationMemo, xBind, False, False);
   except
   end;
-  { }{
-    if (xBind is TXml) then
-    DataTypeDocumentationMemo.Lines.Text := (xBind as TXml).DocumentationText;
-    if (xBind is TXmlAttribute) then
-    DataTypeDocumentationMemo.Lines.Text := (xBind as TXmlAttribute).XsdAttr.Documentation.Text;
-    { }
   if not(tsUpdating in InWsdlTreeView.TreeStates) then
     WsdlOperation.LastFullCaption := StatusPanel.Caption;
   swapEvent := GridView.OnFocusChanged;
@@ -3778,9 +3770,17 @@ begin
 end;
 
 procedure TMainForm.runScriptActionExecute(Sender: TObject);
+var
+  xMenuItem: TMenuItem;
 begin
-  raise Exception.Create(Format(
-      '%s.runScriptActionExecute only for enabling purpose, activation should not happen', [_progName]));
+  xMenuItem := nil;
+  if Sender is TMenuItem then
+    xMenuItem := Sender as TMenuItem;
+  if Sender is TAction then with Sender as TAction do
+    if ActionComponent is TMenuItem then with ActionComponent as TMenuItem do
+      xMenuItem := ActionComponent as TMenuItem;
+  if Assigned (xMenuItem) then
+    xMenuItem.OnClick (xMenuItem);
 end;
 
 procedure TMainForm.runScriptActionUpdate(Sender: TObject);

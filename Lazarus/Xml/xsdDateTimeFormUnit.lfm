@@ -2,11 +2,11 @@ object xsdDateTimeForm: TxsdDateTimeForm
   Left = 229
   Height = 377
   Top = 166
-  Width = 337
+  Width = 267
   BorderStyle = bsDialog
   Caption = 'Enter Date Time'
   ClientHeight = 377
-  ClientWidth = 337
+  ClientWidth = 267
   Color = clBtnFace
   Font.Color = clBlack
   Font.Height = -11
@@ -20,7 +20,7 @@ object xsdDateTimeForm: TxsdDateTimeForm
     Left = 6
     Height = 3
     Top = 324
-    Width = 232
+    Width = 248
     Shape = bsTopLine
   end
   object MonthEdit: TLabel
@@ -76,18 +76,21 @@ object xsdDateTimeForm: TxsdDateTimeForm
     Left = 60
     Height = 21
     Top = 46
-    Width = 172
+    Width = 164
     ItemHeight = 13
     OnChange = MonthComboBoxChange
     TabOrder = 2
     Text = 'MonthComboBox'
   end
   object Calendar: TCalendar
-    Left = 64
+    Left = 62
     Height = 161
     Top = 80
     Width = 162
     DateTime = 42017
+    OnChange = CalendarChange
+    OnMonthChanged = CalendarMonthChanged
+    OnYearChanged = CalendarYearChanged
     TabOrder = 3
   end
   object NowButton: TButton

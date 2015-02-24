@@ -505,6 +505,8 @@ begin
     if invokeList.Find(xOperationName, f)then
     begin
       xOperation := invokeList.Operations[f];
+      if not Assigned (xOperation) then
+        Raise Exception.CreateFmt ('RequestOperation: %s in list but Operation not assigned(?): \n%s', [xOperationName, invokeList.Text]);
       xOperation.StubAction := saRequest;
       try
         xProject.SendMessage (xOperation, nil, '');
@@ -2660,7 +2662,7 @@ begin
       AcquireLock;
       try
         xOperation.invokeList.Add(reqTagName);
-        xOperation.ReqBindablesToWsdlMessage(Messages.Messages[0]);
+        xOperation.ReqBindablesFromWsdlMessage(Messages.Messages[0]);
       finally
         ReleaseLock;
       end;

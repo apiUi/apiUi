@@ -15,6 +15,10 @@
       <EnableI18N LFM="False"/>
     </i18n>
     <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <MajorVersionNr Value="9"/>
+      <BuildNr Value="8011"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -93,7 +97,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="8">
+    <Exceptions Count="9">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -121,6 +125,9 @@
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
       </Item8>
+      <Item9>
+        <Name Value="EStomp"/>
+      </Item9>
     </Exceptions>
   </Debugging>
 </CONFIG>
