@@ -191,7 +191,7 @@ type
     doLoadFromMasterOnStartUp: Boolean;
     isMasterModeEnabled: Boolean;
     isBusy: Boolean;
-    ignoreDifferencesOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList;
     ignoreCoverageOn: TStringList;
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
@@ -242,7 +242,7 @@ type
     function ReloadDesignCommand: String;
     function ClearLogCommand(aDoRaiseExceptions: Boolean): String;
     procedure OpenMessagesLog (aString: String; aIsFileName: Boolean; aLogList: TLogList);
-    procedure ignoreDifferencesOnChanged(Sender: TObject);
+    procedure IgnoreDataChanged(Sender: TObject);
     procedure EnvironmentListClear;
     procedure mqOnNewThread ( Sender: TObject);
     procedure mqStubMessage ( Sender: TObject
@@ -1018,7 +1018,15 @@ begin
   ignoreDifferencesOn := TStringList.Create;
   ignoreDifferencesOn.Sorted := True;
   ignoreDifferencesOn.Duplicates := dupIgnore;
-  ignoreDifferencesOn.OnChange := ignoreDifferencesOnChanged;
+  ignoreDifferencesOn.OnChange := IgnoreDataChanged;
+  ignoreAddingOn := TStringList.Create;
+  ignoreAddingOn.Sorted := True;
+  ignoreAddingOn.Duplicates := dupIgnore;
+  ignoreAddingOn.OnChange := IgnoreDataChanged;
+  ignoreRemovingOn := TStringList.Create;
+  ignoreRemovingOn.Sorted := True;
+  ignoreRemovingOn.Duplicates := dupIgnore;
+  ignoreRemovingOn.OnChange := IgnoreDataChanged;
   ignoreCoverageOn := TStringList.Create;
   xsdElementsWhenRepeatable := 1;
   AsynchRpyLogs := TLogList.Create;
@@ -1164,6 +1172,10 @@ begin
   FreeAndNil (SwiftMtWsdl);
   ignoreDifferencesOn.Clear;
   ignoreDifferencesOn.Free;
+  ignoreAddingOn.Clear;
+  ignoreAddingOn.Free;
+  ignoreRemovingOn.Clear;
+  ignoreRemovingOn.Free;
   ignoreCoverageOn.Clear;
   ignoreCoverageOn.Free;
   FreeAndNil (webserviceWsdl);
@@ -1921,6 +1933,8 @@ begin
         end; // Assigned Wsdl
       end; // for each wsdl
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
+      AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
+      AddXml(TXml.CreateAsString('ignoreRemovingOn', ignoreRemovingOn.Text));
       AddXml(TXml.CreateAsString('ignoreCoverageOn', ignoreCoverageOn.Text));
       with AddXml(TXml.CreateAsString('Scripts', '')) do
         for x := 0 to Scripts.Count - 1 do
@@ -2019,6 +2033,8 @@ begin
               end;
             end;
           ignoreDifferencesOn.Text := xXml.Items.XmlValueByTag ['ignoreDifferencesOn'];
+          ignoreAddingOn.Text := xXml.Items.XmlValueByTag ['ignoreAddingOn'];
+          ignoreRemovingOn.Text := xXml.Items.XmlValueByTag ['ignoreRemovingOn'];
           ignoreCoverageOn.Text := xXml.Items.XmlValueByTag ['ignoreCoverageOn'];
           for w := 0 to xXml.Items.Count - 1 do
           begin
@@ -5582,7 +5598,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.ignoreDifferencesOnChanged(Sender: TObject);
+procedure TWsdlProject.IgnoreDataChanged(Sender: TObject);
 begin
   stubChanged := True;
 end;
@@ -6620,6 +6636,8 @@ begin
                                   , aReferenceFileName
                                   , CompareLogOrderBy
                                   , ignoreDifferencesOn
+                                  , ignoreAddingOn
+                                  , ignoreRemovingOn
                                   );
   finally
     xLogList.Clear;
@@ -6857,6 +6875,8 @@ begin
   doCheckExpectedValues := False;
   _WsdlDisableOnCorrelate := False;
   ignoreDifferencesOn.Clear;
+  ignoreAddingOn.Clear;
+  ignoreRemovingOn.Clear;
   DisplayedLogColumns.Clear;
   AsynchRpyLogs.Clear;
   EnvironmentListClear;

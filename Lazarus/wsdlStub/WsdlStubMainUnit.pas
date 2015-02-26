@@ -516,6 +516,7 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure DataTypeDocumentationMemoClick (Sender : TObject );
     procedure ToggleFileLogActionExecute(Sender: TObject);
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
     procedure ShowLogDetailsActionExecute(Sender: TObject);
@@ -4265,7 +4266,10 @@ begin
     begin
       if Column <= xMessage.corBinds.Count then
         try
-          CellText := xMessage.corBinds.Bindables[Column - 1].CorrelationValue;
+          if Assigned (xMessage.corBinds.Bindables[Column - 1]) then
+            CellText := xMessage.corBinds.Bindables[Column - 1].CorrelationValue
+          else
+            CellText := '?';
         except
         end
       else
@@ -7472,6 +7476,7 @@ begin
         end;
       end;
       ShowLogDifferences(se.displayedLogs, xLogList, wsdlStubMessagesFileName);
+      UpdateCaption;
     finally
       xLogList.Clear;
       FreeAndNil(xLogList);
@@ -7519,6 +7524,8 @@ begin
           ShowLogDifferencesForm.bLogs.AddObject(_OrderKey(bLogs.LogItems[X]),
             bLogs.LogItems[X]);
       ShowLogDifferencesForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
+      ShowLogDifferencesForm.ignoreAddingon := se.ignoreAddingOn;
+      ShowLogDifferencesForm.ignoreRemovingOn := se.ignoreRemovingOn;
       ShowLogDifferencesForm.ShowModal;
     finally
       ShowLogDifferencesForm.aLogs.Free;
@@ -8567,7 +8574,7 @@ begin
   end;
   a2bInitialize;
   try
-    xA2B := TA2BXml.CreateA2B(aXml, bXml, nil, False);
+    xA2B := TA2BXml.CreateA2B(aXml, bXml, False);
   finally
     a2bUninitialize;
   end;
@@ -8577,6 +8584,8 @@ begin
   try
     ShowA2BXmlForm.Caption := 'Changes in Request';
     ShowA2BXmlForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
+    ShowA2BXmlForm.ignoreAddingOn := se.ignoreAddingOn;
+    ShowA2BXmlForm.ignoreRemovingOn := se.ignoreRemovingOn;
     ShowA2BXmlForm.Xml := xA2B;
     ShowA2BXmlForm.ShowModal;
     if ShowA2BXmlForm.RefreshNeeded then
@@ -8605,7 +8614,7 @@ begin
   end;
   a2bInitialize;
   try
-    xA2B := TA2BXml.CreateA2B(aXml, bXml, nil, False);
+    xA2B := TA2BXml.CreateA2B(aXml, bXml, False);
   finally
     a2bUninitialize;
   end;
@@ -8615,6 +8624,8 @@ begin
   try
     ShowA2BXmlForm.Caption := 'Changes in Reply';
     ShowA2BXmlForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
+    ShowA2BXmlForm.ignoreAddingOn := se.ignoreAddingOn;
+    ShowA2BXmlForm.ignoreRemovingOn := se.ignoreRemovingOn;
     ShowA2BXmlForm.Xml := xA2B;
     ShowA2BXmlForm.ShowModal;
     if ShowA2BXmlForm.RefreshNeeded then
@@ -12074,6 +12085,17 @@ end;
 procedure TMainForm.ToggleFileLogActionExecute(Sender: TObject);
 begin
   doFileLog := not doFileLog;
+end;
+
+procedure TMainForm .DataTypeDocumentationMemoClick (Sender : TObject );
+var
+  Pt: TPoint; CharIndex, Col, Row: Integer;
+begin
+  Pt:= DataTypeDocumentationMemo.CaretPos;
+  CharIndex := DataTypeDocumentationMemo.SelStart;
+  Row  := DataTypeDocumentationMemo.CaretPos.Y;
+  Col  := DataTypeDocumentationMemo.CaretPos.X;
+  StatusPanel.Caption := Format('%d', [CharIndex]);
 end;
 
 initialization

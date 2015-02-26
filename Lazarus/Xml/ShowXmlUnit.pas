@@ -102,8 +102,7 @@ type
     CleanActionMenuItem: TMenuItem;
     ZoomasAssignment1: TMenuItem;
     procedure Button1Click (Sender : TObject );
-    procedure DocumentationEditMouseDown (Sender : TObject ;
-      Button : TMouseButton ; Shift : TShiftState ; X , Y : Integer );
+    procedure DocumentationEditClick (Sender : TObject );
     procedure DocumentationEditMouseMove (Sender : TObject ;
       Shift : TShiftState ; X , Y : Integer );
     procedure ZoomMenuItemClick(Sender: TObject);
@@ -219,7 +218,7 @@ type
     procedure setIsChanged(const Value: Boolean);
     procedure setdoEnableCompare(const Value: Boolean);
   public
-    ignoreDifferencesOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn: TStringList;
     doConfirmRemovals: Boolean;
     doShowCancelButton: Boolean;
     initialExpandStyle: TBindExpandStyle;
@@ -522,7 +521,8 @@ begin
           aXml.Name := (Bind as TXml).Name;
           aXml.LoadValues(Bind as TXml, True, False);
           try
-            xA2B := TA2BXml.CreateA2B(aXml, bXml, ignoreDifferencesOn, True);
+            xA2B := TA2BXml.CreateA2B(aXml, bXml, True);
+            xA2B.Ignore(ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn);
           finally
             FreeAndNil(aXml);
             FreeAndNil(bXml);
@@ -532,6 +532,8 @@ begin
             try
               ShowA2BXmlForm.Caption := 'Differences in XML content';
               ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
+              ShowA2BXmlForm.ignoreAddingon := ignoreAddingon;
+              ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
               ShowA2BXmlForm.Xml := xA2B;
               ShowA2BXmlForm.ShowModal;
               if ShowA2BXmlForm.RefreshNeeded then
@@ -1908,24 +1910,15 @@ procedure TShowXmlForm .Button1Click (Sender : TObject );
 begin
 end;
 
-procedure TShowXmlForm .DocumentationEditMouseDown (Sender : TObject ;
-  Button : TMouseButton ; Shift : TShiftState ; X , Y : Integer );
+procedure TShowXmlForm .DocumentationEditClick (Sender : TObject );
 begin
+  Edit1.Text := IntToStr (DocumentationEdit.SelStart);
 end;
+
 
 procedure TShowXmlForm .DocumentationEditMouseMove (Sender : TObject ;
   Shift : TShiftState ; X , Y : Integer );
-var
-  i, z: Integer;
-  Pt: TPoint;
-  s: string;
-  Rslt: Boolean;
-  rx: TRegExpr;
 begin
-  Pt := Point(X, Y);
-  Edit1.Text := Format ('%d:%d', [X, Y]);
-
-//igGlobals.MemoMouseMove(DocumentationEdit, X, Y);
 end;
 
 { TPasswordEditLink }

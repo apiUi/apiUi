@@ -1,11 +1,21 @@
-* Converting file C:\JanBo\Sources\Lazarus\Xml\ShowExpectedXml.pas *
+* Converting file C:\JanBo\Sources\Lazarus\Xml\ShowLogDifferencesUnit.pas *
+Removed unit "ShellAPI" in uses section.
 Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
-* Repairing form file C:\JanBo\Sources\Lazarus\Xml\ShowExpectedXml.lfm *
+Replaced call ShellExecute ( Application.MainForm.Handle               , nil               , PChar (xFileName)               , PChar ('')               , PChar ('')               , SW_SHOW               ) with  OpenDocument(PChar (xFileName)
+               ) { *Converted from ShellExecute* }
+Replaced call FileExists(xFileName) with FileExistsUTF8(xFileName) { *Converted from FileExists* }
+Added unit FileUtil to uses section
+* Repairing form file C:\JanBo\Sources\Lazarus\Xml\ShowLogDifferencesUnit.lfm *
 Removed property "Columns".
-Removed property "CustomCheckImages".
+Removed property "BevelInner".
 Removed property "TextHeight".
 Removed property "OldCreateOrder".
+Changed Top coord of TStatusBar from "354" to "352" inside TPanel.
+Changed Left coord of TStatusBar from "4" to "2" inside TPanel.
 Changed Top coord of TVirtualStringTree from "4" to "2" inside TPanel.
 Changed Left coord of TVirtualStringTree from "4" to "2" inside TPanel.
-* Fixing used units for file C:\JanBo\Sources\Lazarus\Xml\ShowExpectedXml.pas *
+Changed Top coord of TPanel from "4" to "2" inside TPanel.
+Changed Left coord of TPanel from "4" to "2" inside TPanel.
+Added property "SimplePanel = False" for TStatusBar.
+* Fixing used units for file C:\JanBo\Sources\Lazarus\Xml\ShowLogDifferencesUnit.pas *
 Conversion Ready.

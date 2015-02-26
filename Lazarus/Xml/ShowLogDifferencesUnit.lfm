@@ -92,47 +92,57 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Left = 0
       Top = 0
       Width = 8
-      Action = MaintainIgnoreListAction
+      Action = MaintainIgnoreDiffsAction
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
       Left = 8
       Top = 0
-      Action = MaintainIgnoreListAction
+      Action = MaintainIgnoreDiffsAction
     end
-    object ToolButton3: TToolButton
+    object ToolButton12: TToolButton
       Left = 31
       Top = 0
-      Width = 8
+      Action = MaintainIgnoreAdditionsAction
+    end
+    object ToolButton13: TToolButton
+      Left = 54
+      Top = 0
+      Action = MaintainIgnoredRemovalsAction
+    end
+    object ToolButton3: TToolButton
+      Left = 77
+      Top = 0
+      Width = 12
       Caption = 'ToolButton3'
       ImageIndex = 27
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 39
+      Left = 89
       Top = 0
       Action = NextDiffAction
     end
     object ToolButton6: TToolButton
-      Left = 62
+      Left = 112
       Top = 0
       Action = PrevDiffAction
     end
     object ToolButton7: TToolButton
-      Left = 85
+      Left = 135
       Top = 0
-      Width = 8
+      Width = 10
       Caption = 'ToolButton7'
       ImageIndex = 27
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 93
+      Left = 145
       Top = 0
       Action = CopyToClipboardAction
     end
     object ToolButton8: TToolButton
-      Left = 116
+      Left = 168
       Top = 0
       Width = 8
       Caption = 'ToolButton8'
@@ -140,12 +150,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 124
+      Left = 176
       Top = 0
       Action = HtmlReportAction
     end
     object ToolButton11: TToolButton
-      Left = 147
+      Left = 199
       Top = 0
       Width = 8
       Caption = 'ToolButton11'
@@ -153,7 +163,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 155
+      Left = 207
       Top = 0
       Action = CloseAction
     end
@@ -162,7 +172,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     Left = 304
     Top = 127
     Bitmap = {
-      494C01018C00C000400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01018C009000480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004002000001002000000000000040
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -4942,12 +4952,24 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       ImageIndex = 130
       OnExecute = HelpActionExecute
     end
-    object MaintainIgnoreListAction: TAction
-      Caption = 'List of ignored elements'
-      Hint = 'List of ignored elements'
-      ImageIndex = 121
-      OnExecute = MaintainIgnoreListActionExecute
-      OnUpdate = MaintainIgnoreListActionUpdate
+    object MaintainIgnoreDiffsAction: TAction
+      Caption = 'Maintain list of ignored differences'
+      Hint = 'List of ignored differences'
+      ImageIndex = 133
+      OnExecute = MaintainIgnoreDiffsActionExecute
+      OnUpdate = MaintainIgnoreDiffsActionUpdate
+    end
+    object MaintainIgnoreAdditionsAction: TAction
+      Caption = 'Maintain list of ignore additions'
+      ImageIndex = 139
+      OnExecute = MaintainIgnoreAdditionsActionExecute
+      OnUpdate = MaintainIgnoreAdditionsActionUpdate
+    end
+    object MaintainIgnoredRemovalsAction: TAction
+      Caption = 'Maintain list of ignored removals'
+      ImageIndex = 138
+      OnExecute = MaintainIgnoredRemovalsActionExecute
+      OnUpdate = MaintainIgnoredRemovalsActionUpdate
     end
     object NextDiffAction: TAction
       Caption = 'Next difference'

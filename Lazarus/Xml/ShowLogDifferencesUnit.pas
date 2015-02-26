@@ -12,9 +12,10 @@ uses
 {$ELSE}
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, VirtualTrees, FileUtil, ToolWin, FormIniFilez, ComCtrls,
-  ImgList, ActnList, Logz, a2bStringListUnit, Xmlz, A2BXmlz;
+  Messages , SysUtils , Classes , Graphics , Controls , Forms ,
+  Dialogs , StdCtrls , ExtCtrls , VirtualTrees , FileUtil , ToolWin ,
+  FormIniFilez , ComCtrls , ImgList , ActnList , Logz , a2bStringListUnit ,
+  Xmlz , A2BXmlz;
 
 type
   PVSTreeRec = ^TVSTreeRec;
@@ -40,7 +41,7 @@ type
     HelpAction: TAction;
     OverviewStatusBar: TStatusBar;
     ToolButton1: TToolButton;
-    MaintainIgnoreListAction: TAction;
+    MaintainIgnoreDiffsAction: TAction;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     NextDiffAction: TAction;
@@ -55,6 +56,10 @@ type
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
     HtmlReportAction: TAction;
+    ToolButton12: TToolButton;
+    ToolButton13: TToolButton;
+    MaintainIgnoreAdditionsAction: TAction;
+    MaintainIgnoredRemovalsAction: TAction;
     procedure HtmlReportActionExecute(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure CopyToClipboardActionExecute(Sender: TObject);
@@ -62,8 +67,8 @@ type
     procedure NextDiffActionExecute(Sender: TObject);
     procedure PrevDiffActionUpdate(Sender: TObject);
     procedure NextDiffActionUpdate(Sender: TObject);
-    procedure MaintainIgnoreListActionUpdate(Sender: TObject);
-    procedure MaintainIgnoreListActionExecute(Sender: TObject);
+    procedure MaintainIgnoreDiffsActionUpdate(Sender: TObject);
+    procedure MaintainIgnoreDiffsActionExecute(Sender: TObject);
     procedure mainVSTClick(Sender: TObject);
     procedure mainVSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure ToolButton1Click(Sender: TObject);
@@ -87,6 +92,10 @@ type
     procedure FormCreate(Sender: TObject);
     procedure mainVSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure MaintainIgnoreAdditionsActionUpdate(Sender: TObject);
+    procedure MaintainIgnoredRemovalsActionUpdate(Sender: TObject);
+    procedure MaintainIgnoreAdditionsActionExecute(Sender: TObject);
+    procedure MaintainIgnoredRemovalsActionExecute(Sender: TObject);
   private
     IniFile: TFormIniFile;
     fPreviewMode: Boolean;
@@ -99,6 +108,7 @@ type
     procedure setShowDelta(const Value: Boolean);
     procedure setPreviewMode(const Value: Boolean);
     procedure PopulateMain;
+    procedure MaintainList (aCaptian: String; aList: TStringList);
     procedure CreateA (xData: PVSTreeRec);
     procedure CreateB (xData: PVSTreeRec);
     procedure CompareAB (xData: PVSTreeRec);
@@ -107,7 +117,7 @@ type
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
   public
-    ignoreDifferencesOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn: TStringList;
     aLogs: TLogList;
     bLogs: TLogList;
     ReferenceFileName: String;
@@ -128,8 +138,7 @@ uses
   ShellAPI,
 {$ELSE}
 {$ENDIF}
-  Bind, Registry, ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd,
-  vstUtils, xmlxsdparser;
+  Bind, Registry, ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd, vstUtils, XmlXsdParser;
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -503,7 +512,7 @@ begin
   xFileName := ExtractFilePath (ParamStr(0)) + '\Documentation\wsdlStubRMPreview.htm';
   if not FileExistsUTF8(xFileName) { *Converted from FileExists* } then
     raise Exception.Create ('Could not find helpfile: ' + xFileName);
-  if  not OpenDocument(xFileName) then
+  if not OpenDocument(xFileName) then
     raise Exception.Create ('Could not open ' + xFileName);
 end;
 
@@ -528,12 +537,14 @@ var
 begin
   aXml := xData.aLog.reqBodyAsXml;
   bXml := xData.bLog.reqBodyAsXml;
-  xData.reqA2B := TA2BXml.CreateA2B(aXml, bXml, ignoreDifferencesOn, False);
+  xData.reqA2B := TA2BXml.CreateA2B(aXml, bXml, False);
+  xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
   aXml := xData.aLog.rpyBodyAsXml;
   bXml := xData.bLog.rpyBodyAsXml;
-  xData.rpyA2B := TA2BXml.CreateA2B(aXml, bXml, ignoreDifferencesOn, False);
+  xData.rpyA2B := TA2BXml.CreateA2B(aXml, bXml, False);
+  xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
 end;
@@ -553,6 +564,8 @@ begin
         try
           ShowA2BXmlForm.Caption := 'Differences in requests';
           ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
+          ShowA2BXmlForm.ignoreAddingOn := ignoreAddingon;
+          ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
           ShowA2BXmlForm.Xml := xData.reqA2B;
           ShowA2BXmlForm.ShowModal;
           if ShowA2BXmlForm.RefreshNeeded then
@@ -572,6 +585,8 @@ begin
         try
           ShowA2BXmlForm.Caption := 'Differences in replies';
           ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
+          ShowA2BXmlForm.ignoreAddingOn := ignoreAddingon;
+          ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
           ShowA2BXmlForm.Xml := xData.rpyA2B;
           ShowA2BXmlForm.ShowModal;
           if ShowA2BXmlForm.RefreshNeeded then
@@ -608,8 +623,46 @@ begin
   FreeAndNil (bXml);
 end;
 
-procedure TShowLogDifferencesForm.MaintainIgnoreListActionExecute(
+procedure TShowLogDifferencesForm.MaintainIgnoreAdditionsActionExecute(
   Sender: TObject);
+begin
+  MaintainList(MaintainIgnoreAdditionsAction.Caption, ignoreAddingon);
+end;
+
+procedure TShowLogDifferencesForm.MaintainIgnoreAdditionsActionUpdate(
+  Sender: TObject);
+begin
+  MaintainIgnoreAdditionsAction.Enabled := Assigned (ignoreAddingon)
+                                  and (ignoreAddingon.Count > 0);
+end;
+
+procedure TShowLogDifferencesForm.MaintainIgnoreDiffsActionExecute(
+  Sender: TObject);
+begin
+  MaintainList(MaintainIgnoreDiffsAction.Caption, ignoreDifferencesOn);
+end;
+
+procedure TShowLogDifferencesForm.MaintainIgnoreDiffsActionUpdate(
+  Sender: TObject);
+begin
+  MaintainIgnoreDiffsAction.Enabled := Assigned (ignoreDifferencesOn)
+                                  and (ignoreDifferencesOn.Count > 0);
+end;
+
+procedure TShowLogDifferencesForm.MaintainIgnoredRemovalsActionExecute(
+  Sender: TObject);
+begin
+  MaintainList(MaintainIgnoredRemovalsAction.Caption, ignoreRemovingOn);
+end;
+
+procedure TShowLogDifferencesForm.MaintainIgnoredRemovalsActionUpdate(
+  Sender: TObject);
+begin
+  MaintainIgnoredRemovalsAction.Enabled := Assigned (ignoreRemovingOn)
+                                  and (ignoreRemovingOn.Count > 0);
+end;
+
+procedure TShowLogDifferencesForm.MaintainList(aCaptian: String; aList: TStringList);
 var
   x, a, f: Integer;
   Srcs, Dsts: TStringList;
@@ -621,10 +674,10 @@ begin
   Dsts.Sorted := True;
   Dsts.Duplicates := dupIgnore;
   try
-    Dsts.Text := ignoreDifferencesOn.Text;
+    Dsts.Text := aList.Text;
     Application.CreateForm(TdualListForm, dualListForm);
     try
-      dualListForm.Caption := 'List of elements to be ignored';
+      dualListForm.Caption := aCaptian;
       dualListForm.DstList.Items.Text := Dsts.Text;
       dualListForm.SrcList.Items.Text := '';
       dualListForm.DstCaption := 'Ignored elements';
@@ -633,7 +686,7 @@ begin
       dualListForm.ShowModal;
       if dualListForm.ModalResult = mrOk then
       begin
-        ignoreDifferencesOn.Text := dualListForm.DstList.Items.Text;
+        aList.Text := dualListForm.DstList.Items.Text;
         FormShow(nil);
       end;
     finally
@@ -645,13 +698,6 @@ begin
     Dsts.Clear;
     Dsts.Free;
   end;
-end;
-
-procedure TShowLogDifferencesForm.MaintainIgnoreListActionUpdate(
-  Sender: TObject);
-begin
-  MaintainIgnoreListAction.Enabled := Assigned (ignoreDifferencesOn)
-                                  and (ignoreDifferencesOn.Count > 0);
 end;
 
 procedure TShowLogDifferencesForm.NextDiffActionUpdate(Sender: TObject);
@@ -1041,7 +1087,17 @@ begin
     finally
       Screen.Cursor := swapCursor;
     end;
-    ShowMessage(xXml.asHtmlString);
+{ TODO : ShowHTML }
+{
+    Application.CreateForm(TShowHtmlForm, ShowHtmlForm);
+    try
+      ShowHtmlForm.Caption := 'wsdlStub - Differences report';
+      ShowHtmlForm.Html := xXml.asHtmlString;
+      ShowHtmlForm.ShowModal;
+    finally
+      FreeAndNil (ShowHtmlForm);
+    end;
+    }
   finally
     FreeAndNil (xXml);
   end;

@@ -179,7 +179,8 @@ begin
   try
     DecodeDate(Calendar.DateTime, eeyy, mm,dd);
     mm := MonthComboBox.ItemIndex + 1;
-    Calendar.DateTime := EncodeDate(eeyy, mm, dd);
+    if mm > 0 then
+      Calendar.DateTime := EncodeDate(eeyy, mm, dd);
   except
   end;
 end;
