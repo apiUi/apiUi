@@ -2634,7 +2634,7 @@ end;
 
 procedure TMainForm .ShowInfoForm (aCaption : String ; aInfoString : String );
 begin
-
+  ShowText(aCaption, aInfoString);
 end;
 
 procedure TMainForm.FullExpand1Click(Sender: TObject);

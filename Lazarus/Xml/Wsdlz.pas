@@ -3678,7 +3678,6 @@ begin
       result := StrAdd (result, ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"');
       result := StrAdd (result, ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
       result := StrAdd (result, ' >');
-      e := 0;
       if (InputHeaders.Count > 0)
       or (WsdlService.AuthenticationType = atWsSecurity)
       or wsaEnabled then
@@ -3701,7 +3700,6 @@ begin
                                  , (InputHeaders.Headers[x].Use = scSoapUseEncoded)
                                  )
                   ;
-          Inc (e);
         end;
         result := result + StreamWsAddressing(reqWsaXml, True);
         result := StrAdd (result, '  </soapenv:Header>');
@@ -3712,37 +3710,18 @@ begin
       end
       else
         result := StrAdd (result, '  <soapenv:Body>');
-      if SoapBindingStyle = 'rpc' then
+      for x := InputHeaders.Count to (reqBind as TXml).Items.Count - 1 do
       begin
         xsdGenerated := True;
         xsiGenerated := True;
-        result := result
-                + (reqBind as TXml).Items.XmlItems[e].StreamXML
-                               ( aGenerateBodyNameSpaces
-                               , True
-                               , 4
-                               , True
-                               , (SoapBodyInputUse = scSoapUseEncoded)
-                               )
-                ;
-      end
-      else
-      begin
-        for x := 0 to InputHeaders.Count - 1 do
-//          InputHeaders.Headers[x].Part.StreamXML
-        begin
-          xsdGenerated := True;
-          xsiGenerated := True;
-          result := result + (reqBind as TXml).Items.XmlItems[e].StreamXML
-                                   ( aGenerateBodyNameSpaces
-                                   , WsdlService.UseNameSpacePrefixes
-                                   , 4
-                                   , True
-                                   , (SoapBodyInputUse = scSoapUseEncoded)
-                                   )
-                           ;
-          Inc (e);
-        end;
+        result := result + (reqBind as TXml).Items.XmlItems[x].StreamXML
+                                 ( aGenerateBodyNameSpaces
+                                 , WsdlService.UseNameSpacePrefixes
+                                 , 4
+                                 , True
+                                 , (SoapBodyInputUse = scSoapUseEncoded)
+                                 )
+                         ;
       end;
       result := StrAdd (result, '  </soapenv:Body>');
       result := StrAdd (result, '</soapenv:Envelope>');
@@ -3837,33 +3816,18 @@ begin
       end
       else
         result := StrAdd (result, '  <soapenv:Body>');
-      if SoapBindingStyle = 'rpc' then
+      for x := OutputHeaders.Count to (rpyBind as TXml).Items.Count - 1 do
       begin
         xsdGenerated := True;
         xsiGenerated := True;
-        result := result + (rpyBind as TXml).StreamXML
+        result := result + (rpyBind as TXml).Items.XmlItems[x].StreamXML
                                  ( True
                                  , True
                                  , 4
                                  , True
                                  , (SoapBodyOutputUse = scSoapUseEncoded)
-                                 );
-      end
-      else
-      begin
-        for x := 0 to OutputHeaders.Count - 1 do
-        begin
-          xsdGenerated := True;
-          xsiGenerated := True;
-          result := result + (rpyBind as TXml).Items.XmlItems[x + nHeaders].StreamXML
-                                   ( True
-                                   , True
-                                   , 4
-                                   , True
-                                   , (SoapBodyOutputUse = scSoapUseEncoded)
-                                   )
-                           ;
-        end;
+                                 )
+                         ;
       end;
       result := StrAdd (result, '  </soapenv:Body>');
       result := StrAdd (result, '</soapenv:Envelope>');

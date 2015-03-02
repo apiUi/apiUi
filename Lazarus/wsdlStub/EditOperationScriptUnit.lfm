@@ -718,6 +718,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
     NumberAttri.FrameEdges = sfeAround
     PreprocessorAttri.FrameEdges = sfeAround
     SpaceAttri.FrameEdges = sfeAround
+    StringAttri.Foreground = clBlue
     StringAttri.FrameEdges = sfeAround
     SymbolAttri.FrameEdges = sfeAround
     Markup = False
