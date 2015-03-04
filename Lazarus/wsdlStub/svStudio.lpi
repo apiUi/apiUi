@@ -97,7 +97,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="9">
+    <Exceptions Count="11">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -128,6 +128,12 @@
       <Item9>
         <Name Value="EStomp"/>
       </Item9>
+      <Item10>
+        <Name Value="EIdReadTimeout"/>
+      </Item10>
+      <Item11>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item11>
     </Exceptions>
   </Debugging>
 </CONFIG>

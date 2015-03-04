@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 329
+  Left = 394
   Height = 544
-  Top = 152
+  Top = 245
   Width = 951
   Caption = 'MainForm'
   ClientHeight = 525
@@ -9012,6 +9012,7 @@ object MainForm: TMainForm
     KeepConnection = False
     Transaction = SQLTransaction
     LogEvents = []
+    ConnectorType = 'Oracle'
     left = 408
     top = 168
   end

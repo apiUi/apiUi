@@ -518,6 +518,7 @@ begin
   xTransaction := TSQLTransaction.Create(nil);
   xTransaction.DataBase := Qry.Database;
   Qry.Transaction := xTransaction;
+  xTransaction.StartTransaction;
   try
     Qry.ExecSQL;
   finally

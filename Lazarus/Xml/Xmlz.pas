@@ -1554,6 +1554,10 @@ begin
   if (aXml.Items.Count > 0)
   and (Items.Count = 0) then
     ExtendRecursivity;
+  if aXml.Value <> '' then
+    if Group then
+      aXml.Value := '';
+
   if (   (aXml.Group and (Value <> ''))
       or ((aXml.Value <> '') and Group)
      )

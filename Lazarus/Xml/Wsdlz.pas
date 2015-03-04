@@ -826,6 +826,7 @@ begin
   with TSQLQuery.Create(nil) do
   try
     Database := _WsdlDbsConnector;
+    Transaction := _WsdlDbsTransaction;
     UsePrimaryKeyAsKey := False;
     SQL.Clear;
     SQL.Add('Select ' + aValueColumn);

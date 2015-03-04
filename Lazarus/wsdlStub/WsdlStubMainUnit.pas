@@ -13,7 +13,7 @@ uses
 {$IFnDEF FPC}
   AdoDb, Windows,
 {$ELSE}
-  sqldb , odbcconn, LCLIntf, LCLType,
+  sqldb, oracleconnection , odbcconn, LCLIntf, LCLType,
 {$ENDIF}
   Messages
    , SysUtils

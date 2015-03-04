@@ -1,7 +1,7 @@
 object EditOperationScriptForm: TEditOperationScriptForm
-  Left = 397
+  Left = 592
   Height = 381
-  Top = 154
+  Top = 197
   Width = 675
   Anchors = []
   Caption = 'Edit script'
@@ -531,7 +531,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
       HighlightAllColor.FrameEdges = sfeAround
       BracketHighlightStyle = sbhsBoth
       BracketMatchColor.Background = clNone
-      BracketMatchColor.Foreground = clNone
+      BracketMatchColor.Foreground = clRed
       BracketMatchColor.FrameEdges = sfeAround
       BracketMatchColor.Style = [fsBold]
       FoldedCodeColor.Background = clNone

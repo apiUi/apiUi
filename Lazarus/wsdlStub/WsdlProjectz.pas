@@ -159,7 +159,7 @@ type
     procedure InitSpecialWsdls;
   public
     doCloneOperations: Boolean;
-    DbsDatabaseName, DbsType, DbsParams, DbsPassword: String;
+    DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword: String;
     FreeFormatWsdl, XsdWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
@@ -1650,7 +1650,9 @@ begin
     AddXml (TXml.CreateAsBoolean('Enabled', _WsdlDbsEnabled));
     AddXml (TXml.CreateAsString('Type', DbsType));
     AddXml (TXml.CreateAsString('DatabaseName', DbsDatabaseName));
+    AddXml (TXml.CreateAsString('HostName', DbsHostName));
     AddXml (TXml.CreateAsString('Params', DbsParams));
+    AddXml (TXml.CreateAsString('UserName', DbsUserName));
     AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(DbsPassword)))
   end;
 end;
@@ -2923,7 +2925,9 @@ begin
   _WsdlDbsEnabled := False;
   DbsType := '';
   DbsDatabaseName := '';
+  DbsHostName:='';
   DbsParams := '';
+  DbsUserName:='';
   DbsPassword := '';
   wrdFunctionz.wrdDetectFormatChanges := False;
   wrdFunctionz.wrdNewDocumentAsReference := False;
@@ -2991,18 +2995,25 @@ begin
       _WsdlDbsEnabled := xXml.Items.XmlCheckedBooleanByTagDef['Enabled', _WsdlDbsEnabled];
       DbsType := xXml.Items.XmlCheckedValueByTagDef['Type', DbsType];
       DbsDatabaseName := xXml.Items.XmlCheckedValueByTagDef['DatabaseName', DbsDatabaseName];
+      DbsHostName := xXml.Items.XmlCheckedValueByTagDef['HostName', DbsHostName];
       DbsParams := xXml.Items.XmlCheckedValueByTagDef['Params', DbsParams];
+      DbsUserName := xXml.Items.XmlCheckedValueByTagDef['UserName', DbsUserName];
       DbsPassword := xmlz.DecryptString(xXml.Items.XmlCheckedValueByTag['Password']);
+    { TODO : hide password }
+      DbsPassword := 'fpd';
       with _WsdlDbsConnector do
       begin
         ConnectorType := DbsType;
         DatabaseName := DbsDatabaseName;
+        HostName := DbsHostName;
         Params.Text := ReplaceStrings( DbsParams
                                      , '%pwd%'
                                      , DbsPassword
                                      , false
                                      , false
                                      );
+        UserName := DbsUserName;
+        Password := DbsPassword;
       end;
     end;
   end;
