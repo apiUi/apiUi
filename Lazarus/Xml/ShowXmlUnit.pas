@@ -19,7 +19,7 @@ uses
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  , Express , IpHtml , Ipfilebroker , SynEdit
+  , Express
   ;
 
 type
@@ -1938,4 +1938,4 @@ begin
   Self.Edit.PasswordChar := '*';
 end;
 
-end.
+end.

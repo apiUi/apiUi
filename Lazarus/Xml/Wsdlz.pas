@@ -19,6 +19,7 @@ uses sqldb
    , xmlzConsts
    , IpmTypes
    , IdSSLOpenSSL
+   , IdSync
    , SyncObjs
    ;
 
@@ -591,14 +592,15 @@ uses
    , igGlobals
    , RegExpr
    , xmlUtilz
-   , IdSync
    , Forms
    , Math
    , base64
    , HashUtilz
    , IdURI
    , SwiftUnit
+   {$ifdef windows}
    , ActiveX
+   {$endif}
    ;
 
 { TWsdl }
@@ -5924,4 +5926,4 @@ finalization
   UILock.Free;
   EnvVarLock.Free;
 end.
-
+

@@ -10,7 +10,6 @@ uses SysUtils
    , Classes
    , ParserClasses
    , ComCtrls
-   , CommCtrl
    , Controls
    , StdCtrls
    , ActnList
@@ -140,4 +139,4 @@ begin
 end;
 
 
-end.
+end.

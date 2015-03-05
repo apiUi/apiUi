@@ -16,7 +16,7 @@ var
 
 implementation
 
-uses SysUtils, Variants, Classes, OleServer, Word_TLB, ComObj;
+uses SysUtils, Variants, Classes{$ifdef windows}, OleServer, Word_TLB, ComObj{$endif};
 
 var
   wrdApplication: Variant;
@@ -33,6 +33,7 @@ var
   ndoc, cdoc: Variant;
   xDoUninitialise: Boolean;
 begin
+  {$ifdef windows}
   result := -1;
   xDoUninitialise := False;
   if VarIsNull (wrdApplication) then
@@ -88,6 +89,9 @@ begin
     if xDoUninitialise then
       wrdUninitialize;
   end;
+  {$else}
+  raise Exception.Create ('only with ms windos');
+  {$endif}
 end;
 
 procedure wrdFileDiffencesShow (aNewFile, aRefFile: String);
@@ -102,6 +106,7 @@ var
   ndoc, cdoc: Variant;
   word: Variant;
 begin
+  {$ifdef windows}
   if wrdNewDocumentAsReference then
   begin
     FileName := aNewFile;
@@ -171,6 +176,9 @@ begin
   finally
     Word := Null;
   end;
+  {$else}
+  raise Exception.Create('only with ms windows');
+  {$endif}
 end;
 
 procedure wrdStringToFile (aText, aFileName: String);
@@ -178,6 +186,7 @@ var
   ndoc, cdoc: Variant;
   word: Variant;
 begin
+  {$ifdef windows}
   try
     word := CreateOleObject('Word.Application');
   except
@@ -198,6 +207,9 @@ begin
   finally
     Word := Null;
   end;
+  {$else}
+  raise Exception.Create('only with ms windows');
+  {$endif}
 end;
 
 procedure wrdStringToPdfFile (aText, aFileName: String);
@@ -205,6 +217,7 @@ var
   ndoc: Variant;
   word: Variant;
 begin
+  {$ifdef windows}
   try
     word := CreateOleObject('Word.Application');
   except
@@ -225,10 +238,14 @@ begin
   finally
     Word := Null;
   end;
+  {$else}
+  raise Exception.Create('only with ms windows');
+  {$endif}
 end;
 
 procedure wrdInitialize;
 begin
+  {$ifdef windows}
   try
     wrdApplication := CreateOleObject('Word.Application');
     wrdApplication.DisplayAlerts := False;
@@ -237,16 +254,19 @@ begin
   except
     wrdInstalled := False;
   end;
+  {$endif}
 end;
 
 procedure wrdUninitialize;
 begin
+  {$ifdef windows}
   if wrdInstalled
   and not VarIsNull (wrdApplication) then
   begin
     wrdApplication.Quit;
     wrdApplication := null;
   end;
+  {$endif}
 end;
 
-end.
+end.

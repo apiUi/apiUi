@@ -6,7 +6,6 @@ interface
 uses SysUtils
    , Classes
    , ComCtrls
-   , CommCtrl
    , Controls
    , StdCtrls
    , ActnList
@@ -159,6 +158,7 @@ var
   Rslt: Boolean;
   rx: TRegExpr;
 begin
+  {$ifdef windows}
   Pt := Point(X, Y);
   iCharIndex := aMemo.Perform(Messages.EM_CHARFROMPOS, 0, Integer(@Pt));
   if (iCharIndex < 0)
@@ -185,6 +185,9 @@ begin
   finally
     rx.Free;
   end;
+  {$else}
+  raise Exception.Create ('only with ms windos');
+  {$endif}
 end;
 
 procedure MemoMouseMove(aMemo: TLzRichEdit; X, Y: Integer);
@@ -195,6 +198,7 @@ var
   Rslt: Boolean;
   rx: TRegExpr;
 begin
+  {$ifdef windows}
   Pt := Point(X, Y);
   iCharIndex := aMemo.Perform(Messages.EM_CHARFROMPOS, 0, Integer(@Pt));
   if (iCharIndex < 0)
@@ -224,6 +228,9 @@ begin
   finally
     rx.Free;
   end;
+  {$else}
+  raise Exception.Create ('only with ms windos');
+  {$endif}
 end;
 
 procedure MemoShowLinks (aMemo: TLzRichEdit);
@@ -1542,4 +1549,4 @@ end;
 
 
 end.
-
+

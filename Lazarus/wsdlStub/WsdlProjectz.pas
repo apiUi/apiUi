@@ -70,7 +70,9 @@ uses
   , StompInterface
   , StompClient
   , StompTypes
+{$ifdef windows}
   , TacoInterface
+{$endif}
   , IdPOP3Server
   , IdReplyPOP3
   , IdSMTPServer
@@ -471,7 +473,9 @@ uses OpenWsdlUnit
    , smtpInterface
    , RegExpr
    , jwbBase64
+   {$ifdef windows}
    , ActiveX
+   {$endif}
    , xmlUtilz
    , wrdFunctionz
    ;
@@ -817,7 +821,7 @@ var
   Xml, xXml, iniXml: TXml;
   s, xIniFileName: String;
 begin
-  xIniFileName := Copy(ParamStr(0), 1, Length(ParamStr(0)) - 4) + 'Ini.xml';
+  xIniFileName := Copy(ParamStr(0), 1, Length(ParamStr(0)){$ifdef windows} - 4{$endif}) + 'Ini.xml';
   if not FileExistsUTF8(xIniFileName) { *Converted from FileExists* } then
     raise Exception.CreateFmt(
       '%s coud not open expected inifile: %s,%splease install %s properly',
@@ -2724,12 +2728,16 @@ begin
                             + aStompInterface.RequestBodyPostFix; // WORKAROUND, see XSD
       xLog.InboundBody := xLog.RequestBody;
       try
+    {$ifdef windows}
         CoInitialize(nil);
+    {$endif}
         try
           CreateLogReply (xLog, xProcessed, True);
           DelayMS (xLog.DelayTimeMs);
         finally
+    {$ifdef windows}
           CoUninitialize;
+    {$endif}
         end;
       except
         on e: exception do
@@ -3670,6 +3678,7 @@ end;
 
 function TwsdlProject.SendOperationTacoMessage(aOperation: TWsdlOperation;
   aMessage: String; var aRequestHeader, aReplyHeader: String): String;
+{$ifdef windows}
 var
   Taco: TTacoInterface;
   fXml: TXml;
@@ -3688,6 +3697,11 @@ begin
     FreeAndNil (Taco);
   end;
 end;
+{$else}
+begin
+  raise Exception.Create ('SendOperationTacoMessage not im,plemented');
+end;
+{$endif}
 
 procedure TWsdlProject.SetAbortPressed(const Value: Boolean);
 begin
@@ -5413,7 +5427,9 @@ begin
   then exit;
   xMqHeaderXml := nil;
   Inc (mqCurWorkingThreads);
+  {$ifdef windows}
   CoInitialize(nil);
+  {$endif}
   xLog := TLog.Create;
   try
     xLog.InboundTimeStamp := Now;
@@ -5448,7 +5464,9 @@ begin
     AcquireLock;
     Dec (mqCurWorkingThreads);
     ReleaseLock;
+    {$ifdef windows}
     CoUninitialize;
+    {$endif}
   end;
 end;
 
@@ -5644,7 +5662,9 @@ var
   xRelatesTo: String;
 begin
   try // finally set for hhtp reply
+    {$ifdef windows}
     CoInitialize (nil);
+    {$endif}
     try
       xLog := TLog.Create;
       rLog := nil;
@@ -5745,7 +5765,9 @@ begin
         end;
       end;
     finally
+    {$ifdef windows}
       CoUninitialize;
+    {$endif}
     end;
   finally
     // setup for HTTP reply
@@ -5787,7 +5809,9 @@ var
   xStream: TStringStream;
   s, d: AnsiString;
 begin
+  {$ifdef windows}
   CoInitialize (nil);
+  {$endif}
   try
     if ARequestInfo.Command = 'PUT' then
     begin
@@ -5894,7 +5918,9 @@ begin
       end;
     end;
   finally
+    {$ifdef windows}
     CoUninitialize;
+    {$endif}
   end;
 end;
 
@@ -7044,4 +7070,4 @@ initialization
 finalization
 
 end.
-
+

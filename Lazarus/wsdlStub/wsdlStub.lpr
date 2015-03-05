@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms , virtualtreeview_package , lazrichedit ,  wsdlStubMainUnit;
+  Forms , virtualtreeview_package , lazrichedit, WsdlStubMainUnit ;
 
 {$R *.res}
 
@@ -17,4 +17,4 @@ begin
   Application .CreateForm (TMainForm , MainForm );
   Application.Run;
 end.
-
+

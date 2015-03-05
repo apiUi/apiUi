@@ -1188,7 +1188,7 @@ uses
   LogFilterUnit,
   ShowA2BXmlUnit, FindRegExpDialog,
   XmlGridUnit, IpmGridUnit,
-  xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit, ActiveX, EditStamperUnit,
+  xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, base64, xmlxsdparser,
   HashUtilz;
 {$IFnDEF FPC}
@@ -3002,6 +3002,7 @@ end;
 
 function TMainForm.QuitCommand(aDoRaiseExceptions: Boolean): String;
 begin
+  {$ifdef windows}
   result := 'Master instance of ' + _progName + ' is shutting down ';
   try
     // AcquireLock;
@@ -3031,6 +3032,9 @@ begin
         raise Exception.Create(result);
     end;
   end;
+  {$else}
+  result := 'QuitCommand not implemented';
+  {$endif}
 end;
 
 function TMainForm.RestartCommand: String;
@@ -3039,6 +3043,7 @@ function TMainForm.RestartCommand: String;
   end;
 
 begin
+{$ifdef windows}
   result := 'Master instance of ' + _progName +
     ' will restart, try after some time... ';
   try
@@ -3063,6 +3068,9 @@ begin
     on E: Exception do
       result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString(e);
   end;
+{$else}
+  result := 'RestartCommand not implemented';
+{$endif}
 end;
 
 procedure TMainForm.ReleaseLock;
@@ -12098,12 +12106,11 @@ begin
   StatusPanel.Caption := Format('%d', [CharIndex]);
 end;
 
+{$ifdef windows}
 initialization
-
-CoInitialize(nil);
+  CoInitialize(nil);
 
 finalization
-
-CoUninitialize;
-
-end.
+  CoUninitialize;
+{$endif}
+end.

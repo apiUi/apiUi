@@ -202,6 +202,7 @@ var
   fs: TFormatSettings;
   dt: TDateTime;
 begin
+  {$ifdef windows}
   GetLocaleFormatSettings(2057, fs);
   fs.TimeSeparator := ':';
   fs.DecimalSeparator := '.';
@@ -210,6 +211,9 @@ begin
   fs.DateSeparator := '/';
   dt := StrToDateTime({$I %DATE%} + ' ' + {$I %TIME%}, fs);
   result := FormatDateTime('ddd, dd mmm yyyy hh:nn:ss', dt);
+  {$else}
+  result := 'not implemented';
+  {$endif}
 end;
 
 function GetFileVersion: String;
@@ -226,4 +230,4 @@ begin
   end;
 end;
 
-end.
+end.
