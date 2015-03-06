@@ -3695,7 +3695,7 @@ begin
           xsdGenerated := True;
           xsiGenerated := True;
           result := result
-                  + (reqBind as TXml).Items.XmlItems [e].StreamXML
+                  + (reqBind as TXml).Items.XmlItems [x].StreamXML
                                  ( aGenerateHeaderNameSpaces
                                  , True
                                  , 4

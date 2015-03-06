@@ -7976,6 +7976,9 @@ begin
   try
     ExecuteRequestToolButton.Down := True;
     Screen.Cursor := crHourGlass;
+    ShowMessage(WsdlOperation.Name);
+    if not Assigned (WsdlOperation) then
+      raise Exception.Create ('TMainForm.doExecuteRequest: wsdlOp ...');
     WsdlOperation.AcquireLock;
     try
       xOperation := TWsdlOperation.Create(WsdlOperation);
@@ -7997,7 +8000,7 @@ end;
 procedure TMainForm.ExecuteRequestActionExecute(Sender: TObject);
 begin
   EndEdit;
-  TProcedureThread.Create(se, doExecuteRequest);
+  TProcedureThread.Create(se, WsdlOperation, doExecuteRequest);
 end;
 
 procedure TMainForm.ExecuteAllRequests;
