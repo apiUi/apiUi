@@ -21,10 +21,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3366"/>
-        <CursorPos X="1" Y="3391"/>
+        <TopLine Value="3531"/>
+        <CursorPos X="1" Y="3547"/>
         <UsageCount Value="186"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -77,7 +78,6 @@
       <Unit7>
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <UnitName Value="Wsdlz"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="799"/>
@@ -509,7 +509,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <Caret Line="831" Column="1" TopLine="814"/>
@@ -626,6 +626,10 @@
         <Filename Value="..\Xpress\Express.pas"/>
         <Caret Line="524" Column="17" TopLine="498"/>
       </Position29>
+      <Position30>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="3391" Column="1" TopLine="3366"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -656,49 +660,49 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="WsdlStubMainUnit.pas"/>
-        <Line Value="3547"/>
+        <Line Value="2422"/>
       </Item4>
       <Item5>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="WsdlStubMainUnit.pas"/>
-        <Line Value="2422"/>
+        <Line Value="2421"/>
       </Item5>
       <Item6>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="WsdlStubMainUnit.pas"/>
-        <Line Value="2421"/>
+        <Source Value="WsdlProjectz.pas"/>
+        <Line Value="510"/>
       </Item6>
       <Item7>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="WsdlProjectz.pas"/>
-        <Line Value="510"/>
+        <Line Value="509"/>
       </Item7>
       <Item8>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="WsdlProjectz.pas"/>
-        <Line Value="509"/>
+        <Source Value="..\Xml\Wsdlz.pas"/>
+        <Line Value="3693"/>
       </Item8>
       <Item9>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Wsdlz.pas"/>
-        <Line Value="3693"/>
+        <Source Value="..\Xpress\Express.pas"/>
+        <Line Value="518"/>
       </Item9>
       <Item10>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xpress\Express.pas"/>
-        <Line Value="518"/>
+        <Source Value="WsdlStubMainUnit.pas"/>
+        <Line Value="3547"/>
       </Item10>
     </BreakPoints>
   </Debugging>

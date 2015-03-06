@@ -65,6 +65,8 @@ type
     DesignPanel: TPanel;
     alGeneral: TActionList;
     DataTypeDocumentationMemo : TlzRichEdit ;
+    FreeFormatMemo: TMemo;
+    InWsdlTreeView: TVirtualStringTree;
     ReplyHeadersToolBar : TToolBar ;
     ReplyHeadersToolButton : TToolButton ;
     ScriptPanel: TPanel;
@@ -86,7 +88,6 @@ type
     Exit1: TMenuItem;
     OpenWSDLfile1: TMenuItem;
     N1: TMenuItem;
-    InWsdlTreeView: TVirtualStringTree;
     TreeviewImageList: TImageList;
     InWsdlPropertiesListView: TListView;
     Splitter4: TSplitter;
@@ -416,10 +417,6 @@ type
     ToolButton20: TToolButton;
     ToolButton63: TToolButton;
     Readmessagesfromdiskfiles1: TMenuItem;
-    FreeFormatMemo: TMemo;
-    DetailPageControl: TPageControl;
-    XmlSheet: TTabSheet;
-    FreeFormatSheet: TTabSheet;
     LogDisplayedColumnsAction: TAction;
     ToolButton50: TToolButton;
     Displayedcolumns1: TMenuItem;
@@ -1084,6 +1081,7 @@ type
     procedure SetAbortPressed(const Value: Boolean);
     procedure SetIsBusy(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
+    procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
   private
     function getHintStrDisabledWhileActive: String;
   published
@@ -1434,9 +1432,19 @@ begin
   if (xs < 0) or (xo < 0) then
     exit;
   if Wsdl.Services.Services[xs].DescriptionType = ipmDTFreeFormat then
-    DetailPageControl.ActivePage := FreeFormatSheet
+  begin
+    InWsdlTreeView.Align := alLeft;
+    InWsdlTreeView.Visible := False;
+    FreeFormatMemo.Align := alClient;
+    FreeFormatMemo.Visible := True;
+  end
   else
-    DetailPageControl.ActivePage := XmlSheet;
+  begin
+    FreeFormatMemo.Align := alRight;
+    FreeFormatMemo.Visible := False;
+    InWsdlTreeView.Align := alClient;
+    InWsdlTreeView.Visible := True;
+  end;
   saveStubChanged := stubChanged;
   saveOnChanged := OperationReqsTreeView.OnFocusChanged;
   try
@@ -1599,10 +1607,7 @@ begin
       EditBetweenScriptMenuItem.Visible := (Value.StubAction = saStub);
       EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
       EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
-      if Value.WsdlService.DescriptionType = ipmDTFreeFormat then
-        DetailPageControl.ActivePage := FreeFormatSheet
-      else
-        DetailPageControl.ActivePage := XmlSheet;
+      UpdateVisibiltyTreeView(Value.WsdlService.DescriptionType = ipmDTFreeFormat);
     end;
   except
   end;
@@ -3271,6 +3276,24 @@ begin
   HideAllOperationsAction.Enabled := HideoperationMenuItem.Enabled;
   UnhideOperationMenuItem.Enabled := (UnhideOperationMenuItem.Count > 0);
   UnhideAllOperationsAction.Enabled := UnhideOperationMenuItem.Enabled;
+end;
+
+procedure TMainForm.UpdateVisibiltyTreeView(aFreeFormat: Boolean);
+begin
+  if aFreeFormat then
+  begin
+    InWsdlTreeView.Align := alLeft;
+    InWsdlTreeView.Visible := False;
+    FreeFormatMemo.Align := alClient;
+    FreeFormatMemo.Visible := True;
+  end
+  else
+  begin
+    FreeFormatMemo.Align := alRight;
+    FreeFormatMemo.Visible := False;
+    InWsdlTreeView.Align := alClient;
+    InWsdlTreeView.Visible := True;
+  end;
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);
@@ -6373,9 +6396,7 @@ begin
   _OnParseErrorEvent := ParserError;
   _WsdlOnMessageChange := OnMessageChanged;
   try
-    XmlSheet.TabVisible := False;
-    FreeFormatSheet.TabVisible := False;
-    DetailPageControl.ActivePage := XmlSheet;
+    UpdateVisibiltyTreeView(False);
   except
   end;
   xmlUtil.AcquireLock := AcquireLock;

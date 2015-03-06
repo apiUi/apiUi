@@ -28,22 +28,25 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="indylaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="LazRichEdit"/>
+        <PackageName Value="SynEdit"/>
       </Item3>
       <Item4>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="LazRichEdit"/>
       </Item4>
       <Item5>
-        <PackageName Value="LCL"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item5>
+      <Item6>
+        <PackageName Value="LCL"/>
+      </Item6>
     </RequiredPackages>
     <Units Count="2">
       <Unit0>
