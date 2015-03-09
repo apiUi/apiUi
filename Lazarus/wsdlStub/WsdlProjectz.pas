@@ -198,6 +198,7 @@ type
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
     OnDebugOperationEvent: TOnEvent;
+    OnBusy, OnReady: TOnEvent;
     Notify: TOnNotify;
     LogServerMessage: TOnStringEvent;
     doViaProxyServer: Boolean;
@@ -360,6 +361,8 @@ type
     constructor Create;
     destructor Destroy; override;
   end;
+
+  { TProcedureThread }
 
   TProcedureThread = class(TThread)
   private
@@ -756,11 +759,18 @@ end;
 
 procedure TProcedureThread.Execute;
 begin
-  if Assigned (fProcedure) then fProcedure;
-  if Assigned (fProcedureString) then fProcedureString (fString);
-  if Assigned (fProcedureXX) then fProcedureXX (fExtended, fExtended2);
-  if Assigned (fProcedureOperation) then fProcedureOperation (fOperation);
-  if Assigned (fProcedureObject) then fProcedureObject (fObject);
+  if Assigned (fProject.OnBusy) then
+    Synchronize(fProject.OnBusy);
+  try
+    if Assigned (fProcedure) then fProcedure;
+    if Assigned (fProcedureString) then fProcedureString (fString);
+    if Assigned (fProcedureXX) then fProcedureXX (fExtended, fExtended2);
+    if Assigned (fProcedureOperation) then fProcedureOperation (fOperation);
+    if Assigned (fProcedureObject) then fProcedureObject (fObject);
+  finally
+    if Assigned (fProject.OnReady) then
+      Synchronize(fProject.OnReady);
+  end;
 end;
 
 { TSendAsynchReplyThread }

@@ -1082,6 +1082,8 @@ type
     procedure SetIsBusy(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
+    procedure SetUiBusy;
+    procedure SetUiReady;
   private
     function getHintStrDisabledWhileActive: String;
   published
@@ -3294,6 +3296,20 @@ begin
     InWsdlTreeView.Align := alClient;
     InWsdlTreeView.Visible := True;
   end;
+end;
+
+procedure TMainForm.SetUiBusy ;
+begin
+  DownPageControl.ActivePage := MessagesTabSheet;
+  ExecuteRequestToolButton.Down := True;
+  Screen.Cursor := crHourGlass;
+end;
+
+procedure TMainForm.SetUiReady ;
+begin
+  ExecuteRequestToolButton.Down := False;
+  Screen.Cursor := crDefault;
+  DownPageControl.ActivePage := MessagesTabSheet;
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);
@@ -6202,6 +6218,8 @@ begin
   notifyTabImageIndex := ExceptionTabSheet.ImageIndex;
   ExceptionTabSheet.ImageIndex := -1;
   se := TWsdlProject.Create;
+  se.OnBusy := SetUiBusy;
+  se.OnReady := SetUiReady;
   se.OnActivateEvent := ActivateCommand;
   se.OnOpenProjectEvent := OpenProjectCommand;
   se.Notify := Notify;
@@ -7971,36 +7989,25 @@ var
   SwapCursor: TCursor;
   xOperation: TWsdlOperation;
 begin
-  DownPageControl.ActivePage := MessagesTabSheet;
-  SwapCursor := Screen.Cursor;
+  if not Assigned (WsdlOperation) then
+    raise Exception.Create ('TMainForm.doExecuteRequest: wsdlOp ...');
+  WsdlOperation.AcquireLock;
   try
-    ExecuteRequestToolButton.Down := True;
-    Screen.Cursor := crHourGlass;
-    ShowMessage(WsdlOperation.Name);
-    if not Assigned (WsdlOperation) then
-      raise Exception.Create ('TMainForm.doExecuteRequest: wsdlOp ...');
-    WsdlOperation.AcquireLock;
-    try
-      xOperation := TWsdlOperation.Create(WsdlOperation);
-    finally
-      WsdlOperation.ReleaseLock;
-    end;
-    try
-      se.SendMessage(xOperation, WsdlReply, '');
-    finally
-      xOperation.Free;
-    end;
+    xOperation := TWsdlOperation.Create(WsdlOperation);
   finally
-    ExecuteRequestToolButton.Down := False;
-    Screen.Cursor := SwapCursor;
-    DownPageControl.ActivePage := MessagesTabSheet;
+    WsdlOperation.ReleaseLock;
+  end;
+  try
+    se.SendMessage(xOperation, WsdlReply, '');
+  finally
+    xOperation.Free;
   end;
 end;
 
 procedure TMainForm.ExecuteRequestActionExecute(Sender: TObject);
 begin
   EndEdit;
-  TProcedureThread.Create(se, WsdlOperation, doExecuteRequest);
+  TProcedureThread.Create(se, doExecuteRequest);
 end;
 
 procedure TMainForm.ExecuteAllRequests;
@@ -12137,4 +12144,4 @@ initialization
 finalization
   CoUninitialize;
 {$endif}
-end.
+end.

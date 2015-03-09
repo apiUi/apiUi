@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8017"/>
+      <BuildNr Value="8047"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -97,7 +97,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="11">
+    <Exceptions Count="9">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -128,12 +128,6 @@
       <Item9>
         <Name Value="EStomp"/>
       </Item9>
-      <Item10>
-        <Name Value="EIdReadTimeout"/>
-      </Item10>
-      <Item11>
-        <Name Value="EIdConnClosedGracefully"/>
-      </Item11>
     </Exceptions>
   </Debugging>
 </CONFIG>

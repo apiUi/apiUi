@@ -1,63 +1,67 @@
 object AboutBox: TAboutBox
   Left = 229
+  Height = 169
   Top = 166
+  Width = 240
   BorderStyle = bsDialog
   Caption = 'About wsdlStub'
   ClientHeight = 169
   ClientWidth = 240
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clBlack
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
-  Position = poScreenCenter
   OnCreate = FormCreate
-  PixelsPerInch = 96
+  Position = poScreenCenter
+  LCLVersion = '1.2.6.0'
   object Label1: TLabel
     Left = 18
+    Height = 13
     Top = 10
     Width = 43
-    Height = 13
     Caption = 'wsdlStub'
+    ParentColor = False
   end
   object Bevel1: TBevel
     Left = 18
+    Height = 1
     Top = 114
     Width = 213
-    Height = 1
     Shape = bsTopLine
   end
   object VersionLabel: TLabel
     Left = 18
+    Height = 13
     Top = 34
     Width = 78
-    Height = 13
     Caption = 'Version 2.4.9 #5'
+    ParentColor = False
   end
   object Label3: TLabel
     Left = 18
+    Height = 13
     Top = 58
     Width = 186
-    Height = 13
-    Caption = 'Copyright © 2009 - 2014 Jan Bouwman'
+    Caption = 'Copyright © 2009 - 2015 Jan Bouwman'
+    ParentColor = False
   end
   object LicensedLabel: TLabel
     Left = 18
+    Height = 13
     Top = 88
     Width = 58
-    Height = 13
     Caption = 'Licensed to '
+    ParentColor = False
   end
   object OKButton: TButton
     Left = 16
+    Height = 25
     Top = 131
     Width = 75
-    Height = 25
     Cancel = True
     Caption = 'OK'
     Default = True
     ModalResult = 2
     TabOrder = 0
   end
-end
+end
