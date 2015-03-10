@@ -97,7 +97,6 @@ type TProcedureOperationS = procedure (arg: TWsdlOperation; arg2: String) of Obj
 type TProcedureObject = procedure (arg: TObject) of Object;
 type TOnFoundErrorInBufferEvent = procedure (aErrorString: String; aObject: TObject) of Object;
 type TOnEvent = procedure of Object;
-type TOnProgress = procedure (aMax, aPos: Integer) of Object;
 type TOnNotify = procedure (aString: String) of Object;
 type TOnLogEvent = procedure (aLog: TLog) of Object;
 type TOnStringEvent = procedure (const Msg: String; aException: Boolean) of Object;
@@ -199,7 +198,7 @@ type
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
     OnDebugOperationEvent: TOnEvent;
-    OnBusy, OnReady, OnProgress: TOnEvent;
+    OnBusy, OnReady: TOnEvent;
     Notify: TOnNotify;
     LogServerMessage: TOnStringEvent;
     doViaProxyServer: Boolean;
@@ -221,7 +220,6 @@ type
     PublishDescriptions: Boolean;
     OperationsWithEndpointOnly: Boolean;
     SaveRelativeFileNames: Boolean;
-    ProgressMax, ProgressPos: Integer;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure SaveLog (aString: String; aLog: TLog);
@@ -381,6 +379,8 @@ type
   protected
     procedure Execute; override;
   public
+    Progress: TProcedure;
+    procedure UpdateProgress;
     constructor Create ( aSuspended: Boolean
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedure
@@ -778,6 +778,12 @@ begin
     if Assigned (fProject.OnReady) then
       Synchronize(fProject.OnReady);
   end;
+end;
+
+procedure TProcedureThread .UpdateProgress ;
+begin
+  if Assigned(Progress) then
+    Synchronize(Progress);
 end;
 
 { TSendAsynchReplyThread }
@@ -7087,4 +7093,4 @@ initialization
 finalization
 
 end.
-
+

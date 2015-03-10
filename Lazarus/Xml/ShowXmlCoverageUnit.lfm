@@ -1,11 +1,11 @@
 object ShowXmlCoverageForm: TShowXmlCoverageForm
-  Left = 239
+  Left = 328
   Height = 547
   Top = 113
-  Width = 1024
+  Width = 935
   Caption = 'XML Data'
   ClientHeight = 547
-  ClientWidth = 1024
+  ClientWidth = 935
   Color = clBtnFace
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -17,14 +17,14 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     Left = 0
     Height = 481
     Top = 29
-    Width = 1024
+    Width = 935
     Align = alClient
     BorderWidth = 3
     ClientHeight = 481
-    ClientWidth = 1024
+    ClientWidth = 935
     TabOrder = 0
     object Splitter1: TSplitter
-      Left = 830
+      Left = 741
       Height = 473
       Top = 4
       Width = 5
@@ -35,18 +35,53 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
       Left = 4
       Height = 473
       Top = 4
-      Width = 826
+      Width = 737
       Align = alClient
       Color = clBtnFace
       DragOperations = []
       Header.AutoSizeIndex = 0
-      Header.Columns = <>
+      Header.Columns = <      
+        item
+          Position = 0
+          Text = 'Tag'
+        end      
+        item
+          Position = 1
+          Width = 23
+        end      
+        item
+          Position = 2
+          Width = 23
+        end      
+        item
+          Position = 3
+          Text = '%'
+        end      
+        item
+          Position = 4
+          Text = 'Coverage'
+        end      
+        item
+          Position = 5
+          Text = '#'
+        end      
+        item
+          Position = 6
+          Text = '#  nil'
+        end      
+        item
+          Position = 7
+          Text = '# empty'
+        end      
+        item
+          Position = 8
+          Text = '# distinct'
+        end>
       Header.DefaultHeight = 17
       Header.Font.Color = clWindowText
       Header.Font.Height = -11
       Header.Font.Name = 'MS Sans Serif'
       Header.Images = ActionImageList
-      Header.MainColumn = -1
       Header.Options = [hoColumnResize, hoDblClickResize, hoVisible]
       HintMode = hmHint
       Images = ActionImageList
@@ -68,7 +103,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
       OnMouseDown = TreeViewMouseDown
     end
     object Panel2: TPanel
-      Left = 835
+      Left = 746
       Height = 473
       Top = 4
       Width = 185
@@ -125,7 +160,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     Left = 0
     Height = 29
     Top = 0
-    Width = 1024
+    Width = 935
     Caption = 'ToolBar1'
     Images = ActionImageList
     ParentShowHint = False
@@ -209,10 +244,10 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     Left = 0
     Height = 37
     Top = 510
-    Width = 1024
+    Width = 935
     Align = alBottom
     ClientHeight = 37
-    ClientWidth = 1024
+    ClientWidth = 935
     TabOrder = 2
     object OkButton: TButton
       Left = 8

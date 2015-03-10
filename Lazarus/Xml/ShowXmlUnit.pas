@@ -855,7 +855,6 @@ begin
   end;
   try
     xmlUtil.ListXsdDocumentation(DocumentationEdit, xBind, False, False);
-    MemoShowLinks(DocumentationEdit);
   except
   end;
   TreeView.Invalidate;
@@ -1938,4 +1937,4 @@ begin
   Self.Edit.PasswordChar := '*';
 end;
 
-end.
+end.

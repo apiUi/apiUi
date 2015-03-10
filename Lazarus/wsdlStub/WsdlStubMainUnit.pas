@@ -909,6 +909,7 @@ type
     property WsdlReply: TWsdlMessage read getWsdlReply write setWsdlReply;
     property xmlViewType: TxvViewType read getXmlViewType;
   private
+    procedureThread: TProcedureThread;
     editingNode: PVirtualNode;
     notifyTabCaption, logTabCaption: String;
     notifyTabImageIndex: Integer;
@@ -1084,8 +1085,9 @@ type
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
     procedure SetUiBusy;
     procedure SetUiReady;
-    procedure SetUiProgress (aMax, aPos: Integer);
+    procedure SetUiProgress;
   private
+    ProgressMax, ProgressPos: Integer;
     function getHintStrDisabledWhileActive: String;
   published
   public
@@ -3321,10 +3323,10 @@ begin
   AbortToolButton.Enabled := False;
 end;
 
-procedure TMainForm.SetUiProgress (aMax, aPos: Integer);
+procedure TMainForm.SetUiProgress;
 begin
-  ProgressBar.Max := aMax;
-  ProgressBar.Position := aPos;
+  ProgressBar.Max := ProgressMax;
+  ProgressBar.Position := ProgressPos;
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);
@@ -4832,9 +4834,8 @@ begin
     if Assigned(WsdlOperation.FaultMessages) then
     begin
       xNewMessage.fltBind.Name := xOrgMessage.fltBind.Name;
-(xNewMessage.fltBind as TXml)
-      .Xsd := WsdlOperation.FaultXsd; (xNewMessage.fltBind as TXml)
-      .LoadValues(xOrgMessage.fltBind as TXml, True);
+      (xNewMessage.fltBind as TXml).Xsd := WsdlOperation.FaultXsd;
+      (xNewMessage.fltBind as TXml).LoadValues(xOrgMessage.fltBind as TXml, True);
     end;
   end;
   result := GridView.AddChild(nil);
@@ -6235,7 +6236,6 @@ begin
   se := TWsdlProject.Create;
   se.OnBusy := SetUiBusy;
   se.OnReady := SetUiReady;
-  se.OnProgress := SetUiProgress;
   se.OnActivateEvent := ActivateCommand;
   se.OnOpenProjectEvent := OpenProjectCommand;
   se.Notify := Notify;
@@ -8032,7 +8032,7 @@ var
   SwapCursor: TCursor;
   xOperation: TWsdlOperation;
 begin
-  se.ProgressMax := WsdlOperation.Messages.Count;
+  ProgressMax := WsdlOperation.Messages.Count;
   WsdlOperation.AcquireLock;
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
@@ -8046,17 +8046,8 @@ begin
         Break;
       if not xOperation.Messages.Messages[X].Disabled then
       begin
-      { TODO : implement onprogress synchronized}
-      {
-        AcquireLock;
-        try
-          se.ProgressPos := X + 1;
-  if Assigned (se.OnProgress) then
-            se.OnProgress;
-        finally
-          ReleaseLock;
-        end;
-        }
+        ProgressPos := X;
+        procedureThread.UpdateProgress;
         try
           se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
         except
@@ -8071,7 +8062,12 @@ end;
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
   EndEdit;
-  TProcedureThread.Create(False, se, ExecuteAllRequests);
+  procedureThread := TProcedureThread.Create(True, se, ExecuteAllRequests);
+  with procedureThread do
+  begin
+    Progress := SetUiProgress;
+    Start;
+  end;
 end;
 
 procedure TMainForm.MessagesVTSGetHint(Sender: TBaseVirtualTree;
@@ -12151,4 +12147,4 @@ initialization
 finalization
   CoUninitialize;
 {$endif}
-end.
+end.

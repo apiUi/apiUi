@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 450
+  Left = 321
   Height = 484
-  Top = 106
+  Top = 105
   Width = 986
   Caption = 'MainForm'
-  ClientHeight = 463
+  ClientHeight = 465
   ClientWidth = 986
   Color = clBtnFace
   Font.Color = clWindowText
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 289
+    Top = 291
     Width = 986
     Align = alBottom
     ResizeAnchor = akBottom
@@ -184,25 +184,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 260
+    Height = 262
     Top = 29
     Width = 986
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 260
+    ClientHeight = 262
     ClientWidth = 986
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
-      Height = 254
+      Height = 256
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
       Left = 843
-      Height = 254
+      Height = 256
       Top = 3
       Width = 5
       Align = alRight
@@ -211,18 +211,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 254
+      Height = 256
       Top = 3
       Width = 202
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 254
+      ClientHeight = 256
       ClientWidth = 202
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 185
+        Top = 187
         Width = 196
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -230,10 +230,10 @@ object MainForm: TMainForm
         TabOrder = 1
         object ActionComboBox: TComboBox
           Left = 1
-          Height = 27
+          Height = 21
           Top = 2
           Width = 66
-          ItemHeight = 0
+          ItemHeight = 13
           Items.Strings = (
             'Stub'
             'Forward'
@@ -289,7 +289,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 182
+        Height = 184
         Top = 3
         Width = 196
         Align = alClient
@@ -320,7 +320,7 @@ object MainForm: TMainForm
       object ScriptButtonsPanel: TPanel
         Left = 3
         Height = 37
-        Top = 214
+        Top = 216
         Width = 196
         Align = alBottom
         Caption = 'ScriptButtonsPanel'
@@ -363,13 +363,13 @@ object MainForm: TMainForm
     end
     object XsdPanel: TPanel
       Left = 848
-      Height = 254
+      Height = 256
       Top = 3
       Width = 135
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 254
+      ClientHeight = 256
       ClientWidth = 135
       TabOrder = 1
       object Splitter6: TSplitter
@@ -422,7 +422,7 @@ object MainForm: TMainForm
       end
       object DataTypeDocumentationMemo: TlzRichEdit
         Left = 4
-        Height = 35
+        Height = 15
         Top = 237
         Width = 127
         DefaultExtension = '.rtf'
@@ -440,11 +440,11 @@ object MainForm: TMainForm
     end
     object Panel6: TPanel
       Left = 210
-      Height = 254
+      Height = 256
       Top = 3
       Width = 633
       Align = alClient
-      ClientHeight = 254
+      ClientHeight = 256
       ClientWidth = 633
       TabOrder = 2
       object Splitter10: TSplitter
@@ -678,44 +678,44 @@ object MainForm: TMainForm
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
           Left = 224
-          Height = 14
+          Height = 13
           Top = 33
-          Width = 60
+          Width = 49
           Caption = 'Operation:'
           ParentColor = False
         end
         object ServiceLabel: TLabel
           Left = 5
-          Height = 14
+          Height = 13
           Top = 32
-          Width = 46
+          Width = 39
           Caption = 'Service:'
           ParentColor = False
         end
         object WsdlLabel: TLabel
           Left = 18
-          Height = 14
+          Height = 13
           Top = 7
-          Width = 31
+          Width = 27
           Caption = 'Wsdl:'
           ParentColor = False
         end
         object WsdlOperationsComboBox: TComboBox
           Left = 275
-          Height = 27
+          Height = 21
           Top = 29
           Width = 113
-          ItemHeight = 0
+          ItemHeight = 13
           OnChange = WsdlOperationsComboBoxChange
           Style = csDropDownList
           TabOrder = 2
         end
         object WsdlServicesComboBox: TComboBox
           Left = 46
-          Height = 27
+          Height = 21
           Top = 29
           Width = 140
-          ItemHeight = 0
+          ItemHeight = 13
           OnChange = WsdlServicesComboBoxChange
           OnDropDown = WsdlServicesComboBoxDropDown
           Style = csDropDownList
@@ -723,10 +723,10 @@ object MainForm: TMainForm
         end
         object WsdlComboBox: TComboBox
           Left = 46
-          Height = 27
+          Height = 21
           Top = 4
           Width = 342
-          ItemHeight = 0
+          ItemHeight = 13
           OnChange = WsdlComboBoxChange
           OnDropDown = WsdlComboBoxDropDown
           Style = csDropDownList
@@ -787,19 +787,19 @@ object MainForm: TMainForm
         end
         object View: TLabel
           Left = 123
-          Height = 14
+          Height = 13
           Top = 2
-          Width = 30
+          Width = 26
           Caption = 'View:'
           Layout = tlCenter
           ParentColor = False
         end
         object ViewStyleComboBox: TComboBox
-          Left = 153
-          Height = 27
+          Left = 149
+          Height = 21
           Top = 2
           Width = 98
-          ItemHeight = 0
+          ItemHeight = 13
           Items.Strings = (
             'All'
             'Required'
@@ -813,7 +813,7 @@ object MainForm: TMainForm
       end
       object DetailPageControl: TPageControl
         Left = 1
-        Height = 17
+        Height = 19
         Top = 219
         Width = 631
         ActivePage = XmlSheet
@@ -822,13 +822,13 @@ object MainForm: TMainForm
         TabOrder = 4
         object XmlSheet: TTabSheet
           Caption = 'XmlSheet'
-          ClientHeight = 1
-          ClientWidth = 625
+          ClientHeight = 0
+          ClientWidth = 623
           object InWsdlTreeView: TVirtualStringTree
             Left = 0
-            Height = 1
+            Height = 0
             Top = 0
-            Width = 625
+            Width = 623
             Align = alClient
             DragOperations = []
             EditDelay = 0
@@ -902,7 +902,7 @@ object MainForm: TMainForm
       object StatusPanel: TPanel
         Left = 1
         Height = 17
-        Top = 236
+        Top = 238
         Width = 631
         Align = alBottom
         Alignment = taLeftJustify
@@ -914,7 +914,7 @@ object MainForm: TMainForm
   object LogPanel: TPanel
     Left = 0
     Height = 169
-    Top = 294
+    Top = 296
     Width = 986
     Align = alBottom
     ClientHeight = 169
@@ -948,19 +948,19 @@ object MainForm: TMainForm
       end
       object MessagesTabSheet: TTabSheet
         Caption = 'Log'
-        ClientHeight = 133
-        ClientWidth = 978
+        ClientHeight = 140
+        ClientWidth = 976
         object Splitter7: TSplitter
           Left = 268
-          Height = 104
+          Height = 111
           Top = 29
           Width = 5
         end
         object MessagesPageControl: TPageControl
           Left = 273
-          Height = 104
+          Height = 111
           Top = 29
-          Width = 705
+          Width = 703
           ActivePage = RequestHeadersTabSheet
           Align = alClient
           Images = mainImageList
@@ -969,13 +969,13 @@ object MainForm: TMainForm
           TabPosition = tpBottom
           object RequestHeadersTabSheet: TTabSheet
             Caption = 'HTTP Request Headers'
-            ClientHeight = 70
-            ClientWidth = 699
+            ClientHeight = 84
+            ClientWidth = 695
             object RequestHeadersMemo: TMemo
               Left = 0
-              Height = 70
+              Height = 84
               Top = 0
-              Width = 677
+              Width = 673
               Align = alClient
               Font.CharSet = ANSI_CHARSET
               Font.Color = clWindowText
@@ -988,8 +988,8 @@ object MainForm: TMainForm
               TabOrder = 0
             end
             object ToolBar11: TToolBar
-              Left = 677
-              Height = 70
+              Left = 673
+              Height = 84
               Top = 0
               Width = 22
               Align = alRight
@@ -1234,7 +1234,7 @@ object MainForm: TMainForm
           Left = 0
           Height = 29
           Top = 0
-          Width = 978
+          Width = 976
           Caption = 'ToolBar6'
           Images = mainImageList
           TabOrder = 1
@@ -1312,17 +1312,17 @@ object MainForm: TMainForm
         end
         object Panel2: TPanel
           Left = 0
-          Height = 104
+          Height = 111
           Top = 29
           Width = 268
           Align = alLeft
           Caption = 'Panel2'
-          ClientHeight = 104
+          ClientHeight = 111
           ClientWidth = 268
           TabOrder = 2
           object MessagesVTS: TVirtualStringTree
             Left = 1
-            Height = 85
+            Height = 89
             Top = 1
             Width = 266
             Align = alClient
@@ -1411,8 +1411,8 @@ object MainForm: TMainForm
           end
           object MessagesStatusBar: TStatusBar
             Left = 1
-            Height = 17
-            Top = 86
+            Height = 20
+            Top = 90
             Width = 266
             Panels = <            
               item
@@ -9022,4 +9022,4 @@ object MainForm: TMainForm
     left = 440
     top = 168
   end
-end
+end

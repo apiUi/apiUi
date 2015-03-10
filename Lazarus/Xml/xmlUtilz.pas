@@ -1312,6 +1312,7 @@ begin
   aMemo.Text := s;
   aMemo.ParentColor := True;
   aMemo.Color := clBtnFace;
+  MemoShowLinks(aMemo);
 end;
 
 procedure TXmlUtil .ListXsdDocumentation (aMemo : TSynEdit ;

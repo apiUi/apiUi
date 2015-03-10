@@ -758,17 +758,7 @@ begin
     finally
       Screen.Cursor := swapCursor;
     end;
-    {$ifndef fpc}
-    Application.CreateForm(TShowHtmlForm, ShowHtmlForm);
-    try
-      ShowHtmlForm.Caption := 'wsdlStub - Coverage report';
-      ShowHtmlForm.Html := xXml.asHtmlString;
-      ShowHtmlForm.ShowModal;
-    finally
-      FreeAndNil (ShowHtmlForm);
-    end;
-    {$endif}
-    ShowMessage (xXml.asHtmlString);
+    XmlUtil.presentAsHTML('wsdlStub - Coverage report', xXml.asHtmlString);
   finally
     FreeAndNil (xXml);
   end;
