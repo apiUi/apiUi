@@ -97,6 +97,7 @@ type TProcedureOperationS = procedure (arg: TWsdlOperation; arg2: String) of Obj
 type TProcedureObject = procedure (arg: TObject) of Object;
 type TOnFoundErrorInBufferEvent = procedure (aErrorString: String; aObject: TObject) of Object;
 type TOnEvent = procedure of Object;
+type TOnProgress = procedure (aMax, aPos: Integer) of Object;
 type TOnNotify = procedure (aString: String) of Object;
 type TOnLogEvent = procedure (aLog: TLog) of Object;
 type TOnStringEvent = procedure (const Msg: String; aException: Boolean) of Object;
@@ -198,7 +199,7 @@ type
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
     OnDebugOperationEvent: TOnEvent;
-    OnBusy, OnReady: TOnEvent;
+    OnBusy, OnReady, OnProgress: TOnEvent;
     Notify: TOnNotify;
     LogServerMessage: TOnStringEvent;
     doViaProxyServer: Boolean;
@@ -220,6 +221,7 @@ type
     PublishDescriptions: Boolean;
     OperationsWithEndpointOnly: Boolean;
     SaveRelativeFileNames: Boolean;
+    ProgressMax, ProgressPos: Integer;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure SaveLog (aString: String; aLog: TLog);
@@ -379,22 +381,27 @@ type
   protected
     procedure Execute; override;
   public
-    constructor Create ( aProject: TWsdlProject
+    constructor Create ( aSuspended: Boolean
+                       ; aProject: TWsdlProject
                        ; aProcedure: TProcedure
                        ); overload;
-    constructor Create ( aProject: TWsdlProject
+    constructor Create ( aSuspended: Boolean
+                       ; aProject: TWsdlProject
                        ; aProcedure: TProcedureS
                        ; aString: String
                        ); overload;
-    constructor Create ( aProject: TWsdlProject
+    constructor Create ( aSuspended: Boolean
+                       ; aProject: TWsdlProject
                        ; aProcedure: TProcedureXX
                        ; aExtended, aExtended2: Extended
                        ); overload;
-    constructor Create ( aProject: TWsdlProject
+    constructor Create ( aSuspended: Boolean
+                       ; aProject: TWsdlProject
                        ; aProcedure: TProcedureOperation
                        ; aOperation: TWsdlOperation
                        ); overload;
-    constructor Create ( aProject: TWsdlProject
+    constructor Create ( aSuspended: Boolean
+                       ; aProject: TWsdlProject
                        ; aProcedure: TProcedureObject
                        ; aObject: TObject
                        ); overload;
@@ -708,48 +715,48 @@ end;
 
 { TProcedureThread }
 
-constructor TProcedureThread.Create(aProject: TWsdlProject; aProcedure: TProcedure);
+constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject; aProcedure: TProcedure);
 begin
-  inherited Create (False);
+  inherited Create (aSuspended);
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedure := aProcedure;
 end;
 
-constructor TProcedureThread.Create(aProject: TWsdlProject; aProcedure: TProcedureS;
+constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject; aProcedure: TProcedureS;
   aString: String);
 begin
-  inherited Create (False);
+  inherited Create (aSuspended);
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedureString := aProcedure;
   fString := aString;
 end;
 
-constructor TProcedureThread.Create(aProject: TWsdlProject; aProcedure: TProcedureOperation;
+constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject; aProcedure: TProcedureOperation;
   aOperation: TWsdlOperation);
 begin
-  inherited Create (False);
+  inherited Create (aSuspended);
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedureOperation := aProcedure;
   fOperation := aOperation;
 end;
 
-constructor TProcedureThread.Create(aProject: TWsdlProject;
+constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject;
   aProcedure: TProcedureObject; aObject: TObject);
 begin
-  inherited Create (False);
+  inherited Create (aSuspended);
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedureObject := aProcedure;
   fObject := aObject;
 end;
 
-constructor TProcedureThread.Create(aProject: TWsdlProject;
+constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject;
   aProcedure: TProcedureXX; aExtended, aExtended2: Extended);
 begin
-  inherited Create (False);
+  inherited Create (aSuspended);
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedureXX := aProcedure;
@@ -3888,7 +3895,7 @@ begin
     xProject := (aObject as TWsdlOperation).Owner as TWsdlProject
   else
     xProject := aObject as TWsdlProject;
-  TProcedureThread.Create(xProject, xProject.RefuseHttpConnectionsThreaded, aLater, aTime);
+  TProcedureThread.Create(False, xProject, xProject.RefuseHttpConnectionsThreaded, aLater, aTime);
 end;
 
 procedure TWsdlProject.RefuseHttpConnectionsThreaded(aLater, aTime: Extended);
@@ -6450,7 +6457,7 @@ begin
                   raise Exception.Create('sendAllRequestsReq refused because requested operation is not configured as request');
                 if not IsActive then
                   raise Exception.Create('sendAllRequestsReq refused because ' + _progName + ' is inactive');
-                TProcedureThread.Create (Self, ExecuteAllOperationRequests, dOperation);
+                TProcedureThread.Create (False, Self, ExecuteAllOperationRequests, dOperation);
               end;
               if xOperId = 'sendRequestReq' then
               begin
@@ -6886,7 +6893,7 @@ end;
 
 procedure TWsdlProject.ScriptExecuteText(aText: String);
 begin
-  TProcedureThread.Create(self, ScriptExecute, aText);
+  TProcedureThread.Create(False, self, ScriptExecute, aText);
 end;
 
 procedure TWsdlProject.ExecuteAllOperationRequests(aOperation: TWsdlOperation);

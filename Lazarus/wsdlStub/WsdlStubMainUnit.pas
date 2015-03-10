@@ -1084,6 +1084,7 @@ type
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
     procedure SetUiBusy;
     procedure SetUiReady;
+    procedure SetUiProgress (aMax, aPos: Integer);
   private
     function getHintStrDisabledWhileActive: String;
   published
@@ -3302,14 +3303,28 @@ procedure TMainForm.SetUiBusy ;
 begin
   DownPageControl.ActivePage := MessagesTabSheet;
   ExecuteRequestToolButton.Down := True;
+  ExecuteAllRequestsToolButton.Down := True;
+  ProgressBar.Position := 0;
   Screen.Cursor := crHourGlass;
+  abortPressed := False;
+  AbortToolButton.Enabled := True;
 end;
 
 procedure TMainForm.SetUiReady ;
 begin
   ExecuteRequestToolButton.Down := False;
+  ExecuteAllRequestsToolButton.Down := False;
   Screen.Cursor := crDefault;
   DownPageControl.ActivePage := MessagesTabSheet;
+  ProgressBar.Position := 0;
+  abortPressed := False;
+  AbortToolButton.Enabled := False;
+end;
+
+procedure TMainForm.SetUiProgress (aMax, aPos: Integer);
+begin
+  ProgressBar.Max := aMax;
+  ProgressBar.Position := aPos;
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);
@@ -6220,6 +6235,7 @@ begin
   se := TWsdlProject.Create;
   se.OnBusy := SetUiBusy;
   se.OnReady := SetUiReady;
+  se.OnProgress := SetUiProgress;
   se.OnActivateEvent := ActivateCommand;
   se.OnOpenProjectEvent := OpenProjectCommand;
   se.Notify := Notify;
@@ -7471,7 +7487,7 @@ begin
           begin
             saveToDiskSeparator := messagesFromDiskForm.SeparatorEdit.Text;
             FileNameList.Text := Files.Text;
-            TProcedureThread.Create(se, doReadMessagesFromDisk);
+            TProcedureThread.Create(False, se, doReadMessagesFromDisk);
           end;
         finally
           FreeAndNil(messagesFromDiskForm);
@@ -7861,7 +7877,7 @@ begin
   with Sender as TMenuItem do
     with se.Scripts.Objects[Tag] as TStringList do
       xScript := Text;
-  TProcedureThread.Create(se, ExecuteScript, xScript);
+  TProcedureThread.Create(False, se, ExecuteScript, xScript);
 end;
 
 procedure TMainForm.CreateScriptsSubMenuItems;
@@ -8007,7 +8023,7 @@ end;
 procedure TMainForm.ExecuteRequestActionExecute(Sender: TObject);
 begin
   EndEdit;
-  TProcedureThread.Create(se, doExecuteRequest);
+  TProcedureThread.Create(False, se, doExecuteRequest);
 end;
 
 procedure TMainForm.ExecuteAllRequests;
@@ -8016,16 +8032,7 @@ var
   SwapCursor: TCursor;
   xOperation: TWsdlOperation;
 begin
-  DownPageControl.ActivePage := MessagesTabSheet;
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  ExecuteAllRequestsToolButton.Down := True;
-  ProgressBar.Min := 0;
-  ProgressBar.Position := 0;
-  ProgressBar.Max := WsdlOperation.Messages.Count;
-  ProgressBar.Position := 0;
-  abortPressed := False;
-  AbortToolButton.Enabled := True;
+  se.ProgressMax := WsdlOperation.Messages.Count;
   WsdlOperation.AcquireLock;
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
@@ -8039,12 +8046,17 @@ begin
         Break;
       if not xOperation.Messages.Messages[X].Disabled then
       begin
+      { TODO : implement onprogress synchronized}
+      {
         AcquireLock;
         try
-          ProgressBar.Position := X + 1;
+          se.ProgressPos := X + 1;
+  if Assigned (se.OnProgress) then
+            se.OnProgress;
         finally
           ReleaseLock;
         end;
+        }
         try
           se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
         except
@@ -8053,18 +8065,13 @@ begin
     end;
   finally
     FreeAndNil(xOperation);
-    AbortToolButton.Enabled := False;
-    abortPressed := False;
-    ExecuteAllRequestsToolButton.Down := False;
-    ProgressBar.Position := 0;
-    Screen.Cursor := SwapCursor;
   end;
 end;
 
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
   EndEdit;
-  TProcedureThread.Create(se, ExecuteAllRequests);
+  TProcedureThread.Create(False, se, ExecuteAllRequests);
 end;
 
 procedure TMainForm.MessagesVTSGetHint(Sender: TBaseVirtualTree;
@@ -10223,7 +10230,7 @@ begin
       saveToDiskDirectory := messagesToDiskForm.DirectoryEdit.Text;
       saveToDiskExtention := messagesToDiskForm.ExtentionEdit.Text;
       saveToDiskSeparator := messagesToDiskForm.SeparatorEdit.Text;
-      TProcedureThread.Create(se, doSaveMessagesToDisk);
+      TProcedureThread.Create(False, se, doSaveMessagesToDisk);
     end;
   finally
     FreeAndNil(messagesToDiskForm);
@@ -12144,4 +12151,4 @@ initialization
 finalization
   CoUninitialize;
 {$endif}
-end.
+end.

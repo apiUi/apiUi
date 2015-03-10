@@ -1,7 +1,6 @@
 program wsdlStub;
 
 {$mode objfpc}{$H+}
-{$define UseCThreads}
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,

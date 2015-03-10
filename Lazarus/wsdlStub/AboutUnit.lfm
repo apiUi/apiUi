@@ -1,7 +1,7 @@
 object AboutBox: TAboutBox
   Left = 229
   Height = 169
-  Top = 166
+  Top = 78
   Width = 240
   BorderStyle = bsDialog
   Caption = 'About wsdlStub'

@@ -1,7 +1,7 @@
 object EditOperationScriptForm: TEditOperationScriptForm
   Left = 592
   Height = 381
-  Top = 197
+  Top = 109
   Width = 675
   Anchors = []
   Caption = 'Edit script'
