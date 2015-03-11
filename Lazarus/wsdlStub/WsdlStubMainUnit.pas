@@ -1087,7 +1087,6 @@ type
     procedure SetUiReady;
     procedure SetUiProgress;
   private
-    ProgressMax, ProgressPos: Integer;
     function getHintStrDisabledWhileActive: String;
   published
   public
@@ -3325,8 +3324,10 @@ end;
 
 procedure TMainForm.SetUiProgress;
 begin
-  ProgressBar.Max := ProgressMax;
-  ProgressBar.Position := ProgressPos;
+  if ProgressBar.Max <> se.ProgressMax then
+    ProgressBar.Max := se.ProgressMax;
+  if ProgressBar.Position <> se.ProgressPos then
+    ProgressBar.Position := se.ProgressPos;
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);
@@ -8032,7 +8033,9 @@ var
   SwapCursor: TCursor;
   xOperation: TWsdlOperation;
 begin
-  ProgressMax := WsdlOperation.Messages.Count;
+  se.AcquireLogLock;
+  se.ProgressMax := WsdlOperation.Messages.Count;
+  se.ReleaseLogLock;
   WsdlOperation.AcquireLock;
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
@@ -8046,8 +8049,9 @@ begin
         Break;
       if not xOperation.Messages.Messages[X].Disabled then
       begin
-        ProgressPos := X;
-        procedureThread.UpdateProgress;
+        se.AcquireLogLock;
+        se.ProgressPos := X;
+        se.ReleaseLogLock;
         try
           se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
         except
@@ -8062,12 +8066,7 @@ end;
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
   EndEdit;
-  procedureThread := TProcedureThread.Create(True, se, ExecuteAllRequests);
-  with procedureThread do
-  begin
-    Progress := SetUiProgress;
-    Start;
-  end;
+  procedureThread := TProcedureThread.Create(False, se, ExecuteAllRequests);
 end;
 
 procedure TMainForm.MessagesVTSGetHint(Sender: TBaseVirtualTree;
@@ -8519,6 +8518,7 @@ begin
         end;
       end;
       se.toUpdateDisplayLogs.Clear;
+      SetUiProgress;
     finally
       se.ReleaseLogLock;
     end;

@@ -160,6 +160,7 @@ type
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
   public
+    ProgressMax, ProgressPos: Integer;
     doCloneOperations: Boolean;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword: String;
     FreeFormatWsdl, XsdWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
@@ -379,8 +380,6 @@ type
   protected
     procedure Execute; override;
   public
-    Progress: TProcedure;
-    procedure UpdateProgress;
     constructor Create ( aSuspended: Boolean
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedure
@@ -778,12 +777,6 @@ begin
     if Assigned (fProject.OnReady) then
       Synchronize(fProject.OnReady);
   end;
-end;
-
-procedure TProcedureThread .UpdateProgress ;
-begin
-  if Assigned(Progress) then
-    Synchronize(Progress);
 end;
 
 { TSendAsynchReplyThread }

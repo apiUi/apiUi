@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 321
-  Height = 484
-  Top = 105
-  Width = 986
+  Left = 389
+  Height = 633
+  Top = 149
+  Width = 1038
   Caption = 'MainForm'
-  ClientHeight = 465
-  ClientWidth = 986
+  ClientHeight = 614
+  ClientWidth = 1038
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
@@ -23,8 +23,8 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 291
-    Width = 986
+    Top = 440
+    Width = 1038
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -32,7 +32,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 29
     Top = 0
-    Width = 986
+    Width = 1038
     Caption = 'MainToolBar'
     Images = mainImageList
     TabOrder = 2
@@ -184,25 +184,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 262
+    Height = 411
     Top = 29
-    Width = 986
+    Width = 1038
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 262
-    ClientWidth = 986
+    ClientHeight = 411
+    ClientWidth = 1038
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
-      Height = 256
+      Height = 405
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 843
-      Height = 256
+      Left = 895
+      Height = 405
       Top = 3
       Width = 5
       Align = alRight
@@ -211,18 +211,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 256
+      Height = 405
       Top = 3
       Width = 202
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 256
+      ClientHeight = 405
       ClientWidth = 202
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 187
+        Top = 336
         Width = 196
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -289,7 +289,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 184
+        Height = 333
         Top = 3
         Width = 196
         Align = alClient
@@ -320,7 +320,7 @@ object MainForm: TMainForm
       object ScriptButtonsPanel: TPanel
         Left = 3
         Height = 37
-        Top = 216
+        Top = 365
         Width = 196
         Align = alBottom
         Caption = 'ScriptButtonsPanel'
@@ -362,14 +362,14 @@ object MainForm: TMainForm
       end
     end
     object XsdPanel: TPanel
-      Left = 848
-      Height = 256
+      Left = 900
+      Height = 405
       Top = 3
       Width = 135
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 256
+      ClientHeight = 405
       ClientWidth = 135
       TabOrder = 1
       object Splitter6: TSplitter
@@ -422,7 +422,7 @@ object MainForm: TMainForm
       end
       object DataTypeDocumentationMemo: TlzRichEdit
         Left = 4
-        Height = 15
+        Height = 164
         Top = 237
         Width = 127
         DefaultExtension = '.rtf'
@@ -440,19 +440,19 @@ object MainForm: TMainForm
     end
     object Panel6: TPanel
       Left = 210
-      Height = 256
+      Height = 405
       Top = 3
-      Width = 633
+      Width = 685
       Align = alClient
-      ClientHeight = 256
-      ClientWidth = 633
+      ClientHeight = 405
+      ClientWidth = 685
       TabOrder = 2
       object Splitter10: TSplitter
         Cursor = crVSplit
         Left = 1
         Height = 5
         Top = 185
-        Width = 631
+        Width = 683
         Align = alTop
         ResizeAnchor = akTop
       end
@@ -460,7 +460,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 29
         Top = 62
-        Width = 631
+        Width = 683
         Caption = 'GridToolBar'
         Images = mainImageList
         TabOrder = 2
@@ -626,7 +626,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 94
         Top = 91
-        Width = 631
+        Width = 683
         Align = alTop
         DragOperations = []
         EditDelay = 0
@@ -670,10 +670,10 @@ object MainForm: TMainForm
         Left = 1
         Height = 61
         Top = 1
-        Width = 631
+        Width = 683
         Align = alTop
         ClientHeight = 61
-        ClientWidth = 631
+        ClientWidth = 683
         TabOrder = 0
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
@@ -737,7 +737,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 29
         Top = 190
-        Width = 631
+        Width = 683
         Caption = 'ToolBar9'
         Images = mainImageList
         TabOrder = 3
@@ -813,22 +813,22 @@ object MainForm: TMainForm
       end
       object DetailPageControl: TPageControl
         Left = 1
-        Height = 19
+        Height = 168
         Top = 219
-        Width = 631
+        Width = 683
         ActivePage = XmlSheet
         Align = alClient
         TabIndex = 0
         TabOrder = 4
         object XmlSheet: TTabSheet
           Caption = 'XmlSheet'
-          ClientHeight = 0
-          ClientWidth = 623
+          ClientHeight = 142
+          ClientWidth = 675
           object InWsdlTreeView: TVirtualStringTree
             Left = 0
-            Height = 0
+            Height = 142
             Top = 0
-            Width = 623
+            Width = 675
             Align = alClient
             DragOperations = []
             EditDelay = 0
@@ -902,8 +902,8 @@ object MainForm: TMainForm
       object StatusPanel: TPanel
         Left = 1
         Height = 17
-        Top = 238
-        Width = 631
+        Top = 387
+        Width = 683
         Align = alBottom
         Alignment = taLeftJustify
         BevelInner = bvLowered
@@ -914,17 +914,17 @@ object MainForm: TMainForm
   object LogPanel: TPanel
     Left = 0
     Height = 169
-    Top = 296
-    Width = 986
+    Top = 445
+    Width = 1038
     Align = alBottom
     ClientHeight = 169
-    ClientWidth = 986
+    ClientWidth = 1038
     TabOrder = 1
     object DownPageControl: TPageControl
       Left = 1
       Height = 167
       Top = 1
-      Width = 984
+      Width = 1036
       ActivePage = MessagesTabSheet
       Align = alClient
       Images = mainImageList
@@ -949,7 +949,7 @@ object MainForm: TMainForm
       object MessagesTabSheet: TTabSheet
         Caption = 'Log'
         ClientHeight = 140
-        ClientWidth = 976
+        ClientWidth = 1028
         object Splitter7: TSplitter
           Left = 268
           Height = 111
@@ -960,7 +960,7 @@ object MainForm: TMainForm
           Left = 273
           Height = 111
           Top = 29
-          Width = 703
+          Width = 755
           ActivePage = RequestHeadersTabSheet
           Align = alClient
           Images = mainImageList
@@ -970,12 +970,12 @@ object MainForm: TMainForm
           object RequestHeadersTabSheet: TTabSheet
             Caption = 'HTTP Request Headers'
             ClientHeight = 84
-            ClientWidth = 695
+            ClientWidth = 747
             object RequestHeadersMemo: TMemo
               Left = 0
               Height = 84
               Top = 0
-              Width = 673
+              Width = 725
               Align = alClient
               Font.CharSet = ANSI_CHARSET
               Font.Color = clWindowText
@@ -988,7 +988,7 @@ object MainForm: TMainForm
               TabOrder = 0
             end
             object ToolBar11: TToolBar
-              Left = 673
+              Left = 725
               Height = 84
               Top = 0
               Width = 22
@@ -1234,7 +1234,7 @@ object MainForm: TMainForm
           Left = 0
           Height = 29
           Top = 0
-          Width = 976
+          Width = 1028
           Caption = 'ToolBar6'
           Images = mainImageList
           TabOrder = 1
@@ -9008,16 +9008,22 @@ object MainForm: TMainForm
     top = 176
   end
   object SqlConnector: TSQLConnector
-    Connected = False
+    Connected = True
     LoginPrompt = False
+    DatabaseName = 'XE'
     KeepConnection = False
+    Password = 'fpd'
     Transaction = SQLTransaction
+    UserName = 'owner_fpd'
+    HostName = 'xpone:1521'
     LogEvents = []
+    ConnectorType = 'Oracle'
     left = 408
     top = 168
   end
   object SQLTransaction: TSQLTransaction
     Active = False
+    Action = caNone
     Database = SqlConnector
     left = 440
     top = 168
