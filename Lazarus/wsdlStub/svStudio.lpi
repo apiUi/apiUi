@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8051"/>
+      <BuildNr Value="8053"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -81,6 +81,7 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
@@ -97,7 +98,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="11">
+    <Exceptions Count="12">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -134,6 +135,9 @@
       <Item11>
         <Name Value="EOraDatabaseError"/>
       </Item11>
+      <Item12>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item12>
     </Exceptions>
   </Debugging>
 </CONFIG>

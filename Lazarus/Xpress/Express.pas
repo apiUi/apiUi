@@ -519,7 +519,22 @@ begin
   xTransaction.DataBase := Qry.Database;
   Qry.Transaction := xTransaction;
   try
-    xTransaction.Commit;
+    if Qry.DataBase is TSqlConnector then with Qry.DataBase as TSqlConnector do
+      if ConnectorType = 'Oracle' then
+      begin
+        xTransaction.StartTransaction;
+        with TSQLQuery.Create(nil) do
+        try
+          DataBase := Qry.DataBase;
+          Transaction := xTransaction;
+          Sql.Text:= 'set transaction read write;';
+          ExecSql;
+        finally
+          Free;
+        end;
+      end
+      else
+        xTransaction.StartTransaction;
     Qry.ExecSQL;
   finally
     xTransaction.Commit;

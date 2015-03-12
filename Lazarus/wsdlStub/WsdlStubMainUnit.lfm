@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 389
+  Left = 394
   Height = 633
-  Top = 149
+  Top = 142
   Width = 1038
   Caption = 'MainForm'
   ClientHeight = 614
@@ -8496,6 +8496,9 @@ object MainForm: TMainForm
     FieldDefs = <>
     Database = SqlConnector
     Transaction = SQLTransaction
+    DeleteSQL.Strings = (
+      'select * from FPD_EXECUTION_PHASES'
+    )
     Params = <>
     UsePrimaryKeyAsKey = False
     left = 472
@@ -9008,22 +9011,21 @@ object MainForm: TMainForm
     top = 176
   end
   object SqlConnector: TSQLConnector
-    Connected = True
+    Connected = False
     LoginPrompt = False
-    DatabaseName = 'XE'
+    DatabaseName = 'xpone_fpd'
     KeepConnection = False
     Password = 'fpd'
     Transaction = SQLTransaction
     UserName = 'owner_fpd'
-    HostName = 'xpone:1521'
+    HostName = 'xpone'
     LogEvents = []
-    ConnectorType = 'Oracle'
+    ConnectorType = 'ODBC'
     left = 408
     top = 168
   end
   object SQLTransaction: TSQLTransaction
     Active = False
-    Action = caNone
     Database = SqlConnector
     left = 440
     top = 168

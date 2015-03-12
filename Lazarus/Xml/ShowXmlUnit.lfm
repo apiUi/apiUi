@@ -1,7 +1,7 @@
 object ShowXmlForm: TShowXmlForm
   Left = 505
   Height = 446
-  Top = 173
+  Top = 129
   Width = 672
   Caption = 'XML Data'
   ClientHeight = 446

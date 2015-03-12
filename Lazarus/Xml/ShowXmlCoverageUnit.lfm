@@ -1,7 +1,7 @@
 object ShowXmlCoverageForm: TShowXmlCoverageForm
   Left = 328
   Height = 547
-  Top = 113
+  Top = 69
   Width = 935
   Caption = 'XML Data'
   ClientHeight = 547

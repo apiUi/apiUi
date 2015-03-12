@@ -462,7 +462,7 @@ end;
 
 function TFormIniFile.EncryptPassword(aPassword: AnsiString): AnsiString;
 begin
-  if aPassword = '' then
+  if aPassword <> '' then
     result := EncodeStringBase64 (SimpleEncrypt(aPassword))
   else
     result := '';
