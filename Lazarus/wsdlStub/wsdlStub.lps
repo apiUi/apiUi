@@ -25,9 +25,10 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5889"/>
-        <CursorPos X="1" Y="5897"/>
+        <CursorPos X="27" Y="5902"/>
         <UsageCount Value="171"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="testerunit.pas"/>
@@ -113,20 +114,9 @@
       </Position1>
       <Position2>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="5896" Column="12" TopLine="5889"/>
+        <Caret Line="5896" Column="15" TopLine="5889"/>
       </Position2>
     </JumpHistory>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="WsdlStubMainUnit.pas"/>
-        <Line Value="5897"/>
-      </Item1>
-    </BreakPoints>
-  </Debugging>
   <EditorMacros Count="0"/>
 </CONFIG>

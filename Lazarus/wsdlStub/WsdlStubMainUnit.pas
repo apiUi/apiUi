@@ -3305,7 +3305,7 @@ begin
   DownPageControl.ActivePage := MessagesTabSheet;
   ExecuteRequestToolButton.Down := True;
   ExecuteAllRequestsToolButton.Down := True;
-  ProgressBar.Position := 0;
+  se.ProgressPos := 0;
   Screen.Cursor := crHourGlass;
   abortPressed := False;
   AbortToolButton.Enabled := True;
@@ -3317,7 +3317,7 @@ begin
   ExecuteAllRequestsToolButton.Down := False;
   Screen.Cursor := crDefault;
   DownPageControl.ActivePage := MessagesTabSheet;
-  ProgressBar.Position := 0;
+  se.ProgressPos := 0;
   abortPressed := False;
   AbortToolButton.Enabled := False;
 end;
@@ -8050,7 +8050,7 @@ begin
       if not xOperation.Messages.Messages[X].Disabled then
       begin
         se.AcquireLogLock;
-        se.ProgressPos := X;
+        se.ProgressPos := X + 1;
         se.ReleaseLogLock;
         try
           se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
