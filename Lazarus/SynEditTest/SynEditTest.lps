@@ -4,12 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="3">
+    <Units Count="6">
       <Unit0>
         <Filename Value="SynEditTest.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="SynEditTest"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="55"/>
       </Unit0>
       <Unit1>
         <Filename Value="synedittestunit.pas"/>
@@ -21,9 +21,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="12" Y="10"/>
-        <UsageCount Value="54"/>
+        <TopLine Value="58"/>
+        <CursorPos X="5" Y="81"/>
+        <UsageCount Value="55"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -35,11 +35,158 @@
         <CursorPos X="1" Y="2019"/>
         <UsageCount Value="7"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="C:\lazarus\components\synedit\syneditkeycmds.pp"/>
+        <UnitName Value="SynEditKeyCmds"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="779"/>
+        <CursorPos X="13" Y="153"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <UnitName Value="SynEdit"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="C:\lazarus\lcl\forms.pp"/>
+        <UnitName Value="Forms"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1375"/>
+        <CursorPos X="14" Y="1385"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="29" HistoryIndex="28">
+      <Position1>
+        <Filename Value="C:\lazarus\components\synedit\syneditkeycmds.pp"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="8" Column="74" TopLine="28"/>
+      </Position2>
+      <Position3>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="46" Column="22" TopLine="28"/>
+      </Position3>
+      <Position4>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="51" Column="22" TopLine="34"/>
+      </Position4>
+      <Position5>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="84" Column="1" TopLine="48"/>
+      </Position5>
+      <Position6>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="54" Column="18" TopLine="48"/>
+      </Position6>
+      <Position7>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="48" Column="18" TopLine="48"/>
+      </Position7>
+      <Position8>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="69" Column="13" TopLine="57"/>
+      </Position8>
+      <Position9>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="58" Column="26" TopLine="54"/>
+      </Position9>
+      <Position10>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="868" Column="20" TopLine="859"/>
+      </Position10>
+      <Position11>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position11>
+      <Position12>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="201" Column="17" TopLine="183"/>
+      </Position12>
+      <Position13>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="616" Column="23" TopLine="600"/>
+      </Position13>
+      <Position14>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="620" Column="23" TopLine="604"/>
+      </Position14>
+      <Position15>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="639" Column="30" TopLine="623"/>
+      </Position15>
+      <Position16>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="640" Column="51" TopLine="624"/>
+      </Position16>
+      <Position17>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="669" Column="24" TopLine="653"/>
+      </Position17>
+      <Position18>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="819" Column="24" TopLine="803"/>
+      </Position18>
+      <Position19>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="861" Column="20" TopLine="844"/>
+      </Position19>
+      <Position20>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="868" Column="60" TopLine="851"/>
+      </Position20>
+      <Position21>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="870" Column="61" TopLine="853"/>
+      </Position21>
+      <Position22>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="871" Column="82" TopLine="854"/>
+      </Position22>
+      <Position23>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="2417" Column="31" TopLine="2399"/>
+      </Position23>
+      <Position24>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="2421" Column="20" TopLine="2403"/>
+      </Position24>
+      <Position25>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position25>
+      <Position26>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="58" Column="28" TopLine="54"/>
+      </Position26>
+      <Position27>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="78" Column="1" TopLine="68"/>
+      </Position27>
+      <Position28>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="81" Column="29" TopLine="68"/>
+      </Position28>
+      <Position29>
+        <Filename Value="synedittestunit.pas"/>
+        <Caret Line="82" Column="16" TopLine="45"/>
+      </Position29>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

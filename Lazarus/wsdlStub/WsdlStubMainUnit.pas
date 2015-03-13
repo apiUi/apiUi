@@ -3330,10 +3330,15 @@ end;
 
 procedure TMainForm.SetUiProgress;
 begin
-  if ProgressBar.Max <> se.ProgressMax then
+  if (ProgressBar.Max <> se.ProgressMax)
+  or (ProgressBar.Position <> se.ProgressPos) then
+  begin
     ProgressBar.Max := se.ProgressMax;
-  if ProgressBar.Position <> se.ProgressPos then
-    ProgressBar.Position := se.ProgressPos;
+    if se.ProgressMax > 0 then
+      ProgressBar.Position := se.ProgressPos
+    else
+      ProgressBar.Position := 0;
+  end;
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);

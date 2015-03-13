@@ -18,7 +18,7 @@ uses
   , Express, Bind, ComCtrls
   , Wsdlz
   , Xmlz
-  , Menus
+  , Menus , ActnList, StdActns
   , FormIniFilez
   , WsdlProjectz , SynHighlighterAny , SynMemo , SynEdit
   ;
@@ -28,7 +28,13 @@ type
   { TEditOperationScriptForm }
 
   TEditOperationScriptForm = class(TForm)
-    FindDialog1 : TFindDialog ;
+    FindNextAction : TAction ;
+    CancelAction : TAction ;
+    ImageList1 : TImageList ;
+    OkAction : TAction ;
+    CheckAction : TAction ;
+    ActionList1 : TActionList ;
+    FindAction : TSearchFind ;
     SynAnySyn1 : TSynAnySyn ;
     ScriptEdit : TSynEdit ;
     TopPanel: TPanel;
@@ -53,18 +59,22 @@ type
     Anoperationbetweenquotes1: TMenuItem;
     N3: TMenuItem;
     ShowTokens1: TMenuItem;
+    procedure FindActionExecute (Sender : TObject );
+    procedure FindNextActionExecute (Sender : TObject );
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure ScriptEditChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure OKBtnClick(Sender: TObject);
-    procedure CheckButtonClick(Sender: TObject);
-    procedure CancelBtnClick(Sender: TObject);
+    procedure OKExecute(Sender: TObject);
+    procedure CheckExecute(Sender: TObject);
+    procedure CancelExecute(Sender: TObject);
     procedure IpmFieldMenuItemClick(Sender: TObject);
     procedure MemoPopUpMenuPopup(Sender: TObject);
+    procedure FindActionBeforeExecute (Sender : TObject );
     procedure SelectFunctionMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Grammar1Click(Sender: TObject);
+    procedure TFindDialogFind (Sender : TObject );
     procedure TopPanelResize(Sender: TObject);
     procedure EmbeddedSQLMenuItemClick(Sender: TObject);
     procedure DbNameMenuItemClick(Sender: TObject);
@@ -73,11 +83,13 @@ type
     procedure Anoperationbetweenquotes1Click(Sender: TObject);
     procedure ShowTokens1Click(Sender: TObject);
   private
+    Finds: String;
     fScriptChanged: Boolean;
     IniFile: TFormIniFile;
     LastCaption: String;
     fWsdlOperation: TWsdlOperation;
     fAfter, wasConnected: Boolean;
+    procedure doFind (aNext: Boolean);
     procedure setAfter(const Value: Boolean);
     procedure setWsdlOperation(const Value: TWsdlOperation);
     function getScriptName: String;
@@ -158,7 +170,7 @@ begin
   Screen.Cursor := crDefault;
 end;
 
-procedure TEditOperationScriptForm.OKBtnClick(Sender: TObject);
+procedure TEditOperationScriptForm.OKExecute(Sender: TObject);
 var
   Ok: Boolean;
   x: Integer;
@@ -201,7 +213,7 @@ begin
   StatusBar.SimpleText := Data;
 end;
 
-procedure TEditOperationScriptForm.CheckButtonClick(Sender: TObject);
+procedure TEditOperationScriptForm.CheckExecute(Sender: TObject);
 var
   x: Integer;
   SwapOnError: TOnErrorEvent;
@@ -272,9 +284,11 @@ begin
   end;
 end;
 
-procedure TEditOperationScriptForm.CancelBtnClick(Sender:TObject);
+procedure TEditOperationScriptForm.CancelExecute(Sender:TObject);
 begin
   StatusBar.SimpleText := '';
+  ModalResult := mrCancel;
+  Close;
 end;
 
 procedure TEditOperationScriptForm.IpmFieldMenuItemClick(Sender: TObject);
@@ -350,15 +364,23 @@ begin
 
 end;
 
+procedure TEditOperationScriptForm .FindActionBeforeExecute (Sender : TObject
+  );
+begin
+  FindAction.Dialog.FindText := Finds;
+end;
+
 procedure TEditOperationScriptForm.FormCreate(Sender: TObject);
 begin
   IniFile := TFormIniFile.Create (Self);
   IniFile.Restore;
+  Finds := IniFile.StringByName['FindString'];
   After := False;
 end;
 
 procedure TEditOperationScriptForm.FormDestroy(Sender: TObject);
 begin
+  IniFile.StringByName['FindString'] := Finds;
   IniFile.Save;
   IniFile.Free;
 end;
@@ -369,6 +391,12 @@ begin
                        + '\Documentation\Grammar.htm'
                        )
                ); { *Converted from ShellExecute* }
+end;
+
+procedure TEditOperationScriptForm .TFindDialogFind (Sender : TObject );
+begin
+  Finds := FindAction.Dialog.FindText;
+  doFind(False);
 end;
 
 procedure TEditOperationScriptForm.Helponfunctions1Click(Sender: TObject);
@@ -426,6 +454,42 @@ begin
     ShowText ('Tokens', WsdlOperation.DebugTokenStringBefore);
 end;
 
+procedure TEditOperationScriptForm .doFind (aNext: Boolean) ;
+var
+  FPos, IPos, FLen, SLen: Integer;
+  Res : integer;
+  Found: Boolean;
+begin
+  Found:= False;
+  FPos := ScriptEdit.SelStart;
+  if (not aNext)
+  and (frEntireScope in FindAction.Dialog.Options) then
+  begin
+    FPos := 0;
+    FindAction.Dialog.Options := FindAction.Dialog.Options - [frEntireScope];
+  end;
+  FLen := Length(FindS);
+  SLen := Length(ScriptEdit.Text);
+  if frMatchcase in FindAction.Dialog.Options then
+     IPos := Pos(FindS, Copy(ScriptEdit.Text,FPos+1,SLen-FPos))
+  else
+     IPos := Pos(AnsiUpperCase(FindS),AnsiUpperCase( Copy(ScriptEdit.Text,FPos+1,SLen-FPos)));
+
+  if IPos > 0 then
+  begin
+    FPos := FPos + IPos;
+    Self.ActiveControl := ScriptEdit;
+    ScriptEdit.SelStart:= FPos;
+    ScriptEdit.SelEnd := ScriptEdit.SelStart + FLen;
+    Found := True;
+    FPos:=FPos+FLen-1;
+  end
+  else
+  begin
+    ShowMessageFmt('Text ''%s'' was not found', [FindS]);
+  end;
+end;
+
 procedure TEditOperationScriptForm.setAfter(const Value: Boolean);
 begin
   fAfter := Value;
@@ -467,6 +531,16 @@ begin
                       , 0
                       ) = mrYes) then
       CanClose := False;
+end;
+
+procedure TEditOperationScriptForm .FindActionExecute (Sender : TObject );
+begin
+  ShowMessage('aa');
+end;
+
+procedure TEditOperationScriptForm .FindNextActionExecute (Sender : TObject );
+begin
+  doFind(True);
 end;
 
 end.
