@@ -179,16 +179,9 @@ begin
 end;
 
 procedure TShowLogDifferencesForm.FormShow(Sender: TObject);
-var
-  swapCursor: TCursor;
 begin
-  swapCursor := Screen.Cursor;
-  try
-    Screen.Cursor := crHourGlass;
-    PopulateMain;
-  finally
-    Screen.Cursor := swapCursor;
-  end;
+  PopulateMain;
+  Screen.Cursor:=crDefault;
 end;
 
 procedure TShowLogDifferencesForm.PopulateMain;

@@ -1075,6 +1075,8 @@ begin
   doHideXmlNs := IniFile.BooleanByNameDef['doHideXmlNs', True];
   RevalidateXmlTreeView(TreeView);
   TreeViewFocusChanged(TreeView, TreeView.FocusedNode, TreeView.FocusedColumn);
+  DocumentationEdit.Color := clBtnFace;
+  Screen.Cursor := crDefault;
 end;
 
 procedure TShowXmlForm.genDocumentaionActionExecute(Sender: TObject);

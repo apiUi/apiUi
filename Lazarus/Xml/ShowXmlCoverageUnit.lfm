@@ -46,10 +46,12 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
           Text = 'Tag'
         end      
         item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
           Position = 1
           Width = 23
         end      
         item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
           Position = 2
           Width = 23
         end      

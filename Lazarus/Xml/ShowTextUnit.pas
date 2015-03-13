@@ -98,6 +98,7 @@ end;
 procedure TShowTextForm.FormShow(Sender: TObject);
 begin
   Memo.SetFocus;
+  Screen.Cursor:=Self.Cursor;
 end;
 
 procedure TShowTextForm.WrapTextCheckBoxClick(Sender: TObject);

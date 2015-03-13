@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 394
-  Height = 633
-  Top = 142
+  Left = 399
+  Height = 581
+  Top = 158
   Width = 1038
   Caption = 'MainForm'
-  ClientHeight = 614
+  ClientHeight = 562
   ClientWidth = 1038
   Color = clBtnFace
   Font.Color = clWindowText
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 440
+    Top = 388
     Width = 1038
     Align = alBottom
     ResizeAnchor = akBottom
@@ -184,25 +184,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 411
+    Height = 359
     Top = 29
     Width = 1038
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 411
+    ClientHeight = 359
     ClientWidth = 1038
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
-      Height = 405
+      Height = 353
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
       Left = 895
-      Height = 405
+      Height = 353
       Top = 3
       Width = 5
       Align = alRight
@@ -211,18 +211,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 405
+      Height = 353
       Top = 3
       Width = 202
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 405
+      ClientHeight = 353
       ClientWidth = 202
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 336
+        Top = 284
         Width = 196
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -289,7 +289,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 333
+        Height = 281
         Top = 3
         Width = 196
         Align = alClient
@@ -320,7 +320,7 @@ object MainForm: TMainForm
       object ScriptButtonsPanel: TPanel
         Left = 3
         Height = 37
-        Top = 365
+        Top = 313
         Width = 196
         Align = alBottom
         Caption = 'ScriptButtonsPanel'
@@ -363,13 +363,13 @@ object MainForm: TMainForm
     end
     object XsdPanel: TPanel
       Left = 900
-      Height = 405
+      Height = 353
       Top = 3
       Width = 135
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 405
+      ClientHeight = 353
       ClientWidth = 135
       TabOrder = 1
       object Splitter6: TSplitter
@@ -422,29 +422,28 @@ object MainForm: TMainForm
       end
       object DataTypeDocumentationMemo: TlzRichEdit
         Left = 4
-        Height = 164
+        Height = 112
         Top = 237
         Width = 127
         DefaultExtension = '.rtf'
         Align = alClient
-        Color = clWindow
+        Color = clBtnFace
         Lines.Strings = (
           'DataTypeDocumentation'
           'Memo'
         )
         OnClick = DataTypeDocumentationMemoClick
-        ParentColor = True
         ReadOnly = True
         TabOrder = 4
       end
     end
     object Panel6: TPanel
       Left = 210
-      Height = 405
+      Height = 353
       Top = 3
       Width = 685
       Align = alClient
-      ClientHeight = 405
+      ClientHeight = 353
       ClientWidth = 685
       TabOrder = 2
       object Splitter10: TSplitter
@@ -811,110 +810,100 @@ object MainForm: TMainForm
           TabOrder = 0
         end
       end
-      object DetailPageControl: TPageControl
-        Left = 1
-        Height = 168
-        Top = 219
-        Width = 683
-        ActivePage = XmlSheet
-        Align = alClient
-        TabIndex = 0
-        TabOrder = 4
-        object XmlSheet: TTabSheet
-          Caption = 'XmlSheet'
-          ClientHeight = 142
-          ClientWidth = 675
-          object InWsdlTreeView: TVirtualStringTree
-            Left = 0
-            Height = 142
-            Top = 0
-            Width = 675
-            Align = alClient
-            DragOperations = []
-            EditDelay = 0
-            Header.AutoSizeIndex = -1
-            Header.Columns = <            
-              item
-                Position = 0
-                Text = 'Tag'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
-                Position = 1
-                Width = 23
-              end            
-              item
-                Position = 2
-                Text = 'Value'
-              end>
-            Header.DefaultHeight = 17
-            Header.Font.Color = clWindowText
-            Header.Font.Height = -11
-            Header.Font.Name = 'MS Sans Serif'
-            Header.Options = [hoColumnResize, hoDblClickResize, hoVisible]
-            Images = TreeviewImageList
-            PopupMenu = WsdlPopupMenu
-            TabOrder = 0
-            TreeOptions.MiscOptions = [toCheckSupport, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
-            TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect]
-            OnBeforeCellPaint = InWsdlTreeViewBeforeCellPaint
-            OnChecked = InWsdlTreeViewChecked
-            OnChecking = InWsdlTreeViewChecking
-            OnClick = TreeViewClick
-            OnColumnClick = TreeViewColumnClick
-            OnEdited = InWsdlTreeViewEdited
-            OnEditing = InWsdlTreeViewEditing
-            OnExit = InWsdlTreeViewExit
-            OnFocusChanged = InWsdlTreeViewFocusChanged
-            OnFocusChanging = InWsdlTreeViewFocusChanging
-            OnGetText = InWsdlTreeViewGetText
-            OnPaintText = InWsdlTreeViewPaintText
-            OnGetImageIndex = InWsdlTreeViewGetImageIndex
-            OnKeyDown = TreeViewKeyDown
-            OnMouseDown = TreeViewMouseDown
-            OnNewText = InWsdlTreeViewNewText
-            OnResize = TreeViewResize
-          end
-        end
-        object FreeFormatSheet: TTabSheet
-          Caption = 'FreeFormatSheet'
-          ClientHeight = 1
-          ClientWidth = 625
-          ImageIndex = 1
-          object FreeFormatMemo: TMemo
-            Left = 0
-            Height = 130
-            Top = 0
-            Width = 965
-            Align = alClient
-            Font.CharSet = ANSI_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -15
-            Font.Name = 'Courier New'
-            OnChange = FreeFormatMemoChange
-            ParentFont = False
-            ScrollBars = ssBoth
-            TabOrder = 0
-          end
-        end
-      end
       object StatusPanel: TPanel
         Left = 1
         Height = 17
-        Top = 387
+        Top = 335
         Width = 683
         Align = alBottom
         Alignment = taLeftJustify
         BevelInner = bvLowered
-        TabOrder = 5
+        TabOrder = 4
+      end
+      object Panel1: TPanel
+        Left = 1
+        Height = 116
+        Top = 219
+        Width = 683
+        Align = alClient
+        Caption = 'Panel1'
+        ClientHeight = 116
+        ClientWidth = 683
+        TabOrder = 6
+        object FreeFormatMemo: TMemo
+          Left = 596
+          Height = 114
+          Top = 1
+          Width = 86
+          Align = alRight
+          Font.CharSet = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -15
+          Font.Name = 'Courier New'
+          OnChange = FreeFormatMemoChange
+          ParentFont = False
+          ScrollBars = ssBoth
+          TabOrder = 0
+        end
+        object InWsdlTreeView: TVirtualStringTree
+          Left = 1
+          Height = 114
+          Top = 1
+          Width = 595
+          Align = alClient
+          DragOperations = []
+          EditDelay = 0
+          Header.AutoSizeIndex = -1
+          Header.Columns = <          
+            item
+              Position = 0
+              Text = 'Tag'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
+              Position = 1
+              Width = 23
+            end          
+            item
+              Position = 2
+              Text = 'Value'
+            end>
+          Header.DefaultHeight = 17
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -11
+          Header.Font.Name = 'MS Sans Serif'
+          Header.Options = [hoColumnResize, hoDblClickResize, hoVisible]
+          Images = TreeviewImageList
+          PopupMenu = WsdlPopupMenu
+          TabOrder = 1
+          TreeOptions.MiscOptions = [toCheckSupport, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect]
+          OnBeforeCellPaint = InWsdlTreeViewBeforeCellPaint
+          OnChecked = InWsdlTreeViewChecked
+          OnChecking = InWsdlTreeViewChecking
+          OnClick = TreeViewClick
+          OnColumnClick = TreeViewColumnClick
+          OnEdited = InWsdlTreeViewEdited
+          OnEditing = InWsdlTreeViewEditing
+          OnExit = InWsdlTreeViewExit
+          OnFocusChanged = InWsdlTreeViewFocusChanged
+          OnFocusChanging = InWsdlTreeViewFocusChanging
+          OnGetText = InWsdlTreeViewGetText
+          OnPaintText = InWsdlTreeViewPaintText
+          OnGetImageIndex = InWsdlTreeViewGetImageIndex
+          OnKeyDown = TreeViewKeyDown
+          OnMouseDown = TreeViewMouseDown
+          OnNewText = InWsdlTreeViewNewText
+          OnResize = TreeViewResize
+        end
       end
     end
   end
   object LogPanel: TPanel
     Left = 0
     Height = 169
-    Top = 445
+    Top = 393
     Width = 1038
     Align = alBottom
     ClientHeight = 169

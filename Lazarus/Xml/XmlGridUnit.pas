@@ -356,6 +356,7 @@ begin
   end;
   _CreateColumns (0, Xml.Xsd);
   ShowGrid (Xml);
+  Screen.Cursor := crDefault;
 end;
 
 function TXmlGridForm.getCell(col, row: Integer): TCustomBindable;

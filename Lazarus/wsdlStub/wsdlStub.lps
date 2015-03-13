@@ -9,10 +9,11 @@
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="wsdlStub"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="18"/>
-        <UsageCount Value="187"/>
+        <CursorPos X="1" Y="9"/>
+        <UsageCount Value="190"/>
       </Unit0>
       <Unit1>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -21,14 +22,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5889"/>
         <CursorPos X="27" Y="5902"/>
-        <UsageCount Value="171"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="174"/>
       </Unit1>
       <Unit2>
         <Filename Value="testerunit.pas"/>
@@ -104,19 +101,7 @@
         <UsageCount Value="10"/>
       </Unit10>
     </Units>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
-    <JumpHistory Count="2" HistoryIndex="1">
-      <Position1>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="8073" Column="3" TopLine="8071"/>
-      </Position1>
-      <Position2>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="5896" Column="15" TopLine="5889"/>
-      </Position2>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

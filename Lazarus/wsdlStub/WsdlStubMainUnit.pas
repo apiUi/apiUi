@@ -67,6 +67,7 @@ type
     DataTypeDocumentationMemo : TlzRichEdit ;
     FreeFormatMemo: TMemo;
     InWsdlTreeView: TVirtualStringTree;
+    Panel1: TPanel;
     ReplyHeadersToolBar : TToolBar ;
     ReplyHeadersToolButton : TToolButton ;
     ScriptPanel: TPanel;
@@ -2841,31 +2842,36 @@ var
 begin
   if not Assigned(WsdlOperation) then
     Raise Exception.Create('First get a Wsdl');
-  xOperation := TWsdlOperation.Create(WsdlOperation);
-  if xOperation.PrepareErrors <> '' then
-    if not BooleanPromptDialog (xOperation.PrepareErrors + CRLF + 'Continue') then
-      Exit;
+  Screen.Cursor := crHourGlass;
   try
-    Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
+    xOperation := TWsdlOperation.Create(WsdlOperation);
+    if xOperation.PrepareErrors <> '' then
+      if not BooleanPromptDialog (xOperation.PrepareErrors + CRLF + 'Continue') then
+        Exit;
     try
-      EditOperationScriptForm.ScriptName := xOperation.Name;
-      EditOperationScriptForm.After := False;
-      EditOperationScriptForm.WsdlOperation := xOperation;
-      EditOperationScriptForm.ShowModal;
-      if EditOperationScriptForm.ModalResult = mrOk then
-      begin
-        stubChanged := True;
-        WsdlOperation.BeforeScriptLines := xOperation.BeforeScriptLines;
-        try WsdlOperation.PrepareBefore; Except end;
-        WsdlOperation.AfterScriptLines := xOperation.AfterScriptLines;
-        try WsdlOperation.PrepareAfter; Except end;
+      Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
+      try
+        EditOperationScriptForm.ScriptName := xOperation.Name;
+        EditOperationScriptForm.After := False;
+        EditOperationScriptForm.WsdlOperation := xOperation;
+        EditOperationScriptForm.ShowModal;
+        if EditOperationScriptForm.ModalResult = mrOk then
+        begin
+          stubChanged := True;
+          WsdlOperation.BeforeScriptLines := xOperation.BeforeScriptLines;
+          try WsdlOperation.PrepareBefore; Except end;
+          WsdlOperation.AfterScriptLines := xOperation.AfterScriptLines;
+          try WsdlOperation.PrepareAfter; Except end;
+        end;
+        FillInWsdlEdits;
+      finally
+        FreeAndNil(EditOperationScriptForm);
       end;
-      FillInWsdlEdits;
     finally
-      FreeAndNil(EditOperationScriptForm);
+      xOperation.Free;
     end;
   finally
-    xOperation.Free;
+    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -6885,12 +6891,12 @@ var
   xXsdDescr: TXsdDescr;
   xCursor: TCursor;
 begin
+  xCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   xXsdDescr := TXsdDescr.Create(1);
   try
     xXml := TXml.Create;
     try
-      xCursor := Screen.Cursor;
-      Screen.Cursor := crHourGlass;
       try
         xXml.LoadFromString(aText, nil);
         if xXml.Name = '' then
@@ -6918,6 +6924,7 @@ begin
     end;
   finally
     xXsdDescr.Free;
+    Screen.Cursor := xCursor;
   end;
 end;
 
@@ -7509,6 +7516,7 @@ end;
 procedure TMainForm.MessagesRegressionActionExecute(Sender: TObject);
 var
   xLogList: TLogList;
+  xCursor: TCursor;
 begin
   OpenFileDialog.DefaultExt := 'xml';
   OpenFileDialog.FileName := wsdlStubMessagesFileName;
@@ -7516,6 +7524,8 @@ begin
   OpenFileDialog.Title := 'Compare ' + _progName + ' log items from file';
   if OpenFileDialog.Execute then
   begin
+    xCursor:=SCreen.Cursor;
+    Screen.Cursor:=crHourGlass;
     wsdlStubMessagesFileName := OpenFileDialog.FileName;
     xLogList := TLogList.Create;
     try
@@ -7544,6 +7554,7 @@ begin
     finally
       xLogList.Clear;
       FreeAndNil(xLogList);
+      Screen.Cursor:=xCursor;
     end;
   end;
 end;

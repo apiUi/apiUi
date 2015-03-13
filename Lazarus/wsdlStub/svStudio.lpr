@@ -4,7 +4,7 @@ program svStudio;
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
-  cthreads,
+  cthreads,cmem,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms , virtualtreeview_package , lazrichedit ,  wsdlStubMainUnit;

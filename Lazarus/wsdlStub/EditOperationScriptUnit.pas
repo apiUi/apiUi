@@ -155,6 +155,7 @@ begin
   ScriptEdit.ParentColor := ScriptEdit.ReadOnly;
   ScriptEdit.SetFocus;
   fScriptChanged := False;
+  Screen.Cursor := crDefault;
 end;
 
 procedure TEditOperationScriptForm.OKBtnClick(Sender: TObject);

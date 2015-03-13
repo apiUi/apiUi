@@ -585,6 +585,7 @@ end;
 procedure TShowExpectedXmlForm.FormShow(Sender: TObject);
 begin
   RefreshNeeded := False;
+  Screen.Cursor := crDefault;
 end;
 
 procedure TShowExpectedXmlForm.CloseActionExecute(Sender: TObject);

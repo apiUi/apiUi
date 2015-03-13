@@ -279,6 +279,7 @@ var
   xXml: TA2BXml;
   xAtt: TA2BXmlAttribute;
 begin
+  raise exception.Create('TShowA2BXmlForm.ShowInWordMenuItemClick: Not yet implemented');
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml, xAtt);
