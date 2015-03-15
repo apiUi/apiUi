@@ -8516,6 +8516,7 @@ procedure TMainForm.RefreshLog;
       xData := ExceptionsVTS.GetNodeData(xNode);
       xData.xLog := xLog;
     end;
+    se.toDisplayExceptions.Clear;
   end;
 var
   logAdded, exceptionAdded: Boolean;
