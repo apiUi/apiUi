@@ -28,13 +28,13 @@ type
   { TEditOperationScriptForm }
 
   TEditOperationScriptForm = class(TForm)
+    FindAction : TAction ;
     FindNextAction : TAction ;
     CancelAction : TAction ;
     ImageList1 : TImageList ;
     OkAction : TAction ;
     CheckAction : TAction ;
     ActionList1 : TActionList ;
-    FindAction : TSearchFind ;
     SynAnySyn1 : TSynAnySyn ;
     ScriptEdit : TSynEdit ;
     TopPanel: TPanel;
@@ -69,12 +69,10 @@ type
     procedure CancelExecute(Sender: TObject);
     procedure IpmFieldMenuItemClick(Sender: TObject);
     procedure MemoPopUpMenuPopup(Sender: TObject);
-    procedure FindActionBeforeExecute (Sender : TObject );
     procedure SelectFunctionMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Grammar1Click(Sender: TObject);
-    procedure TFindDialogFind (Sender : TObject );
     procedure TopPanelResize(Sender: TObject);
     procedure EmbeddedSQLMenuItemClick(Sender: TObject);
     procedure DbNameMenuItemClick(Sender: TObject);
@@ -84,6 +82,7 @@ type
     procedure ShowTokens1Click(Sender: TObject);
   private
     Finds: String;
+    useRegExp: Boolean;
     fScriptChanged: Boolean;
     IniFile: TFormIniFile;
     LastCaption: String;
@@ -110,14 +109,16 @@ var
 implementation
 
 uses
-{$IFnDEF FPC}
-  ShellApi,
-{$ELSE}
-{$ENDIF}
+  {$IFnDEF FPC}
+    ShellApi,
+  {$ELSE}
+  {$ENDIF}
   SelectXmlElement
    , SelectItemUnit
    , SelectDbNameUnit
+   , FindRegExpDialog
    , xmlUtilz
+   , RegExpr
    ;
 
 {$IFnDEF FPC}
@@ -364,23 +365,19 @@ begin
 
 end;
 
-procedure TEditOperationScriptForm .FindActionBeforeExecute (Sender : TObject
-  );
-begin
-  FindAction.Dialog.FindText := Finds;
-end;
-
 procedure TEditOperationScriptForm.FormCreate(Sender: TObject);
 begin
   IniFile := TFormIniFile.Create (Self);
   IniFile.Restore;
   Finds := IniFile.StringByName['FindString'];
+  useRegExp := IniFile.BooleanByName['useRegExp'];
   After := False;
 end;
 
 procedure TEditOperationScriptForm.FormDestroy(Sender: TObject);
 begin
   IniFile.StringByName['FindString'] := Finds;
+  IniFile.BooleanByName['useRegExp'] := useRegExp;
   IniFile.Save;
   IniFile.Free;
 end;
@@ -391,12 +388,6 @@ begin
                        + '\Documentation\Grammar.htm'
                        )
                ); { *Converted from ShellExecute* }
-end;
-
-procedure TEditOperationScriptForm .TFindDialogFind (Sender : TObject );
-begin
-  Finds := FindAction.Dialog.FindText;
-  doFind(False);
 end;
 
 procedure TEditOperationScriptForm.Helponfunctions1Click(Sender: TObject);
@@ -462,18 +453,28 @@ var
 begin
   Found:= False;
   FPos := ScriptEdit.SelStart;
-  if (not aNext)
-  and (frEntireScope in FindAction.Dialog.Options) then
-  begin
-    FPos := 0;
-    FindAction.Dialog.Options := FindAction.Dialog.Options - [frEntireScope];
-  end;
   FLen := Length(FindS);
-  SLen := Length(ScriptEdit.Text);
-  if frMatchcase in FindAction.Dialog.Options then
-     IPos := Pos(FindS, Copy(ScriptEdit.Text,FPos+1,SLen-FPos))
+  IPos := -1;
+  if not useRegExp then
+  begin
+  {
+    if frMatchcase in FindAction.Dialog.Options then
+       IPos := Pos(FindS, Copy(ScriptEdit.Text,FPos+1,SLen-FPos))
+    else
+    }
+     IPos := Pos(AnsiUpperCase(FindS),AnsiUpperCase( Copy (ScriptEdit.Text, FPos+1, Length (ScriptEdit.Text))));
+  end
   else
-     IPos := Pos(AnsiUpperCase(FindS),AnsiUpperCase( Copy(ScriptEdit.Text,FPos+1,SLen-FPos)));
+  begin
+    with TRegExpr.Create do
+    try
+      Expression := Finds;
+      if Exec (Copy (ScriptEdit.Text, FPos+1, Length (ScriptEdit.Text))) then
+        IPos := MatchPos[0];
+    finally
+      Free;
+    end;
+  end;
 
   if IPos > 0 then
   begin
@@ -535,7 +536,22 @@ end;
 
 procedure TEditOperationScriptForm .FindActionExecute (Sender : TObject );
 begin
-  ShowMessage('aa');
+  Application.CreateForm(TFindDlg, FindDlg);
+  try
+    FindDlg.Caption := 'Find Text';
+    FindDlg.SearchInRadioGroup.Enabled := False;
+    FindDlg.ScopeRadioGroup.Enabled := False;
+    FindDlg.SearchEdit.Text := Finds;
+    FindDlg.ShowModal;
+    if FindDlg.ModalResult = mrOk then
+    begin
+      Finds := FindDlg.SearchEdit.Text;
+      useRegExp := Finddlg.RegularExpressionCheckBox.Checked;
+      doFind(False);
+    end;
+  finally
+    FreeAndNil(FindDlg);
+  end;
 end;
 
 procedure TEditOperationScriptForm .FindNextActionExecute (Sender : TObject );

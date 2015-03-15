@@ -743,20 +743,16 @@ object EditOperationScriptForm: TEditOperationScriptForm
       OnExecute = CancelExecute
       ShortCut = 3
     end
-    object FindAction: TSearchFind
-      Category = 'Search'
-      Caption = '&Find ...'
-      Dialog.Options = [frDown, frHideMatchCase, frHideWholeWord, frHideUpDown, frDisableUpDown, frDisableWholeWord, frHideEntireScope]
-      Dialog.OnFind = TFindDialogFind
-      ImageIndex = 11
-      ShortCut = 16454
-      BeforeExecute = FindActionBeforeExecute
-    end
     object FindNextAction: TAction
       Category = 'Search'
       Caption = 'FindNextAction'
       OnExecute = FindNextActionExecute
       ShortCut = 114
+    end
+    object FindAction: TAction
+      Caption = 'FindAction'
+      OnExecute = FindActionExecute
+      ShortCut = 16454
     end
   end
   object ImageList1: TImageList

@@ -22,6 +22,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5889"/>
         <CursorPos X="27" Y="5902"/>
@@ -33,6 +34,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="testerUnit"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="22"/>
         <CursorPos X="19" Y="41"/>
@@ -41,6 +43,7 @@
       <Unit3>
         <Filename Value="WsdlProjectz.pas"/>
         <UnitName Value="WsdlProjectz"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="104"/>
         <CursorPos X="1" Y="112"/>
@@ -49,6 +52,7 @@
       <Unit4>
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <UnitName Value="Wsdlz"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3670"/>
         <CursorPos X="1" Y="3684"/>
@@ -57,6 +61,7 @@
       <Unit5>
         <Filename Value="..\Utils\igGlobals.pas"/>
         <UnitName Value="igGlobals"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="208"/>
         <CursorPos X="1" Y="234"/>
@@ -65,6 +70,7 @@
       <Unit6>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <UnitName Value="Xmlz"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="709"/>
         <CursorPos X="1" Y="719"/>
@@ -73,6 +79,7 @@
       <Unit7>
         <Filename Value="..\Xpress\Express.pas"/>
         <UnitName Value="Express"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -81,6 +88,7 @@
       <Unit8>
         <Filename Value="..\components\Indy10\Lib\System\IdGlobal.pas"/>
         <UnitName Value="IdGlobal"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1707"/>
         <CursorPos X="56" Y="1719"/>
@@ -89,6 +97,7 @@
       <Unit9>
         <Filename Value="..\components\Indy10\Lib\System\IdStream.pas"/>
         <UnitName Value="IdStream"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="19"/>
         <CursorPos X="14" Y="29"/>
@@ -101,6 +110,9 @@
         <UsageCount Value="10"/>
       </Unit10>
     </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectSession>
   <EditorMacros Count="0"/>

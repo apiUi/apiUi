@@ -9,10 +9,11 @@ interface
 uses Classes
    , SysUtils
    , StrUtils
+   , ClaimListz
    ;
 
 type
-  TExceptionLog = class(TOBject)
+  TExceptionLog = class(TClaimableObject)
   private
   protected
   public
@@ -22,7 +23,7 @@ type
     constructor Create (aText: String);
   end;
 
-  TExceptionLogList = class (TStringList)
+  TExceptionLogList = class (TClaimableObjectList)
   private
     procedure SeTExceptionLog(Index: integer; const Value: TExceptionLog);
   protected
@@ -42,7 +43,7 @@ implementation
 
 function TExceptionLogList.AddEvent(aEvent: TExceptionLog): TExceptionLog;
 begin
-  AddObject('', aEvent);
+  inherited AddObject('', aEvent);
   result := aEvent;
 end;
 

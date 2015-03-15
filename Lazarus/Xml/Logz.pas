@@ -16,6 +16,7 @@ uses Classes
    , igGlobals
    , Dialogs
    , XmlXsdParser
+   , ClaimListz
    ;
 
 type
@@ -27,12 +28,10 @@ type
 
 
 type
+
   TLog = class;
   TLogList = class;
-  TLog = class(TOBject)
-  private
-    fClaimCount: Integer;
-    function getClaimed: Boolean;
+  TLog = class(TClaimableObject)
   protected
   public
     displayRef: PDisplayRef;
@@ -81,7 +80,6 @@ type
     relatesTo: TLog;
     ServiceName, OperationName: String;
     DelayTimeMs, OperationCount: Integer;
-    property Claimed: Boolean read getClaimed;
     function DurationAsString: String;
     function AsXml: TXml;
     function reqBodyAsXml: TXml;
@@ -89,13 +87,11 @@ type
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     procedure toBindables;
     procedure InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TStringList);
-    procedure Claim;
-    procedure Disclaim;
     constructor Create;
     destructor Destroy; override;
   end;
 
-  TLogList = class (TStringList)
+  TLogList = class (TClaimableObjectList)
   private
     fNumber: Integer;
     procedure SetLog(Index: integer; const Value: TLog);
@@ -110,9 +106,6 @@ type
     function LogIncrementAsString(aIndex: Integer; aCheckId: String): String;
     function UnexpectedsAsXml: TXml;
     function PrepareCoverageReportAsXml (aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
-    function AddObject(const S: string; AObject: TObject): Integer; override;
-    procedure Delete(Index: Integer); override;
-    procedure Clear; override;
     procedure InvalidateDisplayedColumns; overload;
     procedure InvalidateDisplayedColumns(aOperation: TWsdlOperation); overload;
     constructor Create; overload;
@@ -420,47 +413,19 @@ begin
     result.CheckDownline(True);
   end;
 end;
+
 { TLogList }
 
 function TLogList.SaveLog(aString: String; aLog: TLog): TLog;
 begin
-  result := aLog;
-  inherited AddObject(aString, aLog);
+  inherited SaveObject (aString, aLog);
   Inc(fNumber);
-  aLog.Claim;
-end;
-
-function TLogList.AddObject(const S: string; AObject: TObject): Integer;
-begin
-  if not (AObject is TLog) then
-    raise Exception.Create('Only objects of type TLog allowed');
-  SaveLog(S, AObject as TLog);
-end;
-
-procedure TLogList.Clear;
-var
-  x: Integer;
-  xLog: TLog;
-begin
-  for x := 0 to Count - 1 do
-    LogItems[x].Disclaim;
-  designSuspect := False;
-  fNumber := 0;
-  inherited;
 end;
 
 constructor TLogList.Create;
 begin
   inherited Create;
   fNumber := 0;
-end;
-
-procedure TLogList.Delete(Index: Integer);
-var
-  xLog: TLog;
-begin
-  LogItems[Index].Disclaim;
-  inherited;
 end;
 
 function TLogList.PrepareCoverageReportAsXml(aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
@@ -1031,11 +996,6 @@ begin
   end;
 end;
 
-procedure TLog.Claim;
-begin
-  Inc (fClaimCount);
-end;
-
 constructor TLog.Create;
 begin
   CorrId := 'uuid:' + generateRandomId;
@@ -1047,16 +1007,6 @@ begin
   DisplayedColumns.Clear;
   FreeAndNil (DisplayedColumns);
   FreeAndNil (Stream);
-end;
-
-procedure TLog.Disclaim;
-begin
-  if Assigned (Self) then
-  begin
-    Dec (fClaimCount);
-    if fClaimCount < 1 then
-      Free;
-  end;
 end;
 
 function TLog.DurationAsString: String;
@@ -1201,11 +1151,6 @@ end;
 procedure TLog.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
 begin
   (aObject as TIpmItem).Value := '?wsdlStub Error found: ' + ErrorString;
-end;
-
-function TLog.getClaimed: Boolean;
-begin
-  result := (fClaimCount > 0);
 end;
 
 { InitDisplayedColumns

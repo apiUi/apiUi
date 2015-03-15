@@ -99,7 +99,7 @@ type TOnFoundErrorInBufferEvent = procedure (aErrorString: String; aObject: TObj
 type TOnEvent = procedure of Object;
 type TOnNotify = procedure (aString: String) of Object;
 type TOnLogEvent = procedure (aLog: TLog) of Object;
-type TOnStringEvent = procedure (const Msg: String; aException: Boolean) of Object;
+type TOnStringEvent = procedure (const Msg: String; aException: Boolean; E: Exception) of Object;
 type TBooleanFunction = function: Boolean of Object;
 type TStringFunction = function: String of Object;
 type TStringFunctionBoolean = function (arg: Boolean): String of Object;
@@ -169,7 +169,7 @@ type
     Wsdls, wsdlNames: TStringList;
     Scripts, DisplayedLogColumns: TStringList;
     projectFileName, LicenseDbName: String;
-    allExceptions: TExceptionLogList;
+    displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs, AsynchRpyLogs: TLogList;
     displayedLogsmaxEntries: Integer;
     CompareLogOrderBy: TCompareLogOrderBy;
@@ -702,7 +702,7 @@ begin
     except
       on e: Exception do
       begin
-        fProject.LogServerMessage(e.Message, True);
+        fProject.LogServerMessage(e.Message, True, e);
       end;
     end;
   finally
@@ -1057,7 +1057,8 @@ begin
   toDisplayLogs := TLogList.Create;
   toUpdateDisplayLogs := TLogList.Create;
   archiveLogs := TLogList.Create;
-  allExceptions := TExceptionLogList.Create;
+  displayedExceptions := TExceptionLogList.Create;
+  toDisplayExceptions := TExceptionLogList.Create;
   Listeners := TListeners.Create;
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
@@ -1170,8 +1171,10 @@ begin
   displayedLogs.Free;
   archiveLogs.Clear;
   archiveLogs.Free;
-  allExceptions.Clear;
-  allExceptions.Free;
+  displayedExceptions.Clear;
+  displayedExceptions.Free;
+  toDisplayExceptions.Clear;
+  toDisplayExceptions.Free;
   AsynchRpyLogs.Clear;
   AsynchRpyLogs.Free;
   FreeAndNil (unknownOperation);
@@ -1269,6 +1272,7 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
                       + xOperation.Name
                       + '). You may encounter errors due to this name conflict'
                       , False
+                      , nil
                       );
         end;
         try
@@ -1348,6 +1352,7 @@ begin
       aLogServerException ( 'Error in Before script: '
                           + Name
                           , False
+                          , nil
                           );
       Inc (scriptErrorCount);
     end;
@@ -1360,12 +1365,13 @@ begin
       aLogServerException ( 'Error in After script: '
                           + Name
                           , False
+                          , nil
                           );
       Inc (scriptErrorCount);
     end;
   end;
   if scriptErrorCount > 0 then
-    aLogServerException ( IntToStr (scriptErrorCount) + ' Script(s) found with errors, see Exceptions log', False);
+    aLogServerException ( IntToStr (scriptErrorCount) + ' Script(s) found with errors, see Exceptions log', False, nil);
 end;
 
 procedure TWsdlProject.AcquireLogLock;
@@ -1461,7 +1467,7 @@ begin
           except
             on e: Exception do
             begin
-              LogServerMessage(format('Exception %s in Activate STOMP. Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s in Activate STOMP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
         end;
@@ -1488,7 +1494,7 @@ begin
           except
             on e: exception do
             begin
-              LogServerMessage(format('Exception %s in Activate HTTP. Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s in Activate HTTP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
         if Listeners.httpsPort > 0 then
@@ -1509,7 +1515,7 @@ begin
           except
             on e: exception do
             begin
-              LogServerMessage(format('Exception %s in Activate HTTPS. Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s in Activate HTTPS. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
         if Listeners.httpBmtpPort > 0 then
@@ -1523,7 +1529,7 @@ begin
           except
             on e: exception do
             begin
-              LogServerMessage(format('Exception %s in Activate HTTP(Bmtp). Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s in Activate HTTP(Bmtp). Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
         if Listeners.httpProxyPort > 0 then
@@ -1534,7 +1540,7 @@ begin
           except
             on e: exception do
             begin
-              LogServerMessage(format('Exception %s in Activate HTTP Proxy. Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s in Activate HTTP Proxy. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
         if Listeners.smtpPort > 0 then
@@ -1545,7 +1551,7 @@ begin
           except
             on e: exception do
             begin
-              LogServerMessage(format('Exception %s in Activate SMTP. Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s in Activate SMTP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
         if Listeners.smtpsPort > 0 then
@@ -1564,7 +1570,7 @@ begin
           except
             on e: exception do
             begin
-              LogServerMessage(format('Exception %s in Activate SMTPS. Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s in Activate SMTPS. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
         if Listeners.pop3Port > 0 then
@@ -1575,7 +1581,7 @@ begin
           except
             on e: exception do
             begin
-              LogServerMessage(format('Exception %s in Activate POP3. Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s in Activate POP3. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
       end;
@@ -2525,7 +2531,7 @@ begin
     begin {}
       aLog.ReplyBody := e.message;
       aLog.Exception := e.Message;
-      LogServerMessage(e.Message, True);
+      LogServerMessage(e.Message, True, e);
       if e.Message = S_NO_OPERATION_FOUND then
       begin
         aLog.Operation := nil;
@@ -2719,7 +2725,7 @@ begin
       end;
     except
       on e: Exception do
-        LogServerMessage (Format('Exception %s%s%swas raised%s', [CRLF, e.Message, CRLF, CRLF]), True);
+        LogServerMessage (Format('Exception %s%s%swas raised%s', [CRLF, e.Message, CRLF, CRLF]), True, e);
     end;
   finally
 //    xWsdl.Free; starnge trick not yet
@@ -2758,7 +2764,7 @@ begin
       except
         on e: exception do
         begin
-          LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True);
+          LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
           xLog.Exception := e.Message;
         end;
       end;
@@ -2770,7 +2776,7 @@ begin
         except
           on e: exception do
           begin
-            LogServerMessage(format('Exception %s in Stomp PutReply. Exception is:"%s".', [e.ClassName, e.Message]), True);
+            LogServerMessage(format('Exception %s in Stomp PutReply. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             xLog.Exception := e.Message;
           end;
         end;
@@ -2783,7 +2789,7 @@ begin
         except
           on e: exception do
           begin
-            LogServerMessage(format('Exception %s in Stomp Ack. Exception is:"%s".', [e.ClassName, e.Message]), True);
+            LogServerMessage(format('Exception %s in Stomp Ack. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             xLog.Exception := e.Message;
           end;
         end;
@@ -2798,6 +2804,7 @@ begin
                        + LINE_END
                        + aFrame.Output
                        , False
+                       , nil
                        );
 end;
 
@@ -3575,7 +3582,7 @@ begin
     except
       on e: exception do
       begin
-        LogServerMessage(format('Exception %s in SendSoapRequest. Exception is:"%s".', [e.ClassName, e.Message]), True);
+        LogServerMessage(format('Exception %s in SendSoapRequest. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
         with xLog do
         begin
           if InboundTimeStamp = 0 then
@@ -3662,7 +3669,7 @@ begin
         on e: Exception do
         begin
           aLog.Exception := e.Message;
-          LogServerMessage (e.Message, True);
+          LogServerMessage (e.Message, True, e);
         end;
       end;
     finally
@@ -5470,7 +5477,7 @@ begin
     except
       on e: exception do
       begin
-        LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True);
+        LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
         xLog.Exception := e.Message;
       end;
     end;
@@ -5761,7 +5768,7 @@ begin
               except
                 on e: exception do
                 begin
-                  LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True);
+                  LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
                   xLog.Exception := e.Message;
                   if (not Assigned (xLog.Operation))
                   or (not xLog.Operation.WsdlService.SuppressHTTP500) then
@@ -5897,7 +5904,7 @@ begin
           except
             on e: exception do
             begin
-              LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True);
+              LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
               xLog.Exception := e.Message;
               AResponseInfo.ContentText := e.Message;
             end;
@@ -6232,7 +6239,7 @@ begin
     end;
   except
     on e: Exception do
-      LogServerMessage(format('Exception %s in SMTPServerMsgReceive. Exception is:"%s".', [e.ClassName, e.Message]), True);
+      LogServerMessage(format('Exception %s in SMTPServerMsgReceive. Exception is:"%s".', [e.ClassName, e.Message]), True,e);
   end;
 end;
 
@@ -6881,7 +6888,7 @@ begin
       ExecuteBefore;
     except
       on e: Exception do
-        LogServerMessage(e.Message, True);
+        LogServerMessage(e.Message, True, e);
     end;
   finally
     FreeAndNil(Data);
@@ -7012,7 +7019,7 @@ begin
       except
         on e: exception do
         begin
-          LogServerMessage (format('Exception %s in Activate. Exception is:"%s".', [e.ClassName, e.Message]), True);
+          LogServerMessage (format('Exception %s in Activate. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
         end;
       end;
     end

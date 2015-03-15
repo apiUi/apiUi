@@ -597,7 +597,6 @@ type
     procedure AfterRequestScriptButtonClick(Sender: TObject);
     procedure ScriptButtonsPanelResize(Sender: TObject);
     procedure ExecuteAllRequests;
-    procedure ExecuteScript(aScript: String);
     procedure ExecuteAllRequestsActionUpdate(Sender: TObject);
     procedure ExecuteRequestActionUpdate(Sender: TObject);
     procedure ExecuteAllRequestsActionExecute(Sender: TObject);
@@ -925,9 +924,6 @@ type
     doScrollExceptionsIntoView: Boolean;
     DisclaimerAccepted: Boolean;
     IniFile: TFormIniFile;
-    StubResponseReceived: Boolean;
-    HostResponse: String;
-    SendString: String;
     ActualXml: TCustomBindable;
     ActualXmlAttr: TXmlAttribute;
     ErrorReadingLicenseInfo: Boolean;
@@ -964,7 +960,7 @@ type
     function getWsdl: TWsdl;
     procedure DisplayServerMessage(const Msg: String);
     procedure LogServerNotification(const Msg: String);
-    procedure LogServerException(const Msg: String; aException: Boolean);
+    procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
     function HttpActiveHint: String;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     procedure WsdlPopulateServices(aWsdl: TWsdl);
@@ -1225,39 +1221,26 @@ end;
 
 procedure TMainForm.LogServerNotification(const Msg: String);
 begin
-  LogServerException(Msg, False);
+  LogServerException(Msg, False, nil);
 end;
 
-procedure TMainForm.LogServerException(const Msg: String; aException: Boolean);
+procedure TMainForm.LogServerException(const Msg: String; aException: Boolean; E: Exception);
 var
   xLog: TExceptionLog;
-  xData: PExceptionTreeRec;
-  xNode: PVirtualNode;
 begin
-  AcquireLock;
+  if aException then
+    xLog := TExceptionLog.Create (Msg
+                                 + LineEnding
+                                 + se.ExceptionStackListString(nil)
+                                 )
+  else
+    xLog := TExceptionLog.Create (Msg
+                                 );
+  se.AcquireLogLock;
   try
-    if aException then
-      se.allExceptions.AddEvent(TExceptionLog.Create(Msg
-          { } + #10#13 + se.ExceptionStackListString(nil) { } ))
-    else
-      se.allExceptions.AddEvent(TExceptionLog.Create(Msg));
-    xLog := se.allExceptions.EventItems[se.allExceptions.Count - 1];
-    xLog.Nr := se.allExceptions.Count;
-    xNode := ExceptionsVTS.AddChild(nil);
-    xData := ExceptionsVTS.GetNodeData(xNode);
-    xData.xLog := xLog;
-    if DownPageControl.ActivePage <> ExceptionTabSheet then
-    begin
-      ExceptionTabSheet.Caption := notifyTabCaption + ' *';
-      ExceptionTabSheet.ImageIndex := notifyTabImageIndex;
-    end;
-    if doScrollExceptionsIntoView then
-    begin
-      ExceptionsVTS.ScrollIntoView(ExceptionsVTS.GetLast, True, False);
-      DownPageControl.ActivePage := ExceptionTabSheet;
-    end;
+    se.toDisplayExceptions.AddEvent (xLog);
   finally
-    ReleaseLock;
+    se.ReleaseLogLock;
   end;
 end;
 
@@ -3308,6 +3291,7 @@ end;
 
 procedure TMainForm.SetUiBusy ;
 begin
+  isBusy := True;
   DownPageControl.ActivePage := MessagesTabSheet;
   ExecuteRequestToolButton.Down := True;
   ExecuteAllRequestsToolButton.Down := True;
@@ -3326,6 +3310,10 @@ begin
   se.ProgressPos := 0;
   abortPressed := False;
   AbortToolButton.Enabled := False;
+  isBusy := False;
+  UpdateInWsdlCheckBoxes;
+  GridView.Invalidate;
+  InWsdlTreeView.Invalidate;
 end;
 
 procedure TMainForm.SetUiProgress;
@@ -4967,7 +4955,7 @@ end;
 procedure TMainForm.DeleteMessageActionExecute(Sender: TObject);
 var
   xMessage: TWsdlMessage;
-  cNode: PVirtualNode;
+  cNode, nNode: PVirtualNode;
 begin
   WsdlOperation.AcquireLock;
   try
@@ -4976,6 +4964,7 @@ begin
       cNode := GridView.GetNext(cNode); // never delete default
     while Assigned(cNode) do
     begin
+      nNode := GridView.GetNext(cNode);  // because it still can
       if GridView.Selected[cNode] then
       begin
         NodeToMessage(GridView, cNode, xMessage);
@@ -4986,7 +4975,7 @@ begin
           stubChanged := True;
         end;
       end;
-      cNode := GridView.GetNext(cNode);
+      cNode := nNode;
     end;
     GridView.Invalidate;
     GridView.SetFocus;
@@ -5858,13 +5847,18 @@ end;
 
 procedure TMainForm.ClearExceptionsActionUpdate(Sender: TObject);
 begin
-  ClearExceptionsAction.Enabled := (se.allExceptions.Count > 0);
+  ClearExceptionsAction.Enabled := (se.displayedExceptions.Count > 0);
 end;
 
 procedure TMainForm.ClearExceptionsActionExecute(Sender: TObject);
 begin
   ExceptionsVTS.Clear;
-  se.allExceptions.Clear;
+  se.AcquireLogLock;
+  try
+    se.displayedExceptions.Clear;
+  finally
+    se.ReleaseLogLock;
+  end;
   ExceptionMemo.Text := '';
 end;
 
@@ -5879,7 +5873,7 @@ begin
   begin
     ExceptionMemo.Text := xLog.Text;
     ExceptionStatusBar.Panels.Items[0].Text := '[' + IntToStr(xLog.Nr)
-      + ' : ' + IntToStr(se.allExceptions.Count) + ']';
+      + ' : ' + IntToStr(se.displayedExceptions.Count) + ']';
   end
   else
   begin
@@ -7887,14 +7881,13 @@ begin
     exit;
   if not se.IsActive then
     raise Exception.Create(Format('%s not active', [_progName]));
-  ProgressBar.Min := 0;
-  ProgressBar.Position := 0;
-  ProgressBar.Max := 5;
-  ProgressBar.Position := 1;
+  se.ProgressMax := 5;
+  se.ProgressPos := 0;
+  isBusy := True;
   with Sender as TMenuItem do
     with se.Scripts.Objects[Tag] as TStringList do
       xScript := Text;
-  TProcedureThread.Create(False, se, ExecuteScript, xScript);
+  TProcedureThread.Create(False, se, se.ScriptExecute, xScript);
 end;
 
 procedure TMainForm.CreateScriptsSubMenuItems;
@@ -8288,40 +8281,15 @@ end;
 
 procedure TMainForm.ExecuteRequestActionUpdate(Sender: TObject);
 begin
-  ExecuteRequestAction.Enabled := Assigned(WsdlOperation) and Assigned
-    (WsdlReply) and (WsdlOperation.StubAction = saRequest) and
-    (se.IsActive) and (not se.isBusy) and (not ExecuteRequestToolButton.Down)
-    and (not ExecuteAllRequestsToolButton.Down);
-end;
-
-procedure TMainForm.ExecuteScript(aScript: String);
-var
-  X: Integer;
-  SwapCursor: TCursor;
-  xPrepared: Boolean;
-begin
-  DownPageControl.ActivePage := MessagesTabSheet;
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  ProgressBar.Min := 0;
-  ProgressBar.Position := 0;
-  ProgressBar.Max := 5;
-  ProgressBar.Position := ProgressBar.Position + 1;
-  isBusy := True;
-  abortPressed := False;
-  AbortToolButton.Enabled := True;
-  try
-    se.ScriptExecute(aScript);
-  finally
-    AbortToolButton.Enabled := False;
-    abortPressed := False;
-    isBusy := False;
-    ProgressBar.Position := 0;
-    Screen.Cursor := SwapCursor;
-    UpdateInWsdlCheckBoxes;
-    GridView.Invalidate;
-    InWsdlTreeView.Invalidate;
-  end;
+  ExecuteRequestAction.Enabled :=
+        Assigned(WsdlOperation)
+    and Assigned(WsdlReply)
+    and (WsdlOperation.StubAction = saRequest)
+    and (se.IsActive)
+    and (not se.isBusy)
+    and (not ExecuteRequestToolButton.Down)
+    and (not ExecuteAllRequestsToolButton.Down)
+    ;
 end;
 
 procedure TMainForm.ExecuteAllRequestsActionUpdate(Sender: TObject);
@@ -8487,61 +8455,93 @@ end;
 
 
 procedure TMainForm.RefreshLog;
-var
-  x: Integer;
-  xLog: TLog;
-  xData: PLogTreeRec;
-  xNode: PVirtualNode;
-  xAdded: Boolean;
-begin
-  xAdded := False;
-  if True then
+  function _refreshLogging: Boolean;
+  var
+    x: Integer;
+    xLog: TLog;
+    xData: PLogTreeRec;
+    xNode: PVirtualNode;
   begin
-    se.AcquireLogLock;
-    try
-      for x := 0 to se.toDisplayLogs.Count - 1 do
-      begin
-        xLog := se.toDisplayLogs.LogItems[x];
-        se.displayedLogs.SaveLog('', xLog);
-        xLog.Nr := se.displayedLogs.Number;
-        xAdded := True;
-        se.LogFilter.Execute(xLog);
-        xNode := MessagesVTS.AddChild(nil);
-        xData := MessagesVTS.GetNodeData(xNode);
-        xData.Log := xLog;
-        xLog.displayRef := PDisplayRef(xNode);
-        MessagesVTS.IsVisible[xNode] := xLog.PassesFilter;
-        if se.displayedLogsmaxEntries > -1 then
-        while se.displayedLogs.Count > se.displayedLogsmaxEntries do
-        begin
-          MessagesVTS.DeleteNode(MessagesVTS.GetFirst);
-          se.displayedLogs.LogItems[0].displayRef := nil;
-          se.displayedLogs.Delete(0);
-        end;
-      end;
-      se.toDisplayLogs.Clear;
-      for x := 0 to se.toUpdateDisplayLogs.Count - 1 do
-      begin
-        xLog := se.toUpdateDisplayLogs.LogItems[x];
-        if Assigned (xlog.displayRef) then
-        begin
-          xNode := PVirtualNode (xLog.displayRef);
-          MessagesVTS.InvalidateNode(xNode);
-          if xNode = MessagesVTS.FocusedNode then
-          begin
-            UpdateLogTabs (xLog);
-          end;
-        end;
-      end;
-      se.toUpdateDisplayLogs.Clear;
-      SetUiProgress;
-    finally
-      se.ReleaseLogLock;
-    end;
-    if doScrollMessagesIntoView
-    and xAdded then
+    result := False;
+    for x := 0 to se.toDisplayLogs.Count - 1 do
     begin
+      xLog := se.toDisplayLogs.LogItems[x];
+      se.displayedLogs.SaveLog('', xLog);
+      xLog.Nr := se.displayedLogs.Number;
+      result := True;
+      se.LogFilter.Execute(xLog);
+      xNode := MessagesVTS.AddChild(nil);
+      xData := MessagesVTS.GetNodeData(xNode);
+      xData.Log := xLog;
+      xLog.displayRef := PDisplayRef(xNode);
+      MessagesVTS.IsVisible[xNode] := xLog.PassesFilter;
+      if se.displayedLogsmaxEntries > -1 then
+      while se.displayedLogs.Count > se.displayedLogsmaxEntries do
+      begin
+        MessagesVTS.DeleteNode(MessagesVTS.GetFirst);
+        se.displayedLogs.LogItems[0].displayRef := nil;
+        se.displayedLogs.Delete(0);
+      end;
+    end;
+    se.toDisplayLogs.Clear;
+    for x := 0 to se.toUpdateDisplayLogs.Count - 1 do
+    begin
+      xLog := se.toUpdateDisplayLogs.LogItems[x];
+      if Assigned (xlog.displayRef) then
+      begin
+        xNode := PVirtualNode (xLog.displayRef);
+        MessagesVTS.InvalidateNode(xNode);
+        if xNode = MessagesVTS.FocusedNode then
+        begin
+          UpdateLogTabs (xLog);
+        end;
+      end;
+    end;
+    se.toUpdateDisplayLogs.Clear;
+  end;
+  function _refreshExceptions: Boolean;
+  var
+    xLog: TExceptionLog;
+    xNode: PVirtualNode;
+    xData: PExceptionTreeRec;
+    x: Integer;
+  begin
+    result := False;
+    for x := 0 to se.toDisplayExceptions.Count - 1 do
+    begin
+      xLog := se.toDisplayExceptions.EventItems[x];
+      se.displayedExceptions.AddObject('', xLog);
+      result := True;
+      xNode := ExceptionsVTS.AddChild(nil);
+      xData := ExceptionsVTS.GetNodeData(xNode);
+      xData.xLog := xLog;
+    end;
+  end;
+var
+  logAdded, exceptionAdded: Boolean;
+begin
+  se.AcquireLogLock;
+  try
+    logAdded := _refreshLogging;
+    exceptionAdded := _refreshExceptions;
+    SetUiProgress;
+  finally
+    se.ReleaseLogLock;
+  end;
+  if logAdded then
+    if doScrollMessagesIntoView then
       MessagesVTS.ScrollIntoView(MessagesVTS.GetLast, True, False);
+  if exceptionAdded then
+  begin
+    if DownPageControl.ActivePage <> ExceptionTabSheet then
+    begin
+      ExceptionTabSheet.Caption := notifyTabCaption + ' *';
+      ExceptionTabSheet.ImageIndex := notifyTabImageIndex;
+    end;
+    if doScrollExceptionsIntoView then
+    begin
+      ExceptionsVTS.ScrollIntoView(ExceptionsVTS.GetLast, True, False);
+      DownPageControl.ActivePage := ExceptionTabSheet;
     end;
   end;
 end;
@@ -9900,7 +9900,7 @@ begin
         on E: Exception do
         begin
           xLogItem.Exception := E.Message;
-          LogServerException(E.Message, True);
+          LogServerException(E.Message, True, e);
         end;
       end;
     finally
@@ -10427,7 +10427,7 @@ begin
               on E: Exception do
                 LogServerException(Format(
                     'Exception %s in SaveMessagesToDisk. Exception is:"%s".',
-                    [E.ClassName, E.Message]), True);
+                    [E.ClassName, E.Message]), True, E);
             end;
           end;
         end;
@@ -10561,7 +10561,7 @@ begin
           except
             on E: Exception do
             begin
-              LogServerException(E.Message, False);
+              LogServerException(E.Message, False, nil);
               Inc(nErrors);
             end;
           end;
