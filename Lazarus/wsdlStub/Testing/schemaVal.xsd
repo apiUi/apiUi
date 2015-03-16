@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="schemaVal">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="dateFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="minIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:date">
+										<xs:minInclusive value="1956-08-17"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:date">
+										<xs:maxInclusive value="1956-08-17"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:date">
+										<xs:minExclusive value="1956-08-17"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:date">
+										<xs:maxExclusive value="1956-08-17"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="dateTimeFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="minIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:dateTime">
+										<xs:minInclusive value="1956-08-17T02:02:02.200"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:dateTime">
+										<xs:maxInclusive value="1956-08-17T02:02:02.200"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:dateTime">
+										<xs:minExclusive value="1956-08-17T02:02:02.200"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:dateTime">
+										<xs:maxExclusive value="1956-08-17T02:02:02.200"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="decimalFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="minIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:decimal">
+										<xs:minInclusive value="2.8"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:decimal">
+										<xs:maxInclusive value="2.8"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:decimal">
+										<xs:minExclusive value="2.8"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:decimal">
+										<xs:maxExclusive value="2.8"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="totalDig">
+								<xs:simpleType>
+									<xs:restriction base="xs:decimal">
+										<xs:totalDigits value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="fracDig">
+								<xs:simpleType>
+									<xs:restriction base="xs:decimal">
+										<xs:fractionDigits value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="durationFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="minIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:duration">
+										<xs:minInclusive value="P5Y2M10DT15H" fixed="true"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:duration">
+										<xs:maxInclusive value="P5Y2M10DT15H"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:duration">
+										<xs:minExclusive value="P5Y2M10DT15H"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:duration">
+										<xs:maxExclusive value="P5Y2M10DT15H"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="integerFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="minIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:minInclusive value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:maxInclusive value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:minExclusive value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:maxExclusive value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="totalDig">
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:totalDigits value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="stringFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="length">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:length value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minLength">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxLength">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="whiteSpaceCollapse">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:whiteSpace value="collapse"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="whiteSpacePreserve">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:whiteSpace value="preserve"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="whiteSpaceReplace">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:whiteSpace value="replace"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="stringEnumeration">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Jan"/>
+							<xs:enumeration value="Willem"/>
+							<xs:enumeration value="Bouwman"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="stringPatterns">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:pattern value="[1-9][0-9]{3}[A-Z]{2}"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

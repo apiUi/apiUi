@@ -1966,7 +1966,7 @@ procedure TMainForm.InWsdlTreeViewEdited(Sender: TBaseVirtualTree;
 begin
   if Column = treeValueColumn then
   begin
-    xmlUtil.CheckValidity(NodeToBind(Sender, Node));
+    try xmlUtil.CheckValidity(NodeToBind(Sender, Node)); Except End;
   end;
 end;
 

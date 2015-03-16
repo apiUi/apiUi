@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 3/16/2015 8:49:04 AM: Generated with wsdlStub 8.0.2.7886 by Jan -->
+<WsdlStubCase>
+  <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.wsdlStub</FileName>
+  <Portnumber>0</Portnumber>
+  <doUseMQ>false</doUseMQ>
+  <mqInterfaces></mqInterfaces>
+  <stompInterfaces></stompInterfaces>
+  <Listeners></Listeners>
+  <isMasterModeEnabled>true</isMasterModeEnabled>
+  <MasterPortNumber>3738</MasterPortNumber>
+  <ValidateRequests>false</ValidateRequests>
+  <ValidateReplies>false</ValidateReplies>
+  <CheckExpectedValues>false</CheckExpectedValues>
+  <DisableOnCorrelate>false</DisableOnCorrelate>
+  <projectOptions>
+    <General>
+      <SaveRelativeFileNames>true</SaveRelativeFileNames>
+    </General>
+    <Log>
+      <maxEntries>unbounded</maxEntries>
+      <CompareLogsOrdered>Service, Operation, Correlation</CompareLogsOrdered>
+      <DocumentComparison>
+        <DetectDocumentFormatChanges>false</DetectDocumentFormatChanges>
+        <NewDocumentAsReference>false</NewDocumentAsReference>
+        <ExpectedDifferenceCount>0</ExpectedDifferenceCount>
+      </DocumentComparison>
+      <ShowCobolDataAs>Cobol</ShowCobolDataAs>
+      <DisplayedColumns></DisplayedColumns>
+    </Log>
+    <MasterSlave>
+      <Enabled>true</Enabled>
+      <Port>3738</Port>
+    </MasterSlave>
+    <Wsdl>
+      <PublishDescriptions>false</PublishDescriptions>
+      <OperationsWithEndpointOnly>true</OperationsWithEndpointOnly>
+      <ElementsWhenRepeatable>1</ElementsWhenRepeatable>
+      <MaxDepthWhenRecursive>1</MaxDepthWhenRecursive>
+      <MaxDepthXmlGen>9999</MaxDepthXmlGen>
+    </Wsdl>
+    <OnCorrelate>
+      <DisableMessage>false</DisableMessage>
+    </OnCorrelate>
+    <UnknownOperations>
+      <RaiseErrorMessage></RaiseErrorMessage>
+    </UnknownOperations>
+    <DatabaseConnection>
+      <Enabled>false</Enabled>
+      <ConnectionString></ConnectionString>
+      <Password></Password>
+    </DatabaseConnection>
+  </projectOptions>
+  <Environments></Environments>
+  <Wsdl>
+    <XsdOperations>
+      <Operation>
+        <Name>schemaVal</Name>
+        <Req>
+          <DescriptionFile>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.xsd</DescriptionFile>
+          <ElementName>schemaVal</ElementName>
+        </Req>
+      </Operation>
+    </XsdOperations>
+    <ElementsWhenRepeatable>-1</ElementsWhenRepeatable>
+    <Service>
+      <Name>_Xsd</Name>
+      <AuthenticationType>0</AuthenticationType>
+      <UserName></UserName>
+      <Password></Password>
+      <PasswordType>0</PasswordType>
+      <SuppressXmlComment>false</SuppressXmlComment>
+      <SuppressHTTP500>false</SuppressHTTP500>
+      <serviceOptions>
+        <general>
+          <suppressXmlComment>false</suppressXmlComment>
+          <suppressHttp500onSoapFaults>false</suppressHttp500onSoapFaults>
+        </general>
+      </serviceOptions>
+      <Operation>
+        <Name>schemaVal</Name>
+        <Action>3</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>0</StubMqTimeOut>
+        <StubStompPutHost></StubStompPutHost>
+        <StubStompPutPort>0</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>0</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <ContentEncoding>identity</ContentEncoding>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply></Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <schemaVal_Req checked__="true">
+                <schemaVal checked__="true">
+                  <dateFacets checked__="true">
+                    <minIncl checked__="true">1956-08-16</minIncl>
+                    <maxIncl checked__="true">1956-08-18</maxIncl>
+                    <minExcl checked__="true">1956-08-17</minExcl>
+                    <maxExcl checked__="true">1956-08-17</maxExcl>
+                  </dateFacets>
+                  <stringFacets checked__="true">
+                    <length checked__="true">1</length>
+                    <minLength checked__="true">1</minLength>
+                    <maxLength checked__="true">123</maxLength>
+                    <whiteSpaceCollapse checked__="false"> </whiteSpaceCollapse>
+                  </stringFacets>
+                </schemaVal>
+              </schemaVal_Req>
+            </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+    </Service>
+  </Wsdl>
+  <ignoreDifferencesOn></ignoreDifferencesOn>
+  <ignoreAddingOn></ignoreAddingOn>
+  <ignoreRemovingOn></ignoreRemovingOn>
+  <ignoreCoverageOn></ignoreCoverageOn>
+  <Scripts></Scripts>
+</WsdlStubCase>

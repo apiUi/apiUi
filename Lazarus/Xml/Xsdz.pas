@@ -1956,14 +1956,21 @@ begin
     exit;
   end;
   try
+    if (Length <> '')
+    and (System.Length (aValue) <> StrToInt(Length)) then
+      raise Exception.CreateFmt('Value violates length constraint (%s)', [Length]);
+    if (MinLength <> '')
+    and (System.Length (aValue) < StrToInt(MinLength)) then
+      raise Exception.CreateFmt('Value violates minLength constraint (%s)', [MinLength]);
     if (MaxLength <> '')
     and (System.Length (aValue) > StrToInt(MaxLength)) then
-      raise Exception.CreateFmt('Exceeds maximum length [%s]', [MaxLength]);
-  { TODO : is valid value against schema }
+      raise Exception.CreateFmt('Value violates maxLength constraint (%s)', [MaxLength]);
+    { TODO : whitespace }
   except
     on E: Exception do
     begin
-      aMessage := 'Value: "' + aValue + '" ' + E.Message;
+      aMessage := Format('Value: "%s" Validate XML Error, reason %s.%sThe Element "%s" failed to parse'
+                        , [aValue, E.Message,LineEnding, aName]);
       result := False;
     end;
   end;
