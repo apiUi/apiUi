@@ -7,6 +7,13 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="booleanFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="boolean" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="dateFacets">
 					<xs:complexType>
 						<xs:sequence>

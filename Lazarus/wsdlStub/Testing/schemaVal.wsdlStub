@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 3/16/2015 8:49:04 AM: Generated with wsdlStub 8.0.2.7886 by Jan -->
+<!-- 3/16/2015 10:49:26 PM: Generated with wsdlStub 8.0.2.7886 by Jan -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.wsdlStub</FileName>
   <Portnumber>0</Portnumber>
@@ -48,7 +48,7 @@
     <DatabaseConnection>
       <Enabled>false</Enabled>
       <ConnectionString></ConnectionString>
-      <Password></Password>
+      <Password>Ehg6</Password>
     </DatabaseConnection>
   </projectOptions>
   <Environments></Environments>
@@ -136,6 +136,20 @@
                     <minExcl checked__="true">1956-08-17</minExcl>
                     <maxExcl checked__="true">1956-08-17</maxExcl>
                   </dateFacets>
+                  <dateTimeFacets checked__="true">
+                    <minIncl checked__="true">1956-08-17T02:02:02.199</minIncl>
+                    <maxIncl checked__="true">1956-08-17T02:02:02.201</maxIncl>
+                    <minExcl checked__="true">1956-08-17T02:02:02.200</minExcl>
+                    <maxExcl checked__="true">1956-08-17T02:02:02.200</maxExcl>
+                  </dateTimeFacets>
+                  <decimalFacets checked__="true">
+                    <minIncl checked__="true">2.8</minIncl>
+                    <maxIncl checked__="true">2.8</maxIncl>
+                    <minExcl checked__="true">2.8</minExcl>
+                    <maxExcl checked__="true">2.8</maxExcl>
+                    <totalDig checked__="true">000022</totalDig>
+                    <fracDig checked__="true">0.1234</fracDig>
+                  </decimalFacets>
                   <stringFacets checked__="true">
                     <length checked__="true">1</length>
                     <minLength checked__="true">1</minLength>

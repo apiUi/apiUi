@@ -176,7 +176,7 @@ const
   fctMinExclusive = 'minExclusive';
   fctWhitespace = 'whiteSpace';
   fctTotalDigits = 'totalDigits';
-  fctFractionalDigits = 'fractionalDigits';
+  fctFractionalDigits = 'fractionDigits';
 
   builtInTypeNames: array[0..45] of String = (xsdString, xsdBoolean,
     xsdDecimal, xsdFloat, xsdDouble, xsdDuration, xsdDateTime, xsdTime,

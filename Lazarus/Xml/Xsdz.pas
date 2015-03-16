@@ -281,6 +281,7 @@ var
   defaultXsdMaxDepthBillOfMaterials: integer;
   defaultXsdMaxDepthXmlGen: Integer;
   defaultXsdElementsWhenRepeatable: Integer;
+  systemStarting: Boolean;
 
 implementation
 
@@ -290,6 +291,7 @@ uses SysUtils
    , Dialogs
    , Controls
    , Xmlz
+   , xmlxsdparser
    ;
 
 { TXsdList }
@@ -1939,41 +1941,123 @@ begin
 { TODO : XML schema validation
  }end;
 
-function TXsdDataType.IsValidValue(aName, aValue: String;
-  var aMessage: String): Boolean;
-var
-  xMessage: String;
-begin
-  aMessage := 'Value validated without errors.';
-  result := True;
-  if Name = 'FileNameType' then
-  begin
-    if not FileExists(aValue) then
+ function TXsdDataType.IsValidValue(aName, aValue: String;
+   var aMessage: String): Boolean;
+   function _totalDigits (aValue: String): Integer;
+   var
+     i: LongInt;
+   begin
+     result := 0; // start with fractionDigits
+     i := 1;
+     while i <= system.Length (aValue) do
+     begin
+       if aValue [i] = '.' then
+       begin
+       { TODO : fractionDigits }
+//         result := result + fractionDigits;
+         Exit;
+       end;
+       if (aValue [i] <> '0')
+       or (result > 0) then
+         Inc (result);
+       Inc (i);
+     end;
+   end;
+
+ var
+   xMessage: String;
+   xBoolean: Boolean;
+   xDate: TDateTime;
+   xDateTime: TDateTime;
+   xDecimal: Extended;
+ begin
+   aMessage := 'Value validated without errors.';
+   result := True;
+   if Name = 'FileNameType' then
+   begin
+     if not FileExists(aValue) then
+     begin
+       aMessage := 'Value: "' + aValue + '" File does not exist';
+       result := False;
+     end;
+     exit;
+   end;
+   try
+     // general facets
+     if (Length <> '')
+     and (System.Length (aValue) <> StrToInt(Length)) then
+       raise Exception.CreateFmt('Value violates length constraint (%s)', [Length]);
+     if (MinLength <> '')
+     and (System.Length (aValue) < StrToInt(MinLength)) then
+       raise Exception.CreateFmt('Value violates minLength constraint (%s)', [MinLength]);
+     if (MaxLength <> '')
+     and (System.Length (aValue) > StrToInt(MaxLength)) then
+       raise Exception.CreateFmt('Value violates maxLength constraint (%s)', [MaxLength]);
+     { TODO : whitespace }
+
+     if BaseDataTypeName = 'boolean' then
+     begin
+       xBoolean := xsdParseBoolean(aValue);
+     end;
+    if BaseDataTypeName = 'date' then
     begin
-      aMessage := 'Value: "' + aValue + '" File does not exist';
-      result := False;
+      xDateTime := xsdParseDate(aValue);
+      if (MinInclusive <> '')
+      and (xDateTime < xsdParseDate(MinInclusive)) then
+        raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
+      if (MaxInclusive <> '')
+      and (xDateTime > xsdParseDate(MaxInclusive)) then
+        raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
+      if (MinExclusive <> '')
+      and (xDateTime <= xsdParseDate(MinExclusive)) then
+        raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
+      if (MaxExclusive <> '')
+      and (xDateTime >= xsdParseDate(MaxExclusive)) then
+        raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
     end;
-    exit;
-  end;
-  try
-    if (Length <> '')
-    and (System.Length (aValue) <> StrToInt(Length)) then
-      raise Exception.CreateFmt('Value violates length constraint (%s)', [Length]);
-    if (MinLength <> '')
-    and (System.Length (aValue) < StrToInt(MinLength)) then
-      raise Exception.CreateFmt('Value violates minLength constraint (%s)', [MinLength]);
-    if (MaxLength <> '')
-    and (System.Length (aValue) > StrToInt(MaxLength)) then
-      raise Exception.CreateFmt('Value violates maxLength constraint (%s)', [MaxLength]);
-    { TODO : whitespace }
-  except
-    on E: Exception do
+    if BaseDataTypeName = 'dateTime' then
     begin
-      aMessage := Format('Value: "%s" Validate XML Error, reason %s.%sThe Element "%s" failed to parse'
-                        , [aValue, E.Message,LineEnding, aName]);
-      result := False;
+      xDateTime := xsdParseDateTime(aValue);
+      if (MinInclusive <> '')
+      and (xDateTime < xsdParseDateTime(MinInclusive)) then
+        raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
+      if (MaxInclusive <> '')
+      and (xDateTime > xsdParseDateTime(MaxInclusive)) then
+        raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
+      if (MinExclusive <> '')
+      and (xDateTime <= xsdParseDateTime(MinExclusive)) then
+        raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
+      if (MaxExclusive <> '')
+      and (xDateTime >= xsdParseDateTime(MaxExclusive)) then
+        raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
     end;
-  end;
+    if BaseDataTypeName = 'decimal' then
+    begin
+      xdecimal := xsdParseDecimal(aValue);
+      if (MinInclusive <> '')
+      and (xdecimal < xsdParsedecimal(MinInclusive)) then
+        raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
+      if (MaxInclusive <> '')
+      and (xdecimal > xsdParseDecimal(MaxInclusive)) then
+        raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
+      if (MinExclusive <> '')
+      and (xdecimal <= xsdParseDecimal(MinExclusive)) then
+        raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
+      if (MaxExclusive <> '')
+      and (xdecimal >= xsdParseDecimal(MaxExclusive)) then
+        raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
+      if (TotalDigits <> '')
+      and (_totalDigits (aValue) > StrToInt(TotalDigits)) then
+        raise Exception.CreateFmt('Value violates TotalDigits constraint (%s)', [TotalDigits]);
+    end;
+   except
+     on E: Exception do
+     begin
+       aMessage := Format('Value: "%s" Validate XML Error, reason %s.%sThe Element "%s" failed to parse'
+                         , [aValue, E.Message,LineEnding, aName]);
+       result := False;
+     end;
+   end;
 end;
 
 function TXsdDataType.getUniqueId: String;
@@ -2329,6 +2413,10 @@ procedure TXsdDescr.Finalise;
           for x := 0 to ElementDefs.Count - 1 do
           with ElementDefs.Xsds[x] do
           begin
+      if ElementName = 'schemaVal' then
+        ElementName := 'schemaVal';
+      if ElementName = 'boolean' then
+        ElementName := 'boolean';
             if not Assigned (sType)
             and (_DataTypeName <> '') then
             begin
@@ -2588,9 +2676,32 @@ procedure TXsdDescr.Finalise;
     end;
   end;
 
+  procedure _track (atrack: String; typedef: TXsdDataType);
+  var
+    x: Integer;
+  begin
+    for x := 0 to typedef.ElementDefs.Count - 1 do with typedef.ElementDefs.Xsds[x] do
+    begin
+      ShowMessage(aTrack + '.' + ElementName);
+      _track (aTrack + '.' + ElementName, sType);
+    end;
+  end;
+
 var
   x, y: integer;
 begin
+
+{
+  if not systemStarting then
+  begin
+    ShowMessage('e#: ' + IntToStr (self.TypeDef.ElementDefs.Count));
+    _track ('', typedef);
+    ShowMessage('t#: ' + IntToStr (self.TypeDefs.Count));
+    for x := 0 to TypeDefs.Count - 1 do
+      _track('', TypeDefs.XsdDataTypes[x]);
+  end;
+}
+
   _LinkElmntToType('', TypeDef);
   for x := 0 to TypeDefs.Count - 1 do
     _LinkElmntToType('', TypeDefs.XsdDataTypes[x]);
@@ -2611,6 +2722,16 @@ begin
       _adjustExtendedByTypeDefs(TypeDefs.XsdDataTypes[x]);
   end;
   _checkSTypes ('', TypeDef);
+{
+    if not systemStarting then
+    begin
+      ShowMessage('e#: ' + IntToStr (self.TypeDef.ElementDefs.Count));
+      _track ('', typedef);
+      ShowMessage('t#: ' + IntToStr (self.TypeDefs.Count));
+      for x := 0 to TypeDefs.Count - 1 do
+        _track('', TypeDefs.XsdDataTypes[x]);
+    end;
+}
 end;
 
 function TXsdDescr.FindTypeDef(aNameSpace, aName: String): TXsdDataType;
@@ -2648,6 +2769,7 @@ end;
 
 initialization
 
+systemStarting := True;
 defaultXsdElementsWhenRepeatable := 1;
 defaultXsdMaxDepthBillOfMaterials := 1;
 defaultXsdMaxDepthXmlGen := 9999;

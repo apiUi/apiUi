@@ -6455,6 +6455,7 @@ begin
   MainToolBarDesignedButtonCount := MainToolBar.ButtonCount;
   CreateScriptsSubMenuItems;
   RefreshLogTimer.Enabled := True;
+  systemStarting := False;
 end;
 
 function TMainForm.inImageArea: Boolean;
