@@ -1941,28 +1941,62 @@ begin
 { TODO : XML schema validation
  }end;
 
- function TXsdDataType.IsValidValue(aName, aValue: String;
-   var aMessage: String): Boolean;
-   function _totalDigits (aValue: String): Integer;
-   var
-     i: LongInt;
-   begin
-     result := 0; // start with fractionDigits
-     i := 1;
-     while i <= system.Length (aValue) do
-     begin
-       if aValue [i] = '.' then
-       begin
-       { TODO : fractionDigits }
-//         result := result + fractionDigits;
-         Exit;
-       end;
-       if (aValue [i] <> '0')
-       or (result > 0) then
-         Inc (result);
-       Inc (i);
-     end;
-   end;
+function TXsdDataType.IsValidValue(aName, aValue: String;
+  var aMessage: String): Boolean;
+
+  function _fractionDigits (aValue: String): Integer;
+  var
+    i: Integer;
+    s: String;
+  begin
+    s := aValue;
+    if Pos ('E', s) > 0 then
+    begin
+      s := FloatToStr(xsdParseDecimal(s));
+      if Pos ('E', s) > 0 then
+        raise Exception.Create ('failed to check totalDigits, the value may be OK');
+    end;
+    result := 0;
+    i := system.Length (s);
+    while i > 0 do
+    begin
+      if s [i] = DecimalSeparator then
+        Exit;
+      if (s [i] > '0')
+      and (s <= '9') then
+        Inc (result);
+      Dec (i);
+    end;
+    if i = 0 then
+      result := 0;
+  end;
+  function _totalDigits (aValue: String): Integer;
+  var
+    i: Integer;
+    s: String;
+  begin
+    s := aValue;
+    if Pos ('E', s) > 0 then
+    begin
+      s := FloatToStr(xsdParseDecimal(s));
+      if Pos ('E', s) > 0 then
+        raise Exception.Create ('failed to check totalDigits, the value may be OK');
+    end;
+    result := 0; // start with fractionDigits
+    i := 1;
+    while i <= system.Length (s) do
+    begin
+      if s [i] = DecimalSeparator then
+      begin
+        result := result + _fractionDigits(aValue);
+        Exit;
+      end;
+      if (s [i] > '0')
+      and (s <= '9') then
+        Inc (result);
+      Inc (i);
+    end;
+  end;
 
  var
    xMessage: String;
@@ -1970,6 +2004,7 @@ begin
    xDate: TDateTime;
    xDateTime: TDateTime;
    xDecimal: Extended;
+   sep: Char;
  begin
    aMessage := 'Value validated without errors.';
    result := True;
@@ -2033,22 +2068,31 @@ begin
     end;
     if BaseDataTypeName = 'decimal' then
     begin
-      xdecimal := xsdParseDecimal(aValue);
-      if (MinInclusive <> '')
-      and (xdecimal < xsdParsedecimal(MinInclusive)) then
-        raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
-      if (MaxInclusive <> '')
-      and (xdecimal > xsdParseDecimal(MaxInclusive)) then
-        raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
-      if (MinExclusive <> '')
-      and (xdecimal <= xsdParseDecimal(MinExclusive)) then
-        raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
-      if (MaxExclusive <> '')
-      and (xdecimal >= xsdParseDecimal(MaxExclusive)) then
-        raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
-      if (TotalDigits <> '')
-      and (_totalDigits (aValue) > StrToInt(TotalDigits)) then
-        raise Exception.CreateFmt('Value violates TotalDigits constraint (%s)', [TotalDigits]);
+      Sep := DecimalSeparator;
+      DecimalSeparator:='.';
+      try
+        xdecimal := xsdParseDecimal(aValue);
+        if (MinInclusive <> '')
+        and (xdecimal < xsdParsedecimal(MinInclusive)) then
+          raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
+        if (MaxInclusive <> '')
+        and (xdecimal > xsdParseDecimal(MaxInclusive)) then
+          raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
+        if (MinExclusive <> '')
+        and (xdecimal <= xsdParseDecimal(MinExclusive)) then
+          raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
+        if (MaxExclusive <> '')
+        and (xdecimal >= xsdParseDecimal(MaxExclusive)) then
+          raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
+        if (TotalDigits <> '')
+        and (_totalDigits (aValue) > StrToInt(TotalDigits)) then
+          raise Exception.CreateFmt('Value violates TotalDigits constraint (%s)', [TotalDigits]);
+        if (FractionalDigits <> '')
+        and (_fractionDigits (aValue) > StrToInt(FractionalDigits)) then
+          raise Exception.CreateFmt('Value violates FractionDigits constraint (%s)', [FractionalDigits]);
+      finally
+        DecimalSeparator:=sep;
+      end;
     end;
    except
      on E: Exception do

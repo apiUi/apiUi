@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 3/16/2015 10:49:26 PM: Generated with wsdlStub 8.0.2.7886 by Jan -->
+<!-- 2015-03-17 8:33:40: Generated with svStudio 9.0.0.8534 by BouwmanJW -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.wsdlStub</FileName>
   <Portnumber>0</Portnumber>
@@ -47,7 +47,11 @@
     </UnknownOperations>
     <DatabaseConnection>
       <Enabled>false</Enabled>
-      <ConnectionString></ConnectionString>
+      <Type></Type>
+      <DatabaseName></DatabaseName>
+      <HostName></HostName>
+      <Params></Params>
+      <UserName></UserName>
       <Password>Ehg6</Password>
     </DatabaseConnection>
   </projectOptions>
@@ -147,8 +151,8 @@
                     <maxIncl checked__="true">2.8</maxIncl>
                     <minExcl checked__="true">2.8</minExcl>
                     <maxExcl checked__="true">2.8</maxExcl>
-                    <totalDig checked__="true">000022</totalDig>
-                    <fracDig checked__="true">0.1234</fracDig>
+                    <totalDig checked__="true">000022.01</totalDig>
+                    <fracDig checked__="true">-1234E-3</fracDig>
                   </decimalFacets>
                   <stringFacets checked__="true">
                     <length checked__="true">1</length>
