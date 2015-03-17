@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 2015-03-17 8:33:40: Generated with svStudio 9.0.0.8534 by BouwmanJW -->
+<!-- 2015-03-17 12:40:23: Generated with svStudio 9.0.0.8534 by BouwmanJW -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.wsdlStub</FileName>
   <Portnumber>0</Portnumber>
@@ -160,6 +160,8 @@
                     <maxLength checked__="true">123</maxLength>
                     <whiteSpaceCollapse checked__="false"> </whiteSpaceCollapse>
                   </stringFacets>
+                  <stringEnumeration checked__="true">Jan</stringEnumeration>
+                  <stringPatterns checked__="true">3738XJJ</stringPatterns>
                 </schemaVal>
               </schemaVal_Req>
             </Request>

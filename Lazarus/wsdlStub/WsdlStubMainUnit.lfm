@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 317
+  Left = 234
   Height = 581
-  Top = 112
+  Top = 44
   Width = 1038
   Caption = 'MainForm'
   ClientHeight = 562

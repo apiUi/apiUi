@@ -5,8 +5,7 @@ unit Unit1;
 interface
 
 uses
-  Classes , SysUtils , FileUtil , Forms , Controls , Graphics , Dialogs ,
-  StdCtrls , EditBtn;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls;
 
 type
 
@@ -14,8 +13,6 @@ type
 
   TForm1 = class(TForm)
     Button1: TButton;
-    FileNameEdit1 : TFileNameEdit ;
-    OpenDialog1: TOpenDialog;
     procedure Button1Click(Sender: TObject);
   private
     { private declarations }
@@ -28,30 +25,36 @@ var
 
 implementation
 
-{$R *.lfm}
-uses xmlz
-   , xsdz
+uses variants
+   , OleServer
+   , ComObj
    ;
+
+{$R *.lfm}
 
 { TForm1 }
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
-  xXml: TXml;
+  wordApp, wordDoc: OleVariant;
+  s: WideString;
 begin
-  with OpenDialog1 do
-  begin
-    if Execute then
-    begin
-      xXml := TXml.Create;
-      try
-        xXml.LoadFromFile(FileName, nil);
-        ShowMessage(xXml.Text);
-      finally
-        xXml.Free;
-      end;
+  Screen.Cursor := crHourGlass;
+  try
+    wordApp :=  CreateOleObject('Word.Application');
+    try
+      s := UTF8Decode('c:\data\Janbo.docx');
+      wordDoc := wordApp.Documents.Open (s);
+      s := UTF8Decode('c:\data\Janbo2.docx');
+      wordDoc.SaveAs(s);
+      wordApp.Quit;
+    finally
+      wordApp := null;
     end;
+  finally
+    Screen.Cursor:=crDefault;
   end;
+
 end;
 
 end.

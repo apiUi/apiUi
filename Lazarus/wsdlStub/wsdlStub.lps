@@ -23,7 +23,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="8503"/>
+        <TopLine Value="8541"/>
         <CursorPos X="31" Y="8457"/>
         <UsageCount Value="175"/>
         <Loaded Value="True"/>
@@ -42,12 +42,10 @@
       <Unit3>
         <Filename Value="WsdlProjectz.pas"/>
         <UnitName Value="WsdlProjectz"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1461"/>
         <CursorPos X="19" Y="1470"/>
         <UsageCount Value="90"/>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Xml\Wsdlz.pas"/>

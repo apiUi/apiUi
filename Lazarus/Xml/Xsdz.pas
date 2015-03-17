@@ -1998,42 +1998,106 @@ function TXsdDataType.IsValidValue(aName, aValue: String;
     end;
   end;
 
- var
-   xMessage: String;
-   xBoolean: Boolean;
-   xDate: TDateTime;
-   xDateTime: TDateTime;
-   xDecimal: Extended;
-   sep: Char;
- begin
-   aMessage := 'Value validated without errors.';
-   result := True;
-   if Name = 'FileNameType' then
-   begin
-     if not FileExists(aValue) then
-     begin
-       aMessage := 'Value: "' + aValue + '" File does not exist';
-       result := False;
-     end;
-     exit;
-   end;
+var
+  xMessage: String;
+  xBoolean: Boolean;
+  xDate: TDateTime;
+  xDateTime: TDateTime;
+  xDecimal: Extended;
+  xInt64: Int64;
+  f: Integer;
+  procedure _checkDecimal;
+  var
+    Sep: Char;
+  begin
+   Sep := DecimalSeparator;
+   DecimalSeparator:='.';
    try
-     // general facets
-     if (Length <> '')
-     and (System.Length (aValue) <> StrToInt(Length)) then
-       raise Exception.CreateFmt('Value violates length constraint (%s)', [Length]);
-     if (MinLength <> '')
-     and (System.Length (aValue) < StrToInt(MinLength)) then
-       raise Exception.CreateFmt('Value violates minLength constraint (%s)', [MinLength]);
-     if (MaxLength <> '')
-     and (System.Length (aValue) > StrToInt(MaxLength)) then
-       raise Exception.CreateFmt('Value violates maxLength constraint (%s)', [MaxLength]);
-     { TODO : whitespace }
+     if (MinInclusive <> '')
+     and (xdecimal < xsdParsedecimal(MinInclusive)) then
+       raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
+     if (MaxInclusive <> '')
+     and (xdecimal > xsdParseDecimal(MaxInclusive)) then
+       raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
+     if (MinExclusive <> '')
+     and (xdecimal <= xsdParseDecimal(MinExclusive)) then
+       raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
+     if (MaxExclusive <> '')
+     and (xdecimal >= xsdParseDecimal(MaxExclusive)) then
+       raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
+     if (TotalDigits <> '')
+     and (_totalDigits (aValue) > StrToInt(TotalDigits)) then
+       raise Exception.CreateFmt('Value violates TotalDigits constraint (%s)', [TotalDigits]);
+     if (FractionalDigits <> '')
+     and (_fractionDigits (aValue) > StrToInt(FractionalDigits)) then
+       raise Exception.CreateFmt('Value violates FractionDigits constraint (%s)', [FractionalDigits]);
+   finally
+     DecimalSeparator:=sep;
+   end;
+  end;
+  procedure _checkInteger;
+  begin
+    if (MinInclusive <> '')
+    and (xInt64 < xsdParseInteger(MinInclusive)) then
+      raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
+    if (MaxInclusive <> '')
+    and (xInt64 > xsdParseInteger(MaxInclusive)) then
+      raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
+    if (MinExclusive <> '')
+    and (xInt64 <= xsdParseInteger(MinExclusive)) then
+      raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
+    if (MaxExclusive <> '')
+    and (xInt64 >= xsdParseInteger(MaxExclusive)) then
+      raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
+      { TODO : check for other facets on Integer
+  }
+  end;
 
-     if BaseDataTypeName = 'boolean' then
-     begin
-       xBoolean := xsdParseBoolean(aValue);
-     end;
+begin
+  aMessage := 'Value parsed without errors.';
+  result := True;
+  if Name = 'FileNameType' then
+  begin
+    if not FileExists(aValue) then
+    begin
+      aMessage := 'Value: "' + aValue + '" File does not exist';
+      result := False;
+    end;
+    exit;
+  end;
+  try
+    // general facets
+    if (Length <> '')
+    and (System.Length (aValue) <> StrToInt(Length)) then
+      raise Exception.CreateFmt('Value violates length constraint (%s)', [Length]);
+    if (MinLength <> '')
+    and (System.Length (aValue) < StrToInt(MinLength)) then
+      raise Exception.CreateFmt('Value violates minLength constraint (%s)', [MinLength]);
+    if (MaxLength <> '')
+    and (System.Length (aValue) > StrToInt(MaxLength)) then
+      raise Exception.CreateFmt('Value violates maxLength constraint (%s)', [MaxLength]);
+    // general enumeration
+    if Assigned (Enumerations)
+    and (Enumerations.Count > 0) then
+      if not Enumerations.Find (aValue, f) then
+        raise Exception.CreateFmt('Value violates enumeration constraint (%s)', [LineEnding + Enumerations.Text]);
+    // general pattern
+    if (Pattern <> '') then
+    begin
+      with TRegExpr.Create do
+      try
+        Expression := '^(' + Pattern + ')$';
+        if not Exec(aValue) then
+          raise Exception.CreateFmt('Value violates pattern constraint (%s)', [Pattern]);
+      finally
+        Free;
+      end;
+    end;
+    { TODO : whitespace }
+    if BaseDataTypeName = 'boolean' then
+    begin
+      xBoolean := xsdParseBoolean(aValue);
+    end;
     if BaseDataTypeName = 'date' then
     begin
       xDateTime := xsdParseDate(aValue);
@@ -2066,42 +2130,112 @@ function TXsdDataType.IsValidValue(aName, aValue: String;
       and (xDateTime >= xsdParseDateTime(MaxExclusive)) then
         raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
     end;
+    if BaseDataTypeName = 'time' then
+    begin
+      xDateTime := xsdParseTime(aValue);
+      if (MinInclusive <> '')
+      and (xDateTime < xsdParseTime(MinInclusive)) then
+        raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
+      if (MaxInclusive <> '')
+      and (xDateTime > xsdParseTime(MaxInclusive)) then
+        raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
+      if (MinExclusive <> '')
+      and (xDateTime <= xsdParseTime(MinExclusive)) then
+        raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
+      if (MaxExclusive <> '')
+      and (xDateTime >= xsdParseTime(MaxExclusive)) then
+        raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
+    end;
     if BaseDataTypeName = 'decimal' then
     begin
-      Sep := DecimalSeparator;
-      DecimalSeparator:='.';
-      try
-        xdecimal := xsdParseDecimal(aValue);
-        if (MinInclusive <> '')
-        and (xdecimal < xsdParsedecimal(MinInclusive)) then
-          raise Exception.CreateFmt('Value violates MinIncl constraint (%s)', [MinInclusive]);
-        if (MaxInclusive <> '')
-        and (xdecimal > xsdParseDecimal(MaxInclusive)) then
-          raise Exception.CreateFmt('Value violates MaxIncl constraint (%s)', [MaxInclusive]);
-        if (MinExclusive <> '')
-        and (xdecimal <= xsdParseDecimal(MinExclusive)) then
-          raise Exception.CreateFmt('Value violates MinExcl constraint (%s)', [MinExclusive]);
-        if (MaxExclusive <> '')
-        and (xdecimal >= xsdParseDecimal(MaxExclusive)) then
-          raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
-        if (TotalDigits <> '')
-        and (_totalDigits (aValue) > StrToInt(TotalDigits)) then
-          raise Exception.CreateFmt('Value violates TotalDigits constraint (%s)', [TotalDigits]);
-        if (FractionalDigits <> '')
-        and (_fractionDigits (aValue) > StrToInt(FractionalDigits)) then
-          raise Exception.CreateFmt('Value violates FractionDigits constraint (%s)', [FractionalDigits]);
-      finally
-        DecimalSeparator:=sep;
-      end;
+      xdecimal := xsdParseDecimal(aValue);
+      _checkDecimal;
     end;
-   except
-     on E: Exception do
-     begin
-       aMessage := Format('Value: "%s" Validate XML Error, reason %s.%sThe Element "%s" failed to parse'
-                         , [aValue, E.Message,LineEnding, aName]);
-       result := False;
-     end;
-   end;
+    if BaseDataTypeName = 'double' then
+    begin
+      xdecimal := xsdParseDouble(aValue);
+      _checkDecimal;
+    end;
+    if BaseDataTypeName = 'float' then
+    begin
+      xdecimal := xsdParseFloat(aValue);
+      _checkDecimal;
+    end;
+    if BaseDataTypeName = 'byte' then
+    begin
+      xInt64 := xsdParseByte(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'integer' then
+    begin
+      xInt64 := xsdParseInteger(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'nonNegativeInteger' then
+    begin
+      xInt64 := xsdParseNonNegativeInteger(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'nonPositiveInteger' then
+    begin
+      xInt64 := xsdParseNonPositiveInteger(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'negativeInteger' then
+    begin
+      xInt64 := xsdParseNegativeInteger(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'positiveInteger' then
+    begin
+      xInt64 := xsdParsePositiveInteger(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'short' then
+    begin
+      xInt64 := xsdParseShort(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'int' then
+    begin
+      xInt64 := xsdParseInt(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'long' then
+    begin
+      xInt64 := xsdParseLong(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'unsignedByte' then
+    begin
+      xInt64 := xsdParseUnsignedByte(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'unsignedShort' then
+    begin
+      xInt64 := xsdParseUnsignedShort(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'unsignedInt' then
+    begin
+      xInt64 := xsdParseUnsignedInt(aValue);
+      _checkInteger;
+    end;
+    if BaseDataTypeName = 'unsignedLong' then
+    begin
+      xInt64 := xsdParseUnsignedLong(aValue);
+      _checkInteger;
+    end;
+    { TODO : those never seen datatypes like gMonth, gDay and others
+duration also never seen but probably used... }
+  except
+    on E: Exception do
+    begin
+      aMessage := Format('Value: "%s" Validate XML Error, reason %s.%sThe Element "%s" failed to parse'
+                        , [aValue, E.Message,LineEnding, aName]);
+      result := False;
+    end;
+  end;
 end;
 
 function TXsdDataType.getUniqueId: String;

@@ -4,95 +4,125 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="9">
+    <Units Count="7">
       <Unit0>
         <Filename Value="project1.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="project1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="20"/>
       </Unit0>
       <Unit1>
         <Filename Value="unit1.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="35"/>
-        <CursorPos X="3" Y="42"/>
-        <UsageCount Value="25"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="..\Xml\xmlzconsts.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="xmlzConsts"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="100"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="24"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <UnitName Value="xmlio"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="16"/>
-        <CursorPos X="33" Y="21"/>
-        <UsageCount Value="13"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <UnitName Value="Xmlz"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1300"/>
-        <CursorPos X="27" Y="1315"/>
-        <UsageCount Value="13"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\Utils\HashUtilz.pas"/>
-        <UnitName Value="HashUtilz"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="6" Y="11"/>
-        <UsageCount Value="13"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <UnitName Value="Xsdz"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1102"/>
-        <CursorPos X="32" Y="1115"/>
-        <UsageCount Value="13"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\StompInterface\Stomp\StompTypes.pas"/>
-        <UnitName Value="StompTypes"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="509"/>
-        <CursorPos X="90" Y="519"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="23"/>
+        <CursorPos X="1" Y="49"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="..\StompInterface\Stomp\testunit.pas"/>
-        <UnitName Value="testunit"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\inc\systemh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="473"/>
+        <CursorPos X="3" Y="487"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\inc\variants.pp"/>
+        <UnitName Value="variants"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\winunits-base\src\oleserver.pp"/>
+        <UnitName Value="OleServer"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\Utils\wrdFunctionz.pas"/>
+        <UnitName Value="wrdFunctionz"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="197"/>
+        <CursorPos X="1" Y="223"/>
+        <UsageCount Value="10"/>
         <Loaded Value="True"/>
-      </Unit8>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\Utils\Word_TLB.pas"/>
+        <UnitName Value="Word_TLB"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1553"/>
+        <CursorPos X="32" Y="1566"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="12" HistoryIndex="11">
+      <Position1>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="34" Column="12" TopLine="6"/>
+      </Position2>
+      <Position3>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="29" Column="15" TopLine="8"/>
+      </Position3>
+      <Position4>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="30" Column="4" TopLine="12"/>
+      </Position4>
+      <Position5>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="45" Column="20" TopLine="13"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\Utils\wrdFunctionz.pas"/>
+        <Caret Line="23" Column="1" TopLine="1"/>
+      </Position6>
+      <Position7>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="46" Column="1" TopLine="19"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Utils\wrdFunctionz.pas"/>
+        <Caret Line="235" Column="5" TopLine="222"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\Utils\wrdFunctionz.pas"/>
+        <Caret Line="197" Column="31" TopLine="165"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\Utils\wrdFunctionz.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\Utils\wrdFunctionz.pas"/>
+        <Caret Line="12" Column="25" TopLine="1"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\Utils\wrdFunctionz.pas"/>
+        <Caret Line="223" Column="1" TopLine="197"/>
+      </Position12>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

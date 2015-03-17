@@ -33,7 +33,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="2">
       <Unit0>
         <Filename Value="project1.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -43,15 +43,9 @@
         <Filename Value="unit1.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="..\Xml\xmlzconsts.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="xmlzConsts"/>
-      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -62,7 +56,6 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="C:\JanBo\Sources\Lazarus\Xml\;C:\JanBo\Sources\Lazarus\Xpress\;C:\JanBo\Sources\Lazarus\Utils\;C:\JanBo\Sources\Lazarus\Utils\dcpCrypt2\;C:\JanBo\Sources\Lazarus\Utils\dcpCrypt2\Ciphers\;C:\JanBo\Sources\Lazarus\Utils\dcpCrypt2\Hashes\;C:\lazarus\components\Indy10\Lib\Core\;C:\lazarus\components\Indy10\Lib\Protocols\;C:\lazarus\components\Indy10\Lib\System\"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
