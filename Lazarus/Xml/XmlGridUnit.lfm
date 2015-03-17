@@ -40,6 +40,7 @@ object XmlGridForm: TXmlGridForm
       Top = 30
       Width = 744
       Align = alClient
+      BottomSpace = 10
       Header.AutoSizeIndex = -1
       Header.Columns = <>
       Header.DefaultHeight = 17

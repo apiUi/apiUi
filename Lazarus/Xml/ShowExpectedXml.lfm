@@ -28,6 +28,7 @@ object ShowExpectedXmlForm: TShowExpectedXmlForm
       Top = 4
       Width = 721
       Align = alClient
+      BottomSpace = 10
       DragOperations = []
       Header.AutoSizeIndex = 0
       Header.Columns = <      

@@ -2049,6 +2049,9 @@ var
     if (MaxExclusive <> '')
     and (xInt64 >= xsdParseInteger(MaxExclusive)) then
       raise Exception.CreateFmt('Value violates MaxExcl constraint (%s)', [MaxExclusive]);
+    if (TotalDigits <> '')
+    and (_totalDigits (aValue) > StrToInt(TotalDigits)) then
+      raise Exception.CreateFmt('Value violates TotalDigits constraint (%s)', [TotalDigits]);
       { TODO : check for other facets on Integer
   }
   end;

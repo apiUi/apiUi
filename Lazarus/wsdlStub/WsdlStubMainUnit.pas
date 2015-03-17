@@ -2667,7 +2667,7 @@ procedure TMainForm.XsdOperationsActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
-  xXml := se.xsdOperationsXml;
+  xXml := se.xsdOperationsXml('');
   if EditXmlXsdBased('Xsd Operations', 'OperationDefs.XsdOperations',
     'XsdOperations.Operation.Name', 'XsdOperations.Operation.Name',
     se.IsActive, OperationDefsXsd, xXml) then
@@ -8168,6 +8168,8 @@ end;
 
 procedure TMainForm.MessagesVTSClick(Sender: TObject);
 begin
+  if not Assigned (MessagesVTS.FocusedNode) then
+    ShowMessage ('MessagesVTS.FocusedNode not assigned');
   claimedLog := NodeToMsgLog(True,MessagesVTS, MessagesVTS.FocusedNode);
   try
     case TLogColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of

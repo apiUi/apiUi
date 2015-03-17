@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 2015-03-17 12:40:23: Generated with svStudio 9.0.0.8534 by BouwmanJW -->
+<!-- 2015-03-17 21:55:57: Generated with svStudio 9.0.0.8536 by Jan -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.wsdlStub</FileName>
   <Portnumber>0</Portnumber>
@@ -61,7 +61,7 @@
       <Operation>
         <Name>schemaVal</Name>
         <Req>
-          <DescriptionFile>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.xsd</DescriptionFile>
+          <DescriptionFile>schemaVal.xsd</DescriptionFile>
           <ElementName>schemaVal</ElementName>
         </Req>
       </Operation>
@@ -134,6 +134,9 @@
             <Request>
               <schemaVal_Req checked__="true">
                 <schemaVal checked__="true">
+                  <booleanFacets checked__="true">
+                    <boolean checked__="true">true</boolean>
+                  </booleanFacets>
                   <dateFacets checked__="true">
                     <minIncl checked__="true">1956-08-16</minIncl>
                     <maxIncl checked__="true">1956-08-18</maxIncl>
@@ -146,22 +149,38 @@
                     <minExcl checked__="true">1956-08-17T02:02:02.200</minExcl>
                     <maxExcl checked__="true">1956-08-17T02:02:02.200</maxExcl>
                   </dateTimeFacets>
+                  <timeFacets checked__="true">
+                    <minIncl checked__="true">02:02:02.19</minIncl>
+                  </timeFacets>
                   <decimalFacets checked__="true">
-                    <minIncl checked__="true">2.8</minIncl>
-                    <maxIncl checked__="true">2.8</maxIncl>
+                    <minIncl checked__="true">2.79</minIncl>
+                    <maxIncl checked__="true">2.81</maxIncl>
                     <minExcl checked__="true">2.8</minExcl>
                     <maxExcl checked__="true">2.8</maxExcl>
                     <totalDig checked__="true">000022.01</totalDig>
                     <fracDig checked__="true">-1234E-3</fracDig>
                   </decimalFacets>
+                  <integerFacets checked__="true">
+                    <minIncl checked__="true">1</minIncl>
+                    <maxIncl checked__="true">3</maxIncl>
+                    <minExcl checked__="true">2</minExcl>
+                    <maxExcl checked__="true">2</maxExcl>
+                    <totalDig checked__="true">123</totalDig>
+                  </integerFacets>
+                  <byteFacets checked__="true">
+                    <minIncl checked__="true">1</minIncl>
+                    <maxIncl checked__="true">3</maxIncl>
+                    <minExcl checked__="true">2</minExcl>
+                    <maxExcl checked__="true">2</maxExcl>
+                    <totalDig checked__="true">123</totalDig>
+                  </byteFacets>
                   <stringFacets checked__="true">
                     <length checked__="true">1</length>
                     <minLength checked__="true">1</minLength>
                     <maxLength checked__="true">123</maxLength>
-                    <whiteSpaceCollapse checked__="false"> </whiteSpaceCollapse>
                   </stringFacets>
-                  <stringEnumeration checked__="true">Jan</stringEnumeration>
-                  <stringPatterns checked__="true">3738XJJ</stringPatterns>
+                  <stringEnumeration checked__="true">Bouwman</stringEnumeration>
+                  <stringPatterns checked__="true">3738Xj</stringPatterns>
                 </schemaVal>
               </schemaVal_Req>
             </Request>

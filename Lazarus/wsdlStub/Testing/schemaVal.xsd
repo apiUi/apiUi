@@ -10,7 +10,13 @@
 				<xs:element name="booleanFacets">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="boolean" type="xs:string"/>
+							<xs:element name="boolean">
+								<xs:simpleType>
+									<xs:restriction base="xs:boolean">
+										<xs:whiteSpace value="collapse"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -76,6 +82,40 @@
 								<xs:simpleType>
 									<xs:restriction base="xs:dateTime">
 										<xs:maxExclusive value="1956-08-17T02:02:02.200"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="timeFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="minIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:time">
+										<xs:minInclusive value="02:02:02.20"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:time">
+										<xs:maxInclusive value="02:02:02.20"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:time">
+										<xs:minExclusive value="02:02:02.20"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:time">
+										<xs:maxExclusive value="02:02:02.20"/>
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:element>
@@ -198,6 +238,47 @@
 							<xs:element name="totalDig">
 								<xs:simpleType>
 									<xs:restriction base="xs:integer">
+										<xs:totalDigits value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="byteFacets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="minIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:byte">
+										<xs:minInclusive value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxIncl">
+								<xs:simpleType>
+									<xs:restriction base="xs:byte">
+										<xs:maxInclusive value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:byte">
+										<xs:minExclusive value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="maxExcl">
+								<xs:simpleType>
+									<xs:restriction base="xs:byte">
+										<xs:maxExclusive value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="totalDig">
+								<xs:simpleType>
+									<xs:restriction base="xs:byte">
 										<xs:totalDigits value="2"/>
 									</xs:restriction>
 								</xs:simpleType>

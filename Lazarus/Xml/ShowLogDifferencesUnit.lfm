@@ -41,6 +41,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
         Top = 4
         Width = 761
         Align = alClient
+        BottomSpace = 10
         Colors.DropTargetColor = clSilver
         Colors.GridLineColor = clWindow
         Colors.UnfocusedSelectionColor = clWindow

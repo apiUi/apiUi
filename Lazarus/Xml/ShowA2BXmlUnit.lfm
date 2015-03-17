@@ -28,6 +28,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
       Top = 4
       Width = 721
       Align = alClient
+      BottomSpace = 10
       Colors.GridLineColor = clWindow
       DragOperations = []
       Header.AutoSizeIndex = 0

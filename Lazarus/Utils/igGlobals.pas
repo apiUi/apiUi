@@ -244,9 +244,20 @@ begin
   rx := TRegExpr.Create;
   try
     rx.Expression := S_REGEXP_LINK;
+    {
     xs := '';
     for x := 0 to aMemo.Lines.Count - 1 do
       xs := xs + aMemo.Lines.Strings[x] + ' ';
+      }
+    xs := '';
+    with TStringList.Create do
+    try
+      Text := aMemo.Text;
+      for x := 0 to Count - 1 do
+        xs := xs + Strings[x] + ' ';
+    finally
+      Free;
+    end;
     swapPos := aMemo.SelStart;
     swapLen := aMemo.SelLength;
     aMemo.SelectAll;
@@ -1549,4 +1560,4 @@ end;
 
 
 end.
-
+

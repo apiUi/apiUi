@@ -37,6 +37,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
       Top = 4
       Width = 737
       Align = alClient
+      BottomSpace = 10
       Color = clBtnFace
       DragOperations = []
       Header.AutoSizeIndex = 0
