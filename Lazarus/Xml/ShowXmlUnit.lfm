@@ -1,7 +1,7 @@
 object ShowXmlForm: TShowXmlForm
-  Left = 505
+  Left = 485
   Height = 418
-  Top = 157
+  Top = 220
   Width = 672
   Caption = 'XML Data'
   ClientHeight = 418
@@ -37,7 +37,6 @@ object ShowXmlForm: TShowXmlForm
       Top = 4
       Width = 420
       Align = alClient
-      BottomSpace = 10
       DragOperations = []
       Header.AutoSizeIndex = 0
       Header.Columns = <      

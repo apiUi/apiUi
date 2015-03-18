@@ -1,7 +1,7 @@
 object EditOperationScriptForm: TEditOperationScriptForm
-  Left = 321
+  Left = 377
   Height = 484
-  Top = 104
+  Top = 206
   Width = 1004
   Anchors = []
   Caption = 'Edit script'
@@ -697,12 +697,14 @@ object EditOperationScriptForm: TEditOperationScriptForm
       'IF'
       'INSERT'
       'INTEGER'
+      'INTO'
       'LOOP'
       'NEW'
       'NOT'
       'NUMBER'
       'OR'
       'SELECT'
+      'SET'
       'SQL'
       'STRING'
       'THEN'
