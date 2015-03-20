@@ -225,6 +225,7 @@ begin
       ndoc.Close (wdDoNotSaveChanges);
     end;
   finally
+    Word.Quit;
     Word := Null;
   end;
 end;

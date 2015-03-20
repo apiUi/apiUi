@@ -1416,8 +1416,8 @@ object MainForm: TMainForm
       end
       object ExceptionTabSheet: TTabSheet
         Caption = 'Notifications'
-        ClientHeight = 538
-        ClientWidth = 3782
+        ClientHeight = 1076
+        ClientWidth = 7564
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'MS Sans Serif'

@@ -13,7 +13,9 @@ type
 
   TForm1 = class(TForm)
     Button1: TButton;
+    Button2: TButton;
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     { private declarations }
   public
@@ -28,6 +30,8 @@ implementation
 uses variants
    , OleServer
    , ComObj
+   , Word_Tlb
+   , wrdFunctionz
    ;
 
 {$R *.lfm}
@@ -45,7 +49,7 @@ begin
     try
       s := UTF8Decode('c:\data\Janbo.docx');
       wordDoc := wordApp.Documents.Open (s);
-      s := UTF8Decode('c:\data\Janbo2.docx');
+      s := UTF8Decode('c:\data\Janbo2.pdf');
       wordDoc.SaveAs(s);
       wordApp.Quit;
     finally
@@ -55,6 +59,11 @@ begin
     Screen.Cursor:=crDefault;
   end;
 
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  wrdStringToPdfFile ('JanBo was here to pfd', 'c:\data\Janbo2.pdf');
 end;
 
 end.

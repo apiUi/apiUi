@@ -124,24 +124,31 @@
       </Item5>
       <Item6>
         <Name Value="Exception"/>
+        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
+        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
+        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
+        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
+        <Enabled Value="False"/>
       </Item10>
       <Item11>
         <Name Value="EOraDatabaseError"/>
+        <Enabled Value="False"/>
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
+        <Enabled Value="False"/>
       </Item12>
     </Exceptions>
   </Debugging>

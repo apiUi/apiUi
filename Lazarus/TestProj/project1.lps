@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="project1.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -15,13 +15,13 @@
         <Filename Value="unit1.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="23"/>
-        <CursorPos X="1" Y="49"/>
+        <TopLine Value="40"/>
+        <CursorPos X="1" Y="66"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -54,26 +54,36 @@
         <UnitName Value="wrdFunctionz"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="197"/>
-        <CursorPos X="1" Y="223"/>
+        <TopLine Value="201"/>
+        <CursorPos X="1" Y="206"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Utils\Word_TLB.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="Word_TLB"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1553"/>
-        <CursorPos X="32" Y="1566"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="106"/>
+        <CursorPos X="25" Y="117"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win32\classes.pp"/>
+        <UnitName Value="Classes"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="12" HistoryIndex="11">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="unit1.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
@@ -122,6 +132,54 @@
         <Filename Value="..\Utils\wrdFunctionz.pas"/>
         <Caret Line="223" Column="1" TopLine="197"/>
       </Position12>
+      <Position13>
+        <Filename Value="..\Utils\Word_TLB.pas"/>
+        <Caret Line="1566" Column="1" TopLine="1553"/>
+      </Position13>
+      <Position14>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="48" Column="42" TopLine="23"/>
+      </Position14>
+      <Position15>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="31" Column="14" TopLine="1"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\Utils\wrdFunctionz.pas"/>
+        <Caret Line="228" Column="12" TopLine="201"/>
+      </Position16>
+      <Position17>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="31" Column="6" TopLine="25"/>
+      </Position17>
+      <Position18>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="33" Column="6" TopLine="27"/>
+      </Position18>
+      <Position19>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="40" Column="5" TopLine="39"/>
+      </Position19>
+      <Position20>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="8" Column="5" TopLine="1"/>
+      </Position20>
+      <Position21>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="34" Column="18" TopLine="7"/>
+      </Position21>
+      <Position22>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="66" Column="7" TopLine="40"/>
+      </Position22>
+      <Position23>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="34" Column="18" TopLine="20"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\Utils\Word_TLB.pas"/>
+        <Caret Line="1586" Column="3" TopLine="1561"/>
+      </Position24>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

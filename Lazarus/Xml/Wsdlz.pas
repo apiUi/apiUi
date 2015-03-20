@@ -70,8 +70,7 @@ type
       Name: String;
       FileName: String;
       isSoapService: Boolean;
-      TargetNamespace: String;
-//      TargetNamespacePrefix: String;
+//      xTargetNamespacePrefix: String;
       Services: TWsdlServices;
       XsdDescr: TXsdDescr;
       sdfXsdDescrs: TXsdDescrList;
@@ -601,6 +600,7 @@ uses
    {$ifdef windows}
    , ActiveX
    {$endif}
+   , xmlxsdparser
    ;
 
 { TWsdl }
@@ -864,7 +864,7 @@ end;
 
 function XmlToDateTime (aString : String ): TDateTime ;
 begin
-  result := Now; { TODO 9 : IMPLEMENT }
+  result := xsdParseDateTime(aString);
 end;
 
 function xsdNowAsDateTime: String;
@@ -1642,8 +1642,10 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
     Oper: TWsdlOperation;
     Srvc: TWsdlService;
     xHdr: TWsdlHeader;
+    xTargetNamespace: String;
     PortTypeName, SoapBindingStyle, SoapTransport, OperationName, FaultName, ns: String;
   begin
+    xTargetNamespace := aXml.Attributes.ValueByTag[tagTargetNamespace];
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
     begin
       if Name = tagImport then
@@ -1661,14 +1663,14 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
       begin
         Mssg := TWsdlMsgDescr.Create(self);
         Mssg.Name := XmlItems[x].Attributes.ValueByTag[tagName];
-        Mssg.NameSpace := TargetNamespace;
+        Mssg.NameSpace := xTargetNamespace;
         fMssgs.AddObject(Mssg.NameSpace + ':' + Mssg.Name, Mssg);
         for y := 0 to XmlItems[x].Items.Count - 1 do with XmlItems[x].Items.XmlItems[y] do
         begin
           Part := TWsdlPart.Create;
           Part.Name := Attributes.ValueByTag[xmlzConsts.tagName];
-          Part._ElementName := XmlItems[y].ExpandPrefixedName(TargetNamespace, Attributes.ValueByTag[tagElement]);
-          Part._TypeName := XmlItems[y].ExpandPrefixedName(TargetNamespace, Attributes.ValueByTag[tagType]);
+          Part._ElementName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagElement]);
+          Part._TypeName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagType]);
           Mssg.Parts.AddObject('', Part);
         end;
       end;
@@ -1677,7 +1679,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
     begin
       if XmlItems[x].Name = tagPortType then
       begin
-        PortTypeName := TargetNamespace + ':' + XmlItems[x].Attributes.ValueByTag[tagName];
+        PortTypeName := xTargetNamespace + ':' + XmlItems[x].Attributes.ValueByTag[tagName];
         for y := 0 to XmlItems[x].Items.Count - 1 do with XmlItems[x].Items do
         begin
           if XmlItems[y].Name = tagOperation then
@@ -1689,12 +1691,12 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
             for z := 0 to XmlItems[y].Items.Count - 1 do with XmlItems[y].Items.XmlItems[z] do
             begin
               if Name = tagInput then
-                Oper._InputMessageName := ExpandPrefixedName(TargetNamespace, Attributes.ValueByTag[tagMessage]);
+                Oper._InputMessageName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagMessage]);
               if Name = tagOutput then
-                Oper._OutputMessageName := ExpandPrefixedName(TargetNamespace, Attributes.ValueByTag[tagMessage]);
+                Oper._OutputMessageName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagMessage]);
               if Name = tagFault then
                 fStrs.Values [PortTypeName+':'+Oper.Name+':FltMssg:'+AttributeValueByTag[xmlzConsts.tagName]+'.Message']
-                  := ExpandPrefixedName(TargetNamespace, Attributes.ValueByTag[tagMessage]);
+                  := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagMessage]);
             end;
           end;
         end;
@@ -1704,8 +1706,8 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
     begin
       if Name = tagBinding then
       begin
-        PortTypeName := ExpandPrefixedName(TargetNamespace, Attributes.ValueByTag[tagType]);
-        fStrs.Values[TargetNamespace + ':' + AttributeValueByTag[xmlzConsts.tagName] + '.Bind'] := PortTypeName;
+        PortTypeName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagType]);
+        fStrs.Values[xTargetNamespace + ':' + AttributeValueByTag[xmlzConsts.tagName] + '.Bind'] := PortTypeName;
         SoapBindingStyle := ItemByTag[tagBinding].AttributeValueByTag[tagStyle];
         SoapTransport := ItemByTag[tagBinding].AttributeValueByTag[tagTransport];
         for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
@@ -1732,7 +1734,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
                   if Name = tagHeader then
                   begin
                     xHdr := TWsdlHeader.Create;
-                    xHdr.MessageName := ExpandPrefixedName(TargetNamespace, AttributeValueByTag[tagMessage]);
+                    xHdr.MessageName := ExpandPrefixedName(xTargetNamespace, AttributeValueByTag[tagMessage]);
                     xHdr.PartName := AttributeValueByTag[tagPart];
                     xHdr.Use := AttributeValueByTagDef[tagUse, scSoapUseLiteral];
                     xHdr.EncodingStyle := AttributeValueByTag[tagEncodingStyle];
@@ -1752,7 +1754,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
                   if Name = tagHeader then
                   begin
                     xHdr := TWsdlHeader.Create;
-                    xHdr.MessageName := ExpandPrefixedName(TargetNamespace, AttributeValueByTag[tagMessage]);
+                    xHdr.MessageName := ExpandPrefixedName(xTargetNamespace, AttributeValueByTag[tagMessage]);
                     xHdr.PartName := AttributeValueByTag[tagPart];
                     xHdr.Use := AttributeValueByTagDef[tagUse, scSoapUseLiteral];
                     xHdr.EncodingStyle := AttributeValueByTag[tagEncodingStyle];
@@ -1797,7 +1799,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
         begin
           if Name = tagPort then
           begin
-            PortTypeName := fStrs.Values[ExpandPrefixedName(TargetNamespace, AttributeValueByTag[tagBinding]) + '.Bind'];
+            PortTypeName := fStrs.Values[ExpandPrefixedName(xTargetNamespace, AttributeValueByTag[tagBinding]) + '.Bind'];
             fStrs.Values[PortTypeName + '.SoapAddress'] := ItemByTag[tagAddress].AttributeValueByTag[tagLocation];
             fStrs.Values[PortTypeName + '.Service'] := Srvc.Name;
           end;
@@ -1835,8 +1837,6 @@ begin
     or (     (xXml.NameSpace <> scWsdlNameSpace)
        ) and (xXml.NameSpace <> '')then
       raise Exception.CreateFmt ('%s is not a WSDL file', [aFileName]);
-    TargetNamespace := xXml.Attributes.ValueByTag[tagTargetNamespace];
-
     _LoadFromXml (xXml, FileName);
     XsdDescr.Finalise;
 
@@ -5926,4 +5926,4 @@ finalization
   UILock.Free;
   EnvVarLock.Free;
 end.
-
+

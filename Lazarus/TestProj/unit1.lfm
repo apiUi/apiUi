@@ -16,4 +16,13 @@ object Form1: TForm1
     OnClick = Button1Click
     TabOrder = 0
   end
+  object Button2: TButton
+    Left = 124
+    Height = 25
+    Top = 154
+    Width = 75
+    Caption = 'toPdf'
+    OnClick = Button2Click
+    TabOrder = 1
+  end
 end
