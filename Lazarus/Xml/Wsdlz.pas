@@ -1517,16 +1517,49 @@ procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, fa
 var
   xWsdl: TWsdl;
   xService: TWsdlService;
-  s, o: Integer;
+  x: Integer;
 begin
   xWsdl := aOperation.Wsdl;
   xService := aOperation.WsdlService;
-  s := xWsdl.Services.IndexOfObject(xService);
-  o := xService.Operations.IndexOfObject(aOperation);
   aOperation.faultcode := faultcode;
   aOperation.faultstring := faultstring;
   aOperation.faultactor := faultactor;
-  { TODO : Raise Generate SoapFault as Text }
+  with TXml.CreateAsString('soapenv:Envelope','') do
+  try
+    AddAttribute(TXmlAttribute.CreateAsString('xmlns:soapenv', 'http://schemas.xmlsoap.org/soap/envelope/'));
+    AddAttribute(TXmlAttribute.CreateAsString('xmlns:soapenc', 'http://schemas.xmlsoap.org/soap/encoding/'));
+    AddAttribute(TXmlAttribute.CreateAsString('xmlns:soap', 'http://schemas.xmlsoap.org/wsdl/soap/'));
+    AddAttribute(TXmlAttribute.CreateAsString('xmlns:wsdl', 'http://schemas.xmlsoap.org/wsdl/'));
+    AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsd', 'http://www.w3.org/2001/XMLSchema'));
+    AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance'));
+    with AddXml(TXml.CreateAsString('soapenv:Header', '')) do
+    begin
+      for x := 0 to aOperation.OutputHeaders.Count - 1 do
+      begin
+        AddXml ((aOperation.rpyBind as TXml).Items.XmlItems [x].XmlStreamer
+                                 ( True
+                                 , True
+                                 , 4
+                                 , True
+                                 , (aOperation.OutputHeaders.Headers[x].Use = scSoapUseEncoded)
+                                 )
+               );
+      end;
+    end;
+    with AddXml(TXml.CreateAsString('soapenv:Body', '')) do
+    begin
+      with AddXml (TXml.CreateAsString('soapenv:Fault', '')) do
+      begin
+        AddXml (TXml.CreateAsString('faultcode', aOperation.faultcode));
+        AddXml (TXml.CreateAsString('faultstring', aOperation.faultstring));
+        AddXml (TXml.CreateAsString('faultactor', aOperation.faultactor));
+        AddXml (TXml.CreateAsString('detail', detail));
+      end;
+    end;
+    raise Exception.Create (AsText(False, 0, False, False));
+  finally
+    Free;
+  end;
 end;
 
 function GetDocumentation (aStringList: TStringList; aXml: TXml): String;

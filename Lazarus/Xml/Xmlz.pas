@@ -202,6 +202,12 @@ type
                         ; OnlyWhenChecked: Boolean
                         ; Encoded: Boolean
                         ): String;
+    function XmlStreamer ( aUseNameSpaces: Boolean
+                         ; aAsPrefix: Boolean
+                         ; aIndent: Integer
+                         ; OnlyWhenChecked: Boolean
+                         ; Encoded: Boolean
+                         ): TXml;
     function StreamJSON ( aIndent: Integer
                         ; OnlyWhenChecked: Boolean
                         ): String;
@@ -1434,6 +1440,14 @@ begin
   else
     aLineNo := 0;
   result := result + _StreamXML(Self, aIndent, OnlyWhenChecked, Encoded);
+end;
+
+function TXml .XmlStreamer (aUseNameSpaces : Boolean ; aAsPrefix : Boolean ;
+  aIndent : Integer ; OnlyWhenChecked : Boolean ; Encoded : Boolean ): TXml ;
+begin
+  { TODO : replace quickfit by desired solution }
+  result := TXml.Create;
+  result.LoadFromString(Self.StreamXML(aUseNameSpaces, aAsPrefix, 2, OnlyWhenChecked, Encoded), nil);
 end;
 
 { TXmlAttributeList }
