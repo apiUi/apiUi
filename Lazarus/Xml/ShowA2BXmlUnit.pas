@@ -249,7 +249,9 @@ begin
          or (xData.Attribute.ChangeKind = ckCopy)
          or (xData.Attribute.IgnoredDifference)
         )
-    and (xData.Xml.ChangeKind = ckCopy) do
+    and (   (xData.Xml.ChangeKind = ckCopy)
+         or (xData.Xml.IgnoredDifference)
+        ) do
     begin
       xNode := TreeView.GetNext(xNode);
       if Assigned (xNode) then
@@ -893,8 +895,10 @@ begin
             or (xData.Attribute.ChangeKind = ckCopy)
             or (xData.Attribute.IgnoredDifference)
            )
-       and (xData.Xml.ChangeKind = ckCopy)
-      ) do
+        and (   (xData.Xml.ChangeKind = ckCopy)
+             or (xData.Xml.IgnoredDifference)
+            )
+       ) do
   begin
     if aDown then
       xNode := TreeView.GetNext(xNode)

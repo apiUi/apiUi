@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8541"/>
+      <BuildNr Value="8576"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -56,7 +56,6 @@
       <Unit0>
         <Filename Value="svStudio.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="svStudio"/>
       </Unit0>
       <Unit1>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -69,7 +68,6 @@
       <Unit2>
         <Filename Value="..\Xml\claimlistz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ClaimListz"/>
       </Unit2>
     </Units>
   </ProjectOptions>
@@ -95,16 +93,12 @@
       </Options>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
       <CustomOptions Value="-dUseCThreads
 -dFPS_NO_GRID_MULTISELECT"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="12">
+    <Exceptions Count="13">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -125,7 +119,6 @@
       </Item5>
       <Item6>
         <Name Value="Exception"/>
-        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
@@ -151,6 +144,9 @@
         <Name Value="EIdConnClosedGracefully"/>
         <Enabled Value="False"/>
       </Item12>
+      <Item13>
+        <Name Value="ERegExpr"/>
+      </Item13>
     </Exceptions>
   </Debugging>
 </CONFIG>

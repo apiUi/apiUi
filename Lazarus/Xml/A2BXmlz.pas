@@ -165,10 +165,28 @@ begin
   end;
   Diffs := TA2BStringList.Create;
 
-  for x := 0 to aXml.Attributes.Count - 1 do
-    aXml.Attributes.Strings [x] := rmPrefix (aXml.Attributes.XmlAttributes [x].Name);
-  for x := 0 to bXml.Attributes.Count - 1 do
-    bXml.Attributes.Strings [x] := rmPrefix (bXml.Attributes.XmlAttributes [x].Name);
+  for x := aXml.Attributes.Count - 1 downto 0 do
+  begin
+    if AnsiStartsStr('xmlns:', aXml.Attributes.XmlAttributes [x].Name)
+    or (aXml.Attributes.XmlAttributes [x].Name = 'xmlns') then
+    begin
+      aXml.Attributes.XmlAttributes[x].Free;
+      aXml.Attributes.Delete(x);
+    end
+    else
+      aXml.Attributes.Strings [x] := rmPrefix (aXml.Attributes.XmlAttributes [x].Name);
+  end;
+  for x := bXml.Attributes.Count - 1 downto 0 do
+  begin
+    if AnsiStartsStr('xmlns:', bXml.Attributes.XmlAttributes [x].Name)
+    or (bXml.Attributes.XmlAttributes [x].Name = 'xmlns') then
+    begin
+      bXml.Attributes.XmlAttributes[x].Free;
+      bXml.Attributes.Delete(x);
+    end
+    else
+      bXml.Attributes.Strings [x] := rmPrefix (bXml.Attributes.XmlAttributes [x].Name);
+  end;
   aXml.Attributes.Sort;
   bXml.Attributes.Sort;
   with Diffs do

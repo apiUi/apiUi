@@ -1530,7 +1530,7 @@ begin
     AddAttribute(TXmlAttribute.CreateAsString('xmlns:soapenc', 'http://schemas.xmlsoap.org/soap/encoding/'));
     AddAttribute(TXmlAttribute.CreateAsString('xmlns:soap', 'http://schemas.xmlsoap.org/wsdl/soap/'));
     AddAttribute(TXmlAttribute.CreateAsString('xmlns:wsdl', 'http://schemas.xmlsoap.org/wsdl/'));
-    AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsd', 'http://www.w3.org/2001/XMLSchema'));
+    AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsd', scXMLSchemaURI));
     AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance'));
     with AddXml(TXml.CreateAsString('soapenv:Header', '')) do
     begin
