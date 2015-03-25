@@ -28,16 +28,27 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="indylaz"/>
       </Item1>
+      <Item2>
+        <PackageName Value="SHDocVw_1_1_TLBP"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LazActiveX"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="Word_8_5_TLBP"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="project1.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="project1"/>
       </Unit0>
       <Unit1>
         <Filename Value="unit1.pas"/>
@@ -52,6 +63,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Word_TLB"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="xmlio"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -62,25 +78,16 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Utils"/>
+      <OtherUnitFiles Value="..\Utils;..\Xml"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
-      <Debugging>
-        <GenerateDebugInfo Value="False"/>
-      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8576"/>
+      <BuildNr Value="8578"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -115,7 +115,6 @@
       </Item4>
       <Item5>
         <Name Value="EDatabaseError"/>
-        <Enabled Value="False"/>
       </Item5>
       <Item6>
         <Name Value="Exception"/>

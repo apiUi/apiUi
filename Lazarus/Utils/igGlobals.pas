@@ -136,6 +136,7 @@ function GenerateRandomId: String;
 procedure MemoMouseDown(aMemo: TLzRichEdit; X, Y: Integer; aOnHaveLink: TOnHaveLinkEvent);
 procedure MemoMouseMove(aMemo: TLzRichEdit; X, Y: Integer);
 procedure MemoShowLinks (aMemo: TLzRichEdit);
+function MemoIsLink (aMemo: TlzRichEdit): String;
 
 implementation
 
@@ -274,6 +275,56 @@ begin
     end;
     aMemo.SelStart := swapPos;
     aMemo.SelLength := swapLen;
+  finally
+    rx.Free;
+  end;
+end;
+
+function MemoIsLink(aMemo: TlzRichEdit): String;
+var
+  rx: TRegExpr;
+  x, p: Integer;
+  xS: String;
+  fnd: Boolean;
+begin
+  result := '';
+  p := aMemo.SelStart;
+  rx := TRegExpr.Create;
+  try
+    rx.Expression := S_REGEXP_LINK;
+    xs := '';
+    with TStringList.Create do
+    try
+      Text := aMemo.Text;
+      for x := 0 to Count - 1 do
+        xs := xs + Strings[x] + ' ';
+    finally
+      Free;
+    end;
+    if (p < 0)
+    or (p = Length (xs))
+    then
+      exit;
+    fnd := Rx.Exec(xs);
+    while fnd and (Rx.MatchPos [0] <= p) do
+    begin
+      if (Rx.MatchPos [0] + Rx.MatchLen [0] > p) then
+      begin
+        if AnsiStartsStr('DOC://', UpperCase(Rx.Match [0]))
+        then
+          result := 'file://'
+                  + ReplaceText
+                      ( ExtractFilePath (ParamStr(0)) + 'Documentation\'
+                      , '\'
+                      , '/'
+                      )
+                  + Copy (Rx.Match[0], 7 , Length (Rx.Match[0]))
+        else
+          result := Rx.Match[0];
+        exit;
+      end;
+      fnd := Rx.ExecNext;
+    end;
   finally
     rx.Free;
   end;

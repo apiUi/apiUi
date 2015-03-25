@@ -1778,7 +1778,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
                 Oper.SoapBodyInputPartName := ItemByTag[tagBody].AttributeValueByTag[tagParts];
                 Oper.SoapBodyInputUse := ItemByTag[tagBody].AttributeValueByTag[tagUse];
                 Oper.SoapBodyInputEncodingStype:= ItemByTag[tagBody].AttributeValueByTag[tagEncodingStyle];
-                Oper.SoapBodyInputRequired := ItemByTag[tagBody].Attributes.BooleanByTagDef[tagRequired, False];
+                Oper.SoapBodyInputRequired := ItemByTag[tagBody].AttributeBooleanByTagDef[tagRequired, False];
               end;
               if Name = tagOutput then
               begin
@@ -1798,7 +1798,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
                 Oper.SoapBodyOutputPartName := ItemByTag[tagBody].AttributeValueByTag[tagParts];
                 Oper.SoapBodyOutputUse := ItemByTag[tagBody].AttributeValueByTag[tagUse];
                 Oper.SoapBodyOutputEncodingStype:= ItemByTag[tagBody].AttributeValueByTag[tagEncodingStyle];
-                Oper.SoapBodyOutputRequired := ItemByTag[tagBody].Attributes.BooleanByTagDef[tagRequired, False];
+                Oper.SoapBodyOutputRequired := ItemByTag[tagBody].AttributeBooleanByTagDef[tagRequired, False];
               end;
               if Name = tagFault then
               begin

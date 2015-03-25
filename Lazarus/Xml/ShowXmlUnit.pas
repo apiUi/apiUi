@@ -28,7 +28,6 @@ type
 
   TShowXmlForm = class(TForm)
     DocumentationEdit : TlzRichEdit ;
-    Edit1 : TEdit ;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -1075,7 +1074,7 @@ begin
   doHideXmlNs := IniFile.BooleanByNameDef['doHideXmlNs', True];
   RevalidateXmlTreeView(TreeView);
   TreeViewFocusChanged(TreeView, TreeView.FocusedNode, TreeView.FocusedColumn);
-  DocumentationEdit.Color := clBtnFace;
+  DocumentationEdit.Color := Self.Color;
   Screen.Cursor := crDefault;
 end;
 
@@ -1913,7 +1912,7 @@ end;
 
 procedure TShowXmlForm .DocumentationEditClick (Sender : TObject );
 begin
-  Edit1.Text := IntToStr (DocumentationEdit.SelStart);
+  OpenUrl(MemoIsLink(DocumentationEdit));
 end;
 
 

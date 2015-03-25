@@ -207,6 +207,8 @@ procedure wrdStringToPdfFile (aText, aFileName: String);
 var
   ndoc: Variant;
   word: Variant;
+  xFileName: OleVariant;
+  _Doc: _Document;
 begin
   try
     word := CreateOleObject('Word.Application');
@@ -215,12 +217,13 @@ begin
       raise Exception.Create('Error initialising Word: ' + e.Message);
   end;
   try
+    xFileName := UTF8Decode(aFileName);
     Word.DisplayAlerts := False;
     word.Visible := False;
     ndoc := word.Documents.Add ;
     try
       ndoc.Range.Text := UTF8Decode(aText);
-      nDoc.SaveAs2(UTF8Decode(aFileName), wdFormatPDF);
+      nDoc.SaveAs2(xFileName, wdFormatPDF, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam);
     finally
       ndoc.Close (wdDoNotSaveChanges);
     end;

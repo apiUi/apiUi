@@ -5,17 +5,28 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, FileUtil, activexcontainer, Forms, Controls, Graphics,
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Word_8_5_TLB, SHDocVw_1_1_TLB, windows, xmlio ;
 
 type
 
   { TForm1 }
 
   TForm1 = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
+    AxcApplication1: TAxcApplication;
+    AxcDocument1: TAxcDocument;
+    Edit1: TEdit;
+    BrowserPanel: TPanel;
+    Memo1: TMemo;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { private declarations }
   public
@@ -24,6 +35,7 @@ type
 
 var
   Form1: TForm1;
+  browser: olevariant;
 
 implementation
 
@@ -62,8 +74,46 @@ begin
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
+var
+   doc: _Document;
 begin
   wrdStringToPdfFile ('JanBo was here to pfd', 'c:\data\Janbo2.pdf');
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+var browser: olevariant;
+begin
+end;
+
+procedure TForm1.Edit1Change(Sender: TObject);
+begin
+end;
+
+procedure TForm1.Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+  );
+var
+  aText: OleVariant;
+begin
+  if Key = VK_RETURN then
+  begin
+    xmlio.SaveStringToFile('c:/data/t.txt', edit1.Text);
+    Browser.Navigate ('file://c:/data/t.txt');
+  end;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+   browser := CreateOleObject('InternetExplorer.Application');
+   windows.setparent(Browser.Hwnd, Memo1.handle); // you can use BrowserPanel.handle, etc..
+   browser.toolbar:=true;
+   browser.fullscreen:=true;
+   browser.Resizable:=false;
+   browser.visible:=true;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  browser := Null;
 end;
 
 end.

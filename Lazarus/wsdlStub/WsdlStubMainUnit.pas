@@ -6235,6 +6235,7 @@ var
   X, wBttn: Integer;
   xXml: TXml;
 begin
+  DataTypeDocumentationMemo.Color := Self.Color;
   logTabCaption := MessagesTabSheet.Caption;
   notifyTabCaption := ExceptionTabSheet.Caption;
   notifyTabImageIndex := ExceptionTabSheet.ImageIndex;
@@ -12151,13 +12152,9 @@ end;
 
 procedure TMainForm .DataTypeDocumentationMemoClick (Sender : TObject );
 var
-  Pt: TPoint; CharIndex, Col, Row: Integer;
+  aLink: String;
 begin
-  Pt:= DataTypeDocumentationMemo.CaretPos;
-  CharIndex := DataTypeDocumentationMemo.SelStart;
-  Row  := DataTypeDocumentationMemo.CaretPos.Y;
-  Col  := DataTypeDocumentationMemo.CaretPos.X;
-  StatusPanel.Caption := Format('%d', [CharIndex]);
+  OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
 end;
 
 {$ifdef windows}
