@@ -3521,7 +3521,7 @@ begin
         xLog.RequestValidated := True;
       end;
       xLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
-      xLog.OutboundTimeStamp := xNow;
+      xLog.OutboundTimeStamp := Now;
       xLog.httpCommand := aOperation.httpVerb;
       try
         case aOperation.StubTransport of
@@ -3586,7 +3586,7 @@ begin
         with xLog do
         begin
           if InboundTimeStamp = 0 then
-            InboundTimeStamp := xNow;
+            InboundTimeStamp := Now;
 //          RequestHeaders := HttpClient.Request.CustomHeaders.Text;
           if Assigned (aRequest) then
             Mssg := aRequest
@@ -3598,7 +3598,7 @@ begin
           Exception := e.Message;
           ReplyBody := Exception;
           if OutboundTimeStamp = 0 then
-            OutboundTimeStamp := Now;
+            OutboundTimeStamp := xNow;
           Nr := displayedLogs.Number;
         end;
         Raise;
