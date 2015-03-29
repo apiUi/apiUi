@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8578"/>
+      <BuildNr Value="8588"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -30,6 +30,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="C:\JanBo\Sources\2011\stubStudio\Examples\crmi\crrmiStub.wsdlStub"/>
       </local>
     </RunParams>
     <RequiredPackages Count="6">
@@ -95,6 +96,7 @@
     <Other>
       <CustomOptions Value="-dUseCThreads
 -dFPS_NO_GRID_MULTISELECT"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

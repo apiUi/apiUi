@@ -1932,14 +1932,135 @@ end;
 
 function TXsdDataType.IsValidXml(aXml: TObject; var aMessage: String): Boolean;
 var
+  x, y, n: Integer;
   xXml: TXml;
-  xMessage: String;
+  xXsd: TXsd;
 begin
-  xXml := aXml as TXml;
-  aMessage := 'Value validated without errors.';
   result := True;
-{ TODO : XML schema validation
- }end;
+  xXml := aXml as TXml;
+  if not xXml.Checked then
+    Exit;
+
+  // check namespace
+  if (xXml.NameSpace <> NameSpace)
+  and (xXml.NameSpace <> '')
+  and (NameSpace <> scXMLSchemaURI) then
+  begin
+    result := False;
+    xXml.ValidationMesssage := Format('Found NameSpace %s at %s, excepted %s', [xXml.NameSpace, xXml.Name, NameSpace]);
+    aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+    Exit;
+  end;
+
+  // check value
+  if ElementDefs.Count = 0 then
+  begin
+    if not IsValidValue(xXml.Name, xXml.Value, xXml.ValidationMesssage) then
+    begin
+      result := False;
+      aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+    end;
+    Exit;
+  end;
+
+  // unexpected elements
+  for x := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[x] do
+  begin
+    if Checked
+    and not Assigned (TypeDef) then
+    begin
+      result := False;
+      xXml.ValidationMesssage := 'Unexpected element ' + Name;
+      aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+      Exit;
+    end;
+  end;
+
+  // more than maxOcurrence
+  for x := 0 to ElementDefs.Count - 1 do
+  begin
+    if ElementDefs.Xsds[x].maxOccurs <> tagUnbounded then
+    begin
+      n := 0;
+      for y := 0 to xXml.Items.Count - 1 do
+        if xXml.Items.XmlItems[y].Checked
+        and (xXml.Items.XmlItems[y].Xsd = ElementDefs.Xsds[x]) then
+          Inc (n);
+      if n > StrToInt(ElementDefs.Xsds[x].maxOccurs) then
+      begin
+        result := False;
+        xXml.ValidationMesssage := Format( 'Number of elements (%d) exceeds maximum (%s) for element %s'
+                                         , [n, ElementDefs.Xsds[x].maxOccurs, ElementDefs.Xsds[x].ElementName]
+                                         );
+        aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+        Exit;
+      end;
+    end;
+  end;
+
+  // less than minOcurrence
+  for x := 0 to ElementDefs.Count - 1 do
+  begin
+    if ElementDefs.Xsds[x].minOccurs <> '0' then
+    begin
+      n := 0;
+      for y := 0 to xXml.Items.Count - 1 do
+        if xXml.Items.XmlItems[y].Checked
+        and (xXml.Items.XmlItems[y].Xsd = ElementDefs.Xsds[x]) then
+          Inc (n);
+      if n < StrToInt(ElementDefs.Xsds[x].minOccurs) then
+      begin
+        if (n > 0)
+        or (ContentModel <> tagChoice) then
+        begin
+          result := False;
+          xXml.ValidationMesssage := Format( 'Number of elements (%d) less then minimum (%s) for element %s'
+                                           , [n, ElementDefs.Xsds[x].maxOccurs, ElementDefs.Xsds[x].ElementName]
+                                           );
+          aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+          Exit;
+        end;
+      end;
+    end;
+  end;
+
+  // check Choice
+  if ContentModel = tagChoice then
+  begin
+    xXsd := nil;
+    for x := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[x] do
+    begin
+      if Checked then
+      begin
+        if Assigned(xXsd) then
+        begin
+          if Xsd <> xXsd then
+          begin
+            result := False;
+            xXml.ValidationMesssage := Format( 'Element %s not allowed after %s in a choice'
+                                             , [Name, xXsd.ElementName]
+                                             );
+            aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+            Exit;
+          end
+        else
+          xXsd := Xsd;
+        end;
+      end;
+    end;
+  end;
+
+  { TODO : check order of elements }
+  if ContentModel = tagSequence then
+  begin
+  end;
+
+  for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
+    if (XmlItems[x].Checked)
+    and Assigned (XmlItems[x].TypeDef) then
+      result := XmlItems[x].TypeDef.IsValidXml(XmlItems[x], aMessage);
+  { TODO : XML schema validation  }
+end;
 
 function TXsdDataType.IsValidValue(aName, aValue: String;
   var aMessage: String): Boolean;
@@ -2057,7 +2178,6 @@ var
   end;
 
 begin
-  aMessage := 'Value parsed without errors.';
   result := True;
   if Name = 'FileNameType' then
   begin

@@ -128,6 +128,7 @@ type
     Xsd: TXsd;
     Ipm: TObject;
     LineNo: Integer;
+    ValidationMesssage: String;
     property ItemByTag [Index: String]: TXml read getItemByTag;
     property AttributeValueByTagDef [Index, aDefault: String]: String read getAttributeValueByTagDef;
     property AttributeValueByTag [Index: String]: String read getAttributeValueByTag;
@@ -1623,6 +1624,8 @@ begin
     Checker := aXml.Checker;
   fChecked := aXml.Checked;
   Value := aXml.Value;
+  NsPrefix := aXml.NsPrefix;
+  NameSpace := aXml.NameSpace;
   for x := 0 to aXml.Items.Count - 1 do
   begin
     xXml := aXml.Items.XmlItems [x];

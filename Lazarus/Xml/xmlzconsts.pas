@@ -10,6 +10,7 @@ const
   scSoapUseLiteral = 'literal';
   scXMLSchemaURI = 'http://www.w3.org/2001/XMLSchema';
   scWsdlNameSpace = 'http://schemas.xmlsoap.org/wsdl/';
+  scSoapEnvNameSpace = 'http://schemas.xmlsoap.org/soap/envelope/';
 
 { tags }
   tagAbstract = 'abstract';

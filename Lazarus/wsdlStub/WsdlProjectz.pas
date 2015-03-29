@@ -3550,7 +3550,7 @@ begin
                 on e: exception do
                   raise Exception.CreateFmt('%s could not parse XML reply (%s)', [_ProgName, e.Message]);
               end;
-              aOperation.SoapXmlReplyToBindables(xXml);
+              aOperation.SoapXmlReplyToBindables(xXml, True);
           //              aOperation.rpyBind.LoadValues(xXml, True, False);
             finally
               xXml.Free;
@@ -4116,6 +4116,7 @@ begin
         and Assigned (aOperation.reqBind)
         and (aOperation.reqBind is TXml) then
         begin
+          xMessage := '';
           if not aOperation.reqBind.IsValueValid (xMessage) then
             RequestValidateResult := xMessage;
           RequestValidated := True;
@@ -4125,6 +4126,7 @@ begin
         and Assigned (aOperation.rpyBind)
         and (aOperation.rpyBind is TXml) then
         begin
+          xMessage := '';
           if not aOperation.rpyBind.IsValueValid (xMessage) then
             ReplyValidateResult := xMessage;
           ReplyValidated := True;
@@ -4326,7 +4328,7 @@ begin
       if result.reqBind is TIpmItem then
         (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString)
       else
-        result.SoapXmlReplyToBindables (xXml);
+        result.SoapXmlReplyToBindables (xXml, False);
     end;
   finally
     FreeAndNil (xXml);
@@ -5419,10 +5421,10 @@ begin
       case result.WsdlService.DescriptionType of
         ipmDTFreeFormat: result.FreeFormatReq := aString;
         ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
-        ipmDTXml: result.SoapXmlRequestToBindables (xXml);
-        ipmDTXsd: result.SoapXmlRequestToBindables (xXml);
-        ipmDTWsdl: result.SoapXmlRequestToBindables (xXml);
-        ipmDTEmail: result.SoapXmlRequestToBindables (xXml);
+        ipmDTXml: result.SoapXmlRequestToBindables (xXml, aDoClone);
+        ipmDTXsd: result.SoapXmlRequestToBindables (xXml, aDoClone);
+        ipmDTWsdl: result.SoapXmlRequestToBindables (xXml, aDoClone);
+        ipmDTEmail: result.SoapXmlRequestToBindables (xXml, aDoClone);
         ipmDTSwiftMT: result.SwiftMtRequestToBindables(aString);
       end;
     finally

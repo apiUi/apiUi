@@ -515,6 +515,8 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
+    procedure MessagesVTSChange (Sender : TBaseVirtualTree ;
+      Node : PVirtualNode );
     procedure ToggleFileLogActionExecute(Sender: TObject);
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
     procedure ShowLogDetailsActionExecute(Sender: TObject);
@@ -5557,27 +5559,31 @@ begin
 end;
 
 procedure TMainForm.UpdateLogTabs (aLog: TLog);
+var
+  s: String;
 begin
-    RequestHeadersMemo.Text := aLog.RequestHeaders;
-    SoapRequestMemo.Text := aLog.RequestBody;
-    ReplyHeadersMemo.Text := aLog.ReplyHeaders;
-    SoapReplyMemo.Text := aLog.ReplyBody;
-    ExceptionMessageMemo.Text := aLog.Exception;
-    ValidationResultMemo.Text := '';
-    if aLog.RequestValidateResult <> '' then
-      ValidationResultMemo.Text := 'Request:' + #$D#$A +
-        aLog.RequestValidateResult + #$D#$A;
-    if aLog.ReplyValidateResult <> '' then
-      ValidationResultMemo.Text :=
-        ValidationResultMemo.Text + 'Reply:' + #$D#$A +
-        aLog.ReplyValidateResult + #$D#$A;
-    if (not aLog.RequestValidated) and (not aLog.ReplyValidated) then
-      ValidationTabSheet.ImageIndex := 40
-    else if (aLog.RequestValidateResult = '') and
+  RequestHeadersMemo.Text := aLog.RequestHeaders;
+  SoapRequestMemo.Text := aLog.RequestBody;
+  ReplyHeadersMemo.Text := aLog.ReplyHeaders;
+  SoapReplyMemo.Text := aLog.ReplyBody;
+  ExceptionMessageMemo.Text := aLog.Exception;
+  s := '';
+  if aLog.RequestValidateResult <> '' then
+    s := s + 'Request:' + LineEnding + aLog.RequestValidateResult + LineEnding;
+  if aLog.ReplyValidateResult <> '' then
+    s := s  + 'Reply:' + LineEnding + aLog.ReplyValidateResult + LineEnding;
+  ValidationResultMemo.Text := s;
+  if (not aLog.RequestValidated)
+  and (not aLog.ReplyValidated) then
+    ValidationTabSheet.ImageIndex := 40
+  else
+  begin
+    if (aLog.RequestValidateResult = '') and
       (aLog.ReplyValidateResult = '') then
       ValidationTabSheet.ImageIndex := 39
     else
       ValidationTabSheet.ImageIndex := 25;
+  end;
 end;
 
 procedure TMainForm.MessagesVTSFocusChanged(Sender: TBaseVirtualTree;
@@ -10527,7 +10533,7 @@ begin
                 xXml := TXml.Create;
                 try
                   xXml.LoadFromString(xMsgString, nil);
-                  WsdlOperation.SoapXmlRequestToBindables(xXml);
+                  WsdlOperation.SoapXmlRequestToBindables(xXml, False);
 (xMessage.reqBind as TXml)
                   .Reset; (xMessage.reqBind as TXml)
                   .LoadValues((WsdlOperation.reqBind as TXml), True, True);
@@ -10550,7 +10556,7 @@ begin
                 xXml := TXml.Create;
                 try
                   xXml.LoadFromString(xMsgString, nil);
-                  WsdlOperation.SoapXmlReplyToBindables(xXml);
+                  WsdlOperation.SoapXmlReplyToBindables(xXml, False);
                   (xMessage.rpyBind as TXml).Reset;
                   (xMessage.rpyBind as TXml).LoadValues((WsdlOperation.rpyBind as TXml), True, True);
                 finally
@@ -10827,14 +10833,14 @@ begin
             try
               try
                 xXml.LoadFromString(xLog.RequestBody, nil);
-                xLog.Operation.SoapXmlRequestToBindables(xXml);
+                xLog.Operation.SoapXmlRequestToBindables(xXml, False);
                 (xMessage.reqBind as TXml).Reset;
                 (xMessage.reqBind as TXml).LoadValues((xLog.Operation.reqBind as TXml), True, True);
               except
               end;
               try
                 xXml.LoadFromString(xLog.ReplyBody, nil);
-                xLog.Operation.SoapXmlReplyToBindables(xXml);
+                xLog.Operation.SoapXmlReplyToBindables(xXml, False);
 (xMessage.rpyBind as TXml)
                 .Reset; (xMessage.rpyBind as TXml)
                 .LoadValues((xLog.Operation.rpyBind as TXml), True, True);
@@ -12155,6 +12161,12 @@ var
   aLink: String;
 begin
   OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
+end;
+
+procedure TMainForm .MessagesVTSChange (Sender : TBaseVirtualTree ;
+  Node : PVirtualNode );
+begin
+
 end;
 
 {$ifdef windows}

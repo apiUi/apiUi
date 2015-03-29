@@ -333,9 +333,9 @@ type
       procedure RpyBindablesFromString (aString: String);
       procedure RpyBindablesFromWsdlMessage (aMessage: TWsdlMessage);
       procedure RpyBindablesToWsdlMessage (aMessage: TWsdlMessage);
-      procedure SoapXmlRequestToBindables (aRequest: TXml);
+      procedure SoapXmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
       procedure SwiftMtRequestToBindables (aString: String);
-      procedure SoapXmlReplyToBindables (aReply: TXml);
+      procedure SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
       procedure RequestStringToBindables (aRequest: String);
       procedure ReplyStringToBindables (aReply: String);
       function FindBind (aCaption: String): TCustomBindable;
@@ -4201,45 +4201,48 @@ begin
   end;
 end;
 
-procedure TWsdlOperation.SoapXmlReplyToBindables(aReply: TXml);
+procedure TWsdlOperation.SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
 var
   x, s, d: Integer;
   xXml, dXml: TXml;
 begin
   (rpyBind as TXml).ResetValues;
   (rpyBind as TXml).Checked := True;
+  aReply.SeparateNsPrefixes;
+  aReply.ResolveNameSpaces;
   if aReply.Name = '' then Exit;
-  if NameWithoutPrefix(aReply.TagName) = 'Envelope' then
+  if (aReply.TagName = 'Envelope')
+  and (aReply.NameSpace = scSoapEnvNameSpace) then
   begin
     for x := 0 to aReply.Items.Count - 1 do
     begin
       xXml := aReply.Items.XmlItems [x];
-      if (NameWithoutPrefix(xXml.TagName) = 'Header')
+      if (xXml.TagName = 'Header')
       and (xXml.Items.Count > 0) then
       begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
           for d := 0 to OutputHeaders.Count - 1 do
-            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], False, False);
+            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False);
         end;
       end;
-      if (NameWithoutPrefix(xXml.TagName) = 'Body') then
+      if (xXml.TagName = 'Body') then
       begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
           for d := OutputHeaders.Count to (rpyBind as TXml).Items.Count - 1 do
-            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], False, False);
+            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False);
         end;
       end;
     end;
   end
   else
   begin
-    (rpyBind as TXml).Items.XmlItems[0].LoadValues (aReply, False, False);
+    (rpyBind as TXml).Items.XmlItems[0].LoadValues (aReply, aAddUnknowns, False);
   end;
 end;
 
-procedure TWsdlOperation.SoapXmlRequestToBindables(aRequest: TXml);
+procedure TWsdlOperation.SoapXmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
 var
   x, s, d: Integer;
   xXml, wXml: TXml;
@@ -4247,17 +4250,20 @@ var
 begin
   (reqBind as TXml).ResetValues;
   (reqBind as TXml).Checked := True;
-  if NameWithoutPrefix(aRequest.TagName) = 'Envelope' then
+  aRequest.SeparateNsPrefixes;
+  aRequest.ResolveNameSpaces;
+  if (aRequest.TagName = 'Envelope')
+  and (aRequest.NameSpace = scSoapEnvNameSpace) then
   begin
     for x := 0 to aRequest.Items.Count - 1 do
     begin
       xXml := aRequest.Items.XmlItems [x];
-      if (NameWithoutPrefix(xXml.TagName) = 'Header') then
+      if (xXml.TagName = 'Header') then
       begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
           for d := 0 to InputHeaders.Count - 1 do
-            (reqBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], False, False);
+            (reqBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False);
         end;
         if Assigned (reqWsaXml) then
         begin
@@ -4272,19 +4278,19 @@ begin
           end;
         end;
       end;
-      if (NameWithoutPrefix(xXml.TagName) = 'Body') then
+      if (xXml.TagName = 'Body') then
       begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
           for d := InputHeaders.Count to (reqBind as TXml).Items.Count - 1 do
-            (reqBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], False, False);
+            (reqBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False);
         end;
       end;
     end;
   end
   else
   begin
-    (reqBind as TXml).Items.XmlItems[0].LoadValues (aRequest, False, False);
+    (reqBind as TXml).Items.XmlItems[0].LoadValues (aRequest, aAddUnknowns, False);
   end;
 end;
 
@@ -4449,7 +4455,7 @@ begin
     xXml := TXml.Create (0, (reqBind as TXml).Xsd);
     try
       xXml.LoadFromString(aString, nil);
-      SoapXmlReplyToBindables(xXml);
+      SoapXmlReplyToBindables(xXml, Assigned(Cloned));
     finally
       FreeAndNil (xXml);
     end;
@@ -4504,7 +4510,7 @@ begin
     xXml := TXml.Create (0, (rpyBind as TXml).Xsd);
     try
       xXml.LoadFromString(aString, nil);
-      SoapXmlReplyToBindables(xXml);
+      SoapXmlReplyToBindables(xXml, Assigned(Cloned));
     finally
       FreeAndNil (xXml);
     end;
@@ -5322,7 +5328,7 @@ begin
       xXml := TXml.Create;
       try
         xXml.LoadFromString(aReply, nil);
-        SoapXmlReplyToBindables (xXml);
+        SoapXmlReplyToBindables (xXml, Assigned(Cloned));
       finally
         xXml.Free;
       end;
@@ -5345,7 +5351,7 @@ begin
       xXml := TXml.Create;
       try
         xXml.LoadFromString(aRequest, nil);
-        SoapXmlRequestToBindables (xXml);
+        SoapXmlRequestToBindables (xXml, Assigned (Cloned));
       finally
         xXml.Free;
       end;
