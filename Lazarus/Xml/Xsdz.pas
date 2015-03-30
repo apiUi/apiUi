@@ -1940,17 +1940,19 @@ begin
   xXml := aXml as TXml;
   if not xXml.Checked then
     Exit;
-
+  if xXml.NameSpace = 'http://www.rabobank.nl/CRM/CRMI/RaadplProductVerhuisbaarheid/1/Req' then{ TODO : remove }
+    xXml.NameSpace:='http://www.rabobank.nl/CRM/CRMI/RaadplProductVerhuisbaarheid/1/Req';
   // check namespace
   if (xXml.NameSpace <> NameSpace)
   and (xXml.NameSpace <> '')
   and (NameSpace <> scXMLSchemaURI) then
   begin
     result := False;
-    xXml.ValidationMesssage := Format('Found NameSpace %s at %s, excepted %s', [xXml.NameSpace, xXml.Name, NameSpace]);
+    xXml.ValidationMesssage := Format('Found NameSpace %s at %s, expected %s', [xXml.NameSpace, xXml.Name, NameSpace]);
     aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
     Exit;
   end;
+
 
   // check value
   if ElementDefs.Count = 0 then

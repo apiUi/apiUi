@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 391
+  Left = 384
   Height = 501
-  Top = 176
+  Top = 247
   Width = 806
   Caption = 'Form1'
   ClientHeight = 501
@@ -51,27 +51,13 @@ object Form1: TForm1
       Text = 'http://www.maan-coaching.nl/'
     end
   end
-  object BrowserPanel: TPanel
-    Left = 0
-    Height = 475
-    Top = 26
-    Width = 806
-    Align = alClient
-    BorderStyle = bsSingle
-    Caption = 'BrowserPanel'
-    ClientHeight = 471
-    ClientWidth = 802
+  object Button1: TButton
+    Left = 170
+    Height = 25
+    Top = 88
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
     TabOrder = 3
-    object Memo1: TMemo
-      Left = 1
-      Height = 469
-      Top = 1
-      Width = 800
-      Align = alClient
-      Lines.Strings = (
-        'Memo1'
-      )
-      TabOrder = 0
-    end
   end
 end

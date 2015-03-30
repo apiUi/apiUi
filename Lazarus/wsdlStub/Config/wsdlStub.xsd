@@ -842,6 +842,14 @@ This user must have sufficient privileges to perform the tasks that you want to 
 									<xs:documentation>Associated with the specified database user</xs:documentation>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="ConnectionString" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>A string that specifies the means of connecting to a data source. Most commonly used for database connections but also for spreadsheets or text files. May include the name of the driver, server and database, user name and password.
+You can hide a password by using a %pwd% placeholder in this connectionstring and provide the password in the next field.
+									
+Visit http://www.connectionstrings.com for more information on connectionstrings and lots of examples </xs:documentation>
+								</xs:annotation>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>

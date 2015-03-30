@@ -3031,7 +3031,6 @@ begin
       DbsUserName := xXml.Items.XmlCheckedValueByTagDef['UserName', DbsUserName];
       DbsPassword := xmlz.DecryptString(xXml.Items.XmlCheckedValueByTag['Password']);
     { TODO : hide password }
-      DbsPassword := 'fpd';
       with _WsdlDbsConnector do
       begin
         ConnectorType := DbsType;

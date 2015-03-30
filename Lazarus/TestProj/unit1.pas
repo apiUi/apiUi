@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, activexcontainer, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Word_8_5_TLB, SHDocVw_1_1_TLB, windows, xmlio ;
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Word_8_5_TLB, SHDocVw_1_1_TLB, windows,
+  xmlio, sqldb, oracleconnection ;
 
 type
 
@@ -15,9 +16,8 @@ type
   TForm1 = class(TForm)
     AxcApplication1: TAxcApplication;
     AxcDocument1: TAxcDocument;
+    Button1: TButton;
     Edit1: TEdit;
-    BrowserPanel: TPanel;
-    Memo1: TMemo;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     procedure Button1Click(Sender: TObject);
@@ -62,7 +62,7 @@ begin
       s := UTF8Decode('c:\data\Janbo.docx');
       wordDoc := wordApp.Documents.Open (s);
       s := UTF8Decode('c:\data\Janbo2.pdf');
-      wordDoc.SaveAs(s);
+      wordDoc.SaveAs(s, wdFormatPDF);
       wordApp.Quit;
     finally
       wordApp := null;
@@ -103,12 +103,6 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   browser := CreateOleObject('InternetExplorer.Application');
-   windows.setparent(Browser.Hwnd, Memo1.handle); // you can use BrowserPanel.handle, etc..
-   browser.toolbar:=true;
-   browser.fullscreen:=true;
-   browser.Resizable:=false;
-   browser.visible:=true;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
