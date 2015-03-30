@@ -29,7 +29,7 @@ var
   WritePasswordTemplate,
   Format, Encoding,
   Visible, DoNotSaveChanges,
-  OriginalFormat, RouteDocument: Olevariant;
+  OriginalFormat, RouteDocument, CompareTargetNew, DetectFormatChanges, xTrue, xFalse: Olevariant;
   ndoc, cdoc: Variant;
   xDoUninitialise: Boolean;
 begin
@@ -42,6 +42,8 @@ begin
     xDoUninitialise := True;
   end;
   try
+    xTrue := True;
+    xFalse := False;
     FileName := aRefFile;
     ConfirmConversions := true ;
     ReadOnly :=  false;
@@ -56,6 +58,8 @@ begin
     Encoding := '';
     visible := true;
     DoNotSaveChanges := wdDoNotSaveChanges;
+    CompareTargetNew := wdCompareTargetNew;
+    DetectFormatChanges := wrdDetectFormatChanges;
     ndoc := wrdApplication.Documents.Open ( FileName
                                           , ConfirmConversions
                                           , ReadOnly
@@ -71,13 +75,13 @@ begin
                                           );
     try
       ndoc.Compare ( aNewFile
-                   , // authorname
-                   , wdCompareTargetNew
-                   , wrdDetectFormatChanges
-                   , True // ignorecomparisonwarnings
-                   , False // addtorecentfiles
-                   , True // removepersonalinformation
-                   , True // removedatetime
+                   , Null
+                   , CompareTargetNew
+                   , DetectFormatChanges
+                   , xTrue // ignorecomparisonwarnings
+                   , xFalse // addtorecentfiles
+                   , xTrue // removepersonalinformation
+                   , xTrue // removedatetime
                    );
       cdoc := wrdApplication.ActiveDocument;
       result := cdoc.Revisions.Count - wrdExpectedDifferenceCount;
@@ -102,7 +106,7 @@ var
   WritePasswordTemplate,
   Format, Encoding,
   Visible, DoNotSaveChanges,
-  OriginalFormat, RouteDocument: Olevariant;
+  OriginalFormat, RouteDocument, CompareTargetNew, DetectFormatChanges, xTrue, xFalse: Olevariant;
   ndoc, cdoc: Variant;
   word: Variant;
 begin
@@ -127,9 +131,13 @@ begin
   WritePasswordDocument := '';
   WritePasswordTemplate := '';
   Format := wdOpenFormatAuto;
+  CompareTargetNew := wdCompareTargetNew;
+  DetectFormatChanges := wrdDetectFormatChanges;
   Encoding := '';
   visible := true;
   DoNotSaveChanges := wdDoNotSaveChanges;
+  xTrue := True;
+  xFalse := False;
   try
     word := CreateOleObject('Word.Application');
   except
@@ -155,12 +163,12 @@ begin
     try
       ndoc.Compare ( CompareFileName
                    , // authorname
-                   , wdCompareTargetNew
-                   , wrdDetectFormatChanges
-                   , True // ignorecomparisonwarnings
-                   , False // addtorecentfiles
-                   , True // removepersonalinformation
-                   , True // removedatetime
+                   , CompareTargetNew
+                   , DetectFormatChanges
+                   , xTrue // ignorecomparisonwarnings
+                   , xFalse // addtorecentfiles
+                   , xTrue // removepersonalinformation
+                   , xTrue // removedatetime
                    );
       cdoc := word.ActiveDocument;
       cdoc.Saved := 1;
@@ -183,10 +191,14 @@ end;
 
 procedure wrdStringToFile (aText, aFileName: String);
 var
-  ndoc, cdoc: Variant;
+  ndoc: Variant;
   word: Variant;
+  xText: OleVariant;
+  xFileName: OleVariant;
 begin
   {$ifdef windows}
+  xText := aText;
+  xFileName := aFileName;
   try
     word := CreateOleObject('Word.Application');
   except
@@ -199,13 +211,17 @@ begin
 //  ndoc := word.Documents.Add ( ,,, );
     ndoc := word.Documents.Add ();
     try
-      ndoc.Range.Text := aText;
-      nDoc.SaveAs2(aFileName);
+      ndoc.Range.Text := xText;
+      nDoc.SaveAs2(xFileName);
     finally
       ndoc.Close (wdDoNotSaveChanges);
     end;
   finally
-    Word := Null;
+    try
+      Word.Quit;
+    finally
+      Word := Null;
+    end;
   end;
   {$else}
   raise Exception.Create('only with ms windows');
@@ -216,8 +232,14 @@ procedure wrdStringToPdfFile (aText, aFileName: String);
 var
   ndoc: Variant;
   word: Variant;
+  xText: OleVariant;
+  xFileName: OleVariant;
+  xFormat: OleVariant;
 begin
   {$ifdef windows}
+  xText := aText;
+  xFileName := aFileName;
+  xFormat := wdFormatPDF;
   try
     word := CreateOleObject('Word.Application');
   except
@@ -230,13 +252,17 @@ begin
 //  ndoc := word.Documents.Add (,,,);
     ndoc := word.Documents.Add ();
     try
-      ndoc.Range.Text := aText;
-      nDoc.SaveAs2(aFileName, wdFormatPDF);
+      ndoc.Range.Text := xText;
+      nDoc.SaveAs2(xFileName, xFormat);
     finally
       ndoc.Close (wdDoNotSaveChanges);
     end;
   finally
-    Word := Null;
+    try
+      Word.Quit;
+    finally
+      Word := Null;
+    end;
   end;
   {$else}
   raise Exception.Create('only with ms windows');
@@ -269,4 +295,6 @@ begin
   {$endif}
 end;
 
-end.
+initialization;
+  wrdApplication := null;
+end.

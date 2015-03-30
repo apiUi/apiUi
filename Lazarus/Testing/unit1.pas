@@ -6,16 +6,18 @@ interface
 
 uses
   Classes , SysUtils , FileUtil , SynEdit , Forms , Controls , Graphics ,
-  Dialogs , StdCtrls , EditBtn, FormIniFilez, strutils ;
+  Dialogs , StdCtrls , EditBtn, FormIniFilez, strutils, wrdFunctionz ;
 
 type
 
   { TForm1 }
 
   TForm1 = class(TForm )
+    Button1 : TButton ;
     Edit1 : TEdit ;
     FileNameEdit : TFileNameEdit ;
     SynEdit1 : TSynEdit ;
+    procedure Button1Click (Sender : TObject );
     procedure FileNameEditAcceptFileName (Sender : TObject ;
       var Value : String );
     procedure FormCreate (Sender : TObject );
@@ -43,6 +45,11 @@ procedure TForm1 .FileNameEditAcceptFileName (Sender : TObject ;
 begin
   SynEdit1.Text := ReadStringFromFile(Value);
   Caption := GuessEncoding(SynEdit1.Text);
+end;
+
+procedure TForm1 .Button1Click (Sender : TObject );
+begin
+  Button1.Caption := IntToStr (wrdFunctionz.wrdFileDiffencesCount('c:\temp\janbo1.docx', 'c:\temp\janbo2.docx'));
 end;
 
 procedure TForm1 .FormCreate (Sender : TObject );

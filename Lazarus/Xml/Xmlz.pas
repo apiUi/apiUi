@@ -1624,8 +1624,6 @@ begin
     Checker := aXml.Checker;
   fChecked := aXml.Checked;
   Value := aXml.Value;
-  NsPrefix := aXml.NsPrefix;
-  NameSpace := aXml.NameSpace;
   for x := 0 to aXml.Items.Count - 1 do
   begin
     xXml := aXml.Items.XmlItems [x];
@@ -2084,6 +2082,7 @@ begin
     Xsd := aXsd;
     xDataType := TypeDef;
     jsonType := xDataType.jsonType;
+    NameSpace := aXsd.ElementNameSpace;
     for xAttrIndex := 0 to xDataType.AttributeDefs.Count - 1 do
     begin
       xAttr := TXmlAttribute.Create;

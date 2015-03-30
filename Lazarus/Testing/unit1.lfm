@@ -541,4 +541,13 @@ object Form1: TForm1
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 2
   end
+  object Button1: TButton
+    Left = 816
+    Height = 25
+    Top = 56
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 3
+  end
 end

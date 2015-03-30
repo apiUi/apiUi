@@ -811,11 +811,11 @@ function TXsdDescr.AddComplexType(aXml: TObject; aTargetNamespace: String; isGlo
     end;
     if Result = '' then Result := 'Empty';  // weet je het zeker ???
   end;
-  procedure _SearchAndAdd (aXml: TXml; aTypeDef: TXsdDataType);
+  procedure _SearchAndAdd (aXml: TXml; aTypeDef: TXsdDataType; aForceOptional: Boolean);
   {
     Xml-schema allows nested Sequences and Choices
     In this implementation we will make a flat list out of a nested structure
-    loosing some information which will allow invalid combinations of xml-elements
+    loosing and changing some information which will allow invalid combinations of xml-elements
   }
   var
     x: Integer;
@@ -824,7 +824,11 @@ function TXsdDescr.AddComplexType(aXml: TObject; aTargetNamespace: String; isGlo
     if aXml.Name = tagAttribute then
       AddAttributeDef(aTypeDef, aXml, aTargetNameSpace);
     if aXml.Name = tagElement then
-      AddElement(aTypeDef, aXml, aTargetNameSpace, False);
+      with AddElement(aTypeDef, aXml, aTargetNameSpace, False) do
+      begin
+        if aForceOptional then
+          minOccurs := '0';
+      end;
     if (aXml.Name = tagAll)
     or (aXml.Name = tagChoice)
     or (aXml.Name = tagSequence)
@@ -832,7 +836,7 @@ function TXsdDescr.AddComplexType(aXml: TObject; aTargetNamespace: String; isGlo
     or (aXml.Name = tagRestriction)
     then
       for x := 0 to aXml.Items.Count - 1 do
-        _SearchAndAdd (aXml.Items.XmlItems[x], aTypeDef);
+        _SearchAndAdd (aXml.Items.XmlItems[x], aTypeDef, (aXml.Name = tagChoice));
   end;
 var
   xXml: TXml;
@@ -855,7 +859,7 @@ begin
     // OK all
     // anyAttribute
     // attribute
-    // attibuteGroup
+    // attributeGroup
     // OK choice
     // OK complexContent
     // group
@@ -875,7 +879,7 @@ begin
       or (xXml.Items.XmlItems[x].Name = tagChoice)
       or (xXml.Items.XmlItems[x].Name = tagSequence)
       then begin
-        _SearchAndAdd (xXml.Items.XmlItems[x], result);
+        _SearchAndAdd (xXml.Items.XmlItems[x], result, False);
       end;
       if (xXml.Items.XmlItems[x].Name = tagComplexContent)
       or (xXml.Items.XmlItems[x].Name = tagSimpleContent)
@@ -887,7 +891,7 @@ begin
           begin
             result.DerivationMethod := 'Restriction';
             _FillRestrictionBase(Items.XmlItems[y], result);
-            _SearchAndAdd (Items.XmlItems[y], result);
+            _SearchAndAdd (Items.XmlItems[y], result, False);
           end;
           if Items.XmlItems[y].Name = tagExtension then
           begin
@@ -895,7 +899,7 @@ begin
             if Items.XmlItems[y].Attributes.ValueByTag[tagBase] = 'simple02-99' then
               result.DerivationMethod := 'Extension';
             _FillExtentionBase(Items.XmlItems[y], result);
-            _SearchAndAdd (Items.XmlItems[y], result);
+            _SearchAndAdd (Items.XmlItems[y], result, False);
           end;
         end;
       end;
@@ -1940,13 +1944,13 @@ begin
   xXml := aXml as TXml;
   if not xXml.Checked then
     Exit;
-  if xXml.NameSpace = 'http://www.rabobank.nl/CRM/CRMI/RaadplProductVerhuisbaarheid/1/Req' then{ TODO : remove }
-    xXml.NameSpace:='http://www.rabobank.nl/CRM/CRMI/RaadplProductVerhuisbaarheid/1/Req';
   // check namespace
   if (xXml.NameSpace <> NameSpace)
   and (xXml.NameSpace <> '')
   and (NameSpace <> scXMLSchemaURI) then
   begin
+      if xXml.NameSpace = 'http://www.rabobank.nl/CRM/CRMI/RaadplProductVerhuisbaarheid/1/Req' then{ TODO : remove }
+        xXml.NameSpace:='http://www.rabobank.nl/CRM/CRMI/RaadplProductVerhuisbaarheid/1/Req';
     result := False;
     xXml.ValidationMesssage := Format('Found NameSpace %s at %s, expected %s', [xXml.NameSpace, xXml.Name, NameSpace]);
     aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
