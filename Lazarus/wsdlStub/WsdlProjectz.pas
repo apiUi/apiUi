@@ -221,6 +221,8 @@ type
     PublishDescriptions: Boolean;
     OperationsWithEndpointOnly: Boolean;
     SaveRelativeFileNames: Boolean;
+    FocusOperationName: String;
+    FocusMessageIndex: Integer;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure SaveLog (aString: String; aLog: TLog);
@@ -1964,6 +1966,8 @@ begin
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
       AddXml(TXml.CreateAsString('ignoreRemovingOn', ignoreRemovingOn.Text));
       AddXml(TXml.CreateAsString('ignoreCoverageOn', ignoreCoverageOn.Text));
+      AddXml(TXml.CreateAsString('FocusOperationName', FocusOperationName));
+      AddXml(TXml.CreateAsInteger('FocusMessageIndex', FocusMessageIndex));
       with AddXml(TXml.CreateAsString('Scripts', '')) do
         for x := 0 to Scripts.Count - 1 do
           with AddXml(Txml.CreateAsString('Script', (Scripts.Objects[x] AS TStringList).Text))
@@ -2064,6 +2068,8 @@ begin
           ignoreAddingOn.Text := xXml.Items.XmlValueByTag ['ignoreAddingOn'];
           ignoreRemovingOn.Text := xXml.Items.XmlValueByTag ['ignoreRemovingOn'];
           ignoreCoverageOn.Text := xXml.Items.XmlValueByTag ['ignoreCoverageOn'];
+          FocusOperationName := xXml.Items.XmlValueByTag ['FocusOperationName'];
+          FocusMessageIndex := xXml.Items.XmlIntegerByTag ['FocusMessageIndex'];
           for w := 0 to xXml.Items.Count - 1 do
           begin
             wXml := xXml.Items.XmlItems [w];

@@ -23,13 +23,13 @@ var
 
 function wrdFileDiffencesCount (aNewFile, aRefFile: String): Integer;
 var
-  FileName, ConfirmConversions, ReadOnly, AddToRecentFiles,
-  PasswordDocument, PasswordTemplate, Revert,
-  WritePasswordDocument,
-  WritePasswordTemplate,
-  Format, Encoding,
-  Visible, DoNotSaveChanges,
-  OriginalFormat, RouteDocument, CompareTargetNew, DetectFormatChanges, xTrue, xFalse: Olevariant;
+  xFileName, xNewFile, xAuthorName, xConfirmConversions, xReadOnly, xAddToRecentFiles,
+  xPasswordDocument, xPasswordTemplate, xRevert,
+  xWritePasswordDocument,
+  xWritePasswordTemplate,
+  xFormat, xEncoding,
+  xVisible, xDoNotSaveChanges,
+  xOriginalFormat, xRouteDocument, xCompareTargetNew, xDetectFormatChanges, xTrue, xFalse: Olevariant;
   ndoc, cdoc: Variant;
   xDoUninitialise: Boolean;
 begin
@@ -44,40 +44,42 @@ begin
   try
     xTrue := True;
     xFalse := False;
-    FileName := aRefFile;
-    ConfirmConversions := true ;
-    ReadOnly :=  false;
-    AddToRecentFiles := true;
-    PasswordDocument := '';
-    PasswordTemplate := '';
-    WritePasswordTemplate := '';
-    Revert := false;
-    WritePasswordDocument := '';
-    WritePasswordTemplate := '';
-    Format := wdOpenFormatAuto;
-    Encoding := '';
-    visible := true;
-    DoNotSaveChanges := wdDoNotSaveChanges;
-    CompareTargetNew := wdCompareTargetNew;
-    DetectFormatChanges := wrdDetectFormatChanges;
-    ndoc := wrdApplication.Documents.Open ( FileName
-                                          , ConfirmConversions
-                                          , ReadOnly
-                                          , AddToRecentFiles
-                                          , PasswordDocument
-                                          , PasswordTemplate
-                                          , Revert
-                                          , WritePasswordDocument
-                                          , WritePasswordTemplate
-                                          , Format
-                                          , Encoding
-                                          , Visible
+    xFileName := aRefFile;
+    xNewFile := aNewFile;
+    xConfirmConversions := true ;
+    xReadOnly :=  false;
+    xAddToRecentFiles := false;
+    xAuthorName := '';
+    xPasswordDocument := '';
+    xPasswordTemplate := '';
+    xWritePasswordTemplate := '';
+    xRevert := false;
+    xWritePasswordDocument := '';
+    xWritePasswordTemplate := '';
+    xFormat := wdOpenFormatAuto;
+    xEncoding := '';
+    xvisible := true;
+    xDoNotSaveChanges := wdDoNotSaveChanges;
+    xCompareTargetNew := wdCompareTargetNew;
+    xDetectFormatChanges := wrdDetectFormatChanges;
+    ndoc := wrdApplication.Documents.Open ( xFileName
+                                          , xConfirmConversions
+                                          , xReadOnly
+                                          , xAddToRecentFiles
+                                          , xPasswordDocument
+                                          , xPasswordTemplate
+                                          , xRevert
+                                          , xWritePasswordDocument
+                                          , xWritePasswordTemplate
+                                          , xFormat
+                                          , xEncoding
+                                          , xVisible
                                           );
     try
-      ndoc.Compare ( aNewFile
-                   , Null
-                   , CompareTargetNew
-                   , DetectFormatChanges
+      ndoc.Compare ( xNewFile
+                   , xAuthorName
+                   , xCompareTargetNew
+                   , xDetectFormatChanges
                    , xTrue // ignorecomparisonwarnings
                    , xFalse // addtorecentfiles
                    , xTrue // removepersonalinformation
@@ -85,9 +87,9 @@ begin
                    );
       cdoc := wrdApplication.ActiveDocument;
       result := cdoc.Revisions.Count - wrdExpectedDifferenceCount;
-      cdoc.Close (DoNotSaveChanges, OriginalFormat, RouteDocument);
+      cdoc.Close (xDoNotSaveChanges, xOriginalFormat, xRouteDocument);
     finally
-      ndoc.Close (DoNotSaveChanges, OriginalFormat, RouteDocument);
+      ndoc.Close (xDoNotSaveChanges, xOriginalFormat, xRouteDocument);
     end;
   finally
     if xDoUninitialise then
@@ -100,42 +102,43 @@ end;
 
 procedure wrdFileDiffencesShow (aNewFile, aRefFile: String);
 var
-  FileName, CompareFileName, ConfirmConversions, ReadOnly, AddToRecentFiles,
-  PasswordDocument, PasswordTemplate, Revert,
-  WritePasswordDocument,
-  WritePasswordTemplate,
-  Format, Encoding,
-  Visible, DoNotSaveChanges,
-  OriginalFormat, RouteDocument, CompareTargetNew, DetectFormatChanges, xTrue, xFalse: Olevariant;
+  xFileName, xCompareFileName, xAuthorName, xConfirmConversions, xReadOnly, xAddToRecentFiles,
+  xPasswordDocument, xPasswordTemplate, xRevert,
+  xWritePasswordDocument,
+  xWritePasswordTemplate,
+  xFormat, xEncoding,
+  xVisible, xDoNotSaveChanges,
+  xOriginalFormat, xRouteDocument, xCompareTargetNew, xDetectFormatChanges, xTrue, xFalse: Olevariant;
   ndoc, cdoc: Variant;
   word: Variant;
 begin
   {$ifdef windows}
   if wrdNewDocumentAsReference then
   begin
-    FileName := aNewFile;
-    CompareFileName := aRefFile;
+    xFileName := aNewFile;
+    xCompareFileName := aRefFile;
   end
   else
   begin
-    FileName := aRefFile;
-    CompareFileName := aNewFile;
+    xFileName := aRefFile;
+    xCompareFileName := aNewFile;
   end;
-  ConfirmConversions := true ;
-  ReadOnly :=  false;
-  AddToRecentFiles := true;
-  PasswordDocument := '';
-  PasswordTemplate := '';
-  WritePasswordTemplate := '';
-  Revert := false;
-  WritePasswordDocument := '';
-  WritePasswordTemplate := '';
-  Format := wdOpenFormatAuto;
-  CompareTargetNew := wdCompareTargetNew;
-  DetectFormatChanges := wrdDetectFormatChanges;
-  Encoding := '';
-  visible := true;
-  DoNotSaveChanges := wdDoNotSaveChanges;
+  xAuthorName := '';
+  xConfirmConversions := true ;
+  xReadOnly :=  false;
+  xAddToRecentFiles := false;
+  xPasswordDocument := '';
+  xPasswordTemplate := '';
+  xWritePasswordTemplate := '';
+  xRevert := false;
+  xWritePasswordDocument := '';
+  xWritePasswordTemplate := '';
+  xFormat := wdOpenFormatAuto;
+  xCompareTargetNew := wdCompareTargetNew;
+  xDetectFormatChanges := wrdDetectFormatChanges;
+  xEncoding := '';
+  xvisible := true;
+  xDoNotSaveChanges := wdDoNotSaveChanges;
   xTrue := True;
   xFalse := False;
   try
@@ -147,24 +150,24 @@ begin
   try
     Word.DisplayAlerts := False;
     word.Visible := False;
-    ndoc := word.Documents.Open ( FileName
-                                , ConfirmConversions
-                                , ReadOnly
-                                , AddToRecentFiles
-                                , PasswordDocument
-                                , PasswordTemplate
-                                , Revert
-                                , WritePasswordDocument
-                                , WritePasswordTemplate
-                                , Format
-                                , Encoding
-                                , Visible
+    ndoc := word.Documents.Open ( xFileName
+                                , xConfirmConversions
+                                , xReadOnly
+                                , xAddToRecentFiles
+                                , xPasswordDocument
+                                , xPasswordTemplate
+                                , xRevert
+                                , xWritePasswordDocument
+                                , xWritePasswordTemplate
+                                , xFormat
+                                , xEncoding
+                                , xVisible
                                 );
     try
-      ndoc.Compare ( CompareFileName
-                   , // authorname
-                   , CompareTargetNew
-                   , DetectFormatChanges
+      ndoc.Compare ( xCompareFileName
+                   , xAuthorName
+                   , xCompareTargetNew
+                   , xDetectFormatChanges
                    , xTrue // ignorecomparisonwarnings
                    , xFalse // addtorecentfiles
                    , xTrue // removepersonalinformation
@@ -179,7 +182,7 @@ begin
       word.Visible := True;
       word.ActiveWindow.Activate;
     finally
-      ndoc.Close (DoNotSaveChanges, OriginalFormat, RouteDocument);
+      ndoc.Close (xDoNotSaveChanges, xOriginalFormat, xRouteDocument);
     end;
   finally
     Word := Null;
@@ -193,12 +196,12 @@ procedure wrdStringToFile (aText, aFileName: String);
 var
   ndoc: Variant;
   word: Variant;
-  xText: OleVariant;
-  xFileName: OleVariant;
+  xText, xFileName, xDoNotSaveChanges: OleVariant;
 begin
   {$ifdef windows}
   xText := aText;
   xFileName := aFileName;
+  xDoNotSaveChanges := wdDoNotSaveChanges;
   try
     word := CreateOleObject('Word.Application');
   except
@@ -214,7 +217,7 @@ begin
       ndoc.Range.Text := xText;
       nDoc.SaveAs2(xFileName);
     finally
-      ndoc.Close (wdDoNotSaveChanges);
+      ndoc.Close (xDoNotSaveChanges);
     end;
   finally
     try
@@ -235,11 +238,13 @@ var
   xText: OleVariant;
   xFileName: OleVariant;
   xFormat: OleVariant;
+  xDoNotSaveChanges: OleVariant;
 begin
   {$ifdef windows}
   xText := aText;
   xFileName := aFileName;
   xFormat := wdFormatPDF;
+  xDoNotSaveChanges := wdDoNotSaveChanges;
   try
     word := CreateOleObject('Word.Application');
   except
@@ -255,7 +260,7 @@ begin
       ndoc.Range.Text := xText;
       nDoc.SaveAs2(xFileName, xFormat);
     finally
-      ndoc.Close (wdDoNotSaveChanges);
+      ndoc.Close (xDoNotSaveChanges);
     end;
   finally
     try

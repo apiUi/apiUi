@@ -1095,14 +1095,7 @@ procedure TXsd.GenerateReport(aStringList: TStringList);
       xSeparator := ';';
     end;
     xString := xString + aXsd.sType.Pattern + #9;
-    if (not Assigned(aParentType)) or
-      (aParentType.NameSpace <> aXsd.sType.NameSpace) then
-      xString := xString + aXsd.sType.NameSpace + #9
-    else
-      xString := xString + '' + #9;
-    { TODO
-      xString := xString + xsdNameSpacePrefix (aXsd.sType.NameSpace) + #9;
-      { }
+    xString := xString + aXsd.ElementNameSpace + #9;
     xString := xString + IntToStr(aIndent);
     aStringList.Add(xString);
     if aXsd.sType._DepthBillOfMaterial > 0 then

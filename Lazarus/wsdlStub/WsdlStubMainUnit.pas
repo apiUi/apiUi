@@ -1255,8 +1255,8 @@ begin
 end;
 
 procedure TMainForm.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
-begin (aObject as TIpmItem)
-  .Value := '?' + _progName + ' Error found: ' + ErrorString;
+begin
+  (aObject as TIpmItem).Value := '?' + _progName + ' Error found: ' + ErrorString;
 end;
 
 procedure TMainForm.FreeFormatMemoChange(Sender: TObject);
@@ -2907,6 +2907,8 @@ begin
   SwapCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
+    se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
+    se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlReply));
     SaveStringToFile(aFileName, se.ProjectDesignAsString(aFileName));
     stubChanged := False;
     se.stubRead := True; // well,... but logically ...
@@ -2935,10 +2937,18 @@ begin
 end;
 
 procedure TMainForm.OpenStubCase(aFileName: String);
+var
+  f: Integer;
 begin
   captionFileName := ExtractFileName(aFileName);
   ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName);
   UpdateReopenList(ReopenCaseList, aFileName);
+  if allOperations.Find (se.FocusOperationName, f) then
+  begin
+    WsdlOperation := allOperations.Operations[f];
+    if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
+      WsdlReply := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+  end;
 end;
 
 function TMainForm.ClearLogCommand(aDoRaiseExceptions: Boolean): String;

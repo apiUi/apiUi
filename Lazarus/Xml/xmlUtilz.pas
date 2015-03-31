@@ -146,6 +146,7 @@ public
   destructor Destroy;
 end;
 
+function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 function IsExistingFile (aRefName, aFileName: String): Boolean;
 function CheckAndPromptForExistingFile (aCaption, aRefName, aFileName: String): String;
 function EditXmlXsdBased (aCaption, aXsdPath, aInitialFocus, aValidateDuplicatesOn: String; aReadOnly: Boolean; aRootXsd: TXsd; aXml: TXml): Boolean;
@@ -184,6 +185,11 @@ uses
    , SwiftUnit
    , base64
    ;
+
+function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
+begin
+  if val then result:=iftrue else result:=iffalse;
+end;
 
 procedure ShowText (aCaption, aText: String);
 var

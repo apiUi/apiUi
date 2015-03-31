@@ -49,7 +49,9 @@ end;
 
 procedure TForm1 .Button1Click (Sender : TObject );
 begin
+  Button1.Enabled := False;
   Button1.Caption := IntToStr (wrdFunctionz.wrdFileDiffencesCount('c:\temp\janbo1.docx', 'c:\temp\janbo2.docx'));
+  Button1.Enabled := True;
 end;
 
 procedure TForm1 .FormCreate (Sender : TObject );
