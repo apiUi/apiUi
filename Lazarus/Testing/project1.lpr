@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms , virtualtreeview_package , Unit1
+  Forms , virtualtreeview_package , indylaz , Unit1
   { you can add units after this };
 
 {$R *.res}

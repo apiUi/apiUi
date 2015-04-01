@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8591"/>
+      <BuildNr Value="8593"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -126,7 +126,6 @@
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
-        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>

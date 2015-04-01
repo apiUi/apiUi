@@ -50,11 +50,7 @@ uses
   , IdText
   , IdEMailAddress
   , IdHeaderList
-  , IdZLibCompressorBase
-  , IdCompressorZLib
-  , IdZLibHeaders
   , IdHTTPHeaderInfo
-  , IdZLib
   , IdStack
   , IdSMTP
   , IdURI
@@ -106,6 +102,9 @@ type TStringFunctionBoolean = function (arg: Boolean): String of Object;
 
 
 type
+
+  { TWsdlProject }
+
   TWsdlProject = class (TComponent)
   private
     fIsActive: Boolean;
@@ -159,6 +158,7 @@ type
     function httpRequestStreamToString(ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
+    procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
   public
     ProgressMax, ProgressPos: Integer;
     doCloneOperations: Boolean;
@@ -489,6 +489,7 @@ uses OpenWsdlUnit
    {$endif}
    , xmlUtilz
    , wrdFunctionz
+   , GZIPUtils
    ;
 
 procedure AddRemark(aOperation: TObject; aString: String);
@@ -2512,10 +2513,8 @@ begin
   end; {END 3.6 style}
 end;
 
-procedure TwsdlProject.CreateLogReply ( aLog: TLog
-                                       ; var aProcessed: Boolean
-                                       ; aIsActive: Boolean
-                                       );
+procedure TWsdlProject .CreateLogReply (aLog : TLog ;
+  var aProcessed : Boolean ; aIsActive : Boolean );
 var
   xMessage: String;
   xXml: TXml;
@@ -2818,54 +2817,31 @@ end;
 function TWsdlProject.httpRequestStreamToString(
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): String;
 var
-  xStream: TStringStream;
+  xStream: TMemoryStream;
 begin
   result := '';
-  if ARequestInfo.ContentEncoding = 'gzip' then
+  if (LowerCase(ARequestInfo.ContentEncoding) = 'gzip')
+  or (LowerCase(ARequestInfo.ContentEncoding) = 'deflate') then
   begin
-    xStream := TStringStream.Create('');
+    AResponseInfo.ContentEncoding := ARequestInfo.ContentEncoding;
+    xStream := TMemoryStream.Create;
     try
-      with TIdCompressorZLib.Create(nil) do
-      try
-        DecompressGZipStream(ARequestInfo.PostStream, xStream);
-        xStream.Position := 0;
-        result := xStream.ReadString(xStream.Size);
-        AResponseInfo.ContentEncoding := ARequestInfo.ContentEncoding;
-      finally
-        Free;
-      end;
+      GZIPUtils.ZUncompressStream(ARequestInfo.PostStream as TMemoryStream, xStream);
+      xStream.Position := 0;
+      SetLength(Result,xStream.Size);
+      xStream.Read(Pointer(Result)^,xStream.Size);
     finally
       xStream.Free;
     end;
   end
   else
   begin
-    if ARequestInfo.ContentEncoding = 'deflate' then
+    AResponseInfo.ContentEncoding := 'identity';
+    with ARequestInfo.PostStream as TMemoryStream do
     begin
-      xStream := TStringStream.Create('');
-      try
-        with TIdCompressorZLib.Create(nil) do
-        try
-          DecompressHTTPDeflate(ARequestInfo.PostStream, xStream);
-          xStream.Position := 0;
-          result := xStream.ReadString(xStream.Size);
-          AResponseInfo.ContentEncoding := ARequestInfo.ContentEncoding;
-        finally
-          Free;
-        end;
-      finally
-        xStream.Free;
-      end;
-    end
-    else
-    begin
-      if Assigned (ARequestInfo.PostStream) then
-      begin
-        ARequestInfo.PostStream.Position := 0;
-//      result := (ARequestInfo.PostStream as TStringStream).ReadString(ARequestInfo.PostStream.Size);
-        result := (ARequestInfo.PostStream as TStringStream).ReadString(ARequestInfo.PostStream.Size);
-      end;
-      AResponseInfo.ContentEncoding := 'identity';
+      Position := 0;
+      SetLength(Result, Size);
+      Read(Pointer(Result)^, Size);
     end;
   end;
 end;
@@ -2914,7 +2890,7 @@ begin
     displayedLogs.InvalidateDisplayedColumns;
 end;
 
-procedure TwsdlProject.ProjectLogOptionsFromXml(aXml: TXml);
+procedure TWsdlProject .ProjectLogOptionsFromXml (aXml : TXml );
 var
   yXml: TXml;
 begin
@@ -2951,7 +2927,7 @@ begin
   end;
 end;
 
-procedure TwsdlProject.ProjectOptionsFromXml(aXml: TXml);
+procedure TWsdlProject .ProjectOptionsFromXml (aXml : TXml );
 var
   xXml, yXml: TXml;
   z: Integer;
@@ -3057,7 +3033,7 @@ begin
   end;
 end;
 
-procedure TwsdlProject.UpdateReplyColumns(aOperation: TWsdlOperation);
+procedure TWsdlProject .UpdateReplyColumns (aOperation : TWsdlOperation );
   procedure _UpdateFirstRow;
   var
     c: Integer;
@@ -3101,7 +3077,8 @@ begin
   end;
 end;
 
-function TwsdlProject.WsdlOpenFile(aName: String; aElementsWhenRepeatable: Integer): TWsdl;
+function TWsdlProject .WsdlOpenFile (aName : String ;
+  aElementsWhenRepeatable : Integer ): TWsdl ;
 var
   s, o: Integer;
 begin
@@ -3131,8 +3108,8 @@ begin
   end;
 end;
 
-procedure TwsdlProject.UpdateMessageRow(aOperation: TWsdlOperation;
-  aMessage: TWsdlMessage);
+procedure TWsdlProject .UpdateMessageRow (aOperation : TWsdlOperation ;
+  aMessage : TWsdlMessage );
 var
   c: Integer;
   Bind: TCustomBindable;
@@ -3174,8 +3151,8 @@ begin
   end;
 end;
 
-function TwsdlProject.SendOperationMessage(aOperation: TWsdlOperation;
-  aMessage: String): String;
+function TWsdlProject .SendOperationMessage (aOperation : TWsdlOperation ;
+  aMessage : String ): String ;
 var
   reqheader, rpyheader, responsecode: String;
 begin
@@ -3187,8 +3164,8 @@ begin
   end;
 end;
 
-function TwsdlProject.SendOperationMqMessage(aOperation: TWsdlOperation;
-  aMessage: String; var aMqHeaderAsText: String): String;
+function TWsdlProject .SendOperationMqMessage (aOperation : TWsdlOperation ;
+  aMessage : String ; var aMqHeaderAsText : String ): String ;
 var
   mq: TMqInterface;
   xIsRequest: Boolean;
@@ -3232,42 +3209,38 @@ begin
   end;
 end;
 
-function TwsdlProject.SendHttpMessage(aOperation: TWsdlOperation;
-  aMessage: String; var aReqHeader, aRpyHeader, aResponseCode: String): String;
-  function _Decompress (aResponse: TIdHTTPResponse; aStream: TStringStream): String;
+function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
+  aMessage : String ; var aReqHeader , aRpyHeader , aResponseCode : String
+  ): String ;
+  function _Decompress (aResponse: TIdHTTPResponse; aStream: TMemoryStream): String;
   var
-    dStream: TStringStream;
+    xStream: TMemoryStream;
   begin
+    result := '';
     aStream.Position := 0;
     if (lowercase(aResponse.ContentEncoding) = 'deflate')
     or (lowercase(aResponse.ContentEncoding) = 'gzip') then
     begin
-      dStream := TStringStream.Create('');
+      xStream := TMemoryStream.Create;
       try
-        with TIdCompressorZLib.Create(nil) do
-        try
-          if aResponse.ContentEncoding = 'gzip' then
-            DecompressGZipStream(aStream, dStream);
-          if aResponse.ContentEncoding = 'deflate' then
-            DecompressHTTPDeflate(aStream, dStream);
-          dStream.Position := 0;
-          result := dStream.ReadString(dStream.Size);
-        finally
-          Free;
-        end;
+        GZIPUtils.ZUncompressStream(aStream, xStream);
+        xStream.Position := 0;
+        SetLength(Result,xStream.Size);
+        xStream.Read(Pointer(Result)^,xStream.Size);
       finally
-        FreeAndNil(dStream);
+        xStream.Free;
       end;
     end
     else
     begin
-      result := aStream.ReadString(aStream.Size)
+      SetLength(Result,aStream.Size);
+      xStream.Read(Pointer(Result)^,aStream.Size);
     end;
   end;
 
 var
   HttpClient: TIdHTTP;
-  HttpRequest, sStream, dStream: TStringStream;
+  HttpRequest, sStream, dStream: TMemoryStream;
   URL: String;
   xResponse: String;
   oUri, sUri: TIdUri;
@@ -3279,7 +3252,7 @@ begin
     then raise Exception.Create('SendHttpMessage: null arguments');
   HttpClient := TIdHTTP.Create;
   try
-    HttpRequest := TStringStream.Create ('');
+    HttpRequest := TMemoryStream.Create;
     try
       if aOperation.StubHttpAddress <> '' then
       begin
@@ -3332,20 +3305,20 @@ begin
       if (HttpClient.Request.ContentEncoding = 'deflate')
       or (HttpClient.Request.ContentEncoding = 'gzip') then
       begin
-        sStream := TStringStream.Create('');
+        sStream := TMemoryStream.Create;
         try
-          sStream.WriteString(aMessage);
+          WriteStringToStream(aMessage, sStream);
           sStream.Position := 0;
           if HttpClient.Request.ContentEncoding = 'deflate' then
-            CompressStreamEx(sStream, HttpRequest, clDefault, zsZLib);
+            GZIPUtils.deflate(sStream, HttpRequest);
           if HttpClient.Request.ContentEncoding = 'gzip' then
-            CompressStreamEx(sStream, HttpRequest, clDefault, zsGZip);
+            GZIPUtils.GZip(sStream, HttpRequest);
         finally
           sStream.Free;
         end;
       end
       else
-        HttpRequest.WriteString (aMessage);
+        WriteStringToStream(aMessage, HttpRequest);
       if doViaProxyServer then
       begin
         HttpClient.ProxyParams.ProxyServer := ViaProxyServer;
@@ -3378,7 +3351,7 @@ begin
       end;
       try
         Notify('result := HttpClient.Verb(URL, HttpRequest);<');
-        dStream := TStringStream.Create('');
+        dStream := TMemoryStream.Create;
         try
           try
             try
@@ -3434,10 +3407,8 @@ begin
   end;
 end;
 
-function TwsdlProject.SendMessage ( aOperation: TWsdlOperation
-                                  ; aRequest: TWsdlMessage
-                                  ; aCorrelationId: String
-                                  ): String;
+function TWsdlProject .SendMessage (aOperation : TWsdlOperation ;
+  aRequest : TWsdlMessage ; aCorrelationId : String ): String ;
   procedure _OperationCount(aLog: TLog);
   begin
     aLog.Operation.AcquireLock;
@@ -3618,7 +3589,7 @@ begin
   end;
 end;
 
-procedure TwsdlProject.SendAsynchReply(aLog: TLog);
+procedure TWsdlProject .SendAsynchReply (aLog : TLog );
 var
   xAction, xAddress: String;
   xXml: TXml;
@@ -3694,7 +3665,8 @@ begin
   end;
 end;
 
-procedure TwsdlProject.CheckExpectedValues(aLog: TLog; aOperation: TWsdlOperation; aDoCheck: Boolean);
+procedure TWsdlProject .CheckExpectedValues (aLog : TLog ;
+  aOperation : TWsdlOperation ; aDoCheck : Boolean );
 begin
   if Assigned (aOperation)
   and aDoCheck
@@ -3706,8 +3678,9 @@ begin
   end;
 end;
 
-function TwsdlProject.SendOperationTacoMessage(aOperation: TWsdlOperation;
-  aMessage: String; var aRequestHeader, aReplyHeader: String): String;
+function TWsdlProject .SendOperationTacoMessage (aOperation : TWsdlOperation ;
+  aMessage : String ; var aRequestHeader : String ; var aReplyHeader : String
+  ): String ;
 {$ifdef windows}
 var
   Taco: TTacoInterface;
@@ -3738,8 +3711,9 @@ begin
   fAbortPressed := Value;
 end;
 
-function TwsdlProject.SendOperationSmtpMessage(aOperation: TWsdlOperation;
-  aMessage: String; var aRequestHeader, aReplyHeader: String): String;
+function TWsdlProject .SendOperationSmtpMessage (aOperation : TWsdlOperation ;
+  aMessage : String ; var aRequestHeader : String ; var aReplyHeader : String
+  ): String ;
 var
   Smtp: TIdSMTP;
   mailMessage: TIdMessage;
@@ -3771,8 +3745,9 @@ begin
   end;
 end;
 
-function TwsdlProject.SendOperationStompMessage(aOperation: TWsdlOperation;
-  aMessage: String; var aRequestHeader: String; var aReplyHeader: String): String;
+function TWsdlProject .SendOperationStompMessage (aOperation : TWsdlOperation ;
+  aMessage : String ; var aRequestHeader : String ; var aReplyHeader : String
+  ): String ;
 var
   Stomp: TStompInterface;
   fXml: TXml;
@@ -3825,13 +3800,9 @@ begin
   end;
 end;
 
-function TwsdlProject.RedirectCommandStomp ( aCommand: String
-                                  ; aHost: String
-                                  ; aPort: Integer
-                                  ; aDestination: String
-                                  ; aReplyTo: String
-                                  ; aTimeOut: Integer
-                                  ): String;
+function TWsdlProject .RedirectCommandStomp (aCommand : String ;
+  aHost : String ; aPort : Integer ; aDestination : String ;
+  aReplyTo : String ; aTimeOut : Integer ): String ;
 var
   stomp: TStompInterface;
   xXml: TXml;
@@ -3868,9 +3839,10 @@ begin
 end;
 
 
-function TwsdlProject.RedirectCommandMQ(aCommand, aPutManager, aPutQueue,
-  aReplyToManager, aReplyToQueue, aGetManager, aGetQueue: String;
-  aTimeOut: Integer): String;
+function TWsdlProject .RedirectCommandMQ (aCommand : String ;
+  aPutManager : String ; aPutQueue : String ; aReplyToManager : String ;
+  aReplyToQueue : String ; aGetManager : String ; aGetQueue : String ;
+  aTimeOut : Integer ): String ;
 var
   mq: TMqInterface;
 begin
@@ -3895,7 +3867,7 @@ begin
   end;
 end;
 
-function TwsdlProject.RedirectCommandURC(aCommand: String): String;
+function TWsdlProject .RedirectCommandURC (aCommand : String ): String ;
 begin
   SendOperationMessage(unknownOperation, aCommand);
 end;
@@ -3931,18 +3903,18 @@ begin
   end;
 end;
 
-function TwsdlProject.RedirectCommandString(aCommand,
-  aAddress, aSoapAction: String): String;
+function TWsdlProject .RedirectCommandString (aCommand : String ; aAddress ,
+  aSoapAction : String ): String ;
 var
   HttpClient: TIdHTTP;
-  HttpRequest: TStringStream;
+  HttpRequest: TMemoryStream;
 begin
   HttpClient := TIdHTTP.Create;
   try
 {}{
     HttpClient.Compressor := TIdCompressorZLib.Create(nil);
 {}
-    HttpRequest := TStringStream.Create ('');
+    HttpRequest := TMemoryStream.Create;
     try
       try
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := aSoapAction;
@@ -3950,7 +3922,7 @@ begin
       end;
       HttpClient.Request.ContentType := 'text/xml';
       HttpClient.Request.CharSet := '';
-      HttpRequest.WriteString ( aCommand);
+      WriteStringToStream(aCommand, HttpRequest);
       try
         if doViaProxyServer then
         begin
@@ -3987,17 +3959,17 @@ begin
   end;
 end;
 
-function TwsdlProject.RedirectCommandHTTP (aCommand, aStubAddress, aDocument, aSoapAction: String): String;
+function TWsdlProject .RedirectCommandHTTP (aCommand , aStubAddress ,
+  aDocument , aSoapAction : String ): String ;
 var
   HttpClient: TIdHTTP;
-  HttpRequest: TStringStream;
+  HttpRequest: TMemoryStream;
   URL: String;
   destUri, docUri: TidURI;
 begin
   HttpClient := TIdHTTP.Create;
   try
-    HttpClient.Compressor := TIdCompressorZLib.Create(nil);
-    HttpRequest := TStringStream.Create ('');
+    HttpRequest := TMemoryStream.Create;
     try
       destUri := TIdURI.Create(aStubAddress);
       docUri := TidUri.Create('http://localhost:6060' + aDocument);
@@ -4018,7 +3990,7 @@ begin
       end;
       HttpClient.Request.ContentType := 'text/xml';
       HttpClient.Request.CharSet := '';
-      HttpRequest.WriteString (aCommand);
+      WriteStringToStream(aCommand, HttpRequest);
       try
         if doViaProxyServer then
         begin
@@ -4053,7 +4025,8 @@ begin
   end;
 end;
 
-procedure TwsdlProject.CreateLogReplyPostProcess ( aLogItem: TLog; aOperation: TWsdlOperation);
+procedure TWsdlProject .CreateLogReplyPostProcess (aLogItem : TLog ;
+  aOperation : TWsdlOperation );
 var
   xMessage: String;
   xXml: TXml;
@@ -5717,7 +5690,7 @@ var
   rLog, xLog: TLog;
   xProcessed: Boolean;
   f: Integer;
-  xStream: TStringStream;
+  xStream: TMemoryStream;
   xRelatesTo: String;
 begin
   try // finally set for hhtp reply
@@ -5832,20 +5805,16 @@ begin
     // setup for HTTP reply
     if AResponseInfo.ContentEncoding <> 'identity' then
     begin
-      aResponseInfo.ContentStream := TStringStream.Create('');
-      with TIdCompressorZLib.Create(nil) do
+      aResponseInfo.ContentStream := TMemoryStream.Create;
+      xStream := TMemoryStream.Create;
       try
-        xStream := TStringStream.Create(aResponseInfo.ContentText);
-        try
-          if AResponseInfo.ContentEncoding = 'deflate' then
-            CompressStreamEx(xStream, aResponseInfo.ContentStream, clDefault, zsZLib);
-          if AResponseInfo.ContentEncoding = 'gzip' then
-            CompressStreamEx(xStream, aResponseInfo.ContentStream, clDefault, zsGZip);
-        finally
-          xStream.Free;
-        end;
+        WriteStringToStream(AResponseInfo.ContentText, xStream);
+        if AResponseInfo.ContentEncoding = 'deflate' then
+          GZIPUtils.deflate(xStream, aResponseInfo.ContentStream as TMemoryStream);
+        if AResponseInfo.ContentEncoding = 'gzip' then
+          GZIPUtils.GZip(xStream, aResponseInfo.ContentStream as TMemoryStream);
       finally
-        Free;
+        xStream.Free;
       end;
       aResponseInfo.ContentText := '';
     end;
@@ -5855,7 +5824,7 @@ end;
 procedure TWsdlProject.HTTPServerCreatePostStream(AContext: TIdContext;
   AHeaders: TIdHeaderList; var VPostStream: TStream);
 begin
-  VPostStream := TStringStream.Create('');
+  VPostStream := TMemoryStream.Create;
 end;
 
 procedure TWsdlProject.HttpServerBmtpCommandGet(AContext: TIdContext;
@@ -5865,7 +5834,7 @@ var
   xProcessed: Boolean;
   f: Integer;
   xXml, mXml: TXml;
-  xStream: TStringStream;
+  xStream: TMemoryStream;
   s, d: AnsiString;
 begin
   {$ifdef windows}
@@ -5953,27 +5922,18 @@ begin
     finally
       if AResponseInfo.ContentEncoding <> 'identity' then
       begin
-  {}{}
-        aResponseInfo.ContentStream := TStringStream.Create('');
-        with TIdCompressorZLib.Create(nil) do
+        aResponseInfo.ContentStream := TMemoryStream.Create;
+        xStream := TMemoryStream.Create;
         try
-          xStream := TStringStream.Create(aResponseInfo.ContentText);
-          try
-            if AResponseInfo.ContentEncoding = 'deflate' then
-              CompressStreamEx(xStream, aResponseInfo.ContentStream, clDefault, zsZLib);
-  //          DeflateStream(xStream, aResponseInfo.ContentStream, 9);
-            if AResponseInfo.ContentEncoding = 'gzip' then
-              CompressStreamEx(xStream, aResponseInfo.ContentStream, clDefault, zsGZip);
-          finally
-            xStream.Free;
-          end;
+          WriteStringToStream(AResponseInfo.ContentText, xStream);
+          if AResponseInfo.ContentEncoding = 'deflate' then
+            GZIPUtils.deflate(xStream, aResponseInfo.ContentStream as TMemoryStream);
+          if AResponseInfo.ContentEncoding = 'gzip' then
+            GZIPUtils.GZip(xStream, aResponseInfo.ContentStream as TMemoryStream);
         finally
-          Free;
+          xStream.Free;
         end;
         aResponseInfo.ContentText := '';
-  {}{
-        AResponseInfo.ContentEncoding := 'identity';
-  {}
       end;
     end;
   finally
@@ -6388,7 +6348,7 @@ var
   xXml, oXml, dXml, eXml: TXml;
   xOperation, oOperation, dOperation: TWsdlOperation;
   dRequest: TWsdlMessage;
-  xStream: TStringStream;
+  xStream: TMemoryStream;
   xOk: Boolean;
   x, f: Integer;
 begin
@@ -6616,20 +6576,16 @@ begin
   finally
     if AResponseInfo.ContentEncoding <> 'identity' then
     begin
-      aResponseInfo.ContentStream := TStringStream.Create('');
-      with TIdCompressorZLib.Create(nil) do
+      aResponseInfo.ContentStream := TMemoryStream.Create;
+      xStream := TMemoryStream.Create;
       try
-        xStream := TStringStream.Create(aResponseInfo.ContentText);
-        try
-          if AResponseInfo.ContentEncoding = 'deflate' then
-            CompressStreamEx(xStream, aResponseInfo.ContentStream, clDefault, zsZLib);
-          if AResponseInfo.ContentEncoding = 'gzip' then
-            CompressStreamEx(xStream, aResponseInfo.ContentStream, clDefault, zsGZip);
-        finally
-          xStream.Free;
-        end;
+        WriteStringToStream(AResponseInfo.ContentText, xStream);
+        if AResponseInfo.ContentEncoding = 'deflate' then
+          GZIPUtils.deflate(xStream, aResponseInfo.ContentStream as TMemoryStream);
+        if AResponseInfo.ContentEncoding = 'gzip' then
+          GZIPUtils.GZip(xStream, aResponseInfo.ContentStream as TMemoryStream);
       finally
-        Free;
+        xStream.Free;
       end;
       aResponseInfo.ContentText := '';
     end;
@@ -7113,6 +7069,14 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTSwiftMT;
   end;
+end;
+
+procedure TWsdlProject .WriteStringToStream (aString : String ;
+  aStream : TMemoryStream );
+begin
+  aStream.Position := 0;
+  aStream.Write(Pointer(aString)^, Length (aString));
+  aStream.Position := 0;
 end;
 
 // TWsdlProject

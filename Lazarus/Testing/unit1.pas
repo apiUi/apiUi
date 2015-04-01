@@ -6,7 +6,7 @@ interface
 
 uses
   Classes , SysUtils , FileUtil , SynEdit , Forms , Controls , Graphics ,
-  Dialogs , StdCtrls , EditBtn, FormIniFilez, strutils, wrdFunctionz ;
+  Dialogs , StdCtrls , EditBtn, FormIniFilez, strutils, wrdFunctionz, GZIPUtils ;
 
 type
 
