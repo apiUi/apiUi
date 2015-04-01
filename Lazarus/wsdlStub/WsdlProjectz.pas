@@ -162,7 +162,7 @@ type
   public
     ProgressMax, ProgressPos: Integer;
     doCloneOperations: Boolean;
-    DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword: String;
+    DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
     FreeFormatWsdl, XsdWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
@@ -1681,7 +1681,8 @@ begin
     AddXml (TXml.CreateAsString('HostName', DbsHostName));
     AddXml (TXml.CreateAsString('Params', DbsParams));
     AddXml (TXml.CreateAsString('UserName', DbsUserName));
-    AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(DbsPassword)))
+    AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(DbsPassword)));
+    AddXml (TXml.CreateAsString('ConnectionString', DbsConnectionString))
   end;
 end;
 
@@ -1966,12 +1967,12 @@ begin
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
       AddXml(TXml.CreateAsString('ignoreRemovingOn', ignoreRemovingOn.Text));
       AddXml(TXml.CreateAsString('ignoreCoverageOn', ignoreCoverageOn.Text));
-      AddXml(TXml.CreateAsString('FocusOperationName', FocusOperationName));
-      AddXml(TXml.CreateAsInteger('FocusMessageIndex', FocusMessageIndex));
       with AddXml(TXml.CreateAsString('Scripts', '')) do
         for x := 0 to Scripts.Count - 1 do
           with AddXml(Txml.CreateAsString('Script', (Scripts.Objects[x] AS TStringList).Text))
             do AddAttribute(TXmlAttribute.CreateAsString('Name', Scripts.Strings[x]));
+      AddXml (TXml.CreateAsString('FocusOperationName', FocusOperationName));
+      AddXml (TXml.CreateAsInteger('FocusMessageIndex', FocusMessageIndex));
       result := AsText(False,0,False,False);
     finally
       Free;
@@ -2068,8 +2069,8 @@ begin
           ignoreAddingOn.Text := xXml.Items.XmlValueByTag ['ignoreAddingOn'];
           ignoreRemovingOn.Text := xXml.Items.XmlValueByTag ['ignoreRemovingOn'];
           ignoreCoverageOn.Text := xXml.Items.XmlValueByTag ['ignoreCoverageOn'];
-          FocusOperationName := xXml.Items.XmlValueByTag ['FocusOperationName'];
-          FocusMessageIndex := xXml.Items.XmlIntegerByTag ['FocusMessageIndex'];
+          FocusOperationName := xXml.Items.XmlValueByTag['FocusOperationName'];
+          FocusMessageIndex := xXml.Items.XmlIntegerByTag['FocusMessageIndex'];
           for w := 0 to xXml.Items.Count - 1 do
           begin
             wXml := xXml.Items.XmlItems [w];
@@ -3036,6 +3037,7 @@ begin
       DbsParams := xXml.Items.XmlCheckedValueByTagDef['Params', DbsParams];
       DbsUserName := xXml.Items.XmlCheckedValueByTagDef['UserName', DbsUserName];
       DbsPassword := xmlz.DecryptString(xXml.Items.XmlCheckedValueByTag['Password']);
+      DbsConnectionString := xXml.Items.XmlCheckedValueByTagDef['ConnectionString', DbsConnectionString]; // to be able to create ado version project
     { TODO : hide password }
       with _WsdlDbsConnector do
       begin
