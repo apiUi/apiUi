@@ -4140,6 +4140,9 @@ begin
   self.StubAction := xOperation.StubAction;
   self.StubTransport := xOperation.StubTransport;
   self.StubHttpAddress := xOperation.StubHttpAddress;
+  self.ContentEncoding := xOperation.ContentEncoding;
+  self.AcceptDeflateEncoding := xOperation.AcceptDeflateEncoding;
+  self.AcceptGzipEncoding := xOperation.AcceptGzipEncoding;
   self.httpVerb := xOperation.httpVerb;
   self.StubMqPutManager := xOperation.StubMqPutManager;
   self.StubMqPutQueue := xOperation.StubMqPutQueue;
@@ -4896,12 +4899,12 @@ begin
           StubTransport := ttHttp;
           StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
           httpVerb := UpperCase(Items.XmlCheckedValueByTagDef['Verb', httpVerb]);
-          ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', 'identity'];
+          ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
           xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
           if Assigned (xXml) then
           begin
-            AcceptDeflateEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['deflate', True];
-            AcceptGzipEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['gzip', True];
+            AcceptDeflateEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['deflate', AcceptDeflateEncoding];
+            AcceptGzipEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['gzip', AcceptGzipEncoding];
           end;
           xXml := Items.XmlCheckedItemByTag['customHeaders'];
           if Assigned (xXml) then
@@ -4912,12 +4915,12 @@ begin
           StubTransport := ttHttp;
           StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
           httpVerb := Items.XmlCheckedValueByTagDef['Verb', httpVerb];
-          ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', 'identity'];
+          ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
           xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
           if Assigned (xXml) then
           begin
-            AcceptDeflateEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['deflate', True];
-            AcceptGzipEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['gzip', True];
+            AcceptDeflateEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['deflate', AcceptDeflateEncoding];
+            AcceptGzipEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['gzip', AcceptGzipEncoding];
           end;
           xXml := Items.XmlCheckedItemByTag['customHeaders'];
           if Assigned (xXml) then

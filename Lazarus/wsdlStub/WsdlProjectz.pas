@@ -3212,14 +3212,13 @@ end;
 function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
   aMessage : String ; var aReqHeader , aRpyHeader , aResponseCode : String
   ): String ;
-  function _Decompress (aResponse: TIdHTTPResponse; aStream: TMemoryStream): String;
+  function _Decompress (aCompressed: Boolean; aStream: TMemoryStream): String;
   var
     xStream: TMemoryStream;
   begin
     result := '';
     aStream.Position := 0;
-    if (lowercase(aResponse.ContentEncoding) = 'deflate')
-    or (lowercase(aResponse.ContentEncoding) = 'gzip') then
+    if aCompressed then
     begin
       xStream := TMemoryStream.Create;
       try
@@ -3234,7 +3233,7 @@ function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
     else
     begin
       SetLength(Result,aStream.Size);
-      xStream.Read(Pointer(Result)^,aStream.Size);
+      aStream.Read(Pointer(Result)^,aStream.Size);
     end;
   end;
 
@@ -3313,6 +3312,7 @@ begin
             GZIPUtils.deflate(sStream, HttpRequest);
           if HttpClient.Request.ContentEncoding = 'gzip' then
             GZIPUtils.GZip(sStream, HttpRequest);
+          HttpRequest.Position := 0;
         finally
           sStream.Free;
         end;
@@ -3370,7 +3370,7 @@ begin
               aRpyHeader := HttpClient.Response.RawHeaders.Text;
               aResponseCode := IntToStr(HttpClient.ResponseCode);
             end;
-            result := _Decompress (HttpClient.Response, dStream);
+            result := _Decompress (HttpClient.Response.ContentEncoding <> 'identity', dStream);
           except
             on e: EIdHTTPProtocolException do
             begin
