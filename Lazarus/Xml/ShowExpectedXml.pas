@@ -10,13 +10,13 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils
-   , Classes, Graphics, Forms, Controls, StdCtrls,
+   , Classes, Graphics, Forms, Controls,
   Buttons, ComCtrls, ExtCtrls, VirtualTrees
 //   , IpmGunMainForm
-   , Bind, Xmlz, Ipmz, ImgList, Menus, Dialogs, ActnList, ToolWin
+   , Bind, Xmlz, Ipmz, Menus, Dialogs, ActnList
    , FormIniFilez
    ;
 
@@ -86,7 +86,6 @@ type
   private
     fBind: TCustomBindable;
     IniFile: TFormIniFile;
-    FileName: String;
     SearchString: String;
     SearchScope: Integer;
     SearchIn: Integer;
@@ -180,8 +179,6 @@ procedure TShowExpectedXmlForm.SetBind(aBind: TCustomBindable);
     end;
   end;
 var
-  xNode: PVirtualNode;
-  xData: PXmlTreeRec;
   swapCursor: TCursor;
 begin
   fBind := aBind;

@@ -1,38 +1,43 @@
 object EditCheckerForm: TEditCheckerForm
   Left = 272
+  Height = 182
   Top = 171
+  Width = 773
   Anchors = []
   Caption = 'Condition Expression'
   ClientHeight = 182
   ClientWidth = 773
   Color = clBtnFace
-  ParentFont = True
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  PixelsPerInch = 96
+  ParentFont = True
+  LCLVersion = '1.2.6.0'
   object TopPanel: TPanel
     Left = 0
+    Height = 41
     Top = 0
     Width = 773
-    Height = 41
     Align = alTop
+    ClientHeight = 41
+    ClientWidth = 773
     TabOrder = 0
     OnResize = TopPanelResize
     object Label1: TLabel
       Left = 4
+      Height = 13
       Top = 13
       Width = 42
-      Height = 13
       Caption = 'Element:'
       FocusControl = ElementNameEdit
+      ParentColor = False
     end
     object ElementNameEdit: TEdit
       Left = 52
+      Height = 21
       Top = 9
       Width = 715
-      Height = 21
       ParentColor = True
       ReadOnly = True
       TabOrder = 0
@@ -40,47 +45,46 @@ object EditCheckerForm: TEditCheckerForm
   end
   object Panel3: TPanel
     Left = 0
+    Height = 100
     Top = 41
     Width = 773
-    Height = 100
     Align = alClient
     BevelInner = bvRaised
     BorderWidth = 3
     Caption = 'Panel3'
+    ClientHeight = 100
+    ClientWidth = 773
     TabOrder = 1
     object ScriptMemo: TMemo
-      Left = 3
-      Top = 23
+      Left = 5
+      Height = 50
+      Top = 25
       Width = 763
-      Height = 51
       Align = alClient
       BorderStyle = bsNone
-      Font.Charset = ANSI_CHARSET
+      Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Courier New'
-      Font.Style = []
+      OnChange = ScriptMemoChange
       ParentFont = False
       PopupMenu = MemoPopUpMenu
       ScrollBars = ssHorizontal
       TabOrder = 0
       WordWrap = False
-      OnChange = ScriptMemoChange
     end
     object StatusBar: TStatusBar
-      Left = 3
-      Top = 74
+      Left = 5
+      Height = 20
+      Top = 75
       Width = 763
-      Height = 19
       Panels = <>
-      SimplePanel = True
     end
     object Memo1: TMemo
-      Left = 3
-      Top = 3
-      Width = 763
+      Left = 5
       Height = 20
-      TabStop = False
+      Top = 5
+      Width = 763
       Align = alTop
       BorderStyle = bsNone
       Lines.Strings = (
@@ -88,51 +92,54 @@ object EditCheckerForm: TEditCheckerForm
       )
       ReadOnly = True
       TabOrder = 2
+      TabStop = False
     end
   end
   object Panel2: TPanel
     Left = 0
+    Height = 41
     Top = 141
     Width = 773
-    Height = 41
     Align = alBottom
+    ClientHeight = 41
+    ClientWidth = 773
     TabOrder = 2
     object OKBtn: TButton
       Left = 89
+      Height = 25
       Top = 7
       Width = 75
-      Height = 25
       Caption = 'OK'
       Default = True
       ModalResult = 1
-      TabOrder = 0
       OnClick = OKBtnClick
+      TabOrder = 0
     end
     object CancelBtn: TButton
       Left = 175
+      Height = 25
       Top = 7
       Width = 75
-      Height = 25
       Cancel = True
       Caption = 'Cancel'
       ModalResult = 2
-      TabOrder = 1
       OnClick = CancelBtnClick
+      TabOrder = 1
     end
     object CheckButton: TButton
       Left = 2
+      Height = 25
       Top = 7
       Width = 75
-      Height = 25
       Caption = '&Check'
-      TabOrder = 2
       OnClick = CheckButtonClick
+      TabOrder = 2
     end
   end
   object MemoPopUpMenu: TPopupMenu
     OnPopup = MemoPopUpMenuPopup
-    Left = 224
-    Top = 96
+    left = 224
+    top = 96
     object IpmFieldMenuItem: TMenuItem
       Caption = 'Xml Element'
       OnClick = IpmFieldMenuItemClick
@@ -160,4 +167,4 @@ object EditCheckerForm: TEditCheckerForm
       OnClick = EmbeddedSQLMenuItemClick
     end
   end
-end
+end

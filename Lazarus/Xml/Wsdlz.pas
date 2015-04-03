@@ -1,11 +1,9 @@
 unit Wsdlz;
-
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
 
 interface
-
 uses sqldb
    , Classes
    , ParserClasses
@@ -581,7 +579,7 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   StrUtils
    , SysUtils
@@ -597,9 +595,6 @@ uses
    , HashUtilz
    , IdURI
    , SwiftUnit
-   {$ifdef windows}
-   , ActiveX
-   {$endif}
    , xmlxsdparser
    ;
 
@@ -1093,8 +1088,6 @@ procedure AssignRecurring (aDAObject, aDEObject, aSAObject, aSEObject: TObject);
       Inc (x);
     end;
   end;
-var
-  daCaption, deCaption, saCaption, seCaption: String;
 begin
   if not (TCustomBindable ((aDAObject as YYSType).yy.yyPointer) is TXml)
   or not (TCustomBindable ((aDEObject as YYSType).yy.yyPointer) is TXml)
@@ -1275,7 +1268,6 @@ end;
 function isAccordingSchema (aObject: TObject): Extended;
 var
   xBind: TCustomBindable;
-  xXml: TXml;
   xMessage: String;
 begin
   result := 1;
@@ -1502,10 +1494,6 @@ begin
 end;
 
 procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
-var
-  xWsdl: TWsdl;
-  xService: TWsdlService;
-  s, o: Integer;
 begin
   aOperation.faultcode := faultcode;
   aOperation.faultstring := faultstring;
@@ -1515,12 +1503,8 @@ end;
 
 procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
 var
-  xWsdl: TWsdl;
-  xService: TWsdlService;
   x: Integer;
 begin
-  xWsdl := aOperation.Wsdl;
-  xService := aOperation.WsdlService;
   aOperation.faultcode := faultcode;
   aOperation.faultstring := faultstring;
   aOperation.faultactor := faultactor;
@@ -1668,15 +1652,13 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
     end;
   var
     a, x, y, z, f, h: Integer;
-    xAttr: TXmlAttribute;
-    SlMssg, SlPart: TStringList;
     Mssg: TWsdlMsgDescr;
     Part: TWsdlPart;
     Oper: TWsdlOperation;
     Srvc: TWsdlService;
     xHdr: TWsdlHeader;
     xTargetNamespace: String;
-    PortTypeName, SoapBindingStyle, SoapTransport, OperationName, FaultName, ns: String;
+    PortTypeName, SoapBindingStyle, SoapTransport, OperationName, FaultName: String;
   begin
     xTargetNamespace := aXml.Attributes.ValueByTag[tagTargetNamespace];
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
@@ -1977,13 +1959,12 @@ end;
 
 procedure TWsdl.LoadFromSdfFile(aFileName: String);
 var
-  x, y, z, a, b, s, o, t: Integer;
+  x, y, z, s, o: Integer;
   xService: TWsdlService;
   xOperation: TWsdlOperation;
   xFileNames: TStringList;
   xServiceName, xOperationName: String;
   aXml, fXml, yXml, zXml: TXml;
-  xXsdDescr: TXsdDescr;
   xIpmDescr: TIpmDescr;
   xDescrType: TIpmDescrType;
   function _refXsd (aXsdDescr: TXsdDescr; aXsdName: String): TXsd;
@@ -2038,7 +2019,7 @@ var
   end;
   function _LoadCobolRecog (aXml: TXml): TStringList;
   var
-    x, y, z, f: Integer;
+    x, y: Integer;
     xXml, yXml: TXml;
     recog: TRecognition;
   begin
@@ -2081,7 +2062,6 @@ var
   end;
   procedure _LoadXsdMsg (aLabel: String; sXml: TXml; aXsd: TXsd);
   var
-    x, y, z, f: Integer;
     xXsd: TXsd;
     xXsdDescr: TXsdDescr;
     xFileName: String;
@@ -2094,16 +2074,12 @@ var
     else
       xXsdDescr := TXsdDescr.Create(xsdDefaultElementsWhenRepeatable);
     sdfXsdDescrs.AddObject('', xXsdDescr);
-    {$ifdef XMLDOM}
     try
-      xXsdDescr.AddFromSchemaDef
-        (LoadXMLSchema(xFileName).SchemaDef
-        );
+      xXsdDescr.AddXsdFromFile(xFileName, _OnParseErrorEvent);
     except
       on E: Exception do
         raise Exception.Create('Error opening ' + xFileName + ': ' + e.Message);
     end;
-    {$endif}
     aXsd.ElementName := xOperation.Name;
     xXsd := _refXsd ( xXsdDescr, sXml.Items.XmlValueByTag ['ElementName']);
     if Assigned (xXsd) then
@@ -2111,8 +2087,6 @@ var
   end;
   procedure _LoadJsonMsg (aLabel: String; sXml: TXml; aXsd: TXsd);
   var
-    x, y, z, f: Integer;
-    xXsd: TXsd;
     xXsdDescr: TXsdDescr;
     xFileName: String;
   begin
@@ -2206,10 +2180,10 @@ var
       end;
     end;
   var
-    x, y, z, f: Integer;
-    fXsd, xXsd, b4Xsd: TXsd;
+    x: Integer;
+    fXsd, b4Xsd: TXsd;
     xXsdDescr: TXsdDescr;
-    xpXmls, xpXml: TXml;
+    xpXmls: TXml;
   begin
     xpXmls := TXml.CreateAsString('expansions', '');
     try
@@ -2268,8 +2242,8 @@ var
   end;
   function _LoadXsdRecog (aXml: TXml): TStringList;
   var
-    x, y, z, f: Integer;
-    xXml, yXml: TXml;
+    x: Integer;
+    xXml: TXml;
     recog: TRecognition;
   begin
     result := TStringList.Create;
@@ -2306,8 +2280,8 @@ var
   end;
   function _LoadJsonRecog (aXml: TXml): TStringList;
   var
-    x, y, z, f: Integer;
-    xXml, yXml: TXml;
+    x: Integer;
+    xXml: TXml;
     recog: TRecognition;
   begin
     result := TStringList.Create;
@@ -3228,9 +3202,8 @@ function TWsdlOperation.getReplyBasedOnRequest: TWsdlMessage;
     end;
   end;
 var
-  x, y: Integer;
+  x: Integer;
   xDefault: TWsdlMessage;
-  xFound: Boolean;
 begin
   try
     if (CorrelationBindables.Count = 0)
@@ -3682,8 +3655,7 @@ function TWsdlOperation.StreamRequest ( aGeneratedWith: String
                                       ; aGenerateBodyNameSpaces: Boolean
                                       ): String;
 var
-  x, e: Integer;
-  swapNSList: TStringList;
+  x: Integer;
   aXml: TXml;
 begin
   result := '';
@@ -3783,7 +3755,7 @@ end;
 
 function TWsdlOperation.StreamReply(aGeneratedWith: String; aGenerateTypes: Boolean): String;
 var
-  x, nHeaders: Integer;
+  x: Integer;
   xXml: TXml;
 begin
   result := '';
@@ -3842,10 +3814,7 @@ begin
         end;
         result := result + StreamWsAddressing(rpyWsaXml, False);
         result := StrAdd (result, '  </soapenv:Header>');
-        nHeaders := OutputHeaders.Count;
-      end
-      else
-        nHeaders := 0;
+      end;
       if SoapBodyOutputUse = scSoapUseEncoded then
       begin
         result := StrAdd (result, '  <soapenv:Body soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
@@ -4082,8 +4051,7 @@ constructor TWsdlOperation.Create(aOperation: TWsdlOperation);
     end;
   end;
 var
-  x, f: Integer;
-  xXml: TXml;
+  f: Integer;
   xOperation: TWsdlOperation;
 begin
   xOperation := aOperation;
@@ -4207,7 +4175,7 @@ end;
 procedure TWsdlOperation.SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
 var
   x, s, d: Integer;
-  xXml, dXml: TXml;
+  xXml: TXml;
 begin
   (rpyBind as TXml).ResetValues;
   (rpyBind as TXml).Checked := True;
@@ -4248,7 +4216,7 @@ end;
 procedure TWsdlOperation.SoapXmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
 var
   x, s, d: Integer;
-  xXml, wXml: TXml;
+  xXml: TXml;
   xWsaName: String;
 begin
   (reqBind as TXml).ResetValues;
@@ -4608,8 +4576,7 @@ end;
 
 procedure TWsdlOperation.reqWsaOnRequest;
 var
-  reqXml, rpyXml: TXml;
-  xAttr: TXmlAttribute;
+  reqXml: TXml;
 begin
   if not wsaEnabled then Exit;
   if not Assigned (reqWsaXml) then Exit;
@@ -5055,8 +5022,6 @@ begin
 end;
 
 procedure TWsdlOperation.BindStamper;
-var
-  x: Integer;
 begin
   try
     FreeAndNil(fExpressStamper);
@@ -5239,7 +5204,6 @@ end;
 function TWsdlOperation.FindBind(aCaption: String): TCustomBindable;
 var
   p: Integer;
-  s: String;
 begin
   result := nil;
   if aCaption = '' then Exit;
@@ -5392,7 +5356,6 @@ end;
 procedure TWsdlPart.LinkToXsd (aXsds: TXsdList; aWsdl: TWsdl);
 var
   f: Integer;
-  e: Integer;
   xTypeDef: TXsdDataType;
 begin
   if _ElementName <> '' then
@@ -5564,7 +5527,6 @@ end;
 procedure TWsdlMessage.corBindsInit(aOperation: TWsdlOperation);
 var
   x: Integer;
-  xBind: TCustomBindable;
   xCorrId: STring;
 begin
   corBinds.ClearListOnly;

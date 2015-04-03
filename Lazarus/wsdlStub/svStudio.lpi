@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8593"/>
+      <BuildNr Value="8598"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -94,6 +94,9 @@
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <IgnoredMessages idx5024="True" idx5057="True"/>
+      </CompilerMessages>
       <CustomOptions Value="-dUseCThreads
 -dFPS_NO_GRID_MULTISELECT"/>
       <CompilerPath Value="$(CompPath)"/>
@@ -140,7 +143,6 @@
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
-        <Enabled Value="False"/>
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>

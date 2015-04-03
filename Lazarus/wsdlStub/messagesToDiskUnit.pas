@@ -10,10 +10,10 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, SysUtils, FormIniFilez, ComCtrls, Xmlz;
+  Buttons, ExtCtrls, SysUtils, FormIniFilez, Xmlz;
 
 type
   TmessagesToDiskForm = class(TForm)
@@ -38,7 +38,6 @@ var
 
 implementation
 
-uses ShowXmlUnit;
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -47,8 +46,6 @@ uses ShowXmlUnit;
 {$ENDIF}
 
 procedure TmessagesToDiskForm.FormCreate(Sender: TObject);
-var
-  x: Integer;
 begin
   IniFile := TFormIniFile.Create (Self);
   DirectoryEdit.Text := IniFile.StringByName['Directory'];
@@ -65,8 +62,6 @@ begin
 end;
 
 procedure TmessagesToDiskForm.FormShow(Sender: TObject);
-var
-  x, y: Integer;
 begin
 end;
 

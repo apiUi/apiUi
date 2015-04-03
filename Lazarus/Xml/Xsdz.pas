@@ -16,6 +16,7 @@ unit Xsdz;
 
 interface
 
+
 uses Classes
    , Variants
    , ParserClasses
@@ -262,8 +263,6 @@ type
     procedure Clear; override;
   end;
 
-function ValidateXml(aCaption, aXmlString: String;
-  aSchemaLocation, aNameSpace: WideString; var aMessage: String): Boolean;
 function NameWithoutPrefix(aName: String): String;
 function xsdGenerateXsiNameSpaceAttribute: String;
 function xsdGenerateXsdNameSpaceAttribute: String;
@@ -295,14 +294,6 @@ uses SysUtils
    ;
 
 { TXsdList }
-
-function ValidateXml(aCaption, aXmlString: String;
-  aSchemaLocation, aNameSpace: WideString; var aMessage: String): Boolean;
-begin
-  aMessage := 'Document validated without errors.';
-  result := True;
-  { TODO : Realize XML validation }
-end;
 
 function NameWithoutPrefix(aName: String): String;
 var
@@ -509,8 +500,6 @@ begin
 end;
 
 destructor TXsdDescr.Destroy;
-var
-  x: integer;
 begin
   Clear;
   FreeAndNil(TypeDefs);
@@ -553,7 +542,7 @@ function TXsdDescr.AddedTypeDefElementsAsXml: TObject;
 
 var
   x, y: integer;
-  nTypeDef, oTypeDef: TXsdDataType;
+  nTypeDef: TXsdDataType;
   XmlResult: TXml;
   sXml: TXml;
 begin
@@ -712,7 +701,6 @@ var
   xXml: TXml;
   xRestricts: TXml;
   xBase: TXmlAttribute;
-  p: Integer;
 begin
   if not (aXml is TXml) then
     raise Exception.Create('Illegal: AddSimpleType(aXml: TObject; aTargetNamespace: String');
@@ -819,7 +807,6 @@ function TXsdDescr.AddComplexType(aXml: TObject; aTargetNamespace: String; isGlo
   }
   var
     x: Integer;
-    xXsd: TXsd;
   begin
     if aXml.Name = tagAttribute then
       AddAttributeDef(aTypeDef, aXml, aTargetNameSpace);
@@ -841,7 +828,6 @@ function TXsdDescr.AddComplexType(aXml: TObject; aTargetNamespace: String; isGlo
 var
   xXml: TXml;
   x, y, f: Integer;
-  s: String;
 begin
   if not (aXml is TXml) then
     raise Exception.Create('Illegal: AddComplexType(aXml: TObject; aTargetNamespace: String; isGlobalDefined: Boolean): TXsdDataType');
@@ -1141,7 +1127,6 @@ procedure TXsd.GenerateCopyBook(aPrefix, aSuffix, a88Prefix, a88Suffix,
   procedure _GenerateReport(aIndent: integer; aXsd: TXsd);
   var
     xString: String;
-    xSeparator: String;
     x: integer;
   begin
     if aXsd._Processed then
@@ -1520,7 +1505,6 @@ function TXsd.AddElementDef(aXsdDescr: TXsdDescr; aName: String;
   end;
 var
   oType, nType: TXsdDataType;
-  x: integer;
 begin
   oType := sType;
   if not oType.Manually then
@@ -1703,8 +1687,7 @@ end;
 
 function TXsdDataType.SchemaAsXml(aName: String): TObject;
 var
-  a, E, x: integer;
-  xXml, yXml: TXml;
+  xXml: TXml;
   idList: TStringList;
   function _typeAsXml(aType: TXsdDataType): TXml;
   var
@@ -1942,8 +1925,6 @@ begin
   and (xXml.NameSpace <> '')
   and (NameSpace <> scXMLSchemaURI) then
   begin
-      if xXml.NameSpace = 'http://www.rabobank.nl/CRM/CRMI/RaadplProductVerhuisbaarheid/1/Req' then{ TODO : remove }
-        xXml.NameSpace:='http://www.rabobank.nl/CRM/CRMI/RaadplProductVerhuisbaarheid/1/Req';
     result := False;
     xXml.ValidationMesssage := Format('Found NameSpace %s at %s, expected %s', [xXml.NameSpace, xXml.Name, NameSpace]);
     aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
@@ -2058,7 +2039,6 @@ begin
     if (XmlItems[x].Checked)
     and Assigned (XmlItems[x].TypeDef) then
       result := XmlItems[x].TypeDef.IsValidXml(XmlItems[x], aMessage);
-  { TODO : XML schema validation  }
 end;
 
 function TXsdDataType.IsValidValue(aName, aValue: String;
@@ -2119,9 +2099,6 @@ function TXsdDataType.IsValidValue(aName, aValue: String;
   end;
 
 var
-  xMessage: String;
-  xBoolean: Boolean;
-  xDate: TDateTime;
   xDateTime: TDateTime;
   xDecimal: Extended;
   xInt64: Int64;
@@ -2218,7 +2195,7 @@ begin
     { TODO : whitespace }
     if BaseDataTypeName = 'boolean' then
     begin
-      xBoolean := xsdParseBoolean(aValue);
+      xsdParseBoolean(aValue);
     end;
     if BaseDataTypeName = 'date' then
     begin
@@ -2503,8 +2480,6 @@ end;
 
 function TXsdDescr.AddElement(aTypeDef: TXsdDataType; aXml: TObject; aTargetNameSpace: String; aRoot: Boolean): TXsd;
 var
-  x: integer;
-  s: String;
   xAtt: TXmlAttribute;
   xXml, cXml: TXml;
 begin
@@ -2619,8 +2594,8 @@ procedure TXsdDescr.AddedTypeDefElementsFromXml(aXml: TObject);
   end;
 
 var
-  oType, nType, sType: TXsdDataType;
-  x, p, t, E: integer;
+  sType: TXsdDataType;
+  x, E: integer;
   xXsd: TXsd;
   xXml, dXml: TXml;
 begin
@@ -2635,7 +2610,6 @@ begin
       xXsd := _UsedAt(dXml.Items.XmlValueByTag['UsedAt']);
       if Assigned(xXsd) then
       begin
-        oType := xXsd.sType;
         for E := 0 to dXml.Items.Count - 1 do
         begin
           if dXml.Items.XmlItems[E].Name = 'Added' then
@@ -2699,9 +2673,7 @@ procedure TXsdDescr.Finalise;
 
   procedure _linkElmntToType(aTrack: String; aTypeDef: TXsdDataType);
   var
-    x, y: Integer;
-    found: Boolean;
-    refXsd: TXsd;
+    x: Integer;
   begin
     if not Assigned (aTypeDef) then Exit;
     if aTypeDef._Processed then Exit;
@@ -2746,7 +2718,6 @@ procedure TXsdDescr.Finalise;
   procedure _linkElmntToRef (aTypeDef: TXsdDataType);
   var
     x, y: Integer;
-    found: Boolean;
     refXsd: TXsd;
   begin
     if not Assigned (aTypeDef) then Exit;
@@ -2905,7 +2876,6 @@ procedure TXsdDescr.Finalise;
     end;
   var
     x: Integer;
-    bt: TXsdDataType;
   begin
     if not Assigned (aTypeDef) then Exit;
     if aTypeDef._Processed then
@@ -2988,7 +2958,7 @@ procedure TXsdDescr.Finalise;
   end;
 
 var
-  x, y: integer;
+  x: integer;
 begin
 
 {

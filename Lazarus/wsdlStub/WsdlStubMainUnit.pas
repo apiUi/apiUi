@@ -1,6 +1,5 @@
 // Search for ZoomElement, it is available
 unit WsdlStubMainUnit;
-
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
@@ -517,7 +516,6 @@ type
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
     procedure MessagesVTSChange (Sender : TBaseVirtualTree ;
       Node : PVirtualNode );
-    procedure ToggleFileLogActionExecute(Sender: TObject);
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
@@ -942,8 +940,6 @@ type
     function hintStringFromXsd(aPrefix, aSep, aPostFix: String;
       aXsd: TXsd): String;
     function inImageArea: Boolean;
-    function getDoFileLog: Boolean;
-    procedure setDoFileLog(const Value: Boolean);
     function getDoCheckExpectedValues: Boolean;
     procedure setDoCheckExpectedValues(const Value: Boolean);
     procedure ParserError(Sender: TObject;
@@ -1114,7 +1110,6 @@ type
       : String read getHintStrDisabledWhileActive;
     property isBusy: Boolean read fIsBusy write SetIsBusy;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
-    property doFileLog: Boolean read getDoFileLog write setDoFileLog;
     property doCheckExpectedValues: Boolean read getDoCheckExpectedValues write
       setDoCheckExpectedValues;
     property doValidateRequests: Boolean read getDoValidateRequests write
@@ -1322,8 +1317,7 @@ end;
 
 procedure TMainForm.OpenWsdlActionExecute(Sender: TObject);
 var
-  SwapCursor: TCursor;
-  f, w, s, o: Integer;
+  f, w: Integer;
 begin
   EndEdit;
   Application.CreateForm(TWsdlListForm, WsdlListForm);
@@ -1619,7 +1613,6 @@ function TMainForm.FillNodeWithIpm(aTreeView: TVirtualStringTree;
   aRootIpm, aIpm: TIpmItem; aNode: PVirtualNode): PVirtualNode;
 var
   xChildNode: PVirtualNode;
-  xAttributeNode: PVirtualNode;
   xData: PXmlTreeRec;
   X: Integer;
 begin
@@ -1712,23 +1705,7 @@ end;
 
 procedure TMainForm.SetXmlNodeCheckBox(aTreeView: TVirtualStringTree;
   aXml: TXml; aNode: PVirtualNode; ForceChoice: Boolean);
-var
-  xxsd: TXsd;
 begin
-  xxsd := nil;
-  {
-    if (ForceChoice) then
-    begin
-    aNode.CheckType := ctRadioButton;
-    if aXml.Checked then
-    aNode.CheckState := csCheckedNormal
-    else
-    aNode.CheckState := csUnCheckedNormal;
-    Exit;
-    end;
-  }
-  if (Assigned(aXml.Parent)) then
-    xxsd := (aXml.Parent as TXml).Xsd;
   if (Assigned(aXml.Parent)) and (Assigned((aXml.Parent as TXml).Xsd)) then
   begin
     if (aXml.Parent as TXml).TypeDef.ContentModel = 'Choice' then
@@ -1783,7 +1760,7 @@ procedure TMainForm.InWsdlTreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
   var ContentRect: TRect);
 var
   xBind: TCustomBindable;
-  Xml, expXml: TXml;
+  expXml: TXml;
   xMessage: TWsdlMessage;
 begin
   if Column = treeValueColumn then
@@ -1860,7 +1837,6 @@ end;
 procedure TMainForm.InWsdlTreeViewChecked(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var
-  X: Integer;
   xBind: TCustomBindable;
 begin
   WsdlOperation.AcquireLock;
@@ -2003,7 +1979,6 @@ var
   Xml: TXml;
   XmlAttr: TXmlAttribute;
   Ipm: TIpmItem;
-  editAllowed: Boolean;
 begin
   try
     xBind := NodeToBind(Sender, Node);
@@ -2138,7 +2113,6 @@ end;
 procedure TMainForm.TreeViewKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
-  aCol: Integer;
   xBind: TCustomBindable;
   xMessage: String;
 begin
@@ -2230,7 +2204,6 @@ procedure TMainForm.InWsdlTreeViewPaintText(Sender: TBaseVirtualTree;
   TextType: TVSTTextType);
 var
   xBind: TCustomBindable;
-  xChecked: Boolean;
 begin
   if (Node = (Sender as TVirtualStringTree).GetFirst) then
   begin
@@ -2293,11 +2266,8 @@ end;
 procedure TMainForm.InWsdlTreeViewFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 var
-  X, f: Integer;
-  DataType: TXsdDataType;
+  f: Integer;
   Xml: TXml;
-  XmlAttr: TXmlAttribute;
-  Ipm: TIpmItem;
   xBind: TCustomBindable;
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
@@ -2310,25 +2280,18 @@ begin
   if xBind is TXmlAttribute then
   begin
     Xml := xBind.Parent as TXml;
-    XmlAttr := xBind as TXmlAttribute;
-    Ipm := nil;
   end;
   if xBind is TXml then
   begin
     Xml := xBind as TXml;
-    XmlAttr := nil;
-    Ipm := nil;
   end;
   if xBind is TIpmItem then
   begin
     Xml := nil;
-    XmlAttr := nil;
-    Ipm := xBind as TIpmItem;
   end;
   xmlUtil.ListXsdProperties(InWsdlPropertiesListView, xBind);
   // InWsdlEnumerationsListView.Clear;
   DataTypeDocumentationMemo.Clear;
-  DataType := nil;
   ActualXml := nil;
   ActualXmlAttr := nil;
   if xBind is TIpmItem then
@@ -2367,10 +2330,7 @@ end;
 
 procedure TMainForm.WsdlItemDelMenuItemClick(Sender: TObject);
 var
-  xXml: TXml; { new created }
   xBind: TCustomBindable;
-  xMessage: TWsdlMessage;
-  X: Integer;
 begin
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if (xBind is TXml) and (Assigned((xBind as TXml).Xsd)) then
@@ -2402,12 +2362,7 @@ end;
 
 procedure TMainForm.ExtendRecursivityMenuItemClick(Sender: TObject);
 var
-  Xml: TXml; { current }
-  xXml: TXml; { new created }
   xBind: TCustomBindable;
-  xMessage: TWsdlMessage;
-  X: Integer;
-  swapElementsWhenRepeatable: Integer;
 begin
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if (xBind is TXml) then
@@ -2430,8 +2385,6 @@ var
   Xml: TXml; { current }
   xXml: TXml; { new created }
   xBind: TCustomBindable;
-  xMessage: TWsdlMessage;
-  X: Integer;
 begin
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if (xBind is TXml) and (Assigned((xBind as TXml).Xsd)) then
@@ -2524,10 +2477,6 @@ begin
 end;
 
 procedure TMainForm.Copytoclipboard1Click(Sender: TObject);
-var
-  xXml: TXml;
-  xAttribute: TXmlAttribute;
-  X: Integer;
 begin
   xmlUtil.CopyToClipboard(NodeToBind(InWsdlTreeView,
       InWsdlTreeView.FocusedNode));
@@ -2581,7 +2530,6 @@ var
   X: Integer;
   xBind: TCustomBindable;
   xXml: TXml;
-  xAttr: TXmlAttribute;
   xIpm: TIpmItem;
   xAttributeNode: PVirtualNode;
   xData: PXmlTreeRec;
@@ -2863,7 +2811,6 @@ end;
 procedure TMainForm.UpdateInWsdlCheckBoxes;
 var
   xNode: PVirtualNode;
-  xXml: TXml;
   xData: PXmlTreeRec;
 begin
   xNode := InWsdlTreeView.GetFirst;
@@ -3089,8 +3036,6 @@ begin
 end;
 
 function TMainForm.ReloadDesignCommand: String;
-var
-  xActive: Boolean;
 begin
   result := 'Master instance of ' + _progName + ' reloaded ' +
     se.projectFileName + ' successfully';
@@ -3108,7 +3053,6 @@ begin
         raise Exception.Create
           ('Reload refused because master instance of ' + _progName +
             ' is inactive');
-      xActive := se.IsActive;
       se.Activate(False);
       OpenStubCase(se.projectFileName);
       se.Activate(True);
@@ -3135,17 +3079,6 @@ end;
 procedure TMainForm.ProjectDesignFromString(aString, aMainFileName: String);
 var
   SwapCursor: TCursor;
-  w, X, Y, s, o, r, p, c, E: Integer;
-  xOperation: TWsdlOperation;
-  xService: TWsdlService;
-  xWsdl: TWsdl;
-  wXml, xXml, sXml, oXml, eXml, eeXml, dXml, rXml, iXml, cXml: TXml;
-  xTempReqBind, xTempRpyBind: TCustomBindable;
-  xBindName: String;
-  swapReqParent: TCustomBindable;
-  xMessage: TWsdlMessage;
-  xPatterns: TStringList;
-  swapxsdElementsWhenRepeatable: Integer;
 begin
   { }
   InWsdlTreeView.BeginUpdate;
@@ -3760,7 +3693,6 @@ function TMainForm.LicenseProvider(aRequest: String): String;
 var
   xUser: String;
   xTimeStamp: String;
-  xBaseString: String;
   xReceivedHash: String;
 begin
   result := '';
@@ -3802,7 +3734,6 @@ var
   HttpRequest: TStringStream;
   s: String;
   xCursor: TCursor;
-  xLogList: TLogList;
 begin
   xCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -4127,9 +4058,6 @@ begin
 end;
 
 procedure TMainForm.ActionComboBoxChange(Sender: TObject);
-var
-  swapXml: TXml;
-  X: Integer;
 begin
   if Assigned(WsdlOperation) then
   begin
@@ -4235,7 +4163,6 @@ procedure TMainForm.GridViewGetImageIndex(Sender: TBaseVirtualTree;
 var
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
-  editAllowed: Boolean;
 begin
   // requires an imagelist attached to treeview
   try
@@ -4388,8 +4315,6 @@ procedure TMainForm.PasteGridOnNewText(Sender: TBaseVirtualTree;
 
 var
   xMessage, xOrgMessage: TWsdlMessage;
-  Xml: TXml;
-  XmlAttr: TXmlAttribute;
   xBind: TCustomBindable;
   xData: PMessageTreeRec;
 begin
@@ -4507,7 +4432,7 @@ end;
 
 procedure TMainForm.PasteSwiftdatafromclipboardMenuItemClick(Sender: TObject);
 var
-  dXml, fXml, sXml, bXml, xXml: TXml;
+  dXml, fXml, sXml, bXml: TXml;
   X: Integer;
 begin
   try
@@ -4580,8 +4505,6 @@ var
   xNode: PVirtualNode;
   xBind: TCustomBindable;
   xMessage: TWsdlMessage;
-  Xml: TXml;
-  XmlAttr: TXmlAttribute;
 begin
   WsdlOperation.AcquireLock;
   try
@@ -4861,8 +4784,7 @@ var
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
   swapNotifyEvent, swapMemoEvent: TNotifyEvent;
-  rpyNode, rpyBodyNode: PVirtualNode;
-  fltNode: PVirtualNode;
+  rpyNode: PVirtualNode;
 begin
   InWsdlTreeView.BeginUpdate;
   try
@@ -4898,24 +4820,7 @@ begin
           end
           else
           begin
-            rpyNode := FillBindTreeView(InWsdlTreeView, xMessage.rpyBind, nil);
-            { begin fault in tree }{
-              if Assigned (xMessage.fltBind)
-              and (xMessage.fltBind.Children.Count > 0) then
-              begin
-              rpyBodyNode := XmlBindToNode(InWsdlTreeView, xMessage.rpyBodyBind);
-              if Assigned (rpyBodyNode) then
-              begin
-              fltNode := FillBindTreeView (InWsdlTreeView, xMessage.fltBind, rpyNode);
-              fltNode.CheckType := ctRadioButton;
-              rpyBodyNode.CheckType := ctRadioButton;
-              if xMessage.fltBind.Checked then
-              rpyBodyNode.CheckState := csUnCheckedNormal
-              else
-              fltNode.CheckState := csUnCheckedNormal;
-              end;
-              end;
-              {end fault in tree }
+            FillBindTreeView(InWsdlTreeView, xMessage.rpyBind, nil);
             FillBindTreeView(InWsdlTreeView, xMessage.reqBind, nil);
           end;
         end;
@@ -5005,7 +4910,6 @@ var
   pNode: PVirtualNode;
   fData: PMessageTreeRec;
   pData: PMessageTreeRec;
-  X: Integer;
 begin
   EndEdit;
   WsdlOperation.AcquireLock;
@@ -5039,10 +4943,6 @@ begin
 end;
 
 procedure TMainForm.MoveUpMessageActionUpdate(Sender: TObject);
-var
-  xMessage: TWsdlMessage;
-  pNode: PVirtualNode;
-  Data: PMessageTreeRec;
 begin
   with GridView do
     MoveUpMessageAction.Enabled := (SelectedCount > 0)
@@ -5050,10 +4950,6 @@ begin
 end;
 
 procedure TMainForm.MoveDownMessageActionUpdate(Sender: TObject);
-var
-  xMessage: TWsdlMessage;
-  nNode: PVirtualNode;
-  Data: PMessageTreeRec;
 begin
   with GridView do
     MoveDownMessageAction.Enabled := (SelectedCount > 0)
@@ -5359,9 +5255,6 @@ begin
 end;
 
 procedure TMainForm.TreeViewResize(Sender: TObject);
-var
-  X, Y, w: Integer;
-  xVst: TVirtualStringTree;
 begin
   {
     with Sender as TVirtualStringTree do
@@ -5844,8 +5737,6 @@ begin
 end;
 
 procedure TMainForm.NewStubCaseActionExecute(Sender: TObject);
-var
-  f: Integer;
 begin
   EndEdit;
   if OkToOpenStubCase then
@@ -6069,7 +5960,6 @@ end;
 procedure TMainForm.FocusOperationsReqVTS;
 var
   xNode: PVirtualNode;
-  xData: POperationTreeRec;
 begin
   xNode := OperationReqsTreeView.GetFirst;
   while not(xNode = nil) do
@@ -6249,7 +6139,6 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   X, wBttn: Integer;
-  xXml: TXml;
 begin
   DataTypeDocumentationMemo.Color := Self.Color;
   logTabCaption := MessagesTabSheet.Caption;
@@ -6477,7 +6366,6 @@ end;
 
 function TMainForm.inImageArea: Boolean;
 var
-  xNode: PVirtualNode;
   xRect: TRect;
   xImageIndex: Integer;
   xGosthed: Boolean;
@@ -6496,8 +6384,6 @@ begin
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
-var
-  X: Integer;
 begin
   if Assigned(se) then
     se.Activate(False);
@@ -6638,8 +6524,6 @@ var
   xBind: TCustomBindable;
   Xml: TXml;
   XmlAttr: TXmlAttribute;
-  Ipm: TIpmItem;
-  xChecked: Boolean;
   xMessage: TWsdlMessage;
 begin
   NodeToMessage(Sender, Node, xMessage);
@@ -6665,13 +6549,10 @@ begin
     exit;
   Xml := nil;
   XmlAttr := nil;
-  Ipm := nil;
   if xBind is TXmlAttribute then
     XmlAttr := xBind as TXmlAttribute;
   if xBind is TXml then
     Xml := xBind as TXml;
-  if xBind is TIpmItem then
-    Ipm := xBind as TIpmItem;
 
   {
     if (Node = (Sender as TVirtualStringTree).GetFirst) then
@@ -7317,7 +7198,6 @@ procedure TMainForm.ToAllLogList(aLogList: TLogList);
 var
   SwapCursor: TCursor;
   X: Integer;
-  xLog: TLog;
 begin
   try
     SwapCursor := Screen.Cursor;
@@ -7400,12 +7280,6 @@ begin
 end;
 
 procedure TMainForm.MasterClearLogActionExecute(Sender: TObject);
-var
-  ret: Word;
-  HttpClient: TIdHTTP;
-  HttpRequest: TStringStream;
-  xCursor: TCursor;
-  s: String;
 begin
   SendMasterCommand('Send clear log command to master instance of ' +
       _progName + '?' + #$D#$A + #$D#$A +
@@ -7592,7 +7466,6 @@ procedure TMainForm.ShowLogDifferences(aLogs, bLogs: TLogList;
   end;
 
 var
-  SwapCursor: TCursor;
   X: Integer;
 begin
   Application.CreateForm(TShowLogDifferencesForm, ShowLogDifferencesForm);
@@ -7657,9 +7530,6 @@ end;
 
 procedure TMainForm.CheckGridFieldsActionExecute(Sender: TObject);
 var
-  xMessage: TWsdlMessage;
-  Xml: TXml;
-  XmlAttr: TXmlAttribute;
   X, Y, r: Integer;
   xString: String;
   xNode: PVirtualNode;
@@ -7804,7 +7674,6 @@ end;
 
 procedure TMainForm.AddEnvironmentActionExecute(Sender: TObject);
 var
-  OptionsKey: String;
   f, X: Integer;
   xXml: TXml;
 begin
@@ -7911,11 +7780,8 @@ end;
 procedure TMainForm.CreateScriptsSubMenuItems;
 var
   xMenuItem: TMenuItem;
-  xButton: TToolButton;
   X: Integer;
-  xLeft: Integer;
 begin
-  xLeft := SeparatorToolButton.Left + SeparatorToolButton.Width;
 {}{
   while MainToolBar.ButtonCount > MainToolBarDesignedButtonCount do
     MainToolBar.Buttons[MainToolBar.ButtonCount].Free;
@@ -8030,7 +7896,6 @@ end;
 
 procedure TMainForm.doExecuteRequest;
 var
-  SwapCursor: TCursor;
   xOperation: TWsdlOperation;
 begin
   if not Assigned (WsdlOperation) then
@@ -8057,7 +7922,6 @@ end;
 procedure TMainForm.ExecuteAllRequests;
 var
   X: Integer;
-  SwapCursor: TCursor;
   xOperation: TWsdlOperation;
 begin
   se.AcquireLogLock;
@@ -8230,11 +8094,8 @@ var
   xEnableDelMenuItems: Boolean;
   xEnableCheck: Boolean;
   xEnableStamp: Boolean;
-  xEnableClean: Boolean;
   xExtRecurVisible: Boolean;
   xAddChildVisible: Boolean;
-  xMenuItem: TMenuItem;
-  X: Integer;
   xRootBase: TXsdDataType;
 begin
   EndEdit;
@@ -8245,7 +8106,6 @@ begin
   xExtRecurVisible := False;
   xEnableCheck := False;
   xEnableStamp := False;
-  xEnableClean := xBind is TXml;
   if xBind is TXml then
     with xBind as TXml do
     begin
@@ -8454,7 +8314,6 @@ end;
 
 procedure TMainForm.RefreshLogList;
 var
-  X: Integer;
   xLog: TLog;
   xNode: PVirtualNode;
 begin
@@ -8618,8 +8477,6 @@ end;
 procedure TMainForm.LogPopupMenuPopup(Sender: TObject);
 var
   xLog: TLog;
-  xNode: PVirtualNode;
-  xData: PMessageTreeRec;
   n: Integer;
 begin
   n := MessagesVTS.SelectedCount;
@@ -8637,8 +8494,6 @@ end;
 procedure TMainForm.RequestMiMActionExecute(Sender: TObject);
 var
   xLog: TLog;
-  xNode: PVirtualNode;
-  xData: PMessageTreeRec;
   aXml, bXml: TXml;
   xA2B: TA2BXml;
 begin
@@ -8677,8 +8532,6 @@ end;
 procedure TMainForm.ReplyMiMActionExecute(Sender: TObject);
 var
   xLog: TLog;
-  xNode: PVirtualNode;
-  xData: PMessageTreeRec;
   aXml, bXml: TXml;
   xA2B: TA2BXml;
 begin
@@ -8724,8 +8577,6 @@ var
   Found: Boolean;
   CurItem: PVirtualNode;
   xNodeText: String;
-  xObject: TObject;
-  Xml: TXml;
 begin
   EndEdit;
   Application.CreateForm(TFindDlg, FindDlg);
@@ -9010,7 +8861,6 @@ procedure TMainForm.AddChildElementDefMenuItemClick(Sender: TObject);
 
 var
   X, f, m: Integer;
-  xWsdl: TWsdl;
   xxsd: TXsd;
   xXml: TXml;
   xBind: TCustomBindable;
@@ -9250,8 +9100,6 @@ begin
 end;
 
 procedure TMainForm.ShowReplyAsXmlGridActionUpdate(Sender: TObject);
-var
-  xLog: TLog;
 begin
   ShowReplyAsXmlGridAction.Enabled := (SoapReplyMemo.Text <> '');
 end;
@@ -9267,8 +9115,6 @@ begin
 end;
 
 procedure TMainForm.ShowRequestAsXmlGridActionUpdate(Sender: TObject);
-var
-  xLog: TLog;
 begin
   ShowRequestAsXmlGridAction.Enabled := (SoapRequestMemo.Text <> '');
 end;
@@ -9371,7 +9217,6 @@ end;
 procedure TMainForm.ShowLogZoomElementActionExecute(Sender: TObject);
 var
   xLog: TLog;
-  xCursor: TCursor;
   xXml, zXml: TXml;
   xCaption: String;
   p: Integer;
@@ -9548,7 +9393,6 @@ end;
 
 procedure TMainForm.ShowExpectedXmlActionExecute(Sender: TObject);
 var
-  xXml, sXml: TXml;
   xHasUnexpectedValue: Boolean;
   xExpectedValuesChecked: Boolean;
   xCursor: TCursor;
@@ -9882,12 +9726,6 @@ procedure TMainForm.LogMqMessage(Sender: TObject; aHeader, aBody: String;
   end;
 
 var
-  aOperation: TWsdlOperation;
-  aReply: TWsdlMessage;
-  aCorrelationId: String;
-  xMessage: String;
-  xXml: TXml;
-  xReply: String;
   xLogItem: TLog;
   xIsRequest: Boolean;
 begin
@@ -10154,8 +9992,6 @@ begin
 end;
 
 procedure TMainForm.DebugOperation;
-var
-  xForm: TShowXmlForm;
 begin
   // ReleaseLock;
   // SetForegroundWindow(Application.Handle);
@@ -10178,7 +10014,6 @@ var
   s: String;
   xCursor: TCursor;
   xLogList: TLogList;
-  xLog: TLog;
   X: Integer;
 begin
   xCursor := Screen.Cursor;
@@ -10251,8 +10086,6 @@ begin
 end;
 
 procedure TMainForm.MessagesToDiskActionExecute(Sender: TObject);
-var
-  X: Integer;
 begin
   EndEdit;
   Application.CreateForm(TmessagesToDiskForm, messagesToDiskForm);
@@ -10272,7 +10105,6 @@ end;
 
 procedure TMainForm.doSaveLogRepliesToDisk;
 var
-  X: Integer;
   SwapCursor: TCursor;
   xNode: PVirtualNode;
   xLog: TLog;
@@ -10316,7 +10148,6 @@ end;
 
 procedure TMainForm.doSaveLogRequestsToDisk;
 var
-  X: Integer;
   SwapCursor: TCursor;
   xNode: PVirtualNode;
   xLog: TLog;
@@ -10364,7 +10195,7 @@ var
   SwapCursor: TCursor;
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
-  xFileName, xSeparator, xMsgString, sl: String;
+  xFileName, xSeparator, xMsgString: String;
 begin
   AcquireLock;
   try
@@ -10488,10 +10319,10 @@ end;
 
 procedure TMainForm.doReadMessagesFromDisk;
 var
-  X, f: Integer;
+  f: Integer;
   SwapCursor: TCursor;
   xMessage: TWsdlMessage;
-  xFileName, xFileExt, xMsgString: String;
+  xFileName, xMsgString: String;
   xPatterns: TStringList;
   nErrors: Integer;
   xXml: TXml;
@@ -10607,7 +10438,6 @@ end;
 
 procedure TMainForm.doDisableMessages;
 var
-  X: Integer;
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
 begin
@@ -10630,7 +10460,6 @@ end;
 
 procedure TMainForm.doRevalidateMessages;
 var
-  X: Integer;
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
 begin
@@ -10673,20 +10502,13 @@ procedure TMainForm.PasteGridFromPasteBoard;
   end;
 
 var
-  xCol: Integer;
-  xSep: String;
-  xText: String;
   copyLines, copyColumns: TStringList;
   l, c: Integer;
-  xMessage, xOrgMessage: TWsdlMessage;
-  Xml: TXml;
-  XmlAttr: TXmlAttribute;
+  xMessage: TWsdlMessage;
   xBind: TCustomBindable;
-  xData: PMessageTreeRec;
 begin
   copyLines := TStringList.Create;
   try
-    xOrgMessage := WsdlOperation.Messages.Messages[0];
     copyLines.Text := ClipBoard.AsText;
     // first check if first line is columnheader line
     copyColumns := TabSepLineToStringGrid(copyLines.Strings[0]);
@@ -10991,9 +10813,6 @@ end;
 
 procedure TMainForm.ViewMssgAsTextActionExecute(Sender: TObject);
 var
-  xXml: TXml;
-  xNow: TDateTime;
-  X: Integer;
   xMessage: String;
 begin
   EndEdit;
@@ -11171,9 +10990,6 @@ begin
 end;
 
 procedure TMainForm.SelectExpectedElementsActionExecute(Sender: TObject);
-var
-  swapReqParent: TCustomBindable;
-  xTempXml: TXml;
 begin
   EndEdit;
   Application.CreateForm(TSelectElementsForm, SelectElementsForm);
@@ -11212,12 +11028,9 @@ end;
 
 procedure TMainForm.ReportUnexpectedValuesActionExecute(Sender: TObject);
 var
-  d, X, Y, z, f, nDiffs: Integer;
-  mXml, xXml, tableXml: TXml;
+  d, X, nDiffs: Integer;
+  xXml, tableXml: TXml;
   xLog: TLog;
-  xOperation: TWsdlOperation;
-  xMssg: TWsdlMessage;
-  xCorrelationId: String;
   xBind: TCustomBindable;
   showReqRep: Boolean;
   SwapCursor: TCursor;
@@ -11350,7 +11163,6 @@ procedure TMainForm.ChangeDataTypeMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
   xDataType: TXsdDataType;
-  xxsd: TXsd;
   xXmlAsText: String;
   xXml, nXml: TXml;
   X: Integer;
@@ -11514,7 +11326,6 @@ end;
 procedure TMainForm.readLog4jEventsActionExecute(Sender: TObject);
 var
   xLogList: TLogList;
-  X: Integer;
 begin
   OpenFileDialog.DefaultExt := 'xml';
   OpenFileDialog.FileName := log4jEventsFileName;
@@ -11595,7 +11406,7 @@ procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
   procedure _DiscoverOperationFromTag(aTag: String; var isRequest: Boolean;
     var aOperation: TWsdlOperation);
   var
-    f, o: Integer;
+    f: Integer;
   begin
     aOperation := nil;
     if allOperations.Find(NameWithoutPrefix(aTag), f) then
@@ -11668,16 +11479,13 @@ procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
   end;
 
 var
-  xXml, yXml: TXml;
+  xXml: TXml;
   SwapCursor: TCursor;
-  X, Y, z: Integer;
+  X, Y: Integer;
   xLog: TLog;
   xOperation: TWsdlOperation;
   xMessageText: String;
-  xOperationName: String;
-  xMessageName: String;
-  xCorrelationId: String;
-  xValue, mainTag: String;
+  mainTag: String;
   isRequest: Boolean;
 begin
   try
@@ -11840,8 +11648,7 @@ end;
 
 procedure TMainForm.RemoveAllMessagesActionExecute(Sender: TObject);
 var
-  xMessage: TWsdlMessage;
-  o, m: Integer;
+  o: Integer;
 begin
   if (xmlUtil.doConfirmRemovals) and (not BooleanPromptDialog(
       'Remove all except default messages from all operations')) then
@@ -11867,7 +11674,6 @@ end;
 
 procedure TMainForm.ShowLogDetailsActionExecute(Sender: TObject);
 var
-  xLog: TLog;
   xNode: PVirtualNode;
   xData: PLogTreeRec;
   aXml: TXml;
@@ -12029,8 +11835,7 @@ end;
 
 procedure TMainForm.OptionsFromXml(aXml: TXml);
 var
-  xXml, yXml, zXml: TXml;
-  z: Integer;
+  xXml, yXml: TXml;
 begin
   if not Assigned(aXml) then
     exit;
@@ -12151,24 +11956,7 @@ begin
   end;
 end;
 
-function TMainForm.getDoFileLog: Boolean;
-begin
-
-end;
-
-procedure TMainForm.setDoFileLog(const Value: Boolean);
-begin
-
-end;
-
-procedure TMainForm.ToggleFileLogActionExecute(Sender: TObject);
-begin
-  doFileLog := not doFileLog;
-end;
-
 procedure TMainForm .DataTypeDocumentationMemoClick (Sender : TObject );
-var
-  aLink: String;
 begin
   OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
 end;

@@ -10,7 +10,7 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, Dialogs
@@ -61,7 +61,6 @@ type
     IniFile: TFormIniFile;
     LastCaption: String;
     fWsdlOperation: TWsdlOperation;
-    fAfter: Boolean;
     fBind: TCustomBindable;
     procedure setBind(const Value: TCustomBindable);
     procedure setWsdlOperation(const Value: TWsdlOperation);
@@ -116,8 +115,6 @@ begin
 end;
 
 procedure TEditStamperForm.FormShow(Sender: TObject);
-var
-  x: Integer;
 begin
   ScriptMemo.ParentColor := ScriptMemo.ReadOnly;
   ScriptMemo.SetFocus;
@@ -125,9 +122,6 @@ begin
 end;
 
 procedure TEditStamperForm.OKBtnClick(Sender: TObject);
-var
-  Ok: Boolean;
-  x: Integer;
 begin
   StatusBar.SimpleText := '';
   Bindable.Value := ':=' + ScriptMemo.Text;
@@ -148,7 +142,6 @@ end;
 
 procedure TEditStamperForm.CheckButtonClick(Sender: TObject);
 var
-  x: Integer;
   SwapOnError: TOnErrorEvent;
   swapScriptLines: String;
 begin

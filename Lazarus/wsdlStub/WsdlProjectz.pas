@@ -1,5 +1,4 @@
 // currently at most 1 project due to what's in wsdlz.initialize, should be held by project
-
 unit WsdlProjectz;
 
 {$IFDEF FPC}
@@ -27,34 +26,21 @@ uses
   , jclDebug
 {$endif}
   , IdComponent
-  , IdTCPServer
   , IdGlobal
-  , IdBaseComponent
-  , IdIntercept
-  , IdIOHandlerSocket
   , IdCustomHTTPServer
   , IdSocketHandle
-  , IdTCPConnection
-  , IdTCPClient
   , IdCmdTCPServer
   , IdHTTPProxyServer
-  , IdServerIOHandler
-  , IdCustomTCPServer
   , IdHTTP
   , IdSync
   , IdSSL
-  , IdExplicitTLSClientServerBase
   , IdMessage
-  , IdMessageParts
-  , IdAttachment
-  , IdText
   , IdEMailAddress
   , IdHeaderList
   , IdHTTPHeaderInfo
   , IdStack
   , IdSMTP
   , IdURI
-  , IdStreamVCL
   , IdSSLOpenSSL
   , IdContext
   , IdCommandHandlers
@@ -64,7 +50,6 @@ uses
   , MqInterface
   , MqApi
   , StompInterface
-  , StompClient
   , StompTypes
 {$ifdef windows}
   , TacoInterface
@@ -477,7 +462,6 @@ var
 implementation
 
 uses OpenWsdlUnit
-   , FormIniFilez
    , StrUtils
    , wsdlStubHtmlUnit
    , SchemaLocationz
@@ -838,7 +822,7 @@ procedure IntrospectIniXml;
 var
   x: Integer;
   Xml, xXml, iniXml: TXml;
-  s, xIniFileName: String;
+  xIniFileName: String;
 begin
   xIniFileName := Copy(ParamStr(0), 1, Length(ParamStr(0)){$ifdef windows} - 4{$endif}) + 'Ini.xml';
   if not FileExistsUTF8(xIniFileName) { *Converted from FileExists* } then
@@ -1215,8 +1199,6 @@ begin
 end;
 
 procedure TWsdlProject.DefaultDisplayMessageData;
-var
-  xLog: TLog;
 begin
 {}{
   while displayedLogsDisplayed < displayedLogs.Count do
@@ -1248,10 +1230,8 @@ end;
 procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent);
   procedure _prepWsdl (xWsdl: TWsdl);
   var
-    s, o, x: Integer;
+    s, o: Integer;
     xOperation: TWsdlOperation;
-    operationTag: String;
-    xMessage: TWsdlMessage;
   begin
     wsdlNames.AddObject(xWsdl.Name, xWsdl);
     for s := 0 to xWsdl.Services.Count - 1 do
@@ -1294,16 +1274,9 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
         if xOperation.Messages.Count = 0 then
         begin
           if xOperation.StubAction = saRequest then
-            xMessage := TWsdlMessage.CreateRequest(xOperation, 'Default', '.*', 'Default request')
+            TWsdlMessage.CreateRequest(xOperation, 'Default', '.*', 'Default request')
           else
-{}{
-            if (not xOperation.isOneWay) then
-{}
-              xMessage := TWsdlMessage.CreateReply(xOperation, 'Default', '.*', 'Default reply');
-{
-          xMessage.Xml.Populate;
-          xMessage.FltBind.Populate;
-}
+            TWsdlMessage.CreateReply(xOperation, 'Default', '.*', 'Default reply');
         end;
       end;
     end;
@@ -1325,7 +1298,7 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
     end;
   end;
 var
-  f, w, o: Integer;
+  w, o: Integer;
 begin
   wsdlNames.Clear;
   allOperations.ClearListOnly;
@@ -1386,7 +1359,6 @@ end;
 
 procedure TWsdlProject.Activate(aActive: Boolean);
 var
-  AppDir: String;
   Binding : TIdSocketHandle;
   x: Integer;
 begin
@@ -1610,8 +1582,6 @@ begin
 end;
 
 function TWsdlProject.ProjectLogOptionsAsXml: TXml;
-var
-  x: Integer;
 begin
   result := TXml.CreateAsString('Log', '');
   with result do
@@ -1636,8 +1606,6 @@ begin
 end;
 
 function TWsdlProject.ProjectOptionsAsXml: TXml;
-var
-  x: Integer;
 begin
   result := TXml.CreateAsString('projectOptions', '');
   with result.AddXml (TXml.CreateAsString('General', '')) do
@@ -1709,7 +1677,6 @@ var
   xWsdl: TWsdl;
   xMessage: TWsdlMessage;
   xDone: Boolean;
-  sl: TStringList;
   swapReqParent: TCustomBindable;
   AddedTypeDefElementsAsXml, checkerXmls: TXml;
 begin
@@ -2002,13 +1969,11 @@ var
   xOperation: TWsdlOperation;
   xService: TWsdlService;
   xWsdl: TWsdl;
-  wXml, xXml, sXml, oXml, eXml, eeXml, dXml, rXml, iXml, cXml: TXml;
+  wXml, xXml, sXml, oXml, eXml, eeXml, dXml, rXml, cXml: TXml;
   xBindName: String;
-  swapReqParent: TCustomBindable;
   xMessage: TWsdlMessage;
   xReadAnother: Boolean;
   xPatterns, sl: TStringList;
-  swapxsdElementsWhenRepeatable: Integer;
 begin
   Clear;
   xReadAnother := False;
@@ -2515,9 +2480,6 @@ end;
 
 procedure TWsdlProject .CreateLogReply (aLog : TLog ;
   var aProcessed : Boolean ; aIsActive : Boolean );
-var
-  xMessage: String;
-  xXml: TXml;
 begin
   aProcessed := False;
   try
@@ -2588,9 +2550,7 @@ function TWsdlProject.CreateReply ( aLog: TLog
                                   ; aIsActive: Boolean
                                   ): String;
 var
-  xXml: TXml;
   xOperation: TWsdlOperation;
-  sl: String;
 begin
   result := '';
   aOperation := nil;
@@ -2678,7 +2638,6 @@ var
   x: Integer;
   xWsdl: TWsdl;
   xOperation: TWsdlOperation;
-  xLog: TLog;
 begin
   xWsdl := TWsdl.Create(1, 1, False);
   with XsdWsdl do
@@ -2742,7 +2701,6 @@ procedure TWsdlProject.HaveStompFrame(aStompInterface: TStompInterface;
   aQueue: String; aFrame: IStompFrame);
 var
   xProcessed: Boolean;
-  xReply: String;
   xLog: TLog;
 begin
   if (aFrame.GetCommand = 'MESSAGE') then
@@ -2930,7 +2888,6 @@ end;
 procedure TWsdlProject .ProjectOptionsFromXml (aXml : TXml );
 var
   xXml, yXml: TXml;
-  z: Integer;
 begin
   if not Assigned (aXml) then Exit;
   if aXml.Name <> 'projectOptions' then raise Exception.Create('ProjectOptionsFromXml illegal XML' + aXml.Text);
@@ -3061,7 +3018,7 @@ procedure TWsdlProject .UpdateReplyColumns (aOperation : TWsdlOperation );
     end;
   end;
 var
-  y, c: Integer;
+  y: Integer;
 begin
   with aOperation.Messages do
   begin
@@ -3079,8 +3036,6 @@ end;
 
 function TWsdlProject .WsdlOpenFile (aName : String ;
   aElementsWhenRepeatable : Integer ): TWsdl ;
-var
-  s, o: Integer;
 begin
   if UpperCase (ExtractFileExt (aName)) = '.SDF' then
   begin
@@ -3241,9 +3196,7 @@ var
   HttpClient: TIdHTTP;
   HttpRequest, sStream, dStream: TMemoryStream;
   URL: String;
-  xResponse: String;
   oUri, sUri: TIdUri;
-  xName, xValue: String;
   x: Integer;
 begin
   Result := '';
@@ -3398,11 +3351,6 @@ begin
       HttpClient.IOHandler.Free;
       HttpClient.IOHandler := nil;
     end;
-    if Assigned (HttpClient.Compressor) then
-    begin
-      HttpClient.Compressor.Free;
-      HttpClient.Compressor := nil;
-    end;
     FreeAndNil (HttpClient);
   end;
 end;
@@ -3420,7 +3368,6 @@ function TWsdlProject .SendMessage (aOperation : TWsdlOperation ;
     end;
   end;
 var
-  xResponse: String;
   xXml: TXml;
   xNow: TDateTime;
   sl: TStringList;
@@ -3591,10 +3538,7 @@ end;
 
 procedure TWsdlProject .SendAsynchReply (aLog : TLog );
 var
-  xAction, xAddress: String;
-  xXml: TXml;
   xOperation: TWsdlOperation;
-  xTries: Integer;
 begin
   try
     xOperation := aLog.Operation;
@@ -3684,7 +3628,6 @@ function TWsdlProject .SendOperationTacoMessage (aOperation : TWsdlOperation ;
 {$ifdef windows}
 var
   Taco: TTacoInterface;
-  fXml: TXml;
 begin
   Result := '';
   aRequestHeader := '';
@@ -3717,7 +3660,6 @@ function TWsdlProject .SendOperationSmtpMessage (aOperation : TWsdlOperation ;
 var
   Smtp: TIdSMTP;
   mailMessage: TIdMessage;
-  fXml: TXml;
 begin
   Result := '';
   if not Assigned (aOperation)
@@ -3911,9 +3853,6 @@ var
 begin
   HttpClient := TIdHTTP.Create;
   try
-{}{
-    HttpClient.Compressor := TIdCompressorZLib.Create(nil);
-{}
     HttpRequest := TMemoryStream.Create;
     try
       try
@@ -3950,11 +3889,6 @@ begin
       FreeAndNil (HttpRequest);
     end;
   finally
-    if Assigned (HttpClient.Compressor) then
-    begin
-      HttpClient.Compressor.Free;
-      HttpClient.Compressor := nil;
-    end;
     FreeAndNil (HttpClient);
   end;
 end;
@@ -4016,11 +3950,6 @@ begin
       FreeAndNil (HttpRequest);
     end;
   finally
-    if Assigned (HttpClient.Compressor) then
-    begin
-      HttpClient.Compressor.Free;
-      HttpClient.Compressor := nil;
-    end;
     FreeAndNil (HttpClient);
   end;
 end;
@@ -4029,7 +3958,6 @@ procedure TWsdlProject .CreateLogReplyPostProcess (aLogItem : TLog ;
   aOperation : TWsdlOperation );
 var
   xMessage: String;
-  xXml: TXml;
 begin
   if Assigned (aOperation) then
     aLogItem.StubAction := aOperation.StubAction;
@@ -4126,11 +4054,9 @@ end;
 
 function TWsdlProject.FindXmlOperationOnReply (aXml: TXml): TWsdlOperation;
 var
-  w, x, s, o, f: Integer;
+  x, o: Integer;
   xXml, rpyXml: TXml;
   eBind: TCustomBindable;
-  xWsdl: TWsdl;
-  xService: TWsdlService;
   xOperation: TWsdlOperation;
   xRecog: TRecognition;
   xName: String;
@@ -4254,10 +4180,7 @@ end;
 function TWsdlProject.FindOperationOnDocument(
   aDocument: String): TWsdlOperation;
 var
-  o, r: Integer;
-  xOperation: TWsdlOperation;
-  xRecog: TRecognition;
-  xMatch: Boolean;
+  o: Integer;
 begin
   result := nil;
   for o := 0 to allOperations.Count - 1 do
@@ -4283,8 +4206,6 @@ end;
 
 function TWsdlProject.FindOperationOnReply(aString: String): TWsdlOperation;
 var
-  o: Integer;
-  xOperation: TWsdlOperation;
   xXml: TXml;
 begin
   result := nil;
@@ -4390,11 +4311,9 @@ end;
 
 function TWsdlProject.FindXmlOperationOnRequest (aDocument: String; aXml: TXml): TWsdlOperation;
 var
-  w, x, s, o, f: Integer;
+  x, o, f: Integer;
   xXml: TXml;
   eBind: TCustomBindable;
-  xWsdl: TWsdl;
-  xService: TWsdlService;
   xOperation: TWsdlOperation;
   xRecog: TRecognition;
 begin
@@ -4634,7 +4553,6 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
   end;
   function _LoadXsdMsg (aLabel: String; sXml: TXml; aXsd: TXsd; var aDescrFileName: String): TXml;
   var
-    x, y, z, f: Integer;
     xXsd: TXsd;
     xXsdDescr: TXsdDescr;
   begin
@@ -4975,10 +4893,10 @@ procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String
       end;
     end;
   var
-    x, y, z, f: Integer;
-    fXsd, xXsd, b4Xsd: TXsd;
+    x: Integer;
+    fXsd, b4Xsd: TXsd;
     xXsdDescr: TXsdDescr;
-    xpXmls, xpXml: TXml;
+    xpXmls: TXml;
   begin
     aDescrFileName := '';
     aDescrExpansionFileName := '';
@@ -5149,7 +5067,7 @@ end;
 
 function TWsdlProject.xsdOperationsXml(aMainFileName: String): TXml;
 var
-  o, x, f: Integer;
+  x: Integer;
   xOperation: TWsdlOperation;
 begin
   result := TXml.CreateAsString('XsdOperations', '');
@@ -5221,7 +5139,7 @@ end;
 
 function TWsdlProject.cobolOperationsXml: TXml;
 var
-  o, x, f: Integer;
+  x: Integer;
   xOperation: TWsdlOperation;
 begin
   result := TXml.CreateAsString('CobolOperations', '');
@@ -5258,7 +5176,7 @@ end;
 
 function TWsdlProject.swiftMtOperationsXml: TXml;
 var
-  o, x, f: Integer;
+  x: Integer;
   xOperation: TWsdlOperation;
 begin
   result := TXml.CreateAsString('SwiftMtOperations', '');
@@ -5364,8 +5282,6 @@ end;
 
 function TWsdlProject.FindOperationOnRequest(aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
 var
-  o: Integer;
-  xOperation: TWsdlOperation;
   xXml: TXml;
 begin
   result := nil;
@@ -5440,11 +5356,6 @@ procedure TWsdlProject.mqStubMessage ( Sender: TObject
                                       );
 var
   aMqInterface: TMqInterface;
-  aOperation: TWsdlOperation;
-  aReply: TWsdlMessage;
-  aCorrelationId: String;
-  xMessage: String;
-  xXml, xMqHeaderXml: TXml;
   xLog: TLog;
   xProcessed: Boolean;
 begin
@@ -5457,7 +5368,6 @@ begin
   or ((MsgType = MQMT_APPL_FIRST) and True)
   or ((MsgType = MQMT_APPL_LAST) and True)
   then exit;
-  xMqHeaderXml := nil;
   Inc (mqCurWorkingThreads);
   {$ifdef windows}
   CoInitialize(nil);
@@ -5611,8 +5521,6 @@ end;
 procedure TWsdlProject.POP3ServerRetrieve(aCmd: TIdCommand; AMsgNo: Integer);
 var
   xLog: TLog;
-  xAttatchment: TIdAttachment;
-  xText: TIdText;
 begin
   try
     xLog := displayedLogs.LogItems[AMsgNo];
@@ -5832,8 +5740,7 @@ procedure TWsdlProject.HttpServerBmtpCommandGet(AContext: TIdContext;
 var
   xLog: TLog;
   xProcessed: Boolean;
-  f: Integer;
-  xXml, mXml: TXml;
+  mXml: TXml;
   xStream: TMemoryStream;
   s, d: AnsiString;
 begin
@@ -5954,10 +5861,8 @@ procedure TWsdlProject.HTTPServerCommandGetGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
   procedure _replLocations (aName, aFileName: String; aXml: TXml);
   var
-    s, v, xUri, xHostName: String;
+    s: String;
     x: Integer;
-    xAtt: TXmlAttribute;
-    sLoc: TSchemaLocation;
   begin
     s := NameWithoutPrefix(aXml.Name);
     if (s = 'import')
@@ -6130,7 +6035,6 @@ end;
 function TWsdlProject.ProcessInboundReply(aLogItem, rLogItem: TLog): String;
 // rLogItem is already on display so locking needed on changing
 var
-  rXml: TXml;
   xMessage: String;
   xOperation: TWsdlOperation;
 begin
@@ -6287,7 +6191,6 @@ procedure TWsdlProject.HttpWebPageServerCommandGet(AContext: TIdContext;
   const reqs = '--requestElementNames--';
   const scrpts = '--scriptNames--';
   var
-    s: String;
     sl, dl: TStringList;
     x, o: Integer;
   begin
@@ -6349,7 +6252,6 @@ var
   xOperation, oOperation, dOperation: TWsdlOperation;
   dRequest: TWsdlMessage;
   xStream: TMemoryStream;
-  xOk: Boolean;
   x, f: Integer;
 begin
   AResponseInfo.ContentEncoding := 'identity';
@@ -6703,9 +6605,6 @@ var
   swapCursor: TCursor;
   x: Integer;
   xLog: TLog;
-  xOperationName: String;
-  xMessageName: String;
-  xCorrelationId: String;
 begin
   try
     SwapCursor := Screen.Cursor;
@@ -6761,8 +6660,6 @@ begin
             xLog.TransportType := TTransportType (StrToIntDef (Items.XmlValueByTag ['TransportType'], 0));
             xLog.StubAction := TStubAction (StrToIntDef (Items.XmlValueByTag ['StubAction'], 0));
             xLog.CorrelationId := Items.XmlValueByTag ['CorrelationId'];
-            xOperationName := Items.XmlValueByTag ['Operation'];
-            xMessageName := Items.XmlValueByTag ['Reply'];
             // Reply
             xLog.Exception := Items.XmlValueByTag ['Error'];
             xLog.Remarks := Items.XmlValueByTag ['Remarks'];
@@ -6904,8 +6801,6 @@ begin
 end;
 
 procedure TWsdlProject.Clean;
-var
-  o, m: Integer;
 begin
   AcquireLock;
   try

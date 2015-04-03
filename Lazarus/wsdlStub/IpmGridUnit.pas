@@ -10,11 +10,11 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
-  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, FormIniFilez, StdCtrls, ExtCtrls, Ipmz, VirtualTrees, ComCtrls,
-  ImgList, ToolWin, ActnList, Menus;
+  ActnList, Menus;
 
 type
   TIpmGridForm = class(TForm)
@@ -178,15 +178,13 @@ const xmlGridMaxBom = 2;
 
 implementation
 
-uses Registry
-   , ClipBrd
+uses ClipBrd
    , StrUtils
    , xmlUtilz
    , Bind
    , Xmlz
    , EditValueUnit
    , BitWiseUnit
-   , ccbGenerationParamsUnit
    ;
 
 {$IFnDEF FPC}
@@ -502,6 +500,7 @@ procedure TIpmGridForm.CheckValueAgainstXsd(aXml: TIpmItem);
 var
   xMessage: String;
 begin
+  { TODO : implementeren }
 {
   if Assigned (XmlAttr) then
   begin
@@ -538,7 +537,7 @@ procedure TIpmGridForm.ShowGrid (aFocusIpm: TIpmItem);
   end;
   function _nRows (aIpm: TIpmItem): Integer;
   var
-    e, x, n, mx: Integer;
+    e, n, mx: Integer;
   begin
     if aIpm.Items.Count = 0 then
       result := 1
@@ -583,7 +582,6 @@ procedure TIpmGridForm.ShowGrid (aFocusIpm: TIpmItem);
   end;
 var
   x, y, xCol: Integer;
-  xNode: PVirtualNode;
   xData: PTreeRec;
 begin
   Grid.BeginUpdate;
@@ -617,7 +615,6 @@ end;
 procedure TIpmGridForm.CleanUp;
 var
   x: Integer;
-  xData: PTreeRec;
 begin
   for x := 0 to Lists.Count - 1 do
     PTreeRec(Lists.Objects[x]).Ipms.Free;
@@ -1162,10 +1159,6 @@ begin
 end;
 
 procedure TIpmGridForm.GenerateCobolWsActionExecute(Sender: TObject);
-var
-  xItem: TIpmItem;
-  xXml: TXml;
-  xAttribute: TXmlAttribute;
 begin
   if not Assigned (FocusedIpm) then Exit;
   fStringList := TStringList.Create;

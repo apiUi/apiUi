@@ -13,7 +13,6 @@ uses Classes
    , Bind
    , Graphics
    , Dialogs
-   , xmlxsdparser
    ;
 
 resourcestring
@@ -81,7 +80,6 @@ type
   private
     scanLineNumber: Integer;
     FileContents: TStringList;
-    sl: TStringList;
     fTypeDef: TXsdDataType;
     function getAttributeBooleanByTag (Index : String ): Boolean ;
     function getAttributeBooleanByTagDef (Index : String ; aDefault : Boolean
@@ -378,7 +376,7 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils
    , StrUtils
@@ -1059,8 +1057,6 @@ begin
 end;
 
 function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
-var
-  aLineNo: Integer;
   function _ValueToJSON (aValue: String): String;
   var
     x: Integer;
@@ -1078,7 +1074,6 @@ var
   function _StreamJSONValue (aXml: TXml; aIndent: Integer): String;
   var
     x: Integer;
-    xString: String;
     xSep: String;
     xJsonType: TjsonType;
     xSwapParent: TCustomBindable;
@@ -1225,7 +1220,6 @@ var
   end;
   function _PrefixedTagname (aXml: TXml): string;
   var
-    xParent: TXml;
     xXsd: TXsd;
     xNameSpace, xPNameSpace: String;
   begin
@@ -1535,8 +1529,6 @@ procedure TXml.LoadValues(aXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheck
         end;
       end;
     end;
-  var
-    x: Integer;
   begin
     result := nil;
     while aTypeDef.IsExtention and Assigned (aTypeDef.BaseDataType) do
@@ -2035,7 +2027,6 @@ end;
 
 function TXml.IndexOfRecursiveItem: Integer;
 var
-  x: Integer;
   pXml: TXml;
 begin
   result := 0;
@@ -2072,8 +2063,6 @@ var
   xDataType: TXsdDataType;
 begin
   try
-    if Name = 'Order' then
-      Name := 'Order';
     if not Assigned (aXsd) then Exit;
     if not Assigned (TypeDef) then Exit;
     CData := False;
@@ -3196,8 +3185,6 @@ procedure TXml.CopyRelevancy(aXml: TXml);
       end;
     end;
   end;
-var
-  x: Integer;
 begin
   Items.Clear;
   Attributes.Clear;
@@ -3238,8 +3225,6 @@ procedure TXml.CopyDownLine(aXml: TXml; aOnlyWhenChecked: Boolean);
       end;
     end;
   end;
-var
-  x: Integer;
 begin
   Items.Clear;
   Attributes.Clear;
@@ -3408,7 +3393,7 @@ procedure TXml.Sort(aRecurringElementsPath, aSubElementsPath: String);
     end;
   end;
 var
-  x, y, p: Integer;
+  x, p: Integer;
 begin
   if Copy (aRecurringElementsPath, 1, 2) = '*.' then
   begin
@@ -3679,8 +3664,7 @@ procedure TXmlCvrg.CountUsage(dataXml: TXml; aOnlyWhenChecked: Boolean);
   procedure _count (aXmlCvrg: TXmlCvrg; aXml: TXml);
   var
     v, cx, dx: Integer;
-    cs: String;
-    cXml, pXml: TXmlCvrg;
+    cXml: TXmlCvrg;
   begin
     if aOnlyWhenChecked and not aXml.Checked then Exit;
     if NameWithoutPrefix(aXmlCvrg.Name) <> NameWithoutPrefix(aXml.Name) then Exit;
@@ -4031,8 +4015,6 @@ procedure TXmlCvrg.setIgnore(const aValue: Boolean);
     for x := 0 to a.Items.Count - 1 do
       _down (a.Items.XmlItems[x] as TXmlCvrg);
   end;
-var
-  x: Integer;
 begin
   _down (self);
   if not aValue then
