@@ -10,9 +10,9 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs
   , FormIniFilez
   , StdCtrls
   , Ipmz
@@ -128,7 +128,6 @@ end;
 
 procedure TEditValueForm.ValueEditChange(Sender: TObject);
 var
-  xFloat: Extended;
   DoEnable: Boolean;
 begin
   DoEnable := True; // start optimistic
@@ -136,7 +135,7 @@ begin
   and (ValueEdit.Text <> '')
   then begin
     try
-      xFloat := StrToFloat (ValueEdit.Text);
+      StrToFloat (ValueEdit.Text);
     except
       DoEnable := False;
     end;
@@ -146,7 +145,6 @@ end;
 
 procedure TEditValueForm.ComboEditChange(Sender: TObject);
 var
-  xFloat: Extended;
   DoEnable: Boolean;
 begin
   DoEnable := True; // start optimistic
@@ -154,7 +152,7 @@ begin
   and (ComboEdit.Text <> '')
   then begin
     try
-      xFloat := StrToFloat (ComboEdit.Text);
+      StrToFloat (ComboEdit.Text);
     except
       DoEnable := False;
     end;

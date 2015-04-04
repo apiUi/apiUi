@@ -10,12 +10,12 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, Dialogs
   , Menus
-  , FormIniFilez, ToolWin, Grids, ValEdit, ComCtrls
+  , FormIniFilez, Grids, ValEdit, ComCtrls
   ;
 
 type
@@ -53,13 +53,6 @@ var
 
 implementation
 
-uses
-{$IFnDEF FPC}
-  ShellApi,
-{$ELSE}
-{$ENDIF}
-  SelectXmlElement, SelectItemUnit;
-
 {$IFnDEF FPC}
   {$R *.dfm}
 {$ELSE}
@@ -88,8 +81,6 @@ begin
 end;
 
 procedure TEditListValuesForm.FormShow(Sender: TObject);
-var
-  x: Integer;
 begin
   ValueListEditor.ParentColor := isReadOnly;
   ValueListEditor.SetFocus;

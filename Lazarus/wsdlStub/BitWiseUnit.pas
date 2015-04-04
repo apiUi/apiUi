@@ -10,9 +10,9 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
-  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, FormIniFilez, VirtualTrees, ExtCtrls, StdCtrls, Ipmz;
 
 type
@@ -85,8 +85,6 @@ var
 
 implementation
 
-uses Math
-   ;
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -120,7 +118,6 @@ procedure TBitWiseForm.VST1InitNode(Sender: TBaseVirtualTree; ParentNode,
   Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 var
   Data: PMyRec;
-  Checked: Boolean;
 begin
   Data:=Sender.GetNodeData(Node);
   Data.Caption := 'Caption ' + IntToStr (Node.Index);
@@ -129,10 +126,7 @@ end;
 
 procedure TBitWiseForm.VST1Checked(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
-var
-  Data: PMyRec;
 begin
-  Data := Sender.GetNodeData(Node);
   if (Node.CheckState = csCheckedNormal) then
     IntegerValue := fIntegerValue + (1 shl Node.Index)
   else
@@ -142,11 +136,8 @@ end;
 procedure TBitWiseForm.VST2Checked(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var
-  Data: PMyRec;
-  I: Integer;
   I64: Int64;
 begin
-  Data := Sender.GetNodeData(Node);
   I64 := 1;
   I64 := I64 shl (Node.Index + 32);
   if (Node.CheckState = csCheckedNormal) then
@@ -158,11 +149,8 @@ end;
 procedure TBitWiseForm.VST1GetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
 var
-  Data: PMyRec;
   CheckValue: Int64;
 begin
-  Data:=Sender.GetNodeData(Node);
-
   case column of
     0: begin
          CheckValue := 1 shl Node.Index;
@@ -181,11 +169,8 @@ end;
 procedure TBitWiseForm.VST2GetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
 var
-  Data: PMyRec;
   I64: Int64;
 begin
-  Data:=Sender.GetNodeData(Node);
-
   case column of
     0: begin
         I64 := 1;

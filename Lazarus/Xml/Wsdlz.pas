@@ -5366,14 +5366,21 @@ begin
   end
   else
   begin
-    if not aWsdl.XsdDescr.TypeDefs.Find(_TypeName, f) then
-      raise Exception.CreateFmt('TypeDef %s not found at part %s', [_TypeName, Name]);
-    xTypedef := aWsdl.XsdDescr.TypeDefs.XsdDataTypes[f];
-    Xsd := TXsd.Create(aWsdl.XsdDescr);
-    aWsdl.XsdDescr.Garbage.AddObject('', Xsd);
-    Xsd.sType := xTypeDef;
-    Xsd.ElementName := self.Name;
-    Xsd.ElementNameSpace := self.NameSpace;
+    if aWsdl.XsdDescr.TypeDefs.Find(_TypeName, f) then
+    begin
+      xTypedef := aWsdl.XsdDescr.TypeDefs.XsdDataTypes[f];
+      Xsd := TXsd.Create(aWsdl.XsdDescr);
+      aWsdl.XsdDescr.Garbage.AddObject('', Xsd);
+      Xsd.sType := xTypeDef;
+      Xsd.ElementName := self.Name;
+      Xsd.ElementNameSpace := self.NameSpace;
+    end
+    else
+    begin
+      if not aXsds.Find(_TypeName, f) then // lets help the poor people who set up wslds
+        raise Exception.CreateFmt('TypeDef %s not found at part %s', [_TypeName, Name]);
+      Xsd := aXsds.Xsds[f];
+    end;
   end;
 end;
 

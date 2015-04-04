@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8598"/>
+      <BuildNr Value="8600"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -30,7 +30,6 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="C:\Data\systemTesting\MNP_MoveHouseNaturalPerson\03-Wsdlstub\rpvh.wsdlStub"/>
       </local>
     </RunParams>
     <RequiredPackages Count="6">

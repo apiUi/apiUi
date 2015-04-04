@@ -1,67 +1,70 @@
 object EditValueForm: TEditValueForm
   Left = 264
+  Height = 213
   Top = 189
   Width = 414
-  Height = 213
   Caption = 'Edit Value'
+  ClientHeight = 213
+  ClientWidth = 414
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
-  PixelsPerInch = 96
+  LCLVersion = '1.2.6.0'
   object Label1: TLabel
     Left = 8
+    Height = 13
     Top = 7
     Width = 21
-    Height = 13
     Caption = 'Key:'
+    ParentColor = False
   end
   object Label2: TLabel
     Left = 8
+    Height = 13
     Top = 95
     Width = 30
-    Height = 13
     Caption = '&Value:'
+    ParentColor = False
   end
   object Label3: TLabel
     Left = 8
+    Height = 13
     Top = 51
     Width = 36
-    Height = 13
     Caption = 'Picture:'
+    ParentColor = False
   end
   object KeyEdit: TEdit
     Left = 8
+    Height = 21
     Top = 22
     Width = 377
-    Height = 21
-    TabStop = False
     ParentColor = True
     ReadOnly = True
+    TabStop = False
     TabOrder = 0
   end
   object OkButton: TButton
     Left = 8
+    Height = 25
     Top = 145
     Width = 75
-    Height = 25
     Caption = '&Ok'
     Default = True
     ModalResult = 1
-    TabOrder = 1
     OnClick = OkButtonClick
+    TabOrder = 1
   end
   object Button2: TButton
     Left = 91
+    Height = 25
     Top = 145
     Width = 75
-    Height = 25
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
@@ -69,37 +72,35 @@ object EditValueForm: TEditValueForm
   end
   object PictureEdit: TEdit
     Left = 8
+    Height = 21
     Top = 64
     Width = 377
-    Height = 21
-    TabStop = False
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
-    Font.Style = []
     ParentColor = True
     ParentFont = False
     ReadOnly = True
+    TabStop = False
     TabOrder = 3
   end
   object ComboEdit: TComboBox
     Left = 8
+    Height = 21
     Top = 112
     Width = 377
-    Height = 21
-    ItemHeight = 0
+    ItemHeight = 13
+    OnChange = ComboEditChange
     TabOrder = 4
     Text = 'ComboEdit'
-    OnChange = ComboEditChange
   end
   object ValueEdit: TEdit
     Left = 8
+    Height = 21
     Top = 112
     Width = 377
-    Height = 21
+    OnChange = ValueEditChange
     TabOrder = 5
     Text = 'ValueEdit'
-    OnChange = ValueEditChange
   end
-end
+end

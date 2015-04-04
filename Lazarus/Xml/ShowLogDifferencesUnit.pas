@@ -10,11 +10,11 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
-  Messages , SysUtils , Classes , Graphics , Controls , Forms ,
-  Dialogs , StdCtrls , ExtCtrls , VirtualTrees , FileUtil , ToolWin ,
-  FormIniFilez , ComCtrls , ImgList , ActnList , Logz , a2bStringListUnit ,
+  SysUtils , Classes , Graphics , Controls , Forms ,
+  Dialogs , ExtCtrls , VirtualTrees , FileUtil ,
+  FormIniFilez , ComCtrls , ActnList , Logz , a2bStringListUnit ,
   Xmlz , A2BXmlz;
 
 type
@@ -138,7 +138,7 @@ uses
   ShellAPI,
 {$ELSE}
 {$ENDIF}
-  Bind, Registry, ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd, vstUtils, XmlXsdParser;
+  Bind, ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd, vstUtils, XmlXsdParser;
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -187,8 +187,8 @@ end;
 procedure TShowLogDifferencesForm.PopulateMain;
 var
   x, a, b, c, i: Integer;
-  xNode, cNode: PVirtualNode;
-  xData, cData: PVSTreeRec;
+  xNode: PVirtualNode;
+  xData: PVSTreeRec;
   LA, LB: TStringList;
   s: String;
 begin
@@ -418,27 +418,12 @@ begin
 end;
 
 procedure TShowLogDifferencesForm.mainVSTResize(Sender: TObject);
-var
-  x, y, w: Integer;
-  xVst: TVirtualStringTree;
 begin
-{
-  with Sender as TVirtualStringTree do
-  begin
-    w := Width - 20; // scrollbar width??;
-    for x := 0 to Header.Columns.Count - 1 do
-      if x <> Header.MainColumn then
-        w := w - Header.Columns[x].Width;
-    Header.Columns [Header.MainColumn].Width := w;
-  end;
-}
 end;
 
 procedure TShowLogDifferencesForm.mainVSTBeforeCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellRect: TRect);
-var
-  xData: PVSTreeRec;
 begin
 end;
 
@@ -657,7 +642,6 @@ end;
 
 procedure TShowLogDifferencesForm.MaintainList(aCaptian: String; aList: TStringList);
 var
-  x, a, f: Integer;
   Srcs, Dsts: TStringList;
 begin
   Srcs := TStringList.Create;

@@ -127,7 +127,6 @@ type
     procedure ListProperties(aListView: TListView; aIpm: TIpmItem);
     function getPropertiesVisible: Boolean;
     procedure setPropertiesVisible(const Value: Boolean);
-    function getVisibleColumnSpan(col: Integer): Integer;
     function CreateHtmlReport: String;
     function getFocusedIpm: TIpmItem;
     procedure ShowHtml(aCaption, aInfoString: String);
@@ -152,7 +151,6 @@ type
     property FocusedIpm: TIpmItem read getFocusedIpm write setFocusedIpm;
     property Cell [col, row: Integer]: TIpmItem read getCell write setCell;
     property ColumnSpan [col: Integer]: Integer read getColumnSpan;
-    property VisibleColumnSpan [col: Integer]: Integer read getVisibleColumnSpan;
     property GroupVisible [col: Integer]: Boolean read getGroupVisible write setGroupVisible;
     property ColumnVisible [col: Integer]: Boolean read getColumnVisible write setColumnVisible;
   public
@@ -310,7 +308,6 @@ end;
 procedure TIpmGridForm.GridEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; var Allowed: Boolean);
 var
-  xCol, xRow: Integer;
   xIpm: TIpmItem;
   xData: PTreeRec;
 begin
@@ -334,7 +331,6 @@ procedure TIpmGridForm.GridFocusChanged(Sender: TBaseVirtualTree;
 var
   xData: PTreeRec;
   xIpm: TIpmItem;
-  c, r: Integer;
 begin
   GridStatusBar.Panels [0].Text := '';
   EnumerationsListView.Clear;
@@ -449,14 +445,13 @@ var
   xNode: PVirtualNode;
   xData: PTreeRec;
   xVisible: Boolean;
-  r, c: Integer;
+  c: Integer;
 begin
   xNode := Grid.GetFirst;
   while Assigned (xNode) do
   begin
     xData := Grid.GetNodeData(xNode);
     xVisible := False;
-    r := xData.Row;
     c := 0;
     while (not xVisible)
     and (c < xData.Ipms.Count) do
@@ -473,20 +468,6 @@ begin
   end;
 end;
 
-function TIpmGridForm.getVisibleColumnSpan(col: Integer): Integer;
-var
-  c: Integer;
-begin
-  try
-    result := 0;
-    for c := 0 to Grid.Header.Columns.Items[col].Tag - 1 do
-      if ColumnVisible [col + 1 + c] then
-        Inc (result);
-  except
-    result := 0;
-  end;
-end;
-
 function TIpmGridForm.getColumnSpan(col: Integer): Integer;
 begin
   try
@@ -497,8 +478,6 @@ begin
 end;
 
 procedure TIpmGridForm.CheckValueAgainstXsd(aXml: TIpmItem);
-var
-  xMessage: String;
 begin
   { TODO : implementeren }
 {
