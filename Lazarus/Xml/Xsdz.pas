@@ -2536,6 +2536,15 @@ begin
 end;
 
 procedure TXsdDescr.AddedTypeDefElementsFromXml(aXml: TObject);
+  function _findLast (f,s: String): Integer;
+  var
+    x: Integer;
+  begin
+    result := 0;
+    for x := 1 to Length (s) do
+      if s[x] = f then
+        result := x;
+  end;
   function __UsedAt(aType: TXsdDataType; s: String): TXsd;
   var
     x, p: integer;
@@ -2555,6 +2564,15 @@ procedure TXsdDescr.AddedTypeDefElementsFromXml(aXml: TObject);
       lft := s;
       rght := '';
     end;
+    p := Pos (';', lft);
+    if p < 1 then // pre 9.0 now working with semicolom because of http prolog in namespaces
+    begin
+      p := _findLast(':', lft);
+      if p > 0 then
+        lft [p] := ';';
+    end;
+    if (p = 1) then // pre 9.0 version - namespace for element not always specified
+      lft := aType.NameSpace + Lft;
     for x := 0 to aType.ElementDefs.Count - 1 do
     begin
       if (aType.ElementDefs.Xsds[x].ElementNameSpace + ';' +
@@ -2578,6 +2596,8 @@ procedure TXsdDescr.AddedTypeDefElementsFromXml(aXml: TObject);
     r := LeftStr(s, p - 1);
     s := Copy(s, p + 2, Length(s));
     p := Pos(';', r);
+    if p < 1 then // pre 9.0 style ??
+      p := _findLast (':', r);
     NameSpace := LeftStr(r, p - 1);
     name := Copy(r, p + 1, Length(r) - p);
     result := __UsedAt(FindTypeDef(NameSpace, name), s);

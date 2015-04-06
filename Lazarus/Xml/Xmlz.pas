@@ -2713,13 +2713,13 @@ begin
   if aName = '' then Exit;
   p := Pos (':', aName);
   if p < 1 then
-    result := aDefaultNS + ':' + aName
+    result := aDefaultNS + ';' + aName
   else
   begin
     ns := PrefixToNameSpace(Copy (aName, 1, p - 1));
     if ns = '' then
       ns := aDefaultNS;
-    result := ns + ':' + Copy(aName, p + 1, Length (aName));
+    result := ns + ';' + Copy(aName, p + 1, Length (aName));
   end;
 end;
 

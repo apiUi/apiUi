@@ -1701,7 +1701,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
           begin
             Oper := TWsdlOperation.Create(self);
             Oper.Name := XmlItems[y].Attributes.ValueByTag[tagName];
-            fOpers.AddObject(Format ('%s:%s', [PortTypeName, Oper.Name]), Oper);
+            fOpers.AddObject(Format ('%s;%s', [PortTypeName, Oper.Name]), Oper);
             Oper.SoapAddress := PortTypeName; // for later lookup real address
             for z := 0 to XmlItems[y].Items.Count - 1 do with XmlItems[y].Items.XmlItems[z] do
             begin
@@ -1710,7 +1710,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
               if Name = tagOutput then
                 Oper._OutputMessageName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagMessage]);
               if Name = tagFault then
-                fStrs.Values [PortTypeName+';'+Oper.Name+':FltMssg:'+AttributeValueByTag[xmlzConsts.tagName]+'.Message']
+                fStrs.Values [PortTypeName+';'+Oper.Name+';FltMssg;'+AttributeValueByTag[xmlzConsts.tagName]+'.Message']
                   := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagMessage]);
             end;
           end;
@@ -1793,7 +1793,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
                   begin
                     Oper.FaultMessages.AddObject(FaultName, nil);
                     for a := 0 to Attributes.Count - 1 do with Attributes.XmlAttributes[a] do
-                      fStrs.Values [PortTypeName+';'+OperationName+':FltMssg:'+FaultName+'.'+Name] := Value;
+                      fStrs.Values [PortTypeName+';'+OperationName+';FltMssg;'+FaultName+'.'+Name] := Value;
                   end;
                 end;
               end;
@@ -1934,7 +1934,7 @@ begin
         for m := 0 to FaultMessages.Count - 1 do
         begin
           FaultName := FaultMessages.Strings[m];
-          MessageName := fStrs.Values[PortTypeName+';'+OperationName+':FltMssg:'+FaultName+'.Message'];
+          MessageName := fStrs.Values[PortTypeName+';'+OperationName+';FltMssg;'+FaultName+'.Message'];
           if not fMssgs.Find (MessageName, f) then
             raise Exception.CreateFmt('Faultmessage %s not found for soapfault %s', [MessageName, FaultName]);
           FaultMessages.Objects[m] := fMssgs.Messages[f];
