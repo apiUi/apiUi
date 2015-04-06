@@ -6,7 +6,8 @@ interface
 
 uses
   Classes , SysUtils , FileUtil , SynEdit , Forms , Controls , Graphics ,
-  Dialogs , StdCtrls , EditBtn, FormIniFilez, strutils, wrdFunctionz, GZIPUtils ;
+  Dialogs , StdCtrls , EditBtn , PairSplitter , FormIniFilez , strutils ,
+  wrdFunctionz , GZIPUtils ;
 
 type
 
@@ -16,6 +17,9 @@ type
     Button1 : TButton ;
     Edit1 : TEdit ;
     FileNameEdit : TFileNameEdit ;
+    PairSplitter1 : TPairSplitter ;
+    PairSplitterSide1 : TPairSplitterSide ;
+    PairSplitterSide2 : TPairSplitterSide ;
     SynEdit1 : TSynEdit ;
     procedure Button1Click (Sender : TObject );
     procedure FileNameEditAcceptFileName (Sender : TObject ;

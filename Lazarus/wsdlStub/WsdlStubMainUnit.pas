@@ -44,7 +44,7 @@ uses
    , MQAPI
    , SwiftUnit
    , ParserClasses
-   ;
+   , types;
 
 type
   THackControl = class(TWinControl)
@@ -53,6 +53,7 @@ type
     FParentWindow: HWnd;
   end;
 
+  TShowLogData = (slRequestHeaders, slRequestBody, slReplyHeaders, slReplyBody, slException, slValidation);
   TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
   TProcedure = procedure of Object;
   TProcedureString = procedure(arg: String) of Object;
@@ -67,13 +68,13 @@ type
     FreeFormatMemo: TMemo;
     InWsdlTreeView: TVirtualStringTree;
     Panel1: TPanel;
-    ReplyHeadersToolBar : TToolBar ;
-    ReplyHeadersToolButton : TToolButton ;
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
-    ShowReplyHeaderAsXmlButton : TToolButton ;
+    LogMemo : TMemo ;
+    Splitter1 : TSplitter ;
     SqlConnector : TSQLConnector ;
     SQLTransaction : TSQLTransaction ;
+    MessagesTabControl : TTabControl ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -109,8 +110,6 @@ type
     ServiceLabel: TLabel;
     WsdlLabel: TLabel;
     Expand2: TMenuItem;
-    LogPanel: TPanel;
-    Splitter1: TSplitter;
     SaveStubCaseAsAction: TAction;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
@@ -163,15 +162,7 @@ type
     ToolButton21: TToolButton;
     DownPageControl: TPageControl;
     MessagesTabSheet: TTabSheet;
-    MessagesPageControl: TPageControl;
-    RequestBodyTabSheet: TTabSheet;
-    RequestHeadersTabSheet: TTabSheet;
-    ReplyBodyTabSheet: TTabSheet;
     ClearLogItemsAction: TAction;
-    RequestHeadersMemo: TMemo;
-    ReplyHeadersMemo: TMemo;
-    SoapRequestMemo: TMemo;
-    SoapReplyMemo: TMemo;
     ToolBar6: TToolBar;
     ToolButton22: TToolButton;
     DocumentationTabSheet: TTabSheet;
@@ -208,15 +199,7 @@ type
     CopyHttpReplyBodyAction: TAction;
     ShowHttpReplyAsXMLAction: TAction;
     ShowHttpRequestAsXMLAction: TAction;
-    ExceptionMessageTabSheet: TTabSheet;
-    ExceptionMessageMemo: TMemo;
     ToolButton35: TToolButton;
-    ToolBar10: TToolBar;
-    ToolButton36: TToolButton;
-    ToolButton37: TToolButton;
-    ToolBar5: TToolBar;
-    ToolButton30: TToolButton;
-    ToolButton32: TToolButton;
     View1: TMenuItem;
     SchemapropertiesMenuItem: TMenuItem;
     ListofOperationsMenuItem: TMenuItem;
@@ -233,9 +216,6 @@ type
     DesignPanelAtTopMenuItem: TMenuItem;
     CopyExceptionToClipboardAction: TAction;
     ShowExceptionAsHtmlAction: TAction;
-    ToolBar7: TToolBar;
-    ToolButton39: TToolButton;
-    ToolButton40: TToolButton;
     EditEnvironmentAction: TAction;
     EnvironmentMenuItem: TMenuItem;
     Editvariables1: TMenuItem;
@@ -284,9 +264,6 @@ type
     ToolButton43: TToolButton;
     ValidateRequestsButton: TToolButton;
     ValidateRepliesButton: TToolButton;
-    ValidationTabSheet: TTabSheet;
-    ToolBar8: TToolBar;
-    ValidationResultMemo: TMemo;
     ValidateRequestsAction: TAction;
     ValidateRepliesAction: TAction;
     LogPopupMenu: TPopupMenu;
@@ -317,9 +294,7 @@ type
     All1: TMenuItem;
     Required1: TMenuItem;
     ShowReplyAsXmlGridAction: TAction;
-    ToolButton51: TToolButton;
     ShowRequestAsXmlGridAction: TAction;
-    ToolButton52: TToolButton;
     ToggleCheckExpectedValuesAction: TAction;
     ToggleBetaModeAction: TAction;
     ShowExpectedXmlAction: TAction;
@@ -331,11 +306,8 @@ type
     MasterMessagesMenuItem: TMenuItem;
     BrowseMqAction: TAction;
     BrowseMqMenuItem: TMenuItem;
-    ToolBar11: TToolBar;
     CopyRequestHeaderToClipBrdAction: TAction;
-    ToolButton53: TToolButton;
     ShowRequestHeaderAsXmlAction: TAction;
-    ShowHeaderAsXmlButton: TToolButton;
     BrowseMqButton: TToolButton;
     httpRequestDesignAction: TAction;
     httpRequestDesignButton: TToolButton;
@@ -449,11 +421,8 @@ type
     SaveLogRepliesToFileAction: TAction;
     Saverequeststofile2: TMenuItem;
     ShowRequestAsHtmlAction: TAction;
-    ToolButton64: TToolButton;
     ShowReplyAsHtmlAction: TAction;
-    ToolButton65: TToolButton;
     ShowExceptAsHtmlAction: TAction;
-    ToolButton66: TToolButton;
     OperationOptionsAction: TAction;
     Options4: TMenuItem;
     HideAllOperationsAction: TAction;
@@ -495,7 +464,6 @@ type
     XsdOperationsAction: TAction;
     XsdOperationsAction1: TMenuItem;
     Xsdoperations1: TMenuItem;
-    ReplyHeadersTabSheet: TTabSheet;
     CopyReplyHeadersToClipBoardAction: TAction;
     ShowReplyHeaderAsXmlAction: TAction;
     CleanMenuItem: TMenuItem;
@@ -514,9 +482,14 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
+    procedure MessagesTabControlChange (Sender : TObject );
+    procedure MessagesTabControlGetImageIndex (Sender : TObject ;
+      TabIndex : Integer ; var ImageIndex : Integer );
     procedure MessagesVTSChange (Sender : TBaseVirtualTree ;
       Node : PVirtualNode );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
+    procedure RequestBodyTabSheetContextPopup (Sender : TObject ;
+      MousePos : TPoint ; var Handled : Boolean );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
     procedure RemoveAllMessagesActionExecute(Sender: TObject);
@@ -542,6 +515,7 @@ type
     procedure ElementvalueMenuItemClick(Sender: TObject);
     procedure PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
     procedure CopyCobolDataToClipboardMenuItemClick(Sender: TObject);
+    procedure ToolBar8Click (Sender : TObject );
     procedure ViewMssgAsTextActionExecute(Sender: TObject);
     procedure ViewMssgAsTextActionUpdate(Sender: TObject);
     procedure Log2DesignActionExecute(Sender: TObject);
@@ -553,10 +527,6 @@ type
       var CanShow: Boolean);
     procedure httpRequestDesignActionUpdate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure ShowRequestHeaderAsXmlActionExecute(Sender: TObject);
-    procedure ShowRequestHeaderAsXmlActionUpdate(Sender: TObject);
-    procedure CopyRequestHeaderToClipBrdActionExecute(Sender: TObject);
-    procedure CopyRequestHeaderToClipBrdActionUpdate(Sender: TObject);
     procedure BrowseMqActionExecute(Sender: TObject);
     procedure BrowseMqActionUpdate(Sender: TObject);
     procedure httpRequestMessagesActionExecute(Sender: TObject);
@@ -570,7 +540,6 @@ type
     procedure ToggleCheckExpectedValuesActionExecute(Sender: TObject);
     procedure ShowRequestAsXmlGridActionExecute(Sender: TObject);
     procedure ShowRequestAsXmlGridActionUpdate(Sender: TObject);
-    procedure ShowReplyAsXmlGridActionUpdate(Sender: TObject);
     procedure ShowReplyAsXmlGridActionExecute(Sender: TObject);
     procedure Required1Click(Sender: TObject);
     procedure All1Click(Sender: TObject);
@@ -620,10 +589,6 @@ type
     procedure EditEnvironmentActionUpdate(Sender: TObject);
     procedure AddEnvironmentActionUpdate(Sender: TObject);
     procedure EditEnvironmentActionExecute(Sender: TObject);
-    procedure ShowExceptionAsHtmlActionExecute(Sender: TObject);
-    procedure ShowExceptionAsHtmlActionUpdate(Sender: TObject);
-    procedure CopyExceptionToClipboardActionExecute(Sender: TObject);
-    procedure CopyExceptionToClipboardActionUpdate(Sender: TObject);
     procedure InWsdlTreeViewChecking(Sender: TBaseVirtualTree;
       Node: PVirtualNode; var NewState: TCheckState; var Allowed: Boolean);
     procedure DesignPanelAtTopMenuItemClick(Sender: TObject);
@@ -644,11 +609,7 @@ type
       TextType: TVSTTextType);
     procedure ShowHttpRequestAsXMLActionUpdate(Sender: TObject);
     procedure ShowHttpRequestAsXMLActionExecute(Sender: TObject);
-    procedure ShowHttpReplyAsXMLActionUpdate(Sender: TObject);
-    procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
-    procedure CopyHttpReplyBodyActionExecute(Sender: TObject);
     procedure CopyHttpRequestToClipBrdActionUpdate(Sender: TObject);
-    procedure CopyHttpReplyBodyActionUpdate(Sender: TObject);
     procedure CopyHttpRequestToClipBrdActionExecute(Sender: TObject);
     procedure PasteGridActionExecute(Sender: TObject);
     procedure PasteGridActionUpdate(Sender: TObject);
@@ -847,7 +808,6 @@ type
     procedure SaveLogRepliesToFileActionExecute(Sender: TObject);
     procedure ShowRequestAsHtmlActionUpdate(Sender: TObject);
     procedure ShowRequestAsHtmlActionExecute(Sender: TObject);
-    procedure ShowReplyAsHtmlActionUpdate(Sender: TObject);
     procedure ShowReplyAsHtmlActionExecute(Sender: TObject);
     procedure ShowExceptAsHtmlActionExecute(Sender: TObject);
     procedure OperationOptionsActionUpdate(Sender: TObject);
@@ -890,10 +850,6 @@ type
     procedure XsdOperationsActionHint(var HintStr: string;
       var CanShow: Boolean);
     procedure XsdOperationsActionExecute(Sender: TObject);
-    procedure CopyReplyHeadersToClipBoardActionExecute(Sender: TObject);
-    procedure CopyReplyHeadersToClipBoardActionUpdate(Sender: TObject);
-    procedure ShowReplyHeaderAsXmlActionUpdate(Sender: TObject);
-    procedure ShowReplyHeaderAsXmlActionExecute(Sender: TObject);
     procedure CleanMenuItemClick(Sender: TObject);
     procedure ProjectCleanActionExecute(Sender: TObject);
     procedure GenerateMenuHelpActionExecute(Sender: TObject);
@@ -913,6 +869,7 @@ type
     editingNode: PVirtualNode;
     notifyTabCaption, logTabCaption: String;
     notifyTabImageIndex: Integer;
+    logValidationTabImageIndex: Integer;
     startStopShortCut: TShortCut;
     fLastCaption: String;
     QueueNameList: TStringList;
@@ -1083,6 +1040,7 @@ type
     procedure SetUiProgress;
   private
     function getHintStrDisabledWhileActive: String;
+    procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
   published
   public
     se: TWsdlProject;
@@ -2911,11 +2869,7 @@ begin
       MessagesVTS.Clear;
       se.AsynchRpyLogs.Clear;
       se.displayedLogs.Clear;
-      RequestHeadersMemo.Text := '';
-      SoapRequestMemo.Text := '';
-      ReplyHeadersMemo.Text := '';
-      SoapReplyMemo.Text := '';
-      ValidationResultMemo.Text := '';
+      LogMemo.Text := '';
     finally
       ReleaseLock;
     end;
@@ -3839,10 +3793,7 @@ begin
   RemoveMessageColumns;
   DocumentationMemo.Clear;
   MessagesVTS.Clear;
-  RequestHeadersMemo.Clear;
-  SoapRequestMemo.Clear;
-  ReplyHeadersMemo.Clear;
-  SoapReplyMemo.Clear;
+  LogMemo.Clear;
   GridView.Clear;
   ExceptionMemo.Clear;
   ExceptionsVTS.Clear;
@@ -3942,7 +3893,7 @@ begin
   if se.IsActive then
   begin
     DownPageControl.ActivePage := MessagesTabSheet;
-    MessagesPageControl.ActivePage := RequestBodyTabSheet;
+    MessagesTabControl.TabIndex := Ord(slRequestBody);
     if se.IsActive then
     begin
       Application.Title := '' + _progName + ' (Active)';
@@ -5465,28 +5416,28 @@ procedure TMainForm.UpdateLogTabs (aLog: TLog);
 var
   s: String;
 begin
-  RequestHeadersMemo.Text := aLog.RequestHeaders;
-  SoapRequestMemo.Text := aLog.RequestBody;
-  ReplyHeadersMemo.Text := aLog.ReplyHeaders;
-  SoapReplyMemo.Text := aLog.ReplyBody;
-  ExceptionMessageMemo.Text := aLog.Exception;
-  s := '';
-  if aLog.RequestValidateResult <> '' then
-    s := s + 'Request:' + LineEnding + aLog.RequestValidateResult + LineEnding;
-  if aLog.ReplyValidateResult <> '' then
-    s := s  + 'Reply:' + LineEnding + aLog.ReplyValidateResult + LineEnding;
-  ValidationResultMemo.Text := s;
-  if (not aLog.RequestValidated)
-  and (not aLog.ReplyValidated) then
-    ValidationTabSheet.ImageIndex := 40
-  else
+  if not Assigned (aLog) then
   begin
-    if (aLog.RequestValidateResult = '') and
-      (aLog.ReplyValidateResult = '') then
-      ValidationTabSheet.ImageIndex := 39
-    else
-      ValidationTabSheet.ImageIndex := 25;
+    LogMemo.Text := '';
+    Exit;
   end;
+  case MessagesTabControl.TabIndex of
+    Ord (slRequestHeaders): LogMemo.Text := aLog.RequestHeaders;
+    Ord (slRequestBody): LogMemo.Text := aLog.RequestBody;
+    Ord (slReplyHeaders): LogMemo.Text := aLog.ReplyHeaders;
+    Ord (slReplyBody): LogMemo.Text := aLog.ReplyBody;
+    Ord (slException): LogMemo.Text := aLog.Exception;
+    Ord (slValidation):
+    begin
+      s := '';
+      if aLog.RequestValidateResult <> '' then
+        s := s + 'Request:' + LineEnding + aLog.RequestValidateResult + LineEnding;
+      if aLog.ReplyValidateResult <> '' then
+        s := s  + 'Reply:' + LineEnding + aLog.ReplyValidateResult + LineEnding;
+      LogMemo.Text := s;
+    end;
+  end;
+  MessagesTabControl.Invalidate;
 end;
 
 procedure TMainForm.MessagesVTSFocusChanged(Sender: TBaseVirtualTree;
@@ -5504,42 +5455,51 @@ begin
       case xLog.TransportType of
         ttHttp:
           begin
-            RequestHeadersTabSheet.Caption := 'HTTP Request Headers';
-            RequestBodyTabSheet.Caption := 'HTTP Request Body';
-            ReplyHeadersTabSheet.Caption := 'HTTP Reply Headers';
-            ReplyBodyTabSheet.Caption := 'HTTP Reply Body';
+            MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'HTTP Request Headers';
+            MessagesTabControl.Tabs[Ord(slRequestBody)] := 'HTTP Request Body';
+            MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'HTTP Reply Headers';
+            MessagesTabControl.Tabs[Ord(slReplyBody)] := 'HTTP Reply Body';
           end;
         ttMQ:
           begin
-            RequestHeadersTabSheet.Caption := 'MQ Message Descriptor';
-            RequestBodyTabSheet.Caption := 'MQ Request Body';
-            ReplyHeadersTabSheet.Caption := 'MQ Message Headers';
-            ReplyBodyTabSheet.Caption := 'MQ Reply Body';
+            MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'MQ Message Descriptor';
+            MessagesTabControl.Tabs[Ord(slRequestBody)] := 'MQ Request Body';
+            MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'MQ Message Headers';
+            MessagesTabControl.Tabs[Ord(slReplyBody)] := 'MQ Reply Body';
           end;
         ttStomp:
           begin
-            RequestHeadersTabSheet.Caption := 'Stomp Request Headers';
-            RequestBodyTabSheet.Caption := 'Stomp Request Body';
-            ReplyHeadersTabSheet.Caption := 'Stomp Reply Headers';
-            ReplyBodyTabSheet.Caption := 'Stomp Reply Body';
+            MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'Stomp Request Headers';
+            MessagesTabControl.Tabs[Ord(slRequestBody)] := 'Stomp Request Body';
+            MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'Stomp Reply Headers';
+            MessagesTabControl.Tabs[Ord(slReplyBody)] := 'Stomp Reply Body';
           end;
         ttSmtp:
           begin
-            RequestHeadersTabSheet.Caption := 'SMTP Request Headers';
-            RequestBodyTabSheet.Caption := 'SMTP Request as XML';
-            ReplyHeadersTabSheet.Caption := 'SMTP Reply Headers';
-            ReplyBodyTabSheet.Caption := 'SMTP Reply Body';
+            MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'SMTP Request Headers';
+            MessagesTabControl.Tabs[Ord(slRequestBody)] := 'Request as XML';
+            MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'SMTP Reply Headers';
+            MessagesTabControl.Tabs[Ord(slReplyBody)] := 'SMTP Reply Body';
           end;
       else
         begin
-          RequestHeadersTabSheet.Caption := 'Request Headers';
-          RequestBodyTabSheet.Caption := 'Request Body';
-          ReplyHeadersTabSheet.Caption := 'Reply Headers';
-          ReplyBodyTabSheet.Caption := 'Reply Body';
+          MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'Request Headers';
+          MessagesTabControl.Tabs[Ord(slRequestBody)] := 'Request Body';
+          MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'Reply Headers';
+          MessagesTabControl.Tabs[Ord(slReplyBody)] := 'Reply Body';
         end;
       end;
-      ShowHeaderAsXmlButton.Visible := (xLog.TransportType = ttMQ) or
-        (xLog.TransportType = ttStomp);
+      if (not xLog.RequestValidated)
+      and (not xLog.ReplyValidated) then
+        logValidationTabImageIndex := 40
+      else
+      begin
+        if (xLog.RequestValidateResult = '') and
+          (xLog.ReplyValidateResult = '') then
+          logValidationTabImageIndex := 39
+        else
+          logValidationTabImageIndex := 25;
+      end;
       UpdateLogTabs (xLog);
       MessagesStatusBar.Panels.Items[0].Text := '[' + IntToStr(xLog.Nr)
         + ' : ' + IntToStr(se.displayedLogs.Number) + ']';
@@ -5572,11 +5532,7 @@ begin
     end
     else
     begin
-      RequestHeadersMemo.Text := '';
-      SoapRequestMemo.Text := '';
-      ReplyHeadersMemo.Text := '';
-      SoapReplyMemo.Text := '';
-      ExceptionMessageMemo.Text := '';
+      LogMemo.Text := '';
       MessagesStatusBar.Panels.Items[0].Text := '';
     end;
   except
@@ -5649,11 +5605,7 @@ begin
         MessagesVTS.Clear;
         se.AsynchRpyLogs.Clear;
         se.displayedLogs.Clear;
-        RequestHeadersMemo.Text := '';
-        SoapRequestMemo.Text := '';
-        ReplyHeadersMemo.Text := '';
-        SoapReplyMemo.Text := '';
-        ValidationResultMemo.Text := '';
+        LogMemo.Text := '';
       finally
         se.ReleaseLogLock;
       end;
@@ -6143,7 +6095,7 @@ begin
   DataTypeDocumentationMemo.Color := Self.Color;
   logTabCaption := MessagesTabSheet.Caption;
   notifyTabCaption := ExceptionTabSheet.Caption;
-  notifyTabImageIndex := ExceptionTabSheet.ImageIndex;
+  notifyTabImageIndex := 66;
   ExceptionTabSheet.ImageIndex := -1;
   se := TWsdlProject.Create;
   se.OnBusy := SetUiBusy;
@@ -6502,7 +6454,7 @@ begin
   for X := 0 to DownPageControl.PageCount - 1 do
     DownPageControl.ActivePageIndex := X;
   DownPageControl.ActivePage := DocumentationTabSheet;
-  MessagesPageControl.ActivePage := RequestBodyTabSheet;
+  MessagesTabControl.TabIndex := Ord (slRequestBody);
   MasterMessagesMenuItem.Visible := isSlaveMode;
   MasterMessagesToolButton.Visible := isSlaveMode;
   CheckBoxClick(nil);
@@ -6828,22 +6780,12 @@ end;
 
 procedure TMainForm.CopyHttpRequestToClipBrdActionExecute(Sender: TObject);
 begin
-  ClipBoard.AsText := SoapRequestMemo.Text;
-end;
-
-procedure TMainForm.CopyHttpReplyBodyActionUpdate(Sender: TObject);
-begin
-  CopyHttpReplyBodyAction.Enabled := (SoapReplyMemo.Text <> '');
+  ClipBoard.AsText := LogMemo.Text;
 end;
 
 procedure TMainForm.CopyHttpRequestToClipBrdActionUpdate(Sender: TObject);
 begin
-  CopyHttpRequestToClipBrdAction.Enabled := (SoapRequestMemo.Text <> '');
-end;
-
-procedure TMainForm.CopyHttpReplyBodyActionExecute(Sender: TObject);
-begin
-  ClipBoard.AsText := SoapReplyMemo.Text;
+  CopyHttpRequestToClipBrdAction.Enabled := (LogMemo.Text <> '');
 end;
 
 procedure TMainForm.ShowHttpReplyAsXMLActionExecute(Sender: TObject);
@@ -6910,11 +6852,6 @@ begin
     else
       ShowTextAsXml('Reply as XML', xString);
   end;
-end;
-
-procedure TMainForm.ShowHttpReplyAsXMLActionUpdate(Sender: TObject);
-begin
-  ShowHttpReplyAsXMLAction.Enabled := (SoapReplyMemo.Text <> '');
 end;
 
 procedure TMainForm.ShowHttpRequestAsXMLActionExecute(Sender: TObject);
@@ -6986,7 +6923,7 @@ end;
 
 procedure TMainForm.ShowHttpRequestAsXMLActionUpdate(Sender: TObject);
 begin
-  ShowHttpRequestAsXMLAction.Enabled := (SoapRequestMemo.Text <> '');
+  ShowHttpRequestAsXMLAction.Enabled := (LogMemo.Text <> '');
 end;
 
 procedure TMainForm.MessagesVTSPaintText(Sender: TBaseVirtualTree;
@@ -7511,12 +7448,12 @@ begin
   fDoShowDesignAtTop := Value;
   if doShowDesignAtTop then
   begin
-    LogPanel.Align := alBottom;
+//    LogPanel.Align := alBottom;
     Splitter1.Align := alBottom;
   end
   else
   begin
-    LogPanel.Align := alTop;
+//    LogPanel.Align := alTop;
     Splitter1.Align := alTop;
   end;
 end;
@@ -7591,26 +7528,6 @@ begin
   { }{
     Allowed := not se.IsActive;
     { }
-end;
-
-procedure TMainForm.CopyExceptionToClipboardActionUpdate(Sender: TObject);
-begin
-  CopyExceptionToClipboardAction.Enabled := (ExceptionMessageMemo.Text <> '');
-end;
-
-procedure TMainForm.CopyExceptionToClipboardActionExecute(Sender: TObject);
-begin
-  ClipBoard.AsText := ExceptionMessageMemo.Text;
-end;
-
-procedure TMainForm.ShowExceptionAsHtmlActionUpdate(Sender: TObject);
-begin
-  ShowExceptionAsHtmlAction.Enabled := (ExceptionMessageMemo.Text <> '');
-end;
-
-procedure TMainForm.ShowExceptionAsHtmlActionExecute(Sender: TObject);
-begin
-  ShowTextAsXml('Exception as XML', ExceptionMessageMemo.Text);
 end;
 
 procedure TMainForm.EditAfterScriptMenuItemClick(Sender: TObject);
@@ -9012,11 +8929,6 @@ begin
     ShowHtml('Reply as HTML', xLog.ReplyBody);
 end;
 
-procedure TMainForm.ShowReplyAsHtmlActionUpdate(Sender: TObject);
-begin
-  ShowRequestAsHtmlAction.Enabled := (SoapReplyMemo.Text <> '');
-end;
-
 procedure TMainForm.ShowReplyAsXmlGridActionExecute(Sender: TObject);
 var
   xCursor: TCursor;
@@ -9099,24 +9011,9 @@ begin
   end;
 end;
 
-procedure TMainForm.ShowReplyAsXmlGridActionUpdate(Sender: TObject);
-begin
-  ShowReplyAsXmlGridAction.Enabled := (SoapReplyMemo.Text <> '');
-end;
-
-procedure TMainForm.ShowReplyHeaderAsXmlActionExecute(Sender: TObject);
-begin
-  ShowTextAsXml('Reply headers as XML', ReplyHeadersMemo.Text);
-end;
-
-procedure TMainForm.ShowReplyHeaderAsXmlActionUpdate(Sender: TObject);
-begin
-  ShowReplyHeaderAsXmlAction.Enabled := (ReplyHeadersMemo.Text <> '');
-end;
-
 procedure TMainForm.ShowRequestAsXmlGridActionUpdate(Sender: TObject);
 begin
-  ShowRequestAsXmlGridAction.Enabled := (SoapRequestMemo.Text <> '');
+  ShowRequestAsXmlGridAction.Enabled := (LogMemo.Text <> '');
 end;
 
 procedure TMainForm.ShowSelectedRequestsAsXmlGridActionExecute(Sender: TObject);
@@ -9211,7 +9108,7 @@ end;
 
 procedure TMainForm.ShowRequestAsHtmlActionUpdate(Sender: TObject);
 begin
-  ShowRequestAsHtmlAction.Enabled := (SoapRequestMemo.Text <> '');
+  ShowRequestAsHtmlAction.Enabled := (LogMemo.Text <> '');
 end;
 
 procedure TMainForm.ShowLogZoomElementActionExecute(Sender: TObject);
@@ -9587,11 +9484,7 @@ begin
       MessagesVTS.Clear;
       se.AsynchRpyLogs.Clear;
       se.displayedLogs.Clear;
-      RequestHeadersMemo.Text := '';
-      SoapRequestMemo.Text := '';
-      ReplyHeadersMemo.Text := '';
-      SoapReplyMemo.Text := '';
-      ValidationResultMemo.Text := '';
+      LogMemo.Text := '';
     end;
   end;
   xCursor := Screen.Cursor;
@@ -9673,11 +9566,7 @@ begin
           MessagesVTS.Clear;
           se.AsynchRpyLogs.Clear;
           se.displayedLogs.Clear;
-          RequestHeadersMemo.Text := '';
-          SoapRequestMemo.Text := '';
-          ReplyHeadersMemo.Text := '';
-          SoapReplyMemo.Text := '';
-          ValidationResultMemo.Text := '';
+          LogMemo.Text := '';
         end;
       end;
       if se.displayedLogs.Count = 0 then
@@ -9789,11 +9678,6 @@ begin
   GridView.FocusedNode := aNode;
 end;
 
-procedure TMainForm.CopyRequestHeaderToClipBrdActionUpdate(Sender: TObject);
-begin
-  CopyRequestHeaderToClipBrdAction.Enabled := (RequestHeadersMemo.Text <> '');
-end;
-
 procedure TMainForm.CopySwiftdatatoclipboardMenuItemClick(Sender: TObject);
 begin
   with TStwiftMtStreamer.Create(NodeToBind(InWsdlTreeView,
@@ -9803,31 +9687,6 @@ begin
     finally
       Free;
     end;
-end;
-
-procedure TMainForm.CopyReplyHeadersToClipBoardActionExecute(Sender: TObject);
-begin
-  ClipBoard.AsText := ReplyHeadersMemo.Text;
-end;
-
-procedure TMainForm.CopyReplyHeadersToClipBoardActionUpdate(Sender: TObject);
-begin
-  CopyReplyHeadersToClipBoardAction.Enabled := (ReplyHeadersMemo.Text <> '');
-end;
-
-procedure TMainForm.CopyRequestHeaderToClipBrdActionExecute(Sender: TObject);
-begin
-  ClipBoard.AsText := RequestHeadersMemo.Text;
-end;
-
-procedure TMainForm.ShowRequestHeaderAsXmlActionUpdate(Sender: TObject);
-begin
-  ShowRequestHeaderAsXmlAction.Enabled := (RequestHeadersMemo.Text <> '');
-end;
-
-procedure TMainForm.ShowRequestHeaderAsXmlActionExecute(Sender: TObject);
-begin
-  ShowTextAsXml('Request headers as XML', RequestHeadersMemo.Text);
 end;
 
 procedure TMainForm.NeedMqInterfaceCaption(aSender, aObject: TObject;
@@ -9926,11 +9785,7 @@ begin
       MessagesVTS.Clear;
       se.AsynchRpyLogs.Clear;
       se.displayedLogs.Clear;
-      RequestHeadersMemo.Text := '';
-      SoapRequestMemo.Text := '';
-      ReplyHeadersMemo.Text := '';
-      SoapReplyMemo.Text := '';
-      ValidationResultMemo.Text := '';
+      LogMemo.Text := '';
     end;
   end;
   if se.displayedLogs.Count > 0 then
@@ -10869,6 +10724,11 @@ begin
       InWsdlTreeView.FocusedNode) as TIpmItem).ValuesToBuffer(nil);
 end;
 
+procedure TMainForm .ToolBar8Click (Sender : TObject );
+begin
+
+end;
+
 procedure TMainForm.CleanMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
@@ -11340,7 +11200,7 @@ begin
       try
         ToAllLogList(xLogList);
         DownPageControl.ActivePage := MessagesTabSheet;
-        MessagesPageControl.ActivePage := RequestBodyTabSheet;
+        MessagesTabControl.TabIndex := Ord (slRequestBody);
       except
         xLogList.Clear;
         raise ;
@@ -11786,6 +11646,12 @@ begin
   end;
 end;
 
+procedure TMainForm .RequestBodyTabSheetContextPopup (Sender : TObject ;
+  MousePos : TPoint ; var Handled : Boolean );
+begin
+
+end;
+
 procedure TMainForm.OperationOptionsActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -11959,6 +11825,19 @@ end;
 procedure TMainForm .DataTypeDocumentationMemoClick (Sender : TObject );
 begin
   OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
+end;
+
+procedure TMainForm .MessagesTabControlChange (Sender : TObject );
+begin
+  UpdateLogTabs(NodeToMsgLog(False,MessagesVTS, MessagesVTS.FocusedNode));
+end;
+
+procedure TMainForm .MessagesTabControlGetImageIndex (Sender : TObject ;
+  TabIndex : Integer ; var ImageIndex : Integer );
+var
+  aLog: TLog;
+begin
+  ImageIndex := logValidationTabImageIndex;
 end;
 
 procedure TMainForm .MessagesVTSChange (Sender : TBaseVirtualTree ;
