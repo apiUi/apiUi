@@ -532,7 +532,7 @@ function TXsdDescr.AddedTypeDefElementsAsXml: TObject;
             ShowMessage(sTypeDef.ElementDefs.Xsds[E].ElementName);
           _Usage(sXml, sTypeDef.ElementDefs.Xsds[E].sType, nTypeDef,
             aCaption + aSep + sTypeDef.ElementDefs.Xsds[E]
-              .ElementNameSpace + ':' + sTypeDef.ElementDefs.Xsds[E]
+              .ElementNameSpace + ';' + sTypeDef.ElementDefs.Xsds[E]
               .ElementName, aSep);
         end;
     finally
@@ -564,7 +564,7 @@ begin
         for y := 0 to TypeDefs.Count - 1 do
           if TypeDefs.XsdDataTypes[y] <> nTypeDef then
             _Usage(sXml, TypeDefs.XsdDataTypes[y], nTypeDef,
-              TypeDefs.XsdDataTypes[y].NameSpace + ':' + TypeDefs.XsdDataTypes
+              TypeDefs.XsdDataTypes[y].NameSpace + ';' + TypeDefs.XsdDataTypes
                 [y].Name, '<>');
         for y := 0 to nTypeDef.ElementDefs.Count - 1 do
         begin
@@ -711,7 +711,7 @@ begin
   result.Name := xXml.Attributes.ValueByTag[tagName];
   result.NameSpace := aTargetNamespace;
   if (not aGlobal)
-  or (not TypeDefs.Find(result.NameSpace + ':' + result.Name, f)) then
+  or (not TypeDefs.Find(result.NameSpace + ';' + result.Name, f)) then
   begin
     AddDocumentation(result.Documentation, xXml);
     AddAppinfo(result.Appinfo, xXml);
@@ -732,7 +732,7 @@ begin
                     and (result.BaseNameSpace = scXMLSchemaURI)
                       ;
     if aGlobal then
-      TypeDefs.AddObject(result.NameSpace + ':' + result.Name, result);
+      TypeDefs.AddObject(result.NameSpace + ';' + result.Name, result);
   end;
 end;
 
@@ -838,7 +838,7 @@ begin
   result.Name := xXml.Attributes.ValueByTag[tagName];
   result.NameSpace := aTargetNamespace;
   if (not isGlobalDefined)
-  or not TypeDefs.Find(result.NameSpace + ':' + result.Name, f) then
+  or not TypeDefs.Find(result.NameSpace + ';' + result.Name, f) then
   begin
     AddDocumentation(result.Documentation, xXml);
     AddAppinfo(result.Appinfo, xXml);
@@ -892,7 +892,7 @@ begin
     end;
   end;
   if isGlobalDefined then
-    TypeDefs.AddObject(result.NameSpace + ':' + result.Name, result);
+    TypeDefs.AddObject(result.NameSpace + ';' + result.Name, result);
 end;
 
 
@@ -903,7 +903,7 @@ var
 begin
   for x := Low(xmlzConsts.builtInTypeNames) to High(xmlzConsts.builtInTypeNames) do
   begin
-    if not TypeDefs.Find(scXMLSchemaURI + ':' + xmlzConsts.builtInTypeNames[x], f) then
+    if not TypeDefs.Find(scXMLSchemaURI + ';' + xmlzConsts.builtInTypeNames[x], f) then
     begin
       xTypeDef := TXsdDataType.Create(self);
       Garbage.AddObject('', xTypeDef);
@@ -913,7 +913,7 @@ begin
       xTypeDef.IsBuiltIn := True;
       xTypeDef.BaseDataTypeName := xTypeDef.Name;
       xTypeDef.xsdDescr := self;
-      TypeDefs.AddObject(xTypeDef.NameSpace + ':' + xTypeDef.Name, xTypeDef);
+      TypeDefs.AddObject(xTypeDef.NameSpace + ';' + xTypeDef.Name, xTypeDef);
     end;
   end;
 end;
@@ -929,18 +929,8 @@ begin
   if not (aXml is TXml) then raise Exception.Create('Illegal arg: TXsdDescr.AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent)');
   xXml := aXml as TXml;
   if not (    (xXml.Name = tagSchema)
-(*
-  and (   (xXml.NameSpace = scXMLSchemaURI)
-               or (xXml.NameSpace = '')
-              )
-*)
          )
   and not (    (xXml.Name = tagTypes)
-(*
-           and (   (xXml.NameSpace = scWsdlNameSpace)
-                or (xXml.NameSpace = '')
-               )
-               *)
           ) then
     raise Exception.CreateFmt ('%s is not a XML schema (%s:%s)', [aFileName, xXml.NameSpace, xXml.Name]);
   swapElementFormDefaultQualified := xsdElementFormDefaultQualified;
@@ -1533,7 +1523,7 @@ begin
   nType.ElementDefs.AddObject(result.ElementName, result);
   nType.Manually := True;
   if nType <> oType then
-    aXsdDescr.TypeDefs.AddObject(nType.NameSpace + ':' + nType.Name, nType);
+    aXsdDescr.TypeDefs.AddObject(nType.NameSpace + ';' + nType.Name, nType);
   sType := nType;
 end;
 
@@ -2567,7 +2557,7 @@ procedure TXsdDescr.AddedTypeDefElementsFromXml(aXml: TObject);
     end;
     for x := 0 to aType.ElementDefs.Count - 1 do
     begin
-      if (aType.ElementDefs.Xsds[x].ElementNameSpace + ':' +
+      if (aType.ElementDefs.Xsds[x].ElementNameSpace + ';' +
           aType.ElementDefs.Xsds[x].ElementName = lft) then
       begin
         if rght = '' then
@@ -2587,7 +2577,7 @@ procedure TXsdDescr.AddedTypeDefElementsFromXml(aXml: TObject);
     p := Pos('<>', s);
     r := LeftStr(s, p - 1);
     s := Copy(s, p + 2, Length(s));
-    p := Pos(':', r);
+    p := Pos(';', r);
     NameSpace := LeftStr(r, p - 1);
     name := Copy(r, p + 1, Length(r) - p);
     result := __UsedAt(FindTypeDef(NameSpace, name), s);
@@ -2639,7 +2629,7 @@ procedure TXsdDescr.Finalise;
     for x := 0 to Garbage.Count - 1 do
       if Garbage.Objects[x] is TXsdDataType then with (Garbage.Objects[x] as TXsdDataType) do
         if _Processed then
-          ShowMessage ('Fnd: ' + BaseNameSpace + ':' + BaseDataTypeName);
+          ShowMessage ('Fnd: ' + BaseNameSpace + ';' + BaseDataTypeName);
   end;
 
   procedure _linkToBase(aTypeDef: TXsdDataType);
@@ -2685,10 +2675,6 @@ procedure TXsdDescr.Finalise;
           for x := 0 to ElementDefs.Count - 1 do
           with ElementDefs.Xsds[x] do
           begin
-      if ElementName = 'schemaVal' then
-        ElementName := 'schemaVal';
-      if ElementName = 'boolean' then
-        ElementName := 'boolean';
             if not Assigned (sType)
             and (_DataTypeName <> '') then
             begin
@@ -2752,6 +2738,33 @@ procedure TXsdDescr.Finalise;
       end;
     end;
   end;
+
+  procedure _linkElmntToDefaultType(aTrack: String; aTypeDef: TXsdDataType);
+  var
+    x: Integer;
+  begin
+    if not Assigned (aTypeDef) then Exit;
+    if aTypeDef._Processed then Exit;
+    aTypeDef._Processed := True;
+    try
+      try
+        with aTypeDef do
+          for x := 0 to ElementDefs.Count - 1 do with ElementDefs.Xsds[x] do
+            if not Assigned (sType) then
+              sType := FindTypeDef(scXMLSchemaURI, xsdString)
+            else
+              _linkElmntToDefaultType(aTrack + '.' + ElementName, sType);
+      except
+        on e: Exception do
+        begin
+          raise Exception.Create (aTrack + ' => ' + e.Message);
+        end;
+      end;
+    finally
+      aTypeDef._Processed := False;
+    end;
+  end;
+
 
   procedure _inheritFacets (aTypeDef: TXsdDataType);
   {
@@ -2981,6 +2994,9 @@ begin
   _linkToBase(TypeDef);
   for x := 0 to TypeDefs.Count - 1 do
     _linkToBase(TypeDefs.XsdDataTypes[x]);
+  _LinkElmntToDefaultType('', TypeDef);
+  for x := 0 to TypeDefs.Count - 1 do
+    _LinkElmntToDefaultType('', TypeDefs.XsdDataTypes[x]);
   _inheritFacets(TypeDef);
   for x := 0 to TypeDefs.Count - 1 do
     _inheritFacets(TypeDefs.XsdDataTypes[x]);
@@ -3009,9 +3025,9 @@ var
   f: integer;
 begin
   result := nil;
-  if TypeDefs.Find(aNameSpace + ':' + aName, f) then
+  if TypeDefs.Find(aNameSpace + ';' + aName, f) then
     result := TypeDefs.XsdDataTypes[f]
-  else if TypeDefs.Find(scXMLSchemaURI + ':' + aName, f) then
+  else if TypeDefs.Find(scXMLSchemaURI + ';' + aName, f) then
     result := TypeDefs.XsdDataTypes[f];
 end;
 

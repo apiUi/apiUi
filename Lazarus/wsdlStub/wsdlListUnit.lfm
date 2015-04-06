@@ -1,29 +1,33 @@
 object wsdlListForm: TwsdlListForm
   Left = 271
+  Height = 321
   Top = 250
+  Width = 844
   Caption = 'List of Wsdls to stub'
   ClientHeight = 321
   ClientWidth = 844
   Color = clBtnFace
-  ParentFont = True
-  ShowHint = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  PixelsPerInch = 96
+  ParentFont = True
+  ShowHint = True
+  LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
+    Height = 57
     Top = 264
     Width = 844
-    Height = 57
     Align = alBottom
     BorderWidth = 3
+    ClientHeight = 57
+    ClientWidth = 844
     TabOrder = 0
     object OKBtn: TButton
       Left = 11
+      Height = 25
       Top = 12
       Width = 75
-      Height = 25
       Action = OKAction
       Default = True
       ModalResult = 1
@@ -31,83 +35,85 @@ object wsdlListForm: TwsdlListForm
     end
     object AddButton: TButton
       Left = 105
+      Height = 25
       Top = 12
       Width = 75
-      Height = 25
       Action = AddAction
       TabOrder = 1
     end
     object DeleteButton: TButton
       Left = 606
+      Height = 25
       Top = 12
       Width = 75
-      Height = 25
       Action = DeleteAction
       TabOrder = 6
     end
     object EditSdfButton: TButton
       Left = 201
+      Height = 25
       Top = 12
       Width = 75
-      Height = 25
       Action = EditAction
       TabOrder = 2
     end
     object NewSdfButton: TButton
       Left = 282
+      Height = 25
       Top = 12
       Width = 75
-      Height = 25
       Action = NewAction
       TabOrder = 3
     end
     object ExtraXsdsButton: TButton
       Left = 386
+      Height = 25
       Top = 12
       Width = 75
-      Height = 25
       Action = ExtraXSDAction
       TabOrder = 4
     end
     object PropertiesButton: TButton
       Left = 489
+      Height = 25
       Top = 12
       Width = 75
-      Height = 25
       Action = PropertiesAction
       TabOrder = 5
     end
   end
   object Panel2: TPanel
     Left = 0
+    Height = 264
     Top = 0
     Width = 844
-    Height = 264
     Align = alClient
     BorderWidth = 3
     Caption = 'Panel2'
+    ClientHeight = 264
+    ClientWidth = 844
     TabOrder = 1
     object ListView: TListView
-      Left = 2
-      Top = 2
-      Width = 836
+      Left = 4
       Height = 256
+      Top = 4
+      Width = 836
       Align = alClient
-      Columns = <
+      Columns = <      
         item
           Caption = 'Wsdl location'
         end>
       HideSelection = False
+      PopupMenu = ListViewPopupMenu
       ReadOnly = True
       RowSelect = True
-      PopupMenu = ListViewPopupMenu
       TabOrder = 0
       ViewStyle = vsReport
     end
   end
   object ActionList1: TActionList
-    Left = 296
-    Top = 32
+    left = 296
+    top = 32
     object DeleteAction: TAction
       Caption = '&Delete...'
       Hint = 'Remove service description'
@@ -154,16 +160,16 @@ object wsdlListForm: TwsdlListForm
     end
   end
   object SaveDialog: TSaveDialog
-    DefaultExt = 'sdf'
+    DefaultExt = '.sdf'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    Left = 376
-    Top = 32
+    left = 376
+    top = 32
   end
   object ListViewPopupMenu: TPopupMenu
-    Left = 472
-    Top = 32
+    left = 472
+    top = 32
     object CopyFileNameAction1: TMenuItem
       Action = CopyFileNameAction
     end
   end
-end
+end

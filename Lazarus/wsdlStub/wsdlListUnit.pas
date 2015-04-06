@@ -392,7 +392,7 @@ begin
     begin
       fstubChanged := True;
       xWsdl.ExtraXsdsFromXml (xXml);
-      ShowMessage ('To use the added XML-schema files,' + CRLF + 'first save and reload your project');
+      ShowMessage ('To use the added XML-schema files,' + LineEnding + 'first save and reload your project');
     end;
   finally
     FreeAndNil (xXml);

@@ -1679,7 +1679,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
         Mssg := TWsdlMsgDescr.Create(self);
         Mssg.Name := XmlItems[x].Attributes.ValueByTag[tagName];
         Mssg.NameSpace := xTargetNamespace;
-        fMssgs.AddObject(Mssg.NameSpace + ':' + Mssg.Name, Mssg);
+        fMssgs.AddObject(Mssg.NameSpace + ';' + Mssg.Name, Mssg);
         for y := 0 to XmlItems[x].Items.Count - 1 do with XmlItems[x].Items.XmlItems[y] do
         begin
           Part := TWsdlPart.Create;
@@ -1694,7 +1694,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
     begin
       if XmlItems[x].Name = tagPortType then
       begin
-        PortTypeName := xTargetNamespace + ':' + XmlItems[x].Attributes.ValueByTag[tagName];
+        PortTypeName := xTargetNamespace + ';' + XmlItems[x].Attributes.ValueByTag[tagName];
         for y := 0 to XmlItems[x].Items.Count - 1 do with XmlItems[x].Items do
         begin
           if XmlItems[y].Name = tagOperation then
@@ -1710,7 +1710,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
               if Name = tagOutput then
                 Oper._OutputMessageName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagMessage]);
               if Name = tagFault then
-                fStrs.Values [PortTypeName+':'+Oper.Name+':FltMssg:'+AttributeValueByTag[xmlzConsts.tagName]+'.Message']
+                fStrs.Values [PortTypeName+';'+Oper.Name+':FltMssg:'+AttributeValueByTag[xmlzConsts.tagName]+'.Message']
                   := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagMessage]);
             end;
           end;
@@ -1722,7 +1722,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
       if Name = tagBinding then
       begin
         PortTypeName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagType]);
-        fStrs.Values[xTargetNamespace + ':' + AttributeValueByTag[xmlzConsts.tagName] + '.Bind'] := PortTypeName;
+        fStrs.Values[xTargetNamespace + ';' + AttributeValueByTag[xmlzConsts.tagName] + '.Bind'] := PortTypeName;
         SoapBindingStyle := ItemByTag[tagBinding].AttributeValueByTag[tagStyle];
         SoapTransport := ItemByTag[tagBinding].AttributeValueByTag[tagTransport];
         for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
@@ -1730,8 +1730,8 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
           if Name = tagOperation then
           begin
             OperationName := AttributeValueByTag[xmlzConsts.tagName];
-            if not fOpers.Find(PortTypeName + ':' + OperationName, f) then
-              raise Exception.CreateFmt('Operation %s not found in portTypes', [PortTypeName + ':' + OperationName]);
+            if not fOpers.Find(PortTypeName + ';' + OperationName, f) then
+              raise Exception.CreateFmt('Operation %s not found in portTypes', [PortTypeName + ';' + OperationName]);
             Oper := fOpers.Operations[f];
             Oper.SoapBindingStyle := SoapBindingStyle;
             Oper.SoapTransport := SoapTransport;
@@ -1793,7 +1793,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
                   begin
                     Oper.FaultMessages.AddObject(FaultName, nil);
                     for a := 0 to Attributes.Count - 1 do with Attributes.XmlAttributes[a] do
-                      fStrs.Values [PortTypeName+':'+OperationName+':FltMssg:'+FaultName+'.'+Name] := Value;
+                      fStrs.Values [PortTypeName+';'+OperationName+':FltMssg:'+FaultName+'.'+Name] := Value;
                   end;
                 end;
               end;
@@ -1859,7 +1859,7 @@ begin
     xXsds.Sorted := True;
     xXsds.CaseSensitive := True;
     for x := 0 to XsdDescr.TypeDef.ElementDefs.Count - 1 do with XsdDescr.TypeDef.ElementDefs do
-      xXsds.AddObject(Xsds[x].ElementNameSpace + ':' + Xsds[x].ElementName, Xsds[x]);
+      xXsds.AddObject(Xsds[x].ElementNameSpace + ';' + Xsds[x].ElementName, Xsds[x]);
     for m := 0 to fMssgs.Count - 1 do with fMssgs.Messages[m] do
     begin
       for p := 0 to Parts.Count - 1 do
@@ -1895,12 +1895,10 @@ begin
         if not fMssgs.Find (_InputMessageName, f) then
           raise Exception.CreateFmt('InputBodyMessage (%s) not found at operation %s', [_InputMessageName, Name]);
         Mssg := fMssgs.Messages[f];
-        if (Mssg.Parts.Count > 0)
-        and Assigned (Mssg.Parts.Parts[0].Xsd) then
-        begin
+        for p := 0 to Mssg.Parts.Count - 1 do
+          reqXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd);
+        if (Mssg.Parts.Count > 0) then
           reqTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
-          reqXsd.sType.AddXsd(Mssg.Parts.Parts[0].Xsd)
-        end;
         bindRefId := 0;
         reqBind := TXml.Create (0, reqXsd);
         reqBind.Name := Mssg.Name;
@@ -1936,7 +1934,7 @@ begin
         for m := 0 to FaultMessages.Count - 1 do
         begin
           FaultName := FaultMessages.Strings[m];
-          MessageName := fStrs.Values[PortTypeName+':'+OperationName+':FltMssg:'+FaultName+'.Message'];
+          MessageName := fStrs.Values[PortTypeName+';'+OperationName+':FltMssg:'+FaultName+'.Message'];
           if not fMssgs.Find (MessageName, f) then
             raise Exception.CreateFmt('Faultmessage %s not found for soapfault %s', [MessageName, FaultName]);
           FaultMessages.Objects[m] := fMssgs.Messages[f];
@@ -2781,7 +2779,9 @@ var
 begin
   for x := 0 to ExtraXsds.Count - 1 do
     if not XsdDescr.ReadFileNames.Find (ExtraXsds.Strings[x], f) then
-      XsdDescr.LoadXsdFromFile ( ExtraXsds.Strings[x], _OnParseErrorEvent);
+      XsdDescr.AddXsdFromFile ( ExtraXsds.Strings[x], _OnParseErrorEvent);
+  if ExtraXsds.Count > 0 then
+    XsdDescr.Finalise; // again
 end;
 
 { TWsdlServices }
@@ -5638,7 +5638,8 @@ begin
       while (x < Count)
       and (x < corBinds.Count) do
       begin
-        corBinds.Bindables[x].CorrelationValue := Strings[x];
+        if Assigned (corBinds.Bindables[x]) then
+          corBinds.Bindables[x].CorrelationValue := Strings[x];
         Inc (x);
       end;
       while (x < corBinds.Count) do
