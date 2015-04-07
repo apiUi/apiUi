@@ -16,6 +16,9 @@ uses
   Buttons, ExtCtrls, SysUtils;
 
 type
+
+  { TAboutBox }
+
   TAboutBox = class(TForm)
     OKButton: TButton;
     Label1: TLabel;
@@ -27,10 +30,12 @@ type
   private
     procedure setProgName(const Value: String);
     procedure setLicensedTo(const Value: String);
+    procedure setVersionInfo(AValue: String);
     { Private declarations }
   public
     property ProgName: String write setProgName;
     property LicensedTo: String write setLicensedTo;
+    property VersionInfo: String write setVersionInfo;
   end;
 
 var
@@ -57,6 +62,11 @@ end;
 procedure TAboutBox.setLicensedTo(const Value: String);
 begin
   LicensedLabel.Caption := 'Licensed to ' + Value;
+end;
+
+procedure TAboutBox.setVersionInfo(AValue: String);
+begin
+  VersionLabel.Caption := 'Version ' + AValue;
 end;
 
 procedure TAboutBox.setProgName(const Value: String);

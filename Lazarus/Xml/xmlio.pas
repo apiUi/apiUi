@@ -13,10 +13,12 @@ procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function GetUserName: String;
+function GetVersion: String;
 
 implementation
 uses StrUtils
    , LCLIntf, LCLType, LMessages
+   , vinfo, versiontypes, versionresource
    , idHTTP
    , LConvEncoding
    ;
@@ -209,6 +211,36 @@ begin
   {$ELSE}
   result := GetEnvironmentVariable('USERNAME');
   {$ENDIF}
+end;
+
+function GetVersion: String;
+var
+  Stream: TResourceStream;
+  vr: TVersionResource;
+  fi: TVersionFixedInfo;
+begin
+  Result := '';
+  try
+  (* This raises an exception if version info has not been incorporated into the  *)
+  (* binary (Lazarus Project -> Project Options -> Version Info -> Version        *)
+  (* numbering).                                                                  *)
+    Stream:= TResourceStream.CreateFromID(HINSTANCE, 1, PChar(RT_VERSION));
+    try
+      vr:= TVersionResource.Create;
+      try
+        vr.SetCustomRawDataStream(Stream);
+        fi:= vr.FixedInfo;
+        result := Format('%d.%d.%d.%d', [fi.FileVersion[0], fi.FileVersion[1], fi.FileVersion[2], fi.FileVersion[3]]);
+        vr.SetCustomRawDataStream(nil);
+      finally
+        vr.Free
+      end;
+    finally
+     Stream.Free
+    end
+  except
+    result := '(not available)';
+  end
 end;
 
 

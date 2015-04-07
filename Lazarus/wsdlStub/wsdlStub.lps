@@ -4,13 +4,11 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="4">
+    <Units Count="13">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="wsdlStub"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="9"/>
+        <CursorPos Y="9"/>
         <UsageCount Value="1099"/>
       </Unit0>
       <Unit1>
@@ -20,102 +18,203 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="3336"/>
-        <CursorPos X="3" Y="3342"/>
+        <TopLine Value="3231"/>
+        <CursorPos Y="3239"/>
         <UsageCount Value="1083"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\lclproc.pas"/>
-        <UnitName Value="LCLProc"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="853"/>
-        <CursorPos X="19" Y="857"/>
-        <UsageCount Value="10"/>
+        <Filename Value="..\Utils\vinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="vinfo"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1"/>
+        <CursorPos X="44" Y="8"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\include\control.inc"/>
-        <EditorIndex Value="2"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="723"/>
-        <CursorPos X="1" Y="732"/>
+        <Filename Value="C:\usr\lib64\lazarus\lcl\lclproc.pas"/>
+        <TopLine Value="853"/>
+        <CursorPos X="19" Y="857"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="C:\usr\lib64\lazarus\lcl\include\control.inc"/>
+        <TopLine Value="723"/>
+        <CursorPos Y="732"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <UnitName Value="Wsdlz"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="5371"/>
+        <CursorPos X="1" Y="5381"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="AboutUnit.pas"/>
+        <ComponentName Value="AboutBox"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AboutUnit"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="56"/>
+        <CursorPos X="45" Y="59"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <UnitName Value="igGlobals"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="344"/>
+        <CursorPos X="1" Y="352"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <UnitName Value="Xmlz"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="4019"/>
+        <CursorPos X="1" Y="4038"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <UnitName Value="VersionSupport"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="199"/>
+        <CursorPos X="3" Y="213"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <UnitName Value="xmlio"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="214"/>
+        <CursorPos X="1" Y="218"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1003"/>
+        <CursorPos X="17" Y="1022"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\inc\resh.inc"/>
+        <TopLine Value="45"/>
+        <CursorPos X="10" Y="56"/>
+        <UsageCount Value="10"/>
+      </Unit12>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="15" HistoryIndex="14">
       <Position1>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\lclproc.pas"/>
-        <Caret Line="861" Column="1" TopLine="850"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="390" Column="11" TopLine="371"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\include\control.inc"/>
-        <Caret Line="727" Column="1" TopLine="716"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="16" Column="20" TopLine="5"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\include\control.inc"/>
-        <Caret Line="731" Column="1" TopLine="723"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="216" Column="20" TopLine="197"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\include\control.inc"/>
-        <Caret Line="732" Column="1" TopLine="723"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="225" Column="17" TopLine="211"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\lclproc.pas"/>
-        <Caret Line="861" Column="1" TopLine="853"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="48" Column="39" TopLine="38"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\include\control.inc"/>
-        <Caret Line="732" Column="1" TopLine="723"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="100" Column="6" TopLine="98"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\lclproc.pas"/>
-        <Caret Line="861" Column="1" TopLine="853"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="44" Column="47" TopLine="34"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\..\..\..\usr\lib64\lazarus\lcl\include\control.inc"/>
-        <Caret Line="732" Column="1" TopLine="723"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="23" Column="5" TopLine="8"/>
       </Position8>
+      <Position9>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="213" Column="3" TopLine="199"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="4038" Column="22" TopLine="4020"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="379" Column="23" TopLine="368"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="222" Column="3" TopLine="222"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="222" Column="3" TopLine="216"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="227" Column="37" TopLine="216"/>
+      </Position14>
+      <Position15>
+        <Filename Value="AboutUnit.pas"/>
+        <Caret Line="38" Column="55" TopLine="32"/>
+      </Position15>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="4">
+    <BreakPoints Count="3">
       <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="WsdlStubMainUnit.pas"/>
-        <Line Value="1240"/>
-      </Item1>
-      <Item2>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="WsdlProjectz.pas"/>
         <Line Value="1470"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\usr\lib64\lazarus\lcl\lclproc.pas"/>
+        <Line Value="857"/>
       </Item2>
       <Item3>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\..\..\..\..\usr\lib64\lazarus\lcl\lclproc.pas"/>
-        <Line Value="857"/>
-      </Item3>
-      <Item4>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\..\..\..\..\usr\lib64\lazarus\lcl\lclproc.pas"/>
+        <Source Value="C:\usr\lib64\lazarus\lcl\lclproc.pas"/>
         <Line Value="859"/>
-      </Item4>
+      </Item3>
     </BreakPoints>
   </Debugging>
   <EditorMacros Count="0"/>

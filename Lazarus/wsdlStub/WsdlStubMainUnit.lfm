@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 449
+  Left = 448
   Height = 525
-  Top = 101
+  Top = 178
   Width = 865
   Caption = 'MainForm'
   ClientHeight = 506
@@ -18,7 +18,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object MainToolBar: TToolBar
     Left = 0
     Height = 29
@@ -34,6 +34,7 @@ object MainForm: TMainForm
     end
     object ToolButton23: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton23'
@@ -62,6 +63,7 @@ object MainForm: TMainForm
     end
     object ToolButton4: TToolButton
       Left = 126
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton4'
@@ -77,6 +79,7 @@ object MainForm: TMainForm
     end
     object ToolButton2: TToolButton
       Left = 171
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton2'
@@ -90,6 +93,7 @@ object MainForm: TMainForm
     end
     object ToolButton48: TToolButton
       Left = 204
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton48'
@@ -116,6 +120,7 @@ object MainForm: TMainForm
     end
     object ToolButton43: TToolButton
       Left = 278
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton43'
@@ -129,6 +134,7 @@ object MainForm: TMainForm
     end
     object ToolButton61: TToolButton
       Left = 311
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton61'
@@ -137,6 +143,7 @@ object MainForm: TMainForm
     end
     object ToolButton21: TToolButton
       Left = 321
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton21'
@@ -150,6 +157,7 @@ object MainForm: TMainForm
     end
     object ToolButton70: TToolButton
       Left = 349
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton70'
@@ -166,6 +174,7 @@ object MainForm: TMainForm
     end
     object SeparatorToolButton: TToolButton
       Left = 382
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'SeparatorToolButton'
@@ -237,6 +246,7 @@ object MainForm: TMainForm
         end
         object ToolButton17: TToolButton
           Left = 67
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton17'
@@ -249,6 +259,7 @@ object MainForm: TMainForm
         end
         object ToolButton19: TToolButton
           Left = 100
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton19'
@@ -262,6 +273,7 @@ object MainForm: TMainForm
         end
         object ToolButton62: TToolButton
           Left = 133
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton62'
@@ -459,6 +471,7 @@ object MainForm: TMainForm
         end
         object ToolButton8: TToolButton
           Left = 24
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton8'
@@ -473,6 +486,7 @@ object MainForm: TMainForm
         end
         object ToolButton20: TToolButton
           Left = 57
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton20'
@@ -486,6 +500,7 @@ object MainForm: TMainForm
         end
         object ToolButton10: TToolButton
           Left = 90
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton10'
@@ -499,6 +514,7 @@ object MainForm: TMainForm
         end
         object ToolButton14: TToolButton
           Left = 123
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton14'
@@ -517,6 +533,7 @@ object MainForm: TMainForm
         end
         object ToolButton26: TToolButton
           Left = 179
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton26'
@@ -530,6 +547,7 @@ object MainForm: TMainForm
         end
         object ToolButton56: TToolButton
           Left = 212
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton56'
@@ -543,6 +561,7 @@ object MainForm: TMainForm
         end
         object ToolButton29: TToolButton
           Left = 245
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton29'
@@ -561,6 +580,7 @@ object MainForm: TMainForm
         end
         object ToolButton34: TToolButton
           Left = 301
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton34'
@@ -574,6 +594,7 @@ object MainForm: TMainForm
         end
         object ToolButton41: TToolButton
           Left = 334
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton41'
@@ -593,6 +614,7 @@ object MainForm: TMainForm
         end
         object LastToolButton: TToolButton
           Left = 390
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'LastToolButton'
@@ -741,6 +763,7 @@ object MainForm: TMainForm
         end
         object ToolButton46: TToolButton
           Left = 47
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton46'
@@ -754,6 +777,7 @@ object MainForm: TMainForm
         end
         object ToolButton18: TToolButton
           Left = 80
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton18'
@@ -767,6 +791,7 @@ object MainForm: TMainForm
         end
         object ToolButton54: TToolButton
           Left = 113
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton54'
@@ -1056,6 +1081,7 @@ object MainForm: TMainForm
         end
         object ToolButton68: TToolButton
           Left = 70
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton68'
@@ -1079,6 +1105,7 @@ object MainForm: TMainForm
         end
         object ToolButton69: TToolButton
           Left = 149
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton69'
@@ -1106,9 +1133,31 @@ object MainForm: TMainForm
           Action = httpRequestMessagesAction
         end
         object ToolButton59: TToolButton
-          Left = 251
-          Top = 2
+          Left = 1
+          Top = 24
           Action = readLog4jEventsAction
+        end
+        object MessagesTabControl: TTabControl
+          Left = 273
+          Height = 21
+          Top = 8
+          Width = 584
+          Images = mainImageList
+          OnChange = MessagesTabControlChange
+          OnGetImageIndex = MessagesTabControlGetImageIndex
+          TabIndex = 2
+          Tabs.Strings = (
+            'HTTP Request Body'
+            'HTTP Request Headers'
+            'HTTP Reply Body'
+            'HTTP Reply Headers'
+            'Exception'
+            'Validation'
+          )
+          Align = alRight
+          BorderSpacing.Top = 6
+          BorderSpacing.CellAlignVertical = ccaRightBottom
+          TabOrder = 0
         end
       end
       object Panel2: TPanel
@@ -1224,42 +1273,21 @@ object MainForm: TMainForm
           SimplePanel = False
         end
       end
-      object MessagesTabControl: TTabControl
+      object LogMemo: TMemo
         Left = 273
         Height = 111
         Top = 29
         Width = 584
-        Images = mainImageList
-        OnChange = MessagesTabControlChange
-        OnGetImageIndex = MessagesTabControlGetImageIndex
-        TabPosition = tpBottom
-        TabIndex = 1
-        Tabs.Strings = (
-          'HTTP Request Body'
-          'HTTP Request Headers'
-          'HTTP Reply Body'
-          'HTTP Reply Headers'
-          'Exception'
-          'Validation'
-        )
         Align = alClient
+        Font.CharSet = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        ParentColor = True
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
         TabOrder = 3
-        object LogMemo: TMemo
-          Left = 2
-          Height = 88
-          Top = 2
-          Width = 580
-          Align = alClient
-          Font.CharSet = ANSI_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -13
-          Font.Name = 'Courier New'
-          ParentColor = True
-          ParentFont = False
-          ReadOnly = True
-          ScrollBars = ssBoth
-          TabOrder = 1
-        end
       end
     end
   end

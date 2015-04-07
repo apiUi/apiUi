@@ -144,7 +144,12 @@ uses StrUtils
    , Menus
    , TypInfo
    , ClipBrd
-   , LCLIntf, LCLType, LMessages
+   , LCLIntf
+   , LCLType
+   , LMessages
+   , vinfo
+   , versiontypes
+   , versionresource
    , Registry
    , RegExpr
    , hashUtilz

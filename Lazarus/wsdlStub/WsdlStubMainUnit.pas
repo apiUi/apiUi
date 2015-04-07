@@ -67,14 +67,14 @@ type
     DataTypeDocumentationMemo : TlzRichEdit ;
     FreeFormatMemo: TMemo;
     InWsdlTreeView: TVirtualStringTree;
+    LogMemo: TMemo;
+    MessagesTabControl: TTabControl;
     Panel1: TPanel;
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
-    LogMemo : TMemo ;
     Splitter1 : TSplitter ;
     SqlConnector : TSQLConnector ;
     SQLTransaction : TSQLTransaction ;
-    MessagesTabControl : TTabControl ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -3234,6 +3234,7 @@ begin
   try
     AboutBox.ProgName := _progName;
     AboutBox.LicensedTo := xCompanyName;
+    AboutBox.VersionInfo:= _xmlProgVersion;
     AboutBox.ShowModal;
   finally
     FreeAndNil(AboutBox);

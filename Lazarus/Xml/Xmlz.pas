@@ -4034,7 +4034,7 @@ end;
 initialization
   _xmlUserName := GetUserName;
   _xmlProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
-  _xmlProgVersion := GetFileVersion;
+  _xmlProgVersion := xmlio.GetVersion;
   _xmlLicensed := True;
   xmlSetDefaultColors;
 
