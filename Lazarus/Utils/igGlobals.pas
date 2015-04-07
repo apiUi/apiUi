@@ -147,7 +147,6 @@ uses StrUtils
    , LCLIntf
    , LCLType
    , LMessages
-   , vinfo
    , versiontypes
    , versionresource
    , Registry

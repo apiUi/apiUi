@@ -6094,6 +6094,7 @@ var
   X, wBttn: Integer;
 begin
   DataTypeDocumentationMemo.Color := Self.Color;
+  (MessagesTabControl as TWinControl).Color := Self.Color;
   logTabCaption := MessagesTabSheet.Caption;
   notifyTabCaption := ExceptionTabSheet.Caption;
   notifyTabImageIndex := 66;

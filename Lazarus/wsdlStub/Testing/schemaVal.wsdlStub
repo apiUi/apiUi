@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 2015-03-17 21:55:57: Generated with svStudio 9.0.0.8536 by Jan -->
+<!-- 2015-04-07 22:18:14: Generated with svStudio 9.0.1.8627 by Jan -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.wsdlStub</FileName>
   <Portnumber>0</Portnumber>
@@ -53,6 +53,7 @@
       <Params></Params>
       <UserName></UserName>
       <Password>Ehg6</Password>
+      <ConnectionString></ConnectionString>
     </DatabaseConnection>
   </projectOptions>
   <Environments></Environments>
@@ -151,6 +152,9 @@
                   </dateTimeFacets>
                   <timeFacets checked__="true">
                     <minIncl checked__="true">02:02:02.19</minIncl>
+                    <maxIncl checked__="true">02:02:02.21</maxIncl>
+                    <minExcl checked__="true">02:02:02.20</minExcl>
+                    <maxExcl checked__="true">02:02:02.20</maxExcl>
                   </timeFacets>
                   <decimalFacets checked__="true">
                     <minIncl checked__="true">2.79</minIncl>
@@ -196,4 +200,6 @@
   <ignoreRemovingOn></ignoreRemovingOn>
   <ignoreCoverageOn></ignoreCoverageOn>
   <Scripts></Scripts>
+  <FocusOperationName>schemaVal_Req</FocusOperationName>
+  <FocusMessageIndex>0</FocusMessageIndex>
 </WsdlStubCase>

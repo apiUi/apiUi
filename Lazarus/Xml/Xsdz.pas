@@ -668,7 +668,9 @@ begin
     result.BaseDataTypeName:=NameWithoutPrefix(xAttr.Value);
     result.BaseNameSpace:=xXml.PrefixToNameSpace(xAttr.Value);
   end;
-  result.FormDefaultQualified := xXml.Attributes.BooleanByTagDef[tagForm, xsdAttributeFormDefaultQualified];
+  xAttr := xXml.Attributes.AttributeByTag[tagForm];
+  if Assigned (xAttr) then
+    result.FormDefaultQualified := (xAttr.Value = tagQualified);
   result.use := xXml.Attributes.ValueByTag[tagUse];
   AddDocumentation(result.Documentation, xXml);
   AddAppinfo(result.Appinfo, xXml);
@@ -941,6 +943,7 @@ begin
       for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
         if XmlItems[x].Name = tagSchema then
           AddXsdFromXml (XmlItems[x], aFileName, ErrorFound);
+      exit; // only here for the schema(s)
     end;
     for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
       if (XmlItems[x].Name = tagImport)
@@ -948,7 +951,7 @@ begin
       then
         AddXsdFromFile (ExpandRelativeFileName(aFileName, XmlItems[x].Attributes.ValueByTag[tagSchemaLocation]), ErrorFound);
     xTargetNameSpace := xXml.Attributes.ValueByTag[tagTargetNamespace];
-    xsdElementFormDefaultQualified := (xXml.Attributes.ValueByTag[tagElementFormDefault] <> tagUnqualified);
+    xsdElementFormDefaultQualified := (xXml.Attributes.ValueByTag[tagElementFormDefault] = tagQualified);
     xsdAttributeFormDefaultQualified := (xXml.Attributes.ValueByTag[tagAttributeFormDefault] = tagQualified);
     for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
       if XmlItems[x].Name = tagSimpleType then
@@ -2483,6 +2486,9 @@ begin
   AddNameSpace(result.ElementNameSpace);
   result.minOccurs := xXml.Attributes.ValueByTagDef[tagMinOccurs, '1'];
   result.maxOccurs := xXml.Attributes.ValueByTagDef[tagMaxOccurs, '1'];
+  xAtt := xXml.Attributes.AttributeByTag[tagForm];
+  if Assigned (xAtt) then
+    result.FormDefaultQualified := (xAtt.Value = tagQualified);
   xAtt := xXml.Attributes.AttributeByTag[tagType];
   if Assigned (xAtt) then
   begin

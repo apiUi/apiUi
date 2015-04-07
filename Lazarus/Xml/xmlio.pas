@@ -18,7 +18,7 @@ function GetVersion: String;
 implementation
 uses StrUtils
    , LCLIntf, LCLType, LMessages
-   , vinfo, versiontypes, versionresource
+   , versiontypes, versionresource
    , idHTTP
    , LConvEncoding
    ;

@@ -16,10 +16,8 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="8003"/>
+      <BuildNr Value="8650"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -53,10 +51,11 @@
         <PackageName Value="LCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="2">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="wsdlStub"/>
       </Unit0>
       <Unit1>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -66,11 +65,6 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="..\Utils\vinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="vinfo"/>
-      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -92,11 +86,15 @@
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <MsgFileName Value=""/>
+      </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="13">
+    <Exceptions Count="10">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -119,23 +117,14 @@
         <Name Value="EIdSocketError"/>
       </Item7>
       <Item8>
-        <Name Value="EIdConnClosedGracefully"/>
+        <Name Value="EIdResolveError"/>
       </Item8>
       <Item9>
-        <Name Value="EIdHTTPProtocolException"/>
+        <Name Value="EInterfaceCritical"/>
       </Item9>
       <Item10>
         <Name Value="Exception"/>
       </Item10>
-      <Item11>
-        <Name Value="EIdReadTimeout"/>
-      </Item11>
-      <Item12>
-        <Name Value="EStreamError"/>
-      </Item12>
-      <Item13>
-        <Name Value="EResNotFound"/>
-      </Item13>
     </Exceptions>
   </Debugging>
 </CONFIG>
