@@ -12,9 +12,9 @@ uses
 {$ELSE}
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
-  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, FormIniFilez, StdCtrls, ExtCtrls, Xsdz, Xmlz, VirtualTrees, ComCtrls,
-  ImgList, ToolWin, ActnList, Menus, Bind
+  Messages , SysUtils , Variants , Classes , Graphics , Controls , Forms ,
+  Dialogs , FormIniFilez , StdCtrls , ExtCtrls , Xsdz , Xmlz , VirtualTrees ,
+  RichBox , ComCtrls , ImgList , ToolWin , ActnList , Menus , Bind
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
@@ -22,7 +22,11 @@ uses
   ;
 
 type
+
+  { TXmlGridForm }
+
   TXmlGridForm = class(TForm)
+    DocumentationEdit : TlzRichEdit ;
     Panel2: TPanel;
     Grid: TVirtualStringTree;
     ToolBar1: TToolBar;
@@ -89,10 +93,10 @@ type
     Panel1: TPanel;
     OkButton: TButton;
     CancelButton: TButton;
-    Panel3: TPanel;
     StatusPanel: TPanel;
     CleanAction: TAction;
     CleanMenuItem: TMenuItem;
+    procedure DocumentationEditClick (Sender : TObject );
     procedure ZoomActionExecute(Sender: TObject);
     procedure Action1Execute(Sender: TObject);
     procedure FindNextActionExecute(Sender: TObject);
@@ -258,6 +262,7 @@ uses igGlobals
 
 procedure TXmlGridForm.FormCreate(Sender: TObject);
 begin
+  DocumentationEdit.Color := Self.Color;
   Grid.NodeDataSize := SizeOf(TTreeRec);
   IniFile := TFormIniFile.Create (Self);
   IniFile.Restore;
@@ -464,9 +469,7 @@ begin
   xBind := BindColNode [Column, Node];
   XmlUtil.ListXsdProperties(InWsdlPropertiesListView, xBind);
   XmlUtil.ListXsdEnumerations(InWsdlEnumerationsListView, xBind);
-  {$IFnDEF FPC}
-  XmlUtil.ListXsdDocumentation(DataTypeDocumentationMemo, xBind, False, False);
-  {$endif}
+  XmlUtil.ListXsdDocumentation(DocumentationEdit, xBind, False, False);
   if xBind is TXml then
     StatusPanel.Caption := (xBind as TXml).FullCaption;
   Grid.Invalidate;
@@ -1823,6 +1826,11 @@ end;
 procedure TXmlGridForm.ZoomActionExecute(Sender: TObject);
 begin
   xmlUtil.presentString (FocusedBind.FullCaption, FocusedBind.Value);
+end;
+
+procedure TXmlGridForm .DocumentationEditClick (Sender : TObject );
+begin
+  OpenUrl(MemoIsLink(DocumentationEdit));
 end;
 
 { TPasswordEditLink }

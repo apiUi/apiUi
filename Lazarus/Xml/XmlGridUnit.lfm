@@ -205,14 +205,22 @@ object XmlGridForm: TXmlGridForm
         TabOrder = 0
         ViewStyle = vsReport
       end
-      object Panel3: TPanel
+      object DocumentationEdit: TlzRichEdit
         Left = 1
         Height = 117
         Top = 296
         Width = 215
+        DefaultExtension = '.rtf'
         Align = alClient
-        Caption = 'Panel3'
-        TabOrder = 2
+        Color = clBtnFace
+        Font.Height = -15
+        Lines.Strings = (
+          'DocumentationEdit'
+        )
+        OnClick = DocumentationEditClick
+        ParentFont = False
+        ReadOnly = True
+        TabOrder = 4
       end
     end
     object Panel1: TPanel

@@ -111,9 +111,6 @@ public
   procedure presentAsIpm (aIpm: TIpmItem; aCaption, aString: String);
   procedure ZoomAsPDF (aBind: TCustomBindable);
   procedure ZoomAsText (aBind: TCustomBindable; aReadOnly: Boolean);
-  {$ifdef SHDOCVW}
-  procedure ZoomAsHtml (aBind: TCustomBindable);
-  {$endif}
   procedure ZoomAsXml (aBind: TCustomBindable; aReadOnly: Boolean);
   function BindCaption (aBind: TCustomBindable): String;
   function ViewAsXml (aBind: TCustomBindable; aReadOnly: Boolean): Boolean;
@@ -169,10 +166,6 @@ uses
 {$ENDIF}
   Dialogs
    , ShowXmlUnit
-{$IFnDEF FPC}
-   , ShowHtmlUnit
-   , ShowRtfUnit
-{$ENDIF}
    , ShowTextUnit
    , ChooseEnumUnit
    , xsdDateTimeFormUnit
@@ -1873,23 +1866,6 @@ begin
   end;
 end;
 
-{$ifdef SHDOCVW}
-procedure TXmlUtil.ZoomAsHtml(aBind: TCustomBindable);
-var
-  xScreen: TShowHtmlForm;
-begin
-  if not Assigned (aBind) then Exit;
-  Application.CreateForm(TShowHtmlForm, xScreen);
-  try
-    xScreen.Caption := aBind.Name + ' as HTML';
-    xScreen.Html := aBind.Value;
-    xScreen.ShowModal;
-  finally
-    FreeAndNil (xScreen);
-  end;
-end;
-
-{$endif}
 procedure TXmlUtil.ZoomAsBase64(aBind: TCustomBindable);
 begin
   if Assigned (aBind) then
@@ -1900,19 +1876,6 @@ procedure TXmlUtil.presentAsRTF(aCaption, aString: String);
 var
   TempFileName: String;
 begin
-{
-  fShowProgress (self, 2, 4);
-  Application.CreateForm(TShowRtfForm, xForm);
-  try
-    xForm.Caption := aCaption;
-    xForm.rtfString := B64Decode (aString);
-//  xForm.rtfString := Base64DecodeStr (aString);
-    fShowProgress (self, 0, 4);
-    xForm.ShowModal;
-  finally
-    FreeAndNil (xForm);
-  end;
-{}
   TempFileName := GetEnvironmentVariable ('Temp')
                 + '\temp'
                 +  IntToStr (rtfFileCounter mod 100)
@@ -1921,7 +1884,6 @@ begin
   Inc (rtfFileCounter);
   fShowProgress (self, 1, 4);
   SaveStringToFile(TempFileName, DecodeStringBase64 (aString));
-{}
   fShowProgress (self, 2, 4);
   try
     if not OpenDocument(PChar (TempFileName)) then
@@ -2223,7 +2185,7 @@ procedure TXmlUtil.presentString(aCaption, aString: String);
     or (LowerCase(Copy (aString, 1, 10)) = '<!doctype ')
     then
     begin
-      presentAsRTF(aCaption, aString);
+      presentAsHTML(aCaption, aString);
       exit;
     end;
     xXsdDescr := TXsdDescr.Create(1);

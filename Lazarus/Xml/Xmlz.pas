@@ -79,7 +79,7 @@ type
   TXml = class(TCustomBindable)
   private
     scanLineNumber: Integer;
-    FileContents: TStringList;
+    fFileContents: TStringList;
     fTypeDef: TXsdDataType;
     function getAttributeBooleanByTag (Index : String ): Boolean ;
     function getAttributeBooleanByTagDef (Index : String ; aDefault : Boolean
@@ -148,6 +148,7 @@ type
     property Text: String read getText write setText;
     property Root: TXml read getRoot;
     function PrefixToNameSpace(aPrefix: String): String;
+    procedure NamespacesToPrefixes;
     function ExpandPrefixedName (aDefaultNS, aName: String): String;
     function IndentString (x: Integer): String;
     function EncodeXml (aValue: String): String;
@@ -627,11 +628,11 @@ end;
 procedure TXml.AnalyserNeedData(Sender: TObject; var MoreData: Boolean;
   var Data: String);
 begin
-  if scanLineNumber = FileContents.Count then
+  if scanLineNumber = fFileContents.Count then
     MoreData := False
   else
   begin
-    Data := FileContents.Strings [scanLineNumber];
+    Data := fFileContents.Strings [scanLineNumber];
     Inc (scanLineNumber);
   end;
 end;
@@ -726,45 +727,45 @@ end;
 
 procedure TXml.LoadFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
 begin
-  FileContents := TStringList.Create;
+  fFileContents := TStringList.Create;
   try
-    FileContents.LoadFromFile (aFileName);
+    fFileContents.Text := xmlio.ReadStringFromFile (aFileName);
     LoadXml (ErrorFound);
   finally
-    FileContents.Free;
+    fFileContents.Free;
   end;
 end;
 
 procedure TXml.LoadJsonFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
 begin
-  FileContents := TStringList.Create;
+  fFileContents := TStringList.Create;
   try
-    FileContents.Text := ReadStringFromFile (aFileName);
+    fFileContents.Text := ReadStringFromFile (aFileName);
     LoadJson (ErrorFound);
   finally
-    FileContents.Free;
+    fFileContents.Free;
   end;
 end;
 
 procedure TXml.LoadJsonFromString(aString: String; ErrorFound: TOnErrorEvent);
 begin
-  FileContents := TStringList.Create;
+  fFileContents := TStringList.Create;
   try
-    FileContents.Text := aString;
+    fFileContents.Text := aString;
     LoadJson (ErrorFound);
   finally
-    FileContents.Free;
+    fFileContents.Free;
   end;
 end;
 
 procedure TXml.LoadFromString(aString: String; ErrorFound: TOnErrorEvent);
 begin
-  FileContents := TStringList.Create;
+  fFileContents := TStringList.Create;
   try
-    FileContents.Text := aString;
+    fFileContents.Text := aString;
     LoadXml (ErrorFound);
   finally
-    FileContents.Free;
+    fFileContents.Free;
   end;
 end;
 
@@ -1427,6 +1428,7 @@ var
   end;
 begin
   result := '';
+  NamespacesToPrefixes;
   if aIndent = 0 then
   begin
     result := GenerateXmlHeader (True);
@@ -2702,6 +2704,46 @@ begin
     result := _ResolveNamespace(self, aPrefix)
   else
     result := _ResolveNamespace(self, Copy (aPrefix, 1, p - 1));
+end;
+
+procedure TXml.NamespacesToPrefixes ;
+var
+  nsList: TStringList;
+  procedure _scanForNs (aXml: TXml; aParentNs: String);
+  var
+    x: Integer;
+  begin
+    if aXml.NameSpace <> aParentNs then
+      nsList.Add (aXml.NameSpace);
+    for x := 0 to aXml.Items.Count - 1 do
+      _scanForNs(aXml.Items.XmlItems[x], aXml.NameSpace);
+  end;
+  procedure _fillNs (aXml: TXml; parentPrefix, parentNameSpace: String);
+  var
+    x, f: Integer;
+  begin
+    if aXml.NameSpace = parentNameSpace then
+      aXml.NsPrefix := parentPrefix
+    else
+    begin
+      if nsList.Find(aXml.NameSpace, f) then
+        aXml.NsPrefix := 'ns' + IntToStr(f + 1)
+      else
+        aXml.NsPrefix := '';
+    end;
+    for x := 0 to aXml.Items.Count - 1 do
+      _fillNs(aXml.Items.XmlItems[x], aXml.NsPrefix, aXml.NameSpace);
+  end;
+begin
+  nsList := TStringList.Create;
+  try
+    nsList.Sorted := True;
+    nsList.Duplicates := dupIgnore;
+    _scanForNs (self, '');
+    _fillNs (self, '', '');
+  finally
+    nsList.Free;
+  end;
 end;
 
 function TXml.ExpandPrefixedName (aDefaultNS, aName: String): String ;

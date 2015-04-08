@@ -3167,13 +3167,14 @@ end;
 function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
   aMessage : String ; var aReqHeader , aRpyHeader , aResponseCode : String
   ): String ;
-  function _Decompress (aCompressed: Boolean; aStream: TMemoryStream): String;
+  function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
     xStream: TMemoryStream;
   begin
     result := '';
     aStream.Position := 0;
-    if aCompressed then
+    if (aContentEncoding <> '')
+    and (aContentEncoding <> 'identity') then
     begin
       xStream := TMemoryStream.Create;
       try
@@ -3323,7 +3324,7 @@ begin
               aRpyHeader := HttpClient.Response.RawHeaders.Text;
               aResponseCode := IntToStr(HttpClient.ResponseCode);
             end;
-            result := _Decompress (HttpClient.Response.ContentEncoding <> 'identity', dStream);
+            result := _Decompress (HttpClient.Response.ContentEncoding, dStream);
           except
             on e: EIdHTTPProtocolException do
             begin
