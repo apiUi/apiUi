@@ -3775,7 +3775,7 @@ begin
     Exit;
   end;
   if (    isSoapService
-      and (OutputHeaders.Count = 0)
+      and (rpyXsd.sType.ElementDefs.Count = 0)
      )
   or (    (rpyXsd.sType.ElementDefs.Count = 0)
       and (rpyBind is TXml)

@@ -1089,6 +1089,7 @@ begin
   with HttpWebPageServer do
   begin
     OnCommandGet := HttpWebPageServerCommandGet;
+    OnCommandOther := HttpWebPageServerCommandGet;
     OnCreatePostStream := HttpServerCreatePostStream;
   end;
   POP3Server := TIdPOP3Server.Create(nil);

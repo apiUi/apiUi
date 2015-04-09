@@ -55,7 +55,6 @@
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="wsdlStub"/>
       </Unit0>
       <Unit1>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -86,15 +85,11 @@
       </Options>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="10">
+    <Exceptions Count="13">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -125,6 +120,15 @@
       <Item10>
         <Name Value="Exception"/>
       </Item10>
+      <Item11>
+        <Name Value="EOraDatabaseError"/>
+      </Item11>
+      <Item12>
+        <Name Value="EIdReadTimeout"/>
+      </Item12>
+      <Item13>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item13>
     </Exceptions>
   </Debugging>
 </CONFIG>
