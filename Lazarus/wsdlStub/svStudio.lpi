@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="8629"/>
+      <BuildNr Value="8630"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -85,6 +85,7 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
@@ -103,7 +104,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="13">
+    <Exceptions Count="14">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -147,6 +148,9 @@
       <Item13>
         <Name Value="ERegExpr"/>
       </Item13>
+      <Item14>
+        <Name Value="EIdHTTPProtocolException"/>
+      </Item14>
     </Exceptions>
   </Debugging>
 </CONFIG>

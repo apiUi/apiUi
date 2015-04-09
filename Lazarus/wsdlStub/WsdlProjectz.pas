@@ -4064,31 +4064,15 @@ var
   xName: String;
 begin
   result := nil;
-  {
-    <?xml version="1.0" encoding="UTF-8" ?>
-    <!-- 2/21/2009 10:31:26 PM: Generated with IpmGun by Bouwman -->
-    <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd1="http://soapinterop.org/" xmlns:typens="http://soapinterop.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/">
-      <SOAP-ENV:Body>
-        <mns:echoStructResponse xmlns:mns="http://soapinterop.org/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-          <return xsi:type="typens:SOAPStruct">
-            <varInt xsi:type="xsd:int">1</varInt>
-            <varFloat xsi:type="xsd:float">12</varFloat>
-            <varString xsi:type="xsd:string">Jan</varString>
-          </return>
-        </mns:echoStructResponse>
-      </SOAP-ENV:Body>
-    </SOAP-ENV:Envelope>
-  }
-  result := nil;
-  if NameWithoutPrefix(aXml.TagName) = 'Envelope' then
+  if aXml.isSoapEnvelope then
   begin
     for x := 0 to aXml.Items.Count - 1 do
     begin
       xXml := aXml.Items.XmlItems [x];
-      if (NameWithoutPrefix(xXml.TagName) = 'Body')
+      if (xXml.isSoapBody)
       and (xXml.Items.Count > 0) then
       begin
-        xName := NameWithoutPrefix (xXml.Items.XmlItems [0].Name);
+        xName := xXml.Items.XmlItems [0].Name;
         for o := 0 to allOperations.Count - 1 do
         begin
           xOperation := allOperations.Operations [o];
@@ -4320,32 +4304,16 @@ var
   xRecog: TRecognition;
 begin
   result := nil;
-  {
-    <?xml version="1.0" encoding="UTF-8" ?>
-    <!-- 2/21/2009 10:31:26 PM: Generated with IpmGun by Bouwman -->
-    <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd1="http://soapinterop.org/" xmlns:typens="http://soapinterop.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/">
-      <SOAP-ENV:Body>
-        <mns:echoStructResponse xmlns:mns="http://soapinterop.org/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-          <return xsi:type="typens:SOAPStruct">
-            <varInt xsi:type="xsd:int">1</varInt>
-            <varFloat xsi:type="xsd:float">12</varFloat>
-            <varString xsi:type="xsd:string">Jan</varString>
-          </return>
-        </mns:echoStructResponse>
-      </SOAP-ENV:Body>
-    </SOAP-ENV:Envelope>
-  }
-  result := nil;
-  if NameWithoutPrefix(aXml.TagName) = 'Envelope' then
+  if aXml.isSoapEnvelope then
   begin
     for x := 0 to aXml.Items.Count - 1 do
     begin
       xXml := aXml.Items.XmlItems [x];
-      if (NameWithoutPrefix(xXml.TagName) = 'Body')
+      if (xXml.isSoapBody)
       and (xXml.Items.Count > 0) then
       begin
         xXml := xXml.Items.XmlItems [0];
-        if allOperations.Find(NameWithoutPrefix (xXml.TagName), f) then
+        if allOperations.Find(xXml.TagName, f) then
           result := allOperations.Operations [f];
         exit;
       end;
@@ -5303,6 +5271,8 @@ begin
           result := FindOperationOnDocument (aDocument)
       else
       begin
+        xXml.SeparateNsPrefixes;
+        xXml.ResolveNameSpaces;
         result := FindXmlOperationOnRequest (aDocument, xXml);
         if not Assigned (result) then
           result := FindCcbOperationOnRequest (aLog, aString);

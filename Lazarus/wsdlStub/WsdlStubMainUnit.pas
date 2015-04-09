@@ -62,6 +62,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    PresentLogMemoTextAction : TAction ;
     DesignPanel: TPanel;
     alGeneral: TActionList;
     DataTypeDocumentationMemo : TlzRichEdit ;
@@ -75,6 +76,9 @@ type
     Splitter1 : TSplitter ;
     SqlConnector : TSQLConnector ;
     SQLTransaction : TSQLTransaction ;
+    ToolBar4 : TToolBar ;
+    ToolButton30 : TToolButton ;
+    ToolButton32 : TToolButton ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -195,8 +199,7 @@ type
     PasteGridAction: TAction;
     ToolButton28: TToolButton;
     ToolButton29: TToolButton;
-    CopyHttpRequestToClipBrdAction: TAction;
-    CopyHttpReplyBodyAction: TAction;
+    CopyLogMemoTextToClipBrdAction: TAction;
     ShowHttpReplyAsXMLAction: TAction;
     ShowHttpRequestAsXMLAction: TAction;
     ToolButton35: TToolButton;
@@ -306,7 +309,6 @@ type
     MasterMessagesMenuItem: TMenuItem;
     BrowseMqAction: TAction;
     BrowseMqMenuItem: TMenuItem;
-    CopyRequestHeaderToClipBrdAction: TAction;
     ShowRequestHeaderAsXmlAction: TAction;
     BrowseMqButton: TToolButton;
     httpRequestDesignAction: TAction;
@@ -464,7 +466,6 @@ type
     XsdOperationsAction: TAction;
     XsdOperationsAction1: TMenuItem;
     Xsdoperations1: TMenuItem;
-    CopyReplyHeadersToClipBoardAction: TAction;
     ShowReplyHeaderAsXmlAction: TAction;
     CleanMenuItem: TMenuItem;
     N34: TMenuItem;
@@ -488,6 +489,8 @@ type
     procedure MessagesVTSChange (Sender : TBaseVirtualTree ;
       Node : PVirtualNode );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
+    procedure PresentLogMemoTextActionExecute (Sender : TObject );
+    procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure RequestBodyTabSheetContextPopup (Sender : TObject ;
       MousePos : TPoint ; var Handled : Boolean );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
@@ -609,8 +612,8 @@ type
       TextType: TVSTTextType);
     procedure ShowHttpRequestAsXMLActionUpdate(Sender: TObject);
     procedure ShowHttpRequestAsXMLActionExecute(Sender: TObject);
-    procedure CopyHttpRequestToClipBrdActionUpdate(Sender: TObject);
-    procedure CopyHttpRequestToClipBrdActionExecute(Sender: TObject);
+    procedure CopyLogMemoTextToClipBrdActionUpdate(Sender: TObject);
+    procedure CopyLogMemoTextToClipBrdActionExecute(Sender: TObject);
     procedure PasteGridActionExecute(Sender: TObject);
     procedure PasteGridActionUpdate(Sender: TObject);
     procedure CopyGridActionUpdate(Sender: TObject);
@@ -6780,14 +6783,14 @@ begin
   end;
 end;
 
-procedure TMainForm.CopyHttpRequestToClipBrdActionExecute(Sender: TObject);
+procedure TMainForm.CopyLogMemoTextToClipBrdActionExecute(Sender: TObject);
 begin
   ClipBoard.AsText := LogMemo.Text;
 end;
 
-procedure TMainForm.CopyHttpRequestToClipBrdActionUpdate(Sender: TObject);
+procedure TMainForm.CopyLogMemoTextToClipBrdActionUpdate(Sender: TObject);
 begin
-  CopyHttpRequestToClipBrdAction.Enabled := (LogMemo.Text <> '');
+  CopyLogMemoTextToClipBrdAction.Enabled := (LogMemo.Text <> '');
 end;
 
 procedure TMainForm.ShowHttpReplyAsXMLActionExecute(Sender: TObject);
@@ -11646,6 +11649,16 @@ begin
   finally
     FreeAndNil(DelayTimeForm);
   end;
+end;
+
+procedure TMainForm .PresentLogMemoTextActionExecute (Sender : TObject );
+begin
+  xmlUtil.presentString(MessagesTabControl.Tabs[MessagesTabControl.TabIndex], LogMemo.Text);
+end;
+
+procedure TMainForm .PresentLogMemoTextActionUpdate (Sender : TObject );
+begin
+  PresentLogMemoTextAction.Enabled := (LogMemo.Lines.Count > 0);
 end;
 
 procedure TMainForm .RequestBodyTabSheetContextPopup (Sender : TObject ;

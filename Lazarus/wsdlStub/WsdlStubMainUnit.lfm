@@ -1250,7 +1250,7 @@ object MainForm: TMainForm
         Left = 273
         Height = 111
         Top = 29
-        Width = 584
+        Width = 559
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1261,6 +1261,27 @@ object MainForm: TMainForm
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 3
+      end
+      object ToolBar4: TToolBar
+        Left = 832
+        Height = 111
+        Top = 29
+        Width = 25
+        Align = alRight
+        BorderWidth = 2
+        Caption = 'ToolBar4'
+        Images = mainImageList
+        TabOrder = 4
+        object ToolButton30: TToolButton
+          Left = 1
+          Top = 2
+          Action = CopyLogMemoTextToClipBrdAction
+        end
+        object ToolButton32: TToolButton
+          Left = 1
+          Top = 24
+          Action = PresentLogMemoTextAction
+        end
       end
     end
   end
@@ -1759,31 +1780,13 @@ object MainForm: TMainForm
       Caption = 'ShowExpectedXmlAction'
       OnExecute = ShowExpectedXmlActionExecute
     end
-    object CopyHttpRequestToClipBrdAction: TAction
+    object CopyLogMemoTextToClipBrdAction: TAction
       Category = 'Log'
       Caption = 'CopyHttpRequestToClipBrdAction'
       Hint = 'Copy text to clipboard'
       ImageIndex = 23
-      OnExecute = CopyHttpRequestToClipBrdActionExecute
-      OnUpdate = CopyHttpRequestToClipBrdActionUpdate
-    end
-    object CopyRequestHeaderToClipBrdAction: TAction
-      Category = 'Log'
-      Caption = 'CopyRequestHeaderToClipBrdAction'
-      Hint = 'Copy text to clipboard'
-      ImageIndex = 23
-    end
-    object CopyReplyHeadersToClipBoardAction: TAction
-      Category = 'Log'
-      Caption = 'CopyReplyHeadersToClipBrdAction'
-      Hint = 'Copy text to clipboard'
-      ImageIndex = 23
-    end
-    object CopyHttpReplyBodyAction: TAction
-      Category = 'Log'
-      Caption = 'CopyHttpReplyBodyAction'
-      Hint = 'Copy text to clipboard'
-      ImageIndex = 23
+      OnExecute = CopyLogMemoTextToClipBrdActionExecute
+      OnUpdate = CopyLogMemoTextToClipBrdActionUpdate
     end
     object MessagesToDiskAction: TAction
       Category = 'Messages'
@@ -1800,13 +1803,6 @@ object MainForm: TMainForm
       ImageIndex = 54
       OnExecute = ServiceOptionsActionExecute
       OnUpdate = ServiceOptionsActionUpdate
-    end
-    object Log2DesignAction: TAction
-      Category = 'Log'
-      Caption = 'Add to design'
-      Hint = 'Add selected log(s) to design'
-      ImageIndex = 15
-      OnExecute = Log2DesignActionExecute
     end
     object ConfigListenersAction: TAction
       Caption = 'Configure listeners...'
@@ -1830,14 +1826,6 @@ object MainForm: TMainForm
       ImageIndex = 2
       OnExecute = MessagesFromDiskActionExecute
       OnUpdate = MessagesFromDiskActionUpdate
-    end
-    object ReportUnexpectedValuesAction: TAction
-      Category = 'Log'
-      Caption = 'ReportUnexpectedValuesAction'
-      Hint = 'Unexpected values report'
-      ImageIndex = 14
-      OnExecute = ReportUnexpectedValuesActionExecute
-      OnUpdate = ReportUnexpectedValuesActionUpdate
     end
     object EnableMessageAction: TAction
       Category = 'Messages'
@@ -1863,22 +1851,6 @@ object MainForm: TMainForm
       OnExecute = MasterReloadDesignActionExecute
       OnHint = MasterReloadDesignActionHint
       OnUpdate = MasterReloadDesignActionUpdate
-    end
-    object readLog4jEventsAction: TAction
-      Category = 'Log'
-      Caption = 'Discover service calls from log'
-      Hint = 'Discover service calls from an event log'
-      ImageIndex = 56
-      OnExecute = readLog4jEventsActionExecute
-      OnHint = readLog4jEventsActionHint
-      OnUpdate = readLog4jEventsActionUpdate
-    end
-    object ConfigLogAction: TAction
-      Category = 'Log'
-      Caption = 'Configure Log'
-      Hint = 'Change project log settings'
-      ImageIndex = 59
-      OnExecute = ConfigLogActionExecute
     end
     object MasterClearLogAction: TAction
       Category = 'MasterSlave'
@@ -1939,10 +1911,6 @@ object MainForm: TMainForm
       OnUpdate = startActionUpdate
       ShortCut = 120
     end
-    object ToggleFileLogAction: TAction
-      Category = 'Log'
-      Caption = 'Toggle'
-    end
     object stopAction: TAction
       Category = 'Miscellaneous'
       Caption = 'Stop'
@@ -1979,20 +1947,6 @@ object MainForm: TMainForm
       OnExecute = OperationOptionsActionExecute
       OnUpdate = OperationOptionsActionUpdate
     end
-    object LogDisplayedColumnsAction: TAction
-      Category = 'Log'
-      Caption = 'Displayed columns'
-      ImageIndex = 21
-      OnExecute = LogDisplayedColumnsActionExecute
-      OnHint = LogDisplayedColumnsActionHint
-    end
-    object SaveLogRequestsToFileAction: TAction
-      Category = 'Log'
-      Caption = 'Save requests to file...'
-      ImageIndex = 3
-      OnExecute = SaveLogRequestsToFileActionExecute
-      OnUpdate = SaveLogRequestsToFileActionUpdate
-    end
     object HideAllOperationsAction: TAction
       Category = 'Project'
       Caption = 'Hide all Operations'
@@ -2003,13 +1957,6 @@ object MainForm: TMainForm
       Caption = 'Unhide all operations'
       OnExecute = UnhideAllOperationsActionExecute
     end
-    object SaveLogRepliesToFileAction: TAction
-      Category = 'Log'
-      Caption = 'Save replies to file...'
-      ImageIndex = 3
-      OnExecute = SaveLogRepliesToFileActionExecute
-      OnUpdate = SaveLogRepliesToFileActionUpdate
-    end
     object OperationZoomOnAction: TAction
       Category = 'Operation'
       Caption = 'Select zoom element'
@@ -2017,14 +1964,6 @@ object MainForm: TMainForm
       ImageIndex = 68
       OnExecute = OperationZoomOnActionExecute
       OnUpdate = OperationZoomOnActionUpdate
-    end
-    object LogCoverageReportAction: TAction
-      Category = 'Log'
-      Caption = 'Coverage report'
-      Hint = 'View coverage report'
-      ImageIndex = 70
-      OnExecute = LogCoverageReportActionExecute
-      OnUpdate = LogCoverageReportActionUpdate
     end
     object ProjectCleanAction: TAction
       Category = 'Project'
@@ -2043,6 +1982,77 @@ object MainForm: TMainForm
       Caption = 'Generate Script Assignments'
       OnExecute = GenerateScriptAssignmentActionExecute
       ShortCut = 49217
+    end
+    object PresentLogMemoTextAction: TAction
+      Category = 'Log'
+      Caption = 'PresentLogMemoTextAction'
+      ImageIndex = 76
+      OnExecute = PresentLogMemoTextActionExecute
+      OnUpdate = PresentLogMemoTextActionUpdate
+    end
+    object Log2DesignAction: TAction
+      Category = 'Log'
+      Caption = 'Add to design'
+      Hint = 'Add selected log(s) to design'
+      ImageIndex = 15
+      OnExecute = Log2DesignActionExecute
+    end
+    object ReportUnexpectedValuesAction: TAction
+      Category = 'Log'
+      Caption = 'ReportUnexpectedValuesAction'
+      Hint = 'Unexpected values report'
+      ImageIndex = 14
+      OnExecute = ReportUnexpectedValuesActionExecute
+      OnUpdate = ReportUnexpectedValuesActionUpdate
+    end
+    object readLog4jEventsAction: TAction
+      Category = 'Log'
+      Caption = 'Discover service calls from log'
+      Hint = 'Discover service calls from an event log'
+      ImageIndex = 56
+      OnExecute = readLog4jEventsActionExecute
+      OnHint = readLog4jEventsActionHint
+      OnUpdate = readLog4jEventsActionUpdate
+    end
+    object ConfigLogAction: TAction
+      Category = 'Log'
+      Caption = 'Configure Log'
+      Hint = 'Change project log settings'
+      ImageIndex = 59
+      OnExecute = ConfigLogActionExecute
+    end
+    object ToggleFileLogAction: TAction
+      Category = 'Log'
+      Caption = 'Toggle'
+    end
+    object LogDisplayedColumnsAction: TAction
+      Category = 'Log'
+      Caption = 'Displayed columns'
+      ImageIndex = 21
+      OnExecute = LogDisplayedColumnsActionExecute
+      OnHint = LogDisplayedColumnsActionHint
+    end
+    object SaveLogRequestsToFileAction: TAction
+      Category = 'Log'
+      Caption = 'Save requests to file...'
+      ImageIndex = 3
+      OnExecute = SaveLogRequestsToFileActionExecute
+      OnUpdate = SaveLogRequestsToFileActionUpdate
+    end
+    object SaveLogRepliesToFileAction: TAction
+      Category = 'Log'
+      Caption = 'Save replies to file...'
+      ImageIndex = 3
+      OnExecute = SaveLogRepliesToFileActionExecute
+      OnUpdate = SaveLogRepliesToFileActionUpdate
+    end
+    object LogCoverageReportAction: TAction
+      Category = 'Log'
+      Caption = 'Coverage report'
+      Hint = 'View coverage report'
+      ImageIndex = 70
+      OnExecute = LogCoverageReportActionExecute
+      OnUpdate = LogCoverageReportActionUpdate
     end
   end
   object mainImageList: TImageList

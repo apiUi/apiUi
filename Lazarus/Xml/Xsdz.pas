@@ -1914,12 +1914,19 @@ begin
   if not xXml.Checked then
     Exit;
   // check namespace
-  if (xXml.NameSpace <> NameSpace)
+  if Assigned (xXml.Xsd)
   and (xXml.NameSpace <> '')
-  and (NameSpace <> scXMLSchemaURI) then
+  and (xXml.NameSpace <> xXml.Xsd.ElementNameSpace)
+//  and (NameSpace <> scXMLSchemaURI)
+  then
   begin
     result := False;
-    xXml.ValidationMesssage := Format('Found NameSpace %s at %s, expected %s', [xXml.NameSpace, xXml.Name, NameSpace]);
+    xXml.ValidationMesssage := Format( 'Found NameSpace %s at %s, expected %s'
+                                     , [ xXml.NameSpace
+                                       , xXml.Name
+                                       , xXml.Xsd.ElementNameSpace
+                                       ]
+                                     );
     aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
     Exit;
   end;

@@ -88,6 +88,9 @@ type
     function getAttributeValueByTagDef (Index , aDefault : String ): String ;
     function getDocumentationText: String;
     function getAppinfoText: String;
+    function getIsSoapEnvelope : Boolean ;
+    function getIsSoapHeader : Boolean ;
+    function getIsSoapBody : Boolean ;
     function getItemByTag (Index : String ): TXml ;
     function getTypeDef: TXsdDataType;
 
@@ -127,6 +130,9 @@ type
     Ipm: TObject;
     LineNo: Integer;
     ValidationMesssage: String;
+    property isSoapEnvelope: Boolean read getIsSoapEnvelope;
+    property isSoapHeader: Boolean read getIsSoapHeader;
+    property isSoapBody: Boolean read getIsSoapBody;
     property ItemByTag [Index: String]: TXml read getItemByTag;
     property AttributeValueByTagDef [Index, aDefault: String]: String read getAttributeValueByTagDef;
     property AttributeValueByTag [Index: String]: String read getAttributeValueByTag;
@@ -689,14 +695,20 @@ procedure TXml.ResolveNameSpaces;
     nsAttr: TXmlAttribute;
   begin
     result := '';
-    if not Assigned(aXml)
-    or (aNsPrefix = '') then
-      exit;
-    nsAttr := aXml.Attributes.AttributeByTag['xmlns:' + aNsPrefix];
+    if not Assigned(aXml) then exit;
+    if aNsPrefix = '' then
+      nsAttr := aXml.Attributes.AttributeByTag['xmlns']
+    else
+      nsAttr := aXml.Attributes.AttributeByTag['xmlns:' + aNsPrefix];
     if Assigned (nsAttr) then
       result := nsAttr.Value
     else
-      result := _ResolveNamespace(aXml.Parent as TXml, aNsPrefix);
+    begin
+      if Assigned (aXml.Parent) then
+        result := (aXml.Parent as TXml).NameSpace;
+      if result = '' then
+        result := _ResolveNamespace(aXml.Parent as TXml, aNsPrefix);
+    end;
   end;
 var
   x: Integer;
@@ -3645,6 +3657,24 @@ begin
   if Assigned (Self.Xsd)
   and (Self.Xsd.Appinfo.Text <> result) then
     result := result + Self.Xsd.Appinfo.Text;
+end;
+
+function TXml .getIsSoapEnvelope : Boolean ;
+begin
+  result := (TagName = 'Envelope')
+        and (NameSpace = scSoapEnvNameSpace);
+end;
+
+function TXml .getIsSoapHeader : Boolean ;
+begin
+  result := (TagName = 'Header')
+        and (NameSpace = scSoapEnvNameSpace);
+end;
+
+function TXml .getIsSoapBody : Boolean ;
+begin
+  result := (TagName = 'Body')
+        and (NameSpace = scSoapEnvNameSpace);
 end;
 
 function TXml.getItemByTag (Index: String): TXml ;
