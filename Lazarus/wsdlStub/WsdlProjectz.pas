@@ -4530,7 +4530,7 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
     try
       if not Assigned (sXml) then
         exit;
-      aDescrFileName := ExpandUNCFileNameUTF8(ExpandRelativeFileName
+      aDescrFileName := ExpandFileNameUTF8(ExpandRelativeFileName
                             (aMainFileName, sXml.Items.XmlCheckedValueByTag ['DescriptionFile'])
                           ); { *Converted from ExpandUNCFileName* }
       if xsdElementsWhenRepeatable > 0 then

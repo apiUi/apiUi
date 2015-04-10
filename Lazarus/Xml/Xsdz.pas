@@ -949,7 +949,7 @@ begin
       if (XmlItems[x].Name = tagImport)
       or (XmlItems[x].Name = tagInclude)
       then
-        AddXsdFromFile (ExpandRelativeFileName(aFileName, XmlItems[x].Attributes.ValueByTag[tagSchemaLocation]), ErrorFound);
+        AddXsdFromFile (ExpandRelativeFileName(aFileName, PrepareFileNameSpace(XmlItems[x].Attributes.ValueByTag[tagSchemaLocation])), ErrorFound);
     xTargetNameSpace := xXml.Attributes.ValueByTag[tagTargetNamespace];
     xsdElementFormDefaultQualified := (xXml.Attributes.ValueByTag[tagElementFormDefault] = tagQualified);
     xsdAttributeFormDefaultQualified := (xXml.Attributes.ValueByTag[tagAttributeFormDefault] = tagQualified);

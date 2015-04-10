@@ -4,12 +4,13 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="11">
+    <Units Count="18">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <CursorPos X="66" Y="9"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="11"/>
+        <CursorPos X="72" Y="19"/>
         <UsageCount Value="1099"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -20,6 +21,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
+        <TopLine Value="2575"/>
+        <CursorPos Y="2581"/>
         <UsageCount Value="1083"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -38,32 +41,29 @@
       </Unit3>
       <Unit4>
         <Filename Value="..\Xpress\PARSER.PAS"/>
-        <UnitName Value="Parser"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="194"/>
         <CursorPos X="3" Y="205"/>
         <UsageCount Value="14"/>
-        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Xml\xmlio.pas"/>
         <UnitName Value="xmlio"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="216"/>
-        <CursorPos X="31" Y="224"/>
+        <TopLine Value="167"/>
+        <CursorPos Y="180"/>
         <UsageCount Value="14"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Components\Indy10\Lib\System\IdException.pas"/>
-        <EditorIndex Value="-1"/>
         <TopLine Value="93"/>
         <CursorPos Y="112"/>
         <UsageCount Value="12"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandlerStack.pas"/>
-        <EditorIndex Value="-1"/>
         <TopLine Value="390"/>
         <CursorPos X="42" Y="400"/>
         <UsageCount Value="12"/>
@@ -71,156 +71,213 @@
       <Unit8>
         <Filename Value="WsdlProjectz.pas"/>
         <UnitName Value="WsdlProjectz"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="6428"/>
-        <CursorPos Y="6446"/>
-        <UsageCount Value="12"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="4527"/>
+        <CursorPos Y="4542"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="6"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="1557"/>
         <CursorPos X="15" Y="1567"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <UnitName Value="Wsdlz"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="3764"/>
-        <CursorPos Y="3780"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="4275"/>
+        <CursorPos Y="4292"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <UnitName Value="Xsdz"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="937"/>
+        <CursorPos X="59" Y="952"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <UnitName Value="Xmlz"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="2290"/>
+        <CursorPos Y="2317"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <UnitName Value="igGlobals"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="92"/>
+        <CursorPos Y="108"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\lazarus\components\lazutils\fileutil.pas"/>
+        <UnitName Value="FileUtil"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="234"/>
+        <CursorPos X="10" Y="250"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="C:\lazarus\components\lazutils\fileutil.inc"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="108"/>
+        <CursorPos X="5" Y="126"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="C:\lazarus\components\lazutils\lazfileutils.pas"/>
+        <UnitName Value="LazFileUtils"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="67"/>
+        <CursorPos X="10" Y="83"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="C:\lazarus\components\lazutils\winlazfileutils.inc"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="844"/>
+        <CursorPos Y="856"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit17>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6480" TopLine="6476"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="175" Column="16" TopLine="148"/>
       </Position1>
       <Position2>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6496" TopLine="6478"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="177" Column="30" TopLine="150"/>
       </Position2>
       <Position3>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6480" TopLine="6476"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="205" Column="14" TopLine="178"/>
       </Position3>
       <Position4>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6496" TopLine="6478"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="220" Column="16" TopLine="193"/>
       </Position4>
       <Position5>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6480" TopLine="6476"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="222" Column="30" TopLine="195"/>
       </Position5>
       <Position6>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6496" TopLine="6478"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="244" Column="14" TopLine="217"/>
       </Position6>
       <Position7>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6480" TopLine="6476"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="250" Column="16" TopLine="223"/>
       </Position7>
       <Position8>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6252" Column="11" TopLine="6244"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="252" Column="30" TopLine="225"/>
       </Position8>
       <Position9>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="139" Column="42" TopLine="129"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="290" Column="14" TopLine="263"/>
       </Position9>
       <Position10>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1091" Column="26" TopLine="1073"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="297" Column="16" TopLine="270"/>
       </Position10>
       <Position11>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6481" TopLine="6470"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="299" Column="30" TopLine="272"/>
       </Position11>
       <Position12>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6497" TopLine="6486"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="849" Column="15" TopLine="822"/>
       </Position12>
       <Position13>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6481" TopLine="6470"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1287" Column="42" TopLine="1260"/>
       </Position13>
       <Position14>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6497" TopLine="6486"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1289" Column="14" TopLine="1262"/>
       </Position14>
       <Position15>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6481" TopLine="6470"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1291" Column="16" TopLine="1264"/>
       </Position15>
       <Position16>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6497" TopLine="6486"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1293" Column="29" TopLine="1266"/>
       </Position16>
       <Position17>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6481" TopLine="6470"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1377" Column="70" TopLine="1350"/>
       </Position17>
       <Position18>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6446" TopLine="6428"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1386" Column="15" TopLine="1359"/>
       </Position18>
       <Position19>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3761" TopLine="3748"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1387" Column="35" TopLine="1360"/>
       </Position19>
       <Position20>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6446" TopLine="6428"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="952" Column="79" TopLine="937"/>
       </Position20>
       <Position21>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3783" TopLine="3763"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
       </Position21>
       <Position22>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="235" Column="20" TopLine="225"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="288" Column="12" TopLine="261"/>
       </Position22>
       <Position23>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1542" Column="45" TopLine="1524"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
       </Position23>
       <Position24>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1777" Column="39" TopLine="1760"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="864" TopLine="835"/>
       </Position24>
       <Position25>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1917" Column="34" TopLine="1896"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="856" Column="61" TopLine="840"/>
       </Position25>
       <Position26>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3007" Column="18" TopLine="2987"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="360" TopLine="331"/>
       </Position26>
       <Position27>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3113" Column="31" TopLine="3095"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="189" TopLine="166"/>
       </Position27>
       <Position28>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3114" Column="34" TopLine="3096"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="169" TopLine="157"/>
       </Position28>
       <Position29>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3115" Column="22" TopLine="3097"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="25" Column="13"/>
       </Position29>
       <Position30>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3116" Column="30" TopLine="3098"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="846" TopLine="842"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="6">
+    <BreakPoints Count="5">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -253,16 +310,9 @@
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Wsdlz.pas"/>
-        <Line Value="3785"/>
+        <Source Value="C:\lazarus\components\lazutils\fileutil.inc"/>
+        <Line Value="127"/>
       </Item5>
-      <Item6>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Wsdlz.pas"/>
-        <Line Value="3761"/>
-      </Item6>
     </BreakPoints>
   </Debugging>
 </CONFIG>

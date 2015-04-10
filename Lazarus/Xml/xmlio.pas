@@ -8,6 +8,7 @@ uses
   Classes, SysUtils;
 
 
+function PrepareFileNameSpace(aFileName: String): String;
 function ReadStringFromFile (aFileName: String): String;
 procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
@@ -21,6 +22,7 @@ uses StrUtils
    , versiontypes, versionresource
    , idHTTP
    , LConvEncoding
+   , RegExpr
    ;
 
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
@@ -162,6 +164,27 @@ begin
   begin
     result := result + aToRelateFileName [x];
     Inc (x);
+  end;
+end;
+
+function PrepareFileNameSpace(aFileName: String): String;
+var
+  Protocol: String;
+begin
+  result := aFileName;
+  with TRegExpr.Create do
+  try
+    Expression:= '^[A-Za-z]+\:/[^/]';
+    if Exec(aFileName) then
+    begin
+      Protocol := Copy (Match[0], 1, Length (Match[0]) - 3); // without ':/' and that other char that differs from '/'
+      if Length (Protocol) > 1 then // migth be a windows driveletter
+      begin
+        Raise Exception.Create(Protocol + ' found');
+      end;
+    end;
+  finally
+    free;
   end;
 end;
 
