@@ -8,7 +8,7 @@ uses
   Classes, SysUtils;
 
 
-function PromptExistingFilename(aCaption, aStart: String): String;
+function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
 function ReadStringFromFile (aFileName: String): String;
 procedure SaveStringToFile (aFileName: String; aString: String);
@@ -27,42 +27,47 @@ uses StrUtils
    , idHTTP
    , LConvEncoding
    , RegExpr
-   , Dialogs
+   , Forms
+   , Controls
+   , PromptUnit
    ;
 
-function PromptExistingFilename(aCaption, aStart: String): String;
+function PromptFolderName(aCaption, aStart: String): String;
+var
+  xForm: TPromptForm;
 begin
-  with TOpenDialog.Create(nil) do
+  Application.CreateForm(TPromptForm, xForm);
   try
-    Options := Options + [ofFileMustExist];
-    FileName := aStart;
-    Title:= aCaption;
-    if not Execute then
-      raise Exception.Create('Could not find file: ' + aStart);
-    result := FileName;
+    xForm.Caption := aCaption;
+    xForm.PromptEdit.Text := aStart;
+    xForm.ShowModal;
+    if xForm.ModalResult = mrOk then
+      result := xForm.PromptEdit.Text
+    else
+      raise Exception.Create('no replcement specified');
   finally
-    Free;
+    FreeAndNil(xForm);
   end;
 end;
 
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
 var
-  xPrefix, xAlias, xSpec: String;
+  xPrefix, xAlias, xSpec, xSep: String;
   xFound: Boolean;
-  x, xSpecStart: Integer;
+  x: Integer;
 begin
   result := aFileName;
   with TRegExpr.Create do
   try
     xFound := False;
-    Expression:= '^[A-Za-z]+\:/[^/]';
+    Expression:= '^[A-Za-z0-9]+\:/[^/]';
     if Exec(aFileName) then
     begin
       xAlias := Copy (Match[0], 1, Length (Match[0]) - 3); // without ':/' and that other char that differs from '/'
       if Length (xAlias) > 1 then // migth be a windows driveletter
       begin
         xPrefix := PathPrefixes.Values[xAlias];
-        xSpec := Copy (aFileName, Length(Match[0]) - 1, 1000);
+        xSpec := Copy (aFileName, Length(Match[0]), 1000);
         if xPrefix <> '' then
         begin
           result := xPrefix + xSpec;
@@ -77,19 +82,29 @@ begin
           {$endif}
           Exit;
         end;
-        result := PromptExistingFilename('Lookup ' + aFileName, '');
-        {$ifdef windows}
-        if not (AnsiStartsText('http://', xSpec))
-        and not (AnsiStartsText('https://', xSpec)) then
+        xPrefix := '';
+        xSep := '';
+        for x := 0 to Length (aFileName) do
         begin
-          for x := 1 to Length (xSpec) do
-            if xSpec[x] = '/' then
-              xSpec[x] := '\';
+          if (aFileName[x] = '/')
+          or (aFileName[x] = '\') then
+          begin
+            xPrefix := xPrefix + xSep;
+            xSep := '..' + aFileName [x];
+          end;
+        end;
+        xPrefix := PromptFolderName('Specify replacement for alias ' + xAlias, xPrefix);
+        {$ifdef windows}
+        if not (AnsiStartsText('http://', xPrefix))
+        and not (AnsiStartsText('https://', xPrefix)) then
+        begin
+          for x := 1 to Length (xPrefix) do
+            if xPrefix[x] = '/' then
+              xPrefix[x] := '\';
         end;
         {$endif}
-        xSpecStart := Pos (xSpec, result);
-        xPrefix := Copy (result, 1, xSpecStart - 1);
         PathPrefixes.Values[xAlias] := xPrefix;
+        result := xPrefix + xSpec;
       end;
     end;
   finally
@@ -158,6 +173,7 @@ var
 begin
   if (AnsiStartsText('http://', aToRelateFileName))
   or (AnsiStartsText('https://', aToRelateFileName))
+  or (AnsiStartsText('file://', aToRelateFileName))
   or (ExtractFileDrive(aToRelateFileName) <> '')
   then
   begin

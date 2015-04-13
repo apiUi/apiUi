@@ -4507,13 +4507,15 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
   function _refXsd (aXsdDescr: TXsdDescr; aXsdName: String): TXsd;
   var
     x: Integer;
+    xName: String;
   begin
     result := nil;
     with aXsdDescr.TypeDef.ElementDefs do
     begin
       for x := 0 to Count - 1 do
       begin
-         if (Xsds[x].ElementName = aXsdName) then
+         xName := Xsds[x].ElementName;
+         if (xName = aXsdName) then
          begin
            result := Xsds[x];
            exit;
@@ -4539,7 +4541,7 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
         xXsdDescr := TXsdDescr.Create(XsdWsdl.xsdDefaultElementsWhenRepeatable);
       XsdWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       try
-        xXsdDescr.AddXsdFromFile(aDescrFileName, nil);
+        xXsdDescr.LoadXsdFromFile(aDescrFileName, nil);
       except
         on E: Exception do
           raise Exception.Create('Error opening ' + aDescrFileName + ': ' + e.Message);
