@@ -4,13 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="18">
+    <Units Count="21">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="11"/>
-        <CursorPos X="72" Y="19"/>
+        <EditorIndex Value="14"/>
+        <CursorPos X="87" Y="15"/>
         <UsageCount Value="1099"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -21,258 +20,291 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
-        <TopLine Value="2575"/>
-        <CursorPos Y="2581"/>
+        <TopLine Value="7306"/>
+        <CursorPos Y="7319"/>
         <UsageCount Value="1083"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
+        <Filename Value="..\Xml\promptfolderunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PromptFolderUnit"/>
+        <EditorIndex Value="2"/>
+        <CursorPos Y="32"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit2>
+      <Unit3>
         <Filename Value="C:\usr\lib64\lazarus\lcl\lclproc.pas"/>
         <TopLine Value="853"/>
         <CursorPos Y="861"/>
-        <UsageCount Value="14"/>
-      </Unit2>
-      <Unit3>
+        <UsageCount Value="13"/>
+      </Unit3>
+      <Unit4>
         <Filename Value="C:\usr\lib64\lazarus\lcl\include\control.inc"/>
         <TopLine Value="723"/>
         <CursorPos Y="731"/>
-        <UsageCount Value="14"/>
-      </Unit3>
-      <Unit4>
+        <UsageCount Value="13"/>
+      </Unit4>
+      <Unit5>
         <Filename Value="..\Xpress\PARSER.PAS"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="194"/>
         <CursorPos X="3" Y="205"/>
-        <UsageCount Value="14"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <UnitName Value="xmlio"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="167"/>
-        <CursorPos Y="180"/>
-        <UsageCount Value="14"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="13"/>
       </Unit5>
       <Unit6>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <UnitName Value="xmlio"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="62"/>
+        <CursorPos Y="78"/>
+        <UsageCount Value="19"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
         <Filename Value="..\Components\Indy10\Lib\System\IdException.pas"/>
         <TopLine Value="93"/>
         <CursorPos Y="112"/>
-        <UsageCount Value="12"/>
-      </Unit6>
-      <Unit7>
+        <UsageCount Value="11"/>
+      </Unit7>
+      <Unit8>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandlerStack.pas"/>
         <TopLine Value="390"/>
         <CursorPos X="42" Y="400"/>
-        <UsageCount Value="12"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="WsdlProjectz.pas"/>
-        <UnitName Value="WsdlProjectz"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="4527"/>
-        <CursorPos Y="4542"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="11"/>
       </Unit8>
       <Unit9>
+        <Filename Value="WsdlProjectz.pas"/>
+        <UnitName Value="WsdlProjectz"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="2366"/>
+        <CursorPos X="36" Y="2392"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="1"/>
         <TopLine Value="1557"/>
         <CursorPos X="15" Y="1567"/>
-        <UsageCount Value="12"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <UnitName Value="Wsdlz"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="4275"/>
-        <CursorPos Y="4292"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit10>
       <Unit11>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <UnitName Value="Xsdz"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="937"/>
-        <CursorPos X="59" Y="952"/>
-        <UsageCount Value="11"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <UnitName Value="Wsdlz"/>
+        <EditorIndex Value="12"/>
+        <TopLine Value="4275"/>
+        <CursorPos Y="4292"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <UnitName Value="Xmlz"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="2290"/>
-        <CursorPos Y="2317"/>
-        <UsageCount Value="11"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <UnitName Value="Xsdz"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="959"/>
+        <CursorPos Y="983"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit12>
       <Unit13>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <UnitName Value="igGlobals"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="92"/>
-        <CursorPos Y="108"/>
-        <UsageCount Value="11"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <UnitName Value="Xmlz"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="2290"/>
+        <CursorPos Y="2317"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit13>
       <Unit14>
-        <Filename Value="C:\lazarus\components\lazutils\fileutil.pas"/>
-        <UnitName Value="FileUtil"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="234"/>
-        <CursorPos X="10" Y="250"/>
-        <UsageCount Value="11"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <UnitName Value="igGlobals"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="92"/>
+        <CursorPos Y="108"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit14>
       <Unit15>
-        <Filename Value="C:\lazarus\components\lazutils\fileutil.inc"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="108"/>
-        <CursorPos X="5" Y="126"/>
-        <UsageCount Value="11"/>
+        <Filename Value="C:\lazarus\components\lazutils\fileutil.pas"/>
+        <UnitName Value="FileUtil"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="234"/>
+        <CursorPos X="10" Y="250"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit15>
       <Unit16>
-        <Filename Value="C:\lazarus\components\lazutils\lazfileutils.pas"/>
-        <UnitName Value="LazFileUtils"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="67"/>
-        <CursorPos X="10" Y="83"/>
-        <UsageCount Value="11"/>
+        <Filename Value="C:\lazarus\components\lazutils\fileutil.inc"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="108"/>
+        <CursorPos Y="127"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit16>
       <Unit17>
-        <Filename Value="C:\lazarus\components\lazutils\winlazfileutils.inc"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="844"/>
-        <CursorPos Y="856"/>
-        <UsageCount Value="11"/>
+        <Filename Value="C:\lazarus\components\lazutils\lazfileutils.pas"/>
+        <UnitName Value="LazFileUtils"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="67"/>
+        <CursorPos X="10" Y="83"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="C:\lazarus\components\lazutils\winlazfileutils.inc"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="844"/>
+        <CursorPos Y="856"/>
+        <UsageCount Value="16"/>
+        <Loaded Value="True"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="11"/>
+        <CursorPos X="10" Y="27"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="C:\lazarus\lcl\dialogs.pp"/>
+        <UnitName Value="Dialogs"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="134"/>
+        <CursorPos X="20" Y="161"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit20>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="175" Column="16" TopLine="148"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="57"/>
       </Position1>
       <Position2>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="177" Column="30" TopLine="150"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="87" TopLine="61"/>
       </Position2>
       <Position3>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="205" Column="14" TopLine="178"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="89" TopLine="63"/>
       </Position3>
       <Position4>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="220" Column="16" TopLine="193"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="159" TopLine="143"/>
       </Position4>
       <Position5>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="222" Column="30" TopLine="195"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="143"/>
       </Position5>
       <Position6>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="244" Column="14" TopLine="217"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="163" TopLine="143"/>
       </Position6>
       <Position7>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="250" Column="16" TopLine="223"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="179" TopLine="163"/>
       </Position7>
       <Position8>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="252" Column="30" TopLine="225"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="983" TopLine="959"/>
       </Position8>
       <Position9>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="290" Column="14" TopLine="263"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position9>
       <Position10>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="297" Column="16" TopLine="270"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position10>
       <Position11>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="299" Column="30" TopLine="272"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position11>
       <Position12>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="849" Column="15" TopLine="822"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position12>
       <Position13>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="1287" Column="42" TopLine="1260"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position13>
       <Position14>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="1289" Column="14" TopLine="1262"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position14>
       <Position15>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="1291" Column="16" TopLine="1264"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position15>
       <Position16>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="1293" Column="29" TopLine="1266"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position16>
       <Position17>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="1377" Column="70" TopLine="1350"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position17>
       <Position18>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="1386" Column="15" TopLine="1359"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position18>
       <Position19>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="1387" Column="35" TopLine="1360"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position19>
       <Position20>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="952" Column="79" TopLine="937"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position20>
       <Position21>
-        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position21>
       <Position22>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="288" Column="12" TopLine="261"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position22>
       <Position23>
-        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position23>
       <Position24>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="864" TopLine="835"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position24>
       <Position25>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="856" Column="61" TopLine="840"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="69" TopLine="53"/>
       </Position25>
       <Position26>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="360" TopLine="331"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="162" TopLine="146"/>
       </Position26>
       <Position27>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="189" TopLine="166"/>
+        <Caret Line="69" TopLine="53"/>
       </Position27>
       <Position28>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="169" TopLine="157"/>
+        <Caret Line="162" TopLine="146"/>
       </Position28>
       <Position29>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="25" Column="13"/>
+        <Caret Line="80" TopLine="62"/>
       </Position29>
       <Position30>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="846" TopLine="842"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="78" TopLine="62"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

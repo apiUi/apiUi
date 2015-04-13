@@ -8,13 +8,17 @@ uses
   Classes, SysUtils;
 
 
-function PrepareFileNameSpace(aFileName: String): String;
+function PromptExistingFilename(aCaption, aStart: String): String;
+function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
 function ReadStringFromFile (aFileName: String): String;
 procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function GetUserName: String;
 function GetVersion: String;
+
+var
+  PathPrefixes: TStringList;
 
 implementation
 uses StrUtils
@@ -23,7 +27,75 @@ uses StrUtils
    , idHTTP
    , LConvEncoding
    , RegExpr
+   , Dialogs
    ;
+
+function PromptExistingFilename(aCaption, aStart: String): String;
+begin
+  with TOpenDialog.Create(nil) do
+  try
+    Options := Options + [ofFileMustExist];
+    FileName := aStart;
+    Title:= aCaption;
+    if not Execute then
+      raise Exception.Create('Could not find file: ' + aStart);
+    result := FileName;
+  finally
+    Free;
+  end;
+end;
+
+function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
+var
+  xPrefix, xAlias, xSpec: String;
+  xFound: Boolean;
+  x, xSpecStart: Integer;
+begin
+  result := aFileName;
+  with TRegExpr.Create do
+  try
+    xFound := False;
+    Expression:= '^[A-Za-z]+\:/[^/]';
+    if Exec(aFileName) then
+    begin
+      xAlias := Copy (Match[0], 1, Length (Match[0]) - 3); // without ':/' and that other char that differs from '/'
+      if Length (xAlias) > 1 then // migth be a windows driveletter
+      begin
+        xPrefix := PathPrefixes.Values[xAlias];
+        xSpec := Copy (aFileName, Length(Match[0]) - 1, 1000);
+        if xPrefix <> '' then
+        begin
+          result := xPrefix + xSpec;
+          {$ifdef windows}
+          if not (AnsiStartsText('http://', result))
+          and not (AnsiStartsText('https://', result)) then
+          begin
+            for x := 1 to Length (result) do
+              if result[x] = '/' then
+                result[x] := '\';
+          end;
+          {$endif}
+          Exit;
+        end;
+        result := PromptExistingFilename('Lookup ' + aFileName, '');
+        {$ifdef windows}
+        if not (AnsiStartsText('http://', xSpec))
+        and not (AnsiStartsText('https://', xSpec)) then
+        begin
+          for x := 1 to Length (xSpec) do
+            if xSpec[x] = '/' then
+              xSpec[x] := '\';
+        end;
+        {$endif}
+        xSpecStart := Pos (xSpec, result);
+        xPrefix := Copy (result, 1, xSpecStart - 1);
+        PathPrefixes.Values[xAlias] := xPrefix;
+      end;
+    end;
+  finally
+    free;
+  end;
+end;
 
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
   function _ExtractHttpPath(aFileName: String): String;
@@ -87,6 +159,13 @@ begin
   if (AnsiStartsText('http://', aToRelateFileName))
   or (AnsiStartsText('https://', aToRelateFileName))
   or (ExtractFileDrive(aToRelateFileName) <> '')
+  then
+  begin
+    result := aToRelateFileName;
+    exit;
+  end;
+  aToRelateFileName := PrepareFileNameSpace(aMainFileName, aToRelateFileName);
+  if (AnsiStartsText('\\', aToRelateFileName))
   then
   begin
     result := aToRelateFileName;
@@ -164,27 +243,6 @@ begin
   begin
     result := result + aToRelateFileName [x];
     Inc (x);
-  end;
-end;
-
-function PrepareFileNameSpace(aFileName: String): String;
-var
-  Protocol: String;
-begin
-  result := aFileName;
-  with TRegExpr.Create do
-  try
-    Expression:= '^[A-Za-z]+\:/[^/]';
-    if Exec(aFileName) then
-    begin
-      Protocol := Copy (Match[0], 1, Length (Match[0]) - 3); // without ':/' and that other char that differs from '/'
-      if Length (Protocol) > 1 then // migth be a windows driveletter
-      begin
-        Raise Exception.Create(Protocol + ' found');
-      end;
-    end;
-  finally
-    free;
   end;
 end;
 
@@ -282,6 +340,12 @@ begin
   end;
 end;
 
+initialization
+  PathPrefixes := TStringList.Create;
+  PathPrefixes.Sorted := True;
+
+finalization
+  PathPrefixes.Free;
 
 end.
 

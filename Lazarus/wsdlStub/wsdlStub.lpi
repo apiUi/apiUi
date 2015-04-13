@@ -51,7 +51,7 @@
         <PackageName Value="LCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -64,6 +64,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\Xml\promptfolderunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PromptFolderUnit"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -102,7 +110,6 @@
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>
-        <Enabled Value="False"/>
       </Item4>
       <Item5>
         <Name Value="EThread"/>
