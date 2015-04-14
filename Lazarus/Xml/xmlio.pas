@@ -23,6 +23,7 @@ var
 implementation
 uses StrUtils
    , LCLIntf, LCLType, LMessages
+   , LazFileUtils
    , versiontypes, versionresource
    , idHTTP
    , LConvEncoding
@@ -71,15 +72,9 @@ begin
         if xPrefix <> '' then
         begin
           result := xPrefix + xSpec;
-          {$ifdef windows}
           if not (AnsiStartsText('http://', result))
           and not (AnsiStartsText('https://', result)) then
-          begin
-            for x := 1 to Length (result) do
-              if result[x] = '/' then
-                result[x] := '\';
-          end;
-          {$endif}
+            ForcePathDelims(result);
           Exit;
         end;
         xPrefix := '';
@@ -94,15 +89,9 @@ begin
           end;
         end;
         xPrefix := PromptFolderName('Specify replacement for alias ' + xAlias, xPrefix);
-        {$ifdef windows}
         if not (AnsiStartsText('http://', xPrefix))
         and not (AnsiStartsText('https://', xPrefix)) then
-        begin
-          for x := 1 to Length (xPrefix) do
-            if xPrefix[x] = '/' then
-              xPrefix[x] := '\';
-        end;
-        {$endif}
+          ForcePathDelims(xPrefix);
         PathPrefixes.Values[xAlias] := xPrefix;
         result := xPrefix + xSpec;
       end;

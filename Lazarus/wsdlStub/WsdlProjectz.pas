@@ -474,6 +474,7 @@ uses OpenWsdlUnit
    , xmlUtilz
    , wrdFunctionz
    , GZIPUtils
+   , xmlio
    ;
 
 procedure AddRemark(aOperation: TObject; aString: String);
@@ -1679,7 +1680,7 @@ var
   xMessage: TWsdlMessage;
   xDone: Boolean;
   swapReqParent: TCustomBindable;
-  AddedTypeDefElementsAsXml, checkerXmls: TXml;
+  asXml, checkerXmls: TXml;
 begin
   AcquireLock;
   try
@@ -1705,6 +1706,7 @@ begin
       AddXml (TXml.CreateAsBoolean('CheckExpectedValues', doCheckExpectedValues));
       AddXml (TXml.CreateAsBoolean('DisableOnCorrelate', _WsdlDisableOnCorrelate));
       AddXml (ProjectOptionsAsXml);
+      AddXml (TXml.CreateAsString('PathPrefixes', xmlio.PathPrefixes.Text));
       with AddXml(TXml.CreateAsString('Environments', '')) do
         for x := 0 to EnvironmentList.Count - 1 do
           with AddXml(TXml.CreateAsString('Environment', '')) do
@@ -1767,11 +1769,16 @@ begin
                 AddXml (xWsdl.ExtraXsdsAsXml(SaveRelativeFileNames));
             end;
             AddXml(TXml.CreateAsInteger('ElementsWhenRepeatable', xWsdl.xsdElementsWhenRepeatable));
-            AddedTypeDefElementsAsXml := xWsdl.XsdDescr.AddedTypeDefElementsAsXml as TXml;
-            if AddedTypeDefElementsAsXml.Items.Count > 0 then
-              AddXml (AddedTypeDefElementsAsXml)
+            asXml := xWsdl.XsdDescr.ChangedElementTypedefsAsXml as TXml;
+            if asXml.Items.Count > 0 then
+              AddXml (asXml)
             else
-              FreeAndNil (AddedTypeDefElementsAsXml);
+              FreeAndNil (asXml);
+            asXml := xWsdl.XsdDescr.AddedTypeDefElementsAsXml as TXml;
+            if asXml.Items.Count > 0 then
+              AddXml (asXml)
+            else
+              FreeAndNil (asXml);
             for s := 0 to xWsdl.Services.Count - 1 do
             begin
               with AddXml (TXml.CreateAsString('Service', '')) do
@@ -2016,6 +2023,7 @@ begin
           eXml := xXml.Items.XmlItemByTag ['projectOptions'];
           if Assigned (eXml) then
             ProjectOptionsFromXml(eXml);
+          xmlio.PathPrefixes.Text := xXml.Items.XmlCheckedValueByTag ['PathPrefixes'];
           eXml := xXml.Items.XmlItemByTag ['Environments'];
           if Assigned (eXml) then
             for e := 0 to eXml.Items.Count - 1 do
@@ -2136,6 +2144,25 @@ begin
                     xWsdl.ExtraXsdsFromXml (dXml.Items.XmlItems[0]);
                     xWsdl.LoadExtraXsds;
                   end;
+                end;
+                dXml := wXml.Items.XmlItemByTag ['ChangedElementTypedefs'];
+                if Assigned (dXml) then
+                begin
+                  xWsdl.XsdDescr.ChangedElementTypedefsFromXml (dXml);
+                  for s := 0 to xWsdl.Services.Count - 1 do
+                    with xWsdl.Services.Services[s] do
+                      for o := 0 to Operations.Count - 1 do
+                        with Operations.Operations[o] do
+                        begin
+                          xBindName := reqBind.Name;
+                          reqBind.Free;
+                          reqBind := TXml.Create(0, reqXsd);
+                          reqBind.Name := xBindName;
+                          xBindName := rpyBind.Name;
+                          rpyBind.Free;
+                          rpyBind := TXml.Create(0, rpyXsd);
+                          rpyBind.Name := xBindName;
+                        end;
                 end;
                 dXml := wXml.Items.XmlItemByTag ['AddedTypeDefElements'];
                 if Assigned (dXml) then
@@ -6818,6 +6845,7 @@ begin
   xsdElementsWhenRepeatable := 1;
   stubRead := False;
   projectFileName := '';
+  xmlio.PathPrefixes.Clear;
   InitSpecialWsdls;
 end;
 

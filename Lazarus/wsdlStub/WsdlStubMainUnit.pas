@@ -509,6 +509,7 @@ type
     procedure LogUsageTimerTimer(Sender: TObject);
     procedure ServiceOptionsActionExecute(Sender: TObject);
     procedure ServiceOptionsActionUpdate(Sender: TObject);
+    procedure ChangeXmlDataType(aXml: TXml; aDataType: TXsdDataType);
     procedure ChangeDataTypeMenuItemClick(Sender: TObject);
     procedure ReportUnexpectedValuesActionExecute(Sender: TObject);
     procedure ReportUnexpectedValuesActionUpdate(Sender: TObject);
@@ -572,6 +573,7 @@ type
     procedure ExecuteAllRequestsActionUpdate(Sender: TObject);
     procedure ExecuteRequestActionUpdate(Sender: TObject);
     procedure ExecuteAllRequestsActionExecute(Sender: TObject);
+    procedure WsdlItemChangeDataTypeMenuItemClick(Sender: TObject);
     procedure WsdlItemDelMenuItemClick(Sender: TObject);
     procedure WsdlPopupMenuPopup(Sender: TObject);
     procedure MessagesVTSClick(Sender: TObject);
@@ -7882,6 +7884,53 @@ begin
   procedureThread := TProcedureThread.Create(False, se, ExecuteAllRequests);
 end;
 
+procedure TMainForm.WsdlItemChangeDataTypeMenuItemClick(Sender: TObject);
+var
+  xBind: TCustomBindable;
+  x, f: Integer;
+begin
+  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  if not Assigned (xBind)
+  or not (xBind is TXml) then
+    Exit;
+  Application.CreateForm(TChooseStringForm, ChooseStringForm);
+  try
+    ChooseStringForm.ListBox.Clear;
+    ChooseStringForm.ListBox.Sorted := False;
+    ChooseStringForm.ListBox.Items.Text := Wsdl.XsdDescr.TypeDefs.Text;
+    for X := 0 to Wsdl.XsdDescr.TypeDefs.Count - 1 do
+      if Wsdl.XsdDescr.TypeDefs.Strings[X]
+        <> ChooseStringForm.ListBox.Items.Strings[X] then
+        ShowMessage(IntToStr(X) + '' + Wsdl.XsdDescr.TypeDefs.Strings[X]
+            + ' ' + ChooseStringForm.ListBox.Items.Strings[X]);
+
+    ChooseStringForm.Caption := 'Choose from Types';
+    ChooseStringForm.ShowModal;
+    if ChooseStringForm.ModalResult = mrOk then with xBind as TXml do
+    begin
+      f := ChooseStringForm.ListBox.ItemIndex;
+      if Wsdl.XsdDescr.TypeDefs.XsdDataTypes[f] <> TypeDef then
+      begin
+        stubChanged := True;
+        TypeDef := Wsdl.XsdDescr.TypeDefs.XsdDataTypes[f];
+        Xsd.sType := TypeDef;
+        XsdCreate (0, Xsd);
+        Wsdl.XsdDescr.ChangedElementDefs.ElementDefs.AddObject('', Xsd);
+        UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+        InWsdlTreeView.FocusedColumn := 0;
+        InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
+        se.UpdateMessageRow(WsdlOperation, WsdlReply);
+        InWsdlTreeView.Invalidate;
+        GridView.InvalidateNode(GridView.FocusedNode);
+        InWsdlTreeViewFocusChanged(InWsdlTreeView, InWsdlTreeView.FocusedNode,
+          InWsdlTreeView.FocusedColumn);
+      end;
+    end;
+  finally
+    ChooseStringForm.Free;
+  end;
+end;
+
 procedure TMainForm.MessagesVTSGetHint(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex;
   var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: string);
@@ -8068,13 +8117,22 @@ begin
   WsdlItemChangeDataTypeMenuItem.Enabled := (xBind is TXml) and
     (Assigned((xBind as TXml).Xsd)) and
     ((xBind as TXml).Xsd.IsTypeDefEnabled);
+  WsdlItemChangeDataTypeMenuItem.OnClick:=nil;
   if WsdlItemChangeDataTypeMenuItem.Enabled then
   begin
-    xRootBase := (xBind as TXml).TypeDef;
-    while Assigned(xRootBase.BaseDataType) do
-      xRootBase := xRootBase.BaseDataType;
-    _createTypeSubMenuItems(WsdlItemChangeDataTypeMenuItem,
-      (xBind as TXml).TypeDef, xRootBase);
+    if (    ((xBind as TXml).TypeDef.xsdType = dtComplexType)
+        and ((xBind as TXml).TypeDef.ElementDefs.Count = 0)
+        and ((xBind as TXml).TypeDef.AttributeDefs.Count = 0)
+       ) then
+      WsdlItemChangeDataTypeMenuItem.OnClick := WsdlItemChangeDataTypeMenuItemClick
+    else
+    begin // to stay within boudarues of extention
+      xRootBase := (xBind as TXml).TypeDef;
+      while Assigned(xRootBase.BaseDataType) do
+        xRootBase := xRootBase.BaseDataType;
+      _createTypeSubMenuItems(WsdlItemChangeDataTypeMenuItem,
+        (xBind as TXml).TypeDef, xRootBase);
+    end;
   end;
   ElementvalueMenuItem.Enabled := xEnableStamp;
   AssignExpressionMenuItem.Enabled := xEnableStamp;
@@ -11024,36 +11082,40 @@ begin
   end;
 end;
 
+procedure TMainForm.ChangeXmlDataType(aXml: TXml; aDataType: TXsdDataType);
+var
+  nXml: TXml;
+  aXmlAsText: String;
+  x: Integer;
+begin
+  aXmlAsText := aXml.AsText(False, 0, True, False);
+  if aXml.TypeDef <> aDataType then
+  begin
+    aXml.TypeDef := aDataType;
+    aXml.XsdCreate(0, aXml.Xsd);
+    nXml := TXml.Create;
+    try
+      nXml.LoadFromString(aXmlAsText, nil);
+      for X := nXml.Attributes.Count - 1 downto 0 do
+        if NameWithoutPrefix(nXml.Attributes.XmlAttributes[X].Name)
+          = 'type' then
+          nXml.Attributes.XmlAttributes[X].Value := aDataType.Name;
+      aXml.LoadValues(nXml, False, False);
+      stubChanged := True;
+    finally
+      nXml.Free;
+    end;
+  end;
+end;
+
 procedure TMainForm.ChangeDataTypeMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
-  xDataType: TXsdDataType;
-  xXmlAsText: String;
-  xXml, nXml: TXml;
-  X: Integer;
 begin
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if (xBind is TXml) and (Assigned((xBind as TXml).Xsd)) then
   begin
-    xXml := xBind as TXml;
-    xXmlAsText := xXml.AsText(False, 0, True, False);
-    xDataType := TXsdDataType((Sender as TMenuItem).Tag);
-    if xXml.TypeDef <> xDataType then
-    begin
-      xXml.TypeDef := xDataType;
-      xXml.XsdCreate(0, xXml.Xsd);
-      nXml := TXml.Create;
-      try
-        nXml.LoadFromString(xXmlAsText, nil);
-        for X := nXml.Attributes.Count - 1 downto 0 do
-          if NameWithoutPrefix(nXml.Attributes.XmlAttributes[X].Name)
-            = 'type' then
-            nXml.Attributes.XmlAttributes[X].Value := xDataType.Name;
-        xXml.LoadValues(nXml, False, False);
-      finally
-        nXml.Free;
-      end;
-    end;
+    ChangeXmlDataType(xBind as TXml, TXsdDataType((Sender as TMenuItem).Tag));
     UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
     InWsdlTreeView.FocusedColumn := 0;
     InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
@@ -11062,7 +11124,6 @@ begin
     GridView.InvalidateNode(GridView.FocusedNode);
     InWsdlTreeViewFocusChanged(InWsdlTreeView, InWsdlTreeView.FocusedNode,
       InWsdlTreeView.FocusedColumn);
-    stubChanged := True;
   end;
 end;
 

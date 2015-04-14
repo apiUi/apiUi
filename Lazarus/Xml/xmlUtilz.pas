@@ -1,6 +1,3 @@
-{.$define XMLDOM}
-{.$define SHDOCVW}
-
 unit xmlUtilz;
 
 {$IFDEF FPC}
@@ -17,9 +14,6 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, FileUtil
    , ParserClasses
    , SynEdit
    , RichBox
-   {$ifdef SHDOCVW}
-   , SHDocVw
-   {$endif}
    ;
 
 
@@ -132,13 +126,6 @@ public
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
                                  ); overload;
-  {$ifdef SHDOCVW}
-  procedure ListXsdDocumentation ( aWebBrowser: TWebBrowser
-                                 ; aBind: TCustomBindable
-                                 ; aShowPath: Boolean
-                                 ; aShowValue: Boolean
-                                 ); overload;
-  {$endif}
   constructor Create;
   destructor Destroy;
 end;
@@ -252,7 +239,7 @@ end;
 
 function CheckAndPromptForExistingFile (aCaption, aRefName, aFileName: String): String;
 begin
-  result := ExpandUNCFileNameUTF8(ExpandRelativeFileName (aRefName, aFileName)); { *Converted from ExpandUNCFileName* }
+  result := ExpandRelativeFileName (aRefName, aFileName);
   while not FileExistsUTF8(result) { *Converted from FileExists* } do
   begin
     if (MessageDlg ( aCaption
@@ -1336,44 +1323,6 @@ end;
 
 
 
-{$ifdef SHDOCVW}
-procedure TXmlUtil.ListXsdDocumentation( aWebBrowser: TWebBrowser
-                                       ; aBind: TCustomBindable
-                                       ; aShowPath: Boolean
-                                       ; aShowValue: Boolean
-                                       );
-var
-  s: String;
-  xTempFileName: String;
-begin
-  xTempFileName := GetEnvironmentVariable ('Temp')
-                + '\temp'
-                +  IntToStr (TempFileCounter mod 10)
-                + '.htm'
-                ;
-  Inc (TempFileCounter);  // to avoid file in use errors
-  s := '';
-  if (aBind is TXml)
-  or (aBind is TXmlAttribute) then
-  begin
-    if aShowPath then
-      s := s + 'Path: ' + aBind.GetFullCaption + #$A#$D;
-    if aShowValue then
-      s := s + 'Value: ' + aBind.Value + #$A#$D;
-    if aBind is TXmlAttribute then
-      s := s + (aBind as TXmlAttribute).XsdAttr.Documentation.Text;
-    if aBind is TXml then
-      s := s + (aBind as TXml).DocumentationText;
-    if aBind is TXmlAttribute then
-      s := s + (aBind as TXmlAttribute).XsdAttr.Appinfo.Text;
-    if aBind is TXml then
-      s := s + (aBind as TXml).AppinfoText;
-  end;
-  SaveStringToFile(xTempFileName, textToHtml(s));
-  aWebBrowser.Navigate('file://' + xTempFileName);
-end;
-
-{$endif}
 procedure TXmlUtil.ListXsdEnumerations(aListView: TListView; aBind: TCustomBindable);
 var
   xDataType: TXsdDataType;
