@@ -966,6 +966,7 @@ type
     procedure UpdateInWsdlCheckBoxes;
     procedure SaveWsdlStubCase(aFileName: String);
     procedure OpenStubCase(aFileName: String);
+    procedure ChangeStubCaseInMemory;
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
     procedure ToAllLogList(aLogList: TLogList);
@@ -2858,6 +2859,29 @@ begin
     WsdlOperation := allOperations.Operations[f];
     if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
       WsdlReply := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+  end;
+end;
+
+procedure TMainForm .ChangeStubCaseInMemory ;
+var
+  xChanged: Boolean;
+  f: Integer;
+begin
+  Screen.Cursor := crHourGlass;
+  xChanged := stubChanged;
+  try
+    se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
+    se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlReply));
+    se.ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
+    if allOperations.Find (se.FocusOperationName, f) then
+    begin
+      WsdlOperation := allOperations.Operations[f];
+      if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
+        WsdlReply := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+    end;
+  finally
+    Screen.Cursor := crDefault;
+    stubChanged := xChanged;
   end;
 end;
 
@@ -7898,12 +7922,6 @@ begin
     ChooseStringForm.ListBox.Clear;
     ChooseStringForm.ListBox.Sorted := False;
     ChooseStringForm.ListBox.Items.Text := Wsdl.XsdDescr.TypeDefs.Text;
-    for X := 0 to Wsdl.XsdDescr.TypeDefs.Count - 1 do
-      if Wsdl.XsdDescr.TypeDefs.Strings[X]
-        <> ChooseStringForm.ListBox.Items.Strings[X] then
-        ShowMessage(IntToStr(X) + '' + Wsdl.XsdDescr.TypeDefs.Strings[X]
-            + ' ' + ChooseStringForm.ListBox.Items.Strings[X]);
-
     ChooseStringForm.Caption := 'Choose from Types';
     ChooseStringForm.ShowModal;
     if ChooseStringForm.ModalResult = mrOk then with xBind as TXml do
@@ -7913,17 +7931,9 @@ begin
       begin
         stubChanged := True;
         TypeDef := Wsdl.XsdDescr.TypeDefs.XsdDataTypes[f];
-        Xsd.sType := TypeDef;
-        XsdCreate (0, Xsd);
+        Wsdl.XsdDescr.ChangeXsdDatatype(Xsd.ElementNameSpace, Xsd.ElementName, TypeDef);
         Wsdl.XsdDescr.ChangedElementDefs.ElementDefs.AddObject('', Xsd);
-        UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
-        InWsdlTreeView.FocusedColumn := 0;
-        InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
-        se.UpdateMessageRow(WsdlOperation, WsdlReply);
-        InWsdlTreeView.Invalidate;
-        GridView.InvalidateNode(GridView.FocusedNode);
-        InWsdlTreeViewFocusChanged(InWsdlTreeView, InWsdlTreeView.FocusedNode,
-          InWsdlTreeView.FocusedColumn);
+        ChangeStubCaseInMemory;
       end;
     end;
   finally

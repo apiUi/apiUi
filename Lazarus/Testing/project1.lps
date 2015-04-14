@@ -9,7 +9,13 @@
         <Filename Value="project1.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="project1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="26"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="unit1.pas"/>
@@ -18,7 +24,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -133,7 +138,7 @@
       <Unit15>
         <Filename Value="..\Utils\gziputils.pas"/>
         <UnitName Value="GZIPUtils"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="43"/>
         <CursorPos X="11" Y="43"/>
@@ -150,7 +155,7 @@
       </Unit16>
       <Unit17>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1446"/>
         <CursorPos X="26" Y="1462"/>
@@ -159,7 +164,7 @@
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\streams.inc"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="813"/>
         <CursorPos X="4" Y="819"/>
