@@ -70,7 +70,6 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="PromptFolderUnit"/>
       </Unit2>
     </Units>
   </ProjectOptions>

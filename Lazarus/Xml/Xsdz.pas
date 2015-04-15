@@ -235,7 +235,7 @@ type
     NameSpaceList: TStringList;
     ReadFileNames: TStringList;
     TypeDef: TXsdDataType;
-    ChangedElementDefs: TXsdDataType;
+    ChangedElementDefs: TObject;
     function GenerateNameSpaceAttributes: String;
     function NameSpacePrefix(aNameSpace: String): String;
     procedure AddNameSpace(aNameSpace: String);
@@ -249,11 +249,11 @@ type
     procedure AddXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
     function LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent): Boolean;
     function LoadXsdFromString(aString: String; ErrorFound: TOnErrorEvent): Boolean;
-    procedure ChangeXsdDatatype (aNameSpace, aName: String; aTypedef: TXsdDataType);
     function ChangedElementTypedefsAsXml: TObject;
-    procedure ChangedElementTypedefsFromXml(aXml: TObject);
+    procedure ChangedElementTypedefsFromXml (aXml: TObject);
     function AddedTypeDefElementsAsXml: TObject;
     procedure AddedTypeDefElementsFromXml(aXml: TObject);
+    procedure ChangeElementsDatatype(aNameSpace, aName: String; aNewType: TXsdDataType);
     constructor Create(aElementsWhenRepeatable: integer);
     destructor Destroy; override;
   end;
@@ -370,11 +370,6 @@ end; { of function ExecRegExpr }
 
 function TXsdList.GetXsd(Index: integer): TXsd;
 begin
-  if not Assigned(Self) then
-  begin
-    result := nil;
-    Exit;
-  end;
   result := TXsd(Objects[index]);
 end;
 
@@ -506,7 +501,7 @@ begin
   NameSpaceList := TXsdList.Create;
   NameSpaceList.Sorted := True;
   NameSpaceList.CaseSensitive := True;
-  ChangedElementDefs := TXsdDataType.Create(self);
+  ChangedElementDefs := TXml.Create;
 end;
 
 destructor TXsdDescr.Destroy;
@@ -529,49 +524,34 @@ var
   xmlResult: TXml;
   x: Integer;
 begin
-  xmlResult := TXml.CreateAsString('ChangedElementTypedefs', '');
+  xmlResult := TXml.Create;
   result := xmlResult;
-  for x := 0 to ChangedElementDefs.ElementDefs.Count - 1 do
-  begin
-    with xmlResult.AddXml(TXml.CreateAsString('ChangedElementTypedef', '')) do
-    begin
-      AddXml (TXml.CreateAsString('NameSpace', ChangedElementDefs.ElementDefs.Xsds[x].ElementNameSpace));
-      AddXml (TXml.CreateAsString('Name', ChangedElementDefs.ElementDefs.Xsds[x].ElementName));
-      with AddXml (TXml.CreateAsString('Typedef', '')) do
-      begin
-        AddXml (TXml.CreateAsString('NameSpace', ChangedElementDefs.ElementDefs.Xsds[x].sType.NameSpace));
-        AddXml (TXml.CreateAsString('Name', ChangedElementDefs.ElementDefs.Xsds[x].sType.Name));
-      end;
-    end;
-  end;
+  xmlResult.LoadValues(ChangedElementDefs as TXml, True);
 end;
 
 procedure TXsdDescr.ChangedElementTypedefsFromXml(aXml: TObject);
 var
   xXml, yXml: TXml;
-  xXsd: TXsd;
   x: Integer;
+  xTypeDef: TXsdDataType;
   xNameSpace, xName: String;
-  nType: TXsdDataType;
 begin
-  xXml := aXml as TXml;
-  ChangedElementDefs.ElementDefs.Clear;
+  xXml := ChangedElementDefs as TXml;
+  xXml.LoadValues (aXml as TXml, True);
   for x := 0 to xXml.Items.Count - 1 do
   begin
     with xXml.Items.XmlItems[x] do
     begin
       if Name = 'ChangedElementTypedef' then
       begin
-        xNameSpace := Items.XmlValueByTag['NameSpace'];
-        xName := Items.XmlValueByTag['Name'];
+        xNameSpace:=Items.XmlValueByTag['NameSpace'];
+        xName:=Items.XmlValueByTag['Name'];
         yXml := Items.XmlItemByTag['Typedef'];
         if Assigned (yXml) then
         begin
-          nType := FindTypeDef(yXml.Items.XmlValueByTag['NameSpace'], yXml.Items.XmlValueByTag['Name']);
-          ChangeXsdDatatype ( xNameSpace, xName, nType);
-          xXsd := FindElement( xNameSpace, xName, True);
-          if Assigned (xXsd) then
-            ChangedElementDefs.ElementDefs.AddObject('', xXsd);
+          xTypeDef := FindTypeDef(yXml.Items.XmlValueByTag['NameSpace'], yXml.Items.XmlValueByTag['Name']);
+          if Assigned (xTypeDef) then
+            ChangeElementsDatatype(xNameSpace, xName, xTypeDef);
         end;
       end;
     end;
@@ -1083,35 +1063,6 @@ begin
     xXml.Free;
   end;
   Finalise;
-end;
-
-procedure TXsdDescr .ChangeXsdDatatype (aNameSpace , aName : String ; aTypedef : TXsdDataType );
-  procedure _process (_Type: TXsdDataType);
-  var
-    x: Integer;
-  begin
-    if not Assigned(_Type) then Exit;
-    if _Type._Processed then Exit;
-    _Type._Processed := True;
-    try
-      for x := 0 to _Type.ElementDefs.Count - 1 do with _Type.ElementDefs.Xsds[x] do
-      begin
-        if (ElementNameSpace = aNameSpace)
-        and (ElementName = aName) then
-          sType := aTypedef
-        else
-          _process (sType);
-      end;
-    finally
-      _Type._Processed := False;
-    end;
-  end;
-var
-  x: Integer;
-begin
-  _process(TypeDef);
-  for x := 0 to TypeDefs.Count - 1 do
-    _process(TypeDefs.XsdDataTypes[x]);
 end;
 
 function TXsd.IsTypeDefEnabled: Boolean;
@@ -2758,6 +2709,34 @@ begin
   end;
 end;
 
+procedure TXsdDescr.ChangeElementsDatatype(aNameSpace, aName: String; aNewType: TXsdDataType);
+  procedure _process (aTypeDef: TXsdDataType);
+  var
+    x: Integer;
+  begin
+    if not Assigned(aTypeDef) then Exit;
+    if aTypeDef._Processed then Exit;
+    aTypeDef._Processed := True;
+    try
+      for x := 0 to aTypeDef.ElementDefs.Count - 1 do with aTypeDef.ElementDefs.Xsds[x] do
+      begin
+        if (ElementNameSpace = aNameSpace)
+        and (ElementName = aName) then
+          sType := aNewType; // else ???? well ...
+        _process(sType);
+      end;
+    finally
+      aTypeDef._Processed := False;
+    end;
+  end;
+var
+  x: Integer;
+begin
+  _process (TypeDef);
+  for x := 0 to TypeDefs.Count - 1 do
+    _process (Typedefs.XsdDataTypes[x]);
+end;
+
 procedure TXsdDescr.Finalise;
   procedure _checkLock;
   var
@@ -3175,30 +3154,29 @@ function TXsdDescr.FindElement (aNameSpace , aName: String; aSearchAll: Boolean 
   begin
     result := nil;
     if not Assigned(aTypedef) then Exit;
-    if not Assigned (aTypedef.ElementDefs) then Exit;
-    if aTypedef._Processed then Exit;
-    aTypedef._Processed := True;
-    try
-    for x := 0 to aTypeDef.ElementDefs.Count - 1 do
+    with aTypeDef.ElementDefs do
     begin
-      if (aTypeDef.ElementDefs.Xsds[x].ElementName = aName)
-      and (aTypeDef.ElementDefs.Xsds[x].ElementNameSpace = aNameSpace) then
+      for x := 0 to Count - 1 do
       begin
-        result := aTypeDef.ElementDefs.Xsds[x];
-        exit;
+        if (Xsds[x].ElementName = aName)
+        and (Xsds[x].ElementNameSpace = aNameSpace) then
+        begin
+          result := Xsds[x];
+          exit;
+        end;
       end;
     end;
     if aSearchAll then
     begin
-      for x := 0 to aTypeDef.ElementDefs.Count - 1 do
+      with aTypeDef.ElementDefs do
       begin
-        result := _search(aTypeDef.ElementDefs.Xsds[x].sType);
-        if Assigned (result) then
-          exit;
+        for x := 0 to Count - 1 do
+        begin
+          result := _search(Xsds[x].sType);
+          if Assigned (result) then
+            exit;
+        end;
       end;
-    end;
-    finally
-      aTypeDef._Processed := False;
     end;
   end;
 var

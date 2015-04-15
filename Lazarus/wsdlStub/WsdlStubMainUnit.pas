@@ -62,6 +62,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ProjectDesignToClipboardAction: TAction;
     PresentLogMemoTextAction : TAction ;
     DesignPanel: TPanel;
     alGeneral: TActionList;
@@ -491,6 +492,7 @@ type
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
+    procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
     procedure RequestBodyTabSheetContextPopup (Sender : TObject ;
       MousePos : TPoint ; var Handled : Boolean );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
@@ -966,7 +968,6 @@ type
     procedure UpdateInWsdlCheckBoxes;
     procedure SaveWsdlStubCase(aFileName: String);
     procedure OpenStubCase(aFileName: String);
-    procedure ChangeStubCaseInMemory;
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
     procedure ToAllLogList(aLogList: TLogList);
@@ -1047,6 +1048,7 @@ type
   private
     function getHintStrDisabledWhileActive: String;
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
+    procedure ReloadProject;
   published
   public
     se: TWsdlProject;
@@ -1315,6 +1317,8 @@ begin
     { }
     UpdateConsole(w);
     stubChanged := (stubChanged or WsdlListForm.stubChanged);
+    if wsdlListForm.ReloadRequired then
+      ReloadProject;
   finally
     FreeAndNil(WsdlListForm);
   end;
@@ -2859,29 +2863,6 @@ begin
     WsdlOperation := allOperations.Operations[f];
     if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
       WsdlReply := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
-  end;
-end;
-
-procedure TMainForm .ChangeStubCaseInMemory ;
-var
-  xChanged: Boolean;
-  f: Integer;
-begin
-  Screen.Cursor := crHourGlass;
-  xChanged := stubChanged;
-  try
-    se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
-    se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlReply));
-    se.ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
-    if allOperations.Find (se.FocusOperationName, f) then
-    begin
-      WsdlOperation := allOperations.Operations[f];
-      if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
-        WsdlReply := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
-    end;
-  finally
-    Screen.Cursor := crDefault;
-    stubChanged := xChanged;
   end;
 end;
 
@@ -6885,6 +6866,33 @@ begin
   end;
 end;
 
+procedure TMainForm.ReloadProject;
+var
+  xChanged, xRead: Boolean;
+  f: Integer;
+begin
+  screen.Cursor:=crHourGlass;
+  Application.ProcessMessages;
+  try
+    xChanged := stubChanged;
+    xRead := se.stubRead;
+    se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
+    se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlReply));
+    se.ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
+    if allOperations.Find (se.FocusOperationName, f) then
+    begin
+      WsdlOperation := allOperations.Operations[f];
+      if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
+        WsdlReply := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+    end;
+    stubChanged := xChanged;
+    se.StubRead := xRead;
+  finally
+    screen.Cursor:=crDefault;
+    Application.ProcessMessages;
+  end;
+end;
+
 procedure TMainForm.ShowHttpRequestAsXMLActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -7911,29 +7919,48 @@ end;
 procedure TMainForm.WsdlItemChangeDataTypeMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
+  xTypeDef: TXsdDataType;
   x, f: Integer;
 begin
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if not Assigned (xBind)
-  or not (xBind is TXml) then
+  or not (xBind is TXml)
+  or not Assigned ((xBind as TXml).Xsd) then
     Exit;
   Application.CreateForm(TChooseStringForm, ChooseStringForm);
   try
     ChooseStringForm.ListBox.Clear;
     ChooseStringForm.ListBox.Sorted := False;
     ChooseStringForm.ListBox.Items.Text := Wsdl.XsdDescr.TypeDefs.Text;
+    for X := 0 to Wsdl.XsdDescr.TypeDefs.Count - 1 do
+      if Wsdl.XsdDescr.TypeDefs.Strings[X]
+        <> ChooseStringForm.ListBox.Items.Strings[X] then
+        ShowMessage(IntToStr(X) + '' + Wsdl.XsdDescr.TypeDefs.Strings[X]
+            + ' ' + ChooseStringForm.ListBox.Items.Strings[X]);
+
     ChooseStringForm.Caption := 'Choose from Types';
     ChooseStringForm.ShowModal;
-    if ChooseStringForm.ModalResult = mrOk then with xBind as TXml do
+    if ChooseStringForm.ModalResult = mrOk then with ((xBind as TXml).Xsd) do
     begin
       f := ChooseStringForm.ListBox.ItemIndex;
-      if Wsdl.XsdDescr.TypeDefs.XsdDataTypes[f] <> TypeDef then
+      xTypeDef := Wsdl.XsdDescr.TypeDefs.XsdDataTypes[f];
+      if xTypeDef <> sType then
       begin
         stubChanged := True;
-        TypeDef := Wsdl.XsdDescr.TypeDefs.XsdDataTypes[f];
-        Wsdl.XsdDescr.ChangeXsdDatatype(Xsd.ElementNameSpace, Xsd.ElementName, TypeDef);
-        Wsdl.XsdDescr.ChangedElementDefs.ElementDefs.AddObject('', Xsd);
-        ChangeStubCaseInMemory;
+        with (Wsdl.XsdDescr.ChangedElementDefs as TXml) do
+        begin
+          with AddXml(TXml.CreateAsString('ChangedElementTypedef', '')) do
+          begin
+            AddXml (TXml.CreateAsString('NameSpace', ElementNameSpace));
+            AddXml (TXml.CreateAsString('Name', ElementName));
+            with AddXml (TXml.CreateAsString('TypeDef', '')) do
+            begin
+              AddXml (TXml.CreateAsString('NameSpace', xTypeDef.NameSpace));
+              AddXml (TXml.CreateAsString('Name', xTypeDef.Name));
+            end;
+          end;
+        end;
+        ReloadProject;
       end;
     end;
   finally
@@ -11730,6 +11757,11 @@ end;
 procedure TMainForm .PresentLogMemoTextActionUpdate (Sender : TObject );
 begin
   PresentLogMemoTextAction.Enabled := (LogMemo.Lines.Count > 0);
+end;
+
+procedure TMainForm.ProjectDesignToClipboardActionExecute(Sender: TObject);
+begin
+  Clipboard.AsText := se.ProjectDesignAsString(se.projectFileName);
 end;
 
 procedure TMainForm .RequestBodyTabSheetContextPopup (Sender : TObject ;

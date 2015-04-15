@@ -68,6 +68,7 @@ type
     IniFile: TFormIniFile;
     LineNumber: Integer;
     fStubChanged: Boolean;
+    fReloadRequired: Boolean;
     procedure UpdateListView;
   public
     wsdlFileName: String;
@@ -77,6 +78,7 @@ type
     ShowOperationsWithEndpointOnly: Boolean;
     SaveRelativeFilenames: Boolean;
     property stubChanged: Boolean read fStubChanged;
+    property ReloadRequired: Boolean read fReloadRequired;
   end;
 
 var
@@ -392,7 +394,7 @@ begin
     begin
       fstubChanged := True;
       xWsdl.ExtraXsdsFromXml (xXml);
-      ShowMessage ('To use the added XML-schema files,' + LineEnding + 'first save and reload your project');
+      fReloadRequired := True;
     end;
   finally
     FreeAndNil (xXml);

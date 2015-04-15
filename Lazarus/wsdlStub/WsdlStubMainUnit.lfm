@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 428
+  Left = 425
   Height = 525
-  Top = 58
+  Top = 205
   Width = 865
   Caption = 'MainForm'
   ClientHeight = 506
@@ -2053,6 +2053,11 @@ object MainForm: TMainForm
       ImageIndex = 70
       OnExecute = LogCoverageReportActionExecute
       OnUpdate = LogCoverageReportActionUpdate
+    end
+    object ProjectDesignToClipboardAction: TAction
+      Caption = 'ProjectDesign To Clipboard'
+      OnExecute = ProjectDesignToClipboardActionExecute
+      ShortCut = 24699
     end
   end
   object mainImageList: TImageList

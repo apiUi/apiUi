@@ -1,7 +1,7 @@
 object wsdlListForm: TwsdlListForm
-  Left = 271
+  Left = 458
   Height = 321
-  Top = 250
+  Top = 241
   Width = 844
   Caption = 'List of Wsdls to stub'
   ClientHeight = 321
@@ -12,7 +12,7 @@ object wsdlListForm: TwsdlListForm
   OnShow = FormShow
   ParentFont = True
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
     Height = 57
