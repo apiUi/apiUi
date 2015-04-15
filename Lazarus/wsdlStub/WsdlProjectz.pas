@@ -2145,8 +2145,9 @@ begin
                     xWsdl.LoadExtraXsds;
                   end;
                 end;
-                dXml := wXml.Items.XmlItemByTag ['ChangedElementTypedefs'];
-                if Assigned (dXml) then
+                dXml := wXml.Items.XmlItemByTag ['ChangedElementDefs'];
+                if Assigned (dXml)
+                and (dXml.Items.Count > 0) then
                 begin
                   xWsdl.XsdDescr.ChangedElementTypedefsFromXml (dXml);
                   for s := 0 to xWsdl.Services.Count - 1 do

@@ -6878,7 +6878,7 @@ begin
     xRead := se.stubRead;
     se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
     se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlReply));
-    se.ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
+    ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
     if allOperations.Find (se.FocusOperationName, f) then
     begin
       WsdlOperation := allOperations.Operations[f];
@@ -8161,14 +8161,17 @@ begin
         and ((xBind as TXml).TypeDef.ElementDefs.Count = 0)
         and ((xBind as TXml).TypeDef.AttributeDefs.Count = 0)
        ) then
-      WsdlItemChangeDataTypeMenuItem.OnClick := WsdlItemChangeDataTypeMenuItemClick
+    begin
+      WsdlItemChangeDataTypeMenuItem.OnClick := WsdlItemChangeDataTypeMenuItemClick;
+      WsdlItemChangeDataTypeMenuItem.Caption := 'Change datatype to...';
+    end
     else
     begin // to stay within boudarues of extention
       xRootBase := (xBind as TXml).TypeDef;
       while Assigned(xRootBase.BaseDataType) do
         xRootBase := xRootBase.BaseDataType;
-      _createTypeSubMenuItems(WsdlItemChangeDataTypeMenuItem,
-        (xBind as TXml).TypeDef, xRootBase);
+      _createTypeSubMenuItems(WsdlItemChangeDataTypeMenuItem, (xBind as TXml).TypeDef, xRootBase);
+      WsdlItemChangeDataTypeMenuItem.Caption := 'Change datatype to';
     end;
   end;
   ElementvalueMenuItem.Enabled := xEnableStamp;

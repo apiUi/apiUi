@@ -1209,8 +1209,8 @@ var
 
   function _doEncode (aXml: TXml): Boolean;
   begin
-    if aXml.TagName = 'serviceRequestArg' then
-      aXml.TagName := 'serviceRequestArg';
+    if aXml.Name = 'GenericData' then
+      aXml.Name := 'GenericData';
     if Assigned (aXml.Xsd)
     and Assigned (aXml.TypeDef)
     and (aXml.Xsd.ElementNameSpace <> aXml.TypeDef.NameSpace) then
@@ -1221,7 +1221,10 @@ var
           and (aXml.Xsd.ElementNameSpace <> '')
           and (aXml.Xsd.DoNotEncode = False)
           and (   Encoded
-               or (Assigned (aXml.Xsd.sType) and aXml.Xsd.sType.IsExtention)
+               or (    Assigned (aXml.Xsd.sType)
+                   and aXml.Xsd.sType.IsExtention
+                   and (aXml.Xsd.sType.Name <> '')
+                  )
                or (Assigned (aXml.Xsd.sType) and (aXml.Xsd.sType.ExtendedByList.Count > 0))
               );
   end;

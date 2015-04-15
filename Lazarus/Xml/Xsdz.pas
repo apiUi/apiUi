@@ -501,7 +501,7 @@ begin
   NameSpaceList := TXsdList.Create;
   NameSpaceList.Sorted := True;
   NameSpaceList.CaseSensitive := True;
-  ChangedElementDefs := TXml.Create;
+  ChangedElementDefs := TXml.CreateAsString('ChangedElementDefs', '');
 end;
 
 destructor TXsdDescr.Destroy;
@@ -524,7 +524,7 @@ var
   xmlResult: TXml;
   x: Integer;
 begin
-  xmlResult := TXml.Create;
+  xmlResult := TXml.CreateAsString((ChangedElementDefs as TXml).Name, '');
   result := xmlResult;
   xmlResult.LoadValues(ChangedElementDefs as TXml, True);
 end;
@@ -546,7 +546,7 @@ begin
       begin
         xNameSpace:=Items.XmlValueByTag['NameSpace'];
         xName:=Items.XmlValueByTag['Name'];
-        yXml := Items.XmlItemByTag['Typedef'];
+        yXml := Items.XmlItemByTag['TypeDef'];
         if Assigned (yXml) then
         begin
           xTypeDef := FindTypeDef(yXml.Items.XmlValueByTag['NameSpace'], yXml.Items.XmlValueByTag['Name']);
