@@ -177,7 +177,8 @@ begin
     MaxIndex := List.Items.Count - 1;
     if Index = -1 then Index := 0
     else if Index > MaxIndex then Index := MaxIndex;
-    Selected[Index] := True;
+    if Index > -1 then
+      Selected[Index] := True;
   end;
   SetButtons;
 end;

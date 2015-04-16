@@ -45,7 +45,7 @@ type TA2BXml = class (TXml)
     property IgnoredDifference: Boolean read fIgnoredDifference write setIgnoredDifference;
     property NumberOfDiffs: Integer read getNumberOfDiffs;
     property ThisOneDiffers: Boolean read fThisOneDiffers;
-    procedure Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList);
+    function Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList): Boolean;
     constructor CreateA (aXml: TXml);
     constructor CreateB (bXml: TXml);
     constructor CreateA2B (aXml, bXml: TXml; ignoreOrder: Boolean);
@@ -383,7 +383,7 @@ begin
       result := result + (Items.XmlItems[x] as TA2BXml).NumberOfDiffs;
 end;
 
-procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList);
+function TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList): Boolean;
   procedure _downIgnored(aXml: TA2BXml);
   var
     x: Integer;
@@ -408,7 +408,7 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
   var
     x, f: Integer;
   begin
-    if aXml.fIgnoredDifference then Exit;
+    if aXml.fIgnoredDifference then Exit;  // because of the _downIgnored...
     if aXml.ChangeKind = ckModify then
     begin
       aXml.Differs := (not Assigned (ignoreDifferencesOn))
@@ -416,6 +416,8 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
                       and (not ignoreDifferencesOn.Find(aXml.FullUQCaption , f))
                      );
       aXml.IgnoredDifference := not aXml.Differs;
+      if not aXml.IgnoredDifference then
+        Ignore := False;
     end;
     if aXml.ChangeKind = ckDelete then
     begin
@@ -425,7 +427,9 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
                      );
       aXml.IgnoredDifference := not aXml.Differs;
       if aXml.IgnoredDifference then
-        _downIgnored(aXml);
+        _downIgnored(aXml)
+      else
+        Ignore := False;
     end;
     if aXml.ChangeKind = ckAdd then
     begin
@@ -435,7 +439,9 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
                       );
       aXml.IgnoredDifference := not aXml.Differs;
       if aXml.IgnoredDifference then
-        _downIgnored(aXml);
+        _downIgnored(aXml)
+      else
+        Ignore := False;
     end;
     for x := 0 to aXml.Attributes.Count - 1 do
     with aXml.Attributes.XmlAttributes[x] as TA2BXmlAttribute do
@@ -447,6 +453,8 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
                     and (not ignoreDifferencesOn.Find(aXml.FullCaption + '.' + Name , f))
                    );
         IgnoredDifference := not Differs;
+        if not IgnoredDifference then
+          Ignore := False;
         aXml.Differs := aXml.fDiffers or Differs;
       end;
       if ChangeKind = ckDelete then
@@ -456,6 +464,8 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
                     and (not ignoreAddingOn.Find(aXml.FullCaption + '.' + Name , f))
                    );
         IgnoredDifference := not Differs;
+        if not IgnoredDifference then
+          Ignore := False;
         aXml.Differs := aXml.fDiffers or Differs;
       end;
       if ChangeKind = ckAdd then
@@ -465,6 +475,8 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
                     and (not ignoreRemovingOn.Find(aXml.FullCaption + '.' + Name , f))
                    );
         IgnoredDifference := not Differs;
+        if not IgnoredDifference then
+          Ignore := False;
         aXml.Differs := aXml.fDiffers or Differs;
       end;
     end;
@@ -473,6 +485,7 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
   end;
 begin
 //_reset(Self);
+  Ignore := Differs;
   _set(Self);
 end;
 

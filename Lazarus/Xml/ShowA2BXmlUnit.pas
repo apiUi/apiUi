@@ -149,7 +149,16 @@ uses FindRegExpDialog
    , xmlUtilz
    , dualListUnit
    , wrdFunctionz
+   , base64
    ;
+const
+  iiGreenBullet = 132;
+  iiRedBullet = 133;
+  iiOrangeBullet = 135;
+  iiRedCross = 134;
+  iiOrangeCross = 141;
+  iiRedPlus = 68;
+  iiOrangePlus = 140;
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -281,7 +290,6 @@ var
   xXml: TA2BXml;
   xAtt: TA2BXmlAttribute;
 begin
-  raise exception.Create('TShowA2BXmlForm.ShowInWordMenuItemClick: Not yet implemented');
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml, xAtt);
@@ -307,8 +315,7 @@ begin
       aFileName := GetEnvironmentVariable ('Temp') + '\A2BCompareFileA.docx';
     if AnsiStartsStr(base64DocxStartStr, aValue)
     or AnsiStartsStr(base64RtfStartStr, aValue) then
-{ TODO : wordfie }
-//    SaveStringToFile ( aFileName , B64Decode (aValue))
+      SaveStringToFile ( aFileName , DecodeStringBase64 (aValue))
     else
       wrdStringToFile(aValue, aFileName);
 
@@ -318,8 +325,7 @@ begin
       bFileName := GetEnvironmentVariable ('Temp') + '\A2BCompareFileB.docx';
     if AnsiStartsStr(base64DocxStartStr, bValue)
     or AnsiStartsStr(base64RtfStartStr, bValue) then
-    { TODO : wordfie}
-//    SaveStringToFile ( bFileName , B64Decode (bValue))
+      SaveStringToFile ( bFileName , DecodeStringBase64 (bValue))
     else
       wrdStringToFile(bValue, bFileName);
 
@@ -800,6 +806,13 @@ end;
 procedure TShowA2BXmlForm.XmlTreeViewGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
+  function _if(aCond: Boolean; trueIndex, falseIndex: Integer): Integer;
+  begin
+    if aCond then
+      result := trueIndex
+    else
+      result := falseIndex;
+  end;
 var
   xXml: TA2BXml;
   xAtt: TA2BXmlAttribute;
@@ -827,12 +840,11 @@ begin
           ikNormal, ikSelected:
           begin
             case ck of
-              ckAdd:    ImageIndex := 68;
-              ckDelete: ImageIndex := 134;
-              ckCopy:   if Differs then ImageIndex := 133 else ImageIndex := 132;
-              ckModify: ImageIndex := 133;
+              ckAdd:    ImageIndex := _if (Ignored, iiOrangePlus, iiRedPlus);
+              ckDelete: ImageIndex := _if (Ignored, iiOrangeCross, iiRedCross);
+              ckCopy:   ImageIndex := _if (Differs, iiRedBullet, _if (Ignored, iiOrangeBullet, iiRedBullet));
+              ckModify: ImageIndex := _if (Ignored, iiOrangeBullet, iiRedBullet);
             end;
-            Ghosted := Ignored;
           end;
         end;
       end;

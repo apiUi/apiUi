@@ -7403,15 +7403,15 @@ begin
         begin
           raise Exception.Create(
             'Can not compare with log file because next exception was raised' +
-              CRLF + E.Message);
+              LineEnding + E.Message);
         end;
       end;
       if xLogList.designSuspect then
       begin
         if not BooleanPromptDialog(
-          'Maybe due to differences in design or Wsdls,' + #$D#$A +
-            'some Operations or Messages could not be relocated;' + #$D#$A +
-            #$D#$A + 'Continue') then
+          'Maybe due to differences in design or Wsdls,' + LineEnding +
+            'some Operations or Messages could not be relocated;' + LineEnding +
+            LineEnding + 'Continue') then
         begin
           raise Exception.Create('Operation aborted');
         end;
@@ -8057,8 +8057,7 @@ end;
 
 procedure TMainForm.MessagesVTSClick(Sender: TObject);
 begin
-  if not Assigned (MessagesVTS.FocusedNode) then
-    ShowMessage ('MessagesVTS.FocusedNode not assigned');
+  if not Assigned (MessagesVTS.FocusedNode) then Exit;
   claimedLog := NodeToMsgLog(True,MessagesVTS, MessagesVTS.FocusedNode);
   try
     case TLogColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of

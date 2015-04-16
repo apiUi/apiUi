@@ -20,11 +20,10 @@ uses
 type
   PVSTreeRec = ^TVSTreeRec;
   TVSTreeRec = record
-    aLog: TLog;
-    bLog: TLog;
+    aLog, bLog: TLog;
     Match: Boolean;
-    reqA2B: TA2BXml;
-    rpyA2B: TA2BXml;
+    reqA2B, rpyA2B: TA2BXml;
+    reqHasOnlyIgnoreds, rpyHasOnlyIgnoreds: Boolean;
   end;
 
 type
@@ -345,7 +344,11 @@ begin
         and Assigned (xData.bLog) then
           if Assigned (xData.reqA2B)
           and xData.reqA2B.Differs then
-            ImageIndex := 133
+          begin
+            ImageIndex := 133;
+            if xData.reqHasOnlyIgnoreds then
+              ImageIndex := 140;
+          end
           else
             ImageIndex := 132
         else
@@ -362,7 +365,11 @@ begin
         and Assigned (xData.bLog) then
           if Assigned (xData.rpyA2B)
           and xData.rpyA2B.Differs then
-            ImageIndex := 133
+          begin
+            ImageIndex := 133;
+            if xData.rpyHasOnlyIgnoreds then
+              ImageIndex := 140;
+          end
           else
             ImageIndex := 132
         else
@@ -516,13 +523,13 @@ begin
   aXml := xData.aLog.reqBodyAsXml;
   bXml := xData.bLog.reqBodyAsXml;
   xData.reqA2B := TA2BXml.CreateA2B(aXml, bXml, False);
-  xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
+  xData.reqHasOnlyIgnoreds := xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
   aXml := xData.aLog.rpyBodyAsXml;
   bXml := xData.bLog.rpyBodyAsXml;
   xData.rpyA2B := TA2BXml.CreateA2B(aXml, bXml, False);
-  xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
+  xData.rpyHasOnlyIgnoreds := xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
 end;
