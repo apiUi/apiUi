@@ -842,7 +842,7 @@ begin
             case ck of
               ckAdd:    ImageIndex := _if (Ignored, iiOrangePlus, iiRedPlus);
               ckDelete: ImageIndex := _if (Ignored, iiOrangeCross, iiRedCross);
-              ckCopy:   ImageIndex := _if (Differs, iiRedBullet, _if (Ignored, iiOrangeBullet, iiRedBullet));
+              ckCopy:   ImageIndex := _if (Differs, _if (Ignored, iiOrangeBullet, iiRedBullet), iiGreenBullet);
               ckModify: ImageIndex := _if (Ignored, iiOrangeBullet, iiRedBullet);
             end;
           end;

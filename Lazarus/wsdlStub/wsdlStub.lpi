@@ -70,6 +70,7 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PromptFolderUnit"/>
       </Unit2>
     </Units>
   </ProjectOptions>
@@ -85,6 +86,9 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -97,7 +101,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="14">
+    <Exceptions Count="13">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -138,9 +142,6 @@
       <Item13>
         <Name Value="EIdConnClosedGracefully"/>
       </Item13>
-      <Item14>
-        <Name Value="EIdHTTPProtocolException"/>
-      </Item14>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

@@ -4,17 +4,14 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="25">
+    <Units Count="22">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="18"/>
+        <CursorPos X="87" Y="15"/>
         <UsageCount Value="1099"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -23,8 +20,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
-        <TopLine Value="7897"/>
-        <CursorPos Y="7913"/>
+        <TopLine Value="1126"/>
+        <CursorPos X="10" Y="1151"/>
         <UsageCount Value="1083"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -35,296 +32,234 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="PromptFolderUnit"/>
-        <CursorPos X="23" Y="17"/>
-        <UsageCount Value="53"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="10"/>
+        <CursorPos Y="32"/>
+        <UsageCount Value="140"/>
       </Unit2>
       <Unit3>
         <Filename Value="C:\usr\lib64\lazarus\lcl\lclproc.pas"/>
         <TopLine Value="853"/>
         <CursorPos Y="861"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="2"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\usr\lib64\lazarus\lcl\include\control.inc"/>
         <TopLine Value="723"/>
         <CursorPos Y="731"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="2"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Xpress\PARSER.PAS"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
         <TopLine Value="194"/>
         <CursorPos X="3" Y="205"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="2"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <UnitName Value="xmlio"/>
-        <EditorIndex Value="9"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="161"/>
-        <CursorPos X="21" Y="161"/>
-        <UsageCount Value="26"/>
-        <Loaded Value="True"/>
+        <TopLine Value="266"/>
+        <CursorPos X="22" Y="277"/>
+        <UsageCount Value="73"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\Components\Indy10\Lib\System\IdException.pas"/>
         <TopLine Value="93"/>
         <CursorPos Y="112"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="10"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandlerStack.pas"/>
         <TopLine Value="390"/>
         <CursorPos X="42" Y="400"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="10"/>
       </Unit8>
       <Unit9>
         <Filename Value="WsdlProjectz.pas"/>
-        <UnitName Value="WsdlProjectz"/>
-        <EditorIndex Value="1"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="2146"/>
-        <CursorPos X="17" Y="2151"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
+        <TopLine Value="1691"/>
+        <CursorPos X="44" Y="1709"/>
+        <UsageCount Value="72"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="5"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="737"/>
-        <CursorPos X="15" Y="753"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <TopLine Value="1557"/>
+        <CursorPos X="15" Y="1567"/>
+        <UsageCount Value="10"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\Xml\Wsdlz.pas"/>
-        <UnitName Value="Wsdlz"/>
-        <EditorIndex Value="0"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="45"/>
-        <CursorPos X="7" Y="73"/>
-        <UsageCount Value="16"/>
-        <Loaded Value="True"/>
+        <TopLine Value="4275"/>
+        <CursorPos Y="4292"/>
+        <UsageCount Value="70"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <UnitName Value="Xsdz"/>
-        <EditorIndex Value="3"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="543"/>
-        <CursorPos X="41" Y="559"/>
-        <UsageCount Value="23"/>
-        <Loaded Value="True"/>
+        <TopLine Value="961"/>
+        <CursorPos Y="983"/>
+        <UsageCount Value="70"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\Xml\Xmlz.pas"/>
-        <UnitName Value="Xmlz"/>
-        <EditorIndex Value="2"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="2068"/>
-        <CursorPos X="3" Y="2086"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
+        <TopLine Value="2295"/>
+        <CursorPos Y="2317"/>
+        <UsageCount Value="70"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\Utils\igGlobals.pas"/>
-        <UnitName Value="igGlobals"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="92"/>
         <CursorPos Y="108"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="70"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\lazarus\components\lazutils\fileutil.pas"/>
-        <UnitName Value="FileUtil"/>
-        <UsageCount Value="15"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="234"/>
+        <CursorPos X="10" Y="250"/>
+        <UsageCount Value="6"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\lazarus\components\lazutils\fileutil.inc"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="108"/>
         <CursorPos X="131" Y="127"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="6"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\lazarus\components\lazutils\lazfileutils.pas"/>
-        <UnitName Value="LazFileUtils"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="42"/>
         <CursorPos X="11" Y="58"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="6"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\components\lazutils\winlazfileutils.inc"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="843"/>
         <CursorPos X="3" Y="856"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="6"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="11"/>
         <CursorPos X="10" Y="27"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="5"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\lazarus\lcl\dialogs.pp"/>
-        <UnitName Value="Dialogs"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="134"/>
         <CursorPos X="20" Y="161"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="4"/>
       </Unit20>
       <Unit21>
-        <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
-        <UnitName Value="IdHTTP"/>
-        <TopLine Value="2659"/>
-        <CursorPos Y="2673"/>
-        <UsageCount Value="8"/>
+        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
+        <ComponentName Value="ShowA2BXmlForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ShowA2BXmlUnit"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="822"/>
+        <CursorPos Y="845"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit21>
-      <Unit22>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <UnitName Value="xmlUtilz"/>
-        <EditorIndex Value="8"/>
-        <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\inc\objpash.inc"/>
-        <EditorIndex Value="7"/>
-        <WindowIndex Value="1"/>
-        <TopLine Value="177"/>
-        <CursorPos X="23" Y="192"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit23>
-      <Unit24>
-        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\stringl.inc"/>
-        <EditorIndex Value="6"/>
-        <WindowIndex Value="1"/>
-        <TopLine Value="1225"/>
-        <CursorPos X="3" Y="1228"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit24>
     </Units>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
-    <JumpHistory Count="18" HistoryIndex="17">
+    <JumpHistory Count="10" HistoryIndex="8">
       <Position1>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="529" Column="76" TopLine="513"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="7319" TopLine="7306"/>
       </Position1>
       <Position2>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="6412" Column="63" TopLine="6381"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="7950" Column="29" TopLine="7939"/>
       </Position2>
       <Position3>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="251" Column="27" TopLine="226"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="11977" Column="20" TopLine="11961"/>
       </Position3>
       <Position4>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="337" Column="28" TopLine="312"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="7950" Column="29" TopLine="7944"/>
       </Position4>
       <Position5>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1772" Column="40" TopLine="1747"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="7952" Column="22" TopLine="7944"/>
       </Position5>
       <Position6>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1683" Column="28" TopLine="1667"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
       </Position6>
       <Position7>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1773" Column="82" TopLine="1747"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="1148" Column="26" TopLine="1123"/>
       </Position7>
       <Position8>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1774" Column="41" TopLine="1748"/>
+        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
       </Position8>
       <Position9>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1775" Column="48" TopLine="1749"/>
+        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
+        <Caret Line="845" Column="66" TopLine="821"/>
       </Position9>
       <Position10>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1777" Column="52" TopLine="1751"/>
+        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
+        <Caret Line="148" Column="50" TopLine="140"/>
       </Position10>
-      <Position11>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1683" Column="3" TopLine="1667"/>
-      </Position11>
-      <Position12>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1734" Column="5" TopLine="1734"/>
-      </Position12>
-      <Position13>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="2151" Column="34" TopLine="2126"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="558" Column="17" TopLine="542"/>
-      </Position14>
-      <Position15>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="2151" Column="34" TopLine="2126"/>
-      </Position15>
-      <Position16>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="337" Column="32" TopLine="312"/>
-      </Position16>
-      <Position17>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="2151" Column="17" TopLine="2146"/>
-      </Position17>
-      <Position18>
-        <Filename Value="wsdlStub.lpr"/>
-        <Caret Line="15" Column="87" TopLine="1"/>
-      </Position18>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="5">
+    <BreakPoints Count="4">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="WsdlProjectz.pas"/>
-        <Line Value="1472"/>
+        <Source Value="WsdlStubMainUnit.pas"/>
+        <Line Value="1240"/>
       </Item1>
       <Item2>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\usr\lib64\lazarus\lcl\lclproc.pas"/>
-        <Line Value="857"/>
+        <Source Value="WsdlProjectz.pas"/>
+        <Line Value="1472"/>
       </Item2>
       <Item3>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="C:\usr\lib64\lazarus\lcl\lclproc.pas"/>
-        <Line Value="859"/>
+        <Line Value="857"/>
       </Item3>
       <Item4>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Xsdz.pas"/>
-        <Line Value="556"/>
+        <Source Value="C:\usr\lib64\lazarus\lcl\lclproc.pas"/>
+        <Line Value="859"/>
       </Item4>
-      <Item5>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Xsdz.pas"/>
-        <Line Value="568"/>
-      </Item5>
     </BreakPoints>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>
