@@ -1,5 +1,4 @@
 unit ShowA2BXmlUnit;
-
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
