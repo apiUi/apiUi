@@ -12,25 +12,11 @@ uses Classes
    , a2bStringListUnit
    ;
 
-type TA2BXmlAttribute = class (TXmlAttribute)
-  private
-    fDiffers: Boolean;
-    fIgnoredDifference: Boolean;
-    function getNumberOfDiffs: Integer;
-    procedure setDiffers(const Value: Boolean);
-    procedure setIgnoredDifference(const Value: Boolean);
-  public
-    bValue: String;
-    ChangeKind: TChangeKind;
-    property Differs: Boolean read fDiffers write setDiffers;
-    property IgnoredDifference: Boolean read fIgnoredDifference write setIgnoredDifference;
-    property NumberOfDiffs: Integer read getNumberOfDiffs;
-    constructor CreateA (aAtt: TXmlAttribute);
-    constructor CreateB (bAtt: TXmlAttribute);
-    constructor CreateA2B (aAtt, bAtt: TXmlAttribute; aPrefix: String);
-  end;
+type
 
-type TA2BXml = class (TXml)
+{ TA2BXml }
+
+ TA2BXml = class (TXml)
   private
     fDiffers: Boolean;
     fThisOneDiffers: Boolean;
@@ -46,9 +32,12 @@ type TA2BXml = class (TXml)
     property NumberOfDiffs: Integer read getNumberOfDiffs;
     property ThisOneDiffers: Boolean read fThisOneDiffers;
     function Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList): Boolean;
-    constructor CreateA (aXml: TXml);
-    constructor CreateB (bXml: TXml);
-    constructor CreateA2B (aXml, bXml: TXml; ignoreOrder: Boolean);
+    constructor CreateA (aXml: TXml); overload;
+    constructor CreateB (bXml: TXml); overload;
+    constructor CreateA2B (aXml, bXml: TXml; ignoreOrder: Boolean); overload;
+    constructor CreateA (aXml: TXmlAttribute); overload;
+    constructor CreateB (bXml: TXmlAttribute); overload;
+    constructor CreateA2B (aXml, bXml: TXmlAttribute); overload;
   end;
 
 procedure a2bInitialize;
@@ -126,7 +115,7 @@ begin
   Value := aXml.Value;
   fThisOneDiffers := True;
   for x := 0 to aXml.Attributes.Count - 1 do
-    AddAttribute(TA2BXmlAttribute.CreateA(aXml.Attributes.XmlAttributes[x]));
+    AddXml (TA2BXml.CreateA(aXml.Attributes.XmlAttributes[x]));
   for x := 0 to aXml.Items.Count - 1 do
     AddXml (TA2BXml.CreateA(aXml.Items.XmlItems[x]));
 end;
@@ -141,7 +130,7 @@ begin
   bValue := bXml.Value;
   fThisOneDiffers := True;
   for x := 0 to bXml.Attributes.Count - 1 do
-    AddAttribute(TA2BXmlAttribute.CreateB(bXml.Attributes.XmlAttributes[x]));
+    AddXml (TA2BXml.CreateB(bXml.Attributes.XmlAttributes[x]));
   for x := 0 to bXml.Items.Count - 1 do
     AddXml (TA2BXml.CreateB(bXml.Items.XmlItems[x]));
 end;
@@ -151,7 +140,6 @@ var
   x, a, b, c, f, i: Integer;
   Diffs: TA2BStringList;
   childXml: TA2BXml;
-  childAtt: TA2BXmlAttribute;
 begin
   inherited Create;
   TagName := aXml.TagName;
@@ -197,19 +185,17 @@ begin
     begin
       while a < Changes[c].x do
       begin
-        childAtt := TA2BXmlAttribute.CreateA2B( aXml.Attributes.XmlAttributes[a]
-                                              , bXml.Attributes.XmlAttributes[b]
-                                              , aXml.FullUQCaption
-                                              );
-        AddAttribute(childAtt);
+        AddXml(TA2BXml.CreateA2B( aXml.Attributes.XmlAttributes[a]
+                                , bXml.Attributes.XmlAttributes[b]
+                                )
+              );
         inc(a); inc(b);
       end;
       if Changes[c].Kind = ckAdd then
       begin
         for i := b to b + Changes[c].Range - 1 do
         begin
-          childAtt := TA2BXmlAttribute.CreateB(bXml.Attributes.XmlAttributes[b]);
-          AddAttribute(childAtt);
+          AddXml (TA2BXml.CreateB(bXml.Attributes.XmlAttributes[b]));
           inc(b);
         end;
       end
@@ -219,8 +205,7 @@ begin
         begin
           for i := a to a + Changes[c].Range - 1 do
           begin
-            childAtt := TA2BXmlAttribute.CreateA(aXml.Attributes.XmlAttributes[a]);
-            AddAttribute(childAtt);
+            AddXml(TA2BXml.CreateA(aXml.Attributes.XmlAttributes[a]));
             inc(a);
           end;
         end
@@ -228,14 +213,12 @@ begin
         begin
           for i := a to a + Changes[c].Range - 1 do
           begin
-            childAtt := TA2BXmlAttribute.CreateA(aXml.Attributes.XmlAttributes[a]);
-            AddAttribute(childAtt);
+            AddXml(TA2BXml.CreateA(aXml.Attributes.XmlAttributes[a]));
             inc(a);
           end;
           for i := b to b + Changes[c].Range - 1 do
           begin
-            childAtt := TA2BXmlAttribute.CreateB(bXml.Attributes.XmlAttributes[b]);
-            AddAttribute(childAtt);
+            AddXml(TA2BXml.CreateB(bXml.Attributes.XmlAttributes[b]));
             inc(b);
           end;
         end;
@@ -243,23 +226,20 @@ begin
     end;
     while (a < aXml.Attributes.Count) and (b < bXml.Attributes.Count) do
     begin
-      childAtt := TA2BXmlAttribute.CreateA2B ( aXml.Attributes.XmlAttributes[a]
-                                             , bXml.Attributes.XmlAttributes[b]
-                                             , aXml.FullUQCaption
-                                             );
-      AddAttribute(childAtt);
+      AddXml(TA2BXml.CreateA2B ( aXml.Attributes.XmlAttributes[a]
+                               , bXml.Attributes.XmlAttributes[b]
+                               )
+            );
       inc(a); inc(b);
     end;
     while (a < aXml.Attributes.Count) do
     begin
-      childAtt := TA2BXmlAttribute.CreateA(aXml.Attributes.XmlAttributes[a]);
-      AddAttribute(childAtt);
+      AddXml(TA2BXml.CreateA(aXml.Attributes.XmlAttributes[a]));
       inc(a);
     end;
     while (b < bXml.Attributes.Count) do
     begin
-      childAtt := TA2BXmlAttribute.CreateB(bXml.Attributes.XmlAttributes[b]);
-      AddAttribute(childAtt);
+      AddXml(TA2BXml.CreateB(bXml.Attributes.XmlAttributes[b]));
       inc(b);
     end;
   end;
@@ -353,6 +333,38 @@ begin
   FreeAndNil (Diffs);
 end;
 
+constructor TA2BXml .CreateA (aXml : TXmlAttribute );
+begin
+  inherited Create;
+  ChangeKind := ckDelete;
+  TagName := '@' + aXml.Name;
+  Value := aXml.Value;
+  fThisOneDiffers := True;
+end;
+
+constructor TA2BXml .CreateB (bXml : TXmlAttribute );
+begin
+  inherited Create;
+  ChangeKind := ckAdd;
+  TagName := '@' + bXml.Name;
+  bValue := bXml.Value;
+  fThisOneDiffers := True;
+end;
+
+constructor TA2BXml .CreateA2B (aXml , bXml : TXmlAttribute);
+begin
+  inherited Create;
+  TagName := '@' + aXml.Name;
+  Value := aXml.Value;
+  bValue := bXml.Value;
+  ChangeKind := ckCopy;
+  if valuesDiffer(Value, bValue) then
+  begin
+    ChangeKind := ckModify;
+    fThisOneDiffers := True;
+  end;
+end;
+
 procedure TA2BXml.setDiffers(const Value: Boolean);
 begin
   fDiffers := Value;
@@ -389,8 +401,6 @@ function TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: T
     x: Integer;
   begin
     aXml.fIgnoredDifference := True;
-    for x := 0 to aXml.Attributes.Count - 1 do
-      (aXml.Attributes.XmlAttributes[x] as TA2BXmlAttribute).fIgnoredDifference := True;
     for x := 0 to aXml.Items.Count - 1 do
       _downIgnored(aXml.Items.XmlItems[x] as TA2BXml);
   end;
@@ -399,8 +409,6 @@ function TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: T
     x: Integer;
   begin
     aXml.fDiffers := False;
-    for x := 0 to aXml.Attributes.Count - 1 do
-      (aXml.Attributes.XmlAttributes[x] as TA2BXmlAttribute).fDiffers := False;
     for x := 0 to aXml.Items.Count - 1 do
       _reset (aXml.Items.XmlItems[x] as TA2BXml);
   end;
@@ -443,43 +451,6 @@ function TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: T
       else
         Ignore := False;
     end;
-    for x := 0 to aXml.Attributes.Count - 1 do
-    with aXml.Attributes.XmlAttributes[x] as TA2BXmlAttribute do
-    begin
-      if ChangeKind = ckModify then
-      begin
-        Differs := (not Assigned (ignoreDifferencesOn))
-                or (    (not ignoreDifferencesOn.Find(rmPrefix(Name) , f))
-                    and (not ignoreDifferencesOn.Find(aXml.FullCaption + '.' + Name , f))
-                   );
-        IgnoredDifference := not Differs;
-        if not IgnoredDifference then
-          Ignore := False;
-        aXml.Differs := aXml.fDiffers or Differs;
-      end;
-      if ChangeKind = ckDelete then
-      begin
-        Differs := (not Assigned (ignoreAddingOn))
-                or (    (not ignoreAddingOn.Find(rmPrefix(Name) , f))
-                    and (not ignoreAddingOn.Find(aXml.FullCaption + '.' + Name , f))
-                   );
-        IgnoredDifference := not Differs;
-        if not IgnoredDifference then
-          Ignore := False;
-        aXml.Differs := aXml.fDiffers or Differs;
-      end;
-      if ChangeKind = ckAdd then
-      begin
-        Differs := (not Assigned (ignoreRemovingOn))
-                or (    (not ignoreRemovingOn.Find(rmPrefix(Name) , f))
-                    and (not ignoreRemovingOn.Find(aXml.FullCaption + '.' + Name , f))
-                   );
-        IgnoredDifference := not Differs;
-        if not IgnoredDifference then
-          Ignore := False;
-        aXml.Differs := aXml.fDiffers or Differs;
-      end;
-    end;
     for x := 0 to aXml.Items.Count - 1 do
       _set (aXml.Items.XmlItems[x] as TA2BXml);
   end;
@@ -487,54 +458,6 @@ begin
 //_reset(Self);
   Ignore := Differs;
   _set(Self);
-end;
-
-{ TA2BXmlAttribute }
-
-constructor TA2BXmlAttribute.CreateA(aAtt: TXmlAttribute);
-begin
-  inherited Create;
-  ChangeKind := ckDelete;
-  Name := aAtt.Name;
-  Value := aAtt.Value;
-  Differs := True;
-end;
-
-constructor TA2BXmlAttribute.CreateA2B(aAtt, bAtt: TXmlAttribute; aPrefix: String);
-var
-  f: Integer;
-begin
-  inherited Create;
-  Name := aAtt.Name;
-  Value := aAtt.Value;
-  bValue := bAtt.Value;
-  if Value = bValue then
-    ChangeKind := ckCopy
-  else
-    ChangeKind := ckModify;
-end;
-
-constructor TA2BXmlAttribute.CreateB(bAtt: TXmlAttribute);
-begin
-  inherited Create;
-  ChangeKind := ckAdd;
-  Name := bAtt.Name;
-  bValue := bAtt.Value;
-end;
-
-function TA2BXmlAttribute.getNumberOfDiffs: Integer;
-begin
-
-end;
-
-procedure TA2BXmlAttribute.setDiffers(const Value: Boolean);
-begin
-  fDiffers := Value;
-end;
-
-procedure TA2BXmlAttribute.setIgnoredDifference(const Value: Boolean);
-begin
-  fIgnoredDifference := Value;
 end;
 
 end.

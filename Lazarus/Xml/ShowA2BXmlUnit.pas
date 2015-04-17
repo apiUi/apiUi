@@ -129,8 +129,8 @@ type
     procedure HaveString (aString: String);
     function ToolButtonUsed (Sender: TObject): Boolean;
     procedure SetXml (aXml: TA2BXml);
-    procedure NodeToXml (aNode: PVirtualNode; var Xml: TA2BXml; var Attribute: TA2BXmlAttribute);
-    procedure SelectedXml(var aXml: TA2BXml; var aAtt: TA2BXmlAttribute);
+    procedure NodeToXml (aNode: PVirtualNode; var Xml: TA2BXml);
+    procedure SelectedXml(var aXml: TA2BXml);
     procedure SearchDiff (aDown: Boolean);
   public
     RefreshNeeded: Boolean;
@@ -169,7 +169,6 @@ type
   PXmlTreeRec = ^TXmlTreeRec;
   TXmlTreeRec = record
     Xml: TA2BXml;
-    Attribute: TA2BXmlAttribute;
   end;
 
 type TColumnEnum =
@@ -224,14 +223,6 @@ procedure TShowA2BXmlForm.SetXml(aXml: TA2BXml);
     ChildNode := TreeView.AddChild(aNode);
     Data := TreeView.GetNodeData(ChildNode);
     Data.Xml := Xml;
-    Data.Attribute := nil;
-    for x := 0 to Xml.Attributes.Count - 1 do
-    begin
-      AttributeNode := TreeView.AddChild(ChildNode);
-      Data := TreeView.GetNodeData(AttributeNode);
-      Data.Xml := Xml;
-      Data.Attribute := Xml.Attributes.XmlAttributes [x] as TA2BXmlAttribute;
-    end;
     for x := 0 to (Xml.Items as TXmlList).Count - 1 do
     begin
       _ShowXml ((Xml.Items as TXmlList).XmlItems [x] as TA2BXml, ChildNode);
@@ -254,10 +245,6 @@ begin
     TreeView.FullCollapse (xNode);
     xData := TreeView.GetNodeData(xNode);
     while Assigned (xNode)
-    and (   (not Assigned (xData.Attribute))
-         or (xData.Attribute.ChangeKind = ckCopy)
-         or (xData.Attribute.IgnoredDifference)
-        )
     and (   (xData.Xml.ChangeKind = ckCopy)
          or (xData.Xml.IgnoredDifference)
         ) do
@@ -288,26 +275,15 @@ procedure TShowA2BXmlForm.ShowInWordMenuItemClick(Sender: TObject);
 var
   aFileName, bFileName, aValue, bValue: String;
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-    begin
-      if not (xAtt.ChangeKind in [ckModify, ckCopy]) then
-        Exit;
-      aValue := xAtt.Value;
-      bValue := xAtt.bValue;
-    end
-    else
-    begin
-      if (xXml.Items.Count > 0)
-      or not (xXml.ChangeKind in [ckModify, ckCopy]) then
-        Exit;
-      aValue := xXml.Value;
-      bValue := xXml.bValue;
-    end;
+    SelectedXml(xXml);
+    if (xXml.Items.Count > 0)
+    or not (xXml.ChangeKind in [ckModify, ckCopy]) then
+      Exit;
+    aValue := xXml.Value;
+    bValue := xXml.bValue;
 
     if AnsiStartsStr(base64RtfStartStr, aValue) then
       aFileName := GetEnvironmentVariable ('Temp') + '\A2BCompareFileA.rtf'
@@ -340,20 +316,16 @@ begin
   FileContents.Free;
 end;
 
-procedure TShowA2BXmlForm.NodeToXml (aNode: PVirtualNode; var Xml: TA2BXml; var Attribute: TA2BXmlAttribute);
+procedure TShowA2BXmlForm.NodeToXml (aNode: PVirtualNode; var Xml: TA2BXml);
 var
   Data: PXmlTreeRec;
 begin
   Xml := nil;
-  Attribute := nil;
   if Assigned (aNode) then
   begin
     Data := TreeView.GetNodeData(aNode);
     if Assigned (Data) then
-    begin
       Xml := Data.Xml;
-      Attribute := Data.Attribute;
-    end;
   end;
 end;
 
@@ -388,12 +360,11 @@ end;
 procedure TShowA2BXmlForm.WriteXmlActionExecute(Sender: TObject);
 var
   xItem: TA2BXml;
-  xAttribute: TA2BXmlAttribute;
 begin
   if ToolButtonUsed(Sender) then
-    NodeToXml (TreeView.GetFirst, xItem, xAttribute)
+    NodeToXml (TreeView.GetFirst, xItem)
   else
-    SelectedXml(xItem, xAttribute);
+    SelectedXml(xItem);
   if xItem <> nil then
   begin
     SaveFileDialog.InitialDir := FileName;
@@ -413,9 +384,9 @@ begin
   end;
 end;
 
-procedure TShowA2BXmlForm.SelectedXml(var aXml: TA2BXml; var aAtt: TA2BXmlAttribute);
+procedure TShowA2BXmlForm.SelectedXml(var aXml: TA2BXml);
 begin
-  NodeToXml(TreeView.FocusedNode, aXml, aATt);
+  NodeToXml(TreeView.FocusedNode, aXml);
 end;
 
 procedure TShowA2BXmlForm.CopyActionExecute(Sender: TObject);
@@ -423,12 +394,11 @@ var
   theXml: TA2BXml;
   Memo: TMemo;
   x: Integer;
-  xAttr: TA2BXmlAttribute;
 begin
   if ToolButtonUsed(Sender) then
-    NodeToXml (TreeView.GetFirst, theXml, xAttr)
+    NodeToXml (TreeView.GetFirst, theXml)
   else
-    NodeToXml (TreeView.FocusedNode, theXml, xAttr);
+    NodeToXml (TreeView.FocusedNode, theXml);
   if theXml = nil then
     exit;
   FileContents.Text := theXml.StreamXML (False, True, 0, False, False);
@@ -475,7 +445,6 @@ var
   Found: Boolean;
   CurItem: PVirtualNode;
   Xml: TA2BXml;
-  xAttr: TA2BXmlAttribute;
 begin
   Application.CreateForm(TFindDlg, FindDlg);
   try
@@ -500,7 +469,7 @@ begin
       while not (CurItem = nil)
       and not Found do
       begin
-        NodeToXml (CurItem, Xml, xAttr);
+        NodeToXml (CurItem, Xml);
         if SearchIn = 0 then // search tag
           Found := StringMatchesMask (Xml.TagName, SearchString, False, SearchUseRegExp)
         else // search description
@@ -529,7 +498,6 @@ var
   Found: Boolean;
   CurNode: PVirtualNode;
   Xml: TA2BXml;
-  xAttr: TA2BXmlAttribute;
 begin
   if True then
   begin
@@ -538,7 +506,7 @@ begin
     while not (CurNode = nil)
     and not Found do
     begin
-      NodeToXml (CurNode, Xml, xAttr);
+      NodeToXml (CurNode, Xml);
       if SearchIn = 0 then // search tag
         Found := StringMatchesMask (Xml.TagName, SearchString, False, SearchUseRegExp)
       else // search description
@@ -559,50 +527,27 @@ end;
 procedure TShowA2BXmlForm.TreeViewPopupMenuPopup(Sender: TObject);
 var
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
 begin
-  if TreeView.FocusedNode = nil then
-  begin
-    exit;
-  end;
-  SelectedXml(xXml, xAtt);
+  if TreeView.FocusedNode = nil then exit;
+  SelectedXml(xXml);
   ShowInWordMenuItem.Enabled := Assigned (xXml)
-                            and (   (    Assigned (xAtt)
-                                     and (   (xAtt.ChangeKind = ckModify)
-                                          or (xAtt.ChangeKind = ckCopy)
-                                         )
-                                    )
-                                 or (    (not Assigned (xAtt))
-                                     and (xXml.Items.Count = 0)
-                                     and (   (xXml.ChangeKind = ckModify)
-                                          or (xXml.ChangeKind = ckCopy)
-                                         )
-                                    )
+                            and (   (xXml.ChangeKind = ckModify)
+                                 or (xXml.ChangeKind = ckCopy)
                                 )
                               ;
   ignoreDiffrenvesOnMenuItem.Enabled := (Assigned (ignoreDifferencesOn))
                                     and (   (xXml.ChangeKind = ckModify)
-                                         or (    Assigned (xAtt)
-                                             and (xAtt.ChangeKind = ckModify)
-                                            )
                                         );
   ignoreFullCaptionMenuitem.Enabled := ignoreDiffrenvesOnMenuItem.Enabled;
   IgnoreAddingMenuItem.Enabled := (Assigned (ignoreAddingOn))
                               and (   (xXml.ChangeKind = ckDelete)
-                                   or (    Assigned (xAtt)
-                                       and (xAtt.ChangeKind = ckDelete)
-                                      )
                                   );
   IgnoreAddingFullCaptionMenuItem.Enabled := IgnoreAddingMenuItem.Enabled;
   IgnoreRemovingTagMenuItem.Enabled := (Assigned (ignoreAddingOn))
                                    and (   (xXml.ChangeKind = ckAdd)
-                                        or (    Assigned (xAtt)
-                                            and (xAtt.ChangeKind = ckAdd)
-                                           )
                                        );
   IgnoreRemovingFullCaptionMenuItem.Enabled := IgnoreRemovingTagMenuItem.Enabled;
   IgnoreOrderFullCaptionMenuItem.Enabled := (Assigned (orderGroupsOn))
-                                        and (not Assigned (xAtt))
                                         and (   (xXml.ChangeKind <> ckCopy)
                                              or (xXml.Differs)
                                             )
@@ -610,28 +555,14 @@ begin
                                         and ((xXml.Parent as TXml).NumberOfSubItemsWithTag(xXml.Name, False) > 1)
                                             ;
   IgnoreOrderOfTagMenuItem.Enabled := IgnoreOrderFullCaptionMenuItem.Enabled;
-  if Assigned (xAtt) then
-  begin
-    ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xAtt.Name);
-    ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption + '.' + xAtt.Name;
-    IgnoreAddingMenuItem.Caption := 'Ignore adding of: *.' + rmPrefix(xAtt.Name);
-    IgnoreAddingFullCaptionMenuItem.Caption := 'Ignore adding of: ' + xXml.FullUQCaption + '.' + xAtt.Name;
-    IgnoreRemovingTagMenuItem.Caption := 'Ignore removing of: *.' + rmPrefix(xAtt.Name);
-    IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption + '.' + xAtt.Name;
-    IgnoreOrderOfTagMenuItem.Caption := 'Ignore order of: *.' + rmPrefix(xAtt.Name);
-    IgnoreOrderFullCaptionMenuItem.Caption := 'Ignore order of: ' + xXml.FullUQCaption + '.' + xAtt.Name;
-  end
-  else
-  begin
-    ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
-    ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
-    IgnoreAddingMenuItem.Caption := 'Ignore adding of: *.' + rmPrefix(xXml.TagName);
-    IgnoreAddingFullCaptionMenuItem.Caption := 'Ignore adding of: ' + xXml.FullUQCaption;
-    IgnoreRemovingTagMenuItem.Caption := 'Ignore removing of: *.' + rmPrefix(xXml.TagName);
-    IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption;
-    IgnoreOrderOfTagMenuItem.Caption := 'Ignore order of: *.' + rmPrefix(xXml.TagName);
-    IgnoreOrderFullCaptionMenuItem.Caption := 'Ignore order of: ' + xXml.FullUQCaption;
-  end;
+  ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
+  ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
+  IgnoreAddingMenuItem.Caption := 'Ignore adding of: *.' + rmPrefix(xXml.TagName);
+  IgnoreAddingFullCaptionMenuItem.Caption := 'Ignore adding of: ' + xXml.FullUQCaption;
+  IgnoreRemovingTagMenuItem.Caption := 'Ignore removing of: *.' + rmPrefix(xXml.TagName);
+  IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption;
+  IgnoreOrderOfTagMenuItem.Caption := 'Ignore order of: *.' + rmPrefix(xXml.TagName);
+  IgnoreOrderFullCaptionMenuItem.Caption := 'Ignore order of: ' + xXml.FullUQCaption;
   CopyDataToClipboardMenuItem.Caption := 'Copy data from '
                                        + xXml.TagName
                                        + ' to clipboard'
@@ -659,15 +590,11 @@ end;
 procedure TShowA2BXmlForm.IgnoreAddingFullCaptionMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-      ignoreAddingOn.Add(xXml.FullUQCaption + '.' + xAtt.Name)
-    else
-      ignoreAddingOn.Add(xXml.FullUQCaption);
+    SelectedXml(xXml);
+    ignoreAddingOn.Add(xXml.FullUQCaption);
     RefreshNeeded := True;
   end;
 end;
@@ -675,15 +602,11 @@ end;
 procedure TShowA2BXmlForm.IgnoreAddingMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-      ignoreAddingOn.Add(rmPrefix(xAtt.Name))
-    else
-      ignoreAddingOn.Add(rmPrefix(xXml.TagName));
+    SelectedXml(xXml);
+    ignoreAddingOn.Add(rmPrefix(xXml.TagName));
     RefreshNeeded := True;
   end;
 end;
@@ -699,34 +622,19 @@ procedure TShowA2BXmlForm.TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
   CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
 var
   Xml: TA2BXml;
-  Attribute: TA2BXmlAttribute;
 begin
   if Column > 0 then
   begin
-    NodeToXml(Node, Xml, Attribute);
-    if Assigned (Attribute) then
+    NodeToXml(Node, Xml);
+    if Assigned (Xml) then
     begin
-      with TargetCanvas do
+      if Xml.Group then
       begin
-{}{
-        Brush.Style := bsSolid;
-        Brush.Color := clAqua;
-        FillRect( CellRect );
-{}
-      end;
-    end
-    else
-    begin
-      if Assigned (Xml) then
-      begin
-        if Xml.Group then
+        with TargetCanvas do
         begin
-          with TargetCanvas do
-          begin
-            Brush.Style := bsSolid;
-            Brush.Color := clBtnFace;
-            FillRect( CellRect );
-          end;
+          Brush.Style := bsSolid;
+          Brush.Color := clBtnFace;
+          FillRect( CellRect );
         end;
       end;
     end;
@@ -757,48 +665,32 @@ procedure TShowA2BXmlForm.TreeViewGetText(Sender: TBaseVirtualTree;
   var CellText: string);
 var
   Xml: TA2BXml;
-  Attribute: TA2BXmlAttribute;
 begin
   // A handler for the OnGetText event is always needed as it provides
   // the tree with the string data to display.
   // Note that we are always using WideString.
-  NodeToXml(Node, Xml, Attribute);
+  NodeToXml(Node, Xml);
     case TColumnEnum(Column) of
     tagColumn:
        begin
-         if Assigned (Attribute) then
-           CellText := '@' + Attribute.Name
+         if Assigned (Xml) then
+           CellText := Xml.Name
          else
-         begin
-           if Assigned (Xml) then
-             CellText := Xml.Name
-           else
-             CellText := '';
-         end;
+           CellText := '';
        end;
     AColumn:
        begin
-         if Assigned (Attribute) then
-           CellText := Attribute.Value
+         if Assigned (Xml) then
+           CellText := Xml.Value
          else
-         begin
-           if Assigned (Xml) then
-             CellText := Xml.Value
-           else
-             CellText := '';
-         end;
+           CellText := '';
        end;
     BColumn:
        begin
-         if Assigned (Attribute) then
-           CellText := Attribute.bValue
+         if Assigned (Xml) then
+           CellText := Xml.bValue
          else
-         begin
-           if Assigned (Xml) then
-             CellText := Xml.bValue
-           else
-             CellText := '';
-         end;
+           CellText := '';
        end;
     end;
 end;
@@ -815,24 +707,14 @@ procedure TShowA2BXmlForm.XmlTreeViewGetImageIndex(Sender: TBaseVirtualTree;
   end;
 var
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
   ck: TChangeKind;
   Ignored, Differs: Boolean;
 begin
-  NodeToXml(Node, xXml, xAtt);
+  NodeToXml(Node, xXml);
   if not Assigned (xXml) then Exit;
-  if Assigned (xAtt) then
-  begin
-    ck := xAtt.ChangeKind;
-    Ignored := xAtt.IgnoredDifference;
-    Differs := xAtt.Differs;
-  end
-  else
-  begin
-    ck := xXml.ChangeKind;
-    Ignored := xXml.IgnoredDifference;
-    Differs := xXml.Differs;
-  end;
+  ck := xXml.ChangeKind;
+  Ignored := xXml.IgnoredDifference;
+  Differs := xXml.Differs;
   case TColumnEnum(Column) of
     tagColumn:
       begin
@@ -852,21 +734,11 @@ begin
     begin
       if Assigned (xXml) then
       begin
-        if Assigned (xAtt) then
+        if xXml.Items.Count = 0 then
         begin
-          case xAtt.ChangeKind of
+          case xXml.ChangeKind of
             ckModify: ImageIndex := 136;
             ckCopy: ImageIndex := 137;
-          end
-        end
-        else
-        begin
-          if xXml.Items.Count = 0 then
-          begin
-            case xXml.ChangeKind of
-              ckModify: ImageIndex := 136;
-              ckCopy: ImageIndex := 137;
-            end;
           end;
         end;
       end;
@@ -877,15 +749,11 @@ end;
 procedure TShowA2BXmlForm.ignoreDiffrenvesOnMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-      ignoreDifferencesOn.Add(rmPrefix(xAtt.Name))
-    else
-      ignoreDifferencesOn.Add(rmPrefix(xXml.TagName));
+    SelectedXml(xXml);
+    ignoreDifferencesOn.Add(rmPrefix(xXml.TagName));
     RefreshNeeded := True;
   end;
 end;
@@ -903,14 +771,9 @@ begin
     xNode := TreeView.GetPrevious(TreeView.FocusedNode);
   xData := TreeView.GetNodeData(xNode);
   while Assigned (xNode)
-  and (    (   (not Assigned (xData.Attribute))
-            or (xData.Attribute.ChangeKind = ckCopy)
-            or (xData.Attribute.IgnoredDifference)
-           )
-        and (   (xData.Xml.ChangeKind = ckCopy)
-             or (xData.Xml.IgnoredDifference)
-            )
-       ) do
+  and (   (xData.Xml.ChangeKind = ckCopy)
+       or (xData.Xml.IgnoredDifference)
+      ) do
   begin
     if aDown then
       xNode := TreeView.GetNext(xNode)
@@ -958,15 +821,11 @@ end;
 procedure TShowA2BXmlForm.ignoreFullCaptionMenuitemClick(Sender: TObject);
 var
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-      ignoreDifferencesOn.Add(xXml.FullUQCaption + '.' + xAtt.Name)
-    else
-      ignoreDifferencesOn.Add(xXml.FullUQCaption);
+    SelectedXml(xXml);
+    ignoreDifferencesOn.Add(xXml.FullUQCaption);
     RefreshNeeded := True;
   end;
 end;
@@ -975,16 +834,12 @@ procedure TShowA2BXmlForm.IgnoreOrderFullCaptionMenuItemClick(Sender: TObject);
 var
   x: Integer;
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
   Srcs, sl: TStringList;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-      raise Exception.Create('Not supported on XML attributes');
-    if (xXml.Items.Count = 0)
-    and (xXml.Attributes.Count = 0) then
+    SelectedXml(xXml);
+    if (xXml.Items.Count = 0) then
     begin
       sl := TStringList.Create;
       sl.Add(rmPrefix(xXml.TagName));
@@ -998,8 +853,6 @@ begin
       for x := 0 to xXml.Items.Count - 1 do
 //        if xXml.Items.XmlItems[x].Items.Count = 0 then
           Srcs.Add(xXml.Name + '.' + xXml.Items.XmlItems[x].Name);
-      for x := 0 to xXml.Attributes.Count - 1 do
-        Srcs.Add(xXml.Name + '.@' + xXml.Attributes.XmlAttributes[x].Name);
       try
         Application.CreateForm(TdualListForm, dualListForm);
         try
@@ -1032,16 +885,12 @@ procedure TShowA2BXmlForm.IgnoreOrderOfTagMenuItemClick(Sender: TObject);
 var
   x: Integer;
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
   Srcs, sl: TStringList;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-      raise Exception.Create('Not supported on XML attributes');
-    if (xXml.Items.Count = 0)
-    and (xXml.Attributes.Count = 0) then
+    SelectedXml(xXml);
+    if (xXml.Items.Count = 0) then
     begin
       sl := TStringList.Create;
       sl.Add(rmPrefix(xXml.TagName));
@@ -1057,8 +906,6 @@ begin
       for x := 0 to xXml.Items.Count - 1 do
 //        if xXml.Items.XmlItems[x].Items.Count = 0 then
           Srcs.Add(xXml.Name + '.' + xXml.Items.XmlItems[x].Name);
-      for x := 0 to xXml.Attributes.Count - 1 do
-        Srcs.Add(xXml.Name + '.@' + xXml.Attributes.XmlAttributes[x].Name);
       try
         Application.CreateForm(TdualListForm, dualListForm);
         try
@@ -1090,15 +937,11 @@ end;
 procedure TShowA2BXmlForm.IgnoreRemovingTagMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-      ignoreRemovingOn.Add(rmPrefix(xAtt.Name))
-    else
-      ignoreRemovingOn.Add(rmPrefix(xXml.TagName));
+    SelectedXml(xXml);
+    ignoreRemovingOn.Add(rmPrefix(xXml.TagName));
     RefreshNeeded := True;
   end;
 end;
@@ -1107,15 +950,11 @@ procedure TShowA2BXmlForm.IgnoreRemovingFullCaptionMenuItemClick(
   Sender: TObject);
 var
   xXml: TA2BXml;
-  xAtt: TA2BXmlAttribute;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
-    SelectedXml(xXml, xAtt);
-    if Assigned (xAtt) then
-      ignoreRemovingOn.Add(xXml.FullUQCaption + '.' + xAtt.Name)
-    else
-      ignoreRemovingOn.Add(xXml.FullUQCaption);
+    SelectedXml(xXml);
+    ignoreRemovingOn.Add(xXml.FullUQCaption);
     RefreshNeeded := True;
   end;
 end;
