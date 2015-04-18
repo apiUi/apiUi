@@ -23,7 +23,6 @@ type
     aLog, bLog: TLog;
     Match: Boolean;
     reqA2B, rpyA2B: TA2BXml;
-    reqHasOnlyIgnoreds, rpyHasOnlyIgnoreds: Boolean;
   end;
 
 type
@@ -346,7 +345,7 @@ begin
           and xData.reqA2B.Differs then
           begin
             ImageIndex := 133;
-            if xData.reqHasOnlyIgnoreds then
+            if xData.reqA2B.AllIgnored then
               ImageIndex := 140;
           end
           else
@@ -367,7 +366,7 @@ begin
           and xData.rpyA2B.Differs then
           begin
             ImageIndex := 133;
-            if xData.rpyHasOnlyIgnoreds then
+            if xData.rpyA2B.AllIgnored then
               ImageIndex := 140;
           end
           else
@@ -523,13 +522,13 @@ begin
   aXml := xData.aLog.reqBodyAsXml;
   bXml := xData.bLog.reqBodyAsXml;
   xData.reqA2B := TA2BXml.CreateA2B(aXml, bXml, False);
-  xData.reqHasOnlyIgnoreds := xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
+  xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
   aXml := xData.aLog.rpyBodyAsXml;
   bXml := xData.bLog.rpyBodyAsXml;
   xData.rpyA2B := TA2BXml.CreateA2B(aXml, bXml, False);
-  xData.rpyHasOnlyIgnoreds := xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
+  xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
 end;

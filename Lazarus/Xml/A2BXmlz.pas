@@ -18,20 +18,24 @@ type
 
  TA2BXml = class (TXml)
   private
+    fAllIgnored : Boolean ;
     fDiffers: Boolean;
     fThisOneDiffers: Boolean;
-    fIgnoredDifference: Boolean;
+    fIgnored: Boolean;
     function getNumberOfDiffs: Integer;
+    procedure setAllIgnored (AValue : Boolean );
     procedure setDiffers(const Value: Boolean);
-    procedure setIgnoredDifference(const Value: Boolean);
+    procedure setIgnored(const Value: Boolean);
+    procedure setThisOneDiffers (AValue : Boolean );
   public
     bValue: String;
     ChangeKind: TChangeKind;
+    property ThisOneDiffers: Boolean read fThisOneDiffers write setThisOneDiffers;
     property Differs: Boolean read fDiffers write setDiffers;
-    property IgnoredDifference: Boolean read fIgnoredDifference write setIgnoredDifference;
+    property Ignored: Boolean read fIgnored write setIgnored;
+    property AllIgnored: Boolean read fAllIgnored write setAllIgnored;
     property NumberOfDiffs: Integer read getNumberOfDiffs;
-    property ThisOneDiffers: Boolean read fThisOneDiffers;
-    function Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList): Boolean;
+    procedure Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList);
     constructor CreateA (aXml: TXml); overload;
     constructor CreateB (bXml: TXml); overload;
     constructor CreateA2B (aXml, bXml: TXml; ignoreOrder: Boolean); overload;
@@ -113,7 +117,7 @@ begin
   ChangeKind := ckDelete;
   TagName := aXml.TagName;
   Value := aXml.Value;
-  fThisOneDiffers := True;
+  ThisOneDiffers := True;
   for x := 0 to aXml.Attributes.Count - 1 do
     AddXml (TA2BXml.CreateA(aXml.Attributes.XmlAttributes[x]));
   for x := 0 to aXml.Items.Count - 1 do
@@ -128,7 +132,7 @@ begin
   ChangeKind := ckAdd;
   TagName := bXml.TagName;
   bValue := bXml.Value;
-  fThisOneDiffers := True;
+  ThisOneDiffers := True;
   for x := 0 to bXml.Attributes.Count - 1 do
     AddXml (TA2BXml.CreateB(bXml.Attributes.XmlAttributes[x]));
   for x := 0 to bXml.Items.Count - 1 do
@@ -149,7 +153,7 @@ begin
   if valuesDiffer(Value, bValue) then
   begin
     ChangeKind := ckModify;
-    fThisOneDiffers := True;
+    ThisOneDiffers := True;
   end;
   Diffs := TA2BStringList.Create;
 
@@ -367,20 +371,26 @@ end;
 
 procedure TA2BXml.setDiffers(const Value: Boolean);
 begin
+  if Value = fDiffers then Exit;
   fDiffers := Value;
   if Value then
     if Assigned (Parent) then
       (Parent as TA2BXml).Differs := True;
 end;
 
-procedure TA2BXml.setIgnoredDifference(const Value: Boolean);
+procedure TA2BXml.setIgnored(const Value: Boolean);
 begin
-  fIgnoredDifference := Value;
-{
-  if Value then
-    if Assigned (Parent) then
-      (Parent as TA2BXml).IgnoredDifference := True;
-}
+  if Value = fIgnored then Exit;
+  fIgnored := Value;
+  AllIgnored := Value;
+end;
+
+procedure TA2BXml .setThisOneDiffers (AValue : Boolean );
+begin
+  if fThisOneDiffers = AValue then Exit ;
+  fThisOneDiffers := AValue ;
+  if AValue then
+    Differs := True;
 end;
 
 function TA2BXml.getNumberOfDiffs: Integer;
@@ -395,12 +405,30 @@ begin
       result := result + (Items.XmlItems[x] as TA2BXml).NumberOfDiffs;
 end;
 
-function TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList): Boolean;
+procedure TA2BXml .setAllIgnored (AValue : Boolean );
+var
+  x: Integer;
+begin
+  if fAllIgnored = AValue then Exit;
+  fAllIgnored := AValue ;
+  if not aValue then
+  begin
+    if Assigned (Parent) then
+      (Parent as TA2BXml).AllIgnored := AValue;
+  end
+  else
+  begin
+    for x := 0 to Items.Count - 1 do
+      (Items.XmlItems[x] as TA2BXml).AllIgnored := AValue;
+  end;
+end;
+
+procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList);
   procedure _downIgnored(aXml: TA2BXml);
   var
     x: Integer;
   begin
-    aXml.fIgnoredDifference := True;
+    aXml.fIgnored := True;
     for x := 0 to aXml.Items.Count - 1 do
       _downIgnored(aXml.Items.XmlItems[x] as TA2BXml);
   end;
@@ -408,7 +436,8 @@ function TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: T
   var
     x: Integer;
   begin
-    aXml.fDiffers := False;
+    aXml.fIgnored := False;
+    aXml.fAllIgnored := False;
     for x := 0 to aXml.Items.Count - 1 do
       _reset (aXml.Items.XmlItems[x] as TA2BXml);
   end;
@@ -416,47 +445,37 @@ function TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: T
   var
     x, f: Integer;
   begin
-    if aXml.fIgnoredDifference then Exit;  // because of the _downIgnored...
+    if aXml.fIgnored then Exit;  // because of the _downIgnored...
     if aXml.ChangeKind = ckModify then
     begin
-      aXml.Differs := (not Assigned (ignoreDifferencesOn))
-                  or (    (not ignoreDifferencesOn.Find(rmPrefix(aXml.TagName) , f))
-                      and (not ignoreDifferencesOn.Find(aXml.FullUQCaption , f))
-                     );
-      aXml.IgnoredDifference := not aXml.Differs;
-      if not aXml.IgnoredDifference then
-        Ignore := False;
+      aXml.Ignored := (Assigned (ignoreDifferencesOn))
+                  and (   ignoreDifferencesOn.Find(rmPrefix(aXml.TagName) , f)
+                       or ignoreDifferencesOn.Find(aXml.FullUQCaption , f)
+                      );
     end;
     if aXml.ChangeKind = ckDelete then
     begin
-      aXml.Differs := (not Assigned (ignoreAddingOn))
-                  or (    (not ignoreAddingOn.Find(rmPrefix(aXml.TagName) , f))
-                      and (not ignoreAddingOn.Find(aXml.FullUQCaption , f))
-                     );
-      aXml.IgnoredDifference := not aXml.Differs;
-      if aXml.IgnoredDifference then
-        _downIgnored(aXml)
-      else
-        Ignore := False;
+      aXml.Ignored := (Assigned (ignoreAddingOn))
+                  and (   ignoreAddingOn.Find(rmPrefix(aXml.TagName) , f)
+                       or ignoreAddingOn.Find(aXml.FullUQCaption , f)
+                      );
+      if aXml.Ignored then
+        _downIgnored(aXml);
     end;
     if aXml.ChangeKind = ckAdd then
     begin
-      aXml.Differs := (not Assigned (ignoreRemovingOn))
-                   or (    (not ignoreRemovingOn.Find(rmPrefix(aXml.TagName) , f))
-                       and (not ignoreRemovingOn.Find(aXml.FullUQCaption , f))
+      aXml.Ignored := (Assigned (ignoreRemovingOn))
+                  and (   ignoreRemovingOn.Find(rmPrefix(aXml.TagName) , f)
+                       or ignoreRemovingOn.Find(aXml.FullUQCaption , f)
                       );
-      aXml.IgnoredDifference := not aXml.Differs;
-      if aXml.IgnoredDifference then
-        _downIgnored(aXml)
-      else
-        Ignore := False;
+      if aXml.Ignored then
+        _downIgnored(aXml);
     end;
     for x := 0 to aXml.Items.Count - 1 do
       _set (aXml.Items.XmlItems[x] as TA2BXml);
   end;
 begin
-//_reset(Self);
-  Ignore := Differs;
+  _reset(Self);
   _set(Self);
 end;
 

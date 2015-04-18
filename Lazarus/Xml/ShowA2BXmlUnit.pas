@@ -245,7 +245,7 @@ begin
     xData := TreeView.GetNodeData(xNode);
     while Assigned (xNode)
     and (   (xData.Xml.ChangeKind = ckCopy)
-         or (xData.Xml.IgnoredDifference)
+         or (xData.Xml.Ignored)
         ) do
     begin
       xNode := TreeView.GetNext(xNode);
@@ -706,26 +706,26 @@ procedure TShowA2BXmlForm.XmlTreeViewGetImageIndex(Sender: TBaseVirtualTree;
   end;
 var
   xXml: TA2BXml;
-  ck: TChangeKind;
-  Ignored, Differs: Boolean;
 begin
   NodeToXml(Node, xXml);
   if not Assigned (xXml) then Exit;
-  ck := xXml.ChangeKind;
-  Ignored := xXml.IgnoredDifference;
-  Differs := xXml.Differs;
   case TColumnEnum(Column) of
     tagColumn:
       begin
         case Kind of
           ikNormal, ikSelected:
           begin
-            case ck of
-              ckAdd:    ImageIndex := _if (Ignored, iiOrangePlus, iiRedPlus);
-              ckDelete: ImageIndex := _if (Ignored, iiOrangeCross, iiRedCross);
-              ckCopy:   ImageIndex := _if (Differs, _if (Ignored, iiOrangeBullet, iiRedBullet), iiGreenBullet);
-              ckModify: ImageIndex := _if (Ignored, iiOrangeBullet, iiRedBullet);
-            end;
+            if xXml.name = 'OutputFormat' then
+              xXml.Name := 'OutputFormat';
+            if xXml.Differs then
+              case xXml.ChangeKind of
+                ckAdd:    ImageIndex := _if (xXml.AllIgnored, iiOrangePlus, iiRedPlus);
+                ckDelete: ImageIndex := _if (xXml.AllIgnored, iiOrangeCross, iiRedCross);
+              else
+                ImageIndex := _if (xXml.AllIgnored, iiOrangeBullet, iiRedBullet);
+              end
+            else
+              ImageIndex := iiGreenBullet;
           end;
         end;
       end;
@@ -771,7 +771,7 @@ begin
   xData := TreeView.GetNodeData(xNode);
   while Assigned (xNode)
   and (   (xData.Xml.ChangeKind = ckCopy)
-       or (xData.Xml.IgnoredDifference)
+       or (xData.Xml.Ignored)
       ) do
   begin
     if aDown then
@@ -782,7 +782,7 @@ begin
       xData := TreeView.GetNodeData(xNode);
   end;
   if not Assigned (xNode) then
-    raise Exception.Create('not found');
+    ShowMessage('not found');
   TreeView.Selected [xNode] := True;
   TreeView.FocusedNode := xNode;
 end;
