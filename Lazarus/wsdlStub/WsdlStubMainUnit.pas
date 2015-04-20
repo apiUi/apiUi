@@ -8885,8 +8885,6 @@ var
   xBind: TCustomBindable;
   nTypeDef, oTypeDef, cTypeDef: TXsdDataType;
 begin
-  // ShowMessage ('not et implemented');
-  { TODO }
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if not Assigned(xBind) then
     raise Exception.Create('no element selected');

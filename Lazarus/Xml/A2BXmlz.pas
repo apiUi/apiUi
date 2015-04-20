@@ -278,7 +278,7 @@ begin
       end;
       if Changes[c].Kind = ckAdd then
       begin
-        ThisOneDiffers := True;
+//        ThisOneDiffers := True;
         for i := b to b + Changes[c].Range - 1 do
         begin
           childXml := AddXml (TA2BXml.CreateB(aPrefix, bXml.Items.XmlItems[b], True)) as TA2BXml;
@@ -290,7 +290,7 @@ begin
       begin
         if Changes[c].Kind = ckDelete then
         begin
-          ThisOneDiffers := True;
+//          ThisOneDiffers := True;
           for i := a to a + Changes[c].Range - 1 do
           begin
             childXml := AddXml (TA2BXml.CreateA(aPrefix, aXml.Items.XmlItems[a], True)) as TA2BXml;
@@ -300,7 +300,7 @@ begin
         end
         else
         begin
-          ThisOneDiffers := True;
+//          ThisOneDiffers := True;
           for i := a to a + Changes[c].Range - 1 do
           begin
             childXml := AddXml (TA2BXml.CreateA(aPrefix, aXml.Items.XmlItems[a], True)) as TA2BXml;
@@ -324,14 +324,14 @@ begin
     end;
     while (a < aXml.Items.Count) do
     begin
-      ThisOneDiffers := True;
+//      ThisOneDiffers := True;
       childXml := AddXml (TA2BXml.CreateA(aPrefix, aXml.Items.XmlItems[a], True)) as TA2BXml;
       Differs := Differs or childXml.Differs;
       inc(a);
     end;
     while (b < bXml.Items.Count) do
     begin
-      ThisOneDiffers := True;
+//      ThisOneDiffers := True;
       childXml := AddXml (TA2BXml.CreateA(aPrefix, bXml.Items.XmlItems[b], True)) as TA2BXml;
       Differs := Differs or childXml.Differs;
       inc(b);
@@ -458,4 +458,4 @@ begin
   _set(Self);
 end;
 
-end.
+end.

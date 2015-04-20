@@ -136,7 +136,7 @@ uses
   ShellAPI,
 {$ELSE}
 {$ENDIF}
-  Bind, ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd, vstUtils, XmlXsdParser;
+  Bind, ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd, vstUtils, XmlXsdParser, xmlUtilz;
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -1071,17 +1071,7 @@ begin
     finally
       Screen.Cursor := swapCursor;
     end;
-{ TODO : ShowHTML }
-{
-    Application.CreateForm(TShowHtmlForm, ShowHtmlForm);
-    try
-      ShowHtmlForm.Caption := 'wsdlStub - Differences report';
-      ShowHtmlForm.Html := xXml.asHtmlString;
-      ShowHtmlForm.ShowModal;
-    finally
-      FreeAndNil (ShowHtmlForm);
-    end;
-    }
+    XmlUtil.presentAsHTML('wsdlStub - Differences report', xXml.Text);
   finally
     FreeAndNil (xXml);
   end;

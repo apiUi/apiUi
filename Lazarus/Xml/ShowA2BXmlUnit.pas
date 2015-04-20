@@ -774,11 +774,12 @@ end;
 
 procedure TShowA2BXmlForm.SearchDiff(aDown: Boolean);
 var
-  xNode: PVirtualNode;
+  xNode, sNode: PVirtualNode;
   xData: PXmlTreeRec;
 begin
   if not Assigned (TreeView.FocusedNode) then
     Raise Exception.Create ('Only possible when a node has focus');
+  sNode := Treeview.FocusedNode;
   if aDown then
     xNode := TreeView.GetNext(TreeView.FocusedNode)
   else
@@ -797,7 +798,10 @@ begin
       xData := TreeView.GetNodeData(xNode);
   end;
   if not Assigned (xNode) then
+  begin
     ShowMessage('not found');
+    xNode := sNode;
+  end;
   TreeView.Selected [xNode] := True;
   TreeView.FocusedNode := xNode;
 end;
