@@ -345,7 +345,7 @@ begin
           and xData.reqA2B.Differs then
           begin
             ImageIndex := 133;
-            if xData.reqA2B.AllIgnored then
+            if xData.reqA2B.Ignored then
               ImageIndex := 140;
           end
           else
@@ -366,7 +366,7 @@ begin
           and xData.rpyA2B.Differs then
           begin
             ImageIndex := 133;
-            if xData.rpyA2B.AllIgnored then
+            if xData.rpyA2B.Ignored then
               ImageIndex := 140;
           end
           else
@@ -518,16 +518,17 @@ end;
 procedure TShowLogDifferencesForm.CompareAB(xData: PVSTreeRec);
 var
   aXml, bXml: TXml;
+  xPrefix: String;
 begin
   aXml := xData.aLog.reqBodyAsXml;
   bXml := xData.bLog.reqBodyAsXml;
-  xData.reqA2B := TA2BXml.CreateA2B(aXml, bXml, False);
+  xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, False);
   xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
   aXml := xData.aLog.rpyBodyAsXml;
   bXml := xData.bLog.rpyBodyAsXml;
-  xData.rpyA2B := TA2BXml.CreateA2B(aXml, bXml, False);
+  xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, False);
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
@@ -588,10 +589,10 @@ var
   aXml: TXml;
 begin
   aXml := xData.aLog.reqBodyAsXml;
-  xData.reqA2B := TA2BXml.CreateA (aXml);
+  xData.reqA2B := TA2BXml.CreateA (xData.aLog.OperationName, aXml, True);
   FreeAndNil (aXml);
   aXml := xData.aLog.rpyBodyAsXml;
-  xData.rpyA2B := TA2BXml.CreateA(aXml);
+  xData.rpyA2B := TA2BXml.CreateA(xData.aLog.OperationName, aXml, True);
   FreeAndNil (aXml);
 end;
 
@@ -600,10 +601,10 @@ var
   bXml: TXml;
 begin
   bXml := xData.bLog.reqBodyAsXml;
-  xData.reqA2B := TA2BXml.CreateB (bXml);
+  xData.reqA2B := TA2BXml.CreateB (xData.bLog.OperationName, bXml, True);
   FreeAndNil (bXml);
   bXml := xData.bLog.rpyBodyAsXml;
-  xData.rpyA2B := TA2BXml.CreateB (bXml);
+  xData.rpyA2B := TA2BXml.CreateB (xData.bLog.OperationName, bXml, True);
   FreeAndNil (bXml);
 end;
 

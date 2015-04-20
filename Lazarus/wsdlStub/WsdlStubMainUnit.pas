@@ -8527,7 +8527,7 @@ begin
   end;
   a2bInitialize;
   try
-    xA2B := TA2BXml.CreateA2B(aXml, bXml, False);
+    xA2B := TA2BXml.CreateA2B('', aXml, bXml, False);
   finally
     a2bUninitialize;
   end;
@@ -8565,7 +8565,7 @@ begin
   end;
   a2bInitialize;
   try
-    xA2B := TA2BXml.CreateA2B(aXml, bXml, False);
+    xA2B := TA2BXml.CreateA2B('', aXml, bXml, False);
   finally
     a2bUninitialize;
   end;

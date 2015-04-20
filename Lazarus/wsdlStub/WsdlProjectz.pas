@@ -2653,6 +2653,7 @@ begin
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
+    aLog.OperationName:=xOperation.reqTagName;
     result := xOperation.StreamReply (_progName, True);
     if not isAsynchronous then
       CreateLogReplyPostProcess(aLog, xOperation);
@@ -3993,6 +3994,7 @@ begin
     aLogItem.StubAction := aOperation.StubAction;
   if Assigned (aOperation) then
   begin
+    aLogItem.OperationName:=aOperation.reqTagName;
     CheckExpectedValues(aLogItem, aOperation, doCheckExpectedValues);
     if aOperation.StubAction = saRequest then
     begin
@@ -5307,6 +5309,8 @@ begin
         if not Assigned (result) then
           result := FindCcbOperationOnRequest (aLog, aString);
       end;
+      if Assigned (result) then
+        aLog.OperationName:=result.reqTagName;
     finally
       //ReleaseLock;
     end;
@@ -6690,6 +6694,8 @@ begin
             if not Assigned (xLog.Operation) then
             try
               xLog.Operation := FindOperationOnReply(xLog.ReplyBody);
+              if Assigned (xLog.Operation) then
+                xLog.OperationName:=xLog.Operation.reqTagName;
             except
             end;
             if Assigned (xLog.Operation) then

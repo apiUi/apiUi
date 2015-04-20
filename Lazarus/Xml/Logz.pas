@@ -234,7 +234,7 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
   begin
     aXml := aLog.reqBodyAsXml;
     bXml := bLog.reqBodyAsXml;
-    a2bXml := TA2BXml.CreateA2B(aXml, bXml, False);
+    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, aXml, bXml, False);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('req.', a2bXml);
     FreeAndNil(a2bXml);
@@ -242,7 +242,7 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     FreeAndNil (bXml);
     aXml := aLog.rpyBodyAsXml;
     bXml := bLog.rpyBodyAsXml;
-    a2bXml := TA2BXml.CreateA2B(aXml, bXml, False);
+    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, aXml, bXml, False);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('rpy.', a2bXml);
     FreeAndNil(a2bXml);
