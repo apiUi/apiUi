@@ -14,6 +14,7 @@ function ReadStringFromFile (aFileName: String): String;
 procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
+function GetHostName: String;
 function GetUserName: String;
 function GetVersion: String;
 
@@ -26,6 +27,7 @@ uses StrUtils
    , LazFileUtils
    , versiontypes, versionresource
    , idHTTP
+   , idStack
    , LConvEncoding
    , RegExpr
    , Forms
@@ -287,6 +289,16 @@ begin
       raise;
     end;
     Free;
+  end;
+end;
+
+function GetHostName: String;
+begin
+  TIdStack.IncUsage;
+  try
+    Result := LowerCase(GStack.HostName);
+  finally
+    TIdStack.DecUsage;
   end;
 end;
 

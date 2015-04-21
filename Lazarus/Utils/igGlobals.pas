@@ -131,7 +131,6 @@ function ExplodeStr(S: string; const Delim: Char; const List: Classes.TStrings;
 function SplitStr(const S: string; Delim: Char; out S1, S2: string): Boolean;
 function BoolToStr (aValue: Boolean): String;
 function GetUserName: String;
-function GetHostName: String;
 function GenerateRandomId: String;
 procedure MemoMouseDown(aMemo: TLzRichEdit; X, Y: Integer; aOnHaveLink: TOnHaveLinkEvent);
 procedure MemoMouseMove(aMemo: TLzRichEdit; X, Y: Integer);
@@ -353,11 +352,6 @@ begin
   {$ELSE}
   result := GetEnvironmentVariable('USERNAME');
   {$ENDIF}
-end;
-
-function GetHostName: String;
-begin
-  result := 'gethostnameisnotyetimplemeted';
 end;
 
 {*********************************************}

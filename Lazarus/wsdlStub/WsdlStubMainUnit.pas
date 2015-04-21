@@ -1152,7 +1152,7 @@ uses
   XmlGridUnit, IpmGridUnit,
   xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, base64, xmlxsdparser,
-  HashUtilz;
+  HashUtilz, xmlio;
 {$IFnDEF FPC}
   {$R *.dfm}
 {$ELSE}
@@ -9443,8 +9443,7 @@ end;
 
 procedure TMainForm.Action1Execute(Sender: TObject);
 begin
-  ShowHtml('', '<html>' + InWsdlTreeView.ContentToHTML(tstVisible,
-      'Jan Test') + '</html>');
+  ShowHtml('', '<html>' + _WsdlHostName + '</html>');
 end;
 
 procedure TMainForm.GenerateScriptAssignmentActionExecute(Sender: TObject);

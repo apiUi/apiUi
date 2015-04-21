@@ -5901,7 +5901,7 @@ procedure TWsdlProject.HTTPServerCommandGetGet(AContext: TIdContext;
           epXml := epXml.Items.XmlItemByTag['port'];
           epXml := epXml.Items.XmlItemByTag['address'];
           epAtr := epXml.Attributes.AttributeByTag['location'];
-          epAtr.Value := 'http://' + GetHostName + ':' + IntToStr(Listeners.httpPort);
+          epAtr.Value := 'http://' + _WsdlHostName + ':' + IntToStr(Listeners.httpPort);
         except
           raise Exception.CreateFmt('No endpoint address found in %s', [aWsdlName]);
         end;
@@ -6190,7 +6190,7 @@ procedure TWsdlProject.HttpWebPageServerCommandGet(AContext: TIdContext;
     n := 'wsdlStubWebService?XSD';
     result := ReplaceText(result, o, n);
     o := 'localhost:3738';
-    n := GetHostName + ':' + IntToStr(MasterPortNumber);
+    n := _WsdlHostName + ':' + IntToStr(MasterPortNumber);
     result := ReplaceText(result, o, n);
   end;
   function _prepXsd(fn: String):String;

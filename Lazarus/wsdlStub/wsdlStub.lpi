@@ -51,7 +51,7 @@
         <PackageName Value="LCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -62,7 +62,6 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="WsdlStubMainUnit"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Xml\promptfolderunit.pas"/>
@@ -71,6 +70,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -93,11 +96,10 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="14">
+    <Exceptions Count="15">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -141,6 +143,9 @@
       <Item14>
         <Name Value="ERegExpr"/>
       </Item14>
+      <Item15>
+        <Name Value="EConvertError"/>
+      </Item15>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

@@ -20,6 +20,7 @@ type
   { TAboutBox }
 
   TAboutBox = class(TForm)
+    BuildLabel: TLabel;
     OKButton: TButton;
     Label1: TLabel;
     Bevel1: TBevel;
@@ -42,11 +43,6 @@ var
   AboutBox: TAboutBox;
 
 implementation
-function GetVersion: string;
-begin
-  Result := 'verzie';
-end;
-
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -56,7 +52,7 @@ end;
 
 procedure TAboutBox.FormCreate(Sender: TObject);
 begin
-  VersionLabel.Caption := 'Version: ' + GetVersion;
+  BuildLabel.Caption := 'Build date: ' + {$I %date%};
 end;
 
 procedure TAboutBox.setLicensedTo(const Value: String);

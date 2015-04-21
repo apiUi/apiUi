@@ -596,6 +596,7 @@ uses
    , IdURI
    , SwiftUnit
    , xmlxsdparser
+   , xmlio
    ;
 
 { TWsdl }
@@ -5908,7 +5909,7 @@ end;
 initialization
   Randomize;
   _WsdlProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
-  _WsdlHostName := GetEnvironmentVariable('COMPUTERNAME');
+  _WsdlHostName := xmlio.GetHostName;
   _ipmGun := (Lowercase(_WsdlProgName) = 'ipmgun');
   _WsdlVars := TStringList.Create;
   _OnParseErrorEvent := nil;
