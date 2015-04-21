@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="8693"/>
+      <BuildNr Value="8694"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -117,21 +117,26 @@
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>
+        <Enabled Value="False"/>
       </Item4>
       <Item5>
         <Name Value="EDatabaseError"/>
+        <Enabled Value="False"/>
       </Item5>
       <Item6>
         <Name Value="Exception"/>
+        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
+        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
+        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
@@ -146,9 +151,11 @@
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>
+        <Enabled Value="False"/>
       </Item13>
       <Item14>
         <Name Value="EIdHTTPProtocolException"/>
+        <Enabled Value="False"/>
       </Item14>
     </Exceptions>
   </Debugging>

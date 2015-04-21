@@ -70,6 +70,7 @@ type
     ToolButton13: TToolButton;
     ToolButton14: TToolButton;
     AsHtmlAction: TAction;
+    procedure DocumentationMemoClick (Sender : TObject );
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure TreeViewClick(Sender: TObject);
     procedure TreeViewGetImageIndex(Sender: TBaseVirtualTree;
@@ -229,6 +230,7 @@ begin
   FileContents := TStringList.Create;
   doConfirmRemovals := True;
   TreeView.Colors.GridLineColor := clBtnHighlight;
+  DocumentationMemo.Color := self.Color;
 end;
 
 procedure TShowXmlCoverageForm.ShowBind (Bind: TXmlCvrg; aNode: PVirtualNode);
@@ -583,8 +585,7 @@ begin
   Sender.Selected [Sender.FocusedNode] := True;
   xBind := SelectedBind;
   try XmlUtil.ListXsdProperties(XsdPropertiesListView, xBind); except end;
-  { TODO : adjust }
-//  try XmlUtil.ListXsdDocumentation(DocumentationMemo, xBind, False, False); except end;
+  try XmlUtil.ListXsdDocumentation(DocumentationMemo, xBind, False, False); except end;
   TreeView.Invalidate;
 end;
 
@@ -1097,6 +1098,11 @@ end;
 procedure TShowXmlCoverageForm.ZoomMenuItemClick(Sender: TObject);
 begin
   xmlUtil.presentString (SelectedBind.FullCaption, SelectedBind.Value);
+end;
+
+procedure TShowXmlCoverageForm .DocumentationMemoClick (Sender : TObject );
+begin
+  OpenUrl(MemoIsLink(DocumentationMemo));
 end;
 
 { TPasswordEditLink }

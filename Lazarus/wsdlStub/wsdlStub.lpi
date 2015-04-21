@@ -17,7 +17,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="9"/>
-      <BuildNr Value="8650"/>
+      <RevisionNr Value="1"/>
+      <BuildNr Value="8722"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -62,6 +63,7 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="WsdlStubMainUnit"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Xml\promptfolderunit.pas"/>
@@ -96,10 +98,11 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="15">
+    <Exceptions Count="16">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -146,6 +149,9 @@
       <Item15>
         <Name Value="EConvertError"/>
       </Item15>
+      <Item16>
+        <Name Value="EIdCouldNotBindSocket"/>
+      </Item16>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

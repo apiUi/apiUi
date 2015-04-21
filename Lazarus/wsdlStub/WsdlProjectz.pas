@@ -6262,7 +6262,7 @@ var
 begin
   AResponseInfo.ContentEncoding := 'identity';
   try
-    if ARequestInfo.Document = '/wsdlStubWebService' then
+    if ARequestInfo.Document = '/' + _ProgName + 'WebService' then
     begin
       try
         xXml := TXml.Create;
