@@ -62,6 +62,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    SqlConnector : TODBCConnection ;
     ProjectDesignToClipboardAction: TAction;
     PresentLogMemoTextAction : TAction ;
     DesignPanel: TPanel;
@@ -75,7 +76,6 @@ type
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
     Splitter1 : TSplitter ;
-    SqlConnector : TSQLConnector ;
     SQLTransaction : TSQLTransaction ;
     ToolBar4 : TToolBar ;
     ToolButton30 : TToolButton ;
@@ -3355,12 +3355,9 @@ var
   xUpdated: TDateTime;
   xUsageDate: TDateTime;
 begin
-{ TODO : repair }
-  exit;
-
   xUpdated := Now;
   xUsageDate := sysutils.Date;
-  if (aUserName <> 'Jan') and (aUserName <> 'Bouwman') then
+  if (aUserName <> 'JanBo') and (aUserName <> 'Bouwman') then
   begin
     SqlConnector.Transaction.StartTransaction;
     try
@@ -3433,18 +3430,13 @@ end;
 
 function TMainForm.OpenLogUsageDatabase: Boolean;
 begin
-{ TODO : repair }
-result:=true;
-exit;
   result := False;
   try
     try
       SqlConnector.Connected := False;
     except
     end;
-    SqlConnector.ConnectorType := 'ODBC';
-    SqlConnector.DatabaseName := licenseOdbcDriver;
-    SqlConnector.Params.Values['DBQ'] := licenseDatabaseName;
+    SqlConnector.Params.Text := 'DBQ=' + licenseDatabaseName;
     SqlConnector.Connected := True;
     result := SqlConnector.Connected;
   except
@@ -3485,15 +3477,13 @@ var
   ymd: Integer;
   xLicenseDate: TDateTime;
 begin
-{ TODO : repair }
-se.Licensed := true;
-exit;
   se.Licensed := False;
   ErrorReadingLicenseInfo := False;
   try
     Qry.SQL.Clear;
     Qry.SQL.Add('Select CompanyName, LicenseExpireDate, LicenseString');
     Qry.SQL.Add('from LicenseInformation');
+    Qry.ParseSQL := False;
     Qry.Open;
     while not Qry.EOF do
     begin

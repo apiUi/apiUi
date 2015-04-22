@@ -21,22 +21,23 @@ type
 
   TAboutBox = class(TForm)
     BuildLabel: TLabel;
+    LazarusLabel : TLabel ;
+    FPCLabel : TLabel ;
     OKButton: TButton;
-    Label1: TLabel;
+    ProgramLabel: TLabel;
     Bevel1: TBevel;
-    VersionLabel: TLabel;
     Label3: TLabel;
     LicensedLabel: TLabel;
+    procedure BuildLabelMouseMove (Sender : TObject ; Shift : TShiftState ; X ,
+      Y : Integer );
     procedure FormCreate(Sender: TObject);
+    procedure FormShow (Sender : TObject );
   private
-    procedure setProgName(const Value: String);
     procedure setLicensedTo(const Value: String);
-    procedure setVersionInfo(AValue: String);
     { Private declarations }
   public
-    property ProgName: String write setProgName;
+    ProgName, VersionInfo: String;
     property LicensedTo: String write setLicensedTo;
-    property VersionInfo: String write setVersionInfo;
   end;
 
 var
@@ -52,23 +53,26 @@ implementation
 
 procedure TAboutBox.FormCreate(Sender: TObject);
 begin
-  BuildLabel.Caption := 'Build date: ' + {$I %date%};
+end;
+
+procedure TAboutBox .FormShow (Sender : TObject );
+begin
+  BuildLabel.Caption := 'Date: ' + {$I %date%};
+  LazarusLabel.Caption := 'Lazarus version: ' + LCLVersion;
+  FPCLabel.Caption := 'FPC version: ' + {$I %fpcversion%};
+  Caption := 'About ' + ProgName;
+  ProgramLabel.Caption := ProgName + ' ' + VersionInfo;
+end;
+
+procedure TAboutBox .BuildLabelMouseMove (Sender : TObject ;
+  Shift : TShiftState ; X , Y : Integer );
+begin
+
 end;
 
 procedure TAboutBox.setLicensedTo(const Value: String);
 begin
   LicensedLabel.Caption := 'Licensed to ' + Value;
-end;
-
-procedure TAboutBox.setVersionInfo(AValue: String);
-begin
-  VersionLabel.Caption := 'Version ' + AValue;
-end;
-
-procedure TAboutBox.setProgName(const Value: String);
-begin
-  Caption := 'About ' + Value;
-  Label1.Caption := Value;
 end;
 
 end.
