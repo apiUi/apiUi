@@ -75,6 +75,7 @@
       <Unit3>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="IdStack"/>
       </Unit3>
     </Units>
   </ProjectOptions>
@@ -98,7 +99,6 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

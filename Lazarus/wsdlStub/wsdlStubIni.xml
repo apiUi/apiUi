@@ -1,7 +1,7 @@
 <wsdlStubIni>
   <licenseDatabase>
 	  <OdbcDriver>Microsoft Access Driver</OdbcDriver>
-	  <DatabaseName>C:\JanBo\SOURCES\2011\wsdlStub\Data\wsdlStubLicense.mdb</DatabaseName>
+	  <DatabaseName>\\File0017.rabobank.corp\Zeistusr4$\BouwmanJW\IpmTools\wsdlStubLicense.mdb</DatabaseName>
   </licenseDatabase>
   <indexWsdlsHtml>Config\wsdlIndex.html</indexWsdlsHtml>
   <indexHtml>Config\index.html</indexHtml>

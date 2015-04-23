@@ -3357,7 +3357,9 @@ var
 begin
   xUpdated := Now;
   xUsageDate := sysutils.Date;
-  if (aUserName <> 'JanBo') and (aUserName <> 'Bouwman') then
+  if (aUserName <> 'JanBo')
+  and (aUserName <> 'Bouwman')
+  and (SqlConnector.Connected) then
   begin
     SqlConnector.Transaction.StartTransaction;
     try
@@ -3436,8 +3438,11 @@ begin
       SqlConnector.Connected := False;
     except
     end;
-    SqlConnector.Params.Text := 'DBQ=' + licenseDatabaseName;
-    SqlConnector.Connected := True;
+    if FileExistsUTF8(licenseDatabaseName) then
+    begin
+      SqlConnector.Params.Text := 'DBQ=' + licenseDatabaseName;
+      SqlConnector.Connected := True;
+    end;
     result := SqlConnector.Connected;
   except
   end;
