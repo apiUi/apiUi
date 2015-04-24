@@ -20,7 +20,7 @@ uses Classes
    ;
 
 type
-  TCompareLogOrderBy = (clTimeStamp, clCorrelation);
+  TCompareLogOrderBy = (clTimeStamp, clOperation, clCorrelation);
   TShowLogCobolStyle = (slCobol, slXml);
   TLogFilterStyle = (fsShowMatch, fsShowMismatch, fsHighlightMatch, fsHighlightMismatch);
   PDisplayRef = ^TObject;
@@ -31,6 +31,9 @@ type
 
   TLog = class;
   TLogList = class;
+
+  { TLog }
+
   TLog = class(TClaimableObject)
   protected
   public
@@ -80,6 +83,7 @@ type
     relatesTo: TLog;
     ServiceName, OperationName: String;
     DelayTimeMs, OperationCount: Integer;
+    function CompareKey (aCompareBy: TCompareLogOrderBy): String;
     function DurationAsString: String;
     function AsXml: TXml;
     function reqBodyAsXml: TXml;
@@ -249,22 +253,6 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     FreeAndNil (aXml);
     FreeAndNil (bXml);
   end;
-
-  function _OrderKey (aLog: TLog): String;
-  begin
-    result := '';
-    if aOrderBy = clCorrelation then
-    begin
-      if Assigned (aLog.Operation) then
-        result := aLog.Operation.WsdlService.Name
-                + ';'
-                + aLog.Operation.Name
-                + ';'
-                + aLog.CorrelationId
-      else
-        result := ';;' + aLog.CorrelationId;
-    end;
-  end;
 var
   x, a, b, c, i: Integer;
   LA, LB: TStringList;
@@ -286,10 +274,10 @@ begin
     try
       for x := 0 to aLogs.Count - 1 do
         if aLogs.LogItems [x].PassesFilter then
-          aSortedLogs.AddObject (_OrderKey(aLogs.LogItems[x]), aLogs.LogItems[x]);
+          aSortedLogs.AddObject (aLogs.LogItems[x].CompareKey(aOrderBy), aLogs.LogItems[x]);
       for x := 0 to bLogs.Count - 1 do
         if bLogs.LogItems [x].PassesFilter then
-          bSortedLogs.AddObject (_OrderKey(bLogs.LogItems[x]), bLogs.LogItems[x]);
+          bSortedLogs.AddObject (bLogs.LogItems[x].CompareKey(aOrderBy), bLogs.LogItems[x]);
 
       LA := TStringList.Create;
       LB := TStringList.Create;
@@ -1007,6 +995,35 @@ begin
   DisplayedColumns.Clear;
   FreeAndNil (DisplayedColumns);
   FreeAndNil (Stream);
+end;
+
+function TLog .CompareKey (aCompareBy : TCompareLogOrderBy ): String ;
+begin
+  result := '';
+  if Assigned (Operation) then
+  begin
+    case aCompareBy of
+      clOperation:
+        result := Operation.WsdlService.Name
+                + ';'
+                + Operation.Name
+                ;
+      clCorrelation:
+        result := Operation.WsdlService.Name
+                + ';'
+                + Operation.Name
+                + ';'
+                + CorrelationId
+                ;
+    end;
+  end
+  else
+  begin
+    case aCompareBy of
+      clOperation: result := ';';
+      clCorrelation: result := ';' + CorrelationId;
+    end;
+  end;
 end;
 
 function TLog.DurationAsString: String;

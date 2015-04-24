@@ -1094,6 +1094,7 @@ type
     function doEncryptString(aString: AnsiString): AnsiString;
     procedure ProjectDesignFromString(aString, aMainFileName: String);
     procedure OnlyWhenLicensed;
+    function LogMaxEntriesEqualsUnbounded (aCaption: String): Boolean;
     procedure LicenseRequestFromServer(aProviderAddress: String);
     procedure AcquireLock;
     procedure ReleaseLock;
@@ -2747,7 +2748,7 @@ begin
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
     if xOperation.PrepareErrors <> '' then
-      if not BooleanPromptDialog (xOperation.PrepareErrors + CRLF + 'Continue') then
+      if not BooleanPromptDialog (xOperation.PrepareErrors + LineEnding + 'Continue') then
         Exit;
     try
       Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
@@ -2917,7 +2918,7 @@ begin
     end;
   except
     on E: Exception do
-      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString(e);
+      result := E.Message + LineEnding + LineEnding + se.ExceptionStackListString(e);
   end;
 end;
 
@@ -2948,7 +2949,7 @@ begin
   except
     on E: Exception do
     begin
-      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString(e);
+      result := E.Message + LineEnding + LineEnding + se.ExceptionStackListString(e);
       if aDoRaiseExceptions then
         raise Exception.Create(result);
     end;
@@ -2987,7 +2988,7 @@ begin
     end;
   except
     on E: Exception do
-      result := E.Message + #$D#$A#$D#$A + se.ExceptionStackListString(e);
+      result := E.Message + LineEnding + LineEnding + se.ExceptionStackListString(e);
   end;
 {$else}
   result := 'RestartCommand not implemented';
@@ -3322,18 +3323,30 @@ begin
         ' user');
 end;
 
+function TMainForm .LogMaxEntriesEqualsUnbounded(aCaption: String): Boolean ;
+begin
+  if se.displayedLogsmaxEntries > - 1 then
+    if BooleanPromptDialog
+        (Format ('Max Log entries now "%d",%s"%s" requires it to be "unbounded".%sSet Log maxEntries to "unbounded"'
+                , [se.displayedLogsmaxEntries, LineEnding, aCaption, LineEnding]
+                )
+        ) then
+    begin
+      se.displayedLogsmaxEntries := - 1;
+      stubChanged := True;
+    end;
+  result := (se.displayedLogsmaxEntries = - 1);
+end;
+
 procedure TMainForm.wsdlStubInitialise;
 begin
   se.Licensed := False;
   WindowsUserName := getUserName;
-  if licenseDatabaseName <> '' then
-  begin
-    OpenLogUsageDatabase;
-    LogUsage(WindowsUserName);
-    ValidateLicense;
-    SqlConnector.Connected := False;
-    SetLogUsageTimer;
-  end;
+  OpenLogUsageDatabase;
+  LogUsage(WindowsUserName);
+  ValidateLicense;
+  SqlConnector.Connected := False;
+  SetLogUsageTimer;
   ConfigListenersAction.Hint := hintStringFromXsd('Configure listeners (',
     ', ', ')', listenersConfigXsd);
   InitMasterServer;
@@ -3440,8 +3453,32 @@ begin
     end;
     if FileExistsUTF8(licenseDatabaseName) then
     begin
-      SqlConnector.Params.Text := 'DBQ=' + licenseDatabaseName;
-      SqlConnector.Connected := True;
+      try
+        SqlConnector.Params.Text := 'DBQ=' + licenseDatabaseName;
+        SqlConnector.Connected := True;
+      except
+        ShowMessage ( 'Can not open database: '
+                    + licenseDatabaseName
+                    + LineEnding
+                    + LineEnding
+                    + 'Please contact your '
+                    + _ProgName
+                    + ' provider for assistence'
+                    );
+        Close;
+      end;
+    end
+    else
+    begin
+      ShowMessage ( 'Can not find database: '
+                  + licenseDatabaseName
+                  + LineEnding
+                  + LineEnding
+                  + 'Please contact your '
+                  + _ProgName
+                  + ' provider for assistence'
+                  );
+      Close;
     end;
     result := SqlConnector.Connected;
   except
@@ -3481,10 +3518,14 @@ var
   Y, m, d: Word;
   ymd: Integer;
   xLicenseDate: TDateTime;
+const
+  xDisableFunctions = 'Therefore the Save Project as... and some reporting functions are disabled.';
 begin
   se.Licensed := False;
-  ErrorReadingLicenseInfo := False;
+  ErrorReadingLicenseInfo := True;
+  if SqlConnector.Connected then
   try
+    ErrorReadingLicenseInfo := False;
     Qry.SQL.Clear;
     Qry.SQL.Add('Select CompanyName, LicenseExpireDate, LicenseString');
     Qry.SQL.Add('from LicenseInformation');
@@ -3549,25 +3590,23 @@ begin
           IniFile.StringByName['LicenseKey']);
       if se.Licensed then
         ShowMessage('' + _progName +
-            ' could not read license information from the server.' + #$D#$A +
-            #$D#$A + 'Your offline license is valid until ' + DateToStr
+            ' could not read license information from the server.' + LineEnding +
+            LineEnding + 'Your offline license is valid until ' + DateToStr
             (xLicenseDate))
       else
         ShowMessage('' + _progName +
-            ' could not read the license information.' + #$D#$A +
-            #$D#$A + 'Therefore ' +
-            _progName
-            + ' will have limited functionallity and will' + #$D#$A +
-            'stub only a limited number of requests.' + #$D#$A + #$D#$A +
-            'Please contact your ' + _progName + ' provider for assistance.');
+            ' could not read the license information.' + LineEnding +
+            LineEnding + xDisableFunctions
+            + LineEnding + LineEnding
+            + 'Please contact your ' + _progName + ' provider for assistance.');
     end
     else
     begin
       { }
       ShowMessage('' + _progName + ' did not find a valid licensestring.' +
-          #$D#$A + #$D#$A + 'Therefore ' + _progName +
-          ' will have limited functionallity.' + #$D#$A + #$D#$A +
-          'Please contact your ' + _progName + ' provider for' + #$D#$A +
+          LineEnding + LineEnding + xDisableFunctions
+            + LineEnding + LineEnding +
+          'Please contact your ' + _progName + ' provider for' + LineEnding +
           'a valid licensestring or technical assistance.');
       { }
     end;
@@ -3589,16 +3628,16 @@ begin
   if not result then
   begin
     ShowMessage('Your ' + _progName + ' license has expired on ' + DateToStr
-        (xDt) + '.' + #$D#$A + #$D#$A + 'Therefore ' + _progName +
-        ' will have limited functionallity and will' + #$D#$A +
-        'stub only a limited number of requests.' + #$D#$A + #$D#$A +
+        (xDt) + '.' + LineEnding + LineEnding + 'Therefore ' + _progName +
+        ' will have limited functionallity and will' + LineEnding +
+        'stub only a limited number of requests.' + LineEnding + LineEnding +
         'Please contact your ' + _progName + ' provider.');
   end
   else
   begin
     if ((xDt - Now) < 30) then
       ShowMessage('Your ' + _progName + ' license expires on ' + DateToStr(xDt)
-          + #$D#$A + 'Please contact your ' + _progName + ' provider');
+          + LineEnding + 'Please contact your ' + _progName + ' provider');
   end;
 end;
 
@@ -3606,7 +3645,7 @@ procedure TMainForm.License1Click(Sender: TObject);
 begin
   if ErrorReadingLicenseInfo then
     raise Exception.Create('' + _progName +
-        ' could not read the license information.' + #$D#$A + #$D#$A +
+        ' could not read the license information.' + LineEnding + LineEnding +
         'Please contact your ' + _progName + ' provider for assistance.');
 
   Application.CreateForm(TIpmGunLicenseForm, IpmGunLicenseForm);
@@ -3632,7 +3671,9 @@ begin
             IpmGunLicenseForm.LicenseExpirationDate;
           Qry.Params.ParamValues['LicenseString'] :=
             IpmGunLicenseForm.LicenseString;
+          Qry.Transaction.Active := True;
           Qry.ExecSql;
+          Qry.Transaction.Active := False;
           ValidateLicense;
         except
           on E: Exception do
@@ -5631,7 +5672,7 @@ begin
   xOperation := se.CreateScriptOperation((se.Scripts.Objects[X] as TStringList).Text);
   try
     if xOperation.PrepareErrors <> '' then
-      if not BooleanPromptDialog (xOperation.PrepareErrors + CRLF + 'Continue') then
+      if not BooleanPromptDialog (xOperation.PrepareErrors + LineEnding + 'Continue') then
         Exit;
     Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
     try
@@ -6150,8 +6191,6 @@ begin
   WsdlInformationMenuItem.Checked := IniFile.BooleanByNameDef
     ['WsdlInformationVisible', True];
   WsdlInfoPanel.Visible := WsdlInformationMenuItem.Checked;
-  se.LogFilter := TLogFilter.Create;
-  // se.LogFilter.Enabled := IniFile.BooleanByNameDef ['se.LogFilter.Enabled', False];
   se.LogFilter.FilterStyle := TLogFilterStyle
     (IniFile.IntegerByNameDef['LogFilter.FilterStyle', 0]);
   se.LogFilter.MatchAny := IniFile.BooleanByNameDef['LogFilter.MatchAny',
@@ -6253,14 +6292,14 @@ begin
     ['HTTPServer.MaxConnections', se.HTTPServer.MaxConnections];
   se.ViaProxyServer := IniFile.StringByNameDef['ViaProxyServer', 'localhost'];
   se.ViaProxyPort := StrToIntDef(IniFile.StringByName['ViaProxyPort'], 8081);
-  if (se.MqInterface.MQServerOK and se.MqInterface.MQClientOK) then
+  if (se.mmqqMqInterface.MQServerOK and se.mmqqMqInterface.MQClientOK) then
     se.mqUse := TMqUse(StrToIntDef(IniFile.StringByName['mqUse'],
         Ord(mquServer)));
-  if (se.MqInterface.MQServerOK and (not se.MqInterface.MQClientOK)) then
+  if (se.mmqqMqInterface.MQServerOK and (not se.mmqqMqInterface.MQClientOK)) then
     se.mqUse := mquServer;
-  if (not se.MqInterface.MQServerOK and (se.MqInterface.MQClientOK)) then
+  if (not se.mmqqMqInterface.MQServerOK and (se.mmqqMqInterface.MQClientOK)) then
     se.mqUse := mquClient;
-  if (not se.MqInterface.MQServerOK and (not se.MqInterface.MQClientOK)) then
+  if (not se.mmqqMqInterface.MQServerOK and (not se.mmqqMqInterface.MQClientOK)) then
     se.mqUse := mquUndefined;
   se.mqMaxWorkingThreads := IniFile.IntegerByNameDef['MaxWorkingThreads', 15];
   se.CompareLogOrderBy := TCompareLogOrderBy
@@ -6292,9 +6331,9 @@ begin
   ExecuteRequestToolButton.Visible := False;
   ExecuteAllRequestsToolButton.Visible := False;
   BrowseMqMenuItem.Visible :=
-    (se.MqInterface.MQServerOK or se.MqInterface.MQClientOK);
+    (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
   BrowseMqButton.Visible :=
-    (se.MqInterface.MQServerOK or se.MqInterface.MQClientOK);
+    (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
   HelpAction.Caption := 'Help on ' + _progName;
   UpdateVisibiltyOfOperations;
   SetBetaMode;
@@ -7023,6 +7062,7 @@ var
   X: Integer;
   xOpenOptions: TOpenOptions;
 begin
+  if not LogMaxEntriesEqualsUnbounded (ReadMessagesAction.Caption) then Exit;
   with OpenFileDialog do
   begin
     xOpenOptions := Options;
@@ -7043,14 +7083,14 @@ begin
             except
               on E: Exception do
                 raise Exception.CreateFmt('Error opening file %s%s%s',
-                  [Files.Strings[X], CRLF, E.Message]);
+                  [Files.Strings[X], LineEnding, E.Message]);
             end;
           if xLogList.designSuspect then
           begin
             if not BooleanPromptDialog(
-              'Maybe due to differences in current design or Wsdls,' + #$D#$A +
+              'Maybe due to differences in current design or Wsdls,' + LineEnding +
                 'some Operations, Messages or Correlation data could not be relocated;'
-                + #$D#$A + #$D#$A + 'Continue') then
+                + LineEnding + LineEnding + 'Continue') then
             begin
               xLogList.Clear;
               raise Exception.Create('Operation aborted');
@@ -7253,9 +7293,9 @@ end;
 procedure TMainForm.MasterClearLogActionExecute(Sender: TObject);
 begin
   SendMasterCommand('Send clear log command to master instance of ' +
-      _progName + '?' + #$D#$A + #$D#$A +
+      _progName + '?' + LineEnding + LineEnding +
       '(May impact other users of the ' + _progName + ' master instance)' +
-      #$D#$A + '(' + MasterAddress + ')', 'ClearLog');
+      LineEnding + '(' + MasterAddress + ')', 'ClearLog');
 end;
 
 procedure TMainForm.MasterClearLogActionHint(var HintStr: string;
@@ -7273,8 +7313,8 @@ end;
 procedure TMainForm.MasterReactivateActonExecute(Sender: TObject);
 begin
   SendMasterCommand('Reactivate master instance of ' + _progName + '?' +
-      #$D#$A + #$D#$A + '(May impact other users of the ' + _progName +
-      ' master instance)' + #$D#$A + '(' + MasterAddress + ')', 'Reactivate');
+      LineEnding + LineEnding + '(May impact other users of the ' + _progName +
+      ' master instance)' + LineEnding + '(' + MasterAddress + ')', 'Reactivate');
 end;
 
 procedure TMainForm.MasterReactivateActonHint(var HintStr: string;
@@ -7292,8 +7332,8 @@ end;
 procedure TMainForm.MasterReloadDesignActionExecute(Sender: TObject);
 begin
   SendMasterCommand('Send reload command to master instance of ' + _progName +
-      '?' + #$D#$A + #$D#$A + '(May impact other users of the ' + _progName +
-      ' master instance)' + #$D#$A + '(' + MasterAddress + ')', 'ReloadDesign');
+      '?' + LineEnding + LineEnding + '(May impact other users of the ' + _progName +
+      ' master instance)' + LineEnding + '(' + MasterAddress + ')', 'ReloadDesign');
 end;
 
 procedure TMainForm.MasterReloadDesignActionHint(var HintStr: string;
@@ -7311,9 +7351,9 @@ end;
 procedure TMainForm.MasterRestartActionExecute(Sender: TObject);
 begin
   SendMasterCommand('Shut down and restart master instance of ' + _progName +
-      '?' + #$D#$A + 'Expect an error message ... and wait a while...' +
-      #$D#$A + #$D#$A + '(May impact other users of the ' + _progName +
-      ' master instance)' + #$D#$A + '(' + MasterAddress + ')', 'Restart');
+      '?' + LineEnding + 'Expect an error message ... and wait a while...' +
+      LineEnding + LineEnding + '(May impact other users of the ' + _progName +
+      ' master instance)' + LineEnding + '(' + MasterAddress + ')', 'Restart');
 end;
 
 procedure TMainForm.MasterRestartActionHint(var HintStr: string;
@@ -7380,6 +7420,8 @@ var
   xLogList: TLogList;
   xCursor: TCursor;
 begin
+  OnlyWhenLicensed;
+  if not LogMaxEntriesEqualsUnbounded (MessagesRegressionAction.Caption) then Exit;
   OpenFileDialog.DefaultExt := 'xml';
   OpenFileDialog.FileName := wsdlStubMessagesFileName;
   OpenFileDialog.Filter := 'XML file (*.xml)|*.xml';
@@ -7401,6 +7443,7 @@ begin
               LineEnding + E.Message);
         end;
       end;
+{
       if xLogList.designSuspect then
       begin
         if not BooleanPromptDialog(
@@ -7411,6 +7454,7 @@ begin
           raise Exception.Create('Operation aborted');
         end;
       end;
+}
       ShowLogDifferences(se.displayedLogs, xLogList, wsdlStubMessagesFileName);
       UpdateCaption;
     finally
@@ -7423,19 +7467,6 @@ end;
 
 procedure TMainForm.ShowLogDifferences(aLogs, bLogs: TLogList;
   aReferenceFileName: String);
-  function _OrderKey(aLog: TLog): String;
-  begin
-    result := '';
-    if se.CompareLogOrderBy = clCorrelation then
-    begin
-      if Assigned(aLog.Operation) then
-        result := aLog.Operation.WsdlService.Name + ';' + aLog.Operation.Name +
-          ';' + aLog.CorrelationId
-      else
-        result := ';;' + aLog.CorrelationId;
-    end;
-  end;
-
 var
   X: Integer;
 begin
@@ -7453,11 +7484,11 @@ begin
     try
       for X := 0 to aLogs.Count - 1 do
         if aLogs.LogItems[X].PassesFilter then
-          ShowLogDifferencesForm.aLogs.AddObject(_OrderKey(aLogs.LogItems[X]),
+          ShowLogDifferencesForm.aLogs.AddObject(aLogs.LogItems[X].CompareKey(se.CompareLogOrderBy),
             aLogs.LogItems[X]);
       for X := 0 to bLogs.Count - 1 do
         if bLogs.LogItems[X].PassesFilter then
-          ShowLogDifferencesForm.bLogs.AddObject(_OrderKey(bLogs.LogItems[X]),
+          ShowLogDifferencesForm.bLogs.AddObject(bLogs.LogItems[X].CompareKey(se.CompareLogOrderBy),
             bLogs.LogItems[X]);
       ShowLogDifferencesForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
       ShowLogDifferencesForm.ignoreAddingon := se.ignoreAddingOn;
@@ -9461,14 +9492,14 @@ procedure TMainForm.GenerateScriptAssignmentActionExecute(Sender: TObject);
     if aXml.Xsd.sType.ElementDefs.Count = 0 then
     begin
       result := _indent(aLvl) + '.' + aXml.Name + ' := ''' + aXml.Value +
-        ''';' + CRLF;
+        ''';' + LineEnding;
       exit;
     end;
-    result := _indent(aLvl) + 'with new .' + aXml.Name + ' do' + CRLF + _indent
-      (aLvl) + '{' + CRLF;
+    result := _indent(aLvl) + 'with new .' + aXml.Name + ' do' + LineEnding + _indent
+      (aLvl) + '{' + LineEnding;
     for X := 0 to aXml.Items.Count - 1 do
       result := result + _xml(aXml.Items.XmlItems[X], aLvl + 2);
-    result := result + _indent(aLvl) + '}' + CRLF;
+    result := result + _indent(aLvl) + '}' + LineEnding;
   end;
 
 var
@@ -9477,8 +9508,8 @@ var
 begin
   xXml := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode) as TXml;
   xStmnt := 'with ' + IfThen(xXml.Root = WsdlOperation.reqBind, 'Req.', 'Rpy.')
-    + xXml.Parent.FullCaption + ' do' + CRLF + '{' + CRLF + _indent(2)
-    + '.' + xXml.Name + ' := nil;' + CRLF + _xml(xXml, 2) + '}' + CRLF;
+    + xXml.Parent.FullCaption + ' do' + LineEnding + '{' + LineEnding + _indent(2)
+    + '.' + xXml.Name + ' := nil;' + LineEnding + _xml(xXml, 2) + '}' + LineEnding;
   ClipBoard.AsText := xStmnt;
 end;
 
@@ -9636,7 +9667,7 @@ end;
 procedure TMainForm.BrowseMqActionUpdate(Sender: TObject);
 begin
   BrowseMqAction.Enabled := (not se.IsActive) and
-    (se.MqInterface.MQServerOK or se.MqInterface.MQClientOK);
+    (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
 end;
 
 procedure TMainForm.BrowseMqActionExecute(Sender: TObject);
@@ -9668,7 +9699,7 @@ begin
         xCursor := Screen.Cursor;
         Screen.Cursor := crHourGlass;
         try
-          xMqInterface := TMqInterface.Create(nil);
+          xMqInterface := TMqInterface.Create;
           try
             xMqInterface.Use := se.mqUse;
             xMqInterface.QManager := MqBrowseForm.GetManagerEdit.Text;
@@ -10682,6 +10713,7 @@ var
   xForm: TShowXmlCoverageForm;
   SwapCursor: TCursor;
 begin
+  OnlyWhenLicensed;
   SwapCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -10989,6 +11021,7 @@ var
   showReqRep: Boolean;
   SwapCursor: TCursor;
 begin
+  OnlyWhenLicensed;
   xXml := TXml.CreateAsString('html', '');
   with xXml do
   begin

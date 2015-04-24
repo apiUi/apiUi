@@ -1579,6 +1579,7 @@ begin
   fRecordDescrTypeBinds.Clear;
   fRecordDescrTypeBinds.Free;
   RecordDescrTypeValues.Free;
+  RecordDescrTypeAliasses.Free;
   inherited;
 end;
 

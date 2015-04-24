@@ -577,6 +577,11 @@ Determines the order while comparing log records.</xs:documentation>
 												<xs:documentation>log records are compared in the order they appeared (time). Usefull in case the order should be the same</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
+										<xs:enumeration value="Service, Operation">
+											<xs:annotation>
+												<xs:documentation>usefull in case order is not predictable (e.g. in case of parallel threads) but correlation causes undesired mismatches</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="Service, Operation, Correlation">
 											<xs:annotation>
 												<xs:documentation>usefull in case order is not predictable (e.g. in case of parallel threads)</xs:documentation>

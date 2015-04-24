@@ -44,15 +44,14 @@ type TOnHaveMqMessage = procedure ( Sender: TObject
                                   ) of Object;
 
 type
-  TMQOptions = class(TPersistent)
+  TMQOptions = class (TObject)
   private
     fOptions: MQLONG;
     function getOptionBoolean (const aOption: MQLONG): Boolean;
     procedure setOptionBoolean (const aOption: MQLONG; aValue: Boolean);
-  published
   public
     property Options: MQLONG read fOptions write fOptions;
-    constructor Create(Owner: TComponent);
+    constructor Create;
   end;
 
 type
@@ -94,7 +93,7 @@ type
     procedure setSetSignal(const Value: Boolean);
     procedure setSyncPoint(const Value: Boolean);
     procedure setUnlock(const Value: Boolean);
-  published
+  public
     property Wait: Boolean read getWait write setWait;
     property SetSignal: Boolean read getSetSignal write setSetSignal;
     property SyncPoint: Boolean read getSyncPoint write setSyncPoint;
@@ -113,9 +112,8 @@ type
     property CompleteMsg: Boolean read getCompleteMsg write setCompleteMsg;
     property AllMsgsAvailable: Boolean read getAllMsgsAvailable write setAllMsgsAvailable;
     property AllSegmentsAvailable: Boolean read getAllSegmentsAvailable write setAllSegmentsAvailable;
-  public
     property Options;
-    constructor Create(Owner: TComponent);
+    constructor Create;
   end;
 
 type
@@ -129,7 +127,7 @@ type
     procedure setMatchGroupId(const Value: Boolean);
     procedure setMatchMsgId(const Value: Boolean);
     procedure setMatchMsgSeqMumber(const Value: Boolean);
-  published
+  public
 {
   MQMO_MATCH_MSG_ID              = $00000001;
   MQMO_MATCH_CORREL_ID           = $00000002;
@@ -145,9 +143,8 @@ type
     property MatchMsgSeqMumber: Boolean read getMatchMsgSeqMumber write setMatchMsgSeqMumber;
     property MatchOffset: Boolean read getMatchMsgSeqMumber write setMatchMsgSeqMumber;
     property MatchMsgToken: Boolean read getMatchMsgSeqMumber write setMatchMsgSeqMumber;
-  public
     property Options;
-    constructor Create(Owner: TComponent);
+    constructor Create;
   end;
 
 type
@@ -179,7 +176,7 @@ type
     procedure setSetAllContext(const Value: Boolean);
     procedure setSetIdentityContext(const Value: Boolean);
     procedure setSyncPoint(const Value: Boolean);
-  published
+  public
 {
   MQPMO_SYNCPOINT                 = $00000002;
   MQPMO_NO_SYNCPOINT              = $00000004;
@@ -208,38 +205,30 @@ type
     property SetAllContext: Boolean read getSetAllContext write setSetAllContext;
     property AlternateUserAuthority: Boolean read getAlternateUserAuthority write setAlternateUserAuthority;
     property FailIfQuiescing: Boolean read getFailIfQuiescing write setFailIfQuiescing;
-  public
     property Options;
-    constructor Create(Owner: TComponent);
+    constructor Create;
   end;
 
 type
-  TMQGMO = class(TPersistent)
-  private
-    fMatchOptions: TGetMsgMatchOptions;
-    fOptions: TGetMsgOptions;
-  published
-    property Options: TGetMsgOptions read fOptions write fOptions;
-    property MatchOptions: TGetMsgMatchOptions read fMatchOptions write fMatchOptions;
+  TMQGMO = class (TObject)
   public
-    constructor Create(Owner: TComponent);
+    Options: TGetMsgOptions;
+    MatchOptions: TGetMsgMatchOptions;
+    constructor Create;
     destructor Destroy;
   end;
 
 type
-  TMQPMO = class(TPersistent)
-  private
-    fOptions: TPutMsgOptions;
-  published
-    property Options: TPutMsgOptions read fOptions write fOptions;
+  TMQPMO = class (TObject)
   public
-    constructor Create(Owner: TComponent);
+    Options: TPutMsgOptions;
+    constructor Create;
     destructor Destroy;
   end;
 
 
 type
-  TMqInterface = class(TComponent)
+  TMqInterface = class (TObject)
   private
     ErrorString: String;
     ClientDLLHandle: MQLONG;
@@ -338,7 +327,7 @@ type
     browseMqMtReport: Boolean;
     browseMqMtDatagram: Boolean;
     property ReversedEncoding: Boolean read getReversedEncoding;
-    constructor Create(Owner: TComponent); override;
+    constructor Create;
     constructor CreateFromXml(aXml: TXml);
     constructor CreateFromXmlOldStyle(aXml: TXml);
     destructor Destroy; override;
@@ -356,7 +345,6 @@ type
     procedure Browse (OnHaveMessage: TOnHaveMqMessage; OnNewThread: TOnNewThread; doWait, doRemove: Boolean);
     function AsXmlOldStyle: TXml;
     function AsXml: TXml;
-  published
     property Qmanager: String read xQmanager write xQmanager;
     property GetQueue: String read xGetQueue write xGetQueue;
     property PutQueue: String read xPutQueue write xPutQueue;
@@ -378,14 +366,9 @@ type
     property MQClientOK: Boolean read fMqClientOK;
     property RequestTimestamp: TDateTime read fReqTime;
     property ReplyTimestamp: TDateTime read fRspTime;
-    property MQPMORequestReply: TMQPMO read fMQPMORequestReply write fMQPMORequestReply;
-    property MQGMORequestReply: TMQGMO read fMQGMORequestReply write fMQGMORequestReply;
-    property MQPMOFireAndForget: TMQPMO read fMQPMOFireAndForget write fMQPMOFireAndForget;
-    property MQGMOGetOnly: TMQGMO read fMQGMOGetOnly write fMQGMOGetOnly;
   end;
 
 procedure CopyChars (var d: array of AnsiChar; s: String;  size: Integer);
-procedure Register;
 
 implementation
 
@@ -431,11 +414,6 @@ begin
     d [x] := ' ';
     Inc (x);
   end;
-end;
-
-procedure Register;
-begin
-  RegisterComponents('MQ', [TMqInterface]);
 end;
 
 const
@@ -579,15 +557,15 @@ var
 begin
   if not Assigned (aXml) then raise Exception.Create ('TMqInterface.CreateFromXml: No XML');
   if aXml.Name <> 'Queue' then raise Exception.Create ('TMqInterface.CreateFromXml: Illegal XML ' + aXml.Text);
-  inherited Create(Nil);  // Initialize inherited parts
-  MQPMORequestReply := TMQPMO.Create(self);
-  MQGMORequestReply := TMQGMO.Create(self);
-  MQGMORequestReply.MatchOptions.Options := {MQMO_MATCH_MSG_ID
+  inherited Create;  // Initialize inherited parts
+  fMQPMORequestReply := TMQPMO.Create;
+  fMQGMORequestReply := TMQGMO.Create;
+  fMQGMORequestReply.MatchOptions.Options := {MQMO_MATCH_MSG_ID
                                           + }MQMO_MATCH_CORREL_ID
                                           ;
-  MQPMOFireAndForget := TMQPMO.Create(self);
-  MQGMOGetOnly := TMQGMO.Create(self);
-  MQGMOGetOnly.MatchOptions.Options := MQMO_MATCH_MSG_ID
+  fMQPMOFireAndForget := TMQPMO.Create;
+  fMQGMOGetOnly := TMQGMO.Create;
+  fMQGMOGetOnly.MatchOptions.Options := MQMO_MATCH_MSG_ID
                                      + MQMO_MATCH_CORREL_ID
                                      ;
   allOK := True;
@@ -627,26 +605,21 @@ begin
     DeleteMessages := mqdelAll
   else
     DeleteMessages := mqdelNone;
-
-  if not (csDesigning in ComponentState) then
-  begin
-    ConnectToDLLs;
-  end;
+  ConnectToDLLs;
 end;
 
 constructor TMqInterface.CreateFromXmlOldStyle(aXml: TXml);
 begin
   if not Assigned (aXml) then raise Exception.Create ('TMqInterface.CreateFromXml: No XML');
   if aXml.Name <> 'mqInterface' then raise Exception.Create ('TMqInterface.CreateFromXml: Illegal XML ' + aXml.Text);
-  inherited Create(Nil);  // Initialize inherited parts
-  MQPMORequestReply := TMQPMO.Create(self);
-  MQGMORequestReply := TMQGMO.Create(self);
-  MQGMORequestReply.MatchOptions.Options := {MQMO_MATCH_MSG_ID
+  fMQPMORequestReply := TMQPMO.Create;
+  fMQGMORequestReply := TMQGMO.Create;
+  fMQGMORequestReply.MatchOptions.Options := {MQMO_MATCH_MSG_ID
                                           + }MQMO_MATCH_CORREL_ID
                                           ;
-  MQPMOFireAndForget := TMQPMO.Create(self);
-  MQGMOGetOnly := TMQGMO.Create(self);
-  MQGMOGetOnly.MatchOptions.Options := MQMO_MATCH_MSG_ID
+  fMQPMOFireAndForget := TMQPMO.Create;
+  fMQGMOGetOnly := TMQGMO.Create;
+  fMQGMOGetOnly.MatchOptions.Options := MQMO_MATCH_MSG_ID
                                      + MQMO_MATCH_CORREL_ID
                                      ;
   allOK := True;
@@ -668,23 +641,19 @@ begin
   browseMqMtReply := aXml.Items.XmlBooleanByTag ['browseMqMtReply'];
   browseMqMtReport := aXml.Items.XmlBooleanByTag ['browseMqMtReport'];
   browseMqMtDatagram := aXml.Items.XmlBooleanByTag ['browseMqMtDatagram'];
-  if not (csDesigning in ComponentState) then
-  begin
-    ConnectToDLLs;
-  end;
+  ConnectToDLLs;
 end;
 
-constructor TMqInterface.Create(Owner: TComponent);
+constructor TMqInterface.Create;
 begin
-  inherited Create(Owner);  // Initialize inherited parts
-  MQPMORequestReply := TMQPMO.Create(self);
-  MQGMORequestReply := TMQGMO.Create(self);
-  MQGMORequestReply.MatchOptions.Options := {MQMO_MATCH_MSG_ID
+  fMQPMORequestReply := TMQPMO.Create;
+  fMQGMORequestReply := TMQGMO.Create;
+  fMQGMORequestReply.MatchOptions.Options := {MQMO_MATCH_MSG_ID
                                           + }MQMO_MATCH_CORREL_ID
                                           ;
-  MQPMOFireAndForget := TMQPMO.Create(self);
-  MQGMOGetOnly := TMQGMO.Create(self);
-  MQGMOGetOnly.MatchOptions.Options := MQMO_MATCH_MSG_ID
+  fMQPMOFireAndForget := TMQPMO.Create;
+  fMQGMOGetOnly := TMQGMO.Create;
+  fMQGMOGetOnly.MatchOptions.Options := MQMO_MATCH_MSG_ID
                                      + MQMO_MATCH_CORREL_ID
                                      ;
   allOK := True;
@@ -695,24 +664,26 @@ begin
   useReplyToQmanager := True;
   useReplyToQueue := True;
   browseMqMtRequest := True;
-  if not (csDesigning in ComponentState) then
-  begin
-    ConnectToDLLs;
-  end;
+  ConnectToDLLs;
 end;
 
 destructor TMqInterface.Destroy;
 begin
   CloseAll (True);
+  FreeAndNil(fMQPMORequestReply.Options); // should not be nessecary....
+  FreeAndNil(fMQGMORequestReply.Options); // should not be nessecary....
+  FreeAndNil(fMQGMORequestReply.MatchOptions); // should not be nessecary....
+  FreeAndNil(fMQPMOFireAndForget.Options); // should not be nessecary....
+  FreeAndNil(fMQGMOGetOnly.Options); // should not be nessecary....
+  FreeAndNil(fMQGMOGetOnly.MatchOptions); // should not be nessecary....
+  fMQPMORequestReply.Free;
+  fMQGMORequestReply.Free;
+  fMQPMOFireAndForget.Free;
+  fMQGMOGetOnly.Free;
   if ConnectedToMQClientDLL then
     FreeLibrary(ClientDLLHandle);
   if ConnectedToMQServerDLL then
     FreeLibrary(ServerDLLHandle);
-  MQPMORequestReply.Free;
-  MQGMORequestReply.Free;
-  MQPMOFireAndForget.Free;
-  MQGMOGetOnly.Free;
-  inherited;
 end;
 
 function TMqInterface.mqiMqConn (var aDoDisconnect: Boolean): Boolean;
@@ -808,7 +779,6 @@ end;
 procedure TMqInterface.setUse(const Value: TMQUse);
 begin
   fUse := Value;
-  if not (csDesigning in ComponentState) then
   begin
     if fUse = mquServer then
     begin
@@ -896,7 +866,7 @@ begin
       MsgDesc.Expiry := -1;
     Buffer := mqRfh2ReverseInts (MsgDescFromXml(aMqHeaderAsXml), ReversedEncoding) + aMessage;
     PutMsgOptions := MQPMO_DEFAULT;
-    PutMsgOptions.Options := MQPMOFireAndForget.Options.Options;
+    PutMsgOptions.Options := fMQPMOFireAndForget.Options.Options;
 {}
     MQPUT ( Hconn
           , HPutobj
@@ -962,7 +932,7 @@ begin
     xMessage := mqRfh2ReverseInts (MsgDescFromXml(aMqHeaderAsXml), ReversedEncoding) + aMessage;
 
     PutMsgOptions := MQPMO_DEFAULT;
-    PutMsgOptions.Options := MQPMOFireAndForget.Options.Options;
+    PutMsgOptions.Options := fMQPMOFireAndForget.Options.Options;
 {}
     MQPUT ( Hconn
           , HPutobj
@@ -1087,8 +1057,8 @@ begin
   begin
     MsgDesc := MQMD_DEFAULT;
     GetMsgOptions := MQGMO_DEFAULT;
-    GetMsgOptions.Options := MQGMOGetOnly.Options.Options;
-    GetMsgOptions.MatchOptions := MQGMOGetOnly.MatchOptions.Options;
+    GetMsgOptions.Options := fMQGMOGetOnly.Options.Options;
+    GetMsgOptions.MatchOptions := fMQGMOGetOnly.MatchOptions.Options;
     GetMsgOptions.WaitInterval := 0;
     SetLength (Buffer, 1024*1024);
     BufferLength := 1024*1024;
@@ -1193,7 +1163,7 @@ begin
     xRequest := mqRfh2ReverseInts (MsgDescFromXml(aMqHeaderAsXml), ReversedEncoding) + aRequest;
 
     PutMsgOptions := MQPMO_DEFAULT;
-    PutMsgOptions.Options := MQPMORequestReply.Options.Options;
+    PutMsgOptions.Options := fMQPMORequestReply.Options.Options;
 {}
     MQPUT ( Hconn
           , HPutobj
@@ -1220,8 +1190,8 @@ begin
     MsgDesc.CorrelId := xCorrelId;
     GetMsgOptions := MQGMO_DEFAULT;
     GetMsgOptions.Options := 0;
-    GetMsgOptions.Options := MQGMORequestReply.Options.Options;
-    GetMsgOptions.MatchOptions := MQGMORequestReply.MatchOptions.Options;
+    GetMsgOptions.Options := fMQGMORequestReply.Options.Options;
+    GetMsgOptions.MatchOptions := fMQGMORequestReply.MatchOptions.Options;
     GetMsgOptions.WaitInterval := StrToIntDef (xTimeOut, 15)*1000;
     SetLength (Buffer, 1024*1024);
     BufferLength := 1024*1024;
@@ -1266,9 +1236,9 @@ end;
 
 { TGetMsgOption }
 
-constructor TGetMsgOptions.Create(Owner: TComponent);
+constructor TGetMsgOptions.Create;
 begin
-  inherited Create (Owner);
+  inherited Create;
   Options := MQGMO_ACCEPT_TRUNCATED_MSG
            + MQGMO_NO_SYNCPOINT
            + MQGMO_CONVERT
@@ -1796,8 +1766,8 @@ begin
   ConnOK := False;
   OpenGetOK := False;
 
-  MQGMOGetOnly.MatchOptions.MatchCorrelId := False;
-  MQGMOGetOnly.MatchOptions.MatchMsgId := False;
+  fMQGMOGetOnly.MatchOptions.MatchCorrelId := False;
+  fMQGMOGetOnly.MatchOptions.MatchMsgId := False;
   Buffer := 'This is a fake response';
   DataLength := Length (Buffer); // and a fake datalength
   ResponseMicroSeconds := 100; // and a fake responsetime
@@ -1996,7 +1966,7 @@ begin
       MsgDesc.Expiry := -1;
     xMessage := aRfhHeader + aMessage;
     PutMsgOptions := MQPMO_DEFAULT;
-    PutMsgOptions.Options := MQPMOFireAndForget.Options.Options;
+    PutMsgOptions.Options := fMQPMOFireAndForget.Options.Options;
 {}
     MQPUT ( Hconn
           , HPutobj
@@ -2025,7 +1995,7 @@ function TMqInterface.PutReply(aMessage: String; aRfhHeader: AnsiString; aMsgDes
 var
   xi: TMqInterface;
 begin
-  xi := TMqInterface.Create(nil);
+  xi := TMqInterface.Create;
   try
     xi.Use := Self.Use;
     xi.Expiry := '-1';
@@ -2071,7 +2041,7 @@ end;
 
 { TMQOptions }
 
-constructor TMQOptions.Create(Owner: TComponent);
+constructor TMQOptions.Create;
 begin
   inherited Create;
 end;
@@ -2098,18 +2068,16 @@ end;
 
 { TMQGMO }
 
-constructor TMQGMO.Create(Owner: TComponent);
+constructor TMQGMO.Create;
 begin
-  inherited Create;
-  Options := TGetMsgOptions.Create(Owner);
-  MatchOptions := TGetMsgMatchOptions.Create(Owner);
+  Options := TGetMsgOptions.Create;
+  MatchOptions := TGetMsgMatchOptions.Create;
 end;
 
 { TGetMsgMatchOption }
 
-constructor TGetMsgMatchOptions.Create(Owner: TComponent);
+constructor TGetMsgMatchOptions.Create;
 begin
-  inherited Create (Owner);
 end;
 
 function TGetMsgMatchOptions.getMatchCorrelId: Boolean;
@@ -2154,23 +2122,23 @@ end;
 
 destructor TMQGMO.Destroy;
 begin
-  Options.Free;
-  MatchOptions.Free;
+  FreeAndNil (Options);
+  FreeAndNil (MatchOptions);
 end;
 
 { TMQPMO }
 
-constructor TMQPMO.Create(Owner: TComponent);
+constructor TMQPMO.Create;
 begin
   inherited Create;
-  Options := TPutMsgOptions.Create(Owner);
+  Options := TPutMsgOptions.Create;
 end;
 
 { TPutMsgOption }
 
-constructor TPutMsgOptions.Create(Owner: TComponent);
+constructor TPutMsgOptions.Create;
 begin
-  inherited Create (Owner);
+  inherited Create;
   Options := MQPMO_NO_SYNCPOINT
            + MQPMO_FAIL_IF_QUIESCING
            ;

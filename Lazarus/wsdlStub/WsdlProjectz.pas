@@ -171,7 +171,7 @@ type
     mqUse: TMQUse;
     mqMaxWorkingThreads: Integer;
     mqCurWorkingThreads: Integer;
-    MqInterface: TMqInterface;
+    mmqqMqInterface: TMqInterface;
     StompInterface: TStompInterface;
     mqGetThreads: TStringList;
     Listeners: TListeners;
@@ -844,7 +844,7 @@ begin
     if Assigned (iniXml.ItemByTag['licenseDatabase']) then with iniXml.ItemByTag['licenseDatabase'].Items do
     begin
       licenseOdbcDriver := XmlValueByTagDef['OdbcDriver', 'Microsoft Access Driver'];
-      licenseDatabaseName := XmlValueByTagDef['DatabaseName', ''];
+      licenseDatabaseName := ExpandRelativeFileName(xIniFileName, XmlValueByTagDef['DatabaseName', '']);
     end;
     MasterPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdElementsWhenRepeatable := defaultXsdElementsWhenRepeatable;
@@ -1051,11 +1051,11 @@ begin
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
   EnvironmentList.Sorted := True;
-  MqInterface := TMqInterface.Create(self);
+  mmqqMqInterface := TMqInterface.Create;
   mqUse := mquUndefined;
   mqMaxWorkingThreads := 15;
-  if MqInterface.MQClientOK then mqUse := mquClient;
-  if MqInterface.MQServerOK then mqUse := mquServer;
+  if mmqqMqInterface.MQClientOK then mqUse := mquClient;
+  if mmqqMqInterface.MQServerOK then mqUse := mquServer;
   ServerOpenSSL := TIdServerIOHandlerSSLOpenSSL.Create(nil);
   HTTPProxyServer := TIdHTTPProxyServer.Create(nil);
   with HTTPProxyServer do
@@ -1138,6 +1138,7 @@ end;
 
 destructor TWsdlProject.Destroy;
 begin
+  FreeAndNil (mmqqMqInterface);
   FreeAndNil (HTTPProxyServer);
   FreeAndNil (HttpServer);
   FreeAndNil (HttpServerSSL);
@@ -1146,6 +1147,8 @@ begin
   FreeAndNil (POP3Server);
   FreeAndNil (ServerOpenSSL);
   FreeAndNil (SmtpOpenSSL);
+  FreeAndNil (SMTPServer);
+  FreeAndNil (SMTPServerSSL);
   fLogLock.Free;
   Listeners.Free;
   mqGetThreads.Clear;
@@ -1160,6 +1163,7 @@ begin
   displayedLogs.Free;
   archiveLogs.Clear;
   archiveLogs.Free;
+  LogFilter.Free;
   displayedExceptions.Clear;
   displayedExceptions.Free;
   toDisplayExceptions.Clear;
@@ -1190,10 +1194,6 @@ begin
   ignoreRemovingOn.Free;
   ignoreCoverageOn.Clear;
   ignoreCoverageOn.Free;
-  FreeAndNil (webserviceWsdl);
-  FreeAndNil (webserviceXsdDescr);
-  FreeAndNil (wsaXsdDescr);
-  FreeAndNil (swiftMTXsdDescr);
   ScriptsClear;
   Scripts.Free;
   DisplayedLogColumns.Free;
@@ -1449,8 +1449,8 @@ begin
           end;
         end;
         if {doUseMq} True
-        and (   MqInterface.MQServerOK
-             or MqInterface.MQClientOK
+        and (   mmqqMqInterface.MQServerOK
+             or mmqqMqInterface.MQClientOK
             ) then
         begin
           for x := 0 to Listeners.mqInterfaces.Count - 1 do
@@ -1591,6 +1591,7 @@ begin
     AddXml(TXml.CreateAsString('maxEntries', IfThen(displayedLogsMaxEntries > -1, IntToStr(displayedLogsMaxEntries), 'unbounded')));
     case CompareLogOrderBy of
       clTimeStamp: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'As is'));
+      clOperation: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'Service, Operation'));
       clCorrelation: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'Service, Operation, Correlation'));
     end;
     with AddXml (TXml.CreateAsString('DocumentComparison','')) do
@@ -2896,6 +2897,7 @@ begin
     if Assigned (yXml) then
     begin
       if yXml.Value = 'As is' then CompareLogOrderBy := clTimeStamp;
+      if yXml.Value = 'Service, Operation' then CompareLogOrderBy := clOperation;
       if yXml.Value = 'Service, Operation, Correlation' then CompareLogOrderBy := clCorrelation;
     end;
     yXml := aXml.Items.XmlCheckedItemByTag['DocumentComparison'];
@@ -3160,7 +3162,7 @@ begin
   fXml := nil;
   if not Assigned (aOperation)
     then raise Exception.Create('SendOperationMqMessage: null arguments');
-  mq := TMqInterface.Create (nil);
+  mq := TMqInterface.Create;
   try
     mq.Use := mqUse;
     mq.Qmanager := aOperation.StubMqPutManager;
@@ -3820,7 +3822,7 @@ var
   mq: TMqInterface;
 begin
   Result := '';
-  mq := TMqInterface.Create (nil);
+  mq := TMqInterface.Create;
   try
     mq.Use := mqUse;
     mq.Qmanager := aPutManager;
@@ -6995,6 +6997,10 @@ initialization
 
 
 finalization
-
+  FreeAndNil (webserviceWsdl);
+  FreeAndNil (webserviceXsdDescr);
+  FreeAndNil (wsaXsdDescr);
+  FreeAndNil (swiftMTXsdDescr);
+  FreeAndNil (_WsdlRtiXml);
 end.
 

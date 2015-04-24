@@ -1211,12 +1211,6 @@ var
   begin
     if aXml.Name = 'GenericData' then
       aXml.Name := 'GenericData';
-    if Assigned (aXml.Xsd)
-    and Assigned (aXml.TypeDef)
-    and (aXml.Xsd.ElementNameSpace <> aXml.TypeDef.NameSpace) then
-      if aXml.Value = 'JanBo' then
-         ShowMessage('tjone');
-
     result := (Assigned (aXml.Xsd))
           and (aXml.Xsd.ElementNameSpace <> '')
           and (aXml.Xsd.DoNotEncode = False)
@@ -2131,7 +2125,9 @@ begin
     end;
   except
     on e: exception do
-      raise Exception.Create (Name + '.' + e.Message);
+      raise Exception.CreateFmt ( 'TXml.XsdCreate (aLevel: %d; aXsd: %s): %s'
+                                , [aLevel, aXsd.ElementName, e.Message + LineEnding]
+                                );
   end;
 end;
 

@@ -5658,73 +5658,78 @@ constructor TWsdlMessage.CreateReply (aOperation: TWsdlOperation; aName, aPatter
 var
   x: Integer;
 begin
-  Name := aName;
-  corBinds := TBindableList.Create;
-{}{
-  Patterns := TStringList.Create;
-  Patterns.Text := aPatterns;
-  while Patterns.Count < aOperation.CorrelationBindables.Count do
-    Patterns.Add(Patterns.Strings[0]);
-{}
-  Documentation := aDocumentation;
-  aOperation.Messages.AddObject('', self);
-  if aOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
-  begin
-    if Assigned (aOperation.reqBind) then
-      reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
-    if Assigned (aOperation.rpyBind) then
-      rpyBind := TIpmItem.Create (aOperation.rpyBind as TIpmItem);
-    if Assigned (aOperation.fltBind) then
-      fltBind := TIpmItem.Create (aOperation.fltBind as TIpmItem);
-  end
-  else
-  begin
-    if not (aOperation.WsdlService.DescriptionType in [ipmDTFreeFormat]) then
+  try
+    Name := aName;
+    corBinds := TBindableList.Create;
+  {}{
+    Patterns := TStringList.Create;
+    Patterns.Text := aPatterns;
+    while Patterns.Count < aOperation.CorrelationBindables.Count do
+      Patterns.Add(Patterns.Strings[0]);
+  {}
+    Documentation := aDocumentation;
+    aOperation.Messages.AddObject('', self);
+    if aOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
     begin
-      bindRefId := 0;
-      if Assigned (aOperation.rpyBind)
-      and Assigned ((aOperation.rpyBind as TXml).Xsd) then
+      if Assigned (aOperation.reqBind) then
+        reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
+      if Assigned (aOperation.rpyBind) then
+        rpyBind := TIpmItem.Create (aOperation.rpyBind as TIpmItem);
+      if Assigned (aOperation.fltBind) then
+        fltBind := TIpmItem.Create (aOperation.fltBind as TIpmItem);
+    end
+    else
+    begin
+      if not (aOperation.WsdlService.DescriptionType in [ipmDTFreeFormat]) then
       begin
-        rpyBind := TXml.Create (0, (aOperation.rpyBind as TXml).Xsd);
-        if rpyBind.Children.Count > 0 then
-          rpyBodyBind := rpyBind.Children.Bindables[aOperation.OutputHeaders.Count];
-        rpyBind.Name := aOperation.rpyBind.Name;
-      end;
-      bindRefId := 0;
-      if Assigned (aOperation.reqBind)
-      and Assigned ((aOperation.reqBind as TXml).Xsd) then
-      begin
-        reqBind := TXml.Create (0, (aOperation.reqBind as TXml).Xsd);
-        reqBind.Name := aOperation.reqBind.Name;
-      end;
-      bindRefId := 0;
-      fltBind := TXml.Create;
-      if Assigned (aOperation.FaultMessages) then
-      begin
-        (fltBind as TXml).CopyDownLine (aOperation.fltBind as TXml, False);
-        fltBind.Name := 'Faults';
-        fltBind.Checked := False;
+        bindRefId := 0;
+        if Assigned (aOperation.rpyBind)
+        and Assigned ((aOperation.rpyBind as TXml).Xsd) then
+        begin
+          rpyBind := TXml.Create (0, (aOperation.rpyBind as TXml).Xsd);
+          if rpyBind.Children.Count > 0 then
+            rpyBodyBind := rpyBind.Children.Bindables[aOperation.OutputHeaders.Count];
+          rpyBind.Name := aOperation.rpyBind.Name;
+        end;
+        bindRefId := 0;
+        if Assigned (aOperation.reqBind)
+        and Assigned ((aOperation.reqBind as TXml).Xsd) then
+        begin
+          reqBind := TXml.Create (0, (aOperation.reqBind as TXml).Xsd);
+          reqBind.Name := aOperation.reqBind.Name;
+        end;
+        bindRefId := 0;
+        fltBind := TXml.Create;
+        if Assigned (aOperation.FaultMessages) then
+        begin
+          (fltBind as TXml).CopyDownLine (aOperation.fltBind as TXml, False);
+          fltBind.Name := 'Faults';
+          fltBind.Checked := False;
+        end;
       end;
     end;
-  end;
-  ColumnXmls := TBindableList.Create;
-  corBindsInit (aOperation);
-  if aOperation.CorrelationBindables.Count > 0 then
-  begin
-    with TStringList.Create do
-    try
-      Text := aPatterns;
-      x := 0;
-      while (x < Count)
-      and (x < corBinds.Count) do
-      begin
-        if Assigned (corBinds.Bindables[x]) then
-          corBinds.Bindables[x].CorrelationValue := Strings[x];
-        Inc (x);
+    ColumnXmls := TBindableList.Create;
+    corBindsInit (aOperation);
+    if aOperation.CorrelationBindables.Count > 0 then
+    begin
+      with TStringList.Create do
+      try
+        Text := aPatterns;
+        x := 0;
+        while (x < Count)
+        and (x < corBinds.Count) do
+        begin
+          if Assigned (corBinds.Bindables[x]) then
+            corBinds.Bindables[x].CorrelationValue := Strings[x];
+          Inc (x);
+        end;
+      finally
+        Free;
       end;
-    finally
-      Free;
     end;
+  except
+    raise Exception.CreateFmt( 'TWsdlMessage.CreateReply (aOperation: %s; %s, aPatterns, aDocumentation: String)%s'
+                             , [aOperation.reqTagName, aName, LineEnding]);
   end;
 end;
 
