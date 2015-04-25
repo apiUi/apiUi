@@ -438,7 +438,6 @@ end;
 
 destructor TXsd.Destroy;
 begin
-  inherited;
   Documentation.Free;
   Appinfo.Free;
   FreeAndNil(Obj);
@@ -2542,6 +2541,7 @@ begin
     raise Exception.Create('Illegal: AddElement(aTypeDef: TXsdDataType; aXml: TObject): TXsd;');
   xXml := aXml as TXml;
   result := TXsd.Create(self);
+  Garbage.AddObject('', Result);
   result.FileName := fMainFileName;
   result.ElementName := xXml.Attributes.ValueByTag[tagName];
   result.ElementNameSpace := aTargetNamespace;

@@ -1900,6 +1900,7 @@ begin
           reqXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd);
         if (Mssg.Parts.Count > 0) then
           reqTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
+        FreeAndNil(freqBind);
         bindRefId := 0;
         reqBind := TXml.Create (0, reqXsd);
         reqBind.Name := Mssg.Name;
@@ -1925,6 +1926,7 @@ begin
           rpyTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
           rpyXsd.sType.AddXsd(Mssg.Parts.Parts[0].Xsd);
         end;
+        FreeAndNil(fRpyBind);
         bindRefId := 0;
         rpyBind := TXml.Create (0, rpyXsd);
         rpyBind.Name := Mssg.Name;
@@ -1943,6 +1945,7 @@ begin
           fMssgs.Messages[f].Name:=FaultName;
           FaultXsd.sType.AddXsd(fMssgs.Messages[f].Xsd);
         end;
+        FreeAndNil(fltBind);
         bindRefId := 0;
         fltBind := TXml.Create (0, FaultXsd);
         fltBind.Name := 'Faults';
@@ -3327,9 +3330,12 @@ begin
           end;
         end;
       end;
-      try reqWsaXml.Bind ('reqWsa', fExpressBefore, 1); except end;
-      try rpyWsaXml.Bind ('rpyWsa', fExpressBefore, 1); except end;
-      try StubMqHeaderXml.Bind ('Mq', fExpressBefore, 1); except end;
+      if Assigned (reqWsaXml) then
+        try reqWsaXml.Bind ('reqWsa', fExpressBefore, 1); except end;
+      if Assigned (rpyWsaXml) then
+        try rpyWsaXml.Bind ('rpyWsa', fExpressBefore, 1); except end;
+      if Assigned (StubMqHeaderXml) then
+        try StubMqHeaderXml.Bind ('Mq', fExpressBefore, 1); except end;
       try fExpressBefore.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
 //      BindFunction ('Log', @ServerLogMessage, VFS, '(aString)');
       BindBeforeFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
@@ -3458,9 +3464,12 @@ begin
         end;
       end;
     end;
-    try reqWsaXml.Bind ('reqWsa', fExpressAfter, 1); except end;
-    try rpyWsaXml.Bind ('rpyWsa', fExpressAfter, 1); except end;
-    try StubMqHeaderXml.Bind ('Mq', fExpressAfter, 1); except end;
+    if Assigned (reqWsaXml) then
+      try reqWsaXml.Bind ('reqWsa', fExpressAfter, 1); except end;
+    if Assigned (rpyWsaXml) then
+      try rpyWsaXml.Bind ('rpyWsa', fExpressAfter, 1); except end;
+    if Assigned (StubMqHeaderXml) then
+      try StubMqHeaderXml.Bind ('Mq', fExpressAfter, 1); except end;
     try fExpressAfter.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
 //      ExpectedXml.Bind ('Exp', fExpressBefore);
 //      BindFunction ('Log', @ServerLogMessage, VFS, '(aString)');
@@ -5448,6 +5457,7 @@ end;
 
 constructor TWsdlMsgDescr.Create (aWsdl: TWsdl);
 begin
+  aWsdl.XsdDescr.Garbage.AddObject('', self);
   Xsd := TXsd.Create(aWsdl.XsdDescr);
   aWsdl.XsdDescr.Garbage.AddObject('', Xsd);
   Xsd.sType := TXsdDataType.Create(aWsdl.XsdDescr);
@@ -5940,6 +5950,7 @@ finalization
   allOperations.Free;
   allOperationsRpy.ClearListOnly;
   allOperationsRpy.Free;
+  _WsdlDbsTransaction.Free;
   _WsdlDbsConnector.Free;
   UILock.Free;
   EnvVarLock.Free;

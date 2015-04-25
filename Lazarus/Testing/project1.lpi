@@ -28,21 +28,18 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item1>
       <Item2>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="LazRichEdit"/>
       </Item2>
       <Item3>
-        <PackageName Value="SynEdit"/>
-      </Item3>
-      <Item4>
         <PackageName Value="LCL"/>
-      </Item4>
+      </Item3>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="project1.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -56,6 +53,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Xmlz"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -66,10 +68,13 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Xml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;$(LazarusDir)\components\Indy10\Lib\Protocols;$(LazarusDir)\components\Indy10\Lib\System;$(LazarusDir)\components\Indy10\Lib\Core"/>
+      <OtherUnitFiles Value="..\Xml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\Mq;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\System;..\components\Indy10\Lib\Core"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <UseHeaptrc Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -84,7 +89,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="5">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -95,8 +100,11 @@
         <Name Value="EFOpenError"/>
       </Item3>
       <Item4>
-        <Name Value="ERegistryException"/>
+        <Name Value="EResNotFound"/>
       </Item4>
+      <Item5>
+        <Name Value="RunError(103)"/>
+      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>

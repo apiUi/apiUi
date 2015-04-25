@@ -12,7 +12,6 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, FileUtil
    , Xsdz
    , Ipmz
    , ParserClasses
-   , SynEdit
    , RichBox
    ;
 
@@ -112,11 +111,6 @@ public
   procedure ListXsdProperties (aListView: TListView; aBind: TCustomBindable);
   procedure ListXsdEnumerations (aListView: TListView; aBind: TCustomBindable);
   procedure ListXsdDocumentation ( aMemo: TMemo
-                                 ; aBind: TCustomBindable
-                                 ; aShowPath: Boolean
-                                 ; aShowValue: Boolean
-                                 ); overload;
-  procedure ListXsdDocumentation ( aMemo: TSynEdit
                                  ; aBind: TCustomBindable
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
@@ -1300,28 +1294,6 @@ begin
   aMemo.Color := clBtnFace;
   MemoShowLinks(aMemo);
 end;
-
-procedure TXmlUtil .ListXsdDocumentation (aMemo : TSynEdit ;
-  aBind : TCustomBindable ; aShowPath : Boolean ; aShowValue : Boolean );
-var
-  s: String;
-begin
-  if aShowPath then
-    s := s + 'Path: ' + aBind.GetFullCaption + CRLF;
-  if aShowValue then
-    s := s + 'Value: ' + aBind.Value + CRLF;
-  if aBind is TXmlAttribute then
-    s := s + (aBind as TXmlAttribute).XsdAttr.Documentation.Text;
-  if aBind is TXml then
-    s := s + (aBind as TXml).DocumentationText;
-  if aBind is TXmlAttribute then
-    s := s + (aBind as TXmlAttribute).XsdAttr.Appinfo.Text;
-  if aBind is TXml then
-    s := s + (aBind as TXml).AppinfoText;
-  aMemo.Text := s;
-end;
-
-
 
 procedure TXmlUtil.ListXsdEnumerations(aListView: TListView; aBind: TCustomBindable);
 var
