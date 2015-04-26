@@ -5748,6 +5748,7 @@ begin
     Wsdl := nil;
     UpdateCaption;
     UpdateVisibiltyOfOperations;
+    se.Clear;
   end;
 end;
 
@@ -9877,7 +9878,9 @@ begin
       end;
     end;
     if (ret = mrCancel) then
-      CanClose := False;
+      CanClose := False
+    else
+      NewStubCaseActionExecute(nil);
   end;
 end;
 

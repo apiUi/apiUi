@@ -1138,6 +1138,7 @@ end;
 
 destructor TWsdlProject.Destroy;
 begin
+  Clear;
   FreeAndNil (mmqqMqInterface);
   FreeAndNil (HTTPProxyServer);
   FreeAndNil (HttpServer);
@@ -1151,7 +1152,6 @@ begin
   FreeAndNil (SMTPServerSSL);
   fLogLock.Free;
   Listeners.Free;
-  mqGetThreads.Clear;
   mqGetThreads.Free;
   toDisplayLogs.Clear;
   toDisplayLogs.Free;
@@ -1171,15 +1171,6 @@ begin
   AsynchRpyLogs.Clear;
   AsynchRpyLogs.Free;
   FreeAndNil (unknownOperation);
-  while Wsdls.Count > 0 do
-  begin
-    if (Wsdls.Objects[0] <> FreeFormatWsdl)
-    and (Wsdls.Objects[0] <> CobolWsdl)
-    and (Wsdls.Objects[0] <> XsdWsdl)
-    and (Wsdls.Objects[0] <> SwiftMtWsdl) then
-      Wsdls.Objects[0].Free;
-    Wsdls.Delete(0);
-  end;
   Wsdls.Free;
   wsdlNames.Free;
   FreeAndNil (FreeFormatWsdl);
@@ -1194,7 +1185,6 @@ begin
   ignoreRemovingOn.Free;
   ignoreCoverageOn.Clear;
   ignoreCoverageOn.Free;
-  ScriptsClear;
   Scripts.Free;
   DisplayedLogColumns.Free;
   inherited;
@@ -6932,6 +6922,7 @@ end;
 
 procedure TWsdlProject.InitSpecialWsdls;
 begin
+  FreeAndNil (FreeFormatWsdl);
   FreeFormatService := TWsdlService.Create;
   with FreeFormatService do
   begin
@@ -6945,6 +6936,7 @@ begin
     isSoapService := False;
     Services.AddObject(FreeFormatService.Name, FreeFormatService);
   end;
+  FreeAndNil(CobolWsdl);
   CobolWsdl := TWsdl.Create(1, 1, False);
   with CobolWsdl do
   begin
@@ -6955,6 +6947,7 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTCobol;
   end;
+  FreeAndNil(XsdWsdl);
   XsdWsdl := TWsdl.Create(1, 1, False);
   with XsdWsdl do
   begin
@@ -6965,6 +6958,7 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTXsd;
   end;
+  FreeAndNil(SwiftMtWsdl);
   SwiftMtWsdl := TWsdl.Create(1, 1, False);
   with SwiftMtWsdl do
   begin
