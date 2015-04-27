@@ -4044,14 +4044,17 @@ var
   xXml: TXml;
 begin
   xXml := OptionsAsXml;
-  if EditXmlXsdBased('Options', '', '', '', se.IsActive, optionsXsd, xXml)
-    then
-  begin
-    isOptionsChanged := True;
-    OptionsFromXml(xXml);
-    RefreshTimer.Enabled :=
-      RefreshTimer.Enabled and isSlaveMode and AutoRefreshSlave;
-    CheckBoxClick(nil);
+  try
+    if EditXmlXsdBased('Options', '', '', '', se.IsActive, optionsXsd, xXml) then
+    begin
+      isOptionsChanged := True;
+      OptionsFromXml(xXml);
+      RefreshTimer.Enabled :=
+        RefreshTimer.Enabled and isSlaveMode and AutoRefreshSlave;
+      CheckBoxClick(nil);
+    end;
+  finally
+    xXml.Free;
   end;
 end;
 
@@ -8833,19 +8836,23 @@ var
   xXml: TXml;
 begin
   xXml := se.ProjectOptionsAsXml;
-  if EditXmlXsdBased('Project Options', '', '', '', se.IsActive,
-    projectOptionsXsd, xXml) then
-  begin
-    AcquireLock;
-    try
-      stubChanged := True;
-      se.ProjectOptionsFromXml(xXml);
-      LogUpdateColumns;
-    finally
-      ReleaseLock;
+  try
+    if EditXmlXsdBased('Project Options', '', '', '', se.IsActive,
+      projectOptionsXsd, xXml) then
+    begin
+      AcquireLock;
+      try
+        stubChanged := True;
+        se.ProjectOptionsFromXml(xXml);
+        LogUpdateColumns;
+      finally
+        ReleaseLock;
+      end;
+      InitMasterServer;
+      CheckBoxClick(nil);
     end;
-    InitMasterServer;
-    CheckBoxClick(nil);
+  finally
+    xXml.Free;
   end;
 end;
 
@@ -11208,16 +11215,20 @@ begin
   with Wsdl.Services.Services[WsdlServicesComboBox.ItemIndex] do
   begin
     xXml := OptionsAsXml;
-    if EditXmlXsdBased('Service Options', '', '', '', False,
-      serviceOptionsXsd, xXml) then
-    begin
-      AcquireLock;
-      try
-        stubChanged := True;
-        OptionsFromXml(xXml);
-      finally
-        ReleaseLock;
+    try
+      if EditXmlXsdBased('Service Options', '', '', '', False,
+        serviceOptionsXsd, xXml) then
+      begin
+        AcquireLock;
+        try
+          stubChanged := True;
+          OptionsFromXml(xXml);
+        finally
+          ReleaseLock;
+        end;
       end;
+    finally
+      xXml.Free;
     end;
   end;
 end;
@@ -11283,11 +11294,15 @@ var
   xXml: TXml;
 begin
   xXml := se.Listeners.AsXml;
-  if EditXmlXsdBased('Configure Listeners', '', '', '', se.IsActive,
-    listenersConfigXsd, xXml) then
-  begin
-    stubChanged := True;
-    se.Listeners.FromXml(xXml, se.HaveStompFrame);
+  try
+    if EditXmlXsdBased('Configure Listeners', '', '', '', se.IsActive,
+      listenersConfigXsd, xXml) then
+    begin
+      stubChanged := True;
+      se.Listeners.FromXml(xXml, se.HaveStompFrame);
+    end;
+  finally
+    xXml.Free;
   end;
 end;
 
@@ -11302,17 +11317,21 @@ var
   xXml: TXml;
 begin
   xXml := se.ProjectLogOptionsAsXml;
-  if EditXmlXsdBased('Project log options', 'projectOptions.Log',
-    'Log.maxEntries', '', False, projectOptionsXsd, xXml) then
-  begin
-    AcquireLock;
-    try
-      stubChanged := True;
-      se.ProjectLogOptionsFromXml(xXml);
-    finally
-      ReleaseLock;
+  try
+    if EditXmlXsdBased('Project log options', 'projectOptions.Log',
+      'Log.maxEntries', '', False, projectOptionsXsd, xXml) then
+    begin
+      AcquireLock;
+      try
+        stubChanged := True;
+        se.ProjectLogOptionsFromXml(xXml);
+      finally
+        ReleaseLock;
+      end;
+      LogUpdateColumns;
     end;
-    LogUpdateColumns;
+  finally
+    xXml.Free;
   end;
 end;
 
@@ -11827,17 +11846,21 @@ begin
   with WsdlOperation do
   begin
     xXml := OptionsAsXml;
-    if EditXmlXsdBased('Operation Options', '', '', '', False,
-      operationOptionsXsd, xXml) then
-    begin
-      AcquireLock;
-      try
-        stubChanged := True;
-        OptionsFromXml(xXml);
-        PrepareOperation;
-      finally
-        ReleaseLock;
+    try
+      if EditXmlXsdBased('Operation Options', '', '', '', False,
+        operationOptionsXsd, xXml) then
+      begin
+        AcquireLock;
+        try
+          stubChanged := True;
+          OptionsFromXml(xXml);
+          PrepareOperation;
+        finally
+          ReleaseLock;
+        end;
       end;
+    finally
+      xXml.Free;
     end;
   end;
 end;

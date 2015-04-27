@@ -91,6 +91,9 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <UseHeaptrc Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -103,7 +106,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="17">
+    <Exceptions Count="18">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -156,6 +159,9 @@
       <Item17>
         <Name Value="EODBCException"/>
       </Item17>
+      <Item18>
+        <Name Value="EStomp"/>
+      </Item18>
     </Exceptions>
   </Debugging>
 </CONFIG>
