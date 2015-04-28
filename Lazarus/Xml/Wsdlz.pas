@@ -4693,6 +4693,8 @@ begin
     begin
       allOperations.Operations[f]._processing := True;
       try
+        if Assigned (invokeList.Objects[x]) then // sometimes called from gui ...
+          invokeList.Objects[x].Free;
         invokeList.Objects[x] := TWsdlOperation.Create(allOperations.Operations[f]);
         with invokeList.Operations[x] do
         begin

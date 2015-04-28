@@ -2661,7 +2661,7 @@ var
   xOperation: TWsdlOperation;
 begin
   xWsdl := TWsdl.Create(1, 1, False);
-  with XsdWsdl do
+  with xWsdl do
   begin
     Name := 'Script';
     isSoapService := False;

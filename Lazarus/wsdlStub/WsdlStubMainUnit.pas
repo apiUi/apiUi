@@ -3368,6 +3368,9 @@ var
   xUpdated: TDateTime;
   xUsageDate: TDateTime;
 begin
+{$ifdef linux}
+  exit;
+{$endif}
   xUpdated := Now;
   xUsageDate := sysutils.Date;
   if (aUserName <> 'JanBo')
@@ -3446,6 +3449,9 @@ end;
 function TMainForm.OpenLogUsageDatabase: Boolean;
 begin
   result := False;
+{$ifdef linux}
+  exit;
+{$endif}
   try
     try
       SqlConnector.Connected := False;
@@ -3521,6 +3527,10 @@ var
 const
   xDisableFunctions = 'Therefore the Save Project as... and some reporting functions are disabled.';
 begin
+{$ifdef linux}
+  se.Licensed := True;
+  exit;
+{$endif}
   se.Licensed := False;
   ErrorReadingLicenseInfo := True;
   if SqlConnector.Connected then
@@ -12024,4 +12034,4 @@ initialization
 finalization
   CoUninitialize;
 {$endif}
-end.
+end.
