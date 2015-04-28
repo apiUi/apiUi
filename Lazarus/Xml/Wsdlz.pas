@@ -4686,6 +4686,15 @@ begin
     end;
   end;
 {}
+  for x := invokeList.Count - 1 downto 0 do
+  begin
+    if not allOperations.Find(invokeList.Strings[x], f) then
+    begin
+      if Assigned (invokeList.Objects[x]) then
+        invokeList.Objects[x].Free;
+      invokeList.Delete(x);
+    end;
+  end;
   for x := 0 to invokeList.Count - 1 do
   begin
     if allOperations.Find(invokeList.Strings[x], f)

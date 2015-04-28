@@ -3854,9 +3854,12 @@ constructor TXmlCvrg.CreateFromXsd(aName: String; aXsd: TXsd);
     aXml.Name := aName;
     aXml.Xsd := aXsd;
     aXml.TypeDef := aXsd.sType;
-    aXml.distinctValues := TStringList.Create;
-    aXml.distinctValues.Sorted := True;
-    aXml.distinctValues.Duplicates := dupIgnore;
+    if not Assigned (aXml.distinctValues) then
+    begin
+      aXml.distinctValues := TStringList.Create;
+      aXml.distinctValues.Sorted := True;
+      aXml.distinctValues.Duplicates := dupIgnore;
+    end;
     if not Assigned (aXsd.sType) then
       Exit;
     for v := 0 to aXsd.sType.Enumerations.Count - 1 do

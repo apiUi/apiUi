@@ -97,8 +97,8 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dUseCThreads
--dheaptrace"/>
+      <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

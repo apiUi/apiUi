@@ -10744,30 +10744,31 @@ begin
     finally
       ReleaseLock;
     end;
-  finally
-    Screen.Cursor := SwapCursor;
-  end;
-  try
-    Application.CreateForm(TShowXmlCoverageForm, xForm);
     try
-      xForm.Caption := '' + _progName + ' - Coverage report';
-      xForm.Bind := xXml;
-      xForm.initialExpandStyle := esOne;
-      xForm.ShowModal;
-      if xForm.Changed then
-      begin
-        if BooleanPromptDialog('Accept changes to Coverage report setting') then
+      Application.CreateForm(TShowXmlCoverageForm, xForm);
+      try
+        xForm.Caption := '' + _progName + ' - Coverage report';
+        xForm.Bind := xXml;
+        xForm.initialExpandStyle := esOne;
+        Screen.Cursor := SwapCursor;
+        xForm.ShowModal;
+        if xForm.Changed then
         begin
-          stubChanged := True;
-          se.ignoreCoverageOn.Clear;
-          _updateIgnoreCoverageOn(xXml, se.ignoreCoverageOn);
+          if BooleanPromptDialog('Accept changes to Coverage report setting') then
+          begin
+            stubChanged := True;
+            se.ignoreCoverageOn.Clear;
+            _updateIgnoreCoverageOn(xXml, se.ignoreCoverageOn);
+          end;
         end;
+      finally
+        xForm.Free;
       end;
     finally
-      xForm.Free;
+      FreeAndNil(xXml);
     end;
   finally
-    FreeAndNil(xXml);
+    Screen.Cursor := SwapCursor;
   end;
 end;
 
@@ -12034,4 +12035,4 @@ initialization
 finalization
   CoUninitialize;
 {$endif}
-end.
+end.
