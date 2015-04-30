@@ -487,13 +487,21 @@ var
   xPrefix: String;
 begin
   aXml := xData.aLog.reqBodyAsXml;
+  aXml.SeparateNsPrefixes;
+  aXml.ResolveNameSpaces;
   bXml := xData.bLog.reqBodyAsXml;
+  bXml.SeparateNsPrefixes;
+  bXml.ResolveNameSpaces;
   xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, False);
   xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
   aXml := xData.aLog.rpyBodyAsXml;
+  aXml.SeparateNsPrefixes;
+  aXml.ResolveNameSpaces;
   bXml := xData.bLog.rpyBodyAsXml;
+  bXml.SeparateNsPrefixes;
+  bXml.ResolveNameSpaces;
   xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, False);
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
@@ -793,7 +801,7 @@ var
   var
     x: Integer;
   begin
-    if aA2B.ThisOneDiffers then
+    if aA2B.ThisOneDiffers and not aA2B.Ignored then
     begin
       with tableXml do
       begin
@@ -1019,8 +1027,8 @@ begin
             end
             else
             begin
-              if (xData.reqA2B.Differs)
-              or (xData.rpyA2B.Differs)
+              if (xData.reqA2B.Differs and not xData.reqA2B.Ignored)
+              or (xData.rpyA2B.Differs and not xData.rpyA2B.Ignored)
               then begin
                 xRowSpan := xData.reqA2B.numberOfDiffs + xData.rpyA2B.numberOfDiffs;
                 if xRowSpan < 1 then
@@ -1037,7 +1045,7 @@ begin
     finally
       Screen.Cursor := swapCursor;
     end;
-    XmlUtil.presentAsHTML('wsdlStub - Differences report', xXml.Text);
+    XmlUtil.presentAsHTML('wsdlStub - Differences report', xXml.asHtmlString{.Text});
   finally
     FreeAndNil (xXml);
   end;

@@ -5,8 +5,9 @@ unit Unit1 ;
 interface
 
 uses
-  Classes, SysUtils , FileUtil , Forms , Controls , Graphics , Dialogs ,
-  StdCtrls , Xmlz , Xsdz , Wsdlz , xmlUtilz, StompInterface, StompTypes, heaptrc;
+  Classes , SysUtils , FileUtil , Forms , Controls , Graphics , Dialogs ,
+  StdCtrls , Xmlz , Xsdz , Wsdlz , xmlUtilz , StompInterface , sqldb , odbcconn ,
+  StompTypes , heaptrc;
 
 type
 
@@ -14,6 +15,7 @@ type
 
   TForm1 = class(TForm )
     Button1 : TButton ;
+    SQLConnector1 : TSQLConnector ;
     procedure Button1Click (Sender : TObject );
     procedure FormCreate (Sender : TObject );
     procedure FormDestroy (Sender : TObject );

@@ -18,4 +18,17 @@ object Form1: TForm1
     OnClick = Button1Click
     TabOrder = 0
   end
+  object SQLConnector1: TSQLConnector
+    Connected = True
+    LoginPrompt = False
+    DatabaseName = 'MS Access Database'
+    KeepConnection = False
+    Params.Strings = (
+      'DBQ=C:\JanBo\SOURCES\2011\wsdlStub\Data\wsdlStubLicense.mdb'
+    )
+    LogEvents = []
+    ConnectorType = 'ODBC'
+    left = 38
+    top = 21
+  end
 end

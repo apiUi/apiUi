@@ -524,7 +524,8 @@ begin
     begin
       ExecuteDirect('commit');
       ExecuteDirect('set transaction read write');
-      ExecuteDirect(Qry.SQL.Text);
+//    ExecuteDirect(Qry.SQL.Text);
+      Qry.ExecSQL;
       ExecuteDirect('commit');
     end
     else

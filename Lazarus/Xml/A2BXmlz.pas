@@ -26,7 +26,7 @@ type
     procedure setIgnored(const Value: Boolean);
     procedure setThisOneDiffers (AValue : Boolean );
   public
-    bValue: String;
+    bValue, bNameSpace: String;
     Prefix: String;
     ChangeKind: TChangeKind;
     property ThisOneDiffers: Boolean read fThisOneDiffers write setThisOneDiffers;
@@ -116,6 +116,7 @@ begin
   TagName := aXml.TagName;
   Value := aXml.Value;
   Prefix:=aPrefix;
+  NameSpace := aXml.NameSpace;
   ThisOneDiffers := aThisOneDiffers;
   for x := 0 to aXml.Attributes.Count - 1 do
     AddXml (TA2BXml.CreateA(aPrefix,aXml.Attributes.XmlAttributes[x], False));
@@ -131,6 +132,7 @@ begin
   ChangeKind := ckAdd;
   TagName := bXml.TagName;
   bValue := bXml.Value;
+  bNameSpace := bXml.NameSpace;
   Prefix:=aPrefix;
   ThisOneDiffers := aThisOneDiffers;
   for x := 0 to bXml.Attributes.Count - 1 do
@@ -148,7 +150,9 @@ begin
   inherited Create;
   TagName := aXml.TagName;
   Value := aXml.Value;
+  NameSpace := aXml.NameSpace;
   bValue := bXml.Value;
+  bNameSpace := bXml.NameSpace;
   Prefix:=aPrefix;
   ChangeKind := ckCopy;
   if valuesDiffer(Value, bValue) then
@@ -415,7 +419,7 @@ var
   x: Integer;
 begin
   result := 0;
-  if fThisOneDiffers then
+  if fThisOneDiffers and not fIgnored then
     result := 1
   else
     for x := 0 to Items.Count - 1 do

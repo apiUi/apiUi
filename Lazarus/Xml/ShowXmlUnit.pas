@@ -14,7 +14,7 @@ uses
 {$ENDIF}
   SysUtils , Classes , Graphics , Forms , Controls , StdCtrls , Buttons ,
   ComCtrls , ExtCtrls , VirtualTrees , RichBox , Bind , Xmlz , Ipmz , Dialogs ,
-  FormIniFilez , ToolWin , ActnList , Menus , ImgList
+  FormIniFilez , ToolWin , ActnList , Menus , ImgList , ButtonPanel
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
@@ -27,6 +27,8 @@ type
   { TShowXmlForm }
 
   TShowXmlForm = class(TForm)
+    CancelButton : TBitBtn ;
+    OkButton : TBitBtn ;
     DocumentationEdit : TlzRichEdit ;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
@@ -82,8 +84,6 @@ type
     ViewinTreeMenuItem: TMenuItem;
     ZoomMenuItem: TMenuItem;
     Panel3: TPanel;
-    OkButton: TButton;
-    CancelButton: TButton;
     genDocumentaionAction: TAction;
     CompareAction: TAction;
     ToolButton5: TToolButton;
@@ -401,6 +401,7 @@ var
   oBind, dBind: TCustomBindable;
 begin
   TreeView.EndEditNode;
+  ModalResult := mrOk;
   if ValidateDuplicatesOn <> '' then
     if not Bind.hasNoDuplicatesOn(ValidateDuplicatesOn, True, oBind, dBind) then
     begin

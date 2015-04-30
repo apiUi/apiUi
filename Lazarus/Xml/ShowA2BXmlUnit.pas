@@ -183,6 +183,7 @@ type TColumnEnum =
 , buttonColumn
 , AColumn
 , BColumn
+, NsColumn
 );
 
 function rmPrefix (aName: String): String;
@@ -705,6 +706,14 @@ begin
          else
            CellText := '';
        end;
+    NsColumn:
+      begin
+        if Assigned (Xml) then
+          if Xml.NameSpace <> '' then
+            CellText := Xml.NameSpace
+          else
+            CellText := Xml.bNameSpace
+      end;
     end;
 end;
 
@@ -729,8 +738,6 @@ begin
         case Kind of
           ikNormal, ikSelected:
           begin
-            if xXml.name = 'OutputFormat' then
-              xXml.Name := 'OutputFormat';
             if xXml.Differs then
               case xXml.ChangeKind of
                 ckAdd:    ImageIndex := _if (xXml.Ignored, iiOrangePlus, iiRedPlus);

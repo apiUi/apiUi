@@ -2985,7 +2985,6 @@ begin
       DbsUserName := xXml.Items.XmlCheckedValueByTagDef['UserName', DbsUserName];
       DbsPassword := xmlz.DecryptString(xXml.Items.XmlCheckedValueByTag['Password']);
       DbsConnectionString := xXml.Items.XmlCheckedValueByTagDef['ConnectionString', DbsConnectionString]; // to be able to create ado version project
-    { TODO : hide password }
       with _WsdlDbsConnector do
       begin
         ConnectorType := DbsType;
