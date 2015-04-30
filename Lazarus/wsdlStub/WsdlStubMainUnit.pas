@@ -12,7 +12,7 @@ uses
 {$IFnDEF FPC}
   AdoDb, Windows,
 {$ELSE}
-  sqldb, oracleconnection , odbcconn, LCLIntf, LCLType,
+  sqldb, odbcconn, LCLIntf, LCLType,
 {$ENDIF}
   Messages
    , SysUtils
@@ -33,7 +33,6 @@ uses
    , StdCtrls
    , IdHTTP
    , IdSync
-   , Buttons
    , ComCtrls
    , ExtCtrls
    , FormIniFilez
@@ -484,17 +483,14 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
+    procedure GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
-    procedure MessagesVTSChange (Sender : TBaseVirtualTree ;
-      Node : PVirtualNode );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
-    procedure RequestBodyTabSheetContextPopup (Sender : TObject ;
-      MousePos : TPoint ; var Handled : Boolean );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
     procedure RemoveAllMessagesActionExecute(Sender: TObject);
@@ -521,7 +517,6 @@ type
     procedure ElementvalueMenuItemClick(Sender: TObject);
     procedure PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
     procedure CopyCobolDataToClipboardMenuItemClick(Sender: TObject);
-    procedure ToolBar8Click (Sender : TObject );
     procedure ViewMssgAsTextActionExecute(Sender: TObject);
     procedure ViewMssgAsTextActionUpdate(Sender: TObject);
     procedure Log2DesignActionExecute(Sender: TObject);
@@ -10871,11 +10866,6 @@ begin
       InWsdlTreeView.FocusedNode) as TIpmItem).ValuesToBuffer(nil);
 end;
 
-procedure TMainForm .ToolBar8Click (Sender : TObject );
-begin
-
-end;
-
 procedure TMainForm.CleanMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
@@ -11824,12 +11814,6 @@ begin
   Clipboard.AsText := se.ProjectDesignAsString(se.projectFileName);
 end;
 
-procedure TMainForm .RequestBodyTabSheetContextPopup (Sender : TObject ;
-  MousePos : TPoint ; var Handled : Boolean );
-begin
-
-end;
-
 procedure TMainForm.OperationOptionsActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -12009,6 +11993,12 @@ begin
   OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
 end;
 
+procedure TMainForm.GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode
+  );
+begin
+
+end;
+
 procedure TMainForm .MessagesTabControlChange (Sender : TObject );
 begin
   UpdateLogTabs(NodeToMsgLog(False,MessagesVTS, MessagesVTS.FocusedNode));
@@ -12020,12 +12010,6 @@ var
   aLog: TLog;
 begin
   ImageIndex := logValidationTabImageIndex;
-end;
-
-procedure TMainForm .MessagesVTSChange (Sender : TBaseVirtualTree ;
-  Node : PVirtualNode );
-begin
-
 end;
 
 {$ifdef windows}

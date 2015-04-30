@@ -1003,17 +1003,17 @@ begin
   if Assigned (Operation) then
   begin
     case aCompareBy of
-      clOperation:
-        result := Operation.WsdlService.Name
-                + ';'
-                + Operation.Name
-                ;
-      clCorrelation:
+      clTimeStamp, clCorrelation:
         result := Operation.WsdlService.Name
                 + ';'
                 + Operation.Name
                 + ';'
                 + CorrelationId
+                ;
+      clOperation:
+        result := Operation.WsdlService.Name
+                + ';'
+                + Operation.Name
                 ;
     end;
   end

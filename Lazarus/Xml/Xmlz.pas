@@ -12,7 +12,6 @@ uses Classes
    , Xsdz
    , Bind
    , Graphics
-   , Dialogs
    ;
 
 resourcestring
@@ -383,7 +382,6 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils
    , StrUtils
@@ -396,7 +394,6 @@ uses
    , RegExpr
    , xmlio
    , HashUtilz
-   , VersionSupport
    ;
 
 function textToHtml (aString: String): String;

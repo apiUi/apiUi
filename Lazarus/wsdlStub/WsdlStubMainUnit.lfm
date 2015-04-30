@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 425
-  Height = 525
-  Top = 144
-  Width = 865
+  Left = 410
+  Height = 603
+  Top = 235
+  Width = 939
   Caption = 'MainForm'
-  ClientHeight = 506
-  ClientWidth = 865
+  ClientHeight = 584
+  ClientWidth = 939
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
@@ -18,12 +18,12 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object MainToolBar: TToolBar
     Left = 0
     Height = 29
     Top = 0
-    Width = 865
+    Width = 939
     Caption = 'MainToolBar'
     Images = mainImageList
     TabOrder = 1
@@ -34,6 +34,7 @@ object MainForm: TMainForm
     end
     object ToolButton23: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton23'
@@ -62,6 +63,7 @@ object MainForm: TMainForm
     end
     object ToolButton4: TToolButton
       Left = 126
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton4'
@@ -77,6 +79,7 @@ object MainForm: TMainForm
     end
     object ToolButton2: TToolButton
       Left = 171
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton2'
@@ -90,6 +93,7 @@ object MainForm: TMainForm
     end
     object ToolButton48: TToolButton
       Left = 204
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton48'
@@ -116,6 +120,7 @@ object MainForm: TMainForm
     end
     object ToolButton43: TToolButton
       Left = 278
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton43'
@@ -129,6 +134,7 @@ object MainForm: TMainForm
     end
     object ToolButton61: TToolButton
       Left = 311
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton61'
@@ -137,6 +143,7 @@ object MainForm: TMainForm
     end
     object ToolButton21: TToolButton
       Left = 321
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton21'
@@ -150,6 +157,7 @@ object MainForm: TMainForm
     end
     object ToolButton70: TToolButton
       Left = 349
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton70'
@@ -166,6 +174,7 @@ object MainForm: TMainForm
     end
     object SeparatorToolButton: TToolButton
       Left = 382
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'SeparatorToolButton'
@@ -175,25 +184,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 305
+    Height = 383
     Top = 29
-    Width = 865
+    Width = 939
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 305
-    ClientWidth = 865
+    ClientHeight = 383
+    ClientWidth = 939
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
-      Height = 299
+      Height = 377
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 722
-      Height = 299
+      Left = 796
+      Height = 377
       Top = 3
       Width = 5
       Align = alRight
@@ -202,18 +211,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 299
+      Height = 377
       Top = 3
       Width = 202
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 299
+      ClientHeight = 377
       ClientWidth = 202
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 230
+        Top = 308
         Width = 196
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -237,6 +246,7 @@ object MainForm: TMainForm
         end
         object ToolButton17: TToolButton
           Left = 67
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton17'
@@ -249,6 +259,7 @@ object MainForm: TMainForm
         end
         object ToolButton19: TToolButton
           Left = 100
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton19'
@@ -262,6 +273,7 @@ object MainForm: TMainForm
         end
         object ToolButton62: TToolButton
           Left = 133
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton62'
@@ -280,7 +292,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 227
+        Height = 305
         Top = 3
         Width = 196
         Align = alClient
@@ -312,7 +324,7 @@ object MainForm: TMainForm
       object ScriptButtonsPanel: TPanel
         Left = 3
         Height = 37
-        Top = 259
+        Top = 337
         Width = 196
         Align = alBottom
         Caption = 'ScriptButtonsPanel'
@@ -354,14 +366,14 @@ object MainForm: TMainForm
       end
     end
     object XsdPanel: TPanel
-      Left = 727
-      Height = 299
+      Left = 801
+      Height = 377
       Top = 3
       Width = 135
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 299
+      ClientHeight = 377
       ClientWidth = 135
       TabOrder = 1
       object Splitter6: TSplitter
@@ -414,7 +426,7 @@ object MainForm: TMainForm
       end
       object DataTypeDocumentationMemo: TlzRichEdit
         Left = 4
-        Height = 58
+        Height = 136
         Top = 237
         Width = 127
         DefaultExtension = '.rtf'
@@ -427,19 +439,19 @@ object MainForm: TMainForm
     end
     object Panel6: TPanel
       Left = 210
-      Height = 299
+      Height = 377
       Top = 3
-      Width = 512
+      Width = 586
       Align = alClient
-      ClientHeight = 299
-      ClientWidth = 512
+      ClientHeight = 377
+      ClientWidth = 586
       TabOrder = 2
       object Splitter10: TSplitter
         Cursor = crVSplit
         Left = 1
         Height = 5
         Top = 185
-        Width = 510
+        Width = 584
         Align = alTop
         ResizeAnchor = akTop
       end
@@ -447,7 +459,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 29
         Top = 62
-        Width = 510
+        Width = 584
         Caption = 'GridToolBar'
         Images = mainImageList
         TabOrder = 2
@@ -459,6 +471,7 @@ object MainForm: TMainForm
         end
         object ToolButton8: TToolButton
           Left = 24
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton8'
@@ -473,6 +486,7 @@ object MainForm: TMainForm
         end
         object ToolButton20: TToolButton
           Left = 57
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton20'
@@ -486,6 +500,7 @@ object MainForm: TMainForm
         end
         object ToolButton10: TToolButton
           Left = 90
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton10'
@@ -499,6 +514,7 @@ object MainForm: TMainForm
         end
         object ToolButton14: TToolButton
           Left = 123
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton14'
@@ -517,6 +533,7 @@ object MainForm: TMainForm
         end
         object ToolButton26: TToolButton
           Left = 179
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton26'
@@ -530,6 +547,7 @@ object MainForm: TMainForm
         end
         object ToolButton56: TToolButton
           Left = 212
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton56'
@@ -543,6 +561,7 @@ object MainForm: TMainForm
         end
         object ToolButton29: TToolButton
           Left = 245
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton29'
@@ -561,6 +580,7 @@ object MainForm: TMainForm
         end
         object ToolButton34: TToolButton
           Left = 301
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton34'
@@ -574,6 +594,7 @@ object MainForm: TMainForm
         end
         object ToolButton41: TToolButton
           Left = 334
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton41'
@@ -593,6 +614,7 @@ object MainForm: TMainForm
         end
         object LastToolButton: TToolButton
           Left = 390
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'LastToolButton'
@@ -613,7 +635,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 94
         Top = 91
-        Width = 510
+        Width = 584
         Align = alTop
         BottomSpace = 10
         DragOperations = []
@@ -641,6 +663,7 @@ object MainForm: TMainForm
         TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
         OnBeforeCellPaint = GridViewBeforeCellPaint
+        OnChange = GridViewChange
         OnClick = TreeViewClick
         OnEdited = GridViewEdited
         OnEditing = GridViewEditing
@@ -658,10 +681,10 @@ object MainForm: TMainForm
         Left = 1
         Height = 61
         Top = 1
-        Width = 510
+        Width = 584
         Align = alTop
         ClientHeight = 61
-        ClientWidth = 510
+        ClientWidth = 584
         TabOrder = 0
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
@@ -725,7 +748,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 29
         Top = 190
-        Width = 510
+        Width = 584
         Caption = 'ToolBar9'
         Images = mainImageList
         TabOrder = 3
@@ -741,6 +764,7 @@ object MainForm: TMainForm
         end
         object ToolButton46: TToolButton
           Left = 47
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton46'
@@ -754,6 +778,7 @@ object MainForm: TMainForm
         end
         object ToolButton18: TToolButton
           Left = 80
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton18'
@@ -767,6 +792,7 @@ object MainForm: TMainForm
         end
         object ToolButton54: TToolButton
           Left = 113
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton54'
@@ -802,8 +828,8 @@ object MainForm: TMainForm
       object StatusPanel: TPanel
         Left = 1
         Height = 17
-        Top = 281
-        Width = 510
+        Top = 359
+        Width = 584
         Align = alBottom
         Alignment = taLeftJustify
         BevelInner = bvLowered
@@ -811,17 +837,17 @@ object MainForm: TMainForm
       end
       object Panel1: TPanel
         Left = 1
-        Height = 62
+        Height = 140
         Top = 219
-        Width = 510
+        Width = 584
         Align = alClient
         Caption = 'Panel1'
-        ClientHeight = 62
-        ClientWidth = 510
+        ClientHeight = 140
+        ClientWidth = 584
         TabOrder = 6
         object FreeFormatMemo: TMemo
-          Left = 423
-          Height = 60
+          Left = 497
+          Height = 138
           Top = 1
           Width = 86
           Align = alRight
@@ -836,9 +862,9 @@ object MainForm: TMainForm
         end
         object InWsdlTreeView: TVirtualStringTree
           Left = 1
-          Height = 60
+          Height = 138
           Top = 1
-          Width = 422
+          Width = 496
           Align = alClient
           DragOperations = []
           EditDelay = 0
@@ -892,8 +918,8 @@ object MainForm: TMainForm
   object DownPageControl: TPageControl
     Left = 0
     Height = 167
-    Top = 339
-    Width = 865
+    Top = 417
+    Width = 939
     ActivePage = MessagesTabSheet
     Align = alBottom
     Images = mainImageList
@@ -1024,7 +1050,7 @@ object MainForm: TMainForm
     object MessagesTabSheet: TTabSheet
       Caption = 'Log'
       ClientHeight = 140
-      ClientWidth = 857
+      ClientWidth = 931
       object Splitter7: TSplitter
         Left = 268
         Height = 111
@@ -1035,7 +1061,7 @@ object MainForm: TMainForm
         Left = 0
         Height = 29
         Top = 0
-        Width = 857
+        Width = 931
         Caption = 'ToolBar6'
         Images = mainImageList
         TabOrder = 0
@@ -1056,6 +1082,7 @@ object MainForm: TMainForm
         end
         object ToolButton68: TToolButton
           Left = 70
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton68'
@@ -1079,6 +1106,7 @@ object MainForm: TMainForm
         end
         object ToolButton69: TToolButton
           Left = 149
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton69'
@@ -1106,12 +1134,12 @@ object MainForm: TMainForm
           Action = httpRequestMessagesAction
         end
         object ToolButton59: TToolButton
-          Left = 1
-          Top = 24
+          Left = 251
+          Top = 2
           Action = readLog4jEventsAction
         end
         object MessagesTabControl: TTabControl
-          Left = 273
+          Left = 347
           Height = 21
           Top = 8
           Width = 584
@@ -1223,7 +1251,6 @@ object MainForm: TMainForm
           TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
-          OnChange = MessagesVTSChange
           OnClick = MessagesVTSClick
           OnColumnClick = TreeViewColumnClick
           OnEditing = VTSEditing
@@ -1250,7 +1277,7 @@ object MainForm: TMainForm
         Left = 273
         Height = 111
         Top = 29
-        Width = 559
+        Width = 633
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1263,7 +1290,7 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object ToolBar4: TToolBar
-        Left = 832
+        Left = 906
         Height = 111
         Top = 29
         Width = 25
@@ -1289,8 +1316,8 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 334
-    Width = 865
+    Top = 412
+    Width = 939
     Align = alBottom
     ResizeAnchor = akBottom
   end

@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   SysUtils , Classes , Graphics , Controls , Forms ,
-  Dialogs , ExtCtrls , VirtualTrees , FileUtil ,
+  ExtCtrls , VirtualTrees , FileUtil ,
   FormIniFilez , ComCtrls , ActnList , Logz , a2bStringListUnit ,
   Xmlz , A2BXmlz;
 
@@ -136,7 +136,7 @@ uses
   ShellAPI,
 {$ELSE}
 {$ENDIF}
-  Bind, ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd, vstUtils, XmlXsdParser, xmlUtilz;
+  ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd, vstUtils, XmlXsdParser, xmlUtilz;
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -187,7 +187,6 @@ var
   x, a, b, c, i: Integer;
   xNode: PVirtualNode;
   xData: PVSTreeRec;
-  LA, LB: TStringList;
   s: String;
 begin
   a2bInitialize;
@@ -195,95 +194,11 @@ begin
     mainVST.BeginUpdate;
     try
       mainVST.Clear;
-      LA := TStringList.Create;
-      LB := TStringList.Create;
-      try
-        for x := 0 to aLogs.Count - 1 do
-        begin
-          s := ';;';
-          with aLogs.LogItems[x] do
-          begin
-            if Assigned (Operation) then
-            begin
-              s := Operation.WsdlService.Name + ';' + Operation.Name + ';';
-            end;
-            s := s + ';' + CorrelationId;
-          end;
-          LA.Add(s);
-        end;
-        for x := 0 to bLogs.Count - 1 do
-        begin
-          s := ';;';
-          with bLogs.LogItems[x] do
-          begin
-            if Assigned (Operation) then
-            begin
-              s := Operation.WsdlService.Name + ';' + Operation.Name + ';';
-            end;
-            s := s + ';' + CorrelationId;
-          end;
-          LB.Add(s);
-        end;
-        Diffs.Execute(LA, LB);
-        a := 0; b := 0;
-        for c := 0 to Diffs.ChangeCount - 1 do
-        begin
-          while a < Diffs.Changes[c].x do
-          begin
-            xNode := mainVST.AddChild(nil,nil);
-            xData := mainVST.GetNodeData(xNode);
-            xData.aLog := aLogs.LogItems[a];
-            xData.bLog := bLogs.LogItems[b];
-            xData.Match := True;
-            CompareAB(xData);
-            inc(a); inc(b);
-          end;
-          if Diffs.Changes[c].Kind = ckAdd then
-          begin
-            for i := b to b + Diffs.Changes[c].Range - 1 do
-            begin
-              xNode := mainVST.AddChild(nil,nil);
-              xData := mainVST.GetNodeData(xNode);
-              xData.bLog := bLogs.LogItems[b];
-              CreateB(xData);
-              inc(b);
-            end;
-          end
-          else
-          begin
-            if Diffs.Changes[c].Kind = ckDelete then
-            begin
-              for i := a to a + Diffs.Changes[c].Range - 1 do
-              begin
-                xNode := mainVST.AddChild(nil,nil);
-                xData := mainVST.GetNodeData(xNode);
-                xData.aLog := aLogs.LogItems[a];
-                CreateA(xData);
-                inc(a);
-              end;
-            end
-            else
-            begin
-              for i := a to a + Diffs.Changes[c].Range - 1 do
-              begin
-                xNode := mainVST.AddChild(nil,nil);
-                xData := mainVST.GetNodeData(xNode);
-                xData.aLog := aLogs.LogItems[a];
-                CreateA(xData);
-                inc(a);
-              end;
-              for i := b to b + Diffs.Changes[c].Range - 1 do
-              begin
-                xNode := mainVST.AddChild(nil,nil);
-                xData := mainVST.GetNodeData(xNode);
-                xData.bLog := bLogs.LogItems[b];
-                CreateB(xData);
-                inc(b);
-              end;
-            end;
-          end;
-        end;
-        while (a < aLogs.Count) and (b < bLogs.Count) do
+      Diffs.Execute(aLogs, bLogs);
+      a := 0; b := 0;
+      for c := 0 to Diffs.ChangeCount - 1 do
+      begin
+        while a < Diffs.Changes[c].x do
         begin
           xNode := mainVST.AddChild(nil,nil);
           xData := mainVST.GetNodeData(xNode);
@@ -293,28 +208,79 @@ begin
           CompareAB(xData);
           inc(a); inc(b);
         end;
-        while (a < aLogs.Count) do
+        if Diffs.Changes[c].Kind = ckAdd then
         begin
-          xNode := mainVST.AddChild(nil,nil);
-          xData := mainVST.GetNodeData(xNode);
-          xData.aLog := aLogs.LogItems[a];
-          CreateA(xData);
-          inc(a);
-        end;
-        while (b < bLogs.Count) do
+          for i := b to b + Diffs.Changes[c].Range - 1 do
+          begin
+            xNode := mainVST.AddChild(nil,nil);
+            xData := mainVST.GetNodeData(xNode);
+            xData.bLog := bLogs.LogItems[b];
+            CreateB(xData);
+            inc(b);
+          end;
+        end
+        else
         begin
-          xNode := mainVST.AddChild(nil,nil);
-          xData := mainVST.GetNodeData(xNode);
-          xData.bLog := bLogs.LogItems[a];
-          CreateB(xData);
-          inc(b);
+          if Diffs.Changes[c].Kind = ckDelete then
+          begin
+            for i := a to a + Diffs.Changes[c].Range - 1 do
+            begin
+              xNode := mainVST.AddChild(nil,nil);
+              xData := mainVST.GetNodeData(xNode);
+              xData.aLog := aLogs.LogItems[a];
+              CreateA(xData);
+              inc(a);
+            end;
+          end
+          else
+          begin
+            for i := a to a + Diffs.Changes[c].Range - 1 do
+            begin
+              xNode := mainVST.AddChild(nil,nil);
+              xData := mainVST.GetNodeData(xNode);
+              xData.aLog := aLogs.LogItems[a];
+              CreateA(xData);
+              inc(a);
+            end;
+            for i := b to b + Diffs.Changes[c].Range - 1 do
+            begin
+              xNode := mainVST.AddChild(nil,nil);
+              xData := mainVST.GetNodeData(xNode);
+              xData.bLog := bLogs.LogItems[b];
+              CreateB(xData);
+              inc(b);
+            end;
+          end;
         end;
-        mainVST.FocusedNode := mainVST.GetFirst;
-        mainVST.SetFocus;
-      finally
-        FreeAndNil (LA);
-        FreeAndNil (LB);
       end;
+      while (a < aLogs.Count) and (b < bLogs.Count) do
+      begin
+        xNode := mainVST.AddChild(nil,nil);
+        xData := mainVST.GetNodeData(xNode);
+        xData.aLog := aLogs.LogItems[a];
+        xData.bLog := bLogs.LogItems[b];
+        xData.Match := True;
+        CompareAB(xData);
+        inc(a); inc(b);
+      end;
+      while (a < aLogs.Count) do
+      begin
+        xNode := mainVST.AddChild(nil,nil);
+        xData := mainVST.GetNodeData(xNode);
+        xData.aLog := aLogs.LogItems[a];
+        CreateA(xData);
+        inc(a);
+      end;
+      while (b < bLogs.Count) do
+      begin
+        xNode := mainVST.AddChild(nil,nil);
+        xData := mainVST.GetNodeData(xNode);
+        xData.bLog := bLogs.LogItems[a];
+        CreateB(xData);
+        inc(b);
+      end;
+      mainVST.FocusedNode := mainVST.GetFirst;
+      mainVST.SetFocus;
     finally
       mainVST.EndUpdate;
     end;

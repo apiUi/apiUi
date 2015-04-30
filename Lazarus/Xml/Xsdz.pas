@@ -290,9 +290,7 @@ implementation
 
 uses SysUtils
    , RegExpr
-   , DateUtils
    , Dialogs
-   , Controls
    , Xmlz
    , xmlxsdparser
    ;

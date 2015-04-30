@@ -9,14 +9,13 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils
    , Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ComCtrls, ExtCtrls, VirtualTrees
+  ComCtrls, ExtCtrls, VirtualTrees
 //   , IpmGunMainForm
-   , A2BXmlz, Xmlz, a2bStringListUnit, ImgList, Menus, Dialogs, ActnList, ToolWin
-   , FormIniFilez
+   , A2BXmlz, Xmlz, a2bStringListUnit, Menus, Dialogs, ActnList, FormIniFilez
    ;
 
 type

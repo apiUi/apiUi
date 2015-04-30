@@ -11,13 +11,11 @@ uses
 {$IFnDEF FPC}
   AdoDb,
 {$ELSE}
-  sqldb,
 {$ENDIF}
   Classes
    , ParserClasses
    , Xmlz
    , Xsdz
-   , Express
    , Bind
    , Ipmz
    , IpmTypes
@@ -25,20 +23,14 @@ uses
 {$ifndef FPC}
   , jclDebug
 {$endif}
-  , IdComponent
   , IdGlobal
   , IdCustomHTTPServer
   , IdSocketHandle
   , IdCmdTCPServer
   , IdHTTPProxyServer
   , IdHTTP
-  , IdSync
-  , IdSSL
   , IdMessage
-  , IdEMailAddress
   , IdHeaderList
-  , IdHTTPHeaderInfo
-  , IdStack
   , IdSMTP
   , IdURI
   , IdSSLOpenSSL
@@ -62,7 +54,7 @@ uses
   , Forms
   , Dialogs
   , Controls
-  , Buttons , FileUtil
+  , FileUtil
   , Logz
   , ExceptionLogz
   , SyncObjs
