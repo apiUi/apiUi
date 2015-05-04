@@ -552,7 +552,7 @@ begin
         aXml.Sort(orderGroupsOn.Strings[x], Strings[y]);
         bXml.Sort(orderGroupsOn.Strings[x], Strings[y]);
       end;
-  xData.A2B := TA2BXml.CreateA2B(aXml, bXml, ignoreDifferencesOn, xmlUtil.IgnoreOrderOfElements);
+  xData.A2B := TA2BXml.CreateA2B(aXml, bXml, ignoreDifferencesOn, nil);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
 end;

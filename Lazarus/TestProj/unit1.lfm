@@ -1,63 +1,21 @@
 object Form1: TForm1
-  Left = 384
-  Height = 501
-  Top = 247
-  Width = 806
+  Left = 391
+  Height = 240
+  Top = 176
+  Width = 320
   Caption = 'Form1'
-  ClientHeight = 501
-  ClientWidth = 806
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
   LCLVersion = '1.4.0.2'
-  object AxcApplication1: TAxcApplication
-    Left = 0
-    Height = 24
-    Top = 344
-    Width = 24
-    TabOrder = 0
-    UseDockManager = False
-    Active = False
-  end
-  object AxcDocument1: TAxcDocument
-    Left = 32
-    Height = 24
-    Top = 344
-    Width = 23
-    TabOrder = 1
-    UseDockManager = False
-    Active = False
-  end
-  object ToolBar1: TToolBar
-    Left = 0
-    Height = 26
-    Top = 0
-    Width = 806
-    Caption = 'ToolBar1'
-    TabOrder = 2
-    object ToolButton1: TToolButton
-      Left = 1
-      Top = 2
-      Caption = 'WB'
-      OnClick = Button3Click
-    end
-    object Edit1: TEdit
-      Left = 24
-      Height = 21
-      Top = 2
-      Width = 480
-      OnChange = Edit1Change
-      OnKeyDown = Edit1KeyDown
-      TabOrder = 0
-      Text = 'http://www.maan-coaching.nl/'
-    end
-  end
-  object Button1: TButton
-    Left = 170
-    Height = 25
-    Top = 88
-    Width = 75
-    Caption = 'Button1'
-    OnClick = Button1Click
-    TabOrder = 3
+  object SQLConnector1: TSQLConnector
+    Connected = True
+    LoginPrompt = False
+    DatabaseName = 'XE'
+    KeepConnection = False
+    Password = 'fpd'
+    UserName = 'owner_fpd'
+    HostName = 'xpone'
+    LogEvents = []
+    ConnectorType = 'Oracle'
+    left = 100
+    top = 37
   end
 end

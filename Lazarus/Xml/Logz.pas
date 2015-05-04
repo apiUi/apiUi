@@ -164,7 +164,7 @@ type
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
                             ; aOrderBy: TCompareLogOrderBy
-                            ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList
+                            ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList
                             ): TXml;
 
 implementation
@@ -179,7 +179,7 @@ uses SysUtils
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
                             ; aOrderBy: TCompareLogOrderBy
-                            ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList
+                            ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList
                             ): TXml;
   function _DetailXml (xLog: TLog): TXml;
   begin
@@ -238,7 +238,7 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
   begin
     aXml := aLog.reqBodyAsXml;
     bXml := bLog.reqBodyAsXml;
-    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, aXml, bXml, False);
+    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, aXml, bXml, ignoreOrderOn);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('req.', a2bXml);
     FreeAndNil(a2bXml);
@@ -246,7 +246,7 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     FreeAndNil (bXml);
     aXml := aLog.rpyBodyAsXml;
     bXml := bLog.rpyBodyAsXml;
-    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, aXml, bXml, False);
+    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, aXml, bXml, ignoreOrderOn);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('rpy.', a2bXml);
     FreeAndNil(a2bXml);

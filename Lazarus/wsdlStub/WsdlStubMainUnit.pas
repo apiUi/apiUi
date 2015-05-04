@@ -12,7 +12,7 @@ uses
 {$IFnDEF FPC}
   AdoDb, Windows,
 {$ELSE}
-  sqldb, odbcconn, LCLIntf, LCLType,
+  sqldb, LCLIntf, LCLType,
 {$ENDIF}
   Messages
    , SysUtils
@@ -31,8 +31,7 @@ uses
    , Xmlz
    , Xsdz
    , StdCtrls
-   , IdHTTP
-   , IdSync
+   , IdHTTP, IdSync
    , ComCtrls
    , ExtCtrls
    , FormIniFilez
@@ -8562,7 +8561,7 @@ begin
   end;
   a2bInitialize;
   try
-    xA2B := TA2BXml.CreateA2B('', aXml, bXml, False);
+    xA2B := TA2BXml.CreateA2B('', aXml, bXml, Nil);
   finally
     a2bUninitialize;
   end;
@@ -8600,7 +8599,7 @@ begin
   end;
   a2bInitialize;
   try
-    xA2B := TA2BXml.CreateA2B('', aXml, bXml, False);
+    xA2B := TA2BXml.CreateA2B('', aXml, bXml, Nil);
   finally
     a2bUninitialize;
   end;

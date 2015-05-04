@@ -1,7 +1,7 @@
 object ShowXmlForm: TShowXmlForm
   Left = 485
   Height = 434
-  Top = 220
+  Top = 176
   Width = 672
   Caption = 'XML Data'
   ClientHeight = 434
@@ -12,7 +12,7 @@ object ShowXmlForm: TShowXmlForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
     Height = 363
@@ -162,6 +162,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object ToolButton3: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -180,6 +181,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object ToolButton6: TToolButton
       Left = 80
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton6'
@@ -198,6 +200,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object ToolButton5: TToolButton
       Left = 136
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton5'
@@ -211,6 +214,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object ToolButton11: TToolButton
       Left = 169
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton11'

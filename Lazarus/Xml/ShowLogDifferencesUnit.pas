@@ -115,7 +115,7 @@ type
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
   public
-    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn: TStringList;
     aLogs: TLogList;
     bLogs: TLogList;
     ReferenceFileName: String;
@@ -492,7 +492,7 @@ begin
   bXml := xData.bLog.reqBodyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
-  xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, False);
+  xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, ignoreOrderOn);
   xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
@@ -502,7 +502,7 @@ begin
   bXml := xData.bLog.rpyBodyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
-  xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, False);
+  xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, ignoreOrderOn);
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);

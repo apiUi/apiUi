@@ -171,7 +171,7 @@ type
     doLoadFromMasterOnStartUp: Boolean;
     isMasterModeEnabled: Boolean;
     isBusy: Boolean;
-    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList;
     ignoreCoverageOn: TStringList;
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
@@ -1027,6 +1027,10 @@ begin
   ignoreRemovingOn.Sorted := True;
   ignoreRemovingOn.Duplicates := dupIgnore;
   ignoreRemovingOn.OnChange := IgnoreDataChanged;
+  ignoreOrderOn := TStringList.Create;
+  ignoreOrderOn.Sorted := True;
+  ignoreOrderOn.Duplicates := dupIgnore;
+  ignoreOrderOn.OnChange := IgnoreDataChanged;
   ignoreCoverageOn := TStringList.Create;
   xsdElementsWhenRepeatable := 1;
   AsynchRpyLogs := TLogList.Create;
@@ -1169,13 +1173,10 @@ begin
   FreeAndNil (CobolWsdl);
   FreeAndNil (XsdWsdl);
   FreeAndNil (SwiftMtWsdl);
-  ignoreDifferencesOn.Clear;
   ignoreDifferencesOn.Free;
-  ignoreAddingOn.Clear;
   ignoreAddingOn.Free;
-  ignoreRemovingOn.Clear;
   ignoreRemovingOn.Free;
-  ignoreCoverageOn.Clear;
+  ignoreOrderOn.Free;
   ignoreCoverageOn.Free;
   Scripts.Free;
   DisplayedLogColumns.Free;
@@ -1657,7 +1658,7 @@ function TWsdlProject.ProjectDesignAsString (aMainFileName: String): String;
       _addCheckers(aList, aXml.Items.XmlItems[x]);
   end;
 var
-  x, w, s, o, r, p: Integer;
+  x, w, s, o, r, p, y: Integer;
   xOperation: TWsdlOperation;
   xWsdl: TWsdl;
   xMessage: TWsdlMessage;
@@ -1925,6 +1926,10 @@ begin
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
       AddXml(TXml.CreateAsString('ignoreRemovingOn', ignoreRemovingOn.Text));
+      with AddXml(TXml.CreateAsString('ignoreOrderOn','')) do
+        for x := 0 to ignoreOrderOn.Count - 1 do
+          with AddXml(TXml.CreateAsString('Element', ignoreOrderOn.Strings[x])) do
+            AddXml(TXml.CreateAsString('Keys', (ignoreOrderOn.Objects[x] as TStringList).Text));
       AddXml(TXml.CreateAsString('ignoreCoverageOn', ignoreCoverageOn.Text));
       with AddXml(TXml.CreateAsString('Scripts', '')) do
         for x := 0 to Scripts.Count - 1 do
@@ -2025,7 +2030,19 @@ begin
             end;
           ignoreDifferencesOn.Text := xXml.Items.XmlValueByTag ['ignoreDifferencesOn'];
           ignoreAddingOn.Text := xXml.Items.XmlValueByTag ['ignoreAddingOn'];
-          ignoreRemovingOn.Text := xXml.Items.XmlValueByTag ['ignoreRemovingOn'];
+          eXml := xXml.Items.XmlItemByTag ['ignoreOrderOn'];
+          if Assigned (eXml) then
+          begin
+            for x := 0 to eXml.Items.Count - 1 do with eXml.Items.XmlItems[x] do
+            begin
+              if Name = 'Element' then
+              begin
+                sl := TStringList.Create;
+                sl.Text := Items.XmlValueByTag['Keys'];
+                ignoreOrderOn.AddObject(Value, sl);
+              end;
+            end;
+          end;
           ignoreCoverageOn.Text := xXml.Items.XmlValueByTag ['ignoreCoverageOn'];
           FocusOperationName := xXml.Items.XmlValueByTag['FocusOperationName'];
           FocusMessageIndex := xXml.Items.XmlIntegerByTag['FocusMessageIndex'];
@@ -6581,6 +6598,7 @@ begin
                                   , ignoreDifferencesOn
                                   , ignoreAddingOn
                                   , ignoreRemovingOn
+                                  , ignoreOrderOn
                                   );
   finally
     xLogList.Clear;
@@ -6802,6 +6820,8 @@ begin
 end;
 
 procedure TWsdlProject.Clear;
+var
+  x: Integer;
 begin
   displayedLogs.Clear;
   archiveLogs.Clear;
@@ -6815,6 +6835,11 @@ begin
   ignoreDifferencesOn.Clear;
   ignoreAddingOn.Clear;
   ignoreRemovingOn.Clear;
+  for x := 0 to ignoreOrderOn.Count - 1 do
+    if Assigned (ignoreOrderOn.Objects[x]) then
+      ignoreOrderOn.Objects[x].Free;
+  ignoreOrderOn.Clear;
+  ignoreCoverageOn.Clear;
   DisplayedLogColumns.Clear;
   AsynchRpyLogs.Clear;
   EnvironmentListClear;

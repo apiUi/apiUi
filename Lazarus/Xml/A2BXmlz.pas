@@ -36,7 +36,7 @@ type
     procedure Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList);
     constructor CreateA (aPrefix: String; aXml: TXml; aThisOneDiffers: Boolean); overload;
     constructor CreateB (aPrefix: String; bXml: TXml; aThisOneDiffers: Boolean); overload;
-    constructor CreateA2B (aPrefix: String; aXml, bXml: TXml; ignoreOrder: Boolean); overload;
+    constructor CreateA2B (aPrefix: String; aXml, bXml: TXml; ignoreOrderOn: TStringList); overload;
     constructor CreateA (aPrefix: String; aXml: TXmlAttribute; aThisOneDiffers: Boolean); overload;
     constructor CreateB (aPrefix: String; bXml: TXmlAttribute; aThisOneDiffers: Boolean); overload;
     constructor CreateA2B (aPrefix: String; aXml, bXml: TXmlAttribute); overload;
@@ -141,11 +141,12 @@ begin
     AddXml (TA2BXml.CreateB(aPrefix, bXml.Items.XmlItems[x], False));
 end;
 
-constructor TA2BXml.CreateA2B(aPrefix: String; aXml, bXml: TXml; ignoreOrder: Boolean);
+constructor TA2BXml.CreateA2B(aPrefix: String; aXml, bXml: TXml; ignoreOrderOn: TStringList);
 var
-  x, a, b, c, f, i: Integer;
+  x, a, b, c, f, i, y: Integer;
   Diffs: TA2BStringList;
   childXml: TA2BXml;
+  xXml: TXml;
 begin
   inherited Create;
   TagName := aXml.TagName;
@@ -255,13 +256,51 @@ begin
     end;
   end;
 
-  if ignoreOrder then
+  if Assigned (ignoreOrderOn) then
   begin
     for x := 0 to aXml.Items.Count - 1 do
-      aXml.Items.Strings [x] := rmPrefix (aXml.Items.XmlItems [x].TagName) + ';' + aXml.Items.XmlItems[x].Value;
+    begin
+      if (   ignoreOrderOn.Find(rmPrefix(aXml.Items.XmlItems[x].TagName) , f)
+          or ignoreOrderOn.Find(aXml.Items.XmlItems[x].FullUQCaption , f)
+          or ignoreOrderOn.Find(aPrefix + '.' + aXml.Items.XmlItems[x].FullUQCaption , f)
+         ) then
+      begin
+        aXml.Items.Strings [x] := aXml.Items.XmlItems [x].TagName + ';';
+        with ignoreOrderOn.Objects[f] as TStringList do
+        begin
+          for y := 0 to Count - 1 do
+          begin
+            xXml := aXml.Items.XmlItems[x].FindUQ(Strings[y]) as TXml;
+            if Assigned (xXml) then
+              aXml.Items.Strings[x] := aXml.Items.Strings[x] + xXml.Value + ';'
+            else
+              aXml.Items.Strings[x] := aXml.Items.Strings[x] + 'nil' + ';';
+          end;
+        end;
+      end;
+    end;
     aXml.Items.Sort;
     for x := 0 to bXml.Items.Count - 1 do
-      bXml.Items.Strings [x] := rmPrefix (bXml.Items.XmlItems [x].TagName) + ';' + bXml.Items.XmlItems[x].Value;
+    begin
+      if (   ignoreOrderOn.Find(rmPrefix(bXml.Items.XmlItems[x].TagName) , f)
+          or ignoreOrderOn.Find(bXml.Items.XmlItems[x].FullUQCaption , f)
+          or ignoreOrderOn.Find(aPrefix + '.' + bXml.Items.XmlItems[x].FullUQCaption , f)
+         ) then
+      begin
+        bXml.Items.Strings [x] := bXml.Items.XmlItems [x].TagName + ';';
+        with ignoreOrderOn.Objects[f] as TStringList do
+        begin
+          for y := 0 to Count - 1 do
+          begin
+            xXml := bXml.Items.XmlItems[x].FindUQ(Strings[y]) as TXml;
+            if Assigned (xXml) then
+              bXml.Items.Strings[x] := bXml.Items.Strings[x] + xXml.Value + ';'
+            else
+              bXml.Items.Strings[x] := bXml.Items.Strings[x] + 'nil' + ';';
+          end;
+        end;
+      end;
+    end;
     bXml.Items.Sort;
   end;
   for x := 0 to aXml.Items.Count - 1 do
@@ -276,7 +315,7 @@ begin
     begin
       while a < Changes[c].x do
       begin
-        childXml := AddXml (TA2BXml.CreateA2B(aPrefix, aXml.Items.XmlItems[a], bXml.Items.XmlItems[b], ignoreOrder)) as TA2BXml;
+        childXml := AddXml (TA2BXml.CreateA2B(aPrefix, aXml.Items.XmlItems[a], bXml.Items.XmlItems[b], ignoreOrderOn)) as TA2BXml;
         Differs := Differs or childXml.Differs;
         inc(a); inc(b);
       end;
@@ -322,7 +361,7 @@ begin
     end;
     while (a < aXml.Items.Count) and (b < bXml.Items.Count) do
     begin
-      childXml := AddXml (TA2BXml.CreateA2B(aPrefix, aXml.Items.XmlItems[a], bXml.Items.XmlItems[b], ignoreOrder)) as TA2BXml;
+      childXml := AddXml (TA2BXml.CreateA2B(aPrefix, aXml.Items.XmlItems[a], bXml.Items.XmlItems[b], ignoreOrderOn)) as TA2BXml;
       Differs := Differs or childXml.Differs;
       inc(a); inc(b);
     end;
