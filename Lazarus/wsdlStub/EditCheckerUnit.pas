@@ -182,7 +182,7 @@ begin
     Application.CreateForm(TSelectXmlElementForm, SelectXmlElementForm);
     try
       SelectXmlElementForm.SkipRootNode := True;
-      SelectXmlElementForm.selfBind := Bindable;
+      SelectXmlElementForm.SrceBind := Bindable;
       SelectXmlElementForm.LastCaption := LastCaption;
       SelectXmlElementForm.IncludeRecurring := True;
       SelectXmlElementForm.ShowModal;

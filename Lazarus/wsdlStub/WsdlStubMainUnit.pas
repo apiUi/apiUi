@@ -12,7 +12,7 @@ uses
 {$IFnDEF FPC}
   AdoDb, Windows,
 {$ELSE}
-  sqldb, LCLIntf, LCLType,
+  sqldb , odbcconn, LCLIntf, LCLType,
 {$ENDIF}
   Messages
    , SysUtils
@@ -3454,6 +3454,7 @@ begin
     if FileExistsUTF8(licenseDatabaseName) then
     begin
       try
+        SQLConnector.ConnectorType := 'odbc';
         SqlConnector.Params.Text := 'DBQ=' + licenseDatabaseName;
         SqlConnector.Connected := True;
       except
@@ -7501,6 +7502,7 @@ begin
       ShowLogDifferencesForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
       ShowLogDifferencesForm.ignoreAddingon := se.ignoreAddingOn;
       ShowLogDifferencesForm.ignoreRemovingOn := se.ignoreRemovingOn;
+      ShowLogDifferencesForm.ignoreOrderOn := se.ignoreOrderOn;
       ShowLogDifferencesForm.ShowModal;
     finally
       ShowLogDifferencesForm.aLogs.Free;

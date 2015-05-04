@@ -260,10 +260,7 @@ begin
   begin
     for x := 0 to aXml.Items.Count - 1 do
     begin
-      if (   ignoreOrderOn.Find(rmPrefix(aXml.Items.XmlItems[x].TagName) , f)
-          or ignoreOrderOn.Find(aXml.Items.XmlItems[x].FullUQCaption , f)
-          or ignoreOrderOn.Find(aPrefix + '.' + aXml.Items.XmlItems[x].FullUQCaption , f)
-         ) then
+      if ignoreOrderOn.Find(aPrefix + '.' + aXml.Items.XmlItems[x].FullUQCaption , f) then
       begin
         aXml.Items.Strings [x] := aXml.Items.XmlItems [x].TagName + ';';
         with ignoreOrderOn.Objects[f] as TStringList do
@@ -277,15 +274,12 @@ begin
               aXml.Items.Strings[x] := aXml.Items.Strings[x] + 'nil' + ';';
           end;
         end;
+        aXml.Items.Sort;
       end;
     end;
-    aXml.Items.Sort;
     for x := 0 to bXml.Items.Count - 1 do
     begin
-      if (   ignoreOrderOn.Find(rmPrefix(bXml.Items.XmlItems[x].TagName) , f)
-          or ignoreOrderOn.Find(bXml.Items.XmlItems[x].FullUQCaption , f)
-          or ignoreOrderOn.Find(aPrefix + '.' + bXml.Items.XmlItems[x].FullUQCaption , f)
-         ) then
+      if ignoreOrderOn.Find(aPrefix + '.' + bXml.Items.XmlItems[x].FullUQCaption , f) then
       begin
         bXml.Items.Strings [x] := bXml.Items.XmlItems [x].TagName + ';';
         with ignoreOrderOn.Objects[f] as TStringList do
@@ -298,10 +292,10 @@ begin
             else
               bXml.Items.Strings[x] := bXml.Items.Strings[x] + 'nil' + ';';
           end;
+          bXml.Items.Sort;
         end;
       end;
     end;
-    bXml.Items.Sort;
   end;
   for x := 0 to aXml.Items.Count - 1 do
     aXml.Items.Strings [x] := rmPrefix (aXml.Items.XmlItems [x].TagName);

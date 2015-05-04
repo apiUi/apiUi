@@ -68,8 +68,7 @@ type
     ToolButton12: TToolButton;
     ignoreFullCaptionMenuitem: TMenuItem;
     N3: TMenuItem;
-    IgnoreOrderOfTagMenuItem: TMenuItem;
-    IgnoreOrderFullCaptionMenuItem: TMenuItem;
+    IgnoreOrderFullCaptionInclPrefixMenuItem: TMenuItem;
     ShowInWordMenuItem: TMenuItem;
     N4: TMenuItem;
     N5: TMenuItem;
@@ -117,7 +116,7 @@ type
     procedure TreeViewGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure IgnoreOrderOfTagMenuItemClick(Sender: TObject);
-    procedure IgnoreOrderFullCaptionMenuItemClick(Sender: TObject);
+    procedure IgnoreOrderFullCaptionInclPrefixMenuItemClick(Sender: TObject);
     procedure ShowInWordMenuItemClick(Sender: TObject);
     procedure TreeViewClick(Sender: TObject);
     procedure IgnoreAddingMenuItemClick(Sender: TObject);
@@ -141,7 +140,7 @@ type
     procedure SearchDiff (aDown: Boolean);
   public
     RefreshNeeded: Boolean;
-    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, orderGroupsOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList;
     property Xml: TA2BXml read fXml write SetXml;
   end;
 
@@ -558,14 +557,13 @@ begin
                                        );
   IgnoreRemovingFullCaptionMenuItem.Enabled := IgnoreRemovingTagMenuItem.Enabled;
   IgnoreRemovingInclPrefixMenuItem.Enabled:=IgnoreRemovingTagMenuItem.Enabled;
-  IgnoreOrderFullCaptionMenuItem.Enabled := (Assigned (orderGroupsOn))
-                                        and (   (xXml.ChangeKind <> ckCopy)
-                                             or (xXml.Differs)
-                                            )
+  IgnoreOrderFullCaptionInclPrefixMenuItem.Enabled := (Assigned (ignoreOrderOn))
                                         and (Assigned (xXml.Parent))
+                                        and (   ((xXml.Parent as TA2BXml).ChangeKind <> ckCopy)
+                                             or ((xXml.Parent as TA2BXml).Differs)
+                                            )
                                         and ((xXml.Parent as TXml).NumberOfSubItemsWithTag(xXml.Name, False) > 1)
                                             ;
-  IgnoreOrderOfTagMenuItem.Enabled := IgnoreOrderFullCaptionMenuItem.Enabled;
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
   IgnoreInclPrefixMenuItem.Caption := 'Ignore differences on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
@@ -575,8 +573,7 @@ begin
   IgnoreRemovingTagMenuItem.Caption := 'Ignore removing of: *.' + rmPrefix(xXml.TagName);
   IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption;
   IgnoreRemovingInclPrefixMenuItem.Caption := 'Ignore removing on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
-  IgnoreOrderOfTagMenuItem.Caption := 'Ignore order of: *.' + rmPrefix(xXml.TagName);
-  IgnoreOrderFullCaptionMenuItem.Caption := 'Ignore order of: ' + xXml.FullUQCaption;
+  IgnoreOrderFullCaptionInclPrefixMenuItem.Caption := 'Ignore order of: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   CopyDataToClipboardMenuItem.Caption := 'Copy data from '
                                        + xXml.TagName
                                        + ' to clipboard'
@@ -890,7 +887,7 @@ begin
   end;
 end;
 
-procedure TShowA2BXmlForm.IgnoreOrderFullCaptionMenuItemClick(Sender: TObject);
+procedure TShowA2BXmlForm.IgnoreOrderFullCaptionInclPrefixMenuItemClick(Sender: TObject);
 var
   x: Integer;
   xXml: TA2BXml;
@@ -903,7 +900,7 @@ begin
     begin
       sl := TStringList.Create;
       sl.Add(rmPrefix(xXml.TagName));
-      OrderGroupsOn.AddObject(xXml.FullUQCaption, sl);
+      ignoreOrderOn.AddObject(xXml.FullUQCaption, sl);
     end
     else
     begin
@@ -927,7 +924,7 @@ begin
           begin
             sl := TStringList.Create;
             sl.Text := dualListForm.DstList.Items.Text;
-            OrderGroupsOn.AddObject(xXml.FullUQCaption, sl);
+            ignoreOrderOn.AddObject(xXml.FullUQCaption, sl);
           end;
         finally
           FreeAndNil (dualListForm);
@@ -942,10 +939,26 @@ begin
 end;
 
 procedure TShowA2BXmlForm.IgnoreOrderOfTagMenuItemClick(Sender: TObject);
+  procedure _createLists (aXml: TXml; aThread: String; aDsts, aSrcs: TStringList);
+  var
+    x, f: Integer;
+  begin
+    for x := 0 to aXml.Items.Count - 1 do
+    begin
+      if aXml.Items.XmlItems[x].Items.Count = 0 then
+      begin
+        if not aDsts.Find(aThread, f) then
+          aSrcs.Add (aThread);
+      end
+      else
+        _createLists(aXml.Items.XmlItems[x], aThread +  '.' + aXml.Items.XmlItems[x].Name, aDsts, aSrcs);
+    end;
+  end;
+
 var
   x: Integer;
   xXml: TA2BXml;
-  Srcs, sl: TStringList;
+  Srcs, Dsts, sl: TStringList;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
@@ -953,24 +966,19 @@ begin
     if (xXml.Items.Count = 0) then
     begin
       sl := TStringList.Create;
-      sl.Add(rmPrefix(xXml.TagName));
-      OrderGroupsOn.AddObject('*.' + rmPrefix(xXml.TagName), sl);
+      sl.Add(xXml.TagName);
+      ignoreOrderOn.AddObject('*.' + xXml.TagName, sl);
     end
     else
     begin
       Srcs := TStringList.Create;
-      Srcs.Sorted := True;
-      Srcs.Duplicates := dupIgnore;
-      if xXml.Items.Count = 0 then
-        srcs.Add(xXml.Name);
-      for x := 0 to xXml.Items.Count - 1 do
-//        if xXml.Items.XmlItems[x].Items.Count = 0 then
-          Srcs.Add(xXml.Name + '.' + xXml.Items.XmlItems[x].Name);
+      Dsts := TStringList.Create;
+      _createLists (xXml, xXml.Name, Dsts, Srcs);
       try
         Application.CreateForm(TdualListForm, dualListForm);
         try
           dualListForm.Caption := 'List of elements to order on';
-          dualListForm.DstList.Items.Text := '';
+          dualListForm.DstList.Items.Text := Dsts.Text;
           dualListForm.SrcList.Items.Text := Srcs.Text;
           dualListForm.DstCaption := 'Order elements';
           dualListForm.SrcCaption := '';
@@ -980,7 +988,7 @@ begin
           begin
             sl := TStringList.Create;
             sl.Text := dualListForm.DstList.Items.Text;
-            OrderGroupsOn.AddObject('*.' + rmPrefix(xXml.TagName), sl);
+            ignoreOrderOn.AddObject('*.' + xXml.TagName, sl);
           end;
         finally
           FreeAndNil (dualListForm);
@@ -988,6 +996,8 @@ begin
       finally
         Srcs.Clear;
         Srcs.Free;
+        Dsts.Clear;
+        Dsts.Free;
       end;
     end;
     RefreshNeeded := True;

@@ -56,7 +56,7 @@ uses
     LastCaption: String;
     SelectedCaption: String;
     SelectedBind: TCustomBindable;
-    selfBind: TCustomBindable;
+    SrceBind: TCustomBindable;
     IncludeRecurring: Boolean;
     maxOccurrences: Integer;
     ElementEnabled: Boolean;
@@ -195,7 +195,7 @@ begin
       end;
       rChild.Collapse(True);
     end;
-    ShowXmls (selfBind, 'Self');
+    ShowXmls (SrceBind, SrceBind.Name);
     if Assigned (WsdlOperation) then
     begin
       if doShowRpy then

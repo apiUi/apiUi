@@ -525,6 +525,7 @@ begin
           ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
           ShowA2BXmlForm.ignoreAddingOn := ignoreAddingon;
           ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
+          ShowA2BXmlForm.ignoreOrderOn := ignoreOrderOn;
           ShowA2BXmlForm.Xml := xData.reqA2B;
           ShowA2BXmlForm.ShowModal;
           if ShowA2BXmlForm.RefreshNeeded then

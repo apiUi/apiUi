@@ -62,16 +62,12 @@ type
   private
     IniFile: TFormIniFile;
     fLastCaption: String;
-    procedure AnalyserError
-                ( Sender: TObject
-                ; LineNumber, ColumnNumber, Offset: Integer
-                ; TokenString, Data: String
-                );
     procedure UpdateListView;
   public
     doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti: Boolean;
     invokeOperations: String;
     WsdlOperation: TWsdlOperation;
+    SrceBind: TCustomBindable;
     ControlBinds: TBindableList;
     DuplicatesAllowed: Boolean;
     stubChanged: Boolean;
@@ -237,22 +233,6 @@ procedure TSelectElementsForm.FormShow(Sender: TObject);
 begin
   UpdateListView;
   stubChanged := False;
-end;
-
-procedure TSelectElementsForm.AnalyserError(Sender: TObject; LineNumber,
-  ColumnNumber, Offset: Integer; TokenString, Data: String);
-begin
-  Application.CreateForm(TErrorFoundDlg,ErrorFoundDlg);
-  try
-    ErrorFoundDlg.FileNameEdit.Text := OpenFileDialog.FileName;
-    ErrorFoundDlg.LineNumberEdit.Text := IntToStr (LineNumber);
-    ErrorFoundDlg.ColumnNumberEdit.Text := IntToStr (ColumnNumber);
-    ErrorFoundDlg.TokenStringEdit.Text := TokenString;
-    ErrorFoundDlg.Viewer := 'Notepad';
-    ErrorFoundDlg.ShowModal;
-  finally
-    FreeAndNil (ErrorFoundDlg);
-  end;
 end;
 
 procedure TSelectElementsForm.UpdateListView;
