@@ -26,13 +26,18 @@ type
   end;
 
 type
+
+  { TShowLogDifferencesForm }
+
   TShowLogDifferencesForm = class(TForm)
+    MaintainIgnoredOrderAction : TAction ;
     Panel1: TPanel;
     ToolBar1: TToolBar;
     leftPanel: TPanel;
     mainVST: TVirtualStringTree;
     ActionImageList: TImageList;
     ActionList1: TActionList;
+    ToolButton14 : TToolButton ;
     ToolButton2: TToolButton;
     CheckAllAction: TAction;
     UncheckAllAction: TAction;
@@ -61,6 +66,9 @@ type
     procedure HtmlReportActionExecute(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure CopyToClipboardActionExecute(Sender: TObject);
+    procedure MaintainIgnoredOrderActionExecute (Sender : TObject );
+    procedure MaintainIgnoredOrderActionUpdate (Sender : TObject );
+    procedure mainVSTChange (Sender : TBaseVirtualTree ; Node : PVirtualNode );
     procedure PrevDiffActionExecute(Sender: TObject);
     procedure NextDiffActionExecute(Sender: TObject);
     procedure PrevDiffActionUpdate(Sender: TObject);
@@ -547,6 +555,7 @@ begin
           ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
           ShowA2BXmlForm.ignoreAddingOn := ignoreAddingon;
           ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
+          ShowA2BXmlForm.ignoreOrderOn := ignoreOrderOn;
           ShowA2BXmlForm.Xml := xData.rpyA2B;
           ShowA2BXmlForm.ShowModal;
           if ShowA2BXmlForm.RefreshNeeded then
@@ -722,6 +731,25 @@ begin
   finally
     Screen.Cursor := swapCursor;
   end;
+end;
+
+procedure TShowLogDifferencesForm .MaintainIgnoredOrderActionExecute (
+  Sender : TObject );
+begin
+  MaintainList(MaintainIgnoredOrderAction.Caption, ignoreOrderOn);
+end;
+
+procedure TShowLogDifferencesForm .MaintainIgnoredOrderActionUpdate (Sender : TObject
+  );
+begin
+  MaintainIgnoredOrderAction.Enabled := Assigned (ignoreOrderOn)
+                                  and (ignoreOrderOn.Count > 0);
+end;
+
+procedure TShowLogDifferencesForm .mainVSTChange (Sender : TBaseVirtualTree ;
+  Node : PVirtualNode );
+begin
+
 end;
 
 procedure TShowLogDifferencesForm.CopyGridOnGetText(Sender: TBaseVirtualTree;

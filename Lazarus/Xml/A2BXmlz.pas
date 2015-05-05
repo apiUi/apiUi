@@ -142,6 +142,15 @@ begin
 end;
 
 constructor TA2BXml.CreateA2B(aPrefix: String; aXml, bXml: TXml; ignoreOrderOn: TStringList);
+  function _sortKey (aXml:TXml): String;
+  var
+    x: Integer;
+  begin
+    result := aXml.Name + ';' + aXml.Value;
+    for x := 0 to aXml.Items.Count - 1 do
+      result := result + ';' + _sortKey(aXml.Items.XmlItems[x]);
+  end;
+
 var
   x, a, b, c, f, i, y: Integer;
   Diffs: TA2BStringList;
@@ -256,51 +265,20 @@ begin
     end;
   end;
 
-  if Assigned (ignoreOrderOn) then
+  if Assigned (ignoreOrderOn)
+  and ignoreOrderOn.Find(aPrefix + '.' + aXml.FullUQCaption , f) then
   begin
     for x := 0 to aXml.Items.Count - 1 do
-    begin
-      if ignoreOrderOn.Find(aPrefix + '.' + aXml.Items.XmlItems[x].FullUQCaption , f) then
-      begin
-        aXml.Items.Strings [x] := aXml.Items.XmlItems [x].TagName + ';';
-        with ignoreOrderOn.Objects[f] as TStringList do
-        begin
-          for y := 0 to Count - 1 do
-          begin
-            xXml := aXml.Items.XmlItems[x].FindUQ(Strings[y]) as TXml;
-            if Assigned (xXml) then
-              aXml.Items.Strings[x] := aXml.Items.Strings[x] + xXml.Value + ';'
-            else
-              aXml.Items.Strings[x] := aXml.Items.Strings[x] + 'nil' + ';';
-          end;
-        end;
-        aXml.Items.Sort;
-      end;
-    end;
+      aXml.Items.Strings [x] := _sortKey (aXml.Items.XmlItems [x]);
+    aXml.Items.Sort;
     for x := 0 to bXml.Items.Count - 1 do
-    begin
-      if ignoreOrderOn.Find(aPrefix + '.' + bXml.Items.XmlItems[x].FullUQCaption , f) then
-      begin
-        bXml.Items.Strings [x] := bXml.Items.XmlItems [x].TagName + ';';
-        with ignoreOrderOn.Objects[f] as TStringList do
-        begin
-          for y := 0 to Count - 1 do
-          begin
-            xXml := bXml.Items.XmlItems[x].FindUQ(Strings[y]) as TXml;
-            if Assigned (xXml) then
-              bXml.Items.Strings[x] := bXml.Items.Strings[x] + xXml.Value + ';'
-            else
-              bXml.Items.Strings[x] := bXml.Items.Strings[x] + 'nil' + ';';
-          end;
-          bXml.Items.Sort;
-        end;
-      end;
-    end;
+      bXml.Items.Strings [x] := _sortKey (bXml.Items.XmlItems [x]);
+    bXml.Items.Sort;
   end;
   for x := 0 to aXml.Items.Count - 1 do
-    aXml.Items.Strings [x] := rmPrefix (aXml.Items.XmlItems [x].TagName);
+    aXml.Items.Strings [x] := aXml.Items.XmlItems [x].TagName;
   for x := 0 to bXml.Items.Count - 1 do
-    bXml.Items.Strings [x] := rmPrefix (bXml.Items.XmlItems [x].TagName);
+    bXml.Items.Strings [x] := bXml.Items.XmlItems [x].TagName;
   with Diffs do
   begin
     Execute(aXml.Items, bXml.Items);

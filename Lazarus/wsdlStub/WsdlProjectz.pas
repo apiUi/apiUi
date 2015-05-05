@@ -1926,10 +1926,7 @@ begin
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
       AddXml(TXml.CreateAsString('ignoreRemovingOn', ignoreRemovingOn.Text));
-      with AddXml(TXml.CreateAsString('ignoreOrderOn','')) do
-        for x := 0 to ignoreOrderOn.Count - 1 do
-          with AddXml(TXml.CreateAsString('Element', ignoreOrderOn.Strings[x])) do
-            AddXml(TXml.CreateAsString('Keys', (ignoreOrderOn.Objects[x] as TStringList).Text));
+      AddXml(TXml.CreateAsString('ignoreOrderOn', ignoreOrderOn.Text));
       AddXml(TXml.CreateAsString('ignoreCoverageOn', ignoreCoverageOn.Text));
       with AddXml(TXml.CreateAsString('Scripts', '')) do
         for x := 0 to Scripts.Count - 1 do
@@ -2030,19 +2027,8 @@ begin
             end;
           ignoreDifferencesOn.Text := xXml.Items.XmlValueByTag ['ignoreDifferencesOn'];
           ignoreAddingOn.Text := xXml.Items.XmlValueByTag ['ignoreAddingOn'];
-          eXml := xXml.Items.XmlItemByTag ['ignoreOrderOn'];
-          if Assigned (eXml) then
-          begin
-            for x := 0 to eXml.Items.Count - 1 do with eXml.Items.XmlItems[x] do
-            begin
-              if Name = 'Element' then
-              begin
-                sl := TStringList.Create;
-                sl.Text := Items.XmlValueByTag['Keys'];
-                ignoreOrderOn.AddObject(Value, sl);
-              end;
-            end;
-          end;
+          ignoreRemovingOn.Text := xXml.Items.XmlValueByTag ['ignoreRemovingOn'];
+          ignoreOrderOn.Text := xXml.Items.XmlValueByTag ['ignoreOrderOn'];
           ignoreCoverageOn.Text := xXml.Items.XmlValueByTag ['ignoreCoverageOn'];
           FocusOperationName := xXml.Items.XmlValueByTag['FocusOperationName'];
           FocusMessageIndex := xXml.Items.XmlIntegerByTag['FocusMessageIndex'];
@@ -6835,9 +6821,6 @@ begin
   ignoreDifferencesOn.Clear;
   ignoreAddingOn.Clear;
   ignoreRemovingOn.Clear;
-  for x := 0 to ignoreOrderOn.Count - 1 do
-    if Assigned (ignoreOrderOn.Objects[x]) then
-      ignoreOrderOn.Objects[x].Free;
   ignoreOrderOn.Clear;
   ignoreCoverageOn.Clear;
   DisplayedLogColumns.Clear;

@@ -532,6 +532,24 @@ begin
 end;
 
 procedure TShowA2BXmlForm.TreeViewPopupMenuPopup(Sender: TObject);
+  function _hasRepeaters (aXml: TXml): Boolean;
+  var
+    x, y: Integer;
+  begin
+    result := False;
+    x := 0;
+    while (x < aXml.Items.Count) and (not Result) do
+    begin
+      y := x + 1;
+      while (y < aXml.Items.Count) and (not Result) do
+      begin
+        result := (aXml.Items.XmlItems[y].Name = aXml.Items.XmlItems[x].Name);
+        Inc(y);
+      end;
+      Inc(x);
+    end;
+  end;
+
 var
   xXml: TA2BXml;
 begin
@@ -558,11 +576,9 @@ begin
   IgnoreRemovingFullCaptionMenuItem.Enabled := IgnoreRemovingTagMenuItem.Enabled;
   IgnoreRemovingInclPrefixMenuItem.Enabled:=IgnoreRemovingTagMenuItem.Enabled;
   IgnoreOrderFullCaptionInclPrefixMenuItem.Enabled := (Assigned (ignoreOrderOn))
-                                        and (Assigned (xXml.Parent))
-                                        and (   ((xXml.Parent as TA2BXml).ChangeKind <> ckCopy)
-                                             or ((xXml.Parent as TA2BXml).Differs)
-                                            )
-                                        and ((xXml.Parent as TXml).NumberOfSubItemsWithTag(xXml.Name, False) > 1)
+                                        and (xXml.Differs)
+                                        and (not xXml.ThisOneDiffers)
+                                        and _hasRepeaters (xXml)
                                             ;
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
@@ -573,7 +589,7 @@ begin
   IgnoreRemovingTagMenuItem.Caption := 'Ignore removing of: *.' + rmPrefix(xXml.TagName);
   IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption;
   IgnoreRemovingInclPrefixMenuItem.Caption := 'Ignore removing on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
-  IgnoreOrderFullCaptionInclPrefixMenuItem.Caption := 'Ignore order of: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
+  IgnoreOrderFullCaptionInclPrefixMenuItem.Caption := 'Ignore order of subitems of: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   CopyDataToClipboardMenuItem.Caption := 'Copy data from '
                                        + xXml.TagName
                                        + ' to clipboard'
@@ -617,7 +633,7 @@ begin
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
-    ignoreAddingOn.Add(rmPrefix(xXml.TagName));
+    ignoreAddingOn.Add(xXml.TagName);
     RefreshNeeded := True;
   end;
 end;
@@ -889,51 +905,12 @@ end;
 
 procedure TShowA2BXmlForm.IgnoreOrderFullCaptionInclPrefixMenuItemClick(Sender: TObject);
 var
-  x: Integer;
   xXml: TA2BXml;
-  Srcs, sl: TStringList;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
-    if (xXml.Items.Count = 0) then
-    begin
-      sl := TStringList.Create;
-      sl.Add(rmPrefix(xXml.TagName));
-      ignoreOrderOn.AddObject(xXml.FullUQCaption, sl);
-    end
-    else
-    begin
-      Srcs := TStringList.Create;
-      Srcs.Sorted := True;
-      Srcs.Duplicates := dupIgnore;
-      for x := 0 to xXml.Items.Count - 1 do
-//        if xXml.Items.XmlItems[x].Items.Count = 0 then
-          Srcs.Add(xXml.Name + '.' + xXml.Items.XmlItems[x].Name);
-      try
-        Application.CreateForm(TdualListForm, dualListForm);
-        try
-          dualListForm.Caption := 'List of elements to order on';
-          dualListForm.DstList.Items.Text := '';
-          dualListForm.SrcList.Items.Text := Srcs.Text;
-          dualListForm.DstCaption := 'Order elements';
-          dualListForm.SrcCaption := '';
-          duallistForm.EmptySelectionAllowed := False;
-          dualListForm.ShowModal;
-          if dualListForm.ModalResult = mrOk then
-          begin
-            sl := TStringList.Create;
-            sl.Text := dualListForm.DstList.Items.Text;
-            ignoreOrderOn.AddObject(xXml.FullUQCaption, sl);
-          end;
-        finally
-          FreeAndNil (dualListForm);
-        end;
-      finally
-        Srcs.Clear;
-        Srcs.Free;
-      end;
-    end;
+    ignoreOrderOn.Add(xXml.Prefix + '.' + xXml.FullUQCaption);
     RefreshNeeded := True;
   end;
 end;
