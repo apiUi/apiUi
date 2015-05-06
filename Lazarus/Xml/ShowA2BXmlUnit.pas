@@ -543,13 +543,13 @@ procedure TShowA2BXmlForm.TreeViewPopupMenuPopup(Sender: TObject);
       y := x + 1;
       while (y < aXml.Items.Count) and (not Result) do
       begin
-        result := (aXml.Items.XmlItems[y].Name = aXml.Items.XmlItems[x].Name);
+        result := (aXml.Items.XmlItems[x] <> aXml.Items.XmlItems[y])
+              and (aXml.Items.XmlItems[x].Name = aXml.Items.XmlItems[y].Name);
         Inc(y);
       end;
       Inc(x);
     end;
   end;
-
 var
   xXml: TA2BXml;
 begin
@@ -589,7 +589,7 @@ begin
   IgnoreRemovingTagMenuItem.Caption := 'Ignore removing of: *.' + rmPrefix(xXml.TagName);
   IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption;
   IgnoreRemovingInclPrefixMenuItem.Caption := 'Ignore removing on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
-  IgnoreOrderFullCaptionInclPrefixMenuItem.Caption := 'Ignore order of subitems of: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
+  IgnoreOrderFullCaptionInclPrefixMenuItem.Caption := 'Ignore order for repeating subelements for : ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   CopyDataToClipboardMenuItem.Caption := 'Copy data from '
                                        + xXml.TagName
                                        + ' to clipboard'
@@ -904,14 +904,75 @@ begin
 end;
 
 procedure TShowA2BXmlForm.IgnoreOrderFullCaptionInclPrefixMenuItemClick(Sender: TObject);
+  procedure _fill (aXml: TXml; aSl, aSr: TStringList; aTag: String);
+  var
+    x, f: Integer;
+  begin
+    if (aXml.Items.Count = 0)
+    and (not aSl.Find (aTag, f))
+    and (not aSr.Find (aTag, f)) then
+      aSl.Add (aTag);
+    for x := 0 to aXml.Items.Count - 1 do
+      _fill (aXml.Items.XmlItems[x], aSl, aSr, aTag + '.' + aXml.Items.XmlItems[x].Name);
+  end;
 var
   xXml: TA2BXml;
+  s: String;
+  xExisting: Boolean;
+  x, f: Integer;
+  sl, sr, snew: TStringList;
 begin
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
-    ignoreOrderOn.Add(xXml.Prefix + '.' + xXml.FullUQCaption);
-    RefreshNeeded := True;
+    sl := TStringList.Create;
+    sl.Sorted:=True;
+    sr := TStringList.Create;
+    sr.Sorted:=True;
+    s := xXml.Prefix + '.' + xXml.FullUQCaption;
+    try
+      xExisting := ignoreOrderOn.Find (s, f);
+      if xExisting then
+        sr.Text := (ignoreOrderOn.Objects[f] as TStringList).Text;
+      for x := 0 to xXml.Items.Count - 1 do
+        _fill (xXml.Items.XmlItems[x], sl, sr, xXml.Items.XmlItems[x].Name);
+      Application.CreateForm(TdualListForm, dualListForm);
+      try
+        dualListForm.Caption := IgnoreOrderFullCaptionInclPrefixMenuItem.Caption;
+        dualListForm.DstList.Items.Text := sr.Text;
+        dualListForm.SrcList.Items.Text := sl.Text;
+        dualListForm.DstCaption := 'Elements to sort on';
+        dualListForm.SrcCaption := 'Candidate sort elements';
+        duallistForm.EmptySelectionAllowed := True;
+        dualListForm.ShowModal;
+        if dualListForm.ModalResult = mrOk then
+        begin
+          sr.Text := dualListForm.DstList.Items.Text;
+          if xExisting then
+          begin
+            if sr.Count = 0 then
+              IgnoreOrderOn.Delete(f)
+            else
+              (ignoreOrderOn.Objects[f] as TStringList).Text := sr.Text
+          end
+          else
+          begin
+            if sr.Count > 0 then
+            begin
+              snew := TStringList.Create;
+              snew.Text := sr.Text;
+              ignoreOrderOn.AddObject(s, snew);
+            end;
+          end;
+          RefreshNeeded := True;
+        end;
+      finally
+        FreeAndNil (dualListForm);
+      end;
+    finally
+      FreeAndNil (sl);
+      FreeAndNil (sr);
+    end;
   end;
 end;
 

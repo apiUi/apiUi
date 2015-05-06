@@ -37,7 +37,6 @@ type
     mainVST: TVirtualStringTree;
     ActionImageList: TImageList;
     ActionList1: TActionList;
-    ToolButton14 : TToolButton ;
     ToolButton2: TToolButton;
     CheckAllAction: TAction;
     UncheckAllAction: TAction;

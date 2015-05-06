@@ -1926,7 +1926,13 @@ begin
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
       AddXml(TXml.CreateAsString('ignoreRemovingOn', ignoreRemovingOn.Text));
-      AddXml(TXml.CreateAsString('ignoreOrderOn', ignoreOrderOn.Text));
+      with AddXml(TXml.CreateAsString('ignoreOrderOn', '')) do
+        for x := 0 to ignoreOrderOn.Count - 1 do
+          with AddXml(TXml.CreateAsString('Element', '')) do
+          begin
+            AddXml(TXml.CreateAsString('Id', ignoreOrderOn.Strings[x]));
+            AddXml(TXml.CreateAsString('Keys', (ignoreOrderOn.Objects[x] as TStringList).Text));
+          end;
       AddXml(TXml.CreateAsString('ignoreCoverageOn', ignoreCoverageOn.Text));
       with AddXml(TXml.CreateAsString('Scripts', '')) do
         for x := 0 to Scripts.Count - 1 do
@@ -2028,7 +2034,22 @@ begin
           ignoreDifferencesOn.Text := xXml.Items.XmlValueByTag ['ignoreDifferencesOn'];
           ignoreAddingOn.Text := xXml.Items.XmlValueByTag ['ignoreAddingOn'];
           ignoreRemovingOn.Text := xXml.Items.XmlValueByTag ['ignoreRemovingOn'];
-          ignoreOrderOn.Text := xXml.Items.XmlValueByTag ['ignoreOrderOn'];
+          eXml := xXml.Items.XmlItemByTag ['ignoreOrderOn'];
+          if Assigned (eXml) then
+          begin
+            for e := 0 to eXml.Items.Count - 1 do
+            begin
+              with eXml.Items.XmlItems[e] do
+              begin
+                if TagName = 'Element' then
+                begin
+                  y := ignoreOrderOn.Add(Items.XmlValueByTag['Id']);
+                  ignoreOrderOn.Objects[y] := TStringList.Create;
+                  (ignoreOrderOn.Objects[y] as TStringList).Text:=Items.XmlValueByTag['Keys'];
+                end;
+              end;
+            end;
+          end;
           ignoreCoverageOn.Text := xXml.Items.XmlValueByTag ['ignoreCoverageOn'];
           FocusOperationName := xXml.Items.XmlValueByTag['FocusOperationName'];
           FocusMessageIndex := xXml.Items.XmlIntegerByTag['FocusMessageIndex'];
@@ -6821,7 +6842,13 @@ begin
   ignoreDifferencesOn.Clear;
   ignoreAddingOn.Clear;
   ignoreRemovingOn.Clear;
-  ignoreOrderOn.Clear;
+  with ignoreOrderOn do
+  begin
+    for x := 0 to Count - 1 do
+      if Assigned (Objects[x]) then
+        Objects[x].Free;
+    Clear;
+  end;
   ignoreCoverageOn.Clear;
   DisplayedLogColumns.Clear;
   AsynchRpyLogs.Clear;

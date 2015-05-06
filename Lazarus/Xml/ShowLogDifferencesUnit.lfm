@@ -1,7 +1,7 @@
 object ShowLogDifferencesForm: TShowLogDifferencesForm
-  Left = 494
+  Left = 491
   Height = 409
-  Top = 192
+  Top = 270
   Width = 777
   Caption = 'wsdlStub - Show Log differences'
   ClientHeight = 409
@@ -13,7 +13,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
     Height = 380
@@ -146,6 +146,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     TabOrder = 1
     object ToolButton2: TToolButton
       Left = 1
+      Height = 22
       Top = 2
       Width = 10
       Action = MaintainIgnoreDiffsAction
@@ -167,7 +168,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Action = MaintainIgnoredRemovalsAction
     end
     object ToolButton3: TToolButton
-      Left = 103
+      Left = 80
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -175,17 +177,18 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 113
+      Left = 90
       Top = 2
       Action = NextDiffAction
     end
     object ToolButton6: TToolButton
-      Left = 136
+      Left = 113
       Top = 2
       Action = PrevDiffAction
     end
     object ToolButton7: TToolButton
-      Left = 159
+      Left = 136
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton7'
@@ -193,12 +196,13 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 169
+      Left = 146
       Top = 2
       Action = CopyToClipboardAction
     end
     object ToolButton8: TToolButton
-      Left = 192
+      Left = 169
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton8'
@@ -206,12 +210,13 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 202
+      Left = 179
       Top = 2
       Action = HtmlReportAction
     end
     object ToolButton11: TToolButton
-      Left = 225
+      Left = 202
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton11'
@@ -219,14 +224,9 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 235
+      Left = 212
       Top = 2
       Action = CloseAction
-    end
-    object ToolButton14: TToolButton
-      Left = 80
-      Top = 2
-      Action = MaintainIgnoredOrderAction
     end
   end
   object ActionImageList: TImageList

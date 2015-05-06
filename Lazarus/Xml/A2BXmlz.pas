@@ -142,15 +142,6 @@ begin
 end;
 
 constructor TA2BXml.CreateA2B(aPrefix: String; aXml, bXml: TXml; ignoreOrderOn: TStringList);
-  function _sortKey (aXml:TXml): String;
-  var
-    x: Integer;
-  begin
-    result := aXml.Name + ';' + aXml.Value;
-    for x := 0 to aXml.Items.Count - 1 do
-      result := result + ';' + _sortKey(aXml.Items.XmlItems[x]);
-  end;
-
 var
   x, a, b, c, f, i, y: Integer;
   Diffs: TA2BStringList;
@@ -265,20 +256,40 @@ begin
     end;
   end;
 
-  if Assigned (ignoreOrderOn)
-  and ignoreOrderOn.Find(aPrefix + '.' + aXml.FullUQCaption , f) then
-  begin
-    for x := 0 to aXml.Items.Count - 1 do
-      aXml.Items.Strings [x] := _sortKey (aXml.Items.XmlItems [x]);
-    aXml.Items.Sort;
-    for x := 0 to bXml.Items.Count - 1 do
-      bXml.Items.Strings [x] := _sortKey (bXml.Items.XmlItems [x]);
-    bXml.Items.Sort;
-  end;
   for x := 0 to aXml.Items.Count - 1 do
     aXml.Items.Strings [x] := aXml.Items.XmlItems [x].TagName;
   for x := 0 to bXml.Items.Count - 1 do
     bXml.Items.Strings [x] := bXml.Items.XmlItems [x].TagName;
+  if Assigned (ignoreOrderOn)
+  and ignoreOrderOn.Find(aPrefix + '.' + aXml.FullUQCaption , f) then
+  begin
+    for x := 0 to aXml.Items.Count - 1 do
+    begin
+      with ignoreOrderOn.Objects[f] as TStringList do
+      begin
+        for y := 0 to Count - 1 do
+        begin
+          xXml := aXml.Items.XmlItems [x].FindUQXml(Strings[y]);
+          if Assigned (xXml) then
+            aXml.Items.Strings[x] := aXml.Items.Strings[x] + ';' + xXml.Name + ';' + xXml.Value;
+        end;
+      end;
+    end;
+    aXml.Items.Sort;
+    for x := 0 to bXml.Items.Count - 1 do
+    begin
+      with ignoreOrderOn.Objects[f] as TStringList do
+      begin
+        for y := 0 to Count - 1 do
+        begin
+          xXml := bXml.Items.XmlItems [x].FindUQXml(Strings[y]);
+          if Assigned (xXml) then
+            bXml.Items.Strings[x] := bXml.Items.Strings[x] + ';' + xXml.Name + ';' + xXml.Value;
+        end;
+      end;
+    end;
+    bXml.Items.Sort;
+  end;
   with Diffs do
   begin
     Execute(aXml.Items, bXml.Items);

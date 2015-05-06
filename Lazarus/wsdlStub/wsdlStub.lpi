@@ -98,7 +98,6 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -157,7 +156,6 @@
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
-        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EIdCouldNotBindSocket"/>
