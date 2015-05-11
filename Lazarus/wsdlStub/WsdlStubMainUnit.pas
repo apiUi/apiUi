@@ -5517,9 +5517,9 @@ begin
           end;
         ttMQ:
           begin
-            MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'MQ Message Descriptor';
+            MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'MQ Request Descriptor';
             MessagesTabControl.Tabs[Ord(slRequestBody)] := 'MQ Request Body';
-            MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'MQ Message Headers';
+            MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'MQ Reply Descriptor';
             MessagesTabControl.Tabs[Ord(slReplyBody)] := 'MQ Reply Body';
           end;
         ttStomp:

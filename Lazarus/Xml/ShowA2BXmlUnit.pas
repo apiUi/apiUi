@@ -926,9 +926,7 @@ begin
   begin
     SelectedXml(xXml);
     sl := TStringList.Create;
-    sl.Sorted:=True;
     sr := TStringList.Create;
-    sr.Sorted:=True;
     s := xXml.Prefix + '.' + xXml.FullUQCaption;
     try
       xExisting := ignoreOrderOn.Find (s, f);
