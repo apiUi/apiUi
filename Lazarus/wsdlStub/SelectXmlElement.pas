@@ -195,7 +195,8 @@ begin
       end;
       rChild.Collapse(True);
     end;
-    ShowXmls (SrceBind, SrceBind.Name);
+    if Assigned (SrceBind) then
+      ShowXmls (SrceBind, SrceBind.Name);
     if Assigned (WsdlOperation) then
     begin
       if doShowRpy then

@@ -1,7 +1,7 @@
 object ShowA2BXmlForm: TShowA2BXmlForm
   Left = 670
   Height = 320
-  Top = 240
+  Top = 196
   Width = 729
   Caption = 'XML Data'
   ClientHeight = 320

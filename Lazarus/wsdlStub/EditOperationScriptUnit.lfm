@@ -1,7 +1,7 @@
 object EditOperationScriptForm: TEditOperationScriptForm
   Left = 377
   Height = 484
-  Top = 206
+  Top = 162
   Width = 1004
   Anchors = []
   Caption = 'Edit script'
@@ -14,7 +14,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object TopPanel: TPanel
     Left = 0
     Height = 41
@@ -519,7 +519,6 @@ object EditOperationScriptForm: TEditOperationScriptForm
         'ScriptEdit'
       )
       VisibleSpecialChars = [vscSpace, vscTabAtLast]
-      SelectedColor.FrameEdges = sfeAround
       SelectedColor.BackPriority = 50
       SelectedColor.ForePriority = 50
       SelectedColor.FramePriority = 50
@@ -527,23 +526,17 @@ object EditOperationScriptForm: TEditOperationScriptForm
       SelectedColor.ItalicPriority = 50
       SelectedColor.UnderlinePriority = 50
       SelectedColor.StrikeOutPriority = 50
-      IncrementColor.FrameEdges = sfeAround
-      HighlightAllColor.FrameEdges = sfeAround
       BracketHighlightStyle = sbhsBoth
       BracketMatchColor.Background = clNone
       BracketMatchColor.Foreground = clRed
-      BracketMatchColor.FrameEdges = sfeAround
       BracketMatchColor.Style = [fsBold]
       FoldedCodeColor.Background = clNone
       FoldedCodeColor.Foreground = clGray
       FoldedCodeColor.FrameColor = clGray
-      FoldedCodeColor.FrameEdges = sfeAround
       MouseLinkColor.Background = clNone
       MouseLinkColor.Foreground = clBlue
-      MouseLinkColor.FrameEdges = sfeAround
       LineHighlightColor.Background = clNone
       LineHighlightColor.Foreground = clNone
-      LineHighlightColor.FrameEdges = sfeAround
       OnChange = ScriptEditChange
       inline SynLeftGutterPartList1: TSynGutterPartList
         object SynGutterMarks1: TSynGutterMarks
@@ -555,7 +548,6 @@ object EditOperationScriptForm: TEditOperationScriptForm
           MouseActions = <>
           MarkupInfo.Background = clBtnFace
           MarkupInfo.Foreground = clNone
-          MarkupInfo.FrameEdges = sfeAround
           DigitCount = 2
           ShowOnlyLineNumbersMultiplesOf = 1
           ZeroStart = False
@@ -572,13 +564,11 @@ object EditOperationScriptForm: TEditOperationScriptForm
           MouseActions = <>
           MarkupInfo.Background = clWhite
           MarkupInfo.Foreground = clGray
-          MarkupInfo.FrameEdges = sfeAround
         end
         object SynGutterCodeFolding1: TSynGutterCodeFolding
           MouseActions = <>
           MarkupInfo.Background = clNone
           MarkupInfo.Foreground = clGray
-          MarkupInfo.FrameEdges = sfeAround
           MouseActionsExpanded = <>
           MouseActionsCollapsed = <>
         end
@@ -672,17 +662,9 @@ object EditOperationScriptForm: TEditOperationScriptForm
   end
   object SynAnySyn1: TSynAnySyn
     Enabled = False
-    CommentAttri.FrameEdges = sfeAround
     Comments = []
     DetectPreprocessor = False
-    IdentifierAttri.FrameEdges = sfeAround
     IdentifierChars = '!"#$%&''()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~'
-    KeyAttri.FrameEdges = sfeAround
-    ConstantAttri.FrameEdges = sfeAround
-    ObjectAttri.FrameEdges = sfeAround
-    EntityAttri.FrameEdges = sfeAround
-    VariableAttri.FrameEdges = sfeAround
-    DotAttri.FrameEdges = sfeAround
     KeyWords.Strings = (
       'AND'
       'AS'
@@ -715,12 +697,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
       'WHILE'
       'WITH'
     )
-    NumberAttri.FrameEdges = sfeAround
-    PreprocessorAttri.FrameEdges = sfeAround
-    SpaceAttri.FrameEdges = sfeAround
     StringAttri.Foreground = clBlue
-    StringAttri.FrameEdges = sfeAround
-    SymbolAttri.FrameEdges = sfeAround
     Markup = False
     Entity = False
     DollarVariables = False

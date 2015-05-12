@@ -1,7 +1,7 @@
 object ShowLogDifferencesForm: TShowLogDifferencesForm
   Left = 491
   Height = 409
-  Top = 270
+  Top = 226
   Width = 777
   Caption = 'wsdlStub - Show Log differences'
   ClientHeight = 409
