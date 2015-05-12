@@ -16,13 +16,16 @@ uses
   Buttons, ExtCtrls, SysUtils, FormIniFilez;
 
 type
+
+  { TDelayTimeForm }
+
   TDelayTimeForm = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
+    CancelButton : TBitBtn ;
     DelayRadioGroup: TRadioGroup;
     DelayMinEdit: TLabeledEdit;
     DelayMaxEdit: TLabeledEdit;
     ApplyToRadioGroup: TRadioGroup;
+    OkButton : TBitBtn ;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure DelayRadioGroupClick(Sender: TObject);

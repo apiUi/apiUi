@@ -16,11 +16,14 @@ uses
   Buttons, ComCtrls, ExtCtrls, IpmGunLicense;
 
 type
+
+  { TIpmGunLicenseForm }
+
   TIpmGunLicenseForm = class(TForm)
+    CancelButton : TBitBtn ;
+    OkButton : TBitBtn ;
     Panel1: TPanel;
     Panel2: TPanel;
-    OKBtn: TButton;
-    CancelBtn: TButton;
     CompanyEdit: TLabeledEdit;
     LicenseDateEdit: TLabeledEdit;
     BaseEdit: TLabeledEdit;

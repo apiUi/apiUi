@@ -28,6 +28,7 @@ type
   { TEditOperationScriptForm }
 
   TEditOperationScriptForm = class(TForm)
+    CancelButton : TBitBtn ;
     FindAction : TAction ;
     FindNextAction : TAction ;
     CancelAction : TAction ;
@@ -35,6 +36,7 @@ type
     OkAction : TAction ;
     CheckAction : TAction ;
     ActionList1 : TActionList ;
+    OkButton : TBitBtn ;
     SynAnySyn1 : TSynAnySyn ;
     ScriptEdit : TSynEdit ;
     TopPanel: TPanel;
@@ -42,8 +44,6 @@ type
     ScriptNameEdit: TEdit;
     Panel3: TPanel;
     Panel2: TPanel;
-    OKBtn: TButton;
-    CancelBtn: TButton;
     CheckButton: TButton;
     StatusBar: TStatusBar;
     MemoPopUpMenu: TPopupMenu;

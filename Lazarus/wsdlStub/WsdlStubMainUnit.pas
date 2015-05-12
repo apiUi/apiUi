@@ -9158,7 +9158,6 @@ end;
 
 procedure TMainForm.ShowSelectedRequestsAsXmlGridActionExecute(Sender: TObject);
 var
-  xLog: TLog;
   xNode: PVirtualNode;
   xData: PLogTreeRec;
   aXml: TXml;
@@ -9174,11 +9173,8 @@ begin
       begin
         xData := MessagesVTS.GetNodeData(xNode);
         if Assigned(xData.Log) and (xData.Log is TLog) then
-        begin
-          xLog := xData.Log;
-          if Assigned(xLog.Operation) then
-            aXml.AddXml(xLog.reqBodyAsXml);
-        end;
+        with xData.Log as TLog do
+          aXml.AddXml(reqBodyAsXml);
         xNode := MessagesVTS.GetNextSelected(xNode);
       end;
       ShowTextAsGrid('Requests as Grid', aXml.AsText(False, 0, False, False));
@@ -9199,7 +9195,6 @@ end;
 procedure TMainForm.ShowSelectedResponsesAsXmlGridActionExecute
   (Sender: TObject);
 var
-  xLog: TLog;
   xNode: PVirtualNode;
   xData: PLogTreeRec;
   aXml: TXml;
@@ -9215,11 +9210,8 @@ begin
       begin
         xData := MessagesVTS.GetNodeData(xNode);
         if Assigned(xData.Log) and (xData.Log is TLog) then
-        begin
-          xLog := xData.Log;
-          if Assigned(xLog.Operation) then
-            aXml.AddXml(xLog.rpyBodyAsXml);
-        end;
+        with xData.Log as TLog do
+          aXml.AddXml(rpyBodyAsXml);
         xNode := MessagesVTS.GetNextSelected(xNode);
       end;
       ShowTextAsGrid('Responses as Grid', aXml.AsText(False, 0, False, False));

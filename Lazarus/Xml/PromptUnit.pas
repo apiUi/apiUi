@@ -16,10 +16,13 @@ uses
   Buttons, ExtCtrls;
 
 type
+
+  { TPromptForm }
+
   TPromptForm = class(TForm)
+    CancelButton : TBitBtn ;
+    OkButton : TBitBtn ;
     Panel1: TPanel;
-    OKButton: TButton;
-    CancelBtn: TButton;
     Panel2: TPanel;
     PromptEdit: TEdit;
     procedure FormShow(Sender: TObject);

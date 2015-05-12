@@ -19,11 +19,14 @@ uses
   ;
 
 type
+
+  { TEditListValuesForm }
+
   TEditListValuesForm = class(TForm)
+    CancelBtn : TBitBtn ;
+    OKBtn : TBitBtn ;
     Panel3: TPanel;
     Panel2: TPanel;
-    OKBtn: TButton;
-    CancelBtn: TButton;
     StatusBar: TStatusBar;
     MemoPopUpMenu: TPopupMenu;
     IpmFieldMenuItem: TMenuItem;

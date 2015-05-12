@@ -16,9 +16,12 @@ uses
   Buttons, ExtCtrls, SysUtils, FormIniFilez;
 
 type
+
+  { TApplyToForm }
+
   TApplyToForm = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
+    CancelButton : TBitBtn ;
+    OkButton : TBitBtn ;
     RadioGroup: TRadioGroup;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);

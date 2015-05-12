@@ -13,15 +13,18 @@ uses
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
   Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, FormIniFilez;
+  StdCtrls, ExtCtrls , Buttons, FormIniFilez;
 
 type
+
+  { TChooseStringForm }
+
   TChooseStringForm = class(TForm)
+    CancelButton : TBitBtn ;
+    OkButton : TBitBtn ;
     Panel1: TPanel;
     Panel2: TPanel;
     ListBox: TListBox;
-    Button1: TButton;
-    Button2: TButton;
     procedure ChooseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
