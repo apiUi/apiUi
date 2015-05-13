@@ -16,9 +16,12 @@ uses
   Buttons, ImgList, FormIniFilez,ExtCtrls;
 
 type
+
+  { TdualListForm }
+
   TdualListForm = class(TForm)
-    OKBtn: TButton;
-    CancelBtn: TButton;
+    CancelButton : TBitBtn ;
+    OkButton : TBitBtn ;
     SrcList: TListBox;
     DstList: TListBox;
     IncludeBtn: TSpeedButton;
@@ -146,7 +149,7 @@ begin
   IncAllBtn.Enabled := not SrcEmpty;
   ExcludeBtn.Enabled := not DstEmpty and DstItemsSelected;
   ExAllBtn.Enabled := not DstEmpty;
-  OKBtn.Enabled := EmptySelectionAllowed or (not DstEmpty);
+  OkButton.Enabled := EmptySelectionAllowed or (not DstEmpty);
   UpBtn.Enabled := False;
   DownBtn.Enabled := False;
   if (DstList.Items.Count > 1)
