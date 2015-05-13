@@ -156,6 +156,7 @@ uses FindRegExpDialog
    , dualListUnit
    , wrdFunctionz
    , base64
+   , Clipbrd
    ;
 const
   iiGreenBullet = 132;
@@ -399,7 +400,6 @@ end;
 procedure TShowA2BXmlForm.CopyActionExecute(Sender: TObject);
 var
   theXml: TA2BXml;
-  Memo: TMemo;
   x: Integer;
 begin
   if ToolButtonUsed(Sender) then
@@ -408,17 +408,7 @@ begin
     NodeToXml (TreeView.FocusedNode, theXml);
   if theXml = nil then
     exit;
-  FileContents.Text := theXml.StreamXML (False, True, 0, False, False);
-  Memo := TMemo.Create (self);
-  Memo.Parent := self;
-  Memo.Visible := False;
-  Memo.Lines.Clear;
-  for x := 0 to FileContents.Count - 1 do
-    Memo.Lines.Add (FileContents.Strings [x]);
-  Memo.SelectAll;
-  Memo.CopyToClipboard;
-  Memo.Free;
-  FileContents.Clear;
+  Clipboard.AsText := theXml.AsTabSeparatedValues;
 end;
 
 procedure TShowA2BXmlForm.FullExpandActionExecute(Sender: TObject);

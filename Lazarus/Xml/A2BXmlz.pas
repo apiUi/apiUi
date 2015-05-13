@@ -29,6 +29,7 @@ type
     bValue, bNameSpace: String;
     Prefix: String;
     ChangeKind: TChangeKind;
+    function AsTabSeparatedValues: String;
     property ThisOneDiffers: Boolean read fThisOneDiffers write setThisOneDiffers;
     property Differs: Boolean read fDiffers write setDiffers;
     property Ignored: Boolean read fIgnored write setIgnored;
@@ -434,6 +435,49 @@ begin
   fThisOneDiffers := AValue ;
   if AValue then
     Differs := True;
+end;
+
+function TA2BXml .AsTabSeparatedValues : String ;
+const
+  Tab = Chr(9);
+  function _Action (aCK: TChangeKind): String;
+  begin
+    result := '';
+    case aCk of
+      ckAdd: result := 'Add';
+      ckDelete: result := 'Delete';
+      ckModify: result := 'Modify';
+      ckCopy: result := 'Copy';
+    end;
+  end;
+  function _tsv (aXml: TA2BXml; aIndent: Integer): String;
+  var
+    x: Integer;
+  begin
+    result := '';
+    for x := 0 to aIndent - 1 do
+      result := result + ' ';
+    result := result + aXml.Name
+            + Tab + _Action (aXml.ChangeKind)
+            + Tab + IfThen(aXml.Ignored and not (aXml.ChangeKind = ckCopy), 'true')
+            + Tab + aXml.Value + ' '
+            + Tab + aXml.bValue + ' '
+            + Tab + aXml.NameSpace + ' '
+            + LineEnding
+            ;
+    for x := 0 to aXml.Items.Count - 1 do
+      result := result + _tsv (aXml.Items.XmlItems[x] as TA2BXml, aIndent + 2);
+  end;
+
+begin
+  result := 'Tag'
+          + Tab + 'Action'
+          + Tab + 'Ignored'
+          + Tab + 'Value'
+          + Tab + 'ReferenceValue'
+          + Tab + 'NameSpace'
+          + LineEnding
+          + _tsv(self, 0);
 end;
 
 function TA2BXml.getNumberOfDiffs: Integer;
