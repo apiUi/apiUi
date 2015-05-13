@@ -3498,7 +3498,11 @@ begin
         xLog.InboundTimeStamp := Now;
       end;
       if xLog.ReplyBody = S_MESSAGE_ACCEPTED then
-        xLog.ReplyBody := ''
+      begin
+        xLog.ReplyBody := '';
+        if aOperation.rpyBind.Name = '' then
+          aOperation.ExecuteAfter;
+      end
       else
       begin
         if not (aOperation.WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail]) then

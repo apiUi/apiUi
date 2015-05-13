@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="8768"/>
+      <BuildNr Value="8772"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -150,7 +150,6 @@
       </Item12>
       <Item13>
         <Name Value="EIdConnClosedGracefully"/>
-        <Enabled Value="False"/>
       </Item13>
       <Item14>
         <Name Value="ERegExpr"/>
