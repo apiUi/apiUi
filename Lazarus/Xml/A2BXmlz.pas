@@ -460,9 +460,9 @@ const
     result := result + aXml.Name
             + Tab + _Action (aXml.ChangeKind)
             + Tab + IfThen(aXml.Ignored and not (aXml.ChangeKind = ckCopy), 'true')
-            + Tab + aXml.Value + ' '
-            + Tab + aXml.bValue + ' '
-            + Tab + aXml.NameSpace + ' '
+            + Tab + '"'+ aXml.Value + '"'
+            + Tab + '"'+ aXml.bValue + '"'
+            + Tab + aXml.NameSpace
             + LineEnding
             ;
     for x := 0 to aXml.Items.Count - 1 do

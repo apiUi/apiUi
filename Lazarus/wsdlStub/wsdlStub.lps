@@ -141,11 +141,10 @@
       <Unit15>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
         <UnitName Value="A2BXmlz"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="452"/>
-        <CursorPos X="84" Y="462"/>
+        <TopLine Value="443"/>
+        <CursorPos X="35" Y="465"/>
         <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit15>
@@ -169,10 +168,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ShowA2BXmlUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="402"/>
-        <CursorPos X="1" Y="412"/>
+        <TopLine Value="568"/>
+        <CursorPos X="66" Y="583"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -655,87 +655,87 @@
       </Position9>
       <Position10>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="63" Column="5" TopLine="65"/>
+        <Caret Line="6649" Column="11" TopLine="6641"/>
       </Position10>
       <Position11>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="6649" Column="11" TopLine="6641"/>
+        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
+        <Caret Line="410" Column="3" TopLine="396"/>
       </Position11>
       <Position12>
         <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
-        <Caret Line="410" Column="3" TopLine="396"/>
+        <Caret Line="159" Column="13" TopLine="145"/>
       </Position12>
       <Position13>
         <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
-        <Caret Line="159" Column="13" TopLine="145"/>
+        <Caret Line="411" Column="30" TopLine="407"/>
       </Position13>
       <Position14>
         <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
-        <Caret Line="411" Column="30" TopLine="407"/>
+        <Caret Line="402" Column="3" TopLine="390"/>
       </Position14>
       <Position15>
-        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
-        <Caret Line="402" Column="3" TopLine="390"/>
-      </Position15>
-      <Position16>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
         <Caret Line="32" Column="28" TopLine="26"/>
-      </Position16>
-      <Position17>
+      </Position15>
+      <Position16>
         <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
         <Caret Line="402" Column="3" TopLine="390"/>
-      </Position17>
-      <Position18>
+      </Position16>
+      <Position17>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
         <Caret Line="440" Column="39" TopLine="439"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
+        <Caret Line="411" Column="30" TopLine="400"/>
       </Position18>
       <Position19>
         <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
-        <Caret Line="411" Column="30" TopLine="400"/>
+        <Caret Line="412" Column="1" TopLine="402"/>
       </Position19>
       <Position20>
-        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
-        <Caret Line="412" Column="1" TopLine="402"/>
+        <Filename Value="..\Xml\A2BXmlz.pas"/>
+        <Caret Line="442" Column="31" TopLine="439"/>
       </Position20>
       <Position21>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
-        <Caret Line="442" Column="31" TopLine="439"/>
+        <Caret Line="443" Column="21" TopLine="439"/>
       </Position21>
       <Position22>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
-        <Caret Line="443" Column="21" TopLine="439"/>
+        <Caret Line="31" Column="23" TopLine="21"/>
       </Position22>
       <Position23>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
-        <Caret Line="31" Column="23" TopLine="21"/>
+        <Caret Line="462" Column="21" TopLine="446"/>
       </Position23>
       <Position24>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
-        <Caret Line="462" Column="21" TopLine="446"/>
+        <Caret Line="443" Column="38" TopLine="432"/>
       </Position24>
       <Position25>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
-        <Caret Line="443" Column="38" TopLine="432"/>
+        <Caret Line="462" Column="21" TopLine="452"/>
       </Position25>
       <Position26>
-        <Filename Value="..\Xml\A2BXmlz.pas"/>
-        <Caret Line="462" Column="21" TopLine="452"/>
-      </Position26>
-      <Position27>
         <Filename Value="wsdlStub.lpr"/>
         <Caret Line="16" Column="57" TopLine="1"/>
-      </Position27>
-      <Position28>
+      </Position26>
+      <Position27>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
         <Caret Line="462" Column="58" TopLine="452"/>
-      </Position28>
-      <Position29>
+      </Position27>
+      <Position28>
         <Filename Value="wsdlStub.lpr"/>
         <Caret Line="31" Column="1" TopLine="10"/>
-      </Position29>
-      <Position30>
+      </Position28>
+      <Position29>
         <Filename Value="..\Xml\A2BXmlz.pas"/>
         <Caret Line="469" Column="49" TopLine="452"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
+        <Caret Line="412" Column="1" TopLine="402"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

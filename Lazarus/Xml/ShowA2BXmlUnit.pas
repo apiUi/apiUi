@@ -580,7 +580,7 @@ begin
   IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption;
   IgnoreRemovingInclPrefixMenuItem.Caption := 'Ignore removing on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   IgnoreOrderFullCaptionInclPrefixMenuItem.Caption := 'Ignore order for repeating subelements for : ' + xXml.Prefix + '.' + xXml.FullUQCaption;
-  CopyDataToClipboardMenuItem.Caption := 'Copy data from '
+  CopyDataToClipboardMenuItem.Caption := 'Copy tab separated data from '
                                        + xXml.TagName
                                        + ' to clipboard'
                                        ;

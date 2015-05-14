@@ -186,7 +186,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
     end
     object CopyAction: TAction
       Caption = 'CopyAction'
-      Hint = 'Copy'
+      Hint = 'Copy tab separated data'
       ImageIndex = 6
       OnExecute = CopyActionExecute
       ShortCut = 16451
