@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="8775"/>
+      <BuildNr Value="8785"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -127,7 +127,6 @@
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
-        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdResolveError"/>

@@ -60,6 +60,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    CopyLogGridToClipBoardAction : TAction ;
     ProjectDesignToClipboardAction: TAction;
     PresentLogMemoTextAction : TAction ;
     DesignPanel: TPanel;
@@ -78,6 +79,8 @@ type
     ToolBar4 : TToolBar ;
     ToolButton30 : TToolButton ;
     ToolButton32 : TToolButton ;
+    ToolButton36 : TToolButton ;
+    ToolButton37 : TToolButton ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -481,6 +484,7 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
     procedure GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure MessagesTabControlChange (Sender : TObject );
@@ -11984,6 +11988,19 @@ end;
 procedure TMainForm .DataTypeDocumentationMemoClick (Sender : TObject );
 begin
   OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
+end;
+
+procedure TMainForm .CopyLogGridToClipBoardActionExecute (Sender : TObject );
+var
+  xCursor: TCursor;
+begin
+  xCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    ClipBoard.AsText := vstToGrid(MessagesVTS, MessagesVTSGetText);
+  finally
+    Screen.Cursor := xCursor;
+  end;
 end;
 
 procedure TMainForm.GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode

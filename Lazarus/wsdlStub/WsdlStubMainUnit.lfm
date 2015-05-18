@@ -903,13 +903,13 @@ object MainForm: TMainForm
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
       Caption = 'Documentation'
-      ClientHeight = 135
-      ClientWidth = 859
+      ClientHeight = 140
+      ClientWidth = 931
       object DocumentationMemo: TMemo
         Left = 0
         Height = 140
         Top = 0
-        Width = 857
+        Width = 931
         Align = alClient
         OnChange = DocumentationMemoChange
         ScrollBars = ssBoth
@@ -918,8 +918,8 @@ object MainForm: TMainForm
     end
     object ExceptionTabSheet: TTabSheet
       Caption = 'Notifications'
-      ClientHeight = 135
-      ClientWidth = 859
+      ClientHeight = 140
+      ClientWidth = 931
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -990,7 +990,7 @@ object MainForm: TMainForm
         end
       end
       object ToolBar3: TToolBar
-        Left = 827
+        Left = 901
         Height = 140
         Top = 0
         Width = 30
@@ -1009,7 +1009,7 @@ object MainForm: TMainForm
         Left = 190
         Height = 140
         Top = 0
-        Width = 637
+        Width = 711
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1064,22 +1064,22 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object ToolButton49: TToolButton
-          Left = 80
+          Left = 113
           Top = 2
           Action = ReportUnexpectedValuesAction
         end
         object ToolButton33: TToolButton
-          Left = 103
+          Left = 136
           Top = 2
           Action = MessagesRegressionAction
         end
         object ToolButton67: TToolButton
-          Left = 126
+          Left = 159
           Top = 2
           Action = LogCoverageReportAction
         end
         object ToolButton69: TToolButton
-          Left = 149
+          Left = 182
           Top = 2
           Width = 10
           Caption = 'ToolButton69'
@@ -1087,27 +1087,27 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object ToolButton22: TToolButton
-          Left = 159
+          Left = 192
           Top = 2
           Action = ClearLogItemsAction
         end
         object ToolButton42: TToolButton
-          Left = 182
+          Left = 215
           Top = 2
           Action = FilterLogAction
         end
         object BrowseMqButton: TToolButton
-          Left = 205
+          Left = 238
           Top = 2
           Action = BrowseMqAction
         end
         object MasterMessagesToolButton: TToolButton
-          Left = 228
+          Left = 261
           Top = 2
           Action = httpRequestMessagesAction
         end
         object ToolButton59: TToolButton
-          Left = 251
+          Left = 284
           Top = 2
           Action = readLog4jEventsAction
         end
@@ -1132,6 +1132,18 @@ object MainForm: TMainForm
           BorderSpacing.Top = 6
           BorderSpacing.CellAlignVertical = ccaRightBottom
           TabOrder = 0
+        end
+        object ToolButton36: TToolButton
+          Left = 103
+          Top = 2
+          Width = 10
+          Caption = 'ToolButton36'
+          Style = tbsSeparator
+        end
+        object ToolButton37: TToolButton
+          Left = 80
+          Top = 2
+          Action = CopyLogGridToClipBoardAction
         end
       end
       object Panel2: TPanel
@@ -1492,7 +1504,7 @@ object MainForm: TMainForm
     object CopyGridAction: TAction
       Category = 'Edit'
       Caption = 'Copy grid'
-      Hint = 'Copy grid (Spreadsheet format)'
+      Hint = 'Copy grid'#13#10'(Spreadsheet format)'
       ImageIndex = 23
       OnExecute = CopyGridActionExecute
       OnUpdate = CopyGridActionUpdate
@@ -1505,7 +1517,7 @@ object MainForm: TMainForm
     object PasteGridAction: TAction
       Category = 'Edit'
       Caption = 'Paste grid'
-      Hint = 'Paste grid (Spreadsheet format)'
+      Hint = 'Paste grid'#13#10'(Spreadsheet format)'
       ImageIndex = 24
       OnExecute = PasteGridActionExecute
       OnUpdate = PasteGridActionUpdate
@@ -2058,6 +2070,13 @@ object MainForm: TMainForm
       Caption = 'ProjectDesign To Clipboard'
       OnExecute = ProjectDesignToClipboardActionExecute
       ShortCut = 24699
+    end
+    object CopyLogGridToClipBoardAction: TAction
+      Category = 'Log'
+      Caption = 'CopyLogGridToClipBoardAction'
+      Hint = 'Copy log entries'#13#10'(Spreadsheet format)'
+      ImageIndex = 23
+      OnExecute = CopyLogGridToClipBoardActionExecute
     end
   end
   object mainImageList: TImageList

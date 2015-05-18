@@ -116,7 +116,7 @@ begin
       xTabSep := #9;
     end;
   end;
-  xNLSep := #$D#$A;
+  xNLSep := LineEnding;
   while Assigned (xNode) do
   begin
     if aVST.IsVisible [xNode] then
@@ -128,15 +128,15 @@ begin
         if (coVisible in aVst.Header.Columns.Items[xCol].Options) then
         begin
           OnGetText (aVST, xNode, xCol, ttStatic, xText);
-          result := result + xTabSep + xText;
+          result := result + xTabSep + '"' + xText + '"';
           xTabSep := #9;
         end;
       end;
-      xNLSep := #$D#$A;
+      xNLSep := LineEnding;
     end;
     xNode := aVST.GetNext(xNode);
   end;
 end;
 
 
-end.
+end.

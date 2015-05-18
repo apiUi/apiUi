@@ -1963,13 +1963,15 @@ var
 begin
   result := True;
   xXml := aXml as TXml;
+  xXml.ValidationMesssage := '';
   if not xXml.Checked then
     Exit;
+
   // check namespace
   if Assigned (xXml.Xsd)
   and (xXml.NameSpace <> '')
   and (xXml.NameSpace <> xXml.Xsd.ElementNameSpace)
-//  and (NameSpace <> scXMLSchemaURI)
+  //and (NameSpace <> scXMLSchemaURI)
   then
   begin
     result := False;

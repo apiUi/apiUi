@@ -570,19 +570,31 @@ begin
   Result := '';
   for x := 1 to Length(aValue) do
   begin
-    case aValue[x] of
-      ' '..'!': Result := Result + aValue[x];
-      '"': result := result + '&quot;';
-      '#'..'%': Result := Result + aValue[x];
-      '&': result := result + '&amp;';
-      '''': result := result + '&apos;';
-      '('..';': Result := Result + aValue[x];
-      '<': result := result + '&lt;';
-      '=': Result := Result + aValue[x];
-      '>': result := result + '&gt;';
-      '?'..'~': Result := Result + aValue[x];
-      else
-        Result := Result + '&#x' + SysUtils.IntToHex(Ord(aValue[x]), 2) + ';';
+    if (    (aValue [x] = #13)
+        and (x < Length (aValue))
+        and (aValue [x + 1] = #10)
+       )
+    or (    (aValue [x] = #10)
+        and (x > 1)
+        and (aValue [x - 1] = #13)
+       ) then
+      Result := Result + aValue[x]
+    else
+    begin
+      case aValue[x] of
+        ' '..'!': Result := Result + aValue[x];
+        '"': result := result + '&quot;';
+        '#'..'%': Result := Result + aValue[x];
+        '&': result := result + '&amp;';
+        '''': result := result + '&apos;';
+        '('..';': Result := Result + aValue[x];
+        '<': result := result + '&lt;';
+        '=': Result := Result + aValue[x];
+        '>': result := result + '&gt;';
+        '?'..'~': Result := Result + aValue[x];
+        else
+          Result := Result + '&#x' + SysUtils.IntToHex(Ord(aValue[x]), 2) + ';';
+      end;
     end;
   end;
 end;
@@ -2865,24 +2877,36 @@ end;
 
 function TXml.getEncodedValue: String;
 var
-  Idx: Integer; // loops thru characters in string
+  x: Integer; // loops thru characters in string
 begin
   Result := '';
-  for Idx := 1 to Length(Value) do
+  for x := 1 to Length(Value) do
   begin
-    case Value[Idx] of
-      ' '..'!': Result := Result + Value[Idx];
-      '"': result := result + '&quot;';
-      '#'..'%': Result := Result + Value[Idx];
-      '&': result := result + '&amp;';
-      '''': result := result + '&apos;';
-      '('..';': Result := Result + Value[Idx];
-      '<': result := result + '&lt;';
-      '=': Result := Result + Value[Idx];
-      '>': result := result + '&gt;';
-      '?'..'~': Result := Result + Value[Idx];
-      else
-        Result := Result + '&#x' + SysUtils.IntToHex(Ord(Value[Idx]), 2) + ';';
+    if (    (Value [x] = #13)
+        and (x < Length (Value))
+        and (Value [x + 1] = #10)
+       )
+    or (    (Value [x] = #10)
+        and (x > 1)
+        and (Value [x - 1] = #13)
+       ) then
+      Result := Result + Value[x]
+    else
+    begin
+      case Value[x] of
+        ' '..'!': Result := Result + Value[x];
+        '"': result := result + '&quot;';
+        '#'..'%': Result := Result + Value[x];
+        '&': result := result + '&amp;';
+        '''': result := result + '&apos;';
+        '('..';': Result := Result + Value[x];
+        '<': result := result + '&lt;';
+        '=': Result := Result + Value[x];
+        '>': result := result + '&gt;';
+        '?'..'~': Result := Result + Value[x];
+        else
+          Result := Result + '&#x' + SysUtils.IntToHex(Ord(Value[x]), 2) + ';';
+      end;
     end;
   end;
 end;
