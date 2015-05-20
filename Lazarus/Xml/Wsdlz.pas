@@ -164,6 +164,8 @@ type
       procedure Clean;
   end;
 
+  { TWsdlOperation }
+
   TWsdlOperation = class(TObject)
     private
       fCloned: TWsdlOperation;
@@ -516,6 +518,7 @@ function getVarDef (aName, aDefault: String): String;
 function xsdOperationCount(aOperation: TWsdlOperation): Extended;
 function wsdlUserName: String;
 function wsdlOperationName(aOper: TWsdlOperation): String;
+function wsdlMessageName(aOper: TWsdlOperation): String;
 function xsdTodayAsDate: String;
 function sblTodayAsDate: String;
 procedure PromptReply(aOperation: TWsdlOperation);
@@ -1443,6 +1446,14 @@ end;
 function wsdlOperationName(aOper: TWsdlOperation): String;
 begin
   result := aOper.reqTagName;
+end;
+
+function wsdlMessageName(aOper: TWsdlOperation): String;
+begin
+  if Assigned (aOper.CorrelatedMessage) then
+    result := aOper.CorrelatedMessage.Name
+  else
+    result := '';
 end;
 
 function xsdTodayAsDate: String;
@@ -3360,6 +3371,7 @@ begin
       BindBeforeFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
       BindBeforeFunction ('MD5', @MD5, SFS, '(aString)');
       BindBeforeFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
+      BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
       BindBeforeFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
       BindBeforeFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
       BindBeforeFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
@@ -3495,6 +3507,7 @@ begin
     BindAfterFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindAfterFunction ('MD5', @MD5, SFS, '(aString)');
     BindAfterFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
+    BindAfterFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindAfterFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindAfterFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
     BindAfterFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
@@ -4344,12 +4357,12 @@ begin
   fOutputXsd := Value;
 end;
 
-procedure TWsdlOperation.setrpyBind(const Value: TCustomBindable);
+procedure TWsdlOperation.setRpyBind(const Value: TCustomBindable);
 begin
   frpyBind := Value;
 end;
 
-function TWsdlOperation.getreqBind: TCustomBindable;
+function TWsdlOperation.getReqBind: TCustomBindable;
 begin
   result := freqBind;
 end;
@@ -4359,12 +4372,12 @@ begin
   result := freqBind as TIpmItem;
 end;
 
-procedure TWsdlOperation.setreqBind(const Value: TCustomBindable);
+procedure TWsdlOperation.setReqBind(const Value: TCustomBindable);
 begin
   freqBind := Value;
 end;
 
-function TWsdlOperation.getrpyBind: TCustomBindable;
+function TWsdlOperation.getRpyBind: TCustomBindable;
 begin
   result := frpyBind;
 end;

@@ -2882,6 +2882,7 @@ begin
   Result := '';
   for x := 1 to Length(Value) do
   begin
+    {
     if (    (Value [x] = #13)
         and (x < Length (Value))
         and (Value [x + 1] = #10)
@@ -2891,7 +2892,7 @@ begin
         and (Value [x - 1] = #13)
        ) then
       Result := Result + Value[x]
-    else
+    else }
     begin
       case Value[x] of
         ' '..'!': Result := Result + Value[x];

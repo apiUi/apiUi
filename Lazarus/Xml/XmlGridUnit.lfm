@@ -16,7 +16,7 @@ object XmlGridForm: TXmlGridForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel2: TPanel
     Left = 0
     Height = 506
@@ -99,6 +99,7 @@ object XmlGridForm: TXmlGridForm
       end
       object ToolButton12: TToolButton
         Left = 70
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton12'
@@ -117,6 +118,7 @@ object XmlGridForm: TXmlGridForm
       end
       object ToolButton10: TToolButton
         Left = 126
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton10'
@@ -130,6 +132,7 @@ object XmlGridForm: TXmlGridForm
       end
       object ToolButton2: TToolButton
         Left = 159
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton2'

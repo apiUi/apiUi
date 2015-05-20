@@ -4761,20 +4761,19 @@ begin
       'Reply' + IntToStr(WsdlOperation.Messages.Count),
       'Pattern' + IntToStr(WsdlOperation.Messages.Count),
       xOrgMessage.Documentation);
+  xNewMessage.FreeFormatReq := xOrgMessage.FreeFormatReq;
+  xNewMessage.FreeFormatRpy := xOrgMessage.FreeFormatRpy;
   if WsdlOperation.reqBind is TIpmItem then
-  begin (xNewMessage.reqBind as TIpmItem)
-    .LoadValues(xOrgMessage.reqBind as TIpmItem);
-(xNewMessage.rpyBind as TIpmItem)
-    .LoadValues(xOrgMessage.rpyBind as TIpmItem);
-(xNewMessage.fltBind as TIpmItem)
-    .LoadValues(xOrgMessage.fltBind as TIpmItem);
+  begin
+    (xNewMessage.reqBind as TIpmItem).LoadValues(xOrgMessage.reqBind as TIpmItem);
+    (xNewMessage.rpyBind as TIpmItem).LoadValues(xOrgMessage.rpyBind as TIpmItem);
+    (xNewMessage.fltBind as TIpmItem).LoadValues(xOrgMessage.fltBind as TIpmItem);
     se.UpdateMessageRow(WsdlOperation, xNewMessage);
   end
   else
-  begin (xNewMessage.reqBind as TXml)
-    .LoadValues(xOrgMessage.reqBind as TXml, False, True);
-(xNewMessage.rpyBind as TXml)
-    .LoadValues(xOrgMessage.rpyBind as TXml, False, True);
+  begin
+    (xNewMessage.reqBind as TXml).LoadValues(xOrgMessage.reqBind as TXml, False, True);
+    (xNewMessage.rpyBind as TXml).LoadValues(xOrgMessage.rpyBind as TXml, False, True);
     se.UpdateMessageRow(WsdlOperation, xNewMessage);
     if Assigned(WsdlOperation.FaultMessages) then
     begin
@@ -7192,6 +7191,7 @@ begin
   begin
     xOperation := TWsdlOperation.Create(WsdlOperation);
     try
+      xOperation.CorrelatedMessage := WsdlReply;
       with xOperation.reqBind as TXml do
       begin
         ResetValues;
@@ -7903,6 +7903,7 @@ begin
     WsdlOperation.ReleaseLock;
   end;
   try
+    xOperation.CorrelatedMessage := WsdlReply;
     se.SendMessage(xOperation, WsdlReply, '');
   finally
     xOperation.Free;

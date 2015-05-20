@@ -165,6 +165,7 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure CleanActionExecute(Sender: TObject);
   private
+    headerClicked: Boolean;
     grid_x, grid_y: Integer;
     IniFile: TFormIniFile;
     nCols, nRows: Integer;
@@ -577,6 +578,7 @@ begin
   GroupExpanded [Column] := not GroupExpanded [Column];
   ShowHideColumns;
   Grid.FocusedColumn := Column;
+  headerClicked := True;
 end;
 
 procedure TXmlGridForm.SetNodesVisibilty;
@@ -1631,6 +1633,11 @@ var
   xChanged: Boolean;
   xBind: TCustomBindable;
 begin
+  if headerClicked then
+  begin
+    headerClicked:=False;
+    Exit;
+  end;
   if (Assigned(Grid.FocusedNode)) then
   begin
     xBind := FocusedBind;
