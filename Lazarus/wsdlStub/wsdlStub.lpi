@@ -17,8 +17,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="9"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="8785"/>
+      <RevisionNr Value="2"/>
+      <BuildNr Value="8792"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -164,7 +164,6 @@
       </Item17>
       <Item18>
         <Name Value="EStomp"/>
-        <Enabled Value="False"/>
       </Item18>
     </Exceptions>
   </Debugging>
