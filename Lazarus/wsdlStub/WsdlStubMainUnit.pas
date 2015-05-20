@@ -486,7 +486,6 @@ type
     SeparatorToolButton: TToolButton;
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
-    procedure GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
@@ -12002,12 +12001,6 @@ begin
   finally
     Screen.Cursor := xCursor;
   end;
-end;
-
-procedure TMainForm.GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode
-  );
-begin
-
 end;
 
 procedure TMainForm .MessagesTabControlChange (Sender : TObject );

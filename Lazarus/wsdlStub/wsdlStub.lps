@@ -21,10 +21,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
         <IsVisibleTab Value="True"/>
-        <WindowIndex Value="1"/>
-        <TopLine Value="12007"/>
-        <CursorPos X="3" Y="12009"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1265"/>
+        <CursorPos X="25" Y="1282"/>
         <UsageCount Value="1083"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Xml\promptfolderunit.pas"/>
@@ -645,7 +648,35 @@
       <Define1 Value="heaptrace"/>
       <Define2 Value="debug"/>
     </CustomDefines>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="6" HistoryIndex="5">
+      <Position1>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="12000" Column="1" TopLine="11999"/>
+      </Position1>
+      <Position2>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="1258" Column="56" TopLine="1247"/>
+      </Position2>
+      <Position3>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="1274" Column="49" TopLine="1263"/>
+      </Position3>
+      <Position4>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="2601" Column="48" TopLine="2590"/>
+      </Position4>
+      <Position5>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="11277" Column="50" TopLine="11266"/>
+      </Position5>
+      <Position6>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="12009" Column="3" TopLine="11996"/>
+      </Position6>
+    </JumpHistory>
   </ProjectSession>
   <Debugging>
     <BreakPoints Count="7">
@@ -654,7 +685,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="WsdlStubMainUnit.pas"/>
-        <Line Value="1240"/>
+        <Line Value="1239"/>
       </Item1>
       <Item2>
         <Kind Value="bpkSource"/>
