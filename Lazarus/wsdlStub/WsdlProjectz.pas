@@ -527,6 +527,27 @@ begin
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationName]));
 end;
 
+procedure ExecuteScript(aContext: TObject; xScriptName: String);
+var
+  f: Integer;
+  xProject: TWsdlProject;
+  xOperation: TWsdlOperation;
+begin
+  xProject := nil; //candidate context
+  xOperation := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create(Format ('ExecuteScript(''%s''); unable to determine context', [xScriptName]));
+  if xProject.Scripts.Find(xScriptName, f) then
+    xProject.ScriptExecute((xProject.Scripts.Objects[f] as TStringList).Text)
+  else
+    raise Exception.Create(Format ('ExecuteScript(''%s''); script not found', [xScriptName]));;
+end;
+
 procedure GetDefaultRequestData(aOperation: String);
 var
   f: Integer;
@@ -7012,6 +7033,7 @@ end;
 // TWsdlProject
 initialization
   _WsdlAddRemark := AddRemark;
+  _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;

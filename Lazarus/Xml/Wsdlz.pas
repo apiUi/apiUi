@@ -508,6 +508,7 @@ procedure ResetEnvVar (aName: String);
 function setEnvNumber (aName: String; aValue: Extended): Extended;
 function setEnvVar (aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
+procedure ExecuteScript (aObject: TObject; aString: String);
 procedure SjowMessage (aString: String);
 function decVarNumber (aName: String): Extended;
 function getVarNumber (aName: String): Extended;
@@ -540,6 +541,7 @@ var
   allOperationsRpy: TWsdlOperations;
   _WsdlVars: TStringList;
   _WsdlRequestOperation: VFunctionOS;
+  _WsdlExecuteScript: VFunctionOS;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
   _WsdlSendOperationRequestLater: VFunctionSSI;
@@ -615,6 +617,13 @@ begin
   if not Assigned (_WsdlAddRemark) then
     raise Exception.Create('No OnAddRemark event assigned: intention was to log remark: ' + aString);
   _WsdlAddRemark (aObject, aString);
+end;
+
+procedure ExecuteScript(aObject: TObject; aString: String);
+begin
+  if not Assigned (_WsdlExecuteScript) then
+    raise Exception.Create('No OnExecuteScript event assigned: intention was to execute script: ' + aString);
+  _WsdlExecuteScript (aObject, aString);
 end;
 
 procedure AcquireLock;
@@ -3358,6 +3367,7 @@ begin
       BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
       BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
       BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
+      BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
       BindBeforeFunction ('Exit', @RaiseExit, VFV, '()');
       BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
       BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
@@ -3494,6 +3504,7 @@ begin
     BindAfterFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindAfterFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
+    BindAfterFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindAfterFunction ('Exit', @RaiseExit, VFV, '()');
     BindAfterFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
     BindAfterFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
