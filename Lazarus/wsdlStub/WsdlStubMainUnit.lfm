@@ -6581,6 +6581,24 @@ object MainForm: TMainForm
         OnClick = DesignPanelAtTopMenuItemClick
       end
     end
+    object RunMenuItem: TMenuItem
+      Caption = '&Run'
+      object startStopMenuItem: TMenuItem
+        Action = startAction
+      end
+      object MenuItem2: TMenuItem
+        Action = ExecuteRequestAction
+      end
+      object MenuItem3: TMenuItem
+        Action = ExecuteAllRequestsAction
+      end
+      object AbortMenuItem: TMenuItem
+        Caption = 'Abort'
+        Enabled = False
+        ImageIndex = 45
+        OnClick = AbortToolButtonClick
+      end
+    end
     object ScriptsMenuItem: TMenuItem
       Caption = 'Scripts'
       object New2: TMenuItem

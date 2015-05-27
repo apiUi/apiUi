@@ -2,10 +2,10 @@ object DelayTimeForm: TDelayTimeForm
   Left = 382
   Height = 232
   Top = 251
-  Width = 277
+  Width = 273
   Caption = 'Delay time settings'
   ClientHeight = 232
-  ClientWidth = 277
+  ClientWidth = 273
   Color = clBtnFace
   Font.Color = clBlack
   Font.Height = -11
@@ -27,7 +27,7 @@ object DelayTimeForm: TDelayTimeForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 72
+    ClientHeight = 86
     ClientWidth = 85
     ItemIndex = 0
     Items.Strings = (
@@ -40,18 +40,19 @@ object DelayTimeForm: TDelayTimeForm
   end
   object DelayMinEdit: TLabeledEdit
     Left = 173
-    Height = 21
+    Height = 24
     Top = 26
     Width = 73
+    Anchors = [akTop, akRight]
     EditLabel.AnchorSideTop.Control = DelayMinEdit
     EditLabel.AnchorSideTop.Side = asrCenter
     EditLabel.AnchorSideRight.Control = DelayMinEdit
     EditLabel.AnchorSideBottom.Control = DelayMinEdit
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 122
-    EditLabel.Height = 13
-    EditLabel.Top = 30
-    EditLabel.Width = 48
+    EditLabel.Left = 109
+    EditLabel.Height = 14
+    EditLabel.Top = 31
+    EditLabel.Width = 61
     EditLabel.Caption = 'Time (ms):'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
@@ -59,18 +60,19 @@ object DelayTimeForm: TDelayTimeForm
   end
   object DelayMaxEdit: TLabeledEdit
     Left = 173
-    Height = 21
+    Height = 24
     Top = 60
     Width = 73
+    Anchors = [akTop, akRight]
     EditLabel.AnchorSideTop.Control = DelayMaxEdit
     EditLabel.AnchorSideTop.Side = asrCenter
     EditLabel.AnchorSideRight.Control = DelayMaxEdit
     EditLabel.AnchorSideBottom.Control = DelayMaxEdit
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 127
-    EditLabel.Height = 13
-    EditLabel.Top = 64
-    EditLabel.Width = 43
+    EditLabel.Left = 116
+    EditLabel.Height = 14
+    EditLabel.Top = 65
+    EditLabel.Width = 54
     EditLabel.Caption = 'and (ms):'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
@@ -80,7 +82,8 @@ object DelayTimeForm: TDelayTimeForm
     Left = 12
     Height = 80
     Top = 101
-    Width = 181
+    Width = 235
+    Anchors = [akTop, akLeft, akRight]
     AutoFill = True
     Caption = 'Apply to'
     ChildSizing.LeftRightSpacing = 6
@@ -90,8 +93,8 @@ object DelayTimeForm: TDelayTimeForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 62
-    ClientWidth = 177
+    ClientHeight = 64
+    ClientWidth = 231
     ItemIndex = 0
     Items.Strings = (
       'Current operation'
@@ -105,7 +108,8 @@ object DelayTimeForm: TDelayTimeForm
     Left = 173
     Height = 25
     Top = 194
-    Width = 75
+    Width = 73
+    Anchors = [akTop, akRight]
     Caption = '&Cancel'
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
@@ -192,4 +196,4 @@ object DelayTimeForm: TDelayTimeForm
     OnClick = Button1Click
     TabOrder = 5
   end
-end
+end

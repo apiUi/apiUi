@@ -60,7 +60,12 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    AbortMenuItem : TMenuItem ;
     CopyLogGridToClipBoardAction : TAction ;
+    RunMenuItem : TMenuItem ;
+    MenuItem2 : TMenuItem ;
+    MenuItem3 : TMenuItem ;
+    startStopMenuItem : TMenuItem ;
     ProjectDesignToClipboardAction: TAction;
     PresentLogMemoTextAction : TAction ;
     DesignPanel: TPanel;
@@ -3206,6 +3211,7 @@ begin
   Screen.Cursor := crHourGlass;
   abortPressed := False;
   AbortToolButton.Enabled := True;
+  AbortMenuItem.Enabled := True;
 end;
 
 procedure TMainForm.SetUiReady ;
@@ -3217,6 +3223,7 @@ begin
   se.ProgressPos := 0;
   abortPressed := False;
   AbortToolButton.Enabled := False;
+  AbortMenuItem.Enabled := False;
   isBusy := False;
   UpdateInWsdlCheckBoxes;
   GridView.Invalidate;
@@ -3971,6 +3978,7 @@ begin
     startAction.ShortCut := startStopShortCut;
     startStopButton.Action := startAction;
   end;
+  startStopMenuItem.Action := startStopButton.Action;
   httpRequestDesignButton.Visible := isSlaveMode;
   MasterDesignMenuItem.Visible := isSlaveMode;
   MasterMessagesMenuItem.Visible := isSlaveMode;
@@ -10199,6 +10207,7 @@ begin
     ProgressBar.Position := 0;
     abortPressed := False;
     AbortToolButton.Enabled := True;
+    AbortMenuItem.Enabled := True;
     isBusy := True;
     CheckBoxClick(nil);
   finally
@@ -10286,6 +10295,7 @@ begin
       isBusy := False;
       CheckBoxClick(nil);
       AbortToolButton.Enabled := False;
+      AbortMenuItem.Enabled := False;
       abortPressed := False;
       ExecuteAllRequestsToolButton.Down := False;
       ProgressBar.Position := 0;
@@ -10330,6 +10340,7 @@ begin
   ProgressBar.Position := 0;
   abortPressed := False;
   AbortToolButton.Enabled := True;
+  AbortMenuItem.Enabled := True;
   isBusy := True;
   CheckBoxClick(nil);
   xPatterns := TStringList.Create;
@@ -10418,6 +10429,7 @@ begin
       isBusy := False;
       CheckBoxClick(nil);
       AbortToolButton.Enabled := False;
+      AbortMenuItem.Enabled := False;
       abortPressed := False;
       ExecuteAllRequestsToolButton.Down := False;
       ProgressBar.Position := 0;
