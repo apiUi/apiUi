@@ -61,6 +61,7 @@ type
 
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
+    AbortAction : TAction ;
     CopyLogGridToClipBoardAction : TAction ;
     RunMenuItem : TMenuItem ;
     MenuItem2 : TMenuItem ;
@@ -551,7 +552,7 @@ type
     procedure ShowReplyAsXmlGridActionExecute(Sender: TObject);
     procedure Required1Click(Sender: TObject);
     procedure All1Click(Sender: TObject);
-    procedure AbortToolButtonClick(Sender: TObject);
+    procedure AbortActionExecute(Sender: TObject);
     procedure GridToolBarResize(Sender: TObject);
     procedure InWsdlTreeViewFocusChanging(Sender: TBaseVirtualTree;
       OldNode, NewNode: PVirtualNode; OldColumn, NewColumn: TColumnIndex;
@@ -3210,8 +3211,7 @@ begin
   se.ProgressPos := 0;
   Screen.Cursor := crHourGlass;
   abortPressed := False;
-  AbortToolButton.Enabled := True;
-  AbortMenuItem.Enabled := True;
+  AbortAction.Enabled := True;
 end;
 
 procedure TMainForm.SetUiReady ;
@@ -3222,8 +3222,7 @@ begin
   DownPageControl.ActivePage := MessagesTabSheet;
   se.ProgressPos := 0;
   abortPressed := False;
-  AbortToolButton.Enabled := False;
-  AbortMenuItem.Enabled := False;
+  AbortAction.Enabled := False;
   isBusy := False;
   UpdateInWsdlCheckBoxes;
   GridView.Invalidate;
@@ -9057,7 +9056,7 @@ begin
   Accept := (Source = Sender);
 end;
 
-procedure TMainForm.AbortToolButtonClick(Sender: TObject);
+procedure TMainForm.AbortActionExecute(Sender: TObject);
 begin
   abortPressed := True;
 end;
@@ -10206,8 +10205,7 @@ begin
     ProgressBar.Max := WsdlOperation.Messages.Count;
     ProgressBar.Position := 0;
     abortPressed := False;
-    AbortToolButton.Enabled := True;
-    AbortMenuItem.Enabled := True;
+    AbortAction.Enabled := True;
     isBusy := True;
     CheckBoxClick(nil);
   finally
@@ -10294,8 +10292,7 @@ begin
     try
       isBusy := False;
       CheckBoxClick(nil);
-      AbortToolButton.Enabled := False;
-      AbortMenuItem.Enabled := False;
+      AbortAction.Enabled := False;
       abortPressed := False;
       ExecuteAllRequestsToolButton.Down := False;
       ProgressBar.Position := 0;
@@ -10339,8 +10336,7 @@ begin
   ProgressBar.Max := FileNameList.Count;
   ProgressBar.Position := 0;
   abortPressed := False;
-  AbortToolButton.Enabled := True;
-  AbortMenuItem.Enabled := True;
+  AbortAction.Enabled := True;
   isBusy := True;
   CheckBoxClick(nil);
   xPatterns := TStringList.Create;
@@ -10428,8 +10424,7 @@ begin
       GridView.Invalidate;
       isBusy := False;
       CheckBoxClick(nil);
-      AbortToolButton.Enabled := False;
-      AbortMenuItem.Enabled := False;
+      AbortAction.Enabled := False;
       abortPressed := False;
       ExecuteAllRequestsToolButton.Down := False;
       ProgressBar.Position := 0;

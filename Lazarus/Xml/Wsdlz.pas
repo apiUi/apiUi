@@ -1382,6 +1382,19 @@ begin
   end;
 end;
 
+function GetHostName: String;
+begin
+  result := _WsdlHostName;
+end;
+
+function ifThenString (aBoolean: Boolean; aTrueString, aFalseString: String): String;
+begin
+  if aBoolean then
+    result := aTrueString
+  else
+    result := aFalseString;
+end;
+
 function getVarDef (aName, aDefault: String): String;
 var
   i: Integer;
@@ -3375,7 +3388,8 @@ begin
       BindBeforeFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
       BindBeforeFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
       BindBeforeFunction ('DisableMessage', @DisableMessage, VFOV, '()');
-//    BindBeforeFunction ('HostName', @GetHostName, SFV, '()');
+      BindBeforeFunction ('HostName', @GetHostName, SFV, '()');
+      BindBeforeFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
       BindBeforeFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
       BindBeforeFunction ('LengthStr', @LengthX, XFS, '(aString)');
       BindBeforeFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
@@ -3512,7 +3526,8 @@ begin
     BindAfterFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
     BindAfterFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
     BindAfterFunction ('DisableMessage', @DisableMessage, VFOV, '()');
-//  BindAfterFunction ('HostName', @GetHostName, SFV, '()');
+    BindAfterFunction ('HostName', @GetHostName, SFV, '()');
+    BindAfterFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindAfterFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
     BindAfterFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindAfterFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
@@ -5033,7 +5048,8 @@ begin
       BindCheckerFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
       BindCheckerFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
       BindCheckerFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
-//    BindCheckerFunction ('HostName', @GetHostName, SFV, '()');
+      BindCheckerFunction ('HostName', @GetHostName, SFV, '()');
+      BindCheckerFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
       BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
       BindCheckerFunction ('LengthStr', @LengthX, XFS, '(aString)');
       BindCheckerFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
@@ -5092,7 +5108,8 @@ begin
     BindStamperFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
     BindStamperFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
     BindStamperFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
-//  BindStamperFunction ('HostName', @GetHostName, SFV, '()');
+    BindStamperFunction ('HostName', @GetHostName, SFV, '()');
+    BindStamperFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindStamperFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
     BindStamperFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindStamperFunction ('LowercaseStr', @lowercase, SFS, '(aString)');

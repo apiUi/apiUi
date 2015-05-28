@@ -5,7 +5,7 @@
 %{
 %}
 
-%token DF DFS DFX FRAME_ SFD SFDS SFS SFSS SFSSS SFSSSS SFSXX SFV SFX
+%token DF DFS DFX FRAME_ SFBSS SFD SFDS SFS SFSS SFSSS SFSSSS SFSXX SFV SFX
 %token SFOV
 %token VFV VFS VFSS VFSX VFSSS VFSSX VFSSSS VFX VFD
 %token VFOV VFOS VFOSS VFOSX VFOSSS VFOSSX VFOSSSS VFOX VFOD
@@ -51,7 +51,7 @@
 
 %%
 %{
-uses Bind, Xmlz, SysUtils, Math, Dialogs, DBTables, Frame
+uses Bind, Xmlz, SysUtils, Math, Dialogs, Frame
    ;
 var
   LocalParser: TParser;
@@ -361,7 +361,7 @@ Statement:
         ;
 
 VoidCall:
-          VFV _LPAREN _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionV; }
+          VFV _LPAREN _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionV(); }
         | VFD _LPAREN dExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionD ($3.yy.yyDateTime); }
         | VFG    _LPAREN gExpr                                        _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionG    ($3); }
         | VFGG   _LPAREN gExpr _COMMA gExpr                           _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionGG   ($3, $5); }
@@ -717,7 +717,7 @@ dExpr:    dExpr _PLUS dExpr	 { $$.yy.yyDateTime := $1.yy.yyDateTime + $3.yy.yyDa
           { yylval := $1;
             if DoIt then GetDataEvent ($1, $$);
           }
-        | DF _LPAREN _RPAREN { if DoIt then $$.yy.yyDateTime := ($1.yy.yyObject as TBind).yy.yyDFunction; }
+        | DF _LPAREN _RPAREN { if DoIt then $$.yy.yyDateTime := ($1.yy.yyObject as TBind).yy.yyDFunction(); }
         | DFS _LPAREN sExpr _RPAREN { if DoIt then $$.yy.yyDateTime := ($1.yy.yyObject as TBind).yy.yyDFunctionS ($3.yyString); }
         | DFX _LPAREN xExpr _RPAREN { if DoIt then $$.yy.yyDateTime := ($1.yy.yyObject as TBind).yy.yyDFunctionX ($3.yy.yyExtended); }
         | dExpr _PLUS _YEARS _LPAREN xExpr _RPAREN { if DoIt then $$.yy.yyDateTime := DateTimeAddYears ($1.yy.yyDateTime, $5.yy.yyExtended);}
@@ -762,6 +762,7 @@ sExpr:    sExpr _PLUS sExpr	{ $$.yyString := $1.yyString + $3.yyString; }
         | SFV _LPAREN _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionV (); }
         | SFOV _LPAREN _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOV (Data); }
         | SFX _LPAREN xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionX ($3.yy.yyExtended); }
+        | SFBSS _LPAREN bExpr _COMMA sExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionBSS ($3.yy.yyBoolean, $5.yyString, $7.yyString); }
         | SFD _LPAREN dExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionD ($3.yy.yyDateTime); }
         | SFDS _LPAREN dExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionDS ($3.yy.yyDateTime, $5.yyString); }
 	;
@@ -786,7 +787,7 @@ xExpr:    xExpr _AND xExpr	 { $$.yy.yyExtended := Trunc ($1.yy.yyExtended) and T
             if DoIt then GetDataEvent ($1, $$);
           }
         | XFD _LPAREN dExpr _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionD ($3.yy.yyDateTime); }
-        | XFV _LPAREN _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionV; }
+        | XFV _LPAREN _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionV(); }
         | XFG _LPAREN gExpr _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionG ($3); }
         | XFGG _LPAREN gExpr _COMMA gExpr _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionGG ($3, $5); }
         | XFS _LPAREN sExpr _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionS ($3.yyString); }
