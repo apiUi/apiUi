@@ -90,9 +90,6 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
-      <Debugging>
-        <GenerateDebugInfo Value="False"/>
-      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -105,7 +102,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="18">
+    <Exceptions Count="19">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -169,6 +166,9 @@
       <Item18>
         <Name Value="EStomp"/>
       </Item18>
+      <Item19>
+        <Name Value="EIdHTTPProtocolException"/>
+      </Item19>
     </Exceptions>
   </Debugging>
 </CONFIG>

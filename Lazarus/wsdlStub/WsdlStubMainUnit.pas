@@ -62,6 +62,7 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    LoadTestAction : TAction ;
     CopyLogGridToClipBoardAction : TAction ;
     RunMenuItem : TMenuItem ;
     MenuItem2 : TMenuItem ;
@@ -264,8 +265,6 @@ type
     N11: TMenuItem;
     N12: TMenuItem;
     N13: TMenuItem;
-    ExecuteRequestMenuItem: TMenuItem;
-    ExecuteAllRequestsMenuItem: TMenuItem;
     ScriptButtonsPanel: TPanel;
     EditScriptButton: TPanel;
     AfterRequestScriptButton: TPanel;
@@ -362,7 +361,6 @@ type
     Disablemessages1: TMenuItem;
     N17: TMenuItem;
     RemoveAllMessagesAction: TAction;
-    N18: TMenuItem;
     Removeallmessagesfromalloperations1: TMenuItem;
     ShowLogDetailsAction: TAction;
     ShowLogdetails1: TMenuItem;
@@ -492,6 +490,8 @@ type
     SeparatorToolButton: TToolButton;
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
+    procedure LoadTestActionExecute (Sender : TObject );
+    procedure LoadTestActionUpdate (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
@@ -574,6 +574,7 @@ type
     procedure FilterLogActionExecute(Sender: TObject);
     procedure AfterRequestScriptButtonClick(Sender: TObject);
     procedure ScriptButtonsPanelResize(Sender: TObject);
+    procedure ExecuteLoadTest;
     procedure ExecuteAllRequests;
     procedure ExecuteAllRequestsActionUpdate(Sender: TObject);
     procedure ExecuteRequestActionUpdate(Sender: TObject);
@@ -875,7 +876,6 @@ type
     property WsdlReply: TWsdlMessage read getWsdlReply write setWsdlReply;
     property xmlViewType: TxvViewType read getXmlViewType;
   private
-    procedureThread: TProcedureThread;
     editingNode: PVirtualNode;
     notifyTabCaption, logTabCaption: String;
     notifyTabImageIndex: Integer;
@@ -1075,6 +1075,7 @@ type
     FileNameList: TStringList;
     scriptPreparedWell: Boolean;
     MainToolBarDesignedButtonCount: Integer;
+    StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property isBusy: Boolean read fIsBusy write SetIsBusy;
@@ -1155,7 +1156,7 @@ uses
   ShowA2BXmlUnit, FindRegExpDialog,
   XmlGridUnit, IpmGridUnit,
   xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
-  EditCheckerUnit, Math, vstUtils, DelayTimeUnit, base64, xmlxsdparser,
+  EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, base64, xmlxsdparser,
   HashUtilz, xmlio;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -4098,9 +4099,6 @@ begin
       (WsdlOperation.StubAction = saRequest);
     ExecuteRequestToolButton.Visible := (WsdlOperation.StubAction = saRequest);
     ExecuteAllRequestsToolButton.Visible :=
-      (WsdlOperation.StubAction = saRequest);
-    ExecuteRequestMenuItem.Visible := (WsdlOperation.StubAction = saRequest);
-    ExecuteAllRequestsMenuItem.Visible :=
       (WsdlOperation.StubAction = saRequest);
     if (WsdlOperation.StubAction = saStub) then
     begin
@@ -7957,10 +7955,54 @@ begin
   end;
 end;
 
+procedure TMainForm.ExecuteLoadTest;
+var
+  X, y: Integer;
+  xOperation: TWsdlOperation;
+  doSleep: Boolean;
+  DelayTimeMs: Integer;
+begin
+  doSleep := False;
+  WsdlOperation.AcquireLock;
+  try
+    xOperation := TWsdlOperation.Create(WsdlOperation);
+  finally
+    WsdlOperation.ReleaseLock;
+  end;
+  try
+    for y := 0 to StressTestLoopsPerThread - 1 do
+    begin
+      for X := 0 to xOperation.Messages.Count - 1 do
+      begin
+        if abortPressed then Exit;
+        if not xOperation.Messages.Messages[X].Disabled then
+        begin
+          if doSleep then
+          begin
+            if (StressTestDelayMsMin > 0)
+            or (StressTestDelayMsMax > 0) then
+            begin
+              Sleep (StressTestDelayMsMin + Random (StressTestDelayMsMax - StressTestDelayMsMin));
+              if abortPressed then Exit;
+            end;
+          end;
+          doSleep := True;
+          try
+            se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
+          except
+          end;
+        end;
+      end;
+    end;
+  finally
+    FreeAndNil(xOperation);
+  end;
+end;
+
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
   EndEdit;
-  procedureThread := TProcedureThread.Create(False, se, ExecuteAllRequests);
+  TProcedureThread.Create(False, se, ExecuteAllRequests);
 end;
 
 procedure TMainForm.WsdlItemChangeDataTypeMenuItemClick(Sender: TObject);
@@ -11995,6 +12037,41 @@ end;
 procedure TMainForm .DataTypeDocumentationMemoClick (Sender : TObject );
 begin
   OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
+end;
+
+procedure TMainForm .LoadTestActionExecute (Sender : TObject );
+var
+  x: Integer;
+begin
+  Application.CreateForm(TStressTestForm, StressTestForm);
+  try
+    StressTestForm.Caption := 'Loadtest operation: ' + WsdlOperation.Name;
+    StressTestForm.ShowModal;
+    if StressTestForm.ModalResult = mrOk then
+    begin
+      StressTestConcurrentThreads := StressTestForm.ConcurrentThreads;
+      StressTestLoopsPerThread := StressTestForm.LoopsPerThread;
+      StressTestDelayMsMin := StressTestForm.DelayMsMin;
+      StressTestDelayMsMax := StressTestForm.DelayMsMax;
+      for x := 0 to StressTestConcurrentThreads - 1 do
+        TProcedureThread.Create(False, se, ExecuteLoadTest);
+    end;
+  finally
+    FreeAndNil(StressTestForm);
+  end;
+end;
+
+procedure TMainForm .LoadTestActionUpdate (Sender : TObject );
+begin
+  LoadTestAction.Enabled :=
+        Assigned(WsdlOperation)
+    and Assigned(WsdlReply)
+    and (WsdlOperation.StubAction = saRequest)
+    and (se.IsActive)
+    and (not se.isBusy)
+    and (not ExecuteRequestToolButton.Down)
+    and (not ExecuteAllRequestsToolButton.Down)
+    ;
 end;
 
 procedure TMainForm .CopyLogGridToClipBoardActionExecute (Sender : TObject );

@@ -32,16 +32,10 @@
         <WorkingDirectory Value="C:\JanBo\Sources\Lazarus\tst"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="1">
       <Item1>
-        <PackageName Value="indysystemlaz"/>
+        <PackageName Value="indylaz"/>
       </Item1>
-      <Item2>
-        <PackageName Value="indyprotocolslaz"/>
-      </Item2>
-      <Item3>
-        <PackageName Value="indycorelaz"/>
-      </Item3>
     </RequiredPackages>
     <Units Count="1">
       <Unit0>

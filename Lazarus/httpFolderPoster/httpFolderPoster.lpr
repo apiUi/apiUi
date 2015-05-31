@@ -7,8 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp, abZipper, abUnzper, abZipTyp, IdHTTP,
-  IdHeaderList, IdZLibCompressorBase, IdCompressorZLib, IdZLibHeaders,
-  indycorelaz, indyprotocolslaz, indysystemlaz;
+  IdHeaderList, IdZLibCompressorBase, IdCompressorZLib, IdZLibHeaders , indylaz;
 var
   doSkipExisting: Boolean;
   doContinueOnErrors: Boolean;

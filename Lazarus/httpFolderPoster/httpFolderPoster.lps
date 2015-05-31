@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="httpFolderPoster.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -12,19 +12,21 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="257"/>
-        <CursorPos X="65" Y="271"/>
-        <FoldState Value=" T7lLJ7m"/>
-        <UsageCount Value="23"/>
+        <TopLine Value="190"/>
+        <CursorPos X="34" Y="209"/>
+        <FoldState Value=" T7lKJ7h"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="545"/>
-        <CursorPos X="25" Y="563"/>
+        <TopLine Value="576"/>
+        <CursorPos X="29" Y="587"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
@@ -52,34 +54,49 @@
       <Unit5>
         <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
         <UnitName Value="indylaz"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="10"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\osutilsh.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="44"/>
+        <CursorPos X="3" Y="57"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="6" HistoryIndex="5">
       <Position1>
-        <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="httpFolderPoster.lpr"/>
+        <Caret Line="285" Column="39" TopLine="39"/>
       </Position1>
       <Position2>
-        <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
-        <Caret Line="10" Column="3" TopLine="1"/>
+        <Filename Value="httpFolderPoster.lpr"/>
+        <Caret Line="98" Column="3" TopLine="88"/>
       </Position2>
       <Position3>
         <Filename Value="httpFolderPoster.lpr"/>
-        <Caret Line="285" Column="39" TopLine="39"/>
+        <Caret Line="262" Column="2" TopLine="203"/>
       </Position3>
       <Position4>
-        <Filename Value="httpFolderPoster.lpr"/>
-        <Caret Line="98" Column="3" TopLine="88"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="69" Column="14" TopLine="60"/>
       </Position4>
+      <Position5>
+        <Filename Value="httpFolderPoster.lpr"/>
+        <Caret Line="262" Column="2" TopLine="203"/>
+      </Position5>
+      <Position6>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="601" Column="5" TopLine="593"/>
+      </Position6>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -89,14 +106,14 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="httpFolderPoster.lpr"/>
-        <Line Value="229"/>
+        <Line Value="228"/>
       </Item1>
       <Item2>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="httpFolderPoster.lpr"/>
-        <Line Value="238"/>
+        <Line Value="237"/>
       </Item2>
     </BreakPoints>
   </Debugging>
