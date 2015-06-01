@@ -176,7 +176,7 @@ type
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
     OnDebugOperationEvent: TOnEvent;
-    OnBusy, OnReady: TOnEvent;
+    OnStartThread, OnTerminateThread: TOnEvent;
     Notify: TOnNotify;
     LogServerMessage: TOnStringEvent;
     doViaProxyServer: Boolean;
@@ -766,8 +766,8 @@ end;
 
 procedure TProcedureThread.Execute;
 begin
-  if Assigned (fProject.OnBusy) then
-    Synchronize(fProject.OnBusy);
+  if Assigned (fProject.OnStartThread) then
+    Synchronize(fProject.OnStartThread);
   try
     if Assigned (fProcedure) then fProcedure;
     if Assigned (fProcedureString) then fProcedureString (fString);
@@ -775,8 +775,8 @@ begin
     if Assigned (fProcedureOperation) then fProcedureOperation (fOperation);
     if Assigned (fProcedureObject) then fProcedureObject (fObject);
   finally
-    if Assigned (fProject.OnReady) then
-      Synchronize(fProject.OnReady);
+    if Assigned (fProject.OnTerminateThread) then
+      Synchronize(fProject.OnTerminateThread);
   end;
 end;
 

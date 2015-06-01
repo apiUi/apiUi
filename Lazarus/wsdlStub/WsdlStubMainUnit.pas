@@ -1045,8 +1045,8 @@ type
     procedure SetIsBusy(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
-    procedure SetUiBusy;
-    procedure SetUiReady;
+    procedure StartThreadEvent;
+    procedure TerminateThreadEvent;
     procedure SetUiProgress;
   private
     function getHintStrDisabledWhileActive: String;
@@ -1076,6 +1076,7 @@ type
     scriptPreparedWell: Boolean;
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
+    NumberOfThreads: Integer;
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property isBusy: Boolean read fIsBusy write SetIsBusy;
@@ -3203,31 +3204,39 @@ begin
   end;
 end;
 
-procedure TMainForm.SetUiBusy ;
+procedure TMainForm.StartThreadEvent ;
 begin
   isBusy := True;
-  DownPageControl.ActivePage := MessagesTabSheet;
-  ExecuteRequestToolButton.Down := True;
-  ExecuteAllRequestsToolButton.Down := True;
-  se.ProgressPos := 0;
-  Screen.Cursor := crHourGlass;
-  abortPressed := False;
-  AbortAction.Enabled := True;
+  if NumberOfThreads = 0 then
+  begin
+    DownPageControl.ActivePage := MessagesTabSheet;
+    ExecuteRequestToolButton.Down := True;
+    ExecuteAllRequestsToolButton.Down := True;
+    se.ProgressPos := 0;
+    Screen.Cursor := crHourGlass;
+    abortPressed := False;
+    AbortAction.Enabled := True;
+  end;
+  Inc (NumberOfThreads);
 end;
 
-procedure TMainForm.SetUiReady ;
+procedure TMainForm.TerminateThreadEvent ;
 begin
-  ExecuteRequestToolButton.Down := False;
-  ExecuteAllRequestsToolButton.Down := False;
-  Screen.Cursor := crDefault;
-  DownPageControl.ActivePage := MessagesTabSheet;
-  se.ProgressPos := 0;
-  abortPressed := False;
-  AbortAction.Enabled := False;
-  isBusy := False;
-  UpdateInWsdlCheckBoxes;
-  GridView.Invalidate;
-  InWsdlTreeView.Invalidate;
+  Dec (NumberOfThreads);
+  if (NumberOfThreads <= 0) then
+  begin
+    ExecuteRequestToolButton.Down := False;
+    ExecuteAllRequestsToolButton.Down := False;
+    Screen.Cursor := crDefault;
+    DownPageControl.ActivePage := MessagesTabSheet;
+    se.ProgressPos := 0;
+    abortPressed := False;
+    AbortAction.Enabled := False;
+    UpdateInWsdlCheckBoxes;
+    GridView.Invalidate;
+    InWsdlTreeView.Invalidate;
+    isBusy := False;
+  end;
 end;
 
 procedure TMainForm.SetUiProgress;
@@ -6162,8 +6171,9 @@ begin
   notifyTabImageIndex := 66;
   ExceptionTabSheet.ImageIndex := -1;
   se := TWsdlProject.Create;
-  se.OnBusy := SetUiBusy;
-  se.OnReady := SetUiReady;
+  NumberOfThreads := 0;
+  se.OnStartThread := StartThreadEvent;
+  se.OnTerminateThread := TerminateThreadEvent;
   se.OnActivateEvent := ActivateCommand;
   se.OnOpenProjectEvent := OpenProjectCommand;
   se.Notify := Notify;
