@@ -488,6 +488,8 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure BrowseMqActionHint (var HintStr : string ; var CanShow : Boolean
+      );
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
     procedure LoadTestActionExecute (Sender : TObject );
@@ -5668,8 +5670,8 @@ procedure TMainForm.ClearLogItemsActionExecute(Sender: TObject);
 begin
   if se.displayedLogs.Count > 0 then
   begin
-    if (not xmlUtil.doConfirmRemovals) or BooleanPromptDialog
-      ('Remove all messages') then
+    if (not xmlUtil.doConfirmRemovals)
+    or BooleanPromptDialog ('Remove all messages') then
     begin
       se.AcquireLogLock;
       try
@@ -7078,8 +7080,7 @@ end;
 
 procedure TMainForm.ReadMessagesActionUpdate(Sender: TObject);
 begin
-  ReadMessagesAction.Enabled := not se.IsActive and (se.Wsdls.Count > 0) and
-    (se.displayedLogs.Count = 0);
+  ReadMessagesAction.Enabled := (se.Wsdls.Count > 0);
 end;
 
 procedure TMainForm.ReadMessagesActionExecute(Sender: TObject);
@@ -7115,7 +7116,7 @@ begin
           begin
             if not BooleanPromptDialog(
               'Maybe due to differences in current design or Wsdls,' + LineEnding +
-                'some Operations, Messages or Correlation data could not be relocated;'
+                'some Operations or Messages could not be relocated;'
                 + LineEnding + LineEnding + 'Continue') then
             begin
               xLogList.Clear;
@@ -7191,8 +7192,6 @@ procedure TMainForm.ReadMessagesActionHint(var HintStr: string;
 begin
   if (se.Wsdls.Count = 0) then
     HintStr := HintStr + ' (no WSDLS read)';
-  if (se.displayedLogs.Count > 0) then
-    HintStr := HintStr + ' (List of messages must be empty)';
 end;
 
 procedure TMainForm.TestBeforeScriptActionExecute(Sender: TObject);
@@ -7240,9 +7239,11 @@ begin
   try
     SwapCursor := Screen.Cursor;
     Screen.Cursor := crHourGlass;
+{
     ClearLogItemsActionExecute(nil);
     if not se.displayedLogs.Count = 0 then
       raise Exception.Create('Operation aborted');
+}
     MessagesVTS.BeginUpdate;
     for X := 0 to aLogList.Count - 1 do
     begin
@@ -9735,8 +9736,7 @@ end;
 
 procedure TMainForm.BrowseMqActionUpdate(Sender: TObject);
 begin
-  BrowseMqAction.Enabled := (not se.IsActive) and
-    (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
+  BrowseMqAction.Enabled := (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
 end;
 
 procedure TMainForm.BrowseMqActionExecute(Sender: TObject);
@@ -9752,35 +9752,21 @@ begin
     begin
       QueueNameList.Add(MqBrowseForm.GetQueueEdit.Text);
       DownPageControl.ActivePage := MessagesTabSheet;
-      if se.displayedLogs.Count > 0 then
-      begin
-        if (not xmlUtil.doConfirmRemovals) or BooleanPromptDialog
-          ('Remove all logrecords') then
-        begin
-          MessagesVTS.Clear;
-          se.AsynchRpyLogs.Clear;
-          se.displayedLogs.Clear;
-          LogMemo.Text := '';
-        end;
-      end;
-      if se.displayedLogs.Count = 0 then
-      begin
-        xCursor := Screen.Cursor;
-        Screen.Cursor := crHourGlass;
+      xCursor := Screen.Cursor;
+      Screen.Cursor := crHourGlass;
+      try
+        xMqInterface := TMqInterface.Create;
         try
-          xMqInterface := TMqInterface.Create;
-          try
-            xMqInterface.Use := se.mqUse;
-            xMqInterface.QManager := MqBrowseForm.GetManagerEdit.Text;
-            xMqInterface.GetQueue := MqBrowseForm.GetQueueEdit.Text;
-            xMqInterface.Browse(LogMqMessage, nil, False, False);
-            QueueNameList.Add(MqBrowseForm.GetQueueEdit.Text);
-          finally
-            FreeAndNil(xMqInterface);
-          end;
+          xMqInterface.Use := se.mqUse;
+          xMqInterface.QManager := MqBrowseForm.GetManagerEdit.Text;
+          xMqInterface.GetQueue := MqBrowseForm.GetQueueEdit.Text;
+          xMqInterface.Browse(LogMqMessage, nil, False, False);
+          QueueNameList.Add(MqBrowseForm.GetQueueEdit.Text);
         finally
-          Screen.Cursor := xCursor;
+          FreeAndNil(xMqInterface);
         end;
+      finally
+        Screen.Cursor := xCursor;
       end;
     end;
   finally
@@ -11423,8 +11409,7 @@ end;
 
 procedure TMainForm.readLog4jEventsActionUpdate(Sender: TObject);
 begin
-  readLog4jEventsAction.Enabled := not se.IsActive and (se.Wsdls.Count > 0) and
-    (se.displayedLogs.Count = 0);
+  readLog4jEventsAction.Enabled := (se.Wsdls.Count > 0);
 end;
 
 procedure TMainForm.readLog4jEventsActionHint(var HintStr: string;
@@ -11432,8 +11417,6 @@ procedure TMainForm.readLog4jEventsActionHint(var HintStr: string;
 begin
   if (se.Wsdls.Count = 0) then
     HintStr := HintStr + ' (no WSDLS read)';
-  if (se.displayedLogs.Count > 0) then
-    HintStr := HintStr + ' (List of messages must be empty)';
 end;
 
 procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
@@ -12095,6 +12078,15 @@ begin
   finally
     Screen.Cursor := xCursor;
   end;
+end;
+
+procedure TMainForm .BrowseMqActionHint (var HintStr : string ;
+  var CanShow : Boolean );
+begin
+  if not (   se.mmqqMqInterface.MQServerOK
+          or se.mmqqMqInterface.MQClientOK
+         ) then
+    HintStr := HintStr + ' (IBM WebSphere MQ not installed?)';
 end;
 
 procedure TMainForm .MessagesTabControlChange (Sender : TObject );

@@ -5393,10 +5393,7 @@ begin
   if WsdlService.DescriptionType = ipmDTCobol then
     result := ((rpyBind as TIpmItem).Bytes = 0)
   else
-    result := (    isSoapService
-               and (OutputHeaders.Count = 0)
-              )
-           or (rpyXsd.sType.ElementDefs.Count = 0)
+    result := (rpyXsd.sType.ElementDefs.Count = 0)
             ;
 end;
 

@@ -1547,32 +1547,6 @@ object MainForm: TMainForm
       ImageIndex = 28
       OnExecute = ShowReplyAsHtmlActionExecute
     end
-    object ShowRequestHeaderAsXmlAction: TAction
-      Category = 'Log'
-      Hint = 'Show in XML viewer'
-      ImageIndex = 25
-    end
-    object ShowReplyHeaderAsXmlAction: TAction
-      Category = 'Log'
-      Hint = 'Show in XML viewer'
-      ImageIndex = 25
-    end
-    object ShowRequestAsXmlGridAction: TAction
-      Category = 'Log'
-      Caption = 'Show request in a Grid'
-      Hint = 'Show request in a Grid'
-      ImageIndex = 46
-      OnExecute = ShowRequestAsXmlGridActionExecute
-      OnUpdate = ShowRequestAsXmlGridActionUpdate
-    end
-    object ShowSelectedRequestsAsXmlGridAction: TAction
-      Category = 'Log'
-      Caption = 'Show selected requests in a grid'
-      Hint = 'Show selected requests in a Grid'
-      ImageIndex = 46
-      OnExecute = ShowSelectedRequestsAsXmlGridActionExecute
-      OnUpdate = ShowSelectedRequestsAsXmlGridActionUpdate
-    end
     object httpRequestDesignAction: TAction
       Category = 'MasterSlave'
       Caption = 'Query Master Design'
@@ -1581,13 +1555,6 @@ object MainForm: TMainForm
       OnExecute = httpRequestDesignActionExecute
       OnHint = httpRequestDesignActionHint
       OnUpdate = httpRequestDesignActionUpdate
-    end
-    object ShowReplyAsXmlGridAction: TAction
-      Category = 'Log'
-      Caption = 'Show reply in a Grid'
-      Hint = 'Show reply in a Grid'
-      ImageIndex = 46
-      OnExecute = ShowReplyAsXmlGridActionExecute
     end
     object httpRequestMessagesAction: TAction
       Category = 'MasterSlave'
@@ -1605,36 +1572,6 @@ object MainForm: TMainForm
       Hint = 'Edit environment variables'
       OnExecute = EditEnvironmentActionExecute
       OnUpdate = EditEnvironmentActionUpdate
-    end
-    object ShowSelectedResponsesAsXmlGridAction: TAction
-      Category = 'Log'
-      Caption = 'Show selected responses in a grid'
-      Hint = 'Show selected responses in a grid'
-      ImageIndex = 46
-      OnExecute = ShowSelectedResponsesAsXmlGridActionExecute
-      OnUpdate = ShowSelectedResponsesAsXmlGridActionUpdate
-    end
-    object ShowLogZoomElementAction: TAction
-      Category = 'Log'
-      Caption = 'Show zoom element'
-      ImageIndex = 68
-      OnExecute = ShowLogZoomElementActionExecute
-    end
-    object SaveMessagesAction: TAction
-      Category = 'Log'
-      Caption = 'Save log items to file...'
-      Hint = 'Save log items to file'
-      ImageIndex = 3
-      OnExecute = SaveMessagesActionExecute
-      OnUpdate = SaveMessagesActionUpdate
-    end
-    object MessagesRegressionAction: TAction
-      Category = 'Log'
-      Caption = 'Compare with file... '
-      Hint = 'Show differences with a previous run'
-      ImageIndex = 43
-      OnExecute = MessagesRegressionActionExecute
-      OnUpdate = MessagesRegressionActionUpdate
     end
     object AddEnvironmentAction: TAction
       Category = 'Environment'
@@ -1674,38 +1611,6 @@ object MainForm: TMainForm
       OnExecute = FindActionExecute
       OnUpdate = FindActionUpdate
       ShortCut = 16454
-    end
-    object CopyExceptionToClipboardAction: TAction
-      Category = 'Log'
-      Caption = 'CopyExceptionToClipboardAction'
-      Hint = 'Copy text to clipboard'
-      ImageIndex = 80
-    end
-    object FilterLogAction: TAction
-      Category = 'Log'
-      Caption = 'Filter Log'
-      Hint = 'Set filter on log'
-      ImageIndex = 33
-      OnExecute = FilterLogActionExecute
-    end
-    object ValidateRequestsAction: TAction
-      Category = 'Log'
-      Caption = 'ValidateRequestsAction'
-      Hint = 'Validate requests against schema'
-      ImageIndex = 37
-      OnExecute = ValidateRequestsActionExecute
-    end
-    object ValidateRepliesAction: TAction
-      Category = 'Log'
-      Caption = 'ValidateRepliesAction'
-      Hint = 'Validate replies against schema'
-      ImageIndex = 38
-      OnExecute = ValidateRepliesActionExecute
-    end
-    object RequestMiMAction: TAction
-      Category = 'Log'
-      Caption = 'Request changes due to script'
-      OnExecute = RequestMiMActionExecute
     end
     object FindNextAction: TAction
       Category = 'Edit'
@@ -1754,15 +1659,119 @@ object MainForm: TMainForm
       OnExecute = ToggleBetaModeActionExecute
       ShortCut = 8311
     end
-    object ReplyMiMAction: TAction
-      Category = 'Log'
-      Caption = 'Reply changes due to script'
-      OnExecute = ReplyMiMActionExecute
-    end
     object Action1: TAction
       Caption = 'Action1'
       OnExecute = Action1Execute
       ShortCut = 8312
+    end
+    object ShowRequestHeaderAsXmlAction: TAction
+      Category = 'Log'
+      Hint = 'Show in XML viewer'
+      ImageIndex = 25
+    end
+    object ShowReplyHeaderAsXmlAction: TAction
+      Category = 'Log'
+      Hint = 'Show in XML viewer'
+      ImageIndex = 25
+    end
+    object ShowRequestAsXmlGridAction: TAction
+      Category = 'Log'
+      Caption = 'Show request in a Grid'
+      Hint = 'Show request in a Grid'
+      ImageIndex = 46
+      OnExecute = ShowRequestAsXmlGridActionExecute
+      OnUpdate = ShowRequestAsXmlGridActionUpdate
+    end
+    object ShowSelectedRequestsAsXmlGridAction: TAction
+      Category = 'Log'
+      Caption = 'Show selected requests in a grid'
+      Hint = 'Show selected requests in a Grid'
+      ImageIndex = 46
+      OnExecute = ShowSelectedRequestsAsXmlGridActionExecute
+      OnUpdate = ShowSelectedRequestsAsXmlGridActionUpdate
+    end
+    object ShowReplyAsXmlGridAction: TAction
+      Category = 'Log'
+      Caption = 'Show reply in a Grid'
+      Hint = 'Show reply in a Grid'
+      ImageIndex = 46
+      OnExecute = ShowReplyAsXmlGridActionExecute
+    end
+    object ShowSelectedResponsesAsXmlGridAction: TAction
+      Category = 'Log'
+      Caption = 'Show selected responses in a grid'
+      Hint = 'Show selected responses in a grid'
+      ImageIndex = 46
+      OnExecute = ShowSelectedResponsesAsXmlGridActionExecute
+      OnUpdate = ShowSelectedResponsesAsXmlGridActionUpdate
+    end
+    object ShowLogZoomElementAction: TAction
+      Category = 'Log'
+      Caption = 'Show zoom element'
+      ImageIndex = 68
+      OnExecute = ShowLogZoomElementActionExecute
+    end
+    object ReadMessagesAction: TAction
+      Category = 'Log'
+      Caption = 'Read from file...'
+      Hint = 'Read wsdlStub log items from file'
+      ImageIndex = 2
+      OnExecute = ReadMessagesActionExecute
+      OnHint = ReadMessagesActionHint
+      OnUpdate = ReadMessagesActionUpdate
+    end
+    object SaveMessagesAction: TAction
+      Category = 'Log'
+      Caption = 'Save log items to file...'
+      Hint = 'Save log items to file'
+      ImageIndex = 3
+      OnExecute = SaveMessagesActionExecute
+      OnUpdate = SaveMessagesActionUpdate
+    end
+    object MessagesRegressionAction: TAction
+      Category = 'Log'
+      Caption = 'Compare with file... '
+      Hint = 'Show differences with a previous run'
+      ImageIndex = 43
+      OnExecute = MessagesRegressionActionExecute
+      OnUpdate = MessagesRegressionActionUpdate
+    end
+    object CopyExceptionToClipboardAction: TAction
+      Category = 'Log'
+      Caption = 'CopyExceptionToClipboardAction'
+      Hint = 'Copy text to clipboard'
+      ImageIndex = 80
+    end
+    object FilterLogAction: TAction
+      Category = 'Log'
+      Caption = 'Filter Log'
+      Hint = 'Set filter on log'
+      ImageIndex = 33
+      OnExecute = FilterLogActionExecute
+    end
+    object ValidateRequestsAction: TAction
+      Category = 'Log'
+      Caption = 'ValidateRequestsAction'
+      Hint = 'Validate requests against schema'
+      ImageIndex = 37
+      OnExecute = ValidateRequestsActionExecute
+    end
+    object ValidateRepliesAction: TAction
+      Category = 'Log'
+      Caption = 'ValidateRepliesAction'
+      Hint = 'Validate replies against schema'
+      ImageIndex = 38
+      OnExecute = ValidateRepliesActionExecute
+    end
+    object RequestMiMAction: TAction
+      Category = 'Log'
+      Caption = 'Request changes due to script'
+      OnExecute = RequestMiMActionExecute
+    end
+    object ReplyMiMAction: TAction
+      Category = 'Log'
+      Caption = 'Reply changes due to script'
+      OnExecute = ReplyMiMActionExecute
     end
     object ToggleCheckExpectedValuesAction: TAction
       Category = 'Log'
@@ -1770,18 +1779,6 @@ object MainForm: TMainForm
       Hint = 'Check expected values'
       ImageIndex = 50
       OnExecute = ToggleCheckExpectedValuesActionExecute
-    end
-    object BrowseMqAction: TAction
-      Caption = 'Browse Mq'
-      Hint = 'Browse Message Queue'
-      ImageIndex = 44
-      OnExecute = BrowseMqActionExecute
-      OnUpdate = BrowseMqActionUpdate
-    end
-    object ShowExceptionAsHtmlAction: TAction
-      Caption = 'SwohHttpReplyAsXMLAction'
-      Hint = 'Show in XML viewer'
-      ImageIndex = 25
     end
     object ShowExpectedXmlAction: TAction
       Category = 'Log'
@@ -1795,6 +1792,58 @@ object MainForm: TMainForm
       ImageIndex = 23
       OnExecute = CopyLogMemoTextToClipBrdActionExecute
       OnUpdate = CopyLogMemoTextToClipBrdActionUpdate
+    end
+    object PresentLogMemoTextAction: TAction
+      Category = 'Log'
+      Caption = 'PresentLogMemoTextAction'
+      ImageIndex = 76
+      OnExecute = PresentLogMemoTextActionExecute
+      OnUpdate = PresentLogMemoTextActionUpdate
+    end
+    object Log2DesignAction: TAction
+      Category = 'Log'
+      Caption = 'Add to design'
+      Hint = 'Add selected log(s) to design'
+      ImageIndex = 15
+      OnExecute = Log2DesignActionExecute
+    end
+    object ReportUnexpectedValuesAction: TAction
+      Category = 'Log'
+      Caption = 'ReportUnexpectedValuesAction'
+      Hint = 'Unexpected values report'
+      ImageIndex = 14
+      OnExecute = ReportUnexpectedValuesActionExecute
+      OnUpdate = ReportUnexpectedValuesActionUpdate
+    end
+    object BrowseMqAction: TAction
+      Category = 'Log'
+      Caption = 'Browse Mq'
+      Hint = 'Browse Message Queue'
+      ImageIndex = 44
+      OnExecute = BrowseMqActionExecute
+      OnHint = BrowseMqActionHint
+      OnUpdate = BrowseMqActionUpdate
+    end
+    object readLog4jEventsAction: TAction
+      Category = 'Log'
+      Caption = 'Discover service calls from log'
+      Hint = 'Discover service calls from an event log'
+      ImageIndex = 56
+      OnExecute = readLog4jEventsActionExecute
+      OnHint = readLog4jEventsActionHint
+      OnUpdate = readLog4jEventsActionUpdate
+    end
+    object ConfigLogAction: TAction
+      Category = 'Log'
+      Caption = 'Configure Log'
+      Hint = 'Change project log settings'
+      ImageIndex = 59
+      OnExecute = ConfigLogActionExecute
+    end
+    object ShowExceptionAsHtmlAction: TAction
+      Caption = 'SwohHttpReplyAsXMLAction'
+      Hint = 'Show in XML viewer'
+      ImageIndex = 25
     end
     object MessagesToDiskAction: TAction
       Category = 'Messages'
@@ -1818,14 +1867,6 @@ object MainForm: TMainForm
       ImageIndex = 57
       OnExecute = ConfigListenersActionExecute
       OnUpdate = ConfigListenersActionUpdate
-    end
-    object ReadMessagesAction: TAction
-      Caption = 'Read from file...'
-      Hint = 'Read wsdlStub log items from file'
-      ImageIndex = 2
-      OnExecute = ReadMessagesActionExecute
-      OnHint = ReadMessagesActionHint
-      OnUpdate = ReadMessagesActionUpdate
     end
     object MessagesFromDiskAction: TAction
       Category = 'Messages'
@@ -1990,44 +2031,6 @@ object MainForm: TMainForm
       Caption = 'Generate Script Assignments'
       OnExecute = GenerateScriptAssignmentActionExecute
       ShortCut = 49217
-    end
-    object PresentLogMemoTextAction: TAction
-      Category = 'Log'
-      Caption = 'PresentLogMemoTextAction'
-      ImageIndex = 76
-      OnExecute = PresentLogMemoTextActionExecute
-      OnUpdate = PresentLogMemoTextActionUpdate
-    end
-    object Log2DesignAction: TAction
-      Category = 'Log'
-      Caption = 'Add to design'
-      Hint = 'Add selected log(s) to design'
-      ImageIndex = 15
-      OnExecute = Log2DesignActionExecute
-    end
-    object ReportUnexpectedValuesAction: TAction
-      Category = 'Log'
-      Caption = 'ReportUnexpectedValuesAction'
-      Hint = 'Unexpected values report'
-      ImageIndex = 14
-      OnExecute = ReportUnexpectedValuesActionExecute
-      OnUpdate = ReportUnexpectedValuesActionUpdate
-    end
-    object readLog4jEventsAction: TAction
-      Category = 'Log'
-      Caption = 'Discover service calls from log'
-      Hint = 'Discover service calls from an event log'
-      ImageIndex = 56
-      OnExecute = readLog4jEventsActionExecute
-      OnHint = readLog4jEventsActionHint
-      OnUpdate = readLog4jEventsActionUpdate
-    end
-    object ConfigLogAction: TAction
-      Category = 'Log'
-      Caption = 'Configure Log'
-      Hint = 'Change project log settings'
-      ImageIndex = 59
-      OnExecute = ConfigLogActionExecute
     end
     object ToggleFileLogAction: TAction
       Category = 'Log'
