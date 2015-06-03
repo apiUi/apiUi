@@ -52,6 +52,7 @@ type
   end;
 
   TShowLogData = (slRequestHeaders, slRequestBody, slReplyHeaders, slReplyBody, slException, slValidation);
+  TLogPanelIndex = (lpiFocus, lpiLoadThreads);
   TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
   TProcedure = procedure of Object;
   TProcedureString = procedure(arg: String) of Object;
@@ -88,6 +89,7 @@ type
     ToolButton32 : TToolButton ;
     ToolButton36 : TToolButton ;
     ToolButton37 : TToolButton ;
+    ToolButton39 : TToolButton ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -3252,6 +3254,10 @@ begin
     else
       ProgressBar.Position := 0;
   end;
+  MessagesStatusBar.Panels.Items[Ord(lpiLoadThreads)].Text := IfThen ( NumberOfThreads = 0
+                                                                     , ''
+                                                                     , 'Loadthreads: ' + IntToStr(NumberOfThreads)
+                                                                     );
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);
@@ -5574,7 +5580,7 @@ begin
           logValidationTabImageIndex := 25;
       end;
       UpdateLogTabs (xLog);
-      MessagesStatusBar.Panels.Items[0].Text := '[' + IntToStr(xLog.Nr)
+      MessagesStatusBar.Panels.Items[Ord(lpiFocus)].Text := '[' + IntToStr(xLog.Nr)
         + ' : ' + IntToStr(se.displayedLogs.Number) + ']';
       if Assigned(xLog.Operation) and (xLog.Operation is TWsdlOperation) then
       begin
@@ -5606,7 +5612,7 @@ begin
     else
     begin
       LogMemo.Text := '';
-      MessagesStatusBar.Panels.Items[0].Text := '';
+      MessagesStatusBar.Panels.Items[Ord(lpiFocus)].Text := '';
     end;
   except
   end;
