@@ -605,7 +605,7 @@ object MainForm: TMainForm
           Step = 1
           TabOrder = 0
         end
-        object ToolButton39: TToolButton
+        object ExecuteLoadTextToolbutton: TToolButton
           Left = 390
           Hint = 'Load test operation'#13#10'(concurrent threads sending all requests)'
           Top = 2

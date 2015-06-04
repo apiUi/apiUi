@@ -249,7 +249,7 @@ end;
 
 procedure TExpress.ScannerError (Sender: TObject; Data: String);
 begin
-    ShowMessage ('Scanner: ' + Data);
+  ShowMessage ('Scanner: ' + Data);
 end;
 
 function TExpress.AsFieldId2FieldId (arg: String): String;

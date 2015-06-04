@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="8826"/>
+      <BuildNr Value="8834"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -102,7 +102,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="19">
+    <Exceptions Count="20">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -169,6 +169,9 @@
       <Item19>
         <Name Value="EIdHTTPProtocolException"/>
       </Item19>
+      <Item20>
+        <Name Value="RunError(203)"/>
+      </Item20>
     </Exceptions>
   </Debugging>
 </CONFIG>

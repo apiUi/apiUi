@@ -2,7 +2,7 @@ unit ParserClasses;
 
 interface
 uses
-  Classes, SysUtils, StrUtils, Dialogs, Bind
+  Classes, SysUtils, StrUtils, Bind
 ;
 
 type TScanned = ( scMessageNumber

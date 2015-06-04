@@ -22,6 +22,7 @@ type
   TStressTestForm = class(TForm)
     CancelButton : TBitBtn ;
     ConcurrentThreadsEdit : TLabeledEdit ;
+    GroupBox2 : TGroupBox ;
     LoopsPerThreadEdit : TLabeledEdit ;
     DelayRadioGroup: TRadioGroup;
     DelayMinEdit: TLabeledEdit;

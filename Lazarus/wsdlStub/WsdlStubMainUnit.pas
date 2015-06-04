@@ -89,7 +89,7 @@ type
     ToolButton32 : TToolButton ;
     ToolButton36 : TToolButton ;
     ToolButton37 : TToolButton ;
-    ToolButton39 : TToolButton ;
+    ExecuteLoadTextToolbutton : TToolButton ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -4115,8 +4115,8 @@ begin
     RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRedirect) or
       (WsdlOperation.StubAction = saRequest);
     ExecuteRequestToolButton.Visible := (WsdlOperation.StubAction = saRequest);
-    ExecuteAllRequestsToolButton.Visible :=
-      (WsdlOperation.StubAction = saRequest);
+    ExecuteAllRequestsToolButton.Visible := (WsdlOperation.StubAction = saRequest);
+    ExecuteLoadTextToolbutton.Visible := (WsdlOperation.StubAction = saRequest);
     if (WsdlOperation.StubAction = saStub) then
     begin
       EditScriptButton.Caption := 'Script';
@@ -6364,6 +6364,7 @@ begin
   freeStubs := -1;
   ExecuteRequestToolButton.Visible := False;
   ExecuteAllRequestsToolButton.Visible := False;
+  ExecuteLoadTextToolbutton.Visible := False;
   BrowseMqMenuItem.Visible :=
     (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
   BrowseMqButton.Visible :=

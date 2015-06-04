@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp
-  { you can add units after this };
+  , WsdlProjectz , lazrichedit , virtualtreeview_package ;
 
 type
   longOptsArrayType = array [0..1] of String;
@@ -27,6 +27,7 @@ type
   protected
     procedure DoRun; override;
   public
+    se: TWsdlProject;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure WriteHelp; virtual;
@@ -75,31 +76,31 @@ end;
 constructor TMyApplication.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
+  se := TWsdlProject.Create;
 end;
 
 destructor TMyApplication.Destroy;
 begin
+  FreeAndNil(se);
   inherited Destroy;
 end;
 
 procedure TMyApplication.WriteHelp;
 begin
   WriteLn (ExeName);
-  WriteLn (ApplicationName, ' inputFolder outputFolder httpEndPoint SOAPAction [switches]');
+  WriteLn (ApplicationName, ' projectFileName [switches]');
   WriteLn ('');
   WriteLn ('');
   WriteLn ('Example');
-  WriteLn ('  httpFolderPoster "c:\data\Requests" "c:\data\Responses" "http://localhost:6060" "myServer"');
+  WriteLn (ExeName, '  myProject.wsdlStub --port=3738');
   WriteLn ('');
-  WriteLn ('This command will scan the folder c:\data\Requests for files');
-  WriteLn ('and post (http command) the content of each file to a server');
-  WriteLn ('listening on http://localhost:6060 with myServer in the HTTP header');
-  WriteLn ('The server responses will be written to the folder c:\data\Responses');
+  WriteLn ('This command will ...');
   WriteLn ('');
   WriteLn ('Switches');
-  WriteLn ('  -c continues with next input files in case of errors.');
+  WriteLn ('  --port=');
   WriteLn ('     writes the error to an output file with ''Error'' appended to its name');
-  WriteLn ('  -s skips input files for which an output file already exists.');
+  WriteLn ('  --help');
+  WriteLn ('     type this helpmessage');
   WriteLn ('');
 end;
 
