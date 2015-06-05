@@ -7,7 +7,13 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp
-  , WsdlProjectz , lazrichedit , virtualtreeview_package ;
+  , WsdlProjectz
+  , xmlio
+  , xmlz
+  , lazrichedit
+  , FormIniFilez
+  , virtualtreeview_package
+  ;
 
 type
   longOptsArrayType = array [0..1] of String;
@@ -28,6 +34,9 @@ type
     procedure DoRun; override;
   public
     se: TWsdlProject;
+    IniFile: TFormIniFile;
+    function doDecryptString(aString: AnsiString): AnsiString;
+    function doEncryptString(aString: AnsiString): AnsiString;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure WriteHelp; virtual;
@@ -65,23 +74,44 @@ begin
     WriteLn('option ', portOpt, GetOptionValue('?', portOpt));
   end;
 
-  { add your program here }
-  for x := 1 to ParamCount do
-    WriteLn (ParamStr(x));
+  se.projectFileName := ParamStr(1);
+  if (Copy (se.projectFileName, 1, 1) = '-')  // switch as first argument ??
+  or (not FileExists(se.projectFileName))
+  then
+  begin
+    WriteLn ('First argument not a filename: ' + se.projectFileName);
+    Terminate;
+    Exit;
+  end;
 
-  // stop program loop
+  se.ProjectDesignFromString(ReadStringFromFile(se.projectFileName), se.projectFileName);
+
   Terminate;
+end;
+
+function TMyApplication.doDecryptString(aString: AnsiString): AnsiString;
+begin
+  result := IniFile.DecryptPassword(aString);
+end;
+
+function TMyApplication.doEncryptString(aString: AnsiString): AnsiString;
+begin
+  result := IniFile.EncryptPassword(aString);
 end;
 
 constructor TMyApplication.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
+  IniFile := TFormIniFile.Create;
   se := TWsdlProject.Create;
+  DecryptString := @doDecryptString;
+  EncryptString := @doEncryptString;
 end;
 
 destructor TMyApplication.Destroy;
 begin
   FreeAndNil(se);
+  IniFile.Free;
   inherited Destroy;
 end;
 
@@ -92,15 +122,15 @@ begin
   WriteLn ('');
   WriteLn ('');
   WriteLn ('Example');
-  WriteLn (ExeName, '  myProject.wsdlStub --port=3738');
+  WriteLn (ExeName, ' myProject.wsdlStub --port=6161');
   WriteLn ('');
   WriteLn ('This command will ...');
   WriteLn ('');
   WriteLn ('Switches');
   WriteLn ('  --port=');
-  WriteLn ('     writes the error to an output file with ''Error'' appended to its name');
+  WriteLn ('     overrules the portnumber for the wsdlServer webservice');
   WriteLn ('  --help');
-  WriteLn ('     type this helpmessage');
+  WriteLn ('     types this helpmessage');
   WriteLn ('');
 end;
 
