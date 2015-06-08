@@ -137,6 +137,7 @@ type
     procedure InitSpecialWsdls;
     procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
   public
+    doDisplayLog: Boolean;
     ProgressMax, ProgressPos: Integer;
     doCloneOperations: Boolean;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
@@ -202,7 +203,7 @@ type
     FocusMessageIndex: Integer;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
-    procedure SaveLog (aString: String; aLog: TLog);
+    procedure DisplayLog (aString: String; aLog: TLog);
     function mergeUri (puri, suri: String): String;
     function freeFormatOperationsXml: TXml;
     procedure freeFormatOperationsUpdate (aXml: TXml);
@@ -1023,6 +1024,7 @@ begin
   {$ifndef FPC}
   jclDebug.JclStartExceptionTracking;
   {$endif}
+  doDisplayLog := True;
   doCloneOperations := True;
   OnRestartEvent := RestartCommand;
   OnReactivateEvent := ReactivateCommand;
@@ -2818,7 +2820,7 @@ begin
       end;
     finally
       xLog.OutboundTimeStamp := Now;
-      SaveLog ('', xLog);
+      DisplayLog ('', xLog);
     end;
   end;
   if (aFrame.GetCommand = 'ERROR') then
@@ -3595,7 +3597,7 @@ begin
   finally
     result := xLog.ReplyBody;
     xLog.InitDisplayedColumns(aOperation, DisplayedLogColumns);
-    SaveLog ('', xLog);
+    DisplayLog ('', xLog);
   end;
 end;
 
@@ -5440,7 +5442,7 @@ begin
     end;
   finally
     xLog.OutboundTimeStamp := Now;
-    SaveLog ('', xLog);
+    DisplayLog ('', xLog);
     AcquireLock;
     Dec (mqCurWorkingThreads);
     ReleaseLock;
@@ -5739,7 +5741,7 @@ begin
         if Assigned (xLog) then {still}
         begin
           xLog.OutboundTimeStamp := Now;
-          SaveLog ('', xLog);
+          DisplayLog ('', xLog);
         end;
       end;
     finally
@@ -5861,7 +5863,7 @@ begin
           end;  // except
         finally
           xLog.OutboundTimeStamp := Now;
-          SaveLog ('', xLog);
+          DisplayLog ('', xLog);
         end; // finally request
       end; // request
     finally
@@ -6173,7 +6175,7 @@ begin
       aMsg.Position := 0;
       xLog.Stream.CopyFrom(aMsg, aMsg.Size);
       xLog.OutboundTimeStamp := Now;
-      SaveLog ('', xLog);
+      DisplayLog ('', xLog);
     end;
   except
     on e: Exception do
@@ -6566,7 +6568,7 @@ begin
       end;
     end;
   finally
-    SaveLog ('', xLog);
+    DisplayLog ('', xLog);
   end;
 end;
 
@@ -6770,9 +6772,15 @@ begin
   end;
 end;
 
-procedure TWsdlProject.SaveLog(aString: String; aLog: TLog);
+procedure TWsdlProject.DisplayLog(aString: String; aLog: TLog);
 begin
   if not Assigned (aLog) then Exit;
+  if not doDisplayLog then
+  begin
+    if not aLog.Claimed then
+      aLog.Free;
+    Exit;
+  end;
   AcquireLogLock;
   try
     toDisplayLogs.SaveLog (aString, aLog);

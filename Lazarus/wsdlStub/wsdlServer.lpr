@@ -41,6 +41,8 @@ type
     function ReloadDesignCommand: String;
     procedure ActivateCommand(aActivate: Boolean);
     procedure OpenProjectCommand(aProject: String);
+    procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
+    procedure Notify (aMsg: String);
   public
     se: TWsdlProject;
     IniFile: TFormIniFile;
@@ -60,7 +62,7 @@ var
 begin
   if ParamCount = 0 then
   begin
-    WriteLn(ExeName, ' --help for more information');
+    WriteLn(ExeName, ' --', helpOpt, ' for more information');
     Terminate;
     Exit;
   end;
@@ -92,12 +94,11 @@ begin
     Terminate;
     Exit;
   end;
-
-  se.ProjectDesignFromString(ReadStringFromFile(se.projectFileName), se.projectFileName);
+  OpenProjectCommand(se.projectFileName);
   if HasOption('?', portOpt) then
     MasterPortNumber := StrToInt(GetOptionValue(portOpt));
   ActivateCommand(True);
-  while not Terminated
+  while not Terminated do
     Sleep (333);
   ActivateCommand(False);
   Terminate;
@@ -105,7 +106,7 @@ end;
 
 function TMyApplication.ClearLogCommand(aDoRaiseExceptions: Boolean): String;
 begin
-  raise Exception.Create('ClearLog: Not implemented in ' + ExeName);
+  raise Exception.Create('ClearLog: Not implemented (not required) in ' + ExeName);
 end;
 
 function TMyApplication.ReactivateCommand: String;
@@ -126,7 +127,9 @@ end;
 
 function TMyApplication.ReloadDesignCommand: String;
 begin
-  raise Exception.Create('ReloadDesign: Not implemented in ' + ExeName);
+  ActivateCommand(False);
+  OpenProjectCommand(se.projectFileName);
+  ActivateCommand(True);
 end;
 
 procedure TMyApplication.ActivateCommand(aActivate: Boolean);
@@ -144,8 +147,28 @@ begin
 end;
 
 procedure TMyApplication.OpenProjectCommand(aProject: String);
+var
+  wasActive: Boolean;
 begin
-  raise Exception.Create('OpenProject: Not implemented in ' + ExeName);
+  wasActive := se.IsActive;
+  ActivateCommand(False);
+  se.projectFileName := aProject;
+  se.ProjectDesignFromString(ReadStringFromFile(aProject), aProject);
+  ActivateCommand(wasActive);
+end;
+
+procedure TMyApplication .LogServerException (const Msg : String ;
+  aException : Boolean ; E : Exception );
+begin
+  if aException then
+    WriteLn (ExeName, ' exception', LineEnding, Msg, LineEnding, se.ExceptionStackListString(nil))
+  else
+    WriteLn (ExeName, ' ', Msg);
+end;
+
+procedure TMyApplication.Notify (aMsg : String );
+begin
+  WriteLn (ExeName, ' notify: ', aMsg);
 end;
 
 function TMyApplication.doDecryptString(aString: AnsiString): AnsiString;
@@ -169,6 +192,8 @@ begin
   EncryptString := @doEncryptString;
   IniFile := TFormIniFile.Create;
   se := TWsdlProject.Create;
+  se.Notify := @Notify;
+  se.doDisplayLog := False;
   se.OnActivateEvent := @ActivateCommand;
   se.OnOpenProjectEvent := @OpenProjectCommand;
   se.OnClearLogEvent := @ClearLogCommand;
@@ -197,9 +222,9 @@ begin
   WriteLn ('This command will ...');
   WriteLn ('');
   WriteLn ('Switches');
-  WriteLn ('  --port=');
+  WriteLn ('  --', portOpt, '=');
   WriteLn ('     overrules the portnumber for the wsdlServer webservice');
-  WriteLn ('  --help');
+  WriteLn ('  --', helpOpt);
   WriteLn ('     types this helpmessage');
   WriteLn ('');
 end;

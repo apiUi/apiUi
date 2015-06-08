@@ -7254,7 +7254,7 @@ begin
     MessagesVTS.BeginUpdate;
     for X := 0 to aLogList.Count - 1 do
     begin
-      se.SaveLog('', aLogList.LogItems[X]);
+      se.DisplayLog('', aLogList.LogItems[X]);
     end;
   finally
     MessagesVTS.EndUpdate;
@@ -9841,7 +9841,7 @@ begin
     finally
       try
         xLogItem.InitDisplayedColumns(xLogItem.Operation, se.DisplayedLogColumns);
-        se.SaveLog('', xLogItem);
+        se.DisplayLog('', xLogItem);
       finally
       end;
     end;
