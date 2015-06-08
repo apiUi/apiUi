@@ -9,9 +9,8 @@
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="73"/>
-        <CursorPos Y="89"/>
-        <UsageCount Value="24"/>
+        <CursorPos X="91" Y="30"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -20,9 +19,12 @@
       </Unit1>
       <Unit2>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
-        <TopLine Value="35"/>
-        <CursorPos X="15" Y="46"/>
-        <UsageCount Value="10"/>
+        <UnitName Value="CustApp"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="247"/>
+        <CursorPos X="15" Y="272"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Mq\MQAPI.pas"/>
@@ -39,10 +41,10 @@
       <Unit5>
         <Filename Value="WsdlProjectz.pas"/>
         <UnitName Value="WsdlProjectz"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="3016"/>
         <CursorPos Y="3030"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
@@ -100,9 +102,9 @@
       <Unit16>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <UnitName Value="Xmlz"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="16"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit16>
       <Unit17>
@@ -127,10 +129,10 @@
       <Unit20>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-registry\src\registry.pp"/>
         <UnitName Value="registry"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="224"/>
         <CursorPos X="3" Y="228"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit20>
     </Units>
@@ -140,123 +142,121 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="54" TopLine="39"/>
+        <Caret Line="147" TopLine="117"/>
       </Position1>
       <Position2>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="125" TopLine="42"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="284" Column="3" TopLine="280"/>
       </Position2>
       <Position3>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="47" TopLine="41"/>
+        <Caret Line="147" TopLine="117"/>
       </Position3>
       <Position4>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="82" TopLine="58"/>
+        <Caret Line="19" Column="119"/>
       </Position4>
       <Position5>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="3031" TopLine="3016"/>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="76" TopLine="51"/>
       </Position5>
       <Position6>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="47" TopLine="31"/>
+        <Caret Line="111" Column="36" TopLine="90"/>
       </Position6>
       <Position7>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="54" TopLine="31"/>
+        <Caret Line="43" Column="3" TopLine="25"/>
       </Position7>
       <Position8>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="72" TopLine="58"/>
+        <Caret Line="130" Column="44" TopLine="112"/>
       </Position8>
       <Position9>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="82" TopLine="58"/>
+        <Caret Line="156" Column="35" TopLine="137"/>
       </Position9>
       <Position10>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="3030" TopLine="3016"/>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="131" Column="70" TopLine="125"/>
       </Position10>
       <Position11>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="376" Column="16" TopLine="361"/>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="116" Column="25" TopLine="116"/>
       </Position11>
       <Position12>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="82" TopLine="58"/>
+        <Caret Line="13" Column="13"/>
       </Position12>
       <Position13>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="37" TopLine="17"/>
+        <Caret Line="132" Column="73" TopLine="117"/>
       </Position13>
       <Position14>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="97" TopLine="89"/>
+        <Caret Line="126" Column="41" TopLine="119"/>
       </Position14>
       <Position15>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="91" Column="13" TopLine="76"/>
+        <Caret Line="98" Column="34" TopLine="72"/>
       </Position15>
       <Position16>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="13" Column="17"/>
+        <Caret Line="102" Column="3" TopLine="83"/>
       </Position16>
       <Position17>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="92" Column="13" TopLine="77"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="61" Column="28" TopLine="50"/>
       </Position17>
       <Position18>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="45" Column="15" TopLine="23"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="272" Column="15" TopLine="245"/>
       </Position18>
       <Position19>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="104" Column="33" TopLine="101"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
       </Position19>
       <Position20>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="111" Column="15" TopLine="101"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="33" Column="15" TopLine="8"/>
       </Position20>
       <Position21>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="86" TopLine="72"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="58" Column="24" TopLine="34"/>
       </Position21>
       <Position22>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="3032" TopLine="3016"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="76" Column="49" TopLine="53"/>
       </Position22>
       <Position23>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="86" TopLine="42"/>
+        <Caret Line="121" Column="13" TopLine="105"/>
       </Position23>
       <Position24>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="108" TopLine="101"/>
       </Position24>
       <Position25>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="106" Column="3" TopLine="91"/>
+        <Caret Line="103" TopLine="84"/>
       </Position25>
       <Position26>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="12" Column="9"/>
+        <Caret Line="119" TopLine="99"/>
       </Position26>
       <Position27>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="107" Column="21" TopLine="92"/>
+        <Caret Line="96" Column="42" TopLine="64"/>
       </Position27>
       <Position28>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="108" Column="21" TopLine="93"/>
+        <Caret Line="101" Column="5" TopLine="86"/>
       </Position28>
       <Position29>
         <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="87" TopLine="73"/>
+        <Caret Line="14" Column="13"/>
       </Position29>
       <Position30>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="3030" TopLine="3016"/>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="15" Column="3"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

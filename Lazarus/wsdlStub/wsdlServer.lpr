@@ -10,6 +10,7 @@ uses
   , WsdlProjectz
   , xmlio
   , xmlz
+  , xmlUtilz
   , lazrichedit
   , FormIniFilez
   , virtualtreeview_package
@@ -32,6 +33,14 @@ type
   TMyApplication = class(TCustomApplication)
   protected
     procedure DoRun; override;
+  private
+    function ClearLogCommand(aDoRaiseExceptions: Boolean): String;
+    function ReactivateCommand: String;
+    function QuitCommand(aDoRaiseExceptions: Boolean): String;
+    function RestartCommand: String;
+    function ReloadDesignCommand: String;
+    procedure ActivateCommand(aActivate: Boolean);
+    procedure OpenProjectCommand(aProject: String);
   public
     se: TWsdlProject;
     IniFile: TFormIniFile;
@@ -85,8 +94,58 @@ begin
   end;
 
   se.ProjectDesignFromString(ReadStringFromFile(se.projectFileName), se.projectFileName);
-
+  if HasOption('?', portOpt) then
+    MasterPortNumber := StrToInt(GetOptionValue(portOpt));
+  ActivateCommand(True);
+  while not Terminated
+    Sleep (333);
+  ActivateCommand(False);
   Terminate;
+end;
+
+function TMyApplication.ClearLogCommand(aDoRaiseExceptions: Boolean): String;
+begin
+  raise Exception.Create('ClearLog: Not implemented in ' + ExeName);
+end;
+
+function TMyApplication.ReactivateCommand: String;
+begin
+  raise Exception.Create('Reactivate: Not implemented in ' + ExeName);
+end;
+
+function TMyApplication.QuitCommand(aDoRaiseExceptions: Boolean): String;
+begin
+  WriteLn (ExeName, ' received Quit command');
+  Terminate;
+end;
+
+function TMyApplication.RestartCommand: String;
+begin
+  raise Exception.Create('Restart: Not implemented in ' + ExeName);
+end;
+
+function TMyApplication.ReloadDesignCommand: String;
+begin
+  raise Exception.Create('ReloadDesign: Not implemented in ' + ExeName);
+end;
+
+procedure TMyApplication.ActivateCommand(aActivate: Boolean);
+begin
+  if aActivate <> se.IsActive then
+  begin
+    try
+      se.Activate(aActivate);
+      WriteLn (ExeName, ifthen (se.IsActive, ': Active' , ': Inactive'));
+    except
+      on e: Exception do
+        raise Exception.Create('Activate: ' + e.Message);
+    end;
+  end;
+end;
+
+procedure TMyApplication.OpenProjectCommand(aProject: String);
+begin
+  raise Exception.Create('OpenProject: Not implemented in ' + ExeName);
 end;
 
 function TMyApplication.doDecryptString(aString: AnsiString): AnsiString;
@@ -102,10 +161,21 @@ end;
 constructor TMyApplication.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
-  IniFile := TFormIniFile.Create;
-  se := TWsdlProject.Create;
+  _xmlUserName := GetUserName;
+  _xmlProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
+  _xmlProgVersion := xmlio.GetVersion;
+  _xmlLicensed := True;
   DecryptString := @doDecryptString;
   EncryptString := @doEncryptString;
+  IniFile := TFormIniFile.Create;
+  se := TWsdlProject.Create;
+  se.OnActivateEvent := @ActivateCommand;
+  se.OnOpenProjectEvent := @OpenProjectCommand;
+  se.OnClearLogEvent := @ClearLogCommand;
+  se.OnReactivateEvent := @ReactivateCommand;
+  se.OnQuitEvent := @QuitCommand;
+  se.OnRestartEvent := @RestartCommand;
+  se.OnReloadDesignEvent := @ReloadDesignCommand;
 end;
 
 destructor TMyApplication.Destroy;
