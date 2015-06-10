@@ -31,7 +31,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;C:\JanBo\Sources\2011\stubStudio\Examples\crmi\crrmiStub.wsdlStub&quot;"/>
+        <CommandLineParams Value="&quot;C:\JanBo\Sources\2011\stubStudio\Examples\crmi\crrmiStub.wsdlStub&quot; --port=3738"/>
       </local>
     </RunParams>
     <RequiredPackages Count="4">
@@ -48,11 +48,16 @@
         <PackageName Value="LCLBase"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="2">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="wsdlcontrolz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="wsdlcontrolz"/>
+      </Unit1>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

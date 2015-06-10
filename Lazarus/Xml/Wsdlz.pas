@@ -467,7 +467,7 @@ type TOnOperationChange = procedure (aOperation: TWsdlOperation) of Object;
 type TOnChange = procedure of Object;
 type TOnStringEvent = procedure (const Msg: String) of Object;
 
-procedure Notify(aString: String);
+procedure Notify(aString: AnsiString);
 function DateTimeToJulianStr (aDateTime: TDateTime): String;
 function SwiftStrToNumber (aString: String): Extended;
 function SwiftNumberToStr (aNumber: Extended): String;

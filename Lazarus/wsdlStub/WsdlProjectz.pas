@@ -128,14 +128,8 @@ type
     procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
       const AUsername, APassword: string; var VAuthenticated: Boolean);
     function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
-    procedure HttpWebPageServerCommandGet(AContext: TIdContext;
-      ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-    function MessagesRegressionReportAsXml(aReferenceFileName: String): TXml;
-    procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
-    function httpRequestStreamToString(ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
-    procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
   public
     doDisplayLog: Boolean;
     ProgressMax, ProgressPos: Integer;
@@ -183,7 +177,7 @@ type
     doViaProxyServer: Boolean;
     ViaProxyServer: String;
     ViaProxyPort: Integer;
-    HTTPServer, HttpServerSSL, HttpServerBmtp, HttpWebPageServer: TIdHTTPServer;
+    HTTPServer, HttpServerSSL, HttpServerBmtp: TIdHTTPServer;
     HTTPProxyServer: TIdHTTPProxyServer;
     SMTPServer, SMTPServerSSL: TIdSMTPServer;
     POP3Server: TIdPOP3Server;
@@ -191,10 +185,6 @@ type
     ServerOpenSSL: TIdServerIOHandlerSSLOpenSSL;
     OnRestartEvent: TStringFunction;
     OnReactivateEvent: TStringFunction;
-    OnActivateEvent: TProcedureB;
-    OnOpenProjectEvent: TProcedureS;
-    OnClearLogEvent: TStringFunctionBoolean;
-    OnQuitEvent: TStringFunctionBoolean;
     OnReloadDesignEvent: TStringFunction;
     PublishDescriptions: Boolean;
     OperationsWithEndpointOnly: Boolean;
@@ -204,6 +194,7 @@ type
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure DisplayLog (aString: String; aLog: TLog);
+    procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
     function mergeUri (puri, suri: String): String;
     function freeFormatOperationsXml: TXml;
     procedure freeFormatOperationsUpdate (aXml: TXml);
@@ -222,9 +213,8 @@ type
     procedure DefaultDisplayMessageData;
     function ReactivateCommand: String;
     function RestartCommand: String;
-    function QuitCommand(aDoRaiseExceptions: Boolean): String;
     function ReloadDesignCommand: String;
-    function ClearLogCommand(aDoRaiseExceptions: Boolean): String;
+    procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
     procedure OpenMessagesLog (aString: String; aIsFileName: Boolean; aLogList: TLogList);
     procedure IgnoreDataChanged(Sender: TObject);
     procedure EnvironmentListClear;
@@ -236,6 +226,7 @@ type
                             ; MsgDesc: MQMD
                             ; MqReturnCode: String
                             );
+    function MessagesRegressionReportAsXml(aReferenceFileName: String): TXml;
     procedure CheckExpectedValues(aLog: TLog; aOperation: TWsdlOperation; aDoCheck: Boolean);
     procedure UpdateMessageRow (aOperation: TWsdlOperation; aMessage: TWsdlMessage);
     procedure DelayMS (aDelayMS: Integer);
@@ -331,7 +322,7 @@ type
     procedure PrepareAllOperations (aLogServerException: TOnStringEvent);
     procedure Activate (aActive: Boolean);
     procedure Clear;
-    procedure InitMasterServer;
+    function httpRequestStreamToString(ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): String;
     {$IFnDEF FPC}
     procedure ADOConnectionWillConnect(Connection: TADOConnection;
       var ConnectionString, UserID, Password: WideString;
@@ -431,10 +422,9 @@ procedure IntrospectIniXml;
 var
   _ProgName: String;
   BetaMode: Boolean;
-  webserviceWsdlFileName: String;
+  webserviceWsdlFileName, webserviceXsdFileName: String;
     indexHtmlFileName: String;
     indexWsdlsHtmlFileName: String;
-    webserviceXsdFileName: String;
     wsaXsdFileName: String;
     mqPutHeaderEditAllowedFileName: String;
     stompPutHeaderEditAllowedFileName: String;
@@ -1004,7 +994,6 @@ begin
     and (endpointConfigXsd.sType.ElementDefs.Count > Ord (ttTaco)) then
       _WsdlTacoConfigXsd := endpointConfigXsd.sType.ElementDefs.Xsds [Ord (ttTaco)];
 
-  {}
     if webserviceWsdlFileName <> '' then
     begin
       webserviceWsdlFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceWsdlFileName);
@@ -1013,7 +1002,8 @@ begin
     end;
     if not Assigned (webserviceWsdl) then
       raise exception.Create('No ' + _progName + ' webservice wsdl read');
-      {}
+    if webserviceXsdFileName <> '' then
+      webserviceXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceXsdFileName);
   finally
     iniXml.Free;
   end;
@@ -1028,8 +1018,6 @@ begin
   doCloneOperations := True;
   OnRestartEvent := RestartCommand;
   OnReactivateEvent := ReactivateCommand;
-  OnClearLogEvent := ClearLogCommand;
-  OnQuitEvent := QuitCommand;
   OnReloadDesignEvent := ReloadDesignCommand;
   fLogLock := TCriticalSection.Create;
   LogFilter := TLogFilter.Create;
@@ -1105,13 +1093,6 @@ begin
     OnCommandOther := HttpServerBmtpCommandGet;
     OnCreatePostStream := HttpServerCreatePostStream;
   end;
-  HttpWebPageServer := TIdHTTPServer.Create(nil);
-  with HttpWebPageServer do
-  begin
-    OnCommandGet := HttpWebPageServerCommandGet;
-    OnCommandOther := HttpWebPageServerCommandGet;
-    OnCreatePostStream := HttpServerCreatePostStream;
-  end;
   POP3Server := TIdPOP3Server.Create(nil);
   with Pop3Server do
   begin
@@ -1163,7 +1144,6 @@ begin
   FreeAndNil (HttpServer);
   FreeAndNil (HttpServerSSL);
   FreeAndNil (HttpServerBmtp);
-  FreeAndNil (HttpWebPageServer);
   FreeAndNil (POP3Server);
   FreeAndNil (ServerOpenSSL);
   FreeAndNil (SmtpOpenSSL);
@@ -6202,338 +6182,6 @@ begin
   VAuthenticated := True; // a friendly server
 end;
 
-procedure TWsdlProject.HttpWebPageServerCommandGet(AContext: TIdContext;
-  ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-  function _prepWsdl(s: String):String;
-    function _replPath(s:String):String;
-    var
-      x: Integer;
-    begin
-      result := '';
-      for x := 1 to Length (s) do
-        if s[x] = '\' then
-          result := ''
-        else
-          result := result + s[x];
-    end;
-  var
-    o,n : String;
-  begin
-    result := s;
-    o := _replPath(ChangeFileExt(webserviceWsdlFileName, '.xsd'));
-    n := 'wsdlStubWebService?XSD';
-    result := ReplaceText(result, o, n);
-    o := 'localhost:3738';
-    n := _WsdlHostName + ':' + IntToStr(MasterPortNumber);
-    result := ReplaceText(result, o, n);
-  end;
-  function _prepXsd(fn: String):String;
-  const reqs = '--requestElementNames--';
-  const scrpts = '--scriptNames--';
-  var
-    sl, dl: TStringList;
-    x, o: Integer;
-  begin
-    result :='';
-    sl := TStringlist.Create;
-    dl := TStringList.Create;
-    try
-      sl.LoadFromFile(fn);
-      for x := 0 to sl.Count - 1 do
-      begin
-        if Pos (reqs, sl.Strings[x]) > 0 then
-          for o := 0 to allOperations.Count - 1 do
-            dl.Add(ReplaceText(sl.Strings[x], reqs, allOperations.Strings[o]))
-        else
-        begin
-          if Pos (scrpts, sl.Strings[x]) > 0 then
-            for o := 0 to Scripts.Count - 1 do
-              dl.Add(ReplaceText(sl.Strings[x], scrpts, Scripts.Strings[o]))
-          else
-            dl.Add(sl.Strings[x]);
-        end;
-      end;
-      result := dl.Text;
-    finally
-      sl.Free;
-      dl.Free;
-    end;
-  end;
-  function _prepHttp(fn: String):String;
-  const rops = '--operationNames--';
-  var
-    sl, dl: TStringList;
-    x, o, s: Integer;
-  begin
-    result :='';
-    sl := TStringlist.Create;
-    dl := TStringList.Create;
-    try
-      sl.LoadFromFile(fn);
-      for x := 0 to sl.Count - 1 do
-      begin
-        if Pos (rops, sl.Strings[x]) > 0 then
-          with webserviceWsdl.Services do
-            for s := 0 to Count - 1 do
-              for o := 0 to Services[s].Operations.Count - 1 do
-                dl.Add(ReplaceText(sl.Strings[x], rops, Services[s].Operations.Operations[o].Name))
-        else
-          dl.Add(sl.Strings[x]);
-      end;
-      result := ReplaceText(dl.Text, '.wsdl', '?WSDL');
-    finally
-      sl.Free;
-      dl.Free;
-    end;
-  end;
-var
-  xOperId, xErrorMessage, dCorrelation, dSep, xParams: String;
-  xXml, oXml, dXml, eXml: TXml;
-  xOperation, oOperation, dOperation: TWsdlOperation;
-  dRequest: TWsdlMessage;
-  xStream: TMemoryStream;
-  x, f: Integer;
-begin
-  AResponseInfo.ContentEncoding := 'identity';
-  try
-    if ARequestInfo.Document = '/' + _ProgName + 'WebService' then
-    begin
-      try
-        xXml := TXml.Create;
-        try
-          if ArequestInfo.QueryParams = 'WSDL' then
-          begin
-            AResponseInfo.ContentText := _prepWsdl(ReadStringFromFile(ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceWsdlFileName)));
-            Exit;
-          end;
-          if ArequestInfo.QueryParams = 'XSD' then
-          begin
-            AResponseInfo.ContentText := _prepXsd ( ChangeFileExt(ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceWsdlFileName), '.xsd'));
-            Exit;
-          end;
-          xParams := httpRequestStreamToString(ARequestInfo, AResponseInfo);
-          xXml.LoadFromString(xParams, nil);
-          if xXml.Name = '' then
-            raise Exception.Create('Could not parse: ' + xParams);
-          oXml := xXml.FindUQXml('Envelope.Body');
-          if not Assigned (oXml) then
-            raise Exception.Create('Not a soap message: ' + xParams);
-          if oXml.Items.Count = 0 then
-            raise Exception.Create('No operation in: ' + xParams);
-          xOperId := NameWithoutPrefix (oXml.Items.XmlItems[0].Name);
-          xOperation := webserviceWsdl.OperationByRequest[xOperId];
-          if not Assigned (xOperation) then
-            raise Exception.Create(format ('Unknown Operation: %s (%s)', [xOperId, xParams]));
-          oOperation := TWsdlOperation.Create(xOperation); //creates a private copy
-          (oOperation.rpyBind as TXml).CheckDownline(True);
-          try
-            try
-              oOperation.RequestStringToBindables(xParams);
-              if xOperId = 'clearLogsReq' then
-              begin
-                OnClearLogEvent(True);
-              end;
-              if xOperId = 'activateReq' then
-              begin
-                if not Assigned (OnActivateEvent) then
-                  raise Exception.Create('activateReq refused because ' + _progName + ' has no OnActivateCommand procedure assigned');
-                dXml := oXml.FindUQXml('Body.activateReq.Activate');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Missing Activate/Deactivate argument (boolean) in request');
-                OnActivateEvent (dXml.ValueAsBoolean);
-              end;
-              if xOperId = 'openProjectReq' then
-              begin
-                if not Assigned (OnOpenProjectEvent) then
-                  raise Exception.Create('openProjectReq refused because ' + _progName + ' has no OnOpenProjectRequested procedure assigned');
-                if IsActive then
-                  raise Exception.Create('openProjectReq refused because ' + _progName + ' is active');
-                dXml := oXml.FindUQXml('Body.openProjectReq.projectFileName');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find filename to use in request');
-                OnOpenProjectEvent (dXml.Value);
-              end;
-              if xOperId = 'regressionReportReq' then
-              begin
-                dXml := oXml.FindUQXml('Body.regressionReportReq.referenceFileName');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find filename to use in request');
-                oXml := MessagesRegressionReportAsXml (ExpandRelativeFileName(projectFileName,dXml.Value));
-                oXml.Name := (oOperation.rpyBind as TXml).Items.XmlItems[0].Name;
-                try
-                  (oOperation.rpyBind as TXml).Items.XmlItems[0].ResetValues;
-                  (oOperation.rpyBind as TXml).Items.XmlItems[0].LoadValues(oXml, False, False);
-                finally
-                  oXml.Free;
-                end;
-              end;
-              if xOperId = 'resetEnvVarReq' then
-              begin
-                dXml := oXml.FindUQXml('Body.resetEnvVarReq.Name');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find name to use in request');
-                wsdlz.resetEnvVar(dXml.Value);
-              end;
-              if xOperId = 'resetEnvVarsReq' then
-              begin
-                dXml := oXml.FindUQXml('Body.resetEnvVarsReq.RegularExpression');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find regular expression to use in request');
-                wsdlz.resetEnvVars(dXml.Value);
-              end;
-              if xOperId = 'saveLogsToFileReq' then
-              begin
-                dXml := oXml.FindUQXml('Body.saveLogsToFileReq.fileName');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find filename to use in request');
-                SaveMessagesLog(ExpandRelativeFileName(projectFileName, dXml.Value));
-              end;
-              if xOperId = 'sendAllRequestsReq' then
-              begin
-                dXml := oXml.FindUQXml('Body.sendAllRequestsReq.elementName');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find elementname to use in request');
-                if allOperations.Find(dXml.Value, f) then
-                  dOperation := allOperations.Operations [f]
-                else
-                  raise Exception.Create('Cannot find operation based on: ' + dXml.Value);
-                if dOperation.StubAction <> saRequest  then
-                  raise Exception.Create('sendAllRequestsReq refused because requested operation is not configured as request');
-                if not IsActive then
-                  raise Exception.Create('sendAllRequestsReq refused because ' + _progName + ' is inactive');
-                TProcedureThread.Create (False, Self, ExecuteAllOperationRequests, dOperation);
-              end;
-              if xOperId = 'sendRequestReq' then
-              begin
-                dXml := oXml.FindUQXml('Body.sendRequestReq.elementName');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find elementname to use in request');
-                if allOperations.Find(dXml.Value, f) then
-                  dOperation := allOperations.Operations [f]
-                else
-                  raise Exception.Create('Cannot find operation based on: ' + dXml.Value);
-                if dOperation.StubAction <> saRequest  then
-                  raise Exception.Create('Refused because requested operation is not configured as request');
-                dXml := oXml.FindUQXml('Body.sendRequestReq.correlationValues');
-                if (not Assigned (dXml))
-                and (dOperation.CorrelationBindables.Count > 0) then
-                  raise Exception.Create('No correlationValues found in request');
-                if Assigned (dXml)
-                and (dXml.Items.Count <> dOperation.CorrelationBindables.Count)  then
-                  raise Exception.Create ( 'Number of correlation items is '
-                                         + IntToStr (dXml.Items.Count)
-                                         + '; must be '
-                                         + IntToStr (dOperation.CorrelationBindables.Count)
-                                         );
-                dSep := '';
-                dCorrelation := '';
-                if Assigned (dXml) then
-                begin
-                  for x := 0 to dXml.Items.Count - 1 do
-                  begin
-                    dOperation.CorrelationBindables.Bindables [x].Value := dXml.Items.XmlItems [x].Value;
-                    dOperation.CorrelationBindables.Bindables [x].Checked := True;
-                    dCorrelation := dCorrelation + dSep + dXml.Items.XmlItems [x].Value;
-                    dSep := ';';
-                  end;
-                end;
-                dRequest := dOperation.MessageBasedOnRequest;
-                if not Assigned (dRequest) then
-                  raise Exception.Create ('Could not find message based on correlation: ' + dXml.Text);
-                if not IsActive then
-                  raise Exception.Create('sendAllRequestsReq refused because ' + _progName + ' is inactive');
-                SendMessage (dOperation, dRequest, dCorrelation);
-              end;
-              if xOperId = 'setEnvVarReq' then
-              begin
-                dXml := oXml.FindUQXml('Body.setEnvVarReq.Name');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find name to use in request');
-                eXml := oXml.FindUQXml('Body.setEnvVarReq.Value');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find value to use in request');
-                wsdlz.setEnvVar(dXml.Value, eXml.Value);
-              end;
-              if xOperId = 'shutDownReq' then
-              begin
-                OnQuitEvent(True);
-              end;
-              if xOperId = 'unexpectedValuesReportReq' then
-              begin
-                oXml := displayedLogs.UnexpectedsAsXml;
-                oXml.Name := (oOperation.rpyBind as TXml).Items.XmlItems[0].Name;
-                try
-                  (oOperation.rpyBind as TXml).Items.XmlItems[0].ResetValues;
-                  (oOperation.rpyBind as TXml).Items.XmlItems[0].LoadValues(oXml, False, False);
-                finally
-                  oXml.Free;
-                end;
-              end;
-              if xOperId = 'executeScriptReq' then
-              begin
-                if not IsActive then
-                  raise Exception.Create('executeScriptReq refused because ' + _progName + ' is inactive');
-                dXml := oXml.FindUQXml('Body.executeScriptReq.scriptName');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find scriptname in request');
-                if Scripts.Find(dXml.Value, f) then
-                  ScriptExecuteText((Scripts.Objects[f] as TStringList).Text)
-                else
-                  raise Exception.Create('Cannot find script based on: ' + dXml.Value);
-              end;
-              AResponseInfo.ContentText := oOperation.StreamReply(_progName, True);
-            except
-              on e: exception do
-              begin
-                xErrorMessage := e.Message;
-                try
-                  dXml := oOperation.fltBind as TXml;
-                  dXml.CheckDownline(True);
-                  dXml.FindUQXml('Faults.*.applicationFault.code').Value := xOperId;
-                  dXml.FindUQXml('Faults.*.applicationFault.text').Value := xErrorMessage;
-                  AResponseInfo.ContentText := oOperation.StreamFault(_progName, true);
-                  AResponseInfo.ResponseNo := 500;
-                except
-                  AResponseInfo.ContentText := xErrorMessage;
-                  AResponseInfo.ResponseNo := 500;
-                end;
-              end;
-            end;
-          finally
-            oOperation.Free;
-          end;
-        finally
-          FreeAndNil (xXml);
-        end;
-      except
-        on e: exception do
-        begin
-          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
-          AResponseInfo.ResponseNo := 500;
-        end;
-      end;
-    end
-    else
-      AResponseInfo.ContentText := createHtmlResponse (Self, ARequestInfo);
-  finally
-    if AResponseInfo.ContentEncoding <> 'identity' then
-    begin
-      aResponseInfo.ContentStream := TMemoryStream.Create;
-      xStream := TMemoryStream.Create;
-      try
-        WriteStringToStream(AResponseInfo.ContentText, xStream);
-        if AResponseInfo.ContentEncoding = 'deflate' then
-          GZIPUtils.deflate(xStream, aResponseInfo.ContentStream as TMemoryStream);
-        if AResponseInfo.ContentEncoding = 'gzip' then
-          GZIPUtils.GZip(xStream, aResponseInfo.ContentStream as TMemoryStream);
-      finally
-        xStream.Free;
-      end;
-      aResponseInfo.ContentText := '';
-    end;
-  end;
-end;
-
 procedure TWsdlProject.HTTPProxyServerAfterCommandHandler(
   ASender: TIdCmdTCPServer; AContext: TIdContext);
 var
@@ -6907,19 +6555,9 @@ begin
   InitSpecialWsdls;
 end;
 
-function TWsdlProject.ClearLogCommand(aDoRaiseExceptions: Boolean): String;
-begin
-  raise Exception.Create('TWsdlProject.ClearLogCommand(aDoRaiseExceptions: Boolean): String;  should be overloaded');
-end;
-
 function TWsdlProject.ReactivateCommand: String;
 begin
   raise Exception.Create('TWsdlProject.ReactivateCommand: String;  should be overloaded');
-end;
-
-function TWsdlProject.QuitCommand(aDoRaiseExceptions: Boolean): String;
-begin
-  raise Exception.Create('TWsdlProject.QuitCommand(aDoRaiseExceptions: Boolean): String;  should be overloaded');
 end;
 
 function TWsdlProject.RestartCommand: String;
@@ -6935,48 +6573,6 @@ end;
 function TWsdlProject.ReloadDesignCommand: String;
 begin
   raise Exception.Create('TWsdlProject.ReloadDesignCommand: String;  should be overloaded');
-end;
-
-procedure TWsdlProject.InitMasterServer;
-begin
-  if MasterPortNumber <> HttpWebPageServer.DefaultPort then
-  begin
-    HttpWebPageServer.Active := False;
-    HttpWebPageServer.DefaultPort := MasterPortNumber;
-  end;
-  if not HttpWebPageServer.Active then
-  begin
-    HttpWebPageServer.Bindings.Clear;
-    with HttpWebPageServer.Bindings.Add do
-    begin
-      Port := MasterPortNumber;
-      IP := '0.0.0.0';
-    end;
-  end;
-  if (isMasterModeEnabled <> HttpWebPageServer.Active) then
-  begin
-    if isMasterModeEnabled
-    { and (not isSlaveMode) }then
-    begin
-      try
-        HttpWebPageServer.SessionState := False;
-        HttpWebPageServer.Active := true;
-        if Assigned (Notify) then
-          Notify(format('Listening for HTTP connections on %s:%d.',[HttpWebPageServer.Bindings[0].IP, HttpWebPageServer.Bindings[0].Port]));
-      except
-        on e: exception do
-        begin
-          LogServerMessage (format('Exception %s in Activate. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-        end;
-      end;
-    end
-    else
-    begin
-      HttpWebPageServer.Active := false;
-      HttpWebPageServer.Intercept := nil;
-      Notify('Stopped listening.');
-    end;
-  end;
 end;
 
 procedure TWsdlProject.InitSpecialWsdls;

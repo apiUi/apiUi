@@ -27,6 +27,7 @@ uses
    , Ipmz
    , IpmTypes
    , WsdlProjectz
+   , wsdlcontrolz
    , Wsdlz
    , Xmlz
    , Xsdz
@@ -1002,7 +1003,6 @@ type
       Column: TColumnIndex; NewText: String);
     procedure CopyGridOnGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
-    procedure InitMasterServer;
     procedure ShowXmlInGrid(aXml: TXml; aReadOnly: Boolean);
     procedure ShowXml(aCaption: String; aXml: TXml);
     procedure ShowIpm(aCaption: String; aIpm: TIpmItem);
@@ -1059,6 +1059,7 @@ type
   published
   public
     se: TWsdlProject;
+    sc: TWsdlControl;
     claimedLog: TLog;
     isSlaveMode: Boolean;
     mqServerEnv: String;
@@ -3083,7 +3084,6 @@ begin
       finally
         ReleaseLock;
       end;
-      InitMasterServer;
       _WsdlPortNumber := IntToStr(se.Listeners.httpPort);
     finally
       { }
@@ -3370,7 +3370,6 @@ begin
   SetLogUsageTimer;
   ConfigListenersAction.Hint := hintStringFromXsd('Configure listeners (',
     ', ', ')', listenersConfigXsd);
-  InitMasterServer;
 end;
 
 procedure TMainForm.LogUpdateColumns;
@@ -6179,18 +6178,21 @@ begin
   notifyTabImageIndex := 66;
   ExceptionTabSheet.ImageIndex := -1;
   se := TWsdlProject.Create;
+  sc := TWsdlControl.Create;
+  sc.se := se;
+  sc.portNumber := 3738;
   NumberOfThreads := 0;
   se.OnStartThread := StartThreadEvent;
   se.OnTerminateThread := TerminateThreadEvent;
-  se.OnActivateEvent := ActivateCommand;
-  se.OnOpenProjectEvent := OpenProjectCommand;
+  sc.OnActivateEvent := ActivateCommand;
+  sc.OnOpenProjectEvent := OpenProjectCommand;
   se.Notify := Notify;
   se.LogServerMessage := LogServerException;
   se.OnDebugOperationEvent := DebugOperation;
   se.FoundErrorInBuffer := FoundErrorInBuffer;
-  se.OnClearLogEvent := ClearLogCommand;
+  sc.OnClearLogEvent := ClearLogCommand;
   se.OnReactivateEvent := ReactivateCommand;
-  se.OnQuitEvent := QuitCommand;
+  sc.OnQuitEvent := QuitCommand;
   se.OnRestartEvent := RestartCommand;
   se.OnReloadDesignEvent := ReloadDesignCommand;
   DecryptString := doDecryptString;
@@ -6395,6 +6397,10 @@ begin
   CreateScriptsSubMenuItems;
   RefreshLogTimer.Enabled := True;
   systemStarting := False;
+  try
+    sc.Active := True;
+  except
+  end;
 end;
 
 function TMainForm.inImageArea: Boolean;
@@ -6504,6 +6510,7 @@ begin
   FileNameList.Free;
   WsdlPaths.Free;
   FreeAndNil(se);
+  FreeAndNil(sc);
   ColumnWidths.Free;
 end;
 
@@ -6728,11 +6735,6 @@ begin
     GridView.SetFocus;
     Screen.Cursor := SwapCursor;
   end;
-end;
-
-procedure TMainForm.InitMasterServer;
-begin
-  se.InitMasterServer;
 end;
 
 procedure TMainForm.ShowXml(aCaption: String; aXml: TXml);
@@ -8925,7 +8927,6 @@ begin
       finally
         ReleaseLock;
       end;
-      InitMasterServer;
       CheckBoxClick(nil);
     end;
   finally

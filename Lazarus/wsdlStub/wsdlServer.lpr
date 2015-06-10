@@ -1,6 +1,7 @@
 program wsdlServer;
-
-{$mode objfpc}{$H+}
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
@@ -8,9 +9,11 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp
   , WsdlProjectz
+  , wsdlcontrolz
   , xmlio
   , xmlz
   , xmlUtilz
+  , Wsdlz
   , lazrichedit
   , FormIniFilez
   , virtualtreeview_package
@@ -25,7 +28,6 @@ const
   longOpts: longOptsArrayType = ( helpOpt
                                 , portOpt + ':'
                                 );
-
 type
 
   { TMyApplication }
@@ -34,6 +36,12 @@ type
   protected
     procedure DoRun; override;
   private
+    se: TWsdlProject;
+    sc: TWsdlControl;
+    IniFile: TFormIniFile;
+    function doDecryptString(aString: AnsiString): AnsiString;
+    function doEncryptString(aString: AnsiString): AnsiString;
+    procedure Notify(aString: String);
     function ClearLogCommand(aDoRaiseExceptions: Boolean): String;
     function ReactivateCommand: String;
     function QuitCommand(aDoRaiseExceptions: Boolean): String;
@@ -42,15 +50,10 @@ type
     procedure ActivateCommand(aActivate: Boolean);
     procedure OpenProjectCommand(aProject: String);
     procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
-    procedure Notify (aMsg: String);
+    procedure WriteHelp; virtual;
   public
-    se: TWsdlProject;
-    IniFile: TFormIniFile;
-    function doDecryptString(aString: AnsiString): AnsiString;
-    function doEncryptString(aString: AnsiString): AnsiString;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
-    procedure WriteHelp; virtual;
   end;
 
 { TMyApplication }
@@ -96,12 +99,18 @@ begin
   end;
   OpenProjectCommand(se.projectFileName);
   if HasOption('?', portOpt) then
-    MasterPortNumber := StrToInt(GetOptionValue(portOpt));
+    sc.portNumber := StrToInt(GetOptionValue(portOpt));
+  sc.Active := True;
   ActivateCommand(True);
   while not Terminated do
     Sleep (333);
   ActivateCommand(False);
   Terminate;
+end;
+
+procedure TMyApplication .Notify (aString : String );
+begin
+  WriteLn (ExeName, ' notify: ', aString);
 end;
 
 function TMyApplication.ClearLogCommand(aDoRaiseExceptions: Boolean): String;
@@ -127,9 +136,7 @@ end;
 
 function TMyApplication.ReloadDesignCommand: String;
 begin
-  ActivateCommand(False);
   OpenProjectCommand(se.projectFileName);
-  ActivateCommand(True);
 end;
 
 procedure TMyApplication.ActivateCommand(aActivate: Boolean);
@@ -138,7 +145,7 @@ begin
   begin
     try
       se.Activate(aActivate);
-      WriteLn (ExeName, ifthen (se.IsActive, ': Active' , ': Inactive'));
+      Notify (ifthen (se.IsActive, 'Is Active' , 'Is Inactive'));
     except
       on e: Exception do
         raise Exception.Create('Activate: ' + e.Message);
@@ -163,12 +170,7 @@ begin
   if aException then
     WriteLn (ExeName, ' exception', LineEnding, Msg, LineEnding, se.ExceptionStackListString(nil))
   else
-    WriteLn (ExeName, ' ', Msg);
-end;
-
-procedure TMyApplication.Notify (aMsg : String );
-begin
-  WriteLn (ExeName, ' notify: ', aMsg);
+    Notify (Msg);
 end;
 
 function TMyApplication.doDecryptString(aString: AnsiString): AnsiString;
@@ -188,19 +190,20 @@ begin
   _xmlProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   _xmlProgVersion := xmlio.GetVersion;
   _xmlLicensed := True;
-  DecryptString := @doDecryptString;
-  EncryptString := @doEncryptString;
+  DecryptString := doDecryptString;
+  EncryptString := doEncryptString;
   IniFile := TFormIniFile.Create;
   se := TWsdlProject.Create;
-  se.Notify := @Notify;
+  se.Notify := Notify;
   se.doDisplayLog := False;
-  se.OnActivateEvent := @ActivateCommand;
-  se.OnOpenProjectEvent := @OpenProjectCommand;
-  se.OnClearLogEvent := @ClearLogCommand;
-  se.OnReactivateEvent := @ReactivateCommand;
-  se.OnQuitEvent := @QuitCommand;
-  se.OnRestartEvent := @RestartCommand;
-  se.OnReloadDesignEvent := @ReloadDesignCommand;
+  sc := TWsdlControl.Create;
+  sc.OnActivateEvent := ActivateCommand;
+  sc.OnClearLogEvent := ClearLogCommand;
+  sc.OnOpenProjectEvent := OpenProjectCommand;
+  sc.OnReactivateEvent := ReactivateCommand;
+  sc.OnQuitEvent := QuitCommand;
+  sc.OnRestartEvent := RestartCommand;
+  sc.OnReloadDesignEvent := ReloadDesignCommand;
 end;
 
 destructor TMyApplication.Destroy;
