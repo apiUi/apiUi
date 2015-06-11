@@ -422,7 +422,7 @@ procedure IntrospectIniXml;
 var
   _ProgName: String;
   BetaMode: Boolean;
-  webserviceWsdlFileName, webserviceXsdFileName: String;
+  webserviceWsdlFileName, webserviceXsdFileName, wsdlStubXsdFileName: String;
     indexHtmlFileName: String;
     indexWsdlsHtmlFileName: String;
     wsaXsdFileName: String;
@@ -838,9 +838,10 @@ begin
   try
     iniXml.LoadFromFile(xIniFileName, nil);
     webserviceWsdlFileName := iniXml.Items.XmlValueByTag ['wsdlStubWebServiceWsdl'];
+    webserviceXsdFileName := iniXml.Items.XmlValueByTag ['wsdlStubWebServiceXsd'];
     indexHtmlFileName := iniXml.Items.XmlValueByTag ['indexHtml'];
     indexWsdlsHtmlFileName  := iniXml.Items.XmlValueByTag ['indexWsdlsHtml'];
-    webserviceXsdFileName := iniXml.Items.XmlValueByTag ['wsdlStubXsd'];
+    wsdlStubXsdFileName := iniXml.Items.XmlValueByTag ['wsdlStubXsd'];
     wsaXsdFileName := iniXml.Items.XmlValueByTag ['wsaXsd'];
     _swiftMTXsdFileName := iniXml.Items.XmlValueByTag ['swiftMTXsd'];
     mqPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed'];
@@ -883,18 +884,18 @@ begin
       end;
     end;
 
-    if webserviceXsdFileName <> '' then
+    if wsdlStubXsdFileName <> '' then
     begin
-      webserviceXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceXsdFileName);
+      wsdlStubXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), wsdlStubXsdFileName);
       webserviceXsdDescr := TXsdDescr.Create(1);
       try
-        webserviceXsdDescr.LoadXsdFromString (_Prep ( webserviceXsdFileName
-                                                    , ReadStringFromFile(webserviceXsdFileName)
+        webserviceXsdDescr.LoadXsdFromString (_Prep ( wsdlStubXsdFileName
+                                                    , ReadStringFromFile(wsdlStubXsdFileName)
                                                     )
                                              , nil
                                              );
       except
-        raise Exception.Create (_progName + ' could not parse ' + webserviceXsdFileName);
+        raise Exception.Create (_progName + ' could not parse ' + wsdlStubXsdFileName);
       end;
     end;
     if not Assigned (webserviceXsdDescr) then
@@ -994,6 +995,8 @@ begin
     and (endpointConfigXsd.sType.ElementDefs.Count > Ord (ttTaco)) then
       _WsdlTacoConfigXsd := endpointConfigXsd.sType.ElementDefs.Xsds [Ord (ttTaco)];
 
+    if webserviceXsdFileName <> '' then
+      webserviceXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceXsdFileName);
     if webserviceWsdlFileName <> '' then
     begin
       webserviceWsdlFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceWsdlFileName);
@@ -1002,8 +1005,8 @@ begin
     end;
     if not Assigned (webserviceWsdl) then
       raise exception.Create('No ' + _progName + ' webservice wsdl read');
-    if webserviceXsdFileName <> '' then
-      webserviceXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceXsdFileName);
+    if wsdlStubXsdFileName <> '' then
+      wsdlStubXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), wsdlStubXsdFileName);
   finally
     iniXml.Free;
   end;

@@ -51,6 +51,9 @@ implementation
 uses strutils
    , wsdlStubHtmlUnit
    , GZIPUtils
+   {$ifdef windows}
+   , ActiveX
+   {$endif}
    ;
 { TWsdlControl }
 
@@ -190,21 +193,26 @@ var
   xStream: TMemoryStream;
   x, f: Integer;
 begin
+  {$ifdef windows}
+  CoInitialize(nil);
+  try
+  {$endif}
   AResponseInfo.ContentEncoding := 'identity';
   try
-    if ARequestInfo.Document = '/' + _ProgName + 'WebService' then
-    begin
+    if (ARequestInfo.Document = '/' + _ProgName + 'WebService')
+    or (ARequestInfo.Document = '/' + 'wsdlStubWebService')
+    then begin
       try
         xXml := TXml.Create;
         try
           if ArequestInfo.QueryParams = 'WSDL' then
           begin
-            AResponseInfo.ContentText := _prepWsdl(ReadStringFromFile(ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceWsdlFileName)));
+            AResponseInfo.ContentText := _prepWsdl(ReadStringFromFile(webserviceWsdlFileName));
             Exit;
           end;
           if ArequestInfo.QueryParams = 'XSD' then
           begin
-            AResponseInfo.ContentText := _prepXsd ( ChangeFileExt(ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceWsdlFileName), '.xsd'));
+            AResponseInfo.ContentText := _prepXsd(webserviceXsdFileName);
             Exit;
           end;
           xParams := se.httpRequestStreamToString(ARequestInfo, AResponseInfo);
@@ -430,6 +438,11 @@ begin
       aResponseInfo.ContentText := '';
     end;
   end;
+  {$ifdef windows}
+  finally
+  CoUninitialize;
+  end;
+  {$endif}
 end;
 
 constructor TWsdlControl .Create;

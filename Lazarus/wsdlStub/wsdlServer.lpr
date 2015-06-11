@@ -197,6 +197,7 @@ begin
   se.Notify := Notify;
   se.doDisplayLog := False;
   sc := TWsdlControl.Create;
+  sc.se := se;
   sc.OnActivateEvent := ActivateCommand;
   sc.OnClearLogEvent := ClearLogCommand;
   sc.OnOpenProjectEvent := OpenProjectCommand;

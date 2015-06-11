@@ -2621,8 +2621,9 @@ begin
     xName := aName
   else
     xName := Copy (aName, 1, x - 1);
-  if (xName = TagName) then
-  begin
+  if (xName = TagName)
+  or (xName = '*')
+  then begin
     if x = 0 then
       result := self
     else
