@@ -181,8 +181,8 @@ var
 
 implementation
 
-uses Xmlz
-   , Xsdz
+uses Xsdz
+   , Xmlz
    ;
 
 

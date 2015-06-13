@@ -291,8 +291,8 @@ implementation
 uses SysUtils
    , RegExpr
    , Dialogs
-   , Xmlz
    , xmlxsdparser
+   , Xmlz
    ;
 
 { TXsdList }

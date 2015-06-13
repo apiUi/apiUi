@@ -163,8 +163,6 @@ type
     mqGetThreads: TStringList;
     Listeners: TListeners;
     doValidateRequests, doValidateReplies, doCheckExpectedValues: Boolean;
-    doLoadFromMasterOnStartUp: Boolean;
-    isMasterModeEnabled: Boolean;
     isBusy: Boolean;
     ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList;
     ignoreCoverageOn: TStringList;
@@ -429,7 +427,7 @@ var
     mqPutHeaderEditAllowedFileName: String;
     stompPutHeaderEditAllowedFileName: String;
     licenseDatabaseName, licenseOdbcDriver: String;
-    MasterPortNumber: Integer;
+    RemoteControlPortNumber: Integer;
     wsaXsdDescr: TXsdDescr;
     swiftMTXsdDescr: TXsdDescr;
     optionsXsd: TXsd;
@@ -851,7 +849,7 @@ begin
       licenseOdbcDriver := XmlValueByTagDef['OdbcDriver', 'Microsoft Access Driver'];
       licenseDatabaseName := ExpandRelativeFileName(xIniFileName, XmlValueByTagDef['DatabaseName', '']);
     end;
-    MasterPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
+    RemoteControlPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdElementsWhenRepeatable := defaultXsdElementsWhenRepeatable;
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
@@ -1136,7 +1134,6 @@ begin
     {$IFnDEF FPC}
   _WsdlDbsAdoConnection.OnWillConnect := ADOConnectionWillConnect;
     {$endif}
-  isMasterModeEnabled := True;
 end;
 
 destructor TWsdlProject.Destroy;
@@ -1605,12 +1602,6 @@ begin
     AddXml (TXml.CreateAsBoolean('SaveRelativeFileNames', SaveRelativeFileNames));
   end;
   result.AddXml(ProjectLogOptionsAsXml);
-  with result.AddXml (TXml.CreateAsString('MasterSlave', '')) do
-  begin
-//    wsdlStubProjectOptionsForm.isSlaveMode := self.isSlaveMode; //only for enable/disable- not to edit
-    AddXml (TXml.CreateAsBoolean('Enabled', isMasterModeEnabled));
-    AddXml (TXml.CreateAsInteger('Port', MasterPortNumber));
-  end;
   with result.AddXml (TXml.CreateAsString('Wsdl', '')) do
   begin
     AddXml (TXml.CreateAsBoolean('PublishDescriptions', PublishDescriptions));
@@ -1689,8 +1680,6 @@ begin
           AddXml((Listeners.stompInterfaces.Objects [x] as TStompInterface).AsXmlOldStyle);
   {END oldstyle}
       AddXml (Listeners.AsXml);
-      AddXml(TXml.CreateAsBoolean('isMasterModeEnabled', isMasterModeEnabled));
-      AddXml(TXml.CreateAsInteger('MasterPortNumber', MasterPortNumber));
       AddXml(TXml.CreateAsBoolean('ValidateRequests', doValidateRequests));
       AddXml(TXml.CreateAsBoolean('ValidateReplies', doValidateReplies));
       AddXml (TXml.CreateAsBoolean('CheckExpectedValues', doCheckExpectedValues));
@@ -2008,8 +1997,6 @@ begin
           sXml := xXml.Items.XmlItemByTag ['Listeners'];
           if Assigned (sXml) then
             Listeners.FromXml(sXml, HaveStompFrame);
-          isMasterModeEnabled := xXml.Items.XmlBooleanByTagDef ['isMasterModeEnabled', true];
-          MasterPortNumber := xXml.Items.XmlIntegerByTagDef ['MasterPortNumber', 3738];
           doValidateRequests := (xXml.Items.XmlValueByTag ['ValidateRequests'] = 'true');
           doValidateReplies := (xXml.Items.XmlValueByTag ['ValidateReplies'] = 'true');
           doCheckExpectedValues := xXml.Items.XmlBooleanByTagDef['CheckExpectedValues', False];
@@ -2947,8 +2934,7 @@ begin
   wrdFunctionz.wrdDetectFormatChanges := False;
   wrdFunctionz.wrdNewDocumentAsReference := False;
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
-  isMasterModeEnabled := False;
-  MasterPortNumber := 3738;
+  RemoteControlPortNumber := 3738;
   xsdElementsWhenRepeatable := defaultXsdElementsWhenRepeatable;
   xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
   xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
@@ -2968,12 +2954,6 @@ begin
       SaveRelativeFileNames := xXml.Items.XmlCheckedBooleanByTagDef['SaveRelativeFileNames', True];
     end;
     ProjectLogOptionsFromXml (XmlCheckedItemByTag ['Log']);
-    xXml := XmlCheckedItemByTag ['MasterSlave'];
-    if Assigned (xXml) then
-    begin
-      isMasterModeEnabled := xXml.Items.XmlCheckedBooleanByTagDef['Enabled', isMasterModeEnabled];
-      MasterPortNumber := xXml.Items.XmlCheckedIntegerByTagDef['Port', MasterPortNumber];
-    end;
     xXml := XmlCheckedItemByTag ['Wsdl'];
     if Assigned (xXml) then
     begin

@@ -314,17 +314,10 @@ type
     ShowrequestinaGrid1: TMenuItem;
     ShowreplyasGrid1: TMenuItem;
     Action1: TAction;
-    httpRequestMessagesAction: TAction;
-    MasterMessagesToolButton: TToolButton;
-    MasterMessagesMenuItem: TMenuItem;
     BrowseMqAction: TAction;
     BrowseMqMenuItem: TMenuItem;
     ShowRequestHeaderAsXmlAction: TAction;
     BrowseMqButton: TToolButton;
-    httpRequestDesignAction: TAction;
-    httpRequestDesignButton: TToolButton;
-    MasterDesignMenuItem: TMenuItem;
-    RefreshTimer: TTimer;
     GridPopupMenu: TPopupMenu;
     MessagesToDiskMenuItem: TMenuItem;
     MessagesToDiskAction: TAction;
@@ -375,9 +368,6 @@ type
     DelayTimeButton: TToolButton;
     ToggleFileLogAction: TAction;
     N20: TMenuItem;
-    MasterReloadDesignMenuItem: TMenuItem;
-    MasterReloadDesignAction: TAction;
-    MasterClearLogAction: TAction;
     N21: TMenuItem;
     Operation1: TMenuItem;
     RedirectAddressAction: TAction;
@@ -388,13 +378,7 @@ type
     Applysettingsto1: TMenuItem;
     OperationWsaAction: TAction;
     WsA1: TMenuItem;
-    MasterReactivateActon: TAction;
-    Reactivatemaster1: TMenuItem;
-    N22: TMenuItem;
-    QueryMasterMessages1: TMenuItem;
     ThrowExceptionAction: TAction;
-    MasterRestartAction: TAction;
-    MasterRestartAction1: TMenuItem;
     Configurelisteners1: TMenuItem;
     MessagesFromDiskAction: TAction;
     ToolButton20: TToolButton;
@@ -495,6 +479,8 @@ type
       );
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
+    procedure httpRequestDesignActionExecute (Sender : TObject );
+    procedure httpRequestMessagesActionExecute (Sender : TObject );
     procedure LoadTestActionExecute (Sender : TObject );
     procedure LoadTestActionUpdate (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
@@ -535,18 +521,9 @@ type
     procedure Log2DesignActionExecute(Sender: TObject);
     procedure MessagesToDiskActionExecute(Sender: TObject);
     procedure MessagesToDiskActionUpdate(Sender: TObject);
-    procedure RefreshTimerTimer(Sender: TObject);
-    procedure httpRequestDesignActionExecute(Sender: TObject);
-    procedure httpRequestDesignActionHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure httpRequestDesignActionUpdate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure BrowseMqActionExecute(Sender: TObject);
     procedure BrowseMqActionUpdate(Sender: TObject);
-    procedure httpRequestMessagesActionExecute(Sender: TObject);
-    procedure httpRequestMessagesActionUpdate(Sender: TObject);
-    procedure httpRequestMessagesActionHint(var HintStr: string;
-      var CanShow: Boolean);
     procedure Action1Execute(Sender: TObject);
     procedure ShowExpectedXmlActionExecute(Sender: TObject);
     procedure ShowRemarksActionExecute(Sender: TObject);
@@ -761,26 +738,9 @@ type
     procedure InWsdlTreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
-    procedure MasterReloadDesignActionUpdate(Sender: TObject);
-    procedure MasterReloadDesignActionHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure MasterReloadDesignActionExecute(Sender: TObject);
-    procedure MasterClearLogActionHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure SendMasterCommand(aPrompt, aCommand: String);
-    procedure MasterClearLogActionUpdate(Sender: TObject);
-    procedure MasterClearLogActionExecute(Sender: TObject);
     procedure OperationWsaActionExecute(Sender: TObject);
     procedure OperationWsaActionUpdate(Sender: TObject);
-    procedure MasterReactivateActonUpdate(Sender: TObject);
-    procedure MasterReactivateActonHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure MasterReactivateActonExecute(Sender: TObject);
     procedure ThrowExceptionActionExecute(Sender: TObject);
-    procedure MasterRestartActionUpdate(Sender: TObject);
-    procedure MasterRestartActionHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure MasterRestartActionExecute(Sender: TObject);
     procedure MessagesFromDiskActionUpdate(Sender: TObject);
     procedure MessagesFromDiskActionExecute(Sender: TObject);
     procedure GridViewGetImageIndex(Sender: TBaseVirtualTree;
@@ -890,8 +850,6 @@ type
     QueueNameList: TStringList;
     captionFileName: String;
     isOptionsChanged: Boolean;
-    MasterAddress: String;
-    AutoRefreshSlave: Boolean;
     doScrollMessagesIntoView: Boolean;
     doScrollExceptionsIntoView: Boolean;
     DisclaimerAccepted: Boolean;
@@ -1061,7 +1019,6 @@ type
     se: TWsdlProject;
     sc: TWsdlControl;
     claimedLog: TLog;
-    isSlaveMode: Boolean;
     mqServerEnv: String;
     CollapseHeaders: Boolean;
     wsdlStubMessagesFileName: String;
@@ -2879,13 +2836,13 @@ end;
 
 function TMainForm.ClearLogCommand(aDoRaiseExceptions: Boolean): String;
 begin
-  result := 'Master log cleared ' + se.projectFileName + ' successfully';
+  result := 'Log cleared ' + se.projectFileName + ' successfully';
   try
     AcquireLock;
     try
       if not se.IsActive then
         raise Exception.Create
-          ('Clear log refused because master instance of ' + _progName +
+          ('Clear log refused because instance of ' + _progName +
             ' is inactive');
       MessagesVTS.Clear;
       se.AsynchRpyLogs.Clear;
@@ -2905,13 +2862,13 @@ end;
 
 function TMainForm.ReactivateCommand: String;
 begin
-  result := 'Master instance of ' + _progName + ' reactivated ';
+  result := 'Instance of ' + _progName + ' reactivated ';
   try
     // AcquireLock;
     try
       if not se.IsActive then
         raise Exception.Create
-          ('Reactivate refused because master instance of ' + _progName + ' is inactive');
+          ('Reactivate refused because instance of ' + _progName + ' is inactive');
       try
         se.Activate(False);
         // IsActive := False;
@@ -2920,7 +2877,7 @@ begin
         // IsActive := xActive;
         if not se.IsActive then
           raise Exception.Create(
-            'Reactivate failed, see master exceptionlog for details');
+            'Reactivate failed, see instance exceptionlog for details');
       finally
       end;
     finally
@@ -2935,13 +2892,13 @@ end;
 function TMainForm.QuitCommand(aDoRaiseExceptions: Boolean): String;
 begin
   {$ifdef windows}
-  result := 'Master instance of ' + _progName + ' is shutting down ';
+  result := 'Instance of ' + _progName + ' is shutting down ';
   try
     // AcquireLock;
     try
       if not se.IsActive then
         raise Exception.Create
-          ('Shurtdown refused because master instance of ' + _progName +
+          ('Shurtdown refused because instance of ' + _progName +
             ' is inactive');
       if stubChanged then
         raise Exception.Create(
@@ -2976,14 +2933,14 @@ function TMainForm.RestartCommand: String;
 
 begin
 {$ifdef windows}
-  result := 'Master instance of ' + _progName +
+  result := 'instance of ' + _progName +
     ' will restart, try after some time... ';
   try
     // AcquireLock;
     try
       if not se.IsActive then
         raise Exception.Create
-          ('Restart refused because master instance of ' + _progName +
+          ('Restart refused because instance of ' + _progName +
             ' is inactive');
       try
         se.Activate(False);
@@ -3012,21 +2969,21 @@ end;
 
 function TMainForm.ReloadDesignCommand: String;
 begin
-  result := 'Master instance of ' + _progName + ' reloaded ' +
+  result := 'Instance of ' + _progName + ' reloaded ' +
     se.projectFileName + ' successfully';
   try
     AcquireLock;
     try
       if stubChanged then
         raise Exception.Create
-          ('Reload refused because master instance of ' + _progName +
+          ('Reload refused because instance of ' + _progName +
             ' has unsaved changes in design');
       if not Assigned(WsdlOperation) then
         raise Exception.Create(
-          'Reload refused because master has not project loaded');
+          'Reload refused because instance has no project loaded');
       if not se.IsActive then
         raise Exception.Create
-          ('Reload refused because master instance of ' + _progName +
+          ('Reload refused because instance of ' + _progName +
             ' is inactive');
       se.Activate(False);
       OpenStubCase(se.projectFileName);
@@ -3531,7 +3488,7 @@ begin
   try
     if stubChanged then
       raise Exception.Create
-        ('Reload refused because master instance of ' + _progName +
+        ('Reload refused because instance of ' + _progName +
           ' has unsaved changes in design');
     se.Activate(False);
     OpenStubCase(aProject);
@@ -3884,7 +3841,6 @@ begin
   WsdlServicesComboBox.Clear;
   WsdlOperationsComboBox.Clear;
   WsdlComboBox.Clear;
-  se.isMasterModeEnabled := False;
   while MessagesVTS.Header.Columns.Count > Ord(logStdColumnCount) do
     MessagesVTS.Header.Columns.Delete(MessagesVTS.Header.Columns.Count - 1);
 end;
@@ -3979,26 +3935,17 @@ begin
       stopAction.ShortCut := startStopShortCut;
       startStopButton.Action := stopAction;
     end;
-    if isSlaveMode then
-      Application.Title := '' + _progName + ' (Slave)'
-    else
-      RefreshTimer.Enabled := False;
     if nStubs > freeStubs then
       freeStubs := nStubs + 10 + Random(10);
   end
   else
   begin
     Application.Title := '' + _progName + '';
-    RefreshTimer.Enabled := False;
     stopAction.ShortCut := 0;
     startAction.ShortCut := startStopShortCut;
     startStopButton.Action := startAction;
   end;
   startStopMenuItem.Action := startStopButton.Action;
-  httpRequestDesignButton.Visible := isSlaveMode;
-  MasterDesignMenuItem.Visible := isSlaveMode;
-  MasterMessagesMenuItem.Visible := isSlaveMode;
-  MasterMessagesToolButton.Visible := isSlaveMode;
 end;
 
 procedure TMainForm.OptionsActionUpdate(Sender: TObject);
@@ -4048,14 +3995,6 @@ begin
       end;
       AddXml(TXml.CreateAsInteger('MaxWorkingThreads', se.mqMaxWorkingThreads));
     end;
-    with result.AddXml(TXml.CreateAsString('MasterSlave', '')) do
-    begin
-      AddXml(TXml.CreateAsBoolean('SlaveEnabled', isSlaveMode));
-      AddXml(TXml.CreateAsString('MasterAddress', MasterAddress));
-      AddXml(TXml.CreateAsBoolean('AutoRefresh', AutoRefreshSlave));
-      AddXml(TXml.CreateAsBoolean('LoadOnStartup', se.doLoadFromMasterOnStartUp)
-        );
-    end;
     with result.AddXml(TXml.CreateAsString('Colors', '')) do
     begin
       with AddXml(TXml.CreateAsString('Xml', '')) do
@@ -4081,8 +4020,6 @@ begin
     begin
       isOptionsChanged := True;
       OptionsFromXml(xXml);
-      RefreshTimer.Enabled :=
-        RefreshTimer.Enabled and isSlaveMode and AutoRefreshSlave;
       CheckBoxClick(nil);
     end;
   finally
@@ -6344,11 +6281,6 @@ begin
     (IniFile.IntegerByNameDef['ShowLogCobolStyle', Ord(slCobol)]);
   mqServerEnv := GetEnvironmentVariable('MQSERVER');
   ColumnWidths.Text := IniFile.StringByNameDef['ColumnWidths', ''];
-  isSlaveMode := IniFile.BooleanByNameDef['isSlaveMode', False];
-  MasterAddress := IniFile.StringByName['MasterAddress'];
-  AutoRefreshSlave := IniFile.BooleanByNameDef['AutoRefreshSlave', False];
-  se.doLoadFromMasterOnStartUp := IniFile.BooleanByNameDef
-    ['doLoadFromMasterOnStartUp', False];
   xsdElementsWhenRepeatable := StrToIntDef
     (IniFile.StringByName['ElementsWhenRepeatable'], 1);
   doShowDesignAtTop := IniFile.BooleanByNameDef['doShowDesignAtTop', True];
@@ -6543,18 +6475,8 @@ begin
     DownPageControl.ActivePageIndex := X;
   DownPageControl.ActivePage := DocumentationTabSheet;
   MessagesTabControl.TabIndex := Ord (slRequestBody);
-  MasterMessagesMenuItem.Visible := isSlaveMode;
-  MasterMessagesToolButton.Visible := isSlaveMode;
   CheckBoxClick(nil);
   stubChanged := False;
-  if isSlaveMode and se.doLoadFromMasterOnStartUp then
-  begin
-    httpRequestDesignActionExecute(nil);
-    httpRequestMessagesActionExecute(nil);
-    RefreshTimer.Enabled := False;
-    RefreshTimer.Enabled := AutoRefreshSlave;
-    DownPageControl.ActivePage := MessagesTabSheet;
-  end;
 end;
 
 procedure TMainForm.GridViewPaintText(Sender: TBaseVirtualTree;
@@ -7268,141 +7190,6 @@ procedure TMainForm.MessagesRegressionActionUpdate(Sender: TObject);
 begin
   MessagesRegressionAction.Enabled := { }{ not se.IsActive
     and { } (se.Wsdls.Count > 0);
-end;
-
-procedure TMainForm.SendMasterCommand(aPrompt, aCommand: String);
-var
-  ret: Word;
-  HttpClient: TIdHTTP;
-  HttpRequest: TStringStream;
-  xCursor: TCursor;
-  xRefresh: Boolean;
-  s: String;
-begin
-  ret := MessageDlg(aPrompt, mtConfirmation, [mbYes, mbNo, mbCancel], 0);
-  if (ret = mrYes) then
-  begin
-    xCursor := Screen.Cursor;
-    try
-      Screen.Cursor := crHourGlass;
-      xRefresh := RefreshTimer.Enabled;
-      try
-        HttpClient := TIdHTTP.Create;
-        try
-          HttpRequest := TStringStream.Create('');
-          try
-            HttpClient.Request.ContentType := 'text/xml';
-            HttpClient.Request.CharSet := '';
-            try
-              if se.doViaProxyServer then
-              begin
-                HttpClient.ProxyParams.ProxyServer := se.ViaProxyServer;
-                HttpClient.ProxyParams.ProxyPort := se.ViaProxyPort;
-              end
-              else
-              begin
-                HttpClient.ProxyParams.ProxyServer := '';
-                HttpClient.ProxyParams.ProxyPort := 0;
-              end;
-              s := HttpClient.Post(MasterAddress + '/' + aCommand, HttpRequest);
-              if HttpClient.ResponseCode = 500 then
-                raise Exception.Create(s);
-              ShowMessage(s);
-            finally
-              if HttpClient.Connected then { in case server s-alive }
-                HttpClient.Disconnect;
-            end;
-          finally
-            FreeAndNil(HttpRequest);
-          end;
-        finally
-          FreeAndNil(HttpClient);
-        end;
-      finally
-        RefreshTimer.Enabled := xRefresh;
-      end;
-    finally
-      Screen.Cursor := xCursor;
-    end;
-  end;
-end;
-
-procedure TMainForm.MasterClearLogActionExecute(Sender: TObject);
-begin
-  SendMasterCommand('Send clear log command to master instance of ' +
-      _progName + '?' + LineEnding + LineEnding +
-      '(May impact other users of the ' + _progName + ' master instance)' +
-      LineEnding + '(' + MasterAddress + ')', 'ClearLog');
-end;
-
-procedure TMainForm.MasterClearLogActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (MasterAddress = '') then
-    HintStr := HintStr + ' (no Master address known)';
-end;
-
-procedure TMainForm.MasterClearLogActionUpdate(Sender: TObject);
-begin
-  MasterClearLogAction.Enabled := isSlaveMode and (MasterAddress <> '');
-end;
-
-procedure TMainForm.MasterReactivateActonExecute(Sender: TObject);
-begin
-  SendMasterCommand('Reactivate master instance of ' + _progName + '?' +
-      LineEnding + LineEnding + '(May impact other users of the ' + _progName +
-      ' master instance)' + LineEnding + '(' + MasterAddress + ')', 'Reactivate');
-end;
-
-procedure TMainForm.MasterReactivateActonHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (MasterAddress = '') then
-    HintStr := HintStr + ' (no Master address known)';
-end;
-
-procedure TMainForm.MasterReactivateActonUpdate(Sender: TObject);
-begin
-  MasterReactivateActon.Enabled := isSlaveMode and (MasterAddress <> '');
-end;
-
-procedure TMainForm.MasterReloadDesignActionExecute(Sender: TObject);
-begin
-  SendMasterCommand('Send reload command to master instance of ' + _progName +
-      '?' + LineEnding + LineEnding + '(May impact other users of the ' + _progName +
-      ' master instance)' + LineEnding + '(' + MasterAddress + ')', 'ReloadDesign');
-end;
-
-procedure TMainForm.MasterReloadDesignActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (MasterAddress = '') then
-    HintStr := HintStr + ' (no Master address known)';
-end;
-
-procedure TMainForm.MasterReloadDesignActionUpdate(Sender: TObject);
-begin
-  MasterReloadDesignAction.Enabled := isSlaveMode and (MasterAddress <> '');
-end;
-
-procedure TMainForm.MasterRestartActionExecute(Sender: TObject);
-begin
-  SendMasterCommand('Shut down and restart master instance of ' + _progName +
-      '?' + LineEnding + 'Expect an error message ... and wait a while...' +
-      LineEnding + LineEnding + '(May impact other users of the ' + _progName +
-      ' master instance)' + LineEnding + '(' + MasterAddress + ')', 'Restart');
-end;
-
-procedure TMainForm.MasterRestartActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (MasterAddress = '') then
-    HintStr := HintStr + ' (no Master address known)';
-end;
-
-procedure TMainForm.MasterRestartActionUpdate(Sender: TObject);
-begin
-  MasterRestartAction.Enabled := isSlaveMode and (MasterAddress <> '');
 end;
 
 procedure TMainForm.MessagesFromDiskActionExecute(Sender: TObject);
@@ -9639,8 +9426,7 @@ end;
 
 procedure TMainForm.startActionUpdate(Sender: TObject);
 begin
-  startAction.Enabled := Assigned(se) and (not se.IsActive) and
-    (not isSlaveMode);
+  startAction.Enabled := Assigned(se) and (not se.IsActive);
 end;
 
 procedure TMainForm.stopActionExecute(Sender: TObject);
@@ -9656,90 +9442,6 @@ end;
 procedure TMainForm.stopActionUpdate(Sender: TObject);
 begin
   stopAction.Enabled := Assigned(se) and (se.IsActive);
-end;
-
-procedure TMainForm.httpRequestMessagesActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (MasterAddress = '') then
-    HintStr := HintStr + ' (no Master address known)';
-end;
-
-procedure TMainForm.httpRequestMessagesActionUpdate(Sender: TObject);
-begin
-  httpRequestMessagesAction.Enabled := isSlaveMode and (MasterAddress <> '');
-end;
-
-procedure TMainForm.httpRequestMessagesActionExecute(Sender: TObject);
-var
-  HttpClient: TIdHTTP;
-  HttpRequest: TStringStream;
-  s: String;
-  xCursor: TCursor;
-  xLogList: TLogList;
-begin
-  DownPageControl.ActivePage := MessagesTabSheet;
-  if se.displayedLogs.Count > 0 then
-  begin
-    if (not xmlUtil.doConfirmRemovals) or BooleanPromptDialog
-      ('Remove all messages') then
-    begin
-      MessagesVTS.Clear;
-      se.AsynchRpyLogs.Clear;
-      se.displayedLogs.Clear;
-      LogMemo.Text := '';
-    end;
-  end;
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  try
-    if se.displayedLogs.Count = 0 then
-    begin
-      RefreshTimer.Enabled := False;
-      HttpClient := TIdHTTP.Create;
-      try
-        HttpRequest := TStringStream.Create('');
-        try
-          HttpClient.Request.ContentType := 'text/xml';
-          HttpClient.Request.CharSet := '';
-          try
-            if se.doViaProxyServer then
-            begin
-              HttpClient.ProxyParams.ProxyServer := se.ViaProxyServer;
-              HttpClient.ProxyParams.ProxyPort := se.ViaProxyPort;
-            end
-            else
-            begin
-              HttpClient.ProxyParams.ProxyServer := '';
-              HttpClient.ProxyParams.ProxyPort := 0;
-            end;
-            try
-              s := HttpClient.Post(MasterAddress + '/' + 'Log', HttpRequest);
-            finally
-            end;
-            if HttpClient.ResponseCode = 500 then
-              raise Exception.Create(s);
-          finally
-            if HttpClient.Connected then { in case server s-alive }
-              HttpClient.Disconnect;
-          end;
-        finally
-          FreeAndNil(HttpRequest);
-        end;
-      finally
-        FreeAndNil(HttpClient);
-      end;
-      xLogList := TLogList.Create;
-      se.OpenMessagesLog(s, False, xLogList);
-      ToAllLogList(xLogList);
-      MessagesVTS.FocusedNode := MessagesVTS.GetLast;
-      xLogList.Clear;
-      FreeAndNil(xLogList);
-      RefreshTimer.Enabled := AutoRefreshSlave;
-    end;
-  finally
-    Screen.Cursor := xCursor;
-  end;
 end;
 
 procedure TMainForm.BrowseMqActionUpdate(Sender: TObject);
@@ -9920,11 +9622,6 @@ begin
       IniFile.StringByName['mqServerEnv'] := mqServerEnv;
       IniFile.IntegerByName['CompareLogOrderBy'] := Ord(se.CompareLogOrderBy);
       IniFile.IntegerByName['ShowLogCobolStyle'] := Ord(se.ShowLogCobolStyle);
-      IniFile.BooleanByName['isSlaveMode'] := isSlaveMode;
-      IniFile.StringByName['MasterAddress'] := MasterAddress;
-      IniFile.BooleanByName['AutoRefreshSlave'] := AutoRefreshSlave;
-      IniFile.BooleanByName['doLoadFromMasterOnStartUp'] :=
-        se.doLoadFromMasterOnStartUp;
       IniFile.StringByName['ElementsWhenRepeatable'] := IntToStr
         (xsdElementsWhenRepeatable);
       IniFile.BooleanByName['doValidateScriptAssignmentAgainstSchema'] :=
@@ -9943,86 +9640,6 @@ begin
       CanClose := False
     else
       NewStubCaseActionExecute(nil);
-  end;
-end;
-
-procedure TMainForm.httpRequestDesignActionUpdate(Sender: TObject);
-begin
-  httpRequestDesignAction.Enabled := isSlaveMode and (MasterAddress <> '');
-end;
-
-procedure TMainForm.httpRequestDesignActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (MasterAddress = '') then
-    HintStr := HintStr + ' (no Master address known)';
-end;
-
-procedure TMainForm.httpRequestDesignActionExecute(Sender: TObject);
-var
-  HttpClient: TIdHTTP;
-  HttpRequest: TStringStream;
-  s: String;
-  xCursor: TCursor;
-  xRefreshEnabled: Boolean;
-begin
-  DownPageControl.ActivePage := MessagesTabSheet;
-  if se.displayedLogs.Count > 0 then
-  begin
-    if (not xmlUtil.doConfirmRemovals) or BooleanPromptDialog
-      ('Remove all messages') then
-    begin
-      MessagesVTS.Clear;
-      se.AsynchRpyLogs.Clear;
-      se.displayedLogs.Clear;
-      LogMemo.Text := '';
-    end;
-  end;
-  if se.displayedLogs.Count > 0 then
-    exit;
-  if not OkToOpenStubCase then
-    exit;
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  try
-    xRefreshEnabled := RefreshTimer.Enabled;
-    RefreshTimer.Enabled := False;
-    HttpClient := TIdHTTP.Create;
-    try
-      HttpRequest := TStringStream.Create('');
-      try
-        HttpClient.Request.ContentType := 'text/xml';
-        HttpClient.Request.CharSet := '';
-        try
-          if se.doViaProxyServer then
-          begin
-            HttpClient.ProxyParams.ProxyServer := se.ViaProxyServer;
-            HttpClient.ProxyParams.ProxyPort := se.ViaProxyPort;
-          end
-          else
-          begin
-            HttpClient.ProxyParams.ProxyServer := '';
-            HttpClient.ProxyParams.ProxyPort := 0;
-          end;
-          s := HttpClient.Post(MasterAddress + '/Design', HttpRequest);
-          if HttpClient.ResponseCode = 500 then
-            raise Exception.Create(s);
-        finally
-          if HttpClient.Connected then { in case server s-alive }
-            HttpClient.Disconnect;
-        end;
-      finally
-        FreeAndNil(HttpRequest);
-      end;
-    finally
-      FreeAndNil(HttpClient);
-      RefreshTimer.Enabled := xRefreshEnabled;
-    end;
-    ProjectDesignFromString(s, '');
-    captionFileName := se.projectFileName;
-    UpdateCaption;
-  finally
-    Screen.Cursor := xCursor;
   end;
 end;
 
@@ -10049,79 +9666,6 @@ begin
     finally
       Free;
     end;
-  end;
-end;
-
-procedure TMainForm.RefreshTimerTimer(Sender: TObject);
-var
-  HttpClient: TIdHTTP;
-  HttpRequest: TStringStream;
-  s: String;
-  xCursor: TCursor;
-  xLogList: TLogList;
-  X: Integer;
-begin
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  try
-    RefreshTimer.Enabled := False;
-    if not AutoRefreshSlave then
-      exit;
-    HttpClient := TIdHTTP.Create;
-    try
-      HttpRequest := TStringStream.Create('');
-      with TXml.CreateAsString('LogIncrement', '') do
-        try
-          AddXml(TXml.CreateAsInteger('Index', se.refreshNr));
-          AddXml(TXml.CreateAsString('Check', se.refreshCheck));
-          HttpRequest.WriteString(Text);
-        finally
-          Free;
-        end;
-      try
-        HttpClient.Request.ContentType := 'text/xml';
-        HttpClient.Request.CharSet := '';
-        try
-          if se.doViaProxyServer then
-          begin
-            HttpClient.ProxyParams.ProxyServer := se.ViaProxyServer;
-            HttpClient.ProxyParams.ProxyPort := se.ViaProxyPort;
-          end
-          else
-          begin
-            HttpClient.ProxyParams.ProxyServer := '';
-            HttpClient.ProxyParams.ProxyPort := 0;
-          end;
-          s := HttpClient.Post(MasterAddress + '/LogIncrement', HttpRequest);
-          if HttpClient.ResponseCode = 500 then
-            raise Exception.Create(s);
-        finally
-          if HttpClient.Connected then { in case server s-alive }
-            HttpClient.Disconnect;
-        end;
-      finally
-        FreeAndNil(HttpRequest);
-      end;
-    finally
-      FreeAndNil(HttpClient);
-    end;
-    xLogList := TLogList.Create;
-    se.OpenMessagesLog(s, False, xLogList);
-    try
-      MessagesVTS.BeginUpdate;
-      for X := 0 to xLogList.Count - 1 do
-      begin
-        se.displayedLogs.SaveLog('', xLogList.LogItems[X]);
-      end;
-    finally
-      MessagesVTS.EndUpdate;
-    end;
-    // MessagesVTS.FocusedNode := MessagesVTS.GetLast;
-    xLogList.Clear;
-    FreeAndNil(xLogList);
-    RefreshTimer.Enabled := True;
-  finally
-    Screen.Cursor := xCursor;
   end;
 end;
 
@@ -11934,10 +11478,6 @@ begin
   se.mqMaxWorkingThreads := 15;
   xsdValidateAssignmentsAgainstSchema := False;
   CollapseHeaders := False;
-  isSlaveMode := False;
-  MasterAddress := '';
-  AutoRefreshSlave := False;
-  se.doLoadFromMasterOnStartUp := False;
   xmlSetDefaultColors;
 
   if not aXml.Checked then
@@ -11998,19 +11538,6 @@ begin
       se.mqMaxWorkingThreads := xXml.Items.XmlCheckedIntegerByTagDef
         ['MaxWorkingThreads', se.mqMaxWorkingThreads];
     end;
-    xXml := XmlCheckedItemByTag['MasterSlave'];
-    if Assigned(xXml) then
-    begin
-      isSlaveMode := xXml.Items.XmlCheckedBooleanByTagDef['SlaveEnabled',
-        isSlaveMode];
-      MasterAddress := xXml.Items.XmlCheckedValueByTagDef['MasterAddress',
-        MasterAddress];
-      AutoRefreshSlave := xXml.Items.XmlCheckedBooleanByTagDef['AutoRefresh',
-        AutoRefreshSlave];
-      se.doLoadFromMasterOnStartUp := xXml.Items.XmlCheckedBooleanByTagDef
-        ['LoadOnStartup', se.doLoadFromMasterOnStartUp];
-    end;
-
     xXml := XmlCheckedItemByTag['Colors'];
     if Assigned(xXml) then
     begin
@@ -12038,6 +11565,16 @@ end;
 procedure TMainForm .DataTypeDocumentationMemoClick (Sender : TObject );
 begin
   OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
+end;
+
+procedure TMainForm .httpRequestDesignActionExecute (Sender : TObject );
+begin
+
+end;
+
+procedure TMainForm .httpRequestMessagesActionExecute (Sender : TObject );
+begin
+
 end;
 
 procedure TMainForm .LoadTestActionExecute (Sender : TObject );

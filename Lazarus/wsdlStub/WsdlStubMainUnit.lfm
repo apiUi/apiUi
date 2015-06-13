@@ -55,13 +55,8 @@ object MainForm: TMainForm
       Top = 2
       Action = SaveStubCaseAction
     end
-    object httpRequestDesignButton: TToolButton
-      Left = 103
-      Top = 2
-      Action = httpRequestDesignAction
-    end
     object ToolButton4: TToolButton
-      Left = 126
+      Left = 103
       Top = 2
       Width = 10
       Caption = 'ToolButton4'
@@ -69,14 +64,14 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 136
+      Left = 113
       Top = 2
       Action = OpenWsdlAction
       DropdownMenu = OperationsPopupMenu
       Style = tbsDropDown
     end
     object ToolButton2: TToolButton
-      Left = 171
+      Left = 148
       Top = 2
       Width = 10
       Caption = 'ToolButton2'
@@ -84,12 +79,12 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton58: TToolButton
-      Left = 181
+      Left = 158
       Top = 2
       Action = ConfigListenersAction
     end
     object ToolButton48: TToolButton
-      Left = 204
+      Left = 181
       Top = 2
       Width = 5
       Caption = 'ToolButton48'
@@ -97,25 +92,25 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ValidateRepliesButton: TToolButton
-      Left = 209
+      Left = 186
       Top = 2
       Action = ValidateRepliesAction
       Style = tbsCheck
     end
     object ValidateRequestsButton: TToolButton
-      Left = 232
+      Left = 209
       Top = 2
       Action = ValidateRequestsAction
       Style = tbsCheck
     end
     object ToolButton57: TToolButton
-      Left = 255
+      Left = 232
       Top = 2
       Action = ToggleCheckExpectedValuesAction
       Style = tbsCheck
     end
     object ToolButton43: TToolButton
-      Left = 278
+      Left = 255
       Top = 2
       Width = 10
       Caption = 'ToolButton43'
@@ -123,12 +118,12 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton60: TToolButton
-      Left = 288
+      Left = 265
       Top = 2
       Action = ConfigLogAction
     end
     object ToolButton61: TToolButton
-      Left = 311
+      Left = 288
       Top = 2
       Width = 10
       Caption = 'ToolButton61'
@@ -136,7 +131,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton21: TToolButton
-      Left = 321
+      Left = 298
       Top = 2
       Width = 5
       Caption = 'ToolButton21'
@@ -144,12 +139,12 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object startStopButton: TToolButton
-      Left = 326
+      Left = 303
       Top = 2
       Action = startAction
     end
     object ToolButton70: TToolButton
-      Left = 349
+      Left = 326
       Top = 2
       Width = 10
       Caption = 'ToolButton70'
@@ -157,12 +152,12 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object AbortToolButton: TToolButton
-      Left = 359
+      Left = 336
       Top = 2
       Action = AbortAction
     end
     object SeparatorToolButton: TToolButton
-      Left = 382
+      Left = 359
       Top = 2
       Width = 10
       Caption = 'SeparatorToolButton'
@@ -1103,13 +1098,8 @@ object MainForm: TMainForm
           Top = 2
           Action = BrowseMqAction
         end
-        object MasterMessagesToolButton: TToolButton
-          Left = 261
-          Top = 2
-          Action = httpRequestMessagesAction
-        end
         object ToolButton59: TToolButton
-          Left = 284
+          Left = 261
           Top = 2
           Action = readLog4jEventsAction
         end
@@ -1559,25 +1549,6 @@ object MainForm: TMainForm
       ImageIndex = 28
       OnExecute = ShowReplyAsHtmlActionExecute
     end
-    object httpRequestDesignAction: TAction
-      Category = 'MasterSlave'
-      Caption = 'Query Master Design'
-      Hint = 'Query Master Design'
-      ImageIndex = 51
-      OnExecute = httpRequestDesignActionExecute
-      OnHint = httpRequestDesignActionHint
-      OnUpdate = httpRequestDesignActionUpdate
-    end
-    object httpRequestMessagesAction: TAction
-      Category = 'MasterSlave'
-      Caption = 'Query Master Messages'
-      Hint = 'Query Master Messages'
-      ImageIndex = 51
-      OnExecute = httpRequestMessagesActionExecute
-      OnHint = httpRequestMessagesActionHint
-      OnUpdate = httpRequestMessagesActionUpdate
-      ShortCut = 116
-    end
     object EditEnvironmentAction: TAction
       Category = 'Environment'
       Caption = 'Edit ...'
@@ -1909,16 +1880,10 @@ object MainForm: TMainForm
     object MasterReloadDesignAction: TAction
       Category = 'MasterSlave'
       Caption = 'Reload master design'
-      OnExecute = MasterReloadDesignActionExecute
-      OnHint = MasterReloadDesignActionHint
-      OnUpdate = MasterReloadDesignActionUpdate
     end
     object MasterClearLogAction: TAction
       Category = 'MasterSlave'
       Caption = 'Clear master log'
-      OnExecute = MasterClearLogActionExecute
-      OnHint = MasterClearLogActionHint
-      OnUpdate = MasterClearLogActionUpdate
     end
     object RedirectAddressAction: TAction
       Category = 'Operation'
@@ -1946,9 +1911,6 @@ object MainForm: TMainForm
     object MasterReactivateActon: TAction
       Category = 'MasterSlave'
       Caption = 'Reactivate master'
-      OnExecute = MasterReactivateActonExecute
-      OnHint = MasterReactivateActonHint
-      OnUpdate = MasterReactivateActonUpdate
     end
     object ThrowExceptionAction: TAction
       Category = 'Miscellaneous'
@@ -1959,9 +1921,6 @@ object MainForm: TMainForm
     object MasterRestartAction: TAction
       Category = 'MasterSlave'
       Caption = 'Shut down and restart master'
-      OnExecute = MasterRestartActionExecute
-      OnHint = MasterRestartActionHint
-      OnUpdate = MasterRestartActionUpdate
     end
     object startAction: TAction
       Category = 'Miscellaneous'
@@ -5291,87 +5250,6 @@ object MainForm: TMainForm
       object N21: TMenuItem
         Caption = '-'
       end
-      object MasterDesignMenuItem: TMenuItem
-        Action = httpRequestDesignAction
-        Bitmap.Data = {
-          36040000424D3604000000000000360000002800000010000000100000000100
-          2000000000000004000064000000640000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000000000000000000000000000FFFF000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00000000000000000000000000000000FFFF0000FFFF00000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000FFFF0000FFFF0000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000FFFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000FFFF0000FFFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000FFFF0000FFFF0000000000000000000000000000FFFF0000
-          FFFF0000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
-          0000000000000000FFFF0000FFFF000000000000000000000000000000000000
-          00000000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
-          000000000000000000000000FFFF0000FFFF0000000000000000000000000000
-          FFFF0000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
-          000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-          FFFF0000FFFF000000000000FFFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000FFFF0000FFFF0000FFFF0000
-          000000000000000000000000FFFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000
-        }
-      end
-      object QueryMasterMessages1: TMenuItem
-        Action = httpRequestMessagesAction
-        Bitmap.Data = {
-          36040000424D3604000000000000360000002800000010000000100000000100
-          2000000000000004000064000000640000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000000000000000000000000000FFFF000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00000000000000000000000000000000FFFF0000FFFF00000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000FFFF0000FFFF0000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000FFFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000FFFF0000FFFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000FFFF0000FFFF0000000000000000000000000000FFFF0000
-          FFFF0000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
-          0000000000000000FFFF0000FFFF000000000000000000000000000000000000
-          00000000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
-          000000000000000000000000FFFF0000FFFF0000000000000000000000000000
-          FFFF0000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
-          000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-          FFFF0000FFFF000000000000FFFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000FFFF0000FFFF0000FFFF0000
-          000000000000000000000000FFFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000
-        }
-      end
-      object N22: TMenuItem
-        Caption = '-'
-      end
       object N20: TMenuItem
         Action = MasterClearLogAction
       end
@@ -6180,7 +6058,6 @@ object MainForm: TMainForm
         }
       end
       object MasterMessagesMenuItem: TMenuItem
-        Action = httpRequestMessagesAction
         Caption = 'Get from Master'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
@@ -6218,6 +6095,9 @@ object MainForm: TMainForm
           0000000000000000000000000000000000000000000000000000000000000000
           0000000000000000000000000000000000000000000000000000
         }
+        Hint = 'Query Master Messages'
+        ImageIndex = 51
+        ShortCut = 116
       end
       object BrowseMqMenuItem: TMenuItem
         Action = BrowseMqAction
@@ -8734,12 +8614,6 @@ object MainForm: TMainForm
         0000000000000000000000000000000000000000000000000000
       }
     end
-  end
-  object RefreshTimer: TTimer
-    Interval = 3000
-    OnTimer = RefreshTimerTimer
-    left = 32
-    top = 56
   end
   object GridPopupMenu: TPopupMenu
     left = 464

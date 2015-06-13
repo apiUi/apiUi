@@ -16,7 +16,7 @@ uses
   , Wsdlz
   , lazrichedit
   , FormIniFilez
-  , virtualtreeview_package
+  , virtualtreeview_package , IdStack
   ;
 
 type
