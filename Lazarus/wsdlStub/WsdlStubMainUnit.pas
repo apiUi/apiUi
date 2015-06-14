@@ -64,8 +64,17 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    logChartAction : TAction ;
     LoadTestAction : TAction ;
     CopyLogGridToClipBoardAction : TAction ;
+    MasterClearLogAction : TAction ;
+    MasterMessagesMenuItem : TMenuItem ;
+    MasterReactivateActon : TAction ;
+    MasterReloadDesignAction : TAction ;
+    MasterReloadDesignMenuItem : TMenuItem ;
+    MasterRestartAction : TAction ;
+    MasterRestartAction1 : TMenuItem ;
+    Reactivatemaster1 : TMenuItem ;
     RunMenuItem : TMenuItem ;
     MenuItem2 : TMenuItem ;
     MenuItem3 : TMenuItem ;
@@ -91,6 +100,7 @@ type
     ToolButton36 : TToolButton ;
     ToolButton37 : TToolButton ;
     ExecuteLoadTextToolbutton : TToolButton ;
+    ToolButton39 : TToolButton ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -483,6 +493,7 @@ type
     procedure httpRequestMessagesActionExecute (Sender : TObject );
     procedure LoadTestActionExecute (Sender : TObject );
     procedure LoadTestActionUpdate (Sender : TObject );
+    procedure logChartActionExecute (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
@@ -1109,7 +1120,7 @@ uses
 {$ELSE}
 {$ENDIF}
   wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
-  ShowXmlCoverageUnit, EditOperationScriptUnit, igGlobals,
+  ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
   ChooseStringUnit, AboutUnit, StrUtils, IpmGunLicense,
   IpmGunLicenseUnit, DisclaimerUnit,
   PromptUnit, SelectXmlElement, ApplyToUnit, wsaConfigUnit,
@@ -11610,6 +11621,37 @@ begin
     and (not ExecuteRequestToolButton.Down)
     and (not ExecuteAllRequestsToolButton.Down)
     ;
+end;
+
+procedure TMainForm .logChartActionExecute (Sender : TObject );
+var
+  SwapCursor: TCursor;
+  xForm: TlogChartForm;
+begin
+  OnlyWhenLicensed;
+  SwapCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    Application.CreateForm(TlogChartForm, xForm);
+    try
+      xForm.Caption := '' + _progName + ' - Performance report';
+      xForm.Operations := allOperations;
+      xForm.Logs := se.displayedLogs;
+      Screen.Cursor := SwapCursor;
+      xForm.ShowModal;
+      if xForm.Changed then
+      begin
+        if BooleanPromptDialog('Accept changes to performance report setting') then
+        begin
+          stubChanged := True;
+        end;
+      end;
+    finally
+      xForm.Free;
+    end;
+  finally
+    Screen.Cursor := SwapCursor;
+  end;
 end;
 
 procedure TMainForm .CopyLogGridToClipBoardActionExecute (Sender : TObject );

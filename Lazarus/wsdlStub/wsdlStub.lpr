@@ -13,8 +13,8 @@ uses
   heaptrc,
   {$endif heaptrace}
   Interfaces, // this includes the LCL widgetset
-  Forms , virtualtreeview_package , lazrichedit , WsdlStubMainUnit , IdStack ,
-  SysUtils ;
+  Forms , tachartlazaruspkg , virtualtreeview_package , lazrichedit ,
+  WsdlStubMainUnit , IdStack , SysUtils ;
 
 {$R *.res}
 

@@ -1076,7 +1076,7 @@ object MainForm: TMainForm
           Action = LogCoverageReportAction
         end
         object ToolButton69: TToolButton
-          Left = 182
+          Left = 205
           Top = 2
           Width = 10
           Caption = 'ToolButton69'
@@ -1084,22 +1084,22 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object ToolButton22: TToolButton
-          Left = 192
+          Left = 215
           Top = 2
           Action = ClearLogItemsAction
         end
         object ToolButton42: TToolButton
-          Left = 215
+          Left = 238
           Top = 2
           Action = FilterLogAction
         end
         object BrowseMqButton: TToolButton
-          Left = 238
+          Left = 261
           Top = 2
           Action = BrowseMqAction
         end
         object ToolButton59: TToolButton
-          Left = 261
+          Left = 284
           Top = 2
           Action = readLog4jEventsAction
         end
@@ -1136,6 +1136,11 @@ object MainForm: TMainForm
           Left = 80
           Top = 2
           Action = CopyLogGridToClipBoardAction
+        end
+        object ToolButton39: TToolButton
+          Left = 182
+          Top = 2
+          Action = logChartAction
         end
       end
       object Panel2: TPanel
@@ -1711,14 +1716,6 @@ object MainForm: TMainForm
       OnExecute = SaveMessagesActionExecute
       OnUpdate = SaveMessagesActionUpdate
     end
-    object MessagesRegressionAction: TAction
-      Category = 'Log'
-      Caption = 'Compare with file... '
-      Hint = 'Show differences with a previous run'
-      ImageIndex = 43
-      OnExecute = MessagesRegressionActionExecute
-      OnUpdate = MessagesRegressionActionUpdate
-    end
     object CopyExceptionToClipboardAction: TAction
       Category = 'Log'
       Caption = 'CopyExceptionToClipboardAction'
@@ -1790,14 +1787,6 @@ object MainForm: TMainForm
       ImageIndex = 15
       OnExecute = Log2DesignActionExecute
     end
-    object ReportUnexpectedValuesAction: TAction
-      Category = 'Log'
-      Caption = 'ReportUnexpectedValuesAction'
-      Hint = 'Unexpected values report'
-      ImageIndex = 14
-      OnExecute = ReportUnexpectedValuesActionExecute
-      OnUpdate = ReportUnexpectedValuesActionUpdate
-    end
     object BrowseMqAction: TAction
       Category = 'Log'
       Caption = 'Browse Mq'
@@ -1822,6 +1811,55 @@ object MainForm: TMainForm
       Hint = 'Change project log settings'
       ImageIndex = 59
       OnExecute = ConfigLogActionExecute
+    end
+    object ToggleFileLogAction: TAction
+      Category = 'Log'
+      Caption = 'Toggle'
+    end
+    object LogDisplayedColumnsAction: TAction
+      Category = 'Log'
+      Caption = 'Displayed columns'
+      ImageIndex = 21
+      OnExecute = LogDisplayedColumnsActionExecute
+      OnHint = LogDisplayedColumnsActionHint
+    end
+    object SaveLogRequestsToFileAction: TAction
+      Category = 'Log'
+      Caption = 'Save requests to file...'
+      ImageIndex = 3
+      OnExecute = SaveLogRequestsToFileActionExecute
+      OnUpdate = SaveLogRequestsToFileActionUpdate
+    end
+    object SaveLogRepliesToFileAction: TAction
+      Category = 'Log'
+      Caption = 'Save replies to file...'
+      ImageIndex = 3
+      OnExecute = SaveLogRepliesToFileActionExecute
+      OnUpdate = SaveLogRepliesToFileActionUpdate
+    end
+    object ReportUnexpectedValuesAction: TAction
+      Category = 'Log'
+      Caption = 'ReportUnexpectedValuesAction'
+      Hint = 'Unexpected values report'
+      ImageIndex = 14
+      OnExecute = ReportUnexpectedValuesActionExecute
+      OnUpdate = ReportUnexpectedValuesActionUpdate
+    end
+    object MessagesRegressionAction: TAction
+      Category = 'Log'
+      Caption = 'Compare with file... '
+      Hint = 'Show differences with a previous run'
+      ImageIndex = 43
+      OnExecute = MessagesRegressionActionExecute
+      OnUpdate = MessagesRegressionActionUpdate
+    end
+    object LogCoverageReportAction: TAction
+      Category = 'Log'
+      Caption = 'Coverage report'
+      Hint = 'View coverage report'
+      ImageIndex = 70
+      OnExecute = LogCoverageReportActionExecute
+      OnUpdate = LogCoverageReportActionUpdate
     end
     object ShowExceptionAsHtmlAction: TAction
       Caption = 'SwohHttpReplyAsXMLAction'
@@ -2003,39 +2041,6 @@ object MainForm: TMainForm
       OnExecute = GenerateScriptAssignmentActionExecute
       ShortCut = 49217
     end
-    object ToggleFileLogAction: TAction
-      Category = 'Log'
-      Caption = 'Toggle'
-    end
-    object LogDisplayedColumnsAction: TAction
-      Category = 'Log'
-      Caption = 'Displayed columns'
-      ImageIndex = 21
-      OnExecute = LogDisplayedColumnsActionExecute
-      OnHint = LogDisplayedColumnsActionHint
-    end
-    object SaveLogRequestsToFileAction: TAction
-      Category = 'Log'
-      Caption = 'Save requests to file...'
-      ImageIndex = 3
-      OnExecute = SaveLogRequestsToFileActionExecute
-      OnUpdate = SaveLogRequestsToFileActionUpdate
-    end
-    object SaveLogRepliesToFileAction: TAction
-      Category = 'Log'
-      Caption = 'Save replies to file...'
-      ImageIndex = 3
-      OnExecute = SaveLogRepliesToFileActionExecute
-      OnUpdate = SaveLogRepliesToFileActionUpdate
-    end
-    object LogCoverageReportAction: TAction
-      Category = 'Log'
-      Caption = 'Coverage report'
-      Hint = 'View coverage report'
-      ImageIndex = 70
-      OnExecute = LogCoverageReportActionExecute
-      OnUpdate = LogCoverageReportActionUpdate
-    end
     object ProjectDesignToClipboardAction: TAction
       Caption = 'ProjectDesign To Clipboard'
       OnExecute = ProjectDesignToClipboardActionExecute
@@ -2065,12 +2070,18 @@ object MainForm: TMainForm
       OnUpdate = LoadTestActionUpdate
       ShortCut = 24647
     end
+    object logChartAction: TAction
+      Category = 'Log'
+      Caption = 'logChartAction'
+      ImageIndex = 83
+      OnExecute = logChartActionExecute
+    end
   end
   object mainImageList: TImageList
     left = 40
     top = 224
     Bitmap = {
-      4C69530000001000000010000000000000000000000000000000000000000000
+      4C69540000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -4726,7 +4737,39 @@ object MainForm: TMainForm
       FF00241CEDFF241CEDFFFFFFFF00FFFFFF00FFFFFF00241CEDFF241CEDFFFFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-      FF00FFFFFF00FFFFFF00FFFFFF00
+      FF00FFFFFF00FFFFFF00FFFFFF00C0C0C0FFC0C0C0FFC0C0C0FF00000000C0C0
+      C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0
+      C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FF0000000000000000C0C0
+      C0FFC0C0C0FFC0C0C0FF00000000000000000000000000000000C0C0C0FFC0C0
+      C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FF00000000FFFFFFFF00000000C0C0
+      C0FFC0C0C0FF0000000000FFFFFF00FFFFFFC0C0C0FF00000000C0C0C0FFC0C0
+      C0FFC0C0C0FFC0C0C0FFC0C0C0FF00000000FFFFFFFF808080FF00000000C0C0
+      C0FFC0C0C0FF0000000000FFFFFF00FFFFFF008080FF00000000C0C0C0FF0000
+      00000000000000000000C0C0C0FF00000000808080FFC0C0C0FF00000000C0C0
+      C0FFC0C0C0FF0000000000FFFFFF00FFFFFF008080FF00000000000000000000
+      FFFF000080FF00000000C0C0C0FF00000000C0C0C0FF808080FF00000000C0C0
+      C0FFC0C0C0FF0000000000FFFFFF00FFFFFF008080FF000000000000FFFF0000
+      FFFF000080FF00000000C0C0C0FF00000000808080FFC0C0C0FF000000000000
+      0000000000000000000000FFFFFF00FFFFFF008080FF000000000000FFFF0000
+      FFFF000080FF00000000C0C0C0FF00000000C0C0C0FF00000000FF0000FFFF00
+      00FF800000FF0000000000FFFFFF00FFFFFF008080FF000000000000FFFF0000
+      FFFF000080FF00000000C0C0C0FF00000000808080FF00000000FF0000FFFF00
+      00FF800000FF0000000000FFFFFF00FFFFFF008080FF000000000000FFFF0000
+      FFFF000080FF00000000C0C0C0FF00000000808080FF00000000FF0000FFFF00
+      00FF800000FF0000000000FFFFFF00FFFFFF008080FF000000000000FFFF0000
+      FFFF000080FF00000000C0C0C0FF00000000808080FF00000000FF0000FFFF00
+      00FF800000FF0000000000FFFFFF00FFFFFF008080FF000000000000FFFF0000
+      FFFF000080FF00000000C0C0C0FF00000000808080FF00000000FF0000FFFF00
+      00FF800000FF0000000000FFFFFF00FFFFFF008080FF000000000000FFFF0000
+      FFFF000080FF00000000C0C0C0FF00000000808080FF00000000FF0000FFFF00
+      00FF000000000000000000FFFFFF00FFFFFF00000000000000000000FFFF0000
+      FFFF000080FF000000000000000000000000C0C0C0FF00000000000000000000
+      0000FFFFFFFF000000000000000000000000808080FF00000000000000000000
+      000000000000808080FF0000000000000000808080FFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF00000000C0C0C0FF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000C0C0C0FFC0C0C0FF
     }
   end
   object OpenFileDialog: TOpenDialog

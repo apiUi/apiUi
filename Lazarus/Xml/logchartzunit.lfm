@@ -1,0 +1,174 @@
+object logChartForm: TlogChartForm
+  Left = 398
+  Height = 419
+  Top = 153
+  Width = 892
+  Caption = 'logChartForm'
+  ClientHeight = 419
+  ClientWidth = 892
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '1.2.6.0'
+  object Chart: TChart
+    Left = 143
+    Height = 393
+    Top = 26
+    Width = 749
+    AxisList = <    
+      item
+        Minors = <        
+          item
+            Grid.Color = clSilver
+            Intervals.MinLength = 5
+            Intervals.Options = [aipUseCount, aipUseMinLength]
+          end>
+        Title.LabelFont.Orientation = 900
+        Title.LabelFont.Style = [fsBold]
+        Title.Visible = True
+        Title.Caption = 'y axis'
+      end    
+      item
+        Alignment = calBottom
+        Minors = <        
+          item
+            Grid.Color = clSilver
+            Intervals.MinLength = 5
+            Intervals.Options = [aipUseCount, aipUseMinLength]
+          end>
+        Title.LabelFont.Style = [fsBold]
+        Title.Visible = True
+        Title.Caption = 'x axis'
+      end>
+    BackColor = clWhite
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Align = alClient
+    DoubleBuffered = True
+    ParentColor = False
+  end
+  object ListboxPanel: TPanel
+    Left = 0
+    Height = 393
+    Top = 26
+    Width = 138
+    Align = alLeft
+    BevelOuter = bvNone
+    ClientHeight = 393
+    ClientWidth = 138
+    TabOrder = 1
+    object ChartListbox: TChartListbox
+      Left = 0
+      Height = 393
+      Top = 0
+      Width = 138
+      Chart = Chart
+      OnSeriesIconDblClick = ChartListboxSeriesIconDblClick
+      Align = alClient
+      Color = clInfoBk
+      ItemHeight = 20
+      TabOrder = 0
+    end
+  end
+  object Splitter: TSplitter
+    Left = 138
+    Height = 393
+    Top = 26
+    Width = 5
+  end
+  object ToolBar1: TToolBar
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 892
+    Caption = 'ToolBar1'
+    Images = MainImageList
+    TabOrder = 3
+    object ToolButton1: TToolButton
+      Left = 1
+      Top = 2
+      Action = CloseAction
+    end
+  end
+  object ColorDialog: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 496
+    top = 128
+  end
+  object MainImageList: TImageList
+    left = 280
+    top = 104
+    Bitmap = {
+      4C69010000001000000010000000C0C0C0FF00000000C0C0C0FF00000000C0C0
+      C0FF00000000C0C0C0FF00000000C0C0C0FF00000000C0C0C0FF00000000C0C0
+      C0FF00000000C0C0C0FF0000000000000000C0C0C0FF00000000C0C0C0FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      0000C0C0C0FF00000000C0C0C0FFC0C0C0FF00000000C0C0C0FF000000000000
+      00FF008080FF000000FF000000FFFFFF00FFFFFF00FFFFFF00FF000000FFC0C0
+      C0FF00000000C0C0C0FF0000000000000000C0C0C0FF00000000C0C0C0FF0000
+      00FF008080FF008080FF008080FF000000FF000000FFFFFF00FF000000FF0000
+      0000C0C0C0FF00000000C0C0C0FFC0C0C0FF00000000C0C0C0FF000000000000
+      00FF008080FF008080FF008080FF008080FF000000FFFFFF00FF000000FFC0C0
+      C0FF00000000C0C0C0FF0000000000000000C0C0C0FF00000000C0C0C0FF0000
+      00FF008080FF008080FF008080FF008080FF000000FFFFFF00FF000000FF0000
+      0000C0C0C0FF00000000C0C0C0FFC0C0C0FF00000000C0C0C0FF000000000000
+      00FF008080FF008080FF008080FF008080FF000000FFFFFF00FF000000FFC0C0
+      C0FF00000000C0C0C0FF0000000000000000C0C0C0FF00000000C0C0C0FF0000
+      00FF008080FF008080FF008080FF008080FF000000FFFFFF00FF000000FF0000
+      0000C0C0C0FF00000000C0C0C0FFC0C0C0FF00000000C0C0C0FF000000000000
+      00FF008080FF008080FF000000FF008080FF000000FFFFFF00FF000000FFC0C0
+      C0FF00000000C0C0C0FF0000000000000000C0C0C0FF00000000C0C0C0FF0000
+      00FF008080FF008080FF008080FF008080FF000000FFFFFF00FF000000FF0000
+      0000C0C0C0FF00000000C0C0C0FFC0C0C0FF00000000C0C0C0FF000000000000
+      00FF008080FF008080FF008080FF008080FF000000FFFFFF00FF000000FFC0C0
+      C0FF00000000C0C0C0FF0000000000000000C0C0C0FF00000000C0C0C0FF0000
+      00FF008080FF008080FF008080FF008080FF000000FFFFFF00FF000000FF0000
+      0000C0C0C0FF00000000C0C0C0FFC0C0C0FF00000000C0C0C0FF000000000000
+      00FF008080FF008080FF008080FF008080FF000000FFFFFF00FF000000FFC0C0
+      C0FF00000000C0C0C0FF00000000000000FF000000FF000000FF000000FF0000
+      00FF000000FF008080FF008080FF008080FF000000FF000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000000000000000000000000000000000
+      000000000000000000FF000000FF008080FF000000FF00000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000FF000000FF00000000000000000000
+      0000000000000000000000000000
+    }
+  end
+  object MainActionList: TActionList
+    Images = MainImageList
+    left = 216
+    top = 96
+    object CloseAction: TAction
+      Caption = 'CloseAction'
+      ImageIndex = 0
+      OnExecute = CloseActionExecute
+    end
+  end
+end
