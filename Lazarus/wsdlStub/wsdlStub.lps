@@ -8,7 +8,6 @@
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="6"/>
         <WindowIndex Value="1"/>
         <TopLine Value="11"/>
@@ -25,8 +24,8 @@
         <UnitName Value="WsdlStubMainUnit"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="11626"/>
-        <CursorPos X="37" Y="11639"/>
+        <TopLine Value="11630"/>
+        <CursorPos X="3" Y="11631"/>
         <UsageCount Value="1083"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -738,10 +737,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="logChartzUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="77"/>
-        <CursorPos X="54" Y="88"/>
+        <TopLine Value="126"/>
+        <CursorPos X="20" Y="131"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -757,124 +757,124 @@
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="347" Column="31" TopLine="325"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="85" Column="29" TopLine="66"/>
       </Position1>
       <Position2>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="84" Column="29" TopLine="65"/>
       </Position2>
       <Position3>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1218" Column="36" TopLine="1226"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="83" Column="29" TopLine="64"/>
       </Position3>
       <Position4>
         <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="74" Column="20" TopLine="59"/>
+        <Caret Line="68" Column="1" TopLine="52"/>
       </Position4>
       <Position5>
         <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="11" Column="36" TopLine="1"/>
+        <Caret Line="43" Column="48" TopLine="32"/>
       </Position5>
       <Position6>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="1030" Column="16" TopLine="1009"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="69" Column="17" TopLine="47"/>
       </Position6>
       <Position7>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="78" Column="71" TopLine="65"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="5866" Column="44" TopLine="5853"/>
       </Position7>
       <Position8>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="1" Column="6" TopLine="1"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="11639" Column="21" TopLine="11626"/>
       </Position8>
       <Position9>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="107" Column="1" TopLine="104"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="8357" Column="3" TopLine="8355"/>
       </Position9>
       <Position10>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="88" Column="1" TopLine="69"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="8329" Column="3" TopLine="8327"/>
       </Position10>
       <Position11>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="87" Column="25" TopLine="65"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="8274" Column="23" TopLine="8260"/>
       </Position11>
       <Position12>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="100" Column="37" TopLine="103"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Caret Line="540" Column="3" TopLine="529"/>
       </Position12>
       <Position13>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="85" Column="29" TopLine="66"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Caret Line="4746" Column="69" TopLine="4725"/>
       </Position13>
       <Position14>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="84" Column="29" TopLine="65"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position14>
       <Position15>
         <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="83" Column="29" TopLine="64"/>
+        <Caret Line="87" Column="19" TopLine="68"/>
       </Position15>
       <Position16>
         <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="68" Column="1" TopLine="52"/>
+        <Caret Line="88" Column="53" TopLine="76"/>
       </Position16>
       <Position17>
         <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="43" Column="48" TopLine="32"/>
+        <Caret Line="87" Column="54" TopLine="73"/>
       </Position17>
       <Position18>
-        <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="69" Column="17" TopLine="47"/>
+        <Filename Value="wsdlStub.lpr"/>
+        <Caret Line="32" Column="1" TopLine="11"/>
       </Position18>
       <Position19>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="5866" Column="44" TopLine="5853"/>
+        <Caret Line="11639" Column="37" TopLine="11551"/>
       </Position19>
       <Position20>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="11639" Column="21" TopLine="11626"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="88" Column="54" TopLine="77"/>
       </Position20>
       <Position21>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="8357" Column="3" TopLine="8355"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="89" Column="54" TopLine="78"/>
       </Position21>
       <Position22>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="8329" Column="3" TopLine="8327"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="90" Column="54" TopLine="79"/>
       </Position22>
       <Position23>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="8274" Column="23" TopLine="8260"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="91" Column="54" TopLine="80"/>
       </Position23>
       <Position24>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="540" Column="3" TopLine="529"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="93" Column="54" TopLine="82"/>
       </Position24>
       <Position25>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="4746" Column="69" TopLine="4725"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="144" Column="12" TopLine="139"/>
       </Position25>
       <Position26>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="110" Column="1" TopLine="100"/>
       </Position26>
       <Position27>
         <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="87" Column="19" TopLine="68"/>
+        <Caret Line="146" Column="1" TopLine="140"/>
       </Position27>
       <Position28>
         <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="88" Column="53" TopLine="76"/>
+        <Caret Line="88" Column="1" TopLine="78"/>
       </Position28>
       <Position29>
         <Filename Value="..\Xml\logchartzunit.pas"/>
-        <Caret Line="87" Column="54" TopLine="73"/>
+        <Caret Line="146" Column="1" TopLine="139"/>
       </Position29>
       <Position30>
-        <Filename Value="wsdlStub.lpr"/>
-        <Caret Line="32" Column="1" TopLine="11"/>
+        <Filename Value="..\Xml\logchartzunit.pas"/>
+        <Caret Line="153" Column="1" TopLine="146"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

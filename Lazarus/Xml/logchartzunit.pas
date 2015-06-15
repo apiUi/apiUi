@@ -15,6 +15,8 @@ type
   { TlogChartForm }
 
   TlogChartForm = class(TForm)
+    UncheckAllOperationsAction : TAction ;
+    CheckAllOperationsAction : TAction ;
     CloseAction : TAction ;
     MainActionList : TActionList ;
     Chart: TChart;
@@ -25,6 +27,10 @@ type
     Splitter: TSplitter;
     ToolBar1 : TToolBar ;
     ToolButton1 : TToolButton ;
+    ToolButton2 : TToolButton ;
+    ToolButton3 : TToolButton ;
+    ToolButton4 : TToolButton ;
+    procedure CheckAllOperationsActionExecute (Sender : TObject );
     procedure CloseActionExecute (Sender : TObject );
     procedure BtnAddPointClick (Sender : TObject );
     procedure BtnDeleteSeriesClick(Sender: TObject);
@@ -34,6 +40,7 @@ type
     procedure ChartListboxSeriesIconDblClick(Sender: TObject; Index: Integer);
     procedure FormDestroy (Sender : TObject );
     procedure FormShow (Sender : TObject );
+    procedure UncheckAllOperationsActionExecute (Sender : TObject );
   private
     fChanged : Boolean ;
     IniFile: TFormIniFile;
@@ -116,6 +123,14 @@ begin
   CreateData;
 end;
 
+procedure TlogChartForm .UncheckAllOperationsActionExecute (Sender : TObject );
+var
+  x: Integer;
+begin
+  for x := 0 to ChartListbox.SeriesCount - 1 do with TLineSeries(ChartListbox.Series[x]) do
+    Active := False;
+end;
+
 procedure TlogChartForm.FormCreate(Sender: TObject);
 begin
   IniFile := TFormIniFile.Create (Self);
@@ -130,6 +145,14 @@ end;
 procedure TlogChartForm .CloseActionExecute (Sender : TObject );
 begin
   Close;
+end;
+
+procedure TlogChartForm .CheckAllOperationsActionExecute (Sender : TObject );
+var
+  x: Integer;
+begin
+  for x := 0 to ChartListbox.SeriesCount - 1 do with TLineSeries(ChartListbox.Series[x]) do
+    Active := True;
 end;
 
 procedure TlogChartForm .BtnDeleteSeriesClick (Sender : TObject );
