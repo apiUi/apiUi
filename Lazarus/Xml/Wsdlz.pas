@@ -4211,13 +4211,13 @@ begin
     self.PrepareBefore;
   except
     on e: Exception do
-      fPrepareErrors := fPrepareErrors + 'Found in BeforeScript: ' + e.Message + CRLF;
+      fPrepareErrors := fPrepareErrors + 'Found in BeforeScript: ' + e.Message + LineEnding;
   end;
   try
     self.PrepareAfter;
   except
     on e: Exception do
-      fPrepareErrors := fPrepareErrors + 'Found in AfterScript: ' + e.Message + CRLF;
+      fPrepareErrors := fPrepareErrors + 'Found in AfterScript: ' + e.Message + LineEnding;
   end;
 end;
 

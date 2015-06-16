@@ -815,7 +815,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
     object CancelAction: TAction
       Caption = 'Cancel'
       OnExecute = CancelExecute
-      ShortCut = 3
+      ShortCut = 27
     end
     object FindNextAction: TAction
       Category = 'Search'

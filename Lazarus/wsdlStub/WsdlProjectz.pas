@@ -5316,7 +5316,11 @@ begin
     result.AcquireLock;
     try
       if aDoClone then
+      begin
         result := TWsdlOperation.Create(result);
+        if result.PrepareErrors <> '' then
+          raise Exception.CreateFmt('%s (%s)', [result.PrepareErrors, result.reqTagName]);
+      end;
       case result.WsdlService.DescriptionType of
         ipmDTFreeFormat: result.FreeFormatReq := aString;
         ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);

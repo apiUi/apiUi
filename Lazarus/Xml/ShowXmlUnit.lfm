@@ -243,6 +243,7 @@ object ShowXmlForm: TShowXmlForm
       Height = 25
       Top = 8
       Width = 75
+      Cancel = True
       Caption = '&Cancel'
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100

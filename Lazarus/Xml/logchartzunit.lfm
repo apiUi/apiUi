@@ -250,6 +250,7 @@ object logChartForm: TlogChartForm
       Caption = 'CloseAction'
       ImageIndex = 0
       OnExecute = CloseActionExecute
+      ShortCut = 27
     end
     object CheckAllOperationsAction: TAction
       Caption = 'Check All'
