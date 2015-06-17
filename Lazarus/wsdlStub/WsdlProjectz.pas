@@ -5621,12 +5621,12 @@ begin
       xLog.httpDocument := ARequestInfo.Document;
       xLog.httpSoapAction := ARequestInfo.RawHeaders.Values ['SOAPAction'];
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
-      xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
-      xLog.InboundBody := xLog.RequestBody;
       xLog.httpParams := ARequestInfo.Params.Text;
       try
         if ARequestInfo.Command = 'GET' then
         begin
+          xLog.RequestBody := '';
+          xLog.InboundBody := xLog.RequestBody;
           HTTPServerCommandGetGet(AContext, ARequestInfo, AResponseInfo);
         end;
         if ARequestInfo.Command = 'TRACE' then
@@ -5638,6 +5638,8 @@ begin
         if (ARequestInfo.Command = 'POST')
         or (ARequestInfo.Command = 'PUT') then
         begin
+          xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
+          xLog.InboundBody := xLog.RequestBody;
           AResponseInfo.ContentType := ARequestInfo.ContentType;
           rLog := nil;
           AcquireLogLock;
@@ -5969,6 +5971,7 @@ procedure TWsdlProject.HTTPServerCommandGetGet(AContext: TIdContext;
     end;
   end;
 begin
+  AResponseInfo.ContentEncoding := 'identity';
   if (ARequestInfo.Document = '/index.html')
   or (ARequestInfo.Document = '/')
   or (ARequestInfo.QueryParams = 'WSDL')

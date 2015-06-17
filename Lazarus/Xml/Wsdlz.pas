@@ -1695,6 +1695,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
     PortTypeName, SoapBindingStyle, SoapTransport, OperationName, FaultName: String;
   begin
     xTargetNamespace := aXml.Attributes.ValueByTag[tagTargetNamespace];
+    Name := aXml.Attributes.ValueByTag[tagName];
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
     begin
       if Name = tagImport then
