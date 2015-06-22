@@ -1276,6 +1276,7 @@ var
       if (   _fdQual (aXml.Xsd.FormDefaultQualified)
           or (Self = aXml) // root xml
           or (xNameSpace <> xPNameSpace)
+          or (aXml.Xsd._RefElementName <> '') // global defined elements
          )
       then
         result := xXsd.NSPrefix

@@ -1137,7 +1137,7 @@ object MainForm: TMainForm
           Top = 2
           Action = CopyLogGridToClipBoardAction
         end
-        object ToolButton39: TToolButton
+        object logChartToolButton: TToolButton
           Left = 182
           Top = 2
           Action = logChartAction
@@ -6710,9 +6710,9 @@ object MainForm: TMainForm
       object N35: TMenuItem
         Caption = '-'
       end
-      object License1: TMenuItem
+      object LicenseMenuItem: TMenuItem
         Caption = 'License'
-        OnClick = License1Click
+        OnClick = LicenseMenuItemClick
       end
       object About1: TMenuItem
         Caption = 'About'

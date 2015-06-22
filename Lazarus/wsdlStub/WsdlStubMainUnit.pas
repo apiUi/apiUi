@@ -100,7 +100,7 @@ type
     ToolButton36 : TToolButton ;
     ToolButton37 : TToolButton ;
     ExecuteLoadTextToolbutton : TToolButton ;
-    ToolButton39 : TToolButton ;
+    logChartToolButton : TToolButton ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -150,7 +150,7 @@ type
     ReopenStubcase1: TMenuItem;
     Help1: TMenuItem;
     wsdStubhelp1: TMenuItem;
-    License1: TMenuItem;
+    LicenseMenuItem: TMenuItem;
     About1: TMenuItem;
     HelpAction: TAction;
     Qry: TSQLQuery;
@@ -687,7 +687,7 @@ type
     procedure OpenStubCaseActionUpdate(Sender: TObject);
     procedure WsdlComboBoxChange(Sender: TObject);
     procedure runScriptActionExecute(Sender: TObject);
-    procedure License1Click(Sender: TObject);
+    procedure LicenseMenuItemClick(Sender: TObject);
     procedure HelpActionExecute(Sender: TObject);
     procedure About1Click(Sender: TObject);
     procedure ReopenStubCaseActionExecute(Sender: TObject);
@@ -3516,6 +3516,18 @@ var
 const
   xDisableFunctions = 'Therefore the Save Project as... and some reporting functions are disabled.';
 begin
+{$ifdef TrialVersion}
+  xLicenseExpirationDate := {$I %date%}; // yyyy/mm/dd
+                                         // 1234567890
+  y := StrToInt(Copy (xLicenseExpirationDate, 1, 4));
+  m := StrToInt(Copy (xLicenseExpirationDate, 6, 2));
+  d := StrToInt(Copy (xLicenseExpirationDate, 9, 2));
+  xLicenseDate := EncodeDate(y, m, d) + 180;
+  xLicenseExpirationDate := FormatDateTime('yyyy-mm-dd', xLicenseDate);
+  se.Licensed := ValidateLicenseExpirationDate(xLicenseExpirationDate);
+  LicenseMenuItem.Enabled := False;
+  Exit;
+{$endif}
 {$ifdef linux}
   se.Licensed := True;
   exit;
@@ -3628,8 +3640,7 @@ begin
   begin
     ShowMessage('Your ' + _progName + ' license has expired on ' + DateToStr
         (xDt) + '.' + LineEnding + LineEnding + 'Therefore ' + _progName +
-        ' will have limited functionallity and will' + LineEnding +
-        'stub only a limited number of requests.' + LineEnding + LineEnding +
+        ' will have limited functionallity.' + LineEnding + LineEnding +
         'Please contact your ' + _progName + ' provider.');
   end
   else
@@ -3640,7 +3651,7 @@ begin
   end;
 end;
 
-procedure TMainForm.License1Click(Sender: TObject);
+procedure TMainForm.LicenseMenuItemClick(Sender: TObject);
 begin
   if ErrorReadingLicenseInfo then
     raise Exception.Create('' + _progName +
@@ -6307,6 +6318,9 @@ begin
   stubChanged := False;
   nStubs := 0;
   freeStubs := -1;
+  logChartToolButton.Visible := (WindowsUserName = 'Jan')
+                             or (WindowsUserName = 'BouwmanJW')
+                              ;
   ExecuteRequestToolButton.Visible := False;
   ExecuteAllRequestsToolButton.Visible := False;
   ExecuteLoadTextToolbutton.Visible := False;

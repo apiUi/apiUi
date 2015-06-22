@@ -73,6 +73,9 @@ end;
 procedure TAboutBox.setLicensedTo(const Value: String);
 begin
   LicensedLabel.Caption := 'Licensed to ' + Value;
+  {$ifdef TrialVersion}
+  LicensedLabel.Caption := 'Trial';
+  {$endif}
 end;
 
 end.
