@@ -9,6 +9,8 @@ uses CustParser
 %%
 
 type TParser = class (TCustParser)
+private
+  xObject: TObject;
 published
   property OnError: TOnErrorEvent read FOnError write FOnError;
 public

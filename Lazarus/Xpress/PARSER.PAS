@@ -175,6 +175,8 @@ const _ILLEGAL = 421;
 const UMINUS = 422;
 
 type TParser = class (TCustParser)
+private
+  xObject: TObject;
 published
   property OnError: TOnErrorEvent read FOnError write FOnError;
 public
@@ -858,11 +860,14 @@ begin
          if not Assigned (cFed.PrepareBindableOnAliasField(yyv[yysp-2].TokenString)) then
          yyerror (yyv[yysp-2].TokenString + ' not found');
          end;
-         if DoIt then with cFed.FindBindableOnAliasField(yyv[yysp-2].TokenString) do
-         try
+         if DoIt then
+         begin
+         xObject := cFed.FindBindableOnAliasField(yyv[yysp-2].TokenString);
+         if Assigned (xObject) then with xObject as TCustomBindable do
+         begin
          Value := yyv[yysp-0].ValueAsString;
          Checked := True;
-         except
+         end;
          end;
          
        end;
@@ -876,10 +881,13 @@ begin
          if not Assigned (cFed.PrepareBindableOnAliasField(yyv[yysp-2].TokenString)) then
          yyerror (yyv[yysp-2].TokenString + ' not found');
          end;
-         if DoIt then with cFed.FindBindableOnAliasField(yyv[yysp-2].TokenString) do
-         try
-         PutGroupData (yyv[yysp-0].yy.yyObject);
-         except
+         if DoIt then
+         begin
+         xObject := cFed.FindBindableOnAliasField(yyv[yysp-2].TokenString);
+         if Assigned (xObject) then with xObject as TCustomBindable do
+         PutGroupData (yyv[yysp-0].yy.yyObject)
+         else
+         yyerror (yyv[yysp-2].TokenString + ' not found');
          end;
          
        end;
@@ -893,8 +901,11 @@ begin
          if not Assigned (cFed.PrepareBindableOnAliasField(yyv[yysp-2].TokenString)) then
          yyerror (yyv[yysp-2].TokenString + ' not found');
          end;
-         if DoIt then with cFed.FindBindableOnAliasField(yyv[yysp-2].TokenString) do
-         try
+         if DoIt then
+         begin
+         xObject := cFed.FindBindableOnAliasField(yyv[yysp-2].TokenString);
+         if Assigned (xObject) then with xObject as TCustomBindable do
+         begin
          if yyv[yysp-0].yy.yyObject is TXml then
          PutGroupData (yyv[yysp-0].yy.yyObject)
          else
@@ -904,7 +915,7 @@ begin
          Value := yyv[yysp-0].yyString;
          Checked := True;
          end;
-         except
+         end;
          end;
          
        end;
@@ -918,10 +929,11 @@ begin
          if not Assigned (cFed.PrepareBindableOnAliasField(yyv[yysp-2].TokenString)) then
          yyerror (yyv[yysp-2].TokenString + ' not found');
          end;
-         if DoIt then with cFed.FindBindableOnAliasField(yyv[yysp-2].TokenString) do
-         try
+         if DoIt then
+         begin
+         xObject := cFed.FindBindableOnAliasField(yyv[yysp-2].TokenString);
+         if Assigned (xObject) then with xObject as TCustomBindable do
          Reset;
-         except
          end;
          
        end;
@@ -1038,12 +1050,15 @@ begin
          if not Assigned (cFed.PrepareBindableOnAliasField (yyv[yysp-0].TokenString)) then
          yyerror (yyv[yysp-0].TokenString + ' not found');
          end;
-         if DoIt then with cFed.FindBindableOnAliasField (yyv[yysp-0].TokenString) do
-         try
+         if DoIt then
+         begin
+         xObject := cFed.FindBindableOnAliasField (yyv[yysp-0].TokenString);
+         if Assigned (xObject) then with xObject as TCustomBindable do
+         begin
          yyval.yy.yyObject := yyv[yysp-0].yy.yyObject; // double function
          yyval.yyString := Value;
          yyval.yyRead := yyval.yy;
-         except
+         end;
          end;
          
        end;
@@ -1408,12 +1423,12 @@ begin
        end;
  225 : begin
          
+         PushObject (cFed);
          cFed := yyv[yysp-0].yy.yyObject as TFed;
          if DoIt then
          if cFed.isDynamic then
          cFed.FirstBind := cFed.Parent.FindBindableOnAliasField (cFed.TokenString);
          if DoIt then cFed.New;
-         PushObject (cFed);
          PushBoolean (DoIt);
          
        end;
@@ -1464,11 +1479,12 @@ begin
        end;
  229 : begin
          
+         PushObject (pFed);
+         PushObject (cFed);
          cFed := yyv[yysp-0].yy.yyObject as TFed;
          if DoIt then
          if cFed.isDynamic then
          cFed.FirstBind := cFed.Parent.FindBindableOnAliasField (cFed.TokenString);
-         PushObject (cFed);
          PushBoolean (DoIt);
          
        end;
@@ -1476,6 +1492,7 @@ begin
          
          DoIt := PopBoolean;
          cFed := PopObject as TFed;
+         pFed := PopObject as TFed;
          
        end;
  231 : begin

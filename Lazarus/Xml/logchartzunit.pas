@@ -67,7 +67,7 @@ procedure TlogChartForm.CreateData;
 const
   n = 100;
 var
-  x, f: Integer;
+  f, x: Integer;
   ser: TLineSeries;
 begin
   for x := 0 to Operations.Count - 1 do

@@ -620,12 +620,15 @@ Assignment:
               if not Assigned (cFed.PrepareBindableOnAliasField($1.TokenString)) then
                 yyerror ($1.TokenString + ' not found');
             end;
-            if DoIt then with cFed.FindBindableOnAliasField($1.TokenString) do
-              try
+            if DoIt then
+            begin
+              xObject := cFed.FindBindableOnAliasField($1.TokenString);
+              if Assigned (xObject) then with xObject as TCustomBindable do
+              begin
                 Value := $3.ValueAsString;
                 Checked := True;
-              except
               end;
+            end;
           }
         | DynToken _ASSIGNMENT gExpr
           {
@@ -637,11 +640,14 @@ Assignment:
               if not Assigned (cFed.PrepareBindableOnAliasField($1.TokenString)) then
                 yyerror ($1.TokenString + ' not found');
             end;
-            if DoIt then with cFed.FindBindableOnAliasField($1.TokenString) do
-              try
-                PutGroupData ($3.yy.yyObject);
-              except
-              end;
+            if DoIt then
+            begin
+              xObject := cFed.FindBindableOnAliasField($1.TokenString);
+              if Assigned (xObject) then with xObject as TCustomBindable do
+                PutGroupData ($3.yy.yyObject)
+              else
+                yyerror ($1.TokenString + ' not found');
+            end;
           }
         | DynToken _ASSIGNMENT sExpr
           {
@@ -653,8 +659,11 @@ Assignment:
               if not Assigned (cFed.PrepareBindableOnAliasField($1.TokenString)) then
                 yyerror ($1.TokenString + ' not found');
             end;
-            if DoIt then with cFed.FindBindableOnAliasField($1.TokenString) do
-              try
+            if DoIt then
+            begin
+              xObject := cFed.FindBindableOnAliasField($1.TokenString);
+              if Assigned (xObject) then with xObject as TCustomBindable do
+              begin
                 if $3.yy.yyObject is TXml then
                   PutGroupData ($3.yy.yyObject)
                 else
@@ -664,8 +673,8 @@ Assignment:
                   Value := $3.yyString;
                   Checked := True;
                 end;
-              except
               end;
+            end;
           }
         | DynToken _ASSIGNMENT _NIL
           {
@@ -677,11 +686,12 @@ Assignment:
               if not Assigned (cFed.PrepareBindableOnAliasField($1.TokenString)) then
                 yyerror ($1.TokenString + ' not found');
             end;
-            if DoIt then with cFed.FindBindableOnAliasField($1.TokenString) do
-              try
+            if DoIt then
+            begin
+              xObject := cFed.FindBindableOnAliasField($1.TokenString);
+              if Assigned (xObject) then with xObject as TCustomBindable do
                 Reset;
-              except
-              end;
+            end;
           }
         ;
 
@@ -746,13 +756,16 @@ sExpr:    sExpr _PLUS sExpr	{ $$.yyString := $1.yyString + $3.yyString; }
               if not Assigned (cFed.PrepareBindableOnAliasField ($1.TokenString)) then
                 yyerror ($1.TokenString + ' not found');
             end;
-            if DoIt then with cFed.FindBindableOnAliasField ($1.TokenString) do
-              try
+            if DoIt then
+            begin
+              xObject := cFed.FindBindableOnAliasField ($1.TokenString);
+              if Assigned (xObject) then with xObject as TCustomBindable do
+              begin
                 $$.yy.yyObject := $1.yy.yyObject; // double function
                 $$.yyString := Value;
                 $$.yyRead := $$.yy;
-              except
               end;
+            end;
           }
         | SFS _LPAREN sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionS ($3.yyString); }
         | SFSS _LPAREN sExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionSS ($3.yyString, $5.yyString); }
@@ -1014,12 +1027,12 @@ OptionalAlias:
 WithNewStatement:
           _WITHNEWDO
           {
+            PushObject (cFed);
             cFed := $1.yy.yyObject as TFed;
             if DoIt then
               if cFed.isDynamic then
                 cFed.FirstBind := cFed.Parent.FindBindableOnAliasField (cFed.TokenString);
             if DoIt then cFed.New;
-            PushObject (cFed);
             PushBoolean (DoIt);
           }
           BlokStatement
@@ -1072,17 +1085,19 @@ ForEachStatement:
 WithStatement:
           _WITHDO
           {
+            PushObject (pFed);
+            PushObject (cFed);
             cFed := $1.yy.yyObject as TFed;
             if DoIt then
               if cFed.isDynamic then
                 cFed.FirstBind := cFed.Parent.FindBindableOnAliasField (cFed.TokenString);
-            PushObject (cFed);
             PushBoolean (DoIt);
           }
           BlokStatement
           {
             DoIt := PopBoolean;
             cFed := PopObject as TFed;
+            pFed := PopObject as TFed;
           }
           ;
 

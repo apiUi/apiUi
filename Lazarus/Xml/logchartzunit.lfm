@@ -3,7 +3,7 @@ object logChartForm: TlogChartForm
   Height = 419
   Top = 153
   Width = 892
-  Caption = 'logChartForm'
+  Caption = 'log Chart Form'
   ClientHeight = 419
   ClientWidth = 892
   OnCreate = FormCreate
@@ -26,7 +26,7 @@ object logChartForm: TlogChartForm
         Title.LabelFont.Orientation = 900
         Title.LabelFont.Style = [fsBold]
         Title.Visible = True
-        Title.Caption = 'y axis'
+        Title.Caption = 'Response time'
       end    
       item
         Alignment = calBottom
