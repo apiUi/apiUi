@@ -547,4 +547,4 @@ initialization
   _OnParseErrorEvent := nil;
   _ParseFileName := '';
 
-end.
+end.

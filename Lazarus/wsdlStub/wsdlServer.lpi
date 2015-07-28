@@ -51,7 +51,7 @@
         <PackageName Value="LCLBase"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="7">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -59,18 +59,27 @@
       <Unit1>
         <Filename Value="wsdlcontrolz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="wsdlcontrolz"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="IdStack"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Xmlz"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="..\Mq\MQAPI.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\Mq\mqInterface.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\Mq\MQRfh2Api.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -85,7 +94,8 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Other>
-      <CompilerPath Value="$(CompPath)"/>
+      <CustomOptions Value="-dConsoleApp
+-dUseCThreads"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -104,4 +114,4 @@
       </Item4>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

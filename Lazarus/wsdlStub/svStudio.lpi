@@ -33,25 +33,28 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="TurboPowerIPro"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item1>
       <Item2>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item2>
       <Item3>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item3>
       <Item4>
-        <PackageName Value="LazRichEdit"/>
+        <PackageName Value="SynEdit"/>
       </Item4>
       <Item5>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="LazRichEdit"/>
       </Item5>
       <Item6>
-        <PackageName Value="LCL"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item6>
+      <Item7>
+        <PackageName Value="LCL"/>
+      </Item7>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
@@ -95,11 +98,10 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5024="True" idx5057="True"/>
+        <IgnoredMessages idx5057="True" idx5024="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads
 -dFPS_NO_GRID_MULTISELECT"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

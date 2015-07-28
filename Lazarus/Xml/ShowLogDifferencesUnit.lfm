@@ -1,7 +1,7 @@
 object ShowLogDifferencesForm: TShowLogDifferencesForm
   Left = 491
   Height = 409
-  Top = 226
+  Top = 182
   Width = 777
   Caption = 'wsdlStub - Show Log differences'
   ClientHeight = 409
@@ -13,7 +13,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
     Height = 380
@@ -146,6 +146,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     TabOrder = 1
     object ToolButton2: TToolButton
       Left = 1
+      Height = 22
       Top = 2
       Width = 10
       Action = MaintainIgnoreDiffsAction
@@ -168,6 +169,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton3: TToolButton
       Left = 80
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -186,6 +188,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton7: TToolButton
       Left = 136
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton7'
@@ -199,6 +202,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton8: TToolButton
       Left = 169
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton8'
@@ -212,6 +216,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton11: TToolButton
       Left = 202
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton11'

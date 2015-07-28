@@ -3237,7 +3237,7 @@ begin
         begin
           oUri := TIdUri.Create(aOperation.SoapAddress);
           try
-            if oUri.Protocol <> '' then
+            if (sUri.Protocol = '') then
               sUri.Protocol := oUri.Protocol;
             if aOperation.useSsl then
               sUri.Protocol := 'https';

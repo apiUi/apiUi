@@ -685,7 +685,8 @@ procedure TCustomBindable.Reset;
     a.fPrevChecked := False;
   end;
 begin
-  _reset (self);
+  if Assigned (self) then
+    _reset (self);
 end;
 
 procedure TCustomBindable.ResetExpectedValues;

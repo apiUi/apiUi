@@ -10,13 +10,13 @@ uses
   Classes, SysUtils, CustApp
   , WsdlProjectz
   , wsdlcontrolz
+  , Xmlz
   , xmlio
-  , xmlz
   , xmlUtilz
   , Wsdlz
   , lazrichedit
-  , FormIniFilez
-  , virtualtreeview_package , IdStack
+  , FormIniFilez, MQAPI, mqInterface, MQRfh2Api, IdStack
+  , virtualtreeview_package
   ;
 
 type

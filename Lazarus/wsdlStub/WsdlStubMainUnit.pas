@@ -6349,6 +6349,10 @@ begin
     OpenStubCase(se.projectFileName);
     se.Activate(True);
     CheckBoxClick(nil);
+    if ParamStr(2) <> '' then
+    begin
+      ExecuteScript(se, ParamStr(2));
+    end;
   end;
   MainToolBarDesignedButtonCount := MainToolBar.ButtonCount;
   CreateScriptsSubMenuItems;

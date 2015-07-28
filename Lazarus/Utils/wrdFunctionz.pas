@@ -20,12 +20,21 @@ var
 
 implementation
 
-uses SysUtils, Variants, Classes, OleServer, Word_TLB, ComObj;
+uses SysUtils
+   , Variants
+   , Classes
+   {$ifndef UNIX}
+   , OleServer
+   , Word_TLB
+   , ComObj
+   {$endif}
+   ;
 
 var
   wrdApplication: Variant;
 
 function wrdFileDiffencesCount (aNewFile, aRefFile: String): Integer;
+{$ifdef WINDOWS}
 var
   FileName, ConfirmConversions, ReadOnly, AddToRecentFiles,
   PasswordDocument, PasswordTemplate, Revert,
@@ -92,9 +101,14 @@ begin
     if xDoUninitialise then
       wrdUninitialize;
   end;
+{$else}
+begin
+  result := 0;
+{$endif}
 end;
 
 procedure wrdFileDiffencesShow (aNewFile, aRefFile: String);
+{$ifdef WINDOWS}
 var
   FileName, CompareFileName, ConfirmConversions, ReadOnly, AddToRecentFiles,
   PasswordDocument, PasswordTemplate, Revert,
@@ -175,6 +189,9 @@ begin
   finally
     Word := Null;
   end;
+{$else}
+begin
+{$endif}
 end;
 
 procedure wrdStringToFile (aText, aFileName: String);
@@ -182,6 +199,7 @@ var
   ndoc, cdoc: Variant;
   word: Variant;
 begin
+{$ifdef WINDOWS}
   try
     word := CreateOleObject('Word.Application');
   except
@@ -201,9 +219,11 @@ begin
   finally
     Word := Null;
   end;
+{$endif}
 end;
 
 procedure wrdStringToPdfFile (aText, aFileName: String);
+{$ifdef WINDOWS}
 var
   ndoc: Variant;
   word: Variant;
@@ -231,10 +251,14 @@ begin
     Word.Quit;
     Word := Null;
   end;
+{$else}
+begin
+{$endif}
 end;
 
 procedure wrdInitialize;
 begin
+{$ifdef WINDOWS}
   try
     wrdApplication := CreateOleObject('Word.Application');
     wrdApplication.DisplayAlerts := False;
@@ -243,16 +267,19 @@ begin
   except
     wrdInstalled := False;
   end;
+{$endif}
 end;
 
 procedure wrdUninitialize;
 begin
+{$ifdef WINDOWS}
   if wrdInstalled
   and not VarIsNull (wrdApplication) then
   begin
     wrdApplication.Quit;
     wrdApplication := null;
   end;
+{$endif}
 end;
 
-end.
+end.
