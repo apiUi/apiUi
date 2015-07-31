@@ -1,0 +1,160 @@
+unit l4jTypes;
+
+{$mode objfpc}{$H+}
+interface
+uses Classes
+   , Xmlz
+   , Express
+   ;
+
+type
+  TLogType = class (TObject)
+    public
+      Name: AnsiString;
+      sTag: AnsiString;
+      eTag: AnsiString;
+      eyeCatchers: TXml;
+  end;
+  TLogTypes = class (TStringList)
+  private
+    function GetLogType(Index: integer): TLogType;
+  published
+    public
+    property Types [Index: integer]: TLogType read GetLogType;
+  end;
+
+type
+  TColumnType = (ctAttribute, ctElement, ctEscXmlElement, ctIndex, ctElapsed, ctSize, ctHasString, ctHasXmlValue);
+  TDisplayedColumn = class (TObject)
+    public
+      Header, Key: String;
+      ColumnType: TColumnType;
+  end;
+
+type
+  TOnHaveString = procedure (aString: String
+                            ) of Object;
+  TOnUpdateStatus = procedure (aNumber, aTotal: Integer
+                              ) of Object;
+
+
+ TMsg = class (TObject)
+  private
+    function getAsText: String;
+public
+  FirstTimeStamp: String;
+  events: String;
+  property AsText: String read getAsText;
+  constructor Create;
+  destructor Destroy; override;
+end;
+
+ TMsgList = class (TStringList)
+  private
+    function getMsg(Index: Integer): TMsg;
+    procedure setMsg(Index: Integer; const Value: TMsg);
+    function getAsText: String;
+  published
+public
+  property Msg [Index: Integer]: TMsg read getMsg write setMsg;
+  property AsText: String read getAsText;
+  procedure Clear; override;
+  constructor Create;
+end;
+
+ { TSl }
+
+ TSl = class (TStringList)
+public
+  procedure xpNeedData (Sender: TObject; var aMoreData: Boolean; var aData: String);
+end;
+
+var
+  xpMoreData, xpFetched: Boolean;
+  xpScript: String;
+  Msgs: TMsgList;
+  TimeStamp, MessageId, ServiceRequestorId, ServiceId, EventType, EventData, Dummy: String;
+  fParam1, fParam2, fParam3, fParam4: String;
+  xp: TExpress;
+
+implementation
+
+{ TSl }
+
+procedure TSl.xpNeedData(Sender: TObject; var aMoreData: Boolean;
+  var aData: String);
+begin
+  aMoreData := xpMoreData;
+  aData := xpScript;
+  xpMoreData := False;
+end;
+
+{ TLogTypes }
+
+function TLogTypes.getLogType(Index: integer): TLogType;
+begin
+  result := TLogType (Objects [index]);
+end;
+
+{ TMsg }
+
+constructor TMsg.Create;
+begin
+  FirstTimeStamp := 'Z';
+end;
+
+destructor TMsg.Destroy;
+begin
+  inherited;
+end;
+
+function TMsg.getAsText: String;
+var
+  x: Integer;
+begin
+  result := '<log4j_event timestamp="' + FirstTimeStamp + '">'
+          + events
+          + '</log4j_event>'
+          + LineEnding;
+          ;
+end;
+
+{ TMsgList }
+
+procedure TMsgList.Clear;
+var
+  x: Integer;
+begin
+  for x := 0 to Count - 1 do
+    Msg[x].Free;
+  inherited;
+end;
+
+constructor TMsgList.Create;
+begin
+  Sorted := True;
+  Duplicates := dupError;
+end;
+
+function TMsgList.getAsText: String;
+var
+  x: Integer;
+begin
+  result := '<log4j_events>';
+  for x := 0 to Count - 1 do
+    result := result + Msg[x].AsText;
+  result := result + '</log4j_events>';
+end;
+
+function TMsgList.getMsg(Index: Integer): TMsg;
+begin
+  result := (Objects[Index] as TMsg);
+end;
+
+procedure TMsgList.setMsg(Index: Integer; const Value: TMsg);
+begin
+  Objects[Index] := Value as TMsg;
+end;
+
+end.
+
