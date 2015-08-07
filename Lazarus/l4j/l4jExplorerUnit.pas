@@ -997,16 +997,6 @@ end;
 
 procedure Tl4jExplorerForm.TreeViewClick(Sender: TObject);
 begin
-  begin
-{
-    if (Assigned((Sender as TVirtualStringTree).FocusedNode))
-    and ((Sender as TVirtualStringTree).FocusedColumn = treeValueColumn) then
-      (Sender as TVirtualStringTree).EditNode
-        ( (Sender as TVirtualStringTree).FocusedNode
-        , (Sender as TVirtualStringTree).FocusedColumn
-        );
-}
-  end;
 end;
 
 procedure Tl4jExplorerForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1352,26 +1342,6 @@ begin
 end;
 
 procedure Tl4jExplorerForm.CopyActionExecute(Sender: TObject);
-{
-  function _Columns (aNode: PVirtualNode): String;
-  var
-    col: Integer;
-    xText: String;
-    xSep: String;
-  begin
-    result := '';
-    xSep := '';
-    for col := 0 to TreeView.Header.Columns.Count - 1 do
-    begin
-      if ColumnVisible [col] then
-      begin
-        GridGetText(Grid, aNode, col, ttNormal,xText);
-        result := result + xSep + xText;
-        xSep := #9;
-      end;
-    end;
-  end;
-}
 var
   xNode: PVirtualNode;
   xData: PTreeRec;

@@ -40,7 +40,6 @@
       <Unit0>
         <Filename Value="TestApp.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="TestApp"/>
       </Unit0>
       <Unit1>
         <Filename Value="testappunit.pas"/>
@@ -75,12 +74,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

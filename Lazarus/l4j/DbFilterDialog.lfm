@@ -1,86 +1,114 @@
 object DbFilterDlg: TDbFilterDlg
-  Left = 295
-  Top = 173
+  Left = 397
+  Height = 706
+  Top = 133
+  Width = 984
   Caption = 'Query Datasource'
-  ClientHeight = 594
-  ClientWidth = 769
+  ClientHeight = 706
+  ClientWidth = 984
   Color = clBtnFace
-  ParentFont = True
-  Position = poDesigned
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  PixelsPerInch = 96
+  ParentFont = True
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
-    Top = 0
-    Width = 769
     Height = 60
+    Top = 0
+    Width = 984
     Align = alTop
+    ClientHeight = 60
+    ClientWidth = 984
     TabOrder = 0
     object Label2: TLabel
       Left = 3
+      Height = 13
       Top = 18
       Width = 113
-      Height = 13
       Caption = 'Connection description:'
+      ParentColor = False
     end
     object ConnStringEdit: TComboBox
       Left = 120
-      Top = 15
-      Width = 600
       Height = 21
-      Anchors = [akLeft, akTop, akRight, akBottom]
+      Top = 15
+      Width = 815
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ItemHeight = 13
       TabOrder = 0
+      Text = '\\rabobank\data\Programs\SourceExplorer\obpmAppLogs\Config\janBo.ConnStrng'
     end
     object FileSearchButton: TButton
-      Left = 726
+      Left = 941
+      Height = 21
       Top = 15
       Width = 21
-      Height = 21
       Anchors = [akTop, akRight]
       Caption = '...'
+      OnClick = FileSearchButtonClick
       TabOrder = 1
       TabStop = False
-      OnClick = FileSearchButtonClick
     end
   end
   object Panel2: TPanel
     Left = 0
+    Height = 478
     Top = 60
-    Width = 769
-    Height = 366
+    Width = 984
     Align = alClient
+    ClientHeight = 478
+    ClientWidth = 984
     TabOrder = 1
     object Label7: TLabel
       Left = 82
+      Height = 13
       Top = 13
       Width = 34
-      Height = 13
       Caption = 'Query:'
+      ParentColor = False
     end
     object QueryEdit: TMemo
-      Left = 119
+      Left = 118
+      Height = 460
       Top = 10
-      Width = 600
-      Height = 348
-      Anchors = [akLeft, akTop, akRight, akBottom]
-      Font.Charset = DEFAULT_CHARSET
+      Width = 815
+      Anchors = [akTop, akLeft, akRight, akBottom]
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Courier New'
-      Font.Style = []
       Lines.Strings = (
-        'select logTime as :ws.TimeStamp'
-        '     , message_id as :ws.MessageId'
-        '     , requestor_id as :ws.ServiceRequestorId'
-        '     , service_id as :ws.ServiceId'
+        'select to_char(log_time,''YYYY-MM-DD"T"HH24:MM:SS"."FF'') as Timestamp as :ws.TimeStamp'
+        '     , (case '
+        '         when (service_message_id is null or service_message_id = ''Not applicable'')'
+        '         then '
+        '           process_group_instance_id || '';'' || to_char(log_time,''YYYY-MM-DD"T"HH24:MM:SS"."FF'')'
+        '         else '
+        '           process_group_instance_id || '';'' || service_message_id'
+        '        end'
+        '        ) MessageId as :ws.MessageId'
+        '     , requester_id as :ws.ServiceRequestorId'
+        '     , service_id as :ws.ServiceId '
         '     , event_type as :ws.EventType'
-        '     , event_data as :ws.EventData'
-        '     , HOEVEEL as :ws.Dummy'
-        '     , HOEVEEL as :ws.Dummy'
-        'from applog'
-        'where event_type <> :ws.Param1'
+        '     , to_char(event_data) as event_data as :ws.EventData'
+        '     , business_object_id as :ws.Dummy'
+        '     , user_task_type as :ws.Dummy'
+        '     , user_task_id as :ws.Dummy'
+        '     , user_task_exec_bankcode as :ws.Dummy'
+        '     , error_flag as :ws.Dummy'
+        '     , component_name as :ws.Dummy'
+        '     , composite_name as :ws.Dummy'
+        'from APP_LOG_DATA'
+        '//where to_char(log_time, ''YYYY-MM-DD:HH24'') between :ws.Param1 and :ws.Param1 || ''Z'''
+        '//and (:ws.Param2 = ''*'' or process_group_instance_id = :ws.Param2)'
+        '//and (:ws.Param3 = ''*'' or composite_name = :ws.Param3)'
+        'where service_message_id = ''cgi://6meAdm8bpDbn8bn40v7b04sf'''
+        'order by 2, 5 '
+        ''
+        '// essential to have specific MessageId''s because queried records are grouped as one Event per MessageId'
+        '// some result columns mapped to specific internal properties are used internally. '
+        '// Assumption is made that the content of EventType is a valid Xml tagname (rfc on ....)'
+        '// map as many new columns to ws.Dummy ( as :ws.Dummy) as you like'
       )
       ParentFont = False
       ScrollBars = ssVertical
@@ -89,84 +117,96 @@ object DbFilterDlg: TDbFilterDlg
   end
   object Panel3: TPanel
     Left = 0
-    Top = 426
-    Width = 769
     Height = 112
+    Top = 538
+    Width = 984
     Align = alBottom
+    ClientHeight = 112
+    ClientWidth = 984
     TabOrder = 2
     object Label3: TLabel
       Left = 73
+      Height = 13
       Top = 9
       Width = 43
-      Height = 13
       Caption = 'Param 1:'
+      ParentColor = False
     end
     object Label4: TLabel
       Left = 106
+      Height = 13
       Top = 33
       Width = 10
-      Height = 13
       Caption = '2:'
+      ParentColor = False
     end
     object Label5: TLabel
       Left = 106
+      Height = 13
       Top = 57
       Width = 10
-      Height = 13
       Caption = '3:'
+      ParentColor = False
     end
     object Label6: TLabel
       Left = 106
+      Height = 13
       Top = 86
       Width = 10
-      Height = 13
       Caption = '4:'
+      ParentColor = False
     end
     object ParamEdit1: TComboBox
       Left = 119
-      Top = 6
-      Width = 600
       Height = 21
-      Anchors = [akLeft, akTop, akRight, akBottom]
+      Top = 6
+      Width = 815
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ItemHeight = 13
       TabOrder = 0
     end
     object ParamEdit2: TComboBox
       Left = 118
-      Top = 30
-      Width = 600
       Height = 21
-      Anchors = [akLeft, akTop, akRight, akBottom]
+      Top = 30
+      Width = 815
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ItemHeight = 13
       TabOrder = 1
     end
     object ParamEdit3: TComboBox
       Left = 118
-      Top = 55
-      Width = 600
       Height = 21
-      Anchors = [akLeft, akTop, akRight, akBottom]
+      Top = 55
+      Width = 815
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ItemHeight = 13
       TabOrder = 2
     end
     object ParamEdit4: TComboBox
       Left = 118
-      Top = 80
-      Width = 600
       Height = 21
-      Anchors = [akLeft, akTop, akRight, akBottom]
+      Top = 80
+      Width = 815
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ItemHeight = 13
       TabOrder = 3
     end
   end
   object Panel4: TPanel
     Left = 0
-    Top = 538
-    Width = 769
     Height = 56
+    Top = 650
+    Width = 984
     Align = alBottom
+    ClientHeight = 56
+    ClientWidth = 984
     TabOrder = 3
     object CancelBtn: TButton
       Left = 198
+      Height = 25
       Top = 14
       Width = 75
-      Height = 25
       Cancel = True
       Caption = 'Cancel'
       ModalResult = 2
@@ -174,14 +214,14 @@ object DbFilterDlg: TDbFilterDlg
     end
     object OKBtn: TButton
       Left = 116
+      Height = 25
       Top = 14
       Width = 75
-      Height = 25
       Caption = '&OK'
       Default = True
       ModalResult = 1
-      TabOrder = 1
       OnClick = OKBtnClick
+      TabOrder = 1
     end
   end
-end
+end

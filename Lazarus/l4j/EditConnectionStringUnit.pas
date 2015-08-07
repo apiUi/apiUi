@@ -12,13 +12,17 @@ uses
 {$ELSE}
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
-  SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
+  SysUtils, Classes, sqldb, odbcconn, Graphics, Forms, Controls, StdCtrls,
   Buttons, ComCtrls, ExtCtrls, Dialogs, ActnList, Menus;
 
 type
+
+  { TOpenSQLServerForm }
+
   TOpenSQLServerForm = class(TForm)
     Panel1: TPanel;
     PageControl1: TPageControl;
+    dbc: TSQLConnector;
     TabSheet1: TTabSheet;
     PasswordEdit: TLabeledEdit;
     TestConButton: TBitBtn;
@@ -76,15 +80,7 @@ implementation
   {$R *.lfm}
 {$ENDIF}
 
-uses
-{$IFnDEF FPC}
-  adodb,
-{$ELSE}
-  sqldb,
-{$ENDIF}
-  adoint
-   , oledb
-   , db
+uses db
    , IniFiles
    , igGlobals
    , Xmlz
@@ -170,31 +166,29 @@ end;
 
 procedure TOpenSQLServerForm.TestConnectionActionExecute(Sender: TObject);
 var
-  dbc : TAdoConnection;
   swapCursor: TCursor;
   s: String;
 begin
   StatusBar.Panels [0].Text := 'Connecting...';
+  StatusBar.Update;
   swapCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    dbC := TAdoConnection.Create(nil);
+    s := ConnectionString;
+    s := ReplaceStrings(s, '%pwd%', Password, false, false);
+    s := ReplaceStrings(s, ';', LineEnding, false, false);
+    dbc.Params.Text := s;
     try
-      s := ConnectionString;
-      s := ReplaceStrings(s, '%pwd%', Password, false, false);
-      dbc.ConnectionString := s;
       try
-        dbc.Open;
-        dbc.Close;
+        dbc.Connected:=True;
+        dbc.Connected:=False;
+        dbc.Connected:=True;
         StatusBar.Panels [0].Text := 'Connection successful';
       except
         StatusBar.Panels[0].Text := 'Connection failed';
-        Raise;
       end;
     finally
-      if dbc.Connected then
-        dbc.Close;
-      dbc.Free;
+      dbc.Connected:=False;
     end;
   finally
     Screen.Cursor := swapCursor;

@@ -5,7 +5,7 @@ unit L4JMainUnit;
 interface
 
 uses
-  l4jTypes, sqldb, LCLIntf, LCLType, LMessages,
+  l4jTypes, sqldb, odbcconn, oracleconnection, LCLIntf, LCLType, LMessages,
   SysUtils
    , Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ComCtrls, ExtCtrls, VirtualTrees
@@ -18,7 +18,9 @@ uses
    , AbUnzper
    , Express
    , Bind
+  {$ifdef WINDOWS}
    , ActiveX
+  {$endif}
    ;
 
 Type
@@ -84,29 +86,57 @@ type
 
   TL4JMainForm = class(TForm)
     AbortAction: TAction;
+    About1: TMenuItem;
     ActionImageList: TImageList;
     ActionList1: TActionList;
     AllXmlAction: TAction;
     CloseAction: TAction;
+    CloseAction1: TMenuItem;
     CopyAction: TAction;
+    CopyAction1: TMenuItem;
     DeleteAction: TAction;
+    Edit1: TMenuItem;
+    Editconfig1: TMenuItem;
+    Editdisplayedcolumns1: TMenuItem;
     EditDisplayedColumnsAction: TAction;
+    ElementAttribute1: TMenuItem;
+    Extra1: TMenuItem;
+    File1: TMenuItem;
     FilterAction: TAction;
+    Find1: TMenuItem;
     FindAction: TAction;
+    FindNext1: TMenuItem;
     FindNextAction: TAction;
     FullCollapseAction: TAction;
     FullExpandAction: TAction;
+    Help1: TMenuItem;
+    License1: TMenuItem;
+    MainMenu1: TMainMenu;
     Memo: TMemo;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N4: TMenuItem;
     NodeCopyAction: TAction;
     NodeFullCollapseAction: TAction;
     NodeFullExpandAction: TAction;
     NodeWriteXmlAction: TAction;
+    Openconfig1: TMenuItem;
     OpenFileAction: TAction;
+    OpenLog4Jevents1: TMenuItem;
     Panel1: TPanel;
     Panel2: TPanel;
+    Paste1: TMenuItem;
     ProgressBar: TProgressBar;
     QueryDbAction: TAction;
+    QueryDbAction1: TMenuItem;
+    Save1: TMenuItem;
+    Saveconfig1: TMenuItem;
+    Saveconfigas1: TMenuItem;
+    Savelogevents1: TMenuItem;
+    Search1: TMenuItem;
     Splitter1: TSplitter;
+    SQLConnector1: TSQLConnector;
+    SQLQuery1: TSQLQuery;
     StatusBar: TStatusBar;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
@@ -127,14 +157,18 @@ type
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
     TreeView: TVirtualStringTree;
+    TvPopupMenu: TPopupMenu;
+    View1: TMenuItem;
+    WraptekstMenuItem: TMenuItem;
     WriteXmlAction: TAction;
+    ZoomMenuAction: TMenuItem;
     procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
     procedure CopyActionExecute(Sender: TObject);
     procedure FindActionExecute(Sender: TObject);
     procedure FindNextActionExecute(Sender: TObject);
+    procedure TreeViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure WriteXmlActionExecute(Sender: TObject);
     procedure Save1Click(Sender: TObject);
-    procedure Command1Click(Sender: TObject);
     procedure WraptekstMenuItemClick(Sender: TObject);
     procedure ElementAttribute1Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -209,7 +243,7 @@ type
     function GetEscXmlElm (aKey, aString: String): String;
     function GetHasString (aDc: TDisplayedColumn; aString: String): String;
     function GetHasXmlValue (aDc: TDisplayedColumn; aString: String): String;
-    function GetText (aData: TStringList; aIndex, aColumn: Integer): String;
+    function GetCellText (aData: TStringList; aIndex, aColumn: Integer): String;
     function Filter (Data: TStringList; aIndex: Integer): Boolean;
     procedure l4jInit;
     procedure ParserError(Sender: TObject; LineNumber, ColumnNumber,
@@ -636,7 +670,7 @@ end;
 procedure TQueryThread.Execute;
 var
   sl: TSL;
-  db: TSQLConnection;
+  db: TSQLConnector;
   cs, qry: String;
   x: Integer;
 begin
@@ -661,6 +695,12 @@ begin
                             , false
                             , false
                             );
+        cs := ReplaceStrings( cs
+                            , ';'
+                            , LineEnding
+                            , false
+                            , false
+                            );
       finally
         Free;
       end;
@@ -668,14 +708,19 @@ begin
       xpMoreData := True;
       xpFetched := False;
       if abortPressed then Exit;
+      {$ifdef WINDOWS}
       CoInitialize(nil);
+      {$endif}
       try
-        db := TSQLConnection.Create(nil);
+        db := TSQLConnector.Create(nil);
         try
-{ TODO : connect
- }
-          //db.ConnectionString := cs;
-          db.Connected := True;
+          db.DatabaseName:='Database';
+          db.ConnectorType:='ODBC';
+          db.Params.Text:=cs;
+          db.Transaction := TSQLTransaction.Create(nil);
+          db.Transaction.Action:=caRollback;
+          db.Connected:=True;
+          db.Transaction.Active:=True;
           xp := TExpress.Create(nil);
           sl := TSL.Create;
           try
@@ -725,10 +770,20 @@ begin
             FreeAndNil(sl);
           end;
         finally
-          FreeAndNil(db);
+          if Assigned (db) then
+          begin
+            if Assigned (db.Transaction) then
+            begin
+              db.Transaction.Active:=False;
+              db.Transaction.Free;
+            end;
+            FreeAndNil(db);
+          end;
         end;
       finally
+        {$ifdef WINDOWS}
         CoUninitialize;
+        {$endif}
       end;
     except
       on e: Exception do
@@ -897,47 +952,231 @@ begin
   end;
 end;
 
-function TL4JMainForm.GetEndurance(aString: String): String;
+function Tl4jMainForm.GetEndurance(aString: String): String;
+var
+  reqTime, repTime: TDateTime;
+  reqTimeAsStr, repTimeAsStr: String;
+  ms: Extended;
 begin
-
+  result := '';
+{ TODO : GetEndurance }
+{$ifdef GETENDURANCE}
+  try
+  with TXSDateTime.Create do
+    try
+      reqTimeAsStr := GetAtt ('<ServiceRequestTimestamp>', aString);
+      repTimeAsStr := GetAtt ('<ServiceReplyTimestamp>', aString);
+      XSToNative(Copy (reqTimeAsStr, 1, 20) + '000'); // convert from String
+      reqTime := AsDateTime; // convert to TDateTime
+      XSToNative(Copy (repTimeAsStr, 1, 20) + '000'); // convert from String
+      repTime := AsDateTime; // convert to TDateTime
+      ms := (repTime - reqTime) * 24 * 60 * 60 * 1000
+          + StrToInt(Copy (repTimeAsStr, 21, 3))
+          - StrToInt(Copy (reqTimeAsStr, 21, 3))
+          ;
+      result := Format ('%.3f', [ms / 1000]);
+    finally
+      Free;
+    end;
+  except
+  end;
+  {$endif}
 end;
 
-function TL4JMainForm.GetAtt(aKey, aString: String): String;
-begin
 
+function Tl4jMainForm.GetEscXmlElm(aKey, aString: String): String;
+var
+  x: Integer;
+begin
+// &lt;ns2:Woonplaats&gt;Veghel&lt;
+  result := '';
+  if aKey = '' then
+  begin
+    result := aString;
+    exit;
+  end;
+  x := Pos ('&lt;' + aKey + '&gt;', aString);
+  if x < 1 then
+  begin
+    x := Pos (':' + aKey + '&gt;', aString); // maybe a nsprefix, maybe followed by an xml attribute
+    if x < 1 then
+      x := Length (aString) + 1
+    else
+      Inc (x);
+  end
+  else
+  begin
+    while (x < Length (aString))
+    and (aString[x] <> ';') do
+      Inc (x);
+    Inc (x);
+  end;
+  while (x < Length (aString))
+  and (aString[x] <> '&') do
+    Inc (x);
+  while (x < Length (aString))
+  and (aString[x] <> ';') do
+    Inc (x);
+  Inc (x);
+  while (x < Length (aString))
+  and (aString[x] <> '&') do
+  begin
+    result := result + aString [x];
+    Inc (x);
+  end;
 end;
 
-function TL4JMainForm.GetElm(aKey, aString: String): String;
+function Tl4jMainForm.GetHasString(aDc: TDisplayedColumn;
+  aString: String): String;
 begin
-
+  if Pos (aDc.Key, aString) > 0 then
+    result := aDc.Header
+  else
+    result := '';
 end;
 
-function TL4JMainForm.GetEscXmlElm(aKey, aString: String): String;
+function Tl4jMainForm.GetHasXmlValue(aDc: TDisplayedColumn;
+  aString: String): String;
 begin
-
+  if Pos ('>' + aDc.Key + '<', aString) > 0 then
+    result := aDc.Header
+  else
+    result := '';
 end;
 
-function TL4JMainForm.GetHasString(aDc: TDisplayedColumn; aString: String
-  ): String;
+function Tl4jMainForm.GetElm(aKey, aString: String): String;
+var
+  x: Integer;
 begin
-
+  result := '';
+  if aKey = '' then
+  begin
+    result := aString;
+    exit;
+  end;
+  x := Pos ('<' + aKey + '>', aString);
+  if x < 1 then
+      x := Pos (':' + aKey + '>', aString); // maybe a nsprefix, maybe followed by an xml attribute
+  if x < 1 then
+    x := Length (aString) + 1;
+  while (x < Length (aString))
+  and (aString[x] <> '>') do
+    Inc (x);
+  Inc (x);
+  while (x < Length (aString))
+  and (aString[x] <> '<') do
+  begin
+    result := result + aString [x];
+    Inc (x);
+  end;
 end;
 
-function TL4JMainForm.GetHasXmlValue(aDc: TDisplayedColumn; aString: String
-  ): String;
+function Tl4jMainForm.GetAtt (aKey, aString: String): String;
+var
+  x: Integer;
 begin
-
+  result := '';
+  if aKey = '' then
+  begin
+    result := aString;
+    exit;
+  end;
+  if aKey = '$endurance' then
+  begin
+    result := GetEndurance (aString);
+    exit;
+  end;
+  x := Pos (aKey, aString);
+  if x < 1 then
+    if aKey[1] = '<' then
+      x := Pos (':' + Copy (aKey, 2, Length (aKey) - 2), aString); // maybe a nsprefix, maybe followed by an xml attribute
+  if x < 1 then
+    x := Length (aString) + 1;
+  if aKey [1] = '<' then
+  begin
+    while (x < Length (aString))
+    and (aString[x] <> '>') do
+      Inc (x);
+    Inc (x);
+    while (x < Length (aString))
+    and (aString[x] <> '<') do
+    begin
+      result := result + aString [x];
+      Inc (x);
+    end;
+  end
+  else
+  begin
+    while (x < Length (aString))
+    and (aString[x] <> '"') do
+      Inc (x);
+    Inc (x);
+    while (x < Length (aString))
+    and (aString[x] <> '"') do
+    begin
+      result := result + aString [x];
+      Inc (x);
+    end;
+  end;
 end;
 
-function TL4JMainForm.GetText(aData: TStringList; aIndex, aColumn: Integer
-  ): String;
+function Tl4jMainForm.GetCellText(aData: TStringList; aIndex,
+  aColumn: Integer): String;
+var
+  xDc: TDisplayedColumn;
 begin
-
+  case aColumn of
+   -1: result := Data.Strings[aIndex];
+   else
+   begin
+     xDc := (DisplayedColumns.Objects[aColumn] as TDisplayedColumn);
+     case xDc.ColumnType of
+       ctAttribute: result := GetAtt (xDc.Key, Data.Strings[aIndex]);
+       ctElement:  result := GetElm (xDc.Key, Data.Strings[aIndex]);
+       ctEscXmlElement:  result := GetEscXmlElm (xDc.Key, Data.Strings[aIndex]);
+       ctIndex: result := IntToStr (aIndex);
+       ctElapsed: result := GetAtt ('$endurance', Data.Strings[aIndex]);
+       ctSize: result := IntToStr (Length (Data.Strings[aIndex]));
+       ctHasString: result := GetHasString (xDc, Data.Strings[aIndex]);
+       ctHasXmlValue: result := GetHasXmlValue (xDc, Data.Strings[aIndex]);
+     end;
+   end;
+  end;
 end;
 
-function TL4JMainForm.Filter(Data: TStringList; aIndex: Integer): Boolean;
+function Tl4jMainForm.Filter(Data: TStringList; aIndex: Integer): Boolean;
+var
+  xString: String;
 begin
-
+  xString := Data.Strings [aIndex];
+  result := (   (FilterDlg.FindEdit0.Text = '')
+             or (Pos (FilterDlg.FindEdit0.Text, xString) > 0)
+            )
+        and (   (FilterDlg.FindEdit1.Text = '')
+             or (    (not FilterDlg.HasNotCheckBox1.Checked)
+                 and (Pos (FilterDlg.FindEdit1.Text, xString) > 0)
+                )
+             or (    (FilterDlg.HasNotCheckBox1.Checked)
+                 and (not (Pos (FilterDlg.FindEdit1.Text, xString) > 0))
+                )
+            )
+        and (   (FilterDlg.FindEdit2.Text = '')
+             or (    (not FilterDlg.HasNotCheckBox2.Checked)
+                 and (Pos (FilterDlg.FindEdit2.Text, xString) > 0)
+                )
+             or (    (FilterDlg.HasNotCheckBox2.Checked)
+                 and (not (Pos (FilterDlg.FindEdit2.Text, xString) > 0))
+                )
+            )
+        and (   (FilterDlg.FindEdit3.Text = '')
+             or (    (not FilterDlg.HasNotCheckBox3.Checked)
+                 and (Pos (FilterDlg.FindEdit3.Text, xString) > 0)
+                )
+             or (    (FilterDlg.HasNotCheckBox3.Checked)
+                 and (not (Pos (FilterDlg.FindEdit3.Text, xString) > 0))
+                )
+            )
+          ;
 end;
 
 procedure TL4JMainForm.l4jInit;
@@ -947,12 +1186,12 @@ var
   xLogType: TLogType;
 begin
   xmlUtil.doExpandFull := True;
-  _xmlLicensed := False;
+  _xmlLicensed := True;
   try
     l4jDbName := '';
     l4jIniFileName := Copy ( ParamStr(0)
                            , 1
-                           , Length (ParamStr(0)) - 4
+                           , Length (ParamStr(0)){$ifdef WINDOWS} - 4 {$endif}
                            )
                      + 'Ini.xml'
                      ;
@@ -1006,53 +1245,8 @@ begin
 
     if not Assigned (DisplayedColumnsXsd) then
       raise Exception.Create('Description for DisplayedColumns not found');
-    xXml := TXml.Create;
-    xXml.LoadFromString(IniFile.ReadString ( 'DisplayedColumns')
- {
-                                           , '<DisplayedColumns>'
-                                           + '  <DisplayedColumn>'
-                                           + '    <Key>Level</Key>'
-                                           + '    <ColumnHeader>Level</ColumnHeader>'
-                                           + '    <Type>Attribute</Type>'
-                                           + '    <Enabled>true</Enabled>'
-                                           + '  </DisplayedColumn>'
-                                           + '  <DisplayedColumn>'
-                                           + '    <Key>ServiceId</Key>'
-                                           + '    <ColumnHeader>ServiceId</ColumnHeader>'
-                                           + '    <Type>Element</Type>'
-                                           + '    <Enabled>true</Enabled>'
-                                           + '  </DisplayedColumn>'
-                                           + '  <DisplayedColumn>'
-                                           + '    <Key>ServiceRequestorId</Key>'
-                                           + '    <ColumnHeader>ServiceRequestorId</ColumnHeader>'
-                                           + '    <Type>Element</Type>'
-                                           + '    <Enabled>true</Enabled>'
-                                           + '  </DisplayedColumn>'
-                                           + '  <DisplayedColumn>'
-                                           + '    <Key>MessageId</Key>'
-                                           + '    <ColumnHeader>MessageId</ColumnHeader>'
-                                           + '    <Type>Element</Type>'
-                                           + '    <Enabled>true</Enabled>'
-                                           + '  </DisplayedColumn>'
-                                           + '  <DisplayedColumn>'
-                                           + '    <Key>FaultCode</Key>'
-                                           + '    <ColumnHeader>FaultCode</ColumnHeader>'
-                                           + '    <Type>Element</Type>'
-                                           + '    <Enabled>true</Enabled>'
-                                           + '  </DisplayedColumn>'
-                                           + '  <DisplayedColumn>'
-                                           + '    <Key>FaultDescription</Key>'
-                                           + '    <ColumnHeader>FaultDescription</ColumnHeader>'
-                                           + '    <Type>Element</Type>'
-                                           + '    <Enabled>true</Enabled>'
-                                           + '  </DisplayedColumn>'
-                                           + '</DisplayedColumns>'
-                                           )
-}
-                       , nil
-                       );
     DisplayedColumnsXml := TXml.Create(0, DisplayedColumnsXsd);
-    DisplayedColumnsXml.LoadValues(xXml, False, False);
+    DisplayedColumnsXml.LoadFromString(IniFile.StringByName['DisplayedColumns'], nil);
     readDisplayedColumnsXml := TXml.Create;
 
     if FileExistsUTF8(l4jDbName) { *Converted from FileExists* } then
@@ -1066,6 +1260,7 @@ begin
     _OnParseErrorEvent := @ParserError;
     if configFileName <> '' then
       readConfig (configFileName);
+    AdjustDisplayedColumns(DisplayedColumnsXml);
   finally
     if not _xmlLicensed then
       ShowMessage ( 'Since you are not a licensed user,'
@@ -1160,7 +1355,7 @@ var
   xData: PTreeRec;
 begin
   xData := TreeView.GetNodeData (Node);
-  CellText := GetText (Data, xData^.Index, Column);
+  CellText := GetCellText (Data, xData^.Index, Column);
 end;
 
 procedure Tl4jMainForm.FormDestroy(Sender: TObject);
@@ -1180,8 +1375,7 @@ begin
   IniFile.StringByName ['ShowDetailed'] := ShowDetailed;
   IniFile.BooleanByName ['doWrapText'] := doWrapText;
   IniFile.StringByName ['ColumnWidths'] := ColumnWidths.Text;
-  { TODO : do }
-//IniFile.StringByName ['DisplayedColumns'] := DisplayedColumnsXml.Text;
+  IniFile.StringByName ['DisplayedColumns'] := DisplayedColumnsXml.Text;
   IniFile.Save;
   IniFile.Free;
   ColumnWidths.Free;
@@ -1197,8 +1391,64 @@ begin
 end;
 
 procedure TL4JMainForm.CopyActionExecute(Sender: TObject);
+{
+  function _Columns (aNode: PVirtualNode): String;
+  var
+    col: Integer;
+    xText: String;
+    xSep: String;
+  begin
+    result := '';
+    xSep := '';
+    for col := 0 to TreeView.Header.Columns.Count - 1 do
+    begin
+      if ColumnVisible [col] then
+      begin
+        GridGetText(Grid, aNode, col, ttNormal,xText);
+        result := result + xSep + xText;
+        xSep := #9;
+      end;
+    end;
+  end;
+}
+var
+  xNode: PVirtualNode;
+  xData: PTreeRec;
+  s, xSep: String;
+  c: Integer;
+  xCursor: TCursor;
 begin
-
+  xCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    s := '';
+    xSep := '';
+    for c := 0 to DisplayedColumns.Count - 1 do
+//    if ColumnVisible [c] then
+      begin
+        s := s + xSep + '"' + (DisplayedColumns.Objects[c] as TDisplayedColumn).Header + '"';
+        xSep := #9;
+      end;
+    xNode := TreeView.GetFirst;
+    while Assigned (xNode) do
+    begin
+      if TreeView.IsVisible [xNode] then
+      begin
+        xData := TreeView.GetNodeData (xNode);
+        s := s + #$D#$A;
+        xSep := '';
+        for c := 0 to DisplayedColumns.Count - 1 do
+        begin
+          s := s + xSep  + '"' + GetCellText (Data, xData^.Index, c) + '"';
+          xSep := #9;
+        end;
+      end;
+      xNode := TreeView.GetNext(xNode);
+    end;
+    Clipboard.AsText := s;
+  finally
+    Screen.Cursor := xCursor;
+  end;
 end;
 
 procedure TL4JMainForm.ActionList1Update(AAction: TBasicAction;
@@ -1333,39 +1583,14 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.TreeViewPopupMenuPopup(Sender: TObject);
-{
-var
-  Bind: TCustomBindable;
-}
+procedure TL4JMainForm.TreeViewChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
 begin
-{
-  if TreeView.FocusedNode = nil then
-    Raise Exception.Create ('no item selected');
-  Bind := SelectedBind;
-  AddMenuItem.Enabled := (Bind is TXml)
-                     and Assigned((Bind as TXml).Xsd)
-                     and ((Bind as TXml).Xsd.maxOccurs <> '1')
-                     ;
-  DeleteMenuItem.Enabled := (Bind is TXml)
-                        and Assigned((Bind as TXml).Xsd)
-                        and ((Bind as TXml).Xsd.maxOccurs <> '1')
-                        and ((Bind as TXml).IndexOfRepeatableItem >= xsdElementsWhenRepeatable)
-                        and False // As long as it access violates and I do not see why??
-                        ;
-  PasteMenuItem.Enabled := not isReadOnly;
-  PopulateMenuItem.Enabled := not isReadOnly;
-  FullExpandMenuItem.Enabled := (Bind.Children.Count > 0);
-//  FullExpandMenuItem.Caption := 'Full expand  '+ (Bind as TXml).TagName;
-  FullCollapseMenuItem.Enabled := (Bind.Children.Count > 0);
-//  FullCollapseMenuItem.Caption := 'Full collapse  ' + (Bind as TXml).TagName;
-//  ViewAsGridMenuItem.Caption := 'View ' + (Bind as TXml).TagName + ' in a grid';
-  ViewAsGridMenuItem.Enabled := (Bind is TXml)
-                            and (Bind.Children.Count > 0);
-//  ZoomAsMenuItem.Caption := 'Zoom ' + (Bind as TXml).TagName + ' as';
-  ZoomMenuItem.Enabled := (Bind.Children.Count = 0);
-  ZoomAsMenuItem.Enabled := (Bind.Children.Count = 0);
-}
+
+end;
+
+procedure Tl4jMainForm.TreeViewPopupMenuPopup(Sender: TObject);
+begin
 end;
 
 procedure Tl4jMainForm.UseReadDisplayedColumns;
@@ -1450,9 +1675,76 @@ begin
   end;
 end;
 
-function TL4JMainForm.prepareDataToZoom(s: String): String;
+function Tl4jMainForm.prepareDataToZoom(s: String): String;
+var
+  x: Integer;
+  xLogType: TLogType;
+  sp, ep, xp: PChar;
+  sEyeCatcher, eEyeCatcher: TXml;
 begin
-
+  result := s;
+  xLogType := findLogType(s);
+  if Assigned (xLogType)
+  and Assigned(xLogType.eyeCatchers)
+  and (xLogType.eyeCatchers.Items.Count > 0) then
+  begin
+    result := '';
+    sp := @s[1];
+    xp := strUtils.SearchBuf(sp, Length(s), 0, 0, xLogType.eTag, [soDown, soMatchCase]);
+    x := 0;
+    sEyeCatcher := xLogType.eyeCatchers.Items.XmlItems[x];
+    ep := strUtils.SearchBuf(sp, xp - sp, 0, 0, sEyeCatcher.Value, [soDown, soMatchCase]);
+    if not Assigned (ep) then
+      ep := xp;
+    result := Copy (s, 1, ep - @s[1]);
+    Inc (x);
+    sp := ep;
+    while (sp < xp)
+    and (x < xLogType.eyeCatchers.Items.Count) do
+    begin
+      eEyeCatcher := xLogType.eyeCatchers.Items.XmlItems[x];
+      ep := strUtils.SearchBuf(sp, xp - sp, 0, 0, eEyeCatcher.Value, [soDown, soMatchCase]);
+      if not Assigned (ep) then
+        ep := xp;
+      result := result
+              + '<'
+              + sEyeCatcher.Attributes.ValueByTag['label']
+              + '>'
+              + Copy ( s
+                     , sp - @s[1] + 1 + Length (sEyeCatcher.Value)
+                     , ep - sp -  Length (sEyeCatcher.Value)
+                     )
+              + '</'
+              + sEyeCatcher.Attributes.ValueByTag['label']
+              + '>'
+              ;
+      sEyeCatcher := eEyeCatcher;
+      sp := ep;
+      Inc (x);
+    end;
+    result := result
+            + '<'
+            + sEyeCatcher.Attributes.ValueByTag['label']
+            + '>'
+            + Copy ( s
+                   , sp - @s[1] + 1 + Length (sEyeCatcher.Value)
+                   , xp - sp - Length (sEyeCatcher.Value)
+                   )
+            + '</'
+            + sEyeCatcher.Attributes.ValueByTag['label']
+            + '>'
+            + xLogType.eTag;
+            ;
+  end;
+  for x := 0 to DisplayedColumns.Count - 1 do
+    with DisplayedColumns.Objects [x] as TDisplayedColumn do
+      if ColumnType = ctHasXmlValue then
+        result := ReplaceStrings ( result
+                                 , '>' + Key + '<'
+                                 , '>' + Header + ':' + Key + '<'
+                                 , True
+                                 , False
+                                 );
 end;
 
 function Tl4jMainForm.getReadOnly: Boolean;
@@ -1460,9 +1752,14 @@ begin
   result := fReadOnly;
 end;
 
+function TL4JMainForm.getDoWrapText: Boolean;
+begin
+  result := WraptekstMenuItem.Checked;
+end;
+
 procedure TL4JMainForm.setDoWrapText(AValue: Boolean);
 begin
-
+  WraptekstMenuItem.Checked := AValue;
 end;
 
 procedure Tl4jMainForm.setReadOnly(AValue: Boolean);
@@ -1486,50 +1783,7 @@ end;
 procedure Tl4jMainForm.TreeViewGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
-{
-var
-  Bind: TCustomBindable;
-  editAllowed: Boolean;
-}
 begin
-{
-  Bind := NodeToBind(Node);
-  case Kind of
-    ikNormal, ikSelected:
-    begin
-      case Column of
-        treeTagColumn:
-        begin
-        end;
-        treeButtonColumn:
-        begin
-          if Bind is TXmlAttribute then
-            ImageIndex := -1;
-          if (Bind is TXml)
-          or (Bind is TIpmItem) then
-          begin
-            TreeViewEditing(Sender, Node, treeValueColumn, editAllowed);
-            if editAllowed
-            and XmlUtil.isEditSupported (Bind) then
-              ImageIndex := 97
-            else
-            begin
-              if XmlUtil.isGridAdviced (Bind) then
-                ImageIndex := 36
-              else
-              begin
-                if XmlUtil.isTreeAdviced (Bind) then
-                  ImageIndex := 98
-                else
-                  ImageIndex := -1;
-              end;
-            end;
-          end;
-        end;
-      end;
-    end;
-  end;
-}
 end;
 
 procedure Tl4jMainForm.TreeViewGetText(Sender: TBaseVirtualTree;
@@ -1539,7 +1793,7 @@ var
   xData: PTreeRec;
 begin
   xData := TreeView.GetNodeData (Node);
-  CellText := GetText (Data, xData^.Index, Column);
+  CellText := GetCellText (Data, xData^.Index, Column);
 end;
 
 procedure Tl4jMainForm.TreeViewKeyDown(Sender: TObject; var Key: Word;
@@ -1642,10 +1896,10 @@ begin
     end
     else
     begin
-      if TreeView.SelectedCount > 500 then
+      if TreeView.SelectedCount > 5000 then
         raise Exception.Create ( 'More lines ('
                                + IntToStr (TreeView.SelectedCount)
-                               + ') selected then allowed (500)'
+                               + ') selected then allowed (5000)'
                                );
       xNode := TreeView.GetFirstSelected;
       s := '<xmlContainer>';
@@ -1685,8 +1939,8 @@ begin
     Result := Length (Data.Strings[d1^.Index]) - Length (Data.Strings[d2^.Index]);
     Exit;
   end;
-  s1 := GetText (Data, d1^.Index, Column);
-  s2 := GetText (Data, d2^.Index, Column);
+  s1 := GetCellText (Data, d1^.Index, Column);
+  s2 := GetCellText (Data, d2^.Index, Column);
   if  s1 < s2 then
     result := -1;
   if s1 > s2 then
@@ -1699,18 +1953,59 @@ begin
 end;
 
 procedure TL4JMainForm.EditDisplayedColumnsActionExecute(Sender: TObject);
+var
+  nXml: TXml;
+  xForm: TXmlGridForm;
 begin
-
+  if Assigned (DisplayedColumnsXsd) then
+  begin
+    nXml := TXml.Create (0, DisplayedColumnsXsd);
+    try
+      nXml.LoadValues(DisplayedColumnsXml, False, True);
+      Application.CreateForm(TXmlGridForm, xForm);
+      try
+        xForm.Caption := 'l4j DisplayedColumns ';
+        xForm.Xml := nXml;
+        xForm.isReadOnly := False;
+        xForm.ShowModal;
+        if (xForm.modalResult = mrOk)
+        then
+        begin
+          DisplayedColumnsXml.Free;
+          DisplayedColumnsXml := TXml.Create (0, DisplayedColumnsXsd);
+          DisplayedColumnsXml.LoadValues(nXml, False, True);
+          DisplayedColumnsChanged := True;
+          AdjustDisplayedColumns(DisplayedColumnsXml);
+        end;
+      finally
+        FreeAndNil (xForm);
+      end;
+    finally
+      nXml.Free;
+    end;
+  end;
 end;
 
 procedure TL4JMainForm.QueryDbActionExecute(Sender: TObject);
 begin
-
-end;
-
-function TL4JMainForm.getDoWrapText: Boolean;
-begin
-
+  DbFilterDlg.ShowModal;
+  if DbFilterDlg.ModalResult = mrOk then
+  begin
+    TreeView.Clear;
+    Treeview.Header.SortColumn := 0;
+    TreeView.Header.SortDirection := sdAscending;
+    Memo.Clear;
+    Data.Clear;
+    numberVisible := 0;
+    Thread := TQueryThread.Create ( Self
+                                  , DbFilterDlg.ConnStringEdit.Text
+                                  , DbFilterDlg.QueryEdit.Text
+                                  , DbFilterDlg.ParamEdit1.Text
+                                  , DbFilterDlg.ParamEdit2.Text
+                                  , DbFilterDlg.ParamEdit3.Text
+                                  , DbFilterDlg.ParamEdit4.Text
+                                  );
+  end;
 end;
 
 procedure Tl4jMainForm.TreeViewHeaderClick(Sender: TVTHeader;
@@ -1791,14 +2086,12 @@ begin
 
 end;
 
-procedure TL4JMainForm.Command1Click(Sender: TObject);
-begin
-
-end;
-
 procedure TL4JMainForm.WraptekstMenuItemClick(Sender: TObject);
 begin
-
+  if DoWrapText then
+    Memo.ScrollBars := ssVertical
+  else
+    Memo.ScrollBars := ssBoth;
 end;
 
 procedure TL4JMainForm.ElementAttribute1Click(Sender: TObject);
@@ -1832,9 +2125,18 @@ begin
 end;
 
 procedure TL4JMainForm.About1Click(Sender: TObject);
+var
+  xForm: TAboutBox;
 begin
-
+  Application.CreateForm(TAboutBox, xForm);
+  try
+    xForm.NameLabel.Caption := 'l4j - LogEvents explorer';
+    xForm.ShowModal;
+  finally
+    FreeAndNil (xForm);
+  end;
 end;
+
 
 procedure TL4JMainForm.License1Click(Sender: TObject);
 begin
@@ -1853,13 +2155,41 @@ begin
 end;
 
 procedure TL4JMainForm.AllXmlActionExecute(Sender: TObject);
+var
+  s: String;
+  xNode: PVirtualNode;
+  xCursor: TCursor;
+  xData: PTreeRec;
 begin
-
+  if numberVisible >= 5000 then
+    raise Exception.Create ('Disabled because number of events exceeds supported number (max 5000)');
+  xCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    s := '<xmlContainer>';
+    xNode := TreeView.GetFirstVisible;
+    while Assigned (xNode) do
+    begin
+      xData := TreeView.GetNodeData (xNode);
+      s := s + Data.Strings[xData^.Index];
+      xNode := TreeView.GetNextVisible (xNode);
+    end;
+    s := s + '</xmlContainer>';
+    xmlUtil.PresentString ( 'All (filtered)'
+                          , s
+                          );
+  finally
+    Screen.Cursor := xCursor;
+  end;
 end;
 
 procedure TL4JMainForm.AbortActionExecute(Sender: TObject);
 begin
-
+  if Assigned (Thread) then
+  begin
+    Thread.abortPressed := True;
+    AbortAction.Enabled := False;
+  end;
 end;
 
 procedure Tl4jMainForm.OpenFileActionExecute(Sender: TObject);

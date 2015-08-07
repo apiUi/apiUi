@@ -1,33 +1,34 @@
-unit Unit1 ;
+unit Unit1;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes , SysUtils , FileUtil , Forms , Controls , Graphics , Dialogs ,
-  StdCtrls , Xmlz , Xsdz , Wsdlz , xmlUtilz , StompInterface , sqldb , odbcconn ,
-  StompTypes , heaptrc;
+  Classes, SysUtils, sqldb, oracleconnection, odbcconn, FileUtil, Forms,
+  Controls, Graphics, Dialogs, StdCtrls;
 
 type
 
   { TForm1 }
 
-  TForm1 = class(TForm )
-    Button1 : TButton ;
-    SQLConnector1 : TSQLConnector ;
-    procedure Button1Click (Sender : TObject );
-    procedure FormCreate (Sender : TObject );
-    procedure FormDestroy (Sender : TObject );
+  TForm1 = class(TForm)
+    goButton: TButton;
+    OracleConnection1: TOracleConnection;
+    rsltMemo: TMemo;
+    qryMemo: TMemo;
+    SQLConnector1: TSQLConnector;
+    SQLQuery1: TSQLQuery;
+    SQLTransaction1: TSQLTransaction;
+    procedure goButtonClick(Sender: TObject);
   private
     { private declarations }
   public
-    StrompInterface: TStompInterface;
-    procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
+    { public declarations }
   end;
 
 var
-  Form1 : TForm1 ;
+  Form1: TForm1;
 
 implementation
 
@@ -35,61 +36,18 @@ implementation
 
 { TForm1 }
 
-procedure TForm1 .FormCreate (Sender : TObject );
-var
-  xName: String;
-BEGIN
-  xName := ParamStr(0) + 'heap.trc';
-  if FileExists(xName) then
-      DeleteFile(xName);
-  SetHeapTraceOutput(xName);
-{
-  StrompInterface := TStompInterface.Create(self, @HaveStompFrame);
-  with StrompInterface do
+procedure TForm1.goButtonClick(Sender: TObject);
+begin
+  rsltMemo.Clear;
+  SQLQuery1.sql.Text:=qryMemo.Lines.Text;
+  SQLQuery1.Open;
+  SQLQuery1.First;
+  while not SQLQuery1.EOF do
   begin
-    Host := 'Localhost';
-    Port := 61613;
-    ClientId := 'JanBo';
-    Connect;
+    rsltMemo.Lines.Add(IntToStr(Length ((SQLQuery1.Fields[0].AsString))));
+    SQLQuery1.Next;
   end;
-}
-end;
-
-procedure TForm1 .FormDestroy (Sender : TObject );
-begin
-{
-  with StrompInterface do
-  begin
-    Disconnect;
-    Free;
-  end;
-}
-end;
-
-procedure TForm1 .HaveStompFrame (aStompInterface : TStompInterface ;
-  aQueue : String ; aFrame : IStompFrame );
-begin
-
-end;
-
-procedure TForm1 .Button1Click (Sender : TObject );
-var
-  xWsdl: TWsdl;
-
-begin
-  xWsdl := TWsdl.Create(-1, 1, False);
-  try
-    xWsdl.LoadFromSchemaFile('C:\Data\systemTesting\CRMi\MoveArchiveDocumentType\1\MoveArchiveDocumentType_1_contract.wsdl', nil);
-    Caption := xWsdl.Name;
-    with TWsdlOperation.Create(xWsdl.Services.Services[0].Operations.Operations[0]) do
-    try
-      Caption := reqTagName;
-    finally
-      Free;
-    end;
-  finally
-    xWsdl.Free;
-  end;
+  SQLQuery1.Close;
 end;
 
 end.

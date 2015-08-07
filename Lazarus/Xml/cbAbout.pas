@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
   Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, FileInfo, Dialogs, VersionSupport;
+  Buttons, ExtCtrls, Dialogs, VersionSupport;
 
 type
 

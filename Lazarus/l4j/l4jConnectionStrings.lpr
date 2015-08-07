@@ -1,4 +1,4 @@
-program project1;
+program l4jConnectionStrings;
 
 {$mode objfpc}{$H+}
 
@@ -7,15 +7,14 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Unit1
-  { you can add units after this };
+  Forms, EditConnectionStringUnit, lazrichedit, virtualtreeview_package;
 
 {$R *.res}
 
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TOpenSQLServerForm, OpenSQLServerForm);
   Application.Run;
 end.
 

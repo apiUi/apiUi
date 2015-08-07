@@ -1,71 +1,92 @@
 object OpenSQLServerForm: TOpenSQLServerForm
   Left = 372
+  Height = 247
   Top = 188
+  Width = 808
   Caption = 'DataSource connection string'
-  ClientHeight = 247
+  ClientHeight = 228
   ClientWidth = 808
   Color = clBtnFace
-  ParentFont = True
   Menu = MainMenu1
-  Position = poScreenCenter
   OnShow = FormShow
-  PixelsPerInch = 96
+  ParentFont = True
+  Position = poScreenCenter
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
+    Height = 208
     Top = 0
     Width = 808
-    Height = 228
     Align = alClient
     BevelOuter = bvNone
     BorderWidth = 5
-    ParentColor = True
+    ClientHeight = 208
+    ClientWidth = 808
     TabOrder = 0
     object PageControl1: TPageControl
-      Left = 3
-      Top = 3
+      Left = 5
+      Height = 198
+      Top = 5
       Width = 798
-      Height = 218
       ActivePage = TabSheet1
       Align = alClient
+      TabIndex = 0
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Properties'
+        ClientHeight = 172
+        ClientWidth = 790
         object Label1: TLabel
           Left = 24
+          Height = 13
           Top = 64
           Width = 324
-          Height = 13
           Caption = 'Hide a password in the ConnectionString by replacing it by %pwd%'
+          ParentColor = False
         end
         object PasswordEdit: TLabeledEdit
           Left = 20
+          Height = 21
           Top = 105
           Width = 269
-          Height = 21
-          EditLabel.Width = 46
+          EchoMode = emPassword
+          EditLabel.AnchorSideLeft.Control = PasswordEdit
+          EditLabel.AnchorSideRight.Control = PasswordEdit
+          EditLabel.AnchorSideRight.Side = asrBottom
+          EditLabel.AnchorSideBottom.Control = PasswordEdit
+          EditLabel.Left = 20
           EditLabel.Height = 13
+          EditLabel.Top = 89
+          EditLabel.Width = 269
           EditLabel.Caption = 'Password'
+          EditLabel.ParentColor = False
           PasswordChar = '*'
           TabOrder = 1
         end
         object ServerNameEdit: TLabeledEdit
           Left = 20
+          Height = 21
           Top = 38
           Width = 757
-          Height = 21
-          EditLabel.Width = 82
+          EditLabel.AnchorSideLeft.Control = ServerNameEdit
+          EditLabel.AnchorSideRight.Control = ServerNameEdit
+          EditLabel.AnchorSideRight.Side = asrBottom
+          EditLabel.AnchorSideBottom.Control = ServerNameEdit
+          EditLabel.Left = 20
           EditLabel.Height = 13
+          EditLabel.Top = 22
+          EditLabel.Width = 757
           EditLabel.Caption = 'ConnectionString'
+          EditLabel.ParentColor = False
           TabOrder = 0
           OnChange = FiledChanged
         end
         object TestConButton: TBitBtn
           Left = 20
+          Height = 25
           Top = 136
           Width = 123
-          Height = 25
           Action = TestConnectionAction
-          Caption = 'Test connection'
           Glyph.Data = {
             DE010000424DDE01000000000000760000002800000024000000120000000100
             0400000000006801000000000000000000001000000000000000000000000000
@@ -82,7 +103,8 @@ object OpenSQLServerForm: TOpenSQLServerForm
             22444442222224338F3388888333FF380000333A2222222222AA243338FF3333
             33FF88F800003333AA222222AA33A3333388FFFFFF8833830000333333AAAAAA
             3333333333338888883333330000333333333333333333333333333333333333
-            0000}
+            0000
+          }
           NumGlyphs = 2
           TabOrder = 2
         end
@@ -91,18 +113,18 @@ object OpenSQLServerForm: TOpenSQLServerForm
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 228
+    Height = 20
+    Top = 208
     Width = 808
-    Height = 19
-    Panels = <
+    Panels = <    
       item
         Width = 50
       end>
     SimplePanel = False
   end
   object ActionList1: TActionList
-    Left = 656
-    Top = 112
+    left = 656
+    top = 112
     object TestConnectionAction: TAction
       Caption = 'Test connection'
       OnExecute = TestConnectionActionExecute
@@ -110,14 +132,14 @@ object OpenSQLServerForm: TOpenSQLServerForm
     end
     object SaveAction: TAction
       Caption = '&Save...'
-      ShortCut = 16467
       OnExecute = SaveActionExecute
       OnUpdate = SaveActionUpdate
+      ShortCut = 16467
     end
     object OpenAction: TAction
       Caption = 'Open...'
-      ShortCut = 16463
       OnExecute = OpenActionExecute
+      ShortCut = 16463
     end
     object SaveAsAction: TAction
       Caption = 'Save as...'
@@ -129,8 +151,8 @@ object OpenSQLServerForm: TOpenSQLServerForm
     end
   end
   object MainMenu1: TMainMenu
-    Left = 440
-    Top = 96
+    left = 440
+    top = 96
     object File1: TMenuItem
       Caption = '&File'
       object Open1: TMenuItem
@@ -150,4 +172,20 @@ object OpenSQLServerForm: TOpenSQLServerForm
       end
     end
   end
-end
+  object dbc: TSQLConnector
+    Connected = True
+    LoginPrompt = False
+    DatabaseName = 'Dbs'
+    KeepConnection = False
+    Params.Strings = (
+      'DSN=Oracle'
+      'Dbq=bpmbox:1521/XE'
+      'Uid=owner_ped'
+      'Pwd=welcome01'
+    )
+    LogEvents = []
+    ConnectorType = 'ODBC'
+    left = 569
+    top = 140
+  end
+end

@@ -1,34 +1,125 @@
 object Form1: TForm1
-  Left = 468
-  Height = 240
-  Top = 192
-  Width = 320
+  Left = 455
+  Height = 819
+  Top = 142
+  Width = 1061
   Caption = 'Form1'
-  ClientHeight = 240
-  ClientWidth = 320
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
-  LCLVersion = '1.2.6.0'
-  object Button1: TButton
-    Left = 100
-    Height = 25
-    Top = 91
-    Width = 75
-    Caption = 'Button1'
-    OnClick = Button1Click
+  ClientHeight = 819
+  ClientWidth = 1061
+  LCLVersion = '1.4.0.2'
+  object qryMemo: TMemo
+    Left = 264
+    Height = 433
+    Top = 15
+    Width = 706
+    Lines.Strings = (
+      'select to_char(log_time,''YYYY-MM-DD"T"HH24:MM:SS"."FF'') as Timestamp as :ws.TimeStamp'
+      '     , (case '
+      '         when (service_message_id is null or service_message_id = ''Not applicable'')'
+      '         then '
+      '           process_group_instance_id || '';'' || to_char(log_time,''YYYY-MM-DD"T"HH24:MM:SS"."FF'')'
+      '         else '
+      '           process_group_instance_id || '';'' || service_message_id'
+      '        end'
+      '        ) MessageId as :ws.MessageId'
+      '     , requester_id as :ws.ServiceRequestorId'
+      '     , service_id as :ws.ServiceId '
+      '     , event_type as :ws.EventType'
+      '     , event_data as :ws.EventData'
+      '     , business_object_id as :ws.Dummy'
+      '     , user_task_type as :ws.Dummy'
+      '     , user_task_id as :ws.Dummy'
+      '     , user_task_exec_bankcode as :ws.Dummy'
+      '     , error_flag as :ws.Dummy'
+      '     , component_name as :ws.Dummy'
+      '     , composite_name as :ws.Dummy'
+      'from APP_LOG_DATA'
+      '//where to_char(log_time, ''YYYY-MM-DD:HH24'') between :ws.Param1 and :ws.Param1 || ''Z'''
+      '//and (:ws.Param2 = ''*'' or process_group_instance_id = :ws.Param2)'
+      '//and (:ws.Param3 = ''*'' or composite_name = :ws.Param3)'
+      'where service_message_id = ''cgi://6meAdm8bpDbn8bn40v7b04sf'''
+      'order by 2, 5 '
+      ''
+      '// essential to have specific MessageId''s because queried records are grouped as one Event per MessageId'
+      '// some result columns mapped to specific internal properties are used internally. '
+      '// Assumption is made that the content of EventType is a valid Xml tagname (rfc on ....)'
+      '// map as many new columns to ws.Dummy ( as :ws.Dummy) as you like'
+    )
     TabOrder = 0
+  end
+  object goButton: TButton
+    Left = 120
+    Height = 25
+    Top = 487
+    Width = 75
+    Caption = 'goButton'
+    OnClick = goButtonClick
+    TabOrder = 1
+  end
+  object rsltMemo: TMemo
+    Left = 265
+    Height = 286
+    Top = 479
+    Width = 702
+    Lines.Strings = (
+      'rsltMemo'
+    )
+    TabOrder = 2
   end
   object SQLConnector1: TSQLConnector
     Connected = True
     LoginPrompt = False
-    DatabaseName = 'MS Access Database'
+    DatabaseName = 'Oracle'
     KeepConnection = False
     Params.Strings = (
-      'DBQ=C:\JanBo\SOURCES\2011\wsdlStub\Data\wsdlStubLicense.mdb'
+      'DBQ=BPMBOX:1521/XE'
     )
+    Password = 'welcome01'
+    UserName = 'owner_ped'
     LogEvents = []
     ConnectorType = 'ODBC'
-    left = 38
-    top = 21
+    left = 32
+    top = 56
+  end
+  object SQLQuery1: TSQLQuery
+    IndexName = 'DEFAULT_ORDER'
+    FieldDefs = <    
+      item
+        Name = 'SERVICE_ID'
+        DataType = ftString
+        Precision = -1
+        Size = 240
+      end>
+    Database = OracleConnection1
+    Transaction = SQLTransaction1
+    ReadOnly = True
+    SQL.Strings = (
+      'select service_id'
+      'from app_log_data'
+    )
+    Params = <>
+    ParseSQL = False
+    UsePrimaryKeyAsKey = False
+    left = 56
+    top = 184
+  end
+  object SQLTransaction1: TSQLTransaction
+    Active = False
+    Database = OracleConnection1
+    left = 56
+    top = 128
+  end
+  object OracleConnection1: TOracleConnection
+    Connected = True
+    LoginPrompt = False
+    DatabaseName = 'XE'
+    KeepConnection = False
+    Password = 'welcome01'
+    Transaction = SQLTransaction1
+    UserName = 'owner_ped'
+    HostName = 'BPMBOX:1521'
+    LogEvents = []
+    left = 144
+    top = 74
   end
 end
