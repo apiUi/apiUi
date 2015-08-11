@@ -1,7 +1,7 @@
 object DbFilterDlg: TDbFilterDlg
   Left = 397
   Height = 706
-  Top = 133
+  Top = 45
   Width = 984
   Caption = 'Query Datasource'
   ClientHeight = 706
@@ -90,7 +90,7 @@ object DbFilterDlg: TDbFilterDlg
         '     , requester_id as :ws.ServiceRequestorId'
         '     , service_id as :ws.ServiceId '
         '     , event_type as :ws.EventType'
-        '     , to_char(event_data) as event_data as :ws.EventData'
+        '     , event_data as :ws.EventData'
         '     , business_object_id as :ws.Dummy'
         '     , user_task_type as :ws.Dummy'
         '     , user_task_id as :ws.Dummy'
@@ -99,10 +99,10 @@ object DbFilterDlg: TDbFilterDlg
         '     , component_name as :ws.Dummy'
         '     , composite_name as :ws.Dummy'
         'from APP_LOG_DATA'
-        '//where to_char(log_time, ''YYYY-MM-DD:HH24'') between :ws.Param1 and :ws.Param1 || ''Z'''
+        'where to_char(log_time, ''YYYY-MM-DD:HH24'') between :ws.Param1 and :ws.Param1 || ''Z'''
         '//and (:ws.Param2 = ''*'' or process_group_instance_id = :ws.Param2)'
         '//and (:ws.Param3 = ''*'' or composite_name = :ws.Param3)'
-        'where service_message_id = ''cgi://6meAdm8bpDbn8bn40v7b04sf'''
+        '//where service_message_id = ''cgi://6meAdm8bpDbn8bn40v7b04sf'''
         'order by 2, 5 '
         ''
         '// essential to have specific MessageId''s because queried records are grouped as one Event per MessageId'

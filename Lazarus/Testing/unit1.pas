@@ -13,6 +13,7 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    cancelButton: TButton;
     goButton: TButton;
     OracleConnection1: TOracleConnection;
     rsltMemo: TMemo;
@@ -20,11 +21,14 @@ type
     SQLConnector1: TSQLConnector;
     SQLQuery1: TSQLQuery;
     SQLTransaction1: TSQLTransaction;
+    procedure cancelButtonClick(Sender: TObject);
     procedure goButtonClick(Sender: TObject);
   private
+    fCancelled: Boolean;
+    procedure setCancelled(AValue: Boolean);
     { private declarations }
   public
-    { public declarations }
+    property Cancelled: Boolean read fCancelled write setCancelled;
   end;
 
 var
@@ -37,17 +41,39 @@ implementation
 { TForm1 }
 
 procedure TForm1.goButtonClick(Sender: TObject);
+var
+  swapColor: TColor;
 begin
-  rsltMemo.Clear;
-  SQLQuery1.sql.Text:=qryMemo.Lines.Text;
-  SQLQuery1.Open;
-  SQLQuery1.First;
-  while not SQLQuery1.EOF do
-  begin
-    rsltMemo.Lines.Add(IntToStr(Length ((SQLQuery1.Fields[0].AsString))));
-    SQLQuery1.Next;
+  swapColor := goButton.Color;
+  Cancelled := False;
+  try
+    rsltMemo.Clear;
+    SQLQuery1.Active:=False;
+    SQLQuery1.sql.Text:=qryMemo.Lines.Text;
+    if not Cancelled then SQLQuery1.Open;
+    if not Cancelled then SQLQuery1.First;
+    while (not SQLQuery1.EOF)
+    and (not Cancelled) do
+    begin
+      rsltMemo.Lines.Add(SQLQuery1.Fields[0].AsString);
+      SQLQuery1.Next;
+    end;
+    SQLQuery1.Close;
+  finally
+    Cancelled := False;
   end;
-  SQLQuery1.Close;
+end;
+
+procedure TForm1.cancelButtonClick(Sender: TObject);
+begin
+  Cancelled:=True;
+end;
+
+procedure TForm1.setCancelled(AValue: Boolean);
+begin
+  if fCancelled=AValue then Exit;
+  fCancelled:=AValue;
+  cancelButton.Enabled:=(not AValue);
 end;
 
 end.

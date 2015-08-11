@@ -173,7 +173,7 @@ object OpenSQLServerForm: TOpenSQLServerForm
     end
   end
   object dbc: TSQLConnector
-    Connected = True
+    Connected = False
     LoginPrompt = False
     DatabaseName = 'Dbs'
     KeepConnection = False

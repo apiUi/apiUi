@@ -338,6 +338,7 @@ begin
         and (DisplayName <> 'REQUESTER_ID')
         and (DisplayName <> 'EVENT_TYPE')
         and (DisplayName <> 'EVENT_DATA')
+        and (not AnsiStartsStr('EVENTDATA', DisplayName))
         then
           s := s
              + '<' + DisplayName + '>'
@@ -350,7 +351,7 @@ begin
        + '<EventType>' + EventType + '</EventType>'
        + '</' + EventType + 'Info>'
        + CRLF
-       + '<' + EventType + '>' + EventData + '</' + EventType + '>'
+       + '<' + EventType + '>' + getEventData + '</' + EventType + '>'
        + CRLF
        ;
     events := events + s;
@@ -671,10 +672,11 @@ procedure TQueryThread.Execute;
 var
   sl: TSL;
   db: TSQLConnector;
-  cs, qry: String;
+  cs, qry, edColumns, sep: String;
   x: Integer;
 begin
   fEnabled := True;
+  EventData:='';
   with TIdSync.Create do
     try
       SynchronizeMethod (@fSynchronisedEnableAbortButton);
@@ -704,7 +706,28 @@ begin
       finally
         Free;
       end;
-      xpScript := 'Exec sql ' + fQuery + 'loop { sqlLoop(); };';
+      edColumns:='';
+      sep := '';
+      for x := 0 to NrOfDataParts - 1 do
+      begin
+        edColumns := edColumns
+                   + sep
+                   + Format ('dbms_lob.substr (event_data, %d, %d) as EventData%d as :ws.EventData%d'
+                            , [                            SizeOfDataPart
+                                                              , x * SizeOfDataPart + 1
+                                                                              , x                , x
+                              ]
+                            )
+                   ;
+        sep := ', ';
+      end;
+      qry := ReplaceStrings( fQuery
+                          , '$EventData'
+                          , edColumns
+                          , false
+                          , false
+                          );
+      xpScript := 'Exec sql ' + qry + 'loop { sqlLoop(); };';
       xpMoreData := True;
       xpFetched := False;
       if abortPressed then Exit;
@@ -730,6 +753,8 @@ begin
             xp.BindString('ws.ServiceId', ServiceId);
             xp.BindString('ws.EventType', EventType);
             xp.BindString('ws.EventData', EventData);
+            for x := 0 to NrOfDataParts - 1 do
+              xp.BindString(Format ('ws.EventData%d', [x]), EventDataParts[x]);
             xp.BindString('ws.Dummy', Dummy);
             xp.BindString('ws.Param1', fParam1);
             xp.BindString('ws.Param2', fParam2);

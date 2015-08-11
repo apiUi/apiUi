@@ -69,6 +69,11 @@ public
   procedure xpNeedData (Sender: TObject; var aMoreData: Boolean; var aData: String);
 end;
 
+function getEventData: String;
+
+const
+  NrOfDataParts = 20;
+  SizeOfDataPart = 3500;
 var
   xpMoreData, xpFetched: Boolean;
   xpScript: String;
@@ -76,8 +81,24 @@ var
   TimeStamp, MessageId, ServiceRequestorId, ServiceId, EventType, EventData, Dummy: String;
   fParam1, fParam2, fParam3, fParam4: String;
   xp: TExpress;
+  EventDataParts: array [0..NrOfDataParts-1] of string;
+
 
 implementation
+
+function getEventData: String;
+var
+  x: Integer;
+begin
+  if EventData <> '' then
+    result := EventData
+  else
+  begin
+    Result := '';
+    for x := 0 to NrOfDataParts - 1 do
+      result := result + EventDataParts[x];
+  end;
+end;
 
 { TSl }
 

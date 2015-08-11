@@ -459,9 +459,15 @@ procedure TExpress.HaveSqlParam ( Sender:TObject
                                 );
 var
   Qry: TXpQuery;
+  f: Integer;
 begin
   Qry := Query as TXpQuery;
+{$ifdef FPC}
+  if not (Qry.ParamList.Find(Param.Id, f)) then
+    Qry.ParamList.AddObject (Param.Id, Param);
+{$else}
   Qry.ParamList.AddObject ('', Param);
+{$endif}
 end;
 
 procedure TExpress.HaveSqlInsertParam ( Sender:TObject
@@ -550,10 +556,12 @@ var
   Bindable: TCustomBindable;
 begin
   Qry := Query as TXpQuery;
-{
+{$ifdef FPC}
   if (Qry.Params.Count <> Qry.ParamList.Count) then
+  begin
     raise Exception.Create ('Number of actual params does not match number of required params');
-}
+  end;
+{$endif}
   if not Qry.DataBase.Connected then
     Qry.DataBase.Connected := True;
   Qry.SQL.Text := Qry.SqlStrings.Text;

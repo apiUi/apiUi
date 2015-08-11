@@ -29,6 +29,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="\\rabobank\data\Programs\SourceExplorer\obpmAppLogs\Config\Keten3.ConnStrng"/>
       </local>
     </RunParams>
     <RequiredPackages Count="4">
@@ -49,7 +50,6 @@
       <Unit0>
         <Filename Value="l4jConnectionStrings.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="l4jConnectionStrings"/>
       </Unit0>
       <Unit1>
         <Filename Value="EditConnectionStringUnit.pas"/>
