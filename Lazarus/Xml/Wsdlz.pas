@@ -1714,15 +1714,20 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
         Mssg := TWsdlMsgDescr.Create(self);
         Mssg.Name := XmlItems[x].Attributes.ValueByTag[tagName];
         Mssg.NameSpace := xTargetNamespace;
-        fMssgs.AddObject(Mssg.NameSpace + ';' + Mssg.Name, Mssg);
-        for y := 0 to XmlItems[x].Items.Count - 1 do with XmlItems[x].Items.XmlItems[y] do
+        if not fMssgs.Find (Mssg.NameSpace + ';' + Mssg.Name, f) then
         begin
-          Part := TWsdlPart.Create;
-          Part.Name := Attributes.ValueByTag[xmlzConsts.tagName];
-          Part._ElementName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagElement]);
-          Part._TypeName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagType]);
-          Mssg.Parts.AddObject('', Part);
-        end;
+          fMssgs.AddObject(Mssg.NameSpace + ';' + Mssg.Name, Mssg);
+          for y := 0 to XmlItems[x].Items.Count - 1 do with XmlItems[x].Items.XmlItems[y] do
+          begin
+            Part := TWsdlPart.Create;
+            Part.Name := Attributes.ValueByTag[xmlzConsts.tagName];
+            Part._ElementName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagElement]);
+            Part._TypeName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagType]);
+            Mssg.Parts.AddObject('', Part);
+          end;
+        end
+        else
+          Mssg.Free;  // duplicate; ignore
       end;
     end;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items do

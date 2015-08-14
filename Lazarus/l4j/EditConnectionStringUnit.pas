@@ -12,21 +12,25 @@ uses
 {$ELSE}
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
-  SysUtils, Classes, sqldb, odbcconn, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ComCtrls, ExtCtrls, Dialogs, ActnList, Menus;
+  SysUtils, Classes, sqldb, oracleconnection, odbcconn, Graphics, Forms,
+  Controls, StdCtrls, Buttons, ComCtrls, ExtCtrls, Dialogs, ActnList, Menus;
 
 type
 
   { TOpenSQLServerForm }
 
   TOpenSQLServerForm = class(TForm)
+    DatabaseNameEdit: TLabeledEdit;
+    HostEdit: TLabeledEdit;
+    ParamsEdit: TLabeledEdit;
     Panel1: TPanel;
     PageControl1: TPageControl;
     dbc: TSQLConnector;
+    UserNameEdit: TLabeledEdit;
     TabSheet1: TTabSheet;
     PasswordEdit: TLabeledEdit;
     TestConButton: TBitBtn;
-    ServerNameEdit: TLabeledEdit;
+    ConnectorTypeEdit: TLabeledEdit;
     ActionList1: TActionList;
     TestConnectionAction: TAction;
     SaveAction: TAction;
@@ -41,7 +45,6 @@ type
     Saveas1: TMenuItem;
     Close1: TMenuItem;
     N1: TMenuItem;
-    Label1: TLabel;
     procedure FiledChanged(Sender: TObject);
     procedure TestConnectionActionExecute(Sender: TObject);
     procedure SaveActionUpdate(Sender: TObject);
@@ -58,8 +61,6 @@ type
     function SimpleEncrypt(const Source: String): String;
     function getConnectionString: String;
     procedure setConnectionString(const Value: String);
-    function getPassword: String;
-    procedure setPassword(const Value: String);
     procedure OpenFileNamed (aFileName: String);
     procedure setConnStringFileName(const Value: String);
   public
@@ -67,7 +68,6 @@ type
     function EncryptString (aString: String): String;
     property ConnStringFileName: String read fConnStringFileName write setConnStringFileName;
     property ConnectionString: String read getConnectionString write setConnectionString;
-    property Password: String read getPassword write setPassword;
   end;
 
 var
@@ -89,7 +89,7 @@ uses db
 
 procedure TOpenSQLServerForm.TestConnectionActionUpdate(Sender: TObject);
 begin
-  TestConnectionAction.Enabled := (ServerNameEdit.Text <> '')
+  TestConnectionAction.Enabled := (ConnectorTypeEdit.Text <> '')
                               and (PasswordEdit.Text <> '')
                                 ;
 end;
@@ -102,9 +102,13 @@ begin
   TestConnectionActionExecute(Sender);
   xml := TXml.CreateAsString('DataSource', '');
   try
-  xml.AddXml(TXml.CreateAsString('ConnectionString', ConnectionString));
-  xml.AddXml(TXml.CreateAsString('Password', XmlUtil.SimpleEncrypt(Password)));
-  SaveStringToFile(ConnStringFileName, xml.Text);
+    xml.AddXml(TXml.CreateAsString('ConnectorType', ConnectorTypeEdit.Text));
+    xml.AddXml(TXml.CreateAsString('DatabaseName', DatabaseNameEdit.Text));
+    xml.AddXml(TXml.CreateAsString('HostName', HostEdit.Text));
+    xml.AddXml(TXml.CreateAsString('UserName', UserNameEdit.Text));
+    xml.AddXml(TXml.CreateAsString('Params', ParamsEdit.Text));
+    xml.AddXml(TXml.CreateAsString('Password', XmlUtil.SimpleEncrypt(PasswordEdit.Text)));
+    SaveStringToFile(ConnStringFileName, xml.Text);
   finally
     xml.Free;
   end;
@@ -121,7 +125,7 @@ var
   xml: TXml;
 begin
   TestConnectionActionExecute(Sender);
-  od := TOpenDialog.Create(nil);
+  od := TSaveDialog.Create(nil);
   try
     with od do
     begin
@@ -135,10 +139,14 @@ begin
     begin
       xml := TXml.CreateAsString('DataSource', '');
       try
-      xml.AddXml(TXml.CreateAsString('ConnectionString', ConnectionString));
-      xml.AddXml(TXml.CreateAsString('Password', XmlUtil.SimpleEncrypt(Password)));
-      SaveStringToFile(od.FileName, xml.Text);
-      ConnStringFileName := od.FileName;
+        xml.AddXml(TXml.CreateAsString('ConnectorType', ConnectorTypeEdit.Text));
+        xml.AddXml(TXml.CreateAsString('DatabaseName', DatabaseNameEdit.Text));
+        xml.AddXml(TXml.CreateAsString('HostName', HostEdit.Text));
+        xml.AddXml(TXml.CreateAsString('UserName', UserNameEdit.Text));
+        xml.AddXml(TXml.CreateAsString('Params', ParamsEdit.Text));
+        xml.AddXml(TXml.CreateAsString('Password', XmlUtil.SimpleEncrypt(PasswordEdit.Text)));
+        SaveStringToFile(od.FileName, xml.Text);
+        ConnStringFileName := od.FileName;
       finally
         xml.Free;
       end;
@@ -150,7 +158,7 @@ end;
 
 procedure TOpenSQLServerForm.setConnectionString(const Value: String);
 begin
-  ServerNameEdit.Text := Value;
+  ConnectorTypeEdit.Text := Value;
 end;
 
 procedure TOpenSQLServerForm.setConnStringFileName(const Value: String);
@@ -159,38 +167,40 @@ begin
   Caption := 'Datasource file ' + Value;
 end;
 
-procedure TOpenSQLServerForm.setPassword(const Value: String);
-begin
-  PasswordEdit.Text := Value;
-end;
-
 procedure TOpenSQLServerForm.TestConnectionActionExecute(Sender: TObject);
 var
   swapCursor: TCursor;
   s: String;
+  dbs: TSQLConnector;
 begin
   StatusBar.Panels [0].Text := 'Connecting...';
   StatusBar.Update;
   swapCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
+  dbs := TSQLConnector.Create(nil);
   try
-    s := ConnectionString;
-    s := ReplaceStrings(s, '%pwd%', Password, false, false);
-    s := ReplaceStrings(s, ';', LineEnding, false, false);
-    dbc.Params.Text := s;
+    dbs.ConnectorType:=ConnectorTypeEdit.Text;
+    dbs.DatabaseName:=DatabaseNameEdit.Text;
+    dbs.HostName:=HostEdit.Text;
+    dbs.Password:=PasswordEdit.Text;
+    dbs.UserName:=UserNameEdit.Text;
+    s :=ReplaceStrings(ParamsEdit.Text, '%pwd%', PasswordEdit.Text, false, false);
+    dbs.Params.Text := ReplaceStrings(s, ';', LineEnding, false, false);
     try
       try
-        dbc.Connected:=True;
-        dbc.Connected:=False;
-        dbc.Connected:=True;
+        dbs.Connected:=True;
+        dbs.Connected:=False;
+        dbs.Connected:=True;
         StatusBar.Panels [0].Text := 'Connection successful';
       except
         StatusBar.Panels[0].Text := 'Connection failed';
+        Raise;
       end;
     finally
-      dbc.Connected:=False;
+      dbs.Connected:=False;
     end;
   finally
+    dbs.Free;
     Screen.Cursor := swapCursor;
   end;
 end;
@@ -230,12 +240,7 @@ end;
 
 function TOpenSQLServerForm.getConnectionString: String;
 begin
-  result := ServerNameEdit.Text;
-end;
-
-function TOpenSQLServerForm.getPassword: String;
-begin
-  result := PasswordEdit.Text;
+  result := ConnectorTypeEdit.Text;
 end;
 
 procedure TOpenSQLServerForm.OpenActionExecute(Sender: TObject);
@@ -265,8 +270,12 @@ begin
       raise Exception.CreateFmt('%s does not contain valid Xml', [aFileName]);
     if xml.TagName <> 'DataSource' then
       raise Exception.CreateFmt('%s does not contain valid ConnectionString data', [aFileName]);
-    ConnectionString := xml.Items.XmlValueByTag['ConnectionString'];
-    Password := XmlUtil.SimpleEncrypt(xml.Items.XmlValueByTag['Password']);
+    ConnectorTypeEdit.Text:=xml.Items.XmlValueByTag['ConnectorType'];
+    DatabaseNameEdit.Text:=xml.Items.XmlValueByTag['DatabaseName'];
+    HostEdit.Text:=xml.Items.XmlValueByTag['HostName'];
+    ParamsEdit.Text:=xml.Items.XmlValueByTag['Params'];
+    PasswordEdit.Text := XmlUtil.SimpleEncrypt(xml.Items.XmlValueByTag['Password']);
+    UserNameEdit.Text:=xml.Items.XmlValueByTag['UserName'];
     ConnStringFileName := aFileName;
   finally
     xml.Free;

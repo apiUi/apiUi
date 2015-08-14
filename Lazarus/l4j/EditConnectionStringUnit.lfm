@@ -1,10 +1,10 @@
 object OpenSQLServerForm: TOpenSQLServerForm
-  Left = 372
-  Height = 247
-  Top = 188
+  Left = 598
+  Height = 472
+  Top = 190
   Width = 808
   Caption = 'DataSource connection string'
-  ClientHeight = 228
+  ClientHeight = 453
   ClientWidth = 808
   Color = clBtnFace
   Menu = MainMenu1
@@ -14,18 +14,18 @@ object OpenSQLServerForm: TOpenSQLServerForm
   LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
-    Height = 208
+    Height = 433
     Top = 0
     Width = 808
     Align = alClient
     BevelOuter = bvNone
     BorderWidth = 5
-    ClientHeight = 208
+    ClientHeight = 433
     ClientWidth = 808
     TabOrder = 0
     object PageControl1: TPageControl
       Left = 5
-      Height = 198
+      Height = 423
       Top = 5
       Width = 798
       ActivePage = TabSheet1
@@ -34,58 +34,52 @@ object OpenSQLServerForm: TOpenSQLServerForm
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Properties'
-        ClientHeight = 172
+        ClientHeight = 397
         ClientWidth = 790
-        object Label1: TLabel
-          Left = 24
-          Height = 13
-          Top = 64
-          Width = 324
-          Caption = 'Hide a password in the ConnectionString by replacing it by %pwd%'
-          ParentColor = False
-        end
         object PasswordEdit: TLabeledEdit
-          Left = 20
+          Left = 30
           Height = 21
-          Top = 105
-          Width = 269
+          Top = 283
+          Width = 267
           EchoMode = emPassword
           EditLabel.AnchorSideLeft.Control = PasswordEdit
           EditLabel.AnchorSideRight.Control = PasswordEdit
           EditLabel.AnchorSideRight.Side = asrBottom
           EditLabel.AnchorSideBottom.Control = PasswordEdit
-          EditLabel.Left = 20
+          EditLabel.Left = 30
           EditLabel.Height = 13
-          EditLabel.Top = 89
-          EditLabel.Width = 269
+          EditLabel.Top = 267
+          EditLabel.Width = 267
           EditLabel.Caption = 'Password'
           EditLabel.ParentColor = False
           PasswordChar = '*'
-          TabOrder = 1
+          TabOrder = 5
+          Text = 'welcome01'
         end
-        object ServerNameEdit: TLabeledEdit
-          Left = 20
+        object ConnectorTypeEdit: TLabeledEdit
+          Left = 30
           Height = 21
           Top = 38
-          Width = 757
-          EditLabel.AnchorSideLeft.Control = ServerNameEdit
-          EditLabel.AnchorSideRight.Control = ServerNameEdit
+          Width = 132
+          EditLabel.AnchorSideLeft.Control = ConnectorTypeEdit
+          EditLabel.AnchorSideRight.Control = ConnectorTypeEdit
           EditLabel.AnchorSideRight.Side = asrBottom
-          EditLabel.AnchorSideBottom.Control = ServerNameEdit
-          EditLabel.Left = 20
+          EditLabel.AnchorSideBottom.Control = ConnectorTypeEdit
+          EditLabel.Left = 30
           EditLabel.Height = 13
           EditLabel.Top = 22
-          EditLabel.Width = 757
-          EditLabel.Caption = 'ConnectionString'
+          EditLabel.Width = 132
+          EditLabel.Caption = 'ConnectorType'
           EditLabel.ParentColor = False
           TabOrder = 0
+          Text = 'Oracle'
           OnChange = FiledChanged
         end
         object TestConButton: TBitBtn
-          Left = 20
+          Left = 30
           Height = 25
-          Top = 136
-          Width = 123
+          Top = 336
+          Width = 122
           Action = TestConnectionAction
           Glyph.Data = {
             DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -106,7 +100,81 @@ object OpenSQLServerForm: TOpenSQLServerForm
             0000
           }
           NumGlyphs = 2
+          TabOrder = 6
+        end
+        object UserNameEdit: TLabeledEdit
+          Left = 30
+          Height = 21
+          Top = 234
+          Width = 267
+          EditLabel.AnchorSideLeft.Control = UserNameEdit
+          EditLabel.AnchorSideRight.Control = UserNameEdit
+          EditLabel.AnchorSideRight.Side = asrBottom
+          EditLabel.AnchorSideBottom.Control = UserNameEdit
+          EditLabel.Left = 30
+          EditLabel.Height = 13
+          EditLabel.Top = 218
+          EditLabel.Width = 267
+          EditLabel.Caption = 'UserName'
+          EditLabel.ParentColor = False
+          TabOrder = 4
+          Text = 'owner_ped'
+        end
+        object DatabaseNameEdit: TLabeledEdit
+          Left = 30
+          Height = 21
+          Top = 87
+          Width = 132
+          EditLabel.AnchorSideLeft.Control = DatabaseNameEdit
+          EditLabel.AnchorSideRight.Control = DatabaseNameEdit
+          EditLabel.AnchorSideRight.Side = asrBottom
+          EditLabel.AnchorSideBottom.Control = DatabaseNameEdit
+          EditLabel.Left = 30
+          EditLabel.Height = 13
+          EditLabel.Top = 71
+          EditLabel.Width = 132
+          EditLabel.Caption = 'DatabaseName'
+          EditLabel.ParentColor = False
+          TabOrder = 1
+          Text = 'XE'
+          OnChange = FiledChanged
+        end
+        object HostEdit: TLabeledEdit
+          Left = 30
+          Height = 21
+          Top = 136
+          Width = 132
+          EditLabel.AnchorSideLeft.Control = HostEdit
+          EditLabel.AnchorSideRight.Control = HostEdit
+          EditLabel.AnchorSideRight.Side = asrBottom
+          EditLabel.AnchorSideBottom.Control = HostEdit
+          EditLabel.Left = 30
+          EditLabel.Height = 13
+          EditLabel.Top = 120
+          EditLabel.Width = 132
+          EditLabel.Caption = 'Host'
+          EditLabel.ParentColor = False
           TabOrder = 2
+          Text = 'localhost:1521'
+          OnChange = FiledChanged
+        end
+        object ParamsEdit: TLabeledEdit
+          Left = 30
+          Height = 21
+          Top = 185
+          Width = 457
+          EditLabel.AnchorSideLeft.Control = ParamsEdit
+          EditLabel.AnchorSideRight.Control = ParamsEdit
+          EditLabel.AnchorSideRight.Side = asrBottom
+          EditLabel.AnchorSideBottom.Control = ParamsEdit
+          EditLabel.Left = 30
+          EditLabel.Height = 13
+          EditLabel.Top = 169
+          EditLabel.Width = 457
+          EditLabel.Caption = 'Params  (Hide a password by replacing it by %pwd%)'
+          EditLabel.ParentColor = False
+          TabOrder = 3
+          OnChange = FiledChanged
         end
       end
     end
@@ -114,7 +182,7 @@ object OpenSQLServerForm: TOpenSQLServerForm
   object StatusBar: TStatusBar
     Left = 0
     Height = 20
-    Top = 208
+    Top = 433
     Width = 808
     Panels = <    
       item
@@ -151,8 +219,8 @@ object OpenSQLServerForm: TOpenSQLServerForm
     end
   end
   object MainMenu1: TMainMenu
-    left = 440
-    top = 96
+    left = 456
+    top = 112
     object File1: TMenuItem
       Caption = '&File'
       object Open1: TMenuItem
@@ -175,7 +243,7 @@ object OpenSQLServerForm: TOpenSQLServerForm
   object dbc: TSQLConnector
     Connected = False
     LoginPrompt = False
-    DatabaseName = 'Dbs'
+    DatabaseName = 'XE'
     KeepConnection = False
     Params.Strings = (
       'DSN=Oracle'
@@ -183,9 +251,12 @@ object OpenSQLServerForm: TOpenSQLServerForm
       'Uid=owner_ped'
       'Pwd=welcome01'
     )
+    Password = 'welcome01'
+    UserName = 'owner_ped'
+    HostName = 'bpmbox:1521'
     LogEvents = []
-    ConnectorType = 'ODBC'
-    left = 569
-    top = 140
+    ConnectorType = 'Oracle'
+    left = 560
+    top = 112
   end
 end

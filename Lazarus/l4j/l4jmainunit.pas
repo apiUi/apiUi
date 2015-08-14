@@ -5,7 +5,7 @@ unit L4JMainUnit;
 interface
 
 uses
-  l4jTypes, sqldb, odbcconn, oracleconnection, LCLIntf, LCLType, LMessages,
+  l4jTypes, sqldb, db, odbcconn, oracleconnection, LCLIntf, LCLType, LMessages,
   SysUtils
    , Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ComCtrls, ExtCtrls, VirtualTrees
@@ -70,7 +70,7 @@ type
 
   TQueryThread = class(TCustomThread)
   private
-    fConnString, fQuery: String;
+    fConnString, fQuery, fParam1, fParam2, fParam3, fParam4: String;
   protected
     procedure Execute; override;
   public
@@ -296,11 +296,12 @@ const treeButtonColumn = 1;
 
 {$R *.lfm}
 
-procedure sqlLoop;
+procedure sqlLoop(aQry: TSqlQuery);
 var
   Msg: l4jTypes.TMsg;
-  f, y: Integer;
-  s: AnsiString;
+  f, x, y: Integer;
+  s: String;
+  field: TField;
 begin
   if (not xpFetched)
 { TODO : abortfie
@@ -309,6 +310,13 @@ begin
   then
     L4JMainForm.Thread.UpdateStatus(5, 10, 'Fetched first data...');
   xpFetched := True;
+  TimeStamp:=aQry.FieldByName('TimeStamp').AsString;
+  MessageId:=aQry.FieldByName('MessageId').AsString;
+  ServiceRequestorId:=aQry.FieldByName('ServiceRequestorId').AsString;
+  ServiceId:=aQry.FieldByName('ServiceId').AsString;
+  EventType:=aQry.FieldByName('EventType').AsString;
+  EventData:='';
+
   if Msgs.Find(MessageId, f) then
     Msg := Msgs.Msg[f]
   else
@@ -316,46 +324,44 @@ begin
     Msg := l4jTypes.TMsg.Create;
     Msgs.AddObject(MessageId, Msg);
   end;
-  with Msg do
+  if (TimeStamp < Msg.FirstTimeStamp) then
+    Msg.FirstTimeStamp := TimeStamp;
+  s := '<' + EventType + 'Info>'
+     + '<TimeStamp>' + TimeStamp + '</TimeStamp>'
+     + '<MessageId>' + MessageId + '</MessageId>'
+     + '<ServiceRequestorId>' + ServiceRequestorId + '</ServiceRequestorId>'
+     + '<ServiceId>' + ServiceId + '</ServiceId>'
+     ;
+  for f := 0 to aQry.Fields.Count - 1 do
   begin
-    if (TimeStamp < FirstTimeStamp) then
-      FirstTimeStamp := TimeStamp;
-    s := '<' + EventType + 'Info>'
-       + '<TimeStamp>' + TimeStamp + '</TimeStamp>'
-       + '<MessageId>' + MessageId + '</MessageId>'
-       + '<ServiceRequestorId>' + ServiceRequestorId + '</ServiceRequestorId>'
-       + '<ServiceId>' + ServiceId + '</ServiceId>'
-       ;
-    for f := 0 to xp.uwaLoopQry.Fields.Count - 1 do
+    field := aQry.Fields.Fields[f];
+    if AnsiStartsStr('EVENTDATA', field.DisplayName) then
+      EventData:=EventData+field.DisplayText
+    else
     begin
-      with xp.uwaLoopQry.Fields.Fields[f] do
+      if (field.DisplayName <> 'TIMESTAMP')
+      and (field.DisplayName <> 'MESSAGEID')
+      and (field.DisplayName <> 'SERVICEREQUESTERID')
+      and (field.DisplayName <> 'SERVICEID')
+      and (field.DisplayName <> 'EVENTTYPE')
+      then
       begin
-        if (DisplayName <> 'TimeStamp')
-        and (DisplayName <> 'MessageId')
-        and (DisplayName <> 'TIMESTAMP')
-        and (DisplayName <> 'MESSAGEID')
-        and (DisplayName <> 'LOG_TIME')
-        and (DisplayName <> 'REQUESTER_ID')
-        and (DisplayName <> 'EVENT_TYPE')
-        and (DisplayName <> 'EVENT_DATA')
-        and (not AnsiStartsStr('EVENTDATA', DisplayName))
-        then
-          s := s
-             + '<' + DisplayName + '>'
-             + DisplayText
-             + '</' + DisplayName + '>'
-             ;
+        s := s
+           + '<' + field.DisplayName + '>'
+           + field.DisplayText
+           + '</' + field.DisplayName + '>'
+           ;
       end;
     end;
-    s := s
-       + '<EventType>' + EventType + '</EventType>'
-       + '</' + EventType + 'Info>'
-       + CRLF
-       + '<' + EventType + '>' + getEventData + '</' + EventType + '>'
-       + CRLF
-       ;
-    events := events + s;
   end;
+  s := s
+     + '<EventType>' + EventType + '</EventType>'
+     + '</' + EventType + 'Info>'
+     + LineEnding
+     + '<' + EventType + '>' + EventData + '</' + EventType + '>'
+     + LineEnding
+     ;
+    Msg.events := Msg.events + s;
 end;
 
 { TCustomThread }
@@ -395,8 +401,6 @@ end;
 procedure TCustomThread.setAbortPressed(const Value: Boolean);
 begin
   fAbortPressed := Value;
-  if fAbortPressed
-  and Assigned (xp) then
   { TODO : abortfie }
 //    xp.abortPressed := True
     ;
@@ -670,9 +674,9 @@ end;
 
 procedure TQueryThread.Execute;
 var
-  sl: TSL;
-  db: TSQLConnector;
-  cs, qry, edColumns, sep: String;
+  dbs: TSQLConnector;
+  qry: TSQLQuery;
+  cs, qryText, edColumns, sep: String;
   x: Integer;
 begin
   fEnabled := True;
@@ -686,129 +690,116 @@ begin
   try
     try
       UpdateStatus (1, 10, 'Preparing...');
-      with TXml.Create do
-      try
-        LoadFromFile(fConnString, nil);
-        if TagName <> 'DataSource' then
-          raise Exception.CreateFmt('%s does not contain valid ConnectionString data', [fConnString]);
-        cs := ReplaceStrings( Items.XmlValueByTag['ConnectionString']
-                            , '%pwd%'
-                            , XmlUtil.SimpleEncrypt(Items.XmlValueByTag['Password'])
-                            , false
-                            , false
-                            );
-        cs := ReplaceStrings( cs
-                            , ';'
-                            , LineEnding
-                            , false
-                            , false
-                            );
-      finally
-        Free;
-      end;
       edColumns:='';
       sep := '';
       for x := 0 to NrOfDataParts - 1 do
       begin
         edColumns := edColumns
                    + sep
-                   + Format ('dbms_lob.substr (event_data, %d, %d) as EventData%d as :ws.EventData%d'
+                   + Format ('dbms_lob.substr (event_data, %d, %d) as EventData%d'
                             , [                            SizeOfDataPart
-                                                              , x * SizeOfDataPart + 1
-                                                                              , x                , x
+                              ,                                x * SizeOfDataPart + 1
+                              ,                                                x
                               ]
                             )
                    ;
         sep := ', ';
       end;
-      qry := ReplaceStrings( fQuery
-                          , '$EventData'
-                          , edColumns
-                          , false
-                          , false
-                          );
-      xpScript := 'Exec sql ' + qry + 'loop { sqlLoop(); };';
-      xpMoreData := True;
+      qryText := ReplaceStrings( fQuery
+                               , '$EventData'
+                               , edColumns
+                               , false
+                               , false
+                              );
       xpFetched := False;
       if abortPressed then Exit;
-      {$ifdef WINDOWS}
-      CoInitialize(nil);
-      {$endif}
+      dbs := TSQLConnector.Create(nil);
       try
-        db := TSQLConnector.Create(nil);
+        with TXml.Create do
         try
-          db.DatabaseName:='Database';
-          db.ConnectorType:='ODBC';
-          db.Params.Text:=cs;
-          db.Transaction := TSQLTransaction.Create(nil);
-          db.Transaction.Action:=caRollback;
-          db.Connected:=True;
-          db.Transaction.Active:=True;
-          xp := TExpress.Create(nil);
-          sl := TSL.Create;
-          try
-            xp.BindString('ws.TimeStamp', TimeStamp);
-            xp.BindString('ws.MessageId', MessageId);
-            xp.BindString('ws.ServiceRequestorId', ServiceRequestorId);
-            xp.BindString('ws.ServiceId', ServiceId);
-            xp.BindString('ws.EventType', EventType);
-            xp.BindString('ws.EventData', EventData);
-            for x := 0 to NrOfDataParts - 1 do
-              xp.BindString(Format ('ws.EventData%d', [x]), EventDataParts[x]);
-            xp.BindString('ws.Dummy', Dummy);
-            xp.BindString('ws.Param1', fParam1);
-            xp.BindString('ws.Param2', fParam2);
-            xp.BindString('ws.Param3', fParam3);
-            xp.BindString('ws.Param4', fParam4);
-            xp.BindFunction('sqlloop', @sqlLoop, VFV, '()');
-            xp.OnNeedData := @(sl.xpNeedData);
-            xp.Database := db;
-            if abortPressed then Exit;
-            xp.Prepare;
-            if abortPressed then Exit;
-            Msgs := TMsgList.Create;
-            try
-              Msgs.Sorted := True;
-              UpdateStatus (2, 10, 'Querying datasource...');
-              xp.Execute;
-              if abortPressed then Exit;
-              UpdateStatus (7, 10, 'Formatting output...');
-              for x := 0 to Msgs.Count - 1 do
-              begin
-                fForm.Data.Add (Msgs.Msg[x].AsText);
-                Inc (fForm.numberVisible);
-                if abortPressed then Exit;
-              end;
-              with TIdSync.Create do
-                try
-                  SynchronizeMethod (@fSynchronisedHaveData);
-                finally
-                  Free;
-                end;
-              UpdateStatus (9, 10, 'Cleaning up...');
-            finally
-              Msgs.Clear;
-              Msgs.Free;
-            end;
-          finally
-            FreeAndNil(xp);
-            FreeAndNil(sl);
-          end;
+          LoadFromFile(fConnString, nil);
+          if TagName <> 'DataSource' then
+            raise Exception.CreateFmt('%s does not contain valid ConnectionString data', [fConnString]);
+          dbs.ConnectorType:=Items.XmlValueByTagDef['ConnectorType', 'Oracle'];
+          dbs.DatabaseName:=Items.XmlValueByTagDef['DatabaseName', 'XE'];
+          dbs.HostName:=Items.XmlValueByTag['HostName'];
+          dbs.Params.Text:=ReplaceStrings( Items.XmlValueByTag['Params']
+                                        , ';'
+                                        , LineEnding
+                                        , false
+                                        , false
+                                        );
+          dbs.Password:=XmlUtil.SimpleEncrypt(Items.XmlValueByTag['Password']);
+          dbs.Params.Text:=ReplaceStrings( dbs.Params.Text
+                                        , '%pwd%'
+                                        , dbs.Password
+                                        , false
+                                        , false
+                                        );
+          dbs.UserName:=Items.XmlValueByTag['UserName'];
         finally
-          if Assigned (db) then
+          Free;
+        end;
+        dbs.Transaction := TSQLTransaction.Create(nil);
+        dbs.Transaction.Action:=caRollback;
+        dbs.Connected:=True;
+        dbs.Transaction.Active:=True;
+        qry := TSQLQuery.Create(nil);
+        qry.DataBase:=dbs;
+        qry.Transaction:=dbs.Transaction;
+        qry.SQL.Text:=qryText;
+        for x := 0 to qry.Params.Count - 1 do
+        begin
+          if qry.Params.Items[x].Name = 'Param1' then qry.Params.Items[x].AsString:=fParam1;
+          if qry.Params.Items[x].Name = 'Param2' then qry.Params.Items[x].AsString:=fParam2;
+          if qry.Params.Items[x].Name = 'Param3' then qry.Params.Items[x].AsString:=fParam3;
+          if qry.Params.Items[x].Name = 'Param4' then qry.Params.Items[x].AsString:=fParam4;
+        end;
+        if abortPressed then Exit;
+        if abortPressed then Exit;
+        Msgs := TMsgList.Create;
+        try
+          Msgs.Sorted := True;
+          UpdateStatus (2, 10, 'Querying datasource...');
+          qry.Open;
+          qry.First;
+          while (not qry.EOF)
+          and (not abortPressed) do
           begin
-            if Assigned (db.Transaction) then
-            begin
-              db.Transaction.Active:=False;
-              db.Transaction.Free;
-            end;
-            FreeAndNil(db);
+            sqlLoop(qry);
+            qry.Next;
           end;
+          qry.Close;
+          if abortPressed then Exit;
+          UpdateStatus (7, 10, 'Formatting output...');
+          for x := 0 to Msgs.Count - 1 do
+          begin
+            fForm.Data.Add (Msgs.Msg[x].AsText);
+            Inc (fForm.numberVisible);
+            if abortPressed then Exit;
+          end;
+          with TIdSync.Create do
+            try
+              SynchronizeMethod (@fSynchronisedHaveData);
+            finally
+              Free;
+            end;
+          UpdateStatus (9, 10, 'Cleaning up...');
+        finally
+          Msgs.Clear;
+          Msgs.Free;
         end;
       finally
-        {$ifdef WINDOWS}
-        CoUninitialize;
-        {$endif}
+        if Assigned (dbs) then
+        begin
+          if Assigned (dbs.Transaction) then
+          begin
+            dbs.Transaction.Active:=False;
+            dbs.Transaction.Free;
+          end;
+          FreeAndNil(dbs);
+        end;
+        FreeAndNil(qry);
       end;
     except
       on e: Exception do

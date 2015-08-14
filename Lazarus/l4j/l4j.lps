@@ -4,14 +4,15 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="29">
+    <Units Count="34">
       <Unit0>
         <Filename Value="l4j.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="1"/>
         <CursorPos Y="23"/>
-        <UsageCount Value="72"/>
+        <UsageCount Value="92"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="l4jmainunit.pas"/>
@@ -22,9 +23,9 @@
         <UnitName Value="L4JMainUnit"/>
         <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="671"/>
-        <CursorPos X="31" Y="682"/>
-        <UsageCount Value="72"/>
+        <TopLine Value="753"/>
+        <CursorPos Y="783"/>
+        <UsageCount Value="92"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -32,28 +33,28 @@
         <Filename Value="l4jtypes.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="l4jTypes"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="89"/>
-        <CursorPos Y="101"/>
-        <UsageCount Value="72"/>
+        <TopLine Value="25"/>
+        <CursorPos X="3" Y="46"/>
+        <UsageCount Value="92"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Xml\FilterDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="69"/>
+        <UsageCount Value="89"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="45"/>
+        <UsageCount Value="65"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="45"/>
+        <UsageCount Value="65"/>
       </Unit5>
       <Unit6>
         <Filename Value="l4jExplorerUnit.pas"/>
@@ -62,27 +63,31 @@
         <ResourceBaseClass Value="Form"/>
         <TopLine Value="763"/>
         <CursorPos Y="785"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\Utils\igGlobals.pas"/>
-        <TopLine Value="2"/>
-        <CursorPos X="131" Y="20"/>
-        <UsageCount Value="8"/>
+        <UnitName Value="igGlobals"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="1"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
-        <TopLine Value="701"/>
-        <CursorPos X="3" Y="716"/>
-        <UsageCount Value="8"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1578"/>
+        <CursorPos X="17" Y="1593"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\Xpress\Express.pas"/>
-        <UnitName Value="Express"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="20" Y="15"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="23"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\Xml\XmlGridUnit.pas"/>
@@ -91,57 +96,57 @@
         <ResourceBaseClass Value="Form"/>
         <TopLine Value="215"/>
         <CursorPos X="3" Y="230"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\lazarus\lcl\lcltype.pp"/>
         <TopLine Value="2607"/>
         <CursorPos X="3" Y="2622"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
         <TopLine Value="3245"/>
         <CursorPos Y="3260"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\lcl\include\application.inc"/>
         <TopLine Value="2154"/>
         <CursorPos Y="2168"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\lazarus\lcl\include\customform.inc"/>
         <TopLine Value="3045"/>
         <CursorPos Y="3060"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <TopLine Value="2723"/>
         <CursorPos Y="2738"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit15>
       <Unit16>
         <Filename Value="l4jini.xml"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos Y="5"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="15"/>
         <DefaultSyntaxHighlighter Value="XML"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\Components\virtualtreeview\VirtualTrees.pas"/>
         <TopLine Value="31339"/>
         <CursorPos Y="31353"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="12"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\lcl\lresources.pp"/>
         <TopLine Value="779"/>
         <CursorPos Y="794"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit18>
       <Unit19>
         <Filename Value="DbFilterDialog.pas"/>
@@ -149,29 +154,29 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DbFilterDialog"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="35"/>
-        <CursorPos X="3" Y="51"/>
-        <UsageCount Value="23"/>
+        <TopLine Value="89"/>
+        <CursorPos Y="95"/>
+        <UsageCount Value="34"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\Xpress\PARSER.PAS"/>
-        <UnitName Value="Parser"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="1255"/>
         <CursorPos Y="1269"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="13"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\Xpress\CustParser.pas"/>
-        <UnitName Value="CustParser"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="326"/>
         <CursorPos Y="354"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="13"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\Components\Abbrevia\source\AbCharset.pas"/>
@@ -179,7 +184,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="263"/>
         <CursorPos X="55" Y="274"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit22>
       <Unit23>
         <Filename Value="..\Components\Abbrevia\source\AbUtils.pas"/>
@@ -187,7 +192,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="352"/>
         <CursorPos X="12" Y="358"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\Xml\xmlio.pas"/>
@@ -195,7 +200,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="15"/>
         <CursorPos X="6" Y="29"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="16"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\Components\Indy10\Lib\Core\IdExceptionCore.pas"/>
@@ -203,154 +208,210 @@
         <WindowIndex Value="1"/>
         <TopLine Value="79"/>
         <CursorPos X="16" Y="93"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\Xml\cbAbout.pas"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="22" Y="16"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\Xpress\XpQuery.pas"/>
-        <UnitName Value="XpQuery"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="21"/>
         <CursorPos X="12" Y="47"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="12"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\Xpress\Bind.pas"/>
-        <UnitName Value="Bind"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="207"/>
         <CursorPos X="6" Y="223"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="11"/>
       </Unit28>
+      <Unit29>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\tthread.inc"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="3"/>
+        <CursorPos X="3" Y="6"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-db\src\base\db.pas"/>
+        <UnitName Value="db"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1093"/>
+        <CursorPos X="49" Y="1107"/>
+        <UsageCount Value="16"/>
+        <Loaded Value="True"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="C:\lazarus\lcl\textstrings.pas"/>
+        <UnitName Value="TextStrings"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="81"/>
+        <CursorPos Y="98"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <UnitName Value="FormIniFilez"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="332"/>
+        <CursorPos Y="350"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-registry\src\registry.pp"/>
+        <UnitName Value="registry"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="57"/>
+        <CursorPos X="14" Y="87"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit33>
     </Units>
     <CustomDefines Count="3">
       <Define0 Value="FPCUnixAPI"/>
       <Define1 Value="USESQLCONNECTOR"/>
       <Define2 Value="USEORACLECONNECTION"/>
     </CustomDefines>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="733" Column="56" TopLine="708"/>
+        <Caret Line="735" Column="46" TopLine="720"/>
       </Position1>
       <Position2>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="735" TopLine="718"/>
+        <Caret Line="749" Column="29" TopLine="724"/>
       </Position2>
       <Position3>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="313" TopLine="313"/>
+        <Caret Line="802" Column="25" TopLine="778"/>
       </Position3>
       <Position4>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1993" Column="3" TopLine="1990"/>
+        <Caret Line="2007" Column="12" TopLine="2004"/>
       </Position4>
       <Position5>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="783" Column="3" TopLine="711"/>
+        <Filename Value="DbFilterDialog.pas"/>
+        <Caret Line="55" Column="17" TopLine="35"/>
       </Position5>
       <Position6>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="711" Column="102" TopLine="694"/>
+        <Filename Value="DbFilterDialog.pas"/>
+        <Caret Line="95" TopLine="69"/>
       </Position6>
       <Position7>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="707" Column="21" TopLine="693"/>
+        <Filename Value="DbFilterDialog.pas"/>
+        <Caret Line="101" Column="60" TopLine="90"/>
       </Position7>
       <Position8>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="711" Column="99" TopLine="696"/>
+        <Filename Value="DbFilterDialog.pas"/>
+        <Caret Line="95" Column="36" TopLine="90"/>
       </Position8>
       <Position9>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="8" Column="66"/>
+        <Filename Value="DbFilterDialog.pas"/>
+        <Caret Line="96" TopLine="90"/>
       </Position9>
       <Position10>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="747" Column="52" TopLine="723"/>
+        <Filename Value="C:\lazarus\lcl\textstrings.pas"/>
+        <Caret Line="97" TopLine="81"/>
       </Position10>
       <Position11>
-        <Filename Value="l4jmainunit.pas"/>
+        <Filename Value="C:\lazarus\lcl\textstrings.pas"/>
+        <Caret Line="98" TopLine="81"/>
       </Position11>
       <Position12>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="711" Column="143" TopLine="705"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="352" Column="27" TopLine="327"/>
       </Position12>
       <Position13>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="720" TopLine="705"/>
+        <Filename Value="DbFilterDialog.pas"/>
+        <Caret Line="95" TopLine="89"/>
       </Position13>
       <Position14>
-        <Filename Value="l4jtypes.pas"/>
-        <Caret Line="74" Column="24" TopLine="58"/>
+        <Filename Value="C:\lazarus\lcl\textstrings.pas"/>
+        <Caret Line="97" TopLine="81"/>
       </Position14>
       <Position15>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="720" TopLine="705"/>
+        <Filename Value="C:\lazarus\lcl\textstrings.pas"/>
+        <Caret Line="98" TopLine="81"/>
       </Position15>
       <Position16>
-        <Filename Value="l4jmainunit.pas"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="360" TopLine="329"/>
       </Position16>
       <Position17>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="716" Column="20" TopLine="707"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="347" TopLine="329"/>
       </Position17>
       <Position18>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="730" Column="12" TopLine="707"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="350" TopLine="332"/>
       </Position18>
       <Position19>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="354" Column="46" TopLine="328"/>
+        <Caret Line="2007" Column="3" TopLine="2005"/>
       </Position19>
       <Position20>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="112" TopLine="81"/>
+        <Caret Line="682" Column="3" TopLine="699"/>
       </Position20>
       <Position21>
-        <Filename Value="l4jtypes.pas"/>
-        <Caret Line="94" Column="45" TopLine="67"/>
+        <Filename Value="l4jmainunit.pas"/>
+        <Caret Line="733" Column="31" TopLine="713"/>
       </Position21>
       <Position22>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="51" Column="10" TopLine="24"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="535" Column="3" TopLine="531"/>
       </Position22>
       <Position23>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="341" Column="56" TopLine="325"/>
+        <Caret Line="733" Column="31" TopLine="713"/>
       </Position23>
       <Position24>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="354" Column="35" TopLine="339"/>
+        <Caret Line="748" TopLine="718"/>
       </Position24>
       <Position25>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="341" Column="37" TopLine="327"/>
+        <Caret Line="8" Column="50"/>
       </Position25>
       <Position26>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="354" Column="37" TopLine="326"/>
+        <Caret Line="766" TopLine="763"/>
       </Position26>
       <Position27>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="2015" Column="3" TopLine="2012"/>
+        <Caret Line="338" Column="12" TopLine="337"/>
       </Position27>
       <Position28>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="679" Column="17" TopLine="671"/>
+        <Caret Line="320" Column="10" TopLine="298"/>
       </Position28>
+      <Position29>
+        <Filename Value="l4jmainunit.pas"/>
+      </Position29>
+      <Position30>
+        <Filename Value="l4jmainunit.pas"/>
+        <Caret Line="2007" Column="3" TopLine="2005"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="2">
+    <BreakPoints Count="1">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -358,13 +419,6 @@
         <Source Value="..\Xpress\Express.pas"/>
         <Line Value="562"/>
       </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="l4jtypes.pas"/>
-        <Line Value="94"/>
-      </Item2>
     </BreakPoints>
   </Debugging>
 </CONFIG>

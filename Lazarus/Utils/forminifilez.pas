@@ -346,7 +346,8 @@ begin
   try
     OpenKey('Strings', True);
     try
-      try result := ReadString(Index); except end;
+      if KeyExists(Index) then
+        result := ReadString(Index);
     finally
       CloseKey;;
     end;

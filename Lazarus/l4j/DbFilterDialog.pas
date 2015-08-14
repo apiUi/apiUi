@@ -91,10 +91,14 @@ procedure TDbFilterDlg.FormCreate(Sender: TObject);
 begin
   IniFile := TFormIniFile.Create (Self);
   IniFile.Restore;
+  ConnStringEdit.Text := IniFile.StringByName['ConnParamsFilename'];
+  QueryEdit.Lines.Text := IniFile.StringByNameDef['QueryText', QueryEdit.Lines.Text];
 end;
 
 procedure TDbFilterDlg.FormDestroy(Sender: TObject);
 begin
+  IniFile.StringByName['ConnParamsFilename'] := ConnStringEdit.Text;
+  IniFile.StringByName['QueryText'] := QueryEdit.Lines.Text;
   IniFile.Save;
   IniFile.Free;
 end;

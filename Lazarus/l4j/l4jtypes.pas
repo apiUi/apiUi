@@ -64,11 +64,6 @@ end;
 
  { TSl }
 
- TSl = class (TStringList)
-public
-  procedure xpNeedData (Sender: TObject; var aMoreData: Boolean; var aData: String);
-end;
-
 function getEventData: String;
 
 const
@@ -80,7 +75,6 @@ var
   Msgs: TMsgList;
   TimeStamp, MessageId, ServiceRequestorId, ServiceId, EventType, EventData, Dummy: String;
   fParam1, fParam2, fParam3, fParam4: String;
-  xp: TExpress;
   EventDataParts: array [0..NrOfDataParts-1] of string;
 
 
@@ -98,16 +92,6 @@ begin
     for x := 0 to NrOfDataParts - 1 do
       result := result + EventDataParts[x];
   end;
-end;
-
-{ TSl }
-
-procedure TSl.xpNeedData(Sender: TObject; var aMoreData: Boolean;
-  var aData: String);
-begin
-  aMoreData := xpMoreData;
-  aData := xpScript;
-  xpMoreData := False;
 end;
 
 { TLogTypes }
