@@ -214,7 +214,8 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     var
       x: Integer;
     begin
-      if a2bXml.ChangeKind <> ckCopy then
+      if (a2bXml.ChangeKind <> ckCopy)
+      and (not a2bXml.Ignored) then
       begin
         with changesXml.AddXml(Txml.CreateAsString('Item', '')) do
         begin
@@ -237,7 +238,11 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     a2bXml: TA2bXml;
   begin
     aXml := aLog.reqBodyAsXml;
+    aXml.SeparateNsPrefixes;
+    aXml.ResolveNameSpaces;
     bXml := bLog.reqBodyAsXml;
+    bXml.SeparateNsPrefixes;
+    bxml.ResolveNameSpaces;
     a2bXml := TA2BXml.CreateA2B(aLog.OperationName, aXml, bXml, ignoreOrderOn);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('req.', a2bXml);
@@ -245,7 +250,11 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     FreeAndNil (aXml);
     FreeAndNil (bXml);
     aXml := aLog.rpyBodyAsXml;
+    aXml.SeparateNsPrefixes;
+    aXml.ResolveNameSpaces;
     bXml := bLog.rpyBodyAsXml;
+    bXml.SeparateNsPrefixes;
+    bxml.ResolveNameSpaces;
     a2bXml := TA2BXml.CreateA2B(aLog.OperationName, aXml, bXml, ignoreOrderOn);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('rpy.', a2bXml);

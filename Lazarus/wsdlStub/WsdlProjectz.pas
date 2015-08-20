@@ -213,7 +213,7 @@ type
     function RestartCommand: String;
     function ReloadDesignCommand: String;
     procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
-    procedure OpenMessagesLog (aString: String; aIsFileName: Boolean; aLogList: TLogList);
+    procedure OpenMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
     procedure IgnoreDataChanged(Sender: TObject);
     procedure EnvironmentListClear;
     procedure mqOnNewThread ( Sender: TObject);
@@ -224,7 +224,7 @@ type
                             ; MsgDesc: MQMD
                             ; MqReturnCode: String
                             );
-    function MessagesRegressionReportAsXml(aReferenceFileName: String): TXml;
+    function MessagesRegressionReportAsXml(aReferenceFileName: String; aPromptUser: Boolean): TXml;
     procedure CheckExpectedValues(aLog: TLog; aOperation: TWsdlOperation; aDoCheck: Boolean);
     procedure UpdateMessageRow (aOperation: TWsdlOperation; aMessage: TWsdlMessage);
     procedure DelayMS (aDelayMS: Integer);
@@ -6256,13 +6256,13 @@ begin
   end;
 end;
 
-function TWsdlProject.MessagesRegressionReportAsXml(aReferenceFileName: String): TXml;
+function TWsdlProject.MessagesRegressionReportAsXml(aReferenceFileName: String; aPromptUser: Boolean): TXml;
 var
   xLogList: TLogList;
 begin
   xLogList := TLogList.Create;
   try
-    OpenMessagesLog (aReferenceFileName, True, xLogList);
+    OpenMessagesLog (aReferenceFileName, True, aPromptUser, xLogList);
     result := logDifferencesAsXml ( displayedLogs
                                   , xLogList
                                   , aReferenceFileName
@@ -6278,7 +6278,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.OpenMessagesLog(aString: String; aIsFileName: Boolean; aLogList: TLogList);
+procedure TWsdlProject.OpenMessagesLog(aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
 var
   xXml: TXml;
   swapCursor: TCursor;
@@ -6298,7 +6298,9 @@ begin
       begin
         if xXml.TagName <> 'WsdlStubCaseMessages' then
           raise Exception.Create('File does not contain saved ' + _progName + ' messages');
-        if xXml.Items.XmlValueByTag['wsdlStub'] <> projectFileName then
+        if (xXml.Items.XmlValueByTag['wsdlStub'] <> projectFileName)
+        and aPrompt
+        then
           if not BooleanPromptDialog( 'wsdlStub from saved messages ('
                                     + xXml.Items.XmlValueByTag['wsdlStub']
                                     + ') is not the same as current ('

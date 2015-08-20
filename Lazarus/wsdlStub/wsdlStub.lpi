@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="8896"/>
+      <BuildNr Value="8920"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -60,6 +60,7 @@
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="wsdlStub"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\Xml\claimlistz.pas"/>
@@ -106,9 +107,10 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5057="True" idx5024="True"/>
+        <IgnoredMessages idx5024="True" idx5057="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -143,7 +145,6 @@
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
-        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>

@@ -14,7 +14,7 @@ uses SysUtils
    , Graphics, FileUtil
    , Messages
    , Types
-   , RichBox
+   , richbox
 //   , VirtualTrees
    ;
 
@@ -150,8 +150,8 @@ uses StrUtils
    , versionresource
    , Registry
    , RegExpr
-   , hashUtilz
-   , idHTTP
+   , HashUtilz
+   , IdHTTP
    , base64
    ;
 procedure MemoMouseDown(aMemo: TLzRichEdit; X, Y: Integer; aOnHaveLink: TOnHaveLinkEvent);

@@ -3460,7 +3460,7 @@ begin
                     + _ProgName
                     + ' provider for assistence'
                     );
-        Close;
+//        Close;
       end;
     end
     else
@@ -3473,7 +3473,7 @@ begin
                   + _ProgName
                   + ' provider for assistence'
                   );
-      Close;
+//      Close;
     end;
     result := SqlConnector.Connected;
   except
@@ -7066,7 +7066,7 @@ begin
         try
           for X := 0 to Files.Count - 1 do
             try
-              se.OpenMessagesLog(Files.Strings[X], True, xLogList);
+              se.OpenMessagesLog(Files.Strings[X], True, True, xLogList);
             except
               on E: Exception do
                 raise Exception.CreateFmt('Error opening file %s%s%s',
@@ -7287,7 +7287,7 @@ begin
     xLogList := TLogList.Create;
     try
       try
-        se.OpenMessagesLog(OpenFileDialog.FileName, True, xLogList);
+        se.OpenMessagesLog(OpenFileDialog.FileName, True, True, xLogList);
       except
         on E: Exception do
         begin

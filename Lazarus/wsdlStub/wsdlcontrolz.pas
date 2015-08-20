@@ -264,7 +264,7 @@ begin
                 dXml := oXml.FindXml('Body.regressionReportReq.referenceFileName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find filename to use in request');
-                oXml := se.MessagesRegressionReportAsXml (ExpandRelativeFileName(se.projectFileName,dXml.Value));
+                oXml := se.MessagesRegressionReportAsXml (ExpandRelativeFileName(se.projectFileName,dXml.Value), False);
                 oXml.Name := (oOperation.rpyBind as TXml).Items.XmlItems[0].Name;
                 try
                   (oOperation.rpyBind as TXml).Items.XmlItems[0].ResetValues;

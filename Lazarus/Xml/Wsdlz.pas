@@ -33,6 +33,16 @@ type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
 type TProcedure = procedure of Object;
+const
+TransportTypeNames: array [ttHttp..ttBmtp] of String =
+( 'Http'
+, 'Https'
+, 'Mq'
+, 'Stomp'
+, 'Taco'
+, 'Smtp'
+, 'Bmtp'
+);
 
 type
   TWsdl = class;
@@ -519,6 +529,7 @@ function getVarDef (aName, aDefault: String): String;
 function xsdOperationCount(aOperation: TWsdlOperation): Extended;
 function wsdlUserName: String;
 function wsdlOperationName(aOper: TWsdlOperation): String;
+function wsdlMessagingProtocol(aOper: TWsdlOperation): String;
 function wsdlMessageName(aOper: TWsdlOperation): String;
 function xsdTodayAsDate: String;
 function sblTodayAsDate: String;
@@ -1468,6 +1479,11 @@ end;
 function wsdlOperationName(aOper: TWsdlOperation): String;
 begin
   result := aOper.reqTagName;
+end;
+
+function wsdlMessagingProtocol(aOper: TWsdlOperation): String;
+begin
+  result := TransportTypeNames [aOper.StubTransport];
 end;
 
 function wsdlMessageName(aOper: TWsdlOperation): String;
@@ -3402,6 +3418,7 @@ begin
       BindBeforeFunction ('MD5', @MD5, SFS, '(aString)');
       BindBeforeFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
       BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
+      BindBeforeFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
       BindBeforeFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
       BindBeforeFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
       BindBeforeFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
@@ -3540,6 +3557,7 @@ begin
     BindAfterFunction ('MD5', @MD5, SFS, '(aString)');
     BindAfterFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindAfterFunction ('MessageName', @wsdlMessageName, SFOV, '()');
+    BindAfterFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
     BindAfterFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindAfterFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
     BindAfterFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
