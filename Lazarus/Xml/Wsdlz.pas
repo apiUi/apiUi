@@ -613,6 +613,7 @@ uses
    , SwiftUnit
    , xmlxsdparser
    , xmlio
+   , Logz
    ;
 
 { TWsdl }
@@ -1483,7 +1484,11 @@ end;
 
 function wsdlMessagingProtocol(aOper: TWsdlOperation): String;
 begin
-  result := TransportTypeNames [aOper.StubTransport];
+  if Assigned (aOper.Data)
+  and (aOper.Data is TLog) then
+    result := TransportTypeNames [(aOper.Data as TLog).TransportType]
+  else
+    result := TransportTypeNames [aOper.StubTransport];
 end;
 
 function wsdlMessageName(aOper: TWsdlOperation): String;
