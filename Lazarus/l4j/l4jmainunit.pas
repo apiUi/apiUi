@@ -740,7 +740,7 @@ begin
       UpdateStatus (1, 10, 'Preparing...');
       qryText := ReplaceStrings( fQuery
                                , '$EventData'
-                               , getEventDataQuery
+                               , getEventDataQuery(True)
                                , false
                                , false
                               );

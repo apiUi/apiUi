@@ -8,7 +8,6 @@
       <Unit0>
         <Filename Value="l4j.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <WindowIndex Value="1"/>
         <TopLine Value="3"/>
@@ -23,10 +22,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="L4JMainUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="370"/>
-        <CursorPos Y="378"/>
+        <TopLine Value="733"/>
+        <CursorPos X="57" Y="743"/>
         <UsageCount Value="115"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -37,8 +37,8 @@
         <UnitName Value="l4jTypes"/>
         <EditorIndex Value="11"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="100"/>
-        <CursorPos X="55" Y="104"/>
+        <TopLine Value="59"/>
+        <CursorPos X="11" Y="69"/>
         <UsageCount Value="115"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -310,101 +310,101 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="358" TopLine="350"/>
+        <Caret Line="347" TopLine="337"/>
       </Position1>
       <Position2>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="351" TopLine="347"/>
+        <Caret Line="358" TopLine="348"/>
       </Position2>
       <Position3>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="347" TopLine="337"/>
+        <Caret Line="794" TopLine="727"/>
       </Position3>
       <Position4>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="358" TopLine="348"/>
       </Position4>
       <Position5>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="794" TopLine="727"/>
+        <Caret Line="311" Column="8" TopLine="293"/>
       </Position5>
       <Position6>
         <Filename Value="l4jmainunit.pas"/>
+        <Caret Line="354" TopLine="337"/>
       </Position6>
       <Position7>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="311" Column="8" TopLine="293"/>
+        <Caret Line="788" TopLine="778"/>
       </Position7>
       <Position8>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="354" TopLine="337"/>
+        <Caret Line="794" TopLine="778"/>
       </Position8>
       <Position9>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="788" TopLine="778"/>
+        <Caret Line="358" TopLine="348"/>
       </Position9>
       <Position10>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="794" TopLine="778"/>
+        <Caret Line="351" TopLine="347"/>
       </Position10>
       <Position11>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="358" TopLine="348"/>
+        <Caret Line="347" TopLine="337"/>
       </Position11>
       <Position12>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="351" TopLine="347"/>
+        <Caret Line="358" TopLine="348"/>
       </Position12>
       <Position13>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="347" TopLine="337"/>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="104" TopLine="100"/>
       </Position13>
       <Position14>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="358" TopLine="348"/>
+        <Caret Line="358" TopLine="338"/>
       </Position14>
       <Position15>
-        <Filename Value="l4jtypes.pas"/>
-        <Caret Line="104" TopLine="100"/>
+        <Filename Value="l4jmainunit.pas"/>
+        <Caret Line="355" TopLine="338"/>
       </Position15>
       <Position16>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="358" TopLine="338"/>
+        <Caret Line="345" TopLine="338"/>
       </Position16>
       <Position17>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="355" TopLine="338"/>
+        <Caret Line="379" TopLine="375"/>
       </Position17>
       <Position18>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="345" TopLine="338"/>
+        <Caret Line="793" Column="11" TopLine="788"/>
       </Position18>
       <Position19>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="379" TopLine="375"/>
+        <Caret Line="363" TopLine="353"/>
       </Position19>
       <Position20>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="793" Column="11" TopLine="788"/>
       </Position20>
       <Position21>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="363" TopLine="353"/>
+        <Caret Line="311" Column="8" TopLine="293"/>
       </Position21>
       <Position22>
         <Filename Value="l4jmainunit.pas"/>
+        <Caret Line="355" Column="16" TopLine="338"/>
       </Position22>
       <Position23>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="311" Column="8" TopLine="293"/>
+        <Caret Line="379" TopLine="375"/>
       </Position23>
       <Position24>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="355" Column="16" TopLine="338"/>
+        <Caret Line="403" TopLine="393"/>
       </Position24>
       <Position25>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="379" TopLine="375"/>
+        <Caret Line="379" TopLine="369"/>
       </Position25>
       <Position26>
         <Filename Value="l4jmainunit.pas"/>
@@ -412,19 +412,19 @@
       </Position26>
       <Position27>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="379" TopLine="369"/>
+        <Caret Line="379" TopLine="371"/>
       </Position27>
       <Position28>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="403" TopLine="393"/>
+        <Filename Value="l4j.lpr"/>
+        <Caret Line="23"/>
       </Position28>
       <Position29>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="379" TopLine="371"/>
+        <Caret Line="378" TopLine="370"/>
       </Position29>
       <Position30>
-        <Filename Value="l4j.lpr"/>
-        <Caret Line="23"/>
+        <Filename Value="l4jmainunit.pas"/>
+        <Caret Line="743" Column="34" TopLine="734"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

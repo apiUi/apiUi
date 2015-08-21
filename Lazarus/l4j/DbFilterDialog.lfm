@@ -1,10 +1,10 @@
 object DbFilterDlg: TDbFilterDlg
   Left = 285
-  Height = 707
+  Height = 792
   Top = 82
   Width = 1107
   Caption = 'Query Datasource'
-  ClientHeight = 707
+  ClientHeight = 792
   ClientWidth = 1107
   Color = clBtnFace
   OnCreate = FormCreate
@@ -53,11 +53,11 @@ object DbFilterDlg: TDbFilterDlg
   end
   object Panel2: TPanel
     Left = 0
-    Height = 479
+    Height = 564
     Top = 60
     Width = 1107
     Align = alClient
-    ClientHeight = 479
+    ClientHeight = 564
     ClientWidth = 1107
     TabOrder = 1
     object Label7: TLabel
@@ -70,12 +70,12 @@ object DbFilterDlg: TDbFilterDlg
     end
     object QueryEdit: TMemo
       Left = 116
-      Height = 456
+      Height = 541
       Top = 13
       Width = 938
       Anchors = [akTop, akLeft, akRight, akBottom]
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -12
       Font.Name = 'Courier New'
       Lines.Strings = (
         'select to_char(log_time,''YYYY-MM-DD"T"HH24:MM:SS"."FF'') as Timestamp'
@@ -84,9 +84,10 @@ object DbFilterDlg: TDbFilterDlg
         '         then '
         '           process_group_instance_id || '';'' || to_char(log_time,''YYYY-MM-DD"T"HH24:MM:SS"."FF'')'
         '         else '
-        '           process_group_instance_id || '';'' || service_message_id'
+        '           service_message_id'
         '        end'
         '        ) as MessageId'
+        #9' , process_group_instance_id as PGID'
         '     , requester_id as ServiceRequestorId'
         '     , service_id as ServiceId '
         '     , event_type as EventType'
@@ -95,12 +96,18 @@ object DbFilterDlg: TDbFilterDlg
         '     , user_task_type as UserTaskType'
         '     , user_task_id as UserTaskId'
         '     , user_task_exec_bankcode'
+        '     , user_task_exec_employee_id'
+        '     , user_task_exec_employee_level'
         '     , error_flag'
         '     , component_name'
         '     , composite_name'
+        '     , composite_instance_id'
+        '     , instance_id'
+        '     , flow_id'
         'from APP_LOG_DATA'
         'where to_char(log_time, ''YYYY-MM-DD:HH24'') between :Param1 and :Param1 || ''Z'''
-        'order by 2, 5 '
+        'order by MessageId, EventType '
+        ''
         ''
         '-- Essential to have specific MessageId''s because queried records are grouped as one Event per MessageId'
         '-- Such a group should contain both request and response for a servicecall'
@@ -117,7 +124,7 @@ object DbFilterDlg: TDbFilterDlg
   object Panel3: TPanel
     Left = 0
     Height = 112
-    Top = 539
+    Top = 624
     Width = 1107
     Align = alBottom
     ClientHeight = 112
@@ -195,7 +202,7 @@ object DbFilterDlg: TDbFilterDlg
   object Panel4: TPanel
     Left = 0
     Height = 56
-    Top = 651
+    Top = 736
     Width = 1107
     Align = alBottom
     ClientHeight = 56
