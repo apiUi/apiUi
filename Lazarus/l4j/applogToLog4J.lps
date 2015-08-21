@@ -4,204 +4,238 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="12">
+    <Units Count="16">
       <Unit0>
         <Filename Value="applogToLog4J.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="47"/>
-        <CursorPos X="61" Y="53"/>
-        <UsageCount Value="26"/>
+        <TopLine Value="152"/>
+        <CursorPos Y="180"/>
+        <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
+        <Filename Value="..\Components\Indy10\Lib\System\IdStream.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="IdStream"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="18" Y="32"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="576"/>
         <CursorPos X="29" Y="587"/>
         <UsageCount Value="11"/>
-      </Unit1>
-      <Unit2>
+      </Unit2>
+      <Unit3>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
         <TopLine Value="18"/>
         <CursorPos X="10" Y="29"/>
         <UsageCount Value="10"/>
-      </Unit2>
-      <Unit3>
+      </Unit3>
+      <Unit4>
         <Filename Value="C:\lazarus\components\Indy10\Lib\Protocols\IdCompressorZLib.pas"/>
         <TopLine Value="247"/>
         <CursorPos X="79" Y="261"/>
         <UsageCount Value="10"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\Xpress\Bind.pas"/>
-        <UsageCount Value="10"/>
       </Unit4>
       <Unit5>
-        <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
-        <CursorPos X="3" Y="10"/>
+        <Filename Value="..\Xpress\Bind.pas"/>
         <UsageCount Value="10"/>
       </Unit5>
       <Unit6>
+        <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
+        <CursorPos X="3" Y="10"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\osutilsh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="36"/>
         <CursorPos X="3" Y="57"/>
         <UsageCount Value="10"/>
-      </Unit6>
-      <Unit7>
+      </Unit7>
+      <Unit8>
         <Filename Value="C:\lazarus\components\Abbrevia\source\AbBase.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="30"/>
         <CursorPos X="18" Y="45"/>
         <UsageCount Value="10"/>
-      </Unit7>
-      <Unit8>
+      </Unit8>
+      <Unit9>
         <Filename Value="..\Xml\ShowXmlUnit.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="16"/>
         <UsageCount Value="10"/>
-      </Unit8>
-      <Unit9>
+      </Unit9>
+      <Unit10>
         <Filename Value="..\Xml\xmlio.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="310"/>
         <CursorPos Y="325"/>
         <UsageCount Value="10"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <UnitName Value="Xmlz"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="2193"/>
-        <CursorPos X="44" Y="2223"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit10>
       <Unit11>
-        <Filename Value="l4jtypes.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="49"/>
-        <UsageCount Value="10"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <UnitName Value="Xmlz"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="2193"/>
+        <CursorPos X="44" Y="2223"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="l4jtypes.pas"/>
+        <UnitName Value="l4jTypes"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="94"/>
+        <CursorPos Y="109"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="823"/>
+        <CursorPos X="3" Y="829"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\streams.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="805"/>
+        <CursorPos X="3" Y="808"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="C:\lazarus\components\Abbrevia\source\AbZipper.pas"/>
+        <UnitName Value="AbZipper"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="112"/>
+        <CursorPos X="15" Y="126"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit15>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="288" TopLine="264"/>
+        <Caret Line="216" TopLine="194"/>
       </Position1>
       <Position2>
-        <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="278" TopLine="264"/>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="69" Column="28" TopLine="54"/>
       </Position2>
       <Position3>
-        <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="279" TopLine="264"/>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="105" Column="10" TopLine="80"/>
       </Position3>
       <Position4>
-        <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="287" TopLine="264"/>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="40" TopLine="15"/>
       </Position4>
       <Position5>
-        <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="288" TopLine="264"/>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="171" TopLine="152"/>
       </Position5>
       <Position6>
-        <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="16" Column="16"/>
+        <Filename Value="..\Components\Indy10\Lib\System\IdStream.pas"/>
+        <Caret Line="26" Column="45" TopLine="12"/>
       </Position6>
       <Position7>
-        <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="135" TopLine="124"/>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="109" Column="107" TopLine="92"/>
       </Position7>
       <Position8>
-        <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="283" Column="21" TopLine="258"/>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="8" Column="4"/>
       </Position8>
       <Position9>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="285" Column="24" TopLine="270"/>
+        <Caret Line="214" TopLine="194"/>
       </Position9>
       <Position10>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="287" Column="20" TopLine="270"/>
       </Position10>
       <Position11>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="14" Column="4"/>
+        <Filename Value="applogToLog4J.lpr"/>
+        <Caret Line="126" Column="7" TopLine="124"/>
       </Position11>
       <Position12>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="288" Column="31" TopLine="270"/>
+        <Caret Line="13" Column="14"/>
       </Position12>
       <Position13>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="126" Column="16" TopLine="112"/>
+        <Filename Value="applogToLog4J.lpr"/>
+        <Caret Line="21" Column="37"/>
       </Position13>
       <Position14>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="4" Column="8" TopLine="3"/>
+        <Filename Value="applogToLog4J.lpr"/>
+        <Caret Line="23" Column="31"/>
       </Position14>
       <Position15>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="290" TopLine="270"/>
+        <Caret Line="174" Column="14" TopLine="149"/>
       </Position15>
       <Position16>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="288" Column="14" TopLine="273"/>
+        <Caret Line="362" TopLine="337"/>
       </Position16>
       <Position17>
         <Filename Value="applogToLog4J.lpr"/>
       </Position17>
       <Position18>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="15"/>
+        <Caret Line="13" Column="14"/>
       </Position18>
       <Position19>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="285" Column="3" TopLine="274"/>
+        <Caret Line="21" Column="37"/>
       </Position19>
       <Position20>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="55" Column="18" TopLine="53"/>
+        <Caret Line="23" Column="31"/>
       </Position20>
       <Position21>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="16" Column="11"/>
+        <Caret Line="177" Column="31" TopLine="161"/>
       </Position21>
       <Position22>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="62" TopLine="62"/>
+        <Caret Line="173" Column="5" TopLine="161"/>
       </Position22>
       <Position23>
         <Filename Value="applogToLog4J.lpr"/>
       </Position23>
       <Position24>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="199" Column="30" TopLine="182"/>
+        <Caret Line="14" Column="17"/>
       </Position24>
       <Position25>
         <Filename Value="applogToLog4J.lpr"/>
+        <Caret Line="73" Column="23" TopLine="48"/>
       </Position25>
       <Position26>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="164" Column="63" TopLine="148"/>
+        <Caret Line="307" Column="17" TopLine="297"/>
       </Position26>
       <Position27>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="148" TopLine="134"/>
       </Position27>
       <Position28>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="170" TopLine="136"/>
+        <Caret Line="13" Column="14"/>
       </Position28>
       <Position29>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="10" Column="49"/>
+        <Caret Line="21" Column="37"/>
       </Position29>
       <Position30>
         <Filename Value="applogToLog4J.lpr"/>
-        <Caret Line="171" Column="5" TopLine="155"/>
+        <Caret Line="26"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
@@ -219,7 +253,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="applogToLog4J.lpr"/>
-        <Line Value="169"/>
+        <Line Value="179"/>
       </Item2>
     </BreakPoints>
   </Debugging>

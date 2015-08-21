@@ -1,7 +1,7 @@
 object L4JMainForm: TL4JMainForm
-  Left = 672
+  Left = 314
   Height = 434
-  Top = 206
+  Top = 221
   Width = 982
   Caption = 'L4JMainForm'
   ClientHeight = 415
@@ -243,7 +243,6 @@ object L4JMainForm: TL4JMainForm
     Top = 395
     Width = 982
     Panels = <>
-    SimplePanel = False
   end
   object ActionImageList: TImageList
     left = 64
@@ -4065,7 +4064,6 @@ object L4JMainForm: TL4JMainForm
   object SQLConnector1: TSQLConnector
     Connected = False
     LoginPrompt = False
-    DatabaseName = 'Database'
     KeepConnection = False
     Params.Strings = (
       'DSN=Oracle'
@@ -4073,15 +4071,122 @@ object L4JMainForm: TL4JMainForm
       'UID=owner_ped'
       'PWD=welcome01'
     )
+    Transaction = SQLTransaction1
     LogEvents = []
-    ConnectorType = 'ODBC'
     left = 264
     top = 176
   end
-  object SQLQuery1: TSQLQuery
-    FieldDefs = <>
+  object SqlQuery: TSQLQuery
+    FieldDefs = <    
+      item
+        Name = 'TIMESTAMP'
+        DataType = ftString
+        Precision = -1
+        Size = 29
+      end    
+      item
+        Name = 'MESSAGEID'
+        DataType = ftString
+        Precision = -1
+        Size = 271
+      end    
+      item
+        Name = 'SERVICEREQUESTORID'
+        DataType = ftString
+        Precision = -1
+        Size = 120
+      end    
+      item
+        Name = 'SERVICEID'
+        DataType = ftString
+        Precision = -1
+        Size = 240
+      end    
+      item
+        Name = 'EVENTTYPE'
+        DataType = ftString
+        Precision = -1
+        Size = 240
+      end    
+      item
+        Name = 'BUSINESSOBJECTID'
+        DataType = ftString
+        Precision = -1
+        Size = 200
+      end    
+      item
+        Name = 'USERTASKTYPE'
+        DataType = ftString
+        Precision = -1
+        Size = 240
+      end    
+      item
+        Name = 'USERTASKID'
+        DataType = ftString
+        Precision = -1
+        Size = 240
+      end    
+      item
+        Name = 'USER_TASK_EXEC_BANKCODE'
+        DataType = ftString
+        Precision = -1
+        Size = 120
+      end    
+      item
+        Name = 'ERROR_FLAG'
+        DataType = ftFloat
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'COMPONENT_NAME'
+        DataType = ftString
+        Precision = -1
+        Size = 240
+      end    
+      item
+        Name = 'COMPOSITE_NAME'
+        DataType = ftString
+        Precision = -1
+        Size = 240
+      end>
+    Database = SQLConnector1
+    Transaction = SQLTransaction1
+    ReadOnly = True
+    SQL.Strings = (
+      'select substr(rowid, 1, 255) as tupleid'
+      'from app_log_data'
+    )
     Params = <>
-    left = 264
-    top = 240
+    UsePrimaryKeyAsKey = False
+    left = 248
+    top = 304
+  end
+  object SQLTransaction1: TSQLTransaction
+    Active = False
+    Action = caNone
+    Database = SQLConnector1
+    left = 288
+    top = 233
+  end
+  object xSqlQuery: TSQLQuery
+    FieldDefs = <    
+      item
+        Name = 'EVENT_TYPE'
+        DataType = ftString
+        Precision = -1
+        Size = 240
+      end>
+    Database = SQLConnector1
+    Transaction = SQLTransaction1
+    ReadOnly = True
+    SQL.Strings = (
+      'select event_type'
+      'from app_log_data'
+    )
+    Params = <>
+    UsePrimaryKeyAsKey = False
+    left = 328
+    top = 296
   end
 end

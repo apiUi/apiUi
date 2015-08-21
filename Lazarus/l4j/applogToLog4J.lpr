@@ -7,10 +7,10 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, StrUtils, CustApp, abZipper, abUnzper, abZipTyp, abbrevia, l4jTypes, Xmlz, xmlUtilz, igGlobals,
-  lazrichedit, sqldb, oracleconnection, odbcconn, db;
+  lazrichedit, IdStream, sqldb, oracleconnection, odbcconn, db;
 var
   Param1, Param2, Param3, Param4: String;
-  zipFileName: String;
+  zipFileName, zipFileExt: String;
   xSize, maxSize, xFile: Integer;
 
 procedure StringToArchive(var Str: String);
@@ -20,7 +20,7 @@ var
 begin
   WriteLn ('Writing: ' + zipFileName + ' obpmMessages' + IntToStr (xFile));
   zipper := TAbZipper.Create(nil);
-  zipper.FileName:=zipFileName;
+  zipper.FileName:=zipFileName {+ ifthen(xFile > 0, '_' + IntToStr (xFile), '') + zipFileExt};
   zipper.AutoSave:=True;
   try
     MS := TStringStream.Create(Str);
@@ -52,11 +52,11 @@ begin
   end;
 end;
 
-procedure sqlLoop(aQry: TSqlQuery);
+procedure sqlLoop(aQry, xQry: TSqlQuery);
 var
   Msg: l4jTypes.TMsg;
-  f: Integer;
-  s: String;
+  x, f, EventDataLength: Integer;
+  s, RowId, xEventData: String;
   field: TField;
 begin
   TimeStamp:=aQry.FieldByName('TimeStamp').AsString;
@@ -93,22 +93,61 @@ begin
   begin
     field := aQry.Fields.Fields[f];
     if AnsiStartsStr('EVENTDATA', field.DisplayName) then
-      EventData:=EventData+field.DisplayText
+      EventData:=EventData+field.AsString
     else
     begin
-      if (field.DisplayName <> 'TIMESTAMP')
-      and (field.DisplayName <> 'MESSAGEID')
-      and (field.DisplayName <> 'SERVICEREQUESTERID')
-      and (field.DisplayName <> 'SERVICEID')
-      and (field.DisplayName <> 'EVENTTYPE')
-      then
+      if field.DisplayName = 'LENGTHEVENTDATA' then
+        EventDataLength:=field.AsInteger
+      else
       begin
-        s := s
-           + '<' + field.DisplayName + '>'
-           + field.DisplayText
-           + '</' + field.DisplayName + '>'
-           ;
+        if field.DisplayName = 'TUPLEID' then
+          RowId:=field.AsString
+        else
+        begin
+          if (field.DisplayName <> 'TIMESTAMP')
+          and (field.DisplayName <> 'MESSAGEID')
+          and (field.DisplayName <> 'SERVICEREQUESTERID')
+          and (field.DisplayName <> 'SERVICEID')
+          and (field.DisplayName <> 'EVENTTYPE')
+          and (field.DisplayName <> 'LDA')
+          and (field.DisplayName <> 'TUPLEID')
+          then
+          begin
+            s := s
+               + '<' + field.DisplayName + '>'
+               + field.AsString
+               + '</' + field.DisplayName + '>'
+               ;
+          end;
+        end;
       end;
+    end;
+  end;
+  if EventDataLength > Length (EventData) then
+  begin
+    x := 0;
+    while Length (EventData) < EventDataLength do
+    begin
+      xqry.SQL.Clear;
+      xqry.SQL.Add ( Format ( 'select dbms_lob.substr (event_data, %d, %d) as EventData'
+                            , [                                     SizeOfDataPart
+                              ,                                         1 + x * SizeOfDataPart
+                              ]
+                            )
+                   );
+      xqry.SQL.Add ( 'from app_log_data');
+      xqry.SQL.Add ( 'where RowId = ''' + RowId + '''');
+      xqry.Open;
+      xqry.First;
+      if xqry.EOF then
+        raise Exception.Create('EOF at selecting on RowId: ' + RowId);
+
+      xEventData:=xqry.Fields[0].AsString;
+      xqry.Close;
+      if xEventData = '' then
+        raise Exception.Create('Read empty string on RowId: ' + RowId);
+      EventData:=EventData+xEventData;
+      Inc (x);
     end;
   end;
   s := s
@@ -125,14 +164,18 @@ end;
 
 procedure main;
 var
-  csFileName, sqlFileName, edColumns, sep, s: String;
+  csFileName, sqlFileName, s, qryText: String;
   dbs: TSQLConnector;
-  qry: TSQLQuery;
+  qry, xqry: TSQLQuery;
   x: Integer;
 begin
   csFileName:=ParamStr(1);
   sqlFileName:=ParamStr(2);
   zipFileName:=ParamStr(3);
+{
+  zipFileExt:=ExtractFileExt(zipFileName);
+  zipFileName:=Copy (zipFileName, 1, Length(zipFileName) - length (zipFileExt));
+}
   if Paramcount > 3 then Param1 := ParamStr(4);
   if Paramcount > 4 then Param2 := ParamStr(5);
   if Paramcount > 5 then Param3 := ParamStr(6);
@@ -165,36 +208,20 @@ begin
       Free;
     end;
     dbs.Transaction := TSQLTransaction.Create(nil);
-    dbs.Transaction.Action:=caRollback;
-    dbs.Connected:=True;
-    dbs.Transaction.Active:=True;
+    dbs.Transaction.Action:=caNone;
     qry := TSQLQuery.Create(nil);
     qry.DataBase:=dbs;
     qry.Transaction:=dbs.Transaction;
     qry.ParseSql := False;
     qry.ReadOnly:=True;
     qry.UsePrimaryKeyAsKey:=False;
-    edColumns:='';
-    sep := '';
-    for x := 0 to NrOfDataParts - 1 do
-    begin
-      edColumns := edColumns
-                 + sep
-                 + Format ('dbms_lob.substr (event_data, %d, %d) as EventData%d'
-                          , [                            SizeOfDataPart
-                            ,                                x * SizeOfDataPart + 1
-                            ,                                                x
-                            ]
-                          )
-                 ;
-      sep := ', ';
-    end;
-    qry.SQL.Text := ReplaceStrings( ReadStringFromFile(sqlFileName)
-                                  , '$EventData'
-                                  , edColumns
-                                  , false
-                                  , false
-                                 );
+    qryText := ReplaceStrings( ReadStringFromFile(sqlFileName)
+                             , '$EventData'
+                             , getEventDataQuery (False)
+                             , false
+                             , false
+                             );
+    qry.SQL.Text := qryText;
     for x := 0 to Qry.Params.Count - 1 do
     begin
       if qry.Params.Items[x].Name = 'Param1' then qry.Params.Items[x].AsString:=Param1;
@@ -202,6 +229,14 @@ begin
       if qry.Params.Items[x].Name = 'Param3' then qry.Params.Items[x].AsString:=Param3;
       if qry.Params.Items[x].Name = 'Param4' then qry.Params.Items[x].AsString:=Param4;
     end;
+
+    xqry := TSQLQuery.Create(nil);
+    xqry.DataBase:=dbs;
+    xqry.Transaction:=dbs.Transaction;
+    xqry.ParseSql := False;
+    xqry.ReadOnly:=True;
+    xqry.UsePrimaryKeyAsKey:=False;
+
     Msgs := TMsgList.Create;
     try
       Msgs.Sorted := True;
@@ -209,7 +244,7 @@ begin
       qry.First;
       while not qry.EOF do
       begin
-        SqlLoop (qry);
+        SqlLoop (qry, xqry);
         qry.Next;
       end;
       s := Msgs.AsText;

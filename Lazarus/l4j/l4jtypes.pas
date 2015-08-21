@@ -5,6 +5,7 @@ interface
 uses Classes
    , Xmlz
    , Express
+   , sysutils
    ;
 
 type
@@ -64,11 +65,13 @@ end;
 
  { TSl }
 
-function getEventData: String;
+ function getEventData: String;
+ function getEventDataQuery(aIncEventData: Boolean): String;
+
 
 const
-  NrOfDataParts = 20;
-  SizeOfDataPart = 3500;
+  NrOfDataParts = 4;
+  SizeOfDataPart = 3990;
 var
   xpMoreData, xpFetched: Boolean;
   xpScript: String;
@@ -92,6 +95,18 @@ begin
     for x := 0 to NrOfDataParts - 1 do
       result := result + EventDataParts[x];
   end;
+end;
+
+function getEventDataQuery(aIncEventData: Boolean): String;
+var
+  x: Integer;
+  xEventDataColumn: String;
+begin
+  if aIncEventData then
+    xEventDataColumn := Format (', dbms_lob.substr (event_data, %d, 1) as EventData', [SizeOfDataPart])
+  else
+    xEventDataColumn := '';
+  result := 'substr(RowId, 1, 255) as TupleId, dbms_lob.GetLength (event_data) as LengthEventData' + xEventDataColumn;
 end;
 
 { TLogTypes }

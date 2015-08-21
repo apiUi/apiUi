@@ -20,7 +20,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="13"/>
+      <BuildNr Value="16"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -49,11 +49,16 @@
         <PackageName Value="indylaz"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="2">
       <Unit0>
         <Filename Value="applogToLog4J.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="..\Components\Indy10\Lib\System\IdStream.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="IdStream"/>
+      </Unit1>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -64,12 +69,13 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Xml;..\Utils"/>
+      <OtherUnitFiles Value="..\Xml;..\Utils;..\Components\Indy10\Lib\System"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
       </Debugging>
     </Linking>
   </CompilerOptions>
