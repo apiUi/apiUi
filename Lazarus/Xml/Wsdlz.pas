@@ -236,7 +236,7 @@ type
       Data: TObject;
       Name: String;
       HiddenFromUI: Boolean;
-      reqTagName, rpyTagName: String;
+      reqTagName, reqTagNameSpace, rpyTagName, rpyTagNameSpace: String;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
       reqDescrExpansionFilename, rpyDescrExpansionFilename, fltDescrExpansionFileName: String;
       Documentation: TStringList;
@@ -1959,7 +1959,10 @@ begin
         for p := 0 to Mssg.Parts.Count - 1 do
           reqXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd);
         if (Mssg.Parts.Count > 0) then
+        begin
           reqTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
+          reqTagNameSpace := Mssg.Parts.Parts[0].Xsd.ElementNameSpace;
+        end;
         FreeAndNil(freqBind);
         bindRefId := 0;
         reqBind := TXml.Create (0, reqXsd);
@@ -1984,6 +1987,7 @@ begin
         and Assigned (Mssg.Parts.Parts[0].Xsd) then
         begin
           rpyTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
+          rpyTagNameSpace := Mssg.Parts.Parts[0].Xsd.ElementNameSpace;
           rpyXsd.sType.AddXsd(Mssg.Parts.Parts[0].Xsd);
         end;
         FreeAndNil(fRpyBind);
@@ -4144,7 +4148,9 @@ begin
   self.WsdlService := xOperation.WsdlService;
   self.Name := xOperation.Name;
   self.reqTagName := xOperation.reqTagName;
+  self.reqTagNameSpace := xOperation.reqTagNameSpace;
   self.rpyTagName := xOperation.rpyTagName;
+  self.rpyTagNameSpace := xOperation.rpyTagNameSpace;
   self.Documentation := xOperation.Documentation;
   Self.FaultMessages := xOperation.FaultMessages;
   self.InputHeaders := xOperation.InputHeaders;
