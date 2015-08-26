@@ -2801,8 +2801,16 @@ begin
   SwapCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
-    se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlReply));
+    if Assigned (WsdlOperation) then
+    begin
+      se.FocusOperationName := WsdlOperation.reqTagName;
+      se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlReply);
+    end
+    else
+    begin
+      se.FocusOperationName := '';
+      se.FocusMessageIndex := 0;
+    end;
     SaveStringToFile(aFileName, se.ProjectDesignAsString(aFileName));
     stubChanged := False;
     se.stubRead := True; // well,... but logically ...
