@@ -102,6 +102,13 @@ var
   x: Integer;
   xEventDataColumn: String;
 begin
+{
+  if aIncEventData then
+    xEventDataColumn := Format (', substr (event_data,1 , %d) as EventData', [SizeOfDataPart])
+  else
+    xEventDataColumn := '';
+  result := 'substr(RowId, 1, 255) as TupleId, Length (event_data) as LengthEventData' + xEventDataColumn;
+}
   if aIncEventData then
     xEventDataColumn := Format (', dbms_lob.substr (event_data, %d, 1) as EventData', [SizeOfDataPart])
   else

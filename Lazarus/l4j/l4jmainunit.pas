@@ -304,7 +304,7 @@ var
   Msg: l4jTypes.TMsg;
   f, x, y: Integer;
   xEventData: String;
-  s: String;
+  s, sx, nm: String;
   field: TField;
   EventDataLength: Integer;
   RowId: String;
@@ -316,6 +316,17 @@ begin
   then
     L4JMainForm.Thread.UpdateStatus(5, 10, 'Fetched first data...');
   xpFetched := True;
+
+  TimeStamp:='';
+  MessageId:='';
+  ServiceRequestorId:='';
+  ServiceId:='';
+  EventType:='';
+  EventDataLength:=-1;
+  EventData:='';
+  sx := '';
+
+{
   TimeStamp:=qry.FieldByName('TimeStamp').AsString;
   MessageId:=Qry.FieldByName('MessageId').AsString;
   ServiceRequestorId:=Qry.FieldByName('ServiceRequestorId').AsString;
@@ -323,6 +334,59 @@ begin
   EventType:=Qry.FieldByName('EventType').AsString;
   EventDataLength:=-1;
   EventData:='';
+}
+
+  for f := 0 to Qry.Fields.Count - 1 do
+  begin
+    field := Qry.Fields.Fields[f];
+    nm := UpperCase(field.DisplayName);
+    if (nm = 'TIMESTAMP') then
+      TimeStamp:=field.AsString
+    else
+    begin
+      if (nm = 'MESSAGEID') then
+        MessageId:=field.AsString
+      else
+      begin
+        if (nm = 'SERVICEREQUESTERID')
+        or (nm = 'SERVICEREQUESTORID') then
+          ServiceRequestorId:=field.AsString
+        else
+        begin
+          if (nm = 'SERVICEID') then
+            ServiceId:=field.AsString
+          else
+          begin
+            if (nm = 'EVENTTYPE') then
+              EventType:=field.AsString
+            else
+            begin
+              if (nm = 'TUPLEID') then
+                RowId:=field.AsString
+              else
+              begin
+                if AnsiStartsStr('EVENTDATA', nm) then
+                  EventData:=EventData+field.AsString
+                else
+                begin
+                  if AnsiStartsStr('LENGTHEVENTDATA', nm) then
+                    EventDataLength:=field.AsInteger
+                  else
+                  begin
+                    sx := sx
+                        + '<' + field.DisplayName + '>'
+                        + field.AsString
+                        + '</' + field.DisplayName + '>'
+                        ;
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
 
   if Msgs.Find(MessageId, f) then
     Msg := Msgs.Msg[f]
@@ -338,41 +402,8 @@ begin
      + '<MessageId>' + MessageId + '</MessageId>'
      + '<ServiceRequestorId>' + ServiceRequestorId + '</ServiceRequestorId>'
      + '<ServiceId>' + ServiceId + '</ServiceId>'
+     + sx
      ;
-  for f := 0 to Qry.Fields.Count - 1 do
-  begin
-    field := Qry.Fields.Fields[f];
-    if AnsiStartsStr('EVENTDATA', field.DisplayName) then
-      EventData:=EventData+field.AsString
-    else
-    begin
-      if field.DisplayName = 'LENGTHEVENTDATA' then
-        EventDataLength:=field.AsInteger
-      else
-      begin
-        if field.DisplayName = 'TUPLEID' then
-          RowId:=field.AsString
-        else
-        begin
-          if (field.DisplayName <> 'TIMESTAMP')
-          and (field.DisplayName <> 'MESSAGEID')
-          and (field.DisplayName <> 'SERVICEREQUESTERID')
-          and (field.DisplayName <> 'SERVICEID')
-          and (field.DisplayName <> 'EVENTTYPE')
-          and (field.DisplayName <> 'LDA')
-          and (field.DisplayName <> 'TUPLEID')
-          then
-          begin
-            s := s
-               + '<' + field.DisplayName + '>'
-               + field.AsString
-               + '</' + field.DisplayName + '>'
-               ;
-          end;
-        end;
-      end;
-    end;
-  end;
   if EventDataLength > Length (EventData) then
   begin
     x := 1;
@@ -408,7 +439,7 @@ begin
      + '<' + EventType + '>' + EventData + '</' + EventType + '>'
      + LineEnding
      ;
-    Msg.events := Msg.events + s;
+  Msg.events := Msg.events + s;
 end;
 
 { TCustomThread }

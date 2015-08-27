@@ -56,15 +56,69 @@ procedure sqlLoop(aQry, xQry: TSqlQuery);
 var
   Msg: l4jTypes.TMsg;
   x, f, EventDataLength: Integer;
-  s, RowId, xEventData: String;
+  s, sx, nm, RowId, xEventData: String;
   field: TField;
 begin
-  TimeStamp:=aQry.FieldByName('TimeStamp').AsString;
-  MessageId:=aQry.FieldByName('MessageId').AsString;
-  ServiceRequestorId:=aQry.FieldByName('ServiceRequestorId').AsString;
-  ServiceId:=aQry.FieldByName('ServiceId').AsString;
-  EventType:=aQry.FieldByName('EventType').AsString;
+  TimeStamp:='';
+  MessageId:='';
+  ServiceRequestorId:='';
+  ServiceId:='';
+  EventType:='';
+  EventDataLength:=-1;
   EventData:='';
+  sx := '';
+
+  for f := 0 to aQry.Fields.Count - 1 do
+  begin
+    field := aQry.Fields.Fields[f];
+    nm := UpperCase(field.DisplayName);
+    if (nm = 'TIMESTAMP') then
+      TimeStamp:=field.AsString
+    else
+    begin
+      if (nm = 'MESSAGEID') then
+        MessageId:=field.AsString
+      else
+      begin
+        if (nm = 'SERVICEREQUESTERID')
+        or (nm = 'SERVICEREQUESTORID') then
+          ServiceRequestorId:=field.AsString
+        else
+        begin
+          if (nm = 'SERVICEID') then
+            ServiceId:=field.AsString
+          else
+          begin
+            if (nm = 'EVENTTYPE') then
+              EventType:=field.AsString
+            else
+            begin
+              if (nm = 'TUPLEID') then
+                RowId:=field.AsString
+              else
+              begin
+                if AnsiStartsStr('EVENTDATA', nm) then
+                  EventData:=EventData+field.AsString
+                else
+                begin
+                  if AnsiStartsStr('LENGTHEVENTDATA', nm) then
+                    EventDataLength:=field.AsInteger
+                  else
+                  begin
+                    sx := sx
+                        + '<' + field.DisplayName + '>'
+                        + field.AsString
+                        + '</' + field.DisplayName + '>'
+                        ;
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
 
   if Msgs.Find(MessageId, f) then
     Msg := Msgs.Msg[f]
@@ -88,41 +142,9 @@ begin
      + '<MessageId>' + MessageId + '</MessageId>'
      + '<ServiceRequestorId>' + ServiceRequestorId + '</ServiceRequestorId>'
      + '<ServiceId>' + ServiceId + '</ServiceId>'
+     + sx
      ;
-  for f := 0 to aQry.Fields.Count - 1 do
-  begin
-    field := aQry.Fields.Fields[f];
-    if AnsiStartsStr('EVENTDATA', field.DisplayName) then
-      EventData:=EventData+field.AsString
-    else
-    begin
-      if field.DisplayName = 'LENGTHEVENTDATA' then
-        EventDataLength:=field.AsInteger
-      else
-      begin
-        if field.DisplayName = 'TUPLEID' then
-          RowId:=field.AsString
-        else
-        begin
-          if (field.DisplayName <> 'TIMESTAMP')
-          and (field.DisplayName <> 'MESSAGEID')
-          and (field.DisplayName <> 'SERVICEREQUESTERID')
-          and (field.DisplayName <> 'SERVICEID')
-          and (field.DisplayName <> 'EVENTTYPE')
-          and (field.DisplayName <> 'LDA')
-          and (field.DisplayName <> 'TUPLEID')
-          then
-          begin
-            s := s
-               + '<' + field.DisplayName + '>'
-               + field.AsString
-               + '</' + field.DisplayName + '>'
-               ;
-          end;
-        end;
-      end;
-    end;
-  end;
+
   if EventDataLength > Length (EventData) then
   begin
     x := 0;

@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="4"/>
-      <BuildNr Value="522"/>
+      <BuildNr Value="525"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -104,7 +104,8 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dFPCUnixAPI"/>
+      <CustomOptions Value="-dFPCUnixAPI
+-dUseCThreads"/>
     </Other>
   </CompilerOptions>
   <Debugging>
