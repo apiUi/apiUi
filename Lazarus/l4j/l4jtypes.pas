@@ -43,7 +43,7 @@ type
   private
     function getAsText: String;
 public
-  FirstTimeStamp: String;
+  FirstTimeStamp, LastTimeStamp: String;
   events: String;
   property AsText: String read getAsText;
   constructor Create;
@@ -128,6 +128,7 @@ end;
 constructor TMsg.Create;
 begin
   FirstTimeStamp := 'Z';
+  LastTimeStamp := '0'; // zero
 end;
 
 destructor TMsg.Destroy;
@@ -139,7 +140,7 @@ function TMsg.getAsText: String;
 var
   x: Integer;
 begin
-  result := '<log4j_event timestamp="' + FirstTimeStamp + '">'
+  result := '<log4j_event timestamp="' + FirstTimeStamp + '" lasttimestamp="' + LastTimeStamp + '">'
           + events
           + '</log4j_event>'
           + LineEnding;

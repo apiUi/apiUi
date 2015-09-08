@@ -197,9 +197,6 @@ type
     procedure TreeViewClick(Sender: TObject);
     procedure TreeViewKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure TreeViewGetImageIndex(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-      var Ghosted: Boolean; var ImageIndex: Integer);
     procedure TreeViewExit(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure CloseActionExecute(Sender: TObject);
@@ -290,6 +287,7 @@ uses FindRegExpDialog
    , PromptUnit
    , CommandDialog
    , DbFilterDialog
+   , xmlxsdparser
    ;
 
 const treeIndexColumn = 0;
@@ -399,6 +397,8 @@ begin
   end;
   if (TimeStamp < Msg.FirstTimeStamp) then
     Msg.FirstTimeStamp := TimeStamp;
+  if (TimeStamp > Msg.LastTimeStamp) then
+    Msg.LastTimeStamp := TimeStamp;
   s := '<' + EventType + 'Info>'
      + '<TimeStamp>' + TimeStamp + '</TimeStamp>'
      + '<MessageId>' + MessageId + '</MessageId>'
@@ -1022,29 +1022,28 @@ end;
 
 function Tl4jMainForm.GetEndurance(aString: String): String;
 var
-  reqTime, repTime: TDateTime;
-  reqTimeAsStr, repTimeAsStr: String;
+  firstTimeStamp, lastTimeStamp: TDateTime;
+  firstTimeAsStr, lastTimeAsStr: String;
   ms: Extended;
 begin
   result := '';
 { TODO : GetEndurance }
 {$ifdef GETENDURANCE}
   try
-  with TXSDateTime.Create do
-    try
-      reqTimeAsStr := GetAtt ('<ServiceRequestTimestamp>', aString);
-      repTimeAsStr := GetAtt ('<ServiceReplyTimestamp>', aString);
-      XSToNative(Copy (reqTimeAsStr, 1, 20) + '000'); // convert from String
-      reqTime := AsDateTime; // convert to TDateTime
-      XSToNative(Copy (repTimeAsStr, 1, 20) + '000'); // convert from String
-      repTime := AsDateTime; // convert to TDateTime
-      ms := (repTime - reqTime) * 24 * 60 * 60 * 1000
-          + StrToInt(Copy (repTimeAsStr, 21, 3))
-          - StrToInt(Copy (reqTimeAsStr, 21, 3))
+    firstTimeAsStr := GetAtt ('<Timestamp>', aString);
+    lastTimeAsStr := GetAtt ('<LastTimestamp>', aString);
+    if (firstTimeAsStr <> '')
+    and (lastTimeAsStr <> '')
+    and (firstTimeAsStr <> lastTimeAsStr)
+    then
+    begin
+      firstTimeStamp := xsdParseDateTime(firstTimeAsStr);
+      lastTimeStamp := xsdParseDateTime(lastTimeAsStr);
+      ms := (lastTimeStamp - firstTimeStamp) * 24 * 60 * 60 * 1000
+          + StrToInt(Copy (lastTimeAsStr, 21, 3))
+          - StrToInt(Copy (firstTimeAsStr, 21, 3))
           ;
       result := Format ('%.3f', [ms / 1000]);
-    finally
-      Free;
     end;
   except
   end;
@@ -1851,12 +1850,6 @@ end;
 procedure Tl4jMainForm.TreeViewExit(Sender: TObject);
 begin
   TreeView.EndEditNode;
-end;
-
-procedure Tl4jMainForm.TreeViewGetImageIndex(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-  var Ghosted: Boolean; var ImageIndex: Integer);
-begin
 end;
 
 procedure Tl4jMainForm.TreeViewGetText(Sender: TBaseVirtualTree;

@@ -105,7 +105,9 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dFPCUnixAPI
--dUseCThreads"/>
+-dUseCThreads
+-dGETENDURANCE"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
