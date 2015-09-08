@@ -292,9 +292,11 @@ uses FindRegExpDialog
    , DbFilterDialog
    ;
 
-const treeTagColumn = 0;
-const treeValueColumn = 2;
-const treeButtonColumn = 1;
+const treeIndexColumn = 0;
+const treeSizeColumn = 1;
+const treeTimeStampColumn = 2;
+const statusInitial = 100;
+const statusDensity = 1000;
 
 
 {$R *.lfm}
@@ -620,7 +622,7 @@ var
   s: AnsiString;
   ss: TMemoryStream;
   aUnzipper: TAbUnZipper;
-  xExt: String;
+  xExt, fn: String;
 begin
   fEnabled := True;
   with TIdSync.Create do
@@ -657,20 +659,24 @@ begin
               ss := TMemoryStream.Create;
               try
                 try
-                  UpdateStatus ( x + 1
-                               , fFileNames.Count + 1
+                  fn := aUnzipper.Items[y].FileName;
+                  UpdateStatus ( statusInitial + statusDensity * x + ((y * statusDensity) div yc)
+                               , statusInitial + statusDensity * fFileNames.Count
                                , fFileNames.Strings[x]
                                + ' ['
-                               + aUnzipper.Items[y].FileName
+                               + fn
                                + ']'
                                );
                   aUnzipper.ExtractToStream(aUnzipper.Items[y].FileName, ss);
-                  ss.Position := 0;
-                  SetLength(s, ss.Size);
-                  ss.Read(Pointer(s)^, ss.Size);
-                  if (x = 0) and (y = 0) then
-                    _ExtractDisplayedColumns (s);
-                  _Extract (s);
+                  if ss.Size > 0 then
+                  begin
+                    ss.Position := 0;
+                    SetLength(s, ss.Size);
+                    ss.Read(Pointer(s)^, ss.Size);
+                    if (x = 0) and (y = 0) then
+                      _ExtractDisplayedColumns (s);
+                    _Extract (s);
+                  end;
                   s := '';
                 except
                   on e: Exception do
@@ -1996,12 +2002,12 @@ begin
   Result := 0;
   d1 := TreeView.GetNodeData (Node1);
   d2 := TreeView.GetNodeData (Node2);
-  if Column = 0 then
+  if Column = treeIndexColumn then
   begin
     Result := d1^.Index - d2^.Index;
     Exit;
   end;
-  if Column = 1 then
+  if Column = treeSizeColumn then
   begin
     Result := Length (Data.Strings[d1^.Index]) - Length (Data.Strings[d2^.Index]);
     Exit;

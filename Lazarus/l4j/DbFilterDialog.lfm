@@ -1,7 +1,7 @@
 object DbFilterDlg: TDbFilterDlg
-  Left = 285
+  Left = 498
   Height = 792
-  Top = 82
+  Top = 92
   Width = 1107
   Caption = 'Query Datasource'
   ClientHeight = 792
@@ -69,7 +69,7 @@ object DbFilterDlg: TDbFilterDlg
       ParentColor = False
     end
     object QueryEdit: TMemo
-      Left = 116
+      Left = 120
       Height = 541
       Top = 13
       Width = 938
@@ -78,11 +78,11 @@ object DbFilterDlg: TDbFilterDlg
       Font.Height = -12
       Font.Name = 'Courier New'
       Lines.Strings = (
-        'select to_char(log_time,''YYYY-MM-DD"T"HH24:MM:SS"."FF'') as Timestamp'
+        'select to_char(log_time,''YYYY-MM-DD"T"HH24:MI:SS"."FF'') as Timestamp'
         '     , (case '
         '         when (service_message_id is null or service_message_id = ''Not applicable'')'
         '         then '
-        '           process_group_instance_id || '';'' || to_char(log_time,''YYYY-MM-DD"T"HH24:MM:SS"."FF'')'
+        '           process_group_instance_id || '';'' || to_char(log_time,''YYYY-MM-DD"T"HH24:MI:SS"."FF'')'
         '         else '
         '           service_message_id'
         '        end'
