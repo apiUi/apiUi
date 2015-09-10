@@ -32,7 +32,6 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     function getDelayMsMax: Integer;
     function getDelayMsMin: Integer;
     procedure setDelayMsMax(const Value: Integer);
@@ -69,12 +68,22 @@ end;
 
 procedure TDelayTimeForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TDelayTimeForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TDelayTimeForm.FormShow(Sender: TObject);

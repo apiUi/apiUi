@@ -25,8 +25,6 @@ type
     RadioGroup: TRadioGroup;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-  private
-    IniFile: TFormIniFile;
   public
     { Public declarations }
   end;
@@ -44,14 +42,24 @@ implementation
 
 procedure TApplyToForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  RadioGroup.ItemIndex := IniFile.IntegerByName['AllAcross'];
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+    RadioGroup.ItemIndex := IntegerByName['AllAcross'];
+  finally
+    Free;
+  end;
 end;
 
 procedure TApplyToForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.IntegerByName['AllAcross'] := RadioGroup.ItemIndex;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    IntegerByName['AllAcross'] := RadioGroup.ItemIndex;
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 end.

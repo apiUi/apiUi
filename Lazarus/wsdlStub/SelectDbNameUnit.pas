@@ -31,7 +31,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure TreeViewChange(Sender: TObject; Node: TTreeNode);
   private
-    IniFile: TFormIniFile;
     {$ifndef fpc}
     fDataBase: TADOConnection;
     function GetDataBase: TADOConnection;
@@ -148,14 +147,22 @@ end;
 
 procedure TSelectDbNameForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TSelectDbNameForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 function TSelectDbNameForm.GetDataBase: TSQLConnector;

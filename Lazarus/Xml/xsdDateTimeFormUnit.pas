@@ -78,7 +78,7 @@ procedure TxsdDateTimeForm.FormCreate(Sender: TObject);
 var
   x: Integer;
 begin
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   dtFormat := dtfDateTime;
   MonthComboBox.Clear;
   for x := 1 to 12 do

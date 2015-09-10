@@ -205,7 +205,7 @@ var
   wBttn: Integer;
 begin
   wBttn := TreeView.Header.Columns [Ord(buttonColumn)].Width;
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   TreeView.Header.Columns [Ord(buttonColumn)].Width := wBttn;
   TreeView.NodeDataSize := SizeOf(TXmlTreeRec);

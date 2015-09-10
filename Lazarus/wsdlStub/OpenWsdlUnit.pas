@@ -72,7 +72,7 @@ end;
 
 procedure TOpenWsdlForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   WsdlLocation := IniFile.StringByName['WsdlLocation'];
 end;

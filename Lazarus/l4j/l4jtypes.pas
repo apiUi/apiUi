@@ -128,7 +128,7 @@ end;
 constructor TMsg.Create;
 begin
   FirstTimeStamp := 'Z';
-  LastTimeStamp := '0'; // zero
+  LastTimeStamp:='0'; //zero
 end;
 
 destructor TMsg.Destroy;

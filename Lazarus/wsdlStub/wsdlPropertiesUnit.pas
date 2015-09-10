@@ -52,7 +52,7 @@ end;
 
 procedure TwsdlPropertiesForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create(self);
+  IniFile := TFormIniFile.Create(self, True);
   IniFile.Restore;
 end;
 

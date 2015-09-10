@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="4"/>
-      <BuildNr Value="548"/>
+      <BuildNr Value="561"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -71,6 +71,7 @@
         <Filename Value="..\Xml\FilterDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="FilterDialog"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
@@ -105,8 +106,7 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dFPCUnixAPI
--dUseCThreads
--dGETENDURANCE"/>
+-dUseCThreads"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

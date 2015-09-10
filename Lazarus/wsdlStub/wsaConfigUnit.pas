@@ -30,7 +30,6 @@ type
     procedure wsaButtonClick(Sender: TObject);
     procedure EnableComponents(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     fdoReadOnly: Boolean;
     procedure setwsaEnabled(const Value: boolean);
     procedure setdoReadOnly(const Value: Boolean);
@@ -91,12 +90,22 @@ procedure TwsaConfigForm.FormCreate(Sender: TObject);
 var
   x: Integer;
 begin
-  IniFile := TFormIniFile.Create (Self);
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TwsaConfigForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TwsaConfigForm.FormShow(Sender: TObject);

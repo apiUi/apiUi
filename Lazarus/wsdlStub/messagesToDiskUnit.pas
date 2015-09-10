@@ -27,8 +27,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-  private
-    IniFile: TFormIniFile;
   public
     mqHeaderXml: TXml;
   end;
@@ -47,18 +45,28 @@ implementation
 
 procedure TmessagesToDiskForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  DirectoryEdit.Text := IniFile.StringByName['Directory'];
-  ExtentionEdit.Text := IniFile.StringByName['Extention'];
-  SeparatorEdit.Text := IniFile.StringByName['Separator'];
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+    DirectoryEdit.Text := StringByName['Directory'];
+    ExtentionEdit.Text := StringByName['Extention'];
+    SeparatorEdit.Text := StringByName['Separator'];
+  finally
+    Free;
+  end;
 end;
 
 procedure TmessagesToDiskForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.StringByName['Directory'] := DirectoryEdit.Text;
-  IniFile.StringByName['Extention'] := ExtentionEdit.Text;
-  IniFile.StringByName['Separator'] := SeparatorEdit.Text;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    StringByName['Directory'] := DirectoryEdit.Text;
+    StringByName['Extention'] := ExtentionEdit.Text;
+    StringByName['Separator'] := SeparatorEdit.Text;
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TmessagesToDiskForm.FormShow(Sender: TObject);

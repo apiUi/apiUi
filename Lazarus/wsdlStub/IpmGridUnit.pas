@@ -116,7 +116,6 @@ type
       CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
   private
     Ipms: TIpmItemList;
-    IniFile: TFormIniFile;
     nCols, nRows: Integer;
     Lists: TStringList;
     ColumnWidths: TStringList;
@@ -195,13 +194,17 @@ procedure TIpmGridForm.FormCreate(Sender: TObject);
 begin
   Ipms := TIpmItemList.Create;
   Grid.NodeDataSize := SizeOf(TTreeRec);
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
-  ToggleShowNillsAction.Checked := IniFile.BooleanByNameDef ['doShowNillsInXmlGrid', True];
-  PropertiesVisible := IniFile.BooleanByNameDef ['PropertiesVisible', False];
-  Lists := TStringList.Create;
-  ColumnWidths := TStringList.Create;
-  ColumnWidths.Text := IniFile.StringByName['DataGridColumnWidths'];
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+    ToggleShowNillsAction.Checked := BooleanByNameDef ['doShowNillsInXmlGrid', True];
+    PropertiesVisible := BooleanByNameDef ['PropertiesVisible', False];
+    Lists := TStringList.Create;
+    ColumnWidths := TStringList.Create;
+    ColumnWidths.Text := StringByName['DataGridColumnWidths'];
+  finally
+    Free;
+  end;
 end;
 
 procedure TIpmGridForm.FormDestroy(Sender: TObject);
@@ -211,11 +214,15 @@ begin
   for x := Grid.Header.Columns.Count - 1  downto 0 do
     ColumnWidths.Values [Grid.Header.Columns.Items[x].Text]
     := IntToStr (Grid.Header.Columns.Items[x].Width);
-  IniFile.BooleanByName ['doShowNillsInXmlGrid'] := doShowNills;
-  IniFile.BooleanByName ['PropertiesVisible'] := PropertiesVisible;
-  IniFile.StringByName['DataGridColumnWidths'] := ColumnWidths.Text;
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    BooleanByName ['doShowNillsInXmlGrid'] := doShowNills;
+    BooleanByName ['PropertiesVisible'] := PropertiesVisible;
+    StringByName['DataGridColumnWidths'] := ColumnWidths.Text;
+    Save;
+  finally
+    Free;
+  end;
   Lists.Clear;
   Lists.Free;
   Ipms.Free;

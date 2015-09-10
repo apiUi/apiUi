@@ -36,8 +36,6 @@ type
     procedure OkButtonClick(Sender: TObject);
     procedure ValueEditChange(Sender: TObject);
     procedure ComboEditChange(Sender: TObject);
-  private
-    IniFile: TFormIniFile;
   public
     Ipm: TIpmItem;
     ReadOnly: Boolean;
@@ -56,14 +54,22 @@ implementation
 
 procedure TEditValueForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TEditValueForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TEditValueForm.FormShow(Sender: TObject);

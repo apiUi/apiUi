@@ -26,8 +26,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-  private
-    IniFile: TFormIniFile;
   public
     procedure EnableEdits;
   end;
@@ -45,16 +43,26 @@ implementation
 
 procedure TmqBrowseForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  GetManagerEdit.Text := IniFile.StringByName['GetQueueManager'];
-  GetQueueEdit.Text := IniFile.StringByName['GetQueue'];
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+    GetManagerEdit.Text := StringByName['GetQueueManager'];
+    GetQueueEdit.Text := StringByName['GetQueue'];
+  finally
+    Free;
+  end;
 end;
 
 procedure TmqBrowseForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.StringByName['GetQueueManager'] := GetManagerEdit.Text;
-  IniFile.StringByName['GetQueue'] := GetQueueEdit.Text;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    StringByName['GetQueueManager'] := GetManagerEdit.Text;
+    StringByName['GetQueue'] := GetQueueEdit.Text;
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TmqBrowseForm.EnableEdits;

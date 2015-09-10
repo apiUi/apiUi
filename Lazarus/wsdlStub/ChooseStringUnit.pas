@@ -31,7 +31,6 @@ type
     procedure FormShow(Sender: TObject);
   private
     fChoosenString: String;
-    IniFile: TFormIniFile;
     function getChoosenIndex: Integer;
     function GetChoosenString: String;
     procedure SetChoosenString (aString: String);
@@ -73,14 +72,22 @@ end;
 
 procedure TChooseStringForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TChooseStringForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TChooseStringForm.FormShow(Sender: TObject);

@@ -17,8 +17,6 @@ begin
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TL4JMainForm, L4JMainForm);
-  Application.CreateForm(TFilterDlg, FilterDlg);
-  Application.CreateForm(TDbFilterDlg, DbFilterDlg);
   Application.Run;
 end.
 

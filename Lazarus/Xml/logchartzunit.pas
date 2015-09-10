@@ -43,7 +43,6 @@ type
     procedure UncheckAllOperationsActionExecute (Sender : TObject );
   private
     fChanged : Boolean ;
-    IniFile: TFormIniFile;
     procedure CreateData;
   public
     Operations: TWsdlOperations;
@@ -114,8 +113,12 @@ end;
 
 procedure TlogChartForm .FormDestroy (Sender : TObject );
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TlogChartForm .FormShow (Sender : TObject );
@@ -133,8 +136,12 @@ end;
 
 procedure TlogChartForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TlogChartForm .BtnAddPointClick (Sender : TObject );

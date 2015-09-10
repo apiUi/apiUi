@@ -125,7 +125,6 @@ type
     fIsChanged: Boolean;
     fReadOnly: Boolean;
     fBind: TXmlCvrg;
-    IniFile: TFormIniFile;
     FileName: String;
     FileContents: TStringList;
     fIsCheckedOnly: Boolean;
@@ -220,9 +219,13 @@ var
   wBttn: Integer;
 begin
   wBttn := TreeView.Header.Columns [treeButtonColumn].Width;
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
-  doShowIgnoreds := IniFile.BooleanByNameDef['doShowIgnoreds', False];
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+    doShowIgnoreds := BooleanByNameDef['doShowIgnoreds', False];
+  finally
+    Free;
+  end;
   TreeView.Header.Columns [treeButtonColumn].Width := wBttn;
   TreeView.Header.Columns [treeHasIgnoredColumn].Width := wBttn;
   TreeView.NodeDataSize := SizeOf(TDataTreeRec);
@@ -273,9 +276,13 @@ end;
 
 procedure TShowXmlCoverageForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.BooleanByName['doShowIgnoreds'] := doShowIgnoreds;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+    BooleanByName['doShowIgnoreds'] := doShowIgnoreds;
+  finally
+    Free;
+  end;
   FileContents.Free;
 end;
 

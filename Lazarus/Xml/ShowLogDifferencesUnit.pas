@@ -102,7 +102,6 @@ type
     procedure MaintainIgnoreAdditionsActionExecute(Sender: TObject);
     procedure MaintainIgnoredRemovalsActionExecute(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     fPreviewMode: Boolean;
     Diffs: TA2BStringList;
     function getShowExpanded: Boolean;
@@ -156,8 +155,12 @@ var
   w5: Integer;
 begin
   w5 := mainVST.Header.Columns.Items[5].Width;
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
   mainVST.Header.Columns.Items[5].Width := w5;
   mainVST.Header.Columns.Items[6].Width := w5;
   mainVST.NodeDataSize := SizeOf (TVSTreeRec);
@@ -172,13 +175,12 @@ end;
 
 procedure TShowLogDifferencesForm.FormDestroy(Sender: TObject);
 begin
-{
-  IniFile.WriteBool('rmPreview', 'ShowExpanded', ShowExpanded);
-  IniFile.WriteBool('rmPreview', 'ShowDelta', ShowDelta);
-  IniFile.WriteBool('rmPreview', 'ShowNonVerbs', ShowNonVerbs);
-}
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
   mainVST.Clear;
   Diffs.Free;
 end;

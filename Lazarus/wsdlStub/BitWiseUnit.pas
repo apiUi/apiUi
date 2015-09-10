@@ -59,7 +59,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     fIntegerValue: Int64;
     fIpmItem: TIpmItem;
     CaptionList: TStringList;
@@ -96,8 +95,12 @@ procedure TBitWiseForm.FormCreate(Sender: TObject);
 var
   x: Integer;
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
   CaptionList := TstringList.Create;
   for x := 0 to 63 do
     CaptionList.Add(''); 
@@ -110,8 +113,12 @@ end;
 procedure TBitWiseForm.FormDestroy(Sender: TObject);
 begin
   CaptionList.Free;
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TBitWiseForm.VST1InitNode(Sender: TBaseVirtualTree; ParentNode,
@@ -256,9 +263,14 @@ begin
   begin
     if (not ReadOnly) then
       Ipm.Value := IntToStr (IntegerValue);
-    for x := 0 to 63 do
-    begin
-      IniFile.StringByName['BitWiseCaption_' + IntToStr (x) + Ipm.Caption]:= CaptionList.Strings [x];
+    with TFormIniFile.Create(self, False) do
+    try
+      for x := 0 to 63 do
+      begin
+        StringByName['BitWiseCaption_' + IntToStr (x) + Ipm.Caption]:= CaptionList.Strings [x];
+      end;
+    finally
+      Free;
     end;
   end;
 end;
@@ -313,9 +325,14 @@ var
   x: Integer;
 begin
   fIpmItem := Value;
-  if Assigned (Value) then
-    for x := 0 to 63 do
-      CaptionList.Strings [x] := IniFile.StringByName['BitWiseCaption_' + IntToStr (x) + Value.Caption];
+  with TFormIniFile.Create(self, False) do
+  try
+    if Assigned (Value) then
+      for x := 0 to 63 do
+        CaptionList.Strings [x] := StringByName['BitWiseCaption_' + IntToStr (x) + Value.Caption];
+  finally
+    Free;
+  end;
 end;
 
 end.

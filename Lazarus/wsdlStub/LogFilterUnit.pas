@@ -76,7 +76,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     function getUnexpectedValuesEnabled: Boolean;
     procedure setUnexpectedValuesEnabled(const Value: Boolean);
     function getReplyEnabled: Boolean;
@@ -201,14 +200,22 @@ implementation
 
 procedure TLogFilterForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TLogFilterForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TLogFilterForm.setActionEnabled(const Value: Boolean);

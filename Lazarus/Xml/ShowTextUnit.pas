@@ -57,7 +57,7 @@ uses Registry;
 
 procedure TShowTextForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   EditAllowed := False;
   DoWrapText := IniFile.BooleanByName['WrapText'];

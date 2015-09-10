@@ -60,7 +60,6 @@ type
     procedure RowDownActionExecute(Sender: TObject);
     procedure RowDownActionUpdate(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     fLastCaption: String;
     procedure UpdateListView;
   public
@@ -219,14 +218,22 @@ end;
 
 procedure TSelectElementsForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TSelectElementsForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TSelectElementsForm.FormShow(Sender: TObject);

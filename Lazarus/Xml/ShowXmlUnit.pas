@@ -186,7 +186,6 @@ type
     fIsChanged: Boolean;
     fReadOnly: Boolean;
     fBind: TCustomBindable;
-    IniFile: TFormIniFile;
     FileName: String;
     FileContents: TStringList;
     fIsCheckedOnly: Boolean;
@@ -278,21 +277,25 @@ procedure TShowXmlForm.FormCreate(Sender: TObject);
 var
   wBttn: Integer;
 begin
+  fHideNodes := TStringList.Create;
+  fHideNodes.Sorted := true;
+  ProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   wBttn := TreeView.Header.Columns[treeButtonColumn].Width;
-  IniFile := TFormIniFile.Create(Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+    fHideNodes.Text := StringByName['hideNodes'];
+    doHideNodes := BooleanByName['doHideNodes'];
+    doHideXmlNs := BooleanByName['doHideXmlNs'];
+  finally
+    Free;
+  end;
   TreeView.Header.Columns[treeButtonColumn].Width := wBttn;
   TreeView.NodeDataSize := SizeOf(TBindTreeRec);
   TreeView.RootNodeCount := 0;
   FileContents := TStringList.Create;
   isChanged := False;
   doConfirmRemovals := True;
-  fHideNodes := TStringList.Create;
-  fHideNodes.Sorted := true;
-  fHideNodes.Text := IniFile.StringByName['hideNodes'];
-  doHideNodes := IniFile.BooleanByName['doHideNodes'];
-  doHideXmlNs := IniFile.BooleanByName['doHideXmlNs'];
-  ProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
 end;
 
 procedure TShowXmlForm.TreeViewEditing(Sender: TBaseVirtualTree;
@@ -373,13 +376,17 @@ end;
 
 procedure TShowXmlForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.StringByName['hideNodes'] := fHideNodes.Text;
-  IniFile.BooleanByName['doHideNodes'] := doHideNodes;
-  IniFile.BooleanByName['doHideXmlNs'] := doHideXmlNs;
+  with TFormIniFile.Create(self, False) do
+  try
+    StringByName['hideNodes'] := fHideNodes.Text;
+    BooleanByName['doHideNodes'] := doHideNodes;
+    BooleanByName['doHideXmlNs'] := doHideXmlNs;
+    Save;
+  finally
+    Free;
+  end;
   fHideNodes.Clear;
   FreeAndNil(fHideNodes);
-  IniFile.Free;
   FileContents.Free;
 end;
 
@@ -1071,8 +1078,6 @@ begin
     CancelButton.Cancel := False;
     OkButton.Cancel := True;
   end;
-  doHideNodes := IniFile.BooleanByNameDef['doHideNodes', True];
-  doHideXmlNs := IniFile.BooleanByNameDef['doHideXmlNs', True];
   RevalidateXmlTreeView(TreeView);
   TreeViewFocusChanged(TreeView, TreeView.FocusedNode, TreeView.FocusedColumn);
   DocumentationEdit.Color := Self.Color;

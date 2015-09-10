@@ -265,7 +265,7 @@ procedure TXmlGridForm.FormCreate(Sender: TObject);
 begin
   DocumentationEdit.Color := Self.Color;
   Grid.NodeDataSize := SizeOf(TTreeRec);
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   ToggleShowAttributeColumnsAction.Checked := IniFile.BooleanByNameDef ['doShowAttributeColumns', True];
   ToggleShowEmptyColunsAction.Checked := IniFile.BooleanByNameDef ['doShowEmptyColumns', True];

@@ -27,7 +27,6 @@ type
     procedure ListBoxDblClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     function GetSelectedItem: String;
   public
     property SelectedItem: String read GetSelectedItem;
@@ -54,14 +53,22 @@ end;
 
 procedure TSelectItemForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TSelectItemForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TSelectItemForm.ListBoxDblClick(Sender: TObject);

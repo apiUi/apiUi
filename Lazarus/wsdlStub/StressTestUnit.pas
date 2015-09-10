@@ -35,7 +35,6 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     function getConcurrentThreads: Integer;
     function getLoopsPerThread: Integer;
     function getDelayMsMax: Integer;
@@ -106,27 +105,35 @@ end;
 
 procedure TStressTestForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
   try
-    ConcurrentThreads := IniFile.IntegerByNameDef['ConcurrentThreads', 5];
-    LoopsPerThread := IniFile.IntegerByNameDef['LoopsPerThread', 10];
-    DelayMsMin := IniFile.IntegerByNameDef['DelayMin', 100];
-    DelayMsMax := IniFile.IntegerByNameDef['DelayMax', 1000];
-    DelayRadioGroup.ItemIndex := Inifile.IntegerByNameDef['DelayRadioGroupItem', 2];
-  except
+    Restore;
+    try
+      ConcurrentThreads := IntegerByNameDef['ConcurrentThreads', 5];
+      LoopsPerThread := IntegerByNameDef['LoopsPerThread', 10];
+      DelayMsMin := IntegerByNameDef['DelayMin', 100];
+      DelayMsMax := IntegerByNameDef['DelayMax', 1000];
+      DelayRadioGroup.ItemIndex := IntegerByNameDef['DelayRadioGroupItem', 2];
+    except
+    end;
+  finally
+    Free;
   end;
 end;
 
 procedure TStressTestForm.FormDestroy(Sender: TObject);
 begin
-  try IniFile.IntegerByName['ConcurrentThreads'] := ConcurrentThreads; except end;
-  try IniFile.IntegerByName['LoopsPerThread'] := LoopsPerThread; except end;
-  try IniFile.IntegerByName['DelayMin'] := DelayMsMin; except end;
-  try IniFile.IntegerByName['DelayMax'] := DelayMsMax; except end;
-  try IniFile.IntegerByName['DelayRadioGroupItem'] := DelayRadioGroup.ItemIndex;  except end;
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    try IntegerByName['ConcurrentThreads'] := ConcurrentThreads; except end;
+    try IntegerByName['LoopsPerThread'] := LoopsPerThread; except end;
+    try IntegerByName['DelayMin'] := DelayMsMin; except end;
+    try IntegerByName['DelayMax'] := DelayMsMax; except end;
+    try IntegerByName['DelayRadioGroupItem'] := DelayRadioGroup.ItemIndex;  except end;
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TStressTestForm.FormShow(Sender: TObject);

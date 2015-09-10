@@ -84,7 +84,6 @@ type
     Finds: String;
     useRegExp: Boolean;
     fScriptChanged: Boolean;
-    IniFile: TFormIniFile;
     LastCaption: String;
     fWsdlOperation: TWsdlOperation;
     fAfter, wasConnected: Boolean;
@@ -367,19 +366,27 @@ end;
 
 procedure TEditOperationScriptForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
-  Finds := IniFile.StringByName['FindString'];
-  useRegExp := IniFile.BooleanByName['useRegExp'];
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+    Finds := StringByName['FindString'];
+    useRegExp := BooleanByName['useRegExp'];
+  finally
+    Free;
+  end;
   After := False;
 end;
 
 procedure TEditOperationScriptForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.StringByName['FindString'] := Finds;
-  IniFile.BooleanByName['useRegExp'] := useRegExp;
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    StringByName['FindString'] := Finds;
+    BooleanByName['useRegExp'] := useRegExp;
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TEditOperationScriptForm.Grammar1Click(Sender: TObject);

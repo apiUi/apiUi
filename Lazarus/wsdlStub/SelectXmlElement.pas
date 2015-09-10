@@ -41,7 +41,6 @@ uses
     procedure ElementButtonClick(Sender: TObject);
   private
     Captions: TStringList;
-    IniFile: TFormIniFile;
     fSkipRootNode: Boolean;
     fWsdlOperation: TWsdlOperation;
     procedure ViewXmlItem ( aTreeView: TTreeView
@@ -245,16 +244,24 @@ end;
 
 procedure TSelectXmlElementForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
   maxOccurrences := MaxInt;
   ElementEnabled := False;
 end;
 
 procedure TSelectXmlElementForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 function TSelectXmlElementForm.getCurrentCaption: String;

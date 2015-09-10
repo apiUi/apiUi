@@ -58,7 +58,7 @@ end;
 
 procedure TCommandDlg.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
 end;
 

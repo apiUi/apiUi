@@ -251,7 +251,7 @@ end;
 
 procedure TdualListForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
 end;
 
 procedure TdualListForm.FormDestroy(Sender: TObject);

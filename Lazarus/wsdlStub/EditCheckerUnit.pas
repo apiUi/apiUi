@@ -59,7 +59,6 @@ type
     procedure EmbeddedSQLMenuItemClick(Sender: TObject);
   private
     fScriptChanged: Boolean;
-    IniFile: TFormIniFile;
     LastCaption: String;
     fWsdlOperation: TWsdlOperation;
     fBind: TCustomBindable;
@@ -246,14 +245,22 @@ end;
 
 procedure TEditCheckerForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TEditCheckerForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TEditCheckerForm.Grammar1Click(Sender: TObject);

@@ -65,7 +65,6 @@ type
     procedure CopyFileNameActionExecute(Sender: TObject);
     procedure CopyFileNameActionUpdate(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     LineNumber: Integer;
     fStubChanged: Boolean;
     fReloadRequired: Boolean;
@@ -224,14 +223,22 @@ end;
 
 procedure TwsdlListForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create(self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
 end;
 
 procedure TwsdlListForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TwsdlListForm.FormShow(Sender: TObject);

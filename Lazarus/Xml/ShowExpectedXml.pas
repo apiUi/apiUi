@@ -85,7 +85,6 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
   private
     fBind: TCustomBindable;
-    IniFile: TFormIniFile;
     SearchString: String;
     SearchScope: Integer;
     SearchIn: Integer;
@@ -138,8 +137,12 @@ end;
 
 procedure TShowExpectedXmlForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
   TreeView.NodeDataSize := SizeOf(TXmlTreeRec);
   TreeView.RootNodeCount := 0;
   CloseAction.ShortCut := VK_ESCAPE;
@@ -204,8 +207,12 @@ end;
 
 procedure TShowExpectedXmlForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TShowExpectedXmlForm.NodeToBind (aNode: PVirtualNode; var Bind: TCustomBindable; var Attribute: TXmlAttribute);

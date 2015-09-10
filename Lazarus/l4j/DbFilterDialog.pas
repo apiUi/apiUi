@@ -41,8 +41,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FileSearchButtonClick(Sender: TObject);
-  private
-    IniFile: TFormIniFile;
   public
     { Public declarations }
   end;
@@ -60,13 +58,18 @@ implementation
 
 procedure TDbFilterDlg.FormShow(Sender: TObject);
 begin
-  ConnStringEdit.Items.Text := IniFile.StringByName['ConnStringHistory'];
-  ParamEdit1.Items.Text := IniFile.StringByName['Param1History'];
-  ParamEdit2.Items.Text := IniFile.StringByName['Param2History'];
-  ParamEdit3.Items.Text := IniFile.StringByName['Param3History'];
-  ParamEdit4.Items.Text := IniFile.StringByName['Param4History'];
-  ParamEdit1.SelectAll;
-  ParamEdit1.SetFocus;
+  with TFormIniFile.Create (Self, False) do
+  try
+    ConnStringEdit.Items.Text := StringByName['ConnStringHistory'];
+    ParamEdit1.Items.Text := StringByName['Param1History'];
+    ParamEdit2.Items.Text := StringByName['Param2History'];
+    ParamEdit3.Items.Text := StringByName['Param3History'];
+    ParamEdit4.Items.Text := StringByName['Param4History'];
+    ParamEdit1.SelectAll;
+    ParamEdit1.SetFocus;
+  finally
+    Free;
+  end;
 end;
 
 procedure TDbFilterDlg.FileSearchButtonClick(Sender: TObject);
@@ -89,18 +92,26 @@ end;
 
 procedure TDbFilterDlg.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
-  ConnStringEdit.Text := IniFile.StringByName['ConnParamsFilename'];
-  QueryEdit.Lines.Text := IniFile.StringByNameDef['QueryText', QueryEdit.Lines.Text];
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+    ConnStringEdit.Text := StringByName['ConnParamsFilename'];
+    QueryEdit.Lines.Text := StringByNameDef['QueryText', QueryEdit.Lines.Text];
+  finally
+    Free;
+  end;
 end;
 
 procedure TDbFilterDlg.FormDestroy(Sender: TObject);
 begin
-  IniFile.StringByName['ConnParamsFilename'] := ConnStringEdit.Text;
-  IniFile.StringByName['QueryText'] := QueryEdit.Lines.Text;
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create (Self, False) do
+  try
+    StringByName['ConnParamsFilename'] := ConnStringEdit.Text;
+    StringByName['QueryText'] := QueryEdit.Lines.Text;
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TDbFilterDlg.OKBtnClick(Sender: TObject);
@@ -126,11 +137,16 @@ begin
   _saveText (ParamEdit2);
   _saveText (ParamEdit3);
   _saveText (ParamEdit4);
-  IniFile.StringByName['ConnStringHistory'] := ConnStringEdit.Items.Text;
-  IniFile.StringByName['Param1History'] := ParamEdit1.Items.Text;
-  IniFile.StringByName['Param2History'] := ParamEdit2.Items.Text;
-  IniFile.StringByName['Param3History'] := ParamEdit3.Items.Text;
-  IniFile.StringByName['Param4History'] := ParamEdit4.Items.Text;
+  with TFormIniFile.Create(self, False) do
+  try
+    StringByName['ConnStringHistory'] := ConnStringEdit.Items.Text;
+    StringByName['Param1History'] := ParamEdit1.Items.Text;
+    StringByName['Param2History'] := ParamEdit2.Items.Text;
+    StringByName['Param3History'] := ParamEdit3.Items.Text;
+    StringByName['Param4History'] := ParamEdit4.Items.Text;
+  finally
+    Free;
+  end;
 end;
 
 end.

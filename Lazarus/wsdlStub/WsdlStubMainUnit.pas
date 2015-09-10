@@ -864,7 +864,6 @@ type
     doScrollMessagesIntoView: Boolean;
     doScrollExceptionsIntoView: Boolean;
     DisclaimerAccepted: Boolean;
-    IniFile: TFormIniFile;
     ActualXml: TCustomBindable;
     ActualXmlAttr: TXmlAttribute;
     ErrorReadingLicenseInfo: Boolean;
@@ -3589,35 +3588,45 @@ begin
     if se.Licensed then // set a license for four days for stand alone pc usage
     begin
       DecodeDate(Now + 14, Y, m, d);
-      IniFile.IntegerByName['LicenseExpirationDate'] := 10000 * Y + 100 * m + d;
-      IniFile.StringByName['LicenseKey'] := generateIpmLicense(IntToStr(10000 * Y + 100 * m + d));
+      with TFormIniFile.Create(self, False) do
+      try
+        IntegerByName['LicenseExpirationDate'] := 10000 * Y + 100 * m + d;
+        StringByName['LicenseKey'] := generateIpmLicense(IntToStr(10000 * Y + 100 * m + d));
+      finally
+        Free;
+      end;
     end;
   end
   else
   begin
     if ErrorReadingLicenseInfo then
     begin
-      // first try if we have a stand alone license
-      ymd := IniFile.IntegerByName['LicenseExpirationDate'];
-      d := ymd mod 100;
-      ymd := ymd div 100;
-      m := ymd mod 100;
-      Y := ymd div 100;
-      xLicenseDate := EncodeDate(Y, m, d);
-      if (Now <= xLicenseDate) and ((Now + 16) > xLicenseDate) then
-        se.Licensed := validateIpmLicense(IntToStr(10000 * Y + 100 * m + d),
-          IniFile.StringByName['LicenseKey']);
-      if se.Licensed then
-        ShowMessage('' + _progName +
-            ' could not read license information from the server.' + LineEnding +
-            LineEnding + 'Your offline license is valid until ' + DateToStr
-            (xLicenseDate))
-      else
-        ShowMessage('' + _progName +
-            ' could not read the license information.' + LineEnding +
-            LineEnding + xDisableFunctions
-            + LineEnding + LineEnding
-            + 'Please contact your ' + _progName + ' provider for assistance.');
+      with TFormIniFile.Create(self, False) do
+      try
+        // first try if we have a stand alone license
+        ymd := IntegerByName['LicenseExpirationDate'];
+        d := ymd mod 100;
+        ymd := ymd div 100;
+        m := ymd mod 100;
+        Y := ymd div 100;
+        xLicenseDate := EncodeDate(Y, m, d);
+        if (Now <= xLicenseDate) and ((Now + 16) > xLicenseDate) then
+          se.Licensed := validateIpmLicense(IntToStr(10000 * Y + 100 * m + d),
+            StringByName['LicenseKey']);
+        if se.Licensed then
+          ShowMessage('' + _progName +
+              ' could not read license information from the server.' + LineEnding +
+              LineEnding + 'Your offline license is valid until ' + DateToStr
+              (xLicenseDate))
+        else
+          ShowMessage('' + _progName +
+              ' could not read the license information.' + LineEnding +
+              LineEnding + xDisableFunctions
+              + LineEnding + LineEnding
+              + 'Please contact your ' + _progName + ' provider for assistance.');
+      finally
+        Free;
+      end;
     end
     else
     begin
@@ -6137,6 +6146,7 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   X, wBttn: Integer;
+  xIniFile: TFormIniFile;
 begin
   DataTypeDocumentationMemo.Color := Self.Color;
   (MessagesTabControl as TWinControl).Color := Self.Color;
@@ -6174,92 +6184,92 @@ begin
   Randomize;
   startStopShortCut := startAction.ShortCut;
   wBttn := MessagesVTS.Header.Columns[Ord(logExpectedColumn)].Width;
-  IniFile := TFormIniFile.Create(Self);
-  IniFile.Restore;
+  xIniFile := TFormIniFile.Create(Self, True);
+  xIniFile.Restore;
   ViewStyleComboBox.ItemIndex := Ord(xvAll);
   for X := 0 to Ord(logTimeColumn) - 1 do
     MessagesVTS.Header.Columns[X].Width := wBttn;
-  se.projectFileName := IniFile.StringByName['WsdlStubFileName'];
-  wsdlStubMessagesFileName := IniFile.StringByName['WsdlStubMessagesFileName'];
-  DisclaimerAccepted := IniFile.BooleanByName['DisclaimerAccepted'];
-  BetaMode := IniFile.BooleanByNameDef['BetaMode', False];
-  ListofOperationsMenuItem.Checked := IniFile.BooleanByNameDef
+  se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
+  wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
+  DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
+  BetaMode := xIniFile.BooleanByNameDef['BetaMode', False];
+  ListofOperationsMenuItem.Checked := xIniFile.BooleanByNameDef
     ['ListofOperationsVisible', True];
   ScriptPanel.Visible := ListofOperationsMenuItem.Checked;
   ScriptSplitter.Visible := ListofOperationsMenuItem.Checked;
-  SchemapropertiesMenuItem.Checked := IniFile.BooleanByNameDef
+  SchemapropertiesMenuItem.Checked := xIniFile.BooleanByNameDef
     ['SchemaPropertiesVisible', True];
   XsdPanel.Visible := SchemapropertiesMenuItem.Checked;
   xsdSplitter.Visible := SchemapropertiesMenuItem.Checked;
-  WsdlInformationMenuItem.Checked := IniFile.BooleanByNameDef
+  WsdlInformationMenuItem.Checked := xIniFile.BooleanByNameDef
     ['WsdlInformationVisible', True];
   WsdlInfoPanel.Visible := WsdlInformationMenuItem.Checked;
   se.LogFilter.FilterStyle := TLogFilterStyle
-    (IniFile.IntegerByNameDef['LogFilter.FilterStyle', 0]);
-  se.LogFilter.MatchAny := IniFile.BooleanByNameDef['LogFilter.MatchAny',
+    (xIniFile.IntegerByNameDef['LogFilter.FilterStyle', 0]);
+  se.LogFilter.MatchAny := xIniFile.BooleanByNameDef['LogFilter.MatchAny',
     False];
-  se.LogFilter.StubActionEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.StubActionEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.StubActionEnabled', False];
-  se.LogFilter.StubActionEquals := IniFile.BooleanByNameDef
+  se.LogFilter.StubActionEquals := xIniFile.BooleanByNameDef
     ['LogFilter.StubActionEquals', True];
   se.LogFilter.StubAction := TStubAction
-    (IniFile.IntegerByNameDef['LogFilter.StubAction', 0]);
-  se.LogFilter.MiMEnabled := IniFile.BooleanByNameDef['LogFilter.MiMEnabled',
+    (xIniFile.IntegerByNameDef['LogFilter.StubAction', 0]);
+  se.LogFilter.MiMEnabled := xIniFile.BooleanByNameDef['LogFilter.MiMEnabled',
     False];
-  se.LogFilter.RequestMiMEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.RequestMiMEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.RequestMiMEnabled', True];
-  se.LogFilter.ReplyMiMEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.ReplyMiMEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.ReplyMiMEnabled', True];
-  se.LogFilter.MessageValidationEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.MessageValidationEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.MessageValidationEnabled', False];
-  se.LogFilter.RequestValidationEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.RequestValidationEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.RequestValidationEnabled', True];
-  se.LogFilter.ReplyValidationEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.ReplyValidationEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.ReplyValidationEnabled', True];
-  se.LogFilter.ExceptionEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.ExceptionEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.ExceptionEnabled', False];
-  se.LogFilter.ExceptionEquals := IniFile.BooleanByNameDef
+  se.LogFilter.ExceptionEquals := xIniFile.BooleanByNameDef
     ['LogFilter.ExceptionEquals', False];
-  se.LogFilter.Exception := IniFile.StringByNameDef['LogFilter.Exception', ''];
-  se.LogFilter.ExceptionRegExp := IniFile.BooleanByNameDef
+  se.LogFilter.Exception := xIniFile.StringByNameDef['LogFilter.Exception', ''];
+  se.LogFilter.ExceptionRegExp := xIniFile.BooleanByNameDef
     ['LogFilter.ExceptionRegExp', False];
-  se.LogFilter.ServiceEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.ServiceEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.ServiceEnabled', False];
-  se.LogFilter.ServiceEquals := IniFile.BooleanByNameDef
+  se.LogFilter.ServiceEquals := xIniFile.BooleanByNameDef
     ['LogFilter.ServiceEquals', True];
-  se.LogFilter.Service := IniFile.StringByNameDef['LogFilter.Service', ''];
-  se.LogFilter.ServiceRegExp := IniFile.BooleanByNameDef
+  se.LogFilter.Service := xIniFile.StringByNameDef['LogFilter.Service', ''];
+  se.LogFilter.ServiceRegExp := xIniFile.BooleanByNameDef
     ['LogFilter.ServiceRegExp', False];
-  se.LogFilter.OperationEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.OperationEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.OperationEnabled', False];
-  se.LogFilter.OperationEquals := IniFile.BooleanByNameDef
+  se.LogFilter.OperationEquals := xIniFile.BooleanByNameDef
     ['LogFilter.OperationEquals', True];
-  se.LogFilter.Operation := IniFile.StringByNameDef['LogFilter.Operation', ''];
-  se.LogFilter.OperationRegExp := IniFile.BooleanByNameDef
+  se.LogFilter.Operation := xIniFile.StringByNameDef['LogFilter.Operation', ''];
+  se.LogFilter.OperationRegExp := xIniFile.BooleanByNameDef
     ['LogFilter.OperationRegExp', False];
-  se.LogFilter.CorrelationEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.CorrelationEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.CorrelationEnabled', False];
-  se.LogFilter.CorrelationEquals := IniFile.BooleanByNameDef
+  se.LogFilter.CorrelationEquals := xIniFile.BooleanByNameDef
     ['LogFilter.CorrelationEquals', True];
-  se.LogFilter.Correlation := IniFile.StringByNameDef['LogFilter.Correlation',
+  se.LogFilter.Correlation := xIniFile.StringByNameDef['LogFilter.Correlation',
     ''];
-  se.LogFilter.CorrelationRegExp := IniFile.BooleanByNameDef
+  se.LogFilter.CorrelationRegExp := xIniFile.BooleanByNameDef
     ['LogFilter.CorrelationRegExp', False];
-  se.LogFilter.RequestEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.RequestEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.RequestEnabled', False];
-  se.LogFilter.RequestEquals := IniFile.BooleanByNameDef
+  se.LogFilter.RequestEquals := xIniFile.BooleanByNameDef
     ['LogFilter.RequestEquals', True];
-  se.LogFilter.Request := IniFile.StringByNameDef['LogFilter.Request', ''];
-  se.LogFilter.ReplyEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.Request := xIniFile.StringByNameDef['LogFilter.Request', ''];
+  se.LogFilter.ReplyEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.ReplyEnabled', False];
-  se.LogFilter.ReplyEquals := IniFile.BooleanByNameDef['LogFilter.ReplyEquals',
+  se.LogFilter.ReplyEquals := xIniFile.BooleanByNameDef['LogFilter.ReplyEquals',
     True];
-  se.LogFilter.Reply := IniFile.StringByNameDef['LogFilter.Reply', ''];
-  se.LogFilter.UnexpectedValuesEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.Reply := xIniFile.StringByNameDef['LogFilter.Reply', ''];
+  se.LogFilter.UnexpectedValuesEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.UnexpectedValuesEnabled', False];
-  se.LogFilter.RemarksEnabled := IniFile.BooleanByNameDef
+  se.LogFilter.RemarksEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.RemarksEnabled', False];
-  CollapseHeaders := IniFile.BooleanByNameDef['CollapseHeaders', True];
+  CollapseHeaders := xIniFile.BooleanByNameDef['CollapseHeaders', True];
   InWsdlTreeView.NodeDataSize := SizeOf(TXmlTreeRec);
   InWsdlTreeView.RootNodeCount := 0;
   OperationReqsTreeView.NodeDataSize := SizeOf(TOperationTreeRec);
@@ -6272,31 +6282,31 @@ begin
   ExceptionsVTS.RootNodeCount := 0;
   FileNameList := TStringList.Create;
   ReopenCaseList := TStringList.Create;
-  ReopenCaseList.Text := IniFile.StringByName['RecentFiles'];
+  ReopenCaseList.Text := xIniFile.StringByName['RecentFiles'];
   WsdlPaths := TStringList.Create;
   WsdlPaths.Sorted := True;
 
-  se.notStubbedExceptionMessage := IniFile.StringByNameDef
+  se.notStubbedExceptionMessage := xIniFile.StringByNameDef
     ['notStubbedExceptionMessage', 'No operation recognized'];
-  se.doViaProxyServer := IniFile.BooleanByName['doViaProxyServer'];
-  doScrollMessagesIntoView := IniFile.BooleanByNameDef
+  se.doViaProxyServer := xIniFile.BooleanByName['doViaProxyServer'];
+  doScrollMessagesIntoView := xIniFile.BooleanByNameDef
     ['doScrollMessagesIntoView', True];
-  doScrollExceptionsIntoView := IniFile.BooleanByNameDef
+  doScrollExceptionsIntoView := xIniFile.BooleanByNameDef
     ['doScrollExceptionsIntoView', True];
-  xmlUtil.doConfirmRemovals := IniFile.BooleanByNameDef['doConfirmRemovals',
+  xmlUtil.doConfirmRemovals := xIniFile.BooleanByNameDef['doConfirmRemovals',
     True];
-  xsdValidateAssignmentsAgainstSchema := IniFile.BooleanByNameDef
+  xsdValidateAssignmentsAgainstSchema := xIniFile.BooleanByNameDef
     ['doValidateScriptAssignmentAgainstSchema', False];
-  // se.HTTPServer.KeepAlive := IniFile.BooleanByNameDef ['HTTPServer.KeepAlive', se.HTTPServer.KeepAlive];
-  se.HTTPServer.ListenQueue := IniFile.IntegerByNameDef
+  // se.HTTPServer.KeepAlive := xIniFile.BooleanByNameDef ['HTTPServer.KeepAlive', se.HTTPServer.KeepAlive];
+  se.HTTPServer.ListenQueue := xIniFile.IntegerByNameDef
     ['HTTPServer.ListenQueue',
     se.HTTPServer.ListenQueue];
-  se.HTTPServer.MaxConnections := IniFile.IntegerByNameDef
+  se.HTTPServer.MaxConnections := xIniFile.IntegerByNameDef
     ['HTTPServer.MaxConnections', se.HTTPServer.MaxConnections];
-  se.ViaProxyServer := IniFile.StringByNameDef['ViaProxyServer', 'localhost'];
-  se.ViaProxyPort := StrToIntDef(IniFile.StringByName['ViaProxyPort'], 8081);
+  se.ViaProxyServer := xIniFile.StringByNameDef['ViaProxyServer', 'localhost'];
+  se.ViaProxyPort := StrToIntDef(xIniFile.StringByName['ViaProxyPort'], 8081);
   if (se.mmqqMqInterface.MQServerOK and se.mmqqMqInterface.MQClientOK) then
-    se.mqUse := TMqUse(StrToIntDef(IniFile.StringByName['mqUse'],
+    se.mqUse := TMqUse(StrToIntDef(xIniFile.StringByName['mqUse'],
         Ord(mquServer)));
   if (se.mmqqMqInterface.MQServerOK and (not se.mmqqMqInterface.MQClientOK)) then
     se.mqUse := mquServer;
@@ -6304,23 +6314,24 @@ begin
     se.mqUse := mquClient;
   if (not se.mmqqMqInterface.MQServerOK and (not se.mmqqMqInterface.MQClientOK)) then
     se.mqUse := mquUndefined;
-  se.mqMaxWorkingThreads := IniFile.IntegerByNameDef['MaxWorkingThreads', 15];
+  se.mqMaxWorkingThreads := xIniFile.IntegerByNameDef['MaxWorkingThreads', 15];
   se.CompareLogOrderBy := TCompareLogOrderBy
-    (IniFile.IntegerByNameDef['CompareLogOrderBy', Ord(clTimeStamp)]);
+    (xIniFile.IntegerByNameDef['CompareLogOrderBy', Ord(clTimeStamp)]);
   se.ShowLogCobolStyle := TShowLogCobolStyle
-    (IniFile.IntegerByNameDef['ShowLogCobolStyle', Ord(slCobol)]);
+    (xIniFile.IntegerByNameDef['ShowLogCobolStyle', Ord(slCobol)]);
   mqServerEnv := GetEnvironmentVariable('MQSERVER');
-  ColumnWidths.Text := IniFile.StringByNameDef['ColumnWidths', ''];
+  ColumnWidths.Text := xIniFile.StringByNameDef['ColumnWidths', ''];
   xsdElementsWhenRepeatable := StrToIntDef
-    (IniFile.StringByName['ElementsWhenRepeatable'], 1);
-  doShowDesignAtTop := IniFile.BooleanByNameDef['doShowDesignAtTop', True];
-  bgCorrelationItemColor := IniFile.IntegerByNameDef['bgCorrelationItemColor',
+    (xIniFile.StringByName['ElementsWhenRepeatable'], 1);
+  doShowDesignAtTop := xIniFile.BooleanByNameDef['doShowDesignAtTop', True];
+  bgCorrelationItemColor := xIniFile.IntegerByNameDef['bgCorrelationItemColor',
     bgCorrelationItemColor];
-  bgExpectedValueColor := IniFile.IntegerByNameDef['bgExpectedValueColor',
+  bgExpectedValueColor := xIniFile.IntegerByNameDef['bgExpectedValueColor',
     bgExpectedValueColor];
-  bgNilValueColor := IniFile.IntegerByNameDef['bgNilValueColor',
+  bgNilValueColor := xIniFile.IntegerByNameDef['bgNilValueColor',
     bgNilValueColor];
   DesignPanelAtTopMenuItem.Checked := doShowDesignAtTop;
+  xIniFile.Free;
   wsdlStubInitialise;
   se.stubRead := False;
   stubChanged := False;
@@ -6392,88 +6403,91 @@ begin
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
+var
+  xIniFile: TFormIniFile;
 begin
   if Assigned(se) then
     se.Activate(False);
   ClearConsole;
-  IniFile.BooleanByName['DisclaimerAccepted'] := DisclaimerAccepted;
-  IniFile.BooleanByName['BetaMode'] := BetaMode;
-  IniFile.BooleanByName['doShowDesignAtTop'] := doShowDesignAtTop;
-  IniFile.StringByName['RecentFiles'] := ReopenCaseList.Text;
-  IniFile.StringByName['ColumnWidths'] := ColumnWidths.Text;
-  IniFile.BooleanByName['ListofOperationsVisible'] :=
+  xIniFile := TFormIniFile.Create(self, False);
+  xIniFile.BooleanByName['DisclaimerAccepted'] := DisclaimerAccepted;
+  xIniFile.BooleanByName['BetaMode'] := BetaMode;
+  xIniFile.BooleanByName['doShowDesignAtTop'] := doShowDesignAtTop;
+  xIniFile.StringByName['RecentFiles'] := ReopenCaseList.Text;
+  xIniFile.StringByName['ColumnWidths'] := ColumnWidths.Text;
+  xIniFile.BooleanByName['ListofOperationsVisible'] :=
     ListofOperationsMenuItem.Checked;
-  IniFile.BooleanByName['SchemaPropertiesVisible'] :=
+  xIniFile.BooleanByName['SchemaPropertiesVisible'] :=
     SchemapropertiesMenuItem.Checked;
-  IniFile.BooleanByName['WsdlInformationVisible'] :=
+  xIniFile.BooleanByName['WsdlInformationVisible'] :=
     WsdlInformationMenuItem.Checked;
-  IniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
-  IniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
-  // IniFile.BooleanByName ['LogFilter.Enabled'] := se.LogFilter.Enabled;
-  IniFile.IntegerByName['LogFilter.FilterStyle'] := Ord
+  xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
+  xIniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
+  // xIniFile.BooleanByName ['LogFilter.Enabled'] := se.LogFilter.Enabled;
+  xIniFile.IntegerByName['LogFilter.FilterStyle'] := Ord
     (se.LogFilter.FilterStyle);
-  IniFile.BooleanByName['LogFilter.MatchAny'] := se.LogFilter.MatchAny;
-  IniFile.BooleanByName['LogFilter.StubActionEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.MatchAny'] := se.LogFilter.MatchAny;
+  xIniFile.BooleanByName['LogFilter.StubActionEnabled'] :=
     se.LogFilter.StubActionEnabled;
-  IniFile.BooleanByName['LogFilter.StubActionEquals'] :=
+  xIniFile.BooleanByName['LogFilter.StubActionEquals'] :=
     se.LogFilter.StubActionEquals;
-  IniFile.IntegerByName['LogFilter.StubAction'] := Ord(se.LogFilter.StubAction);
-  IniFile.BooleanByName['LogFilter.MiMEnabled'] := se.LogFilter.MiMEnabled;
-  IniFile.BooleanByName['LogFilter.RequestMiMEnabled'] :=
+  xIniFile.IntegerByName['LogFilter.StubAction'] := Ord(se.LogFilter.StubAction);
+  xIniFile.BooleanByName['LogFilter.MiMEnabled'] := se.LogFilter.MiMEnabled;
+  xIniFile.BooleanByName['LogFilter.RequestMiMEnabled'] :=
     se.LogFilter.RequestMiMEnabled;
-  IniFile.BooleanByName['LogFilter.ReplyMiMEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.ReplyMiMEnabled'] :=
     se.LogFilter.ReplyMiMEnabled;
-  IniFile.BooleanByName['LogFilter.MessageValidationEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.MessageValidationEnabled'] :=
     se.LogFilter.MessageValidationEnabled;
-  IniFile.BooleanByName['LogFilter.RequestValidationEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.RequestValidationEnabled'] :=
     se.LogFilter.RequestValidationEnabled;
-  IniFile.BooleanByName['LogFilter.ReplyValidationEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.ReplyValidationEnabled'] :=
     se.LogFilter.ReplyValidationEnabled;
-  IniFile.BooleanByName['LogFilter.ExceptionEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.ExceptionEnabled'] :=
     se.LogFilter.ExceptionEnabled;
-  IniFile.BooleanByName['LogFilter.ExceptionEquals'] :=
+  xIniFile.BooleanByName['LogFilter.ExceptionEquals'] :=
     se.LogFilter.ExceptionEquals;
-  IniFile.StringByName['LogFilter.Exception'] := se.LogFilter.Exception;
-  IniFile.BooleanByName['LogFilter.ExceptionRegExp'] :=
+  xIniFile.StringByName['LogFilter.Exception'] := se.LogFilter.Exception;
+  xIniFile.BooleanByName['LogFilter.ExceptionRegExp'] :=
     se.LogFilter.ExceptionRegExp;
-  IniFile.BooleanByName['LogFilter.ServiceEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.ServiceEnabled'] :=
     se.LogFilter.ServiceEnabled;
-  IniFile.BooleanByName['LogFilter.ServiceEquals'] :=
+  xIniFile.BooleanByName['LogFilter.ServiceEquals'] :=
     se.LogFilter.ServiceEquals;
-  IniFile.StringByName['LogFilter.Service'] := se.LogFilter.Service;
-  IniFile.BooleanByName['LogFilter.ServiceRegExp'] :=
+  xIniFile.StringByName['LogFilter.Service'] := se.LogFilter.Service;
+  xIniFile.BooleanByName['LogFilter.ServiceRegExp'] :=
     se.LogFilter.ServiceRegExp;
-  IniFile.BooleanByName['LogFilter.OperationEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.OperationEnabled'] :=
     se.LogFilter.OperationEnabled;
-  IniFile.BooleanByName['LogFilter.OperationEquals'] :=
+  xIniFile.BooleanByName['LogFilter.OperationEquals'] :=
     se.LogFilter.OperationEquals;
-  IniFile.StringByName['LogFilter.Operation'] := se.LogFilter.Operation;
-  IniFile.BooleanByName['LogFilter.OperationRegExp'] :=
+  xIniFile.StringByName['LogFilter.Operation'] := se.LogFilter.Operation;
+  xIniFile.BooleanByName['LogFilter.OperationRegExp'] :=
     se.LogFilter.OperationRegExp;
-  IniFile.BooleanByName['LogFilter.CorrelationEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.CorrelationEnabled'] :=
     se.LogFilter.CorrelationEnabled;
-  IniFile.BooleanByName['LogFilter.CorrelationEquals'] :=
+  xIniFile.BooleanByName['LogFilter.CorrelationEquals'] :=
     se.LogFilter.CorrelationEquals;
-  IniFile.StringByName['LogFilter.Correlation'] := se.LogFilter.Correlation;
-  IniFile.BooleanByName['LogFilter.CorrelationRegExp'] :=
+  xIniFile.StringByName['LogFilter.Correlation'] := se.LogFilter.Correlation;
+  xIniFile.BooleanByName['LogFilter.CorrelationRegExp'] :=
     se.LogFilter.CorrelationRegExp;
-  IniFile.BooleanByName['LogFilter.RequestEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.RequestEnabled'] :=
     se.LogFilter.RequestEnabled;
-  IniFile.BooleanByName['LogFilter.RequestEquals'] :=
+  xIniFile.BooleanByName['LogFilter.RequestEquals'] :=
     se.LogFilter.RequestEquals;
-  IniFile.StringByName['LogFilter.Request'] := se.LogFilter.Request;
-  IniFile.BooleanByName['LogFilter.ReplyEnabled'] := se.LogFilter.ReplyEnabled;
-  IniFile.BooleanByName['LogFilter.ReplyEquals'] := se.LogFilter.ReplyEquals;
-  IniFile.StringByName['LogFilter.Reply'] := se.LogFilter.Reply;
-  IniFile.BooleanByName['LogFilter.UnexpectedValuesEnabled'] :=
+  xIniFile.StringByName['LogFilter.Request'] := se.LogFilter.Request;
+  xIniFile.BooleanByName['LogFilter.ReplyEnabled'] := se.LogFilter.ReplyEnabled;
+  xIniFile.BooleanByName['LogFilter.ReplyEquals'] := se.LogFilter.ReplyEquals;
+  xIniFile.StringByName['LogFilter.Reply'] := se.LogFilter.Reply;
+  xIniFile.BooleanByName['LogFilter.UnexpectedValuesEnabled'] :=
     se.LogFilter.UnexpectedValuesEnabled;
-  IniFile.BooleanByName['LogFilter.RemarksEnabled'] :=
+  xIniFile.BooleanByName['LogFilter.RemarksEnabled'] :=
     se.LogFilter.RemarksEnabled;
-  IniFile.BooleanByName['CollapseHeaders'] := CollapseHeaders;
-  IniFile.StringByName['QueueNames'] := QueueNameList.Text;
-  WsdlInformationMenuItem.Checked := IniFile.BooleanByNameDef['', True];
-  IniFile.Save;
-  IniFile.Free;
+  xIniFile.BooleanByName['CollapseHeaders'] := CollapseHeaders;
+  xIniFile.StringByName['QueueNames'] := QueueNameList.Text;
+  WsdlInformationMenuItem.Checked := xIniFile.BooleanByNameDef['', True];
+  xIniFile.Save;
+  xIniFile.Free;
   QueueNameList.Free;
   ReopenCaseList.Free;
   FileNameList.Free;
@@ -7708,7 +7722,12 @@ begin
         se.EnvironmentList.Find(ChooseStringForm.ChoosenString, f);
         (se.EnvironmentList.Objects[f] as TXml).Free;
         se.EnvironmentList.Delete(f);
-        IniFile.DeleteKey('Environment' + ChooseStringForm.ChoosenString);
+        with TFormIniFile.Create(self, False) do
+        try
+          DeleteKey('Environment' + ChooseStringForm.ChoosenString);
+        finally
+          Free;
+        end;
         CreateEnvironmentSubMenuItems;
         stubChanged := True;
       finally
@@ -7730,12 +7749,12 @@ end;
 
 function TMainForm.doDecryptString(aString: AnsiString): AnsiString;
 begin
-  result := IniFile.DecryptPassword(aString);
+  result := FormIniFilez.DecryptPassword(aString);
 end;
 
 function TMainForm.doEncryptString(aString: AnsiString): AnsiString;
 begin
-  result := IniFile.EncryptPassword(aString);
+  result := FormIniFilez.EncryptPassword(aString);
 end;
 
 procedure TMainForm.doExecuteRequest;
@@ -9641,36 +9660,41 @@ begin
       [mbYes, mbNo, mbCancel], 0);
     if (ret = mrYes) then
     begin
-      IniFile.BooleanByName['doViaProxyServer'] := se.doViaProxyServer;
-      IniFile.BooleanByName['doScrollMessagesIntoView'] :=
-        doScrollMessagesIntoView;
-      IniFile.BooleanByName['doScrollExceptionsIntoView'] :=
-        doScrollExceptionsIntoView;
-      IniFile.BooleanByName['doConfirmRemovals'] := xmlUtil.doConfirmRemovals;
-      // IniFile.BooleanByName ['HTTPServer.KeepAlive'] := se.HTTPServer.KeepAlive;
-      IniFile.IntegerByName['HTTPServer.ListenQueue'] :=
-        se.HTTPServer.ListenQueue;
-      IniFile.IntegerByName['HTTPServer.MaxConnections'] :=
-        se.HTTPServer.MaxConnections;
-      IniFile.StringByName['ViaProxyServer'] := se.ViaProxyServer;
-      IniFile.StringByName['ViaProxyPort'] := IntToStr(se.ViaProxyPort);
-      IniFile.StringByName['mqUse'] := IntToStr(Ord(se.mqUse));
-      IniFile.IntegerByName['MaxWorkingThreads'] := se.mqMaxWorkingThreads;
-      IniFile.StringByName['mqServerEnv'] := mqServerEnv;
-      IniFile.IntegerByName['CompareLogOrderBy'] := Ord(se.CompareLogOrderBy);
-      IniFile.IntegerByName['ShowLogCobolStyle'] := Ord(se.ShowLogCobolStyle);
-      IniFile.StringByName['ElementsWhenRepeatable'] := IntToStr
-        (xsdElementsWhenRepeatable);
-      IniFile.BooleanByName['doValidateScriptAssignmentAgainstSchema'] :=
-        xsdValidateAssignmentsAgainstSchema;
-      IniFile.IntegerByName['bgCorrelationItemColor'] := bgCorrelationItemColor;
-      IniFile.IntegerByName['bgExpectedValueColor'] := bgExpectedValueColor;
-      IniFile.IntegerByName['bgNilValueColor'] := bgNilValueColor;
-      xXml := OptionsAsXml;
+      with TFormIniFile.Create(self, False) do
       try
-        IniFile.StringByName['Options'] := xXml.Text;
+        BooleanByName['doViaProxyServer'] := se.doViaProxyServer;
+        BooleanByName['doScrollMessagesIntoView'] :=
+          doScrollMessagesIntoView;
+        BooleanByName['doScrollExceptionsIntoView'] :=
+          doScrollExceptionsIntoView;
+        BooleanByName['doConfirmRemovals'] := xmlUtil.doConfirmRemovals;
+        // BooleanByName ['HTTPServer.KeepAlive'] := se.HTTPServer.KeepAlive;
+        IntegerByName['HTTPServer.ListenQueue'] :=
+          se.HTTPServer.ListenQueue;
+        IntegerByName['HTTPServer.MaxConnections'] :=
+          se.HTTPServer.MaxConnections;
+        StringByName['ViaProxyServer'] := se.ViaProxyServer;
+        StringByName['ViaProxyPort'] := IntToStr(se.ViaProxyPort);
+        StringByName['mqUse'] := IntToStr(Ord(se.mqUse));
+        IntegerByName['MaxWorkingThreads'] := se.mqMaxWorkingThreads;
+        StringByName['mqServerEnv'] := mqServerEnv;
+        IntegerByName['CompareLogOrderBy'] := Ord(se.CompareLogOrderBy);
+        IntegerByName['ShowLogCobolStyle'] := Ord(se.ShowLogCobolStyle);
+        StringByName['ElementsWhenRepeatable'] := IntToStr
+          (xsdElementsWhenRepeatable);
+        BooleanByName['doValidateScriptAssignmentAgainstSchema'] :=
+          xsdValidateAssignmentsAgainstSchema;
+        IntegerByName['bgCorrelationItemColor'] := bgCorrelationItemColor;
+        IntegerByName['bgExpectedValueColor'] := bgExpectedValueColor;
+        IntegerByName['bgNilValueColor'] := bgNilValueColor;
+        xXml := OptionsAsXml;
+        try
+          StringByName['Options'] := xXml.Text;
+        finally
+          xXml.Free;
+        end;
       finally
-        xXml.Free;
+        Free;
       end;
     end;
     if (ret = mrCancel) then

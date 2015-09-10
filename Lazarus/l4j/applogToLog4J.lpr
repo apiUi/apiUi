@@ -137,6 +137,8 @@ begin
   end;
   if (TimeStamp < Msg.FirstTimeStamp) then
     Msg.FirstTimeStamp := TimeStamp;
+  if (TimeStamp > Msg.LastTimeStamp) then
+    Msg.LastTimeStamp := TimeStamp;
   s := '<' + EventType + 'Info>'
      + '<TimeStamp>' + TimeStamp + '</TimeStamp>'
      + '<MessageId>' + MessageId + '</MessageId>'

@@ -197,6 +197,9 @@ type
     procedure TreeViewClick(Sender: TObject);
     procedure TreeViewKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure TreeViewGetImageIndex(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer);
     procedure TreeViewExit(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure CloseActionExecute(Sender: TObject);
@@ -219,7 +222,6 @@ type
     procedure QueryDbActionExecute(Sender: TObject);
   private
     fReadOnly: Boolean;
-    IniFile: TFormIniFile;
     SaveLog4JFileName, ReadLog4JFileName: String;
     ColumnWidths: TStringList;
     l4jDbName, l4jIniFileName, l4jXsdFileName, configFileName: String;
@@ -243,7 +245,7 @@ type
     function GetHasXmlValue (aDc: TDisplayedColumn; aString: String): String;
     function GetCellText (aData: TStringList; aIndex, aColumn: Integer): String;
     function Filter (Data: TStringList; aIndex: Integer): Boolean;
-    procedure l4jInit;
+    procedure l4jInit (aIniFile: TFormIniFile);
     procedure ParserError(Sender: TObject; LineNumber, ColumnNumber,
       Offset: Integer; TokenString, Data: String);
     procedure saveConfig (aFileName: String);
@@ -288,6 +290,7 @@ uses FindRegExpDialog
    , CommandDialog
    , DbFilterDialog
    , xmlxsdparser
+   , RegExpr
    ;
 
 const treeIndexColumn = 0;
@@ -1022,24 +1025,21 @@ end;
 
 function Tl4jMainForm.GetEndurance(aString: String): String;
 var
-  firstTimeStamp, lastTimeStamp: TDateTime;
+  firstTime, lastTime: TDateTime;
   firstTimeAsStr, lastTimeAsStr: String;
   ms: Extended;
 begin
   result := '';
-{ TODO : GetEndurance }
-{$ifdef GETENDURANCE}
   try
-    firstTimeAsStr := GetAtt ('<Timestamp>', aString);
-    lastTimeAsStr := GetAtt ('<LastTimestamp>', aString);
+    firstTimeAsStr := GetAtt ('timestamp', aString);
+    lastTimeAsStr := GetAtt ('lasttimestamp', aString);
     if (firstTimeAsStr <> '')
-    and (lastTimeAsStr <> '')
-    and (firstTimeAsStr <> lastTimeAsStr)
-    then
+    and (lastTimeAsStr <> '') then
     begin
-      firstTimeStamp := xsdParseDateTime(firstTimeAsStr);
-      lastTimeStamp := xsdParseDateTime(lastTimeAsStr);
-      ms := (lastTimeStamp - firstTimeStamp) * 24 * 60 * 60 * 1000
+      firstTime := xsdParseDateTime(firstTimeAsStr);
+      lastTime := xsdParseDateTime(lastTimeAsStr);
+
+      ms := (lastTime - firstTime) * 24 * 60 * 60 * 1000
           + StrToInt(Copy (lastTimeAsStr, 21, 3))
           - StrToInt(Copy (firstTimeAsStr, 21, 3))
           ;
@@ -1047,7 +1047,6 @@ begin
     end;
   except
   end;
-  {$endif}
 end;
 
 
@@ -1141,6 +1140,7 @@ end;
 function Tl4jMainForm.GetAtt (aKey, aString: String): String;
 var
   x: Integer;
+  s: String;
 begin
   result := '';
   if aKey = '' then
@@ -1153,37 +1153,18 @@ begin
     result := GetEndurance (aString);
     exit;
   end;
-  x := Pos (aKey, aString);
-  if x < 1 then
-    if aKey[1] = '<' then
-      x := Pos (':' + Copy (aKey, 2, Length (aKey) - 2), aString); // maybe a nsprefix, maybe followed by an xml attribute
-  if x < 1 then
-    x := Length (aString) + 1;
-  if aKey [1] = '<' then
-  begin
-    while (x < Length (aString))
-    and (aString[x] <> '>') do
-      Inc (x);
-    Inc (x);
-    while (x < Length (aString))
-    and (aString[x] <> '<') do
+  with TRegExpr.Create do
+  try
+    Expression := aKey + ' *\= *\"[^\"]*\"';
+    if Exec(aString) then
     begin
-      result := result + aString [x];
-      Inc (x);
+      s := Match[0];
+      Expression:='"[^\"]*\"';
+      if Exec (s) then
+        Result := Copy (Match[0], 2, Length (Match[0]) - 2);
     end;
-  end
-  else
-  begin
-    while (x < Length (aString))
-    and (aString[x] <> '"') do
-      Inc (x);
-    Inc (x);
-    while (x < Length (aString))
-    and (aString[x] <> '"') do
-    begin
-      result := result + aString [x];
-      Inc (x);
-    end;
+  finally
+    Free;
   end;
 end;
 
@@ -1246,7 +1227,7 @@ begin
           ;
 end;
 
-procedure TL4JMainForm.l4jInit;
+procedure TL4JMainForm.l4jInit (aIniFile: TFormIniFile);
 var
   x: Integer;
   xXml: TXml;
@@ -1313,7 +1294,7 @@ begin
     if not Assigned (DisplayedColumnsXsd) then
       raise Exception.Create('Description for DisplayedColumns not found');
     DisplayedColumnsXml := TXml.Create(0, DisplayedColumnsXsd);
-    DisplayedColumnsXml.LoadFromString(IniFile.StringByName['DisplayedColumns'], nil);
+    DisplayedColumnsXml.LoadFromString(aIniFile.StringByName['DisplayedColumns'], nil);
     readDisplayedColumnsXml := TXml.Create;
 
     if FileExistsUTF8(l4jDbName) { *Converted from FileExists* } then
@@ -1322,7 +1303,7 @@ begin
       { TODO : logusage }
 //      LogUsage(l4jDbName);
     end;
-    configFileName := IniFile.StringByNameDef  ['configFileName', ''];
+    configFileName := aIniFile.StringByNameDef  ['configFileName', ''];
   //DragAcceptFiles(Self.Handle, True);
     _OnParseErrorEvent := @ParserError;
     if configFileName <> '' then
@@ -1386,35 +1367,40 @@ end;
 procedure Tl4jMainForm.FormCreate(Sender: TObject);
 var
   xXml: TXml;
+  xIniFile: TFormIniFile;
 begin
-  IniFile := TFormIniFile.Create (Self);
-  IniFile.Restore;
-  TreeView.NodeDataSize := SizeOf (TTreeRec);
-  TreeView.RootNodeCount := 0;
-//CloseAction.ShortCut := VK_ESCAPE;
-  isChanged := False;
-  DisplayedColumns := TStringList.Create;
-  ColumnWidths := TStringList.Create;
-  ColumnWidths.Text := IniFile.StringByName ['ColumnWidths'];
-  SaveLog4JFileName := IniFile.StringByNamedef ['SaveLog4JFileName', ''];
-  ReadLog4JFileName := IniFile.StringByNamedef ['ReadLog4JFileName', ''];
-  ShowDetailed := IniFile.StringByNamedef ['ShowDetailed', ''];
-  doWrapText := IniFile.BooleanByNamedef ['doWrapText', False];
-  WraptekstMenuItemClick (nil);
-  { TODO : filterdialog }
-//FilterDlg.Caption := 'Configure filter';
-  Data := TStringList.Create;
-{
-  StatusBar.Visible := False;
-  ProgressBar.Visible := False;
-}
-  logTypes := TLogTypes.Create;
-  iniXml := TXml.Create;
-  readDisplayedColumnsXml := TXml.Create;
-  l4jInit;
-  dbs := SQLConnector1;
-  qry := SqlQuery;
-  xqry := xSqlQuery;
+  xIniFile := TFormIniFile.Create (Self, True);
+  try
+    xIniFile.Restore;
+    TreeView.NodeDataSize := SizeOf (TTreeRec);
+    TreeView.RootNodeCount := 0;
+  //CloseAction.ShortCut := VK_ESCAPE;
+    isChanged := False;
+    DisplayedColumns := TStringList.Create;
+    ColumnWidths := TStringList.Create;
+    ColumnWidths.Text := xIniFile.StringByName ['ColumnWidths'];
+    SaveLog4JFileName := xIniFile.StringByNamedef ['SaveLog4JFileName', ''];
+    ReadLog4JFileName := xIniFile.StringByNamedef ['ReadLog4JFileName', ''];
+    ShowDetailed := xIniFile.StringByNamedef ['ShowDetailed', ''];
+    doWrapText := xIniFile.BooleanByNamedef ['doWrapText', False];
+    WraptekstMenuItemClick (nil);
+    { TODO : filterdialog }
+  //FilterDlg.Caption := 'Configure filter';
+    Data := TStringList.Create;
+  {
+    StatusBar.Visible := False;
+    ProgressBar.Visible := False;
+  }
+    logTypes := TLogTypes.Create;
+    iniXml := TXml.Create;
+    readDisplayedColumnsXml := TXml.Create;
+    l4jInit(xIniFile);
+    dbs := SQLConnector1;
+    qry := SqlQuery;
+    xqry := xSqlQuery;
+  finally
+    xIniFile.Free;
+  end;
 end;
 
 procedure Tl4jMainForm.XmlTreeViewGetText ( Sender: TBaseVirtualTree
@@ -1434,32 +1420,36 @@ procedure Tl4jMainForm.FormDestroy(Sender: TObject);
 var
   x: Integer;
 begin
-  TreeView.Clear;
-  for x := 0 to DisplayedColumns.Count - 1 do
-    DisplayedColumns.Objects [x].Free;
-  DisplayedColumns.Free;
-  for x := TreeView.Header.Columns.Count - 1  downto 0 do
-    ColumnWidths.Values [TreeView.Header.Columns.Items[x].Text]
-    := IntToStr (TreeView.Header.Columns.Items[x].Width);
-  IniFile.StringByName ['SaveLog4JFileName'] := SaveLog4JFileName;
-  IniFile.StringByName ['ReadLog4JFileName'] := ReadLog4JFileName;
-  IniFile.StringByName  ['configFileName'] := configFileName;
-  IniFile.StringByName ['ShowDetailed'] := ShowDetailed;
-  IniFile.BooleanByName ['doWrapText'] := doWrapText;
-  IniFile.StringByName ['ColumnWidths'] := ColumnWidths.Text;
-  IniFile.StringByName ['DisplayedColumns'] := DisplayedColumnsXml.Text;
-  IniFile.Save;
-  IniFile.Free;
-  ColumnWidths.Free;
-  Data.Clear;
-  Data.Free;
-  for x := 0 to logTypes.Count - 1 do
-    logTypes.Types[x].Free;
-  logTypes.Free;
-  iniXml.Free;
-  DisplayedColumnsXml.Free;
-  readDisplayedColumnsXml.Free;
-  l4jXsdDescr.Free;
+  with TFormIniFile.Create (Self, False) do
+  try
+    TreeView.Clear;
+    for x := 0 to DisplayedColumns.Count - 1 do
+      DisplayedColumns.Objects [x].Free;
+    DisplayedColumns.Free;
+    for x := TreeView.Header.Columns.Count - 1  downto 0 do
+      ColumnWidths.Values [TreeView.Header.Columns.Items[x].Text]
+      := IntToStr (TreeView.Header.Columns.Items[x].Width);
+    StringByName ['SaveLog4JFileName'] := SaveLog4JFileName;
+    StringByName ['ReadLog4JFileName'] := ReadLog4JFileName;
+    StringByName  ['configFileName'] := configFileName;
+    StringByName ['ShowDetailed'] := ShowDetailed;
+    BooleanByName ['doWrapText'] := doWrapText;
+    StringByName ['ColumnWidths'] := ColumnWidths.Text;
+    StringByName ['DisplayedColumns'] := DisplayedColumnsXml.Text;
+    Save;
+    ColumnWidths.Free;
+    Data.Clear;
+    Data.Free;
+    for x := 0 to logTypes.Count - 1 do
+      logTypes.Types[x].Free;
+    logTypes.Free;
+    iniXml.Free;
+    DisplayedColumnsXml.Free;
+    readDisplayedColumnsXml.Free;
+    l4jXsdDescr.Free;
+  finally
+    Free;
+  end;
 end;
 
 procedure TL4JMainForm.CopyActionExecute(Sender: TObject);
@@ -1852,6 +1842,12 @@ begin
   TreeView.EndEditNode;
 end;
 
+procedure Tl4jMainForm.TreeViewGetImageIndex(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer);
+begin
+end;
+
 procedure Tl4jMainForm.TreeViewGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: string);
@@ -2054,23 +2050,28 @@ end;
 
 procedure TL4JMainForm.QueryDbActionExecute(Sender: TObject);
 begin
-  DbFilterDlg.ShowModal;
-  if DbFilterDlg.ModalResult = mrOk then
-  begin
-    TreeView.Clear;
-    Treeview.Header.SortColumn := 0;
-    TreeView.Header.SortDirection := sdAscending;
-    Memo.Clear;
-    Data.Clear;
-    numberVisible := 0;
-    Thread := TQueryThread.Create ( Self
-                                  , DbFilterDlg.ConnStringEdit.Text
-                                  , DbFilterDlg.QueryEdit.Text
-                                  , DbFilterDlg.ParamEdit1.Text
-                                  , DbFilterDlg.ParamEdit2.Text
-                                  , DbFilterDlg.ParamEdit3.Text
-                                  , DbFilterDlg.ParamEdit4.Text
-                                  );
+  Application.CreateForm(TDbFilterDlg, DbFilterDlg);
+  try
+    DbFilterDlg.ShowModal;
+    if DbFilterDlg.ModalResult = mrOk then
+    begin
+      TreeView.Clear;
+      Treeview.Header.SortColumn := 0;
+      TreeView.Header.SortDirection := sdAscending;
+      Memo.Clear;
+      Data.Clear;
+      numberVisible := 0;
+      Thread := TQueryThread.Create ( Self
+                                    , DbFilterDlg.ConnStringEdit.Text
+                                    , DbFilterDlg.QueryEdit.Text
+                                    , DbFilterDlg.ParamEdit1.Text
+                                    , DbFilterDlg.ParamEdit2.Text
+                                    , DbFilterDlg.ParamEdit3.Text
+                                    , DbFilterDlg.ParamEdit4.Text
+                                    );
+    end;
+  finally
+    FreeAndNil(DbFilterDlg);
   end;
 end;
 
@@ -2268,27 +2269,32 @@ begin
       Exit;
     if Files.Count > 0 then
       ReadLog4JFileName := Files.Strings[0];
-    FilterDlg.ShowModal;
-    if FilterDlg.ModalResult <> mrOk then
-      Exit;
-    Memo.Clear;
-    Data.Clear;
-    TreeView.Clear;
-    Treeview.Header.SortColumn := 0;
-    TreeView.Header.SortDirection := sdAscending;
-    numberVisible := 0;
-    Thread := TSearchThread.Create ( Self
-                                   , Files
-                                   , FilterDlg.FindEdit0.Text
-                                   , FilterDlg.FindEdit1.Text
-                                   , FilterDlg.FindEdit2.Text
-                                   , FilterDlg.FindEdit3.Text
-                                   , FilterDlg.HasNotCheckBox1.Checked
-                                   , FilterDlg.HasNotCheckBox2.Checked
-                                   , FilterDlg.HasNotCheckBox3.Checked
-                                   );
-    if Files.Count > 0 then
-      ReadLog4JFileName := Files.Strings[0];
+    Application.CreateForm(TFilterDlg, FilterDlg);
+    try
+      FilterDlg.ShowModal;
+      if FilterDlg.ModalResult <> mrOk then
+        Exit;
+      Memo.Clear;
+      Data.Clear;
+      TreeView.Clear;
+      Treeview.Header.SortColumn := 0;
+      TreeView.Header.SortDirection := sdAscending;
+      numberVisible := 0;
+      Thread := TSearchThread.Create ( Self
+                                     , Files
+                                     , FilterDlg.FindEdit0.Text
+                                     , FilterDlg.FindEdit1.Text
+                                     , FilterDlg.FindEdit2.Text
+                                     , FilterDlg.FindEdit3.Text
+                                     , FilterDlg.HasNotCheckBox1.Checked
+                                     , FilterDlg.HasNotCheckBox2.Checked
+                                     , FilterDlg.HasNotCheckBox3.Checked
+                                     );
+      if Files.Count > 0 then
+        ReadLog4JFileName := Files.Strings[0];
+    finally
+      FreeAndNil (FilterDlg);
+    end;
   finally
     Free;
   end;

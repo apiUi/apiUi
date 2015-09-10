@@ -34,7 +34,6 @@ private
   fKey: String;
   fForm: TForm;
   fName: String;
-    EncryptionSeed: String;
     function getIntegerByName(Index: String): Integer;
     function getIntegerByNameDef(Index: String; Default: Integer): Integer;
     procedure setIntegerByName(Index: String; const Value: Integer);
@@ -49,9 +48,6 @@ private
   procedure fCloseKeys;
 public
   function getBooleanByName(Index: String; DefValue: Boolean): Boolean; Overload;
-  function SimpleEncrypt(const Source: AnsiString): AnsiString;
-  function EncryptPassword (aPassword: AnsiString): AnsiString;
-  function DecryptPassword(aPassword: AnsiString): AnsiString;
   procedure Restore;
   procedure Save;
   property BooleanByName [Index: String]: Boolean read getBooleanByName write setBooleanByName;
@@ -60,8 +56,7 @@ public
   property StringByNameDef [Index, Default: String]: String read getStringByNameDef;
   property IntegerByName [Index: String]: Integer read getIntegerByName write setIntegerByName;
   property IntegerByNameDef [Index: String; Default: Integer]: Integer read getIntegerByNameDef;
-  constructor Create (aForm: TForm); Overload;
-  constructor Create (aForm: TForm; aName: String; initScreenPos: Boolean); Overload;
+  constructor Create (aForm: TForm; initScreenPos: Boolean); Overload;
   destructor Destroy; override;
 end;
 
@@ -72,30 +67,51 @@ public
   procedure Restore (aIniFile: TFormIniFile);
 end;
 
+function DecryptPassword(aPassword: AnsiString): AnsiString;
+function EncryptPassword(aPassword: AnsiString): AnsiString;
+
 implementation
 
 uses Math
    , VirtualTrees
    ;
 
+function SimpleEncrypt(const Source: AnsiString): AnsiString;
+var
+  Index: Integer;
+  EncryptionSeed: String;
+begin
+  EncryptionSeed := 'th^ruh54bdkjbkjb4k458&*';
+  SetLength(Result, Length(Source));
+  for Index := 1 to Length(Source) do
+    Result[Index] := AnsiChar((Ord(EncryptionSeed[Index mod Length(EncryptionSeed)]) xor Ord(Source[Index])));
+end;
+
+function DecryptPassword(aPassword: AnsiString): AnsiString;
+begin
+  if aPassword <> '' then
+    result :=  SimpleEncrypt(DecodeStringBase64(aPassword))
+  else
+    result := '';
+end;
+
+function EncryptPassword(aPassword: AnsiString): AnsiString;
+begin
+  if aPassword <> '' then
+    result := EncodeStringBase64 (SimpleEncrypt(aPassword))
+  else
+    result := '';
+end;
+
 { TFormIniFile }
 
 
-constructor TFormIniFile.Create(aForm: TForm);
+constructor TFormIniFile.Create(aForm: TForm; initScreenPos: Boolean);
 begin
   inherited Create;
+  fName := aForm.Name;
   fForm := aForm;
-  fKey := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '') + 'Ini';
-  if Assigned (aForm) then fName := aForm.Name;
-  Initialize (True);
-end;
-
-constructor TFormIniFile.Create(aForm: TForm; aName: String; initScreenPos: Boolean);
-begin
-  inherited Create;
-  fName := aName;
-  fForm := aForm;
-  fKey := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '.ini');
+  fKey := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), 'Ini');
   Initialize(initScreenPos);
 end;
 
@@ -329,16 +345,6 @@ begin
   end;
 end;
 
-function TFormIniFile.SimpleEncrypt(const Source: AnsiString): AnsiString;
-var
-  Index: Integer;
-begin
-  EncryptionSeed := 'th^ruh54bdkjbkjb4k458&*';
-  SetLength(Result, Length(Source));
-  for Index := 1 to Length(Source) do
-    Result[Index] := AnsiChar((Ord(EncryptionSeed[Index mod Length(EncryptionSeed)]) xor Ord(Source[Index])));
-end;
-
 function TFormIniFile.getStringByNameDef(Index, Default: String): String;
 begin
   result := Default;
@@ -377,13 +383,13 @@ begin
         x := fForm.Left;
       end;
       fForm.Left := x;
-    end;
-    fForm.Height := IntegerByNameDef['FormHeight', fForm.Height];
-    fForm.Width := IntegerByNameDef['FormWidth', fForm.Width];
-    try
-      if BooleanByName['FormMaximized'] then
-        fForm.WindowState := wsMaximized;
-    except
+      fForm.Height := IntegerByNameDef['FormHeight', fForm.Height];
+      fForm.Width := IntegerByNameDef['FormWidth', fForm.Width];
+      try
+        if BooleanByName['FormMaximized'] then
+          fForm.WindowState := wsMaximized;
+      except
+      end;
     end;
   end;
 end;
@@ -451,22 +457,6 @@ begin
   finally
     fCloseKeys;
   end;
-end;
-
-function TFormIniFile.DecryptPassword(aPassword: AnsiString): AnsiString;
-begin
-  if aPassword <> '' then
-    result :=  SimpleEncrypt(DecodeStringBase64(aPassword))
-  else
-    result := '';
-end;
-
-function TFormIniFile.EncryptPassword(aPassword: AnsiString): AnsiString;
-begin
-  if aPassword <> '' then
-    result := EncodeStringBase64 (SimpleEncrypt(aPassword))
-  else
-    result := '';
 end;
 
 end.
