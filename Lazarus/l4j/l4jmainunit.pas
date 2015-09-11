@@ -423,13 +423,24 @@ begin
                    );
       xqry.SQL.Add ( 'from app_log_data');
       xqry.SQL.Add ( 'where RowId = ''' + RowId + '''');
-      xqry.Open;
-      xqry.First;
-      if xqry.EOF then
-        raise Exception.Create('EOF at selecting on RowId: ' + RowId);
+      try
+        xqry.Open;
+        try
+          xqry.First;
+          if xqry.EOF then
+            raise Exception.Create('EOF at selecting on RowId: ' + RowId);
 
-      xEventData:=xqry.Fields[0].AsString;
-      xqry.Close;
+          xEventData:=xqry.Fields[0].AsString;
+        finally
+          xqry.Close;
+        end;
+      except
+        on e: Exception do
+        begin
+          xEventData :=  LineEnding + 'Exception in query EventData substrings: ' + e.Message;
+          EventDataLength:=-1; // force out of loop
+        end;
+      end;
       if xEventData = '' then
         raise Exception.Create('Read empty string on RowId: ' + RowId);
       EventData:=EventData+xEventData;
@@ -1024,27 +1035,12 @@ begin
 end;
 
 function Tl4jMainForm.GetEndurance(aString: String): String;
-var
-  firstTime, lastTime: TDateTime;
-  firstTimeAsStr, lastTimeAsStr: String;
-  ms: Extended;
 begin
   result := '';
   try
-    firstTimeAsStr := GetAtt ('timestamp', aString);
-    lastTimeAsStr := GetAtt ('lasttimestamp', aString);
-    if (firstTimeAsStr <> '')
-    and (lastTimeAsStr <> '') then
-    begin
-      firstTime := xsdParseDateTime(firstTimeAsStr);
-      lastTime := xsdParseDateTime(lastTimeAsStr);
-
-      ms := (lastTime - firstTime) * 24 * 60 * 60 * 1000
-          + StrToInt(Copy (lastTimeAsStr, 21, 3))
-          - StrToInt(Copy (firstTimeAsStr, 21, 3))
-          ;
-      result := Format ('%.3f', [ms / 1000]);
-    end;
+    result := xsdFormatTime(  xsdParseDateTime(GetAtt ('lasttimestamp', aString))
+                            - xsdParseDateTime(GetAtt ('timestamp', aString))
+                           );
   except
   end;
 end;

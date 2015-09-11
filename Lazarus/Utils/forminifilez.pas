@@ -352,14 +352,15 @@ begin
   try
     OpenKey('Strings', True);
     try
-      if KeyExists(Index) then
-        result := ReadString(Index);
+      try result := ReadString(Index); except end;
     finally
-      CloseKey;;
+      CloseKey;
     end;
   finally
     fCloseKeys;
   end;
+  if result = '' then
+    result := Default;
 end;
 
 procedure TFormIniFile.Initialize(initScreenPos: Boolean);

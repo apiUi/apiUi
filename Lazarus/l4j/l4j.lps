@@ -4,14 +4,13 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="46">
+    <Units Count="49">
       <Unit0>
         <Filename Value="l4j.lpr"/>
         <IsPartOfProject Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="22"/>
-        <UsageCount Value="173"/>
+        <CursorPos Y="22"/>
+        <UsageCount Value="179"/>
       </Unit0>
       <Unit1>
         <Filename Value="l4jmainunit.pas"/>
@@ -22,50 +21,45 @@
         <UnitName Value="L4JMainUnit"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="272"/>
-        <CursorPos X="12" Y="291"/>
-        <UsageCount Value="173"/>
+        <TopLine Value="2047"/>
+        <CursorPos X="3" Y="2049"/>
+        <UsageCount Value="179"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="l4jtypes.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="l4jTypes"/>
         <WindowIndex Value="1"/>
         <TopLine Value="9"/>
         <CursorPos X="77" Y="28"/>
-        <UsageCount Value="173"/>
+        <UsageCount Value="179"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Xml\FilterDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="FilterDialog"/>
         <WindowIndex Value="1"/>
         <TopLine Value="52"/>
         <CursorPos X="29" Y="63"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="176"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="146"/>
+        <UsageCount Value="152"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="146"/>
+        <UsageCount Value="152"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Utils\igGlobals.pas"/>
-        <UnitName Value="igGlobals"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="1"/>
         <TopLine Value="79"/>
         <CursorPos X="26" Y="101"/>
         <UsageCount Value="54"/>
-        <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
@@ -85,7 +79,6 @@
         <ComponentName Value="XmlGridForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="XmlGridUnit"/>
         <WindowIndex Value="1"/>
         <TopLine Value="257"/>
         <CursorPos X="45" Y="268"/>
@@ -106,10 +99,9 @@
       </Unit11>
       <Unit12>
         <Filename Value="..\Components\virtualtreeview\VirtualTrees.pas"/>
-        <UnitName Value="VirtualTrees"/>
         <WindowIndex Value="1"/>
         <TopLine Value="31342"/>
-        <CursorPos X="1" Y="31353"/>
+        <CursorPos Y="31353"/>
         <UsageCount Value="12"/>
       </Unit12>
       <Unit13>
@@ -124,11 +116,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DbFilterDialog"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="49"/>
-        <CursorPos X="1" Y="61"/>
-        <UsageCount Value="74"/>
+        <TopLine Value="75"/>
+        <CursorPos Y="100"/>
+        <UsageCount Value="76"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit14>
@@ -148,14 +139,10 @@
       </Unit16>
       <Unit17>
         <Filename Value="..\Components\Abbrevia\source\AbCharset.pas"/>
-        <UnitName Value="AbCharset"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="1"/>
         <TopLine Value="264"/>
         <CursorPos X="32" Y="271"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\Components\Abbrevia\source\AbUtils.pas"/>
@@ -214,27 +201,29 @@
       </Unit25>
       <Unit26>
         <Filename Value="C:\lazarus\lcl\textstrings.pas"/>
+        <UnitName Value="TextStrings"/>
         <WindowIndex Value="1"/>
         <TopLine Value="81"/>
         <CursorPos Y="98"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\Utils\forminifilez.pas"/>
         <UnitName Value="FormIniFilez"/>
-        <EditorIndex Value="4"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="366"/>
-        <CursorPos X="1" Y="379"/>
-        <UsageCount Value="55"/>
+        <TopLine Value="338"/>
+        <CursorPos X="11" Y="355"/>
+        <UsageCount Value="56"/>
         <Loaded Value="True"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-registry\src\registry.pp"/>
         <UnitName Value="registry"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="95"/>
-        <CursorPos X="15" Y="104"/>
+        <TopLine Value="65"/>
+        <CursorPos X="14" Y="86"/>
         <UsageCount Value="23"/>
       </Unit28>
       <Unit29>
@@ -246,16 +235,11 @@
       </Unit29>
       <Unit30>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-db\src\sqldb\sqldb.pp"/>
-        <UnitName Value="sqldb"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="162"/>
-        <CursorPos X="34" Y="192"/>
         <UsageCount Value="48"/>
-        <Loaded Value="True"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\Components\Indy10\Lib\Core\IdSync.pas"/>
-        <UnitName Value="IdSync"/>
         <WindowIndex Value="1"/>
         <TopLine Value="78"/>
         <CursorPos X="15" Y="99"/>
@@ -263,15 +247,11 @@
       </Unit31>
       <Unit32>
         <Filename Value="..\Xml\Xmlz.pas"/>
-        <UnitName Value="Xmlz"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
         <UsageCount Value="12"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <UnitName Value="Xsdz"/>
         <WindowIndex Value="1"/>
         <TopLine Value="275"/>
         <CursorPos X="13" Y="294"/>
@@ -279,7 +259,6 @@
       </Unit33>
       <Unit34>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\libxml\src\xmlxsdparser.pas"/>
-        <UnitName Value="xmlxsdparser"/>
         <WindowIndex Value="1"/>
         <TopLine Value="257"/>
         <CursorPos X="10" Y="268"/>
@@ -287,7 +266,6 @@
       </Unit34>
       <Unit35>
         <Filename Value="..\Xml\FindRegExpDialog.pas"/>
-        <UnitName Value="FindRegExpDialog"/>
         <WindowIndex Value="1"/>
         <TopLine Value="44"/>
         <CursorPos X="44" Y="55"/>
@@ -295,7 +273,6 @@
       </Unit35>
       <Unit36>
         <Filename Value="..\Xml\dualListUnit.pas"/>
-        <UnitName Value="dualListUnit"/>
         <WindowIndex Value="1"/>
         <TopLine Value="240"/>
         <CursorPos X="45" Y="254"/>
@@ -303,7 +280,6 @@
       </Unit36>
       <Unit37>
         <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
-        <UnitName Value="ShowA2BXmlUnit"/>
         <WindowIndex Value="1"/>
         <TopLine Value="197"/>
         <CursorPos X="45" Y="208"/>
@@ -311,7 +287,6 @@
       </Unit37>
       <Unit38>
         <Filename Value="..\Xml\ShowXmlUnit.pas"/>
-        <UnitName Value="ShowXmlUnit"/>
         <WindowIndex Value="1"/>
         <TopLine Value="271"/>
         <CursorPos X="44" Y="282"/>
@@ -319,7 +294,6 @@
       </Unit38>
       <Unit39>
         <Filename Value="..\Xml\ShowTextUnit.pas"/>
-        <UnitName Value="ShowTextUnit"/>
         <WindowIndex Value="1"/>
         <TopLine Value="49"/>
         <CursorPos X="45" Y="60"/>
@@ -327,7 +301,6 @@
       </Unit39>
       <Unit40>
         <Filename Value="..\Xml\ChooseEnumUnit.pas"/>
-        <UnitName Value="ChooseEnumUnit"/>
         <WindowIndex Value="1"/>
         <TopLine Value="48"/>
         <CursorPos X="45" Y="59"/>
@@ -335,7 +308,6 @@
       </Unit40>
       <Unit41>
         <Filename Value="..\Xml\xsdDateTimeFormUnit.pas"/>
-        <UnitName Value="xsdDateTimeFormUnit"/>
         <WindowIndex Value="1"/>
         <TopLine Value="70"/>
         <CursorPos X="45" Y="81"/>
@@ -343,7 +315,6 @@
       </Unit41>
       <Unit42>
         <Filename Value="CommandDialog.pas"/>
-        <UnitName Value="CommandDialog"/>
         <WindowIndex Value="1"/>
         <TopLine Value="50"/>
         <CursorPos X="45" Y="61"/>
@@ -359,8 +330,8 @@
       <Unit44>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-registry\src\winreg.inc"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="255"/>
-        <CursorPos X="3" Y="257"/>
+        <TopLine Value="167"/>
+        <CursorPos Y="151"/>
         <UsageCount Value="10"/>
       </Unit44>
       <Unit45>
@@ -370,6 +341,22 @@
         <CursorPos X="17" Y="943"/>
         <UsageCount Value="10"/>
       </Unit45>
+      <Unit46>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-db\src\sqldb\oracle\oracleconnection.pp"/>
+        <WindowIndex Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-db\src\base\dataset.inc"/>
+        <WindowIndex Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\base64.pp"/>
+        <UnitName Value="base64"/>
+        <WindowIndex Value="1"/>
+        <UsageCount Value="11"/>
+      </Unit48>
     </Units>
     <CustomDefines Count="5">
       <Define0 Value="FPCUnixAPI"/>
@@ -381,123 +368,71 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="16" HistoryIndex="15">
       <Position1>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="140" Column="39" TopLine="129"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="55" Column="91" TopLine="21"/>
       </Position1>
       <Position2>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="56" Column="81" TopLine="22"/>
       </Position2>
       <Position3>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="9" Column="5" TopLine="1"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="281" Column="38" TopLine="253"/>
       </Position3>
       <Position4>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="95" Column="20" TopLine="73"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="297" Column="39" TopLine="263"/>
       </Position4>
       <Position5>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="348" Column="38" TopLine="320"/>
       </Position5>
       <Position6>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="16" Column="33" TopLine="1"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="41" Column="29" TopLine="20"/>
       </Position6>
       <Position7>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="61" Column="40" TopLine="42"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="44" Column="27" TopLine="20"/>
       </Position7>
       <Position8>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="95" Column="20" TopLine="76"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="45" Column="28" TopLine="20"/>
       </Position8>
       <Position9>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="107" Column="20" TopLine="88"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="55" Column="91" TopLine="21"/>
       </Position9>
       <Position10>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="140" Column="27" TopLine="122"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="56" Column="81" TopLine="22"/>
       </Position10>
       <Position11>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="288" Column="61" TopLine="247"/>
       </Position11>
       <Position12>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="61" Column="27" TopLine="51"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="297" Column="39" TopLine="263"/>
       </Position12>
       <Position13>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="95" Column="27" TopLine="85"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="355" Column="65" TopLine="329"/>
       </Position13>
       <Position14>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="107" Column="27" TopLine="88"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="356" Column="29" TopLine="329"/>
       </Position14>
       <Position15>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="140" Column="27" TopLine="122"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="353" Column="30" TopLine="329"/>
       </Position15>
       <Position16>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="148" Column="7" TopLine="131"/>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="363" Column="23" TopLine="329"/>
       </Position16>
-      <Position17>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="94" Column="3" TopLine="90"/>
-      </Position17>
-      <Position18>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="148" Column="7" TopLine="131"/>
-      </Position18>
-      <Position19>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="61" Column="1" TopLine="49"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="89" Column="1" TopLine="73"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="353" Column="1" TopLine="342"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="355" Column="1" TopLine="342"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="370" Column="1" TopLine="361"/>
-      </Position23>
-      <Position24>
-        <Filename Value="DbFilterDialog.pas"/>
-        <Caret Line="61" Column="1" TopLine="49"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="89" Column="1" TopLine="72"/>
-      </Position25>
-      <Position26>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="353" Column="1" TopLine="342"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="355" Column="1" TopLine="342"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\Utils\forminifilez.pas"/>
-        <Caret Line="379" Column="1" TopLine="366"/>
-      </Position28>
-      <Position29>
-        <Filename Value="..\Components\Abbrevia\source\AbCharset.pas"/>
-        <Caret Line="271" Column="37" TopLine="262"/>
-      </Position29>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

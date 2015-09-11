@@ -668,34 +668,6 @@ Determines the way wsdlStub will display Cocol data from log records.</xs:docume
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="MasterSlave" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>MasterSlave;
-You can grant users from other wsdlStub instances to view design and log records of this instance and even to reload design, clear log and restart.
-The wsdlStub instance that is actualy running as stub is called the 'master'.
-wsdlStub instances thar are used to watch from a distance are 'slave' instances.
-These options determine 'master' settings.
-See the wsdlStub Options for Slave settings.
-
-wsdlStub webservice
-When enabled, this wsdlStub instance will also act as a webservice. Visit http://localhost:port for a list of supported operations.</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default 'false'</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="Port" type="xs:string" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default "3738"";
-Specifies the port that this instance will listen to for slave requests</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="Wsdl" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
@@ -1056,11 +1028,6 @@ Functions as a request-response protocol in the client-server configurations.
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="KeepAlive" type="xs:boolean">
-								<xs:annotation>
-									<xs:documentation>Default 'true'</xs:documentation>
-								</xs:annotation>
-							</xs:element>
 							<xs:element name="ListenQueue">
 								<xs:annotation>
 									<xs:documentation>Default '15'</xs:documentation>
@@ -1140,41 +1107,23 @@ Max number of MQ working threads that will be active simultaniously</xs:document
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="MasterSlave">
+				<xs:element name="RemoteControl" minOccurs="0">
 					<xs:annotation>
-						<xs:documentation>MasterSlave;
-It is possible to view wsdlStub activities from another workstation.
-The wsdlStub instance that is actualy running as stub is called the 'master'.
-wsdlStub instances thar are used to watch from a distance are 'slave' instances.
-These options determine 'slave' settings.
-See Project->Options for Master settings.</xs:documentation>
+						<xs:documentation>RemoteControl;
+wsdlStub webservice
+When enabled, this wsdlStub instance will also act as a webservice. Visit http://localhost:port for a list of supported operations.</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="SlaveEnabled" type="xs:boolean">
+							<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>Default "false"'; Disables the 'Activate' action.
-When enabled, this wsdlStub instance acts as a 'slave' and can be used to view the design and the log content of a master wsdlStub instance.</xs:documentation>
+									<xs:documentation>Default 'false'</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="MasterAddress" type="xs:string">
+							<xs:element name="Port" type="xs:string" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>Specifies the IP-address of the master instance of wsdlStub.
-Master instances default listen on port 3738.
-
-Example: http://aDNSname:3738</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="AutoRefresh" type="xs:boolean">
-								<xs:annotation>
-									<xs:documentation>Default "false";
-When "true" the log file is refreshed automatically</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="LoadOnStartup" type="xs:boolean">
-								<xs:annotation>
-									<xs:documentation>Default "false";
-When "true", wsdlStub will retrieve the design from the addressed master instance of wsdlStub</xs:documentation>
+									<xs:documentation>Default "3738"";
+Specifies the port that this instance will listen to for slave requests</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 						</xs:sequence>

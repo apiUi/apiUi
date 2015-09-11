@@ -4047,6 +4047,11 @@ begin
       end;
     end;
   end;
+  with result.AddXml(TXml.CreateAsString('RemoteControl', '')) do
+  begin
+    AddXml(TXml.CreateAsBoolean('Enabled', sc.Enabled));
+    AddXml(TXml.CreateAsInteger('Port', sc.portNumber));
+  end;
 end;
 
 procedure TMainForm.OptionsActionExecute(Sender: TObject);
@@ -6147,6 +6152,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   X, wBttn: Integer;
   xIniFile: TFormIniFile;
+  xXml: TXml;
 begin
   DataTypeDocumentationMemo.Color := Self.Color;
   (MessagesTabControl as TWinControl).Color := Self.Color;
@@ -6157,7 +6163,6 @@ begin
   se := TWsdlProject.Create;
   sc := TWsdlControl.Create;
   sc.se := se;
-  sc.portNumber := 3738;
   NumberOfThreads := 0;
   se.OnStartThread := StartThreadEvent;
   se.OnTerminateThread := TerminateThreadEvent;
@@ -6331,6 +6336,14 @@ begin
   bgNilValueColor := xIniFile.IntegerByNameDef['bgNilValueColor',
     bgNilValueColor];
   DesignPanelAtTopMenuItem.Checked := doShowDesignAtTop;
+  xXml := TXml.Create;
+  try
+    xXml.LoadFromString(xIniFile.StringByName['Options'], nil);
+    if xXml.Name = 'wsdlStubOptions' then
+      OptionsFromXml(xXml);
+  finally
+    xXml.Free;
+  end;
   xIniFile.Free;
   wsdlStubInitialise;
   se.stubRead := False;
@@ -11538,6 +11551,8 @@ begin
   se.mqUse := mquUndefined;
   se.mqMaxWorkingThreads := 15;
   xsdValidateAssignmentsAgainstSchema := False;
+  sc.Enabled := False;
+  sc.portNumber:=3738;
   CollapseHeaders := False;
   xmlSetDefaultColors;
 
@@ -11582,6 +11597,12 @@ begin
         se.ViaProxyPort := yXml.Items.XmlCheckedIntegerByTagDef['Port',
           se.ViaProxyPort];
       end;
+    end;
+    xXml := XmlCheckedItemByTag['RemoteControl'];
+    if Assigned(xXml) then
+    begin
+      sc.Enabled:=xXml.Items.XmlCheckedBooleanByTagDef['Enabled', sc.Enabled];
+      sc.portNumber := xXml.Items.XmlCheckedIntegerByTagDef['Port', sc.portNumber];
     end;
     xXml := XmlCheckedItemByTag['Mq'];
     if Assigned(xXml) then

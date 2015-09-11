@@ -11,7 +11,7 @@ object DbFilterDlg: TDbFilterDlg
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
     Height = 60
@@ -106,6 +106,8 @@ object DbFilterDlg: TDbFilterDlg
         '     , flow_id'
         'from APP_LOG_DATA'
         'where to_char(log_time, ''YYYY-MM-DD:HH24'') between :Param1 and :Param1 || ''Z'''
+        'and (:Param2 = ''%'' or process_group_instance_id = :Param2)'
+        'and (:Param3 = ''%'' or business_object_id = :Param3)'
         'order by MessageId, EventType '
         ''
         ''
@@ -170,6 +172,7 @@ object DbFilterDlg: TDbFilterDlg
       Anchors = [akTop, akLeft, akRight, akBottom]
       ItemHeight = 13
       TabOrder = 0
+      Text = '2'
     end
     object ParamEdit2: TComboBox
       Left = 118
@@ -179,6 +182,7 @@ object DbFilterDlg: TDbFilterDlg
       Anchors = [akTop, akLeft, akRight, akBottom]
       ItemHeight = 13
       TabOrder = 1
+      Text = '%'
     end
     object ParamEdit3: TComboBox
       Left = 118
@@ -188,6 +192,7 @@ object DbFilterDlg: TDbFilterDlg
       Anchors = [akTop, akLeft, akRight, akBottom]
       ItemHeight = 13
       TabOrder = 2
+      Text = '%'
     end
     object ParamEdit4: TComboBox
       Left = 118
@@ -197,6 +202,7 @@ object DbFilterDlg: TDbFilterDlg
       Anchors = [akTop, akLeft, akRight, akBottom]
       ItemHeight = 13
       TabOrder = 3
+      Text = '%'
     end
   end
   object Panel4: TPanel

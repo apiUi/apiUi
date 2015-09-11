@@ -25,9 +25,11 @@ type
   TWsdlControl = class
   private
     fActive : Boolean ;
+    fEnabled: Boolean;
     fPortNumber : Integer ;
     function getActive : Boolean ;
     procedure setActive (AValue : Boolean );
+    procedure setEnabled(AValue: Boolean);
     procedure setPortNumber (AValue : Integer );
   public
     se: TWsdlProject;
@@ -44,6 +46,7 @@ type
     constructor Create;
     property portNumber: Integer read fPortNumber write setPortNumber;
     property Active: Boolean read getActive write setActive;
+    property Enabled: Boolean read fEnabled write setEnabled;
   end;
 
 implementation
@@ -59,7 +62,9 @@ uses strutils
 
 procedure TWsdlControl .setPortNumber (AValue : Integer );
 begin
-  if fPortNumber = AValue then Exit ;
+  if (fPortNumber = AValue)
+  and (HttpWebPageServer.Active = Enabled) then
+    Exit ;
   fPortNumber := AValue ;
   HttpWebPageServer.Active := False;
   HttpWebPageServer.DefaultPort := AValue;
@@ -69,6 +74,7 @@ begin
     Port := AValue;
     IP := '0.0.0.0';
   end;
+  HttpWebPageServer.Active := Enabled;
 end;
 
 procedure TWsdlControl .setActive (AValue : Boolean );
@@ -94,6 +100,12 @@ begin
   finally
     fActive := HttpWebPageServer.Active;
   end;
+end;
+
+procedure TWsdlControl.setEnabled(AValue: Boolean);
+begin
+  if fEnabled=AValue then Exit;
+  fEnabled:=AValue;
 end;
 
 function TWsdlControl .getActive : Boolean ;

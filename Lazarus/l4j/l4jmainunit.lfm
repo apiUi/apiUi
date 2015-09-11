@@ -9,7 +9,7 @@ object L4JMainForm: TL4JMainForm
   Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
     Height = 350
@@ -130,6 +130,7 @@ object L4JMainForm: TL4JMainForm
     end
     object ToolButton10: TToolButton
       Left = 47
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton10'
@@ -143,6 +144,7 @@ object L4JMainForm: TL4JMainForm
     end
     object ToolButton17: TToolButton
       Left = 80
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton17'
@@ -161,6 +163,7 @@ object L4JMainForm: TL4JMainForm
     end
     object ToolButton3: TToolButton
       Left = 136
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -174,6 +177,7 @@ object L4JMainForm: TL4JMainForm
     end
     object ToolButton6: TToolButton
       Left = 169
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton6'
@@ -197,6 +201,7 @@ object L4JMainForm: TL4JMainForm
     end
     object ToolButton5: TToolButton
       Left = 248
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton5'
@@ -210,6 +215,7 @@ object L4JMainForm: TL4JMainForm
     end
     object ToolButton12: TToolButton
       Left = 281
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton12'

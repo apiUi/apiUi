@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="4"/>
-      <BuildNr Value="561"/>
+      <BuildNr Value="566"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -65,13 +65,11 @@
       <Unit2>
         <Filename Value="l4jtypes.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="l4jTypes"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Xml\FilterDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="FilterDialog"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
@@ -111,7 +109,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="6">
+    <Exceptions Count="7">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -130,6 +128,9 @@
       <Item6>
         <Name Value="EODBCException"/>
       </Item6>
+      <Item7>
+        <Name Value="EConvertError"/>
+      </Item7>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>
