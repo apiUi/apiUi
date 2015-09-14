@@ -3059,7 +3059,6 @@ begin
       finally
         ReleaseLock;
       end;
-      _WsdlPortNumber := IntToStr(se.Listeners.httpPort);
     finally
       { }
       Screen.Cursor := SwapCursor;

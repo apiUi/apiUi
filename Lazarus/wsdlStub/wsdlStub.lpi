@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="8951"/>
+      <BuildNr Value="8964"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -176,4 +176,4 @@
       </Item17>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

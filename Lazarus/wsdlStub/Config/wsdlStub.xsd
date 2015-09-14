@@ -196,7 +196,7 @@ Functions as a request-response protocol in  client-server configurations.</xs:d
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="Port" type="xs:integer">
+							<xs:element name="Port" type="xs:integer" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>Http port number</xs:documentation>
 								</xs:annotation>
@@ -212,7 +212,7 @@ Functions as a request-response protocol in  client-server configurations.</xs:d
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="Port" type="xs:integer">
+							<xs:element name="Port" type="xs:integer" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>Http port number</xs:documentation>
 								</xs:annotation>

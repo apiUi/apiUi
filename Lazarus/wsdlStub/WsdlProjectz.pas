@@ -1446,41 +1446,54 @@ begin
             mqGetThreads.AddObject ('', TMqGetThread.Create (Self, Listeners.mqInterfaces.Objects [x] as TMqInterface));
           end;
         end;
-        if Listeners.httpPort > 0 then
-          try
-            Binding := HTTPServer.Bindings.Add;
-            Binding.Port := Listeners.httpPort;
-            Binding.IP := '0.0.0.0';
-            HTTPServer.SessionState := False;
-            HTTPServer.Active := true;
-            Notify(format('Listening for HTTP trafic on %s:%d.',[HTTPServer.Bindings[0].IP, HTTPServer.Bindings[0].Port]));
-          except
-            on e: exception do
-            begin
-              LogServerMessage(format('Exception %s in Activate HTTP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
+        if Listeners.httpPorts.Count > 0 then
+        begin
+          for x := 0 to Listeners.httpPorts.Count - 1 do
+          begin
+            try
+              Binding := HTTPServer.Bindings.Add;
+              Binding.Port := StrToInt(Listeners.httpPorts.Strings[x]);
+              Binding.IP := '0.0.0.0';
+              Notify(format( 'Listening for HTTP trafic on %s:%d.'
+                           , [HTTPServer.Bindings[x].IP, HTTPServer.Bindings[0].Port]
+                           )
+                    );
+            except
+              on e: exception do
+              begin
+                LogServerMessage(format('Exception %s in Activate HTTP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
+              end;
             end;
           end;
-        if Listeners.httpsPort > 0 then
-          try
-            with ServerOpenSSL.SSLOptions do
-            begin
-              Method := Listeners.sslVersion;
-              CertFile := Listeners.sslCertificateFile;
-              KeyFile := Listeners.sslKeyFile;
-              RootCertFile := Listeners.sslRootCertificateFile;
-            end;
-            Binding := HTTPServerSSL.Bindings.Add;
-            Binding.Port := Listeners.httpsPort;
-            Binding.IP := '0.0.0.0';
-            HTTPServerSSL.SessionState := False;
-            HTTPServerSSL.Active := true;
-            Notify(format('Listening for HTTPS connections on %s:%d.',[HTTPServerSSL.Bindings[0].IP, HTTPServerSSL.Bindings[0].Port]));
-          except
-            on e: exception do
-            begin
-              LogServerMessage(format('Exception %s in Activate HTTPS. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
+          HTTPServer.SessionState := False;
+          HTTPServer.Active := true;
+        end;
+        if Listeners.httpsPorts.Count > 0 then
+        begin
+          with ServerOpenSSL.SSLOptions do
+          begin
+            Method := Listeners.sslVersion;
+            CertFile := Listeners.sslCertificateFile;
+            KeyFile := Listeners.sslKeyFile;
+            RootCertFile := Listeners.sslRootCertificateFile;
+          end;
+          for x := 0 to Listeners.httpsPorts.Count - 1 do
+          begin
+            try
+              Binding := HTTPServerSSL.Bindings.Add;
+              Binding.Port := StrToInt(Listeners.httpsPorts.Strings[x]);
+              Binding.IP := '0.0.0.0';
+              Notify(format('Listening for HTTPS connections on %s:%d.',[HTTPServerSSL.Bindings[0].IP, HTTPServerSSL.Bindings[0].Port]));
+            except
+              on e: exception do
+              begin
+                LogServerMessage(format('Exception %s in Activate HTTPS. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
+              end;
             end;
           end;
+          HTTPServerSSL.SessionState := False;
+          HTTPServerSSL.Active := true;
+        end;
         if Listeners.httpBmtpPort > 0 then
           try
             Binding := HttpServerBmtp.Bindings.Add;
@@ -1669,16 +1682,6 @@ begin
     try
       AddXml(TXml.CreateAsString('FileName', ExpandUNCFileNameUTF8(aMainFileName) { *Converted from ExpandUNCFileName* }));
 
-  {BEGIN oldstyle}
-      AddXml(TXml.CreateAsInteger('Portnumber', Listeners.httpPort));
-      AddXml(TXml.CreateAsBoolean('doUseMQ', doUseMQ));
-      with AddXml(TXml.CreateAsString('mqInterfaces', '')) do
-        for x := 0 to Listeners.mqInterfaces.Count - 1 do
-          AddXml ((Listeners.mqInterfaces.Objects [x] as TMqInterface).AsXmlOldStyle);
-      with AddXml(TXml.CreateAsString('stompInterfaces', '')) do
-        for x := 0 to Listeners.stompInterfaces.Count - 1 do
-          AddXml((Listeners.stompInterfaces.Objects [x] as TStompInterface).AsXmlOldStyle);
-  {END oldstyle}
       AddXml (Listeners.AsXml);
       AddXml(TXml.CreateAsBoolean('ValidateRequests', doValidateRequests));
       AddXml(TXml.CreateAsBoolean('ValidateReplies', doValidateReplies));
@@ -1982,18 +1985,6 @@ begin
           if aMainFileName = '' then
             aMainFileName := xXml.Items.XmlValueByTag ['FileName'];
           projectFileName := aMainFileName;
-          Listeners.httpPort := xXml.Items.XmlIntegerByTagDef ['Portnumber', 0];
-          doUseMQ := (xXml.Items.XmlValueByTag ['doUseMQ'] = 'true');
-          sXml := xXml.Items.XmlItemByTag ['mqInterfaces'];
-          if Assigned (sXml) then
-            for s := 0 to sXml.Items.Count - 1 do
-              Listeners.mqInterfaces.AddObject ('', TMqInterface.CreateFromXmlOldStyle (sXml.Items.XmlItems [s]));
-          sXml := xXml.Items.XmlItemByTag ['stompConfig'];
-          if Assigned (sXml) then
-          begin
-            for s := 0 to sXml.Items.Count - 1 do
-              Listeners.stompInterfaces.AddObject ('', TStompInterface.CreateFromXml (sXml.Items.XmlItems [s], HaveStompFrame));
-          end;
           sXml := xXml.Items.XmlItemByTag ['Listeners'];
           if Assigned (sXml) then
             Listeners.FromXml(sXml, HaveStompFrame);
@@ -2415,7 +2406,6 @@ begin
         finally
           xXml.Free;
         end;
-        _WsdlPortNumber := IntToStr(Listeners.httpPort);
      finally
         stubChanged := xReadAnother;
         stubRead := True;
@@ -5904,7 +5894,7 @@ procedure TWsdlProject.HTTPServerCommandGetGet(AContext: TIdContext;
           epXml := epXml.Items.XmlItemByTag['port'];
           epXml := epXml.Items.XmlItemByTag['address'];
           epAtr := epXml.Attributes.AttributeByTag['location'];
-          epAtr.Value := 'http://' + _WsdlHostName + ':' + IntToStr(Listeners.httpPort);
+          epAtr.Value := 'http://' + _WsdlHostName + ':' + _WsdlPortNumber;
         except
           raise Exception.CreateFmt('No endpoint address found in %s', [aWsdlName]);
         end;

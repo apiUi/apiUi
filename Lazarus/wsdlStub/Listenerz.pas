@@ -17,9 +17,10 @@ uses Classes, SysUtils
 type
   TListeners = class(TObject)
   public
-    httpPort, httpsPort, httpProxyPort, httpBmtpPort: Integer;
+    httpProxyPort, httpBmtpPort: Integer;
     sslVersion: TIdSSLVersion;
     sslCertificateFile, sslKeyFile, sslRootCertificateFile: String;
+    httpPorts, httpsPorts: TStringList;
     mqInterfaces: TStringList;
     stompInterfaces: TStringList;
     smtpPort: Integer;
@@ -48,14 +49,16 @@ begin
   result := TXml.CreateAsString('Listeners', '');
   with result do
   begin
-    if httpPort > 0 then
+    if httpPorts.Count > 0 then
       with AddXml(TXml.CreateAsString('Http', '')) do
-        AddXml(TXml.CreateAsInteger('Port', httpPort));
-    if httpsPort > 0 then
+        for x := 0 to httpPorts.Count - 1 do
+          AddXml(TXml.CreateAsString('Port', httpPorts.Strings[x]));
+    if httpsPorts.Count > 0 then
     begin
       with AddXml(TXml.CreateAsString('Https', '')) do
       begin
-        AddXml(TXml.CreateAsInteger('Port', httpsPort));
+        for x := 0 to httpsPorts.Count - 1 do
+          AddXml(TXml.CreateAsString('Port', httpsPorts.Strings[x]));
         with AddXml(TXml.CreateAsString('SSL', '')) do
         begin
           if sslVersion = sslvSSLv3 then
@@ -138,8 +141,15 @@ begin
       begin
         if Name = 'Http' then
         begin
-          httpPort := Items.XmlCheckedIntegerByTag['Port'];
-          _WsdlPortNumber := IntToStr (httpPort);
+          for y := 0 to Items.Count - 1 do
+          begin
+            if (Items.XmlItems[y].Checked)
+            and (Items.XmlItems[y].Name = 'Port') then
+            begin
+              httpPorts.Add (Items.XmlItems[y].Value);
+              _WsdlPortNumber := Items.XmlItems[y].Value;
+            end;
+          end;
         end;
         if Name = 'HttpProxy' then
         begin
@@ -151,8 +161,15 @@ begin
         end;
         if Name = 'Https' then
         begin
-          httpsPort := Items.XmlCheckedIntegerByTag['Port'];
-          _WsdlPortNumber := IntToStr (httpsPort);
+          for y := 0 to Items.Count - 1 do
+          begin
+            if (Items.XmlItems[y].Checked)
+            and (Items.XmlItems[y].Name = 'Port') then
+            begin
+              httpsPorts.Add (Items.XmlItems[y].Value);
+              _WsdlPortNumber := Items.XmlItems[y].Value;
+            end;
+          end;
           xXml := Items.XmlCheckedItemByTag['SSL'];
           if Assigned (xXml) then with xXml do
           begin
@@ -223,8 +240,8 @@ procedure TListeners.Clear;
 var
   x: Integer;
 begin
-  httpPort := 0;
-  httpsPort := 0;
+  httpPorts.Clear;
+  httpsPorts.Clear;
   httpProxyPort := 0;
   httpBmtpPort := 0;
   smtpPort := 0;
@@ -248,8 +265,8 @@ end;
 
 constructor TListeners.Create;
 begin
-  httpPort := 0;
-  httpsPort := 0;
+  httpPorts:= TStringList.Create;
+  httpsPorts := TStringList.Create;
   httpBmtpPort := 0;
   mqInterfaces := TStringList.Create;
   stompInterfaces := TStringList.Create;
@@ -261,6 +278,8 @@ destructor TListeners.Destroy;
 begin
   inherited;
   Clear;
+  httpPorts.Free;
+  httpsPorts.Free;
   mqInterfaces.Free;
   stompInterfaces.Free;
 end;
