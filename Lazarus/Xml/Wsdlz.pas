@@ -1740,11 +1740,14 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
           fMssgs.AddObject(Mssg.NameSpace + ';' + Mssg.Name, Mssg);
           for y := 0 to XmlItems[x].Items.Count - 1 do with XmlItems[x].Items.XmlItems[y] do
           begin
-            Part := TWsdlPart.Create;
-            Part.Name := Attributes.ValueByTag[xmlzConsts.tagName];
-            Part._ElementName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagElement]);
-            Part._TypeName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagType]);
-            Mssg.Parts.AddObject('', Part);
+            if Name = tagPart then
+            begin
+              Part := TWsdlPart.Create;
+              Part.Name := Attributes.ValueByTag[xmlzConsts.tagName];
+              Part._ElementName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagElement]);
+              Part._TypeName := ExpandPrefixedName(xTargetNamespace, Attributes.ValueByTag[tagType]);
+              Mssg.Parts.AddObject('', Part);
+            end;
           end;
         end
         else
@@ -1936,12 +1939,12 @@ begin
       PortTypeName := SoapAddress;  // SoapAdress contains PortTypeName
       ServiceName := fStrs.Values[PortTypeName + '.Service'];
       Srvc := ServiceByName[ServiceName];
-      if not Assigned (Srvc) then
-        Raise Exception.CreateFmt('Service %s not found at %s', [ServiceName, SoapAddress]);
-      Srvc.Operations.AddObject(fOpers.Operations[o].Name, fOpers.Operations[o]);
-      fOpers.Operations[o].WsdlService := Srvc;
-      SoapAddress := fStrs.Values[PortTypeName + '.SoapAddress']; // SoapAdress contained PortTypeName
-
+      if Assigned (Srvc) then
+      begin
+        Srvc.Operations.AddObject(fOpers.Operations[o].Name, fOpers.Operations[o]);
+        fOpers.Operations[o].WsdlService := Srvc;
+        SoapAddress := fStrs.Values[PortTypeName + '.SoapAddress']; // SoapAdress contained PortTypeName
+      end;
       for h := 0 to InputHeaders.Count - 1 do with InputHeaders.Headers[h] do
       begin
         if not fMssgs.Find (MessageName, f) then
@@ -5472,7 +5475,12 @@ begin
     else
     begin
       if not aXsds.Find(_TypeName, f) then // lets help the poor people who set up wslds
-        raise Exception.CreateFmt('TypeDef %s not found at part %s', [_TypeName, Name]);
+      begin
+        XmlUtil.presentAsText ( 'TWsdlPart.LinkToXsd (aXsds: TXsdList; aWsdl: TWsdl)'
+                              , aWsdl.XsdDescr.ReadFileNames.Text
+                              );
+        raise Exception.CreateFmt('Element(%s)nor TypeDef(%s) found for part %s', [_ElementName, _TypeName, Name]);
+      end;
       Xsd := aXsds.Xsds[f];
     end;
   end;

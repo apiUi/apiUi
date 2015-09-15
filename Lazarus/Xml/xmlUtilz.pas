@@ -1026,6 +1026,7 @@ var
   xForm: TShowTextForm;
   xIpmDescr: TIpmDescr;
 begin
+  if systemStarting then Exit; // a Lazarus execuatble halts when not yet ...
   xIpmDescr := FindIpmDescr (aString);
   if Assigned (xIpmDescr) then
   begin

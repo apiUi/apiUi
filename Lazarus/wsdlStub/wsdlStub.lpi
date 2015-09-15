@@ -96,6 +96,7 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
@@ -106,13 +107,14 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5057="True" idx5024="True"/>
+        <IgnoredMessages idx5024="True" idx5057="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="17">
+    <Exceptions Count="18">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -172,6 +174,9 @@
       <Item17>
         <Name Value="EInterfaceCritical"/>
       </Item17>
+      <Item18>
+        <Name Value="EStringListError"/>
+      </Item18>
     </Exceptions>
   </Debugging>
 </CONFIG>

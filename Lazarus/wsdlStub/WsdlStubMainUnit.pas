@@ -6388,11 +6388,11 @@ begin
   end;
   MainToolBarDesignedButtonCount := MainToolBar.ButtonCount;
   CreateScriptsSubMenuItems;
-  systemStarting := False;
   try
     sc.Active := True;
   except
   end;
+  systemStarting := False;
 end;
 
 function TMainForm.inImageArea: Boolean;
