@@ -6162,6 +6162,7 @@ begin
   se := TWsdlProject.Create;
   sc := TWsdlControl.Create;
   sc.se := se;
+  RefreshLogTimer.Enabled := True;
   NumberOfThreads := 0;
   se.OnStartThread := StartThreadEvent;
   se.OnTerminateThread := TerminateThreadEvent;
@@ -6387,7 +6388,6 @@ begin
   end;
   MainToolBarDesignedButtonCount := MainToolBar.ButtonCount;
   CreateScriptsSubMenuItems;
-  RefreshLogTimer.Enabled := True;
   systemStarting := False;
   try
     sc.Active := True;
@@ -8383,6 +8383,7 @@ procedure TMainForm.RefreshLog;
 var
   logAdded, exceptionAdded: Boolean;
 begin
+  if not Assigned (se) then Exit;
   se.AcquireLogLock;
   try
     logAdded := _refreshLogging;

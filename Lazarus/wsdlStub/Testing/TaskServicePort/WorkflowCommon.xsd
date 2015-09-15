@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xmlns.oracle.com/bpel/workflow/common"
+     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="1.0" targetNamespace="http://xmlns.oracle.com/bpel/workflow/common"
+     elementFormDefault="qualified">
+    <xsd:annotation>
+        <xsd:documentation>This schema defines elements and types
+      that are commonly used across different workflow services.</xsd:documentation>
+        <xsd:appinfo>
+            <jaxb:schemaBindings>
+                <jaxb:package name="oracle.bpel.services.workflow.common.model"/>
+            </jaxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+    <xsd:element name="workflowContext" type="workflowContextType"/>
+    <xsd:element name="refreshWorkflowContextRequest" type="workflowContextType"/>
+    <xsd:complexType name="workflowContextType">
+        <xsd:sequence>
+            <xsd:element name="credential" type="credentialType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="token" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="locale" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="timeZone" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="displayNameLocale" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="userDisplayName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="isAdmin" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="isBusinessAdmin" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="isManager" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="requester" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="properties" type="propertiesType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="credential" type="credentialType"/>
+    <xsd:complexType name="credentialType">
+        <xsd:sequence>
+            <xsd:element name="login" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="password" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="identityContext" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="onBehalfOfUser" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="propertiesType">
+        <xsd:sequence>
+            <xsd:element name="property" type="propertyType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="propertyType">
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="participant" type="principleRefType">
+        <xsd:annotation>
+            <xsd:documentation>Definition of a participant (a user, group or application role)</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="principleRefType">
+        <xsd:sequence>
+            <xsd:element name="realm" type="xsd:string"/>
+            <xsd:element name="name" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>If participantType is USER or GROUP, this property may be used to
+            identify the identity service realm for this participant.
+            If the participantType is APPROLE, this property may be used to
+            identify the name of the application thte role belongs to.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="type" type="participantTypeEnum" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="principleListType">
+        <xsd:sequence>
+            <xsd:element ref="participant" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="participantTypeEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="USER"/>
+            <xsd:enumeration value="GROUP"/>
+            <xsd:enumeration value="APPROLE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

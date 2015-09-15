@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema targetNamespace="http://xmlns.oracle.com/bpel/workflow/taskService/command" xmlns:tns="http://xmlns.oracle.com/bpel/workflow/taskService/command"
+     xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:taskQuery="http://xmlns.oracle.com/bpel/workflow/taskQueryService"
+     jaxb:version="1.0">
+<!-- elementFormDefault="qualified" blockDefault="#all" 
+-->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <jaxb:globalBindings generateElementProperty="false"/>
+            <jaxb:schemaBindings>
+                <jaxb:package name="oracle.bpel.services.workflow.task.command.model"/>
+            </jaxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+    <xsd:import namespace="http://xmlns.oracle.com/bpel/workflow/taskQueryService" schemaLocation=".\TaskQueryService.xsd"/>
+    <element name="tasksUpdateByCommands" type="tns:tasksUpdateByCommandsType"/>
+    <element name="tasksUpdateByCommandsResponse" type="tns:tasksUpdateByCommandsResponseType"/>
+    <complexType name="tasksUpdateByCommandsType">
+        <sequence>
+            <element name="simpleCommand" type="tns:simpleCommandType" minOccurs="0" maxOccurs="1"/>
+            <element name="stateChangeCommand" type="tns:stateChangeCommandType" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+    <complexType name="simpleCommandType">
+        <sequence>
+            <element name="resumeTask" type="tns:commandParamType" minOccurs="0" maxOccurs="1"/>
+            <element name="acquireTask" type="tns:commandParamType" minOccurs="0" maxOccurs="1"/>
+            <element name="startTask" type="tns:commandParamType" minOccurs="0" maxOccurs="1"/>
+            <element name="addComment" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="updatePriority" type="tns:updatePriorityLevelType" minOccurs="0" maxOccurs="1"/>
+            <element name="updateTaskSummary" type="tns:updateTaskSummaryType" minOccurs="0" maxOccurs="1"/>
+            <element name="stopTask" type="tns:commandParamType" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+    <complexType name="stateChangeCommandType">
+        <sequence>
+            <choice minOccurs="1" maxOccurs="1">
+                <element name="updateOutcome" type="tns:updateOutcomeType"/>
+                <element name="reassignTask" type="tns:taskAssigneesType"/>
+                <element name="deleteTask" type="tns:commandParamType"/>
+                <element name="purgeTask" type="tns:commandParamType"/>
+                <element name="delegateTask" type="tns:taskAssigneesType"/>
+                <element name="escalateTask" type="tns:commandParamType"/>
+                <element name="withdrawTask" type="tns:commandParamType"/>
+                <element name="suspendTask" type="tns:commandParamType"/>
+                <element name="releaseTask" type="tns:commandParamType"/>
+            </choice>
+        </sequence>
+    </complexType>
+    <complexType name="updatePriorityLevelType">
+        <sequence>
+            <element name="priorityType" type="tns:updatePriorityType" minOccurs="1" maxOccurs="1"/>
+            <element name="priorityLevel" type="tns:intPriorityType" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+    <simpleType name="updatePriorityType">
+        <restriction base="xsd:string">
+            <enumeration value="UPDATE"/>
+            <enumeration value="INCREMENT"/>
+            <enumeration value="DECREMENT"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="intPriorityType">
+        <restriction base="xsd:int">
+            <minInclusive value="1"/>
+            <maxInclusive value="5"/>
+        </restriction>
+    </simpleType>
+    <complexType name="taskAssigneesType">
+        <sequence>
+            <element name="taskAssignee" type="tns:taskAssigneeType" minOccurs="1" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <complexType name="taskAssigneeType">
+        <simpleContent>
+            <extension base="xsd:string">
+                <attribute name="type" type="xsd:string" use="optional"/>
+            </extension>
+        </simpleContent>
+    </complexType>
+    <complexType name="updateOutcomeType">
+        <sequence>
+            <element name="outcome" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+    <complexType name="commandParamType">
+        <sequence>
+<!-- Reserve for future usage 
+-->
+        </sequence>
+    </complexType>
+    <complexType name="tasksUpdateByCommandsResponseType">
+        <sequence>
+            <element name="taskUpdateResult" type="tns:taskUpdateResultType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <complexType name="taskUpdateResultType">
+        <sequence>
+            <element name="taskId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <element name="commandResult" type="tns:commandResultType" minOccurs="1" maxOccurs="1"/>
+            <element name="exception" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+    <simpleType name="commandResultType">
+        <restriction base="xsd:string">
+            <enumeration value="SUCCESS"/>
+            <enumeration value="NONSTATECHANGE_FAILED"/>
+            <enumeration value="STATECHANGE_FAILED"/>
+        </restriction>
+    </simpleType>
+    <complexType name="updateTaskSummaryType">
+        <sequence>
+            <element ref="taskQuery:taskSummaryFieldsInfoResponse" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+</schema>
