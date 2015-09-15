@@ -4,15 +4,13 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="34">
+    <Units Count="35">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="14" Y="9"/>
+        <TopLine Value="164"/>
+        <CursorPos X="13" Y="183"/>
         <UsageCount Value="44"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -214,15 +212,45 @@
         <Filename Value="..\Mq\MqTestUnit.pas"/>
         <UsageCount Value="20"/>
       </Unit33>
+      <Unit34>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <UnitName Value="FormIniFilez"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="35"/>
+        <CursorPos X="14" Y="70"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit34>
     </Units>
     <CustomDefines Count="2">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
     </CustomDefines>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="6" HistoryIndex="5">
+      <Position1>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="9" Column="14"/>
+      </Position1>
+      <Position2>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="178" Column="21" TopLine="159"/>
+      </Position2>
+      <Position3>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="41" Column="5" TopLine="22"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="32" Column="2" TopLine="13"/>
+      </Position4>
+      <Position5>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="41" Column="5" TopLine="22"/>
+      </Position5>
+      <Position6>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="178" Column="13" TopLine="159"/>
+      </Position6>
+    </JumpHistory>
   </ProjectSession>
-  <EditorMacros Count="0"/>
 </CONFIG>

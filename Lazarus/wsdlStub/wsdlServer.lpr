@@ -175,12 +175,12 @@ end;
 
 function TMyApplication.doDecryptString(aString: AnsiString): AnsiString;
 begin
-  result := IniFile.DecryptPassword(aString);
+  result := DecryptPassword(aString);
 end;
 
 function TMyApplication.doEncryptString(aString: AnsiString): AnsiString;
 begin
-  result := IniFile.EncryptPassword(aString);
+  result := EncryptPassword(aString);
 end;
 
 constructor TMyApplication.Create(TheOwner: TComponent);

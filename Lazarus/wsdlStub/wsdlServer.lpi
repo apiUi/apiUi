@@ -101,7 +101,6 @@
     <Other>
       <CustomOptions Value="-dConsoleApp
 -dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -120,4 +119,4 @@
       </Item4>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>
