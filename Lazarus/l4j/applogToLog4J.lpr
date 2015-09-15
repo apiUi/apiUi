@@ -139,12 +139,14 @@ begin
     Msg.FirstTimeStamp := TimeStamp;
   if (TimeStamp > Msg.LastTimeStamp) then
     Msg.LastTimeStamp := TimeStamp;
-  s := '<' + EventType + 'Info>'
+  s := '<EventHeader>'
+     + '<EventType>' + EventType + '</EventType>'
      + '<TimeStamp>' + TimeStamp + '</TimeStamp>'
      + '<MessageId>' + MessageId + '</MessageId>'
      + '<ServiceRequestorId>' + ServiceRequestorId + '</ServiceRequestorId>'
      + '<ServiceId>' + ServiceId + '</ServiceId>'
      + sx
+     + '</EventHeader>'
      ;
 
   if EventDataLength > Length (EventData) then
@@ -185,15 +187,12 @@ begin
       Inc (x);
     end;
   end;
-  s := s
-     + '<EventType>' + EventType + '</EventType>'
-     + '</' + EventType + 'Info>'
-     + LineEnding
-     + '<' + EventType + '>' + EventData + '</' + EventType + '>'
-     + LineEnding
-     ;
-  Msg.events := Msg.events + s;
-  xSize := xSize + Length(s);
+  Msg.headers:= Msg.headers + s;
+  Msg.events := Msg.events
+              + '<' + EventType + '>' + EventData + '</' + EventType + '>'
+              + LineEnding
+              ;
+  xSize := xSize + Length(s) + Length (EventData) + 23;
 end;
 
 

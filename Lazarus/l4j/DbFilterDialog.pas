@@ -13,10 +13,15 @@ uses
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, FormIniFilez, Dialogs;
+  Buttons, ExtCtrls, FormIniFilez, Dialogs
+  ;
 
 type
+
+  { TDbFilterDlg }
+
   TDbFilterDlg = class(TForm)
+    FileSearchButton1: TButton;
     OKBtn: TButton;
     CancelBtn: TButton;
     Label2: TLabel;
@@ -36,11 +41,14 @@ type
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
+    procedure FileSearchButton1Click(Sender: TObject);
     procedure OKBtnClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FileSearchButtonClick(Sender: TObject);
+  private
+    fDesignedQuery: String;
   public
     { Public declarations }
   end;
@@ -92,11 +100,16 @@ end;
 
 procedure TDbFilterDlg.FormCreate(Sender: TObject);
 begin
+  fDesignedQuery := QueryEdit.Lines.Text;
   with TFormIniFile.Create (Self, True) do
   try
     Restore;
     ConnStringEdit.Text := StringByName['ConnParamsFilename'];
     QueryEdit.Lines.Text := StringByNameDef['QueryText', QueryEdit.Lines.Text];
+    ParamEdit1.Text := StringByNameDef['Param1', ParamEdit1.Text];
+    ParamEdit2.Text := StringByNameDef['Param2', ParamEdit2.Text];
+    ParamEdit3.Text := StringByNameDef['Param3', ParamEdit3.Text];
+    ParamEdit4.Text := StringByNameDef['Param4', ParamEdit4.Text];
   finally
     Free;
   end;
@@ -108,6 +121,10 @@ begin
   try
     StringByName['ConnParamsFilename'] := ConnStringEdit.Text;
     StringByName['QueryText'] := QueryEdit.Lines.Text;
+    StringByName['Param1'] := ParamEdit1.Text;
+    StringByName['Param2'] := ParamEdit2.Text;
+    StringByName['Param3'] := ParamEdit3.Text;
+    StringByName['Param4'] := ParamEdit4.Text;
     Save;
   finally
     Free;
@@ -147,6 +164,11 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TDbFilterDlg.FileSearchButton1Click(Sender: TObject);
+begin
+  QueryEdit.Lines.Text := fDesignedQuery;
 end;
 
 end.

@@ -9,8 +9,8 @@
         <Filename Value="applogToLog4J.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="151"/>
-        <CursorPos X="19" Y="169"/>
+        <TopLine Value="172"/>
+        <CursorPos X="8" Y="190"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -250,7 +250,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="applogToLog4J.lpr"/>
-        <Line Value="214"/>
+        <Line Value="213"/>
       </Item2>
     </BreakPoints>
   </Debugging>

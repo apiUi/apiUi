@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="4"/>
-      <BuildNr Value="566"/>
+      <BuildNr Value="570"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -65,6 +65,7 @@
       <Unit2>
         <Filename Value="l4jtypes.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="l4jTypes"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Xml\FilterDialog.pas"/>
@@ -105,7 +106,6 @@
     <Other>
       <CustomOptions Value="-dFPCUnixAPI
 -dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -133,4 +133,4 @@
       </Item7>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

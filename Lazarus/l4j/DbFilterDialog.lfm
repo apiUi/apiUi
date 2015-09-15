@@ -42,11 +42,14 @@ object DbFilterDlg: TDbFilterDlg
     object FileSearchButton: TButton
       Left = 1064
       Height = 21
+      Hint = 'Lookup coneection params file'
       Top = 15
       Width = 21
       Anchors = [akTop, akRight]
       Caption = '...'
       OnClick = FileSearchButtonClick
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
       TabStop = False
     end
@@ -78,16 +81,9 @@ object DbFilterDlg: TDbFilterDlg
       Font.Height = -12
       Font.Name = 'Courier New'
       Lines.Strings = (
-        'select to_char(log_time,''YYYY-MM-DD"T"HH24:MI:SS"."FF'') as Timestamp'
-        '     , (case '
-        '         when (service_message_id is null or service_message_id = ''Not applicable'')'
-        '         then '
-        '           process_group_instance_id || '';'' || to_char(log_time,''YYYY-MM-DD"T"HH24:MI:SS"."FF'')'
-        '         else '
-        '           service_message_id'
-        '        end'
-        '        ) as MessageId'
-        #9' , process_group_instance_id as PGID'
+        'select to_char (log_time, ''YYYY-MM-DD"T"HH24:MI:SS.FF'') as Timestamp'
+        '     , process_group_instance_id || '';'' || service_message_id || '';'' || user_task_id as MessageId'
+        '     , process_group_instance_id as PGID'
         '     , requester_id as ServiceRequestorId'
         '     , service_id as ServiceId '
         '     , event_type as EventType'
@@ -108,8 +104,8 @@ object DbFilterDlg: TDbFilterDlg
         'where to_char(log_time, ''YYYY-MM-DD:HH24'') between :Param1 and :Param1 || ''Z'''
         'and (:Param2 = ''%'' or process_group_instance_id = :Param2)'
         'and (:Param3 = ''%'' or business_object_id = :Param3)'
-        'order by MessageId, EventType '
-        ''
+        'and (:Param4 = ''%'' or requester_id = :Param4)'
+        'order by MessageId, log_time desc '
         ''
         '-- Essential to have specific MessageId''s because queried records are grouped as one Event per MessageId'
         '-- Such a group should contain both request and response for a servicecall'
@@ -121,6 +117,20 @@ object DbFilterDlg: TDbFilterDlg
       ParentFont = False
       ScrollBars = ssBoth
       TabOrder = 0
+    end
+    object FileSearchButton1: TButton
+      Left = 1064
+      Height = 21
+      Hint = 'Restore query as designed'
+      Top = 15
+      Width = 21
+      Anchors = [akTop, akRight]
+      Caption = '---'
+      OnClick = FileSearchButton1Click
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      TabStop = False
     end
   end
   object Panel3: TPanel
