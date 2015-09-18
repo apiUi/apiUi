@@ -273,7 +273,7 @@ begin
     SelectItemForm.Caption := 'Select operation';
     SelectItemForm.ListBox.Clear;
     for x := 0 to allOperations.Count - 1 do
-      SelectItemForm.ListBox.Items.Add (allOperations.Strings [x]);
+      SelectItemForm.ListBox.Items.Add (allOperations.Operations [x].reqTagName);
     SelectItemForm.ShowModal;
     if SelectItemForm.ModalResult = mrOk then
     begin

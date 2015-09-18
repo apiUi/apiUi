@@ -151,7 +151,7 @@ begin
       begin
         if (allOperations.Operations[x] = WsdlOperation)
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
-        or (WsdlOperation.invokeList.Find(allOperations.Operations[x].reqTagName, f)) then
+        or (WsdlOperation.invokeList.Find(allOperations.Operations[x].reqTagName + ';' + allOperations.Operations[x].reqTagNameSpace, f)) then
         begin
           if allOperations.Operations[x].reqBind.Children.Count > 0 then
           begin
@@ -176,7 +176,7 @@ begin
       begin
         if (allOperations.Operations[x] = WsdlOperation)
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
-        or (WsdlOperation.invokeList.Find(allOperations.Operations[x].reqTagName, f)) then
+        or (WsdlOperation.invokeList.Find(allOperations.Operations[x].reqTagName + ';' + allOperations.Operations[x].reqTagNameSpace, f)) then
         begin
           if allOperations.Operations[x].rpyBind.Children.Count > 0 then
           begin

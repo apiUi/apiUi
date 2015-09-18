@@ -187,7 +187,7 @@ type
     PublishDescriptions: Boolean;
     OperationsWithEndpointOnly: Boolean;
     SaveRelativeFileNames: Boolean;
-    FocusOperationName: String;
+    FocusOperationName, FocusOperationNameSpace: String;
     FocusMessageIndex: Integer;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
@@ -475,7 +475,6 @@ end;
 
 procedure RequestOperation(aContext: TObject; xOperationName: String);
 var
-  f: Integer;
   xProject: TWsdlProject;
   xOperation: TWsdlOperation;
 begin
@@ -484,11 +483,9 @@ begin
   if aContext is TWsdlOperation then with aContext as TWsdlOperation do
   begin
     xProject := Owner as TWsdlProject;
-    if invokeList.Find(xOperationName, f)then
+    xOperation := invokeList.FindOnOperationName(xOperationName);
+    if Assigned (xOperation) then
     begin
-      xOperation := invokeList.Operations[f];
-      if not Assigned (xOperation) then
-        Raise Exception.CreateFmt ('RequestOperation: %s in list but Operation not assigned(?): \n%s', [xOperationName, invokeList.Text]);
       xOperation.StubAction := saRequest;
       try
         xProject.SendMessage (xOperation, nil, '');
@@ -501,13 +498,11 @@ begin
     if aContext is TWsdlProject then
     begin
       xProject := aContext as TWsdlProject;
-      if allOperations.Find(xOperationName, f)then
-      begin
-        xOperation := allOperations.Operations[f];
-        try
-          xProject.SendMessage (xOperation, nil, '');
-        except
-        end;
+      xOperation := allOperations.FindOnOperationName(xOperationName);
+      if Assigned (xOperation) then
+      try
+        xProject.SendMessage (xOperation, nil, '');
+      except
       end;
     end;
   end;
@@ -539,37 +534,39 @@ end;
 
 procedure GetDefaultRequestData(aOperation: String);
 var
-  f: Integer;
+  xOperation: TWsdlOperation;
 begin
-  if not allOperations.Find(aOperation, f) then
+  xOperation := allOperations.FindOnOperationName(aOperation);
+  if not Assigned (xOperation) then
     raise Exception.Create(Format ('GetDefaultMessageData: Operation %s not found', [aOperation]));
-  with allOperations.Operations[f] do
+  with xOperation do
   begin
     if StubAction <> saRequest then
       raise Exception.Create(Format ('GetDefaultMessageData: Operation %s, only allowed on Operations with action = Request', [aOperation]));
-    ReqBindablesFromWsdlMessage(allOperations.Operations[f].Messages.Messages[0]);
+    ReqBindablesFromWsdlMessage(Messages.Messages[0]);
   end;
 end;
 
 procedure PutDefaultRequestData(aOperation: String);
 var
-  f: Integer;
+  xOperation: TWsdlOperation;
 begin
-  if not allOperations.Find(aOperation, f) then
+  xOperation := allOperations.FindOnOperationName(aOperation);
+  if not Assigned (xOperation) then
     raise Exception.Create(Format ('GetDefaultMessageData: Operation %s not found', [aOperation]));
-  with allOperations.Operations[f] do
+  with xOperation do
   begin
 {}{
     if StubAction <> saRequest then
       raise Exception.Create(Format ('GetDefaultMessageData: Operation %s, only allowed on Operations with action = Request', [aOperation]));
 {}
-    ReqBindablesToWsdlMessage(allOperations.Operations[f].Messages.Messages[0]);
+    ReqBindablesToWsdlMessage(Messages.Messages[0]);
   end;
 end;
 
 procedure SendOperationRequest(aOperation, aCorrelation: String);
 var
-  x, f: Integer;
+  x: Integer;
   xOperation: TWsdlOperation;
   xRequest: TWsdlMessage;
   sl: TStringList;
@@ -579,9 +576,9 @@ begin
     ExplodeStr (aCorrelation, ';', sl);
 //  with wsdlStubForm do
     begin
-      if allOperations.Find(aOperation, f) then
+      xOperation := allOperations.FindOnOperationName(aOperation);
+      if Assigned(xOperation) then
       begin
-        xOperation := allOperations.Operations[f];
         if xOperation.StubAction <> saRequest then
           raise Exception.Create ( 'Operation <' + aOperation + '> not configured as Request'
                                  );
@@ -623,9 +620,9 @@ begin
     ExplodeStr (aCorrelation, ';', sl);
 //  with wsdlStubForm do
     begin
-      if allOperations.Find(aOperation, f) then
+      xOperation := allOperations.FindOnOperationName(aOperation);
+      if Assigned (xOperation) then
       begin
-        xOperation := allOperations.Operations[f];
         if xOperation.StubAction <> saRequest then
           raise Exception.Create ( 'SendOperationRequestLater: Operation <' + aOperation + '> not configured as Request'
                                  );
@@ -1235,7 +1232,7 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
           xOperation.rpyBind.Checked := True;
         xOperation.BindStamper;
         try
-          allOperations.AddObject ( xOperation.reqTagName
+          allOperations.AddObject ( xOperation.reqTagName + ';' + xOperation.reqTagNameSpace
                                   , xOperation
                                   );
         except
@@ -1937,6 +1934,7 @@ begin
           with AddXml(Txml.CreateAsString('Script', (Scripts.Objects[x] AS TStringList).Text))
             do AddAttribute(TXmlAttribute.CreateAsString('Name', Scripts.Strings[x]));
       AddXml (TXml.CreateAsString('FocusOperationName', FocusOperationName));
+      AddXml (TXml.CreateAsString('FocusOperationNameSpace', FocusOperationNameSpace));
       AddXml (TXml.CreateAsInteger('FocusMessageIndex', FocusMessageIndex));
       result := AsText(False,0,False,False);
     finally
@@ -2036,6 +2034,7 @@ begin
           end;
           ignoreCoverageOn.Text := xXml.Items.XmlValueByTag ['ignoreCoverageOn'];
           FocusOperationName := xXml.Items.XmlValueByTag['FocusOperationName'];
+          FocusOperationNameSpace := xXml.Items.XmlValueByTag['FocusOperationNameSpace'];
           FocusMessageIndex := xXml.Items.XmlIntegerByTag['FocusMessageIndex'];
           for w := 0 to xXml.Items.Count - 1 do
           begin
@@ -2690,7 +2689,7 @@ begin
     begin
       AcquireLock;
       try
-        xOperation.invokeList.Add(reqTagName);
+        xOperation.invokeList.Add(reqTagName + ';' + reqTagNameSpace);
         xOperation.ReqBindablesFromWsdlMessage(Messages.Messages[0]);
       finally
         ReleaseLock;
@@ -4330,7 +4329,7 @@ begin
       and (xXml.Items.Count > 0) then
       begin
         xXml := xXml.Items.XmlItems [0];
-        if allOperations.Find(xXml.TagName, f) then
+        if allOperations.Find(xXml.Name + ';' + xXml.NameSpace, f) then
           result := allOperations.Operations [f];
         exit;
       end;

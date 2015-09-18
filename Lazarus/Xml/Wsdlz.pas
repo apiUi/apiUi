@@ -162,12 +162,15 @@ type
       procedure Clear; override;
   end;
 
+  { TWsdlOperations }
+
   TWsdlOperations = class (TStringList)
   private
     function GetOperation(Index: integer): TWsdlOperation;
     protected
     public
       function SaveFind (aString: String; aIndex: Integer): Boolean;
+      function FindOnOperationName(aName: String): TWsdlOperation;
       property Operations [Index: integer]: TWsdlOperation read GetOperation;
       procedure ClearListOnly;
       procedure Clear; override;
@@ -4758,18 +4761,20 @@ begin
               )
           ) then
       begin
-        invokeList.Add(allOperations.Operations[x].reqTagName);
+        invokeList.Add(allOperations.Operations[x].reqTagName + ';' + allOperations.Operations[x].reqTagNameSpace);
       end;
     end;
   end;
 {}
   for x := invokeList.Count - 1 downto 0 do
   begin
-    if not allOperations.Find(invokeList.Strings[x], f) then
+    if Assigned (invokeList.Operations[x]) then
     begin
-      if Assigned (invokeList.Objects[x]) then
-        invokeList.Objects[x].Free;
-      invokeList.Delete(x);
+      if not allOperations.Find(invokeList.Operations[x].reqTagName + ';' + invokeList.Operations[x].reqTagNameSpace, f) then
+      begin
+          invokeList.Objects[x].Free;
+          invokeList.Delete(x);
+      end;
     end;
   end;
   for x := 0 to invokeList.Count - 1 do
@@ -5542,6 +5547,22 @@ begin
     result := Find(aSTring, aIndex);
   finally
     ReleaseLock;
+  end;
+end;
+
+function TWsdlOperations .FindOnOperationName (aName : String
+  ): TWsdlOperation ;
+var
+  x: Integer;
+begin
+  result := nil;
+  for x := 0 to Count - 1 do
+  begin
+    if Operations[x].reqTagName = aName then
+    begin
+      result := Operations[x];
+      Exit;
+    end;
   end;
 end;
 

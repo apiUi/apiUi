@@ -2844,7 +2844,7 @@ begin
   captionFileName := ExtractFileName(aFileName);
   ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName);
   UpdateReopenList(ReopenCaseList, aFileName);
-  if allOperations.Find (se.FocusOperationName, f) then
+  if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
   begin
     WsdlOperation := allOperations.Operations[f];
     if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
@@ -6935,7 +6935,7 @@ begin
     se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
     se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlReply));
     ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
-    if allOperations.Find (se.FocusOperationName, f) then
+    if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
     begin
       WsdlOperation := allOperations.Operations[f];
       if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
@@ -9403,7 +9403,7 @@ end;
 
 procedure TMainForm.Action1Execute(Sender: TObject);
 begin
-  ShowHtml('', '<html>' + _WsdlHostName + '</html>');
+  XmlUtil.presentAsText('AllOps', allOperations.Text);
 end;
 
 procedure TMainForm.GenerateScriptAssignmentActionExecute(Sender: TObject);
@@ -11083,19 +11083,16 @@ procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
   end;
   procedure _DiscoverOperationFromTag(aTag: String; var isRequest: Boolean;
     var aOperation: TWsdlOperation);
-  var
-    f: Integer;
   begin
-    aOperation := nil;
-    if allOperations.Find(NameWithoutPrefix(aTag), f) then
+    aOperation := allOperations.FindOnOperationName(NameWithoutPrefix(aTag));
+    if Assigned (aOperation) then
     begin
-      aOperation := allOperations.Operations[f];
       isRequest := True;
       exit;
     end;
-    if allOperationsRpy.Find(NameWithoutPrefix(aTag), f) then
+    aOperation := allOperationsRpy.FindOnOperationName(NameWithoutPrefix(aTag));
+    if Assigned (aOperation) then
     begin
-      aOperation := allOperations.Operations[f];
       isRequest := False;
       exit;
     end;
