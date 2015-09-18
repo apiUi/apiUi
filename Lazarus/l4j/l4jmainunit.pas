@@ -28,6 +28,9 @@ Type
     Index: Integer;
   end;
 
+Type
+  TColumnEnum = (tceNumber, tceSize, tceTimestamp);
+
 type
 
   TL4JMainForm = class;
@@ -476,9 +479,18 @@ begin
 end;
 
 procedure TCustomThread.fSynchronisedHaveData;
+var
+  xColumn: TColumnIndex;
 begin
 //fForm.Data.Add (fString);
-  fForm.TreeView.RootNodeCount := fForm.Data.Count;
+  with fForm do
+  begin
+    TreeView.RootNodeCount := Data.Count;
+    xColumn := Ord (tceTimestamp);
+    TreeView.Header.SortColumn := xColumn;
+    TreeView.Header.SortDirection := sdAscending;
+    TreeView.SortTree(xColumn, TreeView.Header.SortDirection, True);
+  end;
 end;
 
 procedure TCustomThread.fSynchronisedShowMessage;
@@ -1908,27 +1920,32 @@ var
   xCursor: TCursor;
   xData: PTreeRec;
 begin
-  FilterDlg.ShowModal;
-  if FilterDlg.ModalResult = mrOk then
-  begin
-    xCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
-    try
-      numberVisible := 0;
-      Memo.Clear;
-      xNode := TreeView.GetFirst;
-      while Assigned (xNode) do
-      begin
-        xData := TreeView.GetNodeData (xNode);
-        xPasses := Filter (Data, xData^.Index);
-        TreeView.IsVisible [xNode] := xPasses;
-        if xPasses then
-          Inc (numberVisible);
-        xNode := TreeView.GetNext (xNode);
+  Application.CreateForm(TFilterDlg, FilterDlg);
+  try
+    FilterDlg.ShowModal;
+    if FilterDlg.ModalResult = mrOk then
+    begin
+      xCursor := Screen.Cursor;
+      Screen.Cursor := crHourGlass;
+      try
+        numberVisible := 0;
+        Memo.Clear;
+        xNode := TreeView.GetFirst;
+        while Assigned (xNode) do
+        begin
+          xData := TreeView.GetNodeData (xNode);
+          xPasses := Filter (Data, xData^.Index);
+          TreeView.IsVisible [xNode] := xPasses;
+          if xPasses then
+            Inc (numberVisible);
+          xNode := TreeView.GetNext (xNode);
+        end;
+      finally
+        Screen.Cursor := xCursor;
       end;
-    finally
-      Screen.Cursor := xCursor;
     end;
+  finally
+    FreeAndNil(FilterDlg);
   end;
 end;
 
