@@ -67,7 +67,7 @@ object MainForm: TMainForm
       Left = 113
       Top = 2
       Action = OpenWsdlAction
-      DropdownMenu = OperationsPopupMenu
+      DropdownMenu = WsdlsPopupMenu
       Style = tbsDropDown
     end
     object ToolButton2: TToolButton
@@ -2075,6 +2075,11 @@ object MainForm: TMainForm
       Caption = 'logChartAction'
       ImageIndex = 83
       OnExecute = logChartActionExecute
+    end
+    object OperationAliasAction: TAction
+      Category = 'Operation'
+      Caption = 'Alias...'
+      OnExecute = OperationAliasActionExecute
     end
   end
   object mainImageList: TImageList
@@ -5437,6 +5442,12 @@ object MainForm: TMainForm
       object N31: TMenuItem
         Caption = '-'
       end
+      object MenuItem4: TMenuItem
+        Action = OperationAliasAction
+      end
+      object MenuItem1: TMenuItem
+        Caption = '-'
+      end
       object Options4: TMenuItem
         Action = OperationOptionsAction
       end
@@ -8680,7 +8691,7 @@ object MainForm: TMainForm
     left = 104
     top = 56
   end
-  object OperationsPopupMenu: TPopupMenu
+  object WsdlsPopupMenu: TPopupMenu
     Images = mainImageList
     left = 512
     top = 280

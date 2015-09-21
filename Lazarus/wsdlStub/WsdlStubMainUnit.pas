@@ -64,6 +64,7 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    OperationAliasAction : TAction ;
     logChartAction : TAction ;
     LoadTestAction : TAction ;
     CopyLogGridToClipBoardAction : TAction ;
@@ -74,6 +75,8 @@ type
     MasterReloadDesignMenuItem : TMenuItem ;
     MasterRestartAction : TAction ;
     MasterRestartAction1 : TMenuItem ;
+    MenuItem1 : TMenuItem ;
+    MenuItem4 : TMenuItem ;
     Reactivatemaster1 : TMenuItem ;
     RunMenuItem : TMenuItem ;
     MenuItem2 : TMenuItem ;
@@ -460,7 +463,7 @@ type
     CobolOperationsAction1: TMenuItem;
     SwiftMtOperationsAction: TAction;
     MaintainlistofSwiftMToperations1: TMenuItem;
-    OperationsPopupMenu: TPopupMenu;
+    WsdlsPopupMenu: TPopupMenu;
     Maintainlistoffreeformatoperations1: TMenuItem;
     Maintainlistofcoboloperations1: TMenuItem;
     MaintainlistofSwiftMToperations2: TMenuItem;
@@ -497,6 +500,7 @@ type
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
+    procedure OperationAliasActionExecute (Sender : TObject );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
@@ -5895,7 +5899,7 @@ begin
     begin
       case Column of
         0:
-          CellText := xOperation.reqTagName;
+          CellText := xOperation.Alias;
       end;
     end
     else
@@ -11491,12 +11495,12 @@ begin
     xXsd.sType.Enumerations.Objects[0].Free;
     xXsd.sType.Enumerations.Delete(0);
   end;
-  for o := 0 to allOperations.Count - 1 do
+  for o := 0 to allAliasses.Count - 1 do
   begin
-    if allOperations.Operations[o] <> WsdlOperation then
+    if allAliasses.Operations[o] <> WsdlOperation then
     begin
       xEnum := TXsdEnumeration.Create;
-      xEnum.Value := allOperations.Operations[o].reqTagName;
+      xEnum.Value := allAliasses.Operations[o].Alias;
       xXsd.sType.Enumerations.AddObject(xEnum.Value, xEnum);
     end;
   end;
@@ -11755,6 +11759,44 @@ var
   aLog: TLog;
 begin
   ImageIndex := logValidationTabImageIndex;
+end;
+
+procedure TMainForm .OperationAliasActionExecute (Sender : TObject );
+var
+  oldAlias, newAlias: String;
+  f: Integer;
+  fOperation: TWsdlOperation;
+begin
+  if not Assigned(WsdlOperation) then
+    raise Exception.Create('No operation selected');
+  oldAlias := WsdlOperation.Alias;
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    PromptForm.Caption := 'Alias for operation ' + WsdlOperation.reqTagName;
+    PromptForm.PromptEdit.Text := oldAlias;
+    PromptForm.Numeric := False;
+    PromptForm.ShowModal;
+    if PromptForm.ModalResult = mrOk then
+    begin
+      newAlias := PromptForm.PromptEdit.Text;
+      if newAlias = '' then
+        raise Exception.Create('Alias name must have a value');
+      fOperation := nil;
+      if allAliasses.Find(newAlias, f) then
+        fOperation := allAliasses.Operations[f];
+      if Assigned (fOperation)
+      and (fOperation <> WsdlOperation) then
+        raise Exception.Create(newAlias + ' already exists as alias');
+      WsdlOperation.Alias := newAlias;
+      if allAliasses.Find(oldAlias, f) then
+        allAliasses.Delete(f);
+      allAliasses.AddObject(newAlias, WsdlOperation);
+      stubChanged := True;
+      OperationReqsTreeView.Invalidate;
+    end;
+  finally
+    FreeAndNil(PromptForm);
+  end;
 end;
 
 {$ifdef windows}

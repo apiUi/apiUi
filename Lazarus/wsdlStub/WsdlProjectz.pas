@@ -473,7 +473,7 @@ begin
   end;
 end;
 
-procedure RequestOperation(aContext: TObject; xOperationName: String);
+procedure RequestOperation(aContext: TObject; xOperationAlias: String);
 var
   xProject: TWsdlProject;
   xOperation: TWsdlOperation;
@@ -483,7 +483,7 @@ begin
   if aContext is TWsdlOperation then with aContext as TWsdlOperation do
   begin
     xProject := Owner as TWsdlProject;
-    xOperation := invokeList.FindOnOperationName(xOperationName);
+    xOperation := invokeList.FindOnAliasName(xOperationAlias);
     if Assigned (xOperation) then
     begin
       xOperation.StubAction := saRequest;
@@ -498,7 +498,7 @@ begin
     if aContext is TWsdlProject then
     begin
       xProject := aContext as TWsdlProject;
-      xOperation := allOperations.FindOnOperationName(xOperationName);
+      xOperation := allAliasses.FindOnAliasName(xOperationAlias);
       if Assigned (xOperation) then
       try
         xProject.SendMessage (xOperation, nil, '');
@@ -508,7 +508,7 @@ begin
   end;
   if not Assigned (xProject)
   or not Assigned (xOperation) then
-   raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationName]));
+   raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
 procedure ExecuteScript(aContext: TObject; xScriptName: String);
@@ -536,7 +536,7 @@ procedure GetDefaultRequestData(aOperation: String);
 var
   xOperation: TWsdlOperation;
 begin
-  xOperation := allOperations.FindOnOperationName(aOperation);
+  xOperation := allOperations.FindOnAliasName(aOperation);
   if not Assigned (xOperation) then
     raise Exception.Create(Format ('GetDefaultMessageData: Operation %s not found', [aOperation]));
   with xOperation do
@@ -551,7 +551,7 @@ procedure PutDefaultRequestData(aOperation: String);
 var
   xOperation: TWsdlOperation;
 begin
-  xOperation := allOperations.FindOnOperationName(aOperation);
+  xOperation := allOperations.FindOnAliasName(aOperation);
   if not Assigned (xOperation) then
     raise Exception.Create(Format ('GetDefaultMessageData: Operation %s not found', [aOperation]));
   with xOperation do
@@ -576,7 +576,7 @@ begin
     ExplodeStr (aCorrelation, ';', sl);
 //  with wsdlStubForm do
     begin
-      xOperation := allOperations.FindOnOperationName(aOperation);
+      xOperation := allOperations.FindOnAliasName(aOperation);
       if Assigned(xOperation) then
       begin
         if xOperation.StubAction <> saRequest then
@@ -620,7 +620,7 @@ begin
     ExplodeStr (aCorrelation, ';', sl);
 //  with wsdlStubForm do
     begin
-      xOperation := allOperations.FindOnOperationName(aOperation);
+      xOperation := allOperations.FindOnAliasName(aOperation);
       if Assigned (xOperation) then
       begin
         if xOperation.StubAction <> saRequest then
@@ -1296,6 +1296,10 @@ begin
   for w := 0 to Wsdls.Count - 1 do
     _prepWsdl (Wsdls.Objects [w] as TWsdl);
 
+  allAliasses.ClearListOnly;
+  for o := 0 to allOperations.Count - 1 do with allOperations do
+    allAliasses.AddObject(Operations[o].Alias, Operations[o]);
+
   for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do// here since invokeAll
   begin
     OnGetAbortPressed := self.GetAbortPressed;
@@ -1779,6 +1783,9 @@ begin
                   begin
                     AddXml (TXml.CreateAsString('Name', xOperation.Name));
                     AddXml (TXml.CreateAsString('Action', IntToStr(Ord(xOperation.StubAction))));
+                    if (xOperation.Alias <> xOperation.reqTagName)
+                    and (xOperation.Alias <> '') then
+                      AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
                     AddXml (TXml.CreateAsBoolean('HiddenFromUI', xOperation.HiddenFromUI));
                     AddXml (TXml.CreateAsBoolean('wsaEnabled', xOperation.wsaEnabled));
                     AddXml (TXml.CreateAsBoolean('wsaSpecificMustUnderstand', xOperation.wsaSpecificMustUnderstand));
@@ -2203,6 +2210,7 @@ begin
                             dXml := oXml.Items.XmlItemByTag ['Action'];
                             if Assigned (dXml) then
                               xOperation.StubAction := TStubAction (StrToIntDef(dXml.Value, 0));
+                            xOperation.Alias := oXml.Items.XmlValueByTagDef['Alias', xOperation.reqTagName];
                             xOperation.HiddenFromUI := oXml.Items.XmlBooleanByTagDef ['HiddenFromUI', False];
                             xOperation.wsaEnabled := oXml.Items.XmlBooleanByTagDef ['wsaEnabled', False];
                             xOperation.wsaSpecificMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaSpecificMustUnderstand', False];
@@ -2675,6 +2683,7 @@ begin
     xOperation.Owner := self;
     xOperation.WsdlService := Services.Services[0];
     xOperation.reqTagName := xOperation.Name + '_Req';
+    xOperation.Alias := xOperation.reqTagName;
     xOperation.rpyTagName := xOperation.Name + '_Rpy';
     xOperation.reqRecognition := TStringList.Create;
     xOperation.rpyRecognition := TStringList.Create;
@@ -2685,11 +2694,11 @@ begin
     xOperation.OnGetAbortPressed := self.GetAbortPressed;
   end;
   try
-    for x := 0 to allOperations.Count - 1 do with allOperations.Operations[x] do
+    for x := 0 to allAliasses.Count - 1 do with allAliasses.Operations[x] do
     begin
       AcquireLock;
       try
-        xOperation.invokeList.Add(reqTagName + ';' + reqTagNameSpace);
+        xOperation.invokeList.Add(Alias);
         xOperation.ReqBindablesFromWsdlMessage(Messages.Messages[0]);
       finally
         ReleaseLock;
@@ -4489,6 +4498,7 @@ begin
           xOperation.Wsdl := FreeFormatWsdl;
           xOperation.WsdlService := FreeFormatService;
           xOperation.reqTagName := xOperation.Name;
+          xOperation.Alias := xOperation.reqTagName;
           xOperation.rpyTagName := xOperation.Name;
           xOperation.reqRecognition := TStringList.Create;
           xOperation.rpyRecognition := TStringList.Create;
@@ -4614,6 +4624,7 @@ begin
           xOperation.Wsdl := XsdWsdl;
           xOperation.WsdlService := XsdWsdl.Services.Services[0];
           xOperation.reqTagName := xOperation.Name + '_Req';
+          xOperation.Alias := xOperation.reqTagName;
           xOperation.rpyTagName := xOperation.Name + '_Rpy';
           xOperation.reqRecognition := TStringList.Create;
           xOperation.rpyRecognition := TStringList.Create;
@@ -4748,6 +4759,7 @@ begin
           xOperation.Wsdl := CobolWsdl;
           xOperation.WsdlService := CobolWsdl.Services.Services[0];
           xOperation.reqTagName := xOperation.Name;
+          xOperation.Alias := xOperation.reqTagName;
           xOperation.rpyTagName := xOperation.Name;
           xOperation.reqRecognition := TStringList.Create;
           xOperation.rpyRecognition := TStringList.Create;
@@ -4982,6 +4994,7 @@ begin
           xOperation.Wsdl := SwiftMtWsdl;
           xOperation.WsdlService := SwiftMtWsdl.Services.Services[0];
           xOperation.reqTagName := xOperation.Name;
+          xOperation.Alias := xOperation.reqTagName;
           xOperation.rpyTagName := xOperation.Name;
           xOperation.reqRecognition := TStringList.Create;
           xOperation.rpyRecognition := TStringList.Create;

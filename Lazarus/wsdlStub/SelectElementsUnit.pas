@@ -64,7 +64,6 @@ type
     procedure UpdateListView;
   public
     doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti: Boolean;
-    invokeOperations: String;
     WsdlOperation: TWsdlOperation;
     SrceBind: TCustomBindable;
     ControlBinds: TBindableList;

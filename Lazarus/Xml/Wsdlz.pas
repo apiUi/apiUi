@@ -170,6 +170,7 @@ type
     protected
     public
       function SaveFind (aString: String; aIndex: Integer): Boolean;
+      function FindOnAliasName(aAlias: String): TWsdlOperation;
       function FindOnOperationName(aName: String): TWsdlOperation;
       property Operations [Index: integer]: TWsdlOperation read GetOperation;
       procedure ClearListOnly;
@@ -238,6 +239,7 @@ type
       Owner: TObject;
       Data: TObject;
       Name: String;
+      Alias: String;
       HiddenFromUI: Boolean;
       reqTagName, reqTagNameSpace, rpyTagName, rpyTagNameSpace: String;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
@@ -551,7 +553,7 @@ procedure AcquireEnvVarLock;
 procedure ReleaseEnvVarLock;
 
 var
-  allOperations: TWsdlOperations;
+  allOperations, allAliasses: TWsdlOperations;
   allOperationsRpy: TWsdlOperations;
   _WsdlVars: TStringList;
   _WsdlRequestOperation: VFunctionOS;
@@ -1967,6 +1969,7 @@ begin
         if (Mssg.Parts.Count > 0) then
         begin
           reqTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
+          Alias := reqTagName;
           reqTagNameSpace := Mssg.Parts.Parts[0].Xsd.ElementNameSpace;
         end;
         FreeAndNil(freqBind);
@@ -2549,6 +2552,7 @@ begin
                           xOperation.WsdlService := xService;
                           xOperation.Name := Items.XmlValueByTagDef ['Name', 'freeFormatOperation' + IntToStr (xService.Operations.Count)];
                           xOperation.reqTagName := xOperation.Name;
+                          xOperation.Alias := xOperation.reqTagName;
                           xOperation.rpyTagName := xOperation.Name;
                           xService.Operations.AddObject(xOperation.Name, xOperation);
                           for z := 0 to Items.Count - 1 do
@@ -2571,7 +2575,9 @@ begin
                       xOperation.Wsdl := Self;
                       xOperation.WsdlService := xService;
                       xOperation.Name := 'freeFormatOperation';
+                      xOperation.Alias := xOperation.reqTagName;
                       xOperation.reqTagName := xOperation.Name;
+                      xOperation.Alias := xOperation.reqTagName;
                       xOperation.rpyTagName := xOperation.Name;
                       xService.Operations.AddObject(xOperation.Name, xOperation);
                     end;
@@ -2589,6 +2595,7 @@ begin
                           xOperation.WsdlService := xService;
                           xOperation.Name := Items.XmlValueByTag ['Name'];
                           xOperation.reqTagName := xOperation.Name;
+                          xOperation.Alias := xOperation.reqTagName;
                           xOperation.rpyTagName := xOperation.Name;
                           xOperation.CobolEnvironment := ceTandem;
                           if Items.XmlValueByTag ['CobolEnvironment'] = 'IBM Zos' then
@@ -2638,6 +2645,7 @@ begin
                           xOperation.WsdlService := xService;
                           xOperation.Name := Items.XmlValueByTag ['Name'];
                           xOperation.reqTagName := xOperation.Name;
+                          xOperation.Alias := xOperation.reqTagName;
                           xOperation.rpyTagName := xOperation.Name;
                           xService.Operations.AddObject(xOperation.Name, xOperation);
                           for z := 0 to Items.Count - 1 do
@@ -2674,6 +2682,7 @@ begin
                           xOperation.WsdlService := xService;
                           xOperation.Name := Items.XmlValueByTag ['Name'];
                           xOperation.reqTagName := xOperation.Name;
+                          xOperation.Alias := xOperation.reqTagName;
                           xOperation.rpyTagName := xOperation.Name;
                           xService.Operations.AddObject(xOperation.Name, xOperation);
                           for z := 0 to Items.Count - 1 do
@@ -2713,6 +2722,7 @@ begin
                           xOperation.WsdlService := xService;
                           xOperation.Name := Items.XmlValueByTagDef ['Name', 'mailOperation' + IntToStr (xService.Operations.Count)];
                           xOperation.reqTagName := xOperation.Name;
+                          xOperation.Alias := xOperation.reqTagName;
                           xOperation.rpyTagName := xOperation.Name;
                           xService.Operations.AddObject(xOperation.Name, xOperation);
                           xOperation.reqXsd.ElementName := xOperation.Name;
@@ -2727,6 +2737,7 @@ begin
                       xOperation.WsdlService := xService;
                       xOperation.Name := 'mailOperation';
                       xOperation.reqTagName := xOperation.Name;
+                      xOperation.Alias := xOperation.reqTagName;
                       xOperation.rpyTagName := xOperation.Name;
                       xService.Operations.AddObject(xOperation.Name, xOperation);
                       xOperation.reqXsd.ElementName := xOperation.Name;
@@ -2748,6 +2759,7 @@ begin
                           xOperation.WsdlService := xService;
                           xOperation.Name := Items.XmlValueByTag ['Name'];
                           xOperation.reqTagName := xOperation.Name;
+                          xOperation.Alias := xOperation.reqTagName;
                           xOperation.rpyTagName := xOperation.Name;
                           xService.Operations.AddObject(xOperation.Name, xOperation);
                           for z := 0 to Items.Count - 1 do
@@ -2805,6 +2817,7 @@ begin
           if Services.Services[s].DescriptionType = ipmDTJson then
             (xOperation.fltBind as TXml).jsonType := jsonObject;
           xOperation.reqTagName := xOperation.Name;
+          xOperation.Alias := xOperation.reqTagName;
           xOperation.rpyTagName := xOperation.Name;
         end;
       end;
@@ -4154,6 +4167,7 @@ begin
   self.WsdlService := xOperation.WsdlService;
   self.Name := xOperation.Name;
   self.reqTagName := xOperation.reqTagName;
+  self.Alias := xOperation.Alias;
   self.reqTagNameSpace := xOperation.reqTagNameSpace;
   self.rpyTagName := xOperation.rpyTagName;
   self.rpyTagNameSpace := xOperation.rpyTagNameSpace;
@@ -4751,17 +4765,17 @@ begin
   or (oldInvokeSpec = 'allRequestors') then
   begin
     invokeList.Clear;
-    for x := 0 to allOperations.Count - 1 do
+    for x := 0 to allAliasses.Count - 1 do
     begin
-      if (allOperations.Operations[x] <> Self)
-      and (allOperations.Operations[x] <> Self.Cloned)
+      if (allAliasses.Operations[x] <> Self)
+      and (allAliasses.Operations[x] <> Self.Cloned)
       and (   (oldInvokeSpec = 'allOperations')
            or (    (oldInvokeSpec = 'allRequestors')
-               and (allOperations.Operations[x].StubAction = saRequest)
+               and (allAliasses.Operations[x].StubAction = saRequest)
               )
           ) then
       begin
-        invokeList.Add(allOperations.Operations[x].reqTagName + ';' + allOperations.Operations[x].reqTagNameSpace);
+        invokeList.Add(allAliasses.Operations[x].Alias);
       end;
     end;
   end;
@@ -4770,23 +4784,23 @@ begin
   begin
     if Assigned (invokeList.Operations[x]) then
     begin
-      if not allOperations.Find(invokeList.Operations[x].reqTagName + ';' + invokeList.Operations[x].reqTagNameSpace, f) then
+      if not allAliasses.Find(invokeList.Operations[x].Alias, f) then
       begin
-          invokeList.Objects[x].Free;
-          invokeList.Delete(x);
+        invokeList.Objects[x].Free;
+        invokeList.Delete(x);
       end;
     end;
   end;
   for x := 0 to invokeList.Count - 1 do
   begin
-    if allOperations.Find(invokeList.Strings[x], f)
-    and not (allOperations.Operations[f]._processing) then
+    if allAliasses.Find(invokeList.Strings[x], f)
+    and not (allAliasses.Operations[f]._processing) then
     begin
-      allOperations.Operations[f]._processing := True;
+      allAliasses.Operations[f]._processing := True;
       try
         if Assigned (invokeList.Objects[x]) then // sometimes called from gui ...
           invokeList.Objects[x].Free;
-        invokeList.Objects[x] := TWsdlOperation.Create(allOperations.Operations[f]);
+        invokeList.Objects[x] := TWsdlOperation.Create(allAliasses.Operations[f]);
         with invokeList.Operations[x] do
         begin
           if Messages.Count > 0 then
@@ -4802,7 +4816,7 @@ begin
           end;
         end;
       finally
-        allOperations.Operations[f]._processing := False;
+        allAliasses.Operations[f]._processing := False;
       end;
     end;
   end;
@@ -5550,6 +5564,21 @@ begin
   end;
 end;
 
+function TWsdlOperations .FindOnAliasName (aAlias : String ): TWsdlOperation ;
+var
+  x: Integer;
+begin
+  result := nil;
+  for x := 0 to Count - 1 do
+  begin
+    if Operations[x].Alias = aAlias then
+    begin
+      result := Operations[x];
+      Exit;
+    end;
+  end;
+end;
+
 function TWsdlOperations .FindOnOperationName (aName : String
   ): TWsdlOperation ;
 var
@@ -6048,6 +6077,9 @@ initialization
   allOperationsRpy := TWsdlOperations.Create;
   allOperationsRpy.Sorted := True;
   allOperationsRpy.Duplicates := dupError;
+  allAliasses := TWsdlOperations.Create;
+  allAliasses.Sorted := True;
+  allAliasses.Duplicates := dupError;
   _WsdlDbsConnector := TSQLConnector.Create(nil);
   _WsdlDbsTransaction := TSQLTransaction.Create(nil);
   _WsdlDbsTransaction.DataBase := _WsdlDbsConnector;
@@ -6061,6 +6093,8 @@ finalization
   FreeAndNil(_WsdlVars);
   allOperations.ClearListOnly;
   allOperations.Free;
+  allAliasses.ClearListOnly;
+  allAliasses.Free;
   allOperationsRpy.ClearListOnly;
   allOperationsRpy.Free;
   _WsdlDbsTransaction.Free;
