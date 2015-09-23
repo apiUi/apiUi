@@ -153,8 +153,8 @@ procedure TWsdlControl.HttpWebPageServerCommandGet(AContext: TIdContext;
       for x := 0 to sl.Count - 1 do
       begin
         if Pos (reqs, sl.Strings[x]) > 0 then
-          for o := 0 to allOperations.Count - 1 do
-            dl.Add(ReplaceText(sl.Strings[x], reqs, allOperations.Operations[o].reqTagName))
+          for o := 0 to allAliasses.Count - 1 do
+            dl.Add(ReplaceText(sl.Strings[x], reqs, allAliasses.Operations[o].Alias))
         else
         begin
           if Pos (scrpts, sl.Strings[x]) > 0 then
@@ -311,7 +311,7 @@ begin
                 dXml := oXml.FindXml('Body.sendAllRequestsReq.elementName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find elementname to use in request');
-                dOperation := allOperations.FindOnOperationName(dXml.Value);
+                dOperation := allAliasses.FindOnAliasName(dXml.Value);
                 if not Assigned (dOperation) then
                   raise Exception.Create('Cannot find operation based on: ' + dXml.Value);
                 if dOperation.StubAction <> saRequest  then
@@ -325,7 +325,7 @@ begin
                 dXml := oXml.FindXml('Body.sendRequestReq.elementName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find elementname to use in request');
-                dOperation := allOperations.FindOnOperationName(dXml.Value);
+                dOperation := allAliasses.FindOnAliasName(dXml.Value);
                 if not Assigned (dOperation) then
                   raise Exception.Create('Cannot find operation based on: ' + dXml.Value);
                 if dOperation.StubAction <> saRequest  then

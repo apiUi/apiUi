@@ -3147,7 +3147,7 @@ begin
     begin
       xMenuItem := TMenuItem.Create(nil);
       xMenuItem.Tag := X;
-      xMenuItem.Caption := allOperations.Operations[X].reqTagName;
+      xMenuItem.Caption := allOperations.Operations[X].Alias;
       xMenuItem.OnClick := UnhideOperationMenuItemClick;
       UnhideOperationMenuItem.Add(xMenuItem);
     end
@@ -3155,7 +3155,7 @@ begin
     begin
       xMenuItem := TMenuItem.Create(nil);
       xMenuItem.Tag := X;
-      xMenuItem.Caption := allOperations.Operations[X].reqTagName;
+      xMenuItem.Caption := allOperations.Operations[X].Alias;
       xMenuItem.OnClick := HideoperationMenuItemClick;
       HideoperationMenuItem.Add(xMenuItem);
     end;

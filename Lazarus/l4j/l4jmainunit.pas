@@ -34,6 +34,9 @@ Type
 type
 
   TL4JMainForm = class;
+
+  { TCustomThread }
+
   TCustomThread = class(TThread)
    private
      fNumber, fTotal: Integer;
@@ -43,6 +46,7 @@ type
      fEnabled: Boolean;
      fAbortPressed: Boolean;
      procedure fSynchronisedShowMessage;
+     procedure fSynchronisedOrderData;
      procedure fSynchronisedHaveData;
      procedure fSynchronisedStatusUpdate;
      procedure fSynchronisedEnableAbortButton;
@@ -479,23 +483,30 @@ begin
 end;
 
 procedure TCustomThread.fSynchronisedHaveData;
-var
-  xColumn: TColumnIndex;
 begin
 //fForm.Data.Add (fString);
   with fForm do
   begin
     TreeView.RootNodeCount := Data.Count;
-    xColumn := Ord (tceTimestamp);
-    TreeView.Header.SortColumn := xColumn;
-    TreeView.Header.SortDirection := sdAscending;
-    TreeView.SortTree(xColumn, TreeView.Header.SortDirection, True);
   end;
 end;
 
 procedure TCustomThread.fSynchronisedShowMessage;
 begin
   ShowMessage (fMessage);
+end;
+
+procedure TCustomThread.fSynchronisedOrderData;
+var
+  xColumn: TColumnIndex;
+begin
+  with fForm do
+  begin
+    xColumn := Ord (tceTimestamp);
+    TreeView.Header.SortColumn := xColumn;
+    TreeView.Header.SortDirection := sdAscending;
+    TreeView.SortTree(xColumn, TreeView.Header.SortDirection, True);
+  end;
 end;
 
 procedure TCustomThread.fSynchronisedStatusUpdate;
@@ -870,6 +881,13 @@ begin
         with TIdSync.Create do
           try
             SynchronizeMethod (@fSynchronisedHaveData);
+          finally
+            Free;
+          end;
+        UpdateStatus (8, 10, 'Sorting output...');
+        with TIdSync.Create do
+          try
+            SynchronizeMethod (@fSynchronisedOrderData);
           finally
             Free;
           end;
