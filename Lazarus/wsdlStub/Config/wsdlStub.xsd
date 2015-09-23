@@ -1513,44 +1513,7 @@ In case your records do not have any identifying string for operation (listeners
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SubStrings">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="SubString" maxOccurs="unbounded">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="Start" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Length" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Number of characters; Default = 1</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Value" type="xs:string">
-													<xs:annotation>
-														<xs:documentation>Regular expresion for the value;
-Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
-													</xs:annotation>
-												</xs:element>
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="SubStrings" type="SubStringsType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1560,44 +1523,7 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SubStrings">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="SubString" maxOccurs="unbounded">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="Start" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Length" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Number of characters; Default = 1</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Value" type="xs:string">
-													<xs:annotation>
-														<xs:documentation>Regular expresion for the value;
-Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
-													</xs:annotation>
-												</xs:element>
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="SubStrings" type="SubStringsType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1694,44 +1620,7 @@ In case your records do not have any identifying string for operation (listeners
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SubStrings">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="SubString" maxOccurs="unbounded">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="Start" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Length" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Number of characters; Default = 1</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Value" type="xs:string">
-													<xs:annotation>
-														<xs:documentation>Regular expresion for the value;
-Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
-													</xs:annotation>
-												</xs:element>
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="SubStrings" type="SubStringsType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1760,44 +1649,7 @@ In case your records do not have any identifying string for operation (listeners
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SubStrings">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="SubString" maxOccurs="unbounded">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="Start" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Length" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Number of characters; Default = 1</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Value" type="xs:string">
-													<xs:annotation>
-														<xs:documentation>Regular expresion for the value;
-Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
-													</xs:annotation>
-												</xs:element>
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="SubStrings" type="SubStringsType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1820,44 +1672,7 @@ In case your records do not have any identifying string for operation (listeners
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SubStrings">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="SubString" maxOccurs="unbounded">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="Start" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Length" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Number of characters; Default = 1</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Value" type="xs:string">
-													<xs:annotation>
-														<xs:documentation>Regular expresion for the value;
-Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
-													</xs:annotation>
-												</xs:element>
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="SubStrings" type="SubStringsType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1867,44 +1682,7 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SubStrings">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="SubString" maxOccurs="unbounded">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="Start" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Length" minOccurs="0">
-													<xs:annotation>
-														<xs:documentation>Number of characters; Default = 1</xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:integer">
-															<xs:minInclusive value="1"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="Value" type="xs:string">
-													<xs:annotation>
-														<xs:documentation>Regular expresion for the value;
-Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
-													</xs:annotation>
-												</xs:element>
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="SubStrings" type="SubStringsType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -2158,4 +1936,40 @@ Only relevant for stub operation. </xs:documentation>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:complexType name="SubStringsType">
+		<xs:sequence>
+			<xs:element name="SubString" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Start" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:integer">
+									<xs:minInclusive value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Length" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Number of characters; Default = 1</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:integer">
+									<xs:minInclusive value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Value" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Regular expresion for the value;
+Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 </xs:schema>

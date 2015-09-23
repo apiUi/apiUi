@@ -317,7 +317,7 @@ type
     procedure ProjectOptions36FromXml (aXml: TXml);
     procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
     procedure ProjectDesignFromString (aString, aMainFileName: String);
-    procedure PrepareAllOperations (aLogServerException: TOnStringEvent);
+    procedure PrepareAllOperations (aLogServerException: TOnStringEvent; aPromptOperationAlias: TProcedureOperation);
     procedure Activate (aActive: Boolean);
     procedure Clear;
     function httpRequestStreamToString(ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): String;
@@ -1212,7 +1212,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent);
+procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent; aPromptOperationAlias: TProcedureOperation);
   procedure _prepWsdl (xWsdl: TWsdl);
   var
     s, o: Integer;
@@ -1283,7 +1283,7 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
     end;
   end;
 var
-  w, o: Integer;
+  w, o, f: Integer;
 begin
   wsdlNames.Clear;
   allOperations.ClearListOnly;
@@ -1298,7 +1298,12 @@ begin
 
   allAliasses.ClearListOnly;
   for o := 0 to allOperations.Count - 1 do with allOperations do
+  begin
+    if Assigned (aPromptOperationAlias) then
+      while allAliasses.Find (Operations[o].Alias, f) do // no dups allowed on alias
+        aPromptOperationAlias (Operations[o]);
     allAliasses.AddObject(Operations[o].Alias, Operations[o]);
+  end;
 
   for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do// here since invokeAll
   begin
@@ -2406,7 +2411,7 @@ begin
               end;
           AcquireLock;
           try
-            PrepareAllOperations (LogServerMessage);
+            PrepareAllOperations (LogServerMessage, nil);
           finally
             ReleaseLock;
           end;

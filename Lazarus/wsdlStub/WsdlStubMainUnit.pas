@@ -1070,6 +1070,7 @@ type
     property Wsdl: TWsdl read getWsdl write setWsdl;
     procedure BeginUpdate;
     Procedure EndUpdate;
+    procedure PromptForOperationAlias (aOperation: TWsdlOperation);
     function OptionsAsXml: TXml;
     function doDecryptString(aString: AnsiString): AnsiString;
     function doEncryptString(aString: AnsiString): AnsiString;
@@ -3829,7 +3830,7 @@ end;
 
 procedure TMainForm.PrepareOperation;
 begin
-  se.PrepareAllOperations(LogServerException);
+  se.PrepareAllOperations(LogServerException, PromptForOperationAlias);
   WsdlOperationsComboBox.Clear;
   WsdlServicesComboBox.Clear;
   WsdlComboBox.Items.Text := se.Wsdls.Text;
@@ -11761,41 +11762,54 @@ begin
   ImageIndex := logValidationTabImageIndex;
 end;
 
+procedure TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation );
+var
+  f: Integer;
+  fOperation: TWsdlOperation;
+begin
+  if not Assigned(aOperation) then
+    raise Exception.Create('TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation )  No argument assigned');
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    PromptForm.Caption := 'Alias for operation ' + aOperation.reqTagName + ' ; ' + aOperation.reqTagNameSpace;
+    PromptForm.PromptEdit.Text := aOperation.Alias;
+    PromptForm.Numeric := False;
+    PromptForm.ShowModal;
+    if PromptForm.ModalResult = mrOk then
+    begin
+      if PromptForm.PromptEdit.Text = '' then
+        raise Exception.Create('Alias name must have a value');
+      fOperation := nil;
+      if allAliasses.Find(PromptForm.PromptEdit.Text, f) then
+        fOperation := allAliasses.Operations[f];
+      if Assigned (fOperation)
+      and (fOperation <> aOperation) then
+        raise Exception.Create(PromptForm.PromptEdit.Text + ' already exists as alias');
+      aOperation.Alias := PromptForm.PromptEdit.Text;
+    end;
+  finally
+    FreeAndNil(PromptForm);
+  end;
+end;
+
+
 procedure TMainForm .OperationAliasActionExecute (Sender : TObject );
 var
-  oldAlias, newAlias: String;
+  oldAlias: String;
   f: Integer;
   fOperation: TWsdlOperation;
 begin
   if not Assigned(WsdlOperation) then
     raise Exception.Create('No operation selected');
   oldAlias := WsdlOperation.Alias;
-  Application.CreateForm(TPromptForm, PromptForm);
-  try
-    PromptForm.Caption := 'Alias for operation ' + WsdlOperation.reqTagName;
-    PromptForm.PromptEdit.Text := oldAlias;
-    PromptForm.Numeric := False;
-    PromptForm.ShowModal;
-    if PromptForm.ModalResult = mrOk then
-    begin
-      newAlias := PromptForm.PromptEdit.Text;
-      if newAlias = '' then
-        raise Exception.Create('Alias name must have a value');
-      fOperation := nil;
-      if allAliasses.Find(newAlias, f) then
-        fOperation := allAliasses.Operations[f];
-      if Assigned (fOperation)
-      and (fOperation <> WsdlOperation) then
-        raise Exception.Create(newAlias + ' already exists as alias');
-      WsdlOperation.Alias := newAlias;
-      if allAliasses.Find(oldAlias, f) then
-        allAliasses.Delete(f);
-      allAliasses.AddObject(newAlias, WsdlOperation);
-      stubChanged := True;
-      OperationReqsTreeView.Invalidate;
-    end;
-  finally
-    FreeAndNil(PromptForm);
+  PromptForOperationAlias(WsdlOperation);
+  if WsdlOperation.Alias <> oldAlias then
+  begin
+    if allAliasses.Find(oldAlias, f) then
+      allAliasses.Delete(f);
+    allAliasses.AddObject(WsdlOperation.Alias, WsdlOperation);
+    stubChanged := True;
+    OperationReqsTreeView.Invalidate;
   end;
 end;
 
