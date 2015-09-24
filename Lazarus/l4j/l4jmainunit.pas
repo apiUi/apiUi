@@ -409,6 +409,7 @@ begin
     Msg.FirstTimeStamp := TimeStamp;
   if (TimeStamp > Msg.LastTimeStamp) then
     Msg.LastTimeStamp := TimeStamp;
+  Inc (Msg.Count);
   s := '<EventHeader>'
      + '<EventType>' + EventType + '</EventType>'
      + '<TimeStamp>' + TimeStamp + '</TimeStamp>'

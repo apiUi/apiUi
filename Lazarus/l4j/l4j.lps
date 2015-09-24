@@ -8,10 +8,9 @@
       <Unit0>
         <Filename Value="l4j.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="21"/>
+        <CursorPos Y="21"/>
         <UsageCount Value="190"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -23,10 +22,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="L4JMainUnit"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="557"/>
-        <CursorPos X="1" Y="769"/>
+        <TopLine Value="381"/>
+        <CursorPos X="19" Y="412"/>
         <UsageCount Value="190"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -35,10 +34,10 @@
         <Filename Value="l4jtypes.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="l4jTypes"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="57"/>
-        <CursorPos X="1" Y="98"/>
+        <TopLine Value="141"/>
+        <CursorPos X="24" Y="150"/>
         <UsageCount Value="190"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -109,7 +108,6 @@
       </Unit11>
       <Unit12>
         <Filename Value="..\Components\virtualtreeview\VirtualTrees.pas"/>
-        <UnitName Value="VirtualTrees"/>
         <WindowIndex Value="1"/>
         <TopLine Value="1532"/>
         <CursorPos X="14" Y="1552"/>
@@ -128,10 +126,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DbFilterDialog"/>
-        <EditorIndex Value="0"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
         <UsageCount Value="81"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -373,10 +369,7 @@
       <Define3 Value="UseCThreads"/>
       <Define4 Value="GETENDURANCE"/>
     </CustomDefines>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
-    <JumpHistory Count="22" HistoryIndex="21">
+    <JumpHistory Count="26" HistoryIndex="25">
       <Position1>
         <Filename Value="l4jmainunit.pas"/>
         <Caret Line="50" Column="37" TopLine="19"/>
@@ -465,6 +458,21 @@
         <Filename Value="l4jmainunit.pas"/>
         <Caret Line="2325" Column="33" TopLine="2291"/>
       </Position22>
+      <Position23>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="98" TopLine="57"/>
+      </Position23>
+      <Position24>
+        <Filename Value="l4jtypes.pas"/>
+      </Position24>
+      <Position25>
+        <Filename Value="l4jtypes.pas"/>
+        <Caret Line="47" Column="18" TopLine="27"/>
+      </Position25>
+      <Position26>
+        <Filename Value="l4jmainunit.pas"/>
+        <Caret Line="769" TopLine="554"/>
+      </Position26>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -478,5 +486,4 @@
       </Item1>
     </BreakPoints>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>

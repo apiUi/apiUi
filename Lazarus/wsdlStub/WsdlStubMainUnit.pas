@@ -64,6 +64,14 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    MenuItem10: TMenuItem;
+    MenuItem11: TMenuItem;
+    MenuItem12: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
     OperationAliasAction : TAction ;
     logChartAction : TAction ;
     LoadTestAction : TAction ;
@@ -77,6 +85,7 @@ type
     MasterRestartAction1 : TMenuItem ;
     MenuItem1 : TMenuItem ;
     MenuItem4 : TMenuItem ;
+    OperationsPopupMenu: TPopupMenu;
     Reactivatemaster1 : TMenuItem ;
     RunMenuItem : TMenuItem ;
     MenuItem2 : TMenuItem ;
@@ -500,6 +509,7 @@ type
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
+    procedure Operation1Click(Sender: TObject);
     procedure OperationAliasActionExecute (Sender : TObject );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
@@ -11756,16 +11766,16 @@ end;
 
 procedure TMainForm .MessagesTabControlGetImageIndex (Sender : TObject ;
   TabIndex : Integer ; var ImageIndex : Integer );
-var
-  aLog: TLog;
 begin
   ImageIndex := logValidationTabImageIndex;
 end;
 
+procedure TMainForm.Operation1Click(Sender: TObject);
+begin
+
+end;
+
 procedure TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation );
-var
-  f: Integer;
-  fOperation: TWsdlOperation;
 begin
   if not Assigned(aOperation) then
     raise Exception.Create('TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation )  No argument assigned');
@@ -11775,18 +11785,11 @@ begin
     PromptForm.PromptEdit.Text := aOperation.Alias;
     PromptForm.Numeric := False;
     PromptForm.ShowModal;
+    while (PromptForm.ModalResult = mrOk)
+    and (PromptForm.PromptEdit.Text = '') do
+      PromptForm.ShowModal;
     if PromptForm.ModalResult = mrOk then
-    begin
-      if PromptForm.PromptEdit.Text = '' then
-        raise Exception.Create('Alias name must have a value');
-      fOperation := nil;
-      if allAliasses.Find(PromptForm.PromptEdit.Text, f) then
-        fOperation := allAliasses.Operations[f];
-      if Assigned (fOperation)
-      and (fOperation <> aOperation) then
-        raise Exception.Create(PromptForm.PromptEdit.Text + ' already exists as alias');
       aOperation.Alias := PromptForm.PromptEdit.Text;
-    end;
   finally
     FreeAndNil(PromptForm);
   end;
@@ -11805,6 +11808,20 @@ begin
   PromptForOperationAlias(WsdlOperation);
   if WsdlOperation.Alias <> oldAlias then
   begin
+    fOperation := nil;
+    if allAliasses.Find(WsdlOperation.Alias, f) then
+      fOperation := allAliasses.Operations[f];
+    if Assigned (fOperation)
+    and (fOperation <> WsdlOperation) then
+    begin
+      WsdlOperation.Alias := oldAlias;
+      raise Exception.CreateFmt( '%s already exists as alias at %s ; %s'
+                               , [fOperation.Alias
+                                 ,                            fOperation.reqTagName
+                                 ,                                 fOperation.reqTagNameSpace
+                                 ]
+                               );
+    end;
     if allAliasses.Find(oldAlias, f) then
       allAliasses.Delete(f);
     allAliasses.AddObject(WsdlOperation.Alias, WsdlOperation);

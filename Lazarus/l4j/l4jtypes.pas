@@ -44,6 +44,7 @@ type
     function getAsText: String;
 public
   FirstTimeStamp, LastTimeStamp: String;
+  Count: Integer;
   headers: String;
   events: String;
   property AsText: String read getAsText;
@@ -142,6 +143,7 @@ var
   x: Integer;
 begin
   result := '<log4j_event timestamp="' + FirstTimeStamp + '" lasttimestamp="' + LastTimeStamp + '">'
+          + '<count>'+ IntToStr (Count) + '</count>'
           + '<headers>'+ headers + '</headers>'
           + '<events>'+ events + '</events>'
           + '</log4j_event>'

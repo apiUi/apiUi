@@ -106,7 +106,6 @@
     <Other>
       <CustomOptions Value="-dFPCUnixAPI
 -dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -134,4 +133,4 @@
       </Item7>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>
