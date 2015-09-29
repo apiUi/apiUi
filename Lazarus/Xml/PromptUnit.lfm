@@ -1,7 +1,7 @@
 object PromptForm: TPromptForm
-  Left = 311
+  Left = 614
   Height = 97
-  Top = 257
+  Top = 508
   Width = 644
   BorderStyle = bsDialog
   Caption = 'Dialog'
@@ -11,7 +11,7 @@ object PromptForm: TPromptForm
   OnShow = FormShow
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
     Height = 46

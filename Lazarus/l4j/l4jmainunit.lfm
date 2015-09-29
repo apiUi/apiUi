@@ -1,7 +1,7 @@
 object L4JMainForm: TL4JMainForm
-  Left = 314
+  Left = 359
   Height = 434
-  Top = 221
+  Top = 179
   Width = 982
   Caption = 'L4JMainForm'
   ClientHeight = 415
@@ -9,7 +9,7 @@ object L4JMainForm: TL4JMainForm
   Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
     Height = 350
@@ -130,7 +130,6 @@ object L4JMainForm: TL4JMainForm
     end
     object ToolButton10: TToolButton
       Left = 47
-      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton10'
@@ -143,8 +142,7 @@ object L4JMainForm: TL4JMainForm
       Action = QueryDbAction
     end
     object ToolButton17: TToolButton
-      Left = 80
-      Height = 22
+      Left = 103
       Top = 2
       Width = 10
       Caption = 'ToolButton17'
@@ -152,18 +150,17 @@ object L4JMainForm: TL4JMainForm
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 90
+      Left = 113
       Top = 2
       Action = CopyAction
     end
     object ToolButton14: TToolButton
-      Left = 113
+      Left = 136
       Top = 2
       Action = AllXmlAction
     end
     object ToolButton3: TToolButton
-      Left = 136
-      Height = 22
+      Left = 159
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -171,13 +168,12 @@ object L4JMainForm: TL4JMainForm
       Style = tbsSeparator
     end
     object ToolButton7: TToolButton
-      Left = 146
+      Left = 169
       Top = 2
       Action = FilterAction
     end
     object ToolButton6: TToolButton
-      Left = 169
-      Height = 22
+      Left = 192
       Top = 2
       Width = 10
       Caption = 'ToolButton6'
@@ -185,23 +181,22 @@ object L4JMainForm: TL4JMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 179
+      Left = 202
       Top = 2
       Action = FindAction
     end
     object ToolButton2: TToolButton
-      Left = 202
+      Left = 225
       Top = 2
       Action = FindNextAction
     end
     object ToolButton15: TToolButton
-      Left = 225
+      Left = 248
       Top = 2
       Action = EditDisplayedColumnsAction
     end
     object ToolButton5: TToolButton
-      Left = 248
-      Height = 22
+      Left = 271
       Top = 2
       Width = 10
       Caption = 'ToolButton5'
@@ -209,13 +204,12 @@ object L4JMainForm: TL4JMainForm
       Style = tbsSeparator
     end
     object ToolButton13: TToolButton
-      Left = 258
+      Left = 281
       Top = 2
       Action = AbortAction
     end
     object ToolButton12: TToolButton
-      Left = 281
-      Height = 22
+      Left = 304
       Top = 2
       Width = 10
       Caption = 'ToolButton12'
@@ -223,9 +217,14 @@ object L4JMainForm: TL4JMainForm
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 291
+      Left = 314
       Top = 2
       Action = CloseAction
+    end
+    object ToolButton18: TToolButton
+      Left = 80
+      Top = 2
+      Action = PasteFromClipboardAction
     end
   end
   object ProgressBar: TProgressBar
@@ -248,7 +247,7 @@ object L4JMainForm: TL4JMainForm
     left = 64
     top = 224
     Bitmap = {
-      4C69650000001000000010000000000000000000000000000000000000000000
+      4C69660000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
@@ -3480,7 +3479,39 @@ object L4JMainForm: TL4JMainForm
       80FF000000FF000000FF000000FF000000FF000000FF000000FF808080FF0000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000
+      0000000000000000000000000000E7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800000000FF000000FF000000FF000000FFE7BFC800E7BFC800E7BFC800E7BF
+      C800E7BFC800E7BFC800E7BFC800000000FF000000FF000000FF000000FF0000
+      00FF000000FF00FFFFFF00FFFFFF000000FF000000FF000000FF000000FF0000
+      00FF000000FFE7BFC800E7BFC800000000FF00F2FFFF00F2FFFF008080FF0000
+      00FF00FFFFFF000000FF000000FF00FFFFFF000000FF00F2FFFF00F2FFFF00F2
+      FFFF000000FFE7BFC800E7BFC800000000FF00F2FFFF00F2FFFF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF00F2FFFF00F2
+      FFFF000000FFE7BFC800E7BFC800000000FF00F2FFFF00F2FFFF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF00F2FFFF00F2
+      FFFF000000FFE7BFC800E7BFC800000000FF00F2FFFF00F2FFFF00F2FFFF00F2
+      FFFF00F2FFFF00F2FFFF00F2FFFF00F2FFFF00F2FFFF00F2FFFF00F2FFFF00F2
+      FFFF000000FFE7BFC800E7BFC800000000FF00F2FFFF00F2FFFF00F2FFFF00F2
+      FFFF00F2FFFF800000FF800000FF800000FF800000FF800000FF800000FF8000
+      00FF000000FF000000FFE7BFC800000000FF00F2FFFF00F2FFFF00F2FFFF00F2
+      FFFF00F2FFFF800000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8000
+      00FF800000FF000000FF000000FF000000FF00F2FFFF00F2FFFF00F2FFFF00F2
+      FFFF00F2FFFF800000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8000
+      00FFFFFFFFFF800000FF000000FF000000FF00F2FFFF00F2FFFF00F2FFFF00F2
+      FFFF00F2FFFF800000FFFFFFFFFF800000FF800000FF800000FFFFFFFFFF8000
+      00FF800000FF800000FF800000FF000000FF00F2FFFF00F2FFFF00F2FFFF00F2
+      FFFF00F2FFFF800000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFF800000FF000000FF00F2FFFF00F2FFFF00F2FFFF00F2
+      FFFF00F2FFFF800000FFFFFFFFFF800000FF800000FF800000FF800000FF8000
+      00FF800000FFFFFFFFFF800000FF000000FF000000FF000000FF000000FF0000
+      00FF000000FF800000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFF800000FFE7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800E7BFC800800000FF800000FF800000FF800000FF800000FF800000FF8000
+      00FF800000FF800000FF800000FFE7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800E7BFC800E7BFC800E7BFC800
     }
   end
   object ActionList1: TActionList
@@ -3596,6 +3627,13 @@ object L4JMainForm: TL4JMainForm
       ImageIndex = 100
       OnExecute = QueryDbActionExecute
       ShortCut = 16466
+    end
+    object PasteFromClipboardAction: TAction
+      Caption = 'Paste from clipboard'
+      Hint = 'Paste from clipboard'
+      ImageIndex = 101
+      OnExecute = PasteFromClipboardActionExecute
+      ShortCut = 24662
     end
   end
   object TvPopupMenu: TPopupMenu

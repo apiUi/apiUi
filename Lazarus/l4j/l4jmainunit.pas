@@ -45,6 +45,9 @@ type
      fString: AnsiString;
      fEnabled: Boolean;
      fAbortPressed: Boolean;
+     fFilter1, fFilter2, fFilter3, fFilter4: AnsiString;
+               fHasNot2, fHasNot3, fHasNot4: Boolean;
+     function StringPassesFilter (aString: AnsiString): Boolean;
      procedure fSynchronisedShowMessage;
      procedure fSynchronisedOrderData;
      procedure fSynchronisedHaveData;
@@ -52,18 +55,30 @@ type
      procedure fSynchronisedEnableAbortButton;
      procedure fSynchronisedAdjustDisplayedColumns;
      procedure setAbortPressed(const Value: Boolean);
+     procedure Extract (var s: AnsiString);
+     procedure ExtractDisplayedColumns (var s: AnsiString);
    protected
      procedure UpdateStatus (aNumber, aTotal: Integer; aText: AnsiString);
    public
      property abortPressed: Boolean read fAbortPressed write setAbortPressed;
    end;
 
+  { TStringThread }
+
+  TStringThread = class(TCustomThread)
+  private
+    sString: AnsiString;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create ( aForm: TL4JMainForm
+                       ; aString: AnsiString
+                       );
+  end;
+
   TSearchThread = class(TCustomThread)
   private
     fFilenames: TStringList;
-    fFilter1, fFilter2, fFilter3, fFilter4: AnsiString;
-              fHasNot2, fHasNot3, fHasNot4: Boolean;
-    function StringPassesFilter (aString: AnsiString): Boolean;
   protected
     procedure Execute; override;
   public
@@ -93,6 +108,7 @@ type
   TL4JMainForm = class(TForm)
     AbortAction: TAction;
     About1: TMenuItem;
+    PasteFromClipboardAction : TAction ;
     ActionImageList: TImageList;
     ActionList1: TActionList;
     AllXmlAction: TAction;
@@ -143,6 +159,7 @@ type
     Splitter1: TSplitter;
     SQLConnector1: TSQLConnector;
     SqlQuery: TSQLQuery;
+    ToolButton18 : TToolButton ;
     xSqlQuery: TSQLQuery;
     SQLTransaction1: TSQLTransaction;
     StatusBar: TStatusBar;
@@ -174,6 +191,7 @@ type
     procedure CopyActionExecute(Sender: TObject);
     procedure FindActionExecute(Sender: TObject);
     procedure FindNextActionExecute(Sender: TObject);
+    procedure PasteFromClipboardActionExecute (Sender : TObject );
     procedure TreeViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure WriteXmlActionExecute(Sender: TObject);
     procedure Save1Click(Sender: TObject);
@@ -465,6 +483,44 @@ begin
               ;
 end;
 
+{ TStringThread }
+
+procedure TStringThread .Execute ;
+var
+  s: AnsiString;
+begin
+  fEnabled := True;
+  with TIdSync.Create do
+    try
+      SynchronizeMethod (@fSynchronisedEnableAbortButton);
+    finally
+      Free;
+    end;
+  try
+    UpdateStatus (1, 3, 'from clipboard');
+    Extract(sString);
+  finally
+    UpdateStatus (0, 0, '');
+    fEnabled := False;
+    with TIdSync.Create do
+      try
+        SynchronizeMethod (@fSynchronisedEnableAbortButton);
+      finally
+        Free;
+      end;
+  end;
+end;
+
+constructor TStringThread .Create (aForm : TL4JMainForm ; aString : AnsiString
+  );
+begin
+  inherited Create (False);
+  fForm := aForm;
+  sString := aString;
+  abortPressed := False;
+  FreeOnTerminate := True;
+end;
+
 { TCustomThread }
 
 procedure TCustomThread.fSynchronisedAdjustDisplayedColumns;
@@ -490,6 +546,38 @@ begin
   begin
     TreeView.RootNodeCount := Data.Count;
   end;
+end;
+
+function TCustomThread .StringPassesFilter (aString : AnsiString ): Boolean ;
+begin
+  result := (   (fFilter1 = '')
+             or (Pos (fFilter1, aString) > 0)
+            )
+        and (   (fFilter2 = '')
+             or (    (not fHasNot2)
+                 and (Pos (fFilter2, aString) > 0)
+                )
+             or (    (fHasNot2)
+                 and (not (Pos (fFilter2, aString) > 0))
+                )
+            )
+        and (   (fFilter3 = '')
+             or (    (not fHasNot3)
+                 and (Pos (fFilter3, aString) > 0)
+                )
+             or (    (fHasNot3)
+                 and (not (Pos (fFilter3, aString) > 0))
+                )
+            )
+        and (   (fFilter4 = '')
+             or (    (not fHasNot4)
+                 and (Pos (fFilter4, aString) > 0)
+                )
+             or (    (fHasNot4)
+                 and (not (Pos (fFilter4, aString) > 0))
+                )
+            )
+          ;
 end;
 
 procedure TCustomThread.fSynchronisedShowMessage;
@@ -526,6 +614,112 @@ begin
     ;
 end;
 
+procedure TCustomThread .Extract (var s : AnsiString );
+var
+  x: Integer;
+  sp, ep, xp: PAnsiChar;
+  xOptions: TStringSearchOptions;
+  sSearchString, eSearchString, xSearchString: AnsiString;
+  xLogType: TLogType;
+begin
+  if s = '' then
+    exit;
+  try
+    try
+      xLogType := fForm.findLogType(s);
+    except
+      on e: Exception do
+      begin
+        raise Exception.Create('findLogType: ' + e.Message);
+      end;
+    end;
+    if Assigned (xLogType) then
+    begin
+      sSearchString := xLogType.sTag;
+      eSearchString := xLogType.eTag;
+      xOptions := [soDown, soMatchCase];
+      if fFilter1 = '' then
+        xSearchString := eSearchString
+      else
+        xSearchString := fFilter1;
+      ep := @s[1];
+      xp := strUtils.SearchBuf(ep, Length(s), 0, 0, xSearchString, xOptions);
+      while (not abortPressed)
+      and Assigned (xp) do
+      begin
+        Exclude (xOptions, soDown);
+        sp := strUtils.SearchBuf(@s[1], xp - @s[1], xp - @s[1], 0, sSearchString, xOptions);
+        if Assigned (sp) then
+        begin
+          Include (xOptions, soDown);
+          ep := strUtils.SearchBuf(xp, Length(s) - (xp - @s[1]), 0, 0, eSearchString, xOptions);
+          xp := nil;
+          if Assigned (ep) then
+          begin
+            ep := ep + Length (eSearchString);
+            fString := Copy (s, sp - @s[1] + 1, ep - sp);
+            if StringPassesFilter (fString) then
+            begin
+              fForm.Data.Add (fString);
+              Inc (fForm.numberVisible);
+            end;
+  {
+            begin
+              with TIdSync.Create do
+                try
+                  SynchronizeMethod (fSynchronisedHaveData);
+                finally
+                  Free;
+                end;
+            end;
+  }
+            xp := strUtils.SearchBuf(ep, Length (s) - (ep - @s[1]), 0, 0, xSearchString, xOptions);
+          end;
+        end;
+      end;
+    end;
+  finally
+    with TIdSync.Create do
+      try
+        SynchronizeMethod (@fSynchronisedHaveData);
+      finally
+        Free;
+      end;
+  end;
+end;
+
+procedure TCustomThread .ExtractDisplayedColumns (var s : AnsiString );
+var
+  sp, ep: PAnsiChar;
+  len: Integer;
+  xSearchString, xXmlAnsiString: AnsiString;
+  xXmlString: String;
+begin
+  fForm.readDisplayedColumnsXml.Items.Clear;
+  xSearchString := '<DisplayedColumns>';
+  len := 1000;
+  if Length (s) < 1000 then
+    len := Length (s);
+  sp := strUtils.SearchBuf(@s[1], len, 0, 0, xSearchString, [soDown, soMatchCase]);
+  if Assigned (sp) then
+  begin
+    xSearchString := '</DisplayedColumns>';
+    ep := strUtils.SearchBuf(@s[1], Length(s), 0, 0, xSearchString, [soDown, soMatchCase]);
+    if Assigned (ep) then
+    begin
+      xXmlAnsiString := Copy (s, sp - @s[1] + 1, ep + Length (xSearchString) - sp);
+      xXmlString := xXmlAnsiString;
+      fForm.readDisplayedColumnsXml.LoadFromString(xXmlString, nil);
+      with TIdSync.Create do
+        try
+          SynchronizeMethod (@fSynchronisedAdjustDisplayedColumns);
+        finally
+          Free;
+        end;
+    end;
+  end;
+end;
+
 { TSearchThread }
 
 constructor TSearchThread.Create ( aForm: TL4JMainForm
@@ -550,110 +744,6 @@ begin
 end;
 
 procedure TSearchThread.Execute;
-  procedure _Extract (var s: AnsiString);
-  var
-    x: Integer;
-    sp, ep, xp: PAnsiChar;
-    xOptions: TStringSearchOptions;
-    sSearchString, eSearchString, xSearchString: AnsiString;
-    xLogType: TLogType;
-  begin
-    if s = '' then
-      exit;
-    try
-      try
-        xLogType := fForm.findLogType(s);
-      except
-        on e: Exception do
-        begin
-          raise Exception.Create('findLogType: ' + e.Message);
-        end;
-      end;
-      if Assigned (xLogType) then
-      begin
-        sSearchString := xLogType.sTag;
-        eSearchString := xLogType.eTag;
-        xOptions := [soDown, soMatchCase];
-        if fFilter1 = '' then
-          xSearchString := eSearchString
-        else
-          xSearchString := fFilter1;
-        ep := @s[1];
-        xp := strUtils.SearchBuf(ep, Length(s), 0, 0, xSearchString, xOptions);
-        while (not abortPressed)
-        and Assigned (xp) do
-        begin
-          Exclude (xOptions, soDown);
-          sp := strUtils.SearchBuf(@s[1], xp - @s[1], xp - @s[1], 0, sSearchString, xOptions);
-          if Assigned (sp) then
-          begin
-            Include (xOptions, soDown);
-            ep := strUtils.SearchBuf(xp, Length(s) - (xp - @s[1]), 0, 0, eSearchString, xOptions);
-            xp := nil;
-            if Assigned (ep) then
-            begin
-              ep := ep + Length (eSearchString);
-              fString := Copy (s, sp - @s[1] + 1, ep - sp);
-              if StringPassesFilter (fString) then
-              begin
-                fForm.Data.Add (fString);
-                Inc (fForm.numberVisible);
-              end;
-    {
-              begin
-                with TIdSync.Create do
-                  try
-                    SynchronizeMethod (fSynchronisedHaveData);
-                  finally
-                    Free;
-                  end;
-              end;
-    }
-              xp := strUtils.SearchBuf(ep, Length (s) - (ep - @s[1]), 0, 0, xSearchString, xOptions);
-            end;
-          end;
-        end;
-      end;
-    finally
-      with TIdSync.Create do
-        try
-          SynchronizeMethod (@fSynchronisedHaveData);
-        finally
-          Free;
-        end;
-    end;
-  end;
-  procedure _ExtractDisplayedColumns (var s: AnsiString);
-  var
-    sp, ep: PAnsiChar;
-    len: Integer;
-    xSearchString, xXmlAnsiString: AnsiString;
-    xXmlString: String;
-  begin
-    fForm.readDisplayedColumnsXml.Items.Clear;
-    xSearchString := '<DisplayedColumns>';
-    len := 1000;
-    if Length (s) < 1000 then
-      len := Length (s);
-    sp := strUtils.SearchBuf(@s[1], len, 0, 0, xSearchString, [soDown, soMatchCase]);
-    if Assigned (sp) then
-    begin
-      xSearchString := '</DisplayedColumns>';
-      ep := strUtils.SearchBuf(@s[1], Length(s), 0, 0, xSearchString, [soDown, soMatchCase]);
-      if Assigned (ep) then
-      begin
-        xXmlAnsiString := Copy (s, sp - @s[1] + 1, ep + Length (xSearchString) - sp);
-        xXmlString := xXmlAnsiString;
-        fForm.readDisplayedColumnsXml.LoadFromString(xXmlString, nil);
-        with TIdSync.Create do
-          try
-            SynchronizeMethod (@fSynchronisedAdjustDisplayedColumns);
-          finally
-            Free;
-          end;
-      end;
-    end;
-  end;
 var
   x, y, yC: Integer;
   s: AnsiString;
@@ -711,8 +801,8 @@ begin
                     SetLength(s, ss.Size);
                     ss.Read(Pointer(s)^, ss.Size);
                     if (x = 0) and (y = 0) then
-                      _ExtractDisplayedColumns (s);
-                    _Extract (s);
+                      ExtractDisplayedColumns (s);
+                    Extract (s);
                   end;
                   s := '';
                 except
@@ -744,8 +834,8 @@ begin
           try
             s := ReadStringFromFile (fFileNames.Strings[x]);
             if x = 0 then
-              _ExtractDisplayedColumns(s);
-            _Extract (s);
+              ExtractDisplayedColumns(s);
+            Extract (s);
             s := '';
           except
             on e: Exception do
@@ -920,38 +1010,6 @@ begin
         Free;
       end;
   end;
-end;
-
-function TSearchThread.StringPassesFilter(aString: AnsiString): Boolean;
-begin
-  result := (   (fFilter1 = '')
-             or (Pos (fFilter1, aString) > 0)
-            )
-        and (   (fFilter2 = '')
-             or (    (not fHasNot2)
-                 and (Pos (fFilter2, aString) > 0)
-                )
-             or (    (fHasNot2)
-                 and (not (Pos (fFilter2, aString) > 0))
-                )
-            )
-        and (   (fFilter3 = '')
-             or (    (not fHasNot3)
-                 and (Pos (fFilter3, aString) > 0)
-                )
-             or (    (fHasNot3)
-                 and (not (Pos (fFilter3, aString) > 0))
-                )
-            )
-        and (   (fFilter4 = '')
-             or (    (not fHasNot4)
-                 and (Pos (fFilter4, aString) > 0)
-                )
-             or (    (fHasNot4)
-                 and (not (Pos (fFilter4, aString) > 0))
-                )
-            )
-          ;
 end;
 
 procedure TCustomThread.UpdateStatus(aNumber, aTotal: Integer; aText: AnsiString);
@@ -1669,6 +1727,27 @@ begin
   finally
     Screen.Cursor := xCursor;
   end;
+end;
+
+procedure TL4JMainForm .PasteFromClipboardActionExecute (Sender : TObject );
+var
+  xString: AnsiString;
+begin
+  xString := Clipboard.AsText;
+  if xString = '' then
+  begin
+    ShowMessage('Clipboard does not contain text');
+    Exit;
+  end;
+  Memo.Clear;
+  Data.Clear;
+  TreeView.Clear;
+  Treeview.Header.SortColumn := 0;
+  TreeView.Header.SortDirection := sdAscending;
+  numberVisible := 0;
+  Thread := TStringThread.Create ( Self
+                                 , xString
+                                 );
 end;
 
 procedure TL4JMainForm.TreeViewChange(Sender: TBaseVirtualTree;
