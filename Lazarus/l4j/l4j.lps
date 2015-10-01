@@ -4,15 +4,14 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="49">
+    <Units Count="50">
       <Unit0>
         <Filename Value="l4j.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="21"/>
-        <UsageCount Value="193"/>
+        <CursorPos Y="21"/>
+        <UsageCount Value="195"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -23,11 +22,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="L4JMainUnit"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="484"/>
-        <CursorPos X="14" Y="501"/>
-        <UsageCount Value="193"/>
+        <TopLine Value="562"/>
+        <CursorPos X="70" Y="591"/>
+        <UsageCount Value="195"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -35,11 +34,11 @@
         <Filename Value="l4jtypes.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="l4jTypes"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="5"/>
-        <CursorPos X="3" Y="19"/>
-        <UsageCount Value="193"/>
+        <TopLine Value="60"/>
+        <CursorPos X="7" Y="80"/>
+        <UsageCount Value="195"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -49,19 +48,19 @@
         <WindowIndex Value="1"/>
         <TopLine Value="52"/>
         <CursorPos X="29" Y="63"/>
-        <UsageCount Value="190"/>
+        <UsageCount Value="192"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
         <IsPartOfProject Value="True"/>
         <WindowIndex Value="1"/>
-        <UsageCount Value="166"/>
+        <UsageCount Value="168"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
         <WindowIndex Value="1"/>
-        <UsageCount Value="166"/>
+        <UsageCount Value="168"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Utils\igGlobals.pas"/>
@@ -73,8 +72,8 @@
       <Unit7>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1553"/>
-        <CursorPos X="15" Y="1567"/>
+        <TopLine Value="1578"/>
+        <CursorPos X="17" Y="1593"/>
         <UsageCount Value="25"/>
       </Unit7>
       <Unit8>
@@ -127,11 +126,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DbFilterDialog"/>
-        <EditorIndex Value="0"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="82"/>
+        <UsageCount Value="84"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit14>
@@ -224,7 +221,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="338"/>
         <CursorPos X="11" Y="355"/>
-        <UsageCount Value="62"/>
+        <UsageCount Value="64"/>
         <Loaded Value="True"/>
       </Unit27>
       <Unit28>
@@ -255,8 +252,13 @@
       </Unit31>
       <Unit32>
         <Filename Value="..\Xml\Xmlz.pas"/>
+        <UnitName Value="Xmlz"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="1"/>
-        <UsageCount Value="12"/>
+        <TopLine Value="533"/>
+        <CursorPos X="3" Y="538"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\Xml\Xsdz.pas"/>
@@ -364,6 +366,14 @@
         <WindowIndex Value="1"/>
         <UsageCount Value="11"/>
       </Unit48>
+      <Unit49>
+        <Filename Value="C:\lazarus\lcl\interfaces\win32\win32object.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="358"/>
+        <CursorPos Y="378"/>
+        <UsageCount Value="11"/>
+      </Unit49>
     </Units>
     <CustomDefines Count="5">
       <Define0 Value="FPCUnixAPI"/>
@@ -372,134 +382,125 @@
       <Define3 Value="UseCThreads"/>
       <Define4 Value="GETENDURANCE"/>
     </CustomDefines>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="580" Column="34" TopLine="557"/>
+        <Caret Line="582" Column="11" TopLine="549"/>
       </Position1>
       <Position2>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="710" Column="36" TopLine="688"/>
+        <Caret Line="1098" TopLine="1062"/>
       </Position2>
       <Position3>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1040" Column="1" TopLine="1030"/>
+        <Caret Line="624" Column="28" TopLine="592"/>
       </Position3>
       <Position4>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
       </Position4>
       <Position5>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="50" Column="33" TopLine="26"/>
+        <Caret Line="624" Column="28" TopLine="590"/>
       </Position5>
       <Position6>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="527" Column="1" TopLine="481"/>
+        <Caret Line="1139" TopLine="1106"/>
       </Position6>
       <Position7>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1061" Column="46" TopLine="1052"/>
       </Position7>
       <Position8>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="693" Column="1" TopLine="671"/>
+        <Caret Line="583" TopLine="583"/>
       </Position8>
       <Position9>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="750" Column="23" TopLine="736"/>
       </Position9>
       <Position10>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="751" Column="21" TopLine="737"/>
+        <Caret Line="629" Column="52" TopLine="593"/>
       </Position10>
       <Position11>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="783" Column="15" TopLine="769"/>
+        <Caret Line="1137" TopLine="1098"/>
       </Position11>
       <Position12>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="784" Column="84" TopLine="770"/>
       </Position12>
       <Position13>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="76" Column="1" TopLine="51"/>
+        <Caret Line="652" TopLine="611"/>
       </Position13>
       <Position14>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="487" Column="3" TopLine="485"/>
+        <Caret Line="657" Column="7" TopLine="617"/>
       </Position14>
       <Position15>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="496" Column="1" TopLine="482"/>
+        <Caret Line="594" TopLine="574"/>
       </Position15>
       <Position16>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="500" Column="3" TopLine="554"/>
+        <Caret Line="630" TopLine="609"/>
       </Position16>
       <Position17>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="506" Column="16" TopLine="492"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="746" TopLine="725"/>
       </Position17>
       <Position18>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="503" Column="15" TopLine="482"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="747" TopLine="725"/>
       </Position18>
       <Position19>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="70" Column="5" TopLine="50"/>
+        <Caret Line="582" Column="36" TopLine="547"/>
       </Position19>
       <Position20>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="45" Column="6" TopLine="44"/>
+        <Caret Line="630" Column="22" TopLine="609"/>
       </Position20>
       <Position21>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="2348" Column="3" TopLine="2338"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="747" TopLine="725"/>
       </Position21>
       <Position22>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="2355" Column="3" TopLine="2345"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
       </Position22>
       <Position23>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1731" Column="3" TopLine="1729"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="533" Column="10" TopLine="528"/>
       </Position23>
       <Position24>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="2392" Column="1" TopLine="2365"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
       </Position24>
       <Position25>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1733" Column="30" TopLine="1721"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="345" Column="22" TopLine="311"/>
       </Position25>
       <Position26>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1742" Column="24" TopLine="1731"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="533" Column="22" TopLine="499"/>
       </Position26>
       <Position27>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1743" Column="24" TopLine="1732"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="547" Column="44" TopLine="513"/>
       </Position27>
       <Position28>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1734" Column="3" TopLine="1729"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="559" Column="44" TopLine="525"/>
       </Position28>
       <Position29>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="490" Column="3" TopLine="486"/>
+        <Caret Line="570" Column="39" TopLine="538"/>
       </Position29>
       <Position30>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="625" Column="4" TopLine="586"/>
+        <Caret Line="563" Column="32" TopLine="553"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="2">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -507,7 +508,13 @@
         <Source Value="..\Xpress\Express.pas"/>
         <Line Value="562"/>
       </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\Xml\Xmlz.pas"/>
+        <Line Value="562"/>
+      </Item2>
     </BreakPoints>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>

@@ -68,6 +68,7 @@ type
   TStringThread = class(TCustomThread)
   private
     sString: AnsiString;
+    function DbVis(s: AnsiString): AnsiString;
   protected
     procedure Execute; override;
   public
@@ -323,6 +324,7 @@ const treeSizeColumn = 1;
 const treeTimeStampColumn = 2;
 const statusInitial = 100;
 const statusDensity = 1000;
+const DbVisTag = '<DbVisualizer-Export>';
 
 
 {$R *.lfm}
@@ -483,7 +485,180 @@ begin
               ;
 end;
 
+function xmlLoop (aXml: TXml): String;
+var
+  Msg: l4jTypes.TMsg;
+  f, r, y: Integer;
+  s, sx, nm: String;
+  field: TField;
+  rXml, fXml: TXml;
+  xCorrelationId, xUserTaskId, xPGID: String;
+  fProcessed: Boolean;
+begin
+  if aXml.Name <> 'ROWSET' then
+    raise Exception.Create('procedure xmlLoop (aXml: TXml); illegal argument ' + aXml.Name);
+  if (not xpFetched)
+{ TODO : abortfie
+ }
+// and (not xp.abortPressed)
+  then
+    L4JMainForm.Thread.UpdateStatus(5, 10, 'Converting data...');
+  xpFetched := True;
+  for r := 0 to aXml.Items.Count - 1 do
+  begin
+    TimeStamp:='';
+    MessageId:='';
+    ServiceRequestorId:='';
+    ServiceId:='';
+    EventType:='';
+    EventData:='';
+    sx := '';
+    xCorrelationId := '';
+    xPGID:='';
+    xUserTaskId:='';
+    rXml := aXml.Items.XmlItems[r];
+    for f := 0 to rXml.Items.Count - 1 do
+    begin
+      fXml := rXml.Items.XmlItems[f];
+      nm := UpperCase(fXml.Name);
+      fProcessed:=False;
+      if (nm = 'LOG_TIME') then
+      begin
+        TimeStamp := fXml.Value;
+        fProcessed := True;
+      end;
+      if (nm = 'PROCESS_GROUP_INSTANCE_ID') then
+      begin
+        xPGID:=xmlDecodeXml(fXml.Value);
+        fProcessed := False;   // remains False intentionally
+      end;
+      if (nm = 'USER_TASK_ID') then
+      begin
+        UserTaskId:=xmlDecodeXml(fXml.Value);
+        fProcessed := True;
+      end;
+      if (nm = 'SERVICE_MESSAGE_ID') then
+      begin
+        MessageId:=xmlDecodeXml(fXml.Value);
+        fProcessed := True;
+      end;
+      if (nm = 'REQUESTER_ID')
+      or (nm = 'REQUESTOR_ID') then
+      begin
+        ServiceRequestorId:=fXml.Value;
+        fProcessed := True;
+      end;
+      if (nm = 'SERVICE_ID') then
+      begin
+        ServiceId:=fXml.Value;
+        fProcessed := True;
+      end;
+      if (nm = 'EVENT_TYPE') then
+      begin
+        EventType:=fXml.Value;
+        fProcessed := True;
+      end;
+      if AnsiStartsStr('EVENT_DATA', nm) then
+      begin
+        EventData:=fXml.Value;
+        fProcessed := True;
+      end;
+      if not fProcessed then
+      begin
+        sx := sx
+            + '<' + fXml.Name + '>'
+            + xmlDecodeXml(fXml.Value)
+            + '</' + fXml.Name + '>'
+            ;
+        fProcessed := True;
+      end;
+    end;
+    xCorrelationId := xPGID + ';' + MessageId + ';' + UserTaskId;
+    if Msgs.Find(xCorrelationId, f) then
+      Msg := Msgs.Msg[f]
+    else
+    begin
+      Msg := l4jTypes.TMsg.Create;
+      Msgs.AddObject(xCorrelationId, Msg);
+    end;
+    if (TimeStamp < Msg.FirstTimeStamp) then
+      Msg.FirstTimeStamp := TimeStamp;
+    if (TimeStamp > Msg.LastTimeStamp) then
+      Msg.LastTimeStamp := TimeStamp;
+    Inc (Msg.Count);
+  { }
+    EventData := strUtils.ReplaceText(EventData, '&lt;', '<');
+    EventData := strUtils.ReplaceText(EventData, '&gt;', '>');
+    EventData := strUtils.ReplaceText(EventData, '&quot;', '"');
+    EventData := strUtils.ReplaceText(EventData, '&#47;', '/');
+  { }
+    s := '<EventHeader>'
+       + '<EventType>' + EventType + '</EventType>'
+       + '<TimeStamp>' + TimeStamp + '</TimeStamp>'
+       + '<MessageId>' + MessageId + '</MessageId>'
+       + '<ServiceRequestorId>' + ServiceRequestorId + '</ServiceRequestorId>'
+       + '<ServiceId>' + ServiceId + '</ServiceId>'
+       + '<UserTaskId>' + UserTaskId + '</UserTaskId>'
+       + sx
+       + '</EventHeader>'
+       ;
+    Msg.headers:= Msg.headers + s;
+    Msg.events := Msg.events
+                + '<' + EventType + '>' + EventData + '</' + EventType + '>'
+                + LineEnding
+                ;
+  end;
+
+end;
+
 { TStringThread }
+
+function TStringThread.DbVis(s: AnsiString): AnsiString;
+var
+  xp, sp: PAnsiChar;
+  xXml: TXml;
+  x: Integer;
+begin
+  result := s;
+  xp := strUtils.SearchBuf(@s[1], 1000, 0, 0, DbVisTag, [soDown, soMatchCase]);
+  if Assigned (xp) then
+  begin
+    xXml := TXml.Create;
+    Msgs := TMsgList.Create;
+    try
+      Msgs.Sorted := True;
+      xXml.LoadFromString(s, nil);
+      if xXml.Items.Count > 0 then
+        result := xmlLoop(xXml.Items.XmlItems[0]);
+      if abortPressed then Exit;
+      UpdateStatus (7, 10, 'Formatting output...');
+      for x := 0 to Msgs.Count - 1 do
+      begin
+        fForm.Data.Add (Msgs.Msg[x].AsText);
+        Inc (fForm.numberVisible);
+        if abortPressed then Exit;
+      end;
+      with TIdSync.Create do
+        try
+          SynchronizeMethod (@fSynchronisedHaveData);
+        finally
+          Free;
+        end;
+      UpdateStatus (8, 10, 'Sorting output...');
+      with TIdSync.Create do
+        try
+          SynchronizeMethod (@fSynchronisedOrderData);
+        finally
+          Free;
+        end;
+      UpdateStatus (9, 10, 'Cleaning up...');
+    finally
+      xXml.Free;
+      Msgs.Clear;
+      Msgs.Free;
+    end;
+  end;
+end;
 
 procedure TStringThread .Execute ;
 var
@@ -498,7 +673,8 @@ begin
     end;
   try
     UpdateStatus (1, 3, 'from clipboard');
-    Extract(sString);
+    s := DbVis(sString);
+    Extract(s);
   finally
     UpdateStatus (0, 0, '');
     fEnabled := False;

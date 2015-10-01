@@ -78,7 +78,7 @@ var
   xpMoreData, xpFetched: Boolean;
   xpScript: String;
   Msgs: TMsgList;
-  TimeStamp, MessageId, ServiceRequestorId, ServiceId, EventType, EventData, Dummy: String;
+  TimeStamp, MessageId, UserTaskId, ServiceRequestorId, ServiceId, EventType, EventData, Dummy: String;
   fParam1, fParam2, fParam3, fParam4: String;
   EventDataParts: array [0..NrOfDataParts-1] of string;
 

@@ -555,6 +555,9 @@ begin
   if ds = '' then
     if LeftStr(es, 3) = '&#x' then
       try ds := Char(StrToInt('$'+Copy(es,4,6))); except ds := ''; end;
+  if ds = '' then
+    if LeftStr(es, 2) = '&#' then
+      try ds := Char(StrToInt(Copy(es,3,6))); except ds := ''; end;
   if ds = ''  then
     raise Exception.CreateFmt('xmlDecodeXml (%s): Illegal escape sequence %s', [aValue, es + ';']);
   result := Copy (aValue, 1, p - 1)
