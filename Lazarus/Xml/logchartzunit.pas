@@ -73,7 +73,7 @@ begin
   begin
     ser := TLineSeries.Create(Chart);
     ser.SeriesColor := rgbToColor(Random(255), Random(255), Random(255));
-    ser.Title := Operations.Operations[x].reqTagName;
+    ser.Title := Operations.Operations[x].Alias;
     ser.Pointer.Brush.Color := ser.SeriesColor;
 {
     ser.ShowPoints := Odd(i);
@@ -88,10 +88,10 @@ begin
     begin
       if Assigned(Operation) then
       begin
-        if Operations.Find(Operation.reqTagName, f) then
+        if Operations.Find(Operation.reqTagName + ';' + Operation.reqTagNameSpace, f) then
         begin
           ser := Chart.Series.Items[f] as TLineSeries;
-          ser.AddXY(x, StrToFloatX(DurationAsString));
+          try ser.AddXY(x, StrToFloatX(DurationAsString)); except end;
         end;
       end;
     end;

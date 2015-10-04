@@ -2551,19 +2551,6 @@ begin
         else
           exit;
       end;
-      if (e.Message = 'RaiseFault')
-      or (e.Message = 'RaiseSoapFault') then
-      begin
-        if Assigned (aLog.Operation) then
-          aLog.StubAction := aLog.Operation.StubAction;
-        aLog.ReplyBody := aLog.Operation.StreamFault (_progName, True);
-      end;
-      if AnsiStartsStr(S_RETURN_STRING, e.Message) then
-      begin
-        aLog.ReplyBody := Copy (e.Message, 1 + Length(S_RETURN_STRING), Length(e.Message));
-        aLog.Exception := '';
-        exit;
-      end;
       if aLog.TransportType = ttHttp then
         raise Exception.Create (aLog.ReplyBody)
       else
@@ -2637,15 +2624,9 @@ begin
     if (xOperation.StubAction = saStub)
     and (aIsActive) then
     begin
-      try
-        xOperation.rpyWsaOnRequest;
-        xOperation.ExecuteBefore;
-        xOperation.ExecuteRpyStampers;
-      except
-        on e: exception do
-          if e.Message <> 'Exit' then
-            raise;
-      end;
+      xOperation.rpyWsaOnRequest;
+      xOperation.ExecuteBefore;
+      xOperation.ExecuteRpyStampers;
       if xOperation.doDebug
       and Assigned (OnDebugOperationEvent) then
       begin
@@ -2655,8 +2636,10 @@ begin
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
-    aLog.OperationName:=xOperation.reqTagName;
+    aLog.OperationName:=xOperation.Alias;
     result := xOperation.StreamReply (_progName, True);
+    if xOperation.ReturnSoapFault then
+      aLog.Exception := Result;
     if not isAsynchronous then
       CreateLogReplyPostProcess(aLog, xOperation);
   finally
@@ -5685,6 +5668,11 @@ begin
                 or xLog.isAsynchronousRequest
                 or xLog.isAsynchronousReply then
                   AResponseInfo.ResponseNo := 202;
+                if (xLog.Exception <> '')
+                and (   (not Assigned (xLog.Operation))
+                     or (not xLog.Operation.WsdlService.SuppressHTTP500)
+                    ) then
+                  AResponseInfo.ResponseNo := 500;
                 if (not xLog.isAsynchronousRequest)
                 and (not xLog.isAsynchronousReply) then
                   DelayMS (xLog.DelayTimeMs);

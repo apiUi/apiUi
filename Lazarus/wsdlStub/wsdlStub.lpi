@@ -134,9 +134,11 @@
       </Item5>
       <Item6>
         <Name Value="Exception"/>
+        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
+        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
@@ -144,6 +146,7 @@
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
+        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
@@ -155,9 +158,11 @@
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
+        <Enabled Value="False"/>
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>
+        <Enabled Value="False"/>
       </Item13>
       <Item14>
         <Name Value="EIdHTTPProtocolException"/>
@@ -165,15 +170,18 @@
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
+        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EODBCException"/>
       </Item16>
       <Item17>
         <Name Value="EInterfaceCritical"/>
+        <Enabled Value="False"/>
       </Item17>
       <Item18>
         <Name Value="EStringListError"/>
+        <Enabled Value="False"/>
       </Item18>
     </Exceptions>
   </Debugging>

@@ -22,7 +22,6 @@ uses sqldb
    ;
 
 resourcestring
-  S_RETURN_STRING = '__ReturnString:';
   S_MESSAGE_ACCEPTED = '[Message accepted by server]';
   S_NO_OPERATION_FOUND = 'No operation recognised';
   S_INBOUND_IS_A_RESPONSE = '[Inbound is a response]';
@@ -191,6 +190,7 @@ type
       fExpressChecker: TExpress;
       fPreparedBefore: Boolean;
       fPreparedAfter: Boolean;
+      fDoExit: Boolean;
       fLineNumber: Integer;
       fOnError: TOnErrorEvent;
       fLastMessage: TWsdlMessage;
@@ -205,11 +205,13 @@ type
       fOnGetAbortPressed: TBooleanFunction;
     fPrepareErrors: String;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
+      function getDoExit : Boolean ;
       function getIsOneWay: Boolean;
       function getRpyIpm: TIpmItem;
       function getisSoapService: Boolean;
       function getRpyBind: TCustomBindable;
       function getReqBind: TCustomBindable;
+      procedure setDoExit (AValue : Boolean );
       procedure setReqBind(const Value: TCustomBindable);
       procedure setRpyBind(const Value: TCustomBindable);
       function getInputXml: TXml;
@@ -301,7 +303,8 @@ type
       CorrelatedMessage: TWsdlMessage;
       Messages: TWsdlMessages;
       CorrelationBindables, ExpectationBindables, LogColumns: TBindableList;
-      faultcode, faultstring, faultactor: String;
+      faultcode, faultstring, faultactor, LiteralResult: String;
+      ReturnSoapFault: Boolean;
       RecognitionType: TRecognitionType;
       reqRecognition: TStringList;
       rpyRecognition: TStringList;
@@ -313,6 +316,7 @@ type
       DelayTimeMsMax: Integer;
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
+      property DoExit: Boolean read getDoExit write setDoExit;
       property PrepareErrors: String read fPrepareErrors;
       property OnGetAbortPressed: TBooleanFunction write setOnGetAbortPressed;
       property wsaTo: String read getWsaTo;
@@ -371,6 +375,7 @@ type
       procedure ExecuteReqStampers;
       procedure PrepareRpyStamper (aBind: TCustomBindable);
       procedure ExecuteRpyStampers;
+      procedure InitExecute;
       procedure ExecuteBefore;
       procedure ExecuteAfter;
       procedure reqWsaOnRequest;
@@ -540,9 +545,8 @@ function xsdTodayAsDate: String;
 function sblTodayAsDate: String;
 procedure PromptReply(aOperation: TWsdlOperation);
 procedure PromptRequest(aOperation: TWsdlOperation);
-procedure RaiseExit;
-procedure RaiseFault;
-procedure ReturnString (aString: String);
+procedure RaiseExit(aOperation: TWsdlOperation);
+procedure ReturnString (aOperation: TWsdlOperation; aString: String);
 procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
 procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
 
@@ -1538,19 +1542,15 @@ begin
   end;
 end;
 
-procedure RaiseExit;
+procedure RaiseExit(aOperation: TWsdlOperation);
 begin
-  raise Exception.Create('Exit');
+  aOperation.DoExit := True;
 end;
 
-procedure RaiseFault;
+procedure ReturnString (aOperation: TWsdlOperation; aString: String);
 begin
-  raise Exception.Create('RaiseFault');
-end;
-
-procedure ReturnString (aString: String);
-begin
-  raise Exception.Create(S_RETURN_STRING + aString);
+  aOperation.LiteralResult := aString;
+  aOperation.DoExit := True;
 end;
 
 procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
@@ -1558,7 +1558,9 @@ begin
   aOperation.faultcode := faultcode;
   aOperation.faultstring := faultstring;
   aOperation.faultactor := faultactor;
-  raise Exception.Create(aOperation.StreamFault('', False));
+  aOperation.LiteralResult := aOperation.StreamFault('', False);
+  aOperation.ReturnSoapFault := True;
+  aOperation.DoExit := True;
 end;
 
 procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
@@ -1600,7 +1602,9 @@ begin
         AddXml (TXml.CreateAsString('detail', detail));
       end;
     end;
-    raise Exception.Create (AsText(False, 0, False, False));
+    aOperation.LiteralResult := AsText(False, 0, False, False);
+    aOperation.ReturnSoapFault := True;
+    aOperation.DoExit := True;
   finally
     Free;
   end;
@@ -3242,26 +3246,16 @@ procedure TWsdlOperation.ExecuteBefore;
 begin
   if not PreparedBefore then
     raise Exception.Create('Operation (Before)"' + Name + '" not prepared');
-  try
-    fExpressBefore.Execute;
-  except
-    on e: Exception do
-      if e.Message <> 'RaiseExit' then
-        Raise;
-  end;
+  InitExecute;
+  fExpressBefore.Execute;
 end;
 
 procedure TWsdlOperation.ExecuteAfter;
 begin
   if not PreparedAfter then
     raise Exception.Create('Operation (After)"' + Name + '" not prepared');
-  try
-    fExpressAfter.Execute;
-  except
-    on e: Exception do
-      if e.Message <> 'RaiseExit' then
-        Raise;
-  end;
+  InitExecute;
+  fExpressAfter.Execute;
 end;
 
 function TWsdlOperation.getReplyBasedOnRequest: TWsdlMessage;
@@ -3384,6 +3378,7 @@ begin
       fExpressBefore.Context := Self;
       fExpressBefore.ScriptText := BeforeScriptLines.Text;
       fExpressBefore.OnGetAbortPressed := fOnGetAbortPressed;
+      fExpressBefore.OnGetDoExit := getDoExit;
       fExpressBefore.OnError := fOnError;
 //      fExpress.OnError := ExpressError;
 //      fExpress.OnHaveData := HaveData;
@@ -3431,7 +3426,7 @@ begin
       BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
       BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
       BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
-      BindBeforeFunction ('Exit', @RaiseExit, VFV, '()');
+      BindBeforeFunction ('Exit', @RaiseExit, VFOV, '()');
       BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
       BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
       BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
@@ -3453,7 +3448,6 @@ begin
       BindBeforeFunction ('PromptReply', @PromptReply, VFOV, '()');
       BindBeforeFunction ('PromptRequest', @PromptRequest, VFOV, '()');
       BindBeforeFunction ('RaiseError', @RaiseError, VFS, '(aString)');
-      BindBeforeFunction ('RaiseFault', @RaiseFault, VFV, '()');
       BindBeforeFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
       BindBeforeFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
       BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
@@ -3461,7 +3455,7 @@ begin
       BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
       BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
       BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
-      BindBeforeFunction ('ReturnString', @ReturnString, VFS, '(aString)');
+      BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
       BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
       BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
       BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
@@ -3523,6 +3517,7 @@ begin
     fExpressAfter.ScriptText := AfterScriptLines.Text;
     fExpressAfter.OnError := fOnError;
     fExpressAfter.OnGetAbortPressed := fOnGetAbortPressed;
+    fExpressAfter.OnGetDoExit := getDoExit;
 //      fExpress.OnError := ExpressError;
 //      fExpress.OnHaveData := HaveData;
     fLineNumber := 0;
@@ -3570,7 +3565,7 @@ begin
     BindAfterFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindAfterFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
     BindAfterFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
-    BindAfterFunction ('Exit', @RaiseExit, VFV, '()');
+    BindAfterFunction ('Exit', @RaiseExit, VFOV, '()');
     BindAfterFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
     BindAfterFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
     BindAfterFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
@@ -3592,7 +3587,6 @@ begin
     BindAfterFunction ('PromptReply', @PromptReply, VFOV, '()');
     BindAfterFunction ('PromptRequest', @PromptRequest, VFOV, '()');
     BindAfterFunction ('RaiseError', @RaiseError, VFS, '(aString)');
-    BindAfterFunction ('RaiseFault', @RaiseFault, VFV, '()');
     BindAfterFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
     BindAfterFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindAfterFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
@@ -3600,7 +3594,7 @@ begin
     BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
-    BindAfterFunction ('ReturnString', @ReturnString, VFS, '(aString)');
+    BindAfterFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindAfterFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindAfterFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindAfterFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
@@ -3859,7 +3853,9 @@ var
   x: Integer;
   xXml: TXml;
 begin
-  result := '';
+  result := LiteralResult;
+  if Result <> '' then
+    Exit;
   if WsdlService.DescriptionType in [ipmDTFreeFormat] then
   begin
     result := FreeformatRpy;
@@ -4454,6 +4450,11 @@ end;
 function TWsdlOperation.getReqBind: TCustomBindable;
 begin
   result := freqBind;
+end;
+
+procedure TWsdlOperation .setDoExit (AValue : Boolean );
+begin
+  fDoExit := AValue;
 end;
 
 function TWsdlOperation.getReqIpm: TIpmItem;
@@ -5219,6 +5220,11 @@ begin
     Value := aMessage;
 end;
 
+function TWsdlOperation .getDoExit : Boolean ;
+begin
+  result := fDoExit;
+end;
+
 
 procedure TWsdlOperation.NeedStamperData(Sender: TObject; var MoreData: Boolean;
   var Data: String);
@@ -5326,6 +5332,13 @@ procedure TWsdlOperation.ExecuteRpyStampers;
   end;
 begin
   _Stamp (rpyBind);
+end;
+
+procedure TWsdlOperation .InitExecute ;
+begin
+  DoExit := False;
+  LiteralResult := '';
+  ReturnSoapFault := False;
 end;
 
 function TWsdlOperation.FindBind(aCaption: String): TCustomBindable;

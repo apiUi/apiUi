@@ -41,7 +41,7 @@ private
   fFunctionProtoTypes: TStringList;
   fTextLines: TStringList;
   fTextLineNo: Integer;
-    fOnGetAbortPressed: TBooleanFunction;
+  fOnGetAbortPressed, fOnGetDoExit: TBooleanFunction;
   function GetSqlUsed: Boolean;
   procedure ExpressError ( Sender: TObject
                          ; LineNumber: Integer
@@ -88,7 +88,8 @@ private
     procedure setContext(const Value: TObject);
     function getScriptText: String;
     procedure setScriptText(const Value: String);
-    procedure SetOnGetAbortPressed(const Value: TBooleanFunction);
+  procedure SetOnGetAbortPressed(const Value: TBooleanFunction);
+  procedure SetOnGetDoExit(const Value: TBooleanFunction);
 published
   property Database: TSQLConnection read fDatabase write fDatabase;
   property OnHaveData: TOnHaveDataEvent read FOnHaveData write FOnHaveData;
@@ -102,6 +103,7 @@ public
   property SqlUsed: Boolean read GetSqlUsed;
   property ScannedItems: YYSType read LexicalList;
   property OnGetAbortPressed: TBooleanFunction read fOnGetAbortPressed write SetOnGetAbortPressed;
+  property OnGetDoExit: TBooleanFunction read fOnGetDoExit write SetOnGetDoExit;
   property Context: TObject read getContext write setContext;
   procedure Prepare;
   procedure Execute;
@@ -402,6 +404,13 @@ begin
   fOnGetAbortPressed := Value;
   if Assigned (Parser) then
     Parser.OnGetAbortPressed := Value;
+end;
+
+procedure TExpress.SetOnGetDoExit(const Value: TBooleanFunction);
+begin
+  fOnGetDoExit := Value;
+  if Assigned (Parser) then
+    Parser.OnGetDoExit := Value;
 end;
 
 procedure TExpress.setScriptText(const Value: String);

@@ -10,7 +10,7 @@ const
 
 type TCustParser = class (TObject)
   private
-    FOnGetAbortPressed: TBooleanFunction;
+    FOnGetAbortPressed, FOnGetDoExit: TBooleanFunction;
     fDoIt: Boolean;
     function getDoIt: Boolean;
 protected
@@ -73,6 +73,7 @@ public
   SqlUsed: Boolean;
   property DoIt: Boolean read getDoIt write fDoIt;
   property OnGetAbortPressed: TBooleanFunction read FOnGetAbortPressed write FOnGetAbortPressed;
+  property OnGetDoExit: TBooleanFunction read FOnGetDoExit write FOnGetDoExit;
   property OnPutData: TOnPutDataEvent read FOnPutData write FOnPutData;
   property OnGetData: TOnGetDataEvent read FOnGetData write FOnGetData;
   property OnGetObject: TOnGetDataEvent read FOnGetObject write FOnGetObject;
@@ -238,6 +239,9 @@ begin
   Result := fDoIt
          and (   (not Assigned (FOnGetAbortPressed))
               or (not FOnGetAbortPressed())
+             )
+         and (   (not Assigned (FOnGetDoExit))
+              or (not FOnGetDoExit())
              );
 end;
 
