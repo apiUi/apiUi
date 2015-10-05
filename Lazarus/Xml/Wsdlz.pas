@@ -4282,8 +4282,7 @@ begin
   aReply.SeparateNsPrefixes;
   aReply.ResolveNameSpaces;
   if aReply.Name = '' then Exit;
-  if (aReply.TagName = 'Envelope')
-  and (aReply.NameSpace = scSoapEnvNameSpace) then
+  if aReply.isSoapEnvelope then
   begin
     for x := 0 to aReply.Items.Count - 1 do
     begin
@@ -4323,8 +4322,7 @@ begin
   (reqBind as TXml).Checked := True;
   aRequest.SeparateNsPrefixes;
   aRequest.ResolveNameSpaces;
-  if (aRequest.TagName = 'Envelope')
-  and (aRequest.NameSpace = scSoapEnvNameSpace) then
+  if aRequest.isSoapEnvelope then
   begin
     for x := 0 to aRequest.Items.Count - 1 do
     begin

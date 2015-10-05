@@ -3685,22 +3685,28 @@ begin
     result := result + Self.Xsd.Appinfo.Text;
 end;
 
-function TXml .getIsSoapEnvelope : Boolean ;
+function TXml.getIsSoapEnvelope : Boolean ;
 begin
   result := (TagName = 'Envelope')
-        and (NameSpace = scSoapEnvNameSpace);
+        and (   (NameSpace = scSoapEnvNameSpaceV1_1)
+             or (NameSpace = scSoapEnvNameSpaceV1_2)
+            );
 end;
 
 function TXml .getIsSoapHeader : Boolean ;
 begin
   result := (TagName = 'Header')
-        and (NameSpace = scSoapEnvNameSpace);
+        and (   (NameSpace = scSoapEnvNameSpaceV1_1)
+             or (NameSpace = scSoapEnvNameSpaceV1_2)
+            );
 end;
 
 function TXml .getIsSoapBody : Boolean ;
 begin
   result := (TagName = 'Body')
-        and (NameSpace = scSoapEnvNameSpace);
+        and (   (NameSpace = scSoapEnvNameSpaceV1_1)
+             or (NameSpace = scSoapEnvNameSpaceV1_2)
+            );
 end;
 
 function TXml.getItemByTag (Index: String): TXml ;

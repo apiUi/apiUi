@@ -1145,7 +1145,7 @@ uses
   XmlGridUnit, IpmGridUnit,
   xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, base64, xmlxsdparser,
-  HashUtilz, xmlio;
+  HashUtilz, xmlio, xmlzConsts;
 {$IFnDEF FPC}
   {$R *.dfm}
 {$ELSE}
@@ -11065,7 +11065,7 @@ procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
   procedure _DiscoverOperation(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml);
     function _DiscoverOperationFromXml(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml): Boolean;
     var
-      f: Integer;
+      f, x: Integer;
       xOperation: TWsdlOperation;
     begin
       result := False;
@@ -11132,14 +11132,17 @@ procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       result := aXml.Value
     else
     begin
-      if aOperation.isSoapService then
+      if aOperation.isSoapService
+      and (not aXml.isSoapEnvelope) then
         result := '<se:Envelope xmlns:se="http://schemas.xmlsoap.org/soap/envelope/"><se:Body>'
                 + LineEnding
                 + aXml.AsText(True, 2, False, False)
                 + LineEnding
                 + '</se:Body></se:Envelope>'
       else
+      begin
         result := aXml.AsText(True, 0, False, False);
+      end;
     end;
   end;
 
@@ -11171,10 +11174,6 @@ begin
           xRpyXml := nil;
           xLog.Operation := nil;
           y := 0;
-          {
-            discover soap messages not yet implemented
-            I am now working with logs that only contain the soapbody (without the soapbody tag)
-          }
           while (y < Items.Count) do
           begin
             _DiscoverOperation(Items.XmlItems[Y], xLog, xReqXml, xRpyXml);

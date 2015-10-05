@@ -18,8 +18,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="8988"/>
+      <RevisionNr Value="3"/>
+      <BuildNr Value="9009"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -134,7 +134,6 @@
       </Item5>
       <Item6>
         <Name Value="Exception"/>
-        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
