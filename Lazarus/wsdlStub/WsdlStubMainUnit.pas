@@ -11062,124 +11062,95 @@ end;
 
 procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
   aLogList: TLogList);
-  function _CreateMessage(aXml: TXml; isRequest: Boolean;
-    aOperation: TWsdlOperation): String;
-  var
-    X: Integer;
-  begin
-    result := '';
-    if isRequest then
+  procedure _DiscoverOperation(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml);
+    function _DiscoverOperationFromXml(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml): Boolean;
+    var
+      f: Integer;
+      xOperation: TWsdlOperation;
     begin
-      if aOperation.reqBind is TXml then
-        with aOperation.reqBind as TXml do
-        begin
-          ResetValues;
-          for X := 0 to aXml.Items.Count - 1 do
-            if X < Items.Count then
-              Items.XmlItems[X].LoadValues(aXml.Items.XmlItems[X], False,
-                False);
-        end;
-      result := aOperation.StreamRequest(_progName, True, True, True);
-    end
-    else
-    begin
-      if aOperation.rpyBind is TXml then
-        with aOperation.rpyBind as TXml do
-        begin
-          ResetValues;
-          for X := 0 to aXml.Items.Count - 1 do
-            if X < Items.Count then
-              Items.XmlItems[X].LoadValues(aXml.Items.XmlItems[X], False,
-                False);
-        end;
-      result := aOperation.StreamReply(_progName, True);
+      result := False;
+      if allOperations.Find(aXml.Name + ';' + aXml.NameSpace, f) then
+      begin
+        result := True;
+        aLog.Operation := allOperations.Operations[f];
+        aReqXml := aXml;
+      end;
+      if allOperationsRpy.Find(aXml.Name, f) then
+      begin
+        result := True;
+        aLog.Operation := allOperationsRpy.Operations[f];
+        aRpyXml := aXml;
+      end;
     end;
-    result := result + aOperation.Name + ':' + aXml.Name;
-  end;
-  procedure _DiscoverOperationFromTag(aTag: String; var isRequest: Boolean;
-    var aOperation: TWsdlOperation);
-  begin
-    aOperation := allOperations.FindOnOperationName(NameWithoutPrefix(aTag));
-    if Assigned (aOperation) then
-    begin
-      isRequest := True;
-      exit;
-    end;
-    aOperation := allOperationsRpy.FindOnOperationName(NameWithoutPrefix(aTag));
-    if Assigned (aOperation) then
-    begin
-      isRequest := False;
-      exit;
-    end;
-  end;
-  procedure _DiscoverOperation(aXml: TXml; var isRequest: Boolean;
-    var aOperation: TWsdlOperation; var aMessage: String);
-    procedure _DiscoverOperationFromString(aText: String;
-      var isRequest: Boolean; var aOperation: TWsdlOperation;
-      var aMessage: String);
+    procedure _DiscoverOperationFromXmlValue(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml);
+    var
+      xOperation: TWsdlOperation;
     begin
       try
-        aOperation := se.FindOperationOnRequest(nil, '', aText, False);
+        xOperation := se.FindOperationOnRequest(nil, '', aXml.Value, False);
       Except
+        xOperation := nil;
       End;
-      if Assigned(aOperation) then
+      if Assigned(xOperation) then
       begin
-        aMessage := aText;
-        isRequest := True;
-        exit;
+        aLog.Operation := xOperation;
+        aReqXml := aXml;
       end;
       try
-        aOperation := se.FindOperationOnReply(aText);
+        xOperation := se.FindOperationOnReply(aXml.Value);
       Except
+        xOperation := nil;
       End;
-      if Assigned(aOperation) then
+      if Assigned(xOperation) then
       begin
-        aMessage := aText;
-        isRequest := False;
-        exit;
+        aLog.Operation := xOperation;
+        aRpyXml := aXml;
       end;
     end;
 
   var
     X: Integer;
+    xDiscovered: Boolean;
   begin
-    aOperation := nil;
+    aLog.Operation := nil;
     if aXml.Items.Count = 0 then
+      _DiscoverOperationFromXmlValue (aXml, aLog, aReqXml, aRpyXml)
+    else
     begin
-      _DiscoverOperationFromString(aXml.Value, isRequest, aOperation, aMessage);
-      exit;
-    end;
-    for X := 0 to aXml.Items.Count - 1 do
-    begin
-      _DiscoverOperationFromTag(aXml.Items.XmlItems[X].Name, isRequest,
-        aOperation);
-      if Assigned(aOperation) then
+      if not _DiscoverOperationFromXml (aXml, aLog, aReqXml, aRpyXml) then
       begin
-        aMessage := _CreateMessage(aXml, isRequest, aOperation);
-        exit;
+        for X := 0 to aXml.Items.Count - 1 do
+        begin
+          _DiscoverOperation(aXml.Items.XmlItems[X], aLog, aReqXml, aRpyXml);
+        end;
       end;
     end;
-    for X := 0 to aXml.Items.Count - 1 do
+  end;
+  function _MessageAsText (aOperation: TWsdlOperation; aXml: TXml): string;
+  begin
+    if aXml.Items.Count = 0 then
+      result := aXml.Value
+    else
     begin
-      _DiscoverOperation(aXml.Items.XmlItems[X], isRequest, aOperation,
-        aMessage);
-      if Assigned(aOperation) then
-        exit;
+      if aOperation.isSoapService then
+        result := '<se:Envelope xmlns:se="http://schemas.xmlsoap.org/soap/envelope/"><se:Body>'
+                + LineEnding
+                + aXml.AsText(True, 2, False, False)
+                + LineEnding
+                + '</se:Body></se:Envelope>'
+      else
+        result := aXml.AsText(True, 0, False, False);
     end;
   end;
 
 var
-  xXml: TXml;
+  xXml, xReqXml, xRpyXml: TXml;
   SwapCursor: TCursor;
   X, Y: Integer;
   xLog: TLog;
-  xOperation: TWsdlOperation;
   xMessageText: String;
-  mainTag: String;
-  isRequest: Boolean;
 begin
   try
-    mainTag := 'log4j_event';
     SwapCursor := Screen.Cursor;
     Screen.Cursor := crHourGlass;
     xXml := TXml.Create;
@@ -11190,39 +11161,35 @@ begin
         xXml.LoadFromFile(aString, nil)
       else
         xXml.LoadFromString(aString, nil);
-      if (xXml.Items.Count > 0) and (xXml.Items.XmlItems[0].TagName <> mainTag)
-        then
-      begin
-        if not BooleanPromptDialog(Format(
-            'Found tag <%s>; Expected <%s>, Continue',
-            [xXml.Items.XmlItems[0].TagName, mainTag])) then
-          exit;
-        mainTag := xXml.Items.XmlItems[0].TagName;
-      end;
+      xXml.SeparateNsPrefixes;
+      xXml.ResolveNameSpaces;
       for X := 0 to xXml.Items.Count - 1 do
       begin
         with xXml.Items.XmlItems[X] do
         begin
-          if TagName = mainTag then
+          xReqXml := nil;
+          xRpyXml := nil;
+          xLog.Operation := nil;
+          y := 0;
+          {
+            discover soap messages not yet implemented
+            I am now working with logs that only contain the soapbody (without the soapbody tag)
+          }
+          while (y < Items.Count) do
           begin
-            for Y := 0 to Items.Count - 1 do
-            begin
-              _DiscoverOperation(Items.XmlItems[Y], isRequest, xOperation,
-                xMessageText);
-              if Assigned(xOperation) then
-              begin
-                xLog.Operation := xOperation;
-                if isRequest then
-                  xLog.RequestBody := xMessageText
-                else
-                  xLog.ReplyBody := xMessageText;
-              end;
-            end;
+            _DiscoverOperation(Items.XmlItems[Y], xLog, xReqXml, xRpyXml);
+            Inc (y);
           end;
           if Assigned(xLog.Operation) then
           begin
-            xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
-            // xLog.Exception := ????????????TODO;
+            if Assigned (xReqXml) then
+            begin
+              xLog.RequestBody := _MessageAsText(xLog.Operation, xReqXml);
+              xLog.Operation.RequestStringToBindables(xLog.RequestBody);
+              xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
+            end;
+            if Assigned (xRpyXml) then
+              xLog.ReplyBody := _MessageAsText(xLog.Operation, xRpyXml);
             aLogList.SaveLog('', xLog);
             xLog := TLog.Create;
           end;

@@ -4141,6 +4141,7 @@ var
   xRecog: TRecognition;
   xMatch: Boolean;
 begin
+  result := nil;
   for o := 0 to allOperations.Count - 1 do
   begin
     if allOperations.Operations [o].WsdlService.DescriptionType = ipmDTCobol then

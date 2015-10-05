@@ -4094,24 +4094,16 @@ function TWsdlOperation.CorrelationIdAsText(aSeparator: String): String;
 var
   xSep: String;
   x: Integer;
-  xOperation: TWsdlOperation;
 begin
   result := '';
-  if not Assigned(self) then Exit;
-  xOperation := Self;
-  while Assigned(xOperation.Cloned) do
-    xOperation := xOperation.Cloned;
   xSep := '';
-  if Assigned (xOperation.CorrelationBindables) then with xOperation.CorrelationBindables do
+  for x := 0 to CorrelationBindables.Count - 1 do
   begin
-    for x := 0 to Count - 1 do
-    begin
-      if Assigned (Bindables[x]) then
-        result := result + xSep + Bindables[x].GetStringData
-      else
-        result := result + xSep + '?';
-      xSep := aSeparator;
-    end;
+    if Assigned (CorrelationBindables.Bindables[x]) then
+      result := result + xSep + CorrelationBindables.Bindables[x].GetStringData
+    else
+      result := result + xSep + '?';
+    xSep := aSeparator;
   end;
 end;
 
