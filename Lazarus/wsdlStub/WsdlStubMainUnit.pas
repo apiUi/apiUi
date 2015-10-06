@@ -36,7 +36,7 @@ uses
    , ComCtrls
    , ExtCtrls
    , FormIniFilez
-   , Menus
+   , Menus , PairSplitter
    , VirtualTrees , FileUtil , RichBox
    , Bind
    , mqInterface
@@ -86,6 +86,9 @@ type
     MenuItem1 : TMenuItem ;
     MenuItem4 : TMenuItem ;
     OperationsPopupMenu: TPopupMenu;
+    PairSplitter1 : TPairSplitter ;
+    PairSplitterSide1 : TPairSplitterSide ;
+    PairSplitterSide2 : TPairSplitterSide ;
     Reactivatemaster1 : TMenuItem ;
     RunMenuItem : TMenuItem ;
     MenuItem2 : TMenuItem ;
@@ -224,7 +227,6 @@ type
     ClearExceptionsAction: TAction;
     ExceptionMemo: TMemo;
     OperationReqsTreeView: TVirtualStringTree;
-    Splitter10: TSplitter;
     ToolButton25: TToolButton;
     SelectMessageColumnsAction: TAction;
     ToolButton26: TToolButton;
@@ -976,6 +978,7 @@ type
     procedure FocusOperationsReqVTS;
     procedure ExchangeMessages(fReply, pReply: TWsdlMessage);
     procedure UpdateMessagesGrid;
+    procedure UpdateLogCorrelationIds (aWsdlOperation: TWsdlOperation);
     procedure UpdateLogTabs (aLog: TLog);
     procedure RemoveMessageColumns;
     procedure FocusOnBind(aBind: TCustomBindable);
@@ -4698,6 +4701,7 @@ begin
       begin
         se.UpdateReplyColumns(WsdlOperation);
         UpdateMessagesGrid;
+        UpdateLogCorrelationIds (WsdlOperation);
         stubChanged := stubChanged or SelectElementsForm.stubChanged;
       end;
     finally
@@ -6110,6 +6114,26 @@ begin
   lastWsdlOperation := WsdlOperation;
 end;
 
+procedure TMainForm .UpdateLogCorrelationIds (aWsdlOperation : TWsdlOperation );
+var
+  x: Integer;
+begin
+  se.AcquireLogLock;
+  try
+  for x := 0 to se.displayedLogs.Count - 1 do with se.displayedLogs.LogItems[x] do
+  begin
+    if Operation = aWsdlOperation then
+    begin
+      Operation.RequestStringToBindables(RequestBody);
+      CorrelationId := Operation.CorrelationIdAsText('; ');
+    end;
+  end;
+  finally
+    MessagesVTS.Invalidate;
+    se.ReleaseLogLock;
+  end;
+end;
+
 procedure TMainForm.FocusOnBind(aBind: TCustomBindable);
   procedure _ForceVisibility(aNode: PVirtualNode);
   begin
@@ -7416,12 +7440,12 @@ begin
   fDoShowDesignAtTop := Value;
   if doShowDesignAtTop then
   begin
-//    LogPanel.Align := alBottom;
+    DownPageControl.Align := alBottom;
     Splitter1.Align := alBottom;
   end
   else
   begin
-//    LogPanel.Align := alTop;
+    DownPageControl.Align := alTop;
     Splitter1.Align := alTop;
   end;
 end;

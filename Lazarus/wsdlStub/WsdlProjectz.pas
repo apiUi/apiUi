@@ -6370,7 +6370,11 @@ begin
             except
             end;
             if Assigned (xLog.Operation) then
+            begin
               xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
+              xLog.Operation.RequestStringToBindables(xLog.RequestBody);
+              xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
+            end;
             LogFilter.Execute (xLog);
             aLogList.SaveLog ('', xLog);
           end;
