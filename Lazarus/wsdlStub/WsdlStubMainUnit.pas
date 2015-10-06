@@ -64,9 +64,18 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    ExecuteAllRequestsToolButton : TToolButton ;
+    ExecuteLoadTextToolbutton : TToolButton ;
+    ExecuteRequestToolButton : TToolButton ;
+    FreeFormatMemo : TMemo ;
+    GridToolBar : TToolBar ;
+    GridView : TVirtualStringTree ;
+    InWsdlTreeView : TVirtualStringTree ;
+    LastToolButton : TToolButton ;
     MenuItem10: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
+    DesignPanelSplitVerticalMenuItem : TMenuItem ;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -85,37 +94,76 @@ type
     MasterRestartAction1 : TMenuItem ;
     MenuItem1 : TMenuItem ;
     MenuItem4 : TMenuItem ;
+    OperationLabel : TLabel ;
     OperationsPopupMenu: TPopupMenu;
     PairSplitter1 : TPairSplitter ;
     PairSplitterSide1 : TPairSplitterSide ;
     PairSplitterSide2 : TPairSplitterSide ;
+    DataPanel : TPanel ;
+    GridDataPanel : TPanel ;
+    TreeDataPanel : TPanel ;
+    ProgressBar : TProgressBar ;
     Reactivatemaster1 : TMenuItem ;
     RunMenuItem : TMenuItem ;
     MenuItem2 : TMenuItem ;
     MenuItem3 : TMenuItem ;
+    ServiceLabel : TLabel ;
+    DataPanelSplitter : TSplitter ;
     startStopMenuItem : TMenuItem ;
     ProjectDesignToClipboardAction: TAction;
     PresentLogMemoTextAction : TAction ;
     DesignPanel: TPanel;
     alGeneral: TActionList;
     DataTypeDocumentationMemo : TlzRichEdit ;
-    FreeFormatMemo: TMemo;
-    InWsdlTreeView: TVirtualStringTree;
     LogMemo: TMemo;
     MessagesTabControl: TTabControl;
-    Panel1: TPanel;
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
     Splitter1 : TSplitter ;
     SQLConnector : TSQLConnector ;
     SQLTransaction : TSQLTransaction ;
+    StatusPanel : TPanel ;
     ToolBar4 : TToolBar ;
+    ToolBar9 : TToolBar ;
+    ToolButton10 : TToolButton ;
+    ToolButton11 : TToolButton ;
+    ToolButton12 : TToolButton ;
+    ToolButton13 : TToolButton ;
+    ToolButton14 : TToolButton ;
+    ToolButton16 : TToolButton ;
+    ToolButton18 : TToolButton ;
+    ToolButton20 : TToolButton ;
+    ToolButton25 : TToolButton ;
+    ToolButton26 : TToolButton ;
+    ToolButton27 : TToolButton ;
+    ToolButton28 : TToolButton ;
+    ToolButton29 : TToolButton ;
     ToolButton30 : TToolButton ;
     ToolButton32 : TToolButton ;
+    ToolButton34 : TToolButton ;
     ToolButton36 : TToolButton ;
     ToolButton37 : TToolButton ;
-    ExecuteLoadTextToolbutton : TToolButton ;
     logChartToolButton : TToolButton ;
+    ToolButton38 : TToolButton ;
+    ToolButton41 : TToolButton ;
+    ToolButton44 : TToolButton ;
+    ToolButton45 : TToolButton ;
+    ToolButton46 : TToolButton ;
+    ToolButton47 : TToolButton ;
+    ToolButton54 : TToolButton ;
+    ToolButton55 : TToolButton ;
+    ToolButton56 : TToolButton ;
+    ToolButton63 : TToolButton ;
+    ToolButton7 : TToolButton ;
+    ToolButton8 : TToolButton ;
+    ToolButton9 : TToolButton ;
+    View : TLabel ;
+    ViewStyleComboBox : TComboBox ;
+    WsdlComboBox : TComboBox ;
+    WsdlInfoPanel : TPanel ;
+    WsdlLabel : TLabel ;
+    WsdlOperationsComboBox : TComboBox ;
+    WsdlServicesComboBox : TComboBox ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -125,7 +173,6 @@ type
     OpenFileDialog: TOpenDialog;
     MainMenu1: TMainMenu;
     xsdSplitter: TSplitter;
-    Panel6: TPanel;
     File1: TMenuItem;
     Exit1: TMenuItem;
     OpenWSDLfile1: TMenuItem;
@@ -144,12 +191,6 @@ type
     N4: TMenuItem;
     XmlZoomValueAsTextMenuItem: TMenuItem;
     XmlZoomValueAsXMLMenuItem: TMenuItem;
-    WsdlInfoPanel: TPanel;
-    WsdlOperationsComboBox: TComboBox;
-    WsdlServicesComboBox: TComboBox;
-    OperationLabel: TLabel;
-    ServiceLabel: TLabel;
-    WsdlLabel: TLabel;
     Expand2: TMenuItem;
     SaveStubCaseAsAction: TAction;
     ToolButton3: TToolButton;
@@ -170,20 +211,9 @@ type
     HelpAction: TAction;
     Qry: TSQLQuery;
     runScriptAction: TAction;
-    WsdlComboBox: TComboBox;
     Extra1: TMenuItem;
     Options1: TMenuItem;
     OptionsAction: TAction;
-    GridToolBar: TToolBar;
-    GridView: TVirtualStringTree;
-    ToolButton7: TToolButton;
-    ToolButton8: TToolButton;
-    ToolButton9: TToolButton;
-    ToolButton11: TToolButton;
-    ToolButton12: TToolButton;
-    ToolButton13: TToolButton;
-    ToolButton14: TToolButton;
-    ToolButton10: TToolButton;
     SelectCorrelationElementAction: TAction;
     AddMessageAction: TAction;
     DeleteMessageAction: TAction;
@@ -227,14 +257,9 @@ type
     ClearExceptionsAction: TAction;
     ExceptionMemo: TMemo;
     OperationReqsTreeView: TVirtualStringTree;
-    ToolButton25: TToolButton;
     SelectMessageColumnsAction: TAction;
-    ToolButton26: TToolButton;
-    ToolButton27: TToolButton;
     CopyGridAction: TAction;
     PasteGridAction: TAction;
-    ToolButton28: TToolButton;
-    ToolButton29: TToolButton;
     CopyLogMemoTextToClipBrdAction: TAction;
     ShowHttpReplyAsXMLAction: TAction;
     ShowHttpRequestAsXMLAction: TAction;
@@ -249,8 +274,6 @@ type
     ToolButton31: TToolButton;
     MessagesRegressionAction: TAction;
     ToolButton33: TToolButton;
-    ToolButton34: TToolButton;
-    ToolButton38: TToolButton;
     CheckGridFieldsAction: TAction;
     DesignPanelAtTopMenuItem: TMenuItem;
     CopyExceptionToClipboardAction: TAction;
@@ -262,10 +285,7 @@ type
     RemoveEnvironmentAction: TAction;
     Addenvironment1: TMenuItem;
     RemoveEnvironmentAction1: TMenuItem;
-    ToolButton41: TToolButton;
-    ExecuteRequestToolButton: TToolButton;
     WsdlItemDelMenuItem: TMenuItem;
-    ExecuteAllRequestsToolButton: TToolButton;
     ExecuteRequestAction: TAction;
     ExecuteAllRequestsAction: TAction;
     LogMenuItem: TMenuItem;
@@ -308,26 +328,16 @@ type
     RequestMiMAction1: TMenuItem;
     ReplyMiMAction: TAction;
     ChangesduetoAfterscript1: TMenuItem;
-    ToolBar9: TToolBar;
-    ToolButton44: TToolButton;
     FindAction: TAction;
-    ToolButton45: TToolButton;
     FindNextAction: TAction;
     N14: TMenuItem;
     Validate1: TMenuItem;
-    ToolButton46: TToolButton;
     CheckTreeAction: TAction;
-    ToolButton47: TToolButton;
     Project1: TMenuItem;
     Options2: TMenuItem;
     ProjectOptionsAction: TAction;
     ToolButton48: TToolButton;
     AddChildElementDefMenuItem: TMenuItem;
-    ToolButton18: TToolButton;
-    View: TLabel;
-    ViewStyleComboBox: TComboBox;
-    LastToolButton: TToolButton;
-    ProgressBar: TProgressBar;
     All1: TMenuItem;
     Required1: TMenuItem;
     ShowReplyAsXmlGridAction: TAction;
@@ -347,15 +357,11 @@ type
     MessagesToDiskAction: TAction;
     Log2DesignAction: TAction;
     Addtodesign1: TMenuItem;
-    ToolButton16: TToolButton;
-    ToolButton54: TToolButton;
     ViewMssgAsTextAction: TAction;
     CopyCobolDataToClipboardMenuItem: TMenuItem;
     PasteCobolDataFromClipboardMenuItem: TMenuItem;
     ElementvalueMenuItem: TMenuItem;
     AssignExpressionMenuItem: TMenuItem;
-    ToolButton55: TToolButton;
-    ToolButton56: TToolButton;
     SelectExpectedElementsAction: TAction;
     ToolButton57: TToolButton;
     ToolButton49: TToolButton;
@@ -405,8 +411,6 @@ type
     ThrowExceptionAction: TAction;
     Configurelisteners1: TMenuItem;
     MessagesFromDiskAction: TAction;
-    ToolButton20: TToolButton;
-    ToolButton63: TToolButton;
     Readmessagesfromdiskfiles1: TMenuItem;
     LogDisplayedColumnsAction: TAction;
     ToolButton50: TToolButton;
@@ -414,7 +418,6 @@ type
     startStopButton: TToolButton;
     startAction: TAction;
     stopAction: TAction;
-    StatusPanel: TPanel;
     ScriptsMenuItem: TMenuItem;
     EditScriptMenuItem: TMenuItem;
     N23: TMenuItem;
@@ -503,11 +506,14 @@ type
       );
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
+    procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
     procedure httpRequestDesignActionExecute (Sender : TObject );
     procedure httpRequestMessagesActionExecute (Sender : TObject );
     procedure LoadTestActionExecute (Sender : TObject );
     procedure LoadTestActionUpdate (Sender : TObject );
     procedure logChartActionExecute (Sender : TObject );
+    procedure DesignSplitHorizontalMenuItemClick (Sender : TObject );
+    procedure DesignSplitVerticalMenuItemClick (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
@@ -1038,7 +1044,9 @@ type
     procedure TerminateThreadEvent;
     procedure SetUiProgress;
   private
+    fdoShowDesignSplitVertical : Boolean ;
     function getHintStrDisabledWhileActive: String;
+    procedure setdoShowDesignSplitVertical (AValue : Boolean );
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure ReloadProject;
   published
@@ -1079,6 +1087,8 @@ type
     property isRequestAction: Boolean read getIsRequestAction;
     property doShowDesignAtTop: Boolean read fDoShowDesignAtTop write
       setDoShowDesignAtTop;
+    property doShowDesignSplitVertical: Boolean read fdoShowDesignSplitVertical write
+      setdoShowDesignSplitVertical;
     property stubChanged: Boolean read getStubChanged write setStubChanged;
     property Wsdl: TWsdl read getWsdl write setWsdl;
     procedure BeginUpdate;
@@ -8471,6 +8481,30 @@ begin
     result := ' (disabled while Active)';
 end;
 
+procedure TMainForm .setdoShowDesignSplitVertical (AValue : Boolean );
+begin
+  if fdoShowDesignSplitVertical = AValue then Exit ;
+  fdoShowDesignSplitVertical := AValue ;
+  if fdoShowDesignSplitVertical then
+  begin
+    GridDataPanel.Align := alLeft;
+    GridDataPanel.Width := DataPanel.Width Div 2;
+    GridDataPanel.Left := 0;
+    DataPanelSplitter.Align := alNone;
+    DataPanelSplitter.Left := 1;
+    DataPanelSplitter.Align := alLeft;
+  end
+  else
+  begin
+    GridDataPanel.Align := alTop;
+    GridDataPanel.Height := DataPanel.Height Div 2;
+    GridDataPanel.Top := 0;
+    DataPanelSplitter.Align := alNone;
+    DataPanelSplitter.Top := 1;
+    DataPanelSplitter.Align := alTop;
+  end;
+end;
+
 procedure TMainForm.setDoValidateReplies(const Value: Boolean);
 begin
   stubChanged := doValidateReplies <> Value;
@@ -11651,6 +11685,12 @@ begin
   OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
 end;
 
+procedure TMainForm .DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
+begin
+  DesignPanelSplitVerticalMenuItem.Checked := not DesignPanelSplitVerticalMenuItem.Checked;
+  doShowDesignSplitVertical := DesignPanelSplitVerticalMenuItem.Checked;
+end;
+
 procedure TMainForm .httpRequestDesignActionExecute (Sender : TObject );
 begin
 
@@ -11725,6 +11765,31 @@ begin
   finally
     Screen.Cursor := SwapCursor;
   end;
+end;
+
+procedure TMainForm .DesignSplitHorizontalMenuItemClick (Sender : TObject );
+var
+  h: Integer;
+begin
+  h := GridDataPanel.Height;
+  GridDataPanel.Align := alTop;
+  GridDataPanel.Height := DataPanel.Height Div 2;
+  GridDataPanel.Top := 0;
+  DataPanelSplitter.Align := alNone;
+  DataPanelSplitter.Top := 1;
+  DataPanelSplitter.Align := alTop;
+end;
+
+procedure TMainForm .DesignSplitVerticalMenuItemClick (Sender : TObject );
+var
+  w: Integer;
+begin
+  GridDataPanel.Align := alLeft;
+  GridDataPanel.Width := DataPanel.Width Div 2;
+  GridDataPanel.Left := 0;
+  DataPanelSplitter.Align := alNone;
+  DataPanelSplitter.Left := 1;
+  DataPanelSplitter.Align := alLeft;
 end;
 
 procedure TMainForm .CopyLogGridToClipBoardActionExecute (Sender : TObject );
