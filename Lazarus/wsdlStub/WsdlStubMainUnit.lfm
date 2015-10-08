@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 379
-  Height = 522
-  Top = 116
-  Width = 939
+  Left = 330
+  Height = 603
+  Top = 103
+  Width = 1024
   Caption = 'MainForm'
-  ClientHeight = 503
-  ClientWidth = 939
+  ClientHeight = 584
+  ClientWidth = 1024
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 29
     Top = 0
-    Width = 939
+    Width = 1024
     Caption = 'MainToolBar'
     Images = mainImageList
     TabOrder = 1
@@ -167,25 +167,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 302
+    Height = 403
     Top = 29
-    Width = 939
+    Width = 1024
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 302
-    ClientWidth = 939
+    ClientHeight = 403
+    ClientWidth = 1024
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
-      Height = 296
+      Height = 397
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 796
-      Height = 296
+      Left = 881
+      Height = 397
       Top = 3
       Width = 5
       Align = alRight
@@ -194,18 +194,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 296
+      Height = 397
       Top = 3
       Width = 202
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 296
+      ClientHeight = 397
       ClientWidth = 202
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 227
+        Top = 328
         Width = 196
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -272,7 +272,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 224
+        Height = 325
         Top = 3
         Width = 196
         Align = alClient
@@ -305,7 +305,7 @@ object MainForm: TMainForm
       object ScriptButtonsPanel: TPanel
         Left = 3
         Height = 37
-        Top = 256
+        Top = 357
         Width = 196
         Align = alBottom
         Caption = 'ScriptButtonsPanel'
@@ -347,14 +347,14 @@ object MainForm: TMainForm
       end
     end
     object XsdPanel: TPanel
-      Left = 801
-      Height = 296
+      Left = 886
+      Height = 397
       Top = 3
       Width = 135
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 296
+      ClientHeight = 397
       ClientWidth = 135
       TabOrder = 1
       object Splitter6: TSplitter
@@ -407,7 +407,7 @@ object MainForm: TMainForm
       end
       object DataTypeDocumentationMemo: TlzRichEdit
         Left = 4
-        Height = 55
+        Height = 156
         Top = 237
         Width = 127
         DefaultExtension = '.rtf'
@@ -418,495 +418,506 @@ object MainForm: TMainForm
         TabOrder = 4
       end
     end
-    object DataPanel: TPanel
+    object MiddlePanel: TPanel
       Left = 210
-      Height = 296
+      Height = 397
       Top = 3
-      Width = 586
+      Width = 671
       Align = alClient
-      Caption = 'DataPanel'
-      ClientHeight = 296
-      ClientWidth = 586
+      Caption = 'MiddlePanel'
+      ClientHeight = 397
+      ClientWidth = 671
       TabOrder = 4
-      object GridDataPanel: TPanel
+      object WsdlInfoPanel: TPanel
         Left = 1
-        Height = 146
+        Height = 37
         Top = 1
-        Width = 584
+        Width = 669
         Align = alTop
-        Caption = 'GridDataPanel'
-        ClientHeight = 146
-        ClientWidth = 584
+        ClientHeight = 37
+        ClientWidth = 669
         TabOrder = 0
-        object WsdlInfoPanel: TPanel
-          Left = 1
-          Height = 61
-          Top = 1
-          Width = 582
-          Align = alTop
-          ClientHeight = 61
-          ClientWidth = 582
-          TabOrder = 0
-          OnResize = WsdlInfoPanelResize
-          object OperationLabel: TLabel
-            Left = 224
-            Height = 13
-            Top = 33
-            Width = 49
-            Caption = 'Operation:'
-            ParentColor = False
-          end
-          object ServiceLabel: TLabel
-            Left = 5
-            Height = 13
-            Top = 32
-            Width = 39
-            Caption = 'Service:'
-            ParentColor = False
-          end
-          object WsdlLabel: TLabel
-            Left = 18
-            Height = 13
-            Top = 7
-            Width = 27
-            Caption = 'Wsdl:'
-            ParentColor = False
-          end
-          object WsdlOperationsComboBox: TComboBox
-            Left = 275
-            Height = 21
-            Top = 29
-            Width = 113
-            ItemHeight = 13
-            OnChange = WsdlOperationsComboBoxChange
-            Style = csDropDownList
-            TabOrder = 2
-          end
-          object WsdlServicesComboBox: TComboBox
-            Left = 46
-            Height = 21
-            Top = 29
-            Width = 140
-            ItemHeight = 13
-            OnChange = WsdlServicesComboBoxChange
-            OnDropDown = WsdlServicesComboBoxDropDown
-            Style = csDropDownList
-            TabOrder = 1
-          end
-          object WsdlComboBox: TComboBox
-            Left = 46
-            Height = 21
-            Top = 4
-            Width = 342
-            ItemHeight = 13
-            OnChange = WsdlComboBoxChange
-            OnDropDown = WsdlComboBoxDropDown
-            Style = csDropDownList
-            TabOrder = 0
-          end
+        OnResize = WsdlInfoPanelResize
+        object OperationLabel: TLabel
+          Left = 361
+          Height = 13
+          Top = 12
+          Width = 49
+          Caption = 'Operation:'
+          ParentColor = False
         end
-        object GridToolBar: TToolBar
-          Left = 1
-          Height = 29
-          Top = 62
-          Width = 582
-          Caption = 'GridToolBar'
-          Images = mainImageList
-          TabOrder = 1
-          OnResize = GridToolBarResize
-          object ToolButton7: TToolButton
-            Left = 1
-            Top = 2
-            Action = SelectCorrelationElementAction
-          end
-          object ToolButton8: TToolButton
-            Left = 24
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton8'
-            ImageIndex = 8
-            Style = tbsSeparator
-          end
-          object ToolButton9: TToolButton
-            Left = 34
-            Top = 2
-            Action = AddMessageAction
-            OnDragOver = ToolButton9DragOver
-          end
-          object ToolButton20: TToolButton
-            Left = 57
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton20'
-            ImageIndex = 34
-            Style = tbsSeparator
-          end
-          object ToolButton63: TToolButton
-            Left = 67
-            Top = 2
-            Action = MessagesFromDiskAction
-          end
-          object ToolButton10: TToolButton
-            Left = 90
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton10'
-            ImageIndex = 11
-            Style = tbsSeparator
-          end
-          object ToolButton11: TToolButton
-            Left = 100
-            Top = 2
-            Action = DeleteMessageAction
-          end
-          object ToolButton14: TToolButton
-            Left = 123
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton14'
-            ImageIndex = 11
-            Style = tbsSeparator
-          end
-          object ToolButton12: TToolButton
-            Left = 133
-            Top = 2
-            Action = MoveUpMessageAction
-          end
-          object ToolButton13: TToolButton
-            Left = 156
-            Top = 2
-            Action = MoveDownMessageAction
-          end
-          object ToolButton26: TToolButton
-            Left = 179
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton26'
-            ImageIndex = 12
-            Style = tbsSeparator
-          end
-          object ToolButton25: TToolButton
-            Left = 189
-            Top = 2
-            Action = SelectMessageColumnsAction
-          end
-          object ToolButton56: TToolButton
-            Left = 212
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton56'
-            ImageIndex = 34
-            Style = tbsSeparator
-          end
-          object ToolButton55: TToolButton
-            Left = 222
-            Top = 2
-            Action = SelectExpectedElementsAction
-          end
-          object ToolButton29: TToolButton
-            Left = 245
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton29'
-            ImageIndex = 25
-            Style = tbsSeparator
-          end
-          object ToolButton27: TToolButton
-            Left = 255
-            Top = 2
-            Action = CopyGridAction
-          end
-          object ToolButton28: TToolButton
-            Left = 278
-            Top = 2
-            Action = PasteGridAction
-          end
-          object ToolButton34: TToolButton
-            Left = 301
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton34'
-            ImageIndex = 25
-            Style = tbsSeparator
-          end
-          object ToolButton38: TToolButton
-            Left = 311
-            Top = 2
-            Action = CheckGridFieldsAction
-          end
-          object ToolButton41: TToolButton
-            Left = 334
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton41'
-            ImageIndex = 13
-            Style = tbsSeparator
-          end
-          object ExecuteRequestToolButton: TToolButton
-            Left = 344
-            Top = 2
-            HelpType = htKeyword
-            Action = ExecuteRequestAction
-          end
-          object ExecuteAllRequestsToolButton: TToolButton
-            Left = 367
-            Top = 2
-            Action = ExecuteAllRequestsAction
-          end
-          object LastToolButton: TToolButton
-            Left = 413
-            Top = 2
-            Width = 10
-            Caption = 'LastToolButton'
-            ImageIndex = 33
-            Style = tbsSeparator
-          end
-          object ProgressBar: TProgressBar
-            Left = 423
-            Height = 22
-            Top = 2
-            Width = 93
-            Smooth = True
-            Step = 1
-            TabOrder = 0
-          end
-          object ExecuteLoadTextToolbutton: TToolButton
-            Left = 390
-            Top = 2
-            Action = LoadTestAction
-          end
+        object ServiceLabel: TLabel
+          Left = 169
+          Height = 13
+          Top = 12
+          Width = 39
+          Caption = 'Service:'
+          ParentColor = False
         end
-        object GridView: TVirtualStringTree
-          Left = 1
-          Height = 54
-          Top = 91
-          Width = 582
-          Align = alClient
-          BottomSpace = 10
-          DefaultText = 'Node'
-          DragOperations = []
-          EditDelay = 0
-          Header.AutoSizeIndex = 0
-          Header.Columns = <          
-            item
-              Position = 0
-              Text = 'Reply'
-            end          
-            item
-              Position = 1
-              Text = 'Pattern'
-            end>
-          Header.DefaultHeight = 17
-          Header.Font.Color = clWindowText
-          Header.Font.Height = -11
-          Header.Font.Name = 'Tahoma'
-          Header.Options = [hoColumnResize, hoDblClickResize, hoVisible]
-          Images = TreeviewImageList
-          PopupMenu = GridPopupMenu
+        object WsdlLabel: TLabel
+          Left = 6
+          Height = 13
+          Top = 12
+          Width = 27
+          Caption = 'Wsdl:'
+          ParentColor = False
+        end
+        object WsdlOperationsComboBox: TComboBox
+          Left = 412
+          Height = 21
+          Top = 8
+          Width = 113
+          ItemHeight = 13
+          OnChange = WsdlOperationsComboBoxChange
+          Style = csDropDownList
           TabOrder = 2
-          TreeOptions.AnimationOptions = [toAnimatedToggle]
-          TreeOptions.MiscOptions = [toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toFullRowDrag]
-          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-          OnBeforeCellPaint = GridViewBeforeCellPaint
-          OnClick = TreeViewClick
-          OnEdited = GridViewEdited
-          OnEditing = GridViewEditing
-          OnExit = GridViewExit
-          OnFocusChanged = GridViewFocusChanged
-          OnGetText = GridViewGetText
-          OnPaintText = GridViewPaintText
-          OnGetImageIndex = GridViewGetImageIndex
-          OnKeyDown = TreeViewKeyDown
-          OnMouseDown = GridViewMouseDown
-          OnNewText = GridViewNewText
-          OnResize = TreeViewResize
+        end
+        object WsdlServicesComboBox: TComboBox
+          Left = 210
+          Height = 21
+          Top = 8
+          Width = 140
+          ItemHeight = 13
+          OnChange = WsdlServicesComboBoxChange
+          OnDropDown = WsdlServicesComboBoxDropDown
+          Style = csDropDownList
+          TabOrder = 1
+        end
+        object WsdlComboBox: TComboBox
+          Left = 34
+          Height = 21
+          Top = 8
+          Width = 106
+          ItemHeight = 13
+          OnChange = WsdlComboBoxChange
+          OnDropDown = WsdlComboBoxDropDown
+          Style = csDropDownList
+          TabOrder = 0
         end
       end
-      object DataPanelSplitter: TSplitter
-        AnchorSideTop.Control = GridDataPanel
-        Cursor = crVSplit
+      object DataPanel: TPanel
         Left = 1
-        Height = 5
-        Top = 147
-        Width = 584
-        Align = alTop
-        ResizeAnchor = akTop
-      end
-      object TreeDataPanel: TPanel
-        Left = 1
-        Height = 143
-        Top = 152
-        Width = 584
+        Height = 358
+        Top = 38
+        Width = 669
         Align = alClient
-        Caption = 'TreeDataPanel'
-        ClientHeight = 143
-        ClientWidth = 584
-        TabOrder = 2
-        object StatusPanel: TPanel
+        Caption = 'DataPanel'
+        ClientHeight = 358
+        ClientWidth = 669
+        TabOrder = 1
+        object GridDataPanel: TPanel
           Left = 1
-          Height = 17
-          Top = 125
-          Width = 582
-          Align = alBottom
-          Alignment = taLeftJustify
-          BevelInner = bvLowered
-          TabOrder = 0
-        end
-        object ToolBar9: TToolBar
-          Left = 1
-          Height = 29
+          Height = 109
           Top = 1
-          Width = 582
-          Caption = 'ToolBar9'
-          Images = mainImageList
-          TabOrder = 1
-          object ToolButton44: TToolButton
+          Width = 667
+          Align = alTop
+          Caption = 'GridDataPanel'
+          ClientHeight = 109
+          ClientWidth = 667
+          TabOrder = 0
+          object GridToolBar: TToolBar
             Left = 1
-            Top = 2
-            Action = FindAction
+            Height = 29
+            Top = 1
+            Width = 665
+            Caption = 'GridToolBar'
+            Images = mainImageList
+            TabOrder = 0
+            OnResize = GridToolBarResize
+            object ToolButton7: TToolButton
+              Left = 1
+              Top = 2
+              Action = SelectCorrelationElementAction
+            end
+            object ToolButton8: TToolButton
+              Left = 24
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton8'
+              ImageIndex = 8
+              Style = tbsSeparator
+            end
+            object ToolButton9: TToolButton
+              Left = 34
+              Top = 2
+              Action = AddMessageAction
+              OnDragOver = ToolButton9DragOver
+            end
+            object ToolButton20: TToolButton
+              Left = 57
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton20'
+              ImageIndex = 34
+              Style = tbsSeparator
+            end
+            object ToolButton63: TToolButton
+              Left = 67
+              Top = 2
+              Action = MessagesFromDiskAction
+            end
+            object ToolButton10: TToolButton
+              Left = 90
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton10'
+              ImageIndex = 11
+              Style = tbsSeparator
+            end
+            object ToolButton11: TToolButton
+              Left = 100
+              Top = 2
+              Action = DeleteMessageAction
+            end
+            object ToolButton14: TToolButton
+              Left = 123
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton14'
+              ImageIndex = 11
+              Style = tbsSeparator
+            end
+            object ToolButton12: TToolButton
+              Left = 133
+              Top = 2
+              Action = MoveUpMessageAction
+            end
+            object ToolButton13: TToolButton
+              Left = 156
+              Top = 2
+              Action = MoveDownMessageAction
+            end
+            object ToolButton26: TToolButton
+              Left = 179
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton26'
+              ImageIndex = 12
+              Style = tbsSeparator
+            end
+            object ToolButton25: TToolButton
+              Left = 189
+              Top = 2
+              Action = SelectMessageColumnsAction
+            end
+            object ToolButton56: TToolButton
+              Left = 212
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton56'
+              ImageIndex = 34
+              Style = tbsSeparator
+            end
+            object ToolButton55: TToolButton
+              Left = 222
+              Top = 2
+              Action = SelectExpectedElementsAction
+            end
+            object ToolButton29: TToolButton
+              Left = 245
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton29'
+              ImageIndex = 25
+              Style = tbsSeparator
+            end
+            object ToolButton27: TToolButton
+              Left = 255
+              Top = 2
+              Action = CopyGridAction
+            end
+            object ToolButton28: TToolButton
+              Left = 278
+              Top = 2
+              Action = PasteGridAction
+            end
+            object ToolButton34: TToolButton
+              Left = 301
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton34'
+              ImageIndex = 25
+              Style = tbsSeparator
+            end
+            object ToolButton38: TToolButton
+              Left = 311
+              Top = 2
+              Action = CheckGridFieldsAction
+            end
+            object ToolButton41: TToolButton
+              Left = 334
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton41'
+              ImageIndex = 13
+              Style = tbsSeparator
+            end
+            object ExecuteRequestToolButton: TToolButton
+              Left = 344
+              Top = 2
+              HelpType = htKeyword
+              Action = ExecuteRequestAction
+            end
+            object ExecuteAllRequestsToolButton: TToolButton
+              Left = 367
+              Top = 2
+              Action = ExecuteAllRequestsAction
+            end
+            object LastToolButton: TToolButton
+              Left = 413
+              Top = 2
+              Width = 10
+              Caption = 'LastToolButton'
+              ImageIndex = 33
+              Style = tbsSeparator
+            end
+            object ProgressBar: TProgressBar
+              Left = 423
+              Height = 22
+              Top = 2
+              Width = 93
+              Smooth = True
+              Step = 1
+              TabOrder = 0
+            end
+            object ExecuteLoadTextToolbutton: TToolButton
+              Left = 390
+              Top = 2
+              Action = LoadTestAction
+            end
           end
-          object ToolButton45: TToolButton
-            Left = 24
-            Top = 2
-            Action = FindNextAction
+          object GridView: TVirtualStringTree
+            Left = 1
+            Height = 78
+            Top = 30
+            Width = 665
+            Align = alClient
+            BottomSpace = 10
+            DefaultText = 'Node'
+            DragOperations = []
+            EditDelay = 0
+            Header.AutoSizeIndex = 0
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Reply'
+              end            
+              item
+                Position = 1
+                Text = 'Pattern'
+              end>
+            Header.DefaultHeight = 17
+            Header.Font.Color = clWindowText
+            Header.Font.Height = -11
+            Header.Font.Name = 'Tahoma'
+            Header.Options = [hoColumnResize, hoDblClickResize, hoVisible]
+            Images = TreeviewImageList
+            PopupMenu = GridPopupMenu
+            TabOrder = 1
+            TreeOptions.AnimationOptions = [toAnimatedToggle]
+            TreeOptions.MiscOptions = [toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toFullRowDrag]
+            TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            OnBeforeCellPaint = GridViewBeforeCellPaint
+            OnClick = TreeViewClick
+            OnEdited = GridViewEdited
+            OnEditing = GridViewEditing
+            OnExit = GridViewExit
+            OnFocusChanged = GridViewFocusChanged
+            OnGetText = GridViewGetText
+            OnPaintText = GridViewPaintText
+            OnGetImageIndex = GridViewGetImageIndex
+            OnKeyDown = TreeViewKeyDown
+            OnMouseDown = GridViewMouseDown
+            OnNewText = GridViewNewText
+            OnResize = TreeViewResize
           end
-          object ToolButton46: TToolButton
-            Left = 47
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton46'
-            ImageIndex = 43
-            Style = tbsSeparator
-          end
-          object ToolButton47: TToolButton
-            Left = 57
-            Top = 2
-            Action = CheckTreeAction
-          end
-          object ToolButton18: TToolButton
-            Left = 80
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton18'
-            ImageIndex = 13
-            Style = tbsSeparator
-          end
-          object ToolButton16: TToolButton
-            Left = 90
-            Top = 2
-            Action = ViewMssgAsTextAction
-          end
-          object ToolButton54: TToolButton
-            Left = 113
-            Top = 2
-            Width = 10
-            Caption = 'ToolButton54'
-            ImageIndex = 14
-            Style = tbsSeparator
-          end
-          object View: TLabel
-            Left = 123
-            Height = 13
-            Top = 2
-            Width = 26
-            Caption = 'View:'
-            Layout = tlCenter
-            ParentColor = False
-          end
-          object ViewStyleComboBox: TComboBox
-            Left = 149
-            Height = 21
-            Top = 2
-            Width = 98
-            ItemHeight = 13
-            Items.Strings = (
-              'All'
-              'Required'
-              'Used'
-              'Required+Used'
-            )
-            OnChange = ViewStyleComboBoxChange
-            Style = csDropDownList
+        end
+        object DataPanelSplitter: TSplitter
+          AnchorSideTop.Control = GridDataPanel
+          Cursor = crVSplit
+          Left = 1
+          Height = 5
+          Top = 110
+          Width = 667
+          Align = alTop
+          ResizeAnchor = akTop
+        end
+        object TreeDataPanel: TPanel
+          Left = 1
+          Height = 242
+          Top = 115
+          Width = 667
+          Align = alClient
+          Caption = 'TreeDataPanel'
+          ClientHeight = 242
+          ClientWidth = 667
+          TabOrder = 2
+          object StatusPanel: TPanel
+            Left = 1
+            Height = 17
+            Top = 224
+            Width = 665
+            Align = alBottom
+            Alignment = taLeftJustify
+            BevelInner = bvLowered
             TabOrder = 0
           end
-        end
-        object InWsdlTreeView: TVirtualStringTree
-          Left = 1
-          Height = 59
-          Top = 30
-          Width = 582
-          Align = alTop
-          DefaultText = 'Node'
-          DragOperations = []
-          EditDelay = 0
-          Header.AutoSizeIndex = -1
-          Header.Columns = <          
-            item
-              Position = 0
-              Text = 'Tag'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
-              Position = 1
-              Width = 23
-            end          
-            item
-              Position = 2
-              Text = 'Value'
-            end>
-          Header.DefaultHeight = 17
-          Header.Font.Color = clWindowText
-          Header.Font.Height = -11
-          Header.Font.Name = 'MS Sans Serif'
-          Header.Options = [hoColumnResize, hoDblClickResize, hoVisible]
-          Images = TreeviewImageList
-          PopupMenu = WsdlPopupMenu
-          TabOrder = 2
-          TreeOptions.MiscOptions = [toCheckSupport, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
-          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect]
-          OnBeforeCellPaint = InWsdlTreeViewBeforeCellPaint
-          OnChecked = InWsdlTreeViewChecked
-          OnChecking = InWsdlTreeViewChecking
-          OnClick = TreeViewClick
-          OnColumnClick = TreeViewColumnClick
-          OnEdited = InWsdlTreeViewEdited
-          OnEditing = InWsdlTreeViewEditing
-          OnExit = InWsdlTreeViewExit
-          OnFocusChanged = InWsdlTreeViewFocusChanged
-          OnFocusChanging = InWsdlTreeViewFocusChanging
-          OnGetText = InWsdlTreeViewGetText
-          OnPaintText = InWsdlTreeViewPaintText
-          OnGetImageIndex = InWsdlTreeViewGetImageIndex
-          OnKeyDown = TreeViewKeyDown
-          OnMouseDown = TreeViewMouseDown
-          OnNewText = InWsdlTreeViewNewText
-          OnResize = TreeViewResize
-        end
-        object FreeFormatMemo: TMemo
-          Left = 1
-          Height = 36
-          Top = 89
-          Width = 582
-          Align = alClient
-          Font.CharSet = ANSI_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -15
-          Font.Name = 'Courier New'
-          OnChange = FreeFormatMemoChange
-          ParentFont = False
-          ScrollBars = ssBoth
-          TabOrder = 3
+          object ToolBar9: TToolBar
+            Left = 1
+            Height = 29
+            Top = 1
+            Width = 665
+            Caption = 'ToolBar9'
+            Images = mainImageList
+            TabOrder = 1
+            object ToolButton44: TToolButton
+              Left = 1
+              Top = 2
+              Action = FindAction
+            end
+            object ToolButton45: TToolButton
+              Left = 24
+              Top = 2
+              Action = FindNextAction
+            end
+            object ToolButton46: TToolButton
+              Left = 47
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton46'
+              ImageIndex = 43
+              Style = tbsSeparator
+            end
+            object ToolButton47: TToolButton
+              Left = 57
+              Top = 2
+              Action = CheckTreeAction
+            end
+            object ToolButton18: TToolButton
+              Left = 80
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton18'
+              ImageIndex = 13
+              Style = tbsSeparator
+            end
+            object ToolButton16: TToolButton
+              Left = 90
+              Top = 2
+              Action = ViewMssgAsTextAction
+            end
+            object ToolButton54: TToolButton
+              Left = 113
+              Top = 2
+              Width = 10
+              Caption = 'ToolButton54'
+              ImageIndex = 14
+              Style = tbsSeparator
+            end
+            object View: TLabel
+              Left = 123
+              Height = 13
+              Top = 2
+              Width = 26
+              Caption = 'View:'
+              Layout = tlCenter
+              ParentColor = False
+            end
+            object ViewStyleComboBox: TComboBox
+              Left = 149
+              Height = 21
+              Top = 2
+              Width = 98
+              ItemHeight = 13
+              Items.Strings = (
+                'All'
+                'Required'
+                'Used'
+                'Required+Used'
+              )
+              OnChange = ViewStyleComboBoxChange
+              Style = csDropDownList
+              TabOrder = 0
+            end
+          end
+          object InWsdlTreeView: TVirtualStringTree
+            Left = 1
+            Height = 59
+            Top = 30
+            Width = 665
+            Align = alTop
+            DefaultText = 'Node'
+            DragOperations = []
+            EditDelay = 0
+            Header.AutoSizeIndex = -1
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Tag'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
+                Position = 1
+                Width = 23
+              end            
+              item
+                Position = 2
+                Text = 'Value'
+              end>
+            Header.DefaultHeight = 17
+            Header.Font.Color = clWindowText
+            Header.Font.Height = -11
+            Header.Font.Name = 'MS Sans Serif'
+            Header.Options = [hoColumnResize, hoDblClickResize, hoVisible]
+            Images = TreeviewImageList
+            PopupMenu = WsdlPopupMenu
+            TabOrder = 2
+            TreeOptions.MiscOptions = [toCheckSupport, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
+            TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect]
+            OnBeforeCellPaint = InWsdlTreeViewBeforeCellPaint
+            OnChecked = InWsdlTreeViewChecked
+            OnChecking = InWsdlTreeViewChecking
+            OnClick = TreeViewClick
+            OnColumnClick = TreeViewColumnClick
+            OnEdited = InWsdlTreeViewEdited
+            OnEditing = InWsdlTreeViewEditing
+            OnExit = InWsdlTreeViewExit
+            OnFocusChanged = InWsdlTreeViewFocusChanged
+            OnFocusChanging = InWsdlTreeViewFocusChanging
+            OnGetText = InWsdlTreeViewGetText
+            OnPaintText = InWsdlTreeViewPaintText
+            OnGetImageIndex = InWsdlTreeViewGetImageIndex
+            OnKeyDown = TreeViewKeyDown
+            OnMouseDown = TreeViewMouseDown
+            OnNewText = InWsdlTreeViewNewText
+            OnResize = TreeViewResize
+          end
+          object FreeFormatMemo: TMemo
+            Left = 1
+            Height = 135
+            Top = 89
+            Width = 665
+            Align = alClient
+            Font.CharSet = ANSI_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -15
+            Font.Name = 'Courier New'
+            OnChange = FreeFormatMemoChange
+            ParentFont = False
+            ScrollBars = ssBoth
+            TabOrder = 3
+          end
         end
       end
     end
   end
   object DownPageControl: TPageControl
     Left = 0
-    Height = 167
-    Top = 336
-    Width = 939
+    Height = 147
+    Top = 437
+    Width = 1024
     ActivePage = MessagesTabSheet
     Align = alBottom
     Images = mainImageList
@@ -1036,11 +1047,11 @@ object MainForm: TMainForm
     end
     object MessagesTabSheet: TTabSheet
       Caption = 'Log'
-      ClientHeight = 140
-      ClientWidth = 931
+      ClientHeight = 120
+      ClientWidth = 1016
       object Splitter7: TSplitter
         Left = 268
-        Height = 111
+        Height = 91
         Top = 29
         Width = 5
       end
@@ -1048,7 +1059,7 @@ object MainForm: TMainForm
         Left = 0
         Height = 29
         Top = 0
-        Width = 931
+        Width = 1016
         Caption = 'ToolBar6'
         Images = mainImageList
         TabOrder = 0
@@ -1119,7 +1130,7 @@ object MainForm: TMainForm
           Action = readLog4jEventsAction
         end
         object MessagesTabControl: TTabControl
-          Left = 347
+          Left = 432
           Height = 21
           Top = 8
           Width = 584
@@ -1160,17 +1171,17 @@ object MainForm: TMainForm
       end
       object Panel2: TPanel
         Left = 0
-        Height = 111
+        Height = 91
         Top = 29
         Width = 268
         Align = alLeft
         Caption = 'Panel2'
-        ClientHeight = 111
+        ClientHeight = 91
         ClientWidth = 268
         TabOrder = 1
         object MessagesVTS: TVirtualStringTree
           Left = 1
-          Height = 89
+          Height = 69
           Top = 1
           Width = 266
           Align = alClient
@@ -1261,7 +1272,7 @@ object MainForm: TMainForm
         object MessagesStatusBar: TStatusBar
           Left = 1
           Height = 20
-          Top = 90
+          Top = 70
           Width = 266
           Panels = <          
             item
@@ -1278,9 +1289,9 @@ object MainForm: TMainForm
       end
       object LogMemo: TMemo
         Left = 273
-        Height = 111
+        Height = 91
         Top = 29
-        Width = 633
+        Width = 718
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1293,8 +1304,8 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object ToolBar4: TToolBar
-        Left = 906
-        Height = 111
+        Left = 991
+        Height = 91
         Top = 29
         Width = 25
         Align = alRight
@@ -1319,8 +1330,8 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 331
-    Width = 939
+    Top = 432
+    Width = 1024
     Align = alBottom
     ResizeAnchor = akBottom
   end

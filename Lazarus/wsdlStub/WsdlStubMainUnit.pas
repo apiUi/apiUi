@@ -99,8 +99,9 @@ type
     PairSplitter1 : TPairSplitter ;
     PairSplitterSide1 : TPairSplitterSide ;
     PairSplitterSide2 : TPairSplitterSide ;
-    DataPanel : TPanel ;
+    MiddlePanel : TPanel ;
     GridDataPanel : TPanel ;
+    DataPanel : TPanel ;
     TreeDataPanel : TPanel ;
     ProgressBar : TProgressBar ;
     Reactivatemaster1 : TMenuItem ;
@@ -5396,15 +5397,22 @@ begin
 end;
 
 procedure TMainForm.WsdlInfoPanelResize(Sender: TObject);
+  function _adjust (aLeft, aWidth, aSpace: Integer; aLabel, aOther: TControl): Integer;
+  begin
+    result := aLeft + aWidth;
+    aLabel.Left := aLeft;
+    aOther.Left := aLeft + aLabel.Width;
+    aOther.Width := result - aOther.Left - aSpace;
+  end;
+var
+  lft, wdth, spc: Integer;
 begin
-  WsdlComboBox.Width := (Sender as TPanel).Width - WsdlComboBox.Left - 5;
-  WsdlServicesComboBox.Width := (Sender as TPanel).Width div 2 -
-    WsdlServicesComboBox.Left - 5 - 17;
-  OperationLabel.Left := WsdlServicesComboBox.Left +
-    WsdlServicesComboBox.Width + 2;
-  WsdlOperationsComboBox.Left := OperationLabel.Left + OperationLabel.Width + 2;
-  WsdlOperationsComboBox.Width := (Sender as TPanel)
-    .Width - WsdlOperationsComboBox.Left - 5;
+  spc := 3;
+  lft := spc;
+  wdth := (Sender as TPanel).Width;
+  lft := _adjust(lft, wdth div 2, spc, WsdlLabel, WsdlComboBox);
+  lft := _adjust(lft, wdth div 4, spc, ServiceLabel, WsdlServicesComboBox);
+  lft := _adjust(lft, wdth - lft, spc, OperationLabel, WsdlOperationsComboBox);
 end;
 
 procedure TMainForm.ClearLogItemsActionUpdate(Sender: TObject);
@@ -6239,7 +6247,12 @@ begin
   startStopShortCut := startAction.ShortCut;
   wBttn := MessagesVTS.Header.Columns[Ord(logExpectedColumn)].Width;
   xIniFile := TFormIniFile.Create(Self, True);
+  doShowDesignSplitVertical := xIniFile.BooleanByNameDef['doShowDesignSplitVertical', False];
   xIniFile.Restore;
+  if doShowDesignSplitVertical then
+    GridDataPanel.Width := xIniFile.IntegerByNameDef['GridDataPanelWidth', GridDataPanel.Width]
+  else
+    GridDataPanel.Height := xIniFile.IntegerByNameDef['GridDataPanelHeight', GridDataPanel.Height];
   ViewStyleComboBox.ItemIndex := Ord(xvAll);
   for X := 0 to Ord(logTimeColumn) - 1 do
     MessagesVTS.Header.Columns[X].Width := wBttn;
@@ -6482,6 +6495,9 @@ begin
     SchemapropertiesMenuItem.Checked;
   xIniFile.BooleanByName['WsdlInformationVisible'] :=
     WsdlInformationMenuItem.Checked;
+  xIniFile.BooleanByName['doShowDesignSplitVertical'] := doShowDesignSplitVertical;
+  xIniFile.IntegerByName['GridDataPanelWidth'] := GridDataPanel.Width;
+  xIniFile.IntegerByName['GridDataPanelHeight'] := GridDataPanel.Height;
   xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
   xIniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
   // xIniFile.BooleanByName ['LogFilter.Enabled'] := se.LogFilter.Enabled;
@@ -8488,7 +8504,7 @@ begin
   if fdoShowDesignSplitVertical then
   begin
     GridDataPanel.Align := alLeft;
-    GridDataPanel.Width := DataPanel.Width Div 2;
+    GridDataPanel.Width := MiddlePanel.Width Div 2;
     GridDataPanel.Left := 0;
     DataPanelSplitter.Align := alNone;
     DataPanelSplitter.Left := 1;
@@ -8497,12 +8513,13 @@ begin
   else
   begin
     GridDataPanel.Align := alTop;
-    GridDataPanel.Height := DataPanel.Height Div 2;
+    GridDataPanel.Height := MiddlePanel.Height Div 2;
     GridDataPanel.Top := 0;
     DataPanelSplitter.Align := alNone;
     DataPanelSplitter.Top := 1;
     DataPanelSplitter.Align := alTop;
   end;
+  DesignPanelSplitVerticalMenuItem.Checked := AValue;
 end;
 
 procedure TMainForm.setDoValidateReplies(const Value: Boolean);
@@ -11687,8 +11704,7 @@ end;
 
 procedure TMainForm .DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
 begin
-  DesignPanelSplitVerticalMenuItem.Checked := not DesignPanelSplitVerticalMenuItem.Checked;
-  doShowDesignSplitVertical := DesignPanelSplitVerticalMenuItem.Checked;
+  doShowDesignSplitVertical := not doShowDesignSplitVertical;
 end;
 
 procedure TMainForm .httpRequestDesignActionExecute (Sender : TObject );
@@ -11773,7 +11789,7 @@ var
 begin
   h := GridDataPanel.Height;
   GridDataPanel.Align := alTop;
-  GridDataPanel.Height := DataPanel.Height Div 2;
+  GridDataPanel.Height := MiddlePanel.Height Div 2;
   GridDataPanel.Top := 0;
   DataPanelSplitter.Align := alNone;
   DataPanelSplitter.Top := 1;
@@ -11785,7 +11801,7 @@ var
   w: Integer;
 begin
   GridDataPanel.Align := alLeft;
-  GridDataPanel.Width := DataPanel.Width Div 2;
+  GridDataPanel.Width := MiddlePanel.Width Div 2;
   GridDataPanel.Left := 0;
   DataPanelSplitter.Align := alNone;
   DataPanelSplitter.Left := 1;
