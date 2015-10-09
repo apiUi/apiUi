@@ -104,6 +104,7 @@ type
     procedure DocumentationEditClick (Sender : TObject );
     procedure DocumentationEditMouseMove (Sender : TObject ;
       Shift : TShiftState ; X , Y : Integer );
+    procedure TreeViewDblClick(Sender: TObject);
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure ViewinTreeMenuItemClick(Sender: TObject);
     procedure EditInPopUpMenuItemClick(Sender: TObject);
@@ -1925,6 +1926,11 @@ end;
 procedure TShowXmlForm .DocumentationEditMouseMove (Sender : TObject ;
   Shift : TShiftState ; X , Y : Integer );
 begin
+end;
+
+procedure TShowXmlForm.TreeViewDblClick(Sender: TObject);
+begin
+  xmlUtil.presentString(SelectedBind.FullCaption, SelectedBind.Value);
 end;
 
 { TPasswordEditLink }

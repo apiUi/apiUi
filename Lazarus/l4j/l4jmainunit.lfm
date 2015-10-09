@@ -1,7 +1,7 @@
 object L4JMainForm: TL4JMainForm
   Left = 359
   Height = 434
-  Top = 179
+  Top = 91
   Width = 982
   Caption = 'L4JMainForm'
   ClientHeight = 415

@@ -1,7 +1,7 @@
 object DbFilterDlg: TDbFilterDlg
   Left = 498
   Height = 753
-  Top = 92
+  Top = 44
   Width = 1107
   Caption = 'Query Datasource'
   ClientHeight = 753

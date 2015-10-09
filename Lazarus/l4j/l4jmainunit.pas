@@ -591,6 +591,7 @@ begin
     EventData := strUtils.ReplaceText(EventData, '&gt;', '>');
     EventData := strUtils.ReplaceText(EventData, '&quot;', '"');
     EventData := strUtils.ReplaceText(EventData, '&#47;', '/');
+    EventData := strUtils.ReplaceText(EventData, '&#39;', '''');
   { }
     s := '<EventHeader>'
        + '<EventType>' + EventType + '</EventType>'
@@ -1658,6 +1659,7 @@ begin
     dbs := SQLConnector1;
     qry := SqlQuery;
     xqry := xSqlQuery;
+    systemStarting:=False;
   finally
     xIniFile.Free;
   end;
