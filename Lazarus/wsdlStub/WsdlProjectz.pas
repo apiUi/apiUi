@@ -4047,7 +4047,8 @@ begin
         if doValidateReplies
         and (aOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
         and Assigned (aOperation.rpyBind)
-        and (aOperation.rpyBind is TXml) then
+        and (aOperation.rpyBind is TXml)
+        and (not aOperation.ReturnSoapFault) then
         begin
           xMessage := '';
           if not aOperation.rpyBind.IsValueValid (xMessage) then
