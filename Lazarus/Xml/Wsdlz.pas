@@ -6090,7 +6090,7 @@ initialization
   allOperationsRpy.Duplicates := dupError;
   allAliasses := TWsdlOperations.Create;
   allAliasses.Sorted := True;
-  allAliasses.Duplicates := dupError;
+  allAliasses.Duplicates := dupAccept;
   _WsdlDbsConnector := TSQLConnector.Create(nil);
   _WsdlDbsTransaction := TSQLTransaction.Create(nil);
   _WsdlDbsTransaction.DataBase := _WsdlDbsConnector;

@@ -189,6 +189,7 @@ type
     SaveRelativeFileNames: Boolean;
     FocusOperationName, FocusOperationNameSpace: String;
     FocusMessageIndex: Integer;
+    procedure UpdateOperationAliasses;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure DisplayLog (aString: String; aLog: TLog);
@@ -317,7 +318,7 @@ type
     procedure ProjectOptions36FromXml (aXml: TXml);
     procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
     procedure ProjectDesignFromString (aString, aMainFileName: String);
-    procedure PrepareAllOperations (aLogServerException: TOnStringEvent; aPromptOperationAlias: TProcedureOperation);
+    procedure PrepareAllOperations (aLogServerException: TOnStringEvent);
     procedure Activate (aActive: Boolean);
     procedure Clear;
     function httpRequestStreamToString(ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): String;
@@ -1212,7 +1213,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent; aPromptOperationAlias: TProcedureOperation);
+procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent);
   procedure _prepWsdl (xWsdl: TWsdl);
   var
     s, o: Integer;
@@ -1295,15 +1296,7 @@ begin
   _updtWsdls(SwiftMtWsdl);
   for w := 0 to Wsdls.Count - 1 do
     _prepWsdl (Wsdls.Objects [w] as TWsdl);
-
-  allAliasses.ClearListOnly;
-  for o := 0 to allOperations.Count - 1 do with allOperations do
-  begin
-    if Assigned (aPromptOperationAlias) then
-      while allAliasses.Find (Operations[o].Alias, f) do // no dups allowed on alias
-        aPromptOperationAlias (Operations[o]);
-    allAliasses.AddObject(Operations[o].Alias, Operations[o]);
-  end;
+  UpdateOperationAliasses;
 
   for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do// here since invokeAll
   begin
@@ -2411,7 +2404,7 @@ begin
               end;
           AcquireLock;
           try
-            PrepareAllOperations (LogServerMessage, nil);
+            PrepareAllOperations (LogServerMessage);
           finally
             ReleaseLock;
           end;
@@ -6617,6 +6610,15 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTSwiftMT;
   end;
+end;
+
+procedure TWsdlProject .UpdateOperationAliasses ;
+var
+  o: Integer;
+begin
+  allAliasses.ClearListOnly;
+  for o := 0 to allOperations.Count - 1 do with allOperations do
+    allAliasses.AddObject(Operations[o].Alias, Operations[o]);
 end;
 
 procedure TWsdlProject .WriteStringToStream (aString : String ;

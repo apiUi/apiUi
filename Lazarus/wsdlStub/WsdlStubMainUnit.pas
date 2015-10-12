@@ -76,6 +76,14 @@ type
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     DesignPanelSplitVerticalMenuItem : TMenuItem ;
+    MenuItem13 : TMenuItem ;
+    MenuItem14 : TMenuItem ;
+    MenuItem15 : TMenuItem ;
+    MenuItem16 : TMenuItem ;
+    MenuItem17 : TMenuItem ;
+    MenuItem18 : TMenuItem ;
+    MenuItem19 : TMenuItem ;
+    UnhideOperationMenuItem : TMenuItem ;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -92,8 +100,6 @@ type
     MasterReloadDesignMenuItem : TMenuItem ;
     MasterRestartAction : TAction ;
     MasterRestartAction1 : TMenuItem ;
-    MenuItem1 : TMenuItem ;
-    MenuItem4 : TMenuItem ;
     OperationLabel : TLabel ;
     OperationsPopupMenu: TPopupMenu;
     PairSplitter1 : TPairSplitter ;
@@ -399,16 +405,10 @@ type
     DelayTimeButton: TToolButton;
     ToggleFileLogAction: TAction;
     N20: TMenuItem;
-    N21: TMenuItem;
-    Operation1: TMenuItem;
     RedirectAddressAction: TAction;
     OperationDelayResponseTimeAction: TAction;
-    RedirectAddressAction1: TMenuItem;
-    Delayresponse1: TMenuItem;
     OperationApplySettingsAction: TAction;
-    Applysettingsto1: TMenuItem;
     OperationWsaAction: TAction;
-    WsA1: TMenuItem;
     ThrowExceptionAction: TAction;
     Configurelisteners1: TMenuItem;
     MessagesFromDiskAction: TAction;
@@ -447,22 +447,15 @@ type
     ShowReplyAsHtmlAction: TAction;
     ShowExceptAsHtmlAction: TAction;
     OperationOptionsAction: TAction;
-    Options4: TMenuItem;
     HideAllOperationsAction: TAction;
-    c: TMenuItem;
     N28: TMenuItem;
     UnhideAllOperationsAction: TAction;
-    Unhidealloperations1: TMenuItem;
-    HideoperationMenuItem: TMenuItem;
-    UnhideOperationMenuItem: TMenuItem;
     N29: TMenuItem;
     N30: TMenuItem;
     ShowSelectedRequestsAsXmlGridAction: TAction;
     ShowrequestinaGrid2: TMenuItem;
     ShowSelectedResponsesAsXmlGridAction: TAction;
     Showselectedresponsesinagrid1: TMenuItem;
-    N31: TMenuItem;
-    N32: TMenuItem;
     OperationZoomOnAction: TAction;
     ShowLogZoomElementAction: TAction;
     LogCoverageReportAction: TAction;
@@ -515,12 +508,18 @@ type
     procedure logChartActionExecute (Sender : TObject );
     procedure DesignSplitHorizontalMenuItemClick (Sender : TObject );
     procedure DesignSplitVerticalMenuItemClick (Sender : TObject );
+    procedure MenuItem14Click (Sender : TObject );
+    procedure MenuItem17Click (Sender : TObject );
+    procedure MenuItem19Click (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
     procedure Operation1Click(Sender: TObject);
     procedure OperationAliasActionExecute (Sender : TObject );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
+    procedure OperationReqsTreeViewPaintText (Sender : TBaseVirtualTree ;
+      const TargetCanvas : TCanvas ; Node : PVirtualNode ;
+      Column : TColumnIndex ; TextType : TVSTTextType );
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
@@ -550,6 +549,7 @@ type
     procedure ElementvalueMenuItemClick(Sender: TObject);
     procedure PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
     procedure CopyCobolDataToClipboardMenuItemClick(Sender: TObject);
+    procedure UnhideOperationMenuItemClick (Sender : TObject );
     procedure ViewMssgAsTextActionExecute(Sender: TObject);
     procedure ViewMssgAsTextActionUpdate(Sender: TObject);
     procedure Log2DesignActionExecute(Sender: TObject);
@@ -825,8 +825,6 @@ type
     procedure DownPageControlChange(Sender: TObject);
     procedure HideAllOperationsActionExecute(Sender: TObject);
     procedure UnhideAllOperationsActionExecute(Sender: TObject);
-    procedure HideoperationMenuItemClick(Sender: TObject);
-    procedure UnhideOperationMenuItemClick(Sender: TObject);
     procedure ToolButton67Click(Sender: TObject);
     procedure alGeneralExecute(Action: TBasicAction; var Handled: Boolean);
     procedure ShowSelectedRequestsAsXmlGridActionUpdate(Sender: TObject);
@@ -3155,40 +3153,26 @@ end;
 procedure TMainForm.UpdateVisibiltyOfOperations;
 var
   Node: PVirtualNode;
-  X: Integer;
+  xOperation: TWsdlOperation;
   xMenuItem: TMenuItem;
 begin
-  HideoperationMenuItem.OnClick := nil;
-  HideoperationMenuItem.Clear;
   UnhideOperationMenuItem.OnClick := nil;
   UnhideOperationMenuItem.Clear;
   Node := OperationReqsTreeView.GetFirst;
-  X := 0;
   while Assigned(Node) do
   begin
-    OperationReqsTreeView.IsVisible[Node] := not allOperations.Operations[X]
-      .HiddenFromUI;
-    if allOperations.Operations[X].HiddenFromUI then
+    xOperation := NodeToOperation(OperationReqsTreeView, Node);
+    OperationReqsTreeView.IsVisible[Node] := not xOperation.HiddenFromUI;
+    if xOperation.HiddenFromUI then
     begin
       xMenuItem := TMenuItem.Create(nil);
-      xMenuItem.Tag := X;
-      xMenuItem.Caption := allOperations.Operations[X].Alias;
+      xMenuItem.Tag := PtrInt(xOperation);
+      xMenuItem.Caption := xOperation.Alias;
       xMenuItem.OnClick := UnhideOperationMenuItemClick;
       UnhideOperationMenuItem.Add(xMenuItem);
-    end
-    else
-    begin
-      xMenuItem := TMenuItem.Create(nil);
-      xMenuItem.Tag := X;
-      xMenuItem.Caption := allOperations.Operations[X].Alias;
-      xMenuItem.OnClick := HideoperationMenuItemClick;
-      HideoperationMenuItem.Add(xMenuItem);
     end;
     Node := OperationReqsTreeView.GetNext(Node);
-    Inc(X);
   end;
-  HideoperationMenuItem.Enabled := (HideoperationMenuItem.Count > 0);
-  HideAllOperationsAction.Enabled := HideoperationMenuItem.Enabled;
   UnhideOperationMenuItem.Enabled := (UnhideOperationMenuItem.Count > 0);
   UnhideAllOperationsAction.Enabled := UnhideOperationMenuItem.Enabled;
 end;
@@ -3313,14 +3297,6 @@ begin
     end;
   end;
   UpdateVisibiltyOfOperations;
-end;
-
-procedure TMainForm.HideoperationMenuItemClick(Sender: TObject);
-begin
-  with Sender as TMenuItem do
-    allOperations.Operations[Tag].HiddenFromUI := True;
-  UpdateVisibiltyOfOperations;
-  stubChanged := True;
 end;
 
 function TMainForm.hintStringFromXsd(aPrefix, aSep, aPostFix: String;
@@ -3854,11 +3830,11 @@ end;
 
 procedure TMainForm.PrepareOperation;
 begin
-  se.PrepareAllOperations(LogServerException, PromptForOperationAlias);
+  se.PrepareAllOperations(LogServerException);
   WsdlOperationsComboBox.Clear;
   WsdlServicesComboBox.Clear;
   WsdlComboBox.Items.Text := se.Wsdls.Text;
-  FillOperationReqsTreeView(OperationReqsTreeView, allOperations);
+  FillOperationReqsTreeView(OperationReqsTreeView, allAliasses);
   if se.scriptErrorCount > 0 then
     ShowMessage(IntToStr(se.scriptErrorCount) +
         ' Script(s) found with errors, see Exceptions log');
@@ -5377,7 +5353,7 @@ end;
 procedure TMainForm.UnhideOperationMenuItemClick(Sender: TObject);
 begin
   with Sender as TMenuItem do
-    allOperations.Operations[Tag].HiddenFromUI := False;
+    TWsdlOperation(tag).HiddenFromUI := False;
   UpdateVisibiltyOfOperations;
   stubChanged := True;
 end;
@@ -11517,6 +11493,31 @@ begin
   end;
 end;
 
+procedure TMainForm .OperationReqsTreeViewPaintText (
+  Sender : TBaseVirtualTree ; const TargetCanvas : TCanvas ;
+  Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType );
+var
+  xOperation: TWsdlOperation;
+  o, n: Integer;
+begin
+  try
+    n := 0;
+    xOperation := NodeToOperation(Sender, Node);
+    if Assigned(xOperation) then
+      for o := 0 to allOperations.Count - 1 do
+        if allOperations.Operations[o].Alias = xOperation.Alias then
+          Inc (n);
+    if n <> 1 then with TargetCanvas.Font do
+    begin
+      Color := clRed;
+      Style := Style + [fsBold];
+    end;
+  except
+    on e: Exception do
+      TargetCanvas.Font.Color := clRed;
+  end;
+end;
+
 procedure TMainForm .PresentLogMemoTextActionExecute (Sender : TObject );
 begin
   xmlUtil.presentString(MessagesTabControl.Tabs[MessagesTabControl.TabIndex], LogMemo.Text);
@@ -11560,7 +11561,7 @@ begin
   begin
     xXml := OptionsAsXml;
     try
-      if EditXmlXsdBased('Operation Options', '', '', '', False,
+      if EditXmlXsdBased('Operation options for ' + WsdlOperation.Alias, '', '', '', False,
         operationOptionsXsd, xXml) then
       begin
         AcquireLock;
@@ -11808,6 +11809,30 @@ begin
   DataPanelSplitter.Align := alLeft;
 end;
 
+procedure TMainForm .MenuItem14Click (Sender : TObject );
+var
+  xOperation: TWsdlOperation;
+begin
+  xOperation := WsdlOperation;
+  FillOperationReqsTreeView(OperationReqsTreeView, allAliasses);
+  WsdlOperation := xOperation;
+end;
+
+procedure TMainForm .MenuItem17Click (Sender : TObject );
+begin
+  if Assigned (WsdlOperation) then
+  begin
+    WsdlOperation.HiddenFromUI := True;
+    UpdateVisibiltyOfOperations;
+    stubChanged := True;
+  end;
+end;
+
+procedure TMainForm .MenuItem19Click (Sender : TObject );
+begin
+
+end;
+
 procedure TMainForm .CopyLogGridToClipBoardActionExecute (Sender : TObject );
 var
   xCursor: TCursor;
@@ -11847,20 +11872,31 @@ begin
 end;
 
 procedure TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation );
+var
+  oldAlias: String;
 begin
   if not Assigned(aOperation) then
     raise Exception.Create('TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation )  No argument assigned');
+  oldAlias := aOperation.Alias;
   Application.CreateForm(TPromptForm, PromptForm);
   try
     PromptForm.Caption := 'Alias for operation ' + aOperation.reqTagName + ' ; ' + aOperation.reqTagNameSpace;
     PromptForm.PromptEdit.Text := aOperation.Alias;
     PromptForm.Numeric := False;
     PromptForm.ShowModal;
-    while (PromptForm.ModalResult = mrOk)
-    and (PromptForm.PromptEdit.Text = '') do
-      PromptForm.ShowModal;
     if PromptForm.ModalResult = mrOk then
-      aOperation.Alias := PromptForm.PromptEdit.Text;
+    begin
+      if PromptForm.PromptEdit.Text = '' then
+        aOperation.Alias := aOperation.reqTagName
+      else
+        aOperation.Alias := PromptForm.PromptEdit.Text;
+      if aOperation.Alias <> oldAlias then
+      begin
+        stubChanged := True;
+        se.UpdateOperationAliasses;
+        OperationReqsTreeView.Invalidate;
+      end;
+    end;
   finally
     FreeAndNil(PromptForm);
   end;
@@ -11868,37 +11904,10 @@ end;
 
 
 procedure TMainForm .OperationAliasActionExecute (Sender : TObject );
-var
-  oldAlias: String;
-  f: Integer;
-  fOperation: TWsdlOperation;
 begin
   if not Assigned(WsdlOperation) then
     raise Exception.Create('No operation selected');
-  oldAlias := WsdlOperation.Alias;
   PromptForOperationAlias(WsdlOperation);
-  if WsdlOperation.Alias <> oldAlias then
-  begin
-    fOperation := nil;
-    if allAliasses.Find(WsdlOperation.Alias, f) then
-      fOperation := allAliasses.Operations[f];
-    if Assigned (fOperation)
-    and (fOperation <> WsdlOperation) then
-    begin
-      WsdlOperation.Alias := oldAlias;
-      raise Exception.CreateFmt( '%s already exists as alias at %s ; %s'
-                               , [fOperation.Alias
-                                 ,                            fOperation.reqTagName
-                                 ,                                 fOperation.reqTagNameSpace
-                                 ]
-                               );
-    end;
-    if allAliasses.Find(oldAlias, f) then
-      allAliasses.Delete(f);
-    allAliasses.AddObject(WsdlOperation.Alias, WsdlOperation);
-    stubChanged := True;
-    OperationReqsTreeView.Invalidate;
-  end;
 end;
 
 {$ifdef windows}

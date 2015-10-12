@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 330
+  Left = 302
   Height = 603
   Top = 103
-  Width = 1024
+  Width = 1052
   Caption = 'MainForm'
   ClientHeight = 584
-  ClientWidth = 1024
+  ClientWidth = 1052
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 29
     Top = 0
-    Width = 1024
+    Width = 1052
     Caption = 'MainToolBar'
     Images = mainImageList
     TabOrder = 1
@@ -169,12 +169,12 @@ object MainForm: TMainForm
     Left = 0
     Height = 403
     Top = 29
-    Width = 1024
+    Width = 1052
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
     ClientHeight = 403
-    ClientWidth = 1024
+    ClientWidth = 1052
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
@@ -184,7 +184,7 @@ object MainForm: TMainForm
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 881
+      Left = 909
       Height = 397
       Top = 3
       Width = 5
@@ -300,6 +300,7 @@ object MainForm: TMainForm
         OnEditing = VTSEditing
         OnFocusChanged = OperationReqsTreeViewFocusChanged
         OnGetText = OperationReqsTreeViewGetText
+        OnPaintText = OperationReqsTreeViewPaintText
         OnResize = TreeViewResize
       end
       object ScriptButtonsPanel: TPanel
@@ -347,7 +348,7 @@ object MainForm: TMainForm
       end
     end
     object XsdPanel: TPanel
-      Left = 886
+      Left = 914
       Height = 397
       Top = 3
       Width = 135
@@ -422,20 +423,20 @@ object MainForm: TMainForm
       Left = 210
       Height = 397
       Top = 3
-      Width = 671
+      Width = 699
       Align = alClient
       Caption = 'MiddlePanel'
       ClientHeight = 397
-      ClientWidth = 671
+      ClientWidth = 699
       TabOrder = 4
       object WsdlInfoPanel: TPanel
         Left = 1
         Height = 37
         Top = 1
-        Width = 669
+        Width = 697
         Align = alTop
         ClientHeight = 37
-        ClientWidth = 669
+        ClientWidth = 697
         TabOrder = 0
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
@@ -499,27 +500,27 @@ object MainForm: TMainForm
         Left = 1
         Height = 358
         Top = 38
-        Width = 669
+        Width = 697
         Align = alClient
         Caption = 'DataPanel'
         ClientHeight = 358
-        ClientWidth = 669
+        ClientWidth = 697
         TabOrder = 1
         object GridDataPanel: TPanel
           Left = 1
           Height = 109
           Top = 1
-          Width = 667
+          Width = 695
           Align = alTop
           Caption = 'GridDataPanel'
           ClientHeight = 109
-          ClientWidth = 667
+          ClientWidth = 695
           TabOrder = 0
           object GridToolBar: TToolBar
             Left = 1
             Height = 29
             Top = 1
-            Width = 665
+            Width = 693
             Caption = 'GridToolBar'
             Images = mainImageList
             TabOrder = 0
@@ -690,7 +691,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 78
             Top = 30
-            Width = 665
+            Width = 693
             Align = alClient
             BottomSpace = 10
             DefaultText = 'Node'
@@ -739,7 +740,7 @@ object MainForm: TMainForm
           Left = 1
           Height = 5
           Top = 110
-          Width = 667
+          Width = 695
           Align = alTop
           ResizeAnchor = akTop
         end
@@ -747,17 +748,17 @@ object MainForm: TMainForm
           Left = 1
           Height = 242
           Top = 115
-          Width = 667
+          Width = 695
           Align = alClient
           Caption = 'TreeDataPanel'
           ClientHeight = 242
-          ClientWidth = 667
+          ClientWidth = 695
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
             Top = 224
-            Width = 665
+            Width = 693
             Align = alBottom
             Alignment = taLeftJustify
             BevelInner = bvLowered
@@ -767,7 +768,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 29
             Top = 1
-            Width = 665
+            Width = 693
             Caption = 'ToolBar9'
             Images = mainImageList
             TabOrder = 1
@@ -845,7 +846,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 59
             Top = 30
-            Width = 665
+            Width = 693
             Align = alTop
             DefaultText = 'Node'
             DragOperations = []
@@ -898,7 +899,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 135
             Top = 89
-            Width = 665
+            Width = 693
             Align = alClient
             Font.CharSet = ANSI_CHARSET
             Font.Color = clWindowText
@@ -917,7 +918,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 147
     Top = 437
-    Width = 1024
+    Width = 1052
     ActivePage = MessagesTabSheet
     Align = alBottom
     Images = mainImageList
@@ -1048,7 +1049,7 @@ object MainForm: TMainForm
     object MessagesTabSheet: TTabSheet
       Caption = 'Log'
       ClientHeight = 120
-      ClientWidth = 1016
+      ClientWidth = 1044
       object Splitter7: TSplitter
         Left = 268
         Height = 91
@@ -1059,7 +1060,7 @@ object MainForm: TMainForm
         Left = 0
         Height = 29
         Top = 0
-        Width = 1016
+        Width = 1044
         Caption = 'ToolBar6'
         Images = mainImageList
         TabOrder = 0
@@ -1130,7 +1131,7 @@ object MainForm: TMainForm
           Action = readLog4jEventsAction
         end
         object MessagesTabControl: TTabControl
-          Left = 432
+          Left = 460
           Height = 21
           Top = 8
           Width = 584
@@ -1291,7 +1292,7 @@ object MainForm: TMainForm
         Left = 273
         Height = 91
         Top = 29
-        Width = 718
+        Width = 746
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1304,7 +1305,7 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object ToolBar4: TToolBar
-        Left = 991
+        Left = 1019
         Height = 91
         Top = 29
         Width = 25
@@ -1331,7 +1332,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 5
     Top = 432
-    Width = 1024
+    Width = 1052
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -2032,13 +2033,13 @@ object MainForm: TMainForm
       OnUpdate = OperationOptionsActionUpdate
     end
     object HideAllOperationsAction: TAction
-      Category = 'Project'
-      Caption = 'Hide all Operations'
+      Category = 'Operation'
+      Caption = 'Hide all'
       OnExecute = HideAllOperationsActionExecute
     end
     object UnhideAllOperationsAction: TAction
-      Category = 'Project'
-      Caption = 'Unhide all operations'
+      Category = 'Operation'
+      Caption = 'Unhide all'
       OnExecute = UnhideAllOperationsActionExecute
     end
     object OperationZoomOnAction: TAction
@@ -5307,23 +5308,6 @@ object MainForm: TMainForm
       object N28: TMenuItem
         Caption = '-'
       end
-      object c: TMenuItem
-        Action = HideAllOperationsAction
-      end
-      object HideoperationMenuItem: TMenuItem
-        Caption = 'Hide operation'
-        OnClick = HideoperationMenuItemClick
-      end
-      object Unhidealloperations1: TMenuItem
-        Action = UnhideAllOperationsAction
-      end
-      object UnhideOperationMenuItem: TMenuItem
-        Caption = 'Unhide operation'
-        OnClick = UnhideOperationMenuItemClick
-      end
-      object N21: TMenuItem
-        Caption = '-'
-      end
       object N20: TMenuItem
         Action = MasterClearLogAction
       end
@@ -5377,121 +5361,6 @@ object MainForm: TMainForm
           0000000000000000000000000000000000000000000000000000000000000000
           0000000000000000000000000000000000000000000000000000
         }
-      end
-    end
-    object Operation1: TMenuItem
-      Caption = 'Operation'
-      OnClick = Operation1Click
-      object RedirectAddressAction1: TMenuItem
-        Action = RedirectAddressAction
-        Bitmap.Data = {
-          36040000424D3604000000000000360000002800000010000000100000000100
-          2000000000000004000064000000640000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000004D4D4DFF4D4D4DFF00000000000000004D4D4DFF4D4D4DFF0000
-          0000000000004D4D4DFF4D4D4DFF000000000000000000000000000000000000
-          0000000000004D4D4DFF4D4D4DFF00000000000000004D4D4DFF4D4D4DFF0000
-          0000000000004D4D4DFF4D4D4DFF000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000
-        }
-      end
-      object Delayresponse1: TMenuItem
-        Action = OperationDelayResponseTimeAction
-        Bitmap.Data = {
-          36040000424D3604000000000000360000002800000010000000100000000100
-          2000000000000004000064000000640000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000FF0000
-          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-          00FF000000FF0000000000000000000000000000000000000000000000FF0000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000FF0000000000000000000000000000000000000000000000FF0000
-          00FF000000000000000000000000000000000000000000000000000000000000
-          00FF000000FF0000000000000000000000000000000000000000000000FF0000
-          0000000000FF0000000000000000000000000000000000000000000000FF0000
-          0000000000FF0000000000000000000000000000000000000000000000FF0000
-          000000000000000000FF000000000000000000000000000000FF000000000000
-          00FF000000FF000000FF000000FF000000000000000000000000000000FF0000
-          0000000000FFFFFFFFFF000000FF000000FF000000FF000000FF000000FF0000
-          000000000000808080FF808080FF000000FF000000FF00000000000000FF0000
-          00FFFFFFFFFF00000000FFFFFFFF00000000FFFFFFFF000000FF000000000000
-          0000000000000000000000000000808080FF000000FF00000000000000FFFFFF
-          FFFF00000000FFFFFFFF00000000FFFFFFFF000000FF00000000000000000000
-          000000000000000000000000000000000000808080FF000000FF000000000000
-          00FFFFFFFFFF00000000FFFFFFFF00000000000000FFFFFFFFFF000000FF0000
-          00FF000000FF000000FF000000000000000000000000000000FF000000000000
-          0000000000FFFFFFFFFF00000000FFFFFFFF000000FFFFFFFFFF000000000000
-          000000000000000000FF000000000000000000000000000000FF000000000000
-          000000000000000000FFFFFFFFFF00000000000000FFFFFFFFFF000000000000
-          000000000000000000FF000000000000000000000000000000FF000000000000
-          00000000000000000000000000FF000000FF00000000000000FFFFFFFFFF0000
-          000000000000000000FF0000000000000000000000FF00000000000000000000
-          00000000000000000000000000000000000000000000000000FF000000FFFFFF
-          FFFFFFFFFFFFFFFFFFFF00000000000000FF000000FF00000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00FF000000FF000000FF000000FF000000000000000000000000
-        }
-      end
-      object WsA1: TMenuItem
-        Action = OperationWsaAction
-      end
-      object Applysettingsto1: TMenuItem
-        Action = OperationApplySettingsAction
-      end
-      object N31: TMenuItem
-        Caption = '-'
-      end
-      object MenuItem4: TMenuItem
-        Action = OperationAliasAction
-      end
-      object MenuItem1: TMenuItem
-        Caption = '-'
-      end
-      object Options4: TMenuItem
-        Action = OperationOptionsAction
-      end
-      object N32: TMenuItem
-        Caption = '-'
-      end
-      object EditBetweenScriptMenuItem: TMenuItem
-        Caption = 'Edit Script'
-        OnClick = EditBetweenScriptMenuItemClick
-      end
-      object EditBeforeScriptMenuItem: TMenuItem
-        Caption = 'Edit Before Script'
-        OnClick = EditBeforeScriptMenuItemClick
-      end
-      object EditAfterScriptMenuItem: TMenuItem
-        Caption = 'Edit After Script'
-        OnClick = EditAfterScriptMenuItemClick
       end
     end
     object MessagesMenuItem: TMenuItem
@@ -8955,6 +8824,21 @@ object MainForm: TMainForm
   object OperationsPopupMenu: TPopupMenu
     left = 129
     top = 121
+    object EditBetweenScriptMenuItem: TMenuItem
+      Caption = 'Edit Script'
+      OnClick = EditBetweenScriptMenuItemClick
+    end
+    object EditBeforeScriptMenuItem: TMenuItem
+      Caption = 'Edit Before Script'
+      OnClick = EditBeforeScriptMenuItemClick
+    end
+    object EditAfterScriptMenuItem: TMenuItem
+      Caption = 'Edit After Script'
+      OnClick = EditAfterScriptMenuItemClick
+    end
+    object MenuItem19: TMenuItem
+      Caption = '-'
+    end
     object MenuItem5: TMenuItem
       Action = RedirectAddressAction
       Caption = 'To address ...'
@@ -8979,6 +8863,31 @@ object MainForm: TMainForm
     end
     object MenuItem10: TMenuItem
       Action = OperationOptionsAction
+    end
+    object MenuItem13: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem16: TMenuItem
+      Action = HideAllOperationsAction
+    end
+    object MenuItem17: TMenuItem
+      Caption = 'Hide'
+      OnClick = MenuItem17Click
+    end
+    object MenuItem18: TMenuItem
+      Action = UnhideAllOperationsAction
+    end
+    object UnhideOperationMenuItem: TMenuItem
+      Caption = 'Unhide'
+      OnClick = UnhideOperationMenuItemClick
+    end
+    object MenuItem15: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem14: TMenuItem
+      Caption = 'Refresh'
+      ShortCut = 116
+      OnClick = MenuItem14Click
     end
   end
 end
