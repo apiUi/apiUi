@@ -9,7 +9,7 @@ interface
 uses Classes, SysUtils
    , Xmlz
    , mqInterface, MQAPI
-   , StompInterface, StompClient, StompTypes
+   , StompInterface
    , IdSSLOpenSSL
    , Wsdlz
    ;
@@ -44,7 +44,6 @@ implementation
 function TListeners.AsXml: TXml;
 var
   x: Integer;
-  xMq: TMqInterface;
 begin
   result := TXml.CreateAsString('Listeners', '');
   with result do
@@ -127,7 +126,7 @@ end;
 procedure TListeners.FromXml(aXml: TXml; aOnHaveFrame: TOnHaveFrame);
 var
   m, x, y: Integer;
-  mXml, xXml, yXml: TXml;
+  xXml, yXml: TXml;
 begin
   if not Assigned (aXml) then raise Exception.Create('ListenersFromXml: No XML assigned');
   if aXml.Name <> 'Listeners' then raise Exception.Create('ListenersFromXml: Illegal XML assigned');

@@ -10,7 +10,7 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, ComCtrls, ActnList
@@ -81,9 +81,7 @@ implementation
 {$ELSE}
   {$R *.lfm}
 {$ENDIF}
-uses ErrorFound
-   , SelectXmlElement
-   , StrUtils
+uses SelectXmlElement
    , igGlobals
    ;
 
@@ -128,8 +126,6 @@ end;
 procedure TSelectElementsForm.AddActionExecute(Sender: TObject);
 var
   xAdd: Integer;
-  xreqBind: TCustomBindable;
-  xrpyBind: TCustomBindable;
   procedure _AddBind (aBind: TCustomBindable; aPrefix: String);
   var
     x: Integer;

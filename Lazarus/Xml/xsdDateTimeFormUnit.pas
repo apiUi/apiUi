@@ -10,10 +10,10 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, SysUtils, Grids, Calendar, Spin, FormIniFilez;
+  Buttons, ExtCtrls, SysUtils, Grids, Calendar, FormIniFilez;
 
 type TdtFormat = (dtfDateTime, dtfDate);
 type
@@ -71,8 +71,6 @@ uses RegExpr
 const
   dtregexp = '^[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.([0-9]{1,9}))?(Z|([\+\-][0-9]{2}:[0-9]{2}))?$';
   dregexp = '^[0-9]{4}\-[0-9]{2}\-[0-9]{2}$';
-  tregexp = '^[0-9]{2}:[0-9]{2}:[0-9]{2}(\.([0-9]{1,9}))?$';
-  zregexp = '^(Z|([\+\-][0-9]{2}:[0-9]{2}))?$';
 
 procedure TxsdDateTimeForm.FormCreate(Sender: TObject);
 var
@@ -89,9 +87,7 @@ procedure TxsdDateTimeForm.setXsdDateTime(Value: String);
 var
   x: Integer;
   rx: TRegExpr;
-  dt: TDateTime;
   eeyy, mm, dd: Word;
-  part: Integer;
 begin
   if Value = '' then
   begin
@@ -228,11 +224,6 @@ begin
 end;
 
 procedure TxsdDateTimeForm.OKButtonClick(Sender: TObject);
-var
-  dt: TDateTime;
-  rx: TRegExpr;
-  rValue: String;
-  iValue: Integer;
 begin
   ModalResult := mrNone;
   if dtFormat = dtfDate then

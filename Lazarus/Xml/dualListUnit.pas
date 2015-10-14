@@ -10,10 +10,10 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ImgList, FormIniFilez,ExtCtrls;
+  Buttons, FormIniFilez,ExtCtrls;
 
 type
 

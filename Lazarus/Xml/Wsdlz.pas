@@ -1390,11 +1390,13 @@ end;
 
 function setEnvNumber (aName: String; aValue: Extended): Extended;
 begin
+  result := aValue;
   setEnvVar (aName, FloatToStr(aValue));
 end;
 
 function setEnvVar (aName, aValue: String): String;
 begin
+  result := aValue;
   AcquireEnvVarLock;
   try
     _WsdlVars.Values [aName] := aValue;
@@ -1608,15 +1610,6 @@ begin
   finally
     Free;
   end;
-end;
-
-function GetDocumentation (aStringList: TStringList; aXml: TXml): String;
-var
-  x: Integer;
-begin
-  aStringList.Clear;
-  for x := 0 to aXml.Items.Count - 1 do
-    aStringList.Add ( aXml.Items.XmlItems [x].Value);
 end;
 
 constructor TWsdl.Create(aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);

@@ -10,9 +10,9 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls
   , Wsdlz
   , Xmlz
@@ -79,9 +79,7 @@ implementation
 procedure TSelectXmlElementForm.FormShow(Sender: TObject);
 var
   xChild, rChild: TTreeNode;
-  xNode: TTreeNode;
   x, f: Integer;
-  xXml: TXml;
   procedure ShowAllControlBinds(aList: TBindableList;
     aCaption: String);
   var
@@ -92,7 +90,7 @@ var
       xChild := TreeView.Items.AddChildObject (nil, aCaption, nil);
       for x := 0 to aList.Count - 1 do
       begin
-        xNode := TreeView.Items.AddChildObject
+        TreeView.Items.AddChildObject
           ( xChild
           , aList.Strings [x]
           , aList.Bindables [x]
@@ -102,8 +100,6 @@ var
   end;
 
   procedure ShowXmls (aBind: TCustomBindable; aCaption: String);
-  var
-    x: Integer;
   begin
     if Assigned (aBind)
 //  and (aXml.Items.Count > 0)
@@ -289,7 +285,6 @@ var
   xChild: TTreeNode;
   xBind: TCustomBindable;
   xSubItems: TBindableList;
-  xCaption: String;
 begin
   if aBind = nil then
     exit;

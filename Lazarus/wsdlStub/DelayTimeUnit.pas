@@ -12,7 +12,7 @@ uses
 {$ELSE}
   LCLIntf, LCLType,
 {$ENDIF}
-  Classes, Graphics, Forms, Controls, StdCtrls,
+  Classes, Graphics, Forms, Controls,
   Buttons, ExtCtrls, SysUtils, FormIniFilez;
 
 type

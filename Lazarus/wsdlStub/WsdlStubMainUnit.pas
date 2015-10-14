@@ -1284,6 +1284,7 @@ end;
 
 function TMainForm.HttpActiveHint: String;
 begin
+  result := '';
 end;
 
 procedure TMainForm.OpenWsdlActionExecute(Sender: TObject);
@@ -2830,11 +2831,13 @@ begin
     if Assigned (WsdlOperation) then
     begin
       se.FocusOperationName := WsdlOperation.reqTagName;
+      se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
       se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlReply);
     end
     else
     begin
       se.FocusOperationName := '';
+      se.FocusOperationNameSpace := '';
       se.FocusMessageIndex := 0;
     end;
     SaveStringToFile(aFileName, se.ProjectDesignAsString(aFileName));
@@ -3367,6 +3370,7 @@ var
   xUpdated: TDateTime;
   xUsageDate: TDateTime;
 begin
+  result := True;
 {$ifdef linux}
   exit;
 {$endif}
@@ -4799,7 +4803,6 @@ var
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
   swapNotifyEvent, swapMemoEvent: TNotifyEvent;
-  rpyNode: PVirtualNode;
 begin
   InWsdlTreeView.BeginUpdate;
   try
@@ -7876,7 +7879,6 @@ var
   X, y: Integer;
   xOperation: TWsdlOperation;
   doSleep: Boolean;
-  DelayTimeMs: Integer;
 begin
   doSleep := False;
   WsdlOperation.AcquireLock;
@@ -11116,8 +11118,7 @@ procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
   procedure _DiscoverOperation(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml);
     function _DiscoverOperationFromXml(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml): Boolean;
     var
-      f, x: Integer;
-      xOperation: TWsdlOperation;
+      f: Integer;
     begin
       result := False;
       if allOperations.Find(aXml.Name + ';' + aXml.NameSpace, f) then
@@ -11161,7 +11162,6 @@ procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
 
   var
     X: Integer;
-    xDiscovered: Boolean;
   begin
     aLog.Operation := nil;
     if aXml.Items.Count = 0 then
@@ -11202,7 +11202,6 @@ var
   SwapCursor: TCursor;
   X, Y: Integer;
   xLog: TLog;
-  xMessageText: String;
 begin
   try
     SwapCursor := Screen.Cursor;
@@ -11785,10 +11784,7 @@ begin
 end;
 
 procedure TMainForm .DesignSplitHorizontalMenuItemClick (Sender : TObject );
-var
-  h: Integer;
 begin
-  h := GridDataPanel.Height;
   GridDataPanel.Align := alTop;
   GridDataPanel.Height := MiddlePanel.Height Div 2;
   GridDataPanel.Top := 0;
@@ -11798,8 +11794,6 @@ begin
 end;
 
 procedure TMainForm .DesignSplitVerticalMenuItemClick (Sender : TObject );
-var
-  w: Integer;
 begin
   GridDataPanel.Align := alLeft;
   GridDataPanel.Width := MiddlePanel.Width Div 2;

@@ -9,15 +9,11 @@ interface
 uses SysUtils
    , Classes
    , ParserClasses
-   , ComCtrls
    , Controls
-   , StdCtrls
    , ActnList
    , Dialogs
    , Grids
    , Graphics
-   , Messages
-   , Types
    , VirtualTrees
    ;
 
@@ -49,9 +45,6 @@ procedure vstFromGrid (aVst: TVirtualStringTree; aGrid: String; OnNewText: TVSTN
   end;
 var
   xNode: PVirtualNode;
-  xCol: Integer;
-  xSep: String;
-  xText: String;
   copyLines, copyColumns: TStringList;
   l, c: Integer;
 begin

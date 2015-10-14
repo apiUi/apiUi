@@ -258,6 +258,7 @@ function TShowExpectedXmlForm.SelectedBind: TCustomBindable;
 var
   xAttr: TXmlAttribute;
 begin
+  result := nil;
   NodeToBind(TreeView.FocusedNode, result, xAttr);
 end;
 

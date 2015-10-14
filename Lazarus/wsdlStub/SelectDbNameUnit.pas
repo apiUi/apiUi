@@ -10,9 +10,9 @@ uses
 {$IFnDEF FPC}
   Adodb, Windows,
 {$ELSE}
-  sqldb, LCLIntf, LCLType, LMessages,
+  sqldb, LCLIntf, LCLType,
 {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls
   , Ipmz
   , FormIniFilez
@@ -111,9 +111,7 @@ end;
 
 procedure TSelectDbNameForm.FormShow(Sender: TObject);
 var
-  x, y: Integer;
-  Root: TTreeNode;
-  xChild: TTreeNode;
+  x: Integer;
   TableList: TStrings;
 begin
   TableList := TStringList.Create;
@@ -129,7 +127,7 @@ begin
     end;
     for x := 0 to TableList.Count - 1 do
     begin
-      xChild := TreeView.Items.AddChild (nil, TableList.Strings [x]);
+      TreeView.Items.AddChild (nil, TableList.Strings [x]);
     end;
   finally
     TreeView.EndUpdate;

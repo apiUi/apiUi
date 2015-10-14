@@ -193,10 +193,9 @@ end;
 
 procedure TShowLogDifferencesForm.PopulateMain;
 var
-  x, a, b, c, i: Integer;
+  a, b, c, i: Integer;
   xNode: PVirtualNode;
   xData: PVSTreeRec;
-  s: String;
 begin
   a2bInitialize;
   try
@@ -493,7 +492,6 @@ end;
 procedure TShowLogDifferencesForm.CompareAB(xData: PVSTreeRec);
 var
   aXml, bXml: TXml;
-  xPrefix: String;
 begin
   aXml := xData.aLog.reqBodyAsXml;
   aXml.SeparateNsPrefixes;

@@ -15,7 +15,6 @@ uses Classes
    , Xsdz
    , igGlobals
    , Dialogs
-   , XmlXsdParser
    , ClaimListz
    ;
 
@@ -267,7 +266,7 @@ var
   LA, LB: TStringList;
   s: String;
   aSortedLogs, bSortedLogs: TLogList;
-  headerXml, bodyXml, detailXml, itemsXml: TXml;
+  headerXml, bodyXml, itemsXml: TXml;
   Diffs: TA2BStringList;
 begin
   a2bInitialize;
@@ -415,6 +414,7 @@ end;
 
 function TLogList.SaveLog(aString: String; aLog: TLog): TLog;
 begin
+  result := aLog;
   inherited SaveObject (aString, aLog);
   Inc(fNumber);
 end;
@@ -427,7 +427,7 @@ end;
 
 function TLogList.PrepareCoverageReportAsXml(aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
 var
-  o, lg, s, p, e, d, x: Integer;
+  o, lg, p, e, d, x: Integer;
   xXml, faultXml: TXml;
   oXml, mXml, xXmlCvrg, faultCoverageXml: TXmlCvrg;
   xLog: TLog;
@@ -690,7 +690,6 @@ end;
 function TLogList.LogsAsString (aStubFileName: String): String;
 var
   x: Integer;
-  xLog: TLog;
   n: Integer;
 begin
   n := Count;
@@ -1185,8 +1184,7 @@ end;
 }
 procedure TLog.InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TStringList);
 var
-  x, c, p: Integer;
-  prfx, MsgName: String;
+  x, c: Integer;
 begin
   DisplayedColumns.Clear;
   c := aDisplayedLogColumns.Count;
@@ -1218,8 +1216,6 @@ begin
 end;
 
 procedure TLog.toBindables;
-var
-  xXml: TXml;
 begin
   if not Assigned (Operation) then
     raise sysUtils.Exception.Create('log.toBindables: No operation assigned');

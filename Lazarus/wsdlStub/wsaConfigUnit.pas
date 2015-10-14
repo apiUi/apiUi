@@ -10,10 +10,10 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, SysUtils, FormIniFilez, ComCtrls, Xmlz;
+  Buttons, ExtCtrls, SysUtils, FormIniFilez, Xmlz;
 
 type
   TwsaConfigForm = class(TForm)
@@ -87,8 +87,6 @@ begin
 end;
 
 procedure TwsaConfigForm.FormCreate(Sender: TObject);
-var
-  x: Integer;
 begin
   with TFormIniFile.Create (Self, True) do
   try

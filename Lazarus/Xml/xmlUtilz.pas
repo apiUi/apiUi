@@ -31,7 +31,7 @@ type
 
  TXmlUtil = class(TObject)
 private
-  TempFileCounter, pdfFileCounter, rtfFileCounter, docxFileCounter, htmlFileCounter: Integer;
+  pdfFileCounter, rtfFileCounter, docxFileCounter, htmlFileCounter: Integer;
     fAcquireLock: TProcedure;
     fReleaseLock: TProcedure;
   procedure fShowProgress (aSender: TObject; aProgress, aProgressMax: Integer);
@@ -143,7 +143,7 @@ uses
 {$IFnDEF FPC}
   ShellApi, Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   Dialogs
    , ShowXmlUnit
@@ -365,9 +365,8 @@ end;
 
 procedure TXmlUtil.ShowSoapBodyInGrid (aSoapMessageString: String);
 var
-  x, d, swapMaxDepthXmlGen: Integer;
+  x, swapMaxDepthXmlGen: Integer;
   xXml, sXml: TXml;
-  xXsd: TXsd;
   xForm: TXmlGridForm;
   xXsdPropertiesVisible: Boolean;
   xXsdDescr: TXsdDescr;
@@ -400,7 +399,7 @@ begin
       end;
     end;
     xXsdDescr := TXsdDescr.Create(1);
-    xXsd := CreateXsdFromXml(xXsdDescr, xXml, True);
+    CreateXsdFromXml(xXsdDescr, xXml, True);
     try
       try
         Application.CreateForm(TXmlGridForm, xForm);
@@ -675,8 +674,6 @@ function TXmlUtil.editXml(aBind: TCustomBindable; aReadOnly: Boolean): Boolean;
       end;
     end;
   end;
-var
-  xGridForm: TXmlGridForm;
 begin
   result := False;
   if (aBind is TXmlAttribute)
@@ -840,8 +837,6 @@ begin
 end;
 
 function TXmlUtil.isTreeAdviced(aBind: TCustomBindable): Boolean;
-var
-  x: Integer;
 begin
   result := False;
   if (aBind is TXml)
@@ -921,7 +916,6 @@ end;
 procedure TXmlUtil.PasteFromClipboard(aBind: TCustomBindable);
 var
   hXml: TXml;
-  xMessage: String;
 begin
   if aBind is TXmlAttribute then
     raise Exception.Create('Not implemented for XML attributes');
@@ -1252,7 +1246,6 @@ procedure TXmlUtil.ListXsdDocumentation( aMemo: TMemo
                                        ; aShowValue: Boolean
                                        );
 var
-  xDataType: TXsdDataType;
   s: String;
 begin
   aMemo.Clear;
@@ -1261,7 +1254,6 @@ begin
     s := s + 'Path: ' + aBind.GetFullCaption + #$A#$D;
   if aShowValue then
     s := s + 'Value: ' + aBind.Value + #$A#$D;
-  xDataType := nil;
   if aBind is TXmlAttribute then
     s := s + (aBind as TXmlAttribute).XsdAttr.Documentation.Text;
   if aBind is TXml then
@@ -1278,6 +1270,7 @@ procedure TXmlUtil .ListXsdDocumentation (aMemo : TLzRichEdit ;
 var
   s: String;
 begin
+  s := '';
   if aShowPath then
     s := s + 'Path: ' + aBind.GetFullCaption + CRLF;
   if aShowValue then
@@ -1662,8 +1655,6 @@ end;
 function TXmlUtil.ViewAsGrid(aBind: TCustomBindable;
   aReadOnly: Boolean): Boolean;
 var
-  xCaption: String;
-  s: String;
   xForm: TXmlGridForm;
   xXml: TXml;
 begin
@@ -1715,8 +1706,6 @@ end;
 function TXmlUtil.ViewAsXml(aBind: TCustomBindable; aReadOnly: Boolean
   ): Boolean;
 var
-  xCaption: String;
-  s: String;
   xForm: TShowXmlForm;
   xXml: TXml;
   xIpm: TIpmItem;
@@ -1883,8 +1872,6 @@ begin
 end;
 
 procedure TXmlUtil.ZoomAsPDF(aBind: TCustomBindable);
-var
-  TempFileName: String;
 begin
   if Assigned (aBind) then
     presentAsPdf (aBind.Name + ' as PDF', aBind.Value);

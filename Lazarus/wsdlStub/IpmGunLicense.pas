@@ -95,11 +95,10 @@ end;
 
 function UpdateLicense  (IniFile: TFormIniFile; prgName, dbName: String): Boolean;
 var
-  xLicenseDate: TDateTime;
   xCompanyName: String;
   xLicenseExpirationDate: String;
-  xLicenseString: String;
 begin
+  result := True;
   initDb (dbName);
   try
     if ErrorReadingLicenseInfo then

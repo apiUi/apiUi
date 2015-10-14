@@ -10,7 +10,7 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   Classes
    , Controls
@@ -138,7 +138,6 @@ function TTacoInterface.RequestReply(aRequest: AnsiString; aTimeOut: Integer;
 var
   xHost: String;
   xPort: Integer;
-  xXml: TXml;
 begin
   fReturnType := rtUndefined;
   xHost := aConfigAsXml.Items.XmlValueByTag['Host'];

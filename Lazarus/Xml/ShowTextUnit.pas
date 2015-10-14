@@ -10,10 +10,10 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, ComCtrls,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls,
   FormIniFilez;
 
 type
@@ -46,8 +46,6 @@ var
   ShowTextForm: TShowTextForm;
 
 implementation
-
-uses Registry;
 
 {$IFnDEF FPC}
   {$R *.dfm}

@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9038"/>
+      <BuildNr Value="9045"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -96,7 +96,6 @@
     </SearchPaths>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>

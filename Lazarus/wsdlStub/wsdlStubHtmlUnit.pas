@@ -16,7 +16,6 @@ implementation
 
 uses Wsdlz
    , Xmlz
-   , Logz
    , igGlobals
    , SysUtils
    , Classes
@@ -50,7 +49,7 @@ function createHtmlResponse (aProject: TWsdlProject; aRequest: TIdHTTPRequestInf
   var
     s: String;
     sl, dl: TStringList;
-    x, w: Integer;
+    x: Integer;
   begin
     result :='';
     sl := TStringlist.Create;

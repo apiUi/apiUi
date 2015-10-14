@@ -20,7 +20,6 @@ implementation
 uses IdEMailAddress
    , IdMessageParts
    , IdAttachmentFile
-   , IdAttachment
    , IdText
    ;
 
@@ -91,7 +90,6 @@ function smtpParseMessageStreamAsXml (aMsg: TStream; var aHeaders, aSubject: Str
     x: Integer;
     xXml: TXml;
     xMsgPart: TIdMessagePart;
-    xStream: TStringStream;
   begin
     if not Assigned (aMsgParts)
     or (aMsgParts.Count = 0) then

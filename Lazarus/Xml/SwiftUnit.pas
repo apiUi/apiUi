@@ -74,7 +74,7 @@ type
 
   TSwiftMT = class (TObject)
   private
-    fMtMessage, fBlock1, fBlock2, fBlock3, fBlock4, fBlock5: String;
+    fBlock1, fBlock2, fBlock3, fBlock4, fBlock5: String;
     fMtXsd: TXsd;
     function getMtAsString: String;
     function getBlock1AsString: String;
@@ -137,9 +137,7 @@ function TSwiftMT.getAsXml: TXml;
       sep := ', ';
     end;
   end;
-  function _createNextOccurrence (aRoot, aXml: TXml): TXml;
-  var
-    x: Integer;
+  procedure _createNextOccurrence (aRoot, aXml: TXml);
   begin
     if (LowerCase (aXml.Xsd.maxOccurs) = 'unbounded')
     or (    (StrToInt (aXml.Xsd.maxOccurs) > 1)
@@ -198,7 +196,6 @@ function TSwiftMT.getAsXml: TXml;
   end;
   function _findXmlTag (aXml: TXml; aTag, aValue: String; var xpctdXml: TXml): TXml;
   var
-    xAppInfo, xTagInfo, xRecurring: TXml;
     xContent, xTagValue: String;
     x: Integer;
   begin
@@ -242,7 +239,7 @@ function TSwiftMT.getAsXml: TXml;
               xContent := aXml.TypeDef.Enumerations.Strings[0];
             except
               on e: Exception do
-                raise Exception.Create('Expected to find an enumeration at ' + xTagValue + CRLF + e.Message);
+                raise Exception.Create('Expected to find an enumeration at ' + CRLF + e.Message);
             end;
           end;
           if (mtTag = aTag)
@@ -284,7 +281,7 @@ function TSwiftMT.getAsXml: TXml;
   var
     Sccs: Boolean;
     xTag, xValue: String;
-    f, p: Integer;
+    p: Integer;
     fXml, xpctdXml: TXml;
   begin
     try
@@ -313,9 +310,8 @@ function TSwiftMT.getAsXml: TXml;
   end;
   procedure _evaluateBlock4(aRoot: TXml);
   var
-    Sccs: Boolean;
-    xTag, xValue, xErrorMessage: String;
-    f, s, e: Integer;
+    xTag, xValue: String;
+    s, e: Integer;
     fXml, xpctdXml: TXml;
   begin
     try
@@ -353,7 +349,7 @@ function TSwiftMT.getAsXml: TXml;
   end;
 var
   x: Integer;
-  xXml, xmlCursor, b3Xml, b4Xml, b5Xml: TXml;
+  xmlCursor, b3Xml, b4Xml, b5Xml: TXml;
 begin
   result := TXml.Create (-1000, fMtXsd);
   try
@@ -660,7 +656,6 @@ constructor TSwiftMtProps.Create(aXsd: TXsd);
   end;
 var
   x: Integer;
-  xMaxOccurs, xMaxLength: Integer;
 begin
   if Assigned (aXsd.Obj) then
     raise Exception.Create('TSwiftMtProps.Create(aXsd: TXsd) : Recurisive???'); // recursive...
@@ -1010,7 +1005,6 @@ function TStwiftMtStreamer.getAsText: String;
       result := result.Parent as TXml;
   end;
 var
-  x: Integer;
   pXsd: TXsd;
 begin
   result := '';

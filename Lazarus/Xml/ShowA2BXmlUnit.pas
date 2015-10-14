@@ -12,7 +12,7 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   SysUtils
-   , Classes, Graphics, Forms, Controls, StdCtrls,
+   , Classes, Graphics, Forms, Controls,
   ComCtrls, ExtCtrls, VirtualTrees
 //   , IpmGunMainForm
    , A2BXmlz, Xmlz, a2bStringListUnit, Menus, Dialogs, ActnList, FormIniFilez
@@ -224,7 +224,6 @@ procedure TShowA2BXmlForm.SetXml(aXml: TA2BXml);
   procedure _ShowXml (Xml: TA2BXml; aNode: PVirtualNode);
   var
     ChildNode: PVirtualNode;
-    AttributeNode: PVirtualNode;
     Data: PXmlTreeRec;
     x: Integer;
   begin
@@ -400,7 +399,6 @@ end;
 procedure TShowA2BXmlForm.CopyActionExecute(Sender: TObject);
 var
   theXml: TA2BXml;
-  x: Integer;
 begin
   if ToolButtonUsed(Sender) then
     NodeToXml (TreeView.GetFirst, theXml)
@@ -982,7 +980,6 @@ procedure TShowA2BXmlForm.IgnoreOrderOfTagMenuItemClick(Sender: TObject);
   end;
 
 var
-  x: Integer;
   xXml: TA2BXml;
   Srcs, Dsts, sl: TStringList;
 begin

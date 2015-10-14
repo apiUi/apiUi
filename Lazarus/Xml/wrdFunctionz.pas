@@ -16,7 +16,7 @@ var
 
 implementation
 
-uses SysUtils, Variants, Classes{$ifdef windows}, OleServer, Word_TLB, ComObj{$endif};
+uses SysUtils, Variants, Classes{$ifdef windows}, Word_TLB, ComObj{$endif};
 
 var
   wrdApplication: Variant;

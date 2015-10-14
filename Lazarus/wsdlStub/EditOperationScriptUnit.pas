@@ -10,7 +10,7 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, Dialogs
@@ -18,9 +18,9 @@ uses
   , Express, Bind, ComCtrls
   , Wsdlz
   , Xmlz
-  , Menus , ActnList, StdActns
+  , Menus , ActnList
   , FormIniFilez
-  , WsdlProjectz , SynHighlighterAny , SynMemo , SynEdit
+  , WsdlProjectz , SynHighlighterAny , SynEdit
   ;
 
 type
@@ -148,8 +148,6 @@ begin
 end;
 
 procedure TEditOperationScriptForm.FormShow(Sender: TObject);
-var
-  x: Integer;
 begin
   wasConnected := _WsdlDbsConnector.Connected;
   if _WsdlDbsEnabled then
@@ -171,9 +169,6 @@ begin
 end;
 
 procedure TEditOperationScriptForm.OKExecute(Sender: TObject);
-var
-  Ok: Boolean;
-  x: Integer;
 begin
   StatusBar.SimpleText := '';
   AcquireLock;
@@ -215,7 +210,6 @@ end;
 
 procedure TEditOperationScriptForm.CheckExecute(Sender: TObject);
 var
-  x: Integer;
   SwapOnError: TOnErrorEvent;
   swapScriptLines: String;
 begin
@@ -454,11 +448,8 @@ end;
 
 procedure TEditOperationScriptForm .doFind (aNext: Boolean) ;
 var
-  FPos, IPos, FLen, SLen: Integer;
-  Res : integer;
-  Found: Boolean;
+  FPos, IPos, FLen: Integer;
 begin
-  Found:= False;
   FPos := ScriptEdit.SelStart;
   FLen := Length(FindS);
   IPos := -1;
@@ -489,7 +480,6 @@ begin
     Self.ActiveControl := ScriptEdit;
     ScriptEdit.SelStart:= FPos;
     ScriptEdit.SelEnd := ScriptEdit.SelStart + FLen;
-    Found := True;
     FPos:=FPos+FLen-1;
   end
   else

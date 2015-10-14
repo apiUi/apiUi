@@ -10,11 +10,11 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType
 {$ENDIF}
-  SysUtils , Classes , Graphics , Forms , Controls , StdCtrls , Buttons ,
+  SysUtils , Classes , Graphics , Forms , Controls , Buttons ,
   ComCtrls , ExtCtrls , VirtualTrees , RichBox , Bind , Xmlz , Ipmz , Dialogs ,
-  FormIniFilez , ToolWin , ActnList , Menus , ImgList , ButtonPanel
+  FormIniFilez , ActnList , Menus
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
@@ -303,7 +303,6 @@ procedure TShowXmlForm.TreeViewEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
 var
   xBind: TCustomBindable;
-  xDataType: TXsdDataType;
 begin
   Allowed := False;
   // if fReadOnly then Exit;
@@ -492,8 +491,6 @@ begin
 end;
 
 function TShowXmlForm.SelectedBind: TCustomBindable;
-var
-  xAttr: TXmlAttribute;
 begin
   result := NodeToBind(TreeView.FocusedNode);
 end;
@@ -852,7 +849,6 @@ end;
 procedure TShowXmlForm.TreeViewFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 var
-  xData: PTreeRec;
   xBind: TCustomBindable;
 begin
   Sender.Selected[Sender.FocusedNode] := True;
@@ -1122,7 +1118,8 @@ var
     end;
     function _stdLink(aString: String): TXml;
     begin
-      with aXml.AddXml(TXml.CreateAsString('a', aString)) do
+      result := aXml.AddXml(TXml.CreateAsString('a', aString));
+      with result do
       begin
         AddAttribute(TXmlAttribute.CreateAsString('href', aString));
         AddAttribute(TXmlAttribute.CreateAsString('target', '_top'));
@@ -1585,10 +1582,6 @@ end;
 procedure TShowXmlForm.TreeViewPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType);
-var
-  Bind: TCustomBindable;
-  xXml: TXml;
-  xChecked: Boolean;
 begin
   if (Node = (Sender as TVirtualStringTree).GetFirst) then
   begin
@@ -1708,8 +1701,6 @@ procedure TShowXmlForm.UpdateTreeViewNode(aTreeView: TVirtualStringTree;
   aNode: PVirtualNode);
 var
   X: Integer;
-  xXml: TXml;
-  xAttr: TXmlAttribute;
   xAttributeNode: PVirtualNode;
   xData: PBindTreeRec;
   xExpanded: Boolean;

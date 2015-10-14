@@ -1,10 +1,10 @@
 object MainForm: TMainForm
   Left = 302
-  Height = 603
-  Top = 103
+  Height = 541
+  Top = 90
   Width = 1052
   Caption = 'MainForm'
-  ClientHeight = 584
+  ClientHeight = 522
   ClientWidth = 1052
   Color = clBtnFace
   Font.Color = clWindowText
@@ -167,25 +167,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 403
+    Height = 341
     Top = 29
     Width = 1052
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 403
+    ClientHeight = 341
     ClientWidth = 1052
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
-      Height = 397
+      Height = 335
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
       Left = 909
-      Height = 397
+      Height = 335
       Top = 3
       Width = 5
       Align = alRight
@@ -194,18 +194,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 397
+      Height = 335
       Top = 3
       Width = 202
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 397
+      ClientHeight = 335
       ClientWidth = 202
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 328
+        Top = 266
         Width = 196
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -272,7 +272,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 325
+        Height = 263
         Top = 3
         Width = 196
         Align = alClient
@@ -306,7 +306,7 @@ object MainForm: TMainForm
       object ScriptButtonsPanel: TPanel
         Left = 3
         Height = 37
-        Top = 357
+        Top = 295
         Width = 196
         Align = alBottom
         Caption = 'ScriptButtonsPanel'
@@ -349,13 +349,13 @@ object MainForm: TMainForm
     end
     object XsdPanel: TPanel
       Left = 914
-      Height = 397
+      Height = 335
       Top = 3
       Width = 135
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 397
+      ClientHeight = 335
       ClientWidth = 135
       TabOrder = 1
       object Splitter6: TSplitter
@@ -408,7 +408,7 @@ object MainForm: TMainForm
       end
       object DataTypeDocumentationMemo: TlzRichEdit
         Left = 4
-        Height = 156
+        Height = 94
         Top = 237
         Width = 127
         DefaultExtension = '.rtf'
@@ -421,12 +421,12 @@ object MainForm: TMainForm
     end
     object MiddlePanel: TPanel
       Left = 210
-      Height = 397
+      Height = 335
       Top = 3
       Width = 699
       Align = alClient
       Caption = 'MiddlePanel'
-      ClientHeight = 397
+      ClientHeight = 335
       ClientWidth = 699
       TabOrder = 4
       object WsdlInfoPanel: TPanel
@@ -498,12 +498,12 @@ object MainForm: TMainForm
       end
       object DataPanel: TPanel
         Left = 1
-        Height = 358
+        Height = 296
         Top = 38
         Width = 697
         Align = alClient
         Caption = 'DataPanel'
-        ClientHeight = 358
+        ClientHeight = 296
         ClientWidth = 697
         TabOrder = 1
         object GridDataPanel: TPanel
@@ -746,18 +746,18 @@ object MainForm: TMainForm
         end
         object TreeDataPanel: TPanel
           Left = 1
-          Height = 242
+          Height = 180
           Top = 115
           Width = 695
           Align = alClient
           Caption = 'TreeDataPanel'
-          ClientHeight = 242
+          ClientHeight = 180
           ClientWidth = 695
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
-            Top = 224
+            Top = 162
             Width = 693
             Align = alBottom
             Alignment = taLeftJustify
@@ -897,7 +897,7 @@ object MainForm: TMainForm
           end
           object FreeFormatMemo: TMemo
             Left = 1
-            Height = 135
+            Height = 73
             Top = 89
             Width = 693
             Align = alClient
@@ -917,7 +917,7 @@ object MainForm: TMainForm
   object DownPageControl: TPageControl
     Left = 0
     Height = 147
-    Top = 437
+    Top = 375
     Width = 1052
     ActivePage = MessagesTabSheet
     Align = alBottom
@@ -927,8 +927,8 @@ object MainForm: TMainForm
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
       Caption = 'Documentation'
-      ClientHeight = 140
-      ClientWidth = 931
+      ClientHeight = 115
+      ClientWidth = 1046
       object DocumentationMemo: TMemo
         Left = 0
         Height = 140
@@ -942,8 +942,8 @@ object MainForm: TMainForm
     end
     object ExceptionTabSheet: TTabSheet
       Caption = 'Notifications'
-      ClientHeight = 140
-      ClientWidth = 931
+      ClientHeight = 115
+      ClientWidth = 1046
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -1331,7 +1331,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 432
+    Top = 370
     Width = 1052
     Align = alBottom
     ResizeAnchor = akBottom

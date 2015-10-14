@@ -65,12 +65,8 @@ uses Dialogs
    ;
 
 procedure TStressTestForm.Button1Click(Sender: TObject);
-var
-  x: Integer;
 begin
   try
-    x := ConcurrentThreads;
-    x := LoopsPerThread;
     case DelayRadioGroup.ItemIndex of
       0:
       begin
@@ -83,8 +79,6 @@ begin
       end;
       2:
       begin
-        x := DelayMsMin;
-        x := DelayMsMax;
       end;
     end;
     if DelayRadioGroup.ItemIndex = 0 then

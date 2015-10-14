@@ -1,3 +1,4 @@
+
 // currently at most 1 project due to what's in wsdlz.initialize, should be held by project
 unit WsdlProjectz;
 
@@ -445,7 +446,6 @@ implementation
 
 uses OpenWsdlUnit
    , StrUtils
-   , wsdlStubHtmlUnit
    , SchemaLocationz
    , smtpInterface
    , RegExpr
@@ -516,10 +516,8 @@ procedure ExecuteScript(aContext: TObject; xScriptName: String);
 var
   f: Integer;
   xProject: TWsdlProject;
-  xOperation: TWsdlOperation;
 begin
   xProject := nil; //candidate context
-  xOperation := nil; //candidate context
   if aContext is TWsdlProject then
     xProject := aContext as TWsdlProject
   else
@@ -611,7 +609,7 @@ end;
 
 procedure SendOperationRequestLater(aOperation, aCorrelation: String; aLater: Integer);
 var
-  x, f: Integer;
+  x: Integer;
   xOperation: TWsdlOperation;
   xRequest: TWsdlMessage;
   sl: TStringList;
@@ -1284,7 +1282,7 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
     end;
   end;
 var
-  w, o, f: Integer;
+  w, o: Integer;
 begin
   wsdlNames.Clear;
   allOperations.ClearListOnly;
@@ -1667,7 +1665,7 @@ function TWsdlProject.ProjectDesignAsString (aMainFileName: String): String;
       _addCheckers(aList, aXml.Items.XmlItems[x]);
   end;
 var
-  x, w, s, o, r, p, y: Integer;
+  x, w, s, o, r, p: Integer;
   xOperation: TWsdlOperation;
   xWsdl: TWsdl;
   xMessage: TWsdlMessage;
@@ -3818,13 +3816,14 @@ end;
 
 function TWsdlProject .RedirectCommandURC (aCommand : String ): String ;
 begin
-  SendOperationMessage(unknownOperation, aCommand);
+  result := SendOperationMessage(unknownOperation, aCommand);
 end;
 
 function doRefuseHttpConnections(aObject: TObject; aLater, aTime: Extended): Extended;
 var
   xProject: TWsdlProject;
 begin
+  result := 1;
   if aObject is TWsdlOperation then
     xProject := (aObject as TWsdlOperation).Owner as TWsdlProject
   else
@@ -4058,6 +4057,7 @@ end;
 function TWsdlProject.SendMessageLater(aOperation: TWsdlOperation;
   aRequest: TWsdlMessage; aCorrelationId: String; aLater: Integer): String;
 begin
+  result := '';
   TSendSoapRequestThread.Create (Self, aOperation, aRequest, aCorrelationId, aLater);
 end;
 
@@ -6543,11 +6543,13 @@ end;
 
 function TWsdlProject.ReactivateCommand: String;
 begin
+  result := '';
   raise Exception.Create('TWsdlProject.ReactivateCommand: String;  should be overloaded');
 end;
 
 function TWsdlProject.RestartCommand: String;
 begin
+  result := '';
   raise Exception.Create('TWsdlProject.RestartCommand: String;  should be overloaded');
 end;
 
@@ -6558,6 +6560,7 @@ end;
 
 function TWsdlProject.ReloadDesignCommand: String;
 begin
+  result := '';
   raise Exception.Create('TWsdlProject.ReloadDesignCommand: String;  should be overloaded');
 end;
 
