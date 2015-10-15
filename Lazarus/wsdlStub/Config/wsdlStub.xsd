@@ -375,6 +375,7 @@ A message broker validates, transforms and routes messages.
 												<xs:documentation>The port to which the stomp broker is listening; Default = 61613</xs:documentation>
 											</xs:annotation>
 										</xs:element>
+										<xs:element name="Credentials" type="UserType" minOccurs="0"/>
 										<xs:element name="ClientId" type="xs:string" minOccurs="0"/>
 										<xs:element name="DequeueOn" minOccurs="0">
 											<xs:annotation>
@@ -513,16 +514,10 @@ Internet standard protocol for e-mail clients to retrieve e-mail from a server.<
 												<xs:documentation>Portnumber (standard 110)</xs:documentation>
 											</xs:annotation>
 										</xs:element>
-										<xs:element name="User">
+										<xs:element name="User" type="UserType">
 											<xs:annotation>
 												<xs:documentation>User credentials</xs:documentation>
 											</xs:annotation>
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="Name" type="xs:string"/>
-													<xs:element name="Password" type="passwordType"/>
-												</xs:sequence>
-											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
 								</xs:complexType>
@@ -1970,6 +1965,12 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UserType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Password" type="passwordType"/>
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>

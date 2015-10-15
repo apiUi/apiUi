@@ -10,7 +10,7 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils , Classes , Graphics , Forms , Controls , Buttons ,
   ComCtrls , ExtCtrls , VirtualTrees , RichBox , Bind , Xmlz , Ipmz , Dialogs ,

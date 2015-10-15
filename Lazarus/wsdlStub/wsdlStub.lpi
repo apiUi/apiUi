@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9045"/>
+      <BuildNr Value="9054"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -149,7 +149,6 @@
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
-        <Enabled Value="False"/>
       </Item10>
       <Item11>
         <Name Value="EOraDatabaseError"/>

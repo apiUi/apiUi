@@ -178,7 +178,7 @@ type
 implementation
 
 uses
-  Dateutils, StompClient;
+  Dateutils, StompClient, Xmlz;
 
 class function StompUtils.NewStomp(Host: string = '127.0.0.1'; Port: Integer = DEFAULT_STOMP_PORT;
   ClientID: string = ''; const UserName: string = 'guest'; const Password: string = 'guest')
@@ -260,7 +260,7 @@ end;
 
 function TStompFrame.Output: string;
 begin
-  Result := FCommand + LINE_END + FHeaders.Output + LINE_END + FBody + LINE_END + COMMAND_END;
+  Result := FCommand + LINE_END + FHeaders.Output + LINE_END + FBody + COMMAND_END;
 end;
 
 procedure TStompFrame.SetBody(const Value: string);
@@ -348,7 +348,7 @@ begin
       p := Pos(COMMAND_END, other);
       if (p = 0) then
         raise EStomp.Create('frame no ending');
-      Result.Body := Copy(other, 1, p - 2);
+      Result.Body := Copy(other, 1, p - 1);
       // Buf := Copy(other, p + 2, High(Integer));
     end;
   except
@@ -446,7 +446,7 @@ begin
   begin
     kv := Items[i];
     Result := Result
-            + '<' + kv.Key + '>' + kv.Value + '</' + kv.Key + '>'+ LINE_END;
+            + '<' + kv.Key + '>' + xmlEncodeXml(kv.Value) + '</' + kv.Key + '>'+ LINE_END;
   end;
   result := result + '</headers>';
 end;

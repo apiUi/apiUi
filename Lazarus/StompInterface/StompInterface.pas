@@ -34,7 +34,8 @@ type
   TStompInterface = class(TComponent)
   private
     fStompClient: IStompClient;
-    fHost, fClientId, fReplyBodyPostFix, fRequestBodyPostFix: String;
+    fHost, fUserName, fPassword, fClientId, fReplyBodyPostFix, fRequestBodyPostFix: String;
+    fUseCredentials: Boolean;
     fPort: Integer;
     fOnHaveFrame: TOnHaveFrame;
     fStompClientOK: Boolean;
@@ -53,6 +54,9 @@ type
   public
     property Host: String read fHost write fHost;
     property Port: Integer read fPort write fPort;
+    property UseCredentials: Boolean read fUseCredentials write fUseCredentials;
+    property UserName: String read fUserName write fUserName;
+    property Password: String read fPassword write fPassword;
     property ReplyBodyPostFix: String read fReplyBodyPostFix write fReplyBodyPostFix;
     property RequestBodyPostFix: String read fRequestBodyPostFix write fRequestBodyPostFix;
     property ClientId: String read fClientId write fClientId;
@@ -182,6 +186,16 @@ begin
   fGetThreads.Sorted := False;
   Host := aXml.Items.XmlCheckedValueByTagDef ['Host', 'localhost'];
   Port := aXml.Items.XmlCheckedIntegerByTagDef ['Port', 61613];
+  sXml := aXml.Items.XmlCheckedItemByTag ['Credentials'];
+  if Assigned (sXml) then
+  begin
+    UseCredentials := True;
+    with sXml.Items do
+    begin
+      UserName := XmlCheckedValueByTagDef['Name', 'guest'];
+      Password := XmlCheckedValueByTagDef['Password', 'guest'];
+    end;
+  end;
   ReplyBodyPostFix := aXml.Items.XmlCheckedValueByTagDef ['ReplyBodyPostFix', ''];
   RequestBodyPostFix := aXml.Items.XmlCheckedValueByTagDef ['RequestBodyPostFix', ''];
   ClientId := aXml.Items.XmlCheckedValueByTagDef ['ClientId', ''];
@@ -231,6 +245,12 @@ begin
   begin
     AddXml (TXml.CreateAsString ('Host', fHost));
     AddXml (TXml.CreateAsInteger ('Port', fPort));
+    if fUseCredentials then
+      with AddXml (TXml.CreateAsString('Credentials', '')) do
+      begin
+        AddXml (TXml.CreateAsString('Name', fUserName));
+        AddXml (TXml.CreateAsString('Password', fPassword));
+      end;
     if fReplyBodyPostFix <> '' then
       AddXml (TXml.CreateAsString ('ReplyBodyPostFix', fReplyBodyPostFix));
     if fRequestBodyPostFix <> '' then
@@ -253,6 +273,11 @@ procedure TStompInterface.Connect;
 var
   x: Integer;
 begin
+  if UseCredentials then
+  begin
+    fStompClient.SetUserName(UserName);
+    fStompClient.SetPassword(Password);
+  end;
   fStompClient.Connect (Host, Port, ClientId);
   for x := 0 to GetQueues.Count - 1 do
     Browse (GetQueues.Strings [x]);
