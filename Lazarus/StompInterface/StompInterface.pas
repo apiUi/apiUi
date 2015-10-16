@@ -193,7 +193,7 @@ begin
     with sXml.Items do
     begin
       UserName := XmlCheckedValueByTagDef['Name', 'guest'];
-      Password := XmlCheckedValueByTagDef['Password', 'guest'];
+      Password := Xmlz.DecryptString(XmlCheckedValueByTag['Password']);
     end;
   end;
   ReplyBodyPostFix := aXml.Items.XmlCheckedValueByTagDef ['ReplyBodyPostFix', ''];
@@ -249,7 +249,7 @@ begin
       with AddXml (TXml.CreateAsString('Credentials', '')) do
       begin
         AddXml (TXml.CreateAsString('Name', fUserName));
-        AddXml (TXml.CreateAsString('Password', fPassword));
+        AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(fPassword)));
       end;
     if fReplyBodyPostFix <> '' then
       AddXml (TXml.CreateAsString ('ReplyBodyPostFix', fReplyBodyPostFix));

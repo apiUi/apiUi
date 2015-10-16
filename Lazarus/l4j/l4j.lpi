@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="4"/>
-      <BuildNr Value="574"/>
+      <BuildNr Value="576"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -94,6 +94,9 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -106,7 +109,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="7">
+    <Exceptions Count="8">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -128,6 +131,9 @@
       <Item7>
         <Name Value="EConvertError"/>
       </Item7>
+      <Item8>
+        <Name Value="Exception"/>
+      </Item8>
     </Exceptions>
   </Debugging>
 </CONFIG>

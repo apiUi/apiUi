@@ -348,23 +348,10 @@ begin
   xpFetched := True;
 
   TimeStamp:='';
-  MessageId:='';
-  ServiceRequestorId:='';
-  ServiceId:='';
   EventType:='';
   EventDataLength:=-1;
   EventData:='';
   sx := '';
-
-{
-  TimeStamp:=qry.FieldByName('TimeStamp').AsString;
-  MessageId:=Qry.FieldByName('MessageId').AsString;
-  ServiceRequestorId:=Qry.FieldByName('ServiceRequestorId').AsString;
-  ServiceId:=Qry.FieldByName('ServiceId').AsString;
-  EventType:=Qry.FieldByName('EventType').AsString;
-  EventDataLength:=-1;
-  EventData:='';
-}
 
   for f := 0 to Qry.Fields.Count - 1 do
   begin
@@ -374,42 +361,31 @@ begin
       try TimeStamp := field.DisplayText; except end
     else
     begin
-      if (nm = 'MESSAGEID') then
-        MessageId:=field.AsString
+      if (nm = 'CORRELATIONID') then
+        CorrelationId:=field.AsString
       else
       begin
-        if (nm = 'SERVICEREQUESTERID')
-        or (nm = 'SERVICEREQUESTORID') then
-          ServiceRequestorId:=field.AsString
+        if (nm = 'TUPLEID') then
+          RowId:=field.AsString
         else
         begin
-          if (nm = 'SERVICEID') then
-            ServiceId:=field.AsString
+          if AnsiStartsStr('EVENTTYPE', nm) then
+            EventType:=field.AsString
           else
           begin
-            if (nm = 'EVENTTYPE') then
-              EventType:=field.AsString
+            if AnsiStartsStr('EVENTDATA', nm) then
+              EventData:=EventData+field.AsString
             else
             begin
-              if (nm = 'TUPLEID') then
-                RowId:=field.AsString
+              if AnsiStartsStr('LENGTHEVENTDATA', nm) then
+                EventDataLength:=field.AsInteger
               else
               begin
-                if AnsiStartsStr('EVENTDATA', nm) then
-                  EventData:=EventData+field.AsString
-                else
-                begin
-                  if AnsiStartsStr('LENGTHEVENTDATA', nm) then
-                    EventDataLength:=field.AsInteger
-                  else
-                  begin
-                    sx := sx
-                        + '<' + field.DisplayName + '>'
-                        + field.AsString
-                        + '</' + field.DisplayName + '>'
-                        ;
-                  end;
-                end;
+                sx := sx
+                    + '<' + field.DisplayName + '>'
+                    + field.AsString
+                    + '</' + field.DisplayName + '>'
+                    ;
               end;
             end;
           end;
@@ -418,12 +394,12 @@ begin
     end;
   end;
 
-  if Msgs.Find(MessageId, f) then
+  if Msgs.Find(CorrelationId, f) then
     Msg := Msgs.Msg[f]
   else
   begin
     Msg := l4jTypes.TMsg.Create;
-    Msgs.AddObject(MessageId, Msg);
+    Msgs.AddObject(CorrelationId, Msg);
   end;
   if (TimeStamp < Msg.FirstTimeStamp) then
     Msg.FirstTimeStamp := TimeStamp;
@@ -431,11 +407,9 @@ begin
     Msg.LastTimeStamp := TimeStamp;
   Inc (Msg.Count);
   s := '<EventHeader>'
-     + '<EventType>' + EventType + '</EventType>'
+     + '<EVENT_TYPE>' + EventType + '</EVENT_TYPE>'
      + '<TimeStamp>' + TimeStamp + '</TimeStamp>'
-     + '<MessageId>' + MessageId + '</MessageId>'
-     + '<ServiceRequestorId>' + ServiceRequestorId + '</ServiceRequestorId>'
-     + '<ServiceId>' + ServiceId + '</ServiceId>'
+     + '<CorrelationId>' + CorrelationId + '</CorrelationId>'
      + sx
      + '</EventHeader>'
      ;
@@ -492,7 +466,7 @@ var
   s, sx, nm: String;
   field: TField;
   rXml, fXml: TXml;
-  xCorrelationId, xUserTaskId, xPGID: String;
+  xCorrelationId, xMessageId, xUserTaskId, xPGID: String;
   fProcessed: Boolean;
 begin
   if aXml.Name <> 'ROWSET' then
@@ -507,9 +481,7 @@ begin
   for r := 0 to aXml.Items.Count - 1 do
   begin
     TimeStamp:='';
-    MessageId:='';
-    ServiceRequestorId:='';
-    ServiceId:='';
+    CorrelationId:='';
     EventType:='';
     EventData:='';
     sx := '';
@@ -534,29 +506,18 @@ begin
       end;
       if (nm = 'USER_TASK_ID') then
       begin
-        UserTaskId:=xmlDecodeXml(fXml.Value);
-        fProcessed := True;
+        xUserTaskId:=xmlDecodeXml(fXml.Value);
+        fProcessed := False;
       end;
       if (nm = 'SERVICE_MESSAGE_ID') then
       begin
-        MessageId:=xmlDecodeXml(fXml.Value);
-        fProcessed := True;
-      end;
-      if (nm = 'REQUESTER_ID')
-      or (nm = 'REQUESTOR_ID') then
-      begin
-        ServiceRequestorId:=fXml.Value;
-        fProcessed := True;
-      end;
-      if (nm = 'SERVICE_ID') then
-      begin
-        ServiceId:=fXml.Value;
-        fProcessed := True;
+        xMessageId:=xmlDecodeXml(fXml.Value);
+        fProcessed := False;
       end;
       if (nm = 'EVENT_TYPE') then
       begin
         EventType:=fXml.Value;
-        fProcessed := True;
+        fProcessed := False;
       end;
       if AnsiStartsStr('EVENT_DATA', nm) then
       begin
@@ -573,7 +534,7 @@ begin
         fProcessed := True;
       end;
     end;
-    xCorrelationId := xPGID + ';' + MessageId + ';' + UserTaskId;
+    xCorrelationId := xPGID + ';' + xMessageId + ';' + xUserTaskId;
     if Msgs.Find(xCorrelationId, f) then
       Msg := Msgs.Msg[f]
     else
@@ -596,10 +557,7 @@ begin
     s := '<EventHeader>'
        + '<EventType>' + EventType + '</EventType>'
        + '<TimeStamp>' + TimeStamp + '</TimeStamp>'
-       + '<MessageId>' + MessageId + '</MessageId>'
-       + '<ServiceRequestorId>' + ServiceRequestorId + '</ServiceRequestorId>'
-       + '<ServiceId>' + ServiceId + '</ServiceId>'
-       + '<UserTaskId>' + UserTaskId + '</UserTaskId>'
+       + '<CorrelationId>' + CorrelationId + '</CorrelationId>'
        + sx
        + '</EventHeader>'
        ;
@@ -1244,8 +1202,8 @@ begin
   xDc.ColumnType := ctElement;
   DisplayedColumns.AddObject('', xDc);
   xDc := TDisplayedColumn.Create;
-  xDc.Header := 'ServiceRequestorId';
-  xDc.Key := 'ServiceRequestorId';
+  xDc.Header := 'SrqstrId';
+  xDc.Key := 'SrqstrId';
   xDc.ColumnType := ctElement;
   DisplayedColumns.AddObject('', xDc);
   xDc := TDisplayedColumn.Create;
