@@ -311,13 +311,25 @@ end;
 procedure TStompInterface.PutReply (aMessage: String; aFrame: IStompFrame; var aHeaderAsText: String);
 var
   xHeader: IStompHeaders;
+  xQueueName, xId, xTag: String;
 begin
+  xQueueName := aFrame.GetHeaders.Value ('reply-to');
+  if xQueueName = '' then
+    xQueueName := aFrame.GetHeaders.Value ('ReplyQueue');
+  xTag := 'correlation-id';
+  xId := aFrame.GetHeaders.Value(xTag);
+  if xId = '' then
+  begin
+    xTag := 'message-id';
+    xId := aFrame.GetHeaders.Value(xTag);
+  end;
+  xTag := 'correlation-id';
   xHeader := StompUtils.NewHeaders
-                        .Add('correlation-id', aFrame.GetHeaders.Value ('correlation-id'))
+                        .Add(xTag, xId)
                         .Add(TStompHeaders.NewPersistentHeader(False))
                         ;
 //mergeHeader (xHeader, aStompHeaderAsXml);
-  fStompClient.Send ( aFrame.GetHeaders.Value ('reply-to')
+  fStompClient.Send ( xQueueName
                     , aMessage
                     + ReplyBodyPostFix // WORKAROUND see xsd
                     , xHeader

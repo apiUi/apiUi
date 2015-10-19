@@ -153,7 +153,7 @@ type
     property Text: String read getText write setText;
     property Root: TXml read getRoot;
     function PrefixToNameSpace(aPrefix: String): String;
-    procedure NamespacesToPrefixes;
+    function NamespacesToPrefixes (aOnlyWhenChecked: Boolean): String;
     function ExpandPrefixedName (aDefaultNS, aName: String): String;
     function IndentString (x: Integer): String;
     function EncodeXml (aValue: String): String;
@@ -1193,6 +1193,7 @@ function TXml.StreamXML ( aUseNameSpaces: Boolean
                         ): String;
 var
   aLineNo: Integer;
+  nsAttributes: String;
   procedure _setUsedNameSpaces (aXml: TXml);
     procedure __setUsedNs (aXml: TXml);
     var
@@ -1241,71 +1242,21 @@ var
               )
   end;
   function _PrefixedTagname (aXml: TXml): string;
-  var
-    xXsd: TXsd;
-    xNameSpace, xPNameSpace: String;
   begin
-    if (not Assigned (aXml.TypeDef))
-    or (aXml.TypeDef.NameSpace = '')
-    or (    Assigned (aXml.Xsd)
-        and (aXml.Xsd.ElementNameSpace = '')
-       )
-{
-    or (aXml.Xsd.ElementNameSpace <> aXml.TypeDef.NameSpace)
-}
-    or (not aAsPrefix) then
-    begin
-      result := aXml.TagName;
-      exit;
-    end;
-    if aXml.Name = 'Clients' then
-      aXml.Name := 'Clients';
-    if Assigned (aXml.Parent)
-    and Assigned ((aXml.Parent as TXml).Xsd) then
-      xPNameSpace := (aXml.Parent as TXml).Xsd.ElementNameSpace
+    if (aXml.NameSpace <> '')
+    and aAsPrefix then
+      result := aXml.NsPrefix + ':' + aXml.Name
     else
-      xPNameSpace := scXMLSchemaURI;
-    xNameSpace := aXml.TypeDef.NameSpace;
-    xXsd := aXml.Xsd;
-    if xNameSpace = scXMLSchemaURI then
-    begin
-      xNameSpace := xPNameSpace;
-      if Assigned (aXml.Parent) then
-        xXsd := (aXml.Parent as TXml).Xsd;
-    end;
-    if (aUseNameSpaces) then
-    begin
-//    and (not _doEncode (aXml))
-      if (   _fdQual (aXml.Xsd.FormDefaultQualified)
-          or (Self = aXml) // root xml
-          or (xNameSpace <> xPNameSpace)
-          or (aXml.Xsd._RefElementName <> '') // global defined elements
-         )
-      then
-        result := xXsd.NSPrefix
-               + ':'
-               + aXml.TagName
-      else
-        result := aXml.TagName
-    end
-    else
-      result := aXml.TagName;
+      result := aXml.Name;
   end;
   function _xmlNsStrings (aXml: TXml; aDoEncode: Boolean): String;
   begin
     result := '';
     if (aUseNameSpaces)
     and (aAsPrefix)
-    and (Assigned (aXml.Xsd))
-//  and (aXml.Xsd.ElementNameSpace <> '')
-    and (Assigned (aXml.TypeDef))
-    and (   (Self = aXml) {if current element is root element}
-         or ((aXml.Parent as TXml).TypeDef.Manually)
-        )
-    then
+    and (aXml = self) then
     begin
-      _setUsedNameSpaces (aXml);
-      result := aXml.TypeDef.NSAttributes;
+      result := nsAttributes;
       if aDoEncode then
         result := result + aXml.TypeDef.XsiNameSpaceAttribute;
     end;
@@ -1323,7 +1274,7 @@ var
     if (OnlyWhenChecked and not aXml.Checked)
     then begin
       aXml.Checked := False;
-          exit;
+      exit;
     end;
     _xsiGenerated := xsiGenerated; // push boolean
     _xsdGenerated := xsdGenerated; // push boolean
@@ -1339,12 +1290,13 @@ var
                  ;
         if aUseNameSpaces
         and (not aAsPrefix)
-        and Assigned (aXml.Xsd)
-        and (aXml.Xsd.ElementNameSpace <> '')
-        and (   (not Assigned (aXml.Parent) or (not Assigned ((aXml.Parent as TXml).Xsd)))
-             or (aXml.Xsd.ElementNameSpace <> (aXml.Parent as TXml).Xsd.ElementNameSpace)
+        and (aXml.NameSpace <> '')
+        and (   (aXml = self)
+             or (    Assigned(aXml.Parent)
+                 and ((aXml.Parent as TXml).NameSpace <> aXml.NameSpace)
+                )
             ) then
-          xString := xString + ' xmlns="' + aXml.Xsd.ElementNameSpace + '"';
+          xString := xString + ' xmlns="' + aXml.NameSpace+ '"';
         xString := xString + _xmlNsStrings (aXml, True);
         xString := xString
                  + ' '
@@ -1373,15 +1325,20 @@ var
                  + '<'
                  + xTagName
                  ;
-        xString := xString + _xmlNsStrings (aXml, False);
+        if aXml = self then
+          xString := xString + _xmlNsStrings (aXml, False);
         if aUseNameSpaces
         and (not aAsPrefix)
-        and Assigned (aXml.Xsd)
-        and (aXml.Xsd.ElementNameSpace <> '')
-        and (   (not Assigned (aXml.Parent) or (not Assigned ((aXml.Parent as TXml).Xsd)))
-             or (aXml.Xsd.ElementNameSpace <> (aXml.Parent as TXml).Xsd.ElementNameSpace)
+        and (aXml.NameSpace <> '')
+        and (   (aXml = self)
+             or (    Assigned (aXml.Xsd)
+                 and aXml.Xsd.FormDefaultQualified
+                )
+             or (    Assigned(aXml.Parent)
+                 and ((aXml.Parent as TXml).NameSpace <> aXml.NameSpace)
+                )
             ) then
-          xString := xString + ' xmlns="' + aXml.Xsd.ElementNameSpace + '"';
+          xString := xString + ' xmlns="' + aXml.NameSpace+ '"';
       end;
       for x := 0 to aXml.Attributes.Count - 1 do
       begin
@@ -1450,7 +1407,7 @@ var
   end;
 begin
   result := '';
-  NamespacesToPrefixes;
+  nsAttributes := NamespacesToPrefixes (OnlyWhenChecked);
   if aIndent = 0 then
   begin
     result := GenerateXmlHeader (True);
@@ -2731,13 +2688,17 @@ begin
     result := _ResolveNamespace(self, Copy (aPrefix, 1, p - 1));
 end;
 
-procedure TXml.NamespacesToPrefixes ;
+function TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean): String;
 var
   nsList: TStringList;
+  n: Integer;
   procedure _scanForNs (aXml: TXml; aParentNs: String);
   var
     x: Integer;
   begin
+    if (not aXml.Checked)
+    and (aOnlyWhenChecked) then
+      exit;
     if aXml.NameSpace <> aParentNs then
       nsList.Add (aXml.NameSpace);
     for x := 0 to aXml.Items.Count - 1 do
@@ -2747,6 +2708,9 @@ var
   var
     x, f: Integer;
   begin
+    if (not aXml.Checked)
+    and (aOnlyWhenChecked) then
+      exit;
     if aXml.NameSpace = parentNameSpace then
       aXml.NsPrefix := parentPrefix
     else
@@ -2760,12 +2724,15 @@ var
       _fillNs(aXml.Items.XmlItems[x], aXml.NsPrefix, aXml.NameSpace);
   end;
 begin
+  result := '';
   nsList := TStringList.Create;
   try
     nsList.Sorted := True;
     nsList.Duplicates := dupIgnore;
     _scanForNs (self, '');
     _fillNs (self, '', '');
+    for n := 0 to nsList.Count - 1 do
+      result := result + Format(' xmlns:ns%d="%s"', [n + 1, nsList.Strings[n]]);
   finally
     nsList.Free;
   end;

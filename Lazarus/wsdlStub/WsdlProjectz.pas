@@ -2740,7 +2740,9 @@ begin
         end;
       end;
       if (xLog.ReplyBody <> '')
-      and (aFrame.GetHeaders.Value('reply-to') <> '') then
+      and (   (aFrame.GetHeaders.Value('reply-to') <> '')
+           or (aFrame.GetHeaders.Value('ReplyQueue') <> '')
+          ) then
       begin
         try
           aStompInterface.PutReply (xLog.ReplyBody, aFrame, xLog.ReplyHeaders);
