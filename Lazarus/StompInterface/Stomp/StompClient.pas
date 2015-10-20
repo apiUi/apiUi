@@ -241,7 +241,11 @@ begin
 {$IFDEF USESYNAPSE}
   Result := Assigned(FSynapseTCP) and FSynapseConnected;
 {$ELSE}
-  Result := Assigned(FTCP) and FTCP.Connected;
+  try
+    Result := Assigned(FTCP) and FTCP.Connected;
+  except
+    result := False;
+  end;
 {$ENDIF}
 end;
 

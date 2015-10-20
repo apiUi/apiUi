@@ -315,7 +315,7 @@ var
 begin
   xQueueName := aFrame.GetHeaders.Value ('reply-to');
   if xQueueName = '' then
-    xQueueName := aFrame.GetHeaders.Value ('ReplyQueue');
+    xQueueName := '/queue/' + aFrame.GetHeaders.Value ('ReplyQueue');
   xTag := 'correlation-id';
   xId := aFrame.GetHeaders.Value(xTag);
   if xId = '' then
@@ -355,14 +355,18 @@ end;
 procedure TStompInterface.Disconnect;
 begin
   if not Assigned (Self) then Exit;
-  if not Connected then Exit;
   doTerminate;
-  fStompClient.Disconnect;
+  if not Connected then Exit;
+  try fStompClient.Disconnect; except end;
 end;
 
 function TStompInterface.getConnected: Boolean;
 begin
-  result := fStompClient.Connected;
+  try
+    result := fStompClient.Connected;
+  except
+    result := False;
+  end;
 end;
 
 function TStompInterface.RequestReply(aRequest: String; aTimeOut: Integer;

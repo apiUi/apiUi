@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9067"/>
+      <BuildNr Value="9068"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -80,6 +80,7 @@
       <Unit4>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="IdStack"/>
       </Unit4>
     </Units>
   </ProjectOptions>
@@ -106,10 +107,9 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5024="True" idx5057="True"/>
+        <IgnoredMessages idx5057="True" idx5024="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -137,7 +137,6 @@
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
-        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
@@ -156,7 +155,6 @@
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
-        <Enabled Value="False"/>
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>
@@ -179,7 +177,6 @@
       </Item17>
       <Item18>
         <Name Value="EStringListError"/>
-        <Enabled Value="False"/>
       </Item18>
     </Exceptions>
   </Debugging>

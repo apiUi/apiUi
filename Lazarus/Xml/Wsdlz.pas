@@ -1396,9 +1396,9 @@ end;
 
 function setEnvVar (aName, aValue: String): String;
 begin
-  result := aValue;
   AcquireEnvVarLock;
   try
+    result := _WsdlVars.Values [aValue];
     _WsdlVars.Values [aName] := aValue;
   finally
     ReleaseEnvVarLock;
