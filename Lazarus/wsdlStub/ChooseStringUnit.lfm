@@ -33,6 +33,7 @@ object ChooseStringForm: TChooseStringForm
       Align = alClient
       ItemHeight = 0
       OnDblClick = ChooseClick
+      OnSelectionChange = ListBoxSelectionChange
       Sorted = True
       TabOrder = 0
     end

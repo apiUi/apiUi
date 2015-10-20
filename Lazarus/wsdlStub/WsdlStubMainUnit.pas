@@ -3910,7 +3910,9 @@ end;
 
 procedure TMainForm.ReopenStubCaseActionUpdate(Sender: TObject);
 begin
-  ReopenStubCaseAction.Enabled := not se.IsActive;
+  ReopenStubCaseAction.Enabled := (not se.IsActive)
+                              and (ReopenCaseList.Count > 0)
+                                ;
 end;
 
 procedure TMainForm.CheckBoxClick(Sender: TObject);

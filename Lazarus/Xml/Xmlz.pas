@@ -153,7 +153,7 @@ type
     property Text: String read getText write setText;
     property Root: TXml read getRoot;
     function PrefixToNameSpace(aPrefix: String): String;
-    function NamespacesToPrefixes (aOnlyWhenChecked: Boolean): String;
+    procedure NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList);
     function ExpandPrefixedName (aDefaultNS, aName: String): String;
     function IndentString (x: Integer): String;
     function EncodeXml (aValue: String): String;
@@ -204,8 +204,8 @@ type
     function StreamXML ( aUseNameSpaces: Boolean
                         ; aAsPrefix: Boolean
                         ; aIndent: Integer
-                        ; OnlyWhenChecked: Boolean
-                        ; Encoded: Boolean
+                        ; aOnlyWhenChecked: Boolean
+                        ; aEncoded: Boolean
                         ): String;
     function XmlStreamer ( aUseNameSpaces: Boolean
                          ; aAsPrefix: Boolean
@@ -1188,38 +1188,11 @@ end;
 function TXml.StreamXML ( aUseNameSpaces: Boolean
                         ; aAsPrefix: Boolean
                         ; aIndent: Integer
-                        ; OnlyWhenChecked: Boolean
-                        ; Encoded: Boolean
+                        ; aOnlyWhenChecked: Boolean
+                        ; aEncoded: Boolean
                         ): String;
 var
-  aLineNo: Integer;
-  nsAttributes: String;
-  procedure _setUsedNameSpaces (aXml: TXml);
-    procedure __setUsedNs (aXml: TXml);
-    var
-      x, f: Integer;
-    begin
-      if aXml.Checked then
-      begin
-        if Assigned (aXml.Xsd)
-        and Assigned (aXml.Xsd.sType) then
-        begin
-          if aXml.Xsd.xsdDescr.NameSpaceList.Find(aXml.Xsd.sType.NameSpace, f) then
-            aXml.Xsd.xsdDescr.NameSpaceList.Objects[f] := Pointer (1);
-          if not aXml.TypeDef.Manually then
-            for x := 0 to aXml.Items.Count - 1 do
-              __setUsedNs (aXml.Items.XmlItems[x]);
-        end;
-      end;
-    end;
-  var
-    x: Integer;
-  begin
-    for x := 0 to Xsd.xsdDescr.NameSpaceList.Count - 1 do
-      Xsd.xsdDescr.NameSpaceList.Objects[x] := Pointer (0);
-    __setUsedNs (aXml);
-  end;
-
+  nsAttributes: TStringList;
   function _doEncode (aXml: TXml): Boolean;
   begin
     if aXml.Name = 'GenericData' then
@@ -1227,7 +1200,7 @@ var
     result := (Assigned (aXml.Xsd))
           and (aXml.Xsd.ElementNameSpace <> '')
           and (aXml.Xsd.DoNotEncode = False)
-          and (   Encoded
+          and (   aEncoded
                or (    Assigned (aXml.Xsd.sType)
                    and aXml.Xsd.sType.IsExtention
                    and (aXml.Xsd.sType.Name <> '')
@@ -1249,21 +1222,24 @@ var
     else
       result := aXml.Name;
   end;
-  function _xmlNsStrings (aXml: TXml; aDoEncode: Boolean): String;
+  function _xmlNsStrings (aXml: TXml; aEncoded: Boolean): String;
+  var
+    n: Integer;
   begin
     result := '';
     if (aUseNameSpaces)
     and (aAsPrefix)
     and (aXml = self) then
     begin
-      result := nsAttributes;
-      if aDoEncode then
+      for n := 0 to nsAttributes.Count - 1 do
+        result := result + Format(' xmlns:ns%d="%s"', [n + 1, nsAttributes.Strings[n]]);
+      if aEncoded then
         result := result + aXml.TypeDef.XsiNameSpaceAttribute;
     end;
   end;
-  function _StreamXML(aXml: TXml; aIndent: Integer; OnlyWhenChecked: Boolean; Encoded: Boolean): String;
+  function _StreamXML(aXml: TXml; aIndent: Integer): String;
   var
-    x: Integer;
+    x, f: Integer;
     xString: String;
     xTagName: String;
     xAttrNSPrefix: String;
@@ -1271,15 +1247,11 @@ var
     _xsdGenerated: Boolean; //stack xsdGenerated
   begin
     result := '';
-    if (OnlyWhenChecked and not aXml.Checked)
-    then begin
-      aXml.Checked := False;
+    if (aOnlyWhenChecked and not aXml.Checked) then
       exit;
-    end;
     _xsiGenerated := xsiGenerated; // push boolean
     _xsdGenerated := xsdGenerated; // push boolean
     try
-      aXml.LineNo := aLineNo;
       if (_doEncode (aXml))
       then
       begin
@@ -1303,13 +1275,14 @@ var
                  + 'xsi:type="'
                  ;
         if aXml.TypeDef.IsBuiltIn then
-          xString := xString
-                   + 'xsd:'
+          xString := xString + 'xsd:'
         else
-          xString := xString
-                   + aXml.Xsd.NSPrefix
-                   + ':'
-                   ;
+        begin
+          if nsAttributes.Find(aXml.TypeDef.NameSpace, f) then
+            xString := xString + 'ns' + IntToStr(f) + ':'
+          else
+            xString := xString + 'nsx:';
+        end;
         xString := xString
                  + aXml.TypeDef.Name
                  + '"'
@@ -1342,7 +1315,7 @@ var
       end;
       for x := 0 to aXml.Attributes.Count - 1 do
       begin
-        if (not OnlyWhenChecked)
+        if (not aOnlyWhenChecked)
         or (aXml.Attributes.XmlAttributes [x].Checked) then
         begin
           if Assigned (aXml.Attributes.XmlAttributes [x].XsdAttr)
@@ -1358,24 +1331,21 @@ var
                    + EncodeXml (aXml.Attributes.XmlAttributes [x].Value)
                    + '"'
                    ;
-          aXml.Attributes.XmlAttributes [x].LineNo := aLineNo;
         end;
       end;
       xString := xString + '>';
       if aXml.Group = True then
       begin
         result := StrAdd (result, xString);
-        Inc (aLineNo);
         for x := 0 to aXml.Items.Count - 1 do
           result := result
-                  + _StreamXML (aXml.Items.XmlItems [x], aIndent + 2, OnlyWhenChecked, Encoded);
+                  + _StreamXML (aXml.Items.XmlItems [x], aIndent + 2);
         result := StrAdd ( result
                          , IndentString (aIndent)
                          + '</'
                          + xTagName
                          + '>'
                          );
-        Inc (aLineNo);
       end
       else
       begin
@@ -1398,7 +1368,6 @@ var
                            + '>'
                            );
         end;
-        Inc (aLineNo);
       end;
     finally
       xsiGenerated := _xsiGenerated; // pop boolean
@@ -1407,15 +1376,15 @@ var
   end;
 begin
   result := '';
-  nsAttributes := NamespacesToPrefixes (OnlyWhenChecked);
-  if aIndent = 0 then
-  begin
-    result := GenerateXmlHeader (True);
-    aLineNo := 2;
-  end
-  else
-    aLineNo := 0;
-  result := result + _StreamXML(Self, aIndent, OnlyWhenChecked, Encoded);
+  nsAttributes := TStringList.Create;
+  try
+    NamespacesToPrefixes (aOnlyWhenChecked, nsAttributes);
+    if aIndent = 0 then
+      result := GenerateXmlHeader (True);
+    result := result + _StreamXML(Self, aIndent);
+  finally
+    nsAttributes.Free;
+  end;
 end;
 
 function TXml .XmlStreamer (aUseNameSpaces : Boolean ; aAsPrefix : Boolean ;
@@ -2688,10 +2657,7 @@ begin
     result := _ResolveNamespace(self, Copy (aPrefix, 1, p - 1));
 end;
 
-function TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean): String;
-var
-  nsList: TStringList;
-  n: Integer;
+procedure TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList);
   procedure _scanForNs (aXml: TXml; aParentNs: String);
   var
     x: Integer;
@@ -2700,7 +2666,7 @@ var
     and (aOnlyWhenChecked) then
       exit;
     if aXml.NameSpace <> aParentNs then
-      nsList.Add (aXml.NameSpace);
+      aSl.Add (aXml.NameSpace);
     for x := 0 to aXml.Items.Count - 1 do
       _scanForNs(aXml.Items.XmlItems[x], aXml.NameSpace);
   end;
@@ -2715,7 +2681,7 @@ var
       aXml.NsPrefix := parentPrefix
     else
     begin
-      if nsList.Find(aXml.NameSpace, f) then
+      if aSl.Find(aXml.NameSpace, f) then
         aXml.NsPrefix := 'ns' + IntToStr(f + 1)
       else
         aXml.NsPrefix := '';
@@ -2724,18 +2690,13 @@ var
       _fillNs(aXml.Items.XmlItems[x], aXml.NsPrefix, aXml.NameSpace);
   end;
 begin
-  result := '';
-  nsList := TStringList.Create;
-  try
-    nsList.Sorted := True;
-    nsList.Duplicates := dupIgnore;
-    _scanForNs (self, '');
-    _fillNs (self, '', '');
-    for n := 0 to nsList.Count - 1 do
-      result := result + Format(' xmlns:ns%d="%s"', [n + 1, nsList.Strings[n]]);
-  finally
-    nsList.Free;
-  end;
+  if not Assigned (aSl) then
+    raise Exception.Create ('TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList):: aSl not asigned');
+  aSl.Clear;
+  aSl.Sorted := True;
+  aSl.Duplicates := dupIgnore;
+  _scanForNs (self, '');
+  _fillNs (self, '', '');
 end;
 
 function TXml.ExpandPrefixedName (aDefaultNS, aName: String): String ;

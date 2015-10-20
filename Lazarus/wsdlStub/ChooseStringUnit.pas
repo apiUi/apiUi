@@ -29,6 +29,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ListBoxSelectionChange (Sender : TObject ; User : boolean );
   private
     fChoosenString: String;
     function getChoosenIndex: Integer;
@@ -75,6 +76,7 @@ begin
   with TFormIniFile.Create (Self, True) do
   try
     Restore;
+    OkButton.Enabled := (ListBox.ItemIndex > -1);
   finally
     Free;
   end;
@@ -93,6 +95,12 @@ end;
 procedure TChooseStringForm.FormShow(Sender: TObject);
 begin
   ListBox.SetFocus;
+end;
+
+procedure TChooseStringForm .ListBoxSelectionChange (Sender : TObject ;
+  User : boolean );
+begin
+  OkButton.Enabled := (ListBox.ItemIndex > -1);
 end;
 
 function TChooseStringForm.getChoosenIndex: Integer;

@@ -2521,7 +2521,7 @@ function TXsdDescr.NameSpacePrefix(aNameSpace: String): String;
 var
   x: integer;
 begin
-  if aNameSpace = 'http://www.w3.org/2001/XMLSchema' then
+  if aNameSpace = scXMLSchemaURI then
     result := 'xsd'
   else
   begin
