@@ -11657,7 +11657,14 @@ begin
     if Assigned(xXml) then
     begin
       sc.Enabled:=xXml.Items.XmlCheckedBooleanByTagDef['Enabled', sc.Enabled];
-      sc.portNumber := xXml.Items.XmlCheckedIntegerByTagDef['Port', sc.portNumber];
+      try
+        sc.portNumber := xXml.Items.XmlCheckedIntegerByTagDef['Port', sc.portNumber];
+      except
+        on e: exception do
+        begin
+          LogServerException (e.Message + LineEnding + 'while setting portnumber for remote control' +LineEnding, True, e);
+        end;
+      end;
     end;
     xXml := XmlCheckedItemByTag['Mq'];
     if Assigned(xXml) then

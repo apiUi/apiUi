@@ -341,15 +341,6 @@ begin
   end;
 end;
 
-function VarToStr(aVariant: Variant; aDefault: String): String;
-begin
-  if (VarType(aVariant) = varString) or (VarType(aVariant) = varOleStr) or
-    (VarType(aVariant) = varUString) then
-    result := aVariant
-  else
-    result := aDefault;
-end;
-
 function MatchPattern(const ARegExpr, AInputStr: RegExprString): Boolean;
 var
   Rx: TRegExpr;
