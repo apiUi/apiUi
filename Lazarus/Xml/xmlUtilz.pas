@@ -215,8 +215,8 @@ begin
             and (xForm.isChanged);
       if result then
       begin
-        aXml.LoadFromString(cnfXml.AsText(False,0,True,False), Nil);
-        aXml.CheckDownline(True);
+        aXml.CheckDownline(False);
+        aXml.LoadValues(cnfXml, True, True);
       end;
     finally
       xForm.Free;

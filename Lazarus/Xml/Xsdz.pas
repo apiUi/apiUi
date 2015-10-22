@@ -298,17 +298,8 @@ uses SysUtils
 { TXsdList }
 
 function NameWithoutPrefix(aName: String): String;
-var
-  x: integer;
 begin
-  result := '';
-  for x := 1 to Length(aName) do
-  begin
-    if aName[x] = ':' then
-      result := ''
-    else
-      result := result + aName[x];
-  end;
+  result := Copy (aName, Pos (':', aName) + 1, MaxInt);
 end;
 
 procedure AddDocumentation(aStringList: TStringList; aXml: TXml);
