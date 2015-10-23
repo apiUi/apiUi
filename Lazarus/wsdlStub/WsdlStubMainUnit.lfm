@@ -2108,6 +2108,11 @@ object MainForm: TMainForm
       Caption = 'Alias...'
       OnExecute = OperationAliasActionExecute
     end
+    object SchemasToZip: TAction
+      Caption = 'SchemasToZip'
+      OnExecute = SchemasToZipExecute
+      ShortCut = 24666
+    end
   end
   object mainImageList: TImageList
     left = 40

@@ -64,6 +64,7 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    SchemasToZip : TAction ;
     ExecuteAllRequestsToolButton : TToolButton ;
     ExecuteLoadTextToolbutton : TToolButton ;
     ExecuteRequestToolButton : TToolButton ;
@@ -523,6 +524,7 @@ type
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
+    procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
     procedure RemoveAllMessagesActionExecute(Sender: TObject);
@@ -11532,6 +11534,30 @@ end;
 procedure TMainForm.ProjectDesignToClipboardActionExecute(Sender: TObject);
 begin
   Clipboard.AsText := se.ProjectDesignAsString(se.projectFileName);
+end;
+
+procedure TMainForm .SchemasToZipExecute (Sender : TObject );
+var
+  x, w, n, f: Integer;
+  slFileNames, slNames: TStringList;
+begin
+  slFileNames := TStringList.Create;
+  slNames := TStringList.Create;
+  try
+    slFileNames.Sorted := True;
+    slFileNames.Duplicates := dupError;
+    for w := 0 to se.Wsdls.Count - 1 do with se.Wsdls.Objects[w] as TWsdl do
+    begin
+      for n := 0 to XsdDescr.ReadFileNames.Count - 1 do
+        if not slFileNames.Find(XsdDescr.ReadFileNames.Strings[n], f) then
+          slFileNames.Add(XsdDescr.ReadFileNames.Strings[n]);
+    end;
+    ShowInfoForm('slFileNames', slFileNames.Text);
+  finally
+    FreeAndNil(slFileNames);
+    FreeAndNil(slNames);
+  end;
+  ShowMessage ('controlshiftzet');
 end;
 
 procedure TMainForm.OperationOptionsActionExecute(Sender: TObject);
