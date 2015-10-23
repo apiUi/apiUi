@@ -11539,10 +11539,10 @@ end;
 procedure TMainForm .SchemasToZipExecute (Sender : TObject );
 var
   x, w, n, f: Integer;
-  slFileNames, slNames: TStringList;
+  slFileNames, slDones, slNames: TStringList;
+  xXml: TXml;
 begin
   slFileNames := TStringList.Create;
-  slNames := TStringList.Create;
   try
     slFileNames.Sorted := True;
     slFileNames.Duplicates := dupError;
@@ -11553,11 +11553,28 @@ begin
           slFileNames.Add(XsdDescr.ReadFileNames.Strings[n]);
     end;
     ShowInfoForm('slFileNames', slFileNames.Text);
+    slNames := TStringList.Create;
+    try
+      slNames.Sorted := True;
+      for n := 0 to slFileNames.Count - 1 do
+        slNames.Values[slFileNames.Strings[n]] := 'fn' + IntToStr(n + 1); // you might do better
+      ShowInfoForm('NameValuePairs', slNames.Text);
+      slDones := TStringList.Create;
+      try
+        slDones.Sorted := True;
+        for w := 0 to se.Wsdls.Count - 1 do with se.Wsdls.Objects[w] as TWsdl do
+        begin
+
+        end;
+      finally
+        FreeAndNil(slDones);
+      end;
+    finally
+      FreeAndNil(slNames);
+    end;
   finally
     FreeAndNil(slFileNames);
-    FreeAndNil(slNames);
   end;
-  ShowMessage ('controlshiftzet');
 end;
 
 procedure TMainForm.OperationOptionsActionExecute(Sender: TObject);
