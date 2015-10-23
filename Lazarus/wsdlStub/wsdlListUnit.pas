@@ -378,7 +378,7 @@ end;
 procedure TwsdlListForm.ExtraXSDActionUpdate(Sender: TObject);
 begin
   ExtraXSDAction.Enabled := (ListView.ItemIndex > -1)
-                    and (UpperCase (ExtractFileExt (ListView.Selected.Caption)) = '.WSDL')
+//                  and (UpperCase (ExtractFileExt (ListView.Selected.Caption)) = '.WSDL')
                     and Assigned (_WsdlListOfFilesXsd);
 end;
 
