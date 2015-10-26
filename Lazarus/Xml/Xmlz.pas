@@ -1220,7 +1220,7 @@ var
     and aAsPrefix then
       result := aXml.NsPrefix + ':' + aXml.Name
     else
-      result := NameWithoutPrefix(aXml.Name);
+      result := aXml.Name;
   end;
   function _xmlNsStrings (aXml: TXml; aEncoded: Boolean): String;
   var

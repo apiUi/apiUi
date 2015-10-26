@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, tachartlazaruspkg, virtualtreeview_package, lazrichedit,
+  Forms, tachartlazaruspkg , abbrevia, virtualtreeview_package, lazrichedit,
   IdExceptionCore, IdStack, WsdlStubMainUnit;
 
 {$R *.res}

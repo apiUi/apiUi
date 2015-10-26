@@ -1159,7 +1159,7 @@ uses
   XmlGridUnit, IpmGridUnit,
   xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, base64, xmlxsdparser,
-  HashUtilz, xmlio, xmlzConsts;
+  HashUtilz, xmlio, xmlzConsts, AbZipper;
 {$IFnDEF FPC}
   {$R *.dfm}
 {$ELSE}
@@ -11537,43 +11537,88 @@ begin
 end;
 
 procedure TMainForm .SchemasToZipExecute (Sender : TObject );
-var
-  x, w, n, f: Integer;
-  slFileNames, slDones, slNames: TStringList;
-  xXml: TXml;
-begin
-  slFileNames := TStringList.Create;
-  try
-    slFileNames.Sorted := True;
-    slFileNames.Duplicates := dupError;
-    for w := 0 to se.Wsdls.Count - 1 do with se.Wsdls.Objects[w] as TWsdl do
+  procedure _wsdlZipper (aZipFileName: String);
+  var
+    x, w, n, f: Integer;
+    slFileNames, slNames: TStringList;
+    xXml: TXml;
+    newText: String;
+    zipper: TAbZipper;
+    MS: TStringStream;
+    procedure _scanXml (aXml: TXml; aFileName: String);
+    var
+      x: Integer;
+      xFileName: String;
     begin
-      for n := 0 to XsdDescr.ReadFileNames.Count - 1 do
-        if not slFileNames.Find(XsdDescr.ReadFileNames.Strings[n], f) then
-          slFileNames.Add(XsdDescr.ReadFileNames.Strings[n]);
+      for x := 0 to aXml.Attributes.Count - 1 do with aXml.Attributes.XmlAttributes[x] do
+        if Name = tagSchemaLocation then
+        begin
+          xFileName := ExpandRelativeFileName(aFileName, Value);
+          Value := slNames.Values[xFileName];
+        end;
+      for x := 0 to aXml.Items.Count - 1 do
+        _scanXml(aXml.Items.XmlItems[x], aFileName);
     end;
-    ShowInfoForm('slFileNames', slFileNames.Text);
-    slNames := TStringList.Create;
+
+  begin
+    zipper := TAbZipper.Create(nil);
     try
-      slNames.Sorted := True;
-      for n := 0 to slFileNames.Count - 1 do
-        slNames.Values[slFileNames.Strings[n]] := 'fn' + IntToStr(n + 1); // you might do better
-      ShowInfoForm('NameValuePairs', slNames.Text);
-      slDones := TStringList.Create;
+      zipper.FileName:= aZipFileName;
+      zipper.AutoSave:=True;
+      while zipper.Count > 0 do
+        zipper.DeleteAt(0);
+      slFileNames := TStringList.Create;
       try
-        slDones.Sorted := True;
+        slFileNames.Sorted := True;
+        slFileNames.Duplicates := dupError;
         for w := 0 to se.Wsdls.Count - 1 do with se.Wsdls.Objects[w] as TWsdl do
         begin
-
+          for n := 0 to XsdDescr.ReadFileNames.Count - 1 do
+            if not slFileNames.Find(XsdDescr.ReadFileNames.Strings[n], f) then
+              slFileNames.Add(XsdDescr.ReadFileNames.Strings[n]);
+        end;
+        slNames := TStringList.Create;
+        try
+          slNames.Sorted := False;
+          for n := 0 to slFileNames.Count - 1 do
+            slNames.Values[slFileNames.Strings[n]] := 'fn' + IntToStr(n + 1) + '.xsd'; // you might do better
+          for w := 0 to se.Wsdls.Count - 1 do with se.Wsdls.Objects[w] as TWsdl do
+            slNames.Values[FileName] := 'rootfn' + IntToStr(w + 1) + '.wsdl'; // you might do better
+          for n := 0 to slFileNames.Count - 1 do
+          begin
+            xXml := TXml.Create;
+            try
+              xXml.LoadFromFile(slFileNames.Strings[n], nil);
+              _scanXml (xXml, slFileNames.Strings[n]);
+              MS := TStringStream.Create(xXml.Text);
+              try
+                MS.Position := 0;
+                zipper.AddFromStream(slNames.Values[slFileNames.Strings[n]], MS);
+              finally
+                MS.Free;
+              end;
+            finally
+              xXml.Free;
+            end;
+          end;
+        finally
+          FreeAndNil(slNames);
         end;
       finally
-        FreeAndNil(slDones);
+        FreeAndNil(slFileNames);
       end;
     finally
-      FreeAndNil(slNames);
+      zipper.Free;
     end;
-  finally
-    FreeAndNil(slFileNames);
+  end;
+begin
+  with SaveFileDialog do
+  begin
+    DefaultExt := 'zip';
+    Filter := 'zip file (*.zip)|*.zip';
+    Title := 'wsdlZipper';
+    if Execute then
+      _wsdlZipper(FileName);
   end;
 end;
 
