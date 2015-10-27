@@ -108,6 +108,7 @@ type
     ElementDefs: TXsdList;
     AttributeDefs: TXsdAttrList;
     Manually: Boolean;
+    ManuallyUsedAtPath: String;
 {
     isMaxLengthAdjusted: Boolean;
     MaxOccursAdjusted: Integer;
@@ -539,32 +540,6 @@ end;
 
 
 function TXsdDescr.AddedTypeDefElementsAsXml: TObject;
-  procedure _Usage(sXml: TXml; sTypeDef, nTypeDef: TXsdDataType;
-    aCaption, aSep: String);
-  var
-    E: integer;
-  begin
-    if not Assigned(sTypeDef) or sTypeDef._Processed then
-      exit;
-    sTypeDef._Processed := True;
-    try
-      if sTypeDef = nTypeDef then
-        sXml.AddXml(TXml.CreateAsString('UsedAt', aCaption))
-      else
-        for E := 0 to sTypeDef.ElementDefs.Count - 1 do
-        begin
-          if not Assigned(sTypeDef.ElementDefs.Xsds[E].sType) then
-            ShowMessage(sTypeDef.ElementDefs.Xsds[E].ElementName);
-          _Usage(sXml, sTypeDef.ElementDefs.Xsds[E].sType, nTypeDef,
-            aCaption + aSep + sTypeDef.ElementDefs.Xsds[E]
-              .ElementNameSpace + ';' + sTypeDef.ElementDefs.Xsds[E]
-              .ElementName, aSep);
-        end;
-    finally
-      sTypeDef._Processed := False;
-    end;
-  end;
-
 var
   x, y: integer;
   nTypeDef: TXsdDataType;
@@ -578,32 +553,20 @@ begin
     if TypeDefs.XsdDataTypes[x].Manually then
     begin
       nTypeDef := TypeDefs.XsdDataTypes[x];
-      { }{
-        oTypeDef := nTypeDef.ExtentionBase;
-        while oTypeDef.Manually do
-        oTypedef := oTypeDef.ExtentionBase;
-        { }
       sXml := XmlResult.AddXml(TXml.CreateAsString('AddedTypeDefElement', ''));
       with sXml do
       begin
-        for y := 0 to TypeDefs.Count - 1 do
-          if TypeDefs.XsdDataTypes[y] <> nTypeDef then
-            _Usage(sXml, TypeDefs.XsdDataTypes[y], nTypeDef,
-              TypeDefs.XsdDataTypes[y].NameSpace + ';' + TypeDefs.XsdDataTypes
-                [y].Name, '<>');
+        AddXml (TXml.CreateAsString('UsedAt', nTypeDef.ManuallyUsedAtPath));
         for y := 0 to nTypeDef.ElementDefs.Count - 1 do
         begin
-          if nTypeDef.ElementDefs.Xsds[y].Manually then
+          with AddXml(TXml.CreateAsString('Added', '')) do
           begin
-            with AddXml(TXml.CreateAsString('Added', '')) do
-            begin
-              AddXml(TXml.CreateAsString('NameSpace',
-                  nTypeDef.ElementDefs.Xsds[y].sType.NameSpace));
-              AddXml(TXml.CreateAsString('Name',
-                  nTypeDef.ElementDefs.Xsds[y].sType.Name));
-              AddXml(TXml.CreateAsString('ElementName',
-                  nTypeDef.ElementDefs.Xsds[y].ElementName));
-            end;
+            AddXml(TXml.CreateAsString('NameSpace',
+                nTypeDef.ElementDefs.Xsds[y].sType.NameSpace));
+            AddXml(TXml.CreateAsString('Name',
+                nTypeDef.ElementDefs.Xsds[y].sType.Name));
+            AddXml(TXml.CreateAsString('ElementName',
+                nTypeDef.ElementDefs.Xsds[y].ElementName));
           end;
         end;
       end;
@@ -1517,8 +1480,7 @@ begin
   end;
 end;
 
-function TXsd.AddElementDef(aXsdDescr: TXsdDescr; aName: String;
-  aType: TXsdDataType): TXsd;
+function TXsd.AddElementDef(aXsdDescr: TXsdDescr; aName: String; aType: TXsdDataType): TXsd;
   procedure _setNameSpace (aXsd: TXsd; aNS: String);
   var
     x: Integer;
@@ -1537,17 +1499,13 @@ begin
   if not oType.Manually then
   begin
     nType := TXsdDataType.Create(aXsdDescr, oType);
-    { }{
-      nType.ExtentionBase := oType;
-      oType.ExtendedByList.AddObject ('', nType);
-      DoNotEncode := True;
-      { }
     nType.NameSpace := ElementNameSpace;
     nType.Name := nType.Name + nType.uniqueId;
     aXsdDescr.Garbage.AddObject('', nType);
   end
   else
     nType := oType;
+  nType.Manually := True;
   result := TXsd.Create(aXsdDescr);
   aXsdDescr.Garbage.AddObject('', result);
   result.FormDefaultQualified := FormDefaultQualified;

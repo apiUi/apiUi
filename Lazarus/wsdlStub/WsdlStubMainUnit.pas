@@ -8133,9 +8133,9 @@ begin
         ((xBind as TXml).IndexOfRepeatableItem >= xsdElementsWhenRepeatable);
       if Assigned(TypeDef) then
       begin
-        if (TypeDef.IsComplex and (TypeDef.ElementDefs.Count = 0)) or
-          ((TypeDef.IsBuiltIn) and (TypeDef.BaseDataTypeName = 'anyType')) or
-          (TypeDef.Manually) then
+        if (TypeDef.IsComplex and (TypeDef.ElementDefs.Count = 0))
+        or ((TypeDef.IsBuiltIn) and (TypeDef.BaseDataTypeName = 'anyType'))
+        or (TypeDef.Manually) then
           xAddChildVisible := True;
         if (Items.Count = 0) and (TypeDef.ElementDefs.Count > 0) then
           xExtRecurVisible := True;
@@ -8903,14 +8903,13 @@ begin
 end;
 
 procedure TMainForm.AddChildElementDefMenuItemClick(Sender: TObject);
-  procedure _updateTypedef(aXml: TXml; oXsd, aXsd: TXsd;
-    nType, oType: TXsdDataType);
+  procedure _updateTypedef(aXml: TXml; aFullCaption: String; nType: TXsdDataType; aXsd: TXsd);
   var
     X: Integer;
   begin
     for X := 0 to aXml.Items.Count - 1 do
-      _updateTypedef(aXml.Items.XmlItems[X], oXsd, aXsd, nType, oType);
-    if (aXml.Xsd = oXsd) then
+      _updateTypedef(aXml.Items.XmlItems[X], aFullCaption, nType, aXsd);
+    if (aXml.FullCaption = aFullCaption) then
     begin
       bindRefId := 0;
       aXml.AddXml(TXml.Create(0, aXsd));
@@ -8953,29 +8952,50 @@ begin
         cTypeDef := Wsdl.XsdDescr.TypeDefs.XsdDataTypes[f];
         Application.CreateForm(TPromptForm, PromptForm);
         try
-          PromptForm.Caption := 'Name for ' + Wsdl.XsdDescr.TypeDefs.Strings[f];
+          PromptForm.Caption := 'Name for '
+                              + Wsdl.XsdDescr.TypeDefs.Strings[f]
+                              + ' at '
+                              + xXml.FullCaption
+                              ;
           PromptForm.PromptEdit.Text := '';
           PromptForm.Numeric := False;
           PromptForm.ShowModal;
           if PromptForm.ModalResult = mrOk then
           begin
             oTypeDef := xXml.Xsd.sType;
-            xxsd := xXml.Xsd.AddElementDef(Wsdl.XsdDescr,
-              PromptForm.PromptEdit.Text, cTypeDef);
+            xxsd := xXml.Xsd.AddElementDef ( Wsdl.XsdDescr
+                                           , PromptForm.PromptEdit.Text
+                                           , cTypeDef
+                                           );
             nTypeDef := xXml.Xsd.sType;
+            nTypeDef.ManuallyUsedAtPath := WsdlOperation.Alias
+                                         + '.'
+                                         + IfThen(xXml.Root = WsdlOperation.reqBind, 'Req.', 'Rpy.')
+                                         + xXml.FullCaption
+                                         ;
             xXml.Checked := True;
-            _updateTypedef(WsdlOperation.reqBind as TXml, xXml.Xsd, xxsd,
-              nTypeDef, oTypeDef);
-            _updateTypedef(WsdlOperation.rpyBind as TXml, xXml.Xsd, xxsd,
-              nTypeDef, oTypeDef);
+            _updateTypedef ( WsdlOperation.reqBind as TXml
+                           , xXml.FullCaption
+                           , nTypeDef
+                           , xxsd
+                           );
+            _updateTypedef ( WsdlOperation.rpyBind as TXml
+                           , xXml.FullCaption
+                           , nTypeDef
+                           , xxsd
+                           );
             for m := 0 to WsdlOperation.Messages.Count - 1 do
             begin
-              _updateTypedef
-                (WsdlOperation.Messages.Messages[m].reqBind as TXml, xXml.Xsd,
-                xxsd, nTypeDef, oTypeDef);
-              _updateTypedef
-                (WsdlOperation.Messages.Messages[m].rpyBind as TXml, xXml.Xsd,
-                xxsd, nTypeDef, oTypeDef);
+              _updateTypedef ( WsdlOperation.Messages.Messages[m].reqBind as TXml
+                             , xXml.FullCaption
+                             , nTypeDef
+                             , xxsd
+                             );
+              _updateTypedef ( WsdlOperation.Messages.Messages[m].rpyBind as TXml
+                             , xXml.FullCaption
+                             , nTypeDef
+                             , xxsd
+                             );
             end;
             GridView.OnFocusChanged(GridView, GridView.FocusedNode,
               GridView.FocusedColumn);

@@ -2161,7 +2161,7 @@ begin
                 dXml := wXml.Items.XmlItemByTag ['AddedTypeDefElements'];
                 if Assigned (dXml) then
                 begin
-                  xWsdl.XsdDescr.AddedTypeDefElementsFromXml (dXml);
+                  xWsdl.AddedTypeDefElementsFromXml (dXml);
                   for s := 0 to xWsdl.Services.Count - 1 do
                     with xWsdl.Services.Services[s] do
                       for o := 0 to Operations.Count - 1 do

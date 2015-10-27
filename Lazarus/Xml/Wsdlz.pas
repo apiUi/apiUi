@@ -94,6 +94,7 @@ type
       property OperationByRequest [Index: String]: TWsdlOperation read getOperationByRequest;
       function ExtraXsdsAsXml (aSaveRelativeFileNames: Boolean): TXml;
       procedure ExtraXsdsFromXml (aXml: TXml);
+      procedure AddedTypeDefElementsFromXml (aXml: TXml);
       procedure LoadExtraXsds;
       procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent);
       procedure LoadFromSdfFile(aFileName: String);
@@ -2855,6 +2856,68 @@ begin
   for x := 0 to aXml.Items.Count - 1 do
     if aXml.Items.XmlItems[x].Checked then
       ExtraXsds.Add (CheckAndPromptForExistingFile(aXml.FullIndexCaption, FileName, aXml.Items.XmlItems[x].Value));
+end;
+
+procedure TWsdl .AddedTypeDefElementsFromXml (aXml : TXml );
+var
+  x, y, o: Integer;
+  cXml, rXml: TXml;
+  s, xAlias, xReqRpy, xCaption, xTypeName, xTypeNameSpace, xElementName: String;
+  xOperation: TWsdlOperation;
+  xType: TXsdDataType;
+begin
+  if not Assigned (aXml) then Exit;
+  if aXml.Name <> 'AddedTypeDefElements' then Exit;
+  for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
+  begin
+    if Name = 'AddedTypeDefElement' then
+    begin
+      s := Items.XmlValueByTag['UsedAt'];
+      xAlias := Copy (s, 1, Pos ('.', s) - 1);
+      s := Copy (s, Pos ('.', s) + 1, MaxInt);
+      xReqRpy := Copy (s, 1, Pos ('.', s) - 1);
+      xCaption := Copy (s, Pos ('.', s) + 1, MaxInt);
+      xOperation := nil;
+      for y := 0 to Services.Count -1 do with Services.Services[y] do
+        for o := 0 to Operations.Count - 1  do with Operations do
+          if Operations[o].alias = xAlias then
+            xOperation := Operations[o];
+      if Assigned(xOperation) then
+      begin
+        if xReqRpy = 'Req' then
+          rXml := xOperation.reqBind.FindUQ(xCaption) as TXml
+        else
+          rXml := xOperation.rpyBind.FindUQ(xCaption) as TXml;
+        if Assigned (rXml) then
+        begin
+          for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+          begin
+            if Name = 'Added' then
+            begin
+              xTypeNameSpace := Items.XmlValueByTag['NameSpace'];
+              xTypeName := Items.XmlValueByTag['Name'];
+              xElementName := Items.XmlValueByTag['ElementName'];
+              xType := XsdDescr.FindTypeDef(xTypeNameSpace, xTypeName);
+              if Assigned (xType) then
+              begin
+                rXml.Xsd.AddElementDef ( XsdDescr
+                                       , xElementName
+                                       , xType
+                                       );
+                rXml.Xsd.sType.ManuallyUsedAtPath := xOperation.Alias
+                                                   + '.'
+                                                   + xReqRpy
+                                                   + '.'
+                                                   + xCaption
+                                                   ;
+
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
 end;
 
 procedure TWsdl.LoadExtraXsds;
