@@ -11550,12 +11550,15 @@ procedure TMainForm .SchemasToZipExecute (Sender : TObject );
       x: Integer;
       xFileName: String;
     begin
-      for x := 0 to aXml.Attributes.Count - 1 do with aXml.Attributes.XmlAttributes[x] do
-        if Name = tagSchemaLocation then
-        begin
-          xFileName := ExpandRelativeFileName(aFileName, Value);
-          Value := slNames.Values[xFileName];
-        end;
+      if (NameWithoutPrefix(aXml.Name) = 'import')
+      or (NameWithoutPrefix(aXml.Name) = 'include')  then
+        for x := 0 to aXml.Attributes.Count - 1 do with aXml.Attributes.XmlAttributes[x] do
+          if (Name = tagSchemaLocation)
+          or (Name = 'location') then
+          begin
+            xFileName := ExpandRelativeFileName(aFileName, Value);
+            Value := slNames.Values[xFileName];
+          end;
       for x := 0 to aXml.Items.Count - 1 do
         _scanXml(aXml.Items.XmlItems[x], aFileName);
     end;
