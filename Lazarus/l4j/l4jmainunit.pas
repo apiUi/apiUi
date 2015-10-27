@@ -1261,9 +1261,13 @@ function Tl4jMainForm.GetEndurance(aString: String): String;
 begin
   result := '';
   try
-    result := xsdFormatTime(  xsdParseDateTime(GetAtt ('lasttimestamp', aString))
-                            - xsdParseDateTime(GetAtt ('timestamp', aString))
-                           );
+    result := FloatToStrF((  xsdParseDateTime(GetAtt ('lasttimestamp', aString))
+                          - xsdParseDateTime(GetAtt ('timestamp', aString))
+                          ) * 24 * 60 * 60
+                         , ffNumber
+                         , 18
+                         , 6
+                         );
   except
   end;
 end;
