@@ -1050,6 +1050,7 @@ type
     procedure setdoShowDesignSplitVertical (AValue : Boolean );
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure ReloadProject;
+    function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
   published
   public
     se: TWsdlProject;
@@ -1149,7 +1150,7 @@ uses
 {$ENDIF}
   wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
   ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
-  ChooseStringUnit, AboutUnit, StrUtils, IpmGunLicense,
+  ChooseStringUnit, Choose2StringsUnit, AboutUnit, StrUtils, IpmGunLicense,
   IpmGunLicenseUnit, DisclaimerUnit,
   PromptUnit, SelectXmlElement, ApplyToUnit, wsaConfigUnit,
   SelectElementsUnit, A2BXmlz,
@@ -6997,6 +6998,24 @@ begin
   end;
 end;
 
+function TMainForm .createListOfListsForTypeDefs (aTypeDefs : TXsdDataTypeList
+  ): TStringList ;
+var
+  x, f: Integer;
+begin
+  result := TStringList.Create;
+  result.Sorted := True;
+  for x := 0 to aTypeDefs.Count - 1 do with aTypeDefs.XsdDataTypes[x] do
+  begin
+    if NameSpace <> '' then
+    begin
+      if not result.Find(NameSpace, f) then
+        f := result.AddObject (NameSpace, TStringList.Create);
+      (result.Objects[f] as TStringlist).Add (Name);
+    end;
+  end;
+end;
+
 procedure TMainForm.ShowHttpRequestAsXMLActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -8918,7 +8937,7 @@ procedure TMainForm.AddChildElementDefMenuItemClick(Sender: TObject);
   end;
 
 var
-  X, f, m: Integer;
+  X, m: Integer;
   xxsd: TXsd;
   xXml: TXml;
   xBind: TCustomBindable;
@@ -8932,28 +8951,24 @@ begin
   xXml := xBind as TXml;
   if not Assigned(xXml.Xsd) then
     raise Exception.Create('opeation requires an XSD on the selected element');
+  Application.CreateForm(TChoose2StringsForm, Choose2StringsForm);
   try
-    Application.CreateForm(TChooseStringForm, ChooseStringForm);
-    try
-      ChooseStringForm.ListBox.Clear;
-      ChooseStringForm.ListBox.Sorted := False;
-      ChooseStringForm.ListBox.Items.Text := Wsdl.XsdDescr.TypeDefs.Text;
-      for X := 0 to Wsdl.XsdDescr.TypeDefs.Count - 1 do
-        if Wsdl.XsdDescr.TypeDefs.Strings[X]
-          <> ChooseStringForm.ListBox.Items.Strings[X] then
-          ShowMessage(IntToStr(X) + '' + Wsdl.XsdDescr.TypeDefs.Strings[X]
-              + ' ' + ChooseStringForm.ListBox.Items.Strings[X]);
-
-      ChooseStringForm.Caption := 'Choose from Types';
-      ChooseStringForm.ShowModal;
-      if ChooseStringForm.ModalResult = mrOk then
+    with Choose2StringsForm do
+    begin
+      ListOfLists := createListOfListsForTypeDefs (Wsdl.XsdDescr.TypeDefs);
+      Caption := 'Choose from Types';
+      ShowModal;
+      if ModalResult = mrOk then
       begin
-        f := ChooseStringForm.ListBox.ItemIndex;
-        cTypeDef := Wsdl.XsdDescr.TypeDefs.XsdDataTypes[f];
+        cTypeDef := Wsdl.XsdDescr.FindTypeDef(ChoosenLeftString, ChoosenRightString);
+        if not Assigned (cTypeDef) then
+          raise Exception.Create ('procedure TMainForm.AddChildElementDefMenuItemClick(Sender: TObject): cTypeDef not assigned');
         Application.CreateForm(TPromptForm, PromptForm);
         try
           PromptForm.Caption := 'Name for '
-                              + Wsdl.XsdDescr.TypeDefs.Strings[f]
+                              + cTypeDef.NameSpace
+                              + ';'
+                              + cTypeDef.Name
                               + ' at '
                               + xXml.FullCaption
                               ;
@@ -9005,12 +9020,12 @@ begin
           FreeAndNil(PromptForm);
         end;
       end;
-    finally
-      FreeAndNil(ChooseStringForm);
     end;
   finally
+    if Assigned (Choose2StringsForm.ListOfLists) then
+      Choose2StringsForm.ListOfLists.Free;
+    FreeAndNil(ChooseStringForm);
   end;
-  { }
 end;
 
 function TMainForm.getXmlViewType: TxvViewType;

@@ -7,8 +7,12 @@
 	</xs:simpleType>
 	<xs:simpleType name="sslVersionType">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="SSL Version 2"/>
+			<xs:enumeration value="SSL Version 2.3"/>
 			<xs:enumeration value="SSL Version 3"/>
 			<xs:enumeration value="TLS Version 1"/>
+			<xs:enumeration value="TLS Version 1.1"/>
+			<xs:enumeration value="TLS Version 1.2"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="passwordType">
@@ -224,7 +228,11 @@ More entries allowed
 							<xs:element name="SSL">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="Version" type="sslVersionType"/>
+										<xs:element name="Version">
+											<xs:simpleType>
+												<xs:restriction base="sslVersionType"/>
+											</xs:simpleType>
+										</xs:element>
 										<xs:element name="CertificateFile" type="FileNameType"/>
 										<xs:element name="KeyFile" type="FileNameType"/>
 										<xs:element name="RootCertificateFile" type="FileNameType"/>
