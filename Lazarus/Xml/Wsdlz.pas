@@ -4915,10 +4915,7 @@ begin
           TagName := 'Https';
           with AddXml(TXml.CreateAsString('SSL', '')) do
           begin
-            if sslVersion = sslvSSLv3 then
-              AddXml(TXml.CreateAsString('Version', 'SSL Version 3'));
-            if sslVersion = sslvTLSv1 then
-              AddXml(TXml.CreateAsString('Version', 'TLS Version 1'));
+            AddXml(TXml.CreateAsString('Version', sslVersionToString(sslVersion)));
             AddXml(TXml.CreateAsString('CertificateFile', sslCertificateFile));
             AddXml(TXml.CreateAsString('KeyFile', sslKeyFile));
             AddXml(TXml.CreateAsString('RootCertificateFile', sslRootCertificateFile));
@@ -5006,7 +5003,7 @@ begin
   AcceptDeflateEncoding := True;
   AcceptGzipEncoding := True;
   useSsl := False;
-  sslVersion := sslvSSLv3;
+  sslVersion := sslvTLSv1_2;
   sslCertificateFile := '';
   sslKeyFile := '';
   sslRootCertificateFile := '';
@@ -5070,12 +5067,7 @@ begin
           begin
             yXml := Items.XmlCheckedItemByTag['Version'];
             if Assigned (yXml) then
-            begin
-              if yXml.Value = 'SSL Version 3' then
-                sslVersion := sslvSSLv3;
-              if yXml.Value = 'TLS Version 1' then
-                sslVersion := sslvTLSv1;
-            end;
+              sslVersion:= sslVersionFromString(yXml.Value);
             sslCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
             sslKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
             sslRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];

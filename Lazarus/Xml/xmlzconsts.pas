@@ -4,6 +4,10 @@ unit xmlzConsts;
 
 interface
 
+uses
+  IdSSLOpenSSL
+  ;
+
 const
 
   scSoapUseEncoded = 'encoded';
@@ -196,7 +200,33 @@ const
     xsdYear, xsdTimePeriod, xsdRecurringDuration, xsdCentury);
 
 
+function sslVersionToString (aSslVersion : TIdSSLVersion ): String ;
+function sslVersionFromString (aString : String ): TIdSSLVersion ;
+
 implementation
+
+function sslVersionToString (aSslVersion : TIdSSLVersion ): String ;
+begin
+  case aSslVersion of
+    sslvSSLv2:   result := 'SSL Version 2';
+    sslvSSLv23:  result := 'SSL Version 2.3';
+    sslvSSLv3:   result := 'SSL Version 3';
+    sslvTLSv1:   result := 'TLS Version 1';
+    sslvTLSv1_1: result := 'TLS Version 1.1';
+    sslvTLSv1_2: result := 'TLS Version 1.2';
+  end;
+end;
+
+function sslVersionFromString (aString : String ): TIdSSLVersion ;
+begin
+  result := sslvTLSv1_2;
+  if aString = 'SSL Version 2'   then result :=  sslvSSLv2;
+  if aString = 'SSL Version 2.3' then result :=  sslvSSLv23;
+  if aString = 'SSL Version 3'   then result :=  sslvSSLv3;
+  if aString = 'TLS Version 1'   then result :=  sslvTLSv1;
+  if aString = 'TLS Version 1.1' then result :=  sslvTLSv1_1;
+  if aString = 'TLS Version 1.2' then result :=  sslvTLSv1_2;
+end;
 
 end.
 

@@ -31,8 +31,6 @@ type
     smtpTlsCertificateFile, smtpTlsKeyFile, smtpTlsRootCertificateFile: String;
     pop3Port: Integer;
     pop3UserName, pop3Password: String;
-    function sslVersionToString (aSslVersion: TIdSSLVersion): String;
-    function sslVersionFromString (aString: String): TIdSSLVersion;
     function AsXml: TXml;
     procedure Clear;
     procedure FromXml (aXml: TXml; aOnHaveFrame: TOnHaveFrame);
@@ -44,30 +42,11 @@ type
 
 implementation
 
+uses xmlzConsts
+   ;
+
 { TListeners }
 
-function TListeners .sslVersionToString (aSslVersion : TIdSSLVersion ): String ;
-begin
-  case aSslVersion of
-    sslvSSLv2:   result := 'SSL Version 2';
-    sslvSSLv23:  result := 'SSL Version 2.3';
-    sslvSSLv3:   result := 'SSL Version 3';
-    sslvTLSv1:   result := 'TLS Version 1';
-    sslvTLSv1_1: result := 'TLS Version 1.1';
-    sslvTLSv1_2: result := 'TLS Version 1.2';
-  end;
-end;
-
-function TListeners .sslVersionFromString (aString : String ): TIdSSLVersion ;
-begin
-  result := sslvTLSv1_2;
-  if aString = 'SSL Version 2'   then result :=  sslvSSLv2;
-  if aString = 'SSL Version 2.3' then result :=  sslvSSLv23;
-  if aString = 'SSL Version 3'   then result :=  sslvSSLv3;
-  if aString = 'TLS Version 1'   then result :=  sslvTLSv1;
-  if aString = 'TLS Version 1.1' then result :=  sslvTLSv1_1;
-  if aString = 'TLS Version 1.2' then result :=  sslvTLSv1_2;
-end;
 
 function TListeners.AsXml: TXml;
 var

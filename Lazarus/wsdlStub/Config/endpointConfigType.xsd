@@ -12,8 +12,12 @@
 	</xs:simpleType>
 	<xs:simpleType name="sslVersionType">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="SSL Version 2"/>
+			<xs:enumeration value="SSL Version 2.3"/>
 			<xs:enumeration value="SSL Version 3"/>
 			<xs:enumeration value="TLS Version 1"/>
+			<xs:enumeration value="TLS Version 1.1"/>
+			<xs:enumeration value="TLS Version 1.2"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="acceptEncodingType">
