@@ -312,6 +312,7 @@ type
       oldInvokeSpec: String;
       invokeList: TWsdlOperations;
       doDebug: Boolean;
+      doSuppressLog: Integer;
       DelayTimeMs: Integer;
       DelayTimeMsMin: Integer;
       DelayTimeMsMax: Integer;
@@ -3146,6 +3147,7 @@ constructor TWsdlOperation.Create  (aWsdl: TWsdl);
 begin
   fCloned := nil;
   fLock := SyncObjs.TCriticalSection.Create;
+  doSuppressLog := 0;
   if Assigned (aWsdl) then
   begin
     Wsdl := aWsdl;
@@ -3471,6 +3473,7 @@ begin
       if Assigned (StubMqHeaderXml) then
         try StubMqHeaderXml.Bind ('Mq', fExpressBefore, 1); except end;
       try fExpressBefore.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
+      try fExpressBefore.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
 //      BindFunction ('Log', @ServerLogMessage, VFS, '(aString)');
       BindBeforeFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
       BindBeforeFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
@@ -3609,6 +3612,7 @@ begin
     if Assigned (StubMqHeaderXml) then
       try StubMqHeaderXml.Bind ('Mq', fExpressAfter, 1); except end;
     try fExpressAfter.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
+    try fExpressAfter.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
 //      ExpectedXml.Bind ('Exp', fExpressBefore);
 //      BindFunction ('Log', @ServerLogMessage, VFS, '(aString)');
     BindAfterFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
@@ -4212,6 +4216,7 @@ begin
     xOperation := xOperation.Cloned;
   self.fCloned := xOperation;
   self.fLock := xOperation.fLock;
+  self.doSuppressLog := xOperation.doSuppressLog;
   self.Owner := xOperation.Owner;
   self.Data := xOperation.Data;
   self.fOnGetAbortPressed := xOperation.fOnGetAbortPressed;
@@ -5003,7 +5008,7 @@ begin
   AcceptDeflateEncoding := True;
   AcceptGzipEncoding := True;
   useSsl := False;
-  sslVersion := sslvTLSv1_2;
+  sslVersion := sslvSSLv3;
   sslCertificateFile := '';
   sslKeyFile := '';
   sslRootCertificateFile := '';
@@ -5067,7 +5072,7 @@ begin
           begin
             yXml := Items.XmlCheckedItemByTag['Version'];
             if Assigned (yXml) then
-              sslVersion:= sslVersionFromString(yXml.Value);
+              sslVersion := sslVersionFromString(yXml.Value);
             sslCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
             sslKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
             sslRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];

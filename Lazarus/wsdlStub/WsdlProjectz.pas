@@ -2219,6 +2219,7 @@ begin
                             if Assigned (dXml) then
                               xOperation.OptionsFromXml(dXml);
                             xOperation.AsynchronousDialog := oXml.Items.XmlBooleanByTagDef ['AsynchronousDialog', False];
+                            xOperation.doSuppressLog := oXml.Items.XmlIntegerByTagDef ['doSuppressLog', 0];
                             xOperation.DelayTimeMsMin := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMin', -1];
                             if xOperation.DelayTimeMsMin = -1 then
                             begin
@@ -2626,6 +2627,7 @@ begin
       end;
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
+    aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
     aLog.OperationName:=xOperation.Alias;
     result := xOperation.StreamReply (_progName, True);
@@ -6411,7 +6413,9 @@ end;
 procedure TWsdlProject.DisplayLog(aString: String; aLog: TLog);
 begin
   if not Assigned (aLog) then Exit;
-  if not doDisplayLog then
+  if (not doDisplayLog)
+  or (aLog.doSuppressLog)
+  then
   begin
     if not aLog.Claimed then
       aLog.Free;

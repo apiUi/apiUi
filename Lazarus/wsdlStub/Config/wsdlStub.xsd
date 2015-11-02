@@ -127,6 +127,7 @@ Use this field to send extra data which you can use in the wsdlStub activators (
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="DelayMs" type="xs:integer" minOccurs="0"/>
+						<xs:element name="SuppressLog" type="xs:integer" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

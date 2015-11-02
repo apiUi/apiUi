@@ -36,6 +36,7 @@ type
   TLog = class(TClaimableObject)
   protected
   public
+    doSuppressLog: Boolean;
     displayRef: PDisplayRef;
     DisplayedColumnsValid: Boolean;
     DisplayedColumns: TStringList;
