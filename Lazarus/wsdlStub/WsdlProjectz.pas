@@ -3512,6 +3512,7 @@ begin
         CorrelationId := aOperation.CorrelationIdAsText ('; ');
         Stubbed := True;
         StubAction := aOperation.StubAction;
+        doSuppressLog := (aOperation.doSuppressLog <> 0);
       end;
     except
       on e: exception do
