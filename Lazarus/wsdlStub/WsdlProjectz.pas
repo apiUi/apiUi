@@ -2561,6 +2561,7 @@ function TWsdlProject.CreateReply ( aLog: TLog
                                   ): String;
 var
   xOperation: TWsdlOperation;
+  xReqXml, xRpyXml: TXml;
 begin
   result := '';
   aOperation := nil;
@@ -2599,7 +2600,32 @@ begin
       end;
     end;
     if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-      xOperation.FreeFormatRpy := aReply.FreeFormatRpy
+    begin
+      xOperation.FreeFormatRpy := aReply.FreeFormatRpy;
+      if (xOperation.StubAction = saStub)
+      and (aIsActive)
+      and (Trim(xOperation.BeforeScriptLines.Text) <> '') then
+      begin
+        xReqXml := TXml.Create;
+        xRpyXml := TXml.Create;
+        try
+          xRpyXml.LoadFromString(aReply.FreeFormatRpy, nil);
+          if xRpyXml.Name <> '' then
+            xOperation.rpyBind := xRpyXml;
+          xReqXml.LoadFromString(aRequest, nil);
+          if xReqXml.Name <> '' then
+            xOperation.reqBind := xReqXml;
+          xOperation.PrepareBefore;
+          xOperation.ExecuteBefore;
+          xOperation.FreeFormatRpy := xRpyXml.asString;
+        finally
+          FreeAndNil (xRpyXml);
+          FreeAndNil (xReqXml);
+          xOperation.reqBind := nil;
+          xOperation.rpyBind := nil;
+        end;
+      end
+    end
     else
     begin
       if xOperation.rpyBind is TIpmItem then

@@ -74,6 +74,7 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="WsdlStubMainUnit"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Components\Indy10\Lib\Core\IdExceptionCore.pas"/>
@@ -108,9 +109,10 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
+        <IgnoredMessages idx5023="True" idx5024="True" idx5025="True" idx5028="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

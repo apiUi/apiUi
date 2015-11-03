@@ -2173,7 +2173,10 @@ begin
     if Assigned (Enumerations)
     and (Enumerations.Count > 0) then
       if not Enumerations.Find (aValue, f) then
-        raise Exception.CreateFmt('Value violates enumeration constraint (%s)', [LineEnding + Enumerations.Text]);
+        if Enumerations.Count < 13 then
+          raise Exception.CreateFmt('Value violates enumeration constraint (%s)', [LineEnding + Enumerations.Text])
+        else
+          raise Exception.Create('Value violates enumeration constraint');
     // general pattern
     if (Pattern <> '') then
     begin

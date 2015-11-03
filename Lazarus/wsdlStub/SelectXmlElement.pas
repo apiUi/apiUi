@@ -149,7 +149,7 @@ begin
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
         or (WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)) then
         begin
-          if allOperations.Operations[x].reqBind.Children.Count > 0 then
+          if WsdlOperation.reqBind.Children.Count > 0 then
           begin
             xChild := rChild;
             if (not Assigned (WsdlOperation))
@@ -157,7 +157,8 @@ begin
               xChild := TreeView.Items.AddChildObject (rChild, allOperations.Operations[x].Name, nil);
             ViewXmlItem ( TreeView
                         , xChild
-                        , allOperations.Operations[x].reqBind
+//                      , allOperations.Operations[x].reqBind
+                        , WsdlOperation.reqBind
                         , IncludeRecurring
                         );
           end;
@@ -174,7 +175,7 @@ begin
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
         or (WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)) then
         begin
-          if allOperations.Operations[x].rpyBind.Children.Count > 0 then
+          if WsdlOperation.rpyBind.Children.Count > 0 then
           begin
             xChild := rChild;
             if (not Assigned (WsdlOperation))
@@ -182,7 +183,8 @@ begin
               xChild := TreeView.Items.AddChildObject (rChild, allOperations.Operations[x].Name, nil);
             ViewXmlItem ( TreeView
                         , xChild
-                        , allOperations.Operations[x].rpyBind
+//                      , allOperations.Operations[x].rpyBind
+                        , WsdlOperation.rpyBind
                         , IncludeRecurring
                         );
           end;

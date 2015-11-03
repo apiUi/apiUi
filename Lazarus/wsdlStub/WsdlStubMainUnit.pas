@@ -2755,6 +2755,18 @@ begin
   Screen.Cursor := crHourGlass;
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
+    if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+    begin
+      xOperation.rpyBind := TXml.Create;
+      (xOperation.rpyBind as TXml).LoadFromString(WsdlReply.FreeFormatRpy, nil);
+      if xOperation.rpyBind.Name = '' then
+        xOperation.rpyBind.Name := 'noXml';
+      xOperation.reqBind := TXml.Create;
+      (xOperation.reqBind as TXml).LoadFromString(WsdlReply.FreeFormatReq, nil);
+      if xOperation.reqBind.Name = '' then
+        xOperation.reqBind.Name := 'noXml';
+      xOperation.PrepareBefore;
+    end;
     if xOperation.PrepareErrors <> '' then
       if not BooleanPromptDialog (xOperation.PrepareErrors + LineEnding + 'Continue') then
         Exit;
@@ -2769,9 +2781,12 @@ begin
         begin
           stubChanged := True;
           WsdlOperation.BeforeScriptLines := xOperation.BeforeScriptLines;
-          try WsdlOperation.PrepareBefore; Except end;
           WsdlOperation.AfterScriptLines := xOperation.AfterScriptLines;
-          try WsdlOperation.PrepareAfter; Except end;
+          if WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat then
+          begin
+            try WsdlOperation.PrepareBefore; Except end;
+            try WsdlOperation.PrepareAfter; Except end;
+          end;
         end;
         FillInWsdlEdits;
       finally
