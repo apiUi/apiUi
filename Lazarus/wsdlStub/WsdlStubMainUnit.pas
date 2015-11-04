@@ -1436,18 +1436,20 @@ begin
     ActionComboBox.ItemIndex := Ord(WsdlOperation.StubAction);
     // SoapActionEdit.Text := WsdlOperation.SoapAction;
     OperationDocumentationEdit.Text := WsdlOperation.Documentation.Text;
-    if Trim(WsdlOperation.BeforeScriptLines.Text) <> '' then
+    if (Trim(WsdlOperation.BeforeScriptLines.Text) <> '') then
     begin
       EditScriptButton.Font.Style := EditScriptButton.Font.Style + [fsBold];
-      if not WsdlOperation.PreparedBefore then
+      if (not WsdlOperation.PreparedBefore)
+      and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat) then
         EditScriptButton.Font.Style := EditScriptButton.Font.Style +
           [fsStrikeOut];
     end;
-    if Trim(WsdlOperation.AfterScriptLines.Text) <> '' then
+    if (Trim(WsdlOperation.AfterScriptLines.Text) <> '') then
     begin
       AfterRequestScriptButton.Font.Style :=
         AfterRequestScriptButton.Font.Style + [fsBold];
-      if not WsdlOperation.PreparedAfter then
+      if (not WsdlOperation.PreparedAfter)
+      and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat) then
         AfterRequestScriptButton.Font.Style :=
           AfterRequestScriptButton.Font.Style + [fsStrikeOut];
     end;
@@ -2718,6 +2720,18 @@ begin
   if not Assigned(WsdlOperation) then
     Raise Exception.Create('First get a Wsdl');
   xOperation := TWsdlOperation.Create(WsdlOperation);
+  if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+  begin
+    xOperation.rpyBind := TXml.Create;
+    (xOperation.rpyBind as TXml).LoadFromString(WsdlReply.FreeFormatRpy, nil);
+    if xOperation.rpyBind.Name = '' then
+      xOperation.rpyBind.Name := 'noXml';
+    xOperation.reqBind := TXml.Create;
+    (xOperation.reqBind as TXml).LoadFromString(WsdlReply.FreeFormatReq, nil);
+    if xOperation.reqBind.Name = '' then
+      xOperation.reqBind.Name := 'noXml';
+    try xOperation.PrepareAfter;  except end;
+  end;
   try
     Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
     try
@@ -2730,6 +2744,11 @@ begin
         stubChanged := True;
         WsdlOperation.BeforeScriptLines := xOperation.BeforeScriptLines;
         WsdlOperation.AfterScriptLines := xOperation.AfterScriptLines;
+        if WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat then
+        begin
+          try WsdlOperation.PrepareBefore; Except end;
+          try WsdlOperation.PrepareAfter; Except end;
+        end;
       end;
       FillInWsdlEdits;
     finally
@@ -2765,7 +2784,7 @@ begin
       (xOperation.reqBind as TXml).LoadFromString(WsdlReply.FreeFormatReq, nil);
       if xOperation.reqBind.Name = '' then
         xOperation.reqBind.Name := 'noXml';
-      xOperation.PrepareBefore;
+      try xOperation.PrepareBefore; except end;
     end;
     if xOperation.PrepareErrors <> '' then
       if not BooleanPromptDialog (xOperation.PrepareErrors + LineEnding + 'Continue') then

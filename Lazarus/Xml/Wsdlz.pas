@@ -3827,6 +3827,8 @@ begin
   if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTSwiftMT] then
   begin
     result := FreeformatReq;
+    if Trim (BeforeScriptLines.Text) <> '' then
+      result := (reqBind as TXml).asString;
     Exit;
   end;
   try
@@ -4319,17 +4321,20 @@ begin
   self.invokeList.Text := xOperation.invokeList.Text;
   self.doInvokeOperations;
   self.BindStamper;
-  try
-    self.PrepareBefore;
-  except
-    on e: Exception do
-      fPrepareErrors := fPrepareErrors + 'Found in BeforeScript: ' + e.Message + LineEnding;
-  end;
-  try
-    self.PrepareAfter;
-  except
-    on e: Exception do
-      fPrepareErrors := fPrepareErrors + 'Found in AfterScript: ' + e.Message + LineEnding;
+  if self.WsdlService.DescriptionType <> ipmDTFreeFormat then
+  begin
+    try
+      self.PrepareBefore;
+    except
+      on e: Exception do
+        fPrepareErrors := fPrepareErrors + 'Found in BeforeScript: ' + e.Message + LineEnding;
+    end;
+    try
+      self.PrepareAfter;
+    except
+      on e: Exception do
+        fPrepareErrors := fPrepareErrors + 'Found in AfterScript: ' + e.Message + LineEnding;
+    end;
   end;
 end;
 
@@ -4602,7 +4607,16 @@ end;
 procedure TWsdlOperation.ReqBindablesFromWsdlMessage(aMessage: TWsdlMessage);
 begin
   if WsdlService.DescriptionType in [ipmDTFreeFormat] then
-    FreeFormatReq := aMessage.FreeFormatReq
+  begin
+    FreeFormatReq := aMessage.FreeFormatReq;
+    with reqBind as TXml do
+    begin
+      LoadFromString(FreeFormatReq, nil);
+      if Name = '' then
+        Name := 'noXml';
+      try PrepareBefore; except end;
+    end;
+  end
   else
   begin
     if reqBind is TXml then
@@ -5514,7 +5528,10 @@ begin
   if WsdlService.DescriptionType = ipmDTCobol then
     result := ((rpyBind as TIpmItem).Bytes = 0)
   else
-    result := (rpyXsd.sType.ElementDefs.Count = 0)
+    if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
+      result := (FreeFormatRpy = '')
+    else
+      result := (rpyXsd.sType.ElementDefs.Count = 0)
             ;
 end;
 

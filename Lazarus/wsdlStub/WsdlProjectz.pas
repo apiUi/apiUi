@@ -1304,31 +1304,34 @@ begin
     if fltBind is TXml then with fltBind as TXml do Checked := True;
     Owner := Self;
     doInvokeOperations;
-    try
-      PrepareBefore;
-    except
-    end;
-    if not PreparedBefore then
+    if WsdlService.DescriptionType <> ipmDTFreeFormat then
     begin
-      aLogServerException ( 'Error in Before script: '
-                          + Name
-                          , False
-                          , nil
-                          );
-      Inc (scriptErrorCount);
-    end;
-    try
-      PrepareAfter;
-    except
-    end;
-    if not PreparedAfter then
-    begin
-      aLogServerException ( 'Error in After script: '
-                          + Name
-                          , False
-                          , nil
-                          );
-      Inc (scriptErrorCount);
+      try
+        PrepareBefore;
+      except
+      end;
+      if not PreparedBefore then
+      begin
+        aLogServerException ( 'Error in Before script: '
+                            + Name
+                            , False
+                            , nil
+                            );
+        Inc (scriptErrorCount);
+      end;
+      try
+        PrepareAfter;
+      except
+      end;
+      if not PreparedAfter then
+      begin
+        aLogServerException ( 'Error in After script: '
+                            + Name
+                            , False
+                            , nil
+                            );
+        Inc (scriptErrorCount);
+      end;
     end;
   end;
   if scriptErrorCount > 0 then
@@ -2638,18 +2641,18 @@ begin
         (xOperation.fltBind as TXml).ResetValues;
         (xOperation.fltBind as TXml).LoadValues (aReply.fltBind as TXml, True, True);
       end;
-    end;
-    if (xOperation.StubAction = saStub)
-    and (aIsActive) then
-    begin
-      xOperation.rpyWsaOnRequest;
-      xOperation.ExecuteBefore;
-      xOperation.ExecuteRpyStampers;
-      if xOperation.doDebug
-      and Assigned (OnDebugOperationEvent) then
+      if (xOperation.StubAction = saStub)
+      and (aIsActive) then
       begin
-        DebugOperation := xOperation;
-        OnDebugOperationEvent;
+        xOperation.rpyWsaOnRequest;
+        xOperation.ExecuteBefore;
+        xOperation.ExecuteRpyStampers;
+        if xOperation.doDebug
+        and Assigned (OnDebugOperationEvent) then
+        begin
+          DebugOperation := xOperation;
+          OnDebugOperationEvent;
+        end;
       end;
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
@@ -3498,7 +3501,17 @@ begin
       end
       else
       begin
-        if not (aOperation.WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail]) then
+        if (aOperation.WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail]) then
+        begin
+          with aOperation.rpyBind as TXml do
+          begin
+            LoadFromString(xlog.ReplyBody, nil);
+            if Name = '' then
+              Name := 'noXml';
+            aOperation.PrepareAfter;
+          end;
+        end
+        else
         begin
           if aOperation.reqBind is TXml then
           begin
