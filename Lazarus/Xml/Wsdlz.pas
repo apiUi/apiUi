@@ -208,6 +208,7 @@ type
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
       function getDoExit : Boolean ;
       function getIsOneWay: Boolean;
+      function getLateBinding : Boolean ;
       function getRpyIpm: TIpmItem;
       function getisSoapService: Boolean;
       function getRpyBind: TCustomBindable;
@@ -324,6 +325,7 @@ type
       property wsaTo: String read getWsaTo;
       property isSoapService: Boolean read getIsSoapService;
       property isOneWay: Boolean read getIsOneWay;
+      property lateBinding: Boolean read getLateBinding;
       property reqXsd: TXsd read getInputXsd write setInputXsd;
       property reqBind: TCustomBindable read getReqBind write setReqBind;
       property rpyXsd: TXsd read getOutputXsd write setOutputXsd;
@@ -3824,7 +3826,7 @@ begin
     end;
     Exit;
   end;
-  if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTSwiftMT] then
+  if lateBinding then
   begin
     result := FreeformatReq;
     if Trim (BeforeScriptLines.Text) <> '' then
@@ -3918,7 +3920,7 @@ begin
   result := LiteralResult;
   if Result <> '' then
     Exit;
-  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
+  if lateBinding then
   begin
     result := FreeformatRpy;
     Exit;
@@ -4321,7 +4323,7 @@ begin
   self.invokeList.Text := xOperation.invokeList.Text;
   self.doInvokeOperations;
   self.BindStamper;
-  if self.WsdlService.DescriptionType <> ipmDTFreeFormat then
+  if not self.lateBinding then
   begin
     try
       self.PrepareBefore;
@@ -4606,7 +4608,7 @@ end;
 
 procedure TWsdlOperation.ReqBindablesFromWsdlMessage(aMessage: TWsdlMessage);
 begin
-  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
+  if lateBinding then
   begin
     FreeFormatReq := aMessage.FreeFormatReq;
     with reqBind as TXml do
@@ -5533,6 +5535,11 @@ begin
     else
       result := (rpyXsd.sType.ElementDefs.Count = 0)
             ;
+end;
+
+function TWsdlOperation .getLateBinding : Boolean ;
+begin
+  result := WsdlService.DescriptionType in [ipmDTFreeFormat];
 end;
 
 { TWsdlPart }

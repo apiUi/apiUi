@@ -1304,7 +1304,7 @@ begin
     if fltBind is TXml then with fltBind as TXml do Checked := True;
     Owner := Self;
     doInvokeOperations;
-    if WsdlService.DescriptionType <> ipmDTFreeFormat then
+    if not lateBinding then
     begin
       try
         PrepareBefore;
@@ -2602,7 +2602,7 @@ begin
         Exit;
       end;
     end;
-    if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+    if xOperation.lateBinding then
     begin
       xOperation.FreeFormatRpy := aReply.FreeFormatRpy;
       if (xOperation.StubAction = saStub)
@@ -3501,7 +3501,7 @@ begin
       end
       else
       begin
-        if (aOperation.WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail]) then
+        if aOperation.lateBinding then
         begin
           with aOperation.rpyBind as TXml do
           begin

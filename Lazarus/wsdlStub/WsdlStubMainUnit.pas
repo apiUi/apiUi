@@ -1440,7 +1440,7 @@ begin
     begin
       EditScriptButton.Font.Style := EditScriptButton.Font.Style + [fsBold];
       if (not WsdlOperation.PreparedBefore)
-      and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat) then
+      and (not WsdlOperation.lateBinding) then
         EditScriptButton.Font.Style := EditScriptButton.Font.Style +
           [fsStrikeOut];
     end;
@@ -1449,7 +1449,7 @@ begin
       AfterRequestScriptButton.Font.Style :=
         AfterRequestScriptButton.Font.Style + [fsBold];
       if (not WsdlOperation.PreparedAfter)
-      and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat) then
+      and (not WsdlOperation.lateBinding) then
         AfterRequestScriptButton.Font.Style :=
           AfterRequestScriptButton.Font.Style + [fsStrikeOut];
     end;
@@ -2720,7 +2720,7 @@ begin
   if not Assigned(WsdlOperation) then
     Raise Exception.Create('First get a Wsdl');
   xOperation := TWsdlOperation.Create(WsdlOperation);
-  if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+  if xOperation.lateBinding then
   begin
     xOperation.rpyBind := TXml.Create;
     (xOperation.rpyBind as TXml).LoadFromString(WsdlReply.FreeFormatRpy, nil);
@@ -2744,7 +2744,7 @@ begin
         stubChanged := True;
         WsdlOperation.BeforeScriptLines := xOperation.BeforeScriptLines;
         WsdlOperation.AfterScriptLines := xOperation.AfterScriptLines;
-        if WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat then
+        if not WsdlOperation.lateBinding then
         begin
           try WsdlOperation.PrepareBefore; Except end;
           try WsdlOperation.PrepareAfter; Except end;
@@ -2774,7 +2774,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
-    if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+    if xOperation.lateBinding then
     begin
       xOperation.rpyBind := TXml.Create;
       (xOperation.rpyBind as TXml).LoadFromString(WsdlReply.FreeFormatRpy, nil);
@@ -2801,7 +2801,7 @@ begin
           stubChanged := True;
           WsdlOperation.BeforeScriptLines := xOperation.BeforeScriptLines;
           WsdlOperation.AfterScriptLines := xOperation.AfterScriptLines;
-          if WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat then
+          if not WsdlOperation.lateBinding then
           begin
             try WsdlOperation.PrepareBefore; Except end;
             try WsdlOperation.PrepareAfter; Except end;
@@ -4699,11 +4699,11 @@ end;
 
 procedure TMainForm.SelectCorrelationElementActionUpdate(Sender: TObject);
 begin
-  SelectCorrelationElementAction.Enabled := Assigned(WsdlOperation) and
-    (not se.IsActive) and (WsdlOperation.WsdlService.DescriptionType <>
-      ipmDTFreeFormat)
+  SelectCorrelationElementAction.Enabled := Assigned(WsdlOperation)
+                                        and (not se.IsActive)
+                                        and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
   // and (WsdlOperation.StubAction <> saRequest)
-    ;
+                                          ;
 end;
 
 procedure TMainForm.SetIsBusy(const Value: Boolean);
@@ -8812,9 +8812,10 @@ end;
 
 procedure TMainForm.CheckTreeActionUpdate(Sender: TObject);
 begin
-  CheckTreeAction.Enabled := (Assigned(WsdlOperation)) and
-    (WsdlOperation.Messages.Count > 0) and
-    (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat);
+  CheckTreeAction.Enabled := (Assigned(WsdlOperation))
+                         and (WsdlOperation.Messages.Count > 0)
+                         and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+                           ;
 end;
 
 procedure TMainForm.CheckTreeActionExecute(Sender: TObject);
