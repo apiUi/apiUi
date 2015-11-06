@@ -80,6 +80,7 @@ procedure TSelectXmlElementForm.FormShow(Sender: TObject);
 var
   xChild, rChild: TTreeNode;
   x, f: Integer;
+  xOperation: TWsdlOperation;
   procedure ShowAllControlBinds(aList: TBindableList;
     aCaption: String);
   var
@@ -149,16 +150,19 @@ begin
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
         or (WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)) then
         begin
-          if WsdlOperation.reqBind.Children.Count > 0 then
+          if (allOperations.Operations[x] = WsdlOperation.Cloned) then
+            xOperation := WsdlOperation
+          else
+            xOperation := allOperations.Operations [x];
+          if xOperation.reqBind.Children.Count > 0 then
           begin
             xChild := rChild;
             if (not Assigned (WsdlOperation))
-            and (allOperations.Operations[x].reqBind is TIpmItem) then
+            and (xOperation.reqBind is TIpmItem) then
               xChild := TreeView.Items.AddChildObject (rChild, allOperations.Operations[x].Name, nil);
             ViewXmlItem ( TreeView
                         , xChild
-//                      , allOperations.Operations[x].reqBind
-                        , WsdlOperation.reqBind
+                        , xOperation.reqBind
                         , IncludeRecurring
                         );
           end;
@@ -175,7 +179,11 @@ begin
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
         or (WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)) then
         begin
-          if WsdlOperation.rpyBind.Children.Count > 0 then
+          if (allOperations.Operations[x] = WsdlOperation.Cloned) then
+            xOperation := WsdlOperation
+          else
+            xOperation := allOperations.Operations [x];
+          if xOperation.rpyBind.Children.Count > 0 then
           begin
             xChild := rChild;
             if (not Assigned (WsdlOperation))
@@ -183,8 +191,7 @@ begin
               xChild := TreeView.Items.AddChildObject (rChild, allOperations.Operations[x].Name, nil);
             ViewXmlItem ( TreeView
                         , xChild
-//                      , allOperations.Operations[x].rpyBind
-                        , WsdlOperation.rpyBind
+                        , xOperation.rpyBind
                         , IncludeRecurring
                         );
           end;
