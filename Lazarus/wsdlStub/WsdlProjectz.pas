@@ -2587,7 +2587,10 @@ begin
       aOperation.ReleaseLock;
     end;
     xOperation.InitDelayTime;
-    aReply := xOperation.MessageBasedOnRequest;
+    if xOperation.doReadReplyFromFile then
+      aReply := xOperation.Messages.Messages[0]
+    else
+      aReply := xOperation.MessageBasedOnRequest;
     if not Assigned (aReply) then
       Raise Exception.Create('Could not find any reply based on request');
     aCorrelationId := xOperation.CorrelationIdAsText ('; ');
@@ -2602,8 +2605,11 @@ begin
         Exit;
       end;
     end;
-    if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-      xOperation.FreeFormatRpy := aReply.FreeFormatRpy;
+    if xOperation.doReadReplyFromFile then
+      xOperation.ReadReplyFromFile
+    else
+      if (xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat]) then
+        xOperation.FreeFormatRpy := aReply.FreeFormatRpy;
     if xOperation.lateBinding then
     begin
       if (xOperation.StubAction = saStub)
@@ -2632,15 +2638,18 @@ begin
     end
     else
     begin
-      if xOperation.rpyBind is TIpmItem then
-    //    xOperation.rpyIpm.BufferToValues (FoundErrorInBuffer, aReply.rpyIpm.ValuesToBuffer (nil))
-        (xOperation.rpyBind as TIpmItem).LoadValues (aReply.rpyBind as TIpmItem)
-      else
+      if not xOperation.doReadReplyFromFile then
       begin
-        (xOperation.rpyBind as TXml).ResetValues;
-        (xOperation.rpyBind as TXml).LoadValues (aReply.rpyBind as TXml, True, True);
-        (xOperation.fltBind as TXml).ResetValues;
-        (xOperation.fltBind as TXml).LoadValues (aReply.fltBind as TXml, True, True);
+        if xOperation.rpyBind is TIpmItem then
+      //    xOperation.rpyIpm.BufferToValues (FoundErrorInBuffer, aReply.rpyIpm.ValuesToBuffer (nil))
+          (xOperation.rpyBind as TIpmItem).LoadValues (aReply.rpyBind as TIpmItem)
+        else
+        begin
+          (xOperation.rpyBind as TXml).ResetValues;
+          (xOperation.rpyBind as TXml).LoadValues (aReply.rpyBind as TXml, True, True);
+          (xOperation.fltBind as TXml).ResetValues;
+          (xOperation.fltBind as TXml).LoadValues (aReply.fltBind as TXml, True, True);
+        end;
       end;
       if (xOperation.StubAction = saStub)
       and (aIsActive) then

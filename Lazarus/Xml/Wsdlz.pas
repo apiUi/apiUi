@@ -304,6 +304,8 @@ type
       AfterScriptLines: TStringList;
       CorrelatedMessage: TWsdlMessage;
       Messages: TWsdlMessages;
+      doReadReplyFromFile: Boolean;
+      ReadReplyFromFileXml: TXml;
       CorrelationBindables, ExpectationBindables, LogColumns: TBindableList;
       faultcode, faultstring, faultactor, LiteralResult: String;
       ReturnSoapFault: Boolean;
@@ -348,6 +350,9 @@ type
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
       procedure AcquireLock;
       procedure ReleaseLock;
+      function ReadReplyFromFileName: String;
+      function DefaultReadReplyFromFileName: String;
+      procedure ReadReplyFromFile;
       function BeforeActivatorDebugString: String;
       procedure InitDelayTime;
       procedure ReqBindablesFromString (aString: String);
@@ -3235,6 +3240,8 @@ begin
     TacoConfigXml.CheckDownline(False);
   end;
   StubCustomHeaderXml := TXml.CreateAsString('customHeaders', '');
+  doReadReplyFromFile := False;
+  ReadReplyFromFileXml := TXml.CreateAsString('ReadReplyFromFile', '');
 end;
 
 destructor TWsdlOperation.Destroy;
@@ -3280,6 +3287,7 @@ begin
     FreeAndNil (StubMqHeaderXml);
     FreeAndNil (StubCustomHeaderXml);
     FreeAndNil (TacoConfigXml);
+    FreeAndNil (ReadReplyFromFileXml);
     FreeAndNil (fLock);
   end;
   if True then
@@ -4271,6 +4279,8 @@ begin
   self.StubStompHeaderXml := xOperation.StubStompHeaderXml;
   self.StubCustomHeaderXml := xOperation.StubCustomHeaderXml;
   self.TacoConfigXml := xOperation.TacoConfigXml;
+  self.doReadReplyFromFile := xOperation.doReadReplyFromFile;
+  self.ReadReplyFromFileXml := xOperation.ReadReplyFromFileXml;
   self.StubAction := xOperation.StubAction;
   self.StubTransport := xOperation.StubTransport;
   self.StubHttpAddress := xOperation.StubHttpAddress;
@@ -5330,6 +5340,8 @@ begin
         end;
       end;
     end;
+    with AddXml(TXml.CreateAsString('ReadReplyFromFile', '')) do
+      CopyDownLine(ReadReplyFromFileXml, False);
   end;
 end;
 
@@ -5341,6 +5353,8 @@ begin
   if not Assigned (aXml) then raise Exception.Create('operationOptionsFromXml: No XML assigned');
   if not (aXml.Name = 'operationOptions') then raise Exception.Create('operationOptionsFromXml: Illegal XML: ' + aXml.Text);
   oldInvokeSpec := 'none';
+  doReadReplyFromFile := False;
+  ReadReplyFromFileXml.Items.Clear;
   xXml := aXml.Items.XmlCheckedItemByTag['scripts'];
   if Assigned (xXml) then
   begin
@@ -5358,6 +5372,12 @@ begin
             invokeList.Add(xXml.Items.XmlItems[x].Value);
       end;
     end;
+  end;
+  xXml := aXml.Items.XmlCheckedItemByTag['ReadReplyFromFile'];
+  if Assigned (xXml) then
+  begin
+    ReadReplyFromFileXml.CopyDownLine(xXml, True);
+    doReadReplyFromFile := xXml.Items.XmlCheckedBooleanByTag['Enabled'];
   end;
 end;
 
@@ -5490,6 +5510,43 @@ end;
 procedure TWsdlOperation.ReleaseLock;
 begin
   if doOperationLock then fLock.Release;
+end;
+
+function TWsdlOperation .ReadReplyFromFileName : String ;
+var
+  x, p: Integer;
+  xFormat: String;
+begin
+  result := '';
+  xFormat := ReadReplyFromFileXml.Items.XmlCheckedValueByTag['FileNameFormat'];
+  for x := 0 to CorrelationBindables.Count - 1 do
+  begin
+    p := Pos('%s', xFormat);
+    if p > 0 then
+    begin
+      result := result
+              + Copy (xFormat, 1, p - 1)
+              + CorrelationBindables.Bindables[x].Value;
+      xFormat := Copy(xFormat, p + 2, MaxInt);
+    end;
+  end;
+  result := result + xFormat;
+end;
+
+function TWsdlOperation.DefaultReadReplyFromFileName: String;
+begin
+  result := ReadReplyFromFileXml.Items.XmlCheckedValueByTag['DefaultFileName'];
+end;
+
+procedure TWsdlOperation.ReadReplyFromFile;
+var
+  xFileName, xString: String;
+begin
+  xFileName := ReadReplyFromFileName;
+  if not FileExists(xFileName) then
+    xFileName := DefaultReadReplyFromFileName;
+  xString := xmlio.ReadStringFromFile(xFileName);
+  ReplyStringToBindables(xString);
 end;
 
 procedure TWsdlOperation.ReplyStringToBindables(aReply: String);
