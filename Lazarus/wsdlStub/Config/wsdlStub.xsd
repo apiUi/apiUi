@@ -963,6 +963,20 @@ For an overview of all options visit: doc://wsdlStub_operationOptions_hlp.htm </
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="ReadReplyFromFile" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="FileNameFormat" type="xs:string"/>
+							<xs:element name="Arguments" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="RequestElement" type="xs:string" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

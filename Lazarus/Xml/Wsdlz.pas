@@ -357,6 +357,7 @@ type
       procedure RpyBindablesFromWsdlMessage (aMessage: TWsdlMessage);
       procedure RpyBindablesToWsdlMessage (aMessage: TWsdlMessage);
       procedure SoapXmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
+      procedure FreeFormatToBindables (aRequestXml: TXml; aRequestString: String);
       procedure SwiftMtRequestToBindables (aString: String);
       procedure SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
       procedure RequestStringToBindables (aRequest: String);
@@ -4428,6 +4429,18 @@ begin
   else
   begin
     (reqBind as TXml).Items.XmlItems[0].LoadValues (aRequest, aAddUnknowns, False);
+  end;
+end;
+
+procedure TWsdlOperation .FreeFormatToBindables (aRequestXml : TXml ;
+  aRequestString : String );
+begin
+  FreeFormatReq := aRequestString;
+  if aRequestXml.Name <> '' then
+  begin
+    reqBind.Free;
+    reqBind := TXml.Create;
+    (reqBind as TXml).CopyDownLine(aRequestXml, False);
   end;
 end;
 

@@ -2602,9 +2602,10 @@ begin
         Exit;
       end;
     end;
+    if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+      xOperation.FreeFormatRpy := aReply.FreeFormatRpy;
     if xOperation.lateBinding then
     begin
-      xOperation.FreeFormatRpy := aReply.FreeFormatRpy;
       if (xOperation.StubAction = saStub)
       and (aIsActive)
       and (Trim(xOperation.BeforeScriptLines.Text) <> '') then
@@ -5351,7 +5352,7 @@ begin
           raise Exception.CreateFmt('%s (%s)', [result.PrepareErrors, result.reqTagName]);
       end;
       case result.WsdlService.DescriptionType of
-        ipmDTFreeFormat: result.FreeFormatReq := aString;
+        ipmDTFreeFormat: result.FreeFormatToBindables(xXml, aString);
         ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
         ipmDTXml: result.SoapXmlRequestToBindables (xXml, aDoClone);
         ipmDTXsd: result.SoapXmlRequestToBindables (xXml, aDoClone);

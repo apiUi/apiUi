@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9134"/>
+      <BuildNr Value="9141"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -109,9 +109,10 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
+        <IgnoredMessages idx5023="True" idx5024="True" idx5025="True" idx5028="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
