@@ -2565,6 +2565,7 @@ function TWsdlProject.CreateReply ( aLog: TLog
 var
   xOperation: TWsdlOperation;
   xReqXml, xRpyXml: TXml;
+  x: Integer;
 begin
   result := '';
   aOperation := nil;
@@ -2593,6 +2594,16 @@ begin
       aReply := xOperation.MessageBasedOnRequest;
     if not Assigned (aReply) then
       Raise Exception.Create('Could not find any reply based on request');
+    with xOperation do
+    begin
+      if lateBinding then
+      begin
+        for x := 0 to CorrelationBindables.Count - 1 do
+          CorrelationBindables.Bindables[x] := FindBind(CorrelationBindables.Strings[x]);
+        for x := 0 to ExpectationBindables.Count - 1 do
+          ExpectationBindables.Bindables[x] := FindBind(ExpectationBindables.Strings[x]);
+      end;
+    end;
     aCorrelationId := xOperation.CorrelationIdAsText ('; ');
     if (xOperation.StubAction = saStub)
     and (aIsActive)

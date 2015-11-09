@@ -4701,7 +4701,7 @@ procedure TMainForm.SelectCorrelationElementActionUpdate(Sender: TObject);
 begin
   SelectCorrelationElementAction.Enabled := Assigned(WsdlOperation)
                                         and (not se.IsActive)
-                                        and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+  // and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
   // and (WsdlOperation.StubAction <> saRequest)
                                           ;
 end;
@@ -4717,6 +4717,11 @@ var
   swapBindable: TCustomBindable;
 begin
   EndEdit;
+  with WsdlOperation do
+  begin
+    if WsdlService.DescriptionType in [ipmDTFreeFormat] then
+      (reqBind as TXml).LoadFromString(WsdlReply.FreeFormatReq, nil);
+  end;
   Application.CreateForm(TSelectElementsForm, SelectElementsForm);
   SelectElementsForm.Caption := 'Maintain list of correlation elements';
   try
