@@ -4192,16 +4192,16 @@ begin
   begin
     if Assigned(xMessage) then
     begin
-      if Column <= xMessage.corBinds.Count then
+      if Column <= xMessage.CorrelationBindables.Count then
         try
-          CellText := xMessage.corBinds.Bindables[Column - 1].CorrelationValue;
+          CellText := xMessage.CorrelationBindables.Bindables[Column - 1].CorrelationValue;
         except
         end
       else
       begin
         try
           xBind := xMessage.ColumnXmls.Bindables
-            [Column - xMessage.corBinds.Count - 1];
+            [Column - xMessage.CorrelationBindables.Count - 1];
           if (not Assigned(xBind)) or
             ((not(xBind is TIpmItem)) and (not xBind.Parent.CheckedAllUp)) then
             CellText := '?'
@@ -4234,13 +4234,13 @@ begin
             exit
           else
           begin
-            if Column <= xMessage.corBinds.Count then
+            if Column <= xMessage.CorrelationBindables.Count then
               exit
             else
             begin
               try
                 xBind := xMessage.ColumnXmls.Bindables
-                  [Column - xMessage.corBinds.Count - 1];
+                  [Column - xMessage.CorrelationBindables.Count - 1];
                 if Assigned(xBind) then
                 begin
                   if xBind is TXmlAttribute then
@@ -4317,6 +4317,12 @@ var
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
 begin
+
+{
+  first column Message Name
+  n columns correlation values
+  m columns displayed columns
+}
   NodeToMessage(Sender, Node, xMessage);
   if not Assigned(xMessage) then
     exit;
@@ -4325,10 +4331,10 @@ begin
       CellText := xMessage.Name
     else
     begin
-      if Column <= xMessage.corBinds.Count then
+      if Column <= xMessage.CorrelationBindables.Count then
         try
-          if Assigned (xMessage.corBinds.Bindables[Column - 1]) then
-            CellText := xMessage.corBinds.Bindables[Column - 1].CorrelationValue
+          if Assigned (xMessage.CorrelationBindables.Bindables[Column - 1]) then
+            CellText := xMessage.CorrelationBindables.Bindables[Column - 1].CorrelationValue
           else
             CellText := '?';
         except
@@ -4336,7 +4342,7 @@ begin
       else
       begin
         xBind := xMessage.ColumnXmls.Bindables
-          [Column - xMessage.corBinds.Count - 1];
+          [Column - xMessage.CorrelationBindables.Count - 1];
         if Assigned(xBind) then
         begin
           if ((xBind is TIpmItem) or (not Assigned(xBind.Parent)) or
@@ -4444,16 +4450,16 @@ begin
   end
   else
   begin
-    if Column <= xMessage.corBinds.Count then
+    if Column <= xMessage.CorrelationBindables.Count then
     begin
-      if NewText <> xMessage.corBinds.Bindables[Column - 1]
+      if NewText <> xMessage.CorrelationBindables.Bindables[Column - 1]
         .CorrelationValue then
       begin
         if Node = Sender.GetFirst then
           _RaiseError('Not allowed to change this pattern into ' + NewText)
         else
         begin
-          xMessage.corBinds.Bindables[Column - 1].CorrelationValue := NewText;
+          xMessage.CorrelationBindables.Bindables[Column - 1].CorrelationValue := NewText;
           stubChanged := True;
         end;
       end;
@@ -4462,10 +4468,10 @@ begin
     begin
       if (NewText <> '?') and
         (Assigned(xMessage.ColumnXmls.Bindables
-            [Column - xMessage.corBinds.Count - 1])) then
+            [Column - xMessage.CorrelationBindables.Count - 1])) then
       begin
         xBind := xMessage.ColumnXmls.Bindables
-          [Column - xMessage.corBinds.Count - 1];
+          [Column - xMessage.CorrelationBindables.Count - 1];
         if NewText <> '&nil' then
         begin
           if (NewText <> xBind.Value) or (not xBind.CheckedAllUp) then
@@ -4582,13 +4588,13 @@ begin
     end
     else
     begin
-      if Column <= xMessage.corBinds.Count then
+      if Column <= xMessage.CorrelationBindables.Count then
       begin
         xNode := GridView.GetFirstSelected;
         while Assigned(xNode) do
         begin
           NodeToMessage(Sender, xNode, xMessage);
-          if NewText <> xMessage.corBinds.Bindables[Column - 1]
+          if NewText <> xMessage.CorrelationBindables.Bindables[Column - 1]
             .CorrelationValue then
           begin
             if xNode = Sender.GetFirst then
@@ -4596,7 +4602,7 @@ begin
               Node := xNode;
               _RaiseError('Not allowed to change this pattern into ' + NewText);
             end;
-            xMessage.corBinds.Bindables[Column - 1].CorrelationValue := NewText;
+            xMessage.CorrelationBindables.Bindables[Column - 1].CorrelationValue := NewText;
             stubChanged := True;
           end;
           xNode := GridView.GetNextSelected(xNode);
@@ -4605,7 +4611,7 @@ begin
       else
       begin
         { }{
-          if (Assigned (xMessage.ColumnXmls.Bindables[Column - xMessage.corBinds.Count - 1])) then
+          if (Assigned (xMessage.ColumnXmls.Bindables[Column - xMessage.CorrelationBindables.Count - 1])) then
           InWsdlTreeView.OnNewText ( InWsdlTreeView
           , editingNode
           , treeValueColumn
@@ -4617,7 +4623,7 @@ begin
         begin
           NodeToMessage(Sender, xNode, xMessage);
           xBind := xMessage.ColumnXmls.Bindables
-            [Column - xMessage.corBinds.Count - 1];
+            [Column - xMessage.CorrelationBindables.Count - 1];
           if (xBind is TXml) or (xBind is TXmlAttribute) then
           begin
             if NewText = '&nil' then
@@ -4677,20 +4683,22 @@ begin
     Allowed := (Node <> Sender.GetFirst) and (GridView.SelectedCount = 1);
     exit;
   end;
-  if Column <= xMessage.corBinds.Count then
+  if Column <= xMessage.CorrelationBindables.Count then
   begin
-    Allowed := (Node <> Sender.GetFirst);
+    Allowed := (Node <> Sender.GetFirst)
+           and (Assigned (xMessage.CorrelationBindables.Bindables[Column - 1]))
+             ;
     exit;
   end;
   Allowed := Assigned(xMessage.ColumnXmls.Bindables
-      [Column - xMessage.corBinds.Count - 1]);
+      [Column - xMessage.CorrelationBindables.Count - 1]);
   if Allowed then
   begin
     swapEvent := InWsdlTreeView.OnFocusChanged;
     try
       InWsdlTreeView.OnFocusChanged := nil;
       FocusOnBind(xMessage.ColumnXmls.Bindables
-          [Column - xMessage.corBinds.Count - 1]);
+          [Column - xMessage.CorrelationBindables.Count - 1]);
     finally
       InWsdlTreeView.OnFocusChanged := swapEvent;
     end;
@@ -4720,7 +4728,7 @@ begin
   with WsdlOperation do
   begin
     if WsdlService.DescriptionType in [ipmDTFreeFormat] then
-      (reqBind as TXml).LoadFromString(WsdlReply.FreeFormatReq, nil);
+      FreeFormatReq := Messages.Messages[0].FreeFormatReq; // always and only from first
   end;
   Application.CreateForm(TSelectElementsForm, SelectElementsForm);
   SelectElementsForm.Caption := 'Maintain list of correlation elements';
@@ -4887,14 +4895,14 @@ begin
           end;
         end;
         DocumentationMemo.Text := xMessage.Documentation;
-        if Column > xMessage.corBinds.Count then
+        if Column > xMessage.CorrelationBindables.Count then
         begin
           swapEvent := GridView.OnFocusChanged;
           try
             GridView.OnFocusChanged := nil;
             FocusOnBind
               (xMessage.ColumnXmls.Bindables
-                [Column - xMessage.corBinds.Count - 1]);
+                [Column - xMessage.CorrelationBindables.Count - 1]);
           finally
             GridView.OnFocusChanged := swapEvent;
           end;
@@ -5197,7 +5205,7 @@ begin
     NodeToMessage(Sender, Node, xMessage);
     if not Assigned(xMessage) then
       exit;
-    if Column <= xMessage.corBinds.Count then
+    if Column <= xMessage.CorrelationBindables.Count then
     begin
       with TargetCanvas do
       begin
@@ -5209,7 +5217,7 @@ begin
     end;
     try
       xBind := xMessage.ColumnXmls.Bindables
-        [Column - xMessage.corBinds.Count - 1];
+        [Column - xMessage.CorrelationBindables.Count - 1];
     except
       exit;
     end;
@@ -6094,8 +6102,8 @@ var
 begin
   GridView.FocusedColumn := 0;
   for c := GridView.Header.Columns.Count - 1 downto 0 do
-    ColumnWidths.Values[GridView.Header.Columns[c].Text] := IntToStr
-      (GridView.Header.Columns[c].Width);
+    ColumnWidths.Values[GridView.Header.Columns[c].Text] :=
+      IntToStr (GridView.Header.Columns[c].Width);
   if Assigned(WsdlOperation) then
   begin
     try
@@ -6126,23 +6134,20 @@ begin
     vc.Text := 'Reply';
   vc.Width := StrToIntDef(ColumnWidths.Values[vc.Text], 50);
   Inc(c);
-  with WsdlOperation.CorrelationBindables do
-  begin
-    for X := 0 to Count - 1 do
-    begin
-      vc := GridView.Header.Columns.Items[c];
-      if Assigned(Bindables[X]) then
-        vc.Text := TXml(Bindables[X]).TagName
-      else
-        vc.Text := '?';
-      vc.Width := StrToIntDef(ColumnWidths.Values[vc.Text], 50);
-      Inc(c);
-    end;
-  end;
   if WsdlOperation.Messages.Count > 0 then
   begin
     with WsdlOperation.Messages.Messages[0] do
     begin
+      for X := 0 to CorrelationBindables.Count - 1 do
+      begin
+        vc := GridView.Header.Columns.Items[c];
+        if Assigned(CorrelationBindables.Bindables[X]) then
+          vc.Text := CorrelationBindables.Bindables[X].Name
+        else
+          vc.Text := '?';
+        vc.Width := StrToIntDef(ColumnWidths.Values[vc.Text], 50);
+        Inc(c);
+      end;
       for X := 0 to ColumnXmls.Count - 1 do
       begin
         vc := GridView.Header.Columns.Items[c];
@@ -6650,12 +6655,12 @@ begin
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
     exit;
   end;
-  if Column <= xMessage.corBinds.Count then
+  if Column <= xMessage.CorrelationBindables.Count then
     exit;
   xBind := nil;
   try
     xBind := xMessage.ColumnXmls.Bindables
-      [Column - xMessage.corBinds.Count - 1];
+      [Column - xMessage.CorrelationBindables.Count - 1];
   except
   end;
   if not Assigned(xBind) then
@@ -10039,10 +10044,10 @@ begin
             try
               xFileName := saveToDiskDirectory + '\';
               xSeparator := '';
-              for X := 0 to xMessage.corBinds.Count - 1 do
+              for X := 0 to xMessage.CorrelationBindables.Count - 1 do
               begin
                 xFileName := xFileName + xSeparator +
-                  xMessage.corBinds.Bindables[X].CorrelationValue;
+                  xMessage.CorrelationBindables.Bindables[X].CorrelationValue;
                 xSeparator := saveToDiskSeparator;
               end;
               if saveToDiskExtention <> '' then
@@ -10360,11 +10365,11 @@ begin
           end
           else
           begin
-            if c <= xMessage.corBinds.Count then
+            if c <= xMessage.CorrelationBindables.Count then
             begin
               if c < copyColumns.Count then
               begin
-                if copyColumns.Strings[c] <> xMessage.corBinds.Bindables[c - 1]
+                if copyColumns.Strings[c] <> xMessage.CorrelationBindables.Bindables[c - 1]
                   .CorrelationValue then
                 begin
                   if l = 1 then
@@ -10373,7 +10378,7 @@ begin
                         copyColumns.Strings[c])
                   else
                   begin
-                    xMessage.corBinds.Bindables[c - 1].CorrelationValue :=
+                    xMessage.CorrelationBindables.Bindables[c - 1].CorrelationValue :=
                       copyColumns.Strings[c];
                     stubChanged := True;
                   end;
@@ -10384,10 +10389,10 @@ begin
             begin
               if (copyColumns.Strings[c] <> '?') and
                 (Assigned(xMessage.ColumnXmls.Bindables
-                    [c - xMessage.corBinds.Count - 1])) then
+                    [c - xMessage.CorrelationBindables.Count - 1])) then
               begin
                 xBind := xMessage.ColumnXmls.Bindables
-                  [c - xMessage.corBinds.Count - 1];
+                  [c - xMessage.CorrelationBindables.Count - 1];
                 if copyColumns.Strings[c] <> '&nil' then
                 begin
                   if (copyColumns.Strings[c] <> xBind.Value) or

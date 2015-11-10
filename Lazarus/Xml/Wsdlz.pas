@@ -50,6 +50,7 @@ type
   TWsdlServices = class;
   TWsdlService = class;
   TWsdlOperations = class;
+  TWsdlBinder = class;
   TWsdlOperation = class;
   TWsdlMsgDescrs = class;
   TWsdlMsgDescr = class;
@@ -178,9 +179,52 @@ type
       procedure Clean;
   end;
 
+  { TWsdlBinder }
+  TWsdlBinder = class (TObject)
+  private
+    fInputXsd: TXsd;
+    fReqBind: TCustomBindable;
+    fOutputXsd: TXsd;
+    fRpyBind: TCustomBindable;
+    fWssXml: TXml;
+    fFreeFormatReq: String;
+    fFreeFormatRpy: String;
+    function getRpyXml: TXml;
+    function getReqXml: TXml;
+    function getRpyBind: TCustomBindable;
+    function getReqBind: TCustomBindable;
+    procedure setReqBind(const Value: TCustomBindable);
+    procedure setRpyBind(const Value: TCustomBindable);
+    procedure setFreeFormatReq(const aValue: String);
+    procedure setFreeFormatRpy(const aValue: String);
+    function getReqIpm: TIpmItem;
+    function getInputXsd: TXsd;
+    function getOutputXsd: TXsd;
+    procedure setInputXsd(const Value: TXsd);
+    procedure setOutputXsd(const Value: TXsd);
+    function getRpyIpm: TIpmItem;
+  public
+    Name: String;
+    FaultXsd: TXsd;
+    fltBind: TCustomBindable;
+    CorrelationBindables: TBindableList;
+    function FindBind (aCaption: String): TCustomBindable;
+    procedure PopulateCorrelation (aPatternsList: TStringList);
+    property reqXsd: TXsd read getInputXsd write setInputXsd;
+    property reqBind: TCustomBindable read getReqBind write setReqBind;
+    property rpyXsd: TXsd read getOutputXsd write setOutputXsd;
+    property rpyBind: TCustomBindable read getRpyBind write setRpyBind;
+    property FreeFormatReq: String read fFreeFormatReq write setFreeFormatReq;
+    property FreeFormatRpy: String read fFreeFormatRpy write setFreeFormatRpy;
+    property ReqIpm: TIpmItem read getReqIpm;
+    property RpyIpm: TIpmItem read getRpyIpm;
+    property reqXml: TXml read getReqXml;
+    property rpyXml: TXml read getRpyXml;
+  end;
+
   { TWsdlOperation }
 
-  TWsdlOperation = class(TObject)
+  TWsdlOperation = class(TWsdlBinder)
     private
       fCloned: TWsdlOperation;
       fLock: TCriticalSection;
@@ -196,32 +240,16 @@ type
       fOnError: TOnErrorEvent;
       fLastMessage: TWsdlMessage;
       fLastFullCaption: String;
-      fInputXsd: TXsd;
-      fReqBind: TCustomBindable;
-      fOutputXsd: TXsd;
-      fRpyBind: TCustomBindable;
-      fWssXml: TXml;
-    fFreeFormatReq: String;
-    fFreeFormatRpy: String;
       fOnGetAbortPressed: TBooleanFunction;
-    fPrepareErrors: String;
+      fPrepareErrors: String;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
       function getDoExit : Boolean ;
       function getIsOneWay: Boolean;
       function getLateBinding : Boolean ;
-      function getRpyIpm: TIpmItem;
       function getisSoapService: Boolean;
-      function getRpyBind: TCustomBindable;
-      function getReqBind: TCustomBindable;
       procedure setDoExit (AValue : Boolean );
-      procedure setReqBind(const Value: TCustomBindable);
-      procedure setRpyBind(const Value: TCustomBindable);
       function getInputXml: TXml;
-      function getInputXsd: TXsd;
       function getOutputXml: TXml;
-      function getOutputXsd: TXsd;
-      procedure setInputXsd(const Value: TXsd);
-      procedure setOutputXsd(const Value: TXsd);
       function getLastFullCaption: String;
       function getLastMessage: TWsdlMessage;
       function getReplyBasedOnRequest: TWsdlMessage;
@@ -230,9 +258,6 @@ type
       procedure NeedStamperData(Sender: TObject; var MoreData: Boolean; var Data: String);
       function StreamWsAddressing (aWsa: TXml; isRequest: Boolean): String;
       function getWsaTo: String;
-    procedure setFreeFormatReq(const Value: String);
-    procedure setFreeFormatRpy(const Value: String);
-    function getReqIpm: TIpmItem;
     procedure setOnGetAbortPressed(const Value: TBooleanFunction);
     function getDebugTokenStringAfter: String;
     function getDebugTokenStringBefore: String;
@@ -242,7 +267,6 @@ type
       WsdlService: TWsdlService;
       Owner: TObject;
       Data: TObject;
-      Name: String;
       Alias: String;
       HiddenFromUI: Boolean;
       reqTagName, reqTagNameSpace, rpyTagName, rpyTagNameSpace: String;
@@ -267,8 +291,6 @@ type
       SoapBodyOutputEncodingStype: String;
       SoapBodyOutputPartName: String;
       SoapBodyOutputRequired: Boolean;
-      FaultXsd: TXsd;
-      fltBind: TCustomBindable;
       SoapAddress: String;
       wsaEnabled: Boolean;
       wsaSpecificMustUnderstand: Boolean;
@@ -306,7 +328,7 @@ type
       Messages: TWsdlMessages;
       doReadReplyFromFile: Boolean;
       ReadReplyFromFileXml: TXml;
-      CorrelationBindables, ExpectationBindables, LogColumns: TBindableList;
+      ExpectationBindables, LogColumns: TBindableList;
       faultcode, faultstring, faultactor, LiteralResult: String;
       ReturnSoapFault: Boolean;
       RecognitionType: TRecognitionType;
@@ -328,17 +350,9 @@ type
       property isSoapService: Boolean read getIsSoapService;
       property isOneWay: Boolean read getIsOneWay;
       property lateBinding: Boolean read getLateBinding;
-      property reqXsd: TXsd read getInputXsd write setInputXsd;
-      property reqBind: TCustomBindable read getReqBind write setReqBind;
-      property rpyXsd: TXsd read getOutputXsd write setOutputXsd;
-      property rpyBind: TCustomBindable read getRpyBind write setRpyBind;
       property wssXml: TXml read fWssXml write fWssXml;
       property InputXml: TXml read getInputXml;
       property OutputXml: TXml read getOutputXml;
-      property ReqIpm: TIpmItem read getReqIpm;
-      property RpyIpm: TIpmItem read getRpyIpm;
-      property FreeFormatReq: String read fFreeFormatReq write setFreeFormatReq;
-      property FreeFormatRpy: String read fFreeFormatRpy write setFreeFormatRpy;
       property LastMessage: TWsdlMessage read getLastMessage write fLastMessage;
       property LastFullCaption: String read getLastFullCaption write fLastFullCaption;
       property MessageBasedOnRequest: TWsdlMessage read getReplyBasedOnRequest;
@@ -367,7 +381,6 @@ type
       procedure SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
       procedure RequestStringToBindables (aRequest: String);
       procedure ReplyStringToBindables (aReply: String);
-      function FindBind (aCaption: String): TCustomBindable;
       function CorrelationIdAsText (aSeparator: String): String;
       procedure BindCheckerFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
       procedure BindStamperFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
@@ -456,33 +469,16 @@ type
     procedure Clear; override;
   end;
 
-  TWsdlMessage = class(TObject)
-    private
-    fFreeFormatReq: String;
-    fFreeFormatRpy: String;
-    function getRpyXml: TXml;
-    function getRpyIpm: TIpmItem;
-    procedure setFreeFormatReq(const Value: String);
-    procedure setFreeFormatRpy(const Value: String);
-    function getreqIpm: TIpmItem;
-    function getreqXml: TXml;
+  { TWsdlMessage }
+
+  TWsdlMessage = class(TWsdlBinder)
+  private
     public
-      Name: String;
 //      Patterns: TStringList;
-      reqBind: TCustomBindable;
-      rpyBind: TCustomBindable;
       rpyBodyBind: TCustomBindable; //if Assigned, the body of the reply
-      fltBind: TCustomBindable;
       ColumnXmls: TBindableList;
-      corBinds: TBindableList;
       Documentation: String;
       Disabled: Boolean;
-      property reqIpm: TIpmItem read getreqIpm;
-      property reqXml: TXml read getreqXml;
-      property rpyIpm: TIpmItem read getRpyIpm;
-      property rpyXml: TXml read getRpyXml;
-      property FreeFormatReq: String read fFreeFormatReq write setFreeFormatReq;
-      property FreeFormatRpy: String read fFreeFormatRpy write setFreeFormatRpy;
       function CheckValues(aOperation: TWsdlOperation): Boolean;
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
@@ -3328,7 +3324,7 @@ begin
 end;
 
 function TWsdlOperation.getReplyBasedOnRequest: TWsdlMessage;
-  function _Match (aCorBinds, aBindables: TBindableList): Boolean;
+  function _Match (aCorrelationBindables, aBindables: TBindableList): Boolean;
   var
     x: Integer;
     rx: TRegExpr;
@@ -3338,10 +3334,10 @@ function TWsdlOperation.getReplyBasedOnRequest: TWsdlMessage;
     rx := TRegExpr.Create;
     try
       while Result
-      and (x < aCorBinds.Count)
+      and (x < aCorrelationBindables.Count)
       and (x < aBindables.Count) do
       begin
-        rx.Expression := '^(' + aCorBinds.Bindables[x].CorrelationValue + ')$';  // bol and eol: must match entire string
+        rx.Expression := '^(' + aCorrelationBindables.Bindables[x].CorrelationValue + ')$';  // bol and eol: must match entire string
         result := Assigned (aBindables.Bindables[x]);
         if result then
           result := rx.Exec(aBindables.Bindables[x].GetStringData);
@@ -3369,13 +3365,13 @@ begin
       while (x < Messages.Count)
       and (not Assigned (result)) do
       begin
-        if (Messages.Messages[x].corBinds.Bindables[0].CorrelationValue = '.*')
+        if (Messages.Messages[x].CorrelationBindables.Bindables[0].CorrelationValue = '.*')
         and (not Assigned (xDefault)) then
           xDefault := Messages.Messages [x]
         else
         begin
           if (not Messages.Messages[x].Disabled)
-          and _Match (Messages.Messages[x].corBinds, CorrelationBindables) then
+          and _Match (Messages.Messages[x].CorrelationBindables, CorrelationBindables) then
           begin
             result := Messages.Messages [x];
           end;
@@ -4446,12 +4442,6 @@ procedure TWsdlOperation .FreeFormatToBindables (aRequestXml : TXml ;
   aRequestString : String );
 begin
   FreeFormatReq := aRequestString;
-  if aRequestXml.Name <> '' then
-  begin
-    reqBind.Free;
-    reqBind := TXml.Create;
-    (reqBind as TXml).CopyDownLine(aRequestXml, False);
-  end;
 end;
 
 function TWsdlOperation.getDebugTokenStringAfter: String;
@@ -4475,11 +4465,6 @@ begin
     result := freqBind as TXml;
 end;
 
-function TWsdlOperation.getInputXsd: TXsd;
-begin
-  result := fInputXsd;
-end;
-
 function TWsdlOperation.getOutputXml: TXml;
 begin
   if _ipmGun
@@ -4491,26 +4476,6 @@ begin
     result := frpyBind as TXml;
 end;
 
-function TWsdlOperation.getOutputXsd: TXsd;
-begin
-  result := fOutputXsd;
-end;
-
-procedure TWsdlOperation.setFreeFormatReq(const Value: String);
-begin
-  fFreeFormatReq := Value;
-end;
-
-procedure TWsdlOperation.setFreeFormatRpy(const Value: String);
-begin
-  fFreeFormatRpy := Value;
-end;
-
-procedure TWsdlOperation.setInputXsd(const Value: TXsd);
-begin
-  fInputXsd := Value;
-end;
-
 procedure TWsdlOperation.setOnGetAbortPressed(const Value: TBooleanFunction);
 begin
   fOnGetAbortPressed := Value;
@@ -4518,49 +4483,9 @@ begin
   if Assigned (fExpressAfter) then fExpressAfter.OnGetAbortPressed := Value;
 end;
 
-procedure TWsdlOperation.setOutputXsd(const Value: TXsd);
-begin
-  fOutputXsd := Value;
-end;
-
-procedure TWsdlOperation.setRpyBind(const Value: TCustomBindable);
-begin
-  frpyBind := Value;
-end;
-
-function TWsdlOperation.getReqBind: TCustomBindable;
-begin
-  result := freqBind;
-end;
-
-procedure TWsdlOperation .setDoExit (AValue : Boolean );
+procedure TWsdlOperation.setDoExit (AValue : Boolean );
 begin
   fDoExit := AValue;
-end;
-
-function TWsdlOperation.getReqIpm: TIpmItem;
-begin
-  result := freqBind as TIpmItem;
-end;
-
-procedure TWsdlOperation.setReqBind(const Value: TCustomBindable);
-begin
-  freqBind := Value;
-end;
-
-function TWsdlOperation.getRpyBind: TCustomBindable;
-begin
-  result := frpyBind;
-end;
-
-function TWsdlOperation.getisSoapService: Boolean;
-begin
-  result := Wsdl.isSoapService;
-end;
-
-function TWsdlOperation.getRpyIpm: TIpmItem;
-begin
-  result := rpyBind as TIpmItem;
 end;
 
 function TWsdlOperation.getWsaTo: String;
@@ -5433,35 +5358,6 @@ begin
   ReturnSoapFault := False;
 end;
 
-function TWsdlOperation.FindBind(aCaption: String): TCustomBindable;
-var
-  p: Integer;
-begin
-  result := nil;
-  if aCaption = '' then Exit;
-  p := Pos('.', aCaption);
-  if p < 1 then raise Exception.Create('Dot missing, can not determine Req, Rpy or Flt');
-  try
-    if Copy (aCaption, 1, p) = 'Req.' then
-    begin
-      result := reqBind.FindUQ(Copy (aCaption, p + 1, 10000));
-      exit;
-    end;
-    if Copy (aCaption, 1, p) = 'Rpy.' then
-    begin
-      result := rpyBind.FindUQ(Copy (aCaption, p + 1, 10000));
-      exit;
-    end;
-    if Copy (aCaption, 1, p) = 'Flt.' then
-    begin
-      result := fltBind.FindUQ(Copy (aCaption, p + 1, 10000));
-      exit;
-    end;
-  except
-    result := nil;
-  end;
-end;
-
 procedure TWsdlOperation.ExecuteReqStampers;
   procedure _Stamp (aBindable: TCustomBindable);
   var
@@ -5610,6 +5506,11 @@ end;
 function TWsdlOperation .getLateBinding : Boolean ;
 begin
   result := WsdlService.DescriptionType in [ipmDTFreeFormat];
+end;
+
+function TWsdlOperation.getisSoapService: Boolean;
+begin
+  result := Wsdl.isSoapService;
 end;
 
 { TWsdlPart }
@@ -5847,41 +5748,12 @@ var
   x: Integer;
   xCorrId: STring;
 begin
-  corBinds.ClearListOnly;
+  CorrelationBindables.ClearListOnly;
   for x := 0 to aOperation.CorrelationBindables.Count - 1 do
-  begin
-    xCorrId := aOperation.CorrelationBindables.Strings[x];
-    if AnsiStartsText('Req.',xCorrId) then
-      self.corBinds.AddObject
-        ( xCorrId
-        , self.reqBind.FindUQ
-            (Copy ( xCorrId
-                  , 5
-                  , Length (xCorrId) - 4
-                  )
-            )
-        );
-    if AnsiStartsText('Rpy.',xCorrId) then
-      self.corBinds.AddObject
-        ( xCorrId
-        , self.rpyBind.FindUQ
-            (Copy ( xCorrId
-                  , 5
-                  , Length (xCorrId) - 4
-                  )
-            )
-        );
-    if AnsiStartsText('Flt.',xCorrId) then
-      self.corBinds.AddObject
-        ( xCorrId
-        , self.fltBind.FindUQ
-            (Copy ( xCorrId
-                  , 5
-                  , Length (xCorrId) - 4
-                  )
-            )
-        );
-  end;
+    self.CorrelationBindables.AddObject
+      ( aOperation.CorrelationBindables.Strings[x]
+      , FindBind(aOperation.CorrelationBindables.Strings[x])
+      );
 end;
 
 constructor TWsdlMessage.Create;
@@ -5890,7 +5762,7 @@ begin
   rpyBind := TXml.Create;
   fltBind := TXml.Create;
   ColumnXmls := TBindableList.Create;
-  corBinds := TBindableList.Create;
+  CorrelationBindables := TBindableList.Create;
 //Patterns := TStringList.Create;
 end;
 
@@ -5899,7 +5771,7 @@ var
   x: Integer;
 begin
   Name := aName;
-  corBinds := TBindableList.Create;
+  CorrelationBindables := TBindableList.Create;
 //Patterns := TStringList.Create;
 {}{
 {}
@@ -5938,6 +5810,10 @@ begin
     else
       fltBind := TXml.Create;
   end;
+  if not Assigned (reqBind) then
+    reqBind := TXml.Create;
+  if not Assigned (rpyBind) then
+    rpyBind := TXml.Create;
   ColumnXmls := TBindableList.Create;
   corBindsInit(aOperation);
   if aOperation.CorrelationBindables.Count > 0 then
@@ -5947,15 +5823,15 @@ begin
       Text := aPatterns;
       x := 0;
       while (x < Count)
-      and (x < corBinds.Count) do
+      and (x < CorrelationBindables.Count) do
       begin
-        if Assigned (corBinds.Bindables[x]) then
-          corBinds.Bindables[x].CorrelationValue := Strings[x];
+        if Assigned (CorrelationBindables.Bindables[x]) then
+          CorrelationBindables.Bindables[x].CorrelationValue := Strings[x];
         Inc (x);
       end;
-      while (x < corBinds.Count) do
+      while (x < CorrelationBindables.Count) do
       begin
-        corBinds.Bindables[x].CorrelationValue := '.*';
+        CorrelationBindables.Bindables[x].CorrelationValue := '.*';
         Inc (x);
       end;
     finally
@@ -5970,7 +5846,7 @@ var
 begin
   try
     Name := aName;
-    corBinds := TBindableList.Create;
+    CorrelationBindables := TBindableList.Create;
   {}{
     Patterns := TStringList.Create;
     Patterns.Text := aPatterns;
@@ -6018,6 +5894,10 @@ begin
         end;
       end;
     end;
+    if not Assigned (reqBind) then
+      reqBind := TXml.Create;
+    if not Assigned (rpyBind) then
+      rpyBind := TXml.Create;
     ColumnXmls := TBindableList.Create;
     corBindsInit (aOperation);
     if aOperation.CorrelationBindables.Count > 0 then
@@ -6027,10 +5907,10 @@ begin
         Text := aPatterns;
         x := 0;
         while (x < Count)
-        and (x < corBinds.Count) do
+        and (x < CorrelationBindables.Count) do
         begin
-          if Assigned (corBinds.Bindables[x]) then
-            corBinds.Bindables[x].CorrelationValue := Strings[x];
+          if Assigned (CorrelationBindables.Bindables[x]) then
+            CorrelationBindables.Bindables[x].CorrelationValue := Strings[x];
           Inc (x);
         end;
       finally
@@ -6045,11 +5925,11 @@ end;
 
 destructor TWsdlMessage.Destroy;
 begin
-  FreeAndNil (reqBind);
-  FreeAndNil (rpyBind);
+  reqBind.Free;
+  rpyBind.Free;
   FreeAndNil (fltBind);
   ColumnXmls.Free;
-  corBinds.Free;
+  CorrelationBindables.Free;
 //Patterns.Free;
   inherited;
 end;
@@ -6101,36 +5981,6 @@ begin
          or aOperation.rpyBind.HasUnExpectedValue;
 end;
 
-function TWsdlMessage.getreqIpm: TIpmItem;
-begin
-  result := reqBind as TIpmItem;
-end;
-
-function TWsdlMessage.getreqXml: TXml;
-begin
-  result := reqBind as TXml;
-end;
-
-function TWsdlMessage.getRpyIpm: TIpmItem;
-begin
-  result := rpyBind as TIpmItem;
-end;
-
-function TWsdlMessage.getRpyXml: TXml;
-begin
-  result := rpyBind as TXml;
-end;
-
-procedure TWsdlMessage.setFreeFormatReq(const Value: String);
-begin
-  fFreeFormatReq := Value;
-end;
-
-procedure TWsdlMessage.setFreeFormatRpy(const Value: String);
-begin
-  fFreeFormatRpy := Value;
-end;
-
 { TWsdlMessages }
 
 procedure TWsdlMessages.Clear;
@@ -6165,6 +6015,153 @@ end;
 function TWsdlMessages.GetMessage(Index: integer): TWsdlMessage;
 begin
   result := TWsdlMessage (Objects [Index]);
+end;
+
+procedure TWsdlBinder.PopulateCorrelation (aPatternsList : TStringList );
+var
+  x: Integer;
+begin
+  x := 0;
+  while (x < CorrelationBindables.Count)
+  and (x < aPatternsList.Count) do
+  begin
+    if Assigned (CorrelationBindables.Bindables[x]) then
+      CorrelationBindables.Bindables[x].CorrelationValue := aPatternsList.Strings[x];
+    Inc (x);
+  end;
+  while (x < CorrelationBindables.Count) do
+  begin
+    if Assigned (CorrelationBindables.Bindables[x]) then
+      CorrelationBindables.Bindables[x].CorrelationValue := '.*';
+    Inc (x);
+  end;
+end;
+
+function TWsdlBinder.getReqXml: TXml;
+begin
+  result := reqBind as TXml;
+end;
+
+function TWsdlBinder.getRpyXml: TXml;
+begin
+  result := rpyBind as TXml;
+end;
+
+function TWsdlBinder.FindBind(aCaption: String): TCustomBindable;
+var
+  p: Integer;
+begin
+  result := nil;
+  if aCaption = '' then Exit;
+  p := Pos('.', aCaption);
+  if p < 1 then raise Exception.Create('Dot missing, can not determine Req, Rpy or Flt');
+  try
+    if Copy (aCaption, 1, p) = 'Req.' then
+    begin
+      result := reqBind.FindUQ(Copy (aCaption, p + 1, 10000));
+      exit;
+    end;
+    if Copy (aCaption, 1, p) = 'Rpy.' then
+    begin
+      result := rpyBind.FindUQ(Copy (aCaption, p + 1, 10000));
+      exit;
+    end;
+    if Copy (aCaption, 1, p) = 'Flt.' then
+    begin
+      result := fltBind.FindUQ(Copy (aCaption, p + 1, 10000));
+      exit;
+    end;
+  except
+    result := nil;
+  end;
+end;
+
+function TWsdlBinder.getInputXsd: TXsd;
+begin
+  result := fInputXsd;
+end;
+
+function TWsdlBinder.getOutputXsd: TXsd;
+begin
+  result := fOutputXsd;
+end;
+
+procedure TWsdlBinder.setFreeFormatReq(const aValue: String);
+var
+  sl: TStringList;
+  x: Integer;
+begin
+//  if Value = fFreeFormatReq then Exit;
+  fFreeFormatReq := aValue;
+  sl := TStringList.Create;
+  try
+    for x := 0 to CorrelationBindables.Count - 1 do
+      if Assigned (CorrelationBindables.Bindables[x]) then
+        sl.Add (CorrelationBindables.Bindables[x].CorrelationValue)
+      else
+        sl.Add ('?');
+    with reqBind as TXml do
+    begin
+      LoadFromString(aValue, nil);
+      SeparateNsPrefixes;
+      ResolveNameSpaces;
+    end;
+    PopulateCorrelation(sl);
+  finally
+    sl.Free;
+  end;
+end;
+
+procedure TWsdlBinder.setFreeFormatRpy(const aValue: String);
+begin
+//  if aValue = fFreeFormatRpy then Exit;
+  fFreeFormatRpy := aValue;
+  with rpyBind as TXml do
+  begin
+    LoadFromString(aValue, nil);
+    SeparateNsPrefixes;
+    ResolveNameSpaces;
+  end;
+end;
+
+procedure TWsdlBinder.setInputXsd(const Value: TXsd);
+begin
+  fInputXsd := Value;
+end;
+
+procedure TWsdlBinder.setOutputXsd(const Value: TXsd);
+begin
+  fOutputXsd := Value;
+end;
+
+procedure TWsdlBinder.setRpyBind(const Value: TCustomBindable);
+begin
+  frpyBind := Value;
+end;
+
+function TWsdlBinder.getReqBind: TCustomBindable;
+begin
+  result := freqBind;
+end;
+
+function TWsdlBinder.getReqIpm: TIpmItem;
+begin
+  result := freqBind as TIpmItem;
+end;
+
+procedure TWsdlBinder.setReqBind(const Value: TCustomBindable);
+begin
+  freqBind := Value;
+end;
+
+function TWsdlBinder.getRpyBind: TCustomBindable;
+begin
+  result := frpyBind;
+end;
+
+function TWsdlBinder.getRpyIpm: TIpmItem;
+begin
+  result := rpyBind as TIpmItem;
 end;
 
 function wsdlConvertSdfFrom36 (aXml: TXml): Boolean;
@@ -6220,6 +6217,7 @@ begin
   end;
   result := True;
 end;
+
 
 initialization
   Randomize;

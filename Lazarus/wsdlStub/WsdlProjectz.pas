@@ -1856,9 +1856,9 @@ begin
                         begin
                           AddXml (TXml.CreateAsString('Name', xMessage.Name));
                           with AddXml (TXml.CreateAsString('Patterns' , '')) do
-                            for p := 0 to xMessage.corBinds.Count - 1 do
-                              if Assigned (xMessage.corBinds.Bindables[p]) then
-                                AddXml (TXml.CreateAsString('Pattern', xMessage.corBinds.Bindables[p].CorrelationValue))
+                            for p := 0 to xMessage.CorrelationBindables.Count - 1 do
+                              if Assigned (xMessage.CorrelationBindables.Bindables[p]) then
+                                AddXml (TXml.CreateAsString('Pattern', xMessage.CorrelationBindables.Bindables[p].CorrelationValue))
                               else
                                 AddXml (TXml.CreateAsString('Pattern', '?'));
                           with AddXml (TXml.CreateAsString('Reply', '')) do
@@ -2306,7 +2306,11 @@ begin
                                   if Assigned (rXml) then
                                   begin
                                     if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-                                      xMessage.FreeFormatReq := rXml.Value
+                                    begin
+                                      xMessage.FreeFormatReq := rXml.Value;
+                                      xMessage.corBindsInit(xOperation);
+                                      xMessage.PopulateCorrelation(xPatterns);
+                                    end
                                     else
                                     begin
                                       if (rXml.Items.Count > 0) then
@@ -3051,9 +3055,9 @@ procedure TWsdlProject .UpdateReplyColumns (aOperation : TWsdlOperation );
   begin
     with aOperation.Messages.Messages[0] do
     begin
-      for c := 0 to corBinds.Count - 1 do
-        if Assigned (corBinds.Bindables[c]) then
-          corBinds.Bindables[c].CorrelationValue := '.*' ;
+      for c := 0 to CorrelationBindables.Count - 1 do
+        if Assigned (CorrelationBindables.Bindables[c]) then
+          CorrelationBindables.Bindables[c].CorrelationValue := '.*' ;
       for c := 0 to ColumnXmls.Count - 1 do
       begin
         if AnsiStartsText ('Rpy.', ColumnXmls.Strings[c]) then
@@ -5372,7 +5376,7 @@ begin
           raise Exception.CreateFmt('%s (%s)', [result.PrepareErrors, result.reqTagName]);
       end;
       case result.WsdlService.DescriptionType of
-        ipmDTFreeFormat: result.FreeFormatToBindables(xXml, aString);
+        ipmDTFreeFormat: result.FreeFormatReq := aString;
         ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
         ipmDTXml: result.SoapXmlRequestToBindables (xXml, aDoClone);
         ipmDTXsd: result.SoapXmlRequestToBindables (xXml, aDoClone);
