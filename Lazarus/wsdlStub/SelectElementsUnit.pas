@@ -246,10 +246,7 @@ begin
   for x := 0 to ControlBinds.Count - 1 do
   begin
     ListItem := ListView.Items.Add;
-    if Assigned (ControlBinds.Bindables [x]) then
-      ListItem.Caption := LastCaption (ControlBinds.Strings [x])
-    else
-      ListItem.Caption := '?unknown';
+    ListItem.Caption := LastCaption (ControlBinds.Strings [x]);
     ListItem.SubItems.Add(ControlBinds.Strings [x]);
   end;
   if ListView.Items.Count > 0 then

@@ -732,16 +732,14 @@ end;
 
 function LastCaption (aCaption: String): String;
 var
-  x: Integer;
+  x, p: Integer;
 begin
   result := '';
+  p := 1;
   for x := 1 to Length (aCaption) do
-  begin
     if aCaption [x] = '.' then
-      result := ''
-    else
-      result := result + aCaption [x];
-  end;
+      p := x + 1;
+  result := Copy (aCaption, p, MaxInt);
 end;
 
 function ThisCaption (aCaption: String): String;
