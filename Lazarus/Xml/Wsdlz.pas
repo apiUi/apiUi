@@ -5422,7 +5422,8 @@ begin
     begin
       result := result
               + Copy (xFormat, 1, p - 1)
-              + CorrelationBindables.Bindables[x].Value;
+              + ifthen(Assigned ( CorrelationBindables.Bindables[x]),  CorrelationBindables.Bindables[x].Value)
+              ;
       xFormat := Copy(xFormat, p + 2, MaxInt);
     end;
   end;
