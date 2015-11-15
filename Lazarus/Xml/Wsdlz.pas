@@ -189,11 +189,15 @@ type
     fWssXml: TXml;
     fFreeFormatReq: String;
     fFreeFormatRpy: String;
+    fWsdlMessage: TWsdlMessage;
+    procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
+    function getRequestAsString : String ;
     function getRpyXml: TXml;
     function getReqXml: TXml;
     function getRpyBind: TCustomBindable;
     function getReqBind: TCustomBindable;
     procedure setReqBind(const Value: TCustomBindable);
+    procedure setRequestAsString (AValue : String );
     procedure setRpyBind(const Value: TCustomBindable);
     procedure setFreeFormatReq(const aValue: String);
     procedure setFreeFormatRpy(const aValue: String);
@@ -203,19 +207,24 @@ type
     procedure setInputXsd(const Value: TXsd);
     procedure setOutputXsd(const Value: TXsd);
     function getRpyIpm: TIpmItem;
+    function getDescriptionType: TIpmDescrType;
   public
     Name: String;
+    WsdlOperation: TWsdlOperation;
     FaultXsd: TXsd;
     fltBind: TCustomBindable;
     CorrelationBindables: TBindableList;
+    procedure SwiftMtRequestToBindables (aString: String);
     function FindBind (aCaption: String): TCustomBindable;
     procedure PopulateCorrelation (aPatternsList: TStringList);
+    property DescriptionType: TIpmDescrType read getDescriptionType;
     property reqXsd: TXsd read getInputXsd write setInputXsd;
     property reqBind: TCustomBindable read getReqBind write setReqBind;
     property rpyXsd: TXsd read getOutputXsd write setOutputXsd;
     property rpyBind: TCustomBindable read getRpyBind write setRpyBind;
     property FreeFormatReq: String read fFreeFormatReq write setFreeFormatReq;
     property FreeFormatRpy: String read fFreeFormatRpy write setFreeFormatRpy;
+    property RequestAsString: String read getRequestAsString write setRequestAsString;
     property ReqIpm: TIpmItem read getReqIpm;
     property RpyIpm: TIpmItem read getRpyIpm;
     property reqXml: TXml read getReqXml;
@@ -263,8 +272,8 @@ type
     function getDebugTokenStringBefore: String;
     public
       _processing: Boolean;
-      Wsdl: TWsdl;
       WsdlService: TWsdlService;
+      Wsdl: TWsdl;
       Owner: TObject;
       Data: TObject;
       Alias: String;
@@ -375,9 +384,8 @@ type
       procedure RpyBindablesFromString (aString: String);
       procedure RpyBindablesFromWsdlMessage (aMessage: TWsdlMessage);
       procedure RpyBindablesToWsdlMessage (aMessage: TWsdlMessage);
-      procedure SoapXmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
       procedure FreeFormatToBindables (aRequestXml: TXml; aRequestString: String);
-      procedure SwiftMtRequestToBindables (aString: String);
+      procedure SoapXmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
       procedure SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
       procedure RequestStringToBindables (aRequest: String);
       procedure ReplyStringToBindables (aReply: String);
@@ -565,6 +573,7 @@ procedure ReleaseEnvVarLock;
 var
   allOperations, allAliasses: TWsdlOperations;
   allOperationsRpy: TWsdlOperations;
+  _ProgName: String;
   _WsdlVars: TStringList;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
@@ -3149,6 +3158,7 @@ end;
 
 constructor TWsdlOperation.Create  (aWsdl: TWsdl);
 begin
+  WsdlOperation := self;
   fCloned := nil;
   fLock := SyncObjs.TCriticalSection.Create;
   doSuppressLog := 0;
@@ -3800,17 +3810,6 @@ begin
     result := strAddElm (result, 'wsa:To', WsaTo){};
 end;
 
-procedure TWsdlOperation.SwiftMtRequestToBindables(aString: String);
-begin
-  (reqBind as TXml).ResetValues;
-  with TSwiftMT.Create(aString, reqXsd) do
-  try
-    (reqBind as TXml).LoadValues (AsXml, False, True);
-  finally
-    Free;
-  end;
-end;
-
 function TWsdlOperation.StreamRequest ( aGeneratedWith: String
                                       ; aGenerateTypes: Boolean
                                       ; aGenerateHeaderNameSpaces: Boolean
@@ -4223,6 +4222,7 @@ begin
   xOperation := aOperation;
   while Assigned(xOperation.Cloned) do
     xOperation := xOperation.Cloned;
+  self.WsdlOperation := self;
   self.fCloned := xOperation;
   self.fLock := xOperation.fLock;
   self.doSuppressLog := xOperation.doSuppressLog;
@@ -4253,8 +4253,11 @@ begin
   self.SoapBodyOutputRequired := xOperation.SoapBodyOutputRequired;
   self.SoapBodyOutputUse := xOperation.SoapBodyOutputUse;
   self.FaultXsd := xOperation.FaultXsd;
-  self.fltBind := TXml.Create (-10000, self.FaultXsd);
-  self.fltBind.Name := 'Faults';
+  if Assigned (self.FaultXsd) then
+  begin
+    self.fltBind := TXml.Create (-10000, self.FaultXsd);
+    self.fltBind.Name := 'Faults';
+  end;
   if Assigned (self.FaultMessages) then
     for f := 0 to self.FaultMessages.Count - 1 do
       if f < (self.fltBind as TXml).Items.Count then
@@ -4311,38 +4314,50 @@ begin
     self.reqBind := TIpmItem.Create(xOperation.reqBind as TIpmItem)
   else
   begin
-    self.reqBind := TXml.Create (-10000, self.reqXsd);
-    self.reqBind.Name := xOperation.reqBind.Name;
+    if Assigned (self.reqXsd) then
+    begin
+      self.reqBind := TXml.Create (-10000, self.reqXsd);
+      self.reqBind.Name := xOperation.reqBind.Name;
+    end;
   end;
   self.rpyXsd := xOperation.rpyXsd;
   if xOperation.rpyBind is TIpmItem then
     self.rpyBind := TIpmItem.Create(xOperation.rpyBind as TIpmItem)
   else
   begin
-    self.rpyBind := TXml.Create (-10000, self.rpyXsd);
-    self.rpyBind.Name := xOperation.rpyBind.Name;
+    if Assigned (self.rpyXsd) then
+    begin
+      self.rpyBind := TXml.Create (-10000, self.rpyXsd);
+      self.rpyBind.Name := xOperation.rpyBind.Name;
+    end;
   end;
   self.OnError := xOperation.OnError;
-  self.CorrelationBindables := _cloneBindables(xOperation.CorrelationBindables);
-  self.ExpectationBindables := _cloneBindables(xOperation.ExpectationBindables);
-  self.LogColumns := _cloneBindables(xOperation.LogColumns);
-  self.invokeList := TWsdlOperations.Create;
-  self.invokeList.Text := xOperation.invokeList.Text;
-  self.doInvokeOperations;
-  self.BindStamper;
-  if not self.lateBinding then
+  if Assigned (xOperation.CorrelationBindables) then
+    self.CorrelationBindables := _cloneBindables(xOperation.CorrelationBindables);
+  if Assigned (xOperation.ExpectationBindables) then
+    self.ExpectationBindables := _cloneBindables(xOperation.ExpectationBindables);
+  if Assigned (xOperation.LogColumns) then
+    self.LogColumns := _cloneBindables(xOperation.LogColumns);
+  if Assigned (xOperation.invokeList) then
   begin
-    try
-      self.PrepareBefore;
-    except
-      on e: Exception do
-        fPrepareErrors := fPrepareErrors + 'Found in BeforeScript: ' + e.Message + LineEnding;
-    end;
-    try
-      self.PrepareAfter;
-    except
-      on e: Exception do
-        fPrepareErrors := fPrepareErrors + 'Found in AfterScript: ' + e.Message + LineEnding;
+    self.invokeList := TWsdlOperations.Create;
+    self.invokeList.Text := xOperation.invokeList.Text;
+    self.doInvokeOperations;
+    self.BindStamper;
+    if not self.lateBinding then
+    begin
+      try
+        self.PrepareBefore;
+      except
+        on e: Exception do
+          fPrepareErrors := fPrepareErrors + 'Found in BeforeScript: ' + e.Message + LineEnding;
+      end;
+      try
+        self.PrepareAfter;
+      except
+        on e: Exception do
+          fPrepareErrors := fPrepareErrors + 'Found in AfterScript: ' + e.Message + LineEnding;
+      end;
     end;
   end;
 end;
@@ -5494,14 +5509,19 @@ end;
 
 function TWsdlOperation.getIsOneWay: Boolean;
 begin
-  if WsdlService.DescriptionType = ipmDTCobol then
-    result := ((rpyBind as TIpmItem).Bytes = 0)
-  else
-    if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
-      result := (FreeFormatRpy = '')
+  result := False;
+  if Assigned (self)
+  and Assigned (WsdlService) then
+  begin
+    if WsdlService.DescriptionType = ipmDTCobol then
+      result := ((rpyBind as TIpmItem).Bytes = 0)
     else
-      result := (rpyXsd.sType.ElementDefs.Count = 0)
-            ;
+      if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
+        result := (FreeFormatRpy = '')
+      else
+        result := (rpyXsd.sType.ElementDefs.Count = 0)
+              ;
+  end;
 end;
 
 function TWsdlOperation .getLateBinding : Boolean ;
@@ -5772,13 +5792,14 @@ var
   x: Integer;
 begin
   Name := aName;
+  WsdlOperation:= aOperation;
   CorrelationBindables := TBindableList.Create;
 //Patterns := TStringList.Create;
 {}{
 {}
   Documentation := aDocumentation;
   aOperation.Messages.AddObject('', self);
-  if aOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
+  if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
   begin
     if Assigned (aOperation.reqBind) then
       reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
@@ -5847,6 +5868,7 @@ var
 begin
   try
     Name := aName;
+    WsdlOperation := aOperation;
     CorrelationBindables := TBindableList.Create;
   {}{
     Patterns := TStringList.Create;
@@ -5856,7 +5878,7 @@ begin
   {}
     Documentation := aDocumentation;
     aOperation.Messages.AddObject('', self);
-    if aOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
+    if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
     begin
       if Assigned (aOperation.reqBind) then
         reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
@@ -6018,6 +6040,22 @@ begin
   result := TWsdlMessage (Objects [Index]);
 end;
 
+procedure TWsdlBinder.SwiftMtRequestToBindables(aString: String);
+begin
+  (reqBind as TXml).ResetValues;
+  with TSwiftMT.Create(aString, reqXsd) do
+  try
+    (reqBind as TXml).LoadValues (AsXml, False, True);
+  finally
+    Free;
+  end;
+end;
+
+function TWsdlBinder.getDescriptionType: TIpmDescrType;
+begin
+  result := WsdlOperation.WsdlService.DescriptionType;
+end;
+
 procedure TWsdlBinder.PopulateCorrelation (aPatternsList : TStringList );
 var
   x: Integer;
@@ -6046,6 +6084,15 @@ end;
 function TWsdlBinder.getRpyXml: TXml;
 begin
   result := rpyBind as TXml;
+end;
+
+function TWsdlBinder .getRequestAsString : String ;
+begin
+  case DescriptionType of
+    ipmDTFreeFormat: result := FreeFormatReq;
+    ipmDTCobol, ipmDTBmtp: ;
+    ipmDTXml, ipmDTXsd, ipmDTWsdl, ipmDTEmail, ipmDTSwiftMT, ipmDTJson: result := '';
+  end;
 end;
 
 function TWsdlBinder.FindBind(aCaption: String): TCustomBindable;
@@ -6153,6 +6200,81 @@ end;
 procedure TWsdlBinder.setReqBind(const Value: TCustomBindable);
 begin
   freqBind := Value;
+end;
+
+procedure TWsdlBinder.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
+begin
+  (aObject as TIpmItem).Value := '?' + _progName + ' Error found: ' + ErrorString;
+end;
+
+procedure TWsdlBinder.setRequestAsString (AValue : String );
+  procedure _XmlRequestToBindables;
+  var
+    x, s, d: Integer;
+    xXml: TXml;
+    xWsaName: String;
+  begin
+    xXml := TXml.Create;
+    try
+      xXml.LoadFromString(AValue, nil);
+      xXml.SeparateNsPrefixes;
+      xXml.ResolveNameSpaces;
+      reqXml.ResetValues;
+      reqXml.Checked := True;
+      if xXml.isSoapEnvelope then
+      begin
+        for x := 0 to xXml.Items.Count - 1 do
+        begin
+          xXml := xXml.Items.XmlItems [x];
+          if (xXml.TagName = 'Header') then
+          begin
+            for s := 0 to xXml.Items.Count - 1 do
+            begin
+              for d := 0 to WsdlOperation.InputHeaders.Count - 1 do
+                reqXml.Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], False, False);
+            end;
+            if Assigned (WsdlOperation.reqWsaXml) then
+            begin
+              WsdlOperation.reqWsaXml.ResetValues;
+              xWsaName := xXml.Name;
+              try
+                xXml.Name := WsdlOperation.reqWsaXml.Name;
+                WsdlOperation.reqWsaXml.LoadValues(xXml,False,False);
+                WsdlOperation.rpyWsaOnRequest;
+              finally
+                xXml.Name := xWsaName;
+              end;
+            end;
+          end;
+          if (xXml.TagName = 'Body') then
+          begin
+            for s := 0 to xXml.Items.Count - 1 do
+            begin
+              for d := WsdlOperation.InputHeaders.Count to reqXml.Items.Count - 1 do
+                reqXml.Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], False, False);
+            end;
+          end;
+        end;
+      end
+      else
+      begin
+        reqXml.Items.XmlItems[0].LoadValues (xXml, DescriptionType <> ipmDTXsd, False);
+      end;
+    finally
+      xXml.Free;
+    end;
+  end;
+begin
+  case WsdlOperation.WsdlService.DescriptionType of
+    ipmDTFreeFormat:
+      begin
+        FreeFormatReq := AValue;
+        reqXml.LoadFromString(AValue, nil);
+      end;
+    ipmDTCobol, ipmDTBmtp: (reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, AValue);
+    ipmDTSwiftMT: SwiftMtRequestToBindables(AValue);
+    ipmDTXml, ipmDTXsd, ipmDTWsdl, ipmDTEmail: _XmlRequestToBindables;
+  end;
 end;
 
 function TWsdlBinder.getRpyBind: TCustomBindable;

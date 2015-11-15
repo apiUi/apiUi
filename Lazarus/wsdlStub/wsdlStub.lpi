@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9164"/>
+      <BuildNr Value="9171"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -146,7 +146,6 @@
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
-        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>

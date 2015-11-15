@@ -170,7 +170,7 @@ type
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
     OnDebugOperationEvent: TOnEvent;
-    OnStartThread, OnTerminateThread: TOnEvent;
+    OnStartBlockingThread, OnTerminateBlockingThread, OnStartNonBlockingThread, OnTerminateNonBlockingThread: TOnEvent;
     Notify: TOnNotify;
     LogServerMessage: TOnStringEvent;
     doViaProxyServer: Boolean;
@@ -297,6 +297,7 @@ type
     function FindCcbOperationOnRequest (aLog: TLog; aCobolString: String): TWsdlOperation;
     function FindOperationOnDocument (aDocument: String): TWsdlOperation;
     function FindOperationOnRequest (aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
+    function RedirectUnknownOperation (aLog: TLog): String;
     function CreateReply ( aLog: TLog
                          ; aDocument, aRequest: String
                          ; var aOperation: TWsdlOperation
@@ -348,29 +349,35 @@ type
     fExtended, fExtended2: Extended;
     fOperation: TWsdlOperation;
     fObject: TObject;
+    fBlocking: Boolean;
   protected
     procedure Execute; override;
   public
     constructor Create ( aSuspended: Boolean
+                       ; aBlocking: Boolean
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedure
                        ); overload;
     constructor Create ( aSuspended: Boolean
+                       ; aBlocking: Boolean
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedureS
                        ; aString: String
                        ); overload;
     constructor Create ( aSuspended: Boolean
+                       ; aBlocking: Boolean
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedureXX
                        ; aExtended, aExtended2: Extended
                        ); overload;
     constructor Create ( aSuspended: Boolean
+                       ; aBlocking: Boolean
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedureOperation
                        ; aOperation: TWsdlOperation
                        ); overload;
     constructor Create ( aSuspended: Boolean
+                       ; aBlocking: Boolean
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedureObject
                        ; aObject: TObject
@@ -420,7 +427,6 @@ type
 procedure IntrospectIniXml;
 
 var
-  _ProgName: String;
   BetaMode: Boolean;
   webserviceWsdlFileName, webserviceXsdFileName, wsdlStubXsdFileName: String;
     indexHtmlFileName: String;
@@ -700,48 +706,53 @@ end;
 
 { TProcedureThread }
 
-constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject; aProcedure: TProcedure);
+constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject; aProcedure: TProcedure);
 begin
   inherited Create (aSuspended);
+  fBlocking := aBlocking;
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedure := aProcedure;
 end;
 
-constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject; aProcedure: TProcedureS;
+constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject; aProcedure: TProcedureS;
   aString: String);
 begin
   inherited Create (aSuspended);
+  fBlocking := aBlocking;
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedureString := aProcedure;
   fString := aString;
 end;
 
-constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject; aProcedure: TProcedureOperation;
+constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject; aProcedure: TProcedureOperation;
   aOperation: TWsdlOperation);
 begin
   inherited Create (aSuspended);
+  fBlocking := aBlocking;
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedureOperation := aProcedure;
   fOperation := aOperation;
 end;
 
-constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject;
+constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject;
   aProcedure: TProcedureObject; aObject: TObject);
 begin
   inherited Create (aSuspended);
+  fBlocking := aBlocking;
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedureObject := aProcedure;
   fObject := aObject;
 end;
 
-constructor TProcedureThread.Create(aSuspended: Boolean; aProject: TWsdlProject;
+constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject;
   aProcedure: TProcedureXX; aExtended, aExtended2: Extended);
 begin
   inherited Create (aSuspended);
+  fBlocking := aBlocking;
   FreeOnTerminate := True;
   fProject := aProject;
   fProcedureXX := aProcedure;
@@ -751,8 +762,16 @@ end;
 
 procedure TProcedureThread.Execute;
 begin
-  if Assigned (fProject.OnStartThread) then
-    Synchronize(fProject.OnStartThread);
+  if fBlocking then
+  begin
+    if Assigned (fProject.OnStartBlockingThread) then
+      Synchronize(fProject.OnStartBlockingThread);
+  end
+  else
+  begin
+    if Assigned (fProject.OnStartNonBlockingThread) then
+      Synchronize(fProject.OnStartNonBlockingThread);
+  end;
   try
     if Assigned (fProcedure) then fProcedure;
     if Assigned (fProcedureString) then fProcedureString (fString);
@@ -760,8 +779,16 @@ begin
     if Assigned (fProcedureOperation) then fProcedureOperation (fOperation);
     if Assigned (fProcedureObject) then fProcedureObject (fObject);
   finally
-    if Assigned (fProject.OnTerminateThread) then
-      Synchronize(fProject.OnTerminateThread);
+    if fBlocking then
+    begin
+      if Assigned (fProject.OnTerminateBlockingThread) then
+        Synchronize(fProject.OnTerminateBlockingThread);
+    end
+    else
+    begin
+      if Assigned (fProject.OnTerminateNonBlockingThread) then
+        Synchronize(fProject.OnTerminateNonBlockingThread);
+    end;
   end;
 end;
 
@@ -2540,8 +2567,9 @@ begin
           saForward: raise;
           saRedirect:
             begin
-              aLog.ReplyBody := SendOperationMessage(unknownOperation, aLog.RequestBody);
+              aLog.ReplyBody := RedirectUnknownOperation(aLog);
               aProcessed := True;
+              exit;
             end;
           saRequest: raise;
         end;
@@ -2556,6 +2584,39 @@ begin
         exit;
     end;
   end; //except
+end;
+
+function TWsdlProject.RedirectUnknownOperation (aLog : TLog ): String ;
+var
+  xOperation: TWsdlOperation;
+  rUri: TIdUri;
+begin
+  result := '';
+  aLog.Exception := '';
+  xOperation := TWsdlOperation.Create(unknownOperation);
+  try
+    xOperation.SoapAction := aLog.httpSoapAction;
+    case aLog.TransportType of
+      ttHttp, ttHttps, ttSmtp:
+      begin
+        rUri := TIdUri.Create(xOperation.StubHttpAddress);
+        try
+          if (rUri.Path = '/')
+          and (rUri.Document = '') then
+          begin
+            rUri.Path := '';
+            rUri.Document := aLog.httpDocument;
+          end;
+          xOperation.StubHttpAddress := rUri.URI;
+        finally
+          FreeAndNil (rUri);
+        end;
+      end;
+    end;
+    result := SendOperationMessage(xOperation, aLog.RequestBody);
+  finally
+    xOperation.Free;
+  end;
 end;
 
 function TWsdlProject.CreateReply ( aLog: TLog
@@ -3897,7 +3958,7 @@ begin
     xProject := (aObject as TWsdlOperation).Owner as TWsdlProject
   else
     xProject := aObject as TWsdlProject;
-  TProcedureThread.Create(False, xProject, xProject.RefuseHttpConnectionsThreaded, aLater, aTime);
+  TProcedureThread.Create(False, False, xProject, xProject.RefuseHttpConnectionsThreaded, aLater, aTime);
 end;
 
 procedure TWsdlProject.RefuseHttpConnectionsThreaded(aLater, aTime: Extended);
@@ -6542,7 +6603,7 @@ end;
 
 procedure TWsdlProject.ScriptExecuteText(aText: String);
 begin
-  TProcedureThread.Create(False, self, ScriptExecute, aText);
+  TProcedureThread.Create(False, False, self, ScriptExecute, aText);
 end;
 
 procedure TWsdlProject.ExecuteAllOperationRequests(aOperation: TWsdlOperation);

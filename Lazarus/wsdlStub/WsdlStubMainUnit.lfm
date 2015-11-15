@@ -2087,6 +2087,7 @@ object MainForm: TMainForm
       Hint = 'Abort'
       ImageIndex = 45
       OnExecute = AbortActionExecute
+      OnUpdate = AbortActionUpdate
     end
     object LoadTestAction: TAction
       Category = 'Messages'

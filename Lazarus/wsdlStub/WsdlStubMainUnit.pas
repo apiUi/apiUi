@@ -53,7 +53,7 @@ type
   end;
 
   TShowLogData = (slRequestHeaders, slRequestBody, slReplyHeaders, slReplyBody, slException, slValidation);
-  TLogPanelIndex = (lpiFocus, lpiLoadThreads);
+  TLogPanelIndex = (lpiFocus, lpiThreads);
   TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
   TProcedure = procedure of Object;
   TProcedureString = procedure(arg: String) of Object;
@@ -497,6 +497,7 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure AbortActionUpdate (Sender : TObject );
     procedure BrowseMqActionHint (var HintStr : string ; var CanShow : Boolean
       );
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
@@ -1041,8 +1042,10 @@ type
     procedure SetIsBusy(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
-    procedure StartThreadEvent;
-    procedure TerminateThreadEvent;
+    procedure StartBlockingThreadEvent;
+    procedure StartNonBlockingThreadEvent;
+    procedure TerminateBlockingThreadEvent;
+    procedure TerminateNonBlockingThreadEvent;
     procedure SetUiProgress;
   private
     fdoShowDesignSplitVertical : Boolean ;
@@ -1075,7 +1078,7 @@ type
     scriptPreparedWell: Boolean;
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
-    NumberOfThreads: Integer;
+    NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property isBusy: Boolean read fIsBusy write SetIsBusy;
@@ -3235,10 +3238,10 @@ begin
   end;
 end;
 
-procedure TMainForm.StartThreadEvent ;
+procedure TMainForm.StartBlockingThreadEvent ;
 begin
   isBusy := True;
-  if NumberOfThreads = 0 then
+  if NumberOfBlockingThreads = 0 then
   begin
     DownPageControl.ActivePage := MessagesTabSheet;
     ExecuteRequestToolButton.Down := True;
@@ -3246,27 +3249,47 @@ begin
     se.ProgressPos := 0;
     Screen.Cursor := crHourGlass;
     abortPressed := False;
-    AbortAction.Enabled := True;
   end;
-  Inc (NumberOfThreads);
+  Inc (NumberOfBlockingThreads);
 end;
 
-procedure TMainForm.TerminateThreadEvent ;
+procedure TMainForm.TerminateBlockingThreadEvent ;
 begin
-  Dec (NumberOfThreads);
-  if (NumberOfThreads <= 0) then
+  Dec (NumberOfBlockingThreads);
+  if (NumberOfBlockingThreads <= 0) then
   begin
     ExecuteRequestToolButton.Down := False;
     ExecuteAllRequestsToolButton.Down := False;
     Screen.Cursor := crDefault;
     DownPageControl.ActivePage := MessagesTabSheet;
     se.ProgressPos := 0;
-    abortPressed := False;
-    AbortAction.Enabled := False;
+    if NumberOfNonBlockingThreads <= 0 then
+      abortPressed := False;
     UpdateInWsdlCheckBoxes;
     GridView.Invalidate;
     InWsdlTreeView.Invalidate;
     isBusy := False;
+  end;
+end;
+
+procedure TMainForm.StartNonBlockingThreadEvent ;
+begin
+  if NumberOfNonBlockingThreads = 0 then
+  begin
+    DownPageControl.ActivePage := MessagesTabSheet;
+    abortPressed := False;
+  end;
+  Inc (NumberOfNonBlockingThreads);
+end;
+
+procedure TMainForm.TerminateNonBlockingThreadEvent ;
+begin
+  Dec (NumberOfNonBlockingThreads);
+  if (NumberOfNonBlockingThreads <= 0) then
+  begin
+    DownPageControl.ActivePage := MessagesTabSheet;
+    if NumberOfBlockingThreads <= 0 then
+      abortPressed := False;
   end;
 end;
 
@@ -3281,9 +3304,9 @@ begin
     else
       ProgressBar.Position := 0;
   end;
-  MessagesStatusBar.Panels.Items[Ord(lpiLoadThreads)].Text := IfThen ( NumberOfThreads = 0
+  MessagesStatusBar.Panels.Items[Ord(lpiThreads)].Text := IfThen ( NumberOfBlockingThreads + NumberOfNonBlockingThreads = 0
                                                                      , ''
-                                                                     , 'Loadthreads: ' + IntToStr(NumberOfThreads)
+                                                                     , 'Threads: ' + IntToStr(NumberOfBlockingThreads + NumberOfNonBlockingThreads)
                                                                      );
 end;
 
@@ -3855,6 +3878,7 @@ var
   xMenuItem: TMenuItem;
 begin
   xMenuItem := nil;
+{
   if Sender is TMenuItem then
     xMenuItem := Sender as TMenuItem;
   if Sender is TAction then with Sender as TAction do
@@ -3862,11 +3886,12 @@ begin
       xMenuItem := ActionComponent as TMenuItem;
   if Assigned (xMenuItem) then
     xMenuItem.OnClick (xMenuItem);
+}
 end;
 
 procedure TMainForm.runScriptActionUpdate(Sender: TObject);
 begin
-  runScriptAction.Enabled := se.IsActive and not se.isBusy;
+  runScriptAction.Enabled := se.IsActive {and not se.isBusy};
 end;
 
 procedure TMainForm.PrepareOperation;
@@ -6248,9 +6273,11 @@ begin
   sc := TWsdlControl.Create;
   sc.se := se;
   RefreshLogTimer.Enabled := True;
-  NumberOfThreads := 0;
-  se.OnStartThread := StartThreadEvent;
-  se.OnTerminateThread := TerminateThreadEvent;
+  NumberOfBlockingThreads := 0;
+  se.OnStartBlockingThread := StartBlockingThreadEvent;
+  se.OnTerminateBlockingThread := TerminateBlockingThreadEvent;
+  se.OnStartNonBlockingThread := StartNonBlockingThreadEvent;
+  se.OnTerminateNonBlockingThread := TerminateNonBlockingThreadEvent;
   sc.OnActivateEvent := ActivateCommand;
   sc.OnOpenProjectEvent := OpenProjectCommand;
   se.Notify := Notify;
@@ -7395,7 +7422,7 @@ begin
           begin
             saveToDiskSeparator := messagesFromDiskForm.SeparatorEdit.Text;
             FileNameList.Text := Files.Text;
-            TProcedureThread.Create(False, se, doReadMessagesFromDisk);
+            TProcedureThread.Create(False, True, se, doReadMessagesFromDisk);
           end;
         finally
           FreeAndNil(messagesFromDiskForm);
@@ -7751,11 +7778,10 @@ begin
     raise Exception.Create(Format('%s not active', [_progName]));
   se.ProgressMax := 5;
   se.ProgressPos := 0;
-  isBusy := True;
   with Sender as TMenuItem do
     with se.Scripts.Objects[Tag] as TStringList do
       xScript := Text;
-  TProcedureThread.Create(False, se, se.ScriptExecute, xScript);
+  TProcedureThread.Create(False, False, se, se.ScriptExecute, xScript);
 end;
 
 procedure TMainForm.CreateScriptsSubMenuItems;
@@ -7903,7 +7929,7 @@ end;
 procedure TMainForm.ExecuteRequestActionExecute(Sender: TObject);
 begin
   EndEdit;
-  TProcedureThread.Create(False, se, doExecuteRequest);
+  TProcedureThread.Create(False, True, se, doExecuteRequest);
 end;
 
 procedure TMainForm.ExecuteAllRequests;
@@ -7987,7 +8013,7 @@ end;
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
   EndEdit;
-  TProcedureThread.Create(False, se, ExecuteAllRequests);
+  TProcedureThread.Create(False, True, se, ExecuteAllRequests);
 end;
 
 procedure TMainForm.WsdlItemChangeDataTypeMenuItemClick(Sender: TObject);
@@ -9911,7 +9937,7 @@ begin
       saveToDiskDirectory := messagesToDiskForm.DirectoryEdit.Text;
       saveToDiskExtention := messagesToDiskForm.ExtentionEdit.Text;
       saveToDiskSeparator := messagesToDiskForm.SeparatorEdit.Text;
-      TProcedureThread.Create(False, se, doSaveMessagesToDisk);
+      TProcedureThread.Create(False, True, se, doSaveMessagesToDisk);
     end;
   finally
     FreeAndNil(messagesToDiskForm);
@@ -11912,7 +11938,7 @@ begin
       StressTestDelayMsMin := StressTestForm.DelayMsMin;
       StressTestDelayMsMax := StressTestForm.DelayMsMax;
       for x := 0 to StressTestConcurrentThreads - 1 do
-        TProcedureThread.Create(False, se, ExecuteLoadTest);
+        TProcedureThread.Create(False, True, se, ExecuteLoadTest);
     end;
   finally
     FreeAndNil(StressTestForm);
@@ -12027,6 +12053,13 @@ begin
           or se.mmqqMqInterface.MQClientOK
          ) then
     HintStr := HintStr + ' (IBM WebSphere MQ not installed?)';
+end;
+
+procedure TMainForm .AbortActionUpdate (Sender : TObject );
+begin
+  AbortAction.Enabled := (NumberOfBlockingThreads > 0)
+                      or (NumberOfNonBlockingThreads > 0)
+                       ;
 end;
 
 procedure TMainForm .MessagesTabControlChange (Sender : TObject );
