@@ -2749,7 +2749,10 @@ begin
     if xOperation.ReturnSoapFault then
       aLog.Exception := Result;
     if not isAsynchronous then
+    begin
+      aLog.ReplyBody := result;
       result := CreateLogReplyPostProcess(aLog, xOperation);
+    end;
   finally
     if Assigned (xOperation.Cloned) then
       xOperation.Free;
