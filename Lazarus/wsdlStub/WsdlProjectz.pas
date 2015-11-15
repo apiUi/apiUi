@@ -277,7 +277,7 @@ type
     function RedirectCommandURC (aCommand: String): String;
     function RedirectCommandHTTP ( aCommand, aStubAddress, aDocument, aSoapAction: String): String;
     function RedirectCommandString ( aCommand: String; aAddress, aSoapAction: String): String;
-    procedure CreateLogReplyPostProcess (aLogItem: TLog; aOperation: TWsdlOperation);
+    function CreateLogReplyPostProcess (aLogItem: TLog; aOperation: TWsdlOperation): String;
     procedure SendAsynchReply ( aLog: TLog);
     function SendMessage ( aOperation: TWsdlOperation
                              ; aRequest: TWsdlMessage
@@ -2749,7 +2749,7 @@ begin
     if xOperation.ReturnSoapFault then
       aLog.Exception := Result;
     if not isAsynchronous then
-      CreateLogReplyPostProcess(aLog, xOperation);
+      result := CreateLogReplyPostProcess(aLog, xOperation);
   finally
     if Assigned (xOperation.Cloned) then
       xOperation.Free;
@@ -4090,11 +4090,12 @@ begin
   end;
 end;
 
-procedure TWsdlProject .CreateLogReplyPostProcess (aLogItem : TLog ;
-  aOperation : TWsdlOperation );
+function TWsdlProject .CreateLogReplyPostProcess (aLogItem : TLog ;
+  aOperation : TWsdlOperation ): String;
 var
   xMessage: String;
 begin
+  result := aLogItem.ReplyBody;
   if Assigned (aOperation) then
     aLogItem.StubAction := aOperation.StubAction;
   if Assigned (aOperation) then
@@ -4182,6 +4183,7 @@ begin
       end;
     end;
   end;
+  result := aLogItem.ReplyBody;
 end;
 
 function TWsdlProject.SendMessageLater(aOperation: TWsdlOperation;
