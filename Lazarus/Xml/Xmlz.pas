@@ -24,6 +24,9 @@ type TXmlTagsCase = (xmlTCDontChange, xmlTCUpperCase, xmlTCLowerCase);
 type TXmlTagsHyphen = (xmlTHDontChange, xmlTHHyphen, xmlTHReplaceBy);
 type TXmlBrowser = (xmlBInternal, xmlBShell);
 type
+
+  { TXmlAttribute }
+
   TXmlAttribute = class(TCustomBindable)
 private
 public
@@ -31,6 +34,7 @@ public
   {Value: String; now in TCustomBindable }
   XsdAttr: TXsdAttr;
   LineNo: Integer;
+  function isXmlNsAttribute: Boolean;
   function GetFullIndexCaption: String; Override;
   function IsValueValidAgainstXsd (var aMessageString: String): Boolean;
   function IsMoveUpPossible: Boolean;
@@ -1624,8 +1628,13 @@ begin
       fChecked := aXml.Attributes.XmlAttributes[y].ValueAsBoolean
     else
     begin
-      if (not aOnlyWhenChecked)
-      or aXml.Attributes.XmlAttributes [y].Checked then
+      if (   (not aOnlyWhenChecked)
+          or aXml.Attributes.XmlAttributes [y].Checked
+         )
+      and (  (not Assigned (Xsd))
+           or (not aXml.Attributes.XmlAttributes [y].isXmlNsAttribute)
+          )
+      then
       begin
         _Checked := True;
         _Name := NameWithoutPrefix (aXml.Attributes.XmlAttributes [y].Name);
@@ -3437,6 +3446,13 @@ end;
 function TXml.FindUQ(aName: String): TCustomBindable;
 begin
   result := FindUQBind (aName);
+end;
+
+function TXmlAttribute .isXmlNsAttribute : Boolean ;
+begin
+  result := (Name = 'xmlns')
+         or (Copy (Name, 1, 6) = 'xmlns:')
+          ;
 end;
 
 function TXmlAttribute.GetFullIndexCaption: String;

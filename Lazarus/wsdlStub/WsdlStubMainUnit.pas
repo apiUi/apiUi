@@ -8626,14 +8626,20 @@ var
 begin
   n := MessagesVTS.SelectedCount;
   xLog := NodeToMsgLog(False,MessagesVTS, MessagesVTS.FocusedNode);
-  RequestMiMAction.Enabled := Assigned(xLog) and (xLog.RequestBodyMiM <> '')
-    and (xLog.RequestBodyMiM <> xLog.RequestBody);
-  ReplyMiMAction.Enabled := Assigned(xLog) and (xLog.ReplyBodyMiM <> '') and
-    (xLog.ReplyBodyMiM <> xLog.ReplyBody);
+  RequestMiMAction.Enabled := Assigned(xLog)
+                          and (xLog.RequestBodyMiM <> '')
+                          and (xLog.RequestBodyMiM <> xLog.RequestBody)
+                            ;
+  ReplyMiMAction.Enabled := Assigned(xLog)
+                        and (xLog.ReplyBodyMiM <> '')
+                        and (xLog.ReplyBodyMiM <> xLog.ReplyBody)
+                          ;
   Log2DesignAction.Enabled := (n > 0);
-  DisplayedcolumnMenuItem.Enabled := Assigned(xLog) and Assigned
-    (xLog.Operation) and (n = 1) and (MessagesVTS.FocusedColumn >= Ord
-      (logStdColumnCount));
+  DisplayedcolumnMenuItem.Enabled := Assigned (xLog)
+                                 and Assigned (xLog.Operation)
+                                 and (n = 1)
+                                 and (MessagesVTS.FocusedColumn >= Ord (logStdColumnCount))
+                                   ;
 end;
 
 procedure TMainForm.RequestMiMActionExecute(Sender: TObject);
