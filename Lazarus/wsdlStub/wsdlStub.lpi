@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9185"/>
+      <BuildNr Value="9187"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -110,10 +110,9 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5023="True" idx5024="True" idx5025="True" idx5028="True"/>
+        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -164,11 +163,9 @@
       </Item13>
       <Item14>
         <Name Value="EIdHTTPProtocolException"/>
-        <Enabled Value="False"/>
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
-        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EODBCException"/>

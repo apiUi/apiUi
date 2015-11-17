@@ -35,6 +35,7 @@ public
   XsdAttr: TXsdAttr;
   LineNo: Integer;
   function isXmlNsAttribute: Boolean;
+  function isXmlTypeDefAttribute: Boolean;
   function GetFullIndexCaption: String; Override;
   function IsValueValidAgainstXsd (var aMessageString: String): Boolean;
   function IsMoveUpPossible: Boolean;
@@ -1632,7 +1633,9 @@ begin
           or aXml.Attributes.XmlAttributes [y].Checked
          )
       and (  (not Assigned (Xsd))
-           or (not aXml.Attributes.XmlAttributes [y].isXmlNsAttribute)
+           or (    (not aXml.Attributes.XmlAttributes [y].isXmlNsAttribute)
+               and (not aXml.Attributes.XmlAttributes [y].isXmlTypeDefAttribute)
+              )
           )
       then
       begin
@@ -3453,6 +3456,11 @@ begin
   result := (Name = 'xmlns')
          or (Copy (Name, 1, 6) = 'xmlns:')
           ;
+end;
+
+function TXmlAttribute.isXmlTypeDefAttribute: Boolean;
+begin
+  result := (Name = 'type');    { TODO : xsi namespace }
 end;
 
 function TXmlAttribute.GetFullIndexCaption: String;

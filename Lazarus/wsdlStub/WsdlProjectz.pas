@@ -5444,10 +5444,10 @@ begin
       case result.WsdlService.DescriptionType of
         ipmDTFreeFormat: result.FreeFormatReq := aString;
         ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
-        ipmDTXml: result.SoapXmlRequestToBindables (xXml, aDoClone);
-        ipmDTXsd: result.SoapXmlRequestToBindables (xXml, aDoClone);
-        ipmDTWsdl: result.SoapXmlRequestToBindables (xXml, aDoClone);
-        ipmDTEmail: result.SoapXmlRequestToBindables (xXml, aDoClone);
+        ipmDTXml: result.SoapXmlRequestToBindables (xXml, False);
+        ipmDTXsd: result.SoapXmlRequestToBindables (xXml, False);
+        ipmDTWsdl: result.SoapXmlRequestToBindables (xXml, False);
+        ipmDTEmail: result.SoapXmlRequestToBindables (xXml, False);
         ipmDTSwiftMT: result.SwiftMtRequestToBindables(aString);
       end;
     finally
