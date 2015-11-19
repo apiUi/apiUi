@@ -1375,6 +1375,7 @@ begin
              or (not (aBind is TXmlAttribute))
              or (    (LeftStr (aBind.Name, 6) <> 'xmlns:')
                  and (aBind.Name <> 'xmlns')
+                 and (aBind.Name <> 'xsi:type')      { TODO : other prefixes for schema-insta... }
                 )
             )
           ;
