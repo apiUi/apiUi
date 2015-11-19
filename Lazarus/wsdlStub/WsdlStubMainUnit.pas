@@ -12107,6 +12107,9 @@ begin
       begin
         stubChanged := True;
         se.UpdateOperationAliasses;
+        try aOperation.PrepareBefore; Except end;
+        try aOperation.PrepareAfter; Except end;
+        FillInWsdlEdits;
         OperationReqsTreeView.Invalidate;
       end;
     end;

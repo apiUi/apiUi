@@ -1989,7 +1989,7 @@ begin
         begin
           result := False;
           xXml.ValidationMesssage := Format( 'Number of elements (%d) less then minimum (%s) for element %s'
-                                           , [n, ElementDefs.Xsds[x].maxOccurs, ElementDefs.Xsds[x].ElementName]
+                                           , [n, ElementDefs.Xsds[x].minOccurs, ElementDefs.Xsds[x].ElementName]
                                            );
           aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
           Exit;

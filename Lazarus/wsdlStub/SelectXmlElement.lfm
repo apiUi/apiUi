@@ -13,7 +13,7 @@ object SelectXmlElementForm: TSelectXmlElementForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.2.6.0'
   object TreeViewPanel: TPanel
     Left = 0
     Height = 232

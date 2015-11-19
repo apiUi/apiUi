@@ -81,6 +81,7 @@ var
   xChild, rChild: TTreeNode;
   x, f: Integer;
   xOperation: TWsdlOperation;
+  xBindName: String;
   procedure ShowAllControlBinds(aList: TBindableList;
     aCaption: String);
   var
@@ -160,11 +161,15 @@ begin
             if (not Assigned (WsdlOperation))
             and (xOperation.reqBind is TIpmItem) then
               xChild := TreeView.Items.AddChildObject (rChild, allOperations.Operations[x].Name, nil);
+            xBindName := xOperation.reqBind.Name;
+            if xOperation.Alias <> xOperation.reqTagName then
+              xOperation.reqBind.Name := xOperation.Alias;
             ViewXmlItem ( TreeView
                         , xChild
                         , xOperation.reqBind
                         , IncludeRecurring
                         );
+            xOperation.reqBind.Name := xBindName;
           end;
         end;
       end;
@@ -189,11 +194,15 @@ begin
             if (not Assigned (WsdlOperation))
             and (allOperations.Operations[x].rpyBind is TIpmItem) then
               xChild := TreeView.Items.AddChildObject (rChild, allOperations.Operations[x].Name, nil);
+            xBindName := xOperation.RpyBind.Name;
+            if xOperation.Alias <> xOperation.reqTagName then  // yes, compare with tagname
+              xOperation.rpyBind.Name := xOperation.Alias;
             ViewXmlItem ( TreeView
                         , xChild
                         , xOperation.rpyBind
                         , IncludeRecurring
                         );
+            xOperation.RpyBind.Name := xBindName;
           end;
         end;
       end;

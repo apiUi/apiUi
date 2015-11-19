@@ -371,6 +371,7 @@ type
       property Cloned: TWsdlOperation read fCloned;
       property DebugTokenStringAfter: String read getDebugTokenStringAfter;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
+      procedure Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
       procedure AcquireLock;
       procedure ReleaseLock;
       function ReadReplyFromFileName: String;
@@ -3432,6 +3433,20 @@ begin
   end;
 end;
 
+procedure TWsdlOperation.Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
+var
+  s: String;
+begin
+  s := aBind.Name;
+  try
+    if Alias <> reqTagName then
+      aBind.Name := Alias;
+    aBind.Bind (aRoot, aExpress, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+  finally
+    aBind.Name := s;
+  end;
+end;
+
 procedure TWsdlOperation.PrepareBefore;
 var
   x: Integer;
@@ -3459,14 +3474,14 @@ begin
 //      fExpress.OnHaveData := HaveData;
       fLineNumber := 0;
       fExpressBefore.Database := _WsdlDbsConnector;
-      reqBind.Bind ('Req', fExpressBefore, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
-      rpyBind.Bind ('Rpy', fExpressBefore, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+      Bind ('Req', reqBind, fExpressBefore);
+      Bind ('Rpy', rpyBind, fExpressBefore);
       for x := 0 to invokeList.Count - 1 do
       begin
-        if Assigned (invokeList.Operations[x]) then
+        if Assigned (invokeList.Operations[x]) then with invokeList.Operations[x] do
         begin
-          invokeList.Operations[x].reqBind.Bind ('Req', fExpressBefore, invokeList.Operations[x].Wsdl.XsdDescr.xsdElementsWhenRepeatable);
-          invokeList.Operations[x].rpyBind.Bind ('Rpy', fExpressBefore, invokeList.Operations[x].Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+          Bind ('Req', reqBind, fExpressBefore);
+          Bind ('Rpy', rpyBind, fExpressBefore);
         end;
       end;
       if fltBind is TIpmItem then
@@ -3598,14 +3613,14 @@ begin
 //      fExpress.OnHaveData := HaveData;
     fLineNumber := 0;
     fExpressAfter.Database := _WsdlDbsConnector;
-    reqBind.Bind ('Req', fExpressAfter, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
-    rpyBind.Bind ('Rpy', fExpressAfter, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+    Bind ('Req', reqBind, fExpressAfter);
+    Bind ('Rpy', rpyBind, fExpressAfter);
     for x := 0 to invokeList.Count - 1 do
     begin
-      if Assigned(invokeList.Operations[x]) then
+      if Assigned (invokeList.Operations[x]) then with invokeList.Operations[x] do
       begin
-        invokeList.Operations[x].reqBind.Bind ('Req', fExpressAfter, invokeList.Operations[x].Wsdl.XsdDescr.xsdElementsWhenRepeatable);
-        invokeList.Operations[x].rpyBind.Bind ('Rpy', fExpressAfter, invokeList.Operations[x].Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+        Bind ('Req', reqBind, fExpressAfter);
+        Bind ('Rpy', rpyBind, fExpressAfter);
       end;
     end;
     if fltBind is TIpmItem then
