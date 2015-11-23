@@ -9049,7 +9049,7 @@ begin
                               + ' at '
                               + xXml.FullCaption
                               ;
-          PromptForm.PromptEdit.Text := '';
+          PromptForm.PromptEdit.Text := cTypeDef.Name;
           PromptForm.Numeric := False;
           PromptForm.ShowModal;
           if PromptForm.ModalResult = mrOk then
@@ -12087,6 +12087,7 @@ end;
 procedure TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation );
 var
   oldAlias: String;
+  m: Integer;
 begin
   if not Assigned(aOperation) then
     raise Exception.Create('TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation )  No argument assigned');
@@ -12096,21 +12097,36 @@ begin
     PromptForm.Caption := 'Alias for operation ' + aOperation.reqTagName + ' ; ' + aOperation.reqTagNameSpace;
     PromptForm.PromptEdit.Text := aOperation.Alias;
     PromptForm.Numeric := False;
+    PromptForm.Pattern := '[A-Za-z]([0-9]|[A-Za-z]|\_|\-|\$)*'; // {id} regexp from express/scanner.l
     PromptForm.ShowModal;
     if PromptForm.ModalResult = mrOk then
     begin
       if PromptForm.PromptEdit.Text = '' then
-        aOperation.Alias := aOperation.reqTagName
+      with aOperation do begin
+        Alias := reqTagName;
+        if Assigned (reqBind) then reqBind.Name := reqTagName;
+        if Assigned (rpyBind) then rpyBind.Name := rpyTagName;
+      end
       else
-        aOperation.Alias := PromptForm.PromptEdit.Text;
+      with aOperation do begin
+        Alias := PromptForm.PromptEdit.Text;
+        if Assigned (reqBind) then reqBind.Name := Alias;
+        if Assigned (rpyBind) then rpyBind.Name := Alias;
+      end;
       if aOperation.Alias <> oldAlias then
       begin
         stubChanged := True;
         se.UpdateOperationAliasses;
+        for m := 0 to aOperation.Messages.Count - 1 do
+        begin
+          aOperation.Messages.Messages[m].reqBind.Name := aOperation.reqBind.Name;
+          aOperation.Messages.Messages[m].rpyBind.Name := aOperation.rpyBind.Name;
+        end;
         try aOperation.PrepareBefore; Except end;
         try aOperation.PrepareAfter; Except end;
         FillInWsdlEdits;
         OperationReqsTreeView.Invalidate;
+        InWsdlTreeView.Invalidate;
       end;
     end;
   finally

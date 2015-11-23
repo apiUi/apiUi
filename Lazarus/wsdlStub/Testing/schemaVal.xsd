@@ -350,6 +350,7 @@
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				<xs:element name="anyType" type="xs:anyType"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

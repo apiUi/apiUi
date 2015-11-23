@@ -17,7 +17,11 @@ const
   InSqlState = 1;
   LayoutState = 2;
 
-type TExpress = class (TComponent)
+type
+
+{ TExpress }
+
+ TExpress = class (TComponent)
 private
   rootBlock, currBlock, prntBlock: TBlock;
   ScannerState: Integer;
@@ -105,6 +109,7 @@ public
   property OnGetAbortPressed: TBooleanFunction read fOnGetAbortPressed write SetOnGetAbortPressed;
   property OnGetDoExit: TBooleanFunction read fOnGetDoExit write SetOnGetDoExit;
   property Context: TObject read getContext write setContext;
+  function BindsAsText: String;
   procedure Prepare;
   procedure Execute;
   procedure BindBoolean (Id: String; var Adress: Boolean);
@@ -413,6 +418,11 @@ begin
     Parser.OnGetDoExit := Value;
 end;
 
+function TExpress .BindsAsText : String ;
+begin
+  result := BindList.Text;
+end;
+
 procedure TExpress.setScriptText(const Value: String);
 begin
   fTextLines.Text := Value;
@@ -705,7 +715,7 @@ begin
   end;
 end;
 
-procedure TExpress.FinishInsertQuery(Sender, Query: TObject);
+procedure TExpress .FinishInsertQuery (Sender : TObject ; Query : TObject );
 var
   Qry: TXpQuery;
 begin

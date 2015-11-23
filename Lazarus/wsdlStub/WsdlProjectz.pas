@@ -2237,6 +2237,11 @@ begin
                             if Assigned (dXml) then
                               xOperation.StubAction := TStubAction (StrToIntDef(dXml.Value, 0));
                             xOperation.Alias := oXml.Items.XmlValueByTagDef['Alias', xOperation.reqTagName];
+                            if xOperation.Alias <> xOperation.reqTagName then
+                            begin
+                              xOperation.reqBind.Name := xOperation.alias;
+                              xOperation.rpyBind.Name := xOperation.alias;
+                            end;
                             xOperation.HiddenFromUI := oXml.Items.XmlBooleanByTagDef ['HiddenFromUI', False];
                             xOperation.wsaEnabled := oXml.Items.XmlBooleanByTagDef ['wsaEnabled', False];
                             xOperation.wsaSpecificMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaSpecificMustUnderstand', False];

@@ -262,12 +262,15 @@ procedure TEditOperationScriptForm.Anoperationbetweenquotes1Click(
 var
   x: Integer;
 begin
+  if WsdlOperation.invokeList.Count = 0 then
+    ShowMessage('No operations invoked');
   Application.CreateForm(TSelectItemForm, SelectItemForm);
   try
     SelectItemForm.Caption := 'Select operation';
     SelectItemForm.ListBox.Clear;
-    for x := 0 to allAliasses.Count - 1 do
-      SelectItemForm.ListBox.Items.Add (allAliasses.Operations [x].Alias);
+    with WsdlOperation.invokeList do
+      for x := 0 to Count - 1 do
+        SelectItemForm.ListBox.Items.Add (Operations [x].Alias);
     SelectItemForm.ShowModal;
     if SelectItemForm.ModalResult = mrOk then
     begin

@@ -186,7 +186,6 @@ type
     fReqBind: TCustomBindable;
     fOutputXsd: TXsd;
     fRpyBind: TCustomBindable;
-    fWssXml: TXml;
     fFreeFormatReq: String;
     fFreeFormatRpy: String;
     fWsdlMessage: TWsdlMessage;
@@ -359,7 +358,6 @@ type
       property isSoapService: Boolean read getIsSoapService;
       property isOneWay: Boolean read getIsOneWay;
       property lateBinding: Boolean read getLateBinding;
-      property wssXml: TXml read fWssXml write fWssXml;
       property InputXml: TXml read getInputXml;
       property OutputXml: TXml read getOutputXml;
       property LastMessage: TWsdlMessage read getLastMessage write fLastMessage;
@@ -371,6 +369,7 @@ type
       property Cloned: TWsdlOperation read fCloned;
       property DebugTokenStringAfter: String read getDebugTokenStringAfter;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
+      function BeforeBindsAsText: String;
       procedure Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
       procedure AcquireLock;
       procedure ReleaseLock;
@@ -3434,17 +3433,12 @@ begin
 end;
 
 procedure TWsdlOperation.Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
-var
-  s: String;
 begin
-  s := aBind.Name;
-  try
-    if Alias <> reqTagName then
-      aBind.Name := Alias;
-    aBind.Bind (aRoot, aExpress, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
-  finally
-    aBind.Name := s;
-  end;
+  if not Assigned(aExpress)
+  or not Assigned(aBind)
+  or (aBind.Name = '') then
+    Exit;
+  aBind.Bind (aRoot, aExpress, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
 end;
 
 procedure TWsdlOperation.PrepareBefore;
@@ -3478,10 +3472,10 @@ begin
       Bind ('Rpy', rpyBind, fExpressBefore);
       for x := 0 to invokeList.Count - 1 do
       begin
-        if Assigned (invokeList.Operations[x]) then with invokeList.Operations[x] do
+        if Assigned (invokeList.Operations[x]) then
         begin
-          Bind ('Req', reqBind, fExpressBefore);
-          Bind ('Rpy', rpyBind, fExpressBefore);
+          Bind ('Req', invokeList.Operations[x].reqBind, fExpressBefore);
+          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressBefore);
         end;
       end;
       if fltBind is TIpmItem then
@@ -4482,6 +4476,11 @@ end;
 function TWsdlOperation.getDebugTokenStringBefore: String;
 begin
   result := fExpressBefore.DebugTokenStringList;
+end;
+
+function TWsdlOperation .BeforeBindsAsText : String ;
+begin
+  result := fExpressBefore.BindsAsText;
 end;
 
 function TWsdlOperation.getInputXml: TXml;

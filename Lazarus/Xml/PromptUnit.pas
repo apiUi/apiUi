@@ -32,6 +32,7 @@ type
   public
     Numeric: Boolean;
     ReadOnly: Boolean;
+    Pattern: String;
   end;
 
 var
@@ -39,6 +40,7 @@ var
 
 implementation
 
+uses RegExpr;
 {$IFnDEF FPC}
   {$R *.dfm}
 {$ELSE}
@@ -65,13 +67,25 @@ var
   DoEnable: Boolean;
 begin
   DoEnable := True; // start optimistic
-  if (Numeric)
-  and (PromptEdit.Text <> '')
-  then begin
-    try
-      xFloat := StrToFloat (PromptEdit.Text);
-    except
-      DoEnable := False;
+  if (PromptEdit.Text <> '') then
+  begin
+    if (Numeric)
+    then begin
+      try
+        xFloat := StrToFloat (PromptEdit.Text);
+      except
+        DoEnable := False;
+      end;
+    end;
+    if (Pattern <> '')
+    then begin
+      with TRegExpr.Create do
+      try
+        Expression := '^' + Pattern + '$';
+        DoEnable := Exec(PromptEdit.Text);
+      finally
+        Free;
+      end;
     end;
   end;
   OkButton.Enabled := DoEnable;

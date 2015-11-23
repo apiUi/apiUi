@@ -1481,17 +1481,6 @@ begin
 end;
 
 function TXsd.AddElementDef(aXsdDescr: TXsdDescr; aName: String; aType: TXsdDataType): TXsd;
-  procedure _setNameSpace (aXsd: TXsd; aNS: String);
-  var
-    x: Integer;
-  begin
-    if aXsd._Processed then Exit;
-    aXsd.ElementNameSpace := aNS;
-    aXsd._Processed := True;
-    for x := 0 to aXsd.sType.ElementDefs.Count - 1 do
-      _setNameSpace(aXsd.sType.ElementDefs.Xsds[x], aNs);
-    aXsd._Processed := False;
-  end;
 var
   oType, nType: TXsdDataType;
 begin
@@ -1499,8 +1488,6 @@ begin
   if not oType.Manually then
   begin
     nType := TXsdDataType.Create(aXsdDescr, oType);
-    nType.NameSpace := ElementNameSpace;
-    nType.Name := nType.Name + nType.uniqueId;
     aXsdDescr.Garbage.AddObject('', nType);
   end
   else
@@ -1514,7 +1501,6 @@ begin
   result.ElementName := aName;
   result.ElementNameSpace := aType.NameSpace;
   result.minOccurs := '0';
-  _setNameSpace(result, ElementNameSpace);
   nType.ElementDefs.AddObject(result.ElementName, result);
   nType.Manually := True;
   if nType <> oType then
