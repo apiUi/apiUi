@@ -250,6 +250,7 @@ type
       fLastFullCaption: String;
       fOnGetAbortPressed: TBooleanFunction;
       fPrepareErrors: String;
+      fFetchIndex: Integer;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
       function getDoExit : Boolean ;
       function getIsOneWay: Boolean;
@@ -277,7 +278,7 @@ type
       Data: TObject;
       Alias: String;
       HiddenFromUI: Boolean;
-      reqTagName, reqTagNameSpace, rpyTagName, rpyTagNameSpace: String;
+      reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
       reqDescrExpansionFilename, rpyDescrExpansionFilename, fltDescrExpansionFileName: String;
       Documentation: TStringList;
@@ -351,6 +352,7 @@ type
       DelayTimeMsMax: Integer;
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
+      property FetchIndex: Integer read fFetchIndex write fFetchIndex;
       property DoExit: Boolean read getDoExit write setDoExit;
       property PrepareErrors: String read fPrepareErrors;
       property OnGetAbortPressed: TBooleanFunction write setOnGetAbortPressed;
@@ -378,6 +380,7 @@ type
       procedure ReadReplyFromFile;
       function BeforeActivatorDebugString: String;
       procedure InitDelayTime;
+      procedure RefreshBindables;
       procedure ReqBindablesFromString (aString: String);
       procedure ReqBindablesFromWsdlMessage (aMessage: TWsdlMessage);
       procedure ReqBindablesToWsdlMessage (aMessage: TWsdlMessage);
@@ -519,6 +522,8 @@ function sblNowAsDateTime: String;
 function StringHasRegExpr (aString, aExpr: String): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
+function wsdlFetchFirstMessage (aObject: TObject; aOperation: String): Extended;
+function wsdlFetchNextMessage (aObject: TObject; aOperation: String): Extended;
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation, aLater: String);
@@ -576,6 +581,8 @@ var
   _ProgName: String;
   _WsdlVars: TStringList;
   _WsdlRequestOperation: VFunctionOS;
+  _WsdlFetchFirstMessage: XFunctionOS;
+  _WsdlFetchNextMessage: XFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
@@ -981,6 +988,20 @@ begin
       TagName := swapTagName;
     end;
   end;
+end;
+
+function wsdlFetchFirstMessage (aObject: TObject; aOperation: String): Extended;
+begin
+  if not Assigned (_WsdlFetchFirstMessage) then
+    raise Exception.Create('wsdlFetchFirstMessage: implementation missing');
+  result := _WsdlFetchFirstMessage (aObject, aOperation);
+end;
+
+function wsdlFetchNextMessage (aObject: TObject; aOperation: String): Extended;
+begin
+  if not Assigned (_WsdlFetchNextMessage) then
+    raise Exception.Create('wsdlFetchNextMessage: implementation missing');
+  result := _WsdlFetchNextMessage (aObject, aOperation);
 end;
 
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
@@ -1981,13 +2002,14 @@ begin
         if (Mssg.Parts.Count > 0) then
         begin
           reqTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
-          Alias := reqTagName;
           reqTagNameSpace := Mssg.Parts.Parts[0].Xsd.ElementNameSpace;
         end;
         FreeAndNil(freqBind);
         bindRefId := 0;
         reqBind := TXml.Create (0, reqXsd);
         reqBind.Name := Mssg.Name;
+        reqMessageName := Mssg.Name;
+        Alias := reqTagName;
       end;
 
       for h := 0 to OutputHeaders.Count - 1 do with OutputHeaders.Headers[h] do
@@ -2015,6 +2037,7 @@ begin
         bindRefId := 0;
         rpyBind := TXml.Create (0, rpyXsd);
         rpyBind.Name := Mssg.Name;
+        rpyMessageName := Mssg.Name;
       end;
 
       if Assigned (FaultMessages) then
@@ -3512,6 +3535,8 @@ begin
       BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
       BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
       BindBeforeFunction ('Exit', @RaiseExit, VFOV, '()');
+      BindBeforeFunction ('FetchFirstMessage', @wsdlFetchFirstMessage, XFOS, '(aOperation)');
+      BindBeforeFunction ('FetchNextMessage', @wsdlFetchNextMessage, XFOS, '(aOperation)');
       BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
       BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
       BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
@@ -3652,6 +3677,8 @@ begin
     BindAfterFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
     BindAfterFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindAfterFunction ('Exit', @RaiseExit, VFOV, '()');
+    BindAfterFunction ('FetchFirstMessage', @wsdlFetchFirstMessage, XFOS, '(aOperation)');
+    BindAfterFunction ('FetchNextMessage', @wsdlFetchNextMessage, XFOS, '(aOperation)');
     BindAfterFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
     BindAfterFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
     BindAfterFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
@@ -4242,8 +4269,10 @@ begin
   self.WsdlService := xOperation.WsdlService;
   self.Name := xOperation.Name;
   self.reqTagName := xOperation.reqTagName;
+  self.reqMessageName := xOperation.reqMessageName;
   self.Alias := xOperation.Alias;
   self.reqTagNameSpace := xOperation.reqTagNameSpace;
+  self.rpyMessageName := xOperation.rpyMessageName;
   self.rpyTagName := xOperation.rpyTagName;
   self.rpyTagNameSpace := xOperation.rpyTagNameSpace;
   self.Documentation := xOperation.Documentation;
@@ -4562,6 +4591,39 @@ begin
     DelayTimeMs := DelayTimeMsMin + Random (DelayTimeMsMax - DelayTimeMsMin)
   else
     DelayTimeMs := 0;
+end;
+
+procedure TWsdlOperation .RefreshBindables ;
+  procedure _refresh (aBinder: TWsdlBinder; aList: TBindableList);
+  var
+    x: Integer;
+  begin
+    if Assigned (aBinder)
+    and Assigned (aList) then
+    begin
+      for x := 0 to aList.Count - 1 do
+      begin
+        if Assigned (aList.Bindables[x]) then
+        begin
+          if aBinder.reqBind.IsAncestorOf(aList.Bindables[x]) then
+            aList.Strings[x] := 'Req.' + aList.Bindables[x].FullIndexCaption;
+          if aBinder.rpyBind.IsAncestorOf(aList.Bindables[x]) then
+            aList.Strings[x] := 'Rpy.' + aList.Bindables[x].FullIndexCaption;
+        end;
+      end;
+    end;
+  end;
+var
+  m: Integer;
+begin
+  _refresh(self, CorrelationBindables);
+  _refresh(self, ExpectationBindables);
+  _refresh(self, LogColumns);
+  for m := 0 to Messages.Count - 1 do
+  begin
+    _refresh(Messages.Messages[m], Messages.Messages[m].CorrelationBindables);
+    _refresh(Messages.Messages[m], Messages.Messages[m].ColumnXmls);
+  end;
 end;
 
 procedure TWsdlOperation.ReqBindablesFromString(aString: String);

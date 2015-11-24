@@ -11,7 +11,7 @@
 %token VFOV VFOS VFOSS VFOSX VFOSSS VFOSSX VFOSSSS VFOX VFOD
 %token VFG VFGG VFGGG VFGGGG
 %token XFD XFG XFGG XFS XFSX XFV XFX XFXX XFFRAME
-%token XFOV XFOX XFOXX
+%token XFOV XFOS XFOX XFOXX
 %token BFLD DFLD SFLD IFLD XFLD GFLD PFLD
 %token _NOID, _DYNFLD
 %token _ALIAS _AMPERSAND _AND _ARRAY _AS_DYNFLD _AS_FIELDID _ASSIGNMENT
@@ -809,6 +809,7 @@ xExpr:    xExpr _AND xExpr	 { $$.yy.yyExtended := Trunc ($1.yy.yyExtended) and T
         | XFXX _LPAREN xExpr _COMMA xExpr _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionXX ($3.yy.yyExtended, $5.yy.yyExtended); }
         | XFFRAME _LPAREN FRAME_ _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionObject ($3.yy.yyObject); }
         | XFOV _LPAREN _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionOV (Data); }
+        | XFOS _LPAREN sExpr _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionOS (Data, $3.yyString); }
         | XFOX _LPAREN xExpr _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionOX (Data, $3.yy.yyExtended); }
         | XFOXX _LPAREN xExpr _COMMA xExpr _RPAREN { if DoIt then $$.yy.yyExtended := ($1.yy.yyObject as TBind).yy.yyXFunctionOXX (Data, $3.yy.yyExtended, $5.yy.yyExtended); }
 	;

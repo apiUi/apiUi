@@ -12104,8 +12104,8 @@ begin
       if PromptForm.PromptEdit.Text = '' then
       with aOperation do begin
         Alias := reqTagName;
-        if Assigned (reqBind) then reqBind.Name := reqTagName;
-        if Assigned (rpyBind) then rpyBind.Name := rpyTagName;
+        if Assigned (reqBind) then reqBind.Name := reqMessageName;
+        if Assigned (rpyBind) then rpyBind.Name := rpyMessageName;
       end
       else
       with aOperation do begin
@@ -12122,6 +12122,7 @@ begin
           aOperation.Messages.Messages[m].reqBind.Name := aOperation.reqBind.Name;
           aOperation.Messages.Messages[m].rpyBind.Name := aOperation.rpyBind.Name;
         end;
+        aOperation.RefreshBindables;
         try aOperation.PrepareBefore; Except end;
         try aOperation.PrepareAfter; Except end;
         FillInWsdlEdits;

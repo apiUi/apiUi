@@ -66,6 +66,7 @@ type VFunctionOSSSS = procedure (obj: TObject; arg1, arg2, arg3, arg4: String);
 type VFunctionOX = procedure (obj: TObject; arg: Extended);
 type SFunctionOV = function (obj: TObject): String;
 type XFunctionOV = function (obj: TObject): Extended;
+type XFunctionOS = function (obj: TObject; arg: String): Extended;
 type XFunctionOX = function (obj: TObject; arg: Extended): Extended;
 type XFunctionOXX = function (obj: TObject; arg1, arg2: Extended): Extended;
 type YYRType = record
@@ -122,8 +123,9 @@ type YYRType = record
   50: (yyVFunctionOX : VFunctionOX);
   51: (yySFunctionOV : SFunctionOV);
   52: (yyXFunctionOV : XFunctionOV);
-  53: (yyXFunctionOX : XFunctionOX);
-  54: (yyXFunctionOXX : XFunctionOXX);
+  53: (yyXFunctionOS : XFunctionOS);
+  54: (yyXFunctionOX : XFunctionOX);
+  55: (yyXFunctionOXX : XFunctionOXX);
 end;
 
 type TBindableList = class;
