@@ -720,12 +720,7 @@ procedure TXml.ResolveNameSpaces;
     if Assigned (nsAttr) then
       result := nsAttr.Value
     else
-    begin
-      if Assigned (aXml.Parent) then
-        result := (aXml.Parent as TXml).NameSpace;
-      if result = '' then
-        result := _ResolveNamespace(aXml.Parent as TXml, aNsPrefix);
-    end;
+      result := _ResolveNamespace(aXml.Parent as TXml, aNsPrefix);
   end;
 var
   x: Integer;
