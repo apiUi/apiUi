@@ -6563,17 +6563,9 @@ object MainForm: TMainForm
     end
     object ScriptsMenuItem: TMenuItem
       Caption = 'Scripts'
-      object New2: TMenuItem
-        Caption = 'New...'
-        OnClick = New2Click
-      end
       object EditScriptMenuItem: TMenuItem
         Caption = 'Edit'
         OnClick = EditScriptMenuItemClick
-      end
-      object RemoveScriptMenuItem: TMenuItem
-        Caption = 'Remove'
-        OnClick = RemoveScriptMenuItemClick
       end
       object N23: TMenuItem
         Caption = '-'

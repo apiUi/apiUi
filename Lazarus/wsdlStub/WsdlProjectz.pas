@@ -140,7 +140,8 @@ type
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
     Wsdls, wsdlNames: TStringList;
-    Scripts, DisplayedLogColumns: TStringList;
+    Scripts: TXml;
+    DisplayedLogColumns: TStringList;
     projectFileName, LicenseDbName: String;
     displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs, AsynchRpyLogs: TLogList;
@@ -206,9 +207,9 @@ type
     procedure xsdOperationsUpdate (aXml: TXml; aMainFileName: String);
     function swiftMtOperationsXml: TXml;
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
-    function CreateScriptOperation (aString: String): TWsdlOperation;
-    procedure ScriptExecute(aScript: String);
-    procedure ScriptExecuteText (aText: String);
+    function CreateScriptOperation (aScript: TXml): TWsdlOperation;
+    procedure ScriptExecute(aScript: TObject);
+    function FindScript (aName: String): TXml;
     procedure ScriptsClear;
     procedure DefaultDisplayMessageData;
     function ReactivateCommand: String;
@@ -442,6 +443,7 @@ var
     endpointConfigXsd: TXsd;
     webserviceXsdDescr: TXsdDescr;
     webserviceWsdl: TWsdl;
+    ScriptsXsd: TXsd;
     OperationDefsXsd: TXsd;
     projectOptionsXsd: TXsd;
     serviceOptionsXsd: TXsd;
@@ -612,7 +614,7 @@ end;
 
 procedure ExecuteScript(aContext: TObject; xScriptName: String);
 var
-  f: Integer;
+  xScript: TXml;
   xProject: TWsdlProject;
 begin
   xProject := nil; //candidate context
@@ -623,8 +625,9 @@ begin
       xProject := Owner as TWsdlProject;
   if not Assigned (xProject) then
     raise Exception.Create(Format ('ExecuteScript(''%s''); unable to determine context', [xScriptName]));
-  if xProject.Scripts.Find(xScriptName, f) then
-    xProject.ScriptExecute((xProject.Scripts.Objects[f] as TStringList).Text)
+  xScript := xProject.FindScript(xScriptName);
+  if Assigned(xScript) then
+    xProject.ScriptExecute(xScript)
   else
     raise Exception.Create(Format ('ExecuteScript(''%s''); script not found', [xScriptName]));;
 end;
@@ -1018,6 +1021,7 @@ begin
     begin
       _WsdlRtiXsd := XsdByName['rti'];
       optionsXsd := XsdByName['wsdlStubOptions'];
+      ScriptsXsd := XsdByName['Scripts'];
       OperationDefsXsd := XsdByName['OperationDefs'];
       projectOptionsXsd := XsdByName['projectOptions'];
       serviceOptionsXsd := XsdByName['serviceOptions'];
@@ -1028,6 +1032,7 @@ begin
       listenersConfigXsd := XsdByName['Listeners'];
       _WsdlEmailXsd := XsdByName['Email'];
     end;
+    if not Assigned (ScriptsXsd) then raise Exception.CreateFmt('XML Element definition for %s Scripts not found', [_progName]);
     if not Assigned (_WsdlRtiXsd) then raise Exception.Create('XML Element definition for RunTimeInterface not found');
     if not Assigned (optionsXsd) then raise Exception.CreateFmt('XML Element definition for %s Options not found', [_progName]);
     if not Assigned (OperationDefsXsd) then raise Exception.Create('XML Element definition for OperationDefs not found');
@@ -1238,10 +1243,7 @@ begin
     OnUserLogIn := SmtpServerUserLogin;
     IOHandler := SmtpOpenSSL;
   end;
-  Scripts := TStringList.Create;
-  Scripts.Sorted := True;
-  Scripts.Duplicates := dupError;
-  Scripts.CaseSensitive := False;
+  Scripts := TXml.CreateAsString('Scripts', '');
   DisplayedLogColumns := TStringList.Create;
   OperationsWithEndpointOnly := True;
   SaveRelativeFileNames := True;
@@ -2055,9 +2057,7 @@ begin
           end;
       AddXml(TXml.CreateAsString('ignoreCoverageOn', ignoreCoverageOn.Text));
       with AddXml(TXml.CreateAsString('Scripts', '')) do
-        for x := 0 to Scripts.Count - 1 do
-          with AddXml(Txml.CreateAsString('Script', (Scripts.Objects[x] AS TStringList).Text))
-            do AddAttribute(TXmlAttribute.CreateAsString('Name', Scripts.Strings[x]));
+        CopyDownLine(Scripts, True);
       AddXml (TXml.CreateAsString('FocusOperationName', FocusOperationName));
       AddXml (TXml.CreateAsString('FocusOperationNameSpace', FocusOperationNameSpace));
       AddXml (TXml.CreateAsInteger('FocusMessageIndex', FocusMessageIndex));
@@ -2089,11 +2089,12 @@ var
   xOperation: TWsdlOperation;
   xService: TWsdlService;
   xWsdl: TWsdl;
+  xScript: TXml;
   wXml, xXml, sXml, oXml, eXml, eeXml, dXml, rXml, cXml: TXml;
   xBindName: String;
   xMessage: TWsdlMessage;
   xReadAnother: Boolean;
-  xPatterns, sl: TStringList;
+  xPatterns: TStringList;
 begin
   Clear;
   xReadAnother := False;
@@ -2524,14 +2525,22 @@ begin
           end;
           cXml := xXml.Items.XmlItemByTag ['Scripts'];
           if Assigned (cXml) then
+          begin
             for s := 0 to cXml.Items.Count - 1 do with cXml.Items.XmlItems[s] do
+            begin
               if (Name = 'Script')
               and (Attributes.ValueByTag['Name'] <> '') then
               begin
-                sl := TStringList.Create;
-                sl.Text := Value;
-                Scripts.Objects[Scripts.Add(Attributes.ValueByTag['Name'])] := sl;
+                xScript := Scripts.AddXml(TXml.CreateAsString('Script', ''));
+                xScript.AddXml (TXml.CreateAsString('Name', Attributes.ValueByTag['Name']));
+                xScript.AddXml (TXml.CreateAsString('Code', Value));
               end;
+            end;
+            if Scripts.Items.Count = 0 then
+              Scripts.CopyDownLine(cXml, True)
+            else
+              Scripts.CheckDownline(True);
+          end; // Scripts
           AcquireLock;
           try
             PrepareAllOperations (LogServerMessage);
@@ -2856,12 +2865,17 @@ begin
   end;
 end;
 
-function TWsdlProject.CreateScriptOperation(aString: String): TWsdlOperation;
+function TWsdlProject.CreateScriptOperation(aScript: TXml): TWsdlOperation;
 var
   x: Integer;
   xWsdl: TWsdl;
-  xOperation: TWsdlOperation;
+  xInvoke: TXml;
+  xOperation, sOperation: TWsdlOperation;
 begin
+  if not Assigned(aScript)
+  or (not (aScript is TXml))
+  or (aScript.Name <> 'Script') then
+    raise Exception.Create ('Illegal argument: TWsdlProject.CreateScriptOperation(aScript: TXml): TWsdlOperation');
   xWsdl := TWsdl.Create(1, 1, False);
   with xWsdl do
   begin
@@ -2886,18 +2900,29 @@ begin
     xOperation.RecognitionType := rtSubString;
     xOperation.reqXsd.ElementName := xOperation.reqTagName;
     xOperation.rpyXsd.ElementName := xOperation.rpyTagName;
-    xOperation.BeforeScriptLines.Text := aString;
+    xOperation.BeforeScriptLines.Text := aScript.Items.XmlValueByTag['Code'];
     xOperation.OnGetAbortPressed := self.GetAbortPressed;
   end;
   try
-    for x := 0 to allAliasses.Count - 1 do with allAliasses.Operations[x] do
+    xInvoke := aScript.FindXml('Script.Invoke.operations');
+    if Assigned(xInvoke) then
     begin
-      AcquireLock;
-      try
-        xOperation.invokeList.Add(Alias);
-        xOperation.ReqBindablesFromWsdlMessage(Messages.Messages[0]);
-      finally
-        ReleaseLock;
+      for x := 0 to xInvoke.Items.Count - 1 do
+      begin
+        if xInvoke.Items.XmlItems[x].Name = 'name' then
+        begin
+          sOperation := allAliasses.FindOnAliasName(xInvoke.Items.XmlItems[x].Value);
+          if Assigned (sOperation) then
+          begin
+            sOperation.AcquireLock;
+            try
+              xOperation.invokeList.Add(sOperation.Alias);
+              xOperation.ReqBindablesFromWsdlMessage(sOperation.Messages.Messages[0]);
+            finally
+              sOperation.ReleaseLock;
+            end;
+          end;
+        end;
       end;
     end;
     xOperation.AcquireLock;
@@ -2906,6 +2931,7 @@ begin
     finally
       xOperation.ReleaseLock;
     end;
+{
     try
       with result do
       begin
@@ -2916,6 +2942,7 @@ begin
       on e: Exception do
         LogServerMessage (Format('Exception %s%s%swas raised%s', [CRLF, e.Message, CRLF, CRLF]), True, e);
     end;
+}
   finally
 //    xWsdl.Free; starnge trick not yet
   end;
@@ -6676,18 +6703,14 @@ end;
 
 procedure TWsdlProject.ScriptsClear;
 begin
-  while Scripts.Count > 0 do
-  begin
-    Scripts.Objects[0].Free;
-    Scripts.Delete(0);
-  end;
+  Scripts.Items.Clear;
 end;
 
-procedure TWsdlProject.ScriptExecute(aScript: String);
+procedure TWsdlProject.ScriptExecute(aScript: TObject);
 begin
   if not IsActive then
     raise Exception.Create(Format('%s not active', [_progName]));
-  with CreateScriptOperation(aScript) do
+  with CreateScriptOperation(TXml(aScript)) do
   try
     if PreparedBefore then
     try
@@ -6703,9 +6726,18 @@ begin
   end;
 end;
 
-procedure TWsdlProject.ScriptExecuteText(aText: String);
+function TWsdlProject.FindScript (aName : String ): TXml ;
+var
+  x: Integer;
 begin
-  TProcedureThread.Create(False, False, self, ScriptExecute, aText);
+  result := nil;
+  for x := 0 to Scripts.Items.Count - 1 do
+    if (Scripts.Items.XmlItems[x].Name = 'Script')
+    and (Scripts.Items.XmlItems[x].Items.XmlValueByTag['Name'] = aName) then
+    begin
+      result := Scripts.Items.XmlItems[x];
+      exit;
+    end;
 end;
 
 procedure TWsdlProject.ExecuteAllOperationRequests(aOperation: TWsdlOperation);
@@ -6722,6 +6754,7 @@ begin
   AcquireLock;
   try
     allOperations.Clean;
+    Scripts.Items.Clear;
   finally
     ReleaseLock;
   end;
@@ -6731,6 +6764,7 @@ procedure TWsdlProject.Clear;
 var
   x: Integer;
 begin
+  Scripts.Items.Clear;
   displayedLogs.Clear;
   archiveLogs.Clear;
   doUseMq := False;
@@ -6761,7 +6795,7 @@ begin
     and (Wsdls.Objects[0] <> CobolWsdl)
     and (Wsdls.Objects[0] <> XsdWsdl)
     and (Wsdls.Objects[0] <> SwiftMtWsdl) then
-      Wsdls.Objects[0].Free;
+      try Wsdls.Objects[0].Free; except end; // there is a project that fails at this point, not a clue yet why
     Wsdls.Delete(0);
   end;
   wsdls.Clear;

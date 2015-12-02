@@ -185,6 +185,21 @@ Value is displayed as column header.</xs:documentation>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="Scripts">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Script" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Name" type="xs:string"/>
+							<xs:element name="Invoke" type="invokeType" minOccurs="0"/>
+							<xs:element name="Code" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="Listeners">
 		<xs:annotation>
 			<xs:documentation>Specify connections here. Beware of firewall settings.
@@ -947,19 +962,7 @@ For an overview of all options visit: doc://wsdlStub_operationOptions_hlp.htm </
 				<xs:element name="scripts" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="invoke" minOccurs="0">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="operations" minOccurs="0">
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="name" type="dynEnumString" minOccurs="0" maxOccurs="unbounded"/>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
+							<xs:element name="invoke" type="invokeType" minOccurs="0"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -1989,6 +1992,17 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 		<xs:sequence>
 			<xs:element name="Name" type="xs:string"/>
 			<xs:element name="Password" type="passwordType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="invokeType">
+		<xs:sequence>
+			<xs:element name="operations" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="dynEnumString" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>

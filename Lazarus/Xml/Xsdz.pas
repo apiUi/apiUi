@@ -28,6 +28,8 @@ uses Classes
 type
   TXsdFormDefault = (xsdFDAccordingWsdl, xsdFDQualified, xsdFDUnqualified);
   TXsdType = (dtSimpleType, dtComplexType, dtAttributeType);
+  TBooleanFunctionObject = function (arg: TObject): Boolean of Object;
+
 
 type
   TjsonType = (jsonNone, jsonString, jsonNumber, jsonBoolean, jsonObject,
@@ -179,6 +181,7 @@ type
     Documentation: TStringList;
     Appinfo: TStringList;
     Obj: TObject;
+    EditProcedure: TBooleanFunctionObject;
     function FindXsd(aString: String): TXsd;
     property NSPrefix: String read getNSPrefix;
     property XsdByCaption[Index: String]: TXsd read getXsdByCaption;

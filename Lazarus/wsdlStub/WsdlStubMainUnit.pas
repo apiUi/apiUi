@@ -421,11 +421,8 @@ type
     startAction: TAction;
     stopAction: TAction;
     ScriptsMenuItem: TMenuItem;
-    EditScriptMenuItem: TMenuItem;
     N23: TMenuItem;
     ScriptGoMenuItem: TMenuItem;
-    New2: TMenuItem;
-    RemoveScriptMenuItem: TMenuItem;
     ExtendRecursivityMenuItem: TMenuItem;
     AssignEvaluationMenuItem: TMenuItem;
     N24: TMenuItem;
@@ -1037,7 +1034,7 @@ type
     function getStubChanged: Boolean;
     procedure ExpressError(Sender: TObject;
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
-    procedure EditScript(X: Integer);
+    function EditScript(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
     procedure SetIsBusy(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
@@ -5769,11 +5766,14 @@ begin
   NewStubCaseAction.Enabled := not se.IsActive;
 end;
 
-procedure TMainForm.EditScript(X: Integer);
+function TMainForm.EditScript(aXml: TObject): Boolean;
 var
   xOperation: TWsdlOperation;
+  xScript: TXml;
 begin
-  xOperation := se.CreateScriptOperation((se.Scripts.Objects[X] as TStringList).Text);
+  result := False;
+  xScript := (aXml as TXml).Parent as TXml;
+  xOperation := se.CreateScriptOperation(xScript);
   try
     if xOperation.PrepareErrors <> '' then
       if not BooleanPromptDialog (xOperation.PrepareErrors + LineEnding + 'Continue') then
@@ -5786,10 +5786,10 @@ begin
       EditOperationScriptForm.ShowModal;
       if EditOperationScriptForm.ModalResult = mrOk then
       begin
-        stubChanged := True;
-        (se.Scripts.Objects[X] as TStringList).Text := xOperation.BeforeScriptLines.Text;
+        (aXml as TXml).Value := xOperation.BeforeScriptLines.Text;
+        (aXml as TXml).Checked := True;
+        result := True;
       end;
-      FillInWsdlEdits;
     finally
       FreeAndNil(EditOperationScriptForm);
     end;
@@ -5805,38 +5805,42 @@ begin
 end;
 
 procedure TMainForm.EditScriptMenuItemClick(Sender: TObject);
+var
+  xXml: TXml;
+  xXsd: TXsd;
+  xEnum: TXsdEnumeration;
+  o: Integer;
 begin
-  with Sender as TMenuItem do
-    EditScript(Tag);
+  xXsd := ScriptsXsd.XsdByCaption ['Scripts.Script.Code'];
+  xXsd.EditProcedure := EditScript;
+  xXsd := ScriptsXsd.XsdByCaption ['Scripts.Script.Invoke.operations.name'];
+  while xXsd.sType.Enumerations.Count > 0 do
+  begin
+    xXsd.sType.Enumerations.Objects[0].Free;
+    xXsd.sType.Enumerations.Delete(0);
+  end;
+  for o := 0 to allAliasses.Count - 1 do
+  begin
+    xEnum := TXsdEnumeration.Create;
+    xEnum.Value := allAliasses.Operations[o].Alias;
+    xXsd.sType.Enumerations.AddObject(xEnum.Value, xEnum);
+  end;
+  xXml := TXml.Create;
+  try
+    xXml.CopyDownLine(se.Scripts, True);
+    if EditXmlXsdBased('Scripts', '', '', '', False,
+      ScriptsXsd, xXml) then
+    begin
+      stubChanged := True;
+      se.Scripts.CopyDownLine(xXml, True);
+    end;
+  finally
+    xXml.Free;
+  end;
 end;
 
 procedure TMainForm.New2Click(Sender: TObject);
-var
-  f: Integer;
 begin
-  Application.CreateForm(TPromptForm, PromptForm);
-  try
-    PromptForm.Caption := 'Name for new script';
-    PromptForm.PromptEdit.Text := '';
-    PromptForm.Numeric := False;
-    PromptForm.ShowModal;
-    if PromptForm.ModalResult = mrOk then
-    begin
-      if PromptForm.PromptEdit.Text = '' then
-        raise Exception.Create('Script name must have a value');
-      if se.Scripts.Find(PromptForm.PromptEdit.Text, f) then
-        raise Exception.Create(Format('A script with name %s already exists',
-            [PromptForm.PromptEdit.Text]));
-      se.Scripts.Objects[se.Scripts.Add(PromptForm.PromptEdit.Text)] :=
-        TStringList.Create;
-      CreateScriptsSubMenuItems;
-      stubChanged := True;
-      if se.Scripts.Find(PromptForm.PromptEdit.Text, f) then
-        EditScript(f);
-    end;
-  finally
-    FreeAndNil(PromptForm);
-  end;
 end;
 
 procedure TMainForm.NewStubCaseActionExecute(Sender: TObject);
@@ -7770,7 +7774,8 @@ end;
 
 procedure TMainForm.ScriptGoMenuItemClick(Sender: TObject);
 var
-  xScript: String;
+  xScript: TXml;
+  x: Integer;
 begin
   if not Assigned(se) then
     exit;
@@ -7778,10 +7783,8 @@ begin
     raise Exception.Create(Format('%s not active', [_progName]));
   se.ProgressMax := 5;
   se.ProgressPos := 0;
-  with Sender as TMenuItem do
-    with se.Scripts.Objects[Tag] as TStringList do
-      xScript := Text;
-  TProcedureThread.Create(False, False, se, se.ScriptExecute, xScript);
+  xScript := se.Scripts.Items.XmlItems[(Sender as TMenuItem).Tag];
+  TProcedureThread.Create(False, False, se, se.ScriptExecute, xScript as TObject);
 end;
 
 procedure TMainForm.CreateScriptsSubMenuItems;
@@ -7793,19 +7796,16 @@ begin
   while MainToolBar.ButtonCount > MainToolBarDesignedButtonCount do
     MainToolBar.Buttons[MainToolBar.ButtonCount].Free;
 {}
-  while ScriptsMenuItem.Count > 4 do
-    ScriptsMenuItem.Delete(4);
-  EditScriptMenuItem.Clear;
-  EditScriptMenuItem.OnClick := nil;
-  RemoveScriptMenuItem.Clear;
-  RemoveScriptMenuItem.OnClick := nil;
-  for X := 0 to se.Scripts.Count - 1 do
+  while ScriptsMenuItem.Count > 2 do
+    ScriptsMenuItem.Delete(2);
+  for X := 0 to se.Scripts.Items.Count - 1 do
   begin
     xMenuItem := TMenuItem.Create(Self);
     xMenuItem.Action := runScriptAction; // only for enabling
-    xMenuItem.Caption := se.Scripts.Strings[X];
+    xMenuItem.Caption := se.Scripts.Items.XmlItems[X].Items.XmlValueByTag['Name'];
     xMenuItem.OnClick := ScriptGoMenuItemClick;
     xMenuItem.Tag := X;
+    xMenuItem.Enabled := True;
     ScriptsMenuItem.Add(xMenuItem);
 {}{
     xButton := TToolButton.Create(self);
@@ -7818,22 +7818,8 @@ begin
     xButton.Left := MainToolBar.Width - xButton.Width;
     Inc (xLeft, xButton.Width);
 {}
-    xMenuItem := TMenuItem.Create(Self);
-    xMenuItem.Caption := se.Scripts.Strings[X];
-    xMenuItem.OnClick := EditScriptMenuItemClick;
-    xMenuItem.Tag := X;
-    EditScriptMenuItem.Add(xMenuItem);
-
-    xMenuItem := TMenuItem.Create(Self);
-    xMenuItem.Caption := se.Scripts.Strings[X];
-    xMenuItem.OnClick := RemoveScriptMenuItemClick;
-    xMenuItem.Tag := X;
-    RemoveScriptMenuItem.Add(xMenuItem);
   end;
   ScriptsMenuItem.Enabled := True;
-  EditScriptMenuItem.Enabled := (EditScriptMenuItem.Count > 0);
-  RemoveScriptMenuItem.Enabled := (RemoveScriptMenuItem.Count > 0);
-
 end;
 
 procedure TMainForm.SetEnvironmentClick(Sender: TObject);
@@ -11459,13 +11445,6 @@ end;
 
 procedure TMainForm.RemoveScriptMenuItemClick(Sender: TObject);
 begin
-  with Sender as TMenuItem do
-  begin
-    se.Scripts.Objects[Tag].Free;
-    se.Scripts.Delete(Tag);
-    CreateScriptsSubMenuItems;
-    stubChanged := True;
-  end;
 end;
 
 procedure TMainForm.RemoveAllMessagesActionExecute(Sender: TObject);

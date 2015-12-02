@@ -158,8 +158,13 @@ procedure TWsdlControl.HttpWebPageServerCommandGet(AContext: TIdContext;
         else
         begin
           if Pos (scrpts, sl.Strings[x]) > 0 then
-            for o := 0 to se.Scripts.Count - 1 do
-              dl.Add(ReplaceText(sl.Strings[x], scrpts, se.Scripts.Strings[o]))
+          begin
+            for o := 0 to se.Scripts.Items.Count - 1 do with se.Scripts.Items.XmlItems[o] do
+            begin
+              if Name = 'Script' then
+                dl.Add(ReplaceText(sl.Strings[x], scrpts, Items.XmlValueByTag['Name']));
+            end
+          end
           else
             dl.Add(sl.Strings[x]);
         end;
@@ -199,7 +204,7 @@ procedure TWsdlControl.HttpWebPageServerCommandGet(AContext: TIdContext;
   end;
 var
   xOperId, xErrorMessage, dCorrelation, dSep, xParams: String;
-  xXml, oXml, dXml, eXml: TXml;
+  xXml, oXml, dXml, eXml, sXml: TXml;
   xOperation, oOperation, dOperation: TWsdlOperation;
   dRequest: TWsdlMessage;
   xStream: TMemoryStream;
@@ -392,8 +397,9 @@ begin
                 dXml := oXml.FindXml('Body.executeScriptReq.scriptName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find scriptname in request');
-                if se.Scripts.Find(dXml.Value, f) then
-                  se.ScriptExecuteText((se.Scripts.Objects[f] as TStringList).Text)
+                sXml := se.FindScript (dXml.Value);
+                if Assigned (sXml) then
+                  se.ScriptExecute(sXml)
                 else
                   raise Exception.Create('Cannot find script based on: ' + dXml.Value);
               end;

@@ -682,6 +682,11 @@ begin
   if (aBind is TXml)
   and (Assigned ((aBind as TXml).Xsd)) then
   begin
+    if Assigned ((aBind as TXml).Xsd.EditProcedure) then
+    begin
+      result := (aBind as TXml).Xsd.EditProcedure(aBind);
+      exit;
+    end;
     if (aBind as TXml).TypeDef.ElementDefs.Count = 0 then
     begin
       result := _editElementValue;
@@ -896,6 +901,7 @@ begin
                       or ((aBind as TXml).TypeDef.Name = 'htmlColorType')
                       or Assigned ((aBind as TXml).TypeDef.OnDoSelectValue)
                       or ((aBind as TXml).TypeDef.Enumerations.Count > 0)
+                      or Assigned ((aBind as TXml).Xsd.EditProcedure)
                      )
                 )
              or (    (aBind is TXmlAttribute)
