@@ -5770,9 +5770,16 @@ function TMainForm.EditScript(aXml: TObject): Boolean;
 var
   xOperation: TWsdlOperation;
   xScript: TXml;
+  xCursor: TCursor;
 begin
   result := False;
-  xScript := (aXml as TXml).Parent as TXml;
+  xCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    xScript := (aXml as TXml).Parent as TXml;
+  finally
+    Screen.Cursor := xCursor;
+  end;
   xOperation := se.CreateScriptOperation(xScript);
   try
     if xOperation.PrepareErrors <> '' then
@@ -5833,6 +5840,7 @@ begin
     begin
       stubChanged := True;
       se.Scripts.CopyDownLine(xXml, True);
+      CreateScriptsSubMenuItems;
     end;
   finally
     xXml.Free;

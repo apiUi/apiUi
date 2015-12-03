@@ -2523,16 +2523,26 @@ begin
               end;
             end;
           end;
+          AcquireLock;
+          try
+            PrepareAllOperations (LogServerMessage);
+          finally
+            ReleaseLock;
+          end;
           cXml := xXml.Items.XmlItemByTag ['Scripts'];
           if Assigned (cXml) then
           begin
             for s := 0 to cXml.Items.Count - 1 do with cXml.Items.XmlItems[s] do
             begin
               if (Name = 'Script')
-              and (Attributes.ValueByTag['Name'] <> '') then
+              and (Attributes.ValueByTag['Name'] <> '') then  // compatibility with version 8 and earlier
               begin
                 xScript := Scripts.AddXml(TXml.CreateAsString('Script', ''));
                 xScript.AddXml (TXml.CreateAsString('Name', Attributes.ValueByTag['Name']));
+                with xScript.AddXml (TXml.CreateAsString('Invoke', '')) do
+                  with AddXml (TXml.CreateAsString('operations', '')) do
+                    for o := 0 to allOperations.Count - 1 do
+                      AddXml (TXml.CreateAsString('name', allOperations.Operations[o].Alias));
                 xScript.AddXml (TXml.CreateAsString('Code', Value));
               end;
             end;
@@ -2541,12 +2551,6 @@ begin
             else
               Scripts.CheckDownline(True);
           end; // Scripts
-          AcquireLock;
-          try
-            PrepareAllOperations (LogServerMessage);
-          finally
-            ReleaseLock;
-          end;
         finally
           xXml.Free;
         end;
@@ -2900,16 +2904,17 @@ begin
     xOperation.RecognitionType := rtSubString;
     xOperation.reqXsd.ElementName := xOperation.reqTagName;
     xOperation.rpyXsd.ElementName := xOperation.rpyTagName;
-    xOperation.BeforeScriptLines.Text := aScript.Items.XmlValueByTag['Code'];
+    xOperation.BeforeScriptLines.Text := aScript.Items.XmlCheckedValueByTag['Code'];
     xOperation.OnGetAbortPressed := self.GetAbortPressed;
   end;
   try
-    xInvoke := aScript.FindXml('Script.Invoke.operations');
+    xInvoke := aScript.FindCheckedXml('Script.Invoke.operations');
     if Assigned(xInvoke) then
     begin
       for x := 0 to xInvoke.Items.Count - 1 do
       begin
-        if xInvoke.Items.XmlItems[x].Name = 'name' then
+        if (xInvoke.Items.XmlItems[x].Name = 'name')
+        and (xInvoke.Items.XmlItems[x].Checked) then
         begin
           sOperation := allAliasses.FindOnAliasName(xInvoke.Items.XmlItems[x].Value);
           if Assigned (sOperation) then

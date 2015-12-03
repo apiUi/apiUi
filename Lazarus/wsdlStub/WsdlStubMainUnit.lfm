@@ -848,6 +848,7 @@ object MainForm: TMainForm
             Top = 30
             Width = 693
             Align = alTop
+            BottomSpace = 10
             DefaultText = 'Node'
             DragOperations = []
             EditDelay = 0

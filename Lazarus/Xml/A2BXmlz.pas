@@ -500,23 +500,23 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
     case aXml.ChangeKind of
       ckDelete:
         aXml.Ignored := (Assigned (ignoreAddingOn))
-                    and (   ignoreAddingOn.Find(rmPrefix(aXml.TagName) , f)
-                         or ignoreAddingOn.Find(aXml.FullUQCaption , f)
-                         or ignoreAddingOn.Find(aXml.Prefix + '.' + aXml.FullUQCaption , f)
+                    and (   ignoreAddingOn.Find(aXml.TagName, f)
+                         or ignoreAddingOn.Find(aXml.FullCaption , f)
+                         or ignoreAddingOn.Find(aXml.Prefix + '.' + aXml.FullCaption , f)
                         );
       ckAdd:
         aXml.Ignored := (Assigned (ignoreRemovingOn))
-                    and (   ignoreRemovingOn.Find(rmPrefix(aXml.TagName) , f)
-                         or ignoreRemovingOn.Find(aXml.FullUQCaption , f)
-                         or ignoreRemovingOn.Find(aXml.Prefix + '.' + aXml.FullUQCaption , f)
+                    and (   ignoreRemovingOn.Find(aXml.TagName, f)
+                         or ignoreRemovingOn.Find(aXml.FullCaption , f)
+                         or ignoreRemovingOn.Find(aXml.Prefix + '.' + aXml.FullCaption , f)
                         );
       else
       begin
         if aXml.ChangeKind = ckModify then
           aXml.Ignored := (Assigned (ignoreDifferencesOn))
-                      and (   ignoreDifferencesOn.Find(rmPrefix(aXml.TagName) , f)
-                           or ignoreDifferencesOn.Find(aXml.FullUQCaption , f)
-                           or ignoreDifferencesOn.Find(aXml.Prefix + '.' + aXml.FullUQCaption , f)
+                      and (   ignoreDifferencesOn.Find(aXml.TagName , f)
+                           or ignoreDifferencesOn.Find(aXml.FullCaption , f)
+                           or ignoreDifferencesOn.Find(aXml.Prefix + '.' + aXml.FullCaption , f)
                           );
         for x := 0 to aXml.Items.Count - 1 do
           _set (aXml.Items.XmlItems[x] as TA2BXml);

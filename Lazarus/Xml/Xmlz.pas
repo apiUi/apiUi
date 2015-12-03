@@ -225,12 +225,12 @@ type
     procedure LoadFromString (aString: String; ErrorFound: TOnErrorEvent);
     procedure LoadJsonFromFile (aFileName: String; ErrorFound: TOnErrorEvent);
     procedure LoadJsonFromString (aString: String; ErrorFound: TOnErrorEvent);
-    function UnQualified (aString: String): String; // returns unqualified string
     function FindByRefId (aRefId: Integer): TXml;
     function FindUQ (aName: String): TCustomBindable; Override;
     function FindUQValue (aName: String): String;
     function FindUQXml (aName: String): TXml;
     function FindUQBind (aName: String): TCustomBindable;
+    function FindCheckedXml (aName: String): TXml;
     function FindXml (aName: String): TXml;
     function IsValueValidAgainstXsd (var aMessageString: String): Boolean;
     function IndexOfRepeatableItem: Integer;
@@ -2345,7 +2345,7 @@ begin
   result := '';
   if Self = nil then
     exit;
-  result := Unqualified (TagName) + _Index;
+  result := NameWithoutPrefix (TagName) + _Index;
 end;
 
 function TXml.GetCaption: String;
@@ -2358,21 +2358,7 @@ end;
 
 function TXml.GetUQCaption: String;
 begin
-  result := Unqualified (GetCaption);
-end;
-
-function TXml.UnQualified (aString: String): String;
-var
-  x: Integer;
-begin
-  result := '';
-  for x := 1 to system.Length (aString) do
-  begin
-    if aString [x] = ':' then
-      result := ''
-    else
-      result := result + aString [x];
-  end;
+  result := NameWithoutPrefix (GetCaption);
 end;
 
 function TXml.GetFullUQCaption: String;
@@ -2381,11 +2367,11 @@ begin
   if Self = nil then
     exit;
   if Parent = nil then
-    result := UnQualified (GetCaption)
+    result := NameWithoutPrefix (GetCaption)
   else
     result := (Parent as TXml).GetFullUQCaption
             + '.'
-            + UnQualified (GetCaption);
+            + NameWithoutPrefix (GetCaption);
 end;
 
 function TXml.GetFullIndexCaption: String;
@@ -2426,10 +2412,10 @@ begin
   result := nil;
   x := Pos ('.', aName);
   if x = 0 then
-    xName := UnQualified (aName)
+    xName := NameWithoutPrefix (aName)
   else
-    xName := Unqualified (Copy (aName, 1, x - 1));
-  if (xName = UnQualified(TagName))
+    xName := NameWithoutPrefix (Copy (aName, 1, x - 1));
+  if (xName = NameWithoutPrefix(TagName))
   or (xName = GetIndexCaption)
   then
   begin
@@ -2467,10 +2453,10 @@ begin
   result := '';
   x := Pos ('.', aName);
   if x = 0 then
-    xName := UnQualified (aName)
+    xName := NameWithoutPrefix (aName)
   else
-    xName := Unqualified (Copy (aName, 1, x - 1));
-  if (xName = UnQualified(TagName))
+    xName := NameWithoutPrefix (Copy (aName, 1, x - 1));
+  if (xName = NameWithoutPrefix(TagName))
   or (xName = GetIndexCaption)
   then
   begin
@@ -2514,10 +2500,10 @@ begin
   result := nil;
   x := Pos ('.', aName);
   if x = 0 then
-    xName := UnQualified (aName)
+    xName := NameWithoutPrefix (aName)
   else
-    xName := Unqualified (Copy (aName, 1, x - 1));
-  if (xName = UnQualified(TagName))
+    xName := NameWithoutPrefix (Copy (aName, 1, x - 1));
+  if (xName = NameWithoutPrefix(TagName))
   or (xName = GetIndexCaption)
   or (xName = '*')
   then
@@ -2538,6 +2524,39 @@ begin
       for y := 0 to Items.Count - 1 do
       begin
         result := Items.XmlItems [y].FindUQXml(newName);
+        if result <> nil then
+          exit;
+      end;
+    end;
+  end;
+end;
+
+function TXml.FindCheckedXml(aName: String): TXml;
+var
+  x: Integer;
+  y: Integer;
+  xName: String;
+  newName: String;
+begin
+  result := nil;
+  if not Checked then
+    Exit;
+  x := Pos ('.', aName);
+  if x = 0 then
+    xName := aName
+  else
+    xName := Copy (aName, 1, x - 1);
+  if (xName = TagName)
+  or (xName = '*')
+  then begin
+    if x = 0 then
+      result := self
+    else
+    begin
+      newName := Copy(aName, x + 1, Length (aName));
+      for y := 0 to Items.Count - 1 do
+      begin
+        result := Items.XmlItems [y].FindCheckedXml(newName);
         if result <> nil then
           exit;
       end;
@@ -3365,7 +3384,7 @@ procedure TXml.Sort(aRecurringElementsPath, aSubElementsPath: String);
     sl := TStringList.Create;
     try
       for x := 0 to aParent.Items.Count - 1 do
-        if UnQualified (aParent.Items.XmlItems[x].Name) = aRecurringPath then
+        if NameWithoutPrefix (aParent.Items.XmlItems[x].Name) = aRecurringPath then
           sl.AddObject( aParent.Items.XmlItems[x].FindUQValue(aSubPath)
                       , aParent.Items.XmlItems[x]
                       );
@@ -3375,7 +3394,7 @@ procedure TXml.Sort(aRecurringElementsPath, aSubElementsPath: String);
         y := 0;
         for x := 0 to aParent.Items.Count - 1 do
         begin
-          if  UnQualified (aParent.Items.XmlItems[x].Name) = aRecurringPath then
+          if  NameWithoutPrefix (aParent.Items.XmlItems[x].Name) = aRecurringPath then
           begin
             aParent.Items.XmlItems[x] := sl.Objects[y] as TXml;
             Inc (y);
@@ -3394,12 +3413,12 @@ procedure TXml.Sort(aRecurringElementsPath, aSubElementsPath: String);
     x := Pos ('.', aParName);
     if x = 0 then
     begin
-      if UnQualified (aParName) = UnQualified(aXml.Name) then
+      if NameWithoutPrefix (aParName) = NameWithoutPrefix(aXml.Name) then
         _sortElms (aXml, aElemName, aSubElem);
     end
     else
     begin
-      if UnQualified (Copy (aParName, 1, x - 1)) = UnQualified (aXml.Name) then
+      if NameWithoutPrefix (Copy (aParName, 1, x - 1)) = NameWithoutPrefix (aXml.Name) then
       begin
         xName := Copy (aParName, x + 1, 3000);
         for x := 0 to aXml.Items.Count - 1 do
