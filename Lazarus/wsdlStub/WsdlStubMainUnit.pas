@@ -3261,11 +3261,13 @@ begin
     DownPageControl.ActivePage := MessagesTabSheet;
     se.ProgressPos := 0;
     if NumberOfNonBlockingThreads <= 0 then
+    begin
       abortPressed := False;
+      isBusy := False;
+    end;
     UpdateInWsdlCheckBoxes;
     GridView.Invalidate;
     InWsdlTreeView.Invalidate;
-    isBusy := False;
   end;
 end;
 
@@ -8993,26 +8995,39 @@ begin
 end;
 
 procedure TMainForm.AddChildElementDefMenuItemClick(Sender: TObject);
-  procedure _updateTypedef(aXml: TXml; aFullCaption: String; nType: TXsdDataType; aXsd: TXsd);
-  var
-    X: Integer;
-  begin
-    for X := 0 to aXml.Items.Count - 1 do
-      _updateTypedef(aXml.Items.XmlItems[X], aFullCaption, nType, aXsd);
-    if (aXml.FullCaption = aFullCaption) then
+  procedure _updateTypedef(aBinder: TWsdlBinder; aPath: String; nType: TXsdDataType; aXsd: TXsd);
+    procedure _update(aXml: TXml; aPath: String);
+    var
+      x: Integer;
     begin
-      bindRefId := 0;
-      aXml.AddXml(TXml.Create(0, aXsd));
-      aXml.TypeDef := nType;
+      for x := 0 to aXml.Items.Count - 1 do
+        _update(aXml.Items.XmlItems[x], aPath);
+      if aXml.FullCaption = aPath then
+      begin
+        bindRefId := 0;
+        aXml.AddXml(TXml.Create(0, aXsd));
+        aXml.TypeDef := nType;
+      end;
+    end;
+  var
+    xBind: TCustomBindable;
+  begin
+    xBind := aBinder.FindBind(aPath);
+    if Assigned (xBind) then
+    begin
+      if aBinder.reqBind.IsAncestorOf(xBind) then
+        _update(aBinder.reqXml, xBind.FullCaption)
+      else
+        _update(aBinder.rpyXml, xBind.FullCaption);
     end;
   end;
-
 var
   X, m: Integer;
   xxsd: TXsd;
   xXml: TXml;
   xBind: TCustomBindable;
   nTypeDef, oTypeDef, cTypeDef: TXsdDataType;
+  xPath: String;
 begin
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if not Assigned(xBind) then
@@ -9054,31 +9069,21 @@ begin
                                            , cTypeDef
                                            );
             nTypeDef := xXml.Xsd.sType;
-            nTypeDef.ManuallyUsedAtPath := WsdlOperation.Alias
-                                         + '.'
-                                         + IfThen(xXml.Root = WsdlOperation.reqBind, 'Req.', 'Rpy.')
-                                         + xXml.FullCaption
-                                         ;
+            xPath := IfThen(WsdlReply.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
+                   + xXml.FullCaption
+                   ;
+            if not oTypeDef.Manually then
+              WsdlOperation.BindablesWithAddedElement.AddObject (xPath, WsdlOperation.FindBind(xPath));
             xXml.Checked := True;
-            _updateTypedef ( WsdlOperation.reqBind as TXml
-                           , xXml.FullCaption
-                           , nTypeDef
-                           , xxsd
-                           );
-            _updateTypedef ( WsdlOperation.rpyBind as TXml
-                           , xXml.FullCaption
+            _updateTypedef ( WsdlOperation
+                           , xPath
                            , nTypeDef
                            , xxsd
                            );
             for m := 0 to WsdlOperation.Messages.Count - 1 do
             begin
-              _updateTypedef ( WsdlOperation.Messages.Messages[m].reqBind as TXml
-                             , xXml.FullCaption
-                             , nTypeDef
-                             , xxsd
-                             );
-              _updateTypedef ( WsdlOperation.Messages.Messages[m].rpyBind as TXml
-                             , xXml.FullCaption
+              _updateTypedef ( WsdlOperation.Messages.Messages[m]
+                             , xPath
                              , nTypeDef
                              , xxsd
                              );
@@ -9095,7 +9100,7 @@ begin
   finally
     if Assigned (Choose2StringsForm.ListOfLists) then
       Choose2StringsForm.ListOfLists.Free;
-    FreeAndNil(ChooseStringForm);
+    FreeAndNil(Choose2StringsForm);
   end;
 end;
 
@@ -9512,6 +9517,7 @@ procedure TMainForm.SetAbortPressed(const Value: Boolean);
 begin
   fAbortPressed := Value;
   se.abortPressed := Value;
+  MessagesStatusBar.Invalidate;
 end;
 
 procedure TMainForm.SetBetaMode;

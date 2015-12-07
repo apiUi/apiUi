@@ -337,7 +337,7 @@ type
       Messages: TWsdlMessages;
       doReadReplyFromFile: Boolean;
       ReadReplyFromFileXml: TXml;
-      ExpectationBindables, LogColumns: TBindableList;
+      ExpectationBindables, LogColumns, BindablesWithAddedElement: TBindableList;
       faultcode, faultstring, faultactor, LiteralResult: String;
       ReturnSoapFault: Boolean;
       RecognitionType: TRecognitionType;
@@ -371,6 +371,8 @@ type
       property Cloned: TWsdlOperation read fCloned;
       property DebugTokenStringAfter: String read getDebugTokenStringAfter;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
+      function AddedTypeDefElementsAsXml: TObject;
+      procedure AddedTypeDefElementsFromXml(aXml: TObject);
       function BeforeBindsAsText: String;
       procedure Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
       procedure AcquireLock;
@@ -3227,6 +3229,7 @@ begin
     CorrelationBindables := TBindableList.Create;
     ExpectationBindables := TBindableList.Create;
     LogColumns := TBindableList.Create;
+    BindablesWithAddedElement := TBindableList.Create;
     invokeList := TWsdlOperations.Create;
   end;
   Documentation := TstringList.Create;
@@ -3331,6 +3334,7 @@ begin
     FreeAndNil (CorrelationBindables);
     FreeAndNil (ExpectationBindables);
     FreeAndNil (LogColumns);
+    FreeAndNil (BindablesWithAddedElement);
     FreeAndNil (freqBind);
     FreeAndNil (frpyBind);
     FreeAndNil (fltBind);
@@ -4374,6 +4378,8 @@ begin
     self.CorrelationBindables := _cloneBindables(xOperation.CorrelationBindables);
   if Assigned (xOperation.ExpectationBindables) then
     self.ExpectationBindables := _cloneBindables(xOperation.ExpectationBindables);
+  if Assigned (xOperation.BindablesWithAddedElement) then
+    self.BindablesWithAddedElement := _cloneBindables(xOperation.BindablesWithAddedElement);
   if Assigned (xOperation.LogColumns) then
     self.LogColumns := _cloneBindables(xOperation.LogColumns);
   if Assigned (xOperation.invokeList) then
@@ -4507,6 +4513,69 @@ begin
   result := fExpressBefore.DebugTokenStringList;
 end;
 
+function TWsdlOperation.AddedTypeDefElementsAsXml : TObject ;
+var
+  x, y: integer;
+  nTypeDef: TXsdDataType;
+  XmlResult: TXml;
+  sXml: TXml;
+begin
+  XmlResult := TXml.CreateAsString('AddedTypeDefElements', '');
+  result := XmlResult;
+  for x := 0 to BindablesWithAddedElement.Count - 1 do
+  begin
+    nTypeDef := (BindablesWithAddedElement.Bindables[x] as TXml).TypeDef;
+    sXml := XmlResult.AddXml(TXml.CreateAsString('AddedTypeDefElement', ''));
+    with sXml do
+    begin
+      AddXml (TXml.CreateAsString('UsedAt', BindablesWithAddedElement.Strings[x]));
+      for y := 0 to nTypeDef.ElementDefs.Count - 1 do
+      begin
+        with AddXml(TXml.CreateAsString('Added', '')) do
+        begin
+          AddXml(TXml.CreateAsString('NameSpace',
+              nTypeDef.ElementDefs.Xsds[y].sType.NameSpace));
+          AddXml(TXml.CreateAsString('Name',
+              nTypeDef.ElementDefs.Xsds[y].sType.Name));
+          AddXml(TXml.CreateAsString('ElementName',
+              nTypeDef.ElementDefs.Xsds[y].ElementName));
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TWsdlOperation.AddedTypeDefElementsFromXml (aXml : TObject );
+var
+  xXml, yXml: TXml;
+  x: Integer;
+  xTypeDef: TXsdDataType;
+  xNameSpace, xName: String;
+begin
+{
+  xXml := ChangedElementDefs as TXml;
+  xXml.LoadValues (aXml as TXml, True);
+  for x := 0 to xXml.Items.Count - 1 do
+  begin
+    with xXml.Items.XmlItems[x] do
+    begin
+      if Name = 'ChangedElementTypedef' then
+      begin
+        xNameSpace:=Items.XmlValueByTag['NameSpace'];
+        xName:=Items.XmlValueByTag['Name'];
+        yXml := Items.XmlItemByTag['TypeDef'];
+        if Assigned (yXml) then
+        begin
+          xTypeDef := FindTypeDef(yXml.Items.XmlValueByTag['NameSpace'], yXml.Items.XmlValueByTag['Name']);
+          if Assigned (xTypeDef) then
+            ChangeElementsDatatype(xNameSpace, xName, xTypeDef);
+        end;
+      end;
+    end;
+  end;
+  }
+end;
+
 function TWsdlOperation .BeforeBindsAsText : String ;
 begin
   result := fExpressBefore.BindsAsText;
@@ -4619,6 +4688,7 @@ begin
   _refresh(self, CorrelationBindables);
   _refresh(self, ExpectationBindables);
   _refresh(self, LogColumns);
+  _refresh(self, BindablesWithAddedElement);
   for m := 0 to Messages.Count - 1 do
   begin
     _refresh(Messages.Messages[m], Messages.Messages[m].CorrelationBindables);

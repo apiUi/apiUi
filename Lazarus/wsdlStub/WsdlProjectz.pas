@@ -1877,11 +1877,6 @@ begin
               AddXml (asXml)
             else
               FreeAndNil (asXml);
-            asXml := xWsdl.XsdDescr.AddedTypeDefElementsAsXml as TXml;
-            if asXml.Items.Count > 0 then
-              AddXml (asXml)
-            else
-              FreeAndNil (asXml);
             for s := 0 to xWsdl.Services.Count - 1 do
             begin
               with AddXml (TXml.CreateAsString('Service', '')) do
@@ -1907,6 +1902,11 @@ begin
                     and (xOperation.Alias <> '') then
                       AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
                     AddXml (TXml.CreateAsBoolean('HiddenFromUI', xOperation.HiddenFromUI));
+                    asXml := xOperation.AddedTypeDefElementsAsXml as TXml;
+                    if asXml.Items.Count > 0 then
+                      AddXml (asXml)
+                    else
+                      FreeAndNil (asXml);
                     AddXml (TXml.CreateAsBoolean('wsaEnabled', xOperation.wsaEnabled));
                     AddXml (TXml.CreateAsBoolean('wsaSpecificMustUnderstand', xOperation.wsaSpecificMustUnderstand));
                     AddXml (TXml.CreateAsBoolean('wsaMustUnderstand', xOperation.wsaMustUnderstand));
@@ -2281,25 +2281,6 @@ begin
                           rpyBind.Name := xBindName;
                         end;
                 end;
-                dXml := wXml.Items.XmlItemByTag ['AddedTypeDefElements'];
-                if Assigned (dXml) then
-                begin
-                  xWsdl.AddedTypeDefElementsFromXml (dXml);
-                  for s := 0 to xWsdl.Services.Count - 1 do
-                    with xWsdl.Services.Services[s] do
-                      for o := 0 to Operations.Count - 1 do
-                        with Operations.Operations[o] do
-                        begin
-                          xBindName := reqBind.Name;
-                          reqBind.Free;
-                          reqBind := TXml.Create(0, reqXsd);
-                          reqBind.Name := xBindName;
-                          xBindName := rpyBind.Name;
-                          rpyBind.Free;
-                          rpyBind := TXml.Create(0, rpyXsd);
-                          rpyBind.Name := xBindName;
-                        end;
-                end;
                 xWsdl.XsdDescr.Finalise;
                 for x := 0 to wXml.Items.Count - 1 do
                 begin
@@ -2336,6 +2317,9 @@ begin
                               xOperation.rpyBind.Name := xOperation.alias;
                             end;
                             xOperation.HiddenFromUI := oXml.Items.XmlBooleanByTagDef ['HiddenFromUI', False];
+                            dXml := oXml.Items.XmlItemByTag ['AddedTypeDefElements'];
+                            if Assigned (dXml) then
+                              xOperation.AddedTypeDefElementsFromXml (dXml);
                             xOperation.wsaEnabled := oXml.Items.XmlBooleanByTagDef ['wsaEnabled', False];
                             xOperation.wsaSpecificMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaSpecificMustUnderstand', False];
                             xOperation.wsaMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaMustUnderstand', False];
