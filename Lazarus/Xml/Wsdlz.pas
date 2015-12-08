@@ -4546,34 +4546,75 @@ begin
 end;
 
 procedure TWsdlOperation.AddedTypeDefElementsFromXml (aXml : TObject );
+  procedure _updateTypedef(aPath: String; nType: TXsdDataType; aXsd: TXsd);
+    procedure _update(aXml: TXml; aPath: String);
+    var
+      x: Integer;
+    begin
+      for x := 0 to aXml.Items.Count - 1 do
+        _update(aXml.Items.XmlItems[x], aPath);
+      if aXml.FullCaption = aPath then
+      begin
+        bindRefId := 0;
+        aXml.AddXml(TXml.Create(0, aXsd));
+        aXml.TypeDef := nType;
+      end;
+    end;
+  var
+    xBind: TCustomBindable;
+  begin
+    xBind := FindBind(aPath);
+    if Assigned (xBind) then
+    begin
+      if reqBind.IsAncestorOf(xBind) then
+        _update(reqXml, xBind.FullCaption)
+      else
+        _update(rpyXml, xBind.FullCaption);
+    end;
+  end;
 var
   xXml, yXml: TXml;
-  x: Integer;
-  xTypeDef: TXsdDataType;
-  xNameSpace, xName: String;
+  x, y: Integer;
+  xBind: TXml;
+  nTypeDef, cTypeDef: TXsdDataType;
+  xxsd: TXsd;
+  xPath, xNameSpace, xName, xElementName: String;
 begin
-{
-  xXml := ChangedElementDefs as TXml;
-  xXml.LoadValues (aXml as TXml, True);
-  for x := 0 to xXml.Items.Count - 1 do
+  xXml := aXml as TXml;
+  for x := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[x] do
   begin
-    with xXml.Items.XmlItems[x] do
+    if Name = 'AddedTypeDefElement' then
     begin
-      if Name = 'ChangedElementTypedef' then
+      xPath := Items.XmlValueByTag['UsedAt'];
+      xBind := TXml (FindBind(xPath));
+      if Assigned (xBind) then
       begin
-        xNameSpace:=Items.XmlValueByTag['NameSpace'];
-        xName:=Items.XmlValueByTag['Name'];
-        yXml := Items.XmlItemByTag['TypeDef'];
-        if Assigned (yXml) then
+        BindablesWithAddedElement.AddObject(xPath, xBind);
+        for y := 0 to Items.Count - 1 do
         begin
-          xTypeDef := FindTypeDef(yXml.Items.XmlValueByTag['NameSpace'], yXml.Items.XmlValueByTag['Name']);
-          if Assigned (xTypeDef) then
-            ChangeElementsDatatype(xNameSpace, xName, xTypeDef);
+          if Items.XmlItems[y].Name = 'Added' then with Items.XmlItems[y] do
+          begin
+            xNameSpace := Items.XmlValueByTag['NameSpace'];
+            xName := Items.XmlValueByTag['Name'];
+            xElementName := Items.XmlValueByTag['ElementName'];
+            cTypeDef := Wsdl.XsdDescr.FindTypeDef(xNameSpace, xElementName);
+            if Assigned (cTypeDef) then
+            begin
+              xxsd := xBind.Xsd.AddElementDef ( Wsdl.XsdDescr
+                                              , xElementName
+                                              , cTypeDef
+                                              );
+              _updateTypedef ( xPath
+                             , xBind.Xsd.sType
+                             , xxsd
+                             );
+
+            end;
+          end;
         end;
       end;
     end;
   end;
-  }
 end;
 
 function TWsdlOperation .BeforeBindsAsText : String ;

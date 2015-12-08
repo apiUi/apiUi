@@ -2307,19 +2307,19 @@ begin
                           xOperation := xService.OperationByName [oXml.Items.XmlValueByTag['Name']];
                           if Assigned (xOperation) then
                           begin
-                            dXml := oXml.Items.XmlItemByTag ['Action'];
-                            if Assigned (dXml) then
-                              xOperation.StubAction := TStubAction (StrToIntDef(dXml.Value, 0));
                             xOperation.Alias := oXml.Items.XmlValueByTagDef['Alias', xOperation.reqTagName];
                             if xOperation.Alias <> xOperation.reqTagName then
                             begin
                               xOperation.reqBind.Name := xOperation.alias;
                               xOperation.rpyBind.Name := xOperation.alias;
                             end;
-                            xOperation.HiddenFromUI := oXml.Items.XmlBooleanByTagDef ['HiddenFromUI', False];
                             dXml := oXml.Items.XmlItemByTag ['AddedTypeDefElements'];
                             if Assigned (dXml) then
                               xOperation.AddedTypeDefElementsFromXml (dXml);
+                            dXml := oXml.Items.XmlItemByTag ['Action'];
+                            if Assigned (dXml) then
+                              xOperation.StubAction := TStubAction (StrToIntDef(dXml.Value, 0));
+                            xOperation.HiddenFromUI := oXml.Items.XmlBooleanByTagDef ['HiddenFromUI', False];
                             xOperation.wsaEnabled := oXml.Items.XmlBooleanByTagDef ['wsaEnabled', False];
                             xOperation.wsaSpecificMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaSpecificMustUnderstand', False];
                             xOperation.wsaMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaMustUnderstand', False];
