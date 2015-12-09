@@ -2115,6 +2115,11 @@ object MainForm: TMainForm
       OnExecute = SchemasToZipExecute
       ShortCut = 24666
     end
+    object ShowShortCutActionsAction: TAction
+      Caption = 'ShowShortCutActionsAction'
+      OnExecute = ShowShortCutActionsActionExecute
+      ShortCut = 24665
+    end
   end
   object mainImageList: TImageList
     left = 40

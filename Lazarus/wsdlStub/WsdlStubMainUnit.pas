@@ -64,6 +64,8 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    ShowShortCutActionsAction : TAction ;
+    EditScriptMenuItem : TMenuItem ;
     SchemasToZip : TAction ;
     ExecuteAllRequestsToolButton : TToolButton ;
     ExecuteLoadTextToolbutton : TToolButton ;
@@ -549,6 +551,7 @@ type
     procedure ElementvalueMenuItemClick(Sender: TObject);
     procedure PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
     procedure CopyCobolDataToClipboardMenuItemClick(Sender: TObject);
+    procedure ShowShortCutActionsActionExecute (Sender : TObject );
     procedure UnhideOperationMenuItemClick (Sender : TObject );
     procedure ViewMssgAsTextActionExecute(Sender: TObject);
     procedure ViewMssgAsTextActionUpdate(Sender: TObject);
@@ -1148,7 +1151,7 @@ uses
   ShellApi,
 {$ELSE}
 {$ENDIF}
-  wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
+  LCLProc, wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
   ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
   ChooseStringUnit, Choose2StringsUnit, AboutUnit, StrUtils, IpmGunLicense,
   IpmGunLicenseUnit, DisclaimerUnit,
@@ -10716,6 +10719,38 @@ procedure TMainForm.CopyCobolDataToClipboardMenuItemClick(Sender: TObject);
 begin
   ClipBoard.AsText := (NodeToBind(InWsdlTreeView,
       InWsdlTreeView.FocusedNode) as TIpmItem).ValuesToBuffer(nil);
+end;
+
+procedure TMainForm.ShowShortCutActionsActionExecute (Sender : TObject );
+var
+  sl: TStringList;
+  x: Integer;
+  xKey: Word;
+  xShift : TShiftState;
+  xKeyString: String;
+begin
+  sl := TStringList.Create;
+  try
+    for x := 0 to alGeneral.ActionCount - 1 do with alGeneral.Actions[x] as TCustomAction do
+    begin
+      ShortCutToKey(ShortCut, xKey, xShift);
+      xKeyString := '';
+      if (ssShift in xShift) then
+        xKeyString := xKeyString + 'Shift+';
+      if (ssCtrl in xShift) then
+        xKeyString := xKeyString + 'Ctrl+';
+      if (ssAlt in xShift) then
+        xKeyString := xKeyString + 'Alt+';
+      if xKey <> 0 then
+      begin
+        xKeyString := xKeyString + Copy (DbgsVKCode(xKey), 4, MaxInt);
+        sl.Values[Caption] := xKeyString;
+      end;
+    end;
+    ShowInfoForm('Actions with ShortCut', sl.Text);
+  finally
+    sl.Free;
+  end;
 end;
 
 procedure TMainForm.CleanMenuItemClick(Sender: TObject);
