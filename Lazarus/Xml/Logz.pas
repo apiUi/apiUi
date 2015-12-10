@@ -52,6 +52,7 @@ type
     httpSoapAction: String;
     DestinationIp: String;
     Stubbed: Boolean;
+    LogGroupId: String;
     CorrelationId: String;
     Operation: TWsdlOperation;
     Mssg: TWsdlMessage;
@@ -166,7 +167,8 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aOrderBy: TCompareLogOrderBy
                             ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList
                             ): TXml;
-
+var
+  _logzLogGroupId: String;
 implementation
 
 uses SysUtils
@@ -175,6 +177,11 @@ uses SysUtils
    , IpmTypes
    , SwiftUnit
    ;
+
+function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
+begin
+  if val then result:=iftrue else result:=iffalse;
+end;
 
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
@@ -185,6 +192,8 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
   begin
     result := TXml.CreateAsString('Detail', '');
     result.AddXml (TXml.CreateAsString('messageTimestamp', xsdDateTime(xLog.InboundTimeStamp)));
+    if xLog.LogGroupId <> '' then
+      result.AddXml (TXml.CreateAsString('LogGroupId', xLog.LogGroupId));
     if Assigned (xLog.Operation) then
     begin
       result.AddXml (TXml.CreateAsString('Service', xLog.Operation.WsdlService.Name));
@@ -294,30 +303,30 @@ begin
       try
         for x := 0 to aSortedLogs.Count - 1 do
         begin
-          s := ';;;';
           with aSortedLogs.LogItems[x] do
           begin
+            s := LogGroupId + ';';
             if Assigned (Operation) then
-            begin
-              s := Operation.WsdlService.Name + ';' + Operation.Name + ';';
-              if Assigned (Mssg) then
-                s := s + Mssg.Name;
-            end;
+              s := s + Operation.WsdlService.Name + ';' + Operation.Name + ';'
+            else
+              s := s + ';;';
+            if Assigned (Mssg) then
+              s := s + Mssg.Name;
             s := s + ';' + CorrelationId;
           end;
           LA.Add(s);
         end;
         for x := 0 to bSortedLogs.Count - 1 do
         begin
-          s := ';;;';
           with bSortedLogs.LogItems[x] do
           begin
+            s := LogGroupId + ';';
             if Assigned (Operation) then
-            begin
-              s := Operation.WsdlService.Name + ';' + Operation.Name + ';';
-              if Assigned (Mssg) then
-                s := s + Mssg.Name;
-            end;
+              s := s + Operation.WsdlService.Name + ';' + Operation.Name + ';'
+            else
+              s := s + ';;';
+            if Assigned (Mssg) then
+              s := s + Mssg.Name;
             s := s + ';' + CorrelationId;
           end;
           LB.Add(s);
@@ -737,6 +746,8 @@ begin
         with bodyXml.AddXml(TXml.CreateAsString('Detail','')) do
         begin
           AddXml (TXml.CreateAsString('messageTimestamp', xsdDateTime(xLog.InboundTimeStamp)));
+          if xLog.LogGroupId <> '' then
+            AddXml (TXml.CreateAsString('LogGroupId', xLog.LogGroupId));
           AddXml (TXml.CreateAsString('Service', xLog.Operation.WsdlService.Name));
           AddXml (TXml.CreateAsString('Operation', xLog.Operation.Name));
           AddXml (TXml.CreateAsString('Message', xLog.Mssg.Name));
@@ -952,6 +963,8 @@ begin
     AddXml (Txml.CreateAsInteger('TransportType', Ord (Self.TransportType)));
     AddXml (TXml.CreateAsString('StubAction', IntToStr(Ord(Self.StubAction))));
     AddXml (Txml.CreateAsString('CorrelationId', Self.CorrelationId));
+    if self.LogGroupId <> '' then
+      AddXml (Txml.CreateAsString('LogGroupId', Self.LogGroupId));
     if Assigned (Self.Operation) then
     begin
       AddXml (TXml.CreateAsString('Service', Self.Operation.WsdlService.Name));
@@ -997,6 +1010,7 @@ constructor TLog.Create;
 begin
   CorrId := 'uuid:' + generateRandomId;
   DisplayedColumns := TStringList.Create;
+  LogGroupId := _logzLogGroupId;
 end;
 
 destructor TLog.Destroy;
@@ -1013,14 +1027,18 @@ begin
   begin
     case aCompareBy of
       clTimeStamp, clCorrelation:
-        result := Operation.WsdlService.Name
+        result := LogGroupId
+                + ';'
+                + Operation.WsdlService.Name
                 + ';'
                 + Operation.Name
                 + ';'
                 + CorrelationId
                 ;
       clOperation:
-        result := Operation.WsdlService.Name
+        result := LogGroupId
+                + ';'
+                + Operation.WsdlService.Name
                 + ';'
                 + Operation.Name
                 ;
@@ -1029,8 +1047,8 @@ begin
   else
   begin
     case aCompareBy of
-      clOperation: result := ';';
-      clCorrelation: result := ';' + CorrelationId;
+      clOperation: result := LogGroupId + ';';
+      clCorrelation: result := LogGroupId + ';' + CorrelationId;
     end;
   end;
 end;

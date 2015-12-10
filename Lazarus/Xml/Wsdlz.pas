@@ -549,6 +549,7 @@ procedure ResetEnvVar (aName: String);
 function setEnvNumber (aName: String; aValue: Extended): Extended;
 function setEnvVar (aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
+procedure SetLogGroupId (aObject: TObject; aString: String);
 procedure ExecuteScript (aObject: TObject; aString: String);
 procedure SjowMessage (aString: String);
 function decVarNumber (aName: String): Extended;
@@ -587,6 +588,7 @@ var
   _WsdlFetchNextMessage: XFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlAddRemark: VFunctionOS;
+  _WsdlSetLogGroupId: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
   _WsdlSendOperationRequestLater: VFunctionSSI;
   _WsdlRefuseHttpConnections: XFunctionOXX;
@@ -662,6 +664,13 @@ begin
   if not Assigned (_WsdlAddRemark) then
     raise Exception.Create('No OnAddRemark event assigned: intention was to log remark: ' + aString);
   _WsdlAddRemark (aObject, aString);
+end;
+
+procedure SetLogGroupId(aObject: TObject; aString: String);
+begin
+  if not Assigned (_WsdlSetLogGroupId) then
+    raise Exception.Create('No OnAddRemark event assigned: intention was to log remark: ' + aString);
+  _WsdlSetLogGroupId (aObject, aString);
 end;
 
 procedure ExecuteScript(aObject: TObject; aString: String);
@@ -3579,6 +3588,7 @@ begin
       BindBeforeFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSS, '(aOperation, aCorrelation, aLater)');
       BindBeforeFunction ('SetEnvNumber', @setEnvNumber, XFSX, '(aKey, aNumber)');
       BindBeforeFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
+      BindBeforeFunction ('SetLogGroupId', @SetLogGroupId, VFOS, '(aString)');
       BindBeforeFunction ('SHA1', @SHA1, SFS, '(aString)');
       BindBeforeFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
       BindBeforeFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
@@ -3720,6 +3730,7 @@ begin
     BindAfterFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSS, '(aOperation, aCorrelation, aLater)');
     BindAfterFunction ('SetEnvNumber', @setEnvNumber, XFSX, '(aKey, aNumber)');
     BindAfterFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
+    BindAfterFunction ('SetLogGroupId', @SetLogGroupId, VFOS, '(aString)');
     BindAfterFunction ('SHA1', @SHA1, SFS, '(aString)');
     BindAfterFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
     BindAfterFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');

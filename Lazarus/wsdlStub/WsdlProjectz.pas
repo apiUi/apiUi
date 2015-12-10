@@ -482,6 +482,25 @@ begin
   end;
 end;
 
+procedure SetLogGroupId(aOperation: TObject; aString: String);
+begin
+  if not Assigned (aOperation)
+  or not (aOperation is TWsdlOperation)
+  or not Assigned ((aOperation as TWsdlOperation).Data) then
+    raise Exception.Create('aOperation.Data not assigned; intentention was to SetLogGroupId: ' + aString);
+  with (aOperation as TWsdlOperation).Data as TLog do
+    LogGroupId := aString;
+  with (aOperation as TWsdlOperation).Owner as TWsdlProject do
+  begin
+    AcquireLogLock;
+    try
+      _logzLogGroupId := aString;
+    finally
+      ReleaseLogLock;
+    end;
+  end;
+end;
+
 function FetchFirstMessage(aContext: TObject; xOperationAlias: String): Extended;
 var
   xProject: TWsdlProject;
