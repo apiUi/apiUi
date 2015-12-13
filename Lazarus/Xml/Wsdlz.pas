@@ -669,7 +669,7 @@ end;
 procedure SetLogGroupId(aObject: TObject; aString: String);
 begin
   if not Assigned (_WsdlSetLogGroupId) then
-    raise Exception.Create('No OnAddRemark event assigned: intention was to log remark: ' + aString);
+    raise Exception.Create('No SetLogGroupId event assigned: intention was to set: ' + aString);
   _WsdlSetLogGroupId (aObject, aString);
 end;
 
@@ -4557,7 +4557,7 @@ begin
 end;
 
 procedure TWsdlOperation.AddedTypeDefElementsFromXml (aXml : TObject );
-  procedure _updateTypedef(aPath: String; nType: TXsdDataType; aXsd: TXsd);
+  procedure _updateTypedef(var n: Integer; aPath: String; nType: TXsdDataType; aXsd: TXsd);
     procedure _update(aXml: TXml; aPath: String);
     var
       x: Integer;
@@ -4566,6 +4566,7 @@ procedure TWsdlOperation.AddedTypeDefElementsFromXml (aXml : TObject );
         _update(aXml.Items.XmlItems[x], aPath);
       if aXml.FullCaption = aPath then
       begin
+        n := n + 1;
         bindRefId := 0;
         aXml.AddXml(TXml.Create(0, aXsd));
         aXml.TypeDef := nType;
@@ -4585,7 +4586,7 @@ procedure TWsdlOperation.AddedTypeDefElementsFromXml (aXml : TObject );
   end;
 var
   xXml, yXml: TXml;
-  x, y: Integer;
+  n, x, y: Integer;
   xBind: TXml;
   nTypeDef, cTypeDef: TXsdDataType;
   xxsd: TXsd;
@@ -4598,6 +4599,8 @@ begin
     begin
       xPath := Items.XmlValueByTag['UsedAt'];
       xBind := TXml (FindBind(xPath));
+      if not Assigned (xBind) then
+        SjowMessage(Format ('AddedTypeDefElement [%s], could not find element [%s]', [Alias, xPath]));
       if Assigned (xBind) then
       begin
         BindablesWithAddedElement.AddObject(xPath, xBind);
@@ -4609,17 +4612,22 @@ begin
             xName := Items.XmlValueByTag['Name'];
             xElementName := Items.XmlValueByTag['ElementName'];
             cTypeDef := Wsdl.XsdDescr.FindTypeDef(xNameSpace, xElementName);
+            if not Assigned (cTypeDef) then
+              SjowMessage(Format ('AddedTypeDefElement [%s], could not find typedef [%s;%s]', [Alias, xNameSpace, xName]));
             if Assigned (cTypeDef) then
             begin
               xxsd := xBind.Xsd.AddElementDef ( Wsdl.XsdDescr
                                               , xElementName
                                               , cTypeDef
                                               );
-              _updateTypedef ( xPath
+              n := 0;
+              _updateTypedef ( n
+                             , xPath
                              , xBind.Xsd.sType
                              , xxsd
                              );
-
+              if n = 0 then
+                SjowMessage(Format ('AddedTypeDefElement [%s], no binds updated with [%s;%s]', [Alias, xNameSpace, xName]));
             end;
           end;
         end;

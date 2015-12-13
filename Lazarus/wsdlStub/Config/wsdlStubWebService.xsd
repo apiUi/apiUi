@@ -300,4 +300,19 @@ Enter correlation items in an order that correponds with the wsdlStub correlatio
 			<xs:documentation>Response to an execute script request</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="setLogGroupIdReq">
+		<xs:annotation>
+			<xs:documentation>Request to execute a script</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="logGroupId" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="setLogGroupIdRpy">
+		<xs:annotation>
+			<xs:documentation>Response to an execute script request</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 </xs:schema>
