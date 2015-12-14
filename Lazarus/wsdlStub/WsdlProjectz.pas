@@ -2877,83 +2877,13 @@ var
   x: Integer;
   xWsdl: TWsdl;
   xInvoke: TXml;
-  xOperation, sOperation: TWsdlOperation;
+  sOperation: TWsdlOperation;
 begin
   if not Assigned(aScript)
   or (not (aScript is TXml))
   or (aScript.Name <> 'Script') then
     raise Exception.Create ('Illegal argument: TWsdlProject.CreateScriptOperation(aScript: TXml): TWsdlOperation');
-  xWsdl := TWsdl.Create(1, 1, False);
-  with xWsdl do
-  begin
-    Name := 'Script';
-    isSoapService := False;
-    Services.Add(Name);
-    Services.Objects[0] := TWsdlService.Create;
-    Services.Services[0].Name := Name;
-    Services.Services[0].DescriptionType := ipmDTXsd;
-    xOperation := TWsdlOperation.Create (xWsdl);
-    xOperation.Owner := self;
-    xOperation.Name := Name;
-    Services.Services[0].Operations.AddObject(xOperation.Name, xOperation);
-    xOperation.Wsdl := xWsdl;
-    xOperation.Owner := self;
-    xOperation.WsdlService := Services.Services[0];
-    xOperation.reqTagName := xOperation.Name + '_Req';
-    xOperation.Alias := xOperation.reqTagName;
-    xOperation.rpyTagName := xOperation.Name + '_Rpy';
-    xOperation.reqRecognition := TStringList.Create;
-    xOperation.rpyRecognition := TStringList.Create;
-    xOperation.RecognitionType := rtSubString;
-    xOperation.reqXsd.ElementName := xOperation.reqTagName;
-    xOperation.rpyXsd.ElementName := xOperation.rpyTagName;
-    xOperation.BeforeScriptLines.Text := aScript.Items.XmlCheckedValueByTag['Code'];
-    xOperation.OnGetAbortPressed := self.GetAbortPressed;
-  end;
-  try
-    xInvoke := aScript.FindCheckedXml('Script.Invoke.operations');
-    if Assigned(xInvoke) then
-    begin
-      for x := 0 to xInvoke.Items.Count - 1 do
-      begin
-        if (xInvoke.Items.XmlItems[x].Name = 'name')
-        and (xInvoke.Items.XmlItems[x].Checked) then
-        begin
-          sOperation := allAliasses.FindOnAliasName(xInvoke.Items.XmlItems[x].Value);
-          if Assigned (sOperation) then
-          begin
-            sOperation.AcquireLock;
-            try
-              xOperation.invokeList.Add(sOperation.Alias);
-              xOperation.ReqBindablesFromWsdlMessage(sOperation.Messages.Messages[0]);
-            finally
-              sOperation.ReleaseLock;
-            end;
-          end;
-        end;
-      end;
-    end;
-    xOperation.AcquireLock;
-    try
-      result := TWsdlOperation.Create(xOperation);
-    finally
-      xOperation.ReleaseLock;
-    end;
-{
-    try
-      with result do
-      begin
-        BeforeScriptLines.Text := aString;
-        PrepareBefore;
-      end;
-    except
-      on e: Exception do
-        LogServerMessage (Format('Exception %s%s%swas raised%s', [CRLF, e.Message, CRLF, CRLF]), True, e);
-    end;
-}
-  finally
-//    xWsdl.Free; starnge trick not yet
-  end;
+  result := TWsdlOperation.CreateFromScriptXml(self, GetAbortPressed, aScript);
 end;
 
 procedure TWsdlProject.HaveStompFrame(aStompInterface: TStompInterface;
@@ -6729,7 +6659,6 @@ begin
     end;
   finally
     FreeAndNil(Data);
-    FreeAndNil(Wsdl);
     Free;
   end;
 end;

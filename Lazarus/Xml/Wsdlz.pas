@@ -7,7 +7,6 @@ interface
 uses sqldb
    , Classes
    , ParserClasses
-   , Variants
    , Xmlz
    , Xsdz
    , Express
@@ -436,6 +435,7 @@ type
       procedure OptionsFromXml(aXml: TXml);
       constructor Create (aWsdl: TWsdl); Overload;
       constructor Create (aOperation: TWsdlOperation); Overload;
+      constructor CreateFromScriptXml (aOwner: TObject; aOnGetAbortPressed: TBooleanFunction; aScript: TXml);
       destructor Destroy; override;
   end;
 
@@ -630,7 +630,7 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType,
+  LCLType,
 {$ENDIF}
   StrUtils
    , SysUtils
@@ -3474,38 +3474,33 @@ begin
   or not Assigned(aBind)
   or (aBind.Name = '') then
     Exit;
-  aBind.Bind (aRoot, aExpress, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+  if Assigned (Wsdl) then
+    aBind.Bind (aRoot, aExpress, Wsdl.XsdDescr.xsdElementsWhenRepeatable)
+  else
+    aBind.Bind (aRoot, aExpress, 1)
 end;
 
 procedure TWsdlOperation.PrepareBefore;
 var
   x: Integer;
-  reqParent: TCustomBindable;
-  rpyParent: TCustomBindable;
-  fltParent: TCustomBindable;
 begin
   fPreparedBefore := False;
-  reqParent := reqBind.Parent;
-  rpyParent := rpyBind.Parent;
-  fltParent := fltBind.Parent;
-  reqBind.Parent := nil;
-  rpyBind.Parent := nil;
-  fltBind.Parent := nil;
   try
-    try
-      FreeAndNil(fExpressBefore);
-      fExpressBefore := TExpress.Create (nil);
-      fExpressBefore.Context := Self;
-      fExpressBefore.ScriptText := BeforeScriptLines.Text;
-      fExpressBefore.OnGetAbortPressed := fOnGetAbortPressed;
-      fExpressBefore.OnGetDoExit := getDoExit;
-      fExpressBefore.OnError := fOnError;
+    FreeAndNil(fExpressBefore);
+    fExpressBefore := TExpress.Create (nil);
+    fExpressBefore.Context := Self;
+    fExpressBefore.ScriptText := BeforeScriptLines.Text;
+    fExpressBefore.OnGetAbortPressed := fOnGetAbortPressed;
+    fExpressBefore.OnGetDoExit := getDoExit;
+    fExpressBefore.OnError := fOnError;
 //      fExpress.OnError := ExpressError;
 //      fExpress.OnHaveData := HaveData;
-      fLineNumber := 0;
-      fExpressBefore.Database := _WsdlDbsConnector;
-      Bind ('Req', reqBind, fExpressBefore);
-      Bind ('Rpy', rpyBind, fExpressBefore);
+    fLineNumber := 0;
+    fExpressBefore.Database := _WsdlDbsConnector;
+    Bind ('Req', reqBind, fExpressBefore);
+    Bind ('Rpy', rpyBind, fExpressBefore);
+    if Assigned (invokeList) then
+    begin
       for x := 0 to invokeList.Count - 1 do
       begin
         if Assigned (invokeList.Operations[x]) then
@@ -3514,107 +3509,103 @@ begin
           Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressBefore);
         end;
       end;
-      if fltBind is TIpmItem then
-        fltBind.Bind ('Flt', fExpressBefore, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
-      if fltBind is TXml then
+    end;
+    if fltBind is TIpmItem then
+      fltBind.Bind ('Flt', fExpressBefore, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+    if fltBind is TXml then
+    begin
+      for x := 0 to (fltBind as TXml).Items.Count - 1 do
       begin
-        for x := 0 to (fltBind as TXml).Items.Count - 1 do
-        begin
-          (fltBind as TXml).Items.XmlItems [x].Parent := nil;
-          try
-            (fltBind as TXml).Items.XmlItems [x].Bind('Faults', fExpressBefore, Wsdl.xsdElementsWhenRepeatable);
-          finally
-            (fltBind as TXml).Items.XmlItems [x].Parent := fltBind;
-          end;
+        (fltBind as TXml).Items.XmlItems [x].Parent := nil;
+        try
+          (fltBind as TXml).Items.XmlItems [x].Bind('Faults', fExpressBefore, Wsdl.xsdElementsWhenRepeatable);
+        finally
+          (fltBind as TXml).Items.XmlItems [x].Parent := fltBind;
         end;
       end;
-      if Assigned (reqWsaXml) then
-        try reqWsaXml.Bind ('reqWsa', fExpressBefore, 1); except end;
-      if Assigned (rpyWsaXml) then
-        try rpyWsaXml.Bind ('rpyWsa', fExpressBefore, 1); except end;
-      if Assigned (StubMqHeaderXml) then
-        try StubMqHeaderXml.Bind ('Mq', fExpressBefore, 1); except end;
-      try fExpressBefore.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
-      try fExpressBefore.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
+    end;
+    if Assigned (reqWsaXml) then
+      try reqWsaXml.Bind ('reqWsa', fExpressBefore, 1); except end;
+    if Assigned (rpyWsaXml) then
+      try rpyWsaXml.Bind ('rpyWsa', fExpressBefore, 1); except end;
+    if Assigned (StubMqHeaderXml) then
+      try StubMqHeaderXml.Bind ('Mq', fExpressBefore, 1); except end;
+    try fExpressBefore.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
+    try fExpressBefore.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
 //      BindFunction ('Log', @ServerLogMessage, VFS, '(aString)');
-      BindBeforeFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
-      BindBeforeFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
-      BindBeforeFunction ('Assigned', @isAssigned, XFG, '(aItem)');
-      BindBeforeFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
-      BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
-      BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
-      BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
-      BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
-      BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
-      BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
-      BindBeforeFunction ('Exit', @RaiseExit, VFOV, '()');
-      BindBeforeFunction ('FetchFirstMessage', @wsdlFetchFirstMessage, XFOS, '(aOperation)');
-      BindBeforeFunction ('FetchNextMessage', @wsdlFetchNextMessage, XFOS, '(aOperation)');
-      BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
-      BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
-      BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
-      BindBeforeFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
-      BindBeforeFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
-      BindBeforeFunction ('DisableMessage', @DisableMessage, VFOV, '()');
-      BindBeforeFunction ('HostName', @GetHostName, SFV, '()');
-      BindBeforeFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
-      BindBeforeFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
-      BindBeforeFunction ('LengthStr', @LengthX, XFS, '(aString)');
-      BindBeforeFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
-      BindBeforeFunction ('MD5', @MD5, SFS, '(aString)');
-      BindBeforeFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
-      BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
-      BindBeforeFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
-      BindBeforeFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
-      BindBeforeFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
-      BindBeforeFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
-      BindBeforeFunction ('PromptReply', @PromptReply, VFOV, '()');
-      BindBeforeFunction ('PromptRequest', @PromptRequest, VFOV, '()');
-      BindBeforeFunction ('RaiseError', @RaiseError, VFS, '(aString)');
-      BindBeforeFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
-      BindBeforeFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
-      BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
-      BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
-      BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
-      BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
-      BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
-      BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
-      BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
-      BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
-      BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
-      BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
-      BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
-      BindBeforeFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
-      BindBeforeFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSS, '(aOperation, aCorrelation, aLater)');
-      BindBeforeFunction ('SetEnvNumber', @setEnvNumber, XFSX, '(aKey, aNumber)');
-      BindBeforeFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
-      BindBeforeFunction ('SetLogGroupId', @SetLogGroupId, VFOS, '(aString)');
-      BindBeforeFunction ('SHA1', @SHA1, SFS, '(aString)');
-      BindBeforeFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
-      BindBeforeFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
-      BindBeforeFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
-      BindBeforeFunction ('Sleep', @SleepX, VFX, '(aMilliSeconds)');
-      BindBeforeFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
-      BindBeforeFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
-      BindBeforeFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
-      BindBeforeFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
+    BindBeforeFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
+    BindBeforeFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
+    BindBeforeFunction ('Assigned', @isAssigned, XFG, '(aItem)');
+    BindBeforeFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
+    BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
+    BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
+    BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
+    BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
+    BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
+    BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
+    BindBeforeFunction ('Exit', @RaiseExit, VFOV, '()');
+    BindBeforeFunction ('FetchFirstMessage', @wsdlFetchFirstMessage, XFOS, '(aOperation)');
+    BindBeforeFunction ('FetchNextMessage', @wsdlFetchNextMessage, XFOS, '(aOperation)');
+    BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
+    BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
+    BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
+    BindBeforeFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
+    BindBeforeFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
+    BindBeforeFunction ('DisableMessage', @DisableMessage, VFOV, '()');
+    BindBeforeFunction ('HostName', @GetHostName, SFV, '()');
+    BindBeforeFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
+    BindBeforeFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
+    BindBeforeFunction ('LengthStr', @LengthX, XFS, '(aString)');
+    BindBeforeFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+    BindBeforeFunction ('MD5', @MD5, SFS, '(aString)');
+    BindBeforeFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
+    BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
+    BindBeforeFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
+    BindBeforeFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
+    BindBeforeFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
+    BindBeforeFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
+    BindBeforeFunction ('PromptReply', @PromptReply, VFOV, '()');
+    BindBeforeFunction ('PromptRequest', @PromptRequest, VFOV, '()');
+    BindBeforeFunction ('RaiseError', @RaiseError, VFS, '(aString)');
+    BindBeforeFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
+    BindBeforeFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
+    BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
+    BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
+    BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
+    BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
+    BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
+    BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
+    BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
+    BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
+    BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
+    BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
+    BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
+    BindBeforeFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
+    BindBeforeFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSS, '(aOperation, aCorrelation, aLater)');
+    BindBeforeFunction ('SetEnvNumber', @setEnvNumber, XFSX, '(aKey, aNumber)');
+    BindBeforeFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
+    BindBeforeFunction ('SetLogGroupId', @SetLogGroupId, VFOS, '(aString)');
+    BindBeforeFunction ('SHA1', @SHA1, SFS, '(aString)');
+    BindBeforeFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
+    BindBeforeFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
+    BindBeforeFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
+    BindBeforeFunction ('Sleep', @SleepX, VFX, '(aMilliSeconds)');
+    BindBeforeFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
+    BindBeforeFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
+    BindBeforeFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
+    BindBeforeFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
 //    BindBeforeFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
-      BindBeforeFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
-      BindBeforeFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
-      BindBeforeFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
-      BindBeforeFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
-      BindBeforeFunction ('UserName', @wsdlUserName, SFV, '()');
-      BindBeforeFunction ('OperationName', @wsdlOperationName, SFOV, '()');
-      fExpressBefore.Prepare;
-      fPreparedBefore := True;
-    except
-      raise;
-    end
-  finally
-    reqBind.Parent := reqParent;
-    rpyBind.Parent := rpyParent;
-    fltBind.Parent := fltParent;
-  end;
+    BindBeforeFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
+    BindBeforeFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
+    BindBeforeFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
+    BindBeforeFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
+    BindBeforeFunction ('UserName', @wsdlUserName, SFV, '()');
+    BindBeforeFunction ('OperationName', @wsdlOperationName, SFOV, '()');
+    fExpressBefore.Prepare;
+    fPreparedBefore := True;
+  except
+    raise;
+  end
 end;
 
 procedure TWsdlOperation.PrepareChecker(aBind: TCustomBindable);
@@ -4417,6 +4408,51 @@ begin
   end;
 end;
 
+constructor TWsdlOperation.CreateFromScriptXml (aOwner: TObject; aOnGetAbortPressed: TBooleanFunction; aScript: TXml);
+var
+  x: Integer;
+  xWsdl: TWsdl;
+  xInvoke: TXml;
+  sOperation: TWsdlOperation;
+begin
+  if not Assigned(aScript)
+  or (not (aScript is TXml))
+  or (aScript.Name <> 'Script') then
+    raise Exception.Create ('Illegal argument: constructor TWsdlOperation.CreateFromScriptXml (aScript : TXml );');
+  WsdlOperation := self;
+  fCloned := nil;
+  fLock := SyncObjs.TCriticalSection.Create;
+  BeforeScriptLines := TStringList.Create;
+  invokeList := TWsdlOperations.Create;
+  Owner := aOwner;
+  OnGetAbortPressed := aOnGetAbortPressed;
+  Name := 'Script';
+  Alias := Name;
+  BeforeScriptLines.Text := aScript.Items.XmlCheckedValueByTag['Code'];
+  xInvoke := aScript.FindCheckedXml('Script.Invoke.operations');
+  if Assigned(xInvoke) then
+  begin
+    for x := 0 to xInvoke.Items.Count - 1 do
+    begin
+      if (xInvoke.Items.XmlItems[x].Name = 'name')
+      and (xInvoke.Items.XmlItems[x].Checked) then
+      begin
+        sOperation := allAliasses.FindOnAliasName(xInvoke.Items.XmlItems[x].Value);
+        if Assigned (sOperation) then
+          invokeList.Add(sOperation.Alias);
+      end;
+    end;
+    doInvokeOperations;
+  end;
+  try
+    PrepareBefore;
+  except
+    on e: Exception do
+      fPrepareErrors := fPrepareErrors + 'Found in Script: ' + e.Message + LineEnding;
+  end;
+end;
+
+
 procedure TWsdlOperation.SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
 var
   x, s, d: Integer;
@@ -4611,9 +4647,15 @@ begin
             xNameSpace := Items.XmlValueByTag['NameSpace'];
             xName := Items.XmlValueByTag['Name'];
             xElementName := Items.XmlValueByTag['ElementName'];
-            cTypeDef := Wsdl.XsdDescr.FindTypeDef(xNameSpace, xElementName);
+            cTypeDef := Wsdl.XsdDescr.FindTypeDef(xNameSpace, xName);
             if not Assigned (cTypeDef) then
-              SjowMessage(Format ('AddedTypeDefElement [%s], could not find typedef [%s;%s]', [Alias, xNameSpace, xName]));
+              SjowMessage(Format ( 'AddedTypeDefElement [%s], could not find typedef [%s;%s]'
+                                 , [ Alias
+                                   , xNameSpace
+                                   , xName
+                                   ]
+                                 )
+                         );
             if Assigned (cTypeDef) then
             begin
               xxsd := xBind.Xsd.AddElementDef ( Wsdl.XsdDescr
@@ -4627,7 +4669,13 @@ begin
                              , xxsd
                              );
               if n = 0 then
-                SjowMessage(Format ('AddedTypeDefElement [%s], no binds updated with [%s;%s]', [Alias, xNameSpace, xName]));
+                SjowMessage( Format ( 'AddedTypeDefElement [%s], no binds updated with [%s;%s]'
+                                    , [ Alias
+                                      , xNameSpace
+                                      , xName
+                                      ]
+                                    )
+                           );
             end;
           end;
         end;
@@ -4636,7 +4684,7 @@ begin
   end;
 end;
 
-function TWsdlOperation .BeforeBindsAsText : String ;
+function TWsdlOperation.BeforeBindsAsText : String ;
 begin
   result := fExpressBefore.BindsAsText;
 end;

@@ -1079,6 +1079,7 @@ type
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
+    function SetActiveAfterPrompt: Boolean;
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property isBusy: Boolean read fIsBusy write SetIsBusy;
@@ -7104,6 +7105,20 @@ begin
   end;
 end;
 
+function TMainForm.SetActiveAfterPrompt : Boolean ;
+begin
+  result := False;
+  if Assigned (se) then
+  begin
+    if not se.IsActive then
+    begin
+      if BooleanPromptDialog('Not active' + LineEnding + 'Active wsdlStub first') then
+        startActionExecute (self);
+    end;
+    result := se.IsActive;
+  end;
+end;
+
 procedure TMainForm.ShowHttpRequestAsXMLActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -7347,8 +7362,10 @@ procedure TMainForm.TestBeforeScriptActionExecute(Sender: TObject);
 var
   xOperation: TWsdlOperation;
 begin
-  if not se.IsActive then
-    raise Exception.Create('Not active');
+  if not Assigned(se) then
+    exit;
+  if not SetActiveAfterPrompt then
+    exit;
   if Assigned(WsdlOperation) then
   begin
     xOperation := TWsdlOperation.Create(WsdlOperation);
@@ -7792,8 +7809,8 @@ var
 begin
   if not Assigned(se) then
     exit;
-  if not se.IsActive then
-    raise Exception.Create(Format('%s not active', [_progName]));
+  if not SetActiveAfterPrompt then
+    exit;
   se.ProgressMax := 5;
   se.ProgressPos := 0;
   xScript := se.Scripts.Items.XmlItems[(Sender as TMenuItem).Tag];

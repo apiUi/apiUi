@@ -149,13 +149,16 @@ begin
       begin
         if (allOperations.Operations[x] = WsdlOperation)
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
-        or (WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)) then
+        or (    Assigned (WsdlOperation.invokeList)
+            and WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)
+           ) then
         begin
           if (allOperations.Operations[x] = WsdlOperation.Cloned) then
             xOperation := WsdlOperation
           else
             xOperation := allOperations.Operations [x];
-          if xOperation.reqBind.Children.Count > 0 then
+          if Assigned (xOperation.reqBind)
+          and (xOperation.reqBind.Children.Count > 0) then
           begin
             xChild := rChild;
             if (not Assigned (WsdlOperation))
@@ -182,13 +185,16 @@ begin
       begin
         if (allOperations.Operations[x] = WsdlOperation)
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
-        or (WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)) then
+        or (    Assigned (WsdlOperation.invokeList)
+            and WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)
+           ) then
         begin
           if (allOperations.Operations[x] = WsdlOperation.Cloned) then
             xOperation := WsdlOperation
           else
             xOperation := allOperations.Operations [x];
-          if xOperation.rpyBind.Children.Count > 0 then
+          if Assigned (xOperation.rpyBind)
+          and (xOperation.rpyBind.Children.Count > 0) then
           begin
             xChild := rChild;
             if (not Assigned (WsdlOperation))
@@ -212,7 +218,8 @@ begin
       ShowXmls (SrceBind, SrceBind.Name);
     if Assigned (WsdlOperation) then
     begin
-      if doShowRpy then
+      if doShowRpy
+      and Assigned (WsdlOperation.fltBind) then
       begin
         xChild := TreeView.Items.AddChildObject (nil, 'Faults', nil);
         for x := 0 to WsdlOperation.fltBind.Children.Count - 1 do
