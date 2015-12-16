@@ -386,6 +386,7 @@ begin
       fForm.Left := x;
       fForm.Height := IntegerByNameDef['FormHeight', fForm.Height];
       fForm.Width := IntegerByNameDef['FormWidth', fForm.Width];
+      fForm.MakeFullyVisible();
       try
         if BooleanByName['FormMaximized'] then
           fForm.WindowState := wsMaximized;

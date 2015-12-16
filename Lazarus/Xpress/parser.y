@@ -1005,7 +1005,13 @@ DeclareGroup:
             cFed.Anchor := cFed.FindAnchor (cFed.TokenString);
             cFed.FirstBind := cFed.Anchor.PrepareBindableOnAliasField (cFed.TokenString);
             if not Assigned (cFed.FirstBind) then
-              yyerror (cFed.Name + ' not found in ' + cFed.Parent.FirstBind.FullCaption)
+            begin
+              if Assigned (cFed.Parent)
+              and Assigned (cFed.Parent.FirstBind) then
+                yyerror (cFed.Name + ' not found in ' + cFed.Parent.FirstBind.FullCaption)
+              else
+                yyerror (cFed.Name + ' not found');
+            end
             else
               (cFed.FirstBind as TXml).ExtendRecursivity;
             cFed.isDynamic := True;

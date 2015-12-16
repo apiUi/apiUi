@@ -472,7 +472,10 @@ begin
   if not Assigned (aOperation)
   or not (aOperation is TWsdlOperation)
   or not Assigned ((aOperation as TWsdlOperation).Data) then
-    raise Exception.Create('aOperation.Data not assigned; intentention was to remark: ' + aString);
+  begin
+    wsdlz.SjowMessage('AddRemark: ' + aString);
+    exit;
+  end;
   with (aOperation as TWsdlOperation).Data as TLog do
   begin
     if Remarks = '' then

@@ -7112,7 +7112,7 @@ begin
   begin
     if not se.IsActive then
     begin
-      if BooleanPromptDialog('Not active' + LineEnding + 'Active wsdlStub first') then
+      if BooleanPromptDialog('wsdlStub not active' + LineEnding + 'Active now') then
         startActionExecute (self);
     end;
     result := se.IsActive;
