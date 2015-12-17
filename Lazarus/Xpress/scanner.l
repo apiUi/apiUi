@@ -27,7 +27,7 @@ String        \'{NQUOTE}*\'
 End           {Space}*\}
 Exec          (E|e)(X|x)(E|e)(C|c)
 Sql           (S|s)(Q|q)(L|l)
-Yag           (Y|y)(A|a)(G|g)
+Yag           [Rr][Ee][Gg][Ee][Xx]
 Delete        (D|d)(E|e)(L|l)(E|e)(T|t)(E|e)
 Insert        (I|i)(N|n)(S|s)(E|e)(R|r)(T|t)
 Select        (S|s)(E|e)(L|l)(E|e)(C|c)(T|t)
@@ -37,7 +37,7 @@ ExecSqlDelete {Exec}{WhiteSpace}+{Sql}{WhiteSpace}+{Delete}
 ExecSqlInsert {Exec}{WhiteSpace}+{Sql}{WhiteSpace}+{Insert}
 ExecSqlSelect {Exec}{WhiteSpace}+{Sql}{WhiteSpace}+{Select}
 ExecSqlUpdate {Exec}{WhiteSpace}+{Sql}{WhiteSpace}+{Update}
-ExecYag       {Exec}{WhiteSpace}+{Yag}{WhiteSpace}*\{({Space}*{NewLine})?
+ExecYag       {Exec}{WhiteSpace}+{Yag}
 %%
 
 {FieldID}              return (_FIELDID);

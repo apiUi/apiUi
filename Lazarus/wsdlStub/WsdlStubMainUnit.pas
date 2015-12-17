@@ -1079,7 +1079,7 @@ type
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
-    function SetActiveAfterPrompt: Boolean;
+    function ActiveAfterPrompt: Boolean;
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property isBusy: Boolean read fIsBusy write SetIsBusy;
@@ -3894,7 +3894,7 @@ end;
 
 procedure TMainForm.runScriptActionUpdate(Sender: TObject);
 begin
-  runScriptAction.Enabled := se.IsActive {and not se.isBusy};
+//  runScriptAction.Enabled := se.IsActive {and not se.isBusy};
 end;
 
 procedure TMainForm.PrepareOperation;
@@ -4169,9 +4169,6 @@ begin
       OperationDelayResponseTimeAction.ImageIndex := 61;
     RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRedirect) or
       (WsdlOperation.StubAction = saRequest);
-    ExecuteRequestToolButton.Visible := (WsdlOperation.StubAction = saRequest);
-    ExecuteAllRequestsToolButton.Visible := (WsdlOperation.StubAction = saRequest);
-    ExecuteLoadTextToolbutton.Visible := (WsdlOperation.StubAction = saRequest);
     if (WsdlOperation.StubAction = saStub) then
     begin
       EditScriptButton.Caption := 'Script';
@@ -6488,9 +6485,6 @@ begin
   logChartToolButton.Visible := (WindowsUserName = 'Jan')
                              or (WindowsUserName = 'BouwmanJW')
                               ;
-  ExecuteRequestToolButton.Visible := False;
-  ExecuteAllRequestsToolButton.Visible := False;
-  ExecuteLoadTextToolbutton.Visible := False;
   BrowseMqMenuItem.Visible :=
     (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
   BrowseMqButton.Visible :=
@@ -7105,14 +7099,14 @@ begin
   end;
 end;
 
-function TMainForm.SetActiveAfterPrompt : Boolean ;
+function TMainForm.ActiveAfterPrompt : Boolean ;
 begin
   result := False;
   if Assigned (se) then
   begin
     if not se.IsActive then
     begin
-      if BooleanPromptDialog('wsdlStub not active' + LineEnding + 'Active now') then
+      if BooleanPromptDialog('wsdlStub not active' + LineEnding + 'Activate now') then
         startActionExecute (self);
     end;
     result := se.IsActive;
@@ -7364,7 +7358,7 @@ var
 begin
   if not Assigned(se) then
     exit;
-  if not SetActiveAfterPrompt then
+  if not ActiveAfterPrompt then
     exit;
   if Assigned(WsdlOperation) then
   begin
@@ -7809,7 +7803,7 @@ var
 begin
   if not Assigned(se) then
     exit;
-  if not SetActiveAfterPrompt then
+  if not ActiveAfterPrompt then
     exit;
   se.ProgressMax := 5;
   se.ProgressPos := 0;
@@ -7944,7 +7938,7 @@ end;
 
 procedure TMainForm.ExecuteRequestActionExecute(Sender: TObject);
 begin
-  EndEdit;
+  if not ActiveAfterPrompt then exit;
   TProcedureThread.Create(False, True, se, doExecuteRequest);
 end;
 
@@ -8028,7 +8022,7 @@ end;
 
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
-  EndEdit;
+  if not ActiveAfterPrompt then exit;
   TProcedureThread.Create(False, True, se, ExecuteAllRequests);
 end;
 
@@ -8300,7 +8294,6 @@ begin
         Assigned(WsdlOperation)
     and Assigned(WsdlReply)
     and (WsdlOperation.StubAction = saRequest)
-    and (se.IsActive)
     and (not se.isBusy)
     and (not ExecuteRequestToolButton.Down)
     and (not ExecuteAllRequestsToolButton.Down)
@@ -8312,7 +8305,6 @@ begin
   ExecuteAllRequestsAction.Enabled := Assigned(WsdlOperation)
                                   and Assigned(WsdlReply)
                                   and (WsdlOperation.StubAction = saRequest)
-                                  and (se.IsActive)
                                   and (not se.isBusy)
                                   and (not ExecuteRequestToolButton.Down)
                                   and (not ExecuteAllRequestsToolButton.Down)
@@ -11978,6 +11970,7 @@ procedure TMainForm .LoadTestActionExecute (Sender : TObject );
 var
   x: Integer;
 begin
+  if not ActiveAfterPrompt then exit;
   Application.CreateForm(TStressTestForm, StressTestForm);
   try
     StressTestForm.Caption := 'Loadtest operation: ' + WsdlOperation.Name;
@@ -12002,7 +11995,6 @@ begin
         Assigned(WsdlOperation)
     and Assigned(WsdlReply)
     and (WsdlOperation.StubAction = saRequest)
-    and (se.IsActive)
     and (not se.isBusy)
     and (not ExecuteRequestToolButton.Down)
     and (not ExecuteAllRequestsToolButton.Down)

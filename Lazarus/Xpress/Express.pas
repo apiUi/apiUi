@@ -737,10 +737,11 @@ type LexItemRec = record
 end;
 
 const
-  NoOfLexItems = 680 - 626;
+  NoOfLexItems = 681 - 626;
   LexItems : array [1..NoOfLexItems] of LexItemRec =
   ( (Wrd: 'AND'; Tkn: _AND; Adr: nil)
   , (Wrd: 'ARRAY'; Tkn: _ARRAY; adr: nil)
+  , (Wrd: 'AS'; Tkn: _AS; adr: nil)
   , (Wrd: 'BEGIN'; Tkn: _BEGIN; adr: nil)
   , (Wrd: 'CASE'; Tkn: _CASE; adr: nil)
   , (Wrd: 'CONST'; Tkn: _CONST; adr: nil)
@@ -974,7 +975,7 @@ begin
     end;
     _BEGIN: __begin(Lexical);
     _LOOP: ScannerState := PopInteger;
-    _BEGIN_LAYOUT, _EXEC_YAG:
+    _BEGIN_LAYOUT:
     begin
       Parser.PushObject (prntBlock);
       Parser.PushObject (currBlock);
@@ -1095,7 +1096,7 @@ begin
             Lexical.yy.yyObject := BindList.Binds [BindIndex];
           end;
         end;
-        _BEGIN_LAYOUT, _EXEC_YAG, _NEWLINE:
+        _BEGIN_LAYOUT, _NEWLINE:
         begin
         end
         else

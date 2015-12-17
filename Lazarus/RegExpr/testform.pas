@@ -51,7 +51,7 @@ end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
-  Memo.Text:=IniFile.DecryptPassword(Memo.Text);
+//  Memo.Text:=IniFile.DecryptPassword(Memo.Text);
 end;
 
 procedure TMainForm.NextButtonClick(Sender: TObject);
@@ -62,7 +62,7 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   rx := TRegExpr.Create;
-  IniFile := TFormIniFile.Create(Self);
+  IniFile := TFormIniFile.Create(Self, True);
   IniFile.Restore;
   rxEdit.Text := IniFile.StringByName['RegularExpression'];
 end;
@@ -82,7 +82,7 @@ end;
 
 procedure TMainForm.TstButtonClick(Sender: TObject);
 begin
-  Memo.Text:=IniFile.EncryptPassword(Memo.Text);
+//  Memo.Text:=IniFile.EncryptPassword(Memo.Text);
 end;
 
 procedure TMainForm.Exec(aFirst: Boolean);

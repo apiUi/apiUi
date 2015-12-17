@@ -14,7 +14,7 @@
 %token XFOV XFOS XFOX XFOXX
 %token BFLD DFLD SFLD IFLD XFLD GFLD PFLD
 %token _NOID, _DYNFLD
-%token _ALIAS _AMPERSAND _AND _ARRAY _AS_DYNFLD _AS_FIELDID _ASSIGNMENT
+%token _ALIAS _AMPERSAND _AND _ARRAY _AS _AS_DYNFLD _AS_FIELDID _ASSIGNMENT
 %token _BEGIN _BEGIN_LAYOUT _LOOP
 %token _CASE _CHARACTER_STRING _COLON _COMMA _COMMENT _CONST
 %token _DATETIME _DAYS _DECLARE _DIGSEQ _DIV _DO _DOT _DOTDOT _DOWNTO
@@ -56,6 +56,8 @@ uses Bind, Xmlz, SysUtils, Math, Dialogs, Frame
 var
   LocalParser: TParser;
   LocalBind: TBind;
+  yyRegEx: TStringList;
+  yyRegExCursor: Integer;
   yySql: YYSType;
   yyBeginLayout: YYSType;
   yyEndLayout: YYSType;
@@ -348,6 +350,7 @@ Statement:
         | VoidCall
         | CreateFunction
         | DeclareForEachStatement
+        | RegExStatement
         | ForEachStatement
         | DeclareWithStatement
         | WithStatement
@@ -1047,6 +1050,10 @@ WithNewStatement:
             DoIt := PopBoolean;
             cFed := PopObject as TFed;
           }
+          ;
+
+RegExStatement:
+          _EXEC_YAG _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD _DO BlokStatement
           ;
 
 ForEachStatement:
