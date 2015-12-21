@@ -1384,7 +1384,7 @@ end;
 procedure SjowMessage (aString: String);
 begin
   if not Assigned (wsdlz.OnNotify) then
-    raise Exception.Create('No OnNotify event assigned: intention was to log: ' + aString);
+    raise Exception.Create('No OnNotify event assigned: intention was to show message: ' + LineEnding + aString);
   wsdlz.OnNotify (aString);
 end;
 
@@ -3240,6 +3240,7 @@ begin
     LogColumns := TBindableList.Create;
     BindablesWithAddedElement := TBindableList.Create;
     invokeList := TWsdlOperations.Create;
+    invokeList.Sorted := True;
   end;
   Documentation := TstringList.Create;
   BeforeScriptLines := TStringList.Create;
@@ -4387,6 +4388,7 @@ begin
   if Assigned (xOperation.invokeList) then
   begin
     self.invokeList := TWsdlOperations.Create;
+    self.invokeList.Sorted := True;
     self.invokeList.Text := xOperation.invokeList.Text;
     self.doInvokeOperations;
     self.BindStamper;
@@ -4424,6 +4426,7 @@ begin
   fLock := SyncObjs.TCriticalSection.Create;
   BeforeScriptLines := TStringList.Create;
   invokeList := TWsdlOperations.Create;
+  invokeList.Sorted := True;
   Owner := aOwner;
   OnGetAbortPressed := aOnGetAbortPressed;
   Name := 'Script';

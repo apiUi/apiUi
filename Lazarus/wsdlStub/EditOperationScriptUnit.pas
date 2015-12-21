@@ -300,6 +300,7 @@ begin
     SelectXmlElementForm.WsdlOperation := WsdlOperation;
     SelectXmlElementForm.LastCaption := LastCaption;
     SelectXmlElementForm.IncludeRecurring := True;
+    SelectXmlElementForm.IncludeInvoked := True;
     if Assigned (WsdlOperation.Wsdl) then
       SelectXmlElementForm.maxOccurrences := WsdlOperation.Wsdl.XsdDescr.xsdElementsWhenRepeatable
     else

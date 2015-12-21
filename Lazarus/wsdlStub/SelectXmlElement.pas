@@ -56,7 +56,7 @@ uses
     SelectedCaption: String;
     SelectedBind: TCustomBindable;
     SrceBind: TCustomBindable;
-    IncludeRecurring: Boolean;
+    IncludeRecurring, IncludeInvoked: Boolean;
     maxOccurrences: Integer;
     ElementEnabled: Boolean;
     doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti: Boolean;
@@ -144,12 +144,14 @@ begin
     TreeView.Items.Clear;
     if doShowReq then
     begin
+      Captions.Clear;
       rChild := TreeView.Items.AddChildObject (nil, 'Req', nil);
       for x := 0 to allOperations.Count - 1 do
       begin
         if (allOperations.Operations[x] = WsdlOperation)
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
-        or (    Assigned (WsdlOperation.invokeList)
+        or (    IncludeInvoked
+            and Assigned (WsdlOperation.invokeList)
             and WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)
            ) then
         begin
@@ -180,12 +182,14 @@ begin
     end;
     if doShowRpy then
     begin
+      Captions.Clear;
       rChild := TreeView.Items.AddChildObject (nil, 'Rpy', nil);
       for x := 0 to allOperations.Count - 1 do
       begin
         if (allOperations.Operations[x] = WsdlOperation)
         or (allOperations.Operations[x] = WsdlOperation.Cloned)
-        or (    Assigned (WsdlOperation.invokeList)
+        or (    IncludeInvoked
+            and Assigned (WsdlOperation.invokeList)
             and WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)
            ) then
         begin
@@ -221,6 +225,7 @@ begin
       if doShowRpy
       and Assigned (WsdlOperation.fltBind) then
       begin
+        Captions.Clear;
         xChild := TreeView.Items.AddChildObject (nil, 'Faults', nil);
         for x := 0 to WsdlOperation.fltBind.Children.Count - 1 do
           ViewXmlItem ( TreeView
