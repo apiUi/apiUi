@@ -69,6 +69,7 @@ type XFunctionOV = function (obj: TObject): Extended;
 type XFunctionOS = function (obj: TObject; arg: String): Extended;
 type XFunctionOX = function (obj: TObject; arg: Extended): Extended;
 type XFunctionOXX = function (obj: TObject; arg1, arg2: Extended): Extended;
+type SLFunctionOSS = function (obj: TObject; arg1, arg2: String): TStringList;
 type YYRType = record
   case Integer of
    1: (yyPointer : Pointer);
@@ -126,6 +127,7 @@ type YYRType = record
   53: (yyXFunctionOS : XFunctionOS);
   54: (yyXFunctionOX : XFunctionOX);
   55: (yyXFunctionOXX : XFunctionOXX);
+  56: (yySLFunctionOSS : SLFunctionOSS);
 end;
 
 type TBindableList = class;

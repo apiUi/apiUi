@@ -521,6 +521,7 @@ function xsdDateTime(aDT: TDateTime): String;
 function XmlToDateTime (aString: String): TDateTime;
 function xsdNowAsDateTime: String;
 function sblNowAsDateTime: String;
+procedure RegExprMatches (aFed: TFed; aString, aExpr: String);
 function StringHasRegExpr (aString, aExpr: String): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
@@ -968,6 +969,28 @@ begin
     Free;
   end;
 end;
+
+procedure RegExprMatches (aFed: TFed; aString, aExpr: String);
+var
+  f: Boolean;
+begin
+  aFed.List.Clear;
+  if (aString <> '')
+  and (aExpr <> '') then
+  with TRegExpr.Create do
+  try
+    Expression := aExpr;
+    f := Exec (aString);
+    while f do
+    begin
+      aFed.List.Add (Match[0]);
+      f := ExecNext;
+    end;
+  finally
+    Free;
+  end;
+end;
+
 
 function StringHasRegExpr (aString, aExpr: String): String;
 begin
@@ -3579,6 +3602,7 @@ begin
     BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
+    BindBeforeFunction ('RegExprMatches', @RegExprMatches, SLFOSS, '(aString, aRegExpr)');
     BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindBeforeFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
@@ -3716,6 +3740,7 @@ begin
     BindAfterFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindAfterFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindAfterFunction ('EnableMessage', @EnableMessage, VFOV, '()');
+    BindAfterFunction ('RegExprMatches', @RegExprMatches, SLFOSS, '(aString, aRegExpr)');
     BindAfterFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindAfterFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindAfterFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');

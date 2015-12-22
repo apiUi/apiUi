@@ -81,7 +81,6 @@ state 1:
 	_EXEC_SQLEXEC	reduce 3
 	_EXEC_SQLINSERT	reduce 3
 	_EXEC_SQLSELECT	reduce 3
-	_EXEC_YAG	reduce 3
 	_FIELDID	reduce 3
 	_FOR	reduce 3
 	_FOREACH	reduce 3
@@ -230,7 +229,6 @@ state 9:
 	_EXEC_SQLEXEC	reduce 4
 	_EXEC_SQLINSERT	reduce 4
 	_EXEC_SQLSELECT	reduce 4
-	_EXEC_YAG	reduce 4
 	_FIELDID	reduce 4
 	_FOR	reduce 4
 	_FOREACH	reduce 4
@@ -261,7 +259,7 @@ state 10:
 
 	*** conflicts:
 
-	shift 117, reduce 89 on _SEMICOLON
+	shift 116, reduce 89 on _SEMICOLON
 
 	Start : $$1 OptionalDeclarationList _ OptionalStatementList
 	OptionalStatementList : _	(24)
@@ -329,22 +327,21 @@ state 10:
 	_EXEC_SQLEXEC	shift 107
 	_EXEC_SQLINSERT	shift 108
 	_EXEC_SQLSELECT	shift 109
-	_EXEC_YAG	shift 110
-	_FIELDID	shift 111
-	_FOR	shift 112
-	_FOREACH	shift 113
-	_LPAREN	shift 114
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
-	_SEMICOLON	shift 117
-	_SQLEXEC	shift 118
-	_SQLSELECT	shift 119
-	_STAR	shift 120
-	_VOID	shift 121
-	VOIDFUNCTION_	shift 122
-	_WITH	shift 123
-	_WITHDO	shift 124
-	_WITHNEWDO	shift 125
+	_FIELDID	shift 110
+	_FOR	shift 111
+	_FOREACH	shift 112
+	_LPAREN	shift 113
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
+	_SEMICOLON	shift 116
+	_SQLEXEC	shift 117
+	_SQLSELECT	shift 118
+	_STAR	shift 119
+	_VOID	shift 120
+	VOIDFUNCTION_	shift 121
+	_WITH	shift 122
+	_WITHDO	shift 123
+	_WITHNEWDO	shift 124
 	$end	reduce 24
 	_END	reduce 24
 	_WHILE	reduce 90
@@ -360,11 +357,11 @@ state 10:
 	SqlSelectStatement	goto 28
 	DeclareSqlSelectStatement	goto 29
 	DeclareWithNewStatement	goto 30
-	WithNewStatement	goto 31
-	WithStatement	goto 32
-	DeclareWithStatement	goto 33
-	ForEachStatement	goto 34
-	RegExStatement	goto 35
+	SlStatement	goto 31
+	WithNewStatement	goto 32
+	WithStatement	goto 33
+	DeclareWithStatement	goto 34
+	ForEachStatement	goto 35
 	DeclareForEachStatement	goto 36
 	CreateFunction	goto 37
 	VoidCall	goto 38
@@ -385,7 +382,7 @@ state 11:
 	DateTimeDeclaration : _DATETIME _ _FIELDID
 	DateTimeDeclaration : _DATETIME _ _FIELDID _ASSIGNMENT dExpr
 
-	_FIELDID	shift 126
+	_FIELDID	shift 125
 	.	error
 
 state 12:
@@ -393,7 +390,7 @@ state 12:
 	ExtendedDeclaration : _FLOAT _ _FIELDID
 	ExtendedDeclaration : _FLOAT _ _FIELDID _ASSIGNMENT xExpr
 
-	_FIELDID	shift 127
+	_FIELDID	shift 126
 	.	error
 
 state 13:
@@ -401,7 +398,7 @@ state 13:
 	IntegerDeclaration : _INTEGER _ _FIELDID
 	IntegerDeclaration : _INTEGER _ _FIELDID _ASSIGNMENT xExpr
 
-	_FIELDID	shift 128
+	_FIELDID	shift 127
 	.	error
 
 state 14:
@@ -409,7 +406,7 @@ state 14:
 	PointerDeclaration : _POINTER _ _FIELDID
 	PointerDeclaration : _POINTER _ _FIELDID _ASSIGNMENT _AMPERSAND PointerRef
 
-	_FIELDID	shift 129
+	_FIELDID	shift 128
 	.	error
 
 state 15:
@@ -417,7 +414,7 @@ state 15:
 	StringDeclaration : _STRING _ _FIELDID
 	StringDeclaration : _STRING _ _FIELDID _ASSIGNMENT sExpr
 
-	_FIELDID	shift 130
+	_FIELDID	shift 129
 	.	error
 
 state 16:
@@ -460,16 +457,16 @@ state 22:
 
 	IfStatement : $$5 _ IfOrIfThenElse
 
-	_IF	shift 132
+	_IF	shift 131
 	.	error
 
-	IfOrIfThenElse	goto 131
+	IfOrIfThenElse	goto 130
 
 state 23:
 
 	WhileStatement : $$4 _ _WHILE BooleanExpr _DO TrueStatement
 
-	_WHILE	shift 133
+	_WHILE	shift 132
 	.	error
 
 state 24:
@@ -482,21 +479,21 @@ state 25:
 
 	Statement : DeclareSqlExecStatement _ _SEMICOLON
 
-	_SEMICOLON	shift 134
+	_SEMICOLON	shift 133
 	.	error
 
 state 26:
 
 	Statement : DeclareSqlInsertStatement _ _SEMICOLON
 
-	_SEMICOLON	shift 135
+	_SEMICOLON	shift 134
 	.	error
 
 state 27:
 
 	Statement : SqlExecStatement _ _SEMICOLON
 
-	_SEMICOLON	shift 136
+	_SEMICOLON	shift 135
 	.	error
 
 state 28:
@@ -519,31 +516,31 @@ state 30:
 
 state 31:
 
-	Statement : WithNewStatement _	(43)
+	Statement : SlStatement _	(43)
 
 	.	reduce 43
 
 state 32:
 
-	Statement : WithStatement _	(42)
+	Statement : WithNewStatement _	(42)
 
 	.	reduce 42
 
 state 33:
 
-	Statement : DeclareWithStatement _	(41)
+	Statement : WithStatement _	(41)
 
 	.	reduce 41
 
 state 34:
 
-	Statement : ForEachStatement _	(40)
+	Statement : DeclareWithStatement _	(40)
 
 	.	reduce 40
 
 state 35:
 
-	Statement : RegExStatement _	(39)
+	Statement : ForEachStatement _	(39)
 
 	.	reduce 39
 
@@ -569,7 +566,7 @@ state 39:
 
 	Statement : VoidStatement _ _SEMICOLON
 
-	_SEMICOLON	shift 137
+	_SEMICOLON	shift 136
 	.	error
 
 state 40:
@@ -588,7 +585,7 @@ state 42:
 
 	Statement : Assignment _ _SEMICOLON
 
-	_SEMICOLON	shift 138
+	_SEMICOLON	shift 137
 	.	error
 
 state 43:
@@ -607,7 +604,7 @@ state 45:
 
 	*** conflicts:
 
-	shift 117, reduce 89 on _SEMICOLON
+	shift 116, reduce 89 on _SEMICOLON
 
 	OptionalStatementList : StatementList _	(25)
 	StatementList : StatementList _ Statement
@@ -675,22 +672,21 @@ state 45:
 	_EXEC_SQLEXEC	shift 107
 	_EXEC_SQLINSERT	shift 108
 	_EXEC_SQLSELECT	shift 109
-	_EXEC_YAG	shift 110
-	_FIELDID	shift 111
-	_FOR	shift 112
-	_FOREACH	shift 113
-	_LPAREN	shift 114
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
-	_SEMICOLON	shift 117
-	_SQLEXEC	shift 118
-	_SQLSELECT	shift 119
-	_STAR	shift 120
-	_VOID	shift 121
-	VOIDFUNCTION_	shift 122
-	_WITH	shift 123
-	_WITHDO	shift 124
-	_WITHNEWDO	shift 125
+	_FIELDID	shift 110
+	_FOR	shift 111
+	_FOREACH	shift 112
+	_LPAREN	shift 113
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
+	_SEMICOLON	shift 116
+	_SQLEXEC	shift 117
+	_SQLSELECT	shift 118
+	_STAR	shift 119
+	_VOID	shift 120
+	VOIDFUNCTION_	shift 121
+	_WITH	shift 122
+	_WITHDO	shift 123
+	_WITHNEWDO	shift 124
 	$end	reduce 25
 	_END	reduce 25
 	_WHILE	reduce 90
@@ -706,11 +702,11 @@ state 45:
 	SqlSelectStatement	goto 28
 	DeclareSqlSelectStatement	goto 29
 	DeclareWithNewStatement	goto 30
-	WithNewStatement	goto 31
-	WithStatement	goto 32
-	DeclareWithStatement	goto 33
-	ForEachStatement	goto 34
-	RegExStatement	goto 35
+	SlStatement	goto 31
+	WithNewStatement	goto 32
+	WithStatement	goto 33
+	DeclareWithStatement	goto 34
+	ForEachStatement	goto 35
 	DeclareForEachStatement	goto 36
 	CreateFunction	goto 37
 	VoidCall	goto 38
@@ -719,7 +715,7 @@ state 45:
 	IfStatement	goto 41
 	Assignment	goto 42
 	BlokStatement	goto 43
-	Statement	goto 139
+	Statement	goto 138
 	DynToken	goto 46
 	sExpr	goto 47
 	xExpr	goto 48
@@ -732,7 +728,7 @@ state 46:
 	Assignment : DynToken _ _ASSIGNMENT _NIL
 	sExpr : DynToken _	(149)
 
-	_ASSIGNMENT	shift 140
+	_ASSIGNMENT	shift 139
 	_PLUS	reduce 149
 	_SEMICOLON	reduce 149
 	.	error
@@ -742,8 +738,8 @@ state 47:
 	Statement : sExpr _ _SEMICOLON
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_SEMICOLON	shift 142
+	_PLUS	shift 140
+	_SEMICOLON	shift 141
 	.	error
 
 state 48:
@@ -757,14 +753,14 @@ state 48:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SEMICOLON	shift 147
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SEMICOLON	shift 146
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
 state 49:
@@ -777,329 +773,329 @@ state 50:
 
 	sExpr : SFBSS _ _LPAREN bExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 151
+	_LPAREN	shift 150
 	.	error
 
 state 51:
 
 	sExpr : SFD _ _LPAREN dExpr _RPAREN
 
-	_LPAREN	shift 152
+	_LPAREN	shift 151
 	.	error
 
 state 52:
 
 	sExpr : SFDS _ _LPAREN dExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 153
+	_LPAREN	shift 152
 	.	error
 
 state 53:
 
 	sExpr : SFS _ _LPAREN sExpr _RPAREN
 
-	_LPAREN	shift 154
+	_LPAREN	shift 153
 	.	error
 
 state 54:
 
 	sExpr : SFSS _ _LPAREN sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 155
+	_LPAREN	shift 154
 	.	error
 
 state 55:
 
 	sExpr : SFSSS _ _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 156
+	_LPAREN	shift 155
 	.	error
 
 state 56:
 
 	sExpr : SFSSSS _ _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 157
+	_LPAREN	shift 156
 	.	error
 
 state 57:
 
 	sExpr : SFSXX _ _LPAREN sExpr _COMMA xExpr _COMMA xExpr _RPAREN
 
-	_LPAREN	shift 158
+	_LPAREN	shift 157
 	.	error
 
 state 58:
 
 	sExpr : SFV _ _LPAREN _RPAREN
 
-	_LPAREN	shift 159
+	_LPAREN	shift 158
 	.	error
 
 state 59:
 
 	sExpr : SFX _ _LPAREN xExpr _RPAREN
 
-	_LPAREN	shift 160
+	_LPAREN	shift 159
 	.	error
 
 state 60:
 
 	sExpr : SFOV _ _LPAREN _RPAREN
 
-	_LPAREN	shift 161
+	_LPAREN	shift 160
 	.	error
 
 state 61:
 
 	VoidCall : VFV _ _LPAREN _RPAREN
 
-	_LPAREN	shift 162
+	_LPAREN	shift 161
 	.	error
 
 state 62:
 
 	VoidCall : VFS _ _LPAREN sExpr _RPAREN
 
-	_LPAREN	shift 163
+	_LPAREN	shift 162
 	.	error
 
 state 63:
 
 	VoidCall : VFSS _ _LPAREN sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 164
+	_LPAREN	shift 163
 	.	error
 
 state 64:
 
 	VoidCall : VFSX _ _LPAREN sExpr _COMMA xExpr _RPAREN
 
-	_LPAREN	shift 165
+	_LPAREN	shift 164
 	.	error
 
 state 65:
 
 	VoidCall : VFSSS _ _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 166
+	_LPAREN	shift 165
 	.	error
 
 state 66:
 
 	VoidCall : VFSSX _ _LPAREN sExpr _COMMA sExpr _COMMA xExpr _RPAREN
 
-	_LPAREN	shift 167
+	_LPAREN	shift 166
 	.	error
 
 state 67:
 
 	VoidCall : VFSSSS _ _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 168
+	_LPAREN	shift 167
 	.	error
 
 state 68:
 
 	VoidCall : VFX _ _LPAREN xExpr _RPAREN
 
-	_LPAREN	shift 169
+	_LPAREN	shift 168
 	.	error
 
 state 69:
 
 	VoidCall : VFD _ _LPAREN dExpr _RPAREN
 
-	_LPAREN	shift 170
+	_LPAREN	shift 169
 	.	error
 
 state 70:
 
 	VoidCall : VFOV _ _LPAREN _RPAREN
 
-	_LPAREN	shift 171
+	_LPAREN	shift 170
 	.	error
 
 state 71:
 
 	VoidCall : VFOS _ _LPAREN sExpr _RPAREN
 
-	_LPAREN	shift 172
+	_LPAREN	shift 171
 	.	error
 
 state 72:
 
 	VoidCall : VFOSS _ _LPAREN sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 173
+	_LPAREN	shift 172
 	.	error
 
 state 73:
 
 	VoidCall : VFOSX _ _LPAREN sExpr _COMMA xExpr _RPAREN
 
-	_LPAREN	shift 174
+	_LPAREN	shift 173
 	.	error
 
 state 74:
 
 	VoidCall : VFOSSS _ _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 175
+	_LPAREN	shift 174
 	.	error
 
 state 75:
 
 	VoidCall : VFOSSX _ _LPAREN sExpr _COMMA sExpr _COMMA xExpr _RPAREN
 
-	_LPAREN	shift 176
+	_LPAREN	shift 175
 	.	error
 
 state 76:
 
 	VoidCall : VFOSSSS _ _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
-	_LPAREN	shift 177
+	_LPAREN	shift 176
 	.	error
 
 state 77:
 
 	VoidCall : VFOX _ _LPAREN xExpr _RPAREN
 
-	_LPAREN	shift 178
+	_LPAREN	shift 177
 	.	error
 
 state 78:
 
 	VoidCall : VFOD _ _LPAREN dExpr _RPAREN
 
-	_LPAREN	shift 179
+	_LPAREN	shift 178
 	.	error
 
 state 79:
 
 	VoidCall : VFG _ _LPAREN gExpr _RPAREN
 
-	_LPAREN	shift 180
+	_LPAREN	shift 179
 	.	error
 
 state 80:
 
 	VoidCall : VFGG _ _LPAREN gExpr _COMMA gExpr _RPAREN
 
-	_LPAREN	shift 181
+	_LPAREN	shift 180
 	.	error
 
 state 81:
 
 	VoidCall : VFGGG _ _LPAREN gExpr _COMMA gExpr _COMMA gExpr _RPAREN
 
-	_LPAREN	shift 182
+	_LPAREN	shift 181
 	.	error
 
 state 82:
 
 	VoidCall : VFGGGG _ _LPAREN gExpr _COMMA gExpr _COMMA gExpr _COMMA gExpr _RPAREN
 
-	_LPAREN	shift 183
+	_LPAREN	shift 182
 	.	error
 
 state 83:
 
 	xExpr : XFD _ _LPAREN dExpr _RPAREN
 
-	_LPAREN	shift 184
+	_LPAREN	shift 183
 	.	error
 
 state 84:
 
 	xExpr : XFG _ _LPAREN gExpr _RPAREN
 
-	_LPAREN	shift 185
+	_LPAREN	shift 184
 	.	error
 
 state 85:
 
 	xExpr : XFGG _ _LPAREN gExpr _COMMA gExpr _RPAREN
 
-	_LPAREN	shift 186
+	_LPAREN	shift 185
 	.	error
 
 state 86:
 
 	xExpr : XFS _ _LPAREN sExpr _RPAREN
 
-	_LPAREN	shift 187
+	_LPAREN	shift 186
 	.	error
 
 state 87:
 
 	xExpr : XFSX _ _LPAREN sExpr _COMMA xExpr _RPAREN
 
-	_LPAREN	shift 188
+	_LPAREN	shift 187
 	.	error
 
 state 88:
 
 	xExpr : XFV _ _LPAREN _RPAREN
 
-	_LPAREN	shift 189
+	_LPAREN	shift 188
 	.	error
 
 state 89:
 
 	xExpr : XFX _ _LPAREN xExpr _RPAREN
 
-	_LPAREN	shift 190
+	_LPAREN	shift 189
 	.	error
 
 state 90:
 
 	xExpr : XFXX _ _LPAREN xExpr _COMMA xExpr _RPAREN
 
-	_LPAREN	shift 191
+	_LPAREN	shift 190
 	.	error
 
 state 91:
 
 	xExpr : XFFRAME _ _LPAREN FRAME_ _RPAREN
 
-	_LPAREN	shift 192
+	_LPAREN	shift 191
 	.	error
 
 state 92:
 
 	xExpr : XFOV _ _LPAREN _RPAREN
 
-	_LPAREN	shift 193
+	_LPAREN	shift 192
 	.	error
 
 state 93:
 
 	xExpr : XFOS _ _LPAREN sExpr _RPAREN
 
-	_LPAREN	shift 194
+	_LPAREN	shift 193
 	.	error
 
 state 94:
 
 	xExpr : XFOX _ _LPAREN xExpr _RPAREN
 
-	_LPAREN	shift 195
+	_LPAREN	shift 194
 	.	error
 
 state 95:
 
 	xExpr : XFOXX _ _LPAREN xExpr _COMMA xExpr _RPAREN
 
-	_LPAREN	shift 196
+	_LPAREN	shift 195
 	.	error
 
 state 96:
 
 	Assignment : BFLD _ _ASSIGNMENT bExpr
 
-	_ASSIGNMENT	shift 197
+	_ASSIGNMENT	shift 196
 	.	error
 
 state 97:
@@ -1107,7 +1103,7 @@ state 97:
 	Assignment : DFLD _ _ASSIGNMENT dExpr
 	Assignment : DFLD _ _ASSIGNMENT _NIL
 
-	_ASSIGNMENT	shift 198
+	_ASSIGNMENT	shift 197
 	.	error
 
 state 98:
@@ -1116,7 +1112,7 @@ state 98:
 	Assignment : SFLD _ _ASSIGNMENT _NIL
 	sExpr : SFLD _	(148)
 
-	_ASSIGNMENT	shift 199
+	_ASSIGNMENT	shift 198
 	_PLUS	reduce 148
 	_SEMICOLON	reduce 148
 	.	error
@@ -1127,7 +1123,7 @@ state 99:
 	Assignment : IFLD _ _ASSIGNMENT _NIL
 	xExpr : IFLD _	(172)
 
-	_ASSIGNMENT	shift 200
+	_ASSIGNMENT	shift 199
 	_AND	reduce 172
 	_MINUS	reduce 172
 	_MOD	reduce 172
@@ -1144,7 +1140,7 @@ state 100:
 	Assignment : XFLD _ _ASSIGNMENT _NIL
 	xExpr : XFLD _	(171)
 
-	_ASSIGNMENT	shift 201
+	_ASSIGNMENT	shift 200
 	_AND	reduce 171
 	_MINUS	reduce 171
 	_MOD	reduce 171
@@ -1160,7 +1156,7 @@ state 101:
 	Assignment : GFLD _ _ASSIGNMENT gExpr
 	Assignment : GFLD _ _ASSIGNMENT _NIL
 
-	_ASSIGNMENT	shift 202
+	_ASSIGNMENT	shift 201
 	.	error
 
 state 102:
@@ -1168,7 +1164,7 @@ state 102:
 	Assignment : PFLD _ _ASSIGNMENT _AMPERSAND PointerRef
 	Assignment : PFLD _ _ASSIGNMENT _NIL
 
-	_ASSIGNMENT	shift 203
+	_ASSIGNMENT	shift 202
 	.	error
 
 state 103:
@@ -1184,7 +1180,7 @@ state 104:
 
 	.	reduce 85
 
-	$$3	goto 204
+	$$3	goto 203
 
 state 105:
 
@@ -1196,66 +1192,59 @@ state 106:
 
 	VoidStatement : _EVALUATE _ _LPAREN _CHARACTER_STRING _RPAREN
 
-	_LPAREN	shift 205
+	_LPAREN	shift 204
 	.	error
 
 state 107:
 
-	DeclareSqlExecStatement : _EXEC_SQLEXEC _ $$17 DeclareSqlExecTokenList
-	$$17 : _	(250)
+	DeclareSqlExecStatement : _EXEC_SQLEXEC _ $$20 DeclareSqlExecTokenList
+	$$20 : _	(253)
 
-	.	reduce 250
+	.	reduce 253
 
-	$$17	goto 206
+	$$20	goto 205
 
 state 108:
 
-	DeclareSqlInsertStatement : _EXEC_SQLINSERT _ $$16 DeclareSqlInsertTokenList
-	$$16 : _	(244)
+	DeclareSqlInsertStatement : _EXEC_SQLINSERT _ $$19 DeclareSqlInsertTokenList
+	$$19 : _	(247)
 
-	.	reduce 244
+	.	reduce 247
 
-	$$16	goto 207
+	$$19	goto 206
 
 state 109:
 
-	DeclareSqlSelectStatement : _EXEC_SQLSELECT _ $$15 DeclareSqlTokenList OptionalSqlLoop
-	$$15 : _	(234)
+	DeclareSqlSelectStatement : _EXEC_SQLSELECT _ $$18 DeclareSqlTokenList OptionalSqlLoop
+	$$18 : _	(237)
 
-	.	reduce 234
+	.	reduce 237
 
-	$$15	goto 208
+	$$18	goto 207
 
 state 110:
-
-	RegExStatement : _EXEC_YAG _ _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD _DO BlokStatement
-
-	_LPAREN	shift 209
-	.	error
-
-state 111:
 
 	DynToken : _FIELDID _	(224)
 
 	.	reduce 224
 
-state 112:
+state 111:
 
 	DeclareForEachStatement : _FOR _ _EACH $$9 DeclareGroup OptionalAlias _DO BlokStatement
 
-	_EACH	shift 210
+	_EACH	shift 208
 	.	error
 
+state 112:
+
+	ForEachStatement : _FOREACH _ $$16 BlokStatement
+	$$16 : _	(233)
+
+	.	reduce 233
+
+	$$16	goto 209
+
 state 113:
-
-	ForEachStatement : _FOREACH _ $$13 BlokStatement
-	$$13 : _	(230)
-
-	.	reduce 230
-
-	$$13	goto 211
-
-state 114:
 
 	sExpr : _LPAREN _ sExpr _RPAREN
 	xExpr : _LPAREN _ xExpr _RPAREN
@@ -1284,22 +1273,22 @@ state 114:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 114
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 113
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 213
-	xExpr	goto 214
+	DynToken	goto 210
+	sExpr	goto 211
+	xExpr	goto 212
 
-state 115:
+state 114:
 
 	xExpr : _MINUS _ xExpr
 
@@ -1316,155 +1305,157 @@ state 115:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 218
+	xExpr	goto 216
 
-state 116:
+state 115:
 
 	xExpr : _REALNUMBER _	(170)
 
 	.	reduce 170
 
-state 117:
+state 116:
 
 	Statement : _SEMICOLON _	(28)
 
 	.	reduce 28
 
+state 117:
+
+	SqlExecStatement : _SQLEXEC _	(246)
+
+	.	reduce 246
+
 state 118:
-
-	SqlExecStatement : _SQLEXEC _	(243)
-
-	.	reduce 243
-
-state 119:
 
 	SqlSelectStatement : _SQLSELECT _ $$8 OptionalSqlLoop
 	$$8 : _	(213)
 
 	.	reduce 213
 
-	$$8	goto 220
+	$$8	goto 218
 
-state 120:
+state 119:
 
 	Assignment : _STAR _ PFLD _ASSIGNMENT gExpr
 	Assignment : _STAR _ PFLD _ASSIGNMENT _NIL
 
-	PFLD	shift 221
+	PFLD	shift 219
+	.	error
+
+state 120:
+
+	CreateVoidFunction : _VOID _ _NOID $$2 _LPAREN OptionalArgumentList _RPAREN _BEGIN Start _END
+
+	_NOID	shift 220
 	.	error
 
 state 121:
 
-	CreateVoidFunction : _VOID _ _NOID $$2 _LPAREN OptionalArgumentList _RPAREN _BEGIN Start _END
+	VoidStatement : VOIDFUNCTION_ _ _LPAREN _RPAREN
 
-	_NOID	shift 222
+	_LPAREN	shift 221
 	.	error
 
 state 122:
 
-	VoidStatement : VOIDFUNCTION_ _ _LPAREN _RPAREN
-
-	_LPAREN	shift 223
-	.	error
-
-state 123:
-
 	DeclareWithStatement : _WITH _ $$10 DeclareGroup OptionalAlias _DO BlokStatement
 	DeclareWithNewStatement : _WITH _ _NEW $$11 DeclareGroup OptionalAlias _DO BlokStatement
+	SlStatement : _WITH _ SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD $$14 _DO $$15 BlokStatement
 	$$10 : _	(217)
 
-	_NEW	shift 225
+	SLFOSS	shift 223
+	_NEW	shift 224
 	GFLD	reduce 217
 	_DYNFLD	reduce 217
 	_FIELDID	reduce 217
 	.	error
 
-	$$10	goto 224
+	$$10	goto 222
+
+state 123:
+
+	WithStatement : _WITHDO _ $$17 BlokStatement
+	$$17 : _	(235)
+
+	.	reduce 235
+
+	$$17	goto 225
 
 state 124:
-
-	WithStatement : _WITHDO _ $$14 BlokStatement
-	$$14 : _	(232)
-
-	.	reduce 232
-
-	$$14	goto 226
-
-state 125:
 
 	WithNewStatement : _WITHNEWDO _ $$12 BlokStatement
 	$$12 : _	(227)
 
 	.	reduce 227
 
-	$$12	goto 227
+	$$12	goto 226
 
-state 126:
+state 125:
 
 	DateTimeDeclaration : _DATETIME _FIELDID _	(12)
 	DateTimeDeclaration : _DATETIME _FIELDID _ _ASSIGNMENT dExpr
 
-	_ASSIGNMENT	shift 228
+	_ASSIGNMENT	shift 227
 	_SEMICOLON	reduce 12
 	.	error
 
-state 127:
+state 126:
 
 	ExtendedDeclaration : _FLOAT _FIELDID _	(14)
 	ExtendedDeclaration : _FLOAT _FIELDID _ _ASSIGNMENT xExpr
 
-	_ASSIGNMENT	shift 229
+	_ASSIGNMENT	shift 228
 	_SEMICOLON	reduce 14
 	.	error
 
-state 128:
+state 127:
 
 	IntegerDeclaration : _INTEGER _FIELDID _	(16)
 	IntegerDeclaration : _INTEGER _FIELDID _ _ASSIGNMENT xExpr
 
-	_ASSIGNMENT	shift 230
+	_ASSIGNMENT	shift 229
 	_SEMICOLON	reduce 16
 	.	error
 
-state 129:
+state 128:
 
 	PointerDeclaration : _POINTER _FIELDID _	(20)
 	PointerDeclaration : _POINTER _FIELDID _ _ASSIGNMENT _AMPERSAND PointerRef
 
-	_ASSIGNMENT	shift 231
+	_ASSIGNMENT	shift 230
 	_SEMICOLON	reduce 20
 	.	error
 
-state 130:
+state 129:
 
 	StringDeclaration : _STRING _FIELDID _	(18)
 	StringDeclaration : _STRING _FIELDID _ _ASSIGNMENT sExpr
 
-	_ASSIGNMENT	shift 232
+	_ASSIGNMENT	shift 231
 	_SEMICOLON	reduce 18
 	.	error
 
-state 131:
+state 130:
 
 	IfStatement : $$5 IfOrIfThenElse _	(93)
 
 	.	reduce 93
 
-state 132:
+state 131:
 
 	IfOrIfThenElse : _IF _ BooleanExpr _THEN TrueStatement
 	IfOrIfThenElse : _IF _ BooleanExpr _THEN TrueStatement _ELSE FalseStatement
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	SFBSS	shift 50
 	SFD	shift 51
 	SFDS	shift 52
@@ -1489,34 +1480,34 @@ state 132:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	DFLD	shift 241
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 243
-	_MINUS	shift 115
-	_NOT	shift 244
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 242
+	_MINUS	shift 114
+	_NOT	shift 243
+	_REALNUMBER	shift 115
 	.	error
 
-	RelationalExpression	goto 233
-	bExpr	goto 234
-	BooleanExpr	goto 235
-	DynToken	goto 212
-	sExpr	goto 236
-	xExpr	goto 237
-	dExpr	goto 238
+	RelationalExpression	goto 232
+	bExpr	goto 233
+	BooleanExpr	goto 234
+	DynToken	goto 210
+	sExpr	goto 235
+	xExpr	goto 236
+	dExpr	goto 237
 
-state 133:
+state 132:
 
 	WhileStatement : $$4 _WHILE _ BooleanExpr _DO TrueStatement
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	SFBSS	shift 50
 	SFD	shift 51
 	SFDS	shift 52
@@ -1541,64 +1532,64 @@ state 133:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	DFLD	shift 241
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 243
-	_MINUS	shift 115
-	_NOT	shift 244
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 242
+	_MINUS	shift 114
+	_NOT	shift 243
+	_REALNUMBER	shift 115
 	.	error
 
-	RelationalExpression	goto 233
-	bExpr	goto 234
-	BooleanExpr	goto 245
-	DynToken	goto 212
-	sExpr	goto 236
-	xExpr	goto 237
-	dExpr	goto 238
+	RelationalExpression	goto 232
+	bExpr	goto 233
+	BooleanExpr	goto 244
+	DynToken	goto 210
+	sExpr	goto 235
+	xExpr	goto 236
+	dExpr	goto 237
 
-state 134:
+state 133:
 
 	Statement : DeclareSqlExecStatement _SEMICOLON _	(49)
 
 	.	reduce 49
 
-state 135:
+state 134:
 
 	Statement : DeclareSqlInsertStatement _SEMICOLON _	(48)
 
 	.	reduce 48
 
-state 136:
+state 135:
 
 	Statement : SqlExecStatement _SEMICOLON _	(47)
 
 	.	reduce 47
 
-state 137:
+state 136:
 
 	Statement : VoidStatement _SEMICOLON _	(35)
 
 	.	reduce 35
 
-state 138:
+state 137:
 
 	Statement : Assignment _SEMICOLON _	(30)
 
 	.	reduce 30
 
-state 139:
+state 138:
 
 	StatementList : StatementList Statement _	(27)
 
 	.	reduce 27
 
-state 140:
+state 139:
 
 	Assignment : DynToken _ASSIGNMENT _ SFLD
 	Assignment : DynToken _ASSIGNMENT _ gExpr
@@ -1616,24 +1607,24 @@ state 140:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	DFLD	shift 249
-	SFLD	shift 250
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 249
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
-	_NIL	shift 255
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_LPAREN	shift 253
+	_NIL	shift 254
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 246
-	DynToken	goto 247
-	sExpr	goto 248
+	gExpr	goto 245
+	DynToken	goto 246
+	sExpr	goto 247
 
-state 141:
+state 140:
 
 	sExpr : sExpr _PLUS _ sExpr
 
@@ -1648,23 +1639,23 @@ state 141:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 257
+	DynToken	goto 210
+	sExpr	goto 256
 
-state 142:
+state 141:
 
 	Statement : sExpr _SEMICOLON _	(33)
 
 	.	reduce 33
 
-state 143:
+state 142:
 
 	xExpr : xExpr _AND _ xExpr
 
@@ -1681,16 +1672,16 @@ state 143:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 258
+	xExpr	goto 257
 
-state 144:
+state 143:
 
 	xExpr : xExpr _MINUS _ xExpr
 
@@ -1707,16 +1698,16 @@ state 144:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 259
+	xExpr	goto 258
 
-state 145:
+state 144:
 
 	xExpr : xExpr _MOD _ xExpr
 
@@ -1733,16 +1724,16 @@ state 145:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 260
+	xExpr	goto 259
 
-state 146:
+state 145:
 
 	xExpr : xExpr _PLUS _ xExpr
 
@@ -1759,22 +1750,22 @@ state 146:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 261
+	xExpr	goto 260
 
-state 147:
+state 146:
 
 	Statement : xExpr _SEMICOLON _	(34)
 
 	.	reduce 34
 
-state 148:
+state 147:
 
 	xExpr : xExpr _SLASH _ xExpr
 
@@ -1791,16 +1782,16 @@ state 148:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 262
+	xExpr	goto 261
 
-state 149:
+state 148:
 
 	xExpr : xExpr _STAR _ xExpr
 
@@ -1817,16 +1808,16 @@ state 149:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 263
+	xExpr	goto 262
 
-state 150:
+state 149:
 
 	xExpr : xExpr _UPARROW _ xExpr
 
@@ -1843,22 +1834,22 @@ state 150:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 264
+	xExpr	goto 263
 
-state 151:
+state 150:
 
 	sExpr : SFBSS _LPAREN _ bExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	SFBSS	shift 50
 	SFD	shift 51
 	SFDS	shift 52
@@ -1883,33 +1874,33 @@ state 151:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	DFLD	shift 241
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 243
-	_MINUS	shift 115
-	_NOT	shift 244
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 242
+	_MINUS	shift 114
+	_NOT	shift 243
+	_REALNUMBER	shift 115
 	.	error
 
-	RelationalExpression	goto 233
-	bExpr	goto 265
-	DynToken	goto 212
-	sExpr	goto 236
-	xExpr	goto 237
-	dExpr	goto 238
+	RelationalExpression	goto 232
+	bExpr	goto 264
+	DynToken	goto 210
+	sExpr	goto 235
+	xExpr	goto 236
+	dExpr	goto 237
 
-state 152:
+state 151:
 
 	sExpr : SFD _LPAREN _ dExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -1923,24 +1914,24 @@ state 152:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
-	dExpr	goto 267
+	xExpr	goto 265
+	dExpr	goto 266
 
-state 153:
+state 152:
 
 	sExpr : SFDS _LPAREN _ dExpr _COMMA sExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -1954,18 +1945,18 @@ state 153:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
-	dExpr	goto 269
+	xExpr	goto 265
+	dExpr	goto 268
 
-state 154:
+state 153:
 
 	sExpr : SFS _LPAREN _ sExpr _RPAREN
 
@@ -1980,17 +1971,17 @@ state 154:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 270
+	DynToken	goto 210
+	sExpr	goto 269
 
-state 155:
+state 154:
 
 	sExpr : SFSS _LPAREN _ sExpr _COMMA sExpr _RPAREN
 
@@ -2005,17 +1996,17 @@ state 155:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 271
+	DynToken	goto 210
+	sExpr	goto 270
 
-state 156:
+state 155:
 
 	sExpr : SFSSS _LPAREN _ sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -2030,17 +2021,17 @@ state 156:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 272
+	DynToken	goto 210
+	sExpr	goto 271
 
-state 157:
+state 156:
 
 	sExpr : SFSSSS _LPAREN _ sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -2055,17 +2046,17 @@ state 157:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 273
+	DynToken	goto 210
+	sExpr	goto 272
 
-state 158:
+state 157:
 
 	sExpr : SFSXX _LPAREN _ sExpr _COMMA xExpr _COMMA xExpr _RPAREN
 
@@ -2080,24 +2071,24 @@ state 158:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 274
+	DynToken	goto 210
+	sExpr	goto 273
 
-state 159:
+state 158:
 
 	sExpr : SFV _LPAREN _ _RPAREN
 
-	_RPAREN	shift 275
+	_RPAREN	shift 274
 	.	error
 
-state 160:
+state 159:
 
 	sExpr : SFX _LPAREN _ xExpr _RPAREN
 
@@ -2114,30 +2105,30 @@ state 160:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 276
+	xExpr	goto 275
+
+state 160:
+
+	sExpr : SFOV _LPAREN _ _RPAREN
+
+	_RPAREN	shift 276
+	.	error
 
 state 161:
 
-	sExpr : SFOV _LPAREN _ _RPAREN
+	VoidCall : VFV _LPAREN _ _RPAREN
 
 	_RPAREN	shift 277
 	.	error
 
 state 162:
-
-	VoidCall : VFV _LPAREN _ _RPAREN
-
-	_RPAREN	shift 278
-	.	error
-
-state 163:
 
 	VoidCall : VFS _LPAREN _ sExpr _RPAREN
 
@@ -2152,17 +2143,17 @@ state 163:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 279
+	DynToken	goto 210
+	sExpr	goto 278
 
-state 164:
+state 163:
 
 	VoidCall : VFSS _LPAREN _ sExpr _COMMA sExpr _RPAREN
 
@@ -2177,17 +2168,17 @@ state 164:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 280
+	DynToken	goto 210
+	sExpr	goto 279
 
-state 165:
+state 164:
 
 	VoidCall : VFSX _LPAREN _ sExpr _COMMA xExpr _RPAREN
 
@@ -2202,17 +2193,17 @@ state 165:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 281
+	DynToken	goto 210
+	sExpr	goto 280
 
-state 166:
+state 165:
 
 	VoidCall : VFSSS _LPAREN _ sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -2227,17 +2218,17 @@ state 166:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 282
+	DynToken	goto 210
+	sExpr	goto 281
 
-state 167:
+state 166:
 
 	VoidCall : VFSSX _LPAREN _ sExpr _COMMA sExpr _COMMA xExpr _RPAREN
 
@@ -2252,17 +2243,17 @@ state 167:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 283
+	DynToken	goto 210
+	sExpr	goto 282
 
-state 168:
+state 167:
 
 	VoidCall : VFSSSS _LPAREN _ sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -2277,17 +2268,17 @@ state 168:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 284
+	DynToken	goto 210
+	sExpr	goto 283
 
-state 169:
+state 168:
 
 	VoidCall : VFX _LPAREN _ xExpr _RPAREN
 
@@ -2304,22 +2295,22 @@ state 169:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 285
+	xExpr	goto 284
 
-state 170:
+state 169:
 
 	VoidCall : VFD _LPAREN _ dExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -2333,25 +2324,25 @@ state 170:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
-	dExpr	goto 286
+	xExpr	goto 265
+	dExpr	goto 285
 
-state 171:
+state 170:
 
 	VoidCall : VFOV _LPAREN _ _RPAREN
 
-	_RPAREN	shift 287
+	_RPAREN	shift 286
 	.	error
 
-state 172:
+state 171:
 
 	VoidCall : VFOS _LPAREN _ sExpr _RPAREN
 
@@ -2366,17 +2357,17 @@ state 172:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 288
+	DynToken	goto 210
+	sExpr	goto 287
 
-state 173:
+state 172:
 
 	VoidCall : VFOSS _LPAREN _ sExpr _COMMA sExpr _RPAREN
 
@@ -2391,17 +2382,17 @@ state 173:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 289
+	DynToken	goto 210
+	sExpr	goto 288
 
-state 174:
+state 173:
 
 	VoidCall : VFOSX _LPAREN _ sExpr _COMMA xExpr _RPAREN
 
@@ -2416,17 +2407,17 @@ state 174:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 290
+	DynToken	goto 210
+	sExpr	goto 289
 
-state 175:
+state 174:
 
 	VoidCall : VFOSSS _LPAREN _ sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -2441,17 +2432,17 @@ state 175:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 291
+	DynToken	goto 210
+	sExpr	goto 290
 
-state 176:
+state 175:
 
 	VoidCall : VFOSSX _LPAREN _ sExpr _COMMA sExpr _COMMA xExpr _RPAREN
 
@@ -2466,17 +2457,17 @@ state 176:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 292
+	DynToken	goto 210
+	sExpr	goto 291
 
-state 177:
+state 176:
 
 	VoidCall : VFOSSSS _LPAREN _ sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -2491,17 +2482,17 @@ state 177:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 293
+	DynToken	goto 210
+	sExpr	goto 292
 
-state 178:
+state 177:
 
 	VoidCall : VFOX _LPAREN _ xExpr _RPAREN
 
@@ -2518,22 +2509,22 @@ state 178:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 294
+	xExpr	goto 293
 
-state 179:
+state 178:
 
 	VoidCall : VFOD _LPAREN _ dExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -2547,92 +2538,92 @@ state 179:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
-	dExpr	goto 295
+	xExpr	goto 265
+	dExpr	goto 294
 
-state 180:
+state 179:
 
 	VoidCall : VFG _LPAREN _ gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 296
-	DynToken	goto 297
+	gExpr	goto 295
+	DynToken	goto 296
 
-state 181:
+state 180:
 
 	VoidCall : VFGG _LPAREN _ gExpr _COMMA gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 299
-	DynToken	goto 297
+	gExpr	goto 298
+	DynToken	goto 296
 
-state 182:
+state 181:
 
 	VoidCall : VFGGG _LPAREN _ gExpr _COMMA gExpr _COMMA gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 300
-	DynToken	goto 297
+	gExpr	goto 299
+	DynToken	goto 296
 
-state 183:
+state 182:
 
 	VoidCall : VFGGGG _LPAREN _ gExpr _COMMA gExpr _COMMA gExpr _COMMA gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 301
-	DynToken	goto 297
+	gExpr	goto 300
+	DynToken	goto 296
 
-state 184:
+state 183:
 
 	xExpr : XFD _LPAREN _ dExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -2646,52 +2637,52 @@ state 184:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
-	dExpr	goto 302
+	xExpr	goto 265
+	dExpr	goto 301
 
-state 185:
+state 184:
 
 	xExpr : XFG _LPAREN _ gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 303
-	DynToken	goto 297
+	gExpr	goto 302
+	DynToken	goto 296
 
-state 186:
+state 185:
 
 	xExpr : XFGG _LPAREN _ gExpr _COMMA gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 304
-	DynToken	goto 297
+	gExpr	goto 303
+	DynToken	goto 296
 
-state 187:
+state 186:
 
 	xExpr : XFS _LPAREN _ sExpr _RPAREN
 
@@ -2706,17 +2697,17 @@ state 187:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 305
+	DynToken	goto 210
+	sExpr	goto 304
 
-state 188:
+state 187:
 
 	xExpr : XFSX _LPAREN _ sExpr _COMMA xExpr _RPAREN
 
@@ -2731,24 +2722,24 @@ state 188:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 306
+	DynToken	goto 210
+	sExpr	goto 305
 
-state 189:
+state 188:
 
 	xExpr : XFV _LPAREN _ _RPAREN
 
-	_RPAREN	shift 307
+	_RPAREN	shift 306
 	.	error
 
-state 190:
+state 189:
 
 	xExpr : XFX _LPAREN _ xExpr _RPAREN
 
@@ -2765,16 +2756,16 @@ state 190:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 308
+	xExpr	goto 307
 
-state 191:
+state 190:
 
 	xExpr : XFXX _LPAREN _ xExpr _COMMA xExpr _RPAREN
 
@@ -2791,30 +2782,30 @@ state 191:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 309
+	xExpr	goto 308
 
-state 192:
+state 191:
 
 	xExpr : XFFRAME _LPAREN _ FRAME_ _RPAREN
 
-	FRAME_	shift 310
+	FRAME_	shift 309
 	.	error
 
-state 193:
+state 192:
 
 	xExpr : XFOV _LPAREN _ _RPAREN
 
-	_RPAREN	shift 311
+	_RPAREN	shift 310
 	.	error
 
-state 194:
+state 193:
 
 	xExpr : XFOS _LPAREN _ sExpr _RPAREN
 
@@ -2829,17 +2820,17 @@ state 194:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 312
+	DynToken	goto 210
+	sExpr	goto 311
 
-state 195:
+state 194:
 
 	xExpr : XFOX _LPAREN _ xExpr _RPAREN
 
@@ -2856,16 +2847,16 @@ state 195:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 313
+	xExpr	goto 312
 
-state 196:
+state 195:
 
 	xExpr : XFOXX _LPAREN _ xExpr _COMMA xExpr _RPAREN
 
@@ -2882,22 +2873,22 @@ state 196:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 314
+	xExpr	goto 313
 
-state 197:
+state 196:
 
 	Assignment : BFLD _ASSIGNMENT _ bExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	SFBSS	shift 50
 	SFD	shift 51
 	SFDS	shift 52
@@ -2922,34 +2913,34 @@ state 197:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	DFLD	shift 241
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 243
-	_MINUS	shift 115
-	_NOT	shift 244
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 242
+	_MINUS	shift 114
+	_NOT	shift 243
+	_REALNUMBER	shift 115
 	.	error
 
-	RelationalExpression	goto 233
-	bExpr	goto 315
-	DynToken	goto 212
-	sExpr	goto 236
-	xExpr	goto 237
-	dExpr	goto 238
+	RelationalExpression	goto 232
+	bExpr	goto 314
+	DynToken	goto 210
+	sExpr	goto 235
+	xExpr	goto 236
+	dExpr	goto 237
 
-state 198:
+state 197:
 
 	Assignment : DFLD _ASSIGNMENT _ dExpr
 	Assignment : DFLD _ASSIGNMENT _ _NIL
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -2963,19 +2954,19 @@ state 198:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_NIL	shift 317
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_NIL	shift 316
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
-	dExpr	goto 316
+	xExpr	goto 265
+	dExpr	goto 315
 
-state 199:
+state 198:
 
 	Assignment : SFLD _ASSIGNMENT _ sExpr
 	Assignment : SFLD _ASSIGNMENT _ _NIL
@@ -2991,18 +2982,18 @@ state 199:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
-	_NIL	shift 319
+	_FIELDID	shift 110
+	_LPAREN	shift 253
+	_NIL	shift 318
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 318
+	DynToken	goto 210
+	sExpr	goto 317
 
-state 200:
+state 199:
 
 	Assignment : IFLD _ASSIGNMENT _ xExpr
 	Assignment : IFLD _ASSIGNMENT _ _NIL
@@ -3020,17 +3011,17 @@ state 200:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_NIL	shift 321
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_NIL	shift 320
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 320
+	xExpr	goto 319
 
-state 201:
+state 200:
 
 	Assignment : XFLD _ASSIGNMENT _ xExpr
 	Assignment : XFLD _ASSIGNMENT _ _NIL
@@ -3048,45 +3039,45 @@ state 201:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_NIL	shift 323
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_NIL	shift 322
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 322
+	xExpr	goto 321
 
-state 202:
+state 201:
 
 	Assignment : GFLD _ASSIGNMENT _ gExpr
 	Assignment : GFLD _ASSIGNMENT _ _NIL
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_NIL	shift 325
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_NIL	shift 324
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 324
-	DynToken	goto 297
+	gExpr	goto 323
+	DynToken	goto 296
 
-state 203:
+state 202:
 
 	Assignment : PFLD _ASSIGNMENT _ _AMPERSAND PointerRef
 	Assignment : PFLD _ASSIGNMENT _ _NIL
 
-	_AMPERSAND	shift 326
-	_NIL	shift 327
+	_AMPERSAND	shift 325
+	_NIL	shift 326
 	.	error
 
-state 204:
+state 203:
 
 	BlokStatement : _BEGIN $$3 _ Start _END
 	$$1 : _	(1)
@@ -3094,108 +3085,83 @@ state 204:
 	.	reduce 1
 
 	$$1	goto 1
-	Start	goto 328
+	Start	goto 327
 
-state 205:
+state 204:
 
 	VoidStatement : _EVALUATE _LPAREN _ _CHARACTER_STRING _RPAREN
 
-	_CHARACTER_STRING	shift 329
+	_CHARACTER_STRING	shift 328
 	.	error
+
+state 205:
+
+	DeclareSqlExecStatement : _EXEC_SQLEXEC $$20 _ DeclareSqlExecTokenList
+
+	_SQLPARAM_FIELD	shift 331
+	_SQLTOKEN	shift 332
+	.	error
+
+	DeclareSqlExecToken	goto 329
+	DeclareSqlExecTokenList	goto 330
 
 state 206:
 
-	DeclareSqlExecStatement : _EXEC_SQLEXEC $$17 _ DeclareSqlExecTokenList
+	DeclareSqlInsertStatement : _EXEC_SQLINSERT $$19 _ DeclareSqlInsertTokenList
 
-	_SQLPARAM_FIELD	shift 332
-	_SQLTOKEN	shift 333
+	_AS_FIELDID	shift 335
+	_SQLTOKEN	shift 336
 	.	error
 
-	DeclareSqlExecToken	goto 330
-	DeclareSqlExecTokenList	goto 331
+	DeclareSqlInsertToken	goto 333
+	DeclareSqlInsertTokenList	goto 334
 
 state 207:
 
-	DeclareSqlInsertStatement : _EXEC_SQLINSERT $$16 _ DeclareSqlInsertTokenList
+	DeclareSqlSelectStatement : _EXEC_SQLSELECT $$18 _ DeclareSqlTokenList OptionalSqlLoop
 
-	_AS_FIELDID	shift 336
-	_SQLTOKEN	shift 337
+	_AS_FIELDID	shift 339
+	_SQLPARAM_FIELD	shift 340
+	_SQLTOKEN	shift 341
 	.	error
 
-	DeclareSqlInsertToken	goto 334
-	DeclareSqlInsertTokenList	goto 335
+	DeclareSqlToken	goto 337
+	DeclareSqlTokenList	goto 338
 
 state 208:
-
-	DeclareSqlSelectStatement : _EXEC_SQLSELECT $$15 _ DeclareSqlTokenList OptionalSqlLoop
-
-	_AS_FIELDID	shift 340
-	_SQLPARAM_FIELD	shift 341
-	_SQLTOKEN	shift 342
-	.	error
-
-	DeclareSqlToken	goto 338
-	DeclareSqlTokenList	goto 339
-
-state 209:
-
-	RegExStatement : _EXEC_YAG _LPAREN _ sExpr _COMMA sExpr _RPAREN _AS SFLD _DO BlokStatement
-
-	SFBSS	shift 50
-	SFD	shift 51
-	SFDS	shift 52
-	SFS	shift 53
-	SFSS	shift 54
-	SFSSS	shift 55
-	SFSSSS	shift 56
-	SFSXX	shift 57
-	SFV	shift 58
-	SFX	shift 59
-	SFOV	shift 60
-	SFLD	shift 215
-	_DYNFLD	shift 103
-	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
-	.	error
-
-	DynToken	goto 212
-	sExpr	goto 343
-
-state 210:
 
 	DeclareForEachStatement : _FOR _EACH _ $$9 DeclareGroup OptionalAlias _DO BlokStatement
 	$$9 : _	(215)
 
 	.	reduce 215
 
-	$$9	goto 344
+	$$9	goto 342
 
-state 211:
+state 209:
 
-	ForEachStatement : _FOREACH $$13 _ BlokStatement
+	ForEachStatement : _FOREACH $$16 _ BlokStatement
 
 	_BEGIN	shift 104
 	.	error
 
-	BlokStatement	goto 345
+	BlokStatement	goto 343
 
-state 212:
+state 210:
 
 	sExpr : DynToken _	(149)
 
 	.	reduce 149
 
-state 213:
+state 211:
 
 	sExpr : _LPAREN sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 346
+	_PLUS	shift 140
+	_RPAREN	shift 344
 	.	error
 
-state 214:
+state 212:
 
 	xExpr : _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -3206,35 +3172,35 @@ state 214:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 347
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 345
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 215:
+state 213:
 
 	sExpr : SFLD _	(148)
 
 	.	reduce 148
 
-state 216:
+state 214:
 
 	xExpr : IFLD _	(172)
 
 	.	reduce 172
 
-state 217:
+state 215:
 
 	xExpr : XFLD _	(171)
 
 	.	reduce 171
 
-state 218:
+state 216:
 
 	xExpr : _MINUS xExpr _	(169)
 	xExpr : xExpr _ _AND xExpr
@@ -3245,7 +3211,7 @@ state 218:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
+	_AND	shift 142
 	_COMMA	reduce 169
 	_DO	reduce 169
 	_EQUAL	reduce 169
@@ -3266,7 +3232,7 @@ state 218:
 	_UPARROW	reduce 169
 	.	error
 
-state 219:
+state 217:
 
 	xExpr : _LPAREN _ xExpr _RPAREN
 
@@ -3283,73 +3249,91 @@ state 219:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 214
+	xExpr	goto 212
 
-state 220:
+state 218:
 
 	SqlSelectStatement : _SQLSELECT $$8 _ OptionalSqlLoop
 
-	_LOOP	shift 349
-	_SEMICOLON	shift 350
+	_LOOP	shift 347
+	_SEMICOLON	shift 348
 	.	error
 
-	OptionalSqlLoop	goto 348
+	OptionalSqlLoop	goto 346
 
-state 221:
+state 219:
 
 	Assignment : _STAR PFLD _ _ASSIGNMENT gExpr
 	Assignment : _STAR PFLD _ _ASSIGNMENT _NIL
 
-	_ASSIGNMENT	shift 351
+	_ASSIGNMENT	shift 349
 	.	error
 
-state 222:
+state 220:
 
 	CreateVoidFunction : _VOID _NOID _ $$2 _LPAREN OptionalArgumentList _RPAREN _BEGIN Start _END
 	$$2 : _	(73)
 
 	.	reduce 73
 
-	$$2	goto 352
+	$$2	goto 350
 
-state 223:
+state 221:
 
 	VoidStatement : VOIDFUNCTION_ _LPAREN _ _RPAREN
 
-	_RPAREN	shift 353
+	_RPAREN	shift 351
 	.	error
 
-state 224:
+state 222:
 
 	DeclareWithStatement : _WITH $$10 _ DeclareGroup OptionalAlias _DO BlokStatement
 
-	GFLD	shift 356
+	GFLD	shift 354
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
+	_FIELDID	shift 110
 	.	error
 
-	DeclareGroup	goto 354
-	DynToken	goto 355
+	DeclareGroup	goto 352
+	DynToken	goto 353
 
-state 225:
+state 223:
+
+	SlStatement : _WITH SLFOSS _ $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD $$14 _DO $$15 BlokStatement
+	$$13 : _	(229)
+
+	.	reduce 229
+
+	$$13	goto 355
+
+state 224:
 
 	DeclareWithNewStatement : _WITH _NEW _ $$11 DeclareGroup OptionalAlias _DO BlokStatement
 	$$11 : _	(219)
 
 	.	reduce 219
 
-	$$11	goto 357
+	$$11	goto 356
+
+state 225:
+
+	WithStatement : _WITHDO $$17 _ BlokStatement
+
+	_BEGIN	shift 104
+	.	error
+
+	BlokStatement	goto 357
 
 state 226:
 
-	WithStatement : _WITHDO $$14 _ BlokStatement
+	WithNewStatement : _WITHNEWDO $$12 _ BlokStatement
 
 	_BEGIN	shift 104
 	.	error
@@ -3358,20 +3342,11 @@ state 226:
 
 state 227:
 
-	WithNewStatement : _WITHNEWDO $$12 _ BlokStatement
-
-	_BEGIN	shift 104
-	.	error
-
-	BlokStatement	goto 359
-
-state 228:
-
 	DateTimeDeclaration : _DATETIME _FIELDID _ASSIGNMENT _ dExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -3385,18 +3360,18 @@ state 228:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
-	dExpr	goto 360
+	xExpr	goto 265
+	dExpr	goto 359
 
-state 229:
+state 228:
 
 	ExtendedDeclaration : _FLOAT _FIELDID _ASSIGNMENT _ xExpr
 
@@ -3413,16 +3388,16 @@ state 229:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 361
+	xExpr	goto 360
 
-state 230:
+state 229:
 
 	IntegerDeclaration : _INTEGER _FIELDID _ASSIGNMENT _ xExpr
 
@@ -3439,23 +3414,23 @@ state 230:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 362
+	xExpr	goto 361
 
-state 231:
+state 230:
 
 	PointerDeclaration : _POINTER _FIELDID _ASSIGNMENT _ _AMPERSAND PointerRef
 
-	_AMPERSAND	shift 363
+	_AMPERSAND	shift 362
 	.	error
 
-state 232:
+state 231:
 
 	StringDeclaration : _STRING _FIELDID _ASSIGNMENT _ sExpr
 
@@ -3470,43 +3445,43 @@ state 232:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 364
+	DynToken	goto 210
+	sExpr	goto 363
 
-state 233:
+state 232:
 
 	bExpr : RelationalExpression _	(191)
 
 	.	reduce 191
 
-state 234:
+state 233:
 
 	BooleanExpr : bExpr _	(186)
 	bExpr : bExpr _ _OR bExpr
 	bExpr : bExpr _ _AND bExpr
 
-	_AND	shift 365
-	_OR	shift 366
+	_AND	shift 364
+	_OR	shift 365
 	_DO	reduce 186
 	_THEN	reduce 186
 	.	error
 
-state 235:
+state 234:
 
 	IfOrIfThenElse : _IF BooleanExpr _ _THEN TrueStatement
 	IfOrIfThenElse : _IF BooleanExpr _ _THEN TrueStatement _ELSE FalseStatement
 
-	_THEN	shift 367
+	_THEN	shift 366
 	.	error
 
-state 236:
+state 235:
 
 	sExpr : sExpr _ _PLUS sExpr
 	RelationalExpression : sExpr _	(199)
@@ -3517,13 +3492,13 @@ state 236:
 	RelationalExpression : sExpr _ _GT sExpr
 	RelationalExpression : sExpr _ _NOTEQUAL sExpr
 
-	_EQUAL	shift 368
-	_GE	shift 369
-	_GT	shift 370
-	_LE	shift 371
-	_LT	shift 372
-	_NOTEQUAL	shift 373
-	_PLUS	shift 141
+	_EQUAL	shift 367
+	_GE	shift 368
+	_GT	shift 369
+	_LE	shift 370
+	_LT	shift 371
+	_NOTEQUAL	shift 372
+	_PLUS	shift 140
 	_AND	reduce 199
 	_COMMA	reduce 199
 	_DO	reduce 199
@@ -3533,11 +3508,11 @@ state 236:
 	_THEN	reduce 199
 	.	error
 
-state 237:
+state 236:
 
 	*** conflicts:
 
-	shift 143, reduce 192 on _AND
+	shift 142, reduce 192 on _AND
 
 	dExpr : xExpr _ _PLUS dExpr
 	dExpr : xExpr _ _MINUS dExpr
@@ -3556,19 +3531,19 @@ state 237:
 	RelationalExpression : xExpr _ _GT xExpr
 	RelationalExpression : xExpr _ _NOTEQUAL xExpr
 
-	_AND	shift 143
-	_EQUAL	shift 374
-	_GE	shift 375
-	_GT	shift 376
-	_LE	shift 377
-	_LT	shift 378
-	_MINUS	shift 379
-	_MOD	shift 145
-	_NOTEQUAL	shift 380
-	_PLUS	shift 381
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_EQUAL	shift 373
+	_GE	shift 374
+	_GT	shift 375
+	_LE	shift 376
+	_LT	shift 377
+	_MINUS	shift 378
+	_MOD	shift 144
+	_NOTEQUAL	shift 379
+	_PLUS	shift 380
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 192
 	_DO	reduce 192
 	_OR	reduce 192
@@ -3577,7 +3552,7 @@ state 237:
 	_THEN	reduce 192
 	.	error
 
-state 238:
+state 237:
 
 	dExpr : dExpr _ _PLUS dExpr
 	dExpr : dExpr _ _MINUS dExpr
@@ -3599,14 +3574,14 @@ state 238:
 	RelationalExpression : dExpr _ _GT dExpr
 	RelationalExpression : dExpr _ _NOTEQUAL dExpr
 
-	_EQUAL	shift 382
-	_GE	shift 383
-	_GT	shift 384
-	_LE	shift 385
-	_LT	shift 386
-	_MINUS	shift 387
-	_NOTEQUAL	shift 388
-	_PLUS	shift 389
+	_EQUAL	shift 381
+	_GE	shift 382
+	_GT	shift 383
+	_LE	shift 384
+	_LT	shift 385
+	_MINUS	shift 386
+	_NOTEQUAL	shift 387
+	_PLUS	shift 388
 	_AND	reduce 206
 	_COMMA	reduce 206
 	_DO	reduce 206
@@ -3616,43 +3591,43 @@ state 238:
 	_THEN	reduce 206
 	.	error
 
-state 239:
+state 238:
 
 	dExpr : DF _ _LPAREN _RPAREN
+
+	_LPAREN	shift 389
+	.	error
+
+state 239:
+
+	dExpr : DFS _ _LPAREN sExpr _RPAREN
 
 	_LPAREN	shift 390
 	.	error
 
 state 240:
 
-	dExpr : DFS _ _LPAREN sExpr _RPAREN
+	dExpr : DFX _ _LPAREN xExpr _RPAREN
 
 	_LPAREN	shift 391
 	.	error
 
 state 241:
 
-	dExpr : DFX _ _LPAREN xExpr _RPAREN
-
-	_LPAREN	shift 392
-	.	error
-
-state 242:
-
 	dExpr : DFLD _	(133)
 
 	.	reduce 133
 
-state 243:
+state 242:
 
 	dExpr : _LPAREN _ dExpr _RPAREN
 	sExpr : _LPAREN _ sExpr _RPAREN
 	xExpr : _LPAREN _ xExpr _RPAREN
 	bExpr : _LPAREN _ bExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	SFBSS	shift 50
 	SFD	shift 51
 	SFDS	shift 52
@@ -3677,33 +3652,33 @@ state 243:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	DFLD	shift 241
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 243
-	_MINUS	shift 115
-	_NOT	shift 244
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 242
+	_MINUS	shift 114
+	_NOT	shift 243
+	_REALNUMBER	shift 115
 	.	error
 
-	RelationalExpression	goto 233
-	bExpr	goto 393
-	DynToken	goto 212
-	sExpr	goto 394
-	xExpr	goto 395
-	dExpr	goto 396
+	RelationalExpression	goto 232
+	bExpr	goto 392
+	DynToken	goto 210
+	sExpr	goto 393
+	xExpr	goto 394
+	dExpr	goto 395
 
-state 244:
+state 243:
 
 	bExpr : _NOT _ bExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	SFBSS	shift 50
 	SFD	shift 51
 	SFDS	shift 52
@@ -3728,40 +3703,40 @@ state 244:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	DFLD	shift 241
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 243
-	_MINUS	shift 115
-	_NOT	shift 244
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 242
+	_MINUS	shift 114
+	_NOT	shift 243
+	_REALNUMBER	shift 115
 	.	error
 
-	RelationalExpression	goto 233
-	bExpr	goto 397
-	DynToken	goto 212
-	sExpr	goto 236
-	xExpr	goto 237
-	dExpr	goto 238
+	RelationalExpression	goto 232
+	bExpr	goto 396
+	DynToken	goto 210
+	sExpr	goto 235
+	xExpr	goto 236
+	dExpr	goto 237
 
-state 245:
+state 244:
 
 	WhileStatement : $$4 _WHILE BooleanExpr _ _DO TrueStatement
 
-	_DO	shift 398
+	_DO	shift 397
 	.	error
 
-state 246:
+state 245:
 
 	Assignment : DynToken _ASSIGNMENT gExpr _	(116)
 
 	.	reduce 116
 
-state 247:
+state 246:
 
 	*** conflicts:
 
@@ -3774,22 +3749,22 @@ state 247:
 	_PLUS	reduce 149
 	.	error
 
-state 248:
+state 247:
 
 	Assignment : DynToken _ASSIGNMENT sExpr _	(117)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_SEMICOLON	reduce 117
 	.	error
 
-state 249:
+state 248:
 
 	gExpr : DFLD _	(122)
 
 	.	reduce 122
 
-state 250:
+state 249:
 
 	*** conflicts:
 
@@ -3804,25 +3779,25 @@ state 250:
 	_PLUS	reduce 148
 	.	error
 
-state 251:
+state 250:
 
 	gExpr : IFLD _	(123)
 
 	.	reduce 123
 
-state 252:
+state 251:
 
 	gExpr : XFLD _	(124)
 
 	.	reduce 124
 
-state 253:
+state 252:
 
 	gExpr : GFLD _	(119)
 
 	.	reduce 119
 
-state 254:
+state 253:
 
 	sExpr : _LPAREN _ sExpr _RPAREN
 
@@ -3837,37 +3812,37 @@ state 254:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 213
+	DynToken	goto 210
+	sExpr	goto 211
 
-state 255:
+state 254:
 
 	Assignment : DynToken _ASSIGNMENT _NIL _	(118)
 
 	.	reduce 118
 
-state 256:
+state 255:
 
 	gExpr : _STAR _ PFLD
 
-	PFLD	shift 399
+	PFLD	shift 398
 	.	error
 
-state 257:
+state 256:
 
 	sExpr : sExpr _PLUS sExpr _	(145)
 	sExpr : sExpr _ _PLUS sExpr
 
 	.	reduce 145
 
-state 258:
+state 257:
 
 	xExpr : xExpr _AND xExpr _	(161)
 	xExpr : xExpr _ _AND xExpr
@@ -3880,7 +3855,7 @@ state 258:
 
 	.	reduce 161
 
-state 259:
+state 258:
 
 	xExpr : xExpr _MINUS xExpr _	(163)
 	xExpr : xExpr _ _AND xExpr
@@ -3891,11 +3866,11 @@ state 259:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MOD	shift 145
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MOD	shift 144
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 163
 	_DO	reduce 163
 	_EQUAL	reduce 163
@@ -3912,7 +3887,7 @@ state 259:
 	_THEN	reduce 163
 	.	error
 
-state 260:
+state 259:
 
 	xExpr : xExpr _MOD xExpr _	(166)
 	xExpr : xExpr _ _AND xExpr
@@ -3923,8 +3898,8 @@ state 260:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_UPARROW	shift 150
+	_AND	shift 142
+	_UPARROW	shift 149
 	_COMMA	reduce 166
 	_DO	reduce 166
 	_EQUAL	reduce 166
@@ -3944,7 +3919,7 @@ state 260:
 	_THEN	reduce 166
 	.	error
 
-state 261:
+state 260:
 
 	xExpr : xExpr _PLUS xExpr _	(162)
 	xExpr : xExpr _ _AND xExpr
@@ -3955,11 +3930,11 @@ state 261:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MOD	shift 145
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MOD	shift 144
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 162
 	_DO	reduce 162
 	_EQUAL	reduce 162
@@ -3976,7 +3951,7 @@ state 261:
 	_THEN	reduce 162
 	.	error
 
-state 262:
+state 261:
 
 	xExpr : xExpr _SLASH xExpr _	(165)
 	xExpr : xExpr _ _AND xExpr
@@ -3987,8 +3962,8 @@ state 262:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_UPARROW	shift 150
+	_AND	shift 142
+	_UPARROW	shift 149
 	_COMMA	reduce 165
 	_DO	reduce 165
 	_EQUAL	reduce 165
@@ -4008,7 +3983,7 @@ state 262:
 	_THEN	reduce 165
 	.	error
 
-state 263:
+state 262:
 
 	xExpr : xExpr _STAR xExpr _	(164)
 	xExpr : xExpr _ _AND xExpr
@@ -4019,8 +3994,8 @@ state 263:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_UPARROW	shift 150
+	_AND	shift 142
+	_UPARROW	shift 149
 	_COMMA	reduce 164
 	_DO	reduce 164
 	_EQUAL	reduce 164
@@ -4040,7 +4015,7 @@ state 263:
 	_THEN	reduce 164
 	.	error
 
-state 264:
+state 263:
 
 	xExpr : xExpr _UPARROW xExpr _	(167)
 	xExpr : xExpr _ _AND xExpr
@@ -4051,7 +4026,7 @@ state 264:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
+	_AND	shift 142
 	_COMMA	reduce 167
 	_DO	reduce 167
 	_EQUAL	reduce 167
@@ -4072,18 +4047,18 @@ state 264:
 	_UPARROW	reduce 167
 	.	error
 
-state 265:
+state 264:
 
 	sExpr : SFBSS _LPAREN bExpr _ _COMMA sExpr _COMMA sExpr _RPAREN
 	bExpr : bExpr _ _OR bExpr
 	bExpr : bExpr _ _AND bExpr
 
-	_AND	shift 365
-	_COMMA	shift 400
-	_OR	shift 366
+	_AND	shift 364
+	_COMMA	shift 399
+	_OR	shift 365
 	.	error
 
-state 266:
+state 265:
 
 	dExpr : xExpr _ _PLUS dExpr
 	dExpr : xExpr _ _MINUS dExpr
@@ -4095,16 +4070,16 @@ state 266:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 379
-	_MOD	shift 145
-	_PLUS	shift 381
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 378
+	_MOD	shift 144
+	_PLUS	shift 380
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 267:
+state 266:
 
 	sExpr : SFD _LPAREN dExpr _ _RPAREN
 	dExpr : dExpr _ _PLUS dExpr
@@ -4120,19 +4095,19 @@ state 267:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
-	_RPAREN	shift 401
+	_MINUS	shift 386
+	_PLUS	shift 388
+	_RPAREN	shift 400
 	.	error
 
-state 268:
+state 267:
 
 	dExpr : _LPAREN _ dExpr _RPAREN
 	xExpr : _LPAREN _ xExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -4146,18 +4121,18 @@ state 268:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 402
-	dExpr	goto 403
+	xExpr	goto 401
+	dExpr	goto 402
 
-state 269:
+state 268:
 
 	sExpr : SFDS _LPAREN dExpr _ _COMMA sExpr _RPAREN
 	dExpr : dExpr _ _PLUS dExpr
@@ -4173,63 +4148,63 @@ state 269:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_COMMA	shift 404
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_COMMA	shift 403
+	_MINUS	shift 386
+	_PLUS	shift 388
 	.	error
 
-state 270:
+state 269:
 
 	sExpr : SFS _LPAREN sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 405
+	_PLUS	shift 140
+	_RPAREN	shift 404
 	.	error
 
-state 271:
+state 270:
 
 	sExpr : SFSS _LPAREN sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 406
-	_PLUS	shift 141
+	_COMMA	shift 405
+	_PLUS	shift 140
 	.	error
 
-state 272:
+state 271:
 
 	sExpr : SFSSS _LPAREN sExpr _ _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 407
-	_PLUS	shift 141
+	_COMMA	shift 406
+	_PLUS	shift 140
 	.	error
 
-state 273:
+state 272:
 
 	sExpr : SFSSSS _LPAREN sExpr _ _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 408
-	_PLUS	shift 141
+	_COMMA	shift 407
+	_PLUS	shift 140
 	.	error
 
-state 274:
+state 273:
 
 	sExpr : SFSXX _LPAREN sExpr _ _COMMA xExpr _COMMA xExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 409
-	_PLUS	shift 141
+	_COMMA	shift 408
+	_PLUS	shift 140
 	.	error
 
-state 275:
+state 274:
 
 	sExpr : SFV _LPAREN _RPAREN _	(155)
 
 	.	reduce 155
 
-state 276:
+state 275:
 
 	sExpr : SFX _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -4240,83 +4215,83 @@ state 276:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 410
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 409
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 277:
+state 276:
 
 	sExpr : SFOV _LPAREN _RPAREN _	(156)
 
 	.	reduce 156
 
-state 278:
+state 277:
 
 	VoidCall : VFV _LPAREN _RPAREN _	(50)
 
 	.	reduce 50
 
-state 279:
+state 278:
 
 	VoidCall : VFS _LPAREN sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 411
+	_PLUS	shift 140
+	_RPAREN	shift 410
 	.	error
 
-state 280:
+state 279:
 
 	VoidCall : VFSS _LPAREN sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 412
-	_PLUS	shift 141
+	_COMMA	shift 411
+	_PLUS	shift 140
 	.	error
 
-state 281:
+state 280:
 
 	VoidCall : VFSX _LPAREN sExpr _ _COMMA xExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 413
-	_PLUS	shift 141
+	_COMMA	shift 412
+	_PLUS	shift 140
 	.	error
 
-state 282:
+state 281:
 
 	VoidCall : VFSSS _LPAREN sExpr _ _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 414
-	_PLUS	shift 141
+	_COMMA	shift 413
+	_PLUS	shift 140
 	.	error
 
-state 283:
+state 282:
 
 	VoidCall : VFSSX _LPAREN sExpr _ _COMMA sExpr _COMMA xExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 415
-	_PLUS	shift 141
+	_COMMA	shift 414
+	_PLUS	shift 140
 	.	error
 
-state 284:
+state 283:
 
 	VoidCall : VFSSSS _LPAREN sExpr _ _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 416
-	_PLUS	shift 141
+	_COMMA	shift 415
+	_PLUS	shift 140
 	.	error
 
-state 285:
+state 284:
 
 	VoidCall : VFX _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -4327,17 +4302,17 @@ state 285:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 417
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 416
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 286:
+state 285:
 
 	VoidCall : VFD _LPAREN dExpr _ _RPAREN
 	dExpr : dExpr _ _PLUS dExpr
@@ -4353,72 +4328,72 @@ state 286:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
-	_RPAREN	shift 418
+	_MINUS	shift 386
+	_PLUS	shift 388
+	_RPAREN	shift 417
 	.	error
 
-state 287:
+state 286:
 
 	VoidCall : VFOV _LPAREN _RPAREN _	(63)
 
 	.	reduce 63
 
-state 288:
+state 287:
 
 	VoidCall : VFOS _LPAREN sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 419
+	_PLUS	shift 140
+	_RPAREN	shift 418
 	.	error
 
-state 289:
+state 288:
 
 	VoidCall : VFOSS _LPAREN sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 420
-	_PLUS	shift 141
+	_COMMA	shift 419
+	_PLUS	shift 140
 	.	error
 
-state 290:
+state 289:
 
 	VoidCall : VFOSX _LPAREN sExpr _ _COMMA xExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 421
-	_PLUS	shift 141
+	_COMMA	shift 420
+	_PLUS	shift 140
 	.	error
 
-state 291:
+state 290:
 
 	VoidCall : VFOSSS _LPAREN sExpr _ _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 422
-	_PLUS	shift 141
+	_COMMA	shift 421
+	_PLUS	shift 140
 	.	error
 
-state 292:
+state 291:
 
 	VoidCall : VFOSSX _LPAREN sExpr _ _COMMA sExpr _COMMA xExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 423
-	_PLUS	shift 141
+	_COMMA	shift 422
+	_PLUS	shift 140
 	.	error
 
-state 293:
+state 292:
 
 	VoidCall : VFOSSSS _LPAREN sExpr _ _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 424
-	_PLUS	shift 141
+	_COMMA	shift 423
+	_PLUS	shift 140
 	.	error
 
-state 294:
+state 293:
 
 	VoidCall : VFOX _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -4429,17 +4404,17 @@ state 294:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 425
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 424
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 295:
+state 294:
 
 	VoidCall : VFOD _LPAREN dExpr _ _RPAREN
 	dExpr : dExpr _ _PLUS dExpr
@@ -4455,52 +4430,52 @@ state 295:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
+	_RPAREN	shift 425
+	.	error
+
+state 295:
+
+	VoidCall : VFG _LPAREN gExpr _ _RPAREN
+
 	_RPAREN	shift 426
 	.	error
 
 state 296:
 
-	VoidCall : VFG _LPAREN gExpr _ _RPAREN
-
-	_RPAREN	shift 427
-	.	error
-
-state 297:
-
 	gExpr : DynToken _	(125)
 
 	.	reduce 125
 
-state 298:
+state 297:
 
 	gExpr : SFLD _	(121)
 
 	.	reduce 121
 
-state 299:
+state 298:
 
 	VoidCall : VFGG _LPAREN gExpr _ _COMMA gExpr _RPAREN
+
+	_COMMA	shift 427
+	.	error
+
+state 299:
+
+	VoidCall : VFGGG _LPAREN gExpr _ _COMMA gExpr _COMMA gExpr _RPAREN
 
 	_COMMA	shift 428
 	.	error
 
 state 300:
 
-	VoidCall : VFGGG _LPAREN gExpr _ _COMMA gExpr _COMMA gExpr _RPAREN
+	VoidCall : VFGGGG _LPAREN gExpr _ _COMMA gExpr _COMMA gExpr _COMMA gExpr _RPAREN
 
 	_COMMA	shift 429
 	.	error
 
 state 301:
-
-	VoidCall : VFGGGG _LPAREN gExpr _ _COMMA gExpr _COMMA gExpr _COMMA gExpr _RPAREN
-
-	_COMMA	shift 430
-	.	error
-
-state 302:
 
 	xExpr : XFD _LPAREN dExpr _ _RPAREN
 	dExpr : dExpr _ _PLUS dExpr
@@ -4516,50 +4491,50 @@ state 302:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
+	_RPAREN	shift 430
+	.	error
+
+state 302:
+
+	xExpr : XFG _LPAREN gExpr _ _RPAREN
+
 	_RPAREN	shift 431
 	.	error
 
 state 303:
 
-	xExpr : XFG _LPAREN gExpr _ _RPAREN
+	xExpr : XFGG _LPAREN gExpr _ _COMMA gExpr _RPAREN
 
-	_RPAREN	shift 432
+	_COMMA	shift 432
 	.	error
 
 state 304:
 
-	xExpr : XFGG _LPAREN gExpr _ _COMMA gExpr _RPAREN
+	xExpr : XFS _LPAREN sExpr _ _RPAREN
+	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 433
+	_PLUS	shift 140
+	_RPAREN	shift 433
 	.	error
 
 state 305:
 
-	xExpr : XFS _LPAREN sExpr _ _RPAREN
-	sExpr : sExpr _ _PLUS sExpr
-
-	_PLUS	shift 141
-	_RPAREN	shift 434
-	.	error
-
-state 306:
-
 	xExpr : XFSX _LPAREN sExpr _ _COMMA xExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 435
-	_PLUS	shift 141
+	_COMMA	shift 434
+	_PLUS	shift 140
 	.	error
 
-state 307:
+state 306:
 
 	xExpr : XFV _LPAREN _RPAREN _	(174)
 
 	.	reduce 174
 
-state 308:
+state 307:
 
 	xExpr : XFX _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -4570,17 +4545,17 @@ state 308:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 436
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 435
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 309:
+state 308:
 
 	xExpr : XFXX _LPAREN xExpr _ _COMMA xExpr _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -4591,39 +4566,39 @@ state 309:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_COMMA	shift 437
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_COMMA	shift 436
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 310:
+state 309:
 
 	xExpr : XFFRAME _LPAREN FRAME_ _ _RPAREN
 
-	_RPAREN	shift 438
+	_RPAREN	shift 437
 	.	error
 
-state 311:
+state 310:
 
 	xExpr : XFOV _LPAREN _RPAREN _	(182)
 
 	.	reduce 182
 
-state 312:
+state 311:
 
 	xExpr : XFOS _LPAREN sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 439
+	_PLUS	shift 140
+	_RPAREN	shift 438
 	.	error
 
-state 313:
+state 312:
 
 	xExpr : XFOX _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -4634,17 +4609,17 @@ state 313:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 440
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 439
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 314:
+state 313:
 
 	xExpr : XFOXX _LPAREN xExpr _ _COMMA xExpr _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -4655,28 +4630,28 @@ state 314:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_COMMA	shift 441
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_COMMA	shift 440
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 315:
+state 314:
 
 	Assignment : BFLD _ASSIGNMENT bExpr _	(100)
 	bExpr : bExpr _ _OR bExpr
 	bExpr : bExpr _ _AND bExpr
 
-	_AND	shift 365
-	_OR	shift 366
+	_AND	shift 364
+	_OR	shift 365
 	_SEMICOLON	reduce 100
 	.	error
 
-state 316:
+state 315:
 
 	Assignment : DFLD _ASSIGNMENT dExpr _	(101)
 	dExpr : dExpr _ _PLUS dExpr
@@ -4692,33 +4667,33 @@ state 316:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
 	_SEMICOLON	reduce 101
 	.	error
 
-state 317:
+state 316:
 
 	Assignment : DFLD _ASSIGNMENT _NIL _	(109)
 
 	.	reduce 109
 
-state 318:
+state 317:
 
 	Assignment : SFLD _ASSIGNMENT sExpr _	(102)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_SEMICOLON	reduce 102
 	.	error
 
-state 319:
+state 318:
 
 	Assignment : SFLD _ASSIGNMENT _NIL _	(110)
 
 	.	reduce 110
 
-state 320:
+state 319:
 
 	Assignment : IFLD _ASSIGNMENT xExpr _	(104)
 	xExpr : xExpr _ _AND xExpr
@@ -4729,23 +4704,23 @@ state 320:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_SEMICOLON	reduce 104
 	.	error
 
-state 321:
+state 320:
 
 	Assignment : IFLD _ASSIGNMENT _NIL _	(112)
 
 	.	reduce 112
 
-state 322:
+state 321:
 
 	Assignment : XFLD _ASSIGNMENT xExpr _	(103)
 	xExpr : xExpr _ _AND xExpr
@@ -4756,305 +4731,303 @@ state 322:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_SEMICOLON	reduce 103
 	.	error
 
-state 323:
+state 322:
 
 	Assignment : XFLD _ASSIGNMENT _NIL _	(111)
 
 	.	reduce 111
 
-state 324:
+state 323:
 
 	Assignment : GFLD _ASSIGNMENT gExpr _	(105)
 
 	.	reduce 105
 
-state 325:
+state 324:
 
 	Assignment : GFLD _ASSIGNMENT _NIL _	(113)
 
 	.	reduce 113
 
-state 326:
+state 325:
 
 	Assignment : PFLD _ASSIGNMENT _AMPERSAND _ PointerRef
 
-	GFLD	shift 444
+	GFLD	shift 443
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
+	_FIELDID	shift 110
 	.	error
 
-	DynToken	goto 442
-	PointerRef	goto 443
+	DynToken	goto 441
+	PointerRef	goto 442
 
-state 327:
+state 326:
 
 	Assignment : PFLD _ASSIGNMENT _NIL _	(108)
 
 	.	reduce 108
 
-state 328:
+state 327:
 
 	BlokStatement : _BEGIN $$3 Start _ _END
 
-	_END	shift 445
+	_END	shift 444
+	.	error
+
+state 328:
+
+	VoidStatement : _EVALUATE _LPAREN _CHARACTER_STRING _ _RPAREN
+
+	_RPAREN	shift 445
 	.	error
 
 state 329:
 
-	VoidStatement : _EVALUATE _LPAREN _CHARACTER_STRING _ _RPAREN
-
-	_RPAREN	shift 446
-	.	error
-
-state 330:
-
-	DeclareSqlExecTokenList : DeclareSqlExecToken _	(252)
-
-	.	reduce 252
-
-state 331:
-
-	DeclareSqlExecStatement : _EXEC_SQLEXEC $$17 DeclareSqlExecTokenList _	(251)
-	DeclareSqlExecTokenList : DeclareSqlExecTokenList _ DeclareSqlExecToken
-
-	_SQLPARAM_FIELD	shift 332
-	_SQLTOKEN	shift 333
-	_SEMICOLON	reduce 251
-	.	error
-
-	DeclareSqlExecToken	goto 447
-
-state 332:
-
-	DeclareSqlExecToken : _SQLPARAM_FIELD _	(255)
+	DeclareSqlExecTokenList : DeclareSqlExecToken _	(255)
 
 	.	reduce 255
 
-state 333:
+state 330:
 
-	DeclareSqlExecToken : _SQLTOKEN _	(254)
+	DeclareSqlExecStatement : _EXEC_SQLEXEC $$20 DeclareSqlExecTokenList _	(254)
+	DeclareSqlExecTokenList : DeclareSqlExecTokenList _ DeclareSqlExecToken
 
-	.	reduce 254
-
-state 334:
-
-	DeclareSqlInsertTokenList : DeclareSqlInsertToken _	(246)
-
-	.	reduce 246
-
-state 335:
-
-	DeclareSqlInsertStatement : _EXEC_SQLINSERT $$16 DeclareSqlInsertTokenList _	(245)
-	DeclareSqlInsertTokenList : DeclareSqlInsertTokenList _ DeclareSqlInsertToken
-
-	_AS_FIELDID	shift 336
-	_SQLTOKEN	shift 337
-	_SEMICOLON	reduce 245
+	_SQLPARAM_FIELD	shift 331
+	_SQLTOKEN	shift 332
+	_SEMICOLON	reduce 254
 	.	error
 
-	DeclareSqlInsertToken	goto 448
+	DeclareSqlExecToken	goto 446
 
-state 336:
+state 331:
 
-	DeclareSqlInsertToken : _AS_FIELDID _	(249)
+	DeclareSqlExecToken : _SQLPARAM_FIELD _	(258)
+
+	.	reduce 258
+
+state 332:
+
+	DeclareSqlExecToken : _SQLTOKEN _	(257)
+
+	.	reduce 257
+
+state 333:
+
+	DeclareSqlInsertTokenList : DeclareSqlInsertToken _	(249)
 
 	.	reduce 249
 
-state 337:
+state 334:
 
-	DeclareSqlInsertToken : _SQLTOKEN _	(248)
+	DeclareSqlInsertStatement : _EXEC_SQLINSERT $$19 DeclareSqlInsertTokenList _	(248)
+	DeclareSqlInsertTokenList : DeclareSqlInsertTokenList _ DeclareSqlInsertToken
 
-	.	reduce 248
-
-state 338:
-
-	DeclareSqlTokenList : DeclareSqlToken _	(236)
-
-	.	reduce 236
-
-state 339:
-
-	DeclareSqlSelectStatement : _EXEC_SQLSELECT $$15 DeclareSqlTokenList _ OptionalSqlLoop
-	DeclareSqlTokenList : DeclareSqlTokenList _ DeclareSqlToken
-
-	_AS_FIELDID	shift 340
-	_LOOP	shift 349
-	_SEMICOLON	shift 350
-	_SQLPARAM_FIELD	shift 341
-	_SQLTOKEN	shift 342
+	_AS_FIELDID	shift 335
+	_SQLTOKEN	shift 336
+	_SEMICOLON	reduce 248
 	.	error
 
-	DeclareSqlToken	goto 449
-	OptionalSqlLoop	goto 450
+	DeclareSqlInsertToken	goto 447
 
-state 340:
+state 335:
 
-	DeclareSqlToken : _AS_FIELDID _	(239)
+	DeclareSqlInsertToken : _AS_FIELDID _	(252)
+
+	.	reduce 252
+
+state 336:
+
+	DeclareSqlInsertToken : _SQLTOKEN _	(251)
+
+	.	reduce 251
+
+state 337:
+
+	DeclareSqlTokenList : DeclareSqlToken _	(239)
 
 	.	reduce 239
 
+state 338:
+
+	DeclareSqlSelectStatement : _EXEC_SQLSELECT $$18 DeclareSqlTokenList _ OptionalSqlLoop
+	DeclareSqlTokenList : DeclareSqlTokenList _ DeclareSqlToken
+
+	_AS_FIELDID	shift 339
+	_LOOP	shift 347
+	_SEMICOLON	shift 348
+	_SQLPARAM_FIELD	shift 340
+	_SQLTOKEN	shift 341
+	.	error
+
+	DeclareSqlToken	goto 448
+	OptionalSqlLoop	goto 449
+
+state 339:
+
+	DeclareSqlToken : _AS_FIELDID _	(242)
+
+	.	reduce 242
+
+state 340:
+
+	DeclareSqlToken : _SQLPARAM_FIELD _	(243)
+
+	.	reduce 243
+
 state 341:
 
-	DeclareSqlToken : _SQLPARAM_FIELD _	(240)
+	DeclareSqlToken : _SQLTOKEN _	(241)
 
-	.	reduce 240
+	.	reduce 241
 
 state 342:
 
-	DeclareSqlToken : _SQLTOKEN _	(238)
+	DeclareForEachStatement : _FOR _EACH $$9 _ DeclareGroup OptionalAlias _DO BlokStatement
 
-	.	reduce 238
+	GFLD	shift 354
+	_DYNFLD	shift 103
+	_FIELDID	shift 110
+	.	error
+
+	DeclareGroup	goto 450
+	DynToken	goto 353
 
 state 343:
 
-	RegExStatement : _EXEC_YAG _LPAREN sExpr _ _COMMA sExpr _RPAREN _AS SFLD _DO BlokStatement
-	sExpr : sExpr _ _PLUS sExpr
+	ForEachStatement : _FOREACH $$16 BlokStatement _	(234)
 
-	_COMMA	shift 451
-	_PLUS	shift 141
-	.	error
+	.	reduce 234
 
 state 344:
-
-	DeclareForEachStatement : _FOR _EACH $$9 _ DeclareGroup OptionalAlias _DO BlokStatement
-
-	GFLD	shift 356
-	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	.	error
-
-	DeclareGroup	goto 452
-	DynToken	goto 355
-
-state 345:
-
-	ForEachStatement : _FOREACH $$13 BlokStatement _	(231)
-
-	.	reduce 231
-
-state 346:
 
 	sExpr : _LPAREN sExpr _RPAREN _	(146)
 
 	.	reduce 146
 
-state 347:
+state 345:
 
 	xExpr : _LPAREN xExpr _RPAREN _	(168)
 
 	.	reduce 168
 
-state 348:
+state 346:
 
 	SqlSelectStatement : _SQLSELECT $$8 OptionalSqlLoop _	(214)
 
 	.	reduce 214
 
-state 349:
+state 347:
 
 	OptionalSqlLoop : _LOOP _ BlokStatement
 
 	_BEGIN	shift 104
 	.	error
 
-	BlokStatement	goto 453
+	BlokStatement	goto 451
 
-state 350:
+state 348:
 
-	OptionalSqlLoop : _SEMICOLON _	(241)
+	OptionalSqlLoop : _SEMICOLON _	(244)
 
-	.	reduce 241
+	.	reduce 244
 
-state 351:
+state 349:
 
 	Assignment : _STAR PFLD _ASSIGNMENT _ gExpr
 	Assignment : _STAR PFLD _ASSIGNMENT _ _NIL
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_NIL	shift 455
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_NIL	shift 453
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 454
-	DynToken	goto 297
+	gExpr	goto 452
+	DynToken	goto 296
 
-state 352:
+state 350:
 
 	CreateVoidFunction : _VOID _NOID $$2 _ _LPAREN OptionalArgumentList _RPAREN _BEGIN Start _END
 
-	_LPAREN	shift 456
+	_LPAREN	shift 454
 	.	error
 
-state 353:
+state 351:
 
 	VoidStatement : VOIDFUNCTION_ _LPAREN _RPAREN _	(88)
 
 	.	reduce 88
 
-state 354:
+state 352:
 
 	DeclareWithStatement : _WITH $$10 DeclareGroup _ OptionalAlias _DO BlokStatement
 	OptionalAlias : _	(225)
 
-	_NOID	shift 458
+	_NOID	shift 456
 	_DO	reduce 225
 	.	error
 
-	OptionalAlias	goto 457
+	OptionalAlias	goto 455
 
-state 355:
+state 353:
 
 	DeclareGroup : DynToken _	(222)
 
 	.	reduce 222
 
-state 356:
+state 354:
 
 	DeclareGroup : GFLD _	(221)
 
 	.	reduce 221
 
-state 357:
+state 355:
+
+	SlStatement : _WITH SLFOSS $$13 _ _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD $$14 _DO $$15 BlokStatement
+
+	_LPAREN	shift 457
+	.	error
+
+state 356:
 
 	DeclareWithNewStatement : _WITH _NEW $$11 _ DeclareGroup OptionalAlias _DO BlokStatement
 
-	GFLD	shift 356
+	GFLD	shift 354
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
+	_FIELDID	shift 110
 	.	error
 
-	DeclareGroup	goto 459
-	DynToken	goto 355
+	DeclareGroup	goto 458
+	DynToken	goto 353
+
+state 357:
+
+	WithStatement : _WITHDO $$17 BlokStatement _	(236)
+
+	.	reduce 236
 
 state 358:
-
-	WithStatement : _WITHDO $$14 BlokStatement _	(233)
-
-	.	reduce 233
-
-state 359:
 
 	WithNewStatement : _WITHNEWDO $$12 BlokStatement _	(228)
 
 	.	reduce 228
 
-state 360:
+state 359:
 
 	DateTimeDeclaration : _DATETIME _FIELDID _ASSIGNMENT dExpr _	(13)
 	dExpr : dExpr _ _PLUS dExpr
@@ -5070,12 +5043,12 @@ state 360:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
 	_SEMICOLON	reduce 13
 	.	error
 
-state 361:
+state 360:
 
 	ExtendedDeclaration : _FLOAT _FIELDID _ASSIGNMENT xExpr _	(15)
 	xExpr : xExpr _ _AND xExpr
@@ -5086,17 +5059,17 @@ state 361:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_SEMICOLON	reduce 15
 	.	error
 
-state 362:
+state 361:
 
 	IntegerDeclaration : _INTEGER _FIELDID _ASSIGNMENT xExpr _	(17)
 	xExpr : xExpr _ _AND xExpr
@@ -5107,44 +5080,44 @@ state 362:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_SEMICOLON	reduce 17
 	.	error
 
-state 363:
+state 362:
 
 	PointerDeclaration : _POINTER _FIELDID _ASSIGNMENT _AMPERSAND _ PointerRef
 
-	GFLD	shift 444
+	GFLD	shift 443
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
+	_FIELDID	shift 110
 	.	error
 
-	DynToken	goto 442
-	PointerRef	goto 460
+	DynToken	goto 441
+	PointerRef	goto 459
 
-state 364:
+state 363:
 
 	StringDeclaration : _STRING _FIELDID _ASSIGNMENT sExpr _	(19)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_SEMICOLON	reduce 19
 	.	error
 
-state 365:
+state 364:
 
 	bExpr : bExpr _AND _ bExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	SFBSS	shift 50
 	SFD	shift 51
 	SFDS	shift 52
@@ -5169,33 +5142,33 @@ state 365:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	DFLD	shift 241
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 243
-	_MINUS	shift 115
-	_NOT	shift 244
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 242
+	_MINUS	shift 114
+	_NOT	shift 243
+	_REALNUMBER	shift 115
 	.	error
 
-	RelationalExpression	goto 233
-	bExpr	goto 461
-	DynToken	goto 212
-	sExpr	goto 236
-	xExpr	goto 237
-	dExpr	goto 238
+	RelationalExpression	goto 232
+	bExpr	goto 460
+	DynToken	goto 210
+	sExpr	goto 235
+	xExpr	goto 236
+	dExpr	goto 237
 
-state 366:
+state 365:
 
 	bExpr : bExpr _OR _ bExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	SFBSS	shift 50
 	SFD	shift 51
 	SFDS	shift 52
@@ -5220,27 +5193,27 @@ state 366:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	SFLD	shift 215
-	IFLD	shift 216
-	XFLD	shift 217
+	DFLD	shift 241
+	SFLD	shift 213
+	IFLD	shift 214
+	XFLD	shift 215
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 243
-	_MINUS	shift 115
-	_NOT	shift 244
-	_REALNUMBER	shift 116
+	_FIELDID	shift 110
+	_LPAREN	shift 242
+	_MINUS	shift 114
+	_NOT	shift 243
+	_REALNUMBER	shift 115
 	.	error
 
-	RelationalExpression	goto 233
-	bExpr	goto 462
-	DynToken	goto 212
-	sExpr	goto 236
-	xExpr	goto 237
-	dExpr	goto 238
+	RelationalExpression	goto 232
+	bExpr	goto 461
+	DynToken	goto 210
+	sExpr	goto 235
+	xExpr	goto 236
+	dExpr	goto 237
 
-state 367:
+state 366:
 
 	IfOrIfThenElse : _IF BooleanExpr _THEN _ TrueStatement
 	IfOrIfThenElse : _IF BooleanExpr _THEN _ TrueStatement _ELSE FalseStatement
@@ -5248,10 +5221,10 @@ state 367:
 
 	.	reduce 96
 
-	$$6	goto 463
-	TrueStatement	goto 464
+	$$6	goto 462
+	TrueStatement	goto 463
 
-state 368:
+state 367:
 
 	RelationalExpression : sExpr _EQUAL _ sExpr
 
@@ -5266,17 +5239,17 @@ state 368:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 465
+	DynToken	goto 210
+	sExpr	goto 464
 
-state 369:
+state 368:
 
 	RelationalExpression : sExpr _GE _ sExpr
 
@@ -5291,17 +5264,17 @@ state 369:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 466
+	DynToken	goto 210
+	sExpr	goto 465
 
-state 370:
+state 369:
 
 	RelationalExpression : sExpr _GT _ sExpr
 
@@ -5316,17 +5289,17 @@ state 370:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 467
+	DynToken	goto 210
+	sExpr	goto 466
 
-state 371:
+state 370:
 
 	RelationalExpression : sExpr _LE _ sExpr
 
@@ -5341,17 +5314,17 @@ state 371:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 468
+	DynToken	goto 210
+	sExpr	goto 467
 
-state 372:
+state 371:
 
 	RelationalExpression : sExpr _LT _ sExpr
 
@@ -5366,17 +5339,17 @@ state 372:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 469
+	DynToken	goto 210
+	sExpr	goto 468
 
-state 373:
+state 372:
 
 	RelationalExpression : sExpr _NOTEQUAL _ sExpr
 
@@ -5391,17 +5364,17 @@ state 373:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 470
+	DynToken	goto 210
+	sExpr	goto 469
 
-state 374:
+state 373:
 
 	RelationalExpression : xExpr _EQUAL _ xExpr
 
@@ -5418,16 +5391,16 @@ state 374:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 471
+	xExpr	goto 470
 
-state 375:
+state 374:
 
 	RelationalExpression : xExpr _GE _ xExpr
 
@@ -5444,16 +5417,16 @@ state 375:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 472
+	xExpr	goto 471
 
-state 376:
+state 375:
 
 	RelationalExpression : xExpr _GT _ xExpr
 
@@ -5470,16 +5443,16 @@ state 376:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 473
+	xExpr	goto 472
 
-state 377:
+state 376:
 
 	RelationalExpression : xExpr _LE _ xExpr
 
@@ -5496,16 +5469,16 @@ state 377:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 474
+	xExpr	goto 473
 
-state 378:
+state 377:
 
 	RelationalExpression : xExpr _LT _ xExpr
 
@@ -5522,23 +5495,23 @@ state 378:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 475
+	xExpr	goto 474
 
-state 379:
+state 378:
 
 	dExpr : xExpr _MINUS _ dExpr
 	xExpr : xExpr _MINUS _ xExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5552,18 +5525,18 @@ state 379:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 476
-	dExpr	goto 477
+	xExpr	goto 475
+	dExpr	goto 476
 
-state 380:
+state 379:
 
 	RelationalExpression : xExpr _NOTEQUAL _ xExpr
 
@@ -5580,23 +5553,23 @@ state 380:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 478
+	xExpr	goto 477
 
-state 381:
+state 380:
 
 	dExpr : xExpr _PLUS _ dExpr
 	xExpr : xExpr _PLUS _ xExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5610,24 +5583,55 @@ state 381:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 479
+	xExpr	goto 478
+	dExpr	goto 479
+
+state 381:
+
+	RelationalExpression : dExpr _EQUAL _ dExpr
+
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
+	XFD	shift 83
+	XFG	shift 84
+	XFGG	shift 85
+	XFS	shift 86
+	XFSX	shift 87
+	XFV	shift 88
+	XFX	shift 89
+	XFXX	shift 90
+	XFFRAME	shift 91
+	XFOV	shift 92
+	XFOS	shift 93
+	XFOX	shift 94
+	XFOXX	shift 95
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
+	.	error
+
+	xExpr	goto 265
 	dExpr	goto 480
 
 state 382:
 
-	RelationalExpression : dExpr _EQUAL _ dExpr
+	RelationalExpression : dExpr _GE _ dExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5641,24 +5645,24 @@ state 382:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
+	xExpr	goto 265
 	dExpr	goto 481
 
 state 383:
 
-	RelationalExpression : dExpr _GE _ dExpr
+	RelationalExpression : dExpr _GT _ dExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5672,24 +5676,24 @@ state 383:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
+	xExpr	goto 265
 	dExpr	goto 482
 
 state 384:
 
-	RelationalExpression : dExpr _GT _ dExpr
+	RelationalExpression : dExpr _LE _ dExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5703,24 +5707,24 @@ state 384:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
+	xExpr	goto 265
 	dExpr	goto 483
 
 state 385:
 
-	RelationalExpression : dExpr _LE _ dExpr
+	RelationalExpression : dExpr _LT _ dExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5734,49 +5738,18 @@ state 385:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
+	xExpr	goto 265
 	dExpr	goto 484
 
 state 386:
-
-	RelationalExpression : dExpr _LT _ dExpr
-
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
-	XFD	shift 83
-	XFG	shift 84
-	XFGG	shift 85
-	XFS	shift 86
-	XFSX	shift 87
-	XFV	shift 88
-	XFX	shift 89
-	XFXX	shift 90
-	XFFRAME	shift 91
-	XFOV	shift 92
-	XFOS	shift 93
-	XFOX	shift 94
-	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
-	.	error
-
-	xExpr	goto 266
-	dExpr	goto 485
-
-state 387:
 
 	dExpr : dExpr _MINUS _ dExpr
 	dExpr : dExpr _MINUS _ xExpr
@@ -5785,9 +5758,9 @@ state 387:
 	dExpr : dExpr _MINUS _ _WEEKS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _MINUS _ _DAYS _LPAREN xExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5801,28 +5774,28 @@ state 387:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_DAYS	shift 488
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_MONTHS	shift 489
-	_REALNUMBER	shift 116
-	_WEEKS	shift 490
-	_YEARS	shift 491
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_DAYS	shift 487
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_MONTHS	shift 488
+	_REALNUMBER	shift 115
+	_WEEKS	shift 489
+	_YEARS	shift 490
 	.	error
 
-	xExpr	goto 486
-	dExpr	goto 487
+	xExpr	goto 485
+	dExpr	goto 486
 
-state 388:
+state 387:
 
 	RelationalExpression : dExpr _NOTEQUAL _ dExpr
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5836,18 +5809,18 @@ state 388:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 266
-	dExpr	goto 492
+	xExpr	goto 265
+	dExpr	goto 491
 
-state 389:
+state 388:
 
 	dExpr : dExpr _PLUS _ dExpr
 	dExpr : dExpr _PLUS _ xExpr
@@ -5856,9 +5829,9 @@ state 389:
 	dExpr : dExpr _PLUS _ _WEEKS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _PLUS _ _DAYS _LPAREN xExpr _RPAREN
 
-	DF	shift 239
-	DFS	shift 240
-	DFX	shift 241
+	DF	shift 238
+	DFS	shift 239
+	DFX	shift 240
 	XFD	shift 83
 	XFG	shift 84
 	XFGG	shift 85
@@ -5872,29 +5845,29 @@ state 389:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	DFLD	shift 242
-	IFLD	shift 216
-	XFLD	shift 217
-	_DAYS	shift 495
-	_LPAREN	shift 268
-	_MINUS	shift 115
-	_MONTHS	shift 496
-	_REALNUMBER	shift 116
-	_WEEKS	shift 497
-	_YEARS	shift 498
+	DFLD	shift 241
+	IFLD	shift 214
+	XFLD	shift 215
+	_DAYS	shift 494
+	_LPAREN	shift 267
+	_MINUS	shift 114
+	_MONTHS	shift 495
+	_REALNUMBER	shift 115
+	_WEEKS	shift 496
+	_YEARS	shift 497
 	.	error
 
-	xExpr	goto 493
-	dExpr	goto 494
+	xExpr	goto 492
+	dExpr	goto 493
 
-state 390:
+state 389:
 
 	dExpr : DF _LPAREN _ _RPAREN
 
-	_RPAREN	shift 499
+	_RPAREN	shift 498
 	.	error
 
-state 391:
+state 390:
 
 	dExpr : DFS _LPAREN _ sExpr _RPAREN
 
@@ -5909,17 +5882,17 @@ state 391:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 500
+	DynToken	goto 210
+	sExpr	goto 499
 
-state 392:
+state 391:
 
 	dExpr : DFX _LPAREN _ xExpr _RPAREN
 
@@ -5936,31 +5909,31 @@ state 392:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 501
+	xExpr	goto 500
 
-state 393:
+state 392:
 
 	bExpr : _LPAREN bExpr _ _RPAREN
 	bExpr : bExpr _ _OR bExpr
 	bExpr : bExpr _ _AND bExpr
 
-	_AND	shift 365
-	_OR	shift 366
-	_RPAREN	shift 502
+	_AND	shift 364
+	_OR	shift 365
+	_RPAREN	shift 501
 	.	error
 
-state 394:
+state 393:
 
 	*** conflicts:
 
-	shift 346, reduce 199 on _RPAREN
+	shift 344, reduce 199 on _RPAREN
 
 	sExpr : _LPAREN sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
@@ -5972,24 +5945,24 @@ state 394:
 	RelationalExpression : sExpr _ _GT sExpr
 	RelationalExpression : sExpr _ _NOTEQUAL sExpr
 
-	_EQUAL	shift 368
-	_GE	shift 369
-	_GT	shift 370
-	_LE	shift 371
-	_LT	shift 372
-	_NOTEQUAL	shift 373
-	_PLUS	shift 141
-	_RPAREN	shift 346
+	_EQUAL	shift 367
+	_GE	shift 368
+	_GT	shift 369
+	_LE	shift 370
+	_LT	shift 371
+	_NOTEQUAL	shift 372
+	_PLUS	shift 140
+	_RPAREN	shift 344
 	_AND	reduce 199
 	_OR	reduce 199
 	.	error
 
-state 395:
+state 394:
 
 	*** conflicts:
 
-	shift 143, reduce 192 on _AND
-	shift 347, reduce 192 on _RPAREN
+	shift 142, reduce 192 on _AND
+	shift 345, reduce 192 on _RPAREN
 
 	xExpr : _LPAREN xExpr _ _RPAREN
 	dExpr : xExpr _ _PLUS dExpr
@@ -6009,28 +5982,28 @@ state 395:
 	RelationalExpression : xExpr _ _GT xExpr
 	RelationalExpression : xExpr _ _NOTEQUAL xExpr
 
-	_AND	shift 143
-	_EQUAL	shift 374
-	_GE	shift 375
-	_GT	shift 376
-	_LE	shift 377
-	_LT	shift 378
-	_MINUS	shift 379
-	_MOD	shift 145
-	_NOTEQUAL	shift 380
-	_PLUS	shift 381
-	_RPAREN	shift 347
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_EQUAL	shift 373
+	_GE	shift 374
+	_GT	shift 375
+	_LE	shift 376
+	_LT	shift 377
+	_MINUS	shift 378
+	_MOD	shift 144
+	_NOTEQUAL	shift 379
+	_PLUS	shift 380
+	_RPAREN	shift 345
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_OR	reduce 192
 	.	error
 
-state 396:
+state 395:
 
 	*** conflicts:
 
-	shift 503, reduce 206 on _RPAREN
+	shift 502, reduce 206 on _RPAREN
 
 	dExpr : _LPAREN dExpr _ _RPAREN
 	dExpr : dExpr _ _PLUS dExpr
@@ -6053,20 +6026,20 @@ state 396:
 	RelationalExpression : dExpr _ _GT dExpr
 	RelationalExpression : dExpr _ _NOTEQUAL dExpr
 
-	_EQUAL	shift 382
-	_GE	shift 383
-	_GT	shift 384
-	_LE	shift 385
-	_LT	shift 386
-	_MINUS	shift 387
-	_NOTEQUAL	shift 388
-	_PLUS	shift 389
-	_RPAREN	shift 503
+	_EQUAL	shift 381
+	_GE	shift 382
+	_GT	shift 383
+	_LE	shift 384
+	_LT	shift 385
+	_MINUS	shift 386
+	_NOTEQUAL	shift 387
+	_PLUS	shift 388
+	_RPAREN	shift 502
 	_AND	reduce 206
 	_OR	reduce 206
 	.	error
 
-state 397:
+state 396:
 
 	bExpr : _NOT bExpr _	(189)
 	bExpr : bExpr _ _OR bExpr
@@ -6074,23 +6047,23 @@ state 397:
 
 	.	reduce 189
 
-state 398:
+state 397:
 
 	WhileStatement : $$4 _WHILE BooleanExpr _DO _ TrueStatement
 	$$6 : _	(96)
 
 	.	reduce 96
 
-	$$6	goto 463
-	TrueStatement	goto 504
+	$$6	goto 462
+	TrueStatement	goto 503
 
-state 399:
+state 398:
 
 	gExpr : _STAR PFLD _	(120)
 
 	.	reduce 120
 
-state 400:
+state 399:
 
 	sExpr : SFBSS _LPAREN bExpr _COMMA _ sExpr _COMMA sExpr _RPAREN
 
@@ -6105,23 +6078,23 @@ state 400:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 505
+	DynToken	goto 210
+	sExpr	goto 504
 
-state 401:
+state 400:
 
 	sExpr : SFD _LPAREN dExpr _RPAREN _	(159)
 
 	.	reduce 159
 
-state 402:
+state 401:
 
 	xExpr : _LPAREN xExpr _ _RPAREN
 	dExpr : xExpr _ _PLUS dExpr
@@ -6134,17 +6107,17 @@ state 402:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 379
-	_MOD	shift 145
-	_PLUS	shift 381
-	_RPAREN	shift 347
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 378
+	_MOD	shift 144
+	_PLUS	shift 380
+	_RPAREN	shift 345
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 403:
+state 402:
 
 	dExpr : _LPAREN dExpr _ _RPAREN
 	dExpr : dExpr _ _PLUS dExpr
@@ -6160,12 +6133,12 @@ state 403:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
-	_RPAREN	shift 503
+	_MINUS	shift 386
+	_PLUS	shift 388
+	_RPAREN	shift 502
 	.	error
 
-state 404:
+state 403:
 
 	sExpr : SFDS _LPAREN dExpr _COMMA _ sExpr _RPAREN
 
@@ -6180,23 +6153,23 @@ state 404:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 506
+	DynToken	goto 210
+	sExpr	goto 505
 
-state 405:
+state 404:
 
 	sExpr : SFS _LPAREN sExpr _RPAREN _	(150)
 
 	.	reduce 150
 
-state 406:
+state 405:
 
 	sExpr : SFSS _LPAREN sExpr _COMMA _ sExpr _RPAREN
 
@@ -6211,17 +6184,17 @@ state 406:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 507
+	DynToken	goto 210
+	sExpr	goto 506
 
-state 407:
+state 406:
 
 	sExpr : SFSSS _LPAREN sExpr _COMMA _ sExpr _COMMA sExpr _RPAREN
 
@@ -6236,17 +6209,17 @@ state 407:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 508
+	DynToken	goto 210
+	sExpr	goto 507
 
-state 408:
+state 407:
 
 	sExpr : SFSSSS _LPAREN sExpr _COMMA _ sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -6261,17 +6234,17 @@ state 408:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 509
+	DynToken	goto 210
+	sExpr	goto 508
 
-state 409:
+state 408:
 
 	sExpr : SFSXX _LPAREN sExpr _COMMA _ xExpr _COMMA xExpr _RPAREN
 
@@ -6288,28 +6261,28 @@ state 409:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 510
+	xExpr	goto 509
 
-state 410:
+state 409:
 
 	sExpr : SFX _LPAREN xExpr _RPAREN _	(157)
 
 	.	reduce 157
 
-state 411:
+state 410:
 
 	VoidCall : VFS _LPAREN sExpr _RPAREN _	(56)
 
 	.	reduce 56
 
-state 412:
+state 411:
 
 	VoidCall : VFSS _LPAREN sExpr _COMMA _ sExpr _RPAREN
 
@@ -6324,17 +6297,17 @@ state 412:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 511
+	DynToken	goto 210
+	sExpr	goto 510
 
-state 413:
+state 412:
 
 	VoidCall : VFSX _LPAREN sExpr _COMMA _ xExpr _RPAREN
 
@@ -6351,16 +6324,16 @@ state 413:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 512
+	xExpr	goto 511
 
-state 414:
+state 413:
 
 	VoidCall : VFSSS _LPAREN sExpr _COMMA _ sExpr _COMMA sExpr _RPAREN
 
@@ -6375,17 +6348,17 @@ state 414:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 513
+	DynToken	goto 210
+	sExpr	goto 512
 
-state 415:
+state 414:
 
 	VoidCall : VFSSX _LPAREN sExpr _COMMA _ sExpr _COMMA xExpr _RPAREN
 
@@ -6400,17 +6373,17 @@ state 415:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 514
+	DynToken	goto 210
+	sExpr	goto 513
 
-state 416:
+state 415:
 
 	VoidCall : VFSSSS _LPAREN sExpr _COMMA _ sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -6425,35 +6398,35 @@ state 416:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 515
+	DynToken	goto 210
+	sExpr	goto 514
 
-state 417:
+state 416:
 
 	VoidCall : VFX _LPAREN xExpr _RPAREN _	(62)
 
 	.	reduce 62
 
-state 418:
+state 417:
 
 	VoidCall : VFD _LPAREN dExpr _RPAREN _	(51)
 
 	.	reduce 51
 
-state 419:
+state 418:
 
 	VoidCall : VFOS _LPAREN sExpr _RPAREN _	(65)
 
 	.	reduce 65
 
-state 420:
+state 419:
 
 	VoidCall : VFOSS _LPAREN sExpr _COMMA _ sExpr _RPAREN
 
@@ -6468,17 +6441,17 @@ state 420:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 516
+	DynToken	goto 210
+	sExpr	goto 515
 
-state 421:
+state 420:
 
 	VoidCall : VFOSX _LPAREN sExpr _COMMA _ xExpr _RPAREN
 
@@ -6495,16 +6468,16 @@ state 421:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 517
+	xExpr	goto 516
 
-state 422:
+state 421:
 
 	VoidCall : VFOSSS _LPAREN sExpr _COMMA _ sExpr _COMMA sExpr _RPAREN
 
@@ -6519,17 +6492,17 @@ state 422:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 518
+	DynToken	goto 210
+	sExpr	goto 517
 
-state 423:
+state 422:
 
 	VoidCall : VFOSSX _LPAREN sExpr _COMMA _ sExpr _COMMA xExpr _RPAREN
 
@@ -6544,17 +6517,17 @@ state 423:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 519
+	DynToken	goto 210
+	sExpr	goto 518
 
-state 424:
+state 423:
 
 	VoidCall : VFOSSSS _LPAREN sExpr _COMMA _ sExpr _COMMA sExpr _COMMA sExpr _RPAREN
 
@@ -6569,121 +6542,121 @@ state 424:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 520
+	DynToken	goto 210
+	sExpr	goto 519
 
-state 425:
+state 424:
 
 	VoidCall : VFOX _LPAREN xExpr _RPAREN _	(71)
 
 	.	reduce 71
 
-state 426:
+state 425:
 
 	VoidCall : VFOD _LPAREN dExpr _RPAREN _	(64)
 
 	.	reduce 64
 
-state 427:
+state 426:
 
 	VoidCall : VFG _LPAREN gExpr _RPAREN _	(52)
 
 	.	reduce 52
 
-state 428:
+state 427:
 
 	VoidCall : VFGG _LPAREN gExpr _COMMA _ gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 521
-	DynToken	goto 297
+	gExpr	goto 520
+	DynToken	goto 296
 
-state 429:
+state 428:
 
 	VoidCall : VFGGG _LPAREN gExpr _COMMA _ gExpr _COMMA gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 522
-	DynToken	goto 297
+	gExpr	goto 521
+	DynToken	goto 296
 
-state 430:
+state 429:
 
 	VoidCall : VFGGGG _LPAREN gExpr _COMMA _ gExpr _COMMA gExpr _COMMA gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 523
-	DynToken	goto 297
+	gExpr	goto 522
+	DynToken	goto 296
 
-state 431:
+state 430:
 
 	xExpr : XFD _LPAREN dExpr _RPAREN _	(173)
 
 	.	reduce 173
 
-state 432:
+state 431:
 
 	xExpr : XFG _LPAREN gExpr _RPAREN _	(175)
 
 	.	reduce 175
 
-state 433:
+state 432:
 
 	xExpr : XFGG _LPAREN gExpr _COMMA _ gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 524
-	DynToken	goto 297
+	gExpr	goto 523
+	DynToken	goto 296
 
-state 434:
+state 433:
 
 	xExpr : XFS _LPAREN sExpr _RPAREN _	(177)
 
 	.	reduce 177
 
-state 435:
+state 434:
 
 	xExpr : XFSX _LPAREN sExpr _COMMA _ xExpr _RPAREN
 
@@ -6700,22 +6673,22 @@ state 435:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 525
+	xExpr	goto 524
 
-state 436:
+state 435:
 
 	xExpr : XFX _LPAREN xExpr _RPAREN _	(179)
 
 	.	reduce 179
 
-state 437:
+state 436:
 
 	xExpr : XFXX _LPAREN xExpr _COMMA _ xExpr _RPAREN
 
@@ -6732,34 +6705,34 @@ state 437:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 526
+	xExpr	goto 525
 
-state 438:
+state 437:
 
 	xExpr : XFFRAME _LPAREN FRAME_ _RPAREN _	(181)
 
 	.	reduce 181
 
-state 439:
+state 438:
 
 	xExpr : XFOS _LPAREN sExpr _RPAREN _	(183)
 
 	.	reduce 183
 
-state 440:
+state 439:
 
 	xExpr : XFOX _LPAREN xExpr _RPAREN _	(184)
 
 	.	reduce 184
 
-state 441:
+state 440:
 
 	xExpr : XFOXX _LPAREN xExpr _COMMA _ xExpr _RPAREN
 
@@ -6776,72 +6749,131 @@ state 441:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 527
+	xExpr	goto 526
 
-state 442:
+state 441:
 
 	PointerRef : DynToken _	(23)
 
 	.	reduce 23
 
-state 443:
+state 442:
 
 	Assignment : PFLD _ASSIGNMENT _AMPERSAND PointerRef _	(107)
 
 	.	reduce 107
 
-state 444:
+state 443:
 
 	PointerRef : GFLD _	(22)
 
 	.	reduce 22
 
-state 445:
+state 444:
 
 	BlokStatement : _BEGIN $$3 Start _END _	(86)
 
 	.	reduce 86
 
-state 446:
+state 445:
 
 	VoidStatement : _EVALUATE _LPAREN _CHARACTER_STRING _RPAREN _	(87)
 
 	.	reduce 87
 
+state 446:
+
+	DeclareSqlExecTokenList : DeclareSqlExecTokenList DeclareSqlExecToken _	(256)
+
+	.	reduce 256
+
 state 447:
 
-	DeclareSqlExecTokenList : DeclareSqlExecTokenList DeclareSqlExecToken _	(253)
+	DeclareSqlInsertTokenList : DeclareSqlInsertTokenList DeclareSqlInsertToken _	(250)
 
-	.	reduce 253
+	.	reduce 250
 
 state 448:
 
-	DeclareSqlInsertTokenList : DeclareSqlInsertTokenList DeclareSqlInsertToken _	(247)
+	DeclareSqlTokenList : DeclareSqlTokenList DeclareSqlToken _	(240)
 
-	.	reduce 247
+	.	reduce 240
 
 state 449:
 
-	DeclareSqlTokenList : DeclareSqlTokenList DeclareSqlToken _	(237)
+	DeclareSqlSelectStatement : _EXEC_SQLSELECT $$18 DeclareSqlTokenList OptionalSqlLoop _	(238)
 
-	.	reduce 237
+	.	reduce 238
 
 state 450:
 
-	DeclareSqlSelectStatement : _EXEC_SQLSELECT $$15 DeclareSqlTokenList OptionalSqlLoop _	(235)
+	DeclareForEachStatement : _FOR _EACH $$9 DeclareGroup _ OptionalAlias _DO BlokStatement
+	OptionalAlias : _	(225)
 
-	.	reduce 235
+	_NOID	shift 456
+	_DO	reduce 225
+	.	error
+
+	OptionalAlias	goto 527
 
 state 451:
 
-	RegExStatement : _EXEC_YAG _LPAREN sExpr _COMMA _ sExpr _RPAREN _AS SFLD _DO BlokStatement
+	OptionalSqlLoop : _LOOP BlokStatement _	(245)
+
+	.	reduce 245
+
+state 452:
+
+	Assignment : _STAR PFLD _ASSIGNMENT gExpr _	(106)
+
+	.	reduce 106
+
+state 453:
+
+	Assignment : _STAR PFLD _ASSIGNMENT _NIL _	(114)
+
+	.	reduce 114
+
+state 454:
+
+	CreateVoidFunction : _VOID _NOID $$2 _LPAREN _ OptionalArgumentList _RPAREN _BEGIN Start _END
+	OptionalArgumentList : _	(75)
+
+	_DATETIME	shift 532
+	_FLOAT	shift 533
+	_INTEGER	shift 534
+	_STRING	shift 535
+	_RPAREN	reduce 75
+	.	error
+
+	ArgumentFormat	goto 528
+	Argument	goto 529
+	ArgumentList	goto 530
+	OptionalArgumentList	goto 531
+
+state 455:
+
+	DeclareWithStatement : _WITH $$10 DeclareGroup OptionalAlias _ _DO BlokStatement
+
+	_DO	shift 536
+	.	error
+
+state 456:
+
+	OptionalAlias : _NOID _	(226)
+
+	.	reduce 226
+
+state 457:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN _ sExpr _COMMA sExpr _RPAREN _AS SFLD $$14 _DO $$15 BlokStatement
 
 	SFBSS	shift 50
 	SFD	shift 51
@@ -6854,93 +6886,34 @@ state 451:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 528
-
-state 452:
-
-	DeclareForEachStatement : _FOR _EACH $$9 DeclareGroup _ OptionalAlias _DO BlokStatement
-	OptionalAlias : _	(225)
-
-	_NOID	shift 458
-	_DO	reduce 225
-	.	error
-
-	OptionalAlias	goto 529
-
-state 453:
-
-	OptionalSqlLoop : _LOOP BlokStatement _	(242)
-
-	.	reduce 242
-
-state 454:
-
-	Assignment : _STAR PFLD _ASSIGNMENT gExpr _	(106)
-
-	.	reduce 106
-
-state 455:
-
-	Assignment : _STAR PFLD _ASSIGNMENT _NIL _	(114)
-
-	.	reduce 114
-
-state 456:
-
-	CreateVoidFunction : _VOID _NOID $$2 _LPAREN _ OptionalArgumentList _RPAREN _BEGIN Start _END
-	OptionalArgumentList : _	(75)
-
-	_DATETIME	shift 534
-	_FLOAT	shift 535
-	_INTEGER	shift 536
-	_STRING	shift 537
-	_RPAREN	reduce 75
-	.	error
-
-	ArgumentFormat	goto 530
-	Argument	goto 531
-	ArgumentList	goto 532
-	OptionalArgumentList	goto 533
-
-state 457:
-
-	DeclareWithStatement : _WITH $$10 DeclareGroup OptionalAlias _ _DO BlokStatement
-
-	_DO	shift 538
-	.	error
+	DynToken	goto 210
+	sExpr	goto 537
 
 state 458:
-
-	OptionalAlias : _NOID _	(226)
-
-	.	reduce 226
-
-state 459:
 
 	DeclareWithNewStatement : _WITH _NEW $$11 DeclareGroup _ OptionalAlias _DO BlokStatement
 	OptionalAlias : _	(225)
 
-	_NOID	shift 458
+	_NOID	shift 456
 	_DO	reduce 225
 	.	error
 
-	OptionalAlias	goto 539
+	OptionalAlias	goto 538
 
-state 460:
+state 459:
 
 	PointerDeclaration : _POINTER _FIELDID _ASSIGNMENT _AMPERSAND PointerRef _	(21)
 
 	.	reduce 21
 
-state 461:
+state 460:
 
 	bExpr : bExpr _AND bExpr _	(188)
 	bExpr : bExpr _ _OR bExpr
@@ -6948,13 +6921,13 @@ state 461:
 
 	.	reduce 188
 
-state 462:
+state 461:
 
 	bExpr : bExpr _OR bExpr _	(187)
 	bExpr : bExpr _ _OR bExpr
 	bExpr : bExpr _ _AND bExpr
 
-	_AND	shift 365
+	_AND	shift 364
 	_COMMA	reduce 187
 	_DO	reduce 187
 	_OR	reduce 187
@@ -6963,11 +6936,11 @@ state 462:
 	_THEN	reduce 187
 	.	error
 
-state 463:
+state 462:
 
 	*** conflicts:
 
-	shift 117, reduce 89 on _SEMICOLON
+	shift 116, reduce 89 on _SEMICOLON
 
 	TrueStatement : $$6 _ Statement
 	VoidStatement : _	(89)
@@ -7034,22 +7007,21 @@ state 463:
 	_EXEC_SQLEXEC	shift 107
 	_EXEC_SQLINSERT	shift 108
 	_EXEC_SQLSELECT	shift 109
-	_EXEC_YAG	shift 110
-	_FIELDID	shift 111
-	_FOR	shift 112
-	_FOREACH	shift 113
-	_LPAREN	shift 114
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
-	_SEMICOLON	shift 117
-	_SQLEXEC	shift 118
-	_SQLSELECT	shift 119
-	_STAR	shift 120
-	_VOID	shift 121
-	VOIDFUNCTION_	shift 122
-	_WITH	shift 123
-	_WITHDO	shift 124
-	_WITHNEWDO	shift 125
+	_FIELDID	shift 110
+	_FOR	shift 111
+	_FOREACH	shift 112
+	_LPAREN	shift 113
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
+	_SEMICOLON	shift 116
+	_SQLEXEC	shift 117
+	_SQLSELECT	shift 118
+	_STAR	shift 119
+	_VOID	shift 120
+	VOIDFUNCTION_	shift 121
+	_WITH	shift 122
+	_WITHDO	shift 123
+	_WITHNEWDO	shift 124
 	_WHILE	reduce 90
 	_IF	reduce 92
 	.	error
@@ -7063,11 +7035,11 @@ state 463:
 	SqlSelectStatement	goto 28
 	DeclareSqlSelectStatement	goto 29
 	DeclareWithNewStatement	goto 30
-	WithNewStatement	goto 31
-	WithStatement	goto 32
-	DeclareWithStatement	goto 33
-	ForEachStatement	goto 34
-	RegExStatement	goto 35
+	SlStatement	goto 31
+	WithNewStatement	goto 32
+	WithStatement	goto 33
+	DeclareWithStatement	goto 34
+	ForEachStatement	goto 35
 	DeclareForEachStatement	goto 36
 	CreateFunction	goto 37
 	VoidCall	goto 38
@@ -7076,21 +7048,21 @@ state 463:
 	IfStatement	goto 41
 	Assignment	goto 42
 	BlokStatement	goto 43
-	Statement	goto 540
+	Statement	goto 539
 	DynToken	goto 46
 	sExpr	goto 47
 	xExpr	goto 48
 
-state 464:
+state 463:
 
 	*** conflicts:
 
-	shift 541, reduce 94 on _ELSE
+	shift 540, reduce 94 on _ELSE
 
 	IfOrIfThenElse : _IF BooleanExpr _THEN TrueStatement _	(94)
 	IfOrIfThenElse : _IF BooleanExpr _THEN TrueStatement _ _ELSE FalseStatement
 
-	_ELSE	shift 541
+	_ELSE	shift 540
 	$end	reduce 94
 	SFBSS	reduce 94
 	SFD	reduce 94
@@ -7153,7 +7125,6 @@ state 464:
 	_EXEC_SQLEXEC	reduce 94
 	_EXEC_SQLINSERT	reduce 94
 	_EXEC_SQLSELECT	reduce 94
-	_EXEC_YAG	reduce 94
 	_FIELDID	reduce 94
 	_FOR	reduce 94
 	_FOREACH	reduce 94
@@ -7173,12 +7144,12 @@ state 464:
 	_WITHNEWDO	reduce 94
 	.	error
 
-state 465:
+state 464:
 
 	RelationalExpression : sExpr _EQUAL sExpr _	(202)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_AND	reduce 202
 	_COMMA	reduce 202
 	_DO	reduce 202
@@ -7188,12 +7159,12 @@ state 465:
 	_THEN	reduce 202
 	.	error
 
-state 466:
+state 465:
 
 	RelationalExpression : sExpr _GE sExpr _	(203)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_AND	reduce 203
 	_COMMA	reduce 203
 	_DO	reduce 203
@@ -7203,12 +7174,12 @@ state 466:
 	_THEN	reduce 203
 	.	error
 
-state 467:
+state 466:
 
 	RelationalExpression : sExpr _GT sExpr _	(204)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_AND	reduce 204
 	_COMMA	reduce 204
 	_DO	reduce 204
@@ -7218,12 +7189,12 @@ state 467:
 	_THEN	reduce 204
 	.	error
 
-state 468:
+state 467:
 
 	RelationalExpression : sExpr _LE sExpr _	(201)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_AND	reduce 201
 	_COMMA	reduce 201
 	_DO	reduce 201
@@ -7233,12 +7204,12 @@ state 468:
 	_THEN	reduce 201
 	.	error
 
-state 469:
+state 468:
 
 	RelationalExpression : sExpr _LT sExpr _	(200)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_AND	reduce 200
 	_COMMA	reduce 200
 	_DO	reduce 200
@@ -7248,12 +7219,12 @@ state 469:
 	_THEN	reduce 200
 	.	error
 
-state 470:
+state 469:
 
 	RelationalExpression : sExpr _NOTEQUAL sExpr _	(205)
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_AND	reduce 205
 	_COMMA	reduce 205
 	_DO	reduce 205
@@ -7263,7 +7234,7 @@ state 470:
 	_THEN	reduce 205
 	.	error
 
-state 471:
+state 470:
 
 	RelationalExpression : xExpr _EQUAL xExpr _	(195)
 	xExpr : xExpr _ _AND xExpr
@@ -7274,12 +7245,12 @@ state 471:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_AND	reduce 195
 	_COMMA	reduce 195
 	_DO	reduce 195
@@ -7289,11 +7260,11 @@ state 471:
 	_THEN	reduce 195
 	.	error
 
-state 472:
+state 471:
 
 	*** conflicts:
 
-	shift 143, reduce 196 on _AND
+	shift 142, reduce 196 on _AND
 
 	RelationalExpression : xExpr _GE xExpr _	(196)
 	xExpr : xExpr _ _AND xExpr
@@ -7304,13 +7275,13 @@ state 472:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 196
 	_DO	reduce 196
 	_OR	reduce 196
@@ -7319,11 +7290,11 @@ state 472:
 	_THEN	reduce 196
 	.	error
 
-state 473:
+state 472:
 
 	*** conflicts:
 
-	shift 143, reduce 197 on _AND
+	shift 142, reduce 197 on _AND
 
 	RelationalExpression : xExpr _GT xExpr _	(197)
 	xExpr : xExpr _ _AND xExpr
@@ -7334,13 +7305,13 @@ state 473:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 197
 	_DO	reduce 197
 	_OR	reduce 197
@@ -7349,11 +7320,11 @@ state 473:
 	_THEN	reduce 197
 	.	error
 
-state 474:
+state 473:
 
 	*** conflicts:
 
-	shift 143, reduce 194 on _AND
+	shift 142, reduce 194 on _AND
 
 	RelationalExpression : xExpr _LE xExpr _	(194)
 	xExpr : xExpr _ _AND xExpr
@@ -7364,13 +7335,13 @@ state 474:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 194
 	_DO	reduce 194
 	_OR	reduce 194
@@ -7379,11 +7350,11 @@ state 474:
 	_THEN	reduce 194
 	.	error
 
-state 475:
+state 474:
 
 	*** conflicts:
 
-	shift 143, reduce 193 on _AND
+	shift 142, reduce 193 on _AND
 
 	RelationalExpression : xExpr _LT xExpr _	(193)
 	xExpr : xExpr _ _AND xExpr
@@ -7394,13 +7365,13 @@ state 475:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 193
 	_DO	reduce 193
 	_OR	reduce 193
@@ -7409,7 +7380,7 @@ state 475:
 	_THEN	reduce 193
 	.	error
 
-state 476:
+state 475:
 
 	xExpr : xExpr _MINUS xExpr _	(163)
 	dExpr : xExpr _ _PLUS dExpr
@@ -7422,11 +7393,11 @@ state 476:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MOD	shift 145
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MOD	shift 144
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 163
 	_DO	reduce 163
 	_EQUAL	reduce 163
@@ -7443,7 +7414,7 @@ state 476:
 	_THEN	reduce 163
 	.	error
 
-state 477:
+state 476:
 
 	dExpr : xExpr _MINUS dExpr _	(131)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7461,11 +7432,11 @@ state 477:
 
 	.	reduce 131
 
-state 478:
+state 477:
 
 	*** conflicts:
 
-	shift 143, reduce 198 on _AND
+	shift 142, reduce 198 on _AND
 
 	RelationalExpression : xExpr _NOTEQUAL xExpr _	(198)
 	xExpr : xExpr _ _AND xExpr
@@ -7476,13 +7447,13 @@ state 478:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 198
 	_DO	reduce 198
 	_OR	reduce 198
@@ -7491,7 +7462,7 @@ state 478:
 	_THEN	reduce 198
 	.	error
 
-state 479:
+state 478:
 
 	xExpr : xExpr _PLUS xExpr _	(162)
 	dExpr : xExpr _ _PLUS dExpr
@@ -7504,11 +7475,11 @@ state 479:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MOD	shift 145
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MOD	shift 144
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 162
 	_DO	reduce 162
 	_EQUAL	reduce 162
@@ -7525,7 +7496,7 @@ state 479:
 	_THEN	reduce 162
 	.	error
 
-state 480:
+state 479:
 
 	dExpr : xExpr _PLUS dExpr _	(130)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7543,7 +7514,7 @@ state 480:
 
 	.	reduce 130
 
-state 481:
+state 480:
 
 	RelationalExpression : dExpr _EQUAL dExpr _	(209)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7559,8 +7530,8 @@ state 481:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
 	_AND	reduce 209
 	_COMMA	reduce 209
 	_DO	reduce 209
@@ -7570,7 +7541,7 @@ state 481:
 	_THEN	reduce 209
 	.	error
 
-state 482:
+state 481:
 
 	RelationalExpression : dExpr _GE dExpr _	(210)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7586,8 +7557,8 @@ state 482:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
 	_AND	reduce 210
 	_COMMA	reduce 210
 	_DO	reduce 210
@@ -7597,7 +7568,7 @@ state 482:
 	_THEN	reduce 210
 	.	error
 
-state 483:
+state 482:
 
 	RelationalExpression : dExpr _GT dExpr _	(211)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7613,8 +7584,8 @@ state 483:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
 	_AND	reduce 211
 	_COMMA	reduce 211
 	_DO	reduce 211
@@ -7624,7 +7595,7 @@ state 483:
 	_THEN	reduce 211
 	.	error
 
-state 484:
+state 483:
 
 	RelationalExpression : dExpr _LE dExpr _	(208)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7640,8 +7611,8 @@ state 484:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
 	_AND	reduce 208
 	_COMMA	reduce 208
 	_DO	reduce 208
@@ -7651,7 +7622,7 @@ state 484:
 	_THEN	reduce 208
 	.	error
 
-state 485:
+state 484:
 
 	RelationalExpression : dExpr _LT dExpr _	(207)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7667,8 +7638,8 @@ state 485:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
 	_AND	reduce 207
 	_COMMA	reduce 207
 	_DO	reduce 207
@@ -7678,7 +7649,7 @@ state 485:
 	_THEN	reduce 207
 	.	error
 
-state 486:
+state 485:
 
 	dExpr : dExpr _MINUS xExpr _	(129)
 	dExpr : xExpr _ _PLUS dExpr
@@ -7691,11 +7662,11 @@ state 486:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MOD	shift 145
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MOD	shift 144
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 129
 	_DO	reduce 129
 	_EQUAL	reduce 129
@@ -7712,7 +7683,7 @@ state 486:
 	_THEN	reduce 129
 	.	error
 
-state 487:
+state 486:
 
 	dExpr : dExpr _MINUS dExpr _	(127)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7730,35 +7701,35 @@ state 487:
 
 	.	reduce 127
 
-state 488:
+state 487:
 
 	dExpr : dExpr _MINUS _DAYS _ _LPAREN xExpr _RPAREN
+
+	_LPAREN	shift 541
+	.	error
+
+state 488:
+
+	dExpr : dExpr _MINUS _MONTHS _ _LPAREN xExpr _RPAREN
 
 	_LPAREN	shift 542
 	.	error
 
 state 489:
 
-	dExpr : dExpr _MINUS _MONTHS _ _LPAREN xExpr _RPAREN
+	dExpr : dExpr _MINUS _WEEKS _ _LPAREN xExpr _RPAREN
 
 	_LPAREN	shift 543
 	.	error
 
 state 490:
 
-	dExpr : dExpr _MINUS _WEEKS _ _LPAREN xExpr _RPAREN
+	dExpr : dExpr _MINUS _YEARS _ _LPAREN xExpr _RPAREN
 
 	_LPAREN	shift 544
 	.	error
 
 state 491:
-
-	dExpr : dExpr _MINUS _YEARS _ _LPAREN xExpr _RPAREN
-
-	_LPAREN	shift 545
-	.	error
-
-state 492:
 
 	RelationalExpression : dExpr _NOTEQUAL dExpr _	(212)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7774,8 +7745,8 @@ state 492:
 	dExpr : dExpr _ _PLUS _DAYS _LPAREN xExpr _RPAREN
 	dExpr : dExpr _ _MINUS _DAYS _LPAREN xExpr _RPAREN
 
-	_MINUS	shift 387
-	_PLUS	shift 389
+	_MINUS	shift 386
+	_PLUS	shift 388
 	_AND	reduce 212
 	_COMMA	reduce 212
 	_DO	reduce 212
@@ -7785,7 +7756,7 @@ state 492:
 	_THEN	reduce 212
 	.	error
 
-state 493:
+state 492:
 
 	dExpr : dExpr _PLUS xExpr _	(128)
 	dExpr : xExpr _ _PLUS dExpr
@@ -7798,11 +7769,11 @@ state 493:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MOD	shift 145
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MOD	shift 144
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	_COMMA	reduce 128
 	_DO	reduce 128
 	_EQUAL	reduce 128
@@ -7819,7 +7790,7 @@ state 493:
 	_THEN	reduce 128
 	.	error
 
-state 494:
+state 493:
 
 	dExpr : dExpr _PLUS dExpr _	(126)
 	dExpr : dExpr _ _PLUS dExpr
@@ -7837,50 +7808,50 @@ state 494:
 
 	.	reduce 126
 
-state 495:
+state 494:
 
 	dExpr : dExpr _PLUS _DAYS _ _LPAREN xExpr _RPAREN
+
+	_LPAREN	shift 545
+	.	error
+
+state 495:
+
+	dExpr : dExpr _PLUS _MONTHS _ _LPAREN xExpr _RPAREN
 
 	_LPAREN	shift 546
 	.	error
 
 state 496:
 
-	dExpr : dExpr _PLUS _MONTHS _ _LPAREN xExpr _RPAREN
+	dExpr : dExpr _PLUS _WEEKS _ _LPAREN xExpr _RPAREN
 
 	_LPAREN	shift 547
 	.	error
 
 state 497:
 
-	dExpr : dExpr _PLUS _WEEKS _ _LPAREN xExpr _RPAREN
+	dExpr : dExpr _PLUS _YEARS _ _LPAREN xExpr _RPAREN
 
 	_LPAREN	shift 548
 	.	error
 
 state 498:
 
-	dExpr : dExpr _PLUS _YEARS _ _LPAREN xExpr _RPAREN
-
-	_LPAREN	shift 549
-	.	error
-
-state 499:
-
 	dExpr : DF _LPAREN _RPAREN _	(134)
 
 	.	reduce 134
 
-state 500:
+state 499:
 
 	dExpr : DFS _LPAREN sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 550
+	_PLUS	shift 140
+	_RPAREN	shift 549
 	.	error
 
-state 501:
+state 500:
 
 	dExpr : DFX _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -7891,80 +7862,80 @@ state 501:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 551
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 550
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 502:
+state 501:
 
 	bExpr : _LPAREN bExpr _RPAREN _	(190)
 
 	.	reduce 190
 
-state 503:
+state 502:
 
 	dExpr : _LPAREN dExpr _RPAREN _	(132)
 
 	.	reduce 132
 
-state 504:
+state 503:
 
 	WhileStatement : $$4 _WHILE BooleanExpr _DO TrueStatement _	(91)
 
 	.	reduce 91
 
-state 505:
+state 504:
 
 	sExpr : SFBSS _LPAREN bExpr _COMMA sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 552
-	_PLUS	shift 141
+	_COMMA	shift 551
+	_PLUS	shift 140
 	.	error
 
-state 506:
+state 505:
 
 	sExpr : SFDS _LPAREN dExpr _COMMA sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
+	_RPAREN	shift 552
+	.	error
+
+state 506:
+
+	sExpr : SFSS _LPAREN sExpr _COMMA sExpr _ _RPAREN
+	sExpr : sExpr _ _PLUS sExpr
+
+	_PLUS	shift 140
 	_RPAREN	shift 553
 	.	error
 
 state 507:
 
-	sExpr : SFSS _LPAREN sExpr _COMMA sExpr _ _RPAREN
+	sExpr : SFSSS _LPAREN sExpr _COMMA sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 554
+	_COMMA	shift 554
+	_PLUS	shift 140
 	.	error
 
 state 508:
 
-	sExpr : SFSSS _LPAREN sExpr _COMMA sExpr _ _COMMA sExpr _RPAREN
-	sExpr : sExpr _ _PLUS sExpr
-
-	_COMMA	shift 555
-	_PLUS	shift 141
-	.	error
-
-state 509:
-
 	sExpr : SFSSSS _LPAREN sExpr _COMMA sExpr _ _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 556
-	_PLUS	shift 141
+	_COMMA	shift 555
+	_PLUS	shift 140
 	.	error
 
-state 510:
+state 509:
 
 	sExpr : SFSXX _LPAREN sExpr _COMMA xExpr _ _COMMA xExpr _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -7975,26 +7946,26 @@ state 510:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_COMMA	shift 557
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_COMMA	shift 556
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 511:
+state 510:
 
 	VoidCall : VFSS _LPAREN sExpr _COMMA sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 558
+	_PLUS	shift 140
+	_RPAREN	shift 557
 	.	error
 
-state 512:
+state 511:
 
 	VoidCall : VFSX _LPAREN sExpr _COMMA xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -8005,53 +7976,53 @@ state 512:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 559
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 558
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 513:
+state 512:
 
 	VoidCall : VFSSS _LPAREN sExpr _COMMA sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 560
-	_PLUS	shift 141
+	_COMMA	shift 559
+	_PLUS	shift 140
 	.	error
 
-state 514:
+state 513:
 
 	VoidCall : VFSSX _LPAREN sExpr _COMMA sExpr _ _COMMA xExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 561
-	_PLUS	shift 141
+	_COMMA	shift 560
+	_PLUS	shift 140
 	.	error
 
-state 515:
+state 514:
 
 	VoidCall : VFSSSS _LPAREN sExpr _COMMA sExpr _ _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 562
-	_PLUS	shift 141
+	_COMMA	shift 561
+	_PLUS	shift 140
 	.	error
 
-state 516:
+state 515:
 
 	VoidCall : VFOSS _LPAREN sExpr _COMMA sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 563
+	_PLUS	shift 140
+	_RPAREN	shift 562
 	.	error
 
-state 517:
+state 516:
 
 	VoidCall : VFOSX _LPAREN sExpr _COMMA xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -8062,72 +8033,72 @@ state 517:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 564
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 563
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 518:
+state 517:
 
 	VoidCall : VFOSSS _LPAREN sExpr _COMMA sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 565
-	_PLUS	shift 141
+	_COMMA	shift 564
+	_PLUS	shift 140
 	.	error
 
-state 519:
+state 518:
 
 	VoidCall : VFOSSX _LPAREN sExpr _COMMA sExpr _ _COMMA xExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 566
-	_PLUS	shift 141
+	_COMMA	shift 565
+	_PLUS	shift 140
 	.	error
 
-state 520:
+state 519:
 
 	VoidCall : VFOSSSS _LPAREN sExpr _COMMA sExpr _ _COMMA sExpr _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 567
-	_PLUS	shift 141
+	_COMMA	shift 566
+	_PLUS	shift 140
+	.	error
+
+state 520:
+
+	VoidCall : VFGG _LPAREN gExpr _COMMA gExpr _ _RPAREN
+
+	_RPAREN	shift 567
 	.	error
 
 state 521:
 
-	VoidCall : VFGG _LPAREN gExpr _COMMA gExpr _ _RPAREN
+	VoidCall : VFGGG _LPAREN gExpr _COMMA gExpr _ _COMMA gExpr _RPAREN
 
-	_RPAREN	shift 568
+	_COMMA	shift 568
 	.	error
 
 state 522:
 
-	VoidCall : VFGGG _LPAREN gExpr _COMMA gExpr _ _COMMA gExpr _RPAREN
+	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _ _COMMA gExpr _COMMA gExpr _RPAREN
 
 	_COMMA	shift 569
 	.	error
 
 state 523:
 
-	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _ _COMMA gExpr _COMMA gExpr _RPAREN
+	xExpr : XFGG _LPAREN gExpr _COMMA gExpr _ _RPAREN
 
-	_COMMA	shift 570
+	_RPAREN	shift 570
 	.	error
 
 state 524:
-
-	xExpr : XFGG _LPAREN gExpr _COMMA gExpr _ _RPAREN
-
-	_RPAREN	shift 571
-	.	error
-
-state 525:
 
 	xExpr : XFSX _LPAREN sExpr _COMMA xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -8138,17 +8109,17 @@ state 525:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 572
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 571
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 526:
+state 525:
 
 	xExpr : XFXX _LPAREN xExpr _COMMA xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -8159,17 +8130,17 @@ state 526:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 573
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 572
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 527:
+state 526:
 
 	xExpr : XFOXX _LPAREN xExpr _COMMA xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -8180,120 +8151,120 @@ state 527:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 574
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 573
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
+	.	error
+
+state 527:
+
+	DeclareForEachStatement : _FOR _EACH $$9 DeclareGroup OptionalAlias _ _DO BlokStatement
+
+	_DO	shift 574
 	.	error
 
 state 528:
 
-	RegExStatement : _EXEC_YAG _LPAREN sExpr _COMMA sExpr _ _RPAREN _AS SFLD _DO BlokStatement
-	sExpr : sExpr _ _PLUS sExpr
-
-	_PLUS	shift 141
-	_RPAREN	shift 575
-	.	error
-
-state 529:
-
-	DeclareForEachStatement : _FOR _EACH $$9 DeclareGroup OptionalAlias _ _DO BlokStatement
-
-	_DO	shift 576
-	.	error
-
-state 530:
-
 	Argument : ArgumentFormat _ ArgumentId
 
-	_FIELDID	shift 578
+	_FIELDID	shift 576
 	.	error
 
-	ArgumentId	goto 577
+	ArgumentId	goto 575
 
-state 531:
+state 529:
 
 	ArgumentList : Argument _	(77)
 
 	.	reduce 77
 
-state 532:
+state 530:
 
 	OptionalArgumentList : ArgumentList _	(76)
 	ArgumentList : ArgumentList _ _COMMA Argument
 
-	_COMMA	shift 579
+	_COMMA	shift 577
 	_RPAREN	reduce 76
 	.	error
 
-state 533:
+state 531:
 
 	CreateVoidFunction : _VOID _NOID $$2 _LPAREN OptionalArgumentList _ _RPAREN _BEGIN Start _END
 
-	_RPAREN	shift 580
+	_RPAREN	shift 578
 	.	error
 
-state 534:
+state 532:
 
 	ArgumentFormat : _DATETIME _	(80)
 
 	.	reduce 80
 
-state 535:
+state 533:
 
 	ArgumentFormat : _FLOAT _	(81)
 
 	.	reduce 81
 
-state 536:
+state 534:
 
 	ArgumentFormat : _INTEGER _	(82)
 
 	.	reduce 82
 
-state 537:
+state 535:
 
 	ArgumentFormat : _STRING _	(83)
 
 	.	reduce 83
 
-state 538:
+state 536:
 
 	DeclareWithStatement : _WITH $$10 DeclareGroup OptionalAlias _DO _ BlokStatement
 
 	_BEGIN	shift 104
 	.	error
 
-	BlokStatement	goto 581
+	BlokStatement	goto 579
 
-state 539:
+state 537:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _ _COMMA sExpr _RPAREN _AS SFLD $$14 _DO $$15 BlokStatement
+	sExpr : sExpr _ _PLUS sExpr
+
+	_COMMA	shift 580
+	_PLUS	shift 140
+	.	error
+
+state 538:
 
 	DeclareWithNewStatement : _WITH _NEW $$11 DeclareGroup OptionalAlias _ _DO BlokStatement
 
-	_DO	shift 582
+	_DO	shift 581
 	.	error
 
-state 540:
+state 539:
 
 	TrueStatement : $$6 Statement _	(97)
 
 	.	reduce 97
 
-state 541:
+state 540:
 
 	IfOrIfThenElse : _IF BooleanExpr _THEN TrueStatement _ELSE _ FalseStatement
 	$$7 : _	(98)
 
 	.	reduce 98
 
-	$$7	goto 583
-	FalseStatement	goto 584
+	$$7	goto 582
+	FalseStatement	goto 583
 
-state 542:
+state 541:
 
 	dExpr : dExpr _MINUS _DAYS _LPAREN _ xExpr _RPAREN
 
@@ -8310,16 +8281,16 @@ state 542:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 585
+	xExpr	goto 584
 
-state 543:
+state 542:
 
 	dExpr : dExpr _MINUS _MONTHS _LPAREN _ xExpr _RPAREN
 
@@ -8336,16 +8307,16 @@ state 543:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 586
+	xExpr	goto 585
 
-state 544:
+state 543:
 
 	dExpr : dExpr _MINUS _WEEKS _LPAREN _ xExpr _RPAREN
 
@@ -8362,16 +8333,16 @@ state 544:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 587
+	xExpr	goto 586
 
-state 545:
+state 544:
 
 	dExpr : dExpr _MINUS _YEARS _LPAREN _ xExpr _RPAREN
 
@@ -8388,16 +8359,16 @@ state 545:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 588
+	xExpr	goto 587
 
-state 546:
+state 545:
 
 	dExpr : dExpr _PLUS _DAYS _LPAREN _ xExpr _RPAREN
 
@@ -8414,16 +8385,16 @@ state 546:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 589
+	xExpr	goto 588
 
-state 547:
+state 546:
 
 	dExpr : dExpr _PLUS _MONTHS _LPAREN _ xExpr _RPAREN
 
@@ -8440,16 +8411,16 @@ state 547:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 590
+	xExpr	goto 589
 
-state 548:
+state 547:
 
 	dExpr : dExpr _PLUS _WEEKS _LPAREN _ xExpr _RPAREN
 
@@ -8466,16 +8437,16 @@ state 548:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 591
+	xExpr	goto 590
 
-state 549:
+state 548:
 
 	dExpr : dExpr _PLUS _YEARS _LPAREN _ xExpr _RPAREN
 
@@ -8492,28 +8463,28 @@ state 549:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 592
+	xExpr	goto 591
 
-state 550:
+state 549:
 
 	dExpr : DFS _LPAREN sExpr _RPAREN _	(135)
 
 	.	reduce 135
 
-state 551:
+state 550:
 
 	dExpr : DFX _LPAREN xExpr _RPAREN _	(136)
 
 	.	reduce 136
 
-state 552:
+state 551:
 
 	sExpr : SFBSS _LPAREN bExpr _COMMA sExpr _COMMA _ sExpr _RPAREN
 
@@ -8528,29 +8499,29 @@ state 552:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 593
+	DynToken	goto 210
+	sExpr	goto 592
 
-state 553:
+state 552:
 
 	sExpr : SFDS _LPAREN dExpr _COMMA sExpr _RPAREN _	(160)
 
 	.	reduce 160
 
-state 554:
+state 553:
 
 	sExpr : SFSS _LPAREN sExpr _COMMA sExpr _RPAREN _	(151)
 
 	.	reduce 151
 
-state 555:
+state 554:
 
 	sExpr : SFSSS _LPAREN sExpr _COMMA sExpr _COMMA _ sExpr _RPAREN
 
@@ -8565,17 +8536,17 @@ state 555:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 594
+	DynToken	goto 210
+	sExpr	goto 593
 
-state 556:
+state 555:
 
 	sExpr : SFSSSS _LPAREN sExpr _COMMA sExpr _COMMA _ sExpr _COMMA sExpr _RPAREN
 
@@ -8590,17 +8561,17 @@ state 556:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 595
+	DynToken	goto 210
+	sExpr	goto 594
 
-state 557:
+state 556:
 
 	sExpr : SFSXX _LPAREN sExpr _COMMA xExpr _COMMA _ xExpr _RPAREN
 
@@ -8617,28 +8588,28 @@ state 557:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 596
+	xExpr	goto 595
 
-state 558:
+state 557:
 
 	VoidCall : VFSS _LPAREN sExpr _COMMA sExpr _RPAREN _	(57)
 
 	.	reduce 57
 
-state 559:
+state 558:
 
 	VoidCall : VFSX _LPAREN sExpr _COMMA xExpr _RPAREN _	(58)
 
 	.	reduce 58
 
-state 560:
+state 559:
 
 	VoidCall : VFSSS _LPAREN sExpr _COMMA sExpr _COMMA _ sExpr _RPAREN
 
@@ -8653,17 +8624,17 @@ state 560:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 597
+	DynToken	goto 210
+	sExpr	goto 596
 
-state 561:
+state 560:
 
 	VoidCall : VFSSX _LPAREN sExpr _COMMA sExpr _COMMA _ xExpr _RPAREN
 
@@ -8680,16 +8651,16 @@ state 561:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 598
+	xExpr	goto 597
 
-state 562:
+state 561:
 
 	VoidCall : VFSSSS _LPAREN sExpr _COMMA sExpr _COMMA _ sExpr _COMMA sExpr _RPAREN
 
@@ -8704,29 +8675,29 @@ state 562:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 599
+	DynToken	goto 210
+	sExpr	goto 598
 
-state 563:
+state 562:
 
 	VoidCall : VFOSS _LPAREN sExpr _COMMA sExpr _RPAREN _	(66)
 
 	.	reduce 66
 
-state 564:
+state 563:
 
 	VoidCall : VFOSX _LPAREN sExpr _COMMA xExpr _RPAREN _	(67)
 
 	.	reduce 67
 
-state 565:
+state 564:
 
 	VoidCall : VFOSSS _LPAREN sExpr _COMMA sExpr _COMMA _ sExpr _RPAREN
 
@@ -8741,17 +8712,17 @@ state 565:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 600
+	DynToken	goto 210
+	sExpr	goto 599
 
-state 566:
+state 565:
 
 	VoidCall : VFOSSX _LPAREN sExpr _COMMA sExpr _COMMA _ xExpr _RPAREN
 
@@ -8768,16 +8739,16 @@ state 566:
 	XFOS	shift 93
 	XFOX	shift 94
 	XFOXX	shift 95
-	IFLD	shift 216
-	XFLD	shift 217
-	_LPAREN	shift 219
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
+	IFLD	shift 214
+	XFLD	shift 215
+	_LPAREN	shift 217
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
 	.	error
 
-	xExpr	goto 601
+	xExpr	goto 600
 
-state 567:
+state 566:
 
 	VoidCall : VFOSSSS _LPAREN sExpr _COMMA sExpr _COMMA _ sExpr _COMMA sExpr _RPAREN
 
@@ -8792,148 +8763,166 @@ state 567:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 602
+	DynToken	goto 210
+	sExpr	goto 601
 
-state 568:
+state 567:
 
 	VoidCall : VFGG _LPAREN gExpr _COMMA gExpr _RPAREN _	(53)
 
 	.	reduce 53
 
-state 569:
+state 568:
 
 	VoidCall : VFGGG _LPAREN gExpr _COMMA gExpr _COMMA _ gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 603
-	DynToken	goto 297
+	gExpr	goto 602
+	DynToken	goto 296
 
-state 570:
+state 569:
 
 	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _COMMA _ gExpr _COMMA gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 604
-	DynToken	goto 297
+	gExpr	goto 603
+	DynToken	goto 296
 
-state 571:
+state 570:
 
 	xExpr : XFGG _LPAREN gExpr _COMMA gExpr _RPAREN _	(176)
 
 	.	reduce 176
 
-state 572:
+state 571:
 
 	xExpr : XFSX _LPAREN sExpr _COMMA xExpr _RPAREN _	(178)
 
 	.	reduce 178
 
-state 573:
+state 572:
 
 	xExpr : XFXX _LPAREN xExpr _COMMA xExpr _RPAREN _	(180)
 
 	.	reduce 180
 
-state 574:
+state 573:
 
 	xExpr : XFOXX _LPAREN xExpr _COMMA xExpr _RPAREN _	(185)
 
 	.	reduce 185
 
-state 575:
-
-	RegExStatement : _EXEC_YAG _LPAREN sExpr _COMMA sExpr _RPAREN _ _AS SFLD _DO BlokStatement
-
-	_AS	shift 605
-	.	error
-
-state 576:
+state 574:
 
 	DeclareForEachStatement : _FOR _EACH $$9 DeclareGroup OptionalAlias _DO _ BlokStatement
 
 	_BEGIN	shift 104
 	.	error
 
-	BlokStatement	goto 606
+	BlokStatement	goto 604
 
-state 577:
+state 575:
 
 	Argument : ArgumentFormat ArgumentId _	(79)
 
 	.	reduce 79
 
-state 578:
+state 576:
 
 	ArgumentId : _FIELDID _	(84)
 
 	.	reduce 84
 
-state 579:
+state 577:
 
 	ArgumentList : ArgumentList _COMMA _ Argument
 
-	_DATETIME	shift 534
-	_FLOAT	shift 535
-	_INTEGER	shift 536
-	_STRING	shift 537
+	_DATETIME	shift 532
+	_FLOAT	shift 533
+	_INTEGER	shift 534
+	_STRING	shift 535
 	.	error
 
-	ArgumentFormat	goto 530
-	Argument	goto 607
+	ArgumentFormat	goto 528
+	Argument	goto 605
 
-state 580:
+state 578:
 
 	CreateVoidFunction : _VOID _NOID $$2 _LPAREN OptionalArgumentList _RPAREN _ _BEGIN Start _END
 
-	_BEGIN	shift 608
+	_BEGIN	shift 606
 	.	error
 
-state 581:
+state 579:
 
 	DeclareWithStatement : _WITH $$10 DeclareGroup OptionalAlias _DO BlokStatement _	(218)
 
 	.	reduce 218
 
-state 582:
+state 580:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA _ sExpr _RPAREN _AS SFLD $$14 _DO $$15 BlokStatement
+
+	SFBSS	shift 50
+	SFD	shift 51
+	SFDS	shift 52
+	SFS	shift 53
+	SFSS	shift 54
+	SFSSS	shift 55
+	SFSSSS	shift 56
+	SFSXX	shift 57
+	SFV	shift 58
+	SFX	shift 59
+	SFOV	shift 60
+	SFLD	shift 213
+	_DYNFLD	shift 103
+	_CHARACTER_STRING	shift 105
+	_FIELDID	shift 110
+	_LPAREN	shift 253
+	.	error
+
+	DynToken	goto 210
+	sExpr	goto 607
+
+state 581:
 
 	DeclareWithNewStatement : _WITH _NEW $$11 DeclareGroup OptionalAlias _DO _ BlokStatement
 
 	_BEGIN	shift 104
 	.	error
 
-	BlokStatement	goto 609
+	BlokStatement	goto 608
 
-state 583:
+state 582:
 
 	*** conflicts:
 
-	shift 117, reduce 89 on _SEMICOLON
+	shift 116, reduce 89 on _SEMICOLON
 
 	FalseStatement : $$7 _ Statement
 	VoidStatement : _	(89)
@@ -9000,22 +8989,21 @@ state 583:
 	_EXEC_SQLEXEC	shift 107
 	_EXEC_SQLINSERT	shift 108
 	_EXEC_SQLSELECT	shift 109
-	_EXEC_YAG	shift 110
-	_FIELDID	shift 111
-	_FOR	shift 112
-	_FOREACH	shift 113
-	_LPAREN	shift 114
-	_MINUS	shift 115
-	_REALNUMBER	shift 116
-	_SEMICOLON	shift 117
-	_SQLEXEC	shift 118
-	_SQLSELECT	shift 119
-	_STAR	shift 120
-	_VOID	shift 121
-	VOIDFUNCTION_	shift 122
-	_WITH	shift 123
-	_WITHDO	shift 124
-	_WITHNEWDO	shift 125
+	_FIELDID	shift 110
+	_FOR	shift 111
+	_FOREACH	shift 112
+	_LPAREN	shift 113
+	_MINUS	shift 114
+	_REALNUMBER	shift 115
+	_SEMICOLON	shift 116
+	_SQLEXEC	shift 117
+	_SQLSELECT	shift 118
+	_STAR	shift 119
+	_VOID	shift 120
+	VOIDFUNCTION_	shift 121
+	_WITH	shift 122
+	_WITHDO	shift 123
+	_WITHNEWDO	shift 124
 	_WHILE	reduce 90
 	_IF	reduce 92
 	.	error
@@ -9029,11 +9017,11 @@ state 583:
 	SqlSelectStatement	goto 28
 	DeclareSqlSelectStatement	goto 29
 	DeclareWithNewStatement	goto 30
-	WithNewStatement	goto 31
-	WithStatement	goto 32
-	DeclareWithStatement	goto 33
-	ForEachStatement	goto 34
-	RegExStatement	goto 35
+	SlStatement	goto 31
+	WithNewStatement	goto 32
+	WithStatement	goto 33
+	DeclareWithStatement	goto 34
+	ForEachStatement	goto 35
 	DeclareForEachStatement	goto 36
 	CreateFunction	goto 37
 	VoidCall	goto 38
@@ -9042,18 +9030,18 @@ state 583:
 	IfStatement	goto 41
 	Assignment	goto 42
 	BlokStatement	goto 43
-	Statement	goto 610
+	Statement	goto 609
 	DynToken	goto 46
 	sExpr	goto 47
 	xExpr	goto 48
 
-state 584:
+state 583:
 
 	IfOrIfThenElse : _IF BooleanExpr _THEN TrueStatement _ELSE FalseStatement _	(95)
 
 	.	reduce 95
 
-state 585:
+state 584:
 
 	dExpr : dExpr _MINUS _DAYS _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9064,17 +9052,17 @@ state 585:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 611
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 610
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 586:
+state 585:
 
 	dExpr : dExpr _MINUS _MONTHS _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9085,17 +9073,17 @@ state 586:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 612
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 611
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 587:
+state 586:
 
 	dExpr : dExpr _MINUS _WEEKS _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9106,17 +9094,17 @@ state 587:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 613
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 612
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 588:
+state 587:
 
 	dExpr : dExpr _MINUS _YEARS _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9127,17 +9115,17 @@ state 588:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 614
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 613
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 589:
+state 588:
 
 	dExpr : dExpr _PLUS _DAYS _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9148,17 +9136,17 @@ state 589:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 615
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 614
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 590:
+state 589:
 
 	dExpr : dExpr _PLUS _MONTHS _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9169,17 +9157,17 @@ state 590:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 616
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 615
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 591:
+state 590:
 
 	dExpr : dExpr _PLUS _WEEKS _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9190,17 +9178,17 @@ state 591:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 617
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 616
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 592:
+state 591:
 
 	dExpr : dExpr _PLUS _YEARS _LPAREN xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9211,44 +9199,44 @@ state 592:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 618
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 617
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 593:
+state 592:
 
 	sExpr : SFBSS _LPAREN bExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
+	_RPAREN	shift 618
+	.	error
+
+state 593:
+
+	sExpr : SFSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
+	sExpr : sExpr _ _PLUS sExpr
+
+	_PLUS	shift 140
 	_RPAREN	shift 619
 	.	error
 
 state 594:
 
-	sExpr : SFSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
-	sExpr : sExpr _ _PLUS sExpr
-
-	_PLUS	shift 141
-	_RPAREN	shift 620
-	.	error
-
-state 595:
-
 	sExpr : SFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 621
-	_PLUS	shift 141
+	_COMMA	shift 620
+	_PLUS	shift 140
 	.	error
 
-state 596:
+state 595:
 
 	sExpr : SFSXX _LPAREN sExpr _COMMA xExpr _COMMA xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9259,26 +9247,26 @@ state 596:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 622
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 621
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 597:
+state 596:
 
 	VoidCall : VFSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 623
+	_PLUS	shift 140
+	_RPAREN	shift 622
 	.	error
 
-state 598:
+state 597:
 
 	VoidCall : VFSSX _LPAREN sExpr _COMMA sExpr _COMMA xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9289,35 +9277,35 @@ state 598:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 624
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 623
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 599:
+state 598:
 
 	VoidCall : VFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 625
-	_PLUS	shift 141
+	_COMMA	shift 624
+	_PLUS	shift 140
 	.	error
 
-state 600:
+state 599:
 
 	VoidCall : VFOSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
-	_RPAREN	shift 626
+	_PLUS	shift 140
+	_RPAREN	shift 625
 	.	error
 
-state 601:
+state 600:
 
 	VoidCall : VFOSSX _LPAREN sExpr _COMMA sExpr _COMMA xExpr _ _RPAREN
 	xExpr : xExpr _ _AND xExpr
@@ -9328,59 +9316,52 @@ state 601:
 	xExpr : xExpr _ _MOD xExpr
 	xExpr : xExpr _ _UPARROW xExpr
 
-	_AND	shift 143
-	_MINUS	shift 144
-	_MOD	shift 145
-	_PLUS	shift 146
-	_RPAREN	shift 627
-	_SLASH	shift 148
-	_STAR	shift 149
-	_UPARROW	shift 150
+	_AND	shift 142
+	_MINUS	shift 143
+	_MOD	shift 144
+	_PLUS	shift 145
+	_RPAREN	shift 626
+	_SLASH	shift 147
+	_STAR	shift 148
+	_UPARROW	shift 149
 	.	error
 
-state 602:
+state 601:
 
 	VoidCall : VFOSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _ _COMMA sExpr _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_COMMA	shift 628
-	_PLUS	shift 141
+	_COMMA	shift 627
+	_PLUS	shift 140
+	.	error
+
+state 602:
+
+	VoidCall : VFGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _ _RPAREN
+
+	_RPAREN	shift 628
 	.	error
 
 state 603:
 
-	VoidCall : VFGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _ _RPAREN
+	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _ _COMMA gExpr _RPAREN
 
-	_RPAREN	shift 629
+	_COMMA	shift 629
 	.	error
 
 state 604:
-
-	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _ _COMMA gExpr _RPAREN
-
-	_COMMA	shift 630
-	.	error
-
-state 605:
-
-	RegExStatement : _EXEC_YAG _LPAREN sExpr _COMMA sExpr _RPAREN _AS _ SFLD _DO BlokStatement
-
-	SFLD	shift 631
-	.	error
-
-state 606:
 
 	DeclareForEachStatement : _FOR _EACH $$9 DeclareGroup OptionalAlias _DO BlokStatement _	(216)
 
 	.	reduce 216
 
-state 607:
+state 605:
 
 	ArgumentList : ArgumentList _COMMA Argument _	(78)
 
 	.	reduce 78
 
-state 608:
+state 606:
 
 	CreateVoidFunction : _VOID _NOID $$2 _LPAREN OptionalArgumentList _RPAREN _BEGIN _ Start _END
 	$$1 : _	(1)
@@ -9388,81 +9369,90 @@ state 608:
 	.	reduce 1
 
 	$$1	goto 1
-	Start	goto 632
+	Start	goto 630
 
-state 609:
+state 607:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _ _RPAREN _AS SFLD $$14 _DO $$15 BlokStatement
+	sExpr : sExpr _ _PLUS sExpr
+
+	_PLUS	shift 140
+	_RPAREN	shift 631
+	.	error
+
+state 608:
 
 	DeclareWithNewStatement : _WITH _NEW $$11 DeclareGroup OptionalAlias _DO BlokStatement _	(220)
 
 	.	reduce 220
 
-state 610:
+state 609:
 
 	FalseStatement : $$7 Statement _	(99)
 
 	.	reduce 99
 
-state 611:
+state 610:
 
 	dExpr : dExpr _MINUS _DAYS _LPAREN xExpr _RPAREN _	(144)
 
 	.	reduce 144
 
-state 612:
+state 611:
 
 	dExpr : dExpr _MINUS _MONTHS _LPAREN xExpr _RPAREN _	(140)
 
 	.	reduce 140
 
-state 613:
+state 612:
 
 	dExpr : dExpr _MINUS _WEEKS _LPAREN xExpr _RPAREN _	(142)
 
 	.	reduce 142
 
-state 614:
+state 613:
 
 	dExpr : dExpr _MINUS _YEARS _LPAREN xExpr _RPAREN _	(138)
 
 	.	reduce 138
 
-state 615:
+state 614:
 
 	dExpr : dExpr _PLUS _DAYS _LPAREN xExpr _RPAREN _	(143)
 
 	.	reduce 143
 
-state 616:
+state 615:
 
 	dExpr : dExpr _PLUS _MONTHS _LPAREN xExpr _RPAREN _	(139)
 
 	.	reduce 139
 
-state 617:
+state 616:
 
 	dExpr : dExpr _PLUS _WEEKS _LPAREN xExpr _RPAREN _	(141)
 
 	.	reduce 141
 
-state 618:
+state 617:
 
 	dExpr : dExpr _PLUS _YEARS _LPAREN xExpr _RPAREN _	(137)
 
 	.	reduce 137
 
-state 619:
+state 618:
 
 	sExpr : SFBSS _LPAREN bExpr _COMMA sExpr _COMMA sExpr _RPAREN _	(158)
 
 	.	reduce 158
 
-state 620:
+state 619:
 
 	sExpr : SFSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN _	(152)
 
 	.	reduce 152
 
-state 621:
+state 620:
 
 	sExpr : SFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA _ sExpr _RPAREN
 
@@ -9477,35 +9467,35 @@ state 621:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 633
+	DynToken	goto 210
+	sExpr	goto 632
 
-state 622:
+state 621:
 
 	sExpr : SFSXX _LPAREN sExpr _COMMA xExpr _COMMA xExpr _RPAREN _	(154)
 
 	.	reduce 154
 
-state 623:
+state 622:
 
 	VoidCall : VFSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN _	(59)
 
 	.	reduce 59
 
-state 624:
+state 623:
 
 	VoidCall : VFSSX _LPAREN sExpr _COMMA sExpr _COMMA xExpr _RPAREN _	(60)
 
 	.	reduce 60
 
-state 625:
+state 624:
 
 	VoidCall : VFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA _ sExpr _RPAREN
 
@@ -9520,29 +9510,29 @@ state 625:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 634
+	DynToken	goto 210
+	sExpr	goto 633
 
-state 626:
+state 625:
 
 	VoidCall : VFOSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN _	(68)
 
 	.	reduce 68
 
-state 627:
+state 626:
 
 	VoidCall : VFOSSX _LPAREN sExpr _COMMA sExpr _COMMA xExpr _RPAREN _	(69)
 
 	.	reduce 69
 
-state 628:
+state 627:
 
 	VoidCall : VFOSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA _ sExpr _RPAREN
 
@@ -9557,131 +9547,163 @@ state 628:
 	SFV	shift 58
 	SFX	shift 59
 	SFOV	shift 60
-	SFLD	shift 215
+	SFLD	shift 213
 	_DYNFLD	shift 103
 	_CHARACTER_STRING	shift 105
-	_FIELDID	shift 111
-	_LPAREN	shift 254
+	_FIELDID	shift 110
+	_LPAREN	shift 253
 	.	error
 
-	DynToken	goto 212
-	sExpr	goto 635
+	DynToken	goto 210
+	sExpr	goto 634
 
-state 629:
+state 628:
 
 	VoidCall : VFGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _RPAREN _	(54)
 
 	.	reduce 54
 
-state 630:
+state 629:
 
 	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _COMMA _ gExpr _RPAREN
 
-	DFLD	shift 249
-	SFLD	shift 298
-	IFLD	shift 251
-	XFLD	shift 252
-	GFLD	shift 253
+	DFLD	shift 248
+	SFLD	shift 297
+	IFLD	shift 250
+	XFLD	shift 251
+	GFLD	shift 252
 	_DYNFLD	shift 103
-	_FIELDID	shift 111
-	_STAR	shift 256
+	_FIELDID	shift 110
+	_STAR	shift 255
 	.	error
 
-	gExpr	goto 636
-	DynToken	goto 297
+	gExpr	goto 635
+	DynToken	goto 296
+
+state 630:
+
+	CreateVoidFunction : _VOID _NOID $$2 _LPAREN OptionalArgumentList _RPAREN _BEGIN Start _ _END
+
+	_END	shift 636
+	.	error
 
 state 631:
 
-	RegExStatement : _EXEC_YAG _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD _ _DO BlokStatement
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _ _AS SFLD $$14 _DO $$15 BlokStatement
 
-	_DO	shift 637
+	_AS	shift 637
 	.	error
 
 state 632:
 
-	CreateVoidFunction : _VOID _NOID $$2 _LPAREN OptionalArgumentList _RPAREN _BEGIN Start _ _END
+	sExpr : SFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
+	sExpr : sExpr _ _PLUS sExpr
 
-	_END	shift 638
+	_PLUS	shift 140
+	_RPAREN	shift 638
 	.	error
 
 state 633:
 
-	sExpr : SFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
+	VoidCall : VFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_RPAREN	shift 639
 	.	error
 
 state 634:
 
-	VoidCall : VFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
+	VoidCall : VFOSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
 	sExpr : sExpr _ _PLUS sExpr
 
-	_PLUS	shift 141
+	_PLUS	shift 140
 	_RPAREN	shift 640
 	.	error
 
 state 635:
 
-	VoidCall : VFOSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _ _RPAREN
-	sExpr : sExpr _ _PLUS sExpr
+	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _COMMA gExpr _ _RPAREN
 
-	_PLUS	shift 141
 	_RPAREN	shift 641
 	.	error
 
 state 636:
 
-	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _COMMA gExpr _ _RPAREN
-
-	_RPAREN	shift 642
-	.	error
-
-state 637:
-
-	RegExStatement : _EXEC_YAG _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD _DO _ BlokStatement
-
-	_BEGIN	shift 104
-	.	error
-
-	BlokStatement	goto 643
-
-state 638:
-
 	CreateVoidFunction : _VOID _NOID $$2 _LPAREN OptionalArgumentList _RPAREN _BEGIN Start _END _	(74)
 
 	.	reduce 74
 
-state 639:
+state 637:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _AS _ SFLD $$14 _DO $$15 BlokStatement
+
+	SFLD	shift 642
+	.	error
+
+state 638:
 
 	sExpr : SFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN _	(153)
 
 	.	reduce 153
 
-state 640:
+state 639:
 
 	VoidCall : VFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN _	(61)
 
 	.	reduce 61
 
-state 641:
+state 640:
 
 	VoidCall : VFOSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN _	(70)
 
 	.	reduce 70
 
-state 642:
+state 641:
 
 	VoidCall : VFGGGG _LPAREN gExpr _COMMA gExpr _COMMA gExpr _COMMA gExpr _RPAREN _	(55)
 
 	.	reduce 55
 
+state 642:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD _ $$14 _DO $$15 BlokStatement
+	$$14 : _	(230)
+
+	.	reduce 230
+
+	$$14	goto 643
+
 state 643:
 
-	RegExStatement : _EXEC_YAG _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD _DO BlokStatement _	(229)
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD $$14 _ _DO $$15 BlokStatement
 
-	.	reduce 229
+	_DO	shift 644
+	.	error
+
+state 644:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD $$14 _DO _ $$15 BlokStatement
+	$$15 : _	(231)
+
+	.	reduce 231
+
+	$$15	goto 645
+
+state 645:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD $$14 _DO $$15 _ BlokStatement
+
+	_BEGIN	shift 104
+	.	error
+
+	BlokStatement	goto 646
+
+state 646:
+
+	SlStatement : _WITH SLFOSS $$13 _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD $$14 _DO $$15 BlokStatement _	(232)
+
+	.	reduce 232
 
 15 shift/reduce conflicts.
 3 reduce/reduce conflicts.

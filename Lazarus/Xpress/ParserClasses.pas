@@ -67,6 +67,7 @@ public
   property isOpen: Boolean read fIsOpen;
   property Eof: Boolean read getEof;
   property Data: TCustomBindable read getData;
+  property Cursor: Integer read fCursor;
   function BindableByName (aName: String): TCustomBindable;
   function Ancestor (aAlias: String): TFed;
   function FindAnchor (aAlias: String): TFed;

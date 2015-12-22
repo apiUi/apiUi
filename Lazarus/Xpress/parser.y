@@ -9,6 +9,7 @@
 %token SFOV
 %token VFV VFS VFSS VFSX VFSSS VFSSX VFSSSS VFX VFD
 %token VFOV VFOS VFOSS VFOSX VFOSSS VFOSSX VFOSSSS VFOX VFOD
+%token SLFOSS
 %token VFG VFGG VFGGG VFGGGG
 %token XFD XFG XFGG XFS XFSX XFV XFX XFXX XFFRAME
 %token XFOV XFOS XFOX XFOXX
@@ -350,11 +351,11 @@ Statement:
         | VoidCall
         | CreateFunction
         | DeclareForEachStatement
-        | RegExStatement
         | ForEachStatement
         | DeclareWithStatement
         | WithStatement
         | WithNewStatement
+        | SlStatement
         | DeclareWithNewStatement
         | DeclareSqlSelectStatement
         | SqlSelectStatement
@@ -1052,8 +1053,62 @@ WithNewStatement:
           }
           ;
 
-RegExStatement:
-          _EXEC_YAG _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD _DO BlokStatement
+SlStatement:
+          _WITH SLFOSS
+          {
+            PushBoolean (Cond);
+            PushObject (pFed);
+            PushObject (cFed);
+            if not Assigned (FOnStoreObject) then
+              RaiseException ('No procedure assigned to OnStoreObject');
+            if ($1.yy.yyObject is TFed) then
+              cFed := $1.yy.yyObject as TFed
+            else
+            begin
+              cFed := TFed.Create;
+              cFed.Parent := pFed;
+              cFed.isCursor := True;
+              FOnStoreObject (Self, cFed);
+              $1.yy.yyObject := cFed;
+              $1.yyRead := $1.yy;
+            end;
+            pFed := cFed;
+          }
+          _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD
+          {
+            if DoIt then
+            begin
+              if $1.Tag <> 1 then
+              begin
+                ($2.yy.yyObject as TBind).yy.yySLFunctionOSS ($1.yy.yyObject, $5.yyString, $7.yyString);
+                ($1.yy.yyObject as TFed).First;
+                $1.Tag := 1;
+              end
+              else
+                ($1.yy.yyObject as TFed).Next;
+              DoIt := (not ($1.yy.yyObject as TFed).Eof);
+              if DoIt then with $1.yy.yyObject as TFed do
+              begin
+                yytemp.yyString := List.Strings[Cursor];
+                PutDataEvent ($10, yytemp);
+              end;
+            end;
+          }
+          _DO
+          {
+            PushBoolean (DoIt);
+          }
+          BlokStatement
+          {
+            DoIt := PopBoolean;
+            cFed := TFed (PopObject);
+            pFed := TFed (PopObject);
+            cond := PopBoolean;
+            if DoIt then
+              yyjump ($1)
+            else
+              $1.Tag := 0;
+          }
           ;
 
 ForEachStatement:
