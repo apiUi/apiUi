@@ -521,7 +521,7 @@ function xsdDateTime(aDT: TDateTime): String;
 function XmlToDateTime (aString: String): TDateTime;
 function xsdNowAsDateTime: String;
 function sblNowAsDateTime: String;
-procedure RegExprMatches (aFed: TFed; aString, aExpr: String);
+procedure RegExprMatchList (aSl: TStringList; aString, aExpr: String);
 function StringHasRegExpr (aString, aExpr: String): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
@@ -545,6 +545,7 @@ function SubStringX ( s: String; i, c: Extended): String;
 function isAccordingSchema (aObject: TObject): Extended;
 function isAssigned (aObject: TObject): Extended;
 procedure ResetOperationCounters;
+procedure EnvVarMatchList (aSl: TStringList; aExpr: String);
 procedure ResetEnvVars (aRegExp: String);
 procedure ResetEnvVar (aName: String);
 function setEnvNumber (aName: String; aValue: Extended): Extended;
@@ -970,11 +971,35 @@ begin
   end;
 end;
 
-procedure RegExprMatches (aFed: TFed; aString, aExpr: String);
+procedure EnvVarMatchList (aSl: TStringList; aExpr: String);
+var
+  i: Integer;
+begin
+  aSl.Clear;
+  if (aExpr <> '') then
+  begin
+    AcquireEnvVarLock;
+    try
+      with TRegExpr.Create do
+      try
+        Expression := aExpr;
+        for I := _wsdlVars.Count - 1 downto 0 do
+          if (Exec(_wsdlVars.Names[i])) then
+            aSl.Add (_wsdlVars.Names[i]);
+      finally
+        Free;
+      end;
+    finally
+      ReleaseEnvVarLock;
+    end;
+  end;
+end;
+
+procedure RegExprMatchList (aSl: TStringList; aString, aExpr: String);
 var
   f: Boolean;
 begin
-  aFed.List.Clear;
+  aSl.Clear;
   if (aString <> '')
   and (aExpr <> '') then
   with TRegExpr.Create do
@@ -983,7 +1008,7 @@ begin
     f := Exec (aString);
     while f do
     begin
-      aFed.List.Add (Match[0]);
+      aSl.Add (Match[0]);
       f := ExecNext;
     end;
   finally
@@ -3581,6 +3606,7 @@ begin
     BindBeforeFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
     BindBeforeFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindBeforeFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+    BindBeforeFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
     BindBeforeFunction ('MD5', @MD5, SFS, '(aString)');
     BindBeforeFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
@@ -3602,7 +3628,7 @@ begin
     BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
-    BindBeforeFunction ('RegExprMatches', @RegExprMatches, SLFOSS, '(aString, aRegExpr)');
+    BindBeforeFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindBeforeFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
@@ -3720,6 +3746,7 @@ begin
     BindAfterFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
     BindAfterFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindAfterFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+    BindAfterFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
     BindAfterFunction ('MD5', @MD5, SFS, '(aString)');
     BindAfterFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindAfterFunction ('MessageName', @wsdlMessageName, SFOV, '()');
@@ -3740,7 +3767,7 @@ begin
     BindAfterFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindAfterFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindAfterFunction ('EnableMessage', @EnableMessage, VFOV, '()');
-    BindAfterFunction ('RegExprMatches', @RegExprMatches, SLFOSS, '(aString, aRegExpr)');
+    BindAfterFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindAfterFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindAfterFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindAfterFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');

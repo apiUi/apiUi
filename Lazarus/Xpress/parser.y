@@ -9,7 +9,7 @@
 %token SFOV
 %token VFV VFS VFSS VFSX VFSSS VFSSX VFSSSS VFX VFD
 %token VFOV VFOS VFOSS VFOSX VFOSSS VFOSSX VFOSSSS VFOX VFOD
-%token SLFOSS
+%token SLFOS SLFOSS
 %token VFG VFGG VFGGG VFGGGG
 %token XFD XFG XFGG XFS XFSX XFV XFX XFXX XFFRAME
 %token XFOV XFOS XFOX XFOXX
@@ -458,10 +458,14 @@ BlokStatement:
           {
             if not Preparing then
               $1.Block.InitBinds;
+            PushBoolean (DoIt);
+            PushBoolean (Cond);
           }
           Start
           _END
           {
+            Cond := PopBoolean;
+            DoIt := PopBoolean;
           }
         ;
 
@@ -1044,70 +1048,77 @@ WithNewStatement:
               if cFed.isDynamic then
                 cFed.FirstBind := cFed.Parent.FindBindableOnAliasField (cFed.TokenString);
             if DoIt then cFed.New;
-            PushBoolean (DoIt);
           }
           BlokStatement
           {
-            DoIt := PopBoolean;
             cFed := PopObject as TFed;
           }
           ;
 
 SlStatement:
-          _WITH SLFOSS
+          _FOR _EACH SLFOS _LPAREN sExpr _RPAREN _AS SFLD
           {
-            PushBoolean (Cond);
-            PushObject (pFed);
-            PushObject (cFed);
-            if not Assigned (FOnStoreObject) then
-              RaiseException ('No procedure assigned to OnStoreObject');
-            if ($1.yy.yyObject is TFed) then
-              cFed := $1.yy.yyObject as TFed
-            else
-            begin
-              cFed := TFed.Create;
-              cFed.Parent := pFed;
-              cFed.isCursor := True;
-              FOnStoreObject (Self, cFed);
-              $1.yy.yyObject := cFed;
-              $1.yyRead := $1.yy;
-            end;
-            pFed := cFed;
-          }
-          _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD
-          {
+            PushBoolean (DoIt);
             if DoIt then
             begin
-              if $1.Tag <> 1 then
+              if not ($1.yy.yyObject is TStringList) then
               begin
-                ($2.yy.yyObject as TBind).yy.yySLFunctionOSS ($1.yy.yyObject, $5.yyString, $7.yyString);
-                ($1.yy.yyObject as TFed).First;
-                $1.Tag := 1;
-              end
-              else
-                ($1.yy.yyObject as TFed).Next;
-              DoIt := (not ($1.yy.yyObject as TFed).Eof);
-              if DoIt then with $1.yy.yyObject as TFed do
+                $1.yy.yyObject := TStringList.Create;
+                $1.yyRead := $1.yy;
+                $1.Tag := -1;
+                ($3.yy.yyObject as TBind).yy.yySLFunctionOS ($1.yy.yyObject, $5.yyString);
+              end;
+              $1.Tag := $1.Tag + 1;
+              DoIt := ($1.Tag < ($1.yy.yyObject as TStringList).Count);
+              if DoIt then
               begin
-                yytemp.yyString := List.Strings[Cursor];
+                yytemp.yyString := ($1.yy.yyObject as TStringList).Strings[$1.Tag];
+                PutDataEvent ($8, yytemp);
+              end;
+            end;
+          }
+          _DO BlokStatement
+          {
+            if DoIt then
+              yyjump ($1)
+            else
+            begin
+              FreeAndNil ($1.yy.yyObject);
+              $1.yyRead := $1.yy;
+            end;
+            DoIt := PopBoolean;
+          }
+        | _FOR _EACH SLFOSS _LPAREN sExpr _COMMA sExpr _RPAREN _AS SFLD
+          {
+            PushBoolean (DoIt);
+            if DoIt then
+            begin
+              if not ($1.yy.yyObject is TStringList) then
+              begin
+                $1.yy.yyObject := TStringList.Create;
+                $1.yyRead := $1.yy;
+                $1.Tag := -1;
+                ($3.yy.yyObject as TBind).yy.yySLFunctionOSS ($1.yy.yyObject, $5.yyString, $7.yyString);
+              end;
+              $1.Tag := $1.Tag + 1;
+              DoIt := ($1.Tag < ($1.yy.yyObject as TStringList).Count);
+              if DoIt then
+              begin
+                yytemp.yyString := ($1.yy.yyObject as TStringList).Strings[$1.Tag];
                 PutDataEvent ($10, yytemp);
               end;
             end;
           }
-          _DO
+          _DO BlokStatement
           {
-            PushBoolean (DoIt);
-          }
-          BlokStatement
-          {
-            DoIt := PopBoolean;
-            cFed := TFed (PopObject);
-            pFed := TFed (PopObject);
-            cond := PopBoolean;
             if DoIt then
               yyjump ($1)
             else
-              $1.Tag := 0;
+            begin
+              FreeAndNil ($1.yy.yyObject);
+              $1.yyRead := $1.yy;
+            end;
+            DoIt := PopBoolean;
           }
           ;
 
