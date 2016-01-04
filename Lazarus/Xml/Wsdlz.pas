@@ -983,7 +983,7 @@ begin
       with TRegExpr.Create do
       try
         Expression := aExpr;
-        for I := _wsdlVars.Count - 1 downto 0 do
+        for I := 0 to _wsdlVars.Count - 1 do
           if (Exec(_wsdlVars.Names[i])) then
             aSl.Add (_wsdlVars.Names[i]);
       finally
@@ -993,6 +993,7 @@ begin
       ReleaseEnvVarLock;
     end;
   end;
+  aSl.Sort;
 end;
 
 procedure RegExprMatchList (aSl: TStringList; aString, aExpr: String);
