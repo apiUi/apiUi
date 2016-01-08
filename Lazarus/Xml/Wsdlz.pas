@@ -1586,7 +1586,7 @@ end;
 
 function wsdlOperationName(aOper: TWsdlOperation): String;
 begin
-  result := aOper.reqTagName;
+  result := aOper.Alias;
 end;
 
 function wsdlMessagingProtocol(aOper: TWsdlOperation): String;

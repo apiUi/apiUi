@@ -547,13 +547,16 @@ begin
     if (TimeStamp > Msg.LastTimeStamp) then
       Msg.LastTimeStamp := TimeStamp;
     Inc (Msg.Count);
-  { }
+  {  &amp;lt;clinit&amp;gt; }
     EventData := strUtils.ReplaceText(EventData, '&lt;', '<');
     EventData := strUtils.ReplaceText(EventData, '&gt;', '>');
     EventData := strUtils.ReplaceText(EventData, '&quot;', '"');
     EventData := strUtils.ReplaceText(EventData, '&#47;', '/');
     EventData := strUtils.ReplaceText(EventData, '&#39;', '''');
-  { }
+    EventData := strUtils.ReplaceText(EventData, '&amp;', '&');
+    EventData := strUtils.ReplaceText(EventData, '&lt;', '&amp;lt;');
+    EventData := strUtils.ReplaceText(EventData, '&gt;', '&amp;gt;');
+  {}
     s := '<EventHeader>'
        + '<EventType>' + EventType + '</EventType>'
        + '<TimeStamp>' + TimeStamp + '</TimeStamp>'

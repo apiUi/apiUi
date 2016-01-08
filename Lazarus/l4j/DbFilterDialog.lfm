@@ -1,10 +1,10 @@
 object DbFilterDlg: TDbFilterDlg
-  Left = 498
-  Height = 753
-  Top = 44
+  Left = 353
+  Height = 697
+  Top = 62
   Width = 1107
   Caption = 'Query Datasource'
-  ClientHeight = 753
+  ClientHeight = 697
   ClientWidth = 1107
   Color = clBtnFace
   OnCreate = FormCreate
@@ -56,11 +56,11 @@ object DbFilterDlg: TDbFilterDlg
   end
   object Panel2: TPanel
     Left = 0
-    Height = 525
+    Height = 469
     Top = 60
     Width = 1107
     Align = alClient
-    ClientHeight = 525
+    ClientHeight = 469
     ClientWidth = 1107
     TabOrder = 1
     object Label7: TLabel
@@ -73,7 +73,7 @@ object DbFilterDlg: TDbFilterDlg
     end
     object QueryEdit: TMemo
       Left = 120
-      Height = 502
+      Height = 446
       Top = 13
       Width = 938
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -137,7 +137,7 @@ object DbFilterDlg: TDbFilterDlg
   object Panel3: TPanel
     Left = 0
     Height = 112
-    Top = 585
+    Top = 529
     Width = 1107
     Align = alBottom
     ClientHeight = 112
@@ -219,7 +219,7 @@ object DbFilterDlg: TDbFilterDlg
   object Panel4: TPanel
     Left = 0
     Height = 56
-    Top = 697
+    Top = 641
     Width = 1107
     Align = alBottom
     ClientHeight = 56
