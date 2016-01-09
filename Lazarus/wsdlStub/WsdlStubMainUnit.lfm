@@ -414,7 +414,11 @@ object MainForm: TMainForm
         DefaultExtension = '.rtf'
         Align = alClient
         Color = clBtnFace
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
         OnClick = DataTypeDocumentationMemoClick
+        ParentFont = False
         ReadOnly = True
         TabOrder = 4
       end

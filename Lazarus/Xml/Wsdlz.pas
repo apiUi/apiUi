@@ -522,6 +522,8 @@ function XmlToDateTime (aString: String): TDateTime;
 function xsdNowAsDateTime: String;
 function sblNowAsDateTime: String;
 procedure RegExprMatchList (aSl: TStringList; aString, aExpr: String);
+function xNewLine: String;
+function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringHasRegExpr (aString, aExpr: String): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
@@ -1017,6 +1019,21 @@ begin
   end;
 end;
 
+function xNewLine : String ;
+begin
+  result := LineEnding;
+end;
+
+function xStringOfChar (aString : String ; aNumber : Extended ): String ;
+var
+  c: Char;
+begin
+  if Length (aString) = 0 then
+    c:= ' '
+  else
+    c:= aString [1];
+  result := StringOfChar(c, Trunc (aNumber));
+end;
 
 function StringHasRegExpr (aString, aExpr: String): String;
 begin
@@ -3612,6 +3629,7 @@ begin
     BindBeforeFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindBeforeFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
+    BindBeforeFunction ('NewLine', @xNewLine, SFV, '()');
     BindBeforeFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindBeforeFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
     BindBeforeFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
@@ -3644,6 +3662,7 @@ begin
     BindBeforeFunction ('Sleep', @SleepX, VFX, '(aMilliSeconds)');
     BindBeforeFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
     BindBeforeFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
+    BindBeforeFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
     BindBeforeFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindBeforeFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
 //    BindBeforeFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
@@ -3752,6 +3771,7 @@ begin
     BindAfterFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindAfterFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindAfterFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
+    BindAfterFunction ('NewLine', @xNewLine, SFV, '()');
     BindAfterFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindAfterFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
     BindAfterFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
@@ -3783,6 +3803,7 @@ begin
     BindAfterFunction ('Sleep', @Sleep, VFX, '(aMilliSeconds)');
     BindAfterFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
     BindAfterFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
+    BindAfterFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
     BindAfterFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindAfterFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
 //  BindAfterFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
@@ -5451,6 +5472,7 @@ begin
       BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
       BindCheckerFunction ('LengthStr', @LengthX, XFS, '(aString)');
       BindCheckerFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+      BindCheckerFunction ('NewLine', @xNewLine, SFV, '()');
       BindCheckerFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
       BindCheckerFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
       BindCheckerFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
@@ -5459,6 +5481,7 @@ begin
       BindCheckerFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
       BindCheckerFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
       BindCheckerFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
+      BindCheckerFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
       BindCheckerFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
       BindCheckerFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
 //    BindCheckerFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
@@ -5512,6 +5535,7 @@ begin
     BindStamperFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindStamperFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindStamperFunction ('MD5', @MD5, SFS, '(aString)');
+    BindStamperFunction ('NewLine', @xNewLine, SFV, '()');
     BindStamperFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindStamperFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
     BindStamperFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
@@ -5525,6 +5549,7 @@ begin
     BindStamperFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
     BindStamperFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
     BindStamperFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
+    BindStamperFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
     BindStamperFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindStamperFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
 //  BindStamperFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');

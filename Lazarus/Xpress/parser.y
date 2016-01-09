@@ -5,7 +5,7 @@
 %{
 %}
 
-%token DF DFS DFX FRAME_ SFBSS SFD SFDS SFS SFSS SFSSS SFSSSS SFSXX SFV SFX
+%token DF DFS DFX FRAME_ SFBSS SFD SFDS SFS SFSS SFSSS SFSSSS SFSX SFSXX SFV SFX
 %token SFOV
 %token VFV VFS VFSS VFSX VFSSS VFSSX VFSSSS VFX VFD
 %token VFOV VFOS VFOSS VFOSX VFOSSS VFOSSX VFOSSSS VFOX VFOD
@@ -779,6 +779,7 @@ sExpr:    sExpr _PLUS sExpr	{ $$.yyString := $1.yyString + $3.yyString; }
         | SFSS _LPAREN sExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionSS ($3.yyString, $5.yyString); }
         | SFSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionSSS ($3.yyString, $5.yyString, $7.yyString); }
         | SFSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionSSSS ($3.yyString, $5.yyString, $7.yyString, $9.yyString); }
+        | SFSX _LPAREN sExpr _COMMA xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionSX ($3.yyString, $5.yy.yyExtended); }
         | SFSXX _LPAREN sExpr _COMMA xExpr _COMMA xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionSXX ($3.yyString, $5.yy.yyExtended, $7.yy.yyExtended); }
         | SFV _LPAREN _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionV (); }
         | SFOV _LPAREN _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOV (Data); }
