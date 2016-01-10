@@ -309,6 +309,8 @@ type
                          ): String;
     function ProjectLogOptionsAsXml: TXml;
     function ProjectOptionsAsXml: TXml;
+    function ProjectScriptsAsXml: TXml;
+    procedure ProjectScriptsFromXml (aXml: TXml);
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
     function BooleanPromptDialog (aPrompt: String): Boolean;
     function WsdlOpenFile (aName: String; aElementsWhenRepeatable: Integer): TWsdl;
@@ -1791,6 +1793,55 @@ begin
     AddXml (TXml.CreateAsString('UserName', DbsUserName));
     AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(DbsPassword)));
     AddXml (TXml.CreateAsString('ConnectionString', DbsConnectionString))
+  end;
+end;
+
+function TWsdlProject.ProjectScriptsAsXml : TXml ;
+var
+  x: Integer;
+begin
+  result := TXml.CreateAsString('projectScripts', '');
+  with result.AddXml (TXml.CreateAsString('Scripts', '')) do
+    CopyDownLine(Scripts, True);
+  with result.AddXml (TXml.CreateAsString('Operations', '')) do
+  begin
+    for x := 0 to allAliasses.Count - 1 do
+    begin
+      with AddXml (TXml.CreateAsString('Operation', '')) do
+      begin
+        AddXml (TXml.CreateAsString('Alias', allAliasses.Operations[x].Alias));
+        AddXml (TXml.CreateAsString('BeforeScript', allAliasses.Operations[x].BeforeScriptLines.Text));
+        AddXml (TXml.CreateAsString('AfterScript', allAliasses.Operations[x].AfterScriptLines.Text));
+      end;
+    end;
+  end;
+end;
+
+procedure TWsdlProject.ProjectScriptsFromXml (aXml : TXml );
+var
+  xXml: TXml;
+  x, f: Integer;
+begin
+  if (not Assigned (aXml))
+  or (aXml.Name <> 'projectScripts') then
+    Exit;
+  xXml := aXml.Items.XmlItemByTag['Scripts'];
+  if Assigned (xXml) then
+    Scripts.CopyDownLine(xXml, True);
+  xXml := aXml.Items.XmlItemByTag['Operations'];
+  if Assigned (xXml) then
+  begin
+    for x := 0 to xXml.Items.Count -1 do
+    begin
+      if allAliasses.Find(xXml.Items.XmlValueByTag['Alias'], f) then
+      begin
+        with allAliasses.Operations[f] do
+        begin
+          BeforeScriptLines.Text := xXml.Items.XmlValueByTag['BeforeScript'];
+          AfterScriptLines.Text := xXml.Items.XmlValueByTag['AfterScript'];
+        end;
+      end;
+    end;
   end;
 end;
 

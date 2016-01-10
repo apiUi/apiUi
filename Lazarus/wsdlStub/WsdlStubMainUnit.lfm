@@ -2123,6 +2123,17 @@ object MainForm: TMainForm
       OnExecute = ShowShortCutActionsActionExecute
       ShortCut = 24665
     end
+    object ExportProjectScriptsAction: TAction
+      Category = 'File'
+      Caption = 'Export project scripts...'
+      Hint = 'Save all scripts to fille'
+      OnExecute = ExportProjectScriptsActionExecute
+    end
+    object ImportProjectScriptsAction: TAction
+      Category = 'File'
+      Caption = 'Import project scripts...'
+      OnExecute = ImportProjectScriptsActionExecute
+    end
   end
   object mainImageList: TImageList
     left = 40
@@ -5027,6 +5038,15 @@ object MainForm: TMainForm
           0000000000000000000000000000000000000000000000000000000000000000
           0000000000000000000000000000000000000000000000000000
         }
+      end
+      object MenuItem4: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem20: TMenuItem
+        Action = ImportProjectScriptsAction
+      end
+      object MenuItem1: TMenuItem
+        Action = ExportProjectScriptsAction
       end
       object N1: TMenuItem
         Caption = '-'

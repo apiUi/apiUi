@@ -64,6 +64,11 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    ImportProjectScriptsAction : TAction ;
+    MenuItem20 : TMenuItem ;
+    MenuItem4 : TMenuItem ;
+    ExportProjectScriptsAction : TAction ;
+    MenuItem1 : TMenuItem ;
     ShowShortCutActionsAction : TAction ;
     EditScriptMenuItem : TMenuItem ;
     SchemasToZip : TAction ;
@@ -504,6 +509,7 @@ type
     procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
     procedure httpRequestDesignActionExecute (Sender : TObject );
     procedure httpRequestMessagesActionExecute (Sender : TObject );
+    procedure ImportProjectScriptsActionExecute (Sender : TObject );
     procedure LoadTestActionExecute (Sender : TObject );
     procedure LoadTestActionUpdate (Sender : TObject );
     procedure logChartActionExecute (Sender : TObject );
@@ -524,6 +530,7 @@ type
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
+    procedure ExportProjectScriptsActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
@@ -1080,6 +1087,7 @@ type
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
     function ActiveAfterPrompt: Boolean;
+    function InactiveAfterPrompt: Boolean;
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property isBusy: Boolean read fIsBusy write SetIsBusy;
@@ -2892,7 +2900,7 @@ end;
 
 procedure TMainForm.OpenStubCaseActionExecute(Sender: TObject);
 begin
-  EndEdit;
+  if not InactiveAfterPrompt then Exit;
   if OkToOpenStubCase then
   begin
     OpenFileDialog.DefaultExt := 'wsdlStub';
@@ -3151,7 +3159,7 @@ var
   ChoosenString: String;
   FileName: String;
 begin
-  EndEdit;
+  if not InactiveAfterPrompt then Exit;
   if OkToOpenStubCase then
   begin
     Application.CreateForm(TChooseStringForm, ChooseStringForm);
@@ -3965,7 +3973,6 @@ end;
 
 procedure TMainForm.OpenStubCaseActionUpdate(Sender: TObject);
 begin
-  OpenStubCaseAction.Enabled := not se.IsActive;
 end;
 
 procedure TMainForm.SaveStubCaseAsActionUpdate(Sender: TObject);
@@ -3975,8 +3982,7 @@ end;
 
 procedure TMainForm.ReopenStubCaseActionUpdate(Sender: TObject);
 begin
-  ReopenStubCaseAction.Enabled := (not se.IsActive)
-                              and (ReopenCaseList.Count > 0)
+  ReopenStubCaseAction.Enabled := (ReopenCaseList.Count > 0)
                                 ;
 end;
 
@@ -5766,7 +5772,6 @@ end;
 
 procedure TMainForm.NewStubCaseActionUpdate(Sender: TObject);
 begin
-  NewStubCaseAction.Enabled := not se.IsActive;
 end;
 
 function TMainForm.EditScript(aXml: TObject): Boolean;
@@ -5856,7 +5861,7 @@ end;
 
 procedure TMainForm.NewStubCaseActionExecute(Sender: TObject);
 begin
-  EndEdit;
+  if not InactiveAfterPrompt then Exit;
   if OkToOpenStubCase then
   begin
     ClearConsole;
@@ -7110,6 +7115,20 @@ begin
         startActionExecute (self);
     end;
     result := se.IsActive;
+  end;
+end;
+
+function TMainForm.InactiveAfterPrompt : Boolean ;
+begin
+  result := True;
+  if Assigned (se) then
+  begin
+    if se.IsActive then
+    begin
+      if BooleanPromptDialog('wsdlStub active' + LineEnding + 'Deactivate now') then
+        stopActionExecute (self);
+    end;
+    result := not se.IsActive;
   end;
 end;
 
@@ -11685,6 +11704,26 @@ begin
   Clipboard.AsText := se.ProjectDesignAsString(se.projectFileName);
 end;
 
+procedure TMainForm .ExportProjectScriptsActionExecute (Sender : TObject );
+begin
+  OnlyWhenLicensed;
+  try
+    SaveFileDialog.DefaultExt := 'xml';
+    SaveFileDialog.Filter := 'XML file (*.xml)|*.xml';
+    SaveFileDialog.Title := 'Export all scripts';
+    if SaveFileDialog.Execute then
+    begin
+      with se.ProjectScriptsAsXml do
+      try
+        SaveStringToFile (SaveFileDialog.FileName, Text);
+      finally
+        Free;
+      end;
+    end;
+  finally
+  end;
+end;
+
 procedure TMainForm .SchemasToZipExecute (Sender : TObject );
   procedure _wsdlZipper (aZipFileName: String);
   var
@@ -11966,7 +12005,27 @@ begin
 
 end;
 
-procedure TMainForm .LoadTestActionExecute (Sender : TObject );
+procedure TMainForm.ImportProjectScriptsActionExecute (Sender : TObject );
+var
+  xXml: TXml;
+begin
+  if not InactiveAfterPrompt then Exit;
+  if OkToOpenStubCase then
+  begin
+    OpenFileDialog.DefaultExt := 'xml';
+    OpenFileDialog.Filter := 'XML file (*.xml)|*.xml';
+    OpenFileDialog.Title := 'Import scripts';
+    if OpenFileDialog.Execute then
+    begin
+      hier
+      se.projectFileName := OpenFileDialog.FileName;
+      OpenStubCase(OpenFileDialog.FileName);
+      // TProcedureThread.Create (OpenStubCase, OpenFileDialog.FileName);
+    end;
+  end;
+end;
+
+procedure TMainForm.LoadTestActionExecute (Sender : TObject );
 var
   x: Integer;
 begin
