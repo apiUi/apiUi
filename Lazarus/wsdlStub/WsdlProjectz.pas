@@ -1819,7 +1819,7 @@ end;
 
 procedure TWsdlProject.ProjectScriptsFromXml (aXml : TXml );
 var
-  xXml: TXml;
+  xXml, oXml: TXml;
   x, f: Integer;
 begin
   if (not Assigned (aXml))
@@ -1833,12 +1833,13 @@ begin
   begin
     for x := 0 to xXml.Items.Count -1 do
     begin
-      if allAliasses.Find(xXml.Items.XmlValueByTag['Alias'], f) then
+      oXml := xXml.Items.XmlItems[x];
+      if allAliasses.Find(oXml.Items.XmlValueByTag['Alias'], f) then
       begin
         with allAliasses.Operations[f] do
         begin
-          BeforeScriptLines.Text := xXml.Items.XmlValueByTag['BeforeScript'];
-          AfterScriptLines.Text := xXml.Items.XmlValueByTag['AfterScript'];
+          BeforeScriptLines.Text := oXml.Items.XmlValueByTag['BeforeScript'];
+          AfterScriptLines.Text := oXml.Items.XmlValueByTag['AfterScript'];
         end;
       end;
     end;

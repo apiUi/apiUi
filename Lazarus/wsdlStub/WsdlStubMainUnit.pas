@@ -12008,19 +12008,32 @@ end;
 procedure TMainForm.ImportProjectScriptsActionExecute (Sender : TObject );
 var
   xXml: TXml;
+  xCursor: TCursor;
 begin
   if not InactiveAfterPrompt then Exit;
-  if OkToOpenStubCase then
+  OpenFileDialog.DefaultExt := 'xml';
+  OpenFileDialog.Filter := 'XML file (*.xml)|*.xml';
+  OpenFileDialog.Title := 'Import scripts';
+  if OpenFileDialog.Execute then
   begin
-    OpenFileDialog.DefaultExt := 'xml';
-    OpenFileDialog.Filter := 'XML file (*.xml)|*.xml';
-    OpenFileDialog.Title := 'Import scripts';
-    if OpenFileDialog.Execute then
-    begin
-      hier
-      se.projectFileName := OpenFileDialog.FileName;
-      OpenStubCase(OpenFileDialog.FileName);
-      // TProcedureThread.Create (OpenStubCase, OpenFileDialog.FileName);
+    xCursor := Screen.Cursor;
+    Screen.Cursor := crHourGlass;
+    try
+      xXml := TXml.Create;
+      try
+        xXml.LoadFromFile(OpenFileDialog.FileName, nil);
+        if xXml.Name <> 'projectScripts' then
+          raise Exception.CreateFmt('%s does not contain a valid Script export', [OpenFileDialog.FileName]);
+        se.ProjectScriptsFromXml(xXml);
+        CreateScriptsSubMenuItems;
+        se.PrepareAllOperations(LogServerException);
+        FillInWsdlEdits;
+        stubChanged := True;
+      finally
+        xXml.Free;
+      end;
+    finally
+      Screen.Cursor := xCursor;
     end;
   end;
 end;
