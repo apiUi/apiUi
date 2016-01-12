@@ -510,6 +510,9 @@ type
     procedure httpRequestDesignActionExecute (Sender : TObject );
     procedure httpRequestMessagesActionExecute (Sender : TObject );
     procedure ImportProjectScriptsActionExecute (Sender : TObject );
+    procedure InWsdlTreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
+      TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
+      const CellRect : TRect );
     procedure LoadTestActionExecute (Sender : TObject );
     procedure LoadTestActionUpdate (Sender : TObject );
     procedure logChartActionExecute (Sender : TObject );
@@ -12034,6 +12037,28 @@ begin
       end;
     finally
       Screen.Cursor := xCursor;
+    end;
+  end;
+end;
+
+procedure TMainForm .InWsdlTreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
+  TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
+  const CellRect : TRect );
+var
+  r: TRect;
+  xBind: TCustomBindable;
+begin
+  if Column = treeTagColumn then
+  begin
+    xBind := NodeToBind(Sender, Node);
+    if xBind is TXml then with xBind as TXml do
+    begin
+      if Assigned(Xsd)
+      and (Xsd.maxOccurs <> '1') then
+      begin
+        r := Sender.GetDisplayRect(Node, Column, true);
+        TreeviewImageList.Draw(TargetCanvas, r.Right - 16, CellRect.Top, 31);
+      end;
     end;
   end;
 end;

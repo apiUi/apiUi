@@ -104,6 +104,9 @@ type
     procedure DocumentationEditClick (Sender : TObject );
     procedure DocumentationEditMouseMove (Sender : TObject ;
       Shift : TShiftState ; X , Y : Integer );
+    procedure TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
+      TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
+      const CellRect : TRect );
     procedure TreeViewDblClick(Sender: TObject);
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure ViewinTreeMenuItemClick(Sender: TObject);
@@ -1918,6 +1921,31 @@ end;
 procedure TShowXmlForm .DocumentationEditMouseMove (Sender : TObject ;
   Shift : TShiftState ; X , Y : Integer );
 begin
+end;
+
+procedure TShowXmlForm .TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
+  TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
+  const CellRect : TRect );
+var
+  Bind: TCustomBindable;
+  r: TRect;
+begin
+  case Column of
+  treeTagColumn:
+    begin
+      Bind := NodeToBind(Node);
+      if Assigned(Bind)
+      and (Bind is TXml) then with Bind as TXml do
+      begin
+        if Assigned (Xsd)
+        and (Xsd.maxOccurs <> '1') then
+        begin
+          r := Sender.GetDisplayRect(Node, Column, true);
+          ActionImageList.Draw(TargetCanvas, r.Right - 16, CellRect.Top, 115);
+        end;
+      end;
+    end;
+  end;
 end;
 
 procedure TShowXmlForm.TreeViewDblClick(Sender: TObject);

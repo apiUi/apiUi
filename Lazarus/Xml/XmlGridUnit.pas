@@ -97,6 +97,9 @@ type
     CleanAction: TAction;
     CleanMenuItem: TMenuItem;
     procedure DocumentationEditClick (Sender : TObject );
+    procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
+      TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
+      const CellRect : TRect );
     procedure ZoomActionExecute(Sender: TObject);
     procedure Action1Execute(Sender: TObject);
     procedure FindNextActionExecute(Sender: TObject);
@@ -1838,6 +1841,27 @@ end;
 procedure TXmlGridForm .DocumentationEditClick (Sender : TObject );
 begin
   OpenUrl(MemoIsLink(DocumentationEdit));
+end;
+
+procedure TXmlGridForm .GridAfterCellPaint (Sender : TBaseVirtualTree ;
+  TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
+  const CellRect : TRect );
+var
+  xData: PTreeRec;
+  xBind: TCustomBindable;
+  r: TRect;
+begin
+  xData := Grid.GetNodeData(Node);
+  xBind := xData.Binds.Bindables[Column];
+  if xBind is TXml then with xBind as TXml do
+  begin
+    if Assigned (Xsd)
+    and (Xsd.maxOccurs <> '1') then
+    begin
+      r := Sender.GetDisplayRect(Node, Column, true);
+      ImageList.Draw(TargetCanvas, r.Right - 17, CellRect.Top, 52);
+    end;
+  end;
 end;
 
 { TPasswordEditLink }
