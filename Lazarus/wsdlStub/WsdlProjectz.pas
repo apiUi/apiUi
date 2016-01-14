@@ -525,7 +525,7 @@ begin
       begin
         ReqBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
         RpyBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-        result := 1;
+        result := FetchIndex + 1;
       end;
     end;
   end
@@ -542,7 +542,7 @@ begin
         begin
           ReqBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
           RpyBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-          result := 1;
+          result := FetchIndex;
         end;
       end;
     end;
@@ -571,7 +571,7 @@ begin
       begin
         ReqBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
         RpyBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-        result := 1;
+        result := FetchIndex + 1;
       end;
     end;
   end
@@ -588,7 +588,7 @@ begin
         begin
           ReqBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
           RpyBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-          result := 1;
+          result := FetchIndex + 1;
         end;
       end;
     end;

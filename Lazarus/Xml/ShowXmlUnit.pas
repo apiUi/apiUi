@@ -1658,6 +1658,15 @@ begin
     end
     else
     begin
+      if xBind is TXml then with xBind as TXml do
+      begin
+        if Assigned (TypeDef) then
+        begin
+          if (TypeDef.BaseDataTypeName = 'boolean')
+          and (Value = '') then
+            Value := 'false';
+        end;
+      end;
       if xmlUtil.doExpandOnCheck then
         TreeView.FullExpand(Node);
     end;

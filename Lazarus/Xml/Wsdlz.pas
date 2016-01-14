@@ -554,6 +554,8 @@ function setEnvNumber (aName: String; aValue: Extended): Extended;
 function setEnvVar (aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
 procedure SetLogGroupId (aObject: TObject; aString: String);
+procedure SaveLogs (aObject: TObject; aString: String);
+procedure ClearLogs (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
 procedure SjowMessage (aString: String);
 function decVarNumber (aName: String): Extended;
@@ -591,6 +593,8 @@ var
   _WsdlFetchFirstMessage: XFunctionOS;
   _WsdlFetchNextMessage: XFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
+  _WsdlSaveLogs: VFunctionOS;
+  _WsdlClearLogs: VFunctionV;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSetLogGroupId: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
@@ -675,6 +679,20 @@ begin
   if not Assigned (_WsdlSetLogGroupId) then
     raise Exception.Create('No SetLogGroupId event assigned: intention was to set: ' + aString);
   _WsdlSetLogGroupId (aObject, aString);
+end;
+
+procedure ClearLogs;
+begin
+  if not Assigned (_WsdlClearLogs) then
+    raise Exception.Create('No OnClearLogs event assigned');
+  _WsdlClearLogs;
+end;
+
+procedure SaveLogs (aObject : TObject ; aString : String );
+begin
+  if not Assigned (_WsdlSaveLogs) then
+    raise Exception.Create('No OnSaveLogs event assigned: intention was to write to: ' + aString);
+  _WsdlSaveLogs (aObject, aString);
 end;
 
 procedure ExecuteScript(aObject: TObject; aString: String);
@@ -3605,6 +3623,7 @@ begin
     BindBeforeFunction ('Assigned', @isAssigned, XFG, '(aItem)');
     BindBeforeFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
     BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
+    BindBeforeFunction ('ClearLogs', @ClearLogs, VFV, '()');
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
@@ -3644,6 +3663,7 @@ begin
     BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
     BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
+    BindBeforeFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
@@ -3747,6 +3767,7 @@ begin
     BindAfterFunction ('Assigned', @isAssigned, XFG, '(aItem)');
     BindAfterFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
     BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
+    BindAfterFunction ('ClearLogs', @ClearLogs, VFV, '()');
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
@@ -3786,6 +3807,7 @@ begin
     BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
     BindAfterFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
+    BindAfterFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindAfterFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindAfterFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindAfterFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');

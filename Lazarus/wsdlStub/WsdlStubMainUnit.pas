@@ -1188,6 +1188,27 @@ type
     logTimeColumn, logDurationColumn, logActionColumn, logServiceColumn,
     logOperationColumn, logCorrelationIdColumn, logStdColumnCount);
 
+procedure _ClearLogs ;
+begin
+  MainForm.ClearLogCommand(False);
+end;
+
+procedure _SaveLogs(aContext: TObject; aFileName: String);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create(Format ('SaveLogs(''%s''); unable to determine context', [aFileName]));
+  MainForm.RefreshLog;
+  xProject.SaveMessagesLog(ExpandRelativeFileName(xProject.projectFileName, aFileName));
+end;
+
 function AllChecked(Sender: TBaseVirtualTree; aNode: PVirtualNode): Boolean;
 begin
   if MainForm.NodeToBind(Sender, aNode) is TIpmItem then
@@ -1845,6 +1866,15 @@ begin
     end
     else
     begin
+      if xBind is TXml then with xBind as TXml do
+      begin
+        if Assigned (TypeDef) then
+        begin
+          if (TypeDef.BaseDataTypeName = 'boolean')
+          and (Value = '') then
+            Value := 'false';
+        end;
+      end;
       CheckRpyOrFlt(xBind);
       if xmlUtil.doExpandOnCheck then
         InWsdlTreeView.FullExpand(Node);
@@ -2938,6 +2968,7 @@ function TMainForm.ClearLogCommand(aDoRaiseExceptions: Boolean): String;
 begin
   result := 'Log cleared ' + se.projectFileName + ' successfully';
   try
+    RefreshLog;
     AcquireLock;
     try
       if not se.IsActive then
@@ -12280,7 +12311,8 @@ end;
 {$ifdef windows}
 initialization
   CoInitialize(nil);
-
+  _WsdlClearLogs := _ClearLogs;
+  _WsdlSaveLogs := _SaveLogs;
 finalization
   CoUninitialize;
 {$endif}
