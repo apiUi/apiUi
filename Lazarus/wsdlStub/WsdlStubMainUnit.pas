@@ -32,7 +32,7 @@ uses
    , Xmlz
    , Xsdz
    , StdCtrls
-   , IdHTTP, IdSync
+   , IdSync
    , ComCtrls
    , ExtCtrls
    , FormIniFilez
@@ -524,6 +524,11 @@ type
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
+    procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
+      Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
+    procedure MessagesVTSHeaderClick (Sender : TVTHeader ;
+      Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
+      Y : Integer );
     procedure Operation1Click(Sender: TObject);
     procedure OperationAliasActionExecute (Sender : TObject );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
@@ -901,7 +906,7 @@ type
     ActualXml: TCustomBindable;
     ActualXmlAttr: TXmlAttribute;
     ErrorReadingLicenseInfo: Boolean;
-    xCompanyName: String;
+    CompanyName: String;
     xLicenseExpirationDate: String;
     xLicenseString: String;
     fElementsWhenRepeatable: Integer;
@@ -910,6 +915,9 @@ type
     fAbortPressed: Boolean;
     fIsBusy: Boolean;
     doNotify: Boolean;
+    GetAuthError: String;
+    function GetAuthorization: Boolean;
+    function GetAuthorizationBaseString: String;
     procedure SetOperationZoomPath(aOperation: TWsdlOperation);
     function hintStringFromXsd(aPrefix, aSep, aPostFix: String;
       aXsd: TXsd): String;
@@ -1117,7 +1125,6 @@ type
     procedure ProjectDesignFromString(aString, aMainFileName: String);
     procedure OnlyWhenLicensed;
     function LogMaxEntriesEqualsUnbounded (aCaption: String): Boolean;
-    procedure LicenseRequestFromServer(aProviderAddress: String);
     procedure AcquireLock;
     procedure ReleaseLock;
   end;
@@ -2689,6 +2696,56 @@ begin
   end;
 end;
 
+function TMainForm .GetAuthorization : Boolean ;
+var
+  xRpy, xReq: String;
+  xTimestamp, xKey, xLicensed, xExpireDate: String;
+begin
+  result := False;
+  xTimestamp := xsdNowAsDateTime;
+  with TXml.CreateAsString ('getAuthorization', '') do
+  try
+    AddXml (TXml.CreateAsString('UserName', WindowsUserName));
+    AddXml (TXml.CreateAsString('TimeStamp', xTimestamp));
+    AddXml (TXml.CreateAsString('Program', _ProgName));
+    AddXml (TXml.CreateAsString('Version', _xmlProgVersion));
+    AddXml (TXml.CreateAsString('key', Sha1 (xTimestamp + '_JanBo')));
+    LoadFromString (HttpPostDialog(Text, authorizationServerEndpoint), nil);
+    xLicensed := Items.XmlValueByTag['authorized'];
+    xExpireDate := Items.XmlValueByTag['expireDate'];
+    CompanyName := Items.XmlValueByTag['licensee'];
+    xKey := Items.XmlValueByTag['key'];
+    if (xKey <> Sha1 ( WindowsUserName
+                    + xTimestamp
+                    + '^abra^'
+                    + xLicensed
+                    )) then
+      raise Exception.Create ('Received inalid reply from Authorization server');
+    if (xLicensed = 'true') then
+      result := ValidateLicenseExpirationDate(xExpireDate) // warning...
+    else
+      raise Exception.CreateFmt('Not authorized%sLicense expiredate: %s', [LineEnding, xExpireDate]);
+  finally
+    Free;
+  end;
+end;
+
+function TMainForm .GetAuthorizationBaseString : String ;
+var
+  xTimestamp: String;
+begin
+  result := '';
+  xTimestamp := xsdNowAsDateTime;
+  with TXml.CreateAsString ('getAuthorizationBaseString', '') do
+  try
+    AddXml (TXml.CreateAsString('key', Sha1 (xTimestamp + '_JanBo')));
+    LoadFromString (HttpPostDialog(Text, authorizationServerEndpoint), nil);
+    result := Items.XmlValueByTag['BaseString'];
+  finally
+    Free;
+  end;
+end;
+
 procedure TMainForm.xsdSplitterCanResize(Sender: TObject; var NewSize: Integer;
   var Accept: Boolean);
   function SizeOfToolBar: Integer;
@@ -2976,6 +3033,8 @@ begin
           ('Clear log refused because instance of ' + _progName +
             ' is inactive');
       MessagesVTS.Clear;
+      MessagesVTS.Header.SortColumn := -1;
+      MessagesVTS.Header.SortDirection := sdAscending;
       se.AsynchRpyLogs.Clear;
       se.displayedLogs.Clear;
       LogMemo.Text := '';
@@ -3360,7 +3419,7 @@ begin
   Application.CreateForm(TAboutBox, AboutBox);
   try
     AboutBox.ProgName := _progName;
-    AboutBox.LicensedTo := xCompanyName;
+    AboutBox.LicensedTo := CompanyName;
     AboutBox.VersionInfo:= _xmlProgVersion;
     AboutBox.ShowModal;
   finally
@@ -3450,10 +3509,22 @@ procedure TMainForm.wsdlStubInitialise;
 begin
   se.Licensed := False;
   WindowsUserName := getUserName;
-  OpenLogUsageDatabase;
-  LogUsage(WindowsUserName);
-  ValidateLicense;
-  SqlConnector.Connected := False;
+  if authorizationServerEndpoint <> '' then
+  begin
+    try
+      se.Licensed := GetAuthorization;
+    except
+      on e: Exception do
+        GetAuthError := e.Message;
+    end;
+  end
+  else
+  begin
+    OpenLogUsageDatabase;
+    LogUsage(WindowsUserName);
+    ValidateLicense;
+    SqlConnector.Connected := False;
+  end;
   SetLogUsageTimer;
   ConfigListenersAction.Hint := hintStringFromXsd('Configure listeners (',
     ', ', ')', listenersConfigXsd);
@@ -3664,13 +3735,13 @@ begin
     Qry.Open;
     while not Qry.EOF do
     begin
-      xCompanyName := Qry.FieldByName('CompanyName').AsString;
+      CompanyName := Qry.FieldByName('CompanyName').AsString;
       xLicenseExpirationDate := Qry.FieldByName('LicenseExpireDate').AsString;
       xLicenseString := Qry.FieldByName('LicenseString').AsString;
       Qry.Next;
     end;
     Qry.Close;
-    se.Licensed := (validateIpmLicense( xCompanyName
+    se.Licensed := (validateIpmLicense( CompanyName
                                       + xLicenseExpirationDate
                                       + generateIpmLicense(licenseDatabaseName)
                                       , xLicenseString
@@ -3782,6 +3853,21 @@ begin
 end;
 
 procedure TMainForm.LicenseMenuItemClick(Sender: TObject);
+  function _getBaseString: String;
+  begin
+    result := '';
+    with TXml.CreateAsString('getAuthorizationBaseString', '') do
+    try
+      AddXml (TXml.CreateAsString('key', Sha1 (xsdNowAsDateTime + '_JanBo')));
+      LoadFromString (HttpPostDialog(Text, authorizationServerEndpoint), nil);
+      if Name = 'wsAutorizationBaseString' then
+        result := Items.XmlValueByTag['value'];
+    finally
+      Free;
+    end;
+  end;
+var
+  xResult: String;
 begin
   if ErrorReadingLicenseInfo then
     raise Exception.Create('' + _progName +
@@ -3791,38 +3877,24 @@ begin
   Application.CreateForm(TIpmGunLicenseForm, IpmGunLicenseForm);
   try
     IpmGunLicenseForm.Caption := '' + _progName + ' - License information';
-    IpmGunLicenseForm.Company := xCompanyName;
+    IpmGunLicenseForm.Company := CompanyName;
     IpmGunLicenseForm.LicenseExpirationDate := xLicenseExpirationDate;
-    IpmGunLicenseForm.DbName := licenseDatabaseName;
+    IpmGunLicenseForm.BaseString := _getBaseString;
     IpmGunLicenseForm.ShowModal;
     if IpmGunLicenseForm.ModalResult = mrOk then
     begin
-      OpenLogUsageDatabase;
+      with TXml.CreateAsString ('setAuthorization', '') do
       try
-        try
-          Qry.SQL.Clear;
-          Qry.SQL.Add('Update LicenseInformation');
-          Qry.SQL.Add('set CompanyName = :CompanyName');
-          Qry.SQL.Add('  , LicenseExpireDate = :LicenseExpireDate');
-          Qry.SQL.Add('  , LicenseString = :LicenseString');
-          Qry.Params.ParamValues['CompanyName'] :=
-            IpmGunLicenseForm.Company;
-          Qry.Params.ParamValues['LicenseExpireDate'] :=
-            IpmGunLicenseForm.LicenseExpirationDate;
-          Qry.Params.ParamValues['LicenseString'] :=
-            IpmGunLicenseForm.LicenseString;
-          Qry.Transaction.Active := True;
-          Qry.ExecSql;
-          Qry.Transaction.Active := False;
-          ValidateLicense;
-        except
-          on E: Exception do
-          begin
-            ShowMessage(E.Message);
-          end;
-        end;
+        AddXml (TXml.CreateAsString('Company', IpmGunLicenseForm.Company));
+        AddXml (TXml.CreateAsString('LicenseDate', IpmGunLicenseForm.LicenseExpirationDate));
+        AddXml (TXml.CreateAsString('LicenseString', IpmGunLicenseForm.LicenseString));
+        xResult :=  HttpPostDialog(Text, authorizationServerEndpoint);
+        LoadFromString (xResult, nil);
+        if Name <> 'wsAutorizationSet' then
+          raise Exception.Create ('setAuthorization exception:' + LineEnding + xResult);
+        se.Licensed := GetAuthorization;
       finally
-        SqlConnector.Connected := False;
+        Free;
       end;
     end;
   finally
@@ -3867,55 +3939,6 @@ begin
     finally
       Free;
     end;
-end;
-
-procedure TMainForm.LicenseRequestFromServer(aProviderAddress: String);
-var
-  HttpClient: TIdHTTP;
-  HttpRequest: TStringStream;
-  s: String;
-  xCursor: TCursor;
-begin
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  try
-    HttpClient := TIdHTTP.Create;
-    try
-      HttpRequest := TStringStream.Create('');
-      try
-        HttpClient.Request.ContentType := 'text/xml';
-        HttpClient.Request.CharSet := '';
-        try
-          if se.doViaProxyServer then
-          begin
-            HttpClient.ProxyParams.ProxyServer := se.ViaProxyServer;
-            HttpClient.ProxyParams.ProxyPort := se.ViaProxyPort;
-          end
-          else
-          begin
-            HttpClient.ProxyParams.ProxyServer := '';
-            HttpClient.ProxyParams.ProxyPort := 0;
-          end;
-          try
-            s := HttpClient.Post(aProviderAddress + '/ReadLicenseFromServer',
-              HttpRequest);
-          finally
-          end;
-          if HttpClient.ResponseCode = 500 then
-            raise Exception.Create(s);
-        finally
-          if HttpClient.Connected then { in case server s-alive }
-            HttpClient.Disconnect;
-        end;
-      finally
-        FreeAndNil(HttpRequest);
-      end;
-    finally
-      FreeAndNil(HttpClient);
-    end;
-  finally
-    Screen.Cursor := xCursor;
-  end;
 end;
 
 procedure TMainForm.runScriptActionExecute(Sender: TObject);
@@ -3982,6 +4005,8 @@ begin
   RemoveMessageColumns;
   DocumentationMemo.Clear;
   MessagesVTS.Clear;
+  MessagesVTS.Header.SortColumn := -1;
+  MessagesVTS.Header.SortDirection := sdAscending;
   LogMemo.Clear;
   GridView.Clear;
   ExceptionMemo.Clear;
@@ -5794,6 +5819,8 @@ begin
       se.AcquireLogLock;
       try
         MessagesVTS.Clear;
+        MessagesVTS.Header.SortColumn := -1;
+        MessagesVTS.Header.SortDirection := sdAscending;
         se.AsynchRpyLogs.Clear;
         se.displayedLogs.Clear;
         LogMemo.Text := '';
@@ -6711,6 +6738,9 @@ begin
   MessagesTabControl.TabIndex := Ord (slRequestBody);
   CheckBoxClick(nil);
   stubChanged := False;
+  if (not se.Licensed)
+  and (GetAuthError <> '') then
+    ShowMessage ('Not licenced' + LineEnding + LineEnding + GetAuthError);
 end;
 
 procedure TMainForm.GridViewPaintText(Sender: TBaseVirtualTree;
@@ -7458,6 +7488,8 @@ begin
       raise Exception.Create('Operation aborted');
 }
     MessagesVTS.BeginUpdate;
+    MessagesVTS.Header.SortColumn := -1;
+    MessagesVTS.Header.SortDirection := sdAscending;
     for X := 0 to aLogList.Count - 1 do
     begin
       se.DisplayLog('', aLogList.LogItems[X]);
@@ -8522,6 +8554,11 @@ procedure TMainForm.RefreshLog;
     xNode: PVirtualNode;
   begin
     result := False;
+    if se.toDisplayLogs.Count > 0 then with MessagesVTS.Header do
+    begin
+      SortColumn := -1;
+      SortDirection := sdAscending;
+    end;
     for x := 0 to se.toDisplayLogs.Count - 1 do
     begin
       xLog := se.toDisplayLogs.LogItems[x];
@@ -11187,11 +11224,16 @@ procedure TMainForm.LogUsageTimerTimer(Sender: TObject);
 begin
   try
     try
-      try
-        if OpenLogUsageDatabase then
-          LogUsage(WindowsUserName);
-      finally
-        SqlConnector.Connected := False;
+      if authorizationServerEndpoint <> '' then
+        se.Licensed := GetAuthorization
+      else
+      begin
+        try
+          if OpenLogUsageDatabase then
+            LogUsage(WindowsUserName);
+        finally
+          SqlConnector.Connected := False;
+        end;
       end;
     except
     end;
@@ -12242,6 +12284,47 @@ procedure TMainForm .MessagesTabControlGetImageIndex (Sender : TObject ;
   TabIndex : Integer ; var ImageIndex : Integer );
 begin
   ImageIndex := logValidationTabImageIndex;
+end;
+
+procedure TMainForm .MessagesVTSCompareNodes (Sender : TBaseVirtualTree ;
+  Node1 , Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
+var
+  s1, s2: String;
+begin
+  Result := 0;
+  MessagesVTSGetText(Sender, Node1, Column, ttNormal, s1);
+  MessagesVTSGetText(Sender, Node2, Column, ttNormal, s2);
+  if  s1 < s2 then
+    result := -1;
+  if s1 > s2 then
+    result := 1;
+end;
+
+procedure TMainForm .MessagesVTSHeaderClick (Sender : TVTHeader ;
+  Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
+  Y : Integer );
+var
+  xCursor: TCursor;
+begin
+  xCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    if Sender.SortColumn = Column then
+    begin
+      if Sender.SortDirection = sdAscending then
+        Sender.SortDirection := sdDescending
+      else
+        Sender.SortDirection := sdAscending;
+    end
+    else
+    begin
+      Sender.SortColumn := Column;
+      Sender.SortDirection := sdAscending;
+    end;
+    MessagesVTS.SortTree(Column, Sender.SortDirection, True);
+  finally
+    Screen.Cursor := xCursor;
+  end;
 end;
 
 procedure TMainForm.Operation1Click(Sender: TObject);

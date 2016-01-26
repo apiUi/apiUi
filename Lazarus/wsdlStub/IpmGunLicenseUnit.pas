@@ -41,7 +41,7 @@ type
   public
     property Company: String read getCompany write setCompany;
     property LicenseExpirationDate: String read getLicenseExpirationDate write setLicenseExpirationDate;
-    property DbName: String write setBaseString;
+    property BaseString: String write setBaseString;
     property LicenseString: String read getLicenseString write setLicenseString;
   end;
 
@@ -75,7 +75,7 @@ end;
 
 procedure TIpmGunLicenseForm.setBaseString(const Value: String);
 begin
-  BaseEdit.Text := generateIpmLicense(Value);
+  BaseEdit.Text := Value;
 end;
 
 procedure TIpmGunLicenseForm.setCompany(const Value: String);

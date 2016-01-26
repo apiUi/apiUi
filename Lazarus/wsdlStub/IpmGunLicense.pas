@@ -117,7 +117,7 @@ begin
       IpmGunLicenseForm.Caption := prgName + ' - License information';
       IpmGunLicenseForm.Company := xCompanyName;
       IpmGunLicenseForm.LicenseExpirationDate := xLicenseExpirationDate;
-      IpmGunLicenseForm.DbName := dbName;
+      IpmGunLicenseForm.BaseString := dbName;
       IpmGunLicenseForm.ShowModal;
       if IpmGunLicenseForm.ModalResult = mrOK then
       begin

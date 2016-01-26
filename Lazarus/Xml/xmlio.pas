@@ -8,6 +8,7 @@ uses
   Classes, SysUtils;
 
 
+function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
 function ReadStringFromFile (aFileName: String): String;
@@ -34,6 +35,63 @@ uses StrUtils
    , Controls
    , PromptUnit
    ;
+
+function HttpPostDialog (aRequest, aUrl: String): String;
+var
+  HttpClient: TIdHTTP;
+  HttpRequest: TStringStream;
+  xResponse: String;
+  xStream: TMemoryStream;
+begin
+  Result := '';
+  HttpClient := TIdHTTP.Create;
+  try
+    HttpRequest := TStringStream.Create ('');
+    xStream := TMemoryStream.Create;
+    try
+      try
+        HttpClient.Request.ContentType := 'text/xml';
+        HttpClient.Request.CharSet := '';
+        HttpRequest.WriteString (aRequest);
+        HttpClient.ProxyParams.ProxyServer := '';
+        HttpClient.ProxyParams.ProxyPort := 0;
+        HttpClient.Post(aUrl, HttpRequest, xStream);
+        SetLength(Result,xStream.Size);
+        xStream.Position := 0;;
+        xStream.Read(Pointer(Result)^,xStream.Size);
+        if HttpClient.ResponseCode <> 200 then
+          raise Exception.CreateFmt ( '%d: %s%s%s'
+                                    , [ HttpClient.ResponseCode
+                                      , HttpClient.ResponseText
+                                      , LineEnding
+                                      , Result
+                                      ]
+                                    );
+      except
+        on e: Exception do
+          raise Exception.Create (e.Message);
+      end;
+    finally
+      FreeAndNil (HttpRequest);
+      FreeAndNil (xStream);
+    end;
+  finally
+    if Assigned (HttpClient) then
+    begin
+      if Assigned (HttpClient.IOHandler) then
+      begin
+        HttpClient.IOHandler.Free;
+        HttpClient.IOHandler := nil;
+      end;
+      if Assigned (HttpClient.Compressor) then
+      begin
+        HttpClient.Compressor.Free;
+        HttpClient.Compressor := nil;
+      end;
+    end;
+    FreeAndNil (HttpClient);
+  end;
+end;
 
 function PromptFolderName(aCaption, aStart: String): String;
 var

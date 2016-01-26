@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, tachartlazaruspkg , abbrevia, virtualtreeview_package, lazrichedit,
-  IdExceptionCore, IdStack, WsdlStubMainUnit;
+  IdExceptionCore, IdStack , WsdlStubMainUnit;
 
 {$R *.res}
 
@@ -18,4 +18,4 @@ begin
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.
-
+

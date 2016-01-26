@@ -67,6 +67,7 @@
       <Unit3>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="Xmlz"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Mq\MQAPI.pas"/>
@@ -96,6 +97,7 @@
     <Other>
       <CustomOptions Value="-dConsoleApp
 -dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

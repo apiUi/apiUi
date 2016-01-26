@@ -1199,31 +1199,37 @@ object MainForm: TMainForm
           Header.Columns = <          
             item
               ImageIndex = 67
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
               Position = 0
               Width = 23
             end          
             item
               ImageIndex = 65
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
               Position = 1
               Width = 23
             end          
             item
               ImageIndex = 31
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
               Position = 2
               Width = 23
             end          
             item
               ImageIndex = 30
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
               Position = 3
               Width = 23
             end          
             item
               ImageIndex = 31
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
               Position = 4
               Width = 23
             end          
             item
               ImageIndex = 30
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
               Position = 5
               Width = 23
             end          
@@ -1256,7 +1262,7 @@ object MainForm: TMainForm
           Header.Font.Height = -11
           Header.Font.Name = 'Tahoma'
           Header.Images = mainImageList
-          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowImages, hoVisible]
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowImages, hoShowSortGlyphs, hoVisible]
           HintMode = hmHint
           Images = mainImageList
           ParentColor = True
@@ -1267,12 +1273,14 @@ object MainForm: TMainForm
           TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
           OnClick = MessagesVTSClick
           OnColumnClick = TreeViewColumnClick
+          OnCompareNodes = MessagesVTSCompareNodes
           OnEditing = VTSEditing
           OnFocusChanged = MessagesVTSFocusChanged
           OnGetText = MessagesVTSGetText
           OnPaintText = MessagesVTSPaintText
           OnGetImageIndex = MessagesVTSGetImageIndex
           OnGetHint = MessagesVTSGetHint
+          OnHeaderClick = MessagesVTSHeaderClick
           OnMouseDown = TreeViewMouseDown
         end
         object MessagesStatusBar: TStatusBar

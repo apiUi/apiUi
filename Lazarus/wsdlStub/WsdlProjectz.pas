@@ -436,6 +436,7 @@ var
     indexWsdlsHtmlFileName: String;
     wsaXsdFileName: String;
     mqPutHeaderEditAllowedFileName: String;
+    authorizationServerEndpoint: String;
     stompPutHeaderEditAllowedFileName: String;
     licenseDatabaseName, licenseOdbcDriver: String;
     RemoteControlPortNumber: Integer;
@@ -986,6 +987,7 @@ begin
     _swiftMTXsdFileName := iniXml.Items.XmlValueByTag ['swiftMTXsd'];
     mqPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed'];
     stompPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed'];
+    authorizationServerEndpoint := iniXml.Items.XmlValueByTag ['authorizationServerEndpoint'];
     if Assigned (iniXml.ItemByTag['licenseDatabase']) then with iniXml.ItemByTag['licenseDatabase'].Items do
     begin
       licenseOdbcDriver := XmlValueByTagDef['OdbcDriver', 'Microsoft Access Driver'];
@@ -3554,7 +3556,8 @@ begin
                 if httpVerb = 'GET' then httpClient.Get(URL, dStream);
                 if httpVerb = 'HEAD' then HttpClient.Head(URL);
                 if httpVerb = 'OPTIONS' then HttpClient.Options(URL);
-                if httpVerb = 'POST' then HttpClient.Post(URL, HttpRequest, dStream);
+                if httpVerb = 'POST' then
+                  HttpClient.Post(URL, HttpRequest, dStream);
                 if httpVerb = 'PUT' then HttpClient.Put(URL, HttpRequest, dStream);
                 if httpVerb = 'TRACE' then httpClient.Trace(URL, dStream);
               end;

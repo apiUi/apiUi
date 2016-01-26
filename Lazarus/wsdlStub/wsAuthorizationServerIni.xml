@@ -1,0 +1,7 @@
+<wsdlAuthorizationServerIni>
+  <portNumber>6059</portNumber>
+  <licenseDatabase>
+    <OdbcDriver>Microsoft Access Driver (*.mdb)</OdbcDriver>
+    <DatabaseName>Database\wsdlStubLicense.mdb</DatabaseName>
+  </licenseDatabase>
+</wsdlAuthorizationServerIni>
