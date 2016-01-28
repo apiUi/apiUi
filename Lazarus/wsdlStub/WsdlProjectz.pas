@@ -165,7 +165,6 @@ type
     mqGetThreads: TStringList;
     Listeners: TListeners;
     doValidateRequests, doValidateReplies, doCheckExpectedValues: Boolean;
-    isBusy: Boolean;
     ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList;
     ignoreCoverageOn: TStringList;
     notStubbedExceptionMessage: String;

@@ -1379,7 +1379,6 @@ object MainForm: TMainForm
       ImageIndex = 0
       OnExecute = OpenWsdlActionExecute
       OnHint = OpenWsdlActionHint
-      OnUpdate = OpenWsdlActionUpdate
     end
     object CobolOperationsAction: TAction
       Category = 'Project'
@@ -1387,7 +1386,6 @@ object MainForm: TMainForm
       ImageIndex = 72
       OnExecute = CobolOperationsActionExecute
       OnHint = CobolOperationsActionHint
-      OnUpdate = CobolOperationsActionUpdate
     end
     object XsdOperationsAction: TAction
       Category = 'Project'
@@ -1395,7 +1393,6 @@ object MainForm: TMainForm
       ImageIndex = 75
       OnExecute = XsdOperationsActionExecute
       OnHint = XsdOperationsActionHint
-      OnUpdate = XsdOperationsActionUpdate
     end
     object SwiftMtOperationsAction: TAction
       Category = 'Project'
@@ -1403,7 +1400,6 @@ object MainForm: TMainForm
       ImageIndex = 74
       OnExecute = SwiftMtOperationsActionExecute
       OnHint = SwiftMtOperationsActionHint
-      OnUpdate = SwiftMtOperationsActionUpdate
     end
     object SaveStubCaseAsAction: TAction
       Category = 'File'
@@ -1411,7 +1407,6 @@ object MainForm: TMainForm
       Hint = 'Save stub case'
       ImageIndex = 6
       OnExecute = SaveStubCaseAsActionExecute
-      OnUpdate = SaveStubCaseAsActionUpdate
     end
     object FreeFormatsAction: TAction
       Category = 'Project'
@@ -1419,7 +1414,6 @@ object MainForm: TMainForm
       ImageIndex = 71
       OnExecute = FreeFormatsActionExecute
       OnHint = FreeFormatsActionHint
-      OnUpdate = FreeFormatsActionUpdate
     end
     object ReopenStubCaseAction: TAction
       Category = 'File'
@@ -1447,7 +1441,6 @@ object MainForm: TMainForm
       Caption = 'runScriptAction'
       ImageIndex = 79
       OnExecute = runScriptActionExecute
-      OnUpdate = runScriptActionUpdate
     end
     object OptionsAction: TAction
       Category = 'Extra'
@@ -1525,7 +1518,6 @@ object MainForm: TMainForm
       Hint = 'Save Stub case'
       ImageIndex = 6
       OnExecute = SaveStubCaseActionExecute
-      OnUpdate = SaveStubCaseActionUpdate
       ShortCut = 16467
     end
     object ClearLogItemsAction: TAction

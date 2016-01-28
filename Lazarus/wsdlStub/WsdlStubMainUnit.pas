@@ -695,7 +695,6 @@ type
     procedure TreeViewResize(Sender: TObject);
     procedure GridViewExit(Sender: TObject);
     procedure InWsdlTreeViewExit(Sender: TObject);
-    procedure SaveStubCaseActionUpdate(Sender: TObject);
     procedure SaveStubCaseActionExecute(Sender: TObject);
     procedure GridViewEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex);
@@ -724,7 +723,6 @@ type
     procedure OptionsActionUpdate(Sender: TObject);
     procedure CheckBoxClick(Sender: TObject);
     procedure ReopenStubCaseActionUpdate(Sender: TObject);
-    procedure SaveStubCaseAsActionUpdate(Sender: TObject);
     procedure OpenStubCaseActionUpdate(Sender: TObject);
     procedure WsdlComboBoxChange(Sender: TObject);
     procedure runScriptActionExecute(Sender: TObject);
@@ -779,7 +777,6 @@ type
     procedure Exit1Click(Sender: TObject);
     procedure OpenWsdlActionExecute(Sender: TObject);
     procedure OpenWsdlActionHint(var HintStr: string; var CanShow: Boolean);
-    procedure OpenWsdlActionUpdate(Sender: TObject);
     procedure GridViewFocusedNode(aNode: PVirtualNode);
     procedure OperationReqsTreeViewGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
@@ -819,7 +816,6 @@ type
     procedure ScriptGoMenuItemClick(Sender: TObject);
     procedure New2Click(Sender: TObject);
     procedure RemoveScriptMenuItemClick(Sender: TObject);
-    procedure runScriptActionUpdate(Sender: TObject);
     procedure ExtendRecursivityMenuItemClick(Sender: TObject);
     procedure AssignEvaluationMenuItemClick(Sender: TObject);
     procedure TestBeforeScriptActionExecute(Sender: TObject);
@@ -860,19 +856,15 @@ type
     procedure LogDisplayedColumnsAddClick(Sender: TObject);
     procedure DisplayedcolumnMenuItemClick(Sender: TObject);
     procedure FreeFormatsActionHint(var HintStr: string; var CanShow: Boolean);
-    procedure FreeFormatsActionUpdate(Sender: TObject);
     procedure FreeFormatsActionExecute(Sender: TObject);
     procedure LogDisplayedColumnsActionHint(var HintStr: string;
       var CanShow: Boolean);
     procedure CobolOperationsActionExecute(Sender: TObject);
     procedure CobolOperationsActionHint(var HintStr: string;
       var CanShow: Boolean);
-    procedure CobolOperationsActionUpdate(Sender: TObject);
-    procedure SwiftMtOperationsActionUpdate(Sender: TObject);
     procedure SwiftMtOperationsActionHint(var HintStr: string;
       var CanShow: Boolean);
     procedure SwiftMtOperationsActionExecute(Sender: TObject);
-    procedure XsdOperationsActionUpdate(Sender: TObject);
     procedure XsdOperationsActionHint(var HintStr: string;
       var CanShow: Boolean);
     procedure XsdOperationsActionExecute(Sender: TObject);
@@ -913,7 +905,6 @@ type
     fDoShowDesignAtTop: Boolean;
     grid_x, grid_y: Integer;
     fAbortPressed: Boolean;
-    fIsBusy: Boolean;
     doNotify: Boolean;
     GetAuthError: String;
     function GetAuthorization: Boolean;
@@ -1057,7 +1048,6 @@ type
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     function EditScript(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
-    procedure SetIsBusy(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
     procedure StartBlockingThreadEvent;
@@ -1101,7 +1091,6 @@ type
     function InactiveAfterPrompt: Boolean;
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
-    property isBusy: Boolean read fIsBusy write SetIsBusy;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
     property doCheckExpectedValues: Boolean read getDoCheckExpectedValues write
       setDoCheckExpectedValues;
@@ -1287,6 +1276,7 @@ procedure TMainForm.FreeFormatsActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
+  if not InactiveAfterPrompt then Exit;
   xXml := se.freeFormatOperationsXml;
   if EditXmlXsdBased('Freeformat Operations',
     'OperationDefs.FreeFormatOperations',
@@ -1312,16 +1302,6 @@ begin
   HintStr := 'Maintain list of freeformat operations ' + HttpActiveHint;
 end;
 
-procedure TMainForm.FreeFormatsActionUpdate(Sender: TObject);
-begin
-  FreeFormatsAction.Enabled := not se.IsActive;
-end;
-
-procedure TMainForm.OpenWsdlActionUpdate(Sender: TObject);
-begin
-  OpenWsdlAction.Enabled := not se.IsActive;
-end;
-
 procedure TMainForm.OpenWsdlActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
@@ -1337,7 +1317,7 @@ procedure TMainForm.OpenWsdlActionExecute(Sender: TObject);
 var
   f, w: Integer;
 begin
-  EndEdit;
+  if not InactiveAfterPrompt then Exit;
   Application.CreateForm(TWsdlListForm, WsdlListForm);
   try
     WsdlListForm.xsdElementsWhenRepeatable := xsdElementsWhenRepeatable;
@@ -2648,6 +2628,7 @@ procedure TMainForm.XsdOperationsActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
+  if not InactiveAfterPrompt then Exit;
   xXml := se.xsdOperationsXml('');
   if EditXmlXsdBased('Xsd Operations', 'OperationDefs.XsdOperations',
     'XsdOperations.Operation.Name', 'XsdOperations.Operation.Name',
@@ -2669,11 +2650,6 @@ procedure TMainForm.XsdOperationsActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
   HintStr := 'Maintain list of XSD operations ' + HttpActiveHint;
-end;
-
-procedure TMainForm.XsdOperationsActionUpdate(Sender: TObject);
-begin
-  XsdOperationsAction.Enabled := not se.IsActive;
 end;
 
 procedure TMainForm.XSDreportinClipBoardSpreadSheet1Click(Sender: TObject);
@@ -3342,7 +3318,6 @@ end;
 
 procedure TMainForm.StartBlockingThreadEvent ;
 begin
-  isBusy := True;
   if NumberOfBlockingThreads = 0 then
   begin
     DownPageControl.ActivePage := MessagesTabSheet;
@@ -3360,6 +3335,7 @@ begin
   Dec (NumberOfBlockingThreads);
   if (NumberOfBlockingThreads <= 0) then
   begin
+    NumberOfBlockingThreads := 0;
     ExecuteRequestToolButton.Down := False;
     ExecuteAllRequestsToolButton.Down := False;
     Screen.Cursor := crDefault;
@@ -3368,7 +3344,6 @@ begin
     if NumberOfNonBlockingThreads <= 0 then
     begin
       abortPressed := False;
-      isBusy := False;
     end;
     UpdateInWsdlCheckBoxes;
     GridView.Invalidate;
@@ -3408,10 +3383,12 @@ begin
     else
       ProgressBar.Position := 0;
   end;
-  MessagesStatusBar.Panels.Items[Ord(lpiThreads)].Text := IfThen ( NumberOfBlockingThreads + NumberOfNonBlockingThreads = 0
-                                                                     , ''
-                                                                     , 'Threads: ' + IntToStr(NumberOfBlockingThreads + NumberOfNonBlockingThreads)
-                                                                     );
+  MessagesStatusBar.Panels.Items[Ord(lpiThreads)].Text
+    := IfThen ( NumberOfBlockingThreads + NumberOfNonBlockingThreads = 0
+              , ''
+              , 'Threads: '
+              + IntToStr(NumberOfBlockingThreads + NumberOfNonBlockingThreads)
+              );
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);
@@ -3957,11 +3934,6 @@ begin
 }
 end;
 
-procedure TMainForm.runScriptActionUpdate(Sender: TObject);
-begin
-//  runScriptAction.Enabled := se.IsActive {and not se.isBusy};
-end;
-
 procedure TMainForm.PrepareOperation;
 begin
   se.PrepareAllOperations(LogServerException);
@@ -4034,11 +4006,6 @@ procedure TMainForm.OpenStubCaseActionUpdate(Sender: TObject);
 begin
 end;
 
-procedure TMainForm.SaveStubCaseAsActionUpdate(Sender: TObject);
-begin
-  // SaveStubCaseAsAction.Enabled := not se.IsActive;
-end;
-
 procedure TMainForm.ReopenStubCaseActionUpdate(Sender: TObject);
 begin
   ReopenStubCaseAction.Enabled := (ReopenCaseList.Count > 0)
@@ -4092,7 +4059,6 @@ begin
   ToggleCheckExpectedValuesAction.Checked := doCheckExpectedValues;
   ValidateRepliesAction.Checked := doValidateReplies;
   ValidateRequestsAction.Checked := doValidateRequests;
-  OpenWsdlAction.Enabled := not se.IsActive;
   ActionComboBox.Enabled := Assigned(WsdlOperation) and
     (WsdlOperation.WsdlService.DescriptionType <> ipmDTEmail);
   WsdlItemAddMenuItem.Enabled := True;
@@ -4804,12 +4770,6 @@ begin
                                           ;
 end;
 
-procedure TMainForm.SetIsBusy(const Value: Boolean);
-begin
-  fIsBusy := Value;
-  se.isBusy := Value;
-end;
-
 procedure TMainForm.SelectCorrelationElementActionExecute(Sender: TObject);
 var
   swapBindable: TCustomBindable;
@@ -5397,11 +5357,6 @@ begin
     SaveStubCaseAsActionExecute(Sender)
   else
     SaveWsdlStubCase(se.projectFileName);
-end;
-
-procedure TMainForm.SaveStubCaseActionUpdate(Sender: TObject);
-begin
-  // SaveStubCaseAction.Enabled := not se.IsActive;
 end;
 
 procedure TMainForm.InWsdlTreeViewExit(Sender: TObject);
@@ -6138,8 +6093,10 @@ end;
 
 procedure TMainForm.OperationWsaActionUpdate(Sender: TObject);
 begin
-  OperationWsaAction.Enabled := (not se.IsActive) and Assigned(_WsdlWsaXsd)
-    and Assigned(WsdlOperation);
+  OperationWsaAction.Enabled := (not se.IsActive)
+                            and Assigned(_WsdlWsaXsd)
+                            and Assigned(WsdlOperation)
+                              ;
 end;
 
 procedure TMainForm.FocusOperationsReqVTS;
@@ -6174,8 +6131,8 @@ end;
 
 procedure TMainForm.SelectMessageColumnsActionUpdate(Sender: TObject);
 begin
-  SelectMessageColumnsAction.Enabled := Assigned(WsdlOperation) and
-    (not se.IsActive);
+  SelectMessageColumnsAction.Enabled := Assigned(WsdlOperation)
+                                    and (not se.IsActive);
 end;
 
 procedure TMainForm.SelectMessageColumnsActionExecute(Sender: TObject);
@@ -8378,10 +8335,7 @@ begin
   ExecuteRequestAction.Enabled :=
         Assigned(WsdlOperation)
     and Assigned(WsdlReply)
-    and (WsdlOperation.StubAction = saRequest)
-    and (not se.isBusy)
-    and (not ExecuteRequestToolButton.Down)
-    and (not ExecuteAllRequestsToolButton.Down)
+    and (NumberOfBlockingThreads < 1)
     ;
 end;
 
@@ -8390,9 +8344,7 @@ begin
   ExecuteAllRequestsAction.Enabled := Assigned(WsdlOperation)
                                   and Assigned(WsdlReply)
                                   and (WsdlOperation.StubAction = saRequest)
-                                  and (not se.isBusy)
-                                  and (not ExecuteRequestToolButton.Down)
-                                  and (not ExecuteAllRequestsToolButton.Down)
+                                  and (NumberOfBlockingThreads < 1)
                                     ;
 end;
 
@@ -10156,7 +10108,6 @@ begin
     ProgressBar.Position := 0;
     abortPressed := False;
     AbortAction.Enabled := True;
-    isBusy := True;
     CheckBoxClick(nil);
   finally
     ReleaseLock;
@@ -10240,7 +10191,6 @@ begin
   finally
     AcquireLock;
     try
-      isBusy := False;
       CheckBoxClick(nil);
       AbortAction.Enabled := False;
       abortPressed := False;
@@ -10287,7 +10237,6 @@ begin
   ProgressBar.Position := 0;
   abortPressed := False;
   AbortAction.Enabled := True;
-  isBusy := True;
   CheckBoxClick(nil);
   xPatterns := TStringList.Create;
   try
@@ -10372,7 +10321,6 @@ begin
       end;
     finally
       GridView.Invalidate;
-      isBusy := False;
       CheckBoxClick(nil);
       AbortAction.Enabled := False;
       abortPressed := False;
@@ -11253,6 +11201,7 @@ procedure TMainForm.CobolOperationsActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
+  if not InactiveAfterPrompt then Exit;
   xXml := se.cobolOperationsXml;
   if EditXmlXsdBased('Cobol Operations', 'OperationDefs.CobolOperations',
     'CobolOperations.Operation.Name', 'CobolOperations.Operation.Name',
@@ -11274,11 +11223,6 @@ procedure TMainForm.CobolOperationsActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
   HintStr := 'Maintain list of cobol operations ' + HttpActiveHint;
-end;
-
-procedure TMainForm.CobolOperationsActionUpdate(Sender: TObject);
-begin
-  CobolOperationsAction.Enabled := not se.IsActive;
 end;
 
 procedure TMainForm.ConfigListenersActionExecute(Sender: TObject);
@@ -11542,6 +11486,7 @@ procedure TMainForm.SwiftMtOperationsActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
+  if not InactiveAfterPrompt then Exit;
   xXml := se.swiftMtOperationsXml;
   if EditXmlXsdBased('SwiftMT Operations', 'OperationDefs.SwiftMtOperations',
     'SwiftMtOperations.Operation.Name', 'SwiftMtOperations.Operation.Name',
@@ -11563,11 +11508,6 @@ procedure TMainForm.SwiftMtOperationsActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
   HintStr := 'Maintain list of SwiftMt operations ' + HttpActiveHint;
-end;
-
-procedure TMainForm.SwiftMtOperationsActionUpdate(Sender: TObject);
-begin
-  SwiftMtOperationsAction.Enabled := not se.IsActive;
 end;
 
 procedure TMainForm.SynchronizedOnMessageChanged;
@@ -12165,9 +12105,7 @@ begin
         Assigned(WsdlOperation)
     and Assigned(WsdlReply)
     and (WsdlOperation.StubAction = saRequest)
-    and (not se.isBusy)
-    and (not ExecuteRequestToolButton.Down)
-    and (not ExecuteAllRequestsToolButton.Down)
+    and (NumberOfBlockingThreads < 1)
     ;
 end;
 
