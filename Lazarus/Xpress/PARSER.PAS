@@ -1469,7 +1469,10 @@ begin
          begin
          if not (yyv[yysp-7].yy.yyObject is TStringList) then
          begin
+         if not Assigned (FOnStoreObject) then
+         RaiseException ('No procedure assigned to OnStoreObject');
          yyv[yysp-7].yy.yyObject := TStringList.Create;
+         FOnStoreObject (Self, yyv[yysp-7].yy.yyObject);
          yyv[yysp-7].yyRead := yyv[yysp-7].yy;
          yyv[yysp-7].Tag := -1;
          (yyv[yysp-5].yy.yyObject as TBind).yy.yySLFunctionOS (yyv[yysp-7].yy.yyObject, yyv[yysp-3].yyString);
@@ -1503,7 +1506,10 @@ begin
          begin
          if not (yyv[yysp-9].yy.yyObject is TStringList) then
          begin
+         if not Assigned (FOnStoreObject) then
+         RaiseException ('No procedure assigned to OnStoreObject');
          yyv[yysp-9].yy.yyObject := TStringList.Create;
+         FOnStoreObject (Self, yyv[yysp-9].yy.yyObject);
          yyv[yysp-9].yyRead := yyv[yysp-9].yy;
          yyv[yysp-9].Tag := -1;
          (yyv[yysp-7].yy.yyObject as TBind).yy.yySLFunctionOSS (yyv[yysp-9].yy.yyObject, yyv[yysp-5].yyString, yyv[yysp-3].yyString);

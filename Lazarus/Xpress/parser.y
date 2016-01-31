@@ -1064,7 +1064,10 @@ SlStatement:
             begin
               if not ($1.yy.yyObject is TStringList) then
               begin
+                if not Assigned (FOnStoreObject) then
+                  RaiseException ('No procedure assigned to OnStoreObject');
                 $1.yy.yyObject := TStringList.Create;
+                FOnStoreObject (Self, $1.yy.yyObject);
                 $1.yyRead := $1.yy;
                 $1.Tag := -1;
                 ($3.yy.yyObject as TBind).yy.yySLFunctionOS ($1.yy.yyObject, $5.yyString);
@@ -1096,7 +1099,10 @@ SlStatement:
             begin
               if not ($1.yy.yyObject is TStringList) then
               begin
+                if not Assigned (FOnStoreObject) then
+                  RaiseException ('No procedure assigned to OnStoreObject');
                 $1.yy.yyObject := TStringList.Create;
+                FOnStoreObject (Self, $1.yy.yyObject);
                 $1.yyRead := $1.yy;
                 $1.Tag := -1;
                 ($3.yy.yyObject as TBind).yy.yySLFunctionOSS ($1.yy.yyObject, $5.yyString, $7.yyString);

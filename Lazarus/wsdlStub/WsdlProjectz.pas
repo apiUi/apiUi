@@ -523,8 +523,9 @@ begin
       FetchIndex := 0;
       if Messages.Count > FetchIndex then
       begin
-        ReqBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-        RpyBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
+        CorrelatedMessage := Messages.Messages[FetchIndex];
+        ReqBindablesFromWsdlMessage(CorrelatedMessage);
+        RpyBindablesFromWsdlMessage(CorrelatedMessage);
         result := FetchIndex + 1;
       end;
     end;
@@ -569,8 +570,9 @@ begin
       FetchIndex := FetchIndex + 1;
       if Messages.Count > FetchIndex then
       begin
-        ReqBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-        RpyBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
+        CorrelatedMessage := Messages.Messages[FetchIndex];
+        ReqBindablesFromWsdlMessage(CorrelatedMessage);
+        RpyBindablesFromWsdlMessage(CorrelatedMessage);
         result := FetchIndex + 1;
       end;
     end;
