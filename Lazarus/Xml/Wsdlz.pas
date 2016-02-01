@@ -3657,6 +3657,7 @@ begin
     BindBeforeFunction ('MD5', @MD5, SFS, '(aString)');
     BindBeforeFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
+    BindBeforeFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
     BindBeforeFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
     BindBeforeFunction ('NewLine', @xNewLine, SFV, '()');
     BindBeforeFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
@@ -3677,7 +3678,6 @@ begin
     BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
-    BindBeforeFunction ('OperationMessage', @OperationMessageList, SLFOS, '(aOperation)');
     BindBeforeFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
@@ -3800,6 +3800,7 @@ begin
     BindAfterFunction ('MD5', @MD5, SFS, '(aString)');
     BindAfterFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindAfterFunction ('MessageName', @wsdlMessageName, SFOV, '()');
+    BindAfterFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
     BindAfterFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
     BindAfterFunction ('NewLine', @xNewLine, SFV, '()');
     BindAfterFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
@@ -3843,7 +3844,6 @@ begin
     BindAfterFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
     BindAfterFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
     BindAfterFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
-    BindAfterFunction ('OperationMessage', @OperationMessageList, SLFOS, '(aOperation)');
     BindAfterFunction ('UserName', @wsdlUserName, SFV, '()');
     BindAfterFunction ('OperationName', @wsdlOperationName, SFOV, '()');
     fExpressAfter.Prepare;
