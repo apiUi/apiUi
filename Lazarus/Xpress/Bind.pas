@@ -51,6 +51,7 @@ type XFunctionXX = function (arg1, arg2: Extended): Extended;
 type XFunctionG = function (arg1: TObject): Extended;
 type XFunctionGG = function (arg1, arg2: TObject): Extended;
 type XFunctionObject = function (arg1: TObject): Extended;
+type VFunctionOI = procedure (obj: TObject; aIndex: Integer);
 type VFunctionOV = procedure (obj: TObject);
 type VFunctionOD = procedure (obj: TObject; arg: TDateTime);
 type VFunctionOG = procedure (obj: TObject; arg1: TObject);
@@ -70,8 +71,19 @@ type XFunctionOV = function (obj: TObject): Extended;
 type XFunctionOS = function (obj: TObject; arg: String): Extended;
 type XFunctionOX = function (obj: TObject; arg: Extended): Extended;
 type XFunctionOXX = function (obj: TObject; arg1, arg2: Extended): Extended;
-type SLFunctionOS = function (obj: TObject; arg1: String): TStringList;
-type SLFunctionOSS = function (obj: TObject; arg1, arg2: String): TStringList;
+type
+
+{ TParserStringList }
+
+ TParserStringList = class (TStringList)
+public
+  aObject: TObject;
+  aIndexProcedure: VFunctionOI;
+  aProcedure: VFunctionG;
+  procedure ProcessIndex (aIndex: Integer);
+end;
+type SLFunctionOS = function (obj: TObject; arg1: String): TParserStringList;
+type SLFunctionOSS = function (obj: TObject; arg1, arg2: String): TParserStringList;
 type YYRType = record
   case Integer of
    1: (yyPointer : Pointer);
@@ -265,6 +277,14 @@ implementation
 uses
   SysUtils
 ;
+
+{ TParserStringList }
+
+procedure TParserStringList.ProcessIndex (aIndex: Integer );
+begin
+  if Assigned (aIndexProcedure) then
+    aIndexProcedure (aObject, aIndex);
+end;
 
 function TBindList.GetBind (Index: integer): TBind;
 begin

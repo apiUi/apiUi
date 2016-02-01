@@ -1062,19 +1062,19 @@ SlStatement:
             PushBoolean (DoIt);
             if DoIt then
             begin
-              if not ($1.yy.yyObject is TStringList) then
+              if not ($1.yy.yyObject is TParserStringList) then
               begin
-                $1.yy.yyObject := TStringList.Create;
+                $1.yy.yyObject := ($3.yy.yyObject as TBind).yy.yySLFunctionOS (data, $5.yyString);
                 $1.yyRead := $1.yy;
                 $1.Tag := -1;
-                ($3.yy.yyObject as TBind).yy.yySLFunctionOS ($1.yy.yyObject, $5.yyString);
               end;
               $1.Tag := $1.Tag + 1;
-              DoIt := ($1.Tag < ($1.yy.yyObject as TStringList).Count);
-              if DoIt then
+              DoIt := ($1.Tag < ($1.yy.yyObject as TParserStringList).Count);
+              if DoIt then with $1.yy.yyObject as TParserStringList do
               begin
-                yytemp.yyString := ($1.yy.yyObject as TStringList).Strings[$1.Tag];
+                yytemp.yyString := Strings[$1.Tag];
                 PutDataEvent ($8, yytemp);
+                ProcessIndex ($1.Tag);
               end;
             end;
           }
@@ -1094,19 +1094,19 @@ SlStatement:
             PushBoolean (DoIt);
             if DoIt then
             begin
-              if not ($1.yy.yyObject is TStringList) then
+              if not ($1.yy.yyObject is TParserStringList) then
               begin
-                $1.yy.yyObject := TStringList.Create;
+                $1.yy.yyObject := ($3.yy.yyObject as TBind).yy.yySLFunctionOSS ($1.yy.yyObject, $5.yyString, $7.yyString);
                 $1.yyRead := $1.yy;
                 $1.Tag := -1;
-                ($3.yy.yyObject as TBind).yy.yySLFunctionOSS ($1.yy.yyObject, $5.yyString, $7.yyString);
               end;
               $1.Tag := $1.Tag + 1;
-              DoIt := ($1.Tag < ($1.yy.yyObject as TStringList).Count);
-              if DoIt then
+              DoIt := ($1.Tag < ($1.yy.yyObject as TParserStringList).Count);
+              if DoIt then with $1.yy.yyObject as TParserStringList do
               begin
-                yytemp.yyString := ($1.yy.yyObject as TStringList).Strings[$1.Tag];
+                yytemp.yyString := Strings[$1.Tag];
                 PutDataEvent ($10, yytemp);
+                ProcessIndex ($1.Tag);
               end;
             end;
           }

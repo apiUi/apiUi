@@ -506,100 +506,6 @@ begin
   end;
 end;
 
-function FetchFirstMessage(aContext: TObject; xOperationAlias: String): Extended;
-var
-  xProject: TWsdlProject;
-  xOperation: TWsdlOperation;
-begin
-  result := 0;
-  xProject := nil; //candidate context
-  xOperation := nil; //candidate context
-  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-  begin
-    xProject := Owner as TWsdlProject;
-    xOperation := invokeList.FindOnAliasName(xOperationAlias);
-    if Assigned (xOperation) then with xOperation do
-    begin
-      FetchIndex := 0;
-      if Messages.Count > FetchIndex then
-      begin
-        CorrelatedMessage := Messages.Messages[FetchIndex];
-        ReqBindablesFromWsdlMessage(CorrelatedMessage);
-        RpyBindablesFromWsdlMessage(CorrelatedMessage);
-        result := FetchIndex + 1;
-      end;
-    end;
-  end
-  else
-  begin
-    if aContext is TWsdlProject then
-    begin
-      xProject := aContext as TWsdlProject;
-      xOperation := allAliasses.FindOnAliasName(xOperationAlias);
-      if Assigned (xOperation) then with xOperation do
-      begin
-        FetchIndex := 0;
-        if Messages.Count > FetchIndex then
-        begin
-          ReqBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-          RpyBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-          result := FetchIndex;
-        end;
-      end;
-    end;
-  end;
-  if not Assigned (xProject)
-  or not Assigned (xOperation) then
-   raise Exception.Create(Format ('FetchFirstMessage: Operation ''%s'' not found', [xOperationAlias]));
-end;
-
-function FetchNextMessage(aContext: TObject; xOperationAlias: String): Extended;
-var
-  xProject: TWsdlProject;
-  xOperation: TWsdlOperation;
-begin
-  result := 0;
-  xProject := nil; //candidate context
-  xOperation := nil; //candidate context
-  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-  begin
-    xProject := Owner as TWsdlProject;
-    xOperation := invokeList.FindOnAliasName(xOperationAlias);
-    if Assigned (xOperation) then with xOperation do
-    begin
-      FetchIndex := FetchIndex + 1;
-      if Messages.Count > FetchIndex then
-      begin
-        CorrelatedMessage := Messages.Messages[FetchIndex];
-        ReqBindablesFromWsdlMessage(CorrelatedMessage);
-        RpyBindablesFromWsdlMessage(CorrelatedMessage);
-        result := FetchIndex + 1;
-      end;
-    end;
-  end
-  else
-  begin
-    if aContext is TWsdlProject then
-    begin
-      xProject := aContext as TWsdlProject;
-      xOperation := allAliasses.FindOnAliasName(xOperationAlias);
-      if Assigned (xOperation) then with xOperation do
-      begin
-        FetchIndex := FetchIndex + 1;
-        if Messages.Count > FetchIndex then
-        begin
-          ReqBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-          RpyBindablesFromWsdlMessage(Messages.Messages[FetchIndex]);
-          result := FetchIndex + 1;
-        end;
-      end;
-    end;
-  end;
-  if not Assigned (xProject)
-  or not Assigned (xOperation) then
-   raise Exception.Create(Format ('FetchNextMessage: Operation ''%s'' not found', [xOperationAlias]));
-end;
-
 procedure RequestOperation(aContext: TObject; xOperationAlias: String);
 var
   xProject: TWsdlProject;
@@ -6900,8 +6806,6 @@ end;
 initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
-  _WsdlFetchFirstMessage := FetchFirstMessage;
-  _WsdlFetchNextMessage := FetchNextMessage;
   _WsdlRequestOperation := RequestOperation;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;

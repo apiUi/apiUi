@@ -1467,19 +1467,19 @@ begin
          PushBoolean (DoIt);
          if DoIt then
          begin
-         if not (yyv[yysp-7].yy.yyObject is TStringList) then
+         if not (yyv[yysp-7].yy.yyObject is TParserStringList) then
          begin
-         yyv[yysp-7].yy.yyObject := TStringList.Create;
+         yyv[yysp-7].yy.yyObject := (yyv[yysp-5].yy.yyObject as TBind).yy.yySLFunctionOS (data, yyv[yysp-3].yyString);
          yyv[yysp-7].yyRead := yyv[yysp-7].yy;
          yyv[yysp-7].Tag := -1;
-         (yyv[yysp-5].yy.yyObject as TBind).yy.yySLFunctionOS (yyv[yysp-7].yy.yyObject, yyv[yysp-3].yyString);
          end;
          yyv[yysp-7].Tag := yyv[yysp-7].Tag + 1;
-         DoIt := (yyv[yysp-7].Tag < (yyv[yysp-7].yy.yyObject as TStringList).Count);
-         if DoIt then
+         DoIt := (yyv[yysp-7].Tag < (yyv[yysp-7].yy.yyObject as TParserStringList).Count);
+         if DoIt then with yyv[yysp-7].yy.yyObject as TParserStringList do
          begin
-         yytemp.yyString := (yyv[yysp-7].yy.yyObject as TStringList).Strings[yyv[yysp-7].Tag];
+         yytemp.yyString := Strings[yyv[yysp-7].Tag];
          PutDataEvent (yyv[yysp-0], yytemp);
+         ProcessIndex (yyv[yysp-7].Tag);
          end;
          end;
          
@@ -1501,19 +1501,19 @@ begin
          PushBoolean (DoIt);
          if DoIt then
          begin
-         if not (yyv[yysp-9].yy.yyObject is TStringList) then
+         if not (yyv[yysp-9].yy.yyObject is TParserStringList) then
          begin
-         yyv[yysp-9].yy.yyObject := TStringList.Create;
+         yyv[yysp-9].yy.yyObject := (yyv[yysp-7].yy.yyObject as TBind).yy.yySLFunctionOSS (yyv[yysp-9].yy.yyObject, yyv[yysp-5].yyString, yyv[yysp-3].yyString);
          yyv[yysp-9].yyRead := yyv[yysp-9].yy;
          yyv[yysp-9].Tag := -1;
-         (yyv[yysp-7].yy.yyObject as TBind).yy.yySLFunctionOSS (yyv[yysp-9].yy.yyObject, yyv[yysp-5].yyString, yyv[yysp-3].yyString);
          end;
          yyv[yysp-9].Tag := yyv[yysp-9].Tag + 1;
-         DoIt := (yyv[yysp-9].Tag < (yyv[yysp-9].yy.yyObject as TStringList).Count);
-         if DoIt then
+         DoIt := (yyv[yysp-9].Tag < (yyv[yysp-9].yy.yyObject as TParserStringList).Count);
+         if DoIt then with yyv[yysp-9].yy.yyObject as TParserStringList do
          begin
-         yytemp.yyString := (yyv[yysp-9].yy.yyObject as TStringList).Strings[yyv[yysp-9].Tag];
+         yytemp.yyString := Strings[yyv[yysp-9].Tag];
          PutDataEvent (yyv[yysp-0], yytemp);
+         ProcessIndex (yyv[yysp-9].Tag);
          end;
          end;
          

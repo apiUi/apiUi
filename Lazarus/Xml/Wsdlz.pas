@@ -249,7 +249,6 @@ type
       fLastFullCaption: String;
       fOnGetAbortPressed: TBooleanFunction;
       fPrepareErrors: String;
-      fFetchIndex: Integer;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
       function getDoExit : Boolean ;
       function getIsOneWay: Boolean;
@@ -351,7 +350,6 @@ type
       DelayTimeMsMax: Integer;
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
-      property FetchIndex: Integer read fFetchIndex write fFetchIndex;
       property DoExit: Boolean read getDoExit write setDoExit;
       property PrepareErrors: String read fPrepareErrors;
       property OnGetAbortPressed: TBooleanFunction write setOnGetAbortPressed;
@@ -521,14 +519,14 @@ function xsdDateTime(aDT: TDateTime): String;
 function XmlToDateTime (aString: String): TDateTime;
 function xsdNowAsDateTime: String;
 function sblNowAsDateTime: String;
-procedure RegExprMatchList (aSl: TStringList; aString, aExpr: String);
+procedure OperationFetchMessage (aObject : TObject; aIndex: Integer);
+function OperationMessageList (aObject : TObject ; aAlias: String): TParserStringList ;
+function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
 function xNewLine: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringHasRegExpr (aString, aExpr: String): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
-function wsdlFetchFirstMessage (aObject: TObject; aOperation: String): Extended;
-function wsdlFetchNextMessage (aObject: TObject; aOperation: String): Extended;
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation, aLater: String);
@@ -547,7 +545,7 @@ function SubStringX ( s: String; i, c: Extended): String;
 function isAccordingSchema (aObject: TObject): Extended;
 function isAssigned (aObject: TObject): Extended;
 procedure ResetOperationCounters;
-procedure EnvVarMatchList (aSl: TStringList; aExpr: String);
+function EnvVarMatchList (aObject: TObject; aExpr: String): TParserStringList;
 procedure ResetEnvVars (aRegExp: String);
 procedure ResetEnvVar (aName: String);
 function setEnvNumber (aName: String; aValue: Extended): Extended;
@@ -590,8 +588,6 @@ var
   _ProgName: String;
   _WsdlVars: TStringList;
   _WsdlRequestOperation: VFunctionOS;
-  _WsdlFetchFirstMessage: XFunctionOS;
-  _WsdlFetchNextMessage: XFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
   _WsdlClearLogs: VFunctionV;
@@ -991,11 +987,11 @@ begin
   end;
 end;
 
-procedure EnvVarMatchList (aSl: TStringList; aExpr: String);
+function EnvVarMatchList (aObject: TObject; aExpr: String): TParserStringList;
 var
   i: Integer;
 begin
-  aSl.Clear;
+  result := TParserStringList.Create;
   if (aExpr <> '') then
   begin
     AcquireEnvVarLock;
@@ -1005,7 +1001,7 @@ begin
         Expression := aExpr;
         for I := 0 to _wsdlVars.Count - 1 do
           if (Exec(_wsdlVars.Names[i])) then
-            aSl.Add (_wsdlVars.Names[i]);
+            result.Add (_wsdlVars.Names[i]);
       finally
         Free;
       end;
@@ -1013,14 +1009,44 @@ begin
       ReleaseEnvVarLock;
     end;
   end;
-  aSl.Sort;
+  result.Sort;
 end;
 
-procedure RegExprMatchList (aSl: TStringList; aString, aExpr: String);
+procedure OperationFetchMessage (aObject : TObject ; aIndex : Integer );
+begin
+  with aObject as TWsdlOperation do
+  begin
+    CorrelatedMessage := Messages.Messages[aIndex];
+    ReqBindablesFromWsdlMessage(CorrelatedMessage);
+    RpyBindablesFromWsdlMessage(CorrelatedMessage);
+  end;
+end;
+
+function OperationMessageList (aObject : TObject ; aAlias: String): TParserStringList ;
+var
+  x: Integer;
+  xOperation: TWsdlOperation;
+begin
+  result := TParserStringList.Create;
+  xOperation := nil; //candidate context
+  if aObject is TWsdlOperation then with aObject as TWsdlOperation do
+  begin
+    xOperation := invokeList.FindOnAliasName(aAlias);
+    if Assigned (xOperation) then with xOperation do
+    begin
+      result.aObject := xOperation;
+      result.aIndexProcedure := OperationFetchMessage;
+      for x := 0 to Messages.Count - 1 do
+        result.Add(Messages.Messages[x].Name);
+    end;
+  end;
+end;
+
+function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
 var
   f: Boolean;
 begin
-  aSl.Clear;
+  result := TParserStringList.Create;
   if (aString <> '')
   and (aExpr <> '') then
   with TRegExpr.Create do
@@ -1029,7 +1055,7 @@ begin
     f := Exec (aString);
     while f do
     begin
-      aSl.Add (Match[0]);
+      result.Add (Match[0]);
       f := ExecNext;
     end;
   finally
@@ -1083,20 +1109,6 @@ begin
       TagName := swapTagName;
     end;
   end;
-end;
-
-function wsdlFetchFirstMessage (aObject: TObject; aOperation: String): Extended;
-begin
-  if not Assigned (_WsdlFetchFirstMessage) then
-    raise Exception.Create('wsdlFetchFirstMessage: implementation missing');
-  result := _WsdlFetchFirstMessage (aObject, aOperation);
-end;
-
-function wsdlFetchNextMessage (aObject: TObject; aOperation: String): Extended;
-begin
-  if not Assigned (_WsdlFetchNextMessage) then
-    raise Exception.Create('wsdlFetchNextMessage: implementation missing');
-  result := _WsdlFetchNextMessage (aObject, aOperation);
 end;
 
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
@@ -3630,8 +3642,6 @@ begin
     BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
     BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindBeforeFunction ('Exit', @RaiseExit, VFOV, '()');
-    BindBeforeFunction ('FetchFirstMessage', @wsdlFetchFirstMessage, XFOS, '(aOperation)');
-    BindBeforeFunction ('FetchNextMessage', @wsdlFetchNextMessage, XFOS, '(aOperation)');
     BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
     BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
     BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
@@ -3667,6 +3677,7 @@ begin
     BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
+    BindBeforeFunction ('OperationMessage', @OperationMessageList, SLFOS, '(aOperation)');
     BindBeforeFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
@@ -3774,8 +3785,6 @@ begin
     BindAfterFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
     BindAfterFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindAfterFunction ('Exit', @RaiseExit, VFOV, '()');
-    BindAfterFunction ('FetchFirstMessage', @wsdlFetchFirstMessage, XFOS, '(aOperation)');
-    BindAfterFunction ('FetchNextMessage', @wsdlFetchNextMessage, XFOS, '(aOperation)');
     BindAfterFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
     BindAfterFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
     BindAfterFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
@@ -3834,6 +3843,7 @@ begin
     BindAfterFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
     BindAfterFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
     BindAfterFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
+    BindAfterFunction ('OperationMessage', @OperationMessageList, SLFOS, '(aOperation)');
     BindAfterFunction ('UserName', @wsdlUserName, SFV, '()');
     BindAfterFunction ('OperationName', @wsdlOperationName, SFOV, '()');
     fExpressAfter.Prepare;
