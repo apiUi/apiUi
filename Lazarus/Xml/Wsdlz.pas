@@ -4679,12 +4679,26 @@ begin
       begin
         with AddXml(TXml.CreateAsString('Added', '')) do
         begin
-          AddXml(TXml.CreateAsString('NameSpace',
-              nTypeDef.ElementDefs.Xsds[y].sType.NameSpace));
-          AddXml(TXml.CreateAsString('Name',
-              nTypeDef.ElementDefs.Xsds[y].sType.Name));
-          AddXml(TXml.CreateAsString('ElementName',
-              nTypeDef.ElementDefs.Xsds[y].ElementName));
+          if nTypeDef.ElementDefs.Xsds[y]._RefElementName <> '' then
+          begin
+            AddXml (TXml.CreateAsString('References', 'Element'));
+            AddXml(TXml.CreateAsString('NameSpace',
+                nTypeDef.ElementDefs.Xsds[y]._RefNameSpace));
+            AddXml(TXml.CreateAsString('Name',
+                nTypeDef.ElementDefs.Xsds[y]._RefElementName));
+            AddXml(TXml.CreateAsString('ElementName',
+                nTypeDef.ElementDefs.Xsds[y].ElementName));
+          end
+          else
+          begin
+            AddXml (TXml.CreateAsString('References', 'TypeDef'));
+            AddXml(TXml.CreateAsString('NameSpace',
+                nTypeDef.ElementDefs.Xsds[y].sType.NameSpace));
+            AddXml(TXml.CreateAsString('Name',
+                nTypeDef.ElementDefs.Xsds[y].sType.Name));
+            AddXml(TXml.CreateAsString('ElementName',
+                nTypeDef.ElementDefs.Xsds[y].ElementName));
+          end;
         end;
       end;
     end;
@@ -4724,7 +4738,7 @@ var
   n, x, y: Integer;
   xBind: TXml;
   nTypeDef, cTypeDef: TXsdDataType;
-  xxsd: TXsd;
+  xxsd, cxsd: TXsd;
   xPath, xNameSpace, xName, xElementName: String;
 begin
   xXml := aXml as TXml;
@@ -4743,10 +4757,26 @@ begin
         begin
           if Items.XmlItems[y].Name = 'Added' then with Items.XmlItems[y] do
           begin
+            cTypeDef := nil;
             xNameSpace := Items.XmlValueByTag['NameSpace'];
             xName := Items.XmlValueByTag['Name'];
             xElementName := Items.XmlValueByTag['ElementName'];
-            cTypeDef := Wsdl.XsdDescr.FindTypeDef(xNameSpace, xName);
+            if Items.XmlValueByTagDef['References', 'TypeDef'] = 'TypeDef' then
+              cTypeDef := Wsdl.XsdDescr.FindTypeDef(xNameSpace, xName)
+            else
+            begin
+              cxsd := Wsdl.XsdDescr.FindElement(xNameSpace, xName, True);
+              if not Assigned (cxsd) then
+                SjowMessage(Format ( 'AddedTypeDefElement [%s], could not find element [%s;%s]'
+                                   , [ Alias
+                                     , xNameSpace
+                                     , xName
+                                     ]
+                                   )
+                           );
+              if Assigned (cxsd) then
+                cTypeDef := cxsd.sType;
+            end;
             if not Assigned (cTypeDef) then
               SjowMessage(Format ( 'AddedTypeDefElement [%s], could not find typedef [%s;%s]'
                                  , [ Alias

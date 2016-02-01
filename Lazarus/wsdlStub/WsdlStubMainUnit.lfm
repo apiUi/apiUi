@@ -7738,7 +7738,14 @@ object MainForm: TMainForm
     end
     object AddChildElementDefMenuItem: TMenuItem
       Caption = 'Add child...'
-      OnClick = AddChildElementDefMenuItemClick
+      object MenuItem22: TMenuItem
+        Caption = 'Element Ref'
+        OnClick = AddChildElementRefMenuItemClick
+      end
+      object MenuItem21: TMenuItem
+        Caption = 'Typedef Ref'
+        OnClick = AddChildElementTypeDefMenuItemClick
+      end
     end
     object ExtendRecursivityMenuItem: TMenuItem
       Caption = 'Extend level'

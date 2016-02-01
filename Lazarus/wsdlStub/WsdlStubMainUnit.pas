@@ -66,6 +66,8 @@ type
     AbortAction : TAction ;
     ImportProjectScriptsAction : TAction ;
     MenuItem20 : TMenuItem ;
+    MenuItem21 : TMenuItem ;
+    MenuItem22 : TMenuItem ;
     MenuItem4 : TMenuItem ;
     ExportProjectScriptsAction : TAction ;
     MenuItem1 : TMenuItem ;
@@ -521,6 +523,7 @@ type
     procedure MenuItem14Click (Sender : TObject );
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
+    procedure AddChildElementRefMenuItemClick (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
@@ -593,7 +596,7 @@ type
       var Allowed: Boolean);
     procedure ViewStyleComboBoxChange(Sender: TObject);
     function getXmlViewType: TxvViewType;
-    procedure AddChildElementDefMenuItemClick(Sender: TObject);
+    procedure AddChildElementTypeDefMenuItemClick(Sender: TObject);
     procedure ProjectOptionsActionExecute(Sender: TObject);
     procedure CheckTreeActionExecute(Sender: TObject);
     procedure CheckTreeActionUpdate(Sender: TObject);
@@ -1062,6 +1065,7 @@ type
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure ReloadProject;
     function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
+    function createListOfListsForElements (aTypeDef: TXsdDataType): TStringList;
   published
   public
     se: TWsdlProject;
@@ -7107,8 +7111,7 @@ begin
   end;
 end;
 
-function TMainForm .createListOfListsForTypeDefs (aTypeDefs : TXsdDataTypeList
-  ): TStringList ;
+function TMainForm.createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList ;
 var
   x, f: Integer;
 begin
@@ -7121,6 +7124,23 @@ begin
       if not result.Find(NameSpace, f) then
         f := result.AddObject (NameSpace, TStringList.Create);
       (result.Objects[f] as TStringlist).Add (Name);
+    end;
+  end;
+end;
+
+function TMainForm.createListOfListsForElements (aTypeDef: TXsdDataType): TStringList;
+var
+  x, f: Integer;
+begin
+  result := TStringList.Create;
+  result.Sorted := True;
+  for x := 0 to aTypeDef.ElementDefs.Count - 1 do with aTypeDef.ElementDefs.Xsds[x] do
+  begin
+    if ElementNameSpace <> '' then
+    begin
+      if not result.Find(ElementNameSpace, f) then
+        f := result.AddObject (ElementNameSpace, TStringList.Create);
+      (result.Objects[f] as TStringlist).Add (ElementName);
     end;
   end;
 end;
@@ -9048,7 +9068,7 @@ begin
   end;
 end;
 
-procedure TMainForm.AddChildElementDefMenuItemClick(Sender: TObject);
+procedure TMainForm.AddChildElementTypeDefMenuItemClick(Sender: TObject);
   procedure _updateTypedef(aBinder: TWsdlBinder; aPath: String; nType: TXsdDataType; aXsd: TXsd);
     procedure _update(aXml: TXml; aPath: String);
     var
@@ -12182,6 +12202,103 @@ end;
 procedure TMainForm .MenuItem19Click (Sender : TObject );
 begin
 
+end;
+
+procedure TMainForm .AddChildElementRefMenuItemClick (Sender : TObject );
+  procedure _updateTypedef(aBinder: TWsdlBinder; aPath: String; nType: TXsdDataType; aXsd: TXsd);
+    procedure _update(aXml: TXml; aPath: String);
+    var
+      x: Integer;
+    begin
+      for x := 0 to aXml.Items.Count - 1 do
+        _update(aXml.Items.XmlItems[x], aPath);
+      if aXml.FullCaption = aPath then
+      begin
+        bindRefId := 0;
+        aXml.AddXml(TXml.Create(0, aXsd));
+        aXml.TypeDef := nType;
+      end;
+    end;
+  var
+    xBind: TCustomBindable;
+  begin
+    xBind := aBinder.FindBind(aPath);
+    if Assigned (xBind) then
+    begin
+      if aBinder.reqBind.IsAncestorOf(xBind) then
+        _update(aBinder.reqXml, xBind.FullCaption)
+      else
+        _update(aBinder.rpyXml, xBind.FullCaption);
+    end;
+  end;
+var
+  X, m: Integer;
+  xxsd: TXsd;
+  xXml: TXml;
+  xBind: TCustomBindable;
+  cXsd: TXsd;
+  nTypeDef, oTypeDef, cTypeDef: TXsdDataType;
+  xPath: String;
+begin
+  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  if not Assigned(xBind) then
+    raise Exception.Create('no element selected');
+  if not(xBind is TXml) then
+    raise Exception.Create('operation only valid on XML elements');
+  xXml := xBind as TXml;
+  if not Assigned(xXml.Xsd) then
+    raise Exception.Create('opeation requires an XSD on the selected element');
+  Application.CreateForm(TChoose2StringsForm, Choose2StringsForm);
+  try
+    with Choose2StringsForm do
+    begin
+      ListOfLists := createListOfListsForElements (Wsdl.XsdDescr.TypeDef);
+      Caption := 'Choose from Elements';
+      ShowModal;
+      if ModalResult = mrOk then
+      begin
+        cXsd := Wsdl.XsdDescr.FindElement(ChoosenLeftString, ChoosenRightString);
+        if not Assigned (cXsd) then
+          raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cXsd not assigned');
+        cTypeDef := cXsd.sType;
+        if not Assigned (cTypeDef) then
+          raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cTypeDef not assigned');
+        oTypeDef := xXml.Xsd.sType;
+        xxsd := xXml.Xsd.AddElementDef ( Wsdl.XsdDescr
+                                       , ChoosenRightString
+                                       , cTypeDef
+                                       );
+        xXsd._RefNameSpace := ChoosenLeftString;
+        xXsd._RefElementName := ChoosenRightString;
+        nTypeDef := xXml.Xsd.sType;
+        xPath := IfThen(WsdlReply.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
+               + xXml.FullCaption
+               ;
+        if not oTypeDef.Manually then
+          WsdlOperation.BindablesWithAddedElement.AddObject (xPath, WsdlOperation.FindBind(xPath));
+        xXml.Checked := True;
+        _updateTypedef ( WsdlOperation
+                       , xPath
+                       , nTypeDef
+                       , xxsd
+                       );
+        for m := 0 to WsdlOperation.Messages.Count - 1 do
+        begin
+          _updateTypedef ( WsdlOperation.Messages.Messages[m]
+                         , xPath
+                         , nTypeDef
+                         , xxsd
+                         );
+        end;
+        GridView.OnFocusChanged(GridView, GridView.FocusedNode, GridView.FocusedColumn);
+        stubChanged := True;
+      end;
+    end;
+  finally
+    if Assigned (Choose2StringsForm.ListOfLists) then
+      Choose2StringsForm.ListOfLists.Free;
+    FreeAndNil(Choose2StringsForm);
+  end;
 end;
 
 procedure TMainForm .CopyLogGridToClipBoardActionExecute (Sender : TObject );
