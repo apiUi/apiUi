@@ -30,8 +30,8 @@
         <UnitName Value="WsdlStubMainUnit"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="11744"/>
-        <CursorPos X="8" Y="11767"/>
+        <TopLine Value="10"/>
+        <CursorPos X="5" Y="11"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -52,80 +52,81 @@
       <Unit5>
         <Filename Value="..\Xpress\ParserClasses.pas"/>
         <UnitName Value="ParserClasses"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="17"/>
         <CursorPos X="1" Y="28"/>
-        <UsageCount Value="72"/>
+        <UsageCount Value="74"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Xpress\Express.pas"/>
         <UnitName Value="Express"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1408"/>
-        <CursorPos X="10" Y="1419"/>
+        <TopLine Value="402"/>
+        <CursorPos X="17" Y="418"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\Xpress\PARSER.PAS"/>
         <UnitName Value="Parser"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1452"/>
-        <CursorPos X="54" Y="1470"/>
-        <UsageCount Value="97"/>
+        <TopLine Value="360"/>
+        <CursorPos X="15" Y="374"/>
+        <UsageCount Value="99"/>
         <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Xpress\CustParser.pas"/>
         <UnitName Value="CustParser"/>
-        <WindowIndex Value="1"/>
-        <TopLine Value="66"/>
-        <CursorPos X="21" Y="77"/>
-        <UsageCount Value="57"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="231"/>
+        <CursorPos X="29" Y="244"/>
+        <UsageCount Value="58"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <UnitName Value="Wsdlz"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3800"/>
-        <CursorPos X="1" Y="3804"/>
+        <TopLine Value="5757"/>
+        <CursorPos X="3" Y="5769"/>
         <UsageCount Value="102"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\Xpress\parser.y"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1091"/>
+        <TopLine Value="1022"/>
         <CursorPos X="37" Y="1109"/>
-        <UsageCount Value="75"/>
+        <UsageCount Value="77"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit10>
       <Unit11>
         <Filename Value="WsdlProjectz.pas"/>
         <UnitName Value="WsdlProjectz"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="6797"/>
-        <CursorPos X="1" Y="6809"/>
+        <TopLine Value="43"/>
+        <CursorPos X="5" Y="11"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\Xml\Xsdz.pas"/>
         <UnitName Value="Xsdz"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3075"/>
         <CursorPos X="71" Y="3082"/>
-        <UsageCount Value="59"/>
+        <UsageCount Value="61"/>
         <Loaded Value="True"/>
       </Unit12>
       <Unit13>
@@ -146,7 +147,7 @@
       <Unit15>
         <Filename Value="..\Xpress\Bind.pas"/>
         <UnitName Value="Bind"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="283"/>
         <CursorPos X="41" Y="283"/>
@@ -292,10 +293,13 @@
       <Unit33>
         <Filename Value="wsdlcontrolz.pas"/>
         <UnitName Value="wsdlcontrolz"/>
-        <WindowIndex Value="1"/>
-        <TopLine Value="247"/>
-        <CursorPos X="17" Y="260"/>
-        <UsageCount Value="9"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="267"/>
+        <CursorPos X="21" Y="251"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit33>
       <Unit34>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\inc\objpash.inc"/>
@@ -341,11 +345,11 @@
       </Unit39>
       <Unit40>
         <Filename Value="..\Xpress\PARSER.LST"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9930"/>
         <CursorPos X="27" Y="9953"/>
-        <UsageCount Value="69"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit40>
@@ -518,124 +522,124 @@
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\Xpress\Bind.pas"/>
-        <Caret Line="54" Column="16" TopLine="42"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Caret Line="1698" Column="14" TopLine="1679"/>
       </Position1>
       <Position2>
-        <Filename Value="..\Xpress\Bind.pas"/>
-        <Caret Line="83" Column="42" TopLine="65"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Caret Line="1708" Column="14" TopLine="1696"/>
       </Position2>
       <Position3>
-        <Filename Value="..\Xpress\Bind.pas"/>
-        <Caret Line="286" Column="29" TopLine="274"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Caret Line="1752" Column="16" TopLine="1741"/>
       </Position3>
       <Position4>
-        <Filename Value="..\Xpress\Bind.pas"/>
-        <Caret Line="81" Column="31" TopLine="69"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Caret Line="3591" Column="25" TopLine="3579"/>
       </Position4>
       <Position5>
-        <Filename Value="..\Xpress\Bind.pas"/>
-        <Caret Line="47" Column="15" TopLine="24"/>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Caret Line="3737" Column="24" TopLine="3725"/>
       </Position5>
       <Position6>
         <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="4860" Column="29" TopLine="4848"/>
       </Position6>
       <Position7>
         <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="524" Column="11" TopLine="512"/>
+        <Caret Line="4862" Column="4" TopLine="4848"/>
       </Position7>
       <Position8>
         <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1025" Column="9" TopLine="1021"/>
+        <Caret Line="5643" Column="29" TopLine="5631"/>
       </Position8>
       <Position9>
         <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="5645" Column="14" TopLine="5631"/>
       </Position9>
       <Position10>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="509" Column="1" TopLine="503"/>
+        <Filename Value="..\Xpress\CustParser.pas"/>
+        <Caret Line="240" Column="51" TopLine="237"/>
       </Position10>
       <Position11>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1044" Column="54" TopLine="1026"/>
+        <Filename Value="..\Xpress\CustParser.pas"/>
+        <Caret Line="13" Column="31" TopLine="1"/>
       </Position11>
       <Position12>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="518" Column="12" TopLine="506"/>
+        <Filename Value="..\Xpress\CustParser.pas"/>
+        <Caret Line="76" Column="17" TopLine="65"/>
       </Position12>
       <Position13>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\Xpress\CustParser.pas"/>
+        <Caret Line="243" Column="39" TopLine="231"/>
       </Position13>
       <Position14>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="593" Column="1" TopLine="573"/>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <Caret Line="96" Column="13" TopLine="87"/>
       </Position14>
       <Position15>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1116" Column="1" TopLine="1106"/>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <Caret Line="48" Column="29" TopLine="37"/>
       </Position15>
       <Position16>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3647" Column="1" TopLine="3635"/>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <Caret Line="96" Column="21" TopLine="85"/>
       </Position16>
       <Position17>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3787" Column="5" TopLine="3779"/>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <Caret Line="110" Column="17" TopLine="98"/>
       </Position17>
       <Position18>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1040" Column="47" TopLine="1017"/>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <Caret Line="414" Column="28" TopLine="402"/>
       </Position18>
       <Position19>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <Caret Line="416" Column="9" TopLine="402"/>
       </Position19>
       <Position20>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="252" Column="1" TopLine="232"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="5625" Column="3" TopLine="5678"/>
       </Position20>
       <Position21>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="353" Column="1" TopLine="335"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="7866" Column="3" TopLine="7861"/>
       </Position21>
       <Position22>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="522" Column="25" TopLine="502"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="3390" Column="20" TopLine="3383"/>
       </Position22>
       <Position23>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1015" Column="25" TopLine="995"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="56" Column="31" TopLine="44"/>
       </Position23>
       <Position24>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="970" Column="29" TopLine="965"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="5711" Column="50" TopLine="5689"/>
       </Position24>
       <Position25>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="523" Column="30" TopLine="515"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="3390" Column="44" TopLine="3376"/>
       </Position25>
       <Position26>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1025" Column="30" TopLine="1005"/>
+        <Filename Value="WsdlProjectz.pas"/>
+        <Caret Line="6623" Column="4" TopLine="6616"/>
       </Position26>
       <Position27>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3680" Column="68" TopLine="3661"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="56" Column="31" TopLine="44"/>
       </Position27>
       <Position28>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3846" Column="43" TopLine="3827"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position28>
       <Position29>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="11" Column="5" TopLine="10"/>
       </Position29>
       <Position30>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3661" Column="1" TopLine="3658"/>
+        <Filename Value="wsdlcontrolz.pas"/>
+        <Caret Line="209" Column="25" TopLine="201"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

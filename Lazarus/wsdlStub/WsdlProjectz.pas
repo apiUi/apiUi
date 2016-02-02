@@ -2856,6 +2856,7 @@ var
   xProcessed: Boolean;
   xLog: TLog;
 begin
+  xProcessed := False;
   if (aFrame.GetCommand = 'MESSAGE') then
   begin
     xLog := TLog.Create;
@@ -3259,6 +3260,9 @@ function TWsdlProject .SendOperationMessage (aOperation : TWsdlOperation ;
 var
   reqheader, rpyheader, responsecode: String;
 begin
+  reqheader := '';
+  rpyheader := '';
+  responsecode := '';
   case aOperation.StubTransport of
     ttHttp: result := SendHttpMessage (aOperation, aMessage, reqheader, rpyheader, responsecode);
     ttMq: result := SendOperationMqMessage (aOperation, aMessage, reqheader);
@@ -3545,6 +3549,7 @@ var
 begin
   xNow := Now;
   Result := '';
+  xMessage := '';
   if not Assigned (aOperation)
     then raise Exception.Create('SendMessage: null arguments');
   xLog := TLog.Create;
@@ -3560,9 +3565,9 @@ begin
       and (not aOperation.isOneWay) then
         _setupForAsynchronousReply;
       xLog.TransportType := aOperation.StubTransport;
-      xLog.Mssg := aRequest;
       if Assigned (aRequest) then
         aOperation.ReqBindablesFromWsdlMessage(aRequest);
+      xLog.Mssg := aOperation.CorrelatedMessage;
       if aOperation.wsaEnabled then
         try
           aOperation.reqWsaOnRequest;
@@ -3660,10 +3665,7 @@ begin
       with xLog do
       begin
 //      RequestHeaders := HttpClient.Request.CustomHeaders.Text;
-        if Assigned (aRequest) then
-          Mssg := aRequest
-        else
-          Mssg := aOperation.Messages.Messages[0];
+        Mssg := aOperation.CorrelatedMessage;
         CorrelationId := aOperation.CorrelationIdAsText ('; ');
         Stubbed := True;
         StubAction := aOperation.StubAction;
@@ -3678,10 +3680,7 @@ begin
           if InboundTimeStamp = 0 then
             InboundTimeStamp := Now;
 //          RequestHeaders := HttpClient.Request.CustomHeaders.Text;
-          if Assigned (aRequest) then
-            Mssg := aRequest
-          else
-            Mssg := aOperation.Messages.Messages[0];
+          Mssg := aOperation.CorrelatedMessage;
           CorrelationId := aCorrelationId;
           Stubbed := True;
           StubAction := aOperation.StubAction;
@@ -3916,6 +3915,8 @@ var
   xReqHeader, xRpyHeader: String;
 begin
   Result := '';
+  xReqHeader := '';
+  xRpyHeader := '';
   stomp := TStompInterface.Create (nil, HaveStompFrame);
   try
     Stomp.Host := aHost;
@@ -5513,6 +5514,7 @@ var
   xLog: TLog;
   xProcessed: Boolean;
 begin
+  xProcessed := False;
   aMqInterface := Sender as TMqInterface;
   if ((MsgType = MQMT_REQUEST) and (not aMqInterface.browseMqMtRequest))
   or ((MsgType = MQMT_REPLY) and (not aMqInterface.browseMqMtReply))
@@ -5755,6 +5757,7 @@ var
   xStream: TMemoryStream;
   xRelatesTo: String;
 begin
+  xProcessed := False;
   try // finally set for hhtp reply
     {$ifdef windows}
     CoInitialize (nil);
@@ -5794,6 +5797,7 @@ begin
             if AsynchRpyLogs.Count > 0 then
             begin
               xRelatesTo := _relatesToKey(xLog.RequestBody);
+              f := -1;  // get rid of warning
               rLog := findAsyncReplyLog(xRelatesTo, f);
             end;
           finally
@@ -5957,7 +5961,7 @@ begin
       AResponseInfo.ContentType := ARequestInfo.ContentType;
       begin // request
         try
-
+          xProcessed := False;
           try
             AResponseInfo.ResponseNo := 200;
             CreateLogReply (xLog, xProcessed, True);
@@ -6201,6 +6205,7 @@ var
   xOperation: TWsdlOperation;
 begin
   result := '';
+  xMessage := '';
   xOperation := aLogItem.Operation;
   try
     aLogItem.Operation := TWsdlOperation.Create(rLogItem.Operation);
@@ -6331,6 +6336,7 @@ var
   xMessage: String;
   xOperation: TWsdlOperation;
 begin
+  xMessage := '';
   xLog := AContext.Data as TLog;
   try
     xOperation := FindOperationOnRequest(xLog, xLog.httpDocument, xLog.RequestBody, true);

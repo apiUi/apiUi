@@ -4964,6 +4964,7 @@ end;
 
 procedure TWsdlOperation.ReqBindablesFromWsdlMessage(aMessage: TWsdlMessage);
 begin
+  CorrelatedMessage := aMessage;
   if lateBinding then
   begin
     FreeFormatReq := aMessage.FreeFormatReq;
