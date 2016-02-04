@@ -113,7 +113,7 @@ type
       AHeaders: TIdHeaderList; var VPostStream: TStream);
     procedure HTTPServerCommandPutPut(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-    procedure HTTPServerCommandGetGet(AContext: TIdContext;
+    procedure HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCommandTrace(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
@@ -2676,6 +2676,7 @@ begin
     case aLog.TransportType of
       ttHttp, ttHttps, ttSmtp:
       begin
+        xOperation.httpVerb := aLog.httpCommand;
         rUri := TIdUri.Create(xOperation.StubHttpAddress);
         try
           if (rUri.Path = '/')
@@ -2685,6 +2686,8 @@ begin
             rUri.Document := aLog.httpDocument;
           end;
           xOperation.StubHttpAddress := rUri.URI;
+          if alog.httpParams <> '' then
+            xOperation.StubHttpAddress := xOperation.StubHttpAddress + '?' + aLog.httpParams;
         finally
           FreeAndNil (rUri);
         end;
@@ -5771,13 +5774,13 @@ begin
       xLog.httpDocument := ARequestInfo.Document;
       xLog.httpSoapAction := ARequestInfo.RawHeaders.Values ['SOAPAction'];
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
-      xLog.httpParams := ARequestInfo.Params.Text;
+      xLog.httpParams := ARequestInfo.QueryParams;
       try
         if ARequestInfo.Command = 'GET' then
         begin
           xLog.RequestBody := '';
           xLog.InboundBody := xLog.RequestBody;
-          HTTPServerCommandGetGet(AContext, ARequestInfo, AResponseInfo);
+          HTTPServerCommandGetGet(xLog, AContext, ARequestInfo, AResponseInfo);
         end;
         if ARequestInfo.Command = 'TRACE' then
         begin
@@ -6022,7 +6025,7 @@ begin
   AResponseInfo.ResponseNo := 500;
 end;
 
-procedure TWsdlProject.HTTPServerCommandGetGet(AContext: TIdContext;
+procedure TWsdlProject.HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
   procedure _replLocations (aName, aFileName: String; aXml: TXml);
   var
@@ -6082,12 +6085,15 @@ procedure TWsdlProject.HTTPServerCommandGetGet(AContext: TIdContext;
     try
       sLoc := SchemaLocations.SchemaLocations[aUri];
       if not Assigned (sLoc) then
-        raise Exception.CreateFmt('Could not find %s', [aUri]);
-      s := ReadStringFromFile(sLoc.FileName);
-      LoadFromString(s, nil);
-      for x := 0 to Items.Count - 1 do
-        _replLocations(sLoc.DocumentName, sLoc.FileName, Items.XmlItems[x]);
-      result := Text;
+        result := RedirectUnknownOperation(aLog)
+      else
+      begin
+        s := ReadStringFromFile(sLoc.FileName);
+        LoadFromString(s, nil);
+        for x := 0 to Items.Count - 1 do
+          _replLocations(sLoc.DocumentName, sLoc.FileName, Items.XmlItems[x]);
+        result := Text;
+      end;
     finally
       Free;
     end;
@@ -6129,15 +6135,17 @@ procedure TWsdlProject.HTTPServerCommandGetGet(AContext: TIdContext;
 begin
   AResponseInfo.ContentEncoding := 'identity';
   if (ARequestInfo.Document = '/index.html')
+  or (ARequestInfo.Document = '/index')
   or (ARequestInfo.Document = '/')
-  or (ARequestInfo.QueryParams = 'WSDL')
-  or (Copy(ARequestInfo.QueryParams, 1, 4) = 'XSD=') then
-  begin
+//or (ARequestInfo.QueryParams = 'WSDL')
+//or (Copy(ARequestInfo.QueryParams, 1, 4) = 'XSD=')
+  then begin
     if not PublishDescriptions then
-      raise Exception.CreateFmt('%s is configured not to publish webservicedescriptions, in case you need these descriptions, change the %s project options', [_ProgName, _ProgName]);
+      raise Exception.CreateFmt('<html><b>%s</b> is configured not to publish webservicedescriptions, in case you need these descriptions, change the %s project options</html>', [_ProgName, _ProgName]);
   end;
   try
     if (ARequestInfo.Document = '/index.html')
+    or (ARequestInfo.Document = '/index')
     or (ARequestInfo.Document = '/') then
     begin
       try
@@ -6180,7 +6188,7 @@ begin
         end;
       end;
     end;
-    AResponseInfo.ContentText := '<html>Een <b>Html</b></html>';
+    AResponseInfo.ContentText := RedirectUnknownOperation(aLog);
   finally
   end;
 end;

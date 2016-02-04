@@ -1,29 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 2016-02-04 20:47:47: Generated with stubStudio 9.0.3.9370 by Jan -->
 <WsdlStubCase>
-  <FileName>C:\JanBo\SOURCES\2011\wsdlStub\Config\wsdlStubWebService.wsdlStub</FileName>
-  <Portnumber>0</Portnumber>
-  <doUseMQ>false</doUseMQ>
-  <mqInterfaces></mqInterfaces>
-  <stompInterfaces></stompInterfaces>
-  <Listeners></Listeners>
-  <isMasterModeEnabled>false</isMasterModeEnabled>
-  <doAllowReload>true</doAllowReload>
-  <doAllowClearLog>true</doAllowClearLog>
-  <MasterPortNumber>3738</MasterPortNumber>
+  <FileName>C:\Data\Sources\Lazarus\wsdlStub\Config\wsdlStubWebService.wsdlStub</FileName>
+  <Listeners>
+    <Http>
+      <Port>6161</Port>
+    </Http>
+  </Listeners>
   <ValidateRequests>true</ValidateRequests>
   <ValidateReplies>true</ValidateReplies>
   <CheckExpectedValues>false</CheckExpectedValues>
   <DisableOnCorrelate>false</DisableOnCorrelate>
   <projectOptions>
-    <MasterSlave>
-      <Enabled>false</Enabled>
-      <Port>3738</Port>
-      <Allow>
-        <ClearLog>true</ClearLog>
-        <Reload>true</Reload>
-      </Allow>
-    </MasterSlave>
+    <General>
+      <SaveRelativeFileNames>true</SaveRelativeFileNames>
+    </General>
+    <Log>
+      <maxEntries>unbounded</maxEntries>
+      <CompareLogsOrdered>As is</CompareLogsOrdered>
+      <DocumentComparison>
+        <DetectDocumentFormatChanges>false</DetectDocumentFormatChanges>
+        <NewDocumentAsReference>false</NewDocumentAsReference>
+        <ExpectedDifferenceCount>0</ExpectedDifferenceCount>
+      </DocumentComparison>
+      <ShowCobolDataAs>Cobol</ShowCobolDataAs>
+      <DisplayedColumns></DisplayedColumns>
+    </Log>
     <Wsdl>
+      <PublishDescriptions>true</PublishDescriptions>
+      <OperationsWithEndpointOnly>true</OperationsWithEndpointOnly>
       <ElementsWhenRepeatable>1</ElementsWhenRepeatable>
+      <MaxDepthWhenRecursive>1</MaxDepthWhenRecursive>
+      <MaxDepthXmlGen>9999</MaxDepthXmlGen>
     </Wsdl>
     <OnCorrelate>
       <DisableMessage>false</DisableMessage>
@@ -31,7 +39,18 @@
     <UnknownOperations>
       <RaiseErrorMessage>No operation recognised</RaiseErrorMessage>
     </UnknownOperations>
+    <DatabaseConnection>
+      <Enabled>false</Enabled>
+      <Type></Type>
+      <DatabaseName></DatabaseName>
+      <HostName></HostName>
+      <Params></Params>
+      <UserName></UserName>
+      <Password></Password>
+      <ConnectionString></ConnectionString>
+    </DatabaseConnection>
   </projectOptions>
+  <PathPrefixes></PathPrefixes>
   <Environments></Environments>
   <Wsdl>
     <WsdlLocation>http://localhost:3738/wsdlStubWebService?WSDL</WsdlLocation>
@@ -51,12 +70,81 @@
         </general>
       </serviceOptions>
       <Operation>
-        <Name>clearLogs</Name>
-        <Action>3</Action>
+        <Name>activate</Name>
+        <Action>0</Action>
+        <HiddenFromUI>false</HiddenFromUI>
         <wsaEnabled>false</wsaEnabled>
         <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
         <wsaMustUnderstand>false</wsaMustUnderstand>
         <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>30</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply>
+              <activateRpyMessage checked__="false"></activateRpyMessage>
+            </Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <activateReqMessage checked__="false"></activateReqMessage>
+            </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+      <Operation>
+        <Name>clearLogs</Name>
+        <Action>3</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
         <DelayTimeMsMin>0</DelayTimeMsMin>
         <DelayTimeMsMax>0</DelayTimeMsMax>
         <StubTransport>0</StubTransport>
@@ -73,6 +161,12 @@
         <endpointConfig>
           <Http>
             <Address>http://localhost:3738/wsdlStubWebService</Address>
+            <Verb>POST</Verb>
+            <ContentEncoding>identity</ContentEncoding>
+            <AcceptEncoding>
+              <deflate>true</deflate>
+              <gzip>true</gzip>
+            </AcceptEncoding>
           </Http>
         </endpointConfig>
         <BeforeScript></BeforeScript>
@@ -80,18 +174,81 @@
         <CorrelationElements></CorrelationElements>
         <ExpectationElements></ExpectationElements>
         <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
         <Messages>
           <Message>
             <Name>Default</Name>
             <Patterns></Patterns>
             <Reply>
-              <clearLogsRpyMessage></clearLogsRpyMessage>
+              <clearLogsRpyMessage checked__="true"></clearLogsRpyMessage>
             </Reply>
+            <replyCheckers></replyCheckers>
             <Request>
-              <clearLogsReqMessage>
-                <clearLogsReq></clearLogsReq>
+              <clearLogsReqMessage checked__="true">
+                <clearLogsReq checked__="true"></clearLogsReq>
               </clearLogsReqMessage>
             </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+      <Operation>
+        <Name>executeScript</Name>
+        <Action>0</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>30</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply>
+              <executeScriptRpyMessage checked__="false"></executeScriptRpyMessage>
+            </Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <executeScriptReqMessage checked__="false"></executeScriptReqMessage>
+            </Request>
+            <requestCheckers></requestCheckers>
             <Documentation>Default reply</Documentation>
           </Message>
         </Messages>
@@ -99,10 +256,19 @@
       <Operation>
         <Name>regressionReport</Name>
         <Action>3</Action>
+        <HiddenFromUI>false</HiddenFromUI>
         <wsaEnabled>false</wsaEnabled>
         <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
         <wsaMustUnderstand>false</wsaMustUnderstand>
         <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
         <DelayTimeMsMin>0</DelayTimeMsMin>
         <DelayTimeMsMax>0</DelayTimeMsMax>
         <StubTransport>0</StubTransport>
@@ -119,6 +285,12 @@
         <endpointConfig>
           <Http>
             <Address>http://localhost:3738/wsdlStubWebService</Address>
+            <Verb>POST</Verb>
+            <ContentEncoding>identity</ContentEncoding>
+            <AcceptEncoding>
+              <deflate>true</deflate>
+              <gzip>true</gzip>
+            </AcceptEncoding>
           </Http>
         </endpointConfig>
         <BeforeScript></BeforeScript>
@@ -126,20 +298,143 @@
         <CorrelationElements></CorrelationElements>
         <ExpectationElements></ExpectationElements>
         <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
         <Messages>
           <Message>
             <Name>Default</Name>
             <Patterns></Patterns>
             <Reply>
-              <regressionReportRpyMessage></regressionReportRpyMessage>
+              <regressionReportRpyMessage checked__="true"></regressionReportRpyMessage>
             </Reply>
+            <replyCheckers></replyCheckers>
             <Request>
-              <regressionReportReqMessage>
-                <regressionReportReq>
-                  <referenceFileName>C:\JanBo\SOURCES\2011\wsdlStub\Examples\crmi\Stubs\referenceLog.xml</referenceFileName>
+              <regressionReportReqMessage checked__="true">
+                <regressionReportReq checked__="true">
+                  <referenceFileName checked__="true">C:\JanBo\SOURCES\2011\wsdlStub\Examples\crmi\Stubs\referenceLog.xml</referenceFileName>
                 </regressionReportReq>
               </regressionReportReqMessage>
             </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+      <Operation>
+        <Name>resetEnvVar</Name>
+        <Action>0</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>30</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply>
+              <resetEnvVarRpyMessage checked__="false"></resetEnvVarRpyMessage>
+            </Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <resetEnvVarReqMessage checked__="false"></resetEnvVarReqMessage>
+            </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+      <Operation>
+        <Name>resetEnvVars</Name>
+        <Action>0</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>30</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply>
+              <resetEnvVarsRpyMessage checked__="false"></resetEnvVarsRpyMessage>
+            </Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <resetEnvVarsReqMessage checked__="false"></resetEnvVarsReqMessage>
+            </Request>
+            <requestCheckers></requestCheckers>
             <Documentation>Default reply</Documentation>
           </Message>
         </Messages>
@@ -147,10 +442,19 @@
       <Operation>
         <Name>saveLogsToFile</Name>
         <Action>3</Action>
+        <HiddenFromUI>false</HiddenFromUI>
         <wsaEnabled>false</wsaEnabled>
         <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
         <wsaMustUnderstand>false</wsaMustUnderstand>
         <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
         <DelayTimeMsMin>0</DelayTimeMsMin>
         <DelayTimeMsMax>0</DelayTimeMsMax>
         <StubTransport>0</StubTransport>
@@ -167,6 +471,12 @@
         <endpointConfig>
           <Http>
             <Address>http://localhost:3738/wsdlStubWebService</Address>
+            <Verb>POST</Verb>
+            <ContentEncoding>identity</ContentEncoding>
+            <AcceptEncoding>
+              <deflate>true</deflate>
+              <gzip>true</gzip>
+            </AcceptEncoding>
           </Http>
         </endpointConfig>
         <BeforeScript></BeforeScript>
@@ -174,16 +484,259 @@
         <CorrelationElements></CorrelationElements>
         <ExpectationElements></ExpectationElements>
         <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
         <Messages>
           <Message>
             <Name>Default</Name>
             <Patterns></Patterns>
             <Reply>
-              <saveLogsToFileRpyMessage></saveLogsToFileRpyMessage>
+              <saveLogsToFileRpyMessage checked__="true"></saveLogsToFileRpyMessage>
             </Reply>
+            <replyCheckers></replyCheckers>
             <Request>
-              <saveLogsToFileReqMessage></saveLogsToFileReqMessage>
+              <saveLogsToFileReqMessage checked__="true"></saveLogsToFileReqMessage>
             </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+      <Operation>
+        <Name>sendAllRequests</Name>
+        <Action>0</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>30</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply>
+              <sendAllRequestsRpyMessage checked__="false"></sendAllRequestsRpyMessage>
+            </Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <sendAllRequestsReqMessage checked__="false"></sendAllRequestsReqMessage>
+            </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+      <Operation>
+        <Name>sendRequest</Name>
+        <Action>0</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>30</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply>
+              <sendRequestRpyMessage checked__="false"></sendRequestRpyMessage>
+            </Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <sendRequestReqMessage checked__="false"></sendRequestReqMessage>
+            </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+      <Operation>
+        <Name>setEnvVar</Name>
+        <Action>0</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>30</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply>
+              <setEnvVarRpyMessage checked__="false"></setEnvVarRpyMessage>
+            </Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <setEnvVarReqMessage checked__="false"></setEnvVarReqMessage>
+            </Request>
+            <requestCheckers></requestCheckers>
+            <Documentation>Default reply</Documentation>
+          </Message>
+        </Messages>
+      </Operation>
+      <Operation>
+        <Name>setLogGroupId</Name>
+        <Action>0</Action>
+        <HiddenFromUI>false</HiddenFromUI>
+        <wsaEnabled>false</wsaEnabled>
+        <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
+        <wsaMustUnderstand>false</wsaMustUnderstand>
+        <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
+        <DelayTimeMsMin>0</DelayTimeMsMin>
+        <DelayTimeMsMax>0</DelayTimeMsMax>
+        <StubTransport>0</StubTransport>
+        <StubHttpAddress></StubHttpAddress>
+        <StubMqPutManager></StubMqPutManager>
+        <StubMqPutQueue></StubMqPutQueue>
+        <StubMqGetManager></StubMqGetManager>
+        <StubMqGetQueue></StubMqGetQueue>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
+        <StubStompPutClientId></StubStompPutClientId>
+        <StubStompTimeOut>30</StubStompTimeOut>
+        <endpointConfig>
+          <Http>
+            <Verb>POST</Verb>
+            <AcceptEncoding>
+              <deflate>false</deflate>
+              <gzip>false</gzip>
+            </AcceptEncoding>
+          </Http>
+        </endpointConfig>
+        <BeforeScript></BeforeScript>
+        <AfterScript></AfterScript>
+        <CorrelationElements></CorrelationElements>
+        <ExpectationElements></ExpectationElements>
+        <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
+        <Messages>
+          <Message>
+            <Name>Default</Name>
+            <Patterns></Patterns>
+            <Reply>
+              <setLogGroupIdRpyMessage checked__="false"></setLogGroupIdRpyMessage>
+            </Reply>
+            <replyCheckers></replyCheckers>
+            <Request>
+              <setLogGroupIdReqMessage checked__="false"></setLogGroupIdReqMessage>
+            </Request>
+            <requestCheckers></requestCheckers>
             <Documentation>Default reply</Documentation>
           </Message>
         </Messages>
@@ -191,10 +744,19 @@
       <Operation>
         <Name>shutDown</Name>
         <Action>3</Action>
+        <HiddenFromUI>false</HiddenFromUI>
         <wsaEnabled>false</wsaEnabled>
         <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
         <wsaMustUnderstand>false</wsaMustUnderstand>
         <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
         <DelayTimeMsMin>0</DelayTimeMsMin>
         <DelayTimeMsMax>0</DelayTimeMsMax>
         <StubTransport>0</StubTransport>
@@ -211,6 +773,12 @@
         <endpointConfig>
           <Http>
             <Address>http://localhost:3738/wsdlStubWebService</Address>
+            <Verb>POST</Verb>
+            <ContentEncoding>identity</ContentEncoding>
+            <AcceptEncoding>
+              <deflate>true</deflate>
+              <gzip>true</gzip>
+            </AcceptEncoding>
           </Http>
         </endpointConfig>
         <BeforeScript></BeforeScript>
@@ -218,16 +786,19 @@
         <CorrelationElements></CorrelationElements>
         <ExpectationElements></ExpectationElements>
         <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
         <Messages>
           <Message>
             <Name>Default</Name>
             <Patterns></Patterns>
             <Reply>
-              <shutDownRpyMessage></shutDownRpyMessage>
+              <shutDownRpyMessage checked__="true"></shutDownRpyMessage>
             </Reply>
+            <replyCheckers></replyCheckers>
             <Request>
-              <shutDownReqMessage></shutDownReqMessage>
+              <shutDownReqMessage checked__="true"></shutDownReqMessage>
             </Request>
+            <requestCheckers></requestCheckers>
             <Documentation>Default reply</Documentation>
           </Message>
         </Messages>
@@ -235,10 +806,19 @@
       <Operation>
         <Name>unexpectedValuesReport</Name>
         <Action>3</Action>
+        <HiddenFromUI>false</HiddenFromUI>
         <wsaEnabled>false</wsaEnabled>
         <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
         <wsaMustUnderstand>false</wsaMustUnderstand>
         <AsynchronousDialog>false</AsynchronousDialog>
+        <operationOptions>
+          <scripts>
+            <invoke>
+              <operations></operations>
+            </invoke>
+          </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
+        </operationOptions>
         <DelayTimeMsMin>0</DelayTimeMsMin>
         <DelayTimeMsMax>0</DelayTimeMsMax>
         <StubTransport>0</StubTransport>
@@ -255,6 +835,12 @@
         <endpointConfig>
           <Http>
             <Address>http://localhost:3738/wsdlStubWebService</Address>
+            <Verb>POST</Verb>
+            <ContentEncoding>identity</ContentEncoding>
+            <AcceptEncoding>
+              <deflate>true</deflate>
+              <gzip>true</gzip>
+            </AcceptEncoding>
           </Http>
         </endpointConfig>
         <BeforeScript></BeforeScript>
@@ -262,18 +848,21 @@
         <CorrelationElements></CorrelationElements>
         <ExpectationElements></ExpectationElements>
         <ColumnElements></ColumnElements>
+        <LogColumns></LogColumns>
         <Messages>
           <Message>
             <Name>Default</Name>
             <Patterns></Patterns>
             <Reply>
-              <unexpectedValuesReportRpyMessage></unexpectedValuesReportRpyMessage>
+              <unexpectedValuesReportRpyMessage checked__="true"></unexpectedValuesReportRpyMessage>
             </Reply>
+            <replyCheckers></replyCheckers>
             <Request>
-              <unexpectedValuesReportReqMessage>
-                <unexpectedValuesReportReq></unexpectedValuesReportReq>
+              <unexpectedValuesReportReqMessage checked__="true">
+                <unexpectedValuesReportReq checked__="true"></unexpectedValuesReportReq>
               </unexpectedValuesReportReqMessage>
             </Request>
+            <requestCheckers></requestCheckers>
             <Documentation>Default reply</Documentation>
           </Message>
         </Messages>
@@ -281,4 +870,12 @@
     </Service>
   </Wsdl>
   <ignoreDifferencesOn></ignoreDifferencesOn>
+  <ignoreAddingOn></ignoreAddingOn>
+  <ignoreRemovingOn></ignoreRemovingOn>
+  <ignoreOrderOn></ignoreOrderOn>
+  <ignoreCoverageOn></ignoreCoverageOn>
+  <Scripts></Scripts>
+  <FocusOperationName>activateReq</FocusOperationName>
+  <FocusOperationNameSpace>http://www.wsdlStub.com/webService</FocusOperationNameSpace>
+  <FocusMessageIndex>0</FocusMessageIndex>
 </WsdlStubCase>

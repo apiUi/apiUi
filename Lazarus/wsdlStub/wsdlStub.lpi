@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9400"/>
+      <BuildNr Value="9421"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -122,7 +122,6 @@
     <Exceptions Count="18">
       <Item1>
         <Name Value="EAbort"/>
-        <Enabled Value="False"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>
@@ -147,11 +146,9 @@
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
-        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
-        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
@@ -163,7 +160,6 @@
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
-        <Enabled Value="False"/>
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>

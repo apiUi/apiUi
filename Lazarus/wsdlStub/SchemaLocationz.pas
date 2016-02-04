@@ -107,10 +107,9 @@ function TSchemaLocations.GetSchemaLocation(Index: String)
 var
   f: integer;
 begin
-  if not Find(Index, f) then
-    raise Exception.CreateFmt(
-      'TSchemaLocations.GetSchemaLocation[%s]: no entry found', [Index]);
-  result := Objects[f] as TSchemaLocation;
+  result := nil;
+  if Find(Index, f) then
+    result := Objects[f] as TSchemaLocation;
 end;
 
 function TSchemaLocations.UrlToHost(aUrlName: String): String;
