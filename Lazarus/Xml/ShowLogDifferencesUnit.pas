@@ -80,9 +80,6 @@ type
     procedure HelpActionExecute(Sender: TObject);
     procedure mainVSTMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure ToggleExpandedButtonClick(Sender: TObject);
-    procedure ShowNonVerbsButtonClick(Sender: TObject);
-    procedure ShowDeltaButtonClick(Sender: TObject);
     procedure mainVSTBeforeCellPaint(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       CellRect: TRect);
@@ -102,15 +99,7 @@ type
     procedure MaintainIgnoreAdditionsActionExecute(Sender: TObject);
     procedure MaintainIgnoredRemovalsActionExecute(Sender: TObject);
   private
-    fPreviewMode: Boolean;
     Diffs: TA2BStringList;
-    function getShowExpanded: Boolean;
-    procedure setShowExpanded(const Value: Boolean);
-    function getShowNonVerbs: Boolean;
-    procedure setShowNonVerbs(const Value: Boolean);
-    function getShowDelta: Boolean;
-    procedure setShowDelta(const Value: Boolean);
-    procedure setPreviewMode(const Value: Boolean);
     procedure PopulateMain;
     procedure MaintainList (aCaptian: String; aList: TStringList);
     procedure CreateA (xData: PVSTreeRec);
@@ -125,11 +114,6 @@ type
     aLogs: TLogList;
     bLogs: TLogList;
     ReferenceFileName: String;
-//    PrintPreview: TNotifyEvent;
-    property ShowExpanded: Boolean read getShowExpanded write setShowExpanded;
-    property ShowDelta: Boolean read getShowDelta write setShowDelta;
-    property ShowNonVerbs: Boolean read getShowNonVerbs write setShowNonVerbs;
-    property PreviewMode: Boolean read fPreviewMode write setPreviewMode;
   end;
 
 var
@@ -164,11 +148,6 @@ begin
   mainVST.Header.Columns.Items[5].Width := w5;
   mainVST.Header.Columns.Items[6].Width := w5;
   mainVST.NodeDataSize := SizeOf (TVSTreeRec);
-{
-  ShowExpanded := IniFile.ReadBool('rmPreview', 'ShowExpanded', True);
-  ShowDelta := IniFile.ReadBool('rmPreview', 'ShowDelta', True);
-  ShowNonVerbs := IniFile.ReadBool('rmPreview', 'ShowNonVerbs', True);
-}
   Diffs := TA2BStringList.Create;
   CloseAction.ShortCut := VK_ESCAPE;
 end;
@@ -405,55 +384,6 @@ procedure TShowLogDifferencesForm.mainVSTBeforeCellPaint(Sender: TBaseVirtualTre
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellRect: TRect);
 begin
-end;
-
-procedure TShowLogDifferencesForm.setPreviewMode(const Value: Boolean);
-begin
-end;
-
-procedure TShowLogDifferencesForm.ShowDeltaButtonClick(Sender: TObject);
-begin
-{
-  mainVSTFocusChanged(mainVST, mainVST.FocusedNode, 0);
-  mainVST.Invalidate;
-}
-end;
-
-function TShowLogDifferencesForm.getShowDelta: Boolean;
-begin
-end;
-
-procedure TShowLogDifferencesForm.setShowDelta(const Value: Boolean);
-begin
-end;
-
-procedure TShowLogDifferencesForm.ShowNonVerbsButtonClick(Sender: TObject);
-begin
-  PopulateMain;
-end;
-
-function TShowLogDifferencesForm.getShowNonVerbs: Boolean;
-begin
-end;
-
-procedure TShowLogDifferencesForm.setShowNonVerbs(const Value: Boolean);
-begin
-end;
-
-function TShowLogDifferencesForm.getShowExpanded: Boolean;
-begin
-end;
-
-procedure TShowLogDifferencesForm.setShowExpanded(const Value: Boolean);
-begin
-end;
-
-procedure TShowLogDifferencesForm.ToggleExpandedButtonClick(Sender: TObject);
-begin
-  if ShowExpanded then
-    mainVST.FullExpand(nil)
-  else
-    mainVST.FullCollapse(nil);
 end;
 
 procedure TShowLogDifferencesForm.mainVSTMouseDown(Sender: TObject;

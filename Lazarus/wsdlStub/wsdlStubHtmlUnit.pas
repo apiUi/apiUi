@@ -30,6 +30,7 @@ end;
 
 function _logHref (x: Integer): String;
 begin
+  result := '';
   raise Exception.Create('function _logHref (x: Integer): String;');
 //  result := '?Index=' + IntToStr (x) + ';' + 'Check=' + displayedLogs.LogItems [x].CorrId;
 end;

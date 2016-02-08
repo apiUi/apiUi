@@ -186,6 +186,7 @@ begin
         begin
           while (Length (s) mod 4 <> 0) do
             s := s + ' ';
+          pv := nil; // to avoid compiler warning
           SetLength (result, l + Length (s) + SizeOf (pv.DataLength));
           p := PMQRFH2 (PMQCHAR (result));
           pv := PMQRFH2VAR (PMQCHAR (result) + l);

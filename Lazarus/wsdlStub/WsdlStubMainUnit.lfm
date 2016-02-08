@@ -924,7 +924,7 @@ object MainForm: TMainForm
     Height = 147
     Top = 354
     Width = 1015
-    ActivePage = MessagesTabSheet
+    ActivePage = TabSheet1
     Align = alBottom
     Images = mainImageList
     TabIndex = 2
@@ -932,13 +932,13 @@ object MainForm: TMainForm
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
       Caption = 'Documentation'
-      ClientHeight = 115
-      ClientWidth = 1046
+      ClientHeight = 120
+      ClientWidth = 1007
       object DocumentationMemo: TMemo
         Left = 0
-        Height = 140
+        Height = 120
         Top = 0
-        Width = 931
+        Width = 1007
         Align = alClient
         OnChange = DocumentationMemoChange
         ScrollBars = ssBoth
@@ -947,32 +947,32 @@ object MainForm: TMainForm
     end
     object ExceptionTabSheet: TTabSheet
       Caption = 'Notifications'
-      ClientHeight = 115
-      ClientWidth = 1046
+      ClientHeight = 120
+      ClientWidth = 1007
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       object Splitter8: TSplitter
         Left = 185
-        Height = 140
+        Height = 120
         Top = 0
         Width = 5
       end
       object Panel8: TPanel
         Left = 0
-        Height = 140
+        Height = 120
         Top = 0
         Width = 185
         Align = alLeft
         Caption = 'Panel8'
-        ClientHeight = 140
+        ClientHeight = 120
         ClientWidth = 185
         TabOrder = 0
         object ExceptionStatusBar: TStatusBar
           Left = 1
           Height = 20
-          Top = 119
+          Top = 99
           Width = 183
           Panels = <          
             item
@@ -982,7 +982,7 @@ object MainForm: TMainForm
         end
         object ExceptionsVTS: TVirtualStringTree
           Left = 1
-          Height = 118
+          Height = 98
           Top = 1
           Width = 183
           Align = alClient
@@ -1019,8 +1019,8 @@ object MainForm: TMainForm
         end
       end
       object ToolBar3: TToolBar
-        Left = 901
-        Height = 140
+        Left = 977
+        Height = 120
         Top = 0
         Width = 30
         Align = alRight
@@ -1036,9 +1036,9 @@ object MainForm: TMainForm
       end
       object ExceptionMemo: TMemo
         Left = 190
-        Height = 140
+        Height = 120
         Top = 0
-        Width = 711
+        Width = 787
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1049,6 +1049,83 @@ object MainForm: TMainForm
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 2
+      end
+    end
+    object TabSheet1: TTabSheet
+      Caption = 'Reports'
+      ClientHeight = 120
+      ClientWidth = 1007
+      object ToolBar1: TToolBar
+        Left = 0
+        Height = 26
+        Top = 0
+        Width = 1007
+        Caption = 'ToolBar1'
+        Images = mainImageList
+        TabOrder = 0
+        object ToolButton39: TToolButton
+          Left = 1
+          Top = 2
+          Action = ClearReportsAction
+        end
+      end
+      object Panel1: TPanel
+        Left = 0
+        Height = 94
+        Top = 26
+        Width = 1007
+        Align = alClient
+        Caption = 'Panel1'
+        ClientHeight = 94
+        ClientWidth = 1007
+        TabOrder = 1
+        object ReportsVTS: TVirtualStringTree
+          Left = 1
+          Height = 92
+          Top = 1
+          Width = 1005
+          Align = alClient
+          Colors.GridLineColor = clWhite
+          Colors.UnfocusedSelectionColor = clCaptionText
+          DefaultText = 'Node'
+          DragOperations = []
+          Header.AutoSizeIndex = -1
+          Header.Columns = <          
+            item
+              Position = 0
+              Text = 'Status'
+            end          
+            item
+              Position = 1
+              Text = 'Action'
+            end          
+            item
+              Position = 2
+              Text = 'Time'
+            end          
+            item
+              Position = 3
+              Text = 'Name'
+            end>
+          Header.DefaultHeight = 17
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -11
+          Header.Font.Name = 'Tahoma'
+          Header.MainColumn = 1
+          Header.Options = [hoColumnResize, hoDrag, hoVisible]
+          ParentColor = True
+          TabOrder = 0
+          TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toRightClickSelect]
+          OnClick = ReportsVTSClick
+          OnColumnClick = TreeViewColumnClick
+          OnEditing = VTSEditing
+          OnFocusChanged = ExceptionsVTSFocusChanged
+          OnGetText = ReportsVTSGetText
+          OnMouseDown = TreeViewMouseDown
+          OnResize = TreeViewResize
+        end
       end
     end
     object MessagesTabSheet: TTabSheet
@@ -2134,6 +2211,15 @@ object MainForm: TMainForm
       Category = 'File'
       Caption = 'Import project scripts...'
       OnExecute = ImportProjectScriptsActionExecute
+    end
+    object Action2: TAction
+      Caption = 'Action2'
+    end
+    object ClearReportsAction: TAction
+      Category = 'Reports'
+      Caption = 'Clear reports'
+      ImageIndex = 9
+      OnExecute = ClearReportsActionExecute
     end
   end
   object mainImageList: TImageList

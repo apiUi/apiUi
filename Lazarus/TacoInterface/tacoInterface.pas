@@ -26,7 +26,7 @@ type
                                  ; aClientId, aMessage: AnsiString
                                  ) of Object;
 
-  TTacoInterface = class(TComponent)
+  TTacoInterface = class
   private
     fClient: TIdTCPClient;
     fHost: String;
@@ -71,7 +71,7 @@ uses SysUtils
 
 function TTacoInterface.AsXml: TXml;
 begin
-
+  result := nil;
 end;
 
 procedure TTacoInterface.Connect;
@@ -82,7 +82,6 @@ end;
 constructor TTacoInterface.Create(Owner: TComponent;
   aOnHaveTacoMessage: TOnHaveTacoMessage);
 begin
-  inherited Create(Owner);
   fOnHaveTacoMessage := aOnHaveTacoMessage;
   fClient := TIdTCPClient.Create(nil);
 end;

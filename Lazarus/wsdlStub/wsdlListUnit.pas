@@ -65,7 +65,6 @@ type
     procedure CopyFileNameActionExecute(Sender: TObject);
     procedure CopyFileNameActionUpdate(Sender: TObject);
   private
-    LineNumber: Integer;
     fStubChanged: Boolean;
     fReloadRequired: Boolean;
     procedure UpdateListView;
@@ -251,13 +250,11 @@ end;
 procedure TwsdlListForm.UpdateListView;
 var
   x: Integer;
-  Wsdl: TWsdl;
   ListItem: TListItem;
 begin
   ListView.Clear;
   for x := 0 to Wsdls.Count - 1 do
   begin
-    Wsdl := Wsdls.Objects [x] as TWsdl;
     ListItem := ListView.Items.Add;
     ListItem.Caption := Wsdls.Strings [x];
 //    ListItem.SubItems.Add(Wsdl.FileName);

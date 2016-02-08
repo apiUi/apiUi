@@ -57,6 +57,7 @@ uses
   , Controls
   , FileUtil
   , Logz
+  , Reportz
   , ExceptionLogz
   , SyncObjs
   ;
@@ -83,7 +84,7 @@ type
 
   { TWsdlProject }
 
-  TWsdlProject = class (TComponent)
+  TWsdlProject = class
   private
     fIsActive: Boolean;
     fAbortPressed: Boolean;
@@ -145,6 +146,7 @@ type
     projectFileName, LicenseDbName: String;
     displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs, AsynchRpyLogs: TLogList;
+    displayedReports, toDisplayReports: TReportList;
     displayedLogsmaxEntries: Integer;
     CompareLogOrderBy: TCompareLogOrderBy;
     ShowLogCobolStyle: TShowLogCobolStyle;
@@ -208,6 +210,7 @@ type
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
+    procedure CreateRegressionReport (aName, aFileName, aRefFileName: String);
     function FindScript (aName: String): TXml;
     procedure ScriptsClear;
     procedure DefaultDisplayMessageData;
@@ -334,7 +337,7 @@ type
     property IsActive: Boolean read fIsActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
     constructor Create;
-    destructor Destroy; override;
+    destructor Destroy; Override;
   end;
 
   { TProcedureThread }
@@ -542,6 +545,21 @@ begin
   if not Assigned (xProject)
   or not Assigned (xOperation) then
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
+end;
+
+procedure CreateRegressionReport(aContext: TObject; aName, aFileName, aRefFileName: String);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create(Format ('CreateRegressionReport(''%s''); unable to determine context', [aFileName]));
+  xProject.CreateRegressionReport(aName, aFileName, aRefFileName);
 end;
 
 procedure ExecuteScript(aContext: TObject; xScriptName: String);
@@ -1108,6 +1126,8 @@ begin
   archiveLogs := TLogList.Create;
   displayedExceptions := TExceptionLogList.Create;
   toDisplayExceptions := TExceptionLogList.Create;
+  displayedReports := TReportList.Create;
+  toDisplayReports := TReportList.Create;
   Listeners := TListeners.Create;
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
@@ -1217,6 +1237,10 @@ begin
   displayedExceptions.Free;
   toDisplayExceptions.Clear;
   toDisplayExceptions.Free;
+  displayedReports.Clear;
+  displayedReports.Free;
+  toDisplayReports.Clear;
+  toDisplayReports.Free;
   AsynchRpyLogs.Clear;
   AsynchRpyLogs.Free;
   FreeAndNil (unknownOperation);
@@ -6134,6 +6158,7 @@ procedure TWsdlProject.HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
   end;
 begin
   AResponseInfo.ContentEncoding := 'identity';
+  aLog.RequestBody := ARequestInfo.Document;
   if (ARequestInfo.Document = '/index.html')
   or (ARequestInfo.Document = '/index')
   or (ARequestInfo.Document = '/')
@@ -6156,6 +6181,7 @@ begin
         begin
           AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
+          alog.Exception := AResponseInfo.ContentText;
           exit;
         end;
       end;
@@ -6170,6 +6196,7 @@ begin
         begin
           AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
+          alog.Exception := AResponseInfo.ContentText;
           exit;
         end;
       end;
@@ -6184,12 +6211,14 @@ begin
         begin
           AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
+          alog.Exception := AResponseInfo.ContentText;
           exit;
         end;
       end;
     end;
     AResponseInfo.ContentText := RedirectUnknownOperation(aLog);
   finally
+    alog.ReplyBody := AResponseInfo.ContentText;
   end;
 end;
 
@@ -6642,6 +6671,23 @@ begin
   end;
 end;
 
+procedure TWsdlProject.CreateRegressionReport (aName, aFileName, aRefFileName: String);
+var
+  xReport: TReport;
+begin
+  xReport := TReport.Create;
+  with xReport do
+  begin
+    ;
+    timeStamp := Now;
+    Name := aName;
+    FileName := aFileName;
+    RefFileName := aRefFileName;
+  end;
+
+  toDisplayReports.AddObject('', xReport);
+end;
+
 function TWsdlProject.FindScript (aName : String ): TXml ;
 var
   x: Integer;
@@ -6683,6 +6729,7 @@ begin
   Scripts.Items.Clear;
   displayedLogs.Clear;
   archiveLogs.Clear;
+  displayedReports.Clear;
   doUseMq := False;
   Listeners.Clear;
   mqGetThreads.Clear;
@@ -6821,6 +6868,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
+  _WsdlCreateRegressionReport := CreateRegressionReport;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;
   _WsdlRefuseHttpConnections := doRefuseHttpConnections;

@@ -9,7 +9,6 @@ unit StompInterface;
 }
 
 interface
-
 uses
 {$IFnDEF FPC}
   Windows,
@@ -31,15 +30,13 @@ type
                            ; aFrame: IStompFrame
                            ) of Object;
 
-  TStompInterface = class(TComponent)
+  TStompInterface = class
   private
     fStompClient: IStompClient;
     fHost, fUserName, fPassword, fClientId, fReplyBodyPostFix, fRequestBodyPostFix: String;
     fUseCredentials: Boolean;
     fPort: Integer;
     fOnHaveFrame: TOnHaveFrame;
-    fStompClientOK: Boolean;
-    ResponseMicroSeconds: Integer;
     fReqTime: TDateTime;
     fRspTime: TDateTime;
     xTimeOut: String;
@@ -177,7 +174,6 @@ begin
   if (aXml.Name <> 'stompInterface')
   and (aXml.Name <> 'Broker')
   then raise Exception.Create ('TStompInterface.CreateFromXml: Illegal XML ' + aXml.Text);
-  inherited Create(Nil);  // Initialize inherited parts
   fStompClient := TStompClient.Create;
   fOnHaveFrame := aOnHaveFrame;
   fGetQueues := TStringList.Create;
@@ -210,7 +206,6 @@ end;
 
 constructor TStompInterface.Create(Owner: TComponent; aOnHaveFrame: TOnHaveFrame);
 begin
-  inherited Create (Owner);
   fStompClient := TStompClient.Create;
   fOnHaveFrame := aOnHaveFrame;
   fGetQueues := TStringList.Create;

@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9421"/>
+      <BuildNr Value="9440"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -62,7 +62,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -70,6 +70,7 @@
       <Unit1>
         <Filename Value="..\Xml\claimlistz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ClaimListz"/>
       </Unit1>
       <Unit2>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -87,6 +88,11 @@
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="..\Xml\reportz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Reportz"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

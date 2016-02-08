@@ -679,21 +679,25 @@ end;
 
 function TCustomBindable.Children: TBindableList;
 begin
+  result := nil;
   raise Exception.Create (self.ClassName + ': Virtual Children called')
 end;
 
 function TCustomBindable.GetIndexCaption: String;
 begin
+  result := '';
   raise Exception.Create (self.ClassName + ': Virtual GetIndexCaption called')
 end;
 
 function TCustomBindable.IsValueValid(var aMessage: String): Boolean;
 begin
+  result := false;
   raise Exception.Create (self.ClassName + ': Virtual IsValueValid called')
 end;
 
 function TCustomBindable.FindUQ (aName: String): TCustomBindable;
 begin
+  result := nil;
   raise Exception.Create (self.ClassName + ': Virtual FindUQ called')
 end;
 
@@ -734,7 +738,7 @@ end;
 
 function TCustomBindable.UpLineAsText: String;
 begin
-
+  result := 'function TCustomBindable.UpLineAsText: String;';
 end;
 
 function TCustomBindable.bgColor (aReadOnly: Boolean; aColumn: Integer): TColor;

@@ -1,10 +1,3 @@
-//
-// Op Root nivo ook Types van wsdl accepteren
-// betekent dat er op een lage nivo schema kan staan (inline in die wsdl)
-// <types>
-//    <schema>
-// en ook nog import...
-
 // BaseDataTypeName van root-type laten zijn
 // Annotattions in de juiste volgorde (meest sppecifiek boven aan)
 // TODO Attributes binnen TypeDefs
@@ -2043,7 +2036,7 @@ function TXsdDataType.IsValidValue(aName, aValue: String;
     i := system.Length (s);
     while i > 0 do
     begin
-      if s [i] = DecimalSeparator then
+      if s [i] = DefaultFormatSettings.DecimalSeparator then
         Exit;
       if (s [i] > '0')
       and (s <= '9') then
@@ -2069,7 +2062,7 @@ function TXsdDataType.IsValidValue(aName, aValue: String;
     i := 1;
     while i <= system.Length (s) do
     begin
-      if s [i] = DecimalSeparator then
+      if s [i] = DefaultFormatSettings.DecimalSeparator then
       begin
         result := result + _fractionDigits(aValue);
         Exit;
@@ -2090,8 +2083,8 @@ var
   var
     Sep: Char;
   begin
-   Sep := DecimalSeparator;
-   DecimalSeparator:='.';
+   Sep := DefaultFormatSettings.DecimalSeparator;
+   DefaultFormatSettings.DecimalSeparator :='.';
    try
      if (MinInclusive <> '')
      and (xdecimal < xsdParsedecimal(MinInclusive)) then
@@ -2112,7 +2105,7 @@ var
      and (_fractionDigits (aValue) > StrToInt(FractionalDigits)) then
        raise Exception.CreateFmt('Value violates FractionDigits constraint (%s)', [FractionalDigits]);
    finally
-     DecimalSeparator:=sep;
+     DefaultFormatSettings.DecimalSeparator :=sep;
    end;
   end;
   procedure _checkInteger;
@@ -2913,6 +2906,7 @@ procedure TXsdDescr.Finalise;
       if t._Processed then Exit;
       t._Processed := True;
       if (t.FractionalDigits = '') and Assigned (t.BaseDataType) then t.FractionalDigits := _FractionalDigits(t.BaseDataType);
+      result := t.FractionalDigits;
       t._Processed := False;
     end;
     procedure _inheritEnumeration (t: TXsdDataType);

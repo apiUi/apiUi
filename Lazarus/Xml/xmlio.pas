@@ -114,13 +114,11 @@ end;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
 var
   xPrefix, xAlias, xSpec, xSep: String;
-  xFound: Boolean;
   x: Integer;
 begin
   result := aFileName;
   with TRegExpr.Create do
   try
-    xFound := False;
     Expression:= '^[A-Za-z0-9]+\:/[^/]';
     if Exec(aFileName) then
     begin
@@ -317,6 +315,7 @@ function ReadStringFromFile (aFileName: String): String;
     lHTTP: TIdHTTP;
     lStream: TStringStream;
   begin
+    Result := '';
     lHTTP := TIdHTTP.Create(nil);
     lStream := TStringStream.Create(Result);
     try

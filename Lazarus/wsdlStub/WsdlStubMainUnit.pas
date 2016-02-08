@@ -23,6 +23,7 @@ uses
    , Dialogs
    , ActnList
    , Logz
+   , Reportz
    , ExceptionLogz
    , Ipmz
    , IpmTypes
@@ -64,6 +65,9 @@ type
   TMainForm = class(TForm)
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
+    Action2 : TAction ;
+    ClearReportsAction : TAction ;
+    ReportsVTS : TVirtualStringTree ;
     ImportProjectScriptsAction : TAction ;
     MenuItem20 : TMenuItem ;
     MenuItem21 : TMenuItem ;
@@ -71,6 +75,9 @@ type
     MenuItem4 : TMenuItem ;
     ExportProjectScriptsAction : TAction ;
     MenuItem1 : TMenuItem ;
+    MessagesStatusBar1 : TStatusBar ;
+    Panel1 : TPanel ;
+    Panel3 : TPanel ;
     ShowShortCutActionsAction : TAction ;
     EditScriptMenuItem : TMenuItem ;
     SchemasToZip : TAction ;
@@ -93,6 +100,10 @@ type
     MenuItem17 : TMenuItem ;
     MenuItem18 : TMenuItem ;
     MenuItem19 : TMenuItem ;
+    ReportsTabSheet : TTabSheet ;
+    TabSheet1 : TTabSheet ;
+    ToolBar1 : TToolBar ;
+    ToolButton39 : TToolButton ;
     UnhideOperationMenuItem : TMenuItem ;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
@@ -506,6 +517,7 @@ type
     procedure AbortActionUpdate (Sender : TObject );
     procedure BrowseMqActionHint (var HintStr : string ; var CanShow : Boolean
       );
+    procedure ClearReportsActionExecute (Sender : TObject );
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
     procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
@@ -542,6 +554,10 @@ type
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
     procedure ExportProjectScriptsActionExecute (Sender : TObject );
+    procedure ReportsVTSClick (Sender : TObject );
+    procedure ReportsVTSGetText (Sender : TBaseVirtualTree ;
+      Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
+      var CellText : String );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
@@ -887,7 +903,7 @@ type
     property xmlViewType: TxvViewType read getXmlViewType;
   private
     editingNode: PVirtualNode;
-    notifyTabCaption, logTabCaption: String;
+    notifyTabCaption, logTabCaption, reportTabCaption: String;
     notifyTabImageIndex: Integer;
     logValidationTabImageIndex: Integer;
     startStopShortCut: TShortCut;
@@ -961,6 +977,8 @@ type
       aNode: PVirtualNode): TWsdlOperation;
     function NodeToExceptionLog(aTreeView: TBaseVirtualTree;
       aNode: PVirtualNode): TExceptionLog;
+    function NodeToReprt(aTreeView: TBaseVirtualTree;
+      aNode: PVirtualNode): TReport;
     procedure NodeToMessage(aTreeView: TBaseVirtualTree; aNode: PVirtualNode;
       var aMessage: TWsdlMessage);
     function NodeToBind(aTreeView: TBaseVirtualTree;
@@ -979,6 +997,7 @@ type
     procedure ShowInfoForm(aCaption: String; aInfoString: String);
     procedure UpdateInWsdlCheckBoxes;
     procedure SaveWsdlStubCase(aFileName: String);
+    procedure ShowRegressionReport (aReport: TReport);
     procedure OpenStubCase(aFileName: String);
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
@@ -1147,6 +1166,11 @@ type
     Log: TLog;
   end;
 
+  PReportTreeRec = ^TReportTreeRec;
+  TReportTreeRec = record
+    Report: TReport;
+  end;
+
   PExceptionTreeRec = ^TExceptionTreeRec;
 
   TExceptionTreeRec = record
@@ -1183,10 +1207,27 @@ uses
 {$ENDIF}
 
 type
-  TLogColumnEnum = (logExpectedColumn, logRemarksColumn, logRequestTreeColumn,
-    logReplyTreeColumn, logRequestGridColumn, logReplyGridColumn,
-    logTimeColumn, logDurationColumn, logActionColumn, logServiceColumn,
-    logOperationColumn, logCorrelationIdColumn, logStdColumnCount);
+  TLogColumnEnum =
+    ( logExpectedColumn
+    , logRemarksColumn
+    , logRequestTreeColumn
+    , logReplyTreeColumn
+    , logRequestGridColumn
+    , logReplyGridColumn
+    , logTimeColumn
+    , logDurationColumn
+    , logActionColumn
+    , logServiceColumn
+    , logOperationColumn
+    , logCorrelationIdColumn
+    , logStdColumnCount
+    );
+  TReportColumnEnum =
+    ( reportStatusColumn
+    , reportActionColumn
+    , reportDateTimeColumn
+    , reportNameColumn
+    );
 
 procedure _ClearLogs ;
 begin
@@ -1769,6 +1810,7 @@ var
   expXml: TXml;
   xMessage: TWsdlMessage;
 begin
+  xMessage := nil; //avoid warning
   if Column = treeValueColumn then
   begin
     xBind := NodeToBind(Sender, Node);
@@ -2131,6 +2173,7 @@ var
   xBind: TCustomBindable;
   xMessage: String;
 begin
+  xMessage := ''; //avoid warning
   try
     if (Key = VK_F8) then
     begin
@@ -2287,7 +2330,7 @@ var
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
 begin
-  EndEdit;
+  xMessage := nil; //avoid warning
   Sender.Selected[Sender.FocusedNode] := True;
   xBind := NodeToBind(Sender, Sender.FocusedNode);
   if not Assigned(xBind) then
@@ -2611,6 +2654,7 @@ procedure TMainForm.XmlZoomValueAsTextMenuItemClick(Sender: TObject);
 var
   editAllowed: Boolean;
 begin
+  editAllowed := False;
   InWsdlTreeViewEditing(InWsdlTreeView, InWsdlTreeView.FocusedNode,
     treeValueColumn, editAllowed);
   xmlUtil.ZoomAsText(NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode),
@@ -2968,6 +3012,27 @@ begin
   end;
 end;
 
+procedure TMainForm .ShowRegressionReport (aReport : TReport );
+var
+  xLogList, xRefLogList: TLoglist;
+begin
+  xLogList := TLogList.Create;
+  try
+    se.OpenMessagesLog(aReport.FileName, True, False, xLogList);
+    xRefLogList := TLogList.Create;
+    try
+      se.OpenMessagesLog(aReport.RefFileName, True, False, xRefLogList);
+      ShowLogDifferences(xLogList, xRefLogList, aReport.Name);
+      xRefLogList.Clear;
+      xLogList.Clear;
+    finally
+      FreeAndNil (xRefLogList);
+    end;
+  finally
+    FreeAndNil (xLogList);
+  end;
+end;
+
 procedure TMainForm.OpenStubCaseActionExecute(Sender: TObject);
 begin
   if not InactiveAfterPrompt then Exit;
@@ -3134,7 +3199,7 @@ end;
 
 procedure TMainForm.ReleaseLock;
 begin
-  if False then Wsdlz.ReleaseLock;
+//  if False then Wsdlz.ReleaseLock;
 end;
 
 function TMainForm.ReloadDesignCommand: String;
@@ -3923,10 +3988,7 @@ begin
 end;
 
 procedure TMainForm.runScriptActionExecute(Sender: TObject);
-var
-  xMenuItem: TMenuItem;
 begin
-  xMenuItem := nil;
 {
   if Sender is TMenuItem then
     xMenuItem := Sender as TMenuItem;
@@ -3980,6 +4042,9 @@ procedure TMainForm.ClearConsole;
 begin
   RemoveMessageColumns;
   DocumentationMemo.Clear;
+  ReportsVTS.Clear;
+  ReportsVTS.Header.SortColumn := -1;
+  ReportsVTS.Header.SortDirection := sdAscending;
   MessagesVTS.Clear;
   MessagesVTS.Header.SortColumn := -1;
   MessagesVTS.Header.SortDirection := sdAscending;
@@ -4241,6 +4306,7 @@ var
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
 begin
+  xMessage := nil; //avoid warning
   CellText := '';
   NodeToMessage(Sender, Node, xMessage);
   if Column = 0 then
@@ -4283,6 +4349,7 @@ var
   xBind: TCustomBindable;
 begin
   // requires an imagelist attached to treeview
+  xMessage := nil; //avoid warning
   try
     case Kind of
       ikNormal, ikSelected:
@@ -4383,6 +4450,7 @@ begin
   n columns correlation values
   m columns displayed columns
 }
+  xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
   if not Assigned(xMessage) then
     exit;
@@ -4630,6 +4698,7 @@ var
   xBind: TCustomBindable;
   xMessage: TWsdlMessage;
 begin
+  xMessage := nil; //avoid warning
   WsdlOperation.AcquireLock;
   try
     NodeToMessage(Sender, Node, xMessage);
@@ -4729,13 +4798,7 @@ var
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
 begin
-  { }{
-    if se.IsActive then
-    begin
-    Allowed := False;
-    exit;
-    end;
-    { }
+  xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
   editingNode := InWsdlTreeView.FocusedNode;
   if Column = 0 then
@@ -4825,7 +4888,7 @@ var
   cNode, nNode, sNode: PVirtualNode;
   n: Integer;
 begin
-  EndEdit;
+  xMessage := nil; //avoid warning
   WsdlOperation.AcquireLock;
   try
     nNode := nil;
@@ -4865,6 +4928,7 @@ var
   xOrgMessage, xNewMessage: TWsdlMessage;
   xData: PMessageTreeRec;
 begin
+  xOrgMessage := nil; //avoid warning
   result := nil;
   NodeToMessage(GridView, aCopyNode, xOrgMessage);
   if (WsdlOperation.StubAction = saRequest) then
@@ -4910,6 +4974,7 @@ var
   swapEvent: TVTFocusChangeEvent;
   swapNotifyEvent, swapMemoEvent: TNotifyEvent;
 begin
+  xMessage := nil; //avoid warning
   InWsdlTreeView.BeginUpdate;
   try
     swapNotifyEvent := DocumentationMemo.OnChange;
@@ -4998,6 +5063,7 @@ var
   xMessage: TWsdlMessage;
   cNode, nNode: PVirtualNode;
 begin
+  xMessage := nil; //avoid warning
   WsdlOperation.AcquireLock;
   try
     cNode := GridView.GetFirst;
@@ -5239,6 +5305,7 @@ var
   xBind: TCustomBindable;
   expXml: TXml;
 begin
+  xMessage := nil; //avoid warning
   try
     NodeToMessage(Sender, Node, xMessage);
     if not Assigned(xMessage) then
@@ -5548,6 +5615,7 @@ procedure TMainForm.DocumentationMemoChange(Sender: TObject);
 var
   xMessage: TWsdlMessage;
 begin
+  xMessage := nil; //avoid warning
   NodeToMessage(GridView, GridView.FocusedNode, xMessage);
   if Assigned(xMessage) then
   begin
@@ -5971,6 +6039,22 @@ begin
   end;
 end;
 
+function TMainForm .NodeToReprt (aTreeView : TBaseVirtualTree ;
+  aNode : PVirtualNode ): TReport ;
+var
+  Data: PReportTreeRec;
+begin
+  result := nil;
+  if Assigned(aNode) then
+  begin
+    Data := aTreeView.GetNodeData(aNode);
+    if Assigned(Data) then
+    begin
+      result := Data.Report;
+    end;
+  end;
+end;
+
 procedure TMainForm.ExceptionsVTSGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: String);
@@ -6281,6 +6365,7 @@ var
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
 begin
+  xMessage := nil; //avoid warning
   xNode := GridView.GetFirst;
   while Assigned(xNode) do
   begin
@@ -6296,6 +6381,7 @@ end;
 
 function TMainForm.getWsdlReply: TWsdlMessage;
 begin
+  Result := nil; //avod warning
   NodeToMessage(GridView, GridView.FocusedNode, result);
 end;
 
@@ -6440,6 +6526,8 @@ begin
   OperationReqsTreeView.RootNodeCount := 0;
   GridView.NodeDataSize := SizeOf(TMessageTreeRec);
   GridView.RootNodeCount := 0;
+  ReportsVTS.NodeDataSize := SizeOf(TReportTreeRec);
+  ReportsVTS.RootNodeCount := 0;
   MessagesVTS.NodeDataSize := SizeOf(TLogTreeRec);
   MessagesVTS.RootNodeCount := 0;
   ExceptionsVTS.NodeDataSize := SizeOf(TExceptionTreeRec);
@@ -6557,6 +6645,7 @@ var
   xImageIndex: Integer;
   xGosthed: Boolean;
 begin
+  xGosthed := False; //avoid warning
   result := False;
   xImageIndex := -1;
   if Assigned(GridView.FocusedNode) then
@@ -6713,6 +6802,7 @@ var
   XmlAttr: TXmlAttribute;
   xMessage: TWsdlMessage;
 begin
+  xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
   if (Column = 0) then
   begin
@@ -7653,7 +7743,7 @@ var
   xNode: PVirtualNode;
   SwapCursor: TCursor;
 begin
-  EndEdit;
+  xString := ''; //avoid warning
   SwapCursor := Screen.Cursor;
   try
     Screen.Cursor := crHourGlass;
@@ -8586,14 +8676,34 @@ procedure TMainForm.RefreshLog;
     end;
     se.toDisplayExceptions.Clear;
   end;
+  function _refreshReports: Boolean;
+  var
+    xReport: TReport;
+    xNode: PVirtualNode;
+    xData: PReportTreeRec;
+    x: Integer;
+  begin
+    result := False;
+    for x := 0 to se.toDisplayReports.Count - 1 do
+    begin
+      xReport := se.toDisplayReports.ReportItems[x];
+      se.displayedReports.AddObject('', xReport);
+      result := True;
+      xNode := ReportsVTS.AddChild(nil);
+      xData := ReportsVTS.GetNodeData(xNode);
+      xData.Report := xReport;
+    end;
+    se.toDisplayReports.Clear;
+  end;
 var
-  logAdded, exceptionAdded: Boolean;
+  logAdded, exceptionAdded, reportAdded: Boolean;
 begin
   if not Assigned (se) then Exit;
   se.AcquireLogLock;
   try
     logAdded := _refreshLogging;
     exceptionAdded := _refreshExceptions;
+    reportAdded := _refreshReports;
     SetUiProgress;
   finally
     se.ReleaseLogLock;
@@ -8799,7 +8909,7 @@ var
   CurItem: PVirtualNode;
   xNodeText: String;
 begin
-  EndEdit;
+  xNodeText := '';
   Application.CreateForm(TFindDlg, FindDlg);
   try
     FindDlg.Caption := 'Find Tag';
@@ -8854,7 +8964,7 @@ var
   CurNode: PVirtualNode;
   xNodeText: String;
 begin
-  EndEdit;
+  xNodeText := ''; //avoid warning
   if True then
   begin
     Found := False;
@@ -8937,7 +9047,7 @@ var
   xCursor: TCursor;
   xMessage: String;
 begin
-  EndEdit;
+  xMessage := ''; //avoid warning
   xCursor := Screen.Cursor;
   try
     Screen.Cursor := crHourGlass;
@@ -9656,7 +9766,7 @@ end;
 
 procedure TMainForm.AcquireLock;
 begin
-  if False then Wsdlz.AcquireLock;
+//  if False then Wsdlz.AcquireLock;
 end;
 
 procedure TMainForm.Action1Execute(Sender: TObject);
@@ -9835,6 +9945,7 @@ var
   xLogItem: TLog;
   xIsRequest: Boolean;
 begin
+  xIsRequest := False; //avoid warning
   AcquireLock;
   Inc(se.mqCurWorkingThreads);
   try
@@ -10118,6 +10229,7 @@ var
   xMessage: TWsdlMessage;
   xFileName, xSeparator, xMsgString: String;
 begin
+  xMessage := nil; //avoid warning
   AcquireLock;
   try
     SwapCursor := Screen.Cursor;
@@ -10359,6 +10471,7 @@ var
   xMessage: TWsdlMessage;
 begin
   WsdlOperation.AcquireLock;
+  xMessage := nil; //avoid warning
   try
     xNode := GridView.GetFirstSelected;
     while Assigned(xNode) do
@@ -10380,6 +10493,7 @@ var
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
 begin
+  xMessage := nil; //avoid warning
   WsdlOperation.AcquireLock;
   try
     xNode := GridView.GetFirstSelected;
@@ -11760,6 +11874,45 @@ begin
   end;
 end;
 
+procedure TMainForm .ReportsVTSClick (Sender : TObject );
+var
+  xReport: TReport;
+begin
+  if not Assigned (ReportsVTS.FocusedNode) then Exit;
+  xReport := NodeToReprt(ReportsVTS, ReportsVTS.FocusedNode);
+  try
+    case TReportColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
+      reportActionColumn: ShowRegressionReport (xReport);
+    end;
+  finally
+  end;
+end;
+
+procedure TMainForm .ReportsVTSGetText (Sender : TBaseVirtualTree ;
+  Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
+  var CellText : String );
+var
+  xReport: TReport;
+begin
+  try
+    xReport := NodeToReprt(Sender, Node);
+    if Assigned(xReport) and (xReport is TReport) then
+    begin
+      case TReportColumnEnum(Column) of
+        reportStatusColumn: CellText := 'status';
+        reportActionColumn: CellText := 'action';
+        reportDateTimeColumn: CellText := DateTimeToStr(xReport.TimeStamp);
+        reportNameColumn: CellText := xReport.Name;
+      end;
+    end
+    else
+      CellText := '';
+  except
+    on e: Exception do
+      CellText := e.Message;
+  end;
+end;
+
 procedure TMainForm .SchemasToZipExecute (Sender : TObject );
   procedure _wsdlZipper (aZipFileName: String);
   var
@@ -12323,6 +12476,26 @@ begin
     HintStr := HintStr + ' (IBM WebSphere MQ not installed?)';
 end;
 
+procedure TMainForm .ClearReportsActionExecute (Sender : TObject );
+begin
+  if se.displayedReports.Count > 0 then
+  begin
+    if (not xmlUtil.doConfirmRemovals)
+    or BooleanPromptDialog ('Remove all reports') then
+    begin
+      se.AcquireLogLock;
+      try
+        ReportsVTS.Clear;
+        ReportsVTS.Header.SortColumn := -1;
+        ReportsVTS.Header.SortDirection := sdAscending;
+        se.displayedReports.Clear;
+      finally
+        se.ReleaseLogLock;
+      end;
+    end;
+  end;
+end;
+
 procedure TMainForm .AbortActionUpdate (Sender : TObject );
 begin
   AbortAction.Enabled := (NumberOfBlockingThreads > 0)
@@ -12347,6 +12520,8 @@ var
   s1, s2: String;
 begin
   Result := 0;
+  s1 := '';
+  s2 := '';
   MessagesVTSGetText(Sender, Node1, Column, ttNormal, s1);
   MessagesVTSGetText(Sender, Node2, Column, ttNormal, s2);
   if  s1 < s2 then

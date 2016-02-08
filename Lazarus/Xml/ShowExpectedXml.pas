@@ -259,6 +259,7 @@ var
   xAttr: TXmlAttribute;
 begin
   result := nil;
+  xAttr := nil; // to avoid compiler warning
   NodeToBind(TreeView.FocusedNode, result, xAttr);
 end;
 
@@ -318,6 +319,8 @@ begin
       while not (CurItem = nil)
       and not Found do
       begin
+        Bind := nil; // to avoid compiler warning
+        xAttr := nil; // to avoid compiler warning
         NodeToBind (CurItem, Bind, xAttr);
         if SearchIn = 0 then // search tag
           Found := StringMatchesMask (Bind.Name, SearchString, False, SearchUseRegExp)
@@ -356,6 +359,8 @@ begin
     while not (CurNode = nil)
     and not Found do
     begin
+      Bind := nil; // to avoid compiler warning
+      xAttr := nil; // to avoid compiler warning
       NodeToBind (CurNode, Bind, xAttr);
       if SearchIn = 0 then // search tag
         Found := StringMatchesMask (Bind.Name, SearchString, False, SearchUseRegExp)
@@ -410,6 +415,8 @@ var
 begin
   if Column > 0 then
   begin
+    Bind := nil; // to avoid compiler warning
+    Attribute := nil; // to avoid compiler warning
     NodeToBind(Node, Bind, Attribute);
     if Assigned (Attribute) then
     begin
@@ -460,7 +467,9 @@ begin
   // A handler for the OnGetText event is always needed as it provides
   // the tree with the string data to display.
   // Note that we are always using WideString.
-  NodeToBind(Node, Bind, Attribute);
+    Bind := nil; // to avoid compiler warning
+    Attribute := nil; // to avoid compiler warning
+    NodeToBind(Node, Bind, Attribute);
     case Column of
     0: begin
          if Assigned (Attribute) then
@@ -511,6 +520,8 @@ var
   Bind: TCustomBindable;
   xAtt: TXmlAttribute;
 begin
+  Bind := nil; // to avoid compiler warning
+  xAtt := nil; // to avoid compiler warning
   NodeToBind (Node, Bind, xAtt);
   if Column = 0 then
   begin

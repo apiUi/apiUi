@@ -125,9 +125,7 @@ type
     fIsChanged: Boolean;
     fReadOnly: Boolean;
     fBind: TXmlCvrg;
-    FileName: String;
     FileContents: TStringList;
-    fIsCheckedOnly: Boolean;
     fdoEnableCompare: Boolean;
     procedure SearchMissing (aDown: Boolean);
     procedure HaveLink(Sender: TObject; aLink: String);
@@ -162,7 +160,7 @@ type
   TPasswordEditLink = class(TStringEditLink, IVTEditLink)
   public
     property Node: PVirtualNode read fNode;
-    function BeginEdit: Boolean; virtual; stdcall;
+    function BeginEdit: Boolean; override; stdcall;
     constructor Create; override;
   end;
 

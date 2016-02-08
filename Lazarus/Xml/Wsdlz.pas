@@ -1,4 +1,6 @@
 unit Wsdlz;
+
+
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
@@ -187,7 +189,6 @@ type
     fRpyBind: TCustomBindable;
     fFreeFormatReq: String;
     fFreeFormatRpy: String;
-    fWsdlMessage: TWsdlMessage;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     function getRequestAsString : String ;
     function getRpyXml: TXml;
@@ -553,6 +554,7 @@ function setEnvVar (aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
 procedure SetLogGroupId (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
+procedure CreateRegressionReport (aObject: TObject; aName, aFileName, aRefFileName: String);
 procedure ClearLogs (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
 procedure SjowMessage (aString: String);
@@ -590,6 +592,7 @@ var
   _WsdlRequestOperation: VFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
+  _WsdlCreateRegressionReport: VFunctionOSSS;
   _WsdlClearLogs: VFunctionV;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSetLogGroupId: VFunctionOS;
@@ -689,6 +692,13 @@ begin
   if not Assigned (_WsdlSaveLogs) then
     raise Exception.Create('No OnSaveLogs event assigned: intention was to write to: ' + aString);
   _WsdlSaveLogs (aObject, aString);
+end;
+
+procedure CreateRegressionReport (aObject : TObject ; aName, aFileName, aRefFileName: String );
+begin
+  if not Assigned (_WsdlCreateRegressionReport) then
+    raise Exception.Create('No OnCreateRegressionReport event assigned: intention was to compare with: ' + aFileName);
+  _WsdlCreateRegressionReport (aObject, aName, aFileName, aRefFileName);
 end;
 
 procedure ExecuteScript(aObject: TObject; aString: String);
@@ -843,45 +853,45 @@ begin
   end;
 
   {Overnemen van de maand als tekst}
-  aPos := Pos (LongMonthNames [2], Mask); {februari}
+  aPos := Pos (DefaultFormatSettings.LongMonthNames [2], Mask); {februari}
   if (aPos > 0)then
   begin
-    Delete (DateString, aPos, Length (LongMonthNames [2]));
-    Insert (LongMonthNames [StrToInt (aMonth)], DateString, aPos);
+    Delete (DateString, aPos, Length (DefaultFormatSettings.LongMonthNames [2]));
+    Insert (DefaultFormatSettings.LongMonthNames [StrToInt (aMonth)], DateString, aPos);
   end
   else
   begin
-    aPos := Pos (ShortMonthNames [2], Mask); {feb}
+    aPos := Pos (DefaultFormatSettings.ShortMonthNames [2], Mask); {feb}
     if (aPos > 0)then
     begin
-      Delete (DateString, aPos, Length (ShortMonthNames [2]));
-      Insert (ShortMonthNames [StrToInt (aMonth)], DateString, aPos);
+      Delete (DateString, aPos, Length (DefaultFormatSettings.ShortMonthNames [2]));
+      Insert (DefaultFormatSettings.ShortMonthNames [StrToInt (aMonth)], DateString, aPos);
       {Mask en DateString moeten even lang blijven}
-      Delete (Mask, aPos, Length (ShortMonthNames [2]));
-      Insert (ShortMonthNames [StrToInt (aMonth)], Mask, aPos);
+      Delete (Mask, aPos, Length (DefaultFormatSettings.ShortMonthNames [2]));
+      Insert (DefaultFormatSettings.ShortMonthNames [StrToInt (aMonth)], Mask, aPos);
     end;
   end;
 
   {Overnemen van de dag van week als tekst}
-  aPos := Pos (LongDayNames [1], Mask); {zondag}
+  aPos := Pos (DefaultFormatSettings.LongDayNames [1], Mask); {zondag}
   if (aPos > 0)then
   begin
     Dow := DayOfWeek (aDate);
-    Delete (DateString, aPos, Length (LongDayNames [1]));
-    Insert (LongDayNames [Dow], DateString, aPos);
-    Delete (Mask, aPos, Length (LongDayNames [1]));
-    Insert (LongDayNames [Dow], Mask, aPos);
+    Delete (DateString, aPos, Length (DefaultFormatSettings.LongDayNames [1]));
+    Insert (DefaultFormatSettings.LongDayNames [Dow], DateString, aPos);
+    Delete (Mask, aPos, Length (DefaultFormatSettings.LongDayNames [1]));
+    Insert (DefaultFormatSettings.LongDayNames [Dow], Mask, aPos);
   end
   else
   begin
-    aPos := Pos (ShortDayNames [1], Mask); {zon}
+    aPos := Pos (DefaultFormatSettings.ShortDayNames [1], Mask); {zon}
     if (aPos > 0)then
     begin
       Dow := DayOfWeek (aDate);
-      Delete (DateString, aPos, Length (ShortDayNames [1]));
-      Insert (ShortDayNames [Dow], DateString, aPos);
-      Delete (Mask, aPos, Length (ShortDayNames [1]));
-      Insert (ShortDayNames [Dow], Mask, aPos);
+      Delete (DateString, aPos, Length (DefaultFormatSettings.ShortDayNames [1]));
+      Insert (DefaultFormatSettings.ShortDayNames [Dow], DateString, aPos);
+      Delete (Mask, aPos, Length (DefaultFormatSettings.ShortDayNames [1]));
+      Insert (DefaultFormatSettings.ShortDayNames [Dow], Mask, aPos);
     end;
   end;
 
@@ -1447,6 +1457,7 @@ var
   xBind: TCustomBindable;
   xMessage: String;
 begin
+  xMessage := ''; //avoid warning
   result := 1;
   xBind := TCustomBindable ((aObject as YYSType).yy.yyPointer);
   if not xBind.Checked then Exit;
@@ -3670,6 +3681,7 @@ begin
     BindBeforeFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
+    BindBeforeFunction ('ReportRegression', @CreateRegressionReport, VFOSSS, '(aName, aFileName, aRefFileName)');
     BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
@@ -3813,6 +3825,7 @@ begin
     BindAfterFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindAfterFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindAfterFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
+    BindAfterFunction ('ReportRegression', @CreateRegressionReport, VFOSSS, '(aName, aFileName, aRefFileName)');
     BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');

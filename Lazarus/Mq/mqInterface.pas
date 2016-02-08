@@ -215,7 +215,7 @@ type
     Options: TGetMsgOptions;
     MatchOptions: TGetMsgMatchOptions;
     constructor Create;
-    destructor Destroy;
+    destructor Destroy; Override;
   end;
 
 type
@@ -223,7 +223,7 @@ type
   public
     Options: TPutMsgOptions;
     constructor Create;
-    destructor Destroy;
+    destructor Destroy; Override;
   end;
 
 
@@ -826,10 +826,8 @@ procedure TMqInterface.Put(aMessage: String; aMqHeaderAsXml: TXml);
 var
   xMsgId: AnsiString;
   xCorrelId: AnsiString;
-  xMessage: AnsiString;
   xDisconnect: Boolean;
 begin
-  xMessage := aMessage;
   xMsgId := MsgId;
   xCorrelId := CorrelId;
   mqiCheckUse;
@@ -837,6 +835,7 @@ begin
   ConnOK := False;
   OpenPutOK := False;
 
+  xDisconnect := false; // to avoid compiler warnings
   ConnOK := mqiMqConn (xDisconnect);
   if not ConnOK then
     Raise Exception.Create (mqiRetErr('MQCONN'));
@@ -902,6 +901,7 @@ begin
   ConnOK := False;
   OpenPutOK := False;
 
+  xDisconnect := false; // to avoid compiler warnings
   ConnOK := mqiMqConn (xDisconnect);
   if not ConnOK then
     Raise Exception.Create (mqiRetErr('MQCONN'));
@@ -969,6 +969,7 @@ begin
   DataLength := Length (Buffer); // and a fake datalength
   ResponseMicroSeconds := 100; // and a fake responsetime
 
+  xDisconnect := false; // to avoid compiler warnings
   ConnOK := mqiMqConn (xDisconnect);
   if not ConnOK then
     Raise Exception.Create (mqiRetErr('MQCONN'));
@@ -1037,6 +1038,7 @@ begin
   DataLength := Length (Buffer); // and a fake datalength
   ResponseMicroSeconds := 100; // and a fake responsetime
 
+  xDisconnect := false; // to avoid compiler warnings
   ConnOK := mqiMqConn(xDisconnect);
   if not ConnOK then
     Raise Exception.Create (mqiRetErr('MQCONN'));
@@ -1117,6 +1119,7 @@ begin
   Buffer := 'This is a fake response';
   DataLength := Length (Buffer); // and a fake datalength
   ResponseMicroSeconds := 100; // and a fake responsetime
+  xDisconnect := false; // to avoid compiler warnings
   ConnOK := mqiMqConn (xDisconnect);
   if not ConnOK then
     Raise Exception.Create (mqiRetErr('MQCONN'));
@@ -1602,7 +1605,6 @@ end;
 function TMqInterface.MsgDescFromXml(aXml: TXml): AnsiString;
 var
   x, y: Integer;
-  s: AnsiString;
 begin
   result := '';
   if not Assigned (aXml) then Exit;
@@ -1621,7 +1623,6 @@ begin
           begin
             if Checked then
             begin
-              s := Value;
               if Name = 'StrucId' then CopyChars (MsgDesc.StrucId, Value, SizeOf (MsgDesc.StrucId));
               if Name = 'Version' then MsgDesc.Version := StrToIntDef (Value, 0);
               if Name = 'Report' then MsgDesc.Report := StrToIntDef (Value, 0);
@@ -1772,6 +1773,7 @@ begin
   DataLength := Length (Buffer); // and a fake datalength
   ResponseMicroSeconds := 100; // and a fake responsetime
   try
+    xDisconnect := false; // to avoid compiler warnings
     ConnOK := mqiMqConn (xDisconnect);
     if not ConnOK then
       Raise Exception.Create (mqiRetErr('MQCONN'));
@@ -1934,6 +1936,7 @@ begin
     CloseAll (True);
     PutQueue := xQName;
     QManager := xQManager;
+    xDisconnect := false; // to avoid compiler warning
     ConnOK := mqiMqConn (xDisconnect);
     if not ConnOK then
       Raise Exception.Create (mqiRetErr('MQCONN'));

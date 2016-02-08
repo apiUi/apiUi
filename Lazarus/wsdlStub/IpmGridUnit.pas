@@ -790,6 +790,7 @@ function TIpmGridForm.CreateHtmlReport: String;
       begin
         if ColumnVisible [col] then
         begin
+          xText := ''; // to avoid compiler warning
           GridGetText(Grid, aNode, col, ttNormal, xText);
           AddXml (TXml.CreateAsString('td', xText));
         end;
@@ -832,6 +833,7 @@ procedure TIpmGridForm.CopySpreadSheetFormatActionExecute(Sender: TObject);
     begin
       if ColumnVisible [col] then
       begin
+        xText := ''; // to avoid compiler warning
         GridGetText(Grid, aNode, col, ttNormal,xText);
         result := result + xSep + xText;
         xSep := #9;
