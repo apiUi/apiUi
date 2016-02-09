@@ -66,6 +66,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    RefreshReportsAction : TAction ;
     ClearReportsAction : TAction ;
     ReportsVTS : TVirtualStringTree ;
     ImportProjectScriptsAction : TAction ;
@@ -104,6 +105,8 @@ type
     TabSheet1 : TTabSheet ;
     ToolBar1 : TToolBar ;
     ToolButton39 : TToolButton ;
+    ToolButton40 : TToolButton ;
+    ToolButton51 : TToolButton ;
     UnhideOperationMenuItem : TMenuItem ;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
@@ -554,7 +557,11 @@ type
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
     procedure ExportProjectScriptsActionExecute (Sender : TObject );
+    procedure RefreshReportsActionExecute (Sender : TObject );
     procedure ReportsVTSClick (Sender : TObject );
+    procedure ReportsVTSGetImageIndex (Sender : TBaseVirtualTree ;
+      Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
+      var Ghosted : Boolean ; var ImageIndex : Integer );
     procedure ReportsVTSGetText (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
       var CellText : String );
@@ -903,7 +910,7 @@ type
     property xmlViewType: TxvViewType read getXmlViewType;
   private
     editingNode: PVirtualNode;
-    notifyTabCaption, logTabCaption, reportTabCaption: String;
+    notifyTabCaption, logTabCaption: String;
     notifyTabImageIndex: Integer;
     logValidationTabImageIndex: Integer;
     startStopShortCut: TShortCut;
@@ -977,7 +984,7 @@ type
       aNode: PVirtualNode): TWsdlOperation;
     function NodeToExceptionLog(aTreeView: TBaseVirtualTree;
       aNode: PVirtualNode): TExceptionLog;
-    function NodeToReprt(aTreeView: TBaseVirtualTree;
+    function NodeToReport(aDoClaimReport: Boolean; aTreeView: TBaseVirtualTree;
       aNode: PVirtualNode): TReport;
     procedure NodeToMessage(aTreeView: TBaseVirtualTree; aNode: PVirtualNode;
       var aMessage: TWsdlMessage);
@@ -1077,6 +1084,7 @@ type
     procedure TerminateBlockingThreadEvent;
     procedure TerminateNonBlockingThreadEvent;
     procedure SetUiProgress;
+    procedure OnRegressionReport (aReport: TRegressionReport);
   private
     fdoShowDesignSplitVertical : Boolean ;
     function getHintStrDisabledWhileActive: String;
@@ -1090,6 +1098,7 @@ type
     se: TWsdlProject;
     sc: TWsdlControl;
     claimedLog: TLog;
+    claimedReport: TReport;
     mqServerEnv: String;
     CollapseHeaders: Boolean;
     wsdlStubMessagesFileName: String;
@@ -1224,9 +1233,9 @@ type
     );
   TReportColumnEnum =
     ( reportStatusColumn
-    , reportActionColumn
     , reportDateTimeColumn
     , reportNameColumn
+    , reportMessageColumn
     );
 
 procedure _ClearLogs ;
@@ -3458,6 +3467,11 @@ begin
               , 'Threads: '
               + IntToStr(NumberOfBlockingThreads + NumberOfNonBlockingThreads)
               );
+end;
+
+procedure TMainForm .OnRegressionReport (aReport : TRegressionReport );
+begin
+  aReport.Status := rsOk;
 end;
 
 procedure TMainForm.About1Click(Sender: TObject);
@@ -6039,7 +6053,7 @@ begin
   end;
 end;
 
-function TMainForm .NodeToReprt (aTreeView : TBaseVirtualTree ;
+function TMainForm .NodeToReport (aDoClaimReport: Boolean; aTreeView : TBaseVirtualTree ;
   aNode : PVirtualNode ): TReport ;
 var
   Data: PReportTreeRec;
@@ -6047,10 +6061,19 @@ begin
   result := nil;
   if Assigned(aNode) then
   begin
-    Data := aTreeView.GetNodeData(aNode);
-    if Assigned(Data) then
-    begin
-      result := Data.Report;
+    if aDoClaimReport then
+      se.AcquireLogLock;
+    try
+      Data := aTreeView.GetNodeData(aNode);
+      if Assigned(Data) then
+      begin
+        result := Data.Report;
+        if aDoClaimReport then
+          result.Claim;
+      end;
+    finally
+      if aDoClaimReport then
+        se.ReleaseLogLock;
     end;
   end;
 end;
@@ -6439,6 +6462,8 @@ begin
   ViewStyleComboBox.ItemIndex := Ord(xvAll);
   for X := 0 to Ord(logTimeColumn) - 1 do
     MessagesVTS.Header.Columns[X].Width := wBttn;
+  for X := 0 to Ord(reportDateTimeColumn) - 1 do
+    ReportsVTS.Header.Columns[X].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
   DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
@@ -8696,14 +8721,14 @@ procedure TMainForm.RefreshLog;
     se.toDisplayReports.Clear;
   end;
 var
-  logAdded, exceptionAdded, reportAdded: Boolean;
+  logAdded, exceptionAdded: Boolean;
 begin
   if not Assigned (se) then Exit;
   se.AcquireLogLock;
   try
     logAdded := _refreshLogging;
     exceptionAdded := _refreshExceptions;
-    reportAdded := _refreshReports;
+    _refreshReports;
     SetUiProgress;
   finally
     se.ReleaseLogLock;
@@ -11874,15 +11899,54 @@ begin
   end;
 end;
 
+procedure TMainForm .RefreshReportsActionExecute (Sender : TObject );
+var
+  x, n: Integer;
+begin
+  se.AcquireLogLock;
+  try
+    n := se.displayedReports.Count;
+  finally
+    se.ReleaseLogLock;
+  end;
+  for x := 0 to n - 1 do
+    se.displayedReports.ReportItems[x].doReport;
+  ReportsVTS.Invalidate;
+end;
+
 procedure TMainForm .ReportsVTSClick (Sender : TObject );
+begin
+  if not Assigned (ReportsVTS.FocusedNode) then Exit;
+  claimedReport := NodeToReport(True, ReportsVTS, ReportsVTS.FocusedNode);
+  try
+    case TReportColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
+      reportStatusColumn: ShowRegressionReport (claimedReport);
+    end;
+  finally
+    claimedReport.Disclaim;
+  end;
+end;
+
+procedure TMainForm .ReportsVTSGetImageIndex (Sender : TBaseVirtualTree ;
+  Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
+  var Ghosted : Boolean ; var ImageIndex : Integer );
 var
   xReport: TReport;
 begin
-  if not Assigned (ReportsVTS.FocusedNode) then Exit;
-  xReport := NodeToReprt(ReportsVTS, ReportsVTS.FocusedNode);
   try
-    case TReportColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
-      reportActionColumn: ShowRegressionReport (xReport);
+    case TReportColumnEnum(Column) of
+      reportStatusColumn:
+      begin
+        xReport := NodeToReport(False,Sender as TVirtualStringTree, Node);
+        if Assigned(xReport) then
+        begin
+          case xReport.Status of
+            rsUndefined: ImageIndex := 49;
+            rsOk: ImageIndex := 47;
+            rsNok: ImageIndex := 48;
+          end;
+        end;
+      end;
     end;
   finally
   end;
@@ -11895,14 +11959,13 @@ var
   xReport: TReport;
 begin
   try
-    xReport := NodeToReprt(Sender, Node);
+    xReport := NodeToReport(False, Sender, Node);
     if Assigned(xReport) and (xReport is TReport) then
     begin
       case TReportColumnEnum(Column) of
-        reportStatusColumn: CellText := 'status';
-        reportActionColumn: CellText := 'action';
         reportDateTimeColumn: CellText := DateTimeToStr(xReport.TimeStamp);
         reportNameColumn: CellText := xReport.Name;
+        reportMessageColumn: CellText := xReport.Messsage;
       end;
     end
     else

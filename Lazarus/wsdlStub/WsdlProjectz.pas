@@ -129,6 +129,7 @@ type
       var AReceived: string);
     procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
       const AUsername, APassword: string; var VAuthenticated: Boolean);
+    procedure doRegressionReport (aReport: TRegressionReport);
     function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
@@ -454,6 +455,7 @@ var
     serviceOptionsXsd: TXsd;
     listenersConfigXsd: TXsd;
     operationOptionsXsd: TXsd;
+
 
 implementation
 
@@ -6366,6 +6368,53 @@ begin
   VAuthenticated := True; // a friendly server
 end;
 
+procedure TWsdlProject.doRegressionReport (aReport : TRegressionReport );
+var
+  xLogList, xRefLofList: TLoglist;
+  xXml: TXml;
+  df: String;
+begin
+  aReport.Status := rsOk;
+  try
+    xLogList := TLogList.Create;
+    try
+      OpenMessagesLog (aReport.FileName, True, False, xLogList);
+      xRefLofList := TLogList.Create;
+      try
+        OpenMessagesLog (aReport.RefFileName, True, False, xRefLofList);
+        xXml := logDifferencesAsXml ( xLogList
+                                    , xRefLofList
+                                    , aReport.RefFileName
+                                    , CompareLogOrderBy
+                                    , ignoreDifferencesOn
+                                    , ignoreAddingOn
+                                    , ignoreRemovingOn
+                                    , ignoreOrderOn
+                                    );
+        try
+          if Assigned (xXml) then with xXml do
+          begin
+            df := xXml.FindUQValue('logDifferences.Header.differencesFound');
+            if df = 'true' then
+              aReport.Status := rsNok;
+            if df = 'false' then
+              aReport.Status := rsOk;
+          end;
+        finally
+          FreeAndNil (xXml);
+        end;
+      finally
+        FreeAndNil (xLogList);
+      end;
+    finally
+      FreeAndNil (xLogList);
+    end;
+  except
+    on e: Exception do
+      aReport.Messsage := 'Exception: ' + e.Message;
+  end;
+end;
+
 procedure TWsdlProject.HTTPProxyServerAfterCommandHandler(
   ASender: TIdCmdTCPServer; AContext: TIdContext);
 var
@@ -6673,18 +6722,13 @@ end;
 
 procedure TWsdlProject.CreateRegressionReport (aName, aFileName, aRefFileName: String);
 var
-  xReport: TReport;
+  xReport: TRegressionReport;
+  xXml, dXml: TXml;
+  df: String;
 begin
-  xReport := TReport.Create;
-  with xReport do
-  begin
-    ;
-    timeStamp := Now;
-    Name := aName;
-    FileName := aFileName;
-    RefFileName := aRefFileName;
-  end;
-
+  xReport := TRegressionReport.Create(aName, aFileName, aRefFileName);
+  xReport.OnReport := doRegressionReport;
+  xReport.doReport;
   toDisplayReports.AddObject('', xReport);
 end;
 

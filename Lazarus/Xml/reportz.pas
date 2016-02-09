@@ -6,30 +6,38 @@ interface
 
 uses Classes
    , SysUtils
+   , Xmlz
    , Logz
    , ClaimListz
    ;
 
 type
-  TReportStatus = (rfUndefined, rfOk, rfNok);
+  TReportStatus = (rsUndefined, rsOk, rsNok);
   TReport = class;
+  TRegressionReport = class;
   TReportList = class;
+  TReportRegressionEvent = procedure (aReport: TRegressionReport) of Object;
+
+  { TReport }
 
   TReport = class(TClaimableObject)
-    private
     public
       Status: TReportStatus;
-      Name, FileName, RefFileName: String;
+      Name, FileName, RefFileName, Messsage: String;
       timeStamp: TDateTime;
-      function AsHtml: String; Virtual; Abstract;
+      procedure doReport; virtual abstract;
   end;
 
   { TRegressionReport }
 
   TRegressionReport = class(TReport)
     private
+      fContext: TObject;
+      fOnReport: TReportRegressionEvent;
     public
-      constructor Create (aFileName, aRefFileName: String);
+      procedure doReport; override;
+      property OnReport: TReportRegressionEvent read fOnReport write fOnReport;
+      constructor Create (aName, aFileName, aRefFileName: String);
   end;
 
   { TReportList }
@@ -46,11 +54,30 @@ type
 
 implementation
 
+{ TReport }
+
 { TRegressionReport }
 
-constructor TRegressionReport .Create (aFileName , aRefFileName : String );
+procedure TRegressionReport.doReport;
+var
+  xXml: TXml;
+  df: String;
+begin
+  Status := rsUndefined;
+  Messsage := '';
+  if Assigned (fOnReport) then
+    fOnReport(self)
+  else
+    Messsage := 'Exception: no OnReportEvent assigned';
+end;
+
+constructor TRegressionReport.Create (aName, aFileName, aRefFileName: String);
 begin
   inherited Create;
+  timeStamp := Now;
+  Name := aName;
+  FileName := aFileName;
+  RefFileName := aRefFileName;
 end;
 
 { TReportList }

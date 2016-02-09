@@ -1064,9 +1064,21 @@ object MainForm: TMainForm
         Images = mainImageList
         TabOrder = 0
         object ToolButton39: TToolButton
-          Left = 1
+          Left = 34
           Top = 2
           Action = ClearReportsAction
+        end
+        object ToolButton40: TToolButton
+          Left = 1
+          Top = 2
+          Action = RefreshReportsAction
+        end
+        object ToolButton51: TToolButton
+          Left = 24
+          Top = 2
+          Width = 10
+          Caption = 'ToolButton51'
+          Style = tbsSeparator
         end
       end
       object Panel1: TPanel
@@ -1092,27 +1104,31 @@ object MainForm: TMainForm
           Header.AutoSizeIndex = -1
           Header.Columns = <          
             item
+              ImageIndex = 67
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
               Position = 0
-              Text = 'Status'
+              Width = 23
             end          
             item
               Position = 1
-              Text = 'Action'
-            end          
-            item
-              Position = 2
               Text = 'Time'
             end          
             item
-              Position = 3
+              Position = 2
               Text = 'Name'
+            end          
+            item
+              Position = 3
+              Text = 'Message'
             end>
           Header.DefaultHeight = 17
           Header.Font.Color = clWindowText
           Header.Font.Height = -11
           Header.Font.Name = 'Tahoma'
+          Header.Images = mainImageList
           Header.MainColumn = 1
-          Header.Options = [hoColumnResize, hoDrag, hoVisible]
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowImages, hoVisible]
+          Images = mainImageList
           ParentColor = True
           TabOrder = 0
           TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
@@ -1123,6 +1139,7 @@ object MainForm: TMainForm
           OnEditing = VTSEditing
           OnFocusChanged = ExceptionsVTSFocusChanged
           OnGetText = ReportsVTSGetText
+          OnGetImageIndex = ReportsVTSGetImageIndex
           OnMouseDown = TreeViewMouseDown
           OnResize = TreeViewResize
         end
@@ -2220,6 +2237,13 @@ object MainForm: TMainForm
       Caption = 'Clear reports'
       ImageIndex = 9
       OnExecute = ClearReportsActionExecute
+    end
+    object RefreshReportsAction: TAction
+      Category = 'Reports'
+      Caption = 'Refresh'
+      Hint = 'Refresh reports'
+      ImageIndex = 51
+      OnExecute = RefreshReportsActionExecute
     end
   end
   object mainImageList: TImageList

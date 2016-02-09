@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9440"/>
+      <BuildNr Value="9450"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -125,7 +125,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="18">
+    <Exceptions Count="19">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -191,6 +191,9 @@
         <Name Value="EStringListError"/>
         <Enabled Value="False"/>
       </Item18>
+      <Item19>
+        <Name Value="EOleSysError"/>
+      </Item19>
     </Exceptions>
   </Debugging>
 </CONFIG>
