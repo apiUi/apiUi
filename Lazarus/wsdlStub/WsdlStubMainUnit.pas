@@ -11937,7 +11937,7 @@ begin
               for Y := 0 to xXml.Items.Count - 1 do
               begin
                 yXml := xXml.Items.XmlItems[Y];
-                if yXml.Name = 'reportDetails' then
+                if yXml.Name = 'regressionReportDetails' then
                   se.CreateRegressionReport( yXml.Items.XmlValueByTag ['name']
                                            , yXml.Items.XmlValueByTag ['fileName']
                                            , yXml.Items.XmlValueByTag ['refFileName']

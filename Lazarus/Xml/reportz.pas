@@ -23,12 +23,14 @@ type
 
   TReport = class(TClaimableObject)
   private
-    function getAsXml : TXml ; virtual;
+    function getAsXml : TXml ; virtual; abstract;
+    function getStatusAsText : String ;
     public
       Status: TReportStatus;
       Name, FileName, RefFileName, Message: String;
       timeStamp: TDateTime;
       procedure doReport; virtual abstract;
+      property statusAsText: String read getStatusAsText;
       procedure FromXml (aXml: TXml);
       property AsXml: TXml read getAsXml;
   end;
@@ -39,6 +41,7 @@ type
     private
       fContext: TObject;
       fOnReport: TReportRegressionEvent;
+      function getAsXml : TXml ; override;
     public
       procedure doReport; override;
       property OnReport: TReportRegressionEvent read fOnReport write fOnReport;
@@ -63,26 +66,13 @@ implementation
 
 { TReport }
 
-function TReport.getAsXml : TXml ;
-  function _statusAsText: String;
-  begin
-    case Status of
-      rsUndefined: result := 'undefined';
-      rsOk: result := 'ok';
-      rsNok: result := 'nok';
-      rsException: result := 'exception';
-    end;
-  end;
+function TReport .getStatusAsText : String ;
 begin
-  result := TXml.CreateAsString('reportDetails','');
-  with result do
-  begin
-    AddXml (TXml.CreateAsString('name', self.name));
-    AddXml (TXml.CreateAsString('status', _statusAsText));
-    AddXml (TXml.CreateAsString('fileName', self.FileName));
-    AddXml (TXml.CreateAsString('refFileName', self.RefFileName));
-    AddXml (TXml.CreateAsString('message', self.Message));
-    AddXml (TXml.CreateAsTimeStamp('timeStamp', self.timeStamp));
+  case Status of
+    rsUndefined: result := 'undefined';
+    rsOk: result := 'ok';
+    rsNok: result := 'nok';
+    rsException: result := 'exception';
   end;
 end;
 
@@ -114,6 +104,20 @@ end;
 { TReport }
 
 { TRegressionReport }
+
+function TRegressionReport.getAsXml: TXml ;
+begin
+  result := TXml.CreateAsString('regressionReportDetails','');
+  with result do
+  begin
+    AddXml (TXml.CreateAsString('name', self.name));
+    AddXml (TXml.CreateAsString('status', statusAsText));
+    AddXml (TXml.CreateAsString('fileName', self.FileName));
+    AddXml (TXml.CreateAsString('refFileName', self.RefFileName));
+    AddXml (TXml.CreateAsString('message', self.Message));
+    AddXml (TXml.CreateAsTimeStamp('timeStamp', self.timeStamp));
+  end;
+end;
 
 procedure TRegressionReport.doReport;
 var
