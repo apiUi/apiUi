@@ -924,10 +924,10 @@ object MainForm: TMainForm
     Height = 147
     Top = 354
     Width = 1015
-    ActivePage = TabSheet1
+    ActivePage = MessagesTabSheet
     Align = alBottom
     Images = mainImageList
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
@@ -1064,20 +1064,37 @@ object MainForm: TMainForm
         Images = mainImageList
         TabOrder = 0
         object ToolButton39: TToolButton
-          Left = 34
+          Left = 90
           Top = 2
           Action = ClearReportsAction
         end
         object ToolButton40: TToolButton
-          Left = 1
+          Left = 57
           Top = 2
           Action = RefreshReportsAction
         end
         object ToolButton51: TToolButton
-          Left = 24
+          Left = 80
           Top = 2
           Width = 10
           Caption = 'ToolButton51'
+          Style = tbsSeparator
+        end
+        object ToolButton52: TToolButton
+          Left = 24
+          Top = 2
+          Action = SaveReportAction
+        end
+        object ToolButton53: TToolButton
+          Left = 1
+          Top = 2
+          Action = ReadReportsAction
+        end
+        object ToolButton64: TToolButton
+          Left = 47
+          Top = 2
+          Width = 10
+          Caption = 'ToolButton64'
           Style = tbsSeparator
         end
       end
@@ -1130,6 +1147,7 @@ object MainForm: TMainForm
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowImages, hoVisible]
           Images = mainImageList
           ParentColor = True
+          PopupMenu = ReportsPopupMenu
           TabOrder = 0
           TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
@@ -2244,6 +2262,18 @@ object MainForm: TMainForm
       Hint = 'Refresh reports'
       ImageIndex = 51
       OnExecute = RefreshReportsActionExecute
+    end
+    object ReadReportsAction: TAction
+      Category = 'Reports'
+      Caption = 'Read reports'
+      ImageIndex = 2
+      OnExecute = ReadReportsActionExecute
+    end
+    object SaveReportAction: TAction
+      Category = 'Reports'
+      Caption = 'Save reports'
+      ImageIndex = 3
+      OnExecute = SaveReportsActionExecute
     end
   end
   object mainImageList: TImageList
@@ -9065,6 +9095,18 @@ object MainForm: TMainForm
       Caption = 'Refresh'
       ShortCut = 116
       OnClick = MenuItem14Click
+    end
+  end
+  object ReportsPopupMenu: TPopupMenu
+    left = 606
+    top = 282
+    object reportLoadLogMessagesMenuItem: TMenuItem
+      Caption = 'Load log messages'
+      OnClick = reportLoadLogMessagesMenuItemClick
+    end
+    object reportLoadRefLogMessagesMenuItem: TMenuItem
+      Caption = 'Load reference log records'
+      OnClick = reportLoadRefLogMessagesMenuItemClick
     end
   end
 end

@@ -9,10 +9,11 @@ uses Classes
    , Xmlz
    , Logz
    , ClaimListz
+   , xmlxsdparser
    ;
 
 type
-  TReportStatus = (rsUndefined, rsOk, rsNok);
+  TReportStatus = (rsUndefined, rsOk, rsNok, rsException);
   TReport = class;
   TRegressionReport = class;
   TReportList = class;
@@ -21,11 +22,15 @@ type
   { TReport }
 
   TReport = class(TClaimableObject)
+  private
+    function getAsXml : TXml ; virtual;
     public
       Status: TReportStatus;
-      Name, FileName, RefFileName, Messsage: String;
+      Name, FileName, RefFileName, Message: String;
       timeStamp: TDateTime;
       procedure doReport; virtual abstract;
+      procedure FromXml (aXml: TXml);
+      property AsXml: TXml read getAsXml;
   end;
 
   { TRegressionReport }
@@ -44,15 +49,67 @@ type
 
   TReportList = class (TClaimableObjectList)
   private
+    function getAsXml : TXml ;
     procedure SetReport(Index: integer; const Value: TReport);
     function GetReport (Index: integer): TReport;
   public
     property ReportItems [Index: integer]: TReport read GetReport write SetReport;
+    property AsXml: TXml read getAsXml;
     constructor Create; overload;
   end;
 
 
 implementation
+
+{ TReport }
+
+function TReport.getAsXml : TXml ;
+  function _statusAsText: String;
+  begin
+    case Status of
+      rsUndefined: result := 'undefined';
+      rsOk: result := 'ok';
+      rsNok: result := 'nok';
+      rsException: result := 'exception';
+    end;
+  end;
+begin
+  result := TXml.CreateAsString('reportDetails','');
+  with result do
+  begin
+    AddXml (TXml.CreateAsString('name', self.name));
+    AddXml (TXml.CreateAsString('status', _statusAsText));
+    AddXml (TXml.CreateAsString('fileName', self.FileName));
+    AddXml (TXml.CreateAsString('refFileName', self.RefFileName));
+    AddXml (TXml.CreateAsString('message', self.Message));
+    AddXml (TXml.CreateAsTimeStamp('timeStamp', self.timeStamp));
+  end;
+end;
+
+procedure TReport.FromXml (aXml : TXml );
+var
+  s: String;
+  dXml: TXml;
+begin
+  if not Assigned (aXml)
+  or (aXml.Name <> 'reportDetails') then
+    raise Exception.Create ('TReport.FromXml (aXml : TXml ); //illegal argument');
+  with aXml do
+  begin
+    Name := Items.XmlValueByTagDef['name', Name];
+    s := Items.XmlValueByTag['status'];
+    if s = 'undefined' then Status := rsUndefined;
+    if s = 'ok' then Status := rsOk;
+    if s = 'nok' then Status := rsNok;
+    if s = 'exception' then Status := rsException;
+    FileName := Items.XmlValueByTagDef['fileName', FileName];
+    RefFileName := Items.XmlValueByTagDef['refFileName', RefFileName];
+    Message := Items.XmlValueByTagDef['message', Message];
+    dXml := ItemByTag['timeStamp'];
+    if Assigned (dXml) then
+      timeStamp := xsdParseDateTime(dXml.Value);
+  end;
+end;
 
 { TReport }
 
@@ -64,11 +121,14 @@ var
   df: String;
 begin
   Status := rsUndefined;
-  Messsage := '';
+  Message := '';
   if Assigned (fOnReport) then
     fOnReport(self)
   else
-    Messsage := 'Exception: no OnReportEvent assigned';
+  begin
+    Status := rsException;
+    Message := 'Exception: no OnReportEvent assigned';
+  end;
 end;
 
 constructor TRegressionReport.Create (aName, aFileName, aRefFileName: String);
@@ -81,6 +141,19 @@ begin
 end;
 
 { TReportList }
+
+function TReportList .getAsXml : TXml ;
+var
+  x: Integer;
+begin
+  result := TXml.CreateAsString('reportList', '');
+  with result do
+  begin
+    AddXml (TXml.CreateAsTimeStamp('created', Now));
+    for x := 0 to Count - 1 do
+      AddXml (ReportItems[x].AsXml);
+  end;
+end;
 
 procedure TReportList.SetReport (Index : integer; const Value: TReport);
 begin

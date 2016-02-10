@@ -165,6 +165,7 @@ type TBindableList = class;
     procedure setHasUnexpectedValue(const Value: Boolean);
     function getIsEvaluation: Boolean;
     procedure sethasRelevance(const Value: Boolean);
+    procedure setValueAsTimeStamp (AValue : TDateTime );
 public
   Name: String;
   Group: Boolean;
@@ -223,6 +224,7 @@ public
   property Root: TCustomBindable read getRoot;
   property HasUnExpectedValue: Boolean read fHasUnExpectedValue write setHasUnexpectedValue;
   property ValueAsBoolean: Boolean read getValueAsBoolean write setValueAsBoolean;
+  property ValueAsTimeStamp: TDateTime write setValueAsTimeStamp;
   property ValueAsInteger: Integer read getValueAsInteger write setValueAsInteger;
   property CheckedAllUp: Boolean read getCheckedAllUp;
 end;
@@ -558,6 +560,16 @@ begin
   if Value
   and Assigned (Parent) then
     Parent.hasRelevance := Value;
+end;
+
+procedure TCustomBindable .setValueAsTimeStamp (AValue : TDateTime );
+var
+  year, month, day, hour, min, sec, msec: Word;
+begin
+  DecodeDate(AValue,year,month,day);
+  DecodeTime(AValue,hour,min,sec,msec);
+  Value := Format('%.*d-%.*d-%.*dT%.*d:%.*d:%.*d.%.*d'
+                , [4, year, 2, month, 2, day, 2, hour, 2, min, 2, sec, 3, msec]);
 end;
 
 function TCustomBindable.getChecked: Boolean;

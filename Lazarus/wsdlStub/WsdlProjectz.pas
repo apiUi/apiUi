@@ -1,4 +1,3 @@
-
 // currently at most 1 project due to what's in wsdlz.initialize, should be held by project
 unit WsdlProjectz;
 
@@ -6411,7 +6410,10 @@ begin
     end;
   except
     on e: Exception do
-      aReport.Messsage := 'Exception: ' + e.Message;
+    begin
+      aReport.Message := 'Exception: ' + e.Message;
+      aReport.Status := rsException;
+    end;
   end;
 end;
 
@@ -6525,138 +6527,122 @@ end;
 procedure TWsdlProject.OpenMessagesLog(aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
 var
   xXml: TXml;
-  swapCursor: TCursor;
   x: Integer;
   xLog: TLog;
 begin
+  xXml :=TXml.Create;
   try
-    SwapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
-    xXml :=TXml.Create;
-    try
-      if aIsFileName then
-        xXml.LoadFromFile(aString, nil)
-      else
-        xXml.LoadFromString(aString, nil);
-      if xXml.TagName <> 'LogIncrement' then
-      begin
-        if xXml.TagName <> 'WsdlStubCaseMessages' then
-          raise Exception.Create('File does not contain saved ' + _progName + ' messages');
-        if (xXml.Items.XmlValueByTag['wsdlStub'] <> projectFileName)
-        and aPrompt
-        then
-          if not BooleanPromptDialog( 'wsdlStub from saved messages ('
-                                    + xXml.Items.XmlValueByTag['wsdlStub']
-                                    + ') is not the same as current ('
-                                    + projectFileName
-                                    + ')'
-                                    + #$D#$A
-                                    + 'Continue'
-                                    ) then
-            raise Exception.Create('Operation aborted');
-      end;
-      for x := 0 to xXml.Items.Count - 1 do
-      begin
-        with xXml.Items.XmlItems [x] do
-        begin
-          if TagName = 'refreshInfo' then
-          begin
-            refreshNr := Items.XmlIntegerByTagDef ['Index', -1];
-            refreshCheck := Items.XmlValueByTag ['Check'];
-          end;
-          if TagName = 'RequestReply' then
-          begin
-            xLog := TLog.Create;
-            xLog.CorrId := Items.XmlValueByTagDef ['Check', xLog.CorrId];
-            try
-              xLog.InboundTimeStamp := XmlToDateTime (Items.XmlValueByTag ['InboundTimeStamp']);
-            except
-              try
-                xLog.InboundTimeStamp := XmlToDateTime (Items.XmlValueByTag ['Time']);
-              except
-                xLog.InboundTimeStamp := EncodeTime(0,0,0,0);
-              end;
-            end;
-            try
-              xLog.OutboundTimeStamp := XmlToDateTime (Items.XmlValueByTag ['OutboundTimeStamp']);
-            except
-              xLog.OutboundTimeStamp := EncodeTime(0,0,0,0);
-            end;
-            xLog.TransportType := TTransportType (StrToIntDef (Items.XmlValueByTag ['TransportType'], 0));
-            xLog.StubAction := TStubAction (StrToIntDef (Items.XmlValueByTag ['StubAction'], 0));
-            xLog.CorrelationId := Items.XmlValueByTag ['CorrelationId'];
-            // Reply
-            xLog.Exception := Items.XmlValueByTag ['Error'];
-            xLog.Remarks := Items.XmlValueByTag ['Remarks'];
-            // Script
-            xLog.RequestHeaders := Items.XmlValueByTag ['HttpRequestHeaders'];
-            xLog.RequestBody := Items.XmlValueByTag ['HttpRequestBody'];
-            xLog.RequestBodyMiM := Items.XmlValueByTag ['HttpRequestBodyMiM'];
-            xLog.ReplyBody := Items.XmlValueByTag ['HttpReplyBody'];
-            xLog.ReplyBodyMiM := Items.XmlValueByTag ['HttpReplyBodyMiM'];
-            xLog.RequestValidated := Items.XmlBooleanByTag ['RequestValidated'];
-            xLog.RequestValidateResult := Items.XmlValueByTag ['RequestValidateResult'];
-            xLog.ReplyValidated := Items.XmlBooleanByTag ['ReplyValidated'];
-            xLog.ReplyValidateResult := Items.XmlValueByTag ['ReplyValidateResult'];
-            xLog.CorrId := Items.XmlValueByTag ['Check'];
-            xLog.ServiceName := Items.XmlValueByTag ['ServiceName'];
-            xLog.OperationName := Items.XmlValueByTag ['OperationName'];
-            xLog.CorrId := Items.XmlValueByTag ['Check'];
-            try
-              xLog.Operation := FindOperationOnRequest ( xLog
-                                                       , ''
-                                                       , xLog.RequestBody
-                                                       , False
-                                                       );
-            except
-            end;
-            if not Assigned (xLog.Operation) then
-            try
-              xLog.Operation := FindOperationOnReply(xLog.ReplyBody);
-              if Assigned (xLog.Operation) then
-                xLog.OperationName:=xLog.Operation.reqTagName;
-            except
-            end;
-            if Assigned (xLog.Operation) then
-            begin
-              xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
-              xLog.Operation.RequestStringToBindables(xLog.RequestBody);
-              xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
-            end;
-            LogFilter.Execute (xLog);
-            aLogList.SaveLog ('', xLog);
-          end;
-        end;
-      end; // for each xml
-    finally
-      FreeAndNil (xXml);
+    if aIsFileName then
+      xXml.LoadFromFile(aString, nil)
+    else
+      xXml.LoadFromString(aString, nil);
+    if xXml.TagName <> 'LogIncrement' then
+    begin
+      if xXml.TagName <> 'WsdlStubCaseMessages' then
+        raise Exception.Create('File does not contain saved ' + _progName + ' messages');
+      if (xXml.Items.XmlValueByTag['wsdlStub'] <> projectFileName)
+      and aPrompt
+      then
+        if not BooleanPromptDialog( 'wsdlStub from saved messages ('
+                                  + xXml.Items.XmlValueByTag['wsdlStub']
+                                  + ') is not the same as current ('
+                                  + projectFileName
+                                  + ')'
+                                  + #$D#$A
+                                  + 'Continue'
+                                  ) then
+          raise Exception.Create('Operation aborted');
     end;
+    for x := 0 to xXml.Items.Count - 1 do
+    begin
+      with xXml.Items.XmlItems [x] do
+      begin
+        if TagName = 'refreshInfo' then
+        begin
+          refreshNr := Items.XmlIntegerByTagDef ['Index', -1];
+          refreshCheck := Items.XmlValueByTag ['Check'];
+        end;
+        if TagName = 'RequestReply' then
+        begin
+          xLog := TLog.Create;
+          xLog.CorrId := Items.XmlValueByTagDef ['Check', xLog.CorrId];
+          try
+            xLog.InboundTimeStamp := XmlToDateTime (Items.XmlValueByTag ['InboundTimeStamp']);
+          except
+            try
+              xLog.InboundTimeStamp := XmlToDateTime (Items.XmlValueByTag ['Time']);
+            except
+              xLog.InboundTimeStamp := EncodeTime(0,0,0,0);
+            end;
+          end;
+          try
+            xLog.OutboundTimeStamp := XmlToDateTime (Items.XmlValueByTag ['OutboundTimeStamp']);
+          except
+            xLog.OutboundTimeStamp := EncodeTime(0,0,0,0);
+          end;
+          xLog.TransportType := TTransportType (StrToIntDef (Items.XmlValueByTag ['TransportType'], 0));
+          xLog.StubAction := TStubAction (StrToIntDef (Items.XmlValueByTag ['StubAction'], 0));
+          xLog.CorrelationId := Items.XmlValueByTag ['CorrelationId'];
+          xLog.Exception := Items.XmlValueByTag ['Error'];
+          xLog.Remarks := Items.XmlValueByTag ['Remarks'];
+          xLog.RequestHeaders := Items.XmlValueByTag ['HttpRequestHeaders'];
+          xLog.RequestBody := Items.XmlValueByTag ['HttpRequestBody'];
+          xLog.RequestBodyMiM := Items.XmlValueByTag ['HttpRequestBodyMiM'];
+          xLog.ReplyBody := Items.XmlValueByTag ['HttpReplyBody'];
+          xLog.ReplyBodyMiM := Items.XmlValueByTag ['HttpReplyBodyMiM'];
+          xLog.RequestValidated := Items.XmlBooleanByTag ['RequestValidated'];
+          xLog.RequestValidateResult := Items.XmlValueByTag ['RequestValidateResult'];
+          xLog.ReplyValidated := Items.XmlBooleanByTag ['ReplyValidated'];
+          xLog.ReplyValidateResult := Items.XmlValueByTag ['ReplyValidateResult'];
+          xLog.CorrId := Items.XmlValueByTag ['Check'];
+          xLog.ServiceName := Items.XmlValueByTag ['ServiceName'];
+          xLog.OperationName := Items.XmlValueByTag ['OperationName'];
+          xLog.CorrId := Items.XmlValueByTag ['Check'];
+          try
+            xLog.Operation := FindOperationOnRequest ( xLog
+                                                     , ''
+                                                     , xLog.RequestBody
+                                                     , False
+                                                     );
+          except
+          end;
+          if not Assigned (xLog.Operation) then
+          try
+            xLog.Operation := FindOperationOnReply(xLog.ReplyBody);
+            if Assigned (xLog.Operation) then
+              xLog.OperationName:=xLog.Operation.reqTagName;
+          except
+          end;
+          if Assigned (xLog.Operation) then
+          begin
+            xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
+            xLog.Operation.RequestStringToBindables(xLog.RequestBody);
+            xLog.Operation.ReplyStringToBindables(xLog.ReplyBody);
+            xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
+          end;
+          LogFilter.Execute (xLog);
+          aLogList.SaveLog ('', xLog);
+        end;
+      end;
+    end; // for each xml
   finally
-    Screen.Cursor := SwapCursor;
+    FreeAndNil (xXml);
   end;
 end;
 
 procedure TWsdlProject.SaveMessagesLog(aFileName: String);
-var
-  swapCursor: TCursor;
 begin
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  with TStringList.Create do
   try
-    with TStringList.Create do
+    AcquireLogLock;
     try
-      AcquireLogLock;
-      try
-        Text := displayedLogs.LogsAsString (projectFileName);
-      finally
-        ReleaseLogLock;
-      end;
-      SaveToFile(aFileName);
+      Text := displayedLogs.LogsAsString (projectFileName);
     finally
-      free;
+      ReleaseLogLock;
     end;
+    SaveToFile(aFileName);
   finally
-    Screen.Cursor := swapCursor;
+    free;
   end;
 end;
 
@@ -6726,7 +6712,10 @@ var
   xXml, dXml: TXml;
   df: String;
 begin
-  xReport := TRegressionReport.Create(aName, aFileName, aRefFileName);
+  xReport := TRegressionReport.Create( aName
+                                     , ExpandRelativeFileName(projectFileName, aFileName)
+                                     , ExpandRelativeFileName(projectFileName, aRefFileName)
+                                     );
   xReport.OnReport := doRegressionReport;
   xReport.doReport;
   toDisplayReports.AddObject('', xReport);

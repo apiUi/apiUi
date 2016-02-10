@@ -66,6 +66,11 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    reportLoadLogMessagesMenuItem : TMenuItem ;
+    reportLoadRefLogMessagesMenuItem : TMenuItem ;
+    ReportsPopupMenu : TPopupMenu ;
+    SaveReportAction : TAction ;
+    ReadReportsAction : TAction ;
     RefreshReportsAction : TAction ;
     ClearReportsAction : TAction ;
     ReportsVTS : TVirtualStringTree ;
@@ -107,6 +112,9 @@ type
     ToolButton39 : TToolButton ;
     ToolButton40 : TToolButton ;
     ToolButton51 : TToolButton ;
+    ToolButton52 : TToolButton ;
+    ToolButton53 : TToolButton ;
+    ToolButton64 : TToolButton ;
     UnhideOperationMenuItem : TMenuItem ;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
@@ -539,6 +547,8 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
+    procedure reportLoadRefLogMessagesMenuItemClick (Sender : TObject );
+    procedure reportLoadLogMessagesMenuItemClick (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
@@ -557,6 +567,7 @@ type
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
     procedure ExportProjectScriptsActionExecute (Sender : TObject );
+    procedure ReadReportsActionExecute (Sender : TObject );
     procedure RefreshReportsActionExecute (Sender : TObject );
     procedure ReportsVTSClick (Sender : TObject );
     procedure ReportsVTSGetImageIndex (Sender : TBaseVirtualTree ;
@@ -565,6 +576,7 @@ type
     procedure ReportsVTSGetText (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
       var CellText : String );
+    procedure SaveReportsActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
@@ -1102,6 +1114,7 @@ type
     mqServerEnv: String;
     CollapseHeaders: Boolean;
     wsdlStubMessagesFileName: String;
+    wsdlStubReportsFileName: String;
     log4jEventsFileName: String;
     nStubs: Integer;
     freeStubs: Integer;
@@ -4844,8 +4857,7 @@ end;
 
 procedure TMainForm.SelectCorrelationElementActionUpdate(Sender: TObject);
 begin
-  SelectCorrelationElementAction.Enabled := Assigned(WsdlOperation)
-                                        and (not se.IsActive)
+  SelectCorrelationElementAction.Enabled := Assigned(WsdlOperation);
   // and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
   // and (WsdlOperation.StubAction <> saRequest)
                                           ;
@@ -4855,7 +4867,7 @@ procedure TMainForm.SelectCorrelationElementActionExecute(Sender: TObject);
 var
   swapBindable: TCustomBindable;
 begin
-  EndEdit;
+  if not InactiveAfterPrompt then Exit;
   with WsdlOperation do
   begin
     if WsdlService.DescriptionType in [ipmDTFreeFormat] then
@@ -4866,20 +4878,15 @@ begin
   try
     GridView.BeginUpdate;
     SelectElementsForm.doShowReq := True;
+    SelectElementsForm.doShowRpy := True;
     SelectElementsForm.WsdlOperation := WsdlOperation;
-    swapBindable := WsdlOperation.rpyBind;
-    try
-      WsdlOperation.rpyBind := nil;
-      SelectElementsForm.ControlBinds := WsdlOperation.CorrelationBindables;
-      SelectElementsForm.ShowModal;
-      begin
-        se.UpdateReplyColumns(WsdlOperation);
-        UpdateMessagesGrid;
-        UpdateLogCorrelationIds (WsdlOperation);
-        stubChanged := stubChanged or SelectElementsForm.stubChanged;
-      end;
-    finally
-      WsdlOperation.rpyBind := swapBindable;
+    SelectElementsForm.ControlBinds := WsdlOperation.CorrelationBindables;
+    SelectElementsForm.ShowModal;
+    begin
+      se.UpdateReplyColumns(WsdlOperation);
+      UpdateMessagesGrid;
+      UpdateLogCorrelationIds (WsdlOperation);
+      stubChanged := stubChanged or SelectElementsForm.stubChanged;
     end;
   finally
     GridView.EndUpdate;
@@ -7589,6 +7596,7 @@ begin
   finally
     MessagesVTS.EndUpdate;
     Screen.Cursor := SwapCursor;
+    DownPageControl.ActivePage := MessagesTabSheet;
   end;
 end;
 
@@ -11446,7 +11454,6 @@ begin
       OpenLog4jEvents(log4jEventsFileName, True, xLogList);
       try
         ToAllLogList(xLogList);
-        DownPageControl.ActivePage := MessagesTabSheet;
         MessagesTabControl.TabIndex := Ord (slRequestBody);
       except
         xLogList.Clear;
@@ -11899,6 +11906,60 @@ begin
   end;
 end;
 
+procedure TMainForm.ReadReportsActionExecute (Sender: TObject );
+var
+  xList: TReportList;
+  X, Y: Integer;
+  xOpenOptions: TOpenOptions;
+  xXml, yXml: TXml;
+  xReport: TReport;
+begin
+  with OpenFileDialog do
+  begin
+    xOpenOptions := Options;
+    xXml := TXml.Create;
+    try
+      DefaultExt := 'xml';
+      FileName := wsdlStubReportsFileName;
+      Filter := 'XML file (*.xml)|*.xml';
+      Title := 'Read ' + _progName + ' messages from files';
+      Options := Options + [ofAllowMultiSelect];
+      if Execute then
+      begin
+        wsdlStubReportsFileName := FileName;
+        xList := TReportList.Create;
+        try
+          for X := 0 to Files.Count - 1 do
+            try
+              xXml.LoadFromFile(Files.Strings[X], nil);
+              if xXml.Name <> 'reportList' then
+                raise Exception.Create('not a ReportList');
+              for Y := 0 to xXml.Items.Count - 1 do
+              begin
+                yXml := xXml.Items.XmlItems[Y];
+                if yXml.Name = 'reportDetails' then
+                  se.CreateRegressionReport( yXml.Items.XmlValueByTag ['name']
+                                           , yXml.Items.XmlValueByTag ['fileName']
+                                           , yXml.Items.XmlValueByTag ['refFileName']
+                                           );
+              end;
+            except
+              on E: Exception do
+                raise Exception.CreateFmt('Error opening file %s%s%s',
+                  [Files.Strings[X], LineEnding, E.Message]);
+            end;
+        finally
+          xList.Clear;
+          FreeAndNil(xList);
+        end;
+      end;
+    finally
+      Options := xOpenOptions;
+      xXml.Free;
+    end;
+  end;
+end;
+
 procedure TMainForm .RefreshReportsActionExecute (Sender : TObject );
 var
   x, n: Integer;
@@ -11944,6 +12005,7 @@ begin
             rsUndefined: ImageIndex := 49;
             rsOk: ImageIndex := 47;
             rsNok: ImageIndex := 48;
+            rsException: ImageIndex := 45;
           end;
         end;
       end;
@@ -11965,7 +12027,7 @@ begin
       case TReportColumnEnum(Column) of
         reportDateTimeColumn: CellText := DateTimeToStr(xReport.TimeStamp);
         reportNameColumn: CellText := xReport.Name;
-        reportMessageColumn: CellText := xReport.Messsage;
+        reportMessageColumn: CellText := xReport.Message;
       end;
     end
     else
@@ -11973,6 +12035,27 @@ begin
   except
     on e: Exception do
       CellText := e.Message;
+  end;
+end;
+
+procedure TMainForm.SaveReportsActionExecute (Sender : TObject );
+begin
+  if Assigned (se) then
+  begin
+    SaveFileDialog.DefaultExt := 'xml';
+    SaveFileDialog.FileName := wsdlStubReportsFileName;
+    SaveFileDialog.Filter := 'XML file (*.xml)|*.xml';
+    SaveFileDialog.Title := 'Save ' + _progName + ' reports';
+    if SaveFileDialog.Execute then
+    begin
+      wsdlStubReportsFileName := SaveFileDialog.FileName;
+      with se.displayedReports.AsXml do
+      try
+        SaveStringToFile(wsdlStubReportsFileName, Text);
+      finally
+        Free;
+      end;
+    end;
   end;
 end;
 
@@ -12514,6 +12597,48 @@ begin
     if Assigned (Choose2StringsForm.ListOfLists) then
       Choose2StringsForm.ListOfLists.Free;
     FreeAndNil(Choose2StringsForm);
+  end;
+end;
+
+procedure TMainForm .reportLoadRefLogMessagesMenuItemClick (Sender : TObject );
+var
+  xReport: TReport;
+  xLogList: TLogList;
+begin
+  xReport := NodeToReport(True, ReportsVTS, ReportsVTS.FocusedNode);
+  try
+    if Assigned (xReport) then
+    xLogList := TLogList.Create;
+    try
+      se.OpenMessagesLog(xReport.RefFileName, True, False, xLogList);
+      ToAllLogList(xLogList);
+    finally
+      xLogList.Clear;
+      FreeAndNil(xLogList);
+    end;
+  finally
+    xReport.Disclaim;
+  end;
+end;
+
+procedure TMainForm .reportLoadLogMessagesMenuItemClick (Sender : TObject );
+var
+  xReport: TReport;
+  xLogList: TLogList;
+begin
+  xReport := NodeToReport(True, ReportsVTS, ReportsVTS.FocusedNode);
+  try
+    if Assigned (xReport) then
+    xLogList := TLogList.Create;
+    try
+      se.OpenMessagesLog(xReport.FileName, True, False, xLogList);
+      ToAllLogList(xLogList);
+    finally
+      xLogList.Clear;
+      FreeAndNil(xLogList);
+    end;
+  finally
+    xReport.Disclaim;
   end;
 end;
 

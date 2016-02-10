@@ -245,6 +245,7 @@ type
     procedure MoveDown;
     procedure Sort (aRecurringElementsPath, aSubElementsPath: String);
     constructor Create; Overload;
+    constructor CreateAsTimeStamp (aTagName: String; aTimeStame: TDateTime); Overload;
     constructor CreateAsBoolean (aTagName: String; aBoolean: Boolean); Overload;
     constructor CreateAsInteger (aTagName: String; aInteger: Integer); Overload;
     constructor CreateAsString (aTagName: String; aString: String); Overload;
@@ -3020,6 +3021,17 @@ begin
   Xsd := Nil;
   for x := 0 to Items.Count - 1 do
     Items.XmlItems [x].ForgetXsd;
+end;
+
+constructor TXml.CreateAsTimeStamp (aTagName: String; aTimeStame: TDateTime); Overload;
+begin
+  inherited Create;
+  jsonType := jsonNone;
+  CData := False;
+  Items := TXmlList.Create;
+  Attributes := TXmlAttributeList.Create;
+  TagName := aTagname;
+  ValueAsTimeStamp := aTimeStame;
 end;
 
 constructor TXml.CreateAsBoolean(aTagName: String; aBoolean: Boolean);
