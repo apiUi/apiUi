@@ -441,6 +441,7 @@ var
   xXml, faultXml: TXml;
   oXml, mXml, xXmlCvrg, faultCoverageXml: TXmlCvrg;
   xLog: TLog;
+  xOpr: TWsdlOperation;
 begin
   result := TXmlCvrg.CreateAsString('coverageReport', '');
   // first setup an hyerarchy to count elements
@@ -449,6 +450,7 @@ begin
     Tag := 1;
     for o := 0 to aOperations.Count - 1 do with aOperations.Operations[o] do
     begin
+      xOpr := aOperations.Operations[o];
       if (WsdlService.DescriptionType in [ipmDTXsd, ipmDTWsdl, ipmDTSwiftMT, ipmDTCobol])
       and (not HiddenFromUI) then
       begin
@@ -463,14 +465,14 @@ begin
           if Assigned (ReqBind)
           and (ReqBind is TXml)
           and Assigned ((ReqBind as TXml).TypeDef) then
-            AddXml (TXmlCvrg.CreateFromXsd (ReqBind.Name, (ReqBind as TXml).Xsd));
+            AddXml (TXmlCvrg.CreateFromXsd (reqTagName, (ReqBind as TXml).Xsd));
           if Assigned (ReqBind)
           and (ReqBind is TIpmItem) then
             AddXml (TXmlCvrg.CreateFromIpm (ReqBind.Name, (ReqBind as TIpmItem)));
           if Assigned (RpyBind)
           and (RpyBind is TXml)
           and Assigned ((RpyBind as TXml).TypeDef) then
-            AddXml (TXmlCvrg.CreateFromXsd (RpyBind.Name, (RpyBind as TXml).Xsd));
+            AddXml (TXmlCvrg.CreateFromXsd (rpyTagName, (RpyBind as TXml).Xsd));
           if Assigned (RpyBind)
           and (RpyBind is TIpmItem) then
             AddXml (TXmlCvrg.CreateFromIpm (RpyBind.Name, (RpyBind as TIpmItem)));
@@ -591,7 +593,7 @@ begin
           try
             if NameWithoutPrefix(xXml.Name) = 'Envelope' then
             begin
-              mXml := oXml.Items.XmlItemByTag[xLog.Operation.reqBind.Name] as TXmlCvrg;
+              mXml := oXml.Items.XmlItemByTag[xLog.Operation.reqTagName] as TXmlCvrg;
               if not Assigned (mXml) then
                 raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.reqBind.Name);
               Inc (mXml.Counter);
@@ -616,7 +618,7 @@ begin
               end
               else
               begin
-                mXml := oXml.Items.XmlItemByTag[xLog.Operation.rpyBind.Name] as TXmlCvrg;
+                mXml := oXml.Items.XmlItemByTag[xLog.Operation.rpyTagName] as TXmlCvrg;
                 if not Assigned (mXml) then
                   raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.rpyBind.Name);
                 Inc (mXml.Counter);

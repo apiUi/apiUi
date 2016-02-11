@@ -196,6 +196,7 @@ type
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure DisplayLog (aString: String; aLog: TLog);
+    procedure DisplayReport (aString: String; aReport: TReport);
     procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
     function mergeUri (puri, suri: String): String;
     function freeFormatOperationsXml: TXml;
@@ -317,7 +318,8 @@ type
     function BooleanPromptDialog (aPrompt: String): Boolean;
     function WsdlOpenFile (aName: String; aElementsWhenRepeatable: Integer): TWsdl;
     procedure RefuseHttpConnectionsThreaded (aLater, aTime: Extended);
-    procedure SaveMessagesLog (aFileName: String);
+    procedure SaveLogs (aFileName: String);
+    procedure SaveReports (aFileName: String);
     procedure UpdateReplyColumns (aOperation: TWsdlOperation);
     procedure ProjectOptionsLogDisplayedColumnsFromXml(aXml: TXml);
     procedure ProjectLogOptionsFromXml(aXml: TXml);
@@ -6630,7 +6632,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.SaveMessagesLog(aFileName: String);
+procedure TWsdlProject.SaveLogs(aFileName: String);
 begin
   with TStringList.Create do
   try
@@ -6643,6 +6645,21 @@ begin
     SaveToFile(aFileName);
   finally
     free;
+  end;
+end;
+
+procedure TWsdlProject.SaveReports(aFileName: String);
+begin
+  AcquireLogLock;
+  try
+    with displayedReports.AsXml do
+    try
+      SaveStringToFile(aFileName, Text);
+    finally
+      Free;
+    end;
+  finally
+    ReleaseLogLock;
   end;
 end;
 
@@ -6666,6 +6683,17 @@ begin
   finally
     ReleaseLogLock;
   end;
+end;
+
+procedure TWsdlProject.DisplayReport (aString: String; aReport: TReport);
+begin
+    if not Assigned (aReport) then Exit;
+    AcquireLogLock;
+    try
+      toDisplayReports.SaveObject (aString, aReport);
+    finally
+      ReleaseLogLock;
+    end;
 end;
 
 {$ifndef FPC}
@@ -6718,7 +6746,12 @@ begin
                                      );
   xReport.OnReport := doRegressionReport;
   xReport.doReport;
-  toDisplayReports.AddObject('', xReport);
+  AcquireLogLock;
+  try
+    toDisplayReports.AddObject('', xReport);
+  finally
+    ReleaseLogLock;
+  end;
 end;
 
 function TWsdlProject.FindScript (aName : String ): TXml ;

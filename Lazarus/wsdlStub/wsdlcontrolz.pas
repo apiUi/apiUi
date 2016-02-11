@@ -38,7 +38,8 @@ type
     OnReactivateEvent: TStringFunction;
     OnActivateEvent: TProcedureB;
     OnOpenProjectEvent: TProcedureS;
-    OnClearLogEvent: TStringFunctionBoolean;
+    OnClearLogsEvent: TStringFunctionBoolean;
+    OnClearReportsEvent: TStringFunctionBoolean;
     OnQuitEvent: TStringFunctionBoolean;
     OnReloadDesignEvent: TStringFunction;
     procedure HttpWebPageServerCommandGet(AContext: TIdContext;
@@ -255,9 +256,15 @@ begin
               oOperation.RequestStringToBindables(xParams);
               if xOperId = 'clearLogsReq' then
               begin
-                if not Assigned (OnClearLogEvent) then
+                if not Assigned (OnClearLogsEvent) then
                   raise Exception.Create('clearLogsReq refused because ' + _progName + ' has no OnClearLogEvent procedure assigned');
-                OnClearLogEvent(True);
+                OnClearLogsEvent(True);
+              end;
+              if xOperId = 'clearReportsReq' then
+              begin
+                if not Assigned (OnClearReportsEvent) then
+                  raise Exception.Create('clearReportsReq refused because ' + _progName + ' has no OnClearReportsEvent procedure assigned');
+                OnClearReportsEvent(True);
               end;
               if xOperId = 'activateReq' then
               begin
@@ -310,7 +317,14 @@ begin
                 dXml := oXml.FindXml('Body.saveLogsToFileReq.fileName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find filename to use in request');
-                se.SaveMessagesLog(ExpandRelativeFileName(se.projectFileName, dXml.Value));
+                se.SaveLogs(ExpandRelativeFileName(se.projectFileName, dXml.Value));
+              end;
+              if xOperId = 'saveReportsToFileReq' then
+              begin
+                dXml := oXml.FindXml('Body.saveReportsToFileReq.fileName');
+                if not Assigned (dXml) then
+                  raise Exception.Create('Cannot find filename to use in request');
+                se.SaveReports(ExpandRelativeFileName(se.projectFileName, dXml.Value));
               end;
               if xOperId = 'sendAllRequestsReq' then
               begin

@@ -924,10 +924,10 @@ object MainForm: TMainForm
     Height = 147
     Top = 354
     Width = 1015
-    ActivePage = TabSheet1
+    ActivePage = MessagesTabSheet
     Align = alBottom
     Images = mainImageList
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
@@ -1151,7 +1151,7 @@ object MainForm: TMainForm
           TabOrder = 0
           TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toRightClickSelect]
+          TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
           OnClick = ReportsVTSClick
           OnColumnClick = TreeViewColumnClick
           OnEditing = VTSEditing
@@ -2253,25 +2253,28 @@ object MainForm: TMainForm
     object ClearReportsAction: TAction
       Category = 'Reports'
       Caption = 'Clear reports'
+      Hint = 'Clear reports'
       ImageIndex = 9
       OnExecute = ClearReportsActionExecute
     end
     object RefreshReportsAction: TAction
       Category = 'Reports'
       Caption = 'Refresh'
-      Hint = 'Refresh reports'
+      Hint = 'Generate reports'
       ImageIndex = 51
       OnExecute = RefreshReportsActionExecute
     end
     object ReadReportsAction: TAction
       Category = 'Reports'
       Caption = 'Read reports'
+      Hint = 'Read reports from file'
       ImageIndex = 2
       OnExecute = ReadReportsActionExecute
     end
     object SaveReportAction: TAction
       Category = 'Reports'
       Caption = 'Save reports'
+      Hint = 'Save reports to file'
       ImageIndex = 3
       OnExecute = SaveReportsActionExecute
     end
@@ -9101,12 +9104,26 @@ object MainForm: TMainForm
     left = 606
     top = 282
     object reportLoadLogMessagesMenuItem: TMenuItem
-      Caption = 'Load log messages'
+      Caption = 'Add log records'
       OnClick = reportLoadLogMessagesMenuItemClick
     end
     object reportLoadRefLogMessagesMenuItem: TMenuItem
-      Caption = 'Load reference log records'
+      Caption = 'Add reference log records'
       OnClick = reportLoadRefLogMessagesMenuItemClick
+    end
+    object MenuItem23: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem24: TMenuItem
+      Caption = 'Copy log records to reference'
+      OnClick = MenuItem24Click
+    end
+    object MenuItem25: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem26: TMenuItem
+      Caption = 'Show report details'
+      OnClick = MenuItem26Click
     end
   end
 end

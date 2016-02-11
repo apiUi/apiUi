@@ -66,6 +66,10 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem23 : TMenuItem ;
+    MenuItem24 : TMenuItem ;
+    MenuItem25 : TMenuItem ;
+    MenuItem26 : TMenuItem ;
     reportLoadLogMessagesMenuItem : TMenuItem ;
     reportLoadRefLogMessagesMenuItem : TMenuItem ;
     ReportsPopupMenu : TPopupMenu ;
@@ -547,6 +551,8 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
+    procedure MenuItem24Click (Sender : TObject );
+    procedure MenuItem26Click (Sender : TObject );
     procedure reportLoadRefLogMessagesMenuItemClick (Sender : TObject );
     procedure reportLoadLogMessagesMenuItemClick (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
@@ -1075,7 +1081,8 @@ type
     procedure CheckRpyOrFlt(aBind: TCustomBindable);
     procedure OptionsFromXml(aXml: TXml);
     function LicenseProvider(aRequest: String): String;
-    function ClearLogCommand(aDoRaiseExceptions: Boolean): String;
+    function ClearLogsCommand(aDoRaiseExceptions: Boolean): String;
+    function ClearReportsCommand(aDoRaiseExceptions: Boolean): String;
     function ReactivateCommand: String;
     function QuitCommand(aDoRaiseExceptions: Boolean): String;
     function RestartCommand: String;
@@ -1253,7 +1260,12 @@ type
 
 procedure _ClearLogs ;
 begin
-  MainForm.ClearLogCommand(False);
+  MainForm.ClearLogsCommand(False);
+end;
+
+procedure _ClearReports ;
+begin
+  MainForm.ClearReportsCommand(False);
 end;
 
 procedure _SaveLogs(aContext: TObject; aFileName: String);
@@ -1269,7 +1281,23 @@ begin
   if not Assigned (xProject) then
     raise Exception.Create(Format ('SaveLogs(''%s''); unable to determine context', [aFileName]));
   MainForm.RefreshLog;
-  xProject.SaveMessagesLog(ExpandRelativeFileName(xProject.projectFileName, aFileName));
+  xProject.SaveLogs(ExpandRelativeFileName(xProject.projectFileName, aFileName));
+end;
+
+procedure _SaveReports(aContext: TObject; aFileName: String);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create(Format ('SaveReports(''%s''); unable to determine context', [aFileName]));
+  MainForm.RefreshLog;
+  xProject.SaveReports(ExpandRelativeFileName(xProject.projectFileName, aFileName));
 end;
 
 function AllChecked(Sender: TBaseVirtualTree; aNode: PVirtualNode): Boolean;
@@ -3088,7 +3116,7 @@ begin
   end;
 end;
 
-function TMainForm.ClearLogCommand(aDoRaiseExceptions: Boolean): String;
+function TMainForm.ClearLogsCommand(aDoRaiseExceptions: Boolean): String;
 begin
   result := 'Log cleared ' + se.projectFileName + ' successfully';
   try
@@ -3105,6 +3133,33 @@ begin
       se.AsynchRpyLogs.Clear;
       se.displayedLogs.Clear;
       LogMemo.Text := '';
+    finally
+      ReleaseLock;
+    end;
+  except
+    on E: Exception do
+      if aDoRaiseExceptions then
+        raise
+      else
+        result := E.Message;
+  end;
+end;
+
+function TMainForm.ClearReportsCommand(aDoRaiseExceptions: Boolean): String;
+begin
+  result := 'Reports cleared ' + se.projectFileName + ' successfully';
+  try
+    RefreshLog;
+    AcquireLock;
+    try
+      if not se.IsActive then
+        raise Exception.Create
+          ('Clear report refused because instance of ' + _progName +
+            ' is inactive');
+      ReportsVTS.Clear;
+      ReportsVTS.Header.SortColumn := -1;
+      ReportsVTS.Header.SortDirection := sdAscending;
+      se.displayedReports.Clear;
     finally
       ReleaseLock;
     end;
@@ -6442,7 +6497,8 @@ begin
   se.LogServerMessage := LogServerException;
   se.OnDebugOperationEvent := DebugOperation;
   se.FoundErrorInBuffer := FoundErrorInBuffer;
-  sc.OnClearLogEvent := ClearLogCommand;
+  sc.OnClearLogsEvent := ClearLogsCommand;
+  sc.OnClearReportsEvent := ClearReportsCommand;
   se.OnReactivateEvent := ReactivateCommand;
   sc.OnQuitEvent := QuitCommand;
   se.OnRestartEvent := RestartCommand;
@@ -7523,7 +7579,7 @@ begin
   if SaveFileDialog.Execute then
   begin
     wsdlStubMessagesFileName := SaveFileDialog.FileName;
-    se.SaveMessagesLog(SaveFileDialog.FileName);
+    se.SaveLogs(SaveFileDialog.FileName);
   end;
 end;
 
@@ -10803,8 +10859,9 @@ begin
   try
     AcquireLock;
     try
-      xXml := se.displayedLogs.PrepareCoverageReportAsXml(allOperations,
-        se.ignoreCoverageOn);
+      xXml := se.displayedLogs.PrepareCoverageReportAsXml ( allOperations
+                                                          , se.ignoreCoverageOn
+                                                          );
     finally
       ReleaseLock;
     end;
@@ -11963,16 +12020,23 @@ end;
 procedure TMainForm .RefreshReportsActionExecute (Sender : TObject );
 var
   x, n: Integer;
+  swapCursor: TCursor;
 begin
-  se.AcquireLogLock;
+  swapCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   try
-    n := se.displayedReports.Count;
+    se.AcquireLogLock;
+    try
+      n := se.displayedReports.Count;
+    finally
+      se.ReleaseLogLock;
+    end;
+    for x := 0 to n - 1 do
+      se.displayedReports.ReportItems[x].doReport;
+    ReportsVTS.Invalidate;
   finally
-    se.ReleaseLogLock;
+    Screen.Cursor := swapCursor;
   end;
-  for x := 0 to n - 1 do
-    se.displayedReports.ReportItems[x].doReport;
-  ReportsVTS.Invalidate;
 end;
 
 procedure TMainForm .ReportsVTSClick (Sender : TObject );
@@ -12600,24 +12664,116 @@ begin
   end;
 end;
 
+procedure TMainForm .MenuItem24Click (Sender : TObject );
+var
+  xReport: TReport;
+  SwapCursor: TCursor;
+  xNode: PVirtualNode;
+begin
+  SwapCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    xNode := ReportsVTS.GetFirstSelected;
+    while Assigned (xNode) do
+    begin
+      xReport := NodeToReport(True, ReportsVTS, xNode);
+      try
+        if Assigned (xReport) then
+        try
+          xmlio.SaveStringToFile ( xReport.RefFileName
+                                 , xmlio.ReadStringFromFile (xReport.FileName)
+                                 );
+        except
+          on e: Exception do
+          begin
+            xReport.Message := 'Exception: ' + e.Message;
+            xReport.Status := rsException;
+            ReportsVTS.Invalidate;
+          end;
+        end;
+      finally
+        xReport.Disclaim;
+      end;
+      xNode := ReportsVTS.GetNextSelected(xNode);
+    end;
+  finally
+    Screen.Cursor := SwapCursor;
+  end;
+end;
+
+procedure TMainForm .MenuItem26Click (Sender : TObject );
+var
+  xReport: TReport;
+  SwapCursor: TCursor;
+  xNode: PVirtualNode;
+  xXml: TXml;
+begin
+  SwapCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  xXml := TXml.CreateAsString('selectedReportsDetails','');
+  with xXml do
+  try
+    xNode := ReportsVTS.GetFirstSelected;
+    while Assigned (xNode) do
+    begin
+      xReport := NodeToReport(True, ReportsVTS, xNode);
+      try
+        if Assigned (xReport) then
+        try
+          AddXml(xReport.AsXml);
+        except
+          on e: Exception do
+          begin
+            xReport.Message := 'Exception: ' + e.Message;
+            xReport.Status := rsException;
+            ReportsVTS.Invalidate;
+          end;
+        end;
+      finally
+        xReport.Disclaim;
+      end;
+      xNode := ReportsVTS.GetNextSelected(xNode);
+    end;
+    ShowXml('Report details', xXml);
+  finally
+    xXml.Free;
+    Screen.Cursor := SwapCursor;
+  end;
+end;
+
 procedure TMainForm .reportLoadRefLogMessagesMenuItemClick (Sender : TObject );
 var
   xReport: TReport;
   xLogList: TLogList;
+  SwapCursor: TCursor;
+  xNode: PVirtualNode;
 begin
-  xReport := NodeToReport(True, ReportsVTS, ReportsVTS.FocusedNode);
+  SwapCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   try
-    if Assigned (xReport) then
-    xLogList := TLogList.Create;
-    try
-      se.OpenMessagesLog(xReport.RefFileName, True, False, xLogList);
-      ToAllLogList(xLogList);
-    finally
-      xLogList.Clear;
-      FreeAndNil(xLogList);
+    xNode := ReportsVTS.GetFirstSelected;
+    while Assigned (xNode) do
+    begin
+      xReport := NodeToReport(True, ReportsVTS, xNode);
+      try
+        if Assigned (xReport) then
+        begin
+          xLogList := TLogList.Create;
+          try
+            se.OpenMessagesLog(xReport.RefFileName, True, False, xLogList);
+            ToAllLogList(xLogList);
+          finally
+            xLogList.Clear;
+            FreeAndNil(xLogList);
+          end;
+        end;
+      finally
+        xReport.Disclaim;
+      end;
+      xNode := ReportsVTS.GetNextSelected(xNode);
     end;
   finally
-    xReport.Disclaim;
+    Screen.Cursor := SwapCursor;
   end;
 end;
 
@@ -12625,20 +12781,35 @@ procedure TMainForm .reportLoadLogMessagesMenuItemClick (Sender : TObject );
 var
   xReport: TReport;
   xLogList: TLogList;
+  SwapCursor: TCursor;
+  xNode: PVirtualNode;
 begin
-  xReport := NodeToReport(True, ReportsVTS, ReportsVTS.FocusedNode);
+  SwapCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   try
-    if Assigned (xReport) then
-    xLogList := TLogList.Create;
-    try
-      se.OpenMessagesLog(xReport.FileName, True, False, xLogList);
-      ToAllLogList(xLogList);
-    finally
-      xLogList.Clear;
-      FreeAndNil(xLogList);
+    xNode := ReportsVTS.GetFirstSelected;
+    while Assigned (xNode) do
+    begin
+      xReport := NodeToReport(True, ReportsVTS, xNode);
+      try
+        if Assigned (xReport) then
+        begin
+          xLogList := TLogList.Create;
+          try
+            se.OpenMessagesLog(xReport.FileName, True, False, xLogList);
+            ToAllLogList(xLogList);
+          finally
+            xLogList.Clear;
+            FreeAndNil(xLogList);
+          end;
+        end;
+      finally
+        xReport.Disclaim;
+      end;
+      xNode := ReportsVTS.GetNextSelected(xNode);
     end;
   finally
-    xReport.Disclaim;
+    Screen.Cursor := SwapCursor;
   end;
 end;
 
@@ -12813,7 +12984,9 @@ end;
 initialization
   CoInitialize(nil);
   _WsdlClearLogs := _ClearLogs;
+  _WsdlClearReports := _ClearReports;
   _WsdlSaveLogs := _SaveLogs;
+  _WsdlSaveReports := _SaveReports;
 finalization
   CoUninitialize;
 {$endif}
