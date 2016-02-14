@@ -129,6 +129,7 @@ type
     procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
       const AUsername, APassword: string; var VAuthenticated: Boolean);
     procedure doRegressionReport (aReport: TReport);
+    procedure doCoverageReport (aReport: TReport);
     function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
@@ -6385,6 +6386,51 @@ begin
   VAuthenticated := True; // a friendly server
 end;
 
+procedure TWsdlProject.doCoverageReport (aReport: TReport);
+var
+  xLogList: TLoglist;
+  xXml: TXmlCvrg;
+  x: Integer;
+  df: String;
+begin
+  aReport.Status := rsOk;
+  try
+    xLogList := TLogList.Create;
+    try
+      for x := 0 to displayedReports.Count - 1 do
+        if displayedReports.ReportItems[x].FileName <> '' then
+          OpenMessagesLog (displayedReports.ReportItems[x].FileName, True, False, xLogList);
+      xXml := xLogList.PrepareCoverageReportAsXml ( allOperations
+                                                  , ignoreCoverageOn
+                                                  );
+      try
+        if Assigned (xXml) then
+        begin
+          if xXml.DisplayPercentage(False) = '100' then
+            aReport.Status := rsOk
+          else
+            aReport.Status := rsNok
+        end;
+        aReport.Message := xXml.DisplayPercentage(False)
+                         + '% ('
+                         + xXml.DisplayCoverage(False)
+                         + ')'
+                         ;
+      finally
+        FreeAndNil (xXml);
+      end;
+    finally
+      FreeAndNil (xLogList);
+    end;
+  except
+    on e: Exception do
+    begin
+      aReport.Message := 'Exception: ' + e.Message;
+      aReport.Status := rsException;
+    end;
+  end;
+end;
+
 procedure TWsdlProject.doRegressionReport (aReport: TReport);
 var
   xLogList, xRefLofList: TLoglist;
@@ -6773,6 +6819,8 @@ var
   xReport: TCoverageReport;
 begin
   xReport := TCoverageReport.Create;
+  xReport.OnReport := doCoverageReport;
+  xReport.doReport;
   AcquireLogLock;
   try
     toDisplayReports.AddObject('', xReport);

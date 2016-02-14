@@ -4034,10 +4034,12 @@ function TXmlCvrg.DisplayPercentage (doShowIgnoreds: Boolean): String;
 var
   Denominator: Integer;
 begin
+  result := '';
   Denominator := GreenCounter + RedCounter;
   if doShowIgnoreds then
     Inc (Denominator, OrangeCounter);
-  result := IntToStr(Round(100 * GreenCounter / Denominator));
+  if Denominator <> 0 then
+    result := IntToStr(Round(100 * GreenCounter / Denominator));
 end;
 
 function TXmlCvrg.getDistinctCounter: Integer;
