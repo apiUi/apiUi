@@ -16,36 +16,50 @@ type
   TReportStatus = (rsUndefined, rsOk, rsNok, rsException);
   TReport = class;
   TRegressionReport = class;
+  TCoverageReport = class;
   TReportList = class;
-  TReportRegressionEvent = procedure (aReport: TRegressionReport) of Object;
+  TReportEvent = procedure (aReport: TReport) of Object;
 
   { TReport }
 
   TReport = class(TClaimableObject)
   private
+    fOnReport: TReportEvent;
     function getAsXml : TXml ; virtual; abstract;
     function getStatusAsText : String ;
+    function getTypeAsText: string; virtual; abstract;
     public
       Status: TReportStatus;
       Name, FileName, RefFileName, Message: String;
       timeStamp: TDateTime;
       procedure doReport; virtual abstract;
+      property typeAsText: string read getTypeAsText;
       property statusAsText: String read getStatusAsText;
       procedure FromXml (aXml: TXml);
       property AsXml: TXml read getAsXml;
+      property OnReport: TReportEvent read fOnReport write fOnReport;
   end;
 
   { TRegressionReport }
 
   TRegressionReport = class(TReport)
     private
-      fContext: TObject;
-      fOnReport: TReportRegressionEvent;
       function getAsXml : TXml ; override;
+      function getTypeAsText: string; override;
     public
       procedure doReport; override;
-      property OnReport: TReportRegressionEvent read fOnReport write fOnReport;
       constructor Create (aName, aFileName, aRefFileName: String);
+  end;
+  { TRegressionReport }
+
+  { TCoverageReport }
+
+  TCoverageReport = class(TReport)
+    private
+      function getAsXml : TXml ; override;
+      function getTypeAsText: string; override;
+    public
+      procedure doReport; override;
   end;
 
   { TReportList }
@@ -64,9 +78,43 @@ type
 
 implementation
 
+{ TCoverageReport }
+
+function TCoverageReport.getAsXml: TXml;
+begin
+  result := TXml.CreateAsString('coverageReportDetails','');
+  with result do
+  begin
+    AddXml (TXml.CreateAsString('name', self.name));
+    AddXml (TXml.CreateAsString('status', statusAsText));
+    AddXml (TXml.CreateAsString('message', self.Message));
+    AddXml (TXml.CreateAsTimeStamp('timeStamp', self.timeStamp));
+  end;
+end;
+
+function TCoverageReport.getTypeAsText: string ;
+begin
+  result := 'coverage';
+end;
+
+procedure TCoverageReport.doReport ;
+var
+  xXml: TXml;
+begin
+  Status := rsUndefined;
+  Message := '';
+  if Assigned (fOnReport) then
+    fOnReport(self)
+  else
+  begin
+    Status := rsException;
+    Message := 'Exception: no OnReportEvent for Coverage assigned';
+  end;
+end;
+
 { TReport }
 
-function TReport .getStatusAsText : String ;
+function TReport.getStatusAsText: String ;
 begin
   case Status of
     rsUndefined: result := 'undefined';
@@ -119,10 +167,14 @@ begin
   end;
 end;
 
+function TRegressionReport .getTypeAsText : string ;
+begin
+  result := 'regression';
+end;
+
 procedure TRegressionReport.doReport;
 var
   xXml: TXml;
-  df: String;
 begin
   Status := rsUndefined;
   Message := '';
@@ -131,7 +183,7 @@ begin
   else
   begin
     Status := rsException;
-    Message := 'Exception: no OnReportEvent assigned';
+    Message := 'Exception: no OnReportEvent for Regression assigned';
   end;
 end;
 
@@ -146,7 +198,7 @@ end;
 
 { TReportList }
 
-function TReportList .getAsXml : TXml ;
+function TReportList.getAsXml : TXml ;
 var
   x: Integer;
 begin

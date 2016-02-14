@@ -1114,6 +1114,7 @@ object MainForm: TMainForm
           Top = 1
           Width = 1005
           Align = alClient
+          BottomSpace = 10
           Colors.GridLineColor = clWhite
           Colors.UnfocusedSelectionColor = clCaptionText
           DefaultText = 'Node'
@@ -1132,10 +1133,14 @@ object MainForm: TMainForm
             end          
             item
               Position = 2
-              Text = 'Name'
+              Text = 'Type'
             end          
             item
               Position = 3
+              Text = 'Name'
+            end          
+            item
+              Position = 4
               Text = 'Message'
             end>
           Header.DefaultHeight = 17
@@ -9101,6 +9106,7 @@ object MainForm: TMainForm
     end
   end
   object ReportsPopupMenu: TPopupMenu
+    OnPopup = ReportsPopupMenuPopup
     left = 606
     top = 282
     object reportLoadLogMessagesMenuItem: TMenuItem
@@ -9114,9 +9120,9 @@ object MainForm: TMainForm
     object MenuItem23: TMenuItem
       Caption = '-'
     end
-    object MenuItem24: TMenuItem
+    object ReportCopyLogToReferenceMenuItem: TMenuItem
       Caption = 'Copy log records to reference'
-      OnClick = MenuItem24Click
+      OnClick = ReportCopyLogToReferenceMenuItemClick
     end
     object MenuItem25: TMenuItem
       Caption = '-'

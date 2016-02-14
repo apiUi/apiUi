@@ -556,6 +556,7 @@ procedure SetLogGroupId (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure SaveReports (aObject: TObject; aString: String);
 procedure CreateRegressionReport (aObject: TObject; aName, aFileName, aRefFileName: String);
+procedure CreateCoverageReport (aObject: TObject);
 procedure ClearLogs (aObject: TObject);
 procedure ClearReports (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
@@ -596,6 +597,7 @@ var
   _WsdlSaveLogs: VFunctionOS;
   _WsdlSaveReports: VFunctionOS;
   _WsdlCreateRegressionReport: VFunctionOSSS;
+  _WsdlCreateCoverageReport: VFunctionOV;
   _WsdlClearLogs: VFunctionV;
   _WsdlClearReports: VFunctionV;
   _WsdlAddRemark: VFunctionOS;
@@ -717,6 +719,13 @@ begin
   if not Assigned (_WsdlCreateRegressionReport) then
     raise Exception.Create('No OnCreateRegressionReport event assigned: intention was to compare with: ' + aFileName);
   _WsdlCreateRegressionReport (aObject, aName, aFileName, aRefFileName);
+end;
+
+procedure CreateCoverageReport (aObject: TObject);
+begin
+  if not Assigned (_WsdlCreateCoverageReport) then
+    raise Exception.Create('No OnCreateCoverageReport event assigned');
+  _WsdlCreateCoverageReport (aObject);
 end;
 
 procedure ExecuteScript(aObject: TObject; aString: String);
@@ -3700,6 +3709,7 @@ begin
     BindBeforeFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
+    BindBeforeFunction ('ReportCoverage', @CreateCoverageReport, VFOV, '()');
     BindBeforeFunction ('ReportRegression', @CreateRegressionReport, VFOSSS, '(aName, aFileName, aRefFileName)');
     BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
@@ -3846,6 +3856,7 @@ begin
     BindAfterFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindAfterFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindAfterFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
+    BindAfterFunction ('ReportCoverage', @CreateCoverageReport, VFOV, '()');
     BindAfterFunction ('ReportRegression', @CreateRegressionReport, VFOSSS, '(aName, aFileName, aRefFileName)');
     BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');

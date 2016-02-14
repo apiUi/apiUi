@@ -67,7 +67,7 @@ type
     AbortAction : TAction ;
     Action2 : TAction ;
     MenuItem23 : TMenuItem ;
-    MenuItem24 : TMenuItem ;
+    ReportCopyLogToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
     MenuItem26 : TMenuItem ;
     reportLoadLogMessagesMenuItem : TMenuItem ;
@@ -551,7 +551,7 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
-    procedure MenuItem24Click (Sender : TObject );
+    procedure ReportCopyLogToReferenceMenuItemClick (Sender : TObject );
     procedure MenuItem26Click (Sender : TObject );
     procedure reportLoadRefLogMessagesMenuItemClick (Sender : TObject );
     procedure reportLoadLogMessagesMenuItemClick (Sender : TObject );
@@ -575,6 +575,7 @@ type
     procedure ExportProjectScriptsActionExecute (Sender : TObject );
     procedure ReadReportsActionExecute (Sender : TObject );
     procedure RefreshReportsActionExecute (Sender : TObject );
+    procedure ReportsPopupMenuPopup (Sender : TObject );
     procedure ReportsVTSClick (Sender : TObject );
     procedure ReportsVTSGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
@@ -896,6 +897,7 @@ type
     procedure OperationZoomOnActionUpdate(Sender: TObject);
     procedure ShowLogZoomElementActionExecute(Sender: TObject);
     procedure LogCoverageReportActionUpdate(Sender: TObject);
+    procedure CoverageReport(aList: TLogList);
     procedure LogCoverageReportActionExecute(Sender: TObject);
     procedure LogDisplayedColumnsAddClick(Sender: TObject);
     procedure DisplayedcolumnMenuItemClick(Sender: TObject);
@@ -1022,7 +1024,7 @@ type
     procedure ShowInfoForm(aCaption: String; aInfoString: String);
     procedure UpdateInWsdlCheckBoxes;
     procedure SaveWsdlStubCase(aFileName: String);
-    procedure ShowRegressionReport (aReport: TReport);
+    procedure ShowReport (aReport: TReport);
     procedure OpenStubCase(aFileName: String);
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
@@ -1254,6 +1256,7 @@ type
   TReportColumnEnum =
     ( reportStatusColumn
     , reportDateTimeColumn
+    , reportTypeColumn
     , reportNameColumn
     , reportMessageColumn
     );
@@ -3062,24 +3065,52 @@ begin
   end;
 end;
 
-procedure TMainForm .ShowRegressionReport (aReport : TReport );
-var
-  xLogList, xRefLogList: TLoglist;
-begin
-  xLogList := TLogList.Create;
-  try
-    se.OpenMessagesLog(aReport.FileName, True, False, xLogList);
-    xRefLogList := TLogList.Create;
+procedure TMainForm .ShowReport (aReport : TReport );
+  procedure _ShowCoverageReport;
+  var
+    xList: TLogList;
+    x: Integer;
+  begin
+    xList := TLogList.Create;
     try
-      se.OpenMessagesLog(aReport.RefFileName, True, False, xRefLogList);
-      ShowLogDifferences(xLogList, xRefLogList, aReport.Name);
-      xRefLogList.Clear;
-      xLogList.Clear;
+      for x := 0 to se.displayedReports.Count - 1 do
+      begin
+        if se.displayedReports.ReportItems[x] is TRegressionReport then
+          se.OpenMessagesLog(se.displayedReports.ReportItems[x].FileName, True, False, xList);
+      end;
+      CoverageReport(xList);
     finally
-      FreeAndNil (xRefLogList);
+      xList.Clear;
+      xList.Free;
     end;
+  end;
+  procedure _ShowRegressionReport;
+  var
+    xLogList, xRefLogList: TLoglist;
+  begin
+    xLogList := TLogList.Create;
+    try
+      se.OpenMessagesLog(aReport.FileName, True, False, xLogList);
+      xRefLogList := TLogList.Create;
+      try
+        se.OpenMessagesLog(aReport.RefFileName, True, False, xRefLogList);
+        ShowLogDifferences(xLogList, xRefLogList, aReport.Name);
+        xRefLogList.Clear;
+        xLogList.Clear;
+      finally
+        FreeAndNil (xRefLogList);
+      end;
+    finally
+      FreeAndNil (xLogList);
+    end;
+  end;
+begin
+  Screen.Cursor := crHourGlass;
+  try
+    if aReport is TRegressionReport then _ShowRegressionReport;
+    if aReport is TCoverageReport then _ShowCoverageReport;
   finally
-    FreeAndNil (xLogList);
+    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -10836,7 +10867,7 @@ begin
   ShowMessage(xNotify);
 end;
 
-procedure TMainForm.LogCoverageReportActionExecute(Sender: TObject);
+procedure TMainForm.CoverageReport(aList: TLogList);
   procedure _updateIgnoreCoverageOn(xXml: TXmlCvrg; sl: TStringList);
   var
     X: Integer;
@@ -10851,27 +10882,17 @@ procedure TMainForm.LogCoverageReportActionExecute(Sender: TObject);
 var
   xXml: TXmlCvrg;
   xForm: TShowXmlCoverageForm;
-  SwapCursor: TCursor;
 begin
-  OnlyWhenLicensed;
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  try
-    AcquireLock;
-    try
-      xXml := se.displayedLogs.PrepareCoverageReportAsXml ( allOperations
-                                                          , se.ignoreCoverageOn
-                                                          );
-    finally
-      ReleaseLock;
-    end;
+    xXml := aList.PrepareCoverageReportAsXml ( allOperations
+                                             , se.ignoreCoverageOn
+                                             );
     try
       Application.CreateForm(TShowXmlCoverageForm, xForm);
       try
         xForm.Caption := '' + _progName + ' - Coverage report';
         xForm.Bind := xXml;
         xForm.initialExpandStyle := esOne;
-        Screen.Cursor := SwapCursor;
+        Screen.Cursor := crDefault;
         xForm.ShowModal;
         if xForm.Changed then
         begin
@@ -10888,7 +10909,32 @@ begin
     finally
       FreeAndNil(xXml);
     end;
+end;
+
+
+procedure TMainForm.LogCoverageReportActionExecute(Sender: TObject);
+var
+  xLogList: TLogList;
+  xForm: TShowXmlCoverageForm;
+  SwapCursor: TCursor;
+  x: Integer;
+begin
+  OnlyWhenLicensed;
+  xLogList := TLogList.Create;
+  SwapCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    AcquireLock;
+    try
+      for x := 0 to se.displayedLogs.Count -1 do
+        xLogList.AddObject('', se.displayedLogs.LogItems[x]);
+    finally
+      ReleaseLock;
+    end;
+    CoverageReport(xLogList);
   finally
+    xLogList.Clear;
+    xLogList.Free;
     Screen.Cursor := SwapCursor;
   end;
 end;
@@ -12032,11 +12078,35 @@ begin
       se.ReleaseLogLock;
     end;
     for x := 0 to n - 1 do
+    begin
       se.displayedReports.ReportItems[x].doReport;
-    ReportsVTS.Invalidate;
+      ReportsVTS.Invalidate;
+    end;
   finally
     Screen.Cursor := swapCursor;
   end;
+end;
+
+procedure TMainForm .ReportsPopupMenuPopup (Sender : TObject );
+  function _selectionHasRegressionReport: boolean;
+  var
+    xNode: PVirtualNode;
+    xReport: TReport;
+  begin
+    result := False;
+    xNode := ReportsVTS.GetFirstSelected;
+    while Assigned (xNode)
+    and (not result) do
+    begin
+      xReport := NodeToReport(False, ReportsVTS, xNode);
+      if Assigned (xReport)
+      and (xReport is TRegressionReport) then
+         Result := True;
+      xNode := ReportsVTS.GetNextSelected(xNode);
+    end;
+  end;
+begin
+  ReportCopyLogToReferenceMenuItem.Enabled := _selectionHasRegressionReport;
 end;
 
 procedure TMainForm .ReportsVTSClick (Sender : TObject );
@@ -12045,7 +12115,7 @@ begin
   claimedReport := NodeToReport(True, ReportsVTS, ReportsVTS.FocusedNode);
   try
     case TReportColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
-      reportStatusColumn: ShowRegressionReport (claimedReport);
+      reportStatusColumn: ShowReport (claimedReport);
     end;
   finally
     claimedReport.Disclaim;
@@ -12085,11 +12155,13 @@ var
   xReport: TReport;
 begin
   try
+    CellText := '';
     xReport := NodeToReport(False, Sender, Node);
     if Assigned(xReport) and (xReport is TReport) then
     begin
       case TReportColumnEnum(Column) of
-        reportDateTimeColumn: CellText := DateTimeToStr(xReport.TimeStamp);
+        reportDateTimeColumn: if xReport.timeStamp <> 0 then CellText := DateTimeToStr(xReport.TimeStamp);
+        reportTypeColumn: CellText := xReport.typeAsText;
         reportNameColumn: CellText := xReport.Name;
         reportMessageColumn: CellText := xReport.Message;
       end;
@@ -12664,7 +12736,7 @@ begin
   end;
 end;
 
-procedure TMainForm .MenuItem24Click (Sender : TObject );
+procedure TMainForm .ReportCopyLogToReferenceMenuItemClick (Sender : TObject );
 var
   xReport: TReport;
   SwapCursor: TCursor;
@@ -12678,7 +12750,8 @@ begin
     begin
       xReport := NodeToReport(True, ReportsVTS, xNode);
       try
-        if Assigned (xReport) then
+        if Assigned (xReport)
+        and (xReport is TRegressionReport) then
         try
           xmlio.SaveStringToFile ( xReport.RefFileName
                                  , xmlio.ReadStringFromFile (xReport.FileName)

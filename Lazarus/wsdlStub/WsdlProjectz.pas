@@ -128,7 +128,7 @@ type
       var AReceived: string);
     procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
       const AUsername, APassword: string; var VAuthenticated: Boolean);
-    procedure doRegressionReport (aReport: TRegressionReport);
+    procedure doRegressionReport (aReport: TReport);
     function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
@@ -212,6 +212,7 @@ type
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
     procedure CreateRegressionReport (aName, aFileName, aRefFileName: String);
+    procedure CreateCoverageReport;
     function FindScript (aName: String): TXml;
     procedure ScriptsClear;
     procedure DefaultDisplayMessageData;
@@ -563,6 +564,21 @@ begin
   if not Assigned (xProject) then
     raise Exception.Create(Format ('CreateRegressionReport(''%s''); unable to determine context', [aFileName]));
   xProject.CreateRegressionReport(aName, aFileName, aRefFileName);
+end;
+
+procedure CreateCoverageReport(aContext: TObject);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create('CreateCoverageReport(''%s''); unable to determine context');
+  xProject.CreateCoverageReport;
 end;
 
 procedure ExecuteScript(aContext: TObject; xScriptName: String);
@@ -6369,7 +6385,7 @@ begin
   VAuthenticated := True; // a friendly server
 end;
 
-procedure TWsdlProject.doRegressionReport (aReport : TRegressionReport );
+procedure TWsdlProject.doRegressionReport (aReport: TReport);
 var
   xLogList, xRefLofList: TLoglist;
   xXml: TXml;
@@ -6737,8 +6753,6 @@ end;
 procedure TWsdlProject.CreateRegressionReport (aName, aFileName, aRefFileName: String);
 var
   xReport: TRegressionReport;
-  xXml, dXml: TXml;
-  df: String;
 begin
   xReport := TRegressionReport.Create( aName
                                      , ExpandRelativeFileName(projectFileName, aFileName)
@@ -6746,6 +6760,19 @@ begin
                                      );
   xReport.OnReport := doRegressionReport;
   xReport.doReport;
+  AcquireLogLock;
+  try
+    toDisplayReports.AddObject('', xReport);
+  finally
+    ReleaseLogLock;
+  end;
+end;
+
+procedure TWsdlProject.CreateCoverageReport ;
+var
+  xReport: TCoverageReport;
+begin
+  xReport := TCoverageReport.Create;
   AcquireLogLock;
   try
     toDisplayReports.AddObject('', xReport);
@@ -6935,6 +6962,7 @@ initialization
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
   _WsdlCreateRegressionReport := CreateRegressionReport;
+  _WsdlCreateCoverageReport := CreateCoverageReport;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;
   _WsdlRefuseHttpConnections := doRefuseHttpConnections;
