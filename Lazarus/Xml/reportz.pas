@@ -38,6 +38,7 @@ type
       procedure FromXml (aXml: TXml);
       property AsXml: TXml read getAsXml;
       property OnReport: TReportEvent read fOnReport write fOnReport;
+      constructor Create;
   end;
 
   { TRegressionReport }
@@ -149,6 +150,12 @@ begin
   end;
 end;
 
+constructor TReport .Create ;
+begin
+  inherited Create ;
+  timeStamp := Now;
+end;
+
 { TReport }
 
 { TRegressionReport }
@@ -190,7 +197,6 @@ end;
 constructor TRegressionReport.Create (aName, aFileName, aRefFileName: String);
 begin
   inherited Create;
-  timeStamp := Now;
   Name := aName;
   FileName := aFileName;
   RefFileName := aRefFileName;

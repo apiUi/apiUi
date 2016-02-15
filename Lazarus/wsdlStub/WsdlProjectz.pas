@@ -6392,7 +6392,7 @@ var
   xCvrg: TXmlCvrg;
   x: Integer;
 begin
-  aReport.Status := rsOk;
+  aReport.Status := rsUndefined;
   try
     xLogList := TLogList.Create;
     try
@@ -6437,7 +6437,7 @@ var
   xXml: TXml;
   df: String;
 begin
-  aReport.Status := rsOk;
+  aReport.Status := rsUndefined;
   try
     xLogList := TLogList.Create;
     try
