@@ -32,8 +32,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="10459"/>
-        <CursorPos X="3" Y="10461"/>
+        <TopLine Value="10458"/>
+        <CursorPos X="3" Y="10460"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -598,7 +598,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="WsdlStubMainUnit.pas"/>
         <Caret Line="10894" Column="12" TopLine="10882"/>
@@ -609,8 +609,12 @@
       </Position2>
       <Position3>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="1" Column="1" TopLine="52"/>
+        <Caret Line="10461" Column="3" TopLine="10459"/>
       </Position3>
+      <Position4>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="10460" Column="3" TopLine="10458"/>
+      </Position4>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -620,7 +624,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="WsdlStubMainUnit.pas"/>
-        <Line Value="12470"/>
+        <Line Value="12469"/>
       </Item1>
       <Item2>
         <Kind Value="bpkSource"/>
@@ -634,7 +638,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="WsdlStubMainUnit.pas"/>
-        <Line Value="4057"/>
+        <Line Value="4056"/>
       </Item3>
       <Item4>
         <Kind Value="bpkSource"/>

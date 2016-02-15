@@ -1055,7 +1055,7 @@ object MainForm: TMainForm
         TabOrder = 2
       end
     end
-    object TabSheet1: TTabSheet
+    object ReportTabSheet: TTabSheet
       Caption = 'Reports'
       ClientHeight = 120
       ClientWidth = 1007
@@ -1467,9 +1467,6 @@ object MainForm: TMainForm
           Action = PresentLogMemoTextAction
         end
       end
-    end
-    object TabSheet2: TTabSheet
-      Caption = 'TabSheet2'
     end
   end
   object Splitter1: TSplitter
