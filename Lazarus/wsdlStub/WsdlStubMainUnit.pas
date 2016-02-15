@@ -66,18 +66,31 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    BrowseMqButton : TToolButton ;
+    ExceptionMemo : TMemo ;
+    ExceptionStatusBar : TStatusBar ;
+    ExceptionsVTS : TVirtualStringTree ;
+    logChartToolButton : TToolButton ;
+    LogMemo : TMemo ;
     MenuItem23 : TMenuItem ;
+    DownPageControl : TPageControl ;
+    MessagesStatusBar : TStatusBar ;
+    MessagesTabControl : TTabControl ;
+    MessagesVTS : TVirtualStringTree ;
+    Panel1 : TPanel ;
+    Panel2 : TPanel ;
+    Panel8 : TPanel ;
     ReportCopyLogToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
     MenuItem26 : TMenuItem ;
     reportLoadLogMessagesMenuItem : TMenuItem ;
     reportLoadRefLogMessagesMenuItem : TMenuItem ;
     ReportsPopupMenu : TPopupMenu ;
+    ReportsVTS : TVirtualStringTree ;
     SaveReportAction : TAction ;
     ReadReportsAction : TAction ;
     RefreshReportsAction : TAction ;
     ClearReportsAction : TAction ;
-    ReportsVTS : TVirtualStringTree ;
     ImportProjectScriptsAction : TAction ;
     MenuItem20 : TMenuItem ;
     MenuItem21 : TMenuItem ;
@@ -86,7 +99,6 @@ type
     ExportProjectScriptsAction : TAction ;
     MenuItem1 : TMenuItem ;
     MessagesStatusBar1 : TStatusBar ;
-    Panel1 : TPanel ;
     Panel3 : TPanel ;
     ShowShortCutActionsAction : TAction ;
     EditScriptMenuItem : TMenuItem ;
@@ -111,14 +123,37 @@ type
     MenuItem18 : TMenuItem ;
     MenuItem19 : TMenuItem ;
     ReportsTabSheet : TTabSheet ;
+    Splitter7 : TSplitter ;
+    Splitter8 : TSplitter ;
+    ExceptionTabSheet : TTabSheet ;
     ReportTabSheet : TTabSheet ;
+    MessagesTabSheet : TTabSheet ;
     ToolBar1 : TToolBar ;
+    ToolBar3 : TToolBar ;
+    ToolBar4 : TToolBar ;
+    ToolBar6 : TToolBar ;
+    ToolButton22 : TToolButton ;
+    ToolButton24 : TToolButton ;
+    ToolButton30 : TToolButton ;
+    ToolButton31 : TToolButton ;
+    ToolButton32 : TToolButton ;
+    ToolButton33 : TToolButton ;
+    ToolButton35 : TToolButton ;
+    ToolButton36 : TToolButton ;
+    ToolButton37 : TToolButton ;
     ToolButton39 : TToolButton ;
     ToolButton40 : TToolButton ;
+    ToolButton42 : TToolButton ;
+    ToolButton49 : TToolButton ;
+    ToolButton50 : TToolButton ;
     ToolButton51 : TToolButton ;
     ToolButton52 : TToolButton ;
     ToolButton53 : TToolButton ;
+    ToolButton59 : TToolButton ;
     ToolButton64 : TToolButton ;
+    ToolButton67 : TToolButton ;
+    ToolButton68 : TToolButton ;
+    ToolButton69 : TToolButton ;
     UnhideOperationMenuItem : TMenuItem ;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
@@ -158,15 +193,12 @@ type
     DesignPanel: TPanel;
     alGeneral: TActionList;
     DataTypeDocumentationMemo : TlzRichEdit ;
-    LogMemo: TMemo;
-    MessagesTabControl: TTabControl;
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
     Splitter1 : TSplitter ;
     SQLConnector : TSQLConnector ;
     SQLTransaction : TSQLTransaction ;
     StatusPanel : TPanel ;
-    ToolBar4 : TToolBar ;
     ToolBar9 : TToolBar ;
     ToolButton10 : TToolButton ;
     ToolButton11 : TToolButton ;
@@ -181,12 +213,7 @@ type
     ToolButton27 : TToolButton ;
     ToolButton28 : TToolButton ;
     ToolButton29 : TToolButton ;
-    ToolButton30 : TToolButton ;
-    ToolButton32 : TToolButton ;
     ToolButton34 : TToolButton ;
-    ToolButton36 : TToolButton ;
-    ToolButton37 : TToolButton ;
-    logChartToolButton : TToolButton ;
     ToolButton38 : TToolButton ;
     ToolButton41 : TToolButton ;
     ToolButton44 : TToolButton ;
@@ -274,31 +301,13 @@ type
     OperationDocumentationEdit: TMemo;
     Splitter6: TSplitter;
     ToolButton21: TToolButton;
-    DownPageControl: TPageControl;
-    MessagesTabSheet: TTabSheet;
     ClearLogItemsAction: TAction;
-    ToolBar6: TToolBar;
-    ToolButton22: TToolButton;
-    DocumentationTabSheet: TTabSheet;
-    DocumentationMemo: TMemo;
-    Splitter7: TSplitter;
-    MessagesVTS: TVirtualStringTree;
-    Panel2: TPanel;
-    MessagesStatusBar: TStatusBar;
     NewStubCaseAction: TAction;
     NewStubCase1: TMenuItem;
     N6: TMenuItem;
     ToolButton15: TToolButton;
     ToolButton23: TToolButton;
-    ExceptionTabSheet: TTabSheet;
-    Panel8: TPanel;
-    Splitter8: TSplitter;
-    ExceptionStatusBar: TStatusBar;
-    ExceptionsVTS: TVirtualStringTree;
-    ToolBar3: TToolBar;
-    ToolButton24: TToolButton;
     ClearExceptionsAction: TAction;
-    ExceptionMemo: TMemo;
     OperationReqsTreeView: TVirtualStringTree;
     SelectMessageColumnsAction: TAction;
     CopyGridAction: TAction;
@@ -306,7 +315,6 @@ type
     CopyLogMemoTextToClipBrdAction: TAction;
     ShowHttpReplyAsXMLAction: TAction;
     ShowHttpRequestAsXMLAction: TAction;
-    ToolButton35: TToolButton;
     View1: TMenuItem;
     SchemapropertiesMenuItem: TMenuItem;
     ListofOperationsMenuItem: TMenuItem;
@@ -314,9 +322,7 @@ type
     WsdlInformationMenuItem: TMenuItem;
     WsdlPopulateMenuItem: TMenuItem;
     ReadMessagesAction: TAction;
-    ToolButton31: TToolButton;
     MessagesRegressionAction: TAction;
-    ToolButton33: TToolButton;
     CheckGridFieldsAction: TAction;
     DesignPanelAtTopMenuItem: TMenuItem;
     CopyExceptionToClipboardAction: TAction;
@@ -359,7 +365,6 @@ type
     EditScriptButton: TPanel;
     AfterRequestScriptButton: TPanel;
     FilterLogAction: TAction;
-    ToolButton42: TToolButton;
     FilterLogAction1: TMenuItem;
     ToolButton43: TToolButton;
     ValidateRequestsButton: TToolButton;
@@ -394,7 +399,6 @@ type
     BrowseMqAction: TAction;
     BrowseMqMenuItem: TMenuItem;
     ShowRequestHeaderAsXmlAction: TAction;
-    BrowseMqButton: TToolButton;
     GridPopupMenu: TPopupMenu;
     MessagesToDiskMenuItem: TMenuItem;
     MessagesToDiskAction: TAction;
@@ -407,7 +411,6 @@ type
     AssignExpressionMenuItem: TMenuItem;
     SelectExpectedElementsAction: TAction;
     ToolButton57: TToolButton;
-    ToolButton49: TToolButton;
     ReportUnexpectedValuesAction: TAction;
     WsdlItemChangeDataTypeMenuItem: TMenuItem;
     DataTypeDependingMenu: TMenuItem;
@@ -418,7 +421,6 @@ type
     ConfigListenersAction: TAction;
     ToolButton58: TToolButton;
     readLog4jEventsAction: TAction;
-    ToolButton59: TToolButton;
     readLog4jEventsAction1: TMenuItem;
     Revalidatemessages1: TMenuItem;
     N15: TMenuItem;
@@ -450,7 +452,6 @@ type
     MessagesFromDiskAction: TAction;
     Readmessagesfromdiskfiles1: TMenuItem;
     LogDisplayedColumnsAction: TAction;
-    ToolButton50: TToolButton;
     Displayedcolumns1: TMenuItem;
     startStopButton: TToolButton;
     startAction: TAction;
@@ -492,9 +493,6 @@ type
     OperationZoomOnAction: TAction;
     ShowLogZoomElementAction: TAction;
     LogCoverageReportAction: TAction;
-    ToolButton67: TToolButton;
-    ToolButton68: TToolButton;
-    ToolButton69: TToolButton;
     LogCoverageReportAction1: TMenuItem;
     N26: TMenuItem;
     DisplayedcolumnMenuItem: TMenuItem;
@@ -730,7 +728,6 @@ type
       Node: PVirtualNode; Column: TColumnIndex);
     procedure VTSEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: Boolean);
-    procedure DocumentationMemoChange(Sender: TObject);
     procedure ClearLogItemsActionExecute(Sender: TObject);
     procedure ClearLogItemsActionUpdate(Sender: TObject);
     procedure WsdlInfoPanelResize(Sender: TObject);
@@ -4154,7 +4151,6 @@ end;
 procedure TMainForm.ClearConsole;
 begin
   RemoveMessageColumns;
-  DocumentationMemo.Clear;
   ReportsVTS.Clear;
   ReportsVTS.Header.SortColumn := -1;
   ReportsVTS.Header.SortDirection := sdAscending;
@@ -4247,10 +4243,6 @@ begin
   WsdlPasteFromClipboardMenuItem.Enabled := True;
   WsdlPopulateMenuItem.Enabled := True;
   FreeFormatMemo.ReadOnly := se.IsActive and False;
-  DocumentationMemo.ReadOnly := se.IsActive and False;
-  DocumentationMemo.ParentColor := DocumentationMemo.ReadOnly;
-  if not DocumentationMemo.ParentColor then
-    DocumentationMemo.Color := clWindow;
   if se.IsActive then
   begin
     DownPageControl.ActivePage := MessagesTabSheet;
@@ -5084,15 +5076,12 @@ begin
   xMessage := nil; //avoid warning
   InWsdlTreeView.BeginUpdate;
   try
-    swapNotifyEvent := DocumentationMemo.OnChange;
     swapMemoEvent := FreeFormatMemo.OnChange;
-    DocumentationMemo.OnChange := nil;
     FreeFormatMemo.OnChange := nil;
     try
       Sender.Selected[Sender.FocusedNode] := True;
       NodeToMessage(GridView, GridView.FocusedNode, xMessage);
       InWsdlTreeView.Clear;
-      DocumentationMemo.Clear;
       if Assigned(xMessage) then
       begin
         WsdlOperation.LastMessage := xMessage;
@@ -5120,7 +5109,6 @@ begin
             FillBindTreeView(InWsdlTreeView, xMessage.reqBind, nil);
           end;
         end;
-        DocumentationMemo.Text := xMessage.Documentation;
         if Column > xMessage.CorrelationBindables.Count then
         begin
           swapEvent := GridView.OnFocusChanged;
@@ -5148,7 +5136,6 @@ begin
         end;
       end;
     finally
-      DocumentationMemo.OnChange := swapNotifyEvent;
       FreeFormatMemo.OnChange := swapMemoEvent;
     end;
   finally
@@ -5716,19 +5703,6 @@ begin
     finally
       FreeAndNil(SelectXmlElementForm);
     end;
-end;
-
-procedure TMainForm.DocumentationMemoChange(Sender: TObject);
-var
-  xMessage: TWsdlMessage;
-begin
-  xMessage := nil; //avoid warning
-  NodeToMessage(GridView, GridView.FocusedNode, xMessage);
-  if Assigned(xMessage) then
-  begin
-    xMessage.Documentation := DocumentationMemo.Text;
-    stubChanged := True;
-  end;
 end;
 
 procedure TMainForm.VTSEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -6507,6 +6481,9 @@ var
   xIniFile: TFormIniFile;
   xXml: TXml;
 begin
+
+exit;
+
   DataTypeDocumentationMemo.Color := Self.Color;
   (MessagesTabControl as TWinControl).Color := Self.Color;
   logTabCaption := MessagesTabSheet.Caption;
