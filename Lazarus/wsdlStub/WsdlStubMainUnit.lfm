@@ -934,6 +934,10 @@ object MainForm: TMainForm
       Caption = 'Documentation'
       ClientHeight = 120
       ClientWidth = 1007
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       object DocumentationMemo: TMemo
         Left = 0
         Height = 120
@@ -1055,6 +1059,10 @@ object MainForm: TMainForm
       Caption = 'Reports'
       ClientHeight = 120
       ClientWidth = 1007
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       object ToolBar1: TToolBar
         Left = 0
         Height = 26
@@ -1172,6 +1180,10 @@ object MainForm: TMainForm
       Caption = 'Log'
       ClientHeight = 120
       ClientWidth = 1007
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       object Splitter7: TSplitter
         Left = 268
         Height = 91
@@ -1455,6 +1467,9 @@ object MainForm: TMainForm
           Action = PresentLogMemoTextAction
         end
       end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'TabSheet2'
     end
   end
   object Splitter1: TSplitter

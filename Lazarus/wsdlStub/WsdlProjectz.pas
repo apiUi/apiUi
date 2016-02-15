@@ -6389,9 +6389,8 @@ end;
 procedure TWsdlProject.doCoverageReport (aReport: TReport);
 var
   xLogList: TLoglist;
-  xXml: TXmlCvrg;
+  xCvrg: TXmlCvrg;
   x: Integer;
-  df: String;
 begin
   aReport.Status := rsOk;
   try
@@ -6400,24 +6399,25 @@ begin
       for x := 0 to displayedReports.Count - 1 do
         if displayedReports.ReportItems[x].FileName <> '' then
           OpenMessagesLog (displayedReports.ReportItems[x].FileName, True, False, xLogList);
-      xXml := xLogList.PrepareCoverageReportAsXml ( allOperations
-                                                  , ignoreCoverageOn
-                                                  );
+      xCvrg := xLogList.PrepareCoverageReportAsXml ( allOperations
+                                                   , ignoreCoverageOn
+                                                   );
       try
-        if Assigned (xXml) then
+        if Assigned (xCvrg) then
         begin
-          if xXml.DisplayPercentage(False) = '100' then
+          xCvrg.CalculateCoverage;
+          if xCvrg.DisplayPercentage(False) = '100' then
             aReport.Status := rsOk
           else
             aReport.Status := rsNok
         end;
-        aReport.Message := xXml.DisplayPercentage(False)
+        aReport.Message := xCvrg.DisplayPercentage(False)
                          + '% ('
-                         + xXml.DisplayCoverage(False)
+                         + xCvrg.DisplayCoverage(False)
                          + ')'
                          ;
       finally
-        FreeAndNil (xXml);
+        FreeAndNil (xCvrg);
       end;
     finally
       FreeAndNil (xLogList);

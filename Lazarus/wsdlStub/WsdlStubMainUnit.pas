@@ -112,6 +112,7 @@ type
     MenuItem19 : TMenuItem ;
     ReportsTabSheet : TTabSheet ;
     TabSheet1 : TTabSheet ;
+    TabSheet2 : TTabSheet ;
     ToolBar1 : TToolBar ;
     ToolButton39 : TToolButton ;
     ToolButton40 : TToolButton ;
