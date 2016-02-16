@@ -240,7 +240,6 @@ type
     procedure Clean;
     function ProjectDesignAsString (aMainFileName: String): String;
 {}
-    function ExceptionStackListString(E: Exception): String;
 {}
     function SendOperationMessage ( aOperation: TWsdlOperation
                          ; aMessage: String
@@ -464,6 +463,7 @@ implementation
 
 uses OpenWsdlUnit
    , StrUtils
+   , exceptionUtils
    , SchemaLocationz
    , smtpInterface
    , RegExpr
@@ -6299,37 +6299,6 @@ begin
   end;
 end;
 
-function TWsdlProject.ExceptionStackListString(E: Exception): String;
-{$ifndef FPC}
-var
-  str:TStrings;
-begin
-  result := '';
-  str := TStringList.Create;
-  try
-    jclDebug.JclLastExceptStackListToStrings(str, True, True, True);
-    result := str.Text;
-  finally
-    str.free;
-  end;
-{$else}
-var
-  I: Integer;
-  Frames: PPointer;
-begin
-  result := 'Program exception! ' + LineEnding +
-    'Stacktrace:' + LineEnding + LineEnding;
-  if E <> nil then begin
-    result := result + 'Exception class: ' + E.ClassName + LineEnding +
-    'Message: ' + E.Message + LineEnding;
-  end;
-  result := result + BackTraceStrFunc(ExceptAddr);
-  Frames := ExceptFrames;
-  for I := 0 to ExceptFrameCount - 1 do
-    result := result + LineEnding + BackTraceStrFunc(Frames[I]);
-{$endif}
-end;
-
 procedure TWsdlProject.SMTPServerMailFrom(ASender: TIdSMTPServerContext;
   const AAddress: string; AParams: TStrings; var VAction: TIdMailFromReply);
 begin
@@ -6475,7 +6444,7 @@ begin
   except
     on e: Exception do
     begin
-      aReport.Message := 'Exception: ' + e.Message;
+      aReport.Message := 'Exception: ' + e.Message + ExceptionStackListString(e);
       aReport.Status := rsException;
     end;
   end;

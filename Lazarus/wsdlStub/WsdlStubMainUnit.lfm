@@ -164,6 +164,14 @@ object MainForm: TMainForm
       ImageIndex = 46
       Style = tbsSeparator
     end
+    object ThreadsPanel: TPanel
+      Left = 369
+      Height = 22
+      Top = 2
+      Width = 58
+      BevelOuter = bvNone
+      TabOrder = 0
+    end
   end
   object DesignPanel: TPanel
     Left = 0
@@ -924,10 +932,10 @@ object MainForm: TMainForm
     Height = 147
     Top = 354
     Width = 1015
-    ActivePage = TabSheet1
+    ActivePage = MessagesTabSheet
     Align = alBottom
     Images = mainImageList
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
@@ -7853,8 +7861,8 @@ object MainForm: TMainForm
   object WsdlPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = WsdlPopupMenuPopup
-    left = 432
-    top = 280
+    left = 440
+    top = 282
     object WsdlItemAddMenuItem: TMenuItem
       Caption = 'Add occurrence'
       Bitmap.Data = {
@@ -8531,8 +8539,8 @@ object MainForm: TMainForm
   object LogPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = LogPopupMenuPopup
-    left = 392
-    top = 280
+    left = 384
+    top = 282
     object DisplayedcolumnMenuItem: TMenuItem
       Caption = 'Displayed column...'
       Bitmap.Data = {
@@ -8797,7 +8805,7 @@ object MainForm: TMainForm
     end
   end
   object GridPopupMenu: TPopupMenu
-    left = 464
+    left = 496
     top = 280
     object Revalidatemessages2: TMenuItem
       Action = EnableMessageAction
@@ -8820,8 +8828,8 @@ object MainForm: TMainForm
   end
   object WsdlsPopupMenu: TPopupMenu
     Images = mainImageList
-    left = 512
-    top = 280
+    left = 568
+    top = 282
     object MaintainlistofWSDLfiles1: TMenuItem
       Action = OpenWsdlAction
       Bitmap.Data = {
@@ -9119,8 +9127,8 @@ object MainForm: TMainForm
   end
   object ReportsPopupMenu: TPopupMenu
     OnPopup = ReportsPopupMenuPopup
-    left = 606
-    top = 282
+    left = 640
+    top = 280
     object reportLoadLogMessagesMenuItem: TMenuItem
       Caption = 'Add log records'
       OnClick = reportLoadLogMessagesMenuItemClick

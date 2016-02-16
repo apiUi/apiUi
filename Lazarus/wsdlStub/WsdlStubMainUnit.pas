@@ -87,7 +87,7 @@ type
     MenuItem1 : TMenuItem ;
     MessagesStatusBar1 : TStatusBar ;
     Panel1 : TPanel ;
-    Panel3 : TPanel ;
+    ThreadsPanel : TPanel ;
     ShowShortCutActionsAction : TAction ;
     EditScriptMenuItem : TMenuItem ;
     SchemasToZip : TAction ;
@@ -1230,7 +1230,7 @@ uses
   XmlGridUnit, IpmGridUnit,
   xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, base64, xmlxsdparser,
-  HashUtilz, xmlio, xmlzConsts, AbZipper;
+  HashUtilz, xmlio, xmlzConsts, AbZipper, exceptionUtils;
 {$IFnDEF FPC}
   {$R *.dfm}
 {$ELSE}
@@ -1330,9 +1330,9 @@ var
   xLog: TExceptionLog;
 begin
   if aException then
-    xLog := TExceptionLog.Create (Msg
+    xLog := TExceptionLog.Create ( Msg
                                  + LineEnding
-                                 + se.ExceptionStackListString(nil)
+                                 + ExceptionStackListString(E)
                                  )
   else
     xLog := TExceptionLog.Create (Msg
@@ -3228,7 +3228,7 @@ begin
     end;
   except
     on E: Exception do
-      result := E.Message + LineEnding + LineEnding + se.ExceptionStackListString(e);
+      result := E.Message + LineEnding + LineEnding + ExceptionStackListString(e);
   end;
 end;
 
@@ -3259,7 +3259,7 @@ begin
   except
     on E: Exception do
     begin
-      result := E.Message + LineEnding + LineEnding + se.ExceptionStackListString(e);
+      result := E.Message + LineEnding + LineEnding + ExceptionStackListString(e);
       if aDoRaiseExceptions then
         raise Exception.Create(result);
     end;
@@ -3298,7 +3298,7 @@ begin
     end;
   except
     on E: Exception do
-      result := E.Message + LineEnding + LineEnding + se.ExceptionStackListString(e);
+      result := E.Message + LineEnding + LineEnding + ExceptionStackListString(e);
   end;
 {$else}
   result := 'RestartCommand not implemented';
@@ -3560,7 +3560,7 @@ begin
     else
       ProgressBar.Position := 0;
   end;
-  MessagesStatusBar.Panels.Items[Ord(lpiThreads)].Text
+  ThreadsPanel.Caption
     := IfThen ( NumberOfBlockingThreads + NumberOfNonBlockingThreads = 0
               , ''
               , 'Threads: '
@@ -5161,8 +5161,9 @@ end;
 procedure TMainForm.DeleteMessageActionUpdate(Sender: TObject);
 begin
   with GridView do
-    DeleteMessageAction.Enabled := Assigned(FocusedNode) and not
-      (FocusedNode = GetFirst);
+    DeleteMessageAction.Enabled := Assigned(FocusedNode)
+                               and not (FocusedNode = GetFirst)
+                                 ;
 end;
 
 procedure TMainForm.DeleteMessageActionExecute(Sender: TObject);
@@ -5243,14 +5244,18 @@ procedure TMainForm.MoveUpMessageActionUpdate(Sender: TObject);
 begin
   with GridView do
     MoveUpMessageAction.Enabled := (SelectedCount > 0)
-      and not Selected[GetFirst] and not Selected[GetNext(GetFirst)];
+                               and not Selected[GetFirst]
+                               and not Selected[GetNext(GetFirst)]
+                                 ;
 end;
 
 procedure TMainForm.MoveDownMessageActionUpdate(Sender: TObject);
 begin
   with GridView do
     MoveDownMessageAction.Enabled := (SelectedCount > 0)
-      and not Selected[GetFirst] and not Selected[GetLast];
+                                 and not Selected[GetFirst]
+                                 and not Selected[GetLast]
+                                   ;
 end;
 
 procedure TMainForm.MoveDownMessageActionExecute(Sender: TObject);
@@ -6335,13 +6340,12 @@ end;
 
 procedure TMainForm.SelectMessageColumnsActionUpdate(Sender: TObject);
 begin
-  SelectMessageColumnsAction.Enabled := Assigned(WsdlOperation)
-                                    and (not se.IsActive);
+  SelectMessageColumnsAction.Enabled := Assigned(WsdlOperation);
 end;
 
 procedure TMainForm.SelectMessageColumnsActionExecute(Sender: TObject);
 begin
-  EndEdit;
+  if not InactiveAfterPrompt then Exit;
   Application.CreateForm(TSelectElementsForm, SelectElementsForm);
   try
     GridView.BeginUpdate;
@@ -6905,8 +6909,8 @@ begin
   end;
   ActionComboBoxChange(nil);
   // next loop somehow prevents that an excception is thrown when another tab is choosen (???)
-  for X := 0 to DownPageControl.PageCount - 1 do
-    DownPageControl.ActivePageIndex := X;
+//  for X := 0 to DownPageControl.PageCount - 1 do
+//    DownPageControl.ActivePageIndex := X;
   DownPageControl.ActivePage := DocumentationTabSheet;
   MessagesTabControl.TabIndex := Ord (slRequestBody);
   CheckBoxClick(nil);
@@ -7035,7 +7039,6 @@ procedure TMainForm.CopyGridActionExecute(Sender: TObject);
 var
   xCursor: TCursor;
 begin
-  EndEdit;
   xCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -7048,20 +7051,18 @@ end;
 procedure TMainForm.CopyGridActionUpdate(Sender: TObject);
 begin
   try
-    CopyGridAction.Enabled := Assigned(WsdlOperation) and
-      ((WsdlOperation.CorrelationBindables.Count > 0) or
-        (WsdlOperation.StubAction = saRequest)) and Assigned
-      (GridView.FocusedNode);
+    CopyGridAction.Enabled := Assigned(WsdlOperation)
+                          and Assigned (GridView.FocusedNode)
+                            ;
   except
   end;
 end;
 
 procedure TMainForm.PasteGridActionUpdate(Sender: TObject);
 begin
-  PasteGridAction.Enabled := Assigned(WsdlOperation) and
-    ((WsdlOperation.CorrelationBindables.Count > 0) or
-      (WsdlOperation.StubAction = saRequest)) and Assigned
-    (GridView.FocusedNode);
+  PasteGridAction.Enabled := Assigned(WsdlOperation)
+                         and Assigned (GridView.FocusedNode)
+                           ;
 end;
 
 procedure TMainForm.PasteGridActionExecute(Sender: TObject);
@@ -7070,11 +7071,9 @@ var
   swapColumn: Integer;
   SwapCursor: TCursor;
 begin
-  EndEdit;
   if not ClipBoard.HasFormat(CF_TEXT) then
     raise Exception.Create('Clipboard does not contain text');
-  if se.IsActive then
-    raise Exception.Create('Not allowed while active');
+  if not InactiveAfterPrompt then Exit;
   try
     GridView.BeginUpdate;
     InWsdlTreeView.BeginUpdate;
@@ -7708,7 +7707,15 @@ procedure TMainForm.MessagesFromDiskActionExecute(Sender: TObject);
   end;
 
 begin
-  EndEdit;
+  if WsdlOperation.CorrelationBindables.Count = 0 then
+  begin
+    ShowMessage ( 'Function requires correlation data'
+                + LineEnding
+                + 'Please provide correlation data first'
+                );
+    Exit;
+  end;
+  if not InactiveAfterPrompt then Exit;
   with TOpenDialog.Create(nil) do
     try
       DefaultExt := 'xml';
@@ -7739,9 +7746,7 @@ end;
 
 procedure TMainForm.MessagesFromDiskActionUpdate(Sender: TObject);
 begin
-  MessagesFromDiskAction.Enabled := (not se.IsActive) and Assigned
-    (WsdlOperation) and
-    (WsdlOperation.CorrelationBindables.Count > 0);
+  MessagesFromDiskAction.Enabled := Assigned (WsdlOperation);
 end;
 
 procedure TMainForm.MessagesRegressionActionExecute(Sender: TObject);
@@ -7855,9 +7860,10 @@ end;
 
 procedure TMainForm.CheckGridFieldsActionUpdate(Sender: TObject);
 begin
-  CheckGridFieldsAction.Enabled := (Assigned(WsdlOperation)) and
-    (WsdlOperation.Messages.Count > 0) and
-    (WsdlOperation.Messages.Messages[0].ColumnXmls.Count > 0);
+  CheckGridFieldsAction.Enabled := Assigned(WsdlOperation)
+                               and (WsdlOperation.Messages.Count > 0)
+                               and (WsdlOperation.Messages.Messages[0].ColumnXmls.Count > 0)
+                                 ;
 end;
 
 procedure TMainForm.CheckGridFieldsActionExecute(Sender: TObject);
@@ -9269,7 +9275,7 @@ begin
   if AnsiStartsText('System Error.  Code: 1400.', E.Message) then
     exit; // no idea, no impact
   { }
-  s := se.ExceptionStackListString (E);
+  s := ExceptionStackListString (E);
   { }
   if MessageDlg(E.Message + #10#13#10#13 + 'Show stack trace?', mtError,
     [mbNo, mbYes], 0) = mrYes then
@@ -11196,7 +11202,7 @@ end;
 
 procedure TMainForm.SelectExpectedElementsActionExecute(Sender: TObject);
 begin
-  EndEdit;
+  if not InactiveAfterPrompt then Exit;
   Application.CreateForm(TSelectElementsForm, SelectElementsForm);
   SelectElementsForm.Caption :=
     'Maintain list of elements to check expected values';
@@ -11221,8 +11227,7 @@ end;
 
 procedure TMainForm.SelectExpectedElementsActionUpdate(Sender: TObject);
 begin
-  SelectExpectedElementsAction.Enabled := Assigned(WsdlOperation) and
-    (not se.IsActive);
+  SelectExpectedElementsAction.Enabled := Assigned(WsdlOperation);
 end;
 
 procedure TMainForm.ReportUnexpectedValuesActionUpdate(Sender: TObject);
@@ -12085,8 +12090,10 @@ begin
     begin
       se.displayedReports.ReportItems[x].Status := rsUndefined;
       ReportsVTS.Invalidate;
+      Application.ProcessMessages;
       se.displayedReports.ReportItems[x].doReport;
       ReportsVTS.Invalidate;
+      Application.ProcessMessages;
     end;
   finally
     Screen.Cursor := swapCursor;

@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, tachartlazaruspkg , abbrevia, virtualtreeview_package, lazrichedit,
-  IdExceptionCore, IdStack , WsdlStubMainUnit , Reportz;
+  IdExceptionCore, IdStack , WsdlStubMainUnit , Reportz , exceptionUtils;
 
 {$R *.res}
 

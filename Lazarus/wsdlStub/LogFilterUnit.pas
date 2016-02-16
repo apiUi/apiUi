@@ -1,3 +1,4 @@
+
 unit LogFilterUnit;
 
 {$IFDEF FPC}
@@ -72,7 +73,7 @@ type
     FilterStyleCombo: TComboBox;
     RemarksCheckBox: TCheckBox;
     procedure FormShow(Sender: TObject);
-    procedure DoSetEnabled;
+    procedure SetEnabled (Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -248,7 +249,7 @@ begin
   result := TLogFilterStyle(FilterStyleCombo.ItemIndex);
 end;
 
-procedure TLogFilterForm.DoSetEnabled;
+procedure TLogFilterForm.SetEnabled (Sender: TObject);
   function nEnabledConditions: Integer;
   begin
     result := 0;
@@ -308,7 +309,7 @@ end;
 
 procedure TLogFilterForm.FormShow(Sender: TObject);
 begin
-  DoSetEnabled;
+  SetEnabled (nil);
 end;
 
 function TLogFilterForm.getOperationEnabled: Boolean;

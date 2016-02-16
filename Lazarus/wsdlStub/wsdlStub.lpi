@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9527"/>
+      <BuildNr Value="9540"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -62,7 +62,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -93,6 +93,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Reportz"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="..\Xml\exceptionutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="exceptionUtils"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -135,7 +140,6 @@
       </Item2>
       <Item3>
         <Name Value="EFOpenError"/>
-        <Enabled Value="False"/>
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>

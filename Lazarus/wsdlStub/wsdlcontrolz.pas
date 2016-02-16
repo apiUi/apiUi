@@ -53,6 +53,7 @@ type
 implementation
 
 uses strutils
+   , exceptionUtils
    , wsdlStubHtmlUnit
    , GZIPUtils
    , Logz
@@ -460,7 +461,7 @@ begin
       except
         on e: exception do
         begin
-          AResponseInfo.ContentText := e.Message + #10#13 + se.ExceptionStackListString(e);
+          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
         end;
       end;
