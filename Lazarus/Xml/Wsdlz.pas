@@ -4796,6 +4796,7 @@ var
   nTypeDef, cTypeDef: TXsdDataType;
   xxsd, cxsd: TXsd;
   xPath, xNameSpace, xName, xElementName: String;
+  xIsElementRef: Boolean;
 begin
   xXml := aXml as TXml;
   for x := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[x] do
@@ -4817,9 +4818,8 @@ begin
             xNameSpace := Items.XmlValueByTag['NameSpace'];
             xName := Items.XmlValueByTag['Name'];
             xElementName := Items.XmlValueByTag['ElementName'];
-            if Items.XmlValueByTagDef['References', 'TypeDef'] = 'TypeDef' then
-              cTypeDef := Wsdl.XsdDescr.FindTypeDef(xNameSpace, xName)
-            else
+            xIsElementRef := (Items.XmlValueByTagDef['References', 'TypeDef'] = 'Element');
+            if xIsElementRef then
             begin
               cxsd := Wsdl.XsdDescr.FindElement(xNameSpace, xName, True);
               if not Assigned (cxsd) then
@@ -4832,7 +4832,9 @@ begin
                            );
               if Assigned (cxsd) then
                 cTypeDef := cxsd.sType;
-            end;
+            end
+            else
+              cTypeDef := Wsdl.XsdDescr.FindTypeDef(xNameSpace, xName);
             if not Assigned (cTypeDef) then
               SjowMessage(Format ( 'AddedTypeDefElement [%s], could not find typedef [%s;%s]'
                                  , [ Alias
@@ -4843,10 +4845,15 @@ begin
                          );
             if Assigned (cTypeDef) then
             begin
-              xxsd := xBind.Xsd.AddElementDef ( Wsdl.XsdDescr
+              xXsd := xBind.Xsd.AddElementDef ( Wsdl.XsdDescr
                                               , xElementName
                                               , cTypeDef
                                               );
+              if xIsElementRef then
+              begin
+                xXsd._RefNameSpace := xNameSpace;
+                xXsd._RefElementName := xName;
+              end;
               n := 0;
               _updateTypedef ( n
                              , xPath
