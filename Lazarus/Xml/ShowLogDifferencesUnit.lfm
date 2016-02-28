@@ -68,35 +68,43 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
             Text = 'Correlation'
           end        
           item
-            ImageIndex = 23
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
             Position = 5
             Width = 23
           end        
           item
-            ImageIndex = 22
+            ImageIndex = 23
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
             Position = 6
             Width = 23
           end        
           item
+            ImageIndex = 22
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
             Position = 7
-            Text = 'Time'
+            Width = 23
           end        
           item
             Position = 8
-            Text = 'Service'
+            Width = 23
           end        
           item
             Position = 9
-            Text = 'Operation'
+            Text = 'Time'
           end        
           item
             Position = 10
-            Text = 'Message'
+            Text = 'Service'
           end        
           item
             Position = 11
+            Text = 'Operation'
+          end        
+          item
+            Position = 12
+            Text = 'Message'
+          end        
+          item
+            Position = 13
             Text = 'Correlation'
           end>
         Header.DefaultHeight = 17

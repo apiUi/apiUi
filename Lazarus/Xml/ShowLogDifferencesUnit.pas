@@ -134,19 +134,38 @@ uses
   {$R *.lfm}
 {$ENDIF}
 
+type ceColumnEnum =
+( ceTimeColumn
+, ceServiceColumn
+, ceOperationColumn
+, ceMessageColumn
+, ceCorrelationColumn
+, ceReqIgnores
+, ceReqColumn
+, ceRpyColumn
+, ceRpyIgnores
+, ceRefTimeColumn
+, ceRefServiceColumn
+, ceRefOperationColumn
+, ceRefMessageColumn
+, ceRefCorrelationColumn
+);
+
 procedure TShowLogDifferencesForm.FormCreate(Sender: TObject);
 var
   w5: Integer;
 begin
-  w5 := mainVST.Header.Columns.Items[5].Width;
+  w5 := mainVST.Header.Columns.Items[Ord(ceReqIgnores)].Width;
   with TFormIniFile.Create (Self, True) do
   try
     Restore;
   finally
     Free;
   end;
-  mainVST.Header.Columns.Items[5].Width := w5;
-  mainVST.Header.Columns.Items[6].Width := w5;
+  mainVST.Header.Columns.Items[Ord(ceReqIgnores)].Width := w5;
+  mainVST.Header.Columns.Items[Ord(ceReqColumn)].Width := w5;
+  mainVST.Header.Columns.Items[Ord(ceRpyColumn)].Width := w5;
+  mainVST.Header.Columns.Items[Ord(ceRpyIgnores)].Width := w5;
   mainVST.NodeDataSize := SizeOf (TVSTreeRec);
   Diffs := TA2BStringList.Create;
   CloseAction.ShortCut := VK_ESCAPE;
@@ -289,17 +308,25 @@ var
   xData: PVSTreeRec;
 begin
     xData := mainVST.GetNodeData(Node);
-    case Column of
-    5:
+    case ceColumnEnum(Column) of
+    ceReqIgnores:
+      begin
+        if Assigned (xData.aLog)
+        and Assigned (xData.bLog)
+        and Assigned (xData.reqA2B)
+//        and (not xData.reqA2B.Differs)
+        and xData.reqA2B.Ignored then
+          ImageIndex := 140;
+      end;
+    ceReqColumn:
       begin
         if Assigned (xData.aLog)
         and Assigned (xData.bLog) then
           if Assigned (xData.reqA2B)
-          and xData.reqA2B.Differs then
+          and xData.reqA2B.Differs
+          and (not xData.reqA2B.Ignored) then
           begin
             ImageIndex := 133;
-            if xData.reqA2B.Ignored then
-              ImageIndex := 140;
           end
           else
             ImageIndex := 132
@@ -311,16 +338,15 @@ begin
             ImageIndex := 138;
         end;
       end;
-    6:
+    ceRpyColumn:
       begin
         if Assigned (xData.aLog)
         and Assigned (xData.bLog) then
           if Assigned (xData.rpyA2B)
-          and xData.rpyA2B.Differs then
+          and xData.rpyA2B.Differs
+          and (not xData.rpyA2B.Ignored) then
           begin
             ImageIndex := 133;
-            if xData.rpyA2B.Ignored then
-              ImageIndex := 140;
           end
           else
             ImageIndex := 132
@@ -331,6 +357,15 @@ begin
           else
             ImageIndex := 138;
         end;
+      end;
+    ceRpyIgnores:
+      begin
+        if Assigned (xData.aLog)
+        and Assigned (xData.bLog)
+        and Assigned (xData.rpyA2B)
+//        and (not xData.rpyA2B.Differs)
+        and xData.rpyA2B.Ignored then
+          ImageIndex := 140;
       end;
     end;
 end;
@@ -344,28 +379,37 @@ begin
   try
     CellText := '';
     xData := Sender.GetNodeData(Node);
-    case Column of
-    0: if Assigned (xData.aLog) then
-         CellText := xsdFormatDateTime (xData.aLog.InboundTimeStamp, @TIMEZONE_UTC);
-    1: if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
-         CellText := xData.aLog.Operation.WsdlService.Name;
-    2: if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
-         CellText := xData.aLog.Operation.Name;
-    3: if Assigned (xData.aLog) and Assigned (xData.aLog.Mssg) then
-         CellText := xData.aLog.Mssg.Name;
-    4: if Assigned (xData.aLog) then
-         CellText := xData.aLog.CorrelationId;
-
-    7: if Assigned (xData.bLog) then
-         CellText := xsdFormatDateTime (xData.bLog.InboundTimeStamp, @TIMEZONE_UTC);
-    8: if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
-         CellText := xData.bLog.Operation.WsdlService.Name;
-    9: if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
-         CellText := xData.bLog.Operation.Name;
-   10: if Assigned (xData.bLog) and Assigned (xData.bLog.Mssg) then
-         CellText := xData.bLog.Mssg.Name;
-   11: if Assigned (xData.bLog) then
-         CellText := xData.bLog.CorrelationId;
+    case ceColumnEnum(Column) of
+    ceTimeColumn:
+      if Assigned (xData.aLog) then
+        CellText := xsdFormatDateTime (xData.aLog.InboundTimeStamp, @TIMEZONE_UTC);
+    ceServiceColumn:
+      if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
+        CellText := xData.aLog.Operation.WsdlService.Name;
+    ceOperationColumn:
+      if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
+        CellText := xData.aLog.Operation.Name;
+    ceMessageColumn:
+      if Assigned (xData.aLog) and Assigned (xData.aLog.Mssg) then
+        CellText := xData.aLog.Mssg.Name;
+    ceCorrelationColumn:
+      if Assigned (xData.aLog) then
+        CellText := xData.aLog.CorrelationId;
+    ceRefTimeColumn:
+      if Assigned (xData.bLog) then
+        CellText := xsdFormatDateTime (xData.bLog.InboundTimeStamp, @TIMEZONE_UTC);
+    ceRefServiceColumn:
+      if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
+        CellText := xData.bLog.Operation.WsdlService.Name;
+    ceRefOperationColumn:
+      if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
+        CellText := xData.bLog.Operation.Name;
+   ceRefMessageColumn:
+     if Assigned (xData.bLog) and Assigned (xData.bLog.Mssg) then
+       CellText := xData.bLog.Mssg.Name;
+   ceRefCorrelationColumn:
+     if Assigned (xData.bLog) then
+       CellText := xData.bLog.CorrelationId;
     end;
   except
     on e: Exception do
@@ -449,8 +493,8 @@ procedure TShowLogDifferencesForm.mainVSTClick(Sender: TObject);
 var
   xData: PVSTreeRec;
 begin
-  case mainVST.FocusedColumn of
-  5:
+  case ceColumnEnum(mainVST.FocusedColumn) of
+  ceReqIgnores, ceReqColumn:
     begin
       xData := mainVST.GetNodeData(mainVST.FocusedNode);
       if Assigned(xData.reqA2B)
@@ -472,7 +516,7 @@ begin
         end;
       end;
     end;
-  6:
+  ceRpyIgnores, ceRpyColumn:
     begin
       xData := mainVST.GetNodeData(mainVST.FocusedNode);
       if Assigned (xData.rpyA2B)

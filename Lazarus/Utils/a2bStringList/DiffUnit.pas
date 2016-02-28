@@ -377,7 +377,7 @@ begin
     //DIAGONAL VECTOR IS GREATER THAN OR EQUAL TO A BACKWARD DIAGONAL.
     for D := 1 to MaxD do
     begin
-      application.processmessages;
+//    application.processmessages;
       if fCancelled then
       begin
         result := false;
@@ -548,7 +548,7 @@ begin
     //DIAGONAL VECTOR IS GREATER THAN OR EQUAL TO A BACKWARD DIAGONAL.
     for D := 1 to MaxD do
     begin
-      application.processmessages;
+//    application.processmessages;
       if fCancelled then
       begin
         result := false;
