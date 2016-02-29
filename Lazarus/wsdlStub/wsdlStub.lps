@@ -56,11 +56,12 @@
         <Filename Value="..\Xml\reportz.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Reportz"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="182"/>
         <CursorPos X="28" Y="182"/>
-        <UsageCount Value="151"/>
+        <UsageCount Value="152"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
@@ -70,7 +71,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="26" Y="19"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="34"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\Xpress\ParserClasses.pas"/>
@@ -165,11 +166,10 @@
       <Unit18>
         <Filename Value="..\Xml\Logz.pas"/>
         <UnitName Value="Logz"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="282"/>
-        <CursorPos X="3" Y="282"/>
+        <TopLine Value="666"/>
+        <CursorPos X="16" Y="288"/>
         <UsageCount Value="75"/>
         <Loaded Value="True"/>
       </Unit18>
@@ -656,7 +656,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="28"/>
         <CursorPos X="3" Y="31"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit77>
       <Unit78>
@@ -702,7 +702,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="115"/>
         <CursorPos X="38" Y="124"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit81>
     </Units>
@@ -836,7 +836,7 @@
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="8">
+    <BreakPoints Count="5">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -869,30 +869,9 @@
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Logz.pas"/>
-        <Line Value="491"/>
-      </Item5>
-      <Item6>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Logz.pas"/>
-        <Line Value="507"/>
-      </Item6>
-      <Item7>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Logz.pas"/>
-        <Line Value="553"/>
-      </Item7>
-      <Item8>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
         <Source Value="WsdlStubMainUnit.lfm"/>
         <Line Value="933"/>
-      </Item8>
+      </Item5>
     </BreakPoints>
     <Watches Count="1">
       <Item1>
