@@ -84,7 +84,7 @@ type
     relatesTo: TLog;
     ServiceName, OperationName: String;
     DelayTimeMs, OperationCount: Integer;
-    function CompareKey (aCompareBy: TCompareLogOrderBy): String;
+    function CompareKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TStringList): String;
     function DurationAsString: String;
     function AsXml: TXml;
     function reqBodyAsXml: TXml;
@@ -165,7 +165,7 @@ type
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
                             ; aOrderBy: TCompareLogOrderBy
-                            ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList
+                            ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
                             ): TXml;
 var
   _logzLogGroupId: String;
@@ -186,7 +186,7 @@ end;
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
                             ; aOrderBy: TCompareLogOrderBy
-                            ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList
+                            ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
                             ): TXml;
   function _DetailXml (xLog: TLog): TXml;
   begin
@@ -282,7 +282,7 @@ begin
   a2bInitialize;
   try
     aSortedLogs := TLogList.Create;
-    aSortedLogs.Sorted := True;
+    aSortedLogs.Sorted := (aOrderBy <> clTimeStamp);
     aSortedLogs.Duplicates :=  dupAccept;
     bSortedLogs := TLogList.Create;
     bSortedLogs.Sorted := True;
@@ -292,10 +292,10 @@ begin
     try
       for x := 0 to aLogs.Count - 1 do
         if aLogs.LogItems [x].PassesFilter then
-          aSortedLogs.AddObject (aLogs.LogItems[x].CompareKey(aOrderBy), aLogs.LogItems[x]);
+          aSortedLogs.AddObject (aLogs.LogItems[x].CompareKey(aOrderBy, sortColumns), aLogs.LogItems[x]);
       for x := 0 to bLogs.Count - 1 do
         if bLogs.LogItems [x].PassesFilter then
-          bSortedLogs.AddObject (bLogs.LogItems[x].CompareKey(aOrderBy), bLogs.LogItems[x]);
+          bSortedLogs.AddObject (bLogs.LogItems[x].CompareKey(aOrderBy, sortColumns), bLogs.LogItems[x]);
 
       LA := TStringList.Create;
       LB := TStringList.Create;
@@ -1022,13 +1022,17 @@ begin
   FreeAndNil (Stream);
 end;
 
-function TLog .CompareKey (aCompareBy : TCompareLogOrderBy ): String ;
+function TLog .CompareKey (aCompareBy : TCompareLogOrderBy; aSortColumns: TStringList): String ;
+var
+  xXml, xReqXml, xRpyXml: TXml;
+  x: Integer;
 begin
   result := '';
   if Assigned (Operation) then
   begin
     case aCompareBy of
       clTimeStamp, clCorrelation:
+      begin
         result := LogGroupId
                 + ';'
                 + Operation.WsdlService.Name
@@ -1037,6 +1041,30 @@ begin
                 + ';'
                 + CorrelationId
                 ;
+        if aSortColumns.Count > 0 then
+        begin
+          xReqXml := reqBodyAsXml;
+          xRpyXml := rpyBodyAsXml;
+          try
+            for x := 0 to aSortColumns.Count - 1 do
+            begin
+              result := result + ';';
+              xXml := xReqXml.FindUQXml(aSortColumns.Strings[x]);
+              if Assigned (xXml) then
+                Result := Result + xXml.Value
+              else
+              begin
+                xXml := xRpyXml.FindUQXml(aSortColumns.Strings[x]);
+                if Assigned (xXml) then
+                  Result := Result + xXml.Value
+              end;
+            end;
+          finally
+            FreeAndNil(xReqXml);
+            FreeAndNil(xRpyXml);
+          end;
+        end;
+      end;
       clOperation:
         result := LogGroupId
                 + ';'

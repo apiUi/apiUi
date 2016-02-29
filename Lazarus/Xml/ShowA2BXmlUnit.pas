@@ -26,6 +26,8 @@ type
     IgnoreInclPrefixMenuItem: TMenuItem;
     IgnoreAddingInclPrefixMenuItem: TMenuItem;
     IgnoreRemovingInclPrefixMenuItem: TMenuItem;
+    MenuItem1: TMenuItem;
+    AddToSortColumnsMenuItem: TMenuItem;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -77,6 +79,7 @@ type
     N6: TMenuItem;
     IgnoreRemovingTagMenuItem: TMenuItem;
     IgnoreRemovingFullCaptionMenuItem: TMenuItem;
+    procedure AddToSortColumnsMenuItemClick(Sender: TObject);
     procedure ignoreFullCaptionMenuitemClick(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -140,7 +143,7 @@ type
     procedure SearchDiff (aDown: Boolean);
   public
     RefreshNeeded: Boolean;
-    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     property Xml: TA2BXml read fXml write SetXml;
   end;
 
@@ -283,6 +286,7 @@ var
   aFileName, bFileName, aValue, bValue: String;
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -368,6 +372,7 @@ procedure TShowA2BXmlForm.WriteXmlActionExecute(Sender: TObject);
 var
   xItem: TA2BXml;
 begin
+  xItem := nil;
   if ToolButtonUsed(Sender) then
     NodeToXml (TreeView.GetFirst, xItem)
   else
@@ -400,6 +405,7 @@ procedure TShowA2BXmlForm.CopyActionExecute(Sender: TObject);
 var
   theXml: TA2BXml;
 begin
+  theXml := nil;
   if ToolButtonUsed(Sender) then
     NodeToXml (TreeView.GetFirst, theXml)
   else
@@ -461,6 +467,7 @@ begin
       if (CurItem = nil) // if next object is nil
       or (SearchScope = 1) then // or search entire scope
         CurItem := TreeView.GetFirst; // search from begin
+      Xml := nil;
       while not (CurItem = nil)
       and not Found do
       begin
@@ -496,6 +503,7 @@ var
 begin
   if True then
   begin
+    Xml := nil;
     Found := False;
     CurNode := TreeView.GetNext (TreeView.FocusedNode);
     while not (CurNode = nil)
@@ -540,7 +548,9 @@ procedure TShowA2BXmlForm.TreeViewPopupMenuPopup(Sender: TObject);
   end;
 var
   xXml: TA2BXml;
+  f: Integer;
 begin
+  xXml := nil;
   if TreeView.FocusedNode = nil then exit;
   SelectedXml(xXml);
   ShowInWordMenuItem.Enabled := Assigned (xXml)
@@ -568,6 +578,10 @@ begin
                                         and (not xXml.ThisOneDiffers)
                                         and _hasRepeaters (xXml)
                                             ;
+  AddToSortColumnsMenuItem.Enabled := (Assigned(regressionSortColumns))
+                                   and (xXml.Items.Count = 0)
+                                   and (not regressionSortColumns.Find(xXml.FullUQCaption, f))
+                                     ;
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
   IgnoreInclPrefixMenuItem.Caption := 'Ignore differences on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
@@ -578,6 +592,7 @@ begin
   IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption;
   IgnoreRemovingInclPrefixMenuItem.Caption := 'Ignore removing on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   IgnoreOrderFullCaptionInclPrefixMenuItem.Caption := 'Ignore order for repeating subelements for : ' + xXml.Prefix + '.' + xXml.FullUQCaption;
+  AddToSortColumnsMenuItem.Caption := 'Add ' + xXml.FullUQCaption + ' to list of additional sort elements';
   CopyDataToClipboardMenuItem.Caption := 'Copy tab separated data from '
                                        + xXml.TagName
                                        + ' to clipboard'
@@ -606,6 +621,7 @@ procedure TShowA2BXmlForm.IgnoreAddingFullCaptionMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -618,6 +634,7 @@ procedure TShowA2BXmlForm.IgnoreAddingMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -638,6 +655,7 @@ procedure TShowA2BXmlForm.TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
 var
   Xml: TA2BXml;
 begin
+  Xml := nil;
   if Column > 0 then
   begin
     NodeToXml(Node, Xml);
@@ -684,6 +702,7 @@ begin
   // A handler for the OnGetText event is always needed as it provides
   // the tree with the string data to display.
   // Note that we are always using WideString.
+  Xml := nil;
   NodeToXml(Node, Xml);
     case TColumnEnum(Column) of
     tagColumn:
@@ -731,6 +750,7 @@ procedure TShowA2BXmlForm.XmlTreeViewGetImageIndex(Sender: TBaseVirtualTree;
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   NodeToXml(Node, xXml);
   if not Assigned (xXml) then Exit;
   case TColumnEnum(Column) of
@@ -771,6 +791,7 @@ procedure TShowA2BXmlForm.ignoreDiffrenvesOnMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -842,6 +863,7 @@ procedure TShowA2BXmlForm.IgnoreInclPrefixMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -854,6 +876,7 @@ procedure TShowA2BXmlForm.IgnoreAddingInclPrefixMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -866,6 +889,7 @@ procedure TShowA2BXmlForm.IgnoreRemovingInclPrefixMenuItemClick(Sender: TObject)
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -883,10 +907,24 @@ procedure TShowA2BXmlForm.ignoreFullCaptionMenuitemClick(Sender: TObject);
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
     ignoreDifferencesOn.Add(xXml.FullUQCaption);
+    RefreshNeeded := True;
+  end;
+end;
+
+procedure TShowA2BXmlForm.AddToSortColumnsMenuItemClick(Sender: TObject);
+var
+  xXml: TA2BXml;
+begin
+  xXml := nil;
+  if Assigned (TreeView.FocusedNode) then
+  begin
+    SelectedXml(xXml);
+    regressionSortColumns.Add(xXml.FullUQCaption);
     RefreshNeeded := True;
   end;
 end;
@@ -910,6 +948,7 @@ var
   x, f: Integer;
   sl, sr, snew: TStringList;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -983,6 +1022,7 @@ var
   xXml: TA2BXml;
   Srcs, Dsts, sl: TStringList;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -1031,6 +1071,7 @@ procedure TShowA2BXmlForm.IgnoreRemovingTagMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
@@ -1044,6 +1085,7 @@ procedure TShowA2BXmlForm.IgnoreRemovingFullCaptionMenuItemClick(
 var
   xXml: TA2BXml;
 begin
+  xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);

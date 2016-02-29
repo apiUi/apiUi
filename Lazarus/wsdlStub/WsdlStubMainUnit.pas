@@ -7807,27 +7807,21 @@ begin
   Application.CreateForm(TShowLogDifferencesForm, ShowLogDifferencesForm);
   try
     ShowLogDifferencesForm.aLogs := TLogList.Create;
-    ShowLogDifferencesForm.aLogs.Sorted := (se.CompareLogOrderBy <> clTimeStamp);
-    ShowLogDifferencesForm.aLogs.Duplicates := dupAccept;
     ShowLogDifferencesForm.bLogs := TLogList.Create;
     ShowLogDifferencesForm.ReferenceFileName := aReferenceFileName;
-    ShowLogDifferencesForm.bLogs.Sorted := (se.CompareLogOrderBy <> clTimeStamp);
-    ShowLogDifferencesForm.bLogs.Duplicates := dupAccept;
+    ShowLogDifferencesForm.compareLogOrderBy := se.CompareLogOrderBy;
     try
       for X := 0 to aLogs.Count - 1 do
         if aLogs.LogItems[X].PassesFilter then
-          ShowLogDifferencesForm.aLogs.AddObject ( aLogs.LogItems[X].CompareKey(se.CompareLogOrderBy)
-                                                 , aLogs.LogItems[X]
-                                                 );
+          ShowLogDifferencesForm.aLogs.AddObject ( '', aLogs.LogItems[X]);
       for X := 0 to bLogs.Count - 1 do
         if bLogs.LogItems[X].PassesFilter then
-          ShowLogDifferencesForm.bLogs.AddObject ( bLogs.LogItems[X].CompareKey(se.CompareLogOrderBy)
-                                                 , bLogs.LogItems[X]
-                                                 );
+          ShowLogDifferencesForm.bLogs.AddObject ( '', bLogs.LogItems[X]);
       ShowLogDifferencesForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
       ShowLogDifferencesForm.ignoreAddingon := se.ignoreAddingOn;
       ShowLogDifferencesForm.ignoreRemovingOn := se.ignoreRemovingOn;
       ShowLogDifferencesForm.ignoreOrderOn := se.ignoreOrderOn;
+      ShowLogDifferencesForm.regressionSortColumns := se.regressionSortColumns;
       ShowLogDifferencesForm.ShowModal;
     finally
       ShowLogDifferencesForm.aLogs.Free;

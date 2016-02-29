@@ -58,14 +58,17 @@ type
     procedure UpBtnClick(Sender: TObject);
     procedure DownBtnClick(Sender: TObject);
   private
+    fMaintainOrder : Boolean ;
     IniFile: TFormIniFile;
     fEmptySelectionAllowed: Boolean;
     function getDstCaption: String;
     function getSrcCaption: String;
     procedure setDstCaption(const Value: String);
+    procedure setMaintainOrder (AValue : Boolean );
     procedure setSrcCaption(const Value: String);
     procedure DstExchange (Dir: Integer);
   public
+    property doMaintainOrder: Boolean read fMaintainOrder write setMaintainOrder;
     property EmptySelectionAllowed: Boolean read fEmptySelectionAllowed write fEmptySelectionAllowed;
     property SrcCaption: String read getSrcCaption write setSrcCaption;
     property DstCaption: String read getDstCaption write setDstCaption;
@@ -210,6 +213,7 @@ begin
     if DstList.Selected [x] then
       Selected := x;
   DstList.Items.Exchange (Selected + Dir, Selected);
+  DstList.Selected[Selected] := False;
   DstList.Selected [Selected + Dir] := True;
   SetButtons;
 end;
@@ -239,6 +243,13 @@ begin
   DstLabel.Caption := Value;
 end;
 
+procedure TdualListForm .setMaintainOrder (AValue : Boolean );
+begin
+  fMaintainOrder := AValue ;
+  UpBtn.Visible := AValue;
+  DownBtn.Visible := AValue;
+end;
+
 procedure TdualListForm.setSrcCaption(const Value: String);
 begin
   SrcLabel.Caption := Value;
@@ -252,6 +263,7 @@ end;
 procedure TdualListForm.FormCreate(Sender: TObject);
 begin
   IniFile := TFormIniFile.Create (Self, True);
+  doMaintainOrder := True;
 end;
 
 procedure TdualListForm.FormDestroy(Sender: TObject);

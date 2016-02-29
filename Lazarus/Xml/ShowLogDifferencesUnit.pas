@@ -30,6 +30,7 @@ type
   { TShowLogDifferencesForm }
 
   TShowLogDifferencesForm = class(TForm)
+    MaintainLogOrderColumnsAction : TAction ;
     MaintainIgnoredOrderAction : TAction ;
     Panel1: TPanel;
     ToolBar1: TToolBar;
@@ -37,6 +38,7 @@ type
     mainVST: TVirtualStringTree;
     ActionImageList: TImageList;
     ActionList1: TActionList;
+    ToolButton14 : TToolButton ;
     ToolButton2: TToolButton;
     CheckAllAction: TAction;
     UncheckAllAction: TAction;
@@ -67,6 +69,8 @@ type
     procedure CopyToClipboardActionExecute(Sender: TObject);
     procedure MaintainIgnoredOrderActionExecute (Sender : TObject );
     procedure MaintainIgnoredOrderActionUpdate (Sender : TObject );
+    procedure MaintainLogOrderColumnsActionExecute (Sender : TObject );
+    procedure MaintainLogOrderColumnsActionUpdate (Sender : TObject );
     procedure mainVSTChange (Sender : TBaseVirtualTree ; Node : PVirtualNode );
     procedure PrevDiffActionExecute(Sender: TObject);
     procedure NextDiffActionExecute(Sender: TObject);
@@ -101,7 +105,7 @@ type
   private
     Diffs: TA2BStringList;
     procedure PopulateMain;
-    procedure MaintainList (aCaptian: String; aList: TStringList);
+    procedure MaintainList (aCaptian: String; aList: TStringList; aDoOrder: Boolean);
     procedure CreateA (xData: PVSTreeRec);
     procedure CreateB (xData: PVSTreeRec);
     procedure CompareAB (xData: PVSTreeRec);
@@ -110,7 +114,8 @@ type
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
   public
-    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    compareLogOrderBy: TCompareLogOrderBy;
     aLogs: TLogList;
     bLogs: TLogList;
     ReferenceFileName: String;
@@ -140,10 +145,8 @@ type ceColumnEnum =
 , ceOperationColumn
 , ceMessageColumn
 , ceCorrelationColumn
-, ceReqIgnores
 , ceReqColumn
 , ceRpyColumn
-, ceRpyIgnores
 , ceRefTimeColumn
 , ceRefServiceColumn
 , ceRefOperationColumn
@@ -155,17 +158,15 @@ procedure TShowLogDifferencesForm.FormCreate(Sender: TObject);
 var
   w5: Integer;
 begin
-  w5 := mainVST.Header.Columns.Items[Ord(ceReqIgnores)].Width;
+  w5 := mainVST.Header.Columns.Items[Ord(ceReqColumn)].Width;
   with TFormIniFile.Create (Self, True) do
   try
     Restore;
   finally
     Free;
   end;
-  mainVST.Header.Columns.Items[Ord(ceReqIgnores)].Width := w5;
   mainVST.Header.Columns.Items[Ord(ceReqColumn)].Width := w5;
   mainVST.Header.Columns.Items[Ord(ceRpyColumn)].Width := w5;
-  mainVST.Header.Columns.Items[Ord(ceRpyIgnores)].Width := w5;
   mainVST.NodeDataSize := SizeOf (TVSTreeRec);
   Diffs := TA2BStringList.Create;
   CloseAction.ShortCut := VK_ESCAPE;
@@ -191,10 +192,20 @@ end;
 
 procedure TShowLogDifferencesForm.PopulateMain;
 var
-  a, b, c, i: Integer;
+  a, b, c, i, x: Integer;
   xNode: PVirtualNode;
   xData: PVSTreeRec;
 begin
+  aLogs.Sorted := False;
+  aLogs.Duplicates := dupAccept;
+  for x := 0 to aLogs.Count - 1 do
+    aLogs.Strings[x] := aLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
+  aLogs.Sorted := (compareLogOrderBy <> clTimeStamp);
+  bLogs.Sorted := False;
+  bLogs.Duplicates := dupAccept;
+  for x := 0 to bLogs.Count - 1 do
+    bLogs.Strings[x] := bLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
+  bLogs.Sorted := (compareLogOrderBy <> clTimeStamp);
   a2bInitialize;
   try
     mainVST.BeginUpdate;
@@ -309,15 +320,6 @@ var
 begin
     xData := mainVST.GetNodeData(Node);
     case ceColumnEnum(Column) of
-    ceReqIgnores:
-      begin
-        if Assigned (xData.aLog)
-        and Assigned (xData.bLog)
-        and Assigned (xData.reqA2B)
-//        and (not xData.reqA2B.Differs)
-        and xData.reqA2B.Ignored then
-          ImageIndex := 140;
-      end;
     ceReqColumn:
       begin
         if Assigned (xData.aLog)
@@ -357,15 +359,6 @@ begin
           else
             ImageIndex := 138;
         end;
-      end;
-    ceRpyIgnores:
-      begin
-        if Assigned (xData.aLog)
-        and Assigned (xData.bLog)
-        and Assigned (xData.rpyA2B)
-//        and (not xData.rpyA2B.Differs)
-        and xData.rpyA2B.Ignored then
-          ImageIndex := 140;
       end;
     end;
 end;
@@ -494,7 +487,7 @@ var
   xData: PVSTreeRec;
 begin
   case ceColumnEnum(mainVST.FocusedColumn) of
-  ceReqIgnores, ceReqColumn:
+  ceReqColumn:
     begin
       xData := mainVST.GetNodeData(mainVST.FocusedNode);
       if Assigned(xData.reqA2B)
@@ -507,6 +500,7 @@ begin
           ShowA2BXmlForm.ignoreAddingOn := ignoreAddingon;
           ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
           ShowA2BXmlForm.ignoreOrderOn := ignoreOrderOn;
+          ShowA2BXmlForm.regressionSortColumns := regressionSortColumns;
           ShowA2BXmlForm.Xml := xData.reqA2B;
           ShowA2BXmlForm.ShowModal;
           if ShowA2BXmlForm.RefreshNeeded then
@@ -516,7 +510,7 @@ begin
         end;
       end;
     end;
-  ceRpyIgnores, ceRpyColumn:
+  ceRpyColumn:
     begin
       xData := mainVST.GetNodeData(mainVST.FocusedNode);
       if Assigned (xData.rpyA2B)
@@ -529,6 +523,7 @@ begin
           ShowA2BXmlForm.ignoreAddingOn := ignoreAddingon;
           ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
           ShowA2BXmlForm.ignoreOrderOn := ignoreOrderOn;
+          ShowA2BXmlForm.regressionSortColumns := regressionSortColumns;
           ShowA2BXmlForm.Xml := xData.rpyA2B;
           ShowA2BXmlForm.ShowModal;
           if ShowA2BXmlForm.RefreshNeeded then
@@ -568,7 +563,7 @@ end;
 procedure TShowLogDifferencesForm.MaintainIgnoreAdditionsActionExecute(
   Sender: TObject);
 begin
-  MaintainList(MaintainIgnoreAdditionsAction.Caption, ignoreAddingon);
+  MaintainList(MaintainIgnoreAdditionsAction.Caption, ignoreAddingon, False);
 end;
 
 procedure TShowLogDifferencesForm.MaintainIgnoreAdditionsActionUpdate(
@@ -581,7 +576,7 @@ end;
 procedure TShowLogDifferencesForm.MaintainIgnoreDiffsActionExecute(
   Sender: TObject);
 begin
-  MaintainList(MaintainIgnoreDiffsAction.Caption, ignoreDifferencesOn);
+  MaintainList(MaintainIgnoreDiffsAction.Caption, ignoreDifferencesOn, False);
 end;
 
 procedure TShowLogDifferencesForm.MaintainIgnoreDiffsActionUpdate(
@@ -594,7 +589,7 @@ end;
 procedure TShowLogDifferencesForm.MaintainIgnoredRemovalsActionExecute(
   Sender: TObject);
 begin
-  MaintainList(MaintainIgnoredRemovalsAction.Caption, ignoreRemovingOn);
+  MaintainList(MaintainIgnoredRemovalsAction.Caption, ignoreRemovingOn, False);
 end;
 
 procedure TShowLogDifferencesForm.MaintainIgnoredRemovalsActionUpdate(
@@ -604,15 +599,15 @@ begin
                                   and (ignoreRemovingOn.Count > 0);
 end;
 
-procedure TShowLogDifferencesForm.MaintainList(aCaptian: String; aList: TStringList);
+procedure TShowLogDifferencesForm.MaintainList(aCaptian: String; aList: TStringList; aDoOrder: Boolean);
 var
   Srcs, Dsts: TStringList;
 begin
   Srcs := TStringList.Create;
-  Srcs.Sorted := True;
+  Srcs.Sorted := not aDoOrder;
   Srcs.Duplicates := dupIgnore;
   Dsts := TStringList.Create;
-  Dsts.Sorted := True;
+  Dsts.Sorted := not aDoOrder;
   Dsts.Duplicates := dupIgnore;
   try
     Dsts.Text := aList.Text;
@@ -621,9 +616,10 @@ begin
       dualListForm.Caption := aCaptian;
       dualListForm.DstList.Items.Text := Dsts.Text;
       dualListForm.SrcList.Items.Text := '';
-      dualListForm.DstCaption := 'Ignored elements';
+      dualListForm.DstCaption := 'Selected elements';
       dualListForm.SrcCaption := '';
       duallistForm.EmptySelectionAllowed := True;
+      dualListForm.doMaintainOrder := aDoOrder;
       dualListForm.ShowModal;
       if dualListForm.ModalResult = mrOk then
       begin
@@ -709,7 +705,7 @@ end;
 procedure TShowLogDifferencesForm .MaintainIgnoredOrderActionExecute (
   Sender : TObject );
 begin
-  MaintainList(MaintainIgnoredOrderAction.Caption, ignoreOrderOn);
+  MaintainList(MaintainIgnoredOrderAction.Caption, ignoreOrderOn, False);
 end;
 
 procedure TShowLogDifferencesForm .MaintainIgnoredOrderActionUpdate (Sender : TObject
@@ -717,6 +713,19 @@ procedure TShowLogDifferencesForm .MaintainIgnoredOrderActionUpdate (Sender : TO
 begin
   MaintainIgnoredOrderAction.Enabled := Assigned (ignoreOrderOn)
                                   and (ignoreOrderOn.Count > 0);
+end;
+
+procedure TShowLogDifferencesForm .MaintainLogOrderColumnsActionExecute (
+  Sender : TObject );
+begin
+  MaintainList(MaintainLogOrderColumnsAction.Caption, regressionSortColumns, True);
+end;
+
+procedure TShowLogDifferencesForm .MaintainLogOrderColumnsActionUpdate (
+  Sender : TObject );
+begin
+  MaintainLogOrderColumnsAction.Enabled := Assigned (regressionSortColumns)
+                                       and (regressionSortColumns.Count > 0);
 end;
 
 procedure TShowLogDifferencesForm .mainVSTChange (Sender : TBaseVirtualTree ;
@@ -734,18 +743,18 @@ begin
   xData := mainVST.GetNodeData(Node);
   try
     CellText := '';
-    case Column of
-    0: if Assigned (xData.aLog) then
+    case ceColumnEnum(Column) of
+    ceTimeColumn: if Assigned (xData.aLog) then
          CellText := DateTimeToStr (xData.aLog.InboundTimeStamp);
-    1: if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
+    ceServiceColumn: if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
          CellText := xData.aLog.Operation.WsdlService.Name;
-    2: if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
+    ceOperationColumn: if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
          CellText := xData.aLog.Operation.Name;
-    3: if Assigned (xData.aLog) and Assigned (xData.aLog.Mssg) then
+    ceMessageColumn: if Assigned (xData.aLog) and Assigned (xData.aLog.Mssg) then
          CellText := xData.aLog.Mssg.Name;
-    4: if Assigned (xData.aLog) then
+    ceCorrelationColumn: if Assigned (xData.aLog) then
          CellText := xData.aLog.CorrelationId;
-    5: if Assigned (xData.aLog)
+    ceReqColumn: if Assigned (xData.aLog)
        and Assigned (xData.bLog) then
          if xData.reqA2B.Differs then
            CellText := 'X'
@@ -753,7 +762,7 @@ begin
            CellText := ''
        else
          CellText := 'X';
-    6: if Assigned (xData.aLog)
+    ceRpyColumn: if Assigned (xData.aLog)
        and Assigned (xData.bLog) then
          if xData.rpyA2B.Differs then
            CellText := 'X'
@@ -761,15 +770,15 @@ begin
            CellText := ''
        else
          CellText := 'X';
-    7: if Assigned (xData.bLog) then
+    ceRefTimeColumn: if Assigned (xData.bLog) then
          CellText := DateTimeToStr (xData.bLog.InboundTimeStamp);
-    8: if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
+    ceRefServiceColumn: if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
          CellText := xData.bLog.Operation.WsdlService.Name;
-    9: if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
+    ceRefOperationColumn: if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
          CellText := xData.bLog.Operation.Name;
-   10: if Assigned (xData.bLog) and Assigned (xData.bLog.Mssg) then
+    ceRefMessageColumn: if Assigned (xData.bLog) and Assigned (xData.bLog.Mssg) then
          CellText := xData.bLog.Mssg.Name;
-   11: if Assigned (xData.bLog) then
+    ceRefCorrelationColumn: if Assigned (xData.bLog) then
          CellText := xData.bLog.CorrelationId;
     end;
   except

@@ -410,6 +410,8 @@ procedure TShowXmlForm.OkButtonClick(Sender: TObject);
 var
   oBind, dBind: TCustomBindable;
 begin
+  oBind := nil;
+  dBind := nil;
   TreeView.EndEditNode;
   ModalResult := mrOk;
   if ValidateDuplicatesOn <> '' then

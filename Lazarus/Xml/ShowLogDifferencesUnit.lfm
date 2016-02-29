@@ -1,7 +1,7 @@
 object ShowLogDifferencesForm: TShowLogDifferencesForm
-  Left = 491
+  Left = 515
   Height = 409
-  Top = 182
+  Top = 170
   Width = 777
   Caption = 'wsdlStub - Show Log differences'
   ClientHeight = 409
@@ -68,43 +68,35 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
             Text = 'Correlation'
           end        
           item
-            Position = 5
-            Width = 23
-          end        
-          item
             ImageIndex = 23
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
-            Position = 6
+            Position = 5
             Width = 23
           end        
           item
             ImageIndex = 22
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
+            Position = 6
+            Width = 23
+          end        
+          item
             Position = 7
-            Width = 23
-          end        
-          item
-            Position = 8
-            Width = 23
-          end        
-          item
-            Position = 9
             Text = 'Time'
           end        
           item
-            Position = 10
+            Position = 8
             Text = 'Service'
           end        
           item
-            Position = 11
+            Position = 9
             Text = 'Operation'
           end        
           item
-            Position = 12
+            Position = 10
             Text = 'Message'
           end        
           item
-            Position = 13
+            Position = 11
             Text = 'Correlation'
           end>
         Header.DefaultHeight = 17
@@ -175,7 +167,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Action = MaintainIgnoredRemovalsAction
     end
     object ToolButton3: TToolButton
-      Left = 80
+      Left = 103
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -183,17 +175,17 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 90
+      Left = 113
       Top = 2
       Action = NextDiffAction
     end
     object ToolButton6: TToolButton
-      Left = 113
+      Left = 136
       Top = 2
       Action = PrevDiffAction
     end
     object ToolButton7: TToolButton
-      Left = 136
+      Left = 159
       Top = 2
       Width = 10
       Caption = 'ToolButton7'
@@ -201,12 +193,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 146
+      Left = 169
       Top = 2
       Action = CopyToClipboardAction
     end
     object ToolButton8: TToolButton
-      Left = 169
+      Left = 192
       Top = 2
       Width = 10
       Caption = 'ToolButton8'
@@ -214,12 +206,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 179
+      Left = 202
       Top = 2
       Action = HtmlReportAction
     end
     object ToolButton11: TToolButton
-      Left = 202
+      Left = 225
       Top = 2
       Width = 10
       Caption = 'ToolButton11'
@@ -227,9 +219,14 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 212
+      Left = 235
       Top = 2
       Action = CloseAction
+    end
+    object ToolButton14: TToolButton
+      Left = 80
+      Top = 2
+      Action = MaintainLogOrderColumnsAction
     end
   end
   object ActionImageList: TImageList
@@ -4857,11 +4854,18 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       OnUpdate = MaintainIgnoredRemovalsActionUpdate
     end
     object MaintainIgnoredOrderAction: TAction
-      Caption = 'MaintainIgnoredOrderAction'
+      Caption = 'Maintain additional log sorting elements'
       Hint = 'List of elements with ignored order'
       ImageIndex = 141
       OnExecute = MaintainIgnoredOrderActionExecute
       OnUpdate = MaintainIgnoredOrderActionUpdate
+    end
+    object MaintainLogOrderColumnsAction: TAction
+      Caption = 'Maintain list of additional sort elements'
+      Hint = 'List of additional sort elements'
+      ImageIndex = 141
+      OnExecute = MaintainLogOrderColumnsActionExecute
+      OnUpdate = MaintainLogOrderColumnsActionUpdate
     end
     object NextDiffAction: TAction
       Caption = 'Next difference'

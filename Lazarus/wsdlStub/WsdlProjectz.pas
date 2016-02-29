@@ -168,7 +168,7 @@ type
     mqGetThreads: TStringList;
     Listeners: TListeners;
     doValidateRequests, doValidateReplies, doCheckExpectedValues: Boolean;
-    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     ignoreCoverageOn: TStringList;
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
@@ -1134,6 +1134,8 @@ begin
   ignoreOrderOn.Sorted := True;
   ignoreOrderOn.Duplicates := dupIgnore;
   ignoreOrderOn.OnChange := IgnoreDataChanged;
+  regressionSortColumns := TStringList.Create;
+  regressionSortColumns.OnChange := IgnoreDataChanged;
   ignoreCoverageOn := TStringList.Create;
   xsdElementsWhenRepeatable := 1;
   AsynchRpyLogs := TLogList.Create;
@@ -1274,6 +1276,7 @@ begin
   ignoreAddingOn.Free;
   ignoreRemovingOn.Free;
   ignoreOrderOn.Free;
+  regressionSortColumns.Free;
   ignoreCoverageOn.Free;
   Scripts.Free;
   DisplayedLogColumns.Free;
@@ -2082,6 +2085,7 @@ begin
             AddXml(TXml.CreateAsString('Id', ignoreOrderOn.Strings[x]));
             AddXml(TXml.CreateAsString('Keys', (ignoreOrderOn.Objects[x] as TStringList).Text));
           end;
+      AddXml(TXml.CreateAsString('regressionSortColumns', regressionSortColumns.Text));
       AddXml(TXml.CreateAsString('ignoreCoverageOn', ignoreCoverageOn.Text));
       with AddXml(TXml.CreateAsString('Scripts', '')) do
         CopyDownLine(Scripts, True);
@@ -2185,6 +2189,7 @@ begin
               end;
             end;
           end;
+          regressionSortColumns.Text := xXml.Items.XmlValueByTag ['regressionSortColumns'];
           ignoreCoverageOn.Text := xXml.Items.XmlValueByTag ['ignoreCoverageOn'];
           FocusOperationName := xXml.Items.XmlValueByTag['FocusOperationName'];
           FocusOperationNameSpace := xXml.Items.XmlValueByTag['FocusOperationNameSpace'];
@@ -6422,6 +6427,7 @@ begin
                                     , ignoreAddingOn
                                     , ignoreRemovingOn
                                     , ignoreOrderOn
+                                    , regressionSortColumns
                                     );
         try
           if Assigned (xXml) then with xXml do
@@ -6550,6 +6556,7 @@ begin
                                   , ignoreAddingOn
                                   , ignoreRemovingOn
                                   , ignoreOrderOn
+                                  , regressionSortColumns
                                   );
   finally
     xLogList.Clear;
@@ -6857,6 +6864,7 @@ begin
         Objects[x].Free;
     Clear;
   end;
+  regressionSortColumns.Clear;
   ignoreCoverageOn.Clear;
   DisplayedLogColumns.Clear;
   AsynchRpyLogs.Clear;

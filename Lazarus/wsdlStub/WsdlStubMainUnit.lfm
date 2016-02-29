@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 337
+  Left = 292
   Height = 520
-  Top = 127
+  Top = 144
   Width = 1015
   Caption = 'MainForm'
   ClientHeight = 501
@@ -932,10 +932,10 @@ object MainForm: TMainForm
     Height = 147
     Top = 354
     Width = 1015
-    ActivePage = MessagesTabSheet
+    ActivePage = TabSheet1
     Align = alBottom
     Images = mainImageList
-    TabIndex = 3
+    TabIndex = 2
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
