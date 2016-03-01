@@ -6781,7 +6781,8 @@ begin
                                      , ExpandRelativeFileName(projectFileName, aRefFileName)
                                      );
   xReport.OnReport := doRegressionReport;
-  xReport.doReport;
+  if False then
+    xReport.doReport;
   AcquireLogLock;
   try
     toDisplayReports.AddObject('', xReport);

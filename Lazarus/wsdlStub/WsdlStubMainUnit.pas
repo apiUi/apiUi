@@ -67,6 +67,8 @@ type
     AbortAction : TAction ;
     Action2 : TAction ;
     MenuItem23 : TMenuItem ;
+    MenuItem24: TMenuItem;
+    MenuItem27: TMenuItem;
     ReportCopyLogToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
     MenuItem26 : TMenuItem ;
@@ -551,6 +553,7 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
+    procedure MenuItem27Click(Sender: TObject);
     procedure ReportCopyLogToReferenceMenuItemClick (Sender : TObject );
     procedure MenuItem26Click (Sender : TObject );
     procedure reportLoadRefLogMessagesMenuItemClick (Sender : TObject );
@@ -12740,6 +12743,46 @@ begin
     if Assigned (Choose2StringsForm.ListOfLists) then
       Choose2StringsForm.ListOfLists.Free;
     FreeAndNil(Choose2StringsForm);
+  end;
+end;
+
+procedure TMainForm.MenuItem27Click(Sender: TObject);
+var
+  xReport: TReport;
+  SwapCursor: TCursor;
+  xNode: PVirtualNode;
+begin
+  SwapCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    xNode := ReportsVTS.GetFirstSelected;
+    while Assigned (xNode) do
+    begin
+      xReport := NodeToReport(True, ReportsVTS, xNode);
+      try
+        if Assigned (xReport) then
+        try
+          xReport.Status := rsUndefined;
+          ReportsVTS.InvalidateNode(xNOde);
+          Application.ProcessMessages;
+          xReport.doReport;
+          ReportsVTS.InvalidateNode(xNOde);
+          Application.ProcessMessages;
+        except
+          on e: Exception do
+          begin
+            xReport.Message := 'Exception: ' + e.Message;
+            xReport.Status := rsException;
+            ReportsVTS.InvalidateNode(xNOde);
+          end;
+        end;
+      finally
+        xReport.Disclaim;
+      end;
+      xNode := ReportsVTS.GetNextSelected(xNode);
+    end;
+  finally
+    Screen.Cursor := SwapCursor;
   end;
 end;
 

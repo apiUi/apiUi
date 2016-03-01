@@ -200,12 +200,12 @@ begin
   aLogs.Duplicates := dupAccept;
   for x := 0 to aLogs.Count - 1 do
     aLogs.Strings[x] := aLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
-  aLogs.Sorted := (compareLogOrderBy <> clTimeStamp);
+  aLogs.CustomSort(logz.doOrder);
   bLogs.Sorted := False;
   bLogs.Duplicates := dupAccept;
   for x := 0 to bLogs.Count - 1 do
     bLogs.Strings[x] := bLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
-  bLogs.Sorted := (compareLogOrderBy <> clTimeStamp);
+  bLogs.CustomSort(logz.doOrder);
   a2bInitialize;
   try
     mainVST.BeginUpdate;

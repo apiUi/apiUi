@@ -96,6 +96,8 @@ type
     destructor Destroy; override;
   end;
 
+  { TLogList }
+
   TLogList = class (TClaimableObjectList)
   private
     fNumber: Integer;
@@ -167,6 +169,8 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aOrderBy: TCompareLogOrderBy
                             ; ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
                             ): TXml;
+function doOrder (List: TStringList; Index1, Index2: Integer): Integer;
+
 var
   _logzLogGroupId: String;
 implementation
@@ -176,11 +180,41 @@ uses SysUtils
    , A2BXmlz
    , IpmTypes
    , SwiftUnit
+   , xmlxsdparser
    ;
 
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 begin
   if val then result:=iftrue else result:=iffalse;
+end;
+
+function doOrder(List: TStringList; Index1, Index2: Integer): Integer;
+var
+  t1, t2: String;
+begin
+  result := 0;
+  if List.Strings[Index1] > List.Strings[Index2] then
+  begin
+    result := 1;
+    exit;
+  end;
+  if List.Strings[Index1] < List.Strings[Index2] then
+  begin
+    result := -1;
+    exit;
+  end;
+  t1 := xsdFormatDateTime((List as TLogList).LogItems[Index1].InboundTimeStamp, @TIMEZONE_UTC);
+  t2 := xsdFormatDateTime((List as TLogList).LogItems[Index2].InboundTimeStamp, @TIMEZONE_UTC);
+  if t1 > t2 then
+  begin
+    result := 1;
+    exit;
+  end;
+  if t1 < t2 then
+  begin
+    result := -1;
+    exit;
+  end;
 end;
 
 function logDifferencesAsXml( aLogs, bLogs: TLogList
@@ -282,10 +316,8 @@ begin
   a2bInitialize;
   try
     aSortedLogs := TLogList.Create;
-    aSortedLogs.Sorted := (aOrderBy <> clTimeStamp);
     aSortedLogs.Duplicates :=  dupAccept;
     bSortedLogs := TLogList.Create;
-    bSortedLogs.Sorted := True;
     bSortedLogs.Duplicates :=  dupAccept;
     result := TXml.CreateAsString('logDifferences', '');
     headerXml := result.AddXml(TXml.CreateAsString('Header', ''));
@@ -293,9 +325,11 @@ begin
       for x := 0 to aLogs.Count - 1 do
         if aLogs.LogItems [x].PassesFilter then
           aSortedLogs.AddObject (aLogs.LogItems[x].CompareKey(aOrderBy, sortColumns), aLogs.LogItems[x]);
+      aSortedLogs.CustomSort(logz.doOrder);
       for x := 0 to bLogs.Count - 1 do
         if bLogs.LogItems [x].PassesFilter then
           bSortedLogs.AddObject (bLogs.LogItems[x].CompareKey(aOrderBy, sortColumns), bLogs.LogItems[x]);
+      bSortedLogs.CustomSort(logz.doOrder);
 
       LA := TStringList.Create;
       LB := TStringList.Create;
@@ -441,7 +475,6 @@ var
   xXml, faultXml: TXml;
   oXml, mXml, xXmlCvrg, faultCoverageXml: TXmlCvrg;
   xLog: TLog;
-  xOpr: TWsdlOperation;
 begin
   result := TXmlCvrg.CreateAsString('coverageReport', '');
   // first setup an hyerarchy to count elements
@@ -450,7 +483,6 @@ begin
     Tag := 1;
     for o := 0 to aOperations.Count - 1 do with aOperations.Operations[o] do
     begin
-      xOpr := aOperations.Operations[o];
       if (WsdlService.DescriptionType in [ipmDTXsd, ipmDTWsdl, ipmDTSwiftMT, ipmDTCobol])
       and (not HiddenFromUI) then
       begin
@@ -1022,7 +1054,7 @@ begin
   FreeAndNil (Stream);
 end;
 
-function TLog .CompareKey (aCompareBy : TCompareLogOrderBy; aSortColumns: TStringList): String ;
+function TLog.CompareKey (aCompareBy : TCompareLogOrderBy; aSortColumns: TStringList): String ;
 var
   xXml, xReqXml, xRpyXml: TXml;
   x: Integer;
@@ -1031,7 +1063,7 @@ begin
   if Assigned (Operation) then
   begin
     case aCompareBy of
-      clTimeStamp, clCorrelation:
+      clCorrelation:
       begin
         result := LogGroupId
                 + ';'
