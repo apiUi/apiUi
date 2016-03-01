@@ -13,7 +13,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
     Height = 380
@@ -145,31 +145,29 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     ShowHint = True
     TabOrder = 1
     object ToolButton2: TToolButton
-      Left = 1
-      Height = 22
+      Left = 281
       Top = 2
       Width = 10
       Action = MaintainIgnoreDiffsAction
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 11
+      Left = 291
       Top = 2
       Action = MaintainIgnoreDiffsAction
     end
     object ToolButton12: TToolButton
-      Left = 34
+      Left = 314
       Top = 2
       Action = MaintainIgnoreAdditionsAction
     end
     object ToolButton13: TToolButton
-      Left = 57
+      Left = 337
       Top = 2
       Action = MaintainIgnoredRemovalsAction
     end
     object ToolButton3: TToolButton
-      Left = 103
-      Height = 22
+      Left = 383
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -177,18 +175,17 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 113
+      Left = 393
       Top = 2
       Action = NextDiffAction
     end
     object ToolButton6: TToolButton
-      Left = 136
+      Left = 416
       Top = 2
       Action = PrevDiffAction
     end
     object ToolButton7: TToolButton
-      Left = 159
-      Height = 22
+      Left = 439
       Top = 2
       Width = 10
       Caption = 'ToolButton7'
@@ -196,13 +193,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 169
+      Left = 449
       Top = 2
       Action = CopyToClipboardAction
     end
     object ToolButton8: TToolButton
-      Left = 192
-      Height = 22
+      Left = 472
       Top = 2
       Width = 10
       Caption = 'ToolButton8'
@@ -210,13 +206,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 202
+      Left = 482
       Top = 2
       Action = HtmlReportAction
     end
     object ToolButton11: TToolButton
-      Left = 225
-      Height = 22
+      Left = 505
       Top = 2
       Width = 10
       Caption = 'ToolButton11'
@@ -224,14 +219,60 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 235
+      Left = 515
       Top = 2
       Action = CloseAction
     end
     object ToolButton14: TToolButton
-      Left = 80
+      Left = 360
       Top = 2
       Action = MaintainLogOrderColumnsAction
+    end
+    object CompareLogOrderByComboBox: TComboBox
+      Left = 84
+      Height = 21
+      Top = 2
+      Width = 197
+      ItemHeight = 13
+      ItemIndex = 0
+      Items.Strings = (
+        'As is (timestamp)'
+        'Service, Operation'
+        'Service, Operation, Correlation'
+      )
+      OnChange = CompareLogOrderByComboBoxChange
+      TabOrder = 0
+      Text = 'As is (timestamp)'
+    end
+    object TotalResultButton: TToolButton
+      Left = 11
+      Top = 2
+      Caption = 'TotalResultButton'
+      ImageIndex = 132
+    end
+    object Panel2: TPanel
+      Left = 44
+      Height = 22
+      Top = 2
+      Width = 40
+      Alignment = taRightJustify
+      BevelOuter = bvNone
+      Caption = 'Order:'
+      TabOrder = 1
+    end
+    object ToolButton15: TToolButton
+      Left = 1
+      Top = 2
+      Width = 10
+      Caption = 'ToolButton15'
+      Style = tbsSeparator
+    end
+    object ToolButton16: TToolButton
+      Left = 34
+      Top = 2
+      Width = 10
+      Caption = 'ToolButton16'
+      Style = tbsSeparator
     end
   end
   object ActionImageList: TImageList
@@ -4840,7 +4881,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     object MaintainIgnoreDiffsAction: TAction
       Caption = 'Maintain list of ignored differences'
       Hint = 'List of ignored differences'
-      ImageIndex = 133
+      ImageIndex = 140
       OnExecute = MaintainIgnoreDiffsActionExecute
       OnUpdate = MaintainIgnoreDiffsActionUpdate
     end

@@ -1073,29 +1073,6 @@ begin
                 + ';'
                 + CorrelationId
                 ;
-        if aSortColumns.Count > 0 then
-        begin
-          xReqXml := reqBodyAsXml;
-          xRpyXml := rpyBodyAsXml;
-          try
-            for x := 0 to aSortColumns.Count - 1 do
-            begin
-              result := result + ';';
-              xXml := xReqXml.FindUQXml(aSortColumns.Strings[x]);
-              if Assigned (xXml) then
-                Result := Result + xXml.Value
-              else
-              begin
-                xXml := xRpyXml.FindUQXml(aSortColumns.Strings[x]);
-                if Assigned (xXml) then
-                  Result := Result + xXml.Value
-              end;
-            end;
-          finally
-            FreeAndNil(xReqXml);
-            FreeAndNil(xRpyXml);
-          end;
-        end;
       end;
       clOperation:
         result := LogGroupId
@@ -1111,6 +1088,31 @@ begin
     case aCompareBy of
       clOperation: result := LogGroupId + ';';
       clCorrelation: result := LogGroupId + ';' + CorrelationId;
+    end;
+  end;
+  if (aSortColumns.Count > 0)
+//and (aCompareBy <> clTimeStamp)
+  then
+  begin
+    xReqXml := reqBodyAsXml;
+    xRpyXml := rpyBodyAsXml;
+    try
+      for x := 0 to aSortColumns.Count - 1 do
+      begin
+        result := result + ';';
+        xXml := xReqXml.FindUQXml(aSortColumns.Strings[x]);
+        if Assigned (xXml) then
+          Result := Result + xXml.Value
+        else
+        begin
+          xXml := xRpyXml.FindUQXml(aSortColumns.Strings[x]);
+          if Assigned (xXml) then
+            Result := Result + xXml.Value
+        end;
+      end;
+    finally
+      FreeAndNil(xReqXml);
+      FreeAndNil(xRpyXml);
     end;
   end;
 end;

@@ -1062,8 +1062,8 @@ type
     procedure ShowIpm(aCaption: String; aIpm: TIpmItem);
     procedure ShowTextAsGrid(aCaption, aText: String);
     procedure ShowTextAsXml(aCaption, aText: String);
-    procedure ShowLogDifferences(aLogs, bLogs: TLogList;
-      aReferenceFileName: String);
+    function ShowLogDifferences(aLogs, bLogs: TLogList;
+      aReferenceFileName: String): TReportStatus;
     procedure CreateEnvironmentSubMenuItems;
     procedure CreateScriptsSubMenuItems;
     procedure SetEnvironmentClick(Sender: TObject);
@@ -3068,7 +3068,7 @@ begin
   end;
 end;
 
-procedure TMainForm .ShowReport (aReport : TReport );
+procedure TMainForm.ShowReport (aReport : TReport);
   procedure _ShowCoverageReport;
   var
     xList: TLogList;
@@ -3097,7 +3097,7 @@ procedure TMainForm .ShowReport (aReport : TReport );
       xRefLogList := TLogList.Create;
       try
         se.OpenMessagesLog(aReport.RefFileName, True, False, xRefLogList);
-        ShowLogDifferences(xLogList, xRefLogList, aReport.Name);
+        aReport.Status := ShowLogDifferences(xLogList, xRefLogList, aReport.Name);
         xRefLogList.Clear;
         xLogList.Clear;
       finally
@@ -7793,7 +7793,6 @@ begin
       end;
 }
       ShowLogDifferences(se.displayedLogs, xLogList, wsdlStubMessagesFileName);
-      UpdateCaption;
     finally
       xLogList.Clear;
       FreeAndNil(xLogList);
@@ -7802,11 +7801,12 @@ begin
   end;
 end;
 
-procedure TMainForm.ShowLogDifferences(aLogs, bLogs: TLogList;
-  aReferenceFileName: String);
+function TMainForm.ShowLogDifferences(aLogs, bLogs: TLogList;
+  aReferenceFileName: String): TReportStatus;
 var
   X: Integer;
 begin
+  result := rsUndefined;
   Application.CreateForm(TShowLogDifferencesForm, ShowLogDifferencesForm);
   try
     ShowLogDifferencesForm.aLogs := TLogList.Create;
@@ -7826,11 +7826,21 @@ begin
       ShowLogDifferencesForm.ignoreOrderOn := se.ignoreOrderOn;
       ShowLogDifferencesForm.regressionSortColumns := se.regressionSortColumns;
       ShowLogDifferencesForm.ShowModal;
+      if ShowLogDifferencesForm.compareLogOrderBy <> se.CompareLogOrderBy then
+      begin
+        se.CompareLogOrderBy := ShowLogDifferencesForm.compareLogOrderBy;
+        stubChanged := True;
+      end;
+      if ShowLogDifferencesForm.differencesFound then
+        result := rsNok
+      else
+        Result := rsOk;
     finally
       ShowLogDifferencesForm.aLogs.Free;
       ShowLogDifferencesForm.bLogs.Free;
     end;
   finally
+    UpdateCaption;
     FreeAndNil(ShowLogDifferencesForm);
   end;
 end;
@@ -12127,6 +12137,7 @@ begin
     case TReportColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
       reportStatusColumn: ShowReport (claimedReport);
     end;
+    ReportsVTS.InvalidateNode(ReportsVTS.FocusedNode);
   finally
     claimedReport.Disclaim;
   end;
@@ -12874,6 +12885,17 @@ begin
   SwapCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
+    se.AcquireLogLock;
+    try
+      while se.displayedLogs.Count > 0 do
+      begin
+        MessagesVTS.DeleteNode(MessagesVTS.GetFirst);
+        se.displayedLogs.LogItems[0].displayRef := nil;
+        se.displayedLogs.Delete(0);
+      end;
+    finally
+      se.ReleaseLogLock;
+    end;
     xNode := ReportsVTS.GetFirstSelected;
     while Assigned (xNode) do
     begin
@@ -12910,6 +12932,17 @@ begin
   SwapCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
+    se.AcquireLogLock;
+    try
+      while se.displayedLogs.Count > 0 do
+      begin
+        MessagesVTS.DeleteNode(MessagesVTS.GetFirst);
+        se.displayedLogs.LogItems[0].displayRef := nil;
+        se.displayedLogs.Delete(0);
+      end;
+    finally
+      se.ReleaseLogLock;
+    end;
     xNode := ReportsVTS.GetFirstSelected;
     while Assigned (xNode) do
     begin

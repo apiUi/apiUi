@@ -12,9 +12,9 @@ uses
 {$ELSE}
   LCLIntf, LCLType,
 {$ENDIF}
-  SysUtils , Classes , Graphics , Controls , Forms ,
+  SysUtils , Classes , Graphics , Controls , Forms , Dialogs,
   ExtCtrls , VirtualTrees , FileUtil ,
-  FormIniFilez , ComCtrls , ActnList , Logz , a2bStringListUnit ,
+  FormIniFilez , ComCtrls , ActnList , StdCtrls , Logz , a2bStringListUnit ,
   Xmlz , A2BXmlz;
 
 type
@@ -30,15 +30,20 @@ type
   { TShowLogDifferencesForm }
 
   TShowLogDifferencesForm = class(TForm)
+    CompareLogOrderByComboBox : TComboBox ;
     MaintainLogOrderColumnsAction : TAction ;
     MaintainIgnoredOrderAction : TAction ;
     Panel1: TPanel;
+    Panel2 : TPanel ;
     ToolBar1: TToolBar;
     leftPanel: TPanel;
     mainVST: TVirtualStringTree;
     ActionImageList: TImageList;
     ActionList1: TActionList;
     ToolButton14 : TToolButton ;
+    ToolButton15 : TToolButton ;
+    ToolButton16 : TToolButton ;
+    TotalResultButton : TToolButton ;
     ToolButton2: TToolButton;
     CheckAllAction: TAction;
     UncheckAllAction: TAction;
@@ -64,6 +69,7 @@ type
     ToolButton13: TToolButton;
     MaintainIgnoreAdditionsAction: TAction;
     MaintainIgnoredRemovalsAction: TAction;
+    procedure CompareLogOrderByComboBoxChange (Sender : TObject );
     procedure HtmlReportActionExecute(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure CopyToClipboardActionExecute(Sender: TObject);
@@ -104,6 +110,8 @@ type
     procedure MaintainIgnoredRemovalsActionExecute(Sender: TObject);
   private
     Diffs: TA2BStringList;
+    fCompareLogOrderBy : TCompareLogOrderBy ;
+    fDiffsFound : Boolean ;
     procedure PopulateMain;
     procedure MaintainList (aCaptian: String; aList: TStringList; aDoOrder: Boolean);
     procedure CreateA (xData: PVSTreeRec);
@@ -113,12 +121,14 @@ type
     procedure CopyGridOnGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
+    procedure setCompareLogOrderBy (AValue : TCompareLogOrderBy );
   public
     ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
-    compareLogOrderBy: TCompareLogOrderBy;
     aLogs: TLogList;
     bLogs: TLogList;
     ReferenceFileName: String;
+    property compareLogOrderBy: TCompareLogOrderBy read fCompareLogOrderBy write setCompareLogOrderBy;
+    property differencesFound: Boolean read fDiffsFound;
   end;
 
 var
@@ -196,26 +206,86 @@ var
   xNode: PVirtualNode;
   xData: PVSTreeRec;
 begin
-  aLogs.Sorted := False;
-  aLogs.Duplicates := dupAccept;
-  for x := 0 to aLogs.Count - 1 do
-    aLogs.Strings[x] := aLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
-  aLogs.CustomSort(logz.doOrder);
-  bLogs.Sorted := False;
-  bLogs.Duplicates := dupAccept;
-  for x := 0 to bLogs.Count - 1 do
-    bLogs.Strings[x] := bLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
-  bLogs.CustomSort(logz.doOrder);
-  a2bInitialize;
+  Screen.Cursor := crHourGlass;
+  TotalResultButton.ImageIndex := 131;
+  fDiffsFound := False;
+  Application.ProcessMessages;
   try
-    mainVST.BeginUpdate;
+    aLogs.Sorted := False;
+    aLogs.Duplicates := dupAccept;
+    for x := 0 to aLogs.Count - 1 do
+      aLogs.Strings[x] := aLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
+    aLogs.CustomSort(logz.doOrder);
+    bLogs.Sorted := False;
+    bLogs.Duplicates := dupAccept;
+    for x := 0 to bLogs.Count - 1 do
+      bLogs.Strings[x] := bLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
+    bLogs.CustomSort(logz.doOrder);
+    a2bInitialize;
     try
-      mainVST.Clear;
-      Diffs.Execute(aLogs, bLogs);
-      a := 0; b := 0;
-      for c := 0 to Diffs.ChangeCount - 1 do
-      begin
-        while a < Diffs.Changes[c].x do
+      mainVST.BeginUpdate;
+      try
+        mainVST.Clear;
+        Diffs.Execute(aLogs, bLogs);
+        a := 0; b := 0;
+        for c := 0 to Diffs.ChangeCount - 1 do
+        begin
+          while a < Diffs.Changes[c].x do
+          begin
+            xNode := mainVST.AddChild(nil,nil);
+            xData := mainVST.GetNodeData(xNode);
+            xData.aLog := aLogs.LogItems[a];
+            xData.bLog := bLogs.LogItems[b];
+            xData.Match := True;
+            CompareAB(xData);
+            inc(a); inc(b);
+          end;
+          if Diffs.Changes[c].Kind = ckAdd then
+          begin
+            for i := b to b + Diffs.Changes[c].Range - 1 do
+            begin
+              xNode := mainVST.AddChild(nil,nil);
+              xData := mainVST.GetNodeData(xNode);
+              xData.bLog := bLogs.LogItems[b];
+              CreateB(xData);
+              inc(b);
+            end;
+          end
+          else
+          begin
+            if Diffs.Changes[c].Kind = ckDelete then
+            begin
+              for i := a to a + Diffs.Changes[c].Range - 1 do
+              begin
+                xNode := mainVST.AddChild(nil,nil);
+                xData := mainVST.GetNodeData(xNode);
+                xData.aLog := aLogs.LogItems[a];
+                CreateA(xData);
+                inc(a);
+              end;
+            end
+            else
+            begin
+              for i := a to a + Diffs.Changes[c].Range - 1 do
+              begin
+                xNode := mainVST.AddChild(nil,nil);
+                xData := mainVST.GetNodeData(xNode);
+                xData.aLog := aLogs.LogItems[a];
+                CreateA(xData);
+                inc(a);
+              end;
+              for i := b to b + Diffs.Changes[c].Range - 1 do
+              begin
+                xNode := mainVST.AddChild(nil,nil);
+                xData := mainVST.GetNodeData(xNode);
+                xData.bLog := bLogs.LogItems[b];
+                CreateB(xData);
+                inc(b);
+              end;
+            end;
+          end;
+        end;
+        while (a < aLogs.Count) and (b < bLogs.Count) do
         begin
           xNode := mainVST.AddChild(nil,nil);
           xData := mainVST.GetNodeData(xNode);
@@ -225,84 +295,37 @@ begin
           CompareAB(xData);
           inc(a); inc(b);
         end;
-        if Diffs.Changes[c].Kind = ckAdd then
+        while (a < aLogs.Count) do
         begin
-          for i := b to b + Diffs.Changes[c].Range - 1 do
-          begin
-            xNode := mainVST.AddChild(nil,nil);
-            xData := mainVST.GetNodeData(xNode);
-            xData.bLog := bLogs.LogItems[b];
-            CreateB(xData);
-            inc(b);
-          end;
-        end
-        else
-        begin
-          if Diffs.Changes[c].Kind = ckDelete then
-          begin
-            for i := a to a + Diffs.Changes[c].Range - 1 do
-            begin
-              xNode := mainVST.AddChild(nil,nil);
-              xData := mainVST.GetNodeData(xNode);
-              xData.aLog := aLogs.LogItems[a];
-              CreateA(xData);
-              inc(a);
-            end;
-          end
-          else
-          begin
-            for i := a to a + Diffs.Changes[c].Range - 1 do
-            begin
-              xNode := mainVST.AddChild(nil,nil);
-              xData := mainVST.GetNodeData(xNode);
-              xData.aLog := aLogs.LogItems[a];
-              CreateA(xData);
-              inc(a);
-            end;
-            for i := b to b + Diffs.Changes[c].Range - 1 do
-            begin
-              xNode := mainVST.AddChild(nil,nil);
-              xData := mainVST.GetNodeData(xNode);
-              xData.bLog := bLogs.LogItems[b];
-              CreateB(xData);
-              inc(b);
-            end;
-          end;
+          xNode := mainVST.AddChild(nil,nil);
+          xData := mainVST.GetNodeData(xNode);
+          xData.aLog := aLogs.LogItems[a];
+          CreateA(xData);
+          inc(a);
         end;
+        while (b < bLogs.Count) do
+        begin
+          xNode := mainVST.AddChild(nil,nil);
+          xData := mainVST.GetNodeData(xNode);
+          xData.bLog := bLogs.LogItems[a];
+          CreateB(xData);
+          inc(b);
+        end;
+        mainVST.FocusedNode := mainVST.GetFirst;
+        mainVST.SetFocus;
+      finally
+        mainVST.EndUpdate;
       end;
-      while (a < aLogs.Count) and (b < bLogs.Count) do
-      begin
-        xNode := mainVST.AddChild(nil,nil);
-        xData := mainVST.GetNodeData(xNode);
-        xData.aLog := aLogs.LogItems[a];
-        xData.bLog := bLogs.LogItems[b];
-        xData.Match := True;
-        CompareAB(xData);
-        inc(a); inc(b);
-      end;
-      while (a < aLogs.Count) do
-      begin
-        xNode := mainVST.AddChild(nil,nil);
-        xData := mainVST.GetNodeData(xNode);
-        xData.aLog := aLogs.LogItems[a];
-        CreateA(xData);
-        inc(a);
-      end;
-      while (b < bLogs.Count) do
-      begin
-        xNode := mainVST.AddChild(nil,nil);
-        xData := mainVST.GetNodeData(xNode);
-        xData.bLog := bLogs.LogItems[a];
-        CreateB(xData);
-        inc(b);
-      end;
-      mainVST.FocusedNode := mainVST.GetFirst;
-      mainVST.SetFocus;
     finally
-      mainVST.EndUpdate;
+      a2bUninitialize;
     end;
   finally
-    a2bUninitialize;
+    if fDiffsFound then
+      TotalResultButton.ImageIndex := 133
+    else
+      TotalResultButton.ImageIndex := 132;
+    Screen.Cursor := crDefault;
+    Application.ProcessMessages;
   end;
 end;
 
@@ -480,6 +503,10 @@ begin
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
+  fDiffsFound := fDiffsFound
+              or (xData.reqA2B.Differs and (not xData.reqA2B.Ignored))
+              or (xData.rpyA2B.Differs and (not xData.rpyA2B.Ignored))
+               ;
 end;
 
 procedure TShowLogDifferencesForm.mainVSTClick(Sender: TObject);
@@ -546,6 +573,7 @@ begin
   aXml := xData.aLog.rpyBodyAsXml;
   xData.rpyA2B := TA2BXml.CreateA(xData.aLog.OperationName, aXml, True);
   FreeAndNil (aXml);
+  fDiffsFound := True;
 end;
 
 procedure TShowLogDifferencesForm.CreateB(xData: PVSTreeRec);
@@ -558,6 +586,7 @@ begin
   bXml := xData.bLog.rpyBodyAsXml;
   xData.rpyA2B := TA2BXml.CreateB (xData.bLog.OperationName, bXml, True);
   FreeAndNil (bXml);
+  fDiffsFound := True;
 end;
 
 procedure TShowLogDifferencesForm.MaintainIgnoreAdditionsActionExecute(
@@ -787,6 +816,13 @@ begin
       CellText := 'raised error: '  + e.Message;
     end;
   end;
+end;
+
+procedure TShowLogDifferencesForm .setCompareLogOrderBy (AValue : TCompareLogOrderBy );
+begin
+  if AValue = fCompareLogOrderBy then Exit;
+  fCompareLogOrderBy := AValue ;
+  CompareLogOrderByComboBox.ItemIndex := Ord (AValue);
 end;
 
 procedure TShowLogDifferencesForm.CloseActionExecute(Sender: TObject);
@@ -1060,6 +1096,13 @@ begin
   finally
     FreeAndNil (xXml);
   end;
+end;
+
+procedure TShowLogDifferencesForm .CompareLogOrderByComboBoxChange (
+  Sender : TObject );
+begin
+  fCompareLogOrderBy := TCompareLogOrderBy(CompareLogOrderByComboBox.ItemIndex);
+  PopulateMain;
 end;
 
 end.
