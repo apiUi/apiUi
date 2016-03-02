@@ -737,7 +737,7 @@ type LexItemRec = record
 end;
 
 const
-  NoOfLexItems = 681 - 626;
+  NoOfLexItems = 683 - 626;
   LexItems : array [1..NoOfLexItems] of LexItemRec =
   ( (Wrd: 'AND'; Tkn: _AND; Adr: nil)
   , (Wrd: 'ARRAY'; Tkn: _ARRAY; adr: nil)
@@ -756,6 +756,7 @@ const
   , (Wrd: 'EVALUATE'; Tkn: _EVALUATE; adr: nil)
   , (Wrd: 'EXTERNAL'; Tkn: _EXTERNAL; adr: nil)
   , (Wrd: 'EXTERN'; Tkn: _EXTERNAL; adr: nil)
+  , (Wrd: 'FALSE'; Tkn: _FALSE; adr: nil)
   , (Wrd: 'FILE'; Tkn: _FILE; adr: nil)
   , (Wrd: 'FLOAT'; Tkn: _FLOAT; adr: nil)
   , (Wrd: 'FOR'; Tkn: _FOR; adr: nil)
@@ -786,6 +787,7 @@ const
   , (Wrd: 'THEN'; Tkn: _THEN; adr: nil)
   , (Wrd: 'TIMESTAMP'; Tkn: _DATETIME; adr: nil)
   , (Wrd: 'TO'; Tkn: _TO; adr: nil)
+  , (Wrd: 'TRUE'; Tkn: _TRUE; adr: nil)
   , (Wrd: 'TYPE'; Tkn: _TYPE; adr: nil)
   , (Wrd: 'UNTIL'; Tkn: _UNTIL; adr: nil)
   , (Wrd: 'VAR'; Tkn: _VAR; adr: nil)

@@ -22,7 +22,7 @@
 %token _EACH _ELSE _END _EQUAL _EVALUATE _EXEC_SQL _EXEC_SQLEXEC _EXEC_SQLINSERT _EXEC_SQLSELECT
 %token _EXEC_YAG
 %token _EXTERNAL
-%token _FIELDID _FILE _FLOAT _FOR _FOREACH _FORWARD _FRAME _FUNCTION
+%token _FALSE _FIELDID _FILE _FLOAT _FOR _FOREACH _FORWARD _FRAME _FUNCTION
 %token _GE _GOTO _GT
 %token _IDENTIFIER _IF _IN _INTEGER
 %token _LABEL _LAYOUT_FIELD _LAYOUT_TOKEN _LBRAC _LE _LPAREN _LT
@@ -33,7 +33,7 @@
 %token _RBRAC _REALNUMBER _RECORD _REPEAT _RPAREN
 %token _SEMICOLON _SET _SLASH _SQLEXEC _SQLPARAM_FIELD _SQLSELECT _SQLTOKEN
 %token _SPACE _STAR _STARSTAR _STRING
-%token _THEN _TO _TYPE
+%token _THEN _TO _TRUE _TYPE
 %token _UNTIL _UPARROW
 %token _VAR _VOID VOIDFUNCTION_
 %token _WEEKS _WHILE _WHITESPACE _WITH _WITHDO _WITHNEWDO
@@ -834,6 +834,8 @@ bExpr:    bExpr _OR bExpr   { $$.yy.yyBoolean := $1.yy.yyBoolean or $3.yy.yyBool
         | bExpr _AND bExpr  { $$.yy.yyBoolean := $1.yy.yyBoolean and $3.yy.yyBoolean; }
         | _NOT bExpr        { $$.yy.yyBoolean := not $2.yy.yyBoolean; }
         | _LPAREN bExpr _RPAREN {$$.yy.yyBoolean := $2.yy.yyBoolean; }
+	| _FALSE            { $$.yy.yyBoolean := False; }
+	| _TRUE             { $$.yy.yyBoolean := True; }
         | RelationalExpression {$$.yy.yyBoolean := $1.yy.yyBoolean; }
         ;
 
