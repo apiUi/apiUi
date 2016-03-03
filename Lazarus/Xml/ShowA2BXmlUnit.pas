@@ -136,6 +136,8 @@ type
     SearchUseRegExp: Boolean;
     FileContents: TStringList;
     procedure HaveString (aString: String);
+    procedure setColumnHeaderA (AValue : String );
+    procedure setColumnHeaderB (AValue : String );
     function ToolButtonUsed (Sender: TObject): Boolean;
     procedure SetXml (aXml: TA2BXml);
     procedure NodeToXml (aNode: PVirtualNode; var Xml: TA2BXml);
@@ -145,6 +147,8 @@ type
     RefreshNeeded: Boolean;
     ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     property Xml: TA2BXml read fXml write SetXml;
+    property ColumnHeaderA: String write setColumnHeaderA;
+    property ColumnHeaderB: String write setColumnHeaderB;
   end;
 
 var
@@ -186,7 +190,6 @@ type TColumnEnum =
 , buttonColumn
 , AColumn
 , BColumn
-, NsColumn
 );
 
 function rmPrefix (aName: String): String;
@@ -617,6 +620,16 @@ begin
   FileContents.Add (aString);
 end;
 
+procedure TShowA2BXmlForm .setColumnHeaderA (AValue : String );
+begin
+  TreeView.Header.Columns[Ord(AColumn)].Text := AValue;
+end;
+
+procedure TShowA2BXmlForm .setColumnHeaderB (AValue : String );
+begin
+  TreeView.Header.Columns[Ord(BColumn)].Text := AValue;
+end;
+
 procedure TShowA2BXmlForm.IgnoreAddingFullCaptionMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
@@ -726,14 +739,6 @@ begin
          else
            CellText := '';
        end;
-    NsColumn:
-      begin
-        if Assigned (Xml) then
-          if Xml.NameSpace <> '' then
-            CellText := Xml.NameSpace
-          else
-            CellText := Xml.bNameSpace
-      end;
     end;
 end;
 

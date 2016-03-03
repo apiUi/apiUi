@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 294
+  Left = 342
   Height = 520
   Top = 145
-  Width = 1015
+  Width = 967
   Caption = 'MainForm'
   ClientHeight = 501
-  ClientWidth = 1015
+  ClientWidth = 967
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 29
     Top = 0
-    Width = 1015
+    Width = 967
     Caption = 'MainToolBar'
     Images = mainImageList
     TabOrder = 1
@@ -177,12 +177,12 @@ object MainForm: TMainForm
     Left = 0
     Height = 320
     Top = 29
-    Width = 1015
+    Width = 967
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
     ClientHeight = 320
-    ClientWidth = 1015
+    ClientWidth = 967
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 205
@@ -192,7 +192,7 @@ object MainForm: TMainForm
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 872
+      Left = 824
       Height = 314
       Top = 3
       Width = 5
@@ -356,7 +356,7 @@ object MainForm: TMainForm
       end
     end
     object XsdPanel: TPanel
-      Left = 877
+      Left = 829
       Height = 314
       Top = 3
       Width = 135
@@ -435,20 +435,20 @@ object MainForm: TMainForm
       Left = 210
       Height = 314
       Top = 3
-      Width = 662
+      Width = 614
       Align = alClient
       Caption = 'MiddlePanel'
       ClientHeight = 314
-      ClientWidth = 662
+      ClientWidth = 614
       TabOrder = 4
       object WsdlInfoPanel: TPanel
         Left = 1
         Height = 37
         Top = 1
-        Width = 660
+        Width = 612
         Align = alTop
         ClientHeight = 37
-        ClientWidth = 660
+        ClientWidth = 612
         TabOrder = 0
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
@@ -512,27 +512,27 @@ object MainForm: TMainForm
         Left = 1
         Height = 275
         Top = 38
-        Width = 660
+        Width = 612
         Align = alClient
         Caption = 'DataPanel'
         ClientHeight = 275
-        ClientWidth = 660
+        ClientWidth = 612
         TabOrder = 1
         object GridDataPanel: TPanel
           Left = 1
           Height = 109
           Top = 1
-          Width = 658
+          Width = 610
           Align = alTop
           Caption = 'GridDataPanel'
           ClientHeight = 109
-          ClientWidth = 658
+          ClientWidth = 610
           TabOrder = 0
           object GridToolBar: TToolBar
             Left = 1
             Height = 29
             Top = 1
-            Width = 656
+            Width = 608
             Caption = 'GridToolBar'
             Images = mainImageList
             TabOrder = 0
@@ -703,7 +703,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 78
             Top = 30
-            Width = 656
+            Width = 608
             Align = alClient
             BottomSpace = 10
             DefaultText = 'Node'
@@ -752,7 +752,7 @@ object MainForm: TMainForm
           Left = 1
           Height = 5
           Top = 110
-          Width = 658
+          Width = 610
           Align = alTop
           ResizeAnchor = akTop
         end
@@ -760,17 +760,17 @@ object MainForm: TMainForm
           Left = 1
           Height = 159
           Top = 115
-          Width = 658
+          Width = 610
           Align = alClient
           Caption = 'TreeDataPanel'
           ClientHeight = 159
-          ClientWidth = 658
+          ClientWidth = 610
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
             Top = 141
-            Width = 656
+            Width = 608
             Align = alBottom
             Alignment = taLeftJustify
             BevelInner = bvLowered
@@ -780,7 +780,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 29
             Top = 1
-            Width = 656
+            Width = 608
             Caption = 'ToolBar9'
             Images = mainImageList
             TabOrder = 1
@@ -858,7 +858,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 59
             Top = 30
-            Width = 656
+            Width = 608
             Align = alTop
             DefaultText = 'Node'
             DragOperations = []
@@ -912,7 +912,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 52
             Top = 89
-            Width = 656
+            Width = 608
             Align = alClient
             Font.CharSet = ANSI_CHARSET
             Font.Color = clWindowText
@@ -931,11 +931,11 @@ object MainForm: TMainForm
     Left = 0
     Height = 147
     Top = 354
-    Width = 1015
-    ActivePage = TabSheet1
+    Width = 967
+    ActivePage = MessagesTabSheet
     Align = alBottom
     Images = mainImageList
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
@@ -1187,7 +1187,7 @@ object MainForm: TMainForm
     object MessagesTabSheet: TTabSheet
       Caption = 'Messages'
       ClientHeight = 120
-      ClientWidth = 1007
+      ClientWidth = 959
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -1202,7 +1202,7 @@ object MainForm: TMainForm
         Left = 0
         Height = 29
         Top = 0
-        Width = 1007
+        Width = 959
         Caption = 'ToolBar6'
         Images = mainImageList
         TabOrder = 0
@@ -1273,7 +1273,7 @@ object MainForm: TMainForm
           Action = readLog4jEventsAction
         end
         object MessagesTabControl: TTabControl
-          Left = 423
+          Left = 375
           Height = 21
           Top = 8
           Width = 584
@@ -1442,7 +1442,7 @@ object MainForm: TMainForm
         Left = 273
         Height = 91
         Top = 29
-        Width = 709
+        Width = 661
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1455,7 +1455,7 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object ToolBar4: TToolBar
-        Left = 982
+        Left = 934
         Height = 91
         Top = 29
         Width = 25
@@ -1482,7 +1482,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 5
     Top = 349
-    Width = 1015
+    Width = 967
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -1917,119 +1917,6 @@ object MainForm: TMainForm
       Caption = 'Request changes due to script'
       OnExecute = RequestMiMActionExecute
     end
-    object ReplyMiMAction: TAction
-      Category = 'Log'
-      Caption = 'Reply changes due to script'
-      OnExecute = ReplyMiMActionExecute
-    end
-    object ToggleCheckExpectedValuesAction: TAction
-      Category = 'Log'
-      Caption = 'Check expected values'
-      Hint = 'Check expected values'
-      ImageIndex = 50
-      OnExecute = ToggleCheckExpectedValuesActionExecute
-    end
-    object ShowExpectedXmlAction: TAction
-      Category = 'Log'
-      Caption = 'ShowExpectedXmlAction'
-      OnExecute = ShowExpectedXmlActionExecute
-    end
-    object CopyLogMemoTextToClipBrdAction: TAction
-      Category = 'Log'
-      Caption = 'CopyHttpRequestToClipBrdAction'
-      Hint = 'Copy text to clipboard'
-      ImageIndex = 23
-      OnExecute = CopyLogMemoTextToClipBrdActionExecute
-      OnUpdate = CopyLogMemoTextToClipBrdActionUpdate
-    end
-    object PresentLogMemoTextAction: TAction
-      Category = 'Log'
-      Caption = 'PresentLogMemoTextAction'
-      ImageIndex = 76
-      OnExecute = PresentLogMemoTextActionExecute
-      OnUpdate = PresentLogMemoTextActionUpdate
-    end
-    object Log2DesignAction: TAction
-      Category = 'Log'
-      Caption = 'Add to design'
-      Hint = 'Add selected log(s) to design'
-      ImageIndex = 15
-      OnExecute = Log2DesignActionExecute
-    end
-    object BrowseMqAction: TAction
-      Category = 'Log'
-      Caption = 'Browse Mq'
-      Hint = 'Browse Message Queue'
-      ImageIndex = 44
-      OnExecute = BrowseMqActionExecute
-      OnHint = BrowseMqActionHint
-      OnUpdate = BrowseMqActionUpdate
-    end
-    object readLog4jEventsAction: TAction
-      Category = 'Log'
-      Caption = 'Discover service calls from log'
-      Hint = 'Discover service calls from an event log'
-      ImageIndex = 56
-      OnExecute = readLog4jEventsActionExecute
-      OnHint = readLog4jEventsActionHint
-      OnUpdate = readLog4jEventsActionUpdate
-    end
-    object ConfigLogAction: TAction
-      Category = 'Log'
-      Caption = 'Configure Log'
-      Hint = 'Change project log settings'
-      ImageIndex = 59
-      OnExecute = ConfigLogActionExecute
-    end
-    object ToggleFileLogAction: TAction
-      Category = 'Log'
-      Caption = 'Toggle'
-    end
-    object LogDisplayedColumnsAction: TAction
-      Category = 'Log'
-      Caption = 'Displayed columns'
-      ImageIndex = 21
-      OnExecute = LogDisplayedColumnsActionExecute
-      OnHint = LogDisplayedColumnsActionHint
-    end
-    object SaveLogRequestsToFileAction: TAction
-      Category = 'Log'
-      Caption = 'Save requests to file...'
-      ImageIndex = 3
-      OnExecute = SaveLogRequestsToFileActionExecute
-      OnUpdate = SaveLogRequestsToFileActionUpdate
-    end
-    object SaveLogRepliesToFileAction: TAction
-      Category = 'Log'
-      Caption = 'Save replies to file...'
-      ImageIndex = 3
-      OnExecute = SaveLogRepliesToFileActionExecute
-      OnUpdate = SaveLogRepliesToFileActionUpdate
-    end
-    object ReportUnexpectedValuesAction: TAction
-      Category = 'Log'
-      Caption = 'ReportUnexpectedValuesAction'
-      Hint = 'Unexpected values report'
-      ImageIndex = 14
-      OnExecute = ReportUnexpectedValuesActionExecute
-      OnUpdate = ReportUnexpectedValuesActionUpdate
-    end
-    object MessagesRegressionAction: TAction
-      Category = 'Log'
-      Caption = 'Compare with file... '
-      Hint = 'Show differences with a previous run'
-      ImageIndex = 43
-      OnExecute = MessagesRegressionActionExecute
-      OnUpdate = MessagesRegressionActionUpdate
-    end
-    object LogCoverageReportAction: TAction
-      Category = 'Log'
-      Caption = 'Coverage report'
-      Hint = 'View coverage report'
-      ImageIndex = 70
-      OnExecute = LogCoverageReportActionExecute
-      OnUpdate = LogCoverageReportActionUpdate
-    end
     object ShowExceptionAsHtmlAction: TAction
       Caption = 'SwohHttpReplyAsXMLAction'
       Hint = 'Show in XML viewer'
@@ -2215,13 +2102,6 @@ object MainForm: TMainForm
       OnExecute = ProjectDesignToClipboardActionExecute
       ShortCut = 24699
     end
-    object CopyLogGridToClipBoardAction: TAction
-      Category = 'Log'
-      Caption = 'CopyLogGridToClipBoardAction'
-      Hint = 'Copy log entries'#13#10'(Spreadsheet format)'
-      ImageIndex = 80
-      OnExecute = CopyLogGridToClipBoardActionExecute
-    end
     object AbortAction: TAction
       Category = 'Miscellaneous'
       Caption = 'Abort'
@@ -2239,12 +2119,6 @@ object MainForm: TMainForm
       OnExecute = LoadTestActionExecute
       OnUpdate = LoadTestActionUpdate
       ShortCut = 24647
-    end
-    object logChartAction: TAction
-      Category = 'Log'
-      Caption = 'logChartAction'
-      ImageIndex = 83
-      OnExecute = logChartActionExecute
     end
     object OperationAliasAction: TAction
       Category = 'Operation'
@@ -2302,6 +2176,137 @@ object MainForm: TMainForm
       Hint = 'Save reports to file'
       ImageIndex = 3
       OnExecute = SaveReportsActionExecute
+    end
+    object ShowLogDifferencesAction: TAction
+      Category = 'Log'
+      Caption = 'Show differences between selected logs (requires 2 selected rows)'
+      OnExecute = ShowLogDifferencesActionExecute
+    end
+    object ReplyMiMAction: TAction
+      Category = 'Log'
+      Caption = 'Reply changes due to script'
+      OnExecute = ReplyMiMActionExecute
+    end
+    object ToggleCheckExpectedValuesAction: TAction
+      Category = 'Log'
+      Caption = 'Check expected values'
+      Hint = 'Check expected values'
+      ImageIndex = 50
+      OnExecute = ToggleCheckExpectedValuesActionExecute
+    end
+    object ShowExpectedXmlAction: TAction
+      Category = 'Log'
+      Caption = 'ShowExpectedXmlAction'
+      OnExecute = ShowExpectedXmlActionExecute
+    end
+    object CopyLogMemoTextToClipBrdAction: TAction
+      Category = 'Log'
+      Caption = 'CopyHttpRequestToClipBrdAction'
+      Hint = 'Copy text to clipboard'
+      ImageIndex = 23
+      OnExecute = CopyLogMemoTextToClipBrdActionExecute
+      OnUpdate = CopyLogMemoTextToClipBrdActionUpdate
+    end
+    object PresentLogMemoTextAction: TAction
+      Category = 'Log'
+      Caption = 'PresentLogMemoTextAction'
+      ImageIndex = 76
+      OnExecute = PresentLogMemoTextActionExecute
+      OnUpdate = PresentLogMemoTextActionUpdate
+    end
+    object Log2DesignAction: TAction
+      Category = 'Log'
+      Caption = 'Add to design'
+      Hint = 'Add selected log(s) to design'
+      ImageIndex = 15
+      OnExecute = Log2DesignActionExecute
+    end
+    object BrowseMqAction: TAction
+      Category = 'Log'
+      Caption = 'Browse Mq'
+      Hint = 'Browse Message Queue'
+      ImageIndex = 44
+      OnExecute = BrowseMqActionExecute
+      OnHint = BrowseMqActionHint
+      OnUpdate = BrowseMqActionUpdate
+    end
+    object readLog4jEventsAction: TAction
+      Category = 'Log'
+      Caption = 'Discover service calls from log'
+      Hint = 'Discover service calls from an event log'
+      ImageIndex = 56
+      OnExecute = readLog4jEventsActionExecute
+      OnHint = readLog4jEventsActionHint
+      OnUpdate = readLog4jEventsActionUpdate
+    end
+    object ConfigLogAction: TAction
+      Category = 'Log'
+      Caption = 'Configure Log'
+      Hint = 'Change project log settings'
+      ImageIndex = 59
+      OnExecute = ConfigLogActionExecute
+    end
+    object ToggleFileLogAction: TAction
+      Category = 'Log'
+      Caption = 'Toggle'
+    end
+    object LogDisplayedColumnsAction: TAction
+      Category = 'Log'
+      Caption = 'Displayed columns'
+      ImageIndex = 21
+      OnExecute = LogDisplayedColumnsActionExecute
+      OnHint = LogDisplayedColumnsActionHint
+    end
+    object SaveLogRequestsToFileAction: TAction
+      Category = 'Log'
+      Caption = 'Save requests to file...'
+      ImageIndex = 3
+      OnExecute = SaveLogRequestsToFileActionExecute
+      OnUpdate = SaveLogRequestsToFileActionUpdate
+    end
+    object SaveLogRepliesToFileAction: TAction
+      Category = 'Log'
+      Caption = 'Save replies to file...'
+      ImageIndex = 3
+      OnExecute = SaveLogRepliesToFileActionExecute
+      OnUpdate = SaveLogRepliesToFileActionUpdate
+    end
+    object ReportUnexpectedValuesAction: TAction
+      Category = 'Log'
+      Caption = 'ReportUnexpectedValuesAction'
+      Hint = 'Unexpected values report'
+      ImageIndex = 14
+      OnExecute = ReportUnexpectedValuesActionExecute
+      OnUpdate = ReportUnexpectedValuesActionUpdate
+    end
+    object MessagesRegressionAction: TAction
+      Category = 'Log'
+      Caption = 'Compare with file... '
+      Hint = 'Show differences with a previous run'
+      ImageIndex = 43
+      OnExecute = MessagesRegressionActionExecute
+      OnUpdate = MessagesRegressionActionUpdate
+    end
+    object LogCoverageReportAction: TAction
+      Category = 'Log'
+      Caption = 'Coverage report'
+      Hint = 'View coverage report'
+      ImageIndex = 70
+      OnExecute = LogCoverageReportActionExecute
+      OnUpdate = LogCoverageReportActionUpdate
+    end
+    object CopyLogGridToClipBoardAction: TAction
+      Category = 'Log'
+      Caption = 'CopyLogGridToClipBoardAction'
+      Hint = 'Copy log entries'#13#10'(Spreadsheet format)'
+      ImageIndex = 80
+      OnExecute = CopyLogGridToClipBoardActionExecute
+    end
+    object logChartAction: TAction
+      Category = 'Log'
+      Caption = 'logChartAction'
+      ImageIndex = 83
+      OnExecute = logChartActionExecute
     end
   end
   object mainImageList: TImageList
@@ -8625,6 +8630,12 @@ object MainForm: TMainForm
       }
     end
     object N30: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem29: TMenuItem
+      Action = ShowLogDifferencesAction
+    end
+    object MenuItem28: TMenuItem
       Caption = '-'
     end
     object ShowrequestinaGrid2: TMenuItem

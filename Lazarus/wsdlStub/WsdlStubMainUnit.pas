@@ -66,6 +66,9 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem28 : TMenuItem ;
+    MenuItem29 : TMenuItem ;
+    ShowLogDifferencesAction : TAction ;
     MenuItem23 : TMenuItem ;
     MenuItem24: TMenuItem;
     MenuItem27: TMenuItem;
@@ -614,6 +617,7 @@ type
     procedure ElementvalueMenuItemClick(Sender: TObject);
     procedure PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
     procedure CopyCobolDataToClipboardMenuItemClick(Sender: TObject);
+    procedure ShowLogDifferencesActionExecute (Sender : TObject );
     procedure ShowShortCutActionsActionExecute (Sender : TObject );
     procedure UnhideOperationMenuItemClick (Sender : TObject );
     procedure ViewMssgAsTextActionExecute(Sender: TObject);
@@ -7820,16 +7824,40 @@ begin
       for X := 0 to bLogs.Count - 1 do
         if bLogs.LogItems[X].PassesFilter then
           ShowLogDifferencesForm.bLogs.AddObject ( '', bLogs.LogItems[X]);
-      ShowLogDifferencesForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
-      ShowLogDifferencesForm.ignoreAddingon := se.ignoreAddingOn;
-      ShowLogDifferencesForm.ignoreRemovingOn := se.ignoreRemovingOn;
-      ShowLogDifferencesForm.ignoreOrderOn := se.ignoreOrderOn;
-      ShowLogDifferencesForm.regressionSortColumns := se.regressionSortColumns;
-      ShowLogDifferencesForm.ShowModal;
-      if ShowLogDifferencesForm.compareLogOrderBy <> se.CompareLogOrderBy then
+      ShowLogDifferencesForm.ignoreDifferencesOn.Text := se.ignoreDifferencesOn.Text;
+      ShowLogDifferencesForm.ignoreAddingon.Text := se.ignoreAddingOn.Text;
+      ShowLogDifferencesForm.ignoreRemovingOn.Text := se.ignoreRemovingOn.Text;
+      for x := 0 to ShowLogDifferencesForm.ignoreOrderOn.Count - 1 do
+        ShowLogDifferencesForm.ignoreOrderOn.Objects[x].Free;
+      ShowLogDifferencesForm.ignoreOrderOn.Text := se.ignoreOrderOn.Text;
+      for x := 0 to ShowLogDifferencesForm.ignoreOrderOn.Count - 1 do
       begin
-        se.CompareLogOrderBy := ShowLogDifferencesForm.compareLogOrderBy;
-        stubChanged := True;
+        ShowLogDifferencesForm.ignoreOrderOn.Objects[x] := TStringList.Create;
+        (ShowLogDifferencesForm.ignoreOrderOn.Objects[x] as TStringList).Text :=
+          (se.ignoreOrderOn.Objects[x] as TStringList).Text;
+      end;
+      ShowLogDifferencesForm.regressionSortColumns.Text := se.regressionSortColumns.Text;
+      ShowLogDifferencesForm.ShowModal;
+      if ShowLogDifferencesForm.configChanged then
+      begin
+        if BooleanPromptDialog('Accept changes to Regression report settings') then
+        begin
+          se.CompareLogOrderBy := ShowLogDifferencesForm.compareLogOrderBy;
+          se.ignoreDifferencesOn.Text := ShowLogDifferencesForm.ignoreDifferencesOn.Text;
+          se.ignoreAddingOn.Text := ShowLogDifferencesForm.ignoreAddingon.Text;
+          se.ignoreRemovingOn.Text := ShowLogDifferencesForm.ignoreRemovingOn.Text;
+          for x := 0 to se.ignoreOrderOn.Count - 1 do
+            se.ignoreOrderOn.Objects[x].Free;
+          se.ignoreOrderOn.Text := ShowLogDifferencesForm.ignoreOrderOn.Text;
+          for x := 0 to se.ignoreOrderOn.Count - 1 do
+          begin
+            se.ignoreOrderOn.Objects[x] := TStringList.Create;
+            (se.ignoreOrderOn.Objects[x] as TStringList).Text
+              := (ShowLogDifferencesForm.ignoreOrderOn.Objects[x] as TStringList).Text;
+          end;
+          se.regressionSortColumns.Text := ShowLogDifferencesForm.regressionSortColumns.Text;
+          stubChanged := True;
+        end;
       end;
       if ShowLogDifferencesForm.differencesFound then
         result := rsNok
@@ -8943,6 +8971,7 @@ var
 begin
   n := MessagesVTS.SelectedCount;
   xLog := NodeToMsgLog(False,MessagesVTS, MessagesVTS.FocusedNode);
+  ShowLogDifferencesAction.Enabled := (n = 2);
   RequestMiMAction.Enabled := Assigned(xLog)
                           and (xLog.RequestBodyMiM <> '')
                           and (xLog.RequestBodyMiM <> xLog.RequestBody)
@@ -10913,7 +10942,7 @@ begin
         xForm.ShowModal;
         if xForm.Changed then
         begin
-          if BooleanPromptDialog('Accept changes to Coverage report setting') then
+          if BooleanPromptDialog('Accept changes to Coverage report settings') then
           begin
             stubChanged := True;
             se.ignoreCoverageOn.Clear;
@@ -11053,6 +11082,72 @@ procedure TMainForm.CopyCobolDataToClipboardMenuItemClick(Sender: TObject);
 begin
   ClipBoard.AsText := (NodeToBind(InWsdlTreeView,
       InWsdlTreeView.FocusedNode) as TIpmItem).ValuesToBuffer(nil);
+end;
+
+procedure TMainForm .ShowLogDifferencesActionExecute (Sender : TObject );
+var
+  fNode, nNode: PVirtualNode;
+  fLog, nLog: TLog;
+  fXml, nXml: TXml;
+  xA2B: TA2BXml;
+begin
+  nNode := nil;
+  fNode := MessagesVTS.GetFirstSelected;
+  nNode := MessagesVTS.GetNextSelected(fNode);
+  if Assigned (fNode)
+  and Assigned (nNode) then
+  begin
+    fLog := NodeToMsgLog(True,MessagesVTS, fNode);
+    nLog := NodeToMsgLog(True,MessagesVTS, nNode);
+    try
+      fXml := TXml.CreateAsString('firstSelected', '');
+      with fXml do
+      begin
+        AddXml (TXml.CreateAsTimeStamp('inboundTimestamp', fLog.InboundTimeStamp));
+        AddXml (TXml.CreateAsTimeStamp('outboundTimestamp', fLog.OutboundTimeStamp));
+        with AddXml (TXml.CreateAsString('Req', '')) do
+          AddXml (fLog.reqBodyAsXml);
+        with AddXml (TXml.CreateAsString('Rpy', '')) do
+          AddXml (fLog.rpyBodyAsXml);
+      end;
+      nXml := TXml.CreateAsString('nextSelected', '');
+      with nXml do
+      begin
+        AddXml (TXml.CreateAsTimeStamp('inboundTimestamp', nLog.InboundTimeStamp));
+        AddXml (TXml.CreateAsTimeStamp('outboundTimestamp', nLog.OutboundTimeStamp));
+        with AddXml (TXml.CreateAsString('Req', '')) do
+          AddXml (nLog.reqBodyAsXml);
+        with AddXml (TXml.CreateAsString('Rpy', '')) do
+          AddXml (nLog.rpyBodyAsXml);
+      end;
+    finally
+      fLog.Disclaim;
+      nLog.Disclaim;
+    end;
+    a2bInitialize;
+    try
+      xA2B := TA2BXml.CreateA2B('', fXml, nXml, Nil);
+    finally
+      a2bUninitialize;
+    end;
+    try
+      Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+      with ShowA2BXmlForm do
+      try
+        Caption := 'Diffrences in messages';
+        ColumnHeaderA := 'Value first selected';
+        ColumnHeaderB := 'Value next selected';
+        Xml := xA2B;
+        ShowModal;
+      finally
+        FreeAndNil(ShowA2BXmlForm);
+      end;
+    finally
+      FreeAndNil(xA2B);
+      FreeAndNil(fXml);
+      FreeAndNil(nXml);
+    end;
+  end;
 end;
 
 procedure TMainForm.ShowShortCutActionsActionExecute (Sender : TObject );

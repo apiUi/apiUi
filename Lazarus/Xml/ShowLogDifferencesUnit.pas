@@ -111,8 +111,9 @@ type
   private
     Diffs: TA2BStringList;
     fCompareLogOrderBy : TCompareLogOrderBy ;
+    fConfigChanged : Boolean ;
     fDiffsFound : Boolean ;
-    procedure PopulateMain;
+    procedure PopulateMain (aChanged: Boolean);
     procedure MaintainList (aCaptian: String; aList: TStringList; aDoOrder: Boolean);
     procedure CreateA (xData: PVSTreeRec);
     procedure CreateB (xData: PVSTreeRec);
@@ -122,6 +123,7 @@ type
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
     procedure setCompareLogOrderBy (AValue : TCompareLogOrderBy );
+    procedure onSlChanged (aObject: TObject);
   public
     ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     aLogs: TLogList;
@@ -129,6 +131,7 @@ type
     ReferenceFileName: String;
     property compareLogOrderBy: TCompareLogOrderBy read fCompareLogOrderBy write setCompareLogOrderBy;
     property differencesFound: Boolean read fDiffsFound;
+    property configChanged: Boolean read fConfigChanged;
   end;
 
 var
@@ -165,9 +168,22 @@ type ceColumnEnum =
 );
 
 procedure TShowLogDifferencesForm.FormCreate(Sender: TObject);
+  function _stringList (aSorted: Boolean): TStringList;
+  begin
+    result := TStringList.Create;
+    Result.Sorted := aSorted;
+    Result.Duplicates := dupIgnore;
+    Result.OnChange := onSlChanged;
+  end;
+
 var
   w5: Integer;
 begin
+  ignoreDifferencesOn := _stringList(true);
+  ignoreRemovingOn := _stringList(true);
+  ignoreOrderOn := _stringList(true);
+  ignoreAddingon := _stringList(true);
+  regressionSortColumns := _stringList(false);
   w5 := mainVST.Header.Columns.Items[Ord(ceReqColumn)].Width;
   with TFormIniFile.Create (Self, True) do
   try
@@ -192,20 +208,26 @@ begin
   end;
   mainVST.Clear;
   Diffs.Free;
+  FreeAndNil (ignoreDifferencesOn);
+  FreeAndNil (ignoreRemovingOn);
+  FreeAndNil (ignoreOrderOn);
+  FreeAndNil (ignoreAddingon);
+  FreeAndNil (regressionSortColumns);
 end;
 
 procedure TShowLogDifferencesForm.FormShow(Sender: TObject);
 begin
-  PopulateMain;
-  Screen.Cursor:=crDefault;
+  PopulateMain (False);
+  Screen.Cursor := crDefault;
 end;
 
-procedure TShowLogDifferencesForm.PopulateMain;
+procedure TShowLogDifferencesForm.PopulateMain (aChanged: Boolean);
 var
   a, b, c, i, x: Integer;
   xNode: PVirtualNode;
   xData: PVSTreeRec;
 begin
+  fConfigChanged := aChanged;
   Screen.Cursor := crHourGlass;
   TotalResultButton.ImageIndex := 131;
   fDiffsFound := False;
@@ -531,7 +553,7 @@ begin
           ShowA2BXmlForm.Xml := xData.reqA2B;
           ShowA2BXmlForm.ShowModal;
           if ShowA2BXmlForm.RefreshNeeded then
-            FormShow(nil);
+            PopulateMain (True);
         finally
           FreeAndNil (ShowA2BXmlForm);
         end;
@@ -554,7 +576,7 @@ begin
           ShowA2BXmlForm.Xml := xData.rpyA2B;
           ShowA2BXmlForm.ShowModal;
           if ShowA2BXmlForm.RefreshNeeded then
-            FormShow(nil);
+            PopulateMain(True);
         finally
           FreeAndNil (ShowA2BXmlForm);
         end;
@@ -653,7 +675,7 @@ begin
       if dualListForm.ModalResult = mrOk then
       begin
         aList.Text := dualListForm.DstList.Items.Text;
-        FormShow(nil);
+        PopulateMain(True);
       end;
     finally
       FreeAndNil (dualListForm);
@@ -823,6 +845,11 @@ begin
   if AValue = fCompareLogOrderBy then Exit;
   fCompareLogOrderBy := AValue ;
   CompareLogOrderByComboBox.ItemIndex := Ord (AValue);
+end;
+
+procedure TShowLogDifferencesForm.onSlChanged (aObject : TObject );
+begin
+  fConfigChanged := True;
 end;
 
 procedure TShowLogDifferencesForm.CloseActionExecute(Sender: TObject);
@@ -1102,7 +1129,7 @@ procedure TShowLogDifferencesForm .CompareLogOrderByComboBoxChange (
   Sender : TObject );
 begin
   fCompareLogOrderBy := TCompareLogOrderBy(CompareLogOrderByComboBox.ItemIndex);
-  PopulateMain;
+  PopulateMain (True);
 end;
 
 end.

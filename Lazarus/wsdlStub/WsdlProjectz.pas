@@ -222,7 +222,6 @@ type
     function ReloadDesignCommand: String;
     procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
     procedure OpenMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
-    procedure IgnoreDataChanged(Sender: TObject);
     procedure EnvironmentListClear;
     procedure mqOnNewThread ( Sender: TObject);
     procedure mqStubMessage ( Sender: TObject
@@ -1121,21 +1120,16 @@ begin
   ignoreDifferencesOn := TStringList.Create;
   ignoreDifferencesOn.Sorted := True;
   ignoreDifferencesOn.Duplicates := dupIgnore;
-  ignoreDifferencesOn.OnChange := IgnoreDataChanged;
   ignoreAddingOn := TStringList.Create;
   ignoreAddingOn.Sorted := True;
   ignoreAddingOn.Duplicates := dupIgnore;
-  ignoreAddingOn.OnChange := IgnoreDataChanged;
   ignoreRemovingOn := TStringList.Create;
   ignoreRemovingOn.Sorted := True;
   ignoreRemovingOn.Duplicates := dupIgnore;
-  ignoreRemovingOn.OnChange := IgnoreDataChanged;
   ignoreOrderOn := TStringList.Create;
   ignoreOrderOn.Sorted := True;
   ignoreOrderOn.Duplicates := dupIgnore;
-  ignoreOrderOn.OnChange := IgnoreDataChanged;
   regressionSortColumns := TStringList.Create;
-  regressionSortColumns.OnChange := IgnoreDataChanged;
   ignoreCoverageOn := TStringList.Create;
   xsdElementsWhenRepeatable := 1;
   AsynchRpyLogs := TLogList.Create;
@@ -5773,11 +5767,6 @@ begin
     on e: Exception do
       aCmd.Reply.SetReply(ST_ERR, e.Message);
   end;
-end;
-
-procedure TWsdlProject.IgnoreDataChanged(Sender: TObject);
-begin
-  stubChanged := True;
 end;
 
 procedure TWsdlProject.HTTPServerCommandGet(AContext: TIdContext;
