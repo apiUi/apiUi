@@ -3644,6 +3644,7 @@ object L4JMainForm: TL4JMainForm
   end
   object TvPopupMenu: TPopupMenu
     Images = ActionImageList
+    OnPopup = TvPopupMenuPopup
     left = 64
     top = 320
     object ZoomMenuAction: TMenuItem
@@ -3690,6 +3691,13 @@ object L4JMainForm: TL4JMainForm
     end
     object Save1: TMenuItem
       Caption = 'Save selection...'
+    end
+    object MenuItem1: TMenuItem
+      Caption = '-'
+    end
+    object CompareNodesMenuItem: TMenuItem
+      Caption = 'Compare (requires two selected rows)'
+      OnClick = CompareNodesMenuItemClick
     end
   end
   object MainMenu1: TMainMenu

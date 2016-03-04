@@ -13,6 +13,7 @@ uses
    , FormIniFilez, ToolWin, ActnList, Menus, ImgList , FileUtil
    , FilterDialog
    , Xmlz
+    ,A2BXmlz
    , Xsdz
    , ParserClasses
    , AbUnzper
@@ -109,6 +110,8 @@ type
   TL4JMainForm = class(TForm)
     AbortAction: TAction;
     About1: TMenuItem;
+    MenuItem1: TMenuItem;
+    CompareNodesMenuItem: TMenuItem;
     PasteFromClipboardAction : TAction ;
     ActionImageList: TImageList;
     ActionList1: TActionList;
@@ -192,8 +195,10 @@ type
     procedure CopyActionExecute(Sender: TObject);
     procedure FindActionExecute(Sender: TObject);
     procedure FindNextActionExecute(Sender: TObject);
+    procedure CompareNodesMenuItemClick(Sender: TObject);
     procedure PasteFromClipboardActionExecute (Sender : TObject );
     procedure TreeViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure TvPopupMenuPopup(Sender: TObject);
     procedure WriteXmlActionExecute(Sender: TObject);
     procedure Save1Click(Sender: TObject);
     procedure WraptekstMenuItemClick(Sender: TObject);
@@ -303,6 +308,7 @@ var
 implementation
 
 uses FindRegExpDialog
+   , ShowA2BXmlUnit
    , igGlobals
    , ClipBrd
    , xmlUtilz
@@ -1872,6 +1878,56 @@ begin
   end;
 end;
 
+procedure TL4JMainForm.CompareNodesMenuItemClick(Sender: TObject);
+var
+  fNode, nNode: PVirtualNode;
+  fData, nData: PTreeRec;
+  fString, nString: String;
+  fXml, nXml: TXml;
+  xA2B: TA2BXml;
+begin
+  nNode := nil;
+  fNode := TreeView.GetFirstSelected;
+  nNode := TreeView.GetNextSelected(fNode);
+  if Assigned (fNode)
+  and Assigned (nNode) then
+  begin
+    fData := TreeView.GetNodeData (fNode);
+    fString := prepareDataToZoom(Data.Strings [fData^.Index]);
+    fXml := TXml.CreateAsString('l4j', '');
+    with fXml.AddXml (TXml.Create) do
+      LoadFromString(fString, nil);
+    nData := TreeView.GetNodeData (nNode);
+    nString := prepareDataToZoom(Data.Strings [nData^.Index]);
+    nXml := TXml.CreateAsString('l4j', '');
+    with nXml.AddXml (TXml.Create) do
+      LoadFromString(nString, nil);
+    a2bInitialize;
+    try
+      xA2B := TA2BXml.CreateA2B('', fXml, nXml, Nil);
+    finally
+      a2bUninitialize;
+    end;
+    try
+      Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+      with ShowA2BXmlForm do
+      try
+        Caption := 'Diffrences in messages';
+        ColumnHeaderA := 'Value first selected';
+        ColumnHeaderB := 'Value next selected';
+        Xml := xA2B;
+        ShowModal;
+      finally
+        FreeAndNil(ShowA2BXmlForm);
+      end;
+    finally
+      FreeAndNil(xA2B);
+      FreeAndNil(fXml);
+      FreeAndNil(nXml);
+    end;
+  end;
+end;
+
 procedure TL4JMainForm .PasteFromClipboardActionExecute (Sender : TObject );
 var
   xString: AnsiString;
@@ -1897,6 +1953,14 @@ procedure TL4JMainForm.TreeViewChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
 
+end;
+
+procedure TL4JMainForm.TvPopupMenuPopup(Sender: TObject);
+var
+  n: Integer;
+begin
+  n := TreeView.SelectedCount;
+  CompareNodesMenuItem.Enabled := (n = 2);
 end;
 
 procedure Tl4jMainForm.TreeViewPopupMenuPopup(Sender: TObject);
