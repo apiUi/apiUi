@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="wsAuthorizationService"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="6">
+      <Item1>
+        <PackageName Value="SQLDBLaz"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="indylaz"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LazRichEdit"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="LazDaemon"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="FCL"/>
+      </Item6>
+    </RequiredPackages>
+    <Units Count="4">
+      <Unit0>
+        <Filename Value="wsAuthorizationService.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="wsAuthorizationService"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="wsauthdaemonunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DaemonMapper1"/>
+        <HasResources Value="True"/>
+        <UnitName Value="wsAuthDaemonUnit"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="wsdaemonunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Daemon1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="wsDaemonUnit"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Utils\HashUtilz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="HashUtilz"/>
+      </Unit3>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\Utils;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\Core;..\components\Indy10\Lib\System;..\Xml;..\Xpress;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Hashes"/>
+    </SearchPaths>
+    <Other>
+      <CompilerMessages>
+        <MsgFileName Value=""/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

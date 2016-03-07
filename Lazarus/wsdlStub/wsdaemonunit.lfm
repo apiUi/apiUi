@@ -1,0 +1,70 @@
+object Daemon1: TDaemon1
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
+  OldCreateOrder = False
+  OnStart = DataModuleStart
+  OnStop = DataModuleStop
+  Height = 182
+  HorizontalOffset = 831
+  VerticalOffset = 139
+  Width = 223
+  object IdHTTPServer: TIdHTTPServer
+    Bindings = <>
+    OnCreatePostStream = IdHTTPServerCreatePostStream
+    OnCommandGet = IdHTTPServerCommandGet
+    left = 34
+    top = 40
+  end
+  object SQLTransaction: TSQLTransaction
+    Active = False
+    Action = caCommit
+    Database = SqlConnector
+    left = 152
+    top = 104
+  end
+  object SQLQuery: TSQLQuery
+    FieldDefs = <    
+      item
+        Name = 'CompanyName'
+        DataType = ftString
+        Precision = -1
+        Size = 50
+      end    
+      item
+        Name = 'LicenseExpireDate'
+        DataType = ftString
+        Precision = -1
+        Size = 50
+      end    
+      item
+        Name = 'LicenseString'
+        DataType = ftString
+        Precision = -1
+        Size = 255
+      end>
+    Database = SqlConnector
+    Transaction = SQLTransaction
+    SQL.Strings = (
+      'Select CompanyName, LicenseExpireDate, LicenseString'
+      'from LicenseInformation'
+    )
+    Params = <>
+    ParseSQL = False
+    UsePrimaryKeyAsKey = False
+    left = 58
+    top = 124
+  end
+  object SqlConnector: TODBCConnection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = False
+    Params.Strings = (
+      'DBQ=C:\Data\Sources\Lazarus\wsdlStub\Database\wsdlStubLicense.mdb'
+    )
+    Transaction = SQLTransaction
+    LogEvents = []
+    Driver = 'Microsoft Access Driver (*.mdb, *.accdb)'
+    left = 157
+    top = 37
+  end
+end
