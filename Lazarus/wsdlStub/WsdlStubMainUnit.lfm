@@ -712,6 +712,7 @@ object MainForm: TMainForm
             Header.AutoSizeIndex = 0
             Header.Columns = <            
               item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
                 Position = 0
                 Text = 'Reply'
               end            
@@ -866,11 +867,12 @@ object MainForm: TMainForm
             Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
                 Position = 0
                 Text = 'Tag'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
                 Position = 1
                 Width = 23
               end            
@@ -941,7 +943,7 @@ object MainForm: TMainForm
     object DocumentationTabSheet: TTabSheet
       Caption = 'Documentation'
       ClientHeight = 120
-      ClientWidth = 1007
+      ClientWidth = 959
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -960,7 +962,7 @@ object MainForm: TMainForm
     object ExceptionTabSheet: TTabSheet
       Caption = 'Notifications'
       ClientHeight = 120
-      ClientWidth = 1007
+      ClientWidth = 959
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -1066,7 +1068,7 @@ object MainForm: TMainForm
     object TabSheet1: TTabSheet
       Caption = 'Reports'
       ClientHeight = 120
-      ClientWidth = 1007
+      ClientWidth = 959
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -1336,62 +1338,68 @@ object MainForm: TMainForm
           Header.Columns = <          
             item
               ImageIndex = 67
-              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 0
               Width = 23
             end          
             item
               ImageIndex = 65
-              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 1
               Width = 23
             end          
             item
-              ImageIndex = 31
-              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
+              ImageIndex = 84
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 2
               Width = 23
             end          
             item
-              ImageIndex = 30
-              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
+              ImageIndex = 31
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 3
               Width = 23
             end          
             item
-              ImageIndex = 31
-              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
+              ImageIndex = 30
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 4
               Width = 23
             end          
             item
-              ImageIndex = 30
-              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
+              ImageIndex = 31
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 5
               Width = 23
             end          
             item
+              ImageIndex = 30
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 6
-              Text = 'Time'
+              Width = 23
             end          
             item
               Position = 7
-              Text = 'Duration'
+              Text = 'Time'
             end          
             item
               Position = 8
-              Text = 'Action'
+              Text = 'Duration'
             end          
             item
               Position = 9
-              Text = 'Service'
+              Text = 'Action'
             end          
             item
               Position = 10
-              Text = 'Operation'
+              Text = 'Service'
             end          
             item
               Position = 11
+              Text = 'Operation'
+            end          
+            item
+              Position = 12
               Text = 'CorrelationId'
             end>
           Header.DefaultHeight = 17
@@ -2179,7 +2187,8 @@ object MainForm: TMainForm
     end
     object ShowLogDifferencesAction: TAction
       Category = 'Log'
-      Caption = 'Show differences between selected logs (requires 2 selected rows)'
+      Caption = 'Compare (requires 2 selected rows)'
+      ImageIndex = 67
       OnExecute = ShowLogDifferencesActionExecute
     end
     object ReplyMiMAction: TAction
@@ -2308,12 +2317,18 @@ object MainForm: TMainForm
       ImageIndex = 83
       OnExecute = logChartActionExecute
     end
+    object ShowGridDifferencesAction: TAction
+      Category = 'Messages'
+      Caption = 'Compare (requires 2 selected nodes)'
+      ImageIndex = 67
+      OnExecute = ShowGridDifferencesActionExecute
+    end
   end
   object mainImageList: TImageList
     left = 40
     top = 224
     Bitmap = {
-      4C69540000001000000010000000000000000000000000000000000000000000
+      4C69550000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -5001,7 +5016,39 @@ object MainForm: TMainForm
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFF00000000C0C0C0FF000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      000000000000C0C0C0FFC0C0C0FF
+      000000000000C0C0C0FFC0C0C0FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000808080FF4080FFFF00FFFFFF00FFFFFF0000
+      00FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000808080FF4080FFFF00FFFFFF00FFFFFF000000FF0000
+      00FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000808080FF4080FFFF00FFFFFF00FFFFFF000000FF000000FFC0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000808080FF00F2FFFF00FFFFFF000000FF000000FFC0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000808080FF4080FFFF00FFFFFF000000FF000000FFC0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C0008080
+      80FF43A4FCFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000FF0000
+      00FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C0000000
+      00FF000000FF000000FF000000FF00F2FFFF00FFFFFF000000FF000000FFC0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000808080FF00F2FFFF00FFFFFF000000FF000000FFC0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000808080FF00F2FFFF00FFFFFF000000FF000000FFC0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000808080FF00FFFFFF000000FF000000FFC0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C0008080
+      80FF00FFFFFF000000FF000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C00000F2
+      FFFF000000FF000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C0000000
+      00FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C000C0C0C000C0C0C000
     }
   end
   object OpenFileDialog: TOpenDialog
@@ -8545,7 +8592,7 @@ object MainForm: TMainForm
     Images = mainImageList
     OnPopup = LogPopupMenuPopup
     left = 384
-    top = 282
+    top = 280
     object DisplayedcolumnMenuItem: TMenuItem
       Caption = 'Displayed column...'
       Bitmap.Data = {
@@ -8634,6 +8681,42 @@ object MainForm: TMainForm
     end
     object MenuItem29: TMenuItem
       Action = ShowLogDifferencesAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000082FF000084FF000084FF000084FF0000
+        82FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000008EFF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF00008EFF0000000000000000000000000000000000000000000000000000
+        000000000000000082FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000082FF00000000000000000000000000000000000000000000
+        000000000000000084FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000084FF00000000000000000000000000000000000000000000
+        000000000000000083FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000083FF00000000000000000000000000000000000000000000
+        000000000000000084FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000084FF00000000000000000000000000000000000000000000
+        000000000000000082FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000082FF00000000000000000000000000000000000000000000
+        0000000000000000000000008EFF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF00008EFF0000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000082FF000084FF000084FF000084FF0000
+        82FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem28: TMenuItem
       Caption = '-'
@@ -8816,6 +8899,8 @@ object MainForm: TMainForm
     end
   end
   object GridPopupMenu: TPopupMenu
+    Images = mainImageList
+    OnPopup = GridPopupMenuPopup
     left = 496
     top = 280
     object Revalidatemessages2: TMenuItem
@@ -8829,6 +8914,12 @@ object MainForm: TMainForm
     end
     object MessagesToDiskMenuItem: TMenuItem
       Action = MessagesToDiskAction
+    end
+    object MenuItem30: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem31: TMenuItem
+      Action = ShowGridDifferencesAction
     end
   end
   object LogUsageTimer: TTimer

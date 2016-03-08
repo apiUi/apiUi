@@ -6362,7 +6362,7 @@ begin
       for x := 0 to displayedReports.Count - 1 do
         if displayedReports.ReportItems[x].FileName <> '' then
           OpenMessagesLog (displayedReports.ReportItems[x].FileName, True, False, xLogList);
-      xCvrg := xLogList.PrepareCoverageReportAsXml ( allOperations
+      xCvrg := xLogList.PrepareCoverageReportAsXml ( allAliasses
                                                    , ignoreCoverageOn
                                                    );
       try

@@ -66,6 +66,9 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem30 : TMenuItem ;
+    MenuItem31 : TMenuItem ;
+    ShowGridDifferencesAction : TAction ;
     MenuItem28 : TMenuItem ;
     MenuItem29 : TMenuItem ;
     ShowLogDifferencesAction : TAction ;
@@ -541,6 +544,7 @@ type
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
     procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
+    procedure GridPopupMenuPopup (Sender : TObject );
     procedure httpRequestDesignActionExecute (Sender : TObject );
     procedure httpRequestMessagesActionExecute (Sender : TObject );
     procedure ImportProjectScriptsActionExecute (Sender : TObject );
@@ -591,6 +595,7 @@ type
       var CellText : String );
     procedure SaveReportsActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
+    procedure ShowGridDifferencesActionExecute (Sender : TObject );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
     procedure RemoveAllMessagesActionExecute(Sender: TObject);
@@ -1195,7 +1200,7 @@ type
   PMessageTreeRec = ^TMessageTreeRec;
 
   TMessageTreeRec = record
-    Reply: TWsdlMessage;
+    Message: TWsdlMessage;
   end;
 
   PLogTreeRec = ^TLogTreeRec;
@@ -1248,6 +1253,7 @@ type
   TLogColumnEnum =
     ( logExpectedColumn
     , logRemarksColumn
+    , logExceptionColumn
     , logRequestTreeColumn
     , logReplyTreeColumn
     , logRequestGridColumn
@@ -1629,7 +1635,7 @@ begin
   for X := 0 to aMessages.Count - 1 do
   begin
     xData := aTreeView.GetNodeData(aTreeView.AddChild(nil));
-    xData.Reply := aMessages.Messages[X];
+    xData.Message := aMessages.Messages[X];
   end;
   if Assigned(WsdlOperation.LastMessage) then
     WsdlReply := WsdlOperation.LastMessage;
@@ -1856,7 +1862,7 @@ begin
     Data := aTreeView.GetNodeData(aNode);
     if Assigned(Data) then
     begin
-      aMessage := Data.Reply;
+      aMessage := Data.Message;
     end;
   end;
 end;
@@ -4669,7 +4675,7 @@ begin
       end;
       Node := GridView.AddChild(nil);
       xData := GridView.GetNodeData(Node);
-      xData.Reply := xMessage;
+      xData.Message := xMessage;
       stubChanged := True;
     end
     else
@@ -5078,7 +5084,7 @@ begin
   end;
   result := GridView.AddChild(nil);
   xData := GridView.GetNodeData(result);
-  xData.Reply := xNewMessage;
+  xData.Message := xNewMessage;
 end;
 
 procedure TMainForm.GridViewFocusChanged(Sender: TBaseVirtualTree;
@@ -5229,10 +5235,10 @@ begin
           exit;
         fData := GetNodeData(fNode);
         pData := GetNodeData(pNode);
-        ExchangeMessages(fData.Reply, pData.Reply);
-        xMessage := pData.Reply;
-        pData.Reply := fData.Reply;
-        fData.Reply := xMessage;
+        ExchangeMessages(fData.Message, pData.Message);
+        xMessage := pData.Message;
+        pData.Message := fData.Message;
+        fData.Message := xMessage;
         InvalidateNode(pNode);
         InvalidateNode(fNode);
         Selected[pNode] := True;
@@ -5288,10 +5294,10 @@ begin
             exit;
           fData := GridView.GetNodeData(fNode);
           nData := GridView.GetNodeData(nNode);
-          ExchangeMessages(fData.Reply, nData.Reply);
-          xMessage := nData.Reply;
-          nData.Reply := fData.Reply;
-          fData.Reply := xMessage;
+          ExchangeMessages(fData.Message, nData.Message);
+          xMessage := nData.Message;
+          nData.Message := fData.Message;
+          fData.Message := xMessage;
           InvalidateNode(nNode);
           InvalidateNode(fNode);
           Selected[nNode] := True;
@@ -5876,7 +5882,7 @@ begin
             while Assigned(xNode) do
             begin
               xData := GridView.GetNodeData(xNode);
-              if xData.Reply = xLog.Mssg then
+              if xData.Message = xLog.Mssg then
               begin
                 GridView.Selected[xNode] := True;
                 GridViewFocusedNode(xNode);
@@ -7473,19 +7479,11 @@ begin
   xLog := NodeToMsgLog(False,Sender, Node);
   if Assigned(xLog) and (xLog is TLog) then
   begin
-    if (xLog.Exception <> '') then
+    if xLog.ShowHighLighted then
     begin
-      TargetCanvas.Font.Color := clRed;
+      if not(Node = Sender.FocusedNode) then
+        TargetCanvas.Font.Color := clBlue;
       TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
-    end
-    else
-    begin
-      if xLog.ShowHighLighted then
-      begin
-        if not(Node = Sender.FocusedNode) then
-          TargetCanvas.Font.Color := clBlue;
-        TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
-      end;
     end;
   end;
 end;
@@ -8443,6 +8441,14 @@ begin
           else
             ImageIndex := -1;
         end;
+      logExceptionColumn:
+        begin
+          xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
+          if Assigned(xLog) and (xLog.Exception <> '') then
+            ImageIndex := 84
+          else
+            ImageIndex := -1;
+        end;
       logRequestTreeColumn:
         begin
           xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
@@ -8486,10 +8492,12 @@ procedure TMainForm.MessagesVTSClick(Sender: TObject);
 begin
   if not Assigned (MessagesVTS.FocusedNode) then Exit;
   claimedLog := NodeToMsgLog(True,MessagesVTS, MessagesVTS.FocusedNode);
+  if Assigned (claimedLog) then
   try
     case TLogColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
       logExpectedColumn: ShowExpectedXmlActionExecute(nil);
       logRemarksColumn: ShowRemarksActionExecute(nil);
+      logExceptionColumn: xmlUtil.presentString('Exception', claimedLog.Exception);
       logRequestTreeColumn: ShowHttpRequestAsXMLActionExecute(nil);
       logReplyTreeColumn: ShowHttpReplyAsXMLActionExecute(nil);
       logRequestGridColumn: ShowRequestAsXmlGridActionExecute(nil);
@@ -10604,7 +10612,7 @@ begin
             se.UpdateMessageRow(WsdlOperation, xMessage);
             mNode := GridView.AddChild(nil);
             mData := GridView.GetNodeData(mNode);
-            mData.Reply := xMessage;
+            mData.Message := xMessage;
             stubChanged := True;
           except
             on E: Exception do
@@ -10884,7 +10892,7 @@ begin
           begin
             mNode := GridView.AddChild(nil);
             mData := GridView.GetNodeData(mNode);
-            mData.Reply := xMessage;
+            mData.Message := xMessage;
           end;
           xLog.Mssg := xMessage;
           Inc(ok);
@@ -10929,7 +10937,7 @@ var
   xXml: TXmlCvrg;
   xForm: TShowXmlCoverageForm;
 begin
-    xXml := aList.PrepareCoverageReportAsXml ( allOperations
+    xXml := aList.PrepareCoverageReportAsXml ( allAliasses
                                              , se.ignoreCoverageOn
                                              );
     try
@@ -12400,6 +12408,100 @@ begin
   end;
 end;
 
+procedure TMainForm .ShowGridDifferencesActionExecute (Sender : TObject );
+var
+  fNode, nNode: PVirtualNode;
+  fData, nData: PMessageTreeRec;
+  fMessage, nMessage: TWsdlMessage;
+  fXml, nXml: TXml;
+  xA2B: TA2BXml;
+begin
+  if WsdlOperation.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
+  begin
+    ShowMessage('not implemented for freeformat operations');
+    Exit;
+  end;
+  nNode := nil;
+  fNode := GridView.GetFirstSelected;
+  nNode := GridView.GetNextSelected(fNode);
+  if Assigned (fNode)
+  and Assigned (nNode) then
+  begin
+    fData := GridView.GetNodeData(fNode);
+    fMessage := fData.Message;
+    nData := GridView.GetNodeData(nNode);
+    nMessage := nData.Message;
+    try
+      fXml := TXml.CreateAsString('compare', '');
+      with fXml do
+      begin
+        AddXml (TXml.CreateAsString('name', fMessage.Name));
+        with AddXml (TXml.CreateAsString('Req', '')) do
+        begin
+          if fMessage.reqBind is TXml then
+            with AddXml (TXml.CreateAsString(WsdlOperation.reqTagName, '')) do
+              CopyDownLine(fMessage.reqBind as TXml, True);
+          if (fMessage.reqBind is TIpmItem) then
+            AddXml((fMessage.reqBind as TIpmItem).AsXml);
+        end;
+        with AddXml (TXml.CreateAsString('Rpy', '')) do
+        begin
+          if fMessage.rpyBind is TXml then
+            with AddXml (TXml.CreateAsString(WsdlOperation.rpyTagName, '')) do
+              CopyDownLine(fMessage.rpyBind as TXml, True);
+          if (fMessage.rpyBind is TIpmItem) then
+            AddXml((fMessage.rpyBind as TIpmItem).AsXml);
+        end;
+      end;
+      nXml := TXml.CreateAsString('compare', '');
+      with nXml do
+      begin
+        AddXml (TXml.CreateAsString('name', nMessage.Name));
+        with AddXml (TXml.CreateAsString('Req', '')) do
+        begin
+          if nMessage.reqBind is TXml then
+            with AddXml (TXml.CreateAsString(WsdlOperation.reqTagName, '')) do
+              CopyDownLine(nMessage.reqBind as TXml, True);
+          if (nMessage.reqBind is TIpmItem) then
+            AddXml((nMessage.reqBind as TIpmItem).AsXml);
+        end;
+        with AddXml (TXml.CreateAsString('Rpy', '')) do
+        begin
+          if nMessage.rpyBind is TXml then
+            with AddXml (TXml.CreateAsString(WsdlOperation.rpyTagName, '')) do
+              CopyDownLine(nMessage.rpyBind as TXml, True);
+          if (nMessage.rpyBind is TIpmItem) then
+            AddXml((nMessage.rpyBind as TIpmItem).AsXml);
+        end;
+      end;
+    finally
+    end;
+    a2bInitialize;
+    try
+      xA2B := TA2BXml.CreateA2B('', fXml, nXml, Nil);
+    finally
+      a2bUninitialize;
+    end;
+    try
+      Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+      with ShowA2BXmlForm do
+      try
+        Caption := 'Diffrences in design messages';
+        ColumnHeaderA := 'Value first selected';
+        ColumnHeaderB := 'Value next selected';
+        Xml := xA2B;
+        ShowModal;
+      finally
+        FreeAndNil(ShowA2BXmlForm);
+      end;
+    finally
+      FreeAndNil(xA2B);
+      FreeAndNil(fXml);
+      FreeAndNil(nXml);
+    end;
+  end;
+end;
+
 procedure TMainForm.OperationOptionsActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -12580,6 +12682,14 @@ end;
 procedure TMainForm .DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
 begin
   doShowDesignSplitVertical := not doShowDesignSplitVertical;
+end;
+
+procedure TMainForm .GridPopupMenuPopup (Sender : TObject );
+var
+  n: Integer;
+begin
+  n := GridView.SelectedCount;
+  ShowGridDifferencesAction.Enabled := (n = 2);
 end;
 
 procedure TMainForm .httpRequestDesignActionExecute (Sender : TObject );
@@ -13128,12 +13238,41 @@ procedure TMainForm .MessagesVTSCompareNodes (Sender : TBaseVirtualTree ;
   Node1 , Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
 var
   s1, s2: String;
+  log1, log2: TLog;
 begin
   Result := 0;
   s1 := '';
   s2 := '';
-  MessagesVTSGetText(Sender, Node1, Column, ttNormal, s1);
-  MessagesVTSGetText(Sender, Node2, Column, ttNormal, s2);
+  case TLogColumnEnum(Column) of
+    logExpectedColumn: ;
+    logRemarksColumn:
+      begin
+        log1 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node1);
+        if Assigned (log1) then
+          s1 := log1.Remarks;
+        log2 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node2);
+        if Assigned (log2) then
+          s2 := log2.Remarks;
+      end;
+    logExceptionColumn:
+      begin
+        log1 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node1);
+        if Assigned (log1) then
+          s1 := log1.Exception;
+        log2 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node2);
+        if Assigned (log2) then
+          s2 := log2.Exception;
+      end;
+    logRequestTreeColumn: ;
+    logReplyTreeColumn: ;
+    logRequestGridColumn: ;
+    logReplyGridColumn: ;
+    else
+      begin
+        MessagesVTSGetText(Sender, Node1, Column, ttNormal, s1);
+        MessagesVTSGetText(Sender, Node2, Column, ttNormal, s2);
+      end;
+  end;
   if  s1 < s2 then
     result := -1;
   if s1 > s2 then

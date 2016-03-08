@@ -16,6 +16,7 @@ uses Classes
    , igGlobals
    , Dialogs
    , ClaimListz
+   , xmlUtilz
    ;
 
 type
@@ -472,7 +473,7 @@ end;
 function TLogList.PrepareCoverageReportAsXml(aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
 var
   o, lg, p, e, d, x: Integer;
-  xXml, faultXml: TXml;
+  xXml, faultXml, detailXml: TXml;
   oXml, mXml, xXmlCvrg, faultCoverageXml: TXmlCvrg;
   xLog: TLog;
 begin
@@ -486,7 +487,7 @@ begin
       if (WsdlService.DescriptionType in [ipmDTXsd, ipmDTWsdl, ipmDTSwiftMT, ipmDTCobol])
       and (not HiddenFromUI) then
       begin
-        with AddXml (TXmlCvrg.CreateAsString(reqTagName, '')) do
+        with AddXml (TXmlCvrg.CreateAsString(Alias, '')) do
         begin
 {}{
           if Assigned (fltBind)
@@ -525,6 +526,7 @@ begin
       end;
     end;
   end;
+
   // and now do the counting
   for lg := 0 to Count - 1 do
   begin
@@ -537,7 +539,7 @@ begin
         ipmDTCobol:
         begin
           Inc (result.Counter);
-          oXml := result.Items.XmlItemByTag[xLog.Operation.reqTagName] as TXmlCvrg;
+          oXml := result.Items.XmlItemByTag[xLog.Operation.Alias] as TXmlCvrg;
           if not Assigned (oXml) then
             raise Exception.CreateFmt('Lookup for %s failed', [xLog.Operation.reqTagName]);
           Inc (oXml.Counter);
@@ -583,7 +585,7 @@ begin
         ipmDTXsd, ipmDTSwiftMT:
         begin
           Inc (result.Counter);
-          oXml := result.Items.XmlItemByTag[xLog.Operation.reqTagName] as TXmlCvrg;
+          oXml := result.Items.XmlItemByTag[xLog.Operation.Alias] as TXmlCvrg;
           if not Assigned (oXml) then
             raise Exception.CreateFmt('Lookup for %s failed', [xLog.Operation.reqTagName]);
           Inc (oXml.Counter);
@@ -617,7 +619,7 @@ begin
         ipmDTWsdl:
         begin
           Inc (result.Counter);
-          oXml := result.Items.XmlItemByTag[xLog.Operation.reqTagName] as TXmlCvrg;
+          oXml := result.Items.XmlItemByTag[xLog.Operation.Alias] as TXmlCvrg;
           if not Assigned (oXml) then
             raise Exception.Create('Operation Lookup failed for ' + xLog.Operation.reqTagName);
           Inc (oXml.Counter);
@@ -644,6 +646,9 @@ begin
               faultXml := xXml.FindUQXml('Envelope.Body.Fault');
               if Assigned (faultXml) then
               begin
+                detailXml := faultXml.ItemByTag['detail'];
+                if Assigned (detailXml) then
+                  detailXml.Name := 'SOAPFault';
                 faultCoverageXml := TXmlCvrg(oXml.FindUQXml(oXml.Name + '.Fault'));
                 if Assigned (faultCoverageXml) then
                   faultCoverageXml.CountUsage(faultXml, False);

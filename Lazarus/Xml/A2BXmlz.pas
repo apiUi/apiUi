@@ -462,7 +462,6 @@ const
             + Tab + IfThen(aXml.Ignored and not (aXml.ChangeKind = ckCopy), 'true')
             + Tab + '"'+ aXml.Value + '"'
             + Tab + '"'+ aXml.bValue + '"'
-            + Tab + aXml.NameSpace
             + LineEnding
             ;
     for x := 0 to aXml.Items.Count - 1 do
@@ -475,7 +474,6 @@ begin
           + Tab + 'Ignored'
           + Tab + 'Value'
           + Tab + 'ReferenceValue'
-          + Tab + 'NameSpace'
           + LineEnding
           + _tsv(self, 0);
 end;

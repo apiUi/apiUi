@@ -1,31 +1,31 @@
 object ShowXmlCoverageForm: TShowXmlCoverageForm
-  Left = 343
-  Height = 481
+  Left = 384
+  Height = 523
   Top = 135
-  Width = 920
+  Width = 879
   Caption = 'XML Data'
-  ClientHeight = 481
-  ClientWidth = 920
+  ClientHeight = 523
+  ClientWidth = 879
   Color = clBtnFace
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
-    Height = 415
+    Height = 457
     Top = 29
-    Width = 920
+    Width = 879
     Align = alClient
     BorderWidth = 3
-    ClientHeight = 415
-    ClientWidth = 920
+    ClientHeight = 457
+    ClientWidth = 879
     TabOrder = 0
     object Splitter1: TSplitter
-      Left = 726
-      Height = 407
+      Left = 685
+      Height = 449
       Top = 4
       Width = 5
       Align = alRight
@@ -33,9 +33,9 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object TreeView: TVirtualStringTree
       Left = 4
-      Height = 407
+      Height = 449
       Top = 4
-      Width = 722
+      Width = 681
       Align = alClient
       BottomSpace = 10
       Color = clBtnFace
@@ -106,12 +106,12 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
       OnMouseDown = TreeViewMouseDown
     end
     object Panel2: TPanel
-      Left = 731
-      Height = 407
+      Left = 690
+      Height = 449
       Top = 4
       Width = 185
       Align = alRight
-      ClientHeight = 407
+      ClientHeight = 449
       ClientWidth = 185
       TabOrder = 1
       object Splitter2: TSplitter
@@ -144,7 +144,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
       end
       object DocumentationMemo: TlzRichEdit
         Left = 1
-        Height = 296
+        Height = 338
         Top = 110
         Width = 183
         DefaultExtension = '.rtf'
@@ -164,7 +164,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     Left = 0
     Height = 29
     Top = 0
-    Width = 920
+    Width = 879
     Caption = 'ToolBar1'
     Images = ActionImageList
     ParentShowHint = False
@@ -177,6 +177,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton13: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton13'
@@ -195,6 +196,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton10: TToolButton
       Left = 80
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton10'
@@ -213,6 +215,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton6: TToolButton
       Left = 136
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton6'
@@ -231,6 +234,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton5: TToolButton
       Left = 192
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton5'
@@ -247,11 +251,11 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
   object Panel3: TPanel
     Left = 0
     Height = 37
-    Top = 444
-    Width = 920
+    Top = 486
+    Width = 879
     Align = alBottom
     ClientHeight = 37
-    ClientWidth = 920
+    ClientWidth = 879
     TabOrder = 2
     object OkButton: TButton
       Left = 8
@@ -328,11 +332,13 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
       Caption = 'downAction'
       ImageIndex = 117
       OnExecute = downActionExecute
+      ShortCut = 24654
     end
     object upAction: TAction
       Caption = 'upAction'
       ImageIndex = 118
       OnExecute = upActionExecute
+      ShortCut = 24656
     end
     object ToggleShowIgnoredsAction: TAction
       Caption = 'ToggleShowIgnoredsAction'

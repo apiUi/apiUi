@@ -129,6 +129,7 @@ function IsExistingFile (aRefName, aFileName: String): Boolean;
 function CheckAndPromptForExistingFile (aCaption, aRefName, aFileName: String): String;
 function EditXmlXsdBased (aCaption, aXsdPath, aInitialFocus, aValidateDuplicatesOn: String; aReadOnly: Boolean; aRootXsd: TXsd; aXml: TXml): Boolean;
 procedure ShowText (aCaption, aText: String);
+procedure ShowXml (aCaption: String; aXml: TXml);
 
 const base64DocxStartStr = 'UEsDBB';
 const base64PdfStartStr = 'JVBERi';
@@ -176,6 +177,19 @@ begin
     xForm.ShowModal;
   finally
     FreeAndNil(xForm);
+  end;
+end;
+
+procedure ShowXml(aCaption: String; aXml: TXml);
+begin
+  Application.CreateForm(TShowXmlForm, ShowXmlForm);
+  try
+    ShowXmlForm.Caption := aCaption;
+    ShowXmlForm.Bind := aXml;
+    ShowXmlForm.isReadOnly := True;
+    ShowXmlForm.ShowModal;
+  finally
+    FreeAndNil(ShowXmlForm);
   end;
 end;
 

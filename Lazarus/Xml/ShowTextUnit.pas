@@ -17,6 +17,9 @@ uses
   FormIniFilez;
 
 type
+
+  { TShowTextForm }
+
   TShowTextForm = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
@@ -25,6 +28,8 @@ type
     WrapTextCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown (Sender : TObject ; var Key : Word ;
+      Shift : TShiftState );
     procedure OKButtonClick(Sender: TObject);
     procedure MemoKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -66,6 +71,13 @@ begin
   IniFile.BooleanByName['WrapText']:=DoWrapText;
   IniFile.Save;
   IniFile.Free;
+end;
+
+procedure TShowTextForm .FormKeyDown (Sender : TObject ; var Key : Word ;
+  Shift : TShiftState );
+begin
+  if Key = VK_ESCAPE then
+    ModalResult := mrCancel;
 end;
 
 procedure TShowTextForm.OKButtonClick(Sender: TObject);
@@ -130,12 +142,14 @@ begin
     Memo.Color := clWindow;
     OKButton.Caption := '&OK';
     OKButton.ModalResult := mrOk;
+    OKButton.Cancel := False;
   end
   else
   begin
     Memo.ParentColor := True;
     OKButton.Caption := '&Close';
     OKButton.ModalResult := mrCancel;
+    OKButton.Cancel := True;
   end;
 end;
 

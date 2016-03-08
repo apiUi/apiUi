@@ -11,8 +11,10 @@ object ShowTextForm: TShowTextForm
   Font.Color = clWindowText
   Font.Height = -13
   Font.Name = 'MS Sans Serif'
+  KeyPreview = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   LCLVersion = '1.2.6.0'
   object Panel1: TPanel
