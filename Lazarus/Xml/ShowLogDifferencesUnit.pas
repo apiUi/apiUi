@@ -25,6 +25,14 @@ type
     reqA2B, rpyA2B: TA2BXml;
   end;
 
+  arrowTypes = ( RightRedArrowType=143
+               , LeftRedArrowType
+               , RightArrowType
+               , LeftArrowType
+               , RightGreenArrowType
+               , LeftGreenArrowType
+               );
+
 type
 
   { TShowLogDifferencesForm }
@@ -112,7 +120,9 @@ type
     Diffs: TA2BStringList;
     fCompareLogOrderBy : TCompareLogOrderBy ;
     fConfigChanged : Boolean ;
-    fDiffsFound : Boolean ;
+    fReqDiffsFound : Boolean ;
+    fRpyDiffsFound : Boolean ;
+    function getDiffsFound : Boolean ;
     procedure PopulateMain (aChanged: Boolean);
     procedure MaintainList (aCaptian: String; aList: TStringList; aDoOrder: Boolean);
     procedure CreateA (xData: PVSTreeRec);
@@ -130,7 +140,7 @@ type
     bLogs: TLogList;
     ReferenceFileName: String;
     property compareLogOrderBy: TCompareLogOrderBy read fCompareLogOrderBy write setCompareLogOrderBy;
-    property differencesFound: Boolean read fDiffsFound;
+    property differencesFound: Boolean read getDiffsFound;
     property configChanged: Boolean read fConfigChanged;
   end;
 
@@ -230,7 +240,10 @@ begin
   fConfigChanged := aChanged;
   Screen.Cursor := crHourGlass;
   TotalResultButton.ImageIndex := 131;
-  fDiffsFound := False;
+  mainVST.Header.Columns[Ord(ceReqColumn)].ImageIndex := Ord(RightArrowType);
+  mainVST.Header.Columns[Ord(ceRpyColumn)].ImageIndex := Ord(LeftArrowType);
+  fReqDiffsFound := False;
+  fRpyDiffsFound := False;
   Application.ProcessMessages;
   try
     aLogs.Sorted := False;
@@ -342,13 +355,26 @@ begin
       a2bUninitialize;
     end;
   finally
-    if fDiffsFound then
+    if differencesFound then
       TotalResultButton.ImageIndex := 133
     else
       TotalResultButton.ImageIndex := 132;
+    if fReqDiffsFound then
+      mainVST.Header.Columns[Ord(ceReqColumn)].ImageIndex := Ord(RightRedArrowType)
+    else
+      mainVST.Header.Columns[Ord(ceReqColumn)].ImageIndex := Ord(RightGreenArrowType);
+    if fRpyDiffsFound then
+      mainVST.Header.Columns[Ord(ceRpyColumn)].ImageIndex := Ord(LeftRedArrowType)
+    else
+      mainVST.Header.Columns[Ord(ceRpyColumn)].ImageIndex := Ord(LeftGreenArrowType);
     Screen.Cursor := crDefault;
     Application.ProcessMessages;
   end;
+end;
+
+function TShowLogDifferencesForm .getDiffsFound : Boolean ;
+begin
+  result := (fReqDiffsFound or fRpyDiffsFound);
 end;
 
 procedure TShowLogDifferencesForm.mainVSTColumnClick(Sender: TBaseVirtualTree;
@@ -525,10 +551,12 @@ begin
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
-  fDiffsFound := fDiffsFound
-              or (xData.reqA2B.Differs and (not xData.reqA2B.Ignored))
-              or (xData.rpyA2B.Differs and (not xData.rpyA2B.Ignored))
-               ;
+  fReqDiffsFound := fReqDiffsFound
+                 or (xData.reqA2B.Differs and (not xData.reqA2B.Ignored))
+                  ;
+  fRpyDiffsFound := fRpyDiffsFound
+                 or (xData.rpyA2B.Differs and (not xData.rpyA2B.Ignored))
+                  ;
 end;
 
 procedure TShowLogDifferencesForm.mainVSTClick(Sender: TObject);
@@ -592,10 +620,11 @@ begin
   aXml := xData.aLog.reqBodyAsXml;
   xData.reqA2B := TA2BXml.CreateA (xData.aLog.OperationName, aXml, True);
   FreeAndNil (aXml);
+  fReqDiffsFound := True;
   aXml := xData.aLog.rpyBodyAsXml;
   xData.rpyA2B := TA2BXml.CreateA(xData.aLog.OperationName, aXml, True);
   FreeAndNil (aXml);
-  fDiffsFound := True;
+  fRpyDiffsFound := True;
 end;
 
 procedure TShowLogDifferencesForm.CreateB(xData: PVSTreeRec);
@@ -605,10 +634,11 @@ begin
   bXml := xData.bLog.reqBodyAsXml;
   xData.reqA2B := TA2BXml.CreateB (xData.bLog.OperationName, bXml, True);
   FreeAndNil (bXml);
+  fReqDiffsFound := True;
   bXml := xData.bLog.rpyBodyAsXml;
   xData.rpyA2B := TA2BXml.CreateB (xData.bLog.OperationName, bXml, True);
   FreeAndNil (bXml);
-  fDiffsFound := True;
+  fRpyDiffsFound := True;
 end;
 
 procedure TShowLogDifferencesForm.MaintainIgnoreAdditionsActionExecute(

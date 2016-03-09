@@ -13022,6 +13022,7 @@ begin
           xmlio.SaveStringToFile ( xReport.RefFileName
                                  , xmlio.ReadStringFromFile (xReport.FileName)
                                  );
+          xReport.Status := rsOk;
         except
           on e: Exception do
           begin

@@ -23,9 +23,6 @@ type
   { TShowA2BXmlForm }
 
   TShowA2BXmlForm = class(TForm)
-    IgnoreInclPrefixMenuItem: TMenuItem;
-    IgnoreAddingInclPrefixMenuItem: TMenuItem;
-    IgnoreRemovingInclPrefixMenuItem: TMenuItem;
     MenuItem1: TMenuItem;
     AddToSortColumnsMenuItem: TMenuItem;
     Panel1: TPanel;
@@ -83,9 +80,6 @@ type
     procedure ignoreFullCaptionMenuitemClick(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure IgnoreInclPrefixMenuItemClick(Sender: TObject);
-    procedure IgnoreAddingInclPrefixMenuItemClick(Sender: TObject);
-    procedure IgnoreRemovingInclPrefixMenuItemClick(Sender: TObject);
     procedure NextDiffActionUpdate(Sender: TObject);
     procedure PrevDiffActionUpdate(Sender: TObject);
     procedure PrevDiffActionExecute(Sender: TObject);
@@ -565,17 +559,14 @@ begin
                                     and (   (xXml.ChangeKind = ckModify)
                                         );
   ignoreFullCaptionMenuitem.Enabled := ignoreDiffrenvesOnMenuItem.Enabled;
-  IgnoreInclPrefixMenuItem.Enabled := ignoreDiffrenvesOnMenuItem.Enabled;
   IgnoreAddingMenuItem.Enabled := (Assigned (ignoreAddingOn))
                               and (   (xXml.ChangeKind = ckDelete)
                                   );
   IgnoreAddingFullCaptionMenuItem.Enabled := IgnoreAddingMenuItem.Enabled;
-  IgnoreAddingInclPrefixMenuItem.Enabled:= IgnoreAddingMenuItem.Enabled;;
   IgnoreRemovingTagMenuItem.Enabled := (Assigned (ignoreAddingOn))
                                    and (   (xXml.ChangeKind = ckAdd)
                                        );
   IgnoreRemovingFullCaptionMenuItem.Enabled := IgnoreRemovingTagMenuItem.Enabled;
-  IgnoreRemovingInclPrefixMenuItem.Enabled:=IgnoreRemovingTagMenuItem.Enabled;
   IgnoreOrderFullCaptionInclPrefixMenuItem.Enabled := (Assigned (ignoreOrderOn))
                                         and (xXml.Differs)
                                         and (not xXml.ThisOneDiffers)
@@ -587,13 +578,10 @@ begin
                                      ;
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
-  IgnoreInclPrefixMenuItem.Caption := 'Ignore differences on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   IgnoreAddingMenuItem.Caption := 'Ignore adding of: *.' + rmPrefix(xXml.TagName);
   IgnoreAddingFullCaptionMenuItem.Caption := 'Ignore adding of: ' + xXml.FullUQCaption;
-  IgnoreAddingInclPrefixMenuItem.Caption := 'Ignore adding on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   IgnoreRemovingTagMenuItem.Caption := 'Ignore removing of: *.' + rmPrefix(xXml.TagName);
   IgnoreRemovingFullCaptionMenuItem.Caption := 'Ignore removing of: ' + xXml.FullUQCaption;
-  IgnoreRemovingInclPrefixMenuItem.Caption := 'Ignore removing on: ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   IgnoreOrderFullCaptionInclPrefixMenuItem.Caption := 'Ignore order for repeating subelements for : ' + xXml.Prefix + '.' + xXml.FullUQCaption;
   AddToSortColumnsMenuItem.Caption := 'Add ' + xXml.FullUQCaption + ' to list of additional sort elements';
   CopyDataToClipboardMenuItem.Caption := 'Copy tab separated data from '
@@ -862,45 +850,6 @@ end;
 procedure TShowA2BXmlForm.FormShow(Sender: TObject);
 begin
   RefreshNeeded := False;
-end;
-
-procedure TShowA2BXmlForm.IgnoreInclPrefixMenuItemClick(Sender: TObject);
-var
-  xXml: TA2BXml;
-begin
-  xXml := nil;
-  if Assigned (TreeView.FocusedNode) then
-  begin
-    SelectedXml(xXml);
-    ignoreDifferencesOn.Add(xXml.Prefix + '.' + xXml.FullUQCaption);
-    RefreshNeeded := True;
-  end;
-end;
-
-procedure TShowA2BXmlForm.IgnoreAddingInclPrefixMenuItemClick(Sender: TObject);
-var
-  xXml: TA2BXml;
-begin
-  xXml := nil;
-  if Assigned (TreeView.FocusedNode) then
-  begin
-    SelectedXml(xXml);
-    ignoreAddingOn.Add(xXml.Prefix + '.' + xXml.FullUQCaption);
-    RefreshNeeded := True;
-  end;
-end;
-
-procedure TShowA2BXmlForm.IgnoreRemovingInclPrefixMenuItemClick(Sender: TObject);
-var
-  xXml: TA2BXml;
-begin
-  xXml := nil;
-  if Assigned (TreeView.FocusedNode) then
-  begin
-    SelectedXml(xXml);
-    ignoreRemovingOn.Add(xXml.Prefix + '.' + xXml.FullUQCaption);
-    RefreshNeeded := True;
-  end;
 end;
 
 procedure TShowA2BXmlForm.CloseActionExecute(Sender: TObject);

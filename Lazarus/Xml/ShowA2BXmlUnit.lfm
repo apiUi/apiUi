@@ -262,10 +262,6 @@ object ShowA2BXmlForm: TShowA2BXmlForm
       Caption = 'ignore fullcaption'
       OnClick = ignoreFullCaptionMenuitemClick
     end
-    object IgnoreInclPrefixMenuItem: TMenuItem
-      Caption = 'Ignore incl Prefix'
-      OnClick = IgnoreInclPrefixMenuItemClick
-    end
     object N5: TMenuItem
       Caption = '-'
     end
@@ -277,10 +273,6 @@ object ShowA2BXmlForm: TShowA2BXmlForm
       Caption = 'Ignore Adding FullCaption'
       OnClick = IgnoreAddingFullCaptionMenuItemClick
     end
-    object IgnoreAddingInclPrefixMenuItem: TMenuItem
-      Caption = 'Ignore adding incl prefix'
-      OnClick = IgnoreAddingInclPrefixMenuItemClick
-    end
     object N6: TMenuItem
       Caption = '-'
     end
@@ -291,10 +283,6 @@ object ShowA2BXmlForm: TShowA2BXmlForm
     object IgnoreRemovingFullCaptionMenuItem: TMenuItem
       Caption = 'Ignore removing of fullcaption'
       OnClick = IgnoreRemovingFullCaptionMenuItemClick
-    end
-    object IgnoreRemovingInclPrefixMenuItem: TMenuItem
-      Caption = 'Ignore Removing Icl Prefix'
-      OnClick = IgnoreRemovingInclPrefixMenuItemClick
     end
     object N3: TMenuItem
       Caption = '-'

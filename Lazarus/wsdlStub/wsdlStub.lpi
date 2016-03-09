@@ -18,8 +18,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <RevisionNr Value="3"/>
-      <BuildNr Value="9696"/>
+      <RevisionNr Value="4"/>
+      <BuildNr Value="9710"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

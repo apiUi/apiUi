@@ -190,31 +190,30 @@ begin
 end;
 
 function doOrder(List: TStringList; Index1, Index2: Integer): Integer;
-var
-  t1, t2: String;
 begin
   result := 0;
-  if List.Strings[Index1] > List.Strings[Index2] then
+  with (List as TLogList) do
   begin
-    result := 1;
-    exit;
-  end;
-  if List.Strings[Index1] < List.Strings[Index2] then
-  begin
-    result := -1;
-    exit;
-  end;
-  t1 := xsdFormatDateTime((List as TLogList).LogItems[Index1].InboundTimeStamp, @TIMEZONE_UTC);
-  t2 := xsdFormatDateTime((List as TLogList).LogItems[Index2].InboundTimeStamp, @TIMEZONE_UTC);
-  if t1 > t2 then
-  begin
-    result := 1;
-    exit;
-  end;
-  if t1 < t2 then
-  begin
-    result := -1;
-    exit;
+    if Strings[Index1] > Strings[Index2] then
+    begin
+      result := 1;
+      exit;
+    end;
+    if Strings[Index1] < Strings[Index2] then
+    begin
+      result := -1;
+      exit;
+    end;
+    if LogItems[Index1].InboundTimeStamp > LogItems[Index2].InboundTimeStamp then
+    begin
+      result := 1;
+      exit;
+    end;
+    if LogItems[Index1].InboundTimeStamp < LogItems[Index2].InboundTimeStamp then
+    begin
+      result := -1;
+      exit;
+    end;
   end;
 end;
 
