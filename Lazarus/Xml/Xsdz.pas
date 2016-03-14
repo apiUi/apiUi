@@ -239,7 +239,7 @@ type
     procedure Finalise;
     procedure Clear;
     function FindTypeDef(aNameSpace, aName: String): TXsdDataType;
-    function FindElement(aNameSpace, aName: String; aSearchAll: Boolean = False): TXsd;
+    function FindElement(aNameSpace, aName: String): TXsd;
     function xsdFindTypeDef(aNameSpace, aName: String): TXsdDataType;
     procedure AddBuiltIns;
     procedure AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent);
@@ -3073,7 +3073,7 @@ begin
     result := TypeDefs.XsdDataTypes[f];
 end;
 
-function TXsdDescr.FindElement (aNameSpace , aName: String; aSearchAll: Boolean = False): TXsd ;
+function TXsdDescr.FindElement (aNameSpace , aName: String): TXsd ;
   function _search (aTypedef: TXsdDataType): TXsd;
   var
     x: integer;
@@ -3089,18 +3089,6 @@ function TXsdDescr.FindElement (aNameSpace , aName: String; aSearchAll: Boolean 
         begin
           result := Xsds[x];
           exit;
-        end;
-      end;
-    end;
-    if aSearchAll then
-    begin
-      with aTypeDef.ElementDefs do
-      begin
-        for x := 0 to Count - 1 do
-        begin
-          result := _search(Xsds[x].sType);
-          if Assigned (result) then
-            exit;
         end;
       end;
     end;

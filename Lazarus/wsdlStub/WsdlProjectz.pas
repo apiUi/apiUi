@@ -482,7 +482,7 @@ begin
   or not (aOperation is TWsdlOperation)
   or not Assigned ((aOperation as TWsdlOperation).Data) then
   begin
-    wsdlz.SjowMessage('AddRemark: ' + aString);
+    xmlz.SjowMessage('AddRemark: ' + aString);
     exit;
   end;
   with (aOperation as TWsdlOperation).Data as TLog do

@@ -18,6 +18,7 @@ resourcestring
   S_XML_REGEXP_LINK = '(?i)(FTP|HTTP|FILE|DOC)://([_a-z\d\-/]+(\.[_a-z\d\-/]+)+)((/[ _a-z\d\-\\\./]+)+)*([\?#][a-z0-9=&_/]+)?';
 
 type TOnHaveString = procedure ( aString: String) of Object;
+type TOnStringEvent = procedure (const Msg: String) of Object;
 type TAnsiStringFunctionAnsiString = function (aString: AnsiString): AnsiString of Object;
 
 type TXmlTagsCase = (xmlTCDontChange, xmlTCUpperCase, xmlTCLowerCase);
@@ -354,6 +355,7 @@ procedure xmlSetDefaultColors;
 function ColorToHtml (aColor: TColor): String;
 function HtmlToColor (aHtml: String): TColor;
 function textToHtml (aString: String): String;
+procedure SjowMessage (aString: String);
 
 const BOM = #$EF#$BB#$BF;
 const CheckedAtttributeName = 'checked__';
@@ -381,6 +383,7 @@ var
   fgUnknownDatatypeColor: TColor;
   DecryptString: TAnsiStringFunctionAnsiString;
   EncryptString: TAnsiStringFunctionAnsiString;
+  OnNotify: TOnStringEvent;
 
 implementation
 
@@ -401,6 +404,13 @@ uses
    , xmlio
    , HashUtilz
    ;
+
+procedure SjowMessage (aString: String);
+begin
+  if not Assigned (Xmlz.OnNotify) then
+    raise Exception.Create('No OnNotify event assigned: intention was to show message: ' + LineEnding + aString);
+  Xmlz.OnNotify (aString);
+end;
 
 function textToHtml (aString: String): String;
   function _docLink (aString: String): TXml;

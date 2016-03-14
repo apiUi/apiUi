@@ -1,7 +1,7 @@
 object SelectItemForm: TSelectItemForm
-  Left = 227
+  Left = 419
   Height = 246
-  Top = 108
+  Top = 114
   Width = 438
   Anchors = []
   BorderStyle = bsDialog
@@ -60,9 +60,9 @@ object SelectItemForm: TSelectItemForm
       Top = 4
       Width = 430
       Align = alClient
-      ExtendedSelect = False
       ItemHeight = 0
       OnDblClick = ListBoxDblClick
+      Sorted = True
       TabOrder = 0
     end
   end

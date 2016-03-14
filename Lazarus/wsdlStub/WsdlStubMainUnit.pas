@@ -6753,7 +6753,7 @@ begin
   xmlUtil.ReleaseLock := ReleaseLock;
   _OnEndUpdate := EndUpdate;
   _OnBeginUpdate := BeginUpdate;
-  Wsdlz.OnNotify := LogServerNotification;
+  Xmlz.OnNotify := LogServerNotification;
   // due to a bug in TPageControl, not al tabs are visible....
   // statements below make all tabs visible again...??
   DownPageControl.TabPosition := tpBottom;

@@ -560,7 +560,6 @@ procedure CreateCoverageReport (aObject: TObject);
 procedure ClearLogs (aObject: TObject);
 procedure ClearReports (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
-procedure SjowMessage (aString: String);
 function decVarNumber (aName: String): Extended;
 function getVarNumber (aName: String): Extended;
 function incVarNumber (aName: String): Extended;
@@ -634,7 +633,6 @@ var
 
   UILock: TCriticalSection;
   EnvVarLock: TCriticalSection;
-  OnNotify: TOnStringEvent;
   doOperationLock, doUILock: Boolean;
 
 implementation
@@ -1513,13 +1511,6 @@ begin
     result := 1
   else
     result := 0;
-end;
-
-procedure SjowMessage (aString: String);
-begin
-  if not Assigned (wsdlz.OnNotify) then
-    raise Exception.Create('No OnNotify event assigned: intention was to show message: ' + LineEnding + aString);
-  wsdlz.OnNotify (aString);
 end;
 
 procedure ResetOperationCounters;
@@ -4821,7 +4812,7 @@ begin
             xIsElementRef := (Items.XmlValueByTagDef['References', 'TypeDef'] = 'Element');
             if xIsElementRef then
             begin
-              cxsd := Wsdl.XsdDescr.FindElement(xNameSpace, xName, True);
+              cxsd := Wsdl.XsdDescr.FindElement(xNameSpace, xName);
               if not Assigned (cxsd) then
                 SjowMessage(Format ( 'AddedTypeDefElement [%s], could not find element [%s;%s]'
                                    , [ Alias
