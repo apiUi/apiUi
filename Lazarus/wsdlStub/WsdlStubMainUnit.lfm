@@ -168,8 +168,13 @@ object MainForm: TMainForm
       Left = 369
       Height = 22
       Top = 2
-      Width = 58
+      Width = 87
       BevelOuter = bvNone
+      Font.Color = clRed
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
       TabOrder = 0
     end
   end
@@ -185,14 +190,14 @@ object MainForm: TMainForm
     ClientWidth = 967
     TabOrder = 0
     object ScriptSplitter: TSplitter
-      Left = 205
+      Left = 221
       Height = 314
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 824
+      Left = 790
       Height = 314
       Top = 3
       Width = 5
@@ -204,17 +209,17 @@ object MainForm: TMainForm
       Left = 3
       Height = 314
       Top = 3
-      Width = 202
+      Width = 218
       Align = alLeft
       BorderWidth = 2
       ClientHeight = 314
-      ClientWidth = 202
+      ClientWidth = 218
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
         Top = 245
-        Width = 196
+        Width = 212
         Align = alBottom
         Caption = 'ActionToolBar'
         Images = mainImageList
@@ -269,10 +274,10 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object Button1: TButton
-          Left = 1
+          Left = 143
           Height = 22
           Hint = 'Apply to other services or operations...'
-          Top = 24
+          Top = 2
           Width = 54
           Action = ApplyToAction
           TabOrder = 1
@@ -282,7 +287,7 @@ object MainForm: TMainForm
         Left = 3
         Height = 242
         Top = 3
-        Width = 196
+        Width = 212
         Align = alClient
         BottomSpace = 10
         Colors.GridLineColor = clWhite
@@ -292,6 +297,7 @@ object MainForm: TMainForm
           item
             Position = 0
             Text = 'Operation'
+            Width = 170
           end>
         Header.DefaultHeight = 17
         Header.Font.Color = clWindowText
@@ -315,18 +321,18 @@ object MainForm: TMainForm
         Left = 3
         Height = 37
         Top = 274
-        Width = 196
+        Width = 212
         Align = alBottom
         Caption = 'ScriptButtonsPanel'
         ClientHeight = 37
-        ClientWidth = 196
+        ClientWidth = 212
         TabOrder = 2
         OnResize = ScriptButtonsPanelResize
         object EditScriptButton: TPanel
           Left = 1
           Height = 35
           Top = 1
-          Width = 98
+          Width = 114
           Align = alClient
           BevelInner = bvRaised
           Caption = 'Script'
@@ -338,7 +344,7 @@ object MainForm: TMainForm
           OnClick = EditScriptButtonClick
         end
         object AfterRequestScriptButton: TPanel
-          Left = 99
+          Left = 115
           Height = 35
           Top = 1
           Width = 96
@@ -356,22 +362,22 @@ object MainForm: TMainForm
       end
     end
     object XsdPanel: TPanel
-      Left = 829
+      Left = 795
       Height = 314
       Top = 3
-      Width = 135
+      Width = 169
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
       ClientHeight = 314
-      ClientWidth = 135
+      ClientWidth = 169
       TabOrder = 1
       object Splitter6: TSplitter
         Cursor = crVSplit
         Left = 4
         Height = 5
         Top = 73
-        Width = 127
+        Width = 161
         Align = alTop
         ResizeAnchor = akTop
       end
@@ -380,7 +386,7 @@ object MainForm: TMainForm
         Left = 4
         Height = 5
         Top = 232
-        Width = 127
+        Width = 161
         Align = alTop
         ResizeAnchor = akTop
       end
@@ -388,7 +394,7 @@ object MainForm: TMainForm
         Left = 4
         Height = 69
         Top = 4
-        Width = 127
+        Width = 161
         Align = alTop
         ParentColor = True
         ReadOnly = True
@@ -398,11 +404,12 @@ object MainForm: TMainForm
         Left = 4
         Height = 154
         Top = 78
-        Width = 127
+        Width = 161
         Align = alTop
         Columns = <        
           item
             Caption = 'Property'
+            Width = 70
           end        
           item
             Caption = 'Value'
@@ -418,7 +425,7 @@ object MainForm: TMainForm
         Left = 4
         Height = 73
         Top = 237
-        Width = 127
+        Width = 161
         DefaultExtension = '.rtf'
         Align = alClient
         Color = clBtnFace
@@ -432,23 +439,23 @@ object MainForm: TMainForm
       end
     end
     object MiddlePanel: TPanel
-      Left = 210
+      Left = 226
       Height = 314
       Top = 3
-      Width = 614
+      Width = 564
       Align = alClient
       Caption = 'MiddlePanel'
       ClientHeight = 314
-      ClientWidth = 614
+      ClientWidth = 564
       TabOrder = 4
       object WsdlInfoPanel: TPanel
         Left = 1
         Height = 37
         Top = 1
-        Width = 612
+        Width = 562
         Align = alTop
         ClientHeight = 37
-        ClientWidth = 612
+        ClientWidth = 562
         TabOrder = 0
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
@@ -512,27 +519,27 @@ object MainForm: TMainForm
         Left = 1
         Height = 275
         Top = 38
-        Width = 612
+        Width = 562
         Align = alClient
         Caption = 'DataPanel'
         ClientHeight = 275
-        ClientWidth = 612
+        ClientWidth = 562
         TabOrder = 1
         object GridDataPanel: TPanel
           Left = 1
           Height = 109
           Top = 1
-          Width = 610
+          Width = 560
           Align = alTop
           Caption = 'GridDataPanel'
           ClientHeight = 109
-          ClientWidth = 610
+          ClientWidth = 560
           TabOrder = 0
           object GridToolBar: TToolBar
             Left = 1
             Height = 29
             Top = 1
-            Width = 608
+            Width = 558
             Caption = 'GridToolBar'
             Images = mainImageList
             TabOrder = 0
@@ -703,7 +710,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 78
             Top = 30
-            Width = 608
+            Width = 558
             Align = alClient
             BottomSpace = 10
             DefaultText = 'Node'
@@ -715,10 +722,12 @@ object MainForm: TMainForm
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
                 Position = 0
                 Text = 'Reply'
+                Width = 200
               end            
               item
                 Position = 1
                 Text = 'Pattern'
+                Width = 200
               end>
             Header.DefaultHeight = 17
             Header.Font.Color = clWindowText
@@ -753,7 +762,7 @@ object MainForm: TMainForm
           Left = 1
           Height = 5
           Top = 110
-          Width = 610
+          Width = 560
           Align = alTop
           ResizeAnchor = akTop
         end
@@ -761,17 +770,17 @@ object MainForm: TMainForm
           Left = 1
           Height = 159
           Top = 115
-          Width = 610
+          Width = 560
           Align = alClient
           Caption = 'TreeDataPanel'
           ClientHeight = 159
-          ClientWidth = 610
+          ClientWidth = 560
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
             Top = 141
-            Width = 608
+            Width = 558
             Align = alBottom
             Alignment = taLeftJustify
             BevelInner = bvLowered
@@ -781,7 +790,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 29
             Top = 1
-            Width = 608
+            Width = 558
             Caption = 'ToolBar9'
             Images = mainImageList
             TabOrder = 1
@@ -859,7 +868,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 59
             Top = 30
-            Width = 608
+            Width = 558
             Align = alTop
             DefaultText = 'Node'
             DragOperations = []
@@ -870,6 +879,7 @@ object MainForm: TMainForm
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
                 Position = 0
                 Text = 'Tag'
+                Width = 200
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
@@ -879,6 +889,7 @@ object MainForm: TMainForm
               item
                 Position = 2
                 Text = 'Value'
+                Width = 200
               end>
             Header.DefaultHeight = 17
             Header.Font.Color = clWindowText
@@ -914,7 +925,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 52
             Top = 89
-            Width = 608
+            Width = 558
             Align = alClient
             Font.CharSet = ANSI_CHARSET
             Font.Color = clWindowText
@@ -934,10 +945,10 @@ object MainForm: TMainForm
     Height = 147
     Top = 354
     Width = 967
-    ActivePage = MessagesTabSheet
+    ActivePage = TabSheet1
     Align = alBottom
     Images = mainImageList
-    TabIndex = 3
+    TabIndex = 2
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
@@ -968,7 +979,7 @@ object MainForm: TMainForm
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       object Splitter8: TSplitter
-        Left = 185
+        Left = 619
         Height = 120
         Top = 0
         Width = 5
@@ -977,17 +988,17 @@ object MainForm: TMainForm
         Left = 0
         Height = 120
         Top = 0
-        Width = 185
+        Width = 619
         Align = alLeft
         Caption = 'Panel8'
         ClientHeight = 120
-        ClientWidth = 185
+        ClientWidth = 619
         TabOrder = 0
         object ExceptionStatusBar: TStatusBar
           Left = 1
           Height = 20
           Top = 99
-          Width = 183
+          Width = 617
           Panels = <          
             item
               Width = 50
@@ -998,7 +1009,7 @@ object MainForm: TMainForm
           Left = 1
           Height = 98
           Top = 1
-          Width = 183
+          Width = 617
           Align = alClient
           Colors.GridLineColor = clWhite
           Colors.UnfocusedSelectionColor = clCaptionText
@@ -1008,16 +1019,18 @@ object MainForm: TMainForm
             item
               Position = 0
               Text = 'Time'
+              Width = 100
             end          
             item
               Position = 1
               Text = 'Notification'
+              Width = 400
             end>
           Header.DefaultHeight = 17
           Header.Font.Color = clWindowText
           Header.Font.Height = -11
           Header.Font.Name = 'Tahoma'
-          Header.Options = [hoColumnResize, hoDrag, hoVisible]
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoVisible]
           ParentColor = True
           TabOrder = 1
           TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
@@ -1033,7 +1046,7 @@ object MainForm: TMainForm
         end
       end
       object ToolBar3: TToolBar
-        Left = 977
+        Left = 929
         Height = 120
         Top = 0
         Width = 30
@@ -1049,10 +1062,10 @@ object MainForm: TMainForm
         end
       end
       object ExceptionMemo: TMemo
-        Left = 190
+        Left = 624
         Height = 120
         Top = 0
-        Width = 787
+        Width = 305
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1148,18 +1161,22 @@ object MainForm: TMainForm
             item
               Position = 1
               Text = 'Time'
+              Width = 70
             end          
             item
               Position = 2
               Text = 'Type'
+              Width = 80
             end          
             item
               Position = 3
               Text = 'Name'
+              Width = 200
             end          
             item
               Position = 4
               Text = 'Message'
+              Width = 200
             end>
           Header.DefaultHeight = 17
           Header.Font.Color = clWindowText
@@ -1195,7 +1212,7 @@ object MainForm: TMainForm
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       object Splitter7: TSplitter
-        Left = 268
+        Left = 615
         Height = 91
         Top = 29
         Width = 5
@@ -1319,17 +1336,17 @@ object MainForm: TMainForm
         Left = 0
         Height = 91
         Top = 29
-        Width = 268
+        Width = 615
         Align = alLeft
         Caption = 'Panel2'
         ClientHeight = 91
-        ClientWidth = 268
+        ClientWidth = 615
         TabOrder = 1
         object MessagesVTS: TVirtualStringTree
           Left = 1
           Height = 69
           Top = 1
-          Width = 266
+          Width = 613
           Align = alClient
           BottomSpace = 10
           Colors.GridLineColor = clWhite
@@ -1382,26 +1399,32 @@ object MainForm: TMainForm
             item
               Position = 7
               Text = 'Time'
+              Width = 100
             end          
             item
               Position = 8
               Text = 'Duration'
+              Width = 60
             end          
             item
               Position = 9
               Text = 'Action'
+              Width = 60
             end          
             item
               Position = 10
               Text = 'Service'
+              Width = 70
             end          
             item
               Position = 11
               Text = 'Operation'
+              Width = 70
             end          
             item
               Position = 12
               Text = 'CorrelationId'
+              Width = 70
             end>
           Header.DefaultHeight = 17
           Header.Font.Color = clWindowText
@@ -1433,7 +1456,7 @@ object MainForm: TMainForm
           Left = 1
           Height = 20
           Top = 70
-          Width = 266
+          Width = 613
           Panels = <          
             item
               Width = 100
@@ -1448,10 +1471,10 @@ object MainForm: TMainForm
         end
       end
       object LogMemo: TMemo
-        Left = 273
+        Left = 620
         Height = 91
         Top = 29
-        Width = 661
+        Width = 314
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -6220,6 +6243,42 @@ object MainForm: TMainForm
       end
       object LogCoverageReportAction1: TMenuItem
         Action = LogCoverageReportAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00F2FFFF00F2FFFF00F2FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00F2FFFF00F2FFFF00F2FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF007F7F7FFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF
+          00FF00F2FFFF00F2FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF
+          00FF00F2FFFF00F2FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF00F2FFFF00F2
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF00F2FFFF00F2
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00
+        }
         ImageIndex = 85
       end
       object ReadMessagesAction1: TMenuItem

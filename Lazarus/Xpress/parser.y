@@ -8,7 +8,7 @@
 %token DF DFS DFX FRAME_ SFBSS SFD SFDS SFS SFSS SFSSS SFSSSS SFSX SFSXX SFV SFX
 %token SFOV
 %token VFV VFS VFSS VFSX VFSSS VFSSX VFSSSS VFX VFD
-%token VFOV VFOS VFOSS VFOSX VFOSSS VFOSSX VFOSSSS VFOX VFOD
+%token VFOV VFOS VFOSS VFOSX VFOSSS VFOSSSB VFOSSX VFOSSSS VFOB VFOX VFOD
 %token SLFOS SLFOSS
 %token VFG VFGG VFGGG VFGGGG
 %token XFD XFG XFGG XFS XFSX XFV XFX XFXX XFFRAME
@@ -384,8 +384,10 @@ VoidCall:
         | VFOSS _LPAREN sExpr _COMMA sExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOSS (Data, $3.yyString, $5.yyString); }
         | VFOSX _LPAREN sExpr _COMMA xExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOSX (Data, $3.yyString, $5.yy.yyExtended); }
         | VFOSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOSSS (Data, $3.yyString, $5.yyString, $7.yyString); }
+        | VFOSSSB _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA bExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOSSSB (Data, $3.yyString, $5.yyString, $7.yyString, $9.yy.yyBoolean); }
         | VFOSSX _LPAREN sExpr _COMMA sExpr _COMMA xExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOSSX (Data, $3.yyString, $5.yyString, $7.yy.yyExtended); }
         | VFOSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOSSSS (Data, $3.yyString, $5.yyString, $7.yyString, $9.yyString); }
+        | VFOB _LPAREN bExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOB (Data, $3.yy.yyBoolean); }
         | VFOX _LPAREN xExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOX (Data, $3.yy.yyExtended); }
         ;
 

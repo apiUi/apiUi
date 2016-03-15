@@ -826,8 +826,8 @@ type
     procedure TreeViewClick(Sender: TObject);
     procedure InWsdlTreeViewChecked(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
-    procedure setWsdlReply(const Value: TWsdlMessage);
-    function getWsdlReply: TWsdlMessage;
+    procedure setWsdlMessage(const Value: TWsdlMessage);
+    function getWsdlMessage: TWsdlMessage;
     function getWsdlOperation: TWsdlOperation;
     procedure setWsdlOperation(const Value: TWsdlOperation);
     procedure WsdlOperationsComboBoxChange(Sender: TObject);
@@ -938,7 +938,7 @@ type
     procedure XSDreportinClipBoardSpreadSheet1Click(Sender: TObject);
     property WsdlOperation: TWsdlOperation read getWsdlOperation write
       setWsdlOperation;
-    property WsdlReply: TWsdlMessage read getWsdlReply write setWsdlReply;
+    property WsdlMessage: TWsdlMessage read getWsdlMessage write setWsdlMessage;
     property xmlViewType: TxvViewType read getXmlViewType;
   private
     editingNode: PVirtualNode;
@@ -1373,12 +1373,12 @@ end;
 
 procedure TMainForm.FreeFormatMemoChange(Sender: TObject);
 begin
-  if Assigned(WsdlReply) then
+  if Assigned(WsdlMessage) then
   begin
     if WsdlOperation.StubAction = saRequest then
-      WsdlReply.FreeFormatReq := FreeFormatMemo.Text
+      WsdlMessage.FreeFormatReq := FreeFormatMemo.Text
     else
-      WsdlReply.FreeFormatRpy := FreeFormatMemo.Text;
+      WsdlMessage.FreeFormatRpy := FreeFormatMemo.Text;
     stubChanged := True;
   end;
 end;
@@ -1638,8 +1638,8 @@ begin
     xData.Message := aMessages.Messages[X];
   end;
   if Assigned(WsdlOperation.LastMessage) then
-    WsdlReply := WsdlOperation.LastMessage;
-  if Assigned(WsdlReply) then
+    WsdlMessage := WsdlOperation.LastMessage;
+  if Assigned(WsdlMessage) then
     FocusOnFullCaption(WsdlOperation.LastFullCaption)
   else
   begin
@@ -2470,7 +2470,7 @@ begin
         InWsdlTreeView.DeleteNode(InWsdlTreeView.FocusedNode, True);
         WsdlOperation.AcquireLock;
         try
-          se.UpdateMessageRow(WsdlOperation, WsdlReply);
+          se.UpdateMessageRow(WsdlOperation, WsdlMessage);
         finally
           WsdlOperation.ReleaseLock;
         end;
@@ -2496,7 +2496,7 @@ begin
       UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
       InWsdlTreeView.FocusedColumn := 0;
       InWsdlTreeView.FullExpand(InWsdlTreeView.FocusedNode);
-      se.UpdateMessageRow(WsdlOperation, WsdlReply);
+      se.UpdateMessageRow(WsdlOperation, WsdlMessage);
       InWsdlTreeView.Invalidate;
       GridView.InvalidateNode(GridView.FocusedNode);
       InWsdlTreeViewFocusChanged(InWsdlTreeView, InWsdlTreeView.FocusedNode,
@@ -2527,7 +2527,7 @@ begin
       InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
       WsdlOperation.AcquireLock;
       try
-        se.UpdateMessageRow(WsdlOperation, WsdlReply);
+        se.UpdateMessageRow(WsdlOperation, WsdlMessage);
       finally
         WsdlOperation.ReleaseLock;
       end;
@@ -2915,11 +2915,11 @@ begin
   if xOperation.lateBinding then
   begin
     xOperation.rpyBind := TXml.Create;
-    (xOperation.rpyBind as TXml).LoadFromString(WsdlReply.FreeFormatRpy, nil);
+    (xOperation.rpyBind as TXml).LoadFromString(WsdlMessage.FreeFormatRpy, nil);
     if xOperation.rpyBind.Name = '' then
       xOperation.rpyBind.Name := 'noXml';
     xOperation.reqBind := TXml.Create;
-    (xOperation.reqBind as TXml).LoadFromString(WsdlReply.FreeFormatReq, nil);
+    (xOperation.reqBind as TXml).LoadFromString(WsdlMessage.FreeFormatReq, nil);
     if xOperation.reqBind.Name = '' then
       xOperation.reqBind.Name := 'noXml';
     try xOperation.PrepareAfter;  except end;
@@ -2963,17 +2963,17 @@ var
 begin
   if not Assigned(WsdlOperation) then
     Raise Exception.Create('First get a Wsdl');
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
     if xOperation.lateBinding then
     begin
       xOperation.rpyBind := TXml.Create;
-      (xOperation.rpyBind as TXml).LoadFromString(WsdlReply.FreeFormatRpy, nil);
+      (xOperation.rpyBind as TXml).LoadFromString(WsdlMessage.FreeFormatRpy, nil);
       if xOperation.rpyBind.Name = '' then
         xOperation.rpyBind.Name := 'noXml';
       xOperation.reqBind := TXml.Create;
-      (xOperation.reqBind as TXml).LoadFromString(WsdlReply.FreeFormatReq, nil);
+      (xOperation.reqBind as TXml).LoadFromString(WsdlMessage.FreeFormatReq, nil);
       if xOperation.reqBind.Name = '' then
         xOperation.reqBind.Name := 'noXml';
       try xOperation.PrepareBefore; except end;
@@ -3007,7 +3007,7 @@ begin
       xOperation.Free;
     end;
   finally
-    Screen.Cursor := crDefault;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -3050,18 +3050,15 @@ begin
 end;
 
 procedure TMainForm.SaveWsdlStubCase(aFileName: String);
-var
-  SwapCursor: TCursor;
 begin
   captionFileName := ExtractFileName(aFileName);
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     if Assigned (WsdlOperation) then
     begin
       se.FocusOperationName := WsdlOperation.reqTagName;
       se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
-      se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlReply);
+      se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
     end
     else
     begin
@@ -3074,7 +3071,7 @@ begin
     se.stubRead := True; // well,... but logically ...
     UpdateReopenList(ReopenCaseList, aFileName);
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -3118,12 +3115,12 @@ procedure TMainForm.ShowReport (aReport : TReport);
     end;
   end;
 begin
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     if aReport is TRegressionReport then _ShowRegressionReport;
     if aReport is TCoverageReport then _ShowCoverageReport;
   finally
-    Screen.Cursor := crDefault;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -3156,7 +3153,7 @@ begin
   begin
     WsdlOperation := allOperations.Operations[f];
     if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
-      WsdlReply := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+      WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
   end;
 end;
 
@@ -3365,8 +3362,6 @@ begin
 end;
 
 procedure TMainForm.ProjectDesignFromString(aString, aMainFileName: String);
-var
-  SwapCursor: TCursor;
 begin
   { }
   InWsdlTreeView.BeginUpdate;
@@ -3380,8 +3375,7 @@ begin
     doValidateReplies := False;
     doCheckExpectedValues := False;
     _WsdlDisableOnCorrelate := False;
-    SwapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     try
       se.ProjectDesignFromString(aString, aMainFileName);
       AcquireLock;
@@ -3399,7 +3393,7 @@ begin
       end;
     finally
       { }
-      Screen.Cursor := SwapCursor;
+      XmlUtil.PopCursor;
       stubChanged := se.stubChanged;
       se.stubRead := True;
       { }
@@ -3514,7 +3508,7 @@ begin
     ExecuteRequestToolButton.Down := True;
     ExecuteAllRequestsToolButton.Down := True;
     se.ProgressPos := 0;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     abortPressed := False;
   end;
   Inc (NumberOfBlockingThreads);
@@ -3528,7 +3522,7 @@ begin
     NumberOfBlockingThreads := 0;
     ExecuteRequestToolButton.Down := False;
     ExecuteAllRequestsToolButton.Down := False;
-    Screen.Cursor := crDefault;
+    XmlUtil.PopCursor;
     DownPageControl.ActivePage := MessagesTabSheet;
     se.ProgressPos := 0;
     if NumberOfNonBlockingThreads <= 0 then
@@ -5116,9 +5110,9 @@ begin
         if WsdlOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
         begin
           if WsdlOperation.StubAction = saRequest then
-            FreeFormatMemo.Text := WsdlReply.FreeFormatReq
+            FreeFormatMemo.Text := WsdlMessage.FreeFormatReq
           else
-            FreeFormatMemo.Text := WsdlReply.FreeFormatRpy;
+            FreeFormatMemo.Text := WsdlMessage.FreeFormatRpy;
         end
         else
         begin
@@ -5991,15 +5985,13 @@ function TMainForm.EditScript(aXml: TObject): Boolean;
 var
   xOperation: TWsdlOperation;
   xScript: TXml;
-  xCursor: TCursor;
 begin
   result := False;
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     xScript := (aXml as TXml).Parent as TXml;
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
   xOperation := se.CreateScriptOperation(xScript);
   try
@@ -6493,7 +6485,7 @@ begin
   end;
 end;
 
-procedure TMainForm.setWsdlReply(const Value: TWsdlMessage);
+procedure TMainForm.setWsdlMessage(const Value: TWsdlMessage);
 var
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
@@ -6512,7 +6504,7 @@ begin
   end;
 end;
 
-function TMainForm.getWsdlReply: TWsdlMessage;
+function TMainForm.getWsdlMessage: TWsdlMessage;
 begin
   Result := nil; //avod warning
   NodeToMessage(GridView, GridView.FocusedNode, result);
@@ -7049,15 +7041,12 @@ begin
 end;
 
 procedure TMainForm.CopyGridActionExecute(Sender: TObject);
-var
-  xCursor: TCursor;
 begin
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     ClipBoard.AsText := vstToGrid(GridView, CopyGridOnGetText);
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -7082,7 +7071,6 @@ procedure TMainForm.PasteGridActionExecute(Sender: TObject);
 var
   swapNode: PVirtualNode;
   swapColumn: Integer;
-  SwapCursor: TCursor;
 begin
   if not ClipBoard.HasFormat(CF_TEXT) then
     raise Exception.Create('Clipboard does not contain text');
@@ -7092,8 +7080,7 @@ begin
     InWsdlTreeView.BeginUpdate;
     swapNode := GridView.FocusedNode;
     swapColumn := GridView.FocusedColumn;
-    SwapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     // vstFromGrid(GridView, ClipBoard.AsText, PasteGridOnNewText);
     PasteGridFromPasteBoard;
     DoColorBindButtons;
@@ -7105,7 +7092,7 @@ begin
     InWsdlTreeView.Invalidate;
     InWsdlTreeView.EndUpdate;
     GridView.SetFocus;
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -7152,7 +7139,6 @@ procedure TMainForm.ShowTextAsGrid(aCaption, aText: String);
 var
   xXml: TXml;
   xXsdDescr: TXsdDescr;
-  xCursor: TCursor;
   swapMaxDepthXmlGen: Integer;
 begin
   Application.CreateForm(TXmlGridForm, XmlGridForm);
@@ -7163,13 +7149,12 @@ begin
     try
       xXml := TXml.Create;
       try
-        xCursor := Screen.Cursor;
-        Screen.Cursor := crHourGlass;
+        XmlUtil.PushCursor (crHourGlass);
         try
           xXml.LoadFromString(aText, nil);
           xmlUtil.CreateXsdFromXml(xXsdDescr, xXml, True);
         finally
-          Screen.Cursor := xCursor;
+          XmlUtil.PopCursor;
         end;
         try
           XmlGridForm.isReadOnly := True;
@@ -7194,10 +7179,8 @@ procedure TMainForm.ShowTextAsXml(aCaption, aText: String);
 var
   xXml: TXml;
   xXsdDescr: TXsdDescr;
-  xCursor: TCursor;
 begin
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   xXsdDescr := TXsdDescr.Create(1);
   try
     xXml := TXml.Create;
@@ -7213,7 +7196,7 @@ begin
           end;
         xmlUtil.CreateXsdFromXml(xXsdDescr, xXml, True);
       finally
-        Screen.Cursor := xCursor;
+        XmlUtil.PopCursor;
       end;
       Application.CreateForm(TShowXmlForm, ShowXmlForm);
       try
@@ -7229,7 +7212,7 @@ begin
     end;
   finally
     xXsdDescr.Free;
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -7320,13 +7303,13 @@ begin
     xChanged := stubChanged;
     xRead := se.stubRead;
     se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
-    se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlReply));
+    se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlMessage));
     ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
     if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
     begin
       WsdlOperation := allOperations.Operations[f];
       if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
-        WsdlReply := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+        WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
     end;
     stubChanged := xChanged;
     se.StubRead := xRead;
@@ -7641,16 +7624,16 @@ begin
   begin
     xOperation := TWsdlOperation.Create(WsdlOperation);
     try
-      xOperation.CorrelatedMessage := WsdlReply;
+      xOperation.CorrelatedMessage := WsdlMessage;
       with xOperation.reqBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlReply.reqBind as TXml), False, True, True);
+        LoadValues((WsdlMessage.reqBind as TXml), False, True, True);
       end;
       with xOperation.rpyBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlReply.rpyBind as TXml), False, True, True);
+        LoadValues((WsdlMessage.rpyBind as TXml), False, True, True);
       end;
       xOperation.ExecuteBefore;
       if xOperation.StubAction = saRequest then
@@ -7670,12 +7653,10 @@ end;
 
 procedure TMainForm.ToAllLogList(aLogList: TLogList);
 var
-  SwapCursor: TCursor;
   X: Integer;
 begin
   try
-    SwapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
 {
     ClearLogItemsActionExecute(nil);
     if not se.displayedLogs.Count = 0 then
@@ -7690,7 +7671,7 @@ begin
     end;
   finally
     MessagesVTS.EndUpdate;
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
     DownPageControl.ActivePage := MessagesTabSheet;
   end;
 end;
@@ -7757,7 +7738,6 @@ end;
 procedure TMainForm.MessagesRegressionActionExecute(Sender: TObject);
 var
   xLogList: TLogList;
-  xCursor: TCursor;
 begin
   OnlyWhenLicensed;
   if not LogMaxEntriesEqualsUnbounded (MessagesRegressionAction.Caption) then Exit;
@@ -7767,7 +7747,6 @@ begin
   OpenFileDialog.Title := 'Compare ' + _progName + ' log items from file';
   if OpenFileDialog.Execute then
   begin
-    xCursor:=SCreen.Cursor;
     Screen.Cursor:=crHourGlass;
     wsdlStubMessagesFileName := OpenFileDialog.FileName;
     xLogList := TLogList.Create;
@@ -7798,7 +7777,7 @@ begin
     finally
       xLogList.Clear;
       FreeAndNil(xLogList);
-      Screen.Cursor:=xCursor;
+      XmlUtil.PopCursor;
     end;
   end;
 end;
@@ -7904,12 +7883,10 @@ var
   X, Y, r: Integer;
   xString: String;
   xNode: PVirtualNode;
-  SwapCursor: TCursor;
 begin
   xString := ''; //avoid warning
-  SwapCursor := Screen.Cursor;
   try
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     with WsdlOperation.Messages do
     begin
       for X := 0 to Count - 1 do
@@ -7946,7 +7923,7 @@ begin
       end;
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -8244,8 +8221,8 @@ begin
     WsdlOperation.ReleaseLock;
   end;
   try
-    xOperation.CorrelatedMessage := WsdlReply;
-    se.SendMessage(xOperation, WsdlReply, '');
+    xOperation.CorrelatedMessage := WsdlMessage;
+    se.SendMessage(xOperation, WsdlMessage, '');
   finally
     xOperation.Free;
   end;
@@ -8617,7 +8594,7 @@ procedure TMainForm.ExecuteRequestActionUpdate(Sender: TObject);
 begin
   ExecuteRequestAction.Enabled :=
         Assigned(WsdlOperation)
-    and Assigned(WsdlReply)
+    and Assigned(WsdlMessage)
     and (NumberOfBlockingThreads < 1)
     ;
 end;
@@ -8625,7 +8602,7 @@ end;
 procedure TMainForm.ExecuteAllRequestsActionUpdate(Sender: TObject);
 begin
   ExecuteAllRequestsAction.Enabled := Assigned(WsdlOperation)
-                                  and Assigned(WsdlReply)
+                                  and Assigned(WsdlMessage)
                                   and (WsdlOperation.StubAction = saRequest)
                                   and (NumberOfBlockingThreads < 1)
                                     ;
@@ -9074,7 +9051,7 @@ end;
 
 procedure TMainForm.FindActionUpdate(Sender: TObject);
 begin
-  FindAction.Enabled := (Assigned(WsdlReply));
+  FindAction.Enabled := (Assigned(WsdlMessage));
 end;
 
 procedure TMainForm.FindActionExecute(Sender: TObject);
@@ -9128,7 +9105,7 @@ end;
 
 procedure TMainForm.FindNextActionUpdate(Sender: TObject);
 begin
-  FindNextAction.Enabled := (Assigned(WsdlReply)) and
+  FindNextAction.Enabled := (Assigned(WsdlMessage)) and
     (xmlUtil.SearchString <> '');
 end;
 
@@ -9218,13 +9195,11 @@ procedure TMainForm.CheckTreeActionExecute(Sender: TObject);
 var
   xNode, lastNode: PVirtualNode;
   xBind: TCustomBindable;
-  xCursor: TCursor;
   xMessage: String;
 begin
   xMessage := ''; //avoid warning
-  xCursor := Screen.Cursor;
   try
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     xNode := InWsdlTreeView.GetFirst;
     xBind := NodeToBind(InWsdlTreeView, xNode);
     if (xBind is TIpmItem) then
@@ -9284,7 +9259,7 @@ begin
       end;
     end;
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -9427,7 +9402,7 @@ begin
                                            , cTypeDef
                                            );
             nTypeDef := xXml.Xsd.sType;
-            xPath := IfThen(WsdlReply.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
+            xPath := IfThen(WsdlMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
                    + xXml.FullCaption
                    ;
             if not oTypeDef.Manually then
@@ -9540,7 +9515,6 @@ end;
 
 procedure TMainForm.ShowReplyAsXmlGridActionExecute(Sender: TObject);
 var
-  xCursor: TCursor;
   cForm: TIpmGridForm;
   xString: String;
 begin
@@ -9598,12 +9572,11 @@ begin
       end;
       if claimedLog.Operation.WsdlService.DescriptionType = ipmDTWsdl then
       begin
-        xCursor := Screen.Cursor;
-        Screen.Cursor := crHourGlass;
+        XmlUtil.PushCursor (crHourGlass);
         try
           xmlUtil.ShowSoapBodyInGrid(claimedLog.ReplyBody);
         finally
-          Screen.Cursor := xCursor;
+          XmlUtil.PopCursor;
         end;
         exit;
       end;
@@ -9630,10 +9603,8 @@ var
   xNode: PVirtualNode;
   xData: PLogTreeRec;
   aXml: TXml;
-  SwapCursor: TCursor;
 begin
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     aXml := TXml.CreateAsString('reqXmls', '');
     try
@@ -9651,7 +9622,7 @@ begin
       aXml.Free;
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -9667,10 +9638,8 @@ var
   xNode: PVirtualNode;
   xData: PLogTreeRec;
   aXml: TXml;
-  SwapCursor: TCursor;
 begin
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     aXml := TXml.CreateAsString('rpyXmls', '');
     try
@@ -9688,7 +9657,7 @@ begin
       aXml.Free;
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -9760,7 +9729,6 @@ end;
 
 procedure TMainForm.ShowRequestAsXmlGridActionExecute(Sender: TObject);
 var
-  xCursor: TCursor;
   cForm: TIpmGridForm;
   xString: String;
 begin
@@ -9819,12 +9787,11 @@ begin
       end;
       if claimedLog.Operation.WsdlService.DescriptionType = ipmDTWsdl then
       begin
-        xCursor := Screen.Cursor;
-        Screen.Cursor := crHourGlass;
+        XmlUtil.PushCursor (crHourGlass);
         try
           xmlUtil.ShowSoapBodyInGrid(claimedLog.RequestBody);
         finally
-          Screen.Cursor := xCursor;
+          XmlUtil.PopCursor;
         end;
         exit;
       end;
@@ -9894,10 +9861,8 @@ procedure TMainForm.ShowExpectedXmlActionExecute(Sender: TObject);
 var
   xHasUnexpectedValue: Boolean;
   xExpectedValuesChecked: Boolean;
-  xCursor: TCursor;
 begin
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     if Assigned(claimedLog) and Assigned(claimedLog.Operation) and Assigned(claimedLog.Mssg) then
     begin
@@ -9929,7 +9894,7 @@ begin
       end;
     end;
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -10063,7 +10028,6 @@ end;
 procedure TMainForm.BrowseMqActionExecute(Sender: TObject);
 var
   xMqInterface: TMqInterface;
-  xCursor: TCursor;
 begin
   Application.CreateForm(TMqBrowseForm, MqBrowseForm);
   try
@@ -10073,8 +10037,7 @@ begin
     begin
       QueueNameList.Add(MqBrowseForm.GetQueueEdit.Text);
       DownPageControl.ActivePage := MessagesTabSheet;
-      xCursor := Screen.Cursor;
-      Screen.Cursor := crHourGlass;
+      XmlUtil.PushCursor (crHourGlass);
       try
         xMqInterface := TMqInterface.Create;
         try
@@ -10087,7 +10050,7 @@ begin
           FreeAndNil(xMqInterface);
         end;
       finally
-        Screen.Cursor := xCursor;
+        XmlUtil.PopCursor;
       end;
     end;
   finally
@@ -10311,15 +10274,13 @@ end;
 
 procedure TMainForm.doSaveLogRepliesToDisk;
 var
-  SwapCursor: TCursor;
   xNode: PVirtualNode;
   xLog: TLog;
   sl: TStringList;
 begin
   AcquireLock;
   try
-    SwapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     ProgressBar.Min := 0;
     ProgressBar.Position := 0;
     ProgressBar.Max := se.displayedLogs.Count + 20;
@@ -10344,7 +10305,7 @@ begin
         sl.Free;
       end;
     finally
-      Screen.Cursor := SwapCursor;
+      XmlUtil.PopCursor;
       ProgressBar.Position := 0;
     end;
   finally
@@ -10354,15 +10315,13 @@ end;
 
 procedure TMainForm.doSaveLogRequestsToDisk;
 var
-  SwapCursor: TCursor;
   xNode: PVirtualNode;
   xLog: TLog;
   sl: TStringList;
 begin
   AcquireLock;
   try
-    SwapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     ProgressBar.Min := 0;
     ProgressBar.Position := 0;
     ProgressBar.Max := se.displayedLogs.Count + 20;
@@ -10387,7 +10346,7 @@ begin
         sl.Free;
       end;
     finally
-      Screen.Cursor := SwapCursor;
+      XmlUtil.PopCursor;
       ProgressBar.Position := 0;
     end;
   finally
@@ -10398,7 +10357,6 @@ end;
 procedure TMainForm.doSaveMessagesToDisk;
 var
   X: Integer;
-  SwapCursor: TCursor;
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
   xFileName, xSeparator, xMsgString: String;
@@ -10406,8 +10364,7 @@ begin
   xMessage := nil; //avoid warning
   AcquireLock;
   try
-    SwapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     ProgressBar.Min := 0;
     ProgressBar.Position := 0;
     ProgressBar.Max := WsdlOperation.Messages.Count;
@@ -10502,7 +10459,7 @@ begin
       abortPressed := False;
       ExecuteAllRequestsToolButton.Down := False;
       ProgressBar.Position := 0;
-      Screen.Cursor := SwapCursor;
+      XmlUtil.PopCursor;
     finally
       ReleaseLock;
     end;
@@ -10525,7 +10482,6 @@ end;
 procedure TMainForm.doReadMessagesFromDisk;
 var
   f: Integer;
-  SwapCursor: TCursor;
   xMessage: TWsdlMessage;
   xFileName, xMsgString: String;
   xPatterns: TStringList;
@@ -10535,8 +10491,7 @@ var
   mData: PMessageTreeRec;
 begin
   nErrors := 0;
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   ProgressBar.Min := 0;
   ProgressBar.Position := 0;
   ProgressBar.Max := FileNameList.Count;
@@ -10632,7 +10587,7 @@ begin
       abortPressed := False;
       ExecuteAllRequestsToolButton.Down := False;
       ProgressBar.Position := 0;
-      Screen.Cursor := SwapCursor;
+      XmlUtil.PopCursor;
     end;
   finally
     xPatterns.Free;
@@ -10826,12 +10781,10 @@ var
   xXml: TXml;
   mData: PMessageTreeRec;
   xNotify: String;
-  xCursor: TCursor;
 begin
-  xCursor := Screen.Cursor;
   AcquireLock;
   try
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     ok := 0;
     nok := 0;
     xNode := MessagesVTS.GetFirst;
@@ -10905,7 +10858,7 @@ begin
     end;
   finally
     ReleaseLock;
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
   case ok of
     1: xNotify := 'Added 1 message';
@@ -10937,6 +10890,8 @@ var
   xXml: TXmlCvrg;
   xForm: TShowXmlCoverageForm;
 begin
+  XmlUtil.PushCursor(crHourGlass);
+  try
     xXml := aList.PrepareCoverageReportAsXml ( allAliasses
                                              , se.ignoreCoverageOn
                                              );
@@ -10963,6 +10918,9 @@ begin
     finally
       FreeAndNil(xXml);
     end;
+  finally
+    XmlUtil.PopCursor;
+  end;
 end;
 
 
@@ -10970,13 +10928,11 @@ procedure TMainForm.LogCoverageReportActionExecute(Sender: TObject);
 var
   xLogList: TLogList;
   xForm: TShowXmlCoverageForm;
-  SwapCursor: TCursor;
   x: Integer;
 begin
   OnlyWhenLicensed;
   xLogList := TLogList.Create;
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     AcquireLock;
     try
@@ -10989,7 +10945,7 @@ begin
   finally
     xLogList.Clear;
     xLogList.Free;
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -11031,7 +10987,7 @@ end;
 
 procedure TMainForm.ViewMssgAsTextActionUpdate(Sender: TObject);
 begin
-  ViewMssgAsTextAction.Enabled := Assigned(WsdlReply);
+  ViewMssgAsTextAction.Enabled := Assigned(WsdlMessage);
 end;
 
 procedure TMainForm.ViewMssgAsTextActionExecute(Sender: TObject);
@@ -11039,7 +10995,7 @@ var
   xMessage: String;
 begin
   EndEdit;
-  if not Assigned(WsdlReply) then
+  if not Assigned(WsdlMessage) then
     raise Exception.Create('No message selected');
   if WsdlOperation.StubAction = saRequest then
   begin
@@ -11048,12 +11004,12 @@ begin
       if WsdlOperation.reqBind is TXml then with WsdlOperation.reqBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlReply.reqBind as TXml), False, True);
+        LoadValues((WsdlMessage.reqBind as TXml), False, True);
         xMessage := WsdlOperation.StreamRequest(_progName, True, True, True);
       end
       else
       begin
-        xMessage := (WsdlReply.reqBind as TIpmItem).ValuesToBuffer(nil);
+        xMessage := (WsdlMessage.reqBind as TIpmItem).ValuesToBuffer(nil);
       end;
     finally
       WsdlOperation.ReleaseLock;
@@ -11067,17 +11023,17 @@ begin
       if WsdlOperation.rpyBind is TXml then with WsdlOperation.rpyBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlReply.rpyBind as TXml), False, True);
+        LoadValues((WsdlMessage.rpyBind as TXml), False, True);
         (WsdlOperation.fltBind as TXml).ResetValues;
-        (WsdlOperation.fltBind as TXml).LoadValues((WsdlReply.fltBind as TXml), False, True);
-        if WsdlReply.fltBind.Checked then
+        (WsdlOperation.fltBind as TXml).LoadValues((WsdlMessage.fltBind as TXml), False, True);
+        if WsdlMessage.fltBind.Checked then
           xMessage := WsdlOperation.StreamFault(_progName, True)
         else
           xMessage := WsdlOperation.StreamReply(_progName, True);
       end
       else
       begin
-        xMessage := (WsdlReply.rpyBind as TIpmItem).ValuesToBuffer(nil);
+        xMessage := (WsdlMessage.rpyBind as TIpmItem).ValuesToBuffer(nil);
       end;
     finally
       WsdlOperation.ReleaseLock;
@@ -11353,15 +11309,13 @@ var
   xLog: TLog;
   xBind: TCustomBindable;
   showReqRep: Boolean;
-  SwapCursor: TCursor;
 begin
   OnlyWhenLicensed;
   xXml := TXml.CreateAsString('html', '');
   with xXml do
   begin
     try
-      SwapCursor := Screen.Cursor;
-      Screen.Cursor := crHourGlass;
+      XmlUtil.PushCursor (crHourGlass);
       try
         tableXml := AddXml(TXml.CreateAsString('table', ''));
         with tableXml do
@@ -11471,7 +11425,7 @@ begin
           end;
         end; // table
       finally
-        Screen.Cursor := SwapCursor;
+        XmlUtil.PopCursor;
       end;
       ShowHtml(_progName + ' - Unexpected values report', xXml.asHtmlString);
     finally
@@ -11517,7 +11471,7 @@ begin
     UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
     InWsdlTreeView.FocusedColumn := 0;
     InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
-    se.UpdateMessageRow(WsdlOperation, WsdlReply);
+    se.UpdateMessageRow(WsdlOperation, WsdlMessage);
     InWsdlTreeView.Invalidate;
     GridView.InvalidateNode(GridView.FocusedNode);
     InWsdlTreeViewFocusChanged(InWsdlTreeView, InWsdlTreeView.FocusedNode,
@@ -11786,13 +11740,11 @@ procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
 
 var
   xXml, xReqXml, xRpyXml: TXml;
-  SwapCursor: TCursor;
   X, Y: Integer;
   xLog: TLog;
 begin
   try
-    SwapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     xXml := TXml.Create;
     aLogList.designSuspect := False;
     xLog := TLog.Create;
@@ -11836,7 +11788,7 @@ begin
       FreeAndNil(xLog);
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -11987,10 +11939,10 @@ procedure TMainForm.CheckRpyOrFlt(aBind: TCustomBindable);
 begin
   if (not(aBind is TIpmItem)) and (WsdlOperation.StubAction <> saRequest) then
   begin
-    if aBind.Root = WsdlReply.rpyBind then
-      WsdlReply.fltBind.Checked := False
-    else if Assigned(WsdlReply.rpyBodyBind) then
-      WsdlReply.rpyBodyBind.Checked := False;
+    if aBind.Root = WsdlMessage.rpyBind then
+      WsdlMessage.fltBind.Checked := False
+    else if Assigned(WsdlMessage.rpyBodyBind) then
+      WsdlMessage.rpyBodyBind.Checked := False;
   end;
 end;
 
@@ -12163,6 +12115,7 @@ begin
                   se.CreateRegressionReport( yXml.Items.XmlValueByTag ['name']
                                            , yXml.Items.XmlValueByTag ['fileName']
                                            , yXml.Items.XmlValueByTag ['refFileName']
+                                           , False
                                            );
               end;
             except
@@ -12185,10 +12138,8 @@ end;
 procedure TMainForm .RefreshReportsActionExecute (Sender : TObject );
 var
   x, n: Integer;
-  swapCursor: TCursor;
 begin
-  swapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     se.AcquireLogLock;
     try
@@ -12206,7 +12157,7 @@ begin
       Application.ProcessMessages;
     end;
   finally
-    Screen.Cursor := swapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -12241,6 +12192,7 @@ begin
       reportStatusColumn: ShowReport (claimedReport);
     end;
     ReportsVTS.InvalidateNode(ReportsVTS.FocusedNode);
+    Application.ProcessMessages;
   finally
     claimedReport.Disclaim;
   end;
@@ -12705,7 +12657,6 @@ end;
 procedure TMainForm.ImportProjectScriptsActionExecute (Sender : TObject );
 var
   xXml: TXml;
-  xCursor: TCursor;
 begin
   if not InactiveAfterPrompt then Exit;
   OpenFileDialog.DefaultExt := 'xml';
@@ -12713,8 +12664,7 @@ begin
   OpenFileDialog.Title := 'Import scripts';
   if OpenFileDialog.Execute then
   begin
-    xCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor (crHourGlass);
     try
       xXml := TXml.Create;
       try
@@ -12730,7 +12680,7 @@ begin
         xXml.Free;
       end;
     finally
-      Screen.Cursor := xCursor;
+      XmlUtil.PopCursor;
     end;
   end;
 end;
@@ -12784,7 +12734,7 @@ procedure TMainForm .LoadTestActionUpdate (Sender : TObject );
 begin
   LoadTestAction.Enabled :=
         Assigned(WsdlOperation)
-    and Assigned(WsdlReply)
+    and Assigned(WsdlMessage)
     and (WsdlOperation.StubAction = saRequest)
     and (NumberOfBlockingThreads < 1)
     ;
@@ -12792,19 +12742,17 @@ end;
 
 procedure TMainForm .logChartActionExecute (Sender : TObject );
 var
-  SwapCursor: TCursor;
   xForm: TlogChartForm;
 begin
   OnlyWhenLicensed;
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     Application.CreateForm(TlogChartForm, xForm);
     try
       xForm.Caption := '' + _progName + ' - Performance report';
       xForm.Operations := allOperations;
       xForm.Logs := se.displayedLogs;
-      Screen.Cursor := SwapCursor;
+      XmlUtil.PopCursor;
       xForm.ShowModal;
       if xForm.Changed then
       begin
@@ -12817,7 +12765,7 @@ begin
       xForm.Free;
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -12932,7 +12880,7 @@ begin
         xXsd._RefNameSpace := ChoosenLeftString;
         xXsd._RefElementName := ChoosenRightString;
         nTypeDef := xXml.Xsd.sType;
-        xPath := IfThen(WsdlReply.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
+        xPath := IfThen(WsdlMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
                + xXml.FullCaption
                ;
         if not oTypeDef.Manually then
@@ -12965,11 +12913,9 @@ end;
 procedure TMainForm.MenuItem27Click(Sender: TObject);
 var
   xReport: TReport;
-  SwapCursor: TCursor;
   xNode: PVirtualNode;
 begin
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     xNode := ReportsVTS.GetFirstSelected;
     while Assigned (xNode) do
@@ -12998,18 +12944,16 @@ begin
       xNode := ReportsVTS.GetNextSelected(xNode);
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
 procedure TMainForm .ReportCopyLogToReferenceMenuItemClick (Sender : TObject );
 var
   xReport: TReport;
-  SwapCursor: TCursor;
   xNode: PVirtualNode;
 begin
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     xNode := ReportsVTS.GetFirstSelected;
     while Assigned (xNode) do
@@ -13023,6 +12967,8 @@ begin
                                  , xmlio.ReadStringFromFile (xReport.FileName)
                                  );
           xReport.Status := rsOk;
+          ReportsVts.InvalidateNode(xNode);
+          Application.ProcessMessages;
         except
           on e: Exception do
           begin
@@ -13037,19 +12983,17 @@ begin
       xNode := ReportsVTS.GetNextSelected(xNode);
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
 procedure TMainForm .MenuItem26Click (Sender : TObject );
 var
   xReport: TReport;
-  SwapCursor: TCursor;
   xNode: PVirtualNode;
   xXml: TXml;
 begin
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   xXml := TXml.CreateAsString('selectedReportsDetails','');
   with xXml do
   try
@@ -13077,7 +13021,7 @@ begin
     ShowXml('Report details', xXml);
   finally
     xXml.Free;
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -13085,11 +13029,9 @@ procedure TMainForm .reportLoadRefLogMessagesMenuItemClick (Sender : TObject );
 var
   xReport: TReport;
   xLogList: TLogList;
-  SwapCursor: TCursor;
   xNode: PVirtualNode;
 begin
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     se.AcquireLogLock;
     try
@@ -13124,7 +13066,7 @@ begin
       xNode := ReportsVTS.GetNextSelected(xNode);
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -13132,11 +13074,9 @@ procedure TMainForm .reportLoadLogMessagesMenuItemClick (Sender : TObject );
 var
   xReport: TReport;
   xLogList: TLogList;
-  SwapCursor: TCursor;
   xNode: PVirtualNode;
 begin
-  SwapCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     se.AcquireLogLock;
     try
@@ -13171,20 +13111,17 @@ begin
       xNode := ReportsVTS.GetNextSelected(xNode);
     end;
   finally
-    Screen.Cursor := SwapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
 procedure TMainForm .CopyLogGridToClipBoardActionExecute (Sender : TObject );
-var
-  xCursor: TCursor;
 begin
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     ClipBoard.AsText := vstToGrid(MessagesVTS, MessagesVTSGetText);
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -13283,11 +13220,8 @@ end;
 procedure TMainForm .MessagesVTSHeaderClick (Sender : TVTHeader ;
   Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
   Y : Integer );
-var
-  xCursor: TCursor;
 begin
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   try
     if Sender.SortColumn = Column then
     begin
@@ -13303,7 +13237,7 @@ begin
     end;
     MessagesVTS.SortTree(Column, Sender.SortDirection, True);
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 

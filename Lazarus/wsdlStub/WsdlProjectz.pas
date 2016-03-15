@@ -212,8 +212,8 @@ type
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
-    procedure CreateRegressionReport (aName, aFileName, aRefFileName: String);
-    procedure CreateCoverageReport;
+    procedure CreateRegressionReport (aName, aFileName, aRefFileName: String; aDoRun: Boolean);
+    procedure CreateCoverageReport(aDoRun: Boolean);
     function FindScript (aName: String): TXml;
     procedure ScriptsClear;
     procedure DefaultDisplayMessageData;
@@ -551,7 +551,7 @@ begin
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
-procedure CreateRegressionReport(aContext: TObject; aName, aFileName, aRefFileName: String);
+procedure CreateRegressionReport(aContext: TObject; aName, aFileName, aRefFileName: String; aDoRun: Boolean);
 var
   xProject: TWsdlProject;
 begin
@@ -563,10 +563,10 @@ begin
       xProject := Owner as TWsdlProject;
   if not Assigned (xProject) then
     raise Exception.Create(Format ('CreateRegressionReport(''%s''); unable to determine context', [aFileName]));
-  xProject.CreateRegressionReport(aName, aFileName, aRefFileName);
+  xProject.CreateRegressionReport(aName, aFileName, aRefFileName, aDoRun);
 end;
 
-procedure CreateCoverageReport(aContext: TObject);
+procedure CreateCoverageReport(aContext: TObject; aDoRun: Boolean);
 var
   xProject: TWsdlProject;
 begin
@@ -578,7 +578,7 @@ begin
       xProject := Owner as TWsdlProject;
   if not Assigned (xProject) then
     raise Exception.Create('CreateCoverageReport(''%s''); unable to determine context');
-  xProject.CreateCoverageReport;
+  xProject.CreateCoverageReport(aDoRun);
 end;
 
 procedure ExecuteScript(aContext: TObject; xScriptName: String);
@@ -6761,7 +6761,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.CreateRegressionReport (aName, aFileName, aRefFileName: String);
+procedure TWsdlProject.CreateRegressionReport (aName, aFileName, aRefFileName: String; aDoRun: Boolean);
 var
   xReport: TRegressionReport;
 begin
@@ -6770,7 +6770,7 @@ begin
                                      , ExpandRelativeFileName(projectFileName, aRefFileName)
                                      );
   xReport.OnReport := doRegressionReport;
-  if False then
+  if aDoRun then
     xReport.doReport;
   AcquireLogLock;
   try
@@ -6780,13 +6780,14 @@ begin
   end;
 end;
 
-procedure TWsdlProject.CreateCoverageReport ;
+procedure TWsdlProject.CreateCoverageReport (aDoRun: Boolean);
 var
   xReport: TCoverageReport;
 begin
   xReport := TCoverageReport.Create;
   xReport.OnReport := doCoverageReport;
-  xReport.doReport;
+  if aDoRun then
+    xReport.doReport;
   AcquireLogLock;
   try
     toDisplayReports.AddObject('', xReport);

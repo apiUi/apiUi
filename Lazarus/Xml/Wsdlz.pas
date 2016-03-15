@@ -555,8 +555,8 @@ procedure AddRemark (aObject: TObject; aString: String);
 procedure SetLogGroupId (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure SaveReports (aObject: TObject; aString: String);
-procedure CreateRegressionReport (aObject: TObject; aName, aFileName, aRefFileName: String);
-procedure CreateCoverageReport (aObject: TObject);
+procedure CreateRegressionReport (aObject: TObject; aName, aFileName, aRefFileName: String; aDoRun: Boolean);
+procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 procedure ClearLogs (aObject: TObject);
 procedure ClearReports (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
@@ -595,8 +595,8 @@ var
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
   _WsdlSaveReports: VFunctionOS;
-  _WsdlCreateRegressionReport: VFunctionOSSS;
-  _WsdlCreateCoverageReport: VFunctionOV;
+  _WsdlCreateRegressionReport: VFunctionOSSSB;
+  _WsdlCreateCoverageReport: VFunctionOB;
   _WsdlClearLogs: VFunctionV;
   _WsdlClearReports: VFunctionV;
   _WsdlAddRemark: VFunctionOS;
@@ -712,18 +712,18 @@ begin
   _WsdlSaveReports (aObject, aString);
 end;
 
-procedure CreateRegressionReport (aObject : TObject ; aName, aFileName, aRefFileName: String );
+procedure CreateRegressionReport (aObject : TObject ; aName, aFileName, aRefFileName: String; aDoRun: Boolean);
 begin
   if not Assigned (_WsdlCreateRegressionReport) then
     raise Exception.Create('No OnCreateRegressionReport event assigned: intention was to compare with: ' + aFileName);
-  _WsdlCreateRegressionReport (aObject, aName, aFileName, aRefFileName);
+  _WsdlCreateRegressionReport (aObject, aName, aFileName, aRefFileName, aDoRun);
 end;
 
-procedure CreateCoverageReport (aObject: TObject);
+procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 begin
   if not Assigned (_WsdlCreateCoverageReport) then
     raise Exception.Create('No OnCreateCoverageReport event assigned');
-  _WsdlCreateCoverageReport (aObject);
+  _WsdlCreateCoverageReport (aObject, aDoRun);
 end;
 
 procedure ExecuteScript(aObject: TObject; aString: String);
@@ -3700,8 +3700,8 @@ begin
     BindBeforeFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
-    BindBeforeFunction ('ReportCoverage', @CreateCoverageReport, VFOV, '()');
-    BindBeforeFunction ('ReportRegression', @CreateRegressionReport, VFOSSS, '(aName, aFileName, aRefFileName)');
+    BindBeforeFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
+    BindBeforeFunction ('ReportRegression', @CreateRegressionReport, VFOSSSB, '(aName, aFileName, aRefFileName, aDoRunNow)');
     BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
@@ -3847,8 +3847,8 @@ begin
     BindAfterFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindAfterFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindAfterFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
-    BindAfterFunction ('ReportCoverage', @CreateCoverageReport, VFOV, '()');
-    BindAfterFunction ('ReportRegression', @CreateRegressionReport, VFOSSS, '(aName, aFileName, aRefFileName)');
+    BindAfterFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
+    BindAfterFunction ('ReportRegression', @CreateRegressionReport, VFOSSSB, '(aName, aFileName, aRefFileName, aDoRunNow)');
     BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
@@ -6592,9 +6592,12 @@ begin
         sl.Add ('?');
     with reqBind as TXml do
     begin
-      LoadFromString(aValue, nil);
-      SeparateNsPrefixes;
-      ResolveNameSpaces;
+      try
+        LoadFromString(aValue, nil);
+        SeparateNsPrefixes;
+        ResolveNameSpaces;
+      except
+      end;
     end;
     PopulateCorrelation(sl);
   finally
@@ -6608,9 +6611,12 @@ begin
   fFreeFormatRpy := aValue;
   with rpyBind as TXml do
   begin
-    LoadFromString(aValue, nil);
-    SeparateNsPrefixes;
-    ResolveNameSpaces;
+    try
+      LoadFromString(aValue, nil);
+      SeparateNsPrefixes;
+      ResolveNameSpaces;
+    except
+    end;
   end;
 end;
 

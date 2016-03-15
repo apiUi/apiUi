@@ -17,6 +17,7 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, FileUtil
 
 
 
+const cursorStackSize = 32;
 type
   TProcedure = procedure of Object;
   TOnProgress = procedure ( Sender: TObject
@@ -34,6 +35,8 @@ private
   pdfFileCounter, rtfFileCounter, docxFileCounter, htmlFileCounter: Integer;
     fAcquireLock: TProcedure;
     fReleaseLock: TProcedure;
+    cursorStack: array [0..cursorStackSize] of TCursor;
+    cursorStackIndex: Integer;
   procedure fShowProgress (aSender: TObject; aProgress, aProgressMax: Integer);
     function getAcquireLock: TProcedure;
     function getReleaseLock: TProcedure;
@@ -120,6 +123,8 @@ public
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
                                  ); overload;
+  procedure PushCursor (aNewCursor: TCursor);
+  procedure PopCursor;
   constructor Create;
   destructor Destroy;
 end;
@@ -1309,6 +1314,21 @@ begin
   MemoShowLinks(aMemo);
 end;
 
+procedure TXmlUtil.PushCursor (aNewCursor: TCursor);
+begin
+  cursorStack[cursorStackIndex] := Screen.Cursor;
+  if cursorStackIndex < cursorStackSize then
+    Inc (cursorStackIndex);
+  Screen.Cursor := aNewCursor;
+end;
+
+procedure TXmlUtil.PopCursor;
+begin
+  if cursorStackIndex > 0 then
+    Dec (cursorStackIndex);
+  Screen.Cursor := cursorStack[cursorStackIndex];
+end;
+
 procedure TXmlUtil.ListXsdEnumerations(aListView: TListView; aBind: TCustomBindable);
 var
   xDataType: TXsdDataType;
@@ -2172,6 +2192,7 @@ constructor TXmlUtil.Create;
 begin
   IpmDescrs := TIpmDescrs.Create;
   IpmDescrs.Sorted := False;
+  cursorStackIndex := 0;
 end;
 
 destructor TXmlUtil.Destroy;
