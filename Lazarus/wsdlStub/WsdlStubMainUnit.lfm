@@ -9368,25 +9368,25 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object reportLoadLogMessagesMenuItem: TMenuItem
-      Caption = 'Load log records'
+      Caption = 'Load saved data'
       OnClick = reportLoadLogMessagesMenuItemClick
     end
     object reportLoadRefLogMessagesMenuItem: TMenuItem
-      Caption = 'Load reference log records'
+      Caption = 'Load reference data'
       OnClick = reportLoadRefLogMessagesMenuItemClick
     end
     object MenuItem23: TMenuItem
       Caption = '-'
     end
     object ReportCopyLogToReferenceMenuItem: TMenuItem
-      Caption = 'Copy log records to reference'
+      Caption = 'Promote to reference'
       OnClick = ReportCopyLogToReferenceMenuItemClick
     end
     object MenuItem25: TMenuItem
       Caption = '-'
     end
     object MenuItem26: TMenuItem
-      Caption = 'Show report details'
+      Caption = 'Show details'
       OnClick = MenuItem26Click
     end
   end

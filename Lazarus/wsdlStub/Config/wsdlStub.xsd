@@ -28,6 +28,9 @@ wsdlStub encrypts passwords before storing in a project file or at other locatio
 	<xs:simpleType name="FileNameType">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
+	<xs:simpleType name="FolderNameType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
 	<xs:simpleType name="emailAddressType">
 		<xs:annotation>
 			<xs:documentation>email address</xs:documentation>
@@ -573,6 +576,22 @@ For an overview of all options visit: doc://wsdlStub_projectOptions_hlp.htm
 
 When 'true', stored filenames will be relative to the projectfilename.</xs:documentation>
 								</xs:annotation>
+							</xs:element>
+							<xs:element name="projectFolders" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="current" type="FolderNameType">
+											<xs:annotation>
+												<xs:documentation>Folder where wslStub will save logfiles for regression testing.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reference" type="FolderNameType">
+											<xs:annotation>
+												<xs:documentation>Folder that wsdlStub will use to save reference logfiles for regression testing.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
 					</xs:complexType>

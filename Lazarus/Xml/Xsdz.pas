@@ -2140,6 +2140,15 @@ begin
     end;
     exit;
   end;
+  if Name = 'FolderNameType' then
+  begin
+    if not DirectoryExists(aValue) then
+    begin
+      aMessage := 'Value: "' + aValue + '" Folder does not exist';
+      result := False;
+    end;
+    exit;
+  end;
   try
     // general facets
     if (Length <> '')

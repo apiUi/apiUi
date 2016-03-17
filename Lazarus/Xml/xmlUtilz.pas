@@ -131,7 +131,9 @@ end;
 
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 function IsExistingFile (aRefName, aFileName: String): Boolean;
+function IsExistingFolder (aRefName, aFolderName: String): Boolean;
 function CheckAndPromptForExistingFile (aCaption, aRefName, aFileName: String): String;
+function CheckAndPromptForExistingFolder (aCaption, aRefName, aFolderName: String): String;
 function EditXmlXsdBased (aCaption, aXsdPath, aInitialFocus, aValidateDuplicatesOn: String; aReadOnly: Boolean; aRootXsd: TXsd; aXml: TXml): Boolean;
 procedure ShowText (aCaption, aText: String);
 procedure ShowXml (aCaption: String; aXml: TXml);
@@ -250,6 +252,43 @@ begin
   result := FileExistsUTF8(ExpandUNCFileNameUTF8(ExpandRelativeFileName (aRefName, aFileName)) { *Converted from ExpandUNCFileName* }); { *Converted from FileExists* }
 end;
 
+function IsExistingFolder (aRefName, aFolderName: String): Boolean;
+begin
+  result := DirectoryExistsUTF8(ExpandUNCFileNameUTF8(ExpandRelativeFileName (aRefName, aFolderName)));
+end;
+
+function CheckAndPromptForExistingFolder (aCaption , aRefName ,
+  aFolderName : String ): String ;
+begin
+  result := ExpandRelativeFileName (aRefName, aFolderName);
+  while not DirectoryExistsUTF8(result) { *Converted from FileExists* } do
+  begin
+    if (MessageDlg ( aCaption
+                   + CRLF
+                   + CRLF
+                   + 'Folder: '
+                   + result
+                   + CRLF
+                   + 'does not exist, try to select another one'
+                   , mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    begin
+      with TSelectDirectoryDialog.Create(nil) do
+      try
+        FileName := result;
+        Title := 'Try to select another folder';
+        if Execute then
+        begin
+          result := FileName;
+        end;
+      finally
+        Free;
+      end;
+    end
+    else
+      raise Exception.Create('Folder: ' + result + ' not found');
+  end;
+end;
+
 function CheckAndPromptForExistingFile (aCaption, aRefName, aFileName: String): String;
 begin
   result := ExpandRelativeFileName (aRefName, aFileName);
@@ -337,19 +376,24 @@ function TXmlUtil.CheckAndPromptFileNames(aFileName: String; aXml: TXml; aOnlyWh
     if aOnlyWhenChecked
     and (not aXml.Checked)
       then Exit;
-    if Assigned (aXml.TypeDef)
-    and (aXml.TypeDef.Name = 'FileNameType') then
+    if Assigned (aXml.TypeDef) then
     begin
-      result := not IsExistingFile(aFileName, aXml.Value);
-      if result then
-        aXml.Value := CheckAndPromptForExistingFile(aXml.FullIndexCaption, aFileName, aXml.Value);
-    end
-    else
-    begin
-      for x := 0 to aXml.Items.Count - 1 do
-        if _check(aFileName, aXml.Items.XmlItems[x], aOnlyWhenChecked) then
-          result := True;
+      if (aXml.TypeDef.Name = 'FileNameType') then
+      begin
+        result := not IsExistingFile(aFileName, aXml.Value);
+        if result then
+          aXml.Value := CheckAndPromptForExistingFile(aXml.FullIndexCaption, aFileName, aXml.Value);
+      end;
+      if (aXml.TypeDef.Name = 'FolderNameType') then
+      begin
+        result := not IsExistingFolder(aFileName, aXml.Value);
+        if result then
+          aXml.Value := CheckAndPromptForExistingFolder(aXml.FullIndexCaption, aFileName, aXml.Value);
+      end;
     end;
+    for x := 0 to aXml.Items.Count - 1 do
+      if _check(aFileName, aXml.Items.XmlItems[x], aOnlyWhenChecked) then
+        result := True;
   end;
 begin
   result := false;
@@ -644,6 +688,22 @@ function TXmlUtil.editXml(aBind: TCustomBindable; aReadOnly: Boolean): Boolean;
     end;
     if (aBind is TXml)
     and (Assigned ((aBind as TXml).Xsd))
+    and (   ((aBind as TXml).TypeDef.Name = 'FolderNameType')
+        )
+    and (not ReadOnly) then
+    begin
+      with TSelectDirectoryDialog.Create (nil) do
+      try
+        Title := 'Foldername for ' + (aBind as TXml).Tagname;
+        FileName := (aBind as TXml).Value;
+        result := Execute;
+        NewValue := FileName;
+      finally
+        Free;
+      end;
+    end;
+    if (aBind is TXml)
+    and (Assigned ((aBind as TXml).Xsd))
     and (   ((aBind as TXml).TypeDef.Name = 'htmlColorType')
         )
     and (not ReadOnly) then
@@ -917,6 +977,7 @@ begin
                       or ((aBind as TXml).TypeDef.BaseDataTypeName = 'boolean')
                       or ((aBind as TXml).TypeDef.BaseDataTypeName = 'base64Binary')
                       or ((aBind as TXml).TypeDef.Name = 'FileNameType')
+                      or ((aBind as TXml).TypeDef.Name = 'FolderNameType')
                       or ((aBind as TXml).TypeDef.Name = 'htmlColorType')
                       or Assigned ((aBind as TXml).TypeDef.OnDoSelectValue)
                       or ((aBind as TXml).TypeDef.Enumerations.Count > 0)
@@ -930,6 +991,7 @@ begin
                       or ((aBind as TXmlAttribute).XsdAttr.BaseDataTypeName = 'boolean')
                       or ((aBind as TXmlAttribute).XsdAttr.BaseDataTypeName = 'base64Binary')
                       or ((aBind as TXmlAttribute).XsdAttr.Name = 'FileNameType')
+                      or ((aBind as TXmlAttribute).XsdAttr.Name = 'FolderNameType')
                       or ((aBind as TXmlAttribute).XsdAttr.Name = 'htmlColorType')
                       or ((aBind as TXmlAttribute).XsdAttr.Enumerations.Count > 0)
                      )

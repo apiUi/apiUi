@@ -555,7 +555,7 @@ procedure AddRemark (aObject: TObject; aString: String);
 procedure SetLogGroupId (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure SaveReports (aObject: TObject; aString: String);
-procedure CreateRegressionReport (aObject: TObject; aName, aFileName, aRefFileName: String; aDoRun: Boolean);
+procedure SaveReportData (aObject: TObject; aName: String; aDoRun: Boolean);
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 procedure ClearLogs (aObject: TObject);
 procedure ClearReports (aObject: TObject);
@@ -595,7 +595,7 @@ var
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
   _WsdlSaveReports: VFunctionOS;
-  _WsdlCreateRegressionReport: VFunctionOSSSB;
+  _WsdlSaveReportData: VFunctionOSB;
   _WsdlCreateCoverageReport: VFunctionOB;
   _WsdlClearLogs: VFunctionV;
   _WsdlClearReports: VFunctionV;
@@ -712,11 +712,11 @@ begin
   _WsdlSaveReports (aObject, aString);
 end;
 
-procedure CreateRegressionReport (aObject : TObject ; aName, aFileName, aRefFileName: String; aDoRun: Boolean);
+procedure SaveReportData (aObject : TObject ; aName: String; aDoRun: Boolean);
 begin
-  if not Assigned (_WsdlCreateRegressionReport) then
-    raise Exception.Create('No OnCreateRegressionReport event assigned: intention was to compare with: ' + aFileName);
-  _WsdlCreateRegressionReport (aObject, aName, aFileName, aRefFileName, aDoRun);
+  if not Assigned (_WsdlSaveReportData) then
+    raise Exception.CreateFmt('No OnCreateRegressionReport (%s)', [aName]);
+  _WsdlSaveReportData (aObject, aName, aDoRun);
 end;
 
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
@@ -3701,7 +3701,7 @@ begin
     BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
     BindBeforeFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
-    BindBeforeFunction ('ReportRegression', @CreateRegressionReport, VFOSSSB, '(aName, aFileName, aRefFileName, aDoRunNow)');
+    BindBeforeFunction ('SaveReportData', @SaveReportData, VFOSB, '(aName, aDoRunNow)');
     BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
@@ -3848,7 +3848,7 @@ begin
     BindAfterFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindAfterFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
     BindAfterFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
-    BindAfterFunction ('ReportRegression', @CreateRegressionReport, VFOSSSB, '(aName, aFileName, aRefFileName, aDoRunNow)');
+    BindAfterFunction ('SaveReportData', @SaveReportData, VFOSB, '(aName, aDoRunNow)');
     BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');

@@ -228,7 +228,7 @@ Enter correlation items in an order that correponds with the wsdlStub correlatio
 	</xs:element>
 	<xs:element name="saveLogsToFileReq">
 		<xs:annotation>
-			<xs:documentation>request to save the wsdlStub to a file</xs:documentation>
+			<xs:documentation>request to save the wsdlStub log to a file</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -239,6 +239,21 @@ Enter correlation items in an order that correponds with the wsdlStub correlatio
 	<xs:element name="saveLogsToFileRpy">
 		<xs:annotation>
 			<xs:documentation>response on save wsdlStub log request</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="saveReportDataReq">
+		<xs:annotation>
+			<xs:documentation>request to save wsdlStub reporting data</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="saveReportDataRpy">
+		<xs:annotation>
+			<xs:documentation>response on save wsdlStub report data request</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="activateReq">

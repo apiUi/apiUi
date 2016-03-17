@@ -12112,11 +12112,12 @@ begin
               begin
                 yXml := xXml.Items.XmlItems[Y];
                 if yXml.Name = 'regressionReportDetails' then
-                  se.CreateRegressionReport( yXml.Items.XmlValueByTag ['name']
-                                           , yXml.Items.XmlValueByTag ['fileName']
-                                           , yXml.Items.XmlValueByTag ['refFileName']
-                                           , False
-                                           );
+                  se.SaveReportData ( yXml.Items.XmlValueByTag ['name']
+                                    , yXml.Items.XmlValueByTag ['fileName']
+                                    , yXml.Items.XmlValueByTag ['refFileName']
+                                    , False
+                                    , False
+                                    );
               end;
             except
               on E: Exception do

@@ -2792,7 +2792,9 @@ var
 begin
   if Assigned (TypeDef) then
   begin
-    if TypeDef.Name = 'FileNameType' then
+    if (TypeDef.Name = 'FileNameType')
+    or (TypeDef.Name = 'FolderNameType')
+    then
       Value := ExtractRelativeFileName (aFileName, Value)
     else
     begin

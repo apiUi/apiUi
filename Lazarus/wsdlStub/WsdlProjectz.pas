@@ -191,6 +191,7 @@ type
     PublishDescriptions: Boolean;
     OperationsWithEndpointOnly: Boolean;
     SaveRelativeFileNames: Boolean;
+    CurrentFolder, ReferenceFolder: String;
     FocusOperationName, FocusOperationNameSpace: String;
     FocusMessageIndex: Integer;
     procedure UpdateOperationAliasses;
@@ -212,7 +213,7 @@ type
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
-    procedure CreateRegressionReport (aName, aFileName, aRefFileName: String; aDoRun: Boolean);
+    procedure SaveReportData (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
     procedure CreateCoverageReport(aDoRun: Boolean);
     function FindScript (aName: String): TXml;
     procedure ScriptsClear;
@@ -551,7 +552,7 @@ begin
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
-procedure CreateRegressionReport(aContext: TObject; aName, aFileName, aRefFileName: String; aDoRun: Boolean);
+procedure SaveReportData(aContext: TObject; aName: String; aDoRun: Boolean);
 var
   xProject: TWsdlProject;
 begin
@@ -562,8 +563,17 @@ begin
     if aContext is TWsdlOperation then with aContext as TWsdlOperation do
       xProject := Owner as TWsdlProject;
   if not Assigned (xProject) then
-    raise Exception.Create(Format ('CreateRegressionReport(''%s''); unable to determine context', [aFileName]));
-  xProject.CreateRegressionReport(aName, aFileName, aRefFileName, aDoRun);
+    raise Exception.Create(Format ('CreateRegressionReport(''%s''); unable to determine context', [aName]));
+  if (xProject.CurrentFolder = '')
+  or (xProject.ReferenceFolder = '')
+  or (xProject.CurrentFolder = xProject.ReferenceFolder)then
+    raise Exception.Create('SaveReportData: config (ProjectOptions.General.projectFolders) invalid');
+  xProject.SaveReportData ( aName
+                          , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
+                          , xProject.ReferenceFolder + DirectorySeparator + aName + '.xml'
+                          , true
+                          , aDoRun
+                          );
 end;
 
 procedure CreateCoverageReport(aContext: TObject; aDoRun: Boolean);
@@ -1708,6 +1718,13 @@ begin
   with result.AddXml (TXml.CreateAsString('General', '')) do
   begin
     AddXml (TXml.CreateAsBoolean('SaveRelativeFileNames', SaveRelativeFileNames));
+    if (CurrentFolder <> '')
+    or (ReferenceFolder <> '') then
+      with AddXml (TXml.CreateAsString('projectFolders', '')) do
+      begin
+        AddXml (TXml.CreateAsString('current', CurrentFolder));
+        AddXml (TXml.CreateAsString('reference', ReferenceFolder));
+      end;
   end;
   result.AddXml(ProjectLogOptionsAsXml);
   with result.AddXml (TXml.CreateAsString('Wsdl', '')) do
@@ -3115,6 +3132,8 @@ begin
   PublishDescriptions := False;
   OperationsWithEndpointOnly := True;
   SaveRelativeFileNames := True;
+  CurrentFolder := '';
+  ReferenceFolder := '';
   notStubbedExceptionMessage := 'No operation recognised';
 
   if not aXml.Checked then Exit;
@@ -3124,6 +3143,12 @@ begin
     if Assigned (xXml) then
     begin
       SaveRelativeFileNames := xXml.Items.XmlCheckedBooleanByTagDef['SaveRelativeFileNames', True];
+      yXml := xXml.Items.XmlCheckedItemByTag['projectFolders'];
+      if Assigned (yXml) then with yXml.Items do
+      begin
+        CurrentFolder := XmlCheckedValueByTag['current'];
+        ReferenceFolder := XmlCheckedValueByTag['reference'];
+      end;
     end;
     ProjectLogOptionsFromXml (XmlCheckedItemByTag ['Log']);
     xXml := XmlCheckedItemByTag ['Wsdl'];
@@ -6761,7 +6786,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.CreateRegressionReport (aName, aFileName, aRefFileName: String; aDoRun: Boolean);
+procedure TWsdlProject.SaveReportData (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
 var
   xReport: TRegressionReport;
 begin
@@ -6770,6 +6795,8 @@ begin
                                      , ExpandRelativeFileName(projectFileName, aRefFileName)
                                      );
   xReport.OnReport := doRegressionReport;
+  if aDoSave then
+    SaveLogs(xReport.FileName);
   if aDoRun then
     xReport.doReport;
   AcquireLogLock;
@@ -6977,7 +7004,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
-  _WsdlCreateRegressionReport := CreateRegressionReport;
+  _WsdlSaveReportData := SaveReportData;
   _WsdlCreateCoverageReport := CreateCoverageReport;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;
