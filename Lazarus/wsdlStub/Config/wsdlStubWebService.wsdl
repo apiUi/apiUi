@@ -63,12 +63,6 @@
 	<message name="setEnvVarRpyMessage">
 		<part name="payload" element="tns:setEnvVarRpy"/>
 	</message>
-	<message name="setLogGroupIdReqMessage">
-		<part name="payload" element="tns:setLogGroupIdReq"/>
-	</message>
-	<message name="setLogGroupIdRpyMessage">
-		<part name="payload" element="tns:setLogGroupIdRpy"/>
-	</message>
 	<message name="executeScriptReqMessage">
 		<part name="payload" element="tns:executeScriptReq"/>
 	</message>
@@ -103,11 +97,6 @@
 		<operation name="executeScript">
 			<input message="client:executeScriptReqMessage"/>
 			<output message="client:executeScriptRpyMessage"/>
-			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
-		</operation>
-		<operation name="setLogGroupId">
-			<input message="client:setLogGroupIdReqMessage"/>
-			<output message="client:setLogGroupIdRpyMessage"/>
 			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
 		</operation>
 		<operation name="setEnvVar">
@@ -175,18 +164,6 @@
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 		<operation name="executeScript">
 			<soap:operation soapAction="urn:#executeScriptVar"/>
-			<input>
-				<soap:body use="literal"/>
-			</input>
-			<output>
-				<soap:body use="literal"/>
-			</output>
-			<fault name="SOAPFault">
-				<soap:fault name="SOAPFault" use="literal"/>
-			</fault>
-		</operation>
-		<operation name="setLogGroupId">
-			<soap:operation soapAction="urn:#setLogGroupId"/>
 			<input>
 				<soap:body use="literal"/>
 			</input>

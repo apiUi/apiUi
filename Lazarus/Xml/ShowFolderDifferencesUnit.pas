@@ -204,19 +204,16 @@ begin
 end;
 
 procedure TShowFolderDifferencesForm.FormShow(Sender: TObject);
-var
-  swapCursor: TCursor;
 begin
-  swapCursor := Screen.Cursor;
+  xmlUtil.PushCursor(crHourGlass);
   try
-    Screen.Cursor := crHourGlass;
     mainVst.Header.Columns.Items[0].Text := FolderName1;
     mainVst.Header.Columns.Items[4].Text := FolderName2;
     PopulateMain;
     if Assigned (FinishedEvent) then
       FinishedEvent(Self);
   finally
-    Screen.Cursor := swapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -717,15 +714,12 @@ begin
 end;
 
 procedure TShowFolderDifferencesForm.CopyToClipboardActionExecute(Sender: TObject);
-var
-  swapCursor: TCursor;
 begin
-  swapCursor := Screen.Cursor;
+  XmlUtil.PushCursor(crHourGlass);
   try
-    Screen.Cursor := crHourGlass;
     Clipboard.AsText := vstToGrid (mainVST, CopyGridOnGetText);
   finally
-    Screen.Cursor := swapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 

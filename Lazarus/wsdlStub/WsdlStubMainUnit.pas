@@ -7297,7 +7297,7 @@ var
   xChanged, xRead: Boolean;
   f: Integer;
 begin
-  screen.Cursor:=crHourGlass;
+  XmlUtil.PushCursor (crHourGlass);
   Application.ProcessMessages;
   try
     xChanged := stubChanged;
@@ -7314,7 +7314,7 @@ begin
     stubChanged := xChanged;
     se.StubRead := xRead;
   finally
-    screen.Cursor:=crDefault;
+    XmlUtil.PopCursor;
     Application.ProcessMessages;
   end;
 end;
@@ -9267,10 +9267,16 @@ procedure TMainForm.ProjectOptionsActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
-  xXml := se.ProjectOptionsAsXml;
+  xXml := se.ProjectOptionsAsXml(False, '');
   try
-    if EditXmlXsdBased('Project Options', '', '', '', se.IsActive,
-      projectOptionsXsd, xXml) then
+    if EditXmlXsdBased ('Project Options'
+                       , ''
+                       , ''
+                       , ''
+                       , se.IsActive
+                       , projectOptionsXsd
+                       , xXml
+                       ) then
     begin
       AcquireLock;
       try

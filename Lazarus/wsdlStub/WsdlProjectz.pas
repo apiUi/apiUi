@@ -312,7 +312,7 @@ type
                          ; aIsActive: Boolean
                          ): String;
     function ProjectLogOptionsAsXml: TXml;
-    function ProjectOptionsAsXml: TXml;
+    function ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
     function ProjectScriptsAsXml: TXml;
     procedure ProjectScriptsFromXml (aXml: TXml);
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
@@ -492,25 +492,6 @@ begin
       Remarks := aString
     else
       Remarks := Remarks + CRLF + aString;
-  end;
-end;
-
-procedure SetLogGroupId(aOperation: TObject; aString: String);
-begin
-  if not Assigned (aOperation)
-  or not (aOperation is TWsdlOperation)
-  or not Assigned ((aOperation as TWsdlOperation).Data) then
-    raise Exception.Create('aOperation.Data not assigned; intentention was to SetLogGroupId: ' + aString);
-  with (aOperation as TWsdlOperation).Data as TLog do
-    LogGroupId := aString;
-  with (aOperation as TWsdlOperation).Owner as TWsdlProject do
-  begin
-    AcquireLogLock;
-    try
-      _logzLogGroupId := aString;
-    finally
-      ReleaseLogLock;
-    end;
   end;
 end;
 
@@ -1712,7 +1693,7 @@ begin
   end;
 end;
 
-function TWsdlProject.ProjectOptionsAsXml: TXml;
+function TWsdlProject.ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
 begin
   result := TXml.CreateAsString('projectOptions', '');
   with result.AddXml (TXml.CreateAsString('General', '')) do
@@ -1720,11 +1701,21 @@ begin
     AddXml (TXml.CreateAsBoolean('SaveRelativeFileNames', SaveRelativeFileNames));
     if (CurrentFolder <> '')
     or (ReferenceFolder <> '') then
+    begin
       with AddXml (TXml.CreateAsString('projectFolders', '')) do
       begin
-        AddXml (TXml.CreateAsString('current', CurrentFolder));
-        AddXml (TXml.CreateAsString('reference', ReferenceFolder));
+        if aRelativeFilenames then
+        begin
+          AddXml (TXml.CreateAsString('current', ExtractRelativeFileName (aFileName, CurrentFolder)));
+          AddXml (TXml.CreateAsString('reference', ExtractRelativeFileName (aFileName, ReferenceFolder)));
+        end
+        else
+        begin
+          AddXml (TXml.CreateAsString('current', CurrentFolder));
+          AddXml (TXml.CreateAsString('reference', ReferenceFolder));
+        end;
       end;
+    end;
   end;
   result.AddXml(ProjectLogOptionsAsXml);
   with result.AddXml (TXml.CreateAsString('Wsdl', '')) do
@@ -1849,7 +1840,7 @@ begin
       AddXml(TXml.CreateAsBoolean('ValidateReplies', doValidateReplies));
       AddXml (TXml.CreateAsBoolean('CheckExpectedValues', doCheckExpectedValues));
       AddXml (TXml.CreateAsBoolean('DisableOnCorrelate', _WsdlDisableOnCorrelate));
-      AddXml (ProjectOptionsAsXml);
+      AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, ExpandUNCFileNameUTF8(aMainFileName)));
       AddXml (TXml.CreateAsString('PathPrefixes', xmlio.PathPrefixes.Text));
       with AddXml(TXml.CreateAsString('Environments', '')) do
         for x := 0 to EnvironmentList.Count - 1 do
@@ -2163,7 +2154,11 @@ begin
             ProjectOptions36FromXml(eXml);
           eXml := xXml.Items.XmlItemByTag ['projectOptions'];
           if Assigned (eXml) then
+          begin
             ProjectOptionsFromXml(eXml);
+            CurrentFolder := ExpandRelativeFileName (aMainFileName, CurrentFolder);
+            ReferenceFolder := ExpandRelativeFileName (aMainFileName, ReferenceFolder);
+          end;
           xmlio.PathPrefixes.Text := xXml.Items.XmlCheckedValueByTag ['PathPrefixes'];
           eXml := xXml.Items.XmlItemByTag ['Environments'];
           if Assigned (eXml) then

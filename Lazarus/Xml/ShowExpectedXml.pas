@@ -107,6 +107,7 @@ implementation
 
 uses FindRegExpDialog
    , igGlobals
+   , xmlUtilz
    ;
 
 {$IFnDEF FPC}
@@ -188,7 +189,7 @@ begin
   TreeView.Clear;
   if aBind = nil then
     exit;
-  swapCursor := Screen.Cursor;
+  XmlUtil.PushCursor(crHourGlass);
   try
     Screen.Cursor := crHourGlass;
     _ShowBind (aBind, nil);
@@ -201,7 +202,7 @@ begin
     end;
     TreeView.Selected[TreeView.FocusedNode]:= True;
   finally
-    Screen.Cursor := swapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 

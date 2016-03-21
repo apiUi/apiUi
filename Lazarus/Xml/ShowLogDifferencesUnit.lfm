@@ -145,29 +145,29 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     ShowHint = True
     TabOrder = 1
     object ToolButton2: TToolButton
-      Left = 281
+      Left = 248
       Top = 2
       Width = 10
       Action = MaintainIgnoreDiffsAction
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 291
+      Left = 258
       Top = 2
       Action = MaintainIgnoreDiffsAction
     end
     object ToolButton12: TToolButton
-      Left = 314
+      Left = 281
       Top = 2
       Action = MaintainIgnoreAdditionsAction
     end
     object ToolButton13: TToolButton
-      Left = 337
+      Left = 304
       Top = 2
       Action = MaintainIgnoredRemovalsAction
     end
     object ToolButton3: TToolButton
-      Left = 383
+      Left = 350
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -175,17 +175,17 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 393
+      Left = 360
       Top = 2
       Action = NextDiffAction
     end
     object ToolButton6: TToolButton
-      Left = 416
+      Left = 383
       Top = 2
       Action = PrevDiffAction
     end
     object ToolButton7: TToolButton
-      Left = 439
+      Left = 406
       Top = 2
       Width = 10
       Caption = 'ToolButton7'
@@ -193,12 +193,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 449
+      Left = 416
       Top = 2
       Action = CopyToClipboardAction
     end
     object ToolButton8: TToolButton
-      Left = 472
+      Left = 439
       Top = 2
       Width = 10
       Caption = 'ToolButton8'
@@ -206,12 +206,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 482
+      Left = 449
       Top = 2
       Action = HtmlReportAction
     end
     object ToolButton11: TToolButton
-      Left = 505
+      Left = 472
       Top = 2
       Width = 10
       Caption = 'ToolButton11'
@@ -219,17 +219,17 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 515
+      Left = 482
       Top = 2
       Action = CloseAction
     end
     object ToolButton14: TToolButton
-      Left = 360
+      Left = 327
       Top = 2
       Action = MaintainLogOrderColumnsAction
     end
     object CompareLogOrderByComboBox: TComboBox
-      Left = 84
+      Left = 51
       Height = 21
       Top = 2
       Width = 197
@@ -244,14 +244,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       TabOrder = 0
       Text = 'As is (timestamp)'
     end
-    object TotalResultButton: TToolButton
-      Left = 11
-      Top = 2
-      Caption = 'TotalResultButton'
-      ImageIndex = 132
-    end
     object Panel2: TPanel
-      Left = 44
+      Left = 11
       Height = 22
       Top = 2
       Width = 40
@@ -260,15 +254,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Caption = 'Order:'
       TabOrder = 1
     end
-    object ToolButton15: TToolButton
-      Left = 1
-      Top = 2
-      Width = 10
-      Caption = 'ToolButton15'
-      Style = tbsSeparator
-    end
     object ToolButton16: TToolButton
-      Left = 34
+      Left = 1
       Top = 2
       Width = 10
       Caption = 'ToolButton16'

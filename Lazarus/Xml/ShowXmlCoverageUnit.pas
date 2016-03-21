@@ -706,15 +706,13 @@ procedure TShowXmlCoverageForm.AsHtmlActionExecute(Sender: TObject);
   end;
 var
   tableXml, xXml: TXml;
-  swapCursor: TCursor;
   xNode: PVirtualNode;
   xData: PDataTreeRec;
   xRow: Integer;
 begin
   xXml := TXml.CreateAsString('html', '');
   try
-    swapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor(crHourGlass);
     try
       tableXml := xXml.AddXml (TXml.CreateAsString('table', ''));
       with tableXml do
@@ -762,7 +760,7 @@ begin
         details (tableXml, self.Bind, 0);
       end;
     finally
-      Screen.Cursor := swapCursor;
+      XmlUtil.PopCursor;
     end;
     XmlUtil.presentAsHTML('wsdlStub - Coverage report', xXml.asHtmlString);
   finally

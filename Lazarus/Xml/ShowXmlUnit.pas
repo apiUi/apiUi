@@ -940,7 +940,6 @@ var
   xXsd: TXsd;
   xForm: TXmlGridForm;
   xXsdPropertiesVisible: Boolean;
-  xCursor: TCursor;
   xXsdDescr: TXsdDescr;
 begin
   Bind := SelectedBind;
@@ -951,8 +950,7 @@ begin
   xXml := Bind as TXml;
   if xXml.Items.Count = 0 then
     raise Exception.Create('Function only enabled on groups');
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor(crHourGlass);
   try
     if not Assigned(xXml.Xsd) then
     begin
@@ -1000,7 +998,7 @@ begin
       end;
     end;
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 

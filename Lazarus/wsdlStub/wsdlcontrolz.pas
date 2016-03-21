@@ -431,21 +431,6 @@ begin
                 else
                   raise Exception.Create('Cannot find script based on: ' + dXml.Value);
               end;
-              if xOperId = 'setLogGroupIdReq' then
-              begin
-                dXml := oXml.FindXml('Body.setLogGroupIdReq.logGroupId');
-                if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find logGroupId in request');
-                with se do
-                begin
-                  AcquireLogLock;
-                  try
-                    _logzLogGroupId := dXml.Value;
-                  finally
-                    ReleaseLogLock;
-                  end;
-                end;
-              end;
               AResponseInfo.ContentText := oOperation.StreamReply(_progName, True);
             except
               on e: exception do

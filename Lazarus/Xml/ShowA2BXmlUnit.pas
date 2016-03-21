@@ -244,9 +244,8 @@ begin
   TreeView.Clear;
   if aXml = nil then
     exit;
-  swapCursor := Screen.Cursor;
+  XmlUtil.PushCursor(crHourGlass);
   try
-    Screen.Cursor := crHourGlass;
     _ShowXml (aXml, nil);
     xNode := TreeView.GetFirst;
     TreeView.FullCollapse (xNode);
@@ -274,7 +273,7 @@ begin
       TreeView.FocusedNode := xNode;
     end;
   finally
-    Screen.Cursor := swapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 

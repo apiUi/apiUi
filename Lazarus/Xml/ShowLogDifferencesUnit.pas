@@ -49,9 +49,7 @@ type
     ActionImageList: TImageList;
     ActionList1: TActionList;
     ToolButton14 : TToolButton ;
-    ToolButton15 : TToolButton ;
     ToolButton16 : TToolButton ;
-    TotalResultButton : TToolButton ;
     ToolButton2: TToolButton;
     CheckAllAction: TAction;
     UncheckAllAction: TAction;
@@ -238,8 +236,7 @@ var
   xData: PVSTreeRec;
 begin
   fConfigChanged := aChanged;
-  Screen.Cursor := crHourGlass;
-  TotalResultButton.ImageIndex := 131;
+  XmlUtil.PushCursor(crHourGlass);
   mainVST.Header.Columns[Ord(ceReqColumn)].ImageIndex := Ord(RightArrowType);
   mainVST.Header.Columns[Ord(ceRpyColumn)].ImageIndex := Ord(LeftArrowType);
   fReqDiffsFound := False;
@@ -355,10 +352,6 @@ begin
       a2bUninitialize;
     end;
   finally
-    if differencesFound then
-      TotalResultButton.ImageIndex := 133
-    else
-      TotalResultButton.ImageIndex := 132;
     if fReqDiffsFound then
       mainVST.Header.Columns[Ord(ceReqColumn)].ImageIndex := Ord(RightRedArrowType)
     else
@@ -367,7 +360,7 @@ begin
       mainVST.Header.Columns[Ord(ceRpyColumn)].ImageIndex := Ord(LeftRedArrowType)
     else
       mainVST.Header.Columns[Ord(ceRpyColumn)].ImageIndex := Ord(LeftGreenArrowType);
-    Screen.Cursor := crDefault;
+    XmlUtil.PopCursor;
     Application.ProcessMessages;
   end;
 end;
@@ -771,15 +764,12 @@ begin
 end;
 
 procedure TShowLogDifferencesForm.CopyToClipboardActionExecute(Sender: TObject);
-var
-  swapCursor: TCursor;
 begin
-  swapCursor := Screen.Cursor;
+  XmlUtil.PushCursor(crHourGlass);
   try
-    Screen.Cursor := crHourGlass;
     Clipboard.AsText := vstToGrid (mainVST, CopyGridOnGetText);
   finally
-    Screen.Cursor := swapCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
@@ -890,7 +880,6 @@ end;
 procedure TShowLogDifferencesForm.HtmlReportActionExecute(Sender: TObject);
 var
   xXml, tableXml: TXml;
-  swapCursor: TCursor;
   xNode: PVirtualNode;
   xData: PVSTreeRec;
   xRow: Integer;
@@ -1010,8 +999,7 @@ var
 begin
   xXml := TXml.CreateAsString('html', '');
   try
-    swapCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    XmlUtil.PushCursor(crHourGlass);
     try
       tableXml := xXml.AddXml (TXml.CreateAsString('table', ''));
       with tableXml do
@@ -1147,7 +1135,7 @@ begin
         end;
       end;
     finally
-      Screen.Cursor := swapCursor;
+      XmlUtil.PopCursor;
     end;
     XmlUtil.presentAsHTML('wsdlStub - Differences report', xXml.asHtmlString{.Text});
   finally

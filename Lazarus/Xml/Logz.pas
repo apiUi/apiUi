@@ -53,7 +53,6 @@ type
     httpSoapAction: String;
     DestinationIp: String;
     Stubbed: Boolean;
-    LogGroupId: String;
     CorrelationId: String;
     Operation: TWsdlOperation;
     Mssg: TWsdlMessage;
@@ -172,8 +171,6 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ): TXml;
 function doOrder (List: TStringList; Index1, Index2: Integer): Integer;
 
-var
-  _logzLogGroupId: String;
 implementation
 
 uses SysUtils
@@ -226,8 +223,6 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
   begin
     result := TXml.CreateAsString('Detail', '');
     result.AddXml (TXml.CreateAsString('messageTimestamp', xsdDateTime(xLog.InboundTimeStamp)));
-    if xLog.LogGroupId <> '' then
-      result.AddXml (TXml.CreateAsString('LogGroupId', xLog.LogGroupId));
     if Assigned (xLog.Operation) then
     begin
       result.AddXml (TXml.CreateAsString('Service', xLog.Operation.WsdlService.Name));
@@ -339,7 +334,7 @@ begin
         begin
           with aSortedLogs.LogItems[x] do
           begin
-            s := LogGroupId + ';';
+            s := '';
             if Assigned (Operation) then
               s := s + Operation.WsdlService.Name + ';' + Operation.Name + ';'
             else
@@ -354,7 +349,7 @@ begin
         begin
           with bSortedLogs.LogItems[x] do
           begin
-            s := LogGroupId + ';';
+            s := '';
             if Assigned (Operation) then
               s := s + Operation.WsdlService.Name + ';' + Operation.Name + ';'
             else
@@ -784,8 +779,6 @@ begin
         with bodyXml.AddXml(TXml.CreateAsString('Detail','')) do
         begin
           AddXml (TXml.CreateAsString('messageTimestamp', xsdDateTime(xLog.InboundTimeStamp)));
-          if xLog.LogGroupId <> '' then
-            AddXml (TXml.CreateAsString('LogGroupId', xLog.LogGroupId));
           AddXml (TXml.CreateAsString('Service', xLog.Operation.WsdlService.Name));
           AddXml (TXml.CreateAsString('Operation', xLog.Operation.Name));
           AddXml (TXml.CreateAsString('Message', xLog.Mssg.Name));
@@ -1001,8 +994,6 @@ begin
     AddXml (Txml.CreateAsInteger('TransportType', Ord (Self.TransportType)));
     AddXml (TXml.CreateAsString('StubAction', IntToStr(Ord(Self.StubAction))));
     AddXml (Txml.CreateAsString('CorrelationId', Self.CorrelationId));
-    if self.LogGroupId <> '' then
-      AddXml (Txml.CreateAsString('LogGroupId', Self.LogGroupId));
     if Assigned (Self.Operation) then
     begin
       AddXml (TXml.CreateAsString('Service', Self.Operation.WsdlService.Name));
@@ -1048,7 +1039,6 @@ constructor TLog.Create;
 begin
   CorrId := 'uuid:' + generateRandomId;
   DisplayedColumns := TStringList.Create;
-  LogGroupId := _logzLogGroupId;
 end;
 
 destructor TLog.Destroy;
@@ -1069,9 +1059,7 @@ begin
     case aCompareBy of
       clCorrelation:
       begin
-        result := LogGroupId
-                + ';'
-                + Operation.WsdlService.Name
+        result := Operation.WsdlService.Name
                 + ';'
                 + Operation.Name
                 + ';'
@@ -1079,9 +1067,7 @@ begin
                 ;
       end;
       clOperation:
-        result := LogGroupId
-                + ';'
-                + Operation.WsdlService.Name
+        result := Operation.WsdlService.Name
                 + ';'
                 + Operation.Name
                 ;
@@ -1090,8 +1076,8 @@ begin
   else
   begin
     case aCompareBy of
-      clOperation: result := LogGroupId + ';';
-      clCorrelation: result := LogGroupId + ';' + CorrelationId;
+      clOperation: result := '';
+      clCorrelation: result := CorrelationId;
     end;
   end;
   if (aSortColumns.Count > 0)

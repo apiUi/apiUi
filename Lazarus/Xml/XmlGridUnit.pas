@@ -1157,10 +1157,8 @@ var
   xNode: PVirtualNode;
   s, xSep: String;
   c: Integer;
-  xCursor: TCursor;
 begin
-  xCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  XmlUtil.PushCursor(crHourGlass);
   try
     xNode := Grid.GetFirst;
     s := '';
@@ -1179,7 +1177,7 @@ begin
     end;
     Clipboard.AsText := s;
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 

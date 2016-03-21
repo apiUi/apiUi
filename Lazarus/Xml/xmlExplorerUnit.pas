@@ -776,7 +776,6 @@ end;
 
 procedure TMainForm.openLog4JActionExecute(Sender: TObject);
 var
-  xCursor: TCursor;
   s, ss: String;
   sl: TStringList;
   x: Integer;
@@ -785,12 +784,11 @@ var
   sSearchString, eSearchString, xSearchString: String;
   xForm: TShowStringListForm;
 begin
-  xCursor := Screen.Cursor;
+  XmlUtil.PushCursor(crHourGlass);
   sSearchString := '<log4j_event';
   eSearchString := '</log4j_event>';
   xOptions := [soDown, soMatchCase];
   try
-    Screen.Cursor := crHourGlass;
     with TOpenDialog.Create(nil) do
     try
       Options := Options + [ofAllowMultiSelect];
@@ -878,7 +876,7 @@ begin
       sl.free;
     end;
   finally
-    Screen.Cursor := xCursor;
+    XmlUtil.PopCursor;
   end;
 end;
 
