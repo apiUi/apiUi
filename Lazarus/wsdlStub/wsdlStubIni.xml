@@ -1,9 +1,9 @@
 <wsdlStubIni>
   <authorizationServerEndpoint>http://localhost:6059</authorizationServerEndpoint>
-  <licenseDatabase>
+  <_licenseDatabase>
 	  <OdbcDriver>Microsoft Access Driver (*.mdb)</OdbcDriver>
 	  <DatabaseName>Database\wsdlStubLicense.mdb</DatabaseName>
-  </licenseDatabase>
+  </_licenseDatabase>
   <indexWsdlsHtml>Config\wsdlIndex.html</indexWsdlsHtml>
   <indexHtml>Config\index.html</indexHtml>
   <wsdlStubWebServiceWsdl>Config\wsdlStubWebService.wsdl</wsdlStubWebServiceWsdl>

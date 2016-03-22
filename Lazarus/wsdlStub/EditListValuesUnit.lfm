@@ -1,7 +1,7 @@
 object EditListValuesForm: TEditListValuesForm
-  Left = 272
+  Left = 396
   Height = 343
-  Top = 171
+  Top = 222
   Width = 675
   Anchors = []
   Caption = 'Edit list of values'
@@ -12,7 +12,7 @@ object EditListValuesForm: TEditListValuesForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel3: TPanel
     Left = 0
     Height = 302
@@ -45,6 +45,8 @@ object EditListValuesForm: TEditListValuesForm
       Top = 33
       Width = 667
       Align = alClient
+      DefaultColWidth = 256
+      DefaultRowHeight = 20
       FixedCols = 0
       RowCount = 2
       TabOrder = 2
@@ -54,8 +56,8 @@ object EditListValuesForm: TEditListValuesForm
         ''
       )
       ColWidths = (
-        150
-        513
+        256
+        407
       )
     end
   end

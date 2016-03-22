@@ -554,7 +554,7 @@ function setEnvVar (aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure SaveReports (aObject: TObject; aString: String);
-procedure SaveReportData (aObject: TObject; aName: String; aDoRun: Boolean);
+procedure CreateSavePoint (aObject: TObject; aName: String; aDoRun: Boolean);
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 procedure ClearLogs (aObject: TObject);
 procedure ClearReports (aObject: TObject);
@@ -594,7 +594,7 @@ var
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
   _WsdlSaveReports: VFunctionOS;
-  _WsdlSaveReportData: VFunctionOSB;
+  _WsdlCreateSavepoint: VFunctionOSB;
   _WsdlCreateCoverageReport: VFunctionOB;
   _WsdlClearLogs: VFunctionV;
   _WsdlClearReports: VFunctionV;
@@ -703,11 +703,11 @@ begin
   _WsdlSaveReports (aObject, aString);
 end;
 
-procedure SaveReportData (aObject : TObject ; aName: String; aDoRun: Boolean);
+procedure CreateSavePoint (aObject : TObject ; aName: String; aDoRun: Boolean);
 begin
-  if not Assigned (_WsdlSaveReportData) then
-    raise Exception.CreateFmt('No OnCreateRegressionReport (%s)', [aName]);
-  _WsdlSaveReportData (aObject, aName, aDoRun);
+  if not Assigned (_WsdlCreateSavepoint) then
+    raise Exception.CreateFmt('No OnCreateSavepoint event assigned, intention was to save as (%s)', [aName]);
+  _WsdlCreateSavepoint (aObject, aName, aDoRun);
 end;
 
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
@@ -3657,6 +3657,7 @@ begin
     BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindBeforeFunction ('ClearLogs', @ClearLogs, VFV, '()');
     BindBeforeFunction ('ClearReports', @ClearReports, VFV, '()');
+    BindBeforeFunction ('CreateSavePoint', @CreateSavePoint, VFOSB, '(aName, aDoRunNow)');
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
@@ -3692,7 +3693,6 @@ begin
     BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
     BindBeforeFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
-    BindBeforeFunction ('SaveReportData', @SaveReportData, VFOSB, '(aName, aDoRunNow)');
     BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
@@ -3803,6 +3803,7 @@ begin
     BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindAfterFunction ('ClearLogs', @ClearLogs, VFV, '()');
     BindAfterFunction ('ClearReports', @ClearReports, VFV, '()');
+    BindAfterFunction ('CreateSavePoint', @CreateSavePoint, VFOSB, '(aName, aDoRunNow)');
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
@@ -3838,7 +3839,6 @@ begin
     BindAfterFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindAfterFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
     BindAfterFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
-    BindAfterFunction ('SaveReportData', @SaveReportData, VFOSB, '(aName, aDoRunNow)');
     BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');

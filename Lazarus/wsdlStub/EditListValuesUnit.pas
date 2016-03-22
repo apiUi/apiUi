@@ -138,6 +138,7 @@ begin
   with TFormIniFile.Create (Self, True) do
   try
     Restore;
+    ValueListEditor.DefaultColWidth := IntegerByNameDef['KeyColumnWidth', ValueListEditor.DefaultColWidth];
   finally
     Free;
   end;
@@ -148,6 +149,7 @@ begin
   with TFormIniFile.Create(self, False) do
   try
     Save;
+    IntegerByName['KeyColumnWidth'] := ValueListEditor.ColWidths[0];
   finally
     Free;
   end;

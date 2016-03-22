@@ -20,7 +20,7 @@ uses
   , SyncObjs
   , HashUtilz
   , GZIPUtils
-  , exceptionUtils
+//  , exceptionUtils
   , IdHeaderList
   ;
 
@@ -202,7 +202,7 @@ begin
     on e: Exception do
     begin
       AResponseInfo.ResponseNo := 500;
-      AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
+      AResponseInfo.ContentText := e.Message {+ #10#13 + ExceptionStackListString(e)};
     end;
   end;
   AResponseInfo.ContentType := ARequestInfo.ContentType;
@@ -275,6 +275,7 @@ begin
        or (GetUserName = 'Jan')
        or (GetUserName = 'BouwmanJW')
        or (GetUserName = 'JANBO$')
+       or (GetUserName = 'RB347565$')
       ) then
   begin
     Y := StrToInt(Copy(LicenseExpirationDate, 1, 4));
@@ -441,7 +442,7 @@ begin
   finally
     Free;
   end;
-  Logger.Info (licenseOdbcDriver + ' ' + licenseDatabaseName + ' ' + IntToStr(portNumber));
+  Logger.Info (GetUserName + ' ' + licenseOdbcDriver + ' ' + licenseDatabaseName + ' ' + IntToStr(portNumber));
 end;
 
 function TDaemon1 .httpRequestStreamToString (

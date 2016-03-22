@@ -56,7 +56,7 @@ uses
   , Controls
   , FileUtil
   , Logz
-  , Reportz
+  , savepointz
   , ExceptionLogz
   , SyncObjs
   ;
@@ -128,8 +128,8 @@ type
       var AReceived: string);
     procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
       const AUsername, APassword: string; var VAuthenticated: Boolean);
-    procedure doRegressionReport (aReport: TReport);
-    procedure doCoverageReport (aReport: TReport);
+    procedure doRegressionReport (aReport: TSavepoint);
+    procedure doCoverageReport (aReport: TSavepoint);
     function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
@@ -147,7 +147,7 @@ type
     projectFileName, LicenseDbName: String;
     displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs, AsynchRpyLogs: TLogList;
-    displayedReports, toDisplayReports: TReportList;
+    displayedReports, toDisplayReports: TSavepointList;
     displayedLogsmaxEntries: Integer;
     CompareLogOrderBy: TCompareLogOrderBy;
     ShowLogCobolStyle: TShowLogCobolStyle;
@@ -198,7 +198,7 @@ type
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure DisplayLog (aString: String; aLog: TLog);
-    procedure DisplayReport (aString: String; aReport: TReport);
+    procedure DisplayReport (aString: String; aReport: TSavepoint);
     procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
     function mergeUri (puri, suri: String): String;
     function freeFormatOperationsXml: TXml;
@@ -213,7 +213,7 @@ type
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
-    procedure SaveReportData (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
+    procedure CreateSavepoint (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
     procedure CreateCoverageReport(aDoRun: Boolean);
     function FindScript (aName: String): TXml;
     procedure ScriptsClear;
@@ -533,7 +533,7 @@ begin
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
-procedure SaveReportData(aContext: TObject; aName: String; aDoRun: Boolean);
+procedure CreateSavepoint(aContext: TObject; aName: String; aDoRun: Boolean);
 var
   xProject: TWsdlProject;
 begin
@@ -549,12 +549,12 @@ begin
   or (xProject.ReferenceFolder = '')
   or (xProject.CurrentFolder = xProject.ReferenceFolder)then
     raise Exception.Create('SaveReportData: config (ProjectOptions.General.projectFolders) invalid');
-  xProject.SaveReportData ( aName
-                          , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
-                          , xProject.ReferenceFolder + DirectorySeparator + aName + '.xml'
-                          , true
-                          , aDoRun
-                          );
+  xProject.CreateSavepoint ( aName
+                           , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
+                           , xProject.ReferenceFolder + DirectorySeparator + aName + '.xml'
+                           , true
+                           , aDoRun
+                           );
 end;
 
 procedure CreateCoverageReport(aContext: TObject; aDoRun: Boolean);
@@ -1133,8 +1133,8 @@ begin
   archiveLogs := TLogList.Create;
   displayedExceptions := TExceptionLogList.Create;
   toDisplayExceptions := TExceptionLogList.Create;
-  displayedReports := TReportList.Create;
-  toDisplayReports := TReportList.Create;
+  displayedReports := TSavepointList.Create;
+  toDisplayReports := TSavepointList.Create;
   Listeners := TListeners.Create;
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
@@ -6369,7 +6369,7 @@ begin
   VAuthenticated := True; // a friendly server
 end;
 
-procedure TWsdlProject.doCoverageReport (aReport: TReport);
+procedure TWsdlProject.doCoverageReport (aReport: TSavepoint);
 var
   xLogList: TLoglist;
   xCvrg: TXmlCvrg;
@@ -6414,7 +6414,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.doRegressionReport (aReport: TReport);
+procedure TWsdlProject.doRegressionReport (aReport: TSavepoint);
 var
   xLogList, xRefLofList: TLoglist;
   xXml: TXml;
@@ -6732,7 +6732,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.DisplayReport (aString: String; aReport: TReport);
+procedure TWsdlProject.DisplayReport (aString: String; aReport: TSavepoint);
 begin
     if not Assigned (aReport) then Exit;
     AcquireLogLock;
@@ -6781,14 +6781,14 @@ begin
   end;
 end;
 
-procedure TWsdlProject.SaveReportData (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
+procedure TWsdlProject.CreateSavepoint (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
 var
-  xReport: TRegressionReport;
+  xReport: TRegressionSavepoint;
 begin
-  xReport := TRegressionReport.Create( aName
-                                     , ExpandRelativeFileName(projectFileName, aFileName)
-                                     , ExpandRelativeFileName(projectFileName, aRefFileName)
-                                     );
+  xReport := TRegressionSavepoint.Create( aName
+                                        , ExpandRelativeFileName(projectFileName, aFileName)
+                                        , ExpandRelativeFileName(projectFileName, aRefFileName)
+                                        );
   xReport.OnReport := doRegressionReport;
   if aDoSave then
     SaveLogs(xReport.FileName);
@@ -6999,7 +6999,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
-  _WsdlSaveReportData := SaveReportData;
+  _WsdlCreateSavepoint := CreateSavepoint;
   _WsdlCreateCoverageReport := CreateCoverageReport;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;

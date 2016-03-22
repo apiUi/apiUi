@@ -23,7 +23,7 @@ uses
    , Dialogs
    , ActnList
    , Logz
-   , Reportz
+   , savepointz
    , ExceptionLogz
    , Ipmz
    , IpmTypes
@@ -1017,7 +1017,7 @@ type
     function NodeToExceptionLog(aTreeView: TBaseVirtualTree;
       aNode: PVirtualNode): TExceptionLog;
     function NodeToReport(aDoClaimReport: Boolean; aTreeView: TBaseVirtualTree;
-      aNode: PVirtualNode): TReport;
+      aNode: PVirtualNode): TSavepoint;
     procedure NodeToMessage(aTreeView: TBaseVirtualTree; aNode: PVirtualNode;
       var aMessage: TWsdlMessage);
     function NodeToBind(aTreeView: TBaseVirtualTree;
@@ -1036,7 +1036,7 @@ type
     procedure ShowInfoForm(aCaption: String; aInfoString: String);
     procedure UpdateInWsdlCheckBoxes;
     procedure SaveWsdlStubCase(aFileName: String);
-    procedure ShowReport (aReport: TReport);
+    procedure ShowReport (aReport: TSavepoint);
     procedure OpenStubCase(aFileName: String);
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
@@ -1072,7 +1072,7 @@ type
     procedure ShowTextAsGrid(aCaption, aText: String);
     procedure ShowTextAsXml(aCaption, aText: String);
     function ShowLogDifferences(aLogs, bLogs: TLogList;
-      aReferenceFileName: String): TReportStatus;
+      aReferenceFileName: String): TSavepointStatus;
     procedure CreateEnvironmentSubMenuItems;
     procedure CreateScriptsSubMenuItems;
     procedure SetEnvironmentClick(Sender: TObject);
@@ -1117,7 +1117,7 @@ type
     procedure TerminateBlockingThreadEvent;
     procedure TerminateNonBlockingThreadEvent;
     procedure SetUiProgress;
-    procedure OnRegressionReport (aReport: TRegressionReport);
+    procedure OnRegressionReport (aReport: TRegressionSavepoint);
   private
     fdoShowDesignSplitVertical : Boolean ;
     function getHintStrDisabledWhileActive: String;
@@ -1131,11 +1131,11 @@ type
     se: TWsdlProject;
     sc: TWsdlControl;
     claimedLog: TLog;
-    claimedReport: TReport;
+    claimedReport: TSavepoint;
     mqServerEnv: String;
     CollapseHeaders: Boolean;
     wsdlStubMessagesFileName: String;
-    wsdlStubReportsFileName: String;
+    wsdlStubSavepointsFileName: String;
     log4jEventsFileName: String;
     nStubs: Integer;
     freeStubs: Integer;
@@ -1209,9 +1209,9 @@ type
     Log: TLog;
   end;
 
-  PReportTreeRec = ^TReportTreeRec;
-  TReportTreeRec = record
-    Report: TReport;
+  PReportTreeRec = ^TSavepointTreeRec;
+  TSavepointTreeRec = record
+    Report: TSavepoint;
   end;
 
   PExceptionTreeRec = ^TExceptionTreeRec;
@@ -1266,7 +1266,7 @@ type
     , logCorrelationIdColumn
     , logStdColumnCount
     );
-  TReportColumnEnum =
+  TSavepointColumnEnum =
     ( reportStatusColumn
     , reportDateTimeColumn
     , reportTypeColumn
@@ -3075,7 +3075,7 @@ begin
   end;
 end;
 
-procedure TMainForm.ShowReport (aReport : TReport);
+procedure TMainForm.ShowReport (aReport : TSavepoint);
   procedure _ShowCoverageReport;
   var
     xList: TLogList;
@@ -3085,7 +3085,7 @@ procedure TMainForm.ShowReport (aReport : TReport);
     try
       for x := 0 to se.displayedReports.Count - 1 do
       begin
-        if se.displayedReports.ReportItems[x] is TRegressionReport then
+        if se.displayedReports.ReportItems[x] is TRegressionSavepoint then
           se.OpenMessagesLog(se.displayedReports.ReportItems[x].FileName, True, False, xList);
       end;
       CoverageReport(xList);
@@ -3117,7 +3117,7 @@ procedure TMainForm.ShowReport (aReport : TReport);
 begin
   XmlUtil.PushCursor (crHourGlass);
   try
-    if aReport is TRegressionReport then _ShowRegressionReport;
+    if aReport is TRegressionSavepoint then _ShowRegressionReport;
     if aReport is TCoverageReport then _ShowCoverageReport;
   finally
     XmlUtil.PopCursor;
@@ -3575,7 +3575,7 @@ begin
               );
 end;
 
-procedure TMainForm .OnRegressionReport (aReport : TRegressionReport );
+procedure TMainForm .OnRegressionReport (aReport : TRegressionSavepoint );
 begin
   aReport.Status := rsOk;
 end;
@@ -6157,7 +6157,7 @@ begin
 end;
 
 function TMainForm .NodeToReport (aDoClaimReport: Boolean; aTreeView : TBaseVirtualTree ;
-  aNode : PVirtualNode ): TReport ;
+  aNode : PVirtualNode ): TSavepoint ;
 var
   Data: PReportTreeRec;
 begin
@@ -6654,7 +6654,7 @@ begin
   OperationReqsTreeView.RootNodeCount := 0;
   GridView.NodeDataSize := SizeOf(TMessageTreeRec);
   GridView.RootNodeCount := 0;
-  ReportsVTS.NodeDataSize := SizeOf(TReportTreeRec);
+  ReportsVTS.NodeDataSize := SizeOf(TSavepointTreeRec);
   ReportsVTS.RootNodeCount := 0;
   MessagesVTS.NodeDataSize := SizeOf(TLogTreeRec);
   MessagesVTS.RootNodeCount := 0;
@@ -7783,7 +7783,7 @@ begin
 end;
 
 function TMainForm.ShowLogDifferences(aLogs, bLogs: TLogList;
-  aReferenceFileName: String): TReportStatus;
+  aReferenceFileName: String): TSavepointStatus;
 var
   X: Integer;
 begin
@@ -7966,6 +7966,7 @@ begin
     finally
       EnvVarLock.Release;
     end;
+    EditListValuesForm.ValueListEditor.Strings.Sort;
     EditListValuesForm.ShowModal;
     if (EditListValuesForm.ModalResult = mrOk)
     { }{ and (not se.IsActive){ } then
@@ -8828,7 +8829,7 @@ procedure TMainForm.RefreshLog;
   end;
   function _refreshReports: Boolean;
   var
-    xReport: TReport;
+    xReport: TSavepoint;
     xNode: PVirtualNode;
     xData: PReportTreeRec;
     x: Integer;
@@ -12088,11 +12089,11 @@ end;
 
 procedure TMainForm.ReadReportsActionExecute (Sender: TObject );
 var
-  xList: TReportList;
+  xList: TSavepointList;
   X, Y: Integer;
   xOpenOptions: TOpenOptions;
   xXml, yXml: TXml;
-  xReport: TReport;
+  xReport: TSavepoint;
 begin
   with OpenFileDialog do
   begin
@@ -12100,30 +12101,30 @@ begin
     xXml := TXml.Create;
     try
       DefaultExt := 'xml';
-      FileName := wsdlStubReportsFileName;
+      FileName := wsdlStubSavepointsFileName;
       Filter := 'XML file (*.xml)|*.xml';
-      Title := 'Read ' + _progName + ' messages from files';
+      Title := 'Read ' + _progName + ' savepoint information from file';
       Options := Options + [ofAllowMultiSelect];
       if Execute then
       begin
-        wsdlStubReportsFileName := FileName;
-        xList := TReportList.Create;
+        wsdlStubSavepointsFileName := FileName;
+        xList := TSavepointList.Create;
         try
           for X := 0 to Files.Count - 1 do
             try
               xXml.LoadFromFile(Files.Strings[X], nil);
-              if xXml.Name <> 'reportList' then
-                raise Exception.Create('not a ReportList');
+              if xXml.Name <> 'savepointList' then
+                raise Exception.Create('not a SavepointList');
               for Y := 0 to xXml.Items.Count - 1 do
               begin
                 yXml := xXml.Items.XmlItems[Y];
-                if yXml.Name = 'regressionReportDetails' then
-                  se.SaveReportData ( yXml.Items.XmlValueByTag ['name']
-                                    , yXml.Items.XmlValueByTag ['fileName']
-                                    , yXml.Items.XmlValueByTag ['refFileName']
-                                    , False
-                                    , False
-                                    );
+                if yXml.Name = 'savepointDetails' then
+                  se.CreateSavepoint ( yXml.Items.XmlValueByTag ['name']
+                                     , yXml.Items.XmlValueByTag ['fileName']
+                                     , yXml.Items.XmlValueByTag ['refFileName']
+                                     , False
+                                     , False
+                                     );
               end;
             except
               on E: Exception do
@@ -12172,7 +12173,7 @@ procedure TMainForm .ReportsPopupMenuPopup (Sender : TObject );
   function _selectionHasRegressionReport: boolean;
   var
     xNode: PVirtualNode;
-    xReport: TReport;
+    xReport: TSavepoint;
   begin
     result := False;
     xNode := ReportsVTS.GetFirstSelected;
@@ -12181,7 +12182,7 @@ procedure TMainForm .ReportsPopupMenuPopup (Sender : TObject );
     begin
       xReport := NodeToReport(False, ReportsVTS, xNode);
       if Assigned (xReport)
-      and (xReport is TRegressionReport) then
+      and (xReport is TRegressionSavepoint) then
          Result := True;
       xNode := ReportsVTS.GetNextSelected(xNode);
     end;
@@ -12195,7 +12196,7 @@ begin
   if not Assigned (ReportsVTS.FocusedNode) then Exit;
   claimedReport := NodeToReport(True, ReportsVTS, ReportsVTS.FocusedNode);
   try
-    case TReportColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
+    case TSavepointColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
       reportStatusColumn: ShowReport (claimedReport);
     end;
     ReportsVTS.InvalidateNode(ReportsVTS.FocusedNode);
@@ -12209,10 +12210,10 @@ procedure TMainForm .ReportsVTSGetImageIndex (Sender : TBaseVirtualTree ;
   Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
   var Ghosted : Boolean ; var ImageIndex : Integer );
 var
-  xReport: TReport;
+  xReport: TSavepoint;
 begin
   try
-    case TReportColumnEnum(Column) of
+    case TSavepointColumnEnum(Column) of
       reportStatusColumn:
       begin
         xReport := NodeToReport(False,Sender as TVirtualStringTree, Node);
@@ -12235,14 +12236,14 @@ procedure TMainForm .ReportsVTSGetText (Sender : TBaseVirtualTree ;
   Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
   var CellText : String );
 var
-  xReport: TReport;
+  xReport: TSavepoint;
 begin
   try
     CellText := '';
     xReport := NodeToReport(False, Sender, Node);
-    if Assigned(xReport) and (xReport is TReport) then
+    if Assigned(xReport) and (xReport is TSavepoint) then
     begin
-      case TReportColumnEnum(Column) of
+      case TSavepointColumnEnum(Column) of
         reportDateTimeColumn: if xReport.timeStamp <> 0 then CellText := DateTimeToStr(xReport.TimeStamp);
         reportTypeColumn: CellText := xReport.typeAsText;
         reportNameColumn: CellText := xReport.Name;
@@ -12262,15 +12263,15 @@ begin
   if Assigned (se) then
   begin
     SaveFileDialog.DefaultExt := 'xml';
-    SaveFileDialog.FileName := wsdlStubReportsFileName;
+    SaveFileDialog.FileName := wsdlStubSavepointsFileName;
     SaveFileDialog.Filter := 'XML file (*.xml)|*.xml';
     SaveFileDialog.Title := 'Save ' + _progName + ' reports';
     if SaveFileDialog.Execute then
     begin
-      wsdlStubReportsFileName := SaveFileDialog.FileName;
+      wsdlStubSavepointsFileName := SaveFileDialog.FileName;
       with se.displayedReports.AsXml do
       try
-        SaveStringToFile(wsdlStubReportsFileName, Text);
+        SaveStringToFile(wsdlStubSavepointsFileName, Text);
       finally
         Free;
       end;
@@ -12919,7 +12920,7 @@ end;
 
 procedure TMainForm.MenuItem27Click(Sender: TObject);
 var
-  xReport: TReport;
+  xReport: TSavepoint;
   xNode: PVirtualNode;
 begin
   XmlUtil.PushCursor (crHourGlass);
@@ -12957,7 +12958,7 @@ end;
 
 procedure TMainForm .ReportCopyLogToReferenceMenuItemClick (Sender : TObject );
 var
-  xReport: TReport;
+  xReport: TSavepoint;
   xNode: PVirtualNode;
 begin
   XmlUtil.PushCursor (crHourGlass);
@@ -12968,7 +12969,7 @@ begin
       xReport := NodeToReport(True, ReportsVTS, xNode);
       try
         if Assigned (xReport)
-        and (xReport is TRegressionReport) then
+        and (xReport is TRegressionSavepoint) then
         try
           xmlio.SaveStringToFile ( xReport.RefFileName
                                  , xmlio.ReadStringFromFile (xReport.FileName)
@@ -12996,7 +12997,7 @@ end;
 
 procedure TMainForm .MenuItem26Click (Sender : TObject );
 var
-  xReport: TReport;
+  xReport: TSavepoint;
   xNode: PVirtualNode;
   xXml: TXml;
 begin
@@ -13034,7 +13035,7 @@ end;
 
 procedure TMainForm .reportLoadRefLogMessagesMenuItemClick (Sender : TObject );
 var
-  xReport: TReport;
+  xReport: TSavepoint;
   xLogList: TLogList;
   xNode: PVirtualNode;
 begin
@@ -13079,7 +13080,7 @@ end;
 
 procedure TMainForm .reportLoadLogMessagesMenuItemClick (Sender : TObject );
 var
-  xReport: TReport;
+  xReport: TSavepoint;
   xLogList: TLogList;
   xNode: PVirtualNode;
 begin

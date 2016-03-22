@@ -320,17 +320,17 @@ begin
                   raise Exception.Create('Cannot find filename to use in request');
                 se.SaveLogs(ExpandRelativeFileName(se.projectFileName, dXml.Value));
               end;
-              if xOperId = 'saveReportDataReq' then
+              if xOperId = 'createSavepointReq' then
               begin
-                dXml := oXml.FindXml('Body.saveReportDataReq.name');
+                dXml := oXml.FindXml('Body.createSavepointReq.name');
                 if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find name to use in saving report data');
-                se.SaveReportData ( dXml.Value
-                                  , se.CurrentFolder + DirectorySeparator + dXml.Value + '.xml'
-                                  , se.ReferenceFolder + DirectorySeparator + dXml.Value + '.xml'
-                                  , True
-                                  , False
-                                  );
+                  raise Exception.Create('Cannot find name to use in creating savepoint');
+                se.CreateSavepoint ( dXml.Value
+                                   , se.CurrentFolder + DirectorySeparator + dXml.Value + '.xml'
+                                   , se.ReferenceFolder + DirectorySeparator + dXml.Value + '.xml'
+                                   , True
+                                   , False
+                                   );
               end;
               if xOperId = 'saveReportsToFileReq' then
               begin

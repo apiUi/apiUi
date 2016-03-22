@@ -54,7 +54,6 @@
       <Unit0>
         <Filename Value="wsAuthorizationService.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="wsAuthorizationService"/>
       </Unit0>
       <Unit1>
         <Filename Value="wsauthdaemonunit.pas"/>
@@ -74,7 +73,6 @@
       <Unit3>
         <Filename Value="..\Utils\HashUtilz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="HashUtilz"/>
       </Unit3>
     </Units>
   </ProjectOptions>
@@ -85,12 +83,6 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\Utils;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\Core;..\components\Indy10\Lib\System;..\Xml;..\Xpress;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Hashes"/>
     </SearchPaths>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

@@ -36,11 +36,11 @@
 	<message name="saveLogsToFileRpyMessage">
 		<part name="payload" element="tns:saveLogsToFileRpy"/>
 	</message>
-	<message name="saveReportDataReqMessage">
-		<part name="payload" element="tns:saveReportDataReq"/>
+	<message name="createSavepointReqMessage">
+		<part name="payload" element="tns:createSavepointReq"/>
 	</message>
-	<message name="saveReportDataRpyMessage">
-		<part name="payload" element="tns:saveReportDataRpy"/>
+	<message name="createSavepointRpyMessage">
+		<part name="payload" element="tns:createSavepointRpy"/>
 	</message>
 	<message name="sendAllRequestsReqMessage">
 		<part name="payload" element="tns:sendAllRequestsReq"/>
@@ -139,9 +139,9 @@
 			<output message="client:saveLogsToFileRpyMessage"/>
 			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
 		</operation>
-		<operation name="saveReportData">
-			<input message="client:saveReportDataReqMessage"/>
-			<output message="client:saveReportDataRpyMessage"/>
+		<operation name="createSavepoint">
+			<input message="client:createSavepointReqMessage"/>
+			<output message="client:createSavepointRpyMessage"/>
 			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
 		</operation>
 		<operation name="sendAllRequests">
@@ -270,8 +270,8 @@
 				<soap:fault name="SOAPFault" use="literal"/>
 			</fault>
 		</operation>
-		<operation name="saveReportData">
-			<soap:operation soapAction="urn:#saveReportData" style="document"/>
+		<operation name="createSavepoint">
+			<soap:operation soapAction="urn:#createSavepoint" style="document"/>
 			<input>
 				<soap:body use="literal"/>
 			</input>
