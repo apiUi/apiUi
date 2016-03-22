@@ -71,7 +71,7 @@ type
     procedure SeTSavepoint(Index: integer; const Value: TSavepoint);
     function GeTSavepoint (Index: integer): TSavepoint;
   public
-    property ReportItems [Index: integer]: TSavepoint read GeTSavepoint write SeTSavepoint;
+    property SavepointItems [Index: integer]: TSavepoint read GeTSavepoint write SeTSavepoint;
     property AsXml: TXml read getAsXml;
     constructor Create; overload;
   end;
@@ -213,7 +213,7 @@ begin
   begin
     AddXml (TXml.CreateAsTimeStamp('created', Now));
     for x := 0 to Count - 1 do
-      AddXml (ReportItems[x].AsXml);
+      AddXml (SavepointItems[x].AsXml);
   end;
 end;
 

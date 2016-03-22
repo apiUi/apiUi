@@ -147,7 +147,7 @@ type
     projectFileName, LicenseDbName: String;
     displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs, AsynchRpyLogs: TLogList;
-    displayedReports, toDisplayReports: TSavepointList;
+    displayedSavepoints, toDisplaySavepoints: TSavepointList;
     displayedLogsmaxEntries: Integer;
     CompareLogOrderBy: TCompareLogOrderBy;
     ShowLogCobolStyle: TShowLogCobolStyle;
@@ -214,6 +214,7 @@ type
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
     procedure CreateSavepoint (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
+    procedure CreateSummaryReport (aName: String);
     procedure CreateCoverageReport(aDoRun: Boolean);
     function FindScript (aName: String): TXml;
     procedure ScriptsClear;
@@ -320,7 +321,7 @@ type
     function WsdlOpenFile (aName: String; aElementsWhenRepeatable: Integer): TWsdl;
     procedure RefuseHttpConnectionsThreaded (aLater, aTime: Extended);
     procedure SaveLogs (aFileName: String);
-    procedure SaveReports (aFileName: String);
+    procedure WriteSavepointsInformation (aFileName: String);
     procedure UpdateReplyColumns (aOperation: TWsdlOperation);
     procedure ProjectOptionsLogDisplayedColumnsFromXml(aXml: TXml);
     procedure ProjectLogOptionsFromXml(aXml: TXml);
@@ -544,17 +545,32 @@ begin
     if aContext is TWsdlOperation then with aContext as TWsdlOperation do
       xProject := Owner as TWsdlProject;
   if not Assigned (xProject) then
-    raise Exception.Create(Format ('CreateRegressionReport(''%s''); unable to determine context', [aName]));
+    raise Exception.Create(Format ('CreateSavepoint(''%s''); unable to determine context', [aName]));
   if (xProject.CurrentFolder = '')
   or (xProject.ReferenceFolder = '')
   or (xProject.CurrentFolder = xProject.ReferenceFolder)then
-    raise Exception.Create('SaveReportData: config (ProjectOptions.General.projectFolders) invalid');
+    raise Exception.Create('CreateSavepoint: config (ProjectOptions.General.projectFolders) invalid');
   xProject.CreateSavepoint ( aName
                            , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
                            , xProject.ReferenceFolder + DirectorySeparator + aName + '.xml'
                            , true
                            , aDoRun
                            );
+end;
+
+procedure CreateSummaryReport(aContext: TObject; aName: String);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create(Format ('CreateSummaryReport(''%s''); unable to determine context', [aName]));
+  xProject.CreateSummaryReport (aName);
 end;
 
 procedure CreateCoverageReport(aContext: TObject; aDoRun: Boolean);
@@ -1133,8 +1149,8 @@ begin
   archiveLogs := TLogList.Create;
   displayedExceptions := TExceptionLogList.Create;
   toDisplayExceptions := TExceptionLogList.Create;
-  displayedReports := TSavepointList.Create;
-  toDisplayReports := TSavepointList.Create;
+  displayedSavepoints := TSavepointList.Create;
+  toDisplaySavepoints := TSavepointList.Create;
   Listeners := TListeners.Create;
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
@@ -1244,10 +1260,10 @@ begin
   displayedExceptions.Free;
   toDisplayExceptions.Clear;
   toDisplayExceptions.Free;
-  displayedReports.Clear;
-  displayedReports.Free;
-  toDisplayReports.Clear;
-  toDisplayReports.Free;
+  displayedSavepoints.Clear;
+  displayedSavepoints.Free;
+  toDisplaySavepoints.Clear;
+  toDisplaySavepoints.Free;
   AsynchRpyLogs.Clear;
   AsynchRpyLogs.Free;
   FreeAndNil (unknownOperation);
@@ -6379,9 +6395,9 @@ begin
   try
     xLogList := TLogList.Create;
     try
-      for x := 0 to displayedReports.Count - 1 do
-        if displayedReports.ReportItems[x].FileName <> '' then
-          OpenMessagesLog (displayedReports.ReportItems[x].FileName, True, False, xLogList);
+      for x := 0 to displayedSavepoints.Count - 1 do
+        if displayedSavepoints.SavepointItems[x].FileName <> '' then
+          OpenMessagesLog (displayedSavepoints.SavepointItems[x].FileName, True, False, xLogList);
       xCvrg := xLogList.PrepareCoverageReportAsXml ( allAliasses
                                                    , ignoreCoverageOn
                                                    );
@@ -6695,11 +6711,11 @@ begin
   end;
 end;
 
-procedure TWsdlProject.SaveReports(aFileName: String);
+procedure TWsdlProject.WriteSavepointsInformation(aFileName: String);
 begin
   AcquireLogLock;
   try
-    with displayedReports.AsXml do
+    with displayedSavepoints.AsXml do
     try
       SaveStringToFile(aFileName, Text);
     finally
@@ -6737,7 +6753,7 @@ begin
     if not Assigned (aReport) then Exit;
     AcquireLogLock;
     try
-      toDisplayReports.SaveObject (aString, aReport);
+      toDisplaySavepoints.SaveObject (aString, aReport);
     finally
       ReleaseLogLock;
     end;
@@ -6791,15 +6807,24 @@ begin
                                         );
   xReport.OnReport := doRegressionReport;
   if aDoSave then
+  begin
     SaveLogs(xReport.FileName);
+    if Assigned (_WsdlClearLogs) then
+      _WsdlClearLogs;
+  end;
   if aDoRun then
     xReport.doReport;
   AcquireLogLock;
   try
-    toDisplayReports.AddObject('', xReport);
+    toDisplaySavepoints.AddObject('', xReport);
   finally
     ReleaseLogLock;
   end;
+end;
+
+procedure TWsdlProject.CreateSummaryReport (aName: String);
+begin
+  SjowMessage('TWsdlProject.CreateSummaryReport (aName ): ' + aName);
 end;
 
 procedure TWsdlProject.CreateCoverageReport (aDoRun: Boolean);
@@ -6812,7 +6837,7 @@ begin
     xReport.doReport;
   AcquireLogLock;
   try
-    toDisplayReports.AddObject('', xReport);
+    toDisplaySavepoints.AddObject('', xReport);
   finally
     ReleaseLogLock;
   end;
@@ -6859,7 +6884,7 @@ begin
   Scripts.Items.Clear;
   displayedLogs.Clear;
   archiveLogs.Clear;
-  displayedReports.Clear;
+  displayedSavepoints.Clear;
   doUseMq := False;
   Listeners.Clear;
   mqGetThreads.Clear;
@@ -7000,6 +7025,7 @@ initialization
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
   _WsdlCreateSavepoint := CreateSavepoint;
+  _WsdlCreateSummaryReport := CreateSummaryReport;
   _WsdlCreateCoverageReport := CreateCoverageReport;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;

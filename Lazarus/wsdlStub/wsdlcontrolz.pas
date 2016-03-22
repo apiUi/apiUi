@@ -39,7 +39,7 @@ type
     OnActivateEvent: TProcedureB;
     OnOpenProjectEvent: TProcedureS;
     OnClearLogsEvent: TStringFunctionBoolean;
-    OnClearReportsEvent: TStringFunctionBoolean;
+    OnClearSavepointsEvent: TStringFunctionBoolean;
     OnQuitEvent: TStringFunctionBoolean;
     OnReloadDesignEvent: TStringFunction;
     procedure HttpWebPageServerCommandGet(AContext: TIdContext;
@@ -261,11 +261,11 @@ begin
                   raise Exception.Create('clearLogsReq refused because ' + _progName + ' has no OnClearLogEvent procedure assigned');
                 OnClearLogsEvent(True);
               end;
-              if xOperId = 'clearReportsReq' then
+              if xOperId = 'clearSavepointsReq' then
               begin
-                if not Assigned (OnClearReportsEvent) then
-                  raise Exception.Create('clearReportsReq refused because ' + _progName + ' has no OnClearReportsEvent procedure assigned');
-                OnClearReportsEvent(True);
+                if not Assigned (OnClearSavepointsEvent) then
+                  raise Exception.Create('clearSavepointsReq refused because ' + _progName + ' has no OnClearSavepointsEvent procedure assigned');
+                OnClearSavepointsEvent(True);
               end;
               if xOperId = 'activateReq' then
               begin
@@ -332,12 +332,19 @@ begin
                                    , False
                                    );
               end;
+              if xOperId = 'createSummaryReportReq' then
+              begin
+                dXml := oXml.FindXml('Body.createSummaryReportReq.name');
+                if not Assigned (dXml) then
+                  raise Exception.Create('Cannot find name to use in creating summary report');
+                se.CreateSummaryReport ( dXml.Value );
+              end;
               if xOperId = 'saveReportsToFileReq' then
               begin
                 dXml := oXml.FindXml('Body.saveReportsToFileReq.fileName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find filename to use in request');
-                se.SaveReports(ExpandRelativeFileName(se.projectFileName, dXml.Value));
+                se.WriteSavepointsInformation(ExpandRelativeFileName(se.projectFileName, dXml.Value));
               end;
               if xOperId = 'sendAllRequestsReq' then
               begin
