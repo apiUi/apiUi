@@ -1214,7 +1214,7 @@ object MainForm: TMainForm
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowImages, hoVisible]
           Images = mainImageList
           ParentColor = True
-          PopupMenu = SavepointsPopupMenu
+          PopupMenu = SnapshotsPopupMenu
           TabOrder = 0
           TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
@@ -9386,23 +9386,23 @@ object MainForm: TMainForm
       OnClick = MenuItem14Click
     end
   end
-  object SavepointsPopupMenu: TPopupMenu
-    OnPopup = SavepointsPopupMenuPopup
+  object SnapshotsPopupMenu: TPopupMenu
+    OnPopup = SnapshotsPopupMenuPopup
     left = 640
     top = 280
-    object ReportOnSavepointMenuitem: TMenuItem
-      Caption = 'Run report'
-      OnClick = ReportOnSavepointMenuitemClick
+    object SnapshotCompareMenuitem: TMenuItem
+      Caption = 'Compare with reference'
+      OnClick = SnapshotCompareMenuitemClick
     end
     object MenuItem24: TMenuItem
       Caption = '-'
     end
     object LoadSavepointMessagesMenuItem: TMenuItem
-      Caption = 'Load saved data'
+      Caption = 'Reload checkpoint data'
       OnClick = LoadSavepointMessagesMenuItemClick
     end
     object LoadRefSavepointMessagesMenuItem: TMenuItem
-      Caption = 'Load reference data'
+      Caption = 'Reload checkpoint reference data'
       OnClick = LoadRefSavepointMessagesMenuItemClick
     end
     object MenuItem23: TMenuItem

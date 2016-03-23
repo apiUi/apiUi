@@ -74,13 +74,13 @@ type
     ShowLogDifferencesAction : TAction ;
     MenuItem23 : TMenuItem ;
     MenuItem24: TMenuItem;
-    ReportOnSavepointMenuitem: TMenuItem;
+    SnapshotCompareMenuitem: TMenuItem;
     PromoteToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
     ShowSavepointDetailsMenuitem : TMenuItem ;
     LoadSavepointMessagesMenuItem : TMenuItem ;
     LoadRefSavepointMessagesMenuItem : TMenuItem ;
-    SavepointsPopupMenu : TPopupMenu ;
+    SnapshotsPopupMenu : TPopupMenu ;
     WriteSavepointsInformationAction : TAction ;
     ReadSavepointInformationAction : TAction ;
     ReportOnSavepointsAction : TAction ;
@@ -559,7 +559,7 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
-    procedure ReportOnSavepointMenuitemClick(Sender: TObject);
+    procedure SnapshotCompareMenuitemClick(Sender: TObject);
     procedure PromoteToReferenceMenuItemClick (Sender : TObject );
     procedure ShowSavepointDetailsMenuitemClick (Sender : TObject );
     procedure LoadRefSavepointMessagesMenuItemClick (Sender : TObject );
@@ -584,7 +584,7 @@ type
     procedure ExportProjectScriptsActionExecute (Sender : TObject );
     procedure ReadSavepointInformationActionExecute (Sender : TObject );
     procedure ReportOnSavepointsActionExecute (Sender : TObject );
-    procedure SavepointsPopupMenuPopup (Sender : TObject );
+    procedure SnapshotsPopupMenuPopup (Sender : TObject );
     procedure SavepointsVTSClick (Sender : TObject );
     procedure SavepointsVTSGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
@@ -12160,7 +12160,7 @@ begin
   end;
 end;
 
-procedure TMainForm .SavepointsPopupMenuPopup (Sender : TObject );
+procedure TMainForm .SnapshotsPopupMenuPopup (Sender : TObject );
   function _selectionHasRegressionReport: boolean;
   var
     xNode: PVirtualNode;
@@ -12909,7 +12909,7 @@ begin
   end;
 end;
 
-procedure TMainForm.ReportOnSavepointMenuitemClick(Sender: TObject);
+procedure TMainForm.SnapshotCompareMenuitemClick(Sender: TObject);
 var
   xReport: TSnapshot;
   xNode: PVirtualNode;
