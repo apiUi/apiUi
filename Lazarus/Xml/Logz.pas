@@ -38,6 +38,7 @@ type
   protected
   public
     doSuppressLog: Boolean;
+    onSnapshot: Boolean;
     displayRef: PDisplayRef;
     DisplayedColumnsValid: Boolean;
     DisplayedColumns: TStringList;

@@ -23,7 +23,7 @@ uses
    , Dialogs
    , ActnList
    , Logz
-   , savepointz
+   , snapshotz
    , ExceptionLogz
    , Ipmz
    , IpmTypes
@@ -77,15 +77,12 @@ type
     SnapshotCompareMenuitem: TMenuItem;
     PromoteToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
-    ShowSavepointDetailsMenuitem : TMenuItem ;
-    LoadSavepointMessagesMenuItem : TMenuItem ;
-    LoadRefSavepointMessagesMenuItem : TMenuItem ;
     SnapshotsPopupMenu : TPopupMenu ;
-    WriteSavepointsInformationAction : TAction ;
-    ReadSavepointInformationAction : TAction ;
-    ReportOnSavepointsAction : TAction ;
-    ClearSavepointsAction : TAction ;
-    SavepointsVTS : TVirtualStringTree ;
+    WriteSnapshotsInformationAction : TAction ;
+    ReadSnapshotInformationAction : TAction ;
+    ReportOnSnapshotsAction : TAction ;
+    ClearSnapshotsAction : TAction ;
+    SnapshotsVTS : TVirtualStringTree ;
     ImportProjectScriptsAction : TAction ;
     MenuItem20 : TMenuItem ;
     MenuItem21 : TMenuItem ;
@@ -539,7 +536,7 @@ type
     procedure AbortActionUpdate (Sender : TObject );
     procedure BrowseMqActionHint (var HintStr : string ; var CanShow : Boolean
       );
-    procedure ClearSavepointsActionExecute (Sender : TObject );
+    procedure ClearSnapshotsActionExecute (Sender : TObject );
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DataTypeDocumentationMemoClick (Sender : TObject );
     procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
@@ -560,10 +557,10 @@ type
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
     procedure SnapshotCompareMenuitemClick(Sender: TObject);
-    procedure PromoteToReferenceMenuItemClick (Sender : TObject );
-    procedure ShowSavepointDetailsMenuitemClick (Sender : TObject );
-    procedure LoadRefSavepointMessagesMenuItemClick (Sender : TObject );
-    procedure LoadSavepointMessagesMenuItemClick (Sender : TObject );
+    procedure SnapshotPromoteToReferenceMenuItemClick (Sender : TObject );
+    procedure SnapshotShowDetailsMenuitemClick (Sender : TObject );
+    procedure SnapshotLoadRefMessagesMenuItemClick (Sender : TObject );
+    procedure SnapshotLoadMessagesMenuItemClick (Sender : TObject );
     procedure MessagesTabControlChange (Sender : TObject );
     procedure MessagesTabControlGetImageIndex (Sender : TObject ;
       TabIndex : Integer ; var ImageIndex : Integer );
@@ -582,17 +579,17 @@ type
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
     procedure ExportProjectScriptsActionExecute (Sender : TObject );
-    procedure ReadSavepointInformationActionExecute (Sender : TObject );
-    procedure ReportOnSavepointsActionExecute (Sender : TObject );
+    procedure ReadSnapshotInformationActionExecute (Sender : TObject );
+    procedure ReportOnSnapshotsActionExecute (Sender : TObject );
     procedure SnapshotsPopupMenuPopup (Sender : TObject );
-    procedure SavepointsVTSClick (Sender : TObject );
-    procedure SavepointsVTSGetImageIndex (Sender : TBaseVirtualTree ;
+    procedure SnapshotsVTSClick (Sender : TObject );
+    procedure SnapshotsVTSGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
       var Ghosted : Boolean ; var ImageIndex : Integer );
-    procedure SavepointsVTSGetText (Sender : TBaseVirtualTree ;
+    procedure SnapshotsVTSGetText (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
       var CellText : String );
-    procedure WriteSavepointsInformationActionExecute (Sender : TObject );
+    procedure WriteSnapshotsInformationActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowGridDifferencesActionExecute (Sender : TObject );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
@@ -1015,7 +1012,7 @@ type
       aNode: PVirtualNode): TWsdlOperation;
     function NodeToExceptionLog(aTreeView: TBaseVirtualTree;
       aNode: PVirtualNode): TExceptionLog;
-    function NodeToSavepoint(aDoClaimReport: Boolean; aTreeView: TBaseVirtualTree;
+    function NodeToSnapshot(aDoClaimReport: Boolean; aTreeView: TBaseVirtualTree;
       aNode: PVirtualNode): TSnapshot;
     procedure NodeToMessage(aTreeView: TBaseVirtualTree; aNode: PVirtualNode;
       var aMessage: TWsdlMessage);
@@ -1134,7 +1131,7 @@ type
     mqServerEnv: String;
     CollapseHeaders: Boolean;
     wsdlStubMessagesFileName: String;
-    wsdlStubSavepointsFileName: String;
+    wsdlStubSnapshotsFileName: String;
     log4jEventsFileName: String;
     nStubs: Integer;
     freeStubs: Integer;
@@ -1266,17 +1263,12 @@ type
     , logStdColumnCount
     );
   TSnapshotColumnEnum =
-    ( savepointStatusColumn
-    , savepointDateTimeColumn
-    , savepointTypeColumn
-    , savepointNameColumn
-    , savepointMessageColumn
+    ( snapshotStatusColumn
+    , snapshotDateTimeColumn
+    , snapshotTypeColumn
+    , snapshotNameColumn
+    , snapshotMessageColumn
     );
-
-procedure _ClearLogs ;
-begin
-  MainForm.ClearLogsCommand(False);
-end;
 
 procedure _ClearSnapshots ;
 begin
@@ -1310,7 +1302,7 @@ begin
     if aContext is TWsdlOperation then with aContext as TWsdlOperation do
       xProject := Owner as TWsdlProject;
   if not Assigned (xProject) then
-    raise Exception.Create(Format ('WriteSavepointsInformation(''%s''); unable to determine context', [aFileName]));
+    raise Exception.Create(Format ('WriteSnapshotsInformation(''%s''); unable to determine context', [aFileName]));
   MainForm.RefreshLog;
   xProject.WriteSnapshotsInformation(ExpandRelativeFileName(xProject.projectFileName, aFileName));
 end;
@@ -3187,18 +3179,18 @@ end;
 
 function TMainForm.ClearSnapshotsCommand(aDoRaiseExceptions: Boolean): String;
 begin
-  result := 'Savepoints cleared ' + se.projectFileName + ' successfully';
+  result := 'Snapshots cleared ' + se.projectFileName + ' successfully';
   try
     RefreshLog;
     AcquireLock;
     try
       if not se.IsActive then
         raise Exception.Create
-          ('Clear savepoints refused because instance of ' + _progName +
+          ('Clear snapshots refused because instance of ' + _progName +
             ' is inactive');
-      SavepointsVTS.Clear;
-      SavepointsVTS.Header.SortColumn := -1;
-      SavepointsVTS.Header.SortDirection := sdAscending;
+      SnapshotsVTS.Clear;
+      SnapshotsVTS.Header.SortColumn := -1;
+      SnapshotsVTS.Header.SortDirection := sdAscending;
       se.displayedSnapshots.Clear;
     finally
       ReleaseLock;
@@ -4161,9 +4153,9 @@ procedure TMainForm.ClearConsole;
 begin
   RemoveMessageColumns;
   DocumentationMemo.Clear;
-  SavepointsVTS.Clear;
-  SavepointsVTS.Header.SortColumn := -1;
-  SavepointsVTS.Header.SortDirection := sdAscending;
+  SnapshotsVTS.Clear;
+  SnapshotsVTS.Header.SortColumn := -1;
+  SnapshotsVTS.Header.SortDirection := sdAscending;
   MessagesVTS.Clear;
   MessagesVTS.Header.SortColumn := -1;
   MessagesVTS.Header.SortDirection := sdAscending;
@@ -6155,7 +6147,7 @@ begin
   end;
 end;
 
-function TMainForm .NodeToSavepoint (aDoClaimReport: Boolean; aTreeView : TBaseVirtualTree ;
+function TMainForm .NodeToSnapshot (aDoClaimReport: Boolean; aTreeView : TBaseVirtualTree ;
   aNode : PVirtualNode ): TSnapshot ;
 var
   Data: PReportTreeRec;
@@ -6564,8 +6556,8 @@ begin
   ViewStyleComboBox.ItemIndex := Ord(xvAll);
   for X := 0 to Ord(logTimeColumn) - 1 do
     MessagesVTS.Header.Columns[X].Width := wBttn;
-  for X := 0 to Ord(savepointDateTimeColumn) - 1 do
-    SavepointsVTS.Header.Columns[X].Width := wBttn;
+  for X := 0 to Ord(snapshotDateTimeColumn) - 1 do
+    SnapshotsVTS.Header.Columns[X].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
   DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
@@ -6653,8 +6645,8 @@ begin
   OperationReqsTreeView.RootNodeCount := 0;
   GridView.NodeDataSize := SizeOf(TMessageTreeRec);
   GridView.RootNodeCount := 0;
-  SavepointsVTS.NodeDataSize := SizeOf(TSnapshotTreeRec);
-  SavepointsVTS.RootNodeCount := 0;
+  SnapshotsVTS.NodeDataSize := SizeOf(TSnapshotTreeRec);
+  SnapshotsVTS.RootNodeCount := 0;
   MessagesVTS.NodeDataSize := SizeOf(TLogTreeRec);
   MessagesVTS.RootNodeCount := 0;
   ExceptionsVTS.NodeDataSize := SizeOf(TExceptionTreeRec);
@@ -8826,7 +8818,7 @@ procedure TMainForm.RefreshLog;
     end;
     se.toDisplayExceptions.Clear;
   end;
-  function _refreshSavepoints: Boolean;
+  function _refreshSnapshots: Boolean;
   var
     xReport: TSnapshot;
     xNode: PVirtualNode;
@@ -8839,8 +8831,8 @@ procedure TMainForm.RefreshLog;
       xReport := se.toDisplaySnapshots.SnapshotItems[x];
       se.displayedSnapshots.AddObject('', xReport);
       result := True;
-      xNode := SavepointsVTS.AddChild(nil);
-      xData := SavepointsVTS.GetNodeData(xNode);
+      xNode := SnapshotsVTS.AddChild(nil);
+      xData := SnapshotsVTS.GetNodeData(xNode);
       xData.Report := xReport;
     end;
     se.toDisplaySnapshots.Clear;
@@ -8851,9 +8843,18 @@ begin
   if not Assigned (se) then Exit;
   se.AcquireLogLock;
   try
+    if se.doClearLogs then
+    begin
+      MessagesVTS.Clear;
+      MessagesVTS.Header.SortColumn := -1;
+      MessagesVTS.Header.SortDirection := sdAscending;
+      se.displayedLogs.Clear;
+      LogMemo.Text := '';
+      se.doClearLogs := False;
+    end;
     logAdded := _refreshLogging;
     exceptionAdded := _refreshExceptions;
-    _refreshSavepoints;
+    _refreshSnapshots;
     SetUiProgress;
   finally
     se.ReleaseLogLock;
@@ -12086,7 +12087,7 @@ begin
   end;
 end;
 
-procedure TMainForm.ReadSavepointInformationActionExecute (Sender: TObject );
+procedure TMainForm.ReadSnapshotInformationActionExecute (Sender: TObject );
 var
   X, Y: Integer;
   xOpenOptions: TOpenOptions;
@@ -12098,13 +12099,13 @@ begin
     xXml := TXml.Create;
     try
       DefaultExt := 'xml';
-      FileName := wsdlStubSavepointsFileName;
+      FileName := wsdlStubSnapshotsFileName;
       Filter := 'XML file (*.xml)|*.xml';
-      Title := 'Read ' + _progName + ' savepoint information from file';
+      Title := 'Read ' + _progName + ' snapshots information from file';
       Options := Options + [ofAllowMultiSelect];
       if Execute then
       begin
-        wsdlStubSavepointsFileName := FileName;
+        wsdlStubSnapshotsFileName := FileName;
         for X := 0 to Files.Count - 1 do
         try
           xXml.LoadFromFile(Files.Strings[X], nil);
@@ -12134,7 +12135,7 @@ begin
   end;
 end;
 
-procedure TMainForm .ReportOnSavepointsActionExecute (Sender : TObject );
+procedure TMainForm .ReportOnSnapshotsActionExecute (Sender : TObject );
 var
   x, n: Integer;
 begin
@@ -12149,10 +12150,10 @@ begin
     for x := 0 to n - 1 do
     begin
       se.displayedSnapshots.SnapshotItems[x].Status := rsUndefined;
-      SavepointsVTS.Invalidate;
+      SnapshotsVTS.Invalidate;
       Application.ProcessMessages;
       se.displayedSnapshots.SnapshotItems[x].doReport;
-      SavepointsVTS.Invalidate;
+      SnapshotsVTS.Invalidate;
       Application.ProcessMessages;
     end;
   finally
@@ -12167,37 +12168,37 @@ procedure TMainForm .SnapshotsPopupMenuPopup (Sender : TObject );
     xReport: TSnapshot;
   begin
     result := False;
-    xNode := SavepointsVTS.GetFirstSelected;
+    xNode := SnapshotsVTS.GetFirstSelected;
     while Assigned (xNode)
     and (not result) do
     begin
-      xReport := NodeToSavepoint(False, SavepointsVTS, xNode);
+      xReport := NodeToSnapshot(False, SnapshotsVTS, xNode);
       if Assigned (xReport)
       and (xReport is TRegressionSnapshot) then
          Result := True;
-      xNode := SavepointsVTS.GetNextSelected(xNode);
+      xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
   end;
 begin
   PromoteToReferenceMenuItem.Enabled := _selectionHasRegressionReport;
 end;
 
-procedure TMainForm .SavepointsVTSClick (Sender : TObject );
+procedure TMainForm .SnapshotsVTSClick (Sender : TObject );
 begin
-  if not Assigned (SavepointsVTS.FocusedNode) then Exit;
-  claimedReport := NodeToSavepoint(True, SavepointsVTS, SavepointsVTS.FocusedNode);
+  if not Assigned (SnapshotsVTS.FocusedNode) then Exit;
+  claimedReport := NodeToSnapshot(True, SnapshotsVTS, SnapshotsVTS.FocusedNode);
   try
     case TSnapshotColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
-      savepointStatusColumn: ShowReport (claimedReport);
+      snapshotStatusColumn: ShowReport (claimedReport);
     end;
-    SavepointsVTS.InvalidateNode(SavepointsVTS.FocusedNode);
+    SnapshotsVTS.InvalidateNode(SnapshotsVTS.FocusedNode);
     Application.ProcessMessages;
   finally
     claimedReport.Disclaim;
   end;
 end;
 
-procedure TMainForm .SavepointsVTSGetImageIndex (Sender : TBaseVirtualTree ;
+procedure TMainForm .SnapshotsVTSGetImageIndex (Sender : TBaseVirtualTree ;
   Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
   var Ghosted : Boolean ; var ImageIndex : Integer );
 var
@@ -12205,9 +12206,9 @@ var
 begin
   try
     case TSnapshotColumnEnum(Column) of
-      savepointStatusColumn:
+      snapshotStatusColumn:
       begin
-        xReport := NodeToSavepoint(False,Sender as TVirtualStringTree, Node);
+        xReport := NodeToSnapshot(False,Sender as TVirtualStringTree, Node);
         if Assigned(xReport) then
         begin
           case xReport.Status of
@@ -12223,7 +12224,7 @@ begin
   end;
 end;
 
-procedure TMainForm .SavepointsVTSGetText (Sender : TBaseVirtualTree ;
+procedure TMainForm .SnapshotsVTSGetText (Sender : TBaseVirtualTree ;
   Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
   var CellText : String );
 var
@@ -12231,14 +12232,14 @@ var
 begin
   try
     CellText := '';
-    xReport := NodeToSavepoint(False, Sender, Node);
+    xReport := NodeToSnapshot(False, Sender, Node);
     if Assigned(xReport) and (xReport is TSnapshot) then
     begin
       case TSnapshotColumnEnum(Column) of
-        savepointDateTimeColumn: if xReport.timeStamp <> 0 then CellText := DateTimeToStr(xReport.TimeStamp);
-        savepointTypeColumn: CellText := xReport.typeAsText;
-        savepointNameColumn: CellText := xReport.Name;
-        savepointMessageColumn: CellText := xReport.Message;
+        snapshotDateTimeColumn: if xReport.timeStamp <> 0 then CellText := DateTimeToStr(xReport.TimeStamp);
+        snapshotTypeColumn: CellText := xReport.typeAsText;
+        snapshotNameColumn: CellText := xReport.Name;
+        snapshotMessageColumn: CellText := xReport.Message;
       end;
     end
     else
@@ -12249,20 +12250,20 @@ begin
   end;
 end;
 
-procedure TMainForm.WriteSavepointsInformationActionExecute (Sender : TObject );
+procedure TMainForm.WriteSnapshotsInformationActionExecute (Sender : TObject );
 begin
   if Assigned (se) then
   begin
     SaveFileDialog.DefaultExt := 'xml';
-    SaveFileDialog.FileName := wsdlStubSavepointsFileName;
+    SaveFileDialog.FileName := wsdlStubSnapshotsFileName;
     SaveFileDialog.Filter := 'XML file (*.xml)|*.xml';
-    SaveFileDialog.Title := 'Save ' + _progName + ' savepoints information';
+    SaveFileDialog.Title := 'Save ' + _progName + ' snapshots information';
     if SaveFileDialog.Execute then
     begin
-      wsdlStubSavepointsFileName := SaveFileDialog.FileName;
+      wsdlStubSnapshotsFileName := SaveFileDialog.FileName;
       with se.displayedSnapshots.AsXml do
       try
-        SaveStringToFile(wsdlStubSavepointsFileName, Text);
+        SaveStringToFile(wsdlStubSnapshotsFileName, Text);
       finally
         Free;
       end;
@@ -12916,48 +12917,48 @@ var
 begin
   XmlUtil.PushCursor (crHourGlass);
   try
-    xNode := SavepointsVTS.GetFirstSelected;
+    xNode := SnapshotsVTS.GetFirstSelected;
     while Assigned (xNode) do
     begin
-      xReport := NodeToSavepoint(True, SavepointsVTS, xNode);
+      xReport := NodeToSnapshot(True, SnapshotsVTS, xNode);
       try
         if Assigned (xReport) then
         try
           xReport.Status := rsUndefined;
-          SavepointsVTS.InvalidateNode(xNOde);
+          SnapshotsVTS.InvalidateNode(xNOde);
           Application.ProcessMessages;
           xReport.doReport;
-          SavepointsVTS.InvalidateNode(xNOde);
+          SnapshotsVTS.InvalidateNode(xNOde);
           Application.ProcessMessages;
         except
           on e: Exception do
           begin
             xReport.Message := 'Exception: ' + e.Message;
             xReport.Status := rsException;
-            SavepointsVTS.InvalidateNode(xNOde);
+            SnapshotsVTS.InvalidateNode(xNOde);
           end;
         end;
       finally
         xReport.Disclaim;
       end;
-      xNode := SavepointsVTS.GetNextSelected(xNode);
+      xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
   finally
     XmlUtil.PopCursor;
   end;
 end;
 
-procedure TMainForm .PromoteToReferenceMenuItemClick (Sender : TObject );
+procedure TMainForm .SnapshotPromoteToReferenceMenuItemClick (Sender : TObject );
 var
   xReport: TSnapshot;
   xNode: PVirtualNode;
 begin
   XmlUtil.PushCursor (crHourGlass);
   try
-    xNode := SavepointsVTS.GetFirstSelected;
+    xNode := SnapshotsVTS.GetFirstSelected;
     while Assigned (xNode) do
     begin
-      xReport := NodeToSavepoint(True, SavepointsVTS, xNode);
+      xReport := NodeToSnapshot(True, SnapshotsVTS, xNode);
       try
         if Assigned (xReport)
         and (xReport is TRegressionSnapshot) then
@@ -12966,56 +12967,56 @@ begin
                                  , xmlio.ReadStringFromFile (xReport.FileName)
                                  );
           xReport.Status := rsOk;
-          SavepointsVTS.InvalidateNode(xNode);
+          SnapshotsVTS.InvalidateNode(xNode);
           Application.ProcessMessages;
         except
           on e: Exception do
           begin
             xReport.Message := 'Exception: ' + e.Message;
             xReport.Status := rsException;
-            SavepointsVTS.Invalidate;
+            SnapshotsVTS.Invalidate;
           end;
         end;
       finally
         xReport.Disclaim;
       end;
-      xNode := SavepointsVTS.GetNextSelected(xNode);
+      xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
   finally
     XmlUtil.PopCursor;
   end;
 end;
 
-procedure TMainForm .ShowSavepointDetailsMenuitemClick (Sender : TObject );
+procedure TMainForm .SnapshotShowDetailsMenuitemClick (Sender : TObject );
 var
-  xSavepoint: TSnapshot;
+  xSnapshot: TSnapshot;
   xNode: PVirtualNode;
   xXml: TXml;
 begin
   XmlUtil.PushCursor (crHourGlass);
-  xXml := TXml.CreateAsString('selectedSavepointsDetails','');
+  xXml := TXml.CreateAsString('selectedSnapshotsDetails','');
   with xXml do
   try
-    xNode := SavepointsVTS.GetFirstSelected;
+    xNode := SnapshotsVTS.GetFirstSelected;
     while Assigned (xNode) do
     begin
-      xSavepoint := NodeToSavepoint(True, SavepointsVTS, xNode);
+      xSnapshot := NodeToSnapshot(True, SnapshotsVTS, xNode);
       try
-        if Assigned (xSavepoint) then
+        if Assigned (xSnapshot) then
         try
-          AddXml(xSavepoint.AsXml);
+          AddXml(xSnapshot.AsXml);
         except
           on e: Exception do
           begin
-            xSavepoint.Message := 'Exception: ' + e.Message;
-            xSavepoint.Status := rsException;
-            SavepointsVTS.Invalidate;
+            xSnapshot.Message := 'Exception: ' + e.Message;
+            xSnapshot.Status := rsException;
+            SnapshotsVTS.Invalidate;
           end;
         end;
       finally
-        xSavepoint.Disclaim;
+        xSnapshot.Disclaim;
       end;
-      xNode := SavepointsVTS.GetNextSelected(xNode);
+      xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
     ShowXml('Report details', xXml);
   finally
@@ -13024,7 +13025,7 @@ begin
   end;
 end;
 
-procedure TMainForm .LoadRefSavepointMessagesMenuItemClick (Sender : TObject );
+procedure TMainForm .SnapshotLoadRefMessagesMenuItemClick (Sender : TObject );
 var
   xReport: TSnapshot;
   xLogList: TLogList;
@@ -13043,10 +13044,10 @@ begin
     finally
       se.ReleaseLogLock;
     end;
-    xNode := SavepointsVTS.GetFirstSelected;
+    xNode := SnapshotsVTS.GetFirstSelected;
     while Assigned (xNode) do
     begin
-      xReport := NodeToSavepoint(True, SavepointsVTS, xNode);
+      xReport := NodeToSnapshot(True, SnapshotsVTS, xNode);
       try
         if Assigned (xReport) then
         begin
@@ -13062,16 +13063,16 @@ begin
       finally
         xReport.Disclaim;
       end;
-      xNode := SavepointsVTS.GetNextSelected(xNode);
+      xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
   finally
     XmlUtil.PopCursor;
   end;
 end;
 
-procedure TMainForm .LoadSavepointMessagesMenuItemClick (Sender : TObject );
+procedure TMainForm .SnapshotLoadMessagesMenuItemClick (Sender : TObject );
 var
-  xReport: TSnapshot;
+  xSnapshot: TSnapshot;
   xLogList: TLogList;
   xNode: PVirtualNode;
 begin
@@ -13088,16 +13089,16 @@ begin
     finally
       se.ReleaseLogLock;
     end;
-    xNode := SavepointsVTS.GetFirstSelected;
+    xNode := SnapshotsVTS.GetFirstSelected;
     while Assigned (xNode) do
     begin
-      xReport := NodeToSavepoint(True, SavepointsVTS, xNode);
+      xSnapshot := NodeToSnapshot(True, SnapshotsVTS, xNode);
       try
-        if Assigned (xReport) then
+        if Assigned (xSnapshot) then
         begin
           xLogList := TLogList.Create;
           try
-            se.OpenMessagesLog(xReport.FileName, True, False, xLogList);
+            se.OpenMessagesLog(xSnapshot.FileName, True, False, xLogList);
             ToAllLogList(xLogList);
           finally
             xLogList.Clear;
@@ -13105,9 +13106,9 @@ begin
           end;
         end;
       finally
-        xReport.Disclaim;
+        xSnapshot.Disclaim;
       end;
-      xNode := SavepointsVTS.GetNextSelected(xNode);
+      xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
   finally
     XmlUtil.PopCursor;
@@ -13133,18 +13134,18 @@ begin
     HintStr := HintStr + ' (IBM WebSphere MQ not installed?)';
 end;
 
-procedure TMainForm .ClearSavepointsActionExecute (Sender : TObject );
+procedure TMainForm .ClearSnapshotsActionExecute (Sender : TObject );
 begin
   if se.displayedSnapshots.Count > 0 then
   begin
     if (not xmlUtil.doConfirmRemovals)
-    or BooleanPromptDialog ('Remove all savepoints information') then
+    or BooleanPromptDialog ('Remove all snapshots information') then
     begin
       se.AcquireLogLock;
       try
-        SavepointsVTS.Clear;
-        SavepointsVTS.Header.SortColumn := -1;
-        SavepointsVTS.Header.SortDirection := sdAscending;
+        SnapshotsVTS.Clear;
+        SnapshotsVTS.Header.SortColumn := -1;
+        SnapshotsVTS.Header.SortDirection := sdAscending;
         se.displayedSnapshots.Clear;
       finally
         se.ReleaseLogLock;
@@ -13307,7 +13308,6 @@ end;
 {$ifdef windows}
 initialization
   CoInitialize(nil);
-  _WsdlClearLogs := _ClearLogs;
   _WsdlClearSnapshots := _ClearSnapshots;
   _WsdlSaveLogs := _SaveLogs;
   _WsdlWriteSnapshotsInformation := _WriteSnapshotsInformation;

@@ -56,7 +56,7 @@ uses
   , Controls
   , FileUtil
   , Logz
-  , savepointz
+  , snapshotz
   , ExceptionLogz
   , SyncObjs
   ;
@@ -88,7 +88,9 @@ type
     fIsActive: Boolean;
     fAbortPressed: Boolean;
     fLogLock: TCriticalSection;
+    fClearedLogs: TLogList;
     function GetAbortPressed: Boolean;
+    function getDoClearLogs : Boolean ;
     function SendHttpMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
                              ; var aReqHeader, aRpyHeader, aResponseCode: String
@@ -117,6 +119,7 @@ type
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCommandTrace(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+    procedure setDoClearLogs (AValue : Boolean );
     procedure SMTPServerMailFrom(ASender: TIdSMTPServerContext;
       const AAddress: string; AParams: TStrings; var VAction: TIdMailFromReply);
     procedure SMTPServerMsgReceive(ASender: TIdSMTPServerContext; AMsg: TStream;
@@ -338,6 +341,7 @@ type
       var ConnectionString, UserID, Password: WideString;
       var ConnectOptions: TConnectOption; var EventStatus: TEventStatus);
     {$ENDIF}
+    property doClearLogs: Boolean read getDoClearLogs write setDoClearLogs;
     property IsActive: Boolean read fIsActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
     constructor Create;
@@ -551,11 +555,26 @@ begin
   or (xProject.CurrentFolder = xProject.ReferenceFolder)then
     raise Exception.Create('CreateSnapshot: config (ProjectOptions.General.projectFolders) invalid');
   xProject.CreateSnapshot ( aName
-                           , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
-                           , xProject.ReferenceFolder + DirectorySeparator + aName + '.xml'
-                           , true
-                           , aDoRun
-                           );
+                          , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
+                          , xProject.ReferenceFolder + DirectorySeparator + aName + '.xml'
+                          , true
+                          , aDoRun
+                          );
+end;
+
+procedure ClearLogs (aContext: TObject);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create('ClearLogs; unable to determine context');
+  xProject.doClearLogs := True;
 end;
 
 procedure CreateSummaryReport(aContext: TObject; aName: String);
@@ -5509,6 +5528,11 @@ begin
   result := fAbortPressed;
 end;
 
+function TWsdlProject .getDoClearLogs : Boolean ;
+begin
+  result := Assigned (fClearedLogs);
+end;
+
 function TWsdlProject.FindOperationOnRequest(aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
 var
   xXml: TXml;
@@ -6285,6 +6309,28 @@ begin
   end;
 end;
 
+procedure TWsdlProject.setDoClearLogs (AValue : Boolean );
+begin
+  if AValue = Assigned (fClearedLogs) then Exit;
+  AcquireLogLock;
+  try
+    if AValue then
+    begin
+       toDisplayLogs.Clear;
+       fClearedLogs := displayedLogs;
+       displayedLogs := TLogList.Create;
+    end
+    else
+    begin
+      fClearedLogs.Clear;
+      fClearedLogs.Free;
+      fClearedLogs := nil;
+    end;
+  finally
+    ReleaseLogLock;
+  end;
+end;
+
 function TWsdlProject.ProcessInboundReply(aLogItem, rLogItem: TLog): String;
 // rLogItem is already on display so locking needed on changing
 var
@@ -6800,26 +6846,41 @@ end;
 procedure TWsdlProject.CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
 var
   xReport: TRegressionSnapshot;
+  x: Integer;
 begin
-  xReport := TRegressionSnapshot.Create( aName
-                                        , ExpandRelativeFileName(projectFileName, aFileName)
-                                        , ExpandRelativeFileName(projectFileName, aRefFileName)
-                                        );
-  xReport.OnReport := doRegressionReport;
-  if aDoSave then
-  begin
-    SaveLogs(xReport.FileName);
-    if Assigned (_WsdlClearLogs) then
-      _WsdlClearLogs;
-  end;
-  if aDoRun then
-    xReport.doReport;
+  xReport := nil;
   AcquireLogLock;
   try
+    xReport := TRegressionSnapshot.Create( aName
+                                         , ExpandRelativeFileName(projectFileName, aFileName)
+                                         , ExpandRelativeFileName(projectFileName, aRefFileName)
+                                         );
+    xReport.OnReport := doRegressionReport;
     toDisplaySnapshots.AddObject('', xReport);
+    if aDoSave then
+    begin
+      with TLogList.Create do
+      try
+        for x := 0 to displayedLogs.Count - 1 do
+          if not displayedLogs.LogItems[x].onSnapshot then
+            SaveLog('', displayedLogs.LogItems[x]);
+        for x := 0 to toDisplayLogs.Count - 1 do
+          if not toDisplayLogs.LogItems[x].onSnapshot then
+            SaveLog('', toDisplayLogs.LogItems[x]);
+        SaveStringToFile(xReport.FileName, LogsAsString (projectFileName));
+        for x := 0 to Count - 1 do
+          LogItems[x].onSnapshot := True;
+        Clear;
+      finally
+        Free;
+      end;
+    end;
   finally
     ReleaseLogLock;
   end;
+  if aDoRun
+  and Assigned (xReport) then
+    xReport.doReport;
 end;
 
 procedure TWsdlProject.CreateSummaryReport (aName: String);
@@ -7024,6 +7085,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
+  _WsdlClearLogs := ClearLogs;
   _WsdlCreateSnapshot := CreateSnapshot;
   _WsdlCreateSummaryReport := CreateSummaryReport;
   _WsdlCreateCoverageReport := CreateCoverageReport;

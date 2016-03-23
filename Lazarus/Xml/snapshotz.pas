@@ -1,4 +1,4 @@
-unit savepointz ;
+unit snapshotz ;
 
 {$mode objfpc}{$H+}
 

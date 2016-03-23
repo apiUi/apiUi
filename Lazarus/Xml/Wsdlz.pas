@@ -598,7 +598,7 @@ var
   _WsdlCreateSnapshot: VFunctionOSB;
   _WsdlCreateSummaryReport: VFunctionOS;
   _WsdlCreateCoverageReport: VFunctionOB;
-  _WsdlClearLogs: VFunctionV;
+  _WsdlClearLogs: VFunctionOV;
   _WsdlClearSnapshots: VFunctionV;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
@@ -677,11 +677,11 @@ begin
   _WsdlAddRemark (aObject, aString);
 end;
 
-procedure ClearLogs;
+procedure ClearLogs (aObject: TObject);
 begin
   if not Assigned (_WsdlClearLogs) then
     raise Exception.Create('No OnClearLogs event assigned');
-  _WsdlClearLogs;
+  _WsdlClearLogs (aObject);
 end;
 
 procedure ClearSnapshots;
@@ -3664,7 +3664,7 @@ begin
     BindBeforeFunction ('Assigned', @isAssigned, XFG, '(aItem)');
     BindBeforeFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
     BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
-    BindBeforeFunction ('ClearLogs', @ClearLogs, VFV, '()');
+    BindBeforeFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindBeforeFunction ('ClearSnapshots', @ClearSnapshots, VFV, '()');
     BindBeforeFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindBeforeFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
@@ -3811,7 +3811,7 @@ begin
     BindAfterFunction ('Assigned', @isAssigned, XFG, '(aItem)');
     BindAfterFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
     BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
-    BindAfterFunction ('ClearLogs', @ClearLogs, VFV, '()');
+    BindAfterFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindAfterFunction ('ClearSnapshots', @ClearSnapshots, VFV, '()');
     BindAfterFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindAfterFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
