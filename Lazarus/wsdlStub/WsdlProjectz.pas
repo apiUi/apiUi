@@ -128,8 +128,8 @@ type
       var AReceived: string);
     procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
       const AUsername, APassword: string; var VAuthenticated: Boolean);
-    procedure doRegressionReport (aReport: TSavepoint);
-    procedure doCoverageReport (aReport: TSavepoint);
+    procedure doRegressionReport (aReport: TSnapshot);
+    procedure doCoverageReport (aReport: TSnapshot);
     function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
@@ -147,7 +147,7 @@ type
     projectFileName, LicenseDbName: String;
     displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs, AsynchRpyLogs: TLogList;
-    displayedSavepoints, toDisplaySavepoints: TSavepointList;
+    displayedSnapshots, toDisplaySnapshots: TSnapshotList;
     displayedLogsmaxEntries: Integer;
     CompareLogOrderBy: TCompareLogOrderBy;
     ShowLogCobolStyle: TShowLogCobolStyle;
@@ -198,7 +198,7 @@ type
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure DisplayLog (aString: String; aLog: TLog);
-    procedure DisplayReport (aString: String; aReport: TSavepoint);
+    procedure DisplayReport (aString: String; aReport: TSnapshot);
     procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
     function mergeUri (puri, suri: String): String;
     function freeFormatOperationsXml: TXml;
@@ -213,7 +213,7 @@ type
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
-    procedure CreateSavepoint (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
+    procedure CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
     procedure CreateSummaryReport (aName: String);
     procedure CreateCoverageReport(aDoRun: Boolean);
     function FindScript (aName: String): TXml;
@@ -321,7 +321,7 @@ type
     function WsdlOpenFile (aName: String; aElementsWhenRepeatable: Integer): TWsdl;
     procedure RefuseHttpConnectionsThreaded (aLater, aTime: Extended);
     procedure SaveLogs (aFileName: String);
-    procedure WriteSavepointsInformation (aFileName: String);
+    procedure WriteSnapshotsInformation (aFileName: String);
     procedure UpdateReplyColumns (aOperation: TWsdlOperation);
     procedure ProjectOptionsLogDisplayedColumnsFromXml(aXml: TXml);
     procedure ProjectLogOptionsFromXml(aXml: TXml);
@@ -534,7 +534,7 @@ begin
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
-procedure CreateSavepoint(aContext: TObject; aName: String; aDoRun: Boolean);
+procedure CreateSnapshot(aContext: TObject; aName: String; aDoRun: Boolean);
 var
   xProject: TWsdlProject;
 begin
@@ -545,12 +545,12 @@ begin
     if aContext is TWsdlOperation then with aContext as TWsdlOperation do
       xProject := Owner as TWsdlProject;
   if not Assigned (xProject) then
-    raise Exception.Create(Format ('CreateSavepoint(''%s''); unable to determine context', [aName]));
+    raise Exception.Create(Format ('CreateSnapshot(''%s''); unable to determine context', [aName]));
   if (xProject.CurrentFolder = '')
   or (xProject.ReferenceFolder = '')
   or (xProject.CurrentFolder = xProject.ReferenceFolder)then
-    raise Exception.Create('CreateSavepoint: config (ProjectOptions.General.projectFolders) invalid');
-  xProject.CreateSavepoint ( aName
+    raise Exception.Create('CreateSnapshot: config (ProjectOptions.General.projectFolders) invalid');
+  xProject.CreateSnapshot ( aName
                            , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
                            , xProject.ReferenceFolder + DirectorySeparator + aName + '.xml'
                            , true
@@ -1149,8 +1149,8 @@ begin
   archiveLogs := TLogList.Create;
   displayedExceptions := TExceptionLogList.Create;
   toDisplayExceptions := TExceptionLogList.Create;
-  displayedSavepoints := TSavepointList.Create;
-  toDisplaySavepoints := TSavepointList.Create;
+  displayedSnapshots := TSnapshotList.Create;
+  toDisplaySnapshots := TSnapshotList.Create;
   Listeners := TListeners.Create;
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
@@ -1260,10 +1260,10 @@ begin
   displayedExceptions.Free;
   toDisplayExceptions.Clear;
   toDisplayExceptions.Free;
-  displayedSavepoints.Clear;
-  displayedSavepoints.Free;
-  toDisplaySavepoints.Clear;
-  toDisplaySavepoints.Free;
+  displayedSnapshots.Clear;
+  displayedSnapshots.Free;
+  toDisplaySnapshots.Clear;
+  toDisplaySnapshots.Free;
   AsynchRpyLogs.Clear;
   AsynchRpyLogs.Free;
   FreeAndNil (unknownOperation);
@@ -6385,7 +6385,7 @@ begin
   VAuthenticated := True; // a friendly server
 end;
 
-procedure TWsdlProject.doCoverageReport (aReport: TSavepoint);
+procedure TWsdlProject.doCoverageReport (aReport: TSnapshot);
 var
   xLogList: TLoglist;
   xCvrg: TXmlCvrg;
@@ -6395,9 +6395,9 @@ begin
   try
     xLogList := TLogList.Create;
     try
-      for x := 0 to displayedSavepoints.Count - 1 do
-        if displayedSavepoints.SavepointItems[x].FileName <> '' then
-          OpenMessagesLog (displayedSavepoints.SavepointItems[x].FileName, True, False, xLogList);
+      for x := 0 to displayedSnapshots.Count - 1 do
+        if displayedSnapshots.SnapshotItems[x].FileName <> '' then
+          OpenMessagesLog (displayedSnapshots.SnapshotItems[x].FileName, True, False, xLogList);
       xCvrg := xLogList.PrepareCoverageReportAsXml ( allAliasses
                                                    , ignoreCoverageOn
                                                    );
@@ -6430,7 +6430,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.doRegressionReport (aReport: TSavepoint);
+procedure TWsdlProject.doRegressionReport (aReport: TSnapshot);
 var
   xLogList, xRefLofList: TLoglist;
   xXml: TXml;
@@ -6711,11 +6711,11 @@ begin
   end;
 end;
 
-procedure TWsdlProject.WriteSavepointsInformation(aFileName: String);
+procedure TWsdlProject.WriteSnapshotsInformation(aFileName: String);
 begin
   AcquireLogLock;
   try
-    with displayedSavepoints.AsXml do
+    with displayedSnapshots.AsXml do
     try
       SaveStringToFile(aFileName, Text);
     finally
@@ -6748,12 +6748,12 @@ begin
   end;
 end;
 
-procedure TWsdlProject.DisplayReport (aString: String; aReport: TSavepoint);
+procedure TWsdlProject.DisplayReport (aString: String; aReport: TSnapshot);
 begin
     if not Assigned (aReport) then Exit;
     AcquireLogLock;
     try
-      toDisplaySavepoints.SaveObject (aString, aReport);
+      toDisplaySnapshots.SaveObject (aString, aReport);
     finally
       ReleaseLogLock;
     end;
@@ -6797,11 +6797,11 @@ begin
   end;
 end;
 
-procedure TWsdlProject.CreateSavepoint (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
+procedure TWsdlProject.CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
 var
-  xReport: TRegressionSavepoint;
+  xReport: TRegressionSnapshot;
 begin
-  xReport := TRegressionSavepoint.Create( aName
+  xReport := TRegressionSnapshot.Create( aName
                                         , ExpandRelativeFileName(projectFileName, aFileName)
                                         , ExpandRelativeFileName(projectFileName, aRefFileName)
                                         );
@@ -6816,7 +6816,7 @@ begin
     xReport.doReport;
   AcquireLogLock;
   try
-    toDisplaySavepoints.AddObject('', xReport);
+    toDisplaySnapshots.AddObject('', xReport);
   finally
     ReleaseLogLock;
   end;
@@ -6837,7 +6837,7 @@ begin
     xReport.doReport;
   AcquireLogLock;
   try
-    toDisplaySavepoints.AddObject('', xReport);
+    toDisplaySnapshots.AddObject('', xReport);
   finally
     ReleaseLogLock;
   end;
@@ -6884,7 +6884,7 @@ begin
   Scripts.Items.Clear;
   displayedLogs.Clear;
   archiveLogs.Clear;
-  displayedSavepoints.Clear;
+  displayedSnapshots.Clear;
   doUseMq := False;
   Listeners.Clear;
   mqGetThreads.Clear;
@@ -7024,7 +7024,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
-  _WsdlCreateSavepoint := CreateSavepoint;
+  _WsdlCreateSnapshot := CreateSnapshot;
   _WsdlCreateSummaryReport := CreateSummaryReport;
   _WsdlCreateCoverageReport := CreateCoverageReport;
   _WsdlSendOperationRequest := SendOperationRequest;

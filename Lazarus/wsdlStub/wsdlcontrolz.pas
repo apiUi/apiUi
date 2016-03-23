@@ -39,7 +39,7 @@ type
     OnActivateEvent: TProcedureB;
     OnOpenProjectEvent: TProcedureS;
     OnClearLogsEvent: TStringFunctionBoolean;
-    OnClearSavepointsEvent: TStringFunctionBoolean;
+    OnClearSnapshotsEvent: TStringFunctionBoolean;
     OnQuitEvent: TStringFunctionBoolean;
     OnReloadDesignEvent: TStringFunction;
     procedure HttpWebPageServerCommandGet(AContext: TIdContext;
@@ -261,11 +261,11 @@ begin
                   raise Exception.Create('clearLogsReq refused because ' + _progName + ' has no OnClearLogEvent procedure assigned');
                 OnClearLogsEvent(True);
               end;
-              if xOperId = 'clearSavepointsReq' then
+              if xOperId = 'clearSnapshotsReq' then
               begin
-                if not Assigned (OnClearSavepointsEvent) then
-                  raise Exception.Create('clearSavepointsReq refused because ' + _progName + ' has no OnClearSavepointsEvent procedure assigned');
-                OnClearSavepointsEvent(True);
+                if not Assigned (OnClearSnapshotsEvent) then
+                  raise Exception.Create('clearSnapshotsReq refused because ' + _progName + ' has no OnClearSnapshotsEvent procedure assigned');
+                OnClearSnapshotsEvent(True);
               end;
               if xOperId = 'activateReq' then
               begin
@@ -320,12 +320,12 @@ begin
                   raise Exception.Create('Cannot find filename to use in request');
                 se.SaveLogs(ExpandRelativeFileName(se.projectFileName, dXml.Value));
               end;
-              if xOperId = 'createSavepointReq' then
+              if xOperId = 'createSnapshotReq' then
               begin
-                dXml := oXml.FindXml('Body.createSavepointReq.name');
+                dXml := oXml.FindXml('Body.createSnapshotReq.name');
                 if not Assigned (dXml) then
-                  raise Exception.Create('Cannot find name to use in creating savepoint');
-                se.CreateSavepoint ( dXml.Value
+                  raise Exception.Create('Cannot find name to use in creating Snapshot');
+                se.CreateSnapshot ( dXml.Value
                                    , se.CurrentFolder + DirectorySeparator + dXml.Value + '.xml'
                                    , se.ReferenceFolder + DirectorySeparator + dXml.Value + '.xml'
                                    , True
@@ -344,7 +344,7 @@ begin
                 dXml := oXml.FindXml('Body.saveReportsToFileReq.fileName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find filename to use in request');
-                se.WriteSavepointsInformation(ExpandRelativeFileName(se.projectFileName, dXml.Value));
+                se.WriteSnapshotsInformation(ExpandRelativeFileName(se.projectFileName, dXml.Value));
               end;
               if xOperId = 'sendAllRequestsReq' then
               begin

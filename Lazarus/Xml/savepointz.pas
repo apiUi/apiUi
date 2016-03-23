@@ -13,23 +13,23 @@ uses Classes
    ;
 
 type
-  TSavepointStatus = (rsUndefined, rsOk, rsNok, rsException);
-  TSavepoint = class;
-  TRegressionSavepoint = class;
+  TSnapshotStatus = (rsUndefined, rsOk, rsNok, rsException);
+  TSnapshot = class;
+  TRegressionSnapshot = class;
   TCoverageReport = class;
-  TSavepointList = class;
-  TSavepointEvent = procedure (aReport: TSavepoint) of Object;
+  TSnapshotList = class;
+  TSnapshotEvent = procedure (aReport: TSnapshot) of Object;
 
-  { TSavepoint }
+  { TSnapshot }
 
-  TSavepoint = class(TClaimableObject)
+  TSnapshot = class(TClaimableObject)
   private
-    fOnReport: TSavepointEvent;
+    fOnReport: TSnapshotEvent;
     function getAsXml : TXml ; virtual; abstract;
     function getStatusAsText : String ;
     function getTypeAsText: string; virtual; abstract;
     public
-      Status: TSavepointStatus;
+      Status: TSnapshotStatus;
       Name, FileName, RefFileName, Message: String;
       timeStamp: TDateTime;
       procedure doReport; virtual abstract;
@@ -37,13 +37,13 @@ type
       property statusAsText: String read getStatusAsText;
       procedure FromXml (aXml: TXml);
       property AsXml: TXml read getAsXml;
-      property OnReport: TSavepointEvent read fOnReport write fOnReport;
+      property OnReport: TSnapshotEvent read fOnReport write fOnReport;
       constructor Create;
   end;
 
-  { TRegressionSavepoint }
+  { TRegressionSnapshot }
 
-  TRegressionSavepoint = class(TSavepoint)
+  TRegressionSnapshot = class(TSnapshot)
     private
       function getAsXml : TXml ; override;
       function getTypeAsText: string; override;
@@ -55,7 +55,7 @@ type
 
   { TCoverageReport }
 
-  TCoverageReport = class(TSavepoint)
+  TCoverageReport = class(TSnapshot)
     private
       function getAsXml : TXml ; override;
       function getTypeAsText: string; override;
@@ -63,15 +63,15 @@ type
       procedure doReport; override;
   end;
 
-  { TSavepointList }
+  { TSnapshotList }
 
-  TSavepointList = class (TClaimableObjectList)
+  TSnapshotList = class (TClaimableObjectList)
   private
     function getAsXml : TXml ;
-    procedure SeTSavepoint(Index: integer; const Value: TSavepoint);
-    function GeTSavepoint (Index: integer): TSavepoint;
+    procedure SeTSnapshot(Index: integer; const Value: TSnapshot);
+    function GeTSnapshot (Index: integer): TSnapshot;
   public
-    property SavepointItems [Index: integer]: TSavepoint read GeTSavepoint write SeTSavepoint;
+    property SnapshotItems [Index: integer]: TSnapshot read GeTSnapshot write SeTSnapshot;
     property AsXml: TXml read getAsXml;
     constructor Create; overload;
   end;
@@ -113,9 +113,9 @@ begin
   end;
 end;
 
-{ TSavepoint }
+{ TSnapshot }
 
-function TSavepoint.getStatusAsText: String ;
+function TSnapshot.getStatusAsText: String ;
 begin
   case Status of
     rsUndefined: result := 'undefined';
@@ -125,14 +125,14 @@ begin
   end;
 end;
 
-procedure TSavepoint.FromXml (aXml : TXml );
+procedure TSnapshot.FromXml (aXml : TXml );
 var
   s: String;
   dXml: TXml;
 begin
   if not Assigned (aXml)
   or (aXml.Name <> 'reportDetails') then
-    raise Exception.Create ('TSavepoint.FromXml (aXml : TXml ); //illegal argument');
+    raise Exception.Create ('TSnapshot.FromXml (aXml : TXml ); //illegal argument');
   with aXml do
   begin
     Name := Items.XmlValueByTagDef['name', Name];
@@ -150,19 +150,19 @@ begin
   end;
 end;
 
-constructor TSavepoint .Create ;
+constructor TSnapshot .Create ;
 begin
   inherited Create ;
   timeStamp := Now;
 end;
 
-{ TSavepoint }
+{ TSnapshot }
 
-{ TRegressionSavepoint }
+{ TRegressionSnapshot }
 
-function TRegressionSavepoint.getAsXml: TXml ;
+function TRegressionSnapshot.getAsXml: TXml ;
 begin
-  result := TXml.CreateAsString('savepointDetails','');
+  result := TXml.CreateAsString('SnapshotDetails','');
   with result do
   begin
     AddXml (TXml.CreateAsString('name', self.name));
@@ -174,12 +174,12 @@ begin
   end;
 end;
 
-function TRegressionSavepoint .getTypeAsText : string ;
+function TRegressionSnapshot .getTypeAsText : string ;
 begin
   result := 'regression';
 end;
 
-procedure TRegressionSavepoint.doReport;
+procedure TRegressionSnapshot.doReport;
 var
   xXml: TXml;
 begin
@@ -194,7 +194,7 @@ begin
   end;
 end;
 
-constructor TRegressionSavepoint.Create (aName, aFileName, aRefFileName: String);
+constructor TRegressionSnapshot.Create (aName, aFileName, aRefFileName: String);
 begin
   inherited Create;
   Name := aName;
@@ -202,32 +202,32 @@ begin
   RefFileName := aRefFileName;
 end;
 
-{ TSavepointList }
+{ TSnapshotList }
 
-function TSavepointList.getAsXml : TXml ;
+function TSnapshotList.getAsXml : TXml ;
 var
   x: Integer;
 begin
-  result := TXml.CreateAsString('savepointList', '');
+  result := TXml.CreateAsString('SnapshotList', '');
   with result do
   begin
     AddXml (TXml.CreateAsTimeStamp('created', Now));
     for x := 0 to Count - 1 do
-      AddXml (SavepointItems[x].AsXml);
+      AddXml (SnapshotItems[x].AsXml);
   end;
 end;
 
-procedure TSavepointList.SeTSavepoint (Index : integer; const Value: TSavepoint);
+procedure TSnapshotList.SeTSnapshot (Index : integer; const Value: TSnapshot);
 begin
   Objects [Index] := Value;
 end;
 
-function TSavepointList.GeTSavepoint (Index: integer): TSavepoint;
+function TSnapshotList.GeTSnapshot (Index: integer): TSnapshot;
 begin
-  result := TSavepoint (Objects [Index]);
+  result := TSnapshot (Objects [Index]);
 end;
 
-constructor TSavepointList .Create ;
+constructor TSnapshotList .Create ;
 begin
   inherited Create;
 end;

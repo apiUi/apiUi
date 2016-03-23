@@ -553,12 +553,12 @@ function setEnvNumber (aName: String; aValue: Extended): Extended;
 function setEnvVar (aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
-procedure WriteSavepointsInformation (aObject: TObject; aString: String);
-procedure CreateSavePoint (aObject: TObject; aName: String);
+procedure WriteSnapshotsInformation (aObject: TObject; aString: String);
+procedure CreateSnapshot (aObject: TObject; aName: String);
 procedure CreateSummaryReport (aObject: TObject; aName: String);
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 procedure ClearLogs (aObject: TObject);
-procedure ClearSavepoints (aObject: TObject);
+procedure ClearSnapshots (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
 function decVarNumber (aName: String): Extended;
 function getVarNumber (aName: String): Extended;
@@ -594,12 +594,12 @@ var
   _WsdlRequestOperation: VFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
-  _WsdlWriteSavepointsInformation: VFunctionOS;
-  _WsdlCreateSavepoint: VFunctionOSB;
+  _WsdlWriteSnapshotsInformation: VFunctionOS;
+  _WsdlCreateSnapshot: VFunctionOSB;
   _WsdlCreateSummaryReport: VFunctionOS;
   _WsdlCreateCoverageReport: VFunctionOB;
   _WsdlClearLogs: VFunctionV;
-  _WsdlClearSavepoints: VFunctionV;
+  _WsdlClearSnapshots: VFunctionV;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
   _WsdlSendOperationRequestLater: VFunctionSSI;
@@ -684,11 +684,11 @@ begin
   _WsdlClearLogs;
 end;
 
-procedure ClearSavepoints;
+procedure ClearSnapshots;
 begin
-  if not Assigned (_WsdlClearSavepoints) then
-    raise Exception.Create('No OnClearSavepoints event assigned');
-  _WsdlClearSavepoints;
+  if not Assigned (_WsdlClearSnapshots) then
+    raise Exception.Create('No OnClearSnapshots event assigned');
+  _WsdlClearSnapshots;
 end;
 
 procedure SaveLogs (aObject : TObject ; aString : String );
@@ -698,18 +698,18 @@ begin
   _WsdlSaveLogs (aObject, aString);
 end;
 
-procedure WriteSavepointsInformation (aObject : TObject ; aString : String );
+procedure WriteSnapshotsInformation (aObject : TObject ; aString : String );
 begin
-  if not Assigned (_WsdlWriteSavepointsInformation) then
-    raise Exception.Create('No OnWriteSavepointsInformation event assigned: intention was to write to: ' + aString);
-  _WsdlWriteSavepointsInformation (aObject, aString);
+  if not Assigned (_WsdlWriteSnapshotsInformation) then
+    raise Exception.Create('No OnWriteSnapshotsInformation event assigned: intention was to write to: ' + aString);
+  _WsdlWriteSnapshotsInformation (aObject, aString);
 end;
 
-procedure CreateSavePoint (aObject : TObject ; aName: String);
+procedure CreateSnapshot (aObject : TObject ; aName: String);
 begin
-  if not Assigned (_WsdlCreateSavepoint) then
-    raise Exception.CreateFmt('No OnCreateSavepoint event assigned, intention was to save as (%s)', [aName]);
-  _WsdlCreateSavepoint (aObject, aName, false);
+  if not Assigned (_WsdlCreateSnapshot) then
+    raise Exception.CreateFmt('No OnCreateSnapshot event assigned, intention was to save as (%s)', [aName]);
+  _WsdlCreateSnapshot (aObject, aName, false);
 end;
 
 procedure CreateSummaryReport (aObject : TObject ; aName: String);
@@ -3665,8 +3665,8 @@ begin
     BindBeforeFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
     BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindBeforeFunction ('ClearLogs', @ClearLogs, VFV, '()');
-    BindBeforeFunction ('ClearSavepoints', @ClearSavepoints, VFV, '()');
-    BindBeforeFunction ('CreateSavePoint', @CreateSavePoint, VFOS, '(aName)');
+    BindBeforeFunction ('ClearSnapshots', @ClearSnapshots, VFV, '()');
+    BindBeforeFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindBeforeFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
@@ -3708,7 +3708,7 @@ begin
     BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
     BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindBeforeFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
-    BindBeforeFunction ('WriteSavepointsInformation', @WriteSavepointsInformation, VFOS, '(aFileName)');
+    BindBeforeFunction ('WriteSnapshotsInformation', @WriteSnapshotsInformation, VFOS, '(aFileName)');
     BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
@@ -3812,8 +3812,8 @@ begin
     BindAfterFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
     BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindAfterFunction ('ClearLogs', @ClearLogs, VFV, '()');
-    BindAfterFunction ('ClearSavepoints', @ClearSavepoints, VFV, '()');
-    BindAfterFunction ('CreateSavePoint', @CreateSavePoint, VFOS, '(aName)');
+    BindAfterFunction ('ClearSnapshots', @ClearSnapshots, VFV, '()');
+    BindAfterFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindAfterFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
@@ -3855,7 +3855,7 @@ begin
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
     BindAfterFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindAfterFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
-    BindAfterFunction ('WriteSavepointsInformation', @WriteSavepointsInformation, VFOS, '(aFileName)');
+    BindAfterFunction ('WriteSnapshotsInformation', @WriteSnapshotsInformation, VFOS, '(aFileName)');
     BindAfterFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindAfterFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindAfterFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
