@@ -208,7 +208,7 @@ function TSnapshotList.getAsXml : TXml ;
 var
   x: Integer;
 begin
-  result := TXml.CreateAsString('SnapshotList', '');
+  result := TXml.CreateAsString('wsdlStubSnapshotList', '');
   with result do
   begin
     AddXml (TXml.CreateAsTimeStamp('created', Now));

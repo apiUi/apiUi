@@ -599,7 +599,7 @@ var
   _WsdlCreateSummaryReport: VFunctionOS;
   _WsdlCreateCoverageReport: VFunctionOB;
   _WsdlClearLogs: VFunctionOV;
-  _WsdlClearSnapshots: VFunctionV;
+  _WsdlClearSnapshots: VFunctionOV;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
   _WsdlSendOperationRequestLater: VFunctionSSI;
@@ -684,11 +684,11 @@ begin
   _WsdlClearLogs (aObject);
 end;
 
-procedure ClearSnapshots;
+procedure ClearSnapshots (aObject: TObject);
 begin
   if not Assigned (_WsdlClearSnapshots) then
     raise Exception.Create('No OnClearSnapshots event assigned');
-  _WsdlClearSnapshots;
+  _WsdlClearSnapshots (aObject);
 end;
 
 procedure SaveLogs (aObject : TObject ; aString : String );
@@ -3665,7 +3665,7 @@ begin
     BindBeforeFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
     BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindBeforeFunction ('ClearLogs', @ClearLogs, VFOV, '()');
-    BindBeforeFunction ('ClearSnapshots', @ClearSnapshots, VFV, '()');
+    BindBeforeFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
     BindBeforeFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindBeforeFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
@@ -3812,7 +3812,7 @@ begin
     BindAfterFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
     BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindAfterFunction ('ClearLogs', @ClearLogs, VFOV, '()');
-    BindAfterFunction ('ClearSnapshots', @ClearSnapshots, VFV, '()');
+    BindAfterFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
     BindAfterFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindAfterFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');

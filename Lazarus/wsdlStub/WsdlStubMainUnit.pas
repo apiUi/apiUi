@@ -66,6 +66,10 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem26 : TMenuItem ;
+    ShowSnapshotDifferencesAction : TAction ;
+    LoadRefSavepointMessagesMenuItem : TMenuItem ;
+    LoadSavepointMessagesMenuItem : TMenuItem ;
     MenuItem30 : TMenuItem ;
     MenuItem31 : TMenuItem ;
     ShowGridDifferencesAction : TAction ;
@@ -74,6 +78,7 @@ type
     ShowLogDifferencesAction : TAction ;
     MenuItem23 : TMenuItem ;
     MenuItem24: TMenuItem;
+    ShowSavepointDetailsMenuitem : TMenuItem ;
     SnapshotCompareMenuitem: TMenuItem;
     PromoteToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
@@ -556,6 +561,7 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
+    procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
     procedure SnapshotCompareMenuitemClick(Sender: TObject);
     procedure SnapshotPromoteToReferenceMenuItemClick (Sender : TObject );
     procedure SnapshotShowDetailsMenuitemClick (Sender : TObject );
@@ -1067,8 +1073,7 @@ type
     procedure ShowIpm(aCaption: String; aIpm: TIpmItem);
     procedure ShowTextAsGrid(aCaption, aText: String);
     procedure ShowTextAsXml(aCaption, aText: String);
-    function ShowLogDifferences(aLogs, bLogs: TLogList;
-      aReferenceFileName: String): TSnapshotStatus;
+    function ShowLogDifferences(aLogs, bLogs: TLogList; aAName, aBName: String): TSnapshotStatus;
     procedure CreateEnvironmentSubMenuItems;
     procedure CreateScriptsSubMenuItems;
     procedure SetEnvironmentClick(Sender: TObject);
@@ -1091,8 +1096,6 @@ type
     procedure CheckRpyOrFlt(aBind: TCustomBindable);
     procedure OptionsFromXml(aXml: TXml);
     function LicenseProvider(aRequest: String): String;
-    function ClearLogsCommand(aDoRaiseExceptions: Boolean): String;
-    function ClearSnapshotsCommand(aDoRaiseExceptions: Boolean): String;
     function ReactivateCommand: String;
     function QuitCommand(aDoRaiseExceptions: Boolean): String;
     function RestartCommand: String;
@@ -1269,11 +1272,6 @@ type
     , snapshotNameColumn
     , snapshotMessageColumn
     );
-
-procedure _ClearSnapshots ;
-begin
-  MainForm.ClearSnapshotsCommand(False);
-end;
 
 procedure _SaveLogs(aContext: TObject; aFileName: String);
 var
@@ -3095,7 +3093,7 @@ procedure TMainForm.ShowReport (aReport : TSnapshot);
       xRefLogList := TLogList.Create;
       try
         se.OpenMessagesLog(aReport.RefFileName, True, False, xRefLogList);
-        aReport.Status := ShowLogDifferences(xLogList, xRefLogList, aReport.Name);
+        aReport.Status := ShowLogDifferences(xLogList, xRefLogList, 'Current', aReport.Name);
         xRefLogList.Clear;
         xLogList.Clear;
       finally
@@ -3145,62 +3143,6 @@ begin
     WsdlOperation := allOperations.Operations[f];
     if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
       WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
-  end;
-end;
-
-function TMainForm.ClearLogsCommand(aDoRaiseExceptions: Boolean): String;
-begin
-  result := 'Log cleared ' + se.projectFileName + ' successfully';
-  try
-    RefreshLog;
-    AcquireLock;
-    try
-      if not se.IsActive then
-        raise Exception.Create
-          ('Clear log refused because instance of ' + _progName +
-            ' is inactive');
-      MessagesVTS.Clear;
-      MessagesVTS.Header.SortColumn := -1;
-      MessagesVTS.Header.SortDirection := sdAscending;
-      se.AsynchRpyLogs.Clear;
-      se.displayedLogs.Clear;
-      LogMemo.Text := '';
-    finally
-      ReleaseLock;
-    end;
-  except
-    on E: Exception do
-      if aDoRaiseExceptions then
-        raise
-      else
-        result := E.Message;
-  end;
-end;
-
-function TMainForm.ClearSnapshotsCommand(aDoRaiseExceptions: Boolean): String;
-begin
-  result := 'Snapshots cleared ' + se.projectFileName + ' successfully';
-  try
-    RefreshLog;
-    AcquireLock;
-    try
-      if not se.IsActive then
-        raise Exception.Create
-          ('Clear snapshots refused because instance of ' + _progName +
-            ' is inactive');
-      SnapshotsVTS.Clear;
-      SnapshotsVTS.Header.SortColumn := -1;
-      SnapshotsVTS.Header.SortDirection := sdAscending;
-      se.displayedSnapshots.Clear;
-    finally
-      ReleaseLock;
-    end;
-  except
-    on E: Exception do
-      if aDoRaiseExceptions then
-        raise
-      else
-        result := E.Message;
   end;
 end;
 
@@ -5953,17 +5895,7 @@ begin
     if (not xmlUtil.doConfirmRemovals)
     or BooleanPromptDialog ('Remove all messages') then
     begin
-      se.AcquireLogLock;
-      try
-        MessagesVTS.Clear;
-        MessagesVTS.Header.SortColumn := -1;
-        MessagesVTS.Header.SortDirection := sdAscending;
-        se.AsynchRpyLogs.Clear;
-        se.displayedLogs.Clear;
-        LogMemo.Text := '';
-      finally
-        se.ReleaseLogLock;
-      end;
+      se.doClearLogs := True;
     end;
   end;
 end;
@@ -6528,8 +6460,6 @@ begin
   se.LogServerMessage := LogServerException;
   se.OnDebugOperationEvent := DebugOperation;
   se.FoundErrorInBuffer := FoundErrorInBuffer;
-  sc.OnClearLogsEvent := ClearLogsCommand;
-  sc.OnClearSnapshotsEvent := ClearSnapshotsCommand;
   se.OnReactivateEvent := ReactivateCommand;
   sc.OnQuitEvent := QuitCommand;
   se.OnRestartEvent := RestartCommand;
@@ -7764,7 +7694,7 @@ begin
         end;
       end;
 }
-      ShowLogDifferences(se.displayedLogs, xLogList, wsdlStubMessagesFileName);
+      ShowLogDifferences(se.displayedLogs, xLogList, 'Current', wsdlStubMessagesFileName);
     finally
       xLogList.Clear;
       FreeAndNil(xLogList);
@@ -7773,8 +7703,7 @@ begin
   end;
 end;
 
-function TMainForm.ShowLogDifferences(aLogs, bLogs: TLogList;
-  aReferenceFileName: String): TSnapshotStatus;
+function TMainForm.ShowLogDifferences(aLogs, bLogs: TLogList; aAName, aBName: String): TSnapshotStatus;
 var
   X: Integer;
 begin
@@ -7783,7 +7712,7 @@ begin
   try
     ShowLogDifferencesForm.aLogs := TLogList.Create;
     ShowLogDifferencesForm.bLogs := TLogList.Create;
-    ShowLogDifferencesForm.ReferenceFileName := aReferenceFileName;
+    ShowLogDifferencesForm.ReferenceFileName := aBName;
     ShowLogDifferencesForm.compareLogOrderBy := se.CompareLogOrderBy;
     try
       for X := 0 to aLogs.Count - 1 do
@@ -8851,6 +8780,13 @@ begin
       se.displayedLogs.Clear;
       LogMemo.Text := '';
       se.doClearLogs := False;
+    end;
+    if se.doClearSnapshots then
+    begin
+      SnapshotsVTS.Clear;
+      SnapshotsVTS.Header.SortColumn := -1;
+      SnapshotsVTS.Header.SortDirection := sdAscending;
+      se.doClearSnapshots := False;
     end;
     logAdded := _refreshLogging;
     exceptionAdded := _refreshExceptions;
@@ -12109,12 +12045,12 @@ begin
         for X := 0 to Files.Count - 1 do
         try
           xXml.LoadFromFile(Files.Strings[X], nil);
-          if xXml.Name <> 'snapshotList' then
+          if xXml.Name <> 'wsdlStubSnapshotList' then
             raise Exception.Create('not a SnapshotList');
           for Y := 0 to xXml.Items.Count - 1 do
           begin
             yXml := xXml.Items.XmlItems[Y];
-            if yXml.Name = 'snapshotDetails' then
+            if yXml.Name = 'SnapshotDetails' then
               se.CreateSnapshot ( yXml.Items.XmlValueByTag ['name']
                                 , yXml.Items.XmlValueByTag ['fileName']
                                 , yXml.Items.XmlValueByTag ['refFileName']
@@ -12179,8 +12115,12 @@ procedure TMainForm .SnapshotsPopupMenuPopup (Sender : TObject );
       xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
   end;
+var
+  n: Integer;
 begin
+  n := SnapshotsVTS.SelectedCount;
   PromoteToReferenceMenuItem.Enabled := _selectionHasRegressionReport;
+  ShowSnapshotDifferencesAction.Enabled := (n = 2);
 end;
 
 procedure TMainForm .SnapshotsVTSClick (Sender : TObject );
@@ -12910,6 +12850,44 @@ begin
   end;
 end;
 
+procedure TMainForm .ShowSnapshotDifferencesActionExecute (Sender : TObject );
+var
+  fNode, nNode: PVirtualNode;
+  fSnapshot, nSnapshot: TSnapshot;
+  fLogList, nLogList: TLogList;
+begin
+  nNode := nil;
+  fNode := SnapshotsVTS.GetFirstSelected;
+  nNode := SnapshotsVTS.GetNextSelected(fNode);
+  if Assigned (fNode)
+  and Assigned (nNode) then
+  begin
+    fSnapshot := NodeToSnapshot(True, SnapshotsVTS, fNode);
+    nSnapshot := NodeToSnapshot(True, SnapshotsVTS, nNode);
+    try
+      if Assigned (fSnapshot)
+      and Assigned (nSnapshot) then
+      begin
+        fLogList := TLogList.Create;
+        nLogList := TLogList.Create;
+        try
+          se.OpenMessagesLog(fSnapshot.FileName, True, False, fLogList);
+          se.OpenMessagesLog(nSnapshot.FileName, True, False, nLogList);
+          ShowLogDifferences(fLogList, nLogList, fSnapshot.Name, nSnapshot.Name);
+        finally
+          fLogList.Clear;
+          fLogList.Free;
+          nLogList.Clear;
+          nLogList.Free;
+        end;
+      end;
+    finally
+      fSnapshot.Disclaim;
+      nSnapshot.Disclaim;
+    end;
+  end;
+end;
+
 procedure TMainForm.SnapshotCompareMenuitemClick(Sender: TObject);
 var
   xReport: TSnapshot;
@@ -13141,15 +13119,7 @@ begin
     if (not xmlUtil.doConfirmRemovals)
     or BooleanPromptDialog ('Remove all snapshots information') then
     begin
-      se.AcquireLogLock;
-      try
-        SnapshotsVTS.Clear;
-        SnapshotsVTS.Header.SortColumn := -1;
-        SnapshotsVTS.Header.SortDirection := sdAscending;
-        se.displayedSnapshots.Clear;
-      finally
-        se.ReleaseLogLock;
-      end;
+      se.doClearSnapshots := True;
     end;
   end;
 end;
@@ -13308,7 +13278,6 @@ end;
 {$ifdef windows}
 initialization
   CoInitialize(nil);
-  _WsdlClearSnapshots := _ClearSnapshots;
   _WsdlSaveLogs := _SaveLogs;
   _WsdlWriteSnapshotsInformation := _WriteSnapshotsInformation;
 finalization

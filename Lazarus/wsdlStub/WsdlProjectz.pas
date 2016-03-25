@@ -89,7 +89,9 @@ type
     fAbortPressed: Boolean;
     fLogLock: TCriticalSection;
     fClearedLogs: TLogList;
+    fClearedSnapshots: TSnapshotList;
     function GetAbortPressed: Boolean;
+    function getDoClearSnapshots : Boolean ;
     function getDoClearLogs : Boolean ;
     function SendHttpMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
@@ -119,6 +121,7 @@ type
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCommandTrace(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+    procedure setDoClearSnapshots (AValue : Boolean );
     procedure setDoClearLogs (AValue : Boolean );
     procedure SMTPServerMailFrom(ASender: TIdSMTPServerContext;
       const AAddress: string; AParams: TStrings; var VAction: TIdMailFromReply);
@@ -342,6 +345,7 @@ type
       var ConnectOptions: TConnectOption; var EventStatus: TEventStatus);
     {$ENDIF}
     property doClearLogs: Boolean read getDoClearLogs write setDoClearLogs;
+    property doClearSnapshots: Boolean read getDoClearSnapshots write setDoClearSnapshots;
     property IsActive: Boolean read fIsActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
     constructor Create;
@@ -575,6 +579,21 @@ begin
   if not Assigned (xProject) then
     raise Exception.Create('ClearLogs; unable to determine context');
   xProject.doClearLogs := True;
+end;
+
+procedure ClearSnapshots (aContext: TObject);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create('ClearLogs; unable to determine context');
+  xProject.doClearSnapshots := True;
 end;
 
 procedure CreateSummaryReport(aContext: TObject; aName: String);
@@ -5528,6 +5547,11 @@ begin
   result := fAbortPressed;
 end;
 
+function TWsdlProject .getDoClearSnapshots : Boolean ;
+begin
+  result := Assigned (fClearedSnapshots);
+end;
+
 function TWsdlProject .getDoClearLogs : Boolean ;
 begin
   result := Assigned (fClearedLogs);
@@ -6309,6 +6333,28 @@ begin
   end;
 end;
 
+procedure TWsdlProject .setDoClearSnapshots (AValue : Boolean );
+begin
+  if AValue = Assigned (fClearedSnapshots) then Exit;
+  AcquireLogLock;
+  try
+    if AValue then
+    begin
+       toDisplaySnapshots.Clear;
+       fClearedSnapshots := displayedSnapshots;
+       displayedSnapshots := TSnapshotList.Create;
+    end
+    else
+    begin
+      fClearedSnapshots.Clear;
+      fClearedSnapshots.Free;
+      fClearedSnapshots := nil;
+    end;
+  finally
+    ReleaseLogLock;
+  end;
+end;
+
 procedure TWsdlProject.setDoClearLogs (AValue : Boolean );
 begin
   if AValue = Assigned (fClearedLogs) then Exit;
@@ -7086,6 +7132,7 @@ initialization
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
   _WsdlClearLogs := ClearLogs;
+  _WsdlClearSnapshots := ClearSnapshots;
   _WsdlCreateSnapshot := CreateSnapshot;
   _WsdlCreateSummaryReport := CreateSummaryReport;
   _WsdlCreateCoverageReport := CreateCoverageReport;

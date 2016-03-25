@@ -38,8 +38,6 @@ type
     OnReactivateEvent: TStringFunction;
     OnActivateEvent: TProcedureB;
     OnOpenProjectEvent: TProcedureS;
-    OnClearLogsEvent: TStringFunctionBoolean;
-    OnClearSnapshotsEvent: TStringFunctionBoolean;
     OnQuitEvent: TStringFunctionBoolean;
     OnReloadDesignEvent: TStringFunction;
     procedure HttpWebPageServerCommandGet(AContext: TIdContext;
@@ -257,15 +255,11 @@ begin
               oOperation.RequestStringToBindables(xParams);
               if xOperId = 'clearLogsReq' then
               begin
-                if not Assigned (OnClearLogsEvent) then
-                  raise Exception.Create('clearLogsReq refused because ' + _progName + ' has no OnClearLogEvent procedure assigned');
-                OnClearLogsEvent(True);
+                se.doClearLogs := True;
               end;
               if xOperId = 'clearSnapshotsReq' then
               begin
-                if not Assigned (OnClearSnapshotsEvent) then
-                  raise Exception.Create('clearSnapshotsReq refused because ' + _progName + ' has no OnClearSnapshotsEvent procedure assigned');
-                OnClearSnapshotsEvent(True);
+                se.doClearSnapshots := True;
               end;
               if xOperId = 'activateReq' then
               begin

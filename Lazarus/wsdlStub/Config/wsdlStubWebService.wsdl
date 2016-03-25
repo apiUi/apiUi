@@ -93,6 +93,12 @@
 	<message name="clearLogsRpyMessage">
 		<part name="payload" element="tns:clearLogsRpy"/>
 	</message>
+	<message name="clearSnapshotsReqMessage">
+		<part name="payload" element="tns:clearSnapshotsReq"/>
+	</message>
+	<message name="clearSnapshotsRpyMessage">
+		<part name="payload" element="tns:clearSnapshotsRpy"/>
+	</message>
 	<portType name="wsdlStubPortType">
 		<operation name="executeScript">
 			<input message="client:executeScriptReqMessage"/>
@@ -157,6 +163,11 @@
 		<operation name="clearLogs">
 			<input message="client:clearLogsReqMessage"/>
 			<output message="client:clearLogsRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="clearSnapshots">
+			<input message="client:clearSnapshotsReqMessage"/>
+			<output message="client:clearSnapshotsRpyMessage"/>
 			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
 		</operation>
 	</portType>
@@ -308,6 +319,18 @@
 		</operation>
 		<operation name="clearLogs">
 			<soap:operation soapAction="urn:#clearLogs"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="clearSnapshots">
+			<soap:operation soapAction="urn:#clearSnapshots"/>
 			<input>
 				<soap:body use="literal"/>
 			</input>

@@ -2209,6 +2209,18 @@ object MainForm: TMainForm
       ImageIndex = 3
       OnExecute = WriteSnapshotsInformationActionExecute
     end
+    object ShowGridDifferencesAction: TAction
+      Category = 'Messages'
+      Caption = 'Compare (requires 2 selected nodes)'
+      ImageIndex = 67
+      OnExecute = ShowGridDifferencesActionExecute
+    end
+    object ShowSnapshotDifferencesAction: TAction
+      Category = 'Log'
+      Caption = 'Compare (requires 2 selected rows)'
+      ImageIndex = 67
+      OnExecute = ShowSnapshotDifferencesActionExecute
+    end
     object ShowLogDifferencesAction: TAction
       Category = 'Log'
       Caption = 'Compare (requires 2 selected rows)'
@@ -2340,12 +2352,6 @@ object MainForm: TMainForm
       Caption = 'logChartAction'
       ImageIndex = 83
       OnExecute = logChartActionExecute
-    end
-    object ShowGridDifferencesAction: TAction
-      Category = 'Messages'
-      Caption = 'Compare (requires 2 selected nodes)'
-      ImageIndex = 67
-      OnExecute = ShowGridDifferencesActionExecute
     end
   end
   object mainImageList: TImageList
@@ -9363,6 +9369,9 @@ object MainForm: TMainForm
     object SnapshotCompareMenuitem: TMenuItem
       Caption = 'Compare with reference'
       OnClick = SnapshotCompareMenuitemClick
+    end
+    object MenuItem26: TMenuItem
+      Action = ShowSnapshotDifferencesAction
     end
     object MenuItem24: TMenuItem
       Caption = '-'

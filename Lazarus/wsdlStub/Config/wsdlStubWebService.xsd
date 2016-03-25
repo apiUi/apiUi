@@ -291,6 +291,16 @@ Enter correlation items in an order that correponds with the wsdlStub correlatio
 			<xs:documentation>Response on clear wsdlStub log request</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="clearSnapshotsReq">
+		<xs:annotation>
+			<xs:documentation>Request to clear the wsdlStub snapshots</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="clearSnapshotsRpy">
+		<xs:annotation>
+			<xs:documentation>Response on clear wsdlStub snapshots request</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="executeScriptReq">
 		<xs:annotation>
 			<xs:documentation>Request to execute a script</xs:documentation>
