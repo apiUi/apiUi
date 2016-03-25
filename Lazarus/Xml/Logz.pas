@@ -87,6 +87,7 @@ type
     DelayTimeMs, OperationCount: Integer;
     function CompareKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TStringList): String;
     function DurationAsString: String;
+    function StubActionAsString: String;
     function AsXml: TXml;
     function reqBodyAsXml: TXml;
     function rpyBodyAsXml: TXml;
@@ -1123,6 +1124,17 @@ begin
     Duration := OutBoundTimeStamp - InboundTimeStamp;
   xDuration := Duration * 24 * 60 * 60;
   result := Format ('%.3f', [xDuration]);
+end;
+
+function TLog.StubActionAsString : String ;
+begin
+  result := '';
+  case StubAction of
+    saStub: result := 'Stub';
+    saForward: result := 'Forward';
+    saRedirect: result := 'Redirect';
+    saRequest: result := 'Request';
+  end;
 end;
 
 function TLog.reqBodyAsXml: TXml;

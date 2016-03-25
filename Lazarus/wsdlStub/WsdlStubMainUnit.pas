@@ -6450,6 +6450,7 @@ begin
   sc.se := se;
   RefreshLogTimer.Enabled := True;
   NumberOfBlockingThreads := 0;
+  se.OnBooleanDialog := BooleanPromptDialog;
   se.OnStartBlockingThread := StartBlockingThreadEvent;
   se.OnTerminateBlockingThread := TerminateBlockingThreadEvent;
   se.OnStartNonBlockingThread := StartNonBlockingThreadEvent;

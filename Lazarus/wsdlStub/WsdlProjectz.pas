@@ -77,6 +77,7 @@ type TOnStringEvent = procedure (const Msg: String; aException: Boolean; E: Exce
 type TBooleanFunction = function: Boolean of Object;
 type TStringFunction = function: String of Object;
 type TStringFunctionBoolean = function (arg: Boolean): String of Object;
+type TBooleanFunctionString = function (arg: String): Boolean of Object;
 
 
 type
@@ -200,6 +201,7 @@ type
     CurrentFolder, ReferenceFolder: String;
     FocusOperationName, FocusOperationNameSpace: String;
     FocusMessageIndex: Integer;
+    OnBooleanDialog: TBooleanFunctionString;
     procedure UpdateOperationAliasses;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
@@ -1708,7 +1710,11 @@ end;
 
 function TWsdlProject.BooleanPromptDialog(aPrompt: String): Boolean;
 begin
-  result := (MessageDlg (aPrompt, mtConfirmation, [mbYes, mbNo], 0) = mrYes);
+  result := False;
+  if Assigned (OnBooleanDialog) then
+    result := OnBooleanDialog (aPrompt)
+  else
+    raise Exception.Create(aPrompt);
 end;
 
 function TWsdlProject.ProjectOptionsLogDisplayedColumnsAsXml: TXml;
@@ -3576,7 +3582,6 @@ begin
         end;
       end;
       try
-        Notify('result := HttpClient.Verb(URL, HttpRequest);<');
         dStream := TMemoryStream.Create;
         try
           try
@@ -3608,7 +3613,6 @@ begin
           FreeAndNil (dStream);
         end;
       finally
-        Notify('>result := HttpClient.Post(URL, HttpRequest);');
       end;
       if (HttpClient.ResponseCode = 202) then
         result := S_MESSAGE_ACCEPTED;

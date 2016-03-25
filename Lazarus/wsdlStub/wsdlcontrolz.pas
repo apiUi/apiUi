@@ -428,7 +428,11 @@ begin
                   raise Exception.Create('Cannot find scriptname in request');
                 sXml := se.FindScript (dXml.Value);
                 if Assigned (sXml) then
-                  se.ScriptExecute(sXml)
+                begin
+                  se.ProgressMax := 5;
+                  se.ProgressPos := 0;
+                  TProcedureThread.Create(False, False, se, se.ScriptExecute, sXml as TObject);
+                end
                 else
                   raise Exception.Create('Cannot find script based on: ' + dXml.Value);
               end;

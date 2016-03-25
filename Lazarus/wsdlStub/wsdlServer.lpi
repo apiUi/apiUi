@@ -18,8 +18,9 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MajorVersionNr Value="1"/>
-      <BuildNr Value="25"/>
+      <MajorVersionNr Value="9"/>
+      <RevisionNr Value="4"/>
+      <BuildNr Value="56"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -31,7 +32,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;C:\JanBo\Sources\2011\stubStudio\Examples\crmi\crrmiStub.wsdlStub&quot; --port=3738"/>
+        <CommandLineParams Value="&quot;C:\JanBo\Sources\2011\stubStudio\Examples\crmi\crrmiReq.wsdlStub&quot; --script=report --port=3740"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -59,6 +60,7 @@
       <Unit1>
         <Filename Value="wsdlcontrolz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="wsdlcontrolz"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
@@ -94,6 +96,11 @@
       <OtherUnitFiles Value="..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\Mq;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\System;..\components\Indy10\Lib\Core;..\Xml"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <Linking>
+      <Debugging>
+        <UseValgrind Value="True"/>
+      </Debugging>
+    </Linking>
     <Other>
       <CustomOptions Value="-dConsoleApp
 -dUseCThreads"/>
