@@ -504,6 +504,7 @@ procedure TShowXmlForm.CompareActionExecute(Sender: TObject);
 var
   xA2B: TA2BXml;
   aXml, bXml: TXml;
+  xForm: TShowA2BXmlForm;
 begin
   with TOpenDialog.Create(nil) do
     try
@@ -538,18 +539,18 @@ begin
             FreeAndNil(bXml);
           end;
           try
-            Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+            Application.CreateForm(TShowA2BXmlForm, xForm);
             try
-              ShowA2BXmlForm.Caption := 'Differences in XML content';
-              ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
-              ShowA2BXmlForm.ignoreAddingon := ignoreAddingon;
-              ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
-              ShowA2BXmlForm.Xml := xA2B;
-              ShowA2BXmlForm.ShowModal;
-              if ShowA2BXmlForm.RefreshNeeded then
+              xForm.Caption := 'Differences in XML content';
+              xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+              xForm.ignoreAddingon := ignoreAddingon;
+              xForm.ignoreRemovingOn := ignoreRemovingOn;
+              xForm.Xml := xA2B;
+              xForm.ShowModal;
+              if xForm.RefreshNeeded then
                 FormShow(nil);
             finally
-              FreeAndNil(ShowA2BXmlForm);
+              FreeAndNil(xForm);
             end;
           finally
             FreeAndNil(xA2B);

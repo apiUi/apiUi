@@ -113,6 +113,7 @@ var
   x: Integer;
 begin
   inherited Create;
+  Checked := True;
   ChangeKind := ckDelete;
   TagName := aXml.TagName;
   Value := aXml.Value;
@@ -130,6 +131,7 @@ var
   x: Integer;
 begin
   inherited Create;
+  Checked := True;
   ChangeKind := ckAdd;
   TagName := bXml.TagName;
   bValue := bXml.Value;
@@ -150,6 +152,7 @@ var
   xXml: TXml;
 begin
   inherited Create;
+  Checked := True;
   TagName := aXml.TagName;
   Value := aXml.Value;
   NameSpace := aXml.NameSpace;
@@ -370,6 +373,7 @@ end;
 constructor TA2BXml .CreateA (aPrefix: String; aXml : TXmlAttribute; aThisOneDiffers: Boolean);
 begin
   inherited Create;
+  Checked := True;
   ChangeKind := ckDelete;
   TagName := '@' + aXml.Name;
   Value := aXml.Value;
@@ -380,6 +384,7 @@ end;
 constructor TA2BXml .CreateB (aPrefix: String; bXml : TXmlAttribute; aThisOneDiffers: Boolean); overload;
 begin
   inherited Create;
+  Checked := True;
   ChangeKind := ckAdd;
   TagName := '@' + bXml.Name;
   bValue := bXml.Value;
@@ -390,6 +395,7 @@ end;
 constructor TA2BXml .CreateA2B (aPrefix: String; aXml , bXml : TXmlAttribute);
 begin
   inherited Create;
+  Checked := True;
   TagName := '@' + aXml.Name;
   Value := aXml.Value;
   bValue := bXml.Value;

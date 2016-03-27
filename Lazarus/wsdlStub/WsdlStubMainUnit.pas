@@ -7707,67 +7707,68 @@ end;
 function TMainForm.ShowLogDifferences(aLogs, bLogs: TLogList; aAName, aBName: String): TSnapshotStatus;
 var
   X: Integer;
+  xForm: TShowLogDifferencesForm;
 begin
   result := rsUndefined;
-  Application.CreateForm(TShowLogDifferencesForm, ShowLogDifferencesForm);
+  Application.CreateForm(TShowLogDifferencesForm, xForm);
   try
-    ShowLogDifferencesForm.aLogs := TLogList.Create;
-    ShowLogDifferencesForm.bLogs := TLogList.Create;
-    ShowLogDifferencesForm.ReferenceFileName := aBName;
-    ShowLogDifferencesForm.compareLogOrderBy := se.CompareLogOrderBy;
+    xForm.aLogs := TLogList.Create;
+    xForm.bLogs := TLogList.Create;
+    xForm.ReferenceFileName := aBName;
+    xForm.compareLogOrderBy := se.CompareLogOrderBy;
     try
       for X := 0 to aLogs.Count - 1 do
         if aLogs.LogItems[X].PassesFilter then
-          ShowLogDifferencesForm.aLogs.AddObject ( '', aLogs.LogItems[X]);
+          xForm.aLogs.AddObject ( '', aLogs.LogItems[X]);
       for X := 0 to bLogs.Count - 1 do
         if bLogs.LogItems[X].PassesFilter then
-          ShowLogDifferencesForm.bLogs.AddObject ( '', bLogs.LogItems[X]);
-      ShowLogDifferencesForm.ignoreDifferencesOn.Text := se.ignoreDifferencesOn.Text;
-      ShowLogDifferencesForm.ignoreAddingon.Text := se.ignoreAddingOn.Text;
-      ShowLogDifferencesForm.ignoreRemovingOn.Text := se.ignoreRemovingOn.Text;
-      for x := 0 to ShowLogDifferencesForm.ignoreOrderOn.Count - 1 do
-        ShowLogDifferencesForm.ignoreOrderOn.Objects[x].Free;
-      ShowLogDifferencesForm.ignoreOrderOn.Text := se.ignoreOrderOn.Text;
-      for x := 0 to ShowLogDifferencesForm.ignoreOrderOn.Count - 1 do
+          xForm.bLogs.AddObject ( '', bLogs.LogItems[X]);
+      xForm.ignoreDifferencesOn.Text := se.ignoreDifferencesOn.Text;
+      xForm.ignoreAddingon.Text := se.ignoreAddingOn.Text;
+      xForm.ignoreRemovingOn.Text := se.ignoreRemovingOn.Text;
+      for x := 0 to xForm.ignoreOrderOn.Count - 1 do
+        xForm.ignoreOrderOn.Objects[x].Free;
+      xForm.ignoreOrderOn.Text := se.ignoreOrderOn.Text;
+      for x := 0 to xForm.ignoreOrderOn.Count - 1 do
       begin
-        ShowLogDifferencesForm.ignoreOrderOn.Objects[x] := TStringList.Create;
-        (ShowLogDifferencesForm.ignoreOrderOn.Objects[x] as TStringList).Text :=
+        xForm.ignoreOrderOn.Objects[x] := TStringList.Create;
+        (xForm.ignoreOrderOn.Objects[x] as TStringList).Text :=
           (se.ignoreOrderOn.Objects[x] as TStringList).Text;
       end;
-      ShowLogDifferencesForm.regressionSortColumns.Text := se.regressionSortColumns.Text;
-      ShowLogDifferencesForm.ShowModal;
-      if ShowLogDifferencesForm.configChanged then
+      xForm.regressionSortColumns.Text := se.regressionSortColumns.Text;
+      xForm.ShowModal;
+      if xForm.configChanged then
       begin
         if BooleanPromptDialog('Accept changes to Regression report settings') then
         begin
-          se.CompareLogOrderBy := ShowLogDifferencesForm.compareLogOrderBy;
-          se.ignoreDifferencesOn.Text := ShowLogDifferencesForm.ignoreDifferencesOn.Text;
-          se.ignoreAddingOn.Text := ShowLogDifferencesForm.ignoreAddingon.Text;
-          se.ignoreRemovingOn.Text := ShowLogDifferencesForm.ignoreRemovingOn.Text;
+          se.CompareLogOrderBy := xForm.compareLogOrderBy;
+          se.ignoreDifferencesOn.Text := xForm.ignoreDifferencesOn.Text;
+          se.ignoreAddingOn.Text := xForm.ignoreAddingon.Text;
+          se.ignoreRemovingOn.Text := xForm.ignoreRemovingOn.Text;
           for x := 0 to se.ignoreOrderOn.Count - 1 do
             se.ignoreOrderOn.Objects[x].Free;
-          se.ignoreOrderOn.Text := ShowLogDifferencesForm.ignoreOrderOn.Text;
+          se.ignoreOrderOn.Text := xForm.ignoreOrderOn.Text;
           for x := 0 to se.ignoreOrderOn.Count - 1 do
           begin
             se.ignoreOrderOn.Objects[x] := TStringList.Create;
             (se.ignoreOrderOn.Objects[x] as TStringList).Text
-              := (ShowLogDifferencesForm.ignoreOrderOn.Objects[x] as TStringList).Text;
+              := (xForm.ignoreOrderOn.Objects[x] as TStringList).Text;
           end;
-          se.regressionSortColumns.Text := ShowLogDifferencesForm.regressionSortColumns.Text;
+          se.regressionSortColumns.Text := xForm.regressionSortColumns.Text;
           stubChanged := True;
         end;
       end;
-      if ShowLogDifferencesForm.differencesFound then
+      if xForm.differencesFound then
         result := rsNok
       else
         Result := rsOk;
     finally
-      ShowLogDifferencesForm.aLogs.Free;
-      ShowLogDifferencesForm.bLogs.Free;
+      xForm.aLogs.Free;
+      xForm.bLogs.Free;
     end;
   finally
     UpdateCaption;
-    FreeAndNil(ShowLogDifferencesForm);
+    FreeAndNil(xForm);
   end;
 end;
 
@@ -8916,6 +8917,7 @@ var
   xLog: TLog;
   aXml, bXml: TXml;
   xA2B: TA2BXml;
+  xForm: TShowA2BXmlForm;
 begin
   xLog := NodeToMsgLog(True,MessagesVTS, MessagesVTS.FocusedNode);
   try
@@ -8934,18 +8936,18 @@ begin
   end;
   FreeAndNil(aXml);
   FreeAndNil(bXml);
-  Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+  Application.CreateForm(TShowA2BXmlForm, xForm);
   try
-    ShowA2BXmlForm.Caption := 'Changes in Request';
-    ShowA2BXmlForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
-    ShowA2BXmlForm.ignoreAddingOn := se.ignoreAddingOn;
-    ShowA2BXmlForm.ignoreRemovingOn := se.ignoreRemovingOn;
-    ShowA2BXmlForm.Xml := xA2B;
-    ShowA2BXmlForm.ShowModal;
-    if ShowA2BXmlForm.RefreshNeeded then
+    xForm.Caption := 'Changes in Request';
+    xForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
+    xForm.ignoreAddingOn := se.ignoreAddingOn;
+    xForm.ignoreRemovingOn := se.ignoreRemovingOn;
+    xForm.Xml := xA2B;
+    xForm.ShowModal;
+    if xForm.RefreshNeeded then
       FormShow(nil);
   finally
-    FreeAndNil(ShowA2BXmlForm);
+    FreeAndNil(xForm);
   end;
 end;
 
@@ -8954,6 +8956,7 @@ var
   xLog: TLog;
   aXml, bXml: TXml;
   xA2B: TA2BXml;
+  xForm: TShowA2BXmlForm;
 begin
   xLog := NodeToMsgLog(False,MessagesVTS, MessagesVTS.FocusedNode);
   try
@@ -8972,18 +8975,18 @@ begin
   end;
   FreeAndNil(aXml);
   FreeAndNil(bXml);
-  Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+  Application.CreateForm(TShowA2BXmlForm, xForm);
   try
-    ShowA2BXmlForm.Caption := 'Changes in Reply';
-    ShowA2BXmlForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
-    ShowA2BXmlForm.ignoreAddingOn := se.ignoreAddingOn;
-    ShowA2BXmlForm.ignoreRemovingOn := se.ignoreRemovingOn;
-    ShowA2BXmlForm.Xml := xA2B;
-    ShowA2BXmlForm.ShowModal;
-    if ShowA2BXmlForm.RefreshNeeded then
+    xForm.Caption := 'Changes in Reply';
+    xForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
+    xForm.ignoreAddingOn := se.ignoreAddingOn;
+    xForm.ignoreRemovingOn := se.ignoreRemovingOn;
+    xForm.Xml := xA2B;
+    xForm.ShowModal;
+    if xForm.RefreshNeeded then
       FormShow(nil);
   finally
-    FreeAndNil(ShowA2BXmlForm);
+    FreeAndNil(xForm);
   end;
 end;
 
@@ -10998,6 +11001,7 @@ var
   fLog, nLog: TLog;
   fXml, nXml: TXml;
   xA2B: TA2BXml;
+  xForm: TShowA2BXmlForm;
 begin
   nNode := nil;
   fNode := MessagesVTS.GetFirstSelected;
@@ -11039,8 +11043,8 @@ begin
       a2bUninitialize;
     end;
     try
-      Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
-      with ShowA2BXmlForm do
+      Application.CreateForm(TShowA2BXmlForm, xForm);
+      with xForm do
       try
         Caption := 'Diffrences in messages';
         ColumnHeaderA := 'Value first selected';
@@ -11048,7 +11052,7 @@ begin
         Xml := xA2B;
         ShowModal;
       finally
-        FreeAndNil(ShowA2BXmlForm);
+        FreeAndNil(xForm);
       end;
     finally
       FreeAndNil(xA2B);
@@ -12308,6 +12312,7 @@ var
   fMessage, nMessage: TWsdlMessage;
   fXml, nXml: TXml;
   xA2B: TA2BXml;
+  xForm: TShowA2BXmlForm;
 begin
   if WsdlOperation.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
   begin
@@ -12376,8 +12381,8 @@ begin
       a2bUninitialize;
     end;
     try
-      Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
-      with ShowA2BXmlForm do
+      Application.CreateForm(TShowA2BXmlForm, xForm);
+      with xForm do
       try
         Caption := 'Diffrences in design messages';
         ColumnHeaderA := 'Value first selected';
@@ -12385,7 +12390,7 @@ begin
         Xml := xA2B;
         ShowModal;
       finally
-        FreeAndNil(ShowA2BXmlForm);
+        FreeAndNil(xForm);
       end;
     finally
       FreeAndNil(xA2B);

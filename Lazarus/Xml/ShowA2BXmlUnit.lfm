@@ -541,6 +541,10 @@ object ShowA2BXmlForm: TShowA2BXmlForm
         0000000000000000000000000000000000000000000000000000
       }
     end
+    object A2BGridMenuItem: TMenuItem
+      Caption = 'A2BGrid'
+      OnClick = A2BGridMenuItemClick
+    end
   end
   object ActionImageList: TImageList
     left = 176

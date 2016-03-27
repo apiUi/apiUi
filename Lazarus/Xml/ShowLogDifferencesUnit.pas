@@ -555,6 +555,7 @@ end;
 procedure TShowLogDifferencesForm.mainVSTClick(Sender: TObject);
 var
   xData: PVSTreeRec;
+  xForm: TShowA2BXmlForm;
 begin
   case ceColumnEnum(mainVST.FocusedColumn) of
   ceReqColumn:
@@ -563,20 +564,20 @@ begin
       if Assigned(xData.reqA2B)
       {and xData.reqA2B.Differs} then
       begin
-        Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+        Application.CreateForm(TShowA2BXmlForm, xForm);
         try
-          ShowA2BXmlForm.Caption := 'Differences in requests';
-          ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
-          ShowA2BXmlForm.ignoreAddingOn := ignoreAddingon;
-          ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
-          ShowA2BXmlForm.ignoreOrderOn := ignoreOrderOn;
-          ShowA2BXmlForm.regressionSortColumns := regressionSortColumns;
-          ShowA2BXmlForm.Xml := xData.reqA2B;
-          ShowA2BXmlForm.ShowModal;
-          if ShowA2BXmlForm.RefreshNeeded then
+          xForm.Caption := 'Differences in requests';
+          xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+          xForm.ignoreAddingOn := ignoreAddingon;
+          xForm.ignoreRemovingOn := ignoreRemovingOn;
+          xForm.ignoreOrderOn := ignoreOrderOn;
+          xForm.regressionSortColumns := regressionSortColumns;
+          xForm.Xml := xData.reqA2B;
+          xForm.ShowModal;
+          if xForm.RefreshNeeded then
             PopulateMain (True);
         finally
-          FreeAndNil (ShowA2BXmlForm);
+          FreeAndNil (xForm);
         end;
       end;
     end;
@@ -586,20 +587,20 @@ begin
       if Assigned (xData.rpyA2B)
       {and xData.rpyA2B.Differs} then
       begin
-        Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+        Application.CreateForm(TShowA2BXmlForm, xForm);
         try
-          ShowA2BXmlForm.Caption := 'Differences in replies';
-          ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
-          ShowA2BXmlForm.ignoreAddingOn := ignoreAddingon;
-          ShowA2BXmlForm.ignoreRemovingOn := ignoreRemovingOn;
-          ShowA2BXmlForm.ignoreOrderOn := ignoreOrderOn;
-          ShowA2BXmlForm.regressionSortColumns := regressionSortColumns;
-          ShowA2BXmlForm.Xml := xData.rpyA2B;
-          ShowA2BXmlForm.ShowModal;
-          if ShowA2BXmlForm.RefreshNeeded then
+          xForm.Caption := 'Differences in replies';
+          xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+          xForm.ignoreAddingOn := ignoreAddingon;
+          xForm.ignoreRemovingOn := ignoreRemovingOn;
+          xForm.ignoreOrderOn := ignoreOrderOn;
+          xForm.regressionSortColumns := regressionSortColumns;
+          xForm.Xml := xData.rpyA2B;
+          xForm.ShowModal;
+          if xForm.RefreshNeeded then
             PopulateMain(True);
         finally
-          FreeAndNil (ShowA2BXmlForm);
+          FreeAndNil (xForm);
         end;
       end;
     end;

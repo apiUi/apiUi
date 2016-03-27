@@ -15,7 +15,7 @@ uses
    , Classes, Graphics, Forms, Controls,
   ComCtrls, ExtCtrls, VirtualTrees
 //   , IpmGunMainForm
-   , A2BXmlz, Xmlz, a2bStringListUnit, Menus, Dialogs, ActnList, FormIniFilez
+   , A2BXmlz, Xmlz, Xsdz, a2bStringListUnit, Menus, Dialogs, ActnList, FormIniFilez
    ;
 
 type
@@ -25,6 +25,7 @@ type
   TShowA2BXmlForm = class(TForm)
     MenuItem1: TMenuItem;
     AddToSortColumnsMenuItem: TMenuItem;
+    A2BGridMenuItem : TMenuItem ;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -76,6 +77,7 @@ type
     N6: TMenuItem;
     IgnoreRemovingTagMenuItem: TMenuItem;
     IgnoreRemovingFullCaptionMenuItem: TMenuItem;
+    procedure A2BGridMenuItemClick (Sender : TObject );
     procedure AddToSortColumnsMenuItemClick(Sender: TObject);
     procedure ignoreFullCaptionMenuitemClick(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
@@ -145,8 +147,6 @@ type
     property ColumnHeaderB: String write setColumnHeaderB;
   end;
 
-var
-  ShowA2BXmlForm: TShowA2BXmlForm;
 
 implementation
 
@@ -158,6 +158,7 @@ uses FindRegExpDialog
    , wrdFunctionz
    , base64
    , Clipbrd
+   , A2BXmlGridUnit
    ;
 const
   iiGreenBullet = 132;
@@ -593,6 +594,7 @@ begin
   FullCollapseMenuItem.Caption := 'Full collapse  '
                                 + xXml.TagName
                                 ;
+  A2BGridMenuItem.Enabled := xXml.Items.Count > 0;
 end;
 
 function TShowA2BXmlForm.ToolButtonUsed(Sender: TObject): Boolean;
@@ -879,6 +881,32 @@ begin
     SelectedXml(xXml);
     regressionSortColumns.Add(xXml.FullUQCaption);
     RefreshNeeded := True;
+  end;
+end;
+
+procedure TShowA2BXmlForm .A2BGridMenuItemClick (Sender : TObject );
+var
+  theXml: TA2BXml;
+  xForm: TA2BXmlGridForm;
+begin
+  theXml := nil;
+  if ToolButtonUsed(Sender) then
+    NodeToXml (TreeView.GetFirst, theXml)
+  else
+    NodeToXml (TreeView.FocusedNode, theXml);
+  if theXml = nil then
+    exit;
+  Application.CreateForm(TA2BXmlGridForm, xForm);
+  try
+    xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+    xForm.ignoreAddingOn := ignoreAddingon;
+    xForm.ignoreRemovingOn := ignoreRemovingOn;
+    xForm.ignoreOrderOn := ignoreOrderOn;
+    xForm.regressionSortColumns := regressionSortColumns;
+    xForm.Xml := theXml;
+    xForm.ShowModal;
+  finally
+    xForm.Free;
   end;
 end;
 
