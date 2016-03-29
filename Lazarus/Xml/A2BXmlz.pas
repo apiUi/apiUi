@@ -189,6 +189,11 @@ begin
     else
       bXml.Attributes.Strings [x] := rmPrefix (bXml.Attributes.XmlAttributes [x].Name);
   end;
+  if Namespace <> bNameSpace then
+  begin
+    aXml.AddAttribute(TXmlAttribute.CreateAsString('xmlns', NameSpace));
+    bXml.AddAttribute(TXmlAttribute.CreateAsString('xmlns', bNameSpace));
+  end;
   aXml.Attributes.Sort;
   bXml.Attributes.Sort;
   with Diffs do
@@ -199,11 +204,12 @@ begin
     begin
       while a < Changes[c].x do
       begin
-        AddXml(TA2BXml.CreateA2B( aPrefix
-                                , aXml.Attributes.XmlAttributes[a]
-                                , bXml.Attributes.XmlAttributes[b]
-                                )
-              );
+        childXml := AddXml(TA2BXml.CreateA2B( aPrefix
+                                            , aXml.Attributes.XmlAttributes[a]
+                                            , bXml.Attributes.XmlAttributes[b]
+                                            )
+                          ) as TA2BXml;
+        Differs := Differs or childXml.Differs;
         inc(a); inc(b);
       end;
       if Changes[c].Kind = ckAdd then
@@ -211,6 +217,7 @@ begin
         for i := b to b + Changes[c].Range - 1 do
         begin
           AddXml (TA2BXml.CreateB(aPrefix, bXml.Attributes.XmlAttributes[b], True));
+          Differs := True;
           inc(b);
         end;
       end
@@ -221,6 +228,7 @@ begin
           for i := a to a + Changes[c].Range - 1 do
           begin
             AddXml(TA2BXml.CreateA(aPrefix, aXml.Attributes.XmlAttributes[a], True));
+            Differs := True;
             inc(a);
           end;
         end
@@ -229,11 +237,13 @@ begin
           for i := a to a + Changes[c].Range - 1 do
           begin
             AddXml(TA2BXml.CreateA(aPrefix, aXml.Attributes.XmlAttributes[a], True));
+            Differs := True;
             inc(a);
           end;
           for i := b to b + Changes[c].Range - 1 do
           begin
             AddXml(TA2BXml.CreateB(aPrefix, bXml.Attributes.XmlAttributes[b], True));
+            Differs := True;
             inc(b);
           end;
         end;
@@ -241,21 +251,24 @@ begin
     end;
     while (a < aXml.Attributes.Count) and (b < bXml.Attributes.Count) do
     begin
-      AddXml(TA2BXml.CreateA2B ( aPrefix
-                               , aXml.Attributes.XmlAttributes[a]
-                               , bXml.Attributes.XmlAttributes[b]
-                               )
-            );
+      childXml := AddXml(TA2BXml.CreateA2B ( aPrefix
+                                           , aXml.Attributes.XmlAttributes[a]
+                                           , bXml.Attributes.XmlAttributes[b]
+                                           )
+                        ) as TA2BXml;
+      Differs := Differs or childXml.Differs;
       inc(a); inc(b);
     end;
     while (a < aXml.Attributes.Count) do
     begin
       AddXml(TA2BXml.CreateA(aPrefix, aXml.Attributes.XmlAttributes[a], True));
+      Differs := True;
       inc(a);
     end;
     while (b < bXml.Attributes.Count) do
     begin
       AddXml(TA2BXml.CreateB(aPrefix, bXml.Attributes.XmlAttributes[b], True));
+      Differs := True;
       inc(b);
     end;
   end;

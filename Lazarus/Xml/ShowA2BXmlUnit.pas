@@ -88,11 +88,17 @@ type
     procedure NextDiffActionExecute(Sender: TObject);
     procedure ignoreDiffrenvesOnMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure TreeViewEdited (Sender : TBaseVirtualTree ; Node : PVirtualNode ;
+      Column : TColumnIndex );
     procedure TreeViewEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure ActionList1Update(Action: TBasicAction;
       var Handled: Boolean);
+    procedure TreeViewKeyDown (Sender : TObject ; var Key : Word ;
+      Shift : TShiftState );
+    procedure TreeViewNewText (Sender : TBaseVirtualTree ;
+      Node : PVirtualNode ; Column : TColumnIndex ; const NewText : String );
     procedure WriteXmlActionExecute(Sender: TObject);
     procedure CopyActionExecute(Sender: TObject);
     procedure FullExpandActionExecute(Sender: TObject);
@@ -215,10 +221,16 @@ begin
   CloseAction.ShortCut := VK_ESCAPE;
 end;
 
+procedure TShowA2BXmlForm .TreeViewEdited (Sender : TBaseVirtualTree ;
+  Node : PVirtualNode ; Column : TColumnIndex );
+begin
+
+end;
+
 procedure TShowA2BXmlForm.TreeViewEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
 begin
-  Allowed := False;
+  Allowed := (aColumn <> buttonColumn);
 end;
 
 procedure TShowA2BXmlForm.SetXml(aXml: TA2BXml);
@@ -363,6 +375,23 @@ begin
   NodeFullCollapseAction.Enabled := Selected and (theNode.ChildCount > 0);
 
   Handled := True;
+end;
+
+procedure TShowA2BXmlForm .TreeViewKeyDown (Sender : TObject ; var Key : Word ;
+  Shift : TShiftState );
+begin
+  if (Key = VK_RETURN) then with (Sender as TVirtualStringTree) do
+    EditNode (FocusedNode, FocusedColumn);
+end;
+
+procedure TShowA2BXmlForm .TreeViewNewText (Sender : TBaseVirtualTree ;
+  Node : PVirtualNode ; Column : TColumnIndex ; const NewText : String );
+var
+  oldText: String;
+begin
+  TreeViewGetText(Sender, Node, Column, ttNormal, oldText);
+  if NewText <> oldText then
+    ShowMessage('Change not accepted because form is readonly');
 end;
 
 procedure TShowA2BXmlForm.WriteXmlActionExecute(Sender: TObject);
@@ -753,7 +782,8 @@ begin
         case Kind of
           ikNormal, ikSelected:
           begin
-            if xXml.Differs then
+            if xXml.ThisOneDiffers
+            or xXml.Differs then
               case xXml.ChangeKind of
                 ckAdd:    ImageIndex := _if (xXml.Ignored, iiOrangePlus, iiRedPlus);
                 ckDelete: ImageIndex := _if (xXml.Ignored, iiOrangeCross, iiRedCross);

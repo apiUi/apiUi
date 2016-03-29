@@ -1,7 +1,7 @@
 object ShowA2BXmlForm: TShowA2BXmlForm
-  Left = 629
+  Left = 597
   Height = 320
-  Top = 152
+  Top = 203
   Width = 729
   Caption = 'XML Data'
   ClientHeight = 320
@@ -65,11 +65,14 @@ object ShowA2BXmlForm: TShowA2BXmlForm
       OnBeforeCellPaint = TreeViewBeforeCellPaint
       OnClick = TreeViewClick
       OnColumnClick = TreeViewColumnClick
+      OnEdited = TreeViewEdited
       OnEditing = TreeViewEditing
       OnFocusChanged = TreeViewFocusChanged
       OnGetText = TreeViewGetText
       OnGetImageIndex = XmlTreeViewGetImageIndex
+      OnKeyDown = TreeViewKeyDown
       OnMouseDown = TreeViewMouseDown
+      OnNewText = TreeViewNewText
     end
   end
   object ToolBar1: TToolBar
@@ -542,7 +545,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
       }
     end
     object A2BGridMenuItem: TMenuItem
-      Caption = 'A2BGrid'
+      Caption = 'View in grid'
       OnClick = A2BGridMenuItemClick
     end
   end

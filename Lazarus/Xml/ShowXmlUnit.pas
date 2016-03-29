@@ -313,9 +313,11 @@ begin
     Exit;
   xBind := NodeToBind(Node);
   Allowed := xmlUtil.isEditAllowed(xBind);
-  if Allowed and (xBind is TXml) and Assigned((xBind as TXml).Xsd) and
-    ((xBind as TXml).TypeDef.ElementDefs.Count = 0) and
-    ((xBind as TXml).TypeDef.Name = 'passwordType') then
+  if Allowed
+  and (xBind is TXml)
+  and Assigned((xBind as TXml).Xsd)
+  and ((xBind as TXml).TypeDef.ElementDefs.Count = 0)
+  and ((xBind as TXml).TypeDef.Name = 'passwordType') then
     xBind.Value := DecryptString(xBind.Value);
 end;
 
@@ -1540,11 +1542,8 @@ end;
 procedure TShowXmlForm.TreeViewKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key = VK_RETURN) then
-  begin (Sender as TVirtualStringTree)
-    .EditNode((Sender as TVirtualStringTree).FocusedNode,
-      (Sender as TVirtualStringTree).FocusedColumn);
-  end;
+  if (Key = VK_RETURN) then with (Sender as TVirtualStringTree) do
+    EditNode (FocusedNode, FocusedColumn);
 end;
 
 procedure TShowXmlForm.RevalidateXmlTreeView(aTreeView: TVirtualStringTree);
