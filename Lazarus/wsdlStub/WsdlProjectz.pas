@@ -1597,7 +1597,7 @@ begin
               Binding.Port := StrToInt(Listeners.httpPorts.Strings[x]);
               Binding.IP := '0.0.0.0';
               Notify(format( 'Listening for HTTP trafic on %s:%d.'
-                           , [HTTPServer.Bindings[x].IP, HTTPServer.Bindings[0].Port]
+                           , [HTTPServer.Bindings[x].IP, HTTPServer.Bindings[x].Port]
                            )
                     );
             except
@@ -1625,7 +1625,7 @@ begin
               Binding := HTTPServerSSL.Bindings.Add;
               Binding.Port := StrToInt(Listeners.httpsPorts.Strings[x]);
               Binding.IP := '0.0.0.0';
-              Notify(format('Listening for HTTPS connections on %s:%d.',[HTTPServerSSL.Bindings[0].IP, HTTPServerSSL.Bindings[0].Port]));
+              Notify(format('Listening for HTTPS connections on %s:%d.',[HTTPServerSSL.Bindings[x].IP, HTTPServerSSL.Bindings[x].Port]));
             except
               on e: exception do
               begin
