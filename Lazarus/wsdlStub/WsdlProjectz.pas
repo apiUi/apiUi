@@ -5607,8 +5607,8 @@ begin
         ipmDTFreeFormat: result.FreeFormatReq := aString;
         ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
         ipmDTXml: result.SoapXmlRequestToBindables (xXml, False);
-        ipmDTXsd: result.SoapXmlRequestToBindables (xXml, False);
-        ipmDTWsdl: result.SoapXmlRequestToBindables (xXml, False);
+        ipmDTXsd: result.SoapXmlRequestToBindables (xXml, True);
+        ipmDTWsdl: result.SoapXmlRequestToBindables (xXml, True);
         ipmDTEmail: result.SoapXmlRequestToBindables (xXml, False);
         ipmDTSwiftMT: result.SwiftMtRequestToBindables(aString);
       end;
@@ -5926,7 +5926,7 @@ begin
             if AsynchRpyLogs.Count > 0 then
             begin
               xRelatesTo := _relatesToKey(xLog.RequestBody);
-              f := -1;  // get rid of warning
+              f := -1;  // get rid of compiler warning
               rLog := findAsyncReplyLog(xRelatesTo, f);
             end;
           finally

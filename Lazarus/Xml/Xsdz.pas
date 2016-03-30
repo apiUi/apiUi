@@ -1926,7 +1926,7 @@ begin
     and not Assigned (TypeDef) then
     begin
       result := False;
-      xXml.ValidationMesssage := 'Unexpected element ' + Name;
+      xXml.ValidationMesssage := 'Unexpected element ' + NameSpace + ':' + Name;
       aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
       Exit;
     end;

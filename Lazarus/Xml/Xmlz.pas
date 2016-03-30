@@ -1522,7 +1522,12 @@ begin
   if not (aXml is TXml) then
     raise Exception.Create ( 'Not valid XML data ');
   if aOnlyWhenChecked and (not aXml.Checked) then Exit;
-  if NameWithoutPrefix (TagName) <> NameWithoutPrefix (aXml.TagName) then
+  if (NameWithoutPrefix (TagName) <> NameWithoutPrefix (aXml.TagName))
+  or (    (NameSpace <> aXml.NameSpace)
+      and (NameSpace <> '')
+      and (aXml.NameSpace <> '')
+     )
+  then
     exit;
   for x := 0 to Items.Count - 1 do
     Items.XmlItems[x].isProcessed := False;
@@ -1593,9 +1598,12 @@ begin
     while (y < Items.Count)
     and (yXml = nil)
     do begin
-      if (  NameWithoutPrefix (Items.XmlItems [y].TagName)
-          = NameWithoutPrefix (xXml.TagName)
-         ) then
+      if (NameWithoutPrefix (Items.XmlItems [y].TagName) = NameWithoutPrefix (xXml.TagName))
+      and (   (Items.XmlItems[y].NameSpace = xXml.NameSpace)
+           or (Items.XmlItems[y].NameSpace = '')
+           or (xXml.NameSpace = '')
+          )
+      then
       begin
         cXml := Items.XmlItems [y];
         if (Items.XmlItems [y].isProcessed = False) then
