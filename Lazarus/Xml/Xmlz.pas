@@ -1228,7 +1228,14 @@ var
   function _PrefixedTagname (aXml: TXml): string;
   begin
     if (aXml.NameSpace <> '')
-    and aAsPrefix then
+    and aAsPrefix
+    and (aXml.NsPrefix <> '')
+    and (   (Assigned (aXml.Xsd) and aXml.Xsd.FormDefaultQualified)
+         or (not Assigned (aXml.Xsd))
+         or (   (not Assigned (aXml.Parent))
+             or ((aXml.Parent as TXml).NameSpace <> aXml.NameSpace)
+            )
+        ) then
       result := aXml.NsPrefix + ':' + aXml.Name
     else
       result := aXml.Name;

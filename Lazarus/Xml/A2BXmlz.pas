@@ -189,7 +189,10 @@ begin
     else
       bXml.Attributes.Strings [x] := rmPrefix (bXml.Attributes.XmlAttributes [x].Name);
   end;
-  if Namespace <> bNameSpace then
+  if (Namespace <> bNameSpace)
+  and (NameSpace <> '')
+  and (bNameSpace <> '')
+  then
   begin
     aXml.AddAttribute(TXmlAttribute.CreateAsString('xmlns', NameSpace));
     bXml.AddAttribute(TXmlAttribute.CreateAsString('xmlns', bNameSpace));
