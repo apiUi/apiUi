@@ -92,13 +92,13 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ValidateRepliesButton: TToolButton
-      Left = 186
+      Left = 209
       Top = 2
       Action = ValidateRepliesAction
       Style = tbsCheck
     end
     object ValidateRequestsButton: TToolButton
-      Left = 209
+      Left = 186
       Top = 2
       Action = ValidateRequestsAction
       Style = tbsCheck

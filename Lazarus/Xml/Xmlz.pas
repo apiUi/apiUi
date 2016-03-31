@@ -192,7 +192,7 @@ type
     procedure AddAttribute (aAttr: TXmlAttribute);
     function DeleteChild (aXml: TXml): TXml;
     procedure DeleteAttribute (aAttr: TXmlAttribute);
-    procedure LoadValues (aXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers: Boolean); Overload;
+    procedure LoadValues (aXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences: Boolean); Overload;
     procedure LoadValues (aXml: TXml; aAddUnknowns, aOnlyWhenChecked: Boolean); Overload;
     procedure LoadValues (aXml: TXml; aAddUnknowns: Boolean); Overload;
     procedure CopyValues (aXml: TXml; aDoReset, aSkipAssignments: Boolean);
@@ -1478,7 +1478,7 @@ begin
   result := TXmlAttribute (Objects [index]);
 end;
 
-procedure TXml.LoadValues(aXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers: Boolean);
+procedure TXml.LoadValues(aXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences: Boolean);
   function _getExtendedTypedef (aName: String; aTypeDef: TXsdDataType): TXsdDataType;
     function __get (aTypeDef: TXsdDataType): TXsdDataType;
     var
@@ -1523,7 +1523,8 @@ begin
     raise Exception.Create ( 'Not valid XML data ');
   if aOnlyWhenChecked and (not aXml.Checked) then Exit;
   if (NameWithoutPrefix (TagName) <> NameWithoutPrefix (aXml.TagName))
-  or (    (NameSpace <> aXml.NameSpace)
+  or (    (not aIgnoreNamespaceDifferences)
+      and (NameSpace <> aXml.NameSpace)
       and (NameSpace <> '')
       and (aXml.NameSpace <> '')
      )
@@ -1599,7 +1600,8 @@ begin
     and (yXml = nil)
     do begin
       if (NameWithoutPrefix (Items.XmlItems [y].TagName) = NameWithoutPrefix (xXml.TagName))
-      and (   (Items.XmlItems[y].NameSpace = xXml.NameSpace)
+      and (   (aIgnoreNamespaceDifferences)
+           or (Items.XmlItems[y].NameSpace = xXml.NameSpace)
            or (Items.XmlItems[y].NameSpace = '')
            or (xXml.NameSpace = '')
           )
@@ -1612,7 +1614,7 @@ begin
       Inc (y);
     end;
     if yXml <> nil then
-      yXml.LoadValues (xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers)
+      yXml.LoadValues (xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences)
     else
     begin
       nXml := nil;
@@ -1630,7 +1632,7 @@ begin
                                       , nXml.TagName
                                       , nXml
                                       );
-        nXml.LoadValues(xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers);
+        nXml.LoadValues(xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
       end
       else
       begin
@@ -1639,7 +1641,7 @@ begin
           nXml := TXml.Create;
           nXml.TagName := xXml.TagName;
           AddXml(nXml);
-          nXml.LoadValues(xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers);
+          nXml.LoadValues(xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
         end;
       end;
     end;
@@ -1693,12 +1695,12 @@ end;
 
 procedure TXml.LoadValues(aXml: TXml; aAddUnknowns, aOnlyWhenChecked: Boolean);
 begin
-  LoadValues(aXml, aAddUnknowns, aOnlyWhenChecked, True);
+  LoadValues(aXml, aAddUnknowns, aOnlyWhenChecked, True, True);
 end;
 
 procedure TXml.LoadValues(aXml: TXml; aAddUnknowns: Boolean);
 begin
-  LoadValues(aXml, aAddUnknowns, False, True);
+  LoadValues(aXml, aAddUnknowns, False, True, True);
 end;
 
 { TXmlAttribute }
@@ -3034,7 +3036,7 @@ begin
   swapName := srcXml.TagName;
   try
     srcXml.TagName := TagName;
-    LoadValues (srcXml, False, True, False);
+    LoadValues (srcXml, False, True, False, True);
     Checked := True;
   finally
     srcXml.TagName := swapName;

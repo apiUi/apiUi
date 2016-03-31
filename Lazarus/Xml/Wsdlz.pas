@@ -32,6 +32,7 @@ type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp);
 type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
+type TOnRequestViolatingSchema = (rvsContinue, rvsRaiseErrorMessage);
 type TProcedure = procedure of Object;
 const
 TransportTypeNames: array [ttHttp..ttBmtp] of String =
@@ -287,6 +288,7 @@ type
       InputHeaders: TWsdlHeaders;
       OutputHeaders: TWsdlHeaders;
       OperationCounter: Integer;
+      OnRequestViolatingSchema: TOnRequestViolatingSchema;
       BindName: String;
       SoapTransport: String;
       SoapAction: String;
@@ -2572,7 +2574,7 @@ begin
     try
       yXml.LoadFromFile(aFileName, nil);
       wsdlConvertSdfFrom36 (yXml);
-      aXml.LoadValues(yXml, True, False, False);
+      aXml.LoadValues(yXml, True, False, False, True);
     finally
       yXml.Free;
     end;
@@ -4430,6 +4432,7 @@ begin
   self.InputHeaders := xOperation.InputHeaders;
   self.OutputHeaders := xOperation.OutputHeaders;
   self.BindName := xOperation.BindName;
+  self.OnRequestViolatingSchema := xOperation.OnRequestViolatingSchema;
   self.SoapAction := xOperation.SoapAction;
   self.SoapBindingStyle := xOperation.SoapBindingStyle;
   self.SoapBodyInputEncodingStype := xOperation.SoapBodyInputEncodingStype;
@@ -4620,7 +4623,7 @@ begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
           for d := 0 to OutputHeaders.Count - 1 do
-            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False);
+            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False, True, False);
         end;
       end;
       if (xXml.TagName = 'Body') then
@@ -4628,14 +4631,14 @@ begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
           for d := OutputHeaders.Count to (rpyBind as TXml).Items.Count - 1 do
-            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False);
+            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False, True, False);
         end;
       end;
     end;
   end
   else
   begin
-    (rpyBind as TXml).Items.XmlItems[0].LoadValues (aReply, aAddUnknowns, False);
+    (rpyBind as TXml).Items.XmlItems[0].LoadValues (aReply, aAddUnknowns, False, True, False);
   end;
 end;
 
@@ -4659,7 +4662,7 @@ begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
           for d := 0 to InputHeaders.Count - 1 do
-            (reqBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False);
+            (reqBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False, True, False);
         end;
         if Assigned (reqWsaXml) then
         begin
@@ -4679,14 +4682,14 @@ begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
           for d := InputHeaders.Count to (reqBind as TXml).Items.Count - 1 do
-            (reqBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False);
+            (reqBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False, True, False);
         end;
       end;
     end;
   end
   else
   begin
-    (reqBind as TXml).Items.XmlItems[0].LoadValues (aRequest, aAddUnknowns, False);
+    (reqBind as TXml).Items.XmlItems[0].LoadValues (aRequest, aAddUnknowns, False, True, False);
   end;
 end;
 
@@ -5709,6 +5712,11 @@ begin
   result := TXml.CreateAsString ('operationOptions','');
   with result do
   begin
+    with result.AddXml (Txml.CreateAsString('OnRequestViolatingSchema', '')) do
+      if OnRequestViolatingSchema = rvsContinue then
+        AddXml (TXml.CreateAsString('Continue',''))
+      else
+        AddXml (TXml.CreateAsString('RaiseErrorMessage',''));
     with AddXml (TXml.CreateAsString('scripts', '')) do
     begin
       with AddXml (TXml.CreateAsString('invoke', '')) do
@@ -5729,7 +5737,7 @@ end;
 
 procedure TWsdlOperation.OptionsFromXml(aXml: TXml);
 var
-  xXml: TXml;
+  xXml, yXml: TXml;
   x: Integer;
 begin
   if not Assigned (aXml) then raise Exception.Create('operationOptionsFromXml: No XML assigned');
@@ -5737,6 +5745,14 @@ begin
   oldInvokeSpec := 'none';
   doReadReplyFromFile := False;
   ReadReplyFromFileXml.Items.Clear;
+  OnRequestViolatingSchema := rvsContinue;
+  xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingSchema'];
+  if Assigned (xXml) then
+  begin
+    yXml := xXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage'];
+    if Assigned (yXml) then
+      OnRequestViolatingSchema := rvsRaiseErrorMessage;
+  end;
   xXml := aXml.Items.XmlCheckedItemByTag['scripts'];
   if Assigned (xXml) then
   begin

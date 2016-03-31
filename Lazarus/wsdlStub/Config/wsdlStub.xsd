@@ -978,6 +978,27 @@ For an overview of all options visit: doc://wsdlStub_operationOptions_hlp.htm </
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="OnRequestViolatingSchema" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Default 'Continue'
+
+Setting determines what wsdlStub should do on receiving messages that violate the schema. This setting has no effect in case Request Message Validation is switched off </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="Continue">
+								<xs:annotation>
+									<xs:documentation>Processing continues, unpredictable results</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="RaiseErrorMessage">
+								<xs:annotation>
+									<xs:documentation>Return an error message with some information about the schema validation error(s) found</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="scripts" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>

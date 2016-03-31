@@ -4319,7 +4319,11 @@ begin
         begin
           xMessage := '';
           if not aOperation.reqBind.IsValueValid (xMessage) then
+          begin
             RequestValidateResult := xMessage;
+            if (aOperation.OnRequestViolatingSchema = rvsRaiseErrorMessage) then
+              raise SysUtils.Exception.Create('Schema validation error on request:' + LineEnding + xMessage);
+          end;
           RequestValidated := True;
         end;
         if doValidateReplies

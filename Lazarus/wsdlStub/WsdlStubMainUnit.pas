@@ -5264,6 +5264,7 @@ procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
     if (d = s) then
       exit; // you would loose the mqheader or wsa data entered
     d.StubAction := s.StubAction;
+    d.OnRequestViolatingSchema := s.OnRequestViolatingSchema;
     d.DelayTimeMsMin := s.DelayTimeMsMin;
     d.DelayTimeMsMax := s.DelayTimeMsMax;
     d.StubTransport := s.StubTransport;
@@ -7550,12 +7551,12 @@ begin
       with xOperation.reqBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlMessage.reqBind as TXml), False, True, True);
+        LoadValues((WsdlMessage.reqBind as TXml), False, True, True, True);
       end;
       with xOperation.rpyBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlMessage.rpyBind as TXml), False, True, True);
+        LoadValues((WsdlMessage.rpyBind as TXml), False, True, True, True);
       end;
       xOperation.ExecuteBefore;
       if xOperation.StubAction = saRequest then
