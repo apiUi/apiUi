@@ -66,6 +66,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    SummaryReportAction : TAction ;
     MenuItem26 : TMenuItem ;
     ShowSnapshotDifferencesAction : TAction ;
     LoadRefSavepointMessagesMenuItem : TMenuItem ;
@@ -83,6 +84,7 @@ type
     PromoteToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
     SnapshotsPopupMenu : TPopupMenu ;
+    ToolButton65 : TToolButton ;
     WriteSnapshotsInformationAction : TAction ;
     ReadSnapshotInformationAction : TAction ;
     ReportOnSnapshotsAction : TAction ;
@@ -595,6 +597,7 @@ type
     procedure SnapshotsVTSGetText (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
       var CellText : String );
+    procedure SummaryReportActionExecute (Sender : TObject );
     procedure WriteSnapshotsInformationActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowGridDifferencesActionExecute (Sender : TObject );
@@ -10849,7 +10852,6 @@ begin
         xForm.Caption := '' + _progName + ' - Coverage report';
         xForm.Bind := xXml;
         xForm.initialExpandStyle := esOne;
-        Screen.Cursor := crDefault;
         xForm.ShowModal;
         if xForm.Changed then
         begin
@@ -12193,6 +12195,102 @@ begin
   except
     on e: Exception do
       CellText := e.Message;
+  end;
+end;
+
+procedure TMainForm .SummaryReportActionExecute (Sender : TObject );
+  function nbsp (aText: String): String;
+  begin
+    result := '_' + aText + '_';
+  end;
+var
+  tableXml, xXml: TXml;
+  xList: TSnapshotList;
+  xSnapshot: TSnapshot;
+  x: Integer;
+begin
+  XmlUtil.PushCursor(crHourGlass);
+  try
+    xXml := TXml.CreateAsString('html', '');
+    try
+      tableXml := xXml.AddXml (TXml.CreateAsString('table', ''));
+      with tableXml do
+      begin
+        AddAttribute(TXmlAttribute.CreateAsString('border', '1'));
+        AddAttribute(TXmlAttribute.CreateAsString('bgcolor', 'white'));
+        with AddXml (Txml.CreateAsString ('tr', '')) do
+        begin
+          with AddXml (TXml.CreateAsString('td', 'wsdlStub - Test summary report')) do
+            AddAttribute(TXmlAttribute.CreateAsString('colspan', '3'));
+          with AddXml (TXml.CreateAsString('td', DateTimeToStr(now))) do
+          begin
+            AddAttribute(TXmlAttribute.CreateAsString('colspan', '1'));
+            AddAttribute(TXmlAttribute.CreateAsString('align', 'right'));
+          end;
+          with AddXml (Txml.CreateAsString ('tr', '')) do
+          begin
+            with AddXml (TXml.CreateAsString('td', '_')) do
+               AddAttribute(TXmlAttribute.CreateAsString('colspan', '4'));
+          end;
+          with AddXml (Txml.CreateAsString ('tr', '')) do
+          begin
+            with AddXml (TXml.CreateAsString('td', '')) do
+              AddXml (TXml.CreateAsString('b', 'Date and Time'));
+            with AddXml (TXml.CreateAsString('td', '')) do
+              AddXml (TXml.CreateAsString('b', nbsp('Name')));
+            with AddXml (TXml.CreateAsString('td', '')) do
+              AddXml (TXml.CreateAsString('b', nbsp('Verdict')));
+            with AddXml (TXml.CreateAsString('td', '')) do
+              AddXml (TXml.CreateAsString('b', nbsp('Remark')));
+          end;
+        end;
+        xList := TSnapshotList.Create;
+        try
+          se.AcquireLogLock;
+          try
+            for x := 0 to se.displayedSnapshots.Count - 1 do
+              xList.AddObject('', se.displayedSnapshots.SnapshotItems[x]);
+          finally
+            se.ReleaseLogLock;
+          end;
+          for x := 0 to xList.Count - 1 do
+          begin
+            xSnapshot := xList.SnapshotItems[x];
+            if xSnapshot.Status = rsUndefined then
+              xSnapshot.doReport;
+            with AddXml (Txml.CreateAsString ('tr', '')) do
+            begin
+              with AddXml (TXml.CreateAsString('td', '')) do
+                AddXml (TXml.CreateAsString('a', xsdFormatDateTime(xSnapshot.TimeStamp, @TIMEZONE_UTC)));
+              with AddXml (TXml.CreateAsString('td', '')) do
+                AddXml (TXml.CreateAsString('a', nbsp(xSnapshot.Name)));
+              with AddXml (TXml.CreateAsString('td', '')) do
+              begin
+                AddXml (TXml.CreateAsString('a', nbsp(xSnapshot.Verdict)));
+                AddAttribute(TXmlAttribute.CreateAsString('bgcolor', xSnapshot.VerdictColorAsString));
+              end;
+              with AddXml (TXml.CreateAsString('td', '')) do
+                AddXml (TXml.CreateAsString('a', nbsp(xSnapshot.Message)));
+            end;
+          end;
+          se.AcquireLogLock;
+          try
+            xList.Clear;
+          finally
+            se.ReleaseLogLock;
+          end;
+        finally
+          xList.Free;
+        end;
+        begin
+        end;
+      end;
+      XmlUtil.presentAsHTML('wsdlStub - Test summary report', xXml.asHtmlString);
+    finally
+      xXml.Free;
+    end;
+  finally
+    XmlUtil.PopCursor;
   end;
 end;
 

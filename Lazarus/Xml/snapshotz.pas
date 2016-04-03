@@ -33,6 +33,8 @@ type
       Name, FileName, RefFileName, Message: String;
       timeStamp: TDateTime;
       procedure doReport; virtual abstract;
+      function Verdict: String;
+      function VerdictColorAsString: String;
       property typeAsText: string read getTypeAsText;
       property statusAsText: String read getStatusAsText;
       procedure FromXml (aXml: TXml);
@@ -122,6 +124,28 @@ begin
     rsOk: result := 'ok';
     rsNok: result := 'nok';
     rsException: result := 'exception';
+  end;
+end;
+
+function TSnapshot .Verdict : String ;
+begin
+  result := '?';
+  case Status of
+    rsUndefined: result := 'undefined';
+    rsOk: result := 'passed';
+    rsNok: result := 'failed';
+    rsException: result := 'exception';
+  end;
+end;
+
+function TSnapshot .VerdictColorAsString : String ;
+begin
+  result := 'white';
+  case Status of
+    rsUndefined: result := 'white';
+    rsOk: result := 'green';
+    rsNok: result := 'red';
+    rsException: result := 'orange';
   end;
 end;
 
