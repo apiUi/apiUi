@@ -592,6 +592,7 @@ var
   allOperations, allAliasses: TWsdlOperations;
   allOperationsRpy: TWsdlOperations;
   _ProgName: String;
+  _wsdlStubStylesheet: String;
   _WsdlVars: TStringList;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlExecuteScript: VFunctionOS;

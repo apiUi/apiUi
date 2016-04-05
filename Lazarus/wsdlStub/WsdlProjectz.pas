@@ -988,7 +988,12 @@ begin
     xsdElementsWhenRepeatable := defaultXsdElementsWhenRepeatable;
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
-
+    if Assigned (iniXml.ItemByTag ['cssStylesheet']) then with iniXml.ItemByTag ['cssStylesheet'] do
+    begin
+      _wsdlStubStylesheet := ExpandRelativeFileName ( ExtractFilePath (ParamStr(0))
+                                                                             , Value
+                                                     );
+    end;
     if wsaXsdFileName <> '' then
     begin
       wsaXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), wsaXsdFileName);
@@ -6245,7 +6250,17 @@ procedure TWsdlProject.HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
         on e: Exception do
           raise Exception.CreateFmt('%s: error opening file: %s%s%s', [_progName, fn, CRLF, e.Message]);
       end;
-      sl.Text := StringReplace(s, '--progName--', _ProgName, [rfReplaceAll]);
+      s := StringReplace( s
+                        , '--progName--'
+                        , _ProgName
+                        , [rfReplaceAll]
+                        );
+      s := StringReplace( s
+                        , '--stylesheet--'
+                        , xmlio.ReadStringFromFile (_wsdlStubStylesheet)
+                        , [rfReplaceAll]
+                        );
+      sl.Text := s;
       for x := 0 to sl.Count - 1 do
       begin
         if Pos (placeHolder, sl.Strings[x]) > 0 then

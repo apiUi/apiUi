@@ -6,6 +6,7 @@
   </_licenseDatabase>
   <indexWsdlsHtml>Config\wsdlIndex.html</indexWsdlsHtml>
   <indexHtml>Config\index.html</indexHtml>
+  <cssStylesheet>Config\wsdlStub.css</cssStylesheet>
   <wsdlStubWebServiceWsdl>Config\wsdlStubWebService.wsdl</wsdlStubWebServiceWsdl>
   <wsdlStubWebServiceXsd>Config\wsdlStubWebService.xsd</wsdlStubWebServiceXsd>
   <wsdlStubXsd>Config\wsdlStub.xsd</wsdlStubXsd>

@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="9897"/>
+      <BuildNr Value="9927"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -136,7 +136,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="19">
+    <Exceptions Count="20">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -203,6 +203,9 @@
       <Item19>
         <Name Value="EOleSysError"/>
       </Item19>
+      <Item20>
+        <Name Value="EIdURIException"/>
+      </Item20>
     </Exceptions>
   </Debugging>
 </CONFIG>

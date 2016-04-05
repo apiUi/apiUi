@@ -19,6 +19,7 @@ uses Wsdlz
    , igGlobals
    , SysUtils
    , Classes
+   , xmlio
    ;
 const CRLF = #13#10;
 
@@ -62,7 +63,8 @@ function createHtmlResponse (aProject: TWsdlProject; aRequest: TIdHTTPRequestInf
         on e: Exception do
           raise Exception.CreateFmt('%s: error opening file: %s%s%s', [_progName, fn, CRLF, e.Message]);
       end;
-      sl.Text := StringReplace(s, '--progName--', _ProgName, [rfReplaceAll]);
+      s := StringReplace(s, '--progName--', _ProgName, [rfReplaceAll]);
+      sl.Text := s;
       for x := 0 to sl.Count - 1 do
       begin
 {}{
