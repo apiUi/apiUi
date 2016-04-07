@@ -486,6 +486,7 @@ uses OpenWsdlUnit
    , wrdFunctionz
    , GZIPUtils
    , xmlio
+   , htmlXmlUtilz
    ;
 
 procedure AddRemark(aOperation: TObject; aString: String);
@@ -6234,47 +6235,38 @@ procedure TWsdlProject.HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
     end;
   end;
   function _prepWsdl(fn: String):String;
-  const placeHolder = '--wsdl--';
   var
-    s: String;
-    sl, dl: TStringList;
-    x, w: Integer;
+    w: Integer;
+    xXml: TXml;
+    xWsdl: TWsdl;
   begin
-    result :='';
-    sl := TStringlist.Create;
-    dl := TStringList.Create;
+    result := '';
+    xXml := htmlCreateXml(_progName, 'Web Service Descriptions');
     try
-      try
-        s := ReadStringFromFile(fn);
-      except
-        on e: Exception do
-          raise Exception.CreateFmt('%s: error opening file: %s%s%s', [_progName, fn, CRLF, e.Message]);
-      end;
-      s := StringReplace( s
-                        , '--progName--'
-                        , _ProgName
-                        , [rfReplaceAll]
-                        );
-      s := StringReplace( s
-                        , '--stylesheet--'
-                        , xmlio.ReadStringFromFile (_wsdlStubStylesheet)
-                        , [rfReplaceAll]
-                        );
-      sl.Text := s;
-      for x := 0 to sl.Count - 1 do
+      with htmlFindContentXml(xXml) do
       begin
-        if Pos (placeHolder, sl.Strings[x]) > 0 then
-          for w := 0 to Wsdls.Count - 1 do with wsdls.Objects[w] as TWsdl do
+        with AddXml (TXml.CreateAsString('span', '')) do
+          with AddXml (TXml.CreateAsString('p', 'Provides basic service information.')) do
+            AddAttribute(TXmlAttribute.CreateAsString('class','intro'));
+        with AddXml (TXml.CreateAsString('span', '')) do
+        begin
+          with AddXml (TXml.CreateAsString('p', 'The following Web Service Descriptions are available:')) do
           begin
-            dl.Add(StringReplace(sl.Strings[x], placeHolder, Name, [rfReplaceAll]));
-          end
-        else
-          dl.Add(sl.Strings[x]);
+            AddAttribute(TXmlAttribute.CreateAsString('class','intro'));
+            for w := 0 to Wsdls.Count - 1 do
+            begin
+              xWsdl := wsdls.Objects[w] as TWsdl;
+              with AddXml (TXml.CreateAsString('ul', '')) do
+                with AddXml (TXml.CreateAsString('li', '')) do
+                  with AddXml (TXml.CreateAsString('a', xWsdl.Name)) do
+                    AddAttribute(TXmlAttribute.CreateAsString('href', xWsdl.Name + '?WSDL'));
+            end
+          end;
+        end;
+        result := htmlXmlAsString (xXml, _wsdlStubStylesheet);
       end;
-      result := dl.Text;
     finally
-      sl.Free;
-      dl.Free;
+      xXml.Free;
     end;
   end;
 begin
