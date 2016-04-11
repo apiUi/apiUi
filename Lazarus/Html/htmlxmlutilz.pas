@@ -33,6 +33,9 @@ function htmlHorBarChartAsXml(aWidth, aGreen, aOrange, aRed: Integer): TXml;
 var
   xGreen, xOrange, xRed: Integer;
 begin
+  result := TXml.CreateAsString('td', '');
+  if (aGreen + aRed) = 0 then
+    Exit;
   xGreen := Round( aWidth
                  * (aGreen / (aGreen + aRed))
                  );
@@ -41,7 +44,6 @@ begin
     Inc (xRed, 4);
   if xRed = 0 then
     Inc (xGreen, 4);
-  result := TXml.CreateAsString('td', '');
   with result do
     with AddXml (TXml.CreateAsString('table', '')) do
       with AddXml (TXml.CreateAsString('tr', '')) do

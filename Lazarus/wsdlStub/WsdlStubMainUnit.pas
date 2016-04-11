@@ -44,7 +44,8 @@ uses
    , MQAPI
    , SwiftUnit
    , ParserClasses
-   , types;
+   , types
+   , ClaimListz;
 
 type
   THackControl = class(TWinControl)
@@ -588,6 +589,7 @@ type
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
     procedure ExportProjectScriptsActionExecute (Sender : TObject );
     procedure ReadSnapshotInformationActionExecute (Sender : TObject );
+    procedure ReportOnSnapshots (aList: TClaimableObjectList);
     procedure ReportOnSnapshotsActionExecute (Sender : TObject );
     procedure SnapshotsPopupMenuPopup (Sender : TObject );
     procedure SnapshotsVTSClick (Sender : TObject );
@@ -597,6 +599,7 @@ type
     procedure SnapshotsVTSGetText (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
       var CellText : String );
+    procedure SummaryReport (aList: TClaimableObjectList);
     procedure SummaryReportActionExecute (Sender : TObject );
     procedure WriteSnapshotsInformationActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
@@ -3441,7 +3444,6 @@ procedure TMainForm.StartBlockingThreadEvent ;
 begin
   if NumberOfBlockingThreads = 0 then
   begin
-    DownPageControl.ActivePage := MessagesTabSheet;
     ExecuteRequestToolButton.Down := True;
     ExecuteAllRequestsToolButton.Down := True;
     se.ProgressPos := 0;
@@ -3460,7 +3462,6 @@ begin
     ExecuteRequestToolButton.Down := False;
     ExecuteAllRequestsToolButton.Down := False;
     XmlUtil.PopCursor;
-    DownPageControl.ActivePage := MessagesTabSheet;
     se.ProgressPos := 0;
     if NumberOfNonBlockingThreads <= 0 then
     begin
@@ -8159,6 +8160,7 @@ end;
 procedure TMainForm.ExecuteRequestActionExecute(Sender: TObject);
 begin
   if not ActiveAfterPrompt then exit;
+  DownPageControl.ActivePage := MessagesTabSheet;
   TProcedureThread.Create(False, True, se, doExecuteRequest);
 end;
 
@@ -8243,6 +8245,7 @@ end;
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
   if not ActiveAfterPrompt then exit;
+  DownPageControl.ActivePage := MessagesTabSheet;
   TProcedureThread.Create(False, True, se, ExecuteAllRequests);
 end;
 
@@ -8772,6 +8775,8 @@ procedure TMainForm.RefreshLog;
       xData.Report := xReport;
     end;
     se.toDisplaySnapshots.Clear;
+    if DownPageControl.ActivePage = SnapshotTabsheet then
+      SnapshotsVTS.Invalidate;
   end;
 var
   logAdded, exceptionAdded: Boolean;
@@ -12080,30 +12085,30 @@ begin
   end;
 end;
 
+procedure TMainForm.ReportOnSnapshots (aList: TClaimableObjectList);
+var
+  x: Integer;
+begin
+  with aList as TSnapshotList do
+    for x := 0 to Count - 1 do
+      SnapshotItems[x].doReport;
+end;
+
+
 procedure TMainForm .ReportOnSnapshotsActionExecute (Sender : TObject );
 var
-  x, n: Integer;
+  x: Integer;
+  xList: TSnapshotList;
 begin
-  XmlUtil.PushCursor (crHourGlass);
+  xList := TSnapshotList.Create;
+  se.AcquireLogLock;
   try
-    se.AcquireLogLock;
-    try
-      n := se.displayedSnapshots.Count;
-    finally
-      se.ReleaseLogLock;
-    end;
-    for x := 0 to n - 1 do
-    begin
-      se.displayedSnapshots.SnapshotItems[x].Status := rsUndefined;
-      SnapshotsVTS.Invalidate;
-      Application.ProcessMessages;
-      se.displayedSnapshots.SnapshotItems[x].doReport;
-      SnapshotsVTS.Invalidate;
-      Application.ProcessMessages;
-    end;
+    for x := 0 to se.displayedSnapshots.Count - 1 do
+      xList.AddObject('', se.displayedSnapshots.SnapshotItems[x]);
   finally
-    XmlUtil.PopCursor;
+    se.ReleaseLogLock;
   end;
+  TProcedureThread.Create(False, True, se, ReportOnSnapshots, xList);
 end;
 
 procedure TMainForm .SnapshotsPopupMenuPopup (Sender : TObject );
@@ -12199,7 +12204,7 @@ begin
   end;
 end;
 
-procedure TMainForm .SummaryReportActionExecute (Sender : TObject );
+procedure TMainForm.SummaryReport (aList: TClaimableObjectList);
   function nbsp (aText: String): String;
   begin
     result := htmlNbsp(aText);
@@ -12208,7 +12213,7 @@ procedure TMainForm .SummaryReportActionExecute (Sender : TObject );
   var
     xSnapshot: TSnapshot;
     x, xRed, xOrange, xGreen: Integer;
-    xPerc: String;
+    gPerc: String;
     xXml: TXml;
   begin
     xRed := 0;
@@ -12221,7 +12226,9 @@ procedure TMainForm .SummaryReportActionExecute (Sender : TObject );
       rsNok: Inc(xRed);
       rsException: Inc (xOrange);
     end;
-    xPerc := IntToStr(Round(100 * xGreen / (xGreen + xRed)));
+    gPerc := '';
+    if (aList.Count > 0) then
+      gPerc := IntToStr (Round (100 * xGreen / (xGreen + xOrange + xRed)));
     xXml := htmlCreateXml(_ProgName, 'Test summary report');
     with xXml do
     try
@@ -12237,7 +12244,7 @@ procedure TMainForm .SummaryReportActionExecute (Sender : TObject );
             with AddXml (TXml.CreateAsString('td', '')) do
               AddXml (TXml.CreateAsString('b', nbsp ('Success rate:')));
             with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp (xPerc + ' %')));
+              AddXml (TXml.CreateAsString('b', nbsp (gPerc + ' %')));
             with AddXml (TXml.CreateAsString('td', '')) do
             begin
               AddAttribute(TXmlAttribute.CreateAsString('width', '100px'));
@@ -12331,36 +12338,31 @@ procedure TMainForm .SummaryReportActionExecute (Sender : TObject );
     end;
   end;
 var
+  x: Integer;
+begin
+  with aList as TSnapshotList do
+  begin
+    for x := 0 to Count - 1 do with SnapshotItems[x] do
+      if Status = rsUndefined then
+        doReport;
+    _Report (aList as TSnapshotList);
+  end;
+end;
+
+procedure TMainForm .SummaryReportActionExecute (Sender : TObject );
+var
   xList: TSnapshotList;
   x: Integer;
 begin
-  XmlUtil.PushCursor(crHourGlass);
+  xList := TSnapshotList.Create;
+  se.AcquireLogLock;
   try
-    xList := TSnapshotList.Create;
-    try
-      se.AcquireLogLock;
-      try
-        for x := 0 to se.displayedSnapshots.Count - 1 do
-          xList.AddObject('', se.displayedSnapshots.SnapshotItems[x]);
-      finally
-        se.ReleaseLogLock;
-      end;
-      for x := 0 to xList.Count - 1 do with xList.SnapshotItems[x] do
-        if Status = rsUndefined then
-          doReport;
-      _Report (xList);
-      se.AcquireLogLock;
-      try
-        xList.Clear;
-      finally
-        se.ReleaseLogLock;
-      end;
-    finally
-      xList.free;
-    end;
+    for x := 0 to se.displayedSnapshots.Count - 1 do
+      xList.AddObject('', se.displayedSnapshots.SnapshotItems[x]);
   finally
-    XmlUtil.PopCursor;
+    se.ReleaseLogLock;
   end;
+  TProcedureThread.Create(False, True, se, SummaryReport, xList);
 end;
 
 procedure TMainForm.WriteSnapshotsInformationActionExecute (Sender : TObject );
@@ -12826,6 +12828,7 @@ var
   x: Integer;
 begin
   if not ActiveAfterPrompt then exit;
+  DownPageControl.ActivePage := MessagesTabSheet;
   Application.CreateForm(TStressTestForm, StressTestForm);
   try
     StressTestForm.Caption := 'Loadtest operation: ' + WsdlOperation.Name;
@@ -13066,38 +13069,23 @@ procedure TMainForm.SnapshotCompareMenuitemClick(Sender: TObject);
 var
   xReport: TSnapshot;
   xNode: PVirtualNode;
+  xList: TSnapshotList;
 begin
-  XmlUtil.PushCursor (crHourGlass);
+  xList := TSnapshotList.Create;
+  se.AcquireLogLock;
   try
     xNode := SnapshotsVTS.GetFirstSelected;
     while Assigned (xNode) do
     begin
       xReport := NodeToSnapshot(True, SnapshotsVTS, xNode);
-      try
-        if Assigned (xReport) then
-        try
-          xReport.Status := rsUndefined;
-          SnapshotsVTS.InvalidateNode(xNOde);
-          Application.ProcessMessages;
-          xReport.doReport;
-          SnapshotsVTS.InvalidateNode(xNOde);
-          Application.ProcessMessages;
-        except
-          on e: Exception do
-          begin
-            xReport.Message := 'Exception: ' + e.Message;
-            xReport.Status := rsException;
-            SnapshotsVTS.InvalidateNode(xNOde);
-          end;
-        end;
-      finally
-        xReport.Disclaim;
-      end;
+      if Assigned (xReport) then
+        xList.AddObject('', xReport);
       xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
   finally
-    XmlUtil.PopCursor;
+    se.ReleaseLogLock;
   end;
+  TProcedureThread.Create(False, True, se, ReportOnSnapshots, xList);
 end;
 
 procedure TMainForm .SnapshotPromoteToReferenceMenuItemClick (Sender : TObject );

@@ -59,6 +59,7 @@ uses
   , snapshotz
   , ExceptionLogz
   , SyncObjs
+  , ClaimListz
   ;
 
 type TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
@@ -69,6 +70,7 @@ type TProcedureXX = procedure (arg, arg2: Extended) of Object;
 type TProcedureOperation = procedure (arg: TWsdlOperation) of Object;
 type TProcedureOperationS = procedure (arg: TWsdlOperation; arg2: String) of Object;
 type TProcedureObject = procedure (arg: TObject) of Object;
+type TProcedureClaimableObjectList = procedure (arg: TClaimableObjectList) of Object;
 type TOnFoundErrorInBufferEvent = procedure (aErrorString: String; aObject: TObject) of Object;
 type TOnEvent = procedure of Object;
 type TOnNotify = procedure (aString: String) of Object;
@@ -364,10 +366,12 @@ type
     fProcedureXX: TProcedureXX;
     fProcedureOperation: TProcedureOperation;
     fProcedureObject: TProcedureObject;
+    fProcedureClaimableObjectList: TProcedureClaimableObjectList;
     fString: String;
     fExtended, fExtended2: Extended;
     fOperation: TWsdlOperation;
     fObject: TObject;
+    fClaimableObjectList: TClaimableObjectList;
     fBlocking: Boolean;
   protected
     procedure Execute; override;
@@ -400,6 +404,12 @@ type
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedureObject
                        ; aObject: TObject
+                       ); overload;
+    constructor Create ( aSuspended: Boolean
+                       ; aBlocking: Boolean
+                       ; aProject: TWsdlProject
+                       ; aProcedure: TProcedureClaimableObjectList
+                       ; aClaimableObjectList: TClaimableObjectList
                        ); overload;
   end;
 
@@ -872,6 +882,21 @@ begin
   fExtended2 := aExtended2;
 end;
 
+constructor TProcedureThread.Create ( aSuspended: Boolean
+                                    ; aBlocking: Boolean
+                                    ; aProject: TWsdlProject
+                                    ; aProcedure: TProcedureClaimableObjectList
+                                    ; aClaimableObjectList: TClaimableObjectList
+                                    );
+begin
+  inherited Create (aSuspended);
+  fBlocking := aBlocking;
+  FreeOnTerminate := True;
+  fProject := aProject;
+  fProcedureClaimableObjectList := aProcedure;
+  fClaimableObjectList := aClaimableObjectList;
+end;
+
 procedure TProcedureThread.Execute;
 begin
   if fBlocking then
@@ -890,6 +915,20 @@ begin
     if Assigned (fProcedureXX) then fProcedureXX (fExtended, fExtended2);
     if Assigned (fProcedureOperation) then fProcedureOperation (fOperation);
     if Assigned (fProcedureObject) then fProcedureObject (fObject);
+    if Assigned (fProcedureClaimableObjectList) then
+    begin
+      try
+        fProcedureClaimableObjectList (fClaimableObjectList);
+      finally
+        fProject.AcquireLogLock;
+        try
+          fClaimableObjectList.Clear;
+          fClaimableObjectList.Free;
+        finally
+          fProject.ReleaseLogLock;
+        end;
+      end;
+    end;
   finally
     if fBlocking then
     begin
