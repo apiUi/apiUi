@@ -12091,7 +12091,8 @@ var
 begin
   with aList as TSnapshotList do
     for x := 0 to Count - 1 do
-      SnapshotItems[x].doReport;
+      if not se.abortPressed then
+        SnapshotItems[x].doReport;
 end;
 
 
@@ -12209,7 +12210,103 @@ procedure TMainForm.SummaryReport (aList: TClaimableObjectList);
   begin
     result := htmlNbsp(aText);
   end;
-  procedure _Report (aList: TSnapshotList);
+
+  procedure _coverageReport (tableXml: TXml; aList: TSnapshotList);
+  var
+    xLogList: TLoglist;
+    xCvrg, yCvrg: TXmlCvrg;
+    x: Integer;
+  begin
+    if se.abortPressed then Exit;
+    xLogList := TLogList.Create;
+    try
+      for x := 0 to aList.Count - 1 do
+        if (aList.SnapshotItems[x].FileName <> '')
+        and (not se.abortPressed) then
+          se.OpenMessagesLog (aList.SnapshotItems[x].FileName, True, False, xLogList);
+      if se.abortPressed then Exit;
+      xCvrg := xLogList.PrepareCoverageReportAsXml ( allAliasses
+                                                   , se.ignoreCoverageOn
+                                                   );
+      try
+        if se.abortPressed then Exit;
+        if Assigned (xCvrg) then
+        begin
+          xCvrg.CalculateCoverage;
+          with tableXml do
+          begin
+            with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+            begin
+              with AddXml (TXml.CreateAsString('td', '')) do
+              begin
+                AddAttribute(TXmlAttribute.CreateAsString('colspan','1'));
+                AddXml (TXml.CreateAsString ( 'b'
+                                            , nbsp ( 'Coverage'
+                                                   + '_'
+                                                   + xCvrg.DisplayPercentage(False)
+                                                   + ' % ('
+                                                   + IntToStr (xCvrg.GreenCounter)
+                                                   + '/'
+                                                   + IntToStr (xCvrg.RedCounter)
+                                                   + ')'
+                                                   )
+                                            )
+                       );
+              end;
+              with AddXml (TXml.CreateAsString('td', '')) do
+              begin
+                AddAttribute(TXmlAttribute.CreateAsString('colspan','3'));
+                AddXml (htmlHorBarChartAsXml ( xCvrg.GreenCounter
+                                             , 0
+                                             , xCvrg.RedCounter
+                                             )
+                       );
+              end;
+            end;
+            for x := 0 to xCvrg.Items.Count - 1 do
+            begin
+              yCvrg := xCvrg.Items.XmlItems[x] as TXmlCvrg;
+              with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+              begin
+                with AddXml (TXml.CreateAsString('td', '')) do
+                begin
+                  AddAttribute(TXmlAttribute.CreateAsString('colspan','1'));
+                  AddXml (TXml.CreateAsString ( 'b'
+                                              , nbsp ( htmlIndent(2)
+                                                     + yCvrg.Name
+                                                     + '_'
+                                                     + yCvrg.DisplayPercentage(False)
+                                                     + ' % ('
+                                                     + IntToStr (yCvrg.GreenCounter)
+                                                     + '/'
+                                                     + IntToStr (yCvrg.GreenCounter + yCvrg.RedCounter)
+                                                     + ')'
+                                                     )
+                                              )
+                         );
+                end;
+                with AddXml (TXml.CreateAsString('td', '')) do
+                begin
+                  AddAttribute(TXmlAttribute.CreateAsString('colspan','3'));
+                  AddXml (htmlHorBarChartAsXml ( yCvrg.GreenCounter
+                                               , 0
+                                               , yCvrg.RedCounter
+                                               )
+                         );
+                end;
+              end;
+            end;
+          end;
+        end;
+      finally
+        xCvrg.Free;
+      end;
+    finally
+      xLogList.Free;
+    end;
+  end;
+
+  procedure _regressionReport (tableXml: TXml; aList: TSnapshotList);
   var
     xSnapshot: TSnapshot;
     x, xRed, xOrange, xGreen: Integer;
@@ -12229,110 +12326,102 @@ procedure TMainForm.SummaryReport (aList: TClaimableObjectList);
     gPerc := '';
     if (aList.Count > 0) then
       gPerc := IntToStr (Round (100 * xGreen / (xGreen + xOrange + xRed)));
+    with tableXml do
+    begin
+      with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+      begin
+        with AddXml (TXml.CreateAsString('td', '')) do
+        begin
+          AddAttribute(TXmlAttribute.CreateAsString('colspan','1'));
+          AddXml (TXml.CreateAsString('b', nbsp ('Success rate:' + gPerc + ' %')));
+        end;
+        with AddXml (TXml.CreateAsString('td', '')) do
+        begin
+          AddAttribute(TXmlAttribute.CreateAsString('colspan','3'));
+          AddXml (htmlHorBarChartAsXml(xGreen, xOrange, xRed));
+        end;
+      end;
+      AddXml (TXml.CreateAsString('tr', ''));
+      with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+      begin
+        with AddXml (TXml.CreateAsString('th', '')) do
+          AddXml (TXml.CreateAsString('b', 'Date and Time'));
+        with AddXml (TXml.CreateAsString('th', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp('Name')));
+        with AddXml (TXml.CreateAsString('th', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp('Verdict')));
+        with AddXml (TXml.CreateAsString('th', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp('Remark')));
+      end;
+      for x := 0 to aList.Count - 1 do
+      begin
+        xSnapshot := aList.SnapshotItems[x];
+        with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+        begin
+          with AddXml (TXml.CreateAsString('td', '')) do
+            AddXml (TXml.CreateAsString('b', nbsp (xsdFormatDateTime(xSnapshot.TimeStamp, @TIMEZONE_UTC))));
+          with AddXml (TXml.CreateAsString('td', '')) do
+            AddXml (TXml.CreateAsString('b', nbsp (xSnapshot.Name)));
+          with AddXml (TXml.CreateAsString('td', '')) do
+          begin
+            AddAttribute(TXmlAttribute.CreateAsString('bgcolor', xSnapshot.VerdictColorAsString));
+            AddXml (TXml.CreateAsString('b', nbsp(xSnapshot.Verdict)));
+          end;
+          with AddXml (TXml.CreateAsString('td', '')) do
+            AddXml (TXml.CreateAsString('b', nbsp(xSnapshot.Message)));
+        end;
+      end;
+      AddXml (TXml.CreateAsString('tr', ''));
+      with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+      begin
+        with AddXml (TXml.CreateAsString('td', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp ('Ignored differences:')));
+        with AddXml (TXml.CreateAsString('td', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp (se.ignoreDifferencesOn.Text)));
+      end;
+      with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+      begin
+        with AddXml (TXml.CreateAsString('td', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp ('Ignored additions:')));
+        with AddXml (TXml.CreateAsString('td', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp (se.ignoreAddingOn.Text)));
+      end;
+      with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+      begin
+        with AddXml (TXml.CreateAsString('td', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp ('Ignored removals:')));
+        with AddXml (TXml.CreateAsString('td', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp (se.ignoreRemovingOn.Text)));
+      end;
+      with AddXml (htmlHLeft(htmlVTop(Txml.CreateAsString ('tr', '')))) do
+      begin
+        with AddXml (TXml.CreateAsString('td', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp ('Ignored ordering on:')));
+        with AddXml (TXml.CreateAsString('td', '')) do
+          AddXml (TXml.CreateAsString('b', nbsp (se.ignoreOrderOn.Text)));
+      end;
+    end;
+  end;
+
+  procedure _Report (aList: TSnapshotList);
+  var
+    xXml, tblXml: TXml;
+  begin
     xXml := htmlCreateXml(_ProgName, 'Test summary report');
     with xXml do
     try
       with htmlFindContentXml (xXml) do
       begin
         AddXml (TXml.CreateAsString('p', ''));
-        with AddXml (TXml.CreateAsString('table', '')) do
-        begin
-          with AddXml (Txml.CreateAsString ('tr', '')) do
-          begin
-            AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
-            AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp ('Success rate:')));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp (gPerc + ' %')));
-            with AddXml (TXml.CreateAsString('td', '')) do
-            begin
-              AddAttribute(TXmlAttribute.CreateAsString('width', '100px'));
-              AddXml (htmlHorBarChartAsXml(300, xGreen, xOrange, xRed));
-            end;
-          end;
-        end;
-        AddXml (TXml.CreateAsString('p', ''));
-        with AddXml (TXml.CreateAsString('table', '')) do
-        begin
-          AddAttribute(TXmlAttribute.CreateAsString('border', '0'));
-          AddAttribute(TXmlAttribute.CreateAsString('bgcolor', 'white'));
-          with AddXml (Txml.CreateAsString ('tr', '')) do
-          begin
-            AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
-            AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-            with AddXml (TXml.CreateAsString('th', '')) do
-              AddXml (TXml.CreateAsString('b', 'Date and Time'));
-            with AddXml (TXml.CreateAsString('th', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp('Name')));
-            with AddXml (TXml.CreateAsString('th', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp('Verdict')));
-            with AddXml (TXml.CreateAsString('th', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp('Remark')));
-          end;
-          for x := 0 to aList.Count - 1 do
-          begin
-            xSnapshot := aList.SnapshotItems[x];
-            with AddXml (Txml.CreateAsString ('tr', '')) do
-            begin
-              AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
-              AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              with AddXml (TXml.CreateAsString('td', '')) do
-                AddXml (TXml.CreateAsString('b', nbsp (xsdFormatDateTime(xSnapshot.TimeStamp, @TIMEZONE_UTC))));
-              with AddXml (TXml.CreateAsString('td', '')) do
-                AddXml (TXml.CreateAsString('b', nbsp (xSnapshot.Name)));
-              with AddXml (TXml.CreateAsString('td', '')) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('bgcolor', xSnapshot.VerdictColorAsString));
-                AddXml (TXml.CreateAsString('b', nbsp(xSnapshot.Verdict)));
-              end;
-              with AddXml (TXml.CreateAsString('td', '')) do
-                AddXml (TXml.CreateAsString('b', nbsp(xSnapshot.Message)));
-            end;
-          end;
-        end;
-        AddXml (TXml.CreateAsString('p', ''));
-        with AddXml (TXml.CreateAsString('table', '')) do
-        begin
-          with AddXml (Txml.CreateAsString ('tr', '')) do
-          begin
-            AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
-            AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp ('Ignored differences:')));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp (se.ignoreDifferencesOn.Text)));
-          end;
-          with AddXml (Txml.CreateAsString ('tr', '')) do
-          begin
-            AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
-            AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp ('Ignored additions:')));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp (se.ignoreAddingOn.Text)));
-          end;
-          with AddXml (Txml.CreateAsString ('tr', '')) do
-          begin
-            AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
-            AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp ('Ignored removals:')));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp (se.ignoreRemovingOn.Text)));
-          end;
-          with AddXml (Txml.CreateAsString ('tr', '')) do
-          begin
-            AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
-            AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp ('Ignored ordering on:')));
-            with AddXml (TXml.CreateAsString('td', '')) do
-              AddXml (TXml.CreateAsString('b', nbsp (se.ignoreOrderOn.Text)));
-          end;
-        end;
+        tblXml := AddXml (TXml.CreateAsString('table',''));
+        tblXml.AddAttribute(TXmlAttribute.CreateAsString('border','0'));
+        tblXml.AddAttribute(TXmlAttribute.CreateAsString('widht','100%'));
+        _regressionReport(tblXml, aList);
+        tblXml.AddXml (TXml.CreateAsString('p', ''));
+        _coverageReport(tblXml, aList);
       end;
-      XmlUtil.presentAsHTML ('wsdlStub - Test summary report', htmlXmlAsString (xXml, _wsdlStubStylesheet));
+      if not (se.abortPressed) then
+        XmlUtil.presentAsHTML ('wsdlStub - Test summary report', htmlXmlAsString (xXml, _wsdlStubStylesheet));
     finally
       xXml.Free;
     end;
@@ -12343,9 +12432,11 @@ begin
   with aList as TSnapshotList do
   begin
     for x := 0 to Count - 1 do with SnapshotItems[x] do
-      if Status = rsUndefined then
+      if (Status = rsUndefined)
+      and (not se.abortPressed) then
         doReport;
-    _Report (aList as TSnapshotList);
+    if not se.abortPressed then
+      _Report (aList as TSnapshotList);
   end;
 end;
 

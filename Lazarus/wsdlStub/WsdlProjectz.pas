@@ -6589,19 +6589,22 @@ begin
       OpenMessagesLog (aReport.FileName, True, False, xLogList);
       xRefLofList := TLogList.Create;
       try
-        OpenMessagesLog (aReport.RefFileName, True, False, xRefLofList);
-        xXml := logDifferencesAsXml ( xLogList
-                                    , xRefLofList
-                                    , aReport.RefFileName
-                                    , CompareLogOrderBy
-                                    , ignoreDifferencesOn
-                                    , ignoreAddingOn
-                                    , ignoreRemovingOn
-                                    , ignoreOrderOn
-                                    , regressionSortColumns
-                                    );
+        if not abortPressed then
+          OpenMessagesLog (aReport.RefFileName, True, False, xRefLofList);
+        if not abortPressed then
+          xXml := logDifferencesAsXml ( xLogList
+                                      , xRefLofList
+                                      , aReport.RefFileName
+                                      , CompareLogOrderBy
+                                      , ignoreDifferencesOn
+                                      , ignoreAddingOn
+                                      , ignoreRemovingOn
+                                      , ignoreOrderOn
+                                      , regressionSortColumns
+                                      );
         try
-          if Assigned (xXml) then with xXml do
+          if Assigned (xXml)
+          and (not abortPressed) then with xXml do
           begin
             df := xXml.FindUQValue('logDifferences.Header.differencesFound');
             if df = 'true' then
