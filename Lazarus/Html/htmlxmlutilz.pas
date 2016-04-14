@@ -24,6 +24,60 @@ function htmlXmlAsString (aXml: TXml; aStylesheet: String): String;
 function htmlHorBarChartAsXml(aGreen, aOrange, aRed: Integer): TXml;
 function htmlFindContentXml (aXml: TXml): TXml;
 
+type
+  THtmlTableXml = class;
+  THtmlThXml = class;
+  THtmlTdXml = class;
+  THtmlTrXml = class;
+
+  { THtmlXml }
+
+  THtmlXml = class(TXml)
+  protected
+    function hleft: THtmlXml;
+    function vtop: THtmlXml;
+    function bgcolor (aColorAsString: String): THtmlXml;
+  public
+    function AddTable: THtmlTableXml;
+    function AddB (aString: String): THtmlXml;
+    function AddP: THtmlXml;
+    function AddDiv: THtmlXml;
+  end;
+
+  { THtmlTableXml }
+
+  THtmlTableXml = class (THtmlXml)
+  public
+    function Border (n: Integer): THtmlTableXml;
+    function WidthPerc (n: Integer): THtmlTableXml;
+    function AddTr: THtmlTrXml;
+  end;
+
+  { THtmlTrXml }
+
+  THtmlTrXml = class (THtmlXml)
+  public
+    function hleft: THtmlTrXml;
+    function vtop: THtmlTrXml;
+    function bgcolor (aColorAsString: String): THtmlXml;
+    function AddTd: THtmlTdXml;
+    function AddTh: THtmlThXml;
+  end;
+
+  { THtmlTdXml }
+
+  THtmlTdXml = class (THtmlXml)
+  public
+    function bgcolor (aColorAsString: String): THtmlXml;
+    function WidthPerc (n: Integer): THtmlTdXml;
+    function ColSpan (n: Integer): THtmlTdXml;
+  end;
+
+  THtmlThXml = class (THtmlTdXml)
+  public
+  end;
+
+
 implementation
 
 function htmlNbsp (aText: String): String;
@@ -157,6 +211,111 @@ begin
             , xmlio.ReadStringFromFile(aStylesheet)
             , [rfReplaceAll]
             );
+end;
+
+{ THtmlTrXml }
+
+function THtmlTrXml .hleft : THtmlTrXml ;
+begin
+  result := inherited as THtmlTrXml;
+end;
+
+function THtmlTrXml .vtop : THtmlTrXml ;
+begin
+  result := inherited as THtmlTrXml;
+end;
+
+function THtmlTrXml .bgcolor (aColorAsString : String ): THtmlXml ;
+begin
+  result := inherited as THtmlTrXml;
+end;
+
+function THtmlTrXml .AddTd : THtmlTdXml ;
+begin
+  result := AddXml (THtmlTdXml.CreateAsString('td', '') as TXml) as THtmlTdXml;
+end;
+
+function THtmlTrXml .AddTh : THtmlThXml ;
+begin
+  result := AddXml (THtmlThXml.CreateAsString('th', '') as TXml) as THtmlThXml;
+end;
+
+{ THtmlTdXml }
+
+function THtmlTdXml .bgcolor (aColorAsString : String ): THtmlXml ;
+begin
+  result := inherited as THtmlTdXml;
+end;
+
+function THtmlTdXml .WidthPerc (n : Integer ): THtmlTdXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('width', IntToStr (n) + '%'));
+end;
+
+function THtmlTdXml .ColSpan (n : Integer ): THtmlTdXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('colspan', IntToStr (n)));
+end;
+
+{ THtmlTableXml }
+
+function THtmlTableXml .Border (n : Integer ): THtmlTableXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('border', IntToStr (n)));
+end;
+
+function THtmlTableXml .WidthPerc (n : Integer ): THtmlTableXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('width', IntToStr (n) + '%'));
+end;
+
+function THtmlTableXml .AddTr : THtmlTrXml ;
+begin
+  result := AddXml (THtmlTrXml.CreateAsString('tr', '') as TXml) as THtmlTrXml;
+end;
+
+{ THtmlXml }
+
+function THtmlXml .hleft : THtmlXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
+end;
+
+function THtmlXml .vtop : THtmlXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
+end;
+
+function THtmlXml .bgcolor (aColorAsString : String ): THtmlXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('bgcolor', aColorAsString));
+end;
+
+function THtmlXml .AddTable : THtmlTableXml ;
+begin
+  result := AddXml (THtmlTableXml.CreateAsString('table', '') as TXml) as THtmlTableXml;
+end;
+
+function THtmlXml .AddB (aString: String): THtmlXml ;
+begin
+  result := AddXml (THtmlXml.CreateAsString('b', aString) as TXml) as THtmlXml;
+end;
+
+function THtmlXml .AddP : THtmlXml ;
+begin
+  result := AddXml (THtmlXml.CreateAsString('p', '') as TXml) as THtmlXml;
+end;
+
+function THtmlXml .AddDiv : THtmlXml ;
+begin
+  result := AddXml (THtmlXml.CreateAsString('div', '') as TXml) as THtmlXml;
 end;
 
 
