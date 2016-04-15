@@ -4068,7 +4068,7 @@ begin
   if doShowIgnoreds then
     Inc (Denominator, OrangeCounter);
   if Denominator <> 0 then
-    result := IntToStr(Round(100 * GreenCounter / Denominator));
+    result := IntToStr(Trunc(100 * GreenCounter / Denominator));
 end;
 
 function TXmlCvrg.getDistinctCounter: Integer;

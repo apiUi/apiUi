@@ -71,7 +71,6 @@
       <Unit1>
         <Filename Value="..\Xml\claimlistz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ClaimListz"/>
       </Unit1>
       <Unit2>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -92,17 +91,14 @@
       <Unit5>
         <Filename Value="..\Xml\snapshotz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="snapshotz"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Xml\exceptionutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="exceptionUtils"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="IdHTTP"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Html\htmlxmlutilz.pas"/>
@@ -134,10 +130,9 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5023="True" idx5024="True" idx5025="True" idx5028="True"/>
+        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

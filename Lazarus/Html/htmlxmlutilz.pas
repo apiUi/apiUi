@@ -15,15 +15,6 @@ uses Classes
    , xmlio
    ;
 
-function htmlIndent (x: Integer): String;
-function htmlNbsp (aText: String): String;
-function htmlVTop (aXml: TXml): TXml;
-function htmlHLeft (aXml: TXml): TXml;
-function htmlCreateXml (aName, aCaption: String): TXml;
-function htmlXmlAsString (aXml: TXml; aStylesheet: String): String;
-function htmlHorBarChartAsXml(aGreen, aOrange, aRed: Integer): TXml;
-function htmlFindContentXml (aXml: TXml): TXml;
-
 type
   THtmlTableXml = class;
   THtmlThXml = class;
@@ -35,12 +26,18 @@ type
   THtmlXml = class(TXml)
   protected
     function hleft: THtmlXml;
+    function hright: THtmlXml;
     function vtop: THtmlXml;
     function bgcolor (aColorAsString: String): THtmlXml;
+    function style (aStyleString: String): THtmlXml;
+    function clasz (aClassString: String): THtmlXml;
   public
     function AddTable: THtmlTableXml;
+    function AddHtml (aName: String): THtmlXml;
+    function AddHtml (aName: String; aValue: String): THtmlXml;
     function AddB (aString: String): THtmlXml;
     function AddP: THtmlXml;
+    function AddP(aString: String): THtmlXml;
     function AddDiv: THtmlXml;
   end;
 
@@ -58,6 +55,7 @@ type
   THtmlTrXml = class (THtmlXml)
   public
     function hleft: THtmlTrXml;
+    function hright: THtmlTrXml;
     function vtop: THtmlTrXml;
     function bgcolor (aColorAsString: String): THtmlXml;
     function AddTd: THtmlTdXml;
@@ -76,6 +74,15 @@ type
   THtmlThXml = class (THtmlTdXml)
   public
   end;
+
+function htmlIndent (x: Integer): String;
+function htmlNbsp (aText: String): String;
+function htmlVTop (aXml: TXml): TXml;
+function htmlHLeft (aXml: TXml): TXml;
+function htmlCreateXml (aName, aCaption: String): THtmlXml;
+function htmlXmlAsString (aXml: TXml; aStylesheet: String): String;
+function htmlHorBarChartAsXml(aGreen, aOrange, aRed: Integer): TXml;
+function htmlFindContentXml (aXml: TXml): THtmlXml;
 
 
 implementation
@@ -138,9 +145,9 @@ begin
   end;
 end;
 
-function htmlFindContentXml (aXml : TXml ): TXml ;
+function htmlFindContentXml (aXml : TXml ): THtmlXml ;
 begin
-  result := aXml.FindXml('html.body.div');
+  result := aXml.FindXml('html.body.div') as THtmlXml;
 end;
 
 function htmlVTop (aXml: TXml ): TXml ;
@@ -155,49 +162,23 @@ begin
   result.AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
 end;
 
-function htmlCreateXml (aName , aCaption : String ): TXml ;
+function htmlCreateXml (aName , aCaption : String ): THtmlXml ;
 begin
-  result := TXml.CreateAsString('html', '');
+  result := THtmlXml.CreateAsString('html', '');
   with result do
   begin
-    with AddXml (TXml.CreateAsString('head', '')) do
+    with AddHtml('head') do
     begin
-      with AddXml (TXml.CreateAsString('style', '--stylesheet--')) do
-        AddAttribute(TXmlAttribute.CreateAsString('type', 'text/css'));
-      AddXml (TXml.CreateAsString('title', aName + ' - ' + aCaption));
+      AddHtml('style', '--stylesheet').AddAttribute(TXmlAttribute.CreateAsString('type','text/css'));
+      AddHtml('title', aName + ' - ' + aCaption);
     end;
-    with AddXml (TXml.CreateAsString('body', '')) do
+    with AddHtml ('body').AddHtml('div') do
     begin
-      with AddXml (TXml.CreateAsString('div', '')) do
+      AddAttribute(TXmlAttribute.CreateAsString('id', 'content'));
+      with AddP.style('margin-left: -10px').AddTable.WidthPerc(100).Border(0).AddTr do
       begin
-        AddAttribute(TXmlAttribute.CreateAsString('id', 'content'));
-        with AddXml (TXml.CreateAsString('p', '')) do
-        begin
-          AddAttribute(TXmlAttribute.CreateAsString('style', 'margin-left: -10px'));
-          with AddXml (TXml.CreateAsString('table', '')) do
-          begin
-            AddAttribute(TXmlAttribute.CreateAsString('width', '100%'));
-            AddAttribute(TXmlAttribute.CreateAsString('border', '0'));
-            with AddXml (TXml.CreateAsString('tr', '')) do
-            begin
-              with AddXml (TXml.CreateAsString('td', '')) do
-              begin
-                with AddXml (TXml.CreateAsString('p', htmlNbsp (aName + ' - ' + aCaption))) do
-                begin
-                  AddAttribute(TXmlAttribute.CreateAsString('class', 'heading1'));
-                end;
-              end;
-              with AddXml (TXml.CreateAsString('td', '')) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('align', 'right'));
-                with AddXml (TXml.CreateAsString('p', htmlNbsp (DateTimeToStr(Now)))) do
-                begin
-                  AddAttribute(TXmlAttribute.CreateAsString('class', 'heading1'));
-                end;
-              end;
-            end;
-          end;
-        end;
+        AddTd.hleft.AddP(htmlNbsp (aName + ' - ' + aCaption)).clasz('heading1');
+        AddTd.hright.AddP(htmlNbsp (DateTimeToStr(Now))).clasz('heading1');
       end;
     end;
   end;
@@ -216,6 +197,11 @@ end;
 { THtmlTrXml }
 
 function THtmlTrXml .hleft : THtmlTrXml ;
+begin
+  result := inherited as THtmlTrXml;
+end;
+
+function THtmlTrXml .hright : THtmlTrXml ;
 begin
   result := inherited as THtmlTrXml;
 end;
@@ -286,6 +272,12 @@ begin
   AddAttribute(TXmlAttribute.CreateAsString('align', 'left'));
 end;
 
+function THtmlXml .hright : THtmlXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('align', 'right'));
+end;
+
 function THtmlXml .vtop : THtmlXml ;
 begin
   result := self;
@@ -298,9 +290,31 @@ begin
   AddAttribute(TXmlAttribute.CreateAsString('bgcolor', aColorAsString));
 end;
 
+function THtmlXml.style(aStyleString: String): THtmlXml;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('style', aStyleString));
+end;
+
+function THtmlXml.clasz(aClassString: String): THtmlXml;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('class', aClassString));
+end;
+
 function THtmlXml .AddTable : THtmlTableXml ;
 begin
   result := AddXml (THtmlTableXml.CreateAsString('table', '') as TXml) as THtmlTableXml;
+end;
+
+function THtmlXml.AddHtml(aName: String): THtmlXml;
+begin
+  result := AddXml (THtmlXml.CreateAsString(aName, '') as TXml) as THtmlXml;
+end;
+
+function THtmlXml.AddHtml(aName: String; aValue: String): THtmlXml;
+begin
+  result := AddXml (THtmlXml.CreateAsString(aName, aValue) as TXml) as THtmlXml;
 end;
 
 function THtmlXml .AddB (aString: String): THtmlXml ;
@@ -311,6 +325,11 @@ end;
 function THtmlXml .AddP : THtmlXml ;
 begin
   result := AddXml (THtmlXml.CreateAsString('p', '') as TXml) as THtmlXml;
+end;
+
+function THtmlXml.AddP(aString: String): THtmlXml;
+begin
+  result := AddXml (THtmlXml.CreateAsString('p', aString) as TXml) as THtmlXml;
 end;
 
 function THtmlXml .AddDiv : THtmlXml ;
