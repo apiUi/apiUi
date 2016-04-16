@@ -11262,55 +11262,36 @@ end;
 procedure TMainForm.ReportUnexpectedValuesActionExecute(Sender: TObject);
 var
   d, X, nDiffs: Integer;
-  xXml, tableXml: TXml;
+  xXml: THtmlXml;
+  tableXml: THtmlTableXml;
   xLog: TLog;
   xBind: TCustomBindable;
   showReqRep: Boolean;
 begin
   OnlyWhenLicensed;
-  xXml := TXml.CreateAsString('html', '');
-  with xXml do
+  xXml := htmlCreateXml(_ProgName, 'Unexpected values report');
+  with htmlFindContentXml(xXml) do
   begin
     try
       XmlUtil.PushCursor (crHourGlass);
       try
-        tableXml := AddXml(TXml.CreateAsString('table', ''));
+        AddP;
+        tableXml := AddTable.Border(1);
         with tableXml do
         begin
-          AddAttribute(TXmlAttribute.CreateAsString('border', '1'));
-          { }
-          with AddXml(TXml.CreateAsString('tr', '')) do
+          with AddTr do
           begin
-            with AddXml(TXml.CreateAsString('td',
-                _progName + ' - Unexpected values report')) do
-              AddAttribute(TXmlAttribute.CreateAsString('colspan', '3'));
-            with AddXml(TXml.CreateAsString('td', DateToStr(Now))) do
-              AddAttribute(TXmlAttribute.CreateAsString('colspan', '3'));
+            AddTh.ColSpan(3).AddB('Messages with unexpected values');
+            AddTh.ColSpan(3).AddB('_');
           end;
-          with AddXml(TXml.CreateAsString('tr', '')) do
+          with AddTr do
           begin
-            with AddXml(TXml.CreateAsString('td', ' ')) do
-              AddAttribute(TXmlAttribute.CreateAsString('colspan', '3'));
-            with AddXml(TXml.CreateAsString('td', ' ')) do
-              AddAttribute(TXmlAttribute.CreateAsString('colspan', '3'));
-          end;
-          { }
-          with AddXml(TXml.CreateAsString('tr', '')) do
-          begin
-            with AddXml(TXml.CreateAsString('td',
-                'Messages with unexpected values')) do
-              AddAttribute(TXmlAttribute.CreateAsString('colspan', '3'));
-            with AddXml(TXml.CreateAsString('td', '_')) do
-              AddAttribute(TXmlAttribute.CreateAsString('colspan', '3'));
-          end;
-          with AddXml(TXml.CreateAsString('tr', '')) do
-          begin
-            AddXml(TXml.CreateAsString('td', 'Row '));
-            AddXml(TXml.CreateAsString('td', 'Sent '));
-            AddXml(TXml.CreateAsString('td', 'Correlation '));
-            AddXml(TXml.CreateAsString('td', 'Tag '));
-            AddXml(TXml.CreateAsString('td', 'Value '));
-            AddXml(TXml.CreateAsString('td', 'Reference '));
+            AddTh.AddB('Row_');
+            AddTh.AddB('Sent_');
+            AddTh.AddB('Correlation_');
+            AddTh.AddB('Tag_');
+            AddTh.AddB('Value_');
+            AddTh.AddB('Reference_');
           end;
           AcquireLock;
           try
@@ -11332,23 +11313,11 @@ begin
                   xBind := xLog.Operation.ExpectationBindables.Bindables[d];
                   if xBind.HasUnexpectedValue then
                   begin
-                    with tableXml.AddXml(TXml.CreateAsString('tr', '')) do
+                    with tableXml.AddTr.vtop do
                     begin
-                      AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
                       if showReqRep then
                       begin
-                        with AddXml(TXml.CreateAsString('td', '')) do
-                        begin
-                          AddAttribute(TXmlAttribute.CreateAsString('rowspan',
-                              IntToStr(nDiffs)));
-                          AddAttribute(TXmlAttribute.CreateAsString('valign',
-                              'top'));
-                          with AddXml(TXml.CreateAsString('a', IntToStr(X + 1)))
-                            do
-                          begin
-                            // AddAttribute(TXmlAttribute.CreateAsString('name', 'Row' + IntToStr (x+1)));
-                          end;
-                        end;
+                        AddTd.RowSpan(nDiffs);
                         with AddXml(TXml.CreateAsString('td', '')) do
                         begin
                           AddAttribute(TXmlAttribute.CreateAsString('rowspan',
@@ -11386,7 +11355,7 @@ begin
       end;
       ShowHtml(_progName + ' - Unexpected values report', xXml.asHtmlString);
     finally
-      Free;
+      xXml.Free;
     end;
   end;
 end;

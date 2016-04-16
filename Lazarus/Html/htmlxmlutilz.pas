@@ -20,6 +20,7 @@ type
   THtmlThXml = class;
   THtmlTdXml = class;
   THtmlTrXml = class;
+  THtmlDivXml = class;
 
   { THtmlXml }
 
@@ -28,6 +29,7 @@ type
     function hleft: THtmlXml;
     function hright: THtmlXml;
     function vtop: THtmlXml;
+    function id (aId: String): THtmlXml;
     function bgcolor (aColorAsString: String): THtmlXml;
     function style (aStyleString: String): THtmlXml;
     function clasz (aClassString: String): THtmlXml;
@@ -66,13 +68,23 @@ type
 
   THtmlTdXml = class (THtmlXml)
   public
-    function bgcolor (aColorAsString: String): THtmlXml;
+    function bgcolor (aColorAsString: String): THtmlTdXml;
     function WidthPerc (n: Integer): THtmlTdXml;
     function ColSpan (n: Integer): THtmlTdXml;
+    function RowSpan (n: Integer): THtmlTdXml;
   end;
 
   THtmlThXml = class (THtmlTdXml)
   public
+  end;
+
+  { THtmlTrXml }
+
+  { THtmlDivXml }
+
+  THtmlDivXml = class (THtmlXml)
+  public
+    function id (aId: String): THtmlXml;
   end;
 
 function htmlIndent (x: Integer): String;
@@ -81,7 +93,7 @@ function htmlVTop (aXml: TXml): TXml;
 function htmlHLeft (aXml: TXml): TXml;
 function htmlCreateXml (aName, aCaption: String): THtmlXml;
 function htmlXmlAsString (aXml: TXml; aStylesheet: String): String;
-function htmlHorBarChartAsXml(aGreen, aOrange, aRed: Integer): TXml;
+function htmlHorBarChartAsXml(aGreen, aOrange, aRed: Integer): THtmlTableXml;
 function htmlFindContentXml (aXml: TXml): THtmlXml;
 
 
@@ -92,45 +104,28 @@ begin
   result := {'_' + }aText + '_';
 end;
 
-function htmlHorBarChartAsXml(aGreen, aOrange, aRed: Integer): TXml;
+function htmlHorBarChartAsXml(aGreen, aOrange, aRed: Integer): THtmlTableXml;
 var
   xGreen, xOrange, xRed: Integer;
 begin
-  result := TXml.CreateAsString('td', '');
-  if (aGreen + aOrange + aRed) = 0 then
-    Exit;
-  xGreen := Round( 100
-                 * (aGreen / (aGreen + aOrange + aRed))
-                 );
-  xOrange := Round( 100
-                  * (aOrange / (aGreen + aOrange + aRed))
-                  );
-  xRed := 100 - xGreen - xOrange;
-  with result do
+  result := THtmlTableXml.CreateAsString('table', '').Border(0).WidthPerc(100);
+  if (aGreen + aOrange + aRed) > 0 then
   begin
-    Name := 'table';
-    AddAttribute(TXmlAttribute.CreateAsString('border', '0'));
-    AddAttribute(TXmlAttribute.CreateAsString('width', '100%'));
-    with AddXml (TXml.CreateAsString('tr', '')) do
+    xGreen := Round( 100
+                   * (aGreen / (aGreen + aOrange + aRed))
+                   );
+    xOrange := Round( 100
+                    * (aOrange / (aGreen + aOrange + aRed))
+                    );
+    xRed := 100 - xGreen - xOrange;
+    with result.AddTr do
     begin
       if xGreen > 0 then
-        with AddXml (TXml.CreateAsString('td', '_')) do
-        begin
-          AddAttribute(TXmlAttribute.CreateAsString('width', IntToStr(xGreen) + '%'));
-          AddAttribute(TXmlAttribute.CreateAsString('bgcolor', 'green'));
-        end;
+        AddTd.bgcolor('green').WidthPerc(xGreen).Value := '_';
       if xOrange > 0 then
-        with AddXml (TXml.CreateAsString('td', '_')) do
-        begin
-          AddAttribute(TXmlAttribute.CreateAsString('width', IntToStr(xOrange) + '%'));
-          AddAttribute(TXmlAttribute.CreateAsString('bgcolor', 'orange'));
-        end;
+        AddTd.bgcolor('orange').WidthPerc(xOrange).Value := '_';
       if xRed > 0 then
-        with AddXml (TXml.CreateAsString('td', '_')) do
-        begin
-          AddAttribute(TXmlAttribute.CreateAsString('width', IntToStr(xRed) + '%'));
-          AddAttribute(TXmlAttribute.CreateAsString('bgcolor', 'red'));
-        end;
+        AddTd.bgcolor('red').WidthPerc(xRed).Value := '_';
     end;
   end;
 end;
@@ -169,12 +164,12 @@ begin
   begin
     with AddHtml('head') do
     begin
-      AddHtml('style', '--stylesheet').AddAttribute(TXmlAttribute.CreateAsString('type','text/css'));
+      AddHtml('style', '--stylesheet--').AddAttribute(TXmlAttribute.CreateAsString('type','text/css'));
       AddHtml('title', aName + ' - ' + aCaption);
     end;
-    with AddHtml ('body').AddHtml('div') do
+    with AddHtml ('body')
+          .AddHtml('div').id('content') do
     begin
-      AddAttribute(TXmlAttribute.CreateAsString('id', 'content'));
       with AddP.style('margin-left: -10px').AddTable.WidthPerc(100).Border(0).AddTr do
       begin
         AddTd.hleft.AddP(htmlNbsp (aName + ' - ' + aCaption)).clasz('heading1');
@@ -192,6 +187,13 @@ begin
             , xmlio.ReadStringFromFile(aStylesheet)
             , [rfReplaceAll]
             );
+end;
+
+{ THtmlDivXml }
+
+function THtmlDivXml .id (aId : String ): THtmlXml ;
+begin
+  result := inherited as THtmlDivXml;
 end;
 
 { THtmlTrXml }
@@ -228,7 +230,7 @@ end;
 
 { THtmlTdXml }
 
-function THtmlTdXml .bgcolor (aColorAsString : String ): THtmlXml ;
+function THtmlTdXml .bgcolor (aColorAsString : String ): THtmlTdXml ;
 begin
   result := inherited as THtmlTdXml;
 end;
@@ -243,6 +245,12 @@ function THtmlTdXml .ColSpan (n : Integer ): THtmlTdXml ;
 begin
   result := self;
   AddAttribute(TXmlAttribute.CreateAsString('colspan', IntToStr (n)));
+end;
+
+function THtmlTdXml .RowSpan (n : Integer ): THtmlTdXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (n)));
 end;
 
 { THtmlTableXml }
@@ -282,6 +290,12 @@ function THtmlXml .vtop : THtmlXml ;
 begin
   result := self;
   AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
+end;
+
+function THtmlXml .id (aId : String ): THtmlXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('id', aId));
 end;
 
 function THtmlXml .bgcolor (aColorAsString : String ): THtmlXml ;
