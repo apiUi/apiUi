@@ -21,6 +21,7 @@ type
   THtmlTdXml = class;
   THtmlTrXml = class;
   THtmlDivXml = class;
+  THtmlAXml = class;
 
   { THtmlXml }
 
@@ -32,11 +33,14 @@ type
     function id (aId: String): THtmlXml;
     function bgcolor (aColorAsString: String): THtmlXml;
     function style (aStyleString: String): THtmlXml;
+    function name_ (aName: String): THtmlXml;
+    function href (aName: String): THtmlXml;
     function clasz (aClassString: String): THtmlXml;
   public
     function AddTable: THtmlTableXml;
     function AddHtml (aName: String): THtmlXml;
     function AddHtml (aName: String; aValue: String): THtmlXml;
+    function AddA (aString: String): THtmlAXml;
     function AddB (aString: String): THtmlXml;
     function AddP: THtmlXml;
     function AddP(aString: String): THtmlXml;
@@ -84,8 +88,17 @@ type
 
   THtmlDivXml = class (THtmlXml)
   public
-    function id (aId: String): THtmlXml;
+    function id (aId: String): THtmlDivXml;
   end;
+
+  { THtmlAXml }
+
+  THtmlAXml = class (THtmlXml)
+  public
+    function name_ (aName: String): THtmlAXml;
+    function href (aName: String): THtmlAXml;
+  end;
+
 
 function htmlIndent (x: Integer): String;
 function htmlNbsp (aText: String): String;
@@ -189,9 +202,21 @@ begin
             );
 end;
 
+{ THtmlAXml }
+
+function THtmlAXml .name_ (aName : String ): THtmlAXml ;
+begin
+  result := inherited as THtmlAXml;
+end;
+
+function THtmlAXml .href (aName : String ): THtmlAXml ;
+begin
+  result := inherited as THtmlAXml;
+end;
+
 { THtmlDivXml }
 
-function THtmlDivXml .id (aId : String ): THtmlXml ;
+function THtmlDivXml .id (aId : String ): THtmlDivXml ;
 begin
   result := inherited as THtmlDivXml;
 end;
@@ -310,6 +335,18 @@ begin
   AddAttribute(TXmlAttribute.CreateAsString('style', aStyleString));
 end;
 
+function THtmlXml .name_ (aName : String ): THtmlXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('name', aName));
+end;
+
+function THtmlXml .href (aName : String ): THtmlXml ;
+begin
+  result := self;
+  AddAttribute(TXmlAttribute.CreateAsString('href', aName));
+end;
+
 function THtmlXml.clasz(aClassString: String): THtmlXml;
 begin
   result := self;
@@ -329,6 +366,11 @@ end;
 function THtmlXml.AddHtml(aName: String; aValue: String): THtmlXml;
 begin
   result := AddXml (THtmlXml.CreateAsString(aName, aValue) as TXml) as THtmlXml;
+end;
+
+function THtmlXml .AddA (aString : String ): THtmlAXml ;
+begin
+  result := AddXml (THtmlAXml.CreateAsString('a', aString) as TXml) as THtmlAXml;
 end;
 
 function THtmlXml .AddB (aString: String): THtmlXml ;

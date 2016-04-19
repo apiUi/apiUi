@@ -247,6 +247,7 @@ uses igGlobals
    , xmlUtilz
    , a2bStringListUnit
    , ShowA2BXmlUnit
+   , htmlXmlUtilz
    ;
 
 {$IFnDEF FPC}

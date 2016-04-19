@@ -11304,8 +11304,7 @@ begin
               begin
                 nDiffs := 0;
                 for d := 0 to xLog.Operation.ExpectationBindables.Count - 1 do
-                  if xLog.Operation.ExpectationBindables.Bindables[d]
-                    .HasUnexpectedValue then
+                  if xLog.Operation.ExpectationBindables.Bindables[d].HasUnexpectedValue then
                     Inc(nDiffs);
                 showReqRep := True;
                 for d := 0 to xLog.Operation.ExpectationBindables.Count - 1 do
@@ -11317,30 +11316,14 @@ begin
                     begin
                       if showReqRep then
                       begin
-                        AddTd.RowSpan(nDiffs);
-                        with AddXml(TXml.CreateAsString('td', '')) do
-                        begin
-                          AddAttribute(TXmlAttribute.CreateAsString('rowspan',
-                              IntToStr(nDiffs)));
-                          with AddXml(TXml.CreateAsString('a',
-                              FormatDateTime('hh:nn:ss', xLog.InboundTimeStamp))
-                            ) do
-                          begin
-                            // AddAttribute(TXmlAttribute.CreateAsString('href', '#Request' + IntToStr (x+1)));
-                          end;
-                        end;
-                        with AddXml(TXml.CreateAsString('td',
-                            xLog.CorrelationId)) do
-                        begin
-                          AddAttribute(TXmlAttribute.CreateAsString('rowspan',
-                              IntToStr(nDiffs)));
-                        end;
+                        AddTd.RowSpan(nDiffs).AddB(IntToStr(X + 1));
+                        AddTd.RowSpan(nDiffs).AddB(FormatDateTime('hh:nn:ss', xLog.InboundTimeStamp));
+                        AddTd.RowSpan(nDiffs).AddB(xLog.CorrelationId);
                         showReqRep := False;
                       end;
-                      AddXml(TXml.CreateAsString('td', xBind.FullIndexCaption));
-                      AddXml(TXml.CreateAsString('td', xBind.Value + '_'));
-                      AddXml(TXml.CreateAsString('td', xBind.ExpectedValue + '_')
-                        );
+                      AddTd.AddB(xBind.FullIndexCaption);
+                      AddTd.AddB(xBind.Value + '_');
+                      AddTd.AddB(xBind.ExpectedValue + '_');
                     end; // with row xml
                   end; // if unexpected
                 end; // for each expected value
@@ -11353,7 +11336,7 @@ begin
       finally
         XmlUtil.PopCursor;
       end;
-      ShowHtml(_progName + ' - Unexpected values report', xXml.asHtmlString);
+      ShowHtml(_progName + ' - Unexpected values report', htmlXmlAsString (xXml, _wsdlStubStylesheet));
     finally
       xXml.Free;
     end;
