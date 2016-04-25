@@ -7,12 +7,13 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
   ClientHeight = 523
   ClientWidth = 879
   Color = clBtnFace
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
     Height = 457
@@ -177,7 +178,6 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton13: TToolButton
       Left = 24
-      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton13'
@@ -196,7 +196,6 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton10: TToolButton
       Left = 80
-      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton10'
@@ -215,7 +214,6 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton6: TToolButton
       Left = 136
-      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton6'
@@ -234,7 +232,6 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton5: TToolButton
       Left = 192
-      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton5'

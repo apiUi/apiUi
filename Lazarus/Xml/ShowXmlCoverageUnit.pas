@@ -71,6 +71,7 @@ type
     ToolButton14: TToolButton;
     AsHtmlAction: TAction;
     procedure DocumentationMemoClick (Sender : TObject );
+    procedure FormClose (Sender : TObject ; var CloseAction : TCloseAction );
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure TreeViewClick(Sender: TObject);
     procedure TreeViewGetImageIndex(Sender: TBaseVirtualTree;
@@ -823,6 +824,7 @@ begin
     OkButton.Cancel := True;
   end;
   RevalidateView;
+  xmlUtil.PushCursor(crDefault);
 end;
 
 function TShowXmlCoverageForm.getDoShowIgnoreds: Boolean;
@@ -1106,6 +1108,12 @@ end;
 procedure TShowXmlCoverageForm .DocumentationMemoClick (Sender : TObject );
 begin
   OpenUrl(MemoIsLink(DocumentationMemo));
+end;
+
+procedure TShowXmlCoverageForm .FormClose (Sender : TObject ;
+  var CloseAction : TCloseAction );
+begin
+  XmlUtil.PopCursor;
 end;
 
 { TPasswordEditLink }

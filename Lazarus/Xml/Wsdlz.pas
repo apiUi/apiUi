@@ -6607,7 +6607,7 @@ begin
         sl.Add (CorrelationBindables.Bindables[x].CorrelationValue)
       else
         sl.Add ('?');
-    with reqBind as TXml do
+    if reqBind is TXml then with reqBind as TXml do
     begin
       try
         LoadFromString(aValue, nil);
@@ -6626,7 +6626,7 @@ procedure TWsdlBinder.setFreeFormatRpy(const aValue: String);
 begin
 //  if aValue = fFreeFormatRpy then Exit;
   fFreeFormatRpy := aValue;
-  with rpyBind as TXml do
+  if rpyBind is TXml then with rpyBind as TXml do
   begin
     try
       LoadFromString(aValue, nil);

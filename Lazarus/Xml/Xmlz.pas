@@ -2,7 +2,7 @@
 
 {$define noJSON}
 {$define noXMLDOM}
-
+{$define IPMZ}
 unit Xmlz;
 
 interface
@@ -402,6 +402,7 @@ uses
 {$endif}
    , RegExpr
    , xmlio
+   , Ipmz
    , HashUtilz
    ;
 
