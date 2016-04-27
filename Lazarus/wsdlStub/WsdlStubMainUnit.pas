@@ -7675,7 +7675,7 @@ begin
   OpenFileDialog.Title := 'Compare ' + _progName + ' log items from file';
   if OpenFileDialog.Execute then
   begin
-    Screen.Cursor:=crHourGlass;
+    XmlUtil.PushCursor(crHourGlass);
     wsdlStubMessagesFileName := OpenFileDialog.FileName;
     xLogList := TLogList.Create;
     try
@@ -12225,6 +12225,7 @@ procedure TMainForm.SummaryReport (aList: TClaimableObjectList);
                                       );
               end;
             end;
+            AddTr.AddTd.AddP(nbsp(''));
           end;
         end;
       finally
@@ -12281,7 +12282,7 @@ procedure TMainForm.SummaryReport (aList: TClaimableObjectList);
           AddTd.AddB (nbsp(xSnapshot.Message));
         end;
       end;
-      AddTr;
+      AddTr.AddTd.AddP(nbsp(''));
     end;
   end;
 
@@ -12314,6 +12315,7 @@ procedure TMainForm.SummaryReport (aList: TClaimableObjectList);
         AddTd.ColSpan(1).AddB(nbsp ('Ignored coverage on:'));
         AddTd.ColSpan(3).AddB(nbsp (se.ignoreCoverageOn.Text));
       end;
+      AddTr.AddTd.AddP(nbsp(''));
     end;
   end;
 
@@ -12331,7 +12333,6 @@ procedure TMainForm.SummaryReport (aList: TClaimableObjectList);
         tblXml := AddTable.Border(0).WidthPerc(100);
         _regressionReport(tblXml, aList);
         _coverageReport(tblXml, aList);
-        tblXml.AddXml (TXml.CreateAsString('p', ''));
         _reportProperties (tblXml);
       end;
       if not (se.abortPressed) then
