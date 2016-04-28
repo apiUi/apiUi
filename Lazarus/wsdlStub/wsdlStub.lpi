@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="10052"/>
+      <BuildNr Value="10061"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -71,6 +71,7 @@
       <Unit1>
         <Filename Value="..\Xml\claimlistz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ClaimListz"/>
       </Unit1>
       <Unit2>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -107,9 +108,9 @@
         <UnitName Value="htmlXmlUtilz"/>
       </Unit8>
       <Unit9>
-        <Filename Value="wsdlreportz.pas"/>
+        <Filename Value="htmlreportz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="wsdlreportz"/>
+        <UnitName Value="htmlreportz"/>
       </Unit9>
     </Units>
   </ProjectOptions>

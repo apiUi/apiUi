@@ -55,6 +55,8 @@ uses strutils
    , wsdlStubHtmlUnit
    , GZIPUtils
    , Logz
+   , snapshotz
+   , htmlreportz
    {$ifdef windows}
    , ActiveX
    {$endif}
@@ -116,6 +118,28 @@ end;
 
 procedure TWsdlControl.HttpWebPageServerCommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+  function _htmlreportTestSummary: String;
+  var
+    xList: TSnapshotList;
+    x: Integer;
+  begin
+    result := '';
+    xList := TSnapshotList.Create;
+    try
+      se.AcquireLogLock;
+      try
+        for x := 0 to se.displayedSnapshots.Count - 1 do
+          xList.AddObject('', se.displayedSnapshots.SnapshotItems[x]);
+      finally
+        se.ReleaseLogLock;
+      end;
+      result := htmlReportTestSummary(se, xList);
+    finally
+      xList.clear;
+      xList.Free;
+    end;
+  end;
+
   function _prepWsdl(s: String):String;
     function _replPath(s:String):String;
     var
@@ -470,8 +494,15 @@ begin
       end;
     end;
     if (ARequestInfo.Document = '/' + 'testSummaryReport') then
-    begin
-
+    try
+      AResponseInfo.ResponseNo := 200;
+      AResponseInfo.ContentText := _htmlreportTestSummary;
+    except
+      on e: Exception do
+      begin
+        AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
+        AResponseInfo.ResponseNo := 500;
+      end;
     end;
 
   finally

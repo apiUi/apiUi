@@ -945,10 +945,10 @@ object MainForm: TMainForm
     Height = 147
     Top = 354
     Width = 967
-    ActivePage = SnapshotTabsheet
+    ActivePage = MessagesTabSheet
     Align = alBottom
     Images = mainImageList
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
