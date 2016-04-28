@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms , tachartlazaruspkg , abbrevia , virtualtreeview_package , lazrichedit ,
   IdExceptionCore , IdStack , IdHTTP , WsdlStubMainUnit , snapshotz ,
-  exceptionUtils , htmlXmlUtilz;
+  exceptionUtils , htmlXmlUtilz , wsdlreportz;
 
 {$R *.res}
 

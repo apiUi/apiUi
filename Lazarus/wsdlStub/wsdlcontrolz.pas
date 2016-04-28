@@ -217,6 +217,7 @@ begin
   {$endif}
   AResponseInfo.ContentEncoding := 'identity';
   try
+    AResponseInfo.ContentText := createHtmlResponse (se, ARequestInfo);
     if (ARequestInfo.Document = '/' + _ProgName + 'WebService')
     or (ARequestInfo.Document = '/' + 'wsdlStubWebService')
     then begin
@@ -467,9 +468,12 @@ begin
           AResponseInfo.ResponseNo := 500;
         end;
       end;
-    end
-    else
-      AResponseInfo.ContentText := createHtmlResponse (se, ARequestInfo);
+    end;
+    if (ARequestInfo.Document = '/' + 'testSummaryReport') then
+    begin
+
+    end;
+
   finally
     if AResponseInfo.ContentEncoding <> 'identity' then
     begin

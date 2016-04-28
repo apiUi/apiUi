@@ -945,10 +945,10 @@ object MainForm: TMainForm
     Height = 147
     Top = 354
     Width = 967
-    ActivePage = MessagesTabSheet
+    ActivePage = SnapshotTabsheet
     Align = alBottom
     Images = mainImageList
-    TabIndex = 3
+    TabIndex = 2
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
@@ -1165,16 +1165,11 @@ object MainForm: TMainForm
             end          
             item
               Position = 2
-              Text = 'Type'
-              Width = 80
-            end          
-            item
-              Position = 3
               Text = 'Name'
               Width = 200
             end          
             item
-              Position = 4
+              Position = 3
               Text = 'Message'
               Width = 200
             end>
@@ -9406,11 +9401,13 @@ object MainForm: TMainForm
     end
   end
   object SnapshotsPopupMenu: TPopupMenu
+    Images = mainImageList
     OnPopup = SnapshotsPopupMenuPopup
     left = 640
     top = 280
     object SnapshotCompareMenuitem: TMenuItem
       Caption = 'Compare with reference'
+      ImageIndex = 43
       OnClick = SnapshotCompareMenuitemClick
     end
     object MenuItem26: TMenuItem
@@ -9421,10 +9418,12 @@ object MainForm: TMainForm
     end
     object LoadSavepointMessagesMenuItem: TMenuItem
       Caption = 'Reload checkpoint data'
+      ImageIndex = 2
       OnClick = SnapshotLoadMessagesMenuItemClick
     end
     object LoadRefSavepointMessagesMenuItem: TMenuItem
       Caption = 'Reload checkpoint reference data'
+      ImageIndex = 2
       OnClick = SnapshotLoadRefMessagesMenuItemClick
     end
     object MenuItem23: TMenuItem
@@ -9432,6 +9431,7 @@ object MainForm: TMainForm
     end
     object PromoteToReferenceMenuItem: TMenuItem
       Caption = 'Promote to reference'
+      ImageIndex = 12
       OnClick = SnapshotPromoteToReferenceMenuItemClick
     end
     object MenuItem25: TMenuItem
@@ -9439,6 +9439,7 @@ object MainForm: TMainForm
     end
     object ShowSavepointDetailsMenuitem: TMenuItem
       Caption = 'Show details'
+      ImageIndex = 13
       OnClick = SnapshotShowDetailsMenuitemClick
     end
   end

@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="10036"/>
+      <BuildNr Value="10052"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -63,7 +63,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -91,6 +91,7 @@
       <Unit5>
         <Filename Value="..\Xml\snapshotz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="snapshotz"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Xml\exceptionutils.pas"/>
@@ -105,6 +106,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="htmlXmlUtilz"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="wsdlreportz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="wsdlreportz"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

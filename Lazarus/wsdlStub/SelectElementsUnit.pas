@@ -67,7 +67,7 @@ type
     WsdlOperation: TWsdlOperation;
     SrceBind: TCustomBindable;
     ControlBinds: TBindableList;
-    DuplicatesAllowed: Boolean;
+    DuplicatesAllowed, GroupAllowed: Boolean;
     stubChanged: Boolean;
   end;
 
@@ -124,22 +124,35 @@ begin
 end;
 
 procedure TSelectElementsForm.AddActionExecute(Sender: TObject);
+  function BooleanPromptDialog(aPrompt: String): Boolean;
+  var
+    mr: TModalResult;
+  begin
+    mr := MessageDlg(aPrompt, mtConfirmation, [mbYes, mbNo, mbCancel], 0);
+    if mr = mrCancel then
+      raise Exception.Create('Cancelled by user');
+    if (mr = mrNo)
+    and (not GroupAllowed) then
+      raise Exception.Create ('Group elements not allowed in context of: ' + Caption);
+    result := (mr = mrYes);
+  end;
 var
   xAdd: Integer;
+  xDoExpand: Boolean;
   procedure _AddBind (aBind: TCustomBindable; aPrefix: String);
   var
     x: Integer;
   begin
     if aBind = nil then
       exit;
-    if not (aBind is TXmlAttribute)
-    and (aBind.Children.Count > 0) then
+    if (aBind.Children.Count > 0)
+    and xDoExpand then
     begin
       for x := 0 to aBind.Children.Count - 1 do
         _AddBind (aBind.Children.Bindables [x], aPrefix);
     end
     else
-    begin {not a group}
+    begin
       xAdd := ControlBinds.AddObject ( aPrefix + aBind.FullIndexCaption
                                      , aBind
                                      );
@@ -162,6 +175,8 @@ begin
     if SelectXmlElementForm.ModalResult = mrOk then
     begin
       fLastCaption := SelectXmlElementForm.SelectedCaption;
+      if SelectXmlElementForm.SelectedBind.Children.Count > 0 then
+        xDoExpand := BooleanPromptDialog('Expand group ' + fLastCaption);
       _AddBind (SelectXmlElementForm.SelectedBind, Copy (fLastCaption, 1, Pos('.', fLastCaption)));
       stubChanged := True;
     end;

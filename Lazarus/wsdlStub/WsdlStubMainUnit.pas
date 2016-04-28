@@ -1275,7 +1275,6 @@ type
   TSnapshotColumnEnum =
     ( snapshotStatusColumn
     , snapshotDateTimeColumn
-    , snapshotTypeColumn
     , snapshotNameColumn
     , snapshotMessageColumn
     );
@@ -4855,6 +4854,7 @@ procedure TMainForm.GridViewEditing(Sender: TBaseVirtualTree;
 var
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
+  xDataIndex: Integer;
 begin
   xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
@@ -4871,8 +4871,10 @@ begin
              ;
     exit;
   end;
-  Allowed := Assigned(xMessage.ColumnXmls.Bindables
-      [Column - xMessage.CorrelationBindables.Count - 1]);
+  xDataIndex := Column - xMessage.CorrelationBindables.Count - 1;
+  Allowed := Assigned(xMessage.ColumnXmls.Bindables [xDataIndex])
+         and (xMessage.ColumnXmls.Bindables [xDataIndex].Children.Count = 0)
+           ;
   if Allowed then
   begin
     swapEvent := InWsdlTreeView.OnFocusChanged;
@@ -4910,6 +4912,7 @@ begin
     GridView.BeginUpdate;
     SelectElementsForm.doShowReq := True;
     SelectElementsForm.doShowRpy := True;
+    SelectElementsForm.GroupAllowed := False;
     SelectElementsForm.WsdlOperation := WsdlOperation;
     SelectElementsForm.ControlBinds := WsdlOperation.CorrelationBindables;
     SelectElementsForm.ShowModal;
@@ -6285,9 +6288,9 @@ begin
     GridView.BeginUpdate;
     SelectElementsForm.doShowReq := True;
     SelectElementsForm.doShowRpy := True;
+    SelectElementsForm.GroupAllowed := True;
     SelectElementsForm.WsdlOperation := WsdlOperation;
-    SelectElementsForm.ControlBinds := WsdlOperation.Messages.Messages[0]
-      .ColumnXmls;
+    SelectElementsForm.ControlBinds := WsdlOperation.Messages.Messages[0].ColumnXmls;
     SelectElementsForm.ShowModal;
     if SelectElementsForm.stubChanged then
     begin
@@ -11235,6 +11238,7 @@ begin
     SelectElementsForm.WsdlOperation := WsdlOperation;
     SelectElementsForm.ControlBinds := WsdlOperation.ExpectationBindables;
     SelectElementsForm.DuplicatesAllowed := False;
+    SelectElementsForm.GroupAllowed := False;
     SelectElementsForm.ShowModal;
     // if SelectElementsForm.ModalResult = mrOk then
     begin
@@ -12144,7 +12148,6 @@ begin
     begin
       case TSnapshotColumnEnum(Column) of
         snapshotDateTimeColumn: if xReport.timeStamp <> 0 then CellText := DateTimeToStr(xReport.TimeStamp);
-        snapshotTypeColumn: CellText := xReport.typeAsText;
         snapshotNameColumn: CellText := xReport.Name;
         snapshotMessageColumn: CellText := xReport.Message;
       end;
@@ -13113,6 +13116,7 @@ begin
                                  , xmlio.ReadStringFromFile (xReport.FileName)
                                  );
           xReport.Status := rsOk;
+          xReport.Message := '';
           SnapshotsVTS.InvalidateNode(xNode);
           Application.ProcessMessages;
         except
