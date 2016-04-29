@@ -5361,6 +5361,13 @@ procedure TMainForm.GridViewBeforeCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellPaintMode: TVTCellPaintMode; CellRect: TRect;
   var ContentRect: TRect);
+  function _decColor (aColor: TColor): TColor;
+  begin
+    if Node = GridView.FocusedNode then
+      result := DecColor (aColor, 15)
+    else
+      result := aColor;
+  end;
 var
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
@@ -5371,28 +5378,12 @@ begin
     NodeToMessage(Sender, Node, xMessage);
     if not Assigned(xMessage) then
       exit;
-    {
-      if Column = 0 then
-      begin
-      if xMessage.Disabled
-      and (Node = Sender.GetFirst) then with TargetCanvas do
-      begin
-      Brush.Style := bsSolid;
-      Brush.Color := clFuchsia;
-      FillRect( CellRect );
-      end;
-      Exit;
-      end;
-      }
-    NodeToMessage(Sender, Node, xMessage);
-    if not Assigned(xMessage) then
-      exit;
     if Column <= xMessage.CorrelationBindables.Count then
     begin
       with TargetCanvas do
       begin
         Brush.Style := bsSolid;
-        Brush.Color := bgCorrelationItemColor;
+        Brush.Color := _decColor(bgCorrelationItemColor);
         FillRect(CellRect);
       end;
       exit;
@@ -5415,7 +5406,7 @@ begin
         with TargetCanvas do
         begin
           Brush.Style := bsSolid;
-          Brush.Color := bgExpectedValueColor;
+          Brush.Color := _decColor(bgExpectedValueColor);
           FillRect(CellRect);
         end;
         exit;
@@ -5425,11 +5416,17 @@ begin
         with TargetCanvas do
         begin
           Brush.Style := bsSolid;
-          Brush.Color := bgNilValueColor;
+          Brush.Color := _decColor(bgNilValueColor);
           FillRect(CellRect);
         end;
         exit;
       end;
+    end;
+    with TargetCanvas do
+    begin
+      Brush.Style := bsSolid;
+      Brush.Color := _decColor(GridView.Color);
+      FillRect(CellRect);
     end;
   except
     exit;

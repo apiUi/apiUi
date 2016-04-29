@@ -71,7 +71,6 @@
       <Unit1>
         <Filename Value="..\Xml\claimlistz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ClaimListz"/>
       </Unit1>
       <Unit2>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -92,7 +91,6 @@
       <Unit5>
         <Filename Value="..\Xml\snapshotz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="snapshotz"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Xml\exceptionutils.pas"/>
@@ -110,7 +108,6 @@
       <Unit9>
         <Filename Value="htmlreportz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="htmlreportz"/>
       </Unit9>
     </Units>
   </ProjectOptions>
@@ -137,10 +134,9 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5023="True" idx5024="True" idx5025="True" idx5028="True"/>
+        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -206,7 +202,6 @@
       </Item17>
       <Item18>
         <Name Value="EStringListError"/>
-        <Enabled Value="False"/>
       </Item18>
       <Item19>
         <Name Value="EOleSysError"/>
