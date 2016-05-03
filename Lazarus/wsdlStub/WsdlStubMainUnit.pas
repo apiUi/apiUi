@@ -5363,10 +5363,9 @@ procedure TMainForm.GridViewBeforeCellPaint(Sender: TBaseVirtualTree;
   var ContentRect: TRect);
   function _decColor (aColor: TColor): TColor;
   begin
-    if Node = GridView.FocusedNode then
-      result := DecColor (aColor, 15)
-    else
-      result := aColor;
+    result := aColor;
+    if GridView.Selected[Node] then Result := DecColor(Result, 6);
+    if GridView.FocusedNode = Node then Result := DecColor(Result, 9);
   end;
 var
   xMessage: TWsdlMessage;

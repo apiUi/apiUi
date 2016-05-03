@@ -57,6 +57,7 @@ object XmlGridForm: TXmlGridForm
       TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning]
       TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
       TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+      OnAfterAutoFitColumns = GridAfterAutoFitColumns
       OnAfterCellPaint = GridAfterCellPaint
       OnBeforeCellPaint = GridBeforeCellPaint
       OnClick = GridClick

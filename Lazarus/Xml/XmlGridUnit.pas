@@ -97,6 +97,7 @@ type
     CleanAction: TAction;
     CleanMenuItem: TMenuItem;
     procedure DocumentationEditClick (Sender : TObject );
+    procedure GridAfterAutoFitColumns (Sender : TVTHeader );
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
@@ -1620,11 +1621,17 @@ end;
 procedure TXmlGridForm.GridBeforeCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
+  function _decColor (aColor: TColor): TColor;
+  begin
+    result := aColor;
+    if Sender.Selected[Node] then Result := DecColor(Result, 6);
+    if Sender.FocusedNode = Node then Result := DecColor(Result, 9);
+  end;
 begin
   with TargetCanvas do
   begin
     Brush.Style := bsSolid;
-    Brush.Color := XmlGetColor(BindColNode [Column, Node], FocusedBind);
+    Brush.Color := _decColor(XmlGetColor(BindColNode [Column, Node], FocusedBind));
     FillRect( CellRect );
   end;
 end;
@@ -1839,6 +1846,11 @@ end;
 procedure TXmlGridForm .DocumentationEditClick (Sender : TObject );
 begin
   OpenUrl(MemoIsLink(DocumentationEdit));
+end;
+
+procedure TXmlGridForm .GridAfterAutoFitColumns (Sender : TVTHeader );
+begin
+
 end;
 
 procedure TXmlGridForm .GridAfterCellPaint (Sender : TBaseVirtualTree ;

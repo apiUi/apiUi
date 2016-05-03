@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="10061"/>
+      <BuildNr Value="10068"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -108,6 +108,7 @@
       <Unit9>
         <Filename Value="htmlreportz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="htmlreportz"/>
       </Unit9>
     </Units>
   </ProjectOptions>
@@ -134,9 +135,10 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
+        <IgnoredMessages idx5023="True" idx5024="True" idx5025="True" idx5028="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

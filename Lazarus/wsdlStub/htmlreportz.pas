@@ -70,22 +70,25 @@ function htmlReportTestSummary (aProject: TWsdlProject; aList: TSnapshotList): S
             for x := 0 to xCvrg.Items.Count - 1 do
             begin
               yCvrg := xCvrg.Items.XmlItems[x] as TXmlCvrg;
-              with AddTr.hleft.vtop do
+              if not yCvrg.isIgnored then
               begin
-                AddTd.ColSpan(1).AddB(nbsp ( htmlIndent(2) + yCvrg.Name));
-                AddTd.ColSpan(1).AddXml ( htmlHorBarChartAsXml ( yCvrg.GreenCounter
-                                                               , 0
-                                                               , yCvrg.RedCounter
-                                                               )
+                with AddTr.hleft.vtop do
+                begin
+                  AddTd.ColSpan(1).AddB(nbsp ( htmlIndent(2) + yCvrg.Name));
+                  AddTd.ColSpan(1).AddXml ( htmlHorBarChartAsXml ( yCvrg.GreenCounter
+                                                                 , 0
+                                                                 , yCvrg.RedCounter
+                                                                 )
+                                          );
+                  AddTd.ColSpan(1).AddB (nbsp ( yCvrg.DisplayPercentage(False)
+                                              + ' % ('
+                                              + IntToStr (yCvrg.GreenCounter)
+                                              + '/'
+                                              + IntToStr (yCvrg.GreenCounter + yCvrg.RedCounter)
+                                              + ')'
+                                              )
                                         );
-                AddTd.ColSpan(1).AddB (nbsp ( yCvrg.DisplayPercentage(False)
-                                            + ' % ('
-                                            + IntToStr (yCvrg.GreenCounter)
-                                            + '/'
-                                            + IntToStr (yCvrg.GreenCounter + yCvrg.RedCounter)
-                                            + ')'
-                                            )
-                                      );
+                end;
               end;
             end;
             AddTr.AddTd.AddP(nbsp(''));
