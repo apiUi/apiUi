@@ -7717,6 +7717,8 @@ begin
   result := rsUndefined;
   Application.CreateForm(TShowLogDifferencesForm, xForm);
   try
+    xForm.ProgName := _ProgName;
+    xForm.StyleSheet := _wsdlStubStylesheet;
     xForm.aLogs := TLogList.Create;
     xForm.bLogs := TLogList.Create;
     xForm.ReferenceFileName := aBName;

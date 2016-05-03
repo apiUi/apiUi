@@ -133,6 +133,7 @@ type
     procedure setCompareLogOrderBy (AValue : TCompareLogOrderBy );
     procedure onSlChanged (aObject: TObject);
   public
+    ProgName, StyleSheet: String;
     ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     aLogs: TLogList;
     bLogs: TLogList;
@@ -152,7 +153,15 @@ uses
   ShellAPI,
 {$ELSE}
 {$ENDIF}
-  ShowA2BXmlUnit, dualListUnit, igGlobals, ClipBrd, vstUtils, XmlXsdParser, xmlUtilz;
+    ShowA2BXmlUnit
+  , dualListUnit
+  , igGlobals
+  , ClipBrd
+  , vstUtils
+  , XmlXsdParser
+  , xmlUtilz
+  , htmlXmlUtilz
+  ;
 
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -880,12 +889,14 @@ end;
 
 procedure TShowLogDifferencesForm.HtmlReportActionExecute(Sender: TObject);
 var
-  xXml, tableXml: TXml;
+  xXml: THtmlXml;
+  tableXml: THtmlTableXml;
   xNode: PVirtualNode;
   xData: PVSTreeRec;
   xRow: Integer;
   xRowSpan: Integer;
   xFirst: Boolean;
+  s: String;
   function vTop (aXml: TXml): TXml;
   begin
     result := aXml;
@@ -899,94 +910,51 @@ var
     begin
       with tableXml do
       begin
-        with AddXml (TXml.CreateAsString('tr', '')) do
+        with AddTr.vtop.hleft do
         begin
           if xFirst then
           begin
-            with AddXml (TXml.CreateAsString('td', IntToStr (xRow))) do
-            begin
-              AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-              AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-            end;
+            AddTd.RowSpan(xRowSpan).AddB(IntToStr(xRow));
             try
-              with AddXml (TXml.CreateAsString('td', DateTimeToStr (xData.aLog.InboundTimeStamp))) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-                AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              end;
-            except
-              with AddXml (TXml.CreateAsString('td', '_')) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-                AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              end;
+              s := DateTimeToStr (xData.aLog.InboundTimeStamp);
+            finally
+              s := '';
             end;
+            AddTd.RowSpan(xRowSpan).AddB(s);
             if Assigned (xData.aLog.Operation) then
             begin
-              with AddXml (TXml.CreateAsString('td', xData.aLog.Operation.WsdlService.Name)) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-                AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              end;
-              with AddXml (TXml.CreateAsString('td', xData.aLog.Operation.Name)) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-                AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              end;
+              AddTd.RowSpan(xRowSpan).AddB(xData.aLog.Operation.WsdlService.Name);
+              AddTd.RowSpan(xRowSpan).AddB(xData.aLog.Operation.Name);
             end
             else
             begin
-              with AddXml (TXml.CreateAsString('td', '_')) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-                AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              end;
-              with AddXml (TXml.CreateAsString('td', '_')) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-                AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              end;
+              AddTd.RowSpan(xRowSpan).AddB('_');
+              AddTd.RowSpan(xRowSpan).AddB('_');
             end;
             if Assigned (xData.aLog.Mssg) then
-            begin
-              with AddXml (TXml.CreateAsString('td', xData.aLog.Mssg.Name)) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-                AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              end;
-            end
+              AddTd.RowSpan(xRowSpan).AddB(xData.aLog.Mssg.Name)
             else
-            begin
-              with AddXml (TXml.CreateAsString('td', '_')) do
-              begin
-                AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-                AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-              end;
-            end;
-            with AddXml (TXml.CreateAsString('td', xData.aLog.CorrelationId)) do
-            begin
-              AddAttribute(TXmlAttribute.CreateAsString('rowspan', IntToStr (xRowSpan)));
-              AddAttribute(TXmlAttribute.CreateAsString('valign', 'top'));
-            end;
+              AddTd.RowSpan(xRowSpan).AddB('_');
+            AddTd.RowSpan(xRowSpan).AddB(xData.aLog.CorrelationId);
             xFirst := False;
           end;
-          AddXml (vTop (TXml.CreateAsString('td', aPrefix + aA2B.FullUQCaption + ' ')));
+          AddTd.AddB(aPrefix + aA2B.FullUQCaption + '_');
           case aA2B.ChangeKind of
-          ckModify:
-            begin
-              AddXml (vTop (TXml.CreateAsString('td', aA2B.Value + '_')));
-              AddXml (vTop (TXml.CreateAsString('td', aA2B.bValue + '_')));
-            end;
-          ckAdd:
-            begin
-              AddXml (vTop (TXml.CreateAsString('td', 'Missing element')));
-              AddXml (vTop (TXml.CreateAsString('td', '_')));
-            end;
-          ckDelete:
-            begin
-              AddXml (vTop (TXml.CreateAsString('td', 'New element')));
-              AddXml (vTop (TXml.CreateAsString('td', '_')));
-            end;
+            ckModify:
+              begin
+                AddTd.AddB(aA2B.Value + '_');
+                AddTd.AddB(aA2B.bValue + '_');
+              end;
+            ckAdd:
+              begin
+                AddTd.AddB(aA2B.Value + 'Missing element_');
+                AddTd.AddB(aA2B.bValue + '_');
+              end;
+            ckDelete:
+              begin
+                AddTd.AddB(aA2B.Value + 'New element_');
+                AddTd.AddB(aA2B.bValue + '_');
+              end;
           end;
         end;
       end;
@@ -998,56 +966,30 @@ var
     end;
   end;
 begin
-  xXml := TXml.CreateAsString('html', '');
+  xXml := htmlCreateXml(ProgName, 'Differences report');
   try
     XmlUtil.PushCursor(crHourGlass);
+    with htmlFindContentXml (xXml) do
     try
-      tableXml := xXml.AddXml (TXml.CreateAsString('table', ''));
+      tableXml := AddTable.Border(1);
       with tableXml do
       begin
-        AddAttribute(TXmlAttribute.CreateAsString('border', '1'));
-        with AddXml (Txml.CreateAsString ('tr', '')) do
+        with AddTr.vtop.hleft do
         begin
-          with AddXml (TXml.CreateAsString('td', 'wsdlStub - Differences report')) do
-            AddAttribute(TXmlAttribute.CreateAsString('colspan', '5'));
-          with AddXml (TXml.CreateAsString('td', DateToStr(now))) do
-            AddAttribute(TXmlAttribute.CreateAsString('colspan', '4'));
+          AddTh.ColSpan(5).AddB ('Messages with diffrences against reference');
+          AddTh.ColSpan(4).AddB (ReferenceFilename);
         end;
-        with AddXml (Txml.CreateAsString ('tr', '')) do
+        with AddTr.vtop.hleft do
         begin
-          with AddXml (TXml.CreateAsString('td', '_')) do
-             AddAttribute(TXmlAttribute.CreateAsString('colspan', '5'));
-          with AddXml (TXml.CreateAsString('td', '_')) do
-             AddAttribute(TXmlAttribute.CreateAsString('colspan', '4'));
-        end;
-{}
-        with AddXml (Txml.CreateAsString ('tr', '')) do
-        begin
-          with AddXml (TXml.CreateAsString('td', 'Messages with diffrences against reference')) do
-             AddAttribute(TXmlAttribute.CreateAsString('colspan', '5'));
-          with AddXml (TXml.CreateAsString('td', ReferenceFilename)) do
-             AddAttribute(TXmlAttribute.CreateAsString('colspan', '4'));
-        end;
-        with AddXml (Txml.CreateAsString ('tr', '')) do
-        begin
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Row '));
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Sent/Received '));
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Service '));
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Operation '));
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Message '));
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Correlation '));
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Tag '));
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Current Value '));
-          with AddXml (TXml.CreateAsString('td', '')) do
-            AddXml (TXml.CreateAsString('b', 'Reference Value '));
+          AddTh.AddB('Row_');
+          AddTh.AddB('Sent/Received_');
+          AddTh.AddB('Service_');
+          AddTh.AddB('Operation_');
+          AddTh.AddB('Message_');
+          AddTh.AddB('Correlation_');
+          AddTh.AddB('Tag_');
+          AddTh.AddB('Current Value_');
+          AddTh.AddB('Reference Value_');
         end;
         xNode := mainVst.GetFirst;
         xRow := 0;
@@ -1058,64 +1000,66 @@ begin
             Inc (xRow);
           if (not Assigned (xData.aLog)) then
           begin
-            with AddXml (Txml.CreateAsString ('tr', '')) do
+            with AddTr.vtop.hleft do
             begin
-              AddXml (vTop (TXml.CreateAsInteger('td', xRow)));
+              AddTd.AddB(IntToStr(xRow));
               try
-                AddXml (vTop (TXml.CreateAsString('td', DateTimeToStr (xData.bLog.InboundTimeStamp))));
+                s := DateTimeToStr (xData.bLog.InboundTimeStamp);
               except
-                AddXml (vTop (TXml.CreateAsString('td', '_')));
+                s := '_';
               end;
+              AddTd.AddB (s);
               if Assigned (xData.bLog.Operation) then
               begin
-                AddXml (vTop (TXml.CreateAsString('td', xData.bLog.Operation.WsdlService.Name)));
-                AddXml (vTop (TXml.CreateAsString('td', xData.bLog.Operation.Name)));
+                AddTd.AddB (xData.bLog.Operation.WsdlService.Name);
+                AddTd.AddB (xData.bLog.Operation.Name);
               end
               else
               begin
-                AddXml (vTop (TXml.CreateAsString('td', '_')));
-                AddXml (vTop (TXml.CreateAsString('td', '_')));
+                AddTd.AddB ('_');
+                AddTd.AddB ('_');
               end;
               if Assigned (xData.bLog.Mssg) then
-                AddXml (vTop (TXml.CreateAsString('td', xData.bLog.Mssg.Name)))
+                AddTd.AddB (xData.bLog.Mssg.Name)
               else
-                AddXml (vTop (TXml.CreateAsString('td', '_')));
-              AddXml (vTop (TXml.CreateAsString('td', xData.bLog.CorrelationId)));
-              AddXml (vTop (TXml.CreateAsString('td', 'Missing row')));
-              AddXml (vTop (TXml.CreateAsString('td', '_')));
-              AddXml (vTop (TXml.CreateAsString('td', '_')));
+                AddTd.AddB ('_');
+              AddTd.AddB (xData.bLog.CorrelationId);
+              AddTd.AddB ('Missing row');
+              AddTd.AddB ('_');
+              AddTd.AddB ('_');
             end;
           end
           else
           begin
-            if (not Assigned (xData.bLog)) then
+            if (not Assigned (xData.aLog)) then
             begin
-              with AddXml (Txml.CreateAsString ('tr', '')) do
+              with AddTr.vtop.hleft do
               begin
-                AddXml (vTop (TXml.CreateAsInteger('td', xRow)));
+                AddTd.AddB(IntToStr(xRow));
                 try
-                  AddXml (vTop (TXml.CreateAsString('td', DateTimeToStr (xData.aLog.InboundTimeStamp))));
+                  s := DateTimeToStr (xData.aLog.InboundTimeStamp);
                 except
-                  AddXml (vTop (TXml.CreateAsString('td', '_')));
+                  s := '_';
                 end;
+                AddTd.AddB (s);
                 if Assigned (xData.aLog.Operation) then
                 begin
-                  AddXml (vTop (TXml.CreateAsString('td', xData.aLog.Operation.WsdlService.Name)));
-                  AddXml (vTop (TXml.CreateAsString('td', xData.aLog.Operation.Name)));
+                  AddTd.AddB (xData.aLog.Operation.WsdlService.Name);
+                  AddTd.AddB (xData.aLog.Operation.Name);
                 end
                 else
                 begin
-                  AddXml (vTop (TXml.CreateAsString('td', '_')));
-                  AddXml (vTop (TXml.CreateAsString('td', '_')));
+                  AddTd.AddB ('_');
+                  AddTd.AddB ('_');
                 end;
                 if Assigned (xData.aLog.Mssg) then
-                  AddXml (vTop (TXml.CreateAsString('td', xData.aLog.Mssg.Name)))
+                  AddTd.AddB (xData.aLog.Mssg.Name)
                 else
-                  AddXml (vTop (TXml.CreateAsString('td', '_')));
-                AddXml (vTop (TXml.CreateAsString('td', xData.aLog.CorrelationId)));
-                AddXml (vTop (TXml.CreateAsString('td', 'New row')));
-                AddXml (vTop (TXml.CreateAsString('td', '_')));
-                AddXml (vTop (TXml.CreateAsString('td', '_')));
+                  AddTd.AddB ('_');
+                AddTd.AddB (xData.aLog.CorrelationId);
+                AddTd.AddB ('New row');
+                AddTd.AddB ('_');
+                AddTd.AddB ('_');
               end;
             end
             else
@@ -1138,7 +1082,7 @@ begin
     finally
       XmlUtil.PopCursor;
     end;
-    XmlUtil.presentAsHTML('wsdlStub - Differences report', xXml.asHtmlString{.Text});
+    XmlUtil.presentAsHTML('wsdlStub - Differences report', htmlXmlAsString (xXml, Stylesheet));
   finally
     FreeAndNil (xXml);
   end;
