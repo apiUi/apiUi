@@ -3636,6 +3636,8 @@ begin
         begin
           Bind ('Req', invokeList.Operations[x].reqBind, fExpressBefore);
           Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressBefore);
+          Bind ('Req', invokeList.Operations[x].reqBind, fExpressAfter);
+          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressAfter);
         end;
       end;
     end;
