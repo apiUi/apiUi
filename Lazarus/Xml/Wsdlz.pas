@@ -3636,8 +3636,6 @@ begin
         begin
           Bind ('Req', invokeList.Operations[x].reqBind, fExpressBefore);
           Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressBefore);
-          Bind ('Req', invokeList.Operations[x].reqBind, fExpressAfter);
-          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressAfter);
         end;
       end;
     end;
@@ -3779,12 +3777,15 @@ begin
     fExpressAfter.Database := _WsdlDbsConnector;
     Bind ('Req', reqBind, fExpressAfter);
     Bind ('Rpy', rpyBind, fExpressAfter);
-    for x := 0 to invokeList.Count - 1 do
+    if Assigned (invokeList) then
     begin
-      if Assigned (invokeList.Operations[x]) then with invokeList.Operations[x] do
+      for x := 0 to invokeList.Count - 1 do
       begin
-        Bind ('Req', reqBind, fExpressAfter);
-        Bind ('Rpy', rpyBind, fExpressAfter);
+        if Assigned (invokeList.Operations[x]) then
+        begin
+          Bind ('Req', invokeList.Operations[x].reqBind, fExpressAfter);
+          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressAfter);
+        end;
       end;
     end;
     if fltBind is TIpmItem then
