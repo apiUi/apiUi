@@ -93,6 +93,7 @@ type
     fLogLock: TCriticalSection;
     fClearedLogs: TLogList;
     fClearedSnapshots: TSnapshotList;
+    fTacoInterface: TTacoInterface;
     function GetAbortPressed: Boolean;
     function getDoClearSnapshots : Boolean ;
     function getDoClearLogs : Boolean ;
@@ -126,6 +127,7 @@ type
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure setDoClearSnapshots (AValue : Boolean );
     procedure setDoClearLogs (AValue : Boolean );
+    procedure setOnNeedTacoHostData (AValue : TOnNeedTacoInterfaceData );
     procedure SMTPServerMailFrom(ASender: TIdSMTPServerContext;
       const AAddress: string; AParams: TStrings; var VAction: TIdMailFromReply);
     procedure SMTPServerMsgReceive(ASender: TIdSMTPServerContext; AMsg: TStream;
@@ -348,6 +350,7 @@ type
       var ConnectionString, UserID, Password: WideString;
       var ConnectOptions: TConnectOption; var EventStatus: TEventStatus);
     {$ENDIF}
+    property OnNeedTacoHostData: TOnNeedTacoInterfaceData write setOnNeedTacoHostData;
     property doClearLogs: Boolean read getDoClearLogs write setDoClearLogs;
     property doClearSnapshots: Boolean read getDoClearSnapshots write setDoClearSnapshots;
     property IsActive: Boolean read fIsActive;
@@ -1202,6 +1205,7 @@ begin
   OnRestartEvent := RestartCommand;
   OnReactivateEvent := ReactivateCommand;
   OnReloadDesignEvent := ReloadDesignCommand;
+  fTacoInterface := TTacoInterface.Create(nil, nil);
   fLogLock := TCriticalSection.Create;
   LogFilter := TLogFilter.Create;
   Wsdls := TStringList.Create;
@@ -1317,6 +1321,7 @@ end;
 destructor TWsdlProject.Destroy;
 begin
   Clear;
+  FreeAndNil (fTacoInterface);
   FreeAndNil (mmqqMqInterface);
   FreeAndNil (HTTPProxyServer);
   FreeAndNil (HttpServer);
@@ -3967,14 +3972,7 @@ begin
   aReplyHeader:= '';
   if not Assigned (aOperation)
     then raise Exception.Create('SendOperationTacoMessage: null arguments');
-  Taco := TTacoInterface.Create (nil, nil);
-  try
-    Taco.UserName := aOperation.WsdlService.UserName;
-    Taco.Password := DecryptString(aOperation.WsdlService.Password); // bad news
-    result := Taco.RequestReply(aMessage, 0, aOperation.TacoConfigXml);
-  finally
-    FreeAndNil (Taco);
-  end;
+  result := fTacoInterface.RequestReply(aMessage, 0, aOperation.TacoConfigXml);
 end;
 {$else}
 begin
@@ -6429,6 +6427,12 @@ begin
   finally
     ReleaseLogLock;
   end;
+end;
+
+procedure TWsdlProject .setOnNeedTacoHostData (
+  AValue : TOnNeedTacoInterfaceData );
+begin
+  fTacoInterface.NeedHostData := AValue;
 end;
 
 function TWsdlProject.ProcessInboundReply(aLogItem, rLogItem: TLog): String;

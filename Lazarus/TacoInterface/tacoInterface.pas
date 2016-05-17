@@ -17,6 +17,7 @@ uses
    , StrUtils
    , Xmlz
    , IdTCPClient
+   , IdSync
    ;
 
 type
@@ -25,11 +26,17 @@ type
   TOnHaveTacoMessage = procedure ( aTacoInterface: TTacoInterface
                                  ; aClientId, aMessage: AnsiString
                                  ) of Object;
+  TOnNeedTacoInterfaceData = procedure (aTacoInterface: TTacoInterface) of Object;
+
+  { TTacoInterface }
 
   TTacoInterface = class
   private
+    fAuthorized: Boolean;
+    fAuthorisation : String ;
     fClient: TIdTCPClient;
     fHost: String;
+    fNeedHostData : TOnNeedTacoInterfaceData ;
     fPort: Integer;
     fOnHaveTacoMessage: TOnHaveTacoMessage;
     fReqTime: TDateTime;
@@ -38,6 +45,10 @@ type
     fReady: Boolean;
     fReturnType: TRtReturnType;
     fReply: AnsiString;
+    procedure clientConnected(Sender: TObject);
+    procedure clientDisconnected(Sender: TObject);
+    procedure syncDoAuthorize;
+    procedure doAuthorize;
     function tacoString (aString: AnsiString): AnsiString;
     function tacoRequest (aRequest, aUserName, aPassword: AnsiString; aConfig: TXml): AnsiString;
     function tacoCopy (aString: AnsiString; var x: Integer): AnsiString;
@@ -46,7 +57,9 @@ type
     UserName, Password: AnsiString;
     property Host: String read fHost write fHost;
     property Port: Integer read fPort write fPort;
+    property Authorisation: String read fAuthorisation write fAuthorisation;
     property ReturnType: TRtReturnType read fReturnType;
+    property NeedHostData: TOnNeedTacoInterfaceData write fNeedHostData;
     procedure doTerminate;
     procedure Connect;
     procedure Disconnect;
@@ -84,6 +97,7 @@ constructor TTacoInterface.Create(Owner: TComponent;
 begin
   fOnHaveTacoMessage := aOnHaveTacoMessage;
   fClient := TIdTCPClient.Create(nil);
+  fAuthorized := False;
 end;
 
 constructor TTacoInterface.CreateFromXml(aXml: TXml;
@@ -138,6 +152,8 @@ var
   xHost: String;
   xPort: Integer;
 begin
+  if not fAuthorized then
+    doAuthorize;
   fReturnType := rtUndefined;
   xHost := aConfigAsXml.Items.XmlValueByTag['Host'];
   xPort := aConfigAsXml.Items.XmlIntegerByTag['Port'];
@@ -233,6 +249,79 @@ begin
     end;
   end;
   result := result + tacoString (aRequest) + '<END-OF-DATA>';
+end;
+
+procedure TTacoInterface .clientConnected (Sender : TObject );
+begin
+  fAuthorized := False;
+end;
+
+procedure TTacoInterface .clientDisconnected (Sender : TObject );
+begin
+  fAuthorized := False;
+end;
+
+procedure TTacoInterface .syncDoAuthorize ;
+begin
+  fNeedHostData(Self);
+end;
+
+procedure TTacoInterface .doAuthorize ;
+begin
+  if not Assigned (fNeedHostData) then
+    raise Exception.Create('TTacoInterface: no OnNeedHostData assigned');
+  Authorisation := '';
+  fClient.Disconnect;
+  with TIdSync.Create do
+  begin
+    try
+      SynchronizeMethod (syncDoAuthorize);
+    finally
+      free;
+    end;
+  end;
+  if Authorisation = '' then
+    raise Exception.Create('TacoInterface: aborted due to user action');
+  fClient.Host := Host;
+  fClient.Port := Port;
+  fClient.Connect;
+  fReady := False;
+  fTacoReply := '';
+  fClient.IOHandler.WriteLn ( '<AUTHORISE>'
+                            + tacoString(Authorisation)
+                            + tacoString(UserName)
+                            + '<END-OF-DATA>'
+                            );
+  while not fReady do
+  begin
+    fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
+    fReady := (system.Length(fTacoReply) > 12)
+          and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
+            ;
+  end;
+  if fTacoReply = '<NOT-AUTHORISED><END-OF-DATA>' then
+  begin
+    fAuthorized := False;
+    Raise Exception.Create('Not authorised');
+  end;
+  if fTacoReply = '<AUTHORISE-FAILED><END-OF-DATA>' then
+  begin
+    fAuthorized := False;
+    Raise Exception.Create(
+      'Authorisation failed; Please supply correct authorisation string');
+  end;
+  if fTacoReply = '<AUTHORISE-CLOSED><END-OF-DATA>' then
+  begin
+    fAuthorized := False;
+    Raise Exception.Create('Authorisation failed.' + LineEnding +
+        'For security reasons, the server has stopped running;' + LineEnding +
+        'Restart the server and supply the new authorisation string');
+  end;
+  if fTacoReply = '<AUTHORISE-SUCCESSFUL><END-OF-DATA>' then
+  begin
+    fAuthorized := True;
+    exit;
+  end;
 end;
 
 function TTacoInterface.tacoString(aString: AnsiString): AnsiString;

@@ -45,7 +45,9 @@ uses
    , SwiftUnit
    , ParserClasses
    , types
-   , ClaimListz;
+   , ClaimListz
+   , tacoInterface
+   ;
 
 type
   THackControl = class(TWinControl)
@@ -541,6 +543,7 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure NeedTacoHostData (Sender: TTacoInterface);
     procedure AbortActionUpdate (Sender : TObject );
     procedure BrowseMqActionHint (var HintStr : string ; var CanShow : Boolean
       );
@@ -1248,7 +1251,9 @@ uses
   xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, base64, xmlxsdparser,
   HashUtilz, xmlio, xmlzConsts, AbZipper
-  , htmlXmlUtilz, exceptionUtils, htmlreportz;
+  , htmlXmlUtilz, exceptionUtils, htmlreportz
+  , PromptTacoUnit
+  ;
 {$IFnDEF FPC}
   {$R *.dfm}
 {$ELSE}
@@ -6470,6 +6475,7 @@ begin
   sc.OnQuitEvent := QuitCommand;
   se.OnRestartEvent := RestartCommand;
   se.OnReloadDesignEvent := ReloadDesignCommand;
+  se.OnNeedTacoHostData := NeedTacoHostData;
   DecryptString := doDecryptString;
   EncryptString := doEncryptString;
   xmlUtil.doExpandFull := True;
@@ -13098,6 +13104,27 @@ begin
     begin
       se.doClearSnapshots := True;
     end;
+  end;
+end;
+
+procedure TMainForm.NeedTacoHostData (Sender : TTacoInterface );
+var
+  xForm: TPromptTacoForm;
+begin
+  Application.CreateForm(TPromptTacoForm, xForm);
+  try
+    xForm.Address := Sender.Host;
+    xForm.Port := Sender.Port;
+    xForm.ShowModal;
+    if xForm.ModalResult = mrOk then
+    begin
+      Sender.Host := xForm.Address;
+      Sender.Port := xForm.Port;
+      Sender.Authorisation := xForm.Authorisation;
+      Sender.UserName := xmlio.GetUserName;
+    end;
+  finally
+    FreeAndNil(xForm);
   end;
 end;
 
