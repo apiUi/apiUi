@@ -976,6 +976,8 @@ type
     fAbortPressed: Boolean;
     doNotify: Boolean;
     GetAuthError: String;
+    tacoHost: String;
+    tacoPort: Integer;
     function GetAuthorization: Boolean;
     function GetAuthorizationBaseString: String;
     procedure SetOperationZoomPath(aOperation: TWsdlOperation);
@@ -6580,6 +6582,8 @@ begin
     ['LogFilter.UnexpectedValuesEnabled', False];
   se.LogFilter.RemarksEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.RemarksEnabled', False];
+  tacoHost := xIniFile.StringByNameDef['tacoHost', 'localhost'];
+  tacoPort := xIniFile.IntegerByNameDef['tacoPort', 1025];
   CollapseHeaders := xIniFile.BooleanByNameDef['CollapseHeaders', True];
   InWsdlTreeView.NodeDataSize := SizeOf(TXmlTreeRec);
   InWsdlTreeView.RootNodeCount := 0;
@@ -6749,6 +6753,8 @@ begin
   xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
   xIniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
   // xIniFile.BooleanByName ['LogFilter.Enabled'] := se.LogFilter.Enabled;
+  xIniFile.StringByName['tacoHost'] := tacoHost;
+  xIniFile.IntegerByName['tacoPort'] := tacoPort;
   xIniFile.IntegerByName['LogFilter.FilterStyle'] := Ord
     (se.LogFilter.FilterStyle);
   xIniFile.BooleanByName['LogFilter.MatchAny'] := se.LogFilter.MatchAny;
@@ -12673,6 +12679,7 @@ begin
         Assigned(WsdlOperation)
     and Assigned(WsdlMessage)
     and (WsdlOperation.StubAction = saRequest)
+    and (WsdlOperation.StubTransport <> ttTaco) // server is single threaded
     and (NumberOfBlockingThreads < 1)
     ;
 end;
@@ -13113,13 +13120,15 @@ var
 begin
   Application.CreateForm(TPromptTacoForm, xForm);
   try
-    xForm.Address := Sender.Host;
-    xForm.Port := Sender.Port;
+    xForm.Address := tacoHost;
+    xForm.Port := tacoPort;
     xForm.ShowModal;
     if xForm.ModalResult = mrOk then
     begin
-      Sender.Host := xForm.Address;
-      Sender.Port := xForm.Port;
+      tacoHost := xForm.Address;
+      Sender.Host := tacoHost;
+      tacoPort := xForm.Port;
+      Sender.Port := tacoPort;
       Sender.Authorisation := xForm.Authorisation;
       Sender.UserName := xmlio.GetUserName;
     end;

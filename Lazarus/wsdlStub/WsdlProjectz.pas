@@ -1544,6 +1544,8 @@ var
 begin
   abortPressed := not aActive;
   try
+    if Assigned (fTacoInterface) then
+      fTacoInterface.Disconnect; // (re)connection at first call
     for x := 0 to Listeners.stompInterfaces.Count - 1 do
       (Listeners.stompInterfaces.Objects[x] as TStompInterface).Disconnect;
     for x := mqGetThreads.Count - 1 downto 0 do
