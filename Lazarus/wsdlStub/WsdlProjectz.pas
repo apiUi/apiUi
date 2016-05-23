@@ -128,6 +128,7 @@ type
     procedure setDoClearSnapshots (AValue : Boolean );
     procedure setDoClearLogs (AValue : Boolean );
     procedure setOnNeedTacoHostData (AValue : TOnNeedTacoInterfaceData );
+    procedure setOnTacoAutorize (AValue : TNotifyEvent );
     procedure SMTPServerMailFrom(ASender: TIdSMTPServerContext;
       const AAddress: string; AParams: TStrings; var VAction: TIdMailFromReply);
     procedure SMTPServerMsgReceive(ASender: TIdSMTPServerContext; AMsg: TStream;
@@ -251,6 +252,7 @@ type
     procedure DelayMS (aDelayMS: Integer);
     procedure CreateLogReply (aLog: TLog; var aProcessed: Boolean; aIsActive: Boolean);
     procedure Clean;
+    procedure TacoPingPong;
     function ProjectDesignAsString (aMainFileName: String): String;
 {}
 {}
@@ -351,6 +353,7 @@ type
       var ConnectOptions: TConnectOption; var EventStatus: TEventStatus);
     {$ENDIF}
     property OnNeedTacoHostData: TOnNeedTacoInterfaceData write setOnNeedTacoHostData;
+    property OnTacoAutorize: TNotifyEvent write setOnTacoAutorize;
     property doClearLogs: Boolean read getDoClearLogs write setDoClearLogs;
     property doClearSnapshots: Boolean read getDoClearSnapshots write setDoClearSnapshots;
     property IsActive: Boolean read fIsActive;
@@ -6437,6 +6440,11 @@ begin
   fTacoInterface.NeedHostData := AValue;
 end;
 
+procedure TWsdlProject .setOnTacoAutorize (AValue : TNotifyEvent );
+begin
+  fTacoInterface.OnAuthorize := AValue;
+end;
+
 function TWsdlProject.ProcessInboundReply(aLogItem, rLogItem: TLog): String;
 // rLogItem is already on display so locking needed on changing
 var
@@ -7045,6 +7053,11 @@ begin
   finally
     ReleaseLock;
   end;
+end;
+
+procedure TWsdlProject .TacoPingPong ;
+begin
+  fTacoInterface.PingPong;
 end;
 
 procedure TWsdlProject.Clear;

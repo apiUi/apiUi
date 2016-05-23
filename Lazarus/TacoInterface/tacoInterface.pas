@@ -36,9 +36,9 @@ type
     fAuthorized: Boolean;
     fAuthorisation : String ;
     fClient: TIdTCPClient;
-    fPingPongTimer: TTimer;
     fHost: String;
     fNeedHostData : TOnNeedTacoInterfaceData ;
+    fOnAuthorize : TNotifyEvent ;
     fPort: Integer;
     fOnHaveTacoMessage: TOnHaveTacoMessage;
     fReqTime: TDateTime;
@@ -47,11 +47,11 @@ type
     fReady: Boolean;
     fReturnType: TRtReturnType;
     fReply: AnsiString;
-    procedure OnPingPongTimer (Sender: TObject);
     procedure clientConnected(Sender: TObject);
     procedure clientDisconnected(Sender: TObject);
     procedure setAuthorized (AValue : boolean );
     procedure syncDoAuthorize;
+    procedure syncOnAuthorize;
     procedure doAuthorize;
     function tacoString (aString: AnsiString): AnsiString;
     function tacoRequest (aRequest: AnsiString; aConfig: TXml): AnsiString;
@@ -65,12 +65,14 @@ type
     property Authorisation: String read fAuthorisation write fAuthorisation;
     property ReturnType: TRtReturnType read fReturnType;
     property NeedHostData: TOnNeedTacoInterfaceData write fNeedHostData;
+    property OnAuthorize: TNotifyEvent read fOnAuthorize write fOnAuthorize;
     procedure doTerminate;
     procedure Connect;
     procedure Disconnect;
     constructor Create(Owner: TComponent; aOnHaveTacoMessage: TOnHaveTacoMessage);
     constructor CreateFromXml(aXml: TXml; aOnHaveTacoMessage: TOnHaveTacoMessage);
     destructor Destroy; override;
+    procedure PingPong;
     function RequestReply ( aRequest: AnsiString
                           ; aTimeOut: Integer
                           ; aConfigAsXml: TXml
@@ -103,10 +105,6 @@ begin
   fOnHaveTacoMessage := aOnHaveTacoMessage;
   fClient := TIdTCPClient.Create(nil);
   fClient.OnDisconnected := clientDisconnected;
-  fPingPongTimer := TTimer.Create(nil);
-  fPingPongTimer.OnTimer := OnPingPongTimer;
-  fPingPongTimer.Enabled := False;
-  fPingPongTimer.Interval := 5 * 1000;
   Authorized := False;
 end;
 
@@ -120,8 +118,25 @@ destructor TTacoInterface.Destroy;
 begin
   fClient.Disconnect;
   fClient.Free;
-  fPingPongTimer.Free;
   inherited;
+end;
+
+procedure TTacoInterface.PingPong ;
+begin
+  if not Authorized then
+    Exit;
+  fReturnType := rtUndefined;
+  fReady := False;
+  fTacoReply := '';
+  fClient.IOHandler.WriteLn('<PING><END-OF-DATA>');
+  while not fReady do
+  begin
+    fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
+    fReady := (system.Length(fTacoReply) > 12)
+          and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
+            ;
+  end;
+  EvaluateResponse;
 end;
 
 procedure TTacoInterface.Disconnect;
@@ -179,24 +194,19 @@ begin
   doAuthorize;
   if not Authorized then
     Exit;
-  fPingPongTimer.Enabled := False;
-  try
-    fReturnType := rtUndefined;
-    fReady := False;
-    fTacoReply := '';
-    fClient.IOHandler.WriteLn(tacoRequest(aRequest, aConfigAsXml));
-    while not fReady do
-    begin
-      fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
-      fReady := (system.Length(fTacoReply) > 12)
-            and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
-              ;
-    end;
-    EvaluateResponse;
-    result := fReply;
-  finally
-    fPingPongTimer.Enabled := Authorized;
+  fReturnType := rtUndefined;
+  fReady := False;
+  fTacoReply := '';
+  fClient.IOHandler.WriteLn(tacoRequest(aRequest, aConfigAsXml));
+  while not fReady do
+  begin
+    fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
+    fReady := (system.Length(fTacoReply) > 12)
+          and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
+            ;
   end;
+  EvaluateResponse;
+  result := fReply;
 end;
 
 function TTacoInterface.tacoCopy(aString: AnsiString;
@@ -265,23 +275,6 @@ begin
   result := result + tacoString (aRequest) + '<END-OF-DATA>';
 end;
 
-procedure TTacoInterface .OnPingPongTimer (Sender : TObject );
-begin
-  if not Authorized then
-    Exit;
-  fReady := False;
-  fTacoReply := '';
-  fClient.IOHandler.WriteLn ( '<PING><END-OF-DATA>');
-  while not fReady do
-  begin
-    fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
-    fReady := (system.Length(fTacoReply) > 12)
-          and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
-            ;
-  end;
-  EvaluateResponse;
-end;
-
 procedure TTacoInterface .clientConnected (Sender : TObject );
 begin
   Authorized := False;
@@ -296,12 +289,26 @@ procedure TTacoInterface .setAuthorized (AValue : boolean );
 begin
   if fAuthorized = AValue then Exit ;
   fAuthorized := AValue ;
-  fPingPongTimer.Enabled := AValue;
+  if Assigned (fOnAuthorize) then
+    with TIdSync.Create do
+    begin
+      try
+        SynchronizeMethod (syncOnAuthorize);
+      finally
+        free;
+      end;
+    end;
 end;
 
 procedure TTacoInterface .syncDoAuthorize ;
 begin
   fNeedHostData(Self);
+end;
+
+procedure TTacoInterface .syncOnAuthorize ;
+begin
+  IF Assigned (fOnAuthorize) then
+    fOnAuthorize (self);
 end;
 
 procedure TTacoInterface .doAuthorize ;

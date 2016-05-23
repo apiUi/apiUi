@@ -87,6 +87,7 @@ type
     PromoteToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
     SnapshotsPopupMenu : TPopupMenu ;
+    PingPongTimer : TTimer ;
     ToolButton65 : TToolButton ;
     WriteSnapshotsInformationAction : TAction ;
     ReadSnapshotInformationAction : TAction ;
@@ -544,6 +545,7 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure NeedTacoHostData (Sender: TTacoInterface);
+    procedure OnTacoAuthorize (Sender: TObject);
     procedure AbortActionUpdate (Sender : TObject );
     procedure BrowseMqActionHint (var HintStr : string ; var CanShow : Boolean
       );
@@ -567,6 +569,7 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
+    procedure PingPongTimerTimer (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
     procedure SnapshotCompareMenuitemClick(Sender: TObject);
     procedure SnapshotPromoteToReferenceMenuItemClick (Sender : TObject );
@@ -6478,6 +6481,7 @@ begin
   se.OnRestartEvent := RestartCommand;
   se.OnReloadDesignEvent := ReloadDesignCommand;
   se.OnNeedTacoHostData := NeedTacoHostData;
+  se.OnTacoAutorize := OnTacoAuthorize;
   DecryptString := doDecryptString;
   EncryptString := doEncryptString;
   xmlUtil.doExpandFull := True;
@@ -12854,6 +12858,11 @@ begin
   end;
 end;
 
+procedure TMainForm.PingPongTimerTimer (Sender : TObject );
+begin
+  se.TacoPingPong;
+end;
+
 procedure TMainForm .ShowSnapshotDifferencesActionExecute (Sender : TObject );
 var
   fNode, nNode: PVirtualNode;
@@ -13135,6 +13144,12 @@ begin
   finally
     FreeAndNil(xForm);
   end;
+end;
+
+procedure TMainForm .OnTacoAuthorize (Sender : TObject );
+begin
+  with Sender as TTacoInterface do
+    PingPongTimer.Enabled := Authorized;
 end;
 
 procedure TMainForm .AbortActionUpdate (Sender : TObject );

@@ -9659,4 +9659,10 @@ object MainForm: TMainForm
       OnClick = SnapshotShowDetailsMenuitemClick
     end
   end
+  object PingPongTimer: TTimer
+    Enabled = False
+    OnTimer = PingPongTimerTimer
+    left = 80
+    top = 72
+  end
 end
