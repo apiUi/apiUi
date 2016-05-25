@@ -36,7 +36,7 @@ object AboutBox: TAboutBox
     Height = 13
     Top = 46
     Width = 186
-    Caption = 'Copyright © 2009 - 2015 Jan Bouwman'
+    Caption = 'Copyright © 2009 - 2016 Jan Bouwman'
     ParentColor = False
   end
   object LicensedLabel: TLabel

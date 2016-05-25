@@ -7057,7 +7057,11 @@ end;
 
 procedure TWsdlProject .TacoPingPong ;
 begin
-  fTacoInterface.PingPong;
+  try
+    fTacoInterface.PingPong;
+  except
+    fTacoInterface.Disconnect;
+  end;
 end;
 
 procedure TWsdlProject.Clear;

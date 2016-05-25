@@ -955,6 +955,8 @@ type
     property WsdlMessage: TWsdlMessage read getWsdlMessage write setWsdlMessage;
     property xmlViewType: TxvViewType read getXmlViewType;
   private
+    enableTacoPingPong: Boolean;
+    intervalTacoPingPong: Integer;
     editingNode: PVirtualNode;
     notifyTabCaption, logTabCaption: String;
     notifyTabImageIndex: Integer;
@@ -4287,6 +4289,14 @@ begin
         AddXml(TXml.CreateAsString('ExpectedValues',
             ColorToHtml(bgExpectedValueColor)));
       end;
+    end;
+  end;
+  with result.AddXml(TXml.CreateAsString('TaCo', '')) do
+  begin
+    with AddXml(TXml.CreateAsString('pingpong', '')) do
+    begin
+      AddXml(TXml.CreateAsBoolean('Enabled', enableTacoPingPong));
+      AddXml(TXml.CreateAsInteger('interval', intervalTacoPingPong));
     end;
   end;
   with result.AddXml(TXml.CreateAsString('RemoteControl', '')) do
@@ -12458,6 +12468,8 @@ begin
   if not Assigned(aXml) then
     exit;
 
+  enableTacoPingPong := True;
+  intervalTacoPingPong := 5 * 60 * 1000;
   xmlUtil.doConfirmRemovals := True;
   xmlUtil.doCollapseOnUncheck := True;
   xmlUtil.doExpandOnCheck := True;
@@ -12517,6 +12529,16 @@ begin
           se.ViaProxyServer];
         se.ViaProxyPort := yXml.Items.XmlCheckedIntegerByTagDef['Port',
           se.ViaProxyPort];
+      end;
+    end;
+    xXml := XmlCheckedItemByTag['TaCo'];
+    if Assigned(xXml) then with xXml.Items do
+    begin
+      yXml := XmlCheckedItemByTag['pingpong'];
+      if Assigned (yXml) then with yXml.Items do
+      begin
+        enableTacoPingPong := XmlCheckedBooleanByTagDef['Enabled', enableTacoPingPong];
+        intervalTacoPingPong := XmlCheckedIntegerByTagDef['interval', intervalTacoPingPong];
       end;
     end;
     xXml := XmlCheckedItemByTag['RemoteControl'];
@@ -13148,8 +13170,9 @@ end;
 
 procedure TMainForm .OnTacoAuthorize (Sender : TObject );
 begin
+  PingPongTimer.Interval := intervalTacoPingPong;
   with Sender as TTacoInterface do
-    PingPongTimer.Enabled := Authorized;
+    PingPongTimer.Enabled := (Authorized and enableTacoPingPong);
 end;
 
 procedure TMainForm .AbortActionUpdate (Sender : TObject );

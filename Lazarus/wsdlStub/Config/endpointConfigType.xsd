@@ -671,16 +671,6 @@ Specified string is appended to the message body on sending a request, is a work
 	</xs:complexType>
 	<xs:complexType name="tacoConfigType">
 		<xs:sequence>
-			<xs:element name="Host" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>DNS name or IP affress</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Port" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>Port number</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="messageBroker" type="tns:tacoMessageBrokerType"/>
 		</xs:sequence>
 	</xs:complexType>
@@ -710,6 +700,27 @@ Specified string is appended to the message body on sending a request, is a work
 						<xs:enumeration value="Abort">
 							<xs:annotation>
 								<xs:documentation>Abort transaction</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SBulk" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="No">
+							<xs:annotation>
+								<xs:documentation>Do not use SBULK</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="NormalIO">
+							<xs:annotation>
+								<xs:documentation>Use SBUK with Normal IO</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="LargeIO">
+							<xs:annotation>
+								<xs:documentation>Use SBULK with Large IO</xs:documentation>
 							</xs:annotation>
 						</xs:enumeration>
 					</xs:restriction>

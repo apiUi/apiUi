@@ -18,6 +18,7 @@ uses
    , Xmlz
    , IdTCPClient
    , IdSync
+   , SyncObjs
    , ExtCtrls
    ;
 
@@ -47,6 +48,7 @@ type
     fReady: Boolean;
     fReturnType: TRtReturnType;
     fReply: AnsiString;
+    fLock: TCriticalSection;
     procedure clientConnected(Sender: TObject);
     procedure clientDisconnected(Sender: TObject);
     procedure setAuthorized (AValue : boolean );
@@ -102,6 +104,7 @@ end;
 constructor TTacoInterface.Create(Owner: TComponent;
   aOnHaveTacoMessage: TOnHaveTacoMessage);
 begin
+  fLock := SyncObjs.TCriticalSection.Create;
   fOnHaveTacoMessage := aOnHaveTacoMessage;
   fClient := TIdTCPClient.Create(nil);
   fClient.OnDisconnected := clientDisconnected;
@@ -118,25 +121,31 @@ destructor TTacoInterface.Destroy;
 begin
   fClient.Disconnect;
   fClient.Free;
+  fLock.Free;
   inherited;
 end;
 
 procedure TTacoInterface.PingPong ;
 begin
-  if not Authorized then
-    Exit;
-  fReturnType := rtUndefined;
-  fReady := False;
-  fTacoReply := '';
-  fClient.IOHandler.WriteLn('<PING><END-OF-DATA>');
-  while not fReady do
-  begin
-    fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
-    fReady := (system.Length(fTacoReply) > 12)
-          and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
-            ;
+  fLock.Acquire;
+  try
+    if not Authorized then
+      Exit;
+    fReturnType := rtUndefined;
+    fReady := False;
+    fTacoReply := '';
+    fClient.IOHandler.WriteLn('<PING><END-OF-DATA>');
+    while not fReady do
+    begin
+      fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
+      fReady := (system.Length(fTacoReply) > 12)
+            and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
+              ;
+    end;
+    EvaluateResponse;
+  finally
+    fLock.Release;
   end;
-  EvaluateResponse;
 end;
 
 procedure TTacoInterface.Disconnect;
@@ -155,7 +164,9 @@ var
   x: Integer;
 begin
   fReply := '';
-  if fTacoReply = '<PONG><END-OF-DATA>' then
+  if (fTacoReply = '<PONG><OK><END-OF-DATA>')
+  or (fTacoReply = '<PONG><END-OF-DATA>')
+  then
   begin
     fReturnType := rtReply;
     Exit;
@@ -191,22 +202,27 @@ var
   xHost: String;
   xPort: Integer;
 begin
-  doAuthorize;
-  if not Authorized then
-    Exit;
-  fReturnType := rtUndefined;
-  fReady := False;
-  fTacoReply := '';
-  fClient.IOHandler.WriteLn(tacoRequest(aRequest, aConfigAsXml));
-  while not fReady do
-  begin
-    fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
-    fReady := (system.Length(fTacoReply) > 12)
-          and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
-            ;
+  fLock.Acquire;
+  try
+    doAuthorize;
+    if not Authorized then
+      Exit;
+    fReturnType := rtUndefined;
+    fReady := False;
+    fTacoReply := '';
+    fClient.IOHandler.WriteLn(tacoRequest(aRequest, aConfigAsXml));
+    while not fReady do
+    begin
+      fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
+      fReady := (system.Length(fTacoReply) > 12)
+            and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
+              ;
+    end;
+    EvaluateResponse;
+    result := fReply;
+  finally
+    fLock.Release;
   end;
-  EvaluateResponse;
-  result := fReply;
 end;
 
 function TTacoInterface.tacoCopy(aString: AnsiString;
@@ -244,6 +260,11 @@ begin
       result := result + 'T';
     if s = 'Abort' then
       result := result + 'A';
+    s := xXml.Items.XmlValueByTag['SBulk'];
+    if s = 'NormalIO' then
+      result := result + '-B1';
+    if s = 'LargeIO' then
+      result := result + '-B4';
     result := result + '>';
     result := result + tacoString (xXml.Items.XmlValueByTag['Monitor'])
                      + tacoString (xXml.Items.XmlValueByTag['Server'])

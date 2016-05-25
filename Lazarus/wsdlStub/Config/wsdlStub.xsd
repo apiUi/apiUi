@@ -1080,7 +1080,7 @@ When "true", wsdlStub will expand xml nodes on check by the user</xs:documentati
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="Http">
+				<xs:element name="Http" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Hypertext Transfer Protocol
 Functions as a request-response protocol in the client-server configurations.
@@ -1088,23 +1088,23 @@ Functions as a request-response protocol in the client-server configurations.
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="ListenQueue">
+							<xs:element name="ListenQueue" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default '15'</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="MaxConnections" type="xs:integer">
+							<xs:element name="MaxConnections" type="xs:integer" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default: '15'</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="ProxyServer">
+							<xs:element name="ProxyServer" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Allows you to view Http messages that wsdlStub sends over Http in proxy-tracers</xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="Enabled" type="xs:boolean">
+										<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>Default 'false';</xs:documentation>
 											</xs:annotation>
@@ -1125,7 +1125,7 @@ Functions as a request-response protocol in the client-server configurations.
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="Mq">
+				<xs:element name="Mq" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>IBM(C) Websphere MQ;
 Using Mq requires MQ to be installed on the machine where wsdlStub is running.
@@ -1167,6 +1167,43 @@ Max number of MQ working threads that will be active simultaniously</xs:document
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="TaCo" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>TaCo - Tandem Communication Protocol
+Developed for Rabobank by Lars Jansen and Jan Bouwman
+</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="pingpong" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Enable PingPong if you want to keep your TaCo connection healthywhen no other requests are send using this transport protocol.
+New settings become active on (re)connecting to the TaCo server.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Default 'true'</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="interval" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Default "300000" which is 5 miutes in milliseconds.
+Minimum value "30000" which is half a minute in milliseconds.</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:integer">
+													<xs:minInclusive value="30000"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="RemoteControl" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>RemoteControl;
@@ -1189,7 +1226,7 @@ Specifies the port that this instance will listen to for slave requests</xs:docu
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="Colors">
+				<xs:element name="Colors" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Customise colors</xs:documentation>
 					</xs:annotation>
