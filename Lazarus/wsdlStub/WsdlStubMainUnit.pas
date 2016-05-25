@@ -9986,7 +9986,11 @@ end;
 
 procedure TMainForm.startActionUpdate(Sender: TObject);
 begin
-  startAction.Enabled := Assigned(se) and (not se.IsActive);
+  startAction.Enabled := Assigned(se)
+                     and (not se.IsActive)
+                     and (NumberOfBlockingThreads < 1)
+                     and (NumberOfNonBlockingThreads < 1)
+                       ;
 end;
 
 procedure TMainForm.stopActionExecute(Sender: TObject);
