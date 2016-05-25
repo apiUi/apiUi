@@ -18,6 +18,7 @@ function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): Stri
 function GetHostName: String;
 function GetUserName: String;
 function GetVersion: String;
+function resolveAliasses (aString: String; aAliasses: TStringList): String;
 
 var
   PathPrefixes: TStringList;
@@ -396,6 +397,66 @@ begin
   except
     result := '(not available)';
   end
+end;
+
+function resolveAliasses (aString : String ; aAliasses : TStringList ): String ;
+  function _resolv (aString: String; aSl: TStringList): String;
+    function _trans (aString: String): String;
+    var
+      f, x: Integer;
+    begin
+      result := '';
+      f := aSl.IndexOfName(aString);
+      if f < 0 then
+        raise Exception.Create('Alias not found:' + aString);
+      if Assigned (aSl.Objects[f]) then
+        raise Exception.Create('Circular reference for alias:' + aString);
+      try
+        aSl.Objects[f] := TObject (Pointer (1));
+        try
+          result := _resolv (aSl.ValueFromIndex[f], aSl);
+        finally
+          aSl.Objects[f] := nil;
+        end;
+      except
+        on e: exception do
+          raise Exception.CreateFmt('%s%s resolving %s', [e.Message, LineEnding, aString]);
+      end;
+    end;
+  begin
+    result := '';
+    try
+      with TRegExpr.Create do
+      try
+        Expression := '\%[A-Za-z][A-Za-z0-9]*\%';
+        if Exec (aString) then
+          result := Copy (aString, 1, MatchPos[0] - 1)
+                  + _trans (Match[0])
+                  + _resolv (Copy (aString, MatchPos[0] + MatchLen[0], Length (aString)), aSl)
+        else
+          result := aString;
+      finally
+        Free;
+      end;
+    except
+      on e: exception do
+        raise Exception.CreateFmt('%s%s resolving %s', [e.Message, LineEnding, aString]);
+    end;
+  end;
+var
+  x: Integer;
+  sl: TStringList;
+begin
+  result := aString;
+  if not Assigned (aAliasses) then
+    raise Exception.Create('resolveAliasses (aString : String ; aAliasses : TStringList ): No aAliasses');
+  sl := TStringList.Create;
+  try
+    sl.Text := aAliasses.Text; // need to work with a copy since we are gonna set TObj
+    result := _resolv (aString, sl);
+  finally
+    sl.Free;
+  end;
 end;
 
 

@@ -2,54 +2,46 @@ object EditListValuesForm: TEditListValuesForm
   Left = 396
   Height = 343
   Top = 222
-  Width = 675
+  Width = 703
   Anchors = []
   Caption = 'Edit list of values'
   ClientHeight = 343
-  ClientWidth = 675
+  ClientWidth = 703
   Color = clBtnFace
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.2.6.0'
   object Panel3: TPanel
     Left = 0
     Height = 302
     Top = 0
-    Width = 675
+    Width = 703
     Align = alClient
     BorderWidth = 3
     Caption = 'Panel3'
     ClientHeight = 302
-    ClientWidth = 675
+    ClientWidth = 703
     TabOrder = 0
     object StatusBar: TStatusBar
       Left = 4
       Height = 20
       Top = 278
-      Width = 667
+      Width = 695
       Panels = <>
-    end
-    object ToolBar1: TToolBar
-      Left = 4
-      Height = 29
-      Top = 4
-      Width = 667
-      Caption = 'ToolBar1'
-      TabOrder = 1
     end
     object ValueListEditor: TValueListEditor
       Left = 4
-      Height = 245
-      Top = 33
-      Width = 667
+      Height = 179
+      Top = 99
+      Width = 695
       Align = alClient
       DefaultColWidth = 256
       DefaultRowHeight = 20
       FixedCols = 0
       RowCount = 2
-      TabOrder = 2
+      TabOrder = 1
       KeyOptions = [keyEdit, keyAdd, keyDelete, keyUnique]
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goEditing, goAutoAddRows, goAlwaysShowEditor, goThumbTracking]
       Strings.Strings = (
@@ -57,18 +49,61 @@ object EditListValuesForm: TEditListValuesForm
       )
       ColWidths = (
         256
-        407
+        435
       )
+    end
+    object Memo: TMemo
+      Left = 4
+      Height = 90
+      Top = 4
+      Width = 695
+      Align = alTop
+      Font.CharSet = ANSI_CHARSET
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Pitch = fpFixed
+      Font.Quality = fqDraft
+      Lines.Strings = (
+        'Environment Variables'
+        ''
+        'These variables can be manipulated from script with:'
+        '- DecEnvNumber (aKey)'
+        '- IncEnvNumber (aKey)'
+        '- ResetEnvVar (aKey)'
+        '- ResetEnvVars (aRegularExpr)'
+        '- SetEnvNumber (aKey, aNumber)'
+        '- SetEnvVar (aKey, aValue)'
+        'and be read with:'
+        '- GetEnvNumber (aKey)'
+        '- GetEnvNumberDef (aKey, aDefault)'
+        '- GetEnvVar (aKey)'
+        '- GetEnvVarDef (aKey, aDefault)'
+        '- for each MatchingEnvVar (aRegExpr) as '
+      )
+      ParentColor = True
+      ParentFont = False
+      ReadOnly = True
+      ScrollBars = ssAutoVertical
+      TabOrder = 2
+    end
+    object Splitter1: TSplitter
+      Cursor = crVSplit
+      Left = 4
+      Height = 5
+      Top = 94
+      Width = 695
+      Align = alTop
+      ResizeAnchor = akTop
     end
   end
   object Panel2: TPanel
     Left = 0
     Height = 41
     Top = 302
-    Width = 675
+    Width = 703
     Align = alBottom
     ClientHeight = 41
-    ClientWidth = 675
+    ClientWidth = 703
     TabOrder = 1
     object OKBtn: TBitBtn
       Left = 4

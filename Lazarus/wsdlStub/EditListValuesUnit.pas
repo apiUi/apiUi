@@ -24,9 +24,11 @@ type
 
   TEditListValuesForm = class(TForm)
     CancelBtn : TBitBtn ;
+    Memo : TMemo ;
     OKBtn : TBitBtn ;
     Panel3: TPanel;
     Panel2: TPanel;
+    Splitter1 : TSplitter ;
     StatusBar: TStatusBar;
     MemoPopUpMenu: TPopupMenu;
     IpmFieldMenuItem: TMenuItem;
@@ -36,7 +38,6 @@ type
     N2: TMenuItem;
     DbNameMenuItem: TMenuItem;
     EmbeddedSQLMenuItem: TMenuItem;
-    ToolBar1: TToolBar;
     ValueListEditor: TValueListEditor;
     procedure FormShow(Sender: TObject);
     procedure CancelBtnClick(Sender: TObject);
