@@ -7914,36 +7914,23 @@ begin
       EditListValuesForm.Caption := 'View environment variables'
     else
       EditListValuesForm.Caption := 'Edit environment variables';
-    EditListValuesForm.Memo.Text
-      := 'Environment Variables'
-       + LineEnding
-       + LineEnding
-       + 'These variables can be manipulated from script with:'
-       + LineEnding
-       + '- DecEnvNumber (aKey)'
-       + LineEnding
-       + '- IncEnvNumber (aKey)'
-       + LineEnding
-       + '- ResetEnvVar (aKey)'
-       + LineEnding
-       + '- ResetEnvVars (aRegularExpr)'
-       + LineEnding
-       + '- SetEnvNumber (aKey, aNumber)'
-       + LineEnding
-       + '- SetEnvVar (aKey, aValue)'
-       + LineEnding
-       + 'and be read with:'
-       + LineEnding
-       + '- GetEnvNumber (aKey)'
-       + LineEnding
-       + '- GetEnvNumberDef (aKey, aDefault)'
-       + LineEnding
-       + '- GetEnvVar (aKey)'
-       + LineEnding
-       + '- GetEnvVarDef (aKey, aDefault)'
-       + LineEnding
-       + '- for each MatchingEnvVar (aRegExpr) as '
-       ;
+{
+Environment Variables
+
+These variables can be manipulated from script with:
+- DecEnvNumber (aKey)
+- IncEnvNumber (aKey)
+- ResetEnvVar (aKey)
+- ResetEnvVars (aRegularExpr)
+- SetEnvNumber (aKey, aNumber)
+- SetEnvVar (aKey, aValue)
+and be read with:
+- GetEnvNumber (aKey)
+- GetEnvNumberDef (aKey, aDefault)
+- GetEnvVar (aKey)
+- GetEnvVarDef (aKey, aDefault)
+- for each MatchingEnvVar (aRegExpr) as [stringvar] do ...
+}
     EditListValuesForm.isReadOnly := se.IsActive and False;
     EnvVarLock.Acquire;
     try

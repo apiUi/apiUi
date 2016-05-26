@@ -24,11 +24,9 @@ type
 
   TEditListValuesForm = class(TForm)
     CancelBtn : TBitBtn ;
-    Memo : TMemo ;
     OKBtn : TBitBtn ;
     Panel3: TPanel;
     Panel2: TPanel;
-    Splitter1 : TSplitter ;
     StatusBar: TStatusBar;
     MemoPopUpMenu: TPopupMenu;
     IpmFieldMenuItem: TMenuItem;

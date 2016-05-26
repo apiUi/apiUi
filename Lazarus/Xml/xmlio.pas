@@ -449,10 +449,10 @@ var
 begin
   result := aString;
   if not Assigned (aAliasses) then
-    raise Exception.Create('resolveAliasses (aString : String ; aAliasses : TStringList ): No aAliasses');
+    exit;
   sl := TStringList.Create;
   try
-    sl.Text := aAliasses.Text; // need to work with a copy since we are gonna set TObj
+    sl.Text := aAliasses.Text; // need to work with a copy since we are gonna set TObjs
     result := _resolv (aString, sl);
   finally
     sl.Free;
