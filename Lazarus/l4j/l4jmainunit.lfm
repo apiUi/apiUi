@@ -67,6 +67,7 @@ object L4JMainForm: TL4JMainForm
       TreeOptions.MiscOptions = [toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
       TreeOptions.PaintOptions = [toShowDropmark, toShowHorzGridLines, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
       TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+      OnBeforeCellPaint = TreeViewBeforeCellPaint
       OnChange = TreeViewChange
       OnClick = TreeViewClick
       OnColumnClick = TreeViewColumnClick
@@ -3626,6 +3627,7 @@ object L4JMainForm: TL4JMainForm
       Hint = 'Displayed columns'
       ImageIndex = 36
       OnExecute = EditDisplayedColumnsActionExecute
+      ShortCut = 16452
     end
     object QueryDbAction: TAction
       Caption = 'Query Database'
@@ -3691,6 +3693,7 @@ object L4JMainForm: TL4JMainForm
     end
     object Save1: TMenuItem
       Caption = 'Save selection...'
+      OnClick = Save1Click
     end
     object MenuItem1: TMenuItem
       Caption = '-'

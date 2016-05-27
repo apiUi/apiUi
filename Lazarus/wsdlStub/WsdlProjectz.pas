@@ -4987,7 +4987,11 @@ procedure TWsdlProject.cobolOperationsUpdate(aXml: TXml; aMainFileName: String);
     if aXml.Name = 'DescriptionFile' then
     begin
       if not aFileNames.Find(aXml.Value, f) then
-        aFilenames.AddObject (aXml.Value, Pointer (ipmDTCobol));
+        aFilenames.AddObject ( ExpandUNCFileNameUTF8 ( ExpandRelativeFileName ( aMainFileName, aXml.Value)
+
+                                                     )
+                             , Pointer (ipmDTCobol)
+                             );
     end
     else
     begin

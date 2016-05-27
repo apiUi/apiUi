@@ -191,12 +191,16 @@ type
     WraptekstMenuItem: TMenuItem;
     WriteXmlAction: TAction;
     ZoomMenuAction: TMenuItem;
+    procedure SaveAccordingSelected(aSelectedOnly: Boolean);
     procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
     procedure CopyActionExecute(Sender: TObject);
     procedure FindActionExecute(Sender: TObject);
     procedure FindNextActionExecute(Sender: TObject);
     procedure CompareNodesMenuItemClick(Sender: TObject);
     procedure PasteFromClipboardActionExecute (Sender : TObject );
+    procedure TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
     procedure TreeViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure TvPopupMenuPopup(Sender: TObject);
     procedure WriteXmlActionExecute(Sender: TObject);
@@ -1169,7 +1173,7 @@ begin
     end;
 end;
 
-procedure Tl4jMainForm.AdjustDisplayedColumns(aXml: TXml);
+procedure TL4JMainForm.AdjustDisplayedColumns(aXml: TXml);
 var
   x: Integer;
   xDc: TDisplayedColumn;
@@ -1266,7 +1270,7 @@ begin
   end;
 end;
 
-function Tl4jMainForm.GetEndurance(aString: String): String;
+function TL4JMainForm.GetEndurance(aString: String): String;
 begin
   result := '';
   try
@@ -1282,7 +1286,7 @@ begin
 end;
 
 
-function Tl4jMainForm.GetEscXmlElm(aKey, aString: String): String;
+function TL4JMainForm.GetEscXmlElm(aKey, aString: String): String;
 var
   x: Integer;
 begin
@@ -1324,8 +1328,8 @@ begin
   end;
 end;
 
-function Tl4jMainForm.GetHasString(aDc: TDisplayedColumn;
-  aString: String): String;
+function TL4JMainForm.GetHasString(aDc: TDisplayedColumn; aString: String
+  ): String;
 begin
   if Pos (aDc.Key, aString) > 0 then
     result := aDc.Header
@@ -1333,8 +1337,8 @@ begin
     result := '';
 end;
 
-function Tl4jMainForm.GetHasXmlValue(aDc: TDisplayedColumn;
-  aString: String): String;
+function TL4JMainForm.GetHasXmlValue(aDc: TDisplayedColumn; aString: String
+  ): String;
 begin
   if Pos ('>' + aDc.Key + '<', aString) > 0 then
     result := aDc.Header
@@ -1342,7 +1346,7 @@ begin
     result := '';
 end;
 
-function Tl4jMainForm.GetElm(aKey, aString: String): String;
+function TL4JMainForm.GetElm(aKey, aString: String): String;
 var
   x: Integer;
 begin
@@ -1369,7 +1373,7 @@ begin
   end;
 end;
 
-function Tl4jMainForm.GetAtt (aKey, aString: String): String;
+function TL4JMainForm.GetAtt(aKey, aString: String): String;
 var
   x: Integer;
   s: String;
@@ -1400,8 +1404,8 @@ begin
   end;
 end;
 
-function Tl4jMainForm.GetCellText(aData: TStringList; aIndex,
-  aColumn: Integer): String;
+function TL4JMainForm.GetCellText(aData: TStringList; aIndex, aColumn: Integer
+  ): String;
 var
   xDc: TDisplayedColumn;
 begin
@@ -1424,7 +1428,7 @@ begin
   end;
 end;
 
-function Tl4jMainForm.Filter(Data: TStringList; aIndex: Integer): Boolean;
+function TL4JMainForm.Filter(Data: TStringList; aIndex: Integer): Boolean;
 var
   xString: String;
 begin
@@ -1596,7 +1600,7 @@ begin
 
 end;
 
-procedure Tl4jMainForm.FormCreate(Sender: TObject);
+procedure TL4JMainForm.FormCreate(Sender: TObject);
 var
   xXml: TXml;
   xIniFile: TFormIniFile;
@@ -1636,12 +1640,9 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.XmlTreeViewGetText ( Sender: TBaseVirtualTree
-                                      ; Node: PVirtualNode
-                                      ; Column: TColumnIndex
-                                      ; TextType: TVSTTextType
-                                      ; var CellText: String
-                                      );
+procedure TL4JMainForm.XmlTreeViewGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: String);
 var
   xData: PTreeRec;
 begin
@@ -1649,7 +1650,7 @@ begin
   CellText := GetCellText (Data, xData^.Index, Column);
 end;
 
-procedure Tl4jMainForm.FormDestroy(Sender: TObject);
+procedure TL4JMainForm.FormDestroy(Sender: TObject);
 var
   x: Integer;
 begin
@@ -1774,7 +1775,7 @@ begin
   Handled := True;
 end;
 
-procedure Tl4jMainForm.FindActionExecute(Sender: TObject);
+procedure TL4JMainForm.FindActionExecute(Sender: TObject);
 var
   Found: Boolean;
   CurItem: PVirtualNode;
@@ -1838,7 +1839,7 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.FindNextActionExecute(Sender: TObject);
+procedure TL4JMainForm.FindNextActionExecute(Sender: TObject);
 var
   Found: Boolean;
   CurNode: PVirtualNode;
@@ -1885,6 +1886,7 @@ var
   fString, nString: String;
   fXml, nXml: TXml;
   xA2B: TA2BXml;
+  xForm: TShowA2BXmlForm;
 begin
   nNode := nil;
   fNode := TreeView.GetFirstSelected;
@@ -1909,8 +1911,8 @@ begin
       a2bUninitialize;
     end;
     try
-      Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
-      with ShowA2BXmlForm do
+      Application.CreateForm(TShowA2BXmlForm, xForm);
+      with xForm do
       try
         Caption := 'Diffrences in messages';
         ColumnHeaderA := 'Value first selected';
@@ -1918,7 +1920,7 @@ begin
         Xml := xA2B;
         ShowModal;
       finally
-        FreeAndNil(ShowA2BXmlForm);
+        FreeAndNil(xForm);
       end;
     finally
       FreeAndNil(xA2B);
@@ -1949,6 +1951,24 @@ begin
                                  );
 end;
 
+procedure TL4JMainForm.TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
+  function _decColor (aColor: TColor): TColor;
+  begin
+    result := aColor;
+    if Sender.Selected[Node] then Result := DecColor(Result, 6);
+    if Sender.FocusedNode = Node then Result := DecColor(Result, 9);
+  end;
+begin
+  with TargetCanvas do
+  begin
+    Brush.Style := bsSolid;
+    Brush.Color := _decColor(clWhite);
+    FillRect(CellRect);
+  end;
+end;
+
 procedure TL4JMainForm.TreeViewChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
@@ -1963,11 +1983,11 @@ begin
   CompareNodesMenuItem.Enabled := (n = 2);
 end;
 
-procedure Tl4jMainForm.TreeViewPopupMenuPopup(Sender: TObject);
+procedure TL4JMainForm.TreeViewPopupMenuPopup(Sender: TObject);
 begin
 end;
 
-procedure Tl4jMainForm.UseReadDisplayedColumns;
+procedure TL4JMainForm.UseReadDisplayedColumns;
 begin
   DisplayedColumnsXml.Free;
   DisplayedColumnsXml := TXml.Create (0, DisplayedColumnsXsd);
@@ -1976,19 +1996,19 @@ begin
   AdjustDisplayedColumns(DisplayedColumnsXml);
 end;
 
-procedure Tl4jMainForm.TreeViewMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TL4JMainForm.TreeViewMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
   TreeView.FocusedNode := TreeView.GetNodeAt(X, Y);
 end;
 
-procedure Tl4jMainForm.TreeViewColumnClick(Sender: TBaseVirtualTree;
+procedure TL4JMainForm.TreeViewColumnClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
   Sender.FocusedColumn := Column;
 end;
 
-procedure Tl4jMainForm.TreeViewFocusChanged(Sender: TBaseVirtualTree;
+procedure TL4JMainForm.TreeViewFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 var
   s: String;
@@ -2011,19 +2031,19 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.CloseActionExecute(Sender: TObject);
+procedure TL4JMainForm.CloseActionExecute(Sender: TObject);
 begin
   Close;
 end;
 
-procedure Tl4jMainForm.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TL4JMainForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
     Close;
 end;
 
-function Tl4jMainForm.findLogType(aString: AnsiString): TLogType;
+function TL4JMainForm.findLogType(aString: AnsiString): TLogType;
 var
   x: Integer;
   str: AnsiString;
@@ -2049,7 +2069,7 @@ begin
   end;
 end;
 
-function Tl4jMainForm.prepareDataToZoom(s: String): String;
+function TL4JMainForm.prepareDataToZoom(s: String): String;
 var
   x: Integer;
   xLogType: TLogType;
@@ -2121,7 +2141,7 @@ begin
                                  );
 end;
 
-function Tl4jMainForm.getReadOnly: Boolean;
+function TL4JMainForm.getReadOnly: Boolean;
 begin
   result := fReadOnly;
 end;
@@ -2136,7 +2156,7 @@ begin
   WraptekstMenuItem.Checked := AValue;
 end;
 
-procedure Tl4jMainForm.setReadOnly(AValue: Boolean);
+procedure TL4JMainForm.setReadOnly(AValue: Boolean);
 begin
   fReadOnly := AValue;
   TreeView.ParentColor := AValue;
@@ -2149,18 +2169,18 @@ begin
     TreeView.Colors.GridLineColor := clBtnHighlight;
 end;
 
-procedure Tl4jMainForm.TreeViewExit(Sender: TObject);
+procedure TL4JMainForm.TreeViewExit(Sender: TObject);
 begin
   TreeView.EndEditNode;
 end;
 
-procedure Tl4jMainForm.TreeViewGetImageIndex(Sender: TBaseVirtualTree;
+procedure TL4JMainForm.TreeViewGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
 begin
 end;
 
-procedure Tl4jMainForm.TreeViewGetText(Sender: TBaseVirtualTree;
+procedure TL4JMainForm.TreeViewGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: string);
 var
@@ -2170,7 +2190,7 @@ begin
   CellText := GetCellText (Data, xData^.Index, Column);
 end;
 
-procedure Tl4jMainForm.TreeViewKeyDown(Sender: TObject; var Key: Word;
+procedure TL4JMainForm.TreeViewKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key = VK_RETURN) then
@@ -2182,7 +2202,7 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.TreeViewClick(Sender: TObject);
+procedure TL4JMainForm.TreeViewClick(Sender: TObject);
 begin
   begin
 {
@@ -2196,7 +2216,7 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.ZoomMenuItemClick(Sender: TObject);
+procedure TL4JMainForm.ZoomMenuItemClick(Sender: TObject);
 var
   xData: PTreeRec;
 begin
@@ -2207,7 +2227,7 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.FormShow(Sender: TObject);
+procedure TL4JMainForm.FormShow(Sender: TObject);
 var
   x: Integer;
 begin
@@ -2218,7 +2238,7 @@ begin
   TreeView.Header.SortColumn := 0;
 end;
 
-procedure Tl4jMainForm.FilterActionExecute(Sender: TObject);
+procedure TL4JMainForm.FilterActionExecute(Sender: TObject);
 var
   xNode: PVirtualNode;
   xPasses: Boolean;
@@ -2254,7 +2274,7 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.ZoomMenuActionClick(Sender: TObject);
+procedure TL4JMainForm.ZoomMenuActionClick(Sender: TObject);
 var
   xData: PTreeRec;
   xNode: PVirtualNode;
@@ -2299,8 +2319,8 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.TreeViewCompareNodes(Sender: TBaseVirtualTree;
-  Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+procedure TL4JMainForm.TreeViewCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
 var
   s1, s2: String;
   d1, d2: PTreeRec;
@@ -2326,7 +2346,7 @@ begin
     result := 1;
 end;
 
-procedure Tl4jMainForm.TreeViewDblClick(Sender: TObject);
+procedure TL4JMainForm.TreeViewDblClick(Sender: TObject);
 begin
   ZoomMenuActionClick(nil);
 end;
@@ -2392,9 +2412,9 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.TreeViewHeaderClick(Sender: TVTHeader;
-  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
-  Y: Integer);
+procedure TL4JMainForm.TreeViewHeaderClick(Sender: TVTHeader;
+  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X, Y: Integer
+  );
 var
   xCursor: TCursor;
 begin
@@ -2419,8 +2439,8 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.TreeViewInitNode(Sender: TBaseVirtualTree;
-  ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+procedure TL4JMainForm.TreeViewInitNode(Sender: TBaseVirtualTree; ParentNode,
+  Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 var
   xData: PTreeRec;
 begin
@@ -2428,7 +2448,7 @@ begin
   xData^.Index := Node^.Index;
 end;
 
-procedure Tl4jMainForm.WriteXmlActionExecute(Sender: TObject);
+procedure TL4JMainForm.SaveAccordingSelected(aSelectedOnly: Boolean);
 var
   s: String;
   xNode: PVirtualNode;
@@ -2445,12 +2465,16 @@ begin
       Screen.Cursor := crHourGlass;
       try
         SaveLog4JFileName := FileName;
-        s := '<xmlContainer>' + DisplayedColumnsXml.AsText (False, -1, True, False);
+        s := '<xmlContainer>' + DisplayedColumnsXml.AsText (False, -1, True, False) + LineEnding;
         xNode := TreeView.GetFirstVisible;
         while Assigned (xNode) do
         begin
-          xData := TreeView.GetNodeData (xNode);
-          s := s + Data.Strings [xData^.Index];
+          if (not aSelectedOnly)
+          or (TreeView.Selected[xNode]) then
+          begin
+            xData := TreeView.GetNodeData (xNode);
+            s := s + Data.Strings [xData^.Index] + LineEnding;
+          end;
           xNode := TreeView.GetNextVisible (xNode);
         end;
         s := s + '</xmlContainer>';
@@ -2465,9 +2489,15 @@ begin
   end;
 end;
 
+
+procedure TL4JMainForm.WriteXmlActionExecute(Sender: TObject);
+begin
+  SaveAccordingSelected(False);
+end;
+
 procedure TL4JMainForm.Save1Click(Sender: TObject);
 begin
-
+  SaveAccordingSelected(True);
 end;
 
 procedure TL4JMainForm.WraptekstMenuItemClick(Sender: TObject);
@@ -2576,7 +2606,7 @@ begin
   end;
 end;
 
-procedure Tl4jMainForm.OpenFileActionExecute(Sender: TObject);
+procedure TL4JMainForm.OpenFileActionExecute(Sender: TObject);
 begin
   with TOpenDialog.Create(nil) do
   try
