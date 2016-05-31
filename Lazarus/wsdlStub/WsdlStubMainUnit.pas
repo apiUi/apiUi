@@ -12090,10 +12090,19 @@ procedure TMainForm.ReportOnSnapshots (aList: TClaimableObjectList);
 var
   x: Integer;
 begin
-  with aList as TSnapshotList do
-    for x := 0 to Count - 1 do
-      if not se.abortPressed then
-        SnapshotItems[x].doReport;
+{$ifdef windows}
+  CoInitialize(nil);
+{$endif}
+  try
+    with aList as TSnapshotList do
+      for x := 0 to Count - 1 do
+        if not se.abortPressed then
+          SnapshotItems[x].doReport;
+{$ifdef windows}
+  finally
+    CoUninitialize;
+  end;
+{$endif}
 end;
 
 

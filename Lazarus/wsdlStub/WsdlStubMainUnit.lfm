@@ -945,10 +945,10 @@ object MainForm: TMainForm
     Height = 147
     Top = 441
     Width = 1145
-    ActivePage = MessagesTabSheet
+    ActivePage = SnapshotTabsheet
     Align = alBottom
     Images = mainImageList
-    TabIndex = 3
+    TabIndex = 2
     TabOrder = 2
     OnChange = DownPageControlChange
     object DocumentationTabSheet: TTabSheet
@@ -973,7 +973,7 @@ object MainForm: TMainForm
     object ExceptionTabSheet: TTabSheet
       Caption = 'Notifications'
       ClientHeight = 120
-      ClientWidth = 959
+      ClientWidth = 1137
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -1046,7 +1046,7 @@ object MainForm: TMainForm
         end
       end
       object ToolBar3: TToolBar
-        Left = 929
+        Left = 1107
         Height = 120
         Top = 0
         Width = 30
@@ -1065,7 +1065,7 @@ object MainForm: TMainForm
         Left = 624
         Height = 120
         Top = 0
-        Width = 305
+        Width = 483
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1081,7 +1081,7 @@ object MainForm: TMainForm
     object SnapshotTabsheet: TTabSheet
       Caption = 'Snapshots'
       ClientHeight = 120
-      ClientWidth = 959
+      ClientWidth = 1137
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -1090,7 +1090,7 @@ object MainForm: TMainForm
         Left = 0
         Height = 26
         Top = 0
-        Width = 959
+        Width = 1137
         Caption = 'ToolBar1'
         Images = mainImageList
         TabOrder = 0
@@ -1133,17 +1133,17 @@ object MainForm: TMainForm
         Left = 0
         Height = 94
         Top = 26
-        Width = 959
+        Width = 1137
         Align = alClient
         Caption = 'Panel1'
         ClientHeight = 94
-        ClientWidth = 959
+        ClientWidth = 1137
         TabOrder = 1
         object SnapshotsVTS: TVirtualStringTree
           Left = 1
           Height = 92
           Top = 1
-          Width = 957
+          Width = 1135
           Align = alClient
           BottomSpace = 10
           Colors.GridLineColor = clWhite

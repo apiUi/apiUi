@@ -29,6 +29,7 @@ type
     bValue, bNameSpace: String;
     Prefix: String;
     ChangeKind: TChangeKind;
+    function valuesDiffer (aValue, bValue: String): Boolean;
     function AsTabSeparatedValues: String;
     property ThisOneDiffers: Boolean read fThisOneDiffers write setThisOneDiffers;
     property Differs: Boolean read fDiffers write setDiffers;
@@ -60,7 +61,23 @@ begin
   wrdUninitialize;
 end;
 
-function valuesDiffer (aValue, bValue: String): Boolean;
+function rmPrefix (aName: String): String;
+var
+  x: Integer;
+begin
+  result := '';
+  for x := 1 to Length (aName) do
+  begin
+    if aName [x] = ':' then
+      result := ''
+    else
+      result := result + aName [x];
+  end;
+end;
+
+{ TA2BXml }
+
+function TA2BXml.valuesDiffer (aValue, bValue: String): Boolean;
 var
   aFileName, bFileName: String;
 begin
@@ -91,22 +108,6 @@ begin
   end;
 end;
 
-
-function rmPrefix (aName: String): String;
-var
-  x: Integer;
-begin
-  result := '';
-  for x := 1 to Length (aName) do
-  begin
-    if aName [x] = ':' then
-      result := ''
-    else
-      result := result + aName [x];
-  end;
-end;
-
-{ TA2BXml }
 
 constructor TA2BXml.CreateA(aPrefix: String; aXml: TXml; aThisOneDiffers: Boolean);
 var
