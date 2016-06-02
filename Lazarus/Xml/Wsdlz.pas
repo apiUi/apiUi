@@ -4715,47 +4715,64 @@ end;
 
 function TWsdlOperation.AddedTypeDefElementsAsXml : TObject ;
 var
-  x, y: integer;
+  x, y, f: integer;
   nTypeDef: TXsdDataType;
   XmlResult: TXml;
   sXml: TXml;
+  sl: TStringList; // to avoid duplicates
+  xKey: String;
 begin
   XmlResult := TXml.CreateAsString('AddedTypeDefElements', '');
   result := XmlResult;
-  for x := 0 to BindablesWithAddedElement.Count - 1 do
-  begin
-    nTypeDef := (BindablesWithAddedElement.Bindables[x] as TXml).TypeDef;
-    sXml := XmlResult.AddXml(TXml.CreateAsString('AddedTypeDefElement', ''));
-    with sXml do
+  sl := TStringList.Create;
+  try
+    sl.Sorted := True;
+    for x := 0 to BindablesWithAddedElement.Count - 1 do
     begin
-      AddXml (TXml.CreateAsString('UsedAt', BindablesWithAddedElement.Strings[x]));
-      for y := 0 to nTypeDef.ElementDefs.Count - 1 do
+      nTypeDef := (BindablesWithAddedElement.Bindables[x] as TXml).TypeDef;
+      sXml := XmlResult.AddXml(TXml.CreateAsString('AddedTypeDefElement', ''));
+      with sXml do
       begin
-        with AddXml(TXml.CreateAsString('Added', '')) do
+        AddXml (TXml.CreateAsString('UsedAt', BindablesWithAddedElement.Strings[x]));
+        sl.Clear;
+        for y := 0 to nTypeDef.ElementDefs.Count - 1 do
+        with nTypeDef.ElementDefs.Xsds[y] do
         begin
-          if nTypeDef.ElementDefs.Xsds[y]._RefElementName <> '' then
+          if _RefElementName <> '' then
           begin
-            AddXml (TXml.CreateAsString('References', 'Element'));
-            AddXml(TXml.CreateAsString('NameSpace',
-                nTypeDef.ElementDefs.Xsds[y]._RefNameSpace));
-            AddXml(TXml.CreateAsString('Name',
-                nTypeDef.ElementDefs.Xsds[y]._RefElementName));
-            AddXml(TXml.CreateAsString('ElementName',
-                nTypeDef.ElementDefs.Xsds[y].ElementName));
+            xKey := Format ('Element;%s;%s;%s', [_RefNameSpace, _RefElementName, ElementName]);
+            if not sl.Find(xKey, f) then
+            begin
+              sl.Add (xKey);
+              with AddXml(TXml.CreateAsString('Added', '')) do
+              begin
+                AddXml (TXml.CreateAsString('References', 'Element'));
+                AddXml(TXml.CreateAsString('NameSpace', _RefNameSpace));
+                AddXml(TXml.CreateAsString('Name', _RefElementName));
+                AddXml(TXml.CreateAsString('ElementName', ElementName));
+              end
+            end;
           end
           else
           begin
-            AddXml (TXml.CreateAsString('References', 'TypeDef'));
-            AddXml(TXml.CreateAsString('NameSpace',
-                nTypeDef.ElementDefs.Xsds[y].sType.NameSpace));
-            AddXml(TXml.CreateAsString('Name',
-                nTypeDef.ElementDefs.Xsds[y].sType.Name));
-            AddXml(TXml.CreateAsString('ElementName',
-                nTypeDef.ElementDefs.Xsds[y].ElementName));
+            xKey := Format ('TypeDef;%s;%s;%s', [NameSpace, sType.Name, ElementName]);
+            if not sl.Find(xKey, f) then
+            begin
+              sl.Add (xKey);
+              with AddXml(TXml.CreateAsString('Added', '')) do
+              begin
+                AddXml (TXml.CreateAsString('References', 'TypeDef'));
+                AddXml(TXml.CreateAsString('NameSpace', NameSpace));
+                AddXml(TXml.CreateAsString('Name', sType.Name));
+                AddXml(TXml.CreateAsString('ElementName', ElementName));
+              end;
+            end;
           end;
         end;
       end;
     end;
+  finally
+    sl.Free;
   end;
 end;
 
