@@ -1516,6 +1516,21 @@ begin
     result := 0;
 end;
 
+function sqlQuotedString (aString: String): String;
+var
+  x: Integer;
+begin
+  result := ''''
+          + ReplaceStrings ( aString
+                           , ''''
+                           , ''''''
+                           , false
+                           , false
+                           )
+          + ''''
+          ;
+end;
+
 procedure ResetOperationCounters;
 var
   i: Integer;
@@ -3711,6 +3726,7 @@ begin
     BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
     BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindBeforeFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
+    BindBeforeFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
     BindBeforeFunction ('WriteSnapshotsInformation', @WriteSnapshotsInformation, VFOS, '(aFileName)');
     BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
@@ -3850,6 +3866,7 @@ begin
     BindAfterFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
     BindAfterFunction ('PromptReply', @PromptReply, VFOV, '()');
     BindAfterFunction ('PromptRequest', @PromptRequest, VFOV, '()');
+    BindAfterFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
     BindAfterFunction ('RaiseError', @RaiseError, VFS, '(aString)');
     BindAfterFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
     BindAfterFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
@@ -5615,7 +5632,7 @@ begin
       BindCheckerFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
       BindCheckerFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
       BindCheckerFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-//    BindCheckerFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
+      BindCheckerFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
       BindCheckerFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
       BindCheckerFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
       BindCheckerFunction ('UserName', @wsdlUserName, SFV, '()');
@@ -5678,12 +5695,12 @@ begin
     BindStamperFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
     BindStamperFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
     BindStamperFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
+    BindStamperFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
     BindStamperFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
     BindStamperFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
     BindStamperFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
     BindStamperFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindStamperFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-//  BindStamperFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
     BindStamperFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
     BindStamperFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
     BindStamperFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
