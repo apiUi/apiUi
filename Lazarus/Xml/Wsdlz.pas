@@ -4779,7 +4779,7 @@ begin
               with AddXml(TXml.CreateAsString('Added', '')) do
               begin
                 AddXml (TXml.CreateAsString('References', 'TypeDef'));
-                AddXml(TXml.CreateAsString('NameSpace', NameSpace));
+                AddXml(TXml.CreateAsString('NameSpace', sType.NameSpace));
                 AddXml(TXml.CreateAsString('Name', sType.Name));
                 AddXml(TXml.CreateAsString('ElementName', ElementName));
               end;
