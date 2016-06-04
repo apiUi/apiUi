@@ -4736,52 +4736,58 @@ var
   nTypeDef: TXsdDataType;
   XmlResult: TXml;
   sXml: TXml;
-  sl: TStringList; // to avoid duplicates
+  slx, sly: TStringList; // to avoid duplicates
   xKey: String;
 begin
   XmlResult := TXml.CreateAsString('AddedTypeDefElements', '');
   result := XmlResult;
-  sl := TStringList.Create;
+  slx := TStringList.Create;
+  sly := TStringList.Create;
   try
-    sl.Sorted := True;
+    sly.Sorted := True;
+    slx.Sorted := True;
     for x := 0 to BindablesWithAddedElement.Count - 1 do
     begin
-      nTypeDef := (BindablesWithAddedElement.Bindables[x] as TXml).TypeDef;
-      sXml := XmlResult.AddXml(TXml.CreateAsString('AddedTypeDefElement', ''));
-      with sXml do
+      if not slx.Find(BindablesWithAddedElement.Strings[x], f) then
       begin
-        AddXml (TXml.CreateAsString('UsedAt', BindablesWithAddedElement.Strings[x]));
-        sl.Clear;
-        for y := 0 to nTypeDef.ElementDefs.Count - 1 do
-        with nTypeDef.ElementDefs.Xsds[y] do
+        slx.Add (BindablesWithAddedElement.Strings[x]);
+        nTypeDef := (BindablesWithAddedElement.Bindables[x] as TXml).TypeDef;
+        sXml := XmlResult.AddXml(TXml.CreateAsString('AddedTypeDefElement', ''));
+        with sXml do
         begin
-          if _RefElementName <> '' then
+          sly.Clear;
+          AddXml (TXml.CreateAsString('UsedAt', BindablesWithAddedElement.Strings[x]));
+          for y := 0 to nTypeDef.ElementDefs.Count - 1 do
+          with nTypeDef.ElementDefs.Xsds[y] do
           begin
-            xKey := Format ('Element;%s;%s;%s', [_RefNameSpace, _RefElementName, ElementName]);
-            if not sl.Find(xKey, f) then
+            if _RefElementName <> '' then
             begin
-              sl.Add (xKey);
-              with AddXml(TXml.CreateAsString('Added', '')) do
+              xKey := Format ('Element;%s;%s;%s', [_RefNameSpace, _RefElementName, ElementName]);
+              if not sly.Find(xKey, f) then
               begin
-                AddXml (TXml.CreateAsString('References', 'Element'));
-                AddXml(TXml.CreateAsString('NameSpace', _RefNameSpace));
-                AddXml(TXml.CreateAsString('Name', _RefElementName));
-                AddXml(TXml.CreateAsString('ElementName', ElementName));
-              end
-            end;
-          end
-          else
-          begin
-            xKey := Format ('TypeDef;%s;%s;%s', [NameSpace, sType.Name, ElementName]);
-            if not sl.Find(xKey, f) then
+                sly.Add (xKey);
+                with AddXml(TXml.CreateAsString('Added', '')) do
+                begin
+                  AddXml (TXml.CreateAsString('References', 'Element'));
+                  AddXml(TXml.CreateAsString('NameSpace', _RefNameSpace));
+                  AddXml(TXml.CreateAsString('Name', _RefElementName));
+                  AddXml(TXml.CreateAsString('ElementName', ElementName));
+                end
+              end;
+            end
+            else
             begin
-              sl.Add (xKey);
-              with AddXml(TXml.CreateAsString('Added', '')) do
+              xKey := Format ('TypeDef;%s;%s;%s', [sType.NameSpace, sType.Name, ElementName]);
+              if not sly.Find(xKey, f) then
               begin
-                AddXml (TXml.CreateAsString('References', 'TypeDef'));
-                AddXml(TXml.CreateAsString('NameSpace', sType.NameSpace));
-                AddXml(TXml.CreateAsString('Name', sType.Name));
-                AddXml(TXml.CreateAsString('ElementName', ElementName));
+                sly.Add (xKey);
+                with AddXml(TXml.CreateAsString('Added', '')) do
+                begin
+                  AddXml (TXml.CreateAsString('References', 'TypeDef'));
+                  AddXml(TXml.CreateAsString('NameSpace', sType.NameSpace));
+                  AddXml(TXml.CreateAsString('Name', sType.Name));
+                  AddXml(TXml.CreateAsString('ElementName', ElementName));
+                end;
               end;
             end;
           end;
@@ -4789,7 +4795,8 @@ begin
       end;
     end;
   finally
-    sl.Free;
+    FreeAndNil (sly);
+    FreeAndNil (slx);
   end;
 end;
 
