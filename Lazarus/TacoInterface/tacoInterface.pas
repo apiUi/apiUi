@@ -42,6 +42,7 @@ type
     fOnAuthorize : TNotifyEvent ;
     fPort: Integer;
     fOnHaveTacoMessage: TOnHaveTacoMessage;
+    fprojectProperties : TStringList ;
     fReqTime: TDateTime;
     fRspTime: TDateTime;
     fTacoReply: AnsiString;
@@ -61,6 +62,7 @@ type
     procedure EvaluateResponse;
   public
     UserName, Password: AnsiString;
+    property ProjectProperties: TStringList write fprojectProperties;
     property Host: String read fHost write fHost;
     property Port: Integer read fPort write fPort;
     property Authorized: boolean read fAuthorized write setAuthorized;
@@ -88,6 +90,7 @@ type
 implementation
 
 uses SysUtils
+   , xmlio
    ;
 { TTacoInterface }
 
@@ -266,8 +269,8 @@ begin
     if s = 'LargeIO' then
       result := result + '-B4';
     result := result + '>';
-    result := result + tacoString (xXml.Items.XmlValueByTag['Monitor'])
-                     + tacoString (xXml.Items.XmlValueByTag['Server'])
+    result := result + tacoString (resolveAliasses(xXml.Items.XmlValueByTag['Monitor'], fprojectProperties))
+                     + tacoString (resolveAliasses(xXml.Items.XmlValueByTag['Server'], fprojectProperties))
                      ;
  {}
   end
@@ -285,11 +288,11 @@ begin
         raise Exception.Create('tacoInterface: Illegal MQ config');
       result := result
               + '<MQSEND>'
-              + tacoString (mqXml.Items.XmlValueByTag['Manager'])
-              + tacoString (mqXml.Items.XmlValueByTag['GetQueue'])
-              + tacoString (mqXml.Items.XmlValueByTag['PutQueue'])
-              + tacoString (mqXml.Items.XmlValueByTag['ReplyToQueue'])
-              + tacoString (mqXml.Items.XmlValueByTag['TimeOut'])
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['Manager'], fprojectProperties))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['GetQueue'], fprojectProperties))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['PutQueue'], fprojectProperties))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['ReplyToQueue'], fprojectProperties))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['TimeOut'], fprojectProperties))
               ;
     end;
   end;

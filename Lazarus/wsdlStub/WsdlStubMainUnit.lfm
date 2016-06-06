@@ -2359,6 +2359,11 @@ object MainForm: TMainForm
       ImageIndex = 86
       OnExecute = SummaryReportActionExecute
     end
+    object Properties: TAction
+      Category = 'Project'
+      Caption = 'Properties'
+      OnExecute = EditProjectPropertiesExecute
+    end
   end
   object mainImageList: TImageList
     left = 40
@@ -5420,6 +5425,9 @@ object MainForm: TMainForm
       end
       object Options2: TMenuItem
         Action = ProjectOptionsAction
+      end
+      object MenuItem27: TMenuItem
+        Action = Properties
       end
       object N5: TMenuItem
         Caption = '-'

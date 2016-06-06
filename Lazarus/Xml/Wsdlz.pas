@@ -327,7 +327,7 @@ type
       StubStompHeaderXml: TXml;
       StubCustomHeaderXml: TXml;
       StubStompPutHost: String;
-      StubStompPutPort: Integer;
+      StubStompPutPort: String;
       StubStompPutClientId: String;
       StubStompTimeOut: Integer;
       StubStompReplyBodyPostFix, StubStompRequestBodyPostFix: String;
@@ -3397,7 +3397,7 @@ begin
   StubMqGetQueue := '';
   StubMqTimeOut := 30;
   StubStompPutHost := 'localhost';
-  StubStompPutPort := 61613;
+  StubStompPutPort := '61613';
   StubStompPutClientId := '';
   StubStompReplyBodyPostFix := '';
   StubStompRequestBodyPostFix := '';
@@ -5423,7 +5423,7 @@ begin
       with result.AddXml(TXml.CreateAsString('Stomp', '')) do
       begin
         AddXml (TXml.CreateAsString('Host', StubStompPutHost));
-        AddXml (TXml.CreateAsInteger('Port', StubStompPutPort));
+        AddXml (TXml.CreateAsString('Port', StubStompPutPort));
         AddXml (TXml.CreateAsString('ClientId', StubStompPutClientId));
         if StubStompReplyBodyPostFix <> '' then
           AddXml (TXml.CreateAsString('ReplyBodyPostFix', StubStompReplyBodyPostFix));
@@ -5484,7 +5484,7 @@ begin
   StubMqTimeOut := 0;
   StubMqHeaderXml.CheckDownline(False);
   StubStompPutHost := '';
-  StubStompPutPort := 0;
+  StubStompPutPort := '';
   StubStompPutClientId := '';
   StubStompReplyBodyPostFix := '';
   StubStompRequestBodyPostFix := '';
@@ -5567,7 +5567,7 @@ begin
         begin
           StubTransport := ttStomp;
           StubStompPutHost := Items.XmlCheckedValueByTagDef['Host', 'localhost'];
-          StubStompPutPort := Items.XmlCheckedIntegerByTagDef['Port', 61613];
+          StubStompPutPort := Items.XmlCheckedValueByTagDef['Port', '61613'];
           StubStompPutClientId := Items.XmlCheckedValueByTag['ClientId'];
           StubStompRequestBodyPostFix := Items.XmlCheckedValueByTag['RequestBodyPostFix'];
           StubStompReplyBodyPostFix := Items.XmlCheckedValueByTag['ReplyBodyPostFix'];

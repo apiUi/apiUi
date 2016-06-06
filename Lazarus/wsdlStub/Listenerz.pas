@@ -19,7 +19,10 @@ type
   { TListeners }
 
   TListeners = class(TObject)
+  private
+    fXml : TXml ;
   public
+    aliasses: TStringList;
     httpProxyPort, httpBmtpPort: Integer;
     sslVersion: TIdSSLVersion;
     sslCertificateFile, sslKeyFile, sslRootCertificateFile: String;
@@ -31,7 +34,7 @@ type
     smtpTlsCertificateFile, smtpTlsKeyFile, smtpTlsRootCertificateFile: String;
     pop3Port: Integer;
     pop3UserName, pop3Password: String;
-    function AsXml: TXml;
+    property AsXml: TXml read fXml;
     procedure Clear;
     procedure FromXml (aXml: TXml; aOnHaveFrame: TOnHaveFrame);
     constructor Create;
@@ -43,11 +46,12 @@ type
 implementation
 
 uses xmlzConsts
+   , xmlio
    ;
 
 { TListeners }
 
-
+{
 function TListeners.AsXml: TXml;
 var
   x: Integer;
@@ -126,6 +130,7 @@ begin
     end;
   end;
 end;
+}
 
 procedure TListeners.FromXml(aXml: TXml; aOnHaveFrame: TOnHaveFrame);
 var
@@ -134,6 +139,7 @@ var
 begin
   if not Assigned (aXml) then raise Exception.Create('ListenersFromXml: No XML assigned');
   if aXml.Name <> 'Listeners' then raise Exception.Create('ListenersFromXml: Illegal XML assigned');
+  fXml.CopyDownLine(aXml, True);
   Clear;
   if not aXml.Checked then Exit;
   for x := 0 to aXml.Items.Count - 1 do
@@ -149,8 +155,8 @@ begin
             if (Items.XmlItems[y].Checked)
             and (Items.XmlItems[y].Name = 'Port') then
             begin
-              httpPorts.Add (Items.XmlItems[y].Value);
-              _WsdlPortNumber := Items.XmlItems[y].Value;
+              httpPorts.Add (resolveAliasses(Items.XmlItems[y].Value, aliasses));
+              _WsdlPortNumber := resolveAliasses(Items.XmlItems[y].Value, aliasses);
             end;
           end;
         end;
@@ -264,6 +270,7 @@ end;
 
 constructor TListeners.Create;
 begin
+  fXml := TXml.Create;
   httpPorts:= TStringList.Create;
   httpsPorts := TStringList.Create;
   httpBmtpPort := 0;
@@ -281,6 +288,7 @@ begin
   httpsPorts.Free;
   mqInterfaces.Free;
   stompInterfaces.Free;
+  fXml.Free;
 end;
 
 end.

@@ -69,6 +69,8 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem27 : TMenuItem ;
+    Properties : TAction ;
     SummaryReportAction : TAction ;
     MenuItem26 : TMenuItem ;
     ShowSnapshotDifferencesAction : TAction ;
@@ -570,6 +572,7 @@ type
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
     procedure PingPongTimerTimer (Sender : TObject );
+    procedure EditProjectPropertiesExecute (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
     procedure SnapshotCompareMenuitemClick(Sender: TObject);
     procedure SnapshotPromoteToReferenceMenuItemClick (Sender : TObject );
@@ -11530,8 +11533,9 @@ procedure TMainForm.ConfigListenersActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
-  xXml := se.Listeners.AsXml;
+  xXml := TXml.Create;
   try
+    xXml.CopyDownLine(se.Listeners.AsXml, True);
     if EditXmlXsdBased('Configure Listeners', '', '', '', se.IsActive,
       listenersConfigXsd, xXml) then
     begin
@@ -12913,6 +12917,40 @@ end;
 procedure TMainForm.PingPongTimerTimer (Sender : TObject );
 begin
   se.TacoPingPong;
+end;
+
+procedure TMainForm .EditProjectPropertiesExecute (Sender : TObject );
+begin
+  Application.CreateForm(TEditListValuesForm, EditListValuesForm);
+  try
+    if se.IsActive and False then
+      EditListValuesForm.Caption := 'View project properties'
+    else
+      EditListValuesForm.Caption := 'Edit project properties';
+  {
+  }
+    EditListValuesForm.isReadOnly := se.IsActive and False;
+    se.ppLock.Acquire;
+    try
+      EditListValuesForm.ValueListEditor.Strings.Text := se.projectProperties.Text;
+    finally
+      se.ppLock.Release;
+    end;
+    EditListValuesForm.ValueListEditor.Strings.Sort;
+    EditListValuesForm.ShowModal;
+    if (EditListValuesForm.ModalResult = mrOk)
+    { }{ and (not se.IsActive){ } then
+    begin
+      se.ppLock.Acquire;;
+      try
+        se.projectProperties.Text := EditListValuesForm.ValueListEditor.Strings.Text;
+      finally
+        se.ppLock.Release;
+      end;
+    end;
+  finally
+    FreeAndNil(EditListValuesForm);
+  end;
 end;
 
 procedure TMainForm .ShowSnapshotDifferencesActionExecute (Sender : TObject );

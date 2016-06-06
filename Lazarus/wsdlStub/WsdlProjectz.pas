@@ -146,6 +146,8 @@ type
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
   public
+    projectProperties: TStringList;
+    ppLock: TCriticalSection;
     doDisplayLog: Boolean;
     ProgressMax, ProgressPos: Integer;
     doCloneOperations: Boolean;
@@ -1208,6 +1210,8 @@ begin
   OnRestartEvent := RestartCommand;
   OnReactivateEvent := ReactivateCommand;
   OnReloadDesignEvent := ReloadDesignCommand;
+  projectProperties := TStringList.Create;
+  ppLock := TCriticalSection.Create;
   fTacoInterface := TTacoInterface.Create(nil, nil);
   fLogLock := TCriticalSection.Create;
   LogFilter := TLogFilter.Create;
@@ -1335,6 +1339,8 @@ begin
   FreeAndNil (SmtpOpenSSL);
   FreeAndNil (SMTPServer);
   FreeAndNil (SMTPServerSSL);
+  projectProperties.Free;
+  ppLock.Free;
   fLogLock.Free;
   Listeners.Free;
   mqGetThreads.Free;
@@ -1618,6 +1624,7 @@ begin
           end;
         end;
     {$endif}
+        Listeners.FromXml(Listeners.AsXml, HaveStompFrame); // because of properties...
         for x := 0 to Listeners.stompInterfaces.Count - 1 do
         begin
           with Listeners.stompInterfaces.Objects[x] as TStompInterface do
@@ -1965,6 +1972,7 @@ begin
             with AddXml (TXml.Create) do
               Text := (EnvironmentList.Objects [x] as TXml).Text;
           end;
+      AddXml (TXml.CreateAsString('properties', projectProperties.Text));
       for w := 0 to Wsdls.Count - 1 do
       begin
         xWsdl := Wsdls.Objects [w] as TWsdl;
@@ -2080,7 +2088,7 @@ begin
                     AddXml (TXml.CreateAsString('StubMqGetQueue', xOperation.StubMqGetQueue));
                     AddXml (TXml.CreateAsInteger('StubMqTimeOut', xOperation.StubMqTimeOut));
                     AddXml (TXml.CreateAsString('StubStompPutHost', xOperation.StubStompPutHost));
-                    AddXml (TXml.CreateAsInteger('StubStompPutPort', xOperation.StubStompPutPort));
+                    AddXml (TXml.CreateAsString('StubStompPutPort', xOperation.StubStompPutPort));
                     AddXml (TXml.CreateAsString('StubStompPutClientId', xOperation.StubStompPutClientId));
                     AddXml (TXml.CreateAsInteger('StubStompTimeOut', xOperation.StubStompTimeOut));
                     if Assigned(xOperation.StubMqHeaderXml)
@@ -2275,6 +2283,7 @@ begin
             ReferenceFolder := ExpandRelativeFileName (aMainFileName, ReferenceFolder);
           end;
           xmlio.PathPrefixes.Text := xXml.Items.XmlCheckedValueByTag ['PathPrefixes'];
+          projectProperties.Text := xXml.Items.XmlValueByTag['properties'];
           eXml := xXml.Items.XmlItemByTag ['Environments'];
           if Assigned (eXml) then
             for e := 0 to eXml.Items.Count - 1 do
@@ -2505,7 +2514,7 @@ begin
                             xOperation.StubMqTimeOut := StrToIntDef(oXml.Items.XmlValueByTag ['StubMqTimeOut'], 30);
                             xOperation.StubMqHeaderXml.LoadValues (oXml.Items.XmlItemByTag ['mqHeader'], False);
                             xOperation.StubStompPutHost := oXml.Items.XmlValueByTag ['StubStompPutHost'];
-                            xOperation.StubStompPutPort := StrToIntDef(oXml.Items.XmlValueByTag ['StubStompPutPort'], 61613);
+                            xOperation.StubStompPutPort := oXml.Items.XmlValueByTagDef ['StubStompPutPort', '61613'];
                             xOperation.StubStompPutClientId := oXml.Items.XmlValueByTag ['StubStompPutClientId'];
                             xOperation.StubStompTimeOut := StrToIntDef(oXml.Items.XmlValueByTag ['StubStompTimeOut'], 30);
                             xOperation.StubStompHeaderXml.LoadValues (oXml.Items.XmlItemByTag ['stompHeader'], False);
@@ -2756,7 +2765,7 @@ begin
           if Assigned (endpointConfigXsd) then
           begin
             unknownOperation.StubStompPutHost := aXml.Items.XmlValueByTag ['notStubbedStompHost'];
-            unknownOperation.StubStompPutPort := aXml.Items.XmlIntegerByTag ['notStubbedStompPort'];
+            unknownOperation.StubStompPutPort := aXml.Items.XmlValueByTag ['notStubbedStompPort'];
             xXml := aXml.Items.XmlItemByTag ['notStubbedStompDestination'];
             if Assigned (xXml) then
             begin
@@ -3466,9 +3475,9 @@ begin
   mq := TMqInterface.Create;
   try
     mq.Use := mqUse;
-    mq.Qmanager := aOperation.StubMqPutManager;
-    mq.PutQueue := aOperation.StubMqPutQueue;
-    mq.GetQueue := aOperation.StubMqGetQueue;
+    mq.Qmanager := resolveAliasses(aOperation.StubMqPutManager, projectProperties);
+    mq.PutQueue := resolveAliasses(aOperation.StubMqPutQueue, projectProperties);
+    mq.GetQueue := resolveAliasses(aOperation.StubMqGetQueue, projectProperties);
     mq.TimeOut := IntToStr (aOperation.StubMqTimeOut);
     mq.Expiry := '-1';
     xIsRequest := True;
@@ -3542,7 +3551,12 @@ begin
     try
       if aOperation.StubHttpAddress <> '' then
       begin
-        sUri := TIdUri.Create(aOperation.StubHttpAddress);
+        ppLock.Acquire;
+        try
+          sUri := TIdUri.Create(resolveAliasses(aOperation.StubHttpAddress, projectProperties));
+        finally
+          ppLock.Release;
+        end;
         if aOperation.SoapAddress <> '' then
         begin
           oUri := TIdUri.Create(aOperation.SoapAddress);
@@ -3968,7 +3982,6 @@ end;
 function TWsdlProject .SendOperationTacoMessage (aOperation : TWsdlOperation ;
   aMessage : String ; var aRequestHeader : String ; var aReplyHeader : String
   ): String ;
-{$ifdef windows}
 var
   Taco: TTacoInterface;
 begin
@@ -3979,11 +3992,6 @@ begin
     then raise Exception.Create('SendOperationTacoMessage: null arguments');
   result := fTacoInterface.RequestReply(aMessage, 0, aOperation.TacoConfigXml);
 end;
-{$else}
-begin
-  raise Exception.Create ('SendOperationTacoMessage not im,plemented');
-end;
-{$endif}
 
 procedure TWsdlProject.SetAbortPressed(const Value: Boolean);
 begin
@@ -4034,9 +4042,9 @@ begin
   if not Assigned (aOperation)
     then raise Exception.Create('SendOperationStompMessage: null arguments');
   Stomp := TStompInterface.Create (nil, HaveStompFrame);
-  Stomp.Host := aOperation.StubStompPutHost;
-  Stomp.Port := aOperation.StubStompPutPort;
-  Stomp.ClientId := aOperation.StubStompPutClientId;
+  Stomp.Host := resolveAliasses(aOperation.StubStompPutHost, projectProperties);
+  Stomp.Port := StrToIntDef(resolveAliasses(aOperation.StubStompPutPort, projectProperties), 61613);
+  Stomp.ClientId := resolveAliasses(aOperation.StubStompPutClientId, projectProperties);
   try
     Stomp.Connect;
     try

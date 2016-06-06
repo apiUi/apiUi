@@ -428,10 +428,10 @@ function resolveAliasses (aString : String ; aAliasses : TStringList ): String ;
     try
       with TRegExpr.Create do
       try
-        Expression := '\%[A-Za-z][A-Za-z0-9]*\%';
+        Expression := '\$\{[_A-Za-z][A-Za-z0-9]*\}';
         if Exec (aString) then
           result := Copy (aString, 1, MatchPos[0] - 1)
-                  + _trans (Match[0])
+                  + _trans (Copy (Match[0], 3, Length (Match[0]) - 3)) // "${property}"
                   + _resolv (Copy (aString, MatchPos[0] + MatchLen[0], Length (aString)), aSl)
         else
           result := aString;
