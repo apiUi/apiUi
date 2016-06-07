@@ -151,6 +151,7 @@ type
     doDisplayLog: Boolean;
     ProgressMax, ProgressPos: Integer;
     doCloneOperations: Boolean;
+    DatabaseConnectionSpecificationXml: TXml;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
     FreeFormatWsdl, XsdWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
     FreeFormatService: TWsdlService;
@@ -209,6 +210,7 @@ type
     FocusOperationName, FocusOperationNameSpace: String;
     FocusMessageIndex: Integer;
     OnBooleanDialog: TBooleanFunctionString;
+    procedure DatabaseConnectionSpecificationFromXml;
     procedure UpdateOperationAliasses;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
@@ -329,7 +331,6 @@ type
                          ; aIsActive: Boolean
                          ): String;
     function ProjectLogOptionsAsXml: TXml;
-    function ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
     function ProjectScriptsAsXml: TXml;
     procedure ProjectScriptsFromXml (aXml: TXml);
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
@@ -341,6 +342,7 @@ type
     procedure UpdateReplyColumns (aOperation: TWsdlOperation);
     procedure ProjectOptionsLogDisplayedColumnsFromXml(aXml: TXml);
     procedure ProjectLogOptionsFromXml(aXml: TXml);
+    function ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
     procedure ProjectOptionsFromXml(aXml: TXml);
     procedure ProjectOptions36FromXml (aXml: TXml);
     procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
@@ -1211,6 +1213,7 @@ begin
   OnReactivateEvent := ReactivateCommand;
   OnReloadDesignEvent := ReloadDesignCommand;
   projectProperties := TStringList.Create;
+  DatabaseConnectionSpecificationXml := TXml.CreateAsString ('DatabaseConnection', '');
   ppLock := TCriticalSection.Create;
   fTacoInterface := TTacoInterface.Create(nil, nil);
   fLogLock := TCriticalSection.Create;
@@ -1341,6 +1344,7 @@ begin
   FreeAndNil (SMTPServer);
   FreeAndNil (SMTPServerSSL);
   projectProperties.Free;
+  DatabaseConnectionSpecificationXml.Free;
   ppLock.Free;
   fLogLock.Free;
   Listeners.Free;
@@ -1626,6 +1630,7 @@ begin
         end;
     {$endif}
         Listeners.FromXml(HaveStompFrame); // because of properties...
+        DatabaseConnectionSpecificationFromXml; // because of properties...
         for x := 0 to Listeners.stompInterfaces.Count - 1 do
         begin
           with Listeners.stompInterfaces.Objects[x] as TStompInterface do
@@ -1864,17 +1869,8 @@ begin
        saRequest: ;
     end;
   end;
-  with result.AddXml (TXml.CreateAsString('DatabaseConnection', '')) do
-  begin
-    AddXml (TXml.CreateAsBoolean('Enabled', _WsdlDbsEnabled));
-    AddXml (TXml.CreateAsString('Type', DbsType));
-    AddXml (TXml.CreateAsString('DatabaseName', DbsDatabaseName));
-    AddXml (TXml.CreateAsString('HostName', DbsHostName));
-    AddXml (TXml.CreateAsString('Params', DbsParams));
-    AddXml (TXml.CreateAsString('UserName', DbsUserName));
-    AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(DbsPassword)));
-    AddXml (TXml.CreateAsString('ConnectionString', DbsConnectionString))
-  end;
+  with result.AddXml (TXml.Create) do
+    CopyDownLine(DatabaseConnectionSpecificationXml, True);
 end;
 
 function TWsdlProject.ProjectScriptsAsXml : TXml ;
@@ -3231,19 +3227,11 @@ end;
 
 procedure TWsdlProject .ProjectOptionsFromXml (aXml : TXml );
 var
-  xXml, yXml: TXml;
+  xXml, yXml, hXml: TXml;
 begin
   if not Assigned (aXml) then Exit;
   if aXml.Name <> 'projectOptions' then raise Exception.Create('ProjectOptionsFromXml illegal XML' + aXml.Text);
-  _WsdlDbsConnector.Connected := False;
-  _WsdlDbsConnector.LoginPrompt := False;
-  _WsdlDbsEnabled := False;
-  DbsType := '';
-  DbsDatabaseName := '';
-  DbsHostName:='';
-  DbsParams := '';
-  DbsUserName:='';
-  DbsPassword := '';
+  DatabaseConnectionSpecificationXml.Items.Clear;
   wrdFunctionz.wrdDetectFormatChanges := False;
   wrdFunctionz.wrdNewDocumentAsReference := False;
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
@@ -3307,30 +3295,8 @@ begin
     end;
     xXml := XmlCheckedItemByTag ['DatabaseConnection'];
     if Assigned (xXml) then
-    begin
-      _WsdlDbsEnabled := xXml.Items.XmlCheckedBooleanByTagDef['Enabled', _WsdlDbsEnabled];
-      DbsType := xXml.Items.XmlCheckedValueByTagDef['Type', DbsType];
-      DbsDatabaseName := xXml.Items.XmlCheckedValueByTagDef['DatabaseName', DbsDatabaseName];
-      DbsHostName := xXml.Items.XmlCheckedValueByTagDef['HostName', DbsHostName];
-      DbsParams := xXml.Items.XmlCheckedValueByTagDef['Params', DbsParams];
-      DbsUserName := xXml.Items.XmlCheckedValueByTagDef['UserName', DbsUserName];
-      DbsPassword := xmlz.DecryptString(xXml.Items.XmlCheckedValueByTag['Password']);
-      DbsConnectionString := xXml.Items.XmlCheckedValueByTagDef['ConnectionString', DbsConnectionString]; // to be able to create ado version project
-      with _WsdlDbsConnector do
-      begin
-        ConnectorType := DbsType;
-        DatabaseName := DbsDatabaseName;
-        HostName := DbsHostName;
-        Params.Text := ReplaceStrings( DbsParams
-                                     , '%pwd%'
-                                     , DbsPassword
-                                     , false
-                                     , false
-                                     );
-        UserName := DbsUserName;
-        Password := DbsPassword;
-      end;
-    end;
+      DatabaseConnectionSpecificationXml.CopyDownLine(xXml, True);
+    DatabaseConnectionSpecificationFromXml;
   end;
 end;
 
@@ -7086,6 +7052,7 @@ var
   x: Integer;
 begin
   projectProperties.Clear;
+  DatabaseConnectionSpecificationXml.Items.Clear;
   Scripts.Items.Clear;
   displayedLogs.Clear;
   archiveLogs.Clear;
@@ -7204,6 +7171,50 @@ begin
     Services.Objects[0] := TWsdlService.Create;
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTSwiftMT;
+  end;
+end;
+
+procedure TWsdlProject.DatabaseConnectionSpecificationFromXml ;
+var
+  hXml: TXml;
+begin
+  _WsdlDbsConnector.Connected := False;
+  _WsdlDbsConnector.LoginPrompt := False;
+  _WsdlDbsEnabled := False;
+  DbsType := '';
+  DbsDatabaseName := '';
+  DbsHostName:='';
+  DbsParams := '';
+  DbsUserName:='';
+  DbsPassword := '';
+  hXml := TXml.Create;
+  try
+    hXml.CopyDownLine(DatabaseConnectionSpecificationXml, True);
+    hXml.ResolveAliasses(projectProperties);
+    _WsdlDbsEnabled := hXml.Items.XmlCheckedBooleanByTagDef['Enabled', _WsdlDbsEnabled];
+    DbsType := hXml.Items.XmlCheckedValueByTagDef['Type', DbsType];
+    DbsDatabaseName := hXml.Items.XmlCheckedValueByTagDef['DatabaseName', DbsDatabaseName];
+    DbsHostName := hXml.Items.XmlCheckedValueByTagDef['HostName', DbsHostName];
+    DbsParams := hXml.Items.XmlCheckedValueByTagDef['Params', DbsParams];
+    DbsUserName := hXml.Items.XmlCheckedValueByTagDef['UserName', DbsUserName];
+    DbsPassword := xmlz.DecryptString(hXml.Items.XmlCheckedValueByTag['Password']);
+    DbsConnectionString := hXml.Items.XmlCheckedValueByTagDef['ConnectionString', DbsConnectionString]; // to be able to create ado version project
+  finally
+    hXml.Free;
+  end;
+  with _WsdlDbsConnector do
+  begin
+    ConnectorType := DbsType;
+    DatabaseName := DbsDatabaseName;
+    HostName := DbsHostName;
+    Params.Text := ReplaceStrings( DbsParams
+                                 , '%pwd%'
+                                 , DbsPassword
+                                 , false
+                                 , false
+                                 );
+    UserName := DbsUserName;
+    Password := DbsPassword;
   end;
 end;
 
