@@ -527,7 +527,6 @@ function OperationMessageList (aObject : TObject ; aAlias: String): TParserStrin
 function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
 function xNewLine: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
-function StringHasRegExpr (aString, aExpr: String): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
@@ -1115,21 +1114,6 @@ begin
   else
     c:= aString [1];
   result := StringOfChar(c, Trunc (aNumber));
-end;
-
-function StringHasRegExpr (aString, aExpr: String): String;
-begin
-  result := '';
-  if (aString <> '')
-  and (aExpr <> '') then
-  with TRegExpr.Create do
-  try
-    Expression := aExpr;
-    if (Exec(aString)) then
-      result := Match[0];
-  finally
-    Free;
-  end;
 end;
 
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);

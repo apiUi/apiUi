@@ -197,6 +197,7 @@ type
     procedure LoadValues (aXml: TXml; aAddUnknowns: Boolean); Overload;
     procedure CopyValues (aXml: TXml; aDoReset, aSkipAssignments: Boolean);
     procedure CopyDownLine (aXml: TXml; aOnlyWhenChecked: Boolean);
+    procedure ResolveAliasses (aAliasses: TStringList);
     procedure CopyRelevancy (aXml: TXml);
     procedure ResetExpectedValues;
     procedure CheckExpectedValues;
@@ -3305,6 +3306,20 @@ begin
   Items.Clear;
   Attributes.Clear;
   _Copy (Self, aXml);
+end;
+
+procedure TXml .ResolveAliasses (aAliasses : TStringList);
+  procedure _resolv (aXml: TXml);
+  var
+    x: Integer;
+  begin
+    aXml.Value := xmlio.resolveAliasses(aXml.Value, aAliasses);
+    for x := 0 to aXml.Items.Count - 1 do
+      _resolv(aXml.Items.XmlItems[x]);
+  end;
+begin
+  if not Assigned (aAliasses) then Exit;
+  _resolv (self);
 end;
 
 function TXml.GetIndexString: String;

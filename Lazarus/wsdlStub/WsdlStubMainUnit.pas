@@ -11535,12 +11535,13 @@ var
 begin
   xXml := TXml.Create;
   try
-    xXml.CopyDownLine(se.Listeners.AsXml, True);
+    xXml.CopyDownLine(se.Listeners.SpecificationXml, True);
     if EditXmlXsdBased('Configure Listeners', '', '', '', se.IsActive,
       listenersConfigXsd, xXml) then
     begin
       stubChanged := True;
-      se.Listeners.FromXml(xXml, se.HaveStompFrame);
+      se.Listeners.SpecificationXml.CopyDownLine(xXml, True);
+      se.Listeners.FromXml(se.HaveStompFrame);
     end;
   finally
     xXml.Free;

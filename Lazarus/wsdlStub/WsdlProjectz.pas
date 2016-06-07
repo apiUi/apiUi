@@ -1248,6 +1248,7 @@ begin
   displayedSnapshots := TSnapshotList.Create;
   toDisplaySnapshots := TSnapshotList.Create;
   Listeners := TListeners.Create;
+  Listeners.aliasses := projectProperties;
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
   EnvironmentList.Sorted := True;
@@ -1624,7 +1625,7 @@ begin
           end;
         end;
     {$endif}
-        Listeners.FromXml(Listeners.AsXml, HaveStompFrame); // because of properties...
+        Listeners.FromXml(HaveStompFrame); // because of properties...
         for x := 0 to Listeners.stompInterfaces.Count - 1 do
         begin
           with Listeners.stompInterfaces.Objects[x] as TStompInterface do
@@ -1956,8 +1957,8 @@ begin
     with TXml.CreateAsString ('WsdlStubCase', '') do
     try
       AddXml(TXml.CreateAsString('FileName', ExpandUNCFileNameUTF8(aMainFileName) { *Converted from ExpandUNCFileName* }));
-
-      AddXml (Listeners.AsXml);
+      with AddXml (TXml.Create) do
+        CopyDownLine(Listeners.SpecificationXml, True);
       AddXml(TXml.CreateAsBoolean('ValidateRequests', doValidateRequests));
       AddXml(TXml.CreateAsBoolean('ValidateReplies', doValidateReplies));
       AddXml (TXml.CreateAsBoolean('CheckExpectedValues', doCheckExpectedValues));
@@ -2265,9 +2266,14 @@ begin
           if aMainFileName = '' then
             aMainFileName := xXml.Items.XmlValueByTag ['FileName'];
           projectFileName := aMainFileName;
+          projectProperties.Text := xXml.Items.XmlValueByTag['properties'];
           sXml := xXml.Items.XmlItemByTag ['Listeners'];
+          Listeners.SpecificationXml.Items.Clear;
           if Assigned (sXml) then
-            Listeners.FromXml(sXml, HaveStompFrame);
+          begin
+            Listeners.SpecificationXml.CopyDownLine(sXml, True);
+            Listeners.FromXml(HaveStompFrame);
+          end;
           doValidateRequests := (xXml.Items.XmlValueByTag ['ValidateRequests'] = 'true');
           doValidateReplies := (xXml.Items.XmlValueByTag ['ValidateReplies'] = 'true');
           doCheckExpectedValues := xXml.Items.XmlBooleanByTagDef['CheckExpectedValues', False];
@@ -2283,7 +2289,6 @@ begin
             ReferenceFolder := ExpandRelativeFileName (aMainFileName, ReferenceFolder);
           end;
           xmlio.PathPrefixes.Text := xXml.Items.XmlCheckedValueByTag ['PathPrefixes'];
-          projectProperties.Text := xXml.Items.XmlValueByTag['properties'];
           eXml := xXml.Items.XmlItemByTag ['Environments'];
           if Assigned (eXml) then
             for e := 0 to eXml.Items.Count - 1 do
@@ -7080,6 +7085,7 @@ procedure TWsdlProject.Clear;
 var
   x: Integer;
 begin
+  projectProperties.Clear;
   Scripts.Items.Clear;
   displayedLogs.Clear;
   archiveLogs.Clear;

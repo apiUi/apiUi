@@ -19,8 +19,6 @@ type
   { TListeners }
 
   TListeners = class(TObject)
-  private
-    fXml : TXml ;
   public
     aliasses: TStringList;
     httpProxyPort, httpBmtpPort: Integer;
@@ -34,9 +32,9 @@ type
     smtpTlsCertificateFile, smtpTlsKeyFile, smtpTlsRootCertificateFile: String;
     pop3Port: Integer;
     pop3UserName, pop3Password: String;
-    property AsXml: TXml read fXml;
+    SpecificationXml: TXml;
     procedure Clear;
-    procedure FromXml (aXml: TXml; aOnHaveFrame: TOnHaveFrame);
+    procedure FromXml (aOnHaveFrame: TOnHaveFrame);
     constructor Create;
     destructor Destroy; Override;
   end;
@@ -132,104 +130,108 @@ begin
 end;
 }
 
-procedure TListeners.FromXml(aXml: TXml; aOnHaveFrame: TOnHaveFrame);
+procedure TListeners.FromXml(aOnHaveFrame: TOnHaveFrame);
 var
   m, x, y: Integer;
-  xXml, yXml: TXml;
+  xXml, yXml, hXml: TXml;
 begin
-  if not Assigned (aXml) then raise Exception.Create('ListenersFromXml: No XML assigned');
-  if aXml.Name <> 'Listeners' then raise Exception.Create('ListenersFromXml: Illegal XML assigned');
-  fXml.CopyDownLine(aXml, True);
+  if not Assigned (SpecificationXml) then raise Exception.Create('ListenersFromXml: No SpecificationXml assigned');
+  if SpecificationXml.Name <> 'Listeners' then raise Exception.Create('ListenersFromXml: Illegal XML assigned');
   Clear;
-  if not aXml.Checked then Exit;
-  for x := 0 to aXml.Items.Count - 1 do
-  begin
-    with aXml.Items.XmlItems[x] do
+  if not SpecificationXml.Checked then Exit;
+  hXml := TXml.Create;
+  try
+    hXml.CopyDownLine(SpecificationXml, True);
+    hXml.ResolveAliasses(aliasses);
+    for x := 0 to hXml.Items.Count - 1 do
     begin
-      if Checked then
+      with hXml.Items.XmlItems[x] do
       begin
-        if Name = 'Http' then
+        if Checked then
         begin
-          for y := 0 to Items.Count - 1 do
+          if Name = 'Http' then
           begin
-            if (Items.XmlItems[y].Checked)
-            and (Items.XmlItems[y].Name = 'Port') then
+            for y := 0 to Items.Count - 1 do
             begin
-              httpPorts.Add (resolveAliasses(Items.XmlItems[y].Value, aliasses));
-              _WsdlPortNumber := resolveAliasses(Items.XmlItems[y].Value, aliasses);
-            end;
-          end;
-        end;
-        if Name = 'HttpProxy' then
-        begin
-          httpProxyPort := Items.XmlCheckedIntegerByTag['Port'];
-        end;
-        if Name = 'Bmtp' then
-        begin
-          httpBmtpPort := Items.XmlCheckedIntegerByTag['Port'];
-        end;
-        if Name = 'Https' then
-        begin
-          for y := 0 to Items.Count - 1 do
-          begin
-            if (Items.XmlItems[y].Checked)
-            and (Items.XmlItems[y].Name = 'Port') then
-            begin
-              httpsPorts.Add (Items.XmlItems[y].Value);
-              _WsdlPortNumber := Items.XmlItems[y].Value;
-            end;
-          end;
-          xXml := Items.XmlCheckedItemByTag['SSL'];
-          if Assigned (xXml) then with xXml do
-          begin
-            sslVersion := sslvTLSv1_2; // nice default
-            yXml := Items.XmlCheckedItemByTag['Version'];
-            if Assigned (yXml) then
-              sslVersion := sslVersionFromString(yXml.Value);
-            sslCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
-            sslKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
-            sslRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
-          end;
-        end;
-        if Name = 'Mq' then
-          for y := 0 to Items.Count - 1 do
-            if Items.XmlItems[y].Checked then
-              mqInterfaces.AddObject ('', TMqInterface.CreateFromXml (Items.XmlItems [y]));
-        if Name = 'Stomp' then
-          for y := 0 to Items.Count - 1 do
-            if Items.XmlItems[y].Checked then
-              stompInterfaces.AddObject ('', TStompInterface.CreateFromXml (Items.XmlItems [y], aOnHaveFrame));
-        if Name = 'Mail' then
-        begin
-          for m := 0 to Items.Count - 1 do
-          begin
-            if Items.XmlItems[m].Checked then
-            begin
-              with Items.XmlItems[m] do
+              if (Items.XmlItems[y].Checked)
+              and (Items.XmlItems[y].Name = 'Port') then
               begin
-                if Name = 'Smtp' then
+                httpPorts.Add (Items.XmlItems[y].Value);
+                _WsdlPortNumber := Items.XmlItems[y].Value;
+              end;
+            end;
+          end;
+          if Name = 'HttpProxy' then
+          begin
+            httpProxyPort := Items.XmlCheckedIntegerByTag['Port'];
+          end;
+          if Name = 'Bmtp' then
+          begin
+            httpBmtpPort := Items.XmlCheckedIntegerByTag['Port'];
+          end;
+          if Name = 'Https' then
+          begin
+            for y := 0 to Items.Count - 1 do
+            begin
+              if (Items.XmlItems[y].Checked)
+              and (Items.XmlItems[y].Name = 'Port') then
+              begin
+                httpsPorts.Add (Items.XmlItems[y].Value);
+                _WsdlPortNumber := Items.XmlItems[y].Value;
+              end;
+            end;
+            xXml := Items.XmlCheckedItemByTag['SSL'];
+            if Assigned (xXml) then with xXml do
+            begin
+              sslVersion := sslvTLSv1_2; // nice default
+              yXml := Items.XmlCheckedItemByTag['Version'];
+              if Assigned (yXml) then
+                sslVersion := sslVersionFromString(yXml.Value);
+              sslCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
+              sslKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
+              sslRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
+            end;
+          end;
+          if Name = 'Mq' then
+            for y := 0 to Items.Count - 1 do
+              if Items.XmlItems[y].Checked then
+                mqInterfaces.AddObject ('', TMqInterface.CreateFromXml (Items.XmlItems [y]));
+          if Name = 'Stomp' then
+            for y := 0 to Items.Count - 1 do
+              if Items.XmlItems[y].Checked then
+                stompInterfaces.AddObject ('', TStompInterface.CreateFromXml (Items.XmlItems [y], aOnHaveFrame));
+          if Name = 'Mail' then
+          begin
+            for m := 0 to Items.Count - 1 do
+            begin
+              if Items.XmlItems[m].Checked then
+              begin
+                with Items.XmlItems[m] do
                 begin
-                  smtpPort := Items.XmlCheckedIntegerByTag['Port'];
-                end;
-                if Name = 'Smtps' then
-                begin
-                  smtpsPort := Items.XmlCheckedIntegerByTag['Port'];
-                  xXml := Items.XmlCheckedItemByTag['TLS'];
-                  if Assigned (xXml) then with xXml do
+                  if Name = 'Smtp' then
                   begin
-                    smtpTlsCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
-                    smtpTlsKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
-                    smtpTlsRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
+                    smtpPort := Items.XmlCheckedIntegerByTag['Port'];
                   end;
-                end;
-                if Name = 'Pop3' then
-                begin
-                  pop3Port := Items.XmlCheckedIntegerByTag['Port'];
-                  xXml := Items.XmlCheckedItemByTag['User'];
-                  if Assigned (xXml) then with xXml do
+                  if Name = 'Smtps' then
                   begin
-                    pop3UserName := Items.XmlCheckedValueByTag['Name'];
-                    pop3Password := DecryptString (Items.XmlCheckedValueByTag['Password']);
+                    smtpsPort := Items.XmlCheckedIntegerByTag['Port'];
+                    xXml := Items.XmlCheckedItemByTag['TLS'];
+                    if Assigned (xXml) then with xXml do
+                    begin
+                      smtpTlsCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
+                      smtpTlsKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
+                      smtpTlsRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
+                    end;
+                  end;
+                  if Name = 'Pop3' then
+                  begin
+                    pop3Port := Items.XmlCheckedIntegerByTag['Port'];
+                    xXml := Items.XmlCheckedItemByTag['User'];
+                    if Assigned (xXml) then with xXml do
+                    begin
+                      pop3UserName := Items.XmlCheckedValueByTag['Name'];
+                      pop3Password := DecryptString (Items.XmlCheckedValueByTag['Password']);
+                    end;
                   end;
                 end;
               end;
@@ -238,6 +240,8 @@ begin
         end;
       end;
     end;
+  finally
+    hXml.Free;
   end;
 end;
 
@@ -270,7 +274,7 @@ end;
 
 constructor TListeners.Create;
 begin
-  fXml := TXml.Create;
+  SpecificationXml := TXml.Create;
   httpPorts:= TStringList.Create;
   httpsPorts := TStringList.Create;
   httpBmtpPort := 0;
@@ -288,7 +292,7 @@ begin
   httpsPorts.Free;
   mqInterfaces.Free;
   stompInterfaces.Free;
-  fXml.Free;
+  SpecificationXml.Free;
 end;
 
 end.

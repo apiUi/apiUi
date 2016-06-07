@@ -19,6 +19,7 @@ function GetHostName: String;
 function GetUserName: String;
 function GetVersion: String;
 function resolveAliasses (aString: String; aAliasses: TStringList): String;
+function StringHasRegExpr (aString, aExpr: String): String;
 
 var
   PathPrefixes: TStringList;
@@ -36,6 +37,21 @@ uses StrUtils
    , Controls
    , PromptUnit
    ;
+
+function StringHasRegExpr (aString, aExpr: String): String;
+begin
+  result := '';
+  if (aString <> '')
+  and (aExpr <> '') then
+  with TRegExpr.Create do
+  try
+    Expression := aExpr;
+    if (Exec(aString)) then
+      result := Match[0];
+  finally
+    Free;
+  end;
+end;
 
 function HttpPostDialog (aRequest, aUrl: String): String;
 var
@@ -400,6 +416,7 @@ begin
 end;
 
 function resolveAliasses (aString : String ; aAliasses : TStringList ): String ;
+  const _regexp = '\$\{[_A-Za-z][A-Za-z0-9]*\}';
   function _resolv (aString: String; aSl: TStringList): String;
     function _trans (aString: String): String;
     var
@@ -428,7 +445,7 @@ function resolveAliasses (aString : String ; aAliasses : TStringList ): String ;
     try
       with TRegExpr.Create do
       try
-        Expression := '\$\{[_A-Za-z][A-Za-z0-9]*\}';
+        Expression := _regexp;
         if Exec (aString) then
           result := Copy (aString, 1, MatchPos[0] - 1)
                   + _trans (Copy (Match[0], 3, Length (Match[0]) - 3)) // "${property}"
@@ -450,12 +467,15 @@ begin
   result := aString;
   if not Assigned (aAliasses) then
     exit;
-  sl := TStringList.Create;
-  try
-    sl.Text := aAliasses.Text; // need to work with a copy since we are gonna set TObjs
-    result := _resolv (aString, sl);
-  finally
-    sl.Free;
+  if StringHasRegExpr(aString, _regexp) <> '' then
+  begin
+    sl := TStringList.Create;
+    try
+      sl.Text := aAliasses.Text; // need to work with a copy since we are gonna set TObjs
+      result := _resolv (aString, sl);
+    finally
+      sl.Free;
+    end;
   end;
 end;
 
