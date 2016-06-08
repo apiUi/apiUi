@@ -95,7 +95,7 @@ type
       _expectXml: TXml;
       property ServiceByName [Index: String]: TWsdlService read getServiceByName;
       property OperationByRequest [Index: String]: TWsdlOperation read getOperationByRequest;
-      function ExtraXsdsAsXml (aSaveRelativeFileNames: Boolean): TXml;
+      function ExtraXsdsAsXml (aSaveRelativeFileNames: Boolean; aMainFileName: String): TXml;
       procedure ExtraXsdsFromXml (aXml: TXml);
       procedure AddedTypeDefElementsFromXml (aXml: TXml);
       procedure LoadExtraXsds;
@@ -3002,7 +3002,7 @@ begin
   end;
 end;
 
-function TWsdl.ExtraXsdsAsXml (aSaveRelativeFileNames: Boolean): TXml;
+function TWsdl.ExtraXsdsAsXml (aSaveRelativeFileNames: Boolean; aMainFileName: String): TXml;
 var
   x: Integer;
 begin
@@ -3010,7 +3010,7 @@ begin
   for x := 0 to ExtraXsds.Count - 1 do
     if aSaveRelativeFileNames then
       result.AddXml ( TXml.CreateAsString ( 'FileName'
-                                          , ExtractRelativeFileName ( FileName
+                                          , ExtractRelativeFileName ( aMainFileName
                                                                     , ExtraXsds.Strings[x]
                                                                     )
                                           )

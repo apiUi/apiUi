@@ -3052,8 +3052,8 @@ begin
     SaveFileDialog.Title := 'Save wsdlStub case';
     if SaveFileDialog.Execute then
     begin
-      se.projectFileName := SaveFileDialog.FileName;
-      SaveWsdlStubCase(SaveFileDialog.FileName);
+      se.projectFileName := ExpandUNCFileNameUTF8(SaveFileDialog.FileName);
+      SaveWsdlStubCase(se.projectFileName);
     end;
   finally
   end;
@@ -3145,8 +3145,8 @@ begin
     OpenFileDialog.Title := 'Open Stub Case';
     if OpenFileDialog.Execute then
     begin
-      se.projectFileName := OpenFileDialog.FileName;
-      OpenStubCase(OpenFileDialog.FileName);
+      se.projectFileName := ExpandUNCFileNameUTF8(OpenFileDialog.FileName);
+      OpenStubCase(se.projectFileName);
       // TProcedureThread.Create (OpenStubCase, OpenFileDialog.FileName);
     end;
   end;

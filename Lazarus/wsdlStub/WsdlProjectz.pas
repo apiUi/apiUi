@@ -2021,7 +2021,7 @@ begin
             if xWsdl.ExtraXsds.Count > 0 then
             begin
               with AddXml (TXml.CreateAsString ('ExtraXsds','')) do
-                AddXml (xWsdl.ExtraXsdsAsXml(SaveRelativeFileNames));
+                AddXml (xWsdl.ExtraXsdsAsXml(SaveRelativeFileNames, aMainFileName));
             end;
             AddXml(TXml.CreateAsInteger('ElementsWhenRepeatable', xWsdl.xsdElementsWhenRepeatable));
             asXml := xWsdl.XsdDescr.ChangedElementTypedefsAsXml as TXml;
@@ -6076,85 +6076,74 @@ begin
   {$ifdef windows}
   CoInitialize (nil);
   {$endif}
-  try
-    if ARequestInfo.Command = 'PUT' then
+  try // to always CoFinalize
+    if ARequestInfo.Command <> 'POST' then
     begin
-      AResponseInfo.ResponseText := 'Bmtp: Http PUT not supported';
+      AResponseInfo.ResponseText := 'Bmtp: Http ' + ARequestInfo.Command + ' not supported';
       exit;
     end;
-    if ARequestInfo.Command = 'GET' then
-    begin
-      AResponseInfo.ResponseText := 'Bmtp: Http GET not yet supported; might scan the service defs for ...';
-      exit;
-    end;
-    try
+    try // to always reply
       xLog := TLog.Create;
-      xLog.InboundTimeStamp := Now;
-      xLog.TransportType := ttBmtp;
-      xLog.httpCommand := ARequestInfo.Command;
-      xLog.httpDocument := ARequestInfo.Document;
-      xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
-      with TXml.Create do
-      try
-        LoadFromString(httpRequestStreamToString(ARequestInfo, AResponseInfo), nil);
-        if Name = '' then
-          raise Exception.Create('Bmtp: Could not parse message envelope as XML');
-        if Name <> 'bmtpEnvelope' then
-          raise Exception.Create('Bmtp: No Bmtp envelope found');
-        xLog.ServiceName := Items.XmlValueByTag['Service'];
-        if xLog.ServiceName = '' then
-          raise Exception.Create('Bmtp: Element Service not found');
-        xLog.OperationName := Items.XmlValueByTag['Operation'];
-        if xLog.OperationName = '' then
-          raise Exception.Create('Bmtp: Element Operation not found');
-        mXml := Items.XmlItemByTag['Request'];
-        if not Assigned (mXml) then
-          raise Exception.Create('Bmtp: Element Request not found');
-        try
-          s := mXml.Value;
-          d := Base64DecodeStr(s);
-          xLog.RequestBody := d;
-        except
-          on e: Exception do
-            raise Exception.Create('Bmtp: Exception while b64decoding message: ' + e.Message);
-        end;
-      finally
-        Free;
-      end;
-      xLog.InboundBody := xLog.RequestBody;
-      AResponseInfo.ContentType := ARequestInfo.ContentType;
-      begin // request
-        try
-          xProcessed := False;
+      try // to always log
+        try // to catch exceptions
+          xLog.InboundTimeStamp := Now;
+          xLog.TransportType := ttBmtp;
+          xLog.httpCommand := ARequestInfo.Command;
+          xLog.httpDocument := ARequestInfo.Document;
+          xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
+          xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
+          with TXml.Create do
           try
-            AResponseInfo.ResponseNo := 200;
-            CreateLogReply (xLog, xProcessed, True);
-//          xLog.ReplyBody := 'Lars was here';
-            DelayMS (xLog.DelayTimeMs);
-            with TXml.CreateAsString('bmtpEnvelope', '') do
+            LoadFromString(xLog.RequestBody, nil);
+            if Name = '' then
+              raise Exception.Create('Bmtp: Could not parse message envelope as XML');
+            if Name <> 'bmtpEnvelope' then
+              raise Exception.Create('Bmtp: No Bmtp envelope found');
+            xLog.ServiceName := Items.XmlValueByTagDef['Service', 'not specified'];
+            xLog.OperationName := Items.XmlValueByTagDef['Operation', 'not specified'];
+            mXml := Items.XmlItemByTag['Request'];
+            if not Assigned (mXml) then
+              raise Exception.Create('Bmtp: Element Request not found');
             try
-              AddXml(TXml.CreateAsString('Service',xLog.ServiceName));
-              AddXml(TXml.CreateAsString('Operation',xLog.OperationName));
-              s := xLog.ReplyBody;
-              d := Base64EncodeStr(s);
-              AddXml(TXml.CreateAsString('Reply', d));
-              aResponseInfo.ContentText := AsText(False,0,False,False);
-            finally
-              Free;
+              s := mXml.Value;
+              d := Base64DecodeStr(s);
+              xLog.RequestBody := d; // when everything Ok loose the Bmtp envelope here
+            except
+              on e: Exception do
+                raise Exception.Create('Bmtp: Exception while b64decoding message: ' + e.Message);
             end;
-          except
-            on e: exception do
-            begin
-              LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-              xLog.Exception := e.Message;
-              AResponseInfo.ContentText := e.Message;
-            end;
-          end;  // except
-        finally
-          xLog.OutboundTimeStamp := Now;
-          DisplayLog ('', xLog);
-        end; // finally request
-      end; // request
+          finally
+            Free;
+          end;
+          xLog.InboundBody := xLog.RequestBody;
+          AResponseInfo.ContentType := ARequestInfo.ContentType;
+          xProcessed := False;
+          AResponseInfo.ResponseNo := 200;
+          CreateLogReply (xLog, xProcessed, True);
+          DelayMS (xLog.DelayTimeMs);
+          with TXml.CreateAsString('bmtpEnvelope', '') do
+          try
+            AddXml(TXml.CreateAsString('Service',xLog.ServiceName));
+            AddXml(TXml.CreateAsString('Operation',xLog.OperationName));
+            s := xLog.ReplyBody;
+            d := Base64EncodeStr(s);
+            AddXml(TXml.CreateAsString('Reply', d));
+            aResponseInfo.ContentText := AsText(False,0,False,False);
+          finally
+            Free;
+          end;
+        except
+          on e: exception do
+          begin
+            LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
+            xLog.Exception := e.Message;
+            AResponseInfo.ContentText := e.Message;
+          end;
+        end;  // except
+      finally
+        xLog.OutboundTimeStamp := Now;
+        DisplayLog ('', xLog);
+      end; // finally request
     finally
       if AResponseInfo.ContentEncoding <> 'identity' then
       begin
