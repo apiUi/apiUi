@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="8">
+      <Unit0>
+        <Filename Value="portChecker.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos Y="20"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="mainunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="mainUnit"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="53"/>
+        <CursorPos X="29" Y="89"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\Components\Indy10\Lib\System\IdStream.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <CursorPos X="15" Y="31"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Components\Indy10\Bubbles\boxtests\IPv4.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="25"/>
+        <CursorPos X="12" Y="44"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\Components\Indy10\Bubbles\boxtests\IPv6.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="88"/>
+        <CursorPos X="26" Y="116"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <UnitName Value="IdTCPClient"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="186"/>
+        <CursorPos X="34" Y="214"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
+        <UnitName Value="IdGlobal"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="1108"/>
+        <CursorPos X="3" Y="1127"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="AboutUnit.pas"/>
+        <ComponentName Value="AboutBox"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AboutUnit"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="20"/>
+        <CursorPos X="24" Y="58"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit7>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="67" Column="14" TopLine="48"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="88" Column="25" TopLine="56"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="108" Column="7" TopLine="76"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="116" Column="22" TopLine="84"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="117" Column="7" TopLine="85"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="121" Column="11" TopLine="89"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="127" Column="26" TopLine="95"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="163" Column="10" TopLine="131"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="188" Column="22" TopLine="158"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="203" Column="51" TopLine="187"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <Caret Line="214" Column="34" TopLine="186"/>
+      </Position12>
+      <Position13>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="9" Column="32"/>
+      </Position13>
+      <Position14>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="74" Column="12" TopLine="43"/>
+      </Position14>
+      <Position15>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="75" Column="31" TopLine="44"/>
+      </Position15>
+      <Position16>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="47" Column="19" TopLine="45"/>
+      </Position16>
+      <Position17>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="64" Column="27" TopLine="46"/>
+      </Position17>
+      <Position18>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="65" Column="32" TopLine="46"/>
+      </Position18>
+      <Position19>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="82" Column="21" TopLine="47"/>
+      </Position19>
+      <Position20>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="9" Column="13"/>
+      </Position20>
+      <Position21>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="49"/>
+      </Position21>
+      <Position22>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="56" TopLine="18"/>
+      </Position22>
+      <Position23>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="59" TopLine="48"/>
+      </Position23>
+      <Position24>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="9" Column="35"/>
+      </Position24>
+      <Position25>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="53" Column="42" TopLine="33"/>
+      </Position25>
+      <Position26>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="43" Column="20" TopLine="36"/>
+      </Position26>
+      <Position27>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="40" Column="4" TopLine="27"/>
+      </Position27>
+      <Position28>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="43" Column="4" TopLine="38"/>
+      </Position28>
+      <Position29>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="91" Column="38" TopLine="72"/>
+      </Position29>
+      <Position30>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="29" Column="19" TopLine="25"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

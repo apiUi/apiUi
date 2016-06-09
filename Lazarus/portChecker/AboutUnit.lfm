@@ -1,0 +1,89 @@
+object AboutBox: TAboutBox
+  Left = 513
+  Height = 245
+  Top = 254
+  Width = 276
+  BorderStyle = bsDialog
+  Caption = 'About wsdlStub'
+  ClientHeight = 245
+  ClientWidth = 276
+  Color = clBtnFace
+  Font.Color = clBlack
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '1.4.0.2'
+  object ProgramLabel: TLabel
+    Left = 18
+    Height = 13
+    Top = 10
+    Width = 43
+    Caption = 'wsdlStub'
+    ParentColor = False
+  end
+  object Bevel1: TBevel
+    Left = 18
+    Height = 1
+    Top = 191
+    Width = 249
+    Anchors = [akLeft, akRight, akBottom]
+    Shape = bsTopLine
+  end
+  object Label3: TLabel
+    Left = 18
+    Height = 13
+    Top = 46
+    Width = 186
+    Caption = 'Copyright © 2009 - 2016 Jan Bouwman'
+    ParentColor = False
+  end
+  object LicensedLabel: TLabel
+    Left = 18
+    Height = 13
+    Top = 155
+    Width = 64
+    Caption = 'Free software'
+    ParentColor = False
+  end
+  object OKButton: TButton
+    Left = 16
+    Height = 25
+    Top = 208
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Cancel = True
+    Caption = 'OK'
+    Default = True
+    ModalResult = 2
+    TabOrder = 0
+  end
+  object BuildLabel: TLabel
+    Left = 18
+    Height = 13
+    Top = 82
+    Width = 50
+    Caption = 'Build date:'
+    ParentColor = False
+    OnMouseMove = BuildLabelMouseMove
+  end
+  object LazarusLabel: TLabel
+    Left = 18
+    Height = 13
+    Top = 99
+    Width = 74
+    Caption = 'Lazarus version'
+    ParentColor = False
+    OnMouseMove = BuildLabelMouseMove
+  end
+  object FPCLabel: TLabel
+    Left = 18
+    Height = 13
+    Top = 116
+    Width = 57
+    Caption = 'FPC version'
+    ParentColor = False
+    OnMouseMove = BuildLabelMouseMove
+  end
+end
