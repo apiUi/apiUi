@@ -19,6 +19,9 @@ type
   { TListeners }
 
   TListeners = class(TObject)
+  private
+    fConnected : Boolean ;
+    procedure setConnected (AValue : Boolean );
   public
     aliasses: TStringList;
     httpProxyPort, httpBmtpPort: Integer;
@@ -33,6 +36,7 @@ type
     pop3Port: Integer;
     pop3UserName, pop3Password: String;
     SpecificationXml: TXml;
+    property Connected: Boolean read fConnected write setConnected;
     procedure Clear;
     procedure FromXml (aOnHaveFrame: TOnHaveFrame);
     constructor Create;
@@ -243,6 +247,12 @@ begin
   finally
     hXml.Free;
   end;
+end;
+
+procedure TListeners .setConnected (AValue : Boolean );
+begin
+  if fConnected = AValue then Exit ;
+  fConnected := AValue ;
 end;
 
 procedure TListeners.Clear;

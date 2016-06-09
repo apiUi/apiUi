@@ -145,6 +145,7 @@ type
     function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
+    function relFilNam(aFileName: String): String;
   public
     projectProperties: TStringList;
     ppLock: TCriticalSection;
@@ -4756,12 +4757,26 @@ end;
 procedure TWsdlProject.freeFormatOperationsUpdate(aXml: TXml);
 var
   sList: TStringList;
-  oXml: TXml;
+  xXml, oXml: TXml;
+  xXsd: TXsd;
   f, x, o: Integer;
   xOperation: TWsdlOperation;
+const
+  _xsdName = 'OperationDefs.FreeFormatOperations';
 begin
   if aXml.Name <> 'FreeFormatOperations' then
     raise Exception.Create('??TWsdlProject.freeFormatOperationsUpdate(aXml: TXml): ' + aXml.Name);
+  xXsd := OperationDefsXsd.FindXsd (_xsdName);
+  if not Assigned (xXsd) then
+    raise  Exception.Create('Xsd not found: ' + _xsdName);
+  xXml := TXml.Create(-1000, xXsd);
+  try
+    xXml.LoadValues(aXml, False);
+    aXml.CopyDownLine(xXml, True);
+  finally
+    xXml.Free;
+  end;
+
   sList := TStringList.Create;
   sList.Sorted := True;
   try
@@ -4888,12 +4903,26 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
   end;
 var
   sList: TStringList;
-  oXml: TXml;
+  oXml, xXml: TXml;
+  xXsd: TXsd;
   f, x, o: Integer;
   xOperation: TWsdlOperation;
+const
+  _xsdName = 'OperationDefs.XsdOperations';
 begin
   if aXml.Name <> 'XsdOperations' then
     raise Exception.Create('??TWsdlProject.XsdOperationsUpdate(aXml: TXml): ' + aXml.Name);
+  xXsd := OperationDefsXsd.FindXsd (_xsdName);
+  if not Assigned (xXsd) then
+    raise  Exception.Create('Xsd not found: ' + _xsdName);
+  xXml := TXml.Create(-1000, xXsd);
+  try
+    xXml.LoadValues(aXml, False);
+    aXml.CopyDownLine(xXml, True); // assigns Xsd to downline
+  finally
+    xXml.Free;
+  end;
+
   sList := TStringList.Create;
   sList.Sorted := True;
   if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
@@ -5007,14 +5036,28 @@ procedure TWsdlProject.cobolOperationsUpdate(aXml: TXml; aMainFileName: String);
 {}
 var
   sList: TStringList;
-  oXml: TXml;
+  oXml, xXml: TXml;
+  xXsd: TXsd;
   f, x, o: Integer;
   xOperation: TWsdlOperation;
   xFileNames: TStringList;
   xIpmDescr: TIpmDescr;
+const
+  _xsdName = 'OperationDefs.CobolOperations';
 begin
   if aXml.Name <> 'CobolOperations' then
     raise Exception.Create('??TWsdlProject.cobolOperationsUpdate(aXml: TXml): ' + aXml.Name);
+  xXsd := OperationDefsXsd.FindXsd (_xsdName);
+  if not Assigned (xXsd) then
+    raise  Exception.Create('Xsd not found: ' + _xsdName);
+  xXml := TXml.Create(-1000, xXsd);
+  try
+    xXml.LoadValues(aXml, False);
+    aXml.CopyDownLine(xXml, True); // assigns Xsd to downline
+  finally
+    xXml.Free;
+  end;
+
   sList := TStringList.Create;
   sList.Sorted := True;
   xFileNames := TStringList.Create;
@@ -5262,12 +5305,26 @@ procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String
 {}
 var
   sList: TStringList;
-  oXml: TXml;
+  oXml, xXml: TXml;
+  xXsd: TXsd;
   f, x, o: Integer;
   xOperation: TWsdlOperation;
+const
+  _xsdName = 'OperationDefs.SwiftMtOperations';
 begin
   if aXml.Name <> 'SwiftMtOperations' then
     raise Exception.Create('??TWsdlProject.SwiftMtOperationsUpdate(aXml: TXml): ' + aXml.Name);
+  xXsd := OperationDefsXsd.FindXsd (_xsdName);
+  if not Assigned (xXsd) then
+    raise  Exception.Create('Xsd not found: ' + _xsdName);
+  xXml := TXml.Create(-1000, xXsd);
+  try
+    xXml.LoadValues(aXml, False);
+    aXml.CopyDownLine(xXml, True); // assigns Xsd to downline
+  finally
+    xXml.Free;
+  end;
+
   sList := TStringList.Create;
   sList.Sorted := True;
   if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
@@ -5387,16 +5444,7 @@ begin
       and (xOperation.reqDescrFilename <> '') then
         with AddXml (TXml.CreateAsString('Req', '')) do
         begin
-          if (aMainFileName <> '')
-          and (SaveRelativeFileNames) then
-            AddXml(TXml.CreateAsString ( 'DescriptionFile'
-                                       , ExtractRelativeFileName ( aMainFileName
-                                                                 , xOperation.reqDescrFilename
-                                                                 )
-                                       )
-                  )
-          else
-            AddXml(TXml.CreateAsString('DescriptionFile', xOperation.reqDescrFilename));
+          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.reqDescrFilename)));
           if xOperation.reqBind.Children.Count > 0 then
             AddXml(TXml.CreateAsString('ElementName', (xOperation.reqBind as TXml).Items.XmlItems[0].Name));
         end;
@@ -5404,16 +5452,7 @@ begin
       and (xOperation.rpyDescrFilename <> '') then
         with AddXml (TXml.CreateAsString('Rpy', '')) do
         begin
-          if (aMainFileName <> '')
-          and (SaveRelativeFileNames) then
-            AddXml(TXml.CreateAsString ( 'DescriptionFile'
-                                       , ExtractRelativeFileName ( aMainFileName
-                                                                 , xOperation.rpyDescrFilename
-                                                                 )
-                                       )
-                  )
-          else
-            AddXml(TXml.CreateAsString('DescriptionFile', xOperation.rpyDescrFilename));
+          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.rpyDescrFilename)));
           if xOperation.rpyBind.Children.Count > 0 then
             AddXml(TXml.CreateAsString('ElementName', (xOperation.rpyBind as TXml).Items.XmlItems[0].Name));
         end;
@@ -5421,16 +5460,7 @@ begin
       and (xOperation.fltDescrFilename <> '') then
         with AddXml (TXml.CreateAsString('Flt', '')) do
         begin
-          if (aMainFileName <> '')
-          and (SaveRelativeFileNames) then
-            AddXml(TXml.CreateAsString ( 'DescriptionFile'
-                                       , ExtractRelativeFileName ( aMainFileName
-                                                                 , xOperation.fltDescrFilename
-                                                                 )
-                                       )
-                  )
-          else
-            AddXml(TXml.CreateAsString('DescriptionFile', xOperation.fltDescrFilename));
+          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.fltDescrFilename)));
           if xOperation.fltBind.Children.Count > 0 then
             AddXml(TXml.CreateAsString('ElementName', (xOperation.fltBind as TXml).Items.XmlItems[0].Name));
         end;
@@ -5462,15 +5492,15 @@ begin
       if Assigned (xOperation.reqBind)
       and (xOperation.reqDescrFilename <> '') then
         with AddXml (TXml.CreateAsString('Req', '')) do
-          AddXml(TXml.CreateAsString('DescriptionFile', xOperation.reqDescrFilename));
+          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.reqDescrFilename)));
       if Assigned (xOperation.rpyBind)
       and (xOperation.rpyDescrFilename <> '') then
         with AddXml (TXml.CreateAsString('Rpy', '')) do
-          AddXml(TXml.CreateAsString('DescriptionFile', xOperation.rpyDescrFilename));
+          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.rpyDescrFilename)));
       if Assigned (xOperation.fltBind)
       and (xOperation.fltDescrFilename <> '') then
         with AddXml (TXml.CreateAsString('Flt', '')) do
-          AddXml(TXml.CreateAsString('DescriptionFile', xOperation.fltDescrFilename));
+          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.fltDescrFileName)));
       if xOperation.reqRecognition.Count > 0 then
         AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
       if xOperation.rpyRecognition.Count > 0 then
@@ -5496,17 +5526,17 @@ begin
       and (xOperation.reqDescrFilename <> '') then
         with AddXml (TXml.CreateAsString('Req', '')) do
         begin
-          AddXml(TXml.CreateAsString('DescriptionFile', xOperation.reqDescrFilename));
+          AddXml(TXml.CreateAsString('DescriptionFile', relFilNam (xOperation.reqDescrFilename)));
           if xOperation.reqDescrExpansionFilename <> '' then
-            AddXml(TXml.CreateAsString('DescriptionExpansionFile', xOperation.reqDescrExpansionFilename));
+            AddXml(TXml.CreateAsString('DescriptionExpansionFile', relFilNam (xOperation.reqDescrExpansionFilename)));
         end;
       if Assigned (xOperation.rpyBind)
       and (xOperation.rpyDescrFilename <> '') then
         with AddXml (TXml.CreateAsString('Rpy', '')) do
         begin
-          AddXml(TXml.CreateAsString('DescriptionFile', xOperation.rpyDescrFilename));
+          AddXml(TXml.CreateAsString('DescriptionFile', relFilNam (xOperation.rpyDescrFilename)));
           if xOperation.rpyDescrExpansionFilename <> '' then
-            AddXml(TXml.CreateAsString('DescriptionExpansionFile', xOperation.rpyDescrExpansionFilename));
+            AddXml(TXml.CreateAsString('DescriptionExpansionFile', relFilNam (xOperation.rpyDescrExpansionFilename)));
         end;
       if xOperation.reqRecognition.Count > 0 then
         AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
@@ -7161,6 +7191,15 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTSwiftMT;
   end;
+end;
+
+function TWsdlProject .relFilNam (aFileName : String ): String ;
+begin
+  if (projectFileName <> '')
+  and (SaveRelativeFileNames) then
+    result := xmlio.ExtractRelativeFileName(projectFileName, aFileName)
+  else
+    result := aFileName;
 end;
 
 procedure TWsdlProject.DatabaseConnectionSpecificationFromXml ;

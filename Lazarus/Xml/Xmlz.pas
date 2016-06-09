@@ -3316,7 +3316,17 @@ procedure TXml .ResolveAliasses (aAliasses : TStringList);
   var
     x: Integer;
   begin
-    aXml.Value := xmlio.resolveAliasses(aXml.Value, aAliasses);
+    try
+      aXml.Value := xmlio.resolveAliasses(aXml.Value, aAliasses);
+    except
+      on e: Exception do
+      begin
+        if Assigned (xmlz.OnNotify) then
+          xmlz.OnNotify (e.Message)
+        else
+          Raise;
+      end;
+    end;
     for x := 0 to aXml.Items.Count - 1 do
       _resolv(aXml.Items.XmlItems[x]);
   end;

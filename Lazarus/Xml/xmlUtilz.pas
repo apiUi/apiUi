@@ -301,7 +301,9 @@ begin
                    + result
                    + CRLF
                    + 'does not exist, try to open another one'
-                   , mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+                   , mtConfirmation, [mbYes, mbNo], 0
+                   ) = mrYes
+       ) then
     begin
       with TOpenDialog.Create(nil) do
       try

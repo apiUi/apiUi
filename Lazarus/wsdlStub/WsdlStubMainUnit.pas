@@ -12942,8 +12942,9 @@ begin
     if (EditListValuesForm.ModalResult = mrOk)
     { }{ and (not se.IsActive){ } then
     begin
-      se.ppLock.Acquire;;
+      se.ppLock.Acquire;
       try
+        stubChanged := True;
         se.projectProperties.Text := EditListValuesForm.ValueListEditor.Strings.Text;
       finally
         se.ppLock.Release;
