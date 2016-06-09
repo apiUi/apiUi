@@ -371,7 +371,6 @@ var
   XmlReplaceHyphenBy: String;
   XmlBrowser: TXmlBrowser;
   CDataString: String;
-  IsRootElement: Boolean;
   _xmlUserName: String;
   _xmlProgName: String;
   _xmlProgVersion: String;
@@ -1232,7 +1231,11 @@ var
     if (aXml.NameSpace <> '')
     and aAsPrefix
     and (aXml.NsPrefix <> '')
-    and (   (Assigned (aXml.Xsd) and aXml.Xsd.FormDefaultQualified)
+    and (   (    Assigned (aXml.Xsd)
+             and (   aXml.Xsd.FormDefaultQualified
+                  or aXml.Xsd.isRootElement
+                 )
+            )
          or (not Assigned (aXml.Xsd))
          or (   (not Assigned (aXml.Parent))
              or ((aXml.Parent as TXml).NameSpace <> aXml.NameSpace)

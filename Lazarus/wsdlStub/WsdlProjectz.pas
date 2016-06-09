@@ -2420,7 +2420,7 @@ begin
                 begin
                   if dXml.Items.Count = 1 then
                   begin
-                    xWsdl.ExtraXsdsFromXml (dXml.Items.XmlItems[0]);
+                    xWsdl.ExtraXsdsFromXml (dXml.Items.XmlItems[0], SaveRelativeFileNames, aMainFileName);
                     xWsdl.LoadExtraXsds;
                   end;
                 end;

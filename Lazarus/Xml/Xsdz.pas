@@ -2771,6 +2771,7 @@ procedure TXsdDescr.Finalise;
             refXsd := FindElement(_RefNameSpace, _RefElementName);
             if Assigned (refXsd) then
             begin
+              isRootElement := True;
               sType := refXsd.sType;
               for y := 0 to refXsd.Documentation.Count - 1 do
                 Documentation.Add(refXsd.Documentation.Strings[y]);

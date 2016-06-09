@@ -397,7 +397,7 @@ begin
                        ) then
     begin
       fstubChanged := True;
-      xWsdl.ExtraXsdsFromXml (xXml);
+      xWsdl.ExtraXsdsFromXml (xXml, False, '');
       fReloadRequired := True;
     end;
   finally

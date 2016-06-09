@@ -96,7 +96,7 @@ type
       property ServiceByName [Index: String]: TWsdlService read getServiceByName;
       property OperationByRequest [Index: String]: TWsdlOperation read getOperationByRequest;
       function ExtraXsdsAsXml (aSaveRelativeFileNames: Boolean; aMainFileName: String): TXml;
-      procedure ExtraXsdsFromXml (aXml: TXml);
+      procedure ExtraXsdsFromXml (aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);
       procedure AddedTypeDefElementsFromXml (aXml: TXml);
       procedure LoadExtraXsds;
       procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent);
@@ -3023,14 +3023,14 @@ begin
                     ).Checked := True;
 end;
 
-procedure TWsdl.ExtraXsdsFromXml(aXml: TXml);
+procedure TWsdl.ExtraXsdsFromXml(aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);
 var
   x: Integer;
 begin
   ExtraXsds.Clear;
   for x := 0 to aXml.Items.Count - 1 do
     if aXml.Items.XmlItems[x].Checked then
-      ExtraXsds.Add (CheckAndPromptForExistingFile(aXml.FullIndexCaption, FileName, aXml.Items.XmlItems[x].Value));
+      ExtraXsds.Add (CheckAndPromptForExistingFile(aXml.FullIndexCaption, aMainFileName, aXml.Items.XmlItems[x].Value));
 end;
 
 procedure TWsdl .AddedTypeDefElementsFromXml (aXml : TXml );
