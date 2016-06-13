@@ -220,7 +220,7 @@ begin
   end;
   try
     cnfXml.CheckDownLine (False);
-    aXml.CheckDownline(True);
+//  aXml.CheckDownline(True);
     cnfXml.LoadValues (aXml, False, True);
     Application.CreateForm(TShowXmlForm, xForm);
     try
@@ -382,12 +382,14 @@ function TXmlUtil.CheckAndPromptFileNames(aFileName: String; aXml: TXml; aOnlyWh
     begin
       if (aXml.TypeDef.Name = 'FileNameType') then
       begin
+        aXml.Value := ExpandUNCFileNameUTF8(ExpandRelativeFileName (aFileName, aXml.Value)); // this is not a modification
         result := not IsExistingFile(aFileName, aXml.Value);
         if result then
           aXml.Value := CheckAndPromptForExistingFile(aXml.FullIndexCaption, aFileName, aXml.Value);
       end;
       if (aXml.TypeDef.Name = 'FolderNameType') then
       begin
+        aXml.Value := ExpandUNCFileNameUTF8(ExpandRelativeFileName (aFileName, aXml.Value)); // this is not a modification
         result := not IsExistingFolder(aFileName, aXml.Value);
         if result then
           aXml.Value := CheckAndPromptForExistingFolder(aXml.FullIndexCaption, aFileName, aXml.Value);

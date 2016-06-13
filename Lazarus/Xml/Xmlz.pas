@@ -3066,6 +3066,7 @@ begin
   Attributes := TXmlAttributeList.Create;
   TagName := aTagname;
   ValueAsTimeStamp := aTimeStame;
+  Checked := True;
 end;
 
 constructor TXml.CreateAsBoolean(aTagName: String; aBoolean: Boolean);
@@ -3077,6 +3078,7 @@ begin
   Attributes := TXmlAttributeList.Create;
   TagName := aTagname;
   ValueAsBoolean := aBoolean;
+  Checked := True;
 end;
 
 constructor TXmlAttribute.CreateAsInteger(aName: String; aInteger: Integer);
@@ -3095,6 +3097,7 @@ begin
   Attributes := TXmlAttributeList.Create;
   TagName := aTagname;
   ValueAsInteger := aInteger;
+  Checked := True;
 end;
 
 constructor TXml.CreateAsString(aTagName: String; aString: String);
@@ -3106,6 +3109,7 @@ begin
   Attributes := TXmlAttributeList.Create;
   TagName := aTagname;
   Value := aString;
+  Checked := True;
 end;
 
 constructor TXmlAttribute.CreateAsString(aName, aString: String);

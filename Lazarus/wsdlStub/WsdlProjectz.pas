@@ -1986,7 +1986,11 @@ begin
           if xWsdl = CobolWsdl then
           begin
             if CobolWsdl.Services.Services[0].Operations.Count > 0 then
-              AddXml (cobolOperationsXml);
+              with AddXml (cobolOperationsXml) do
+              begin
+                if SaveRelativeFileNames then
+                  SetFileNamesRelative(aMainFileName);
+              end;
             xDone := True;
           end;
           if xWsdl = XsdWsdl then
@@ -2215,7 +2219,7 @@ begin
       AddXml (TXml.CreateAsString('FocusOperationName', FocusOperationName));
       AddXml (TXml.CreateAsString('FocusOperationNameSpace', FocusOperationNameSpace));
       AddXml (TXml.CreateAsInteger('FocusMessageIndex', FocusMessageIndex));
-      result := AsText(False,0,False,False);
+      result := AsText(False,0,True,False);
     finally
       Free;
     end;
@@ -5477,37 +5481,46 @@ function TWsdlProject.cobolOperationsXml: TXml;
 var
   x: Integer;
   xOperation: TWsdlOperation;
+  xXml: TXml;
 begin
-  result := TXml.CreateAsString('CobolOperations', '');
-  for x := 0 to CobolWsdl.Services.Services[0].Operations.Count - 1 do
-  begin
-    xOperation := CobolWsdl.Services.Services[0].Operations.Operations[x];
-    with result.AddXml(TXml.CreateAsString('Operation', '')) do
+  xXml := TXml.CreateAsString('CobolOperations', '');
+  try
+    for x := 0 to CobolWsdl.Services.Services[0].Operations.Count - 1 do
     begin
-      AddXml (TXml.CreateAsString('Name', xOperation.Name));
-      if xOperation.CobolEnvironment = ceTandem then
-        AddXml (TXml.CreateAsString('CobolEnvironment', 'Tandem'));
-      if xOperation.CobolEnvironment = ceIbmZOs then
-        AddXml (TXml.CreateAsString('CobolEnvironment', 'IBM Zos'));
-      if Assigned (xOperation.reqBind)
-      and (xOperation.reqDescrFilename <> '') then
-        with AddXml (TXml.CreateAsString('Req', '')) do
-          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.reqDescrFilename)));
-      if Assigned (xOperation.rpyBind)
-      and (xOperation.rpyDescrFilename <> '') then
-        with AddXml (TXml.CreateAsString('Rpy', '')) do
-          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.rpyDescrFilename)));
-      if Assigned (xOperation.fltBind)
-      and (xOperation.fltDescrFilename <> '') then
-        with AddXml (TXml.CreateAsString('Flt', '')) do
-          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.fltDescrFileName)));
-      if xOperation.reqRecognition.Count > 0 then
-        AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
-      if xOperation.rpyRecognition.Count > 0 then
-        AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
+      xOperation := CobolWsdl.Services.Services[0].Operations.Operations[x];
+      with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
+      begin
+        AddXml (TXml.CreateAsString('Name', xOperation.Name));
+        if xOperation.CobolEnvironment = ceTandem then
+          AddXml (TXml.CreateAsString('CobolEnvironment', 'Tandem'));
+        if xOperation.CobolEnvironment = ceIbmZOs then
+          AddXml (TXml.CreateAsString('CobolEnvironment', 'IBM Zos'));
+        if Assigned (xOperation.reqBind)
+        and (xOperation.reqDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Req', '')) do
+            AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.reqDescrFilename));
+        if Assigned (xOperation.rpyBind)
+        and (xOperation.rpyDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Rpy', '')) do
+            AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.rpyDescrFilename));
+        if Assigned (xOperation.fltBind)
+        and (xOperation.fltDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Flt', '')) do
+            AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.fltDescrFileName));
+        if xOperation.reqRecognition.Count > 0 then
+          AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
+        if xOperation.rpyRecognition.Count > 0 then
+          AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
+      end;
     end;
+    xXml.CheckDownline(True);
+    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.CobolOperations'));
+    result.CheckDownline(False);
+    result.LoadValues(xXml, False, True, False, True);
+    SjowMessage (result.AsText(false,0, true,false));
+  finally
+    xXml.Free;
   end;
-  result.CheckDownline(True);
 end;
 
 function TWsdlProject.swiftMtOperationsXml: TXml;
