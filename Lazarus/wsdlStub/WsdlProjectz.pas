@@ -1996,13 +1996,21 @@ begin
           if xWsdl = XsdWsdl then
           begin
             if XsdWsdl.Services.Services[0].Operations.Count > 0 then
-              AddXml (xsdOperationsXml(aMainFileName));
+              with AddXml (xsdOperationsXml(aMainFileName)) do
+              begin
+                if SaveRelativeFileNames then
+                  SetFileNamesRelative(aMainFileName);
+              end;
             xDone := True;
           end;
           if xWsdl = SwiftMtWsdl then
           begin
             if SwiftMtWsdl.Services.Services[0].Operations.Count > 0 then
-              AddXml (swiftMtOperationsXml);
+              with AddXml (swiftMtOperationsXml) do
+              begin
+                if SaveRelativeFileNames then
+                  SetFileNamesRelative(aMainFileName);
+              end;
             xDone := True;
           end;
           if not xDone then
