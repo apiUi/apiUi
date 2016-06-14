@@ -116,6 +116,7 @@ procedure TForm1.testButtonClick(Sender: TObject);
     with TIdTCPClient.Create(nil) do
     try
       try
+        ConnectTimeout := 3000;
         Connect(AHost, APort);
         ResultEdit.Text := 'Ok';
       except
