@@ -5444,45 +5444,53 @@ function TWsdlProject.xsdOperationsXml(aMainFileName: String): TXml;
 var
   x: Integer;
   xOperation: TWsdlOperation;
+  xXml: TXml;
 begin
-  result := TXml.CreateAsString('XsdOperations', '');
-  for x := 0 to XsdWsdl.Services.Services[0].Operations.Count - 1 do
-  begin
-    xOperation := XsdWsdl.Services.Services[0].Operations.Operations[x];
-    with result.AddXml(TXml.CreateAsString('Operation', '')) do
+  xXml := TXml.CreateAsString('XsdOperations', '');
+  try
+    for x := 0 to XsdWsdl.Services.Services[0].Operations.Count - 1 do
     begin
-      AddXml (TXml.CreateAsString('Name', xOperation.Name));
-      if Assigned (xOperation.reqBind)
-      and (xOperation.reqDescrFilename <> '') then
-        with AddXml (TXml.CreateAsString('Req', '')) do
-        begin
-          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.reqDescrFilename)));
-          if xOperation.reqBind.Children.Count > 0 then
-            AddXml(TXml.CreateAsString('ElementName', (xOperation.reqBind as TXml).Items.XmlItems[0].Name));
-        end;
-      if Assigned (xOperation.rpyBind)
-      and (xOperation.rpyDescrFilename <> '') then
-        with AddXml (TXml.CreateAsString('Rpy', '')) do
-        begin
-          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.rpyDescrFilename)));
-          if xOperation.rpyBind.Children.Count > 0 then
-            AddXml(TXml.CreateAsString('ElementName', (xOperation.rpyBind as TXml).Items.XmlItems[0].Name));
-        end;
-      if Assigned (xOperation.fltBind)
-      and (xOperation.fltDescrFilename <> '') then
-        with AddXml (TXml.CreateAsString('Flt', '')) do
-        begin
-          AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.fltDescrFilename)));
-          if xOperation.fltBind.Children.Count > 0 then
-            AddXml(TXml.CreateAsString('ElementName', (xOperation.fltBind as TXml).Items.XmlItems[0].Name));
-        end;
-      if xOperation.reqRecognition.Count > 0 then
-        AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
-      if xOperation.rpyRecognition.Count > 0 then
-        AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
+      xOperation := XsdWsdl.Services.Services[0].Operations.Operations[x];
+      with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
+      begin
+        AddXml (TXml.CreateAsString('Name', xOperation.Name));
+        if Assigned (xOperation.reqBind)
+        and (xOperation.reqDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Req', '')) do
+          begin
+            AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.reqDescrFilename)));
+            if xOperation.reqBind.Children.Count > 0 then
+              AddXml(TXml.CreateAsString('ElementName', (xOperation.reqBind as TXml).Items.XmlItems[0].Name));
+          end;
+        if Assigned (xOperation.rpyBind)
+        and (xOperation.rpyDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Rpy', '')) do
+          begin
+            AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.rpyDescrFilename)));
+            if xOperation.rpyBind.Children.Count > 0 then
+              AddXml(TXml.CreateAsString('ElementName', (xOperation.rpyBind as TXml).Items.XmlItems[0].Name));
+          end;
+        if Assigned (xOperation.fltBind)
+        and (xOperation.fltDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Flt', '')) do
+          begin
+            AddXml ( TXml.CreateAsString ( 'DescriptionFile', relFilNam ( xOperation.fltDescrFilename)));
+            if xOperation.fltBind.Children.Count > 0 then
+              AddXml(TXml.CreateAsString('ElementName', (xOperation.fltBind as TXml).Items.XmlItems[0].Name));
+          end;
+        if xOperation.reqRecognition.Count > 0 then
+          AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
+        if xOperation.rpyRecognition.Count > 0 then
+          AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
+      end;
     end;
+    xXml.CheckDownline(True);
+    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.XsdOperations'));
+    result.CheckDownline(False);
+    result.LoadValues(xXml, False, True, False, True);
+  finally
+    xXml.Free;
   end;
-  result.CheckDownline(True);
 end;
 
 function TWsdlProject.cobolOperationsXml: TXml;
@@ -5525,7 +5533,6 @@ begin
     result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.CobolOperations'));
     result.CheckDownline(False);
     result.LoadValues(xXml, False, True, False, True);
-    SjowMessage (result.AsText(false,0, true,false));
   finally
     xXml.Free;
   end;
@@ -5535,37 +5542,46 @@ function TWsdlProject.swiftMtOperationsXml: TXml;
 var
   x: Integer;
   xOperation: TWsdlOperation;
+  xXml: TXml;
 begin
-  result := TXml.CreateAsString('SwiftMtOperations', '');
-  for x := 0 to SwiftMtWsdl.Services.Services[0].Operations.Count - 1 do
-  begin
-    xOperation := SwiftMtWsdl.Services.Services[0].Operations.Operations[x];
-    with result.AddXml(TXml.CreateAsString('Operation', '')) do
+  xXml := TXml.Create;
+  try
+    xXml := TXml.CreateAsString('SwiftMtOperations', '');
+    for x := 0 to SwiftMtWsdl.Services.Services[0].Operations.Count - 1 do
     begin
-      AddXml (TXml.CreateAsString('Name', xOperation.Name));
-      if Assigned (xOperation.reqBind)
-      and (xOperation.reqDescrFilename <> '') then
-        with AddXml (TXml.CreateAsString('Req', '')) do
-        begin
-          AddXml(TXml.CreateAsString('DescriptionFile', relFilNam (xOperation.reqDescrFilename)));
-          if xOperation.reqDescrExpansionFilename <> '' then
-            AddXml(TXml.CreateAsString('DescriptionExpansionFile', relFilNam (xOperation.reqDescrExpansionFilename)));
-        end;
-      if Assigned (xOperation.rpyBind)
-      and (xOperation.rpyDescrFilename <> '') then
-        with AddXml (TXml.CreateAsString('Rpy', '')) do
-        begin
-          AddXml(TXml.CreateAsString('DescriptionFile', relFilNam (xOperation.rpyDescrFilename)));
-          if xOperation.rpyDescrExpansionFilename <> '' then
-            AddXml(TXml.CreateAsString('DescriptionExpansionFile', relFilNam (xOperation.rpyDescrExpansionFilename)));
-        end;
-      if xOperation.reqRecognition.Count > 0 then
-        AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
-      if xOperation.rpyRecognition.Count > 0 then
-        AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
+      xOperation := SwiftMtWsdl.Services.Services[0].Operations.Operations[x];
+      with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
+      begin
+        AddXml (TXml.CreateAsString('Name', xOperation.Name));
+        if Assigned (xOperation.reqBind)
+        and (xOperation.reqDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Req', '')) do
+          begin
+            AddXml(TXml.CreateAsString('DescriptionFile', relFilNam (xOperation.reqDescrFilename)));
+            if xOperation.reqDescrExpansionFilename <> '' then
+              AddXml(TXml.CreateAsString('DescriptionExpansionFile', relFilNam (xOperation.reqDescrExpansionFilename)));
+          end;
+        if Assigned (xOperation.rpyBind)
+        and (xOperation.rpyDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Rpy', '')) do
+          begin
+            AddXml(TXml.CreateAsString('DescriptionFile', relFilNam (xOperation.rpyDescrFilename)));
+            if xOperation.rpyDescrExpansionFilename <> '' then
+              AddXml(TXml.CreateAsString('DescriptionExpansionFile', relFilNam (xOperation.rpyDescrExpansionFilename)));
+          end;
+        if xOperation.reqRecognition.Count > 0 then
+          AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
+        if xOperation.rpyRecognition.Count > 0 then
+          AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
+      end;
     end;
+    xXml.CheckDownline(True);
+    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.SwiftMtOperations'));
+    result.CheckDownline(False);
+    result.LoadValues(xXml, False, True, False, True);
+  finally
+    xXml.Free;
   end;
-  result.CheckDownline(True);
 end;
 
 function TWsdlProject.freeFormatOperationsXml: TXml;
