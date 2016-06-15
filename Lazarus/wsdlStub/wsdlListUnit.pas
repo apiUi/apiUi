@@ -385,7 +385,7 @@ var
   xWsdl: TWsdl;
 begin
   xWsdl := Wsdls.Objects [ListView.ItemIndex] as TWsdl;
-  xXml := xWsdl.ExtraXsdsAsXml(False, '');
+  xXml := xWsdl.ExtraXsdsAsXml;
   try
     if EditXmlXsdBased ( 'Extra XML-Schema files for : ' + ListView.Selected.Caption
                        , ''

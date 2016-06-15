@@ -2034,7 +2034,11 @@ begin
             if xWsdl.ExtraXsds.Count > 0 then
             begin
               with AddXml (TXml.CreateAsString ('ExtraXsds','')) do
-                AddXml (xWsdl.ExtraXsdsAsXml(SaveRelativeFileNames, aMainFileName));
+                with AddXml (xWsdl.ExtraXsdsAsXml) do
+                begin
+                  if SaveRelativeFileNames then
+                    SetFileNamesRelative(aMainFileName);
+                end;
             end;
             AddXml(TXml.CreateAsInteger('ElementsWhenRepeatable', xWsdl.xsdElementsWhenRepeatable));
             asXml := xWsdl.XsdDescr.ChangedElementTypedefsAsXml as TXml;

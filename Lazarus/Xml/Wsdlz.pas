@@ -95,7 +95,7 @@ type
       _expectXml: TXml;
       property ServiceByName [Index: String]: TWsdlService read getServiceByName;
       property OperationByRequest [Index: String]: TWsdlOperation read getOperationByRequest;
-      function ExtraXsdsAsXml (aSaveRelativeFileNames: Boolean; aMainFileName: String): TXml;
+      function ExtraXsdsAsXml: TXml;
       procedure ExtraXsdsFromXml (aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);
       procedure AddedTypeDefElementsFromXml (aXml: TXml);
       procedure LoadExtraXsds;
@@ -3002,25 +3002,17 @@ begin
   end;
 end;
 
-function TWsdl.ExtraXsdsAsXml (aSaveRelativeFileNames: Boolean; aMainFileName: String): TXml;
+function TWsdl.ExtraXsdsAsXml: TXml;
 var
   x: Integer;
 begin
   result := TXml.CreateAsString ('FileNames', '');
   for x := 0 to ExtraXsds.Count - 1 do
-    if aSaveRelativeFileNames then
-      result.AddXml ( TXml.CreateAsString ( 'FileName'
-                                          , ExtractRelativeFileName ( aMainFileName
-                                                                    , ExtraXsds.Strings[x]
-                                                                    )
-                                          )
-                    ).Checked := True
-    else
-      result.AddXml ( TXml.CreateAsString ( 'FileName'
-                                          , ExpandUNCFileNameUTF8(ExtraXsds.Strings[x]
-                                                              ) { *Converted from ExpandUNCFileName* }
-                                          )
-                    ).Checked := True;
+    result.AddXml ( TXml.CreateAsString ( 'FileName'
+                                        , ExpandUNCFileNameUTF8(ExtraXsds.Strings[x]
+                                                            ) { *Converted from ExpandUNCFileName* }
+                                        )
+                  );
 end;
 
 procedure TWsdl.ExtraXsdsFromXml(aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);
