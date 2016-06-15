@@ -137,7 +137,7 @@ begin
     fReturnType := rtUndefined;
     fReady := False;
     fTacoReply := '';
-    fClient.IOHandler.WriteLn('<PING><END-OF-DATA>');
+    fClient.IOHandler.Write('<PING><END-OF-DATA>');
     while not fReady do
     begin
       fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
@@ -213,7 +213,7 @@ begin
     fReturnType := rtUndefined;
     fReady := False;
     fTacoReply := '';
-    fClient.IOHandler.WriteLn(tacoRequest(aRequest, aConfigAsXml));
+    fClient.IOHandler.Write(tacoRequest(aRequest, aConfigAsXml));
     while not fReady do
     begin
       fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
@@ -358,11 +358,11 @@ begin
   fClient.Connect;
   fReady := False;
   fTacoReply := '';
-  fClient.IOHandler.WriteLn ( '<AUTHORISE>'
-                            + tacoString(Authorisation)
-                            + tacoString(UserName)
-                            + '<END-OF-DATA>'
-                            );
+  fClient.IOHandler.Write ( '<AUTHORISE>'
+                          + tacoString(Authorisation)
+                          + tacoString(UserName)
+                          + '<END-OF-DATA>'
+                          );
   while not fReady do
   begin
     fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
