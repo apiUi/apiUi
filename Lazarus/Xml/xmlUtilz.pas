@@ -166,6 +166,7 @@ uses
 // , XsBuiltIns
    , SwiftUnit
    , base64
+   , xmlio
    ;
 
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
@@ -249,12 +250,12 @@ end;
 
 function IsExistingFile (aRefName, aFileName: String): Boolean;
 begin
-  result := FileExistsUTF8(ExpandUNCFileNameUTF8(ExpandRelativeFileName (aRefName, aFileName)) { *Converted from ExpandUNCFileName* }); { *Converted from FileExists* }
+  result := FileExistsUTF8(uncFilename(ExpandRelativeFileName (aRefName, aFileName)));
 end;
 
 function IsExistingFolder (aRefName, aFolderName: String): Boolean;
 begin
-  result := DirectoryExistsUTF8(ExpandUNCFileNameUTF8(ExpandRelativeFileName (aRefName, aFolderName)));
+  result := DirectoryExistsUTF8(uncFilename(ExpandRelativeFileName (aRefName, aFolderName)));
 end;
 
 function CheckAndPromptForExistingFolder (aCaption , aRefName ,
@@ -382,14 +383,14 @@ function TXmlUtil.CheckAndPromptFileNames(aFileName: String; aXml: TXml; aOnlyWh
     begin
       if (aXml.TypeDef.Name = 'FileNameType') then
       begin
-        aXml.Value := ExpandUNCFileNameUTF8(ExpandRelativeFileName (aFileName, aXml.Value)); // this is not a modification
+        aXml.Value := uncFilename(ExpandRelativeFileName (aFileName, aXml.Value)); // this is not a modification
         result := not IsExistingFile(aFileName, aXml.Value);
         if result then
           aXml.Value := CheckAndPromptForExistingFile(aXml.FullIndexCaption, aFileName, aXml.Value);
       end;
       if (aXml.TypeDef.Name = 'FolderNameType') then
       begin
-        aXml.Value := ExpandUNCFileNameUTF8(ExpandRelativeFileName (aFileName, aXml.Value)); // this is not a modification
+        aXml.Value := uncFilename(ExpandRelativeFileName (aFileName, aXml.Value)); // this is not a modification
         result := not IsExistingFolder(aFileName, aXml.Value);
         if result then
           aXml.Value := CheckAndPromptForExistingFolder(aXml.FullIndexCaption, aFileName, aXml.Value);

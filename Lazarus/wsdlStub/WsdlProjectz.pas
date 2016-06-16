@@ -1953,14 +1953,14 @@ begin
   try
     with TXml.CreateAsString ('WsdlStubCase', '') do
     try
-      AddXml(TXml.CreateAsString('FileName', ExpandUNCFileNameUTF8(aMainFileName) { *Converted from ExpandUNCFileName* }));
+      AddXml(TXml.CreateAsString('FileName', uncFilename(aMainFileName)));
       with AddXml (TXml.Create) do
         CopyDownLine(Listeners.SpecificationXml, True);
       AddXml(TXml.CreateAsBoolean('ValidateRequests', doValidateRequests));
       AddXml(TXml.CreateAsBoolean('ValidateReplies', doValidateReplies));
       AddXml (TXml.CreateAsBoolean('CheckExpectedValues', doCheckExpectedValues));
       AddXml (TXml.CreateAsBoolean('DisableOnCorrelate', _WsdlDisableOnCorrelate));
-      AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, ExpandUNCFileNameUTF8(aMainFileName)));
+      AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, uncFilename(aMainFileName)));
       AddXml (TXml.CreateAsString('PathPrefixes', xmlio.PathPrefixes.Text));
       with AddXml(TXml.CreateAsString('Environments', '')) do
         for x := 0 to EnvironmentList.Count - 1 do
@@ -2025,7 +2025,7 @@ begin
                     )
             else
               AddXml(TXml.CreateAsString ( 'WsdlLocation'
-                                         , ExpandUNCFileNameUTF8(Wsdls.Strings [w]) { *Converted from ExpandUNCFileName* }
+                                         , uncFilename(Wsdls.Strings [w])
                                          )
                     );
           end;
@@ -5011,7 +5011,7 @@ procedure TWsdlProject.cobolOperationsUpdate(aXml: TXml; aMainFileName: String);
     if aXml.Name = 'DescriptionFile' then
     begin
       if not aFileNames.Find(aXml.Value, f) then
-        aFilenames.AddObject ( ExpandUNCFileNameUTF8 ( ExpandRelativeFileName ( aMainFileName, aXml.Value)
+        aFilenames.AddObject ( uncFilename ( ExpandRelativeFileName ( aMainFileName, aXml.Value)
 
                                                      )
                              , Pointer (ipmDTCobol)
@@ -5032,10 +5032,10 @@ procedure TWsdlProject.cobolOperationsUpdate(aXml: TXml; aMainFileName: String);
     try
       if not Assigned (sXml) then Exit;
       if not aXml.Checked then Exit;
-      if aFileNames.Find ( ExpandUNCFileNameUTF8(ExpandRelativeFileName ( aMainFileName
+      if aFileNames.Find ( uncFilename(ExpandRelativeFileName ( aMainFileName
                                                                       , sXml.Items.XmlCheckedValueByTag ['DescriptionFile']
                                                                       )
-                                             ) { *Converted from ExpandUNCFileName* }
+                                             )
                          , f
                          ) then
       begin
@@ -5283,13 +5283,13 @@ procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String
         begin
           if sXml.Items.XmlItems[x].Name = 'DescriptionFile' then
           begin
-            aDescrFileName := ExpandUNCFileNameUTF8(ExpandRelativeFileName(aMainFileName, sXml.Items.XmlItems[x].Value)); { *Converted from ExpandUNCFileName* }
+          aDescrFileName := uncFilename(ExpandRelativeFileName(aMainFileName, sXml.Items.XmlItems[x].Value));
             xXsdDescr.AddXsdFromFile(aDescrFileName, nil);
           end;
           if sXml.Items.XmlItems[x].Name = 'DescriptionExpansionFile' then
             with xpXmls.AddXml(TXml.Create) do
             begin
-              aDescrExpansionFileName := ExpandUNCFileNameUTF8(ExpandRelativeFileName(aMainFileName, sXml.Items.XmlItems[x].Value)); { *Converted from ExpandUNCFileName* }
+              aDescrExpansionFileName := uncFilename(ExpandRelativeFileName(aMainFileName, sXml.Items.XmlItems[x].Value));
               LoadFromFile(aDescrExpansionFileName, nil);
             end;
         end;

@@ -267,6 +267,7 @@ uses SysUtils
    , Math
    , ErrorFound
    , IpmAnalyser
+   , xmlio
    ;
 
 function ExtendPictureClause (arg: String): String;
@@ -1799,7 +1800,7 @@ begin
   IpmItem.Free;
   IpmItem := nil;
   saveParseFileName := _ParseFileName;
-  _ParseFileName := ExpandUNCFileNameUTF8(aFileName); { *Converted from ExpandUNCFileName* }
+  _ParseFileName := uncFilename(aFileName);
   try
     FileName := aFileName;
     FileContents.LoadFromFile (aFileName);

@@ -2812,18 +2812,16 @@ procedure TXml.SetFileNamesRelative(aFileName: String);
 var
   x: Integer;
 begin
-  if Assigned (TypeDef) then
-  begin
-    if (TypeDef.Name = 'FileNameType')
-    or (TypeDef.Name = 'FolderNameType')
-    then
-      Value := ExtractRelativeFileName (aFileName, Value)
-    else
-    begin
-      for x := 0 to Items.Count - 1 do
-        Items.XmlItems[x].SetFileNamesRelative(aFileName);
-    end;
-  end;
+  if (    Assigned (TypeDef)
+      and (   (TypeDef.Name = 'FileNameType')
+           or (TypeDef.Name = 'FolderNameType')
+          )
+     )
+  or (Name = 'FileName')
+  then
+    Value := ExtractRelativeFileName (aFileName, Value);
+  for x := 0 to Items.Count - 1 do
+    Items.XmlItems[x].SetFileNamesRelative(aFileName);
 end;
 
 function TXml.AddXml(aChildXml: TXml): TXml;

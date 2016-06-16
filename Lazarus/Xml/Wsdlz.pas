@@ -2232,7 +2232,7 @@ var
       end;
     end;
 {}{
-    if xFileNames.Find(ExpandUNCFileName (ExpandRelativeFileName (aFileName, _aFileName)), f) then
+    if xFileNames.Find(uncFileName (ExpandRelativeFileName (aFileName, _aFileName)), f) then
     begin
       with xXsdDescr. [f] do
       begin
@@ -2253,10 +2253,10 @@ var
     f: Integer;
   begin
     result := nil;
-    if xFileNames.Find ( ExpandUNCFileNameUTF8(ExpandRelativeFileName ( aFileName
+    if xFileNames.Find ( uncFilename(ExpandRelativeFileName ( aFileName
                                                                     , sXml.Items.XmlValueByTag ['DescriptionFile']
                                                                     )
-                                           ) { *Converted from ExpandUNCFileName* }
+                                           )
                        , f
                        ) then
     begin
@@ -2314,9 +2314,9 @@ var
     xXsdDescr: TXsdDescr;
     xFileName: String;
   begin
-    xFileName := ExpandUNCFileNameUTF8(ExpandRelativeFileName
+    xFileName := uncFilename(ExpandRelativeFileName
                           (aFileName, sXml.Items.XmlValueByTag ['DescriptionFile'])
-                        ); { *Converted from ExpandUNCFileName* }
+                        );
     if xsdElementsWhenRepeatable > 0 then
       xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
     else
@@ -2338,9 +2338,9 @@ var
     xXsdDescr: TXsdDescr;
     xFileName: String;
   begin
-    xFileName := ExpandUNCFileNameUTF8(ExpandRelativeFileName
+    xFileName := uncFilename(ExpandRelativeFileName
                           (aFileName, sXml.Items.XmlValueByTag ['DescriptionFile'])
-                        ); { *Converted from ExpandUNCFileName* }
+                        );
     if xsdElementsWhenRepeatable > 0 then
       xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
     else
@@ -2454,7 +2454,7 @@ var
       begin
         if sXml.Items.XmlItems[x].Name = 'DescriptionFile' then
           xXsdDescr.LoadXsdFromFile
-                      (ExpandUNCFileNameUTF8
+                      (uncFilename
                         (ExpandRelativeFileName
                           (aFileName, sXml.Items.XmlItems[x].Value)
                         )
@@ -2462,9 +2462,9 @@ var
                       );
         if sXml.Items.XmlItems[x].Name = 'DescriptionExpansionFile' then
           with xpXmls.AddXml(TXml.Create) do
-            LoadFromFile(ExpandUNCFileNameUTF8(ExpandRelativeFileName
+            LoadFromFile(uncFilename(ExpandRelativeFileName
                               (aFileName, sXml.Items.XmlItems[x].Value)
-                            ) { *Converted from ExpandUNCFileName* }
+                            )
                         , nil
                         );
       end;
@@ -3008,11 +3008,13 @@ var
 begin
   result := TXml.CreateAsString ('FileNames', '');
   for x := 0 to ExtraXsds.Count - 1 do
+  begin
     result.AddXml ( TXml.CreateAsString ( 'FileName'
-                                        , ExpandUNCFileNameUTF8(ExtraXsds.Strings[x]
-                                                            ) { *Converted from ExpandUNCFileName* }
+                                        , uncFilename(ExtraXsds.Strings[x]
+                                                            )
                                         )
                   );
+  end;
 end;
 
 procedure TWsdl.ExtraXsdsFromXml(aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);

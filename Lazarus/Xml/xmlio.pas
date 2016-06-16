@@ -15,6 +15,7 @@ function ReadStringFromFile (aFileName: String): String;
 procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
+function uncFilename (aFileName: String): String;
 function GetHostName: String;
 function GetUserName: String;
 function GetVersion: String;
@@ -364,6 +365,15 @@ begin
     end;
     Free;
   end;
+end;
+
+function uncFilename(aFileName: String): String;
+begin
+  if (Copy (aFileName, 1, 2) <> '\\')
+  and (Copy (aFileName, 1, 2) <> '//') then
+    result := ExpandUNCFileName(aFileName)
+  else
+    result := aFileName;
 end;
 
 function GetHostName: String;

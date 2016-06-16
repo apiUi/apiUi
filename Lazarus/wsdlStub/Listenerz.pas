@@ -284,7 +284,7 @@ end;
 
 constructor TListeners.Create;
 begin
-  SpecificationXml := TXml.Create;
+  SpecificationXml := TXml.CreateAsString('Listeners', '');
   httpPorts:= TStringList.Create;
   httpsPorts := TStringList.Create;
   httpBmtpPort := 0;
