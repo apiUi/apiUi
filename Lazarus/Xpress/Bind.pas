@@ -74,7 +74,7 @@ type XFunctionOV = function (obj: TObject): Extended;
 type XFunctionOS = function (obj: TObject; arg: String): Extended;
 type XFunctionOX = function (obj: TObject; arg: Extended): Extended;
 type XFunctionOXX = function (obj: TObject; arg1, arg2: Extended): Extended;
-type
+type SFunctionOS = function (obj: TObject; arg: String): String;
 
 { TParserStringList }
 
@@ -150,6 +150,7 @@ type YYRType = record
   59: (yyXFunctionOXX : XFunctionOXX);
   60: (yySLFunctionOS : SLFunctionOS);
   61: (yySLFunctionOSS : SLFunctionOSS);
+  62: (yySFunctionOS : SFunctionOS);
 end;
 
 type TBindableList = class;

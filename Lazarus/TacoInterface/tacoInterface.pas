@@ -17,6 +17,7 @@ uses
    , StrUtils
    , Xmlz
    , IdTCPClient
+   , IdGlobal
    , IdSync
    , SyncObjs
    , ExtCtrls
@@ -26,7 +27,7 @@ type
   TRtReturnType = (rtUndefined, rtReply, rtError);
   TTacoInterface = class;
   TOnHaveTacoMessage = procedure ( aTacoInterface: TTacoInterface
-                                 ; aClientId, aMessage: AnsiString
+                                 ; aClientId, aMessage: String
                                  ) of Object;
   TOnNeedTacoInterfaceData = procedure (aTacoInterface: TTacoInterface) of Object;
 
@@ -45,10 +46,10 @@ type
     fprojectProperties : TStringList ;
     fReqTime: TDateTime;
     fRspTime: TDateTime;
-    fTacoReply: AnsiString;
+    fTacoReply: String;
     fReady: Boolean;
     fReturnType: TRtReturnType;
-    fReply: AnsiString;
+    fReply: String;
     fLock: TCriticalSection;
     procedure clientConnected(Sender: TObject);
     procedure clientDisconnected(Sender: TObject);
@@ -56,12 +57,12 @@ type
     procedure syncDoAuthorize;
     procedure syncOnAuthorize;
     procedure doAuthorize;
-    function tacoString (aString: AnsiString): AnsiString;
-    function tacoRequest (aRequest: AnsiString; aConfig: TXml): AnsiString;
-    function tacoCopy (aString: AnsiString; var x: Integer): AnsiString;
+    function tacoString (aString: String): String;
+    function tacoRequest (aRequest: String; aConfig: TXml): String;
+    function tacoCopy (aString: String; var x: Integer): String;
     procedure EvaluateResponse;
   public
-    UserName, Password: AnsiString;
+    UserName, Password: String;
     property ProjectProperties: TStringList write fprojectProperties;
     property Host: String read fHost write fHost;
     property Port: Integer read fPort write fPort;
@@ -77,10 +78,10 @@ type
     constructor CreateFromXml(aXml: TXml; aOnHaveTacoMessage: TOnHaveTacoMessage);
     destructor Destroy; override;
     procedure PingPong;
-    function RequestReply ( aRequest: AnsiString
+    function RequestReply ( aRequest: String
                           ; aTimeOut: Integer
                           ; aConfigAsXml: TXml
-                          ): AnsiString; Virtual;
+                          ): String; Virtual;
     function AsXml: TXml;
   published
     property RequestTimestamp: TDateTime read fReqTime;
@@ -91,6 +92,7 @@ implementation
 
 uses SysUtils
    , xmlio
+   , igGlobals
    ;
 { TTacoInterface }
 
@@ -199,11 +201,13 @@ begin
   raise Exception.Create('tacoInterface: Illegal Taco response: ' + fTacoReply);
 end;
 
-function TTacoInterface.RequestReply(aRequest: AnsiString; aTimeOut: Integer;
-  aConfigAsXml: TXml): AnsiString;
+function TTacoInterface.RequestReply(aRequest: String; aTimeOut: Integer;
+  aConfigAsXml: TXml): String;
 var
   xHost: String;
   xPort: Integer;
+  ms: TStringStream;
+  b: Byte;
 begin
   fLock.Acquire;
   try
@@ -213,11 +217,20 @@ begin
     fReturnType := rtUndefined;
     fReady := False;
     fTacoReply := '';
-    fClient.IOHandler.Write(tacoRequest(aRequest, aConfigAsXml));
+    ms := TStringStream.Create(tacoRequest(aRequest, aConfigAsXml));
+    try
+      ms.Position := 0;
+      fClient.IOHandler.Write(ms, ms.Size);
+    finally
+      ms.Free;
+    end;
     while not fReady do
     begin
-      fTacoReply := fTacoReply + fClient.IOHandler.ReadString(1);
+      b := fClient.IOHandler.ReadByte;
+      SetLength(fTacoReply, system.Length (fTacoReply) + 1);
+      fTacoReply [system.Length (fTacoReply)] := Char(b);
       fReady := (system.Length(fTacoReply) > 12)
+            and (fTacoReply [system.Length(fTacoReply) - 12] = '<') // avoid unnessary copy
             and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
               ;
     end;
@@ -228,8 +241,8 @@ begin
   end;
 end;
 
-function TTacoInterface.tacoCopy(aString: AnsiString;
-  var x: Integer): AnsiString;
+function TTacoInterface.tacoCopy(aString: String;
+  var x: Integer): String;
 var
   L, S: Integer;
 begin
@@ -246,7 +259,7 @@ begin
   x := x + 1 + S;
 end;
 
-function TTacoInterface.tacoRequest(aRequest: AnsiString; aConfig: TXml): AnsiString;
+function TTacoInterface.tacoRequest(aRequest: String; aConfig: TXml): String;
 var
   xXml, mqXml: TXml;
   s: String;
@@ -395,7 +408,7 @@ begin
   end;
 end;
 
-function TTacoInterface.tacoString(aString: AnsiString): AnsiString;
+function TTacoInterface.tacoString(aString: String): String;
 begin
   result := '<'
           + IntToStr (Length (aString))

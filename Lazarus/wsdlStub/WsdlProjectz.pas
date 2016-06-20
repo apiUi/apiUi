@@ -528,6 +528,46 @@ begin
   end;
 end;
 
+function OperationFromContext (aContext: TObject; xOperationAlias: String): TWsdlOperation;
+begin
+  result := nil;
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    result := invokeList.FindOnAliasName(xOperationAlias);
+  end
+  else
+  begin
+    if aContext is TWsdlProject then
+    begin
+      result := allAliasses.FindOnAliasName(xOperationAlias);
+    end;
+  end;
+end;
+
+function RequestAsText (aContext: TObject; xOperationAlias: String): String;
+var
+  aOper: TWsdlOperation;
+begin
+  result := '';
+  aOper := OperationFromContext(aContext, xOperationAlias);
+  if Assigned (aOper) then
+    result := aOper.StreamRequest(_progName, True, True, True)
+  else
+    raise Exception.Create(Format ('RequestAsText: Operation ''%s'' not found', [xOperationAlias]));
+end;
+
+function ReplyAsText (aContext: TObject; xOperationAlias: String): String;
+var
+  aOper: TWsdlOperation;
+begin
+  result := '';
+  aOper := OperationFromContext(aContext, xOperationAlias);
+  if Assigned (aOper) then
+    result := aOper.StreamReply(_progName, True)
+  else
+    raise Exception.Create(Format ('RequestAsText: Operation ''%s'' not found', [xOperationAlias]));
+end;
+
 procedure RequestOperation(aContext: TObject; xOperationAlias: String);
 var
   xProject: TWsdlProject;
@@ -7309,6 +7349,8 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
+  _WsdlRequestAsText := RequestAsText;
+  _WsdlReplyAsText := ReplyAsText;
   _WsdlClearLogs := ClearLogs;
   _WsdlClearSnapshots := ClearSnapshots;
   _WsdlCreateSnapshot := CreateSnapshot;

@@ -529,6 +529,8 @@ function xNewLine: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
+function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
+function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation, aLater: String);
@@ -594,6 +596,7 @@ var
   _wsdlStubStylesheet: String;
   _WsdlVars: TStringList;
   _WsdlRequestOperation: VFunctionOS;
+  _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
   _WsdlWriteSnapshotsInformation: VFunctionOS;
@@ -1131,6 +1134,20 @@ begin
       TagName := swapTagName;
     end;
   end;
+end;
+
+function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
+begin
+  if not Assigned (_WsdlRequestAsText) then
+    raise Exception.Create('wsdlRequestAsText: implementation missing');
+  result := _WsdlRequestAsText (aObject, aOperation);
+end;
+
+function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
+begin
+  if not Assigned (_WsdlReplyAsText) then
+    raise Exception.Create('wsdlReplyAsText: implementation missing');
+  result := _WsdlReplyAsText (aObject, aOperation);
 end;
 
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
@@ -3699,6 +3716,8 @@ begin
     BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
     BindBeforeFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
+    BindBeforeFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
+    BindBeforeFunction ('ReplyAsText', @wsdlReplyAsText, SFOV, '()');
     BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
@@ -3851,6 +3870,8 @@ begin
     BindAfterFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindAfterFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
     BindAfterFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
+    BindAfterFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
+    BindAfterFunction ('ReplyAsText', @wsdlReplyAsText, SFOV, '()');
     BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
