@@ -57,12 +57,12 @@ type
     procedure syncDoAuthorize;
     procedure syncOnAuthorize;
     procedure doAuthorize;
-    function tacoString (aString: String): String;
     function tacoRequest (aRequest: String; aConfig: TXml): String;
     function tacoCopy (aString: String; var x: Integer): String;
     procedure EvaluateResponse;
   public
     UserName, Password: String;
+    function tacoString (aString: String): String;
     property ProjectProperties: TStringList write fprojectProperties;
     property Host: String read fHost write fHost;
     property Port: Integer read fPort write fPort;
@@ -82,6 +82,7 @@ type
                           ; aTimeOut: Integer
                           ; aConfigAsXml: TXml
                           ): String; Virtual;
+    function tacoCommand (aCommand: String): String;
     function AsXml: TXml;
   published
     property RequestTimestamp: TDateTime read fReqTime;
@@ -236,6 +237,43 @@ begin
     end;
     EvaluateResponse;
     result := fReply;
+  finally
+    fLock.Release;
+  end;
+end;
+
+function TTacoInterface .tacoCommand (aCommand: String): String;
+var
+  ms: TStringStream;
+  b: Byte;
+begin
+  result := '';
+  fLock.Acquire;
+  try
+    doAuthorize;
+    if not Authorized then
+      Exit;
+    fReturnType := rtUndefined;
+    fReady := False;
+    fTacoReply := '';
+    ms := TStringStream.Create(aCommand + '<END-OF-DATA>');
+    try
+      ms.Position := 0;
+      fClient.IOHandler.Write(ms, ms.Size);
+    finally
+      ms.Free;
+    end;
+    while not fReady do
+    begin
+      b := fClient.IOHandler.ReadByte;
+      SetLength(fTacoReply, system.Length (fTacoReply) + 1);
+      fTacoReply [system.Length (fTacoReply)] := Char(b);
+      fReady := (system.Length(fTacoReply) > 12)
+            and (fTacoReply [system.Length(fTacoReply) - 12] = '<') // avoid unnessary copy
+            and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
+              ;
+    end;
+    result := fTacoReply;
   finally
     fLock.Release;
   end;
