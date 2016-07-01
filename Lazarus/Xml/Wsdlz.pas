@@ -497,6 +497,7 @@ type
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
       constructor Create; Overload;
+      constructor Create (aOperation: TWsdlOperation); Overload;
       constructor CreateRequest (aOperation: TWsdlOperation; aName, aPatterns, aDocumentation: String); Overload;
       constructor CreateReply (aOperation: TWsdlOperation; aName, aPatterns, aDocumentation: String); Overload;
       destructor Destroy; override;
@@ -531,6 +532,7 @@ function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
 function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
+procedure wsdlCreateDesignMessage (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation, aLater: String);
@@ -595,6 +597,7 @@ var
   _ProgName: String;
   _wsdlStubStylesheet: String;
   _WsdlVars: TStringList;
+  _WsdlCreateDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
@@ -1155,6 +1158,13 @@ begin
   if not Assigned (_wsdlRequestOperation) then
     raise Exception.Create('wsdlRequestOperation: implementation missing');
   _wsdlRequestOperation (aObject, aOperation);
+end;
+
+procedure wsdlCreateDesignMessage (aObject: TObject; aOperation: String);
+begin
+  if not Assigned (_wsdlCreateDesignMessage) then
+    raise Exception.Create('wsdlCreateDesignMessage: implementation missing');
+  _wsdlCreateDesignMessage (aObject, aOperation);
 end;
 
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
@@ -3679,6 +3689,7 @@ begin
     BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindBeforeFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindBeforeFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
+    BindBeforeFunction ('CreateDesignMessage', @WsdlCreateDesignMessage, VFOS, '(aOperation)');
     BindBeforeFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindBeforeFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
@@ -3832,6 +3843,7 @@ begin
     BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindAfterFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindAfterFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
+    BindAfterFunction ('CreateDesignMessage', @WsdlCreateDesignMessage, VFOS, '(aOperation)');
     BindAfterFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindAfterFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
@@ -6284,9 +6296,32 @@ begin
   reqBind := TXml.Create;
   rpyBind := TXml.Create;
   fltBind := TXml.Create;
+//Patterns := TStringList.Create;
+end;
+
+constructor TWsdlMessage.Create(aOperation: TWsdlOperation);
+begin
   ColumnXmls := TBindableList.Create;
   CorrelationBindables := TBindableList.Create;
-//Patterns := TStringList.Create;
+  WsdlOperation := aOperation;
+  aOperation.Messages.AddObject('', self);
+  FreeFormatReq := WsdlOperation.FreeFormatReq;
+  FreeFormatRpy := WsdlOperation.FreeFormatRpy;
+  if WsdlOperation.reqBind is TIpmItem then
+  begin
+    reqBind := TIpmItem.Create(WsdlOperation.reqBind as TIpmItem);
+    rpyBind := TIpmItem.Create(WsdlOperation.rpyBind as TIpmItem);
+    fltBind := TIpmItem.Create(WsdlOperation.fltBind as TIpmItem);
+  end
+  else
+  begin
+    reqBind := TXml.Create(0, WsdlOperation.reqXsd);
+    (reqBind as TXml).LoadValues(WsdlOperation.reqBind as TXml, True);
+    rpyBind := TXml.Create(0, WsdlOperation.rpyXsd);
+    (rpyBind as TXml).LoadValues(WsdlOperation.rpyBind as TXml, True);
+    fltBind := TXml.Create(0, WsdlOperation.FaultXsd);
+    (fltBind as TXml).LoadValues(WsdlOperation.fltBind as TXml, True);
+  end;
 end;
 
 constructor TWsdlMessage.CreateRequest (aOperation: TWsdlOperation; aName, aPatterns, aDocumentation: String);

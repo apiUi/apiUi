@@ -606,6 +606,36 @@ begin
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
+procedure CreateDesignMessage(aContext: TObject; xOperationAlias: String);
+var
+  xProject: TWsdlProject;
+  xOperation: TWsdlOperation;
+  xMessage: TWsdlMessage;
+begin
+  xProject := nil; //candidate context
+  xOperation := nil; //candidate context
+  xMessage := nil;
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    xProject := Owner as TWsdlProject;
+    xOperation := invokeList.FindOnAliasName(xOperationAlias);
+  end
+  else
+  begin
+    if aContext is TWsdlProject then
+    begin
+      xProject := aContext as TWsdlProject;
+      xOperation := allAliasses.FindOnAliasName(xOperationAlias);
+    end;
+  end;
+  if not Assigned (xProject)
+  or not Assigned (xOperation) then
+   raise Exception.Create(Format ('CreateDesignMessage: Operation ''%s'' not found', [xOperationAlias]));
+  xMessage := TWsdlMessage.Create (xOperation);
+  xProject.UpdateMessageRow(xOperation, xMessage);
+  // update screen.....
+end;
+
 procedure CreateSnapshot(aContext: TObject; aName: String; aDoRun: Boolean);
 var
   xProject: TWsdlProject;
@@ -7349,6 +7379,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
+  _WsdlCreateDesignMessage := CreateDesignMessage;
   _WsdlRequestAsText := RequestAsText;
   _WsdlReplyAsText := ReplyAsText;
   _WsdlClearLogs := ClearLogs;
