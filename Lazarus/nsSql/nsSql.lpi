@@ -46,7 +46,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="nsSql.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -60,6 +60,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="nsSqlMainUnit"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="QueryScanner\QUERYSCANNER.PAS"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="QueryScanner"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -70,7 +75,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Xml;..\Utils;..\Xpress;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\TacoInterface;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\Xml\IpmScanner"/>
+      <OtherUnitFiles Value="..\Xml;..\Utils;..\Xpress;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\TacoInterface;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\Xml\IpmScanner;QueryScanner"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -88,7 +93,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="6">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -101,6 +106,12 @@
       <Item4>
         <Name Value="EConvertError"/>
       </Item4>
+      <Item5>
+        <Name Value="ERegistryException"/>
+      </Item5>
+      <Item6>
+        <Name Value="Exception"/>
+      </Item6>
     </Exceptions>
   </Debugging>
 </CONFIG>
