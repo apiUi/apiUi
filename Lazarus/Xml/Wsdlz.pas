@@ -208,6 +208,7 @@ type
     procedure setOutputXsd(const Value: TXsd);
     function getRpyIpm: TIpmItem;
     function getDescriptionType: TIpmDescrType;
+    function cloneBindables (aSrc: TBindableList): TBindableList;
   public
     Name: String;
     WsdlOperation: TWsdlOperation;
@@ -532,7 +533,7 @@ function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
 function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
-procedure wsdlCreateDesignMessage (aObject: TObject; aOperation: String);
+procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation, aLater: String);
@@ -597,7 +598,7 @@ var
   _ProgName: String;
   _wsdlStubStylesheet: String;
   _WsdlVars: TStringList;
-  _WsdlCreateDesignMessage: VFunctionOS;
+  _WsdlNewDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
@@ -1160,11 +1161,11 @@ begin
   _wsdlRequestOperation (aObject, aOperation);
 end;
 
-procedure wsdlCreateDesignMessage (aObject: TObject; aOperation: String);
+procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
 begin
-  if not Assigned (_wsdlCreateDesignMessage) then
-    raise Exception.Create('wsdlCreateDesignMessage: implementation missing');
-  _wsdlCreateDesignMessage (aObject, aOperation);
+  if not Assigned (_WsdlNewDesignMessage) then
+    raise Exception.Create('wsdlNewDesignMessage: implementation missing');
+  _WsdlNewDesignMessage (aObject, aOperation);
 end;
 
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
@@ -3689,7 +3690,6 @@ begin
     BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindBeforeFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindBeforeFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
-    BindBeforeFunction ('CreateDesignMessage', @WsdlCreateDesignMessage, VFOS, '(aOperation)');
     BindBeforeFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindBeforeFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
@@ -3715,6 +3715,7 @@ begin
     BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindBeforeFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
     BindBeforeFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
+    BindBeforeFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOS, '(aOperation)');
     BindBeforeFunction ('NewLine', @xNewLine, SFV, '()');
     BindBeforeFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindBeforeFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
@@ -3843,7 +3844,6 @@ begin
     BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindAfterFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindAfterFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
-    BindAfterFunction ('CreateDesignMessage', @WsdlCreateDesignMessage, VFOS, '(aOperation)');
     BindAfterFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindAfterFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
@@ -3869,6 +3869,7 @@ begin
     BindAfterFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindAfterFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
     BindAfterFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
+    BindAfterFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOS, '(aOperation)');
     BindAfterFunction ('NewLine', @xNewLine, SFV, '()');
     BindAfterFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindAfterFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
@@ -6302,25 +6303,34 @@ end;
 constructor TWsdlMessage.Create(aOperation: TWsdlOperation);
 begin
   ColumnXmls := TBindableList.Create;
-  CorrelationBindables := TBindableList.Create;
   WsdlOperation := aOperation;
-  aOperation.Messages.AddObject('', self);
-  FreeFormatReq := WsdlOperation.FreeFormatReq;
-  FreeFormatRpy := WsdlOperation.FreeFormatRpy;
+  while Assigned(WsdlOperation.Cloned) do
+    WsdlOperation := WsdlOperation.Cloned;
+  WsdlOperation.Messages.AddObject('', self);
+  Name := 'Message' + IntToStr (aOperation.Messages.Count);
   if WsdlOperation.reqBind is TIpmItem then
   begin
-    reqBind := TIpmItem.Create(WsdlOperation.reqBind as TIpmItem);
-    rpyBind := TIpmItem.Create(WsdlOperation.rpyBind as TIpmItem);
-    fltBind := TIpmItem.Create(WsdlOperation.fltBind as TIpmItem);
+    reqBind := TIpmItem.Create(aOperation.reqBind as TIpmItem);
+    rpyBind := TIpmItem.Create(aOperation.rpyBind as TIpmItem);
+    fltBind := TIpmItem.Create(aOperation.fltBind as TIpmItem);
   end
   else
   begin
     reqBind := TXml.Create(0, WsdlOperation.reqXsd);
-    (reqBind as TXml).LoadValues(WsdlOperation.reqBind as TXml, True);
+    reqBind.Name := WsdlOperation.reqBind.Name;
+    (reqBind as TXml).LoadValues(aOperation.reqBind as TXml, True);
     rpyBind := TXml.Create(0, WsdlOperation.rpyXsd);
-    (rpyBind as TXml).LoadValues(WsdlOperation.rpyBind as TXml, True);
+    rpyBind.Name := WsdlOperation.rpyBind.Name;
+    (rpyBind as TXml).LoadValues(aOperation.rpyBind as TXml, True);
     fltBind := TXml.Create(0, WsdlOperation.FaultXsd);
-    (fltBind as TXml).LoadValues(WsdlOperation.fltBind as TXml, True);
+    fltBind.Name := WsdlOperation.fltBind.Name;
+    (fltBind as TXml).LoadValues(aOperation.fltBind as TXml, True);
+  end;
+  CorrelationBindables := cloneBindables(WsdlOperation.CorrelationBindables);
+  if aOperation.WsdlService.DescriptionType = ipmDTFreeFormat then
+  begin
+    FreeFormatReq := aOperation.FreeFormatReq;
+    FreeFormatRpy := aOperation.FreeFormatRpy;
   end;
 end;
 
@@ -6591,6 +6601,46 @@ end;
 function TWsdlBinder.getDescriptionType: TIpmDescrType;
 begin
   result := WsdlOperation.WsdlService.DescriptionType;
+end;
+
+function TWsdlBinder .cloneBindables (aSrc : TBindableList ): TBindableList ;
+var
+  x: Integer;
+begin
+  result := TBindableList.Create;
+  for x := 0 to aSrc.Count - 1 do
+  begin
+    if AnsiStartsText('Req.',aSrc.Strings[x]) then
+      result.AddObject
+        ( aSrc.Strings[x]
+        , self.reqBind.FindUQ
+            (Copy ( aSrc.Strings[x]
+                  , 5
+                  , Length (aSrc.Strings[x]) - 4
+                  )
+            )
+        );
+    if AnsiStartsText('Rpy.',aSrc.Strings[x]) then
+      result.AddObject
+        ( aSrc.Strings[x]
+        , self.rpyBind.FindUQ
+            (Copy ( aSrc.Strings[x]
+                  , 5
+                  , Length (aSrc.Strings[x]) - 4
+                  )
+            )
+        );
+    if AnsiStartsText('Flt.',aSrc.Strings[x]) then
+      result.AddObject
+        ( aSrc.Strings[x]
+        , self.fltBind.FindUQ
+            (Copy ( aSrc.Strings[x]
+                  , 5
+                  , Length (aSrc.Strings[x]) - 4
+                  )
+            )
+        );
+  end;
 end;
 
 procedure TWsdlBinder.PopulateCorrelation (aPatternsList : TStringList );

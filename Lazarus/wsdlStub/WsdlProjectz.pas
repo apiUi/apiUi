@@ -150,6 +150,7 @@ type
     projectProperties: TStringList;
     ppLock: TCriticalSection;
     doDisplayLog: Boolean;
+    uiInvalid: Boolean;
     ProgressMax, ProgressPos: Integer;
     doCloneOperations: Boolean;
     DatabaseConnectionSpecificationXml: TXml;
@@ -606,11 +607,12 @@ begin
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
-procedure CreateDesignMessage(aContext: TObject; xOperationAlias: String);
+procedure NewDesignMessage(aContext: TObject; xOperationAlias: String);
 var
   xProject: TWsdlProject;
   xOperation: TWsdlOperation;
   xMessage: TWsdlMessage;
+  x: Integer;
 begin
   xProject := nil; //candidate context
   xOperation := nil; //candidate context
@@ -631,9 +633,21 @@ begin
   if not Assigned (xProject)
   or not Assigned (xOperation) then
    raise Exception.Create(Format ('CreateDesignMessage: Operation ''%s'' not found', [xOperationAlias]));
-  xMessage := TWsdlMessage.Create (xOperation);
-  xProject.UpdateMessageRow(xOperation, xMessage);
-  // update screen.....
+  xOperation.AcquireLock;
+  try
+    xMessage := TWsdlMessage.Create (xOperation);
+    for x := 0 to xMessage.CorrelationBindables.Count - 1 do with xMessage.CorrelationBindables do
+      Bindables[x].CorrelationValue := Bindables[x].Value;
+    xProject.UpdateMessageRow(xOperation, xMessage);
+  finally
+    xOperation.ReleaseLock;
+  end;
+  xProject.AcquireLogLock;
+  try
+    xProject.uiInvalid := True;
+  finally
+    xProject.ReleaseLogLock;
+  end;
 end;
 
 procedure CreateSnapshot(aContext: TObject; aName: String; aDoRun: Boolean);
@@ -7379,7 +7393,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
-  _WsdlCreateDesignMessage := CreateDesignMessage;
+  _WsdlNewDesignMessage := NewDesignMessage;
   _WsdlRequestAsText := RequestAsText;
   _WsdlReplyAsText := ReplyAsText;
   _WsdlClearLogs := ClearLogs;

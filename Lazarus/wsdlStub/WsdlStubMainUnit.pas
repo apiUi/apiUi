@@ -8826,11 +8826,13 @@ procedure TMainForm.RefreshLog;
       SnapshotsVTS.Invalidate;
   end;
 var
-  logAdded, exceptionAdded: Boolean;
+  logAdded, exceptionAdded, uiInvalidated: Boolean;
 begin
   if not Assigned (se) then Exit;
   se.AcquireLogLock;
   try
+    uiInvalidated := se.uiInvalid;
+    se.uiInvalid := False;
     if se.doClearLogs then
     begin
       MessagesVTS.Clear;
@@ -8854,6 +8856,8 @@ begin
   finally
     se.ReleaseLogLock;
   end;
+  if uiInvalidated then
+    setWsdlOperation(WsdlOperation);
   if logAdded then
     if doScrollMessagesIntoView then
       MessagesVTS.ScrollIntoView(MessagesVTS.GetLast, True, False);
