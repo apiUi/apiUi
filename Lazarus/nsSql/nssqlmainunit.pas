@@ -19,6 +19,8 @@ type
 
   TmainUnit = class(TForm )
     DataGrid : TStringGrid ;
+    MachineEdit : TLabeledEdit ;
+    VolumeEdit : TLabeledEdit ;
     UseEnvironmentCheckBox : TCheckBox ;
     ColumnListbox : TListBox ;
     DefineListBox : TListBox ;
@@ -48,10 +50,11 @@ type
     Splitter1 : TSplitter ;
     Splitter2 : TSplitter ;
     Splitter3 : TSplitter ;
-    StatusBar1 : TStatusBar ;
+    StatusBar : TStatusBar ;
     SynSQLSyn1 : TSynSQLSyn ;
     ToolBar1 : TToolBar ;
     ToolButton1 : TToolButton ;
+    EnvironmentEdit : TLabeledEdit ;
     procedure browseMenuItemClick (Sender : TObject );
     procedure DefineListBoxClick (Sender : TObject );
     procedure ExecuteActionExecute (Sender : TObject );
@@ -64,15 +67,23 @@ type
     procedure MenuItem2Click (Sender : TObject );
     procedure MenuItem3Click (Sender : TObject );
     procedure MenuItem5Click (Sender : TObject );
+    procedure UseEnvironmentCheckBoxClick (Sender : TObject );
   private
+    procedure setUseEnvVars (AValue : Boolean );
+  private
+    fUseEnvVars : Boolean ;
     fTacoInterface: TTacoInterface;
     SqlResultsXml: TXml;
+    SqlNullPresentation: String;
     QueryScanner: TQueryScanner;
-    sqlQueries, SqlQueryStrings: TStringList;
+    sqlQueries, SqlQueryStrings, ColumnWidths: TStringList;
     sqlQuery: TQuery;
     InvokeDefine: TDefine;
     SqlBrowseDefine: TDefine;
     LineNumber: Integer;
+    property UseEnvVars: Boolean read fUseEnvVars write setUseEnvVars;
+    procedure SaveGridColumnWidths(aGrid: TStringGrid);
+    procedure ProcessSqlResult(aResult: String);
     procedure DoInvokeDefine(aDefine: TDefine);
     function UseEnvironment(aFileName: String): String;
     function DefineNameFound(aQuery: TQuery; DefineName: String): Boolean;
@@ -121,6 +132,205 @@ end;
 procedure TmainUnit .MenuItem5Click (Sender : TObject );
 begin
   ShowMessage ('notyetimplemented');
+end;
+
+procedure TmainUnit .UseEnvironmentCheckBoxClick (Sender : TObject );
+begin
+  UseEnvVars := UseEnvironmentCheckBox.Checked;
+end;
+
+procedure TmainUnit .setUseEnvVars (AValue : Boolean );
+begin
+  fUseEnvVars := AValue ;
+  UseEnvironmentCheckBox.Checked := AValue;
+  MachineEdit.Visible := AValue;
+  VolumeEdit.Visible := AValue;
+  EnvironmentEdit.Visible := AValue;
+end;
+
+procedure TmainUnit .SaveGridColumnWidths (aGrid : TStringGrid );
+  function _ColHeaderStr(aString: String): String;
+  var
+    c: Integer;
+  begin
+    result := '';
+    if aString <> '' then
+      for c := 1 to Length(aString) do
+        if aString[c] = '-' then
+          result := result + '_'
+        else
+          result := result + aString[c];
+  end;
+var
+  X: Integer;
+begin
+  if (aGrid.RowCount > 0) then
+  begin
+    for X := 0 to aGrid.ColCount - 1 do
+      try
+        ColumnWidths.Values[_ColHeaderStr(aGrid.Cells[X, 0])] := IntToStr
+          (aGrid.ColWidths[X]);
+      except
+      end;
+  end;
+end;
+
+procedure TmainUnit .ProcessSqlResult (aResult : String );
+var
+  sList: TStringList;
+  X: Integer;
+  RowNo: Integer;
+  ColNo: Integer;
+  Cols: Integer;
+  Row: String;
+  Value: String;
+  InString: Boolean;
+  isQuotedString: Boolean;
+begin
+  sqlQuery.ResultTimestamp := Now;
+  SaveGridColumnWidths(DataGrid);
+  sList := TStringList.Create;
+  try
+    {
+      <SQLRESULT>
+      12345678901
+      }
+    DataGrid.FixedCols := 0;
+    try
+      sList.Text := Copy(aResult, 12, Length(aResult) - 11);
+    except
+      raise Exception.Create('Could not assign host response to sList');
+    end;
+    Row := sList.Strings[0];
+    X := 1;
+    Cols := 1; { Col 1: Empty }
+    for X := 1 to Length(Row) do
+    begin
+      if Row[X] = ';' then
+        Inc(Cols);
+    end;
+    SqlBrowseDefine := sqlQuery.LastDefine;
+    if (sqlQuery.SingleFullTableQuery) and (SqlBrowseDefine.ColClassKnown) then
+      Cols := Cols + 2;
+    DataGrid.ColCount := Cols;
+    DataGrid.RowCount := sList.Count - 1;
+    if (sqlQuery.SingleFullTableQuery) and (SqlBrowseDefine.ColClassKnown) then
+      DataGrid.FixedCols := 2;
+    StatusBar.Panels[0].Text := IntToStr(sList.Count - 2)
+      + ' Rows';
+    for RowNo := 0 to sList.Count - 2 do { ignore <END-OF-DATA> line }
+    begin
+      for ColNo := 0 to DataGrid.FixedCols - 1 do
+      begin
+        DataGrid.Cells[ColNo, RowNo] := '';
+        DataGrid.Objects[ColNo, RowNo] := nil; { not null }
+      end;
+      ColNo := DataGrid.FixedCols;
+      Row := sList.Strings[RowNo];
+      Value := '';
+      isQuotedString := False;
+      X := 1;
+      while X <= Length(Row) do
+      begin
+        if Row[X] = '"' then
+        begin
+          isQuotedString := True;
+          InString := True;
+          Inc(X);
+          while (X <= Length(Row)) and (InString) do
+          begin
+            if (Row[X] = '"') and ((X = Length(Row)) or (Row[X + 1] = ';'))
+              then
+              InString := False
+            else
+              Value := Value + Row[X];
+            Inc(X);
+          end;
+        end
+        else
+        begin
+          if Row[X] <> ';' then
+          begin
+            if Row[X] = '.' then
+              Value := Value + { Row [x] } DecimalSeparator
+            else
+              Value := Value + Row[X];
+          end
+          else
+          begin { not in string and on a separator }
+            if (Value = 'NULL') and (not isQuotedString) then
+            begin
+              DataGrid.Objects[ColNo, RowNo] := Pointer(1); { null }
+              DataGrid.Cells[ColNo, RowNo] := SqlNullPresentation;
+            end
+            else
+            begin
+              DataGrid.Objects[ColNo, RowNo] := nil;
+              DataGrid.Cells[ColNo, RowNo] := Value;
+            end;
+            Inc(ColNo);
+            Value := '';
+            isQuotedString := False;
+          end;
+          Inc(X);
+        end;
+      end; { for x := 0 to lenght }
+      if (Value = 'NULL') and (not isQuotedString) then
+      begin
+        DataGrid.Objects[ColNo, RowNo] := Pointer(1); { null }
+        DataGrid.Cells[ColNo, RowNo] := SqlNullPresentation;
+      end
+      else
+      begin
+        DataGrid.Objects[ColNo, RowNo] := nil;
+        DataGrid.Cells[ColNo, RowNo] := Value; { show last value }
+      end;
+    end; { for RowNo := 0 to ... }
+    DataGrid.Col := DataGrid.FixedCols;
+    SetGridColumnWidths(DataGrid);
+    if DataGrid.RowCount > 1 then
+    begin
+      DataGrid.Row := 1;
+      DataGrid.FixedRows := 1;
+      DataGrid.LeftCol := DataGrid.FixedCols;
+    end;
+    RowNo := sList.Count - 1;
+    Row := sList.Strings[RowNo];
+    X := 1;
+    if Copy(Row, 1, Length('<TRUNCATED>')) = '<TRUNCATED>' then
+    begin
+      DataSheetStatusBar.Panels[1].Text := 'Max data returned';
+      X := X + Length('<TRUNCATED>');
+    end
+    else
+      DataSheetStatusBar.Panels[1].Text := '';
+
+    if Copy(Row, X, Length('<RESPONSETIME>')) = '<RESPONSETIME>' then
+    begin
+      X := X + Length('<RESPONSETIME>') + 1;
+      try
+        ResponseTime := StrToFloat(GetString(Row, X));
+        StatusBar.Panels.Items[1].Text := Format
+          ('Responsetime: %.6f seconds', [ResponseTime / 1000000]);
+      except
+        StatusBar.Panels.Items[1].Text := 'Error formatting responsetime';
+      end;
+    end
+    else
+    begin
+      StatusBar.Panels.Items[1].Text :=
+        'Responsetime not delivered by server';
+    end;
+
+    DataTabSheet.TabVisible := True;
+    MainPageControl.ActivePage := DataTabSheet;
+    DataGrid.SetFocus;
+//      BrowseHistory.Add(SqlQueryStrings.Text);
+    SqlSourceQryString := SqlQueryStrings.Text;
+    AddSqlQueryResult(sqlQuery, DataGrid);
+  finally
+    FreeAndNil(sList);
+  end;
 end;
 
 procedure TmainUnit .DoInvokeDefine (aDefine : TDefine );
@@ -467,6 +677,7 @@ procedure TmainUnit .FormCreate (Sender : TObject );
 begin
   sqlQueries := TStringList.Create;
   SqlQueryStrings := TStringList.Create;
+  ColumnWidths := TStringList.Create;
   SqlResultsXml := TXml.Create;
   fTacoInterface := TTacoInterface.Create(nil, nil);
   fTacoInterface.NeedHostData := NeedTacoHostData;
@@ -476,6 +687,12 @@ begin
     tacoPort := IntegerByName['tacoPort'];
     MaxRowsEdit.Text := StringByName['queryMaxRows'];
     queryEdit.Text := StringByName['queryText'];
+    UseEnvVars := BooleanByNameDef['useEnvVars', False];
+    MachineEdit.Text := StringByName['MachineName'];
+    VolumeEdit.Text := StringByName['VolumeName'];
+    EnvironmentEdit.Text := StringByName['EnvironmentName'];
+    ColumnWidths.Text := StringByName['ResultColumnWidths'];
+    SqlNullPresentation := StringByNameDef['SqlNullPresentation', 'NULL'];
     Restore;
   finally
     Free;
@@ -562,20 +779,27 @@ end;
 
 procedure TmainUnit .FormDestroy (Sender : TObject );
 begin
-  FreeAndNil(fTacoInterface);
-  FreeAndNil(sqlQueries);
-  FreeAndNil(SqlQueryStrings);
-  FreeAndNil(SqlResultsXml);
-  with TFormIniFile.Create(self, True) do
+  with TFormIniFile.Create(self, False) do
   try
     StringByName['tacoHost'] := tacoHost;
     IntegerByName['tacoPort'] := tacoPort;
     StringByName['queryText'] := queryEdit.Text;
     StringByName['queryMaxRows'] := MaxRowsEdit.Text;
+    BooleanByName['useEnvVars'] := UseEnvVars;
+    StringByName['MachineName'] := MachineEdit.Text;
+    StringByName['VolumeName'] := VolumeEdit.Text;
+    StringByName['EnvironmentName'] := EnvironmentEdit.Text;
+    StringByName['ResultColumnWidths'] := ColumnWidths.Text;
+    StringByNameDef['SqlNullPresentation', 'NULL'] := SqlNullPresentation;
     Save;
   finally
     Free;
   end;
+  FreeAndNil(fTacoInterface);
+  FreeAndNil(sqlQueries);
+  FreeAndNil(SqlQueryStrings);
+  FreeAndNil(SqlResultsXml);
+  FreeAndNil(ColumnWidths);
 end;
 
 end.
