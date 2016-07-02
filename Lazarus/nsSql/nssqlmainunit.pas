@@ -9,8 +9,8 @@ interface
 uses
   Classes , SysUtils , FileUtil , SynEdit , SynHighlighterSQL , Forms ,
   Controls , Graphics , Dialogs , Menus , ExtCtrls , ComCtrls , StdCtrls ,
-  ActnList , TacoInterface , Definez , FormIniFilez , types , QueryScanner ,
-  Xmlz
+  ActnList , Grids , TacoInterface , Definez , FormIniFilez , types ,
+  QueryScanner , Xmlz
   ;
 
 type
@@ -18,10 +18,13 @@ type
   { TmainUnit }
 
   TmainUnit = class(TForm )
+    DataGrid : TStringGrid ;
+    UseEnvironmentCheckBox : TCheckBox ;
+    ColumnListbox : TListBox ;
+    DefineListBox : TListBox ;
     ExecuteAction : TAction ;
     ActionList1 : TActionList ;
-    DefineListBox : TListBox ;
-    ColumnListbox : TListBox ;
+    MaxRowsEdit : TLabeledEdit ;
     mainImageList : TImageList ;
     MainMenu1 : TMainMenu ;
     MenuItem1 : TMenuItem ;
@@ -30,20 +33,22 @@ type
     MenuItem3 : TMenuItem ;
     MenuItem4 : TMenuItem ;
     MenuItem5 : TMenuItem ;
-    Panel1 : TPanel ;
-    Panel2 : TPanel ;
-    Panel3 : TPanel ;
+    DefinesPanel : TPanel ;
+    ColumnsPanel : TPanel ;
+    editPanel : TPanel ;
     Panel4 : TPanel ;
     Panel5 : TPanel ;
-    Panel6 : TPanel ;
     definesPopUpMenu : TPopupMenu ;
+    Panel6 : TPanel ;
+    Panel7 : TPanel ;
+    Panel8 : TPanel ;
+    queryEdit : TSynEdit ;
     resultPanel : TPanel ;
     queryPanel : TPanel ;
     Splitter1 : TSplitter ;
     Splitter2 : TSplitter ;
-    Splitter4 : TSplitter ;
+    Splitter3 : TSplitter ;
     StatusBar1 : TStatusBar ;
-    queryEdit : TSynEdit ;
     SynSQLSyn1 : TSynSQLSyn ;
     ToolBar1 : TToolBar ;
     ToolButton1 : TToolButton ;
@@ -373,8 +378,7 @@ begin
     if SqlCommand = '<SQLSELECT>' then
     begin
       SendString := SqlCommand
-//                  + StringToMsg(MaxRowsEdit.Text)
-  + '<3>999'
+                  + fTacoInterface.tacoString(MaxRowsEdit.Text)
                   + fTacoInterface.tacoString('999999999')
                   + fTacoInterface.tacoString(sqlQuery.Text)
                   + '<END-OF-DATA>'
@@ -470,6 +474,7 @@ begin
   try
     tacoHost := StringByName['tacoHost'];
     tacoPort := IntegerByName['tacoPort'];
+    MaxRowsEdit.Text := StringByName['queryMaxRows'];
     queryEdit.Text := StringByName['queryText'];
     Restore;
   finally
@@ -566,6 +571,7 @@ begin
     StringByName['tacoHost'] := tacoHost;
     IntegerByName['tacoPort'] := tacoPort;
     StringByName['queryText'] := queryEdit.Text;
+    StringByName['queryMaxRows'] := MaxRowsEdit.Text;
     Save;
   finally
     Free;
