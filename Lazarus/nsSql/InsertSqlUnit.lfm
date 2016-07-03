@@ -1,0 +1,124 @@
+object InsertSqlForm: TInsertSqlForm
+  Left = 345
+  Top = 180
+  Width = 609
+  Height = 413
+  BorderStyle = bsSizeToolWin
+  Caption = 'Screen'
+  Color = clBtnFace
+  Font.Charset = ANSI_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Courier New'
+  Font.Style = []
+  ShowHint = True
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnHide = FormHide
+  OnMouseMove = InitMouseMove
+  OnShow = FormShow
+  PixelsPerInch = 96
+  object ToolBar: TToolBar
+    Left = 0
+    Top = 0
+    Width = 601
+    Height = 29
+    ButtonHeight = 23
+    Caption = 'ToolBar'
+    Images = ConsoleForm.ActionImages
+    TabOrder = 0
+    object ToolButton5: TToolButton
+      Left = 0
+      Top = 2
+      Action = SaveQueryAction
+    end
+    object ToolButton4: TToolButton
+      Left = 23
+      Top = 2
+      Width = 8
+      Caption = 'ToolButton4'
+      ImageIndex = 67
+      Style = tbsSeparator
+    end
+    object ToolButton1: TToolButton
+      Left = 31
+      Top = 2
+      Action = GenerateAction
+    end
+    object ToolButton3: TToolButton
+      Left = 54
+      Top = 2
+      Width = 8
+      Caption = 'ToolButton3'
+      ImageIndex = 67
+      Style = tbsSeparator
+    end
+    object ToolButton2: TToolButton
+      Left = 62
+      Top = 2
+      Action = InsertAction
+    end
+  end
+  object DataGrid: TStringGrid
+    Left = 0
+    Top = 29
+    Width = 601
+    Height = 360
+    Align = alClient
+    ColCount = 6
+    DefaultRowHeight = 18
+    FixedCols = 5
+    RowCount = 2
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Courier New'
+    Font.Style = []
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goThumbTracking]
+    ParentFont = False
+    TabOrder = 1
+    OnDrawCell = DataGridDrawCell
+    OnKeyPress = DataGridKeyPress
+    OnMouseDown = DataGridMouseDown
+    OnSelectCell = DataGridSelectCell
+  end
+  object ActionList1: TActionList
+    Images = ConsoleForm.ActionImages
+    Left = 344
+    Top = 125
+    object CopyToClibBoardAction: TAction
+      Caption = '&Copy to Clipboard'
+      Enabled = False
+      Hint = 'Copy screen to clipboard'
+    end
+    object GenerateAction: TAction
+      Caption = 'GenerateAction'
+      Hint = 'View SQL query'
+      ImageIndex = 66
+      ShortCut = 16468
+      OnExecute = GenerateActionExecute
+      OnUpdate = GenerateActionUpdate
+    end
+    object InsertAction: TAction
+      Caption = 'Insert'
+      Hint = 'Insert Row'
+      ImageIndex = 68
+      ShortCut = 16455
+      OnExecute = InsertActionExecute
+    end
+    object SaveQueryAction: TAction
+      Caption = 'SaveQueryAction'
+      Hint = 'Save SQL query to file'
+      ImageIndex = 2
+      ShortCut = 16467
+      OnExecute = SaveQueryActionExecute
+      OnUpdate = SaveQueryActionUpdate
+    end
+  end
+  object SqlSaveDialog: TSaveDialog
+    Filter = 'SQL File (*.sql)|*.sql'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Left = 438
+    Top = 220
+  end
+end
