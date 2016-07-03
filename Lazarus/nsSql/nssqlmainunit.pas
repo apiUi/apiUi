@@ -704,13 +704,13 @@ procedure TMainForm .OnQueryToken (Sender : TObject );
     xStart, x: Integer;
   begin
     xStart := 0;
-    for x := 0 to aScanner.LineNumber - 2 do
+    for x := 0 to aScanner.LineNumber - 2 do // 2 because: without current line and scanner starts with 1...
     begin
-      xStart := xStart + Length (aEdit.Lines.Strings[x]) + 2;
+      xStart := xStart + Length (aEdit.Lines.Strings[x]) + Length (LineEnding);
     end;
     xStart := xStart + aScanner.ColumnNumber;
     aEdit.SelStart := xStart;
-    aEdit.SelEnd := xStart + system.Length(aScanner.TokenAsString);
+    aEdit.SelEnd := xStart + Length(aScanner.TokenAsString);
   end;
 
 var
