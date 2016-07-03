@@ -9,24 +9,41 @@ interface
 uses
   Classes , SysUtils , FileUtil , SynEdit , SynHighlighterSQL , Forms ,
   Controls , Graphics , Dialogs , Menus , ExtCtrls , ComCtrls , StdCtrls ,
-  ActnList , Grids , TacoInterface , Definez , FormIniFilez , types ,
-  QueryScanner , Xmlz
+  ActnList , Grids , TacoInterface , Definez , FormIniFilez , types
+  , QueryScanner
+  , Xmlz
+  , xmlxsdparser
+  , xmlUtilz
   ;
 
 type
 
-  { TmainUnit }
+  { TMainForm }
 
-  TmainUnit = class(TForm )
+  TNsSqlVerb = (nsvUnknown, nsvInsert, nsvDelete, nsvUpdate);
+
+  TProcedureThread = class;
+  TMainForm = class(TForm )
+    ToolButton4 : TToolButton ;
+    ToolButton5 : TToolButton ;
+    ToolButton6 : TToolButton ;
+    ToolButton7 : TToolButton ;
+    ToolButton8 : TToolButton ;
+    ViewAction : TAction ;
+    UpdateAction : TAction ;
+    DeleteAction : TAction ;
+    InsertAction : TAction ;
+    MaxRowsEdit : TLabeledEdit ;
+    Panel1 : TPanel ;
+    ShowHostSqlAction : TAction ;
     DataGrid : TStringGrid ;
-    MachineEdit : TLabeledEdit ;
-    VolumeEdit : TLabeledEdit ;
-    UseEnvironmentCheckBox : TCheckBox ;
+    ToolBar2 : TToolBar ;
+    ToolButton2 : TToolButton ;
+    ToolButton3 : TToolButton ;
     ColumnListbox : TListBox ;
     DefineListBox : TListBox ;
     ExecuteAction : TAction ;
     ActionList1 : TActionList ;
-    MaxRowsEdit : TLabeledEdit ;
     mainImageList : TImageList ;
     MainMenu1 : TMainMenu ;
     MenuItem1 : TMenuItem ;
@@ -43,7 +60,6 @@ type
     definesPopUpMenu : TPopupMenu ;
     Panel6 : TPanel ;
     Panel7 : TPanel ;
-    Panel8 : TPanel ;
     queryEdit : TSynEdit ;
     resultPanel : TPanel ;
     queryPanel : TPanel ;
@@ -54,10 +70,14 @@ type
     SynSQLSyn1 : TSynSQLSyn ;
     ToolBar1 : TToolBar ;
     ToolButton1 : TToolButton ;
-    EnvironmentEdit : TLabeledEdit ;
     procedure browseMenuItemClick (Sender : TObject );
     procedure DefineListBoxClick (Sender : TObject );
+    procedure DeleteActionExecute (Sender : TObject );
+    procedure DeleteActionUpdate (Sender : TObject );
     procedure ExecuteActionExecute (Sender : TObject );
+    procedure ExecuteActionUpdate (Sender : TObject );
+    procedure InsertActionExecute (Sender : TObject );
+    procedure InsertActionUpdate (Sender : TObject );
     procedure ListBoxDblClick (Sender : TObject );
     procedure ListBoxMouseDown (Sender : TObject ; Button : TMouseButton ;
       Shift : TShiftState ; X , Y : Integer );
@@ -67,29 +87,42 @@ type
     procedure MenuItem2Click (Sender : TObject );
     procedure MenuItem3Click (Sender : TObject );
     procedure MenuItem5Click (Sender : TObject );
-    procedure UseEnvironmentCheckBoxClick (Sender : TObject );
+    procedure ShowHostSqlActionExecute (Sender : TObject );
+    procedure UpdateActionExecute (Sender : TObject );
+    procedure UpdateActionUpdate (Sender : TObject );
+    procedure ViewActionExecute (Sender : TObject );
   private
-    procedure setUseEnvVars (AValue : Boolean );
-  private
-    fUseEnvVars : Boolean ;
+    fActive: Boolean;
+    fProcedureThread: TProcedureThread;
     fTacoInterface: TTacoInterface;
     SqlResultsXml: TXml;
-    SqlNullPresentation: String;
+    SqlNullPresentation, SqlSourceQryString: String;
     QueryScanner: TQueryScanner;
     sqlQueries, SqlQueryStrings, ColumnWidths: TStringList;
     sqlQuery: TQuery;
+    ResponseTime: Extended;
     InvokeDefine: TDefine;
     SqlBrowseDefine: TDefine;
     LineNumber: Integer;
-    property UseEnvVars: Boolean read fUseEnvVars write setUseEnvVars;
+    procedure DeleteRowFromDatagrid (aRow: Integer);
+    procedure OnStartBlockingThread;
+    procedure OnEndBlockingThread;
+    function BooleanPromptDialog(aPrompt: String): Boolean;
+    procedure ShowSqlDeleteScreen(ARow: Integer);
+    procedure ExecuteSQL (aString: String; aRow: Integer; aVerb: TNsSqlVerb);
+    function doAuthorize: Boolean;
+    procedure SetGridColumnWidths(aGrid: TStringGrid);
     procedure SaveGridColumnWidths(aGrid: TStringGrid);
+    procedure AddSqlQueryResult(aQuery: TQuery; aGrid: TStringGrid);
     procedure ProcessSqlResult(aResult: String);
+    procedure ProcessSqlStats (aResult: String; aRow: Integer; aVerb: TNsSqlVerb);
+    procedure ProcessSqlResponse(aResult: String; aRow: Integer; aVerb: TNsSqlVerb);
     procedure DoInvokeDefine(aDefine: TDefine);
-    function UseEnvironment(aFileName: String): String;
     function DefineNameFound(aQuery: TQuery; DefineName: String): Boolean;
     procedure AnalyserScannerError(Sender: TObject; Data: String);
     procedure OnQueryToken(Sender: TObject);
     procedure ScannerNeedsData(Sender: TObject; var MoreData: Boolean; var Data: String);
+    function HostSqlQueryStrings: String;
     procedure CreateHostSqlQueryStrings(aQuery: String);
     procedure DoSqlQuery(aString: String);
   public
@@ -99,8 +132,31 @@ type
     procedure QueryDefines;
   end;
 
+  { TProcedureThread }
+
+  TProcedureThread = class(TThread)
+  private
+    fRow: Integer;
+    fVerb: TNsSqlVerb;
+    fString, fResponse: String;
+    fForm: TMainForm;
+    fTacoInterface: TTacoInterface;
+  protected
+    procedure Execute; override;
+  public
+    property Verb: TNsSqlVerb read fVerb;
+    property Response: String read fResponse;
+    property Row: Integer read fRow;
+    constructor Create ( aForm: TMainForm
+                       ; aTacoInterface: TTacoInterface
+                       ; aString: String
+                       ; aRow: Integer
+                       ; aVerb: TNsSqlVerb
+                       ); overload;
+  end;
+
 var
-  mainUnit : TmainUnit ;
+  MainForm : TMainForm ;
 
 implementation
 
@@ -108,16 +164,45 @@ implementation
 
 uses xmlio
    , PromptTacoUnit
+   , strutils
    ;
 
-{ TmainUnit }
+{ TProcedureThread }
 
-procedure TmainUnit .MenuItem2Click (Sender : TObject );
+procedure TProcedureThread .Execute ;
+begin
+  Synchronize(fForm.OnStartBlockingThread);
+  try
+    fResponse := fTacoInterface.tacoCommand(fString);
+  finally
+    Synchronize(fForm.OnEndBlockingThread);
+  end;
+end;
+
+constructor TProcedureThread.Create ( aForm: TMainForm
+                                    ; aTacoInterface: TTacoInterface
+                                    ; aString : String
+                                    ; aRow : Integer
+                                    ; aVerb : TNsSqlVerb
+                                    );
+begin
+  Inherited Create(False);
+  FreeOnTerminate := True;
+  fForm := aForm;
+  fTacoInterface := aTacoInterface;
+  fString := aString;
+  frow := aRow;
+  fVerb := aVerb;
+end;
+
+{ TMainForm }
+
+procedure TMainForm .MenuItem2Click (Sender : TObject );
 begin
   Close;
 end;
 
-procedure TmainUnit .MenuItem3Click (Sender : TObject );
+procedure TMainForm .MenuItem3Click (Sender : TObject );
 begin
   if DefineListBox.ItemIndex > -1 then
     queryEdit.Lines.Text := 'Select count(*)'
@@ -129,26 +214,129 @@ begin
                           ;
 end;
 
-procedure TmainUnit .MenuItem5Click (Sender : TObject );
+procedure TMainForm .MenuItem5Click (Sender : TObject );
 begin
   ShowMessage ('notyetimplemented');
 end;
 
-procedure TmainUnit .UseEnvironmentCheckBoxClick (Sender : TObject );
+procedure TMainForm .ShowHostSqlActionExecute (Sender : TObject );
 begin
-  UseEnvVars := UseEnvironmentCheckBox.Checked;
+  if (queryEdit.SelEnd - queryEdit.SelStart) > 0 then
+    CreateHostSqlQueryStrings(queryEdit.SelText)
+  else
+    CreateHostSqlQueryStrings(queryEdit.Text);
+  xmlUtilz.ShowText('nsSql - View query with resolved filenames', HostSqlQueryStrings);
 end;
 
-procedure TmainUnit .setUseEnvVars (AValue : Boolean );
+procedure TMainForm .UpdateActionExecute (Sender : TObject );
 begin
-  fUseEnvVars := AValue ;
-  UseEnvironmentCheckBox.Checked := AValue;
-  MachineEdit.Visible := AValue;
-  VolumeEdit.Visible := AValue;
-  EnvironmentEdit.Visible := AValue;
+  ShowMessage ('nyi');
 end;
 
-procedure TmainUnit .SaveGridColumnWidths (aGrid : TStringGrid );
+procedure TMainForm .UpdateActionUpdate (Sender : TObject );
+begin
+  UpdateAction.Enabled := (not fActive);
+end;
+
+procedure TMainForm .ViewActionExecute (Sender : TObject );
+begin
+  ShowMessage ('nyi');
+end;
+
+procedure TMainForm .DeleteRowFromDatagrid (aRow : Integer );
+var
+  c: Integer;
+  r: Integer;
+begin
+  for c := 0 to DataGrid.ColCount - 1 do
+  begin
+    for r := aRow + 1 to DataGrid.RowCount - 1 do
+    begin
+      DataGrid.Cells[c, r - 1] := DataGrid.Cells[c, r];
+      DataGrid.Objects[c, r - 1] := DataGrid.Objects[c, r];
+    end;
+  end;
+  DataGrid.RowCount := DataGrid.RowCount - 1;
+end;
+
+procedure TMainForm .OnStartBlockingThread ;
+begin
+  fActive := True;
+  StatusBar.Panels[0].Text := '...';
+end;
+
+procedure TMainForm .OnEndBlockingThread ;
+begin
+  ProcessSqlResponse(fProcedureThread.Response, fProcedureThread.Row, fProcedureThread.Verb);
+  fActive := False;
+end;
+
+function TMainForm .BooleanPromptDialog (aPrompt : String ): Boolean ;
+begin
+  result := (MessageDlg(aPrompt, mtConfirmation, [mbYes, mbNo], 0) = mrYes)
+end;
+
+procedure TMainForm .ShowSqlDeleteScreen (ARow : Integer );
+var
+  xCol: Integer;
+begin
+  for xCol := DataGrid.FixedCols to DataGrid.ColCount - 1 do
+  with SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols] do
+  begin
+    OriginalValue := DataGrid.Cells[xCol, ARow];
+    OriginalUseNull := Assigned(DataGrid.Objects[xCol, ARow]);
+  end;
+  if BooleanPromptDialog(SqlBrowseDefine.DeleteQuery) then
+  begin
+    ExecuteSQL ( '<SQLEXEC>'
+               + fTacoInterface.tacoString(SqlBrowseDefine.DeleteQuery)
+               , aRow
+               , nsvDelete
+               );
+  end;
+end;
+
+procedure TMainForm .ExecuteSQL (aString: String; aRow: Integer; aVerb: TNsSqlVerb);
+var
+  resultString: String;
+begin
+  fProcedureThread := TProcedureThread.Create(Self, fTacoInterface, aString, aRow, aVerb);
+end;
+
+function TMainForm .doAuthorize : Boolean ;
+begin
+  if not fTacoInterface.Authorized then
+    QueryDefines;
+  result := fTacoInterface.Authorized;
+end;
+
+procedure TMainForm .SetGridColumnWidths (aGrid : TStringGrid );
+  function _ColHeaderStr(aString: String): String;
+  var
+    c: Integer;
+  begin
+    result := '';
+    for c := 1 to Length(aString) do
+      if aString[c] = '-' then
+        result := result + '_'
+      else
+        result := result + aString[c];
+  end;
+var
+  X: Integer;
+begin
+  if aGrid.RowCount > 0 then
+  begin
+    for X := 0 to aGrid.FixedCols - 1 do
+      aGrid.ColWidths[X] := 16;
+    for X := aGrid.FixedCols to aGrid.ColCount - 1 do
+      aGrid.ColWidths[X] := StrToIntDef
+        (ColumnWidths.Values[_ColHeaderStr(aGrid.Cells[X, 0])],
+        aGrid.DefaultColWidth);
+  end;
+end;
+
+procedure TMainForm .SaveGridColumnWidths (aGrid : TStringGrid );
   function _ColHeaderStr(aString: String): String;
   var
     c: Integer;
@@ -175,7 +363,37 @@ begin
   end;
 end;
 
-procedure TmainUnit .ProcessSqlResult (aResult : String );
+procedure TMainForm .AddSqlQueryResult (aQuery : TQuery ; aGrid : TStringGrid );
+var
+  r, c: Integer;
+begin
+  SqlResultsXml.Name := 'sqlSelects';
+  with SqlResultsXml.AddXml(TXml.CreateAsString('query', '')) do
+  begin
+    AddXml(TXml.CreateAsString('text', aQuery.Text));
+    AddXml(TXml.CreateAsString('submitTimestamp',
+        xsdFormatDateTime(sqlQuery.SubmitTimestamp, @TIMEZONE_UTC)));
+    AddXml(TXml.CreateAsString('resultTimestamp',
+        xsdFormatDateTime(sqlQuery.ResultTimestamp, @TIMEZONE_UTC)));
+    AddXml(TXml.CreateAsString('define', aQuery.DefineName));
+    with AddXml(TXml.CreateAsString('result', '')) do
+    begin
+      for r := 1 to aGrid.RowCount - 1 do
+      begin
+        with AddXml(TXml.CreateAsString('row', '')) do
+        begin
+          for c := aGrid.FixedCols to aGrid.ColCount - 1 do
+          begin
+            AddXml(TXml.CreateAsString(aGrid.Cells[c, 0],
+                aGrid.Cells[c, r]));
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TMainForm .ProcessSqlResult (aResult : String );
 var
   sList: TStringList;
   X: Integer;
@@ -203,21 +421,24 @@ begin
     end;
     Row := sList.Strings[0];
     X := 1;
-    Cols := 1; { Col 1: Empty }
+    Cols := 1;
     for X := 1 to Length(Row) do
     begin
       if Row[X] = ';' then
         Inc(Cols);
     end;
     SqlBrowseDefine := sqlQuery.LastDefine;
+{
     if (sqlQuery.SingleFullTableQuery) and (SqlBrowseDefine.ColClassKnown) then
       Cols := Cols + 2;
+}
     DataGrid.ColCount := Cols;
     DataGrid.RowCount := sList.Count - 1;
+{
     if (sqlQuery.SingleFullTableQuery) and (SqlBrowseDefine.ColClassKnown) then
       DataGrid.FixedCols := 2;
-    StatusBar.Panels[0].Text := IntToStr(sList.Count - 2)
-      + ' Rows';
+}
+    StatusBar.Panels[0].Text := IntToStr(sList.Count - 2) + ' Rows';
     for RowNo := 0 to sList.Count - 2 do { ignore <END-OF-DATA> line }
     begin
       for ColNo := 0 to DataGrid.FixedCols - 1 do
@@ -299,17 +520,17 @@ begin
     X := 1;
     if Copy(Row, 1, Length('<TRUNCATED>')) = '<TRUNCATED>' then
     begin
-      DataSheetStatusBar.Panels[1].Text := 'Max data returned';
+      StatusBar.Panels[1].Text := 'Max data returned';
       X := X + Length('<TRUNCATED>');
     end
     else
-      DataSheetStatusBar.Panels[1].Text := '';
+      StatusBar.Panels[1].Text := '';
 
     if Copy(Row, X, Length('<RESPONSETIME>')) = '<RESPONSETIME>' then
     begin
       X := X + Length('<RESPONSETIME>') + 1;
       try
-        ResponseTime := StrToFloat(GetString(Row, X));
+        ResponseTime := StrToFloat(fTacoInterface.decodeTacoString(Row, X));
         StatusBar.Panels.Items[1].Text := Format
           ('Responsetime: %.6f seconds', [ResponseTime / 1000000]);
       except
@@ -322,8 +543,6 @@ begin
         'Responsetime not delivered by server';
     end;
 
-    DataTabSheet.TabVisible := True;
-    MainPageControl.ActivePage := DataTabSheet;
     DataGrid.SetFocus;
 //      BrowseHistory.Add(SqlQueryStrings.Text);
     SqlSourceQryString := SqlQueryStrings.Text;
@@ -333,7 +552,54 @@ begin
   end;
 end;
 
-procedure TmainUnit .DoInvokeDefine (aDefine : TDefine );
+procedure TMainForm.ProcessSqlStats (aResult: String; aRow: Integer; aVerb: TNsSqlVerb);
+{
+  <SQLSTATS>
+  1234567890
+  <OK>
+  <END-OF-DATA>
+  1234567890123
+}
+  function _prep(s: String): String;
+  begin
+    result := Copy (s, 11, Length (s) - 10);
+    if AnsiEndsStr('<END-OF-DATA>', result) then
+      result := Copy (result, 1 , Length (result) - 13);
+    if AnsiEndsStr('<OK>', result) then
+      result := Copy (result, 1 , Length (result) - 4);
+  end;
+
+begin
+  StatusBar.Panels[0].Text := 'SqlStats';
+  StatusBar.Panels[1].Text := _prep(aResult);
+  if (aRow > 0)
+  and (aVerb = nsvDelete) then
+  begin
+    DeleteRowFromDatagrid (aRow);
+  end;
+end;
+
+procedure TMainForm.ProcessSqlResponse(aResult: String; aRow: Integer; aVerb: TNsSqlVerb);
+var
+  isProcessed: Boolean;
+begin
+  isProcessed := False;
+  sqlQuery.ResultTimestamp := Now;
+  if (not isProcessed)
+  and AnsiStartsText('<SQLRESULT>', aResult) then
+  begin
+    ProcessSqlResult(aResult);
+    isProcessed := True;
+  end;
+  if (not isProcessed)
+  and AnsiStartsText('<SQLSTATS>', aResult) then
+  begin
+    ProcessSqlStats(aResult, aRow, aVerb);
+    isProcessed := True;
+  end;
+end;
+
+procedure TMainForm .DoInvokeDefine (aDefine : TDefine );
   procedure _evalResp (aDefine: TDefine; aResponse: String);
   var
     Offset: Integer;
@@ -414,12 +680,7 @@ begin
   end; { Columns not yet read }
 end;
 
-function TmainUnit .UseEnvironment (aFileName : String ): String ;
-begin
-  result := aFileName;
-end;
-
-function TmainUnit .DefineNameFound (aQuery : TQuery ; DefineName : String
+function TMainForm .DefineNameFound (aQuery : TQuery ; DefineName : String
   ): Boolean ;
 begin
   aQuery.LastDefine := Defines.FindDefine(LowerCase(DefineName));
@@ -427,17 +688,31 @@ begin
     result := False
   else
   begin
-    aQuery.Text := aQuery.Text + UseEnvironment(aQuery.LastDefine.FileName);
+    aQuery.Text := aQuery.Text + aQuery.LastDefine.FileName;
     result := True;
   end;
 end;
 
-procedure TmainUnit .AnalyserScannerError (Sender : TObject ; Data : String );
+procedure TMainForm .AnalyserScannerError (Sender : TObject ; Data : String );
 begin
   ShowMessage('Scanner: ' + Data);
 end;
 
-procedure TmainUnit .OnQueryToken (Sender : TObject );
+procedure TMainForm .OnQueryToken (Sender : TObject );
+  procedure SelectTokenInEditor (aEdit: TSynEdit; aScanner: TQueryScanner);
+  var
+    xStart, x: Integer;
+  begin
+    xStart := 0;
+    for x := 0 to aScanner.LineNumber - 2 do
+    begin
+      xStart := xStart + Length (aEdit.Lines.Strings[x]) + 2;
+    end;
+    xStart := xStart + aScanner.ColumnNumber;
+    aEdit.SelStart := xStart;
+    aEdit.SelEnd := xStart + system.Length(aScanner.TokenAsString);
+  end;
+
 var
   Scanner: TQueryScanner;
 begin
@@ -459,13 +734,7 @@ begin
           sqlQuery.DefineName := sqlQuery.DefineName + Copy (Scanner.TokenAsString, 2, 100);
           if not(DefineNameFound(sqlQuery, Scanner.TokenAsString)) then
           begin
-            queryEdit.SelStart := 1;
-            queryEdit.SelEnd := 2;
-            queryEdit.SelText := 'impl seltext';
-{
-            MemoSetSelectedText(queryEdit, Scanner.LineNumber,
-              Scanner.ColumnNumber, system.Length(Scanner.TokenAsString));
-}
+            SelectTokenInEditor (queryEdit, Scanner);
             raise Exception.Create('DefineName ' + Scanner.TokenAsString +
                 ' not known (Line: ' + IntToStr(Scanner.LineNumber)
                 + ' Column: ' + IntToStr(Scanner.ColumnNumber) + ')');
@@ -497,7 +766,7 @@ begin
   end;
 end;
 
-procedure TmainUnit .ScannerNeedsData (Sender : TObject ;
+procedure TMainForm .ScannerNeedsData (Sender : TObject ;
   var MoreData : Boolean ; var Data : String );
 begin
   if LineNumber >= SqlQueryStrings.Count then
@@ -509,7 +778,27 @@ begin
   end;
 end;
 
-procedure TmainUnit .CreateHostSqlQueryStrings (aQuery : String );
+function TMainForm .HostSqlQueryStrings : String ;
+var
+  x: Integer;
+  xQuery: TQuery;
+begin
+  result := '';
+  with TStringList.Create do
+  try
+    for x := 0 to sqlQueries.Count - 1 do
+    begin
+      xQuery := sqlQueries.Objects[x] as TQuery;
+      if Trim(xQuery.Text) <> '' then
+        Add (Trim (xQuery.Text));
+    end;
+    result := Text;
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm .CreateHostSqlQueryStrings (aQuery : String );
 var
   X: Integer;
 begin
@@ -566,10 +855,10 @@ begin
   sqlQuery := sqlQueries.Objects[0] as TQuery;
 end;
 
-procedure TmainUnit.DoSqlQuery (aString : String );
+procedure TMainForm.DoSqlQuery (aString : String );
 var
   X: Integer;
-  SqlCommand, SendString: String;
+  SqlCommand, SendString, resultString: String;
 begin
   SqlResultsXml.Items.Clear;
   CreateHostSqlQueryStrings(aString);
@@ -601,15 +890,11 @@ begin
                   + '<END-OF-DATA>'
                   ;
     end;
-    ShowMessage (fTacoInterface.tacoCommand(SendString));
-{
-    if sqlQueries.Count > 1 then
-      ShowXml('View Sql results as Xml', SqlResultsXml);
-}
+    ExecuteSQL(SendString, -1, nsvUnknown);
   end;
 end;
 
-procedure TmainUnit .NeedTacoHostData (Sender : TTacoInterface );
+procedure TMainForm .NeedTacoHostData (Sender : TTacoInterface );
 var
   xForm: TPromptTacoForm;
 begin
@@ -632,7 +917,7 @@ begin
   end;
 end;
 
-procedure TmainUnit .QueryDefines ;
+procedure TMainForm .QueryDefines ;
   procedure _ProcessDefines (aString: String);
   var
     Offset: Integer;
@@ -668,12 +953,12 @@ begin
   _ProcessDefines (fTacoInterface.tacoCommand('<DEFINES>'));
 end;
 
-procedure TmainUnit .FormShow (Sender : TObject );
+procedure TMainForm .FormShow (Sender : TObject );
 begin
   QueryDefines;
 end;
 
-procedure TmainUnit .FormCreate (Sender : TObject );
+procedure TMainForm .FormCreate (Sender : TObject );
 begin
   sqlQueries := TStringList.Create;
   SqlQueryStrings := TStringList.Create;
@@ -687,19 +972,16 @@ begin
     tacoPort := IntegerByName['tacoPort'];
     MaxRowsEdit.Text := StringByName['queryMaxRows'];
     queryEdit.Text := StringByName['queryText'];
-    UseEnvVars := BooleanByNameDef['useEnvVars', False];
-    MachineEdit.Text := StringByName['MachineName'];
-    VolumeEdit.Text := StringByName['VolumeName'];
-    EnvironmentEdit.Text := StringByName['EnvironmentName'];
-    ColumnWidths.Text := StringByName['ResultColumnWidths'];
     SqlNullPresentation := StringByNameDef['SqlNullPresentation', 'NULL'];
+    ColumnWidths.Text := StringByName['ResultColumnWidths'];
     Restore;
+    SetGridColumnWidths(DataGrid);
   finally
     Free;
   end;
 end;
 
-procedure TmainUnit .DefineListBoxClick (Sender : TObject );
+procedure TMainForm .DefineListBoxClick (Sender : TObject );
 var
   xDefine: TDefine;
 begin
@@ -711,15 +993,45 @@ begin
   end;
 end;
 
-procedure TmainUnit .ExecuteActionExecute (Sender : TObject );
+procedure TMainForm .DeleteActionExecute (Sender : TObject );
 begin
+  ShowSqlDeleteScreen (DataGrid.Row);
+end;
+
+procedure TMainForm .DeleteActionUpdate (Sender : TObject );
+begin
+  DeleteAction.Enabled := (not fActive)
+                      and (DataGrid.RowCount > 1)
+                      and (sqlQuery.SingleFullTableQuery)
+                      and (SqlBrowseDefine.ColClassKnown)
+                        ;
+end;
+
+procedure TMainForm .ExecuteActionExecute (Sender : TObject );
+begin
+  if not doAuthorize then Exit;
   if (queryEdit.SelEnd - queryEdit.SelStart) > 0 then
     DoSqlQuery(queryEdit.SelText)
   else
     DoSqlQuery(queryEdit.Text);
 end;
 
-procedure TmainUnit .ListBoxDblClick (Sender : TObject );
+procedure TMainForm .ExecuteActionUpdate (Sender : TObject );
+begin
+  ExecuteAction.Enabled := not fActive;
+end;
+
+procedure TMainForm .InsertActionExecute (Sender : TObject );
+begin
+  ShowMessage ('nyi');
+end;
+
+procedure TMainForm .InsertActionUpdate (Sender : TObject );
+begin
+  InsertAction.Enabled := (not fActive);
+end;
+
+procedure TMainForm .ListBoxDblClick (Sender : TObject );
 var
   ListBox: TListBox;
   xString: String;
@@ -741,7 +1053,7 @@ begin
   queryEdit.SetFocus;
 end;
 
-procedure TmainUnit .ListBoxMouseDown (Sender : TObject ;
+procedure TMainForm .ListBoxMouseDown (Sender : TObject ;
   Button : TMouseButton ; Shift : TShiftState ; X , Y : Integer );
 var
   APoint: TPoint;
@@ -766,7 +1078,7 @@ begin
   end;
 end;
 
-procedure TmainUnit .browseMenuItemClick (Sender : TObject );
+procedure TMainForm .browseMenuItemClick (Sender : TObject );
 begin
   if DefineListBox.ItemIndex > -1 then
     queryEdit.Lines.Text := 'Select *' + LineEnding
@@ -777,20 +1089,17 @@ begin
                           ;
 end;
 
-procedure TmainUnit .FormDestroy (Sender : TObject );
+procedure TMainForm .FormDestroy (Sender : TObject );
 begin
+  SaveGridColumnWidths(DataGrid);
   with TFormIniFile.Create(self, False) do
   try
     StringByName['tacoHost'] := tacoHost;
     IntegerByName['tacoPort'] := tacoPort;
     StringByName['queryText'] := queryEdit.Text;
     StringByName['queryMaxRows'] := MaxRowsEdit.Text;
-    BooleanByName['useEnvVars'] := UseEnvVars;
-    StringByName['MachineName'] := MachineEdit.Text;
-    StringByName['VolumeName'] := VolumeEdit.Text;
-    StringByName['EnvironmentName'] := EnvironmentEdit.Text;
+    StringByName['SqlNullPresentation'] := SqlNullPresentation;
     StringByName['ResultColumnWidths'] := ColumnWidths.Text;
-    StringByNameDef['SqlNullPresentation', 'NULL'] := SqlNullPresentation;
     Save;
   finally
     Free;

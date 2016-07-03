@@ -55,7 +55,7 @@
       <Unit1>
         <Filename Value="nssqlmainunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="mainUnit"/>
+        <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="nsSqlMainUnit"/>
@@ -75,7 +75,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Xml;..\Utils;..\Xpress;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\TacoInterface;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\Xml\IpmScanner;QueryScanner"/>
+      <OtherUnitFiles Value="..\Xml;..\Html;..\Utils;..\Xpress;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\TacoInterface;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\Xml\IpmScanner;QueryScanner"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

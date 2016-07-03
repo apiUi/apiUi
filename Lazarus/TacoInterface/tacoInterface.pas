@@ -63,6 +63,7 @@ type
   public
     UserName, Password: String;
     function tacoString (aString: String): String;
+    function decodeTacoString (aString: String; var aOffset: Integer): String;
     property ProjectProperties: TStringList write fprojectProperties;
     property Host: String read fHost write fHost;
     property Port: Integer read fPort write fPort;
@@ -453,6 +454,26 @@ begin
           + '>'
           + aString
           ;
+end;
+
+function TTacoInterface .decodeTacoString (aString : String; var aOffset: Integer): String ;
+var
+  iString: String;
+begin
+  { <13>sofac.bouwman }
+
+  iString := '';
+  if aString[aOffset] = '<' then
+    Inc(aOffset);
+  iString := '';
+  while (aOffset <= Length(aString)) and (aString[aOffset] <> '>') do
+  begin
+    iString := iString + aString[aOffset];
+    Inc(aOffset);
+  end;
+  Inc(aOffset);
+  result := Copy(aString, aOffset, StrToInt(iString));
+  aOffset := aOffset + StrToInt(iString);
 end;
 
 end.

@@ -1,11 +1,11 @@
-object mainUnit: TmainUnit
-  Left = 330
+object MainForm: TMainForm
+  Left = 354
   Height = 557
   Top = 133
-  Width = 933
-  Caption = 'mainUnit'
+  Width = 909
+  Caption = 'MainForm'
   ClientHeight = 538
-  ClientWidth = 933
+  ClientWidth = 909
   Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -14,32 +14,32 @@ object mainUnit: TmainUnit
   object queryPanel: TPanel
     Left = 0
     Height = 170
-    Top = 26
-    Width = 933
+    Top = 24
+    Width = 909
     Align = alTop
     Caption = ' '
     ClientHeight = 170
-    ClientWidth = 933
+    ClientWidth = 909
     TabOrder = 0
     object Panel7: TPanel
       Left = 1
-      Height = 129
-      Top = 40
-      Width = 931
+      Height = 168
+      Top = 1
+      Width = 907
       Align = alClient
       Caption = 'Panel7'
-      ClientHeight = 129
-      ClientWidth = 931
+      ClientHeight = 168
+      ClientWidth = 907
       TabOrder = 0
       object DefinesPanel: TPanel
         Left = 1
-        Height = 127
+        Height = 166
         Top = 1
         Width = 170
         Align = alLeft
         Alignment = taLeftJustify
         BorderWidth = 1
-        ClientHeight = 127
+        ClientHeight = 166
         ClientWidth = 170
         TabOrder = 0
         object Panel4: TPanel
@@ -56,7 +56,7 @@ object mainUnit: TmainUnit
         end
         object DefineListBox: TListBox
           Left = 3
-          Height = 98
+          Height = 137
           Top = 26
           Width = 164
           Align = alClient
@@ -74,18 +74,18 @@ object mainUnit: TmainUnit
       end
       object Splitter2: TSplitter
         Left = 171
-        Height = 127
+        Height = 166
         Top = 1
         Width = 3
       end
       object ColumnsPanel: TPanel
         Left = 174
-        Height = 127
+        Height = 166
         Top = 1
         Width = 170
         Align = alLeft
         BorderWidth = 1
-        ClientHeight = 127
+        ClientHeight = 166
         ClientWidth = 170
         TabOrder = 2
         object Panel5: TPanel
@@ -102,7 +102,7 @@ object mainUnit: TmainUnit
         end
         object ColumnListbox: TListBox
           Left = 3
-          Height = 98
+          Height = 137
           Top = 26
           Width = 164
           Align = alClient
@@ -119,24 +119,24 @@ object mainUnit: TmainUnit
       end
       object Splitter3: TSplitter
         Left = 344
-        Height = 127
+        Height = 166
         Top = 1
         Width = 3
       end
       object editPanel: TPanel
         Left = 347
-        Height = 127
+        Height = 166
         Top = 1
-        Width = 583
+        Width = 559
         Align = alClient
-        ClientHeight = 127
-        ClientWidth = 583
+        ClientHeight = 166
+        ClientWidth = 559
         TabOrder = 4
         object Panel6: TPanel
           Left = 3
           Height = 23
           Top = 1
-          Width = 579
+          Width = 555
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Left = 2
@@ -146,9 +146,9 @@ object mainUnit: TmainUnit
         end
         inline queryEdit: TSynEdit
           Left = 1
-          Height = 102
+          Height = 141
           Top = 24
-          Width = 581
+          Width = 557
           Align = alClient
           Font.Height = -13
           Font.Name = 'Courier New'
@@ -656,20 +656,140 @@ object mainUnit: TmainUnit
         end
       end
     end
-    object Panel8: TPanel
+  end
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 3
+    Top = 194
+    Width = 909
+    Align = alTop
+    ResizeAnchor = akTop
+  end
+  object resultPanel: TPanel
+    Left = 0
+    Height = 321
+    Top = 197
+    Width = 909
+    Align = alClient
+    Caption = 'resultPanel'
+    ClientHeight = 321
+    ClientWidth = 909
+    TabOrder = 2
+    object DataGrid: TStringGrid
       Left = 1
-      Height = 39
+      Height = 293
+      Top = 27
+      Width = 907
+      Align = alClient
+      ColCount = 1
+      FixedCols = 0
+      Font.CharSet = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Courier New'
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowSelect, goDblClickAutoSize, goSmoothScroll]
+      ParentColor = True
+      ParentFont = False
+      RowCount = 1
+      TabOrder = 0
+      TitleFont.CharSet = ANSI_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Courier New'
+    end
+    object ToolBar2: TToolBar
+      Left = 1
+      Height = 26
       Top = 1
-      Width = 931
-      Align = alTop
-      ClientHeight = 39
-      ClientWidth = 931
+      Width = 907
+      Caption = 'ToolBar2'
+      Images = mainImageList
       TabOrder = 1
+      object ToolButton4: TToolButton
+        Left = 1
+        Top = 2
+        Action = InsertAction
+      end
+      object ToolButton5: TToolButton
+        Left = 24
+        Top = 2
+        Action = DeleteAction
+      end
+      object ToolButton6: TToolButton
+        Left = 47
+        Top = 2
+        Action = UpdateAction
+      end
+      object ToolButton7: TToolButton
+        Left = 80
+        Top = 2
+        Action = ViewAction
+      end
+      object ToolButton8: TToolButton
+        Left = 70
+        Top = 2
+        Width = 10
+        Caption = 'ToolButton8'
+        Style = tbsSeparator
+      end
+    end
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 20
+    Top = 518
+    Width = 909
+    Panels = <    
+      item
+        Width = 200
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object ToolBar1: TToolBar
+    Left = 0
+    Height = 24
+    Top = 0
+    Width = 909
+    Caption = 'ToolBar1'
+    Images = mainImageList
+    TabOrder = 4
+    object ToolButton1: TToolButton
+      Left = 34
+      Top = 2
+      Action = ExecuteAction
+    end
+    object ToolButton2: TToolButton
+      Left = 1
+      Top = 2
+      Action = ShowHostSqlAction
+    end
+    object ToolButton3: TToolButton
+      Left = 24
+      Top = 2
+      Width = 10
+      Caption = 'ToolButton3'
+      Style = tbsSeparator
+    end
+    object Panel1: TPanel
+      Left = 774
+      Height = 22
+      Top = 2
+      Width = 135
+      Align = alRight
+      BevelOuter = bvNone
+      ClientHeight = 22
+      ClientWidth = 135
+      TabOrder = 0
       object MaxRowsEdit: TLabeledEdit
         Left = 61
         Height = 21
-        Top = 9
+        Top = 0
         Width = 59
+        EditLabel.AnchorSideLeft.Side = asrBottom
         EditLabel.AnchorSideTop.Control = MaxRowsEdit
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = MaxRowsEdit
@@ -677,7 +797,7 @@ object mainUnit: TmainUnit
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 8
         EditLabel.Height = 13
-        EditLabel.Top = 13
+        EditLabel.Top = 4
         EditLabel.Width = 50
         EditLabel.Caption = 'Max rows:'
         EditLabel.ParentColor = False
@@ -685,140 +805,12 @@ object mainUnit: TmainUnit
         TabOrder = 0
         Text = '9999'
       end
-      object UseEnvironmentCheckBox: TCheckBox
-        Left = 136
-        Height = 17
-        Top = 12
-        Width = 221
-        BidiMode = bdRightToLeft
-        Caption = 'Use environmentvars on resolving defines'
-        OnClick = UseEnvironmentCheckBoxClick
-        ParentBidiMode = False
-        TabOrder = 1
-      end
-      object MachineEdit: TLabeledEdit
-        Left = 429
-        Height = 21
-        Top = 9
-        Width = 59
-        EditLabel.AnchorSideTop.Control = MachineEdit
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = MachineEdit
-        EditLabel.AnchorSideBottom.Control = MachineEdit
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 383
-        EditLabel.Height = 13
-        EditLabel.Top = 13
-        EditLabel.Width = 43
-        EditLabel.Caption = 'Machine:'
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
-        TabOrder = 2
-      end
-      object VolumeEdit: TLabeledEdit
-        Left = 537
-        Height = 21
-        Top = 8
-        Width = 59
-        EditLabel.AnchorSideTop.Control = VolumeEdit
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = VolumeEdit
-        EditLabel.AnchorSideBottom.Control = VolumeEdit
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 496
-        EditLabel.Height = 13
-        EditLabel.Top = 12
-        EditLabel.Width = 38
-        EditLabel.Caption = 'Volume:'
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
-        TabOrder = 3
-      end
-      object EnvironmentEdit: TLabeledEdit
-        Left = 675
-        Height = 21
-        Top = 8
-        Width = 59
-        EditLabel.AnchorSideTop.Control = EnvironmentEdit
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = EnvironmentEdit
-        EditLabel.AnchorSideBottom.Control = EnvironmentEdit
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 608
-        EditLabel.Height = 13
-        EditLabel.Top = 12
-        EditLabel.Width = 64
-        EditLabel.Caption = 'Environment:'
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
-        TabOrder = 4
-      end
-    end
-  end
-  object Splitter1: TSplitter
-    Cursor = crVSplit
-    Left = 0
-    Height = 3
-    Top = 196
-    Width = 933
-    Align = alTop
-    ResizeAnchor = akTop
-  end
-  object resultPanel: TPanel
-    Left = 0
-    Height = 319
-    Top = 199
-    Width = 933
-    Align = alClient
-    Caption = 'resultPanel'
-    ClientHeight = 319
-    ClientWidth = 933
-    TabOrder = 2
-    object DataGrid: TStringGrid
-      Left = 1
-      Height = 317
-      Top = 1
-      Width = 931
-      Align = alClient
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Courier New'
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDblClickAutoSize, goSmoothScroll]
-      ParentColor = True
-      ParentFont = False
-      TabOrder = 0
-      TitleFont.CharSet = ANSI_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -11
-      TitleFont.Name = 'Courier New'
-    end
-  end
-  object StatusBar: TStatusBar
-    Left = 0
-    Height = 20
-    Top = 518
-    Width = 933
-    Panels = <>
-  end
-  object ToolBar1: TToolBar
-    Left = 0
-    Height = 26
-    Top = 0
-    Width = 933
-    Caption = 'ToolBar1'
-    Images = mainImageList
-    TabOrder = 4
-    object ToolButton1: TToolButton
-      Left = 1
-      Top = 2
-      Action = ExecuteAction
     end
   end
   object MainMenu1: TMainMenu
     Images = mainImageList
-    left = 64
-    top = 328
+    left = 328
+    top = 376
     object MenuItem1: TMenuItem
       Caption = '&File'
       object MenuItem2: TMenuItem
@@ -846,13 +838,13 @@ object mainUnit: TmainUnit
     TableNameAttri.FrameEdges = sfeAround
     VariableAttri.FrameEdges = sfeAround
     SQLDialect = sqlSybase
-    left = 548
-    top = 104
+    left = 448
+    top = 120
   end
   object definesPopUpMenu: TPopupMenu
     Images = mainImageList
     left = 56
-    top = 88
+    top = 112
     object browseMenuItem: TMenuItem
       Caption = 'Browse...'
       OnClick = browseMenuItemClick
@@ -870,10 +862,10 @@ object mainUnit: TmainUnit
     end
   end
   object mainImageList: TImageList
-    left = 68
-    top = 252
+    left = 48
+    top = 376
     Bitmap = {
-      4C69570000001000000010000000000000000000000000000000000000000000
+      4C695A0000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -3657,18 +3649,144 @@ object mainUnit: TmainUnit
       C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0
       C0FFC0C0C0FFC0C0C0FFC0C0C0FFFFFFFF00C0C0C0FF808080FFC0C0C0FFC0C0
       C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0
-      C0FFC0C0C0FFC0C0C0FFC0C0C0FF
+      C0FFC0C0C0FFC0C0C0FFC0C0C0FFFF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00000000FF000000FF000000FFFF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FF0000
+      00FF000000FFFFFFFFFFFF00FF00FF00FF00000000FF000000FF000000FFFF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFFFFFF
+      FFFF000000FF000000FF000000FF000000FF000000FFFFFFFFFFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000080FFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000080FFFFFFFFFFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFF000080FFFF00FF00FFFFFFFFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFF0000
+      80FF000080FFFFFFFFFF000080FF000080FFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFFFFFF
+      FFFF000080FF000080FF000080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFFFFFF
+      FFFFFFFFFFFF000080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FFFF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00C3C3C3FFFF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FFC9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000FFFF0000
+      FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+      00FFC9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FFC9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      FFFF000000FF0000FFFF000000FF0000FFFF000000FF0000FFFF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FFC9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AEFF00C9AE
+      FF00C9AEFF00C9AEFF00C9AEFF00
     }
   end
   object ActionList1: TActionList
     Images = mainImageList
-    left = 167
-    top = 252
+    left = 120
+    top = 376
     object ExecuteAction: TAction
       Caption = '&Execute'
       ImageIndex = 63
       OnExecute = ExecuteActionExecute
+      OnUpdate = ExecuteActionUpdate
       ShortCut = 16455
+    end
+    object ShowHostSqlAction: TAction
+      Caption = 'Show host SQL'
+      Hint = 'Show SQL with resoved filenames'
+      ImageIndex = 52
+      OnExecute = ShowHostSqlActionExecute
+    end
+    object InsertAction: TAction
+      Caption = 'InsertAction'
+      ImageIndex = 15
+      OnExecute = InsertActionExecute
+      OnUpdate = InsertActionUpdate
+    end
+    object DeleteAction: TAction
+      Caption = 'DeleteAction'
+      ImageIndex = 89
+      OnExecute = DeleteActionExecute
+      OnUpdate = DeleteActionUpdate
+    end
+    object UpdateAction: TAction
+      Caption = 'UpdateAction'
+      ImageIndex = 87
+      OnExecute = UpdateActionExecute
+      OnUpdate = UpdateActionUpdate
+    end
+    object ViewAction: TAction
+      Caption = 'ViewAction'
+      ImageIndex = 13
+      OnExecute = ViewActionExecute
     end
   end
 end
