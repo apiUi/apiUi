@@ -9,7 +9,12 @@
         <Filename Value="nsSql.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="nsSql"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="20"/>
         <UsageCount Value="44"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="nssqlmainunit.pas"/>
@@ -21,8 +26,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="956"/>
-        <CursorPos X="30" Y="959"/>
+        <TopLine Value="872"/>
+        <CursorPos X="1" Y="889"/>
         <UsageCount Value="44"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -31,7 +36,7 @@
         <Filename Value="QueryScanner\QUERYSCANNER.PAS"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="QueryScanner"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2"/>
         <CursorPos X="6" Y="13"/>
@@ -72,10 +77,12 @@
       <Unit7>
         <Filename Value="..\TacoInterface\tacoInterface.pas"/>
         <UnitName Value="tacoInterface"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="76"/>
-        <CursorPos X="14" Y="86"/>
+        <TopLine Value="244"/>
+        <CursorPos X="3" Y="251"/>
         <UsageCount Value="17"/>
+        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Xml\xmlio.pas"/>
@@ -125,7 +132,7 @@
       <Unit14>
         <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
         <UnitName Value="SynEdit"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="789"/>
         <CursorPos X="3" Y="414"/>
@@ -207,7 +214,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="InsertSqlUnit"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="127"/>
         <CursorPos X="4" Y="149"/>
@@ -221,123 +228,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="585" Column="41" TopLine="568"/>
+        <Caret Line="1107" Column="1" TopLine="1057"/>
       </Position1>
       <Position2>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="557" Column="1" TopLine="553"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position2>
       <Position3>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="575" Column="1" TopLine="563"/>
+        <Caret Line="208" Column="15" TopLine="188"/>
       </Position3>
       <Position4>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="555" Column="24" TopLine="554"/>
+        <Caret Line="224" Column="36" TopLine="204"/>
       </Position4>
       <Position5>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="723" Column="17" TopLine="710"/>
+        <Caret Line="225" Column="41" TopLine="205"/>
       </Position5>
       <Position6>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="63" Column="5" TopLine="52"/>
+        <Caret Line="227" Column="41" TopLine="207"/>
       </Position6>
       <Position7>
-        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
-        <Caret Line="1137" Column="3" TopLine="1129"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="702" Column="66" TopLine="697"/>
       </Position7>
       <Position8>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="63" Column="5" TopLine="52"/>
+        <Caret Line="722" Column="48" TopLine="713"/>
       </Position8>
       <Position9>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="1107" Column="1" TopLine="1057"/>
+        <Caret Line="100" Column="17" TopLine="78"/>
       </Position9>
       <Position10>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="703" Column="1" TopLine="692"/>
       </Position10>
       <Position11>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="208" Column="15" TopLine="188"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position11>
       <Position12>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="224" Column="36" TopLine="204"/>
+        <Caret Line="13" Column="17" TopLine="1"/>
       </Position12>
       <Position13>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="225" Column="41" TopLine="205"/>
+        <Caret Line="100" Column="14" TopLine="81"/>
       </Position13>
       <Position14>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="227" Column="41" TopLine="207"/>
+        <Caret Line="738" Column="1" TopLine="726"/>
       </Position14>
       <Position15>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="702" Column="66" TopLine="697"/>
+        <Caret Line="707" Column="45" TopLine="697"/>
       </Position15>
       <Position16>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="722" Column="48" TopLine="713"/>
+        <Caret Line="713" Column="30" TopLine="695"/>
       </Position16>
       <Position17>
-        <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="100" Column="17" TopLine="78"/>
+        <Filename Value="InsertSqlUnit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position17>
       <Position18>
-        <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="703" Column="1" TopLine="692"/>
+        <Filename Value="InsertSqlUnit.pas"/>
+        <Caret Line="13" Column="6" TopLine="1"/>
       </Position18>
       <Position19>
-        <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="InsertSqlUnit.pas"/>
+        <Caret Line="73" Column="1" TopLine="61"/>
       </Position19>
       <Position20>
-        <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="13" Column="17" TopLine="1"/>
+        <Filename Value="InsertSqlUnit.pas"/>
+        <Caret Line="116" Column="45" TopLine="104"/>
       </Position20>
       <Position21>
-        <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="100" Column="14" TopLine="81"/>
+        <Filename Value="InsertSqlUnit.pas"/>
+        <Caret Line="118" Column="1" TopLine="110"/>
       </Position21>
       <Position22>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="738" Column="1" TopLine="726"/>
+        <Caret Line="17" Column="1" TopLine="1"/>
       </Position22>
       <Position23>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="707" Column="45" TopLine="697"/>
+        <Caret Line="959" Column="30" TopLine="956"/>
       </Position23>
       <Position24>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="713" Column="30" TopLine="695"/>
+        <Caret Line="1016" Column="5" TopLine="1012"/>
       </Position24>
       <Position25>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="863" Column="3" TopLine="874"/>
       </Position25>
       <Position26>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="13" Column="6" TopLine="1"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="303" Column="3" TopLine="297"/>
       </Position26>
       <Position27>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="73" Column="1" TopLine="61"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="182" Column="18" TopLine="181"/>
       </Position27>
       <Position28>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="116" Column="45" TopLine="104"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="174" Column="3" TopLine="172"/>
       </Position28>
       <Position29>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="118" Column="1" TopLine="110"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1016" Column="8" TopLine="1012"/>
       </Position29>
       <Position30>
-        <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="17" Column="1" TopLine="1"/>
+        <Filename Value="nsSql.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

@@ -880,14 +880,12 @@ begin
                   + fTacoInterface.tacoString(MaxRowsEdit.Text)
                   + fTacoInterface.tacoString('999999999')
                   + fTacoInterface.tacoString(sqlQuery.Text)
-                  + '<END-OF-DATA>'
                   ;
     end
     else
     begin
       SendString := SqlCommand
                   + fTacoInterface.tacoString(sqlQuery.Text)
-                  + '<END-OF-DATA>'
                   ;
     end;
     ExecuteSQL(SendString, -1, nsvUnknown);
