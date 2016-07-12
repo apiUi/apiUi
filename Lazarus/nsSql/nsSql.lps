@@ -21,8 +21,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="17"/>
+        <TopLine Value="956"/>
+        <CursorPos X="30" Y="959"/>
         <UsageCount Value="44"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -337,7 +337,7 @@
       </Position29>
       <Position30>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="17" Column="5" TopLine="34"/>
+        <Caret Line="17" Column="1" TopLine="1"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

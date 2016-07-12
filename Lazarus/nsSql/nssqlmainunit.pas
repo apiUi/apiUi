@@ -955,6 +955,8 @@ end;
 
 procedure TMainForm .FormShow (Sender : TObject );
 begin
+  Invalidate;
+  Application.ProcessMessages;
   QueryDefines;
 end;
 
