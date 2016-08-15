@@ -50,7 +50,6 @@
       <Unit0>
         <Filename Value="nsSql.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="nsSql"/>
       </Unit0>
       <Unit1>
         <Filename Value="nssqlmainunit.pas"/>
@@ -85,12 +84,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="6">

@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="endpointConfigDef" targetNamespace="endpointConfigDef" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="passwordType">
+		<xs:annotation>
+			<xs:documentation>Password;
+wsdlStub encrypts passwords before storing in a project file or at other locations</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
 	<xs:complexType name="nameValuePairType">
 		<xs:sequence>
 			<xs:element name="Name" type="xs:string"/>
 			<xs:element name="Value" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UserType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Password" type="passwordType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="FileNameType">
@@ -601,6 +614,7 @@ If the NameValueCCSID is a 2-byte Unicode CCSID (1200, 13488, or 17584), the byt
 					<xs:documentation>The prort to which the stomp broker is listening; Default = 61613</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="Credentials" type="UserType" minOccurs="0"/>
 			<xs:element name="ClientId" type="xs:string" minOccurs="0"/>
 			<xs:element name="Timeout" type="xs:integer">
 				<xs:annotation>

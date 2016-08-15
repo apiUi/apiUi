@@ -4,14 +4,13 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="9">
+    <Units Count="16">
       <Unit0>
         <Filename Value="wsAuthorizationService.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <CursorPos Y="14"/>
-        <UsageCount Value="44"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="45"/>
       </Unit0>
       <Unit1>
         <Filename Value="wsauthdaemonunit.pas"/>
@@ -19,8 +18,9 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="wsAuthDaemonUnit"/>
+        <IsVisibleTab Value="True"/>
         <CursorPos X="53" Y="13"/>
-        <UsageCount Value="44"/>
+        <UsageCount Value="45"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -31,20 +31,17 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="wsDaemonUnit"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="253"/>
-        <CursorPos Y="278"/>
-        <UsageCount Value="44"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="414"/>
+        <CursorPos X="81" Y="445"/>
+        <UsageCount Value="45"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Utils\HashUtilz.pas"/>
         <IsPartOfProject Value="True"/>
         <TopLine Value="2"/>
         <CursorPos X="10" Y="11"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="41"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-extra\src\daemonapp.pp"/>
@@ -76,124 +73,58 @@
         <CursorPos X="31" Y="29"/>
         <UsageCount Value="9"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="..\Xml\Ipmz.pas"/>
+        <UnitName Value="Ipmz"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="250"/>
+        <CursorPos X="6" Y="269"/>
+        <UsageCount Value="11"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="wsAuthorizationServiceIni.xml"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="30" Y="7"/>
+        <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <UnitName Value="xmlio"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="370"/>
+        <CursorPos X="3" Y="377"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="10" Y="29"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\sysutils.pp"/>
+        <UnitName Value="sysutils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="169"/>
+        <CursorPos X="24" Y="201"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\wininc\defines.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2950"/>
+        <CursorPos X="28" Y="2982"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\wininc\redef.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="931"/>
+        <CursorPos X="10" Y="950"/>
+        <UsageCount Value="10"/>
+      </Unit15>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
-      <Position1>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="85" TopLine="69"/>
-      </Position1>
-      <Position2>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="101" TopLine="85"/>
-      </Position2>
-      <Position3>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="113" TopLine="97"/>
-      </Position3>
-      <Position4>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="121" TopLine="106"/>
-      </Position4>
-      <Position5>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="127" TopLine="112"/>
-      </Position5>
-      <Position6>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="132" TopLine="117"/>
-      </Position6>
-      <Position7>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="270" TopLine="255"/>
-      </Position7>
-      <Position8>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="312" TopLine="297"/>
-      </Position8>
-      <Position9>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="446" Column="14" TopLine="431"/>
-      </Position9>
-      <Position10>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="236" Column="59" TopLine="231"/>
-      </Position10>
-      <Position11>
-        <Filename Value="wsdaemonunit.pas"/>
-      </Position11>
-      <Position12>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="48" Column="43" TopLine="33"/>
-      </Position12>
-      <Position13>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="165" Column="76" TopLine="150"/>
-      </Position13>
-      <Position14>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="235" Column="43" TopLine="220"/>
-      </Position14>
-      <Position15>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="236" Column="59" TopLine="220"/>
-      </Position15>
-      <Position16>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="271" Column="64" TopLine="256"/>
-      </Position16>
-      <Position17>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="274" Column="51" TopLine="259"/>
-      </Position17>
-      <Position18>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="438" Column="100" TopLine="424"/>
-      </Position18>
-      <Position19>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="411" Column="21" TopLine="393"/>
-      </Position19>
-      <Position20>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="23" Column="3" TopLine="8"/>
-      </Position20>
-      <Position21>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="205" TopLine="211"/>
-      </Position21>
-      <Position22>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="38" Column="15" TopLine="23"/>
-      </Position22>
-      <Position23>
-        <Filename Value="wsdaemonunit.pas"/>
-      </Position23>
-      <Position24>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="444" Column="2" TopLine="422"/>
-      </Position24>
-      <Position25>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="275" Column="23" TopLine="246"/>
-      </Position25>
-      <Position26>
-        <Filename Value="wsdaemonunit.pas"/>
-      </Position26>
-      <Position27>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="82" Column="3" TopLine="79"/>
-      </Position27>
-      <Position28>
-        <Filename Value="wsAuthorizationService.lpr"/>
-        <Caret Line="14"/>
-      </Position28>
-      <Position29>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="444" TopLine="426"/>
-      </Position29>
-      <Position30>
-        <Filename Value="wsdaemonunit.pas"/>
-      </Position30>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
   </ProjectSession>
 </CONFIG>

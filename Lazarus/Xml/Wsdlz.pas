@@ -329,6 +329,9 @@ type
       StubCustomHeaderXml: TXml;
       StubStompPutHost: String;
       StubStompPutPort: String;
+      StubStompPutUseCredentials: Boolean;
+      StubStompPutUserName: String;
+      StubStompPutPassword: String;
       StubStompPutClientId: String;
       StubStompTimeOut: Integer;
       StubStompReplyBodyPostFix, StubStompRequestBodyPostFix: String;
@@ -3404,6 +3407,9 @@ begin
   StubMqTimeOut := 30;
   StubStompPutHost := 'localhost';
   StubStompPutPort := '61613';
+  StubStompPutUseCredentials := False;
+  StubStompPutUserName := '';
+  StubStompPutPassword := '';
   StubStompPutClientId := '';
   StubStompReplyBodyPostFix := '';
   StubStompRequestBodyPostFix := '';
@@ -4518,6 +4524,9 @@ begin
   self.StubMqTimeOut := xOperation.StubMqTimeOut;
   self.StubStompPutHost := xOperation.StubStompPutHost;
   self.StubStompPutPort := xOperation.StubStompPutPort;
+  self.StubStompPutUseCredentials := xOperation.StubStompPutUseCredentials;
+  self.StubStompPutUserName := xOperation.StubStompPutUserName;
+  self.StubStompPutPassword := xOperation.StubStompPutPassword;
   self.StubStompPutClientId := xOperation.StubStompPutClientId;
   self.StubStompReplyBodyPostFix := xOperation.StubStompReplyBodyPostFix;
   self.StubStompRequestBodyPostFix := xOperation.StubStompRequestBodyPostFix;
@@ -5436,6 +5445,14 @@ begin
       begin
         AddXml (TXml.CreateAsString('Host', StubStompPutHost));
         AddXml (TXml.CreateAsString('Port', StubStompPutPort));
+        if StubStompPutUseCredentials then
+        begin
+          with AddXml (tXml.CreateAsString('Credentials', '')) do
+          begin
+            AddXml (TXml.CreateAsString('Name', StubStompPutUserName));
+            AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(StubStompPutPassword)));
+          end;
+        end;
         AddXml (TXml.CreateAsString('ClientId', StubStompPutClientId));
         if StubStompReplyBodyPostFix <> '' then
           AddXml (TXml.CreateAsString('ReplyBodyPostFix', StubStompReplyBodyPostFix));
@@ -5497,6 +5514,9 @@ begin
   StubMqHeaderXml.CheckDownline(False);
   StubStompPutHost := '';
   StubStompPutPort := '';
+  StubStompPutUseCredentials := False;
+  StubStompPutUserName := '';
+  StubStompPutPassword := '';
   StubStompPutClientId := '';
   StubStompReplyBodyPostFix := '';
   StubStompRequestBodyPostFix := '';
@@ -5580,6 +5600,13 @@ begin
           StubTransport := ttStomp;
           StubStompPutHost := Items.XmlCheckedValueByTagDef['Host', 'localhost'];
           StubStompPutPort := Items.XmlCheckedValueByTagDef['Port', '61613'];
+          xXml := Items.XmlCheckedItemByTag['Credentials'];
+          if Assigned (xXml) then
+          begin
+            StubStompPutUseCredentials := True;
+            StubStompPutUserName := xXml.Items.XmlValueByTag['Name'];
+            StubStompPutPassword := xmlz.DecryptString (xXml.Items.XmlValueByTag['Password']);
+          end;
           StubStompPutClientId := Items.XmlCheckedValueByTag['ClientId'];
           StubStompRequestBodyPostFix := Items.XmlCheckedValueByTag['RequestBodyPostFix'];
           StubStompReplyBodyPostFix := Items.XmlCheckedValueByTag['ReplyBodyPostFix'];

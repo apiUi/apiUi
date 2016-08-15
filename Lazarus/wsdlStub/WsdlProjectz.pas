@@ -4116,6 +4116,9 @@ begin
   Stomp := TStompInterface.Create (nil, HaveStompFrame);
   Stomp.Host := resolveAliasses(aOperation.StubStompPutHost, projectProperties);
   Stomp.Port := StrToIntDef(resolveAliasses(aOperation.StubStompPutPort, projectProperties), 61613);
+  Stomp.UseCredentials := aOperation.StubStompPutUseCredentials;
+  Stomp.UserName := aOperation.StubStompPutUserName;
+  Stomp.Password := aOperation.StubStompPutPassword;
   Stomp.ClientId := resolveAliasses(aOperation.StubStompPutClientId, projectProperties);
   try
     Stomp.Connect;
