@@ -43,9 +43,7 @@ uses
   , MqApi
   , StompInterface
   , StompTypes
-{$ifdef windows}
   , TacoInterface
-{$endif}
   , IdPOP3Server
   , IdReplyPOP3
   , IdSMTPServer
@@ -7422,4 +7420,4 @@ finalization
   FreeAndNil (swiftMTXsdDescr);
   FreeAndNil (_WsdlRtiXml);
 end.
-
+

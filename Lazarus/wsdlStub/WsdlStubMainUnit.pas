@@ -12104,8 +12104,8 @@ var
 begin
 {$ifdef windows}
   CoInitialize(nil);
-{$endif}
   try
+{$endif}
     with aList as TSnapshotList do
       for x := 0 to Count - 1 do
         if not se.abortPressed then
@@ -13411,4 +13411,4 @@ initialization
 finalization
   CoUninitialize;
 {$endif}
-end.
+end.
