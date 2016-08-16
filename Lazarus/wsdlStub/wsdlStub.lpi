@@ -18,8 +18,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
-      <RevisionNr Value="4"/>
-      <BuildNr Value="10260"/>
+      <MinorVersionNr Value="1"/>
+      <BuildNr Value="10291"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -78,7 +78,6 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="WsdlStubMainUnit"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Components\Indy10\Lib\Core\IdExceptionCore.pas"/>
@@ -171,7 +170,6 @@
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
-        <Enabled Value="False"/>
       </Item10>
       <Item11>
         <Name Value="EOraDatabaseError"/>

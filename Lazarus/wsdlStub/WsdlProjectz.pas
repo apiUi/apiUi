@@ -4133,12 +4133,16 @@ begin
         end;
         if aOperation.IsOneWay
         or (fXml.Items.XmlValueByTag ['reply-to'] = '') then
-          Stomp.Put ( aMessage
-                    + aOperation.StubStompRequestBodyPostFix // WORKAROUND, see XSD
-                    , fXml
-                    , aOperation.StubCustomHeaderXml
-                    , aRequestHeader
-                    )
+          try
+            Stomp.Put ( aMessage
+                      + aOperation.StubStompRequestBodyPostFix // WORKAROUND, see XSD
+                      , fXml
+                      , aOperation.StubCustomHeaderXml
+                      , aRequestHeader
+                      )
+          except
+            raise;
+          end
         else
           Result := Stomp.RequestReply ( aMessage
                                        + aOperation.StubStompRequestBodyPostFix // WORKAROUND, see XSD

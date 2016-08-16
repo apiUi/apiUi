@@ -652,7 +652,7 @@ Specified string is appended to the message body on sending a request, is a work
 			<xs:element name="persistent" type="tns:stompPersistentType" minOccurs="0"/>
 			<xs:element name="priority" type="xs:integer" minOccurs="0"/>
 			<xs:element name="redelivered" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="reply-to" type="xs:string"/>
+			<xs:element name="reply-to" type="xs:string" minOccurs="0"/>
 			<xs:element name="sequence" type="xs:integer" minOccurs="0"/>
 			<xs:element name="timestamp" type="xs:string" minOccurs="0"/>
 			<xs:element name="type" type="xs:string" minOccurs="0"/>
