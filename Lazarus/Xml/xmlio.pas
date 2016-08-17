@@ -36,7 +36,7 @@ uses StrUtils
    , RegExpr
    , Forms
    , Controls
-   , PromptUnit
+   , PromptFolderUnit
    ;
 
 function StringHasRegExpr (aString, aExpr: String): String;
@@ -113,9 +113,9 @@ end;
 
 function PromptFolderName(aCaption, aStart: String): String;
 var
-  xForm: TPromptForm;
+  xForm: TPromptFolderForm;
 begin
-  Application.CreateForm(TPromptForm, xForm);
+  Application.CreateForm(TPromptFolderForm, xForm);
   try
     xForm.Caption := aCaption;
     xForm.PromptEdit.Text := aStart;
@@ -164,7 +164,7 @@ begin
             xSep := '..' + aFileName [x];
           end;
         end;
-        xPrefix := PromptFolderName('Specify replacement for alias ' + xAlias, xPrefix);
+        xPrefix := PromptFolderName('Specify replacement for alias ' + xAlias, xPrefix) + '/';
         if not (AnsiStartsText('http://', xPrefix))
         and not (AnsiStartsText('https://', xPrefix)) then
           ForcePathDelims(xPrefix);
@@ -236,16 +236,21 @@ function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): Strin
 var
   httpPath: String;
 begin
+  aToRelateFileName := PrepareFileNameSpace(aMainFileName, aToRelateFileName);
   if (AnsiStartsText('http://', aToRelateFileName))
   or (AnsiStartsText('https://', aToRelateFileName))
   or (AnsiStartsText('file://', aToRelateFileName))
+{$ifdef UNIX}
+  or (AnsiStartsText('/', aToRelateFileName))
+{$endif}
+{$ifdef WINDOWS}
   or (ExtractFileDrive(aToRelateFileName) <> '')
+{$endif}
   then
   begin
     result := aToRelateFileName;
     exit;
   end;
-  aToRelateFileName := PrepareFileNameSpace(aMainFileName, aToRelateFileName);
   if (AnsiStartsText('\\', aToRelateFileName))
   then
   begin

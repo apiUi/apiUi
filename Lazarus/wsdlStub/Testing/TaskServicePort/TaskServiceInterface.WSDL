@@ -36,7 +36,7 @@
     <types>
         <schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://xmlns.oracle.com/bpel/workflow/taskService/schema"
              xmlns="http://www.w3.org/2001/XMLSchema">
-            <import namespace="http://xmlns.oracle.com/bpel/workflow/task" schemaLocation=".\WorkflowTask.xsd"/>
+            <import namespace="http://xmlns.oracle.com/bpel/workflow/task" schemaLocation="oram:\WorkflowTask.xsd"/>
             <import namespace="http://xmlns.oracle.com/bpel/workflow/taskService" schemaLocation=".\TaskService.xsd"/>
             <import namespace="http://xmlns.oracle.com/bpel/workflow/routingSlip" schemaLocation=".\RoutingSlip.xsd"/>
             <import namespace="http://xmlns.oracle.com/bpel/workflow/common/tsc" schemaLocation=".\TaskSequenceChanges.xsd"/>
