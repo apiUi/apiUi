@@ -77,7 +77,7 @@ type
     ExceptionsVTS: TVirtualStringTree;
     logChartToolButton: TToolButton;
     LogMemo: TMemo;
-    LogTabControl: TTabControl;
+    LogTabControl : TTabControl ;
     MenuItem27 : TMenuItem ;
     LogPanel: TPanel;
     MessagesStatusBar: TStatusBar;
@@ -114,7 +114,6 @@ type
     SnapshotsPopupMenu : TPopupMenu ;
     PingPongTimer : TTimer ;
     ToolBar1: TToolBar;
-    ToolBar2: TToolBar;
     ToolBar3: TToolBar;
     ToolBar4: TToolBar;
     ToolBar6: TToolBar;
