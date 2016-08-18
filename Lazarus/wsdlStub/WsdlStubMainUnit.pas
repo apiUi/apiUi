@@ -56,6 +56,7 @@ type
     FParentWindow: HWnd;
   end;
 
+  TShowPanel = (spDocumentation, spNotifications, spSnapshots, spMessages);
   TShowLogData = (slRequestHeaders, slRequestBody, slReplyHeaders, slReplyBody, slException, slValidation);
   TLogPanelIndex = (lpiFocus, lpiThreads);
   TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
@@ -69,8 +70,30 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    BrowseMqButton: TToolButton;
+    DocumentationMemo: TMemo;
+    ExceptionMemo: TMemo;
+    ExceptionStatusBar: TStatusBar;
+    ExceptionsVTS: TVirtualStringTree;
+    logChartToolButton: TToolButton;
+    LogMemo: TMemo;
+    LogTabControl: TTabControl;
     MenuItem27 : TMenuItem ;
+    LogPanel: TPanel;
+    MessagesStatusBar: TStatusBar;
+    MessagesTabControl: TTabControl;
+    MessagesVTS: TVirtualStringTree;
+    Panel1: TPanel;
+    MessagesPanel: TPanel;
+    Panel2: TPanel;
+    SnapshotsPanel: TPanel;
+    DocumentationPanel: TPanel;
+    NotificationsPanel: TPanel;
+    Panel8: TPanel;
     Properties : TAction ;
+    SnapshotsVTS: TVirtualStringTree;
+    Splitter7: TSplitter;
+    Splitter8: TSplitter;
     SummaryReportAction : TAction ;
     MenuItem26 : TMenuItem ;
     ShowSnapshotDifferencesAction : TAction ;
@@ -90,12 +113,38 @@ type
     MenuItem25 : TMenuItem ;
     SnapshotsPopupMenu : TPopupMenu ;
     PingPongTimer : TTimer ;
-    ToolButton65 : TToolButton ;
+    ToolBar1: TToolBar;
+    ToolBar2: TToolBar;
+    ToolBar3: TToolBar;
+    ToolBar4: TToolBar;
+    ToolBar6: TToolBar;
+    ToolButton22: TToolButton;
+    ToolButton24: TToolButton;
+    ToolButton30: TToolButton;
+    ToolButton31: TToolButton;
+    ToolButton32: TToolButton;
+    ToolButton33: TToolButton;
+    ToolButton35: TToolButton;
+    ToolButton36: TToolButton;
+    ToolButton37: TToolButton;
+    ToolButton39: TToolButton;
+    ToolButton40: TToolButton;
+    ToolButton42: TToolButton;
+    ToolButton49: TToolButton;
+    ToolButton50: TToolButton;
+    ToolButton51: TToolButton;
+    ToolButton52: TToolButton;
+    ToolButton53: TToolButton;
+    ToolButton59: TToolButton;
+    ToolButton64: TToolButton;
+    ToolButton65: TToolButton;
+    ToolButton67: TToolButton;
+    ToolButton68: TToolButton;
+    ToolButton69: TToolButton;
     WriteSnapshotsInformationAction : TAction ;
     ReadSnapshotInformationAction : TAction ;
     ReportOnSnapshotsAction : TAction ;
     ClearSnapshotsAction : TAction ;
-    SnapshotsVTS : TVirtualStringTree ;
     ImportProjectScriptsAction : TAction ;
     MenuItem20 : TMenuItem ;
     MenuItem21 : TMenuItem ;
@@ -104,7 +153,6 @@ type
     ExportProjectScriptsAction : TAction ;
     MenuItem1 : TMenuItem ;
     MessagesStatusBar1 : TStatusBar ;
-    Panel1 : TPanel ;
     ThreadsPanel : TPanel ;
     ShowShortCutActionsAction : TAction ;
     EditScriptMenuItem : TMenuItem ;
@@ -128,14 +176,6 @@ type
     MenuItem17 : TMenuItem ;
     MenuItem18 : TMenuItem ;
     MenuItem19 : TMenuItem ;
-    SnapshotTabsheet : TTabSheet ;
-    ToolBar1 : TToolBar ;
-    ToolButton39 : TToolButton ;
-    ToolButton40 : TToolButton ;
-    ToolButton51 : TToolButton ;
-    ToolButton52 : TToolButton ;
-    ToolButton53 : TToolButton ;
-    ToolButton64 : TToolButton ;
     UnhideOperationMenuItem : TMenuItem ;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
@@ -175,15 +215,12 @@ type
     DesignPanel: TPanel;
     alGeneral: TActionList;
     DataTypeDocumentationMemo : TlzRichEdit ;
-    LogMemo: TMemo;
-    MessagesTabControl: TTabControl;
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
     Splitter1 : TSplitter ;
     SQLConnector : TSQLConnector ;
     SQLTransaction : TSQLTransaction ;
     StatusPanel : TPanel ;
-    ToolBar4 : TToolBar ;
     ToolBar9 : TToolBar ;
     ToolButton10 : TToolButton ;
     ToolButton11 : TToolButton ;
@@ -198,12 +235,7 @@ type
     ToolButton27 : TToolButton ;
     ToolButton28 : TToolButton ;
     ToolButton29 : TToolButton ;
-    ToolButton30 : TToolButton ;
-    ToolButton32 : TToolButton ;
     ToolButton34 : TToolButton ;
-    ToolButton36 : TToolButton ;
-    ToolButton37 : TToolButton ;
-    logChartToolButton : TToolButton ;
     ToolButton38 : TToolButton ;
     ToolButton41 : TToolButton ;
     ToolButton44 : TToolButton ;
@@ -291,31 +323,13 @@ type
     OperationDocumentationEdit: TMemo;
     Splitter6: TSplitter;
     ToolButton21: TToolButton;
-    DownPageControl: TPageControl;
-    MessagesTabSheet: TTabSheet;
     ClearLogItemsAction: TAction;
-    ToolBar6: TToolBar;
-    ToolButton22: TToolButton;
-    DocumentationTabSheet: TTabSheet;
-    DocumentationMemo: TMemo;
-    Splitter7: TSplitter;
-    MessagesVTS: TVirtualStringTree;
-    Panel2: TPanel;
-    MessagesStatusBar: TStatusBar;
     NewStubCaseAction: TAction;
     NewStubCase1: TMenuItem;
     N6: TMenuItem;
     ToolButton15: TToolButton;
     ToolButton23: TToolButton;
-    ExceptionTabSheet: TTabSheet;
-    Panel8: TPanel;
-    Splitter8: TSplitter;
-    ExceptionStatusBar: TStatusBar;
-    ExceptionsVTS: TVirtualStringTree;
-    ToolBar3: TToolBar;
-    ToolButton24: TToolButton;
     ClearExceptionsAction: TAction;
-    ExceptionMemo: TMemo;
     OperationReqsTreeView: TVirtualStringTree;
     SelectMessageColumnsAction: TAction;
     CopyGridAction: TAction;
@@ -323,7 +337,6 @@ type
     CopyLogMemoTextToClipBrdAction: TAction;
     ShowHttpReplyAsXMLAction: TAction;
     ShowHttpRequestAsXMLAction: TAction;
-    ToolButton35: TToolButton;
     View1: TMenuItem;
     SchemapropertiesMenuItem: TMenuItem;
     ListofOperationsMenuItem: TMenuItem;
@@ -331,9 +344,7 @@ type
     WsdlInformationMenuItem: TMenuItem;
     WsdlPopulateMenuItem: TMenuItem;
     ReadMessagesAction: TAction;
-    ToolButton31: TToolButton;
     MessagesRegressionAction: TAction;
-    ToolButton33: TToolButton;
     CheckGridFieldsAction: TAction;
     DesignPanelAtTopMenuItem: TMenuItem;
     CopyExceptionToClipboardAction: TAction;
@@ -376,7 +387,6 @@ type
     EditScriptButton: TPanel;
     AfterRequestScriptButton: TPanel;
     FilterLogAction: TAction;
-    ToolButton42: TToolButton;
     FilterLogAction1: TMenuItem;
     ToolButton43: TToolButton;
     ValidateRequestsButton: TToolButton;
@@ -411,7 +421,6 @@ type
     BrowseMqAction: TAction;
     BrowseMqMenuItem: TMenuItem;
     ShowRequestHeaderAsXmlAction: TAction;
-    BrowseMqButton: TToolButton;
     GridPopupMenu: TPopupMenu;
     MessagesToDiskMenuItem: TMenuItem;
     MessagesToDiskAction: TAction;
@@ -424,7 +433,6 @@ type
     AssignExpressionMenuItem: TMenuItem;
     SelectExpectedElementsAction: TAction;
     ToolButton57: TToolButton;
-    ToolButton49: TToolButton;
     ReportUnexpectedValuesAction: TAction;
     WsdlItemChangeDataTypeMenuItem: TMenuItem;
     DataTypeDependingMenu: TMenuItem;
@@ -435,7 +443,6 @@ type
     ConfigListenersAction: TAction;
     ToolButton58: TToolButton;
     readLog4jEventsAction: TAction;
-    ToolButton59: TToolButton;
     readLog4jEventsAction1: TMenuItem;
     Revalidatemessages1: TMenuItem;
     N15: TMenuItem;
@@ -467,7 +474,6 @@ type
     MessagesFromDiskAction: TAction;
     Readmessagesfromdiskfiles1: TMenuItem;
     LogDisplayedColumnsAction: TAction;
-    ToolButton50: TToolButton;
     Displayedcolumns1: TMenuItem;
     startStopButton: TToolButton;
     startAction: TAction;
@@ -509,9 +515,6 @@ type
     OperationZoomOnAction: TAction;
     ShowLogZoomElementAction: TAction;
     LogCoverageReportAction: TAction;
-    ToolButton67: TToolButton;
-    ToolButton68: TToolButton;
-    ToolButton69: TToolButton;
     LogCoverageReportAction1: TMenuItem;
     N26: TMenuItem;
     DisplayedcolumnMenuItem: TMenuItem;
@@ -546,6 +549,8 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure LogPanelClick(Sender: TObject);
+    procedure LogTabControlChange(Sender: TObject);
     procedure NeedTacoHostData (Sender: TTacoInterface);
     procedure OnTacoAuthorize (Sender: TObject);
     procedure AbortActionUpdate (Sender : TObject );
@@ -610,6 +615,7 @@ type
       var CellText : String );
     procedure SummaryReport (aList: TClaimableObjectList);
     procedure SummaryReportActionExecute (Sender : TObject );
+    procedure ToolBar6Click(Sender: TObject);
     procedure WriteSnapshotsInformationActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowGridDifferencesActionExecute (Sender : TObject );
@@ -961,7 +967,7 @@ type
     enableTacoPingPong: Boolean;
     intervalTacoPingPong: Integer;
     editingNode: PVirtualNode;
-    notifyTabCaption, logTabCaption: String;
+    notifyTabCaption, MessagesTabCaption: String;
     notifyTabImageIndex: Integer;
     logValidationTabImageIndex: Integer;
     startStopShortCut: TShortCut;
@@ -986,6 +992,7 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
+    procedure ShowChosenLogTab;
     function GetAuthorization: Boolean;
     function GetAuthorizationBaseString: String;
     procedure SetOperationZoomPath(aOperation: TWsdlOperation);
@@ -2796,6 +2803,20 @@ begin
   end;
 end;
 
+procedure TMainForm.ShowChosenLogTab;
+begin
+  DocumentationPanel.Visible := False;
+  NotificationsPanel.Visible := False;
+  SnapshotsPanel.Visible := False;
+  MessagesPanel.Visible := False;
+  case LogTabControl.TabIndex of
+    Ord (spDocumentation): DocumentationPanel.Visible := True;
+    Ord (spNotifications): NotificationsPanel.Visible := True;
+    Ord (spSnapshots): SnapshotsPanel.Visible := True;
+    Ord (spMessages): MessagesPanel.Visible := True;
+  end;
+end;
+
 function TMainForm .GetAuthorization : Boolean ;
 var
   xRpy, xReq: String;
@@ -3491,7 +3512,7 @@ procedure TMainForm.StartNonBlockingThreadEvent ;
 begin
   if NumberOfNonBlockingThreads = 0 then
   begin
-    DownPageControl.ActivePage := MessagesTabSheet;
+    LogTabControl.TabIndex := Ord (spMessages);
     abortPressed := False;
   end;
   Inc (NumberOfNonBlockingThreads);
@@ -3502,7 +3523,7 @@ begin
   Dec (NumberOfNonBlockingThreads);
   if (NumberOfNonBlockingThreads <= 0) then
   begin
-    DownPageControl.ActivePage := MessagesTabSheet;
+    LogTabControl.TabIndex := Ord (spMessages);
     if NumberOfBlockingThreads <= 0 then
       abortPressed := False;
   end;
@@ -4212,7 +4233,7 @@ begin
     DocumentationMemo.Color := clWindow;
   if se.IsActive then
   begin
-    DownPageControl.ActivePage := MessagesTabSheet;
+    LogTabControl.TabIndex := Ord (spMessages);
     MessagesTabControl.TabIndex := Ord(slRequestBody);
     if se.IsActive then
     begin
@@ -6472,10 +6493,10 @@ var
 begin
   DataTypeDocumentationMemo.Color := Self.Color;
   (MessagesTabControl as TWinControl).Color := Self.Color;
-  logTabCaption := MessagesTabSheet.Caption;
-  notifyTabCaption := ExceptionTabSheet.Caption;
+  MessagesTabCaption := LogTabControl.Tabs [Ord (spMessages)];
+  notifyTabCaption := LogTabControl.Tabs [Ord (spNotifications)];
   notifyTabImageIndex := 66;
-  ExceptionTabSheet.ImageIndex := -1;
+//  ExceptionTabSheet.ImageIndex := -1;
   se := TWsdlProject.Create;
   sc := TWsdlControl.Create;
   sc.se := se;
@@ -6705,8 +6726,8 @@ begin
   Xmlz.OnNotify := LogServerNotification;
   // due to a bug in TPageControl, not al tabs are visible....
   // statements below make all tabs visible again...??
-  DownPageControl.TabPosition := tpBottom;
-  DownPageControl.TabPosition := tpTop;
+//  DownPageControl.TabPosition := tpBottom;
+//  DownPageControl.TabPosition := tpTop;
   if ParamStr(1) <> '' then
   begin
     Update;
@@ -6875,8 +6896,16 @@ begin
   // next loop somehow prevents that an excception is thrown when another tab is choosen (???)
 //  for X := 0 to DownPageControl.PageCount - 1 do
 //    DownPageControl.ActivePageIndex := X;
-  DownPageControl.ActivePage := DocumentationTabSheet;
+  LogTabControl.TabIndex := Ord (spNotifications);
   MessagesTabControl.TabIndex := Ord (slRequestBody);
+  ShowChosenLogTab;
+  DocumentationPanel.Align := alClient;
+  NotificationsPanel.Align := alClient;
+  MessagesPanel.Align := alClient;
+  SnapshotsPanel.Align := alClient;
+{$ifdef UNIX}
+  LogTabControl.Height := LogTabControl.Height + 3;
+{$endif}
   CheckBoxClick(nil);
   stubChanged := False;
   if (not se.Licensed)
@@ -7631,7 +7660,7 @@ begin
   finally
     MessagesVTS.EndUpdate;
     XmlUtil.PopCursor;
-    DownPageControl.ActivePage := MessagesTabSheet;
+    LogTabControl.TabIndex := Ord (spMessages);
   end;
 end;
 
@@ -7821,12 +7850,12 @@ begin
   fDoShowDesignAtTop := Value;
   if doShowDesignAtTop then
   begin
-    DownPageControl.Align := alBottom;
+    LogPanel.Align := alBottom;
     Splitter1.Align := alBottom;
   end
   else
   begin
-    DownPageControl.Align := alTop;
+    LogPanel.Align := alTop;
     Splitter1.Align := alTop;
   end;
 end;
@@ -8210,7 +8239,7 @@ end;
 procedure TMainForm.ExecuteRequestActionExecute(Sender: TObject);
 begin
   if not ActiveAfterPrompt then exit;
-  DownPageControl.ActivePage := MessagesTabSheet;
+  LogTabControl.TabIndex := Ord (spMessages);
   TProcedureThread.Create(False, True, se, doExecuteRequest);
 end;
 
@@ -8295,7 +8324,7 @@ end;
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
   if not ActiveAfterPrompt then exit;
-  DownPageControl.ActivePage := MessagesTabSheet;
+  LogTabControl.TabIndex := Ord (spMessages);
   TProcedureThread.Create(False, True, se, ExecuteAllRequests);
 end;
 
@@ -8825,7 +8854,7 @@ procedure TMainForm.RefreshLog;
       xData.Report := xReport;
     end;
     se.toDisplaySnapshots.Clear;
-    if DownPageControl.ActivePage = SnapshotTabsheet then
+    if LogTabControl.TabIndex = Ord (spSnapshots) then
       SnapshotsVTS.Invalidate;
   end;
 var
@@ -8866,15 +8895,14 @@ begin
       MessagesVTS.ScrollIntoView(MessagesVTS.GetLast, True, False);
   if exceptionAdded then
   begin
-    if DownPageControl.ActivePage <> ExceptionTabSheet then
+    if LogTabControl.TabIndex <> Ord (spNotifications) then
     begin
-      ExceptionTabSheet.Caption := notifyTabCaption + ' *';
-      ExceptionTabSheet.ImageIndex := notifyTabImageIndex;
+      LogTabControl.Tabs [Ord (spNotifications)] := notifyTabCaption + ' [*]';
     end;
     if doScrollExceptionsIntoView then
     begin
       ExceptionsVTS.ScrollIntoView(ExceptionsVTS.GetLast, True, False);
-      DownPageControl.ActivePage := ExceptionTabSheet;
+      LogTabControl.TabIndex := Ord (spNotifications);
     end;
   end;
 end;
@@ -10051,7 +10079,7 @@ begin
     if MqBrowseForm.ModalResult = mrOk then
     begin
       QueueNameList.Add(MqBrowseForm.GetQueueEdit.Text);
-      DownPageControl.ActivePage := MessagesTabSheet;
+      LogTabControl.TabIndex := Ord (spMessages);
       XmlUtil.PushCursor (crHourGlass);
       try
         xMqInterface := TMqInterface.Create;
@@ -10483,14 +10511,13 @@ end;
 
 procedure TMainForm.DownPageControlChange(Sender: TObject);
 begin
-  if DownPageControl.ActivePage = MessagesTabSheet then
+  if LogTabControl.TabIndex = Ord (spMessages) then
   begin
-    MessagesTabSheet.Caption := logTabCaption; // remove asterix since exceptions can be viewed now
+    LogTabControl.Tabs[Ord (spMessages)] := MessagesTabCaption; // remove asterix since exceptions can be viewed now
   end;
-  if DownPageControl.ActivePage = ExceptionTabSheet then
+  if LogTabControl.TabIndex = Ord (spNotifications) then
   begin
-    ExceptionTabSheet.Caption := notifyTabCaption; // remove asterix since exceptions can be viewed now
-    ExceptionTabSheet.ImageIndex := -1;
+    LogTabControl.Tabs[Ord (spNotifications)] := notifyTabCaption; // remove asterix since exceptions can be viewed now
   end;
 end;
 
@@ -12247,6 +12274,11 @@ begin
   TProcedureThread.Create(False, True, se, SummaryReport, xList);
 end;
 
+procedure TMainForm.ToolBar6Click(Sender: TObject);
+begin
+
+end;
+
 procedure TMainForm.WriteSnapshotsInformationActionExecute (Sender : TObject );
 begin
   if Assigned (se) then
@@ -12722,7 +12754,7 @@ var
   x: Integer;
 begin
   if not ActiveAfterPrompt then exit;
-  DownPageControl.ActivePage := MessagesTabSheet;
+  LogTabControl.TabIndex := Ord(spMessages);
   Application.CreateForm(TStressTestForm, StressTestForm);
   try
     StressTestForm.Caption := 'Loadtest operation: ' + WsdlOperation.Name;
@@ -13243,6 +13275,16 @@ begin
   finally
     FreeAndNil(xForm);
   end;
+end;
+
+procedure TMainForm.LogPanelClick(Sender: TObject);
+begin
+
+end;
+
+procedure TMainForm.LogTabControlChange(Sender: TObject);
+begin
+  ShowChosenLogTab;
 end;
 
 procedure TMainForm .OnTacoAuthorize (Sender : TObject );
