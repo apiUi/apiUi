@@ -1,7 +1,7 @@
 object ShowTextForm: TShowTextForm
   Left = 271
   Height = 328
-  Top = 162
+  Top = 118
   Width = 536
   BorderStyle = bsSizeToolWin
   Caption = 'Information Window'
@@ -16,7 +16,7 @@ object ShowTextForm: TShowTextForm
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object Panel1: TPanel
     Left = 0
     Height = 287

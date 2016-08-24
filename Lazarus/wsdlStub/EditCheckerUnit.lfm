@@ -1,7 +1,7 @@
 object EditCheckerForm: TEditCheckerForm
-  Left = 272
+  Left = 399
   Height = 182
-  Top = 171
+  Top = 253
   Width = 773
   Anchors = []
   Caption = 'Condition Expression'
@@ -28,14 +28,14 @@ object EditCheckerForm: TEditCheckerForm
       Left = 4
       Height = 13
       Top = 13
-      Width = 42
+      Width = 49
       Caption = 'Element:'
       FocusControl = ElementNameEdit
       ParentColor = False
     end
     object ElementNameEdit: TEdit
       Left = 52
-      Height = 21
+      Height = 23
       Top = 9
       Width = 715
       ParentColor = True
@@ -57,8 +57,8 @@ object EditCheckerForm: TEditCheckerForm
     TabOrder = 1
     object ScriptMemo: TMemo
       Left = 5
-      Height = 50
-      Top = 25
+      Height = 38
+      Top = 40
       Width = 763
       Align = alClient
       BorderStyle = bsNone
@@ -75,14 +75,14 @@ object EditCheckerForm: TEditCheckerForm
     end
     object StatusBar: TStatusBar
       Left = 5
-      Height = 20
-      Top = 75
+      Height = 17
+      Top = 78
       Width = 763
       Panels = <>
     end
     object Memo1: TMemo
       Left = 5
-      Height = 20
+      Height = 35
       Top = 5
       Width = 763
       Align = alTop
@@ -167,4 +167,4 @@ object EditCheckerForm: TEditCheckerForm
       OnClick = EmbeddedSQLMenuItemClick
     end
   end
-end
+end

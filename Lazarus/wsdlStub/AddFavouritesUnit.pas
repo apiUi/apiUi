@@ -13,12 +13,14 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, FormIniFilez;
+  Dialogs, StdCtrls, ExtCtrls, FormIniFilez;
 
 type
+
+  { TAddFavouritesForm }
+
   TAddFavouritesForm = class(TForm)
-    Label1: TLabel;
-    NameEdit: TEdit;
+    NameEdit: TLabeledEdit;
     OkButton: TButton;
     Button2: TButton;
     procedure FormDestroy(Sender: TObject);
@@ -85,4 +87,4 @@ begin
   end;
 end;
 
-end.
+end.

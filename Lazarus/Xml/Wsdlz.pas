@@ -6444,12 +6444,12 @@ begin
     Name := aName;
     WsdlOperation := aOperation;
     CorrelationBindables := TBindableList.Create;
-  {}{
+{$ifdef jwbPatterns}
     Patterns := TStringList.Create;
     Patterns.Text := aPatterns;
     while Patterns.Count < aOperation.CorrelationBindables.Count do
       Patterns.Add(Patterns.Strings[0]);
-  {}
+{$endif}
     Documentation := aDocumentation;
     aOperation.Messages.AddObject('', self);
     if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then

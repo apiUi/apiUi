@@ -1,37 +1,41 @@
 object PromptTacoForm: TPromptTacoForm
   Left = 311
+  Height = 160
   Top = 257
+  Width = 393
   BorderStyle = bsDialog
   Caption = 'Host connection data'
   ClientHeight = 160
   ClientWidth = 393
   Color = clBtnFace
+  OnShow = FormShow
   ParentFont = True
   Position = poScreenCenter
-  OnShow = FormShow
-  PixelsPerInch = 96
+  LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
+    Height = 46
     Top = 114
     Width = 393
-    Height = 46
     Align = alBottom
-    TabOrder = 0
+    ClientHeight = 46
+    ClientWidth = 393
+    TabOrder = 1
     object OKButton: TButton
-      Left = 77
+      Left = 85
+      Height = 25
       Top = 8
       Width = 75
-      Height = 25
       Caption = 'OK'
       Default = True
       ModalResult = 1
       TabOrder = 0
     end
     object CancelBtn: TButton
-      Left = 157
+      Left = 165
+      Height = 25
       Top = 8
       Width = 75
-      Height = 25
       Cancel = True
       Caption = 'Cancel'
       ModalResult = 2
@@ -40,59 +44,64 @@ object PromptTacoForm: TPromptTacoForm
   end
   object Panel2: TPanel
     Left = 0
+    Height = 114
     Top = 0
     Width = 393
-    Height = 114
     Align = alClient
     BorderWidth = 3
-    TabOrder = 1
+    ClientHeight = 114
+    ClientWidth = 393
+    TabOrder = 0
     object Label1: TLabel
-      Left = 34
-      Top = 14
-      Width = 43
+      Left = 36
       Height = 13
+      Top = 14
+      Width = 48
       Caption = 'A&ddress:'
+      ParentColor = False
     end
     object Label2: TLabel
-      Left = 52
-      Top = 44
-      Width = 24
+      Left = 59
       Height = 13
+      Top = 44
+      Width = 25
       Caption = '&Port:'
+      ParentColor = False
     end
     object Label3: TLabel
       Left = 9
-      Top = 78
-      Width = 68
       Height = 13
+      Top = 78
+      Width = 77
       Caption = '&Authorisation:'
+      ParentColor = False
     end
     object AuthEdit: TEdit
-      Left = 78
+      Left = 86
+      Height = 23
       Top = 75
       Width = 281
-      Height = 21
+      OnChange = CheckOkEnabled
       TabOrder = 2
       Text = 'Auth'
-      OnChange = CheckOkEnabled
     end
     object PortEdit: TEdit
-      Left = 78
+      Left = 86
+      Height = 23
       Top = 41
       Width = 281
-      Height = 21
+      OnChange = CheckOkEnabled
       TabOrder = 1
       Text = 'Port'
-      OnChange = CheckOkEnabled
     end
     object HostEdit: TEdit
-      Left = 78
+      Left = 86
+      Height = 23
       Top = 11
       Width = 281
-      Height = 21
+      OnChange = CheckOkEnabled
       TabOrder = 0
       Text = 'Host'
-      OnChange = CheckOkEnabled
     end
   end
 end

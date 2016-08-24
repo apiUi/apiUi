@@ -1,11 +1,11 @@
 object DelayTimeForm: TDelayTimeForm
   Left = 382
-  Height = 232
+  Height = 259
   Top = 251
-  Width = 273
+  Width = 283
   Caption = 'Delay time settings'
-  ClientHeight = 232
-  ClientWidth = 273
+  ClientHeight = 259
+  ClientWidth = 283
   Color = clBtnFace
   Font.Color = clBlack
   Font.Height = -11
@@ -39,7 +39,7 @@ object DelayTimeForm: TDelayTimeForm
     TabOrder = 0
   end
   object DelayMinEdit: TLabeledEdit
-    Left = 173
+    Left = 194
     Height = 24
     Top = 26
     Width = 73
@@ -49,7 +49,7 @@ object DelayTimeForm: TDelayTimeForm
     EditLabel.AnchorSideRight.Control = DelayMinEdit
     EditLabel.AnchorSideBottom.Control = DelayMinEdit
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 109
+    EditLabel.Left = 130
     EditLabel.Height = 14
     EditLabel.Top = 31
     EditLabel.Width = 61
@@ -59,7 +59,7 @@ object DelayTimeForm: TDelayTimeForm
     TabOrder = 1
   end
   object DelayMaxEdit: TLabeledEdit
-    Left = 173
+    Left = 194
     Height = 24
     Top = 60
     Width = 73
@@ -69,7 +69,7 @@ object DelayTimeForm: TDelayTimeForm
     EditLabel.AnchorSideRight.Control = DelayMaxEdit
     EditLabel.AnchorSideBottom.Control = DelayMaxEdit
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 116
+    EditLabel.Left = 137
     EditLabel.Height = 14
     EditLabel.Top = 65
     EditLabel.Width = 54
@@ -80,9 +80,9 @@ object DelayTimeForm: TDelayTimeForm
   end
   object ApplyToRadioGroup: TRadioGroup
     Left = 12
-    Height = 80
+    Height = 99
     Top = 101
-    Width = 235
+    Width = 255
     Anchors = [akTop, akLeft, akRight]
     AutoFill = True
     Caption = 'Apply to'
@@ -93,21 +93,25 @@ object DelayTimeForm: TDelayTimeForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 64
-    ClientWidth = 231
+    ClientHeight = 80
+    ClientWidth = 251
+    Font.Color = clBlack
+    Font.Height = -13
+    Font.Name = 'Sans'
     ItemIndex = 0
     Items.Strings = (
-      'Current operation'
-      'All across current service'
-      'All across current wsdl'
-      'All across all wsdls'
+      'Current operation                      '
+      'All across current service                        '
+      'All across current wsdl                       '
+      'All across all wsdls                        '
     )
+    ParentFont = False
     TabOrder = 3
   end
   object CancelButton: TBitBtn
-    Left = 173
+    Left = 194
     Height = 25
-    Top = 194
+    Top = 211
     Width = 73
     Anchors = [akTop, akRight]
     Caption = '&Cancel'
@@ -148,12 +152,12 @@ object DelayTimeForm: TDelayTimeForm
       FF00FFFFFF00FFFFFF006360F80AFFFFFF00FFFFFF00FFFFFF00
     }
     ModalResult = 2
-    TabOrder = 4
+    TabOrder = 5
   end
   object OkButton: TBitBtn
     Left = 12
     Height = 25
-    Top = 194
+    Top = 211
     Width = 75
     Caption = '&Ok'
     Glyph.Data = {
@@ -194,6 +198,6 @@ object DelayTimeForm: TDelayTimeForm
     }
     ModalResult = 1
     OnClick = Button1Click
-    TabOrder = 5
+    TabOrder = 4
   end
 end

@@ -39,33 +39,33 @@ object wsaConfigForm: TwsaConfigForm
     Height = 161
     Top = 24
     Width = 296
-    ClientHeight = 143
+    ClientHeight = 157
     ClientWidth = 292
     TabOrder = 2
     object EnabledCheckBox: TCheckBox
       Left = 55
-      Height = 17
+      Height = 22
       Top = 16
-      Width = 93
+      Width = 105
       Caption = 'WS-A Enabled:'
       OnClick = EnableComponents
       TabOrder = 0
     end
     object mustUnderstandCheckBox: TCheckBox
       Left = 55
-      Height = 17
+      Height = 22
       Top = 51
-      Width = 102
+      Width = 120
       Caption = 'Must understand:'
       OnClick = EnableComponents
       TabOrder = 1
     end
     object MustUnderstandComboBox: TComboBox
-      Left = 160
-      Height = 21
+      Left = 193
+      Height = 27
       Top = 49
-      Width = 56
-      ItemHeight = 13
+      Width = 80
+      ItemHeight = 0
       ItemIndex = 0
       Items.Strings = (
         'true'
@@ -77,12 +77,12 @@ object wsaConfigForm: TwsaConfigForm
     end
     object AsynchDialogCheckBox: TCheckBox
       Left = 56
-      Height = 17
+      Height = 22
       Top = 111
-      Width = 123
+      Width = 143
       Caption = 'Asynchronous Dialog:'
       OnClick = EnableComponents
       TabOrder = 3
     end
   end
-end
+end

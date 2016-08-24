@@ -276,6 +276,7 @@ begin
        or (GetUserName = 'BouwmanJW')
        or (GetUserName = 'JANBO$')
        or (GetUserName = 'RB347565$')
+       or (GetUserName = 'RB926266$')
       ) then
   begin
     Y := StrToInt(Copy(LicenseExpirationDate, 1, 4));

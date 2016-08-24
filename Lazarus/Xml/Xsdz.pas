@@ -72,6 +72,8 @@ type
     IsComplex: Boolean;
     IsBuiltIn: Boolean;
     IsExtention: Boolean;
+    isAbstract: Boolean;
+    isMixed: Boolean;
     xsdDescr: TXsdDescr;
     _Processed: Boolean;
     _DepthBillOfMaterial: integer;
@@ -83,7 +85,6 @@ type
     BaseDataType: TXsdDataType;
     ContentModel: String;
     DerivationMethod: String;
-    isAbstract: Boolean;
     Length: String;
     MinLength: String;
     MaxLength: String;
@@ -840,6 +841,7 @@ begin
     result.IsComplex:=True;
     result.IsBuiltIn:=False;
     result.isAbstract:= xXml.Attributes.BooleanByTag[tagAbstract];
+    result.isMixed:= xXml.Attributes.BooleanByTag[tagMixed];
     result.ContentModel:= _ContentModel (xXml);
     for x := 0 to xXml.Items.Count - 1 do
     begin

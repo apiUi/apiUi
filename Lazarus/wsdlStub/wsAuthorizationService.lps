@@ -8,9 +8,11 @@
       <Unit0>
         <Filename Value="wsAuthorizationService.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
         <CursorPos Y="14"/>
-        <UsageCount Value="45"/>
+        <UsageCount Value="47"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="wsauthdaemonunit.pas"/>
@@ -18,11 +20,9 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="wsAuthDaemonUnit"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="53" Y="13"/>
-        <UsageCount Value="45"/>
+        <CursorPos X="7" Y="6"/>
+        <UsageCount Value="47"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="wsdaemonunit.pas"/>
@@ -31,23 +31,28 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="wsDaemonUnit"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="414"/>
-        <CursorPos X="81" Y="445"/>
-        <UsageCount Value="45"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="252"/>
+        <CursorPos X="35" Y="279"/>
+        <UsageCount Value="47"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Utils\HashUtilz.pas"/>
         <IsPartOfProject Value="True"/>
         <TopLine Value="2"/>
         <CursorPos X="10" Y="11"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="43"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-extra\src\daemonapp.pp"/>
+        <UnitName Value="daemonapp"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="32"/>
         <CursorPos X="3" Y="41"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\eventlog.pp"/>
@@ -76,10 +81,11 @@
       <Unit9>
         <Filename Value="..\Xml\Ipmz.pas"/>
         <UnitName Value="Ipmz"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="250"/>
-        <CursorPos X="6" Y="269"/>
+        <CursorPos X="17" Y="269"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="wsAuthorizationServiceIni.xml"/>
@@ -90,7 +96,6 @@
       </Unit10>
       <Unit11>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <UnitName Value="xmlio"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="370"/>
         <CursorPos X="3" Y="377"/>
@@ -104,7 +109,6 @@
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\sysutils.pp"/>
-        <UnitName Value="sysutils"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="169"/>
         <CursorPos X="24" Y="201"/>
@@ -125,6 +129,39 @@
         <UsageCount Value="10"/>
       </Unit15>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="8" HistoryIndex="7">
+      <Position1>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="445" Column="81" TopLine="398"/>
+      </Position1>
+      <Position2>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="82" Column="3" TopLine="79"/>
+      </Position2>
+      <Position3>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="90" Column="3" TopLine="88"/>
+      </Position3>
+      <Position4>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="95" Column="3" TopLine="93"/>
+      </Position4>
+      <Position5>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="82" Column="3" TopLine="79"/>
+      </Position5>
+      <Position6>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="100" Column="3" TopLine="119"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\Xml\Ipmz.pas"/>
+        <Caret Line="269" Column="6" TopLine="250"/>
+      </Position7>
+      <Position8>
+        <Filename Value="wsAuthorizationService.lpr"/>
+        <Caret Line="14"/>
+      </Position8>
+    </JumpHistory>
   </ProjectSession>
 </CONFIG>

@@ -1,5 +1,5 @@
 <wsdlStubIni>
-  <authorizationServerEndpoint>http://localhost:6059</authorizationServerEndpoint>
+  <authorizationServerEndpoint>http://RB926266.rabobank.corp:6059</authorizationServerEndpoint>
   <_licenseDatabase>
 	  <OdbcDriver>Microsoft Access Driver (*.mdb)</OdbcDriver>
 	  <DatabaseName>Database\wsdlStubLicense.mdb</DatabaseName>

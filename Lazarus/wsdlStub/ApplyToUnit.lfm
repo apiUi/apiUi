@@ -2,11 +2,11 @@ object ApplyToForm: TApplyToForm
   Left = 530
   Height = 167
   Top = 202
-  Width = 218
+  Width = 229
   BorderStyle = bsDialog
   Caption = 'Apply action settings to'
   ClientHeight = 167
-  ClientWidth = 218
+  ClientWidth = 229
   Color = clBtnFace
   Font.Color = clBlack
   Font.Height = -11
@@ -19,7 +19,7 @@ object ApplyToForm: TApplyToForm
     Left = 16
     Height = 105
     Top = 7
-    Width = 181
+    Width = 192
     AutoFill = True
     Caption = 'Apply to'
     ChildSizing.LeftRightSpacing = 6
@@ -29,8 +29,8 @@ object ApplyToForm: TApplyToForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 87
-    ClientWidth = 177
+    ClientHeight = 89
+    ClientWidth = 188
     ItemIndex = 1
     Items.Strings = (
       'All across current service'
@@ -40,7 +40,7 @@ object ApplyToForm: TApplyToForm
     TabOrder = 0
   end
   object CancelButton: TBitBtn
-    Left = 122
+    Left = 133
     Height = 25
     Top = 128
     Width = 75
@@ -131,4 +131,4 @@ object ApplyToForm: TApplyToForm
     ModalResult = 1
     TabOrder = 2
   end
-end
+end

@@ -16,17 +16,20 @@ uses
   Buttons, ExtCtrls, FormIniFilez;
 
 type
+
+  { TFindDlg }
+
   TFindDlg = class(TForm)
+    SearchEdit: TLabeledEdit;
     OKBtn: TButton;
     CancelBtn: TButton;
-    Label1: TLabel;
-    SearchEdit: TEdit;
     SearchInRadioGroup: TRadioGroup;
     ScopeRadioGroup: TRadioGroup;
     RegularExpressionCheckBox: TCheckBox;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure OKBtnClick(Sender: TObject);
   private
     IniFile: TFormIniFile;
   public
@@ -50,6 +53,11 @@ begin
   SearchEdit.SetFocus;
 end;
 
+procedure TFindDlg.OKBtnClick(Sender: TObject);
+begin
+
+end;
+
 procedure TFindDlg.FormCreate(Sender: TObject);
 begin
   IniFile := TFormIniFile.Create(self, True);
@@ -70,4 +78,4 @@ begin
   IniFile.Free;
 end;
 
-end.
+end.

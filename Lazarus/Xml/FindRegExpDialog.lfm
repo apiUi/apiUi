@@ -1,7 +1,7 @@
 object FindDlg: TFindDlg
-  Left = 295
+  Left = 526
   Height = 226
-  Top = 173
+  Top = 255
   Width = 310
   BorderStyle = bsDialog
   Caption = 'Find Tag'
@@ -14,15 +14,6 @@ object FindDlg: TFindDlg
   ParentFont = True
   Position = poScreenCenter
   LCLVersion = '1.2.6.0'
-  object Label1: TLabel
-    Left = 18
-    Height = 13
-    Top = 18
-    Width = 56
-    Caption = '&Text to find'
-    FocusControl = SearchEdit
-    ParentColor = False
-  end
   object OKBtn: TButton
     Left = 76
     Height = 25
@@ -31,6 +22,7 @@ object FindDlg: TFindDlg
     Caption = '&OK'
     Default = True
     ModalResult = 1
+    OnClick = OKBtnClick
     TabOrder = 4
   end
   object CancelBtn: TButton
@@ -42,16 +34,6 @@ object FindDlg: TFindDlg
     Caption = 'Cancel'
     ModalResult = 2
     TabOrder = 5
-  end
-  object SearchEdit: TEdit
-    Left = 76
-    Height = 21
-    Hint = 'Enter text to find (with wildcards)'
-    Top = 15
-    Width = 189
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 0
   end
   object SearchInRadioGroup: TRadioGroup
     Left = 76
@@ -67,7 +49,7 @@ object FindDlg: TFindDlg
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 2
-    ClientHeight = 22
+    ClientHeight = 25
     ClientWidth = 185
     Columns = 2
     ItemIndex = 0
@@ -91,7 +73,7 @@ object FindDlg: TFindDlg
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 52
+    ClientHeight = 55
     ClientWidth = 185
     ItemIndex = 1
     Items.Strings = (
@@ -100,12 +82,31 @@ object FindDlg: TFindDlg
     )
     TabOrder = 3
   end
+  object SearchEdit: TLabeledEdit
+    Left = 76
+    Height = 23
+    Top = 13
+    Width = 80
+    EditLabel.AnchorSideTop.Control = SearchEdit
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = SearchEdit
+    EditLabel.AnchorSideBottom.Control = SearchEdit
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 9
+    EditLabel.Height = 13
+    EditLabel.Top = 18
+    EditLabel.Width = 64
+    EditLabel.Caption = 'Text to find:'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 0
+  end
   object RegularExpressionCheckBox: TCheckBox
     Left = 75
-    Height = 17
+    Height = 22
     Top = 42
-    Width = 112
+    Width = 129
     Caption = 'Regular expression'
     TabOrder = 1
   end
-end
+end

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 404
+  Left = 416
   Height = 753
-  Top = 33
+  Top = 106
   Width = 1145
   Caption = 'MainForm'
   ClientHeight = 734
@@ -18,7 +18,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.0.2'
   object MainToolBar: TToolBar
     Left = 0
     Height = 29
@@ -34,6 +34,7 @@ object MainForm: TMainForm
     end
     object ToolButton23: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton23'
@@ -57,6 +58,7 @@ object MainForm: TMainForm
     end
     object ToolButton4: TToolButton
       Left = 103
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton4'
@@ -72,6 +74,7 @@ object MainForm: TMainForm
     end
     object ToolButton2: TToolButton
       Left = 148
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton2'
@@ -85,6 +88,7 @@ object MainForm: TMainForm
     end
     object ToolButton48: TToolButton
       Left = 181
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton48'
@@ -111,6 +115,7 @@ object MainForm: TMainForm
     end
     object ToolButton43: TToolButton
       Left = 255
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton43'
@@ -124,6 +129,7 @@ object MainForm: TMainForm
     end
     object ToolButton61: TToolButton
       Left = 288
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton61'
@@ -132,6 +138,7 @@ object MainForm: TMainForm
     end
     object ToolButton21: TToolButton
       Left = 298
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton21'
@@ -145,6 +152,7 @@ object MainForm: TMainForm
     end
     object ToolButton70: TToolButton
       Left = 326
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton70'
@@ -158,6 +166,7 @@ object MainForm: TMainForm
     end
     object SeparatorToolButton: TToolButton
       Left = 359
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'SeparatorToolButton'
@@ -242,6 +251,7 @@ object MainForm: TMainForm
         end
         object ToolButton17: TToolButton
           Left = 67
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton17'
@@ -254,6 +264,7 @@ object MainForm: TMainForm
         end
         object ToolButton19: TToolButton
           Left = 100
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton19'
@@ -267,6 +278,7 @@ object MainForm: TMainForm
         end
         object ToolButton62: TToolButton
           Left = 133
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton62'
@@ -551,6 +563,7 @@ object MainForm: TMainForm
             end
             object ToolButton8: TToolButton
               Left = 24
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton8'
@@ -565,6 +578,7 @@ object MainForm: TMainForm
             end
             object ToolButton20: TToolButton
               Left = 57
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton20'
@@ -578,6 +592,7 @@ object MainForm: TMainForm
             end
             object ToolButton10: TToolButton
               Left = 90
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton10'
@@ -591,6 +606,7 @@ object MainForm: TMainForm
             end
             object ToolButton14: TToolButton
               Left = 123
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton14'
@@ -609,6 +625,7 @@ object MainForm: TMainForm
             end
             object ToolButton26: TToolButton
               Left = 179
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton26'
@@ -622,6 +639,7 @@ object MainForm: TMainForm
             end
             object ToolButton56: TToolButton
               Left = 212
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton56'
@@ -635,6 +653,7 @@ object MainForm: TMainForm
             end
             object ToolButton29: TToolButton
               Left = 245
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton29'
@@ -653,6 +672,7 @@ object MainForm: TMainForm
             end
             object ToolButton34: TToolButton
               Left = 301
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton34'
@@ -666,6 +686,7 @@ object MainForm: TMainForm
             end
             object ToolButton41: TToolButton
               Left = 334
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton41'
@@ -685,6 +706,7 @@ object MainForm: TMainForm
             end
             object LastToolButton: TToolButton
               Left = 413
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'LastToolButton'
@@ -806,6 +828,7 @@ object MainForm: TMainForm
             end
             object ToolButton46: TToolButton
               Left = 47
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton46'
@@ -819,6 +842,7 @@ object MainForm: TMainForm
             end
             object ToolButton18: TToolButton
               Left = 80
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton18'
@@ -832,6 +856,7 @@ object MainForm: TMainForm
             end
             object ToolButton54: TToolButton
               Left = 113
+              Height = 22
               Top = 2
               Width = 10
               Caption = 'ToolButton54'
@@ -990,6 +1015,7 @@ object MainForm: TMainForm
         end
         object ToolButton51: TToolButton
           Left = 80
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton51'
@@ -1007,6 +1033,7 @@ object MainForm: TMainForm
         end
         object ToolButton64: TToolButton
           Left = 47
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton64'
@@ -1259,6 +1286,7 @@ object MainForm: TMainForm
         end
         object ToolButton68: TToolButton
           Left = 70
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton68'
@@ -1282,6 +1310,7 @@ object MainForm: TMainForm
         end
         object ToolButton69: TToolButton
           Left = 228
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton69'
@@ -1332,6 +1361,7 @@ object MainForm: TMainForm
         end
         object ToolButton36: TToolButton
           Left = 103
+          Height = 22
           Top = 2
           Width = 10
           Caption = 'ToolButton36'
@@ -1535,6 +1565,7 @@ object MainForm: TMainForm
       Height = 19
       Top = 7
       Width = 1143
+      TabStop = False
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
@@ -1555,8 +1586,8 @@ object MainForm: TMainForm
   object alGeneral: TActionList
     Images = mainImageList
     OnExecute = alGeneralExecute
-    left = 32
-    top = 176
+    left = 384
+    top = 640
     object NewStubCaseAction: TAction
       Category = 'File'
       Caption = '&New Project...'
@@ -2400,8 +2431,8 @@ object MainForm: TMainForm
     end
   end
   object mainImageList: TImageList
-    left = 40
-    top = 224
+    left = 32
+    top = 688
     Bitmap = {
       4C69570000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5192,13 +5223,13 @@ object MainForm: TMainForm
   end
   object OpenFileDialog: TOpenDialog
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    left = 128
-    top = 224
+    left = 544
+    top = 648
   end
   object MainMenu1: TMainMenu
     Images = mainImageList
-    left = 32
-    top = 128
+    left = 448
+    top = 640
     object File1: TMenuItem
       Caption = '&File'
       object NewStubCase1: TMenuItem
@@ -7023,8 +7054,8 @@ object MainForm: TMainForm
     end
   end
   object TreeviewImageList: TImageList
-    left = 240
-    top = 288
+    left = 80
+    top = 688
     Bitmap = {
       4C69200000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8056,8 +8087,8 @@ object MainForm: TMainForm
   object WsdlPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = WsdlPopupMenuPopup
-    left = 440
-    top = 282
+    left = 792
+    top = 632
     object WsdlItemAddMenuItem: TMenuItem
       Caption = 'Add occurrence'
       Bitmap.Data = {
@@ -8714,8 +8745,8 @@ object MainForm: TMainForm
   end
   object SaveFileDialog: TSaveDialog
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    left = 320
-    top = 288
+    left = 688
+    top = 640
   end
   object Qry: TSQLQuery
     FieldDefs = <>
@@ -8728,14 +8759,14 @@ object MainForm: TMainForm
       'select * from FPD_EXECUTION_PHASES'
     )
     Params = <>
-    left = 472
-    top = 168
+    left = 112
+    top = 640
   end
   object LogPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = LogPopupMenuPopup
-    left = 384
-    top = 280
+    left = 736
+    top = 672
     object DisplayedcolumnMenuItem: TMenuItem
       Caption = 'Displayed column...'
       Bitmap.Data = {
@@ -9044,8 +9075,8 @@ object MainForm: TMainForm
   object GridPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = GridPopupMenuPopup
-    left = 496
-    top = 280
+    left = 848
+    top = 672
     object Revalidatemessages2: TMenuItem
       Action = EnableMessageAction
     end
@@ -9140,13 +9171,13 @@ object MainForm: TMainForm
   object LogUsageTimer: TTimer
     Enabled = False
     OnTimer = LogUsageTimerTimer
-    left = 32
-    top = 72
+    left = 216
+    top = 688
   end
   object WsdlsPopupMenu: TPopupMenu
     Images = mainImageList
-    left = 568
-    top = 282
+    left = 920
+    top = 640
     object MaintainlistofWSDLfiles1: TMenuItem
       Action = OpenWsdlAction
       Bitmap.Data = {
@@ -9350,15 +9381,15 @@ object MainForm: TMainForm
     Enabled = False
     Interval = 100
     OnTimer = RefreshLogTimerTimer
-    left = 72
-    top = 176
+    left = 216
+    top = 640
   end
   object SQLTransaction: TSQLTransaction
     Active = False
     Action = caCommit
     Database = SQLConnector
-    left = 440
-    top = 168
+    left = 72
+    top = 640
   end
   object SQLConnector: TSQLConnector
     Connected = False
@@ -9370,12 +9401,12 @@ object MainForm: TMainForm
     )
     Transaction = SQLTransaction
     LogEvents = []
-    left = 408
-    top = 168
+    left = 32
+    top = 640
   end
   object OperationsPopupMenu: TPopupMenu
-    left = 129
-    top = 121
+    left = 384
+    top = 688
     object EditBetweenScriptMenuItem: TMenuItem
       Caption = 'Edit Script'
       OnClick = EditBetweenScriptMenuItemClick
@@ -9445,8 +9476,8 @@ object MainForm: TMainForm
   object SnapshotsPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = SnapshotsPopupMenuPopup
-    left = 640
-    top = 280
+    left = 992
+    top = 656
     object SnapshotCompareMenuitem: TMenuItem
       Caption = 'Compare with reference'
       Bitmap.Data = {
@@ -9704,7 +9735,7 @@ object MainForm: TMainForm
   object PingPongTimer: TTimer
     Enabled = False
     OnTimer = PingPongTimerTimer
-    left = 80
-    top = 72
+    left = 280
+    top = 640
   end
 end

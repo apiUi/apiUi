@@ -2810,7 +2810,11 @@ begin
   MessagesPanel.Visible := False;
   case LogTabControl.TabIndex of
     Ord (spDocumentation): DocumentationPanel.Visible := True;
-    Ord (spNotifications): NotificationsPanel.Visible := True;
+    Ord (spNotifications):
+    begin
+      LogTabControl.Tabs [Ord (spNotifications)] := notifyTabCaption;
+      NotificationsPanel.Visible := True;
+    end;
     Ord (spSnapshots): SnapshotsPanel.Visible := True;
     Ord (spMessages): MessagesPanel.Visible := True;
   end;
@@ -3569,8 +3573,11 @@ procedure TMainForm.HelpActionExecute(Sender: TObject);
 var
   xFileName: String;
 begin
-  xFileName := ExtractFilePath(ParamStr(0)) + '\Documentation\' + _progName +
-    '.htm';
+  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
+                                + 'Documentation\'
+                                + _progName
+                                + '.htm'
+                                );
   if not FileExistsUTF8(xFileName) { *Converted from FileExists* } then
     raise Exception.Create('Could not find helpfile: ' + xFileName);
   if not OpenDocument(xFileName) then
@@ -3581,8 +3588,11 @@ procedure TMainForm.HelpMainMenuActionExecute(Sender: TObject);
 var
   xFileName: String;
 begin
-  xFileName := ExtractFilePath(ParamStr(0)) + '\Documentation\' + _progName +
-    '_Menu_hlp.htm';
+  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
+                                + 'Documentation\'
+                                + _progName
+                                + '_Menu_hlp.htm'
+                                );
   if not FileExistsUTF8(xFileName) { *Converted from FileExists* } then
     raise Exception.Create('Could not find helpfile: ' + xFileName);
   if not OpenDocument(xFileName) then
@@ -5039,8 +5049,11 @@ begin
       'Reply' + IntToStr(WsdlOperation.Messages.Count),
       'Pattern' + IntToStr(WsdlOperation.Messages.Count),
       xOrgMessage.Documentation);
-  xNewMessage.FreeFormatReq := xOrgMessage.FreeFormatReq;
-  xNewMessage.FreeFormatRpy := xOrgMessage.FreeFormatRpy;
+  if WsdlOperation.DescriptionType = ipmDTFreeFormat then
+  begin
+    xNewMessage.FreeFormatReq := xOrgMessage.FreeFormatReq;
+    xNewMessage.FreeFormatRpy := xOrgMessage.FreeFormatRpy;
+  end;
   if WsdlOperation.reqBind is TIpmItem then
   begin
     (xNewMessage.reqBind as TIpmItem).LoadValues(xOrgMessage.reqBind as TIpmItem);
@@ -13309,6 +13322,7 @@ procedure TMainForm .MessagesTabControlGetImageIndex (Sender : TObject ;
   TabIndex : Integer ; var ImageIndex : Integer );
 begin
   ImageIndex := logValidationTabImageIndex;
+  ImageIndex := 46;
 end;
 
 procedure TMainForm .MessagesVTSCompareNodes (Sender : TBaseVirtualTree ;
@@ -13452,4 +13466,4 @@ initialization
 finalization
   CoUninitialize;
 {$endif}
-end.
+end.

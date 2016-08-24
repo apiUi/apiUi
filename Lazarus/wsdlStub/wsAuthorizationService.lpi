@@ -81,7 +81,7 @@
     <PathDelim Value="\"/>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Utils;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\Core;..\components\Indy10\Lib\System;..\Xml;..\Xpress;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Hashes"/>
+      <OtherUnitFiles Value="..\Utils;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\Core;..\components\Indy10\Lib\System;..\Xml;..\Xml\IpmScanner;..\Xpress;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Hashes"/>
     </SearchPaths>
   </CompilerOptions>
   <Debugging>

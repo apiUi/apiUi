@@ -1,7 +1,7 @@
 object messagesToDiskForm: TmessagesToDiskForm
-  Left = 229
+  Left = 287
   Height = 219
-  Top = 166
+  Top = 219
   Width = 568
   Caption = 'Save message(s) to diskfile(s)'
   ClientHeight = 219
@@ -15,23 +15,23 @@ object messagesToDiskForm: TmessagesToDiskForm
   OnShow = FormShow
   LCLVersion = '1.2.6.0'
   object Label1: TLabel
-    Left = 141
-    Height = 13
+    Left = 153
+    Height = 14
     Top = 97
-    Width = 187
+    Width = 233
     Caption = '(separates correlation fields in flenames)'
     ParentColor = False
   end
   object Label2: TLabel
-    Left = 140
-    Height = 13
+    Left = 152
+    Height = 14
     Top = 60
-    Width = 61
+    Width = 77
     Caption = '(omit the dot)'
     ParentColor = False
   end
   object Button1: TButton
-    Left = 89
+    Left = 101
     Height = 25
     Top = 137
     Width = 75
@@ -41,7 +41,7 @@ object messagesToDiskForm: TmessagesToDiskForm
     TabOrder = 0
   end
   object Button2: TButton
-    Left = 217
+    Left = 229
     Height = 25
     Top = 138
     Width = 75
@@ -51,8 +51,8 @@ object messagesToDiskForm: TmessagesToDiskForm
     TabOrder = 1
   end
   object DirectoryEdit: TLabeledEdit
-    Left = 89
-    Height = 21
+    Left = 101
+    Height = 24
     Top = 22
     Width = 448
     EditLabel.AnchorSideTop.Control = DirectoryEdit
@@ -60,18 +60,18 @@ object messagesToDiskForm: TmessagesToDiskForm
     EditLabel.AnchorSideRight.Control = DirectoryEdit
     EditLabel.AnchorSideBottom.Control = DirectoryEdit
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 41
-    EditLabel.Height = 13
-    EditLabel.Top = 26
-    EditLabel.Width = 45
+    EditLabel.Left = 43
+    EditLabel.Height = 14
+    EditLabel.Top = 27
+    EditLabel.Width = 55
     EditLabel.Caption = 'Directory:'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 2
   end
   object ExtentionEdit: TLabeledEdit
-    Left = 89
-    Height = 21
+    Left = 101
+    Height = 24
     Top = 56
     Width = 48
     EditLabel.AnchorSideTop.Control = ExtentionEdit
@@ -79,18 +79,18 @@ object messagesToDiskForm: TmessagesToDiskForm
     EditLabel.AnchorSideRight.Control = ExtentionEdit
     EditLabel.AnchorSideBottom.Control = ExtentionEdit
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 39
-    EditLabel.Height = 13
-    EditLabel.Top = 60
-    EditLabel.Width = 47
+    EditLabel.Left = 41
+    EditLabel.Height = 14
+    EditLabel.Top = 61
+    EditLabel.Width = 57
     EditLabel.Caption = 'Extention:'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 3
   end
   object SeparatorEdit: TLabeledEdit
-    Left = 89
-    Height = 21
+    Left = 101
+    Height = 24
     Top = 93
     Width = 48
     EditLabel.AnchorSideTop.Control = SeparatorEdit
@@ -98,13 +98,13 @@ object messagesToDiskForm: TmessagesToDiskForm
     EditLabel.AnchorSideRight.Control = SeparatorEdit
     EditLabel.AnchorSideBottom.Control = SeparatorEdit
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 12
-    EditLabel.Height = 13
-    EditLabel.Top = 97
-    EditLabel.Width = 74
+    EditLabel.Left = 9
+    EditLabel.Height = 14
+    EditLabel.Top = 98
+    EditLabel.Width = 89
     EditLabel.Caption = 'Field Separator:'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 4
   end
-end
+end
