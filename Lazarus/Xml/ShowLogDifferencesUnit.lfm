@@ -37,7 +37,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       TabOrder = 0
       object mainVST: TVirtualStringTree
         Left = 4
-        Height = 344
+        Height = 347
         Top = 4
         Width = 761
         Align = alClient
@@ -123,8 +123,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       end
       object OverviewStatusBar: TStatusBar
         Left = 4
-        Height = 20
-        Top = 348
+        Height = 17
+        Top = 351
         Width = 761
         Panels = <        
           item
@@ -145,29 +145,29 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     ShowHint = True
     TabOrder = 1
     object ToolButton2: TToolButton
-      Left = 248
+      Left = 272
       Top = 2
       Width = 10
       Action = MaintainIgnoreDiffsAction
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 258
+      Left = 282
       Top = 2
       Action = MaintainIgnoreDiffsAction
     end
     object ToolButton12: TToolButton
-      Left = 281
+      Left = 305
       Top = 2
       Action = MaintainIgnoreAdditionsAction
     end
     object ToolButton13: TToolButton
-      Left = 304
+      Left = 328
       Top = 2
       Action = MaintainIgnoredRemovalsAction
     end
     object ToolButton3: TToolButton
-      Left = 350
+      Left = 374
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -175,17 +175,17 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 360
+      Left = 384
       Top = 2
       Action = NextDiffAction
     end
     object ToolButton6: TToolButton
-      Left = 383
+      Left = 407
       Top = 2
       Action = PrevDiffAction
     end
     object ToolButton7: TToolButton
-      Left = 406
+      Left = 430
       Top = 2
       Width = 10
       Caption = 'ToolButton7'
@@ -193,12 +193,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 416
+      Left = 440
       Top = 2
       Action = CopyToClipboardAction
     end
     object ToolButton8: TToolButton
-      Left = 439
+      Left = 463
       Top = 2
       Width = 10
       Caption = 'ToolButton8'
@@ -206,12 +206,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 449
+      Left = 473
       Top = 2
       Action = HtmlReportAction
     end
     object ToolButton11: TToolButton
-      Left = 472
+      Left = 496
       Top = 2
       Width = 10
       Caption = 'ToolButton11'
@@ -219,22 +219,22 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 482
+      Left = 506
       Top = 2
       Action = CloseAction
     end
     object ToolButton14: TToolButton
-      Left = 327
+      Left = 351
       Top = 2
       Action = MaintainLogOrderColumnsAction
     end
     object CompareLogOrderByComboBox: TComboBox
       Left = 51
-      Height = 21
+      Height = 27
       Top = 2
-      Width = 197
-      ItemHeight = 13
-      ItemIndex = 0
+      Width = 221
+      ItemHeight = 0
+      ItemIndex = 2
       Items.Strings = (
         'As is (timestamp)'
         'Service, Operation'
@@ -242,7 +242,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       )
       OnChange = CompareLogOrderByComboBoxChange
       TabOrder = 0
-      Text = 'As is (timestamp)'
+      Text = 'Service, Operation, Correlation'
     end
     object Panel2: TPanel
       Left = 11
@@ -5123,4 +5123,4 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       OnExecute = HtmlReportActionExecute
     end
   end
-end
+end
