@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="10390"/>
+      <BuildNr Value="10407"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -87,6 +87,7 @@
       <Unit4>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="IdStack"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Xml\snapshotz.pas"/>
@@ -133,16 +134,16 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5023="True" idx5024="True" idx5025="True" idx5028="True"/>
+        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="20">
       <Item1>
         <Name Value="EAbort"/>
+        <Enabled Value="False"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>
@@ -150,9 +151,11 @@
       </Item2>
       <Item3>
         <Name Value="EFOpenError"/>
+        <Enabled Value="False"/>
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>
+        <Enabled Value="False"/>
       </Item4>
       <Item5>
         <Name Value="EDatabaseError"/>
@@ -160,18 +163,23 @@
       </Item5>
       <Item6>
         <Name Value="Exception"/>
+        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
+        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
+        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
+        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
+        <Enabled Value="False"/>
       </Item10>
       <Item11>
         <Name Value="EOraDatabaseError"/>
@@ -179,6 +187,7 @@
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
+        <Enabled Value="False"/>
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>
@@ -190,6 +199,7 @@
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
+        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EODBCException"/>
@@ -197,16 +207,20 @@
       </Item16>
       <Item17>
         <Name Value="EInterfaceCritical"/>
+        <Enabled Value="False"/>
       </Item17>
       <Item18>
         <Name Value="EStringListError"/>
+        <Enabled Value="False"/>
       </Item18>
       <Item19>
         <Name Value="EOleSysError"/>
+        <Enabled Value="False"/>
       </Item19>
       <Item20>
         <Name Value="EIdURIException"/>
+        <Enabled Value="False"/>
       </Item20>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

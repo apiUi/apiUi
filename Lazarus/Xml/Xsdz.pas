@@ -244,7 +244,7 @@ type
     function xsdFindTypeDef(aNameSpace, aName: String): TXsdDataType;
     procedure AddBuiltIns;
     procedure AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent);
-    procedure AddXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
+    procedure AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);
     function LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent): Boolean;
     function LoadXsdFromString(aString: String; ErrorFound: TOnErrorEvent): Boolean;
     function ChangedElementTypedefsAsXml: TObject;
@@ -931,12 +931,16 @@ begin
           AddXsdFromXml (XmlItems[x], aFileName, ErrorFound);
       exit; // only here for the schema(s)
     end;
-    for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
-      if (XmlItems[x].Name = tagImport)
-      or (XmlItems[x].Name = tagInclude)
-      then
-        AddXsdFromFile (ExpandRelativeFileName(aFileName, XmlItems[x].Attributes.ValueByTag[tagSchemaLocation]), ErrorFound);
     xTargetNameSpace := xXml.Attributes.ValueByTag[tagTargetNamespace];
+    for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
+    begin
+      if (XmlItems[x].Name = tagImport)
+      then
+        AddXsdFromFile ('', ExpandRelativeFileName(aFileName, XmlItems[x].Attributes.ValueByTag[tagSchemaLocation]), ErrorFound);
+      if (XmlItems[x].Name = tagInclude)
+      then
+        AddXsdFromFile (xTargetNameSpace, ExpandRelativeFileName(aFileName, XmlItems[x].Attributes.ValueByTag[tagSchemaLocation]), ErrorFound);
+    end;
     xsdElementFormDefaultQualified := (xXml.Attributes.ValueByTag[tagElementFormDefault] = tagQualified);
     xsdAttributeFormDefaultQualified := (xXml.Attributes.ValueByTag[tagAttributeFormDefault] = tagQualified);
     for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
@@ -954,18 +958,30 @@ begin
   end;
 end;
 
-procedure TXsdDescr.AddXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
+procedure TXsdDescr.AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);
+  procedure _inheritTargetNamespace (aXml: TXml);
+  var
+    xAttr: TXmlAttribute;
+  begin
+    xAttr := aXml.Attributes.AttributeByTag[tagTargetNamespace];
+    if Assigned (xAttr) then
+      xAttr.Value := aOverruleNamespace
+    else
+      aXml.AddAttribute(TXmlAttribute.CreateAsString(tagTargetNamespace, aOverruleNamespace));
+  end;
 var
   x: Integer;
   xXml: TXml;
 begin
-  if ReadFileNames.Find(aFileName, x) then Exit;
-  ReadFileNames.Add(aFileName);
+  if ReadFileNames.Find(aOverruleNamespace + ';' + aFileName, x) then Exit;
+  ReadFileNames.Add(aOverruleNamespace + ';' + aFileName);
   xXml := TXml.Create;
   try
     xXml.LoadFromString(ReadStringFromFile(aFileName), ErrorFound);
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
+    if aOverruleNamespace <> '' then
+      _inheritTargetNamespace (xXml);
     AddXsdFromXml(xXml, aFileName, ErrorFound);
   finally
     xXml.Free;
@@ -981,7 +997,7 @@ begin
     fMainFileName := ExpandFileNameUTF8(aFileName)
   else
     fMainFileName := aFileName;
-  AddXsdFromFile (fMainFileName, ErrorFound);
+  AddXsdFromFile ('', fMainFileName, ErrorFound);
   Finalise;
 end;
 

@@ -2760,19 +2760,23 @@ var
 begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.xsdOperationsXml('');
-  if EditXmlXsdBased('Xsd Operations', 'OperationDefs.XsdOperations',
-    'XsdOperations.Operation.Name', 'XsdOperations.Operation.Name',
-    se.IsActive, OperationDefsXsd, xXml) then
-  begin
-    AcquireLock;
-    try
-      stubChanged := True;
-      se.xsdOperationsUpdate(xXml, se.projectFileName);
-      PrepareOperation;
-    finally
-      ReleaseLock;
+  try
+    if EditXmlXsdBased('Xsd Operations', 'OperationDefs.XsdOperations',
+      'XsdOperations.Operation.Name', 'XsdOperations.Operation.Name',
+      se.IsActive, OperationDefsXsd, xXml) then
+    begin
+      AcquireLock;
+      try
+        stubChanged := True;
+        se.xsdOperationsUpdate(xXml, se.projectFileName);
+        PrepareOperation;
+      finally
+        ReleaseLock;
+      end;
+      CheckBoxClick(nil);
     end;
-    CheckBoxClick(nil);
+  finally
+    xXml.Free;
   end;
 end;
 

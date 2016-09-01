@@ -1928,6 +1928,8 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
     begin
       if Name = tagImport then
         _LoadFromFile (ExpandRelativeFileName(aFileName, Attributes.ValueByTag[tagLocation]));
+      if Name = tagInclude then
+        _LoadFromFile (ExpandRelativeFileName(aFileName, Attributes.ValueByTag[tagLocation]));
     end;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items do
     begin
@@ -2354,7 +2356,7 @@ var
       xXsdDescr := TXsdDescr.Create(xsdDefaultElementsWhenRepeatable);
     sdfXsdDescrs.AddObject('', xXsdDescr);
     try
-      xXsdDescr.AddXsdFromFile(xFileName, _OnParseErrorEvent);
+      xXsdDescr.AddXsdFromFile('', xFileName, _OnParseErrorEvent);
     except
       on E: Exception do
         raise Exception.Create('Error opening ' + xFileName + ': ' + e.Message);
@@ -3126,7 +3128,7 @@ var
 begin
   for x := 0 to ExtraXsds.Count - 1 do
     if not XsdDescr.ReadFileNames.Find (ExtraXsds.Strings[x], f) then
-      XsdDescr.AddXsdFromFile ( ExtraXsds.Strings[x], _OnParseErrorEvent);
+      XsdDescr.AddXsdFromFile ('', ExtraXsds.Strings[x], _OnParseErrorEvent);
   if ExtraXsds.Count > 0 then
     XsdDescr.Finalise; // again
 end;
@@ -4497,6 +4499,11 @@ begin
   self.wsaSpecificMustUnderstand := xOperation.wsaSpecificMustUnderstand;
   self.wsaMustUnderstand := xOperation.wsaMustUnderstand;
   self.AsynchronousDialog := xOperation.AsynchronousDialog;
+  self.useSsl := xOperation.useSsl;
+  self.sslCertificateFile := xOperation.sslCertificateFile;
+  self.sslKeyFile := xOperation.sslKeyFile;
+  self.sslRootCertificateFile := xOperation.sslRootCertificateFile;
+  self.sslVersion := xOperation.sslVersion;
   if Assigned (_WsdlWsaXsd) then
   begin
     reqWsaXml := TXml.Create(-1000, _WsdlWsaXsd);
