@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="10407"/>
+      <BuildNr Value="10416"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -155,7 +155,6 @@
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>
-        <Enabled Value="False"/>
       </Item4>
       <Item5>
         <Name Value="EDatabaseError"/>
@@ -167,7 +166,6 @@
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
-        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>

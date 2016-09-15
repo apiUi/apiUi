@@ -28,6 +28,8 @@ type
     Range    : integer;     //range :-)
   end;
 
+  { TA2BStringList }
+
   TA2BStringList = class(TObject)
   private
     Diff: TDiff;
@@ -60,25 +62,23 @@ end;
 procedure TA2BStringList.Execute(aList, bList: TStringList);
 var
   x, i, a, p: Integer;
-  HashList1,HashList2: TList;
+  HashList1,HashList2: PIntArray;
 begin
-  HashList1 := TList.create;
-  HashList2 := TList.create;
+  GetMem (HashList1, sizeof(integer)*(aList.Count));
+  GetMem (HashList2, sizeof(integer)*(bList.Count));
   try
-    HashList1.Capacity := aList.Count;
-    HashList2.Capacity := bList.Count;
     for i := 0 to aList.Count - 1 do
-      HashList1.add(HashLine(aList[i],False, False));
+      HashList1 [i + 1] := Integer(HashLine(aList[i],False, False));
     for i := 0 to bList.Count - 1 do
-      HashList2.add(HashLine(bList[i],False, False));
-    Diff.Execute ( PIntArray (HashList1.List)
-                 , PIntArray (HashList2.List)
-                 , HashList1.Count
-                 , HashList2.Count
+      HashList2 [i + 1] := Integer(HashLine(bList[i],False, False));
+    Diff.Execute ( HashList1
+                 , HashList2
+                 , aList.Count
+                 , bList.Count
                  );
   finally
-    HashList1.Free;
-    HashList2.Free;
+    FreeMem (HashList1);
+    FreeMem (HashList2);
   end;
 end;
 
