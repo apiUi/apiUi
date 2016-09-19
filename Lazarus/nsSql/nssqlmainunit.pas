@@ -166,6 +166,7 @@ implementation
 uses xmlio
    , PromptTacoUnit
    , ViewSqlRowUnit
+   , InsertSqlUnit
    , strutils
    ;
 
@@ -1023,7 +1024,7 @@ end;
 procedure TMainForm .DeleteActionUpdate (Sender : TObject );
 begin
   DeleteAction.Enabled := (not fActive)
-                      and (DataGrid.RowCount > 1)
+                      and (DataGrid.RowCount > DataGrid.FixedRows)
                       and (sqlQuery.SingleFullTableQuery)
                       and (SqlBrowseDefine.ColClassKnown)
                         ;
@@ -1044,8 +1045,32 @@ begin
 end;
 
 procedure TMainForm .InsertActionExecute (Sender : TObject );
+var
+  xCol: Integer;
 begin
-  ShowMessage ('insert nyi');
+  for xCol := DataGrid.FixedCols to DataGrid.ColCount - 1 do
+  begin
+    if DataGrid.Row < DataGrid.FixedRows then
+    begin
+      SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].Value := '';
+      SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].UseNull := False;
+    end
+    else
+    begin
+      SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].Value := DataGrid.Cells[xCol, DataGrid.Row];
+      SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].UseNull
+        := Assigned(DataGrid.Objects[xCol, DataGrid.Row])
+       and SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].NullAllowed;
+    end;
+  end;
+  Application.CreateForm(TInsertSqlForm, InsertSqlForm);
+  try
+    InsertSqlForm.Caption := 'Insert into ' + SqlBrowseDefine.DefineName;
+    InsertSqlForm.Define := SqlBrowseDefine;
+    InsertSqlForm.ShowModal;
+  finally
+    FreeAndNil(InsertSqlForm);
+  end;
 end;
 
 procedure TMainForm .InsertActionUpdate (Sender : TObject );

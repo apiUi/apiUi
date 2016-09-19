@@ -14,20 +14,26 @@ uses
   ;
 
 type
+
+  { TInsertSqlForm }
+
   TInsertSqlForm = class(TForm)
+    Button1 : TButton ;
+    CancelAction : TAction ;
     ActionList1: TActionList;
     CopyToClibBoardAction: TAction;
+    mainImageList : TImageList ;
     ToolBar: TToolBar;
     GenerateAction: TAction;
     ToolButton1: TToolButton;
     DataGrid: TStringGrid;
     InsertAction: TAction;
-    ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     SaveQueryAction: TAction;
     SqlSaveDialog: TSaveDialog;
+    procedure CancelActionExecute (Sender : TObject );
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure InitMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -149,12 +155,14 @@ begin
   }
 end;
 
+procedure TInsertSqlForm .CancelActionExecute (Sender : TObject );
+begin
+  ModalResult := mrCancel;
+end;
+
 procedure TInsertSqlForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.WriteInteger ( 'ScreenForm'
-                       , 'ValueWidth'
-                       , DataGrid.ColWidths [ValueColumn]
-                       );
+  IniFile.IntegerByName['ValueColumnWidth'] := DataGrid.ColWidths [ValueColumn];
   IniFile.Save;
   IniFile.Free;
   FNoCheck.Free;
@@ -181,14 +189,7 @@ begin
   SaveValues;
   if True then {if generate Insert}
   begin
-    Application.CreateForm(TipmInfoForm, ipmInfoForm);
-    try
-      ipmInfoForm.Caption := 'IpmGun - Generated SQL insert statement';
-      ipmInfoForm.Memo.Lines.Text := Define.InsertQuery;
-      ipmInfoForm.ShowModal;
-    finally
-      FreeAndNil (ipmInfoForm);
-    end;
+    ShowMessage (Define.InsertQuery);
   end;
 end;
 
@@ -287,6 +288,7 @@ procedure TInsertSqlForm.DataGridSelectCell(Sender: TObject; ACol,
   ARow: Integer; var CanSelect: Boolean);
 begin
   if (aCol = ValueColumn)
+  and Assigned (Define)
   and (not Define.Columns.Columns [aRow - 1].UseDefault)
   and (not Define.Columns.Columns [aRow - 1].UseNull)
   and (UpperCase (Define.Columns.Columns [aRow - 1].ColClass) <> 'S')
@@ -344,10 +346,10 @@ begin
   SqlSaveDialog.Title := 'Save SQL query to file';
   SqlSaveDialog.DefaultExt := 'SQL';
   SqlSaveDialog.Filter := 'SQL File (*.SQL)|*.SQL';
-  SqlSaveDialog.FileName := ConsoleForm.SqlFileName;
+//SqlSaveDialog.FileName := ConsoleForm.SqlFileName;
   if SqlSaveDialog.Execute = True then
   begin
-    ConsoleForm.SqlFileName := SqlSaveDialog.FileName;
+//  ConsoleForm.SqlFileName := SqlSaveDialog.FileName;
     SaveStringToFile (SqlSaveDialog.FileName, Define.InsertQuery);
   end;
 end;
@@ -358,14 +360,14 @@ begin
   InsertAction.Enabled := False;
   DataGrid.Enabled := False;
   SaveValues;
-  ConsoleForm.BooleanDoSqlQuery (Define.InsertQuery);
+//ConsoleForm.BooleanDoSqlQuery (Define.InsertQuery);
   ToolBar.Invalidate;
-  ConsoleForm.WaitUntilEndOfDialog;
+//ConsoleForm.WaitUntilEndOfDialog;
   InsertAction.Enabled := True;
   DataGrid.Enabled := True;
   QueryRunning := False;
-  if ConsoleForm.SqlSuccess then
-    ConsoleForm.InsertDataGridRow;
+//if ConsoleForm.SqlSuccess then
+//  ConsoleForm.InsertDataGridRow;
   DataGrid.SetFocus;
 end;
 
