@@ -237,7 +237,7 @@ function TDefine.GetDeleteQuery: String;
 begin
   result := 'delete from '
           + DefineName
-          + #$D#$A {newline}
+          + LineEnding {newline}
           + WhereClause
           ;
 end;
@@ -381,7 +381,7 @@ begin
                 + ' = '
                 + qColumn.SqlValuePresentation (qColumn.OriginalValue)
                 ;
-      result := result + #$D#$A; {append newline}
+      result := result + LineEnding; {append newline}
       Sep := 'and ';
     end; {if to be included in where clause}
   end; {for each column}

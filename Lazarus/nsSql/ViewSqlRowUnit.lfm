@@ -1,0 +1,60 @@
+object ViewSqlRowForm: TViewSqlRowForm
+  Left = 345
+  Height = 413
+  Top = 180
+  Width = 609
+  BorderStyle = bsSizeToolWin
+  Caption = 'Screen'
+  ClientHeight = 413
+  ClientWidth = 609
+  Color = clBtnFace
+  Font.CharSet = ANSI_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Courier New'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnMouseMove = InitMouseMove
+  OnShow = FormShow
+  ShowHint = True
+  LCLVersion = '1.2.6.0'
+  object ToolBar: TToolBar
+    Left = 0
+    Height = 29
+    Top = 0
+    Width = 609
+    ButtonHeight = 23
+    Caption = 'ToolBar'
+    TabOrder = 0
+  end
+  object DataGrid: TStringGrid
+    Left = 0
+    Height = 384
+    Top = 29
+    Width = 609
+    Align = alClient
+    ColCount = 2
+    DefaultRowHeight = 18
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Courier New'
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goThumbTracking]
+    ParentFont = False
+    RowCount = 2
+    TabOrder = 1
+    TitleFont.CharSet = ANSI_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Courier New'
+  end
+  object ActionList1: TActionList
+    left = 344
+    top = 125
+    object CopyToClibBoardAction: TAction
+      Caption = '&Copy to Clipboard'
+      Enabled = False
+      Hint = 'Copy screen to clipboard'
+    end
+  end
+end

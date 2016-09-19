@@ -91,6 +91,7 @@ type
     procedure UpdateActionExecute (Sender : TObject );
     procedure UpdateActionUpdate (Sender : TObject );
     procedure ViewActionExecute (Sender : TObject );
+    procedure ViewActionUpdate (Sender : TObject );
   private
     fActive: Boolean;
     fProcedureThread: TProcedureThread;
@@ -164,6 +165,7 @@ implementation
 
 uses xmlio
    , PromptTacoUnit
+   , ViewSqlRowUnit
    , strutils
    ;
 
@@ -240,7 +242,27 @@ end;
 
 procedure TMainForm .ViewActionExecute (Sender : TObject );
 begin
-  ShowMessage ('nyi');
+  if DataGrid.Row >= DataGrid.FixedRows then
+  begin
+    Application.CreateForm(TViewSqlRowForm, ViewSqlRowForm);
+    try
+      ViewSqlRowForm.Headers := DataGrid.Rows[0];
+      ViewSqlRowForm.Values := DataGrid.Rows[DataGrid.Row];
+      ViewSqlRowForm.StartWithColumn := DataGrid.FixedCols;
+      ViewSqlRowForm.Caption := 'Viewing row ' + IntToStr
+        (DataGrid.Row + 1 - DataGrid.FixedRows);
+      ViewSqlRowForm.ShowModal;
+    finally
+      FreeAndNil(ViewSqlRowForm);
+    end;
+  end;
+end;
+
+procedure TMainForm .ViewActionUpdate (Sender : TObject );
+begin
+  ViewAction.Enabled := (not fActive)
+                    and (DataGrid.Row >= DataGrid.FixedRows)
+                      ;
 end;
 
 procedure TMainForm .DeleteRowFromDatagrid (aRow : Integer );
@@ -1023,12 +1045,18 @@ end;
 
 procedure TMainForm .InsertActionExecute (Sender : TObject );
 begin
-  ShowMessage ('nyi');
+  ShowMessage ('insert nyi');
 end;
 
 procedure TMainForm .InsertActionUpdate (Sender : TObject );
 begin
-  InsertAction.Enabled := (not fActive);
+  InsertAction.Enabled := (not fActive)
+                      and Assigned (sqlQuery)
+                      and sqlQuery.SingleFullTableQuery
+                      and Assigned(SqlBrowseDefine)
+                      and SqlBrowseDefine.ColClassKnown
+                      and (DataGrid.Row >= DataGrid.FixedRows)
+                        ;
 end;
 
 procedure TMainForm .ListBoxDblClick (Sender : TObject );
