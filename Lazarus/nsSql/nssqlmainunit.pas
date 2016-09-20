@@ -1068,6 +1068,12 @@ begin
     InsertSqlForm.Caption := 'Insert into ' + SqlBrowseDefine.DefineName;
     InsertSqlForm.Define := SqlBrowseDefine;
     InsertSqlForm.ShowModal;
+    if InsertSqlForm.ModalResult = mrOK then
+      ExecuteSQL ( '<SQLEXEC>'
+                 + fTacoInterface.tacoString(SqlBrowseDefine.InsertQuery)
+                 , DataGrid.Row
+                 , nsvInsert
+                 );
   finally
     FreeAndNil(InsertSqlForm);
   end;

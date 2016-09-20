@@ -54,7 +54,7 @@ object InsertSqlForm: TInsertSqlForm
       ImageIndex = 67
       Style = tbsSeparator
     end
-    object Button1: TButton
+    object Button2: TButton
       Left = 534
       Height = 27
       Top = 2
@@ -68,6 +68,11 @@ object InsertSqlForm: TInsertSqlForm
       ModalResult = 2
       ParentFont = False
       TabOrder = 0
+    end
+    object ToolButton2: TToolButton
+      Left = 67
+      Top = 2
+      Action = InsertAction
     end
   end
   object DataGrid: TStringGrid

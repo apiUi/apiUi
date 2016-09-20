@@ -18,7 +18,7 @@ type
   { TInsertSqlForm }
 
   TInsertSqlForm = class(TForm)
-    Button1 : TButton ;
+    Button2 : TButton ;
     CancelAction : TAction ;
     ActionList1: TActionList;
     CopyToClibBoardAction: TAction;
@@ -28,6 +28,7 @@ type
     ToolButton1: TToolButton;
     DataGrid: TStringGrid;
     InsertAction: TAction;
+    ToolButton2 : TToolButton ;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
@@ -356,6 +357,7 @@ end;
 
 procedure TInsertSqlForm.InsertActionExecute(Sender: TObject);
 begin
+  {
   QueryRunning := True;
   InsertAction.Enabled := False;
   DataGrid.Enabled := False;
@@ -369,6 +371,8 @@ begin
 //if ConsoleForm.SqlSuccess then
 //  ConsoleForm.InsertDataGridRow;
   DataGrid.SetFocus;
+  }
+  ModalResult := mrOK;
 end;
 
 procedure TInsertSqlForm.GenerateActionUpdate(Sender: TObject);
