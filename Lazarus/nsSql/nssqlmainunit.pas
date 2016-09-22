@@ -105,6 +105,8 @@ type
     InvokeDefine: TDefine;
     SqlBrowseDefine: TDefine;
     LineNumber: Integer;
+    procedure NewGridRow(aGrid: TStringGrid);
+    procedure InsertDataGridRow;
     procedure DeleteRowFromDatagrid (aRow: Integer);
     procedure OnStartBlockingThread;
     procedure OnEndBlockingThread;
@@ -264,6 +266,64 @@ begin
   ViewAction.Enabled := (not fActive)
                     and (DataGrid.Row >= DataGrid.FixedRows)
                       ;
+end;
+
+procedure TMainForm.NewGridRow(aGrid: TStringGrid);
+var
+  c: Integer;
+  r: Integer;
+begin
+  if aGrid.RowCount > 1 then { if already detailrows visible }
+  begin { Scroll all details from current row down 1 row }
+    aGrid.RowCount := aGrid.RowCount + 1;
+    for c := 0 to aGrid.ColCount - 1 do
+    begin
+      for r := aGrid.RowCount - 2 downto aGrid.Row do
+      begin
+        aGrid.Cells[c, r + 1] := aGrid.Cells[c, r];
+        aGrid.Objects[c, r + 1] := aGrid.Objects[c, r];
+      end;
+    end;
+  end
+  else
+  begin { first row to display }
+    aGrid.RowCount := 2;
+    aGrid.FixedRows := 1;
+    aGrid.Row := aGrid.RowCount - 1; { Update last row as new row }
+  end;
+end;
+
+procedure TMainForm.InsertDataGridRow;
+var
+  c: Integer;
+  r: Integer;
+begin
+  NewGridRow(DataGrid);
+  for c := DataGrid.FixedCols to DataGrid.ColCount - 1 do
+  begin
+    if SqlBrowseDefine.Columns.Columns[c - DataGrid.FixedCols]
+      .UseDefault then
+    begin
+      DataGrid.Objects[c, DataGrid.Row] := nil; { ?? }
+      DataGrid.Cells[c, DataGrid.Row] := SqlBrowseDefine.Columns.Columns
+        [c - DataGrid.FixedCols].DefaultValue;
+    end
+    else
+    begin
+      if SqlBrowseDefine.Columns.Columns[c - DataGrid.FixedCols]
+        .UseNull then
+      begin
+        DataGrid.Objects[c, DataGrid.Row] := Pointer(1);
+        DataGrid.Cells[c, DataGrid.Row] := { 'Null' } SqlNullPresentation;
+      end
+      else
+      begin
+        DataGrid.Objects[c, DataGrid.Row] := nil;
+        DataGrid.Cells[c, DataGrid.Row] := SqlBrowseDefine.Columns.Columns
+          [c - DataGrid.FixedCols].Value;
+      end;
+    end;
+  end;
 end;
 
 procedure TMainForm .DeleteRowFromDatagrid (aRow : Integer );
@@ -600,6 +660,13 @@ begin
   begin
     DeleteRowFromDatagrid (aRow);
   end;
+  if (aRow > 0)
+  and (aVerb = nsvInsert) then
+  begin
+    InsertDataGridRow;
+  end;
+
+
 end;
 
 procedure TMainForm.ProcessSqlResponse(aResult: String; aRow: Integer; aVerb: TNsSqlVerb);
