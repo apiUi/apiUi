@@ -28,7 +28,7 @@ resourcestring
   S_INBOUND_IS_A_RESPONSE = '[Inbound is a response]';
 
 type TStubAction = (saStub, saForward, saRedirect, saRequest);
-type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp);
+type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone);
 type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
@@ -5488,6 +5488,8 @@ begin
         AddXml (TXml.CreateAsString('Host', smtpHost));
         AddXml (TXml.CreateAsInteger('Port', smtpPort));
       end;
+    ttNone:
+      result.AddXml(TXml.CreateAsString('None', ''));
   end;
 
 end;
@@ -5635,6 +5637,10 @@ begin
         begin
           StubTransport := ttTaco;
           TacoConfigXml.LoadValues (aXml.Items.XmlItems[x], False, True);
+        end;
+        if Name = 'None' then
+        begin
+          StubTransport := ttNone;
         end;
       end;
     end;

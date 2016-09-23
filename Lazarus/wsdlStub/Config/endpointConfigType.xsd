@@ -828,6 +828,12 @@ Specify Username / Password at the Service Options</xs:documentation>
 Internet standard for electronic mail transmission across IP networks</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="None">
+				<xs:annotation>
+					<xs:documentation>No Transfer Protocol
+Used to use wsdlStub operation functionality without sending a message</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 </xs:schema>

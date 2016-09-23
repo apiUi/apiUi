@@ -95,6 +95,9 @@ type
     function GetAbortPressed: Boolean;
     function getDoClearSnapshots : Boolean ;
     function getDoClearLogs : Boolean ;
+    function SendNoneMessage ( aOperation: TWsdlOperation
+                             ; aMessage: String
+                             ): String;
     function SendHttpMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
                              ; var aReqHeader, aRpyHeader, aResponseCode: String
@@ -3526,7 +3529,8 @@ begin
     ttHttp: result := SendHttpMessage (aOperation, aMessage, reqheader, rpyheader, responsecode);
     ttMq: result := SendOperationMqMessage (aOperation, aMessage, reqheader);
     ttStomp: result := SendOperationStompMessage (aOperation, aMessage, reqheader, rpyheader);
-    ttTaco: result := SendOperationTacoMessage(aOperation, aMessage, reqheader, rpyheader)
+    ttTaco: result := SendOperationTacoMessage(aOperation, aMessage, reqheader, rpyheader);
+    ttNone: result := SendNoneMessage(aOperation, aMessage);
   end;
 end;
 
@@ -3872,6 +3876,7 @@ begin
           ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttTaco: xLog.ReplyBody := SendOperationTacoMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
+          ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody);
         end;
       finally
         xLog.InboundTimeStamp := Now;
@@ -5753,6 +5758,11 @@ end;
 function TWsdlProject .getDoClearLogs : Boolean ;
 begin
   result := Assigned (fClearedLogs);
+end;
+
+function TWsdlProject.SendNoneMessage(aOperation: TWsdlOperation; aMessage: String): String;
+begin
+  result := '';
 end;
 
 function TWsdlProject.FindOperationOnRequest(aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;

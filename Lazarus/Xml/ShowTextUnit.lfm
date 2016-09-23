@@ -16,7 +16,7 @@ object ShowTextForm: TShowTextForm
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
     Height = 287
@@ -69,12 +69,12 @@ object ShowTextForm: TShowTextForm
     end
     object WrapTextCheckBox: TCheckBox
       Left = 125
-      Height = 20
+      Height = 22
       Top = 11
-      Width = 76
+      Width = 87
       Caption = 'Wrap text'
       OnClick = WrapTextCheckBoxClick
       TabOrder = 1
     end
   end
-end
+end
