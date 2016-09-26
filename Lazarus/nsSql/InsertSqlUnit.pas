@@ -117,43 +117,13 @@ begin
 end;
 
 procedure TInsertSqlForm.FormCreate(Sender: TObject);
-var
-  bmp: TBitmap;
 begin
   IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   FCheck:= TBitmap.Create;
   FNoCheck:= TBitmap.Create;
-  bmp:= TBitmap.create;
-  {
-  try
-    bmp.handle := LoadBitmap( 0, PChar(OBM_CHECKBOXES ));
-    // bmp now has a 4x3 bitmap of divers state images
-    // used by checkboxes and radiobuttons
-    With FNoCheck Do Begin
-      // the first subimage is the unchecked box
-      width := bmp.width div 4;
-      height := bmp.height div 3;
-      canvas.copyrect
-      ( canvas.cliprect
-      , bmp.canvas
-      , canvas.cliprect
-      );
-    End;
-    With FCheck Do Begin
-      // the second subimage is the checked box
-      width := bmp.width div 4;
-      height := bmp.height div 3;
-      canvas.copyrect
-      ( canvas.cliprect
-      , bmp.canvas
-      , rect( width, 0, 2*width, height )
-      );
-    End;
-  finally
-    bmp.free
-  end;
-  }
+  mainImageList.GetBitmap(90, FCheck);
+  mainImageList.GetBitmap(91, FNoCheck);
 end;
 
 procedure TInsertSqlForm .CancelActionExecute (Sender : TObject );
@@ -190,7 +160,7 @@ begin
   SaveValues;
   if True then {if generate Insert}
   begin
-    ShowMessage (Define.InsertQuery);
+    ShowMessage (Define.InsertQuery[' ']);
   end;
 end;
 
@@ -227,13 +197,12 @@ end;
 procedure TInsertSqlForm.DataGridDrawCell(Sender: TObject; ACol,
   ARow: Integer; Rect: TRect; State: TGridDrawState);
 var
-  grid: TStringgrid;
   xDrawCheckBox: Boolean;
   xBoolean: Boolean;
+  xBitMap: TBitmap;
 begin
   if aRow < DataGrid.FixedRows then
     exit;
-  grid:= Sender As TStringgrid;
   xDrawCheckBox := False;
   case aCol of
     UseDefaultColumn:
@@ -253,12 +222,12 @@ begin
         or (Define.Columns.Columns [aRow - 1].UseNull)
         or (UpperCase (Define.Columns.Columns [aRow - 1].ColClass) = 'S')
         then begin
-          grid.Canvas.Brush.Color := Color;
-          grid.Canvas.FillRect( rect );
-          grid.Canvas.TextRect
+          DataGrid.Canvas.Brush.Color := Color;
+          DataGrid.Canvas.FillRect( rect );
+          DataGrid.Canvas.TextRect
             ( Rect
-            , Rect.Left + grid.Canvas.TextWidth ('l')
-            , Rect.Top + (Rect.Bottom - Rect.Top - grid.Canvas.TextHeight('X')) div 2
+            , Rect.Left + DataGrid.Canvas.TextWidth ('l')
+            , Rect.Top + (Rect.Bottom - Rect.Top - DataGrid.Canvas.TextHeight('X')) div 2
             , DataGrid.Cells [aCol, aRow]
             );
         end;
@@ -266,7 +235,7 @@ begin
   end;
   if xDrawCheckBox then
   begin
-    With grid.Canvas Do
+    With DataGrid.Canvas Do
     Begin
       if not (gdFixed in State) then
       begin
@@ -276,7 +245,7 @@ begin
       If xBoolean Then
         Draw( (rect.right + rect.left - FCheck.width) div 2,
               (rect.bottom + rect.top - FCheck.height) div 2,
-              FCheck )
+              FCheck)
       Else
         Draw( (rect.right + rect.left - FNoCheck.width) div 2,
               (rect.bottom + rect.top - FNoCheck.height) div 2,
@@ -351,7 +320,7 @@ begin
   if SqlSaveDialog.Execute = True then
   begin
 //  ConsoleForm.SqlFileName := SqlSaveDialog.FileName;
-    SaveStringToFile (SqlSaveDialog.FileName, Define.InsertQuery);
+    SaveStringToFile (SqlSaveDialog.FileName, Define.InsertQuery[LineEnding]);
   end;
 end;
 

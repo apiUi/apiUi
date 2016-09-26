@@ -104,23 +104,23 @@ end;
 type
   TDefine = class(TObject)
 private
-    function GetInsertQuery: String;
-    function GetUpdateQuery: String;
-    function GetDeleteQuery: String;
+    function GetInsertQuery(LineSep: String): String;
+    function GetUpdateQuery(LineSep: String): String;
+    function GetDeleteQuery(LineSep: String): String;
     function GetHasPrimaryKey: Boolean;
     function GetSelectStarColumns: String;
-    function getWhereClause: String;
+    function getWhereClause(LineSep: String): String;
 public
   DefineName: String;
   FileName: String;
   Columns: TColumnList;
   ColClassKnown: Boolean;
-  property InsertQuery: String read GetInsertQuery;
-  property UpdateQuery: String read GetUpdateQuery;
-  property DeleteQuery: String read GetDeleteQuery;
+  property InsertQuery[LineSep: String]: String read GetInsertQuery;
+  property UpdateQuery[LineSep: String]: String read GetUpdateQuery;
+  property DeleteQuery[LineSep: String]: String read GetDeleteQuery;
   property SelectStarColums: String read GetSelectStarColumns;
   property HasPrimaryKey: Boolean read GetHasPrimaryKey;
-  property WhereClause: String read getWhereClause;
+  property WhereClause[LineSep: String]: String read getWhereClause;
   constructor Create;
   destructor Destroy; override;
 end;
@@ -233,12 +233,12 @@ begin
   inherited;
 end;
 
-function TDefine.GetDeleteQuery: String;
+function TDefine.GetDeleteQuery(LineSep: String): String;
 begin
   result := 'delete from '
           + DefineName
-          + LineEnding {newline}
-          + WhereClause
+          + LineSep
+          + WhereClause [LineSep]
           ;
 end;
 
@@ -257,46 +257,37 @@ begin
   end;
 end;
 
-function TDefine.GetInsertQuery: String;
+function TDefine.GetInsertQuery(LineSep: String): String;
 var
-  qStrings: TStringList;
   Sep: String;
   qColumn: TColumn;
   x: Integer;
 begin
-  qStrings := TStringList.Create;
-  try
-    qStrings.Add('insert into ' + DefineName);
-    Sep := '( ';
-    for x := 0 to Columns.Count - 1 do
+  result := 'insert into ' + DefineName;
+  Sep := '( ';
+  for x := 0 to Columns.Count - 1 do
+  begin
+    qColumn := Columns.Columns [x];
+    if (not qColumn.UseDefault)
+    and (not qColumn.IsSysKey) then
     begin
-      qColumn := Columns.Columns [x];
-      if (not qColumn.UseDefault)
-      and (not qColumn.IsSysKey) then
-      begin
-        qStrings.Add(Sep + qColumn.ColName);
-        Sep := ', ';
-      end;
+      result := result + Sep + qColumn.ColName + LineSep;
+      Sep := ', ';
     end;
-    qStrings.Add(') values');
-    Sep := '( ';
-    for x := 0 to Columns.Count - 1 do
+  end;
+  result := result + ') values';
+  Sep := '( ';
+  for x := 0 to Columns.Count - 1 do
+  begin
+    qColumn := Columns.Columns [x];
+    if (not qColumn.UseDefault)
+    and (not qColumn.IsSysKey) then
     begin
-      qColumn := Columns.Columns [x];
-      if (not qColumn.UseDefault)
-      and (not qColumn.IsSysKey) then
-      begin
-        qStrings.Add ( Sep
-                     + qColumn.SqlValuePresentation (qColumn.Value)
-                     );
-        Sep := ', ';
-      end;
+      Result := Result + Sep + qColumn.SqlValuePresentation (qColumn.Value) + LineSep;
+      Sep := ', ';
     end;
-    qStrings.Add(')');
-    result := qStrings.Text;
-  finally
-    qStrings.Free;
-  end; {try}
+  end;
+  Result := Result + ')' + LineSep;
 end;
 
 function TDefine.GetSelectStarColumns: String;
@@ -323,7 +314,7 @@ begin
     result := '*';
 end;
 
-function TDefine.GetUpdateQuery: String;
+function TDefine.GetUpdateQuery(LineSep: String): String;
 var
   qStrings: TStringList;
   Sep: String;
@@ -348,14 +339,14 @@ begin
         Sep := '  , ';
       end;
     end;
-    qStrings.Add(WhereClause);
+    qStrings.Add(WhereClause[LineSep]);
     result := qStrings.Text;
   finally
     qStrings.Free;
   end; {try}
 end;
 
-function TDefine.getWhereClause: String;
+function TDefine.getWhereClause(LineSep: String): String;
 var
   Sep: String;
   qColumn: TColumn;
@@ -381,7 +372,7 @@ begin
                 + ' = '
                 + qColumn.SqlValuePresentation (qColumn.OriginalValue)
                 ;
-      result := result + LineEnding; {append newline}
+      result := result + LineSep; {append newline}
       Sep := 'and ';
     end; {if to be included in where clause}
   end; {for each column}

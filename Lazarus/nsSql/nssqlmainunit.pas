@@ -169,6 +169,7 @@ uses xmlio
    , PromptTacoUnit
    , ViewSqlRowUnit
    , InsertSqlUnit
+   , UpdateSqlUnit
    , strutils
    ;
 
@@ -369,10 +370,10 @@ begin
     OriginalValue := DataGrid.Cells[xCol, ARow];
     OriginalUseNull := Assigned(DataGrid.Objects[xCol, ARow]);
   end;
-  if BooleanPromptDialog(SqlBrowseDefine.DeleteQuery) then
+  if BooleanPromptDialog(SqlBrowseDefine.DeleteQuery[LineEnding]) then
   begin
     ExecuteSQL ( '<SQLEXEC>'
-               + fTacoInterface.tacoString(SqlBrowseDefine.DeleteQuery)
+               + fTacoInterface.tacoString(SqlBrowseDefine.DeleteQuery[' '])
                , aRow
                , nsvDelete
                );
@@ -1137,7 +1138,7 @@ begin
     InsertSqlForm.ShowModal;
     if InsertSqlForm.ModalResult = mrOK then
       ExecuteSQL ( '<SQLEXEC>'
-                 + fTacoInterface.tacoString(SqlBrowseDefine.InsertQuery)
+                 + fTacoInterface.tacoString(SqlBrowseDefine.InsertQuery[' '])
                  , DataGrid.Row
                  , nsvInsert
                  );
