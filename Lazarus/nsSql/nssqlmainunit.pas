@@ -333,7 +333,6 @@ begin
     xXml.CheckDownline(True);
     xmlUtil.CreateXsdFromXml(xXsdDescr, xXml, True);
     XmlUtilz.ShowXml('View Sql results as Xml', xXml);
-    xmlUtilz.ShowXml('Viewiew', SqlResultsXml);
   finally
     xXml.Free;
     xXsdDescr.Free;
