@@ -4,14 +4,16 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="36">
+    <Units Count="38">
       <Unit0>
         <Filename Value="nsSql.lpr"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="18" Y="16"/>
-        <UsageCount Value="56"/>
+        <TopLine Value="5"/>
+        <CursorPos X="1" Y="20"/>
+        <UsageCount Value="63"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="nssqlmainunit.pas"/>
@@ -20,11 +22,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="nsSqlMainUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="161"/>
-        <CursorPos X="19" Y="172"/>
-        <UsageCount Value="56"/>
+        <TopLine Value="1045"/>
+        <CursorPos X="1" Y="1051"/>
+        <UsageCount Value="63"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -35,15 +38,17 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2"/>
         <CursorPos X="6" Y="13"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="60"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <UnitName Value="Xmlz"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="4165"/>
-        <CursorPos X="1" Y="4184"/>
+        <TopLine Value="191"/>
+        <CursorPos X="15" Y="197"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Utils\igGlobals.pas"/>
@@ -51,7 +56,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="6" Y="17"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Xml\Ipmz.pas"/>
@@ -59,14 +64,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2714"/>
         <CursorPos X="5" Y="2737"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\inc\objpash.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="183"/>
         <CursorPos X="23" Y="192"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\TacoInterface\tacoInterface.pas"/>
@@ -74,7 +79,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="244"/>
         <CursorPos X="3" Y="251"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Xml\xmlio.pas"/>
@@ -82,48 +87,44 @@
         <WindowIndex Value="0"/>
         <TopLine Value="401"/>
         <CursorPos X="1" Y="409"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit8>
       <Unit9>
         <Filename Value="Definez.pas"/>
         <UnitName Value="Definez"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="111"/>
-        <CursorPos X="12" Y="119"/>
-        <UsageCount Value="14"/>
-        <Loaded Value="True"/>
+        <TopLine Value="330"/>
+        <CursorPos X="15" Y="338"/>
+        <UsageCount Value="15"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\Utils\forminifilez.pas"/>
         <UnitName Value="FormIniFilez"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="52"/>
         <CursorPos X="15" Y="59"/>
-        <UsageCount Value="19"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="20"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\lazarus\lcl\include\customedit.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="521"/>
         <CursorPos X="1" Y="530"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\lazarus\lcl\interfaces\win32\win32listsl.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="159"/>
         <CursorPos X="1" Y="167"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\lcl\include\menuitem.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="76"/>
         <CursorPos X="1" Y="84"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
@@ -131,14 +132,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="789"/>
         <CursorPos X="3" Y="414"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit14>
       <Unit15>
         <Filename Value="QueryScanner\QueryScanner.l"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="16"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit15>
       <Unit16>
@@ -147,14 +148,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1855"/>
         <CursorPos X="32" Y="1877"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="16"/>
       </Unit16>
       <Unit17>
         <Filename Value="QueryScanner\yylex.cod"/>
         <WindowIndex Value="0"/>
         <TopLine Value="32"/>
         <CursorPos X="35" Y="38"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="16"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit17>
       <Unit18>
@@ -163,15 +164,17 @@
         <WindowIndex Value="0"/>
         <TopLine Value="31"/>
         <CursorPos X="10" Y="42"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\Xml\xmlUtilz.pas"/>
         <UnitName Value="xmlUtilz"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="286"/>
-        <CursorPos X="10" Y="293"/>
+        <TopLine Value="62"/>
+        <CursorPos X="12" Y="68"/>
         <UsageCount Value="12"/>
+        <Loaded Value="True"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\Xml\a2bxmlgridunit.pas"/>
@@ -179,7 +182,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="238"/>
         <CursorPos X="6" Y="250"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\libxml\src\xmlxsdparser.pas"/>
@@ -187,21 +190,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="26"/>
         <CursorPos X="15" Y="46"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1555"/>
         <CursorPos X="15" Y="1567"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\tthread.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="3" Y="51"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit23>
       <Unit24>
         <Filename Value="InsertSqlUnit.pas"/>
@@ -209,13 +212,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="InsertSqlUnit"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="111"/>
-        <CursorPos X="1" Y="127"/>
-        <UsageCount Value="16"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <CursorPos X="86" Y="118"/>
+        <UsageCount Value="17"/>
       </Unit24>
       <Unit25>
         <Filename Value="ViewSqlRowUnit.pas"/>
@@ -226,34 +226,30 @@
         <WindowIndex Value="0"/>
         <TopLine Value="70"/>
         <CursorPos X="44" Y="82"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit25>
       <Unit26>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-registry\src\registry.pp"/>
         <UnitName Value="registry"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="86"/>
         <CursorPos X="14" Y="94"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="14"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\lazarus\lcl\graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1189"/>
+        <TopLine Value="1187"/>
         <CursorPos X="15" Y="1158"/>
-        <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="13"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\lazarus\lcl\include\winapih.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="178"/>
         <CursorPos X="20" Y="186"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit28>
       <Unit29>
         <Filename Value="..\Components\Abbrevia\source\AbRegVcl.pas"/>
@@ -261,7 +257,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="224"/>
         <CursorPos X="5" Y="231"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\Components\Indy10\Lib\Core\IdAboutDotNET.pas"/>
@@ -269,7 +265,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="315"/>
         <CursorPos X="20" Y="324"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdDsnSASLListEditorFormNET.pas"/>
@@ -277,7 +273,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="335"/>
         <CursorPos X="30" Y="344"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit31>
       <Unit32>
         <Filename Value="..\Components\MsWord\Office_2_5_TLB.pas"/>
@@ -285,7 +281,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="8068"/>
         <CursorPos X="8" Y="8075"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\Components\virtualtreeview\VirtualTrees.pas"/>
@@ -293,17 +289,15 @@
         <WindowIndex Value="0"/>
         <TopLine Value="23549"/>
         <CursorPos X="3" Y="23553"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit33>
       <Unit34>
         <Filename Value="C:\lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="736"/>
         <CursorPos X="14" Y="742"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit34>
       <Unit35>
         <Filename Value="UpdateSqlUnit.pas"/>
@@ -311,139 +305,151 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UpdateSqlUnit"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="129"/>
-        <CursorPos X="1" Y="145"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <TopLine Value="351"/>
+        <CursorPos X="3" Y="353"/>
+        <UsageCount Value="12"/>
       </Unit35>
+      <Unit36>
+        <Filename Value="C:\lazarus\lcl\grids.pas"/>
+        <UnitName Value="Grids"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1584"/>
+        <CursorPos X="3" Y="1592"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="..\Utils\BrowseHistory.pas"/>
+        <UnitName Value="BrowseHistory"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="24"/>
+        <CursorPos X="3" Y="26"/>
+        <UsageCount Value="10"/>
+      </Unit37>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="226" Column="1" TopLine="215"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1152" Column="16" TopLine="1138"/>
       </Position1>
       <Position2>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="200" Column="1" TopLine="196"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1361" Column="27" TopLine="1348"/>
       </Position2>
       <Position3>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="229" Column="35" TopLine="217"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="115" Column="18" TopLine="108"/>
       </Position3>
       <Position4>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="230" Column="60" TopLine="222"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="331" Column="1" TopLine="327"/>
       </Position4>
       <Position5>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="238" Column="18" TopLine="238"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1" Column="2" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="62" Column="21" TopLine="55"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="115" Column="18" TopLine="102"/>
       </Position6>
       <Position7>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="126" Column="29" TopLine="126"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="331" Column="31" TopLine="327"/>
       </Position7>
       <Position8>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="62" Column="11" TopLine="54"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="332" Column="34" TopLine="327"/>
       </Position8>
       <Position9>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="1118" Column="3" TopLine="1125"/>
+        <Caret Line="546" Column="16" TopLine="556"/>
       </Position9>
       <Position10>
         <Filename Value="nssqlmainunit.pas"/>
-        <Caret Line="238" Column="12" TopLine="236"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position10>
       <Position11>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="115" Column="18" TopLine="102"/>
       </Position11>
       <Position12>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="13" Column="5" TopLine="5"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="331" Column="31" TopLine="317"/>
       </Position12>
       <Position13>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="85" Column="1" TopLine="77"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="332" Column="34" TopLine="318"/>
       </Position13>
       <Position14>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="135" Column="45" TopLine="127"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="546" Column="16" TopLine="532"/>
       </Position14>
       <Position15>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="141" Column="29" TopLine="134"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="547" Column="21" TopLine="533"/>
       </Position15>
       <Position16>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="138" Column="42" TopLine="134"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1049" Column="16" TopLine="1035"/>
       </Position16>
       <Position17>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="140" Column="89" TopLine="135"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position17>
       <Position18>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="144" Column="89" TopLine="139"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1049" Column="1" TopLine="1044"/>
       </Position18>
       <Position19>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="149" Column="1" TopLine="143"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1053" Column="1" TopLine="1044"/>
       </Position19>
       <Position20>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="148" Column="81" TopLine="140"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="336" Column="46" TopLine="329"/>
       </Position20>
       <Position21>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="123" Column="88" TopLine="115"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1050" Column="1" TopLine="1041"/>
       </Position21>
       <Position22>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="186" Column="36" TopLine="182"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1078" Column="5" TopLine="1069"/>
       </Position22>
       <Position23>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="342" Column="1" TopLine="334"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="480" Column="3" TopLine="474"/>
       </Position23>
       <Position24>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="344" Column="77" TopLine="336"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1050" Column="1" TopLine="1042"/>
       </Position24>
       <Position25>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="351" Column="1" TopLine="316"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1207" Column="12" TopLine="1191"/>
       </Position25>
       <Position26>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="150" Column="14" TopLine="143"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position26>
       <Position27>
-        <Filename Value="UpdateSqlUnit.pas"/>
-        <Caret Line="71" Column="21" TopLine="64"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="148" Column="22" TopLine="136"/>
       </Position27>
       <Position28>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="165" Column="1" TopLine="158"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1068" Column="30" TopLine="1056"/>
       </Position28>
       <Position29>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1054" Column="1" TopLine="1045"/>
       </Position29>
       <Position30>
-        <Filename Value="InsertSqlUnit.pas"/>
-        <Caret Line="62" Column="21" TopLine="49"/>
+        <Filename Value="nssqlmainunit.pas"/>
+        <Caret Line="1050" Column="1" TopLine="1045"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

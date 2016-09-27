@@ -12,8 +12,10 @@ uses
   ActnList , Grids , TacoInterface , Definez , FormIniFilez , types
   , QueryScanner
   , Xmlz
+  , Xsdz
   , xmlxsdparser
   , xmlUtilz
+  , BrowseHistory
   ;
 
 type
@@ -24,11 +26,19 @@ type
 
   TProcedureThread = class;
   TMainForm = class(TForm )
+    ToolButton10 : TToolButton ;
+    ToolButton11 : TToolButton ;
+    ViewSqlResultsAction : TAction ;
+    ForwardAction : TAction ;
+    BackwardAction : TAction ;
+    QueryBackButton : TToolButton ;
+    QueryForwardButton : TToolButton ;
     ToolButton4 : TToolButton ;
     ToolButton5 : TToolButton ;
     ToolButton6 : TToolButton ;
     ToolButton7 : TToolButton ;
     ToolButton8 : TToolButton ;
+    ToolButton9 : TToolButton ;
     ViewAction : TAction ;
     UpdateAction : TAction ;
     DeleteAction : TAction ;
@@ -70,12 +80,17 @@ type
     SynSQLSyn1 : TSynSQLSyn ;
     ToolBar1 : TToolBar ;
     ToolButton1 : TToolButton ;
+    procedure BackwardActionUpdate (Sender : TObject );
+    procedure ForwardActionUpdate (Sender : TObject );
+    procedure HistoryListMenuItemClick(Sender: TObject);
+    procedure BackwardActionExecute (Sender : TObject );
     procedure browseMenuItemClick (Sender : TObject );
     procedure DefineListBoxClick (Sender : TObject );
     procedure DeleteActionExecute (Sender : TObject );
     procedure DeleteActionUpdate (Sender : TObject );
     procedure ExecuteActionExecute (Sender : TObject );
     procedure ExecuteActionUpdate (Sender : TObject );
+    procedure ForwardActionExecute (Sender : TObject );
     procedure InsertActionExecute (Sender : TObject );
     procedure InsertActionUpdate (Sender : TObject );
     procedure ListBoxDblClick (Sender : TObject );
@@ -92,6 +107,7 @@ type
     procedure UpdateActionUpdate (Sender : TObject );
     procedure ViewActionExecute (Sender : TObject );
     procedure ViewActionUpdate (Sender : TObject );
+    procedure ViewSqlResultsActionExecute (Sender : TObject );
   private
     fActive: Boolean;
     fProcedureThread: TProcedureThread;
@@ -105,8 +121,10 @@ type
     InvokeDefine: TDefine;
     SqlBrowseDefine: TDefine;
     LineNumber: Integer;
+    BrowseHistory: TBrowseHistory;
     procedure NewGridRow(aGrid: TStringGrid);
     procedure InsertDataGridRow;
+    procedure UpdateDatagridRow (aRow: Integer);
     procedure DeleteRowFromDatagrid (aRow: Integer);
     procedure OnStartBlockingThread;
     procedure OnEndBlockingThread;
@@ -235,8 +253,40 @@ begin
 end;
 
 procedure TMainForm .UpdateActionExecute (Sender : TObject );
+var
+  xCol, xRow: Integer;
 begin
-  ShowMessage ('nyi');
+  xRow := DataGrid.Row;
+  if xRow < DataGrid.FixedRows then
+    Exit;
+  for xCol := DataGrid.FixedCols to DataGrid.ColCount - 1 do
+  begin
+    SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].Value :=
+      DataGrid.Cells[xCol, xRow];
+    SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols]
+      .OriginalValue := DataGrid.Cells[xCol, xRow];
+    SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].UseNull :=
+      Assigned(DataGrid.Objects[xCol, xRow])
+      and SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols]
+      .NullAllowed;
+    SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols]
+      .OriginalUseNull := SqlBrowseDefine.Columns.Columns
+      [xCol - DataGrid.FixedCols].UseNull;
+  end;
+  Application.CreateForm(TUpdateSqlForm, UpdateSqlForm);
+  try
+    UpdateSqlForm.Caption := 'Update ' + SqlBrowseDefine.DefineName;
+    UpdateSqlForm.Define := SqlBrowseDefine;
+    UpdateSqlForm.ShowModal;
+    if UpdateSqlForm.ModalResult = mrOK then
+      ExecuteSQL ( '<SQLEXEC>'
+                 + fTacoInterface.tacoString(SqlBrowseDefine.UpdateQuery[' '])
+                 , xRow
+                 , nsvUpdate
+                 );
+  finally
+    FreeAndNil(UpdateSqlForm);
+  end;
 end;
 
 procedure TMainForm .UpdateActionUpdate (Sender : TObject );
@@ -267,6 +317,27 @@ begin
   ViewAction.Enabled := (not fActive)
                     and (DataGrid.Row >= DataGrid.FixedRows)
                       ;
+end;
+
+procedure TMainForm .ViewSqlResultsActionExecute (Sender : TObject );
+var
+  xXml: TXml;
+  xXsdDescr: TXsdDescr;
+  xCursor: TCursor;
+begin
+  xXml := TXml.Create;
+  xXsdDescr := TXsdDescr.Create(1);
+  try
+    xXml.Name := SqlResultsXml.Name;
+    xXml.LoadValues(SqlResultsXml, True);
+    xXml.CheckDownline(True);
+    xmlUtil.CreateXsdFromXml(xXsdDescr, xXml, True);
+    XmlUtilz.ShowXml('View Sql results as Xml', xXml);
+    xmlUtilz.ShowXml('Viewiew', SqlResultsXml);
+  finally
+    xXml.Free;
+    xXsdDescr.Free;
+  end;
 end;
 
 procedure TMainForm.NewGridRow(aGrid: TStringGrid);
@@ -325,6 +396,28 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TMainForm.UpdateDatagridRow (aRow : Integer );
+var
+  xCol: Integer;
+begin
+  for xCol := DataGrid.FixedCols to DataGrid.ColCount - 1 do
+  begin
+    if SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].DoUpdate then
+    begin
+      if SqlBrowseDefine.Columns.Columns[xCol - DataGrid.FixedCols].UseNull then
+      begin
+        DataGrid.Objects[xCol, ARow] := Pointer(1);
+        DataGrid.Cells[xCol, ARow] := SqlNullPresentation;
+      end { if UseNul }
+      else
+      begin
+        DataGrid.Objects[xCol, ARow] := nil;
+        DataGrid.Cells[xCol, ARow] := SqlBrowseDefine.Columns.Columns [xCol - DataGrid.FixedCols].Value;
+      end; { not UseNull }
+    end; { if DoUpdate }
+  end; { for each column }
 end;
 
 procedure TMainForm .DeleteRowFromDatagrid (aRow : Integer );
@@ -628,7 +721,7 @@ begin
     end;
 
     DataGrid.SetFocus;
-//      BrowseHistory.Add(SqlQueryStrings.Text);
+    BrowseHistory.Add(SqlQueryStrings.Text);
     SqlSourceQryString := SqlQueryStrings.Text;
     AddSqlQueryResult(sqlQuery, DataGrid);
   finally
@@ -666,8 +759,11 @@ begin
   begin
     InsertDataGridRow;
   end;
-
-
+  if (aRow > 0)
+  and (aVerb = nsvUpdate) then
+  begin
+    UpdateDataGridRow(aRow);
+  end;
 end;
 
 procedure TMainForm.ProcessSqlResponse(aResult: String; aRow: Integer; aVerb: TNsSqlVerb);
@@ -923,7 +1019,7 @@ begin
   end;
   if sqlQueries.Count = 0 then
     raise Exception.Create('No SQL queries available');
-//BrowseHistory.Add(aQuery);
+  BrowseHistory.Add(aQuery);
   for X := 0 to sqlQueries.Count - 1 do
   begin
     with sqlQueries.Objects[X] as TQuery do
@@ -1049,7 +1145,7 @@ begin
   QueryDefines;
 end;
 
-procedure TMainForm .FormCreate (Sender : TObject );
+procedure TMainForm.FormCreate (Sender : TObject );
 begin
   sqlQueries := TStringList.Create;
   SqlQueryStrings := TStringList.Create;
@@ -1057,6 +1153,10 @@ begin
   SqlResultsXml := TXml.Create;
   fTacoInterface := TTacoInterface.Create(nil, nil);
   fTacoInterface.NeedHostData := NeedTacoHostData;
+  BrowseHistory := TBrowseHistory.Create;
+  QueryBackButton.DropdownMenu := BrowseHistory.BackwardPopUpMenu;
+  QueryForwardButton.DropdownMenu := BrowseHistory.ForwardPopUpMenu;
+  BrowseHistory.OnMenuItemClick := HistoryListMenuItemClick;
   with TFormIniFile.Create(self, True) do
   try
     tacoHost := StringByName['tacoHost'];
@@ -1110,6 +1210,11 @@ end;
 procedure TMainForm .ExecuteActionUpdate (Sender : TObject );
 begin
   ExecuteAction.Enabled := not fActive;
+end;
+
+procedure TMainForm .ForwardActionExecute (Sender : TObject );
+begin
+  queryEdit.Lines.Text := BrowseHistory.GetForward;
 end;
 
 procedure TMainForm .InsertActionExecute (Sender : TObject );
@@ -1214,6 +1319,26 @@ begin
                           + LineEnding
                           + 'browse access'
                           ;
+end;
+
+procedure TMainForm.HistoryListMenuItemClick (Sender : TObject );
+begin
+  queryEdit.Lines.Text := String(Sender);
+end;
+
+procedure TMainForm .ForwardActionUpdate (Sender : TObject );
+begin
+  ForwardAction.Enabled := BrowseHistory.OkToEnableForward;
+end;
+
+procedure TMainForm .BackwardActionUpdate (Sender : TObject );
+begin
+  BackwardAction.Enabled := BrowseHistory.OkToEnableBackward;
+end;
+
+procedure TMainForm .BackwardActionExecute (Sender : TObject );
+begin
+  queryEdit.Lines.Text := BrowseHistory.GetBackward;
 end;
 
 procedure TMainForm .FormDestroy (Sender : TObject );

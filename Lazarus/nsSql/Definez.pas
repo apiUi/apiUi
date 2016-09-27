@@ -321,29 +321,25 @@ var
   qColumn: TColumn;
   x: Integer;
 begin
-  qStrings := TStringList.Create;
-  try
-    qStrings.Add('update ' + DefineName);
-    Sep := 'set ';
-    for x := 0 to Columns.Count - 1 do
+  result := '';
+  result := result + 'update ' + DefineName + LineSep;
+  Sep := 'set ';
+  for x := 0 to Columns.Count - 1 do
+  begin
+    qColumn := Columns.Columns [x];
+    if (qColumn.IsUpdatable)
+    and (qColumn.DoUpdate) then
     begin
-      qColumn := Columns.Columns [x];
-      if (qColumn.IsUpdatable)
-      and (qColumn.DoUpdate) then
-      begin
-        qStrings.Add ( Sep
-                     + qColumn.ColName
-                     + ' = '
-                     + qColumn.SqlValuePresentation (qColumn.Value)
-                     );
-        Sep := '  , ';
-      end;
+      result := result
+              + Sep
+              + qColumn.ColName
+              + ' = '
+              + qColumn.SqlValuePresentation (qColumn.Value)
+              ;
+      Sep := '  , ';
     end;
-    qStrings.Add(WhereClause[LineSep]);
-    result := qStrings.Text;
-  finally
-    qStrings.Free;
-  end; {try}
+  end;
+  result := result + LineSep + WhereClause[LineSep];
 end;
 
 function TDefine.getWhereClause(LineSep: String): String;
