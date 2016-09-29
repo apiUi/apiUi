@@ -32,7 +32,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;C:\JanBo\Sources\2011\stubStudio\Examples\crmi\crrmiReq.wsdlStub&quot; --script=report --port=3740"/>
+        <CommandLineParams Value="&quot;del.wsdlStub&quot; --script=test --terminate"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -123,4 +123,4 @@
       </Item4>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

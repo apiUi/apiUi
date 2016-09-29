@@ -29,15 +29,17 @@ uses
   ;
 
 type
-  longOptsArrayType = array [0..2] of String;
+  longOptsArrayType = array [0..3] of String;
 
 const
   helpOpt = 'help';
   portOpt = 'port';
   scriptOpt = 'script';
+  terminateOpt = 'terminate';
   longOpts: longOptsArrayType = ( helpOpt
                                 , portOpt + ':'
                                 , scriptOpt + ':'
+                                , terminateOpt
                                 );
 type
 
@@ -51,6 +53,7 @@ type
     sc: TWsdlControl;
     IniFile: TFormIniFile;
     scriptName: String;
+    terminateAfterScript: Boolean;
     WindowsUserName, CompanyName: String;
     LogUsageTime: TDateTime;
     procedure SetLogUsageTimer;
@@ -58,7 +61,8 @@ type
     function doDecryptString(aString: AnsiString): AnsiString;
     function doEncryptString(aString: AnsiString): AnsiString;
     procedure HandleException(Sender: TObject; E: Exception);
-    procedure Notify(aString: String);
+    procedure Notify(const aString: String);
+    procedure OnFinishedScript (Sender: TObject);
     function ReactivateCommand: String;
     function QuitCommand(aDoRaiseExceptions: Boolean): String;
     function RestartCommand: String;
@@ -70,6 +74,7 @@ type
     procedure RefreshLogger;
     procedure WriteHelp; virtual;
     function GetAuthorization : Boolean ;
+    procedure OnTerminateThread;
   public
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
@@ -110,6 +115,9 @@ begin
   begin
     WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
   end;
+  terminateAfterScript := HasOption('?',terminateOpt);
+  if terminateAfterScript then
+    WriteLn('option ', terminateOpt);
   se.projectFileName := ParamStr(1);
   if (Copy (se.projectFileName, 1, 1) = '-')  // switch as first argument ??
   or (not FileExists(se.projectFileName))
@@ -137,7 +145,14 @@ begin
   sc.Active := True;
   ActivateCommand(True);
   if Assigned (sXml) then
-    TProcedureThread.Create(False, False, se, se.ScriptExecute, sXml as TObject);
+  begin
+    with TProcedureThread.Create(True, False, se, se.ScriptExecute, sXml as TObject) do
+    begin
+      FreeOnTerminate := True;
+      OnFinished := OnFinishedScript;
+      Start;
+    end;
+  end;
   SetLogUsageTimer;
   while not Terminated do
   begin
@@ -179,9 +194,15 @@ begin
   end;
 end;
 
-procedure TMyApplication .Notify (aString : String );
+procedure TMyApplication .Notify (const aString : String );
 begin
   WriteLn (ExeName, ' notify: ', aString);
+end;
+
+procedure TMyApplication .OnFinishedScript (Sender : TObject );
+begin
+  if terminateAfterScript then
+    Terminate;
 end;
 
 function TMyApplication.ReactivateCommand: String;
@@ -402,6 +423,7 @@ begin
   sc.OnQuitEvent := QuitCommand;
   sc.OnRestartEvent := RestartCommand;
   sc.OnReloadDesignEvent := ReloadDesignCommand;
+  xmlz.OnNotify := se.Notify;
   IntrospectIniXml;
   try
     se.Licensed := GetAuthorization;
@@ -445,6 +467,8 @@ begin
   WriteLn ('     overrules the portnumber for the wsdlServer webservice');
   WriteLn ('  --', scriptOpt, '=');
   WriteLn ('     starts executing the named project-script');
+  WriteLn ('  --', terminateOpt);
+  WriteLn ('     terminates after executing the named project-script');
   WriteLn ('');
   WriteLn ('');
 end;
@@ -480,6 +504,12 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TMyApplication .OnTerminateThread ;
+begin
+  if terminateAfterScript then
+    Terminate;
 end;
 
 var

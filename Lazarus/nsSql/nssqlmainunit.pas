@@ -117,6 +117,7 @@ type
     QueryScanner: TQueryScanner;
     sqlQueries, SqlQueryStrings, ColumnWidths: TStringList;
     sqlQuery: TQuery;
+    sqlCommands: TStringList;
     ResponseTime: Extended;
     InvokeDefine: TDefine;
     SqlBrowseDefine: TDefine;
@@ -439,6 +440,7 @@ procedure TMainForm .OnStartBlockingThread ;
 begin
   fActive := True;
   StatusBar.Panels[0].Text := '...';
+  sqlQuery.SubmitTimestamp := Now;
 end;
 
 procedure TMainForm .OnEndBlockingThread ;
@@ -1074,7 +1076,13 @@ begin
                   + fTacoInterface.tacoString(sqlQuery.Text)
                   ;
     end;
+    fActive := True;
     ExecuteSQL(SendString, -1, nsvUnknown);
+    while fActive do
+    begin
+      Sleep(100);
+      Application.ProcessMessages;
+    end;
   end;
 end;
 

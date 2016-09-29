@@ -596,7 +596,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
     ClientWidth = 1004
     TabOrder = 2
     object CheckButton: TButton
-      Left = 2
+      Left = 4
       Height = 25
       Top = 7
       Width = 75

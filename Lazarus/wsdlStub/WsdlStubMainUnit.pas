@@ -1127,7 +1127,7 @@ type
     function ReloadDesignCommand: String;
     procedure ActivateCommand(aActivate: Boolean);
     procedure OpenProjectCommand(aProject: String);
-    procedure Notify(aString: String);
+    procedure Notify(const aString: String);
     procedure wsdlStubInitialise;
     function getStubChanged: Boolean;
     procedure ExpressError(Sender: TObject;
@@ -6125,7 +6125,7 @@ begin
   end;
 end;
 
-procedure TMainForm.Notify(aString: String);
+procedure TMainForm.Notify(const aString: String);
 begin
   if doNotify then
     LogServerNotification(aString);

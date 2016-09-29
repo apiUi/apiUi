@@ -71,7 +71,7 @@ type TProcedureObject = procedure (arg: TObject) of Object;
 type TProcedureClaimableObjectList = procedure (arg: TClaimableObjectList) of Object;
 type TOnFoundErrorInBufferEvent = procedure (aErrorString: String; aObject: TObject) of Object;
 type TOnEvent = procedure of Object;
-type TOnNotify = procedure (aString: String) of Object;
+type TOnNotify = procedure (const aString: String) of Object;
 type TOnLogEvent = procedure (aLog: TLog) of Object;
 type TOnStringEvent = procedure (const Msg: String; aException: Boolean; E: Exception) of Object;
 type TBooleanFunction = function: Boolean of Object;
@@ -385,9 +385,11 @@ type
     fObject: TObject;
     fClaimableObjectList: TClaimableObjectList;
     fBlocking: Boolean;
+    fOnFinished: TNotifyEvent;
   protected
     procedure Execute; override;
   public
+    property OnFinished: TNotifyEvent read fOnFinished write fOnFinished;
     constructor Create ( aSuspended: Boolean
                        ; aBlocking: Boolean
                        ; aProject: TWsdlProject
@@ -508,7 +510,7 @@ uses OpenWsdlUnit
    , wrdFunctionz
    , GZIPUtils
    , xmlio
-   , htmlXmlUtilz
+   , htmlxmlutilz
    ;
 
 procedure AddRemark(aOperation: TObject; aString: String);
@@ -1035,6 +1037,8 @@ begin
       if Assigned (fProject.OnTerminateNonBlockingThread) then
         Synchronize(fProject.OnTerminateNonBlockingThread);
     end;
+    if Assigned (fOnFinished) then
+      fOnFinished (Self);
   end;
 end;
 

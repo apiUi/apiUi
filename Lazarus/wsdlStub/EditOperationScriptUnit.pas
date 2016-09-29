@@ -202,7 +202,7 @@ var
 begin
   st := 0;
   for x := 0 to LineNumber - 2 do
-    st := ST + Length (ScriptEdit.Lines.Strings[x]) + 2;
+    st := ST + Length (ScriptEdit.Lines.Strings[x]) + Length(LineEnding);
   ScriptEdit.SelStart := st + ColumnNumber;
   ScriptEdit.SelEnd := ScriptEdit.SelStart + Length (TokenString);
   StatusBar.SimpleText := Data;

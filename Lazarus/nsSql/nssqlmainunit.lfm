@@ -10,6 +10,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  ShowHint = True
   LCLVersion = '1.2.6.0'
   object queryPanel: TPanel
     Left = 0
@@ -3849,6 +3850,7 @@ object MainForm: TMainForm
     top = 376
     object ExecuteAction: TAction
       Caption = '&Execute'
+      Hint = 'Execute query'
       ImageIndex = 63
       OnExecute = ExecuteActionExecute
       OnUpdate = ExecuteActionUpdate
@@ -3862,42 +3864,49 @@ object MainForm: TMainForm
     end
     object InsertAction: TAction
       Caption = 'InsertAction'
+      Hint = 'Insert row...'
       ImageIndex = 15
       OnExecute = InsertActionExecute
       OnUpdate = InsertActionUpdate
     end
     object DeleteAction: TAction
       Caption = 'DeleteAction'
+      Hint = 'Delete row...'
       ImageIndex = 89
       OnExecute = DeleteActionExecute
       OnUpdate = DeleteActionUpdate
     end
     object UpdateAction: TAction
       Caption = 'UpdateAction'
+      Hint = 'Update row...'
       ImageIndex = 87
       OnExecute = UpdateActionExecute
       OnUpdate = UpdateActionUpdate
     end
     object ViewAction: TAction
       Caption = 'ViewAction'
+      Hint = 'View row...'
       ImageIndex = 13
       OnExecute = ViewActionExecute
       OnUpdate = ViewActionUpdate
     end
     object BackwardAction: TAction
       Caption = 'BackwardAction'
+      Hint = 'Previous query'
       ImageIndex = 90
       OnExecute = BackwardActionExecute
       OnUpdate = BackwardActionUpdate
     end
     object ForwardAction: TAction
       Caption = 'ForwardAction'
+      Hint = 'Next query'
       ImageIndex = 91
       OnExecute = ForwardActionExecute
       OnUpdate = ForwardActionUpdate
     end
     object ViewSqlResultsAction: TAction
       Caption = 'ViewSqlResultsAction'
+      Hint = 'View results as XML'
       ImageIndex = 25
       OnExecute = ViewSqlResultsActionExecute
     end
