@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="10426"/>
+      <BuildNr Value="10430"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -71,6 +71,7 @@
       <Unit1>
         <Filename Value="..\Xml\claimlistz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ClaimListz"/>
       </Unit1>
       <Unit2>
         <Filename Value="WsdlStubMainUnit.pas"/>
@@ -87,11 +88,11 @@
       <Unit4>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="IdStack"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Xml\snapshotz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="snapshotz"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Xml\exceptionutils.pas"/>
@@ -108,6 +109,7 @@
       <Unit9>
         <Filename Value="htmlreportz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="htmlreportz"/>
       </Unit9>
     </Units>
   </ProjectOptions>
@@ -134,10 +136,9 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5023="True" idx5024="True" idx5025="True" idx5028="True"/>
+        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

@@ -32,7 +32,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;del.wsdlStub&quot; --script=test --terminate"/>
+        <CommandLineParams Value="&quot;testScript.wsdlStub&quot; --script=test --terminate"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -52,7 +52,7 @@
         <PackageName Value="LCLBase"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -60,7 +60,6 @@
       <Unit1>
         <Filename Value="wsdlcontrolz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="wsdlcontrolz"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
@@ -83,6 +82,10 @@
         <Filename Value="..\Mq\MQRfh2Api.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="..\TacoInterface\tacoInterface.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -108,7 +111,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="6">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -121,6 +124,12 @@
       <Item4>
         <Name Value="EIdSocketError"/>
       </Item4>
+      <Item5>
+        <Name Value="Exception"/>
+      </Item5>
+      <Item6>
+        <Name Value="EIdCouldNotBindSocket"/>
+      </Item6>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

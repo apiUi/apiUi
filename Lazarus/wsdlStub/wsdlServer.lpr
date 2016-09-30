@@ -24,7 +24,7 @@ uses
   , FormIniFilez, MQAPI, mqInterface, MQRfh2Api, IdStack
   , virtualtreeview_package
   , xmlxsdparser
-  , HashUtilz
+  , HashUtilz, tacoInterface
   , ExtCtrls
   ;
 
@@ -62,7 +62,7 @@ type
     function doEncryptString(aString: AnsiString): AnsiString;
     procedure HandleException(Sender: TObject; E: Exception);
     procedure Notify(const aString: String);
-    procedure OnFinishedScript (Sender: TObject);
+    procedure OnFinishedScript;
     function ReactivateCommand: String;
     function QuitCommand(aDoRaiseExceptions: Boolean): String;
     function RestartCommand: String;
@@ -156,6 +156,7 @@ begin
   SetLogUsageTimer;
   while not Terminated do
   begin
+    CheckSynchronize;
     RefreshLogger;
     Sleep (100);
     if Now > LogUsageTime then
@@ -199,7 +200,7 @@ begin
   WriteLn (ExeName, ' notify: ', aString);
 end;
 
-procedure TMyApplication .OnFinishedScript (Sender : TObject );
+procedure TMyApplication .OnFinishedScript;
 begin
   if terminateAfterScript then
     Terminate;
@@ -523,3 +524,5 @@ begin
   Application.Free;
 end.
 
+
+initialize

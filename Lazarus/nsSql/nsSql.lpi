@@ -62,7 +62,6 @@
       <Unit2>
         <Filename Value="QueryScanner\QUERYSCANNER.PAS"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="QueryScanner"/>
       </Unit2>
     </Units>
   </ProjectOptions>
@@ -84,9 +83,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="6">

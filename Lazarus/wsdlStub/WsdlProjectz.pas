@@ -385,11 +385,11 @@ type
     fObject: TObject;
     fClaimableObjectList: TClaimableObjectList;
     fBlocking: Boolean;
-    fOnFinished: TNotifyEvent;
+    fOnFinished: TOnEvent;
   protected
     procedure Execute; override;
   public
-    property OnFinished: TNotifyEvent read fOnFinished write fOnFinished;
+    property OnFinished: TOnEvent read fOnFinished write fOnFinished;
     constructor Create ( aSuspended: Boolean
                        ; aBlocking: Boolean
                        ; aProject: TWsdlProject
@@ -511,6 +511,7 @@ uses OpenWsdlUnit
    , GZIPUtils
    , xmlio
    , htmlxmlutilz
+   , htmlreportz
    ;
 
 procedure AddRemark(aOperation: TObject; aString: String);
@@ -1038,7 +1039,7 @@ begin
         Synchronize(fProject.OnTerminateNonBlockingThread);
     end;
     if Assigned (fOnFinished) then
-      fOnFinished (Self);
+      Synchronize(fOnFinished);
   end;
 end;
 
@@ -7146,8 +7147,28 @@ begin
 end;
 
 procedure TWsdlProject.CreateSummaryReport (aName: String);
+var
+  xList: TSnapshotList;
+  x: Integer;
 begin
-  SjowMessage('TWsdlProject.CreateSummaryReport (aName ): ' + aName);
+  if (CurrentFolder = '') then
+    raise Exception.Create('CreateSummaryReport: config (ProjectOptions.General.projectFolders) invalid');
+  xList := TSnapshotList.Create;
+  try
+    AcquireLogLock;
+    try
+      for x := 0 to displayedSnapshots.Count - 1 do
+        xList.AddObject('', displayedSnapshots.SnapshotItems[x]);
+    finally
+      ReleaseLogLock;
+    end;
+    SaveStringToFile ( CurrentFolder + DirectorySeparator + aName + '.html'
+                     , htmlReportTestSummary(Self, xList)
+                     );
+    xList.Clear;
+  finally
+    xList.Free;
+  end;
 end;
 
 procedure TWsdlProject.CreateCoverageReport (aDoRun: Boolean);
