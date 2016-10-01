@@ -340,7 +340,7 @@ type
     function WsdlOpenFile (aName: String; aElementsWhenRepeatable: Integer): TWsdl;
     procedure RefuseHttpConnectionsThreaded (aLater, aTime: Extended);
     procedure SaveLogs (aFileName: String);
-    procedure WriteSnapshotsInformation (aFileName: String);
+    procedure SaveSnapshots (aName: String);
     procedure UpdateReplyColumns (aOperation: TWsdlOperation);
     procedure ProjectOptionsLogDisplayedColumnsFromXml(aXml: TXml);
     procedure ProjectLogOptionsFromXml(aXml: TXml);
@@ -572,6 +572,21 @@ begin
     raise Exception.Create(Format ('RequestAsText: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
+procedure SaveSnapshots(aContext: TObject; aName: String);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create(Format ('SaveSnapshots(''%s''); unable to determine context', [aName]));
+  xProject.SaveSnapshots(aName);
+end;
+
 procedure RequestOperation(aContext: TObject; xOperationAlias: String);
 var
   xProject: TWsdlProject;
@@ -666,8 +681,11 @@ begin
   if not Assigned (xProject) then
     raise Exception.Create(Format ('CreateSnapshot(''%s''); unable to determine context', [aName]));
   if (xProject.CurrentFolder = '')
-  or (xProject.ReferenceFolder = '')
-  or (xProject.CurrentFolder = xProject.ReferenceFolder)then
+  or (    aDorun
+      and (   (xProject.ReferenceFolder = '')
+           or (xProject.CurrentFolder = xProject.ReferenceFolder)
+          )
+     ) then
     raise Exception.Create('CreateSnapshot: config (ProjectOptions.General.projectFolders) invalid');
   xProject.CreateSnapshot ( aName
                           , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
@@ -7020,13 +7038,24 @@ begin
   end;
 end;
 
-procedure TWsdlProject.WriteSnapshotsInformation(aFileName: String);
+procedure TWsdlProject.SaveSnapshots(aName: String);
+var
+  x: Integer;
 begin
+  if (CurrentFolder = '') then
+    raise Exception.Create('SaveSnapshots: config (ProjectOptions.General.projectFolders) invalid');
   AcquireLogLock;
   try
     with displayedSnapshots.AsXml do
     try
-      SaveStringToFile(aFileName, Text);
+      for x := 0 to toDisplaySnapshots.Count - 1 do
+        AddXml (toDisplaySnapshots.SnapshotItems[x].AsXml);
+      SaveStringToFile ( CurrentFolder
+                       + DirectorySeparator
+                       + aName
+                       + '.xml'
+                       , Text
+                       );
     finally
       Free;
     end;
@@ -7434,6 +7463,7 @@ initialization
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;
   _WsdlRefuseHttpConnections := doRefuseHttpConnections;
+  _WsdlSaveSnapshots := SaveSnapshots;
   _ProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   IntrospectIniXml;
 

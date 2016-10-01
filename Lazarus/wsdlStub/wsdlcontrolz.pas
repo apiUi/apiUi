@@ -363,7 +363,7 @@ begin
                 dXml := oXml.FindXml('Body.saveReportsToFileReq.fileName');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find filename to use in request');
-                se.WriteSnapshotsInformation(ExpandRelativeFileName(se.projectFileName, dXml.Value));
+                se.SaveSnapshots(ExpandRelativeFileName(se.projectFileName, dXml.Value));
               end;
               if xOperId = 'sendAllRequestsReq' then
               begin

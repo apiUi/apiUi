@@ -474,7 +474,7 @@ var
   xLog: TLog;
 begin
   result := TXmlCvrg.CreateAsString('coverageReport', '');
-  // first setup an hyerarchy to count elements
+  // first setup a hyerarchy to count elements
   with result do
   begin
     Tag := 1;
@@ -588,10 +588,11 @@ begin
           if Assigned (xLog.Operation.reqBind)
           and (xLog.RequestBody <> '') then
           begin
-            mXml := oXml.Items.XmlItemByTag[xLog.Operation.reqBind.Name] as TXmlCvrg;
+            mXml := oXml.Items.XmlItemByTag[xLog.Operation.reqTagName] as TXmlCvrg;
             if not Assigned (mXml) then
-              raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.reqBind.Name);
-            xXml := xLog.reqBodyAsXml;
+              raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.reqTagName);
+            xXml := TXml.CreateAsString(mXml.Name, '');
+            xXml.AddXml (xLog.reqBodyAsXml);
             try
               mXml.CountUsage(xXml, xLog.Operation.WsdlService.DescriptionType in [ipmDTSwiftMT]);
             finally
@@ -601,10 +602,11 @@ begin
           if Assigned (xLog.Operation.rpyBind)
           and (xLog.ReplyBody <> '') then
           begin
-            mXml := oXml.Items.XmlItemByTag[xLog.Operation.rpyBind.Name] as TXmlCvrg;
+            mXml := oXml.Items.XmlItemByTag[xLog.Operation.rpyTagName] as TXmlCvrg;
             if not Assigned (mXml) then
-              raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.rpyBind.Name);
-            xXml := xLog.rpyBodyAsXml;
+              raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.rpyTagName);
+            xXml := TXml.CreateAsString(mXml.Name, '');
+            xXml.AddXml (xLog.rpyBodyAsXml);
             try
               mXml.CountUsage(xXml, xLog.Operation.WsdlService.DescriptionType in [ipmDTSwiftMT]);
             finally

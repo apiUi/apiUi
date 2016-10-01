@@ -70,6 +70,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    ShowResolvedProperties : TAction ;
     BrowseMqButton: TToolButton;
     DocumentationMemo: TMemo;
     ExceptionMemo: TMemo;
@@ -140,7 +141,7 @@ type
     ToolButton67: TToolButton;
     ToolButton68: TToolButton;
     ToolButton69: TToolButton;
-    WriteSnapshotsInformationAction : TAction ;
+    SaveSnapshotsAction : TAction ;
     ReadSnapshotInformationAction : TAction ;
     ReportOnSnapshotsAction : TAction ;
     ClearSnapshotsAction : TAction ;
@@ -577,6 +578,7 @@ type
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
     procedure PingPongTimerTimer (Sender : TObject );
     procedure EditProjectPropertiesExecute (Sender : TObject );
+    procedure ShowResolvedPropertiesExecute (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
     procedure SnapshotCompareMenuitemClick(Sender: TObject);
     procedure SnapshotPromoteToReferenceMenuItemClick (Sender : TObject );
@@ -615,7 +617,7 @@ type
     procedure SummaryReport (aList: TClaimableObjectList);
     procedure SummaryReportActionExecute (Sender : TObject );
     procedure ToolBar6Click(Sender: TObject);
-    procedure WriteSnapshotsInformationActionExecute (Sender : TObject );
+    procedure SaveSnapshotsActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowGridDifferencesActionExecute (Sender : TObject );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
@@ -1314,22 +1316,6 @@ begin
     raise Exception.Create(Format ('SaveLogs(''%s''); unable to determine context', [aFileName]));
   MainForm.RefreshLog;
   xProject.SaveLogs(ExpandRelativeFileName(xProject.projectFileName, aFileName));
-end;
-
-procedure _WriteSnapshotsInformation(aContext: TObject; aFileName: String);
-var
-  xProject: TWsdlProject;
-begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create(Format ('WriteSnapshotsInformation(''%s''); unable to determine context', [aFileName]));
-  MainForm.RefreshLog;
-  xProject.WriteSnapshotsInformation(ExpandRelativeFileName(xProject.projectFileName, aFileName));
 end;
 
 function AllChecked(Sender: TBaseVirtualTree; aNode: PVirtualNode): Boolean;
@@ -12295,7 +12281,7 @@ begin
 
 end;
 
-procedure TMainForm.WriteSnapshotsInformationActionExecute (Sender : TObject );
+procedure TMainForm.SaveSnapshotsActionExecute (Sender : TObject );
 begin
   if Assigned (se) then
   begin
@@ -13010,6 +12996,33 @@ begin
   end;
 end;
 
+procedure TMainForm.ShowResolvedPropertiesExecute (Sender : TObject );
+var
+  x: Integer;
+  xXml: TXml;
+begin
+  xXml := TXml.CreateAsString('resolvedProperties', '');
+  try
+    for x := 0 to se.projectProperties.Count - 1 do
+    begin
+      with xXml.AddXml(TXml.CreateAsString('property', '')) do
+      begin
+        AddXml (TXml.CreateAsString ( 'key', '${' + se.projectProperties.Names[x] + '}'));
+        AddXml (TXml.CreateAsString ( 'value', se.projectProperties.Values[se.projectProperties.Names[x]]));
+        AddXml (TXml.CreateAsString ( 'resolvesTo'
+                                    , xmlio.resolveAliasses ( '${' + se.projectProperties.Names[x] + '}'
+                                                            , se.projectProperties
+                                                            )
+                                    )
+               );
+      end;
+    end;
+    ShowXml('project Properties', xXml);
+  finally
+    xXml.Free;
+  end;
+end;
+
 procedure TMainForm .ShowSnapshotDifferencesActionExecute (Sender : TObject );
 var
   fNode, nNode: PVirtualNode;
@@ -13454,7 +13467,6 @@ begin
   end;
 end;
 
-
 procedure TMainForm .OperationAliasActionExecute (Sender : TObject );
 begin
   if not Assigned(WsdlOperation) then
@@ -13466,7 +13478,6 @@ end;
 initialization
   CoInitialize(nil);
   _WsdlSaveLogs := _SaveLogs;
-  _WsdlWriteSnapshotsInformation := _WriteSnapshotsInformation;
 finalization
   CoUninitialize;
 {$endif}

@@ -54,7 +54,7 @@ type
     IniFile: TFormIniFile;
     scriptName: String;
     terminateAfterScript: Boolean;
-    WindowsUserName, CompanyName: String;
+    osUserName, CompanyName: String;
     LogUsageTime: TDateTime;
     procedure SetLogUsageTimer;
     function ValidateLicenseExpirationDate(eDt: String): Boolean;
@@ -168,6 +168,7 @@ begin
   ActivateCommand(False);
   RefreshLogger;
   Terminate;
+  Notify ('quit');
 end;
 
 procedure TMyApplication .SetLogUsageTimer ;
@@ -197,7 +198,7 @@ end;
 
 procedure TMyApplication .Notify (const aString : String );
 begin
-  WriteLn (ExeName, ' notify: ', aString);
+  WriteLn (xsdFormatDateTime(now, @TIMEZONE_UTC), ' notify: ', aString);
 end;
 
 procedure TMyApplication .OnFinishedScript;
@@ -345,6 +346,13 @@ procedure TMyApplication .RefreshLogger ;
     begin
       xSnapshot := se.toDisplaySnapshots.SnapshotItems[x];
       se.displayedSnapshots.AddObject('', xSnapshot);
+      WriteLn ( Format ( '%s %s %s'
+                       , [ xsdFormatDateTime(xSnapshot.timeStamp, @TIMEZONE_UTC)
+                         , 'created snapshot '
+                         , xSnapshot.Name
+                         ]
+                       )
+              );
       result := True;
     end;
     se.toDisplaySnapshots.Clear;
@@ -482,7 +490,7 @@ begin
   xTimestamp := xsdNowAsDateTime;
   with TXml.CreateAsString ('getAuthorization', '') do
   try
-    AddXml (TXml.CreateAsString('UserName', WindowsUserName));
+    AddXml (TXml.CreateAsString('UserName', osUserName));
     AddXml (TXml.CreateAsString('TimeStamp', xTimestamp));
     AddXml (TXml.CreateAsString('Program', _ProgName));
     AddXml (TXml.CreateAsString('Version', _xmlProgVersion));
@@ -492,7 +500,7 @@ begin
     xExpireDate := Items.XmlValueByTag['expireDate'];
     CompanyName := Items.XmlValueByTag['licensee'];
     xKey := Items.XmlValueByTag['key'];
-    if (xKey <> Sha1 ( WindowsUserName
+    if (xKey <> Sha1 ( osUserName
                     + xTimestamp
                     + '^abra^'
                     + xLicensed
@@ -525,4 +533,4 @@ begin
 end.
 
 
-initialize
+initialize

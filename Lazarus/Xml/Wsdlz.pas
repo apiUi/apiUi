@@ -562,7 +562,7 @@ function setEnvNumber (aName: String; aValue: Extended): Extended;
 function setEnvVar (aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
-procedure WriteSnapshotsInformation (aObject: TObject; aString: String);
+procedure SaveSnapshots (aObject: TObject; aString: String);
 procedure CreateSnapshot (aObject: TObject; aName: String);
 procedure CreateSummaryReport (aObject: TObject; aName: String);
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
@@ -606,7 +606,7 @@ var
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
-  _WsdlWriteSnapshotsInformation: VFunctionOS;
+  _WsdlSaveSnapshots: VFunctionOS;
   _WsdlCreateSnapshot: VFunctionOSB;
   _WsdlCreateSummaryReport: VFunctionOS;
   _WsdlCreateCoverageReport: VFunctionOB;
@@ -710,11 +710,11 @@ begin
   _WsdlSaveLogs (aObject, aString);
 end;
 
-procedure WriteSnapshotsInformation (aObject : TObject ; aString : String );
+procedure SaveSnapshots (aObject : TObject ; aString : String );
 begin
-  if not Assigned (_WsdlWriteSnapshotsInformation) then
-    raise Exception.Create('No OnWriteSnapshotsInformation event assigned: intention was to write to: ' + aString);
-  _WsdlWriteSnapshotsInformation (aObject, aString);
+  if not Assigned (_WsdlSaveSnapshots) then
+    raise Exception.Create('No OnSaveSnapshots event assigned: intention was to write to: ' + aString);
+  _WsdlSaveSnapshots (aObject, aString);
 end;
 
 procedure CreateSnapshot (aObject : TObject ; aName: String);
@@ -3744,7 +3744,7 @@ begin
     BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindBeforeFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindBeforeFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
-    BindBeforeFunction ('WriteSnapshotsInformation', @WriteSnapshotsInformation, VFOS, '(aFileName)');
+    BindBeforeFunction ('SaveSnapshots', @SaveSnapshots, VFOS, '(aFileName)');
     BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
@@ -3898,7 +3898,7 @@ begin
     BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
     BindAfterFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindAfterFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
-    BindAfterFunction ('WriteSnapshotsInformation', @WriteSnapshotsInformation, VFOS, '(aFileName)');
+    BindAfterFunction ('SaveSnapshots', @SaveSnapshots, VFOS, '(aFileName)');
     BindAfterFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindAfterFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindAfterFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');

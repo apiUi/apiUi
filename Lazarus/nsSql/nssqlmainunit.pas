@@ -26,8 +26,33 @@ type
 
   TProcedureThread = class;
   TMainForm = class(TForm )
+    MaintainIgnoreListSqlAction : TAction ;
+    CompareXmlAction : TAction ;
+    MenuItem10 : TMenuItem ;
+    MenuItem11 : TMenuItem ;
+    MenuItem12 : TMenuItem ;
+    MenuItem13 : TMenuItem ;
+    MenuItem14 : TMenuItem ;
+    MenuItem15 : TMenuItem ;
+    MenuItem16 : TMenuItem ;
+    MenuItem17 : TMenuItem ;
+    MenuItem6 : TMenuItem ;
+    MenuItem7 : TMenuItem ;
+    MenuItem8 : TMenuItem ;
+    MenuItem9 : TMenuItem ;
+    ToolButton17 : TToolButton ;
+    ToolButton18 : TToolButton ;
+    WriteXmlAction : TAction ;
+    ReadXmlAction : TAction ;
+    SaveSqlAction : TAction ;
+    ReadSqlAction : TAction ;
     ToolButton10 : TToolButton ;
     ToolButton11 : TToolButton ;
+    ToolButton12 : TToolButton ;
+    ToolButton13 : TToolButton ;
+    ToolButton14 : TToolButton ;
+    ToolButton15 : TToolButton ;
+    ToolButton16 : TToolButton ;
     ViewSqlResultsAction : TAction ;
     ForwardAction : TAction ;
     BackwardAction : TAction ;
@@ -49,7 +74,6 @@ type
     DataGrid : TStringGrid ;
     ToolBar2 : TToolBar ;
     ToolButton2 : TToolButton ;
-    ToolButton3 : TToolButton ;
     ColumnListbox : TListBox ;
     DefineListBox : TListBox ;
     ExecuteAction : TAction ;
@@ -81,6 +105,7 @@ type
     ToolBar1 : TToolBar ;
     ToolButton1 : TToolButton ;
     procedure BackwardActionUpdate (Sender : TObject );
+    procedure CompareXmlActionExecute (Sender : TObject );
     procedure ForwardActionUpdate (Sender : TObject );
     procedure HistoryListMenuItemClick(Sender: TObject);
     procedure BackwardActionExecute (Sender : TObject );
@@ -99,9 +124,14 @@ type
     procedure FormCreate (Sender : TObject );
     procedure FormDestroy (Sender : TObject );
     procedure FormShow (Sender : TObject );
+    procedure MaintainIgnoreListSqlActionExecute (Sender : TObject );
     procedure MenuItem2Click (Sender : TObject );
     procedure MenuItem3Click (Sender : TObject );
     procedure MenuItem5Click (Sender : TObject );
+    procedure ReadSqlActionExecute (Sender : TObject );
+    procedure ReadXmlActionExecute (Sender : TObject );
+    procedure SaveSqlActionExecute (Sender : TObject );
+    procedure WriteXmlActionExecute (Sender : TObject );
     procedure ShowHostSqlActionExecute (Sender : TObject );
     procedure UpdateActionExecute (Sender : TObject );
     procedure UpdateActionUpdate (Sender : TObject );
@@ -115,11 +145,11 @@ type
     SqlResultsXml: TXml;
     SqlNullPresentation, SqlSourceQryString: String;
     QueryScanner: TQueryScanner;
+    SqlFileName, XmlFileName: String;
     sqlQueries, SqlQueryStrings, ColumnWidths: TStringList;
     sqlQuery: TQuery;
-    sqlCommands: TStringList;
+    ignoreDifferencesOnSql: TStringList;
     ResponseTime: Extended;
-    InvokeDefine: TDefine;
     SqlBrowseDefine: TDefine;
     LineNumber: Integer;
     BrowseHistory: TBrowseHistory;
@@ -189,7 +219,11 @@ uses xmlio
    , ViewSqlRowUnit
    , InsertSqlUnit
    , UpdateSqlUnit
+   , InvokeSqlUnit
+   , ShowA2BXmlUnit
+   , dualListUnit
    , strutils
+   , A2BXmlz
    ;
 
 { TProcedureThread }
@@ -241,7 +275,93 @@ end;
 
 procedure TMainForm .MenuItem5Click (Sender : TObject );
 begin
-  ShowMessage ('notyetimplemented');
+  Application.CreateForm(TInvokeSqlForm, InvokeSqlForm);
+  try
+    InvokeSqlForm.Define := Defines.Defines[DefineListBox.ItemIndex];
+    InvokeSqlForm.ShowModal;
+  finally
+    FreeAndNil(InvokeSqlForm);
+  end;
+end;
+
+procedure TMainForm .ReadSqlActionExecute (Sender : TObject );
+begin
+  with TOpenDialog.Create(Nil) do
+  try
+    FileName := SqlFileName;
+    DefaultExt := 'SQL';
+    Filter := 'SQL File (*.SQL)|*.SQL';
+    Title := 'Read SQL from file';
+    if Execute then
+    begin
+      SqlFileName := FileName;
+      queryEdit.Lines.LoadFromFile(SqlFileName);
+      CreateHostSqlQueryStrings(queryEdit.Lines.Text);
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm .ReadXmlActionExecute (Sender : TObject );
+begin
+  with TOpenDialog.Create(Nil) do
+  try
+    FileName := XmlFileName;
+    DefaultExt := 'xml';
+    Filter := 'XML File (*.xml)|*.xml';
+    Title := 'Read XML from file';
+    if Execute then
+    begin
+      XmlFileName := FileName;
+      SqlResultsXml.LoadFromFile(XmlFileName, nil);
+      if SqlResultsXml.Name <> 'sqlSelects' then
+      begin
+        SqlResultsXml.Items.Clear;
+        raise Exception.Create(XmlFileName +
+            ' does not contain Sql results as XML data');
+      end;
+      ViewSqlResultsActionExecute (nil)
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm .SaveSqlActionExecute (Sender : TObject );
+begin
+  with TSaveDialog.Create (nil) do
+  try
+    FileName := SqlFileName;
+    DefaultExt := 'SQL';
+    Filter := 'SQL File (*.SQL)|*.SQL';
+    Title := 'Save SQL to file';
+    if Execute then
+    begin
+      SqlFileName := FileName;
+      queryEdit.Lines.SaveToFile(SqlFileName);
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm .WriteXmlActionExecute (Sender : TObject );
+begin
+  with TSaveDialog.Create (nil) do
+  try
+    FileName := XmlFileName;
+    DefaultExt := 'xml';
+    Filter := 'XML File (*.xml)|*.xml';
+    Title := 'Write query results as XML to file';
+    if Execute then
+    begin
+      XmlFileName := FileName;
+      SaveStringToFile(XmlFileName, SqlResultsXml.Text);
+    end;
+  finally
+    Free;
+  end;
 end;
 
 procedure TMainForm .ShowHostSqlActionExecute (Sender : TObject );
@@ -1152,26 +1272,68 @@ begin
   QueryDefines;
 end;
 
+procedure TMainForm .MaintainIgnoreListSqlActionExecute (Sender : TObject );
+var
+  Srcs, Dsts: TStringList;
+begin
+  Srcs := TStringList.Create;
+  Srcs.Sorted := True;
+  Srcs.Duplicates := dupIgnore;
+  Dsts := TStringList.Create;
+  Dsts.Sorted := True;
+  Dsts.Duplicates := dupIgnore;
+  try
+    Dsts.Text := ignoreDifferencesOnSql.Text;
+    Application.CreateForm(TdualListForm, dualListForm);
+    try
+      dualListForm.Caption := 'List of columns to be ignored';
+      dualListForm.DstList.Items.Text := Dsts.Text;
+      dualListForm.SrcList.Items.Text := '';
+      dualListForm.DstCaption := 'Ignored columns';
+      dualListForm.SrcCaption := '';
+      dualListForm.EmptySelectionAllowed := True;
+      dualListForm.ShowModal;
+      if dualListForm.ModalResult = mrOk then
+      begin
+        ignoreDifferencesOnSql.Text := dualListForm.DstList.Items.Text;
+      end;
+    finally
+      FreeAndNil(dualListForm);
+    end;
+  finally
+    Srcs.Clear;
+    Srcs.Free;
+    Dsts.Clear;
+    Dsts.Free;
+  end;
+end;
+
 procedure TMainForm.FormCreate (Sender : TObject );
 begin
   sqlQueries := TStringList.Create;
   SqlQueryStrings := TStringList.Create;
   ColumnWidths := TStringList.Create;
+  ignoreDifferencesOnSql := TStringList.Create;
+  ignoreDifferencesOnSql.Sorted := True;
+  ignoreDifferencesOnSql.Duplicates := dupIgnore;
   SqlResultsXml := TXml.Create;
   fTacoInterface := TTacoInterface.Create(nil, nil);
   fTacoInterface.NeedHostData := NeedTacoHostData;
   BrowseHistory := TBrowseHistory.Create;
-  QueryBackButton.DropdownMenu := BrowseHistory.BackwardPopUpMenu;
-  QueryForwardButton.DropdownMenu := BrowseHistory.ForwardPopUpMenu;
+//QueryBackButton.DropdownMenu := BrowseHistory.BackwardPopUpMenu;
+//QueryForwardButton.DropdownMenu := BrowseHistory.ForwardPopUpMenu;
   BrowseHistory.OnMenuItemClick := HistoryListMenuItemClick;
   with TFormIniFile.Create(self, True) do
   try
     tacoHost := StringByName['tacoHost'];
     tacoPort := IntegerByName['tacoPort'];
-    MaxRowsEdit.Text := StringByName['queryMaxRows'];
+    MaxRowsEdit.Text := StringByNameDef['queryMaxRows', '9999'];
     queryEdit.Text := StringByName['queryText'];
     SqlNullPresentation := StringByNameDef['SqlNullPresentation', 'NULL'];
     ColumnWidths.Text := StringByName['ResultColumnWidths'];
+    SqlFileName := StringByName['SqlFileName'];
+    XmlFileName := StringByName['XmlFileName'];
+    ignoreDifferencesOnSql.Text := StringByNameDef['ignoreDifferencesOnSql', ignoreDifferencesOnSql.Text];
     Restore;
     SetGridColumnWidths(DataGrid);
   finally
@@ -1299,22 +1461,6 @@ var
   Index: integer;
   ListBox: TListBox;
 begin
-  if Sender is TListBox then
-  begin
-    if Button = mbRight then
-    begin
-      ListBox := Sender as TListBox;
-      APoint.X := X;
-      APoint.Y := Y;
-      Index := ListBox.ItemAtPos(APoint, True);
-      if Index > -1 then
-      begin
-        ListBox.Selected[Index] := True;
-        if Assigned(ListBox.OnClick) then
-          ListBox.OnClick(ListBox);
-      end;
-    end;
-  end;
 end;
 
 procedure TMainForm .browseMenuItemClick (Sender : TObject );
@@ -1343,6 +1489,53 @@ begin
   BackwardAction.Enabled := BrowseHistory.OkToEnableBackward;
 end;
 
+procedure TMainForm .CompareXmlActionExecute (Sender : TObject );
+var
+  xXml: TXml;
+  xA2BXml: TA2BXml;
+  ShowA2BXmlForm: TShowA2BXmlForm;
+begin
+  with TOpenDialog.Create(nil) do
+  try
+    Title := 'Read Sql results as XML';
+    FileName := XmlFileName;
+    DefaultExt := 'xml';
+    Filter := 'XML File (*.xml)|*.xml';
+    if Execute = True then
+    begin
+      xXml := TXml.Create;
+      try
+        xXml.LoadFromFile(FileName, nil);
+        if xXml.Name <> 'sqlSelects' then
+          raise Exception.Create(FileName +
+              ' does not contain Sql results as XML data');
+        if SqlResultsXml.Items.Count <> xXml.Items.Count then
+          if not BooleanPromptDialog('Number of queries differ, Continue') then
+            exit;
+        Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+        try
+          xA2BXml := TA2BXml.CreateA2B('', SqlResultsXml, xXml, nil);
+          try
+            xA2BXml.Ignore(ignoreDifferencesOnSql, nil, nil);
+            ShowA2BXmlForm.Caption := 'Differences in replies';
+            ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOnSql;
+            ShowA2BXmlForm.Xml := xA2BXml;
+            ShowA2BXmlForm.ShowModal;
+          finally
+            xA2BXml.Free;
+          end;
+        finally
+          FreeAndNil(ShowA2BXmlForm);
+        end;
+      finally
+        xXml.Free;
+      end;
+    end;
+  finally
+    Free;
+  end;
+end;
+
 procedure TMainForm .BackwardActionExecute (Sender : TObject );
 begin
   queryEdit.Lines.Text := BrowseHistory.GetBackward;
@@ -1359,6 +1552,9 @@ begin
     StringByName['queryMaxRows'] := MaxRowsEdit.Text;
     StringByName['SqlNullPresentation'] := SqlNullPresentation;
     StringByName['ResultColumnWidths'] := ColumnWidths.Text;
+    StringByName['SqlFileName'] := SqlFileName;
+    StringByName['XmlFileName'] := XmlFileName;
+    StringByName['ignoreDifferencesOnSql'] := ignoreDifferencesOnSql.Text;
     Save;
   finally
     Free;
@@ -1368,6 +1564,7 @@ begin
   FreeAndNil(SqlQueryStrings);
   FreeAndNil(SqlResultsXml);
   FreeAndNil(ColumnWidths);
+  FreeAndNil(ignoreDifferencesOnSql);
 end;
 
 end.

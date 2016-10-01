@@ -1,0 +1,71 @@
+object InvokeSqlForm: TInvokeSqlForm
+  Left = 345
+  Height = 413
+  Top = 180
+  Width = 609
+  BorderStyle = bsSizeToolWin
+  Caption = 'Screen'
+  ClientHeight = 413
+  ClientWidth = 609
+  Color = clBtnFace
+  Font.CharSet = ANSI_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Courier New'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnMouseMove = InitMouseMove
+  OnShow = FormShow
+  ShowHint = True
+  LCLVersion = '1.2.6.0'
+  object DataGrid: TStringGrid
+    Left = 0
+    Height = 372
+    Top = 0
+    Width = 609
+    Align = alClient
+    ColCount = 7
+    DefaultRowHeight = 18
+    FixedCols = 0
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Courier New'
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goThumbTracking]
+    ParentColor = True
+    ParentFont = False
+    RowCount = 2
+    TabOrder = 0
+    TitleFont.CharSet = ANSI_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Courier New'
+    OnKeyDown = DataGridKeyDown
+    OnMouseDown = DataGridMouseDown
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 41
+    Top = 372
+    Width = 609
+    Align = alBottom
+    ClientHeight = 41
+    ClientWidth = 609
+    TabOrder = 1
+    object Button1: TButton
+      Left = 14
+      Height = 25
+      Top = 7
+      Width = 75
+      Cancel = True
+      Caption = '&Close'
+      Default = True
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      ModalResult = 2
+      ParentFont = False
+      TabOrder = 0
+    end
+  end
+end
