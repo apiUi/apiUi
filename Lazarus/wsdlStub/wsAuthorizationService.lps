@@ -8,10 +8,11 @@
       <Unit0>
         <Filename Value="wsAuthorizationService.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
-        <CursorPos Y="14"/>
-        <UsageCount Value="47"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1"/>
+        <CursorPos X="55" Y="7"/>
+        <UsageCount Value="48"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -20,8 +21,11 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="wsAuthDaemonUnit"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1"/>
         <CursorPos X="7" Y="6"/>
-        <UsageCount Value="47"/>
+        <UsageCount Value="48"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -31,10 +35,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="wsDaemonUnit"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="252"/>
-        <CursorPos X="35" Y="279"/>
-        <UsageCount Value="47"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="269"/>
+        <CursorPos X="3" Y="255"/>
+        <UsageCount Value="48"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit2>
@@ -43,14 +49,15 @@
         <IsPartOfProject Value="True"/>
         <TopLine Value="2"/>
         <CursorPos X="10" Y="11"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="44"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-extra\src\daemonapp.pp"/>
         <UnitName Value="daemonapp"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="32"/>
-        <CursorPos X="3" Y="41"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="946"/>
+        <CursorPos X="39" Y="945"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit4>
@@ -81,7 +88,8 @@
       <Unit9>
         <Filename Value="..\Xml\Ipmz.pas"/>
         <UnitName Value="Ipmz"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="1"/>
         <TopLine Value="250"/>
         <CursorPos X="17" Y="269"/>
         <UsageCount Value="11"/>
@@ -89,46 +97,43 @@
       </Unit9>
       <Unit10>
         <Filename Value="wsAuthorizationServiceIni.xml"/>
-        <EditorIndex Value="-1"/>
         <CursorPos X="30" Y="7"/>
         <UsageCount Value="11"/>
         <DefaultSyntaxHighlighter Value="XML"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <EditorIndex Value="-1"/>
         <TopLine Value="370"/>
         <CursorPos X="3" Y="377"/>
         <UsageCount Value="10"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
-        <EditorIndex Value="-1"/>
         <CursorPos X="10" Y="29"/>
         <UsageCount Value="10"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\sysutils.pp"/>
-        <EditorIndex Value="-1"/>
         <TopLine Value="169"/>
         <CursorPos X="24" Y="201"/>
         <UsageCount Value="10"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\wininc\defines.inc"/>
-        <EditorIndex Value="-1"/>
         <TopLine Value="2950"/>
         <CursorPos X="28" Y="2982"/>
         <UsageCount Value="10"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\wininc\redef.inc"/>
-        <EditorIndex Value="-1"/>
         <TopLine Value="931"/>
         <CursorPos X="10" Y="950"/>
         <UsageCount Value="10"/>
       </Unit15>
     </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
     <JumpHistory Count="8" HistoryIndex="7">
       <Position1>
         <Filename Value="wsdaemonunit.pas"/>
@@ -151,17 +156,18 @@
         <Caret Line="82" Column="3" TopLine="79"/>
       </Position5>
       <Position6>
-        <Filename Value="wsdaemonunit.pas"/>
-        <Caret Line="100" Column="3" TopLine="119"/>
-      </Position6>
-      <Position7>
         <Filename Value="..\Xml\Ipmz.pas"/>
         <Caret Line="269" Column="6" TopLine="250"/>
+      </Position6>
+      <Position7>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-extra\src\daemonapp.pp"/>
+        <Caret Line="585" Column="3" TopLine="557"/>
       </Position7>
       <Position8>
-        <Filename Value="wsAuthorizationService.lpr"/>
-        <Caret Line="14"/>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="112" Column="3" TopLine="113"/>
       </Position8>
     </JumpHistory>
   </ProjectSession>
+  <EditorMacros Count="0"/>
 </CONFIG>

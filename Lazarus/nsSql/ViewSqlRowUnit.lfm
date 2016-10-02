@@ -26,6 +26,21 @@ object ViewSqlRowForm: TViewSqlRowForm
     ButtonHeight = 23
     Caption = 'ToolBar'
     TabOrder = 0
+    object Button2: TButton
+      Left = 534
+      Height = 27
+      Top = 2
+      Width = 75
+      Align = alRight
+      Cancel = True
+      Caption = 'Cancel'
+      Font.CharSet = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      ModalResult = 2
+      ParentFont = False
+      TabOrder = 0
+    end
   end
   object DataGrid: TStringGrid
     Left = 0
@@ -55,6 +70,7 @@ object ViewSqlRowForm: TViewSqlRowForm
       Caption = '&Copy to Clipboard'
       Enabled = False
       Hint = 'Copy screen to clipboard'
+      OnExecute = CopyToClibBoardActionExecute
     end
   end
 end

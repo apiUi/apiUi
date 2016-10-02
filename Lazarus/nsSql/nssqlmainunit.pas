@@ -26,6 +26,7 @@ type
 
   TProcedureThread = class;
   TMainForm = class(TForm )
+    AboutAction : TAction ;
     MaintainIgnoreListSqlAction : TAction ;
     CompareXmlAction : TAction ;
     MenuItem10 : TMenuItem ;
@@ -36,23 +37,38 @@ type
     MenuItem15 : TMenuItem ;
     MenuItem16 : TMenuItem ;
     MenuItem17 : TMenuItem ;
+    MenuItem18 : TMenuItem ;
+    MenuItem19 : TMenuItem ;
+    MenuItem20 : TMenuItem ;
+    MenuItem21 : TMenuItem ;
+    MenuItem22 : TMenuItem ;
+    MenuItem23 : TMenuItem ;
+    MenuItem24 : TMenuItem ;
+    MenuItem25 : TMenuItem ;
+    MenuItem26 : TMenuItem ;
+    MenuItem27 : TMenuItem ;
+    MenuItem28 : TMenuItem ;
+    MenuItem29 : TMenuItem ;
+    MenuItem30 : TMenuItem ;
     MenuItem6 : TMenuItem ;
     MenuItem7 : TMenuItem ;
     MenuItem8 : TMenuItem ;
     MenuItem9 : TMenuItem ;
+    DataPopupMenu : TPopupMenu ;
+    ToolButton11 : TToolButton ;
+    ToolButton15 : TToolButton ;
+    ToolButton16 : TToolButton ;
     ToolButton17 : TToolButton ;
     ToolButton18 : TToolButton ;
+    ToolButton3 : TToolButton ;
     WriteXmlAction : TAction ;
     ReadXmlAction : TAction ;
     SaveSqlAction : TAction ;
     ReadSqlAction : TAction ;
     ToolButton10 : TToolButton ;
-    ToolButton11 : TToolButton ;
     ToolButton12 : TToolButton ;
     ToolButton13 : TToolButton ;
     ToolButton14 : TToolButton ;
-    ToolButton15 : TToolButton ;
-    ToolButton16 : TToolButton ;
     ViewSqlResultsAction : TAction ;
     ForwardAction : TAction ;
     BackwardAction : TAction ;
@@ -104,6 +120,7 @@ type
     SynSQLSyn1 : TSynSQLSyn ;
     ToolBar1 : TToolBar ;
     ToolButton1 : TToolButton ;
+    procedure AboutActionExecute (Sender : TObject );
     procedure BackwardActionUpdate (Sender : TObject );
     procedure CompareXmlActionExecute (Sender : TObject );
     procedure ForwardActionUpdate (Sender : TObject );
@@ -217,6 +234,7 @@ implementation
 uses xmlio
    , PromptTacoUnit
    , ViewSqlRowUnit
+   , AboutUnit
    , InsertSqlUnit
    , UpdateSqlUnit
    , InvokeSqlUnit
@@ -412,7 +430,13 @@ end;
 
 procedure TMainForm .UpdateActionUpdate (Sender : TObject );
 begin
-  UpdateAction.Enabled := (not fActive);
+  UpdateAction.Enabled := (not fActive)
+                      and Assigned (sqlQuery)
+                      and sqlQuery.SingleFullTableQuery
+                      and Assigned(SqlBrowseDefine)
+                      and SqlBrowseDefine.ColClassKnown
+                      and (DataGrid.Row >= DataGrid.FixedRows)
+                        ;
 end;
 
 procedure TMainForm .ViewActionExecute (Sender : TObject );
@@ -1487,6 +1511,19 @@ end;
 procedure TMainForm .BackwardActionUpdate (Sender : TObject );
 begin
   BackwardAction.Enabled := BrowseHistory.OkToEnableBackward;
+end;
+
+procedure TMainForm .AboutActionExecute (Sender : TObject );
+begin
+  Application.CreateForm(TAboutBox, AboutBox);
+  try
+    AboutBox.VersionInfo:= _xmlProgVersion;
+    AboutBox.CopyRight := 'Copyright © 2016 Jan Bouwman';
+    AboutBox.LicensedTo := '';
+    AboutBox.ShowModal;
+  finally
+    FreeAndNil(AboutBox);
+  end;
 end;
 
 procedure TMainForm .CompareXmlActionExecute (Sender : TObject );

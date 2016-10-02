@@ -26,18 +26,20 @@ type
     OKButton: TButton;
     ProgramLabel: TLabel;
     Bevel1: TBevel;
-    Label3: TLabel;
+    CopyRightLabel: TLabel;
     LicensedLabel: TLabel;
     procedure BuildLabelMouseMove (Sender : TObject ; Shift : TShiftState ; X ,
       Y : Integer );
     procedure FormCreate(Sender: TObject);
     procedure FormShow (Sender : TObject );
   private
+    procedure setCopyRight (AValue : String );
     procedure setLicensedTo(const Value: String);
     { Private declarations }
   public
     ProgName, VersionInfo: String;
     property LicensedTo: String write setLicensedTo;
+    property CopyRight: String write setCopyRight;
   end;
 
 var
@@ -57,11 +59,18 @@ end;
 
 procedure TAboutBox .FormShow (Sender : TObject );
 begin
+  if Progname = '' then
+    ProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   BuildLabel.Caption := 'Date: ' + {$I %date%};
   LazarusLabel.Caption := 'Lazarus version: ' + LCLVersion;
   FPCLabel.Caption := 'FPC version: ' + {$I %fpcversion%};
   Caption := 'About ' + ProgName;
   ProgramLabel.Caption := ProgName + ' ' + VersionInfo;
+end;
+
+procedure TAboutBox .setCopyRight (AValue : String );
+begin
+  CopyRightLabel.Caption := AValue;
 end;
 
 procedure TAboutBox .BuildLabelMouseMove (Sender : TObject ;
@@ -73,6 +82,8 @@ end;
 procedure TAboutBox.setLicensedTo(const Value: String);
 begin
   LicensedLabel.Caption := 'Licensed to ' + Value;
+  if Value = '' then
+    LicensedLabel.Caption := '';
   {$ifdef TrialVersion}
   LicensedLabel.Caption := 'Trial';
   {$endif}

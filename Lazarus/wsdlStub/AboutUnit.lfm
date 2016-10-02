@@ -31,7 +31,7 @@ object AboutBox: TAboutBox
     Anchors = [akLeft, akRight, akBottom]
     Shape = bsTopLine
   end
-  object Label3: TLabel
+  object CopyRightLabel: TLabel
     Left = 18
     Height = 13
     Top = 46

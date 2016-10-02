@@ -14,11 +14,16 @@ uses
   ;
 
 type
+
+  { TViewSqlRowForm }
+
   TViewSqlRowForm = class(TForm)
     ActionList1: TActionList;
+    Button2 : TButton ;
     CopyToClibBoardAction: TAction;
     ToolBar: TToolBar;
     DataGrid: TStringGrid;
+    procedure CopyToClibBoardActionExecute (Sender : TObject );
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure InitMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -75,6 +80,11 @@ begin
   IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   DataGrid.ColWidths [ValueColumn] := IniFile.IntegerByNameDef ['ValueColumnWidth', DataGrid.ColWidths [ValueColumn]];
+end;
+
+procedure TViewSqlRowForm .CopyToClibBoardActionExecute (Sender : TObject );
+begin
+
 end;
 
 procedure TViewSqlRowForm.FormDestroy(Sender: TObject);
