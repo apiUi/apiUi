@@ -6972,11 +6972,20 @@ begin
           except
             xLog.OutboundTimeStamp := EncodeTime(0,0,0,0);
           end;
+          xLog.DelayTimeMs := Items.XmlIntegerByTagDef['DelayTimeMs', 0];
+          xLog.OperationCount := Items.XmlIntegerByTagDef['OperationCount', 0];
           xLog.TransportType := TTransportType (StrToIntDef (Items.XmlValueByTag ['TransportType'], 0));
           xLog.StubAction := TStubAction (StrToIntDef (Items.XmlValueByTag ['StubAction'], 0));
           xLog.CorrelationId := Items.XmlValueByTag ['CorrelationId'];
+          xLog.ServiceName := Items.XmlValueByTag ['Service'];
+          xLog.OperationName := Items.XmlValueByTag ['Operation'];
           xLog.Exception := Items.XmlValueByTag ['Error'];
           xLog.Remarks := Items.XmlValueByTag ['Remarks'];
+          xLog.httpResponseCode := Items.XmlValueByTag ['httpResponseCode'];
+          xLog.httpCommand := Items.XmlValueByTag ['httpCommand'];
+          xLog.httpDocument := Items.XmlValueByTag ['httpDocument'];
+          xLog.httpParams := Items.XmlValueByTag ['httpParams'];
+          xLog.httpSoapAction := Items.XmlValueByTag ['httpSoapAction'];
           xLog.RequestHeaders := Items.XmlValueByTag ['HttpRequestHeaders'];
           xLog.RequestBody := Items.XmlValueByTag ['HttpRequestBody'];
           xLog.RequestBodyMiM := Items.XmlValueByTag ['HttpRequestBodyMiM'];
@@ -6987,8 +6996,10 @@ begin
           xLog.ReplyValidated := Items.XmlBooleanByTag ['ReplyValidated'];
           xLog.ReplyValidateResult := Items.XmlValueByTag ['ReplyValidateResult'];
           xLog.CorrId := Items.XmlValueByTag ['Check'];
-          xLog.ServiceName := Items.XmlValueByTag ['ServiceName'];
-          xLog.OperationName := Items.XmlValueByTag ['OperationName'];
+          if xLog.ServiceName = '' then
+            xLog.ServiceName := Items.XmlValueByTag ['ServiceName'];
+          if xLog.OperationName = '' then
+            xLog.OperationName := Items.XmlValueByTag ['OperationName'];
           xLog.CorrId := Items.XmlValueByTag ['Check'];
           try
             xLog.Operation := FindOperationOnRequest ( xLog
