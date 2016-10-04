@@ -149,7 +149,7 @@ begin
             and (Copy (fTacoReply, Length (fTacoReply) - 12, 13) = '<END-OF-DATA>')
               ;
     end;
-    EvaluateResponse;
+//  EvaluateResponse;
   finally
     fLock.Release;
   end;

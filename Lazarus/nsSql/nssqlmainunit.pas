@@ -9,7 +9,7 @@ interface
 uses
   Classes , SysUtils , FileUtil , SynEdit , SynHighlighterSQL , Forms ,
   Controls , Graphics , Dialogs , Menus , ExtCtrls , ComCtrls , StdCtrls ,
-  ActnList , Grids , TacoInterface , Definez , FormIniFilez , types
+  ActnList , Grids , LResources , TacoInterface , Definez , FormIniFilez , types
   , QueryScanner
   , Xmlz
   , Xsdz
@@ -55,6 +55,7 @@ type
     MenuItem8 : TMenuItem ;
     MenuItem9 : TMenuItem ;
     DataPopupMenu : TPopupMenu ;
+    PingPongTimer : TTimer ;
     ToolButton11 : TToolButton ;
     ToolButton15 : TToolButton ;
     ToolButton16 : TToolButton ;
@@ -123,6 +124,8 @@ type
     procedure AboutActionExecute (Sender : TObject );
     procedure BackwardActionUpdate (Sender : TObject );
     procedure CompareXmlActionExecute (Sender : TObject );
+    procedure DataGridMouseDown (Sender : TObject ; Button : TMouseButton ;
+      Shift : TShiftState ; X , Y : Integer );
     procedure ForwardActionUpdate (Sender : TObject );
     procedure HistoryListMenuItemClick(Sender: TObject);
     procedure BackwardActionExecute (Sender : TObject );
@@ -145,6 +148,7 @@ type
     procedure MenuItem2Click (Sender : TObject );
     procedure MenuItem3Click (Sender : TObject );
     procedure MenuItem5Click (Sender : TObject );
+    procedure PingPongTimerTimer (Sender : TObject );
     procedure ReadSqlActionExecute (Sender : TObject );
     procedure ReadXmlActionExecute (Sender : TObject );
     procedure SaveSqlActionExecute (Sender : TObject );
@@ -180,6 +184,7 @@ type
     procedure ShowSqlDeleteScreen(ARow: Integer);
     procedure ExecuteSQL (aString: String; aRow: Integer; aVerb: TNsSqlVerb);
     function doAuthorize: Boolean;
+    procedure onAuthorize (Sender: TObject);
     procedure SetGridColumnWidths(aGrid: TStringGrid);
     procedure SaveGridColumnWidths(aGrid: TStringGrid);
     procedure AddSqlQueryResult(aQuery: TQuery; aGrid: TStringGrid);
@@ -300,6 +305,11 @@ begin
   finally
     FreeAndNil(InvokeSqlForm);
   end;
+end;
+
+procedure TMainForm .PingPongTimerTimer (Sender : TObject );
+begin
+  fTacoInterface.PingPong;
 end;
 
 procedure TMainForm .ReadSqlActionExecute (Sender : TObject );
@@ -630,6 +640,12 @@ begin
   if not fTacoInterface.Authorized then
     QueryDefines;
   result := fTacoInterface.Authorized;
+end;
+
+procedure TMainForm .onAuthorize (Sender: TObject);
+begin
+  with Sender as TTacoInterface do
+    PingPongTimer.Enabled := Authorized;
 end;
 
 procedure TMainForm .SetGridColumnWidths (aGrid : TStringGrid );
@@ -1342,6 +1358,7 @@ begin
   ignoreDifferencesOnSql.Duplicates := dupIgnore;
   SqlResultsXml := TXml.Create;
   fTacoInterface := TTacoInterface.Create(nil, nil);
+  fTacoInterface.OnAuthorize := onAuthorize;
   fTacoInterface.NeedHostData := NeedTacoHostData;
   BrowseHistory := TBrowseHistory.Create;
 //QueryBackButton.DropdownMenu := BrowseHistory.BackwardPopUpMenu;
@@ -1363,6 +1380,7 @@ begin
   finally
     Free;
   end;
+  PingPongTimer.Interval := 10 * 1000;
 end;
 
 procedure TMainForm .DefineListBoxClick (Sender : TObject );
@@ -1571,6 +1589,17 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TMainForm .DataGridMouseDown (Sender : TObject ;
+  Button : TMouseButton ; Shift : TShiftState ; X , Y : Integer );
+var
+  xCol, xRow: Integer;
+begin
+  DataGrid.MouseToCell(X, Y, xCol, xRow);
+  if (xRow < DataGrid.RowCount)
+  and (xRow >= DataGrid.FixedRows) then
+    DataGrid.Row := xRow;
 end;
 
 procedure TMainForm .BackwardActionExecute (Sender : TObject );

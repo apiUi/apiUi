@@ -1160,8 +1160,7 @@ type
     claimedReport: TSnapshot;
     mqServerEnv: String;
     CollapseHeaders: Boolean;
-    wsdlStubMessagesFileName: String;
-    wsdlStubSnapshotsFileName: String;
+    wsdlStubMessagesFileName, wsdlStubSnapshotsFileName: String;
     log4jEventsFileName: String;
     nStubs: Integer;
     freeStubs: Integer;
@@ -6547,6 +6546,7 @@ begin
     SnapshotsVTS.Header.Columns[X].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
+  wsdlStubSnapshotsFileName := xIniFile.StringByName['wsdlStubSnapshotsFileName'];
   DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
   BetaMode := xIniFile.BooleanByNameDef['BetaMode', False];
   ListofOperationsMenuItem.Checked := xIniFile.BooleanByNameDef
@@ -6795,7 +6795,7 @@ begin
   xIniFile.IntegerByName['GridDataPanelHeight'] := GridDataPanel.Height;
   xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
   xIniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
-  // xIniFile.BooleanByName ['LogFilter.Enabled'] := se.LogFilter.Enabled;
+  xIniFile.StringByName['wsdlStubSnapshotsFileName'] := wsdlStubSnapshotsFileName;
   xIniFile.StringByName['tacoHost'] := tacoHost;
   xIniFile.IntegerByName['tacoPort'] := tacoPort;
   xIniFile.IntegerByName['LogFilter.FilterStyle'] := Ord
