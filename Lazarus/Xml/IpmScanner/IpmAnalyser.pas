@@ -13,7 +13,7 @@ uses Classes
 const InternalStackSize = 256;
 const InitState = 2; {taken from Scanner.pas}
 
-type TIpmAnalyser = class (TComponent)
+type TIpmAnalyser = class (TObject)
 private
   Stack: array [0..InternalStackSize] of Integer;
   StackIndex: Integer;
@@ -48,7 +48,6 @@ private
   procedure HaveData (aObject: TObject; aString: String);
 public
   StartState: Integer;
-published
   property ScannedItems: YYSType read LexicalList;
   property OnHaveScanned: TOnHaveScannedEvent read GetOnHaveScanned write SetOnHaveScanned;
   property OnHaveData: TOnHaveDataEvent read FOnHaveData write FOnHaveData;
@@ -57,7 +56,7 @@ published
   procedure DebugTokenStringList (arg: TStringList);
   procedure Prepare;
   procedure Execute;
-  constructor Create (AComponent: TComponent); override;
+  constructor Create (aOwner: TObject);
   destructor Destroy; override;
 end;
 
@@ -368,13 +367,12 @@ begin
   Parser.Execute;
 end;
 
-constructor TIpmAnalyser.Create (AComponent: TComponent);
+constructor TIpmAnalyser.Create (aOwner: TObject);
 begin
-  inherited Create (AComponent);
   Scanner := TIpmScanner.Create;
   Scanner.OnNeedData := ScannerNeedsData;
   Scanner.OnError := AnalyserScannerError;
-  Parser := TIpmParser.Create;
+  Parser := TIpmParser.Create (aOwner);
   Parser.OnHaveData := HaveData;
   Parser.OnError := AnalyserParserError;
   LexicalList:= nil;

@@ -14,6 +14,7 @@ type TCustParser = class (TObject)
     fDoIt: Boolean;
     function getDoIt: Boolean;
 protected
+  Owner: TObject;
   LexItem: YYSType;
   Cond: Boolean;
   Stack: array [0..InternalStackSize] of YYRType;
@@ -104,15 +105,16 @@ public
   procedure HaveData (aObject: TObject; aString: String);
   procedure Prepare; virtual;
   function Execute: Integer; virtual;
-  constructor Create;
+  constructor Create (aOwner: TObject);
   destructor Destroy; override;
 end;
 
 implementation
 
-constructor TCustParser.Create;
+constructor TCustParser.Create(aOwner: TObject);
 begin
   inherited Create;
+  Owner := aOwner;
   StackIndex := 0;
   InternalBinds := TBindList.Create;
   InternalBinds.Sorted := True;

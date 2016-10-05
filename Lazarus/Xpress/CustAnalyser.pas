@@ -9,7 +9,7 @@ uses Classes
 
 const InternalStackSize = 256;
 
-type TCustAnalyser = class (TComponent)
+type TCustAnalyser = class (TObject)
 protected
   Stack: array [0..InternalStackSize] of Integer;
   StackIndex: Integer;
@@ -42,7 +42,7 @@ published
   procedure DebugTokenStringList (arg: TStringList);
   procedure Prepare; dynamic;
   procedure Execute; dynamic;
-  constructor Create (AComponent: TComponent); override;
+  constructor Create (aOwner: TObject); override;
   destructor Destroy; override;
 public
   InitState: Integer;
@@ -257,7 +257,7 @@ begin
   Parser.Execute;
 end;
 
-constructor TCustAnalyser.Create (AComponent: TComponent);
+constructor TCustAnalyser.Create (aOnwer: TObject);
 begin
   inherited Create (AComponent);
   LexicalList:= nil;

@@ -68,7 +68,7 @@ var
 
 procedure CreateLocalParser (aParser: TParser);
 begin
-  LocalParser := TParser.Create;
+  LocalParser := TParser.Create(aParser.Owner);
   LocalParser.OnPutData := aParser.OnPutData;
   LocalParser.OnGetData := aParser.OnGetData;
   LocalParser.OnHaveData := aParser.OnHaveData;

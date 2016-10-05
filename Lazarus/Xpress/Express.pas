@@ -21,7 +21,7 @@ type
 
 { TExpress }
 
- TExpress = class (TComponent)
+ TExpress = class (TObject)
 private
   rootBlock, currBlock, prntBlock: TBlock;
   ScannerState: Integer;
@@ -127,7 +127,7 @@ public
   procedure BindBuildIns;
   function DebugTokenStringList: String;
   function FindBind (aId: String): TBind;
-  constructor Create (AComponent: TComponent); override;
+  constructor Create (aOwner: TObject);
   destructor Destroy; override;
 end;
 {$INCLUDE Parser.def}
@@ -441,7 +441,7 @@ procedure TExpress.CreateQuery ( Sender:TObject
 var
   Qry: TXpQuery;
 begin
-  Qry := TXpQuery.Create (self);
+  Qry := TXpQuery.Create (nil);
   Qry.DataBase := Database;
 {  Qry.UniDirectional := True; }
   Qry.InsertValuesString := 'values';
@@ -1395,9 +1395,8 @@ begin
   result := fTextLines.Text;
 end;
 
-constructor TExpress.Create (AComponent: TComponent);
+constructor TExpress.Create (aOwner: TObject);
 begin
-  inherited Create (AComponent);
   fTextLines := TStringList.Create;
   fOnNeedData := PassText;
   fFunctionProtoTypes := TStringList.Create;
@@ -1410,7 +1409,7 @@ begin
   Scanner := TScanner.Create;
   Scanner.OnNeedData := ScannerNeedsData;
   Scanner.OnError := ScannerError;
-  Parser := TParser.Create;
+  Parser := TParser.Create(aOwner);
   Parser.OnGetAbortPressed := OnGetAbortPressed;
   Parser.OnPutData := PutData;
   Parser.OnGetData := GetData;

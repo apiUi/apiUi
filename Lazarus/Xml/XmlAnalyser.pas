@@ -12,7 +12,7 @@ uses Classes
 const InternalStackSize = 256;
 const InitState = 2; {taken from Scanner.pas}
 
-type TXmlAnalyser = class (TComponent)
+type TXmlAnalyser = class (TObject)
 private
   Stack: array [0..InternalStackSize] of Integer;
   StackIndex: Integer;
@@ -49,7 +49,6 @@ private
   procedure HaveData (aObject: TObject; aString: String);
 public
   StartState: Integer;
-published
   property BaseXml: TXml read getBaseXml write setBaseXml;
   property ScannedItems: YYSType read LexicalList;
   property OnHaveScanned: TOnHaveScannedEvent read GetOnHaveScanned write SetOnHaveScanned;
@@ -59,7 +58,7 @@ published
   procedure DebugTokenStringList (arg: TStringList);
   procedure Prepare;
   procedure Execute;
-  constructor Create (AComponent: TComponent); override;
+  constructor Create (aOwner: TOBject);
   destructor Destroy; override;
 end;
 
@@ -337,13 +336,13 @@ begin
   Parser.Execute;
 end;
 
-constructor TXmlAnalyser.Create (AComponent: TComponent);
+constructor TXmlAnalyser.Create (aOwner: TOBject);
 begin
-  inherited Create (AComponent);
+  inherited Create;
   Scanner := TXmlScanner.Create;
   Scanner.OnNeedData := @ScannerNeedsData;
   Scanner.OnError := @AnalyserScannerError;
-  Parser := TXmlParser.Create;
+  Parser := TXmlParser.Create(aOwner);
   Parser.OnHaveData := @HaveData;
   Parser.OnError := @AnalyserParserError;
   LexicalList:= nil;

@@ -3645,7 +3645,7 @@ begin
   fPreparedBefore := False;
   try
     FreeAndNil(fExpressBefore);
-    fExpressBefore := TExpress.Create (nil);
+    fExpressBefore := TExpress.Create (self);
     fExpressBefore.Context := Self;
     fExpressBefore.ScriptText := BeforeScriptLines.Text;
     fExpressBefore.OnGetAbortPressed := fOnGetAbortPressed;
@@ -3798,7 +3798,7 @@ begin
   fPreparedAfter := False;
   try
     FreeAndNil(fExpressAfter);
-    fExpressAfter := TExpress.Create (nil);
+    fExpressAfter := TExpress.Create (self);
     fExpressAfter.Context := Self;
     fExpressAfter.ScriptText := AfterScriptLines.Text;
     fExpressAfter.OnError := fOnError;
@@ -5659,7 +5659,7 @@ begin
   try
     try
       FreeAndNil(fExpressChecker);
-      fExpressChecker := TExpress.Create (nil);
+      fExpressChecker := TExpress.Create (self);
       fExpressChecker.Context := Self;
       fExpressChecker.OnNeedData := NeedStamperData;
       fExpressChecker.OnError := fOnError;
@@ -5714,7 +5714,7 @@ procedure TWsdlOperation.BindStamper;
 begin
   try
     FreeAndNil(fExpressStamper);
-    fExpressStamper := TExpress.Create (nil);
+    fExpressStamper := TExpress.Create (self);
     fExpressStamper.Context := Self;
     fExpressStamper.OnNeedData := NeedStamperData;
     fExpressStamper.OnError := fOnError;
