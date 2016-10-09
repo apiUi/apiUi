@@ -35,7 +35,7 @@ type TPasswordType = (pwText, pwDigest);
 type TOnRequestViolatingSchema = (rvsContinue, rvsRaiseErrorMessage);
 type TProcedure = procedure of Object;
 const
-TransportTypeNames: array [ttHttp..ttBmtp] of String =
+TransportTypeNames: array [ttHttp..ttNone] of String =
 ( 'Http'
 , 'Https'
 , 'Mq'
@@ -43,6 +43,7 @@ TransportTypeNames: array [ttHttp..ttBmtp] of String =
 , 'Taco'
 , 'Smtp'
 , 'Bmtp'
+, 'None'
 );
 
 type
@@ -90,6 +91,7 @@ type
       xsdElementsWhenRepeatable: Integer;
       xsdDefaultElementsWhenRepeatable: Integer;
       OperationsWithEndpointOnly: Boolean;
+      EnvVars: TStringList;
       _inXml: TXml;
       _outXml: TXml;
       _expectXml: TXml;
@@ -101,7 +103,7 @@ type
       procedure LoadExtraXsds;
       procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent);
       procedure LoadFromSdfFile(aFileName: String);
-      constructor Create(aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);
+      constructor Create(aEnvVars: TStringList; aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);
       destructor Destroy; override;
   end;
 
@@ -555,11 +557,11 @@ function SubStringX ( s: String; i, c: Extended): String;
 function isAccordingSchema (aObject: TObject): Extended;
 function isAssigned (aObject: TObject): Extended;
 procedure ResetOperationCounters;
-function EnvVarMatchList (aObject: TObject; aExpr: String): TParserStringList;
-procedure ResetEnvVars (aRegExp: String);
-procedure ResetEnvVar (aName: String);
-function setEnvNumber (aName: String; aValue: Extended): Extended;
-function setEnvVar (aName, aValue: String): String;
+function EnvVarMatchList (aOperation: TWsdlOperation; aExpr: String): TParserStringList;
+procedure ResetEnvVars (aOperation: TWsdlOperation; aRegExp: String);
+procedure ResetEnvVar (aOperation: TWsdlOperation; aName: String);
+function setEnvNumber (aOperation: TWsdlOperation; aName: String; aValue: Extended): Extended;
+function setEnvVar (aOperation: TWsdlOperation; aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure SaveSnapshots (aObject: TObject; aString: String);
@@ -569,12 +571,12 @@ procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 procedure ClearLogs (aObject: TObject);
 procedure ClearSnapshots (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
-function decVarNumber (aName: String): Extended;
-function getVarNumber (aName: String): Extended;
-function incVarNumber (aName: String): Extended;
-function getVarNumberDef (aName: String; aDefault: Extended): Extended;
-function getVar (aName: String): String;
-function getVarDef (aName, aDefault: String): String;
+function decVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
+function getVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
+function incVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
+function getVarNumberDef (aOperation: TWsdlOperation; aName: String; aDefault: Extended): Extended;
+function getVar (aOperation: TWsdlOperation; aName: String): String;
+function getVarDef (aOperation: TWsdlOperation; aName, aDefault: String): String;
 function xsdOperationCount(aOperation: TWsdlOperation): Extended;
 function wsdlUserName: String;
 function wsdlOperationName(aOper: TWsdlOperation): String;
@@ -1034,7 +1036,7 @@ begin
   end;
 end;
 
-function EnvVarMatchList (aObject: TObject; aExpr: String): TParserStringList;
+function EnvVarMatchList (aOperation: TWsdlOperation; aExpr: String): TParserStringList;
 var
   i: Integer;
 begin
@@ -1046,9 +1048,9 @@ begin
       with TRegExpr.Create do
       try
         Expression := aExpr;
-        for I := 0 to _wsdlVars.Count - 1 do
-          if (Exec(_wsdlVars.Names[i])) then
-            result.Add (_wsdlVars.Names[i]);
+        for I := 0 to aOperation.Wsdl.EnvVars.Count - 1 do
+          if (Exec(aOperation.Wsdl.EnvVars.Names[i])) then
+            result.Add (aOperation.Wsdl.EnvVars.Names[i]);
       finally
         Free;
       end;
@@ -1559,7 +1561,7 @@ begin
   end;
 end;
 
-procedure ResetEnvVars (aRegExp: String);
+procedure ResetEnvVars (aOperation: TWsdlOperation; aRegExp: String);
 var
   i: Integer;
 begin
@@ -1568,9 +1570,9 @@ begin
     with TRegExpr.Create do
     try
       Expression := aRegExp;
-      for I := _wsdlVars.Count - 1 downto 0 do
-        if (Exec(_wsdlVars.Names[i])) then
-          _WsdlVars.Delete (i);
+      for I := aOperation.Wsdl.EnvVars.Count - 1 downto 0 do
+        if (Exec(aOperation.Wsdl.EnvVars.Names[i])) then
+          aOperation.Wsdl.EnvVars.Delete (i);
     finally
       Free;
     end;
@@ -1579,32 +1581,32 @@ begin
   end;
 end;
 
-procedure ResetEnvVar (aName: String);
+procedure ResetEnvVar (aOperation: TWsdlOperation; aName: String);
 var
   i: Integer;
 begin
   AcquireEnvVarLock;
   try
-    i := _wsdlVars.IndexOfName(aName);
+    i := aOperation.Wsdl.EnvVars.IndexOfName(aName);
     if i >= 0 then
-      _WsdlVars.Delete (i);
+      aOperation.Wsdl.EnvVars.Delete (i);
   finally
     ReleaseEnvVarLock;
   end;
 end;
 
-function setEnvNumber (aName: String; aValue: Extended): Extended;
+function setEnvNumber (aOperation: TWsdlOperation; aName: String; aValue: Extended): Extended;
 begin
   result := aValue;
-  setEnvVar (aName, FloatToStr(aValue));
+  setEnvVar (aOperation, aName, FloatToStr(aValue));
 end;
 
-function setEnvVar (aName, aValue: String): String;
+function setEnvVar (aOperation: TWsdlOperation; aName, aValue: String): String;
 begin
   AcquireEnvVarLock;
   try
-    result := _WsdlVars.Values [aName];
-    _WsdlVars.Values [aName] := aValue;
+    result := aOperation.Wsdl.EnvVars.Values [aName];
+    aOperation.Wsdl.EnvVars.Values [aName] := aValue;
   finally
     ReleaseEnvVarLock;
   end;
@@ -1623,15 +1625,15 @@ begin
     result := aFalseString;
 end;
 
-function getVarDef (aName, aDefault: String): String;
+function getVarDef (aOperation: TWsdlOperation; aName, aDefault: String): String;
 var
   i: Integer;
 begin
   AcquireEnvVarLock;
   try
-    i := _wsdlVars.IndexOfName(aName);
+    i := aOperation.Wsdl.EnvVars.IndexOfName(aName);
     if i >= 0 then
-      result := _WsdlVars.ValueFromIndex [i]
+      result := aOperation.Wsdl.EnvVars.ValueFromIndex [i]
     else
       Result := aDefault;
   finally
@@ -1639,38 +1641,38 @@ begin
   end;
 end;
 
-function getVar (aName: String): String;
+function getVar (aOperation: TWsdlOperation; aName: String): String;
 begin
-  result := getVarDef(aName, '');
+  result := getVarDef(aOperation, aName, '');
 end;
 
-function getVarNumberDef (aName: String; aDefault: Extended): Extended;
+function getVarNumberDef (aOperation: TWsdlOperation; aName: String; aDefault: Extended): Extended;
 begin
-  result := StrToFloatDef (getVar (aName), aDefault);
+  result := StrToFloatDef (getVar (aOperation, aName), aDefault);
 end;
 
-function getVarNumber (aName: String): Extended;
+function getVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
 begin
-  result := getVarNumberDef(aName, 0);
+  result := getVarNumberDef(aOperation, aName, 0);
 end;
 
-function incVarNumber (aName: String): Extended;
+function incVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
 begin
   AcquireEnvVarLock; // nests lock....
   try
-    result := getVarNumberDef(aName, 0) + 1;
-    setEnvNumber(aName, result);
+    result := getVarNumberDef(aOperation, aName, 0) + 1;
+    setEnvNumber(aOperation, aName, result);
   finally
     ReleaseEnvVarLock;
   end;
 end;
 
-function decVarNumber (aName: String): Extended;
+function decVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
 begin
   AcquireEnvVarLock; // nests lock....
   try
-    result := getVarNumberDef(aName, 0) + 1;
-    setEnvNumber(aName, result);
+    result := getVarNumberDef(aOperation, aName, 0) + 1;
+    setEnvNumber(aOperation, aName, result);
   finally
     ReleaseEnvVarLock;
   end;
@@ -1817,9 +1819,10 @@ begin
   end;
 end;
 
-constructor TWsdl.Create(aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);
+constructor TWsdl.Create(aEnvVars: TStringList; aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);
 begin
   inherited Create;
+  EnvVars := aEnvVars;
   xsdElementsWhenRepeatable := aElementsWhenRepeatable;
   xsdDefaultElementsWhenRepeatable := aDefaultElementsWhenRepeatable;
   OperationsWithEndpointOnly := aOperationsWithEndpointOnly;
@@ -3703,18 +3706,18 @@ begin
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
-    BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
+    BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindBeforeFunction ('Exit', @RaiseExit, VFOV, '()');
     BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
-    BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
-    BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
-    BindBeforeFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
-    BindBeforeFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
+    BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
+    BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
+    BindBeforeFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
+    BindBeforeFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
     BindBeforeFunction ('DisableMessage', @DisableMessage, VFOV, '()');
     BindBeforeFunction ('HostName', @GetHostName, SFV, '()');
     BindBeforeFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
-    BindBeforeFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
+    BindBeforeFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
     BindBeforeFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindBeforeFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindBeforeFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
@@ -3739,8 +3742,8 @@ begin
     BindBeforeFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
     BindBeforeFunction ('ReplyAsText', @wsdlReplyAsText, SFOV, '()');
     BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
-    BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
-    BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
+    BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFOS, '(aKey)');
+    BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFOS, '(aRegularExpr)');
     BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindBeforeFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindBeforeFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
@@ -3753,8 +3756,8 @@ begin
     BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindBeforeFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
     BindBeforeFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSS, '(aOperation, aCorrelation, aLater)');
-    BindBeforeFunction ('SetEnvNumber', @setEnvNumber, XFSX, '(aKey, aNumber)');
-    BindBeforeFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
+    BindBeforeFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
+    BindBeforeFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
     BindBeforeFunction ('SHA1', @SHA1, SFS, '(aString)');
     BindBeforeFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
     BindBeforeFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
@@ -3857,18 +3860,18 @@ begin
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
-    BindAfterFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
+    BindAfterFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindAfterFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindAfterFunction ('Exit', @RaiseExit, VFOV, '()');
     BindAfterFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
-    BindAfterFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
-    BindAfterFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
-    BindAfterFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
-    BindAfterFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
+    BindAfterFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
+    BindAfterFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
+    BindAfterFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
+    BindAfterFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
     BindAfterFunction ('DisableMessage', @DisableMessage, VFOV, '()');
     BindAfterFunction ('HostName', @GetHostName, SFV, '()');
     BindAfterFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
-    BindAfterFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
+    BindAfterFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
     BindAfterFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindAfterFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindAfterFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
@@ -3894,8 +3897,8 @@ begin
     BindAfterFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
     BindAfterFunction ('ReplyAsText', @wsdlReplyAsText, SFOV, '()');
     BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
-    BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFS, '(aKey)');
-    BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFS, '(aRegularExpr)');
+    BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFOS, '(aKey)');
+    BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFOS, '(aRegularExpr)');
     BindAfterFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindAfterFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindAfterFunction ('SaveSnapshots', @SaveSnapshots, VFOS, '(aFileName)');
@@ -3906,8 +3909,8 @@ begin
     BindAfterFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindAfterFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
     BindAfterFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSS, '(aOperation, aCorrelation, aLater)');
-    BindAfterFunction ('SetEnvNumber', @setEnvNumber, XFSX, '(aKey, aNumber)');
-    BindAfterFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
+    BindAfterFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
+    BindAfterFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
     BindAfterFunction ('SHA1', @SHA1, SFS, '(aString)');
     BindAfterFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
     BindAfterFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
@@ -5668,15 +5671,15 @@ begin
       aBind.Bind ('', fExpressChecker, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
       fExpressChecker.BindBoolean('Bind_.Checker', aBind.fChecked);
       BindCheckerFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
-      BindCheckerFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
+      BindCheckerFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
       BindCheckerFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
-      BindCheckerFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
-      BindCheckerFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
-      BindCheckerFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
-      BindCheckerFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
+      BindCheckerFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
+      BindCheckerFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
+      BindCheckerFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
+      BindCheckerFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
       BindCheckerFunction ('HostName', @GetHostName, SFV, '()');
       BindCheckerFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
-      BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
+      BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
       BindCheckerFunction ('LengthStr', @LengthX, XFS, '(aString)');
       BindCheckerFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
       BindCheckerFunction ('NewLine', @xNewLine, SFV, '()');
@@ -5684,8 +5687,8 @@ begin
       BindCheckerFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
       BindCheckerFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
       BindCheckerFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
-      BindCheckerFunction ('SetEnvNumber', @setEnvNumber, XFSX, '(aKey, aNumber)');
-      BindCheckerFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
+      BindCheckerFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
+      BindCheckerFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
       BindCheckerFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
       BindCheckerFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
       BindCheckerFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
@@ -5730,15 +5733,15 @@ begin
     BindStamperFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindStamperFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindStamperFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
-    BindStamperFunction ('DecEnvNumber', @decVarNumber, XFS, '(aKey)');
+    BindStamperFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
-    BindStamperFunction ('GetEnvNumber', @getVarNumber, XFS, '(aKey)');
-    BindStamperFunction ('GetEnvNumberDef', @getVarNumberDef, XFSX, '(aKey, aDefault)');
-    BindStamperFunction ('GetEnvVar', @getVar, SFS, '(aKey)');
-    BindStamperFunction ('GetEnvVarDef', @getVarDef, SFSS, '(aKey, aDefault)');
+    BindStamperFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
+    BindStamperFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
+    BindStamperFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
+    BindStamperFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
     BindStamperFunction ('HostName', @GetHostName, SFV, '()');
     BindStamperFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
-    BindStamperFunction ('IncEnvNumber', @incVarNumber, XFS, '(aKey)');
+    BindStamperFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindStamperFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindStamperFunction ('MD5', @MD5, SFS, '(aString)');
@@ -5748,8 +5751,8 @@ begin
     BindStamperFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
     BindStamperFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
     BindStamperFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
-    BindStamperFunction ('SetEnvNumber', @setEnvNumber, XFSX, '(aKey, aNumber)');
-    BindStamperFunction ('SetEnvVar', @setEnvVar, SFSS, '(aKey, aValue)');
+    BindStamperFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
+    BindStamperFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
     BindStamperFunction ('SHA1', @SHA1, SFS, '(aString)');
     BindStamperFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
     BindStamperFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');

@@ -71,6 +71,7 @@ type
   public
     wsdlFileName: String;
     Wsdls: TStringList;
+    EnvVars: TStringList;
     IsBetaTestMode: Boolean;
     xsdElementsWhenRepeatable: Integer;
     ShowOperationsWithEndpointOnly: Boolean;
@@ -152,7 +153,7 @@ begin
       SwapCursor := Screen.Cursor;
       try
         Screen.Cursor := crHourGlass;
-        Wsdl := TWsdl.Create(-1, xsdElementsWhenRepeatable, ShowOperationsWithEndpointOnly);
+        Wsdl := TWsdl.Create(EnvVars, -1, xsdElementsWhenRepeatable, ShowOperationsWithEndpointOnly);
         try
           if UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text)) = '.SDF' then
             Wsdl.LoadFromSdfFile (OpenWsdlForm.WsdlLocationEdit.Text)
@@ -349,7 +350,7 @@ begin
           finally
             free;
           end;
-          xWsdl := TWsdl.Create (-1, xsdElementsWhenRepeatable, ShowOperationsWithEndpointOnly);
+          xWsdl := TWsdl.Create (EnvVars, -1, xsdElementsWhenRepeatable, ShowOperationsWithEndpointOnly);
           try
             xWsdl.LoadFromSdfFile (SaveDialog.FileName);
           except

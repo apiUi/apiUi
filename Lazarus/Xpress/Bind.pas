@@ -72,9 +72,18 @@ type VFunctionOX = procedure (obj: TObject; arg: Extended);
 type SFunctionOV = function (obj: TObject): String;
 type XFunctionOV = function (obj: TObject): Extended;
 type XFunctionOS = function (obj: TObject; arg: String): Extended;
+type XFunctionOSX = function (obj: TObject; arg1: String; arg2: Extended): Extended;
 type XFunctionOX = function (obj: TObject; arg: Extended): Extended;
 type XFunctionOXX = function (obj: TObject; arg1, arg2: Extended): Extended;
 type SFunctionOS = function (obj: TObject; arg: String): String;
+type SFunctionOSB = function (obj: TObject; arg1: String; arg2: Boolean): String;
+type SFunctionOSS = function (obj: TObject; arg1, arg2: String): String;
+type SFunctionOSX = function (obj: TObject; arg1: String; arg2: Extended): String;
+type SFunctionOSSX = function (obj: TObject; arg1, arg2: String; arg3: Extended): String;
+type SFunctionOSSI = function (obj: TObject; arg1, arg2: String; arg3: Integer): String;
+type SFunctionOSSS = function (obj: TObject; arg1, arg2, arg3: String): String;
+type SFunctionOSSSB = function (obj: TObject; arg1, arg2, arg3: String; arg4: Boolean): String;
+type SFunctionOSSSS = function (obj: TObject; arg1, arg2, arg3, arg4: String): String;
 
 { TParserStringList }
 
@@ -151,6 +160,17 @@ type YYRType = record
   60: (yySLFunctionOS : SLFunctionOS);
   61: (yySLFunctionOSS : SLFunctionOSS);
   62: (yySFunctionOS : SFunctionOS);
+  63: (yySFunctionOSB : SFunctionOSB);
+  64: (yySFunctionOSS : SFunctionOSS);
+  65: (yySFunctionOSX : SFunctionOSX);
+  66: (yySFunctionOSSX : SFunctionOSSX);
+  67: (yySFunctionOSSI : SFunctionOSSI);
+  68: (yySFunctionOSSS : SFunctionOSSS);
+  69: (yySFunctionOSSSB : SFunctionOSSSB);
+  70: (yySFunctionOSSSS : SFunctionOSSSS);
+  71: (yyXFunctionOSX : XFunctionOSX);
+
+
 end;
 
 type TBindableList = class;

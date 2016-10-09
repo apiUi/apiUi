@@ -323,14 +323,14 @@ begin
                 dXml := oXml.FindXml('Body.resetEnvVarReq.Name');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find name to use in request');
-                wsdlz.resetEnvVar(dXml.Value);
+                wsdlz.resetEnvVar(allOperations.Operations[0], dXml.Value);
               end;
               if xOperId = 'resetEnvVarsReq' then
               begin
                 dXml := oXml.FindXml('Body.resetEnvVarsReq.RegularExpression');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find regular expression to use in request');
-                wsdlz.resetEnvVars(dXml.Value);
+                wsdlz.resetEnvVars(allOperations.Operations[0], dXml.Value);
               end;
               if xOperId = 'saveLogsToFileReq' then
               begin
@@ -427,7 +427,7 @@ begin
                 eXml := oXml.FindXml('Body.setEnvVarReq.Value');
                 if not Assigned (dXml) then
                   raise Exception.Create('Cannot find value to use in request');
-                wsdlz.setEnvVar(dXml.Value, eXml.Value);
+                wsdlz.setEnvVar(allOperations.Operations[0], dXml.Value, eXml.Value);
               end;
               if xOperId = 'shutDownReq' then
               begin

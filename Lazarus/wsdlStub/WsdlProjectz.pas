@@ -1298,7 +1298,7 @@ begin
     if webserviceWsdlFileName <> '' then
     begin
       webserviceWsdlFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceWsdlFileName);
-      webserviceWsdl := TWsdl.Create(-1, 1, False);
+      webserviceWsdl := TWsdl.Create(nil, -1, 1, False);
       webserviceWsdl.LoadFromSchemaFile(webserviceWsdlFileName, nil);
     end;
     if not Assigned (webserviceWsdl) then
@@ -3473,7 +3473,7 @@ function TWsdlProject .WsdlOpenFile (aName : String ;
 begin
   if UpperCase (ExtractFileExt (aName)) = '.SDF' then
   begin
-    result := TWsdl.Create(aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
+    result := TWsdl.Create(_WsdlVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
     result.FileName := aName;
     try
       result.LoadFromSdfFile(aName);
@@ -3492,7 +3492,7 @@ begin
   end
   else
   begin
-    result := TWsdl.Create(aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
+    result := TWsdl.Create(_WsdlVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
     result.LoadFromSchemaFile(aName, nil);
   end;
 end;
@@ -7133,12 +7133,17 @@ begin
     raise Exception.Create(Format('%s not active', [_progName]));
   with CreateScriptOperation(TXml(aScript)) do
   try
-    if PreparedBefore then
+    Wsdl := TWsdl.Create(_WsdlVars, 1, 1, True);
     try
-      ExecuteBefore;
-    except
-      on e: Exception do
-        LogServerMessage(e.Message, True, e);
+      if PreparedBefore then
+      try
+        ExecuteBefore;
+      except
+        on e: Exception do
+          LogServerMessage(e.Message, True, e);
+      end;
+    finally
+      Wsdl.Free;
     end;
   finally
     FreeAndNil(Data);
@@ -7355,7 +7360,7 @@ begin
     Name := '_FreeFormat';
     DescriptionType := ipmDTFreeFormat;
   end;
-  FreeFormatWsdl := TWsdl.Create(1, 1, False);
+  FreeFormatWsdl := TWsdl.Create(_WsdlVars, 1, 1, False);
   with FreeFormatWsdl do
   begin
     Name := '_Freeformat';
@@ -7363,7 +7368,7 @@ begin
     Services.AddObject(FreeFormatService.Name, FreeFormatService);
   end;
   FreeAndNil(CobolWsdl);
-  CobolWsdl := TWsdl.Create(1, 1, False);
+  CobolWsdl := TWsdl.Create(_WsdlVars, 1, 1, False);
   with CobolWsdl do
   begin
     Name := '_Cobol';
@@ -7374,7 +7379,7 @@ begin
     Services.Services[0].DescriptionType := ipmDTCobol;
   end;
   FreeAndNil(XsdWsdl);
-  XsdWsdl := TWsdl.Create(1, 1, False);
+  XsdWsdl := TWsdl.Create(_WsdlVars, 1, 1, False);
   with XsdWsdl do
   begin
     Name := '_Xsd';
@@ -7385,7 +7390,7 @@ begin
     Services.Services[0].DescriptionType := ipmDTXsd;
   end;
   FreeAndNil(SwiftMtWsdl);
-  SwiftMtWsdl := TWsdl.Create(1, 1, False);
+  SwiftMtWsdl := TWsdl.Create(_WsdlVars, 1, 1, False);
   with SwiftMtWsdl do
   begin
     Name := '_SwiftMT';

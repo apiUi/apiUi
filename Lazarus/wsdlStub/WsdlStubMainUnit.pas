@@ -1432,6 +1432,7 @@ begin
   if not InactiveAfterPrompt then Exit;
   Application.CreateForm(TWsdlListForm, WsdlListForm);
   try
+    wsdlListForm.EnvVars := _WsdlVars;
     WsdlListForm.xsdElementsWhenRepeatable := xsdElementsWhenRepeatable;
     WsdlListForm.ShowOperationsWithEndpointOnly :=
       se.OperationsWithEndpointOnly;
@@ -11805,7 +11806,7 @@ procedure TMainForm.Reset1Click(Sender: TObject);
 begin
   EnvVarLock.Acquire;
   try
-    ResetEnvVars('.*');
+    ResetEnvVars(allOperations.Operations[0], '.*');
   finally
     EnvVarLock.Release;
   end;
