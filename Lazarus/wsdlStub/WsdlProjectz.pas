@@ -173,7 +173,7 @@ type
     refreshNr: Integer;
     refreshCheck: String;
     scriptErrorCount: Integer;
-    EnvironmentList: TStringList;
+    EnvironmentList, EnvVars: TStringList;
     StubChanged, StubRead, Licensed: Boolean;
     doUseMQ: Boolean;
     NumberOfActiveMqs: Integer;
@@ -1363,6 +1363,7 @@ begin
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
   EnvironmentList.Sorted := True;
+  EnvVars := TStringList.Create;
   mmqqMqInterface := TMqInterface.Create;
   mqUse := mquUndefined;
   mqMaxWorkingThreads := 15;
@@ -1463,6 +1464,8 @@ begin
   toUpdateDisplayLogs.Free;
   EnvironmentList.Clear;
   EnvironmentList.Free;
+  EnvVars.Clear;
+  EnvVars.Free;
   displayedLogs.Clear;
   displayedLogs.Free;
   archiveLogs.Clear;
@@ -3473,7 +3476,7 @@ function TWsdlProject .WsdlOpenFile (aName : String ;
 begin
   if UpperCase (ExtractFileExt (aName)) = '.SDF' then
   begin
-    result := TWsdl.Create(_WsdlVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
+    result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
     result.FileName := aName;
     try
       result.LoadFromSdfFile(aName);
@@ -3492,7 +3495,7 @@ begin
   end
   else
   begin
-    result := TWsdl.Create(_WsdlVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
+    result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
     result.LoadFromSchemaFile(aName, nil);
   end;
 end;
@@ -7133,7 +7136,7 @@ begin
     raise Exception.Create(Format('%s not active', [_progName]));
   with CreateScriptOperation(TXml(aScript)) do
   try
-    Wsdl := TWsdl.Create(_WsdlVars, 1, 1, True);
+    Wsdl := TWsdl.Create(EnvVars, 1, 1, True);
     try
       if PreparedBefore then
       try
@@ -7360,7 +7363,7 @@ begin
     Name := '_FreeFormat';
     DescriptionType := ipmDTFreeFormat;
   end;
-  FreeFormatWsdl := TWsdl.Create(_WsdlVars, 1, 1, False);
+  FreeFormatWsdl := TWsdl.Create(EnvVars, 1, 1, False);
   with FreeFormatWsdl do
   begin
     Name := '_Freeformat';
@@ -7368,7 +7371,7 @@ begin
     Services.AddObject(FreeFormatService.Name, FreeFormatService);
   end;
   FreeAndNil(CobolWsdl);
-  CobolWsdl := TWsdl.Create(_WsdlVars, 1, 1, False);
+  CobolWsdl := TWsdl.Create(EnvVars, 1, 1, False);
   with CobolWsdl do
   begin
     Name := '_Cobol';
@@ -7379,7 +7382,7 @@ begin
     Services.Services[0].DescriptionType := ipmDTCobol;
   end;
   FreeAndNil(XsdWsdl);
-  XsdWsdl := TWsdl.Create(_WsdlVars, 1, 1, False);
+  XsdWsdl := TWsdl.Create(EnvVars, 1, 1, False);
   with XsdWsdl do
   begin
     Name := '_Xsd';
@@ -7390,7 +7393,7 @@ begin
     Services.Services[0].DescriptionType := ipmDTXsd;
   end;
   FreeAndNil(SwiftMtWsdl);
-  SwiftMtWsdl := TWsdl.Create(_WsdlVars, 1, 1, False);
+  SwiftMtWsdl := TWsdl.Create(EnvVars, 1, 1, False);
   with SwiftMtWsdl do
   begin
     Name := '_SwiftMT';

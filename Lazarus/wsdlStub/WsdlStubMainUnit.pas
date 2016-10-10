@@ -1432,7 +1432,7 @@ begin
   if not InactiveAfterPrompt then Exit;
   Application.CreateForm(TWsdlListForm, WsdlListForm);
   try
-    wsdlListForm.EnvVars := _WsdlVars;
+    wsdlListForm.EnvVars := se.EnvVars;
     WsdlListForm.xsdElementsWhenRepeatable := xsdElementsWhenRepeatable;
     WsdlListForm.ShowOperationsWithEndpointOnly :=
       se.OperationsWithEndpointOnly;
@@ -7972,7 +7972,7 @@ and be read with:
     EditListValuesForm.isReadOnly := se.IsActive and False;
     EnvVarLock.Acquire;
     try
-      EditListValuesForm.ValueListEditor.Strings.Text := _WsdlVars.Text;
+      EditListValuesForm.ValueListEditor.Strings.Text := se.EnvVars.Text;
     finally
       EnvVarLock.Release;
     end;
@@ -7983,7 +7983,7 @@ and be read with:
     begin
       EnvVarLock.Acquire;;
       try
-        _WsdlVars.Text := EditListValuesForm.ValueListEditor.Strings.Text;
+        se.EnvVars.Text := EditListValuesForm.ValueListEditor.Strings.Text;
       finally
         EnvVarLock.Release;
       end;
@@ -7995,7 +7995,7 @@ end;
 
 procedure TMainForm.AddEnvironmentActionUpdate(Sender: TObject);
 begin
-  AddEnvironmentAction.Enabled := (_WsdlVars.Count > 0);
+  AddEnvironmentAction.Enabled := (se.EnvVars.Count > 0);
 end;
 
 procedure TMainForm.EditEnvironmentActionUpdate(Sender: TObject);
@@ -8034,12 +8034,12 @@ begin
         xXml := TXml.CreateAsString('Vars', '');
         with xXml do
         begin
-          for X := 0 to _WsdlVars.Count - 1 do
+          for X := 0 to se.EnvVars.Count - 1 do
           begin
             with AddXml(TXml.CreateAsString('Var', '')) do
             begin
-              AddXml(TXml.CreateAsString('Key', _WsdlVars.Names[X]));
-              AddXml(TXml.CreateAsString('Value', _WsdlVars.ValueFromIndex[X]));
+              AddXml(TXml.CreateAsString('Key', se.EnvVars.Names[X]));
+              AddXml(TXml.CreateAsString('Value', se.EnvVars.ValueFromIndex[X]));
             end;
           end;
         end;
@@ -8158,10 +8158,10 @@ begin
   try
     X := (Sender as TMenuItem).Tag;
     xXml := se.EnvironmentList.Objects[X] as TXml;
-    _WsdlVars.Clear;
+    se.EnvVars.Clear;
     for X := 0 to xXml.Items.Count - 1 do
       with xXml.Items.XmlItems[X].Items do
-        _WsdlVars.Values[XmlValueByTag['Key']] := XmlValueByTag['Value'];
+        se.EnvVars.Values[XmlValueByTag['Key']] := XmlValueByTag['Value'];
   finally
     EnvVarLock.Release;
   end;

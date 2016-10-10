@@ -602,7 +602,6 @@ var
   allOperationsRpy: TWsdlOperations;
   _ProgName: String;
   _wsdlStubStylesheet: String;
-  _WsdlVars: TStringList;
   _WsdlNewDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
@@ -6983,7 +6982,6 @@ initialization
   _WsdlProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   _WsdlHostName := xmlio.GetHostName;
   _ipmGun := (Lowercase(_WsdlProgName) = 'ipmgun');
-  _WsdlVars := TStringList.Create;
   _OnParseErrorEvent := nil;
   _WsdlUserNameTokenNumber := 0;
   allOperations := TWsdlOperations.Create;
@@ -7005,7 +7003,6 @@ initialization
   doOperationLock := True;
 
 finalization
-  FreeAndNil(_WsdlVars);
   allOperations.ClearListOnly;
   allOperations.Free;
   allAliasses.ClearListOnly;
