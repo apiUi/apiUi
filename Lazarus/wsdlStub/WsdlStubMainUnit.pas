@@ -70,6 +70,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    SnapshotsFromFolderAction : TAction ;
     ShowResolvedProperties : TAction ;
     BrowseMqButton: TToolButton;
     DocumentationMemo: TMemo;
@@ -137,7 +138,8 @@ type
     ToolButton53: TToolButton;
     ToolButton59: TToolButton;
     ToolButton64: TToolButton;
-    ToolButton65: TToolButton;
+    ToolButton65 : TToolButton ;
+    ToolButton66 : TToolButton ;
     ToolButton67: TToolButton;
     ToolButton68: TToolButton;
     ToolButton69: TToolButton;
@@ -582,6 +584,8 @@ type
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
     procedure SnapshotCompareMenuitemClick(Sender: TObject);
     procedure SnapshotPromoteToReferenceMenuItemClick (Sender : TObject );
+    procedure SnapshotsFromFolderActionExecute (Sender : TObject );
+    procedure SnapshotsFromFolderActionUpdate (Sender : TObject );
     procedure SnapshotShowDetailsMenuitemClick (Sender : TObject );
     procedure SnapshotLoadRefMessagesMenuItemClick (Sender : TObject );
     procedure SnapshotLoadMessagesMenuItemClick (Sender : TObject );
@@ -13123,6 +13127,26 @@ begin
   finally
     XmlUtil.PopCursor;
   end;
+end;
+
+procedure TMainForm .SnapshotsFromFolderActionExecute (Sender : TObject );
+var
+  x: Integer;
+begin
+  with FileUtil.FindAllFiles(se.CurrentFolder, '*.xml', False) do
+  try
+    for x := 0 to Count - 1 do
+      _WsdlCreateSnapshot(WsdlOperation, ExtractFileNameOnly(Strings[x]) , False);
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm .SnapshotsFromFolderActionUpdate (Sender : TObject );
+begin
+  SnapshotsFromFolderAction.Enabled := (se.displayedSnapshots.Count = 0)
+                                   and Assigned (WsdlOperation)
+                                     ;
 end;
 
 procedure TMainForm .SnapshotShowDetailsMenuitemClick (Sender : TObject );
