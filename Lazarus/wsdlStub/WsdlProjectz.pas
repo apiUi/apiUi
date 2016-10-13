@@ -208,7 +208,7 @@ type
     PublishDescriptions: Boolean;
     OperationsWithEndpointOnly: Boolean;
     SaveRelativeFileNames: Boolean;
-    CurrentFolder, ReferenceFolder: String;
+    CurrentFolder, ReferenceFolder, ReportsFolder: String;
     FocusOperationName, FocusOperationNameSpace: String;
     FocusMessageIndex: Integer;
     OnBooleanDialog: TBooleanFunctionString;
@@ -232,7 +232,7 @@ type
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
-    procedure CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
+    function CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
     procedure CreateSummaryReport (aName: String);
     procedure CreateCoverageReport(aDoRun: Boolean);
     function FindScript (aName: String): TXml;
@@ -1947,11 +1947,13 @@ begin
         begin
           AddXml (TXml.CreateAsString('current', ExtractRelativeFileName (aFileName, CurrentFolder)));
           AddXml (TXml.CreateAsString('reference', ExtractRelativeFileName (aFileName, ReferenceFolder)));
+          AddXml (TXml.CreateAsString('reports', ExtractRelativeFileName (aFileName, ReportsFolder)));
         end
         else
         begin
           AddXml (TXml.CreateAsString('current', CurrentFolder));
           AddXml (TXml.CreateAsString('reference', ReferenceFolder));
+          AddXml (TXml.CreateAsString('reports', ReportsFolder));
         end;
       end;
     end;
@@ -3387,6 +3389,7 @@ begin
       begin
         CurrentFolder := XmlCheckedValueByTag['current'];
         ReferenceFolder := XmlCheckedValueByTag['reference'];
+        ReportsFolder := XmlCheckedValueByTagDef['reports', CurrentFolder];
       end;
     end;
     ProjectLogOptionsFromXml (XmlCheckedItemByTag ['Log']);
@@ -7064,7 +7067,7 @@ begin
     try
       for x := 0 to toDisplaySnapshots.Count - 1 do
         AddXml (toDisplaySnapshots.SnapshotItems[x].AsXml);
-      SaveStringToFile ( CurrentFolder
+      SaveStringToFile ( ReportsFolder
                        + DirectorySeparator
                        + aName
                        + '.xml'
@@ -7154,20 +7157,19 @@ begin
   end;
 end;
 
-procedure TWsdlProject.CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean);
+function TWsdlProject.CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
 var
-  xReport: TRegressionSnapshot;
   x: Integer;
 begin
-  xReport := nil;
+  result := nil;
   AcquireLogLock;
   try
-    xReport := TRegressionSnapshot.Create( aName
-                                         , ExpandRelativeFileName(projectFileName, aFileName)
-                                         , ExpandRelativeFileName(projectFileName, aRefFileName)
-                                         );
-    xReport.OnReport := doRegressionReport;
-    toDisplaySnapshots.AddObject('', xReport);
+    result := TRegressionSnapshot.Create( aName
+                                        , ExpandRelativeFileName(projectFileName, aFileName)
+                                        , ExpandRelativeFileName(projectFileName, aRefFileName)
+                                        );
+    result.OnReport := doRegressionReport;
+    toDisplaySnapshots.AddObject('', result);
     if aDoSave then
     begin
       with TLogList.Create do
@@ -7178,7 +7180,7 @@ begin
         for x := 0 to toDisplayLogs.Count - 1 do
           if not toDisplayLogs.LogItems[x].onSnapshot then
             SaveLog('', toDisplayLogs.LogItems[x]);
-        SaveStringToFile(xReport.FileName, LogsAsString (projectFileName));
+        SaveStringToFile(result.FileName, LogsAsString (projectFileName));
         for x := 0 to Count - 1 do
           LogItems[x].onSnapshot := True;
         Clear;
@@ -7190,8 +7192,8 @@ begin
     ReleaseLogLock;
   end;
   if aDoRun
-  and Assigned (xReport) then
-    xReport.doReport;
+  and Assigned (result) then
+    result.doReport;
 end;
 
 procedure TWsdlProject.CreateSummaryReport (aName: String);
@@ -7210,7 +7212,7 @@ begin
     finally
       ReleaseLogLock;
     end;
-    SaveStringToFile ( CurrentFolder + DirectorySeparator + aName + '.html'
+    SaveStringToFile ( ReportsFolder + DirectorySeparator + aName + '.html'
                      , htmlReportTestSummary(Self, xList)
                      );
     xList.Clear;

@@ -612,6 +612,8 @@ type
     procedure ReportOnSnapshotsActionExecute (Sender : TObject );
     procedure SnapshotsPopupMenuPopup (Sender : TObject );
     procedure SnapshotsVTSClick (Sender : TObject );
+    procedure SnapshotsVTSCompareNodes(Sender: TBaseVirtualTree; Node1,
+      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure SnapshotsVTSGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
       var Ghosted : Boolean ; var ImageIndex : Integer );
@@ -12209,6 +12211,37 @@ begin
   end;
 end;
 
+procedure TMainForm.SnapshotsVTSCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var
+  s1, s2: String;
+  Snp1, Snp2: TSnapshot;
+begin
+  Result := 0;
+  s1 := '';
+  s2 := '';
+  case TSnapshotColumnEnum(Column) of
+    snapshotStatusColumn:
+    begin
+      Snp1 := NodeToSnapshot(False,Sender as TVirtualStringTree, Node1);
+      if Assigned (Snp1) then
+        s1 := Snp1.statusAsText;
+      Snp2 := NodeToSnapshot(False,Sender as TVirtualStringTree, Node2);
+      if Assigned (Snp2) then
+        s2 := Snp2.statusAsText;
+    end;
+    else
+    begin
+      MessagesVTSGetText(Sender, Node1, Column, ttNormal, s1);
+      MessagesVTSGetText(Sender, Node2, Column, ttNormal, s2);
+    end;
+  end;
+  if  s1 < s2 then
+    result := -1;
+  if s1 > s2 then
+    result := 1;
+end;
+
 procedure TMainForm .SnapshotsVTSGetImageIndex (Sender : TBaseVirtualTree ;
   Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
   var Ghosted : Boolean ; var ImageIndex : Integer );
@@ -12247,7 +12280,7 @@ begin
     if Assigned(xReport) and (xReport is TSnapshot) then
     begin
       case TSnapshotColumnEnum(Column) of
-        snapshotDateTimeColumn: if xReport.timeStamp <> 0 then CellText := DateTimeToStr(xReport.TimeStamp);
+        snapshotDateTimeColumn: if xReport.timeStamp <> 0 then CellText := xsdFormatDateTime(xReport.timeStamp, @TIMEZONE_UTC);
         snapshotNameColumn: CellText := xReport.Name;
         snapshotMessageColumn: CellText := xReport.Message;
       end;
@@ -13132,11 +13165,21 @@ end;
 procedure TMainForm .SnapshotsFromFolderActionExecute (Sender : TObject );
 var
   x: Integer;
+  xName: String;
 begin
   with FileUtil.FindAllFiles(se.CurrentFolder, '*.xml', False) do
   try
     for x := 0 to Count - 1 do
-      _WsdlCreateSnapshot(WsdlOperation, ExtractFileNameOnly(Strings[x]) , False);
+    begin
+       xName := ExtractFileNameOnly(Strings[x]);
+      with se.CreateSnapshot ( xName
+                             , se.CurrentFolder + DirectorySeparator + xName + '.xml'
+                             , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
+                             , False
+                             , False
+                             ) do
+        timeStamp := xmlio.GetFileChangedTime(FileName);
+    end;
   finally
     Free;
   end;
@@ -13144,8 +13187,7 @@ end;
 
 procedure TMainForm .SnapshotsFromFolderActionUpdate (Sender : TObject );
 begin
-  SnapshotsFromFolderAction.Enabled := (se.displayedSnapshots.Count = 0)
-                                   and Assigned (WsdlOperation)
+  SnapshotsFromFolderAction.Enabled := Assigned (WsdlOperation)
                                      ;
 end;
 

@@ -590,6 +590,11 @@ When 'true', stored filenames will be relative to the projectfilename.</xs:docum
 												<xs:documentation>Folder that wsdlStub will use to save reference logfiles for regression testing.</xs:documentation>
 											</xs:annotation>
 										</xs:element>
+										<xs:element name="reports" type="FolderNameType" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Folder that wsdlStub will use to store reports.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>

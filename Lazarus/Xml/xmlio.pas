@@ -16,6 +16,7 @@ procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function uncFilename (aFileName: String): String;
+function GetFileChangedTime (aFileName:string):TDateTime;
 function GetHostName: String;
 function GetUserName: String;
 function GetVersion: String;
@@ -494,6 +495,14 @@ begin
   end;
 end;
 
+function GetFileChangedTime (aFileName:string):TDateTime;
+begin
+  result := 0;
+  try
+    result := FileDateToDateTime (FileAge(aFileName));
+  except
+  end;
+end;
 
 procedure SaveStringToFile (aFileName: String; aString: AnsiString);
 var
