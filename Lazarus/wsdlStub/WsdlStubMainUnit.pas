@@ -594,7 +594,7 @@ type
       TabIndex : Integer ; var ImageIndex : Integer );
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
-    procedure MessagesVTSHeaderClick (Sender : TVTHeader ;
+    procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
     procedure Operation1Click(Sender: TObject);
@@ -12232,8 +12232,8 @@ begin
     end;
     else
     begin
-      MessagesVTSGetText(Sender, Node1, Column, ttNormal, s1);
-      MessagesVTSGetText(Sender, Node2, Column, ttNormal, s2);
+      SnapshotsVTSGetText(Sender, Node1, Column, ttNormal, s1);
+      SnapshotsVTSGetText(Sender, Node2, Column, ttNormal, s2);
     end;
   end;
   if  s1 < s2 then
@@ -13454,7 +13454,7 @@ begin
     result := 1;
 end;
 
-procedure TMainForm .MessagesVTSHeaderClick (Sender : TVTHeader ;
+procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;
   Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
   Y : Integer );
 begin
@@ -13472,7 +13472,7 @@ begin
       Sender.SortColumn := Column;
       Sender.SortDirection := sdAscending;
     end;
-    MessagesVTS.SortTree(Column, Sender.SortDirection, True);
+    Sender.Treeview.SortTree(Column, Sender.SortDirection, True);
   finally
     XmlUtil.PopCursor;
   end;
