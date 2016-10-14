@@ -141,7 +141,6 @@ type
       var AReceived: string);
     procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
       const AUsername, APassword: string; var VAuthenticated: Boolean);
-    procedure doRegressionReport (aReport: TSnapshot);
     procedure doCoverageReport (aReport: TSnapshot);
     function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
     procedure SetAbortPressed(const Value: Boolean);
@@ -212,6 +211,7 @@ type
     FocusOperationName, FocusOperationNameSpace: String;
     FocusMessageIndex: Integer;
     OnBooleanDialog: TBooleanFunctionString;
+    procedure doRegressionReport (aReport: TSnapshot);
     procedure DatabaseConnectionSpecificationFromXml;
     procedure UpdateOperationAliasses;
     procedure AcquireLogLock;

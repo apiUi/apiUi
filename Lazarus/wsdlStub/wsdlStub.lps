@@ -8,11 +8,10 @@
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="25" Y="19"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\Xml\claimlistz.pas"/>
@@ -20,8 +19,8 @@
         <UnitName Value="ClaimListz"/>
         <EditorIndex Value="6"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="13"/>
-        <CursorPos X="12" Y="30"/>
+        <TopLine Value="48"/>
+        <CursorPos X="3" Y="51"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -33,10 +32,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="WsdlStubMainUnit"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="12209"/>
-        <CursorPos X="29" Y="12229"/>
+        <TopLine Value="13413"/>
+        <CursorPos X="89" Y="13415"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -57,13 +56,11 @@
       <Unit5>
         <Filename Value="..\Xml\snapshotz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="snapshotz"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="9"/>
         <CursorPos X="3" Y="25"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Xml\exceptionutils.pas"/>
@@ -90,12 +87,10 @@
       <Unit9>
         <Filename Value="htmlreportz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="htmlreportz"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="10" Y="10"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\Xml\savepointz.pas"/>
@@ -128,13 +123,11 @@
       </Unit14>
       <Unit15>
         <Filename Value="..\Xml\Wsdlz.pas"/>
-        <UnitName Value="Wsdlz"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="594"/>
         <CursorPos X="22" Y="611"/>
         <UsageCount Value="117"/>
-        <Loaded Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\Xpress\parser.y"/>
@@ -146,22 +139,19 @@
       <Unit17>
         <Filename Value="WsdlProjectz.pas"/>
         <UnitName Value="WsdlProjectz"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="218"/>
-        <CursorPos X="14" Y="235"/>
+        <TopLine Value="185"/>
+        <CursorPos Y="215"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <UnitName Value="Xsdz"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="270"/>
         <CursorPos X="5" Y="289"/>
         <UsageCount Value="88"/>
-        <Loaded Value="True"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\Xml\Xmlz.pas"/>
@@ -186,10 +176,12 @@
       </Unit21>
       <Unit22>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="180"/>
-        <CursorPos X="3" Y="197"/>
+        <TopLine Value="48"/>
+        <CursorPos X="3" Y="66"/>
         <UsageCount Value="16"/>
+        <Loaded Value="True"/>
       </Unit22>
       <Unit23>
         <Filename Value="..\Components\Indy10\Lib\Core\IdSync.pas"/>
@@ -243,9 +235,10 @@
       <Unit29>
         <Filename Value="..\Xml\xmlio.pas"/>
         <UnitName Value="xmlio"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="1"/>
-        <CursorPos Y="20"/>
+        <TopLine Value="485"/>
+        <CursorPos Y="502"/>
         <UsageCount Value="93"/>
         <Loaded Value="True"/>
       </Unit29>
@@ -467,9 +460,13 @@
       </Unit60>
       <Unit61>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\types.pp"/>
-        <TopLine Value="115"/>
+        <UnitName Value="types"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="107"/>
         <CursorPos X="38" Y="124"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit61>
       <Unit62>
         <Filename Value="EditListValuesUnit.pas"/>
@@ -507,10 +504,13 @@
       </Unit66>
       <Unit67>
         <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <UnitName Value="xmlUtilz"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="177"/>
-        <CursorPos X="31" Y="181"/>
+        <TopLine Value="505"/>
+        <CursorPos X="23" Y="529"/>
         <UsageCount Value="52"/>
+        <Loaded Value="True"/>
       </Unit67>
       <Unit68>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
@@ -528,13 +528,11 @@
       </Unit69>
       <Unit70>
         <Filename Value="..\Xml\Ipmz.pas"/>
-        <UnitName Value="Ipmz"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="764"/>
         <CursorPos X="99" Y="781"/>
         <UsageCount Value="23"/>
-        <Loaded Value="True"/>
       </Unit70>
       <Unit71>
         <Filename Value="..\Components\Indy10\Lib\System\IdException.pas"/>
@@ -768,62 +766,51 @@
         <ComponentName Value="ShowXmlForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ShowXmlUnit"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="1364"/>
         <CursorPos Y="1388"/>
         <UsageCount Value="16"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit99>
       <Unit100>
         <Filename Value="..\TacoInterface\tacoInterface.pas"/>
-        <UnitName Value="tacoInterface"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="178"/>
         <CursorPos X="3" Y="207"/>
         <UsageCount Value="16"/>
-        <Loaded Value="True"/>
       </Unit100>
       <Unit101>
         <Filename Value="C:\lazarus\components\lazutils\fileutil.pas"/>
-        <UnitName Value="FileUtil"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="127"/>
         <CursorPos X="10" Y="204"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit101>
       <Unit102>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\filutilh.inc"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="64"/>
         <CursorPos X="13" Y="96"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit102>
       <Unit103>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win\sysutils.pp"/>
-        <UnitName Value="sysutils"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="390"/>
         <CursorPos X="3" Y="392"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit103>
       <Unit104>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\libxml\src\xmlxsdparser.pas"/>
-        <UnitName Value="xmlxsdparser"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="413"/>
         <CursorPos X="13" Y="441"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit104>
     </Units>
     <CustomDefines Count="2">
@@ -832,123 +819,124 @@
     </CustomDefines>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="502" TopLine="485"/>
       </Position1>
       <Position2>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="271" Column="8" TopLine="243"/>
+        <Caret Line="13185" TopLine="13157"/>
       </Position2>
       <Position3>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="500" Column="15" TopLine="478"/>
+        <Caret Line="502" TopLine="485"/>
       </Position3>
       <Position4>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="503" Column="33" TopLine="484"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="13185" TopLine="13157"/>
       </Position4>
       <Position5>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="1274" Column="19" TopLine="1252"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="502" TopLine="485"/>
       </Position5>
       <Position6>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="13137" Column="3" TopLine="13132"/>
+        <Caret Line="13174" TopLine="13160"/>
       </Position6>
       <Position7>
-        <Filename Value="C:\lazarus\components\lazutils\fileutil.pas"/>
-        <Caret Line="204" Column="10" TopLine="127"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="13179" Column="27" TopLine="13160"/>
       </Position7>
       <Position8>
-        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\filutilh.inc"/>
-        <Caret Line="17" Column="13" TopLine="4"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="13182" TopLine="13160"/>
       </Position8>
       <Position9>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="13137" Column="3" TopLine="13132"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="502" TopLine="485"/>
       </Position9>
       <Position10>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="498" TopLine="485"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="13186" TopLine="13160"/>
       </Position10>
       <Position11>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="13148" Column="33" TopLine="13131"/>
+        <Caret Line="13179" Column="48" TopLine="13160"/>
       </Position11>
       <Position12>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="13147" Column="75" TopLine="13131"/>
+        <Caret Line="13182" TopLine="13160"/>
       </Position12>
       <Position13>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="235" Column="14" TopLine="218"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="502" TopLine="485"/>
       </Position13>
       <Position14>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="13147" Column="75" TopLine="13131"/>
+        <Caret Line="13186" TopLine="13160"/>
       </Position14>
       <Position15>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="13148" Column="55" TopLine="13131"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="502" TopLine="485"/>
       </Position15>
       <Position16>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="12250" Column="75" TopLine="12238"/>
+        <Caret Line="13189" TopLine="13161"/>
       </Position16>
       <Position17>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="980" Column="36" TopLine="961"/>
+        <Filename Value="..\Xml\claimlistz.pas"/>
+        <Caret Line="43" Column="3" TopLine="37"/>
       </Position17>
       <Position18>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="289" Column="5" TopLine="270"/>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="13175" Column="22" TopLine="13161"/>
       </Position18>
       <Position19>
-        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\libxml\src\xmlxsdparser.pas"/>
-        <Caret Line="57" Column="27" TopLine="34"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
+        <Caret Line="761" Column="14" TopLine="745"/>
       </Position19>
       <Position20>
-        <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="34" Column="10"/>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
+        <Caret Line="66" Column="3" TopLine="48"/>
       </Position20>
       <Position21>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="5909" Column="81" TopLine="5892"/>
+        <Caret Line="13175" Column="31" TopLine="13125"/>
       </Position21>
       <Position22>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="12250" Column="111" TopLine="12238"/>
+        <Caret Line="2888" Column="3" TopLine="2886"/>
       </Position22>
       <Position23>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="2068" Column="3" TopLine="2065"/>
+        <Caret Line="2786" Column="3" TopLine="2781"/>
       </Position23>
       <Position24>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="13385" Column="3" TopLine="13383"/>
+        <Caret Line="2615" TopLine="2611"/>
       </Position24>
       <Position25>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="1285" Column="3" TopLine="1273"/>
+        <Caret Line="2616" TopLine="2612"/>
       </Position25>
       <Position26>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="13430" TopLine="13397"/>
+        <Caret Line="2618" TopLine="2614"/>
       </Position26>
       <Position27>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="12223" Column="27" TopLine="12211"/>
+        <Caret Line="13408" Column="84" TopLine="13406"/>
       </Position27>
       <Position28>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="12226" TopLine="12210"/>
+        <Caret Line="13409" Column="84" TopLine="13407"/>
       </Position28>
       <Position29>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="12238" TopLine="12216"/>
+        <Caret Line="13408" Column="84" TopLine="13406"/>
       </Position29>
       <Position30>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <Caret Line="12231" Column="19" TopLine="12211"/>
+        <Caret Line="13411" TopLine="13408"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

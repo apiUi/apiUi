@@ -70,6 +70,9 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem32: TMenuItem;
+    MenuItem33: TMenuItem;
+    MenuItem34: TMenuItem;
     SnapshotsFromFolderAction : TAction ;
     ShowResolvedProperties : TAction ;
     BrowseMqButton: TToolButton;
@@ -553,6 +556,8 @@ type
     SeparatorToolButton: TToolButton;
     procedure LogPanelClick(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
+    procedure MenuItem33Click(Sender: TObject);
+    procedure MenuItem34Click(Sender: TObject);
     procedure NeedTacoHostData (Sender: TTacoInterface);
     procedure OnTacoAuthorize (Sender: TObject);
     procedure AbortActionUpdate (Sender : TObject );
@@ -13166,28 +13171,45 @@ procedure TMainForm .SnapshotsFromFolderActionExecute (Sender : TObject );
 var
   x: Integer;
   xName: String;
+  sl: TSnapshotList;
+  s: TSnapshot;
 begin
-  with FileUtil.FindAllFiles(se.CurrentFolder, '*.xml', False) do
+  sl := TSnapshotList.Create;
   try
-    for x := 0 to Count - 1 do
-    begin
-       xName := ExtractFileNameOnly(Strings[x]);
-      with se.CreateSnapshot ( xName
-                             , se.CurrentFolder + DirectorySeparator + xName + '.xml'
-                             , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
-                             , False
-                             , False
-                             ) do
-        timeStamp := xmlio.GetFileChangedTime(FileName);
+    sl.Sorted := True;
+    sl.Duplicates := dupAccept;
+    with FileUtil.FindAllFiles(se.CurrentFolder, '*.xml', False) do
+    try
+      for x := 0 to Count - 1 do
+      begin
+        xName := ExtractFileNameOnly(Strings[x]);
+        s := TRegressionSnapshot.Create ( xName
+                                        , se.CurrentFolder + DirectorySeparator + xName + '.xml'
+                                        , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
+                                        );
+        s.OnReport := se.doRegressionReport;
+        s.timeStamp := xmlio.GetFileChangedTime(s.FileName);
+        sl.SaveObject(xsdFormatDateTime(s.timeStamp, @TIMEZONE_UTC), s);
+      end;
+    finally
+      Free;
     end;
+    se.AcquireLogLock;
+    try
+      for x := 0 to sl.Count - 1 do
+        se.toDisplaySnapshots.AddObject('', sl.SnapshotItems[x]);
+    finally
+      se.ReleaseLogLock;
+    end;
+    sl.Clear;
   finally
-    Free;
+    sl.Free;
   end;
 end;
 
 procedure TMainForm .SnapshotsFromFolderActionUpdate (Sender : TObject );
 begin
-  SnapshotsFromFolderAction.Enabled := Assigned (WsdlOperation)
+  SnapshotsFromFolderAction.Enabled := True
                                      ;
 end;
 
@@ -13381,6 +13403,16 @@ end;
 procedure TMainForm.LogTabControlChange(Sender: TObject);
 begin
   ShowChosenLogTab;
+end;
+
+procedure TMainForm.MenuItem33Click(Sender: TObject);
+begin
+   Clipboard.AsText := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode).Name;
+end;
+
+procedure TMainForm.MenuItem34Click(Sender: TObject);
+begin
+  Clipboard.AsText := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode).FullCaption;
 end;
 
 procedure TMainForm .OnTacoAuthorize (Sender : TObject );
