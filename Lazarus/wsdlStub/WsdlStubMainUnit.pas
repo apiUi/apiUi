@@ -3575,7 +3575,8 @@ var
   xFileName: String;
 begin
   xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation\'
+                                + 'Documentation'
+                                + DirectorySeparator
                                 + _progName
                                 + '.htm'
                                 );
@@ -3590,7 +3591,8 @@ var
   xFileName: String;
 begin
   xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation\'
+                                + 'Documentation'
+                                + DirectorySeparator
                                 + _progName
                                 + '_Menu_hlp.htm'
                                 );
@@ -10013,8 +10015,13 @@ var
   xXsdDescr: TXsdDescr;
   xFileName: String;
 begin
-  xFileName := ExtractFilePath(ParamStr(0)) + '\Config\' + _xmlProgName +
-    'Menu.xsd';
+  xFileName := ExtractFilePath(ParamStr(0))
+             + DirectorySeparator
+             + 'Config'
+             + DirectorySeparator
+             + _xmlProgName
+             + 'Menu.xsd'
+             ;
   xXsdDescr := TXsdDescr.Create(1);
   try
     try
@@ -10447,7 +10454,7 @@ begin
           if Assigned(xMessage) then
           begin
             try
-              xFileName := saveToDiskDirectory + '\';
+              xFileName := saveToDiskDirectory + DirectorySeparator;
               xSeparator := '';
               for X := 0 to xMessage.CorrelationBindables.Count - 1 do
               begin
