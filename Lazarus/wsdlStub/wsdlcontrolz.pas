@@ -147,7 +147,7 @@ procedure TWsdlControl.HttpWebPageServerCommandGet(AContext: TIdContext;
     begin
       result := '';
       for x := 1 to Length (s) do
-        if s[x] = '\' then
+        if s[x] = DirectorySeparator then
           result := ''
         else
           result := result + s[x];
@@ -541,4 +541,4 @@ begin
 end;
 
 end.
-
+

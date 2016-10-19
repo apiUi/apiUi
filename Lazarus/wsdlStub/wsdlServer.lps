@@ -8,7 +8,6 @@
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="415"/>
@@ -77,10 +76,11 @@
       <Unit10>
         <Filename Value="WsdlProjectz.pas"/>
         <UnitName Value="WsdlProjectz"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1509"/>
-        <CursorPos X="3" Y="1122"/>
+        <TopLine Value="130"/>
+        <CursorPos X="24" Y="143"/>
         <UsageCount Value="106"/>
         <Loaded Value="True"/>
       </Unit10>
@@ -163,7 +163,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="27" HistoryIndex="24">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="WsdlProjectz.pas"/>
         <Caret Line="7478" Column="1" TopLine="7404"/>
@@ -261,17 +261,9 @@
         <Caret Line="57" Column="5" TopLine="45"/>
       </Position24>
       <Position25>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="415" Column="3" TopLine="427"/>
+        <Filename Value="WsdlProjectz.pas"/>
+        <Caret Line="1122" Column="3" TopLine="1508"/>
       </Position25>
-      <Position26>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="489" Column="3" TopLine="498"/>
-      </Position26>
-      <Position27>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="185" Column="3" TopLine="164"/>
-      </Position27>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

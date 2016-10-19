@@ -4,15 +4,15 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="58">
+    <Units Count="60">
       <Unit0>
         <Filename Value="xmlExplorer.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="xmlExplorer"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="19"/>
+        <TopLine Value="2"/>
+        <CursorPos X="46" Y="10"/>
         <UsageCount Value="47"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -23,13 +23,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="xmlExplorerUnit"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="764"/>
+        <TopLine Value="648"/>
         <CursorPos X="42" Y="648"/>
         <UsageCount Value="47"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="FilterDialog.pas"/>
@@ -83,7 +83,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="cbAbout"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="54"/>
         <CursorPos X="17" Y="55"/>
@@ -159,8 +159,8 @@
         <UnitName Value="xmlio"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="5"/>
-        <CursorPos X="30" Y="14"/>
+        <TopLine Value="1"/>
+        <CursorPos X="6" Y="34"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit14>
@@ -186,10 +186,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="OpenTwoFoldersUnit"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="82"/>
-        <CursorPos X="5" Y="86"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="8"/>
+        <CursorPos X="46" Y="16"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit17>
       <Unit18>
         <Filename Value="ShowFolderDifferencesUnit.pas"/>
@@ -279,10 +282,12 @@
       <Unit28>
         <Filename Value="..\Utils\igGlobals.pas"/>
         <UnitName Value="igGlobals"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1030"/>
-        <CursorPos X="33" Y="1040"/>
+        <TopLine Value="9"/>
+        <CursorPos X="6" Y="17"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit28>
       <Unit29>
         <Filename Value="ShowA2BXmlUnit.pas"/>
@@ -525,11 +530,28 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
       </Unit57>
+      <Unit58>
+        <Filename Value="xmlzconsts.pas"/>
+        <UnitName Value="xmlzConsts"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="IdHTTP"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit59>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="19" HistoryIndex="18">
+    <JumpHistory Count="26" HistoryIndex="25">
       <Position1>
         <Filename Value="Xmlz.pas"/>
         <Caret Line="10" Column="6" TopLine="1"/>
@@ -606,6 +628,34 @@
         <Filename Value="xmlExplorerUnit.pas"/>
         <Caret Line="242" Column="30" TopLine="237"/>
       </Position19>
+      <Position20>
+        <Filename Value="xmlzconsts.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position20>
+      <Position21>
+        <Filename Value="xmlio.pas"/>
+        <Caret Line="14" Column="30" TopLine="5"/>
+      </Position21>
+      <Position22>
+        <Filename Value="xmlExplorer.lpr"/>
+        <Caret Line="19" Column="1" TopLine="1"/>
+      </Position22>
+      <Position23>
+        <Filename Value="xmlExplorer.lpr"/>
+        <Caret Line="10" Column="35" TopLine="1"/>
+      </Position23>
+      <Position24>
+        <Filename Value="xmlio.pas"/>
+        <Caret Line="34" Column="6" TopLine="25"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1040" Column="33" TopLine="1030"/>
+      </Position25>
+      <Position26>
+        <Filename Value="OpenTwoFoldersUnit.pas"/>
+        <Caret Line="86" Column="5" TopLine="82"/>
+      </Position26>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
