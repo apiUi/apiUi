@@ -2748,7 +2748,7 @@ procedure TXsdDescr.Finalise;
             begin
               sType := FindTypeDef(_NameSpace, _DataTypeName);
               if not Assigned (sType) then
-                ShowMessage(Format
+                SjowMessage(Format
 //              raise Exception.CreateFmt
                        ( 'Coud not find datatype (%s:%s) on element (%s:%s) %S'
                        , [_NameSpace, _DataTypeName, ElementNameSpace, ElementName, aTrack]

@@ -24,7 +24,7 @@ uses
   , FormIniFilez, MQAPI, mqInterface, MQRfh2Api, IdStack
   , virtualtreeview_package
   , xmlxsdparser
-  , HashUtilz, tacoInterface
+  , HashUtilz, tacoInterface , htmlXmlUtilz
   , ExtCtrls
   ;
 

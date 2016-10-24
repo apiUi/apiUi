@@ -33,6 +33,7 @@ private
 public
   {Name: String; now in TCustomBindable }
   {Value: String; now in TCustomBindable }
+  NameSpace: String;
   XsdAttr: TXsdAttr;
   LineNo: Integer;
   function isXmlNsAttribute: Boolean;
@@ -158,6 +159,7 @@ type
     property FullUQCaption: String read GetFullUQCaption;
     property Text: String read getText write setText;
     property Root: TXml read getRoot;
+    procedure SeparateNsPrefixes;
     function PrefixToNameSpace(aPrefix: String): String;
     procedure NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList);
     function ExpandPrefixedName (aDefaultNS, aName: String): String;
@@ -737,7 +739,9 @@ procedure TXml.ResolveNameSpaces;
 var
   x: Integer;
 begin
-  NameSpace:=_ResolveNamespace(Self, NsPrefix);
+  NameSpace := _ResolveNamespace(Self, NsPrefix);
+  for x := 0 to Attributes.Count - 1 do with Attributes.XmlAttributes[x] do
+    NameSpace := _ResolveNamespace(Self, NsPrefix);
   for x := 0 to Items.Count - 1 do
     Items.XmlItems[x].ResolveNameSpaces;
 end;
@@ -2689,6 +2693,32 @@ end;
 function TXml.GetGroup: Boolean;
 begin
   result := (Items.Count > 0)
+end;
+
+procedure TXml .SeparateNsPrefixes ;
+var
+  x, p: Integer;
+begin
+  p := Pos(':', Name);
+  if p > 0 then
+  begin
+    NsPrefix:= Copy(Name, 1, p - 1);
+    Name := Copy (Name, p + 1, 300000);
+  end;
+  for x := 0 to Items.Count -1 do
+    Items.XmlItems[x].SeparateNsPrefixes;
+
+  for x := 0 to Attributes.Count - 1 do with Attributes.XmlAttributes[x] do
+  begin
+    p := Pos(':', Name);
+    if (p > 0)
+    and (Copy(Name, 1, p - 1) <> 'xmlns') then
+    begin
+      NsPrefix:= Copy(Name, 1, p - 1);
+      Name := Copy (Name, p + 1, 300000);
+    end;
+  end;
+
 end;
 
 function TXml.PrefixToNameSpace(aPrefix: String): String;

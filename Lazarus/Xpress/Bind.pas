@@ -213,7 +213,6 @@ public
   procedure Reset; Virtual;
   procedure ResetExpectedValues; Virtual;
   procedure setChecked(const aValue: Boolean); Virtual;
-  procedure SeparateNsPrefixes;
   procedure ExploreRelevancy;
   procedure Populate (aViewType: TxvViewType); Virtual;
   function FindUQ (aName: String): TCustomBindable; Virtual;
@@ -565,20 +564,6 @@ begin
     Parent.Checked := True;
   fPrevChecked := fChecked;
   fChecked := aValue;
-end;
-
-procedure TCustomBindable.SeparateNsPrefixes;
-var
-  x: Integer;
-begin
-  x := Pos(':', Name);
-  if x > 0 then
-  begin
-    NsPrefix:= Copy(Name, 1, x - 1);
-    Name := Copy (Name, x + 1, 300000);
-  end;
-  for x := 0 to Children.Count -1 do
-    Children.Bindables[x].SeparateNsPrefixes;
 end;
 
 procedure TCustomBindable.sethasRelevance(const Value: Boolean);
