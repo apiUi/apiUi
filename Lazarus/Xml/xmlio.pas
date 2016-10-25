@@ -323,7 +323,7 @@ begin
   while (m <= Length (xMainPath)) do
   begin
     if IsPathDelimiter (xMainPath, m) then
-      result := result + '..\';
+      result := result + '..' + DirectorySeparator;
     Inc (m);
   end;
   while (x <= Length (aToRelateFileName)) do
