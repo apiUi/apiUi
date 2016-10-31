@@ -2452,7 +2452,7 @@ begin
   if not xsiGenerated then
   begin
     xsiGenerated := True;
-    result := ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"';
+    result := ' xmlns:xsi="' + scXMLSchemaInstanceURI + '"';
   end
   else
     result := '';

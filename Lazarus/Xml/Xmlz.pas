@@ -1581,7 +1581,9 @@ begin
       begin // in case aXml loaded from a string, maybe there is a xsi:type
         for x := 0 to aXml.Attributes.Count - 1 do
         begin
-          if NameWithoutPrefix (aXml.Attributes.XmlAttributes[x].Name) = 'type' then
+          if (NameWithoutPrefix (aXml.Attributes.XmlAttributes[x].Name) = tagType)
+          and (ExpandPrefixedName(aXml.NameSpace, aXml.Attributes.XmlAttributes[x].Name) = scXMLSchemaInstanceURI)
+          then
           begin
             xtndDatatype := _getExtendedTypedef (NameWithoutPrefix (aXml.Attributes.XmlAttributes[x].Value), Xsd.sType);
             if Assigned (xtndDatatype)
@@ -3576,7 +3578,8 @@ end;
 
 function TXmlAttribute.isXmlTypeDefAttribute: Boolean;
 begin
-  result := (Name = 'type');    { TODO : xsi namespace }
+  result := (Name = tagType)
+        and (NameSpace = scXMLSchemaInstanceURI);
 end;
 
 function TXmlAttribute.GetFullIndexCaption: String;

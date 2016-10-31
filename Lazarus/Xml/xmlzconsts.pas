@@ -13,6 +13,7 @@ const
   scSoapUseEncoded = 'encoded';
   scSoapUseLiteral = 'literal';
   scXMLSchemaURI = 'http://www.w3.org/2001/XMLSchema';
+  scXMLSchemaInstanceURI = 'http://www.w3.org/2001/XMLSchema-instance';
   scWsdlNameSpace = 'http://schemas.xmlsoap.org/wsdl/';
   scSoapEnvNameSpaceV1_1 = 'http://schemas.xmlsoap.org/soap/envelope/';
   scSoapEnvNameSpaceV1_2 = 'http://www.w3.org/2002/12/soap-envelope';

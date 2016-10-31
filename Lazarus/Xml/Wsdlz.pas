@@ -1785,7 +1785,7 @@ begin
     AddAttribute(TXmlAttribute.CreateAsString('xmlns:soap', 'http://schemas.xmlsoap.org/wsdl/soap/'));
     AddAttribute(TXmlAttribute.CreateAsString('xmlns:wsdl', 'http://schemas.xmlsoap.org/wsdl/'));
     AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsd', scXMLSchemaURI));
-    AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance'));
+    AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsi', scXMLSchemaInstanceURI));
     with AddXml(TXml.CreateAsString('soapenv:Header', '')) do
     begin
       for x := 0 to aOperation.OutputHeaders.Count - 1 do
@@ -4078,7 +4078,7 @@ begin
       result := StrAdd (result, ' xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"');
       result := StrAdd (result, ' xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"');
       result := StrAdd (result, ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"');
-      result := StrAdd (result, ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
+      result := StrAdd (result, ' xmlns:xsi="' + scXMLSchemaInstanceURI + '"');
       result := StrAdd (result, ' >');
       if (InputHeaders.Count > 0)
       or (WsdlService.AuthenticationType = atWsSecurity)
@@ -4187,7 +4187,7 @@ begin
       result := StrAdd (result, ' xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"');
       result := StrAdd (result, ' xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"');
       result := StrAdd (result, ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"');
-      result := StrAdd (result, ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
+      result := StrAdd (result, ' xmlns:xsi="' + scXMLSchemaInstanceURI + '"');
       result := StrAdd (result, ' >');
       if (OutputHeaders.Count > 0)
       or wsaEnabled then
@@ -4280,7 +4280,7 @@ begin
     result := StrAdd (result, ' xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"');
     result := StrAdd (result, ' xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"');
     result := StrAdd (result, ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"');
-    result := StrAdd (result, ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
+    result := StrAdd (result, ' xmlns:xsi="' + scXMLSchemaInstanceURI + '"');
     result := StrAdd (result, ' >');
 
     if (OutputHeaders.Count > 0) then
