@@ -23,8 +23,14 @@
       <BuildNr Value="56"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <MacroValues Count="1">
+      <Macro1 Name="LCLWidgetType" Value="gtk2"/>
+    </MacroValues>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="248589427810" Modes="Default" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -37,13 +43,13 @@
     </RunParams>
     <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="richmemopackage"/>
       </Item1>
       <Item2>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="indylaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="LazRichEdit"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item3>
       <Item4>
         <PackageName Value="LazUtils"/>
@@ -68,7 +74,6 @@
       <Unit3>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Xmlz"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Mq\MQAPI.pas"/>
@@ -101,7 +106,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\Mq;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\System;..\components\Indy10\Lib\Core;..\Xml;..\Html"/>
+      <OtherUnitFiles Value="..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\Mq;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\System;..\components\Indy10\Lib\Core;..\Xml;..\Html;C:\lazarus\lcl\interfaces\gtk2\"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -112,7 +117,10 @@
     <Other>
       <CustomOptions Value="-dConsoleApp
 -dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
+      <OtherDefines Count="2">
+        <Define0 Value="ConsoleApp"/>
+        <Define1 Value="UseCThreads"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>

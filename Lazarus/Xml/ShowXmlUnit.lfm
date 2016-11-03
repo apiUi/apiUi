@@ -12,7 +12,7 @@ object ShowXmlForm: TShowXmlForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 363
@@ -127,15 +127,15 @@ object ShowXmlForm: TShowXmlForm
         TabOrder = 0
         ViewStyle = vsReport
       end
-      object DocumentationEdit: TlzRichEdit
+      object DocumentationEdit: TRichMemo
         Left = 1
         Height = 244
         Top = 110
         Width = 237
-        DefaultExtension = '.rtf'
         Align = alClient
         Color = clBtnFace
         Font.Height = -15
+        HideSelection = False
         Lines.Strings = (
           'DocumentationEdit'
         )
@@ -144,6 +144,7 @@ object ShowXmlForm: TShowXmlForm
         ParentFont = False
         ReadOnly = True
         TabOrder = 2
+        ZoomFactor = 1
       end
     end
   end
@@ -164,6 +165,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object ToolButton3: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -182,6 +184,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object ToolButton6: TToolButton
       Left = 80
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton6'
@@ -200,6 +203,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object ToolButton5: TToolButton
       Left = 136
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton5'
@@ -213,6 +217,7 @@ object ShowXmlForm: TShowXmlForm
     end
     object ToolButton11: TToolButton
       Left = 169
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton11'

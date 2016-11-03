@@ -20,7 +20,6 @@ uses
   , ExceptionLogz
   , snapshotz
   , Wsdlz
-  , lazrichedit
   , FormIniFilez, MQAPI, mqInterface, MQRfh2Api, IdStack
   , virtualtreeview_package
   , xmlxsdparser

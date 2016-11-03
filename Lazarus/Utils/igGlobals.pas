@@ -14,7 +14,7 @@ uses SysUtils
    , Graphics, FileUtil
    , Messages
    , Types
-   , richbox
+   , RichMemo
 //   , VirtualTrees
    ;
 
@@ -79,7 +79,7 @@ function HEXDecode(const S: AnsiString): AnsiString;
 function HEXEncode(const S: AnsiString): AnsiString;
 function HEXRGBToColor(const S: string): TColor;
 
-procedure MemoSetSelectedText (Memo: TLzRichEdit; Line: Integer; Column: Integer; Width: Integer);
+procedure MemoSetSelectedText (Memo: TRichMemo; Line: Integer; Column: Integer; Width: Integer);
 function StringMatchesMask( S, mask: String; CaseSensitive, useRegExp: Boolean ): Boolean;
 function SubStringMatch ( aString: String
                         ; var aOffset: Integer
@@ -132,10 +132,10 @@ function SplitStr(const S: string; Delim: Char; out S1, S2: string): Boolean;
 function BoolToStr (aValue: Boolean): String;
 function GetUserName: String;
 function GenerateRandomId: String;
-procedure MemoMouseDown(aMemo: TLzRichEdit; X, Y: Integer; aOnHaveLink: TOnHaveLinkEvent);
-procedure MemoMouseMove(aMemo: TLzRichEdit; X, Y: Integer);
-procedure MemoShowLinks (aMemo: TLzRichEdit);
-function MemoIsLink (aMemo: TlzRichEdit): String;
+procedure MemoMouseDown(aMemo: TRichMemo; X, Y: Integer; aOnHaveLink: TOnHaveLinkEvent);
+procedure MemoMouseMove(aMemo: TRichMemo; X, Y: Integer);
+procedure MemoShowLinks (aMemo: TRichMemo);
+function MemoIsLink (aMemo: TRichMemo): String;
 
 implementation
 
@@ -154,7 +154,7 @@ uses StrUtils
    , IdHTTP
    , base64
    ;
-procedure MemoMouseDown(aMemo: TLzRichEdit; X, Y: Integer; aOnHaveLink: TOnHaveLinkEvent);
+procedure MemoMouseDown(aMemo: TRichMemo; X, Y: Integer; aOnHaveLink: TOnHaveLinkEvent);
 var
   iCharIndex, z: Integer;
   Pt: TPoint;
@@ -194,7 +194,7 @@ begin
   {$endif}
 end;
 
-procedure MemoMouseMove(aMemo: TLzRichEdit; X, Y: Integer);
+procedure MemoMouseMove(aMemo: TRichMemo; X, Y: Integer);
 var
   iCharIndex, z: Integer;
   Pt: TPoint;
@@ -203,8 +203,9 @@ var
   rx: TRegExpr;
 begin
   {$ifdef windows}
-  Pt := Point(X, Y);
-  iCharIndex := aMemo.Perform(Messages.EM_CHARFROMPOS, 0, Integer(@Pt));
+  iCharIndex := aMemo.CharAtPos(X, Y);
+//  Pt := Point(X, Y);
+//  iCharIndex := aMemo.Perform(Messages.EM_CHARFROMPOS, 0, Integer(@Pt));
   if (iCharIndex < 0)
   or (iCharIndex = Length (s))
   then begin
@@ -237,13 +238,14 @@ begin
   {$endif}
 end;
 
-procedure MemoShowLinks (aMemo: TLzRichEdit);
+procedure MemoShowLinks (aMemo: TRichMemo);
 var
   rx: TRegExpr;
   x: Integer;
   Rslt: Boolean;
   xS: String;
   swapPos, swapLen: Integer;
+  xFont: TFont;
 begin
   rx := TRegExpr.Create;
   try
@@ -265,15 +267,18 @@ begin
     swapPos := aMemo.SelStart;
     swapLen := aMemo.SelLength;
     aMemo.SelectAll;
-    aMemo.SelAttributes.Color := clBlack;
-    aMemo.SelAttributes.Style := [];
+    xFont := aMemo.Font;
+    xFont.Color := clBlack;
+    xFont.Style := [];
+    with aMemo do SetTextAttributes(SelStart, SelLength, xFont);
+    xFont.Color := clBlue;
+//  xFont.Style := [fsUnderline];
     Rslt := Rx.Exec(xs);
     while Rslt do
     begin
       aMemo.SelStart := Rx.MatchPos [0] - 1;
       aMemo.SelLength := Rx.MatchLen [0];
-      aMemo.SelAttributes.Color := clBlue;
-      aMemo.SelAttributes.Style := [fsUnderline];
+      with aMemo do SetTextAttributes(SelStart, SelLength, xFont);
       Rslt := Rx.ExecNext;
     end;
     aMemo.SelStart := swapPos;
@@ -283,7 +288,7 @@ begin
   end;
 end;
 
-function MemoIsLink(aMemo: TlzRichEdit): String;
+function MemoIsLink(aMemo: TRichMemo): String;
 var
   rx: TRegExpr;
   x, p: Integer;
@@ -1243,7 +1248,7 @@ begin
                    );
 end;
 
-procedure MemoSetSelectedText (Memo: TLzRichEdit; Line: Integer; Column: Integer; Width: Integer);
+procedure MemoSetSelectedText (Memo: TRichMemo; Line: Integer; Column: Integer; Width: Integer);
 var
   x: Integer;
   Offset: Integer;

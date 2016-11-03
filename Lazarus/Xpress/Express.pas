@@ -864,6 +864,11 @@ begin
   result := lowercase(aStr);
 end;
 
+function xpuppercase(aStr: String): String;
+begin
+  result := UpperCase(aStr);
+end;
+
 const
   NoOfLexItems = 546 - 515;
   LexItems : array [1..NoOfLexItems] of LexItemRec =
@@ -897,7 +902,7 @@ const
   , (Wrd: 'TIME'; Tkn: DFS; adr: @xpStrToTime)
   , (Wrd: 'TIMETOSTR'; Tkn: SFD; adr: @xpTimeToStr)
   , (Wrd: 'TODAY'; Tkn: DF; adr: @Date)
-  , (Wrd: 'UPPERCASE'; Tkn: SFS; adr: @uppercase)
+  , (Wrd: 'UPPERCASE'; Tkn: SFS; adr: @xpuppercase)
   );
 
 var m: integer;

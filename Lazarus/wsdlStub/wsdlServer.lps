@@ -4,17 +4,15 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="31">
+    <Units Count="97">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="404"/>
-        <CursorPos X="1" Y="424"/>
+        <CursorPos Y="424"/>
         <UsageCount Value="218"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="wsdlcontrolz.pas"/>
@@ -28,18 +26,15 @@
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
         <UsageCount Value="200"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Xmlz"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="2702"/>
-        <CursorPos X="1" Y="2719"/>
+        <CursorPos Y="2719"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Mq\MQAPI.pas"/>
@@ -61,16 +56,15 @@
       <Unit7>
         <Filename Value="..\TacoInterface\tacoInterface.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="29"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Html\htmlxmlutilz.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="htmlXmlUtilz"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
-        <CursorPos X="6" Y="1"/>
-        <UsageCount Value="24"/>
+        <CursorPos X="6"/>
+        <UsageCount Value="25"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\components\lazutils\fileutil.pas"/>
@@ -85,11 +79,8 @@
       </Unit10>
       <Unit11>
         <Filename Value="WsdlProjectz.pas"/>
-        <UnitName Value="WsdlProjectz"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="7466"/>
-        <CursorPos X="14" Y="7489"/>
+        <CursorPos X="54"/>
         <UsageCount Value="106"/>
         <Loaded Value="True"/>
       </Unit11>
@@ -139,10 +130,10 @@
       </Unit19>
       <Unit20>
         <Filename Value="WsdlStubMainUnit.pas"/>
-        <UnitName Value="WsdlStubMainUnit"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1270"/>
-        <CursorPos X="5" Y="1282"/>
+        <TopLine Value="13567"/>
+        <CursorPos X="5" Y="13590"/>
         <UsageCount Value="29"/>
       </Unit20>
       <Unit21>
@@ -154,7 +145,6 @@
       </Unit21>
       <Unit22>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <UnitName Value="xmlio"/>
         <WindowIndex Value="1"/>
         <TopLine Value="400"/>
         <CursorPos X="3" Y="396"/>
@@ -162,32 +152,27 @@
       </Unit22>
       <Unit23>
         <Filename Value="C:\lazarus\lcl\include\lclintf.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="353"/>
-        <CursorPos X="1" Y="365"/>
+        <CursorPos Y="365"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <UnitName Value="Xsdz"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="2721"/>
-        <CursorPos X="1" Y="2757"/>
+        <TopLine Value="2720"/>
+        <CursorPos Y="2757"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\Xpress\Bind.pas"/>
-        <UnitName Value="Bind"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="187"/>
         <CursorPos X="3" Y="197"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\Xml\a2bxmlgridunit.pas"/>
@@ -195,172 +180,692 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="A2BXmlGridUnit"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="238"/>
-        <CursorPos X="6" Y="250"/>
+        <TopLine Value="5"/>
+        <CursorPos X="11" Y="17"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit26>
       <Unit27>
         <Filename Value="htmlreportz.pas"/>
-        <UnitName Value="htmlreportz"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="1"/>
         <CursorPos X="6" Y="14"/>
         <UsageCount Value="10"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\Xml\xmlzconsts.pas"/>
         <UnitName Value="xmlzConsts"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="56"/>
         <CursorPos X="3" Y="85"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit28>
       <Unit29>
         <Filename Value="C:\lazarus\lcl\include\messagedialogs.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="193"/>
-        <CursorPos X="1" Y="205"/>
+        <CursorPos Y="205"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\lazarus\lcl\include\winapi.inc"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="309"/>
         <CursorPos X="50" Y="314"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="..\Components\lzRichEdit\interfaces\gtk2\gtk2wsrichbox.pas"/>
+        <UnitName Value="Gtk2WSRichBox"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="30"/>
+        <CursorPos X="29" Y="42"/>
+        <UsageCount Value="10"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="..\Components\richmemo\gtk2\gtk2richmemo.pas"/>
+        <UnitName Value="Gtk2RichMemo"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="23"/>
+        <CursorPos X="42" Y="35"/>
+        <UsageCount Value="10"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="5"/>
+        <CursorPos X="6" Y="17"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\alllclintfunits.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\dragicons.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2callback.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2cellrenderer.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2debug.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2def.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2defines.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2devicecontext.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2disableliboverlay.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2extra.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2extra.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2extrah.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2fontcache.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2globals.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2int.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2lclintf.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2lclintfh.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2listsl.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2listslh.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2listviewtreemodel.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2memostrings.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2msgqueue.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2pagecontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2privatelist.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2privatewidget.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2proc.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2proc.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit60>
+      <Unit61>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2stdpixmaps.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit61>
+      <Unit62>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2themes.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit62>
+      <Unit63>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2trayicon.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit63>
+      <Unit64>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2widgetset.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit64>
+      <Unit65>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2winapi.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit65>
+      <Unit66>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2winapih.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit66>
+      <Unit67>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2winapiwindow.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit67>
+      <Unit68>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2windows.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit68>
+      <Unit69>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsbuttons.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit69>
+      <Unit70>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wscalendar.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit70>
+      <Unit71>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wschecklst.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit71>
+      <Unit72>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wscomctrls.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit72>
+      <Unit73>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wscontrols.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit73>
+      <Unit74>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wscustomlistview.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit74>
+      <Unit75>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wscustommemo.inc"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit75>
+      <Unit76>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsdialogs.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit76>
+      <Unit77>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsextctrls.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit77>
+      <Unit78>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsextdlgs.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit78>
+      <Unit79>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsfactory.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit79>
+      <Unit80>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsforms.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit80>
+      <Unit81>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsgrids.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit81>
+      <Unit82>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsimglist.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit82>
+      <Unit83>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsmenus.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit83>
+      <Unit84>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wspairsplitter.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit84>
+      <Unit85>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsprivate.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsspin.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\gtk2wsstdctrls.pp"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="C:\lazarus\lcl\interfaces\gtk2\interfaces.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="C:\lazarus\lcl\interfaces\lcl.pas"/>
+        <UnitName Value="LCL"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <CursorPos X="3" Y="10"/>
+        <UsageCount Value="10"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="..\Components\lzRichEdit\interfaces\win32\win32wsrichbox.pas"/>
+        <UnitName Value="Win32WSRichBox"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="30"/>
+        <CursorPos X="70" Y="42"/>
+        <UsageCount Value="10"/>
+      </Unit90>
+      <Unit91>
+        <Filename Value="..\Components\lzRichEdit\lazrichedit.pas"/>
+        <UnitName Value="LazRichEdit"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <CursorPos X="3" Y="10"/>
+        <UsageCount Value="10"/>
+      </Unit91>
+      <Unit92>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="894"/>
+        <CursorPos X="51" Y="905"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit92>
+      <Unit93>
+        <Filename Value="..\Xpress\parser.def"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="1"/>
+        <CursorPos X="7" Y="8"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit93>
+      <Unit94>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1340"/>
+        <CursorPos X="60" Y="1360"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit94>
+      <Unit95>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="862"/>
+        <CursorPos X="51" Y="869"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit95>
+      <Unit96>
+        <Filename Value="..\Xml\XmlGridUnit.pas"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="9"/>
+        <CursorPos X="34" Y="29"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit96>
     </Units>
-    <CustomDefines Count="2">
+    <OtherDefines Count="2">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
-    </CustomDefines>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
-    <JumpHistory Count="29" HistoryIndex="28">
+    </OtherDefines>
+    <JumpHistory Count="28" HistoryIndex="27">
       <Position1>
         <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1192" Column="1" TopLine="1177"/>
+        <Caret Line="1191" TopLine="1177"/>
       </Position1>
       <Position2>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="1021" Column="1" TopLine="1010"/>
+        <Filename Value="WsdlProjectz.pas"/>
+        <Caret Line="1191" TopLine="1177"/>
       </Position2>
       <Position3>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="3058" Column="1" TopLine="3047"/>
+        <Filename Value="WsdlProjectz.pas"/>
+        <Caret Line="523" Column="10" TopLine="511"/>
       </Position3>
       <Position4>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="2758" Column="1" TopLine="2748"/>
+        <Filename Value="WsdlProjectz.pas"/>
+        <Caret Line="367" Column="17" TopLine="357"/>
       </Position4>
       <Position5>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="3058" Column="1" TopLine="3046"/>
+        <Filename Value="WsdlProjectz.pas"/>
+        <Caret Line="7489" Column="14" TopLine="7466"/>
       </Position5>
       <Position6>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="2758" Column="1" TopLine="2748"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
       </Position6>
       <Position7>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="2756" Column="1" TopLine="2739"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="1229" Column="15" TopLine="1213"/>
       </Position7>
       <Position8>
         <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1191" Column="1" TopLine="1177"/>
+        <Caret Line="7400" Column="8" TopLine="7400"/>
       </Position8>
       <Position9>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="2748" Column="10" TopLine="2729"/>
+        <Filename Value="..\Xpress\Express.pas"/>
       </Position9>
       <Position10>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="3058" Column="1" TopLine="3047"/>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <Caret Line="900" Column="49" TopLine="877"/>
       </Position10>
       <Position11>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="1191" Column="1" TopLine="1177"/>
+        <Filename Value="..\Xpress\Express.pas"/>
+        <Caret Line="867" Column="21" TopLine="851"/>
       </Position11>
       <Position12>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="415" Column="3" TopLine="415"/>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="17" Column="11" TopLine="7"/>
       </Position12>
       <Position13>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="523" Column="10" TopLine="511"/>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
       </Position13>
       <Position14>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="413" Column="1" TopLine="401"/>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <Caret Line="15" Column="14" TopLine="3"/>
       </Position14>
       <Position15>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="361" Column="11" TopLine="349"/>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <Caret Line="121" Column="54" TopLine="109"/>
       </Position15>
       <Position16>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="414" Column="8" TopLine="399"/>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
       </Position16>
       <Position17>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="410" Column="65" TopLine="399"/>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
       </Position17>
       <Position18>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="2756" Column="1" TopLine="2746"/>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
+        <Caret Line="16" Column="48" TopLine="4"/>
       </Position18>
       <Position19>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="2746" Column="110" TopLine="2734"/>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
+        <Caret Line="32" Column="36" TopLine="20"/>
       </Position19>
       <Position20>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="411" Column="22" TopLine="399"/>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
       </Position20>
       <Position21>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="536" Column="11" TopLine="219"/>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
+        <Caret Line="32" Column="22" TopLine="18"/>
       </Position21>
       <Position22>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="423" Column="8" TopLine="403"/>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
+        <Caret Line="104" Column="32" TopLine="85"/>
       </Position22>
       <Position23>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="367" Column="17" TopLine="357"/>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
+        <Caret Line="105" Column="32" TopLine="86"/>
       </Position23>
       <Position24>
-        <Filename Value="WsdlProjectz.pas"/>
-        <Caret Line="7489" Column="14" TopLine="7466"/>
+        <Filename Value="..\Xml\XmlGridUnit.pas"/>
       </Position24>
       <Position25>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="2722" Column="1" TopLine="2702"/>
+        <Filename Value="..\Xml\XmlGridUnit.pas"/>
+        <Caret Line="17" Column="11" TopLine="5"/>
       </Position25>
       <Position26>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="2718" Column="20" TopLine="2702"/>
+        <Filename Value="..\Xml\XmlGridUnit.pas"/>
+        <Caret Line="22" Column="25" TopLine="17"/>
       </Position26>
       <Position27>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="2719" Column="1" TopLine="2702"/>
+        <Filename Value="..\Xml\XmlGridUnit.pas"/>
       </Position27>
       <Position28>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="2720" Column="1" TopLine="2702"/>
+        <Filename Value="..\Xml\a2bxmlgridunit.pas"/>
+        <Caret Line="250" Column="6" TopLine="238"/>
       </Position28>
-      <Position29>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="2719" Column="1" TopLine="2702"/>
-      </Position29>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -374,5 +879,4 @@
       </Item1>
     </BreakPoints>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>

@@ -12,7 +12,7 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, FileUtil
    , Xsdz
    , Ipmz
    , ParserClasses
-   , RichBox
+   , RichMemo
    ;
 
 
@@ -118,7 +118,7 @@ public
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
                                  ); overload;
-  procedure ListXsdDocumentation ( aMemo: TLzRichEdit
+  procedure ListXsdDocumentation ( aMemo: TRichMemo
                                  ; aBind: TCustomBindable
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
@@ -1357,7 +1357,7 @@ begin
   aMemo.Lines.Text := s;
 end;
 
-procedure TXmlUtil .ListXsdDocumentation (aMemo : TLzRichEdit ;
+procedure TXmlUtil .ListXsdDocumentation (aMemo : TRichMemo ;
   aBind : TCustomBindable ; aShowPath : Boolean ; aShowValue : Boolean );
 var
   s: String;

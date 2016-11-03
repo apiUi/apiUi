@@ -14,7 +14,7 @@ uses
 {$ENDIF}
   Messages , SysUtils , Variants , Classes , Graphics , Controls , Forms ,
   Dialogs , FormIniFilez , StdCtrls , ExtCtrls , Xsdz , Xmlz , VirtualTrees ,
-  RichBox , ComCtrls , ImgList , ToolWin , ActnList , Menus , Bind
+  RichMemo , ComCtrls , ImgList , ToolWin , ActnList , Menus , Bind
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
@@ -26,7 +26,7 @@ type
   { TXmlGridForm }
 
   TXmlGridForm = class(TForm)
-    DocumentationEdit : TlzRichEdit ;
+    DocumentationEdit : TRichMemo ;
     Panel2: TPanel;
     Grid: TVirtualStringTree;
     ToolBar1: TToolBar;
