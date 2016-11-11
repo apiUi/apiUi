@@ -191,7 +191,7 @@ type
     procedure ResolveNameSpaces;
     procedure InsertXml (aIndex: Integer; aXml: TXml);
     procedure InsertAttribute (aIndex: Integer; aAttr: TXmlAttribute);
-    procedure AddAttribute (aAttr: TXmlAttribute);
+    function AddAttribute (aAttr: TXmlAttribute): TXmlAttribute;
     function DeleteChild (aXml: TXml): TXml;
     procedure DeleteAttribute (aAttr: TXmlAttribute);
     procedure LoadValues (aXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences: Boolean); Overload;
@@ -2878,10 +2878,11 @@ begin
   aAttr.Parent := self;
 end;
 
-procedure TXml.AddAttribute(aAttr: TXmlAttribute);
+function TXml.AddAttribute(aAttr: TXmlAttribute): TXmlAttribute;
 begin
   Attributes.AddObject(aAttr.Name, aAttr);
   aAttr.Parent := self;
+  result := aAttr;
 end;
 
 function TXml.getText: String;

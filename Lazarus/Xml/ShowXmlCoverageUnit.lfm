@@ -1,11 +1,11 @@
 object ShowXmlCoverageForm: TShowXmlCoverageForm
   Left = 384
-  Height = 523
+  Height = 528
   Top = 135
-  Width = 879
+  Width = 921
   Caption = 'XML Data'
-  ClientHeight = 523
-  ClientWidth = 879
+  ClientHeight = 528
+  ClientWidth = 921
   Color = clBtnFace
   OnClose = FormClose
   OnCreate = FormCreate
@@ -13,20 +13,20 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
-    Height = 457
+    Height = 462
     Top = 29
-    Width = 879
+    Width = 921
     Align = alClient
     BorderWidth = 3
-    ClientHeight = 457
-    ClientWidth = 879
+    ClientHeight = 462
+    ClientWidth = 921
     TabOrder = 0
     object Splitter1: TSplitter
-      Left = 685
-      Height = 449
+      Left = 727
+      Height = 454
       Top = 4
       Width = 5
       Align = alRight
@@ -34,9 +34,9 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object TreeView: TVirtualStringTree
       Left = 4
-      Height = 449
+      Height = 454
       Top = 4
-      Width = 681
+      Width = 723
       Align = alClient
       BottomSpace = 10
       Color = clBtnFace
@@ -107,12 +107,12 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
       OnMouseDown = TreeViewMouseDown
     end
     object Panel2: TPanel
-      Left = 690
-      Height = 449
+      Left = 732
+      Height = 454
       Top = 4
       Width = 185
       Align = alRight
-      ClientHeight = 449
+      ClientHeight = 454
       ClientWidth = 185
       TabOrder = 1
       object Splitter2: TSplitter
@@ -143,14 +143,12 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
         TabOrder = 0
         ViewStyle = vsReport
       end
-      object DocumentationMemo: TlzRichEdit
+      object DocumentationMemo: TMemo
         Left = 1
-        Height = 338
+        Height = 343
         Top = 110
         Width = 183
-        DefaultExtension = '.rtf'
         Align = alClient
-        Color = clWindow
         Lines.Strings = (
           'DocumentationMemo'
         )
@@ -165,7 +163,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     Left = 0
     Height = 29
     Top = 0
-    Width = 879
+    Width = 921
     Caption = 'ToolBar1'
     Images = ActionImageList
     ParentShowHint = False
@@ -178,6 +176,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton13: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton13'
@@ -196,6 +195,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton10: TToolButton
       Left = 80
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton10'
@@ -214,6 +214,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton6: TToolButton
       Left = 136
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton6'
@@ -232,6 +233,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object ToolButton5: TToolButton
       Left = 192
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton5'
@@ -248,11 +250,11 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
   object Panel3: TPanel
     Left = 0
     Height = 37
-    Top = 486
-    Width = 879
+    Top = 491
+    Width = 921
     Align = alBottom
     ClientHeight = 37
-    ClientWidth = 879
+    ClientWidth = 921
     TabOrder = 2
     object OkButton: TButton
       Left = 8

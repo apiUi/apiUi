@@ -1939,7 +1939,8 @@ begin
   begin
     AddXml (TXml.CreateAsBoolean('SaveRelativeFileNames', SaveRelativeFileNames));
     if (CurrentFolder <> '')
-    or (ReferenceFolder <> '') then
+    or (ReferenceFolder <> '')
+    or (ReportsFolder <> '') then
     begin
       with AddXml (TXml.CreateAsString('projectFolders', '')) do
       begin
@@ -2078,7 +2079,7 @@ begin
         for x := 0 to EnvironmentList.Count - 1 do
           with AddXml(TXml.CreateAsString('Environment', '')) do
           begin
-            AddAttribute(TXmlAttribute.CreateAsString('Name', EnvironmentList.Strings[x]));
+            AddAttribute(TXmlAttribute.CreateAsString('Name', EnvironmentList.Strings[x])).Checked := True;
             with AddXml (TXml.Create) do
               Text := (EnvironmentList.Objects [x] as TXml).Text;
           end;
@@ -2412,6 +2413,7 @@ begin
             ProjectOptionsFromXml(eXml);
             CurrentFolder := ExpandRelativeFileName (aMainFileName, CurrentFolder);
             ReferenceFolder := ExpandRelativeFileName (aMainFileName, ReferenceFolder);
+            ReportsFolder := ExpandRelativeFileName (aMainFileName, ReportsFolder);
           end;
           xmlio.PathPrefixes.Text := xXml.Items.XmlCheckedValueByTag ['PathPrefixes'];
           eXml := xXml.Items.XmlItemByTag ['Environments'];
@@ -3375,6 +3377,7 @@ begin
   SaveRelativeFileNames := True;
   CurrentFolder := '';
   ReferenceFolder := '';
+  ReportsFolder := '';
   notStubbedExceptionMessage := 'No operation recognised';
 
   if not aXml.Checked then Exit;

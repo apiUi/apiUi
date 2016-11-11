@@ -14,7 +14,7 @@ uses
 {$ENDIF}
   Messages , SysUtils , Variants , Classes , Graphics , Controls , Forms ,
   Dialogs , FormIniFilez , StdCtrls , ExtCtrls , Xsdz , A2BXmlz , Xmlz, VirtualTrees ,
-  RichMemo , ComCtrls , ImgList , ToolWin , ActnList , Menus , Bind
+  ComCtrls , ImgList , ToolWin , ActnList , Menus , Bind
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw

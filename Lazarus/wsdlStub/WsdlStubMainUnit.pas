@@ -38,7 +38,7 @@ uses
    , ExtCtrls
    , FormIniFilez
    , Menus , PairSplitter
-   , VirtualTrees , FileUtil , RichMemo
+   , VirtualTrees , FileUtil
    , Bind
    , mqInterface
    , MQAPI
@@ -219,7 +219,7 @@ type
     PresentLogMemoTextAction : TAction ;
     DesignPanel: TPanel;
     alGeneral: TActionList;
-    DataTypeDocumentationMemo : TRichMemo ;
+    DataTypeDocumentationMemo : TMemo ;
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
     Splitter1 : TSplitter ;
@@ -554,8 +554,6 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
-    procedure DataTypeDocumentationMemoMouseMove (Sender : TObject ;
-      Shift : TShiftState ; X , Y : Integer );
     procedure LogPanelClick(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
@@ -1268,7 +1266,7 @@ uses
   ShellApi,
 {$ELSE}
 {$ENDIF}
-  LCLProc, LazFileUtils, wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
+  LCLProc, wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
   ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
   ChooseStringUnit, Choose2StringsUnit, AboutUnit, StrUtils, IpmGunLicense,
   IpmGunLicenseUnit, DisclaimerUnit,
@@ -3079,7 +3077,7 @@ begin
     SaveFileDialog.Title := 'Save wsdlStub case';
     if SaveFileDialog.Execute then
     begin
-      se.projectFileName := uncFilename(SaveFileDialog.FileName);
+      se.projectFileName := SaveFileDialog.FileName;
       SaveWsdlStubCase(se.projectFileName);
     end;
   finally
@@ -3172,7 +3170,7 @@ begin
     OpenFileDialog.Title := 'Open Stub Case';
     if OpenFileDialog.Execute then
     begin
-      se.projectFileName := uncFilename(OpenFileDialog.FileName);
+      se.projectFileName := OpenFileDialog.FileName;
       OpenStubCase(se.projectFileName);
       // TProcedureThread.Create (OpenStubCase, OpenFileDialog.FileName);
     end;
@@ -13407,12 +13405,6 @@ end;
 procedure TMainForm.LogPanelClick(Sender: TObject);
 begin
 
-end;
-
-procedure TMainForm .DataTypeDocumentationMemoMouseMove (Sender : TObject ;
-  Shift : TShiftState ; X , Y : Integer );
-begin
-  MemoMouseMove(DataTypeDocumentationMemo, X, Y);
 end;
 
 procedure TMainForm.LogTabControlChange(Sender: TObject);

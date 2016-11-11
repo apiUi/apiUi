@@ -20,7 +20,7 @@ uses
    , Ipmz
    , Dialogs
    , FormIniFilez, ToolWin, ActnList, Menus, ImgList,
-  Express , RichMemo
+  Express
    ;
 
 type
@@ -28,7 +28,7 @@ type
   { TShowXmlCoverageForm }
 
   TShowXmlCoverageForm = class(TForm)
-    DocumentationMemo : TRichMemo ;
+    DocumentationMemo : TMemo ;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -336,13 +336,13 @@ end;
 procedure TShowXmlCoverageForm.XsdDocumentationMemoMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  MemoMouseDown(Sender as TRichMemo, X, Y, HaveLink);
+  MemoMouseDown(Sender as TMemo, X, Y, HaveLink);
 end;
 
 procedure TShowXmlCoverageForm.XsdDocumentationMemoMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-  MemoMouseMove(Sender as TRichMemo, X, Y);
+  MemoMouseMove(Sender as TMemo, X, Y);
 end;
 
 procedure TShowXmlCoverageForm.SearchMissing(aDown: Boolean);

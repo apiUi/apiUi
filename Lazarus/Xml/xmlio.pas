@@ -375,11 +375,14 @@ end;
 
 function uncFilename(aFileName: String): String;
 begin
+  result := aFileName;
+{ does ot work snce lazarus 1.6 fpc 3.0
   if (Copy (aFileName, 1, 2) <> '\\')
   and (Copy (aFileName, 1, 2) <> '//') then
     result := ExpandUNCFileName(aFileName)
   else
     result := aFileName;
+}
 end;
 
 function GetHostName: String;

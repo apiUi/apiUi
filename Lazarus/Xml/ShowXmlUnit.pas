@@ -12,9 +12,8 @@ uses
 {$ELSE}
   LCLIntf, LCLType,
 {$ENDIF}
-  SysUtils , Classes , Graphics , Forms , Controls , Buttons ,
-  ComCtrls , ExtCtrls , VirtualTrees
-  , RichMemo , Bind , Xmlz , Ipmz , Dialogs ,
+  SysUtils , Classes , Graphics , Forms , Controls , Buttons ,StdCtrls,
+  ComCtrls , ExtCtrls , VirtualTrees , Bind , Xmlz , Ipmz , Dialogs ,
   FormIniFilez , ActnList , Menus
 {$IFnDEF FPC}
   , OleCtrls
@@ -30,7 +29,7 @@ type
   TShowXmlForm = class(TForm)
     CancelButton : TBitBtn ;
     OkButton : TBitBtn ;
-    DocumentationEdit : TRichMemo ;
+    DocumentationEdit : TMemo ;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -1931,7 +1930,6 @@ end;
 procedure TShowXmlForm .DocumentationEditMouseMove (Sender : TObject ;
   Shift : TShiftState ; X , Y : Integer );
 begin
-  MemoMouseMove(DocumentationEdit, X, Y);
 end;
 
 procedure TShowXmlForm .TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;

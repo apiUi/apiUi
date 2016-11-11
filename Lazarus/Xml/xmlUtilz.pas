@@ -12,7 +12,6 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, FileUtil
    , Xsdz
    , Ipmz
    , ParserClasses
-   , RichMemo
    ;
 
 
@@ -114,11 +113,6 @@ public
   procedure ListXsdProperties (aListView: TListView; aBind: TCustomBindable);
   procedure ListXsdEnumerations (aListView: TListView; aBind: TCustomBindable);
   procedure ListXsdDocumentation ( aMemo: TMemo
-                                 ; aBind: TCustomBindable
-                                 ; aShowPath: Boolean
-                                 ; aShowValue: Boolean
-                                 ); overload;
-  procedure ListXsdDocumentation ( aMemo: TRichMemo
                                  ; aBind: TCustomBindable
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
@@ -1357,7 +1351,8 @@ begin
   aMemo.Lines.Text := s;
 end;
 
-procedure TXmlUtil .ListXsdDocumentation (aMemo : TRichMemo ;
+{
+procedure TXmlUtil .ListXsdDocumentation (aMemo : TMemo ;
   aBind : TCustomBindable ; aShowPath : Boolean ; aShowValue : Boolean );
 var
   s: String;
@@ -1380,6 +1375,7 @@ begin
   aMemo.Color := clBtnFace;
   MemoShowLinks(aMemo);
 end;
+}
 
 procedure TXmlUtil.PushCursor (aNewCursor: TCursor);
 begin

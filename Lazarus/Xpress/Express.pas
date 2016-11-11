@@ -866,7 +866,7 @@ end;
 
 function xpuppercase(aStr: String): String;
 begin
-  result := UpperCase(aStr);
+  result := uppercase(aStr);
 end;
 
 const

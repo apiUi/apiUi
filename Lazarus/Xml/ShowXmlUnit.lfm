@@ -1,11 +1,11 @@
 object ShowXmlForm: TShowXmlForm
   Left = 485
-  Height = 434
+  Height = 459
   Top = 88
-  Width = 672
+  Width = 704
   Caption = 'XML Data'
-  ClientHeight = 434
-  ClientWidth = 672
+  ClientHeight = 459
+  ClientWidth = 704
   Color = clBtnFace
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,17 +15,17 @@ object ShowXmlForm: TShowXmlForm
   LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
-    Height = 363
+    Height = 388
     Top = 29
-    Width = 672
+    Width = 704
     Align = alClient
     BorderWidth = 3
-    ClientHeight = 363
-    ClientWidth = 672
+    ClientHeight = 388
+    ClientWidth = 704
     TabOrder = 0
     object Splitter1: TSplitter
-      Left = 424
-      Height = 355
+      Left = 456
+      Height = 380
       Top = 4
       Width = 5
       Align = alRight
@@ -33,9 +33,9 @@ object ShowXmlForm: TShowXmlForm
     end
     object TreeView: TVirtualStringTree
       Left = 4
-      Height = 355
+      Height = 380
       Top = 4
-      Width = 420
+      Width = 452
       Align = alClient
       DragOperations = []
       Header.AutoSizeIndex = 0
@@ -90,12 +90,12 @@ object ShowXmlForm: TShowXmlForm
       OnNewText = TreeViewNewText
     end
     object Panel2: TPanel
-      Left = 429
-      Height = 355
+      Left = 461
+      Height = 380
       Top = 4
       Width = 239
       Align = alRight
-      ClientHeight = 355
+      ClientHeight = 380
       ClientWidth = 239
       TabOrder = 1
       object Splitter2: TSplitter
@@ -127,15 +127,14 @@ object ShowXmlForm: TShowXmlForm
         TabOrder = 0
         ViewStyle = vsReport
       end
-      object DocumentationEdit: TRichMemo
+      object DocumentationEdit: TMemo
         Left = 1
-        Height = 244
+        Height = 269
         Top = 110
         Width = 237
         Align = alClient
         Color = clBtnFace
         Font.Height = -15
-        HideSelection = False
         Lines.Strings = (
           'DocumentationEdit'
         )
@@ -144,7 +143,6 @@ object ShowXmlForm: TShowXmlForm
         ParentFont = False
         ReadOnly = True
         TabOrder = 2
-        ZoomFactor = 1
       end
     end
   end
@@ -152,7 +150,7 @@ object ShowXmlForm: TShowXmlForm
     Left = 0
     Height = 29
     Top = 0
-    Width = 672
+    Width = 704
     Caption = 'ToolBar1'
     Images = ActionImageList
     ParentShowHint = False
@@ -239,11 +237,11 @@ object ShowXmlForm: TShowXmlForm
   object Panel3: TPanel
     Left = 0
     Height = 42
-    Top = 392
-    Width = 672
+    Top = 417
+    Width = 704
     Align = alBottom
     ClientHeight = 42
-    ClientWidth = 672
+    ClientWidth = 704
     TabOrder = 2
     object CancelButton: TBitBtn
       Left = 115
