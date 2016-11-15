@@ -119,7 +119,7 @@ end;
 
 procedure TOpenTwoFoldersForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   FolderName1 := IniFile.StringByName['Folder1'];
   FolderName2 := IniFile.StringByName['Folder2'];

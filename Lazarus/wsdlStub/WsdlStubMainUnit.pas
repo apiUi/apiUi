@@ -38,7 +38,7 @@ uses
    , ExtCtrls
    , FormIniFilez
    , Menus , PairSplitter
-   , VirtualTrees , FileUtil
+   , VirtualTrees, HtmlView , FileUtil
    , Bind
    , mqInterface
    , MQAPI
@@ -47,7 +47,7 @@ uses
    , types
    , ClaimListz
    , tacoInterface
-   ;
+   , HtmlGlobals;
 
 type
   THackControl = class(TWinControl)
@@ -70,9 +70,11 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    DocumentationViewer: THtmlViewer;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
+    Panel4: TPanel;
     SnapshotsFromFolderAction : TAction ;
     ShowResolvedProperties : TAction ;
     BrowseMqButton: TToolButton;
@@ -219,7 +221,6 @@ type
     PresentLogMemoTextAction : TAction ;
     DesignPanel: TPanel;
     alGeneral: TActionList;
-    DataTypeDocumentationMemo : TMemo ;
     ScriptPanel: TPanel;
     ScriptSplitter: TSplitter;
     Splitter1 : TSplitter ;
@@ -554,6 +555,8 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
     procedure LogPanelClick(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
@@ -565,7 +568,6 @@ type
       );
     procedure ClearSnapshotsActionExecute (Sender : TObject );
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
-    procedure DataTypeDocumentationMemoClick (Sender : TObject );
     procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
     procedure GridPopupMenuPopup (Sender : TObject );
     procedure httpRequestDesignActionExecute (Sender : TObject );
@@ -2428,7 +2430,6 @@ begin
   end;
   xmlUtil.ListXsdProperties(InWsdlPropertiesListView, xBind);
   // InWsdlEnumerationsListView.Clear;
-  DataTypeDocumentationMemo.Clear;
   ActualXml := nil;
   ActualXmlAttr := nil;
   if xBind is TIpmItem then
@@ -2437,7 +2438,7 @@ begin
   else
     StatusPanel.Caption := xBind.FullCaption;
   try
-    xmlUtil.ListXsdDocumentation(DataTypeDocumentationMemo, xBind, False, False);
+    xmlUtil.ListXsdDocumentation(DocumentationViewer, xBind, False, False);
   except
   end;
   if not(tsUpdating in InWsdlTreeView.TreeStates) then
@@ -4158,7 +4159,6 @@ begin
   ExceptionMemo.Clear;
   ExceptionsVTS.Clear;
   OperationReqsTreeView.Clear;
-  DataTypeDocumentationMemo.Clear;
   // InWSdlEnumerationsListView.Clear;
   InWsdlPropertiesListView.Clear;
   OperationDocumentationEdit.Clear;
@@ -6506,7 +6506,6 @@ var
   xIniFile: TFormIniFile;
   xXml: TXml;
 begin
-  DataTypeDocumentationMemo.Color := Self.Color;
   (MessagesTabControl as TWinControl).Color := Self.Color;
   MessagesTabCaption := LogTabControl.Tabs [Ord (spMessages)];
   notifyTabCaption := LogTabControl.Tabs [Ord (spNotifications)];
@@ -12720,11 +12719,6 @@ begin
   end;
 end;
 
-procedure TMainForm .DataTypeDocumentationMemoClick (Sender : TObject );
-begin
-  OpenUrl(MemoIsLink(DataTypeDocumentationMemo));
-end;
-
 procedure TMainForm .DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
 begin
   doShowDesignSplitVertical := not doShowDesignSplitVertical;
@@ -13405,6 +13399,13 @@ end;
 procedure TMainForm.LogPanelClick(Sender: TObject);
 begin
 
+end;
+
+procedure TMainForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled:=True;
+  OpenURL(SRC);
 end;
 
 procedure TMainForm.LogTabControlChange(Sender: TObject);

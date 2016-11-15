@@ -11,14 +11,14 @@ uses SysUtils
    , ActnList
    , Dialogs
    , Grids
-   , Graphics, FileUtil
+   , Graphics, LazFileUtils
    , Messages
    , Types
 //   , VirtualTrees
    ;
 
 resourcestring
-  S_REGEXP_LINK = '(?i)(FTP|HTTP|FILE|DOC)://([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*(\?[a-z0-9=&]+)?';
+  S_REGEXP_LINK = '(?i)(FTP|HTTPS?|FILE|DOC)://([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*(\?[a-z0-9=&]+)?';
 //S_REGEXP_LINK = '(?i)(FILE)://[a-z]([_:/a-z0-9\.])+';
 type
   TOnHaveDir = function ( Path: String
@@ -234,6 +234,52 @@ begin
   {$else}
   raise Exception.Create ('only with ms windos');
   {$endif}
+end;
+
+function TextToHtml(aText: String): String;
+var
+  rx: TRegExpr;
+  b: Boolean;
+  t, xlabel, xhref: String;
+  e, p: Integer;
+begin
+  t := ReplaceStr(aText, LineEnding, '<br/>');
+  result := '<html>';
+  e := 1;
+  rx := TRegExpr.Create;
+  try
+    rx.Expression := S_REGEXP_LINK;
+    b := Rx.Exec(t);
+    while b do
+    begin
+      xhref := Rx.Match[0];
+      xlabel := Copy (xhref, Pos ('//', xhref) + 2, Length (xhref));
+      if AnsiStartsStr('DOC://', UpperCase(xhref)) then
+        xhref := 'file://'
+                + ReplaceText
+                  ( ExtractFilePath (ParamStr(0)) + 'Documentation\'
+                  , '\'
+                  , '/'
+                  )
+                + Copy (xhref, 7 , Length (xhref))
+                ;
+
+      result := result
+              + Copy (t, e, Rx.MatchPos [0] - e)
+              + '<a href="'
+              + xhref
+              + '">'
+              + xlabel
+              + '</a>'
+              ;
+      e := Rx.MatchPos[0] + Rx.MatchLen[0];
+      b := Rx.ExecNext;
+    end;
+    result := result + Copy (t, e, Length (t));
+  finally
+    rx.Free;
+  end;
+  result := result + '</html>';
 end;
 
 procedure MemoShowLinks (aMemo: TMemo);

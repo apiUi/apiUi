@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, virtualtreeview_package, lazrichedit, xmlExplorerUnit, StdVCL, cbAbout,
+  Forms, virtualtreeview_package, xmlExplorerUnit, StdVCL, cbAbout,
   FilterDialog, ShowXmlUnit, XmlGridUnit, VersionSupport, IdHTTP;
 
 {$R *.res}

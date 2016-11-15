@@ -14,21 +14,22 @@ uses
 {$ENDIF}
   Messages , SysUtils , Variants , Classes , Graphics , Controls , Forms ,
   Dialogs , FormIniFilez , StdCtrls , ExtCtrls , Xsdz , Xmlz , VirtualTrees ,
-  ComCtrls , ImgList , ToolWin , ActnList , Menus , Bind
+  ComCtrls , ImgList , ToolWin , ActnList , Menus, HtmlView , Bind
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  ;
+  , HtmlGlobals;
 
 type
 
   { TXmlGridForm }
 
   TXmlGridForm = class(TForm)
-    DocumentationEdit : TMemo ;
+    DocumentationViewer: THtmlViewer;
     Panel2: TPanel;
     Grid: TVirtualStringTree;
+    Panel4: TPanel;
     ToolBar1: TToolBar;
     ImageList: TImageList;
     ActionList: TActionList;
@@ -96,7 +97,8 @@ type
     StatusPanel: TPanel;
     CleanAction: TAction;
     CleanMenuItem: TMenuItem;
-    procedure DocumentationEditClick (Sender : TObject );
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
     procedure GridAfterAutoFitColumns (Sender : TVTHeader );
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
@@ -267,7 +269,6 @@ uses igGlobals
 
 procedure TXmlGridForm.FormCreate(Sender: TObject);
 begin
-  DocumentationEdit.Color := Self.Color;
   Grid.NodeDataSize := SizeOf(TTreeRec);
   IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
@@ -474,7 +475,7 @@ begin
   xBind := BindColNode [Column, Node];
   XmlUtil.ListXsdProperties(InWsdlPropertiesListView, xBind);
   XmlUtil.ListXsdEnumerations(InWsdlEnumerationsListView, xBind);
-  XmlUtil.ListXsdDocumentation(DocumentationEdit, xBind, False, False);
+  XmlUtil.ListXsdDocumentation(DocumentationViewer, xBind, False, False);
   if xBind is TXml then
     StatusPanel.Caption := (xBind as TXml).FullCaption;
   Grid.Invalidate;
@@ -1843,14 +1844,16 @@ begin
   xmlUtil.presentString (FocusedBind.FullCaption, FocusedBind.Value);
 end;
 
-procedure TXmlGridForm .DocumentationEditClick (Sender : TObject );
-begin
-  OpenUrl(MemoIsLink(DocumentationEdit));
-end;
-
 procedure TXmlGridForm .GridAfterAutoFitColumns (Sender : TVTHeader );
 begin
 
+end;
+
+procedure TXmlGridForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled:=True;
+  OpenURL(SRC);
 end;
 
 procedure TXmlGridForm .GridAfterCellPaint (Sender : TBaseVirtualTree ;

@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="10512"/>
+      <BuildNr Value="10530"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -34,31 +34,34 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="FrameViewer09"/>
       </Item1>
       <Item2>
-        <PackageName Value="Abbrevia"/>
+        <PackageName Value="indylaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="TAChartLazarusPkg"/>
+        <PackageName Value="Abbrevia"/>
       </Item3>
       <Item4>
-        <PackageName Value="TurboPowerIPro"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item4>
       <Item5>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item5>
       <Item6>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item6>
       <Item7>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="SynEdit"/>
       </Item7>
       <Item8>
-        <PackageName Value="LCL"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
     </RequiredPackages>
     <Units Count="10">
       <Unit0>
@@ -120,6 +123,7 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
@@ -129,6 +133,9 @@
       </Options>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShowNotes Value="False"/>
+      </Verbosity>
       <CompilerMessages>
         <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
       </CompilerMessages>

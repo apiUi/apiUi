@@ -163,7 +163,7 @@ var
   w3: Integer;
 begin
   w3 := mainVST.Header.Columns.Items[3].Width;
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   mainVST.Header.Columns.Items[3].Width := w3;
   mainVST.NodeDataSize := SizeOf (TVSTreeRec);
@@ -557,6 +557,7 @@ end;
 procedure TShowFolderDifferencesForm.mainVSTClick(Sender: TObject);
 var
   xData: PVSTreeRec;
+  xForm: TShowA2BXmlForm;
 begin
   xData := mainVST.GetNodeData(mainVST.FocusedNode);
   case mainVST.FocusedColumn of
@@ -565,17 +566,17 @@ begin
       if Assigned(xData.A2B)
       {and xData.reqA2B.Differs} then
       begin
-        Application.CreateForm(TShowA2BXmlForm, ShowA2BXmlForm);
+        Application.CreateForm(TShowA2BXmlForm, xForm);
         try
-          ShowA2BXmlForm.Caption := 'Differences in requests';
-          ShowA2BXmlForm.ignoreDifferencesOn := ignoreDifferencesOn;
-          ShowA2BXmlForm.orderGroupsOn := orderGroupsOn;
-          ShowA2BXmlForm.Xml := xData.A2B;
-          ShowA2BXmlForm.ShowModal;
-          if ShowA2BXmlForm.RefreshNeeded then
+          xForm.Caption := 'Differences in requests';
+          xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+          xForm.orderGroupsOn := orderGroupsOn;
+          xForm.Xml := xData.A2B;
+          xForm.ShowModal;
+          if xForm.RefreshNeeded then
             FormShow(nil);
         finally
-          FreeAndNil (ShowA2BXmlForm);
+          FreeAndNil (xForm);
         end;
       end;
     end;

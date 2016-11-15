@@ -1,7 +1,7 @@
 object ShowXmlForm: TShowXmlForm
-  Left = 485
+  Left = 446
   Height = 459
-  Top = 88
+  Top = 223
   Width = 704
   Caption = 'XML Data'
   ClientHeight = 459
@@ -127,22 +127,35 @@ object ShowXmlForm: TShowXmlForm
         TabOrder = 0
         ViewStyle = vsReport
       end
-      object DocumentationEdit: TMemo
+      object Panel4: TPanel
         Left = 1
         Height = 269
         Top = 110
         Width = 237
         Align = alClient
-        Color = clBtnFace
-        Font.Height = -15
-        Lines.Strings = (
-          'DocumentationEdit'
-        )
-        OnClick = DocumentationEditClick
-        OnMouseMove = DocumentationEditMouseMove
-        ParentFont = False
-        ReadOnly = True
+        BevelInner = bvLowered
+        BorderWidth = 2
+        Caption = 'Panel4'
+        ClientHeight = 269
+        ClientWidth = 237
         TabOrder = 2
+        object DocumentationViewer: THtmlViewer
+          Left = 4
+          Height = 261
+          Top = 4
+          Width = 229
+          BorderStyle = htFocused
+          HistoryMaxCount = 0
+          NoSelect = False
+          PrintMarginBottom = 2
+          PrintMarginLeft = 2
+          PrintMarginRight = 2
+          PrintMarginTop = 2
+          PrintScale = 1
+          OnHotSpotClick = DocumentationViewerHotSpotClick
+          Align = alClient
+          TabOrder = 0
+        end
       end
     end
   end

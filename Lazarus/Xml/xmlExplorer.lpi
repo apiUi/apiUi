@@ -34,22 +34,18 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LazRichEdit"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item1>
       <Item2>
-        <PackageName Value="virtualtreeview_package"/>
-      </Item2>
-      <Item3>
         <PackageName Value="LCL"/>
-      </Item3>
+      </Item2>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="xmlExplorer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="xmlExplorer"/>
       </Unit0>
       <Unit1>
         <Filename Value="xmlExplorerUnit.pas"/>
@@ -57,7 +53,6 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="xmlExplorerUnit"/>
       </Unit1>
       <Unit2>
         <Filename Value="FilterDialog.pas"/>
@@ -65,7 +60,6 @@
         <ComponentName Value="FilterDlg"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FilterDialog"/>
       </Unit2>
       <Unit3>
         <Filename Value="ShowXmlUnit.pas"/>
@@ -73,7 +67,6 @@
         <ComponentName Value="ShowXmlForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ShowXmlUnit"/>
       </Unit3>
       <Unit4>
         <Filename Value="XmlGridUnit.pas"/>
@@ -81,7 +74,6 @@
         <ComponentName Value="XmlGridForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="XmlGridUnit"/>
       </Unit4>
       <Unit5>
         <Filename Value="stdvcl.pas"/>
@@ -94,7 +86,6 @@
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="cbAbout"/>
       </Unit6>
       <Unit7>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
@@ -108,8 +99,11 @@
       <Unit9>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="IdHTTP"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="..\Html\htmlxmlutilz.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -120,7 +114,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\System;..\components\Indy10\Lib\Core;IpmScanner;..\Components\Indy10\Lib\Protocols"/>
+      <OtherUnitFiles Value="..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\components\Indy10\Lib\Protocols;..\components\Indy10\Lib\System;..\components\Indy10\Lib\Core;IpmScanner;..\Html"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -130,12 +124,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="4">
@@ -153,4 +141,4 @@
       </Item4>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

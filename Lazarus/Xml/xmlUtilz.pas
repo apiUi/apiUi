@@ -12,6 +12,7 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, FileUtil
    , Xsdz
    , Ipmz
    , ParserClasses
+   , HtmlView
    ;
 
 
@@ -113,6 +114,11 @@ public
   procedure ListXsdProperties (aListView: TListView; aBind: TCustomBindable);
   procedure ListXsdEnumerations (aListView: TListView; aBind: TCustomBindable);
   procedure ListXsdDocumentation ( aMemo: TMemo
+                                 ; aBind: TCustomBindable
+                                 ; aShowPath: Boolean
+                                 ; aShowValue: Boolean
+                                 ); overload;
+  procedure ListXsdDocumentation ( aHtmlViewer: THtmlViewer
                                  ; aBind: TCustomBindable
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
@@ -1349,6 +1355,27 @@ begin
   if aBind is TXml then
     s := s + (aBind as TXml).AppinfoText;
   aMemo.Lines.Text := s;
+end;
+
+procedure TXmlUtil.ListXsdDocumentation(aHtmlViewer: THtmlViewer;
+  aBind: TCustomBindable; aShowPath: Boolean; aShowValue: Boolean);
+var
+  s: String;
+begin
+  s := '';
+  if aShowPath then
+    s := s + 'Path: ' + aBind.GetFullCaption + #$A#$D;
+  if aShowValue then
+    s := s + 'Value: ' + aBind.Value + #$A#$D;
+  if aBind is TXmlAttribute then
+    s := s + (aBind as TXmlAttribute).XsdAttr.Documentation.Text;
+  if aBind is TXml then
+    s := s + (aBind as TXml).DocumentationText;
+  if aBind is TXmlAttribute then
+    s := s + (aBind as TXmlAttribute).XsdAttr.Appinfo.Text;
+  if aBind is TXml then
+    s := s + (aBind as TXml).AppinfoText;
+  aHtmlViewer.LoadFromString(textToHtml(s));
 end;
 
 {
