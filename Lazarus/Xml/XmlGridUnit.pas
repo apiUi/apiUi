@@ -29,6 +29,7 @@ type
     DocumentationViewer: TIpHtmlPanel;
     Panel2: TPanel;
     Grid: TVirtualStringTree;
+    Panel4: TPanel;
     ToolBar1: TToolBar;
     ImageList: TImageList;
     ActionList: TActionList;

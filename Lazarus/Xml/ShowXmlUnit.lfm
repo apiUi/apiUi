@@ -127,23 +127,38 @@ object ShowXmlForm: TShowXmlForm
         TabOrder = 0
         ViewStyle = vsReport
       end
-      object DocumentationViewer: TIpHtmlPanel
+      object Panel4: TPanel
         Left = 1
         Height = 269
         Top = 110
         Width = 237
         Align = alClient
-        FixedTypeface = 'Courier New'
-        DefaultTypeFace = 'default'
-        DefaultFontSize = 11
-        FlagErrors = False
-        PrintSettings.MarginLeft = 0.5
-        PrintSettings.MarginTop = 0.5
-        PrintSettings.MarginRight = 0.5
-        PrintSettings.MarginBottom = 0.5
-        ShowHints = False
+        BevelInner = bvLowered
+        BevelOuter = bvNone
+        BorderWidth = 2
+        Caption = 'Panel4'
+        ClientHeight = 269
+        ClientWidth = 237
         TabOrder = 2
-        OnHotClick = DocumentationViewerHotClick
+        object DocumentationViewer: TIpHtmlPanel
+          Left = 3
+          Height = 263
+          Top = 3
+          Width = 231
+          Align = alClient
+          BorderStyle = bsSingle
+          FixedTypeface = 'Courier New'
+          DefaultTypeFace = 'default'
+          DefaultFontSize = 11
+          FlagErrors = False
+          PrintSettings.MarginLeft = 0.5
+          PrintSettings.MarginTop = 0.5
+          PrintSettings.MarginRight = 0.5
+          PrintSettings.MarginBottom = 0.5
+          ShowHints = False
+          TabOrder = 0
+          OnHotClick = DocumentationViewerHotClick
+        end
       end
     end
   end

@@ -31,6 +31,7 @@ type
     DocumentationViewer: TIpHtmlPanel;
     OkButton : TBitBtn ;
     Panel1: TPanel;
+    Panel4: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
     WriteXmlAction: TAction;

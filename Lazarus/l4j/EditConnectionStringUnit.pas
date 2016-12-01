@@ -218,13 +218,13 @@ end;
 function TOpenSQLServerForm.DecryptString(aString: String): String;
 begin
   EncryptionSeed := 'fh^ruh54bdkjbkjb44458&*';
-//  result := SimpleEncrypt(B64Decode (aString));
+  result := SimpleEncrypt(B64Decode (aString));
 end;
 
 function TOpenSQLServerForm.EncryptString(aString: String): String;
 begin
   EncryptionSeed := 'fh^ruh54bdkjbkjb44458&*';
-//  result := B64Encode (SimpleEncrypt(aString));
+  result := B64Encode (SimpleEncrypt(aString));
 end;
 
 procedure TOpenSQLServerForm.FiledChanged(Sender: TObject);
