@@ -14,22 +14,21 @@ uses
 {$ENDIF}
   Messages , SysUtils , Variants , Classes , Graphics , Controls , Forms ,
   Dialogs , FormIniFilez , StdCtrls , ExtCtrls , Xsdz , Xmlz , VirtualTrees ,
-  ComCtrls , ImgList , ToolWin , ActnList , Menus, HtmlView , Bind
+  ComCtrls , ImgList , ToolWin , ActnList , Menus, IpHtml , Bind
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  , HtmlGlobals;
+  ;
 
 type
 
   { TXmlGridForm }
 
   TXmlGridForm = class(TForm)
-    DocumentationViewer: THtmlViewer;
+    DocumentationViewer: TIpHtmlPanel;
     Panel2: TPanel;
     Grid: TVirtualStringTree;
-    Panel4: TPanel;
     ToolBar1: TToolBar;
     ImageList: TImageList;
     ActionList: TActionList;
@@ -97,8 +96,8 @@ type
     StatusPanel: TPanel;
     CleanAction: TAction;
     CleanMenuItem: TMenuItem;
-    procedure DocumentationViewerHotSpotClick(Sender: TObject;
-      const SRC: ThtString; var Handled: Boolean);
+    procedure DocumentationViewerClick (Sender : TObject );
+    procedure DocumentationViewerHotClick(Sender: TObject);
     procedure GridAfterAutoFitColumns (Sender : TVTHeader );
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
@@ -269,6 +268,7 @@ uses igGlobals
 
 procedure TXmlGridForm.FormCreate(Sender: TObject);
 begin
+  DocumentationViewer.Color := Self.Color;
   Grid.NodeDataSize := SizeOf(TTreeRec);
   IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
@@ -1844,16 +1844,19 @@ begin
   xmlUtil.presentString (FocusedBind.FullCaption, FocusedBind.Value);
 end;
 
-procedure TXmlGridForm .GridAfterAutoFitColumns (Sender : TVTHeader );
+procedure TXmlGridForm .DocumentationViewerClick (Sender : TObject );
 begin
 
 end;
 
-procedure TXmlGridForm.DocumentationViewerHotSpotClick(Sender: TObject;
-  const SRC: ThtString; var Handled: Boolean);
+procedure TXmlGridForm.DocumentationViewerHotClick(Sender: TObject);
 begin
-  Handled:=True;
-  OpenURL(SRC);
+  OpenUrl(DocumentationViewer.HotURL);
+end;
+
+procedure TXmlGridForm .GridAfterAutoFitColumns (Sender : TVTHeader );
+begin
+
 end;
 
 procedure TXmlGridForm .GridAfterCellPaint (Sender : TBaseVirtualTree ;

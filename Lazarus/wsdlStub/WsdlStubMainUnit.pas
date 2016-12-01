@@ -38,7 +38,7 @@ uses
    , ExtCtrls
    , FormIniFilez
    , Menus , PairSplitter
-   , VirtualTrees, HtmlView , FileUtil
+   , VirtualTrees, FileUtil, IpHtml
    , Bind
    , mqInterface
    , MQAPI
@@ -70,7 +70,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
-    DocumentationViewer: THtmlViewer;
+    DocumentationViewer: TIpHtmlPanel;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
@@ -555,6 +555,7 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure DocumentationViewerHotClick(Sender: TObject);
     procedure DocumentationViewerHotSpotClick(Sender: TObject;
       const SRC: ThtString; var Handled: Boolean);
     procedure LogPanelClick(Sender: TObject);
@@ -13406,6 +13407,11 @@ procedure TMainForm.DocumentationViewerHotSpotClick(Sender: TObject;
 begin
   Handled:=True;
   OpenURL(SRC);
+end;
+
+procedure TMainForm.DocumentationViewerHotClick(Sender: TObject);
+begin
+  OpenUrl(DocumentationViewer.HotURL);
 end;
 
 procedure TMainForm.LogTabControlChange(Sender: TObject);

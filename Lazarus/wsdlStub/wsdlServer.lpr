@@ -24,7 +24,7 @@ uses
   , virtualtreeview_package
   , xmlxsdparser
   , HashUtilz, tacoInterface , htmlXmlUtilz
-  , ExtCtrls
+  , ExtCtrls, FrameViewer09
   ;
 
 type

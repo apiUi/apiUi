@@ -210,35 +210,23 @@ object XmlGridForm: TXmlGridForm
         TabOrder = 0
         ViewStyle = vsReport
       end
-      object Panel4: TPanel
+      object DocumentationViewer: TIpHtmlPanel
         Left = 1
         Height = 127
         Top = 296
         Width = 215
         Align = alClient
-        BevelInner = bvLowered
-        BorderWidth = 2
-        Caption = 'Panel4'
-        ClientHeight = 127
-        ClientWidth = 215
+        FixedTypeface = 'Courier New'
+        DefaultTypeFace = 'default'
+        DefaultFontSize = 11
+        FlagErrors = False
+        PrintSettings.MarginLeft = 0.5
+        PrintSettings.MarginTop = 0.5
+        PrintSettings.MarginRight = 0.5
+        PrintSettings.MarginBottom = 0.5
+        ShowHints = False
         TabOrder = 4
-        object DocumentationViewer: THtmlViewer
-          Left = 4
-          Height = 119
-          Top = 4
-          Width = 207
-          BorderStyle = htFocused
-          HistoryMaxCount = 0
-          NoSelect = False
-          PrintMarginBottom = 2
-          PrintMarginLeft = 2
-          PrintMarginRight = 2
-          PrintMarginTop = 2
-          PrintScale = 1
-          OnHotSpotClick = DocumentationViewerHotSpotClick
-          Align = alClient
-          TabOrder = 0
-        end
+        OnHotClick = DocumentationViewerHotClick
       end
     end
     object Panel1: TPanel

@@ -447,8 +447,8 @@ begin
     try
       with AddXml (TXml.CreateAsString('body','')) do
       begin
-        AddAttribute(TXmlAttribute.CreateAsString('bgcolor', 'RGB(212,208,200)')); // bg read-only gray
-        with AddXml (TXml.CreateAsString('p','')) do
+        AddAttribute(TXmlAttribute.CreateAsString('bgcolor', '#D4D0C8')); // bg read-only gray
+        with AddXml (TXml.CreateAsString('p',' ')) do
         begin
           p := 1;
           rslt := Rx.Exec(aString);

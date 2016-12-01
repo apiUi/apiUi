@@ -12,7 +12,7 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, FileUtil
    , Xsdz
    , Ipmz
    , ParserClasses
-   , HtmlView
+   , IpHtml
    ;
 
 
@@ -118,7 +118,7 @@ public
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
                                  ); overload;
-  procedure ListXsdDocumentation ( aHtmlViewer: THtmlViewer
+  procedure ListXsdDocumentation ( aHtmlViewer: TIpHtmlPanel
                                  ; aBind: TCustomBindable
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
@@ -1357,7 +1357,7 @@ begin
   aMemo.Lines.Text := s;
 end;
 
-procedure TXmlUtil.ListXsdDocumentation(aHtmlViewer: THtmlViewer;
+procedure TXmlUtil.ListXsdDocumentation(aHtmlViewer: TIpHtmlPanel;
   aBind: TCustomBindable; aShowPath: Boolean; aShowValue: Boolean);
 var
   s: String;
@@ -1375,7 +1375,10 @@ begin
     s := s + (aBind as TXmlAttribute).XsdAttr.Appinfo.Text;
   if aBind is TXml then
     s := s + (aBind as TXml).AppinfoText;
-  aHtmlViewer.LoadFromString(textToHtml(s));
+  try
+    aHtmlViewer.SetHtmlFromStr(textToHtml(s));
+  except
+  end;
 end;
 
 {

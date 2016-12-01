@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="10530"/>
+      <BuildNr Value="10532"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -143,7 +143,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="20">
+    <Exceptions Count="21">
       <Item1>
         <Name Value="EAbort"/>
         <Enabled Value="False"/>
@@ -173,7 +173,6 @@
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
-        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
@@ -223,6 +222,9 @@
         <Name Value="EIdURIException"/>
         <Enabled Value="False"/>
       </Item20>
+      <Item21>
+        <Name Value="EListError"/>
+      </Item21>
     </Exceptions>
   </Debugging>
 </CONFIG>

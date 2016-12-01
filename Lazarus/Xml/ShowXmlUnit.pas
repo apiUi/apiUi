@@ -14,13 +14,13 @@ uses
 {$ENDIF}
   SysUtils , Classes , Graphics , Forms , Controls , Buttons ,StdCtrls,
   ComCtrls , ExtCtrls , VirtualTrees , Bind , Xmlz , Ipmz , Dialogs ,
-  FormIniFilez , ActnList , Menus
+  FormIniFilez , ActnList , Menus, IpHtml
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  , Express, HtmlView
-  , HtmlGlobals;
+  , Express
+  ;
 
 type
 
@@ -28,10 +28,9 @@ type
 
   TShowXmlForm = class(TForm)
     CancelButton : TBitBtn ;
-    DocumentationViewer: THtmlViewer;
+    DocumentationViewer: TIpHtmlPanel;
     OkButton : TBitBtn ;
     Panel1: TPanel;
-    Panel4: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
     WriteXmlAction: TAction;
@@ -101,8 +100,11 @@ type
     CleanAction: TAction;
     CleanActionMenuItem: TMenuItem;
     ZoomasAssignment1: TMenuItem;
-    procedure DocumentationViewerHotSpotClick(Sender: TObject;
-      const SRC: ThtString; var Handled: Boolean);
+    procedure Button1Click (Sender : TObject );
+    procedure DocumentationViewerClick (Sender : TObject );
+    procedure DocumentationViewerMouseMove (Sender : TObject ;
+      Shift : TShiftState ; X , Y : Integer );
+    procedure DocumentationViewerHotClick(Sender: TObject);
     procedure TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
@@ -1082,6 +1084,7 @@ begin
   end;
   RevalidateXmlTreeView(TreeView);
   TreeViewFocusChanged(TreeView, TreeView.FocusedNode, TreeView.FocusedColumn);
+  DocumentationViewer.Color := Self.Color;
   Screen.Cursor := crDefault;
 end;
 
@@ -1915,6 +1918,25 @@ begin
   xmlUtil.presentString(SelectedBind.FullCaption, SelectedBind.Value);
 end;
 
+procedure TShowXmlForm .Button1Click (Sender : TObject );
+begin
+end;
+
+procedure TShowXmlForm .DocumentationViewerClick (Sender : TObject );
+begin
+end;
+
+
+procedure TShowXmlForm .DocumentationViewerMouseMove (Sender : TObject ;
+  Shift : TShiftState ; X , Y : Integer );
+begin
+end;
+
+procedure TShowXmlForm.DocumentationViewerHotClick(Sender: TObject);
+begin
+  OpenUrl(DocumentationViewer.HotURL);
+end;
+
 procedure TShowXmlForm .TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
   TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
   const CellRect : TRect );
@@ -1938,13 +1960,6 @@ begin
       end;
     end;
   end;
-end;
-
-procedure TShowXmlForm.DocumentationViewerHotSpotClick(Sender: TObject;
-  const SRC: ThtString; var Handled: Boolean);
-begin
-  Handled := True;
-  OpenUrl(SRC);
 end;
 
 procedure TShowXmlForm.TreeViewDblClick(Sender: TObject);

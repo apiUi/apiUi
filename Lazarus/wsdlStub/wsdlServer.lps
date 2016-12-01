@@ -4,11 +4,10 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="32">
+    <Units Count="33">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
         <TopLine Value="403"/>
         <CursorPos Y="423"/>
@@ -227,12 +226,22 @@
         <CursorPos X="3" Y="42"/>
         <UsageCount Value="10"/>
       </Unit31>
+      <Unit32>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="4"/>
+        <CursorPos X="6" Y="15"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit32>
     </Units>
     <OtherDefines Count="2">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
     </OtherDefines>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="wsdlServer.lpr"/>
         <Caret Line="415" Column="3" TopLine="415"/>
@@ -245,6 +254,9 @@
         <Filename Value="wsdlServer.lpr"/>
         <Caret Line="423" Column="8" TopLine="403"/>
       </Position3>
+      <Position4>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+      </Position4>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

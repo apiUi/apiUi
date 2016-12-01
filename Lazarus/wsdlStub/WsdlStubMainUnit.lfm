@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 231
+  Left = 398
   Height = 641
-  Top = 94
+  Top = 159
   Width = 1094
   Caption = 'MainForm'
   ClientHeight = 622
@@ -445,22 +445,23 @@ object MainForm: TMainForm
         ClientHeight = 32
         ClientWidth = 161
         TabOrder = 4
-        object DocumentationViewer: THtmlViewer
+        object DocumentationViewer: TIpHtmlPanel
           Left = 4
           Height = 24
           Top = 4
           Width = 153
-          BorderStyle = htFocused
-          HistoryMaxCount = 0
-          NoSelect = False
-          PrintMarginBottom = 2
-          PrintMarginLeft = 2
-          PrintMarginRight = 2
-          PrintMarginTop = 2
-          PrintScale = 1
-          OnHotSpotClick = DocumentationViewerHotSpotClick
           Align = alClient
+          FixedTypeface = 'Courier New'
+          DefaultTypeFace = 'default'
+          DefaultFontSize = 11
+          FlagErrors = False
+          PrintSettings.MarginLeft = 0.5
+          PrintSettings.MarginTop = 0.5
+          PrintSettings.MarginRight = 0.5
+          PrintSettings.MarginBottom = 0.5
+          ShowHints = False
           TabOrder = 0
+          OnHotClick = DocumentationViewerHotClick
         end
       end
     end
