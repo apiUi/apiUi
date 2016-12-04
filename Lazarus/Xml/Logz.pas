@@ -17,6 +17,7 @@ uses Classes
    , Dialogs
    , ClaimListz
    , xmlUtilz
+   , base64
    ;
 
 type
@@ -987,7 +988,10 @@ end;
 { TLog }
 
 function TLog.AsXml: TXml;
+var
+  xBodiesAsBase64: Boolean;
 begin
+  xBodiesAsBase64 := False;
   result := TXml.CreateAsString('RequestReply', '');
   with result do
   begin
@@ -1000,6 +1004,7 @@ begin
     AddXml (Txml.CreateAsString('CorrelationId', Self.CorrelationId));
     if Assigned (Self.Operation) then
     begin
+      xBodiesAsBase64 := (Self.Operation.WsdlService.DescriptionType = ipmDTCobol);
       AddXml (TXml.CreateAsString('Service', Self.Operation.WsdlService.Name));
       AddXml (TXml.CreateAsString('Operation', Self.Operation.Name));
       if Assigned (Self.Mssg) then
@@ -1021,11 +1026,22 @@ begin
     AddXml (Txml.CreateAsString('httpParams', Self.httpParams));
     AddXml (Txml.CreateAsString('httpSoapAction', Self.httpSoapAction));
     AddXml (Txml.CreateAsString('HttpRequestHeaders', Self.RequestHeaders));
-    AddXml (Txml.CreateAsString('HttpRequestBody', Self.RequestBody));
-    AddXml (Txml.CreateAsString('HttpRequestBodyMiM', Self.RequestBodyMiM));
     AddXml (Txml.CreateAsString('HttpReplyHeaders', Self.ReplyHeaders));
-    AddXml (Txml.CreateAsString('HttpReplyBody', Self.ReplyBody));
-    AddXml (Txml.CreateAsString('HttpReplyBodyMiM', Self.ReplyBodyMiM));
+    if xBodiesAsBase64 then
+    begin
+      AddXml (TXml.CreateAsBoolean('BodiesAsBase64', xBodiesAsBase64));
+      AddXml (Txml.CreateAsString('HttpRequestBody', base64.EncodeStringBase64(Self.RequestBody)));
+      AddXml (Txml.CreateAsString('HttpRequestBodyMiM', base64.EncodeStringBase64(Self.RequestBodyMiM)));
+      AddXml (Txml.CreateAsString('HttpReplyBody', base64.EncodeStringBase64(Self.ReplyBody)));
+      AddXml (Txml.CreateAsString('HttpReplyBodyMiM', base64.EncodeStringBase64(Self.ReplyBodyMiM)));
+    end
+    else
+    begin
+      AddXml (Txml.CreateAsString('HttpRequestBody', Self.RequestBody));
+      AddXml (Txml.CreateAsString('HttpRequestBodyMiM', Self.RequestBodyMiM));
+      AddXml (Txml.CreateAsString('HttpReplyBody', Self.ReplyBody));
+      AddXml (Txml.CreateAsString('HttpReplyBodyMiM', Self.ReplyBodyMiM));
+    end;
     AddXml (Txml.CreateAsBoolean('RequestValidated', Self.RequestValidated));
     AddXml (Txml.CreateAsString('RequestValidateResult', Self.RequestValidateResult));
     AddXml (Txml.CreateAsBoolean('ReplyValidated', Self.ReplyValidated));

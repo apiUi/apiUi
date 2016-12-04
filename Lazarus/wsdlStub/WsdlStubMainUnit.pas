@@ -12826,7 +12826,7 @@ begin
         Assigned(WsdlOperation)
     and Assigned(WsdlMessage)
     and (WsdlOperation.StubAction = saRequest)
-    and (WsdlOperation.StubTransport <> ttTaco) // server is single threaded
+    and (WsdlOperation.StubTransport <> ttTaco) // server (and client are) is single threaded
     and (NumberOfBlockingThreads < 1)
     ;
 end;

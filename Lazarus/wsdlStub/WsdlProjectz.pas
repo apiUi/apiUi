@@ -503,6 +503,7 @@ uses OpenWsdlUnit
    , smtpInterface
    , RegExpr
    , jwbBase64
+   , base64
    {$ifdef windows}
    , ActiveX
    {$endif}
@@ -6930,6 +6931,7 @@ var
   xXml: TXml;
   x: Integer;
   xLog: TLog;
+  xBodiesAsBase64: Boolean;
 begin
   xXml :=TXml.Create;
   try
@@ -6981,6 +6983,7 @@ begin
           except
             xLog.OutboundTimeStamp := EncodeTime(0,0,0,0);
           end;
+          xBodiesAsBase64 := Items.XmlBooleanByTag['BodiesAsBase64'];
           xLog.DelayTimeMs := Items.XmlIntegerByTagDef['DelayTimeMs', 0];
           xLog.OperationCount := Items.XmlIntegerByTagDef['OperationCount', 0];
           xLog.TransportType := TTransportType (StrToIntDef (Items.XmlValueByTag ['TransportType'], 0));
@@ -7000,6 +7003,17 @@ begin
           xLog.RequestBodyMiM := Items.XmlValueByTag ['HttpRequestBodyMiM'];
           xLog.ReplyBody := Items.XmlValueByTag ['HttpReplyBody'];
           xLog.ReplyBodyMiM := Items.XmlValueByTag ['HttpReplyBodyMiM'];
+          if xBodiesAsBase64 then
+          begin
+            if xLog.RequestBody <> '' then
+              xlog.RequestBody := base64.DecodeStringBase64(xlog.RequestBody);
+            if xLog.RequestBodyMiM <> '' then
+              xlog.RequestBodyMiM := base64.DecodeStringBase64(xlog.RequestBodyMiM);
+            if xLog.ReplyBody <> '' then
+              xlog.ReplyBody := base64.DecodeStringBase64(xlog.ReplyBody);
+            if xLog.ReplyBodyMiM <> '' then
+              xlog.ReplyBodyMiM := base64.DecodeStringBase64(xlog.ReplyBodyMiM);
+          end;
           xLog.RequestValidated := Items.XmlBooleanByTag ['RequestValidated'];
           xLog.RequestValidateResult := Items.XmlValueByTag ['RequestValidateResult'];
           xLog.ReplyValidated := Items.XmlBooleanByTag ['ReplyValidated'];
