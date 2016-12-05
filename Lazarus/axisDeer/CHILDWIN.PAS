@@ -426,7 +426,7 @@ end;
 procedure TAxisDeerCF.FormCreate(Sender: TObject);
 begin
   InWsdlTreeView.NodeDataSize := SizeOf(TXmlTreeRec);
-  IniFile := TFormIniFile.Create (Self, 'axisDeerCF', Self.Name = 'axisDeerCF');
+  IniFile := TFormIniFile.Create (Self, Self.Name = 'axisDeerCF');
   IniFile.Restore;
 end;
 

@@ -34,7 +34,7 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="LazRichEdit"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item1>
       <Item2>
         <PackageName Value="virtualtreeview_package"/>
@@ -43,11 +43,10 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="axisDeer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="axisDeer"/>
       </Unit0>
       <Unit1>
         <Filename Value="Main.pas"/>
@@ -55,13 +54,16 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Main"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Xml\xsddescr.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="xsdDescr"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\Html\htmlxmlutilz.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -72,7 +74,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Xml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;$(LazarusDir)\components\Indy10\Lib\Protocols;$(LazarusDir)\components\Indy10\Lib\System;$(LazarusDir)\components\Indy10\Lib\Core"/>
+      <OtherUnitFiles Value="..\Xml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\Protocols;..\Components\Indy10\Lib\System;..\Html"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -82,12 +84,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="4">

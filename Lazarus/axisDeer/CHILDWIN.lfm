@@ -14,7 +14,7 @@ object axisDeerCF: TaxisDeerCF
   OnDestroy = FormDestroy
   ParentFont = True
   Position = poDefault
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   Visible = True
   object Splitter1: TSplitter
     Left = 697

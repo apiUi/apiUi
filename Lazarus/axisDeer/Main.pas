@@ -283,7 +283,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Xsdz.xsdMaxDepthXmlGen := 9999;
   Xsdz.xsdMaxDepthBillOfMaterials := 2;
-  IniFile := TFormIniFile.Create(Self);
+  IniFile := TFormIniFile.Create(Self, True);
   IniFile.Restore;
 end;
 

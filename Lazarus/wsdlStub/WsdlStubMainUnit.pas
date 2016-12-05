@@ -47,7 +47,7 @@ uses
    , types
    , ClaimListz
    , tacoInterface
-   , HtmlGlobals;
+   ;
 
 type
   THackControl = class(TWinControl)
@@ -556,8 +556,6 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure DocumentationViewerHotClick(Sender: TObject);
-    procedure DocumentationViewerHotSpotClick(Sender: TObject;
-      const SRC: ThtString; var Handled: Boolean);
     procedure LogPanelClick(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
@@ -13400,13 +13398,6 @@ end;
 procedure TMainForm.LogPanelClick(Sender: TObject);
 begin
 
-end;
-
-procedure TMainForm.DocumentationViewerHotSpotClick(Sender: TObject;
-  const SRC: ThtString; var Handled: Boolean);
-begin
-  Handled:=True;
-  OpenURL(SRC);
 end;
 
 procedure TMainForm.DocumentationViewerHotClick(Sender: TObject);

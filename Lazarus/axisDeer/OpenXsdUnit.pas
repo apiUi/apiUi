@@ -90,7 +90,7 @@ end;
 
 procedure TOpenXsdForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   try SchemaType := TSchemaType(IniFile.IntegerByName['SchemaType']) except end;
   try xsdFileName:= IniFile.StringByName['XsdFileName']; except end;
@@ -135,7 +135,7 @@ begin
       if (SchemaType = stWsdlType) then
       begin
         FreeAndNil(fWsdl);
-        fWsdl := TWsdl.Create(-1, 1, True);
+        fWsdl := TWsdl.Create(nil, -1, 1, True);
         fXsdDescr := fWsdl.XsdDescr;
         fWsdl.LoadFromSchemaFile(xsdFileName, nil);
       end;
@@ -184,7 +184,7 @@ begin
       if (SchemaType = stWsdlType) then
       begin
         FreeAndNil(fWsdl);
-        fWsdl := TWsdl.Create(-1, 1, True);
+        fWsdl := TWsdl.Create(nil, -1, 1, True);
         fXsdDescr := fWsdl.XsdDescr;
         fWsdl.LoadFromSchemaFile(xsdFileName, nil);
       end;

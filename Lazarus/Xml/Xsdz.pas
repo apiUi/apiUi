@@ -2731,7 +2731,7 @@ procedure TXsdDescr.Finalise;
 
   procedure _linkElmntToType(aTrack: String; aTypeDef: TXsdDataType);
   var
-    x: Integer;
+    x, d: Integer;
   begin
     if not Assigned (aTypeDef) then Exit;
     if aTypeDef._Processed then Exit;
@@ -2753,7 +2753,12 @@ procedure TXsdDescr.Finalise;
                        ( 'Coud not find datatype (%s:%s) on element (%s:%s) %S'
                        , [_NameSpace, _DataTypeName, ElementNameSpace, ElementName, aTrack]
                        )
-                       );
+                       )
+              else
+              begin
+                for d := 0 to sType.Documentation.Count - 1 do
+                  Documentation.Add (sType.Documentation.Strings[d]);
+              end;
             end;
             _linkElmntToType(aTrack + '.' + ElementName, sType);
           end;

@@ -11,7 +11,7 @@ object OpenXsdForm: TOpenXsdForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object OKBtn: TButton
     Left = 101
     Height = 25

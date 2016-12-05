@@ -15,7 +15,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poDefault
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object StatusBar: TStatusBar
     Left = 0
     Height = 20
@@ -55,6 +55,7 @@ object MainForm: TMainForm
     end
     object ToolButton3: TToolButton
       Left = 74
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -73,6 +74,7 @@ object MainForm: TMainForm
     end
     object ToolButton7: TToolButton
       Left = 130
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton7'

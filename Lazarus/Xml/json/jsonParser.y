@@ -92,15 +92,7 @@ OptionalIgnoredSpace:
 JsonObjects:
       JsonObject
     | JsonObjects JsonObject
-    | _LEFT_SQUARE_BRACKET
-      {
-         Xml.jsonType := jsonArray;
-         if not Assigned (ParentXml) then
-           Xml.Name := 'json';
-      }
-      optionalArrayValues
-      _RIGHT_SQUARE_BRACKET
-
+    | JsonArray
     ;
 
 JsonObject:
@@ -186,6 +178,8 @@ JsonArray:
       _LEFT_SQUARE_BRACKET
       {
          Xml.jsonType := jsonArray;
+         if not Assigned (ParentXml) then
+           Xml.Name := 'json';
       }
       optionalArrayValues
       _RIGHT_SQUARE_BRACKET
