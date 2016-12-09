@@ -435,8 +435,10 @@ begin
 end;
 
 function resolveAliasses (aString : String ; aAliasses : TStringList ): String ;
-  const _regexp = '\$\{[_A-Za-z][A-Za-z0-9]*\}';
+  const _regexp = '\$\{[^\{\}]+\}';
   function _resolv (aString: String; aSl: TStringList): String;
+  var
+    xHasExp: Boolean;
     function _trans (aString: String): String;
     var
       f, x: Integer;
@@ -460,17 +462,18 @@ function resolveAliasses (aString : String ; aAliasses : TStringList ): String ;
       end;
     end;
   begin
-    result := '';
+    result := aString;
     try
       with TRegExpr.Create do
       try
         Expression := _regexp;
-        if Exec (aString) then
-          result := Copy (aString, 1, MatchPos[0] - 1)
+        while Exec (result) do
+        begin
+          result := Copy (result, 1, MatchPos[0] - 1)
                   + _trans (Copy (Match[0], 3, Length (Match[0]) - 3)) // "${property}"
-                  + _resolv (Copy (aString, MatchPos[0] + MatchLen[0], Length (aString)), aSl)
-        else
-          result := aString;
+                  + _resolv (Copy (result, MatchPos[0] + MatchLen[0], Length (result)), aSl)
+                  ;
+        end;
       finally
         Free;
       end;
@@ -486,7 +489,7 @@ begin
   result := aString;
   if not Assigned (aAliasses) then
     exit;
-  if StringHasRegExpr(aString, _regexp) <> '' then
+  if Pos ('${', aString) > 0 then
   begin
     sl := TStringList.Create;
     try
