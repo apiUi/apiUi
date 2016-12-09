@@ -1,6 +1,6 @@
 {$MODE Delphi}
 
-{$define noJSON}
+{$define JSON}
 {$define noXMLDOM}
 {$define IPMZ}
 unit Xmlz;
@@ -400,7 +400,7 @@ uses
    , XmlzConsts
    , XmlAnalyser
 {$ifdef JSON}
-   , JsonAnalyser
+   , jsnAnalyser
 {$endif}
    , RegExpr
    , xmlio
@@ -812,23 +812,23 @@ end;
 procedure TXml.LoadJSON(aErrorFound: TOnErrorEvent);
 {$ifdef json}
 var
-  jsonAnalyser: TjsonAnalyser;
+  jsnAnalyser: TjsnAnalyser;
 {$endif}
 begin
 {$ifdef json}
   Items.Clear;
-  jsonAnalyser := TjsonAnalyser.Create (nil);
-  jsonAnalyser.StartState := InitState;
-  jsonAnalyser.OnNeedData := AnalyserNeedData;
-  jsonAnalyser.OnError := aErrorFound;
-  jsonAnalyser.Xml := Self;
+  jsnAnalyser := TjsnAnalyser.Create (nil);
+  jsnAnalyser.StartState := InitState;
+  jsnAnalyser.OnNeedData := AnalyserNeedData;
+  jsnAnalyser.OnError := aErrorFound;
+  jsnAnalyser.Xml := Self;
   try
     scanLineNumber := 0;
-    jsonAnalyser.Prepare;
+    jsnAnalyser.Prepare;
     scanLineNumber := 0;
-    jsonAnalyser.Execute;
+    jsnAnalyser.Execute;
   finally
-    jsonAnalyser.Free;
+    jsnAnalyser.Free;
   end;
 {$endif}
 end;

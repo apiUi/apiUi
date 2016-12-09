@@ -1,11 +1,15 @@
-unit jsonAnalyser;
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
+unit jsnAnalyser;
 
 interface
 uses Classes
    , ParserClasses
    , igGlobals
    , jsnParser
-   , jsonScanner
+   , jsnScanner
    , CustScanner
    , Xmlz
    ;
@@ -13,13 +17,13 @@ uses Classes
 const InternalStackSize = 256;
 const InitState = 2; {taken from Scanner.pas}
 
-type TjsonAnalyser = class (TComponent)
+type TjsnAnalyser = class (TComponent)
 private
   Stack: array [0..InternalStackSize] of Integer;
   StackIndex: Integer;
   LexItem: YYSType;
   LexicalList: YYSType;
-  Scanner: TjsonScanner;
+  Scanner: TjsnScanner;
   Parser: TjsnParser;
   FOnError: TOnErrorEvent;
   FOnHaveData: TOnHaveDataEvent;
@@ -66,7 +70,7 @@ implementation
 
 uses SysUtils, StrUtils, Dialogs, ShowMemo, Forms;
 
-procedure TjsonAnalyser.DebugTokenStringList (arg: TStringList);
+procedure TjsnAnalyser.DebugTokenStringList (arg: TStringList);
 var
   Lex: YYSType;
 begin
@@ -91,7 +95,7 @@ begin
   end;
 end;
 
-procedure TjsonAnalyser.ShowTokens;
+procedure TjsnAnalyser.ShowTokens;
 var
   StringList: TStringList;
 begin
@@ -105,7 +109,7 @@ begin
   StringList.Free;
 end;
 
-procedure TjsonAnalyser.PushInteger (arg: Integer);
+procedure TjsnAnalyser.PushInteger (arg: Integer);
 begin
   if StackIndex > InternalStackSize then
     raise Exception.Create ('Internal stack overflow')
@@ -116,17 +120,17 @@ begin
   end;
 end;
 
-procedure TjsonAnalyser.SetOnHaveScanned (aEvent: TOnHaveScannedEvent);
+procedure TjsnAnalyser.SetOnHaveScanned (aEvent: TOnHaveScannedEvent);
 begin
   Parser.OnHaveScanned := aEvent;
 end;
 
-function TjsonAnalyser.GetOnHaveScanned: TOnHaveScannedEvent;
+function TjsnAnalyser.GetOnHaveScanned: TOnHaveScannedEvent;
 begin
   result := Parser.OnHaveScanned;
 end;
 
-procedure TjsonAnalyser.HaveData (aObject: TObject; aString: String);
+procedure TjsnAnalyser.HaveData (aObject: TObject; aString: String);
 begin
   if Assigned (FOnHaveData) then
     FOnHaveData (Self, aString)
@@ -134,7 +138,7 @@ begin
     raise Exception.Create ('No OnHaveData proc assigned');
 end;
 
-function TjsonAnalyser.PopInteger: Integer;
+function TjsnAnalyser.PopInteger: Integer;
 begin
   if StackIndex <= 0 then
     Raise Exception.Create ('Internal stack underflow')
@@ -145,12 +149,12 @@ begin
   end;
 end;
 
-procedure TjsonAnalyser.AnalyserScannerError (Sender: TObject; Data: String);
+procedure TjsnAnalyser.AnalyserScannerError (Sender: TObject; Data: String);
 begin
     ShowMessage ('Scanner: ' + Data);
 end;
 
-procedure TjsonAnalyser.AnalyserParserError
+procedure TjsnAnalyser.AnalyserParserError
                                 ( Sender: TObject
                                 ; LineNumber: Integer
                                 ; ColumnNumber: Integer
@@ -177,7 +181,7 @@ begin
                            );
 end;
 
-procedure TjsonAnalyser.ClearLexicalList;
+procedure TjsnAnalyser.ClearLexicalList;
 var
   y: YYSType;
   n: YYSType;
@@ -192,7 +196,7 @@ begin
   LexicalList := nil;
 end;
 
-function TjsonAnalyser.TokenToFloat (arg: String): Extended;
+function TjsnAnalyser.TokenToFloat (arg: String): Extended;
 var
   SwapSeparator: Char;
 begin
@@ -204,7 +208,7 @@ begin
     DecimalSeparator := SwapSeparator;
 end;
 
-procedure TjsonAnalyser.ScannerNeedsData ( Sender:TObject
+procedure TjsnAnalyser.ScannerNeedsData ( Sender:TObject
                                     ; var MoreData: Boolean
                                     ; var Data: String
                                     );
@@ -215,16 +219,16 @@ begin
     MoreData := False;
 end;
 
-procedure TjsonAnalyser.OnToken (Sender: TObject);
+procedure TjsnAnalyser.OnToken (Sender: TObject);
 var
-  Scanner: TjsonScanner;
+  xScanner: TjsnScanner;
   Lexical: YYSType;
   CobolNumberString: String;
   EscapeChar: String;
   HexCode: Integer;  // hex character code (-1 on error)
 begin
-  Scanner := Sender as TjsonScanner;
-  if (Scanner.Token = _IGNORE) then
+  xScanner := Sender as TjsnScanner;
+  if (xScanner.Token = _IGNORE) then
     exit;
 {
   if (Scanner.Token = _VALUE) then
@@ -289,7 +293,7 @@ begin
   Lexical.yyRead := Lexical.yy;
 end;
 
-procedure TjsonAnalyser.Prepare;
+procedure TjsnAnalyser.Prepare;
 begin
   ClearLexicalList;
   ValueString := '';
@@ -305,26 +309,26 @@ begin
 {  Parser.Prepare; }
 end;
 
-procedure TjsonAnalyser.Execute;
+procedure TjsnAnalyser.Execute;
 begin
   LexItem := LexicalList;
   Parser.DoIt := True;
   Parser.Execute;
 end;
 
-constructor TjsonAnalyser.Create (AComponent: TComponent);
+constructor TjsnAnalyser.Create (AComponent: TComponent);
 begin
   inherited Create (AComponent);
-  Scanner := TjsonScanner.Create;
+  Scanner := TjsnScanner.Create;
   Scanner.OnNeedData := ScannerNeedsData;
   Scanner.OnError := AnalyserScannerError;
-  Parser := TjsnParser.Create;
+  Parser := TjsnParser.Create (AComponent);
   Parser.OnHaveData := HaveData;
   Parser.OnError := AnalyserParserError;
   LexicalList:= nil;
 end;
 
-destructor TjsonAnalyser.Destroy;
+destructor TjsnAnalyser.Destroy;
 begin
   Parser.Free;
   Scanner.Free;

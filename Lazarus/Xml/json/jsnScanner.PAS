@@ -1,10 +1,10 @@
 
-unit jsonScanner;
+unit jsnScanner;
 
 interface
 uses CustScanner, Classes, jsnParser;
 
-type TjsonScanner = class (TCustScanner)
+type TjsnScanner = class (TCustScanner)
 published
   property OnNeedData: TOnNeedDataEvent read FOnNeedData write FOnNeedData;
   property OnOutput: TNotifyEvent read FOnOutput write FOnOutput;
@@ -23,7 +23,7 @@ const IgnoreState = 4;
 
 
 
-function TjsonScanner.yylex : Integer;
+function TjsnScanner.yylex : Integer;
 
 procedure yyaction ( yyruleno : Integer );
   (* local definitions: *)
@@ -491,11 +491,11 @@ yyth : array [0..yynstates-1] of Integer = (
 
 var yyn : Integer;
 
-label start, scan, action;
+label start_, scan, action;
 
 begin
 
-start:
+start_:
 
   (* initialize: *)
 
@@ -542,7 +542,7 @@ action:
       return (0);
     end;
 
-  if not yydone then goto start;
+  if not yydone then goto start_;
 
   yylex := FToken;
 

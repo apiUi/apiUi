@@ -14,7 +14,6 @@ type TjsnParser = class (TCustParser)
 private
   ParentXml: TXml;
   OfIdString: String;
-  FOnHaveScanned: TOnHaveScannedEvent;
 published
   property OnHaveScanned: TOnHaveScannedEvent read FOnHaveScanned write FOnHaveScanned;
   property OnError: TOnErrorEvent read FOnError write FOnError;

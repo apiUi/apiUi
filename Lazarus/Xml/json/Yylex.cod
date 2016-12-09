@@ -1,10 +1,10 @@
 
-unit jsonScanner;
+unit jsnScanner;
 
 interface
 uses CustScanner, Classes, jsnParser;
 
-type TjsonScanner = class (TCustScanner)
+type TjsnScanner = class (TCustScanner)
 published
   property OnNeedData: TOnNeedDataEvent read FOnNeedData write FOnNeedData;
   property OnOutput: TNotifyEvent read FOnOutput write FOnOutput;
@@ -18,7 +18,7 @@ end;
 implementation
 %%
 
-function TjsonScanner.yylex : Integer;
+function TjsnScanner.yylex : Integer;
 
 procedure yyaction ( yyruleno : Integer );
   (* local definitions: *)

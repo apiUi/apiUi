@@ -9830,7 +9830,7 @@ begin
       end;
       if claimedLog.Operation.WsdlService.DescriptionType = ipmDTFreeFormat then
       begin
-        ShowInfoForm('Request freeformat', claimedLog.RequestBody);
+        xmlUtil.presentString('Request', claimedLog.RequestBody);
         exit;
       end;
       if claimedLog.Operation.WsdlService.DescriptionType = ipmDTEmail then
