@@ -4,7 +4,7 @@ interface
 uses Classes
    , ParserClasses
    , igGlobals
-   , jsonParser
+   , jsnParser
    , jsonScanner
    , CustScanner
    , Xmlz
@@ -20,7 +20,7 @@ private
   LexItem: YYSType;
   LexicalList: YYSType;
   Scanner: TjsonScanner;
-  Parser: TjsonParser;
+  Parser: TjsnParser;
   FOnError: TOnErrorEvent;
   FOnHaveData: TOnHaveDataEvent;
   FOnNeedData: TOnNeedDataEvent;
@@ -318,7 +318,7 @@ begin
   Scanner := TjsonScanner.Create;
   Scanner.OnNeedData := ScannerNeedsData;
   Scanner.OnError := AnalyserScannerError;
-  Parser := TjsonParser.Create;
+  Parser := TjsnParser.Create;
   Parser.OnHaveData := HaveData;
   Parser.OnError := AnalyserParserError;
   LexicalList:= nil;

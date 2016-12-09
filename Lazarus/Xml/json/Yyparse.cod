@@ -1,4 +1,4 @@
-unit jsonParser;
+unit jsnParser;
 
 interface
 uses Classes
@@ -14,7 +14,7 @@ uses Classes
 %%
 const yymaxdepth = 1024;
 
-function TjsonParser.yyparse : Integer;
+function TjsnParser.yyparse : Integer;
 
 var yystate, yysp, yyn : Integer;
     yys : array [1..yymaxdepth] of Integer;

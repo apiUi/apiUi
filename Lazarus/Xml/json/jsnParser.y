@@ -1,5 +1,5 @@
 %{
-type TjsonParser = class (TCustParser)
+type TjsnParser = class (TCustParser)
 private
   ParentXml: TXml;
   OfIdString: String;
@@ -38,17 +38,17 @@ implementation
 uses SysUtils, Dialogs
    ;
 
-procedure TjsonParser.Prepare;
+procedure TjsnParser.Prepare;
 begin
   inherited Prepare;
 end;
 
-destructor TjsonParser.Destroy;
+destructor TjsnParser.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TjsonParser.yylex: Integer;
+function TjsnParser.yylex: Integer;
 begin
   result := inherited yylex;
 end;

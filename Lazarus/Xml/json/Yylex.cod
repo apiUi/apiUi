@@ -2,7 +2,7 @@
 unit jsonScanner;
 
 interface
-uses CustScanner, Classes, jsonParser;
+uses CustScanner, Classes, jsnParser;
 
 type TjsonScanner = class (TCustScanner)
 published
@@ -35,11 +35,11 @@ end(*yyaction*);
 
 var yyn : Integer;
 
-label start, scan, action;
+label start_, scan, action;
 
 begin
 
-start:
+start_:
 
   (* initialize: *)
 
@@ -86,7 +86,7 @@ action:
       return (0);
     end;
 
-  if not yydone then goto start;
+  if not yydone then goto start_;
 
   yylex := FToken;
 

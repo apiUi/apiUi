@@ -2,7 +2,7 @@
 unit jsonScanner;
 
 interface
-uses CustScanner, Classes, jsonParser;
+uses CustScanner, Classes, jsnParser;
 
 type TjsonScanner = class (TCustScanner)
 published
