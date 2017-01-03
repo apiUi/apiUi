@@ -1,9 +1,9 @@
 %{
-type TjsnParser = class (TCustParser)
+type TJsnParser = class (TCustParser)
 private
   ParentXml: TXml;
   OfIdString: String;
-  FOnHaveScanned: TOnHaveScannedEvent;
+  function StringDecode(aString: String): String;
 published
   property OnHaveScanned: TOnHaveScannedEvent read FOnHaveScanned write FOnHaveScanned;
   property OnError: TOnErrorEvent read FOnError write FOnError;
@@ -38,20 +38,67 @@ implementation
 uses SysUtils, Dialogs
    ;
 
-procedure TjsnParser.Prepare;
+procedure TJsnParser.Prepare;
 begin
   inherited Prepare;
 end;
 
-destructor TjsnParser.Destroy;
+destructor TJsnParser.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TjsnParser.yylex: Integer;
+function TJsnParser.yylex: Integer;
 begin
   result := inherited yylex;
 end;
+
+function TJsnParser.StringDecode(aString: String): String;
+  function hexVal (aChar: Char): Word;
+  begin
+    result := StrToInt ('$0' + aChar);
+  end;
+
+var
+  p, x, n: Integer;
+  s: String;
+  w: Word;
+  b: Char;
+begin
+  p := Pos ('\', aString);
+  if p < 1 then
+  begin
+    result := aString;
+    Exit;
+  end;
+  x := p + 1;
+  n := p + 2;
+  case aString [x] of
+    'b': s := #8;
+    't': s := #9;
+    'n': s := #10;
+    'f': s := #12;
+    'r': s := #13;
+    'u':
+      begin
+        w := (hexVal(aString[n    ]) shl 12)
+           + (hexVal(aString[n + 1]) shl  8)
+           + (hexVal(aString[n + 2]) shl  4)
+           + (hexVal(aString[n + 3])       )
+           ;
+        b := Char(w);
+        s := b;
+        n := n + 4;
+      end;
+    else
+      s := aString [x];
+  end;
+  result := Copy (aString, 1, p - 1)
+          + s
+          + StringDecode(Copy (aString, n, Length(aString)))
+          ;
+end;
+
 
 %}
 
@@ -148,7 +195,7 @@ NameValuePair:
 Value:
       _STRING
       {
-        Xml.Value := Copy ($1.TokenString, 2, Length ($1.TokenString) - 2);
+        Xml.Value := StringDecode(Copy ($1.TokenString, 2, Length ($1.TokenString) - 2));
         Xml.jsonType := jsonString;
       }
     | _NUMBER
@@ -203,6 +250,7 @@ ArrayValue:
         Xml := ParentXml.AddXml (TXml.Create);
         Xml.Checked := True;
         Xml.Name := ParentXml.Name + '__Value';
+        Xml.Name := '_';
         Xml.jsonType := jsonArrayValue;
       }
       Value

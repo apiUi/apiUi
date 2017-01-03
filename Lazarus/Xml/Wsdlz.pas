@@ -3704,6 +3704,7 @@ begin
     BindBeforeFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
+    BindBeforeFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
     BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
@@ -3858,6 +3859,7 @@ begin
     BindAfterFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindAfterFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
+    BindAfterFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
     BindAfterFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindAfterFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindAfterFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
@@ -5731,6 +5733,7 @@ begin
     fExpressStamper.BindString('stamper.uwa', fExpressStamper.uwaString);
     BindStamperFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindStamperFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
+    BindStamperFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
     BindStamperFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindStamperFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');

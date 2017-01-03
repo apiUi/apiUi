@@ -35,9 +35,9 @@
         <CommandLineParams Value="&quot;testScript.wsdlStub&quot; --script=test --terminate"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="FrameViewer09"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item1>
       <Item2>
         <PackageName Value="indylaz"/>
@@ -48,11 +48,8 @@
       <Item4>
         <PackageName Value="LazUtils"/>
       </Item4>
-      <Item5>
-        <PackageName Value="LCLBase"/>
-      </Item5>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -90,6 +87,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="htmlXmlUtilz"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="C:\lazarus\lcl\translations.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Translations"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -111,6 +113,10 @@
     <Other>
       <CustomOptions Value="-dConsoleApp
 -dUseCThreads"/>
+      <OtherDefines Count="2">
+        <Define0 Value="ConsoleApp"/>
+        <Define1 Value="UseCThreads"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>

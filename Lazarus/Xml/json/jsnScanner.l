@@ -2,7 +2,7 @@
 
 %start InitState IgnoreState
 
-String          \"[^\"]*\"
+String          \"((\\.)|[^\"])*\"
 WhiteSpace      [ \t\n\r]
 Colon           \:
 Comma           \,

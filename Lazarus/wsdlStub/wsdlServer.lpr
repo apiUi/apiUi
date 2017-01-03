@@ -24,8 +24,7 @@ uses
   , virtualtreeview_package
   , xmlxsdparser
   , HashUtilz, tacoInterface , htmlXmlUtilz
-  , ExtCtrls, FrameViewer09
-  ;
+  , ExtCtrls, Translations;
 
 type
   longOptsArrayType = array [0..3] of String;

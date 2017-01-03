@@ -10,10 +10,11 @@ uses Classes
    ;
 
 
-type TjsnParser = class (TCustParser)
+type TJsnParser = class (TCustParser)
 private
   ParentXml: TXml;
   OfIdString: String;
+  function StringDecode(aString: String): String;
 published
   property OnHaveScanned: TOnHaveScannedEvent read FOnHaveScanned write FOnHaveScanned;
   property OnError: TOnErrorEvent read FOnError write FOnError;
@@ -45,20 +46,67 @@ implementation
 uses SysUtils, Dialogs
    ;
 
-procedure TjsnParser.Prepare;
+procedure TJsnParser.Prepare;
 begin
   inherited Prepare;
 end;
 
-destructor TjsnParser.Destroy;
+destructor TJsnParser.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TjsnParser.yylex: Integer;
+function TJsnParser.yylex: Integer;
 begin
   result := inherited yylex;
 end;
+
+function TJsnParser.StringDecode(aString: String): String;
+  function hexVal (aChar: Char): Word;
+  begin
+    result := StrToInt ('$0' + aChar);
+  end;
+
+var
+  p, x, n: Integer;
+  s: String;
+  w: Word;
+  b: Char;
+begin
+  p := Pos ('\', aString);
+  if p < 1 then
+  begin
+    result := aString;
+    Exit;
+  end;
+  x := p + 1;
+  n := p + 2;
+  case aString [x] of
+    'b': s := #8;
+    't': s := #9;
+    'n': s := #10;
+    'f': s := #12;
+    'r': s := #13;
+    'u':
+      begin
+        w := (hexVal(aString[n    ]) shl 12)
+           + (hexVal(aString[n + 1]) shl  8)
+           + (hexVal(aString[n + 2]) shl  4)
+           + (hexVal(aString[n + 3])       )
+           ;
+        b := Char(w);
+        s := b;
+        n := n + 4;
+      end;
+    else
+      s := aString [x];
+  end;
+  result := Copy (aString, 1, p - 1)
+          + s
+          + StringDecode(Copy (aString, n, Length(aString)))
+          ;
+end;
+
 
 const yymaxdepth = 1024;
 
@@ -117,44 +165,37 @@ begin
          yyval := yyv[yysp-1];
        end;
    9 : begin
-         
-         Xml.jsonType := jsonArray;
-         if not Assigned (ParentXml) then
-         Xml.Name := 'json';
-         
+         yyval := yyv[yysp-0];
        end;
   10 : begin
-         yyval := yyv[yysp-3];
-       end;
-  11 : begin
          
          Xml.jsonType := jsonObject;
          if not Assigned (ParentXml) then
          Xml.Name := 'json';
          
        end;
-  12 : begin
+  11 : begin
          
          
        end;
-  13 : begin
+  12 : begin
          yyval := yyv[yysp-4];
        end;
-  14 : begin
+  13 : begin
          yyval := yyv[yysp-0];
        end;
+  14 : begin
+       end;
   15 : begin
+         yyval := yyv[yysp-0];
        end;
   16 : begin
          yyval := yyv[yysp-0];
        end;
   17 : begin
-         yyval := yyv[yysp-0];
-       end;
-  18 : begin
          yyval := yyv[yysp-2];
        end;
-  19 : begin
+  18 : begin
          
          PushObject (ParentXml);
          PushObject (Xml);
@@ -163,75 +204,77 @@ begin
          Xml.Checked := True;
          
        end;
-  20 : begin
+  19 : begin
          
          Xml := PopObject as TXml;
          ParentXml := PopObject as TXml;
          
        end;
-  21 : begin
+  20 : begin
          
          Xml.Name := Copy (yyv[yysp-1].TokenString, 2, Length (yyv[yysp-1].TokenString) - 2);
          
        end;
-  22 : begin
+  21 : begin
          yyval := yyv[yysp-3];
        end;
-  23 : begin
+  22 : begin
          
-         Xml.Value := Copy (yyv[yysp-0].TokenString, 2, Length (yyv[yysp-0].TokenString) - 2);
+         Xml.Value := StringDecode(Copy (yyv[yysp-0].TokenString, 2, Length (yyv[yysp-0].TokenString) - 2));
          Xml.jsonType := jsonString;
          
        end;
-  24 : begin
+  23 : begin
          
          Xml.Value := yyv[yysp-0].TokenString;
          Xml.jsonType := jsonNumber;
          
        end;
+  24 : begin
+         yyval := yyv[yysp-0];
+       end;
   25 : begin
          yyval := yyv[yysp-0];
        end;
   26 : begin
-         yyval := yyv[yysp-0];
-       end;
-  27 : begin
          
          Xml.Value := 'true';
          Xml.jsonType := jsonBoolean;
          
        end;
-  28 : begin
+  27 : begin
          
          Xml.Value := 'false';
          Xml.jsonType := jsonBoolean;
          
        end;
-  29 : begin
+  28 : begin
          
          Xml.Checked := False;
          
        end;
-  30 : begin
+  29 : begin
          
          Xml.jsonType := jsonArray;
+         if not Assigned (ParentXml) then
+         Xml.Name := 'json';
          
        end;
-  31 : begin
+  30 : begin
          yyval := yyv[yysp-3];
        end;
+  31 : begin
+       end;
   32 : begin
+         yyval := yyv[yysp-0];
        end;
   33 : begin
          yyval := yyv[yysp-0];
        end;
   34 : begin
-         yyval := yyv[yysp-0];
-       end;
-  35 : begin
          yyval := yyv[yysp-2];
        end;
-  36 : begin
+  35 : begin
          
          PushObject (ParentXml);
          ParentXml := Xml;
@@ -239,10 +282,11 @@ begin
          Xml := ParentXml.AddXml (TXml.Create);
          Xml.Checked := True;
          Xml.Name := ParentXml.Name + '__Value';
+         Xml.Name := '_';
          Xml.jsonType := jsonArrayValue;
          
        end;
-  37 : begin
+  36 : begin
          
          Xml := PopObject as TXml;
          ParentXml := PopObject as TXml;
@@ -262,10 +306,10 @@ type YYARec = record
 
 const
 
-yynacts   = 49;
-yyngotos  = 39;
-yynstates = 47;
-yynrules  = 37;
+yynacts   = 40;
+yyngotos  = 35;
+yynstates = 44;
+yynrules  = 36;
 
 yya : array [1..yynacts] of YYARec = (
 { 0: }
@@ -277,50 +321,50 @@ yya : array [1..yynacts] of YYARec = (
   ( sym: 0; act: 0 ),
 { 3: }
 { 4: }
-  ( sym: 257; act: 8 ),
-  ( sym: 258; act: 9 ),
+  ( sym: 257; act: 9 ),
+  ( sym: 258; act: 10 ),
 { 5: }
 { 6: }
 { 7: }
-  ( sym: 258; act: 9 ),
-  ( sym: 0; act: -5 ),
 { 8: }
+  ( sym: 258; act: 10 ),
+  ( sym: 0; act: -5 ),
 { 9: }
 { 10: }
 { 11: }
 { 12: }
-  ( sym: 259; act: -32 ),
-  ( sym: 257; act: -36 ),
-  ( sym: 258; act: -36 ),
-  ( sym: 263; act: -36 ),
-  ( sym: 264; act: -36 ),
-  ( sym: 265; act: -36 ),
-  ( sym: 266; act: -36 ),
-  ( sym: 267; act: -36 ),
 { 13: }
-  ( sym: 260; act: -15 ),
-  ( sym: 263; act: -19 ),
+  ( sym: 259; act: -31 ),
+  ( sym: 257; act: -35 ),
+  ( sym: 258; act: -35 ),
+  ( sym: 263; act: -35 ),
+  ( sym: 264; act: -35 ),
+  ( sym: 265; act: -35 ),
+  ( sym: 266; act: -35 ),
+  ( sym: 267; act: -35 ),
 { 14: }
-  ( sym: 257; act: 26 ),
-  ( sym: 258; act: 9 ),
+  ( sym: 260; act: -14 ),
+  ( sym: 263; act: -18 ),
+{ 15: }
+  ( sym: 257; act: 9 ),
+  ( sym: 258; act: 10 ),
   ( sym: 263; act: 27 ),
   ( sym: 264; act: 28 ),
   ( sym: 265; act: 29 ),
   ( sym: 266; act: 30 ),
   ( sym: 267; act: 31 ),
-{ 15: }
 { 16: }
-  ( sym: 262; act: 32 ),
-  ( sym: 259; act: -33 ),
 { 17: }
-  ( sym: 259; act: 33 ),
+  ( sym: 262; act: 32 ),
+  ( sym: 259; act: -32 ),
 { 18: }
-  ( sym: 263; act: 35 ),
+  ( sym: 259; act: 33 ),
 { 19: }
+  ( sym: 263; act: 35 ),
 { 20: }
-  ( sym: 262; act: 36 ),
-  ( sym: 260; act: -16 ),
 { 21: }
+  ( sym: 262; act: 36 ),
+  ( sym: 260; act: -15 ),
 { 22: }
 { 23: }
 { 24: }
@@ -335,35 +379,23 @@ yya : array [1..yynacts] of YYARec = (
 { 33: }
 { 34: }
 { 35: }
-  ( sym: 261; act: 40 ),
+  ( sym: 261; act: 39 ),
 { 36: }
 { 37: }
-  ( sym: 260; act: 42 ),
+  ( sym: 260; act: 41 ),
 { 38: }
-  ( sym: 259; act: -32 ),
-  ( sym: 257; act: -36 ),
-  ( sym: 258; act: -36 ),
-  ( sym: 263; act: -36 ),
-  ( sym: 264; act: -36 ),
-  ( sym: 265; act: -36 ),
-  ( sym: 266; act: -36 ),
-  ( sym: 267; act: -36 ),
 { 39: }
 { 40: }
 { 41: }
 { 42: }
-{ 43: }
-  ( sym: 259; act: 45 ),
-{ 44: }
-  ( sym: 257; act: 26 ),
-  ( sym: 258; act: 9 ),
+  ( sym: 257; act: 9 ),
+  ( sym: 258; act: 10 ),
   ( sym: 263; act: 27 ),
   ( sym: 264; act: 28 ),
   ( sym: 265; act: 29 ),
   ( sym: 266; act: 30 ),
   ( sym: 267; act: 31 )
-{ 45: }
-{ 46: }
+{ 43: }
 );
 
 yyg : array [1..yyngotos] of YYARec = (
@@ -377,82 +409,75 @@ yyg : array [1..yyngotos] of YYARec = (
 { 2: }
 { 3: }
 { 4: }
-  ( sym: -8; act: 6 ),
-  ( sym: -6; act: 7 ),
+  ( sym: -9; act: 6 ),
+  ( sym: -8; act: 7 ),
+  ( sym: -6; act: 8 ),
 { 5: }
 { 6: }
 { 7: }
-  ( sym: -8; act: 10 ),
-  ( sym: -7; act: 3 ),
-  ( sym: -5; act: 11 ),
 { 8: }
-  ( sym: -10; act: 12 ),
+  ( sym: -8; act: 11 ),
+  ( sym: -7; act: 3 ),
+  ( sym: -5; act: 12 ),
 { 9: }
-  ( sym: -12; act: 13 ),
+  ( sym: -21; act: 13 ),
 { 10: }
+  ( sym: -11; act: 14 ),
 { 11: }
 { 12: }
-  ( sym: -25; act: 14 ),
+{ 13: }
   ( sym: -24; act: 15 ),
   ( sym: -23; act: 16 ),
-  ( sym: -9; act: 17 ),
-{ 13: }
-  ( sym: -18; act: 18 ),
-  ( sym: -16; act: 19 ),
+  ( sym: -22; act: 17 ),
+  ( sym: -20; act: 18 ),
+{ 14: }
+  ( sym: -17; act: 19 ),
   ( sym: -15; act: 20 ),
   ( sym: -14; act: 21 ),
-  ( sym: -11; act: 22 ),
-{ 14: }
-  ( sym: -21; act: 23 ),
-  ( sym: -19; act: 24 ),
-  ( sym: -8; act: 25 ),
+  ( sym: -13; act: 22 ),
+  ( sym: -10; act: 23 ),
 { 15: }
+  ( sym: -18; act: 24 ),
+  ( sym: -9; act: 25 ),
+  ( sym: -8; act: 26 ),
 { 16: }
 { 17: }
 { 18: }
-  ( sym: -17; act: 34 ),
 { 19: }
+  ( sym: -16; act: 34 ),
 { 20: }
 { 21: }
 { 22: }
-  ( sym: -13; act: 37 ),
 { 23: }
+  ( sym: -12; act: 37 ),
 { 24: }
 { 25: }
 { 26: }
-  ( sym: -22; act: 38 ),
 { 27: }
 { 28: }
 { 29: }
 { 30: }
 { 31: }
 { 32: }
-  ( sym: -25; act: 14 ),
-  ( sym: -24; act: 39 ),
+  ( sym: -24; act: 15 ),
+  ( sym: -23; act: 38 ),
 { 33: }
 { 34: }
 { 35: }
 { 36: }
-  ( sym: -18; act: 18 ),
-  ( sym: -16; act: 41 ),
+  ( sym: -17; act: 19 ),
+  ( sym: -15; act: 40 ),
 { 37: }
 { 38: }
-  ( sym: -25; act: 14 ),
-  ( sym: -24; act: 15 ),
-  ( sym: -23; act: 16 ),
-  ( sym: -9; act: 43 ),
 { 39: }
+  ( sym: -19; act: 42 ),
 { 40: }
-  ( sym: -20; act: 44 ),
 { 41: }
 { 42: }
+  ( sym: -18; act: 43 ),
+  ( sym: -9; act: 25 ),
+  ( sym: -8; act: 26 )
 { 43: }
-{ 44: }
-  ( sym: -21; act: 23 ),
-  ( sym: -19; act: 46 ),
-  ( sym: -8; act: 25 )
-{ 45: }
-{ 46: }
 );
 
 yyd : array [0..yynstates-1] of Integer = (
@@ -462,47 +487,44 @@ yyd : array [0..yynstates-1] of Integer = (
 { 3: } -6,
 { 4: } 0,
 { 5: } -2,
-{ 6: } -7,
-{ 7: } 0,
-{ 8: } -9,
-{ 9: } -11,
-{ 10: } -8,
-{ 11: } -4,
-{ 12: } 0,
+{ 6: } -9,
+{ 7: } -7,
+{ 8: } 0,
+{ 9: } -29,
+{ 10: } -10,
+{ 11: } -8,
+{ 12: } -4,
 { 13: } 0,
 { 14: } 0,
-{ 15: } -34,
-{ 16: } 0,
+{ 15: } 0,
+{ 16: } -33,
 { 17: } 0,
 { 18: } 0,
-{ 19: } -17,
-{ 20: } 0,
-{ 21: } -14,
-{ 22: } -12,
-{ 23: } -26,
-{ 24: } -37,
+{ 19: } 0,
+{ 20: } -16,
+{ 21: } 0,
+{ 22: } -13,
+{ 23: } -11,
+{ 24: } -36,
 { 25: } -25,
-{ 26: } -30,
-{ 27: } -23,
-{ 28: } -24,
-{ 29: } -28,
-{ 30: } -29,
-{ 31: } -27,
-{ 32: } -36,
-{ 33: } -10,
-{ 34: } -20,
+{ 26: } -24,
+{ 27: } -22,
+{ 28: } -23,
+{ 29: } -27,
+{ 30: } -28,
+{ 31: } -26,
+{ 32: } -35,
+{ 33: } -30,
+{ 34: } -19,
 { 35: } 0,
-{ 36: } -19,
+{ 36: } -18,
 { 37: } 0,
-{ 38: } 0,
-{ 39: } -35,
-{ 40: } -21,
-{ 41: } -18,
-{ 42: } -13,
-{ 43: } 0,
-{ 44: } 0,
-{ 45: } -31,
-{ 46: } -22
+{ 38: } -34,
+{ 39: } -20,
+{ 40: } -17,
+{ 41: } -12,
+{ 42: } 0,
+{ 43: } -21
 );
 
 yyal : array [0..yynstates-1] of Integer = (
@@ -514,20 +536,20 @@ yyal : array [0..yynstates-1] of Integer = (
 { 5: } 7,
 { 6: } 7,
 { 7: } 7,
-{ 8: } 9,
+{ 8: } 7,
 { 9: } 9,
 { 10: } 9,
 { 11: } 9,
 { 12: } 9,
-{ 13: } 17,
-{ 14: } 19,
-{ 15: } 26,
+{ 13: } 9,
+{ 14: } 17,
+{ 15: } 19,
 { 16: } 26,
-{ 17: } 28,
-{ 18: } 29,
-{ 19: } 30,
+{ 17: } 26,
+{ 18: } 28,
+{ 19: } 29,
 { 20: } 30,
-{ 21: } 32,
+{ 21: } 30,
 { 22: } 32,
 { 23: } 32,
 { 24: } 32,
@@ -545,14 +567,11 @@ yyal : array [0..yynstates-1] of Integer = (
 { 36: } 33,
 { 37: } 33,
 { 38: } 34,
-{ 39: } 42,
-{ 40: } 42,
-{ 41: } 42,
-{ 42: } 42,
-{ 43: } 42,
-{ 44: } 43,
-{ 45: } 50,
-{ 46: } 50
+{ 39: } 34,
+{ 40: } 34,
+{ 41: } 34,
+{ 42: } 34,
+{ 43: } 41
 );
 
 yyah : array [0..yynstates-1] of Integer = (
@@ -563,20 +582,20 @@ yyah : array [0..yynstates-1] of Integer = (
 { 4: } 6,
 { 5: } 6,
 { 6: } 6,
-{ 7: } 8,
+{ 7: } 6,
 { 8: } 8,
 { 9: } 8,
 { 10: } 8,
 { 11: } 8,
-{ 12: } 16,
-{ 13: } 18,
-{ 14: } 25,
+{ 12: } 8,
+{ 13: } 16,
+{ 14: } 18,
 { 15: } 25,
-{ 16: } 27,
-{ 17: } 28,
-{ 18: } 29,
+{ 16: } 25,
+{ 17: } 27,
+{ 18: } 28,
 { 19: } 29,
-{ 20: } 31,
+{ 20: } 29,
 { 21: } 31,
 { 22: } 31,
 { 23: } 31,
@@ -594,15 +613,12 @@ yyah : array [0..yynstates-1] of Integer = (
 { 35: } 32,
 { 36: } 32,
 { 37: } 33,
-{ 38: } 41,
-{ 39: } 41,
-{ 40: } 41,
-{ 41: } 41,
-{ 42: } 41,
-{ 43: } 42,
-{ 44: } 49,
-{ 45: } 49,
-{ 46: } 49
+{ 38: } 33,
+{ 39: } 33,
+{ 40: } 33,
+{ 41: } 33,
+{ 42: } 40,
+{ 43: } 40
 );
 
 yygl : array [0..yynstates-1] of Integer = (
@@ -611,6 +627,53 @@ yygl : array [0..yynstates-1] of Integer = (
 { 2: } 6,
 { 3: } 6,
 { 4: } 6,
+{ 5: } 9,
+{ 6: } 9,
+{ 7: } 9,
+{ 8: } 9,
+{ 9: } 12,
+{ 10: } 13,
+{ 11: } 14,
+{ 12: } 14,
+{ 13: } 14,
+{ 14: } 18,
+{ 15: } 23,
+{ 16: } 26,
+{ 17: } 26,
+{ 18: } 26,
+{ 19: } 26,
+{ 20: } 27,
+{ 21: } 27,
+{ 22: } 27,
+{ 23: } 27,
+{ 24: } 28,
+{ 25: } 28,
+{ 26: } 28,
+{ 27: } 28,
+{ 28: } 28,
+{ 29: } 28,
+{ 30: } 28,
+{ 31: } 28,
+{ 32: } 28,
+{ 33: } 30,
+{ 34: } 30,
+{ 35: } 30,
+{ 36: } 30,
+{ 37: } 32,
+{ 38: } 32,
+{ 39: } 32,
+{ 40: } 33,
+{ 41: } 33,
+{ 42: } 33,
+{ 43: } 36
+);
+
+yygh : array [0..yynstates-1] of Integer = (
+{ 0: } 2,
+{ 1: } 5,
+{ 2: } 5,
+{ 3: } 5,
+{ 4: } 8,
 { 5: } 8,
 { 6: } 8,
 { 7: } 8,
@@ -633,56 +696,6 @@ yygl : array [0..yynstates-1] of Integer = (
 { 24: } 27,
 { 25: } 27,
 { 26: } 27,
-{ 27: } 28,
-{ 28: } 28,
-{ 29: } 28,
-{ 30: } 28,
-{ 31: } 28,
-{ 32: } 28,
-{ 33: } 30,
-{ 34: } 30,
-{ 35: } 30,
-{ 36: } 30,
-{ 37: } 32,
-{ 38: } 32,
-{ 39: } 36,
-{ 40: } 36,
-{ 41: } 37,
-{ 42: } 37,
-{ 43: } 37,
-{ 44: } 37,
-{ 45: } 40,
-{ 46: } 40
-);
-
-yygh : array [0..yynstates-1] of Integer = (
-{ 0: } 2,
-{ 1: } 5,
-{ 2: } 5,
-{ 3: } 5,
-{ 4: } 7,
-{ 5: } 7,
-{ 6: } 7,
-{ 7: } 10,
-{ 8: } 11,
-{ 9: } 12,
-{ 10: } 12,
-{ 11: } 12,
-{ 12: } 16,
-{ 13: } 21,
-{ 14: } 24,
-{ 15: } 24,
-{ 16: } 24,
-{ 17: } 24,
-{ 18: } 25,
-{ 19: } 25,
-{ 20: } 25,
-{ 21: } 25,
-{ 22: } 26,
-{ 23: } 26,
-{ 24: } 26,
-{ 25: } 26,
-{ 26: } 27,
 { 27: } 27,
 { 28: } 27,
 { 29: } 27,
@@ -694,15 +707,12 @@ yygh : array [0..yynstates-1] of Integer = (
 { 35: } 29,
 { 36: } 31,
 { 37: } 31,
-{ 38: } 35,
-{ 39: } 35,
-{ 40: } 36,
-{ 41: } 36,
-{ 42: } 36,
-{ 43: } 36,
-{ 44: } 39,
-{ 45: } 39,
-{ 46: } 39
+{ 38: } 31,
+{ 39: } 32,
+{ 40: } 32,
+{ 41: } 32,
+{ 42: } 35,
+{ 43: } 35
 );
 
 yyr : array [1..yynrules] of YYRRec = (
@@ -714,35 +724,34 @@ yyr : array [1..yynrules] of YYRRec = (
 { 6: } ( len: 1; sym: -5 ),
 { 7: } ( len: 1; sym: -6 ),
 { 8: } ( len: 2; sym: -6 ),
-{ 9: } ( len: 0; sym: -10 ),
-{ 10: } ( len: 4; sym: -6 ),
+{ 9: } ( len: 1; sym: -6 ),
+{ 10: } ( len: 0; sym: -11 ),
 { 11: } ( len: 0; sym: -12 ),
-{ 12: } ( len: 0; sym: -13 ),
-{ 13: } ( len: 5; sym: -8 ),
-{ 14: } ( len: 1; sym: -11 ),
-{ 15: } ( len: 0; sym: -14 ),
+{ 12: } ( len: 5; sym: -8 ),
+{ 13: } ( len: 1; sym: -10 ),
+{ 14: } ( len: 0; sym: -13 ),
+{ 15: } ( len: 1; sym: -13 ),
 { 16: } ( len: 1; sym: -14 ),
-{ 17: } ( len: 1; sym: -15 ),
-{ 18: } ( len: 3; sym: -15 ),
-{ 19: } ( len: 0; sym: -18 ),
-{ 20: } ( len: 2; sym: -16 ),
-{ 21: } ( len: 0; sym: -20 ),
-{ 22: } ( len: 4; sym: -17 ),
-{ 23: } ( len: 1; sym: -19 ),
-{ 24: } ( len: 1; sym: -19 ),
-{ 25: } ( len: 1; sym: -19 ),
-{ 26: } ( len: 1; sym: -19 ),
-{ 27: } ( len: 1; sym: -19 ),
-{ 28: } ( len: 1; sym: -19 ),
-{ 29: } ( len: 1; sym: -19 ),
-{ 30: } ( len: 0; sym: -22 ),
-{ 31: } ( len: 4; sym: -21 ),
-{ 32: } ( len: 0; sym: -9 ),
-{ 33: } ( len: 1; sym: -9 ),
-{ 34: } ( len: 1; sym: -23 ),
-{ 35: } ( len: 3; sym: -23 ),
-{ 36: } ( len: 0; sym: -25 ),
-{ 37: } ( len: 2; sym: -24 )
+{ 17: } ( len: 3; sym: -14 ),
+{ 18: } ( len: 0; sym: -17 ),
+{ 19: } ( len: 2; sym: -15 ),
+{ 20: } ( len: 0; sym: -19 ),
+{ 21: } ( len: 4; sym: -16 ),
+{ 22: } ( len: 1; sym: -18 ),
+{ 23: } ( len: 1; sym: -18 ),
+{ 24: } ( len: 1; sym: -18 ),
+{ 25: } ( len: 1; sym: -18 ),
+{ 26: } ( len: 1; sym: -18 ),
+{ 27: } ( len: 1; sym: -18 ),
+{ 28: } ( len: 1; sym: -18 ),
+{ 29: } ( len: 0; sym: -21 ),
+{ 30: } ( len: 4; sym: -9 ),
+{ 31: } ( len: 0; sym: -20 ),
+{ 32: } ( len: 1; sym: -20 ),
+{ 33: } ( len: 1; sym: -22 ),
+{ 34: } ( len: 3; sym: -22 ),
+{ 35: } ( len: 0; sym: -24 ),
+{ 36: } ( len: 2; sym: -23 )
 );
 
 
