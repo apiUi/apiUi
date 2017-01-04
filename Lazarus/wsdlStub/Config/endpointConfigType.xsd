@@ -17,7 +17,7 @@ wsdlStub encrypts passwords before storing in a project file or at other locatio
 	<xs:complexType name="UserType">
 		<xs:sequence>
 			<xs:element name="Name" type="xs:string"/>
-			<xs:element name="Password" type="tns:passwordType" minOccurs="0"/>
+			<xs:element name="Password" type="passwordType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="FileNameType">
@@ -614,7 +614,7 @@ If the NameValueCCSID is a 2-byte Unicode CCSID (1200, 13488, or 17584), the byt
 					<xs:documentation>The prort to which the stomp broker is listening; Default = 61613</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="Credentials" type="tns:UserType" minOccurs="0"/>
+			<xs:element name="Credentials" type="UserType" minOccurs="0"/>
 			<xs:element name="ClientId" type="xs:string" minOccurs="0"/>
 			<xs:element name="Timeout" type="xs:integer">
 				<xs:annotation>
