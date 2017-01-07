@@ -282,7 +282,7 @@ begin
          Xml := ParentXml.AddXml (TXml.Create);
          Xml.Checked := True;
          Xml.Name := ParentXml.Name + '__Value';
-         Xml.Name := '_';
+         Xml.Name := '';
          Xml.jsonType := jsonArrayValue;
          
        end;
