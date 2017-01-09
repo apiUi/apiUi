@@ -20,7 +20,7 @@ object MainForm: TMainForm
   OnDropFiles = FormDropFiles
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object ToolBar: TToolBar
     Left = 0
     Height = 29
@@ -35,6 +35,7 @@ object MainForm: TMainForm
     end
     object ToolButton4: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton4'
@@ -48,6 +49,7 @@ object MainForm: TMainForm
     end
     object ToolButton2: TToolButton
       Left = 57
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton2'
@@ -61,6 +63,7 @@ object MainForm: TMainForm
     end
     object ToolButton6: TToolButton
       Left = 90
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton6'

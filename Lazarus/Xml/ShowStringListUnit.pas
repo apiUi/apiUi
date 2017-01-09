@@ -228,7 +228,7 @@ end;
 
 procedure TShowStringListForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   TreeView.NodeDataSize := SizeOf (TTreeRec);
   TreeView.RootNodeCount := 0;

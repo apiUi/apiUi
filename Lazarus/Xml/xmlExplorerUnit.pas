@@ -195,7 +195,7 @@ var
 begin
   w := Width;
   h := Height;
-  IniFile := TFormIniFile.Create (Self);
+  IniFile := TFormIniFile.Create (Self, True);
   IniFile.Restore;
   Width := w;
   Height := h;
@@ -645,7 +645,7 @@ begin
   begin
     xmlExplorerXsdDescr := TXsdDescr.Create(1);
     try
-      xmlExplorerXsdDescr.LoadFromXsdFile (xmlExplorerXsdFileName, nil);
+      xmlExplorerXsdDescr.LoadXsdFromFile (xmlExplorerXsdFileName, nil);
   {$ifdef XMLDOM}
       if xmlExplorerXsdDescr.TypeDef.ElementDefs.Count = 1 then
         configXsd := xmlExplorerXsdDescr.TypeDef.ElementDefs.Xsds [0];

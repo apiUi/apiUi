@@ -115,7 +115,7 @@ type
     function XmlFromFile (aFileName: String): TXml;
   public
     FolderName1, FolderName2: String;
-    ignoreDifferencesOn: TStringList;
+    ignoreDifferencesOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     orderGroupsOn: TStringList;
     aFiles, bFiles: TStringList;
     ReferenceFileName: String;
@@ -549,7 +549,7 @@ begin
         aXml.Sort(orderGroupsOn.Strings[x], Strings[y]);
         bXml.Sort(orderGroupsOn.Strings[x], Strings[y]);
       end;
-  xData.A2B := TA2BXml.CreateA2B(aXml, bXml, ignoreDifferencesOn, nil);
+  xData.A2B := TA2BXml.CreateA2B('', aXml, bXml, ignoreDifferencesOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
 end;
@@ -570,7 +570,10 @@ begin
         try
           xForm.Caption := 'Differences in requests';
           xForm.ignoreDifferencesOn := ignoreDifferencesOn;
-          xForm.orderGroupsOn := orderGroupsOn;
+          xForm.ignoreRemovingOn := ignoreRemovingOn;
+          xForm.ignoreOrderOn := ignoreOrderOn;
+          xForm.regressionSortColumns := regressionSortColumns;
+//        xForm.orderGroupsOn := orderGroupsOn;
           xForm.Xml := xData.A2B;
           xForm.ShowModal;
           if xForm.RefreshNeeded then
@@ -604,7 +607,7 @@ var
   aXml: TXml;
 begin
   aXml := XmlFromFile(AppendSlash (FolderName1) + xData.aFile.Name);
-  xData.A2B := TA2BXml.CreateA (aXml);
+  xData.A2B := TA2BXml.CreateA ('', aXml, False);
   FreeAndNil (aXml);
 end;
 
@@ -613,7 +616,7 @@ var
   bXml: TXml;
 begin
   bXml := XmlFromFile(AppendSlash (FolderName2) + xData.bFile.Name);
-  xData.A2B := TA2BXml.CreateB (bXml);
+  xData.A2B := TA2BXml.CreateB ('', bXml, False);
   FreeAndNil (bXml);
 end;
 

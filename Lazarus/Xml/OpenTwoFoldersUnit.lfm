@@ -1,11 +1,11 @@
 object OpenTwoFoldersForm: TOpenTwoFoldersForm
-  Left = 442
-  Height = 216
-  Top = 185
-  Width = 691
+  Left = 499
+  Height = 133
+  Top = 263
+  Width = 567
   Caption = 'reqExplorer - Start project'
-  ClientHeight = 216
-  ClientWidth = 691
+  ClientHeight = 133
+  ClientWidth = 567
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,86 +13,68 @@ object OpenTwoFoldersForm: TOpenTwoFoldersForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '1.6.0.4'
-  object FolderName1Edit: TLabeledEdit
-    Left = 32
-    Height = 21
-    Top = 36
-    Width = 537
-    EditLabel.AnchorSideLeft.Control = FolderName1Edit
-    EditLabel.AnchorSideRight.Control = FolderName1Edit
-    EditLabel.AnchorSideRight.Side = asrBottom
-    EditLabel.AnchorSideBottom.Control = FolderName1Edit
-    EditLabel.Left = 32
-    EditLabel.Height = 13
-    EditLabel.Top = 20
-    EditLabel.Width = 537
-    EditLabel.Caption = 'Folder 1'
-    EditLabel.ParentColor = False
-    ParentColor = True
-    ReadOnly = True
-    TabOrder = 0
-    TabStop = False
-    OnChange = enableOK
-  end
-  object FolderName2Edit: TLabeledEdit
-    Left = 32
-    Height = 21
-    Top = 85
-    Width = 537
-    EditLabel.AnchorSideLeft.Control = FolderName2Edit
-    EditLabel.AnchorSideRight.Control = FolderName2Edit
-    EditLabel.AnchorSideRight.Side = asrBottom
-    EditLabel.AnchorSideBottom.Control = FolderName2Edit
-    EditLabel.Left = 32
-    EditLabel.Height = 13
-    EditLabel.Top = 69
-    EditLabel.Width = 537
-    EditLabel.Caption = 'Folder 2'
-    EditLabel.ParentColor = False
-    ParentColor = True
-    ReadOnly = True
-    TabOrder = 2
-    TabStop = False
-    OnChange = enableOK
-  end
-  object BrowseFolder1Button: TButton
-    Left = 576
-    Height = 25
-    Top = 33
-    Width = 75
-    Caption = 'B&rowse'
-    OnClick = BrowseFolder1ButtonClick
-    TabOrder = 1
-    TabStop = False
-  end
-  object BrowseFolder2Button: TButton
-    Left = 576
-    Height = 25
-    Top = 83
-    Width = 75
-    Caption = 'Bro&wse'
-    OnClick = BrowseFolder2ButtonClick
-    TabOrder = 3
-    TabStop = False
-  end
   object OKButton: TButton
-    Left = 32
+    Left = 8
     Height = 25
-    Top = 131
-    Width = 75
+    Top = 94
+    Width = 81
     Caption = '&OK'
     Default = True
     ModalResult = 1
-    TabOrder = 4
+    TabOrder = 0
   end
   object CancelButton: TButton
-    Left = 120
+    Left = 103
     Height = 25
-    Top = 131
-    Width = 75
+    Top = 94
+    Width = 81
     Cancel = True
     Caption = '&Cancel'
     ModalResult = 2
-    TabOrder = 5
+    TabOrder = 1
+  end
+  object FolderName1Edit: TDirectoryEdit
+    Left = 8
+    Height = 21
+    Top = 21
+    Width = 544
+    Directory = 'c:\data'
+    ShowHidden = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    MaxLength = 0
+    TabOrder = 2
+    OnChange = FolderNameChange
+    Text = 'c:\data'
+  end
+  object FolderName2Edit: TDirectoryEdit
+    Left = 8
+    Height = 21
+    Top = 61
+    Width = 544
+    ShowHidden = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    MaxLength = 0
+    TabOrder = 3
+    OnChange = FolderNameChange
+  end
+  object FolderName1Label: TLabel
+    Left = 8
+    Height = 13
+    Top = 8
+    Width = 43
+    Caption = 'Folder 1:'
+    ParentColor = False
+  end
+  object FolderName2Label: TLabel
+    Left = 8
+    Height = 13
+    Top = 48
+    Width = 43
+    Caption = 'Folder 2:'
+    ParentColor = False
   end
 end

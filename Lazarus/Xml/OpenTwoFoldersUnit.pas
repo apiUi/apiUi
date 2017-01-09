@@ -10,27 +10,28 @@ uses
 {$IFnDEF FPC}
   ShellAPI, Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
-  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, FormIniFilez, ShlObj;
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, EditBtn, FormIniFilez;
 
 type typeOpenFileMode = (ofmRead, ofmWrite);
 type
+
+  { TOpenTwoFoldersForm }
+
   TOpenTwoFoldersForm = class(TForm)
-    FolderName1Edit: TLabeledEdit;
-    FolderName2Edit: TLabeledEdit;
-    BrowseFolder1Button: TButton;
-    BrowseFolder2Button: TButton;
+    FolderName1Edit: TDirectoryEdit;
+    FolderName2Edit: TDirectoryEdit;
+    FolderName1Label: TLabel;
+    FolderName2Label: TLabel;
     OKButton: TButton;
     CancelButton: TButton;
     procedure enableOK(Sender: TObject);
+    procedure FolderNameChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure BrowseFolder2ButtonClick(Sender: TObject);
-    procedure BrowseFolder1ButtonClick(Sender: TObject);
   private
-    IniFile: TFormIniFile;
     function getFolderLabel1: String;
     function getFolderName2Label: String;
     procedure setFolderLabel1(const Value: String);
@@ -75,28 +76,6 @@ begin
 end;
 
 
-procedure TOpenTwoFoldersForm.BrowseFolder1ButtonClick(Sender: TObject);
-var
-  s: String;
-begin
-  {$IFnDEF FPC}
-  s := FolderName1Edit.Text;
-  if not GetFolder(self,'Open Folder 1',s) then exit;
-  FolderName1Edit.Text := s;
-  {$endif}
-end;
-
-procedure TOpenTwoFoldersForm.BrowseFolder2ButtonClick(Sender: TObject);
-var
-  s: String;
-begin
-  {$IFnDEF FPC}
-  s := FolderName2Edit.Text;
-  if not GetFolder(self,'Open Folder 2',s) then exit;
-  FolderName2Edit.Text := s;
-  {$endif}
-end;
-
 function TOpenTwoFoldersForm.getFolderName1: String;
 begin
   result := FolderName1Edit.Text;
@@ -119,19 +98,23 @@ end;
 
 procedure TOpenTwoFoldersForm.FormCreate(Sender: TObject);
 begin
-  IniFile := TFormIniFile.Create (Self, True);
-  IniFile.Restore;
-  FolderName1 := IniFile.StringByName['Folder1'];
-  FolderName2 := IniFile.StringByName['Folder2'];
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
   enableOK(nil);
 end;
 
 procedure TOpenTwoFoldersForm.FormDestroy(Sender: TObject);
 begin
-  IniFile.StringByName['Folder1'] := FolderName1;
-  IniFile.StringByName['Folder2'] := FolderName2;
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create (Self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
 end;
 
 procedure TOpenTwoFoldersForm.enableOK(Sender: TObject);
@@ -142,24 +125,29 @@ begin
                  ;
 end;
 
+procedure TOpenTwoFoldersForm.FolderNameChange(Sender: TObject);
+begin
+  enableOK(nil);
+end;
+
 function TOpenTwoFoldersForm.getFolderLabel1: String;
 begin
-  result := FolderName1Edit.EditLabel.Caption;
+  result := FolderName1Label.Caption;
 end;
 
 function TOpenTwoFoldersForm.getFolderName2Label: String;
 begin
-  result := FolderName2Edit.EditLabel.Caption;
+  result := FolderName2Label.Caption;
 end;
 
 procedure TOpenTwoFoldersForm.setFolderLabel1(const Value: String);
 begin
-  FolderName1Edit.EditLabel.Caption := Value;
+  FolderName1Label.Caption := Value;
 end;
 
 procedure TOpenTwoFoldersForm.setFolderName2Label(const Value: String);
 begin
-  FolderName2Edit.EditLabel.Caption := Value;
+  FolderName2Label.Caption := Value;
 end;
 
 end.

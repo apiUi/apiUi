@@ -250,7 +250,7 @@ ArrayValue:
         Xml := ParentXml.AddXml (TXml.Create);
         Xml.Checked := True;
         Xml.Name := ParentXml.Name + '__Value';
-        Xml.Name := '';
+        Xml.Name := '_';
         Xml.jsonType := jsonArrayValue;
       }
       Value
