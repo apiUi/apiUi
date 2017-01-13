@@ -93,7 +93,6 @@ type
     procedure mainVSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
   private
-    IniFile: TFormIniFile;
     fPreviewMode: Boolean;
     Diffs: TA2BStringList;
     procedure GetFolderFiles(FolderName: String; aFiles: TStringList);
@@ -115,7 +114,7 @@ type
     function XmlFromFile (aFileName: String): TXml;
   public
     FolderName1, FolderName2: String;
-    ignoreDifferencesOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     orderGroupsOn: TStringList;
     aFiles, bFiles: TStringList;
     ReferenceFileName: String;
@@ -163,8 +162,12 @@ var
   w3: Integer;
 begin
   w3 := mainVST.Header.Columns.Items[3].Width;
-  IniFile := TFormIniFile.Create (Self, True);
-  IniFile.Restore;
+  with TFormIniFile.Create (Self, True) do
+  try
+    Restore;
+  finally
+    Free;
+  end;
   mainVST.Header.Columns.Items[3].Width := w3;
   mainVST.NodeDataSize := SizeOf (TVSTreeRec);
 {
@@ -189,18 +192,28 @@ begin
 }
   mainVst.Header.Columns.Items[0].Text := 'Name 1';
   mainVst.Header.Columns.Items[4].Text := 'Name 2';
-  IniFile.Save;
-  IniFile.Free;
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
   mainVST.Clear;
   Diffs.Free;
-  for x := 0 to aFiles.Count - 1 do
-    aFiles.Objects[x].Free;
-  aFiles.Clear;
-  aFiles.Free;
-  for x := 0 to aFiles.Count - 1 do
-    bFiles.Objects[x].Free;
-  bFiles.Clear;
-  bFiles.Free;
+  with aFiles do
+  begin
+    for x := 0 to Count - 1 do
+      Objects[x].Free;
+    Clear;
+    Free;
+  end;
+  with bFiles do
+  begin
+    for x := 0 to Count - 1 do
+      Objects[x].Free;
+    Clear;
+    Free;
+  end;
 end;
 
 procedure TShowFolderDifferencesForm.FormShow(Sender: TObject);
@@ -549,7 +562,8 @@ begin
         aXml.Sort(orderGroupsOn.Strings[x], Strings[y]);
         bXml.Sort(orderGroupsOn.Strings[x], Strings[y]);
       end;
-  xData.A2B := TA2BXml.CreateA2B('', aXml, bXml, ignoreDifferencesOn);
+  xData.A2B := TA2BXml.CreateA2B('', aXml, bXml, ignoreOrderOn);
+  xData.A2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
 end;
@@ -702,9 +716,12 @@ begin
       xData := mainVST.GetNodeData(xNode);
   end;
   if not Assigned (xNode) then
-    raise Exception.Create('not found');
-  mainVST.Selected [xNode] := True;
-  mainVST.FocusedNode := xNode;
+    ShowMessage('not found')
+  else
+  begin
+    mainVST.Selected [xNode] := True;
+    mainVST.FocusedNode := xNode;
+  end;
 end;
 
 procedure TShowFolderDifferencesForm.NextDiffActionExecute(Sender: TObject);

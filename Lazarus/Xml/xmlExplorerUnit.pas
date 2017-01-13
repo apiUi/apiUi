@@ -97,8 +97,6 @@ type
     procedure readConfig (aFileName: String);
     procedure OnlyWhenLicensed;
     procedure FinishedEvent(Sender: TObject);
-    procedure ClearSortSpecs;
-    procedure SortSpecsChanged (Sender: TObject);
     procedure IgnoreChanged (Sender: TObject);
   public
     FolderName1, FolderName2: String;
@@ -108,6 +106,7 @@ type
     xmlExplorerXsdDescr: TXsdDescr;
     configXsd: TXsd;
     SortSpecs: TStringList;
+    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList;
     property xmlExplorerLicensed: Boolean read getXmlExplorerLicensed write setXmlExplorerLicensed;
     property configChanged: Boolean read fConfigChanged write setConfigChanged;
     procedure xmlExplorerInit;
@@ -191,7 +190,8 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var
-  w, h: Integer;
+  x, w, h: Integer;
+  sl: TStringList;
 begin
   w := Width;
   h := Height;
@@ -202,27 +202,83 @@ begin
   FolderName1 := IniFile.StringByName['FolderName1'];
   FolderName2 := IniFile.StringByName['FolderName2'];
   xmlUtil.doExpandFull := True;
-  xmlUtil.ignoreDifferencesOn := TStringList.Create;
-  xmlUtil.ignoreDifferencesOn.Sorted := True;
-  xmlUtil.ignoreDifferencesOn.Duplicates := dupIgnore;
-  xmlUtil.ignoreDifferencesOn.Text := IniFile.StringByName['ignoreDifferencesOn'];
-  xmlUtil.ignoreDifferencesOn.OnChange := IgnoreChanged;
+  ignoreDifferencesOn := TStringList.Create;
+  ignoreDifferencesOn.Sorted := True;
+  ignoreDifferencesOn.Duplicates := dupIgnore;
+  ignoreDifferencesOn.Text := IniFile.StringByName['ignoreDifferencesOn'];
+  ignoreDifferencesOn.OnChange := IgnoreChanged;
+
+  ignoreAddingOn := TStringList.Create;
+  ignoreAddingOn.Sorted := True;
+  ignoreAddingOn.Duplicates := dupIgnore;
+  ignoreAddingOn.Text := IniFile.StringByName['ignoreAddingOn'];
+  ignoreAddingOn.OnChange := IgnoreChanged;
+
+  ignoreRemovingOn := TStringList.Create;
+  ignoreRemovingOn.Sorted := True;
+  ignoreRemovingOn.Duplicates := dupIgnore;
+  ignoreRemovingOn.Text := IniFile.StringByName['ignoreRemovingOn'];
+  ignoreRemovingOn.OnChange := IgnoreChanged;
+
+  ignoreOrderOn := TStringList.Create;
+  ignoreOrderOn.Sorted := True;
+  ignoreOrderOn.Duplicates := dupIgnore;
+  with TXml.Create do
+  begin
+    LoadFromString(IniFile.StringByName['ignoreOrderOn'], nil);
+    if Name = 'ignoreOrderOn' then
+    begin
+      for x := 0 to Items.Count - 1 do
+      begin
+        with Items.XmlItems[x].Items do
+        begin
+          sl := TStringList.Create;
+          sl.Text := XmlValueByTag['Keys'];
+          ignoreOrderOn.AddObject(XmlValueByTag['Id'], sl);
+        end;
+      end;
+    end;
+  end;
+  ignoreOrderOn.OnChange := IgnoreChanged;
+
   SortSpecs := TStringList.Create;
-  SortSpecs.OnChange := SortSpecsChanged;
   xmlExplorerInit;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
+var
+  x: Integer;
 begin
   IniFile.StringByName  ['configFileName'] := configFileName;
   IniFile.StringByName  ['FolderName1'] := FolderName1;
   IniFile.StringByName  ['FolderName2'] := FolderName2;
-  IniFile.StringByName ['ignoreDifferencesOn'] := xmlUtil.ignoreDifferencesOn.Text;
+  IniFile.StringByName ['ignoreDifferencesOn'] := ignoreDifferencesOn.Text;
+  IniFile.StringByName ['ignoreAddingOn'] := ignoreAddingOn.Text;
+  IniFile.StringByName ['ignoreRemovingOn'] := ignoreRemovingOn.Text;
+  with TXml.CreateAsString('ignoreOrderOn', '') do
+  begin
+    for x := 0 to ignoreOrderOn.Count - 1 do
+      with AddXml(TXml.CreateAsString('Element', '')) do
+      begin
+        AddXml(TXml.CreateAsString('Id', ignoreOrderOn.Strings[x]));
+        AddXml(TXml.CreateAsString('Keys', (ignoreOrderOn.Objects[x] as TStringList).Text));
+      end;
+    IniFile.StringByName ['ignoreOrderOn'] := Text;
+  end;
   IniFile.Save;
   IniFile.Free;
-  ClearSortSpecs;
   FreeAndNil (SortSpecs);
-  FreeAndNil (xmlUtil.ignoreDifferencesOn);
+  FreeAndNil (ignoreDifferencesOn);
+  FreeAndNil (ignoreAddingOn);
+  FreeAndNil (ignoreRemovingOn);
+  with ignoreOrderOn do
+  begin
+    for x := 0 to Count - 1 do
+      if Assigned (Objects[x]) then
+        Objects[x].Free;
+    Clear;
+  end;
+  FreeAndNil (ignoreOrderOn);
 end;
 
 procedure TMainForm.PasteActionExecute(Sender: TObject);
@@ -259,11 +315,6 @@ begin
   ProgressBar.Position := aProgress;
 end;
 
-procedure TMainForm.SortSpecsChanged(Sender: TObject);
-begin
-  configChanged := True;
-end;
-
 procedure TMainForm.FolderActionExecute(Sender: TObject);
 var
   xForm: TOpenTwoFoldersForm;
@@ -286,7 +337,10 @@ begin
         dForm.FolderName1 := FolderName1;
         dForm.FolderName2 := FolderName2;
         dForm.Caption := xForm.Caption;
-        dForm.ignoreDifferencesOn := xmlUtil.ignoreDifferencesOn;
+        dForm.ignoreDifferencesOn := ignoreDifferencesOn;
+        dForm.ignoreOrderOn := ignoreOrderOn;
+        dForm.ignoreAddingOn := ignoreAddingOn;
+        dForm.ignoreRemovingOn := ignoreRemovingOn;
         dForm.orderGroupsOn := SortSpecs;
         dForm.FinishedEvent := FinishedEvent;
         dForm.ShowModal;
@@ -365,16 +419,6 @@ begin
   end;
 end;
 
-procedure TMainForm.ClearSortSpecs;
-var
-  x: Integer;
-begin
-  for x := 0 to SortSpecs.Count - 1 do
-    with SortSpecs.Objects[x] as TStringList do
-      Clear;
-  SortSpecs.Clear;
-end;
-
 function TMainForm.configAsXml: TXml;
 var
   x, y: Integer;
@@ -430,7 +474,6 @@ var
   x, y: Integer;
   sl: TStringList;
 begin
-  ClearSortSpecs;
   if aXml.Name <> 'xmlExplorerConfig' then
     raise Exception.Create ('Not an xmlExplorer config file');
   xmlUtil.IpmDescrsFromXml (aFileName, aXml.Items.XmlItemByTag['RecordDescriptors']);

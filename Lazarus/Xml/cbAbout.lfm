@@ -13,7 +13,7 @@ object AboutBox: TAboutBox
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object NameLabel: TLabel
     Left = 18
     Height = 13
@@ -42,7 +42,7 @@ object AboutBox: TAboutBox
     Height = 13
     Top = 58
     Width = 186
-    Caption = 'Copyright © 2010 - 2015 Jan Bouwman'
+    Caption = 'Copyright © 2010 - 2017 Jan Bouwman'
     ParentColor = False
   end
   object OKButton: TButton

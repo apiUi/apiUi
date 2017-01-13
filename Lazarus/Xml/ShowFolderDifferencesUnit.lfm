@@ -1,7 +1,7 @@
 object ShowFolderDifferencesForm: TShowFolderDifferencesForm
-  Left = 293
+  Left = 347
   Height = 414
-  Top = 165
+  Top = 176
   Width = 755
   Caption = 'wsdlStub - Show Log differences'
   ClientHeight = 414
@@ -13,7 +13,7 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 385
@@ -45,13 +45,41 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
         Colors.GridLineColor = clWindow
         Colors.UnfocusedSelectionColor = clWindow
         Header.AutoSizeIndex = -1
-        Header.Columns = <>
+        Header.Columns = <        
+          item
+            Position = 0
+            Text = 'folder'
+          end        
+          item
+            Position = 1
+            Text = 'Size'
+          end        
+          item
+            Position = 2
+            Text = 'Modified'
+          end        
+          item
+            Position = 3
+            Text = ' '
+            Width = 24
+          end        
+          item
+            Position = 4
+            Text = 'folder'
+          end        
+          item
+            Position = 5
+            Text = 'Size'
+          end        
+          item
+            Position = 6
+            Text = 'Modified'
+          end>
         Header.DefaultHeight = 17
         Header.Font.Color = clWindowText
         Header.Font.Height = -11
         Header.Font.Name = 'Tahoma'
         Header.Images = ActionImageList
-        Header.MainColumn = -1
         Header.Options = [hoColumnResize, hoDrag, hoShowImages, hoVisible]
         Images = ActionImageList
         ParentColor = True
@@ -93,6 +121,7 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
     TabOrder = 1
     object ToolButton2: TToolButton
       Left = 1
+      Height = 22
       Top = 2
       Width = 10
       Action = MaintainIgnoreListAction
@@ -105,6 +134,7 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
     end
     object ToolButton3: TToolButton
       Left = 34
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -123,6 +153,7 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
     end
     object ToolButton7: TToolButton
       Left = 90
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton7'
@@ -136,6 +167,7 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
     end
     object ToolButton8: TToolButton
       Left = 123
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton8'
@@ -149,6 +181,7 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
     end
     object ToolButton11: TToolButton
       Left = 156
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton11'
