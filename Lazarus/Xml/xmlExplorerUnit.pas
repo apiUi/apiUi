@@ -34,24 +34,13 @@ type
     ImageList: TImageList;
     ProgressBar: TProgressBar;
     ActionList1: TActionList;
-    pasteAction: TAction;
-    configAction: TAction;
     MainMenu1: TMainMenu;
     File1: TMenuItem;
     Exit1: TMenuItem;
     N1: TMenuItem;
     Open1: TMenuItem;
-    openConfigAction: TAction;
-    Openconfig1: TMenuItem;
-    saveConfigAction: TAction;
-    saveConfigAsAction: TAction;
-    Saveconfig1: TMenuItem;
-    Saveconfigas1: TMenuItem;
     openFileAction: TAction;
     editConfigAction: TAction;
-    Edit1: TMenuItem;
-    Editconfig1: TMenuItem;
-    N2: TMenuItem;
     configAction1: TMenuItem;
     About1: TMenuItem;
     License1: TMenuItem;
@@ -63,13 +52,8 @@ type
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure openLog4JActionExecute(Sender: TObject);
     procedure License1Click(Sender: TObject);
-    procedure editConfigActionExecute(Sender: TObject);
     procedure openFileActionExecute(Sender: TObject);
-    procedure saveConfigAsActionExecute(Sender: TObject);
-    procedure saveConfigActionExecute(Sender: TObject);
-    procedure openConfigActionExecute(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure HelpAboutButtonClick(Sender: TObject);
     procedure ExitButtonClick(Sender: TObject);
     procedure PasteActionExecute(Sender: TObject);
@@ -93,8 +77,6 @@ type
     function StringPassesFilter (aString: String): Boolean;
     procedure setXmlExplorerLicensed(const Value: Boolean);
     procedure setConfigChanged(const Value: Boolean);
-    procedure saveConfig (aFileName: String);
-    procedure readConfig (aFileName: String);
     procedure OnlyWhenLicensed;
     procedure FinishedEvent(Sender: TObject);
     procedure IgnoreChanged (Sender: TObject);
@@ -112,9 +94,7 @@ type
     procedure xmlExplorerInit;
     procedure ParserError(Sender: TObject; LineNumber, ColumnNumber,
       Offset: Integer; TokenString, Data: String);
-    function configAsXml: TXml;
     procedure configFromXml (aFileName: String; aXml: TXml);
-    function OkTopOpenCase: Boolean;
     procedure ShowProgress (Sender: TObject; aProgress, aProgressMax: Integer);
   end;
 
@@ -249,7 +229,6 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 var
   x: Integer;
 begin
-  IniFile.StringByName  ['configFileName'] := configFileName;
   IniFile.StringByName  ['FolderName1'] := FolderName1;
   IniFile.StringByName  ['FolderName2'] := FolderName2;
   IniFile.StringByName ['ignoreDifferencesOn'] := ignoreDifferencesOn.Text;
@@ -354,51 +333,6 @@ begin
   end;
 end;
 
-procedure TMainForm.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
-begin
-  CanClose := OkTopOpenCase;
-end;
-
-function TMainForm.OkTopOpenCase: Boolean;
-var
-  ret: Word;
-begin
-  result := True;
-  if configChanged then
-  begin
-    ret := MessageDlg ('Save changes to config?', mtConfirmation,
-      [mbYes, mbNo, mbCancel], 0);
-    if (ret = mrYes) then
-    begin
-      OnlyWhenLicensed;
-      if configRead then
-        saveConfig (configFileName)
-      else
-      begin
-        with TSaveDialog.Create (nil) do
-        try
-          DefaultExt := 'xmlExplorer';
-          FileName := configFileName;
-          Filter := 'xmlExplorer config (*.xmlExplorer)|*.xmlExplorer';
-          Title := 'Save xmlExplorer config';
-          if Execute then
-          begin
-            configFileName := FileName;
-            saveConfig (configFileName);
-          end
-          else
-            Result := False;
-        finally
-          Free;
-        end;
-      end;
-    end;
-    if (ret = mrCancel) then
-      Result := False;
-  end;
-end;
-
 procedure TMainForm.OnlyWhenLicensed;
 begin
   if (GetUserName <> 'BouwmanJW')
@@ -407,65 +341,9 @@ begin
     raise Exception.Create ('Disabled because you are not a licensed user.');
 end;
 
-procedure TMainForm.saveConfig(aFileName: String);
-begin
-  with configAsXml do
-  try
-    SaveStringToFile (aFileName, AsText(False, 0, False, False));
-    configRead := True; // well, looks like
-    configChanged := False;
-  finally
-    free;
-  end;
-end;
-
-function TMainForm.configAsXml: TXml;
-var
-  x, y: Integer;
-  sl: TStringList;
-begin
-  result := TXml.CreateAsString ('xmlExplorerConfig', '');
-  result.AddXml (xmlUtil.IpmDescrsAsXml);
-  with result.AddXml(TXml.CreateAsString('CompareSpecs', '')) do
-  begin
-    AddXml (TXml.CreateAsBoolean('IgnoreOrderOfElements', XmlUtil.IgnoreOrderOfElements));
-    for x := 0 to SortSpecs.Count - 1 do
-    begin
-      with AddXml (TXml.CreateAsString('OrderGroup', '')) do
-      begin
-        AddXml (TXml.CreateAsString('RecurringGroup', SortSpecs.Strings[x]));
-        with AddXml (TXml.CreateAsString('SortKeys', '')) do
-        begin
-          sl := SortSpecs.Objects[x] as TStringList;
-          for y := 0 to sl.Count - 1 do
-            AddXml (TXml.CreateAsString('Element', sl.Strings[y]));
-        end;
-      end;
-    end;
-    with AddXml (TXml.CreateAsString('IgnoreDifferences', '')) do
-      for x := 0 to XmlUtil.ignoreDifferencesOn.Count - 1 do
-        AddXml (TXml.CreateAsString('Element', XmlUtil.ignoreDifferencesOn.Strings[x]));
-  end;
-end;
-
 procedure TMainForm.Exit1Click(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TMainForm.readConfig(aFileName: String);
-var
-  xXml: TXml;
-begin
-  xXml := TXml.Create;
-  try
-    xXml.LoadFromFile (aFileName, nil);
-    configFromXml (aFileName, xXml);
-    configRead := True;
-    configChanged := False;
-  finally
-    xXml.Free;
-  end;
 end;
 
 procedure TMainForm.configFromXml(aFileName: String; aXml: TXml);
@@ -525,52 +403,6 @@ begin
 {}
 end;
 
-procedure TMainForm.openConfigActionExecute(Sender: TObject);
-begin
-  OnlyWhenLicensed;
-  with TOpenDialog.Create (nil) do
-  try
-    DefaultExt := 'xmlExplorer';
-    FileName := configFileName;
-    Filter := 'xmlExplorer config (*.xmlExplorer)|*.xmlExplorer';
-    Title := 'Open xmlExplorer config';
-    Options := Options + [ofFileMustExist];
-    if Execute then
-    begin
-      configFileName := FileName;
-      readConfig (configFileName);
-    end;
-  finally
-    Free;
-  end;
-end;
-
-procedure TMainForm.saveConfigActionExecute(Sender: TObject);
-begin
-  OnlyWhenLicensed;
-  saveConfig (configFileName);
-end;
-
-procedure TMainForm.saveConfigAsActionExecute(Sender: TObject);
-begin
-  OnlyWhenLicensed;
-  with TSaveDialog.Create (nil) do
-  try
-    DefaultExt := 'xmlExplorer';
-    FileName := configFileName;
-    Filter := 'xmlExplorer config (*.xmlExplorer)|*.xmlExplorer';
-    Title := 'Save xmlExplorer config';
-    Options := Options + [ofOverWritePrompt];
-    if Execute then
-    begin
-      configFileName := FileName;
-      saveConfig (configFileName);
-    end;
-  finally
-    Free;
-  end;
-end;
-
 procedure TMainForm.openFileActionExecute(Sender: TObject);
 var
   xForm: TShowXmlForm;
@@ -594,42 +426,6 @@ begin
     end;
   finally
     Free;
-  end;
-end;
-
-procedure TMainForm.editConfigActionExecute(Sender: TObject);
-var
-  nXml, cXml: TXml;
-begin
-  if Assigned (configXsd) then
-  begin
-    nXml := TXml.Create (0,configXsd);
-    try
-      cXml := configAsXml;
-      try
-        nXml.LoadValues (cXml, False, False);
-        Application.CreateForm(TShowXmlForm, ShowXmlForm);
-        try
-          ShowXmlForm.Caption := 'xmlExplorer config ' + configFileName;
-          ShowXmlForm.Bind := nXml;
-          ShowXmlForm.isReadOnly := False;
-          ShowXmlForm.ShowModal;
-          if (ShowXmlForm.modalResult = mrOk)
-          or (True) then
-          begin
-            cXml.CopyDownLine (nXml, True);
-            configFromXml (configFileName, cXml);
-            configChanged := True;
-          end;
-        finally
-          FreeAndNil (ShowXmlForm);
-        end;
-      finally
-        cXml.Free;
-      end;
-    finally
-      nXml.Free;
-    end;
   end;
 end;
 
@@ -713,8 +509,6 @@ begin
   xmlUtil.OnProgress := ShowProgress;
   xmlUtil.doEnableCompare := True;
   _OnParseErrorEvent := ParserError;
-  if configFileName <> '' then
-    readConfig (configFileName);
 end;
 
 procedure TMainForm.License1Click(Sender: TObject);

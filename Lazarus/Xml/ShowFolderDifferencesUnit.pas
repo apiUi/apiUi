@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
   Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, VirtualTrees, FileUtil, ToolWin, FormIniFilez,
+  Dialogs, StdCtrls, ExtCtrls, VirtualTrees, LazFileUtils, ToolWin, FormIniFilez,
   ComCtrls, ImgList, ActnList, a2bStringListUnit, Xmlz, A2BXmlz;
 
 type
@@ -32,20 +32,29 @@ type
   end;
 
 type
+
+  { TShowFolderDifferencesForm }
+
   TShowFolderDifferencesForm = class(TForm)
+    MaintainIgnoredOrderListAction: TAction;
+    MaintainIgnoredRemovalsAction: TAction;
+    MaintainIgnoredAdditionsAction: TAction;
     Panel1: TPanel;
     ToolBar1: TToolBar;
     leftPanel: TPanel;
     mainVST: TVirtualStringTree;
     ActionImageList: TImageList;
     ActionList1: TActionList;
+    ToolButton12: TToolButton;
+    ToolButton13: TToolButton;
+    ToolButton14: TToolButton;
     ToolButton2: TToolButton;
     CheckAllAction: TAction;
     UncheckAllAction: TAction;
     HelpAction: TAction;
     OverviewStatusBar: TStatusBar;
     ToolButton1: TToolButton;
-    MaintainIgnoreListAction: TAction;
+    MaintainIgnoreDiffsListAction: TAction;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     NextDiffAction: TAction;
@@ -60,15 +69,22 @@ type
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
     HtmlReportAction: TAction;
+    procedure CheckAllActionExecute(Sender: TObject);
     procedure HtmlReportActionExecute(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure CopyToClipboardActionExecute(Sender: TObject);
+    procedure MaintainIgnoredOrderListActionExecute(Sender: TObject);
+    procedure MaintainIgnoredAdditionsActionExecute(Sender: TObject);
+    procedure MaintainIgnoredAdditionsActionUpdate(Sender: TObject);
+    procedure MaintainIgnoredOrderListActionUpdate(Sender: TObject);
+    procedure MaintainIgnoredRemovalsActionExecute(Sender: TObject);
+    procedure MaintainIgnoredRemovalsActionUpdate(Sender: TObject);
     procedure PrevDiffActionExecute(Sender: TObject);
     procedure NextDiffActionExecute(Sender: TObject);
     procedure PrevDiffActionUpdate(Sender: TObject);
     procedure NextDiffActionUpdate(Sender: TObject);
-    procedure MaintainIgnoreListActionUpdate(Sender: TObject);
-    procedure MaintainIgnoreListActionExecute(Sender: TObject);
+    procedure MaintainIgnoreDiffsListActionUpdate(Sender: TObject);
+    procedure MaintainIgnoreDiffsListActionExecute(Sender: TObject);
     procedure mainVSTClick(Sender: TObject);
     procedure mainVSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure ToolButton1Click(Sender: TObject);
@@ -124,6 +140,7 @@ type
     property ShowDelta: Boolean read getShowDelta write setShowDelta;
     property ShowNonVerbs: Boolean read getShowNonVerbs write setShowNonVerbs;
     property PreviewMode: Boolean read fPreviewMode write setPreviewMode;
+    procedure MaintainList (aCaptian: String; aList: TStringList; aDoOrder: Boolean);
   end;
 
 var
@@ -152,9 +169,11 @@ var
   len: integer;
 begin
   len := length(path);
-  if (len = 0) or (path[len] = '\') then
-    result := path else
-    result := path+'\';
+  if (len = 0)
+  or (path[len] = DirectorySeparator) then
+    result := path
+  else
+    result := path + DirectorySeparator;
 end;
 
 procedure TShowFolderDifferencesForm.FormCreate(Sender: TObject);
@@ -248,6 +267,7 @@ var
   res: integer;
   sr: TSearchRec;
   xFile: TFileSpec;
+  xFolderName: String;
 begin
   if not DirectoryExistsUTF8(FolderName) { *Converted from DirectoryExists* } then
     raise Exception.Create('Unknown folder: ' + FolderName);
@@ -255,7 +275,8 @@ begin
     aFiles.Objects[x].Free;
   aFiles.Clear;
 
-  res := sysUtils.FindFirst(appendSlash(FolderName)+'*.*',faAnyFile,sr); { *Converted from FindFirst* }
+  xFolderName := appendSlash(FolderName);
+  res := FindFirstUTF8(xFolderName + '*.*',faAnyFile,sr); { *Converted from FindFirst* }
   while res = 0 do
   begin
     if not (sr.Attr and faDirectory = faDirectory) then
@@ -263,20 +284,19 @@ begin
       xFile := TFileSpec.Create;
       xFile.Name := sr.Name;
       xFile.Size := sr.Size;
-      xFile.Modified := FileAgeUtf8(sr.Name);
+      xFile.Modified := FileDateToDateTime(sr.Time);
       aFiles.AddObject(xFile.Name, xFile);
     end;
-    res := sysUtils.FindNext(sr); { *Converted from FindNext* }
+    res := FindNextUTF8(sr); { *Converted from FindNext* }
   end;
   aFiles.Sort;
 end;
 
 procedure TShowFolderDifferencesForm.PopulateMain;
 var
-  x, a, b, c, i: Integer;
-  xNode, cNode: PVirtualNode;
-  xData, cData: PVSTreeRec;
-  s: String;
+  a, b, c, i: Integer;
+  xNode: PVirtualNode;
+  xData: PVSTreeRec;
 begin
   mainVST.BeginUpdate;
   try
@@ -393,7 +413,8 @@ begin
       begin
         if Assigned (xData.aFile)
         and Assigned (xData.bFile) then
-          if xData.A2B.Differs then
+          if xData.A2B.Differs
+          and (not xData.A2B.Ignored) then
             ImageIndex := 133
           else
             ImageIndex := 132
@@ -411,6 +432,15 @@ end;
 procedure TShowFolderDifferencesForm.mainVSTGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: string);
+  function _DateTimeAsStr(aDT: TDateTime): String;
+  var
+    year, month, day, hour, min, sec, msec: Word;
+  begin
+    DecodeDate(aDT,year,month,day);
+    DecodeTime(aDT,hour,min,sec,msec);
+    result := Format('%.*d-%.*d-%.*dT%.*d:%.*d:%.*d.%.*d'
+                  , [4, year, 2, month, 2, day, 2, hour, 2, min, 2, sec, 3, msec]);
+  end;
 var
   xData: PVSTreeRec;
 begin
@@ -423,13 +453,13 @@ begin
     1: if Assigned (xData.aFile) then
          CellText := IntToStr (xData.aFile.Size);
     2: if Assigned (xData.aFile) then
-         CellText := DateTimeToStr (xData.aFile.Modified);
+         CellText := _DateTimeAsStr (xData.aFile.Modified);
     4: if Assigned (xData.bFile) then
          CellText := xData.bFile.Name;
     5: if Assigned (xData.bFile) then
          CellText := IntToStr (xData.bFile.Size);
     6: if Assigned (xData.bFile) then
-         CellText := DateTimeToStr(xData.bFile.Modified);
+         CellText := _DateTimeAsStr(xData.bFile.Modified);
     end;
   except
     on e: Exception do
@@ -585,6 +615,7 @@ begin
           xForm.Caption := 'Differences in requests';
           xForm.ignoreDifferencesOn := ignoreDifferencesOn;
           xForm.ignoreRemovingOn := ignoreRemovingOn;
+          xForm.ignoreAddingOn := ignoreAddingOn;
           xForm.ignoreOrderOn := ignoreOrderOn;
           xForm.regressionSortColumns := regressionSortColumns;
 //        xForm.orderGroupsOn := orderGroupsOn;
@@ -616,6 +647,45 @@ begin
   end;
 end;
 
+procedure TShowFolderDifferencesForm.MaintainList(aCaptian: String;
+  aList: TStringList; aDoOrder: Boolean);
+var
+  x, a, f: Integer;
+  Srcs, Dsts: TStringList;
+begin
+  Srcs := TStringList.Create;
+  Srcs.Sorted := not aDoOrder;
+  Srcs.Duplicates := dupIgnore;
+  Dsts := TStringList.Create;
+  Dsts.Sorted := not aDoOrder;
+  Dsts.Duplicates := dupIgnore;
+  try
+    Dsts.Text := aList.Text;
+    Application.CreateForm(TdualListForm, dualListForm);
+    try
+      dualListForm.Caption := aCaptian;
+      dualListForm.DstList.Items.Text := Dsts.Text;
+      dualListForm.SrcList.Items.Text := '';
+      dualListForm.DstCaption := 'Ignored elements';
+      dualListForm.SrcCaption := '';
+      duallistForm.EmptySelectionAllowed := True;
+      dualListForm.ShowModal;
+      if dualListForm.ModalResult = mrOk then
+      begin
+        aList.Text := dualListForm.DstList.Items.Text;
+        FormShow(nil);
+      end;
+    finally
+      FreeAndNil (dualListForm);
+    end;
+  finally
+    Srcs.Clear;
+    Srcs.Free;
+    Dsts.Clear;
+    Dsts.Free;
+  end;
+end;
+
 procedure TShowFolderDifferencesForm.CreateA(xData: PVSTreeRec);
 var
   aXml: TXml;
@@ -634,49 +704,16 @@ begin
   FreeAndNil (bXml);
 end;
 
-procedure TShowFolderDifferencesForm.MaintainIgnoreListActionExecute(
+procedure TShowFolderDifferencesForm.MaintainIgnoreDiffsListActionExecute(
   Sender: TObject);
-var
-  x, a, f: Integer;
-  Srcs, Dsts: TStringList;
 begin
-  Srcs := TStringList.Create;
-  Srcs.Sorted := True;
-  Srcs.Duplicates := dupIgnore;
-  Dsts := TStringList.Create;
-  Dsts.Sorted := True;
-  Dsts.Duplicates := dupIgnore;
-  try
-    Dsts.Text := ignoreDifferencesOn.Text;
-    Application.CreateForm(TdualListForm, dualListForm);
-    try
-      dualListForm.Caption := 'List of elements to be ignored';
-      dualListForm.DstList.Items.Text := Dsts.Text;
-      dualListForm.SrcList.Items.Text := '';
-      dualListForm.DstCaption := 'Ignored elements';
-      dualListForm.SrcCaption := '';
-      duallistForm.EmptySelectionAllowed := True;
-      dualListForm.ShowModal;
-      if dualListForm.ModalResult = mrOk then
-      begin
-        ignoreDifferencesOn.Text := dualListForm.DstList.Items.Text;
-        FormShow(nil);
-      end;
-    finally
-      FreeAndNil (dualListForm);
-    end;
-  finally
-    Srcs.Clear;
-    Srcs.Free;
-    Dsts.Clear;
-    Dsts.Free;
-  end;
+  MaintainList(MaintainIgnoreDiffsListAction.Caption, ignoreDifferencesOn, False);
 end;
 
-procedure TShowFolderDifferencesForm.MaintainIgnoreListActionUpdate(
+procedure TShowFolderDifferencesForm.MaintainIgnoreDiffsListActionUpdate(
   Sender: TObject);
 begin
-  MaintainIgnoreListAction.Enabled := Assigned (ignoreDifferencesOn)
+  MaintainIgnoreDiffsListAction.Enabled := Assigned (ignoreDifferencesOn)
                                   and (ignoreDifferencesOn.Count > 0);
 end;
 
@@ -742,6 +779,45 @@ begin
   finally
     XmlUtil.PopCursor;
   end;
+end;
+
+procedure TShowFolderDifferencesForm.MaintainIgnoredOrderListActionExecute(
+  Sender: TObject);
+begin
+  MaintainList(MaintainIgnoredOrderListAction.Caption, ignoreOrderOn, False);
+end;
+
+procedure TShowFolderDifferencesForm.MaintainIgnoredAdditionsActionExecute(
+  Sender: TObject);
+begin
+  MaintainList(MaintainIgnoredAdditionsAction.Caption, ignoreAddingOn, False);
+end;
+
+procedure TShowFolderDifferencesForm.MaintainIgnoredAdditionsActionUpdate(
+  Sender: TObject);
+begin
+  MaintainIgnoredAdditionsAction.Enabled := Assigned (ignoreAddingOn)
+                                  and (ignoreAddingOn.Count > 0);
+end;
+
+procedure TShowFolderDifferencesForm.MaintainIgnoredOrderListActionUpdate(
+  Sender: TObject);
+begin
+  MaintainIgnoredOrderListAction.Enabled := Assigned (ignoreOrderOn)
+                                  and (ignoreOrderOn.Count > 0);
+end;
+
+procedure TShowFolderDifferencesForm.MaintainIgnoredRemovalsActionExecute(
+  Sender: TObject);
+begin
+  MaintainList(MaintainIgnoredRemovalsAction.Caption, ignoreRemovingOn, False);
+end;
+
+procedure TShowFolderDifferencesForm.MaintainIgnoredRemovalsActionUpdate(
+  Sender: TObject);
+begin
+  MaintainIgnoredRemovalsAction.Enabled := Assigned (ignoreRemovingOn)
+                                  and (ignoreRemovingOn.Count > 0);
 end;
 
 procedure TShowFolderDifferencesForm.CopyGridOnGetText(Sender: TBaseVirtualTree;
@@ -911,6 +987,7 @@ var
   end;
 {}
 begin
+  ShowMessage ('not implemented');
 {}{
   xXml := TXml.CreateAsString('html', '');
   try
@@ -1065,6 +1142,11 @@ begin
     FreeAndNil (xXml);
   end;
 {}
+end;
+
+procedure TShowFolderDifferencesForm.CheckAllActionExecute(Sender: TObject);
+begin
+
 end;
 
 end.

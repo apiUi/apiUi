@@ -13,7 +13,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 380
@@ -37,7 +37,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       TabOrder = 0
       object mainVST: TVirtualStringTree
         Left = 4
-        Height = 347
+        Height = 344
         Top = 4
         Width = 761
         Align = alClient
@@ -123,8 +123,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       end
       object OverviewStatusBar: TStatusBar
         Left = 4
-        Height = 17
-        Top = 351
+        Height = 20
+        Top = 348
         Width = 761
         Panels = <        
           item
@@ -146,6 +146,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     TabOrder = 1
     object ToolButton2: TToolButton
       Left = 272
+      Height = 22
       Top = 2
       Width = 10
       Action = MaintainIgnoreDiffsAction
@@ -168,6 +169,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton3: TToolButton
       Left = 374
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -186,6 +188,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton7: TToolButton
       Left = 430
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton7'
@@ -199,6 +202,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton8: TToolButton
       Left = 463
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton8'
@@ -212,6 +216,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton11: TToolButton
       Left = 496
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton11'
@@ -230,10 +235,10 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object CompareLogOrderByComboBox: TComboBox
       Left = 51
-      Height = 27
+      Height = 21
       Top = 2
       Width = 221
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 2
       Items.Strings = (
         'As is (timestamp)'
@@ -256,6 +261,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
     object ToolButton16: TToolButton
       Left = 1
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton16'
@@ -263,8 +269,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
   end
   object ActionImageList: TImageList
-    left = 304
-    top = 127
+    left = 312
+    top = 112
     Bitmap = {
       4C69950000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5123,4 +5129,4 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       OnExecute = HtmlReportActionExecute
     end
   end
-end
+end

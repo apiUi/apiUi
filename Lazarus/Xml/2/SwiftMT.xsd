@@ -82,7 +82,7 @@ Any and all rights, including title, ownership rights, copyright, trademark, pat
 					<xs:element name="ApplicationIdentifier" type="ApplicationIdentifierFin_Type"/>
 					<xs:element name="ServiceIdentifier" type="ServiceIdentifier_Type"/>
 					<xs:element name="LogicalTerminalAddress" type="LogicalTerminalAddress_Type"/>
-					<xs:element name="SessionNumber" type="SessionNumber_Type"/>
+					<xs:element name="SessionNummer" type="SessionNumber_Type"/>
 					<xs:element name="SequenceNumber" type="SequenceNumber_Type"/>
 				</xs:sequence>
 			</xs:extension>

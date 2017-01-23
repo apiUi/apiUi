@@ -1,7 +1,7 @@
 object AboutBox: TAboutBox
-  Left = 229
+  Left = 331
   Height = 268
-  Top = 166
+  Top = 172
   Width = 223
   BorderStyle = bsDialog
   Caption = 'About xmlExplorer'
