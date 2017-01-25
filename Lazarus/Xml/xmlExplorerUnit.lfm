@@ -43,10 +43,8 @@ object MainForm: TMainForm
     end
     object ToolButton5: TToolButton
       Left = 34
-      Hint = 'Paste from clipboard'
       Top = 2
-      Caption = 'Paste'
-      ImageIndex = 24
+      Action = PasteAction
     end
     object ToolButton2: TToolButton
       Left = 57
@@ -1884,6 +1882,11 @@ object MainForm: TMainForm
       ImageIndex = 5
       OnExecute = FolderActionExecute
       ShortCut = 16452
+    end
+    object PasteAction: TAction
+      Caption = 'PasteAction'
+      ImageIndex = 24
+      OnExecute = PasteActionExecute
     end
   end
   object MainMenu1: TMainMenu

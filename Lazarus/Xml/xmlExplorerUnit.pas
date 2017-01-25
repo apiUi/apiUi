@@ -25,6 +25,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    PasteAction: TAction;
     ToolBar: TToolBar;
     ToolButton1: TToolButton;
     ToolButton4: TToolButton;
