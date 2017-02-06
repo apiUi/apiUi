@@ -541,7 +541,7 @@ function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
-procedure wsdlSendOperationRequestLater (aOperation, aCorrelation, aLater: String);
+procedure wsdlSendOperationRequestLater (aOperation, aCorrelation: String; aLater: Extended);
 function RefuseHttpConnections (aObject: TObject; aLater, aWhile: Extended): Extended;
 function Sum (aSAObject, aSEObject: TObject): Extended;
 procedure AssignRecurring (aDAObject, aDEObject, aSAObject, aSEObject: TObject);
@@ -1187,11 +1187,14 @@ begin
   result := 1;
 end;
 
-procedure wsdlSendOperationRequestLater (aOperation, aCorrelation, aLater: String);
+procedure wsdlSendOperationRequestLater (aOperation, aCorrelation: String; aLater: Extended);
+var
+  xLater: Integer;
 begin
+  xLater := Trunc (aLater);
   if not Assigned (_WsdlSendOperationRequestLater) then
     raise Exception.Create('wsdlSendOperationRequestLater: implementation missing');
-  _WsdlSendOperationRequestLater (aOperation, aCorrelation, StrToIntDef (aLater, 3000));
+  _WsdlSendOperationRequestLater (aOperation, aCorrelation, xLater);
 end;
 
 function Sum (aSAObject, aSEObject: TObject): Extended;
@@ -3755,7 +3758,7 @@ begin
     BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindBeforeFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
-    BindBeforeFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSS, '(aOperation, aCorrelation, aLater)');
+    BindBeforeFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSX, '(aOperation, aCorrelation, aLater)');
     BindBeforeFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
     BindBeforeFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
     BindBeforeFunction ('SHA1', @SHA1, SFS, '(aString)');
@@ -3909,7 +3912,7 @@ begin
     BindAfterFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindAfterFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindAfterFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
-    BindAfterFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSS, '(aOperation, aCorrelation, aLater)');
+    BindAfterFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSX, '(aOperation, aCorrelation, aLater)');
     BindAfterFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
     BindAfterFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
     BindAfterFunction ('SHA1', @SHA1, SFS, '(aString)');

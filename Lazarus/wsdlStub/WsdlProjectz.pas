@@ -6191,6 +6191,24 @@ begin
               try
                 AResponseInfo.ResponseNo := 200;
                 CreateLogReply (xLog, xProcessed, True);
+                if Assigned (xLog.Operation) then
+                begin
+                  with TIdURI.Create(xLog.Operation.SoapAddress) do
+                  try
+                    if Path + Document <> xlog.httpDocument then
+                      xLog.Notifications := xLog.Notifications
+                                          + 'Used path ('
+                                          + xlog.httpDocument
+                                          + ') differs from expected path ('
+                                          + Path
+                                          + Document
+                                          + ')'
+                                          + LineEnding
+                                          ;
+                  finally
+                    Free;
+                  end;
+                end;
                 if xLog.Operation.isOneWay
                 or xLog.isAsynchronousRequest
                 or xLog.isAsynchronousReply then
@@ -6993,6 +7011,7 @@ begin
           xLog.OperationName := Items.XmlValueByTag ['Operation'];
           xLog.Exception := Items.XmlValueByTag ['Error'];
           xLog.Remarks := Items.XmlValueByTag ['Remarks'];
+          xLog.Notifications := Items.XmlValueByTag ['Notifications'];
           xLog.httpResponseCode := Items.XmlValueByTag ['httpResponseCode'];
           xLog.httpCommand := Items.XmlValueByTag ['httpCommand'];
           xLog.httpDocument := Items.XmlValueByTag ['httpDocument'];

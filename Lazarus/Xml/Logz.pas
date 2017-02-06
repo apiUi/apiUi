@@ -60,6 +60,7 @@ type
     Mssg: TWsdlMessage;
     Exception: String;
     Remarks: String;
+    Notifications: String;
     BeforeScript: String;
     AfterScript: String;
     RequestHeaders: String;
@@ -1020,6 +1021,7 @@ begin
     end;
     AddXml (TXml.CreateAsString('Error', Self.Exception));
     AddXml (TXml.CreateAsString('Remarks', Self.Remarks));
+    AddXml (TXml.CreateAsString('Notifications', Self.Notifications));
     AddXml (Txml.CreateAsString('httpResponseCode', Self.httpResponseCode));
     AddXml (Txml.CreateAsString('httpCommand', Self.httpCommand));
     AddXml (Txml.CreateAsString('httpDocument', Self.httpDocument));
