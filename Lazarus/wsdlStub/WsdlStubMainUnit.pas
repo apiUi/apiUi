@@ -5331,6 +5331,7 @@ procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
       exit; // you would loose the mqheader or wsa data entered
     d.StubAction := s.StubAction;
     d.OnRequestViolatingSchema := s.OnRequestViolatingSchema;
+    d.OnRequestViolatingAddressPath := s.OnRequestViolatingAddressPath;
     d.DelayTimeMsMin := s.DelayTimeMsMin;
     d.DelayTimeMsMax := s.DelayTimeMsMax;
     d.StubTransport := s.StubTransport;

@@ -32,7 +32,7 @@ type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, t
 type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
-type TOnRequestViolatingSchema = (rvsContinue, rvsRaiseErrorMessage);
+type TOnRequestViolating = (rvsDefault, rvsContinue, rvsRaiseErrorMessage, rvsAddRemark);
 type TProcedure = procedure of Object;
 const
 TransportTypeNames: array [ttHttp..ttNone] of String =
@@ -291,7 +291,7 @@ type
       InputHeaders: TWsdlHeaders;
       OutputHeaders: TWsdlHeaders;
       OperationCounter: Integer;
-      OnRequestViolatingSchema: TOnRequestViolatingSchema;
+      OnRequestViolatingSchema, OnRequestViolatingAddressPath: TOnRequestViolating;
       BindName: String;
       SoapTransport: String;
       SoapAction: String;
@@ -4481,6 +4481,7 @@ begin
   self.OutputHeaders := xOperation.OutputHeaders;
   self.BindName := xOperation.BindName;
   self.OnRequestViolatingSchema := xOperation.OnRequestViolatingSchema;
+  self.OnRequestViolatingAddressPath := xOperation.OnRequestViolatingAddressPath;
   self.SoapAction := xOperation.SoapAction;
   self.SoapBindingStyle := xOperation.SoapBindingStyle;
   self.SoapBodyInputEncodingStype := xOperation.SoapBodyInputEncodingStype;
@@ -5818,10 +5819,27 @@ begin
   with result do
   begin
     with result.AddXml (Txml.CreateAsString('OnRequestViolatingSchema', '')) do
+    begin
+      if OnRequestViolatingSchema = rvsDefault then
+        AddXml (TXml.CreateAsString('UseProjectDefault',''));
       if OnRequestViolatingSchema = rvsContinue then
-        AddXml (TXml.CreateAsString('Continue',''))
-      else
+        AddXml (TXml.CreateAsString('Continue',''));
+      if OnRequestViolatingSchema = rvsRaiseErrorMessage then
         AddXml (TXml.CreateAsString('RaiseErrorMessage',''));
+      if OnRequestViolatingSchema = rvsAddRemark then
+        AddXml (TXml.CreateAsString('AddRemark',''));
+    end;
+    with result.AddXml (Txml.CreateAsString('OnRequestViolatingAddressPath', '')) do
+    begin
+      if OnRequestViolatingAddressPath = rvsDefault then
+        AddXml (TXml.CreateAsString('UseProjectDefault',''));
+      if OnRequestViolatingAddressPath = rvsContinue then
+        AddXml (TXml.CreateAsString('Continue',''));
+      if OnRequestViolatingAddressPath = rvsRaiseErrorMessage then
+        AddXml (TXml.CreateAsString('RaiseErrorMessage',''));
+      if OnRequestViolatingAddressPath = rvsAddRemark then
+        AddXml (TXml.CreateAsString('AddRemark',''));
+    end;
     with AddXml (TXml.CreateAsString('scripts', '')) do
     begin
       with AddXml (TXml.CreateAsString('invoke', '')) do
@@ -5850,13 +5868,31 @@ begin
   oldInvokeSpec := 'none';
   doReadReplyFromFile := False;
   ReadReplyFromFileXml.Items.Clear;
-  OnRequestViolatingSchema := rvsContinue;
   xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingSchema'];
+  OnRequestViolatingSchema := rvsDefault;
   if Assigned (xXml) then
   begin
-    yXml := xXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage'];
-    if Assigned (yXml) then
+    if Assigned (xXml.Items.XmlCheckedItemByTag ['UseProjectDefault']) then
+      OnRequestViolatingSchema := rvsDefault;
+    if Assigned (xXml.Items.XmlCheckedItemByTag ['Continue']) then
+      OnRequestViolatingSchema := rvsContinue;
+    if Assigned (xXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
       OnRequestViolatingSchema := rvsRaiseErrorMessage;
+    if Assigned (xXml.Items.XmlCheckedItemByTag ['AddRemark']) then
+      OnRequestViolatingSchema := rvsAddRemark;
+  end;
+  xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingAddressPath'];
+  OnRequestViolatingAddressPath := rvsDefault;
+  if Assigned (xXml) then
+  begin
+    if Assigned (xXml.Items.XmlCheckedItemByTag ['UseProjectDefault']) then
+      OnRequestViolatingAddressPath := rvsDefault;
+    if Assigned (xXml.Items.XmlCheckedItemByTag ['Continue']) then
+      OnRequestViolatingAddressPath := rvsContinue;
+    if Assigned (xXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
+      OnRequestViolatingAddressPath := rvsRaiseErrorMessage;
+    if Assigned (xXml.Items.XmlCheckedItemByTag ['AddRemark']) then
+      OnRequestViolatingAddressPath := rvsAddRemark;
   end;
   xXml := aXml.Items.XmlCheckedItemByTag['scripts'];
   if Assigned (xXml) then

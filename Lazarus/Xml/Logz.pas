@@ -87,6 +87,7 @@ type
     relatesTo: TLog;
     ServiceName, OperationName: String;
     DelayTimeMs, OperationCount: Integer;
+    procedure AddRemark (aRemark: String);
     function CompareKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TStringList): String;
     function DurationAsString: String;
     function StubActionAsString: String;
@@ -1068,6 +1069,14 @@ begin
   DisplayedColumns.Clear;
   FreeAndNil (DisplayedColumns);
   FreeAndNil (Stream);
+end;
+
+procedure TLog.AddRemark(aRemark: String);
+begin
+  if Remarks = '' then
+    Remarks := aRemark
+  else
+    Remarks := Remarks + LineEnding + aRemark;
 end;
 
 function TLog.CompareKey (aCompareBy : TCompareLogOrderBy; aSortColumns: TStringList): String ;

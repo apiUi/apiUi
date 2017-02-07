@@ -152,6 +152,7 @@ type
     uiInvalid: Boolean;
     ProgressMax, ProgressPos: Integer;
     doCloneOperations: Boolean;
+    OnRequestViolatingSchema, OnRequestViolatingAddressPath: TOnRequestViolating;
     DatabaseConnectionSpecificationXml: TXml;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
     FreeFormatWsdl, XsdWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
@@ -526,10 +527,7 @@ begin
   end;
   with (aOperation as TWsdlOperation).Data as TLog do
   begin
-    if Remarks = '' then
-      Remarks := aString
-    else
-      Remarks := Remarks + CRLF + aString;
+    AddRemark(aString);
   end;
 end;
 
@@ -1984,6 +1982,27 @@ begin
        saRequest: ;
     end;
   end;
+  with result.AddXml (TXml.CreateAsString('OperationDefaults', '')) do
+  begin
+    with AddXml (TXml.CreateAsString('OnRequestViolatingAddressPath', '')) do
+    begin
+      case OnRequestViolatingAddressPath of
+        rvsDefault: AddXml (TXml.CreateAsString('Continue', '')); // YES!!
+        rvsContinue: AddXml (TXml.CreateAsString('Continue', ''));
+        rvsAddRemark: AddXml (TXml.CreateAsString('AddRemark', ''));
+        rvsRaiseErrorMessage: AddXml (TXml.CreateAsString('RaiseErrorMessage', ''));
+      end;
+    end;
+    with AddXml (TXml.CreateAsString('OnRequestViolatingSchema', '')) do
+    begin
+      case OnRequestViolatingSchema of
+        rvsDefault: AddXml (TXml.CreateAsString('Continue', '')); // YES!!
+        rvsContinue: AddXml (TXml.CreateAsString('Continue', ''));
+        rvsAddRemark: AddXml (TXml.CreateAsString('AddRemark', ''));
+        rvsRaiseErrorMessage: AddXml (TXml.CreateAsString('RaiseErrorMessage', ''));
+      end;
+    end;
+  end;
   with result.AddXml (TXml.Create) do
     CopyDownLine(DatabaseConnectionSpecificationXml, True);
 end;
@@ -3368,6 +3387,8 @@ begin
   wrdFunctionz.wrdNewDocumentAsReference := False;
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
   RemoteControlPortNumber := 3738;
+  OnRequestViolatingAddressPath:=rvsContinue;
+  OnRequestViolatingSchema:=rvsContinue;
   xsdElementsWhenRepeatable := defaultXsdElementsWhenRepeatable;
   xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
   xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
@@ -3425,6 +3446,26 @@ begin
       begin
         unknownOperation.StubAction := saRedirect;
         unknownOperation.endpointConfigFromXml(yXml);
+      end;
+    end;
+    xXml := XmlCheckedItemByTag ['OperationDefaults'];
+    if Assigned (xXml) then
+    begin
+      yXml := xXml.Items.XmlCheckedItemByTag ['OnRequestViolatingAddressPath'];
+      if Assigned (yXml) then
+      begin
+        if Assigned (yXml.Items.XmlCheckedItemByTag ['AddRemark']) then
+          OnRequestViolatingAddressPath:=rvsAddRemark;
+        if Assigned (yXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
+          OnRequestViolatingAddressPath:=rvsRaiseErrorMessage;
+      end;
+      yXml := xXml.Items.XmlCheckedItemByTag ['OnRequestViolatingSchema'];
+      if Assigned (yXml) then
+      begin
+        if Assigned (yXml.Items.XmlCheckedItemByTag ['AddRemark']) then
+          OnRequestViolatingSchema:=rvsAddRemark;
+        if Assigned (yXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
+          OnRequestViolatingSchema:=rvsRaiseErrorMessage;
       end;
     end;
     xXml := XmlCheckedItemByTag ['DatabaseConnection'];
@@ -4419,6 +4460,7 @@ function TWsdlProject .CreateLogReplyPostProcess (aLogItem : TLog ;
   aOperation : TWsdlOperation ): String;
 var
   xMessage: String;
+  xOnRequestViolatingSchema: TOnRequestViolating;
 begin
   result := aLogItem.ReplyBody;
   if Assigned (aOperation) then
@@ -4490,9 +4532,14 @@ begin
           xMessage := '';
           if not aOperation.reqBind.IsValueValid (xMessage) then
           begin
+            xOnRequestViolatingSchema := aOperation.OnRequestViolatingSchema;
+            if xOnRequestViolatingSchema = rvsDefault then
+              xOnRequestViolatingSchema := OnRequestViolatingSchema;
             RequestValidateResult := xMessage;
-            if (aOperation.OnRequestViolatingSchema = rvsRaiseErrorMessage) then
+            if (xOnRequestViolatingSchema = rvsRaiseErrorMessage) then
               raise SysUtils.Exception.Create('Schema validation error on request:' + LineEnding + xMessage);
+            if (xOnRequestViolatingSchema = rvsAddRemark) then
+              aLogItem.AddRemark ('Schema validation error on request:' + LineEnding + xMessage);
           end;
           RequestValidated := True;
         end;
@@ -6121,7 +6168,8 @@ var
   xProcessed: Boolean;
   f: Integer;
   xStream: TMemoryStream;
-  xRelatesTo: String;
+  xRelatesTo, xNotification: String;
+  xOnRequestViolatingAddressPath: TOnRequestViolating;
 begin
   xProcessed := False;
   try // finally set for hhtp reply
@@ -6196,15 +6244,28 @@ begin
                   with TIdURI.Create(xLog.Operation.SoapAddress) do
                   try
                     if Path + Document <> xlog.httpDocument then
+                    begin
+                      xNotification := 'Used path ('
+                                     + xlog.httpDocument
+                                     + ') differs from expected path ('
+                                     + Path
+                                     + Document
+                                     + ')'
+                                     ;
                       xLog.Notifications := xLog.Notifications
-                                          + 'Used path ('
-                                          + xlog.httpDocument
-                                          + ') differs from expected path ('
-                                          + Path
-                                          + Document
-                                          + ')'
+                                          + xNotification
                                           + LineEnding
                                           ;
+                      if xLog.Operation.OnRequestViolatingAddressPath = rvsDefault then
+                        xOnRequestViolatingAddressPath := OnRequestViolatingAddressPath
+                      else
+                        xOnRequestViolatingAddressPath := xLog.Operation.OnRequestViolatingAddressPath;
+                      case xOnRequestViolatingAddressPath of
+                        rvsContinue: ;
+                        rvsRaiseErrorMessage: raise Exception.Create(xNotification);
+                        rvsAddRemark: xLog.AddRemark(xNotification);
+                      end;
+                    end;
                   finally
                     Free;
                   end;
