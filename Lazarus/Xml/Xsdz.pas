@@ -27,6 +27,7 @@ type
 type
   TjsonType = (jsonNone, jsonString, jsonNumber, jsonBoolean, jsonObject,
     jsonArray, jsonArrayValue);
+type TOperationParametersType = (oppBody, oppPath, oppQuery, oppHeader, oppForm);
 
 type
   TOnHaveString = procedure(aString: String) of Object;
@@ -83,11 +84,19 @@ type
     BaseDataTypeName: String;
     BaseNameSpace: String;
     BaseDataType: TXsdDataType;
+    DefaultValue: String;
     ContentModel: String;
     DerivationMethod: String;
     Length: String;
     MinLength: String;
     MaxLength: String;
+    MinItems: String;
+    MaxItems: String;
+    MultipleOf: String;
+    uniqueItems: String;
+    maxProperties: String;
+    MinProperties: String;
+    Required: Boolean; // json
     Pattern: String;
     Whitespace: String;
     MaxInclusive: String;
@@ -105,6 +114,7 @@ type
     AttributeDefs: TXsdAttrList;
     Manually: Boolean;
     ManuallyUsedAtPath: String;
+    dollarRef: String;
 {
     isMaxLengthAdjusted: Boolean;
     MaxOccursAdjusted: Integer;
@@ -161,6 +171,7 @@ type
     FormDefaultQualified: Boolean;
     DoNotEncode: Boolean;
     isReadOnly: Boolean;
+    ParametersType: TOperationParametersType;
     minOccurs: String;
     maxOccurs: String;
     _UnknownType: String;
@@ -215,6 +226,7 @@ type
     function ArrayContains(const Value: String;
       const Values: array of String): Boolean;
     function AddComplexType(aXml: TObject; aTargetNamespace: String; isGlobalDefined: Boolean): TXsdDataType;
+    procedure AppendDoc (var aDoc: String; aString: String);
     procedure AddDataTypeFacets(aTypeDef: TXsdDataType; aXml: TObject);
     function AddAttributeDef (aTypeDef: TXsdDataType; aXml: TObject; aTargetNamespace: String): TXsdAttr;
     function AddElement(aTypeDef: TXsdDataType; aXml: TObject; aTargetNameSpace: String; aRoot: Boolean): TXsd;
@@ -244,6 +256,7 @@ type
     function xsdFindTypeDef(aNameSpace, aName: String): TXsdDataType;
     procedure AddBuiltIns;
     procedure AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent);
+    function AddTypeDefFromJsonXml(aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
     procedure AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);
     function LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent): Boolean;
     function LoadXsdFromString(aString: String; ErrorFound: TOnErrorEvent): Boolean;
@@ -395,6 +408,7 @@ begin
   xsdDescr := aXsdDescr;
   minOccurs := '1';
   maxOccurs := '1';
+  ParametersType := oppBody;
   FormDefaultQualified := xsdElementFormDefaultQualified;
 end;
 
@@ -408,6 +422,7 @@ begin
   self.ElementNameSpace := aSource.ElementNameSpace;
   self.minOccurs := aSource.minOccurs;
   self.maxOccurs := aSource.maxOccurs;
+  self.ParametersType := aSource.ParametersType;
   self.sType := aSource.sType;
   self.InitialCollapsed := aSource.InitialCollapsed;
   self.Documentation.Text := aSource.Documentation.Text;
@@ -883,6 +898,14 @@ begin
     TypeDefs.AddObject(result.NameSpace + ';' + result.Name, result);
 end;
 
+procedure TXsdDescr.AppendDoc (var aDoc: String ; aString: String);
+begin
+  if Length (aDoc) > 0 then
+    aDoc := aDoc + LineEnding + aString
+  else
+    aDoc := aString;
+end;
+
 
 procedure TXsdDescr.AddBuiltIns;
 var
@@ -956,6 +979,100 @@ begin
     xsdElementFormDefaultQualified := swapElementFormDefaultQualified;
     xsdAttributeFormDefaultQualified := swapAttributeFormDefaultQualified;
   end;
+end;
+
+function TXsdDescr.AddTypeDefFromJsonXml (aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
+  function _AddTypeDefFromJsonXml (aList: TXsdDataTypeList; aXml: TXml): TXsdDataType;
+    procedure _baseTypeToJson (aType: TXsdDataType);
+    begin
+      if aType.BaseDataTypeName = 'string' then aType.jsonType := jsonString;
+      if aType.BaseDataTypeName = 'object' then
+      begin
+        aType.jsonType := jsonObject;
+        aType.ContentModel := 'All';
+      end;
+      if aType.BaseDataTypeName = 'array' then
+      begin
+        aType.jsonType := jsonArray;
+        aType.ContentModel := 'All';
+      end;
+      if aType.BaseDataTypeName = 'boolean' then aType.jsonType := jsonBoolean;
+      if aType.BaseDataTypeName = 'number' then
+      begin
+        aType.jsonType := jsonNumber;
+        aType.BaseDataTypeName := 'float';
+      end;
+      if aType.BaseDataTypeName = 'integer' then aType.jsonType := jsonNumber;
+      if aType.BaseDataTypeName = 'any' then
+      begin
+        aType.jsonType := jsonObject;
+        aType.BaseDataTypeName := 'anyType';
+      end;
+      aType.BaseDataType := self.FindTypeDef(scXMLSchemaURI, aType.BaseDataTypeName);
+    end;
+  var
+    x, y, z: Integer;
+    xXml: TXml;
+    xDoc: String;
+    xEnum: TXsdEnumeration;
+  begin
+    result := TXsdDataType.Create(self);
+    result.xsdType:= dtSimpleType;
+    Garbage.AddObject('', result);
+    result.Name := aXml.Name;
+    result.NameSpace := aNameSpace;
+    aList.AddObject(result.NameSpace + ';' + result.Name, result);
+    xDoc := '';
+    for x := 0 to aXml.Items.Count - 1 do
+    begin
+      xXml := aXml.Items.XmlItems[x];
+      if xXml.Name = '$ref' then result.dollarRef := xXml.Value;
+      if xXml.Name = 'type' then
+      begin
+        result.BaseDataTypeName := xXml.Value;
+        _baseTypeToJson(result);
+        if not Assigned (result.BaseDataType) then
+        begin
+          SjowMessage (Format ('not yet found type: %s at %s', [result.BaseDataTypeName, result.Name]));
+        end;
+      end;
+      if xXml.Name = 'format' then;
+      if xXml.Name = 'title' then AppendDoc(xDoc, xXml.Value);
+      if xXml.Name = 'description' then AppendDoc(xDoc, xXml.Value);
+      if xXml.Name = 'default ' then result.DefaultValue := xXml.Value;
+      if xXml.Name = 'multipleOf' then ;
+      if xXml.Name = 'maximum' then result.MaxInclusive := xXml.Value;
+      if xXml.Name = 'exclusiveMaximum' then result.MaxExclusive := xXml.Value;
+      if xXml.Name = 'minimum' then result.MinInclusive := xXml.Value;
+      if xXml.Name = 'exclusiveMinimum' then result.MinExclusive := xXml.Value;
+      if xXml.Name = 'maxLength' then result.MaxLength := xXml.Value;
+      if xXml.Name = 'minLength' then result.MinLength := xXml.Value;
+      if xXml.Name = 'pattern' then result.Pattern := xXml.Value;
+      if xXml.Name = 'maxItems' then result.MaxItems := xXml.Value;
+      if xXml.Name = 'minItems' then result.MinItems := xXml.Value;
+      if xXml.Name = 'uniqueItems' then result.uniqueItems := xXml.Value;
+      if xXml.Name = 'maxProperties' then result.maxProperties := xXml.Value;
+      if xXml.Name = 'minProperties' then result.minProperties := xXml.Value;
+      if xXml.Name = 'required' then result.required := xXml.ValueAsBoolean;
+      if xXml.Name = 'enum' then
+      begin
+        for y := 0 to xXml.Items.Count - 1 do
+        begin
+          xEnum := TXsdEnumeration.Create;
+          xEnum.Value := xXml.Items.XmlItems[y].Value;
+          result.Enumerations.AddObject(xEnum.Value, xEnum);
+        end;
+      end;
+    end;
+    result.Documentation.Text := xDoc;
+  end;
+var
+  x: Integer;
+  swapElementFormDefaultQualified: Boolean;
+  swapAttributeFormDefaultQualified: Boolean;
+begin
+  if not (aXml is TXml) then raise Exception.Create('Illegal arg: TXsdDescr.AddXsdFromJsonXml(aXml: TObject; ErrorFound: TOnErrorEvent)');
+  result := _AddTypeDefFromJsonXml (TypeDefs, aXml as TXml);
 end;
 
 procedure TXsdDescr.AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);

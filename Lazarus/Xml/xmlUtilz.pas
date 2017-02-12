@@ -1256,6 +1256,16 @@ begin
     and Assigned ((aBind as TXml).Xsd.sType) then
     begin
 //    AddProperty('NameSpace (TypeDef)', (aBind as TXml).TypeDef.NameSpace);
+      if (aBind as TXml).Xsd.ParametersType <> oppBody then
+      begin
+        case (aBind as TXml).Xsd.ParametersType of
+          oppForm: AddProperty('in', 'formData');
+          oppBody: AddProperty('in', 'body');
+          oppHeader: AddProperty('in', 'header');
+          oppPath: AddProperty('in', 'path');
+          oppQuery: AddProperty('in', 'query');
+        end;
+      end;
       AddProperty('NameSpace', (aBind as TXml).Xsd.ElementNameSpace);
       AddProperty('ContentModel', (aBind as TXml).TypeDef.ContentModel);
       AddProperty('DerivationMethod', (aBind as TXml).TypeDef.DerivationMethod);

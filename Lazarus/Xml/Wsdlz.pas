@@ -46,6 +46,7 @@ TransportTypeNames: array [ttHttp..ttNone] of String =
 , 'None'
 );
 
+
 type
   TWsdl = class;
   TWsdlHeaders = class;
@@ -78,8 +79,8 @@ type
       function getServiceByName(Index: String): TWsdlService;
       function getOperationByRequest(Index: String): TWsdlOperation;
     public
-      Name: String;
-      FileName: String;
+      Name, FileName: String;
+      Description, Host, basePath, Schemes, Consumes, Produces: String;
       isSoapService: Boolean;
 //      xTargetNamespacePrefix: String;
       Services: TWsdlServices;
@@ -97,11 +98,13 @@ type
       _expectXml: TXml;
       property ServiceByName [Index: String]: TWsdlService read getServiceByName;
       property OperationByRequest [Index: String]: TWsdlOperation read getOperationByRequest;
+      procedure ValidateEvaluatedTags (aXml: TXml; aSl: TStringList);
       function ExtraXsdsAsXml: TXml;
       procedure ExtraXsdsFromXml (aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);
       procedure AddedTypeDefElementsFromXml (aXml: TXml);
       procedure LoadExtraXsds;
       procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent);
+      procedure LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
       procedure LoadFromSdfFile(aFileName: String);
       constructor Create(aEnvVars: TStringList; aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);
       destructor Destroy; override;
@@ -282,6 +285,7 @@ type
       Alias: String;
       HiddenFromUI: Boolean;
       reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
+      Schemes, Consumes, Produces: String;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
       reqDescrExpansionFilename, rpyDescrExpansionFilename, fltDescrExpansionFileName: String;
       Documentation: TStringList;
@@ -1901,6 +1905,15 @@ begin
       end;
 end;
 
+procedure TWsdl .ValidateEvaluatedTags (aXml : TXml ; aSl : TStringList );
+var
+  x, f: Integer;
+begin
+  for x := 0 to aXml.Items.Count - 1 do
+    if not aSl.Find(aXml.Items.XmlItems[x].Name, f) then
+      SjowMessage(Format('not evaluated %s at %s', [aXml.Items.XmlItems[x].Name, aXml.FullCaption]));
+end;
+
 procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent);
   procedure _LoadFromXml (aXml: TXml; aFileName: String);
     procedure _LoadFromFile (aFileName : String);
@@ -2240,6 +2253,229 @@ begin
   end;
   fOpers.ClearListOnly;
   fMssgs.ClearListOnly;
+end;
+
+procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
+//
+// Based on https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+//
+  procedure _appendInfo (var aExisting: String; aNew:String);
+  begin
+    if Length (aExisting) > 0 then
+      aExisting := aExisting + LineEnding + aNew
+    else
+      aExisting := aNew;
+  end;
+var
+  xXml, dXml, vXml: TXml;
+  x, y, z, u, v, w, r: Integer;
+  xService: TWsdlService;
+  xOperation: TWsdlOperation;
+  xDoc: String;
+  sl: TStringList;
+  xXsd: TXsd;
+begin
+  try
+    with TIdURI.Create(aFileName) do
+    try
+      self.Schemes := Protocol;
+      self.Host := Host;
+      if Port <> '' then
+        self.Host := self.Host + ':' + Port;
+    finally
+      Free;
+    end;
+  except
+  end;
+  Name := aFileName;
+  FileName := aFileName;
+  xXml := TXml.Create;
+  sl := TStringList.Create;
+  sl.Sorted := True;
+  sl.Duplicates := dupIgnore;
+  XsdDescr.Clear;
+  XsdDescr.AddBuiltIns;
+  with xXml do
+  try
+    LoadJsonFromFile(aFileName, aOnError);
+    for x := 0 to Items.Count - 1 do
+    begin
+      dXml := ItemByTag['swagger'];
+      if Assigned (dXml) then
+      begin
+      end;
+      if Items.XmlItems[x].Name = 'swagger' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        if Value <> '2.0' then
+          SjowMessage (Format('warning (%s): unexpected version number %s (2.0 expected)', [aFileName, Value]));
+      end;
+      if Items.XmlItems[x].Name = 'info' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        for y := 0 to Items.Count -1 do with Items.XmlItems[y] do
+        begin
+          _appendInfo (Description, Name + ': ' + Value);
+        end;
+        SjowMessage('Info: ' + Description);
+      end;
+      if Items.XmlItems[x].Name = 'host' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        Host := Value;
+      end;
+      if Items.XmlItems[x].Name = 'basePath' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        basePath := Value;
+      end;
+      if Items.XmlItems[x].Name = 'schemes' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        Schemes := '';
+        for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+          _appendInfo(Schemes, Value);
+      end;
+      if Items.XmlItems[x].Name = 'consumes' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        Consumes := '';
+        for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+          _appendInfo(Consumes, Value);
+      end;
+      if Items.XmlItems[x].Name = 'produces' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        Produces := '';
+        for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+          _appendInfo(Produces, Value);
+      end;
+      if Items.XmlItems[x].Name = 'securityDefinitions' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        SjowMessage ('to be implemented: ' + Name + ': ' + Value);
+      end;
+      if Items.XmlItems[x].Name = 'security' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        SjowMessage ('to be implemented: ' + Name + ': ' + Value);
+      end;
+      if Items.XmlItems[x].Name = 'tags' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        SjowMessage ('to be implemented: ' + Name + ': ' + Value);
+      end;
+    end;
+
+    dXml := ItemByTag['definitions'];;
+    if Assigned (dXml) then
+    begin
+      sl.Add (dXml.Name);
+      for y := 0 to dXml.Items.Count - 1 do
+        XsdDescr.AddTypeDefFromJsonXml(aFileName, dXml.Items.XmlItems[y], aOnError);
+    end;
+
+    dXml := ItemByTag['paths'];;
+    if Assigned (dXml) then with dXml do
+    begin
+      sl.Add (Name);
+      for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+      begin
+        xService := TWsdlService.Create;
+        xService.Name := Name;
+        Services.AddObject(Name, xService);
+        xService.DescriptionType := ipmDTJson;
+        for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
+        begin
+          if Name = 'parameters' then
+          begin
+            SjowMessage(Format('parameters found at %s.%s', [aFileName, xService.Name]));
+          end
+          else
+          begin
+            xOperation := TWsdlOperation.Create (Self);
+            xOperation.Wsdl := self;
+            xOperation.WsdlService := xService;
+            xOperation.Name := xService.Name + ':' + Name;
+            xService.Operations.AddObject(xOperation.Name, xOperation);
+            xOperation.reqTagName := xOperation.Name;
+            xOperation.rpyTagName := xOperation.Name;
+            xOperation.Alias := xOperation.reqTagName;
+            xOperation.httpVerb := UpperCase(xOperation.Name);
+            xOperation.Schemes := Schemes;
+            xOperation.Consumes := Consumes;
+            xOperation.Produces := Produces;
+            xDoc := '';
+            for u := 0 to Items.Count - 1 do with items.XmlItems[u] do
+            begin
+              if Name = 'tags' then ;
+              if Name = 'summary' then _appendInfo(xDoc, Value);
+              if Name = 'description' then _appendInfo(xDoc, Value);
+              if Name = 'externalDocs' then ;
+              if Name = 'operationId' then xOperation.Alias := Value;
+              if Name = 'consumes' then
+              begin
+                xOperation.Consumes := '';
+                for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
+                  _appendInfo(xOperation.Consumes, Value);
+              end;
+              if Name = 'produces' then
+              begin
+                xOperation.produces := '';
+                for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
+                  _appendInfo(xOperation.produces, Value);
+              end;
+              if Name = 'parameters' then
+              begin
+                for v := 0 to Items.Count - 1 do
+                begin
+                  vXml := Items.XmlItems[v];
+                  xXsd := TXsd.Create(XsdDescr);
+                  XsdDescr.Garbage.AddObject('', xXsd);
+                  xXsd.ElementName := vXml.Items.XmlValueByTag['name'];
+                  xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, vXml, aOnError);
+                  xXsd.sType.Name := xXsd.ElementName;
+                  xOperation.reqXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+                  for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
+                  begin
+                    if Name = 'in' then
+                    begin
+                      if Value = 'path' then xXsd.ParametersType := oppPath;
+                      if Value = 'query' then xXsd.ParametersType := oppQuery;
+                      if Value = 'header' then xXsd.ParametersType := oppHeader;
+                      if Value = 'body' then xXsd.ParametersType := oppBody;
+                      if Value = 'form' then xXsd.ParametersType := oppForm;
+                    end;
+                    if Name = 'description' then xXsd.Documentation.Text := Value;
+                    if Name = 'required' then
+                      if Value = 'true' then
+                        xXsd.minOccurs := '1'
+                      else
+                        xXsd.minOccurs := '0';
+                  end;
+                end;
+              end;
+              if Name = 'responses' then ;
+              if Name = 'schemes' then
+              begin
+                xOperation.schemes := '';
+                for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
+                  _appendInfo(xOperation.schemes, Value);
+              end;
+              if Name = 'deprecated' then SjowMessage(Format ('depricated operation %s at %s', [xOperation.Name, aFileName]));
+              if Name = 'security' then ;
+            end;
+            xOperation.Documentation.Text := xDoc;
+          end;
+        end;
+      end;
+    end;
+    ValidateEvaluatedTags (xXml, sl);
+    sl.Clear;
+  finally
+    Free;
+    FreeAndNil(sl);
+  end;
 end;
 
 
@@ -4471,6 +4707,9 @@ begin
   self.reqTagName := xOperation.reqTagName;
   self.reqMessageName := xOperation.reqMessageName;
   self.Alias := xOperation.Alias;
+  self.Schemes := xOperation.Schemes;
+  self.Produces := xOperation.Produces;
+  self.Consumes := xOperation.Consumes;
   self.reqTagNameSpace := xOperation.reqTagNameSpace;
   self.rpyMessageName := xOperation.rpyMessageName;
   self.rpyTagName := xOperation.rpyTagName;

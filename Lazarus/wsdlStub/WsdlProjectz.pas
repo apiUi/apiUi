@@ -2621,7 +2621,9 @@ begin
                           xOperation := xService.OperationByName [oXml.Items.XmlValueByTag['Name']];
                           if Assigned (xOperation) then
                           begin
-                            xOperation.Alias := oXml.Items.XmlValueByTagDef['Alias', xOperation.reqTagName];
+                            if xOperation.Alias = '' then
+                              xOperation.Alias := xOperation.reqTagName;
+                            xOperation.Alias := oXml.Items.XmlValueByTagDef['Alias', xOperation.Alias];
                             if xOperation.Alias <> xOperation.reqTagName then
                             begin
                               xOperation.reqBind.Name := xOperation.alias;
@@ -3521,8 +3523,11 @@ end;
 
 function TWsdlProject .WsdlOpenFile (aName : String ;
   aElementsWhenRepeatable : Integer ): TWsdl ;
+var
+  xExt: String;
 begin
-  if UpperCase (ExtractFileExt (aName)) = '.SDF' then
+  xExt := UpperCase (ExtractFileExt (aName));
+  if xExt = '.SDF' then
   begin
     result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
     result.FileName := aName;
@@ -3544,7 +3549,10 @@ begin
   else
   begin
     result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
-    result.LoadFromSchemaFile(aName, nil);
+    if xExt = '.JSON' then
+      result.LoadFromJsonFile(aName, nil)
+    else
+      result.LoadFromSchemaFile(aName, nil);
   end;
 end;
 

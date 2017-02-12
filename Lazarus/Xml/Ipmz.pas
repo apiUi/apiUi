@@ -773,55 +773,60 @@ procedure TIpmItem.BufferToValues (OnFoundError: TOnFoundError; aBuffer: AnsiStr
                   xSignByteIndex := 1
                 else
                   xSignByteIndex := Length (xString);
-                xByte := Byte (xString [xSignByteIndex]);
-                if CobolEnvironment = ceTandem then
+                if xSignByteIndex > 0 then
                 begin
-                  if xByte > 127 then
+                  xByte := Byte (xString [xSignByteIndex]);
+                  if CobolEnvironment = ceTandem then
                   begin
-                    xByte := xByte - 128;
-                    xString [xSignByteIndex] := AnsiChar (xByte);
-                    xString := '-' + xString;
-                  end;
-                end;
-                if (CobolEnvironment = ceIbmZOs) then
-                begin
-                  if (xByte > Ord ('9'))
-                  or (xByte < Ord ('0')) then
-                  begin
-                    if (xByte = Ord ('{'))
-                    or (xByte = Ord ('}'))
-                    then begin
-                      if (xByte = Ord ('}')) then // negative multiple of 10
-                      begin
-                        xByte := Ord ('0');
-                        xString [xSignByteIndex] := AnsiChar (xByte);
-                        xString := '-' + xString;
-                      end
-                      else
-                      begin
-                        xByte := Ord ('0');
-                        xString [xSignByteIndex] := AnsiChar (xByte);
-                      end;
-                    end
-                    else
+                    if xByte > 127 then
                     begin
-                      if (xByte < Ord ('J')) then // positive; 'A' => '1'
-                      begin
-                        xByte := xByte - Ord ('A') + Ord ('1');
-                        xString [xSignByteIndex] := AnsiChar (xByte);
+                      xByte := xByte - 128;
+                      xString [xSignByteIndex] := AnsiChar (xByte);
+                      xString := '-' + xString;
+                    end;
+                  end;
+                  if (CobolEnvironment = ceIbmZOs) then
+                  begin
+                    if (xByte > Ord ('9'))
+                    or (xByte < Ord ('0')) then
+                    begin
+                      if (xByte = Ord ('{'))
+                      or (xByte = Ord ('}'))
+                      then begin
+                        if (xByte = Ord ('}')) then // negative multiple of 10
+                        begin
+                          xByte := Ord ('0');
+                          xString [xSignByteIndex] := AnsiChar (xByte);
+                          xString := '-' + xString;
+                        end
+                        else
+                        begin
+                          xByte := Ord ('0');
+                          xString [xSignByteIndex] := AnsiChar (xByte);
+                        end;
                       end
                       else
-                      begin // negative; 'J' => '1'
-                        xByte := xByte - Ord ('J') + Ord ('1');
-                        xString [xSignByteIndex] := AnsiChar (xByte);
-                        xString := '-' + xString;
+                      begin
+                        if (xByte < Ord ('J')) then // positive; 'A' => '1'
+                        begin
+                          xByte := xByte - Ord ('A') + Ord ('1');
+                          xString [xSignByteIndex] := AnsiChar (xByte);
+                        end
+                        else
+                        begin // negative; 'J' => '1'
+                          xByte := xByte - Ord ('J') + Ord ('1');
+                          xString [xSignByteIndex] := AnsiChar (xByte);
+                          xString := '-' + xString;
+                        end;
                       end;
                     end;
                   end;
-                end;
+                end
+                else
+                  xString := '0';
               end; {end Sign not Separate}
               try
-                xInteger := StrToInt64 (xString);
+                xInteger := StrToInt64Def (xString, 0);
                 aItem.Int64ToValue (xInteger);
               except
                 on E: Exception do OnFoundError (E.Message, aItem);

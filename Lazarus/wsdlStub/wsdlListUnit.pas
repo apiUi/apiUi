@@ -159,12 +159,10 @@ begin
             Wsdl.LoadFromSdfFile (OpenWsdlForm.WsdlLocationEdit.Text)
           else
           begin
-            wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil);
-{
-            for s := 0 to Wsdl.Services.Count - 1 do
-              for o := 0 to Wsdl.Services.Services [s].Operations.Count - 1 do
-                Wsdl.Services.Services [s].Operations.Operations [o].OutputXml.Populate(xvAll);
-}
+            if UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text)) = '.JSON' then
+              Wsdl.LoadFromJsonFile (OpenWsdlForm.WsdlLocationEdit.Text, nil)
+            else
+              wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil);
           end;
           Wsdl.XsdDescr.Finalise;
         except
