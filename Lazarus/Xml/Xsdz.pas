@@ -256,7 +256,7 @@ type
     function xsdFindTypeDef(aNameSpace, aName: String): TXsdDataType;
     procedure AddBuiltIns;
     procedure AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent);
-    function AddTypeDefFromJsonXml(aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
+    function AddTypeDefFromJsonXml(aFileName, aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
     procedure AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);
     function LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent): Boolean;
     function LoadXsdFromString(aString: String; ErrorFound: TOnErrorEvent): Boolean;
@@ -299,7 +299,8 @@ var
 
 implementation
 
-uses SysUtils
+uses sysutils
+   , strutils
    , RegExpr
    , Dialogs
    , xmlxsdparser
@@ -981,7 +982,7 @@ begin
   end;
 end;
 
-function TXsdDescr.AddTypeDefFromJsonXml (aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
+function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
   function _AddTypeDefFromJsonXml (aList: TXsdDataTypeList; aXml: TXml): TXsdDataType;
     procedure _baseTypeToJson (aType: TXsdDataType);
     begin
@@ -1011,22 +1012,45 @@ function TXsdDescr.AddTypeDefFromJsonXml (aNameSpace: String; aXml: TObject; Err
       aType.BaseDataType := self.FindTypeDef(scXMLSchemaURI, aType.BaseDataTypeName);
     end;
   var
-    x, y, z: Integer;
-    xXml: TXml;
+    x, y, z, f: Integer;
+    xXml, yXml: TXml;
     xDoc: String;
     xEnum: TXsdEnumeration;
+    xXsd: TXsd;
   begin
     result := TXsdDataType.Create(self);
     result.xsdType:= dtSimpleType;
     Garbage.AddObject('', result);
     result.Name := aXml.Name;
     result.NameSpace := aNameSpace;
-    aList.AddObject(result.NameSpace + ';' + result.Name, result);
+    self.TypeDefs.AddObject(result.NameSpace + '/' + result.Name, result);
     xDoc := '';
     for x := 0 to aXml.Items.Count - 1 do
     begin
       xXml := aXml.Items.XmlItems[x];
-      if xXml.Name = '$ref' then result.dollarRef := xXml.Value;
+      if xXml.Name = 'properties' then
+      begin
+        for y := 0 to xXml.Items.Count - 1 do
+        begin
+          yXml := xXml.Items.XmlItems[y];
+          xXsd := TXsd.Create(self);
+          self.Garbage.AddObject('', xXsd);
+          xXsd.ElementName := yXml.Name;
+          xXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, yXml, ErrorFound);
+          xXsd.sType.Name := xXsd.ElementName;
+          xXsd.minOccurs := '0';
+          result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+        end;
+      end;
+      if xXml.Name = '$ref' then
+      begin
+        result.dollarRef := xXml.Value;
+        if result.dollarRef[1] = '#' then
+          result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
+        SjowMessage ('$ref: ' + result.dollarRef);
+        if self.TypeDefs.Find (result.dollarRef, f) then
+          result := self.TypeDefs.XsdDataTypes[f]; // DANGEROUS  !!!!!!
+      end;
       if xXml.Name = 'type' then
       begin
         result.BaseDataTypeName := xXml.Value;
@@ -1034,6 +1058,35 @@ function TXsdDescr.AddTypeDefFromJsonXml (aNameSpace: String; aXml: TObject; Err
         if not Assigned (result.BaseDataType) then
         begin
           SjowMessage (Format ('not yet found type: %s at %s', [result.BaseDataTypeName, result.Name]));
+        end;
+      end;
+      if xXml.Name = 'schema' then
+      begin
+        for y := 0 to xXml.Items.Count - 1 do
+        begin
+          yXml := xXml.Items.XmlItems[y];
+          if yXml.Name = 'type' then
+          begin
+            result.BaseDataTypeName := yXml.Value;
+            _baseTypeToJson(result);
+            if not Assigned (result.BaseDataType) then
+            begin
+              SjowMessage (Format ('not yet found type: %s at %s', [result.BaseDataTypeName, result.Name]));
+            end;
+          end;
+          if yXml.Name = 'items' then
+          begin
+            SjowMessage (Format ('items found at: %s %s', [result.BaseDataTypeName, result.Name]));
+          end;
+          if yXml.Name = '$ref' then
+          begin
+            result.dollarRef := yXml.Value;
+            if result.dollarRef[1] = '#' then
+              result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
+            SjowMessage ('$ref: ' + result.dollarRef);
+            if self.TypeDefs.Find (result.dollarRef, f) then
+              result := self.TypeDefs.XsdDataTypes[f]; // DANGEROUS  !!!!!!
+          end;
         end;
       end;
       if xXml.Name = 'format' then;

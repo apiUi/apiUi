@@ -2266,9 +2266,10 @@ procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
     else
       aExisting := aNew;
   end;
+
 var
   xXml, dXml, vXml: TXml;
-  x, y, z, u, v, w, r: Integer;
+  x, y, z, u, v, w, r, f: Integer;
   xService: TWsdlService;
   xOperation: TWsdlOperation;
   xDoc: String;
@@ -2372,7 +2373,7 @@ begin
     begin
       sl.Add (dXml.Name);
       for y := 0 to dXml.Items.Count - 1 do
-        XsdDescr.AddTypeDefFromJsonXml(aFileName, dXml.Items.XmlItems[y], aOnError);
+        XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName + '/definitions', dXml.Items.XmlItems[y], aOnError);
     end;
 
     dXml := ItemByTag['paths'];;
@@ -2433,7 +2434,7 @@ begin
                   xXsd := TXsd.Create(XsdDescr);
                   XsdDescr.Garbage.AddObject('', xXsd);
                   xXsd.ElementName := vXml.Items.XmlValueByTag['name'];
-                  xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, vXml, aOnError);
+                  xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
                   xXsd.sType.Name := xXsd.ElementName;
                   xOperation.reqXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
                   for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
@@ -2465,13 +2466,32 @@ begin
               if Name = 'deprecated' then SjowMessage(Format ('depricated operation %s at %s', [xOperation.Name, aFileName]));
               if Name = 'security' then ;
             end;
-            xOperation.Documentation.Text := xDoc;
+            with xOperation do
+            begin
+              Documentation.Text := xDoc;
+            end;
           end;
         end;
       end;
     end;
     ValidateEvaluatedTags (xXml, sl);
     sl.Clear;
+    SjowMessage (LineEnding + XsdDescr.TypeDefs.Text);
+    with XsdDescr.TypeDefs do
+    begin
+      for x := 0 to Count - 1 do
+      begin
+        if XsdDataTypes[x].dollarRef <> '' then
+        begin
+          if Find (XsdDataTypes[x].dollarRef, f) then
+          begin
+            if x = f then
+              SjowMessage ('dollarreffed self: ' + Strings[x]);
+            Objects[x] := Objects[f];
+          end;
+        end;
+      end;
+    end;
   finally
     Free;
     FreeAndNil(sl);
