@@ -2259,6 +2259,38 @@ procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
 //
 // Based on https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 //
+
+  procedure _ResolveDollarRefs;
+    procedure _resolve (aXsd: TXsd);
+    var
+      x, f: Integer;
+    begin
+      if aXsd._Processed then Exit;
+      if not Assigned (aXsd.sType) then Exit;
+      aXsd._Processed := True;
+      try
+        if aXsd.sType.dollarRef <> '' then
+          if self.XsdDescr.TypeDefs.Find(aXsd.sType.dollarRef, f) then
+            aXsd.sType := self.XsdDescr.TypeDefs.XsdDataTypes[f];
+        for x := 0 to aXsd.sType.ElementDefs.Count - 1 do
+          _resolve (aXsd.sType.ElementDefs.Xsds[x]);
+      finally
+        aXsd._Processed := False;
+      end;
+    end;
+  var
+    s, o, x: Integer;
+  begin
+    for s := 0 to Services.Count - 1 do with Services.Services[s] do
+    begin
+      for o := 0 to Operations.Count - 1 do with Operations.Operations[o] do
+      begin
+        _resolve(reqXsd);
+        _resolve(rpyXsd);
+      end;
+    end;
+  end;
+
   procedure _appendInfo (var aExisting: String; aNew:String);
   begin
     if Length (aExisting) > 0 then
@@ -2390,7 +2422,7 @@ begin
         begin
           if Name = 'parameters' then
           begin
-            SjowMessage(Format('parameters found at %s.%s', [aFileName, xService.Name]));
+            SjowMessage(Format('parameters found at path level %s.%s (not yet implemented)', [aFileName, xService.Name]));
           end
           else
           begin
@@ -2476,7 +2508,7 @@ begin
     end;
     ValidateEvaluatedTags (xXml, sl);
     sl.Clear;
-    SjowMessage (LineEnding + XsdDescr.TypeDefs.Text);
+    _resolveDollarRefs;
     with XsdDescr.TypeDefs do
     begin
       for x := 0 to Count - 1 do
@@ -4391,7 +4423,8 @@ begin
     end
     else
     begin
-      if reqBind is TXml then
+      if reqBind is TXml
+      and ((reqBind as TXml).Items.Count > 0) then
       begin
         aXml := (reqBind as TXml).Items.XmlItems[0];
         xsiGenerated := False;

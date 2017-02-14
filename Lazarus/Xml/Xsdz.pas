@@ -1047,9 +1047,10 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
         result.dollarRef := xXml.Value;
         if result.dollarRef[1] = '#' then
           result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
-        SjowMessage ('$ref: ' + result.dollarRef);
+{
         if self.TypeDefs.Find (result.dollarRef, f) then
           result := self.TypeDefs.XsdDataTypes[f]; // DANGEROUS  !!!!!!
+}
       end;
       if xXml.Name = 'type' then
       begin
@@ -1083,9 +1084,10 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
             result.dollarRef := yXml.Value;
             if result.dollarRef[1] = '#' then
               result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
-            SjowMessage ('$ref: ' + result.dollarRef);
+        {
             if self.TypeDefs.Find (result.dollarRef, f) then
               result := self.TypeDefs.XsdDataTypes[f]; // DANGEROUS  !!!!!!
+        }
           end;
         end;
       end;
