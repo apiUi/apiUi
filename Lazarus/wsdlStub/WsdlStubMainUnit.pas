@@ -2823,9 +2823,24 @@ end;
 
 function TMainForm .GetAuthorization : Boolean ;
 var
+  Y, m, d: Word;
+  ymd: Integer;
+  xLicenseDate: TDateTime;
   xRpy, xReq: String;
   xTimestamp, xKey, xLicensed, xExpireDate: String;
 begin
+{$ifdef TrialVersion}
+  xLicenseExpirationDate := {$I %date%}; // yyyy/mm/dd
+                                         // 1234567890
+  y := StrToInt(Copy (xLicenseExpirationDate, 1, 4));
+  m := StrToInt(Copy (xLicenseExpirationDate, 6, 2));
+  d := StrToInt(Copy (xLicenseExpirationDate, 9, 2));
+  xLicenseDate := EncodeDate(y, m, d) + 180;
+  xLicenseExpirationDate := FormatDateTime('yyyy-mm-dd', xLicenseDate);
+  result := ValidateLicenseExpirationDate(xLicenseExpirationDate);
+  LicenseMenuItem.Enabled := False;
+  Exit;
+{$endif}
   result := False;
   xTimestamp := xsdNowAsDateTime;
   with TXml.CreateAsString ('getAuthorization', '') do

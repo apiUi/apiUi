@@ -82,6 +82,7 @@ type
       Name, FileName: String;
       Description, Host, basePath, Schemes, Consumes, Produces: String;
       isSoapService: Boolean;
+      isOpenApiService: Boolean;
 //      xTargetNamespacePrefix: String;
       Services: TWsdlServices;
       XsdDescr: TXsdDescr;
@@ -260,6 +261,7 @@ type
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
       function getDoExit : Boolean ;
       function getIsOneWay: Boolean;
+      function getIsOpenApiService: Boolean;
       function getLateBinding : Boolean ;
       function getisSoapService: Boolean;
       procedure setDoExit (AValue : Boolean );
@@ -368,6 +370,7 @@ type
       property OnGetAbortPressed: TBooleanFunction write setOnGetAbortPressed;
       property wsaTo: String read getWsaTo;
       property isSoapService: Boolean read getIsSoapService;
+      property isOpenApiService: Boolean read getIsOpenApiService;
       property isOneWay: Boolean read getIsOneWay;
       property lateBinding: Boolean read getLateBinding;
       property InputXml: TXml read getInputXml;
@@ -2340,6 +2343,7 @@ begin
       if Items.XmlItems[x].Name = 'swagger' then with Items.XmlItems[x] do
       begin
         sl.Add (Name);
+        isOpenApiService := True;
         if Value <> '2.0' then
           SjowMessage (Format('warning (%s): unexpected version number %s (2.0 expected)', [aFileName, Value]));
       end;
@@ -2434,7 +2438,7 @@ begin
             xOperation.reqTagName := xOperation.Name;
             xOperation.rpyTagName := xOperation.Name;
             xOperation.Alias := xOperation.reqTagName;
-            xOperation.httpVerb := UpperCase(xOperation.Name);
+            xOperation.httpVerb := UpperCase(Name);
             xOperation.Schemes := Schemes;
             xOperation.Consumes := Consumes;
             xOperation.Produces := Produces;
@@ -6413,6 +6417,11 @@ begin
         result := (rpyXsd.sType.ElementDefs.Count = 0)
               ;
   end;
+end;
+
+function TWsdlOperation.getIsOpenApiService: Boolean;
+begin
+  result := Wsdl.isOpenApiService;
 end;
 
 function TWsdlOperation .getLateBinding : Boolean ;

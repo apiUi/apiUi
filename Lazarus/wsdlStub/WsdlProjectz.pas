@@ -3693,7 +3693,7 @@ function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
 var
   HttpClient: TIdHTTP;
   HttpRequest, sStream, dStream: TMemoryStream;
-  URL: String;
+  URL, sep: String;
   oUri, sUri: TIdUri;
   x: Integer;
 begin
@@ -3734,7 +3734,33 @@ begin
         FreeAndNil (sUri);
       end
       else
-        URL := aOperation.SoapAddress;
+        if aOperation.isOpenApiService then
+        begin
+          URL := 'http://'
+               + aOperation.Wsdl.Host
+               + aOperation.Wsdl.basePath
+               + aOperation.WsdlService.Name;
+          sep := '?';
+          for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
+          begin
+            if Checked
+            and Assigned (Xsd) then
+            begin
+              if (Xsd.ParametersType = oppPath) then
+              begin
+                URL := ReplaceStr(URL, '{' + Name + '}', Value);
+              end;
+              if (Xsd.ParametersType = oppQuery) then
+              begin
+                URL := URL + sep + Name + '=' + Value;  // TODO urldecode
+                sep := '&';
+              end;
+            end;
+          end;
+          SjowMessage(URL);
+        end
+        else
+         URL := aOperation.SoapAddress;
       try
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := '"' + aOperation.SoapAction + '"';
       except
@@ -3993,7 +4019,8 @@ begin
                 on e: exception do
                   raise Exception.CreateFmt('%s could not parse XML reply (%s)', [_ProgName, e.Message]);
               end;
-              aOperation.SoapXmlReplyToBindables(xXml, True);
+              if xXml.Name <> '' then
+                aOperation.SoapXmlReplyToBindables(xXml, True);
           //              aOperation.rpyBind.LoadValues(xXml, True, False);
             finally
               xXml.Free;

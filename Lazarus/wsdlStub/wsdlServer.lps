@@ -124,6 +124,7 @@
         <TopLine Value="375"/>
         <CursorPos Y="385"/>
         <UsageCount Value="70"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\Xml\exceptionutils.pas"/>
@@ -261,19 +262,18 @@
       <Unit36>
         <Filename Value="C:\lazarus\lcl\graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="12"/>
         <CursorPos X="2" Y="20"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit36>
     </Units>
     <OtherDefines Count="2">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
     </OtherDefines>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
         <Filename Value="wsdlServer.lpr"/>
         <Caret Line="415" Column="3" TopLine="415"/>
@@ -286,10 +286,6 @@
         <Filename Value="wsdlServer.lpr"/>
         <Caret Line="423" Column="8" TopLine="403"/>
       </Position3>
-      <Position4>
-        <Filename Value="C:\lazarus\lcl\graphics.pp"/>
-        <Caret Line="20" Column="20" TopLine="12"/>
-      </Position4>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

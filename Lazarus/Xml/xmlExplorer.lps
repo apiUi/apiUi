@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="77">
+    <Units Count="78">
       <Unit0>
         <Filename Value="xmlExplorer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -18,9 +18,8 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="264"/>
-        <CursorPos X="16" Y="266"/>
+        <TopLine Value="432"/>
+        <CursorPos X="3" Y="434"/>
         <UsageCount Value="69"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,7 +66,7 @@
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="30"/>
         <CursorPos X="40" Y="59"/>
         <UsageCount Value="56"/>
@@ -133,7 +132,7 @@
       </Unit14>
       <Unit15>
         <Filename Value="Xmlz.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="405"/>
         <CursorPos X="47" Y="424"/>
         <UsageCount Value="14"/>
@@ -171,7 +170,7 @@
         <ComponentName Value="ShowFolderDifferencesForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -285,7 +284,7 @@
       </Unit37>
       <Unit38>
         <Filename Value="xmlUtilz.pas"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="51"/>
         <CursorPos Y="61"/>
         <UsageCount Value="21"/>
@@ -446,7 +445,7 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="7780"/>
         <CursorPos X="3" Y="7790"/>
         <UsageCount Value="20"/>
@@ -462,7 +461,7 @@
       </Unit63>
       <Unit64>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="2320"/>
         <CursorPos Y="2334"/>
         <UsageCount Value="14"/>
@@ -487,7 +486,7 @@
         <ComponentName Value="ShowLogDifferencesForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="820"/>
         <CursorPos X="21" Y="787"/>
         <UsageCount Value="12"/>
@@ -519,10 +518,9 @@
       </Unit70>
       <Unit71>
         <Filename Value="C:\lazarus\components\lazutils\winlazfileutils.inc"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="10" Y="7"/>
         <UsageCount Value="13"/>
-        <Loaded Value="True"/>
       </Unit71>
       <Unit72>
         <Filename Value="C:\lazarus\components\lazutils\lazutf8.pas"/>
@@ -535,98 +533,103 @@
       <Unit73>
         <Filename Value="C:\lazarus\components\lazutils\lazfileutils.pas"/>
         <UnitName Value="LazFileUtils"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="10" Y="85"/>
         <UsageCount Value="13"/>
-        <Loaded Value="True"/>
       </Unit73>
       <Unit74>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\sysutils\filutilh.inc"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="55"/>
         <CursorPos X="5" Y="64"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit74>
       <Unit75>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\sysutils\datih.inc"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="156"/>
         <CursorPos X="25" Y="157"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit75>
       <Unit76>
         <Filename Value="Wsdlz.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="979"/>
         <CursorPos Y="992"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit76>
+      <Unit77>
+        <Filename Value="json\jsnAnalyser.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="14" Y="11"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit77>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="JSON"/>
     </OtherDefines>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="548" Column="17" TopLine="505"/>
+        <Filename Value="ShowFolderDifferencesUnit.pas"/>
+        <Caret Line="829" Column="3" TopLine="820"/>
       </Position1>
       <Position2>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="248" TopLine="241"/>
+        <Caret Line="352" TopLine="331"/>
       </Position2>
       <Position3>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="303" Column="9" TopLine="287"/>
+        <Caret Line="548" Column="17" TopLine="505"/>
       </Position3>
       <Position4>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="367" TopLine="358"/>
+        <Caret Line="248" TopLine="241"/>
       </Position4>
       <Position5>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="95" TopLine="77"/>
+        <Caret Line="303" Column="9" TopLine="287"/>
       </Position5>
       <Position6>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="364" TopLine="348"/>
+        <Caret Line="367" TopLine="358"/>
       </Position6>
       <Position7>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="431" TopLine="424"/>
+        <Caret Line="95" TopLine="77"/>
       </Position7>
       <Position8>
         <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="364" TopLine="348"/>
       </Position8>
       <Position9>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="461" TopLine="457"/>
+        <Caret Line="431" TopLine="424"/>
       </Position9>
       <Position10>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="535" TopLine="479"/>
       </Position10>
       <Position11>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="423" TopLine="421"/>
+        <Caret Line="461" TopLine="457"/>
       </Position11>
       <Position12>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="427" TopLine="425"/>
+        <Caret Line="535" TopLine="479"/>
       </Position12>
       <Position13>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="431" TopLine="429"/>
+        <Caret Line="423" TopLine="421"/>
       </Position13>
       <Position14>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="461" TopLine="459"/>
+        <Caret Line="427" TopLine="425"/>
       </Position14>
       <Position15>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="462" TopLine="460"/>
+        <Caret Line="431" TopLine="429"/>
       </Position15>
       <Position16>
         <Filename Value="xmlExplorerUnit.pas"/>
@@ -634,58 +637,58 @@
       </Position16>
       <Position17>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="460" TopLine="458"/>
+        <Caret Line="462" TopLine="460"/>
       </Position17>
       <Position18>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="459" TopLine="457"/>
+        <Caret Line="461" TopLine="459"/>
       </Position18>
       <Position19>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="458" TopLine="456"/>
+        <Caret Line="460" TopLine="458"/>
       </Position19>
       <Position20>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="457" TopLine="455"/>
+        <Caret Line="459" TopLine="457"/>
       </Position20>
       <Position21>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="456" TopLine="454"/>
+        <Caret Line="458" TopLine="456"/>
       </Position21>
       <Position22>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="455" TopLine="453"/>
+        <Caret Line="457" TopLine="455"/>
       </Position22>
       <Position23>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="454" TopLine="452"/>
+        <Caret Line="456" TopLine="454"/>
       </Position23>
       <Position24>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="453" TopLine="451"/>
+        <Caret Line="455" TopLine="453"/>
       </Position24>
       <Position25>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="452" TopLine="450"/>
+        <Caret Line="454" TopLine="452"/>
       </Position25>
       <Position26>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="451" TopLine="449"/>
+        <Caret Line="453" TopLine="451"/>
       </Position26>
       <Position27>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="450" TopLine="448"/>
+        <Caret Line="452" TopLine="450"/>
       </Position27>
       <Position28>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="438" Column="34" TopLine="432"/>
+        <Caret Line="451" TopLine="449"/>
       </Position28>
       <Position29>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="263" Column="32" TopLine="244"/>
+        <Caret Line="450" TopLine="448"/>
       </Position29>
       <Position30>
-        <Filename Value="xmlExplorerUnit.pas"/>
+        <Filename Value="json\jsnAnalyser.pas"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
@@ -696,7 +699,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="xmlExplorerUnit.pas"/>
-        <Line Value="748"/>
+        <Line Value="747"/>
       </Item1>
     </BreakPoints>
   </Debugging>
