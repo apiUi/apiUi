@@ -3748,19 +3748,28 @@ begin
             begin
               if (Xsd.ParametersType = oppPath) then
               begin
-                URL := ReplaceStr(URL, '{' + Name + '}', Value);
+                URL := ReplaceStr(URL, '{' + Name + '}', URLEncode(Value));
               end;
               if (Xsd.ParametersType = oppQuery) then
               begin
-                URL := URL + sep + Name + '=' + Value;  // TODO urldecode
+                URL := URL + sep + Name + '=' + URLEncode(Value);
                 sep := '&';
               end;
+            end;
+            try
+              HttpClient.Request.ContentType := 'application/json';
+              HttpClient.Request.Accept := 'application/json';
+            except
+              SjowMessage('HttpClient.Request.Accept :=  FAILED');
             end;
           end;
           SjowMessage(URL);
         end
         else
-         URL := aOperation.SoapAddress;
+        begin
+          URL := aOperation.SoapAddress;
+          HttpClient.Request.ContentType := 'text/xml';
+        end;
       try
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := '"' + aOperation.SoapAction + '"';
       except
@@ -3774,7 +3783,6 @@ begin
               with XmlItems[x].Items do
                 HttpClient.Request.CustomHeaders.Values [XmlCheckedValueByTag ['Name']]
                                                       := XmlCheckedValueByTag ['Value'];
-      HttpClient.Request.ContentType := 'text/xml';
       HttpClient.Request.CharSet := '';
       HttpClient.Request.ContentEncoding := aOperation.ContentEncoding;
       HttpClient.Request.AcceptEncoding := 'identity';
@@ -3783,6 +3791,7 @@ begin
       if aOperation.AcceptGzipEncoding then
         HttpClient.Request.AcceptEncoding := HttpClient.Request.AcceptEncoding + ', gzip';
 {}
+      SjowMessage('3795: ' + HttpClient.Request.RawHeaders.Text);
       if (HttpClient.Request.ContentEncoding = 'deflate')
       or (HttpClient.Request.ContentEncoding = 'gzip') then
       begin

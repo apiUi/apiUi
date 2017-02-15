@@ -72,8 +72,8 @@ procedure BalancedLine ( Sender: TObject
 function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): Integer;
 function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
 function B64EncodeStream(const S: TMemoryStream): AnsiString;
-function URLDecode(const S: AnsiString): AnsiString;
-function URLEncode(const S: AnsiString): AnsiString;
+function URLDecode(const S: String): String;
+function URLEncode(const S: String): String;
 function HEXDecode(const S: AnsiString): AnsiString;
 function HEXEncode(const S: AnsiString): AnsiString;
 function HEXRGBToColor(const S: string): TColor;
@@ -1158,7 +1158,7 @@ begin
   end;
 end;
 
-function URLDecode(const S: AnsiString): AnsiString;
+function URLDecode(const S: String): String;
 var
   Idx: Integer;   // loops thru chars in string
   pIdx: Integer; // remember pos of %
@@ -1209,7 +1209,7 @@ begin
   end;
 end;
 
-function URLEncode(const S: AnsiString): AnsiString;
+function URLEncode(const S: String): String;
 var
   Idx: Integer; // loops thru characters in string
 begin
