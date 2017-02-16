@@ -286,8 +286,9 @@ type
       Data: TObject;
       Alias: String;
       HiddenFromUI: Boolean;
+      isDepricated: Boolean;
       reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
-      Schemes, Consumes, Produces: String;
+      Schemes, Consumes, Produces, ContentType, Accept: String;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
       reqDescrExpansionFilename, rpyDescrExpansionFilename, fltDescrExpansionFileName: String;
       Documentation: TStringList;
@@ -2442,6 +2443,8 @@ begin
             xOperation.Schemes := Schemes;
             xOperation.Consumes := Consumes;
             xOperation.Produces := Produces;
+            xOperation.ContentType := 'application/json';
+            xOperation.Accept := 'application/json';
             xDoc := '';
             for u := 0 to Items.Count - 1 do with items.XmlItems[u] do
             begin
@@ -2499,7 +2502,11 @@ begin
                 for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
                   _appendInfo(xOperation.schemes, Value);
               end;
-              if Name = 'deprecated' then SjowMessage(Format ('depricated operation %s at %s', [xOperation.Name, aFileName]));
+              if Name = 'deprecated' then
+              begin
+                xOperation.isDepricated := True;
+                SjowMessage(Format ('depricated operation %s at %s', [xOperation.Name, aFileName]));
+              end;
               if Name = 'security' then ;
             end;
             with xOperation do
@@ -3696,6 +3703,8 @@ begin
   Documentation := TstringList.Create;
   BeforeScriptLines := TStringList.Create;
   AfterScriptLines := TStringList.Create;
+  ContentType := 'text/xml';
+  Accept := 'text/xml';
   StubAction := saStub;
   StubHttpAddress := '';
   httpVerb := 'POST';
@@ -4767,6 +4776,8 @@ begin
   self.Schemes := xOperation.Schemes;
   self.Produces := xOperation.Produces;
   self.Consumes := xOperation.Consumes;
+  self.ContentType := xOperation.ContentType;
+  self.Accept := xOperation.Accept;
   self.reqTagNameSpace := xOperation.reqTagNameSpace;
   self.rpyMessageName := xOperation.rpyMessageName;
   self.rpyTagName := xOperation.rpyTagName;
@@ -5809,8 +5820,11 @@ begin
   and (aXml.Name <> 'Redirect')
   then raise Exception.Create('endpointConfigfromXml: invalid XML' + aXml.Text);
   StubTransport := ttHttp;
-  StubHttpAddress := '';
-  httpVerb := 'POST';
+  if not isOpenApiService then
+  begin
+    StubHttpAddress := '';
+    httpVerb := 'POST';
+  end;
   ContentEncoding := 'identity';
   AcceptDeflateEncoding := True;
   AcceptGzipEncoding := True;
@@ -5848,8 +5862,11 @@ begin
         if Name = 'Http' then
         begin
           StubTransport := ttHttp;
-          StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
-          httpVerb := UpperCase(Items.XmlCheckedValueByTagDef['Verb', httpVerb]);
+          if not isOpenApiService then
+          begin
+            StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
+            httpVerb := UpperCase(Items.XmlCheckedValueByTagDef['Verb', httpVerb]);
+          end;
           ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
           xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
           if Assigned (xXml) then
@@ -5864,8 +5881,11 @@ begin
         if Name = 'Https' then
         begin
           StubTransport := ttHttp;
-          StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
-          httpVerb := Items.XmlCheckedValueByTagDef['Verb', httpVerb];
+          if not isOpenApiService then
+          begin
+            StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
+            httpVerb := Items.XmlCheckedValueByTagDef['Verb', httpVerb];
+          end;
           ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
           xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
           if Assigned (xXml) then

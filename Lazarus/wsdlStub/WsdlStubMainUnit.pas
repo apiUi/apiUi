@@ -5350,8 +5350,11 @@ procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
     d.DelayTimeMsMin := s.DelayTimeMsMin;
     d.DelayTimeMsMax := s.DelayTimeMsMax;
     d.StubTransport := s.StubTransport;
-    d.StubHttpAddress := s.StubHttpAddress;
-    d.httpVerb := s.httpVerb;
+    if not d.isOpenApiService then
+    begin
+      d.StubHttpAddress := s.StubHttpAddress;
+      d.httpVerb := s.httpVerb;
+    end;
     d.ContentEncoding := s.ContentEncoding;
     d.AcceptGzipEncoding := s.AcceptGzipEncoding;
     d.AcceptDeflateEncoding := s.AcceptDeflateEncoding;
@@ -5597,6 +5600,7 @@ begin
   with WsdlOperation do
   begin
     xXml := endpointConfigAsXml;
+    endpointConfigXsd.FindXsd('endpointConfig.Http.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
     if EditXmlXsdBased('Configure Endpoint', '', '', '', False,
       endpointConfigXsd, xXml) then
     begin
@@ -12071,6 +12075,8 @@ begin
       Color := clRed;
       Style := Style + [fsBold];
     end;
+    if xOperation.isDepricated then with TargetCanvas.Font do
+      Style := Style + [fsStrikeOut];
   except
     on e: Exception do
       TargetCanvas.Font.Color := clRed;

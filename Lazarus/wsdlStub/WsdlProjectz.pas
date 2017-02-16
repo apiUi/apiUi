@@ -3734,6 +3734,7 @@ begin
         FreeAndNil (sUri);
       end
       else
+      begin
         if aOperation.isOpenApiService then
         begin
           URL := 'http://'
@@ -3755,12 +3756,10 @@ begin
                 URL := URL + sep + Name + '=' + URLEncode(Value);
                 sep := '&';
               end;
-            end;
-            try
-              HttpClient.Request.ContentType := 'application/json';
-              HttpClient.Request.Accept := 'application/json';
-            except
-              SjowMessage('HttpClient.Request.Accept :=  FAILED');
+              if (Xsd.ParametersType = oppHeader) then
+              begin
+                HttpClient.Request.CustomHeaders.Values [Name] := Value;
+              end;
             end;
           end;
           SjowMessage(URL);
@@ -3768,8 +3767,10 @@ begin
         else
         begin
           URL := aOperation.SoapAddress;
-          HttpClient.Request.ContentType := 'text/xml';
         end;
+      end;
+      HttpClient.Request.ContentType := aOperation.ContentType;
+      HttpClient.Request.Accept := aOperation.Accept;
       try
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := '"' + aOperation.SoapAction + '"';
       except
