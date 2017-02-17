@@ -3792,7 +3792,6 @@ begin
       if aOperation.AcceptGzipEncoding then
         HttpClient.Request.AcceptEncoding := HttpClient.Request.AcceptEncoding + ', gzip';
 {}
-      SjowMessage('3795: ' + HttpClient.Request.RawHeaders.Text);
       if (HttpClient.Request.ContentEncoding = 'deflate')
       or (HttpClient.Request.ContentEncoding = 'gzip') then
       begin
