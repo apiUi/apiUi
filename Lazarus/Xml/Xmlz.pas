@@ -169,6 +169,7 @@ type
     function asHtmlString: String;
     function asString: String;
     function asAssignments: String;
+    function CustomCheck (NewText: String): Boolean;
     function AsText ( aUseNameSpaces: Boolean
                     ; aIndent: Integer
                     ; OnlyWhenChecked: Boolean
@@ -943,6 +944,15 @@ begin
           + '  .' + self.Name + ' := nil;' + CRLF
           + _asAssignments(2, self)
           + '}' + CRLF
+end;
+
+function TXml.CustomCheck (NewText: String ): Boolean;
+begin
+  if Assigned (Xsd)
+  and Assigned (Xsd.CheckNewValue) then
+    result := Xsd.CheckNewValue (self, NewText)
+  else
+    result := True;
 end;
 
 function TXml.asHtmlString: String;

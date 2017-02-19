@@ -788,6 +788,9 @@ begin
       end;
     treeValueColumn:
       begin
+        if (Bind is TXml)
+        and not (Bind as TXml).CustomCheck (NewText) then
+          Exit;
         if (Bind is TXmlAttribute) or (Bind is TXml) then
         begin
           if NewText <> Bind.Value then

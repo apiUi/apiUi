@@ -34,6 +34,7 @@ uses
    , Xsdz
    , StdCtrls
    , IdSync
+   , IdUri
    , ComCtrls
    , ExtCtrls
    , FormIniFilez
@@ -784,6 +785,7 @@ type
     procedure WsdlInfoPanelResize(Sender: TObject);
     procedure WsdlServicesComboBoxDropDown(Sender: TObject);
     procedure WsdlComboBoxDropDown(Sender: TObject);
+    function CheckHttpAddress (aBind: TObject; aNewValue: String): Boolean;
     procedure RedirectAddressActionExecute(Sender: TObject);
     procedure TreeViewResize(Sender: TObject);
     procedure GridViewExit(Sender: TObject);
@@ -5591,6 +5593,24 @@ begin
   }
 end;
 
+function TMainForm.CheckHttpAddress (aBind: TObject; aNewValue: String): Boolean;
+begin
+  result := True;
+  if WsdlOperation.isOpenApiService then
+  begin
+    with TIdUri.Create(aNewValue) do
+    try
+      if (Path + Document <> '/') then
+      begin
+        ShowMessage (Format ('no path (%s) allowed on OpenApi service', [Path + Document]));
+        result := False;
+      end;
+    finally
+      free;
+    end;
+  end;
+end;
+
 procedure TMainForm.RedirectAddressActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -5601,6 +5621,9 @@ begin
   begin
     xXml := endpointConfigAsXml;
     endpointConfigXsd.FindXsd('endpointConfig.Http.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
+    endpointConfigXsd.FindXsd('endpointConfig.Https.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
+    endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
+    endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpAddress;
     if EditXmlXsdBased('Configure Endpoint', '', '', '', False,
       endpointConfigXsd, xXml) then
     begin

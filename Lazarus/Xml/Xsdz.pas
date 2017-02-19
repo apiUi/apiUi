@@ -32,6 +32,7 @@ type TCollectionFormat = (ocfSingle, ocfCSV, ocfSSV, ocfTSV, ocfPipes, ocfMulti)
 
 type
   TOnHaveString = procedure(aString: String) of Object;
+  TOnCheckNewValue = function (aBind: TObject; aNewText: String): Boolean of Object;
 
 type
   TOnDoSelectValue = procedure(var Ok: Boolean; var NewString: String;
@@ -189,6 +190,7 @@ type
     Appinfo: TStringList;
     Obj: TObject;
     EditProcedure: TBooleanFunctionObject;
+    CheckNewValue: TOnCheckNewValue;
     function FindXsd(aString: String): TXsd;
     property NSPrefix: String read getNSPrefix;
     property XsdByCaption[Index: String]: TXsd read getXsdByCaption;
@@ -1073,7 +1075,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           begin
             yXsd := TXsd.Create(self);
             self.Garbage.AddObject('', yXsd);
-            yXsd.ElementName := '-';
+            yXsd.ElementName := '_';
             yXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, yXml, ErrorFound);
             yXsd.sType.Name := yXsd.ElementName;
             yXsd.minOccurs := '0';
@@ -1105,7 +1107,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
       begin
         xXsd := TXsd.Create(self);
         self.Garbage.AddObject('', xXsd);
-        xXsd.ElementName := '-';
+        xXsd.ElementName := '_';
         xXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, xXml, ErrorFound);
         xXsd.sType.Name := xXsd.ElementName;
         xXsd.minOccurs := '0';

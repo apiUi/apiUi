@@ -143,7 +143,7 @@ type
     private
     function getOperationByName(Index: String): TWsdlOperation;
     public
-      Name: String;
+      Name, openApiPathRegExp: String;
       AuthenticationType: TAuthenticationType;
       UserName: String;
       Password: String;
@@ -2303,6 +2303,31 @@ procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
       aExisting := aNew;
   end;
 
+  const
+    pathTemplateRegExp = '\{[^\}]+\}';
+    valueRegExp = '[^/]*';
+  function _openApiPathRegExp(aName: String): String;
+  var
+    s, e: Integer;
+    f: Boolean;
+  begin
+    s := 1;
+    result := '';
+    with TRegExpr.Create(pathTemplateRegExp) do
+    try
+      f := Exec(aName);
+      while f do
+      begin
+        e := MatchPos[0];
+        result := result + Copy (aName, s, e - s) + valueRegExp;
+        s := MatchPos[0] + MatchLen[0];
+        f := ExecNext;
+      end;
+      result := result + Copy (aName, s, Length (aName));
+    finally
+      Free;
+    end;
+  end;
 var
   xXml, dXml, vXml: TXml;
   x, y, z, u, v, w, r, f: Integer;
@@ -2421,6 +2446,7 @@ begin
       begin
         xService := TWsdlService.Create;
         xService.Name := Name;
+        xService.openApiPathRegExp := self.basePath + _openApiPathRegExp(xService.Name);
         Services.AddObject(Name, xService);
         xService.DescriptionType := ipmDTJson;
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do

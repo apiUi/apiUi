@@ -8,7 +8,7 @@ Alpha	      [A-Za-z]
 Digit	      [0-9]
 Index         \[{Digit}+\]
 Dot           \.
-Id            {Alpha}({Digit}|{Alpha}|\_|\-|\$)*
+Id            ({Alpha}|\_)({Digit}|{Alpha}|\_|\-|\$)*
 FieldID       {Id}({Dot}{Id}({Index})?)+
 dynId         {Dot}{Id}({Dot}{Id})*
 IdDot         {Id}{Dot}
