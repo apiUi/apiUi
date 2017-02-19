@@ -3749,39 +3749,15 @@ begin
             begin
               if (Xsd.ParametersType = oppPath) then
               begin
-                URL := ReplaceStr(URL, '{' + Name + '}', URLEncode(Value));
+                URL := ReplaceStr(URL, '{' + Name + '}', jsonMultiValue(true));
               end;
               if (Xsd.ParametersType = oppQuery) then
               begin
-                if Xsd.sType.jsonType = jsonArray then
-                begin
-                  valueSep := '';
-                  URL := URL + querySep + Name + '=';
-                  for y := 0 to Items.Count - 1 do
-                  begin
-                    if Items.XmlItems[y].Checked then
-                    begin
-                      URL := URL + valueSep + Items.XmlItems[y].Value;
-                      case Xsd.sType.CollectionFormat of
-                        ocfMulti: valueSep := '&' + Name + '=';
-                        ocfPipes: valueSep := '|';
-                        ocfSingle: valueSep := '??';
-                        ocfCSV: valueSep := ',';
-                        ocfTSV: valueSep := #9;
-                        ocfSSV: valueSep := ' ';
-                      end;
-                    end;
-                  end;
-                end
-                else
-                begin
-                  URL := URL + querySep + Name + '=' + URLEncode(Value);
-                end;
-                querySep := '&';
+                URL := URL + querySep + Name + '=' + jsonMultiValue(true);
               end;
               if (Xsd.ParametersType = oppHeader) then
               begin
-                HttpClient.Request.CustomHeaders.Values [Name] := Value;
+                HttpClient.Request.CustomHeaders.Values [Name] := jsonMultiValue(false);
               end;
             end;
           end;

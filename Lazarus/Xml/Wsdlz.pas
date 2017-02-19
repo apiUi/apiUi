@@ -2495,7 +2495,24 @@ begin
                   end;
                 end;
               end;
-              if Name = 'responses' then ;
+              if Name = 'responses' then
+              begin
+                xOperation.rpyXsd.sType.ContentModel := 'Choice';
+                for v := 0 to Items.Count - 1 do
+                begin
+                  vXml := Items.XmlItems[v];
+                  xXsd := TXsd.Create(XsdDescr);
+                  XsdDescr.Garbage.AddObject('', xXsd);
+                  xXsd.ElementName := 'rspns' + vXml.Name;
+                  xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
+                  xXsd.sType.Name := xXsd.ElementName;
+                  xOperation.rpyXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+                  for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
+                  begin
+                    if Name = 'description' then xXsd.Documentation.Text := Value;
+                  end;
+                end;
+              end;
               if Name = 'schemes' then
               begin
                 xOperation.schemes := '';

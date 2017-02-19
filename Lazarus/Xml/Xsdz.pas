@@ -1018,7 +1018,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
     xXml, yXml: TXml;
     xDoc: String;
     xEnum: TXsdEnumeration;
-    xXsd: TXsd;
+    xXsd, yXsd: TXsd;
   begin
     result := TXsdDataType.Create(self);
     result.xsdType:= dtSimpleType;
@@ -1058,10 +1058,6 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
       begin
         result.BaseDataTypeName := xXml.Value;
         _baseTypeToJson(result);
-        if not Assigned (result.BaseDataType) then
-        begin
-          SjowMessage (Format ('not yet found type: %s at %s', [result.BaseDataTypeName, result.Name]));
-        end;
       end;
       if xXml.Name = 'schema' then
       begin
@@ -1072,14 +1068,17 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           begin
             result.BaseDataTypeName := yXml.Value;
             _baseTypeToJson(result);
-            if not Assigned (result.BaseDataType) then
-            begin
-              SjowMessage (Format ('not yet found type: %s at %s', [result.BaseDataTypeName, result.Name]));
-            end;
           end;
           if yXml.Name = 'items' then
           begin
-            SjowMessage (Format ('items found at: %s %s', [result.BaseDataTypeName, result.Name]));
+            yXsd := TXsd.Create(self);
+            self.Garbage.AddObject('', yXsd);
+            yXsd.ElementName := '-';
+            yXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, yXml, ErrorFound);
+            yXsd.sType.Name := yXsd.ElementName;
+            yXsd.minOccurs := '0';
+            yXsd.maxOccurs := 'unbounded';
+            result.ElementDefs.AddObject(yXsd.ElementName, yXsd);
           end;
           if yXml.Name = '$ref' then
           begin

@@ -8,6 +8,8 @@ uses
   Classes, SysUtils;
 
 
+function urlDecode(const S: String): String;
+function urlEncode(const S: String): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
@@ -524,6 +526,73 @@ begin
     S.Free;
   end;
 end;
+
+function urlDecode(const S: String): String;
+var
+  Idx: Integer;   // loops thru chars in string
+  pIdx: Integer; // remember pos of %
+  Hex: string;    // string of hex characters
+  Code: Integer;  // hex character code (-1 on error)
+begin
+  // Intialise result and string index
+  Result := '';
+  Idx := 1;
+  // Loop thru string decoding each character
+  while Idx <= Length(S) do
+  begin
+    case S[Idx] of
+      '%':
+      begin
+        pIdx := Idx;
+        // % should be followed by two hex digits - exception otherwise
+        if Idx <= Length(S) - 2 then
+        begin
+          // there are sufficient digits - try to decode hex digits
+          Hex := S[Idx+1] + S[Idx+2];
+          Code := SysUtils.StrToIntDef('$' + Hex, -1);
+          Inc(Idx, 2);
+        end
+        else
+          // insufficient digits - error
+          Code := -1;
+        // check for error and raise exception if found
+        if Code = -1 then
+          raise SysUtils.EConvertError.Create(
+            '(UrlDecode) Invalid hex digit in string: '''
+            + Copy (S, pIdx, 3)
+            + ''' (at position '
+            + IntToStr (pIdx)
+            + ')'
+          );
+        // decoded OK - add character to result
+        Result := Result + Chr(Code);
+      end;
+      '+':
+        // + is decoded as a space
+        Result := Result + ' '
+      else
+        // All other characters pass thru unchanged
+        Result := Result + S[Idx];
+    end;
+    Inc(Idx);
+  end;
+end;
+
+function urlEncode(const S: String): String;
+var
+  Idx: Integer; // loops thru characters in string
+begin
+  Result := '';
+  for Idx := 1 to Length(S) do
+  begin
+    case S[Idx] of
+      'A'..'Z', 'a'..'z', '0'..'9', '-', '_', '.': Result := Result + S[Idx];
+      ' ': Result := Result + '+';
+      else Result := Result + '%' + SysUtils.IntToHex(Ord(S[Idx]), 2);
+    end;
+  end;
+end;
+
 
 initialization
   PathPrefixes := TStringList.Create;

@@ -159,6 +159,7 @@ type
     property FullUQCaption: String read GetFullUQCaption;
     property Text: String read getText write setText;
     property Root: TXml read getRoot;
+    function jsonMultiValue (aUrlEncoded: Boolean): String;
     procedure SeparateNsPrefixes;
     function PrefixToNameSpace(aPrefix: String): String;
     procedure NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList);
@@ -2695,6 +2696,49 @@ end;
 function TXml.GetGroup: Boolean;
 begin
   result := (Items.Count > 0)
+end;
+
+function TXml.jsonMultiValue (aUrlEncoded: Boolean): String;
+  function _urlEncode (aValue: String): String;
+  begin
+    if aUrlEncoded then
+      result := urlEncode (aValue)
+    else
+      result := Value;
+  end;
+var
+  x: Integer;
+  valueSep: String;
+begin
+  if not Assigned (Xsd) then
+  begin
+    result := _urlEncode (Value);
+    exit;
+  end;
+  result := '';
+  valueSep := '';
+  if Xsd.sType.jsonType = jsonArray then
+  begin
+    for x := 0 to Items.Count - 1 do
+    begin
+      if Items.XmlItems[x].Checked then
+      begin
+        result := result + valueSep + Items.XmlItems[x].Value;
+        case Xsd.sType.CollectionFormat of
+          ocfMulti: valueSep := '&' + Name + '=';
+          ocfPipes: valueSep := '|';
+          ocfSingle: valueSep := '-?-';
+          ocfCSV: valueSep := ',';
+          ocfTSV: valueSep := #9;
+          ocfSSV: valueSep := ' ';
+        end;
+      end;
+    end;
+  end
+  else
+  begin
+    result := _urlEncode(Value);
+  end;
 end;
 
 procedure TXml .SeparateNsPrefixes ;
