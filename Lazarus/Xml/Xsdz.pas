@@ -28,6 +28,7 @@ type
   TjsonType = (jsonNone, jsonString, jsonNumber, jsonBoolean, jsonObject,
     jsonArray, jsonArrayValue);
 type TOperationParametersType = (oppBody, oppPath, oppQuery, oppHeader, oppForm);
+type TCollectionFormat = (ocfSingle, ocfCSV, ocfSSV, ocfTSV, ocfPipes, ocfMulti);
 
 type
   TOnHaveString = procedure(aString: String) of Object;
@@ -87,6 +88,7 @@ type
     DefaultValue: String;
     ContentModel: String;
     DerivationMethod: String;
+    CollectionFormat: TCollectionFormat;
     Length: String;
     MinLength: String;
     MaxLength: String;
@@ -1028,7 +1030,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
     for x := 0 to aXml.Items.Count - 1 do
     begin
       xXml := aXml.Items.XmlItems[x];
-      if xXml.Name = 'properties' then
+      if (xXml.Name = 'properties') then
       begin
         for y := 0 to xXml.Items.Count - 1 do
         begin
@@ -1091,7 +1093,26 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           end;
         end;
       end;
+      if xXml.Name = 'collectionFormat' then
+      begin
+        if xXml.Value = 'csv' then result.CollectionFormat := ocfCSV;
+        if xXml.Value = 'ssv' then result.CollectionFormat := ocfSSV;
+        if xXml.Value = 'tsv' then result.CollectionFormat := ocfTSV;
+        if xXml.Value = 'pipes' then result.CollectionFormat := ocfPipes;
+        if xXml.Value = 'multi' then result.CollectionFormat := ocfMulti;
+      end;
       if xXml.Name = 'format' then;
+      if (xXml.Name = 'items') then
+      begin
+        xXsd := TXsd.Create(self);
+        self.Garbage.AddObject('', xXsd);
+        xXsd.ElementName := '-';
+        xXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, xXml, ErrorFound);
+        xXsd.sType.Name := xXsd.ElementName;
+        xXsd.minOccurs := '0';
+        xXsd.maxOccurs := 'unbounded';
+        result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+      end;
       if xXml.Name = 'title' then AppendDoc(xDoc, xXml.Value);
       if xXml.Name = 'description' then AppendDoc(xDoc, xXml.Value);
       if xXml.Name = 'default ' then result.DefaultValue := xXml.Value;

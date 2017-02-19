@@ -4436,16 +4436,24 @@ begin
     end
     else
     begin
-      if reqBind is TXml
-      and ((reqBind as TXml).Items.Count > 0) then
+      if reqBind is TXml then
       begin
-        aXml := (reqBind as TXml).Items.XmlItems[0];
-        xsiGenerated := False;
-        xsdGenerated := False;
-        if WsdlService.DescriptionType <> ipmDTJson then
-          result := result + aXml.StreamXML(aGenerateBodyNameSpaces, WsdlService.UseNameSpacePrefixes, 0, True, False)
-        else
-          result := result + aXml.StreamJSON(0, True);
+        for x := 0 to (reqBind as TXml).Items.Count - 1 do
+        begin
+          aXml := (reqBind as TXml).Items.XmlItems[x];
+          if (not isOpenApiService)
+          or (    Assigned (aXml.Xsd)
+              and (aXml.Xsd.ParametersType = oppBody)
+             ) then
+          begin
+            xsiGenerated := False;
+            xsdGenerated := False;
+            if WsdlService.DescriptionType <> ipmDTJson then
+              result := result + aXml.StreamXML(aGenerateBodyNameSpaces, WsdlService.UseNameSpacePrefixes, 0, True, False)
+            else
+              result := result + aXml.StreamJSON(0, True);
+          end;
+        end;
       end;
       if reqBind is TIpmItem then
         result := (reqBind as TIpmItem).ValuesToBuffer (nil);

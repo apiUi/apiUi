@@ -3693,9 +3693,9 @@ function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
 var
   HttpClient: TIdHTTP;
   HttpRequest, sStream, dStream: TMemoryStream;
-  URL, sep: String;
+  URL, querySep, valueSep: String;
   oUri, sUri: TIdUri;
-  x: Integer;
+  x, y: Integer;
 begin
   Result := '';
   if not Assigned (aOperation)
@@ -3741,7 +3741,7 @@ begin
                + aOperation.Wsdl.Host
                + aOperation.Wsdl.basePath
                + aOperation.WsdlService.Name;
-          sep := '?';
+          querySep := '?';
           for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
           begin
             if Checked
@@ -3753,8 +3753,31 @@ begin
               end;
               if (Xsd.ParametersType = oppQuery) then
               begin
-                URL := URL + sep + Name + '=' + URLEncode(Value);
-                sep := '&';
+                if Xsd.sType.jsonType = jsonArray then
+                begin
+                  valueSep := '';
+                  URL := URL + querySep + Name + '=';
+                  for y := 0 to Items.Count - 1 do
+                  begin
+                    if Items.XmlItems[y].Checked then
+                    begin
+                      URL := URL + valueSep + Items.XmlItems[y].Value;
+                      case Xsd.sType.CollectionFormat of
+                        ocfMulti: valueSep := '&' + Name + '=';
+                        ocfPipes: valueSep := '|';
+                        ocfSingle: valueSep := '??';
+                        ocfCSV: valueSep := ',';
+                        ocfTSV: valueSep := #9;
+                        ocfSSV: valueSep := ' ';
+                      end;
+                    end;
+                  end;
+                end
+                else
+                begin
+                  URL := URL + querySep + Name + '=' + URLEncode(Value);
+                end;
+                querySep := '&';
               end;
               if (Xsd.ParametersType = oppHeader) then
               begin
