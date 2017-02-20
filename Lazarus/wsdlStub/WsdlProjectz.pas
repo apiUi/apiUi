@@ -122,6 +122,8 @@ type
       AHeaders: TIdHeaderList; var VPostStream: TStream);
     procedure HTTPServerCommandPutPut(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+    function ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext;
+      ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): Boolean;
     procedure HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCommandTrace(AContext: TIdContext;
@@ -158,7 +160,7 @@ type
     FreeFormatWsdl, XsdWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
-    Wsdls, wsdlNames: TStringList;
+    Wsdls, wsdlNames, openApiPaths: TStringList;
     Scripts: TXml;
     DisplayedLogColumns: TStringList;
     projectFileName, LicenseDbName: String;
@@ -1329,6 +1331,8 @@ begin
   Wsdls.Sorted := True;
   wsdlNames := TStringList.Create;
   wsdlNames.Sorted := True;
+  openApiPaths := TStringList.Create;
+  openApiPaths.Sorted := True;
   unknownOperation := TWsdlOperation.Create(TWsdl(nil));
   ignoreDifferencesOn := TStringList.Create;
   ignoreDifferencesOn.Sorted := True;
@@ -1483,6 +1487,7 @@ begin
   FreeAndNil (unknownOperation);
   Wsdls.Free;
   wsdlNames.Free;
+  openApiPaths.Free;
   FreeAndNil (FreeFormatWsdl);
   FreeAndNil (CobolWsdl);
   FreeAndNil (XsdWsdl);
@@ -1536,6 +1541,10 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
     wsdlNames.AddObject(xWsdl.Name, xWsdl);
     for s := 0 to xWsdl.Services.Count - 1 do
     begin
+      if xWsdl.isOpenApiService then with xWsdl.Services do
+      begin
+        openApiPaths.AddObject(Services[s].openApiPathRegExp, Services[s]);
+      end;
       for o := 0 to xWsdl.Services.Services[s].Operations.Count - 1 do
       begin
         xOperation := xWsdl.Services.Services[s].Operations.Operations [o];
@@ -1601,6 +1610,7 @@ var
   w, o: Integer;
 begin
   wsdlNames.Clear;
+  openApiPaths.Clear;
   allOperations.ClearListOnly;
   allOperationsRpy.ClearListOnly;
   scriptErrorCount := 0;
@@ -6230,6 +6240,17 @@ begin
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
       xLog.httpParams := ARequestInfo.QueryParams;
       try
+        if (ARequestInfo.Command = 'GET')
+        or (ARequestInfo.Command = 'PUT')
+        or (ARequestInfo.Command = 'POST')
+        or (ARequestInfo.Command = 'DELETE')
+        or (ARequestInfo.Command = 'OPTIONS')
+        or (ARequestInfo.Command = 'HEAD')
+        or (ARequestInfo.Command = 'PATCH') then
+        begin
+          if ProcessedAsOpenApi (xLog, AContext, ARequestInfo, AResponseInfo) then
+            Exit;
+        end;
         if ARequestInfo.Command = 'GET' then
         begin
           xLog.RequestBody := '';
@@ -6497,6 +6518,39 @@ procedure TWsdlProject.HTTPServerCommandPutPut(AContext: TIdContext;
 begin
   AResponseInfo.ContentText := 'JanBo PutPut';
   AResponseInfo.ResponseNo := 500;
+end;
+
+function TWsdlProject .ProcessedAsOpenApi (aLog : TLog ;
+  AContext : TIdContext ; ARequestInfo : TIdHTTPRequestInfo ;
+  AResponseInfo : TIdHTTPResponseInfo ): Boolean ;
+var
+  x, s, o: Integer;
+  xService: TWsdlService;
+begin
+  result := False;
+  s := -1;
+  o := -1;
+  with TRegExpr.Create do
+  try
+    for x := 0 to openApiPaths.Count - 1 do
+    begin
+      Expression := '^(' + openApiPaths.Strings[x] + ')$';
+      if Exec(aLog.httpDocument) then
+        s := x;
+    end;
+  finally
+    free;
+  end;
+  if s > -1 then
+  begin
+    xService := openApiPaths.Objects[s] as TWsdlService;
+    for x := 0 to xService.Operations.Count - 1 do
+    with xService.Operations do
+    begin
+      if Operations[x].httpVerb = aLog.httpCommand then
+        o := x;
+    end;
+  end;
 end;
 
 procedure TWsdlProject.HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
@@ -7464,6 +7518,7 @@ begin
   end;
   wsdls.Clear;
   wsdlNames.Clear;
+  openApiPaths.Clear;
   ScriptsClear;
   DisplayedLogColumns.Clear;
   xsdElementsWhenRepeatable := 1;
