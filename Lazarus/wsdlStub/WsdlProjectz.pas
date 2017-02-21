@@ -6520,35 +6520,95 @@ begin
   AResponseInfo.ResponseNo := 500;
 end;
 
-function TWsdlProject .ProcessedAsOpenApi (aLog : TLog ;
-  AContext : TIdContext ; ARequestInfo : TIdHTTPRequestInfo ;
-  AResponseInfo : TIdHTTPResponseInfo ): Boolean ;
+function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): Boolean;
+
+  function _ServiceFromPath: TWsdlService;
+  var
+    x: Integer;
+    xService: TWsdlService;
+  begin
+    result := nil;
+    with TRegExpr.Create do
+    try
+      for x := 0 to openApiPaths.Count - 1 do
+      begin
+        Expression := '^(' + openApiPaths.Strings[x] + ')$';
+        if Exec(aLog.httpDocument) then
+          result := openApiPaths.Objects[x] as TWsdlService;
+      end;
+    finally
+      free;
+    end;
+  end;
+  function _OperationFromPath: TWsdlOperation;
+  var
+    x: Integer;
+    xService: TWsdlService;
+  begin
+    result := nil;
+    xService := _ServiceFromPath;
+    if Assigned (xService) then
+    begin
+      for x := 0 to xService.Operations.Count - 1 do
+      with xService.Operations do
+      begin
+        if Operations[x].httpVerb = aLog.httpCommand then
+          result := Operations[x];
+      end;
+    end;
+  end;
+  procedure _RequestToBindables (aOperation: TWsdlOperation);
+  var
+    x, k: Integer;
+    sl: TStringList;
+  begin
+    sl := TStringList.Create;
+    try
+      ExplodeStr (aLog.httpDocument, '/', sl);
+      k := sl.Count - 1;
+      with aOperation.reqXml.Items do for x := Count - 1 downto 0 do
+      begin
+        case XmlItems[x].Xsd.ParametersType of
+          oppBody: ;
+          oppPath:
+            begin
+              XmlItems[x].Value := sl.Strings[k];
+              XmlItems[x].Checked := True;
+              k := k - 1;
+            end;
+          oppQuery: ;
+          oppHeader: ;
+          oppForm: SjowMessage ('oppForm: not suported');
+        end;
+      end;
+    finally
+      sl.free;
+    end;
+  end;
+
 var
   x, s, o: Integer;
-  xService: TWsdlService;
+  xOperation: TWsdlOperation;
 begin
   result := False;
-  s := -1;
-  o := -1;
-  with TRegExpr.Create do
-  try
-    for x := 0 to openApiPaths.Count - 1 do
-    begin
-      Expression := '^(' + openApiPaths.Strings[x] + ')$';
-      if Exec(aLog.httpDocument) then
-        s := x;
-    end;
-  finally
-    free;
-  end;
-  if s > -1 then
+  aLog.Operation := _OperationFromPath;
+  if Assigned(aLog.Operation) then
   begin
-    xService := openApiPaths.Objects[s] as TWsdlService;
-    for x := 0 to xService.Operations.Count - 1 do
-    with xService.Operations do
-    begin
-      if Operations[x].httpVerb = aLog.httpCommand then
-        o := x;
+    aLog.Operation.AcquireLock;
+    try
+      xOperation := TWsdlOperation.Create(aLog.Operation);
+      if xOperation.PrepareErrors <> '' then
+        raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
+    finally
+      aLog.Operation.ReleaseLock;
+    end;
+    try
+      SjowMessage ('===>' + xOperation.Alias);
+      _RequestToBindables (xOperation);
+      SjowMessage(xOperation.reqXml.Text);
+      Result := True;
+    finally
+      xOperation.Free;
     end;
   end;
 end;
