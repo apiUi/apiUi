@@ -6559,7 +6559,7 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
   end;
   procedure _RequestToBindables (aOperation: TWsdlOperation);
   var
-    x, k: Integer;
+    x, k, f: Integer;
     sl: TStringList;
   begin
     sl := TStringList.Create;
@@ -6575,8 +6575,15 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
               XmlItems[x].ValueToJsonArray(sl.Strings[k]);
               k := k - 1;
             end;
-          oppQuery: ;
-          oppHeader: ;
+          oppQuery:
+            begin
+            end;
+          oppHeader:
+            begin
+              f := ARequestInfo.Params.IndexOfName(XmlItems[x].Name);
+              if f > -1 then
+                XmlItems[x].ValueToJsonArray(ARequestInfo.Params.ValueFromIndex[f]);
+            end;
           oppForm: SjowMessage ('oppForm: not suported');
         end;
       end;
