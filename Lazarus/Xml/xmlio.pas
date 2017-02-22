@@ -24,6 +24,8 @@ function GetUserName: String;
 function GetVersion: String;
 function resolveAliasses (aString: String; aAliasses: TStringList): String;
 function StringHasRegExpr (aString, aExpr: String): String;
+function ExplodeStr(S, Delim: string; const List: Classes.TStrings;
+  const AllowEmpty: Boolean = True; const Trim: Boolean = False): Integer;
 
 var
   PathPrefixes: TStringList;
@@ -41,6 +43,61 @@ uses StrUtils
    , Controls
    , PromptFolderUnit
    ;
+
+function ExplodeStr(S, Delim: string; const List: Classes.TStrings;
+  const AllowEmpty: Boolean = True; const Trim: Boolean = False): Integer;
+
+  function SplitStr(S, Delim: string; out S1, S2: string): Boolean;
+  var
+    DelimPos: Integer;  // position of delimiter in source string
+  begin
+    // Find position of first occurence of delimter in string
+    DelimPos := Pos(Delim, S);
+    if DelimPos > 0 then
+    begin
+      // Delimiter found: do split and return True
+      S1 := Copy(S, 1, DelimPos - 1);
+      S2 := Copy(S, DelimPos + Length (Delim), MaxInt);
+      Result := True;
+    end
+    else
+    begin
+      // Delimeter not found: return false and set S1 to whole string
+      S1 := S;
+      S2 := '';
+      Result := False;
+    end;
+  end;
+var
+  Item: string;       // current delimted text
+  Remainder: string;  // remaining unconsumed part of string
+
+  procedure AddItem;
+  begin
+    // Adds optionally trimmed item to list if required
+    if (Trim) then
+      Item := SysUtils.Trim(Item);
+    if (Item <> '') or AllowEmpty then
+      List.Add(Item);
+  end;
+
+begin
+  // Clear the list
+  List.Clear;
+  // Check we have some entries in the string
+  if S <> '' then
+  begin
+    // Repeatedly split string until we have no more entries
+    while SplitStr(S, Delim, Item, Remainder) do
+    begin
+      AddItem;
+      S := Remainder;
+    end;
+    // Add any remaining item
+    AddItem;
+  end;
+  Result := List.Count;
+end;
 
 function StringHasRegExpr (aString, aExpr: String): String;
 begin

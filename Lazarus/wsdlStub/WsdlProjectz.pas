@@ -3759,15 +3759,15 @@ begin
             begin
               if (Xsd.ParametersType = oppPath) then
               begin
-                URL := ReplaceStr(URL, '{' + Name + '}', jsonMultiValue(true));
+                URL := ReplaceStr(URL, '{' + Name + '}', ValueFromJsonArray(true));
               end;
               if (Xsd.ParametersType = oppQuery) then
               begin
-                URL := URL + querySep + Name + '=' + jsonMultiValue(true);
+                URL := URL + querySep + Name + '=' + ValueFromJsonArray(true);
               end;
               if (Xsd.ParametersType = oppHeader) then
               begin
-                HttpClient.Request.CustomHeaders.Values [Name] := jsonMultiValue(false);
+                HttpClient.Request.CustomHeaders.Values [Name] := ValueFromJsonArray(false);
               end;
             end;
           end;
@@ -6572,8 +6572,7 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
           oppBody: ;
           oppPath:
             begin
-              XmlItems[x].Value := sl.Strings[k];
-              XmlItems[x].Checked := True;
+              XmlItems[x].ValueToJsonArray(sl.Strings[k]);
               k := k - 1;
             end;
           oppQuery: ;

@@ -159,7 +159,8 @@ type
     property FullUQCaption: String read GetFullUQCaption;
     property Text: String read getText write setText;
     property Root: TXml read getRoot;
-    function jsonMultiValue (aUrlEncoded: Boolean): String;
+    function ValueFromJsonArray (aUrlEncoded: Boolean): String;
+    procedure ValueToJsonArray (aValue:String);
     procedure SeparateNsPrefixes;
     function PrefixToNameSpace(aPrefix: String): String;
     procedure NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList);
@@ -2708,7 +2709,7 @@ begin
   result := (Items.Count > 0)
 end;
 
-function TXml.jsonMultiValue (aUrlEncoded: Boolean): String;
+function TXml.ValueFromJsonArray (aUrlEncoded: Boolean): String;
   function _urlEncode (aValue: String): String;
   begin
     if aUrlEncoded then
@@ -2748,6 +2749,35 @@ begin
   else
   begin
     result := _urlEncode(Value);
+  end;
+end;
+
+procedure TXml.ValueToJsonArray(aValue: String);
+var
+  valueSep: String;
+  sl: TStringList;
+begin
+  if (not Assigned (Xsd))
+  or (Xsd.sType.jsonType <> jsonArray) then
+  begin
+    Value := aValue;
+    Checked := True;
+    Exit;
+  end;
+  case Xsd.sType.CollectionFormat of
+    ocfMulti: valueSep := '&' + Name + '=';
+    ocfPipes: valueSep := '|';
+    ocfSingle: valueSep := '-?-';
+    ocfCSV: valueSep := ',';
+    ocfTSV: valueSep := #9;
+    ocfSSV: valueSep := ' ';
+  end;
+  SjowMessage (FullCaption + ': ' + valueSep + ' procedure TXml.ValueToJsonArray(aValue: String);');
+  sl := TStringList.Create;
+  try
+    ExplodeStr(aValue, valueSep, sl);
+  finally
+    sl.Free;
   end;
 end;
 
