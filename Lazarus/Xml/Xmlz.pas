@@ -2756,14 +2756,17 @@ procedure TXml.ValueToJsonArray(aValue: String);
 var
   valueSep: String;
   sl: TStringList;
+  x: Integer;
 begin
   if (not Assigned (Xsd))
-  or (Xsd.sType.jsonType <> jsonArray) then
+  or (Xsd.sType.jsonType <> jsonArray)
+  or (Xsd.sType.ElementDefs.Count = 0)then
   begin
     Value := aValue;
     Checked := True;
     Exit;
   end;
+  ResetValues;
   case Xsd.sType.CollectionFormat of
     ocfMulti: valueSep := '&' + Name + '=';
     ocfPipes: valueSep := '|';
@@ -2772,10 +2775,16 @@ begin
     ocfTSV: valueSep := #9;
     ocfSSV: valueSep := ' ';
   end;
-  SjowMessage (FullCaption + ': ' + valueSep + ' procedure TXml.ValueToJsonArray(aValue: String);');
   sl := TStringList.Create;
   try
     ExplodeStr(aValue, valueSep, sl);
+    while Items.Count < sl.Count do
+      AddXml(TXml.Create(0, TypeDef.ElementDefs.Xsds[0]));
+    for x := 0 to sl.Count - 1 do
+    begin
+      Items.XmlItems[x].Value := sl.Strings[x];
+      Items.XmlItems[x].Checked := True;
+    end;
   finally
     sl.Free;
   end;

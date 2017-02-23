@@ -6233,24 +6233,24 @@ begin
       xLog := TLog.Create;
       rLog := nil;
       xLog.InboundTimeStamp := Now;
+      xLog.httpUri := ARequestInfo.URI;
       xLog.TransportType := ttHttp;
       xLog.httpCommand := ARequestInfo.Command;
       xLog.httpDocument := ARequestInfo.Document;
       xLog.httpSoapAction := ARequestInfo.RawHeaders.Values ['SOAPAction'];
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
+      xLog.ContentType := ARequestInfo.ContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
+      AResponseInfo.ContentEncoding := 'identity';
       try
-        if (ARequestInfo.Command = 'GET')
-        or (ARequestInfo.Command = 'PUT')
-        or (ARequestInfo.Command = 'POST')
-        or (ARequestInfo.Command = 'DELETE')
-        or (ARequestInfo.Command = 'OPTIONS')
-        or (ARequestInfo.Command = 'HEAD')
-        or (ARequestInfo.Command = 'PATCH') then
+        if (ARequestInfo.Command = 'POST')
+        or (ARequestInfo.Command = 'PUT') then
         begin
-          if ProcessedAsOpenApi (xLog, AContext, ARequestInfo, AResponseInfo) then
-            Exit;
+          xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
+          xLog.InboundBody := xLog.RequestBody;
         end;
+        if ProcessedAsOpenApi (xLog, AContext, ARequestInfo, AResponseInfo) then
+          Exit;
         if ARequestInfo.Command = 'GET' then
         begin
           xLog.RequestBody := '';
@@ -6266,8 +6266,6 @@ begin
         if (ARequestInfo.Command = 'POST')
         or (ARequestInfo.Command = 'PUT') then
         begin
-          xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
-          xLog.InboundBody := xLog.RequestBody;
           AResponseInfo.ContentType := ARequestInfo.ContentType;
           rLog := nil;
           AcquireLogLock;
@@ -6559,8 +6557,10 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
   end;
   procedure _RequestToBindables (aOperation: TWsdlOperation);
   var
-    x, k, f: Integer;
+    x, y, k, f: Integer;
     sl: TStringList;
+    xXml: TXml;
+    xValue, xSeparator: String;
   begin
     sl := TStringList.Create;
     try
@@ -6569,7 +6569,20 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
       with aOperation.reqXml.Items do for x := Count - 1 downto 0 do
       begin
         case XmlItems[x].Xsd.ParametersType of
-          oppBody: ;
+          oppBody:
+            begin
+              xXml := TXml.Create;
+              try
+                if Pos ('json', aLog.ContentType) > 0 then
+                  xXml.LoadJsonFromString(aLog.RequestBody, nil)
+                else
+                  xXml.LoadFromString(aLog.RequestBody, nil);
+                xXml.Name := XmlItems[x].Name;
+                XmlItems[x].LoadValues (xXml, false, False, True, False);
+              finally
+                xXml.Free;
+              end;
+            end;
           oppPath:
             begin
               XmlItems[x].ValueToJsonArray(sl.Strings[k]);
@@ -6577,13 +6590,21 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
             end;
           oppQuery:
             begin
+              xValue := '';
+              xSeparator := '';
+              for y := 0 to ARequestInfo.Params.Count - 1 do
+              begin
+                if ARequestInfo.Params.Names[y] = XmlItems[x].Name then
+                begin
+                  xValue := xValue + xSeparator + ARequestInfo.Params.ValueFromIndex[y];
+                  xSeparator := '&' + XmlItems[x].Name + '=';
+                end;
+              end;
+              XmlItems[x].ValueToJsonArray(xValue);
             end;
           oppHeader:
-            begin
-              f := ARequestInfo.Params.IndexOfName(XmlItems[x].Name);
-              if f > -1 then
-                XmlItems[x].ValueToJsonArray(ARequestInfo.Params.ValueFromIndex[f]);
-            end;
+              if ARequestInfo.RawHeaders.IndexOfName(XmlItems[x].Name) > -1 then
+                XmlItems[x].ValueToJsonArray(ARequestInfo.RawHeaders.Values[XmlItems[x].Name]);
           oppForm: SjowMessage ('oppForm: not suported');
         end;
       end;
@@ -6595,6 +6616,7 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
 var
   x, s, o: Integer;
   xOperation: TWsdlOperation;
+  xMssg: TWsdlMessage;
 begin
   result := False;
   aLog.Operation := _OperationFromPath;
@@ -6603,16 +6625,56 @@ begin
     aLog.Operation.AcquireLock;
     try
       xOperation := TWsdlOperation.Create(aLog.Operation);
-      if xOperation.PrepareErrors <> '' then
-        raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
     finally
       aLog.Operation.ReleaseLock;
     end;
     try
-      SjowMessage ('===>' + xOperation.Alias);
-      _RequestToBindables (xOperation);
-      SjowMessage(xOperation.reqXml.Text);
       Result := True;
+      SjowMessage ('===>' + xOperation.Alias);
+      if xOperation.PrepareErrors <> '' then
+        raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
+      _RequestToBindables (xOperation);
+      xOperation.Data := aLog;
+      if IsActive then with xOperation.Cloned do
+      begin
+        AcquireLock;
+        Inc (OperationCounter);
+        aLog.OperationCount := OperationCounter;
+        ReleaseLock;
+      end;
+      xOperation.InitDelayTime;
+      if xOperation.doReadReplyFromFile then
+      begin
+        xMssg := xOperation.Messages.Messages[0];
+        xOperation.ReadReplyFromFile;
+      end
+      else
+        xMssg := xOperation.MessageBasedOnRequest;
+      if not Assigned (xMssg) then
+        Raise Exception.Create('Could not find any reply based on request');
+      xOperation.rpyXml.ResetValues;
+      xOperation.rpyXml.LoadValues (xMssg.rpyXml, True, True);
+      if (xOperation.StubAction = saStub)
+      and (IsActive) then
+      begin
+        xOperation.ExecuteBefore;
+        xOperation.ExecuteRpyStampers;
+        if xOperation.doDebug
+        and Assigned (OnDebugOperationEvent) then
+        begin
+          DebugOperation := xOperation;
+          OnDebugOperationEvent;
+        end;
+      end;
+      aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
+      aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
+      aLog.DelayTimeMs := xOperation.DelayTimeMs;
+      aLog.OperationName:=xOperation.Alias;
+      aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+      CreateLogReplyPostProcess(aLog, xOperation);
+      AResponseInfo.ResponseNo := 200;
+      AResponseInfo.ContentText := aLog.ReplyBody;
+      SjowMessage (AResponseInfo.ContentText);
     finally
       xOperation.Free;
     end;
@@ -7236,6 +7298,7 @@ begin
           xLog.Exception := Items.XmlValueByTag ['Error'];
           xLog.Remarks := Items.XmlValueByTag ['Remarks'];
           xLog.Notifications := Items.XmlValueByTag ['Notifications'];
+          xLog.httpUri := Items.XmlValueByTag ['httpUri'];
           xLog.httpResponseCode := Items.XmlValueByTag ['httpResponseCode'];
           xLog.httpCommand := Items.XmlValueByTag ['httpCommand'];
           xLog.httpDocument := Items.XmlValueByTag ['httpDocument'];

@@ -47,12 +47,13 @@ type
     CorrId: String;
     InboundTimeStamp, OutBoundTimeStamp: TDateTime;
     TransportType: TTransportType;
-    SourceIp: String;
+    httpUri: String;
     httpResponseCode: String;
     httpCommand: String;
     httpDocument: String;
     httpParams: String;
     httpSoapAction: String;
+    ContentType: String;
     DestinationIp: String;
     Stubbed: Boolean;
     CorrelationId: String;
@@ -1023,6 +1024,7 @@ begin
     AddXml (TXml.CreateAsString('Error', Self.Exception));
     AddXml (TXml.CreateAsString('Remarks', Self.Remarks));
     AddXml (TXml.CreateAsString('Notifications', Self.Notifications));
+    AddXml (Txml.CreateAsString('httpUri', Self.httpUri));
     AddXml (Txml.CreateAsString('httpResponseCode', Self.httpResponseCode));
     AddXml (Txml.CreateAsString('httpCommand', Self.httpCommand));
     AddXml (Txml.CreateAsString('httpDocument', Self.httpDocument));
