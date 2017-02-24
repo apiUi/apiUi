@@ -1303,6 +1303,8 @@ type
     , logTimeColumn
     , logDurationColumn
     , logActionColumn
+    , logVerbColumn
+    , logStatusColumn
     , logServiceColumn
     , logOperationColumn
     , logCorrelationIdColumn
@@ -5972,6 +5974,8 @@ begin
             saRedirect: CellText := 'Redirect';
             saRequest: CellText := 'Request';
           end;
+        logVerbColumn: CellText := xLog.httpCommand;
+        logStatusColumn: CellText := xLog.httpResponseCode;
         logServiceColumn:
           if Assigned(xLog.Operation) then
             CellText := xLog.Operation.WsdlService.Name;

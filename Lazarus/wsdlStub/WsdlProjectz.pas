@@ -122,8 +122,7 @@ type
       AHeaders: TIdHeaderList; var VPostStream: TStream);
     procedure HTTPServerCommandPutPut(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-    function ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext;
-      ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): Boolean;
+    function ProcessedAsOpenApi (aLog: TLog): Boolean;
     procedure HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCommandTrace(AContext: TIdContext;
@@ -6242,6 +6241,7 @@ begin
       xLog.ContentType := ARequestInfo.ContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
       AResponseInfo.ContentEncoding := 'identity';
+      AResponseInfo.ResponseNo := 200;
       try
         if (ARequestInfo.Command = 'POST')
         or (ARequestInfo.Command = 'PUT') then
@@ -6249,8 +6249,12 @@ begin
           xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
           xLog.InboundBody := xLog.RequestBody;
         end;
-        if ProcessedAsOpenApi (xLog, AContext, ARequestInfo, AResponseInfo) then
+        if ProcessedAsOpenApi (xLog) then
+        begin
+          AResponseInfo.ContentText := xLog.ReplyBody;
+          SjowMessage (AResponseInfo.ContentText);
           Exit;
+        end;
         if ARequestInfo.Command = 'GET' then
         begin
           xLog.RequestBody := '';
@@ -6518,7 +6522,7 @@ begin
   AResponseInfo.ResponseNo := 500;
 end;
 
-function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): Boolean;
+function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
 
   function _ServiceFromPath: TWsdlService;
   var
@@ -6558,14 +6562,18 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
   procedure _RequestToBindables (aOperation: TWsdlOperation);
   var
     x, y, k, f: Integer;
-    sl: TStringList;
+    pathParams, qryParams, hdrParams: TStringList;
     xXml: TXml;
     xValue, xSeparator: String;
   begin
-    sl := TStringList.Create;
+    pathParams := TStringList.Create;
+    qryParams := TStringList.Create;
+    hdrParams := TStringList.Create;
     try
-      ExplodeStr (aLog.httpDocument, '/', sl);
-      k := sl.Count - 1;
+      ExplodeStr (aLog.httpDocument, '/', pathParams);
+      k := pathParams.Count - 1;
+      qryParams.Text := aLog.httpParams;
+      hdrParams.Text := aLog.RequestHeaders;
       with aOperation.reqXml.Items do for x := Count - 1 downto 0 do
       begin
         case XmlItems[x].Xsd.ParametersType of
@@ -6585,31 +6593,33 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog; AContext: TIdContext; AReq
             end;
           oppPath:
             begin
-              XmlItems[x].ValueToJsonArray(sl.Strings[k]);
+              XmlItems[x].ValueToJsonArray(pathParams.Strings[k]);
               k := k - 1;
             end;
           oppQuery:
             begin
               xValue := '';
               xSeparator := '';
-              for y := 0 to ARequestInfo.Params.Count - 1 do
+              for y := 0 to qryParams.Count - 1 do
               begin
-                if ARequestInfo.Params.Names[y] = XmlItems[x].Name then
+                if qryParams.Names[y] = XmlItems[x].Name then
                 begin
-                  xValue := xValue + xSeparator + ARequestInfo.Params.ValueFromIndex[y];
+                  xValue := xValue + xSeparator + qryParams.ValueFromIndex[y];
                   xSeparator := '&' + XmlItems[x].Name + '=';
                 end;
               end;
               XmlItems[x].ValueToJsonArray(xValue);
             end;
           oppHeader:
-              if ARequestInfo.RawHeaders.IndexOfName(XmlItems[x].Name) > -1 then
-                XmlItems[x].ValueToJsonArray(ARequestInfo.RawHeaders.Values[XmlItems[x].Name]);
+              if hdrParams.IndexOfName(XmlItems[x].Name) > -1 then
+                XmlItems[x].ValueToJsonArray(hdrParams.Values[XmlItems[x].Name]);
           oppForm: SjowMessage ('oppForm: not suported');
         end;
       end;
     finally
-      sl.free;
+      FreeAndNil(pathParams);
+      FreeAndNil(qryParams);
+      FreeAndNil(hdrParams);
     end;
   end;
 
@@ -6672,9 +6682,6 @@ begin
       aLog.OperationName:=xOperation.Alias;
       aLog.ReplyBody := xOperation.StreamReply (_progName, True);
       CreateLogReplyPostProcess(aLog, xOperation);
-      AResponseInfo.ResponseNo := 200;
-      AResponseInfo.ContentText := aLog.ReplyBody;
-      SjowMessage (AResponseInfo.ContentText);
     finally
       xOperation.Free;
     end;
