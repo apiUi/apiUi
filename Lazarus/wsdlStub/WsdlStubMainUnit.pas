@@ -1,4 +1,4 @@
-// Search for ZoomElement, it is available
+//  Search for ZoomElement, it is available
 unit WsdlStubMainUnit;
 {$IFDEF FPC}
   {$MODE Delphi}

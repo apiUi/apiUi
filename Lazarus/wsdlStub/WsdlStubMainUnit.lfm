@@ -461,10 +461,6 @@ object MainForm: TMainForm
           PrintSettings.MarginTop = 0.5
           PrintSettings.MarginRight = 0.5
           PrintSettings.MarginBottom = 0.5
-          PrintSettings.Preview.Left = 480
-          PrintSettings.Preview.Top = 270
-          PrintSettings.Preview.Width = 1440
-          PrintSettings.Preview.Height = 810
           ShowHints = False
           TabOrder = 0
           OnHotClick = DocumentationViewerHotClick
