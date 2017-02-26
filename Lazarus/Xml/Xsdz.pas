@@ -175,6 +175,7 @@ type
     DoNotEncode: Boolean;
     isReadOnly: Boolean;
     ParametersType: TOperationParametersType;
+    ResponseNo: Integer;
     minOccurs: String;
     maxOccurs: String;
     _UnknownType: String;
@@ -413,6 +414,7 @@ begin
   xsdDescr := aXsdDescr;
   minOccurs := '1';
   maxOccurs := '1';
+  ResponseNo := 200;
   ParametersType := oppBody;
   FormDefaultQualified := xsdElementFormDefaultQualified;
 end;
@@ -432,6 +434,7 @@ begin
   self.InitialCollapsed := aSource.InitialCollapsed;
   self.Documentation.Text := aSource.Documentation.Text;
   self.Appinfo.Text := aSource.Appinfo.Text;
+  self.ResponseNo := aSource.ResponseNo;
 end;
 
 destructor TXsd.Destroy;

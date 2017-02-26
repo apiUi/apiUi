@@ -2336,6 +2336,7 @@ var
   xDoc: String;
   sl: TStringList;
   xXsd: TXsd;
+  s: String;
 begin
   try
     with TIdURI.Create(aFileName) do
@@ -2463,7 +2464,9 @@ begin
             xOperation.Name := xService.Name + ':' + Name;
             xService.Operations.AddObject(xOperation.Name, xOperation);
             xOperation.reqTagName := xOperation.Name;
+            xOperation.reqBind.Name := xOperation.reqTagName;
             xOperation.rpyTagName := xOperation.Name;
+            xOperation.rpyBind.Name := xOperation.rpyTagName;
             xOperation.Alias := xOperation.reqTagName;
             xOperation.httpVerb := UpperCase(Name);
             xOperation.Schemes := Schemes;
@@ -2478,7 +2481,12 @@ begin
               if Name = 'summary' then _appendInfo(xDoc, Value);
               if Name = 'description' then _appendInfo(xDoc, Value);
               if Name = 'externalDocs' then ;
-              if Name = 'operationId' then xOperation.Alias := Value;
+              if Name = 'operationId' then with xOperation do
+              begin
+                Alias := Value;
+                if Assigned (reqBind) then reqBind.Name := Alias;
+                if Assigned (rpyBind) then rpyBind.Name := Alias;
+              end;
               if Name = 'consumes' then
               begin
                 xOperation.Consumes := '';
@@ -2530,8 +2538,10 @@ begin
                   xXsd := TXsd.Create(XsdDescr);
                   XsdDescr.Garbage.AddObject('', xXsd);
                   xXsd.ElementName := 'rspns' + vXml.Name;
+                  xXsd.ResponseNo := StrToIntDef(vXml.Name, 200);
                   xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
                   xXsd.sType.Name := xXsd.ElementName;
+                  xXsd.minOccurs := '0';
                   xOperation.rpyXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
                   for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
                   begin
@@ -2548,13 +2558,20 @@ begin
               if Name = 'deprecated' then
               begin
                 xOperation.isDepricated := True;
-                SjowMessage(Format ('depricated operation %s at %s', [xOperation.Name, aFileName]));
               end;
               if Name = 'security' then ;
             end;
             with xOperation do
             begin
               Documentation.Text := xDoc;
+              s := reqBind.Name;
+              reqBind.Free;
+              reqBind := TXml.Create(0, reqXsd);
+              reqBind.Name := s;
+              s := rpyBind.Name;
+              rpyBind.Free;
+              rpyBind := TXml.Create(0, rpyXsd);
+              rpyBind.Name := s;
             end;
           end;
         end;
@@ -2576,6 +2593,20 @@ begin
             Objects[x] := Objects[f];
           end;
         end;
+      end;
+    end;
+    for x := 0 to Services.Count - 1 do with Services.Services[x] do
+    begin
+      for y := 0 to Operations.Count - 1 do with Operations.Operations[y] do
+      begin
+        s := reqBind.Name;
+        reqBind.Free;
+        reqBind := TXml.Create(0, reqXsd);
+        reqBind.Name := s;
+        s := rpyBind.Name;
+        rpyBind.Free;
+        rpyBind := TXml.Create(0, rpyXsd);
+        rpyBind.Name := s;
       end;
     end;
   finally
