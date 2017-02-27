@@ -2329,13 +2329,13 @@ procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
     end;
   end;
 var
-  xXml, dXml, vXml: TXml;
+  xXml, dXml, vXml, rXml: TXml;
   x, y, z, u, v, w, r, f: Integer;
   xService: TWsdlService;
   xOperation: TWsdlOperation;
   xDoc: String;
   sl: TStringList;
-  xXsd: TXsd;
+  xXsd, hXsd: TXsd;
   s: String;
 begin
   try
@@ -2657,6 +2657,7 @@ var
         end;
       end;
     end;
+                  end;
 {}
   end;
   function _LoadCobolMsg (aLabel: String; sXml: TXml): TIpmItem;
