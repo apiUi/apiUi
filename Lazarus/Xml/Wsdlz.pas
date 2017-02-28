@@ -2329,13 +2329,13 @@ procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
     end;
   end;
 var
-  xXml, dXml, vXml, rXml: TXml;
-  x, y, z, u, v, w, r, f: Integer;
+  xXml, dXml, vXml, wXml, rXml, hXml: TXml;
+  x, y, z, u, v, w, r, f, h: Integer;
   xService: TWsdlService;
   xOperation: TWsdlOperation;
   xDoc: String;
   sl: TStringList;
-  xXsd, hXsd: TXsd;
+  xXsd, yXsd, hXsd: TXsd;
   s: String;
 begin
   try
@@ -2539,13 +2539,40 @@ begin
                   XsdDescr.Garbage.AddObject('', xXsd);
                   xXsd.ElementName := 'rspns' + vXml.Name;
                   xXsd.ResponseNo := StrToIntDef(vXml.Name, 200);
-                  xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
-                  xXsd.sType.Name := xXsd.ElementName;
+                  xXsd.sType := TXsdDataType.Create(XsdDescr);
+                  xXsd.sType.xsdType:= dtComplexType;
+                  XsdDescr.Garbage.AddObject('', xXsd.sType);
+                  xXsd.sType.Name := vXml.Name;
                   xXsd.minOccurs := '0';
                   xOperation.rpyXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
-                  for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
+                  for w := 0 to vXml.Items.Count - 1 do
                   begin
-                    if Name = 'description' then xXsd.Documentation.Text := Value;
+                    wXml := vXml.Items.XmlItems[w];
+                    if wXml.Name = 'description' then xXsd.Documentation.Text := wXml.Value;
+                    if wXml.Name = 'schema' then
+                    begin
+                      yXsd := TXsd.Create(XsdDescr);
+                      XsdDescr.Garbage.AddObject('', yXsd);
+                      yXsd.ElementName := 'body';
+                      yXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
+                      yXsd.sType.Name := xXsd.ElementName;
+                      xXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
+                    end;
+                    if wXml.Name = 'headers' then
+                    begin
+                      for h := 0 to wXml.Items.Count - 1 do
+                      begin
+                        hXml := wXml.Items.XmlItems[h];
+                        hXsd := TXsd.Create(XsdDescr);
+                        XsdDescr.Garbage.AddObject('', hXsd);
+                        hXsd.ElementName := hXml.Name;
+                        hXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, '', hXml, aOnError);
+                        hXsd.sType.Name := hXsd.ElementName;
+                        hXsd.minOccurs := '0';
+                        hXsd.ParametersType := oppHeader;
+                        xXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
+                      end;
+                    end;
                   end;
                 end;
               end;
