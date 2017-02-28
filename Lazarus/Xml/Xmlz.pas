@@ -1318,7 +1318,7 @@ var
         else
         begin
           if nsAttributes.Find(aXml.TypeDef.NameSpace, f) then
-            xString := xString + 'ns' + IntToStr(f) + ':'
+            xString := xString + 'ns' + IntToStr(f + 1) + ':'
           else
             xString := xString + 'nsx:';
         end;
