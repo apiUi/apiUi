@@ -2278,6 +2278,8 @@ procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
             aXsd.sType := self.XsdDescr.TypeDefs.XsdDataTypes[f];
         for x := 0 to aXsd.sType.ElementDefs.Count - 1 do
           _resolve (aXsd.sType.ElementDefs.Xsds[x]);
+        if aXsd.sType.JsonXmlName <> '' then
+          aXsd.ElementName := aXsd.sType.JsonXmlName;
       finally
         aXsd._Processed := False;
       end;

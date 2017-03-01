@@ -100,6 +100,7 @@ type
     maxProperties: String;
     MinProperties: String;
     Required: Boolean; // json
+    JsonXmlName: String;
     Pattern: String;
     Whitespace: String;
     MaxInclusive: String;
@@ -1049,30 +1050,11 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
         end;
       end;
-      if (xXml.Name = 'headers') then
-      begin
-        for y := 0 to xXml.Items.Count - 1 do
-        begin
-          yXml := xXml.Items.XmlItems[y];
-          xXsd := TXsd.Create(self);
-          self.Garbage.AddObject('', xXsd);
-          xXsd.ElementName := yXml.Name;
-          xXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, yXml, ErrorFound);
-          xXsd.sType.Name := xXsd.ElementName;
-          xXsd.minOccurs := '0';
-          xXsd.ParametersType := oppHeader;
-          result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
-        end;
-      end;
       if xXml.Name = '$ref' then
       begin
         result.dollarRef := xXml.Value;
         if result.dollarRef[1] = '#' then
           result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
-{
-        if self.TypeDefs.Find (result.dollarRef, f) then
-          result := self.TypeDefs.XsdDataTypes[f]; // DANGEROUS  !!!!!!
-}
       end;
       if xXml.Name = 'type' then
       begin
@@ -1105,10 +1087,6 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
             result.dollarRef := yXml.Value;
             if result.dollarRef[1] = '#' then
               result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
-        {
-            if self.TypeDefs.Find (result.dollarRef, f) then
-              result := self.TypeDefs.XsdDataTypes[f]; // DANGEROUS  !!!!!!
-        }
           end;
         end;
       end;
@@ -1158,13 +1136,17 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           result.Enumerations.AddObject(xEnum.Value, xEnum);
         end;
       end;
+
+      if xXml.Name = 'xml' then
+      begin
+        for y := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[y] do
+        begin
+          if Name = 'name' then result.JsonXmlName := Value;
+        end;
+      end;
     end;
     result.Documentation.Text := xDoc;
   end;
-var
-  x: Integer;
-  swapElementFormDefaultQualified: Boolean;
-  swapAttributeFormDefaultQualified: Boolean;
 begin
   if not (aXml is TXml) then raise Exception.Create('Illegal arg: TXsdDescr.AddXsdFromJsonXml(aXml: TObject; ErrorFound: TOnErrorEvent)');
   result := _AddTypeDefFromJsonXml (TypeDefs, aXml as TXml);
