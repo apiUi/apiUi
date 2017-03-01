@@ -5622,20 +5622,24 @@ begin
   with WsdlOperation do
   begin
     xXml := endpointConfigAsXml;
-    endpointConfigXsd.FindXsd('endpointConfig.Http.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
-    endpointConfigXsd.FindXsd('endpointConfig.Https.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
-    endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
-    endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpAddress;
-    if EditXmlXsdBased('Configure Endpoint', '', '', '', False,
-      endpointConfigXsd, xXml) then
-    begin
-      AcquireLock;
-      try
-        stubChanged := True;
-        endpointConfigFromXml(xXml);
-      finally
-        ReleaseLock;
+    try
+      endpointConfigXsd.FindXsd('endpointConfig.Http.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
+      endpointConfigXsd.FindXsd('endpointConfig.Https.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
+      endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
+      endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpAddress;
+      if EditXmlXsdBased('Configure Endpoint', '', '', '', False,
+        endpointConfigXsd, xXml) then
+      begin
+        AcquireLock;
+        try
+          stubChanged := True;
+          endpointConfigFromXml(xXml);
+        finally
+          ReleaseLock;
+        end;
       end;
+    finally
+      xXml.Free;
     end;
   end;
 end;

@@ -100,7 +100,7 @@ type
                              ): String;
     function SendHttpMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
-                             ; var aReqHeader, aRpyHeader, aResponseCode: String
+                             ; var aReqHeader, aRpyHeader, aResponseCode, aUri: String
                              ): String;
     procedure POP3ServerCheckUser(aContext: TIdContext;
       aServerContext: TIdPOP3ServerContext);
@@ -3611,13 +3611,13 @@ end;
 function TWsdlProject .SendOperationMessage (aOperation : TWsdlOperation ;
   aMessage : String ): String ;
 var
-  reqheader, rpyheader, responsecode: String;
+  reqheader, rpyheader, responsecode, uri: String;
 begin
   reqheader := '';
   rpyheader := '';
   responsecode := '';
   case aOperation.StubTransport of
-    ttHttp: result := SendHttpMessage (aOperation, aMessage, reqheader, rpyheader, responsecode);
+    ttHttp: result := SendHttpMessage (aOperation, aMessage, reqheader, rpyheader, responsecode, uri);
     ttMq: result := SendOperationMqMessage (aOperation, aMessage, reqheader);
     ttStomp: result := SendOperationStompMessage (aOperation, aMessage, reqheader, rpyheader);
     ttTaco: result := SendOperationTacoMessage(aOperation, aMessage, reqheader, rpyheader);
@@ -3671,7 +3671,7 @@ begin
 end;
 
 function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
-  aMessage : String ; var aReqHeader , aRpyHeader , aResponseCode : String
+  aMessage : String ; var aReqHeader , aRpyHeader , aResponseCode, aUri : String
   ): String ;
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
@@ -3702,13 +3702,18 @@ function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
 var
   HttpClient: TIdHTTP;
   HttpRequest, sStream, dStream: TMemoryStream;
-  URL, querySep, valueSep: String;
+  URL, querySep, valueSep, addressFromDescr: String;
   oUri, sUri: TIdUri;
   x, y: Integer;
 begin
   Result := '';
   if not Assigned (aOperation)
     then raise Exception.Create('SendHttpMessage: null arguments');
+  URL := aOperation.SoapAddress;
+  if aOperation.isOpenApiService then
+    addressFromDescr := aOperation.Wsdl.Host
+  else
+    addressFromDescr := aOperation.SoapAddress;
   HttpClient := TIdHTTP.Create;
   try
     HttpRequest := TMemoryStream.Create;
@@ -3721,15 +3726,16 @@ begin
         finally
           ppLock.Release;
         end;
-        if aOperation.SoapAddress <> '' then
+        if addressFromDescr <> '' then
         begin
-          oUri := TIdUri.Create(aOperation.SoapAddress);
+          oUri := TIdUri.Create(addressFromDescr);
           try
             if (sUri.Protocol = '') then
               sUri.Protocol := oUri.Protocol;
             if aOperation.useSsl then
               sUri.Protocol := 'https';
-            if (sUri.Path = '/')
+            if (not aOperation.isOpenApiService)
+            and (sUri.Path = '/')
             and (sUri.Document = '') then
             begin
               sUri.Path := oUri.Path;
@@ -3741,42 +3747,36 @@ begin
         end;
         URL := sUri.URI;
         FreeAndNil (sUri);
-      end
-      else
+      end;
+      if aOperation.isOpenApiService then
       begin
-        if aOperation.isOpenApiService then
+        if URL [Length (URL)] = '/' then
+          SetLength(URL, Length (URL) - 1);
+        URL := URL
+             + aOperation.Wsdl.basePath
+             + aOperation.WsdlService.Name;
+        querySep := '?';
+        for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
         begin
-          URL := 'http://'
-               + aOperation.Wsdl.Host
-               + aOperation.Wsdl.basePath
-               + aOperation.WsdlService.Name;
-          querySep := '?';
-          for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
+          if Checked
+          and Assigned (Xsd) then
           begin
-            if Checked
-            and Assigned (Xsd) then
+            if (Xsd.ParametersType = oppPath) then
             begin
-              if (Xsd.ParametersType = oppPath) then
-              begin
-                URL := ReplaceStr(URL, '{' + Name + '}', ValueFromJsonArray(true));
-              end;
-              if (Xsd.ParametersType = oppQuery) then
-              begin
-                URL := URL + querySep + Name + '=' + ValueFromJsonArray(true);
-              end;
-              if (Xsd.ParametersType = oppHeader) then
-              begin
-                HttpClient.Request.CustomHeaders.Values [Name] := ValueFromJsonArray(false);
-              end;
+              URL := ReplaceStr(URL, '{' + Name + '}', ValueFromJsonArray(true));
+            end;
+            if (Xsd.ParametersType = oppQuery) then
+            begin
+              URL := URL + querySep + Name + '=' + ValueFromJsonArray(true);
+            end;
+            if (Xsd.ParametersType = oppHeader) then
+            begin
+              HttpClient.Request.CustomHeaders.Values [Name] := ValueFromJsonArray(false);
             end;
           end;
-          SjowMessage(URL);
-        end
-        else
-        begin
-          URL := aOperation.SoapAddress;
         end;
       end;
+      aUri := URL;
       HttpClient.Request.ContentType := aOperation.ContentType;
       HttpClient.Request.Accept := aOperation.Accept;
       try
@@ -3996,7 +3996,7 @@ begin
       xLog.httpCommand := aOperation.httpVerb;
       try
         case aOperation.StubTransport of
-          ttHttp: xLog.ReplyBody := SendHttpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders, xLog.httpResponseCode);
+          ttHttp: xLog.ReplyBody := SendHttpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders, xLog.httpResponseCode, xlog.httpUri);
           ttMq: xLog.ReplyBody := SendOperationMqMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders);
           ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
