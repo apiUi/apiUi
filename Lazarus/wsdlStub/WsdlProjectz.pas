@@ -3709,11 +3709,16 @@ begin
   Result := '';
   if not Assigned (aOperation)
     then raise Exception.Create('SendHttpMessage: null arguments');
-  URL := aOperation.SoapAddress;
   if aOperation.isOpenApiService then
-    addressFromDescr := aOperation.Wsdl.Host
+  begin
+    URL := ifthen(aOperation.useSsl, 'https://', 'http://') + aOperation.Wsdl.Host;
+    addressFromDescr := URL;
+  end
   else
-    addressFromDescr := aOperation.SoapAddress;
+  begin
+    URL := aOperation.SoapAddress;
+    addressFromDescr := URL;
+  end;
   HttpClient := TIdHTTP.Create;
   try
     HttpRequest := TMemoryStream.Create;
@@ -3750,6 +3755,8 @@ begin
       end;
       if aOperation.isOpenApiService then
       begin
+        if URL = '' then
+          raise Exception.CreateFmt ('Operation: %s URL empty', [aOperation.Name]);
         if URL [Length (URL)] = '/' then
           SetLength(URL, Length (URL) - 1);
         URL := URL
