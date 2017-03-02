@@ -48,7 +48,7 @@ type
     InboundTimeStamp, OutBoundTimeStamp: TDateTime;
     TransportType: TTransportType;
     httpUri: String;
-    httpResponseCode: String;
+    httpResponseCode: Integer;
     httpCommand: String;
     httpDocument: String;
     httpParams: String;
@@ -1025,7 +1025,7 @@ begin
     AddXml (TXml.CreateAsString('Remarks', Self.Remarks));
     AddXml (TXml.CreateAsString('Notifications', Self.Notifications));
     AddXml (Txml.CreateAsString('httpUri', Self.httpUri));
-    AddXml (Txml.CreateAsString('httpResponseCode', Self.httpResponseCode));
+    AddXml (Txml.CreateAsInteger('httpResponseCode', Self.httpResponseCode));
     AddXml (Txml.CreateAsString('httpCommand', Self.httpCommand));
     AddXml (Txml.CreateAsString('httpDocument', Self.httpDocument));
     AddXml (Txml.CreateAsString('httpParams', Self.httpParams));

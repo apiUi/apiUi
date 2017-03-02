@@ -321,6 +321,7 @@ type
       StubTransport: TTransportType;
       StubHttpAddress: String;
       httpVerb: String;
+      ResponseNo: Integer;
       ContentEncoding: String;
       AcceptGzipEncoding, AcceptDeflateEncoding: Boolean;
       smtpHost: String;
@@ -2508,6 +2509,7 @@ begin
                   XsdDescr.Garbage.AddObject('', xXsd);
                   xXsd.ElementName := vXml.Items.XmlValueByTag['name'];
                   xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
+                  xXsd.sType.jsonType := jsonObject;
                   xXsd.sType.Name := xXsd.ElementName;
                   xOperation.reqXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
                   for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
@@ -2540,6 +2542,7 @@ begin
                   xXsd.ElementName := 'rspns' + vXml.Name;
                   xXsd.ResponseNo := StrToIntDef(vXml.Name, 200);
                   xXsd.sType := TXsdDataType.Create(XsdDescr);
+                  xXsd.sType.jsonType := jsonObject;
                   xXsd.sType.xsdType:= dtComplexType;
                   XsdDescr.Garbage.AddObject('', xXsd.sType);
                   xXsd.sType.Name := vXml.Name;
@@ -4566,9 +4569,10 @@ end;
 
 function TWsdlOperation.StreamReply(aGeneratedWith: String; aGenerateTypes: Boolean): String;
 var
-  x: Integer;
-  xXml: TXml;
+  x, y: Integer;
+  xXml, yXml, zXml: TXml;
 begin
+  SjowMessage(rpyXml.AsText(false, 0,true, false));
   result := LiteralResult;
   if Result <> '' then
     Exit;
@@ -4666,7 +4670,29 @@ begin
                                  , False
                                  )
         else
-          result := result + xXml.StreamJSON(0, True);
+        begin
+          if not isOpenApiService then
+            result := result + xXml.StreamJSON(0, True)
+          else
+          begin
+            xXml := (rpyBind as TXml);
+            for x := 0 to xXml.Items.Count - 1 do
+            begin
+              xXml := (rpyBind as TXml);
+              if xXml.Items.XmlItems[x].Checked then
+              begin
+                yXml := xXml.Items.XmlItems[x];
+                ResponseNo := yXml.Xsd.ResponseNo;
+                for y := 0 to yXml.Items.Count - 1 do
+                begin
+                  zXml := yXml.Items.XmlItems[y];
+                  if zXml.Xsd.ParametersType <> oppHeader then    // ToDo headers
+                    result := result + zXml.StreamJSON(0, True);
+                end;
+              end;
+            end;
+          end;
+        end;
       end;
       if rpyBind is TIpmItem then
       begin

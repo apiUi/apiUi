@@ -100,7 +100,8 @@ type
                              ): String;
     function SendHttpMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
-                             ; var aReqHeader, aRpyHeader, aResponseCode, aUri: String
+                             ; var aReqHeader, aRpyHeader, aUri: String
+                             ; aResponseCode: Integer
                              ): String;
     procedure POP3ServerCheckUser(aContext: TIdContext;
       aServerContext: TIdPOP3ServerContext);
@@ -3611,13 +3612,14 @@ end;
 function TWsdlProject .SendOperationMessage (aOperation : TWsdlOperation ;
   aMessage : String ): String ;
 var
-  reqheader, rpyheader, responsecode, uri: String;
+  reqheader, rpyheader, uri: String;
+  responsecode: Integer;
 begin
   reqheader := '';
   rpyheader := '';
-  responsecode := '';
+  responsecode := 0;
   case aOperation.StubTransport of
-    ttHttp: result := SendHttpMessage (aOperation, aMessage, reqheader, rpyheader, responsecode, uri);
+    ttHttp: result := SendHttpMessage (aOperation, aMessage, reqheader, rpyheader, uri, responsecode);
     ttMq: result := SendOperationMqMessage (aOperation, aMessage, reqheader);
     ttStomp: result := SendOperationStompMessage (aOperation, aMessage, reqheader, rpyheader);
     ttTaco: result := SendOperationTacoMessage(aOperation, aMessage, reqheader, rpyheader);
@@ -3671,7 +3673,8 @@ begin
 end;
 
 function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
-  aMessage : String ; var aReqHeader , aRpyHeader , aResponseCode, aUri : String
+  aMessage : String ; var aReqHeader , aRpyHeader, aUri : String
+  ; aResponseCode: Integer
   ): String ;
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
@@ -3874,7 +3877,7 @@ begin
             finally
               aReqHeader := HttpClient.Request.RawHeaders.Text;
               aRpyHeader := HttpClient.Response.RawHeaders.Text;
-              aResponseCode := IntToStr(HttpClient.ResponseCode);
+              aResponseCode := HttpClient.ResponseCode;
             end;
             result := _Decompress (HttpClient.Response.ContentEncoding, dStream);
           except
@@ -4003,7 +4006,7 @@ begin
       xLog.httpCommand := aOperation.httpVerb;
       try
         case aOperation.StubTransport of
-          ttHttp: xLog.ReplyBody := SendHttpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders, xLog.httpResponseCode, xlog.httpUri);
+          ttHttp: xLog.ReplyBody := SendHttpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders, xlog.httpUri, xLog.httpResponseCode);
           ttMq: xLog.ReplyBody := SendOperationMqMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders);
           ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
@@ -6240,6 +6243,8 @@ begin
       rLog := nil;
       xLog.InboundTimeStamp := Now;
       xLog.httpUri := ARequestInfo.URI;
+    SjowMessage('Host: ' + ARequestInfo.Host);
+    SjowMessage('Uri: ' + xLog.httpUri);
       xLog.TransportType := ttHttp;
       xLog.httpCommand := ARequestInfo.Command;
       xLog.httpDocument := ARequestInfo.Document;
@@ -6259,7 +6264,7 @@ begin
         if ProcessedAsOpenApi (xLog) then
         begin
           AResponseInfo.ContentText := xLog.ReplyBody;
-          SjowMessage (AResponseInfo.ContentText);
+          AResponseInfo.ResponseNo := xLog.httpResponseCode;
           Exit;
         end;
         if ARequestInfo.Command = 'GET' then
@@ -6576,10 +6581,11 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
     pathParams := TStringList.Create;
     qryParams := TStringList.Create;
     hdrParams := TStringList.Create;
+    hdrParams.NameValueSeparator := ':';
     try
       ExplodeStr (aLog.httpDocument, '/', pathParams);
       k := pathParams.Count - 1;
-      qryParams.Text := aLog.httpParams;
+      ExplodeStr (urlDecode(aLog.httpParams), '&', qryParams);
       hdrParams.Text := aLog.RequestHeaders;
       with aOperation.reqXml.Items do for x := Count - 1 downto 0 do
       begin
@@ -6618,11 +6624,14 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
               XmlItems[x].ValueToJsonArray(xValue);
             end;
           oppHeader:
+            begin
               if hdrParams.IndexOfName(XmlItems[x].Name) > -1 then
-                XmlItems[x].ValueToJsonArray(hdrParams.Values[XmlItems[x].Name]);
+                XmlItems[x].ValueToJsonArray(Copy(hdrParams.Values[XmlItems[x].Name], 2, MaxInt));
+            end;
           oppForm: SjowMessage ('oppForm: not suported');
         end;
       end;
+      SjowMessage(aOperation.reqXml.Text);
     finally
       FreeAndNil(pathParams);
       FreeAndNil(qryParams);
@@ -6687,7 +6696,9 @@ begin
       aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
       aLog.DelayTimeMs := xOperation.DelayTimeMs;
       aLog.OperationName:=xOperation.Alias;
+      xOperation.rpyXml.jsonType := jsonObject;
       aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+      aLog.httpResponseCode := xOperation.ResponseNo;
       CreateLogReplyPostProcess(aLog, xOperation);
     finally
       xOperation.Free;
@@ -7313,7 +7324,7 @@ begin
           xLog.Remarks := Items.XmlValueByTag ['Remarks'];
           xLog.Notifications := Items.XmlValueByTag ['Notifications'];
           xLog.httpUri := Items.XmlValueByTag ['httpUri'];
-          xLog.httpResponseCode := Items.XmlValueByTag ['httpResponseCode'];
+          xLog.httpResponseCode := Items.XmlIntegerByTag ['httpResponseCode'];
           xLog.httpCommand := Items.XmlValueByTag ['httpCommand'];
           xLog.httpDocument := Items.XmlValueByTag ['httpDocument'];
           xLog.httpParams := Items.XmlValueByTag ['httpParams'];

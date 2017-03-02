@@ -5979,7 +5979,7 @@ begin
             saRequest: CellText := 'Request';
           end;
         logVerbColumn: CellText := xLog.httpCommand;
-        logStatusColumn: CellText := xLog.httpResponseCode;
+        logStatusColumn: CellText := IntToStr(xLog.httpResponseCode);
         logServiceColumn:
           if Assigned(xLog.Operation) then
             CellText := xLog.Operation.WsdlService.Name;
