@@ -143,7 +143,7 @@ type
     private
     function getOperationByName(Index: String): TWsdlOperation;
     public
-      Name, openApiPathRegExp: String;
+      Name, openApiPathRegExp, openApiPathMask: String;
       AuthenticationType: TAuthenticationType;
       UserName: String;
       Password: String;
@@ -2307,24 +2307,27 @@ procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
   const
     pathTemplateRegExp = '\{[^\}]+\}';
     valueRegExp = '[^/]*';
-  function _openApiPathRegExp(aName: String): String;
+  procedure _openApiPathPreparation(aSrvc: TWsdlService);
   var
     s, e: Integer;
     f: Boolean;
   begin
     s := 1;
-    result := '';
     with TRegExpr.Create(pathTemplateRegExp) do
     try
-      f := Exec(aName);
+      f := Exec(aSrvc.Name);
       while f do
       begin
         e := MatchPos[0];
-        result := result + Copy (aName, s, e - s) + valueRegExp;
+        aSrvc.openApiPathRegExp := aSrvc.openApiPathRegExp + Copy (aSrvc.Name, s, e - s) + valueRegExp;
+        aSrvc.openApiPathMask := aSrvc.openApiPathMask + Copy (aSrvc.Name, s, e - s) + '%s';
         s := MatchPos[0] + MatchLen[0];
         f := ExecNext;
       end;
-      result := result + Copy (aName, s, Length (aName));
+      aSrvc.openApiPathRegExp := aSrvc.openApiPathRegExp + Copy (aSrvc.Name, s, Length (aSrvc.Name));
+      aSrvc.openApiPathMask := aSrvc.openApiPathMask + Copy (aSrvc.Name, s, Length (aSrvc.Name));
+      SjowMessage('_openApiPathRegExp: ' + aSrvc.openApiPathRegExp);
+      SjowMessage('_openApiPathMask: ' + aSrvc.openApiPathMask);
     finally
       Free;
     end;
@@ -2448,7 +2451,9 @@ begin
       begin
         xService := TWsdlService.Create;
         xService.Name := Name;
-        xService.openApiPathRegExp := self.basePath + _openApiPathRegExp(xService.Name);
+        xService.openApiPathRegExp := self.basePath;
+        xService.openApiPathMask := self.basePath;
+        _openApiPathPreparation(xService);
         Services.AddObject(Name, xService);
         xService.DescriptionType := ipmDTJson;
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
@@ -6577,7 +6582,7 @@ end;
 
 function TWsdlOperation.getIsOpenApiService: Boolean;
 begin
-  result := Wsdl.isOpenApiService;
+  result := Assigned (Wsdl) and Wsdl.isOpenApiService;
 end;
 
 function TWsdlOperation .getLateBinding : Boolean ;

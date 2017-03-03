@@ -4004,6 +4004,7 @@ begin
       xLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
       xLog.OutboundTimeStamp := Now;
       xLog.httpCommand := aOperation.httpVerb;
+      xLog.httpResponseCode := aOperation.ResponseNo;
       try
         case aOperation.StubTransport of
           ttHttp: xLog.ReplyBody := SendHttpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders, xlog.httpUri, xLog.httpResponseCode);
@@ -6574,17 +6575,29 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
   procedure _RequestToBindables (aOperation: TWsdlOperation);
   var
     x, y, k, f: Integer;
-    pathParams, qryParams, hdrParams: TStringList;
+    pathParams, pathMask, qryParams, hdrParams: TStringList;
     xXml: TXml;
     xValue, xSeparator: String;
   begin
     pathParams := TStringList.Create;
+    pathMask := TStringList.Create;
     qryParams := TStringList.Create;
     hdrParams := TStringList.Create;
     hdrParams.NameValueSeparator := ':';
     try
       ExplodeStr (aLog.httpDocument, '/', pathParams);
+      ExplodeStr (aOperation.WsdlService.openApiPathMask , '/', pathMask);
+      if pathParams.Count <> pathMask.Count then
+        raise Exception.CreateFmt ( '%s document %s and service path %s do not match'
+                                  , [ aOperation.Name
+                                    , aLog.httpDocument
+                                    , aOperation.WsdlService.openApiPathMask
+                                    ]
+                                  );
       k := pathParams.Count - 1;
+      while (k > -1)
+      and (pathMask.Strings[k] <> '%s') do
+        k := k - 1;
       ExplodeStr (urlDecode(aLog.httpParams), '&', qryParams);
       hdrParams.Text := aLog.RequestHeaders;
       with aOperation.reqXml.Items do for x := Count - 1 downto 0 do
@@ -6608,6 +6621,9 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
             begin
               XmlItems[x].ValueToJsonArray(pathParams.Strings[k]);
               k := k - 1;
+              while (k > -1)
+              and (pathMask.Strings[k] <> '%s') do
+                k := k - 1;
             end;
           oppQuery:
             begin
@@ -6634,6 +6650,7 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
       SjowMessage(aOperation.reqXml.Text);
     finally
       FreeAndNil(pathParams);
+      FreeAndNil(pathMask);
       FreeAndNil(qryParams);
       FreeAndNil(hdrParams);
     end;
