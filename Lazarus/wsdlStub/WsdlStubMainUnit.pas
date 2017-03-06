@@ -5354,9 +5354,9 @@ procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
     d.DelayTimeMsMin := s.DelayTimeMsMin;
     d.DelayTimeMsMax := s.DelayTimeMsMax;
     d.StubTransport := s.StubTransport;
+    d.StubHttpAddress := s.StubHttpAddress;
     if not d.isOpenApiService then
     begin
-      d.StubHttpAddress := s.StubHttpAddress;
       d.httpVerb := s.httpVerb;
     end;
     d.ContentEncoding := s.ContentEncoding;

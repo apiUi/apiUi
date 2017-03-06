@@ -101,7 +101,7 @@ type
     function SendHttpMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
                              ; var aReqHeader, aRpyHeader, aUri: String
-                             ; aResponseCode: Integer
+                             ; var aResponseCode: Integer
                              ): String;
     procedure POP3ServerCheckUser(aContext: TIdContext;
       aServerContext: TIdPOP3ServerContext);
@@ -624,6 +624,46 @@ begin
   if not Assigned (xProject)
   or not Assigned (xOperation) then
    raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
+end;
+
+procedure RequestOperationLater(aContext: TObject; xOperationAlias: String; aLater: Extended);
+var
+  xProject: TWsdlProject;
+  xOperation: TWsdlOperation;
+  xLater: Integer;
+begin
+  xLater := Trunc (aLater);
+  xProject := nil; //candidate context
+  xOperation := nil; //candidate context
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    xProject := Owner as TWsdlProject;
+    xOperation := invokeList.FindOnAliasName(xOperationAlias);
+    if Assigned (xOperation) then
+    begin
+      xOperation.StubAction := saRequest;
+      try
+        xProject.SendMessage (xOperation, nil, '');
+      except
+      end;
+    end;
+  end
+  else
+  begin
+    if aContext is TWsdlProject then
+    begin
+      xProject := aContext as TWsdlProject;
+      xOperation := allAliasses.FindOnAliasName(xOperationAlias);
+      if Assigned (xOperation) then
+    end;
+  end;
+  if not Assigned (xProject)
+  or not Assigned (xOperation) then
+   raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
+  try
+//    xProject.SendMessage (xOperation, nil, '');
+  except
+  end;
 end;
 
 procedure NewDesignMessage(aContext: TObject; xOperationAlias: String);
@@ -3674,7 +3714,7 @@ end;
 
 function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
   aMessage : String ; var aReqHeader , aRpyHeader, aUri : String
-  ; aResponseCode: Integer
+  ; var aResponseCode: Integer
   ): String ;
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
@@ -4004,10 +4044,15 @@ begin
       xLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
       xLog.OutboundTimeStamp := Now;
       xLog.httpCommand := aOperation.httpVerb;
-      xLog.httpResponseCode := aOperation.ResponseNo;
       try
         case aOperation.StubTransport of
-          ttHttp: xLog.ReplyBody := SendHttpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders, xlog.httpUri, xLog.httpResponseCode);
+          ttHttp: xLog.ReplyBody := SendHttpMessage ( aOperation
+                                                    , xLog.RequestBody
+                                                    , xLog.RequestHeaders
+                                                    , xLog.ReplyHeaders
+                                                    , xlog.httpUri
+                                                    , xLog.httpResponseCode
+                                                    );
           ttMq: xLog.ReplyBody := SendOperationMqMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders);
           ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
@@ -6244,8 +6289,6 @@ begin
       rLog := nil;
       xLog.InboundTimeStamp := Now;
       xLog.httpUri := ARequestInfo.URI;
-    SjowMessage('Host: ' + ARequestInfo.Host);
-    SjowMessage('Uri: ' + xLog.httpUri);
       xLog.TransportType := ttHttp;
       xLog.httpCommand := ARequestInfo.Command;
       xLog.httpDocument := ARequestInfo.Document;
@@ -6253,8 +6296,8 @@ begin
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
       xLog.ContentType := ARequestInfo.ContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
+      xlog.httpResponseCode := 200;
       AResponseInfo.ContentEncoding := 'identity';
-      AResponseInfo.ResponseNo := 200;
       try
         if (ARequestInfo.Command = 'POST')
         or (ARequestInfo.Command = 'PUT') then
@@ -6265,7 +6308,6 @@ begin
         if ProcessedAsOpenApi (xLog) then
         begin
           AResponseInfo.ContentText := xLog.ReplyBody;
-          AResponseInfo.ResponseNo := xLog.httpResponseCode;
           Exit;
         end;
         if ARequestInfo.Command = 'GET' then
@@ -6316,7 +6358,6 @@ begin
           begin // request
             try
               try
-                AResponseInfo.ResponseNo := 200;
                 CreateLogReply (xLog, xProcessed, True);
                 if Assigned (xLog.Operation) then
                 begin
@@ -6352,12 +6393,12 @@ begin
                 if xLog.Operation.isOneWay
                 or xLog.isAsynchronousRequest
                 or xLog.isAsynchronousReply then
-                  AResponseInfo.ResponseNo := 202;
+                  xLog.httpResponseCode := 202;
                 if (xLog.Exception <> '')
                 and (   (not Assigned (xLog.Operation))
                      or (not xLog.Operation.WsdlService.SuppressHTTP500)
                     ) then
-                  AResponseInfo.ResponseNo := 500;
+                  xLog.httpResponseCode := 500;
                 if (not xLog.isAsynchronousRequest)
                 and (not xLog.isAsynchronousReply) then
                   DelayMS (xLog.DelayTimeMs);
@@ -6378,7 +6419,7 @@ begin
                   xLog.Exception := e.Message;
                   if (not Assigned (xLog.Operation))
                   or (not xLog.Operation.WsdlService.SuppressHTTP500) then
-                    AResponseInfo.ResponseNo := 500;
+                    xLog.httpResponseCode := 500;
                 end;
               end;  // except
             finally
@@ -6391,6 +6432,7 @@ begin
         begin
           xLog.OutboundTimeStamp := Now;
           DisplayLog ('', xLog);
+          AResponseInfo.ResponseNo := xLog.httpResponseCode;
         end;
       end;
     finally
@@ -6647,7 +6689,6 @@ function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
           oppForm: SjowMessage ('oppForm: not suported');
         end;
       end;
-      SjowMessage(aOperation.reqXml.Text);
     finally
       FreeAndNil(pathParams);
       FreeAndNil(pathMask);
@@ -6673,7 +6714,6 @@ begin
     end;
     try
       Result := True;
-      SjowMessage ('===>' + xOperation.Alias);
       if xOperation.PrepareErrors <> '' then
         raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
       _RequestToBindables (xOperation);

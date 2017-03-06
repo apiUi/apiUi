@@ -613,6 +613,7 @@ var
   _wsdlStubStylesheet: String;
   _WsdlNewDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
+  _WsdlRequestOperationLater: VFunctionOSX;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlSaveLogs: VFunctionOS;
@@ -2326,8 +2327,6 @@ procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
       end;
       aSrvc.openApiPathRegExp := aSrvc.openApiPathRegExp + Copy (aSrvc.Name, s, Length (aSrvc.Name));
       aSrvc.openApiPathMask := aSrvc.openApiPathMask + Copy (aSrvc.Name, s, Length (aSrvc.Name));
-      SjowMessage('_openApiPathRegExp: ' + aSrvc.openApiPathRegExp);
-      SjowMessage('_openApiPathMask: ' + aSrvc.openApiPathMask);
     finally
       Free;
     end;
@@ -4577,7 +4576,7 @@ var
   x, y: Integer;
   xXml, yXml, zXml: TXml;
 begin
-  SjowMessage(rpyXml.AsText(false, 0,true, false));
+  ResponseNo := 200; // default
   result := LiteralResult;
   if Result <> '' then
     Exit;

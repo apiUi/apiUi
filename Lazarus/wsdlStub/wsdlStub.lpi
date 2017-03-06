@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="10910"/>
+      <BuildNr Value="10930"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -193,7 +193,6 @@
       </Item13>
       <Item14>
         <Name Value="EIdHTTPProtocolException"/>
-        <Enabled Value="False"/>
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
