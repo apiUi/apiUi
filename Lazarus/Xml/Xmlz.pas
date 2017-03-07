@@ -3408,6 +3408,7 @@ procedure TXml.CopyDownLine(aXml: TXml; aOnlyWhenChecked: Boolean);
     xAttr: TXmlAttribute;
   begin
     dXml.TagName := sXml.TagName;
+    dXml.NameSpace := sXml.NameSpace;
     dXml.jsonType := sXml.jsonType;
     dXml.Value := sXml.Value;
     dXml.Xsd := sXml.Xsd;
@@ -3418,6 +3419,7 @@ procedure TXml.CopyDownLine(aXml: TXml; aOnlyWhenChecked: Boolean);
     begin
       xAttr := TXmlAttribute.Create;
       xAttr.Name := sXml.Attributes.XmlAttributes[x].Name;
+      xAttr.NameSpace := sXml.Attributes.XmlAttributes[x].NameSpace;
       xAttr.Value := sXml.Attributes.XmlAttributes[x].Value;
       xAttr.fChecked := sXml.Attributes.XmlAttributes[x].fChecked;
       xAttr.XsdAttr := sXml.Attributes.XmlAttributes[x].XsdAttr;

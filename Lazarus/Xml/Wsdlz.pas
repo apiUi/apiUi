@@ -365,6 +365,8 @@ type
       DelayTimeMs: Integer;
       DelayTimeMsMin: Integer;
       DelayTimeMsMax: Integer;
+      PostponementMs: Integer;
+      FreeOnTerminateRequest: Boolean;
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
       property DoExit: Boolean read getDoExit write setDoExit;
@@ -549,6 +551,7 @@ function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
 function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
+procedure wsdlRequestOperationLater (aObject: TObject; aOperation: String; aLaterMs: Extended);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation: String; aLater: Extended);
 function RefuseHttpConnections (aObject: TObject; aLater, aWhile: Extended): Extended;
@@ -1173,6 +1176,13 @@ begin
   if not Assigned (_wsdlRequestOperation) then
     raise Exception.Create('wsdlRequestOperation: implementation missing');
   _wsdlRequestOperation (aObject, aOperation);
+end;
+
+procedure wsdlRequestOperationLater (aObject: TObject; aOperation: String; aLaterMs: Extended);
+begin
+  if not Assigned (_WsdlRequestOperationLater) then
+    raise Exception.Create('wsdlRequestOperation: implementation missing');
+  _WsdlRequestOperationLater (aObject, aOperation, aLaterMs);
 end;
 
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
@@ -4166,6 +4176,7 @@ begin
     BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
     BindBeforeFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
+    BindBeforeFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
     BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindBeforeFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
     BindBeforeFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSX, '(aOperation, aCorrelation, aLater)');
@@ -4320,6 +4331,7 @@ begin
     BindAfterFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindAfterFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindAfterFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
+    BindAfterFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
     BindAfterFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
     BindAfterFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
     BindAfterFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSX, '(aOperation, aCorrelation, aLater)');

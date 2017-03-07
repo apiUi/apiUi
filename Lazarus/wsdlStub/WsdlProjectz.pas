@@ -308,6 +308,8 @@ type
     function RedirectCommandString ( aCommand: String; aAddress, aSoapAction: String): String;
     function CreateLogReplyPostProcess (aLogItem: TLog; aOperation: TWsdlOperation): String;
     procedure SendAsynchReply ( aLog: TLog);
+    procedure SendOperationInThread (aOperation: TWsdlOperation);
+    procedure SendOperation (aOperation: TWsdlOperation);
     function SendMessage ( aOperation: TWsdlOperation
                              ; aRequest: TWsdlMessage
                              ; aCorrelationId: String
@@ -410,12 +412,12 @@ type
                        ; aProcedure: TProcedureXX
                        ; aExtended, aExtended2: Extended
                        ); overload;
-    constructor Create ( aSuspended: Boolean
+    constructor CreateProcedureOperation ( aSuspended: Boolean
                        ; aBlocking: Boolean
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedureOperation
                        ; aOperation: TWsdlOperation
-                       ); overload;
+                       );
     constructor Create ( aSuspended: Boolean
                        ; aBlocking: Boolean
                        ; aProject: TWsdlProject
@@ -629,24 +631,14 @@ end;
 procedure RequestOperationLater(aContext: TObject; xOperationAlias: String; aLater: Extended);
 var
   xProject: TWsdlProject;
-  xOperation: TWsdlOperation;
-  xLater: Integer;
+  xOperation, yOperation: TWsdlOperation;
 begin
-  xLater := Trunc (aLater);
   xProject := nil; //candidate context
   xOperation := nil; //candidate context
   if aContext is TWsdlOperation then with aContext as TWsdlOperation do
   begin
     xProject := Owner as TWsdlProject;
     xOperation := invokeList.FindOnAliasName(xOperationAlias);
-    if Assigned (xOperation) then
-    begin
-      xOperation.StubAction := saRequest;
-      try
-        xProject.SendMessage (xOperation, nil, '');
-      except
-      end;
-    end;
   end
   else
   begin
@@ -654,16 +646,23 @@ begin
     begin
       xProject := aContext as TWsdlProject;
       xOperation := allAliasses.FindOnAliasName(xOperationAlias);
-      if Assigned (xOperation) then
     end;
   end;
   if not Assigned (xProject)
   or not Assigned (xOperation) then
-   raise Exception.Create(Format ('RequestOperation: Operation ''%s'' not found', [xOperationAlias]));
-  try
-//    xProject.SendMessage (xOperation, nil, '');
-  except
+   raise Exception.Create(Format ('RequestOperationLater: Operation ''%s'' not found', [xOperationAlias]));
+  yOperation := TWsdlOperation.Create(xOperation);
+  with yOperation do
+  begin
+    if reqBind is TXml then
+      reqXml.CopyDownLine(xOperation.reqXml, True);
+    if reqBind is TIpmItem then
+      ReqIpm.BufferToValues(nil, xOperation.ReqIpm.ValuesToBuffer(nil));
+    StubAction := saRequest;
+    PostponementMs := Trunc (aLater);
+    FreeOnTerminateRequest := True;
   end;
+  xProject.SendOperationInThread(yOperation);
 end;
 
 procedure NewDesignMessage(aContext: TObject; xOperationAlias: String);
@@ -1005,7 +1004,7 @@ begin
   fString := aString;
 end;
 
-constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject; aProcedure: TProcedureOperation;
+constructor TProcedureThread.CreateProcedureOperation(aSuspended, aBlocking: Boolean; aProject: TWsdlProject; aProcedure: TProcedureOperation;
   aOperation: TWsdlOperation);
 begin
   inherited Create (aSuspended);
@@ -1070,7 +1069,14 @@ begin
     if Assigned (fProcedure) then fProcedure;
     if Assigned (fProcedureString) then fProcedureString (fString);
     if Assigned (fProcedureXX) then fProcedureXX (fExtended, fExtended2);
-    if Assigned (fProcedureOperation) then fProcedureOperation (fOperation);
+    if Assigned (fProcedureOperation) then
+    begin
+      if fOperation.PostponementMs > 0 then
+        Sleep (fOperation.PostponementMs);
+      fProcedureOperation (fOperation);
+      if fOperation.FreeOnTerminateRequest then
+        FreeAndNil(fOperation);
+    end;
     if Assigned (fProcedureObject) then fProcedureObject (fObject);
     if Assigned (fProcedureClaimableObjectList) then
     begin
@@ -3949,6 +3955,192 @@ begin
     FreeAndNil (HttpClient);
   end;
 end;
+
+procedure TWsdlProject .SendOperation (aOperation : TWsdlOperation);
+  procedure _OperationCount(aLog: TLog);
+  begin
+    aLog.Operation.AcquireLock;
+    try
+      Inc (aLog.Operation.OperationCounter);
+      aLog.OperationCount := aLog.Operation.OperationCounter;
+    finally
+      aLog.Operation.ReleaseLock;
+    end;
+  end;
+var
+  xXml: TXml;
+  xNow: TDateTime;
+  x: Integer;
+  xLog: TLog;
+  xMessage: String;
+  procedure _setupForAsynchronousReply;
+  var
+    xXml: TXml;
+  begin
+    with xLog do
+    begin
+      ReplyBody := '';
+      xXml := aOperation.reqWsaXml.Items.XmlItemByTag ['MessageID'];
+      xXml.Value := CorrId;
+      xXml.Checked := True;
+      AcquireLogLock;
+      try
+        AsynchRpyLogs.SaveLog(CorrId, xLog);
+      finally
+        ReleaseLogLock;
+      end;
+    end;
+  end;
+begin
+  xNow := Now;
+  xMessage := '';
+  if not Assigned (aOperation)
+    then raise Exception.Create('SendMessage: null arguments');
+  xLog := TLog.Create;
+  try
+    try
+      xLog.Operation := aOperation;
+      xLog.Operation.Data := xLog;
+      while Assigned(xLog.Operation.Cloned) do
+        xLog.Operation := xLog.Operation.Cloned;
+      _OperationCount(xLog);
+      xLog.ServiceName := aOperation.WsdlService.Name;
+      xLog.OperationName := aOperation.reqTagName;
+      if aOperation.wsaEnabled
+      and aOperation.AsynchronousDialog
+      and (not aOperation.isOneWay) then
+        _setupForAsynchronousReply;
+      xLog.TransportType := aOperation.StubTransport;
+      xLog.Mssg := aOperation.Messages.Messages[0];
+      if aOperation.wsaEnabled then
+        try
+          aOperation.reqWsaOnRequest;
+          with aOperation.reqWsaXml.FindUQXml('wsa.MessageID') do
+          begin
+            Value := xLog.CorrId;
+            Checked := True;
+          end;
+        except
+        end;
+      aOperation.ExecuteBefore;
+      aOperation.ExecuteReqStampers;
+      if doValidateRequests then
+      begin
+        if not aOperation.reqBind.IsValueValid (xMessage) then
+          xLog.RequestValidateResult := xMessage;
+        xLog.RequestValidated := True;
+      end;
+      xLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
+      xLog.OutboundTimeStamp := Now;
+      xLog.httpCommand := aOperation.httpVerb;
+      try
+        case aOperation.StubTransport of
+          ttHttp: xLog.ReplyBody := SendHttpMessage ( aOperation
+                                                    , xLog.RequestBody
+                                                    , xLog.RequestHeaders
+                                                    , xLog.ReplyHeaders
+                                                    , xlog.httpUri
+                                                    , xLog.httpResponseCode
+                                                    );
+          ttMq: xLog.ReplyBody := SendOperationMqMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders);
+          ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
+          ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
+          ttTaco: xLog.ReplyBody := SendOperationTacoMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
+          ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody);
+        end;
+      finally
+        xLog.InboundTimeStamp := Now;
+      end;
+      if xLog.ReplyBody = S_MESSAGE_ACCEPTED then
+      begin
+        xLog.ReplyBody := '';
+        if aOperation.rpyBind.Name = '' then
+          aOperation.ExecuteAfter;
+      end
+      else
+      begin
+        if aOperation.lateBinding then
+        begin
+          with aOperation.rpyBind as TXml do
+          begin
+            LoadFromString(xlog.ReplyBody, nil);
+            if Name = '' then
+              Name := 'noXml';
+            aOperation.PrepareAfter;
+          end;
+        end
+        else
+        begin
+          if aOperation.reqBind is TXml then
+          begin
+            xXml := TXml.Create;
+            try
+              try
+                xXml.LoadFromString(xLog.ReplyBody, nil);
+              except
+                on e: exception do
+                  raise Exception.CreateFmt('%s could not parse XML reply (%s)', [_ProgName, e.Message]);
+              end;
+              if xXml.Name <> '' then
+                aOperation.SoapXmlReplyToBindables(xXml, True);
+          //              aOperation.rpyBind.LoadValues(xXml, True, False);
+            finally
+              xXml.Free;
+            end;
+          end;
+          if aOperation.reqBind is TIpmItem then
+            (aOperation.rpyBind as TIpmItem).BufferToValues (FoundErrorInBuffer, xLog.ReplyBody);
+          if doValidateReplies then
+          begin
+            if not aOperation.rpyBind.IsValueValid (xMessage) then
+              xLog.ReplyValidateResult := xMessage;
+            xLog.ReplyValidated := True;
+          end;
+        end;
+        aOperation.ExecuteAfter;
+        CheckExpectedValues (xLog, aOperation, doCheckExpectedValues);
+      end;
+      with xLog do
+      begin
+//      RequestHeaders := HttpClient.Request.CustomHeaders.Text;
+        Mssg := aOperation.Messages.Messages[0];
+        CorrelationId := aOperation.CorrelationIdAsText ('; ');
+        Stubbed := True;
+        StubAction := aOperation.StubAction;
+        doSuppressLog := (aOperation.doSuppressLog <> 0);
+      end;
+    except
+      on e: exception do
+      begin
+        LogServerMessage(format('Exception %s in SendSoapRequest. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
+        with xLog do
+        begin
+          if InboundTimeStamp = 0 then
+            InboundTimeStamp := Now;
+//          RequestHeaders := HttpClient.Request.CustomHeaders.Text;
+          Mssg := aOperation.CorrelatedMessage;
+          Stubbed := True;
+          StubAction := aOperation.StubAction;
+          Exception := e.Message;
+          ReplyBody := Exception;
+          if OutboundTimeStamp = 0 then
+            OutboundTimeStamp := xNow;
+          Nr := displayedLogs.Number;
+        end;
+        Raise;
+      end;
+    end;
+  finally
+    xLog.InitDisplayedColumns(aOperation, DisplayedLogColumns);
+    DisplayLog ('', xLog);
+  end;
+end;
+
+procedure TWsdlProject.SendOperationInThread(aOperation: TWsdlOperation);
+begin
+  TProcedureThread.CreateProcedureOperation(False, False, self, SendOperation, aOperation);
+end;
+
 
 function TWsdlProject .SendMessage (aOperation : TWsdlOperation ;
   aRequest : TWsdlMessage ; aCorrelationId : String ): String ;
@@ -7879,6 +8071,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlRequestOperation := RequestOperation;
+  _WsdlRequestOperationLater := RequestOperationLater;
   _WsdlNewDesignMessage := NewDesignMessage;
   _WsdlRequestAsText := RequestAsText;
   _WsdlReplyAsText := ReplyAsText;
