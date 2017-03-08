@@ -9526,7 +9526,7 @@ object MainForm: TMainForm
     Transaction = SQLTransaction
     LogEvents = []
     Options = []
-    left = 16
+    left = 24
     top = 320
   end
   object OperationsPopupMenu: TPopupMenu
