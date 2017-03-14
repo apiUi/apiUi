@@ -18,7 +18,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.2.0'
   object MainToolBar: TToolBar
     Left = 0
     Height = 29

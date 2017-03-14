@@ -4021,6 +4021,7 @@ begin
         _setupForAsynchronousReply;
       xLog.TransportType := aOperation.StubTransport;
       xLog.Mssg := aOperation.CorrelatedMessage;
+      aOperation.doSuppressLog := 0;
       if aOperation.wsaEnabled then
         try
           aOperation.reqWsaOnRequest;
@@ -4162,6 +4163,7 @@ begin
     then raise Exception.Create('SendMessage: null arguments');
   if Assigned (aRequest) then
     aOperation.ReqBindablesFromWsdlMessage(aRequest);
+  aOperation.Data := nil;
   sl := TStringList.Create;
   try
     ExplodeStr(aCorrelationId, ';', sl);
