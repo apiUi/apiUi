@@ -5993,7 +5993,7 @@ begin
       begin
         if not xLog.DisplayedColumnsValid then
         begin
-          xLog.toBindables;
+          xLog.toBindables (xLog.Operation);
           xLog.InitDisplayedColumns(xLog.Operation, se.DisplayedLogColumns);
         end;
         CellText := xLog.DisplayedColumns.Strings[Column - Ord(logStdColumnCount)];
@@ -7439,6 +7439,27 @@ var
   xXml: TXml;
   xString: String;
 begin
+  if Assigned (claimedLog)
+  and Assigned (claimedLog.Operation)
+  and claimedLog.Operation.isOpenApiService then
+  begin
+    Application.CreateForm(TShowXmlForm, ShowXmlForm);
+    try
+      ShowXmlForm.Caption := 'Request as XML';
+      ShowXmlForm.isCheckedOnly := True;
+      ShowXmlForm.isReadOnly := True;
+      ShowXmlForm.Bind := claimedLog.reqBodyAsXml;
+      try
+        ShowXmlForm.ShowModal;
+      finally
+        ShowXmlForm.Bind.Free;
+      end;
+    finally
+      FreeAndNil(ShowXmlForm);
+    end;
+    Exit;
+  end;
+
   xString := IfThen(Assigned(claimedLog) and (claimedLog is TLog), claimedLog.RequestBody, '');
   if (xString <> '') then
   begin
@@ -10908,7 +10929,7 @@ begin
         if Assigned(xLog) and Assigned(xLog.Operation) and
           (xLog.Exception = '') then
         begin
-          xLog.toBindables;
+          xLog.toBindables(xLog.Operation);
           if xLog.Operation.StubAction = saRequest then
           begin
             xMessage := TWsdlMessage.CreateRequest(xLog.Operation,
@@ -11454,7 +11475,7 @@ begin
             for X := 0 to se.displayedLogs.Count - 1 do
             begin
               xLog := se.displayedLogs.LogItems[X];
-              xLog.toBindables;
+              xLog.toBindables(xLog.Operation);
               se.CheckExpectedValues(xLog, xLog.Operation, True);
               if xLog.HasUnexpectedValue then
               begin

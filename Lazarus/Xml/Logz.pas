@@ -96,7 +96,8 @@ type
     function reqBodyAsXml: TXml;
     function rpyBodyAsXml: TXml;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
-    procedure toBindables;
+    procedure OpenApiRequestToBindables (aOperation: TWsdlOperation);
+    procedure toBindables (aOperation: TWsdlOperation);
     procedure InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TStringList);
     constructor Create;
     destructor Destroy; override;
@@ -779,7 +780,7 @@ begin
     and Assigned (xLog.Mssg)
     and (xLog.Exception = '') then
     begin
-      xLog.toBindables;
+      xLog.toBindables (xLog.Operation);
       xLog.HasUnexpectedValue := xLog.Mssg.CheckValues(xLog.Operation);
       xLog.ExpectedValuesChecked := True;
       if xLog.HasUnexpectedValue then
@@ -1029,6 +1030,7 @@ begin
     AddXml (Txml.CreateAsString('httpCommand', Self.httpCommand));
     AddXml (Txml.CreateAsString('httpDocument', Self.httpDocument));
     AddXml (Txml.CreateAsString('httpParams', Self.httpParams));
+    AddXml (Txml.CreateAsString('ContentType', Self.ContentType));
     AddXml (Txml.CreateAsString('httpSoapAction', Self.httpSoapAction));
     AddXml (Txml.CreateAsString('HttpRequestHeaders', Self.RequestHeaders));
     AddXml (Txml.CreateAsString('HttpReplyHeaders', Self.ReplyHeaders));
@@ -1175,48 +1177,56 @@ begin
   then begin
     (Operation.reqBind as TIpmItem).BufferToValues (nil, RequestBody);
     try result := (Operation.reqBind as TIpmItem).AsXml; except end;
-  end
-  else
+    Exit;
+  end;
+
+  if Assigned (Operation)
+  and (Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
   begin
-    if Assigned (Operation)
-    and (Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
-    begin
-      with TSwiftMT.Create(RequestBody, Operation.reqXsd) do
+    with TSwiftMT.Create(RequestBody, Operation.reqXsd) do
+    try
       try
-        try
-          result := AsXml;
-        except
-          on e: sysUtils.Exception do
-          begin
-            result := TXml.Create;
-            result.Checked := True;
-            result.Name := 'Exception';
-            result.Value := e.Message;
-          end;
+        result := AsXml;
+        Exit;
+      except
+        on e: sysUtils.Exception do
+        begin
+          result := TXml.Create;
+          result.Checked := True;
+          result.Name := 'Exception';
+          result.Value := e.Message;
         end;
-      finally
-        Free;
       end;
-    end
-    else
-    begin
-      result := TXml.Create;
-      result.LoadFromString(RequestBody, nil);
-      if result.Name = '' then
+    finally
+      Free;
+    end;
+  end;
+
+  if Assigned (Operation)
+  and (Operation.isOpenApiService) then
+  begin
+    OpenApiRequestToBindables(Operation);
+    SjowMessage(Operation.reqXml.AsText(False,0,True,False));
+    result := TXml.Create;
+    result.CopyDownLine(Operation.reqXml, True);
+    Exit;
+  end;
+
+  result := TXml.Create;
+  result.LoadFromString(RequestBody, nil);
+  if result.Name = '' then
+  begin
+    try
+      result.LoadJsonFromString(RequestBody, nil);
+    except
+      on e: sysUtils.Exception do
       begin
-        try
-          result.LoadJsonFromString(RequestBody, nil);
-        except
-          on e: sysUtils.Exception do
-          begin
-            result.Checked := True;
-            if Assigned (Operation) then
-              result.Name := Operation.Name
-            else
-              result.Name := 'UnknownOperation';
-            result.Value := 'unable to present request as Xml';
-          end;
-        end;
+        result.Checked := True;
+        if Assigned (Operation) then
+          result.Name := Operation.Name
+        else
+          result.Name := 'UnknownOperation';
+        result.Value := 'unable to present request as Xml';
       end;
     end;
   end;
@@ -1295,6 +1305,95 @@ begin
   (aObject as TIpmItem).Value := '?wsdlStub Error found: ' + ErrorString;
 end;
 
+procedure TLog.OpenApiRequestToBindables (aOperation: TWsdlOperation);
+var
+  x, y, k, f: Integer;
+  pathParams, pathMask, qryParams, hdrParams: TStringList;
+  xXml: TXml;
+  xValue, xSeparator: String;
+begin
+  if not Assigned (aOperation) then
+    raise SysUtils.Exception.Create('procedure TLog.OpenApiRequestToBindables (aOperation: TWsdlOperation); nil arg');
+  if not aOperation.isOpenApiService then
+    raise SysUtils.Exception.Create('procedure TLog.OpenApiRequestToBindables (aOperation: TWsdlOperation); not an openApi operation');
+  aOperation.reqXml.ResetValues;
+  aOperation.reqXml.Checked := True;
+  pathParams := TStringList.Create;
+  pathMask := TStringList.Create;
+  qryParams := TStringList.Create;
+  hdrParams := TStringList.Create;
+  hdrParams.NameValueSeparator := ':';
+  try
+    ExplodeStr (self.httpDocument, '/', pathParams);
+    ExplodeStr (aOperation.WsdlService.openApiPathMask , '/', pathMask);
+    if pathParams.Count <> pathMask.Count then
+      raise sysutils.Exception.CreateFmt ( '%s document %s and service path %s do not match'
+                                         , [ aOperation.Name
+                                           ,             self.httpDocument
+                                           ,                                 aOperation.WsdlService.openApiPathMask
+                                           ]
+                                         );
+    k := pathParams.Count - 1;
+    while (k > -1)
+    and (pathMask.Strings[k] <> '%s') do
+      k := k - 1;
+    ExplodeStr (urlDecode(self.httpParams), '&', qryParams);
+    hdrParams.Text := self.RequestHeaders;
+    with aOperation.reqXml.Items do for x := Count - 1 downto 0 do
+    begin
+      case XmlItems[x].Xsd.ParametersType of
+        oppBody:
+          begin
+            xXml := TXml.Create;
+            try
+              if Pos ('json', self.ContentType) > 0 then
+                xXml.LoadJsonFromString(self.RequestBody, nil)
+              else
+                xXml.LoadFromString(self.RequestBody, nil);
+              xXml.Name := XmlItems[x].Name;
+              XmlItems[x].LoadValues (xXml, false, False, True, False);
+            finally
+              xXml.Free;
+            end;
+          end;
+        oppPath:
+          begin
+            XmlItems[x].ValueToJsonArray(pathParams.Strings[k]);
+            k := k - 1;
+            while (k > -1)
+            and (pathMask.Strings[k] <> '%s') do
+              k := k - 1;
+          end;
+        oppQuery:
+          begin
+            xValue := '';
+            xSeparator := '';
+            for y := 0 to qryParams.Count - 1 do
+            begin
+              if qryParams.Names[y] = XmlItems[x].Name then
+              begin
+                xValue := xValue + xSeparator + qryParams.ValueFromIndex[y];
+                xSeparator := '&' + XmlItems[x].Name + '=';
+              end;
+            end;
+            XmlItems[x].ValueToJsonArray(xValue);
+          end;
+        oppHeader:
+          begin
+            if hdrParams.IndexOfName(XmlItems[x].Name) > -1 then
+              XmlItems[x].ValueToJsonArray(Copy(hdrParams.Values[XmlItems[x].Name], 2, MaxInt));
+          end;
+        oppForm: SjowMessage ('oppForm: not suported');
+      end;
+    end;
+  finally
+    FreeAndNil(pathParams);
+    FreeAndNil(pathMask);
+    FreeAndNil(qryParams);
+    FreeAndNil(hdrParams);
+  end;
+end;
+
 { InitDisplayedColumns
   requires that the Operation.Bindables are filled with the correct values
   use .toBindables in case not
@@ -1332,12 +1431,15 @@ begin
   DisplayedColumnsValid := True;
 end;
 
-procedure TLog.toBindables;
+procedure TLog.toBindables (aOperation: TWsdlOperation);
 begin
-  if not Assigned (Operation) then
-    raise sysUtils.Exception.Create('log.toBindables: No operation assigned');
-  Operation.RequestStringToBindables(RequestBody);
-  Operation.ReplyStringToBindables(ReplyBody);
+  if not Assigned (aOperation) then
+    raise sysUtils.Exception.Create('procedure TLog.toBindables (aOperation: TWsdlOperation); nil arg');
+  if aOperation.isOpenApiService then
+    self.OpenApiRequestToBindables (aOperation)
+  else
+    aOperation.RequestStringToBindables(RequestBody);
+  aOperation.ReplyStringToBindables(ReplyBody);
 end;
 
 end.

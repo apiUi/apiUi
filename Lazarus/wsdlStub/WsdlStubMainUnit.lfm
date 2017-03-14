@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 310
+  Left = 290
   Height = 638
-  Top = 158
+  Top = 99
   Width = 1141
   Caption = 'MainForm'
   ClientHeight = 619
@@ -18,7 +18,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.6.0.4'
   object MainToolBar: TToolBar
     Left = 0
     Height = 29

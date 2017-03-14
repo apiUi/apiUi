@@ -98,11 +98,7 @@ type
     function SendNoneMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
                              ): String;
-    function SendHttpMessage ( aOperation: TWsdlOperation
-                             ; aMessage: String
-                             ; var aReqHeader, aRpyHeader, aUri: String
-                             ; var aResponseCode: Integer
-                             ): String;
+    function SendHttpMessage ( aOperation: TWsdlOperation; aLog: TLog): String;
     procedure POP3ServerCheckUser(aContext: TIdContext;
       aServerContext: TIdPOP3ServerContext);
     procedure POP3ServerRetrieve(aCmd: TIdCommand; AMsgNo: Integer);
@@ -328,6 +324,7 @@ type
     function FindCcbOperationOnRequest (aLog: TLog; aCobolString: String): TWsdlOperation;
     function FindOperationOnDocument (aDocument: String): TWsdlOperation;
     function FindOperationOnRequest (aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
+    function FindApiOnLog (aLog: TLog): TWsdlOperation;
     function FindOperationOnLog (aLog: TLog): TWsdlOperation;
     function RedirectUnknownOperation (aLog: TLog): String;
     function CreateReply ( aLog: TLog
@@ -3670,7 +3667,7 @@ begin
   rpyheader := '';
   responsecode := 0;
   case aOperation.StubTransport of
-    ttHttp: result := SendHttpMessage (aOperation, aMessage, reqheader, rpyheader, uri, responsecode);
+    ttHttp: result := SendHttpMessage (aOperation, nil);
     ttMq: result := SendOperationMqMessage (aOperation, aMessage, reqheader);
     ttStomp: result := SendOperationStompMessage (aOperation, aMessage, reqheader, rpyheader);
     ttTaco: result := SendOperationTacoMessage(aOperation, aMessage, reqheader, rpyheader);
@@ -3723,10 +3720,7 @@ begin
   end;
 end;
 
-function TWsdlProject .SendHttpMessage (aOperation : TWsdlOperation ;
-  aMessage : String ; var aReqHeader , aRpyHeader, aUri : String
-  ; var aResponseCode: Integer
-  ): String ;
+function TWsdlProject.SendHttpMessage (aOperation: TWsdlOperation; aLog: TLog): String;
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
     xStream: TMemoryStream;
@@ -3829,6 +3823,7 @@ begin
             if (Xsd.ParametersType = oppQuery) then
             begin
               URL := URL + querySep + Name + '=' + ValueFromJsonArray(true);
+              querySep := '&';
             end;
             if (Xsd.ParametersType = oppHeader) then
             begin
@@ -3836,9 +3831,17 @@ begin
             end;
           end;
         end;
+        with TIdURI.Create(URL) do
+        try
+          aLog.httpDocument := Path + Document;
+          alog.httpParams := Params;
+        finally
+          Free;
+        end;
       end;
-      aUri := URL;
+      aLog.httpUri := URL;
       HttpClient.Request.ContentType := aOperation.ContentType;
+      aLog.ContentType := aOperation.ContentType;
       HttpClient.Request.Accept := aOperation.Accept;
       try
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := '"' + aOperation.SoapAction + '"';
@@ -3866,7 +3869,7 @@ begin
       begin
         sStream := TMemoryStream.Create;
         try
-          WriteStringToStream(aMessage, sStream);
+          WriteStringToStream(aLog.RequestBody, sStream);
           sStream.Position := 0;
           if HttpClient.Request.ContentEncoding = 'deflate' then
             GZIPUtils.deflate(sStream, HttpRequest);
@@ -3878,7 +3881,7 @@ begin
         end;
       end
       else
-        WriteStringToStream(aMessage, HttpRequest);
+        WriteStringToStream(aLog.RequestBody, HttpRequest);
       if doViaProxyServer then
       begin
         HttpClient.ProxyParams.ProxyServer := ViaProxyServer;
@@ -3926,9 +3929,9 @@ begin
                 if httpVerb = 'TRACE' then httpClient.Trace(URL, dStream);
               end;
             finally
-              aReqHeader := HttpClient.Request.RawHeaders.Text;
-              aRpyHeader := HttpClient.Response.RawHeaders.Text;
-              aResponseCode := HttpClient.ResponseCode;
+              aLog.RequestHeaders := HttpClient.Request.RawHeaders.Text;
+              aLog.ReplyHeaders := HttpClient.Response.RawHeaders.Text;
+              alog.httpResponseCode := HttpClient.ResponseCode;
             end;
             result := _Decompress (HttpClient.Response.ContentEncoding, dStream);
           except
@@ -4045,13 +4048,7 @@ begin
       xLog.httpCommand := aOperation.httpVerb;
       try
         case aOperation.StubTransport of
-          ttHttp: xLog.ReplyBody := SendHttpMessage ( aOperation
-                                                    , xLog.RequestBody
-                                                    , xLog.RequestHeaders
-                                                    , xLog.ReplyHeaders
-                                                    , xlog.httpUri
-                                                    , xLog.httpResponseCode
-                                                    );
+          ttHttp: xLog.ReplyBody := SendHttpMessage (aOperation, xLog);
           ttMq: xLog.ReplyBody := SendOperationMqMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders);
           ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
@@ -6044,11 +6041,49 @@ begin
   end;
 end;
 
-function TWsdlProject .FindOperationOnLog (aLog : TLog ): TWsdlOperation ;
+function TWsdlProject.FindApiOnLog (aLog : TLog): TWsdlOperation;
+  function _ServiceFromPath: TWsdlService;
+  var
+    x: Integer;
+    xService: TWsdlService;
+  begin
+    result := nil;
+    with TRegExpr.Create do
+    try
+      for x := 0 to openApiPaths.Count - 1 do
+      begin
+        Expression := '^(' + openApiPaths.Strings[x] + ')$';
+        if Exec(aLog.httpDocument) then
+          result := openApiPaths.Objects[x] as TWsdlService;
+      end;
+    finally
+      free;
+    end;
+  end;
+var
+  x: Integer;
+  xService: TWsdlService;
+begin
+  result := nil;
+  xService := _ServiceFromPath;
+  if Assigned (xService) then
+  begin
+    for x := 0 to xService.Operations.Count - 1 do
+    with xService.Operations do
+    begin
+      if Operations[x].httpVerb = aLog.httpCommand then
+        result := Operations[x];
+    end;
+  end;
+end;
+
+function TWsdlProject.FindOperationOnLog (aLog: TLog): TWsdlOperation;
 var
   xXml: TXml;
 begin
-  result := nil;
+  result := FindApiOnLog (aLog);
+  if Assigned (result) then
+    Exit;
   xXml := TXml.Create;
   try
     try
@@ -6642,132 +6677,13 @@ begin
 end;
 
 function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
-
-  function _ServiceFromPath: TWsdlService;
-  var
-    x: Integer;
-    xService: TWsdlService;
-  begin
-    result := nil;
-    with TRegExpr.Create do
-    try
-      for x := 0 to openApiPaths.Count - 1 do
-      begin
-        Expression := '^(' + openApiPaths.Strings[x] + ')$';
-        if Exec(aLog.httpDocument) then
-          result := openApiPaths.Objects[x] as TWsdlService;
-      end;
-    finally
-      free;
-    end;
-  end;
-  function _OperationFromPath: TWsdlOperation;
-  var
-    x: Integer;
-    xService: TWsdlService;
-  begin
-    result := nil;
-    xService := _ServiceFromPath;
-    if Assigned (xService) then
-    begin
-      for x := 0 to xService.Operations.Count - 1 do
-      with xService.Operations do
-      begin
-        if Operations[x].httpVerb = aLog.httpCommand then
-          result := Operations[x];
-      end;
-    end;
-  end;
-  procedure _RequestToBindables (aOperation: TWsdlOperation);
-  var
-    x, y, k, f: Integer;
-    pathParams, pathMask, qryParams, hdrParams: TStringList;
-    xXml: TXml;
-    xValue, xSeparator: String;
-  begin
-    pathParams := TStringList.Create;
-    pathMask := TStringList.Create;
-    qryParams := TStringList.Create;
-    hdrParams := TStringList.Create;
-    hdrParams.NameValueSeparator := ':';
-    try
-      ExplodeStr (aLog.httpDocument, '/', pathParams);
-      ExplodeStr (aOperation.WsdlService.openApiPathMask , '/', pathMask);
-      if pathParams.Count <> pathMask.Count then
-        raise Exception.CreateFmt ( '%s document %s and service path %s do not match'
-                                  , [ aOperation.Name
-                                    , aLog.httpDocument
-                                    , aOperation.WsdlService.openApiPathMask
-                                    ]
-                                  );
-      k := pathParams.Count - 1;
-      while (k > -1)
-      and (pathMask.Strings[k] <> '%s') do
-        k := k - 1;
-      ExplodeStr (urlDecode(aLog.httpParams), '&', qryParams);
-      hdrParams.Text := aLog.RequestHeaders;
-      with aOperation.reqXml.Items do for x := Count - 1 downto 0 do
-      begin
-        case XmlItems[x].Xsd.ParametersType of
-          oppBody:
-            begin
-              xXml := TXml.Create;
-              try
-                if Pos ('json', aLog.ContentType) > 0 then
-                  xXml.LoadJsonFromString(aLog.RequestBody, nil)
-                else
-                  xXml.LoadFromString(aLog.RequestBody, nil);
-                xXml.Name := XmlItems[x].Name;
-                XmlItems[x].LoadValues (xXml, false, False, True, False);
-              finally
-                xXml.Free;
-              end;
-            end;
-          oppPath:
-            begin
-              XmlItems[x].ValueToJsonArray(pathParams.Strings[k]);
-              k := k - 1;
-              while (k > -1)
-              and (pathMask.Strings[k] <> '%s') do
-                k := k - 1;
-            end;
-          oppQuery:
-            begin
-              xValue := '';
-              xSeparator := '';
-              for y := 0 to qryParams.Count - 1 do
-              begin
-                if qryParams.Names[y] = XmlItems[x].Name then
-                begin
-                  xValue := xValue + xSeparator + qryParams.ValueFromIndex[y];
-                  xSeparator := '&' + XmlItems[x].Name + '=';
-                end;
-              end;
-              XmlItems[x].ValueToJsonArray(xValue);
-            end;
-          oppHeader:
-            begin
-              if hdrParams.IndexOfName(XmlItems[x].Name) > -1 then
-                XmlItems[x].ValueToJsonArray(Copy(hdrParams.Values[XmlItems[x].Name], 2, MaxInt));
-            end;
-          oppForm: SjowMessage ('oppForm: not suported');
-        end;
-      end;
-    finally
-      FreeAndNil(pathParams);
-      FreeAndNil(pathMask);
-      FreeAndNil(qryParams);
-      FreeAndNil(hdrParams);
-    end;
-  end;
-
 var
   x, s, o: Integer;
   xOperation: TWsdlOperation;
   xMssg: TWsdlMessage;
 begin
   result := False;
-  aLog.Operation := _OperationFromPath;
+  aLog.Operation := FindApiOnLog(aLog);
   if Assigned(aLog.Operation) then
   begin
     aLog.Operation.AcquireLock;
@@ -6780,7 +6696,7 @@ begin
       Result := True;
       if xOperation.PrepareErrors <> '' then
         raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
-      _RequestToBindables (xOperation);
+      aLog.OpenApiRequestToBindables(xOperation);
       xOperation.Data := aLog;
       if IsActive then with xOperation.Cloned do
       begin
@@ -7449,6 +7365,7 @@ begin
           xLog.httpCommand := Items.XmlValueByTag ['httpCommand'];
           xLog.httpDocument := Items.XmlValueByTag ['httpDocument'];
           xLog.httpParams := Items.XmlValueByTag ['httpParams'];
+          xLog.ContentType := Items.XmlValueByTag ['ContentType'];
           xLog.httpSoapAction := Items.XmlValueByTag ['httpSoapAction'];
           xLog.RequestHeaders := Items.XmlValueByTag ['HttpRequestHeaders'];
           xLog.RequestBody := Items.XmlValueByTag ['HttpRequestBody'];
