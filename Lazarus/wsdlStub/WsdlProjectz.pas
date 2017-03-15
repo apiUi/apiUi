@@ -5986,7 +5986,21 @@ function TWsdlProject.FindOperationOnRequest(aLog: TLog; aDocument, aString: Str
 var
   xXml: TXml;
 begin
-  result := nil;
+  result := FindApiOnLog(aLog);
+  if Assigned (Result) then
+  begin
+    if aDoClone then
+    begin
+      Result.AcquireLock;
+      try
+        result := TWsdlOperation.Create(Result);
+      finally
+        Result.ReleaseLock;
+      end;
+    end;
+    aLog.OpenApiRequestToBindables(Result);
+    Exit;
+  end;
   xXml := TXml.Create;
   try
     try

@@ -97,6 +97,7 @@ type
     function rpyBodyAsXml: TXml;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     procedure OpenApiRequestToBindables (aOperation: TWsdlOperation);
+    procedure OpenApiReplyToBindables (aOperation: TWsdlOperation);
     procedure toBindables (aOperation: TWsdlOperation);
     procedure InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TStringList);
     constructor Create;
@@ -1206,7 +1207,6 @@ begin
   and (Operation.isOpenApiService) then
   begin
     OpenApiRequestToBindables(Operation);
-    SjowMessage(Operation.reqXml.AsText(False,0,True,False));
     result := TXml.Create;
     result.CopyDownLine(Operation.reqXml, True);
     Exit;
@@ -1242,6 +1242,7 @@ begin
     try
       (Operation.rpyBind as TIpmItem).BufferToValues (nil, ReplyBody);
       try result := (Operation.rpyBind as TIpmItem).AsXml; except end;
+      Exit;
     except
       result := TXml.CreateAsString('UnableToPresentReplyAsXml', '');
       with TStringList.Create do
@@ -1253,48 +1254,54 @@ begin
         Free;
       end;
     end;
-  end
-  else
+  end;
+
+  if Assigned (Operation)
+  and (Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
   begin
-    if Assigned (Operation)
-    and (Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
-    begin
-      with TSwiftMT.Create(ReplyBody, Operation.rpyXsd) do
+    with TSwiftMT.Create(ReplyBody, Operation.rpyXsd) do
+    try
       try
-        try
-          result := AsXml;
-        except
-          on e: sysUtils.Exception do
-          begin
-            result := TXml.Create;
-            result.Checked := True;
-            result.Name := 'Exception';
-            result.Value := e.Message
-          end;
+        result := AsXml;
+        Exit;
+      except
+        on e: sysUtils.Exception do
+        begin
+          result := TXml.Create;
+          result.Checked := True;
+          result.Name := 'Exception';
+          result.Value := e.Message
         end;
-      finally
-        Free;
       end;
-    end
-    else
-    begin
-      result := TXml.Create;
-      result.LoadFromString(ReplyBody, nil);
-      if result.Name = '' then
+    finally
+      Free;
+    end;
+  end;
+
+  if Assigned (Operation)
+  and (Operation.isOpenApiService) then
+  begin
+    OpenApiReplyToBindables(Operation);
+    result := TXml.Create;
+    result.CopyDownLine(Operation.rpyXml, True);
+    Exit;
+  end;
+
+  result := TXml.Create;
+  result.LoadFromString(ReplyBody, nil);
+  if result.Name = '' then
+  begin
+    try
+      result.LoadJsonFromString(ReplyBody, nil);
+    except
+      on e: sysUtils.Exception do
       begin
-        try
-          result.LoadJsonFromString(ReplyBody, nil);
-        except
-          on e: sysUtils.Exception do
-          begin
-            result.Checked := True;
-            if Assigned (Operation) then
-              result.Name := Operation.Name
-            else
-              result.Name := 'UnknownOperation';
-            result.Value := 'unable to present reply as Xml';
-          end;
-        end;
+        result.Checked := True;
+        if Assigned (Operation) then
+          result.Name := Operation.Name
+        else
+          result.Name := 'UnknownOperation';
+        result.Value := 'unable to present reply as Xml';
       end;
     end;
   end;
@@ -1394,6 +1401,61 @@ begin
   end;
 end;
 
+procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation);
+var
+  x, y, k, f: Integer;
+  hdrParams: TStringList;
+  xXml: TXml;
+  xValue, xSeparator: String;
+begin
+  if not Assigned (aOperation) then
+    raise SysUtils.Exception.Create('procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation); nil arg');
+  if not aOperation.isOpenApiService then
+    raise SysUtils.Exception.Create('procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation); not an openApi operation');
+  aOperation.rpyXml.ResetValues;
+  aOperation.rpyXml.Checked := True;
+  hdrParams := TStringList.Create;
+  hdrParams.NameValueSeparator := ':';
+  try
+    hdrParams.Text := self.ReplyHeaders;
+    with aOperation.rpyXml.Items do for x := Count - 1 downto 0 do
+    begin
+      case XmlItems[x].Xsd.ParametersType of
+        oppBody:
+          begin
+            xXml := TXml.Create;
+            try
+              if Pos ('json', self.ContentType) > 0 then
+                try
+                   xXml.LoadJsonFromString(self.ReplyBody, nil);
+                except
+                   xXml.Value := self.ReplyBody;
+                end
+              else
+                try
+                  xXml.LoadFromString(self.ReplyBody, nil);
+                except
+                  xXml.Value := self.ReplyBody;
+                end;
+              xXml.Name := XmlItems[x].Name;
+              XmlItems[x].LoadValues (xXml, false, False, True, False);
+            finally
+              xXml.Free;
+            end;
+          end;
+        oppHeader:
+          begin
+            if hdrParams.IndexOfName(XmlItems[x].Name) > -1 then
+              XmlItems[x].ValueToJsonArray(Copy(hdrParams.Values[XmlItems[x].Name], 2, MaxInt));
+          end;
+        oppForm: SjowMessage ('oppForm: not suported');
+      end;
+    end;
+  finally
+    FreeAndNil(hdrParams);
+  end;
+end;
+
 { InitDisplayedColumns
   requires that the Operation.Bindables are filled with the correct values
   use .toBindables in case not
@@ -1436,10 +1498,15 @@ begin
   if not Assigned (aOperation) then
     raise sysUtils.Exception.Create('procedure TLog.toBindables (aOperation: TWsdlOperation); nil arg');
   if aOperation.isOpenApiService then
-    self.OpenApiRequestToBindables (aOperation)
+  begin
+    self.OpenApiRequestToBindables (aOperation);
+    self.OpenApiReplyToBindables (aOperation);
+  end
   else
+  begin
     aOperation.RequestStringToBindables(RequestBody);
-  aOperation.ReplyStringToBindables(ReplyBody);
+    aOperation.ReplyStringToBindables(ReplyBody);
+  end;
 end;
 
 end.
