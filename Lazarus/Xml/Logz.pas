@@ -1234,26 +1234,27 @@ end;
 
 function TLog.rpyBodyAsXml: TXml;
 var
-  I: Integer;
+  x: Integer;
 begin
   if Assigned (Operation)
   and (Operation.rpyBind is TIpmItem)
-  then begin
+  then
+  begin
     try
       (Operation.rpyBind as TIpmItem).BufferToValues (nil, ReplyBody);
       try result := (Operation.rpyBind as TIpmItem).AsXml; except end;
-      Exit;
     except
       result := TXml.CreateAsString('UnableToPresentReplyAsXml', '');
       with TStringList.Create do
       try
         Text := ReplyBody;
-        for I := 0 to Count - 1 do
-          result.AddXml(TXml.CreateAsString('Line', Strings[I]));
+        for x := 0 to Count - 1 do
+          result.AddXml(TXml.CreateAsString('Line', Strings[x]));
       finally
         Free;
       end;
     end;
+    Exit;
   end;
 
   if Assigned (Operation)
@@ -1263,7 +1264,6 @@ begin
     try
       try
         result := AsXml;
-        Exit;
       except
         on e: sysUtils.Exception do
         begin
@@ -1276,14 +1276,30 @@ begin
     finally
       Free;
     end;
+    Exit;
   end;
 
   if Assigned (Operation)
   and (Operation.isOpenApiService) then
   begin
     OpenApiReplyToBindables(Operation);
-    result := TXml.Create;
-    result.CopyDownLine(Operation.rpyXml, True);
+    result := TXml.CreateAsString('reply', '');
+    with Operation.rpyXml.Items do
+    for x := 0 to Count - 1 do
+    begin
+      if XmlItems[x].Checked
+      and (XmlItems[x].Xsd.ParametersType <> oppBody) then
+        result.AddXml(TXml.Create).CopyDownLine(XmlItems[x], True);
+    end;
+    result.AddXml(TXml.CreateAsInteger('httpResponseCode', httpResponseCode));
+    if ReplyBody <> '' then
+    with result.AddXml(TXml.Create) do
+    begin
+      if Pos ('json', self.ContentType) > 0 then
+        LoadJsonFromString(self.ReplyBody, nil)
+      else
+        LoadFromString(self.ReplyBody, nil);
+    end;
     Exit;
   end;
 
