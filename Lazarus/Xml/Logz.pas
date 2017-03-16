@@ -53,7 +53,7 @@ type
     httpDocument: String;
     httpParams: String;
     httpSoapAction: String;
-    ContentType: String;
+    RequestContentType, ReplyContentType: String;
     DestinationIp: String;
     Stubbed: Boolean;
     CorrelationId: String;
@@ -1031,7 +1031,8 @@ begin
     AddXml (Txml.CreateAsString('httpCommand', Self.httpCommand));
     AddXml (Txml.CreateAsString('httpDocument', Self.httpDocument));
     AddXml (Txml.CreateAsString('httpParams', Self.httpParams));
-    AddXml (Txml.CreateAsString('ContentType', Self.ContentType));
+    AddXml (Txml.CreateAsString('RequestContentType', Self.RequestContentType));
+    AddXml (Txml.CreateAsString('ReplyContentType', Self.ReplyContentType));
     AddXml (Txml.CreateAsString('httpSoapAction', Self.httpSoapAction));
     AddXml (Txml.CreateAsString('HttpRequestHeaders', Self.RequestHeaders));
     AddXml (Txml.CreateAsString('HttpReplyHeaders', Self.ReplyHeaders));
@@ -1295,10 +1296,22 @@ begin
     if ReplyBody <> '' then
     with result.AddXml(TXml.Create) do
     begin
-      if Pos ('json', self.ContentType) > 0 then
-        LoadJsonFromString(self.ReplyBody, nil)
+      if Pos ('json', self.ReplyContentType) > 0 then
+      try
+        LoadJsonFromString(self.ReplyBody, nil);
+      except
+        Name := 'replyBody';
+        Value := self.ReplyBody;
+      end
       else
+      begin
         LoadFromString(self.ReplyBody, nil);
+        if Name = '' then
+        begin
+          Name := 'replyBody';
+          Value := self.ReplyBody;
+        end;
+      end;
     end;
     Exit;
   end;
@@ -1369,7 +1382,7 @@ begin
           begin
             xXml := TXml.Create;
             try
-              if Pos ('json', self.ContentType) > 0 then
+              if Pos ('json', self.RequestContentType) > 0 then
                 xXml.LoadJsonFromString(self.RequestBody, nil)
               else
                 xXml.LoadFromString(self.RequestBody, nil);
@@ -1441,7 +1454,7 @@ begin
           begin
             xXml := TXml.Create;
             try
-              if Pos ('json', self.ContentType) > 0 then
+              if Pos ('json', self.ReplyContentType) > 0 then
                 try
                    xXml.LoadJsonFromString(self.ReplyBody, nil);
                 except

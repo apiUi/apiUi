@@ -3841,7 +3841,7 @@ begin
       end;
       aLog.httpUri := URL;
       HttpClient.Request.ContentType := aOperation.ContentType;
-      aLog.ContentType := aOperation.ContentType;
+      aLog.RequestContentType := aOperation.ContentType;
       HttpClient.Request.Accept := aOperation.Accept;
       try
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := '"' + aOperation.SoapAction + '"';
@@ -3931,6 +3931,7 @@ begin
             finally
               aLog.RequestHeaders := HttpClient.Request.RawHeaders.Text;
               aLog.ReplyHeaders := HttpClient.Response.RawHeaders.Text;
+              aLog.ReplyContentType := HttpClient.Response.ContentType;
               alog.httpResponseCode := HttpClient.ResponseCode;
             end;
             result := _Decompress (HttpClient.Response.ContentEncoding, dStream);
@@ -6407,7 +6408,7 @@ begin
       xLog.httpDocument := ARequestInfo.Document;
       xLog.httpSoapAction := ARequestInfo.RawHeaders.Values ['SOAPAction'];
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
-      xLog.ContentType := ARequestInfo.ContentType;
+      xLog.RequestContentType := ARequestInfo.ContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
       xlog.httpResponseCode := 200;
       AResponseInfo.ContentEncoding := 'identity';
@@ -6439,6 +6440,7 @@ begin
         or (ARequestInfo.Command = 'PUT') then
         begin
           AResponseInfo.ContentType := ARequestInfo.ContentType;
+          xLog.ReplyContentType := AResponseInfo.ContentType;
           rLog := nil;
           AcquireLogLock;
           try
@@ -6632,6 +6634,7 @@ begin
           end;
           xLog.InboundBody := xLog.RequestBody;
           AResponseInfo.ContentType := ARequestInfo.ContentType;
+          xLog.ReplyContentType := AResponseInfo.ContentType;
           xProcessed := False;
           AResponseInfo.ResponseNo := 200;
           CreateLogReply (xLog, xProcessed, True);
@@ -7379,7 +7382,8 @@ begin
           xLog.httpCommand := Items.XmlValueByTag ['httpCommand'];
           xLog.httpDocument := Items.XmlValueByTag ['httpDocument'];
           xLog.httpParams := Items.XmlValueByTag ['httpParams'];
-          xLog.ContentType := Items.XmlValueByTag ['ContentType'];
+          xLog.RequestContentType := Items.XmlValueByTag ['RequestContentType'];
+          xLog.ReplyContentType := Items.XmlValueByTag ['ReplyContentType'];
           xLog.httpSoapAction := Items.XmlValueByTag ['httpSoapAction'];
           xLog.RequestHeaders := Items.XmlValueByTag ['HttpRequestHeaders'];
           xLog.RequestBody := Items.XmlValueByTag ['HttpRequestBody'];
