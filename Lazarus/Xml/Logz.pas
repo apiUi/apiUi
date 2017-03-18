@@ -1235,7 +1235,8 @@ end;
 
 function TLog.rpyBodyAsXml: TXml;
 var
-  x: Integer;
+  x, y, f: Integer;
+  hdrXml: TXml;
 begin
   if Assigned (Operation)
   and (Operation.rpyBind is TIpmItem)
@@ -1283,36 +1284,70 @@ begin
   if Assigned (Operation)
   and (Operation.isOpenApiService) then
   begin
-    OpenApiReplyToBindables(Operation);
-    result := TXml.CreateAsString('reply', '');
-    with Operation.rpyXml.Items do
-    for x := 0 to Count - 1 do
+    result := TXml.CreateAsString(Operation.Alias, '');
+    with result.AddXml (TXml.CreateAsString('reply', '')) do
     begin
-      if XmlItems[x].Checked
-      and (XmlItems[x].Xsd.ParametersType <> oppBody) then
-        result.AddXml(TXml.Create).CopyDownLine(XmlItems[x], True);
-    end;
-    result.AddXml(TXml.CreateAsInteger('httpResponseCode', httpResponseCode));
-    if ReplyBody <> '' then
-    with result.AddXml(TXml.Create) do
-    begin
-      if Pos ('json', self.ReplyContentType) > 0 then
+      AddXml(TXml.CreateAsInteger('httpResponseCode', httpResponseCode));
+      hdrXml := TXml.CreateAsString('httpHeaders', '');
       try
-        LoadJsonFromString(self.ReplyBody, nil);
-      except
-        Name := 'replyBody';
-        Value := self.ReplyBody;
-      end
-      else
-      begin
-        LoadFromString(self.ReplyBody, nil);
-        if Name = '' then
+        hdrXml.Items.Sorted := True;
+        with Operation.rpyXsd.sType.ElementDefs do
         begin
+          for x := 0 to Count - 1 do with Xsds[x].sType.ElementDefs do
+          begin
+            for y := 0 to Count - 1 do with Xsds[y] do
+              if (ParametersType = oppHeader)
+              and not hdrXml.Items.Find(ElementName, f) then
+                hdrXml.AddXml (TXml.CreateAsString(ElementName, ''))
+          end;
+        end;
+        hdrXml.Reset;
+        with TStringList.Create do
+        try
+          NameValueSeparator := ':';
+          Text := ReplyHeaders;
+          for x := 0 to hdrXml.Items.Count - 1 do
+          begin
+            f := IndexOfName(hdrXml.Items.XmlItems[x].Name);
+            if f > -1 then
+            begin
+              hdrXml.Items.XmlItems[x].Value := Copy(ValueFromIndex[f], 2, MaxInt);
+              hdrXml.Items.XmlItems[x].Checked := True;
+            end;
+          end;
+        finally
+          Free;
+        end;
+      finally
+        if hdrXml.Checked then
+        begin
+          AddXml(hdrXml);
+          hdrXml.Items.Sorted := False;
+        end
+        else
+          hdrXml.Free;
+      end;
+      if ReplyBody <> '' then
+      with AddXml(TXml.Create) do
+      begin
+        if Pos ('json', self.ReplyContentType) > 0 then
+        try
+          LoadJsonFromString(self.ReplyBody, nil);
+        except
           Name := 'replyBody';
           Value := self.ReplyBody;
+        end
+        else
+        begin
+          LoadFromString(self.ReplyBody, nil);
+          if Name = '' then
+          begin
+            Name := 'replyBody';
+            Value := self.ReplyBody;
+          end;
         end;
       end;
-    end;
+    End;
     Exit;
   end;
 
@@ -1434,20 +1469,36 @@ procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation);
 var
   x, y, k, f: Integer;
   hdrParams: TStringList;
-  xXml: TXml;
+  rXml, xXml: TXml;
   xValue, xSeparator: String;
 begin
   if not Assigned (aOperation) then
     raise SysUtils.Exception.Create('procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation); nil arg');
   if not aOperation.isOpenApiService then
     raise SysUtils.Exception.Create('procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation); not an openApi operation');
-  aOperation.rpyXml.ResetValues;
-  aOperation.rpyXml.Checked := True;
+  with aOperation.rpyXml do
+  begin
+    ResetValues;
+    Checked := True;
+    rXml := nil;
+    for x := 0 to Items.Count - 1 do
+    begin
+      if Assigned (Items.XmlItems[x].Xsd)
+      and (Items.XmlItems[x].Xsd.ResponseNo = httpResponseCode) then
+        rXml := Items.XmlItems[x];
+    end;
+  end;
+  if not Assigned(rXml) then
+  begin
+    SjowMessage ('not Assigned(rXml)');
+    Exit;
+  end;
+  rXml.Checked := True;
   hdrParams := TStringList.Create;
   hdrParams.NameValueSeparator := ':';
   try
     hdrParams.Text := self.ReplyHeaders;
-    with aOperation.rpyXml.Items do for x := Count - 1 downto 0 do
+    with rXml.Items do for x := Count - 1 downto 0 do
     begin
       case XmlItems[x].Xsd.ParametersType of
         oppBody:

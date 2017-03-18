@@ -7386,6 +7386,7 @@ begin
           xLog.ReplyContentType := Items.XmlValueByTag ['ReplyContentType'];
           xLog.httpSoapAction := Items.XmlValueByTag ['httpSoapAction'];
           xLog.RequestHeaders := Items.XmlValueByTag ['HttpRequestHeaders'];
+          xLog.ReplyHeaders := Items.XmlValueByTag ['HttpReplyHeaders'];
           xLog.RequestBody := Items.XmlValueByTag ['HttpRequestBody'];
           xLog.RequestBodyMiM := Items.XmlValueByTag ['HttpRequestBodyMiM'];
           xLog.ReplyBody := Items.XmlValueByTag ['HttpReplyBody'];

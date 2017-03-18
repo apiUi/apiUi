@@ -3206,7 +3206,8 @@ begin
   if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
   begin
     WsdlOperation := allOperations.Operations[f];
-    if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
+    if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
+    and (se.FocusMessageIndex > -1) then
       WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
   end;
 end;
@@ -10945,32 +10946,21 @@ begin
               'Logged at ' + DateTimeToStr(xLog.InboundTimeStamp));
           end;
           if xLog.Operation.reqBind is TIpmItem then
-          begin (xMessage.reqBind as TIpmItem)
-            .BufferToValues(FoundErrorInBuffer, xLog.RequestBody);
-(xMessage.rpyBind as TIpmItem)
-            .BufferToValues(FoundErrorInBuffer, xLog.ReplyBody);
+          begin
+            (xMessage.reqBind as TIpmItem).BufferToValues(FoundErrorInBuffer, xLog.RequestBody);
+            (xMessage.rpyBind as TIpmItem).BufferToValues(FoundErrorInBuffer, xLog.ReplyBody);
           end
           else
           begin
-            xXml := TXml.Create;
             try
-              try
-                xXml.LoadFromString(xLog.RequestBody, nil);
-                xLog.Operation.SoapXmlRequestToBindables(xXml, False);
-                (xMessage.reqBind as TXml).Reset;
-                (xMessage.reqBind as TXml).LoadValues((xLog.Operation.reqBind as TXml), True, True);
-              except
-              end;
-              try
-                xXml.LoadFromString(xLog.ReplyBody, nil);
-                xLog.Operation.SoapXmlReplyToBindables(xXml, False);
-(xMessage.rpyBind as TXml)
-                .Reset; (xMessage.rpyBind as TXml)
-                .LoadValues((xLog.Operation.rpyBind as TXml), True, True);
-              except
-              end;
-            finally
-              xXml.Free;
+              xMessage.reqXml.Reset;
+              xMessage.reqXml.LoadValues(xLog.Operation.reqXml, True, True);
+            except
+            end;
+            try
+              xMessage.rpyXml.Reset;
+              xMessage.rpyXml.LoadValues(xLog.Operation.rpyXml, True, True);
+            except
             end;
           end;
           se.UpdateMessageRow(xLog.Operation, xMessage);
