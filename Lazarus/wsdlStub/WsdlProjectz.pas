@@ -149,7 +149,6 @@ type
     doDisplayLog: Boolean;
     uiInvalid: Boolean;
     ProgressMax, ProgressPos: Integer;
-    doCloneOperations: Boolean;
     OnRequestViolatingSchema, OnRequestViolatingAddressPath: TOnRequestViolating;
     DatabaseConnectionSpecificationXml: TXml;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
@@ -316,7 +315,6 @@ type
                                   ; aLater: Integer
                                   ): String;
     procedure FindRequestReply (aLog: TLog; aDocument, aString: String; var isRequest: Boolean);
-    procedure FindReply (aLog: TLog; aDocument, aRequest: String; var aOperation: TWsdlOperation; var aReply: TWsdlMessage; var aCorrelationId: String);
     function FindXmlOperationOnReply (aXml: TXml): TWsdlOperation; Overload;
     function FindCcbOperationOnReply (aCobolString: String): TWsdlOperation; Overload;
     function FindOperationOnReply (aString: String): TWsdlOperation; Overload;
@@ -327,14 +325,7 @@ type
     function FindApiOnLog (aLog: TLog): TWsdlOperation;
     function FindOperationOnLog (aLog: TLog): TWsdlOperation;
     function RedirectUnknownOperation (aLog: TLog): String;
-    function CreateReply ( aLog: TLog
-                         ; aDocument, aRequest: String
-                         ; var aOperation: TWsdlOperation
-                         ; var aReply: TWsdlMessage
-                         ; var aCorrelationId: String
-                         ; var isAsynchronous: Boolean
-                         ; aIsActive: Boolean
-                         ): String;
+    function CreateReply ( aLog: TLog; aIsActive: Boolean): String;
     function ProjectLogOptionsAsXml: TXml;
     function ProjectScriptsAsXml: TXml;
     procedure ProjectScriptsFromXml (aXml: TXml);
@@ -1365,7 +1356,6 @@ begin
   jclDebug.JclStartExceptionTracking;
   {$endif}
   doDisplayLog := True;
-  doCloneOperations := True;
   OnRestartEvent := RestartCommand;
   OnReactivateEvent := ReactivateCommand;
   OnReloadDesignEvent := ReloadDesignCommand;
@@ -3009,15 +2999,7 @@ begin
   aProcessed := False;
   try
 {}
-    aLog.ReplyBody := CreateReply ( aLog
-                                  , aLog.httpDocument
-                                  , aLog.RequestBody
-                                  , aLog.Operation
-                                  , aLog.Mssg
-                                  , aLog.CorrelationId
-                                  , aLog.isAsynchronousRequest
-                                  , aIsActive
-                                  );
+    aLog.ReplyBody := CreateReply (aLog, aIsActive);
     aProcessed := True;
   except
     on e: exception do
@@ -3090,45 +3072,38 @@ begin
   end;
 end;
 
-function TWsdlProject.CreateReply ( aLog: TLog
-                                  ; aDocument, aRequest: String
-                                  ; var aOperation: TWsdlOperation
-                                  ; var aReply: TWsdlMessage
-                                  ; var aCorrelationId: String
-                                  ; var isAsynchronous: Boolean
-                                  ; aIsActive: Boolean
-                                  ): String;
+function TWsdlProject.CreateReply (aLog: TLog; aIsActive: Boolean): String;
 var
   xOperation: TWsdlOperation;
   xReqXml, xRpyXml: TXml;
   x: Integer;
 begin
   result := '';
-  aOperation := nil;
-  aReply := nil;
-  aCorrelationId := '';
-  isAsynchronous := False;
-  xOperation := FindOperationOnRequest(aLog, aDocument, aRequest, doCloneOperations);
+  aLog.Operation := nil;
+  aLog.Mssg := nil;
+  aLog.CorrelationId := '';
+  aLog.isAsynchronousRequest := False;
+  xOperation := FindOperationOnRequest(aLog, aLog.httpDocument, aLog.RequestBody, True);
   if not Assigned (xOperation) then
     raise Exception.Create(S_NO_OPERATION_FOUND);
   try
     xOperation.Data := aLog;
-    aOperation := xOperation;
-    while Assigned(aOperation.Cloned) do
-      aOperation := aOperation.Cloned;
+    aLog.Operation := xOperation;
+    while Assigned(aLog.Operation.Cloned) do
+      aLog.Operation := aLog.Operation.Cloned;
     if aIsActive then
     begin
-      aOperation.AcquireLock;
-      Inc (aOperation.OperationCounter);
-      aLog.OperationCount := aOperation.OperationCounter;
-      aOperation.ReleaseLock;
+      aLog.Operation.AcquireLock;
+      Inc (aLog.Operation.OperationCounter);
+      aLog.OperationCount := aLog.Operation.OperationCounter;
+      aLog.Operation.ReleaseLock;
     end;
     xOperation.InitDelayTime;
     if xOperation.doReadReplyFromFile then
-      aReply := xOperation.Messages.Messages[0]
+      aLog.Mssg := xOperation.Messages.Messages[0]
     else
-      aReply := xOperation.MessageBasedOnRequest;
-    if not Assigned (aReply) then
+      aLog.Mssg := xOperation.MessageBasedOnRequest;
+    if not Assigned (aLog.Mssg) then
       Raise Exception.Create('Could not find any reply based on request');
     with xOperation do
     begin
@@ -3140,7 +3115,7 @@ begin
           ExpectationBindables.Bindables[x] := FindBind(ExpectationBindables.Strings[x]);
       end;
     end;
-    aCorrelationId := xOperation.CorrelationIdAsText ('; ');
+    aLog.CorrelationId := xOperation.CorrelationIdAsText ('; ');
     if (xOperation.StubAction = saStub)
     and (aIsActive)
     and xOperation.wsaEnabled then
@@ -3148,7 +3123,7 @@ begin
       if xOperation.AsynchronousDialog
       and Assigned (xOperation.reqWsaXml.FindUQXml('wsa.ReplyTo.Address')) then
       begin
-        isAsynchronous := True;
+        alog.isAsynchronousRequest := True;
         Exit;
       end;
     end;
@@ -3156,7 +3131,7 @@ begin
       xOperation.ReadReplyFromFile
     else
       if (xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat]) then
-        xOperation.FreeFormatRpy := aReply.FreeFormatRpy;
+        xOperation.FreeFormatRpy := aLog.Mssg.FreeFormatRpy;
     if xOperation.lateBinding then
     begin
       if (xOperation.StubAction = saStub)
@@ -3166,10 +3141,10 @@ begin
         xReqXml := TXml.Create;
         xRpyXml := TXml.Create;
         try
-          xRpyXml.LoadFromString(aReply.FreeFormatRpy, nil);
+          xRpyXml.LoadFromString(alog.Mssg.FreeFormatRpy, nil);
           if xRpyXml.Name <> '' then
             xOperation.rpyBind := xRpyXml;
-          xReqXml.LoadFromString(aRequest, nil);
+          xReqXml.LoadFromString(alog.RequestBody, nil);
           if xReqXml.Name <> '' then
             xOperation.reqBind := xReqXml;
           xOperation.PrepareBefore;
@@ -3189,13 +3164,13 @@ begin
       begin
         if xOperation.rpyBind is TIpmItem then
       //    xOperation.rpyIpm.BufferToValues (FoundErrorInBuffer, aReply.rpyIpm.ValuesToBuffer (nil))
-          (xOperation.rpyBind as TIpmItem).LoadValues (aReply.rpyBind as TIpmItem)
+          (xOperation.rpyBind as TIpmItem).LoadValues (aLog.Mssg.rpyBind as TIpmItem)
         else
         begin
           (xOperation.rpyBind as TXml).ResetValues;
-          (xOperation.rpyBind as TXml).LoadValues (aReply.rpyBind as TXml, True, True);
+          (xOperation.rpyBind as TXml).LoadValues (aLog.Mssg.rpyBind as TXml, True, True);
           (xOperation.fltBind as TXml).ResetValues;
-          (xOperation.fltBind as TXml).LoadValues (aReply.fltBind as TXml, True, True);
+          (xOperation.fltBind as TXml).LoadValues (aLog.Mssg.fltBind as TXml, True, True);
         end;
       end;
       if (xOperation.StubAction = saStub)
@@ -3219,7 +3194,7 @@ begin
     result := xOperation.StreamReply (_progName, True);
     if xOperation.ReturnSoapFault then
       aLog.Exception := Result;
-    if not isAsynchronous then
+    if not aLog.isAsynchronousRequest then
     begin
       aLog.ReplyBody := result;
       result := CreateLogReplyPostProcess(aLog, xOperation);
@@ -4130,7 +4105,6 @@ begin
           Stubbed := True;
           StubAction := aOperation.StubAction;
           Exception := e.Message;
-          ReplyBody := Exception;
           if OutboundTimeStamp = 0 then
             OutboundTimeStamp := xNow;
           Nr := displayedLogs.Number;
@@ -6228,19 +6202,6 @@ begin
     try aLog.Operation := FindOperationOnReply(aString); except end;
     if Assigned (aLog.Operation) then
       aLog.CorrelationId := aLog.Operation.CorrelationIdAsText ('; ');
-  end;
-end;
-
-procedure TWsdlProject.FindReply(aLog: TLog; aDocument, aRequest: String; var aOperation: TWsdlOperation;
-  var aReply: TWsdlMessage; var aCorrelationId: String);
-begin
-  aCorrelationId := '';
-  aReply := nil;
-  aOperation := FindOperationOnRequest(aLog, aDocument, aRequest, False);
-  if Assigned (aOperation) then
-  begin
-    aReply := aOperation.MessageBasedOnRequest;
-    aCorrelationId := aOperation.CorrelationIdAsText ('; ');
   end;
 end;
 

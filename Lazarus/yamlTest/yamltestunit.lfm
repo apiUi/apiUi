@@ -1,0 +1,841 @@
+object Form1: TForm1
+  Left = 288
+  Height = 559
+  Top = 132
+  Width = 952
+  Caption = 'Form1'
+  ClientHeight = 559
+  ClientWidth = 952
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '1.6.0.4'
+  inline SynEdit: TSynEdit
+    Left = 16
+    Height = 280
+    Top = 16
+    Width = 888
+    Font.Height = -13
+    Font.Name = 'Courier New'
+    Font.Pitch = fpFixed
+    Font.Quality = fqNonAntialiased
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 0
+    Gutter.Width = 65
+    Gutter.MouseActions = <>
+    RightGutter.Width = 0
+    RightGutter.MouseActions = <>
+    Keystrokes = <    
+      item
+        Command = ecUp
+        ShortCut = 38
+      end    
+      item
+        Command = ecSelUp
+        ShortCut = 8230
+      end    
+      item
+        Command = ecScrollUp
+        ShortCut = 16422
+      end    
+      item
+        Command = ecDown
+        ShortCut = 40
+      end    
+      item
+        Command = ecSelDown
+        ShortCut = 8232
+      end    
+      item
+        Command = ecScrollDown
+        ShortCut = 16424
+      end    
+      item
+        Command = ecLeft
+        ShortCut = 37
+      end    
+      item
+        Command = ecSelLeft
+        ShortCut = 8229
+      end    
+      item
+        Command = ecWordLeft
+        ShortCut = 16421
+      end    
+      item
+        Command = ecSelWordLeft
+        ShortCut = 24613
+      end    
+      item
+        Command = ecRight
+        ShortCut = 39
+      end    
+      item
+        Command = ecSelRight
+        ShortCut = 8231
+      end    
+      item
+        Command = ecWordRight
+        ShortCut = 16423
+      end    
+      item
+        Command = ecSelWordRight
+        ShortCut = 24615
+      end    
+      item
+        Command = ecPageDown
+        ShortCut = 34
+      end    
+      item
+        Command = ecSelPageDown
+        ShortCut = 8226
+      end    
+      item
+        Command = ecPageBottom
+        ShortCut = 16418
+      end    
+      item
+        Command = ecSelPageBottom
+        ShortCut = 24610
+      end    
+      item
+        Command = ecPageUp
+        ShortCut = 33
+      end    
+      item
+        Command = ecSelPageUp
+        ShortCut = 8225
+      end    
+      item
+        Command = ecPageTop
+        ShortCut = 16417
+      end    
+      item
+        Command = ecSelPageTop
+        ShortCut = 24609
+      end    
+      item
+        Command = ecLineStart
+        ShortCut = 36
+      end    
+      item
+        Command = ecSelLineStart
+        ShortCut = 8228
+      end    
+      item
+        Command = ecEditorTop
+        ShortCut = 16420
+      end    
+      item
+        Command = ecSelEditorTop
+        ShortCut = 24612
+      end    
+      item
+        Command = ecLineEnd
+        ShortCut = 35
+      end    
+      item
+        Command = ecSelLineEnd
+        ShortCut = 8227
+      end    
+      item
+        Command = ecEditorBottom
+        ShortCut = 16419
+      end    
+      item
+        Command = ecSelEditorBottom
+        ShortCut = 24611
+      end    
+      item
+        Command = ecToggleMode
+        ShortCut = 45
+      end    
+      item
+        Command = ecCopy
+        ShortCut = 16429
+      end    
+      item
+        Command = ecPaste
+        ShortCut = 8237
+      end    
+      item
+        Command = ecDeleteChar
+        ShortCut = 46
+      end    
+      item
+        Command = ecCut
+        ShortCut = 8238
+      end    
+      item
+        Command = ecDeleteLastChar
+        ShortCut = 8
+      end    
+      item
+        Command = ecDeleteLastChar
+        ShortCut = 8200
+      end    
+      item
+        Command = ecDeleteLastWord
+        ShortCut = 16392
+      end    
+      item
+        Command = ecUndo
+        ShortCut = 32776
+      end    
+      item
+        Command = ecRedo
+        ShortCut = 40968
+      end    
+      item
+        Command = ecLineBreak
+        ShortCut = 13
+      end    
+      item
+        Command = ecSelectAll
+        ShortCut = 16449
+      end    
+      item
+        Command = ecCopy
+        ShortCut = 16451
+      end    
+      item
+        Command = ecBlockIndent
+        ShortCut = 24649
+      end    
+      item
+        Command = ecLineBreak
+        ShortCut = 16461
+      end    
+      item
+        Command = ecInsertLine
+        ShortCut = 16462
+      end    
+      item
+        Command = ecDeleteWord
+        ShortCut = 16468
+      end    
+      item
+        Command = ecBlockUnindent
+        ShortCut = 24661
+      end    
+      item
+        Command = ecPaste
+        ShortCut = 16470
+      end    
+      item
+        Command = ecCut
+        ShortCut = 16472
+      end    
+      item
+        Command = ecDeleteLine
+        ShortCut = 16473
+      end    
+      item
+        Command = ecDeleteEOL
+        ShortCut = 24665
+      end    
+      item
+        Command = ecUndo
+        ShortCut = 16474
+      end    
+      item
+        Command = ecRedo
+        ShortCut = 24666
+      end    
+      item
+        Command = ecGotoMarker0
+        ShortCut = 16432
+      end    
+      item
+        Command = ecGotoMarker1
+        ShortCut = 16433
+      end    
+      item
+        Command = ecGotoMarker2
+        ShortCut = 16434
+      end    
+      item
+        Command = ecGotoMarker3
+        ShortCut = 16435
+      end    
+      item
+        Command = ecGotoMarker4
+        ShortCut = 16436
+      end    
+      item
+        Command = ecGotoMarker5
+        ShortCut = 16437
+      end    
+      item
+        Command = ecGotoMarker6
+        ShortCut = 16438
+      end    
+      item
+        Command = ecGotoMarker7
+        ShortCut = 16439
+      end    
+      item
+        Command = ecGotoMarker8
+        ShortCut = 16440
+      end    
+      item
+        Command = ecGotoMarker9
+        ShortCut = 16441
+      end    
+      item
+        Command = ecSetMarker0
+        ShortCut = 24624
+      end    
+      item
+        Command = ecSetMarker1
+        ShortCut = 24625
+      end    
+      item
+        Command = ecSetMarker2
+        ShortCut = 24626
+      end    
+      item
+        Command = ecSetMarker3
+        ShortCut = 24627
+      end    
+      item
+        Command = ecSetMarker4
+        ShortCut = 24628
+      end    
+      item
+        Command = ecSetMarker5
+        ShortCut = 24629
+      end    
+      item
+        Command = ecSetMarker6
+        ShortCut = 24630
+      end    
+      item
+        Command = ecSetMarker7
+        ShortCut = 24631
+      end    
+      item
+        Command = ecSetMarker8
+        ShortCut = 24632
+      end    
+      item
+        Command = ecSetMarker9
+        ShortCut = 24633
+      end    
+      item
+        Command = EcFoldLevel1
+        ShortCut = 41009
+      end    
+      item
+        Command = EcFoldLevel2
+        ShortCut = 41010
+      end    
+      item
+        Command = EcFoldLevel3
+        ShortCut = 41011
+      end    
+      item
+        Command = EcFoldLevel4
+        ShortCut = 41012
+      end    
+      item
+        Command = EcFoldLevel5
+        ShortCut = 41013
+      end    
+      item
+        Command = EcFoldLevel6
+        ShortCut = 41014
+      end    
+      item
+        Command = EcFoldLevel7
+        ShortCut = 41015
+      end    
+      item
+        Command = EcFoldLevel8
+        ShortCut = 41016
+      end    
+      item
+        Command = EcFoldLevel9
+        ShortCut = 41017
+      end    
+      item
+        Command = EcFoldLevel0
+        ShortCut = 41008
+      end    
+      item
+        Command = EcFoldCurrent
+        ShortCut = 41005
+      end    
+      item
+        Command = EcUnFoldCurrent
+        ShortCut = 41003
+      end    
+      item
+        Command = EcToggleMarkupWord
+        ShortCut = 32845
+      end    
+      item
+        Command = ecNormalSelect
+        ShortCut = 24654
+      end    
+      item
+        Command = ecColumnSelect
+        ShortCut = 24643
+      end    
+      item
+        Command = ecLineSelect
+        ShortCut = 24652
+      end    
+      item
+        Command = ecTab
+        ShortCut = 9
+      end    
+      item
+        Command = ecShiftTab
+        ShortCut = 8201
+      end    
+      item
+        Command = ecMatchBracket
+        ShortCut = 24642
+      end    
+      item
+        Command = ecColSelUp
+        ShortCut = 40998
+      end    
+      item
+        Command = ecColSelDown
+        ShortCut = 41000
+      end    
+      item
+        Command = ecColSelLeft
+        ShortCut = 40997
+      end    
+      item
+        Command = ecColSelRight
+        ShortCut = 40999
+      end    
+      item
+        Command = ecColSelPageDown
+        ShortCut = 40994
+      end    
+      item
+        Command = ecColSelPageBottom
+        ShortCut = 57378
+      end    
+      item
+        Command = ecColSelPageUp
+        ShortCut = 40993
+      end    
+      item
+        Command = ecColSelPageTop
+        ShortCut = 57377
+      end    
+      item
+        Command = ecColSelLineStart
+        ShortCut = 40996
+      end    
+      item
+        Command = ecColSelLineEnd
+        ShortCut = 40995
+      end    
+      item
+        Command = ecColSelEditorTop
+        ShortCut = 57380
+      end    
+      item
+        Command = ecColSelEditorBottom
+        ShortCut = 57379
+      end>
+    MouseActions = <>
+    MouseTextActions = <>
+    MouseSelActions = <>
+    Lines.Strings = (
+      '# this is an example of the Uber API'
+      '# as a demonstration of an API spec in YAML'
+      'swagger: ''2.0'''
+      'info:'
+      '  title: Uber API'
+      '  description: Move your app forward with the Uber API'
+      '  version: "1.0.0"'
+      '# the domain of the service'
+      'host: api.uber.com'
+      '# array of all schemes that your API supports'
+      'schemes:'
+      '  - https'
+      '# will be prefixed to all paths'
+      'basePath: /v1'
+      'produces:'
+      '  - application/json'
+      'paths:'
+      '  /products:'
+      '    get:'
+      '      summary: Product Types'
+      '      description: |'
+      '        The Products endpoint returns information about the *Uber* products'
+      '        offered at a given location. The response includes the display name'
+      '        and other details about each product, and lists the products in the'
+      '        proper display order.'
+      '      parameters:'
+      '        - name: latitude'
+      '          in: query'
+      '          description: Latitude component of location.'
+      '          required: true'
+      '          type: number'
+      '          format: double'
+      '        - name: longitude'
+      '          in: query'
+      '          description: Longitude component of location.'
+      '          required: true'
+      '          type: number'
+      '          format: double'
+      '      tags:'
+      '        - Products'
+      '      responses:'
+      '        200:'
+      '          description: An array of products'
+      '          schema:'
+      '            type: array'
+      '            items:'
+      '              $ref: ''#/definitions/Product'''
+      '        default:'
+      '          description: Unexpected error'
+      '          schema:'
+      '            $ref: ''#/definitions/Error'''
+      '  /estimates/price:'
+      '    get:'
+      '      summary: Price Estimates'
+      '      description: |'
+      '        The Price Estimates endpoint returns an estimated price range'
+      '        for each product offered at a given location. The price estimate is'
+      '        provided as a formatted string with the full price range and the localized'
+      '        currency symbol.<br><br>The response also includes low and high estimates,'
+      '        and the [ISO 4217](http://en.wikipedia.org/wiki/ISO_4217) currency code for'
+      '        situations requiring currency conversion. When surge is active for a particular'
+      '        product, its surge_multiplier will be greater than 1, but the price estimate'
+      '        already factors in this multiplier.'
+      '      parameters:'
+      '        - name: start_latitude'
+      '          in: query'
+      '          description: Latitude component of start location.'
+      '          required: true'
+      '          type: number'
+      '          format: double'
+      '        - name: start_longitude'
+      '          in: query'
+      '          description: Longitude component of start location.'
+      '          required: true'
+      '          type: number'
+      '          format: double'
+      '        - name: end_latitude'
+      '          in: query'
+      '          description: Latitude component of end location.'
+      '          required: true'
+      '          type: number'
+      '          format: double'
+      '        - name: end_longitude'
+      '          in: query'
+      '          description: Longitude component of end location.'
+      '          required: true'
+      '          type: number'
+      '          format: double'
+      '      tags:'
+      '        - Estimates'
+      '      responses:'
+      '        200:'
+      '          description: An array of price estimates by product'
+      '          schema:'
+      '            type: array'
+      '            items:'
+      '              $ref: ''#/definitions/PriceEstimate'''
+      '        default:'
+      '          description: Unexpected error'
+      '          schema:'
+      '            $ref: ''#/definitions/Error'''
+      '  /estimates/time:'
+      '    get:'
+      '      summary: Time Estimates'
+      '      description: The Time Estimates endpoint returns ETAs for all products offered at a given location, with the responses expressed as integers in seconds. We recommend that this endpoint be called every minute to provide the most accurate, up-to-date ETAs.'
+      '      parameters:'
+      '        - name: start_latitude'
+      '          in: query'
+      '          description: Latitude component of start location.'
+      '          required: true'
+      '          type: number'
+      '          format: double'
+      '        - name: start_longitude'
+      '          in: query'
+      '          description: Longitude component of start location.'
+      '          required: true'
+      '          type: number'
+      '          format: double'
+      '        - name: customer_uuid'
+      '          in: query'
+      '          type: string'
+      '          format: uuid'
+      '          description: Unique customer identifier to be used for experience customization.'
+      '        - name: product_id'
+      '          in: query'
+      '          type: string'
+      '          description: Unique identifier representing a specific product for a given latitude & longitude.'
+      '      tags:'
+      '        - Estimates'
+      '      responses:'
+      '        200:'
+      '          description: An array of products'
+      '          schema:'
+      '            type: array'
+      '            items:'
+      '              $ref: ''#/definitions/Product'''
+      '        default:'
+      '          description: Unexpected error'
+      '          schema:'
+      '            $ref: ''#/definitions/Error'''
+      '  /me:'
+      '    get:'
+      '      summary: User Profile'
+      '      description: The User Profile endpoint returns information about the Uber user that has authorized with the application.'
+      '      tags:'
+      '        - User'
+      '      responses:'
+      '        200:'
+      '          description: Profile information for a user'
+      '          schema:'
+      '            $ref: ''#/definitions/Profile'''
+      '        default:'
+      '          description: Unexpected error'
+      '          schema:'
+      '            $ref: ''#/definitions/Error'''
+      '  /history:'
+      '    get:'
+      '      summary: User Activity'
+      '      description: The User Activity endpoint returns data about a user''s lifetime activity with Uber. The response will include pickup locations and times, dropoff locations and times, the distance of past requests, and information about which products were requested.<br><br>The history array in the response will have a maximum length based on the limit parameter. The response value count may exceed limit, therefore subsequent API requests may be necessary.'
+      '      parameters:'
+      '        - name: offset'
+      '          in: query'
+      '          type: integer'
+      '          format: int32'
+      '          description: Offset the list of returned results by this amount. Default is zero.'
+      '        - name: limit'
+      '          in: query'
+      '          type: integer'
+      '          format: int32'
+      '          description: Number of items to retrieve. Default is 5, maximum is 100.'
+      '      tags:'
+      '        - User'
+      '      responses:'
+      '        200:'
+      '          description: History information for the given user'
+      '          schema:'
+      '            $ref: ''#/definitions/Activities'''
+      '        default:'
+      '          description: Unexpected error'
+      '          schema:'
+      '            $ref: ''#/definitions/Error'''
+      'definitions:'
+      '  Product:'
+      '    type: object'
+      '    properties:'
+      '      product_id:'
+      '        type: string'
+      '        description: Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles.'
+      '      description:'
+      '        type: string'
+      '        description: Description of product.'
+      '      display_name:'
+      '        type: string'
+      '        description: Display name of product.'
+      '      capacity:'
+      '        type: string'
+      '        description: Capacity of product. For example, 4 people.'
+      '      image:'
+      '        type: string'
+      '        description: Image URL representing the product.'
+      '  PriceEstimate:'
+      '    type: object'
+      '    properties:'
+      '      product_id:'
+      '        type: string'
+      '        description: Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles'
+      '      currency_code:'
+      '        type: string'
+      '        description: "[ISO 4217](http://en.wikipedia.org/wiki/ISO_4217) currency code."'
+      '      display_name:'
+      '        type: string'
+      '        description: Display name of product.'
+      '      estimate:'
+      '        type: string'
+      '        description: Formatted string of estimate in local currency of the start location. Estimate could be a range, a single number (flat rate) or "Metered" for TAXI.'
+      '      low_estimate:'
+      '        type: number'
+      '        description: Lower bound of the estimated price.'
+      '      high_estimate:'
+      '        type: number'
+      '        description: Upper bound of the estimated price.'
+      '      surge_multiplier:'
+      '        type: number'
+      '        description: Expected surge multiplier. Surge is active if surge_multiplier is greater than 1. Price estimate already factors in the surge multiplier.'
+      '  Profile:'
+      '    type: object'
+      '    properties:'
+      '      first_name:'
+      '        type: string'
+      '        description: First name of the Uber user.'
+      '      last_name:'
+      '        type: string'
+      '        description: Last name of the Uber user.'
+      '      email:'
+      '        type: string'
+      '        description: Email address of the Uber user'
+      '      picture:'
+      '        type: string'
+      '        description: Image URL of the Uber user.'
+      '      promo_code:'
+      '        type: string'
+      '        description: Promo code of the Uber user.'
+      '  Activity:'
+      '    type: object'
+      '    properties:'
+      '      uuid:'
+      '        type: string'
+      '        description: Unique identifier for the activity'
+      '  Activities:'
+      '    type: object'
+      '    properties:'
+      '      offset:'
+      '        type: integer'
+      '        format: int32'
+      '        description: Position in pagination.'
+      '      limit:'
+      '        type: integer'
+      '        format: int32'
+      '        description: Number of items to retrieve (100 max).'
+      '      count:'
+      '        type: integer'
+      '        format: int32'
+      '        description: Total number of items available.'
+      '      history:'
+      '        type: array'
+      '        items:'
+      '          $ref: ''#/definitions/Activity'''
+      '  Error:'
+      '    type: object'
+      '    properties:'
+      '      code:'
+      '        type: integer'
+      '        format: int32'
+      '      message:'
+      '        type: string'
+      '      fields:'
+      '        type: string'
+    )
+    Options = [eoAutoIndent, eoBracketHighlight, eoGroupUndo]
+    VisibleSpecialChars = [vscSpace, vscTabAtLast]
+    SelectedColor.BackPriority = 50
+    SelectedColor.ForePriority = 50
+    SelectedColor.FramePriority = 50
+    SelectedColor.BoldPriority = 50
+    SelectedColor.ItalicPriority = 50
+    SelectedColor.UnderlinePriority = 50
+    SelectedColor.StrikeOutPriority = 50
+    BracketHighlightStyle = sbhsBoth
+    BracketMatchColor.Background = clNone
+    BracketMatchColor.Foreground = clNone
+    BracketMatchColor.Style = [fsBold]
+    FoldedCodeColor.Background = clNone
+    FoldedCodeColor.Foreground = clGray
+    FoldedCodeColor.FrameColor = clGray
+    MouseLinkColor.Background = clNone
+    MouseLinkColor.Foreground = clBlue
+    LineHighlightColor.Background = clNone
+    LineHighlightColor.Foreground = clNone
+    inline SynLeftGutterPartList1: TSynGutterPartList
+      object SynGutterMarks1: TSynGutterMarks
+        Width = 24
+        MouseActions = <>
+      end
+      object SynGutterLineNumber1: TSynGutterLineNumber
+        Width = 25
+        MouseActions = <>
+        MarkupInfo.Background = clBtnFace
+        MarkupInfo.Foreground = clNone
+        DigitCount = 2
+        ShowOnlyLineNumbersMultiplesOf = 1
+        ZeroStart = False
+        LeadingZeros = False
+      end
+      object SynGutterChanges1: TSynGutterChanges
+        Width = 4
+        MouseActions = <>
+        ModifiedColor = 59900
+        SavedColor = clGreen
+      end
+      object SynGutterSeparator1: TSynGutterSeparator
+        Width = 2
+        MouseActions = <>
+        MarkupInfo.Background = clWhite
+        MarkupInfo.Foreground = clGray
+      end
+      object SynGutterCodeFolding1: TSynGutterCodeFolding
+        MouseActions = <>
+        MarkupInfo.Background = clNone
+        MarkupInfo.Foreground = clGray
+        MouseActionsExpanded = <>
+        MouseActionsCollapsed = <>
+      end
+    end
+  end
+  object TreeView: TVirtualStringTree
+    Left = 16
+    Height = 238
+    Top = 306
+    Width = 888
+    DefaultText = 'Node'
+    Header.AutoSizeIndex = 0
+    Header.Columns = <    
+      item
+        Position = 0
+        Text = 'Token'
+      end    
+      item
+        Position = 1
+        Text = 'Value'
+      end    
+      item
+        Position = 2
+        Text = 'Name'
+        Width = 150
+      end    
+      item
+        Position = 3
+        Text = 'Offset'
+      end    
+      item
+        Position = 4
+        Text = 'Length'
+      end    
+      item
+        Position = 5
+        Text = 'fb'
+      end    
+      item
+        Position = 6
+        Text = 'Text'
+        Width = 400
+      end>
+    Header.DefaultHeight = 17
+    Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    TabOrder = 1
+    OnFocusChanged = TreeViewFocusChanged
+    OnGetText = TreeViewGetText
+  end
+  object Button1: TButton
+    Left = 912
+    Height = 25
+    Top = 16
+    Width = 35
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 2
+  end
+end

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="19">
+      <Unit0>
+        <Filename Value="yamlTest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="37"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="yamltestunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="yamlTestUnit"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="146"/>
+        <CursorPos Y="163"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="292"/>
+        <CursorPos X="3" Y="302"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Xml\yaml\YAMLSCANNER.PAS"/>
+        <UnitName Value="yamlScanner"/>
+        <EditorIndex Value="6"/>
+        <CursorPos X="15" Y="10"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\Xml\yaml\YAMLPARSER.PAS"/>
+        <UnitName Value="yamlParser"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="16"/>
+        <CursorPos X="8" Y="42"/>
+        <UsageCount Value="17"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\Xpress\ParserClasses.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="91"/>
+        <CursorPos X="6" Y="99"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\Xml\xmlzconsts.pas"/>
+        <UnitName Value="xmlzConsts"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="9"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\Xpress\CustScanner.pas"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="244"/>
+        <CursorPos X="5" Y="264"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
+        <ComponentName Value="ShowXmlForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="862"/>
+        <CursorPos X="3" Y="867"/>
+        <UsageCount Value="17"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <UnitName Value="SynEdit"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2652"/>
+        <CursorPos Y="2663"/>
+        <UsageCount Value="9"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="49"/>
+        <CursorPos X="50" Y="66"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\Xml\yaml\Yylex.cod"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="32" Y="5"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\Xml\yaml\Yyparse.cod"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="21" Y="17"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\Xml\yaml\yamlParser.y"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="13"/>
+        <CursorPos X="14" Y="25"/>
+        <UsageCount Value="17"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\Xpress\scanner.l"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\Xml\json\jsnScanner.l"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="C:\JanBo\Sources\2011\Xpress\scanner.l"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="C:\JanBo\Sources\Delphi32\TpLY\Examples\Expr\EXPRLEX.L"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\Xml\yaml\parser.def"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="9"/>
+        <CursorPos X="7" Y="7"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit18>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="171" Column="36" TopLine="155"/>
+      </Position1>
+      <Position2>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="177" Column="76" TopLine="168"/>
+      </Position2>
+      <Position3>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="181" TopLine="167"/>
+      </Position3>
+      <Position4>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="173" TopLine="167"/>
+      </Position4>
+      <Position5>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="158" Column="54" TopLine="149"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="12" Column="6" TopLine="3"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="14" Column="23" TopLine="3"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="15" Column="23" TopLine="3"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="38" Column="23" TopLine="22"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="39" Column="24" TopLine="23"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="48" Column="23" TopLine="32"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="50" Column="52" TopLine="34"/>
+      </Position12>
+      <Position13>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="63" Column="11" TopLine="144"/>
+      </Position13>
+      <Position14>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="18" Column="77" TopLine="2"/>
+      </Position14>
+      <Position15>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="96" Column="22" TopLine="81"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="14" Column="12" TopLine="6"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="38" Column="31" TopLine="19"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="15" Column="11" TopLine="2"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="44" Column="50" TopLine="28"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="49" Column="23" TopLine="33"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="51" Column="52" TopLine="35"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="59" Column="52" TopLine="43"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="67" Column="50" TopLine="50"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="14" Column="12"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="43" Column="50" TopLine="27"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="48" Column="24" TopLine="32"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="50" Column="52" TopLine="34"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="58" Column="52" TopLine="42"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\Xml\yaml\YAMLSCANNER.PAS"/>
+        <Caret Line="19" Column="21"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
