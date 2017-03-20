@@ -32,7 +32,7 @@ type
       Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
       var CellText : String );
   private
-    LineNumber, Offset: Integer;
+    LineNumber, Offset, HyphenIndent: Integer;
     StartState: Integer;
     Stack: array [0..InternalStackSize] of Integer;
     StackIndex: Integer;
@@ -155,11 +155,14 @@ var
   Data: PBindTreeRec;
 begin
   xScanner := Sender as TyamlScanner;
+  if (xScanner.Token = _NEWLINE) then
+  begin
+    HyphenIndent := 0;
+    Offset := Offset + Length (xScanner.TokenAsString);
+    exit;
+  end;
   if (xScanner.Token = _WHITESPACE)
-  or (    (xScanner.Token = _VALUE)
-      and (Length (xScanner.TokenAsString) = 1)
-      and (Ord (xScanner.TokenAsString[1]) = 13)
-     )
+  or (xScanner.Token = _COMMENT)
   then
   begin
     Offset := Offset + Length (xScanner.TokenAsString);
@@ -180,12 +183,16 @@ begin
   Lexical.ColumnNumber := Scanner.ColumnNumber;
   Lexical.Token := Scanner.Token;
   Lexical.TokenString := Scanner.TokenAsString;
-  if (Lexical.Token = _INDENT)
-  or (Lexical.Token = _HYPHENINDENT) then
+  if (Lexical.Token = _INDENT) then
     Lexical.yy.yyInteger := Length (Lexical.TokenString);
+  if (Lexical.Token = _HYPHENINDENT) then
+  begin
+    HyphenIndent := Length (Lexical.TokenString);
+    Lexical.yy.yyInteger := HyphenIndent;
+  end;
   if (Lexical.Token = _INDENT)
   and (PrevLexItem.Token = _HYPHENINDENT) then
-    Lexical.yy.yyInteger := Lexical.yy.yyInteger + PrevLexItem.yy.yyInteger;
+    Lexical.yy.yyInteger := Lexical.yy.yyInteger + HyphenIndent;
   Lexical.yyRead := Lexical.yy;
   PrevLexItem := Lexical;
 

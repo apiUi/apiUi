@@ -9,6 +9,7 @@ dqString        \"((\\.)|[^\"\n])*\"
 sqString        \'((\\.)|[^\'\n])*\'
 String          {dqString}|{sqString}
 NewLine         \n
+cr              \r
 Space           (\ )
 Pipe            (\|)
 IndentSpace     {Space}+
@@ -23,6 +24,7 @@ True            true
 
 %%
 
+{cr}                          return (_WHITESPACE);
 {Comment}                     begin
                                 Start (InitState);
                                 return (_COMMENT);
