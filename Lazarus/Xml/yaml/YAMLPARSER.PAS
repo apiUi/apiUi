@@ -12,9 +12,10 @@ uses Classes
 
 type TyamlParser = class (TCustParser)
 private
-  ParentXml: TXml;
+  CurrentXml, PreviousXml: TXml;
   OfIdString: String;
   function StringDecode(aString: String): String;
+  procedure AddToParent (aXml, aCurrentXml: TXml);
 published
   property OnHaveScanned: TOnHaveScannedEvent read FOnHaveScanned write FOnHaveScanned;
   property OnError: TOnErrorEvent read FOnError write FOnError;
@@ -26,27 +27,29 @@ public
   destructor Destroy; override;
 end;
 const _COMMENT = 257;
-const _NAME = 258;
-const _NEWLINE = 259;
-const _WHITESPACE = 260;
-const _INDENT = 261;
-const _HYPHENINDENT = 262;
-const _VALUE = 263;
-const _PIPE = 264;
-const _LEFT_SQUARE_BRACKET = 265;
-const _LEFT_CURLY_BRACKET = 266;
-const _RIGHT_SQUARE_BRACKET = 267;
-const _RIGHT_CURLY_BRACKET = 268;
-const _COLON = 269;
-const _COMMA = 270;
-const _STRING = 271;
-const _NUMBER = 272;
-const _FALSE = 273;
-const _NULL = 274;
-const _TRUE = 275;
-const _IS = 276;
-const _IGNORE = 277;
-const _NOTUSEDLASTONE = 278;
+const _LINECONT = 258;
+const _NAME = 259;
+const _NEWLINE = 260;
+const _WHITESPACE = 261;
+const _INDENT = 262;
+const _HYPHENINDENT = 263;
+const _VALUE = 264;
+const _ARRAYVALUE = 265;
+const _PIPE = 266;
+const _LEFT_SQUARE_BRACKET = 267;
+const _LEFT_CURLY_BRACKET = 268;
+const _RIGHT_SQUARE_BRACKET = 269;
+const _RIGHT_CURLY_BRACKET = 270;
+const _COLON = 271;
+const _COMMA = 272;
+const _STRING = 273;
+const _NUMBER = 274;
+const _FALSE = 275;
+const _NULL = 276;
+const _TRUE = 277;
+const _IS = 278;
+const _IGNORE = 279;
+const _NOTUSEDLASTONE = 280;
 
 
 
@@ -116,6 +119,19 @@ begin
           ;
 end;
 
+procedure TyamlParser.AddToParent (aXml, aCurrentXml: TXml);
+var
+  pLevel, cLevel: Integer;
+begin
+  cLevel := aCurrentXml.Tag;
+  pLevel := aXml.Tag;
+  while cLevel <= pLevel do
+  begin
+    aXml := aXml.Parent as TXml;
+    pLevel := aXml.Tag;
+  end;
+  aXml.AddXml(aCurrentXml);
+end;
 
 const yymaxdepth = 1024;
 
@@ -137,168 +153,91 @@ begin
   case yyruleno of
    1 : begin
          
-         ParentXml := nil;
+         PreviousXml := nil;
          Xml.Checked := True;
          Xml.jsonType := jsonObject;
-         Xml.Name := '';
+         Xml.Name := 'yaml';
+         PushInteger (Xml.Tag);
+         Xml.Tag := -1;
          
        end;
    2 : begin
          
+         Xml.Tag := PopInteger;
          
        end;
    3 : begin
        end;
    4 : begin
-         yyval := yyv[yysp-2];
+         yyval := yyv[yysp-0];
        end;
    5 : begin
+         yyval := yyv[yysp-0];
        end;
    6 : begin
-         
-         if Trim (yyv[yysp-0].TokenString) <> '' then
-         raise Exception.Create ( '%Illegal: ['
-         + yyv[yysp-0].TokenString
-         + ']['
-         + IntToStr (yyv[yysp-0].LineNumber)
-         + ':'
-         + IntToStr (yyv[yysp-0].ColumnNumber)
-         + ']'
-         );
-         
-       end;
-   7 : begin
-         yyval := yyv[yysp-0];
-       end;
-   8 : begin
          yyval := yyv[yysp-1];
        end;
+   7 : begin
+         
+         CurrentXml := TXml.Create;
+         CurrentXml.Checked := True;
+         CurrentXml.Tag := 0;
+         CurrentXml.jsonType := jsonObject;
+         
+       end;
+   8 : begin
+         
+         if not Assigned (PreviousXml) then
+         Xml.AddXml (CurrentXml)
+         else
+         AddToParent (PreviousXml, CurrentXml);
+         PreviousXml := CurrentXml;
+         
+       end;
    9 : begin
-         yyval := yyv[yysp-0];
        end;
   10 : begin
-         
-         Xml.jsonType := jsonObject;
-         if not Assigned (ParentXml) then
-         Xml.Name := 'json';
-         
+         yyval := yyv[yysp-0];
        end;
   11 : begin
          
+         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
          
        end;
   12 : begin
-         yyval := yyv[yysp-4];
+         
+         CurrentXml.Name := yyv[yysp-1].yyString;
+         
        end;
   13 : begin
          yyval := yyv[yysp-0];
        end;
   14 : begin
+         yyval := yyv[yysp-0];
        end;
   15 : begin
-         yyval := yyv[yysp-0];
+         
+         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
+         CurrentXml.Name := '_';
+         CurrentXml.jsonType := jsonArrayValue
+         
        end;
   16 : begin
-         yyval := yyv[yysp-0];
+         
+         CurrentXml.Value := yyv[yysp-0].yyString;
+         CurrentXml.jsonType := jsonString;
+         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger
+         
        end;
   17 : begin
-         yyval := yyv[yysp-2];
        end;
   18 : begin
-         
-         PushObject (ParentXml);
-         PushObject (Xml);
-         ParentXml := Xml;
-         Xml := ParentXml.AddXml (TXml.Create);
-         Xml.Checked := True;
-         
+         yyval := yyv[yysp-0];
        end;
   19 : begin
          
-         Xml := PopObject as TXml;
-         ParentXml := PopObject as TXml;
-         
-       end;
-  20 : begin
-         
-         Xml.Name := Copy (yyv[yysp-1].TokenString, 2, Length (yyv[yysp-1].TokenString) - 2);
-         
-       end;
-  21 : begin
-         yyval := yyv[yysp-3];
-       end;
-  22 : begin
-         
-         Xml.Value := StringDecode(Copy (yyv[yysp-0].TokenString, 2, Length (yyv[yysp-0].TokenString) - 2));
-         Xml.jsonType := jsonString;
-         
-       end;
-  23 : begin
-         
-         Xml.Value := yyv[yysp-0].TokenString;
-         Xml.jsonType := jsonNumber;
-         
-       end;
-  24 : begin
-         yyval := yyv[yysp-0];
-       end;
-  25 : begin
-         yyval := yyv[yysp-0];
-       end;
-  26 : begin
-         
-         Xml.Value := 'true';
-         Xml.jsonType := jsonBoolean;
-         
-       end;
-  27 : begin
-         
-         Xml.Value := 'false';
-         Xml.jsonType := jsonBoolean;
-         
-       end;
-  28 : begin
-         
-         Xml.Checked := False;
-         
-       end;
-  29 : begin
-         
-         Xml.jsonType := jsonArray;
-         if not Assigned (ParentXml) then
-         Xml.Name := 'json';
-         
-       end;
-  30 : begin
-         yyval := yyv[yysp-3];
-       end;
-  31 : begin
-       end;
-  32 : begin
-         yyval := yyv[yysp-0];
-       end;
-  33 : begin
-         yyval := yyv[yysp-0];
-       end;
-  34 : begin
-         yyval := yyv[yysp-2];
-       end;
-  35 : begin
-         
-         PushObject (ParentXml);
-         ParentXml := Xml;
-         PushObject (Xml);
-         Xml := ParentXml.AddXml (TXml.Create);
-         Xml.Checked := True;
-         Xml.Name := ParentXml.Name + '__Value';
-         Xml.Name := '_';
-         Xml.jsonType := jsonArrayValue;
-         
-       end;
-  36 : begin
-         
-         Xml := PopObject as TXml;
-         ParentXml := PopObject as TXml;
+         CurrentXml.Value := yyv[yysp-0].yyString;
+         CurrentXml.jsonType := jsonString;
          
        end;
   end;
@@ -315,98 +254,56 @@ type YYARec = record
 
 const
 
-yynacts   = 42;
-yyngotos  = 33;
-yynstates = 44;
-yynrules  = 36;
+yynacts   = 24;
+yyngotos  = 15;
+yynstates = 20;
+yynrules  = 19;
 
 yya : array [1..yynacts] of YYARec = (
 { 0: }
 { 1: }
-  ( sym: 263; act: 5 ),
   ( sym: 0; act: -3 ),
-  ( sym: 265; act: -5 ),
-  ( sym: 266; act: -5 ),
+  ( sym: 259; act: -7 ),
+  ( sym: 262; act: -7 ),
+  ( sym: 263; act: -7 ),
+  ( sym: 265; act: -7 ),
 { 2: }
   ( sym: 0; act: 0 ),
 { 3: }
-  ( sym: 265; act: 9 ),
-  ( sym: 266; act: 10 ),
+  ( sym: 262; act: 9 ),
+  ( sym: 259; act: -9 ),
+  ( sym: 263; act: -9 ),
+  ( sym: 265; act: -9 ),
 { 4: }
 { 5: }
+  ( sym: 0; act: -4 ),
+  ( sym: 259; act: -7 ),
+  ( sym: 262; act: -7 ),
+  ( sym: 263; act: -7 ),
+  ( sym: 265; act: -7 ),
 { 6: }
 { 7: }
 { 8: }
-  ( sym: 263; act: 5 ),
-  ( sym: 266; act: 10 ),
-  ( sym: 0; act: -5 ),
+  ( sym: 259; act: 14 ),
+  ( sym: 263; act: 15 ),
+  ( sym: 265; act: 16 ),
 { 9: }
 { 10: }
 { 11: }
 { 12: }
 { 13: }
-  ( sym: 267; act: -31 ),
-  ( sym: 265; act: -35 ),
-  ( sym: 266; act: -35 ),
-  ( sym: 271; act: -35 ),
-  ( sym: 272; act: -35 ),
-  ( sym: 273; act: -35 ),
-  ( sym: 274; act: -35 ),
-  ( sym: 275; act: -35 ),
 { 14: }
-  ( sym: 268; act: -14 ),
-  ( sym: 271; act: -18 ),
+  ( sym: 264; act: 19 ),
+  ( sym: 0; act: -17 ),
+  ( sym: 259; act: -17 ),
+  ( sym: 262; act: -17 ),
+  ( sym: 263; act: -17 ),
+  ( sym: 265; act: -17 )
 { 15: }
-  ( sym: 265; act: 9 ),
-  ( sym: 266; act: 10 ),
-  ( sym: 271; act: 27 ),
-  ( sym: 272; act: 28 ),
-  ( sym: 273; act: 29 ),
-  ( sym: 274; act: 30 ),
-  ( sym: 275; act: 31 ),
 { 16: }
 { 17: }
-  ( sym: 270; act: 32 ),
-  ( sym: 267; act: -32 ),
 { 18: }
-  ( sym: 267; act: 33 ),
 { 19: }
-  ( sym: 271; act: 35 ),
-{ 20: }
-{ 21: }
-  ( sym: 270; act: 36 ),
-  ( sym: 268; act: -15 ),
-{ 22: }
-{ 23: }
-{ 24: }
-{ 25: }
-{ 26: }
-{ 27: }
-{ 28: }
-{ 29: }
-{ 30: }
-{ 31: }
-{ 32: }
-{ 33: }
-{ 34: }
-{ 35: }
-  ( sym: 269; act: 39 ),
-{ 36: }
-{ 37: }
-  ( sym: 268; act: 41 ),
-{ 38: }
-{ 39: }
-{ 40: }
-{ 41: }
-{ 42: }
-  ( sym: 265; act: 9 ),
-  ( sym: 266; act: 10 ),
-  ( sym: 271; act: 27 ),
-  ( sym: 272; act: 28 ),
-  ( sym: 273; act: 29 ),
-  ( sym: 274; act: 30 ),
-  ( sym: 275; act: 31 )
-{ 43: }
 );
 
 yyg : array [1..yyngotos] of YYARec = (
@@ -414,79 +311,37 @@ yyg : array [1..yyngotos] of YYARec = (
   ( sym: -4; act: 1 ),
   ( sym: -2; act: 2 ),
 { 1: }
-  ( sym: -5; act: 3 ),
-  ( sym: -3; act: 4 ),
+  ( sym: -8; act: 3 ),
+  ( sym: -6; act: 4 ),
+  ( sym: -5; act: 5 ),
+  ( sym: -3; act: 6 ),
 { 2: }
 { 3: }
-  ( sym: -8; act: 6 ),
-  ( sym: -7; act: 7 ),
-  ( sym: -6; act: 8 ),
+  ( sym: -10; act: 7 ),
+  ( sym: -7; act: 8 ),
 { 4: }
 { 5: }
+  ( sym: -8; act: 3 ),
+  ( sym: -6; act: 10 ),
 { 6: }
 { 7: }
 { 8: }
-  ( sym: -7; act: 11 ),
-  ( sym: -5; act: 12 ),
+  ( sym: -13; act: 11 ),
+  ( sym: -12; act: 12 ),
+  ( sym: -9; act: 13 ),
 { 9: }
-  ( sym: -20; act: 13 ),
 { 10: }
-  ( sym: -10; act: 14 ),
 { 11: }
 { 12: }
 { 13: }
-  ( sym: -23; act: 15 ),
-  ( sym: -22; act: 16 ),
-  ( sym: -21; act: 17 ),
-  ( sym: -19; act: 18 ),
 { 14: }
-  ( sym: -16; act: 19 ),
-  ( sym: -14; act: 20 ),
-  ( sym: -13; act: 21 ),
-  ( sym: -12; act: 22 ),
-  ( sym: -9; act: 23 ),
+  ( sym: -14; act: 17 ),
+  ( sym: -11; act: 18 )
 { 15: }
-  ( sym: -17; act: 24 ),
-  ( sym: -8; act: 25 ),
-  ( sym: -7; act: 26 ),
 { 16: }
 { 17: }
 { 18: }
 { 19: }
-  ( sym: -15; act: 34 ),
-{ 20: }
-{ 21: }
-{ 22: }
-{ 23: }
-  ( sym: -11; act: 37 ),
-{ 24: }
-{ 25: }
-{ 26: }
-{ 27: }
-{ 28: }
-{ 29: }
-{ 30: }
-{ 31: }
-{ 32: }
-  ( sym: -23; act: 15 ),
-  ( sym: -22; act: 38 ),
-{ 33: }
-{ 34: }
-{ 35: }
-{ 36: }
-  ( sym: -16; act: 19 ),
-  ( sym: -14; act: 40 ),
-{ 37: }
-{ 38: }
-{ 39: }
-  ( sym: -18; act: 42 ),
-{ 40: }
-{ 41: }
-{ 42: }
-  ( sym: -17; act: 43 ),
-  ( sym: -8; act: 25 ),
-  ( sym: -7; act: 26 )
-{ 43: }
 );
 
 yyd : array [0..yynstates-1] of Integer = (
@@ -494,273 +349,136 @@ yyd : array [0..yynstates-1] of Integer = (
 { 1: } 0,
 { 2: } 0,
 { 3: } 0,
-{ 4: } -2,
-{ 5: } -6,
-{ 6: } -9,
-{ 7: } -7,
+{ 4: } -5,
+{ 5: } 0,
+{ 6: } -2,
+{ 7: } -10,
 { 8: } 0,
-{ 9: } -29,
-{ 10: } -10,
-{ 11: } -8,
-{ 12: } -4,
-{ 13: } 0,
+{ 9: } -11,
+{ 10: } -6,
+{ 11: } -14,
+{ 12: } -13,
+{ 13: } -8,
 { 14: } 0,
-{ 15: } 0,
-{ 16: } -33,
-{ 17: } 0,
-{ 18: } 0,
-{ 19: } 0,
-{ 20: } -16,
-{ 21: } 0,
-{ 22: } -13,
-{ 23: } -11,
-{ 24: } -36,
-{ 25: } -25,
-{ 26: } -24,
-{ 27: } -22,
-{ 28: } -23,
-{ 29: } -27,
-{ 30: } -28,
-{ 31: } -26,
-{ 32: } -35,
-{ 33: } -30,
-{ 34: } -19,
-{ 35: } 0,
-{ 36: } -18,
-{ 37: } 0,
-{ 38: } -34,
-{ 39: } -20,
-{ 40: } -17,
-{ 41: } -12,
-{ 42: } 0,
-{ 43: } -21
+{ 15: } -15,
+{ 16: } -16,
+{ 17: } -18,
+{ 18: } -12,
+{ 19: } -19
 );
 
 yyal : array [0..yynstates-1] of Integer = (
 { 0: } 1,
 { 1: } 1,
-{ 2: } 5,
-{ 3: } 6,
-{ 4: } 8,
-{ 5: } 8,
-{ 6: } 8,
-{ 7: } 8,
-{ 8: } 8,
-{ 9: } 11,
-{ 10: } 11,
-{ 11: } 11,
-{ 12: } 11,
-{ 13: } 11,
+{ 2: } 6,
+{ 3: } 7,
+{ 4: } 11,
+{ 5: } 11,
+{ 6: } 16,
+{ 7: } 16,
+{ 8: } 16,
+{ 9: } 19,
+{ 10: } 19,
+{ 11: } 19,
+{ 12: } 19,
+{ 13: } 19,
 { 14: } 19,
-{ 15: } 21,
-{ 16: } 28,
-{ 17: } 28,
-{ 18: } 30,
-{ 19: } 31,
-{ 20: } 32,
-{ 21: } 32,
-{ 22: } 34,
-{ 23: } 34,
-{ 24: } 34,
-{ 25: } 34,
-{ 26: } 34,
-{ 27: } 34,
-{ 28: } 34,
-{ 29: } 34,
-{ 30: } 34,
-{ 31: } 34,
-{ 32: } 34,
-{ 33: } 34,
-{ 34: } 34,
-{ 35: } 34,
-{ 36: } 35,
-{ 37: } 35,
-{ 38: } 36,
-{ 39: } 36,
-{ 40: } 36,
-{ 41: } 36,
-{ 42: } 36,
-{ 43: } 43
+{ 15: } 25,
+{ 16: } 25,
+{ 17: } 25,
+{ 18: } 25,
+{ 19: } 25
 );
 
 yyah : array [0..yynstates-1] of Integer = (
 { 0: } 0,
-{ 1: } 4,
-{ 2: } 5,
-{ 3: } 7,
-{ 4: } 7,
-{ 5: } 7,
-{ 6: } 7,
-{ 7: } 7,
-{ 8: } 10,
-{ 9: } 10,
-{ 10: } 10,
-{ 11: } 10,
-{ 12: } 10,
+{ 1: } 5,
+{ 2: } 6,
+{ 3: } 10,
+{ 4: } 10,
+{ 5: } 15,
+{ 6: } 15,
+{ 7: } 15,
+{ 8: } 18,
+{ 9: } 18,
+{ 10: } 18,
+{ 11: } 18,
+{ 12: } 18,
 { 13: } 18,
-{ 14: } 20,
-{ 15: } 27,
-{ 16: } 27,
-{ 17: } 29,
-{ 18: } 30,
-{ 19: } 31,
-{ 20: } 31,
-{ 21: } 33,
-{ 22: } 33,
-{ 23: } 33,
-{ 24: } 33,
-{ 25: } 33,
-{ 26: } 33,
-{ 27: } 33,
-{ 28: } 33,
-{ 29: } 33,
-{ 30: } 33,
-{ 31: } 33,
-{ 32: } 33,
-{ 33: } 33,
-{ 34: } 33,
-{ 35: } 34,
-{ 36: } 34,
-{ 37: } 35,
-{ 38: } 35,
-{ 39: } 35,
-{ 40: } 35,
-{ 41: } 35,
-{ 42: } 42,
-{ 43: } 42
+{ 14: } 24,
+{ 15: } 24,
+{ 16: } 24,
+{ 17: } 24,
+{ 18: } 24,
+{ 19: } 24
 );
 
 yygl : array [0..yynstates-1] of Integer = (
 { 0: } 1,
 { 1: } 3,
-{ 2: } 5,
-{ 3: } 5,
-{ 4: } 8,
-{ 5: } 8,
-{ 6: } 8,
-{ 7: } 8,
-{ 8: } 8,
-{ 9: } 10,
-{ 10: } 11,
-{ 11: } 12,
-{ 12: } 12,
-{ 13: } 12,
-{ 14: } 16,
-{ 15: } 21,
-{ 16: } 24,
-{ 17: } 24,
-{ 18: } 24,
-{ 19: } 24,
-{ 20: } 25,
-{ 21: } 25,
-{ 22: } 25,
-{ 23: } 25,
-{ 24: } 26,
-{ 25: } 26,
-{ 26: } 26,
-{ 27: } 26,
-{ 28: } 26,
-{ 29: } 26,
-{ 30: } 26,
-{ 31: } 26,
-{ 32: } 26,
-{ 33: } 28,
-{ 34: } 28,
-{ 35: } 28,
-{ 36: } 28,
-{ 37: } 30,
-{ 38: } 30,
-{ 39: } 30,
-{ 40: } 31,
-{ 41: } 31,
-{ 42: } 31,
-{ 43: } 34
+{ 2: } 7,
+{ 3: } 7,
+{ 4: } 9,
+{ 5: } 9,
+{ 6: } 11,
+{ 7: } 11,
+{ 8: } 11,
+{ 9: } 14,
+{ 10: } 14,
+{ 11: } 14,
+{ 12: } 14,
+{ 13: } 14,
+{ 14: } 14,
+{ 15: } 16,
+{ 16: } 16,
+{ 17: } 16,
+{ 18: } 16,
+{ 19: } 16
 );
 
 yygh : array [0..yynstates-1] of Integer = (
 { 0: } 2,
-{ 1: } 4,
-{ 2: } 4,
-{ 3: } 7,
-{ 4: } 7,
-{ 5: } 7,
-{ 6: } 7,
-{ 7: } 7,
-{ 8: } 9,
-{ 9: } 10,
-{ 10: } 11,
-{ 11: } 11,
-{ 12: } 11,
-{ 13: } 15,
-{ 14: } 20,
-{ 15: } 23,
-{ 16: } 23,
-{ 17: } 23,
-{ 18: } 23,
-{ 19: } 24,
-{ 20: } 24,
-{ 21: } 24,
-{ 22: } 24,
-{ 23: } 25,
-{ 24: } 25,
-{ 25: } 25,
-{ 26: } 25,
-{ 27: } 25,
-{ 28: } 25,
-{ 29: } 25,
-{ 30: } 25,
-{ 31: } 25,
-{ 32: } 27,
-{ 33: } 27,
-{ 34: } 27,
-{ 35: } 27,
-{ 36: } 29,
-{ 37: } 29,
-{ 38: } 29,
-{ 39: } 30,
-{ 40: } 30,
-{ 41: } 30,
-{ 42: } 33,
-{ 43: } 33
+{ 1: } 6,
+{ 2: } 6,
+{ 3: } 8,
+{ 4: } 8,
+{ 5: } 10,
+{ 6: } 10,
+{ 7: } 10,
+{ 8: } 13,
+{ 9: } 13,
+{ 10: } 13,
+{ 11: } 13,
+{ 12: } 13,
+{ 13: } 13,
+{ 14: } 15,
+{ 15: } 15,
+{ 16: } 15,
+{ 17: } 15,
+{ 18: } 15,
+{ 19: } 15
 );
 
 yyr : array [1..yynrules] of YYRRec = (
 { 1: } ( len: 0; sym: -4 ),
 { 2: } ( len: 2; sym: -2 ),
 { 3: } ( len: 0; sym: -3 ),
-{ 4: } ( len: 3; sym: -3 ),
-{ 5: } ( len: 0; sym: -5 ),
-{ 6: } ( len: 1; sym: -5 ),
-{ 7: } ( len: 1; sym: -6 ),
-{ 8: } ( len: 2; sym: -6 ),
-{ 9: } ( len: 1; sym: -6 ),
-{ 10: } ( len: 0; sym: -10 ),
-{ 11: } ( len: 0; sym: -11 ),
-{ 12: } ( len: 5; sym: -7 ),
+{ 4: } ( len: 1; sym: -3 ),
+{ 5: } ( len: 1; sym: -5 ),
+{ 6: } ( len: 2; sym: -5 ),
+{ 7: } ( len: 0; sym: -8 ),
+{ 8: } ( len: 3; sym: -6 ),
+{ 9: } ( len: 0; sym: -7 ),
+{ 10: } ( len: 1; sym: -7 ),
+{ 11: } ( len: 1; sym: -10 ),
+{ 12: } ( len: 2; sym: -9 ),
 { 13: } ( len: 1; sym: -9 ),
-{ 14: } ( len: 0; sym: -12 ),
+{ 14: } ( len: 1; sym: -9 ),
 { 15: } ( len: 1; sym: -12 ),
 { 16: } ( len: 1; sym: -13 ),
-{ 17: } ( len: 3; sym: -13 ),
-{ 18: } ( len: 0; sym: -16 ),
-{ 19: } ( len: 2; sym: -14 ),
-{ 20: } ( len: 0; sym: -18 ),
-{ 21: } ( len: 4; sym: -15 ),
-{ 22: } ( len: 1; sym: -17 ),
-{ 23: } ( len: 1; sym: -17 ),
-{ 24: } ( len: 1; sym: -17 ),
-{ 25: } ( len: 1; sym: -17 ),
-{ 26: } ( len: 1; sym: -17 ),
-{ 27: } ( len: 1; sym: -17 ),
-{ 28: } ( len: 1; sym: -17 ),
-{ 29: } ( len: 0; sym: -20 ),
-{ 30: } ( len: 4; sym: -8 ),
-{ 31: } ( len: 0; sym: -19 ),
-{ 32: } ( len: 1; sym: -19 ),
-{ 33: } ( len: 1; sym: -21 ),
-{ 34: } ( len: 3; sym: -21 ),
-{ 35: } ( len: 0; sym: -23 ),
-{ 36: } ( len: 2; sym: -22 )
+{ 17: } ( len: 0; sym: -11 ),
+{ 18: } ( len: 1; sym: -11 ),
+{ 19: } ( len: 1; sym: -14 )
 );
 
 

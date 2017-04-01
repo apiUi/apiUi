@@ -1,11 +1,14 @@
 TokenNames: array [256+1.._NOTUSEDLASTONE] of String =
 ( '_COMMENT'
+, '_LINECONT'
 , '_NAME'
 , '_NEWLINE'
 , '_WHITESPACE'
 , '_INDENT'
 , '_HYPHENINDENT'
 , '_VALUE'
+, '_ARRAYVALUE'
+, '_PIPE'
 , '_LEFT_SQUARE_BRACKET'
 , '_LEFT_CURLY_BRACKET'
 , '_RIGHT_SQUARE_BRACKET'
@@ -21,3 +24,4 @@ TokenNames: array [256+1.._NOTUSEDLASTONE] of String =
 , '_IGNORE'
 , '_NOTUSEDLASTONE'
 );
+

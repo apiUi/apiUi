@@ -28,16 +28,19 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item1>
       <Item2>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
@@ -78,7 +81,7 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="6">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -91,6 +94,12 @@
       <Item4>
         <Name Value="EResNotFound"/>
       </Item4>
+      <Item5>
+        <Name Value="ERegistryException"/>
+      </Item5>
+      <Item6>
+        <Name Value="Exception"/>
+      </Item6>
     </Exceptions>
   </Debugging>
 </CONFIG>

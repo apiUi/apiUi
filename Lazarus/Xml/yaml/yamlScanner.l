@@ -2,6 +2,8 @@
 
 %start InitState MidlState RighState
 
+NewStreamSep    \-\-\-\ *
+LineCont        \\[\n\r ]+\\ *
 Comment         \#[^\n]*
 Name            [^ \-\n\:][^\n\:]*\:
 Value           [^ \-\n\:][^\n\:]*
@@ -11,11 +13,11 @@ String          {dqString}|{sqString}
 NewLine         \n
 cr              \r
 Space           (\ )
-Pipe            (\|)
+Pipe            (\|)(\ )*
 IndentSpace     {Space}+
 HyphenSpace     {Space}*\-
 Rest            [^ \n]
-RestEol         [^\|\n]+
+RestEol         [^\|\\\n]+
 Digit	        [0-9]
 Number          {Digit}*(\.{Digit}+)?([Ee][+-]?{Digit}+)?
 False           false
@@ -24,14 +26,17 @@ True            true
 
 %%
 
+{NewStreamSep}                return (_COMMENT);
+{LineCont}                    return (_LINECONT);
+{NewLine}                     begin
+                                Start (InitState);
+                                return (_NEWLINE);
+                              end;
 {cr}                          return (_WHITESPACE);
+{String}                      return (_VALUE);
 {Comment}                     begin
                                 Start (InitState);
                                 return (_COMMENT);
-                              end;
-<InitState>{NewLine}          begin
-                                Start (InitState);
-                                return (_NEWLINE);
                               end;
 <InitState>{Name}             begin
                                 Start (MidlState);
@@ -39,7 +44,6 @@ True            true
                               end;
 <InitState>{IndentSpace}      return (_INDENT);
 <InitState>{HyphenSpace}      return (_HYPHENINDENT);
-<InitState>{String}           return (_STRING);
 <InitState>{Value}            return (_VALUE);
 <InitState>{Pipe}             return (_PIPE);
 <InitState>{Rest}             return (_WHITESPACE);
@@ -59,7 +63,7 @@ True            true
                                 Start (InitState);
                                 return (_WHITESPACE);
                               end;
-<MidlState>{String}           return (_STRING);
+<MidlState>{String}           return (_VALUE);
 <RighState>{NewLine}          begin
                                 Start (InitState);
                                 return (_NEWLINE);

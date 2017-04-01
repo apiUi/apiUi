@@ -1,9 +1,10 @@
 %{
 type TyamlParser = class (TCustParser)
 private
-  ParentXml: TXml;
+  CurrentXml, PreviousXml: TXml;
   OfIdString: String;
   function StringDecode(aString: String): String;
+  procedure AddToParent (aXml, aCurrentXml: TXml);
 published
   property OnHaveScanned: TOnHaveScannedEvent read FOnHaveScanned write FOnHaveScanned;
   property OnError: TOnErrorEvent read FOnError write FOnError;
@@ -17,12 +18,14 @@ end;
 %}
 
 %token _COMMENT
+%token _LINECONT
 %token _NAME
 %token _NEWLINE
 %token _WHITESPACE
 %token _INDENT
 %token _HYPHENINDENT
 %token _VALUE
+%token _ARRAYVALUE
 %token _PIPE
 %token _LEFT_SQUARE_BRACKET
 %token _LEFT_CURLY_BRACKET
@@ -108,163 +111,116 @@ begin
           ;
 end;
 
+procedure TyamlParser.AddToParent (aXml, aCurrentXml: TXml);
+var
+  pLevel, cLevel: Integer;
+begin
+  cLevel := aCurrentXml.Tag;
+  pLevel := aXml.Tag;
+  while cLevel <= pLevel do
+  begin
+    aXml := aXml.Parent as TXml;
+    pLevel := aXml.Tag;
+  end;
+  aXml.AddXml(aCurrentXml);
+end;
 
 %}
 
 start:
       {
-        ParentXml := nil;
+        PreviousXml := nil;
         Xml.Checked := True;
         Xml.jsonType := jsonObject;
-        Xml.Name := '';
+        Xml.Name := 'yaml';
+        PushInteger (Xml.Tag);
+        Xml.Tag := -1;
       }
-      OptionalJsonObjects
+      OptionalYamlObjects
       {
+        Xml.Tag := PopInteger;
       }
     ;
 
-OptionalJsonObjects:
+OptionalYamlObjects:
       /* void */
-    | OptionalIgnoredSpace JsonObjects OptionalIgnoredSpace
+    | YamlObjects
     ;
 
-OptionalIgnoredSpace:
-      /* void */
-    | _VALUE
+YamlObjects:
+      YamlObject
+    | YamlObjects YamlObject
+    ;
+
+YamlObject:
       {
-        if Trim ($1.TokenString) <> '' then
-          raise Exception.Create ( '%Illegal: ['
-                                 + $1.TokenString
-                                 + ']['
-                                 + IntToStr ($1.LineNumber)
-                                 + ':'
-                                 + IntToStr ($1.ColumnNumber)
-                                 + ']'
-                                 );
+        CurrentXml := TXml.Create;
+        CurrentXml.Checked := True;
+        CurrentXml.Tag := 0;
+        CurrentXml.jsonType := jsonObject;
       }
-    ;
-
-
-JsonObjects:
-      JsonObject
-    | JsonObjects JsonObject
-    | JsonArray
-    ;
-
-JsonObject:
-      _LEFT_CURLY_BRACKET
-      {
-         Xml.jsonType := jsonObject;
-         if not Assigned (ParentXml) then
-           Xml.Name := 'json';
-     }
-      Object
-      {
-      }
-      _RIGHT_CURLY_BRACKET
-    ;
-
-Object:
-      OptionalListOfMembers
-    ;
-
-OptionalListOfMembers:
-      /* void */
-    | ListOfMembers
-    ;
-
-ListOfMembers:
-      Member
-    | ListOfMembers _COMMA Member
-    ;
-
-Member:
-      {
-        PushObject (ParentXml);
-        PushObject (Xml);
-        ParentXml := Xml;
-        Xml := ParentXml.AddXml (TXml.Create);
-        Xml.Checked := True;
-      }
+      OptionalYamlIndent
       NameValuePair
       {
-        Xml := PopObject as TXml;
-        ParentXml := PopObject as TXml;
+        if not Assigned (PreviousXml) then
+          Xml.AddXml (CurrentXml)
+        else
+          AddToParent (PreviousXml, CurrentXml);
+        PreviousXml := CurrentXml;
+      }
+    ;
+
+OptionalYamlIndent:
+      /* void */
+    | YamlIndent
+    ;
+
+YamlIndent:
+      _INDENT
+      {
+        CurrentXml.Tag := $1.yy.yyInteger;
       }
     ;
 
 NameValuePair:
-      _STRING _COLON
+      _NAME OptionalValue
       {
-        Xml.Name := Copy ($1.TokenString, 2, Length ($1.TokenString) - 2);
+        CurrentXml.Name := $1.yyString;
       }
-      Value
+    | arrayEntry
+    | arrayValueWithoutName
+    ;
+
+arrayEntry:
+      _HYPHENINDENT
+      {
+        CurrentXml.Tag := $1.yy.yyInteger;
+        CurrentXml.Name := '_';
+        CurrentXml.jsonType := jsonArrayValue
+      }
+    ;
+
+arrayValueWithoutName:
+      _ARRAYVALUE
+      {
+        CurrentXml.Value := $1.yyString;
+        CurrentXml.jsonType := jsonString;
+        CurrentXml.Tag := $1.yy.yyInteger
+      }
+    ;
+
+
+OptionalValue:
+      /* void */
+    | Value
     ;
 
 Value:
-      _STRING
+      _VALUE
       {
-        Xml.Value := StringDecode(Copy ($1.TokenString, 2, Length ($1.TokenString) - 2));
-        Xml.jsonType := jsonString;
-      }
-    | _NUMBER
-      {
-        Xml.Value := $1.TokenString;
-        Xml.jsonType := jsonNumber;
-      }
-    | JsonObject
-    | JsonArray
-    | _TRUE
-      {
-        Xml.Value := 'true';
-        Xml.jsonType := jsonBoolean;
-      }
-    | _FALSE
-      {
-        Xml.Value := 'false';
-        Xml.jsonType := jsonBoolean;
-      }
-    | _NULL
-      {
-        Xml.Checked := False;
+        CurrentXml.Value := $1.yyString;
+        CurrentXml.jsonType := jsonString;
       }
     ;
 
-JsonArray:
-      _LEFT_SQUARE_BRACKET
-      {
-         Xml.jsonType := jsonArray;
-         if not Assigned (ParentXml) then
-           Xml.Name := 'json';
-      }
-      optionalArrayValues
-      _RIGHT_SQUARE_BRACKET
-    ;
 
-optionalArrayValues:
-      /* void */
-    | ArrayValues
-    ;
-
-ArrayValues:
-      ArrayValue
-    | ArrayValues _COMMA ArrayValue
-    ;
-
-ArrayValue:
-      {
-        PushObject (ParentXml);
-        ParentXml := Xml;
-        PushObject (Xml);
-        Xml := ParentXml.AddXml (TXml.Create);
-        Xml.Checked := True;
-        Xml.Name := ParentXml.Name + '__Value';
-        Xml.Name := '_';
-        Xml.jsonType := jsonArrayValue;
-      }
-      Value
-      {
-        Xml := PopObject as TXml;
-        ParentXml := PopObject as TXml;
-      }
-    ;

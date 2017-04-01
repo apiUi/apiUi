@@ -8,8 +8,8 @@ interface
 uses Classes
    , ParserClasses
    , igGlobals
-   , YAMLPARSER
-   , YAMLSCANNER
+   , yamlParser
+   , yamlScanner
    , CustScanner
    , Xmlz
    ;
@@ -17,11 +17,15 @@ uses Classes
 const InternalStackSize = 256;
 const InitState = 2; {taken from Scanner.pas}
 
-type TyamlAnalyser = class (TComponent)
+type
+
+{ TyamlAnalyser }
+
+ TyamlAnalyser = class (TComponent)
 private
   Stack: array [0..InternalStackSize] of Integer;
-  StackIndex: Integer;
-  LexItem: YYSType;
+  StackIndex, HyphenIndent, Offset: Integer;
+  LexItem, PrevLexItem: YYSType;
   LexicalList: YYSType;
   Scanner: TyamlScanner;
   Parser: TyamlParser;
@@ -29,8 +33,10 @@ private
   FOnHaveData: TOnHaveDataEvent;
   FOnNeedData: TOnNeedDataEvent;
   ValueString: String;
+  function GetTokenNames (Index : Integer ): String ;
   procedure SetOnHaveScanned (aEvent: TOnHaveScannedEvent);
   function GetOnHaveScanned: TOnHaveScannedEvent;
+  procedure PrepareParsing;
   procedure ShowTokens;
   procedure AnalyserParserError ( Sender: TObject
                                 ; LineNumber: Integer
@@ -50,9 +56,11 @@ private
   procedure PushInteger (arg: Integer);
   function PopInteger: Integer;
   procedure HaveData (aObject: TObject; aString: String);
+  function GetTokenName (Index: Integer): String;
 public
   StartState: Integer;
   Xml: TXml;
+  property TokenNames [Index: Integer]: String read GetTokenNames;
 published
   property ScannedItems: YYSType read LexicalList;
   property OnHaveScanned: TOnHaveScannedEvent read GetOnHaveScanned write SetOnHaveScanned;
@@ -125,9 +133,100 @@ begin
   Parser.OnHaveScanned := aEvent;
 end;
 
+function TyamlAnalyser .GetTokenNames (Index : Integer ): String ;
+const
+{$INCLUDE parser.def}
+begin
+  result := TokenNames[index];
+end;
+
 function TyamlAnalyser.GetOnHaveScanned: TOnHaveScannedEvent;
 begin
   result := Parser.OnHaveScanned;
+end;
+
+procedure TyamlAnalyser .PrepareParsing ;
+var
+  lx, lx_1, lx_2: YYSType;
+  sIndent: Integer;
+  sep: String;
+begin
+  lx := LexicalList;
+  while (Assigned(lx)) do
+  begin
+    if lx.Token = _VALUE then
+    begin
+      lx_1 := lx.NextToken;
+      while (Assigned (lx_1))
+      and (   (lx_1.Token = _LINECONT)
+           or (lx_1.Token = _VALUE)
+          ) do
+      begin
+        if lx_1.Token = _LINECONT then
+          lx.yyStringRead := lx.yyStringRead + ' '
+        else
+          lx.yyStringRead := lx.yyStringRead + lx_1.yyStringRead;
+        lx_1 := lx_1.NextToken;
+      end;
+      lx.NextToken := lx_1;
+    end;
+    lx := lx.NextToken;
+  end;
+  lx := LexicalList;
+  lx_1 := lx;
+  lx_2 := lx_1;
+  while Assigned (lx) do
+  begin
+    if lx.Token = _NAME then
+      lx.yyStringRead := Copy (lx.yyStringRead, 1, Length (lx.yyStringRead) - 1);
+    if (lx.Token = _VALUE)
+    or (lx.Token = _NAME) then
+    begin
+      if (lx.yyStringRead[1] = '"')
+      and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '"')then
+        lx.yyStringRead := Copy(lx.yyStringRead, 2, system.Length(lx.yyStringRead) - 2);
+    end;
+    if lx_1.Token = _PIPE then
+    begin
+      sep := '';
+      if lx.Token <> _INDENT then
+        Raise Exception.CreateFmt('Illegal %s found after PIPE indent at %s', [lx.TokenString, lx.Offset]); // TODO how
+      lx_1.TokenString := '';
+      sIndent := lx.yy.yyInteger;
+      lx_1.NextToken := lx;
+      while Assigned (lx)
+      and (   (lx.Token <> _INDENT)
+           or (lx.yy.yyInteger >= sIndent)
+          )
+      do
+      begin
+        if lx.Token <> _INDENT then
+        begin
+          lx_1.TokenString := lx_1.TokenString + sep + lx.TokenString;
+          sep := ' ';
+        end;
+        lx := lx.NextToken;
+      end;
+      lx_1.NextToken := lx;
+      lx_1.Token := _Value;
+      lx_1.yyStringRead := lx_1.TokenString;
+    end;
+    if Assigned (lx) then
+    begin
+      if (lx.Token = _VALUE)
+      and (lx_1.Token = _INDENT)
+      and (lx_2.Token = _HYPHENINDENT)
+      then
+      begin
+        lx_2.Token := _ARRAYVALUE;
+        lx_2.yyStringRead := lx.yyStringRead;
+        lx_2.NextToken := lx.NextToken;
+      end;
+      lx_2 := lx_1;
+      lx_1 := lx;
+      lx := lx.NextToken;
+    end;
+  end;
 end;
 
 procedure TyamlAnalyser.HaveData (aObject: TObject; aString: String);
@@ -136,6 +235,11 @@ begin
     FOnHaveData (Self, aString)
   else
     raise Exception.Create ('No OnHaveData proc assigned');
+end;
+
+function TyamlAnalyser .GetTokenName (Index : Integer ): String ;
+begin
+
 end;
 
 function TyamlAnalyser.PopInteger: Integer;
@@ -228,69 +332,52 @@ var
   HexCode: Integer;  // hex character code (-1 on error)
 begin
   xScanner := Sender as TyamlScanner;
-  if (xScanner.Token = _IGNORE) then
-    exit;
-{
-  if (Scanner.Token = _VALUE) then
+  if True then
   begin
-    ValueString := ValueString + Scanner.TokenAsString;
-    exit;
-  end;
-  if (Scanner.Token = _ESCAPECHAR) then
-  begin
-    EscapeChar := uppercase (Scanner.TokenAsString);
-    if EscapeChar = '&LT;' then
-      EscapeChar := '<';
-    if EscapeChar = '&GT;' then
-      EscapeChar := '>';
-    if EscapeChar = '&AMP;' then
-      EscapeChar := '&';
-    if EscapeChar = '&APOS;' then
-      EscapeChar := '''';
-    if EscapeChar = '&QUOT;' then
-      EscapeChar := '"';
-    if LeftStr (EscapeChar, 3) = '&#X' then // &#xXX; - XML encoding convention
+    if (xScanner.Token = _NEWLINE) then
     begin
-      EscapeChar := '$' + Copy (EscapeChar, 4, Length(EscapeChar) - 4);
-      HexCode := StrToIntDef(EscapeChar, -1);
-      if HexCode = -1 then
-        raise Exception.Create('Invalid Hex: ' + EscapeChar);
-      EscapeChar := Chr (HexCode);
+      HyphenIndent := 0;
+      Offset := Offset + Length (LineEnding);
+      exit;
     end;
-    if LeftStr (EscapeChar, 2) = '&%' then // &%XX; - IPMdata spec convention
+    if (xScanner.Token = _WHITESPACE)
+    or (xScanner.Token = _COMMENT)
+    then
     begin
-      EscapeChar := '$' + Copy (EscapeChar, 3, Length(EscapeChar) - 3);
-      HexCode := StrToIntDef(EscapeChar, -1);
-      if HexCode = -1 then
-        raise Exception.Create('Invalide Hex: ' + EscapeChar);
-      EscapeChar := Chr (HexCode);
+      Offset := Offset + Length (xScanner.TokenAsString);
+      exit;
     end;
-    ValueString := ValueString + EscapeChar;
-    exit;
   end;
-}
   Lexical := YYSType.Create;
   if LexicalList = nil then
     LexicalList := Lexical
   else
   begin
-    LexItem.Next := Lexical;
-    LexItem.NextToken := Lexical;
+    PrevLexItem.Next := Lexical;
+    PrevLexItem.NextToken := Lexical;
   end;
-  LexItem := Lexical;
   Lexical.Next := nil;
   Lexical.NextToken := nil;
   Lexical.LineNumber := Scanner.LineNumber;
+  Lexical.Offset := Offset;
   Lexical.ColumnNumber := Scanner.ColumnNumber;
   Lexical.Token := Scanner.Token;
   Lexical.TokenString := Scanner.TokenAsString;
-{
-  case Lexical.Token of
-    _TAG: ValueString := '';
-    _ENDTAG: ValueString := '';
+  if (Lexical.Token = _INDENT) then
+    Lexical.yy.yyInteger := Length (Lexical.TokenString);
+  if (Lexical.Token = _HYPHENINDENT) then
+  begin
+    HyphenIndent := Length (Lexical.TokenString);
+    Lexical.yy.yyInteger := HyphenIndent;
   end;
-}
+  if (Lexical.Token = _INDENT)
+  and (PrevLexItem.Token = _HYPHENINDENT) then
+    Lexical.yy.yyInteger := Lexical.yy.yyInteger + HyphenIndent;
+  Lexical.yyStringRead := Lexical.TokenString;
   Lexical.yyRead := Lexical.yy;
+  PrevLexItem := Lexical;
+
+  Offset := Offset + Length (Lexical.TokenString);
 end;
 
 procedure TyamlAnalyser.Prepare;
@@ -299,8 +386,10 @@ begin
   ValueString := '';
   Scanner.OnToken := OnToken;
   StackIndex := 0;
+  Offset := 1;
   Scanner.Start (StartState);
   Scanner.Execute;
+  PrepareParsing;
   Parser.LexItems := LexicalList;
   Parser.Xml := Xml;
   {ifdef DEBUG}

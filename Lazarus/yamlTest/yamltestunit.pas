@@ -9,7 +9,8 @@ interface
 
 uses
   Classes , SysUtils , FileUtil , SynEdit , Forms , Controls , Graphics ,
-  Dialogs , StdCtrls , VirtualTrees, YAMLSCANNER, YAMLPARSER, ParserClasses, CustScanner;
+  Dialogs , StdCtrls , VirtualTrees, yamlAnalyser, YAMLSCANNER, YAMLPARSER, ParserClasses, CustScanner, Xmlz;
+
 const InternalStackSize = 256;
 const InitState = 2; {taken from Scanner.pas}
 
@@ -20,64 +21,42 @@ type
 
   TForm1 = class(TForm )
     Button1 : TButton ;
+    Button2 : TButton ;
     SynEdit : TSynEdit ;
     TreeView : TVirtualStringTree ;
     procedure Button1Click (Sender : TObject );
+    procedure Button2Click (Sender : TObject );
     procedure FormCreate (Sender : TObject );
     procedure FormDestroy (Sender : TObject );
     procedure FormShow (Sender : TObject );
+    procedure SynEditChange (Sender : TObject );
     procedure TreeViewFocusChanged (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Column : TColumnIndex );
     procedure TreeViewGetText (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType ;
       var CellText : String );
   private
-    LineNumber, Offset, HyphenIndent: Integer;
-    StartState: Integer;
-    Stack: array [0..InternalStackSize] of Integer;
-    StackIndex: Integer;
-    PrevLexItem: YYSType;
-    LexicalList: YYSType;
-    FOnError: TOnErrorEvent;
-    FOnHaveData: TOnHaveDataEvent;
-    procedure AnalyserScannerError (Sender: TObject; Data: String);
-    procedure OnToken (Sender: TObject);
-    procedure ScannerNeedsData ( Sender:TObject
-                               ; var MoreData: Boolean
-                               ; var Data: String
+    procedure fOnAnalyserError ( Sender:TObject
+                               ; LineNumber: Integer
+                               ; ColumnNumber: Integer
+                               ; Offset: Integer
+                               ; TokenString: String
+                               ; Data: String
                                );
+    procedure PopulateTreeview;
+    procedure ScannerNeedsData(Sender: TObject; var MoreData: Boolean; var Data: String);
   public
-    scanner: TyamlScanner;
+    LineNumber: Integer;
+    analyser: TyamlAnalyser;
   end;
 
 var
   Form1 : TForm1 ;
-  TokenNames: array [256+1.._NOTUSEDLASTONE] of String =
-  ( '_COMMENT'
-  , '_NAME'
-  , '_NEWLINE'
-  , '_WHITESPACE'
-  , '_INDENT'
-  , '_HYPHENINDENT'
-  , '_VALUE'
-  , '_PIPE'
-  , '_LEFT_SQUARE_BRACKET'
-  , '_LEFT_CURLY_BRACKET'
-  , '_RIGHT_SQUARE_BRACKET'
-  , '_RIGHT_CURLY_BRACKET'
-  , '_COLON'
-  , '_COMMA'
-  , '_STRING'
-  , '_NUMBER'
-  , '_FALSE'
-  , '_NULL'
-  , '_TRUE'
-  , '_IS'
-  , '_IGNORE'
-  , '_NOTUSEDLASTONE'
-  );
 
 implementation
+
+uses xmlUtilz
+   ;
 
 {$R *.lfm}
 
@@ -93,14 +72,22 @@ type
 procedure TForm1 .FormShow (Sender : TObject );
 begin
   TreeView.Clear;
-  Scanner.OnToken := OnToken;
-  StackIndex := 0;
-  Scanner.Start (InitState);
   LineNumber := 0;
-  Offset := 1;
-  Scanner.Execute;
+  if not Assigned (analyser.Xml) then
+    analyser.Xml := TXml.Create;
+  analyser.Xml.Items.Clear;
+  analyser.StartState := InitState;
+  analyser.OnNeedData := ScannerNeedsData;
+  analyser.Prepare;
+  analyser.Execute;
+  PopulateTreeview;
   TreeView.SetFocus;
   TreeView.FocusedNode := TreeView.GetFirst;
+end;
+
+procedure TForm1.SynEditChange(Sender : TObject );
+begin
+
 end;
 
 procedure TForm1 .TreeViewFocusChanged (Sender : TBaseVirtualTree ;
@@ -112,7 +99,7 @@ begin
   Data := TreeView.GetNodeData(Node);
   Lex := Data.lex;
   SynEdit.SelStart:=lex.Offset;
-  SynEdit.SelEnd:=lex.Offset + Length (lex.TokenString);
+  SynEdit.SelEnd := lex.Offset + Length (lex.TokenString);
 end;
 
 procedure TForm1 .TreeViewGetText (Sender : TBaseVirtualTree ;
@@ -130,92 +117,61 @@ begin
     case vtColumnType (Column) of
       vtToken: CellText := IntToStr (Lex.Token);
       vtValue: CellText := IntToStr (Lex.yy.yyInteger);
-      vtName: CellText := TokenNames [Lex.Token];
+      vtName: CellText := analyser.TokenNames [Lex.Token];
       vtOffset: CellText := IntToStr(Lex.Offset);
       vtLength: CellText := IntToStr(Length (Lex.TokenString));
       vtFB: If Length (Lex.TokenString) > 0 then CellText := IntToStr(Ord (Lex.TokenString[1]));
-      vtText: CellText := Lex.TokenString;
+      vtText: CellText := Lex.yyString;
     end;
   end;
 end;
 
-procedure TForm1 .AnalyserScannerError (Sender : TObject ; Data : String );
+procedure TForm1 .fOnAnalyserError (Sender : TObject ; LineNumber : Integer ;
+  ColumnNumber : Integer ; Offset : Integer ; TokenString : String ;
+  Data : String );
 begin
-  ShowMessage ('Scanner: ' + Data);
+  ShowMessage (Format( 'Error at %d %d %d: %s'
+                     , [         LineNumber
+                       ,            ColumnNumber
+                       ,               Offset
+                       ,                   TokenString
+                       ]
+                     )
+              );
 end;
 
-procedure TForm1 .OnToken (Sender : TObject );
+procedure TForm1 .PopulateTreeview;
 var
-  xScanner: TyamlScanner;
-  Lexical: YYSType;
-  CobolNumberString: String;
-  EscapeChar: String;
-  HexCode: Integer;  // hex character code (-1 on error)
+  l: YYSType;
   ChildNode: PVirtualNode;
   Data: PBindTreeRec;
 begin
-  xScanner := Sender as TyamlScanner;
-  if (xScanner.Token = _NEWLINE) then
+  l := analyser.ScannedItems;
+  while Assigned(l) do
   begin
-    HyphenIndent := 0;
-    Offset := Offset + Length (xScanner.TokenAsString);
-    exit;
+    ChildNode := TreeView.AddChild(nil);
+    Data := TreeView.GetNodeData(ChildNode);
+    Data.lex := l;
+    l := l.NextToken;
   end;
-  if (xScanner.Token = _WHITESPACE)
-  or (xScanner.Token = _COMMENT)
-  then
-  begin
-    Offset := Offset + Length (xScanner.TokenAsString);
-    exit;
-  end;
-  Lexical := YYSType.Create;
-  if LexicalList = nil then
-    LexicalList := Lexical
-  else
-  begin
-    PrevLexItem.Next := Lexical;
-    PrevLexItem.NextToken := Lexical;
-  end;
-  Lexical.Next := nil;
-  Lexical.NextToken := nil;
-  Lexical.LineNumber := Scanner.LineNumber;
-  Lexical.Offset := Offset;
-  Lexical.ColumnNumber := Scanner.ColumnNumber;
-  Lexical.Token := Scanner.Token;
-  Lexical.TokenString := Scanner.TokenAsString;
-  if (Lexical.Token = _INDENT) then
-    Lexical.yy.yyInteger := Length (Lexical.TokenString);
-  if (Lexical.Token = _HYPHENINDENT) then
-  begin
-    HyphenIndent := Length (Lexical.TokenString);
-    Lexical.yy.yyInteger := HyphenIndent;
-  end;
-  if (Lexical.Token = _INDENT)
-  and (PrevLexItem.Token = _HYPHENINDENT) then
-    Lexical.yy.yyInteger := Lexical.yy.yyInteger + HyphenIndent;
-  Lexical.yyRead := Lexical.yy;
-  PrevLexItem := Lexical;
-
-  Offset := Offset + Length (Lexical.TokenString);
-  ChildNode := TreeView.AddChild(nil);
-  Data := TreeView.GetNodeData(ChildNode);
-  Data.lex := Lexical;
 end;
 
 procedure TForm1 .ScannerNeedsData (Sender : TObject ; var MoreData : Boolean ;
   var Data : String );
 begin
-  MoreData := (LineNumber < SynEdit.Lines.Count);
-  if MoreData then
-    Data := SynEdit.Lines.Text;
-  LineNumber := MaxInt;
+  if LineNumber >= SynEdit.Lines.Count then
+    MoreData := False
+  else
+  begin
+    Data := SynEdit.Lines.Strings[LineNumber];
+    Inc(LineNumber);
+  end;
 end;
 
 procedure TForm1 .FormCreate (Sender : TObject );
 begin
-  scanner := TyamlScanner.Create;
-  scanner.OnNeedData := ScannerNeedsData;
-  Scanner.OnError := AnalyserScannerError;
+  analyser := TyamlAnalyser.Create(nil);
+  analyser.OnError := fOnAnalyserError;
   TreeView.NodeDataSize := SizeOf(TBindTreeRec);
 end;
 
@@ -224,9 +180,16 @@ begin
   FormShow(nil);
 end;
 
+procedure TForm1 .Button2Click (Sender : TObject );
+begin
+  ShowXml ('yaml', analyser.Xml);
+end;
+
 procedure TForm1 .FormDestroy (Sender : TObject );
 begin
-  scanner.Free;
+  if Assigned (analyser.Xml) then
+    analyser.Xml.Free;
+  analyser.Free;
 end;
 
 end.

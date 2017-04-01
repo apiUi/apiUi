@@ -3815,8 +3815,9 @@ begin
         end;
       end;
       aLog.httpUri := URL;
+      HttpClient.Request.CharSet := '';
       HttpClient.Request.ContentType := aOperation.ContentType;
-      aLog.RequestContentType := aOperation.ContentType;
+      aLog.RequestContentType := HttpClient.Request.ContentType;
       HttpClient.Request.Accept := aOperation.Accept;
       try
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := '"' + aOperation.SoapAction + '"';
@@ -3831,7 +3832,6 @@ begin
               with XmlItems[x].Items do
                 HttpClient.Request.CustomHeaders.Values [XmlCheckedValueByTag ['Name']]
                                                       := XmlCheckedValueByTag ['Value'];
-      HttpClient.Request.CharSet := '';
       HttpClient.Request.ContentEncoding := aOperation.ContentEncoding;
       HttpClient.Request.AcceptEncoding := 'identity';
       if aOperation.AcceptDeflateEncoding then
@@ -6401,6 +6401,7 @@ begin
         or (ARequestInfo.Command = 'PUT') then
         begin
           AResponseInfo.ContentType := ARequestInfo.ContentType;
+          AResponseInfo.CharSet := ARequestInfo.CharSet;
           xLog.ReplyContentType := AResponseInfo.ContentType;
           rLog := nil;
           AcquireLogLock;
