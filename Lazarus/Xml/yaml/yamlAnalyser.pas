@@ -24,7 +24,7 @@ type
  TyamlAnalyser = class (TComponent)
 private
   Stack: array [0..InternalStackSize] of Integer;
-  StackIndex, HyphenIndent, Offset: Integer;
+  StackIndex, HyphenIndent, lexIndent, Offset: Integer;
   LexItem, PrevLexItem: YYSType;
   LexicalList: YYSType;
   Scanner: TyamlScanner;
@@ -76,7 +76,7 @@ end;
 
 implementation
 
-uses SysUtils, StrUtils, Dialogs, ShowMemo, Forms;
+uses SysUtils, StrUtils, Dialogs, ShowMemo, Forms, RegExpr;
 
 procedure TyamlAnalyser.DebugTokenStringList (arg: TStringList);
 var
@@ -148,29 +148,58 @@ end;
 procedure TyamlAnalyser .PrepareParsing ;
 var
   lx, lx_1, lx_2: YYSType;
-  sIndent: Integer;
   sep: String;
+  rx: TRegExpr;
 begin
-  lx := LexicalList;
-  while (Assigned(lx)) do
-  begin
-    if lx.Token = _VALUE then
+  rx := TRegExpr.Create('\ *\#[^\n]*$'); // yaml comment
+  try
+    lx := LexicalList;
+    while (Assigned(lx)) do
     begin
-      lx_1 := lx.NextToken;
-      while (Assigned (lx_1))
-      and (   (lx_1.Token = _LINECONT)
-           or (lx_1.Token = _VALUE)
-          ) do
+      if lx.Token = _VALUE then
       begin
-        if lx_1.Token = _LINECONT then
-          lx.yyStringRead := lx.yyStringRead + ' '
-        else
-          lx.yyStringRead := lx.yyStringRead + lx_1.yyStringRead;
-        lx_1 := lx_1.NextToken;
+        lx_1 := lx.NextToken;
+        if Assigned (lx_1)
+        and (lx_1.Token <> _LINECONT) then
+        begin
+          if rx.Exec (lx.yyStringRead)then
+            lx.yyStringRead := Copy (lx.yyStringRead, 1, rx.MatchPos[0] - 1);
+        end;
+        while (Assigned (lx_1))
+        and (   (lx_1.Token = _LINECONT)
+             or (lx_1.Token = _VALUE)
+            ) do
+        begin
+          if lx_1.Token = _LINECONT then
+            lx.yyStringRead := lx.yyStringRead + ' '
+          else
+            lx.yyStringRead := lx.yyStringRead + lx_1.yyStringRead;
+          lx_1 := lx_1.NextToken;
+        end;
+        lx.NextToken := lx_1;
       end;
-      lx.NextToken := lx_1;
+      if lx.Token = _PIPE then
+      begin
+        lx_1 := lx.NextToken;
+        sep := '';
+        lx.yyStringRead := '';
+        while Assigned (lx_1)
+        and (lx_1.yy.yyInteger > lx.yy.yyInteger) do
+        begin
+          if (lx_1.Token <> _INDENT) then
+          begin
+            lx.yyStringRead := lx.yyStringRead + sep + lx_1.yyStringRead;
+            sep := ' ';
+          end;
+          lx_1 := lx_1.NextToken;
+        end;
+        lx.NextToken := lx_1;
+        lx.Token := _VALUE;
+      end;
+      lx := lx.NextToken;
     end;
-    lx := lx.NextToken;
+  finally
+    rx.Free;
   end;
   lx := LexicalList;
   lx_1 := lx;
@@ -182,34 +211,12 @@ begin
     if (lx.Token = _VALUE)
     or (lx.Token = _NAME) then
     begin
-      if (lx.yyStringRead[1] = '"')
-      and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '"')then
-        lx.yyStringRead := Copy(lx.yyStringRead, 2, system.Length(lx.yyStringRead) - 2);
-    end;
-    if lx_1.Token = _PIPE then
-    begin
-      sep := '';
-      if lx.Token <> _INDENT then
-        Raise Exception.CreateFmt('Illegal %s found after PIPE indent at %s', [lx.TokenString, lx.Offset]); // TODO how
-      lx_1.TokenString := '';
-      sIndent := lx.yy.yyInteger;
-      lx_1.NextToken := lx;
-      while Assigned (lx)
-      and (   (lx.Token <> _INDENT)
-           or (lx.yy.yyInteger >= sIndent)
-          )
-      do
+      if lx.yyStringRead <> '' then
       begin
-        if lx.Token <> _INDENT then
-        begin
-          lx_1.TokenString := lx_1.TokenString + sep + lx.TokenString;
-          sep := ' ';
-        end;
-        lx := lx.NextToken;
+        if (lx.yyStringRead[1] = '"')
+        and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '"')then
+          lx.yyStringRead := Copy(lx.yyStringRead, 2, system.Length(lx.yyStringRead) - 2);
       end;
-      lx_1.NextToken := lx;
-      lx_1.Token := _Value;
-      lx_1.yyStringRead := lx_1.TokenString;
     end;
     if Assigned (lx) then
     begin
@@ -332,11 +339,26 @@ var
   HexCode: Integer;  // hex character code (-1 on error)
 begin
   xScanner := Sender as TyamlScanner;
+
+  if (xScanner.Token <> _INDENT) then
+    HyphenIndent := 0;
+  if (xScanner.Token = _HYPHENINDENT) then
+  begin
+    HyphenIndent := Length(xScanner.TokenAsString);
+    lexIndent := HyphenIndent;
+  end;
+  if (xScanner.Token = _INDENT) then
+    lexIndent := HyphenIndent + Length(xScanner.TokenAsString);
+  if (xScanner.Token = _NEWLINE)
+  or (xScanner.Token = _COMMENT)
+  then
+    lexIndent := 0;
+
   if True then
   begin
     if (xScanner.Token = _NEWLINE) then
     begin
-      HyphenIndent := 0;
+      lexIndent := 0;
       Offset := Offset + Length (LineEnding);
       exit;
     end;
@@ -348,7 +370,9 @@ begin
       exit;
     end;
   end;
+
   Lexical := YYSType.Create;
+  Lexical.yy.yyInteger := lexIndent;
   if LexicalList = nil then
     LexicalList := Lexical
   else
@@ -363,20 +387,9 @@ begin
   Lexical.ColumnNumber := Scanner.ColumnNumber;
   Lexical.Token := Scanner.Token;
   Lexical.TokenString := Scanner.TokenAsString;
-  if (Lexical.Token = _INDENT) then
-    Lexical.yy.yyInteger := Length (Lexical.TokenString);
-  if (Lexical.Token = _HYPHENINDENT) then
-  begin
-    HyphenIndent := Length (Lexical.TokenString);
-    Lexical.yy.yyInteger := HyphenIndent;
-  end;
-  if (Lexical.Token = _INDENT)
-  and (PrevLexItem.Token = _HYPHENINDENT) then
-    Lexical.yy.yyInteger := Lexical.yy.yyInteger + HyphenIndent;
   Lexical.yyStringRead := Lexical.TokenString;
   Lexical.yyRead := Lexical.yy;
   PrevLexItem := Lexical;
-
   Offset := Offset + Length (Lexical.TokenString);
 end;
 
@@ -387,6 +400,8 @@ begin
   Scanner.OnToken := OnToken;
   StackIndex := 0;
   Offset := 1;
+  lexIndent := 0;
+  HyphenIndent := 0;
   Scanner.Start (StartState);
   Scanner.Execute;
   PrepareParsing;

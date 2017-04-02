@@ -4,7 +4,7 @@
 
 NewStreamSep    \-\-\-\ *
 LineCont        \\[\n\r ]+\\ *
-Comment         \#[^\n]*
+Comment         \ *\#[^\n]*
 Name            [^ \-\n\:][^\n\:]*\:
 Value           [^ \-\n\:][^\n\:]*
 dqString        \"((\\.)|[^\"\n])*\"
@@ -13,7 +13,7 @@ String          {dqString}|{sqString}
 NewLine         \n
 cr              \r
 Space           (\ )
-Pipe            (\|)(\ )*
+Pipe            (\|)({Comment})?
 IndentSpace     {Space}+
 HyphenSpace     {Space}*\-
 Rest            [^ \n]

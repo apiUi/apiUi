@@ -452,9 +452,12 @@ object Form1: TForm1
     MouseSelActions = <>
     Lines.Strings = (
       '---'
-      'swagger: "2.0"'
+      'swagger: "2.0"  # dat is mooi'
+      'a:'
+      '      description: |'
+      '        api is secured by basic security'
       'info:'
-      '  description: |'
+      '  description: | #comment'
       '    This is a sample server Petstore server.  You can find out more about'
       '    Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\'
       '    For this sample, you can use the api key `special-key` to test the authorization\'
@@ -1230,7 +1233,7 @@ object Form1: TForm1
       end    
       item
         Position = 1
-        Text = 'Value'
+        Text = 'Indent'
       end    
       item
         Position = 2
