@@ -159,7 +159,6 @@ YamlObject:
         CurrentXml.Tag := 0;
         CurrentXml.jsonType := jsonObject;
       }
-      OptionalYamlIndent
       NameValuePair
       {
         if not Assigned (PreviousXml) then
@@ -170,22 +169,11 @@ YamlObject:
       }
     ;
 
-OptionalYamlIndent:
-      /* void */
-    | YamlIndent
-    ;
-
-YamlIndent:
-      _INDENT
-      {
-        CurrentXml.Tag := $1.yy.yyInteger;
-      }
-    ;
-
 NameValuePair:
       _NAME OptionalValue
       {
         CurrentXml.Name := $1.yyString;
+        CurrentXml.Tag := $1.yy.yyInteger;
       }
     | arrayEntry
     | arrayValueWithoutName
@@ -194,9 +182,9 @@ NameValuePair:
 arrayEntry:
       _HYPHENINDENT
       {
-        CurrentXml.Tag := $1.yy.yyInteger;
         CurrentXml.Name := '_';
-        CurrentXml.jsonType := jsonArrayValue
+        CurrentXml.jsonType := jsonArrayValue;
+        CurrentXml.Tag := $1.yy.yyInteger;
       }
     ;
 
@@ -205,7 +193,7 @@ arrayValueWithoutName:
       {
         CurrentXml.Value := $1.yyString;
         CurrentXml.jsonType := jsonString;
-        CurrentXml.Tag := $1.yy.yyInteger
+        CurrentXml.Tag := $1.yy.yyInteger;
       }
     ;
 
@@ -220,6 +208,7 @@ Value:
       {
         CurrentXml.Value := $1.yyString;
         CurrentXml.jsonType := jsonString;
+        CurrentXml.Tag := $1.yy.yyInteger;
       }
     ;
 

@@ -17,7 +17,6 @@ state 1:
 
 	$end	reduce 3
 	_NAME	reduce 7
-	_INDENT	reduce 7
 	_HYPHENINDENT	reduce 7
 	_ARRAYVALUE	reduce 7
 	.	error
@@ -36,17 +35,16 @@ state 2:
 
 state 3:
 
-	YamlObject : $$2 _ OptionalYamlIndent NameValuePair
-	OptionalYamlIndent : _	(9)
+	YamlObject : $$2 _ NameValuePair
 
-	_INDENT	shift 9
-	_NAME	reduce 9
-	_HYPHENINDENT	reduce 9
-	_ARRAYVALUE	reduce 9
+	_NAME	shift 10
+	_HYPHENINDENT	shift 11
+	_ARRAYVALUE	shift 12
 	.	error
 
-	YamlIndent	goto 7
-	OptionalYamlIndent	goto 8
+	arrayValueWithoutName	goto 7
+	arrayEntry	goto 8
+	NameValuePair	goto 9
 
 state 4:
 
@@ -62,13 +60,12 @@ state 5:
 
 	$end	reduce 4
 	_NAME	reduce 7
-	_INDENT	reduce 7
 	_HYPHENINDENT	reduce 7
 	_ARRAYVALUE	reduce 7
 	.	error
 
 	$$2	goto 3
-	YamlObject	goto 10
+	YamlObject	goto 13
 
 state 6:
 
@@ -78,96 +75,70 @@ state 6:
 
 state 7:
 
-	OptionalYamlIndent : YamlIndent _	(10)
-
-	.	reduce 10
-
-state 8:
-
-	YamlObject : $$2 OptionalYamlIndent _ NameValuePair
-
-	_NAME	shift 14
-	_HYPHENINDENT	shift 15
-	_ARRAYVALUE	shift 16
-	.	error
-
-	arrayValueWithoutName	goto 11
-	arrayEntry	goto 12
-	NameValuePair	goto 13
-
-state 9:
-
-	YamlIndent : _INDENT _	(11)
+	NameValuePair : arrayValueWithoutName _	(11)
 
 	.	reduce 11
 
+state 8:
+
+	NameValuePair : arrayEntry _	(10)
+
+	.	reduce 10
+
+state 9:
+
+	YamlObject : $$2 NameValuePair _	(8)
+
+	.	reduce 8
+
 state 10:
 
-	YamlObjects : YamlObjects YamlObject _	(6)
+	NameValuePair : _NAME _ OptionalValue
+	OptionalValue : _	(14)
 
-	.	reduce 6
+	_VALUE	shift 16
+	$end	reduce 14
+	_NAME	reduce 14
+	_HYPHENINDENT	reduce 14
+	_ARRAYVALUE	reduce 14
+	.	error
+
+	Value	goto 14
+	OptionalValue	goto 15
 
 state 11:
 
-	NameValuePair : arrayValueWithoutName _	(14)
+	arrayEntry : _HYPHENINDENT _	(12)
 
-	.	reduce 14
+	.	reduce 12
 
 state 12:
 
-	NameValuePair : arrayEntry _	(13)
+	arrayValueWithoutName : _ARRAYVALUE _	(13)
 
 	.	reduce 13
 
 state 13:
 
-	YamlObject : $$2 OptionalYamlIndent NameValuePair _	(8)
+	YamlObjects : YamlObjects YamlObject _	(6)
 
-	.	reduce 8
+	.	reduce 6
 
 state 14:
 
-	NameValuePair : _NAME _ OptionalValue
-	OptionalValue : _	(17)
-
-	_VALUE	shift 19
-	$end	reduce 17
-	_NAME	reduce 17
-	_INDENT	reduce 17
-	_HYPHENINDENT	reduce 17
-	_ARRAYVALUE	reduce 17
-	.	error
-
-	Value	goto 17
-	OptionalValue	goto 18
-
-state 15:
-
-	arrayEntry : _HYPHENINDENT _	(15)
+	OptionalValue : Value _	(15)
 
 	.	reduce 15
 
+state 15:
+
+	NameValuePair : _NAME OptionalValue _	(9)
+
+	.	reduce 9
+
 state 16:
 
-	arrayValueWithoutName : _ARRAYVALUE _	(16)
+	Value : _VALUE _	(16)
 
 	.	reduce 16
-
-state 17:
-
-	OptionalValue : Value _	(18)
-
-	.	reduce 18
-
-state 18:
-
-	NameValuePair : _NAME OptionalValue _	(12)
-
-	.	reduce 12
-
-state 19:
-
-	Value : _VALUE _	(19)
-
-	.	reduce 19
 

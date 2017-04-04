@@ -147,7 +147,7 @@ end;
 
 procedure TyamlAnalyser .PrepareParsing ;
 var
-  lx, lx_1, lx_2: YYSType;
+  lx, lx_1: YYSType;
   sep: String;
   rx: TRegExpr;
 begin
@@ -186,11 +186,8 @@ begin
         while Assigned (lx_1)
         and (lx_1.yy.yyInteger > lx.yy.yyInteger) do
         begin
-          if (lx_1.Token <> _INDENT) then
-          begin
-            lx.yyStringRead := lx.yyStringRead + sep + lx_1.yyStringRead;
-            sep := ' ';
-          end;
+          lx.yyStringRead := lx.yyStringRead + sep + lx_1.yyStringRead;
+          sep := ' ';
           lx_1 := lx_1.NextToken;
         end;
         lx.NextToken := lx_1;
@@ -203,7 +200,6 @@ begin
   end;
   lx := LexicalList;
   lx_1 := lx;
-  lx_2 := lx_1;
   while Assigned (lx) do
   begin
     if lx.Token = _NAME then
@@ -221,15 +217,13 @@ begin
     if Assigned (lx) then
     begin
       if (lx.Token = _VALUE)
-      and (lx_1.Token = _INDENT)
-      and (lx_2.Token = _HYPHENINDENT)
+      and (lx_1.Token = _HYPHENINDENT)
       then
       begin
-        lx_2.Token := _ARRAYVALUE;
-        lx_2.yyStringRead := lx.yyStringRead;
-        lx_2.NextToken := lx.NextToken;
+        lx_1.Token := _ARRAYVALUE;
+        lx_1.yyStringRead := lx.yyStringRead;
+        lx_1.NextToken := lx.NextToken;
       end;
-      lx_2 := lx_1;
       lx_1 := lx;
       lx := lx.NextToken;
     end;
@@ -364,6 +358,7 @@ begin
     end;
     if (xScanner.Token = _WHITESPACE)
     or (xScanner.Token = _COMMENT)
+    or (xScanner.Token = _INDENT)
     then
     begin
       Offset := Offset + Length (xScanner.TokenAsString);

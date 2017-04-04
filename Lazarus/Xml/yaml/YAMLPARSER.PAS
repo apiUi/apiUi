@@ -195,49 +195,41 @@ begin
          
        end;
    9 : begin
+         
+         CurrentXml.Name := yyv[yysp-1].yyString;
+         CurrentXml.Tag := yyv[yysp-1].yy.yyInteger;
+         
        end;
   10 : begin
          yyval := yyv[yysp-0];
        end;
   11 : begin
-         
-         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
-         
+         yyval := yyv[yysp-0];
        end;
   12 : begin
          
-         CurrentXml.Name := yyv[yysp-1].yyString;
+         CurrentXml.Name := '_';
+         CurrentXml.jsonType := jsonArrayValue;
+         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
          
        end;
   13 : begin
-         yyval := yyv[yysp-0];
+         
+         CurrentXml.Value := yyv[yysp-0].yyString;
+         CurrentXml.jsonType := jsonString;
+         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
+         
        end;
   14 : begin
-         yyval := yyv[yysp-0];
        end;
   15 : begin
-         
-         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
-         CurrentXml.Name := '_';
-         CurrentXml.jsonType := jsonArrayValue
-         
+         yyval := yyv[yysp-0];
        end;
   16 : begin
          
          CurrentXml.Value := yyv[yysp-0].yyString;
          CurrentXml.jsonType := jsonString;
-         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger
-         
-       end;
-  17 : begin
-       end;
-  18 : begin
-         yyval := yyv[yysp-0];
-       end;
-  19 : begin
-         
-         CurrentXml.Value := yyv[yysp-0].yyString;
-         CurrentXml.jsonType := jsonString;
+         CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
          
        end;
   end;
@@ -254,56 +246,46 @@ type YYARec = record
 
 const
 
-yynacts   = 24;
-yyngotos  = 15;
-yynstates = 20;
-yynrules  = 19;
+yynacts   = 17;
+yyngotos  = 13;
+yynstates = 17;
+yynrules  = 16;
 
 yya : array [1..yynacts] of YYARec = (
 { 0: }
 { 1: }
   ( sym: 0; act: -3 ),
   ( sym: 259; act: -7 ),
-  ( sym: 262; act: -7 ),
   ( sym: 263; act: -7 ),
   ( sym: 265; act: -7 ),
 { 2: }
   ( sym: 0; act: 0 ),
 { 3: }
-  ( sym: 262; act: 9 ),
-  ( sym: 259; act: -9 ),
-  ( sym: 263; act: -9 ),
-  ( sym: 265; act: -9 ),
+  ( sym: 259; act: 10 ),
+  ( sym: 263; act: 11 ),
+  ( sym: 265; act: 12 ),
 { 4: }
 { 5: }
   ( sym: 0; act: -4 ),
   ( sym: 259; act: -7 ),
-  ( sym: 262; act: -7 ),
   ( sym: 263; act: -7 ),
   ( sym: 265; act: -7 ),
 { 6: }
 { 7: }
 { 8: }
-  ( sym: 259; act: 14 ),
-  ( sym: 263; act: 15 ),
-  ( sym: 265; act: 16 ),
 { 9: }
 { 10: }
+  ( sym: 264; act: 16 ),
+  ( sym: 0; act: -14 ),
+  ( sym: 259; act: -14 ),
+  ( sym: 263; act: -14 ),
+  ( sym: 265; act: -14 )
 { 11: }
 { 12: }
 { 13: }
 { 14: }
-  ( sym: 264; act: 19 ),
-  ( sym: 0; act: -17 ),
-  ( sym: 259; act: -17 ),
-  ( sym: 262; act: -17 ),
-  ( sym: 263; act: -17 ),
-  ( sym: 265; act: -17 )
 { 15: }
 { 16: }
-{ 17: }
-{ 18: }
-{ 19: }
 );
 
 yyg : array [1..yyngotos] of YYARec = (
@@ -317,31 +299,26 @@ yyg : array [1..yyngotos] of YYARec = (
   ( sym: -3; act: 6 ),
 { 2: }
 { 3: }
-  ( sym: -10; act: 7 ),
-  ( sym: -7; act: 8 ),
+  ( sym: -11; act: 7 ),
+  ( sym: -10; act: 8 ),
+  ( sym: -7; act: 9 ),
 { 4: }
 { 5: }
   ( sym: -8; act: 3 ),
-  ( sym: -6; act: 10 ),
+  ( sym: -6; act: 13 ),
 { 6: }
 { 7: }
 { 8: }
-  ( sym: -13; act: 11 ),
-  ( sym: -12; act: 12 ),
-  ( sym: -9; act: 13 ),
 { 9: }
 { 10: }
+  ( sym: -12; act: 14 ),
+  ( sym: -9; act: 15 )
 { 11: }
 { 12: }
 { 13: }
 { 14: }
-  ( sym: -14; act: 17 ),
-  ( sym: -11; act: 18 )
 { 15: }
 { 16: }
-{ 17: }
-{ 18: }
-{ 19: }
 );
 
 yyd : array [0..yynstates-1] of Integer = (
@@ -352,65 +329,56 @@ yyd : array [0..yynstates-1] of Integer = (
 { 4: } -5,
 { 5: } 0,
 { 6: } -2,
-{ 7: } -10,
-{ 8: } 0,
-{ 9: } -11,
-{ 10: } -6,
-{ 11: } -14,
+{ 7: } -11,
+{ 8: } -10,
+{ 9: } -8,
+{ 10: } 0,
+{ 11: } -12,
 { 12: } -13,
-{ 13: } -8,
-{ 14: } 0,
-{ 15: } -15,
-{ 16: } -16,
-{ 17: } -18,
-{ 18: } -12,
-{ 19: } -19
+{ 13: } -6,
+{ 14: } -15,
+{ 15: } -9,
+{ 16: } -16
 );
 
 yyal : array [0..yynstates-1] of Integer = (
 { 0: } 1,
 { 1: } 1,
-{ 2: } 6,
-{ 3: } 7,
-{ 4: } 11,
-{ 5: } 11,
-{ 6: } 16,
-{ 7: } 16,
-{ 8: } 16,
-{ 9: } 19,
-{ 10: } 19,
-{ 11: } 19,
-{ 12: } 19,
-{ 13: } 19,
-{ 14: } 19,
-{ 15: } 25,
-{ 16: } 25,
-{ 17: } 25,
-{ 18: } 25,
-{ 19: } 25
+{ 2: } 5,
+{ 3: } 6,
+{ 4: } 9,
+{ 5: } 9,
+{ 6: } 13,
+{ 7: } 13,
+{ 8: } 13,
+{ 9: } 13,
+{ 10: } 13,
+{ 11: } 18,
+{ 12: } 18,
+{ 13: } 18,
+{ 14: } 18,
+{ 15: } 18,
+{ 16: } 18
 );
 
 yyah : array [0..yynstates-1] of Integer = (
 { 0: } 0,
-{ 1: } 5,
-{ 2: } 6,
-{ 3: } 10,
-{ 4: } 10,
-{ 5: } 15,
-{ 6: } 15,
-{ 7: } 15,
-{ 8: } 18,
-{ 9: } 18,
-{ 10: } 18,
-{ 11: } 18,
-{ 12: } 18,
-{ 13: } 18,
-{ 14: } 24,
-{ 15: } 24,
-{ 16: } 24,
-{ 17: } 24,
-{ 18: } 24,
-{ 19: } 24
+{ 1: } 4,
+{ 2: } 5,
+{ 3: } 8,
+{ 4: } 8,
+{ 5: } 12,
+{ 6: } 12,
+{ 7: } 12,
+{ 8: } 12,
+{ 9: } 12,
+{ 10: } 17,
+{ 11: } 17,
+{ 12: } 17,
+{ 13: } 17,
+{ 14: } 17,
+{ 15: } 17,
+{ 16: } 17
 );
 
 yygl : array [0..yynstates-1] of Integer = (
@@ -418,45 +386,39 @@ yygl : array [0..yynstates-1] of Integer = (
 { 1: } 3,
 { 2: } 7,
 { 3: } 7,
-{ 4: } 9,
-{ 5: } 9,
-{ 6: } 11,
-{ 7: } 11,
-{ 8: } 11,
-{ 9: } 14,
-{ 10: } 14,
+{ 4: } 10,
+{ 5: } 10,
+{ 6: } 12,
+{ 7: } 12,
+{ 8: } 12,
+{ 9: } 12,
+{ 10: } 12,
 { 11: } 14,
 { 12: } 14,
 { 13: } 14,
 { 14: } 14,
-{ 15: } 16,
-{ 16: } 16,
-{ 17: } 16,
-{ 18: } 16,
-{ 19: } 16
+{ 15: } 14,
+{ 16: } 14
 );
 
 yygh : array [0..yynstates-1] of Integer = (
 { 0: } 2,
 { 1: } 6,
 { 2: } 6,
-{ 3: } 8,
-{ 4: } 8,
-{ 5: } 10,
-{ 6: } 10,
-{ 7: } 10,
-{ 8: } 13,
-{ 9: } 13,
+{ 3: } 9,
+{ 4: } 9,
+{ 5: } 11,
+{ 6: } 11,
+{ 7: } 11,
+{ 8: } 11,
+{ 9: } 11,
 { 10: } 13,
 { 11: } 13,
 { 12: } 13,
 { 13: } 13,
-{ 14: } 15,
-{ 15: } 15,
-{ 16: } 15,
-{ 17: } 15,
-{ 18: } 15,
-{ 19: } 15
+{ 14: } 13,
+{ 15: } 13,
+{ 16: } 13
 );
 
 yyr : array [1..yynrules] of YYRRec = (
@@ -467,18 +429,15 @@ yyr : array [1..yynrules] of YYRRec = (
 { 5: } ( len: 1; sym: -5 ),
 { 6: } ( len: 2; sym: -5 ),
 { 7: } ( len: 0; sym: -8 ),
-{ 8: } ( len: 3; sym: -6 ),
-{ 9: } ( len: 0; sym: -7 ),
+{ 8: } ( len: 2; sym: -6 ),
+{ 9: } ( len: 2; sym: -7 ),
 { 10: } ( len: 1; sym: -7 ),
-{ 11: } ( len: 1; sym: -10 ),
-{ 12: } ( len: 2; sym: -9 ),
-{ 13: } ( len: 1; sym: -9 ),
-{ 14: } ( len: 1; sym: -9 ),
-{ 15: } ( len: 1; sym: -12 ),
-{ 16: } ( len: 1; sym: -13 ),
-{ 17: } ( len: 0; sym: -11 ),
-{ 18: } ( len: 1; sym: -11 ),
-{ 19: } ( len: 1; sym: -14 )
+{ 11: } ( len: 1; sym: -7 ),
+{ 12: } ( len: 1; sym: -10 ),
+{ 13: } ( len: 1; sym: -11 ),
+{ 14: } ( len: 0; sym: -9 ),
+{ 15: } ( len: 1; sym: -9 ),
+{ 16: } ( len: 1; sym: -12 )
 );
 
 
