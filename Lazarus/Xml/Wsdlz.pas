@@ -615,6 +615,7 @@ var
   _ProgName: String;
   _wsdlStubStylesheet: String;
   _WsdlNewDesignMessage: VFunctionOS;
+  _wsdlFetchDefaultDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlRequestOperationLater: VFunctionOSX;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
@@ -1183,6 +1184,13 @@ begin
   if not Assigned (_WsdlRequestOperationLater) then
     raise Exception.Create('wsdlRequestOperation: implementation missing');
   _WsdlRequestOperationLater (aObject, aOperation, aLaterMs);
+end;
+
+procedure wsdlFetchDefaultDesignMessage (aObject: TObject; aOperation: String);
+begin
+  if not Assigned (_wsdlFetchDefaultDesignMessage) then
+    raise Exception.Create('wsdlFetchDefaultDesignMessage: implementation missing');
+  _wsdlFetchDefaultDesignMessage (aObject, aOperation);
 end;
 
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
@@ -4132,6 +4140,7 @@ begin
     BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindBeforeFunction ('Exit', @RaiseExit, VFOV, '()');
+    BindBeforeFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
     BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
     BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
     BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
@@ -4288,6 +4297,7 @@ begin
     BindAfterFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindAfterFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindAfterFunction ('Exit', @RaiseExit, VFOV, '()');
+    BindAfterFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
     BindAfterFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
     BindAfterFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
     BindAfterFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');

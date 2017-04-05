@@ -658,6 +658,42 @@ begin
   xProject.SendOperationInThread(yOperation);
 end;
 
+procedure FetchDefaultDesignMessage(aContext: TObject; xOperationAlias: String);
+var
+  sOperation, dOperation: TWsdlOperation;
+  xMessage: TWsdlMessage;
+  x: Integer;
+begin
+  if aContext is TWsdlProject then
+    raise Exception.Create ('FetchDefaultDesignMessage(aContext: TObject; xOperationAlias: String): Project is illegal context');
+  dOperation := nil; //candidate context
+  xMessage := nil;
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    if Alias = xOperationAlias then
+      dOperation := aContext as TWsdlOperation
+    else
+      dOperation := invokeList.FindOnAliasName(xOperationAlias);
+  end;
+  if not Assigned (dOperation) then
+   raise Exception.Create(Format ('FetchDefaultDesignMessage: Operation ''%s'' not found', [xOperationAlias]));
+  sOperation := dOperation;
+  while Assigned (sOperation.Cloned) do
+    sOperation := sOperation.Cloned;
+  if sOperation.Messages.Count > 0 then
+  begin
+    xMessage := sOperation.Messages.Messages[0];
+    if dOperation.reqBind is TIpmItem then
+      dOperation.ReqIpm.LoadValues (xMessage.ReqIpm);
+    if dOperation.rpyBind is TIpmItem then
+      dOperation.RpyIpm.LoadValues (xMessage.RpyIpm);
+    if dOperation.reqBind is TXml then
+      dOperation.reqXml.LoadValues (xMessage.reqXml, True, True);
+    if dOperation.rpyBind is TXml then
+      dOperation.rpyXml.LoadValues (xMessage.rpyXml, True, True);
+  end;
+end;
+
 procedure NewDesignMessage(aContext: TObject; xOperationAlias: String);
 var
   xProject: TWsdlProject;
@@ -7843,6 +7879,7 @@ initialization
   _WsdlRequestOperation := RequestOperation;
   _WsdlRequestOperationLater := RequestOperationLater;
   _WsdlNewDesignMessage := NewDesignMessage;
+  _wsdlFetchDefaultDesignMessage := FetchDefaultDesignMessage;
   _WsdlRequestAsText := RequestAsText;
   _WsdlReplyAsText := ReplyAsText;
   _WsdlClearLogs := ClearLogs;
