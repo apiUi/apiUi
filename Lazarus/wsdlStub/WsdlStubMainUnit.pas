@@ -2839,7 +2839,7 @@ begin
   y := StrToInt(Copy (xLicenseExpirationDate, 1, 4));
   m := StrToInt(Copy (xLicenseExpirationDate, 6, 2));
   d := StrToInt(Copy (xLicenseExpirationDate, 9, 2));
-  xLicenseDate := EncodeDate(y, m, d) + 180;
+  xLicenseDate := EncodeDate(2099, 12, 31);
   xLicenseExpirationDate := FormatDateTime('yyyy-mm-dd', xLicenseDate);
   result := ValidateLicenseExpirationDate(xLicenseExpirationDate);
   LicenseMenuItem.Enabled := False;
@@ -8338,30 +8338,30 @@ begin
   se.AcquireLogLock;
   se.ProgressMax := WsdlOperation.Messages.Count;
   se.ReleaseLogLock;
-  WsdlOperation.AcquireLock;
-  try
-    xOperation := TWsdlOperation.Create(WsdlOperation);
-  finally
-    WsdlOperation.ReleaseLock;
-  end;
-  try
-    for X := 0 to xOperation.Messages.Count - 1 do
-    begin
-      if abortPressed then
-        Break;
-      if not xOperation.Messages.Messages[X].Disabled then
+  for X := 0 to WsdlOperation.Messages.Count - 1 do
+  begin
+    if abortPressed then
+      Break;
+    WsdlOperation.AcquireLock;
+    try
+      xOperation := TWsdlOperation.Create(WsdlOperation); // fresh copy
+    finally
+      WsdlOperation.ReleaseLock;
+    end;
+    try
+      if not WsdlOperation.Messages.Messages[X].Disabled then
       begin
         se.AcquireLogLock;
         se.ProgressPos := X + 1;
         se.ReleaseLogLock;
         try
-          se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
+          se.SendMessage(xOperation, WsdlOperation.Messages.Messages[X], '');
         except
         end;
       end;
+    finally
+      FreeAndNil(xOperation);
     end;
-  finally
-    FreeAndNil(xOperation);
   end;
 end;
 
@@ -11196,6 +11196,7 @@ begin
           AddXml (fLog.reqBodyAsXml);
         with AddXml (TXml.CreateAsString('Rpy', '')) do
           AddXml (fLog.rpyBodyAsXml);
+        fXml.SeparateNsPrefixes;
       end;
       nXml := TXml.CreateAsString('nextSelected', '');
       with nXml do
@@ -11206,6 +11207,7 @@ begin
           AddXml (nLog.reqBodyAsXml);
         with AddXml (TXml.CreateAsString('Rpy', '')) do
           AddXml (nLog.rpyBodyAsXml);
+        nXml.SeparateNsPrefixes;
       end;
     finally
       fLog.Disclaim;
