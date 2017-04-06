@@ -585,6 +585,9 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
+    procedure OperationReqsTreeViewGetImageIndex (Sender : TBaseVirtualTree ;
+      Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
+      var Ghosted : Boolean ; var ImageIndex : Integer );
     procedure PingPongTimerTimer (Sender : TObject );
     procedure EditProjectPropertiesExecute (Sender : TObject );
     procedure ShowResolvedPropertiesExecute (Sender : TObject );
@@ -6278,7 +6281,7 @@ begin
     if Assigned(xOperation) then
     begin
       case Column of
-        0:
+        2:
           CellText := xOperation.Alias;
       end;
     end
@@ -6608,6 +6611,8 @@ begin
     MessagesVTS.Header.Columns[X].Width := wBttn;
   for X := 0 to Ord(snapshotDateTimeColumn) - 1 do
     SnapshotsVTS.Header.Columns[X].Width := wBttn;
+    OperationReqsTreeView.Header.Columns[0].Width := wBttn;
+    OperationReqsTreeView.Header.Columns[1].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
   wsdlStubSnapshotsFileName := xIniFile.StringByName['wsdlStubSnapshotsFileName'];
@@ -13062,6 +13067,36 @@ begin
     if Assigned (Choose2StringsForm.ListOfLists) then
       Choose2StringsForm.ListOfLists.Free;
     FreeAndNil(Choose2StringsForm);
+  end;
+end;
+
+procedure TMainForm .OperationReqsTreeViewGetImageIndex (
+  Sender : TBaseVirtualTree ; Node : PVirtualNode ; Kind : TVTImageKind ;
+  Column : TColumnIndex ; var Ghosted : Boolean ; var ImageIndex : Integer );
+var
+  xOperation: TWsdlOperation;
+begin
+  ImageIndex := -1;
+  try
+    xOperation := NodeToOperation(Sender, Node);
+    if Assigned(xOperation) then
+    begin
+      case Column of
+        0: begin
+             if (Trim(xOperation.BeforeScriptLines.Text) <> '') then
+             begin
+               if (not xOperation.PreparedBefore)
+               and (not xOperation.lateBinding) then
+                 ImageIndex := 93
+               else
+                 ImageIndex := 92;
+             end
+             else
+               ImageIndex := 91;
+           end;
+      end;
+    end;
+  except
   end;
 end;
 
