@@ -390,9 +390,6 @@ type
     N11: TMenuItem;
     N12: TMenuItem;
     N13: TMenuItem;
-    ScriptButtonsPanel: TPanel;
-    EditScriptButton: TPanel;
-    AfterRequestScriptButton: TPanel;
     FilterLogAction: TAction;
     FilterLogAction1: TMenuItem;
     ToolButton43: TToolButton;
@@ -585,6 +582,7 @@ type
     procedure MenuItem17Click (Sender : TObject );
     procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
+    procedure OperationReqsTreeViewClick(Sender: TObject);
     procedure OperationReqsTreeViewGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
       var Ghosted : Boolean ; var ImageIndex : Integer );
@@ -1319,6 +1317,11 @@ type
     , snapshotNameColumn
     , snapshotMessageColumn
     );
+  TOperationsColumnEnum =
+    ( operationsColumnBeforeScript
+    , operationsColumnAfterScript
+    , operationsColumnAlias
+    );
 
 procedure _SaveLogs(aContext: TObject; aFileName: String);
 var
@@ -1582,32 +1585,11 @@ end;
 
 procedure TMainForm.FillInWsdlEdits;
 begin
-  EditScriptButton.Font.Style := EditScriptButton.Font.Style - [fsBold] -
-    [fsStrikeOut];
-  AfterRequestScriptButton.Font.Style := AfterRequestScriptButton.Font.Style -
-    [fsBold] - [fsStrikeOut];
   if (WsdlOperation <> nil) then
   begin
     ActionComboBox.ItemIndex := Ord(WsdlOperation.StubAction);
     // SoapActionEdit.Text := WsdlOperation.SoapAction;
     OperationDocumentationEdit.Text := WsdlOperation.Documentation.Text;
-    if (Trim(WsdlOperation.BeforeScriptLines.Text) <> '') then
-    begin
-      EditScriptButton.Font.Style := EditScriptButton.Font.Style + [fsBold];
-      if (not WsdlOperation.PreparedBefore)
-      and (not WsdlOperation.lateBinding) then
-        EditScriptButton.Font.Style := EditScriptButton.Font.Style +
-          [fsStrikeOut];
-    end;
-    if (Trim(WsdlOperation.AfterScriptLines.Text) <> '') then
-    begin
-      AfterRequestScriptButton.Font.Style :=
-        AfterRequestScriptButton.Font.Style + [fsBold];
-      if (not WsdlOperation.PreparedAfter)
-      and (not WsdlOperation.lateBinding) then
-        AfterRequestScriptButton.Font.Style :=
-          AfterRequestScriptButton.Font.Style + [fsStrikeOut];
-    end;
   end
   else
   begin
@@ -2969,6 +2951,7 @@ begin
   if not Assigned(WsdlOperation) then
     Raise Exception.Create('First get a Wsdl');
   xOperation := TWsdlOperation.Create(WsdlOperation);
+  if xOperation.StubAction = saStub then Exit;
   if xOperation.lateBinding then
   begin
     xOperation.rpyBind := TXml.Create;
@@ -3035,9 +3018,6 @@ begin
         xOperation.reqBind.Name := 'noXml';
       try xOperation.PrepareBefore; except end;
     end;
-    if xOperation.PrepareErrors <> '' then
-      if not BooleanPromptDialog (xOperation.PrepareErrors + LineEnding + 'Continue') then
-        Exit;
     try
       Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
       try
@@ -4395,6 +4375,7 @@ begin
     end;
     WsdlOperation.StubAction := TStubAction(ActionComboBox.ItemIndex);
     stubChanged := True;
+    OperationReqsTreeView.Invalidate;
     OperationDelayResponseTimeAction.Visible :=
       (WsdlOperation.StubAction <> saRequest);
     if (WsdlOperation.DelayTimeMsMin = 0) and
@@ -4404,16 +4385,6 @@ begin
       OperationDelayResponseTimeAction.ImageIndex := 61;
     RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRedirect) or
       (WsdlOperation.StubAction = saRequest);
-    if (WsdlOperation.StubAction = saStub) then
-    begin
-      EditScriptButton.Caption := 'Script';
-      AfterRequestScriptButton.Visible := False;
-    end
-    else
-    begin
-      EditScriptButton.Caption := 'Before';
-      AfterRequestScriptButton.Visible := True;
-    end;
     EditBetweenScriptMenuItem.Visible := (WsdlOperation.StubAction = saStub);
     EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
     EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
@@ -4578,8 +4549,9 @@ procedure TMainForm.GridViewGetText(Sender: TBaseVirtualTree;
 var
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
+  xButtonColumns: Integer;
 begin
-
+  xButtonColumns := Ord(operationsColumnAfterScript) + 1;
 {
   first column Message Name
   n columns correlation values
@@ -4587,14 +4559,14 @@ begin
 }
   xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
-  if not Assigned(xMessage) then
-    exit;
+  if not Assigned(xMessage) then Exit;
+  if Column < xButtonColumns then Exit;
   try
-    if Column = 0 then
+    if Column = xButtonColumns then
       CellText := xMessage.Name
     else
     begin
-      if Column <= xMessage.CorrelationBindables.Count then
+      if (Column - xButtonColumns) <= xMessage.CorrelationBindables.Count then
         try
           if Assigned (xMessage.CorrelationBindables.Bindables[Column - 1]) then
             CellText := xMessage.CorrelationBindables.Bindables[Column - 1].CorrelationValue
@@ -4605,7 +4577,7 @@ begin
       else
       begin
         xBind := xMessage.ColumnXmls.Bindables
-          [Column - xMessage.CorrelationBindables.Count - 1];
+          [Column - xButtonColumns - xMessage.CorrelationBindables.Count - 1];
         if Assigned(xBind) then
         begin
           if ((xBind is TIpmItem) or (not Assigned(xBind.Parent)) or
@@ -5109,7 +5081,9 @@ var
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
   swapNotifyEvent, swapMemoEvent: TNotifyEvent;
+  fCols: Integer;
 begin
+  fCols := Ord (operationsColumnAfterScript) + 1;
   xMessage := nil; //avoid warning
   InWsdlTreeView.BeginUpdate;
   try
@@ -5150,14 +5124,14 @@ begin
           end;
         end;
         DocumentationMemo.Text := xMessage.Documentation;
-        if Column > xMessage.CorrelationBindables.Count then
+        if (Column - fCols) > xMessage.CorrelationBindables.Count then
         begin
           swapEvent := GridView.OnFocusChanged;
           try
             GridView.OnFocusChanged := nil;
             FocusOnBind
               (xMessage.ColumnXmls.Bindables
-                [Column - xMessage.CorrelationBindables.Count - 1]);
+                [Column - fCols - xMessage.CorrelationBindables.Count - 1]);
           finally
             GridView.OnFocusChanged := swapEvent;
           end;
@@ -5435,6 +5409,7 @@ begin
               end;
             end;
         end;
+        OperationReqsTreeView.Invalidate;
         stubChanged := True;
       finally
         ReleaseLock;
@@ -6281,7 +6256,7 @@ begin
     if Assigned(xOperation) then
     begin
       case Column of
-        2:
+        Ord (operationsColumnAlias):
           CellText := xOperation.Alias;
       end;
     end
@@ -6418,21 +6393,22 @@ end;
 
 procedure TMainForm.RemoveMessageColumns;
 var
-  c: Integer;
+  c, fCols: Integer;
 begin
-  GridView.FocusedColumn := 0;
-  for c := GridView.Header.Columns.Count - 1 downto 0 do
+  fCols := Ord (operationsColumnAfterScript) + 1;
+  GridView.FocusedColumn := fCols;
+  for c := GridView.Header.Columns.Count - 1 downto fCols do
     ColumnWidths.Values[GridView.Header.Columns[c].Text] :=
       IntToStr (GridView.Header.Columns[c].Width);
   if Assigned(WsdlOperation) then
   begin
     try
       while GridView.Header.Columns.Count >
-        (1 + WsdlOperation.CorrelationBindables.Count +
+        (fCols + 1 + WsdlOperation.CorrelationBindables.Count +
           WsdlOperation.Messages.Messages[0].ColumnXmls.Count) do
         GridView.Header.Columns.Delete(GridView.Header.Columns.Count - 1);
       while GridView.Header.Columns.Count <
-        (1 + WsdlOperation.CorrelationBindables.Count +
+        (fCols + 1 + WsdlOperation.CorrelationBindables.Count +
           WsdlOperation.Messages.Messages[0].ColumnXmls.Count) do
         GridView.Header.Columns.Add;
     except
@@ -6446,7 +6422,7 @@ var
   vc: TVirtualTreeColumn;
 begin
   RemoveMessageColumns;
-  c := 0;
+  c := Ord (operationsColumnAfterScript) + 1;
   vc := GridView.Header.Columns.Items[c];
   if WsdlOperation.StubAction = saRequest then
     vc.Text := 'Request'
@@ -6611,8 +6587,10 @@ begin
     MessagesVTS.Header.Columns[X].Width := wBttn;
   for X := 0 to Ord(snapshotDateTimeColumn) - 1 do
     SnapshotsVTS.Header.Columns[X].Width := wBttn;
-    OperationReqsTreeView.Header.Columns[0].Width := wBttn;
-    OperationReqsTreeView.Header.Columns[1].Width := wBttn;
+  OperationReqsTreeView.Header.Columns[0].Width := wBttn;
+  OperationReqsTreeView.Header.Columns[1].Width := wBttn;
+  GridView.Header.Columns[0].Width := wBttn;
+  GridView.Header.Columns[1].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
   wsdlStubSnapshotsFileName := xIniFile.StringByName['wsdlStubSnapshotsFileName'];
@@ -6992,10 +6970,13 @@ var
   Xml: TXml;
   XmlAttr: TXmlAttribute;
   xMessage: TWsdlMessage;
+  fCols: Integer;
 begin
+  fCols := Ord (operationsColumnAfterScript) + 1;
   xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
-  if (Column = 0) then
+  if Column < fCols then exit;
+  if (Column = fCols) then
   begin
     if xMessage.Disabled then
       if (Node <> GridView.GetFirst) then
@@ -7005,12 +6986,12 @@ begin
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
     exit;
   end;
-  if Column <= xMessage.CorrelationBindables.Count then
+  if (Column - fCols) <= xMessage.CorrelationBindables.Count then
     exit;
   xBind := nil;
   try
     xBind := xMessage.ColumnXmls.Bindables
-      [Column - xMessage.CorrelationBindables.Count - 1];
+      [Column - fCols - xMessage.CorrelationBindables.Count - 1];
   except
   end;
   if not Assigned(xBind) then
@@ -8712,7 +8693,6 @@ end;
 
 procedure TMainForm.ScriptButtonsPanelResize(Sender: TObject);
 begin
-  AfterRequestScriptButton.Width := ScriptButtonsPanel.Width div 2;
 end;
 
 procedure TMainForm.ScriptSplitterCanResize(Sender: TObject;
@@ -13070,6 +13050,17 @@ begin
   end;
 end;
 
+procedure TMainForm.OperationReqsTreeViewClick(Sender: TObject);
+begin
+  if not Assigned (OperationReqsTreeView.FocusedNode) then Exit;
+  case OperationReqsTreeView.FocusedColumn of
+  Ord (operationsColumnBeforeScript):
+    EditScriptButtonClick(nil);
+  Ord (operationsColumnAfterScript):
+    AfterRequestScriptButtonClick(nil);
+  end;
+end;
+
 procedure TMainForm .OperationReqsTreeViewGetImageIndex (
   Sender : TBaseVirtualTree ; Node : PVirtualNode ; Kind : TVTImageKind ;
   Column : TColumnIndex ; var Ghosted : Boolean ; var ImageIndex : Integer );
@@ -13082,18 +13073,35 @@ begin
     if Assigned(xOperation) then
     begin
       case Column of
-        0: begin
-             if (Trim(xOperation.BeforeScriptLines.Text) <> '') then
-             begin
-               if (not xOperation.PreparedBefore)
-               and (not xOperation.lateBinding) then
-                 ImageIndex := 93
-               else
-                 ImageIndex := 92;
-             end
+      Ord (operationsColumnBeforeScript):
+        begin
+           if (Trim(xOperation.BeforeScriptLines.Text) <> '') then
+           begin
+             if (not xOperation.PreparedBefore)
+             and (not xOperation.lateBinding) then
+               ImageIndex := 93
              else
-               ImageIndex := 91;
-           end;
+               ImageIndex := 92;
+           end
+           else
+             ImageIndex := 91;
+        end;
+      Ord (operationsColumnAfterScript):
+        begin
+          if xOperation.StubAction <> saStub then
+          begin
+            if (Trim(xOperation.AfterScriptLines.Text) <> '') then
+            begin
+              if (not xOperation.PreparedAfter)
+              and (not xOperation.lateBinding) then
+                ImageIndex := 93
+              else
+                ImageIndex := 92;
+            end
+            else
+              ImageIndex := 91;
+          end;
+        end;
       end;
     end;
   except
