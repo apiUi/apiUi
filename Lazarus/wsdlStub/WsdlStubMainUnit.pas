@@ -1322,6 +1322,7 @@ type
     , operationsColumnAfterScript
     , operationsColumnAlias
     );
+  const NScripts = 2;
 
 procedure _SaveLogs(aContext: TObject; aFileName: String);
 var
@@ -2440,8 +2441,7 @@ begin
     begin
       try
         GridView.OnFocusChanged := nil;
-        GridView.FocusedColumn := f + 1 +
-          WsdlOperation.CorrelationBindables.Count;
+        GridView.FocusedColumn := f + 1 + NScripts + WsdlOperation.CorrelationBindables.Count;
       finally
         GridView.OnFocusChanged := swapEvent;
       end;
@@ -4463,17 +4463,17 @@ begin
           NodeToMessage(Sender, Node, xMessage);
           if not Assigned(xMessage) then
             exit;
-          if Column = 0 then
+          if Column <= NScripts then
             exit
           else
           begin
-            if Column <= xMessage.CorrelationBindables.Count then
+            if Column <= (NScripts + xMessage.CorrelationBindables.Count) then
               exit
             else
             begin
               try
                 xBind := xMessage.ColumnXmls.Bindables
-                  [Column - xMessage.CorrelationBindables.Count - 1];
+                  [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
                 if Assigned(xBind) then
                 begin
                   if xBind is TXmlAttribute then
@@ -4549,27 +4549,26 @@ procedure TMainForm.GridViewGetText(Sender: TBaseVirtualTree;
 var
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
-  xButtonColumns: Integer;
 begin
-  xButtonColumns := Ord(operationsColumnAfterScript) + 1;
 {
   first column Message Name
   n columns correlation values
   m columns displayed columns
 }
   xMessage := nil; //avoid warning
+  CellText := '';
   NodeToMessage(Sender, Node, xMessage);
   if not Assigned(xMessage) then Exit;
-  if Column < xButtonColumns then Exit;
+  if Column < NScripts then Exit;
   try
-    if Column = xButtonColumns then
+    if Column = NScripts then
       CellText := xMessage.Name
     else
     begin
-      if (Column - xButtonColumns) <= xMessage.CorrelationBindables.Count then
+      if (Column - NScripts) <= xMessage.CorrelationBindables.Count then
         try
-          if Assigned (xMessage.CorrelationBindables.Bindables[Column - 1]) then
-            CellText := xMessage.CorrelationBindables.Bindables[Column - 1].CorrelationValue
+          if Assigned (xMessage.CorrelationBindables.Bindables[Column - NScripts - 1]) then
+            CellText := xMessage.CorrelationBindables.Bindables[Column - NScripts - 1].CorrelationValue
           else
             CellText := '?';
         except
@@ -4577,7 +4576,7 @@ begin
       else
       begin
         xBind := xMessage.ColumnXmls.Bindables
-          [Column - xButtonColumns - xMessage.CorrelationBindables.Count - 1];
+          [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
         if Assigned(xBind) then
         begin
           if ((xBind is TIpmItem) or (not Assigned(xBind.Parent)) or
@@ -4809,7 +4808,7 @@ begin
   WsdlOperation.AcquireLock;
   try
     NodeToMessage(Sender, Node, xMessage);
-    if Column = 0 then
+    if Column = NScripts then
     begin
       if NewText <> xMessage.Name then
       begin
@@ -4824,13 +4823,13 @@ begin
     end
     else
     begin
-      if Column <= xMessage.CorrelationBindables.Count then
+      if (Column - NScripts) <= xMessage.CorrelationBindables.Count then
       begin
         xNode := GridView.GetFirstSelected;
         while Assigned(xNode) do
         begin
           NodeToMessage(Sender, xNode, xMessage);
-          if NewText <> xMessage.CorrelationBindables.Bindables[Column - 1]
+          if NewText <> xMessage.CorrelationBindables.Bindables[Column - NScripts - 1]
             .CorrelationValue then
           begin
             if xNode = Sender.GetFirst then
@@ -4838,7 +4837,7 @@ begin
               Node := xNode;
               _RaiseError('Not allowed to change this pattern into ' + NewText);
             end;
-            xMessage.CorrelationBindables.Bindables[Column - 1].CorrelationValue := NewText;
+            xMessage.CorrelationBindables.Bindables[Column - NScripts - 1].CorrelationValue := NewText;
             stubChanged := True;
           end;
           xNode := GridView.GetNextSelected(xNode);
@@ -4859,7 +4858,7 @@ begin
         begin
           NodeToMessage(Sender, xNode, xMessage);
           xBind := xMessage.ColumnXmls.Bindables
-            [Column - xMessage.CorrelationBindables.Count - 1];
+            [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
           if (xBind is TXml) or (xBind is TXmlAttribute) then
           begin
             if NewText = '&nil' then
@@ -4909,19 +4908,24 @@ begin
   xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
   editingNode := InWsdlTreeView.FocusedNode;
-  if Column = 0 then
+  if Column < NScripts then
+  begin
+    Allowed := False;
+    Exit;
+  end;
+  if Column = NScripts then
   begin
     Allowed := (Node <> Sender.GetFirst) and (GridView.SelectedCount = 1);
     exit;
   end;
-  if Column <= xMessage.CorrelationBindables.Count then
+  if (Column - NScripts) <= xMessage.CorrelationBindables.Count then
   begin
     Allowed := (Node <> Sender.GetFirst)
            and (Assigned (xMessage.CorrelationBindables.Bindables[Column - 1]))
              ;
     exit;
   end;
-  xDataIndex := Column - xMessage.CorrelationBindables.Count - 1;
+  xDataIndex := Column - NScripts - xMessage.CorrelationBindables.Count - 1;
   Allowed := Assigned(xMessage.ColumnXmls.Bindables [xDataIndex])
          and (xMessage.ColumnXmls.Bindables [xDataIndex].Children.Count = 0)
            ;
@@ -4930,8 +4934,7 @@ begin
     swapEvent := InWsdlTreeView.OnFocusChanged;
     try
       InWsdlTreeView.OnFocusChanged := nil;
-      FocusOnBind(xMessage.ColumnXmls.Bindables
-          [Column - xMessage.CorrelationBindables.Count - 1]);
+      FocusOnBind(xMessage.ColumnXmls.Bindables [xDataIndex]);
     finally
       InWsdlTreeView.OnFocusChanged := swapEvent;
     end;
@@ -5081,9 +5084,7 @@ var
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
   swapNotifyEvent, swapMemoEvent: TNotifyEvent;
-  fCols: Integer;
 begin
-  fCols := Ord (operationsColumnAfterScript) + 1;
   xMessage := nil; //avoid warning
   InWsdlTreeView.BeginUpdate;
   try
@@ -5124,14 +5125,14 @@ begin
           end;
         end;
         DocumentationMemo.Text := xMessage.Documentation;
-        if (Column - fCols) > xMessage.CorrelationBindables.Count then
+        if (Column - NScripts) > xMessage.CorrelationBindables.Count then
         begin
           swapEvent := GridView.OnFocusChanged;
           try
             GridView.OnFocusChanged := nil;
             FocusOnBind
               (xMessage.ColumnXmls.Bindables
-                [Column - fCols - xMessage.CorrelationBindables.Count - 1]);
+                [Column - NScripts - xMessage.CorrelationBindables.Count - 1]);
           finally
             GridView.OnFocusChanged := swapEvent;
           end;
@@ -5440,7 +5441,7 @@ begin
     NodeToMessage(Sender, Node, xMessage);
     if not Assigned(xMessage) then
       exit;
-    if Column <= xMessage.CorrelationBindables.Count then
+    if Column <= NScripts + xMessage.CorrelationBindables.Count then
     begin
       with TargetCanvas do
       begin
@@ -5452,7 +5453,7 @@ begin
     end;
     try
       xBind := xMessage.ColumnXmls.Bindables
-        [Column - xMessage.CorrelationBindables.Count - 1];
+        [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
     except
       exit;
     end;
@@ -5498,7 +5499,7 @@ end;
 procedure TMainForm.GridViewEdited(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 begin
-  if Column > WsdlOperation.CorrelationBindables.Count then
+  if (Column - NScripts) > WsdlOperation.CorrelationBindables.Count then
   begin
     InWsdlTreeView.OnEdited(InWsdlTreeView, editingNode, treeValueColumn);
   end;
@@ -6393,22 +6394,21 @@ end;
 
 procedure TMainForm.RemoveMessageColumns;
 var
-  c, fCols: Integer;
+  c: Integer;
 begin
-  fCols := Ord (operationsColumnAfterScript) + 1;
-  GridView.FocusedColumn := fCols;
-  for c := GridView.Header.Columns.Count - 1 downto fCols do
+  GridView.FocusedColumn := NScripts;
+  for c := GridView.Header.Columns.Count - 1 downto NScripts do
     ColumnWidths.Values[GridView.Header.Columns[c].Text] :=
       IntToStr (GridView.Header.Columns[c].Width);
   if Assigned(WsdlOperation) then
   begin
     try
       while GridView.Header.Columns.Count >
-        (fCols + 1 + WsdlOperation.CorrelationBindables.Count +
+        (NScripts + 1 + WsdlOperation.CorrelationBindables.Count +
           WsdlOperation.Messages.Messages[0].ColumnXmls.Count) do
         GridView.Header.Columns.Delete(GridView.Header.Columns.Count - 1);
       while GridView.Header.Columns.Count <
-        (fCols + 1 + WsdlOperation.CorrelationBindables.Count +
+        (NScripts + 1 + WsdlOperation.CorrelationBindables.Count +
           WsdlOperation.Messages.Messages[0].ColumnXmls.Count) do
         GridView.Header.Columns.Add;
     except
@@ -6970,13 +6970,11 @@ var
   Xml: TXml;
   XmlAttr: TXmlAttribute;
   xMessage: TWsdlMessage;
-  fCols: Integer;
 begin
-  fCols := Ord (operationsColumnAfterScript) + 1;
   xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
-  if Column < fCols then exit;
-  if (Column = fCols) then
+  if Column < NScripts then exit;
+  if (Column = NScripts) then
   begin
     if xMessage.Disabled then
       if (Node <> GridView.GetFirst) then
@@ -6986,12 +6984,12 @@ begin
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
     exit;
   end;
-  if (Column - fCols) <= xMessage.CorrelationBindables.Count then
+  if (Column - NScripts) <= xMessage.CorrelationBindables.Count then
     exit;
   xBind := nil;
   try
     xBind := xMessage.ColumnXmls.Bindables
-      [Column - fCols - xMessage.CorrelationBindables.Count - 1];
+      [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
   except
   end;
   if not Assigned(xBind) then
