@@ -4456,87 +4456,109 @@ var
 begin
   // requires an imagelist attached to treeview
   xMessage := nil; //avoid warning
+  if Column = NScripts then
+    Exit;
+  if not Assigned(wsdlOperation) then
+    exit;
+  NodeToMessage(Sender, Node, xMessage);
+  if not Assigned(xMessage) then
+    exit;
   try
     case Kind of
       ikNormal, ikSelected:
         begin
-          NodeToMessage(Sender, Node, xMessage);
-          if not Assigned(xMessage) then
-            exit;
-          if Column <= NScripts then
-            exit
-          else
+          if Column < NScripts then
           begin
-            if Column <= (NScripts + xMessage.CorrelationBindables.Count) then
-              exit
-            else
-            begin
-              try
-                xBind := xMessage.ColumnXmls.Bindables
-                  [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
-                if Assigned(xBind) then
+            case Column of
+              Ord (operationsColumnBeforeScript):
                 begin
-                  if xBind is TXmlAttribute then
+                   if (Trim(wsdlOperation.BeforeScriptLines.Text) <> '') then
+                   begin
+                     if (not wsdlOperation.PreparedBefore)
+                     and (not wsdlOperation.lateBinding) then
+                       ImageIndex := 6
+                     else
+                       ImageIndex := 5;
+                   end
+                   else
+                     ImageIndex := 4;
+                end;
+              Ord (operationsColumnAfterScript):
+                begin
+                  if wsdlOperation.StubAction <> saStub then
                   begin
-                    ImageIndex := -1;
-                    exit;
-                  end;
-                  if xBind is TXml then
-                  begin
-                    if xmlUtil.isBoolean(xBind) then
+                    if (Trim(wsdlOperation.AfterScriptLines.Text) <> '') then
                     begin
-                      if (xBind.Value = 'true') or (xBind.Value = '1') then
-                        ImageIndex := 22
+                      if (not wsdlOperation.PreparedAfter)
+                      and (not wsdlOperation.lateBinding) then
+                        ImageIndex := 6
                       else
-                        ImageIndex := 21;
-                      exit;
-                    end;
-                    if xmlUtil.isDateTime(xBind) then
-                    begin
-                      ImageIndex := 23;
-                      exit;
-                    end;
-                    if xmlUtil.isDate(xBind) then
-                    begin
-                      ImageIndex := 24;
-                      exit;
-                    end;
-                    if xmlUtil.isTime(xBind) then
-                    begin
-                      ImageIndex := 25;
-                      exit;
-                    end;
-                    if xmlUtil.isEditSupported(xBind) then
-                    begin
-                      ImageIndex := 18;
-                      exit;
-                    end;
-                    if xmlUtil.isGridAdviced(xBind) then
-                    begin
-                      ImageIndex := 19;
-                      exit;
-                    end;
-                    if xmlUtil.isTreeAdviced(xBind) then
-                    begin
-                      ImageIndex := 20;
-                      exit;
-                    end;
-                    ImageIndex := -1;
-                    exit;
+                        ImageIndex := 5;
+                    end
+                    else
+                      ImageIndex := 4;
                   end;
-                  if xBind is TIpmItem then
-                  begin
-                    // tbd
-                  end;
-                end
-                else
-                  exit;
-              except
-                on E: Exception do
-                  exit;
+                end;
               end;
-            end;
+            exit;
           end;
+          xBind := xMessage.ColumnXmls.Bindables
+            [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
+          if Assigned(xBind) then
+          begin
+            if xBind is TXmlAttribute then
+            begin
+              ImageIndex := -1;
+              exit;
+            end;
+            if xBind is TXml then
+            begin
+              if xmlUtil.isBoolean(xBind) then
+              begin
+                if (xBind.Value = 'true') or (xBind.Value = '1') then
+                  ImageIndex := 22
+                else
+                  ImageIndex := 21;
+                exit;
+              end;
+              if xmlUtil.isDateTime(xBind) then
+              begin
+                ImageIndex := 23;
+                exit;
+              end;
+              if xmlUtil.isDate(xBind) then
+              begin
+                ImageIndex := 24;
+                exit;
+              end;
+              if xmlUtil.isTime(xBind) then
+              begin
+                ImageIndex := 25;
+                exit;
+              end;
+              if xmlUtil.isEditSupported(xBind) then
+              begin
+                ImageIndex := 18;
+                exit;
+              end;
+              if xmlUtil.isGridAdviced(xBind) then
+              begin
+                ImageIndex := 19;
+                exit;
+              end;
+              if xmlUtil.isTreeAdviced(xBind) then
+              begin
+                ImageIndex := 20;
+                exit;
+              end;
+              ImageIndex := -1;
+              exit;
+            end;
+            if xBind is TIpmItem then
+            begin
+              // tbd
+            end;
+          end
         end;
     end;
   except
@@ -5441,6 +5463,10 @@ begin
     NodeToMessage(Sender, Node, xMessage);
     if not Assigned(xMessage) then
       exit;
+    if Column < NScripts then
+    begin
+      exit;
+    end;
     if Column <= NScripts + xMessage.CorrelationBindables.Count then
     begin
       with TargetCanvas do
@@ -13077,12 +13103,12 @@ begin
            begin
              if (not xOperation.PreparedBefore)
              and (not xOperation.lateBinding) then
-               ImageIndex := 93
+               ImageIndex := 96
              else
-               ImageIndex := 92;
+               ImageIndex := 95;
            end
            else
-             ImageIndex := 91;
+             ImageIndex := 94;
         end;
       Ord (operationsColumnAfterScript):
         begin
@@ -13092,12 +13118,12 @@ begin
             begin
               if (not xOperation.PreparedAfter)
               and (not xOperation.lateBinding) then
-                ImageIndex := 93
+                ImageIndex := 96
               else
-                ImageIndex := 92;
+                ImageIndex := 95;
             end
             else
-              ImageIndex := 91;
+              ImageIndex := 94;
           end;
         end;
       end;

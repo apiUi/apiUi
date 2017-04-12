@@ -125,7 +125,16 @@ begin
     Terminate;
     Exit;
   end;
-  OpenProjectCommand(se.projectFileName);
+  try
+    OpenProjectCommand(se.projectFileName);
+  except
+    on e: Exception do
+    begin
+      WriteLn (e.Message);
+      Terminate;
+      Exit;
+    end;
+  end;
   scriptName := GetOptionValue(scriptOpt);
   sXml := nil;
   if (scriptName <> '') then
@@ -140,8 +149,17 @@ begin
   end;
   if HasOption('?', portOpt) then
     sc.portNumber := StrToInt(GetOptionValue(portOpt));
-  sc.Active := True;
-  ActivateCommand(True);
+  try
+    sc.Active := True;
+    ActivateCommand(True);
+  except
+    on e: Exception do
+    begin
+      WriteLn (e.Message);
+      Terminate;
+      Exit;
+    end;
+  end;
   if Assigned (sXml) then
   begin
     with TProcedureThread.Create(True, False, se, se.ScriptExecute, sXml as TObject) do

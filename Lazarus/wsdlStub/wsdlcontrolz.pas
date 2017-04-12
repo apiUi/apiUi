@@ -92,7 +92,13 @@ begin
     except
       on e: exception do
       begin
-        raise Exception.CreateFmt('Exception %s in Activate. Exception is:"%s".', [e.ClassName, e.Message]);
+        raise Exception.CreateFmt ( 'Exception %s in Activate %s:%d. Exception is:"%s".'
+                                  , [ e.ClassName
+                                    , HttpWebPageServer.Bindings[0].IP
+                                    , HttpWebPageServer.Bindings[0].Port
+                                    , e.Message
+                                    ]
+                                  );
       end;
     end
     else
@@ -541,4 +547,4 @@ begin
 end;
 
 end.
-
+
