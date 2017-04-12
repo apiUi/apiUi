@@ -2027,6 +2027,14 @@ var
   xChanged: Boolean;
   xBind: TCustomBindable;
 begin
+  if (Sender = GridView) then
+  begin
+    if not Assigned (GridView.FocusedNode) then Exit;
+    case GridView.FocusedColumn of
+      Ord (operationsColumnBeforeScript): EditScriptButtonClick(nil);
+      Ord (operationsColumnAfterScript): AfterRequestScriptButtonClick(nil);
+    end;
+  end;
   if (    (Sender = GridView)
       and (inImageArea)
      )
@@ -4502,6 +4510,8 @@ begin
               end;
             exit;
           end;
+          if Column < (NScripts + xMessage.CorrelationBindables.Count + 1) then
+            Exit;
           xBind := xMessage.ColumnXmls.Bindables
             [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
           if Assigned(xBind) then
@@ -4943,7 +4953,7 @@ begin
   if (Column - NScripts) <= xMessage.CorrelationBindables.Count then
   begin
     Allowed := (Node <> Sender.GetFirst)
-           and (Assigned (xMessage.CorrelationBindables.Bindables[Column - 1]))
+           and (Assigned (xMessage.CorrelationBindables.Bindables[Column- NScripts - 1]))
              ;
     exit;
   end;
@@ -5465,6 +5475,12 @@ begin
       exit;
     if Column < NScripts then
     begin
+      with TargetCanvas do
+      begin
+        Brush.Style := bsSolid;
+        Brush.Color := _decColor(self.Color);
+        FillRect(CellRect);
+      end;
       exit;
     end;
     if Column <= NScripts + xMessage.CorrelationBindables.Count then
@@ -13078,10 +13094,8 @@ procedure TMainForm.OperationReqsTreeViewClick(Sender: TObject);
 begin
   if not Assigned (OperationReqsTreeView.FocusedNode) then Exit;
   case OperationReqsTreeView.FocusedColumn of
-  Ord (operationsColumnBeforeScript):
-    EditScriptButtonClick(nil);
-  Ord (operationsColumnAfterScript):
-    AfterRequestScriptButtonClick(nil);
+    Ord (operationsColumnBeforeScript): EditScriptButtonClick(nil);
+    Ord (operationsColumnAfterScript): AfterRequestScriptButtonClick(nil);
   end;
 end;
 

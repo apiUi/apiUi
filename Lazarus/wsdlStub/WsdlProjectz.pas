@@ -2411,6 +2411,10 @@ begin
                             _addCheckers (checkerXmls, xMessage.reqBind as TXml);
                           end;
                           AddXml (TXml.CreateAsString('Documentation', xMessage.Documentation));
+                          if Assigned (xMessage.BeforeScriptLines) then
+                            AddXml (TXml.CreateAsString('BeforeScript', xMessage.BeforeScriptLines.Text));
+                          if Assigned (xMessage.AfterScriptLines) then
+                            AddXml (TXml.CreateAsString('AfterScript', xMessage.AfterScriptLines.Text));
 {
                           if Assigned (xOperation.FaultMessages) then
                           begin
@@ -2811,6 +2815,10 @@ begin
                                                                , xPatterns.Text
                                                                , Items.XmlValueByTag ['Documentation']
                                                                );
+                                  if Assigned (xMessage.BeforeScriptLines) then
+                                    xMessage.BeforeScriptLines.Text := Items.XmlValueByTag ['BeforeScript'];
+                                  if Assigned (xMessage.AfterScriptLines) then
+                                    xMessage.AfterScriptLines.Text := Items.XmlValueByTag ['AfterScript'];
                                   rXml := Items.XmlItemByTag ['Request'];
                                   if Assigned (rXml) then
                                   begin

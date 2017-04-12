@@ -6974,6 +6974,8 @@ begin
       Free;
     end;
   end;
+  BeforeScriptLines := TStringList.Create;
+  AfterScriptLines := TStringList.Create;
 end;
 
 constructor TWsdlMessage.CreateReply (aOperation: TWsdlOperation; aName, aPatterns, aDocumentation: String);
@@ -7054,6 +7056,8 @@ begin
         Free;
       end;
     end;
+    BeforeScriptLines := TStringList.Create;
+    AfterScriptLines := TStringList.Create;
   except
     raise Exception.CreateFmt( 'TWsdlMessage.CreateReply (aOperation: %s; %s, aPatterns, aDocumentation: String)%s'
                              , [aOperation.reqTagName, aName, LineEnding]);
@@ -7068,6 +7072,8 @@ begin
   ColumnXmls.Free;
   CorrelationBindables.Free;
 //Patterns.Free;
+  BeforeScriptLines.Free;
+  AfterScriptLines.Free;
   inherited;
 end;
 
