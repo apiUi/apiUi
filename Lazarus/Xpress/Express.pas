@@ -29,7 +29,7 @@ private
   StackIndex: Integer;
   LexItem, PrevItem: YYSType;
   LexicalList: YYSType;
-  BindList: TBindList;
+  fBindList: TBindList;
   Scanner: TScanner;
   Parser: TParser;
   Blocks: TStringList;
@@ -328,7 +328,7 @@ begin
   try
     Xpress.OnError := OnError;
     Xpress.fOnNeedData := Xpress.PassString;
-    XPress.BindList := BindList;
+    XPress.fBindList := fBindList;
     Xpress.Prepare;
     Xpress.Execute;
   finally
@@ -420,7 +420,7 @@ end;
 
 function TExpress .BindsAsText : String ;
 begin
-  result := BindList.Text;
+  result := fBindList.Text;
 end;
 
 procedure TExpress.setScriptText(const Value: String);
@@ -1006,8 +1006,8 @@ begin
           lexical.TokenString := AsFieldId2FieldId (lexical.TokenString);
           Bind := Lexical.Block.BindedByName(Uppercase (lexical.TokenString));
           if not Assigned (Bind) then
-            if BindList.Find (Uppercase (Lexical.TokenString), BindIndex) then
-              Bind := BindList.Binds [BindIndex];
+            if fBindList.Find (Uppercase (Lexical.TokenString), BindIndex) then
+              Bind := fBindList.Binds [BindIndex];
           if Assigned (Bind) then
             Lexical.yy.yyObject := Bind;
         end;
@@ -1030,9 +1030,9 @@ begin
                            , Lexical.yy.yyPointer
                            ) then
           begin
-            if BindList.Find (Uppercase (Scanner.TokenAsString), BindIndex) then
+            if fBindList.Find (Uppercase (Scanner.TokenAsString), BindIndex) then
             begin { maybe it's a user binded function}
-              Bind := BindList.Binds [BindIndex];
+              Bind := fBindList.Binds [BindIndex];
               Lexical.Token := Bind.Token;
               Lexical.yy.yyObject := Bind;
             end
@@ -1072,8 +1072,8 @@ begin
           begin
             Bind := Lexical.Block.BindedByName(Uppercase (Scanner.TokenAsString));
             if not Assigned (Bind) then
-              if BindList.Find (Uppercase (Scanner.TokenAsString), BindIndex) then
-                Bind := BindList.Binds [BindIndex];
+              if fBindList.Find (Uppercase (Scanner.TokenAsString), BindIndex) then
+                Bind := fBindList.Binds [BindIndex];
             if Assigned (Bind) then
             begin
               Lexical.Token := Bind.Token;
@@ -1098,9 +1098,9 @@ begin
         _LAYOUT_FIELD:
         begin
           lexical.TokenString := LayoutFieldId2FieldId (lexical.TokenString);
-          if BindList.Find (Uppercase (lexical.TokenString), BindIndex) then
+          if fBindList.Find (Uppercase (lexical.TokenString), BindIndex) then
           begin
-            Lexical.yy.yyObject := BindList.Binds [BindIndex];
+            Lexical.yy.yyObject := fBindList.Binds [BindIndex];
           end;
         end;
         _BEGIN_LAYOUT, _NEWLINE:
@@ -1159,7 +1159,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := BFLD;
   Bind.yy.yyPointer := @Adress;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindDateTime (Id: String; var Adress: TDateTime);
@@ -1171,7 +1171,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := DFLD;
   Bind.yy.yyPointer := @Adress;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindInteger (Id: String; var Adress: Integer);
@@ -1183,7 +1183,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := IFLD;
   Bind.yy.yyPointer := @Adress;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindExtended (Id: String; var Adress: Extended);
@@ -1195,7 +1195,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := XFLD;
   Bind.yy.yyPointer := @Adress;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindString (Id: String; var Adress: String);
@@ -1207,7 +1207,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := SFLD;
   Bind.yy.yyPointer := @Adress;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindDateTimeObject (Id: String; aBindable: TCustomBindable);
@@ -1219,7 +1219,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := DFLD;
   Bind.yy.yyPointer := aBindable;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindIntegerObject (Id: String; aBindable: TCustomBindable);
@@ -1231,7 +1231,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := IFLD;
   Bind.yy.yyPointer := aBindable;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindExtendedObject (Id: String; aBindable: TCustomBindable);
@@ -1243,7 +1243,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := XFLD;
   Bind.yy.yyPointer := aBindable;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindStringObject (Id: String; aBindable: TCustomBindable);
@@ -1255,7 +1255,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := SFLD;
   Bind.yy.yyPointer := aBindable;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindGroupObject (Id: String; aBindable: TCustomBindable);
@@ -1267,7 +1267,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := GFLD;
   Bind.yy.yyPointer := aBindable;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.BindFunction (Id: String; Adr: Pointer; Token: Integer; Prototype: String);
@@ -1279,7 +1279,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := Token;
   Bind.yy.yyPointer := Adr;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
   fFunctionPrototypes.Add (Id + ' ' + Prototype);
 end;
 
@@ -1292,7 +1292,7 @@ begin
   Bind.Id := Uppercase (Id);
   Bind.Token := Token;
   Bind.yy.yyPointer := Adr;
-  BindList.AddObject (Bind.Id, Bind);
+  fBindList.AddObject (Bind.Id, Bind);
 end;
 
 procedure TExpress.Execute;
@@ -1435,9 +1435,9 @@ begin
   Parser.OnNeedSqlFirstRow := NeedFirstSqlRow;
   Parser.OnFinshInsertQuery := FinishInsertQuery;
   LexicalList:= nil;
-  BindList := TBindList.Create;
-  BindList.Sorted := True;
-  BindList.Duplicates := DupError;
+  fBindList := TBindList.Create;
+  fBindList.Sorted := True;
+  fBindList.Duplicates := DupError;
   BindBuildIns;
 end;
 
@@ -1445,10 +1445,10 @@ destructor TExpress.Destroy;
 var
   x: Integer;
 begin
-  for x := 0 to BindList.Count - 1 do
-    BindList.Binds[x].Free;
-  BindList.Clear;
-  BindList.Free;
+  for x := 0 to fBindList.Count - 1 do
+    fBindList.Binds[x].Free;
+  fBindList.Clear;
+  fBindList.Free;
   Parser.Free;
   Scanner.Free;
   ClearLexicalList;
@@ -1487,8 +1487,8 @@ function TExpress.FindBind(aId: String): TBind;
 var
   f: Integer;
 begin
-  if BindList.Find (Uppercase (aId), f) then
-    result := BindList.Binds [f]
+  if fBindList.Find (Uppercase (aId), f) then
+    result := fBindList.Binds [f]
   else
     result := nil;
 end;

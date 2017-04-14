@@ -196,22 +196,6 @@ type
     fRpyBind: TCustomBindable;
     fFreeFormatReq: String;
     fFreeFormatRpy: String;
-    fExpressBefore: TExpress;
-    fExpressAfter: TExpress;
-    fPreparedBefore: Boolean;
-    fPreparedAfter: Boolean;
-    fDoExit: Boolean;
-    fLineNumber: Integer;
-    fOnError: TOnErrorEvent;
-    fOnGetAbortPressed: TBooleanFunction;
-    fPrepareErrors: String;
-    faultcode, faultstring, faultactor, LiteralResult: String;
-    procedure setDoExit (AValue : Boolean );
-    function getDoExit : Boolean ;
-    procedure NeedBeforeData(Sender: TObject; var MoreData: Boolean; var Data: String);
-    procedure NeedAfterData(Sender: TObject; var MoreData: Boolean; var Data: String);
-    function getDebugTokenStringBefore: String;
-    function getDebugTokenStringAfter: String;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     function getRequestAsString : String ;
     function getRpyXml: TXml;
@@ -234,34 +218,14 @@ type
   public
     Name: String;
     WsdlOperation: TWsdlOperation;
-    Wsdl: TWsdl;
     FaultXsd: TXsd;
     fltBind: TCustomBindable;
     CorrelationBindables: TBindableList;
-    invokeList: TWsdlOperations;
     BeforeScriptLines: TStringList;
     AfterScriptLines: TStringList;
-    reqWsaXml, rpyWsaXml: TXml;
-    StubMqHeaderXml: TXml;
-    DelayTimeMs: Integer;
-    DelayTimeMsMin: Integer;
-    DelayTimeMsMax: Integer;
-    PostponementMs: Integer;
-    doSuppressLog: Integer;
-    ReturnSoapFault: Boolean;
     procedure SwiftMtRequestToBindables (aString: String);
     function FindBind (aCaption: String): TCustomBindable;
     procedure PopulateCorrelation (aPatternsList: TStringList);
-    procedure BindBeforeFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
-    procedure BindAfterFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
-    function BeforeBindsAsText: String;
-    function BeforeActivatorDebugString: String;
-    procedure InitExecute;
-    procedure PrepareBefore;
-    procedure PrepareAfter;
-    procedure ExecuteBefore;
-    procedure ExecuteAfter;
-    procedure Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
     property DescriptionType: TIpmDescrType read getDescriptionType;
     property reqXsd: TXsd read getInputXsd write setInputXsd;
     property reqBind: TCustomBindable read getReqBind write setReqBind;
@@ -274,11 +238,6 @@ type
     property RpyIpm: TIpmItem read getRpyIpm;
     property reqXml: TXml read getReqXml;
     property rpyXml: TXml read getRpyXml;
-    property PreparedBefore: Boolean read fPreparedBefore;
-    property PreparedAfter: Boolean read fPreparedAfter;
-    property DebugTokenStringBefore: String read getDebugTokenStringBefore;
-    property DebugTokenStringAfter: String read getDebugTokenStringAfter;
-    property DoExit: Boolean read getDoExit write setDoExit;
   end;
 
   { TWsdlOperation }
@@ -288,27 +247,43 @@ type
       fCloned: TWsdlOperation;
       fLock: TCriticalSection;
       fStamperStatement: String;
+      fExpressBefore: TExpress;
+      fExpressAfter: TExpress;
       fExpressStamper: TExpress;
       fExpressChecker: TExpress;
+      fPreparedBefore: Boolean;
+      fPreparedAfter: Boolean;
+      fDoExit: Boolean;
+      fLineNumber: Integer;
+      fOnError: TOnErrorEvent;
       fLastMessage: TWsdlMessage;
       fLastFullCaption: String;
+      fOnGetAbortPressed: TBooleanFunction;
+      fPrepareErrors: String;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
+      function getDoExit : Boolean ;
       function getIsOneWay: Boolean;
       function getIsOpenApiService: Boolean;
       function getLateBinding : Boolean ;
       function getisSoapService: Boolean;
+      procedure setDoExit (AValue : Boolean );
       function getInputXml: TXml;
       function getOutputXml: TXml;
       function getLastFullCaption: String;
       function getLastMessage: TWsdlMessage;
       function getReplyBasedOnRequest: TWsdlMessage;
+      procedure NeedBeforeData(Sender: TObject; var MoreData: Boolean; var Data: String);
+      procedure NeedAfterData(Sender: TObject; var MoreData: Boolean; var Data: String);
       procedure NeedStamperData(Sender: TObject; var MoreData: Boolean; var Data: String);
       function StreamWsAddressing (aWsa: TXml; isRequest: Boolean): String;
       function getWsaTo: String;
     procedure setOnGetAbortPressed(const Value: TBooleanFunction);
+    function getDebugTokenStringAfter: String;
+    function getDebugTokenStringBefore: String;
     public
       _processing: Boolean;
       WsdlService: TWsdlService;
+      Wsdl: TWsdl;
       Owner: TObject;
       Data: TObject;
       Alias: String;
@@ -342,6 +317,7 @@ type
       wsaEnabled: Boolean;
       wsaSpecificMustUnderstand: Boolean;
       wsaMustUnderstand: Boolean;
+      reqWsaXml, rpyWsaXml: TXml;
       AsynchronousDialog: Boolean;
       StubAction: TStubAction;
       StubTransport: TTransportType;
@@ -355,6 +331,7 @@ type
       useSsl: Boolean;
       sslVersion: TIdSSLVersion;
       sslCertificateFile, sslKeyFile, sslRootCertificateFile: String;
+      StubMqHeaderXml: TXml;
       StubMqPutManager: String;
       StubMqPutQueue: String;
       StubMqGetManager: String;
@@ -376,14 +353,23 @@ type
       doReadReplyFromFile: Boolean;
       ReadReplyFromFileXml: TXml;
       ExpectationBindables, LogColumns, BindablesWithAddedElement: TBindableList;
+      faultcode, faultstring, faultactor, LiteralResult: String;
+      ReturnSoapFault: Boolean;
       RecognitionType: TRecognitionType;
       reqRecognition: TStringList;
       rpyRecognition: TStringList;
       oldInvokeSpec: String;
+      invokeList: TWsdlOperations;
       doDebug: Boolean;
+      doSuppressLog: Integer;
+      DelayTimeMs: Integer;
+      DelayTimeMsMin: Integer;
+      DelayTimeMsMax: Integer;
+      PostponementMs: Integer;
       FreeOnTerminateRequest: Boolean;
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
+      property DoExit: Boolean read getDoExit write setDoExit;
       property PrepareErrors: String read fPrepareErrors;
       property OnGetAbortPressed: TBooleanFunction write setOnGetAbortPressed;
       property wsaTo: String read getWsaTo;
@@ -397,14 +383,21 @@ type
       property LastFullCaption: String read getLastFullCaption write fLastFullCaption;
       property MessageBasedOnRequest: TWsdlMessage read getReplyBasedOnRequest;
       property OnError: TOnErrorEvent read fOnError write fOnError;
+      property PreparedBefore: Boolean read fPreparedBefore;
+      property PreparedAfter: Boolean read fPreparedAfter;
       property Cloned: TWsdlOperation read fCloned;
+      property DebugTokenStringAfter: String read getDebugTokenStringAfter;
+      property DebugTokenStringBefore: String read getDebugTokenStringBefore;
       function AddedTypeDefElementsAsXml: TObject;
       procedure AddedTypeDefElementsFromXml(aXml: TObject);
+      function BeforeBindsAsText: String;
+      procedure Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
       procedure AcquireLock;
       procedure ReleaseLock;
       function ReadReplyFromFileName: String;
       function DefaultReadReplyFromFileName: String;
       procedure ReadReplyFromFile;
+      function BeforeActivatorDebugString: String;
       procedure InitDelayTime;
       procedure RefreshBindables;
       procedure ReqBindablesFromString (aString: String);
@@ -421,16 +414,23 @@ type
       function CorrelationIdAsText (aSeparator: String): String;
       procedure BindCheckerFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
       procedure BindStamperFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
+      procedure BindBeforeFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
+      procedure BindAfterFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
       procedure doPromptReply;
       procedure doPromptRequest;
       procedure BindStamper;
       procedure BindChecker (aBind: TCustomBindable);
+      procedure PrepareBefore;
       procedure doInvokeOperations;
+      procedure PrepareAfter;
       procedure PrepareChecker (aBind: TCustomBindable);
       procedure PrepareReqStamper (aBind: TCustomBindable);
       procedure ExecuteReqStampers;
       procedure PrepareRpyStamper (aBind: TCustomBindable);
       procedure ExecuteRpyStampers;
+      procedure InitExecute;
+      procedure ExecuteBefore;
+      procedure ExecuteAfter;
       procedure reqWsaOnRequest;
       procedure rpyWsaOnRequest;
       procedure fltWsaOnRequest;
@@ -3753,7 +3753,7 @@ end;
 
 { TWsdlOperation }
 
-procedure TWsdlBinder.BindBeforeFunction(Id: String; Adr: Pointer; Token: Integer;
+procedure TWsdlOperation.BindBeforeFunction(Id: String; Adr: Pointer; Token: Integer;
   ArgumentsPrototype: String);
 begin
   fExpressBefore.BindFunction (Id, Adr, Token, ArgumentsPrototype);
@@ -3764,12 +3764,12 @@ begin
   if doOperationLock then fLock.Acquire;
 end;
 
-function TWsdlBinder.BeforeActivatorDebugString: String;
+function TWsdlOperation.BeforeActivatorDebugString: String;
 begin
   result := fExpressBefore.DebugTokenStringList;
 end;
 
-procedure TWsdlBinder.BindAfterFunction(Id: String; Adr: Pointer; Token: Integer;
+procedure TWsdlOperation.BindAfterFunction(Id: String; Adr: Pointer; Token: Integer;
   ArgumentsPrototype: String);
 begin
   fExpressAfter.BindFunction (Id, Adr, Token, ArgumentsPrototype);
@@ -3944,7 +3944,7 @@ begin
   inherited;
 end;
 
-procedure TWsdlBinder.ExecuteBefore;
+procedure TWsdlOperation.ExecuteBefore;
 begin
   if not PreparedBefore then
     raise Exception.Create('Operation (Before)"' + Name + '" not prepared');
@@ -3952,7 +3952,7 @@ begin
   fExpressBefore.Execute;
 end;
 
-procedure TWsdlBinder.ExecuteAfter;
+procedure TWsdlOperation.ExecuteAfter;
 begin
   if not PreparedAfter then
     raise Exception.Create('Operation (After)"' + Name + '" not prepared');
@@ -4035,7 +4035,7 @@ begin
   end;
 end;
 
-procedure TWsdlBinder.NeedBeforeData(Sender: TObject; var MoreData: Boolean;
+procedure TWsdlOperation.NeedBeforeData(Sender: TObject; var MoreData: Boolean;
   var Data: String);
 begin
   if fLineNumber = BeforeScriptLines.Count then
@@ -4047,7 +4047,7 @@ begin
   end;
 end;
 
-procedure TWsdlBinder.NeedAfterData(Sender: TObject; var MoreData: Boolean;
+procedure TWsdlOperation.NeedAfterData(Sender: TObject; var MoreData: Boolean;
   var Data: String);
 begin
   if fLineNumber = AfterScriptLines.Count then
@@ -4059,7 +4059,7 @@ begin
   end;
 end;
 
-procedure TWsdlBinder.Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
+procedure TWsdlOperation.Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
 begin
   if not Assigned(aExpress)
   or not Assigned(aBind)
@@ -4071,7 +4071,7 @@ begin
     aBind.Bind (aRoot, aExpress, 1)
 end;
 
-procedure TWsdlBinder.PrepareBefore;
+procedure TWsdlOperation.PrepareBefore;
 var
   x: Integer;
 begin
@@ -4227,7 +4227,7 @@ begin
   end;
 end;
 
-procedure TWsdlBinder.PrepareAfter;
+procedure TWsdlOperation.PrepareAfter;
 var
   x: Integer;
 begin
@@ -5225,12 +5225,12 @@ begin
   FreeFormatReq := aRequestString;
 end;
 
-function TWsdlBinder.getDebugTokenStringAfter: String;
+function TWsdlOperation.getDebugTokenStringAfter: String;
 begin
   result := fExpressAfter.DebugTokenStringList;
 end;
 
-function TWsdlBinder.getDebugTokenStringBefore: String;
+function TWsdlOperation.getDebugTokenStringBefore: String;
 begin
   result := fExpressBefore.DebugTokenStringList;
 end;
@@ -5420,7 +5420,7 @@ begin
   end;
 end;
 
-function TWsdlBinder.BeforeBindsAsText : String ;
+function TWsdlOperation.BeforeBindsAsText : String ;
 begin
   result := fExpressBefore.BindsAsText;
 end;
@@ -5454,7 +5454,7 @@ begin
   if Assigned (fExpressAfter) then fExpressAfter.OnGetAbortPressed := Value;
 end;
 
-procedure TWsdlBinder.setDoExit (AValue : Boolean );
+procedure TWsdlOperation.setDoExit (AValue : Boolean );
 begin
   fDoExit := AValue;
 end;
@@ -6271,7 +6271,7 @@ begin
     Value := aMessage;
 end;
 
-function TWsdlBinder .getDoExit : Boolean ;
+function TWsdlOperation .getDoExit : Boolean ;
 begin
   result := fDoExit;
 end;
@@ -6443,7 +6443,7 @@ begin
   _Stamp (rpyBind);
 end;
 
-procedure TWsdlBinder .InitExecute ;
+procedure TWsdlOperation .InitExecute ;
 begin
   DoExit := False;
   LiteralResult := '';
@@ -6908,6 +6908,8 @@ begin
   Name := aName;
   WsdlOperation:= aOperation;
   CorrelationBindables := TBindableList.Create;
+  BeforeScriptLines := TStringList.Create;
+  AfterScriptLines := TStringList.Create;
 //Patterns := TStringList.Create;
 {}{
 {}
@@ -6974,8 +6976,6 @@ begin
       Free;
     end;
   end;
-  BeforeScriptLines := TStringList.Create;
-  AfterScriptLines := TStringList.Create;
 end;
 
 constructor TWsdlMessage.CreateReply (aOperation: TWsdlOperation; aName, aPatterns, aDocumentation: String);
@@ -6986,6 +6986,8 @@ begin
     Name := aName;
     WsdlOperation := aOperation;
     CorrelationBindables := TBindableList.Create;
+    BeforeScriptLines := TStringList.Create;
+    AfterScriptLines := TStringList.Create;
 {$ifdef jwbPatterns}
     Patterns := TStringList.Create;
     Patterns.Text := aPatterns;
@@ -7056,8 +7058,6 @@ begin
         Free;
       end;
     end;
-    BeforeScriptLines := TStringList.Create;
-    AfterScriptLines := TStringList.Create;
   except
     raise Exception.CreateFmt( 'TWsdlMessage.CreateReply (aOperation: %s; %s, aPatterns, aDocumentation: String)%s'
                              , [aOperation.reqTagName, aName, LineEnding]);
@@ -7071,9 +7071,9 @@ begin
   FreeAndNil (fltBind);
   ColumnXmls.Free;
   CorrelationBindables.Free;
+  FreeAndNil(BeforeScriptLines);
+  FreeAndNil(AfterScriptLines);
 //Patterns.Free;
-  BeforeScriptLines.Free;
-  AfterScriptLines.Free;
   inherited;
 end;
 
