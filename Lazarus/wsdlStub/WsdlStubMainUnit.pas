@@ -71,10 +71,16 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    EditMessageAfterScriptAction : TAction ;
+    EditMessageScriptAction : TAction ;
     DocumentationViewer: TIpHtmlPanel;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
+    MenuItem35 : TMenuItem ;
+    EditMessageScriptMenuItem : TMenuItem ;
+    MenuItem37 : TMenuItem ;
+    MenuItem38 : TMenuItem ;
     Panel4: TPanel;
     SnapshotsFromFolderAction : TAction ;
     ShowResolvedProperties : TAction ;
@@ -553,11 +559,14 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure EditMessageAfterScriptActionExecute (Sender : TObject );
+    procedure EditMessageScriptActionExecute (Sender : TObject );
     procedure DocumentationViewerHotClick(Sender: TObject);
     procedure LogPanelClick(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
+    procedure EditMessageScriptMenuItemClick (Sender : TObject );
     procedure NeedTacoHostData (Sender: TTacoInterface);
     procedure OnTacoAuthorize (Sender: TObject);
     procedure AbortActionUpdate (Sender : TObject );
@@ -4485,9 +4494,9 @@ begin
             case Column of
               Ord (operationsColumnBeforeScript):
                 begin
-                   if (Trim(wsdlOperation.BeforeScriptLines.Text) <> '') then
+                   if (Trim(xMessage.BeforeScriptLines.Text) <> '') then
                    begin
-                     if (not wsdlOperation.PreparedBefore)
+                     if (not xMessage.PreparedBefore)
                      and (not wsdlOperation.lateBinding) then
                        ImageIndex := 6
                      else
@@ -4500,9 +4509,9 @@ begin
                 begin
                   if wsdlOperation.StubAction <> saStub then
                   begin
-                    if (Trim(wsdlOperation.AfterScriptLines.Text) <> '') then
+                    if (Trim(xMessage.AfterScriptLines.Text) <> '') then
                     begin
-                      if (not wsdlOperation.PreparedAfter)
+                      if (not xMessage.PreparedAfter)
                       and (not wsdlOperation.lateBinding) then
                         ImageIndex := 6
                       else
@@ -13557,6 +13566,120 @@ begin
   OpenUrl(DocumentationViewer.HotURL);
 end;
 
+procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
+var
+  xOperation: TWsdlOperation;
+  xScriptName: String;
+begin
+  if not Assigned(WsdlOperation) then
+    Raise Exception.Create('First get a Wsdl');
+  if not Assigned (WsdlMessage) then Exit;
+  XmlUtil.PushCursor (crHourGlass);
+  try
+    xOperation := TWsdlOperation.Create(WsdlOperation);
+    if xOperation.lateBinding then
+    begin
+      xOperation.rpyBind := TXml.Create;
+      (xOperation.rpyBind as TXml).LoadFromString(WsdlMessage.FreeFormatRpy, nil);
+      if xOperation.rpyBind.Name = '' then
+        xOperation.rpyBind.Name := 'noXml';
+      xOperation.reqBind := TXml.Create;
+      (xOperation.reqBind as TXml).LoadFromString(WsdlMessage.FreeFormatReq, nil);
+      if xOperation.reqBind.Name = '' then
+        xOperation.reqBind.Name := 'noXml';
+      try xOperation.PrepareBefore; except end;
+    end;
+    if xOperation.StubAction = saStub then
+      xScriptName := Format('%s / %s  / Main Script', [WsdlOperation.Alias, WsdlMessage.Name])
+    else
+      xScriptName := Format('%s / %s  / Before Script', [WsdlOperation.Alias, WsdlMessage.Name]);
+    try
+      Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
+      try
+        EditOperationScriptForm.ScriptName := xScriptName;
+        EditOperationScriptForm.After := False;
+        EditOperationScriptForm.WsdlOperation := xOperation;
+        EditOperationScriptForm.ScriptEdit.Lines.Text := WsdlMessage.BeforeScriptLines.Text;
+        EditOperationScriptForm.ShowModal;
+        if EditOperationScriptForm.ModalResult = mrOk then
+        begin
+          stubChanged := True;
+          WsdlMessage.BeforeScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
+          if not WsdlOperation.lateBinding then
+          begin
+            try WsdlMessage.CheckBefore; Except end;
+            try WsdlMessage.CheckAfter; Except end;
+          end;
+        end;
+        FillInWsdlEdits;
+      finally
+        FreeAndNil(EditOperationScriptForm);
+      end;
+    finally
+      xOperation.Free;
+    end;
+  finally
+    XmlUtil.PopCursor;
+  end;
+end;
+
+procedure TMainForm .EditMessageAfterScriptActionExecute (Sender : TObject );
+var
+  xOperation: TWsdlOperation;
+  xScriptName: String;
+begin
+  if not Assigned(WsdlOperation) then
+    Raise Exception.Create('First get a Wsdl');
+  if not Assigned (WsdlMessage) then Exit;
+  XmlUtil.PushCursor (crHourGlass);
+  try
+    xOperation := TWsdlOperation.Create(WsdlOperation);
+    if xOperation.lateBinding then
+    begin
+      xOperation.rpyBind := TXml.Create;
+      (xOperation.rpyBind as TXml).LoadFromString(WsdlMessage.FreeFormatRpy, nil);
+      if xOperation.rpyBind.Name = '' then
+        xOperation.rpyBind.Name := 'noXml';
+      xOperation.reqBind := TXml.Create;
+      (xOperation.reqBind as TXml).LoadFromString(WsdlMessage.FreeFormatReq, nil);
+      if xOperation.reqBind.Name = '' then
+        xOperation.reqBind.Name := 'noXml';
+      try xOperation.PrepareBefore; except end;
+    end;
+    if xOperation.StubAction = saStub then
+      xScriptName := Format('%s / %s  / Main Script', [WsdlOperation.Alias, WsdlMessage.Name])
+    else
+      xScriptName := Format('%s / %s  / After Script', [WsdlOperation.Alias, WsdlMessage.Name]);
+    try
+      Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
+      try
+        EditOperationScriptForm.ScriptName := xScriptName;
+        EditOperationScriptForm.After := True;
+        EditOperationScriptForm.WsdlOperation := xOperation;
+        EditOperationScriptForm.ScriptEdit.Lines.Text := WsdlMessage.AfterScriptLines.Text;
+        EditOperationScriptForm.ShowModal;
+        if EditOperationScriptForm.ModalResult = mrOk then
+        begin
+          stubChanged := True;
+          WsdlMessage.AfterScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
+          if not WsdlOperation.lateBinding then
+          begin
+            try WsdlMessage.CheckBefore; Except end;
+            try WsdlMessage.CheckAfter; Except end;
+          end;
+        end;
+        FillInWsdlEdits;
+      finally
+        FreeAndNil(EditOperationScriptForm);
+      end;
+    finally
+      xOperation.Free;
+    end;
+  finally
+    XmlUtil.PopCursor;
+  end;
+end;
+
 procedure TMainForm.LogTabControlChange(Sender: TObject);
 begin
   ShowChosenLogTab;
@@ -13570,6 +13693,11 @@ end;
 procedure TMainForm.MenuItem34Click(Sender: TObject);
 begin
   Clipboard.AsText := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode).FullCaption;
+end;
+
+procedure TMainForm.EditMessageScriptMenuItemClick (Sender : TObject );
+begin
+
 end;
 
 procedure TMainForm .OnTacoAuthorize (Sender : TObject );

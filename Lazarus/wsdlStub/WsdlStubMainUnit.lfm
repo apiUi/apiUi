@@ -2457,6 +2457,16 @@ object MainForm: TMainForm
       OnExecute = SnapshotsFromFolderActionExecute
       OnUpdate = SnapshotsFromFolderActionUpdate
     end
+    object EditMessageScriptAction: TAction
+      Category = 'Messages'
+      Caption = 'Edit Message Script'
+      OnExecute = EditMessageScriptActionExecute
+    end
+    object EditMessageAfterScriptAction: TAction
+      Category = 'Messages'
+      Caption = 'Edit Message After Script'
+      OnExecute = EditMessageAfterScriptActionExecute
+    end
   end
   object mainImageList: TImageList
     left = 112
@@ -9437,6 +9447,19 @@ object MainForm: TMainForm
     OnPopup = GridPopupMenuPopup
     left = 456
     top = 120
+    object EditMessageScriptMenuItem: TMenuItem
+      Action = EditMessageScriptAction
+      OnClick = EditMessageScriptMenuItemClick
+    end
+    object MenuItem37: TMenuItem
+      Action = EditMessageScriptAction
+    end
+    object MenuItem38: TMenuItem
+      Action = EditMessageAfterScriptAction
+    end
+    object MenuItem35: TMenuItem
+      Caption = '-'
+    end
     object Revalidatemessages2: TMenuItem
       Action = EnableMessageAction
     end

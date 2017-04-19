@@ -196,6 +196,8 @@ type
     fRpyBind: TCustomBindable;
     fFreeFormatReq: String;
     fFreeFormatRpy: String;
+    fPreparedBefore: Boolean;
+    fPreparedAfter: Boolean;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     function getRequestAsString : String ;
     function getRpyXml: TXml;
@@ -238,6 +240,8 @@ type
     property RpyIpm: TIpmItem read getRpyIpm;
     property reqXml: TXml read getReqXml;
     property rpyXml: TXml read getRpyXml;
+    property PreparedBefore: Boolean read fPreparedBefore;
+    property PreparedAfter: Boolean read fPreparedAfter;
   end;
 
   { TWsdlOperation }
@@ -251,8 +255,6 @@ type
       fExpressAfter: TExpress;
       fExpressStamper: TExpress;
       fExpressChecker: TExpress;
-      fPreparedBefore: Boolean;
-      fPreparedAfter: Boolean;
       fDoExit: Boolean;
       fLineNumber: Integer;
       fOnError: TOnErrorEvent;
@@ -383,8 +385,6 @@ type
       property LastFullCaption: String read getLastFullCaption write fLastFullCaption;
       property MessageBasedOnRequest: TWsdlMessage read getReplyBasedOnRequest;
       property OnError: TOnErrorEvent read fOnError write fOnError;
-      property PreparedBefore: Boolean read fPreparedBefore;
-      property PreparedAfter: Boolean read fPreparedAfter;
       property Cloned: TWsdlOperation read fCloned;
       property DebugTokenStringAfter: String read getDebugTokenStringAfter;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
@@ -515,6 +515,8 @@ type
       function CheckValues(aOperation: TWsdlOperation): Boolean;
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
+      procedure CheckBefore;
+      procedure CheckAfter;
       constructor Create; Overload;
       constructor Create (aOperation: TWsdlOperation); Overload;
       constructor CreateRequest (aOperation: TWsdlOperation; aName, aPatterns, aDocumentation: String); Overload;
@@ -6856,6 +6858,24 @@ begin
     (rpyBind as TXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
   if fltBind is TXml then
     (rpyBind as TXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
+end;
+
+procedure TWsdlMessage.CheckBefore ;
+begin
+  fPreparedBefore := False;
+  if Assigned (WsdlOperation) then
+  begin
+    try
+      WsdlOperation.CheckScript(BeforeScriptLines, nil);
+      fPreparedBefore := True;
+    except
+    end;
+  end;
+end;
+
+procedure TWsdlMessage .CheckAfter ;
+begin
+
 end;
 
 procedure TWsdlMessage.corBindsInit(aOperation: TWsdlOperation);
