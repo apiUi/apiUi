@@ -112,6 +112,7 @@ public
   function BindsAsText: String;
   procedure Prepare;
   procedure Execute;
+  procedure ExecuteScript (aStringList: TStringList);
   procedure BindBoolean (Id: String; var Adress: Boolean);
   procedure BindDateTime (Id: String; var Adress: TDateTime);
   procedure BindInteger (Id: String; var Adress: Integer);
@@ -331,6 +332,31 @@ begin
     XPress.fBindList := fBindList;
     Xpress.Prepare;
     Xpress.Execute;
+  finally
+    Xpress.Free;
+  end;
+end;
+
+procedure TExpress.ExecuteScript (aStringList : TStringList );
+var
+  Xpress: TExpress;
+  xStringList: TStringList;
+  xBindList: TBindList;
+begin
+  Xpress := TExpress.Create (nil);
+  try
+    Xpress.OnError := OnError;
+    xBindList := Xpress.fBindList;
+    xStringList := Xpress.fTextLines;
+    try
+      XPress.fBindList := fBindList;
+      Xpress.fTextLines := aStringList;
+      Xpress.Prepare;
+      Xpress.Execute;
+    finally
+      XPress.fBindList := xBindList;
+      Xpress.fTextLines := xStringList;
+    end;
   finally
     Xpress.Free;
   end;
