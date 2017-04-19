@@ -112,7 +112,8 @@ public
   function BindsAsText: String;
   procedure Prepare;
   procedure Execute;
-  procedure ExecuteScript (aStringList: TStringList);
+  procedure CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);
+  procedure ExecuteScript (aStringList: TStringList; aOnError: TOnErrorEvent);
   procedure BindBoolean (Id: String; var Adress: Boolean);
   procedure BindDateTime (Id: String; var Adress: TDateTime);
   procedure BindInteger (Id: String; var Adress: Integer);
@@ -337,7 +338,7 @@ begin
   end;
 end;
 
-procedure TExpress.ExecuteScript (aStringList : TStringList );
+procedure TExpress.CheckScript (aStringList : TStringList; aOnError: TOnErrorEvent);
 var
   Xpress: TExpress;
   xStringList: TStringList;
@@ -345,7 +346,31 @@ var
 begin
   Xpress := TExpress.Create (nil);
   try
-    Xpress.OnError := OnError;
+    Xpress.OnError := aOnError;
+    xBindList := Xpress.fBindList;
+    xStringList := Xpress.fTextLines;
+    try
+      XPress.fBindList := fBindList;
+      Xpress.fTextLines := aStringList;
+      Xpress.Prepare;
+    finally
+      XPress.fBindList := xBindList;
+      Xpress.fTextLines := xStringList;
+    end;
+  finally
+    Xpress.Free;
+  end;
+end;
+
+procedure TExpress.ExecuteScript (aStringList: TStringList; aOnError: TOnErrorEvent);
+var
+  Xpress: TExpress;
+  xStringList: TStringList;
+  xBindList: TBindList;
+begin
+  Xpress := TExpress.Create (nil);
+  try
+    Xpress.OnError := aOnError;
     xBindList := Xpress.fBindList;
     xStringList := Xpress.fTextLines;
     try

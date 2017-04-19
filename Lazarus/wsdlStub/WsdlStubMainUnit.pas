@@ -2975,15 +2975,15 @@ begin
   try
     Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
     try
-      EditOperationScriptForm.ScriptName := xOperation.Name;
+      EditOperationScriptForm.ScriptName := xOperation.Alias + ' / After Script';
       EditOperationScriptForm.After := True;
       EditOperationScriptForm.WsdlOperation := xOperation;
+      EditOperationScriptForm.ScriptEdit.Lines.Text := xOperation.AfterScriptLines.Text;
       EditOperationScriptForm.ShowModal;
       if EditOperationScriptForm.ModalResult = mrOk then
       begin
         stubChanged := True;
-        WsdlOperation.BeforeScriptLines := xOperation.BeforeScriptLines;
-        WsdlOperation.AfterScriptLines := xOperation.AfterScriptLines;
+        WsdlOperation.AfterScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
         if not WsdlOperation.lateBinding then
         begin
           try WsdlOperation.PrepareBefore; Except end;
@@ -3008,6 +3008,7 @@ end;
 procedure TMainForm.EditScriptButtonClick(Sender: TObject);
 var
   xOperation: TWsdlOperation;
+  xScriptName: String;
 begin
   if not Assigned(WsdlOperation) then
     Raise Exception.Create('First get a Wsdl');
@@ -3026,18 +3027,22 @@ begin
         xOperation.reqBind.Name := 'noXml';
       try xOperation.PrepareBefore; except end;
     end;
+    if xOperation.StubAction = saStub then
+      xScriptName := ' / Main Script'
+    else
+      xScriptName := ' / Before Script';
     try
       Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
       try
-        EditOperationScriptForm.ScriptName := xOperation.Name;
+        EditOperationScriptForm.ScriptName := xOperation.Alias + xScriptName;
         EditOperationScriptForm.After := False;
         EditOperationScriptForm.WsdlOperation := xOperation;
+        EditOperationScriptForm.ScriptEdit.Lines.Text := xOperation.BeforeScriptLines.Text;
         EditOperationScriptForm.ShowModal;
         if EditOperationScriptForm.ModalResult = mrOk then
         begin
           stubChanged := True;
-          WsdlOperation.BeforeScriptLines := xOperation.BeforeScriptLines;
-          WsdlOperation.AfterScriptLines := xOperation.AfterScriptLines;
+          WsdlOperation.BeforeScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
           if not WsdlOperation.lateBinding then
           begin
             try WsdlOperation.PrepareBefore; Except end;

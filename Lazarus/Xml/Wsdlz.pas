@@ -429,6 +429,8 @@ type
       procedure PrepareRpyStamper (aBind: TCustomBindable);
       procedure ExecuteRpyStampers;
       procedure InitExecute;
+      procedure CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);
+      procedure Execute (aStringList: TStringList; aOnError: TOnErrorEvent);
       procedure ExecuteBefore;
       procedure ExecuteAfter;
       procedure reqWsaOnRequest;
@@ -6448,6 +6450,16 @@ begin
   DoExit := False;
   LiteralResult := '';
   ReturnSoapFault := False;
+end;
+
+procedure TWsdlOperation.CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);
+begin
+  fExpressBefore.CheckScript(aStringList, aOnError);
+end;
+
+procedure TWsdlOperation.Execute (aStringList: TStringList; aOnError: TOnErrorEvent);
+begin
+  fExpressBefore.ExecuteScript(aStringList, aOnError);
 end;
 
 procedure TWsdlOperation.ExecuteReqStampers;

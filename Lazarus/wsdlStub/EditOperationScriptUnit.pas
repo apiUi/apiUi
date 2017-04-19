@@ -40,7 +40,6 @@ type
     SynAnySyn1 : TSynAnySyn ;
     ScriptEdit : TSynEdit ;
     TopPanel: TPanel;
-    Label1: TLabel;
     ScriptNameEdit: TEdit;
     Panel3: TPanel;
     Panel2: TPanel;
@@ -53,7 +52,6 @@ type
     Grammar1: TMenuItem;
     N2: TMenuItem;
     DbNameMenuItem: TMenuItem;
-    BeforeOrAfterEdit: TEdit;
     EmbeddedSQLMenuItem: TMenuItem;
     Helponfunctions1: TMenuItem;
     Anoperationbetweenquotes1: TMenuItem;
@@ -73,7 +71,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Grammar1Click(Sender: TObject);
-    procedure TopPanelResize(Sender: TObject);
     procedure EmbeddedSQLMenuItemClick(Sender: TObject);
     procedure DbNameMenuItemClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -171,28 +168,7 @@ end;
 procedure TEditOperationScriptForm.OKExecute(Sender: TObject);
 begin
   StatusBar.SimpleText := '';
-  AcquireLock;
-  try
-    if After then
-    begin
-      WsdlOperation.AfterScriptLines.Text := ScriptEdit.Text;
-      try
-        WsdlOperation.PrepareAfter;
-      except
-      end;
-    end
-    else
-    begin
-      WsdlOperation.BeforeScriptLines.Text := ScriptEdit.Text;
-      try
-        WsdlOperation.PrepareBefore;
-      except
-      end;
-    end;
-  finally
-    fScriptChanged := False;
-    ReleaseLock;
-  end;
+  fScriptChanged := False;
 end;
 
 procedure TEditOperationScriptForm.ExpressError(Sender: TObject; LineNumber,
@@ -210,37 +186,16 @@ end;
 
 procedure TEditOperationScriptForm.CheckExecute(Sender: TObject);
 var
-  SwapOnError: TOnErrorEvent;
   swapScriptLines: String;
+  sl: TStringList;
 begin
   StatusBar.SimpleText := '';
-  SwapOnError := WsdlOperation.OnError;
-  AcquireLock;
+  sl := TStringList.Create;
   try
-    WsdlOperation.OnError := ExpressError;
-    if After then
-    begin
-      SwapScriptLines := WsdlOperation.AfterScriptLines.Text;
-      WsdlOperation.AfterScriptLines.Text := ScriptEdit.Lines.Text;
-      try
-        WsdlOperation.PrepareAfter;
-      finally
-        WsdlOperation.AfterScriptLines.Text := SwapScriptLines;
-      end;
-    end
-    else
-    begin
-      SwapScriptLines := WsdlOperation.BeforeScriptLines.Text;
-      WsdlOperation.BeforeScriptLines.Text := ScriptEdit.Lines.Text;
-      try
-        WsdlOperation.PrepareBefore;
-      finally
-        WsdlOperation.BeforeScriptLines.Text := SwapScriptLines;
-      end;
-    end;
+    sl.Text := ScriptEdit.Lines.Text;
+    WsdlOperation.CheckScript(sl, ExpressError);
   finally
-    WsdlOperation.OnError := SwapOnError;
-    ReleaseLock;
+    FreeAndNil(sl);
   end;
 end;
 
@@ -409,15 +364,6 @@ begin
                ); { *Converted from ShellExecute* }
 end;
 
-procedure TEditOperationScriptForm.TopPanelResize(Sender: TObject);
-begin
-  BeforeOrAfterEdit.Width := TopPanel.Width
-                            - BeforeOrAfterEdit.Left
-                            - 5
-                            ;
-
-end;
-
 procedure TEditOperationScriptForm.EmbeddedSQLMenuItemClick(Sender: TObject);
 begin
    OpenDocument(PChar ( ExtractFilePath (ParamStr(0))
@@ -500,13 +446,11 @@ begin
   fAfter := Value;
   if fAfter then
   begin
-    BeforeOrAfterEdit.Text := 'After';
     if Assigned (fWsdlOperation) then
       ScriptEdit.Lines.Text := fWsdlOperation.AfterScriptLines.Text;
   end
   else
   begin
-    BeforeOrAfterEdit.Text := 'Before';
     if Assigned (fWsdlOperation) then
       ScriptEdit.Lines.Text := fWsdlOperation.BeforeScriptLines.Text;
   end;
