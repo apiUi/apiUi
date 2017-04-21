@@ -231,6 +231,7 @@ type
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
     function CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
+    procedure CreateJUnitReport (aName: String);
     procedure CreateSummaryReport (aName: String);
     procedure CreateCoverageReport(aDoRun: Boolean);
     function FindScript (aName: String): TXml;
@@ -507,6 +508,7 @@ uses OpenWsdlUnit
    , xmlio
    , htmlxmlutilz
    , htmlreportz
+   , junitunit
    ;
 
 procedure AddRemark(aOperation: TObject; aString: String);
@@ -792,6 +794,21 @@ begin
   if not Assigned (xProject) then
     raise Exception.Create('ClearLogs; unable to determine context');
   xProject.doClearSnapshots := True;
+end;
+
+procedure CreateJUnitReport(aContext: TObject; aName: String);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create(Format ('CreateJUnitReport(''%s''); unable to determine context', [aName]));
+  xProject.CreateJUnitReport (aName);
 end;
 
 procedure CreateSummaryReport(aContext: TObject; aName: String);
@@ -1681,7 +1698,8 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
     end;
   end;
 var
-  w, o: Integer;
+  w, o, m: Integer;
+  xMessage: TWsdlMessage;
 begin
   wsdlNames.Clear;
   openApiPaths.Clear;
@@ -1711,31 +1729,33 @@ begin
       except
       end;
       if not PreparedBefore then
-      begin
-        aLogServerException ( 'Error in Before script: '
-                            + Name
-                            , False
-                            , nil
-                            );
         Inc (scriptErrorCount);
-      end;
       try
         PrepareAfter;
       except
       end;
       if not PreparedAfter then
-      begin
-        aLogServerException ( 'Error in After script: '
-                            + Name
-                            , False
-                            , nil
-                            );
         Inc (scriptErrorCount);
+      for m := 0 to Messages.Count - 1 do
+      begin
+        xMessage := Messages.Messages[m];
+        if xMessage.BeforeScriptLines.Count > 0 then
+        begin
+          xMessage.CheckBefore;
+          if not xMessage.PreparedBefore then
+            Inc (scriptErrorCount);
+        end;
+        if xMessage.AfterScriptLines.Count > 0 then
+        begin
+          xMessage.CheckAfter;
+          if not xMessage.PreparedAfter then
+            Inc (scriptErrorCount);
+        end;
       end;
     end;
   end;
   if scriptErrorCount > 0 then
-    aLogServerException ( IntToStr (scriptErrorCount) + ' Script(s) found with errors, see Exceptions log', False, nil);
+    aLogServerException ( IntToStr (scriptErrorCount) + ' Script(s) found with errors', False, nil);
 end;
 
 procedure TWsdlProject.AcquireLogLock;
@@ -3222,6 +3242,8 @@ begin
       begin
         xOperation.rpyWsaOnRequest;
         xOperation.ExecuteBefore;
+        if Assigned(aLog.Mssg) then
+          xOperation.Execute(aLog.Mssg.BeforeScriptLines, nil);
         xOperation.ExecuteRpyStampers;
         if xOperation.doDebug
         and Assigned (OnDebugOperationEvent) then
@@ -4642,6 +4664,8 @@ begin
         aLogItem.RequestBodyMiM := aLogItem.RequestBody;
         try
           aOperation.ExecuteBefore;
+          if Assigned (aLogItem.Mssg) then
+            aOperation.Execute(aLogItem.Mssg.BeforeScriptLines, nil);
         except
           on e: exception do
             if e.Message <> 'Exit' then
@@ -4663,6 +4687,8 @@ begin
         aLogItem.ReplyBodyMiM := aLogItem.ReplyBody;
         try
           aOperation.ExecuteAfter;
+          if Assigned (aLogItem.Mssg) then
+            aOperation.Execute(aLogItem.Mssg.AfterScriptLines, nil);
         except
           on e: exception do
             if e.Message <> 'Exit' then
@@ -6744,6 +6770,7 @@ begin
       and (IsActive) then
       begin
         xOperation.ExecuteBefore;
+        xOperation.Execute(xMssg.BeforeScriptLines, nil);
         xOperation.ExecuteRpyStampers;
         if xOperation.doDebug
         and Assigned (OnDebugOperationEvent) then
@@ -7607,6 +7634,33 @@ begin
     result.doReport;
 end;
 
+procedure TWsdlProject.CreateJUnitReport (aName: String);
+var
+  xList: TSnapshotList;
+  x: Integer;
+begin
+  if (CurrentFolder = '') then
+    raise Exception.Create('CreateJUnitReport: config (ProjectOptions.General.projectFolders) invalid');
+  xList := TSnapshotList.Create;
+  try
+    AcquireLogLock;
+    try
+      for x := 0 to displayedSnapshots.Count - 1 do
+        xList.AddObject('', displayedSnapshots.SnapshotItems[x]);
+      for x := 0 to toDisplaySnapshots.Count - 1 do
+        xList.AddObject('', toDisplaySnapshots.SnapshotItems[x]);
+    finally
+      ReleaseLogLock;
+    end;
+    SaveStringToFile ( ReportsFolder + DirectorySeparator + aName + '.xml'
+                     , JUnitSummary(Self, xList)
+                     );
+    xList.Clear;
+  finally
+    xList.Free;
+  end;
+end;
+
 procedure TWsdlProject.CreateSummaryReport (aName: String);
 var
   xList: TSnapshotList;
@@ -7620,6 +7674,8 @@ begin
     try
       for x := 0 to displayedSnapshots.Count - 1 do
         xList.AddObject('', displayedSnapshots.SnapshotItems[x]);
+      for x := 0 to toDisplaySnapshots.Count - 1 do
+        xList.AddObject('', toDisplaySnapshots.SnapshotItems[x]);
     finally
       ReleaseLogLock;
     end;
@@ -7893,6 +7949,7 @@ initialization
   _WsdlClearLogs := ClearLogs;
   _WsdlClearSnapshots := ClearSnapshots;
   _WsdlCreateSnapshot := CreateSnapshot;
+  _WsdlCreateJUnitReport := CreateJUnitReport;
   _WsdlCreateSummaryReport := CreateSummaryReport;
   _WsdlCreateCoverageReport := CreateCoverageReport;
   _WsdlSendOperationRequest := SendOperationRequest;

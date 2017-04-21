@@ -582,6 +582,7 @@ procedure AddRemark (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure SaveSnapshots (aObject: TObject; aString: String);
 procedure CreateSnapshot (aObject: TObject; aName: String);
+procedure CreateJUnitReport (aObject: TObject; aName: String);
 procedure CreateSummaryReport (aObject: TObject; aName: String);
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 procedure ClearLogs (aObject: TObject);
@@ -627,6 +628,7 @@ var
   _WsdlSaveLogs: VFunctionOS;
   _WsdlSaveSnapshots: VFunctionOS;
   _WsdlCreateSnapshot: VFunctionOSB;
+  _WsdlCreateJUnitReport: VFunctionOS;
   _WsdlCreateSummaryReport: VFunctionOS;
   _WsdlCreateCoverageReport: VFunctionOB;
   _WsdlClearLogs: VFunctionOV;
@@ -748,6 +750,13 @@ begin
   if not Assigned (_WsdlCreateSummaryReport) then
     raise Exception.CreateFmt('No OnCreateSummaryReport event assigned, intention was to save as (%s)', [aName]);
   _WsdlCreateSummaryReport (aObject, aName);
+end;
+
+procedure CreateJUnitReport (aObject : TObject ; aName: String);
+begin
+  if not Assigned (_WsdlCreateJUnitReport) then
+    raise Exception.CreateFmt('No OnCreateJUnitReport event assigned, intention was to save as (%s)', [aName]);
+  _WsdlCreateJUnitReport (aObject, aName);
 end;
 
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
@@ -4135,6 +4144,7 @@ begin
     BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindBeforeFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindBeforeFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
+    BindBeforeFunction ('CreateJUnitReport', @CreateJUnitReport, VFOS, '(aName)');
     BindBeforeFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindBeforeFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
@@ -4292,6 +4302,7 @@ begin
     BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindAfterFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindAfterFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
+    BindAfterFunction ('CreateJUnitReport', @CreateJUnitReport, VFOS, '(aName)');
     BindAfterFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindAfterFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
     BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
@@ -6461,7 +6472,9 @@ end;
 
 procedure TWsdlOperation.Execute (aStringList: TStringList; aOnError: TOnErrorEvent);
 begin
-  fExpressBefore.ExecuteScript(aStringList, aOnError);
+  if Assigned (aStringList)
+  and (aStringList.Count > 0) then
+    fExpressBefore.ExecuteScript(aStringList, aOnError);
 end;
 
 procedure TWsdlOperation.ExecuteReqStampers;
@@ -6875,7 +6888,15 @@ end;
 
 procedure TWsdlMessage .CheckAfter ;
 begin
-
+  fPreparedAfter := False;
+  if Assigned (WsdlOperation) then
+  begin
+    try
+      WsdlOperation.CheckScript(AfterScriptLines, nil);
+      fPreparedAfter := True;
+    except
+    end;
+  end;
 end;
 
 procedure TWsdlMessage.corBindsInit(aOperation: TWsdlOperation);

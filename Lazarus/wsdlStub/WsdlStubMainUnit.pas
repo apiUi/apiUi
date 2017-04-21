@@ -79,7 +79,6 @@ type
     MenuItem34: TMenuItem;
     MenuItem35 : TMenuItem ;
     EditMessageScriptMenuItem : TMenuItem ;
-    MenuItem37 : TMenuItem ;
     MenuItem38 : TMenuItem ;
     Panel4: TPanel;
     SnapshotsFromFolderAction : TAction ;
@@ -560,6 +559,7 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure EditMessageAfterScriptActionExecute (Sender : TObject );
+    procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
     procedure EditMessageScriptActionExecute (Sender : TObject );
     procedure DocumentationViewerHotClick(Sender: TObject);
     procedure LogPanelClick(Sender: TObject);
@@ -2040,8 +2040,8 @@ begin
   begin
     if not Assigned (GridView.FocusedNode) then Exit;
     case GridView.FocusedColumn of
-      Ord (operationsColumnBeforeScript): EditScriptButtonClick(nil);
-      Ord (operationsColumnAfterScript): AfterRequestScriptButtonClick(nil);
+      Ord (operationsColumnBeforeScript): EditMessageScriptActionExecute(nil);
+      Ord (operationsColumnAfterScript): EditMessageAfterScriptActionExecute(nil);
     end;
   end;
   if (    (Sender = GridView)
@@ -4407,6 +4407,10 @@ begin
       OperationDelayResponseTimeAction.ImageIndex := 61;
     RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRedirect) or
       (WsdlOperation.StubAction = saRequest);
+    if WsdlOperation.StubAction = saStub then
+      EditMessageScriptAction.Caption := 'Edit Message Script'
+    else
+      EditMessageScriptAction.Caption := 'Edit Message Before Script';
     EditBetweenScriptMenuItem.Visible := (WsdlOperation.StubAction = saStub);
     EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
     EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
@@ -4494,7 +4498,7 @@ begin
             case Column of
               Ord (operationsColumnBeforeScript):
                 begin
-                   if (Trim(xMessage.BeforeScriptLines.Text) <> '') then
+                   if (xMessage.BeforeScriptLines.Count > 0) then
                    begin
                      if (not xMessage.PreparedBefore)
                      and (not wsdlOperation.lateBinding) then
@@ -4509,7 +4513,7 @@ begin
                 begin
                   if wsdlOperation.StubAction <> saStub then
                   begin
-                    if (Trim(xMessage.AfterScriptLines.Text) <> '') then
+                    if (xMessage.AfterScriptLines.Count > 0) then
                     begin
                       if (not xMessage.PreparedAfter)
                       and (not wsdlOperation.lateBinding) then
@@ -6079,10 +6083,11 @@ begin
       EditOperationScriptForm.ScriptName := xOperation.Name;
       EditOperationScriptForm.After := False;
       EditOperationScriptForm.WsdlOperation := xOperation;
+      EditOperationScriptForm.ScriptEdit.Lines.Text := xOperation.BeforeScriptLines.Text;
       EditOperationScriptForm.ShowModal;
       if EditOperationScriptForm.ModalResult = mrOk then
       begin
-        (aXml as TXml).Value := xOperation.BeforeScriptLines.Text;
+        (aXml as TXml).Value := EditOperationScriptForm.ScriptEdit.Lines.Text;
         (aXml as TXml).Checked := True;
         result := True;
       end;
@@ -13678,6 +13683,11 @@ begin
   finally
     XmlUtil.PopCursor;
   end;
+end;
+
+procedure TMainForm.EditMessageAfterScriptActionUpdate (Sender : TObject );
+begin
+  EditMessageAfterScriptAction.Enabled := (WsdlOperation.StubAction <> saStub);
 end;
 
 procedure TMainForm.LogTabControlChange(Sender: TObject);

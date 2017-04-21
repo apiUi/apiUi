@@ -2466,6 +2466,7 @@ object MainForm: TMainForm
       Category = 'Messages'
       Caption = 'Edit Message After Script'
       OnExecute = EditMessageAfterScriptActionExecute
+      OnUpdate = EditMessageAfterScriptActionUpdate
     end
   end
   object mainImageList: TImageList
@@ -9450,9 +9451,6 @@ object MainForm: TMainForm
     object EditMessageScriptMenuItem: TMenuItem
       Action = EditMessageScriptAction
       OnClick = EditMessageScriptMenuItemClick
-    end
-    object MenuItem37: TMenuItem
-      Action = EditMessageScriptAction
     end
     object MenuItem38: TMenuItem
       Action = EditMessageAfterScriptAction

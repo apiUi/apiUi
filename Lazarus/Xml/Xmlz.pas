@@ -49,6 +49,7 @@ public
   procedure Bind (aRoot: String; aExpress: TObject; aMaxOccurrences: Integer); Override;
   function GetStringData: String; override;
   procedure PutStringData (aString: String); override;
+  constructor CreateAsTimeStamp (aTagName: String; aTimeStame: TDateTime); Overload;
   constructor CreateAsString(aName, aString: String);
   constructor CreateAsInteger(aName: String;  aInteger: Integer);
   constructor CreateAsBoolean(aName: String; aBoolean: Boolean);
@@ -3241,6 +3242,13 @@ begin
   inherited Create;
   Name := aName;
   Value := aString;
+end;
+
+constructor TXmlAttribute.CreateAsTimeStamp (aTagName: String; aTimeStame: TDateTime);
+begin
+  inherited Create;
+  Name := aTagName;
+  ValueAsTimeStamp := aTimeStame;
 end;
 
 constructor TXmlAttribute.CreateAsBoolean(aName: String; aBoolean: Boolean);

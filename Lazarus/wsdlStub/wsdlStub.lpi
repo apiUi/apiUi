@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -105,6 +105,10 @@
         <Filename Value="htmlreportz.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="junitunit.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -154,7 +158,6 @@
       </Item2>
       <Item3>
         <Name Value="EFOpenError"/>
-        <Enabled Value="False"/>
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>
@@ -212,7 +215,6 @@
       </Item18>
       <Item19>
         <Name Value="EOleSysError"/>
-        <Enabled Value="False"/>
       </Item19>
       <Item20>
         <Name Value="EIdURIException"/>
