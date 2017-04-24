@@ -3963,12 +3963,16 @@ begin
     raise Exception.Create('Operation (Before)"' + Name + '" not prepared');
   InitExecute;
   fExpressBefore.Execute;
+  if Assigned(CorrelatedMessage) then
+    Execute(CorrelatedMessage.BeforeScriptLines, nil);
 end;
 
 procedure TWsdlOperation.ExecuteAfter;
 begin
   if not PreparedAfter then
     raise Exception.Create('Operation (After)"' + Name + '" not prepared');
+  if Assigned (CorrelatedMessage) then
+    Execute(CorrelatedMessage.AfterScriptLines, nil);
   InitExecute;
   fExpressAfter.Execute;
 end;
@@ -6917,11 +6921,14 @@ begin
   reqBind := TXml.Create;
   rpyBind := TXml.Create;
   fltBind := TXml.Create;
-//Patterns := TStringList.Create;
+  BeforeScriptLines := TStringList.Create;
+  AfterScriptLines := TStringList.Create;
 end;
 
 constructor TWsdlMessage.Create(aOperation: TWsdlOperation);
 begin
+  BeforeScriptLines := TStringList.Create;
+  AfterScriptLines := TStringList.Create;
   ColumnXmls := TBindableList.Create;
   WsdlOperation := aOperation;
   while Assigned(WsdlOperation.Cloned) do
@@ -7126,7 +7133,6 @@ begin
   CorrelationBindables.Free;
   FreeAndNil(BeforeScriptLines);
   FreeAndNil(AfterScriptLines);
-//Patterns.Free;
   inherited;
 end;
 

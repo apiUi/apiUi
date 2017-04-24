@@ -169,6 +169,9 @@ procedure TEditOperationScriptForm.OKExecute(Sender: TObject);
 begin
   StatusBar.SimpleText := '';
   fScriptChanged := False;
+  if (ScriptEdit.Lines.Count = 1)
+  and (ScriptEdit.Lines.Strings[0] = '') then
+    ScriptEdit.Lines.Delete(0);
 end;
 
 procedure TEditOperationScriptForm.ExpressError(Sender: TObject; LineNumber,

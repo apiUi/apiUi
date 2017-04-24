@@ -3200,7 +3200,11 @@ begin
     begin
       if (xOperation.StubAction = saStub)
       and (aIsActive)
-      and (Trim(xOperation.BeforeScriptLines.Text) <> '') then
+      and (   (xOperation.BeforeScriptLines.Count > 0)
+           or (    Assigned (xOperation.CorrelatedMessage)
+               and (xOperation.CorrelatedMessage.BeforeScriptLines.Count > 0)
+              )
+          )then
       begin
         xReqXml := TXml.Create;
         xRpyXml := TXml.Create;
@@ -3242,8 +3246,6 @@ begin
       begin
         xOperation.rpyWsaOnRequest;
         xOperation.ExecuteBefore;
-        if Assigned(aLog.Mssg) then
-          xOperation.Execute(aLog.Mssg.BeforeScriptLines, nil);
         xOperation.ExecuteRpyStampers;
         if xOperation.doDebug
         and Assigned (OnDebugOperationEvent) then
@@ -4104,7 +4106,9 @@ begin
       begin
         xLog.ReplyBody := '';
         if aOperation.rpyBind.Name = '' then
+        begin
           aOperation.ExecuteAfter;
+        end;
       end
       else
       begin
@@ -4152,7 +4156,8 @@ begin
       with xLog do
       begin
 //      RequestHeaders := HttpClient.Request.CustomHeaders.Text;
-        Mssg := aOperation.Messages.Messages[0];
+        if not Assigned (Mssg) then
+          Mssg := aOperation.Messages.Messages[0];
         CorrelationId := aOperation.CorrelationIdAsText ('; ');
         Stubbed := True;
         StubAction := aOperation.StubAction;
@@ -4664,8 +4669,6 @@ begin
         aLogItem.RequestBodyMiM := aLogItem.RequestBody;
         try
           aOperation.ExecuteBefore;
-          if Assigned (aLogItem.Mssg) then
-            aOperation.Execute(aLogItem.Mssg.BeforeScriptLines, nil);
         except
           on e: exception do
             if e.Message <> 'Exit' then
@@ -4687,8 +4690,6 @@ begin
         aLogItem.ReplyBodyMiM := aLogItem.ReplyBody;
         try
           aOperation.ExecuteAfter;
-          if Assigned (aLogItem.Mssg) then
-            aOperation.Execute(aLogItem.Mssg.AfterScriptLines, nil);
         except
           on e: exception do
             if e.Message <> 'Exit' then
@@ -6770,7 +6771,6 @@ begin
       and (IsActive) then
       begin
         xOperation.ExecuteBefore;
-        xOperation.Execute(xMssg.BeforeScriptLines, nil);
         xOperation.ExecuteRpyStampers;
         if xOperation.doDebug
         and Assigned (OnDebugOperationEvent) then

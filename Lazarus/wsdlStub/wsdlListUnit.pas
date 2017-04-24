@@ -141,6 +141,7 @@ var
   s, o, f: Integer;
   ListItem: TListItem;
   Wsdl: TWsdl;
+  xExt: String;
   swapCursor: TCursor;
 begin
   Application.CreateForm(TOpenWsdlForm, OpenWsdlForm);
@@ -155,11 +156,13 @@ begin
         Screen.Cursor := crHourGlass;
         Wsdl := TWsdl.Create(EnvVars, -1, xsdElementsWhenRepeatable, ShowOperationsWithEndpointOnly);
         try
-          if UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text)) = '.SDF' then
+          xExt := UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text));
+          SjowMessage(xExt);
+          if xExt = '.SDF' then
             Wsdl.LoadFromSdfFile (OpenWsdlForm.WsdlLocationEdit.Text)
           else
           begin
-            if UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text)) = '.JSON' then
+            if xExt = '.JSON' then
               Wsdl.LoadFromJsonFile (OpenWsdlForm.WsdlLocationEdit.Text, nil)
             else
               wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil);

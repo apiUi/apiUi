@@ -14,7 +14,7 @@ type TCustParser = class (TObject)
     fDoIt: Boolean;
     function getDoIt: Boolean;
 protected
-  Owner: TObject;
+  fOwner: TObject;
   LexItem: YYSType;
   Cond: Boolean;
   Stack: array [0..InternalStackSize] of YYRType;
@@ -72,6 +72,7 @@ public
   LexItems : YYSType;
   ArgumentBinds: TBindList;
   SqlUsed: Boolean;
+  property Owner: TObject read fOwner;
   property DoIt: Boolean read getDoIt write fDoIt;
   property OnGetAbortPressed: TBooleanFunction read FOnGetAbortPressed write FOnGetAbortPressed;
   property OnGetDoExit: TBooleanFunction read FOnGetDoExit write FOnGetDoExit;
@@ -114,7 +115,7 @@ implementation
 constructor TCustParser.Create(aOwner: TObject);
 begin
   inherited Create;
-  Owner := aOwner;
+  fOwner := aOwner;
   StackIndex := 0;
   InternalBinds := TBindList.Create;
   InternalBinds.Sorted := True;

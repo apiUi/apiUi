@@ -344,7 +344,7 @@ var
   xStringList: TStringList;
   xBindList: TBindList;
 begin
-  Xpress := TExpress.Create (nil);
+  Xpress := TExpress.Create (Parser.Owner);
   try
     Xpress.OnError := aOnError;
     xBindList := Xpress.fBindList;
@@ -368,7 +368,7 @@ var
   xStringList: TStringList;
   xBindList: TBindList;
 begin
-  Xpress := TExpress.Create (nil);
+  Xpress := TExpress.Create (Parser.Owner);
   try
     Xpress.OnError := aOnError;
     xBindList := Xpress.fBindList;

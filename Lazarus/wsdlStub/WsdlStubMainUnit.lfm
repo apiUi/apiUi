@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 300
+  Left = 274
   Height = 678
-  Top = 143
+  Top = 97
   Width = 1300
   Caption = 'MainForm'
   ClientHeight = 659
@@ -1582,7 +1582,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 0
+      TabIndex = 3
       Tabs.Strings = (
         'Documentation'
         'Notifications'
