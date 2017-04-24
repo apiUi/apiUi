@@ -157,13 +157,13 @@ begin
         Wsdl := TWsdl.Create(EnvVars, -1, xsdElementsWhenRepeatable, ShowOperationsWithEndpointOnly);
         try
           xExt := UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text));
-          SjowMessage(xExt);
           if xExt = '.SDF' then
             Wsdl.LoadFromSdfFile (OpenWsdlForm.WsdlLocationEdit.Text)
           else
           begin
-            if xExt = '.JSON' then
-              Wsdl.LoadFromJsonFile (OpenWsdlForm.WsdlLocationEdit.Text, nil)
+            if (xExt = '.JSON')
+            or (xExt = '.YAML') then
+              Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil)
             else
               wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil);
           end;

@@ -1449,7 +1449,7 @@ end;
 procedure TMainForm.OpenWsdlActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
-  HintStr := 'Open WSDL web service description' + HttpActiveHint;
+  HintStr := 'Open WSDL web service description or API (OpenAPI f.k.a. Swagger)' + HttpActiveHint;
 end;
 
 function TMainForm.HttpActiveHint: String;

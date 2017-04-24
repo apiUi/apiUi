@@ -1,7 +1,5 @@
 {$MODE Delphi}
 
-{$define JSON}
-{$define noXMLDOM}
 {$define IPMZ}
 unit Xmlz;
 
@@ -119,6 +117,7 @@ type
                               ; var Data: String
                               );
     procedure LoadJSON (aErrorFound: TOnErrorEvent);
+    procedure LoadYAML (aErrorFound: TOnErrorEvent);
     procedure LoadXML (aErrorFound: TOnErrorEvent);
     function GetIndexString: String;
     function GetCaption: String;
@@ -233,6 +232,8 @@ type
     procedure LoadFromString (aString: String; ErrorFound: TOnErrorEvent);
     procedure LoadJsonFromFile (aFileName: String; ErrorFound: TOnErrorEvent);
     procedure LoadJsonFromString (aString: String; ErrorFound: TOnErrorEvent);
+    procedure LoadYamlFromFile (aFileName: String; ErrorFound: TOnErrorEvent);
+    procedure LoadYamlFromString (aString: String; ErrorFound: TOnErrorEvent);
     function FindByRefId (aRefId: Integer): TXml;
     function FindUQ (aName: String): TCustomBindable; Override;
     function FindUQValue (aName: String): String;
@@ -403,9 +404,8 @@ uses
    , Types
    , XmlzConsts
    , XmlAnalyser
-{$ifdef JSON}
    , jsnAnalyser
-{$endif}
+   , yamlAnalyser
    , RegExpr
    , xmlio
    , Ipmz
@@ -802,6 +802,28 @@ begin
   end;
 end;
 
+procedure TXml.LoadYamlFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
+begin
+  fFileContents := TStringList.Create;
+  try
+    fFileContents.Text := ReadStringFromFile (aFileName);
+    LoadYaml (ErrorFound);
+  finally
+    fFileContents.Free;
+  end;
+end;
+
+procedure TXml.LoadYamlFromString(aString: String; ErrorFound: TOnErrorEvent);
+begin
+  fFileContents := TStringList.Create;
+  try
+    fFileContents.Text := aString;
+    LoadYaml (ErrorFound);
+  finally
+    fFileContents.Free;
+  end;
+end;
+
 procedure TXml.LoadFromString(aString: String; ErrorFound: TOnErrorEvent);
 begin
   fFileContents := TStringList.Create;
@@ -814,12 +836,9 @@ begin
 end;
 
 procedure TXml.LoadJSON(aErrorFound: TOnErrorEvent);
-{$ifdef json}
 var
   jsnAnalyser: TjsnAnalyser;
-{$endif}
 begin
-{$ifdef json}
   Items.Clear;
   jsnAnalyser := TjsnAnalyser.Create (nil);
   jsnAnalyser.StartState := InitState;
@@ -834,9 +853,27 @@ begin
   finally
     jsnAnalyser.Free;
   end;
-{$endif}
 end;
 
+procedure TXml.LoadYAML(aErrorFound: TOnErrorEvent);
+var
+  yamlAnalyser: TyamlAnalyser;
+begin
+  Items.Clear;
+  yamlAnalyser := TyamlAnalyser.Create (nil);
+  yamlAnalyser.StartState := InitState;
+  yamlAnalyser.OnNeedData := AnalyserNeedData;
+  yamlAnalyser.OnError := aErrorFound;
+  yamlAnalyser.Xml := Self;
+  try
+    scanLineNumber := 0;
+    yamlAnalyser.Prepare;
+    scanLineNumber := 0;
+    yamlAnalyser.Execute;
+  finally
+    yamlAnalyser.Free;
+  end;
+end;
 
 procedure TXml.LoadXML (aErrorFound: TOnErrorEvent);
 var

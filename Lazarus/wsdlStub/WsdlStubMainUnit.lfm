@@ -1582,7 +1582,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 3
+      TabIndex = 0
       Tabs.Strings = (
         'Documentation'
         'Notifications'
@@ -1621,8 +1621,8 @@ object MainForm: TMainForm
     end
     object OpenWsdlAction: TAction
       Category = 'Project'
-      Caption = 'Maintain list of WSDL files...'
-      Hint = 'Maintain list of WSDL files'
+      Caption = 'Maintain list of WSDL and API files...'
+      Hint = 'Maintain list of WSDL and API (currently only OpenAPI f.k.a. Swagger) files'
       ImageIndex = 0
       OnExecute = OpenWsdlActionExecute
       OnHint = OpenWsdlActionHint

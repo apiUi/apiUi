@@ -3650,8 +3650,9 @@ begin
   else
   begin
     result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
-    if xExt = '.JSON' then
-      result.LoadFromJsonFile(aName, nil)
+    if (xExt = '.JSON')
+    or (xExt = '.YAML') then
+      result.LoadFromJsonYamlFile(aName, nil)
     else
       result.LoadFromSchemaFile(aName, nil);
   end;

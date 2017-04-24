@@ -1,10 +1,10 @@
 object OpenWsdlForm: TOpenWsdlForm
-  Left = 270
+  Left = 313
   Height = 89
-  Top = 195
+  Top = 196
   Width = 651
   BorderStyle = bsDialog
-  Caption = 'Open Web Server Description'
+  Caption = 'Open Web Service Description'
   ClientHeight = 89
   ClientWidth = 651
   Color = clBtnFace
@@ -12,7 +12,7 @@ object OpenWsdlForm: TOpenWsdlForm
   OnDestroy = FormDestroy
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 55
@@ -38,15 +38,15 @@ object OpenWsdlForm: TOpenWsdlForm
         Left = 4
         Height = 13
         Top = 13
-        Width = 32
-        Caption = 'WSDL:'
+        Width = 65
+        Caption = 'API or WSDL:'
         ParentColor = False
       end
       object WsdlLocationEdit: TEdit
-        Left = 42
+        Left = 72
         Height = 21
         Top = 10
-        Width = 507
+        Width = 477
         TabOrder = 0
       end
       object Button1: TButton
@@ -71,9 +71,9 @@ object OpenWsdlForm: TOpenWsdlForm
     ClientWidth = 651
     TabOrder = 1
     object OKBtn: TButton
-      Left = 63
+      Left = 77
       Height = 25
-      Top = 0
+      Top = 1
       Width = 75
       Caption = 'OK'
       Default = True
@@ -81,9 +81,9 @@ object OpenWsdlForm: TOpenWsdlForm
       TabOrder = 0
     end
     object CancelBtn: TButton
-      Left = 143
+      Left = 155
       Height = 25
-      Top = 0
+      Top = 1
       Width = 75
       Cancel = True
       Caption = 'Cancel'
@@ -92,10 +92,9 @@ object OpenWsdlForm: TOpenWsdlForm
     end
   end
   object OpenFileDialog: TOpenDialog
-    Title = 'Open input Ipm'
+    Title = 'Open API (f.k.a. Swagger) API or WSDL'
     DefaultExt = '.WSDL'
-    Filter = 'Service Definition file (*.wsdl;*.sdf)|*.wsdl;*.sdf|SDF files (*.sdf)|*.sdf|WSDL files (*.wsdl)|*.wsdl|All files (*.*)|*.*'
-    FilterIndex = 0
+    Filter = 'Service Definition file (*.wsdl;*.json;*.yaml)|*.wsdl;*.json;*.yaml|OpenAPI (f.k.a. Swagger)|*.json;*.yaml|WSDL files (*.wsdl)|*.wsdl|SDF files (*.sdf)|*.sdf|All files (*.*)|*.*'
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing]
     left = 417
     top = 57

@@ -105,7 +105,7 @@ type
       procedure AddedTypeDefElementsFromXml (aXml: TXml);
       procedure LoadExtraXsds;
       procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent);
-      procedure LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
+      procedure LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent);
       procedure LoadFromSdfFile(aFileName: String);
       constructor Create(aEnvVars: TStringList; aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);
       destructor Destroy; override;
@@ -2292,7 +2292,7 @@ begin
   fMssgs.ClearListOnly;
 end;
 
-procedure TWsdl.LoadFromJsonFile(aFileName: String; aOnError: TOnErrorEvent);
+procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent);
 //
 // Based on https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 //
@@ -2367,7 +2367,7 @@ var
   x, y, z, u, v, w, r, f, h: Integer;
   xService: TWsdlService;
   xOperation: TWsdlOperation;
-  xDoc: String;
+  xDoc, xExt: String;
   sl: TStringList;
   xXsd, yXsd, hXsd: TXsd;
   s: String;
@@ -2386,6 +2386,7 @@ begin
   end;
   Name := aFileName;
   FileName := aFileName;
+  xExt := UpperCase (ExtractFileExt (FileName));
   xXml := TXml.Create;
   sl := TStringList.Create;
   sl.Sorted := True;
@@ -2394,13 +2395,12 @@ begin
   XsdDescr.AddBuiltIns;
   with xXml do
   try
-    LoadJsonFromFile(aFileName, aOnError);
+    if xExt = '.JSON' then
+      LoadJsonFromFile(aFileName, aOnError)
+    else
+      LoadYamlFromFile(aFileName, aOnError);
     for x := 0 to Items.Count - 1 do
     begin
-      dXml := ItemByTag['swagger'];
-      if Assigned (dXml) then
-      begin
-      end;
       if Items.XmlItems[x].Name = 'swagger' then with Items.XmlItems[x] do
       begin
         sl.Add (Name);

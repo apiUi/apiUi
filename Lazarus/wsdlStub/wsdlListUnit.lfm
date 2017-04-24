@@ -3,7 +3,7 @@ object wsdlListForm: TwsdlListForm
   Height = 321
   Top = 241
   Width = 844
-  Caption = 'List of Wsdls to stub'
+  Caption = 'List of Wsdl and API files'
   ClientHeight = 321
   ClientWidth = 844
   Color = clBtnFace
@@ -101,7 +101,7 @@ object wsdlListForm: TwsdlListForm
       Align = alClient
       Columns = <      
         item
-          Caption = 'Wsdl location'
+          Caption = 'Location'
         end>
       HideSelection = False
       PopupMenu = ListViewPopupMenu
@@ -122,7 +122,7 @@ object wsdlListForm: TwsdlListForm
     end
     object AddAction: TAction
       Caption = '&Add...'
-      Hint = 'Add a service description file'
+      Hint = 'Add a service description or OpenAPI (f.k.a. Swagger) file'
       OnExecute = AddActionExecute
       OnUpdate = AddActionUpdate
     end

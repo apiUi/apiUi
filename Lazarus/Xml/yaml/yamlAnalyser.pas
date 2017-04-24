@@ -149,9 +149,7 @@ procedure TyamlAnalyser .PrepareParsing ;
 var
   lx, lx_1: YYSType;
   sep: String;
-  rx: TRegExpr;
 begin
-  rx := TRegExpr.Create('\ *\#[^\n]*$'); // yaml comment
   try
     lx := LexicalList;
     while (Assigned(lx)) do
@@ -159,12 +157,6 @@ begin
       if lx.Token = _VALUE then
       begin
         lx_1 := lx.NextToken;
-        if Assigned (lx_1)
-        and (lx_1.Token <> _LINECONT) then
-        begin
-          if rx.Exec (lx.yyStringRead)then
-            lx.yyStringRead := Copy (lx.yyStringRead, 1, rx.MatchPos[0] - 1);
-        end;
         while (Assigned (lx_1))
         and (   (lx_1.Token = _LINECONT)
              or (lx_1.Token = _VALUE)
@@ -196,7 +188,6 @@ begin
       lx := lx.NextToken;
     end;
   finally
-    rx.Free;
   end;
   lx := LexicalList;
   lx_1 := lx;
@@ -209,8 +200,14 @@ begin
     begin
       if lx.yyStringRead <> '' then
       begin
-        if (lx.yyStringRead[1] = '"')
-        and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '"')then
+        if (    (    (lx.yyStringRead[1] = '"')
+                 and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '"')
+                )
+            or  (    (lx.yyStringRead[1] = '''')
+                 and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '''')
+                )
+           )
+        then
           lx.yyStringRead := Copy(lx.yyStringRead, 2, system.Length(lx.yyStringRead) - 2);
       end;
     end;
@@ -333,7 +330,6 @@ var
   HexCode: Integer;  // hex character code (-1 on error)
 begin
   xScanner := Sender as TyamlScanner;
-
   if (xScanner.Token <> _INDENT) then
     HyphenIndent := 0;
   if (xScanner.Token = _HYPHENINDENT) then

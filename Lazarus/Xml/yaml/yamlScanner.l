@@ -33,11 +33,11 @@ True            true
                                 return (_NEWLINE);
                               end;
 {cr}                          return (_WHITESPACE);
-{String}                      return (_VALUE);
 {Comment}                     begin
                                 Start (InitState);
                                 return (_COMMENT);
                               end;
+<InitState>{String}           return (_VALUE);
 <InitState>{Name}             begin
                                 Start (MidlState);
                                 return (_NAME);
@@ -71,4 +71,5 @@ True            true
 <RighState>{Pipe}             return (_PIPE);
 <RighState>{IndentSpace}      return (_WHITESPACE);
 <RighState>{RestEol}          return (_VALUE);
+<RighState>{String}           return (_VALUE);
 
