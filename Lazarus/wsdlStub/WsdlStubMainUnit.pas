@@ -200,7 +200,6 @@ type
     LoadTestAction : TAction ;
     CopyLogGridToClipBoardAction : TAction ;
     MasterClearLogAction : TAction ;
-    MasterMessagesMenuItem : TMenuItem ;
     MasterReactivateActon : TAction ;
     MasterReloadDesignAction : TAction ;
     MasterReloadDesignMenuItem : TMenuItem ;
@@ -377,9 +376,6 @@ type
     Comparewithfile1: TMenuItem;
     N7: TMenuItem;
     ClearExceptionsAction1: TMenuItem;
-    N8: TMenuItem;
-    ShowrequestasXML1: TMenuItem;
-    ShowreplyasXML1: TMenuItem;
     MessagesMenuItem: TMenuItem;
     Selectcorrelationelements1: TMenuItem;
     Selectcolumnelements1: TMenuItem;
@@ -424,8 +420,6 @@ type
     ToggleCheckExpectedValuesAction: TAction;
     ToggleBetaModeAction: TAction;
     ShowExpectedXmlAction: TAction;
-    ShowrequestinaGrid1: TMenuItem;
-    ShowreplyasGrid1: TMenuItem;
     Action1: TAction;
     BrowseMqAction: TAction;
     BrowseMqMenuItem: TMenuItem;
@@ -562,11 +556,11 @@ type
     procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
     procedure EditMessageScriptActionExecute (Sender : TObject );
     procedure DocumentationViewerHotClick(Sender: TObject);
-    procedure LogPanelClick(Sender: TObject);
+    procedure ImportProjectScriptsActionHint (var HintStr : string ;
+      var CanShow : Boolean );
     procedure LogTabControlChange(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
-    procedure EditMessageScriptMenuItemClick (Sender : TObject );
     procedure NeedTacoHostData (Sender: TTacoInterface);
     procedure OnTacoAuthorize (Sender: TObject);
     procedure AbortActionUpdate (Sender : TObject );
@@ -576,8 +570,6 @@ type
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
     procedure GridPopupMenuPopup (Sender : TObject );
-    procedure httpRequestDesignActionExecute (Sender : TObject );
-    procedure httpRequestMessagesActionExecute (Sender : TObject );
     procedure ImportProjectScriptsActionExecute (Sender : TObject );
     procedure InWsdlTreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
@@ -589,7 +581,6 @@ type
     procedure DesignSplitVerticalMenuItemClick (Sender : TObject );
     procedure MenuItem14Click (Sender : TObject );
     procedure MenuItem17Click (Sender : TObject );
-    procedure MenuItem19Click (Sender : TObject );
     procedure AddChildElementRefMenuItemClick (Sender : TObject );
     procedure OperationReqsTreeViewClick(Sender: TObject);
     procedure OperationReqsTreeViewGetImageIndex (Sender : TBaseVirtualTree ;
@@ -614,7 +605,6 @@ type
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
-    procedure Operation1Click(Sender: TObject);
     procedure OperationAliasActionExecute (Sender : TObject );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
     procedure OperationReqsTreeViewPaintText (Sender : TBaseVirtualTree ;
@@ -639,7 +629,6 @@ type
       var CellText : String );
     procedure SummaryReport (aList: TClaimableObjectList);
     procedure SummaryReportActionExecute (Sender : TObject );
-    procedure ToolBar6Click(Sender: TObject);
     procedure SaveSnapshotsActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowGridDifferencesActionExecute (Sender : TObject );
@@ -711,7 +700,6 @@ type
     procedure LogPopupMenuPopup(Sender: TObject);
     procedure FilterLogActionExecute(Sender: TObject);
     procedure AfterRequestScriptButtonClick(Sender: TObject);
-    procedure ScriptButtonsPanelResize(Sender: TObject);
     procedure ExecuteLoadTest;
     procedure ExecuteAllRequests;
     procedure ExecuteAllRequestsActionUpdate(Sender: TObject);
@@ -782,7 +770,6 @@ type
     procedure ClearExceptionsActionExecute(Sender: TObject);
     procedure ClearExceptionsActionUpdate(Sender: TObject);
     procedure NewStubCaseActionExecute(Sender: TObject);
-    procedure NewStubCaseActionUpdate(Sender: TObject);
     procedure MessagesVTSGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
     procedure MessagesVTSFocusChanged(Sender: TBaseVirtualTree;
@@ -828,7 +815,6 @@ type
     procedure OptionsActionUpdate(Sender: TObject);
     procedure CheckBoxClick(Sender: TObject);
     procedure ReopenStubCaseActionUpdate(Sender: TObject);
-    procedure OpenStubCaseActionUpdate(Sender: TObject);
     procedure WsdlComboBoxChange(Sender: TObject);
     procedure runScriptActionExecute(Sender: TObject);
     procedure LicenseMenuItemClick(Sender: TObject);
@@ -919,8 +905,6 @@ type
       var Accept: Boolean);
     procedure EditScriptMenuItemClick(Sender: TObject);
     procedure ScriptGoMenuItemClick(Sender: TObject);
-    procedure New2Click(Sender: TObject);
-    procedure RemoveScriptMenuItemClick(Sender: TObject);
     procedure ExtendRecursivityMenuItemClick(Sender: TObject);
     procedure AssignEvaluationMenuItemClick(Sender: TObject);
     procedure TestBeforeScriptActionExecute(Sender: TObject);
@@ -4200,10 +4184,6 @@ begin
   WsdlPopulateServices(Wsdl);
 end;
 
-procedure TMainForm.OpenStubCaseActionUpdate(Sender: TObject);
-begin
-end;
-
 procedure TMainForm.ReopenStubCaseActionUpdate(Sender: TObject);
 begin
   ReopenStubCaseAction.Enabled := (ReopenCaseList.Count > 0)
@@ -6057,10 +6037,6 @@ begin
   end;
 end;
 
-procedure TMainForm.NewStubCaseActionUpdate(Sender: TObject);
-begin
-end;
-
 function TMainForm.EditScript(aXml: TObject): Boolean;
 var
   xOperation: TWsdlOperation;
@@ -6139,10 +6115,6 @@ begin
   finally
     xXml.Free;
   end;
-end;
-
-procedure TMainForm.New2Click(Sender: TObject);
-begin
 end;
 
 procedure TMainForm.NewStubCaseActionExecute(Sender: TObject);
@@ -8748,10 +8720,6 @@ begin
                                   and (WsdlOperation.StubAction = saRequest)
                                   and (NumberOfBlockingThreads < 1)
                                     ;
-end;
-
-procedure TMainForm.ScriptButtonsPanelResize(Sender: TObject);
-begin
 end;
 
 procedure TMainForm.ScriptSplitterCanResize(Sender: TObject;
@@ -12000,10 +11968,6 @@ begin
     end;
 end;
 
-procedure TMainForm.RemoveScriptMenuItemClick(Sender: TObject);
-begin
-end;
-
 procedure TMainForm.RemoveAllMessagesActionExecute(Sender: TObject);
 var
   o: Integer;
@@ -12434,11 +12398,6 @@ begin
   TProcedureThread.Create(False, True, se, SummaryReport, xList);
 end;
 
-procedure TMainForm.ToolBar6Click(Sender: TObject);
-begin
-
-end;
-
 procedure TMainForm.SaveSnapshotsActionExecute (Sender : TObject );
 begin
   if Assigned (se) then
@@ -12841,16 +12800,6 @@ begin
   ShowGridDifferencesAction.Enabled := (n = 2);
 end;
 
-procedure TMainForm .httpRequestDesignActionExecute (Sender : TObject );
-begin
-
-end;
-
-procedure TMainForm .httpRequestMessagesActionExecute (Sender : TObject );
-begin
-
-end;
-
 procedure TMainForm.ImportProjectScriptsActionExecute (Sender : TObject );
 var
   xXml: TXml;
@@ -13005,11 +12954,6 @@ begin
     UpdateVisibiltyOfOperations;
     stubChanged := True;
   end;
-end;
-
-procedure TMainForm .MenuItem19Click (Sender : TObject );
-begin
-
 end;
 
 procedure TMainForm .AddChildElementRefMenuItemClick (Sender : TObject );
@@ -13561,14 +13505,15 @@ begin
   end;
 end;
 
-procedure TMainForm.LogPanelClick(Sender: TObject);
-begin
-
-end;
-
 procedure TMainForm.DocumentationViewerHotClick(Sender: TObject);
 begin
   OpenUrl(DocumentationViewer.HotURL);
+end;
+
+procedure TMainForm .ImportProjectScriptsActionHint (var HintStr : string ;
+  var CanShow : Boolean );
+begin
+
 end;
 
 procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
@@ -13705,11 +13650,6 @@ begin
   Clipboard.AsText := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode).FullCaption;
 end;
 
-procedure TMainForm.EditMessageScriptMenuItemClick (Sender : TObject );
-begin
-
-end;
-
 procedure TMainForm .OnTacoAuthorize (Sender : TObject );
 begin
   PingPongTimer.Interval := intervalTacoPingPong;
@@ -13803,11 +13743,6 @@ begin
   finally
     XmlUtil.PopCursor;
   end;
-end;
-
-procedure TMainForm.Operation1Click(Sender: TObject);
-begin
-
 end;
 
 procedure TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation );
