@@ -1025,6 +1025,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
     xDoc: String;
     xEnum: TXsdEnumeration;
     xXsd, yXsd: TXsd;
+    xMaxExcl, xMinExcl: Boolean;
   begin
     result := TXsdDataType.Create(self);
     result.xsdType:= dtSimpleType;
@@ -1033,6 +1034,8 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
     result.NameSpace := aNameSpace;
     self.TypeDefs.AddObject(result.NameSpace + '/' + result.Name, result);
     xDoc := '';
+    xMaxExcl := False;
+    xMinExcl := False;
     for x := 0 to aXml.Items.Count - 1 do
     begin
       xXml := aXml.Items.XmlItems[x];
@@ -1114,10 +1117,10 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
       if xXml.Name = 'description' then AppendDoc(xDoc, xXml.Value);
       if xXml.Name = 'default ' then result.DefaultValue := xXml.Value;
       if xXml.Name = 'multipleOf' then ;
-      if xXml.Name = 'maximum' then result.MaxInclusive := xXml.Value;
-      if xXml.Name = 'exclusiveMaximum' then result.MaxExclusive := xXml.Value;
+      //if xXml.Name = 'maximum' then result.MaxInclusive := xXml.Value;
+      if xXml.Name = 'exclusiveMaximum' then xMaxExcl := xXml.ValueAsBoolean;
       if xXml.Name = 'minimum' then result.MinInclusive := xXml.Value;
-      if xXml.Name = 'exclusiveMinimum' then result.MinExclusive := xXml.Value;
+      if xXml.Name = 'exclusiveMinimum' then xMinExcl := xXml.ValueAsBoolean;
       if xXml.Name = 'maxLength' then result.MaxLength := xXml.Value;
       if xXml.Name = 'minLength' then result.MinLength := xXml.Value;
       if xXml.Name = 'pattern' then result.Pattern := xXml.Value;
@@ -1144,6 +1147,16 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           if Name = 'name' then result.JsonXmlName := Value;
         end;
       end;
+    end;
+    if xMaxExcl then
+    begin
+      result.MaxExclusive := result.MaxInclusive;
+      result.MaxInclusive := '';
+    end;
+    if xMinExcl then
+    begin
+      result.MinExclusive := result.MinInclusive;
+      result.MinInclusive := '';
     end;
     result.Documentation.Text := xDoc;
   end;

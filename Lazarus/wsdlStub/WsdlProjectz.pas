@@ -5349,6 +5349,11 @@ begin
           reqBind := _LoadXsdMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
           rpyBind := _LoadXsdMsg('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename);
           fltBind := _LoadXsdMsg('Flt', oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename);
+          if Alias <> reqTagName then
+          begin
+            if Assigned (reqBind) then reqBind.Name := Alias;
+            if Assigned (rpyBind) then rpyBind.Name := Alias;
+          end;
           operationRecognitionUpdate (xOperation, reqRecognition, oXml.Items.XmlCheckedItemByTag['reqRecognition']);
           operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
         end;
