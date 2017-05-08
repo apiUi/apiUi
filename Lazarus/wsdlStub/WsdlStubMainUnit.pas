@@ -13031,7 +13031,7 @@ begin
       case Column of
       Ord (operationsColumnBeforeScript):
         begin
-           if (Trim(xOperation.BeforeScriptLines.Text) <> '') then
+           if (xOperation.BeforeScriptLines.Count > 0) then
            begin
              if (not xOperation.PreparedBefore)
              and (not xOperation.lateBinding) then
@@ -13046,7 +13046,7 @@ begin
         begin
           if xOperation.StubAction <> saStub then
           begin
-            if (Trim(xOperation.AfterScriptLines.Text) <> '') then
+            if (xOperation.AfterScriptLines.Count > 0) then
             begin
               if (not xOperation.PreparedAfter)
               and (not xOperation.lateBinding) then

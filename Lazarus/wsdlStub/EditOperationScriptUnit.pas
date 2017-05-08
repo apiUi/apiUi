@@ -396,10 +396,7 @@ end;
 
 procedure TEditOperationScriptForm.ShowTokens1Click(Sender: TObject);
 begin
-  if After then
-    ShowText ('Tokens', WsdlOperation.DebugTokenStringAfter)
-  else
-    ShowText ('Tokens', WsdlOperation.DebugTokenStringBefore);
+  ShowText ('Tokens', WsdlOperation.DebugTokenStringBefore);
 end;
 
 procedure TEditOperationScriptForm .doFind (aNext: Boolean) ;

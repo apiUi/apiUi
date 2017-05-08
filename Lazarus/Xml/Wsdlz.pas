@@ -251,8 +251,7 @@ type
       fCloned: TWsdlOperation;
       fLock: TCriticalSection;
       fStamperStatement: String;
-      fExpressBefore: TExpress;
-      fExpressAfter: TExpress;
+      fExpress: TExpress;
       fExpressStamper: TExpress;
       fExpressChecker: TExpress;
       fDoExit: Boolean;
@@ -280,7 +279,6 @@ type
       function StreamWsAddressing (aWsa: TXml; isRequest: Boolean): String;
       function getWsaTo: String;
     procedure setOnGetAbortPressed(const Value: TBooleanFunction);
-    function getDebugTokenStringAfter: String;
     function getDebugTokenStringBefore: String;
     public
       _processing: Boolean;
@@ -386,7 +384,6 @@ type
       property MessageBasedOnRequest: TWsdlMessage read getReplyBasedOnRequest;
       property OnError: TOnErrorEvent read fOnError write fOnError;
       property Cloned: TWsdlOperation read fCloned;
-      property DebugTokenStringAfter: String read getDebugTokenStringAfter;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
       function AddedTypeDefElementsAsXml: TObject;
       procedure AddedTypeDefElementsFromXml(aXml: TObject);
@@ -414,12 +411,12 @@ type
       function CorrelationIdAsText (aSeparator: String): String;
       procedure BindCheckerFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
       procedure BindStamperFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
-      procedure BindBeforeFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
-      procedure BindAfterFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
+      procedure BindScriptFunction (Id: String; Adr: Pointer; Token: Integer; ArgumentsPrototype: String);
       procedure doPromptReply;
       procedure doPromptRequest;
       procedure BindStamper;
       procedure BindChecker (aBind: TCustomBindable);
+      procedure PrepareScripting;
       procedure PrepareBefore;
       procedure doInvokeOperations;
       procedure PrepareAfter;
@@ -3766,10 +3763,10 @@ end;
 
 { TWsdlOperation }
 
-procedure TWsdlOperation.BindBeforeFunction(Id: String; Adr: Pointer; Token: Integer;
+procedure TWsdlOperation.BindScriptFunction(Id: String; Adr: Pointer; Token: Integer;
   ArgumentsPrototype: String);
 begin
-  fExpressBefore.BindFunction (Id, Adr, Token, ArgumentsPrototype);
+  fExpress.BindFunction (Id, Adr, Token, ArgumentsPrototype);
 end;
 
 procedure TWsdlOperation.AcquireLock;
@@ -3779,13 +3776,7 @@ end;
 
 function TWsdlOperation.BeforeActivatorDebugString: String;
 begin
-  result := fExpressBefore.DebugTokenStringList;
-end;
-
-procedure TWsdlOperation.BindAfterFunction(Id: String; Adr: Pointer; Token: Integer;
-  ArgumentsPrototype: String);
-begin
-  fExpressAfter.BindFunction (Id, Adr, Token, ArgumentsPrototype);
+  result := fExpress.DebugTokenStringList;
 end;
 
 constructor TWsdlOperation.Create  (aWsdl: TWsdl);
@@ -3940,8 +3931,7 @@ begin
     if Assigned (invokeList) then
       invokeList.Clear;
     FreeAndNil (invokeList);
-    FreeAndNil (fExpressBefore);
-    FreeAndNil (fExpressAfter);
+    FreeAndNil (fExpress);
     FreeAndNil (fExpressStamper);
     FreeAndNil (fExpressChecker);
     FreeAndNil (CorrelationBindables);
@@ -3961,8 +3951,7 @@ procedure TWsdlOperation.ExecuteBefore;
 begin
   if not PreparedBefore then
     raise Exception.Create('Operation (Before)"' + Name + '" not prepared');
-  InitExecute;
-  fExpressBefore.Execute;
+  Execute(BeforeScriptLines, nil);
   if Assigned(CorrelatedMessage) then
     Execute(CorrelatedMessage.BeforeScriptLines, nil);
 end;
@@ -3973,8 +3962,7 @@ begin
     raise Exception.Create('Operation (After)"' + Name + '" not prepared');
   if Assigned (CorrelatedMessage) then
     Execute(CorrelatedMessage.AfterScriptLines, nil);
-  InitExecute;
-  fExpressAfter.Execute;
+  Execute(AfterScriptLines, nil);
 end;
 
 function TWsdlOperation.getReplyBasedOnRequest: TWsdlMessage;
@@ -4088,145 +4076,151 @@ begin
     aBind.Bind (aRoot, aExpress, 1)
 end;
 
-procedure TWsdlOperation.PrepareBefore;
+procedure TWsdlOperation.PrepareScripting;
 var
   x: Integer;
 begin
-  fPreparedBefore := False;
   try
-    FreeAndNil(fExpressBefore);
-    fExpressBefore := TExpress.Create (self);
-    fExpressBefore.Context := Self;
-    fExpressBefore.ScriptText := BeforeScriptLines.Text;
-    fExpressBefore.OnGetAbortPressed := fOnGetAbortPressed;
-    fExpressBefore.OnGetDoExit := getDoExit;
-    fExpressBefore.OnError := fOnError;
-//      fExpress.OnError := ExpressError;
-//      fExpress.OnHaveData := HaveData;
-    fLineNumber := 0;
-    fExpressBefore.Database := _WsdlDbsConnector;
-    Bind ('Req', reqBind, fExpressBefore);
-    Bind ('Rpy', rpyBind, fExpressBefore);
+    FreeAndNil(fExpress);
+    fExpress := TExpress.Create (self);
+    fExpress.Context := Self;
+    fExpress.OnGetAbortPressed := fOnGetAbortPressed;
+    fExpress.OnGetDoExit := getDoExit;
+    fExpress.OnError := fOnError;
+    fExpress.Database := _WsdlDbsConnector;
+    Bind ('Req', reqBind, fExpress);
+    Bind ('Rpy', rpyBind, fExpress);
     if Assigned (invokeList) then
     begin
       for x := 0 to invokeList.Count - 1 do
       begin
         if Assigned (invokeList.Operations[x]) then
         begin
-          Bind ('Req', invokeList.Operations[x].reqBind, fExpressBefore);
-          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressBefore);
+          Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
+          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
         end;
       end;
     end;
     if fltBind is TIpmItem then
-      fltBind.Bind ('Flt', fExpressBefore, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+      fltBind.Bind ('Flt', fExpress, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
     if fltBind is TXml then
     begin
       for x := 0 to (fltBind as TXml).Items.Count - 1 do
       begin
         (fltBind as TXml).Items.XmlItems [x].Parent := nil;
         try
-          (fltBind as TXml).Items.XmlItems [x].Bind('Faults', fExpressBefore, Wsdl.xsdElementsWhenRepeatable);
+          (fltBind as TXml).Items.XmlItems [x].Bind('Faults', fExpress, Wsdl.xsdElementsWhenRepeatable);
         finally
           (fltBind as TXml).Items.XmlItems [x].Parent := fltBind;
         end;
       end;
     end;
     if Assigned (reqWsaXml) then
-      try reqWsaXml.Bind ('reqWsa', fExpressBefore, 1); except end;
+      try reqWsaXml.Bind ('reqWsa', fExpress, 1); except end;
     if Assigned (rpyWsaXml) then
-      try rpyWsaXml.Bind ('rpyWsa', fExpressBefore, 1); except end;
+      try rpyWsaXml.Bind ('rpyWsa', fExpress, 1); except end;
     if Assigned (StubMqHeaderXml) then
-      try StubMqHeaderXml.Bind ('Mq', fExpressBefore, 1); except end;
-    try fExpressBefore.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
-    try fExpressBefore.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
-//      BindFunction ('Log', @ServerLogMessage, VFS, '(aString)');
-    BindBeforeFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
-    BindBeforeFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
-    BindBeforeFunction ('Assigned', @isAssigned, XFG, '(aItem)');
-    BindBeforeFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
-    BindBeforeFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
-    BindBeforeFunction ('ClearLogs', @ClearLogs, VFOV, '()');
-    BindBeforeFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
-    BindBeforeFunction ('CreateJUnitReport', @CreateJUnitReport, VFOS, '(aName)');
-    BindBeforeFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
-    BindBeforeFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
-    BindBeforeFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
-    BindBeforeFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
-    BindBeforeFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
-    BindBeforeFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
-    BindBeforeFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
-    BindBeforeFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
-    BindBeforeFunction ('Exit', @RaiseExit, VFOV, '()');
-    BindBeforeFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
-    BindBeforeFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
-    BindBeforeFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
-    BindBeforeFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
-    BindBeforeFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
-    BindBeforeFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
-    BindBeforeFunction ('DisableMessage', @DisableMessage, VFOV, '()');
-    BindBeforeFunction ('HostName', @GetHostName, SFV, '()');
-    BindBeforeFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
-    BindBeforeFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
-    BindBeforeFunction ('LengthStr', @LengthX, XFS, '(aString)');
-    BindBeforeFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
-    BindBeforeFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
-    BindBeforeFunction ('MD5', @MD5, SFS, '(aString)');
-    BindBeforeFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
-    BindBeforeFunction ('MessageName', @wsdlMessageName, SFOV, '()');
-    BindBeforeFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
-    BindBeforeFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
-    BindBeforeFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOS, '(aOperation)');
-    BindBeforeFunction ('NewLine', @xNewLine, SFV, '()');
-    BindBeforeFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
-    BindBeforeFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
-    BindBeforeFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
-    BindBeforeFunction ('PromptReply', @PromptReply, VFOV, '()');
-    BindBeforeFunction ('PromptRequest', @PromptRequest, VFOV, '()');
-    BindBeforeFunction ('RaiseError', @RaiseError, VFS, '(aString)');
-    BindBeforeFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
-    BindBeforeFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
-    BindBeforeFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
-    BindBeforeFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
-    BindBeforeFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
-    BindBeforeFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
-    BindBeforeFunction ('ReplyAsText', @wsdlReplyAsText, SFOV, '()');
-    BindBeforeFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
-    BindBeforeFunction ('ResetEnvVar', @ResetEnvVar, VFOS, '(aKey)');
-    BindBeforeFunction ('ResetEnvVars', @ResetEnvVars, VFOS, '(aRegularExpr)');
-    BindBeforeFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
-    BindBeforeFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
-    BindBeforeFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
-    BindBeforeFunction ('SaveSnapshots', @SaveSnapshots, VFOS, '(aFileName)');
-    BindBeforeFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
-    BindBeforeFunction ('EnableMessage', @EnableMessage, VFOV, '()');
-    BindBeforeFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
-    BindBeforeFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
-    BindBeforeFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
-    BindBeforeFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
-    BindBeforeFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
-    BindBeforeFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
-    BindBeforeFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSX, '(aOperation, aCorrelation, aLater)');
-    BindBeforeFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
-    BindBeforeFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
-    BindBeforeFunction ('SHA1', @SHA1, SFS, '(aString)');
-    BindBeforeFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
-    BindBeforeFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
-    BindBeforeFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
-    BindBeforeFunction ('Sleep', @SleepX, VFX, '(aMilliSeconds)');
-    BindBeforeFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
-    BindBeforeFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
-    BindBeforeFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
-    BindBeforeFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
-    BindBeforeFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-//    BindBeforeFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
-    BindBeforeFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
-    BindBeforeFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
-    BindBeforeFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
-    BindBeforeFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
-    BindBeforeFunction ('UserName', @wsdlUserName, SFV, '()');
-    BindBeforeFunction ('OperationName', @wsdlOperationName, SFOV, '()');
-    fExpressBefore.Prepare;
+      try StubMqHeaderXml.Bind ('Mq', fExpress, 1); except end;
+    try fExpress.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
+    try fExpress.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
+    BindScriptFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
+    BindScriptFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
+    BindScriptFunction ('Assigned', @isAssigned, XFG, '(aItem)');
+    BindScriptFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
+    BindScriptFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
+    BindScriptFunction ('ClearLogs', @ClearLogs, VFOV, '()');
+    BindScriptFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
+    BindScriptFunction ('CreateJUnitReport', @CreateJUnitReport, VFOS, '(aName)');
+    BindScriptFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
+    BindScriptFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
+    BindScriptFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
+    BindScriptFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
+    BindScriptFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
+    BindScriptFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
+    BindScriptFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
+    BindScriptFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
+    BindScriptFunction ('Exit', @RaiseExit, VFOV, '()');
+    BindScriptFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
+    BindScriptFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
+    BindScriptFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
+    BindScriptFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
+    BindScriptFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
+    BindScriptFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
+    BindScriptFunction ('DisableMessage', @DisableMessage, VFOV, '()');
+    BindScriptFunction ('HostName', @GetHostName, SFV, '()');
+    BindScriptFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
+    BindScriptFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
+    BindScriptFunction ('LengthStr', @LengthX, XFS, '(aString)');
+    BindScriptFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+    BindScriptFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
+    BindScriptFunction ('MD5', @MD5, SFS, '(aString)');
+    BindScriptFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
+    BindScriptFunction ('MessageName', @wsdlMessageName, SFOV, '()');
+    BindScriptFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
+    BindScriptFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
+    BindScriptFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOS, '(aOperation)');
+    BindScriptFunction ('NewLine', @xNewLine, SFV, '()');
+    BindScriptFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
+    BindScriptFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
+    BindScriptFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
+    BindScriptFunction ('PromptReply', @PromptReply, VFOV, '()');
+    BindScriptFunction ('PromptRequest', @PromptRequest, VFOV, '()');
+    BindScriptFunction ('RaiseError', @RaiseError, VFS, '(aString)');
+    BindScriptFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
+    BindScriptFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
+    BindScriptFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
+    BindScriptFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
+    BindScriptFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
+    BindScriptFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
+    BindScriptFunction ('ReplyAsText', @wsdlReplyAsText, SFOV, '()');
+    BindScriptFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
+    BindScriptFunction ('ResetEnvVar', @ResetEnvVar, VFOS, '(aKey)');
+    BindScriptFunction ('ResetEnvVars', @ResetEnvVars, VFOS, '(aRegularExpr)');
+    BindScriptFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
+    BindScriptFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
+    BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
+    BindScriptFunction ('SaveSnapshots', @SaveSnapshots, VFOS, '(aFileName)');
+    BindScriptFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
+    BindScriptFunction ('EnableMessage', @EnableMessage, VFOV, '()');
+    BindScriptFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
+    BindScriptFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
+    BindScriptFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
+    BindScriptFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
+    BindScriptFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
+    BindScriptFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
+    BindScriptFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSX, '(aOperation, aCorrelation, aLater)');
+    BindScriptFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
+    BindScriptFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
+    BindScriptFunction ('SHA1', @SHA1, SFS, '(aString)');
+    BindScriptFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
+    BindScriptFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
+    BindScriptFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
+    BindScriptFunction ('Sleep', @SleepX, VFX, '(aMilliSeconds)');
+    BindScriptFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
+    BindScriptFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
+    BindScriptFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
+    BindScriptFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
+    BindScriptFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
+    BindScriptFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
+    BindScriptFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
+    BindScriptFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
+    BindScriptFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
+    BindScriptFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
+    BindScriptFunction ('UserName', @wsdlUserName, SFV, '()');
+    BindScriptFunction ('OperationName', @wsdlOperationName, SFOV, '()');
+  except
+    raise;
+  end
+end;
+
+procedure TWsdlOperation.PrepareBefore;
+var
+  x: Integer;
+begin
+  fPreparedBefore := False;
+  try
+    PrepareScripting;
+    CheckScript(BeforeScriptLines, nil);
     fPreparedBefore := True;
   except
     raise;
@@ -4251,140 +4245,7 @@ var
 begin
   fPreparedAfter := False;
   try
-    FreeAndNil(fExpressAfter);
-    fExpressAfter := TExpress.Create (self);
-    fExpressAfter.Context := Self;
-    fExpressAfter.ScriptText := AfterScriptLines.Text;
-    fExpressAfter.OnError := fOnError;
-    fExpressAfter.OnGetAbortPressed := fOnGetAbortPressed;
-    fExpressAfter.OnGetDoExit := getDoExit;
-//      fExpress.OnError := ExpressError;
-//      fExpress.OnHaveData := HaveData;
-    fLineNumber := 0;
-    fExpressAfter.Database := _WsdlDbsConnector;
-    Bind ('Req', reqBind, fExpressAfter);
-    Bind ('Rpy', rpyBind, fExpressAfter);
-    if Assigned (invokeList) then
-    begin
-      for x := 0 to invokeList.Count - 1 do
-      begin
-        if Assigned (invokeList.Operations[x]) then
-        begin
-          Bind ('Req', invokeList.Operations[x].reqBind, fExpressAfter);
-          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpressAfter);
-        end;
-      end;
-    end;
-    if fltBind is TIpmItem then
-      fltBind.Bind ('Flt', fExpressAfter, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
-    if fltBind is TXml then
-    begin
-      for x := 0 to (fltBind as TXml).Items.Count - 1 do
-      begin
-        (fltBind as TXml).Items.XmlItems [x].Parent := nil;
-        try
-          (fltBind as TXml).Items.XmlItems [x].Bind('Faults', fExpressAfter, Wsdl.xsdElementsWhenRepeatable);
-        finally
-          (fltBind as TXml).Items.XmlItems [x].Parent := fltBind;
-        end;
-      end;
-    end;
-    if Assigned (reqWsaXml) then
-      try reqWsaXml.Bind ('reqWsa', fExpressAfter, 1); except end;
-    if Assigned (rpyWsaXml) then
-      try rpyWsaXml.Bind ('rpyWsa', fExpressAfter, 1); except end;
-    if Assigned (StubMqHeaderXml) then
-      try StubMqHeaderXml.Bind ('Mq', fExpressAfter, 1); except end;
-    try fExpressAfter.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
-    try fExpressAfter.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
-//      ExpectedXml.Bind ('Exp', fExpressBefore);
-//      BindFunction ('Log', @ServerLogMessage, VFS, '(aString)');
-    BindAfterFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
-    BindAfterFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
-    BindAfterFunction ('Assigned', @isAssigned, XFG, '(aItem)');
-    BindAfterFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
-    BindAfterFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
-    BindAfterFunction ('ClearLogs', @ClearLogs, VFOV, '()');
-    BindAfterFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
-    BindAfterFunction ('CreateJUnitReport', @CreateJUnitReport, VFOS, '(aName)');
-    BindAfterFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
-    BindAfterFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
-    BindAfterFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
-    BindAfterFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
-    BindAfterFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
-    BindAfterFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
-    BindAfterFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
-    BindAfterFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
-    BindAfterFunction ('Exit', @RaiseExit, VFOV, '()');
-    BindAfterFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
-    BindAfterFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
-    BindAfterFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
-    BindAfterFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
-    BindAfterFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
-    BindAfterFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
-    BindAfterFunction ('DisableMessage', @DisableMessage, VFOV, '()');
-    BindAfterFunction ('HostName', @GetHostName, SFV, '()');
-    BindAfterFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
-    BindAfterFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
-    BindAfterFunction ('LengthStr', @LengthX, XFS, '(aString)');
-    BindAfterFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
-    BindAfterFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
-    BindAfterFunction ('MD5', @MD5, SFS, '(aString)');
-    BindAfterFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
-    BindAfterFunction ('MessageName', @wsdlMessageName, SFOV, '()');
-    BindAfterFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
-    BindAfterFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
-    BindAfterFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOS, '(aOperation)');
-    BindAfterFunction ('NewLine', @xNewLine, SFV, '()');
-    BindAfterFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
-    BindAfterFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
-    BindAfterFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
-    BindAfterFunction ('PromptReply', @PromptReply, VFOV, '()');
-    BindAfterFunction ('PromptRequest', @PromptRequest, VFOV, '()');
-    BindAfterFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
-    BindAfterFunction ('RaiseError', @RaiseError, VFS, '(aString)');
-    BindAfterFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
-    BindAfterFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
-    BindAfterFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
-    BindAfterFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
-    BindAfterFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
-    BindAfterFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
-    BindAfterFunction ('ReplyAsText', @wsdlReplyAsText, SFOV, '()');
-    BindAfterFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
-    BindAfterFunction ('ResetEnvVar', @ResetEnvVar, VFOS, '(aKey)');
-    BindAfterFunction ('ResetEnvVars', @ResetEnvVars, VFOS, '(aRegularExpr)');
-    BindAfterFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
-    BindAfterFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
-    BindAfterFunction ('SaveSnapshots', @SaveSnapshots, VFOS, '(aFileName)');
-    BindAfterFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
-    BindAfterFunction ('EnableMessage', @EnableMessage, VFOV, '()');
-    BindAfterFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
-    BindAfterFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
-    BindAfterFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
-    BindAfterFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
-    BindAfterFunction ('SendOperationRequest', @WsdlSendOperationRequest, VFSS, '(aOperation, aCorrelation)');
-    BindAfterFunction ('SendOperationRequestLater', @WsdlSendOperationRequestLater, VFSSX, '(aOperation, aCorrelation, aLater)');
-    BindAfterFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
-    BindAfterFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
-    BindAfterFunction ('SHA1', @SHA1, SFS, '(aString)');
-    BindAfterFunction ('ShowMessage', @SjowMessage, VFS, '(aString)');
-    BindAfterFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
-    BindAfterFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
-    BindAfterFunction ('Sleep', @Sleep, VFX, '(aMilliSeconds)');
-    BindAfterFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
-    BindAfterFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
-    BindAfterFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
-    BindAfterFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
-    BindAfterFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-//  BindAfterFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
-    BindAfterFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
-    BindAfterFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
-    BindAfterFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
-    BindAfterFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
-    BindAfterFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
-    BindAfterFunction ('UserName', @wsdlUserName, SFV, '()');
-    BindAfterFunction ('OperationName', @wsdlOperationName, SFOV, '()');
-    fExpressAfter.Prepare;
+    CheckScript(AfterScriptLines, nil);
     fPreparedAfter := True;
   except
     raise;
@@ -5244,14 +5105,9 @@ begin
   FreeFormatReq := aRequestString;
 end;
 
-function TWsdlOperation.getDebugTokenStringAfter: String;
-begin
-  result := fExpressAfter.DebugTokenStringList;
-end;
-
 function TWsdlOperation.getDebugTokenStringBefore: String;
 begin
-  result := fExpressBefore.DebugTokenStringList;
+  result := fExpress.DebugTokenStringList;
 end;
 
 function TWsdlOperation.AddedTypeDefElementsAsXml : TObject ;
@@ -5441,7 +5297,7 @@ end;
 
 function TWsdlOperation.BeforeBindsAsText : String ;
 begin
-  result := fExpressBefore.BindsAsText;
+  result := fExpress.BindsAsText;
 end;
 
 function TWsdlOperation.getInputXml: TXml;
@@ -5469,8 +5325,7 @@ end;
 procedure TWsdlOperation.setOnGetAbortPressed(const Value: TBooleanFunction);
 begin
   fOnGetAbortPressed := Value;
-  if Assigned (fExpressBefore) then fExpressBefore.OnGetAbortPressed := Value;
-  if Assigned (fExpressAfter) then fExpressAfter.OnGetAbortPressed := Value;
+  if Assigned (fExpress) then fExpress.OnGetAbortPressed := Value;
 end;
 
 procedure TWsdlOperation.setDoExit (AValue : Boolean );
@@ -5721,10 +5576,7 @@ end;
 
 function TWsdlOperation.FunctionPrototypes(aAfter: Boolean): TStringList;
 begin
-  if aAfter then
-    result := fExpressAfter.FunctionProtoTypes
-  else
-    result := fExpressBefore.FunctionProtoTypes;
+  result := fExpress.FunctionProtoTypes;
 end;
 
 procedure TWsdlOperation.reqWsaOnRequest;
@@ -6471,14 +6323,14 @@ end;
 
 procedure TWsdlOperation.CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);
 begin
-  fExpressBefore.CheckScript(aStringList, aOnError);
+  fExpress.CheckScript(aStringList, aOnError);
 end;
 
 procedure TWsdlOperation.Execute (aStringList: TStringList; aOnError: TOnErrorEvent);
 begin
   if Assigned (aStringList)
   and (aStringList.Count > 0) then
-    fExpressBefore.ExecuteScript(aStringList, aOnError);
+    fExpress.ExecuteScript(aStringList, aOnError);
 end;
 
 procedure TWsdlOperation.ExecuteReqStampers;

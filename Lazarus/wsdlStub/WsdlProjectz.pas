@@ -3215,7 +3215,7 @@ begin
           xReqXml.LoadFromString(alog.RequestBody, nil);
           if xReqXml.Name <> '' then
             xOperation.reqBind := xReqXml;
-          xOperation.PrepareBefore;
+          xOperation.PrepareScripting;
           xOperation.ExecuteBefore;
           xOperation.FreeFormatRpy := xRpyXml.asString;
         finally
@@ -4665,7 +4665,7 @@ begin
     end;
     if aOperation.StubAction = saRedirect then
     begin
-      if Trim (aOperation.BeforeScriptLines.Text) <> '' then // MIM before
+      if aOperation.BeforeScriptLines.Count > 0 then // MIM before
       begin
         aLogItem.RequestBodyMiM := aLogItem.RequestBody;
         try
@@ -4686,7 +4686,7 @@ begin
       else
         aLogItem.ReplyBody := SendOperationMessage (aOperation, aLogItem.RequestBody);
       aOperation.RpyBindablesFromString (aLogItem.ReplyBody);
-      if Trim (aOperation.AfterScriptLines.Text) <> '' then // MIM after action
+      if aOperation.AfterScriptLines.Count > 0 then // MIM after action
       begin
         aLogItem.ReplyBodyMiM := aLogItem.ReplyBody;
         try
