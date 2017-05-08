@@ -1101,8 +1101,6 @@ type
     procedure PasteGridFromPasteBoard;
     procedure PasteGridOnNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; NewText: String);
-    procedure CopyGridOnGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
     procedure ShowXmlInGrid(aXml: TXml; aReadOnly: Boolean);
     procedure ShowXml(aCaption: String; aXml: TXml);
     procedure ShowIpm(aCaption: String; aIpm: TIpmItem);
@@ -4411,48 +4409,6 @@ begin
   end;
 end;
 
-procedure TMainForm.CopyGridOnGetText(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
-  var CellText: String);
-var
-  xMessage: TWsdlMessage;
-  xBind: TCustomBindable;
-begin
-  xMessage := nil; //avoid warning
-  CellText := '';
-  NodeToMessage(Sender, Node, xMessage);
-  if Column = 0 then
-  begin
-    if Assigned(xMessage) then
-      CellText := xMessage.Name;
-  end
-  else
-  begin
-    if Assigned(xMessage) then
-    begin
-      if Column <= xMessage.CorrelationBindables.Count then
-        try
-          CellText := xMessage.CorrelationBindables.Bindables[Column - 1].CorrelationValue;
-        except
-        end
-      else
-      begin
-        try
-          xBind := xMessage.ColumnXmls.Bindables
-            [Column - xMessage.CorrelationBindables.Count - 1];
-          if (not Assigned(xBind)) or
-            ((not(xBind is TIpmItem)) and (not xBind.Parent.CheckedAllUp)) then
-            CellText := '?'
-          else
-            CellText := xBind.GetStringData;
-        except
-          CellText := '?';
-        end;
-      end;
-    end;
-  end;
-end;
-
 procedure TMainForm.GridViewGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
@@ -4609,8 +4565,10 @@ begin
           [Column - NScripts - xMessage.CorrelationBindables.Count - 1];
         if Assigned(xBind) then
         begin
-          if ((xBind is TIpmItem) or (not Assigned(xBind.Parent)) or
-              (xBind.Parent.CheckedAllUp)) then
+          if (   (xBind is TIpmItem)
+              or (not Assigned(xBind.Parent))
+              or (xBind.Parent.CheckedAllUp)
+             ) then
             CellText := xBind.GetStringData
           else
             CellText := '&nil';
@@ -7115,7 +7073,7 @@ procedure TMainForm.CopyGridActionExecute(Sender: TObject);
 begin
   XmlUtil.PushCursor (crHourGlass);
   try
-    ClipBoard.AsText := vstToGrid(GridView, CopyGridOnGetText);
+    ClipBoard.AsText := vstToGrid(GridView, GridViewGetText);
   finally
     XmlUtil.PopCursor;
   end;
@@ -7125,7 +7083,6 @@ procedure TMainForm.CopyGridActionUpdate(Sender: TObject);
 begin
   try
     CopyGridAction.Enabled := Assigned(WsdlOperation)
-                          and Assigned (GridView.FocusedNode)
                             ;
   except
   end;
@@ -7134,7 +7091,6 @@ end;
 procedure TMainForm.PasteGridActionUpdate(Sender: TObject);
 begin
   PasteGridAction.Enabled := Assigned(WsdlOperation)
-                         and Assigned (GridView.FocusedNode)
                            ;
 end;
 
@@ -10835,11 +10791,11 @@ begin
         NodeToMessage(GridView, AddMessage(GridView.GetFirst), xMessage);
       copyColumns := TabSepLineToStringGrid(copyLines.Strings[l]);
       try
-        c := 0;
+        c := 0 + NScripts;
         while (c < copyColumns.Count) and (c < GridView.Header.Columns.Count) do
         begin
           // OnNewText (aVst, xNode, c, copyColumns.Strings[c]);
-          if c = 0 then
+          if c = 0 + NScripts then
           begin
             if copyColumns.Strings[c] <> xMessage.Name then
             begin
@@ -10856,11 +10812,11 @@ begin
           end
           else
           begin
-            if c <= xMessage.CorrelationBindables.Count then
+            if c <= xMessage.CorrelationBindables.Count + NScripts then
             begin
               if c < copyColumns.Count then
               begin
-                if copyColumns.Strings[c] <> xMessage.CorrelationBindables.Bindables[c - 1]
+                if copyColumns.Strings[c] <> xMessage.CorrelationBindables.Bindables[c - 1 - NScripts]
                   .CorrelationValue then
                 begin
                   if l = 1 then
@@ -10869,7 +10825,7 @@ begin
                         copyColumns.Strings[c])
                   else
                   begin
-                    xMessage.CorrelationBindables.Bindables[c - 1].CorrelationValue :=
+                    xMessage.CorrelationBindables.Bindables[c - 1 - NScripts].CorrelationValue :=
                       copyColumns.Strings[c];
                     stubChanged := True;
                   end;
@@ -10878,12 +10834,11 @@ begin
             end
             else
             begin
-              if (copyColumns.Strings[c] <> '?') and
-                (Assigned(xMessage.ColumnXmls.Bindables
-                    [c - xMessage.CorrelationBindables.Count - 1])) then
+              if (copyColumns.Strings[c] <> '?')
+              and (Assigned(xMessage.ColumnXmls.Bindables
+                    [c - NScripts - xMessage.CorrelationBindables.Count - 1])) then
               begin
-                xBind := xMessage.ColumnXmls.Bindables
-                  [c - xMessage.CorrelationBindables.Count - 1];
+                xBind := xMessage.ColumnXmls.Bindables [c - NScripts - xMessage.CorrelationBindables.Count - 1];
                 if copyColumns.Strings[c] <> '&nil' then
                 begin
                   if (copyColumns.Strings[c] <> xBind.Value) or
