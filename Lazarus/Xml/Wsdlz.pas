@@ -4172,7 +4172,7 @@ begin
     BindScriptFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
     BindScriptFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
     BindScriptFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
-    BindScriptFunction ('ReplyAsText', @wsdlReplyAsText, SFOV, '()');
+    BindScriptFunction ('ReplyAsText', @wsdlReplyAsText, SFOS, '(aOperation)');
     BindScriptFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindScriptFunction ('ResetEnvVar', @ResetEnvVar, VFOS, '(aKey)');
     BindScriptFunction ('ResetEnvVars', @ResetEnvVars, VFOS, '(aRegularExpr)');
