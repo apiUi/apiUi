@@ -3949,19 +3949,28 @@ end;
 
 procedure TWsdlOperation.ExecuteBefore;
 begin
+  DoExit := False;
+  LiteralResult := '';
+  ReturnSoapFault := False;
   if not PreparedBefore then
     raise Exception.Create('Operation (Before)"' + Name + '" not prepared');
   Execute(BeforeScriptLines, nil);
-  if Assigned(CorrelatedMessage) then
+  DoExit := False;
+  if Assigned(CorrelatedMessage)
+  and not ReturnSoapFault then
     Execute(CorrelatedMessage.BeforeScriptLines, nil);
 end;
 
 procedure TWsdlOperation.ExecuteAfter;
 begin
+  DoExit := False;
+  LiteralResult := '';
+  ReturnSoapFault := False;
   if not PreparedAfter then
     raise Exception.Create('Operation (After)"' + Name + '" not prepared');
   if Assigned (CorrelatedMessage) then
     Execute(CorrelatedMessage.AfterScriptLines, nil);
+  DoExit := False;
   Execute(AfterScriptLines, nil);
 end;
 
@@ -6316,9 +6325,6 @@ end;
 
 procedure TWsdlOperation .InitExecute ;
 begin
-  DoExit := False;
-  LiteralResult := '';
-  ReturnSoapFault := False;
 end;
 
 procedure TWsdlOperation.CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);

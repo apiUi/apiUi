@@ -371,6 +371,8 @@ begin
   Xpress := TExpress.Create (Parser.Owner);
   try
     Xpress.OnError := aOnError;
+    Xpress.OnGetDoExit := OnGetDoExit;
+    Xpress.OnGetAbortPressed := OnGetAbortPressed;
     xBindList := Xpress.fBindList;
     xStringList := Xpress.fTextLines;
     try
