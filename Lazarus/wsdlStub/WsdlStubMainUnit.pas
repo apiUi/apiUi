@@ -74,13 +74,13 @@ type
     EditMessageAfterScriptAction : TAction ;
     EditMessageScriptAction : TAction ;
     DocumentationViewer: TIpHtmlPanel;
+    OperationDocumentationViewer : TIpHtmlPanel ;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
     MenuItem35 : TMenuItem ;
     EditMessageScriptMenuItem : TMenuItem ;
     MenuItem38 : TMenuItem ;
-    Panel4: TPanel;
     SnapshotsFromFolderAction : TAction ;
     ShowResolvedProperties : TAction ;
     BrowseMqButton: TToolButton;
@@ -331,7 +331,6 @@ type
     ToolButton17: TToolButton;
     RedirectAddressButton: TToolButton;
     ToolButton19: TToolButton;
-    OperationDocumentationEdit: TMemo;
     Splitter6: TSplitter;
     ToolButton21: TToolButton;
     ClearLogItemsAction: TAction;
@@ -1581,11 +1580,10 @@ begin
   begin
     ActionComboBox.ItemIndex := Ord(WsdlOperation.StubAction);
     // SoapActionEdit.Text := WsdlOperation.SoapAction;
-    OperationDocumentationEdit.Text := WsdlOperation.Documentation.Text;
-  end
-  else
-  begin
-    // OperationDocumentationEdit.Text := '';
+    try
+      OperationDocumentationViewer.SetHtmlFromStr(textToHtml(WsdlOperation.Documentation.Text));
+    except
+    end;
   end;
 end;
 
@@ -4167,7 +4165,7 @@ begin
   OperationReqsTreeView.Clear;
   // InWSdlEnumerationsListView.Clear;
   InWsdlPropertiesListView.Clear;
-  OperationDocumentationEdit.Clear;
+  OperationDocumentationViewer.Canvas.Clear;
   InWsdlTreeView.Clear;
   WsdlServicesComboBox.Clear;
   WsdlOperationsComboBox.Clear;
@@ -13462,7 +13460,7 @@ end;
 
 procedure TMainForm.DocumentationViewerHotClick(Sender: TObject);
 begin
-  OpenUrl(DocumentationViewer.HotURL);
+  OpenUrl((Sender as TIpHtmlPanel).HotURL);
 end;
 
 procedure TMainForm .ImportProjectScriptsActionHint (var HintStr : string ;
