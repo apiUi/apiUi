@@ -4254,6 +4254,7 @@ var
 begin
   fPreparedAfter := False;
   try
+    PrepareScripting;
     CheckScript(AfterScriptLines, nil);
     fPreparedAfter := True;
   except
