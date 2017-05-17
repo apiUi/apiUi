@@ -373,6 +373,8 @@ begin
     Xpress.OnError := aOnError;
     Xpress.OnGetDoExit := OnGetDoExit;
     Xpress.OnGetAbortPressed := OnGetAbortPressed;
+    XPress.Database := Database;
+    Xpress.Context := Context;
     xBindList := Xpress.fBindList;
     xStringList := Xpress.fTextLines;
     try
