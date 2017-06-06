@@ -4113,42 +4113,55 @@ begin
       end
       else
       begin
-        if aOperation.lateBinding then
+        if aOperation.isOpenApiService then
         begin
-          with aOperation.rpyBind as TXml do
-          begin
-            LoadFromString(xlog.ReplyBody, nil);
-            if Name = '' then
-              Name := 'noXml';
-            aOperation.PrepareAfter;
+          aOperation.rpyXml.ResetValues;
+          xXml := TXml.Create;
+          try
+            xLog.OpenApiReplyToBindables(aOperation);
+          finally
+            xXml.Free;
           end;
         end
         else
         begin
-          if aOperation.reqBind is TXml then
+          if aOperation.lateBinding then
           begin
-            xXml := TXml.Create;
-            try
-              try
-                xXml.LoadFromString(xLog.ReplyBody, nil);
-              except
-                on e: exception do
-                  raise Exception.CreateFmt('%s could not parse XML reply (%s)', [_ProgName, e.Message]);
-              end;
-              if xXml.Name <> '' then
-                aOperation.SoapXmlReplyToBindables(xXml, True);
-          //              aOperation.rpyBind.LoadValues(xXml, True, False);
-            finally
-              xXml.Free;
+            with aOperation.rpyBind as TXml do
+            begin
+              LoadFromString(xlog.ReplyBody, nil);
+              if Name = '' then
+                Name := 'noXml';
+              aOperation.PrepareAfter;
             end;
-          end;
-          if aOperation.reqBind is TIpmItem then
-            (aOperation.rpyBind as TIpmItem).BufferToValues (FoundErrorInBuffer, xLog.ReplyBody);
-          if doValidateReplies then
+          end
+          else
           begin
-            if not aOperation.rpyBind.IsValueValid (xMessage) then
-              xLog.ReplyValidateResult := xMessage;
-            xLog.ReplyValidated := True;
+            if aOperation.reqBind is TXml then
+            begin
+              xXml := TXml.Create;
+              try
+                try
+                  xXml.LoadFromString(xLog.ReplyBody, nil);
+                except
+                  on e: exception do
+                    raise Exception.CreateFmt('%s could not parse XML reply (%s)', [_ProgName, e.Message]);
+                end;
+                if xXml.Name <> '' then
+                  aOperation.SoapXmlReplyToBindables(xXml, True);
+            //              aOperation.rpyBind.LoadValues(xXml, True, False);
+              finally
+                xXml.Free;
+              end;
+            end;
+            if aOperation.reqBind is TIpmItem then
+              (aOperation.rpyBind as TIpmItem).BufferToValues (FoundErrorInBuffer, xLog.ReplyBody);
+            if doValidateReplies then
+            begin
+              if not aOperation.rpyBind.IsValueValid (xMessage) then
+                xLog.ReplyValidateResult := xMessage;
+              xLog.ReplyValidated := True;
+            end;
           end;
         end;
         aOperation.ExecuteAfter;

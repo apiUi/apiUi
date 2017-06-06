@@ -1469,70 +1469,39 @@ procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation);
 var
   x, y, k, f: Integer;
   hdrParams: TStringList;
-  rXml, xXml: TXml;
+  xXml, dXml: TXml;
   xValue, xSeparator: String;
 begin
   if not Assigned (aOperation) then
     raise SysUtils.Exception.Create('procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation); nil arg');
   if not aOperation.isOpenApiService then
     raise SysUtils.Exception.Create('procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation); not an openApi operation');
-  with aOperation.rpyXml do
-  begin
-    ResetValues;
-    Checked := True;
-    rXml := nil;
-    for x := 0 to Items.Count - 1 do
-    begin
-      if Assigned (Items.XmlItems[x].Xsd)
-      and (Items.XmlItems[x].Xsd.ResponseNo = httpResponseCode) then
-        rXml := Items.XmlItems[x];
-    end;
-  end;
-  if not Assigned(rXml) then
-  begin
-    SjowMessage ('not Assigned(rXml)');
-    Exit;
-  end;
-  rXml.Checked := True;
-  hdrParams := TStringList.Create;
-  hdrParams.NameValueSeparator := ':';
+  aOperation.rpyXml.ResetValues;
+  xXml := TXml.Create;
   try
-    hdrParams.Text := self.ReplyHeaders;
-    with rXml.Items do for x := Count - 1 downto 0 do
+    if pos('xml', LowerCase(self.ReplyContentType)) > 0 then
+      xXml.LoadFromString(self.ReplyBody, nil);
+    if pos('json', LowerCase(self.ReplyContentType)) > 0 then
+      xXml.LoadJsonFromString(self.ReplyBody, nil);
+    if xXml.Name = '' then
+      xXml.Name := 'unknown';
+    dXml := nil;
+    try
+      dXml := aOperation.rpyXml.ItemByTag['rspns' + IntToStr(self.httpResponseCode)];
+    except
+    end;
+    if Assigned(dXml) then
     begin
-      case XmlItems[x].Xsd.ParametersType of
-        oppBody:
-          begin
-            xXml := TXml.Create;
-            try
-              if Pos ('json', self.ReplyContentType) > 0 then
-                try
-                   xXml.LoadJsonFromString(self.ReplyBody, nil);
-                except
-                   xXml.Value := self.ReplyBody;
-                end
-              else
-                try
-                  xXml.LoadFromString(self.ReplyBody, nil);
-                except
-                  xXml.Value := self.ReplyBody;
-                end;
-              xXml.Name := XmlItems[x].Name;
-              XmlItems[x].LoadValues (xXml, false, False, True, False);
-            finally
-              xXml.Free;
-            end;
-          end;
-        oppHeader:
-          begin
-            if hdrParams.IndexOfName(XmlItems[x].Name) > -1 then
-              XmlItems[x].ValueToJsonArray(Copy(hdrParams.Values[XmlItems[x].Name], 2, MaxInt));
-          end;
-        oppForm: SjowMessage ('oppForm: not suported');
+      dXml.Checked := True;
+      if (dXml.Items.Count > 0) then
+      begin
+        dXml := dXml.Items.XmlItems[0];
+        xXml.Name := dXml.Name;
+        dXml.LoadValues(xXml, false, true);
       end;
     end;
   finally
-    FreeAndNil(hdrParams);
+    xXml.Free;
   end;
 end;
 

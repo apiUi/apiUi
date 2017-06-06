@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="11144"/>
+      <BuildNr Value="11150"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -142,10 +142,6 @@
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads
 -dTrialVersion"/>
-      <OtherDefines Count="2">
-        <Define0 Value="UseCThreads"/>
-        <Define1 Value="TrialVersion"/>
-      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>
