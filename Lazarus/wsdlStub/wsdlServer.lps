@@ -11,7 +11,6 @@
         <WindowIndex Value="1"/>
         <TopLine Value="106"/>
         <CursorPos Y="155"/>
-        <FoldState Value=" T3lH03012111]38]8:"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -21,8 +20,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="34"/>
-        <CursorPos X="14" Y="47"/>
+        <TopLine Value="33"/>
+        <CursorPos X="25" Y="40"/>
         <UsageCount Value="206"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -104,6 +103,7 @@
         <TopLine Value="375"/>
         <CursorPos Y="385"/>
         <UsageCount Value="41"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\Xml\exceptionutils.pas"/>

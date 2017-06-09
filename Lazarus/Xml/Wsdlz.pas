@@ -548,6 +548,7 @@ function xNewLine: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
+procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
 function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
@@ -1166,6 +1167,40 @@ begin
       TagName := swapTagName;
     end;
   end;
+end;
+
+procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
+  procedure _copy (dst, src: TXml);
+  var
+    x: Integer;
+    cXml: TXml;
+  begin
+    dst.Checked := True;
+    dst.NameSpace := src.NameSpace;
+    for x := 0 to src.Attributes.Count - 1 do
+      with src.Attributes.XmlAttributes[x] do
+        if Checked then
+          dst.AddAttribute(TXmlAttribute.CreateAsString(Name, Value));
+    dst.NameSpace := src.NameSpace;
+    for x := 0 to src.Items.Count - 1 do
+    begin
+      if src.Items.XmlItems[x].Checked then
+      begin
+        cXml := dst.AddXml (TXml.CreateAsString(src.Items.XmlItems[x].Name, src.Items.XmlItems[x].Value));
+        _copy(cXml, src.Items.XmlItems[x]);
+      end;
+    end;
+  end;
+var
+  swapTagName: String;
+  dXml, sXml: TXml;
+begin
+  dXml := TXml ((aDstGroup as YYSType).yy.yyPointer);
+  sXml := TXml ((aSrcGroup as YYSType).yy.yyPointer);
+  dXml.Items.Clear;
+  dXml.Attributes.Clear;
+  if sXml.Checked then
+    _copy(dXml, sXml);
 end;
 
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
@@ -4139,6 +4174,7 @@ begin
     BindScriptFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindScriptFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindScriptFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
+    BindScriptFunction ('AssignAnyType', @assignAnyType, VFGG, '(aDestGroup, aSrcGroup)');
     BindScriptFunction ('CreateJUnitReport', @CreateJUnitReport, VFOS, '(aName)');
     BindScriptFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindScriptFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');

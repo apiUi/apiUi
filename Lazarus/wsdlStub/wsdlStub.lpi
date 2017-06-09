@@ -124,7 +124,6 @@
     </SearchPaths>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
@@ -142,6 +141,10 @@
       </CompilerMessages>
       <CustomOptions Value="-dUseCThreads
 -dTrialVersion"/>
+      <OtherDefines Count="2">
+        <Define0 Value="UseCThreads"/>
+        <Define1 Value="TrialVersion"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>

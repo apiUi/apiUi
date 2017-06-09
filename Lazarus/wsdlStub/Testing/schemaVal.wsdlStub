@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 2015-04-07 22:18:14: Generated with svStudio 9.0.1.8627 by Jan -->
+<!-- 6/9/2017 17:08:11: Generated with wsdlStub 9.1.0.11150 by BouwmanJW -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\schemaVal.wsdlStub</FileName>
-  <Portnumber>0</Portnumber>
-  <doUseMQ>false</doUseMQ>
-  <mqInterfaces></mqInterfaces>
-  <stompInterfaces></stompInterfaces>
   <Listeners></Listeners>
-  <isMasterModeEnabled>true</isMasterModeEnabled>
-  <MasterPortNumber>3738</MasterPortNumber>
   <ValidateRequests>false</ValidateRequests>
   <ValidateReplies>false</ValidateReplies>
   <CheckExpectedValues>false</CheckExpectedValues>
@@ -16,6 +10,11 @@
   <projectOptions>
     <General>
       <SaveRelativeFileNames>true</SaveRelativeFileNames>
+      <projectFolders>
+        <current></current>
+        <reference></reference>
+        <reports></reports>
+      </projectFolders>
     </General>
     <Log>
       <maxEntries>unbounded</maxEntries>
@@ -28,10 +27,6 @@
       <ShowCobolDataAs>Cobol</ShowCobolDataAs>
       <DisplayedColumns></DisplayedColumns>
     </Log>
-    <MasterSlave>
-      <Enabled>true</Enabled>
-      <Port>3738</Port>
-    </MasterSlave>
     <Wsdl>
       <PublishDescriptions>false</PublishDescriptions>
       <OperationsWithEndpointOnly>true</OperationsWithEndpointOnly>
@@ -45,6 +40,14 @@
     <UnknownOperations>
       <RaiseErrorMessage></RaiseErrorMessage>
     </UnknownOperations>
+    <OperationDefaults>
+      <OnRequestViolatingAddressPath>
+        <Continue></Continue>
+      </OnRequestViolatingAddressPath>
+      <OnRequestViolatingSchema>
+        <Continue></Continue>
+      </OnRequestViolatingSchema>
+    </OperationDefaults>
     <DatabaseConnection>
       <Enabled>false</Enabled>
       <Type></Type>
@@ -56,7 +59,9 @@
       <ConnectionString></ConnectionString>
     </DatabaseConnection>
   </projectOptions>
+  <PathPrefixes></PathPrefixes>
   <Environments></Environments>
+  <properties></properties>
   <Wsdl>
     <XsdOperations>
       <Operation>
@@ -91,15 +96,22 @@
         <wsaMustUnderstand>false</wsaMustUnderstand>
         <AsynchronousDialog>false</AsynchronousDialog>
         <operationOptions>
+          <OnRequestViolatingSchema>
+            <UseProjectDefault></UseProjectDefault>
+          </OnRequestViolatingSchema>
+          <OnRequestViolatingAddressPath>
+            <UseProjectDefault></UseProjectDefault>
+          </OnRequestViolatingAddressPath>
           <scripts>
             <invoke>
               <operations></operations>
             </invoke>
           </scripts>
+          <ReadReplyFromFile></ReadReplyFromFile>
         </operationOptions>
         <DelayTimeMsMin>0</DelayTimeMsMin>
         <DelayTimeMsMax>0</DelayTimeMsMax>
-        <StubTransport>0</StubTransport>
+        <StubTransport>7</StubTransport>
         <StubHttpAddress></StubHttpAddress>
         <StubMqPutManager></StubMqPutManager>
         <StubMqPutQueue></StubMqPutQueue>
@@ -107,20 +119,13 @@
         <StubMqGetQueue></StubMqGetQueue>
         <StubMqTimeOut>0</StubMqTimeOut>
         <StubStompPutHost></StubStompPutHost>
-        <StubStompPutPort>0</StubStompPutPort>
+        <StubStompPutPort></StubStompPutPort>
         <StubStompPutClientId></StubStompPutClientId>
         <StubStompTimeOut>0</StubStompTimeOut>
         <endpointConfig>
-          <Http>
-            <Verb>POST</Verb>
-            <ContentEncoding>identity</ContentEncoding>
-            <AcceptEncoding>
-              <deflate>false</deflate>
-              <gzip>false</gzip>
-            </AcceptEncoding>
-          </Http>
+          <None></None>
         </endpointConfig>
-        <BeforeScript></BeforeScript>
+        <BeforeScript>AssignAnyType (Req.schemaVal_Req.schemaVal.anyType, Req.schemaVal_Req.schemaVal.stringFacets);&#x0D;&#x0A;AssignPathValue (Req.schemaVal_Req.schemaVal.anyType, &apos;anyType.maxLength&apos;, &apos;veljoe&apos;);&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;</BeforeScript>
         <AfterScript></AfterScript>
         <CorrelationElements></CorrelationElements>
         <ExpectationElements></ExpectationElements>
@@ -133,63 +138,65 @@
             <Reply></Reply>
             <replyCheckers></replyCheckers>
             <Request>
-              <schemaVal_Req checked__="true">
-                <schemaVal checked__="true">
-                  <booleanFacets checked__="true">
-                    <boolean checked__="true">true</boolean>
+              <schemaVal_Req>
+                <schemaVal>
+                  <booleanFacets>
+                    <boolean>true</boolean>
                   </booleanFacets>
-                  <dateFacets checked__="true">
-                    <minIncl checked__="true">1956-08-16</minIncl>
-                    <maxIncl checked__="true">1956-08-18</maxIncl>
-                    <minExcl checked__="true">1956-08-17</minExcl>
-                    <maxExcl checked__="true">1956-08-17</maxExcl>
+                  <dateFacets>
+                    <minIncl>1956-08-16</minIncl>
+                    <maxIncl>1956-08-18</maxIncl>
+                    <minExcl>1956-08-17</minExcl>
+                    <maxExcl>1956-08-17</maxExcl>
                   </dateFacets>
-                  <dateTimeFacets checked__="true">
-                    <minIncl checked__="true">1956-08-17T02:02:02.199</minIncl>
-                    <maxIncl checked__="true">1956-08-17T02:02:02.201</maxIncl>
-                    <minExcl checked__="true">1956-08-17T02:02:02.200</minExcl>
-                    <maxExcl checked__="true">1956-08-17T02:02:02.200</maxExcl>
+                  <dateTimeFacets>
+                    <minIncl>1956-08-17T02:02:02.199</minIncl>
+                    <maxIncl>1956-08-17T02:02:02.201</maxIncl>
+                    <minExcl>1956-08-17T02:02:02.200</minExcl>
+                    <maxExcl>1956-08-17T02:02:02.200</maxExcl>
                   </dateTimeFacets>
-                  <timeFacets checked__="true">
-                    <minIncl checked__="true">02:02:02.19</minIncl>
-                    <maxIncl checked__="true">02:02:02.21</maxIncl>
-                    <minExcl checked__="true">02:02:02.20</minExcl>
-                    <maxExcl checked__="true">02:02:02.20</maxExcl>
+                  <timeFacets>
+                    <minIncl>02:02:02.19</minIncl>
+                    <maxIncl>02:02:02.21</maxIncl>
+                    <minExcl>02:02:02.20</minExcl>
+                    <maxExcl>02:02:02.20</maxExcl>
                   </timeFacets>
-                  <decimalFacets checked__="true">
-                    <minIncl checked__="true">2.79</minIncl>
-                    <maxIncl checked__="true">2.81</maxIncl>
-                    <minExcl checked__="true">2.8</minExcl>
-                    <maxExcl checked__="true">2.8</maxExcl>
-                    <totalDig checked__="true">000022.01</totalDig>
-                    <fracDig checked__="true">-1234E-3</fracDig>
+                  <decimalFacets>
+                    <minIncl>2.79</minIncl>
+                    <maxIncl>2.81</maxIncl>
+                    <minExcl>2.8</minExcl>
+                    <maxExcl>2.8</maxExcl>
+                    <totalDig>000022.01</totalDig>
+                    <fracDig>-1234E-3</fracDig>
                   </decimalFacets>
-                  <integerFacets checked__="true">
-                    <minIncl checked__="true">1</minIncl>
-                    <maxIncl checked__="true">3</maxIncl>
-                    <minExcl checked__="true">2</minExcl>
-                    <maxExcl checked__="true">2</maxExcl>
-                    <totalDig checked__="true">123</totalDig>
+                  <integerFacets>
+                    <minIncl>1</minIncl>
+                    <maxIncl>3</maxIncl>
+                    <minExcl>2</minExcl>
+                    <maxExcl>2</maxExcl>
+                    <totalDig>123</totalDig>
                   </integerFacets>
-                  <byteFacets checked__="true">
-                    <minIncl checked__="true">1</minIncl>
-                    <maxIncl checked__="true">3</maxIncl>
-                    <minExcl checked__="true">2</minExcl>
-                    <maxExcl checked__="true">2</maxExcl>
-                    <totalDig checked__="true">123</totalDig>
+                  <byteFacets>
+                    <minIncl>1</minIncl>
+                    <maxIncl>3</maxIncl>
+                    <minExcl>2</minExcl>
+                    <maxExcl>2</maxExcl>
+                    <totalDig>123</totalDig>
                   </byteFacets>
-                  <stringFacets checked__="true">
-                    <length checked__="true">1</length>
-                    <minLength checked__="true">1</minLength>
-                    <maxLength checked__="true">123</maxLength>
+                  <stringFacets>
+                    <length>1</length>
+                    <minLength>1</minLength>
+                    <maxLength>123</maxLength>
                   </stringFacets>
-                  <stringEnumeration checked__="true">Bouwman</stringEnumeration>
-                  <stringPatterns checked__="true">3738Xj</stringPatterns>
+                  <stringEnumeration>Bouwman</stringEnumeration>
+                  <stringPatterns>3738Xj</stringPatterns>
                 </schemaVal>
               </schemaVal_Req>
             </Request>
             <requestCheckers></requestCheckers>
             <Documentation>Default reply</Documentation>
+            <BeforeScript></BeforeScript>
+            <AfterScript></AfterScript>
           </Message>
         </Messages>
       </Operation>
@@ -198,8 +205,11 @@
   <ignoreDifferencesOn></ignoreDifferencesOn>
   <ignoreAddingOn></ignoreAddingOn>
   <ignoreRemovingOn></ignoreRemovingOn>
+  <ignoreOrderOn></ignoreOrderOn>
+  <regressionSortColumns></regressionSortColumns>
   <ignoreCoverageOn></ignoreCoverageOn>
   <Scripts></Scripts>
   <FocusOperationName>schemaVal_Req</FocusOperationName>
+  <FocusOperationNameSpace></FocusOperationNameSpace>
   <FocusMessageIndex>0</FocusMessageIndex>
 </WsdlStubCase>
