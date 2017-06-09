@@ -4080,6 +4080,9 @@ begin
           end;
         except
         end;
+      if aOperation.lateBinding
+      and (not aOperation.PreparedBefore) then
+        aOperation.PrepareBefore;
       aOperation.ExecuteBefore;
       aOperation.ExecuteReqStampers;
       if doValidateRequests then
