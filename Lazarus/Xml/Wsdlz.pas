@@ -263,6 +263,7 @@ type
       fPrepareErrors: String;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
       function getDoExit : Boolean ;
+      function getIsFreeFormat : Boolean ;
       function getIsOneWay: Boolean;
       function getIsOpenApiService: Boolean;
       function getLateBinding : Boolean ;
@@ -377,6 +378,7 @@ type
       property isOpenApiService: Boolean read getIsOpenApiService;
       property isOneWay: Boolean read getIsOneWay;
       property lateBinding: Boolean read getLateBinding;
+      property isFreeFormat: Boolean read getIsFreeFormat;
       property InputXml: TXml read getInputXml;
       property OutputXml: TXml read getOutputXml;
       property LastMessage: TWsdlMessage read getLastMessage write fLastMessage;
@@ -5752,14 +5754,22 @@ begin
         begin
           if Messages.Count > 0 then
           begin
-            if reqBind is TIpmItem then
-              (reqBind as TIpmItem).LoadValues (Messages.Messages[0].reqBind as TIpmItem);
-            if rpyBind is TIpmItem then
-              (rpyBind as TIpmItem).LoadValues (Messages.Messages[0].rpyBind as TIpmItem);
-            if reqBind is TXml then
-              (reqBind as TXml).LoadValues (Messages.Messages[0].reqBind as TXml, True, True);
-            if rpyBind is TXml then
-              (rpyBind as TXml).LoadValues (Messages.Messages[0].rpyBind as TXml, True, True);
+            if isFreeFormat then
+            begin
+              FreeFormatReq := Messages.Messages[0].FreeFormatReq;
+              FreeFormatRpy := Messages.Messages[0].FreeFormatRpy;
+            end
+            else
+            begin
+              if reqBind is TIpmItem then
+                (reqBind as TIpmItem).LoadValues (Messages.Messages[0].reqBind as TIpmItem);
+              if rpyBind is TIpmItem then
+                (rpyBind as TIpmItem).LoadValues (Messages.Messages[0].rpyBind as TIpmItem);
+              if reqBind is TXml then
+                (reqBind as TXml).LoadValues (Messages.Messages[0].reqBind as TXml, True, True);
+              if rpyBind is TXml then
+                (rpyBind as TXml).LoadValues (Messages.Messages[0].rpyBind as TXml, True, True);
+            end;
           end;
         end;
       finally
@@ -6191,6 +6201,11 @@ end;
 function TWsdlOperation .getDoExit : Boolean ;
 begin
   result := fDoExit;
+end;
+
+function TWsdlOperation.getIsFreeFormat : Boolean ;
+begin
+  result := WsdlService.DescriptionType in [ipmDTFreeFormat];
 end;
 
 
@@ -7266,8 +7281,6 @@ begin
     begin
       try
         LoadFromString(aValue, nil);
-        SeparateNsPrefixes;
-        ResolveNameSpaces;
       except
       end;
     end;
@@ -7285,8 +7298,6 @@ begin
   begin
     try
       LoadFromString(aValue, nil);
-      SeparateNsPrefixes;
-      ResolveNameSpaces;
     except
     end;
   end;
