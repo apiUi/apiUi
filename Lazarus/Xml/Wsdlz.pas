@@ -227,6 +227,7 @@ type
     AfterScriptLines: TStringList;
     procedure SwiftMtRequestToBindables (aString: String);
     function FindBind (aCaption: String): TCustomBindable;
+    procedure RebindLists; virtual;
     procedure PopulateCorrelation (aPatternsList: TStringList);
     property DescriptionType: TIpmDescrType read getDescriptionType;
     property reqXsd: TXsd read getInputXsd write setInputXsd;
@@ -390,6 +391,7 @@ type
       function AddedTypeDefElementsAsXml: TObject;
       procedure AddedTypeDefElementsFromXml(aXml: TObject);
       function BeforeBindsAsText: String;
+      procedure RebindLists; override;
       procedure Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
       procedure AcquireLock;
       procedure ReleaseLock;
@@ -5348,6 +5350,24 @@ begin
   result := fExpress.BindsAsText;
 end;
 
+procedure TWsdlOperation.RebindLists;
+var
+  x: Integer;
+begin
+  if Assigned (CorrelationBindables) then with CorrelationBindables do
+    for x := 0 to Count - 1 do
+      Bindables[x] := FindBind(Strings[x]);
+  if Assigned (ExpectationBindables) then with ExpectationBindables do
+    for x := 0 to Count - 1 do
+      Bindables[x] := FindBind(Strings[x]);
+  if Assigned (LogColumns) then with LogColumns do
+    for x := 0 to Count - 1 do
+      Bindables[x] := FindBind(Strings[x]);
+  if Assigned (BindablesWithAddedElement) then with BindablesWithAddedElement do
+    for x := 0 to Count - 1 do
+      Bindables[x] := FindBind(Strings[x]);
+end;
+
 function TWsdlOperation.getInputXml: TXml;
 begin
   if _ipmGun
@@ -7253,6 +7273,15 @@ begin
   end;
 end;
 
+procedure TWsdlBinder.RebindLists ;
+var
+  x: Integer;
+begin
+  if Assigned (CorrelationBindables) then with CorrelationBindables do
+    for x := 0 to Count - 1 do
+      Bindables[x] := FindBind(Strings[x]);
+end;
+
 function TWsdlBinder.getInputXsd: TXsd;
 begin
   result := fInputXsd;
@@ -7281,6 +7310,7 @@ begin
     begin
       try
         LoadFromString(aValue, nil);
+        RebindLists;
       except
       end;
     end;
@@ -7298,6 +7328,7 @@ begin
   begin
     try
       LoadFromString(aValue, nil);
+      RebindLists;
     except
     end;
   end;

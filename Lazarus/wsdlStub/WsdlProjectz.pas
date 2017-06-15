@@ -4130,13 +4130,8 @@ begin
         begin
           if aOperation.lateBinding then
           begin
-            with aOperation.rpyBind as TXml do
-            begin
-              LoadFromString(xlog.ReplyBody, nil);
-              if Name = '' then
-                Name := 'noXml';
-              aOperation.PrepareAfter;
-            end;
+            aOperation.FreeFormatRpy := xLog.ReplyBody;
+            aOperation.PrepareAfter;
           end
           else
           begin
