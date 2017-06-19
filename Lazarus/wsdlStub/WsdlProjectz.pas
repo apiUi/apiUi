@@ -3103,7 +3103,6 @@ end;
 function TWsdlProject.RedirectUnknownOperation (aLog : TLog ): String ;
 var
   xOperation: TWsdlOperation;
-  rUri: TIdUri;
 begin
   result := '';
   aLog.Exception := '';
@@ -3114,23 +3113,16 @@ begin
       ttHttp, ttHttps, ttSmtp:
       begin
         xOperation.httpVerb := aLog.httpCommand;
-        rUri := TIdUri.Create(xOperation.StubHttpAddress);
-        try
-          if (rUri.Path = '/')
-          and (rUri.Document = '') then
-          begin
-            rUri.Path := '';
-            rUri.Document := aLog.httpDocument;
-          end;
-          xOperation.StubHttpAddress := rUri.URI;
-          if alog.httpParams <> '' then
-            xOperation.StubHttpAddress := xOperation.StubHttpAddress + '?' + aLog.httpParams;
-        finally
-          FreeAndNil (rUri);
-        end;
+        xOperation.StubHttpAddress := mergeUri(xOperation.StubHttpAddress, aLog.httpUri);
       end;
     end;
-    result := SendOperationMessage(xOperation, aLog.RequestBody);
+    case xOperation.StubTransport of
+      ttHttp: result := SendHttpMessage (xOperation, aLog);
+      ttMq: result := SendOperationMqMessage (xOperation, aLog.RequestBody, aLog.RequestHeaders);
+      ttStomp: result := SendOperationStompMessage (xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
+      ttTaco: result := SendOperationTacoMessage(xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
+      ttNone: result := SendNoneMessage(xOperation, aLog.RequestBody);
+    end;
   finally
     xOperation.Free;
   end;

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:schema targetNamespace="http://www.rechtspraak.nl/namespaces/cir01"
+    elementFormDefault="qualified"
+    xmlns:tns="http://www.rechtspraak.nl/namespaces/cir01"
+    xmlns:pub="http://www.rechtspraak.nl/namespaces/inspubber01"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:s="http://www.w3.org/2001/XMLSchema">
+    <s:import namespace="http://www.rechtspraak.nl/namespaces/inspubber01" schemaLocation="../xsd/Cir_1.xsd"/>
+    <s:element name="searchByDate" type="tns:searchByDateType"/>
+    <s:complexType name="searchByDateType">
+        <s:sequence>
+            <s:element type="s:dateTime" minOccurs="1" name="date" maxOccurs="1"/>
+            <s:element type="s:string" minOccurs="0" name="court" maxOccurs="1"/>
+            <s:element type="tns:ArrayOfString" minOccurs="0"
+                name="pubType" maxOccurs="1"/>
+        </s:sequence>
+    </s:complexType>
+    <s:complexType name="ArrayOfString">
+        <s:sequence>
+            <s:element type="s:string" minOccurs="0" nillable="true"
+                name="string" maxOccurs="unbounded"/>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchByDateResponse" type="tns:searchByDateResponseType"/>
+    <s:complexType name="searchByDateResponseType">
+        <s:sequence>
+            <s:element minOccurs="0" name="searchByDateResult" maxOccurs="1">
+                <s:complexType mixed="true">
+                    <s:sequence>
+                        <s:element ref="pub:publicatieLijst"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchInsolvencyID" type="tns:searchInsolvencyIDType"/>
+    <s:complexType name="searchInsolvencyIDType">
+        <s:sequence>
+            <s:element type="s:string" minOccurs="0"
+                name="insolvencyID" maxOccurs="1"/>
+            <s:element type="s:string" minOccurs="0" name="court" maxOccurs="1"/>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchInsolvencyIDResponse" type="tns:searchInsolvencyIDResponseType"/>
+    <s:complexType name="searchInsolvencyIDResponseType">
+        <s:sequence>
+            <s:element minOccurs="0" name="searchInsolvencyIDResult" maxOccurs="1">
+                <s:complexType mixed="true">
+                    <s:sequence>
+                        <s:element ref="pub:publicatieLijst"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchNaturalPerson" type="tns:searchNaturalPersonType"/>
+    <s:complexType name="searchNaturalPersonType">
+        <s:sequence>
+            <s:element type="s:string" minOccurs="0" name="prefix" maxOccurs="1"/>
+            <s:element type="s:string" minOccurs="0" name="surname" maxOccurs="1"/>
+            <s:element type="s:dateTime" minOccurs="0"
+                name="dateOfBirth" maxOccurs="1"/>
+            <s:element type="s:string" minOccurs="0"
+                name="postalCode" maxOccurs="1"/>
+            <s:element type="s:int" minOccurs="0" name="houseNumber" maxOccurs="1"/>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchNaturalPersonResponse" type="tns:searchNaturalPersonResponseType"/>
+    <s:complexType name="searchNaturalPersonResponseType">
+        <s:sequence>
+            <s:element minOccurs="0"
+                name="searchNaturalPersonResult" maxOccurs="1">
+                <s:complexType mixed="true">
+                    <s:sequence>
+                        <s:element ref="pub:publicatieLijst"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchUndertaking" type="tns:searchUndertakingType"/>
+    <s:complexType name="searchUndertakingType">
+        <s:sequence>
+            <s:element type="s:string" minOccurs="0" name="name" maxOccurs="1"/>
+            <s:element type="s:string" minOccurs="0"
+                name="commercialRegisterID" maxOccurs="1"/>
+            <s:element type="s:string" minOccurs="0"
+                name="postalCode" maxOccurs="1"/>
+            <s:element type="s:int" minOccurs="0" name="houseNumber" maxOccurs="1"/>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchUndertakingResponse" type="tns:searchUndertakingResponseType"/>
+    <s:complexType name="searchUndertakingResponseType">
+        <s:sequence>
+            <s:element minOccurs="0" name="searchUndertakingResult" maxOccurs="1">
+                <s:complexType mixed="true">
+                    <s:sequence>
+                        <s:element ref="pub:publicatieLijst"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchModifiedSince" type="tns:searchModifiedSinceType"/>
+    <s:complexType name="searchModifiedSinceType">
+        <s:sequence>
+            <s:element type="s:dateTime" minOccurs="1"
+                name="modifyDate" maxOccurs="1"/>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="searchModifiedSinceResponse" type="tns:searchModifiedSinceResponseType"/>
+    <s:complexType name="searchModifiedSinceResponseType">
+        <s:sequence>
+            <s:element minOccurs="0"
+                name="searchModifiedSinceResult" maxOccurs="1">
+                <s:complexType mixed="true">
+                    <s:sequence>
+                        <s:element ref="pub:publicatieLijst"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="getCase" type="tns:getCaseType"/>
+    <s:complexType name="getCaseType">
+        <s:sequence>
+            <s:element type="s:string" minOccurs="0"
+                name="publicationNumber" maxOccurs="1"/>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="getCaseResponse" type="tns:getCaseResponseType"/>
+    <s:complexType name="getCaseResponseType">
+        <s:sequence>
+            <s:element minOccurs="0" name="getCaseResult" maxOccurs="1">
+                <s:complexType mixed="true">
+                    <s:sequence>
+                        <s:element ref="pub:inspubWebserviceInsolvente"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="GetLastUpdate" type="tns:GetLastUpdateType"/>
+    <s:complexType name="GetLastUpdateType"/>
+    <s:element name="GetLastUpdateResponse" type="tns:GetLastUpdateResponseType"/>
+    <s:complexType name="GetLastUpdateResponseType">
+        <s:sequence>
+            <s:element minOccurs="0" name="GetLastUpdateResult" maxOccurs="1">
+                <s:complexType mixed="true">
+                    <s:sequence>
+                        <s:element ref="pub:lastUpdate"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:sequence>
+    </s:complexType>
+</s:schema>

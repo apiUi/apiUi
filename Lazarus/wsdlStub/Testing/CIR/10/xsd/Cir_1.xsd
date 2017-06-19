@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:schema
+    targetNamespace="http://www.rechtspraak.nl/namespaces/inspubber01"
+    elementFormDefault="qualified"
+    xmlns:tns="http://www.rechtspraak.nl/namespaces/cir01"
+    xmlns:pub="http://www.rechtspraak.nl/namespaces/inspubber01"
+    xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns="http://www.rechtspraak.nl/namespaces/inspubber01">
+    <s:simpleType name="adresHuisnummerBezoekadres">
+        <s:restriction base="xs:string">
+            <s:maxLength value="20"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="datumBegin">
+        <s:restriction base="xs:date"/>
+    </s:simpleType>
+    <s:simpleType name="datumEind">
+        <s:restriction base="xs:date"/>
+    </s:simpleType>
+    <s:simpleType name="datumPublicatie">
+        <s:restriction base="xs:date"/>
+    </s:simpleType>
+    <s:simpleType name="exceptieCode">
+        <s:restriction base="xs:string">
+            <s:enumeration value="1"/>
+            <s:enumeration value="2"/>
+            <s:enumeration value="3"/>
+            <s:enumeration value="4"/>
+            <s:enumeration value="5"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="ID">
+        <s:restriction base="xs:positiveInteger"/>
+    </s:simpleType>
+    <s:simpleType name="inspubAdresHuisnummer">
+        <s:restriction base="xs:positiveInteger"/>
+    </s:simpleType>
+    <s:simpleType name="inspubAdresHuisnummerToevoeging1">
+        <s:restriction base="xs:string">
+            <s:maxLength value="10"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubAdresHuisnummerToevoeging2">
+        <s:restriction base="xs:string">
+            <s:maxLength value="10"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubAdresPlaats">
+        <s:restriction base="xs:string">
+            <s:maxLength value="40"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubAdresPostcode">
+        <s:restriction base="xs:string">
+            <s:length value="6"/>
+            <s:pattern value="[1-9][0-9]{3}[A-Z]{2}"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubAdresStraat">
+        <s:restriction base="xs:string">
+            <s:maxLength value="35"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubAdresTelefoon">
+        <s:restriction base="xs:string">
+            <s:maxLength value="15"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubAdresType">
+        <s:restriction base="xs:string">
+            <s:maxLength value="10"/>
+            <s:enumeration value="WOON"/>
+            <s:enumeration value="VEST"/>
+            <s:enumeration value="CORR"/>
+            <s:enumeration value="VRHN"/>
+            <s:enumeration value="PBAV"/>
+            <s:enumeration value="PBTI"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubCbvCB">
+        <s:restriction base="xs:string">
+            <s:length value="1"/>
+            <s:enumeration value="C"/>
+            <s:enumeration value="B"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubCbvVoorletters">
+        <s:restriction base="xs:string">
+            <s:maxLength value="20"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubCbvVoorvoegsel">
+        <s:restriction base="xs:string">
+            <s:maxLength value="20"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubCbvAchternaam">
+        <s:restriction base="xs:string">
+            <s:maxLength value="200"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubCbvTitel">
+        <s:restriction base="xs:string">
+            <s:maxLength value="10"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubDatumRekEnVerantw">
+        <s:restriction base="xs:date"/>
+    </s:simpleType>
+    <s:simpleType name="inspubEindeVindbaarheid">
+        <s:restriction base="xs:date"/>
+    </s:simpleType>
+    <s:simpleType name="inspubGeheimAdres">
+        <s:restriction base="xs:boolean">
+            <s:pattern value="true|false"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubHandelsnaam">
+        <s:restriction base="xs:string">
+            <s:maxLength value="200"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubHandelsnaamVoorheen">
+        <s:restriction base="xs:boolean">
+            <s:pattern value="true|false"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubInsolventienummer">
+        <s:restriction base="xs:string">
+            <s:pattern value="[F|S|R]\.\d{2}/\d{1,4}"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubInstroomLegacy">
+        <s:restriction base="xs:boolean">
+            <s:pattern value="true|false"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubLandNaam">
+        <s:restriction base="xs:string">
+            <s:maxLength value="50"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubPersoonAchternaam">
+        <s:restriction base="xs:string">
+            <s:maxLength value="200"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubPersoonVoorvoegsel">
+        <s:restriction base="xs:string">
+            <s:maxLength value="20"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubPersoonVoorletters">
+        <s:restriction base="xs:string">
+            <s:maxLength value="20"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubPersoonVoornaam">
+        <s:restriction base="xs:string">
+            <s:maxLength value="100"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubPersoonGeboorteplaats">
+        <s:restriction base="xs:string">
+            <s:maxLength value="40"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubPublicatiekenmerk">
+        <s:restriction base="xs:string">
+            <s:pattern value="[a-z]{3}\.[0-9]{2}\.[0-9]{1,4}\.[F|S|R]\.[0-9]{4}\.[0-9]{1,2}\.[0-9]{2}"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubPublicatieOmschrijving">
+        <s:restriction base="xs:string">
+            <s:maxLength value="400"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubPublicatieOmschrijvingVerlengd">
+        <s:restriction base="xs:string"/>
+    </s:simpleType>
+    <s:simpleType name="inspubPublicatiesoortCode">
+        <s:restriction base="xs:string">
+            <s:enumeration value="1200"/>
+            <s:enumeration value="1201"/>
+            <s:enumeration value="1202"/>
+            <s:enumeration value="2200"/>
+            <s:enumeration value="2201"/>
+            <s:enumeration value="2202"/>
+            <s:enumeration value="3200"/>
+            <s:enumeration value="3201"/>
+            <s:enumeration value="3202"/>
+            <s:enumeration value="1100"/>
+            <s:enumeration value="1101"/>
+            <s:enumeration value="1102"/>
+            <s:enumeration value="2100"/>
+            <s:enumeration value="2101"/>
+            <s:enumeration value="2102"/>
+            <s:enumeration value="3100"/>
+            <s:enumeration value="3101"/>
+            <s:enumeration value="3102"/>
+            <s:enumeration value="3310"/>
+            <s:enumeration value="1323"/>
+            <s:enumeration value="2300"/>
+            <s:enumeration value="1300"/>
+            <s:enumeration value="1301"/>
+            <s:enumeration value="1302"/>
+            <s:enumeration value="1303"/>
+            <s:enumeration value="1304"/>
+            <s:enumeration value="1305"/>
+            <s:enumeration value="1306"/>
+            <s:enumeration value="2301"/>
+            <s:enumeration value="2302"/>
+            <s:enumeration value="2303"/>
+            <s:enumeration value="2304"/>
+            <s:enumeration value="2305"/>
+            <s:enumeration value="2306"/>
+            <s:enumeration value="2307"/>
+            <s:enumeration value="2308"/>
+            <s:enumeration value="3300"/>
+            <s:enumeration value="3301"/>
+            <s:enumeration value="3302"/>
+            <s:enumeration value="3303"/>
+            <s:enumeration value="1307"/>
+            <s:enumeration value="2309"/>
+            <s:enumeration value="3304"/>
+            <s:enumeration value="1308"/>
+            <s:enumeration value="1309"/>
+            <s:enumeration value="1310"/>
+            <s:enumeration value="1311"/>
+            <s:enumeration value="2310"/>
+            <s:enumeration value="2311"/>
+            <s:enumeration value="2312"/>
+            <s:enumeration value="2313"/>
+            <s:enumeration value="2314"/>
+            <s:enumeration value="2315"/>
+            <s:enumeration value="2316"/>
+            <s:enumeration value="2317"/>
+            <s:enumeration value="2318"/>
+            <s:enumeration value="2319"/>
+            <s:enumeration value="2320"/>
+            <s:enumeration value="2321"/>
+            <s:enumeration value="2322"/>
+            <s:enumeration value="2323"/>
+            <s:enumeration value="2324"/>
+            <s:enumeration value="2325"/>
+            <s:enumeration value="3305"/>
+            <s:enumeration value="3306"/>
+            <s:enumeration value="1312"/>
+            <s:enumeration value="1313"/>
+            <s:enumeration value="1314"/>
+            <s:enumeration value="1315"/>
+            <s:enumeration value="2326"/>
+            <s:enumeration value="2327"/>
+            <s:enumeration value="1316"/>
+            <s:enumeration value="1317"/>
+            <s:enumeration value="1318"/>
+            <s:enumeration value="1319"/>
+            <s:enumeration value="1320"/>
+            <s:enumeration value="2337"/>
+            <s:enumeration value="2328"/>
+            <s:enumeration value="2329"/>
+            <s:enumeration value="2330"/>
+            <s:enumeration value="2331"/>
+            <s:enumeration value="2332"/>
+            <s:enumeration value="2333"/>
+            <s:enumeration value="2334"/>
+            <s:enumeration value="2335"/>
+            <s:enumeration value="3307"/>
+            <s:enumeration value="3308"/>
+            <s:enumeration value="3309"/>
+            <s:enumeration value="1322"/>
+            <s:enumeration value="2336"/>
+            <s:enumeration value="1324"/>
+            <s:enumeration value="1325"/>
+            <s:enumeration value="1326"/>
+            <s:enumeration value="2338"/>
+            <s:enumeration value="2339"/>
+            <s:enumeration value="2340"/>
+            <s:enumeration value="2341"/>
+            <s:enumeration value="2342"/>
+            <s:enumeration value="2343"/>
+            <s:enumeration value="2344"/>
+            <s:enumeration value="2345"/>
+            <s:enumeration value="2346"/>
+            <s:enumeration value="2347"/>
+            <s:enumeration value="2348"/>
+            <s:enumeration value="1328"/>
+            <s:enumeration value="2349"/>
+            <s:enumeration value="3311"/>
+            <s:enumeration value="1330"/>
+            <s:enumeration value="1331"/>
+            <s:enumeration value="1332"/>
+            <s:enumeration value="2351"/>
+            <s:enumeration value="2352"/>
+            <s:enumeration value="2353"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubRC">
+        <s:restriction base="xs:string">
+            <s:maxLength value="200"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubSchuldsaneringsregelingNummer">
+        <s:restriction base="xs:string">
+            <s:pattern value="[A-Za-z]{3}\d{10}"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="inspubVorigInsolventienummer">
+        <s:restriction base="xs:string">
+            <s:maxLength value="100"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="instantieRechtbankCode">
+        <s:restriction base="xs:string"/>
+    </s:simpleType>
+    <s:simpleType name="KvKNummer">
+        <s:restriction base="xs:string">
+            <s:pattern value="\d{5,8}"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="KvKPlaats">
+        <s:restriction base="xs:string">
+            <s:maxLength value="40"/>
+            <s:pattern value="\D*"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:simpleType name="persoonGeboortedatum">
+        <s:restriction base="xs:date"/>
+    </s:simpleType>
+    <s:simpleType name="persoonOverlijdenDatum">
+        <s:restriction base="xs:date"/>
+    </s:simpleType>
+    <s:simpleType name="rechtspersoonlijkheid">
+        <s:restriction base="xs:string">
+            <s:enumeration value="natuurlijk persoon"/>
+            <s:enumeration value="rechtspersoon"/>
+        </s:restriction>
+    </s:simpleType>
+    <s:complexType name="inspubAdresCBElem">
+        <s:sequence>
+            <s:element type="datumBegin" minOccurs="0" name="datumBegin"/>
+            <s:element type="inspubAdresStraat" name="straat"/>
+            <s:element type="inspubAdresHuisnummer" name="huisnummer"/>
+            <s:element type="inspubAdresHuisnummerToevoeging1"
+                minOccurs="0" name="huisnummerToevoeging1"/>
+            <s:element type="inspubAdresHuisnummerToevoeging2"
+                minOccurs="0" name="huisnummerToevoeging2"/>
+            <s:element type="inspubAdresPostcode" minOccurs="0" name="postcode"/>
+            <s:element type="inspubAdresPlaats" name="plaats"/>
+            <s:element type="inspubAdresTelefoon" minOccurs="0" name="telefoonnummer"/>
+        </s:sequence>
+    </s:complexType>
+    <s:complexType name="inspubAdresHandelsnaamElem">
+        <s:sequence>
+            <s:element type="inspubAdresType" name="adresType"/>
+            <s:element type="datumBegin" minOccurs="0" name="datumBegin"/>
+            <s:element type="inspubAdresStraat" name="straat"/>
+            <s:element type="inspubAdresHuisnummer" minOccurs="0" name="huisnummer"/>
+            <s:element type="inspubAdresHuisnummerToevoeging1"
+                minOccurs="0" name="huisnummerToevoeging1"/>
+            <s:element type="inspubAdresHuisnummerToevoeging2"
+                minOccurs="0" name="huisnummerToevoeging2"/>
+            <s:element type="inspubAdresPostcode" minOccurs="0" name="postcode"/>
+            <s:element type="inspubAdresPlaats" name="plaats"/>
+        </s:sequence>
+    </s:complexType>
+    <s:complexType name="inspubAdresInsolvente">
+        <s:sequence>
+            <s:element type="datumBegin" name="datumBegin"/>
+            <s:element type="inspubAdresStraat" name="straat"/>
+            <s:element type="inspubAdresHuisnummer" minOccurs="0" name="huisnummer"/>
+            <s:element type="inspubAdresHuisnummerToevoeging1"
+                minOccurs="0" name="huisnummerToevoeging1"/>
+            <s:element type="inspubAdresHuisnummerToevoeging2"
+                minOccurs="0" name="huisnummerToevoeging2"/>
+            <s:element type="inspubAdresPostcode" minOccurs="0" name="postcode"/>
+            <s:element type="inspubAdresPlaats" minOccurs="0" name="plaats"/>
+        </s:sequence>
+    </s:complexType>
+    <s:complexType name="inspubCbvElem">
+        <s:sequence>
+            <s:element type="datumBegin" name="datumBegin"/>
+            <s:element type="datumEind" minOccurs="0" name="datumEind"/>
+            <s:element type="inspubCbvTitel" minOccurs="0" name="titulatuur"/>
+            <s:element type="inspubCbvVoorletters" minOccurs="0" name="voorletters"/>
+            <s:element type="inspubCbvVoorvoegsel" minOccurs="0" name="voorvoegsel"/>
+            <s:element type="inspubCbvAchternaam" name="achternaam"/>
+            <s:element type="inspubCbvCB" name="CB"/>
+            <s:element type="inspubAdresCBElem" name="adres"/>
+        </s:sequence>
+    </s:complexType>
+    <s:complexType name="inspubCbvers">
+        <s:sequence>
+            <s:element type="inspubCbvElem" name="cbv" maxOccurs="unbounded"/>
+        </s:sequence>
+    </s:complexType>
+    <s:complexType name="inspubHandelendOnderDeNaamElem">
+        <s:sequence>
+            <s:element type="inspubHandelsnaam" name="handelsnaam"/>
+            <s:element type="KvKNummer" minOccurs="0" name="KvKNummer"/>
+            <s:element type="KvKPlaats" minOccurs="0" name="KvKPlaats"/>
+            <s:element minOccurs="0" name="handelsadressen">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element type="inspubAdresHandelsnaamElem"
+                            name="handelsadres" maxOccurs="unbounded"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:sequence>
+    </s:complexType>
+    <s:complexType name="inspubPersoonWebsite">
+        <s:sequence>
+            <s:element type="rechtspersoonlijkheid" name="rechtspersoonlijkheid"/>
+            <s:element type="inspubPersoonVoornaam" minOccurs="0" name="voornaam"/>
+            <s:element type="inspubPersoonVoorletters" minOccurs="0" name="voorletters"/>
+            <s:element type="inspubPersoonVoorvoegsel" minOccurs="0" name="voorvoegsel"/>
+            <s:element type="inspubPersoonAchternaam" minOccurs="0" name="achternaam"/>
+            <s:element type="persoonGeboortedatum" minOccurs="0" name="geboortedatum"/>
+            <s:element type="inspubPersoonGeboorteplaats" minOccurs="0" name="geboorteplaats"/>
+            <s:element type="inspubLandNaam" minOccurs="0" name="geboorteland"/>
+            <s:element type="persoonOverlijdenDatum" minOccurs="0" name="overlijdensdatum"/>
+            <s:element type="KvKNummer" minOccurs="0" name="KvKNummer"/>
+            <s:element type="KvKPlaats" minOccurs="0" name="KvKPlaats"/>
+        </s:sequence>
+    </s:complexType>
+	<s:complexType name="publicatieType">
+                    <s:sequence>
+                        <s:element type="datumPublicatie" name="publicatieDatum"/>
+                        <s:element type="inspubPublicatiekenmerk" name="publicatieKenmerk"/>
+                        <s:element
+                            type="inspubPublicatieOmschrijvingVerlengd" name="publicatieOmschrijving"/>
+                        <s:element type="inspubPublicatiesoortCode" name="publicatieSoortCode"/>
+                        <s:element type="inspubZittingslocatie"
+                            minOccurs="0" name="zittingslocatie"/>
+                        <s:element type="instantieRechtbankCode" name="publicerendeInstantieCode"/>
+                    </s:sequence>
+                </s:complexType>
+    <s:complexType name="inspubPublicatiegeschiedenis">
+        <s:sequence>
+                 <s:element name="publicatie" type ="publicatieType" maxOccurs="unbounded">
+                </s:element>
+            <s:element type="inspubInstroomLegacy" name="instroomLegacy"/>
+        </s:sequence>
+    </s:complexType>
+	
+    <s:complexType name="inspubZittingslocatie">
+        <s:sequence>
+            <s:element type="inspubAdresStraat" name="straat"/>
+            <s:element type="adresHuisnummerBezoekadres" name="huisnummer"/>
+            <s:element type="inspubAdresHuisnummerToevoeging1"
+                minOccurs="0" name="huisnummerToevoeging"/>
+            <s:element type="inspubAdresPlaats" name="plaats"/>
+        </s:sequence>
+    </s:complexType>
+    <s:element name="inspubWebserviceInsolvente">
+        <s:complexType>
+            <s:choice>
+                <s:element name="exceptie" type="ExceptieType"/>
+                <s:element name="insolvente" type="InsolventeType"/>
+            </s:choice>
+        </s:complexType>
+    </s:element>
+    <s:complexType name="ExceptieType">
+        <s:simpleContent>
+            <s:extension base="xs:string">
+                <s:attribute type="exceptieCode"
+                    use="required" name="errorcode"/>
+            </s:extension>
+        </s:simpleContent>
+    </s:complexType>
+    <s:complexType name="InsolventeType">
+            <s:sequence>
+                <s:element
+                    type="inspubSchuldsaneringsregelingNummer"
+                    minOccurs="0" name="ssrNummer"/>
+                <s:element type="inspubInsolventienummer" name="insolventienummer"/>
+                <s:element type="inspubPersoonWebsite" name="persoon"/>
+                <s:element type="inspubRC" minOccurs="0" name="RC"/>
+                <s:element type="inspubRC" minOccurs="0" name="VorigeRC"/>
+                <s:element type="inspubInsolventienummer"
+                    minOccurs="0" name="vorigInsolventienummer"/>
+                <s:element type ="adressenType" name="adressen"/>
+                <s:element minOccurs="0" name="handelendOnderDeNamen" type="handelendOnderDeNamenType">
+                </s:element>
+                <s:element type="inspubCbvers" minOccurs="0" name="cbvers"/>
+                <s:element
+                    type="inspubPublicatiegeschiedenis" name="publicatiegeschiedenis"/>
+                <s:element type="inspubEindeVindbaarheid"
+                    minOccurs="0" name="eindeVindbaarheid"/>
+            </s:sequence>
+    </s:complexType>
+    <s:element name="publicatieLijst">
+        <s:complexType>
+            <s:choice>
+                <s:element name="exceptie">
+                    <s:complexType>
+                        <s:simpleContent>
+                            <s:extension base="xs:string">
+                                <s:attribute type="exceptieCode"
+                                    use="required" name="errorcode"/>
+                            </s:extension>
+                        </s:simpleContent>
+                    </s:complexType>
+                </s:element>
+                <s:element type="inspubPublicatiekenmerk"
+                    name="publicatieKenmerk" maxOccurs="unbounded"/>
+            </s:choice>
+            <s:attribute type="xs:dateTime" use="required" name="extractiedatum"/>
+        </s:complexType>
+    </s:element>
+    <s:element name="lastUpdate" type="pub:lastUpdateType"/>
+    <s:complexType name="lastUpdateType">
+        <s:sequence>
+            <s:element type="xs:date" name="lastUpdateDate"/>
+        </s:sequence>
+    </s:complexType>    
+      <s:complexType  name="adressenType">
+                        <s:sequence>
+                        <s:element
+                        type="inspubGeheimAdres" name="geheimAdres"/>
+                        <s:element minOccurs="0" name="adres" type="addressType" maxOccurs="unbounded"/>
+                        </s:sequence>
+                    </s:complexType>
+                    
+                    
+                    
+    <s:complexType name = "addressType">
+                      
+                        <s:sequence>
+            
+		    <s:element type="s:string" minOccurs="0" name="plaats"/>
+		    <s:element type="s:string" minOccurs="0" name="postcode"/>
+	 	   <s:element type="s:int" minOccurs="0" name="huisnummer"/>	   
+		    <s:element type="s:string" name="straat"/>
+			 <s:element type="s:date" name="datumBegin"/>
+			   <s:element type="s:string" name="adresType"/>           
+		    <s:element type="s:string"
+		        minOccurs="0" name="huisnummerToevoeging1"/>
+		    <s:element type="s:string"
+		        minOccurs="0" name="huisnummerToevoeging2"/>
+		             
+	     </s:sequence>
+
+    
+                        </s:complexType>
+                         
+                    
+    <s:complexType name = "addressTypeMoyo">
+                      
+                        <s:sequence>
+            
+		    <s:element type="s:string" minOccurs="0" name="plaats"/>
+		    <s:element type="s:string" minOccurs="0" name="postcode"/>
+	 	   <s:element type="s:int" minOccurs="0" name="huisnummer"/>	   
+		    <s:element type="s:string" name="straat"/>
+			 <s:element type="s:date" name="datumBegin"/>
+			   <s:element type="s:string" name="adresType"/>           
+		    <s:element type="s:string"
+		        minOccurs="0" name="huisnummerToevoeging1"/>
+		    <s:element type="s:string"
+		        minOccurs="0" name="huisnummerToevoeging2"/>
+		             
+	     </s:sequence>
+
+    
+    </s:complexType>
+                       
+                      
+                    <s:complexType name="handelendOnderDeNamenType">
+                        <s:sequence>
+                        <s:element
+                        name="handelendOnderDeNaam" type="handelendOnderDeNaamType" maxOccurs="unbounded">
+                        </s:element>
+                        </s:sequence>
+                    </s:complexType>
+                    
+                    
+                        <s:complexType  name="handelendOnderDeNaamType">
+                        <s:complexContent>
+                        <s:extension base="inspubHandelendOnderDeNaamElem">
+                        <s:attribute
+                        type="inspubHandelsnaamVoorheen"
+                        use="required" name="voorheen"/>
+                        </s:extension>
+                        </s:complexContent>
+                        </s:complexType>
+    
+</s:schema>

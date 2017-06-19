@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:pub="http://www.rechtspraak.nl/namespaces/inspubber01" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.rechtspraak.nl/namespaces/cir01" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://www.rechtspraak.nl/namespaces/cir01">
+	<wsdl:types>
+		<s:schema targetNamespace="http://www.rechtspraak.nl/namespaces/cir01" elementFormDefault="qualified">
+			<s:element name="searchByDate" type="tns:searchByDateType"/>
+			<s:element name="searchByDateResponse" type="tns:searchByDateResponseType"/>
+			<s:element name="searchInsolvencyID" type="tns:searchInsolvencyIDType"/>
+			<s:element name="searchInsolvencyIDResponse" type="tns:searchInsolvencyIDResponseType"/>
+			<s:element name="searchNaturalPerson" type="tns:searchNaturalPersonType"/>
+			<s:element name="searchNaturalPersonResponse" type="tns:searchNaturalPersonResponseType"/>
+			<s:element name="searchUndertaking" type="tns:searchUndertakingType"/>
+			<s:element name="searchUndertakingResponse" type="tns:searchUndertakingResponseType"/>
+			<s:element name="searchModifiedSince" type="tns:searchModifiedSinceType"/>
+			<s:element name="searchModifiedSinceResponse" type="tns:searchModifiedSinceResponseType"/>
+			<s:element name="getCase" type="tns:getCaseType"/>
+			<s:element name="getCaseResponse" type="tns:getCaseResponseType"/>
+			<s:element name="GetLastUpdate" type="tns:GetLastUpdateType"/>
+			<s:element name="GetLastUpdateResponse" type="tns:GetLastUpdateResponseType"/>
+		</s:schema>
+		<xs:schema>
+			<xs:import namespace="http://www.rechtspraak.nl/namespaces/inspubber01" schemaLocation="cir:/Cir_1.xsd"/>
+		</xs:schema>
+		<xs:schema>
+			<xs:import namespace="http://www.rechtspraak.nl/namespaces/cir01" schemaLocation="cir:/Cir.xsd"/>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="searchByDateSoapIn">
+		<wsdl:part name="parameters" element="tns:searchByDate"/>
+	</wsdl:message>
+	<wsdl:message name="searchByDateSoapOut">
+		<wsdl:part name="parameters" element="tns:searchByDateResponse"/>
+	</wsdl:message>
+	<wsdl:message name="searchInsolvencyIDSoapIn">
+		<wsdl:part name="parameters" element="tns:searchInsolvencyID"/>
+	</wsdl:message>
+	<wsdl:message name="searchInsolvencyIDSoapOut">
+		<wsdl:part name="parameters" element="tns:searchInsolvencyIDResponse"/>
+	</wsdl:message>
+	<wsdl:message name="searchNaturalPersonSoapIn">
+		<wsdl:part name="parameters" element="tns:searchNaturalPerson"/>
+	</wsdl:message>
+	<wsdl:message name="searchNaturalPersonSoapOut">
+		<wsdl:part name="parameters" element="tns:searchNaturalPersonResponse"/>
+	</wsdl:message>
+	<wsdl:message name="searchUndertakingSoapIn">
+		<wsdl:part name="parameters" element="tns:searchUndertaking"/>
+	</wsdl:message>
+	<wsdl:message name="searchUndertakingSoapOut">
+		<wsdl:part name="parameters" element="tns:searchUndertakingResponse"/>
+	</wsdl:message>
+	<wsdl:message name="searchModifiedSinceSoapIn">
+		<wsdl:part name="parameters" element="tns:searchModifiedSince"/>
+	</wsdl:message>
+	<wsdl:message name="searchModifiedSinceSoapOut">
+		<wsdl:part name="parameters" element="tns:searchModifiedSinceResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getCaseSoapIn">
+		<wsdl:part name="parameters" element="tns:getCase"/>
+	</wsdl:message>
+	<wsdl:message name="getCaseSoapOut">
+		<wsdl:part name="parameters" element="tns:getCaseResponse"/>
+	</wsdl:message>
+	<wsdl:message name="GetLastUpdateSoapIn">
+		<wsdl:part name="parameters" element="tns:GetLastUpdate"/>
+	</wsdl:message>
+	<wsdl:message name="GetLastUpdateSoapOut">
+		<wsdl:part name="parameters" element="tns:GetLastUpdateResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="CIRSoap">
+		<wsdl:operation name="searchByDate">
+			<wsdl:input message="tns:searchByDateSoapIn"/>
+			<wsdl:output message="tns:searchByDateSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="searchInsolvencyID">
+			<wsdl:input message="tns:searchInsolvencyIDSoapIn"/>
+			<wsdl:output message="tns:searchInsolvencyIDSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="searchNaturalPerson">
+			<wsdl:input message="tns:searchNaturalPersonSoapIn"/>
+			<wsdl:output message="tns:searchNaturalPersonSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="searchUndertaking">
+			<wsdl:input message="tns:searchUndertakingSoapIn"/>
+			<wsdl:output message="tns:searchUndertakingSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="searchModifiedSince">
+			<wsdl:input message="tns:searchModifiedSinceSoapIn"/>
+			<wsdl:output message="tns:searchModifiedSinceSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="getCase">
+			<wsdl:input message="tns:getCaseSoapIn"/>
+			<wsdl:output message="tns:getCaseSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetLastUpdate">
+			<wsdl:input message="tns:GetLastUpdateSoapIn"/>
+			<wsdl:output message="tns:GetLastUpdateSoapOut"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="CIRSoap" type="tns:CIRSoap">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="searchByDate">
+			<soap:operation soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchByDate" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchInsolvencyID">
+			<soap:operation soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchInsolvencyID" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchNaturalPerson">
+			<soap:operation soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchNaturalPerson" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchUndertaking">
+			<soap:operation soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchUndertaking" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchModifiedSince">
+			<soap:operation soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchModifiedSince" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getCase">
+			<soap:operation soapAction="http://www.rechtspraak.nl/namespaces/cir01/getCase" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetLastUpdate">
+			<soap:operation soapAction="http://www.rechtspraak.nl/namespaces/cir01/GetLastUpdate" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="CIRSoap12" type="tns:CIRSoap">
+		<soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="searchByDate">
+			<soap12:operation style="document" soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchByDate"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchInsolvencyID">
+			<soap12:operation style="document" soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchInsolvencyID"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchNaturalPerson">
+			<soap12:operation style="document" soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchNaturalPerson"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchUndertaking">
+			<soap12:operation style="document" soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchUndertaking"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchModifiedSince">
+			<soap12:operation style="document" soapAction="http://www.rechtspraak.nl/namespaces/cir01/searchModifiedSince"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getCase">
+			<soap12:operation style="document" soapAction="http://www.rechtspraak.nl/namespaces/cir01/getCase"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetLastUpdate">
+			<soap12:operation style="document" soapAction="http://www.rechtspraak.nl/namespaces/cir01/GetLastUpdate"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="CIR">
+		<wsdl:port name="CIRSoap" binding="tns:CIRSoap">
+			<soap:address location="@env.endpoint.distributie.klant.cir.10@"/>
+		</wsdl:port>
+		<wsdl:port name="CIRSoap12" binding="tns:CIRSoap12">
+			<soap12:address location="http://webservice.rechtspraak.nl/cir.asmx"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
