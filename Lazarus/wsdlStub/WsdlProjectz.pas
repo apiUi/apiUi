@@ -3837,6 +3837,7 @@ begin
         URL := sUri.URI;
         FreeAndNil (sUri);
       end;
+      HttpClient.Request.CustomHeaders.Text := aLog.RequestHeaders;
       if aOperation.isOpenApiService then
       begin
         if URL = '' then
@@ -3982,8 +3983,6 @@ begin
         end;
       finally
       end;
-      if (HttpClient.ResponseCode = 202) then
-        result := S_MESSAGE_ACCEPTED;
       if HttpClient.ResponseCode = 500 then
         raise Exception.Create(Result);
       if HttpClient.Connected then {in case server s-alive}
@@ -6590,6 +6589,8 @@ begin
           xLog.OutboundTimeStamp := Now;
           DisplayLog ('', xLog);
           AResponseInfo.ResponseNo := xLog.httpResponseCode;
+          if xLog.ReplyHeaders <> '' then
+            AResponseInfo.CustomHeaders.Text := xLog.ReplyHeaders;
         end;
       end;
     finally
