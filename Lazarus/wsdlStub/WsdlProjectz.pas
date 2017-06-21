@@ -1425,6 +1425,7 @@ begin
   openApiPaths := TStringList.Create;
   openApiPaths.Sorted := True;
   unknownOperation := TWsdlOperation.Create(TWsdl(nil));
+  unknownOperation.StubAction := saRedirect;
   ignoreDifferencesOn := TStringList.Create;
   ignoreDifferencesOn.Sorted := True;
   ignoreDifferencesOn.Duplicates := dupIgnore;
@@ -3106,9 +3107,9 @@ var
 begin
   result := '';
   aLog.Exception := '';
+  aLog.StubAction := saRedirect;
   xOperation := TWsdlOperation.Create(unknownOperation);
   try
-    xOperation.SoapAction := aLog.httpSoapAction;
     case aLog.TransportType of
       ttHttp, ttHttps, ttSmtp:
       begin
@@ -3882,7 +3883,13 @@ begin
       aLog.RequestContentType := HttpClient.Request.ContentType;
       HttpClient.Request.Accept := aOperation.Accept;
       try
-        HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := '"' + aOperation.SoapAction + '"';
+        if aOperation.SoapAction <> '' then
+        begin
+          if aOperation.SoapAction [1] <> '"' then
+            HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := '"' + aOperation.SoapAction + '"'
+          else
+            HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := aOperation.SoapAction;
+        end;
       except
       end;
       if Assigned (aOperation.StubCustomHeaderXml)
