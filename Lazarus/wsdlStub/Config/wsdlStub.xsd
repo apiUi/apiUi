@@ -2,8 +2,47 @@
 <!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:epc="endpointConfigDef" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:import namespace="endpointConfigDef" schemaLocation="endpointConfigType.xsd"/>
+	<xs:simpleType name="CobolEnvironmentType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Tandem"/>
+			<xs:enumeration value="IBM Zos"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="dynEnumString">
 		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="emailAddressType">
+		<xs:annotation>
+			<xs:documentation>email address</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="FileNameType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="FolderNameType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="htmlColorType">
+		<xs:restriction base="xs:hexBinary"/>
+	</xs:simpleType>
+	<xs:simpleType name="NameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[^ /\\]+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="passwordType">
+		<xs:annotation>
+			<xs:documentation>Password;
+wsdlStub encrypts passwords before storing in a project file or at other locations</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="persistentType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="True"/>
+			<xs:enumeration value="False"/>
+		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="sslVersionType">
 		<xs:restriction base="xs:string">
@@ -15,58 +54,121 @@
 			<xs:enumeration value="TLS Version 1.2"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="passwordType">
-		<xs:annotation>
-			<xs:documentation>Password;
-wsdlStub encrypts passwords before storing in a project file or at other locations</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
-	<xs:simpleType name="htmlColorType">
-		<xs:restriction base="xs:hexBinary"/>
-	</xs:simpleType>
-	<xs:simpleType name="FileNameType">
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
-	<xs:simpleType name="FolderNameType">
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
-	<xs:simpleType name="emailAddressType">
-		<xs:annotation>
-			<xs:documentation>email address</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
-	<xs:complexType name="xsdRecognitionType">
-		<xs:choice>
-			<xs:element name="XmlElement">
+	<xs:complexType name="CobolOperationType">
+		<xs:sequence>
+			<xs:element name="Name" type="NameType">
 				<xs:annotation>
-					<xs:documentation>An XML element or an XML attribute</xs:documentation>
+					<xs:documentation>Operation name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CobolEnvironment" type="CobolEnvironmentType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Required for handling embedded sign;
+
+Tandem and IBM differ in the way thay handle embedded signs</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Req" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Describes request.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="Path" type="xs:string">
-							<xs:annotation>
-								<xs:documentation>A dot-separated string that identifies the element or attribute</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Value" type="xs:string" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Regular expresion for the value </xs:documentation>
-							</xs:annotation>
-						</xs:element>
+						<xs:element name="DescriptionFile" type="FileNameType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="HttpDocument" type="xs:string">
+			<xs:element name="Rpy" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>only with HTTP; Document part of the URI</xs:documentation>
+					<xs:documentation>Describes response.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DescriptionFile" type="FileNameType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Flt" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Describes the fault message.
+
+Only relevant for stub operation. </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DescriptionFile" type="FileNameType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="reqRecognition" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
+
+In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubStrings" type="SubStringsType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rpyRecognition" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can recognise a record as a response to a specific operation. Relevant for reading logfiles.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubStrings" type="SubStringsType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FreeFormatOperationType">
+		<xs:sequence>
+			<xs:element name="Name" type="NameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default "freeFormatOperation"
+
+Specify a name for the operation.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-		</xs:choice>
+			<xs:element name="reqRecognition" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
+
+In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubStrings" type="SubStringsType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rpyRecognition" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can recognise a record as a response to a specific operation. Relevant for reading logfiles.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubStrings" type="SubStringsType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="jsonRecognitionType">
-		<xs:choice/>
+	<xs:complexType name="FreeformatServiceType">
+		<xs:sequence>
+			<xs:element name="Name" type="NameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default "freeFormatService"
+
+
+Specify a name for the service.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Operation" type="FreeFormatOperationType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="emailType">
 		<xs:sequence>
@@ -123,7 +225,92 @@ Use this field to send extra data which you can use in the wsdlStub activators (
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:element name="Email" type="emailType"/>
+	<xs:complexType name="hostConnectionType">
+		<xs:sequence>
+			<xs:element name="Host" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>DNS name or IP affress</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Port" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Port number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="invokeType">
+		<xs:sequence>
+			<xs:element name="operations" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="dynEnumString" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="jsonRecognitionType">
+		<xs:choice/>
+	</xs:complexType>
+	<xs:complexType name="ListOfFilesType">
+		<xs:sequence>
+			<xs:element name="FileName" type="FileNameType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Name of the file by which in can be opened by your operating system</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnRequestViolatingSchemaType">
+		<xs:choice>
+			<xs:element name="UseProjectDefault"/>
+			<xs:element name="Continue">
+				<xs:annotation>
+					<xs:documentation>Processing continues, unpredictable results</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RaiseErrorMessage">
+				<xs:annotation>
+					<xs:documentation>Return an error message with some information about the schema validation error(s) found</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AddRemark">
+				<xs:annotation>
+					<xs:documentation>Add remark to log.
+Processing continues with unpredictable results
+</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="PathsendType">
+		<xs:sequence>
+			<xs:element name="Monitor" type="xs:string"/>
+			<xs:element name="Server" type="xs:string"/>
+			<xs:element name="TMF" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="No">
+							<xs:annotation>
+								<xs:documentation>Do not use the Transaction Moinotor Facility</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="Commit">
+							<xs:annotation>
+								<xs:documentation>Commit transaction</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="Abort">
+							<xs:annotation>
+								<xs:documentation>Abort transaction</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="rtiType">
 		<xs:sequence>
 			<xs:element name="Operation" minOccurs="0">
@@ -136,12 +323,435 @@ Use this field to send extra data which you can use in the wsdlStub activators (
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:element name="rti" type="rtiType">
-		<xs:annotation>
-			<xs:documentation>RunTime Interface
-A hierarchical representation of the run time elements that are addressable from scripts</xs:documentation>
-		</xs:annotation>
-	</xs:element>
+	<xs:complexType name="stompConfigType">
+		<xs:sequence>
+			<xs:element name="stompInterface" type="stompInterfaceType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Describes a streaming text oriented protocol interface</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="stompHeaderType">
+		<xs:sequence>
+			<xs:element name="correlation-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="destination" type="xs:string" minOccurs="0"/>
+			<xs:element name="expiration" type="xs:integer" minOccurs="0"/>
+			<xs:element name="group" type="xs:string" minOccurs="0"/>
+			<xs:element name="message-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="persistent" type="persistentType" minOccurs="0"/>
+			<xs:element name="priority" type="xs:integer" minOccurs="0"/>
+			<xs:element name="redelivered" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="reply-to" type="xs:string" minOccurs="0"/>
+			<xs:element name="sequence" type="xs:integer" minOccurs="0"/>
+			<xs:element name="timestamp" type="xs:string" minOccurs="0"/>
+			<xs:element name="type" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="stompInterfaceType">
+		<xs:sequence>
+			<xs:element name="Host" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The address of the server where the stomp broker is running</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Port" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The prort to which the stomp broker is listening; Default = 61613</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ClientId" type="xs:string" minOccurs="0"/>
+			<xs:element name="DequeueOn">
+				<xs:annotation>
+					<xs:documentation>Specifies when messages will be enqueued.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Process">
+							<xs:annotation>
+								<xs:documentation>Only processed messages will be enqueued</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="Browse">
+							<xs:annotation>
+								<xs:documentation>All browsed messages will be enqueued</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="None">
+							<xs:annotation>
+								<xs:documentation>No message will be enqueued</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Queues">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Queue" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Specifies a queue </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ReplyBodyPostFix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>WORKAROUND
+Default "" (empty string)
+
+Specified string is appended to the message body on receiving a reply, is a workaround because current STOMP implementation looses last byte;
+Obviously, this will only help in cases you know what that last byte would be.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RequestBodyPostFix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>WORKAROUND
+Default "" (empty string)
+
+Specified string is appended to the message body on sending a request, is a workaround because current STOMP implementation looses last byte;</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SubStringsType">
+		<xs:sequence>
+			<xs:element name="SubString" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Start" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:integer">
+									<xs:minInclusive value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Length" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Number of characters; Default = 1</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:integer">
+									<xs:minInclusive value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Value" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Regular expresion for the value;
+Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SwiftMtOperationType">
+		<xs:sequence>
+			<xs:element name="Name" type="NameType"/>
+			<xs:element name="Req" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DescriptionFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DescriptionExpansionFile" type="FileNameType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Name of the XML file that contains tag name expansions
+</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="reqRecognition" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
+
+In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubStrings" type="SubStringsType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Rpy" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DescriptionFile" type="FileNameType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DescriptionExpansionFile" type="FileNameType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Name of the XML file that contains tag name expansions
+</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rpyRecognition" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
+
+In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubStrings" type="SubStringsType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="tacoConfigType">
+		<xs:sequence>
+			<xs:element name="hostConnection" type="hostConnectionType">
+				<xs:annotation>
+					<xs:documentation>Hostconnection parameters; addresses the Tacoserver</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Transport" type="TransportType">
+				<xs:annotation>
+					<xs:documentation>On the Tandem, both Pathsend and MQ are supported</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TransportType">
+		<xs:choice>
+			<xs:element name="Pathsend" type="PathsendType"/>
+			<xs:element name="Mq">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="RequestReply">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Manager" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="PutQueue" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>The name of the queue to put the message</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="ReplyToQueue" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>The name of the queue where the MQ serviceproducer should put its reply</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="GetQueue" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>The name of the queue where the Tandem server will try to get the reply</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="TimeOut" type="xs:int">
+										<xs:annotation>
+											<xs:documentation>The number of seconds the Tandem server should wait for a reply</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="FireAndForget">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Manager" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="PutQueue" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>The name of the queue to put the message</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="GetFirst">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Manager" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="GetQueue" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>The name of the queue where the Tandem server will try to get the reply</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="TimeOut" type="xs:int">
+										<xs:annotation>
+											<xs:documentation>The number of seconds the Tandem server should wait for a reply</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="UserType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Password" type="passwordType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="XmlSampleOperationType">
+		<xs:sequence>
+			<xs:element name="Name" type="NameType"/>
+			<xs:element name="Req" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SampleFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the XML sample request file</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Rpy" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SampleFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the XML sample response file</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Flt" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SampleFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the XML sample fault file</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="reqRecognition" type="xsdRecognitionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a message is for this specific operation. Relevant for stub operation and reading logfiles. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="rpyRecognition" type="xsdRecognitionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a message is a response for this specific operation. Relevant for reading logfiles. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="XsdOperationType">
+		<xs:sequence>
+			<xs:element name="Name" type="NameType"/>
+			<xs:element name="Req" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DescriptionFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ElementName" type="NameType">
+							<xs:annotation>
+								<xs:documentation>Name of the element to use.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Rpy" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DescriptionFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the XSD file that contains the response description.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ElementName" type="NameType">
+							<xs:annotation>
+								<xs:documentation>Name of the element to use.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Flt" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DescriptionFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the XSD file that contains the fault description.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ElementName" type="NameType">
+							<xs:annotation>
+								<xs:documentation>Name of the element to use.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="reqRecognition" type="xsdRecognitionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a message is for this specific operation. Relevant for stub operation and reading logfiles. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="rpyRecognition" type="xsdRecognitionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a message is a response for this specific operation. Relevant for reading logfiles. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="xsdRecognitionType">
+		<xs:choice>
+			<xs:element name="XmlElement">
+				<xs:annotation>
+					<xs:documentation>An XML element or an XML attribute</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Path" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>A dot-separated string that identifies the element or attribute</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Value" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Regular expresion for the value </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="HttpDocument" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>only with HTTP; Document part of the URI</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
 	<xs:element name="DisplayedColumns">
 		<xs:annotation>
 			<xs:documentation>A list of displayed columns.</xs:documentation>
@@ -188,21 +798,13 @@ Value is displayed as column header.</xs:documentation>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="Scripts">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="Script" minOccurs="0" maxOccurs="unbounded">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Name" type="xs:string"/>
-							<xs:element name="Invoke" type="invokeType" minOccurs="0"/>
-							<xs:element name="Code" type="xs:string" minOccurs="0"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
+	<xs:element name="Email" type="emailType"/>
+	<xs:element name="endpointConfig" type="epc:endpointConfigType">
+		<xs:annotation>
+			<xs:documentation>Configure endpoint</xs:documentation>
+		</xs:annotation>
 	</xs:element>
+	<xs:element name="FileNames" type="ListOfFilesType"/>
 	<xs:element name="Listeners">
 		<xs:annotation>
 			<xs:documentation>Specify connections here. Beware of firewall settings.
@@ -555,6 +1157,89 @@ Internet standard protocol for e-mail clients to retrieve e-mail from a server.<
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="OperationDefs">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="XsdOperations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Operation" type="XsdOperationType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="CobolOperations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Operation" type="CobolOperationType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="SwiftMtOperations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Operation" type="SwiftMtOperationType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="FreeFormatOperations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Operation" type="FreeFormatOperationType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="XmlSampleOperations">
+					<xs:annotation>
+						<xs:documentation>XmlSample operations
+
+Sometims you want to mock trafic for wich you do not have a formal description.
+Instead of a formal description (.xsd,...) this operationtype uses a example message to create a (wsdlStub internal) description.
+</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Operation" type="XmlSampleOperationType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="operationOptions">
+		<xs:annotation>
+			<xs:documentation>Operation options;
+
+For an overview of all options visit: doc://wsdlStub_operationOptions_hlp.htm </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="OnRequestViolatingAddressPath" type="OnRequestViolatingSchemaType" minOccurs="0"/>
+				<xs:element name="OnRequestViolatingSchema" type="OnRequestViolatingSchemaType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Default 'Continue'
+
+Setting determines what wsdlStub should do on receiving messages that violate the schema. This setting has no effect in case Request Message Validation is switched off </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="scripts" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="invoke" type="invokeType" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ReadReplyFromFile" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Enabled" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="DefaultFileName" type="FileNameType" minOccurs="0"/>
+							<xs:element name="FileNameFormat" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="projectOptions">
 		<xs:annotation>
 			<xs:documentation>Project options;
@@ -888,6 +1573,12 @@ Visit http://www.connectionstrings.com for more information on connectionstrings
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="rti" type="rtiType">
+		<xs:annotation>
+			<xs:documentation>RunTime Interface
+A hierarchical representation of the run time elements that are addressable from scripts</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="serviceOptions">
 		<xs:annotation>
 			<xs:documentation>Service options;
@@ -983,40 +1674,249 @@ wsdlStub encrypts passwords before storing in a project file or at other locatio
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="operationOptions">
-		<xs:annotation>
-			<xs:documentation>Operation options;
-
-For an overview of all options visit: doc://wsdlStub_operationOptions_hlp.htm </xs:documentation>
-		</xs:annotation>
+	<xs:element name="Scripts">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="OnRequestViolatingAddressPath" type="OnRequestViolatingSchemaType" minOccurs="0"/>
-				<xs:element name="OnRequestViolatingSchema" type="OnRequestViolatingSchemaType" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>Default 'Continue'
-
-Setting determines what wsdlStub should do on receiving messages that violate the schema. This setting has no effect in case Request Message Validation is switched off </xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="scripts" minOccurs="0">
+				<xs:element name="Script" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="invoke" type="invokeType" minOccurs="0"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="ReadReplyFromFile" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Enabled" type="xs:boolean" minOccurs="0"/>
-							<xs:element name="DefaultFileName" type="FileNameType" minOccurs="0"/>
-							<xs:element name="FileNameFormat" type="xs:string" minOccurs="0"/>
+							<xs:element name="Name" type="xs:string"/>
+							<xs:element name="Invoke" type="invokeType" minOccurs="0"/>
+							<xs:element name="Code" type="xs:string" minOccurs="0"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
+	</xs:element>
+	<xs:element name="ServiceDefinitions">
+		<xs:annotation>
+			<xs:documentation>Describe services that are not described with a Wsdl</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Service" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="Cobol">
+								<xs:annotation>
+									<xs:documentation>Used to describe service operations that work with COBOL records.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Name" type="NameType">
+											<xs:annotation>
+												<xs:documentation>Service name</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Operation" type="CobolOperationType" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Describes an unbound number of operations or methods</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Freeformat" type="FreeformatServiceType">
+								<xs:annotation>
+									<xs:documentation>Used to send and receive freeformat messages.
+
+Only in case you want to use more then one end-point at the same time, there is need to specify more.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Mail">
+								<xs:annotation>
+									<xs:documentation>Used to sent email from wsdlStub to an SMTP server (not needed for receiving emails, all ou have to do then is to specify a Listener);
+
+Only in case you want to send emails to more then one service you need to specify more details.
+In that case, specify at least one service and as many operations as end-points needed.
+After confirming and saving, wsdlStub will show mail operations with action Request (read-only).
+Specify an end-point for each operation and populate messages to complete the configuration.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Name" type="NameType" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Default "mailService"
+
+Specify a name for the service.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Operation" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Name" type="NameType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Default "mailOperation"
+
+Specify a name for the operation.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="SwiftMT">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Name" type="NameType"/>
+										<xs:element name="Operation" type="SwiftMtOperationType" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Xsd">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Name" type="NameType"/>
+										<xs:element name="useNamespacePrefixes" type="xs:boolean" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Default "true"
+
+When "true", wsdlStub will create XML messages with Namespace prefixes. </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Operation" type="XsdOperationType" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Bmtp">
+								<xs:annotation>
+									<xs:documentation>Used to describe service operations that work with COBOL records. Transport protocol (bmtp params) determines Service/Operation</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Name" type="NameType">
+											<xs:annotation>
+												<xs:documentation>Service name</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Operation" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Describes an unbound number of operations or methods</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Name" type="NameType">
+														<xs:annotation>
+															<xs:documentation>Operation name</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="CobolEnvironment" type="CobolEnvironmentType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Required for handling embedded sign;
+
+Tandem and IBM differ in the way thay handle embedded signs</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Req" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Describes request.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="DescriptionFile" type="FileNameType"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Rpy" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Describes response.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="DescriptionFile" type="FileNameType"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Flt" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Describes the fault message.
+
+Only relevant for stub operation. </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="DescriptionFile" type="FileNameType"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Json">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Name" type="NameType"/>
+										<xs:element name="Schema" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Name" type="NameType"/>
+													<xs:element name="DescriptionFile" type="FileNameType">
+														<xs:annotation>
+															<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Operation" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Name" type="xs:string">
+																	<xs:annotation>
+																		<xs:documentation>Operation name</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="Method">
+																	<xs:annotation>
+																		<xs:documentation>HTTP Command</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">
+																			<xs:enumeration value="GET"/>
+																			<xs:enumeration value="DELETE"/>
+																			<xs:enumeration value="POST"/>
+																			<xs:enumeration value="PUT"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="HttpDocument" type="xs:string">
+																	<xs:annotation>
+																		<xs:documentation>only with HTTP; Document part of the URI; Regular expression
+</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stompConfig" type="stompConfigType">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="stompHeader" type="stompHeaderType">
+		<xs:annotation>
+			<xs:documentation>Describes a stompHeader</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="tacoConfig" type="tacoConfigType">
+		<xs:annotation>
+			<xs:documentation>Describes Tandem client configuration</xs:documentation>
+		</xs:annotation>
 	</xs:element>
 	<xs:element name="wsdlStubOptions">
 		<xs:annotation>
@@ -1266,842 +2166,4 @@ For driver-operation this applies to reponse values.</xs:documentation>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="endpointConfig" type="epc:endpointConfigType">
-		<xs:annotation>
-			<xs:documentation>Configure endpoint</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="stompConfig" type="stompConfigType">
-		<xs:annotation>
-			<xs:documentation>Comment describing your root element</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:complexType name="stompConfigType">
-		<xs:sequence>
-			<xs:element name="stompInterface" type="stompInterfaceType" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Describes a streaming text oriented protocol interface</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="stompInterfaceType">
-		<xs:sequence>
-			<xs:element name="Host" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>The address of the server where the stomp broker is running</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Port" type="xs:integer" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>The prort to which the stomp broker is listening; Default = 61613</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="ClientId" type="xs:string" minOccurs="0"/>
-			<xs:element name="DequeueOn">
-				<xs:annotation>
-					<xs:documentation>Specifies when messages will be enqueued.</xs:documentation>
-				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="Process">
-							<xs:annotation>
-								<xs:documentation>Only processed messages will be enqueued</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="Browse">
-							<xs:annotation>
-								<xs:documentation>All browsed messages will be enqueued</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="None">
-							<xs:annotation>
-								<xs:documentation>No message will be enqueued</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="Queues">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="Queue" type="xs:string" minOccurs="0" maxOccurs="unbounded">
-							<xs:annotation>
-								<xs:documentation>Specifies a queue </xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="ReplyBodyPostFix" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>WORKAROUND
-Default "" (empty string)
-
-Specified string is appended to the message body on receiving a reply, is a workaround because current STOMP implementation looses last byte;
-Obviously, this will only help in cases you know what that last byte would be.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="RequestBodyPostFix" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>WORKAROUND
-Default "" (empty string)
-
-Specified string is appended to the message body on sending a request, is a workaround because current STOMP implementation looses last byte;</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:element name="tacoConfig" type="tacoConfigType">
-		<xs:annotation>
-			<xs:documentation>Describes Tandem client configuration</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:complexType name="tacoConfigType">
-		<xs:sequence>
-			<xs:element name="hostConnection" type="hostConnectionType">
-				<xs:annotation>
-					<xs:documentation>Hostconnection parameters; addresses the Tacoserver</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Transport" type="TransportType">
-				<xs:annotation>
-					<xs:documentation>On the Tandem, both Pathsend and MQ are supported</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="hostConnectionType">
-		<xs:sequence>
-			<xs:element name="Host" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>DNS name or IP affress</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Port" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>Port number</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="TransportType">
-		<xs:choice>
-			<xs:element name="Pathsend" type="PathsendType"/>
-			<xs:element name="Mq">
-				<xs:complexType>
-					<xs:choice>
-						<xs:element name="RequestReply">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="Manager" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="PutQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue to put the message</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="ReplyToQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue where the MQ serviceproducer should put its reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="GetQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue where the Tandem server will try to get the reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="TimeOut" type="xs:int">
-										<xs:annotation>
-											<xs:documentation>The number of seconds the Tandem server should wait for a reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="FireAndForget">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="Manager" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="PutQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue to put the message</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="GetFirst">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="Manager" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="GetQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue where the Tandem server will try to get the reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="TimeOut" type="xs:int">
-										<xs:annotation>
-											<xs:documentation>The number of seconds the Tandem server should wait for a reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-					</xs:choice>
-				</xs:complexType>
-			</xs:element>
-		</xs:choice>
-	</xs:complexType>
-	<xs:complexType name="PathsendType">
-		<xs:sequence>
-			<xs:element name="Monitor" type="xs:string"/>
-			<xs:element name="Server" type="xs:string"/>
-			<xs:element name="TMF" minOccurs="0">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="No">
-							<xs:annotation>
-								<xs:documentation>Do not use the Transaction Moinotor Facility</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="Commit">
-							<xs:annotation>
-								<xs:documentation>Commit transaction</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="Abort">
-							<xs:annotation>
-								<xs:documentation>Abort transaction</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:element name="stompHeader" type="stompHeaderType">
-		<xs:annotation>
-			<xs:documentation>Describes a stompHeader</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:complexType name="stompHeaderType">
-		<xs:sequence>
-			<xs:element name="correlation-id" type="xs:string" minOccurs="0"/>
-			<xs:element name="destination" type="xs:string" minOccurs="0"/>
-			<xs:element name="expiration" type="xs:integer" minOccurs="0"/>
-			<xs:element name="group" type="xs:string" minOccurs="0"/>
-			<xs:element name="message-id" type="xs:string" minOccurs="0"/>
-			<xs:element name="persistent" type="persistentType" minOccurs="0"/>
-			<xs:element name="priority" type="xs:integer" minOccurs="0"/>
-			<xs:element name="redelivered" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="reply-to" type="xs:string" minOccurs="0"/>
-			<xs:element name="sequence" type="xs:integer" minOccurs="0"/>
-			<xs:element name="timestamp" type="xs:string" minOccurs="0"/>
-			<xs:element name="type" type="xs:string" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:simpleType name="persistentType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="True"/>
-			<xs:enumeration value="False"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:complexType name="ListOfFilesType">
-		<xs:sequence>
-			<xs:element name="FileName" type="FileNameType" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Name of the file by which in can be opened by your operating system</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:element name="FileNames" type="ListOfFilesType"/>
-	<xs:simpleType name="NameType">
-		<xs:restriction base="xs:string">
-			<xs:pattern value="[^ /\\]+"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="CobolEnvironmentType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="Tandem"/>
-			<xs:enumeration value="IBM Zos"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:complexType name="FreeformatServiceType">
-		<xs:sequence>
-			<xs:element name="Name" type="NameType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Default "freeFormatService"
-
-
-Specify a name for the service.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Operation" type="FreeFormatOperationType" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="CobolOperationType">
-		<xs:sequence>
-			<xs:element name="Name" type="NameType">
-				<xs:annotation>
-					<xs:documentation>Operation name</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="CobolEnvironment" type="CobolEnvironmentType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Required for handling embedded sign;
-
-Tandem and IBM differ in the way thay handle embedded signs</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Req" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Describes request.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Rpy" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Describes response.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Flt" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Describes the fault message.
-
-Only relevant for stub operation. </xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="reqRecognition" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
-
-In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SubStrings" type="SubStringsType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="rpyRecognition" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can recognise a record as a response to a specific operation. Relevant for reading logfiles.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SubStrings" type="SubStringsType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="XsdOperationType">
-		<xs:sequence>
-			<xs:element name="Name" type="NameType"/>
-			<xs:element name="Req" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="ElementName" type="NameType">
-							<xs:annotation>
-								<xs:documentation>Name of the element to use.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Rpy" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XSD file that contains the response description.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="ElementName" type="NameType">
-							<xs:annotation>
-								<xs:documentation>Name of the element to use.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Flt" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XSD file that contains the fault description.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="ElementName" type="NameType">
-							<xs:annotation>
-								<xs:documentation>Name of the element to use.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="reqRecognition" type="xsdRecognitionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can determine that a message is for this specific operation. Relevant for stub operation and reading logfiles. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="rpyRecognition" type="xsdRecognitionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can determine that a message is a response for this specific operation. Relevant for reading logfiles. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="SwiftMtOperationType">
-		<xs:sequence>
-			<xs:element name="Name" type="NameType"/>
-			<xs:element name="Req" minOccurs="0" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="DescriptionExpansionFile" type="FileNameType" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Name of the XML file that contains tag name expansions
-</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="reqRecognition" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
-
-In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SubStrings" type="SubStringsType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Rpy" minOccurs="0" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="DescriptionExpansionFile" type="FileNameType" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Name of the XML file that contains tag name expansions
-</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="rpyRecognition" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
-
-In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SubStrings" type="SubStringsType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="FreeFormatOperationType">
-		<xs:sequence>
-			<xs:element name="Name" type="NameType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Default "freeFormatOperation"
-
-Specify a name for the operation.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="reqRecognition" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
-
-In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SubStrings" type="SubStringsType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="rpyRecognition" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can recognise a record as a response to a specific operation. Relevant for reading logfiles.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SubStrings" type="SubStringsType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:element name="OperationDefs">
-		<xs:complexType>
-			<xs:choice>
-				<xs:element name="XsdOperations">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Operation" type="XsdOperationType" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="CobolOperations">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Operation" type="CobolOperationType" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="SwiftMtOperations">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Operation" type="SwiftMtOperationType" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="FreeFormatOperations">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Operation" type="FreeFormatOperationType" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="ServiceDefinitions">
-		<xs:annotation>
-			<xs:documentation>Describe services that are not described with a Wsdl</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="Service" minOccurs="0" maxOccurs="unbounded">
-					<xs:complexType>
-						<xs:choice>
-							<xs:element name="Cobol">
-								<xs:annotation>
-									<xs:documentation>Used to describe service operations that work with COBOL records.</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Name" type="NameType">
-											<xs:annotation>
-												<xs:documentation>Service name</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="Operation" type="CobolOperationType" maxOccurs="unbounded">
-											<xs:annotation>
-												<xs:documentation>Describes an unbound number of operations or methods</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="Freeformat" type="FreeformatServiceType">
-								<xs:annotation>
-									<xs:documentation>Used to send and receive freeformat messages.
-
-Only in case you want to use more then one end-point at the same time, there is need to specify more.</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="Mail">
-								<xs:annotation>
-									<xs:documentation>Used to sent email from wsdlStub to an SMTP server (not needed for receiving emails, all ou have to do then is to specify a Listener);
-
-Only in case you want to send emails to more then one service you need to specify more details.
-In that case, specify at least one service and as many operations as end-points needed.
-After confirming and saving, wsdlStub will show mail operations with action Request (read-only).
-Specify an end-point for each operation and populate messages to complete the configuration.</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Name" type="NameType" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Default "mailService"
-
-Specify a name for the service.</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="Operation" minOccurs="0" maxOccurs="unbounded">
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="Name" type="NameType" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Default "mailOperation"
-
-Specify a name for the operation.</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="SwiftMT">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Name" type="NameType"/>
-										<xs:element name="Operation" type="SwiftMtOperationType" maxOccurs="unbounded"/>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="Xsd">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Name" type="NameType"/>
-										<xs:element name="useNamespacePrefixes" type="xs:boolean" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Default "true"
-
-When "true", wsdlStub will create XML messages with Namespace prefixes. </xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="Operation" type="XsdOperationType" maxOccurs="unbounded"/>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="Bmtp">
-								<xs:annotation>
-									<xs:documentation>Used to describe service operations that work with COBOL records. Transport protocol (bmtp params) determines Service/Operation</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Name" type="NameType">
-											<xs:annotation>
-												<xs:documentation>Service name</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="Operation" maxOccurs="unbounded">
-											<xs:annotation>
-												<xs:documentation>Describes an unbound number of operations or methods</xs:documentation>
-											</xs:annotation>
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="Name" type="NameType">
-														<xs:annotation>
-															<xs:documentation>Operation name</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-													<xs:element name="CobolEnvironment" type="CobolEnvironmentType" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Required for handling embedded sign;
-
-Tandem and IBM differ in the way thay handle embedded signs</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-													<xs:element name="Req" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Describes request.</xs:documentation>
-														</xs:annotation>
-														<xs:complexType>
-															<xs:sequence>
-																<xs:element name="DescriptionFile" type="FileNameType"/>
-															</xs:sequence>
-														</xs:complexType>
-													</xs:element>
-													<xs:element name="Rpy" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Describes response.</xs:documentation>
-														</xs:annotation>
-														<xs:complexType>
-															<xs:sequence>
-																<xs:element name="DescriptionFile" type="FileNameType"/>
-															</xs:sequence>
-														</xs:complexType>
-													</xs:element>
-													<xs:element name="Flt" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Describes the fault message.
-
-Only relevant for stub operation. </xs:documentation>
-														</xs:annotation>
-														<xs:complexType>
-															<xs:sequence>
-																<xs:element name="DescriptionFile" type="FileNameType"/>
-															</xs:sequence>
-														</xs:complexType>
-													</xs:element>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="Json">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Name" type="NameType"/>
-										<xs:element name="Schema" maxOccurs="unbounded">
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="Name" type="NameType"/>
-													<xs:element name="DescriptionFile" type="FileNameType">
-														<xs:annotation>
-															<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-													<xs:element name="Operation" minOccurs="0" maxOccurs="unbounded">
-														<xs:complexType>
-															<xs:sequence>
-																<xs:element name="Name" type="xs:string">
-																	<xs:annotation>
-																		<xs:documentation>Operation name</xs:documentation>
-																	</xs:annotation>
-																</xs:element>
-																<xs:element name="Method">
-																	<xs:annotation>
-																		<xs:documentation>HTTP Command</xs:documentation>
-																	</xs:annotation>
-																	<xs:simpleType>
-																		<xs:restriction base="xs:string">
-																			<xs:enumeration value="GET"/>
-																			<xs:enumeration value="DELETE"/>
-																			<xs:enumeration value="POST"/>
-																			<xs:enumeration value="PUT"/>
-																		</xs:restriction>
-																	</xs:simpleType>
-																</xs:element>
-																<xs:element name="HttpDocument" type="xs:string">
-																	<xs:annotation>
-																		<xs:documentation>only with HTTP; Document part of the URI; Regular expression
-</xs:documentation>
-																	</xs:annotation>
-																</xs:element>
-															</xs:sequence>
-														</xs:complexType>
-													</xs:element>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-						</xs:choice>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:complexType name="SubStringsType">
-		<xs:sequence>
-			<xs:element name="SubString" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="Start" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Startposition of substring; Starts with 1; Default = 1;</xs:documentation>
-							</xs:annotation>
-							<xs:simpleType>
-								<xs:restriction base="xs:integer">
-									<xs:minInclusive value="1"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:element>
-						<xs:element name="Length" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Number of characters; Default = 1</xs:documentation>
-							</xs:annotation>
-							<xs:simpleType>
-								<xs:restriction base="xs:integer">
-									<xs:minInclusive value="1"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:element>
-						<xs:element name="Value" type="xs:string">
-							<xs:annotation>
-								<xs:documentation>Regular expresion for the value;
-Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="UserType">
-		<xs:sequence>
-			<xs:element name="Name" type="xs:string"/>
-			<xs:element name="Password" type="passwordType"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="invokeType">
-		<xs:sequence>
-			<xs:element name="operations" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="name" type="dynEnumString" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="OnRequestViolatingSchemaType">
-		<xs:choice>
-			<xs:element name="UseProjectDefault"/>
-			<xs:element name="Continue">
-				<xs:annotation>
-					<xs:documentation>Processing continues, unpredictable results</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="RaiseErrorMessage">
-				<xs:annotation>
-					<xs:documentation>Return an error message with some information about the schema validation error(s) found</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="AddRemark">
-				<xs:annotation>
-					<xs:documentation>Add remark to log.
-Processing continues with unpredictable results
-</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:choice>
-	</xs:complexType>
 </xs:schema>

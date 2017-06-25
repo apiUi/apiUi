@@ -320,7 +320,6 @@ type
       wsaSpecificMustUnderstand: Boolean;
       wsaMustUnderstand: Boolean;
       reqWsaXml, rpyWsaXml: TXml;
-      AsynchronousDialog: Boolean;
       StubAction: TStubAction;
       StubTransport: TTransportType;
       StubHttpAddress: String;
@@ -4905,7 +4904,6 @@ begin
   self.wsaEnabled := xOperation.wsaEnabled;
   self.wsaSpecificMustUnderstand := xOperation.wsaSpecificMustUnderstand;
   self.wsaMustUnderstand := xOperation.wsaMustUnderstand;
-  self.AsynchronousDialog := xOperation.AsynchronousDialog;
   self.useSsl := xOperation.useSsl;
   self.sslCertificateFile := xOperation.sslCertificateFile;
   self.sslKeyFile := xOperation.sslKeyFile;

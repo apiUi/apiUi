@@ -71,6 +71,9 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem36 : TMenuItem ;
+    XmlSampleOperationsMenuItem : TMenuItem ;
+    XmlSampleOperations : TAction ;
     EditMessageAfterScriptAction : TAction ;
     EditMessageScriptAction : TAction ;
     DocumentationViewer: TIpHtmlPanel;
@@ -824,6 +827,9 @@ type
     procedure SaveStubCaseAsActionExecute(Sender: TObject);
     procedure EditScriptButtonClick(Sender: TObject);
     procedure Expand2Click(Sender: TObject);
+    procedure XmlSampleOperationsExecute (Sender : TObject );
+    procedure XmlSampleOperationsHint (var HintStr : string ;
+      var CanShow : Boolean );
     procedure XmlZoomValueAsXMLMenuItemClick(Sender: TObject);
     procedure XmlZoomValueAsTextMenuItemClick(Sender: TObject);
     procedure FullCollapse1Click(Sender: TObject);
@@ -1457,6 +1463,8 @@ begin
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     if se.Wsdls.Find(se.XsdWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
+    if se.Wsdls.Find(se.XmlSampleWsdl.Name, f) then // not to be seen in list
+      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     if se.Wsdls.Find(se.SwiftMtWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     WsdlListForm.Wsdls := se.Wsdls;
@@ -1469,6 +1477,8 @@ begin
     if se.Wsdls.Find(se.CobolWsdl.Name, f) then // not to be seen in list
       Inc(w);
     if se.Wsdls.Find(se.XsdWsdl.Name, f) then // not to be seen in list
+      Inc(w);
+    if se.Wsdls.Find(se.XmlSampleWsdl.Name, f) then // not to be seen in list
       Inc(w);
     if se.Wsdls.Find(se.SwiftMtWsdl.Name, f) then // not to be seen in list
       Inc(w);
@@ -2939,6 +2949,38 @@ begin
     InWsdlTreeView.FullCollapse(nil);
     InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
   end;
+end;
+
+procedure TMainForm.XmlSampleOperationsExecute (Sender: TObject);
+var
+  xXml: TXml;
+begin
+  if not InactiveAfterPrompt then Exit;
+  xXml := se.xmlSampleOperationsXml('');
+  try
+    if EditXmlXsdBased('XmlSample Operations', 'OperationDefs.XmlSampleOperations',
+      'XmlSampleOperations.Operation.Name', 'XmlSampleOperations.Operation.Name',
+      se.IsActive, OperationDefsXsd, xXml) then
+    begin
+      AcquireLock;
+      try
+        stubChanged := True;
+        se.xmlSampleOperationsUpdate(xXml, se.projectFileName);
+        PrepareOperation;
+      finally
+        ReleaseLock;
+      end;
+      CheckBoxClick(nil);
+    end;
+  finally
+    xXml.Free;
+  end;
+end;
+
+procedure TMainForm .XmlSampleOperationsHint (var HintStr : string ;
+  var CanShow : Boolean );
+begin
+  HintStr := 'Maintain list of XmlSample operations ' + HttpActiveHint;
 end;
 
 procedure TMainForm.AfterRequestScriptButtonClick(Sender: TObject);
@@ -5350,7 +5392,6 @@ procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
     d.reqWsaXml.LoadValues(s.reqWsaXml, False, True);
     d.reqWsaXml.CheckDownLine(False);
     d.reqWsaXml.LoadValues(s.reqWsaXml, False, True);
-    d.AsynchronousDialog := s.AsynchronousDialog;
   end;
 
 var
@@ -6287,7 +6328,6 @@ begin
         if WsdlOperation.StubAction = saRequest then
           wsaConfigForm.wsaXml := reqWsaXml;
         { }
-        wsaConfigForm.AsynchronousDialog := WsdlOperation.AsynchronousDialog;
         wsaConfigForm.ShowModal;
         if wsaConfigForm.ModalResult = mrOk then
         begin
@@ -6299,7 +6339,6 @@ begin
           WsdlOperation.reqWsaXml.LoadValues(reqWsaXml, False, True);
           WsdlOperation.rpyWsaXml.CheckDownLine(False);
           WsdlOperation.rpyWsaXml.LoadValues(rpyWsaXml, False, True);
-          WsdlOperation.AsynchronousDialog := wsaConfigForm.AsynchronousDialog;
           stubChanged := True;
         end;
       finally

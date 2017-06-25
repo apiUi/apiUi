@@ -252,6 +252,7 @@ type
     ReadFileNames: TStringList;
     TypeDef: TXsdDataType;
     ChangedElementDefs: TObject;
+    function CreateXsdFromXml (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
     function GenerateNameSpaceAttributes: String;
     function NameSpacePrefix(aNameSpace: String): String;
     procedure AddNameSpace(aNameSpace: String);
@@ -265,6 +266,7 @@ type
     function AddTypeDefFromJsonXml(aFileName, aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
     procedure AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);
     function LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent): Boolean;
+    function LoadXsdFromXmlSampleFile(aFileName: String; ErrorFound: TOnErrorEvent): TXsd;
     function LoadXsdFromString(aString: String; ErrorFound: TOnErrorEvent): Boolean;
     function ChangedElementTypedefsAsXml: TObject;
     procedure ChangedElementTypedefsFromXml (aXml: TObject);
@@ -1206,6 +1208,39 @@ begin
     fMainFileName := aFileName;
   AddXsdFromFile ('', fMainFileName, ErrorFound);
   Finalise;
+end;
+
+function TXsdDescr.LoadXsdFromXmlSampleFile (aFileName: String; ErrorFound: TOnErrorEvent): TXsd ;
+  procedure _removeNSAttributes (aXml: TXml);
+  var
+    x: Integer;
+  begin
+    with aXml.Attributes do
+      for x := Count - 1 downto 0 do
+        if XmlAttributes[x].isXmlNsAttribute then
+        begin
+          XmlAttributes[x].Free;
+          Delete(x);
+        end;
+    with aXml.Items do
+      for x := 0 to Count - 1 do
+        _removeNSAttributes(XmlItems[x]);
+  end;
+var
+  xXml: TXml;
+begin
+  xXml := TXml.Create;
+  try
+    xXml.LoadFromFile(aFileName,nil);
+    if xXml.Name = '' then
+      raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Xml: ' + aFileName);
+    xXml.SeparateNsPrefixes;
+    xXml.ResolveNameSpaces;
+    _removeNSAttributes (xXml);
+    result := CreateXsdFromXml (xXml, False);
+  finally
+    xXml.Free;
+  end;
 end;
 
 function TXsdDescr .LoadXsdFromString (aString : String ;
@@ -2738,6 +2773,113 @@ begin
   AddAppinfo(result.Appinfo, xXml);
   result.isRootElement:= aRoot;
   aTypeDef.AddXsd(result);
+end;
+
+function TXsdDescr.CreateXsdFromXml (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
+  procedure _guessBaseDataType (aType: TXsdDataType; aXml: TXml);
+  begin
+    if (aXml.Items.Count = 0)
+    and (aXml.Value <> '') then with aType do
+    begin
+      BaseNameSpace := scXMLSchemaURI;
+      BaseDataTypeName := 'string';
+      try xsdParseInteger(aXml.Value); BaseDataTypeName := 'integer'; exit; except end;
+      try xsdParseDecimal(aXml.Value); BaseDataTypeName := 'decimal'; exit; except end;
+      try xsdParseDateTime(aXml.Value); BaseDataTypeName := 'dateTime'; exit; except end;
+      try xsdParseDate(aXml.Value); BaseDataTypeName := 'date'; exit; except end;
+      try xsdParseTime(aXml.Value); BaseDataTypeName := 'time'; exit; except end;
+      try xsdParseBoolean(aXml.Value); BaseDataTypeName := 'boolean'; exit; except end;
+    end;
+  end;
+  procedure _AddXsdAttribute (aXsd: TXsd; aAtt: TXmlAttribute);
+  var
+    x: Integer;
+    xXsdAtt: TXsdAttr;
+  begin
+    xXsdAtt := nil;
+    for x := 0 to aXsd.sType.AttributeDefs.Count - 1 do
+      if aXsd.sType.AttributeDefs.XsdAttrs [x].Name = aAtt.Name then
+        xXsdAtt := aXsd.sType.AttributeDefs.XsdAttrs [x];
+    if not Assigned (xXsdAtt) then
+    begin
+      xXsdAtt := TXsdAttr.Create (self);
+      self.Garbage.AddObject ('', xXsdAtt);
+      xXsdAtt.Name := aAtt.Name;
+      aXsd.sType.AttributeDefs.AddObject('', xXsdAtt);
+      xXsdAtt._Ficticious := True;
+    end;
+    if aLinkXmlToXsd then
+      aAtt.XsdAttr := xXsdAtt;
+  end;
+  procedure _ChildXml (aXsd: TXsd; aXml: TXml);
+  var
+    x: Integer;
+    xXsd: TXsd;
+  begin
+    xXsd := nil;
+    for x := 0 to aXsd.sType.ElementDefs.Count - 1 do
+      if (aXsd.sType.ElementDefs.Xsds[x].ElementName = aXml.Name) then
+        xXsd := aXsd.sType.ElementDefs.Xsds [x];
+    if not Assigned (xXsd) then
+    begin
+      xXsd := TXsd.Create (self);
+      self.Garbage.AddObject ('', xXsd);
+      xXsd.sType := TXsdDataType.Create(self);
+      self.Garbage.AddObject ('', xXsd.sType);
+      aXsd.sType.ElementDefs.AddObject('', xXsd);
+      xXsd.minOccurs := '0';
+      xXsd.maxOccurs := '1';
+      xXsd.ElementName := aXml.Name;
+      xXsd.ElementNameSpace := aXml.NameSpace;
+      xXsd.FormDefaultQualified := (aXml.NsPrefix <> '');
+      xXsd.sType.Name := aXml.Name + 'Type';
+      xXsd.sType.NameSpace := aXml.NameSpace;
+      xXsd.DoNotEncode := True;
+      xXsd.sType._Ficticious := True;
+      _guessBaseDataType(xXsd.sType, aXml);
+    end;
+    if xXsd._Processed then
+      xXsd.maxOccurs := 'unbounded';
+    xXsd._Processed := True;
+    if aLinkXmlToXsd then
+      aXml.Xsd := xXsd;
+    for x := 0 to aXml.Attributes.Count - 1 do
+      _AddXsdAttribute (xXsd, aXml.Attributes.XmlAttributes[x]);
+    for x := 0 to xXsd.sType.ElementDefs.Count - 1 do
+      xXsd.sType.ElementDefs.Xsds [x]._Processed := False;
+    for x := 0 to aXml.Items.Count - 1 do
+      _ChildXml (xXsd, aXml.Items.XmlItems[x]);
+    for x := 0 to xXsd.sType.ElementDefs.Count - 1 do
+      xXsd.sType.ElementDefs.Xsds [x]._Processed := False;
+  end;
+var
+  xXml: TXml;
+  x: Integer;
+begin
+  if not Assigned (aXml) then Exit;
+  if not (aXml is TXml) then Exit;
+  xXml := aXml as TXml;
+  try
+    result := TXsd.Create(self);
+    self.Garbage.AddObject ('', result);
+    result.ElementName := xXml.Name;
+    result.ElementNameSpace := xXml.NameSpace;
+    result.maxOccurs := '1';
+    result.sType := TXsdDataType.Create(self);
+    self.Garbage.AddObject('', result.sType);
+    Result.sType.NameSpace := xXml.NameSpace;
+    result.sType.Name := xXml.Name + 'Type';
+    result.sType._Ficticious := True;
+    _guessBaseDataType(result.sType, xXml);
+    result.DoNotEncode := True;
+    if aLinkXmlToXsd then
+      xXml.Xsd := result;
+    for x := 0 to xXml.Attributes.Count - 1 do
+      _AddXsdAttribute (result, xXml.Attributes.XmlAttributes[x]);
+    for x := 0 to xXml.Items.Count - 1 do
+      _ChildXml (result, xXml.Items.XmlItems[x]);
+  finally
+  end;
 end;
 
 procedure TXsdDescr.Clear;

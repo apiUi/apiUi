@@ -1632,26 +1632,12 @@ object MainForm: TMainForm
       OnExecute = XsdOperationsActionExecute
       OnHint = XsdOperationsActionHint
     end
-    object SwiftMtOperationsAction: TAction
-      Category = 'Project'
-      Caption = 'SwiftMT operations...'
-      ImageIndex = 74
-      OnExecute = SwiftMtOperationsActionExecute
-      OnHint = SwiftMtOperationsActionHint
-    end
     object SaveStubCaseAsAction: TAction
       Category = 'File'
       Caption = 'S&ave Project as...'
       Hint = 'Save stub case'
       ImageIndex = 6
       OnExecute = SaveStubCaseAsActionExecute
-    end
-    object FreeFormatsAction: TAction
-      Category = 'Project'
-      Caption = 'Freeformat operations...'
-      ImageIndex = 71
-      OnExecute = FreeFormatsActionExecute
-      OnHint = FreeFormatsActionHint
     end
     object ReopenStubCaseAction: TAction
       Category = 'File'
@@ -1905,11 +1891,6 @@ object MainForm: TMainForm
       OnExecute = ViewMssgAsTextActionExecute
       OnUpdate = ViewMssgAsTextActionUpdate
       ShortCut = 16468
-    end
-    object ProjectOptionsAction: TAction
-      Category = 'Project'
-      Caption = 'Options'
-      OnExecute = ProjectOptionsActionExecute
     end
     object ToggleBetaModeAction: TAction
       Category = 'Miscellaneous'
@@ -2180,13 +2161,6 @@ object MainForm: TMainForm
       OnExecute = OperationZoomOnActionExecute
       OnUpdate = OperationZoomOnActionUpdate
     end
-    object ProjectCleanAction: TAction
-      Category = 'Project'
-      Caption = 'Clean'
-      Hint = 'Cleans XML messages from unused elements'
-      ImageIndex = 77
-      OnExecute = ProjectCleanActionExecute
-    end
     object HelpMainMenuAction: TAction
       Category = 'Help'
       Caption = 'Main Menu'
@@ -2429,18 +2403,6 @@ object MainForm: TMainForm
       ImageIndex = 86
       OnExecute = SummaryReportActionExecute
     end
-    object Properties: TAction
-      Category = 'Project'
-      Caption = 'Properties'
-      OnExecute = EditProjectPropertiesExecute
-    end
-    object ShowResolvedProperties: TAction
-      Category = 'Project'
-      Caption = 'ShowResolvedProperties'
-      Hint = 'Show resolved properties'
-      OnExecute = ShowResolvedPropertiesExecute
-      ShortCut = 24664
-    end
     object SnapshotsFromFolderAction: TAction
       Category = 'Reports'
       Caption = 'SnapshotsFromFolderAction'
@@ -2460,12 +2422,57 @@ object MainForm: TMainForm
       OnExecute = EditMessageAfterScriptActionExecute
       OnUpdate = EditMessageAfterScriptActionUpdate
     end
+    object XmlSampleOperations: TAction
+      Category = 'Project'
+      Caption = 'XmlSample Operations'
+      ImageIndex = 97
+      OnExecute = XmlSampleOperationsExecute
+      OnHint = XmlSampleOperationsHint
+    end
+    object SwiftMtOperationsAction: TAction
+      Category = 'Project'
+      Caption = 'SwiftMT operations...'
+      ImageIndex = 74
+      OnExecute = SwiftMtOperationsActionExecute
+      OnHint = SwiftMtOperationsActionHint
+    end
+    object FreeFormatsAction: TAction
+      Category = 'Project'
+      Caption = 'Freeformat operations...'
+      ImageIndex = 71
+      OnExecute = FreeFormatsActionExecute
+      OnHint = FreeFormatsActionHint
+    end
+    object ProjectOptionsAction: TAction
+      Category = 'Project'
+      Caption = 'Options'
+      OnExecute = ProjectOptionsActionExecute
+    end
+    object ProjectCleanAction: TAction
+      Category = 'Project'
+      Caption = 'Clean'
+      Hint = 'Cleans XML messages from unused elements'
+      ImageIndex = 77
+      OnExecute = ProjectCleanActionExecute
+    end
+    object Properties: TAction
+      Category = 'Project'
+      Caption = 'Properties'
+      OnExecute = EditProjectPropertiesExecute
+    end
+    object ShowResolvedProperties: TAction
+      Category = 'Project'
+      Caption = 'ShowResolvedProperties'
+      Hint = 'Show resolved properties'
+      OnExecute = ShowResolvedPropertiesExecute
+      ShortCut = 24664
+    end
   end
   object mainImageList: TImageList
     left = 112
     top = 112
     Bitmap = {
-      4C69610000001000000010000000000000000000000000000000000000000000
+      4C69620000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -5569,6 +5576,38 @@ object MainForm: TMainForm
       00FF000000FF0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000808080FF00000000808080FF8080
+      80FF808080FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+      80FF808080FF0000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFF808080FF808080FF8080
+      80FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFF808080FF808080FF8080
+      80FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFF0000FFFFFFFFFFFF0000
+      FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFF0000FFFFFFFFFFFF0000
+      FFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFFFFFFFFFF0000FFFFFFFF
+      FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFF0000FFFFFFFFFFFF0000
+      FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFF0000FFFFFFFFFFFF0000
+      FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000FFFF0000
+      FFFFFFFFFFFF000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000
     }
   end
@@ -5925,6 +5964,9 @@ object MainForm: TMainForm
           0000000000000000000000000000000000000000000000000000000000000000
           0000000000000000000000000000000000000000000000000000
         }
+      end
+      object XmlSampleOperationsMenuItem: TMenuItem
+        Action = XmlSampleOperations
       end
       object CobolOperationsAction1: TMenuItem
         Action = CobolOperationsAction
@@ -9429,6 +9471,9 @@ object MainForm: TMainForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
+    end
+    object MenuItem36: TMenuItem
+      Action = XmlSampleOperations
     end
     object Maintainlistofcoboloperations1: TMenuItem
       Action = CobolOperationsAction

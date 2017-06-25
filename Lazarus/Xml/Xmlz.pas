@@ -2845,7 +2845,7 @@ begin
   begin
     p := Pos(':', Name);
     if (p > 0)
-    and (Copy(Name, 1, p - 1) <> 'xmlns') then
+    and (not isXmlNsAttribute) then
     begin
       NsPrefix:= Copy(Name, 1, p - 1);
       Name := Copy (Name, p + 1, 300000);
