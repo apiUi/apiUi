@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="9"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="11180"/>
+      <BuildNr Value="11192"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -124,6 +124,7 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
@@ -139,8 +140,7 @@
       <CompilerMessages>
         <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-dUseCThreads
--dTrialVersion"/>
+      <CustomOptions Value="-dUseCThreads"/>
       <OtherDefines Count="2">
         <Define0 Value="UseCThreads"/>
         <Define1 Value="TrialVersion"/>

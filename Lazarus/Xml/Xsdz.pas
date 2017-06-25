@@ -1211,21 +1211,6 @@ begin
 end;
 
 function TXsdDescr.LoadXsdFromXmlSampleFile (aFileName: String; ErrorFound: TOnErrorEvent): TXsd ;
-  procedure _removeNSAttributes (aXml: TXml);
-  var
-    x: Integer;
-  begin
-    with aXml.Attributes do
-      for x := Count - 1 downto 0 do
-        if XmlAttributes[x].isXmlNsAttribute then
-        begin
-          XmlAttributes[x].Free;
-          Delete(x);
-        end;
-    with aXml.Items do
-      for x := 0 to Count - 1 do
-        _removeNSAttributes(XmlItems[x]);
-  end;
 var
   xXml: TXml;
 begin
@@ -1236,7 +1221,6 @@ begin
       raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Xml: ' + aFileName);
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
-    _removeNSAttributes (xXml);
     result := CreateXsdFromXml (xXml, False);
   finally
     xXml.Free;
@@ -2796,6 +2780,7 @@ function TXsdDescr.CreateXsdFromXml (aXml: TObject; aLinkXmlToXsd: Boolean): TXs
     x: Integer;
     xXsdAtt: TXsdAttr;
   begin
+    if aAtt.isXmlNsAttribute then Exit;
     xXsdAtt := nil;
     for x := 0 to aXsd.sType.AttributeDefs.Count - 1 do
       if aXsd.sType.AttributeDefs.XsdAttrs [x].Name = aAtt.Name then
@@ -2831,7 +2816,8 @@ function TXsdDescr.CreateXsdFromXml (aXml: TObject; aLinkXmlToXsd: Boolean): TXs
       xXsd.maxOccurs := '1';
       xXsd.ElementName := aXml.Name;
       xXsd.ElementNameSpace := aXml.NameSpace;
-      xXsd.FormDefaultQualified := (aXml.NsPrefix <> '');
+      xXsd.FormDefaultQualified := (aXml.NsPrefix <> '')
+                                or (aXml.AttributeValueByTag['xmlns'] = aXml.NameSpace);
       xXsd.sType.Name := aXml.Name + 'Type';
       xXsd.sType.NameSpace := aXml.NameSpace;
       xXsd.DoNotEncode := True;
