@@ -311,6 +311,20 @@ Processing continues with unpredictable results
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="replacementsType">
+		<xs:sequence>
+			<xs:element name="Replacement" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="OldString" type="xs:string"/>
+						<xs:element name="NewString" type="xs:string"/>
+						<xs:element name="ReplaceAll" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="IgnoreCase" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="rtiType">
 		<xs:sequence>
 			<xs:element name="Operation" minOccurs="0">
@@ -1490,10 +1504,17 @@ Settings determine what wsdlStub should do on receiving messages for unknown (no
 									<xs:documentation>Default 'Unknown operation'</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="Redirect" type="epc:endpointConfigType" minOccurs="0">
+							<xs:element name="Redirect" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>When checked, wsdlStub will route webservice calls for unknown operations to the end-point specified.</xs:documentation>
 								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Transport" type="epc:endpointConfigType"/>
+										<xs:element name="reqReplacements" type="replacementsType" minOccurs="0"/>
+										<xs:element name="rpyReplacements" type="replacementsType" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
 							</xs:element>
 						</xs:choice>
 					</xs:complexType>

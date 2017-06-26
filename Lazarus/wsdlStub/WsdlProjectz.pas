@@ -151,7 +151,7 @@ type
     uiInvalid: Boolean;
     ProgressMax, ProgressPos: Integer;
     OnRequestViolatingSchema, OnRequestViolatingAddressPath: TOnRequestViolating;
-    DatabaseConnectionSpecificationXml: TXml;
+    DatabaseConnectionSpecificationXml, UnknownOpsReqReplactementsXml, UnknownOpsRpyReplactementsXml: TXml;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
     FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
     FreeFormatService: TWsdlService;
@@ -305,7 +305,7 @@ type
     function RedirectCommandURC (aCommand: String): String;
     function RedirectCommandHTTP ( aCommand, aStubAddress, aDocument, aSoapAction: String): String;
     function RedirectCommandString ( aCommand: String; aAddress, aSoapAction: String): String;
-    function CreateLogReplyPostProcess (aLogItem: TLog; aOperation: TWsdlOperation): String;
+    function CreateLogReplyPostProcess (aLog: TLog; aOperation: TWsdlOperation): String;
     procedure SendOperationInThread (aOperation: TWsdlOperation);
     procedure SendOperation (aOperation: TWsdlOperation);
     procedure SendMessage ( aOperation: TWsdlOperation
@@ -1392,6 +1392,8 @@ begin
   OnReloadDesignEvent := ReloadDesignCommand;
   projectProperties := TStringList.Create;
   DatabaseConnectionSpecificationXml := TXml.CreateAsString ('DatabaseConnection', '');
+  UnknownOpsReqReplactementsXml := TXml.CreateAsString ('reqReplacements', '');
+  UnknownOpsRpyReplactementsXml := TXml.CreateAsString ('rpyReplacements', '');
   ppLock := TCriticalSection.Create;
   fTacoInterface := TTacoInterface.Create(nil, nil);
   fLogLock := TCriticalSection.Create;
@@ -1524,6 +1526,8 @@ begin
   FreeAndNil (SMTPServerSSL);
   projectProperties.Free;
   DatabaseConnectionSpecificationXml.Free;
+  UnknownOpsReqReplactementsXml.Free;
+  UnknownOpsRpyReplactementsXml.Free;
   ppLock.Free;
   fLogLock.Free;
   Listeners.Free;
@@ -2049,17 +2053,27 @@ begin
   end;
   with result.AddXml (TXml.CreateAsString('OnCorrelate', '')) do
   begin
-      AddXml (TXml.CreateAsBoolean('DisableMessage', _WsdlDisableOnCorrelate));
+    AddXml (TXml.CreateAsBoolean('DisableMessage', _WsdlDisableOnCorrelate));
   end;
   with result.AddXml (TXml.CreateAsString('UnknownOperations', '')) do
   begin
     case unknownOperation.StubAction of
-       saStub: AddXml (TXml.CreateAsString('RaiseErrorMessage', notStubbedExceptionMessage));
-       saForward: ;
-       saRedirect:
-         with AddXml (unknownOperation.endpointConfigAsXml) do
-           Name := 'Redirect';
-       saRequest: ;
+      saStub: AddXml (TXml.CreateAsString('RaiseErrorMessage', notStubbedExceptionMessage));
+      saForward: ;
+      saRedirect:
+        with AddXml (unknownOperation.endpointConfigAsXml) do // 9.1 style
+        begin
+          Name := 'Redirect';
+          with AddXml (unknownOperation.endpointConfigAsXml) do
+          begin
+            Name := 'Transport'; // 10.x style
+          end;
+          with AddXml (TXml.Create) do
+            CopyDownLine(UnknownOpsReqReplactementsXml, True);
+          with AddXml (TXml.Create) do
+            CopyDownLine(UnknownOpsRpyReplactementsXml, True);
+        end;
+      saRequest: ;
     end;
   end;
   with result.AddXml (TXml.CreateAsString('OperationDefaults', '')) do
@@ -3092,12 +3106,39 @@ begin
 end;
 
 function TWsdlProject.RedirectUnknownOperation (aLog : TLog ): String ;
+  function _doReplacemets (aSpecXml: TXml; aString: String): String;
+  var
+    x: Integer;
+    oldString, newString: String;
+    xReplaceAll, xIgnoreCase: Boolean;
+    xFlags: TReplaceFlags;
+  begin
+    result := aString;
+    if not Assigned (aSpecXml) then Exit;
+    with aSpecXml.Items do
+    begin
+      for x := 0 to Count - 1 do with XmlItems[x] do
+      begin
+        oldString := Items.XmlCheckedValueByTagDef['OldString', ''];
+        newString := Items.XmlCheckedValueByTagDef['NewString', ''];
+        xReplaceAll := Items.XmlCheckedBooleanByTagDef['ReplaceAll', false];
+        xIgnoreCase := Items.XmlCheckedBooleanByTagDef['IgnoreCase', false];
+        xFlags := [];
+        if xReplaceAll then xFlags := xFlags + [rfReplaceAll];
+        if xIgnoreCase then xFlags := xFlags + [rfIgnoreCase];
+        if oldString <> '' then
+          Result := StringReplace(Result, oldString, newString, xFlags);
+      end;
+    end;
+  end;
 var
   xOperation: TWsdlOperation;
 begin
   result := '';
   aLog.Exception := '';
   aLog.StubAction := saRedirect;
+  alog.RequestBodyMiM := alog.RequestBody;
+  aLog.RequestBody := _doReplacemets (UnknownOpsReqReplactementsXml, aLog.RequestBody);
   xOperation := TWsdlOperation.Create(unknownOperation);
   try
     case aLog.TransportType of
@@ -3114,6 +3155,9 @@ begin
       ttTaco: result := SendOperationTacoMessage(xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
       ttNone: result := SendNoneMessage(xOperation, aLog.RequestBody);
     end;
+    aLog.ReplyBodyMiM := Result;
+    aLog.ReplyBody := _doReplacemets (UnknownOpsRpyReplactementsXml, Result);
+    Result := alog.ReplyBody;
   finally
     xOperation.Free;
   end;
@@ -3462,6 +3506,8 @@ begin
   if not Assigned (aXml) then Exit;
   if aXml.Name <> 'projectOptions' then raise Exception.Create('ProjectOptionsFromXml illegal XML' + aXml.Text);
   DatabaseConnectionSpecificationXml.Items.Clear;
+  UnknownOpsReqReplactementsXml.Items.Clear;
+  UnknownOpsRpyReplactementsXml.Items.Clear;
   wrdFunctionz.wrdDetectFormatChanges := False;
   wrdFunctionz.wrdNewDocumentAsReference := False;
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
@@ -3524,7 +3570,17 @@ begin
       if Assigned (yXml) then
       begin
         unknownOperation.StubAction := saRedirect;
-        unknownOperation.endpointConfigFromXml(yXml);
+        hXml := yXml.Items.XmlCheckedItemByTag ['Transport'];
+        if Assigned (hXml) then
+          unknownOperation.endpointConfigFromXml(hXml)  // 10.x
+        else
+          unknownOperation.endpointConfigFromXml(yXml); // 9.x
+        hXml := yXml.Items.XmlCheckedItemByTag ['reqReplacements'];
+        if Assigned (hXml) then
+          UnknownOpsReqReplactementsXml.CopyDownLine(hXml, True);
+        hXml := yXml.Items.XmlCheckedItemByTag ['rpyReplacements'];
+        if Assigned (hXml) then
+          UnknownOpsRpyReplactementsXml.CopyDownLine(hXml, True);
       end;
     end;
     xXml := XmlCheckedItemByTag ['OperationDefaults'];
@@ -4541,34 +4597,34 @@ begin
   end;
 end;
 
-function TWsdlProject .CreateLogReplyPostProcess (aLogItem : TLog ;
+function TWsdlProject .CreateLogReplyPostProcess (aLog : TLog ;
   aOperation : TWsdlOperation ): String;
 var
   xMessage: String;
   xOnRequestViolatingSchema: TOnRequestViolating;
 begin
-  result := aLogItem.ReplyBody;
+  result := aLog.ReplyBody;
   if Assigned (aOperation) then
-    aLogItem.StubAction := aOperation.StubAction;
+    aLog.StubAction := aOperation.StubAction;
   if Assigned (aOperation) then
   begin
-    aLogItem.OperationName:=aOperation.reqTagName;
-    CheckExpectedValues(aLogItem, aOperation, doCheckExpectedValues);
+    aLog.OperationName:=aOperation.reqTagName;
+    CheckExpectedValues(aLog, aOperation, doCheckExpectedValues);
     if aOperation.StubAction = saRequest then
     begin
-      aLogItem.ReplyBody := _progName + ' - Operation itself is a requestor ('+ aOperation.Name +')';
-      raise Exception.Create(aLogItem.ReplyBody);
+      aLog.ReplyBody := _progName + ' - Operation itself is a requestor ('+ aOperation.Name +')';
+      raise Exception.Create(aLog.ReplyBody);
     end;
     if aOperation.StubAction = saForward then
     begin
-      aLogItem.ReplyBody := _progName + ' - Forwarding not supported';
-      raise Exception.Create(aLogItem.ReplyBody);
+      aLog.ReplyBody := _progName + ' - Forwarding not supported';
+      raise Exception.Create(aLog.ReplyBody);
     end;
     if aOperation.StubAction = saRedirect then
     begin
       if aOperation.BeforeScriptLines.Count > 0 then // MIM before
       begin
-        aLogItem.RequestBodyMiM := aLogItem.RequestBody;
+        aLog.RequestBodyMiM := aLog.RequestBody;
         try
           aOperation.ExecuteBefore;
         except
@@ -4576,20 +4632,20 @@ begin
             if e.Message <> 'Exit' then
               raise;
         end;
-        aLogItem.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
+        aLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
       end;
-      if aLogItem.TransportType = ttHttp then
-        aLogItem.ReplyBody := RedirectCommandHTTP ( aLogItem.RequestBody
-                                                  , aOperation.StubHttpAddress
-                                                  , aLogItem.httpDocument
-                                                  , aLogItem.httpSoapAction
-                                                  )
+      if aLog.TransportType = ttHttp then
+      begin
+        aOperation.httpVerb := aLog.httpCommand;
+        aOperation.StubHttpAddress := mergeUri(aOperation.StubHttpAddress, aLog.httpUri);
+        aLog.ReplyBody := SendHttpMessage (aOperation, aLog);
+      end
       else
-        aLogItem.ReplyBody := SendOperationMessage (aOperation, aLogItem.RequestBody);
-      aOperation.RpyBindablesFromString (aLogItem.ReplyBody);
+        aLog.ReplyBody := SendOperationMessage (aOperation, aLog.RequestBody);
+      aOperation.RpyBindablesFromString (aLog.ReplyBody);
       if aOperation.AfterScriptLines.Count > 0 then // MIM after action
       begin
-        aLogItem.ReplyBodyMiM := aLogItem.ReplyBody;
+        aLog.ReplyBodyMiM := aLog.ReplyBody;
         try
           aOperation.ExecuteAfter;
         except
@@ -4598,16 +4654,16 @@ begin
               raise;
         end;
         if aOperation.rpyBind is TXml then
-          aLogItem.ReplyBody := aOperation.StreamReply (_progName, True);
+          aLog.ReplyBody := aOperation.StreamReply (_progName, True);
         if aOperation.rpyBind is TIpmItem then
-          aLogItem.ReplyBody := (aOperation.rpyBind as TIpmItem).ValuesToBuffer (nil);
+          aLog.ReplyBody := (aOperation.rpyBind as TIpmItem).ValuesToBuffer (nil);
       end;
-      aLogItem.Mssg := nil;
-      aLogItem.Stubbed := False;
+      aLog.Mssg := nil;
+      aLog.Stubbed := False;
     end;
     if Assigned (aOperation) then
     begin
-      with aLogItem do
+      with aLog do
       begin
         if doValidateRequests
         and (aOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
@@ -4624,7 +4680,7 @@ begin
             if (xOnRequestViolatingSchema = rvsRaiseErrorMessage) then
               raise SysUtils.Exception.Create('Schema validation error on request:' + LineEnding + xMessage);
             if (xOnRequestViolatingSchema = rvsAddRemark) then
-              aLogItem.AddRemark ('Schema validation error on request:' + LineEnding + xMessage);
+              aLog.AddRemark ('Schema validation error on request:' + LineEnding + xMessage);
           end;
           RequestValidated := True;
         end;
@@ -4644,7 +4700,7 @@ begin
       end;
     end;
   end;
-  result := aLogItem.ReplyBody;
+  result := aLog.ReplyBody;
 end;
 
 function TWsdlProject.SendMessageLater(aOperation: TWsdlOperation;
@@ -6575,7 +6631,8 @@ begin
           try
             try
               CreateLogReply (xLog, xProcessed, True);
-              if Assigned (xLog.Operation) then
+              if Assigned (xLog.Operation)
+              and (xLog.Operation.SoapAddress <> '') then
               begin
                 with TIdURI.Create(xLog.Operation.SoapAddress) do
                 try
@@ -6606,7 +6663,8 @@ begin
                   Free;
                 end;
               end;
-              if xLog.Operation.isOneWay then
+              if xLog.Operation.isOneWay
+              and (xLog.Operation.StubAction = saStub) then
                 xLog.httpResponseCode := 202;
               if (xLog.Exception <> '')
               and (   (not Assigned (xLog.Operation))

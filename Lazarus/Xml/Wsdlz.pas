@@ -5925,6 +5925,7 @@ begin
     raise Exception.Create('endpointConfigfromXml: nil argument');
   if (aXml.Name <> 'endpointConfig')
   and (aXml.Name <> 'Redirect')
+  and (aXml.Name <> 'Transport')
   then raise Exception.Create('endpointConfigfromXml: invalid XML' + aXml.Text);
   StubTransport := ttHttp;
   if not isOpenApiService then

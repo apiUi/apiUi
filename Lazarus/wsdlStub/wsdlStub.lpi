@@ -17,9 +17,9 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <MajorVersionNr Value="9"/>
+      <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="11192"/>
+      <BuildNr Value="11200"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -100,6 +100,7 @@
       <Unit8>
         <Filename Value="..\Html\htmlxmlutilz.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="htmlXmlUtilz"/>
       </Unit8>
       <Unit9>
         <Filename Value="htmlreportz.pas"/>
