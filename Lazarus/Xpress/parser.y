@@ -6,8 +6,8 @@
 %}
 
 %token DF DFS DFX FRAME_ SFBSS SFD SFDS SFS SFSS SFSSS SFSSSS SFSX SFSXX SFV SFX
-%token SFOV, SFOS, SFOSB, SFOSS, SFOSX, SFOSSS, SFOSSSS
-%token VFV VFS VFSS VFSX VFSSS VFSSX VFSSSS VFX VFD
+%token SFOG, SFOV, SFOS, SFOSB, SFOSS, SFOSX, SFOSSS, SFOSSSS
+%token VFV VFS VFSS VFSX VFSSS VFSSX VFSSSS VFX VFOGS
 %token VFOV VFOS VFOSB VFOSS VFOSX VFOSSS VFOSSSB VFOSSX VFOSSSS VFOB VFOX VFOD
 %token SLFOS SLFOSS
 %token VFG VFGG VFGGG VFGGGG
@@ -366,7 +366,6 @@ Statement:
 
 VoidCall:
           VFV _LPAREN _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionV(); }
-        | VFD _LPAREN dExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionD ($3.yy.yyDateTime); }
         | VFG    _LPAREN gExpr                                        _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionG    ($3); }
         | VFGG   _LPAREN gExpr _COMMA gExpr                           _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionGG   ($3, $5); }
         | VFGGG  _LPAREN gExpr _COMMA gExpr _COMMA gExpr              _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionGGG  ($3, $5, $7); }
@@ -380,6 +379,7 @@ VoidCall:
         | VFX _LPAREN xExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionX ($3.yy.yyExtended); }
         | VFOV _LPAREN _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOV (Owner); }
         | VFOD _LPAREN dExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOD (Owner, $3.yy.yyDateTime); }
+        | VFOGS _LPAREN gExpr _COMMA sExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOGS (Owner, $3, $5.yyString); }
         | VFOS _LPAREN sExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOS (Owner, $3.yyString); }
         | VFOSB _LPAREN sExpr _COMMA bExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOSB (Owner, $3.yyString, $5.yy.yyBoolean); }
         | VFOSS _LPAREN sExpr _COMMA sExpr _RPAREN { if DoIt then ($1.yy.yyObject as TBind).yy.yyVFunctionOSS (Owner, $3.yyString, $5.yyString); }
@@ -785,6 +785,7 @@ sExpr:    sExpr _PLUS sExpr	{ $$.yyString := $1.yyString + $3.yyString; }
         | SFSX _LPAREN sExpr _COMMA xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionSX ($3.yyString, $5.yy.yyExtended); }
         | SFSXX _LPAREN sExpr _COMMA xExpr _COMMA xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionSXX ($3.yyString, $5.yy.yyExtended, $7.yy.yyExtended); }
         | SFV _LPAREN _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionV (); }
+        | SFOG _LPAREN gExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOG (Owner, $3); }
         | SFOV _LPAREN _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOV (Owner); }
         | SFOS _LPAREN sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOS (Owner, $3.yyString); }
         | SFOSB _LPAREN sExpr _COMMA bExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOSB (Owner, $3.yyString, $5.yy.yyBoolean); }

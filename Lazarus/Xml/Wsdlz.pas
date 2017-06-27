@@ -1331,6 +1331,33 @@ begin
        );
 end;
 
+function asXmlString (aOwner: TObject; aArg: TObject): String;
+var
+  xXml: TXml;
+begin
+  if not (TCustomBindable ((aArg as YYSType).yy.yyPointer) is TXml) then
+    raise Exception.Create ('asXmlString: Only allowed with XML elements');
+  xXml := (TXml ((aArg as YYSType).yy.yyPointer));
+  result := xXml.AsText(True, 2, True, False);
+end;
+
+procedure populateFromXmlString (aOwner: TObject; aArg1: TObject; aArg2: String);
+var
+  xXml, yXml: TXml;
+begin
+  if not (TCustomBindable ((aArg1 as YYSType).yy.yyPointer) is TXml) then
+    raise Exception.Create ('populateFromXmlString: Only allowed with XML elements');
+  xXml := (TXml ((aArg1 as YYSType).yy.yyPointer));
+  yXml := TXml.Create;
+  try
+    yXml.LoadFromString(aArg2, nil);
+    xXml.LoadValues(yXml, False, False, False, True);
+    xXml.Checked := True;
+  finally
+    yXml.Free;
+  end;
+end;
+
 procedure AssignRecurring (aDAObject, aDEObject, aSAObject, aSEObject: TObject);
   procedure _AssignRecurring (da, de, sa, se: TXml);
   var
@@ -4178,6 +4205,7 @@ begin
     BindScriptFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindScriptFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
     BindScriptFunction ('AssignAnyType', @assignAnyType, VFGG, '(aDestGroup, aSrcGroup)');
+    BindScriptFunction ('AsXmlString', @asXmlString, SFOG, '(aId)');
     BindScriptFunction ('CreateJUnitReport', @CreateJUnitReport, VFOS, '(aName)');
     BindScriptFunction ('CreateSnapshot', @CreateSnapshot, VFOS, '(aName)');
     BindScriptFunction ('CreateSummaryReport', @CreateSummaryReport, VFOS, '(aName)');
@@ -4211,6 +4239,7 @@ begin
     BindScriptFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindScriptFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
     BindScriptFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
+    BindScriptFunction ('PopulateFromXmlString', @populateFromXmlString, VFOGS, '(aId, aString)');
     BindScriptFunction ('PromptReply', @PromptReply, VFOV, '()');
     BindScriptFunction ('PromptRequest', @PromptRequest, VFOV, '()');
     BindScriptFunction ('RaiseError', @RaiseError, VFS, '(aString)');

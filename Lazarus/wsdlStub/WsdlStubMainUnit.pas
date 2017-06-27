@@ -39,7 +39,10 @@ uses
    , ExtCtrls
    , FormIniFilez
    , Menus , PairSplitter
-   , VirtualTrees, FileUtil, IpHtml
+   , VirtualTrees
+   , LazFileUtils
+   , FileUtil
+   , IpHtml
    , Bind
    , mqInterface
    , MQAPI
@@ -3627,7 +3630,7 @@ begin
                                 + _progName
                                 + '.htm'
                                 );
-  if not FileExistsUTF8(xFileName) { *Converted from FileExists* } then
+  if not LazFileUtils.FileExistsUTF8(xFileName) { *Converted from FileExists* } then
     raise Exception.Create('Could not find helpfile: ' + xFileName);
   if not OpenDocument(xFileName) then
     raise Exception.Create('Could not open ' + xFileName);
@@ -3643,7 +3646,7 @@ begin
                                 + _progName
                                 + '_Menu_hlp.htm'
                                 );
-  if not FileExistsUTF8(xFileName) { *Converted from FileExists* } then
+  if not LazFileUtils.FileExistsUTF8(xFileName) { *Converted from FileExists* } then
     raise Exception.Create('Could not find helpfile: ' + xFileName);
   if not OpenDocument(xFileName) then
     raise Exception.Create('Could not open ' + xFileName);
@@ -3834,7 +3837,7 @@ begin
       SqlConnector.Connected := False;
     except
     end;
-    if FileExistsUTF8(licenseDatabaseName) then
+    if LazFileUtils.FileExistsUTF8(licenseDatabaseName) then
     begin
       try
         SQLConnector.ConnectorType := 'odbc';

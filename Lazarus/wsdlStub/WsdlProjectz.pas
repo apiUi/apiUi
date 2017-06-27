@@ -52,6 +52,7 @@ uses
   , Forms
   , Dialogs
   , Controls
+  , LazFileUtils
   , FileUtil
   , Logz
   , snapshotz
@@ -141,7 +142,6 @@ type
     procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
       const AUsername, APassword: string; var VAuthenticated: Boolean);
     procedure doCoverageReport (aReport: TSnapshot);
-    function ProcessInboundReply(aLogItem, rLogItem: TLog): String;
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
   public
@@ -305,7 +305,7 @@ type
     function RedirectCommandURC (aCommand: String): String;
     function RedirectCommandHTTP ( aCommand, aStubAddress, aDocument, aSoapAction: String): String;
     function RedirectCommandString ( aCommand: String; aAddress, aSoapAction: String): String;
-    function CreateLogReplyPostProcess (aLog: TLog; aOperation: TWsdlOperation): String;
+    procedure CreateLogReplyPostProcess (aLog: TLog; aOperation: TWsdlOperation);
     procedure SendOperationInThread (aOperation: TWsdlOperation);
     procedure SendOperation (aOperation: TWsdlOperation);
     procedure SendMessage ( aOperation: TWsdlOperation
@@ -327,8 +327,8 @@ type
     function FindOperationOnRequest (aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
     function FindApiOnLog (aLog: TLog): TWsdlOperation;
     function FindOperationOnLog (aLog: TLog): TWsdlOperation;
-    function RedirectUnknownOperation (aLog: TLog): String;
-    function CreateReply ( aLog: TLog; aIsActive: Boolean): String;
+    procedure RedirectUnknownOperation (aLog: TLog);
+    procedure CreateReply ( aLog: TLog; aIsActive: Boolean);
     function ProjectLogOptionsAsXml: TXml;
     function ProjectScriptsAsXml: TXml;
     procedure ProjectScriptsFromXml (aXml: TXml);
@@ -3068,7 +3068,7 @@ begin
   aProcessed := False;
   try
 {}
-    aLog.ReplyBody := CreateReply (aLog, aIsActive);
+    CreateReply (aLog, aIsActive);
     aProcessed := True;
   except
     on e: exception do
@@ -3086,7 +3086,7 @@ begin
           saForward: raise;
           saRedirect:
             begin
-              aLog.ReplyBody := RedirectUnknownOperation(aLog);
+              RedirectUnknownOperation(aLog);
               aProcessed := True;
               exit;
             end;
@@ -3105,7 +3105,7 @@ begin
   end; //except
 end;
 
-function TWsdlProject.RedirectUnknownOperation (aLog : TLog ): String ;
+procedure TWsdlProject.RedirectUnknownOperation (aLog : TLog );
   function _doReplacemets (aSpecXml: TXml; aString: String): String;
   var
     x: Integer;
@@ -3134,7 +3134,7 @@ function TWsdlProject.RedirectUnknownOperation (aLog : TLog ): String ;
 var
   xOperation: TWsdlOperation;
 begin
-  result := '';
+  aLog.ReplyBody := '';
   aLog.Exception := '';
   aLog.StubAction := saRedirect;
   alog.RequestBodyMiM := alog.RequestBody;
@@ -3149,27 +3149,26 @@ begin
       end;
     end;
     case xOperation.StubTransport of
-      ttHttp: result := SendHttpMessage (xOperation, aLog);
-      ttMq: result := SendOperationMqMessage (xOperation, aLog.RequestBody, aLog.RequestHeaders);
-      ttStomp: result := SendOperationStompMessage (xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
-      ttTaco: result := SendOperationTacoMessage(xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
-      ttNone: result := SendNoneMessage(xOperation, aLog.RequestBody);
+      ttHttp: aLog.ReplyBody := SendHttpMessage (xOperation, aLog);
+      ttMq: aLog.ReplyBody := SendOperationMqMessage (xOperation, aLog.RequestBody, aLog.RequestHeaders);
+      ttStomp: aLog.ReplyBody := SendOperationStompMessage (xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
+      ttTaco: aLog.ReplyBody := SendOperationTacoMessage(xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
+      ttNone: aLog.ReplyBody := SendNoneMessage(xOperation, aLog.RequestBody);
     end;
-    aLog.ReplyBodyMiM := Result;
-    aLog.ReplyBody := _doReplacemets (UnknownOpsRpyReplactementsXml, Result);
-    Result := alog.ReplyBody;
+    aLog.ReplyBodyMiM := aLog.ReplyBody;
+    aLog.ReplyBody := _doReplacemets (UnknownOpsRpyReplactementsXml, aLog.ReplyBody);
   finally
     xOperation.Free;
   end;
 end;
 
-function TWsdlProject.CreateReply (aLog: TLog; aIsActive: Boolean): String;
+procedure TWsdlProject.CreateReply (aLog: TLog; aIsActive: Boolean);
 var
   xOperation: TWsdlOperation;
   xReqXml, xRpyXml: TXml;
   x: Integer;
 begin
-  result := '';
+  aLog.ReplyBody := '';
   aLog.Operation := nil;
   aLog.Mssg := nil;
   aLog.CorrelationId := '';
@@ -3279,13 +3278,12 @@ begin
     aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
     aLog.OperationName:=xOperation.Alias;
-    result := xOperation.StreamReply (_progName, True);
+    aLog.ReplyBody := xOperation.StreamReply (_progName, True);
     if xOperation.ReturnSoapFault then
-      aLog.Exception := Result;
+      aLog.Exception := aLog.ReplyBody;
     if not aLog.isAsynchronousRequest then
     begin
-      aLog.ReplyBody := result;
-      result := CreateLogReplyPostProcess(aLog, xOperation);
+      CreateLogReplyPostProcess(aLog, xOperation);
     end;
   finally
     if Assigned (xOperation.Cloned) then
@@ -4597,13 +4595,11 @@ begin
   end;
 end;
 
-function TWsdlProject .CreateLogReplyPostProcess (aLog : TLog ;
-  aOperation : TWsdlOperation ): String;
+procedure TWsdlProject.CreateLogReplyPostProcess (aLog: TLog; aOperation: TWsdlOperation);
 var
   xMessage: String;
   xOnRequestViolatingSchema: TOnRequestViolating;
 begin
-  result := aLog.ReplyBody;
   if Assigned (aOperation) then
     aLog.StubAction := aOperation.StubAction;
   if Assigned (aOperation) then
@@ -4700,7 +4696,6 @@ begin
       end;
     end;
   end;
-  result := aLog.ReplyBody;
 end;
 
 function TWsdlProject.SendMessageLater(aOperation: TWsdlOperation;
@@ -6969,7 +6964,10 @@ procedure TWsdlProject.HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
     try
       sLoc := SchemaLocations.SchemaLocations[aUri];
       if not Assigned (sLoc) then
-        result := RedirectUnknownOperation(aLog)
+      begin
+        RedirectUnknownOperation(aLog);
+        result := aLog.ReplyBody;
+      end
       else
       begin
         s := ReadStringFromFile(sLoc.FileName);
@@ -7035,14 +7033,14 @@ begin
     or (ARequestInfo.Document = '/') then
     begin
       try
-        AResponseInfo.ContentText := _prepWsdl(ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), indexWsdlsHtmlFileName));
+        alog.ReplyBody := _prepWsdl(ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), indexWsdlsHtmlFileName));
         Exit;
       except
         on e: exception do
         begin
-          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
+          alog.ReplyBody := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
-          alog.Exception := AResponseInfo.ContentText;
+          alog.Exception := alog.ReplyBody;
           exit;
         end;
       end;
@@ -7050,14 +7048,14 @@ begin
     if (ARequestInfo.QueryParams = 'WSDL') then
     begin
       try
-        AResponseInfo.ContentText := _getWsdl(Copy (ARequestInfo.Document, 2, 10000));
+        alog.ReplyBody := _getWsdl(Copy (ARequestInfo.Document, 2, 10000));
         Exit;
       except
         on e: exception do
         begin
-          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
+          alog.ReplyBody := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
-          alog.Exception := AResponseInfo.ContentText;
+          alog.Exception := alog.ReplyBody;
           exit;
         end;
       end;
@@ -7065,21 +7063,21 @@ begin
     if Copy(ARequestInfo.QueryParams, 1, 4) = 'XSD=' then
     begin
       try
-        AResponseInfo.ContentText := _getXsd(ARequestInfo.Document + '?' + ARequestInfo.QueryParams);
+        alog.ReplyBody := _getXsd(ARequestInfo.Document + '?' + ARequestInfo.QueryParams);
         Exit;
       except
         on e: exception do
         begin
-          AResponseInfo.ContentText := e.Message + #10#13 + ExceptionStackListString(e);
+          alog.ReplyBody := e.Message + #10#13 + ExceptionStackListString(e);
           AResponseInfo.ResponseNo := 500;
-          alog.Exception := AResponseInfo.ContentText;
+          alog.Exception := alog.ReplyBody;
           exit;
         end;
       end;
     end;
-    AResponseInfo.ContentText := RedirectUnknownOperation(aLog);
+    RedirectUnknownOperation(aLog);
   finally
-    alog.ReplyBody := AResponseInfo.ContentText;
+    AResponseInfo.ContentText := alog.ReplyBody;
   end;
 end;
 
@@ -7149,50 +7147,6 @@ end;
 procedure TWsdlProject .setOnTacoAutorize (AValue : TNotifyEvent );
 begin
   fTacoInterface.OnAuthorize := AValue;
-end;
-
-function TWsdlProject.ProcessInboundReply(aLogItem, rLogItem: TLog): String;
-// rLogItem is already on display so locking needed on changing
-var
-  xMessage: String;
-  xOperation: TWsdlOperation;
-begin
-  result := '';
-  xMessage := '';
-  xOperation := aLogItem.Operation;
-  try
-    aLogItem.Operation := TWsdlOperation.Create(rLogItem.Operation);
-    try
-      aLogItem.Mssg := rLogItem.Mssg;
-      aLogItem.Operation.RequestStringToBindables (rLogItem.RequestBody);
-      aLogItem.Operation.ReplyStringToBindables (aLogItem.InboundBody); // reply comes as a request
-      if doValidateReplies then
-      begin
-        if not aLogItem.Operation.rpyBind.IsValueValid (xMessage) then
-          aLogItem.ReplyValidateResult := xMessage;
-        aLogItem.ReplyValidated := True;
-      end;
-      aLogItem.Operation.ExecuteAfter;
-      CheckExpectedValues (aLogItem, aLogItem.Operation, doCheckExpectedValues);
-      AcquireLogLock;
-      try
-        rLogItem.ReplyBody := aLogItem.InboundBody;
-        rLogItem.InboundTimeStamp := aLogItem.InboundTimestamp;
-        rLogItem.CorrelationId := aLogItem.Operation.CorrelationIdAsText ('; ');
-        rLogItem.wsaCorrelated := True;
-        rLogItem.HasUnexpectedValue := aLogItem.HasUnexpectedValue;
-        rLogItem.ExpectedValuesChecked := aLogItem.ExpectedValuesChecked;
-        toUpdateDisplayLogs.SaveLog('', rLogItem);
-      finally
-        ReleaseLogLock;
-      end;
-      result := '';
-    finally
-      aLogItem.Operation.Free;
-    end;
-  finally
-    aLogItem.Operation := xOperation;
-  end;
 end;
 
 procedure TWsdlProject.SMTPServerMailFrom(ASender: TIdSMTPServerContext;
