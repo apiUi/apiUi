@@ -300,7 +300,7 @@ const treeTagColumn = 0;
 const treeValueColumn = 2;
 const treeButtonColumn = 1;
 const LF = #10;
-const CRLF = #13#10;
+const CRLF = LineEnding;
 
 implementation
 

@@ -2994,18 +2994,6 @@ begin
     Raise Exception.Create('First get a Wsdl');
   xOperation := TWsdlOperation.Create(WsdlOperation);
   if xOperation.StubAction = saStub then Exit;
-  if xOperation.lateBinding then
-  begin
-    xOperation.rpyBind := TXml.Create;
-    (xOperation.rpyBind as TXml).LoadFromString(WsdlMessage.FreeFormatRpy, nil);
-    if xOperation.rpyBind.Name = '' then
-      xOperation.rpyBind.Name := 'noXml';
-    xOperation.reqBind := TXml.Create;
-    (xOperation.reqBind as TXml).LoadFromString(WsdlMessage.FreeFormatReq, nil);
-    if xOperation.reqBind.Name = '' then
-      xOperation.reqBind.Name := 'noXml';
-    try xOperation.PrepareAfter;  except end;
-  end;
   try
     Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
     try
@@ -3018,11 +3006,8 @@ begin
       begin
         stubChanged := True;
         WsdlOperation.AfterScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
-        if not WsdlOperation.lateBinding then
-        begin
-          try WsdlOperation.PrepareBefore; Except end;
-          try WsdlOperation.PrepareAfter; Except end;
-        end;
+        try WsdlOperation.PrepareBefore; Except end;
+        try WsdlOperation.PrepareAfter; Except end;
       end;
       FillInWsdlEdits;
     finally
@@ -3049,18 +3034,6 @@ begin
   XmlUtil.PushCursor (crHourGlass);
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
-    if xOperation.lateBinding then
-    begin
-      xOperation.rpyBind := TXml.Create;
-      (xOperation.rpyBind as TXml).LoadFromString(WsdlMessage.FreeFormatRpy, nil);
-      if xOperation.rpyBind.Name = '' then
-        xOperation.rpyBind.Name := 'noXml';
-      xOperation.reqBind := TXml.Create;
-      (xOperation.reqBind as TXml).LoadFromString(WsdlMessage.FreeFormatReq, nil);
-      if xOperation.reqBind.Name = '' then
-        xOperation.reqBind.Name := 'noXml';
-      try xOperation.PrepareBefore; except end;
-    end;
     if xOperation.StubAction = saStub then
       xScriptName := ' / Main Script'
     else
@@ -3077,11 +3050,8 @@ begin
         begin
           stubChanged := True;
           WsdlOperation.BeforeScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
-          if not WsdlOperation.lateBinding then
-          begin
-            try WsdlOperation.PrepareBefore; Except end;
-            try WsdlOperation.PrepareAfter; Except end;
-          end;
+          try WsdlOperation.PrepareBefore; Except end;
+          try WsdlOperation.PrepareAfter; Except end;
         end;
         FillInWsdlEdits;
       finally
@@ -4479,8 +4449,7 @@ begin
                 begin
                    if (xMessage.BeforeScriptLines.Count > 0) then
                    begin
-                     if (not xMessage.PreparedBefore)
-                     and (not wsdlOperation.lateBinding) then
+                     if (not xMessage.PreparedBefore) then
                        ImageIndex := 6
                      else
                        ImageIndex := 5;
@@ -4494,8 +4463,7 @@ begin
                   begin
                     if (xMessage.AfterScriptLines.Count > 0) then
                     begin
-                      if (not xMessage.PreparedAfter)
-                      and (not wsdlOperation.lateBinding) then
+                      if (not xMessage.PreparedAfter) then
                         ImageIndex := 6
                       else
                         ImageIndex := 5;
@@ -13073,8 +13041,7 @@ begin
         begin
            if (xOperation.BeforeScriptLines.Count > 0) then
            begin
-             if (not xOperation.PreparedBefore)
-             and (not xOperation.lateBinding) then
+             if (not xOperation.PreparedBefore) then
                ImageIndex := 96
              else
                ImageIndex := 95;
@@ -13088,8 +13055,7 @@ begin
           begin
             if (xOperation.AfterScriptLines.Count > 0) then
             begin
-              if (not xOperation.PreparedAfter)
-              and (not xOperation.lateBinding) then
+              if (not xOperation.PreparedAfter) then
                 ImageIndex := 96
               else
                 ImageIndex := 95;
@@ -13522,18 +13488,6 @@ begin
   XmlUtil.PushCursor (crHourGlass);
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
-    if xOperation.lateBinding then
-    begin
-      xOperation.rpyBind := TXml.Create;
-      (xOperation.rpyBind as TXml).LoadFromString(WsdlMessage.FreeFormatRpy, nil);
-      if xOperation.rpyBind.Name = '' then
-        xOperation.rpyBind.Name := 'noXml';
-      xOperation.reqBind := TXml.Create;
-      (xOperation.reqBind as TXml).LoadFromString(WsdlMessage.FreeFormatReq, nil);
-      if xOperation.reqBind.Name = '' then
-        xOperation.reqBind.Name := 'noXml';
-      try xOperation.PrepareBefore; except end;
-    end;
     if xOperation.StubAction = saStub then
       xScriptName := Format('%s / %s  / Main Script', [WsdlOperation.Alias, WsdlMessage.Name])
     else
@@ -13550,11 +13504,8 @@ begin
         begin
           stubChanged := True;
           WsdlMessage.BeforeScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
-          if not WsdlOperation.lateBinding then
-          begin
-            try WsdlMessage.CheckBefore; Except end;
-            try WsdlMessage.CheckAfter; Except end;
-          end;
+          try WsdlMessage.CheckBefore; Except end;
+          try WsdlMessage.CheckAfter; Except end;
         end;
         FillInWsdlEdits;
       finally
@@ -13579,18 +13530,6 @@ begin
   XmlUtil.PushCursor (crHourGlass);
   try
     xOperation := TWsdlOperation.Create(WsdlOperation);
-    if xOperation.lateBinding then
-    begin
-      xOperation.rpyBind := TXml.Create;
-      (xOperation.rpyBind as TXml).LoadFromString(WsdlMessage.FreeFormatRpy, nil);
-      if xOperation.rpyBind.Name = '' then
-        xOperation.rpyBind.Name := 'noXml';
-      xOperation.reqBind := TXml.Create;
-      (xOperation.reqBind as TXml).LoadFromString(WsdlMessage.FreeFormatReq, nil);
-      if xOperation.reqBind.Name = '' then
-        xOperation.reqBind.Name := 'noXml';
-      try xOperation.PrepareBefore; except end;
-    end;
     if xOperation.StubAction = saStub then
       xScriptName := Format('%s / %s  / Main Script', [WsdlOperation.Alias, WsdlMessage.Name])
     else
@@ -13607,11 +13546,8 @@ begin
         begin
           stubChanged := True;
           WsdlMessage.AfterScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
-          if not WsdlOperation.lateBinding then
-          begin
-            try WsdlMessage.CheckBefore; Except end;
-            try WsdlMessage.CheckAfter; Except end;
-          end;
+          try WsdlMessage.CheckBefore; Except end;
+          try WsdlMessage.CheckAfter; Except end;
         end;
         FillInWsdlEdits;
       finally

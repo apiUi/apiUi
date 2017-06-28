@@ -1702,35 +1702,32 @@ begin
     if fltBind is TXml then with fltBind as TXml do Checked := True;
     Owner := Self;
     doInvokeOperations;
-    if not lateBinding then
+    try
+      PrepareBefore;
+    except
+    end;
+    if (not PreparedBefore) then
+      Inc (scriptErrorCount);
+    try
+      PrepareAfter;
+    except
+    end;
+    if (not PreparedAfter) then
+      Inc (scriptErrorCount);
+    for m := 0 to Messages.Count - 1 do
     begin
-      try
-        PrepareBefore;
-      except
-      end;
-      if not PreparedBefore then
-        Inc (scriptErrorCount);
-      try
-        PrepareAfter;
-      except
-      end;
-      if not PreparedAfter then
-        Inc (scriptErrorCount);
-      for m := 0 to Messages.Count - 1 do
+      xMessage := Messages.Messages[m];
+      if xMessage.BeforeScriptLines.Count > 0 then
       begin
-        xMessage := Messages.Messages[m];
-        if xMessage.BeforeScriptLines.Count > 0 then
-        begin
-          xMessage.CheckBefore;
-          if not xMessage.PreparedBefore then
-            Inc (scriptErrorCount);
-        end;
-        if xMessage.AfterScriptLines.Count > 0 then
-        begin
-          xMessage.CheckAfter;
-          if not xMessage.PreparedAfter then
-            Inc (scriptErrorCount);
-        end;
+        xMessage.CheckBefore;
+        if not xMessage.PreparedBefore then
+          Inc (scriptErrorCount);
+      end;
+      if xMessage.AfterScriptLines.Count > 0 then
+      begin
+        xMessage.CheckAfter;
+        if not xMessage.PreparedAfter then
+          Inc (scriptErrorCount);
       end;
     end;
   end;
@@ -2061,9 +2058,8 @@ begin
       saStub: AddXml (TXml.CreateAsString('RaiseErrorMessage', notStubbedExceptionMessage));
       saForward: ;
       saRedirect:
-        with AddXml (unknownOperation.endpointConfigAsXml) do // 9.1 style
+        with AddXml (TXml.CreateAsString('Redirect', '')) do
         begin
-          Name := 'Redirect';
           with AddXml (unknownOperation.endpointConfigAsXml) do
           begin
             Name := 'Transport'; // 10.x style
@@ -3194,16 +3190,6 @@ begin
       aLog.Mssg := xOperation.MessageBasedOnRequest;
     if not Assigned (aLog.Mssg) then
       Raise Exception.Create('Could not find any reply based on request');
-    with xOperation do
-    begin
-      if lateBinding then
-      begin
-        for x := 0 to CorrelationBindables.Count - 1 do
-          CorrelationBindables.Bindables[x] := FindBind(CorrelationBindables.Strings[x]);
-        for x := 0 to ExpectationBindables.Count - 1 do
-          ExpectationBindables.Bindables[x] := FindBind(ExpectationBindables.Strings[x]);
-      end;
-    end;
     aLog.CorrelationId := xOperation.CorrelationIdAsText ('; ');
     if (xOperation.StubAction = saStub)
     and (aIsActive)
@@ -3215,63 +3201,30 @@ begin
     else
       if (xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat]) then
         xOperation.FreeFormatRpy := aLog.Mssg.FreeFormatRpy;
-    if xOperation.lateBinding then
+    if not xOperation.doReadReplyFromFile then
     begin
-      if (xOperation.StubAction = saStub)
-      and (aIsActive)
-      and (   (xOperation.BeforeScriptLines.Count > 0)
-           or (    Assigned (xOperation.CorrelatedMessage)
-               and (xOperation.CorrelatedMessage.BeforeScriptLines.Count > 0)
-              )
-          )then
+      if xOperation.rpyBind is TIpmItem then
+    //    xOperation.rpyIpm.BufferToValues (FoundErrorInBuffer, aReply.rpyIpm.ValuesToBuffer (nil))
+        (xOperation.rpyBind as TIpmItem).LoadValues (aLog.Mssg.rpyBind as TIpmItem)
+      else
       begin
-        xReqXml := TXml.Create;
-        xRpyXml := TXml.Create;
-        try
-          xRpyXml.LoadFromString(alog.Mssg.FreeFormatRpy, nil);
-          if xRpyXml.Name <> '' then
-            xOperation.rpyBind := xRpyXml;
-          xReqXml.LoadFromString(alog.RequestBody, nil);
-          if xReqXml.Name <> '' then
-            xOperation.reqBind := xReqXml;
-          xOperation.PrepareScripting;
-          xOperation.ExecuteBefore;
-          xOperation.FreeFormatRpy := xRpyXml.asString;
-        finally
-          FreeAndNil (xRpyXml);
-          FreeAndNil (xReqXml);
-          xOperation.reqBind := nil;
-          xOperation.rpyBind := nil;
-        end;
-      end
-    end
-    else
-    begin
-      if not xOperation.doReadReplyFromFile then
-      begin
-        if xOperation.rpyBind is TIpmItem then
-      //    xOperation.rpyIpm.BufferToValues (FoundErrorInBuffer, aReply.rpyIpm.ValuesToBuffer (nil))
-          (xOperation.rpyBind as TIpmItem).LoadValues (aLog.Mssg.rpyBind as TIpmItem)
-        else
-        begin
-          (xOperation.rpyBind as TXml).ResetValues;
-          (xOperation.rpyBind as TXml).LoadValues (aLog.Mssg.rpyBind as TXml, True, True);
-          (xOperation.fltBind as TXml).ResetValues;
-          (xOperation.fltBind as TXml).LoadValues (aLog.Mssg.fltBind as TXml, True, True);
-        end;
+        (xOperation.rpyBind as TXml).ResetValues;
+        (xOperation.rpyBind as TXml).LoadValues (aLog.Mssg.rpyBind as TXml, True, True);
+        (xOperation.fltBind as TXml).ResetValues;
+        (xOperation.fltBind as TXml).LoadValues (aLog.Mssg.fltBind as TXml, True, True);
       end;
-      if (xOperation.StubAction = saStub)
-      and (aIsActive) then
+    end;
+    if (xOperation.StubAction = saStub)
+    and (aIsActive) then
+    begin
+      xOperation.rpyWsaOnRequest;
+      xOperation.ExecuteBefore;
+      xOperation.ExecuteRpyStampers;
+      if xOperation.doDebug
+      and Assigned (OnDebugOperationEvent) then
       begin
-        xOperation.rpyWsaOnRequest;
-        xOperation.ExecuteBefore;
-        xOperation.ExecuteRpyStampers;
-        if xOperation.doDebug
-        and Assigned (OnDebugOperationEvent) then
-        begin
-          DebugOperation := xOperation;
-          OnDebugOperationEvent;
-        end;
+        DebugOperation := xOperation;
+        OnDebugOperationEvent;
       end;
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
@@ -4097,8 +4050,7 @@ begin
           end;
         except
         end;
-      if aOperation.lateBinding
-      and (not aOperation.PreparedBefore) then
+      if (not aOperation.PreparedBefore) then
         aOperation.PrepareBefore;
       aOperation.ExecuteBefore;
       aOperation.ExecuteReqStampers;
@@ -4145,11 +4097,8 @@ begin
         end
         else
         begin
-          if aOperation.lateBinding then
-          begin
-            aOperation.FreeFormatRpy := xLog.ReplyBody;
-            aOperation.PrepareAfter;
-          end
+          if aOperation.isFreeFormat then
+            aOperation.FreeFormatRpy := xLog.ReplyBody
           else
           begin
             if aOperation.reqBind is TXml then

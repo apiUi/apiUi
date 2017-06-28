@@ -267,7 +267,6 @@ type
       function getIsFreeFormat : Boolean ;
       function getIsOneWay: Boolean;
       function getIsOpenApiService: Boolean;
-      function getLateBinding : Boolean ;
       function getisSoapService: Boolean;
       procedure setDoExit (AValue : Boolean );
       function getInputXml: TXml;
@@ -377,7 +376,6 @@ type
       property isSoapService: Boolean read getIsSoapService;
       property isOpenApiService: Boolean read getIsOpenApiService;
       property isOneWay: Boolean read getIsOneWay;
-      property lateBinding: Boolean read getLateBinding;
       property isFreeFormat: Boolean read getIsFreeFormat;
       property InputXml: TXml read getInputXml;
       property OutputXml: TXml read getOutputXml;
@@ -668,6 +666,8 @@ var
   UILock: TCriticalSection;
   EnvVarLock: TCriticalSection;
   doOperationLock, doUILock: Boolean;
+
+const ESCAPEDCRLF = '_CRLF_';
 
 implementation
 
@@ -1710,8 +1710,8 @@ function setEnvVar (aOperation: TWsdlOperation; aName, aValue: String): String;
 begin
   AcquireEnvVarLock;
   try
-    result := aOperation.Wsdl.EnvVars.Values [aName];
-    aOperation.Wsdl.EnvVars.Values [aName] := aValue;
+    result := StringReplace (aOperation.Wsdl.EnvVars.Values [aName], ESCAPEDCRLF, CRLF, [rfReplaceAll]);
+    aOperation.Wsdl.EnvVars.Values [aName] := StringReplace (aValue, CRLF, ESCAPEDCRLF, [rfReplaceAll]);
   finally
     ReleaseEnvVarLock;
   end;
@@ -1738,7 +1738,7 @@ begin
   try
     i := aOperation.Wsdl.EnvVars.IndexOfName(aName);
     if i >= 0 then
-      result := aOperation.Wsdl.EnvVars.ValueFromIndex [i]
+      result := StringReplace (aOperation.Wsdl.EnvVars.ValueFromIndex [i], ESCAPEDCRLF, CRLF, [rfReplaceAll])
     else
       Result := aDefault;
   finally
@@ -4162,13 +4162,17 @@ begin
     fExpress.OnGetDoExit := getDoExit;
     fExpress.OnError := fOnError;
     fExpress.Database := _WsdlDbsConnector;
-    Bind ('Req', reqBind, fExpress);
-    Bind ('Rpy', rpyBind, fExpress);
+    if not isFreeFormat then
+    begin
+      Bind ('Req', reqBind, fExpress);
+      Bind ('Rpy', rpyBind, fExpress);
+    end;
     if Assigned (invokeList) then
     begin
       for x := 0 to invokeList.Count - 1 do
       begin
-        if Assigned (invokeList.Operations[x]) then
+        if Assigned (invokeList.Operations[x])
+        and (not invokeList.Operations[x].isFreeFormat) then
         begin
           Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
           Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
@@ -4456,11 +4460,9 @@ begin
     end;
     Exit;
   end;
-  if lateBinding then
+  if isFreeFormat then
   begin
     result := FreeformatReq;
-    if Trim (BeforeScriptLines.Text) <> '' then
-      result := (reqBind as TXml).asString;
     Exit;
   end;
   try
@@ -4560,7 +4562,7 @@ begin
   result := LiteralResult;
   if Result <> '' then
     Exit;
-  if lateBinding then
+  if isFreeFormat then
   begin
     result := FreeformatRpy;
     Exit;
@@ -5021,20 +5023,17 @@ begin
     self.invokeList.Text := xOperation.invokeList.Text;
     self.doInvokeOperations;
     self.BindStamper;
-    if not self.lateBinding then
-    begin
-      try
-        self.PrepareBefore;
-      except
-        on e: Exception do
-          fPrepareErrors := fPrepareErrors + 'Found in BeforeScript: ' + e.Message + LineEnding;
-      end;
-      try
-        self.PrepareAfter;
-      except
-        on e: Exception do
-          fPrepareErrors := fPrepareErrors + 'Found in AfterScript: ' + e.Message + LineEnding;
-      end;
+    try
+      self.PrepareBefore;
+    except
+      on e: Exception do
+        fPrepareErrors := fPrepareErrors + 'Found in BeforeScript: ' + e.Message + LineEnding;
+    end;
+    try
+      self.PrepareAfter;
+    except
+      on e: Exception do
+        fPrepareErrors := fPrepareErrors + 'Found in AfterScript: ' + e.Message + LineEnding;
     end;
   end;
 end;
@@ -5531,16 +5530,9 @@ end;
 procedure TWsdlOperation.ReqBindablesFromWsdlMessage(aMessage: TWsdlMessage);
 begin
   CorrelatedMessage := aMessage;
-  if lateBinding then
+  if isFreeFormat then
   begin
     FreeFormatReq := aMessage.FreeFormatReq;
-    with reqBind as TXml do
-    begin
-      LoadFromString(FreeFormatReq, nil);
-      if Name = '' then
-        Name := 'noXml';
-      try PrepareBefore; except end;
-    end;
   end
   else
   begin
@@ -6593,11 +6585,6 @@ end;
 function TWsdlOperation.getIsOpenApiService: Boolean;
 begin
   result := Assigned (Wsdl) and Wsdl.isOpenApiService;
-end;
-
-function TWsdlOperation .getLateBinding : Boolean ;
-begin
-  result := WsdlService.DescriptionType in [ipmDTFreeFormat];
 end;
 
 function TWsdlOperation.getisSoapService: Boolean;
