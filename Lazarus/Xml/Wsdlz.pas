@@ -5550,7 +5550,7 @@ end;
 
 procedure TWsdlOperation.ReqBindablesToWsdlMessage(aMessage: TWsdlMessage);
 begin
-  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
+  if isFreeFormat then
     aMessage.FreeFormatReq := FreeFormatReq
   else
   begin
@@ -5587,7 +5587,7 @@ end;
 
 procedure TWsdlOperation.RpyBindablesFromWsdlMessage(aMessage: TWsdlMessage);
 begin
-  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
+  if isFreeFormat then
     FreeFormatRpy := aMessage.FreeFormatRpy
   else
   begin
@@ -5605,7 +5605,7 @@ end;
 
 procedure TWsdlOperation.RpyBindablesToWsdlMessage(aMessage: TWsdlMessage);
 begin
-  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
+  if isFreeFormat then
     aMessage.FreeFormatRpy := FreeFormatRpy
   else
   begin
@@ -6245,7 +6245,8 @@ end;
 
 function TWsdlOperation.getIsFreeFormat : Boolean ;
 begin
-  result := WsdlService.DescriptionType in [ipmDTFreeFormat];
+  result := Assigned (WsdlService)
+        and (WsdlService.DescriptionType in [ipmDTFreeFormat]);
 end;
 
 
@@ -6899,7 +6900,7 @@ begin
     (fltBind as TXml).LoadValues(aOperation.fltBind as TXml, True);
   end;
   CorrelationBindables := cloneBindables(WsdlOperation.CorrelationBindables);
-  if aOperation.WsdlService.DescriptionType = ipmDTFreeFormat then
+  if aOperation.isFreeFormat then
   begin
     FreeFormatReq := aOperation.FreeFormatReq;
     FreeFormatRpy := aOperation.FreeFormatRpy;
@@ -7012,7 +7013,7 @@ begin
     end
     else
     begin
-      if not (aOperation.WsdlService.DescriptionType in [ipmDTFreeFormat]) then
+      if not (aOperation.isFreeFormat) then
       begin
         bindRefId := 0;
         if Assigned (aOperation.rpyBind)
