@@ -575,8 +575,10 @@ begin
             raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.rpyTagName);
           xXml := xLog.rpyBodyAsXml;
           try
-            xXml.Name := mXml.Name;
-            mXml.CountUsage(xXml, False);
+            if (xXml.Name = xLog.Operation.Alias)
+            and (xXml.Items.Count = 1)
+            and (xXml.Items.XmlItems[0].Name = 'Rpy') then
+              mXml.CountUsage(xXml.Items.XmlItems[0], False);
           finally
             xXml.Free;
           end;
@@ -1284,7 +1286,7 @@ end;
 function TLog.rpyBodyAsXml: TXml;
 var
   x, y, f: Integer;
-  hdrXml: TXml;
+  hXml: TXml;
 begin
   if Assigned (Operation)
   and (Operation.rpyBind is TIpmItem)
@@ -1333,70 +1335,26 @@ begin
   and (Operation.isOpenApiService) then
   begin
     result := TXml.CreateAsString(Operation.Alias, '');
-    with result.AddXml (TXml.CreateAsString('reply', '')) do
+    with result.AddXml(TXml.CreateAsString('Rpy', '')) do
     begin
-      AddXml(TXml.CreateAsInteger('httpResponseCode', httpResponseCode));
-      hdrXml := TXml.CreateAsString('httpHeaders', '');
-      try
-        hdrXml.Items.Sorted := True;
-        with Operation.rpyXsd.sType.ElementDefs do
-        begin
-          for x := 0 to Count - 1 do with Xsds[x].sType.ElementDefs do
-          begin
-            for y := 0 to Count - 1 do with Xsds[y] do
-              if (ParametersType = oppHeader)
-              and not hdrXml.Items.Find(ElementName, f) then
-                hdrXml.AddXml (TXml.CreateAsString(ElementName, ''))
-          end;
-        end;
-        hdrXml.Reset;
-        with TStringList.Create do
-        try
-          NameValueSeparator := ':';
-          Text := ReplyHeaders;
-          for x := 0 to hdrXml.Items.Count - 1 do
-          begin
-            f := IndexOfName(hdrXml.Items.XmlItems[x].Name);
-            if f > -1 then
-            begin
-              hdrXml.Items.XmlItems[x].Value := Copy(ValueFromIndex[f], 2, MaxInt);
-              hdrXml.Items.XmlItems[x].Checked := True;
-            end;
-          end;
-        finally
-          Free;
-        end;
-      finally
-        if hdrXml.Checked then
-        begin
-          AddXml(hdrXml);
-          hdrXml.Items.Sorted := False;
-        end
-        else
-          hdrXml.Free;
-      end;
-      if ReplyBody <> '' then
-      with AddXml(TXml.Create) do
+      with AddXml (TXml.CreateAsString('rspns' + IntToStr(httpResponseCode), '')) do
       begin
-        if Pos ('json', self.ReplyContentType) > 0 then
-        try
-          LoadJsonFromString(self.ReplyBody, nil);
-        except
-          Name := 'replyBody';
-          Value := self.ReplyBody;
-        end
-        else
+        with AddXml (TXml.Create) do
         begin
-          LoadFromString(self.ReplyBody, nil);
-          if Name = '' then
+          if Pos ('xml', ReplyContentType) > 0 then
           begin
-            Name := 'replyBody';
-            Value := self.ReplyBody;
+            LoadFromString(ReplyBody, nil);
+            exit;
+          end;
+          if Pos ('json', ReplyContentType) > 0 then
+          begin
+            LoadJsonFromString(ReplyBody, nil);
+            Name := 'body';
+            exit;
           end;
         end;
       end;
-    End;
-    Exit;
+    end;
   end;
 
   result := TXml.Create;

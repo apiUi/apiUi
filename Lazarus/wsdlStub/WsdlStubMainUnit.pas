@@ -7273,6 +7273,17 @@ begin
   xString := IfThen(Assigned(claimedLog) and (claimedLog is TLog), claimedLog.ReplyBody, '');
   if (xString <> '') then
   begin
+    if Assigned (claimedLog.Operation)
+    and (claimedLog.Operation.isOpenApiService) then
+    begin
+      with claimedLog.rpyBodyAsXml do
+      try
+        ShowTextAsXml('Reply as XML', AsText(False, 0, False, False));
+      finally
+        Free;
+      end;
+      exit;
+    end;
     if Assigned(claimedLog.Mssg) then
     begin
       case claimedLog.Operation.WsdlService.DescriptionType of
