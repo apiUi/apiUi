@@ -487,7 +487,7 @@ end;
 function strAdd (aString, aStringToAdd: String): String;
 begin
   if aStringToAdd <> '' then
-    result := aString + aStringToAdd + #$D#$A
+    result := aString + aStringToAdd + CRLF
   else
     result := aString;
 end;

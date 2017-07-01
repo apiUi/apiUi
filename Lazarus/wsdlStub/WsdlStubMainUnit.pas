@@ -5519,7 +5519,7 @@ var
   ret: Word;
 begin
   result := True;
-  if stubChanged and Assigned(Wsdl) then
+  if stubChanged then
   begin
     ret := MessageDlg('Save changes to stub?', mtConfirmation,
       [mbYes, mbNo, mbCancel], 0);
@@ -5653,7 +5653,7 @@ procedure TMainForm.setStubChanged(const Value: Boolean);
 begin
   if Value then
   begin
-    if Assigned(se) and Assigned(Wsdl) then
+    if Assigned(se) then
       se.stubChanged := Value;
   end
   else
@@ -5970,10 +5970,14 @@ begin
         logStatusColumn: CellText := IntToStr(xLog.httpResponseCode);
         logServiceColumn:
           if Assigned(xLog.Operation) then
-            CellText := xLog.Operation.WsdlService.Name;
+            CellText := xLog.Operation.WsdlService.Name
+          else
+            CellText := xLog.ServiceName;
         logOperationColumn:
           if Assigned(xLog.Operation) then
-            CellText := xLog.Operation.Name;
+            CellText := xLog.Operation.Name
+          else
+            CellText := xLog.OperationName;
         logCorrelationIdColumn:
           CellText := xLog.CorrelationId;
       end;

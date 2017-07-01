@@ -2424,6 +2424,15 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
       Free;
     end;
   end;
+  function _trimPath (aPath: String): String;
+  begin
+    if (Length (aPath) > 0)
+    and (Copy (aPath, Length(aPath), 1) = '/') then
+      result := _trimPath (Copy (aPath, 1, Length(aPath) - 1))
+    else
+      result := aPath;
+  end;
+
 var
   xXml, dXml, vXml, wXml, rXml, hXml: TXml;
   x, y, z, u, v, w, r, f, h: Integer;
@@ -2487,7 +2496,7 @@ begin
       if Items.XmlItems[x].Name = 'basePath' then with Items.XmlItems[x] do
       begin
         sl.Add (Name);
-        basePath := Value;
+        basePath := _trimPath(Value);
       end;
       if Items.XmlItems[x].Name = 'schemes' then with Items.XmlItems[x] do
       begin

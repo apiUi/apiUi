@@ -3072,37 +3072,14 @@ begin
       aLog.ReplyBody := e.message;
       aLog.Exception := e.Message;
       LogServerMessage(e.Message, True, e);
-      if e.Message = S_NO_OPERATION_FOUND then
-      begin
-        aLog.Operation := nil;
-        aLog.Mssg := nil;
-        aLog.CorrelationId := '';
-        case unknownOperation.StubAction of
-          saStub: raise Exception.Create(notStubbedExceptionMessage);
-          saForward: raise;
-          saRedirect:
-            begin
-              RedirectUnknownOperation(aLog);
-              aProcessed := True;
-              exit;
-            end;
-          saRequest: raise;
-        end;
-        if aLog.TransportType = ttHttp then
-          raise Exception.Create (aLog.ReplyBody)
-        else
-          exit;
-      end;
       if aLog.TransportType = ttHttp then
-        raise Exception.Create (aLog.ReplyBody)
-      else
-        exit;
+        aLog.httpResponseCode := 500;
     end;
   end; //except
 end;
 
 procedure TWsdlProject.RedirectUnknownOperation (aLog : TLog );
-  function _doReplacemets (aSpecXml: TXml; aString: String): String;
+  function _doReplacements (aSpecXml: TXml; aString: String): String;
   var
     x: Integer;
     oldString, newString: String;
@@ -3129,12 +3106,33 @@ procedure TWsdlProject.RedirectUnknownOperation (aLog : TLog );
   end;
 var
   xOperation: TWsdlOperation;
+  xXml, yXml: TXml;
 begin
   aLog.ReplyBody := '';
   aLog.Exception := '';
   aLog.StubAction := saRedirect;
+  aLog.ServiceName := 'unknown';
+  alog.OperationName := 'unknown';
+  if Pos ('xml', aLog.RequestContentType) > 0 then
+  begin
+    xXml := TXml.Create;
+    try
+      xXml.LoadFromString(aLog.RequestBody, nil);
+      if xXml.Name <> '' then
+      begin
+        xXml.SeparateNsPrefixes;
+        xXml.ResolveNameSpaces;
+        yXml := xXml.FindXml('Envelope.Body');
+        if Assigned (yXml)
+        and (yXml.Items.Count > 0) then
+          aLog.OperationName := yXml.Items.XmlItems[0].Name;
+      end;
+    finally
+      xXml.Free;
+    end;
+  end;
   alog.RequestBodyMiM := alog.RequestBody;
-  aLog.RequestBody := _doReplacemets (UnknownOpsReqReplactementsXml, aLog.RequestBody);
+  aLog.RequestBody := _doReplacements (UnknownOpsReqReplactementsXml, aLog.RequestBody);
   xOperation := TWsdlOperation.Create(unknownOperation);
   try
     case aLog.TransportType of
@@ -3152,7 +3150,7 @@ begin
       ttNone: aLog.ReplyBody := SendNoneMessage(xOperation, aLog.RequestBody);
     end;
     aLog.ReplyBodyMiM := aLog.ReplyBody;
-    aLog.ReplyBody := _doReplacemets (UnknownOpsRpyReplactementsXml, aLog.ReplyBody);
+    aLog.ReplyBody := _doReplacements (UnknownOpsRpyReplactementsXml, aLog.ReplyBody);
   finally
     xOperation.Free;
   end;
@@ -3170,7 +3168,24 @@ begin
   aLog.CorrelationId := '';
   xOperation := FindOperationOnRequest(aLog, aLog.httpDocument, aLog.RequestBody, True);
   if not Assigned (xOperation) then
-    raise Exception.Create(S_NO_OPERATION_FOUND);
+  begin
+    case unknownOperation.StubAction of
+      saRedirect:
+        begin
+          RedirectUnknownOperation(aLog);
+          exit;
+        end;
+      else
+        begin
+          aLog.Exception := notStubbedExceptionMessage;
+          aLog.ReplyBody := aLog.Exception;
+          if (aLog.TransportType = ttHttp)
+          or (aLog.TransportType = ttHttps) then
+            aLog.httpResponseCode := 500;
+          exit;
+        end;
+    end;
+  end;
   try
     xOperation.Data := aLog;
     aLog.Operation := xOperation;
@@ -3777,7 +3792,7 @@ function TWsdlProject.SendHttpMessage (aOperation: TWsdlOperation; aLog: TLog): 
 var
   HttpClient: TIdHTTP;
   HttpRequest, sStream, dStream: TMemoryStream;
-  URL, querySep, valueSep, addressFromDescr: String;
+  URL, querySep, valueSep, addressFromDescr, headerName: String;
   oUri, sUri: TIdUri;
   x, y: Integer;
 begin
@@ -3887,14 +3902,24 @@ begin
       except
       end;
       if Assigned (aOperation.StubCustomHeaderXml)
-      and aOperation.StubCustomHeaderXml.Checked then
-        with aOperation.StubCustomHeaderXml.Items do
-          for x := 0 to Count - 1 do
-            if (XmlItems[x].Name = 'Header')
-            and (XmlItems[x].Checked) then
-              with XmlItems[x].Items do
-                HttpClient.Request.CustomHeaders.Values [XmlCheckedValueByTag ['Name']]
-                                                      := XmlCheckedValueByTag ['Value'];
+      and aOperation.StubCustomHeaderXml.Checked then with aOperation.StubCustomHeaderXml.Items do
+      begin
+        for x := 0 to Count - 1 do
+        begin
+          if (XmlItems[x].Name = 'Header')
+          and (XmlItems[x].Checked) then
+          begin
+            with XmlItems[x].Items do
+            begin
+              headerName := XmlCheckedValueByTag ['Name'];
+              if headerName = 'Accept' then
+                HttpClient.Request.Accept := XmlCheckedValueByTag ['Value']
+              else
+                HttpClient.Request.CustomHeaders.Values [headerName] := XmlCheckedValueByTag ['Value'];
+            end;
+          end;
+        end;
+      end;
       HttpClient.Request.ContentEncoding := aOperation.ContentEncoding;
       HttpClient.Request.AcceptEncoding := 'identity';
       if aOperation.AcceptDeflateEncoding then
@@ -6180,7 +6205,7 @@ begin
       //ReleaseLock;
     end;
     if not Assigned (result) then
-      raise Exception.Create (S_NO_OPERATION_FOUND);
+      Exit;
     result.AcquireLock;
     try
       if aDoClone then
