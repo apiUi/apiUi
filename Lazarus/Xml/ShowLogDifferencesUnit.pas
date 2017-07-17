@@ -872,7 +872,6 @@ end;
 
 procedure TShowLogDifferencesForm .setCompareLogOrderBy (AValue : TCompareLogOrderBy );
 begin
-  if AValue = fCompareLogOrderBy then Exit;
   fCompareLogOrderBy := AValue ;
   CompareLogOrderByComboBox.ItemIndex := Ord (AValue);
 end;

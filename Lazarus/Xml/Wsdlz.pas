@@ -1184,7 +1184,6 @@ procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
       with src.Attributes.XmlAttributes[x] do
         if Checked then
           dst.AddAttribute(TXmlAttribute.CreateAsString(Name, Value));
-    dst.NameSpace := src.NameSpace;
     for x := 0 to src.Items.Count - 1 do
     begin
       if src.Items.XmlItems[x].Checked then
@@ -1195,7 +1194,7 @@ procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
     end;
   end;
 var
-  swapTagName: String;
+  xSaveNamespace: String;
   dXml, sXml: TXml;
 begin
   dXml := TXml ((aDstGroup as YYSType).yy.yyPointer);
@@ -1203,7 +1202,11 @@ begin
   dXml.Items.Clear;
   dXml.Attributes.Clear;
   if sXml.Checked then
+  begin
+    xSaveNamespace := dXml.NameSpace;
     _copy(dXml, sXml);
+    dXml.NameSpace := xSaveNamespace;
+  end;
 end;
 
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
@@ -4837,7 +4840,11 @@ begin
   for x := 0 to CorrelationBindables.Count - 1 do
   begin
     if Assigned (CorrelationBindables.Bindables[x]) then
-      result := result + xSep + CorrelationBindables.Bindables[x].GetStringData
+      try
+        result := result + xSep + CorrelationBindables.Bindables[x].GetStringData;
+      except
+        result := result + xSep + '?';
+      end
     else
       result := result + xSep + '?';
     xSep := aSeparator;
