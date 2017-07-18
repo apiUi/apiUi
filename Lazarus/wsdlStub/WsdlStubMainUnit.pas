@@ -2050,7 +2050,7 @@ begin
       ExtendRecursivityMenuItemClick(nil)
     else
     begin
-      xChanged := xmlUtil.editXml(xBind, False);
+      xChanged := xmlUtil.editXml(xBind, Sender = InWsdlTreeView, False);
       if xChanged then
       begin
         UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
@@ -4516,11 +4516,11 @@ begin
                 ImageIndex := 18;
                 exit;
               end;
-              if xmlUtil.isGridAdviced(xBind) then
-              begin
-                ImageIndex := 19;
-                exit;
-              end;
+              //if xmlUtil.isGridAdviced(xBind) then
+              //begin
+              //  ImageIndex := 19;
+              //  exit;
+              //end;
               if xmlUtil.isTreeAdviced(xBind) then
               begin
                 ImageIndex := 20;

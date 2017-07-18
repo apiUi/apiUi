@@ -89,7 +89,7 @@ public
   function isGridAdviced (aBind: TCustomBindable): Boolean;
   function isPasswordType (aBind: TCustomBindable): Boolean;
   function getImageImdex (aBind: TCustomBindable; aOffset: Integer): Integer;
-  function editXml (aBind: TCustomBindable; aReadOnly: Boolean): Boolean;
+  function editXml (aBind: TCustomBindable; aDoUseGrid, aReadOnly: Boolean): Boolean;
   procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
   procedure CheckValidity(aBind: TCustomBindable);
   procedure CopyToClipboard (aBind: TCustomBindable);
@@ -557,7 +557,7 @@ begin
   end;
 end;
 
-function TXmlUtil.editXml(aBind: TCustomBindable; aReadOnly: Boolean): Boolean;
+function TXmlUtil.editXml(aBind: TCustomBindable; aDoUseGrid, aReadOnly: Boolean): Boolean;
   function _editElementValue: Boolean;
   var
     xChooseEnumForm: TChooseEnumForm;
@@ -781,7 +781,8 @@ begin
       result := xmlUtil.ViewAsXml(aBind, aReadOnly);
       exit;
     end;
-    if XmlUtil.isGridAdviced (aBind) then
+    if XmlUtil.isGridAdviced (aBind)
+    and aDoUseGrid then
     begin
       result := xmlUtil.ViewAsGrid(aBind, aReadOnly);
       exit;

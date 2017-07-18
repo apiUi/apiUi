@@ -1255,7 +1255,7 @@ begin
   if (not isReadOnly)
   and XmlUtil.isEditSupported (FocusedBind) then
   begin
-    if XmlUtil.editXml (FocusedBind, isReadOnly) then
+    if XmlUtil.editXml (FocusedBind, True, isReadOnly) then
     begin
       GridNewText ( Grid
                   , Grid.FocusedNode
@@ -1661,7 +1661,7 @@ begin
       end
       else
       begin
-        xChanged := xmlUtil.editXml (xBind, isReadOnly);
+        xChanged := xmlUtil.editXml (xBind, True, isReadOnly);
         if xChanged then
           ShowGrid (xBind);
         fStubChanged := fStubChanged or xChanged;

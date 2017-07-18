@@ -1695,7 +1695,7 @@ begin
       ExpandLevelActionExecute(nil)
     else
     begin
-      xChanged := xmlUtil.editXml(SelectedBind, isReadOnly);
+      xChanged := xmlUtil.editXml(SelectedBind, True, isReadOnly);
       if xChanged then
       begin
         UpdateTreeViewNode(TreeView, TreeView.FocusedNode);
@@ -1883,7 +1883,7 @@ procedure TShowXmlForm.EditInPopUpMenuItemClick(Sender: TObject);
 begin
   if (not isReadOnly) and xmlUtil.isEditSupported(SelectedBind) then
   begin
-    if xmlUtil.editXml(SelectedBind, isReadOnly) then
+    if xmlUtil.editXml(SelectedBind, True, isReadOnly) then
     begin
       TreeViewNewText(TreeView, TreeView.FocusedNode, treeValueColumn,
         xmlUtil.NewValue);
