@@ -134,7 +134,12 @@ function IsExistingFile (aRefName, aFileName: String): Boolean;
 function IsExistingFolder (aRefName, aFolderName: String): Boolean;
 function CheckAndPromptForExistingFile (aCaption, aRefName, aFileName: String): String;
 function CheckAndPromptForExistingFolder (aCaption, aRefName, aFolderName: String): String;
-function EditXmlXsdBased (aCaption, aXsdPath, aInitialFocus, aValidateDuplicatesOn: String; aReadOnly: Boolean; aRootXsd: TXsd; aXml: TXml): Boolean;
+function EditXmlXsdBased ( aCaption, aXsdPath, aInitialFocus, aValidateDuplicatesOn: String
+                         ; aReadOnly, aAsGrid: Boolean
+                         ; initialExpandStyle: TBindExpandStyle
+                         ; aRootXsd: TXsd
+                         ; aXml: TXml
+                         ): Boolean;
 procedure ShowText (aCaption, aText: String);
 procedure ShowXml (aCaption: String; aXml: TXml);
 
@@ -201,11 +206,17 @@ begin
   end;
 end;
 
-function EditXmlXsdBased (aCaption, aXsdPath, aInitialFocus, aValidateDuplicatesOn: String; aReadOnly: Boolean; aRootXsd: TXsd; aXml: TXml): Boolean;
+function EditXmlXsdBased ( aCaption, aXsdPath, aInitialFocus, aValidateDuplicatesOn: String
+                         ; aReadOnly, aAsGrid: Boolean
+                         ; initialExpandStyle: TBindExpandStyle
+                         ; aRootXsd: TXsd
+                         ; aXml: TXml
+                         ): Boolean;
 var
   cnfXml: TXml;
   savexsdElementsWhenRepeatable, savexsdMaxDepthBillOfMaterials: Integer;
   xForm: TShowXmlForm;
+  gForm: TXmlGridForm;
 begin
   result := False;
   if aXsdPath = '' then
@@ -223,25 +234,50 @@ begin
     cnfXml.CheckDownLine (False);
 //  aXml.CheckDownline(True);
     cnfXml.LoadValues (aXml, False, True);
-    Application.CreateForm(TShowXmlForm, xForm);
-    try
-      xForm.Caption := xForm.progName + ' - ' + aCaption;
-      xForm.Bind := cnfXml;
-      xForm.isReadOnly := aReadOnly;
-      xForm.initialExpandStyle := esUsed;
-      xForm.doShowCancelButton := True;
-      xForm.InitialFocusOn := aInitialFocus;
-      xForm.ValidateDuplicatesOn := aValidateDuplicatesOn;
-      xForm.ShowModal;
-      result := (xForm.ModalResult = mrOk)
-            and (xForm.isChanged);
-      if result then
-      begin
-        aXml.CheckDownline(False);
-        aXml.LoadValues(cnfXml, True, True);
+    if aAsGrid then
+    begin
+      Application.CreateForm(TXmlGridForm, gForm);
+      try
+        gForm.Caption := gForm.progName + ' - ' + aCaption;
+        gForm.Xml := cnfXml;
+        gForm.isReadOnly := aReadOnly;
+        gForm.initialExpandStyle := initialExpandStyle;
+        gForm.doShowCancelButton := True;
+        gForm.ValidateDuplicatesOn := aValidateDuplicatesOn;
+        gForm.ShowModal;
+        result := (gForm.ModalResult = mrOk)
+              and (gForm.stubChanged);
+        if result then
+        begin
+          aXml.CheckDownline(False);
+          aXml.LoadValues(cnfXml, True, True);
+        end;
+      finally
+        gForm.Free;
       end;
-    finally
-      xForm.Free;
+    end
+    else
+    begin
+      Application.CreateForm(TShowXmlForm, xForm);
+      try
+        xForm.Caption := xForm.progName + ' - ' + aCaption;
+        xForm.Bind := cnfXml;
+        xForm.isReadOnly := aReadOnly;
+        xForm.initialExpandStyle := initialExpandStyle;
+        xForm.doShowCancelButton := True;
+        xForm.InitialFocusOn := aInitialFocus;
+        xForm.ValidateDuplicatesOn := aValidateDuplicatesOn;
+        xForm.ShowModal;
+        result := (xForm.ModalResult = mrOk)
+              and (xForm.isChanged);
+        if result then
+        begin
+          aXml.CheckDownline(False);
+          aXml.LoadValues(cnfXml, True, True);
+        end;
+      finally
+        xForm.Free;
+      end;
     end;
   finally
     cnfXml.Free;

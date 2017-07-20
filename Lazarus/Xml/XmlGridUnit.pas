@@ -103,6 +103,7 @@ type
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
+    procedure OkButtonClick (Sender : TObject );
     procedure ZoomActionExecute(Sender: TObject);
     procedure Action1Execute(Sender: TObject);
     procedure FindNextActionExecute(Sender: TObject);
@@ -224,6 +225,8 @@ type
     doConfirmRemovals: Boolean;
     doShowCancelButton: Boolean;
     initialExpandStyle: TBindExpandStyle;
+    ValidateDuplicatesOn: String;
+    ProgName: String;
     property doShowAttributeColumns: Boolean read getDoShowAttributeColumns;
     property doShowEmptyColumns: Boolean read getDoShowEmptyColumns;
     property doShowEmptyRows: Boolean read getDoShowEmptyRows;
@@ -269,6 +272,7 @@ uses igGlobals
 
 procedure TXmlGridForm.FormCreate(Sender: TObject);
 begin
+  ProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   DocumentationViewer.Color := Self.Color;
   Grid.NodeDataSize := SizeOf(TTreeRec);
   IniFile := TFormIniFile.Create (Self, True);
@@ -1879,6 +1883,22 @@ begin
       ImageList.Draw(TargetCanvas, r.Right - 17, CellRect.Top, 52);
     end;
   end;
+end;
+
+procedure TXmlGridForm .OkButtonClick (Sender : TObject );
+var
+  oBind, dBind: TCustomBindable;
+begin
+  oBind := nil;
+  dBind := nil;
+  ModalResult := mrOk;
+  if ValidateDuplicatesOn <> '' then
+    if not Xml.hasNoDuplicatesOn(ValidateDuplicatesOn, True, oBind, dBind) then
+    begin
+      ModalResult := mrNone;
+      ShowMessageFmt('Dusplicate found on %s: %s', [ValidateDuplicatesOn,
+        dBind.Value]);
+    end;
 end;
 
 { TPasswordEditLink }

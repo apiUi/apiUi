@@ -260,6 +260,7 @@ object XmlGridForm: TXmlGridForm
         Width = 75
         Caption = '&Ok'
         ModalResult = 1
+        OnClick = OkButtonClick
         TabOrder = 0
       end
       object CancelButton: TButton

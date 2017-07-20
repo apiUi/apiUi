@@ -1416,7 +1416,7 @@ begin
     'OperationDefs.FreeFormatOperations',
     'FreeFormatOperations.Operation.Name',
     'FreeFormatOperations.Operation.Name',
-    se.IsActive, OperationDefsXsd, xXml) then
+    se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
   begin
     AcquireLock;
     try
@@ -2759,7 +2759,7 @@ begin
   try
     if EditXmlXsdBased('Xsd Operations', 'OperationDefs.XsdOperations',
       'XsdOperations.Operation.Name', 'XsdOperations.Operation.Name',
-      se.IsActive, OperationDefsXsd, xXml) then
+      se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
     begin
       AcquireLock;
       try
@@ -2963,7 +2963,7 @@ begin
   try
     if EditXmlXsdBased('XmlSample Operations', 'OperationDefs.XmlSampleOperations',
       'XmlSampleOperations.Operation.Name', 'XmlSampleOperations.Operation.Name',
-      se.IsActive, OperationDefsXsd, xXml) then
+      se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
     begin
       AcquireLock;
       try
@@ -4363,7 +4363,7 @@ var
 begin
   xXml := OptionsAsXml;
   try
-    if EditXmlXsdBased('Options', '', '', '', se.IsActive, optionsXsd, xXml) then
+    if EditXmlXsdBased('Options', '', '', '', se.IsActive, False, esUsed, optionsXsd, xXml) then
     begin
       isOptionsChanged := True;
       OptionsFromXml(xXml);
@@ -5615,7 +5615,7 @@ begin
       endpointConfigXsd.FindXsd('endpointConfig.Https.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
       endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
       endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpAddress;
-      if EditXmlXsdBased('Configure Endpoint', '', '', '', False,
+      if EditXmlXsdBased('Configure Endpoint', '', '', '', False, False, esUsed,
         endpointConfigXsd, xXml) then
       begin
         AcquireLock;
@@ -6077,8 +6077,16 @@ begin
   xXml := TXml.Create;
   try
     xXml.CopyDownLine(se.Scripts, True);
-    if EditXmlXsdBased('Scripts', '', '', '', False,
-      ScriptsXsd, xXml) then
+    if EditXmlXsdBased ( 'Scripts'
+                       , ''
+                       , ''
+                       , ''
+                       , False
+                       , xXml.Items.Count > 1
+                       , esUsed
+                       , ScriptsXsd
+                       , xXml
+                       ) then
     begin
       stubChanged := True;
       se.Scripts.CopyDownLine(xXml, True);
@@ -9385,6 +9393,8 @@ begin
                        , ''
                        , ''
                        , se.IsActive
+                       , False
+                       , esOne
                        , projectOptionsXsd
                        , xXml
                        ) then
@@ -10091,7 +10101,7 @@ begin
       xXml := TXml.Create(0, xXsdDescr.TypeDef.ElementDefs.Xsds[0]);
       try
         EditXmlXsdBased('Press Ctrl_Alt_H to generate Help file', 'Menu',
-          'Menu', '', True, xXsdDescr.TypeDef.ElementDefs.Xsds[0], xXml);
+          'Menu', '', True, False, esUsed, xXsdDescr.TypeDef.ElementDefs.Xsds[0], xXml);
       finally
         FreeAndNil(xXml);
       end;
@@ -11076,6 +11086,8 @@ begin
                     ,'DisplayedColumns.DisplayedColumn.Header'
                     , ''
                     , False
+                    , False
+                    , esUsed
                     , projectOptionsXsd
                     , xXml
                     ) then
@@ -11562,8 +11574,7 @@ begin
   begin
     xXml := OptionsAsXml;
     try
-      if EditXmlXsdBased('Service Options', '', '', '', False,
-        serviceOptionsXsd, xXml) then
+      if EditXmlXsdBased('Service Options', '', '', '', False, False, esUsed, serviceOptionsXsd, xXml) then
       begin
         AcquireLock;
         try
@@ -11616,7 +11627,7 @@ begin
   xXml := se.cobolOperationsXml;
   if EditXmlXsdBased('Cobol Operations', 'OperationDefs.CobolOperations',
     'CobolOperations.Operation.Name', 'CobolOperations.Operation.Name',
-    se.IsActive, OperationDefsXsd, xXml) then
+    se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
   begin
     AcquireLock;
     try
@@ -11643,8 +11654,7 @@ begin
   xXml := TXml.Create;
   try
     xXml.CopyDownLine(se.Listeners.SpecificationXml, True);
-    if EditXmlXsdBased('Configure Listeners', '', '', '', se.IsActive,
-      listenersConfigXsd, xXml) then
+    if EditXmlXsdBased('Configure Listeners', '', '', '', se.IsActive, False, esUsed, listenersConfigXsd, xXml) then
     begin
       stubChanged := True;
       se.Listeners.SpecificationXml.CopyDownLine(xXml, True);
@@ -11668,7 +11678,7 @@ begin
   xXml := se.ProjectLogOptionsAsXml;
   try
     if EditXmlXsdBased('Project log options', 'projectOptions.Log',
-      'Log.maxEntries', '', False, projectOptionsXsd, xXml) then
+      'Log.maxEntries', '', False, False, esUsed, projectOptionsXsd, xXml) then
     begin
       AcquireLock;
       try
@@ -11900,7 +11910,7 @@ begin
   xXml := se.swiftMtOperationsXml;
   if EditXmlXsdBased('SwiftMT Operations', 'OperationDefs.SwiftMtOperations',
     'SwiftMtOperations.Operation.Name', 'SwiftMtOperations.Operation.Name',
-    se.IsActive, OperationDefsXsd, xXml) then
+    se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
   begin
     AcquireLock;
     try
@@ -12609,8 +12619,16 @@ begin
   begin
     xXml := OptionsAsXml;
     try
-      if EditXmlXsdBased('Operation options for ' + WsdlOperation.Alias, '', '', '', False,
-        operationOptionsXsd, xXml) then
+      if EditXmlXsdBased ( 'Operation options for ' + WsdlOperation.Alias
+                         , ''
+                         , ''
+                         , ''
+                         , False
+                         , False
+                         , esUsed
+                         , operationOptionsXsd
+                         , xXml
+                         ) then
       begin
         AcquireLock;
         try

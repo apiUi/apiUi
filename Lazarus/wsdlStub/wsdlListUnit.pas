@@ -286,6 +286,8 @@ begin
                       , 'FreeFormatOperations.Operation.Name'
                       , 'FreeFormatOperations.Operation.Name'
                       , False
+                      , False
+                      , esUsed
                       , _WsdlServiceDefinitionXsd
                       , xXml
                       ) then
@@ -317,6 +319,8 @@ procedure TwsdlListForm.NewActionExecute(Sender: TObject);
                              , ''
                              , ''
                              , False
+                             , False
+                             , esUsed
                              , _WsdlServiceDefinitionXsd
                              , aXml
                              );
@@ -394,6 +398,8 @@ begin
                        , ''
                        , ''
                        , False
+                       , False
+                       , esUsed
                        , _WsdlListOfFilesXsd
                        , xXml
                        ) then
