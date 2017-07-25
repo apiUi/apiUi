@@ -1,23 +1,23 @@
 object L4JMainForm: TL4JMainForm
   Left = 360
-  Height = 434
+  Height = 487
   Top = 93
   Width = 982
   Caption = 'L4JMainForm'
-  ClientHeight = 415
+  ClientHeight = 468
   ClientWidth = 982
   Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
-    Height = 350
+    Height = 403
     Top = 29
     Width = 982
     Align = alClient
     BorderWidth = 3
-    ClientHeight = 350
+    ClientHeight = 403
     ClientWidth = 982
     TabOrder = 0
     object Splitter1: TSplitter
@@ -83,16 +83,16 @@ object L4JMainForm: TL4JMainForm
     end
     object Panel2: TPanel
       Left = 4
-      Height = 204
+      Height = 257
       Top = 142
       Width = 974
       Align = alClient
-      ClientHeight = 204
+      ClientHeight = 257
       ClientWidth = 974
       TabOrder = 1
       object Memo: TMemo
         Left = 1
-        Height = 202
+        Height = 255
         Top = 1
         Width = 972
         Align = alClient
@@ -237,7 +237,7 @@ object L4JMainForm: TL4JMainForm
   object ProgressBar: TProgressBar
     Left = 0
     Height = 16
-    Top = 379
+    Top = 432
     Width = 982
     Align = alBottom
     Smooth = True
@@ -246,7 +246,7 @@ object L4JMainForm: TL4JMainForm
   object StatusBar: TStatusBar
     Left = 0
     Height = 20
-    Top = 395
+    Top = 448
     Width = 982
     Panels = <>
   end
@@ -4128,6 +4128,7 @@ object L4JMainForm: TL4JMainForm
     )
     Transaction = SQLTransaction1
     LogEvents = []
+    Options = []
     left = 264
     top = 176
   end
@@ -4191,7 +4192,6 @@ object L4JMainForm: TL4JMainForm
         Name = 'ERROR_FLAG'
         DataType = ftFloat
         Precision = -1
-        Size = 0
       end    
       item
         Name = 'COMPONENT_NAME'
@@ -4212,6 +4212,7 @@ object L4JMainForm: TL4JMainForm
       'select substr(rowid, 1, 255) as tupleid'
       'from app_log_data'
     )
+    Options = []
     Params = <>
     UsePrimaryKeyAsKey = False
     left = 248
@@ -4221,6 +4222,7 @@ object L4JMainForm: TL4JMainForm
     Active = False
     Action = caNone
     Database = SQLConnector1
+    Options = []
     left = 288
     top = 233
   end
@@ -4239,6 +4241,7 @@ object L4JMainForm: TL4JMainForm
       'select event_type'
       'from app_log_data'
     )
+    Options = []
     Params = <>
     UsePrimaryKeyAsKey = False
     left = 328

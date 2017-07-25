@@ -8,7 +8,7 @@ object MainForm: TMainForm
   ClientWidth = 912
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 379
@@ -457,6 +457,7 @@ object MainForm: TMainForm
           ShortCut = 57379
         end>
       MouseActions = <>
+      MouseTextActions = <>
       MouseSelActions = <>
       Lines.Strings = (
         'Jan Bouwman'
@@ -469,7 +470,7 @@ object MainForm: TMainForm
         ''
         ''
       )
-      SelectedColor.FrameEdges = sfeAround
+      VisibleSpecialChars = [vscSpace, vscTabAtLast]
       SelectedColor.BackPriority = 50
       SelectedColor.ForePriority = 50
       SelectedColor.FramePriority = 50
@@ -488,7 +489,6 @@ object MainForm: TMainForm
           MouseActions = <>
           MarkupInfo.Background = clBtnFace
           MarkupInfo.Foreground = clNone
-          MarkupInfo.FrameEdges = sfeAround
           DigitCount = 2
           ShowOnlyLineNumbersMultiplesOf = 1
           ZeroStart = False
@@ -505,13 +505,11 @@ object MainForm: TMainForm
           MouseActions = <>
           MarkupInfo.Background = clWhite
           MarkupInfo.Foreground = clGray
-          MarkupInfo.FrameEdges = sfeAround
         end
         object SynGutterCodeFolding1: TSynGutterCodeFolding
           MouseActions = <>
           MarkupInfo.Background = clNone
           MarkupInfo.Foreground = clGray
-          MarkupInfo.FrameEdges = sfeAround
           MouseActionsExpanded = <>
           MouseActionsCollapsed = <>
         end

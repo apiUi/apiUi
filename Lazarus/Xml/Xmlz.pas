@@ -1598,14 +1598,14 @@ begin
     if Group then
       aXml.Value := '';
 
-  if (   (aXml.Group and (Value <> ''))
-      or ((aXml.Value <> '') and Group)
-     )
-  then begin
-    raise Exception.Create ( 'Mismatch on grouping for tag: '
-                           + TagName
-                           );
-  end; {if aXml.Group <> aIpmItem.Group}
+  //if (   (aXml.Group and (Value <> ''))
+  //    or ((aXml.Value <> '') and Group)
+  //   )
+  //then begin
+  //  raise Exception.Create ( 'Mismatch on grouping for tag: '
+  //                         + TagName
+  //                         );
+  //end; {if aXml.Group <> aIpmItem.Group}
 
   if Assigned (Xsd) then
   begin

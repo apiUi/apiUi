@@ -46,7 +46,6 @@
       <Unit0>
         <Filename Value="TestRegExp.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="TestRegExp"/>
       </Unit0>
       <Unit1>
         <Filename Value="testform.pas"/>
@@ -59,7 +58,6 @@
       <Unit2>
         <Filename Value="Source\RegExpr.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="RegExpr"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\Utils\forminifilez.pas"/>
@@ -86,12 +84,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="4">

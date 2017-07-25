@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, L4JMainUnit, abbrevia, lazrichedit, IdHTTP, IdStack, l4jTypes,
+  Forms, L4JMainUnit, abbrevia, IdHTTP, IdStack, l4jTypes,
   FilterDialog, DbFilterDialog, htmlxmlutilz
   { you can add units after this };
 

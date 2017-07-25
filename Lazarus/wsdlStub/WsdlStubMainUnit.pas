@@ -1412,11 +1412,16 @@ var
 begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.freeFormatOperationsXml;
-  if EditXmlXsdBased('Freeformat Operations',
-    'OperationDefs.FreeFormatOperations',
-    'FreeFormatOperations.Operation.Name',
-    'FreeFormatOperations.Operation.Name',
-    se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
+  if EditXmlXsdBased ( 'Freeformat Operations'
+                     , 'OperationDefs.FreeFormatOperations'
+                     , 'FreeFormatOperations.Operation.Name'
+                     , 'FreeFormatOperations.Operation.Name'
+                     , se.IsActive
+                     , xXml.Items.Count > 1
+                     , esUsed
+                     , OperationDefsXsd
+                     , xXml
+                     ) then
   begin
     AcquireLock;
     try
@@ -2757,9 +2762,16 @@ begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.xsdOperationsXml('');
   try
-    if EditXmlXsdBased('Xsd Operations', 'OperationDefs.XsdOperations',
-      'XsdOperations.Operation.Name', 'XsdOperations.Operation.Name',
-      se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
+    if EditXmlXsdBased ( 'Xsd Operations'
+                       , 'OperationDefs.XsdOperations'
+                       , 'XsdOperations.Operation.Name'
+                       , 'XsdOperations.Operation.Name'
+                       , se.IsActive
+                       , xXml.Items.Count > 1
+                       , esUsed
+                       , OperationDefsXsd
+                       , xXml
+                       ) then
     begin
       AcquireLock;
       try
@@ -2961,9 +2973,16 @@ begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.xmlSampleOperationsXml('');
   try
-    if EditXmlXsdBased('XmlSample Operations', 'OperationDefs.XmlSampleOperations',
-      'XmlSampleOperations.Operation.Name', 'XmlSampleOperations.Operation.Name',
-      se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
+    if EditXmlXsdBased ( 'XmlSample Operations'
+                       , 'OperationDefs.XmlSampleOperations'
+                       , 'XmlSampleOperations.Operation.Name'
+                       , 'XmlSampleOperations.Operation.Name'
+                       , se.IsActive
+                       , xXml.Items.Count > 1
+                       , esUsed
+                       , OperationDefsXsd
+                       , xXml
+                       ) then
     begin
       AcquireLock;
       try
@@ -11625,9 +11644,16 @@ var
 begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.cobolOperationsXml;
-  if EditXmlXsdBased('Cobol Operations', 'OperationDefs.CobolOperations',
-    'CobolOperations.Operation.Name', 'CobolOperations.Operation.Name',
-    se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
+  if EditXmlXsdBased ( 'Cobol Operations'
+                     , 'OperationDefs.CobolOperations'
+                     , 'CobolOperations.Operation.Name'
+                     , 'CobolOperations.Operation.Name'
+                     , se.IsActive
+                     , xXml.Items.Count > 1
+                     , esUsed
+                     , OperationDefsXsd
+                     , xXml
+                     ) then
   begin
     AcquireLock;
     try
@@ -11910,7 +11936,7 @@ begin
   xXml := se.swiftMtOperationsXml;
   if EditXmlXsdBased('SwiftMT Operations', 'OperationDefs.SwiftMtOperations',
     'SwiftMtOperations.Operation.Name', 'SwiftMtOperations.Operation.Name',
-    se.IsActive, False, esUsed, OperationDefsXsd, xXml) then
+    se.IsActive, xXml.Items.Count > 1, esUsed, OperationDefsXsd, xXml) then
   begin
     AcquireLock;
     try

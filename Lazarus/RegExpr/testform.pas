@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynMemo, VirtualTrees, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls, RegExpr, FormIniFilez, Dom;
+  Dialogs, StdCtrls, ExtCtrls, RegExpr, FormIniFilez;
 
 type
 
@@ -50,8 +50,14 @@ begin
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
+var
+  x: Integer;
+  s: String;
 begin
-//  Memo.Text:=IniFile.DecryptPassword(Memo.Text);
+  s := IntToStr (rx.SubExprMatchCount) + LineEnding;
+  for x := 0 to rx.SubExprMatchCount do
+    s := s + IntToStr(x) + ': ' + rx.Match[x] + LineEnding;
+  ShowMessage(s);
 end;
 
 procedure TMainForm.NextButtonClick(Sender: TObject);
