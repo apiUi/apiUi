@@ -3763,6 +3763,23 @@ begin
 end;
 
 function TWsdlProject.SendHttpMessage (aOperation: TWsdlOperation; aLog: TLog): String;
+  function _download (dStream: TMemoryStream; aResponse: TIdHTTPResponse): String;
+  begin
+    with TRegExpr.Create('filename=[^\;]*') do
+    try
+      if Exec(aResponse.ContentDisposition) then
+      begin
+        result := CurrentFolder
+                   + DirectorySeparator
+                   + Copy(Match[0], Length('filename=') + 1, MaxInt)
+                   ;
+        dStream.SaveToFile(result);
+      end;
+    finally
+      free;
+    end;
+  end;
+
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
     xStream: TMemoryStream;
@@ -3997,7 +4014,14 @@ begin
               aLog.ReplyContentType := HttpClient.Response.ContentType;
               alog.httpResponseCode := HttpClient.ResponseCode;
             end;
-            result := _Decompress (HttpClient.Response.ContentEncoding, dStream);
+            if (HttpClient.Response.ContentType = 'application/octet-stream')
+            and (Pos ('attachment', HttpClient.Response.ContentDisposition) > 0)
+            and (Pos ('filename', HttpClient.Response.ContentDisposition) > 0) then
+            begin
+              result := _download (dStream, HttpClient.Response)
+            end
+            else
+              result := _Decompress (HttpClient.Response.ContentEncoding, dStream);
           except
             on e: EIdHTTPProtocolException do
             begin
@@ -7543,8 +7567,7 @@ begin
           if Assigned (xLog.Operation) then
           begin
             xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
-            xLog.Operation.RequestStringToBindables(xLog.RequestBody);
-            xLog.Operation.ReplyStringToBindables(xLog.ReplyBody);
+            xLog.toBindables(xLog.Operation);
             xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
           end;
           LogFilter.Execute (xLog);

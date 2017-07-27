@@ -6496,7 +6496,7 @@ begin
   begin
     if Operation = aWsdlOperation then
     begin
-      Operation.RequestStringToBindables(RequestBody);
+      toBindables(Operation);
       CorrelationId := Operation.CorrelationIdAsText('; ');
     end;
   end;
@@ -10016,8 +10016,7 @@ begin
       try
         xHasUnexpectedValue := claimedLog.HasUnexpectedValue;
         xExpectedValuesChecked := claimedLog.ExpectedValuesChecked;
-        claimedLog.Operation.RequestStringToBindables(claimedLog.RequestBody);
-        claimedLog.Operation.ReplyStringToBindables(claimedLog.ReplyBody);
+        claimedLog.toBindables(claimedLog.Operation);
         claimedLog.HasUnexpectedValue := claimedLog.Mssg.CheckValues(claimedLog.Operation);
         claimedLog.ExpectedValuesChecked := True;
         MessagesVTS.InvalidateNode(MessagesVTS.FocusedNode);
