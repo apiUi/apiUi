@@ -12,8 +12,6 @@ uses Classes
    , Graphics
    ;
 
-resourcestring
-  S_XML_REGEXP_LINK = '(?i)(FTP|HTTP|FILE|DOC)://([_a-z\d\-/]+(\.[_a-z\d\-/]+)+)((/[ _a-z\d\-\\\./]+)+)*([\?#][a-z0-9=&_/]+)?';
 
 type TOnHaveString = procedure ( aString: String) of Object;
 type TOnStringEvent = procedure (const Msg: String) of Object;
@@ -98,7 +96,6 @@ type
     function getIsSoapBody : Boolean ;
     function getItemByTag (Index : String ): TXml ;
     function getTypeDef: TXsdDataType;
-
 
     function IsValueValid (var aMessage: String): Boolean; Override;
     function getChecked: Boolean;

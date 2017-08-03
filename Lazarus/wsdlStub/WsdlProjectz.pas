@@ -1191,7 +1191,7 @@ var
   xIniFileName: String;
 begin
   xIniFileName := Copy(ParamStr(0), 1, Length(ParamStr(0)){$ifdef windows} - 4{$endif}) + 'Ini.xml';
-  if not FileExistsUTF8(xIniFileName) { *Converted from FileExists* } then
+  if not LazFileUtils.FileExistsUTF8(xIniFileName) { *Converted from FileExists* } then
     raise Exception.CreateFmt(
       '%s coud not open expected inifile: %s,%splease install %s properly',
       [_progName, xIniFileName, CRLF, _progName]);
@@ -5197,7 +5197,7 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
     try
       if not Assigned (sXml) then
         exit;
-      aDescrFileName := ExpandFileNameUTF8(ExpandRelativeFileName
+      aDescrFileName := LazFileUtils.ExpandFileNameUTF8(ExpandRelativeFileName
                             (aMainFileName, sXml.Items.XmlCheckedValueByTag ['DescriptionFile'])
                           );
       if xsdElementsWhenRepeatable > 0 then
@@ -5341,7 +5341,7 @@ procedure TWsdlProject.xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: Str
     try
       if not Assigned (sXml) then
         exit;
-      aSampleFileName := ExpandFileNameUTF8(ExpandRelativeFileName
+      aSampleFileName := LazFileUtils.ExpandFileNameUTF8(ExpandRelativeFileName
                             (aMainFileName, sXml.Items.XmlCheckedValueByTag ['SampleFile'])
                           );
       if xsdElementsWhenRepeatable > 0 then

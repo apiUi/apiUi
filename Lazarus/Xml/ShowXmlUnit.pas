@@ -575,9 +575,10 @@ end;
 
 procedure TShowXmlForm.CopyActionExecute(Sender: TObject);
 begin
-  if not(SelectedBind is TXml) then
-    Exit;
-  xmlUtil.CopyToClipboard(SelectedBind);
+  if ToolButtonUsed(Sender) then
+    xmlUtil.CopyToClipboard(Bind)
+  else
+    xmlUtil.CopyToClipboard(SelectedBind);
 end;
 
 procedure TShowXmlForm.FullExpandActionExecute(Sender: TObject);
@@ -1597,7 +1598,13 @@ begin
     TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
     Exit;
   end;
-  NodeToBind(Node).Font(TargetCanvas.Font);
+  with NodeToBind(Node) do
+  begin
+    Font(TargetCanvas.Font);
+    if (Column = treeValueColumn)
+    and isValueLink then
+      TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
+  end;
 end;
 
 procedure TShowXmlForm.SetBindNodeCheckBox(aTreeView: TVirtualStringTree;

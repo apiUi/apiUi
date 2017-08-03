@@ -2067,11 +2067,13 @@ begin
   end
   else
   begin
-    if (Assigned((Sender as TVirtualStringTree).FocusedNode)) and
-      (((Sender as TVirtualStringTree).FocusedColumn = treeValueColumn) or
-        (Sender = GridView)) then (Sender as TVirtualStringTree)
-      .EditNode((Sender as TVirtualStringTree).FocusedNode,
-        (Sender as TVirtualStringTree).FocusedColumn);
+    if (Assigned((Sender as TVirtualStringTree).FocusedNode))
+    and (   ((Sender as TVirtualStringTree).FocusedColumn = treeValueColumn)
+         or (Sender = GridView)
+        ) then
+      (Sender as TVirtualStringTree).EditNode ( (Sender as TVirtualStringTree).FocusedNode
+                                              , (Sender as TVirtualStringTree).FocusedColumn
+                                              );
   end;
 end;
 

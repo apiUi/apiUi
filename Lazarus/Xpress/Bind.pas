@@ -9,7 +9,11 @@ uses Classes
    , Graphics
    ;
 
-type TBindExpandStyle = (esAll, esOne, esUsed);
+resourcestring
+  S_XML_REGEXP_LINK = '(?i)((FTP|HTTPS?|FILE|DOC)://([_a-z\d\-/]+(\.[_a-z\d\-/]+)+)((/[ _a-z\d\-\\\./]+)+)*([\?#][a-z0-9=%&_/\+\-\.]+)?)';
+
+type TBindExpandStyle = (esAll, esOne, esUsed, edBestEffort);
+const TBindExpandStyleStr: array [TBindExpandStyle] of String = ('All', 'One', 'Used', 'BestEffort');
 type TxvViewType = (xvAll, xvRequired, xvUsed, xvReqUsed);
 type PTDateTime = ^TDateTime;
 type PBoolean = ^Boolean;
@@ -184,6 +188,7 @@ type TBindableList = class;
     fHasUnExpectedValue: Boolean;
     fhasRelevance: Boolean;
     function getIsExpression: Boolean;
+    function getTotalNumberOfSubElements: Integer;
     function getValueAsInteger: Integer;
     procedure setValueAsInteger(const aValue: Integer);
     function getChecked: Boolean;
@@ -211,6 +216,7 @@ public
     fPrevChecked: Boolean;
   isProcessed: Boolean;
   Tag: LongInt;
+  function isValueLink: Boolean;
   function hasNoDuplicatesOn (aCaption: String; aOnlyWhenChecked: Boolean; var oBind, dBind: TCustomBindable): Boolean;
   procedure Reset; Virtual;
   procedure ResetExpectedValues; Virtual;
@@ -242,6 +248,7 @@ public
   function IsAncestorOf (aBindable: TCustomBindable): Boolean;
   function UpLineAsText: String; Virtual;
   constructor Create; Overload;
+  property totalNumberOfSubElements: Integer read getTotalNumberOfSubElements;
   property isEvaluation: Boolean read getIsEvaluation;
   property isExpression: Boolean read getIsExpression;
   property hasRelevance: Boolean read fhasRelevance write sethasRelevance;
@@ -306,6 +313,7 @@ implementation
 
 uses
   SysUtils
+, RegExpr
 ;
 
 { TParserStringList }
@@ -586,6 +594,29 @@ begin
                 , [4, year, 2, month, 2, day, 2, hour, 2, min, 2, sec, 3, msec]);
 end;
 
+function TCustomBindable.isValueLink: Boolean;
+var
+  s: String;
+begin
+  result := False;
+  exit;
+  if self.Checked
+  and (self.Children.Count = 0)
+  and (Length (Value) > 5) then
+  begin
+    s := Copy(Value, 1, 6);
+    if (Pos (':', s) > 0) then
+    begin
+      with TRegExpr.Create (S_XML_REGEXP_LINK) do
+      try
+        result := Exec (Value) and (MatchLen[0] = Length(Value));
+      finally
+        Free;
+      end;
+    end;
+  end;
+end;
+
 function TCustomBindable.getChecked: Boolean;
 begin
   result := fChecked;
@@ -794,6 +825,15 @@ end;
 function TCustomBindable.getIsExpression: Boolean;
 begin
   result := (Copy (Value, 1, 2) = ':=');
+end;
+
+function TCustomBindable.getTotalNumberOfSubElements: Integer;
+var
+  x: Integer;
+begin
+  result := Children.Count;
+  for x := 0 to Children.Count - 1 do
+    result += Children.Bindables[x].getTotalNumberOfSubElements;
 end;
 
 initialization

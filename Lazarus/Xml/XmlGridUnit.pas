@@ -1249,6 +1249,9 @@ begin
         if not xXml.Checked then
           TargetCanvas.Font.Color := clRed {clLtGray}	;
     end;
+    if xXml.Checked
+    and xXml.isValueLink then
+      TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
   except
     ShowMessage (xXml.Xsd.minOccurs);
   end;

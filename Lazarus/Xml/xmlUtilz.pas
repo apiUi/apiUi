@@ -1899,6 +1899,8 @@ begin
     xForm.doShowCancelButton := not aReadOnly;
     xForm.IsReadOnly := aReadonly;
     xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+    if aBind.totalNumberOfSubElements > 40 then
+      xForm.initialExpandStyle := esOne;
     if {}{}aReadOnly{}{ True{} then
     begin
       xForm.Bind := aBind;
