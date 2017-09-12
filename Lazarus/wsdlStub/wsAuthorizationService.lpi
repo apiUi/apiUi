@@ -30,7 +30,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="5">
       <Item1>
         <PackageName Value="SQLDBLaz"/>
       </Item1>
@@ -38,17 +38,14 @@
         <PackageName Value="indylaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="LazRichEdit"/>
+        <PackageName Value="LazDaemon"/>
       </Item3>
       <Item4>
-        <PackageName Value="LazDaemon"/>
+        <PackageName Value="LCL"/>
       </Item4>
       <Item5>
-        <PackageName Value="LCL"/>
-      </Item5>
-      <Item6>
         <PackageName Value="FCL"/>
-      </Item6>
+      </Item5>
     </RequiredPackages>
     <Units Count="4">
       <Unit0>
@@ -67,7 +64,7 @@
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Daemon1"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="DataModule"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="wsDaemonUnit"/>
       </Unit2>
       <Unit3>

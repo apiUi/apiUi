@@ -1,13 +1,11 @@
 object Daemon1: TDaemon1
+  Left = 147
+  Height = 182
+  Top = 119
+  Width = 223
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  OldCreateOrder = False
-  OnStart = DataModuleStart
-  OnStop = DataModuleStop
-  Height = 182
-  HorizontalOffset = 831
-  VerticalOffset = 139
-  Width = 223
+  LCLVersion = '1.6.0.4'
   object IdHTTPServer: TIdHTTPServer
     Bindings = <>
     OnCreatePostStream = IdHTTPServerCreatePostStream
@@ -19,6 +17,7 @@ object Daemon1: TDaemon1
     Active = False
     Action = caCommit
     Database = SqlConnector
+    Options = []
     left = 152
     top = 104
   end
@@ -48,6 +47,7 @@ object Daemon1: TDaemon1
       'Select CompanyName, LicenseExpireDate, LicenseString'
       'from LicenseInformation'
     )
+    Options = []
     Params = <>
     ParseSQL = False
     UsePrimaryKeyAsKey = False
@@ -63,6 +63,7 @@ object Daemon1: TDaemon1
     )
     Transaction = SQLTransaction
     LogEvents = []
+    Options = []
     Driver = 'Microsoft Access Driver (*.mdb, *.accdb)'
     left = 157
     top = 37

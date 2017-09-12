@@ -3233,6 +3233,7 @@ begin
     and (aIsActive) then
     begin
       xOperation.rpyWsaOnRequest;
+      xOperation.logRequestBody := aLog.RequestBody;
       xOperation.ExecuteBefore;
       xOperation.ExecuteRpyStampers;
       if xOperation.doDebug
@@ -4129,6 +4130,8 @@ begin
         xLog.ReplyBody := '';
         if aOperation.rpyBind.Name = '' then
         begin
+          aOperation.logRequestBody := xLog.RequestBody;
+          aOperation.logReplyBody := xLog.ReplyBody;
           aOperation.ExecuteAfter;
         end;
       end
@@ -4177,6 +4180,8 @@ begin
             end;
           end;
         end;
+        aOperation.logRequestBody := xLog.RequestBody;
+        aOperation.logReplyBody := xLog.ReplyBody;
         aOperation.ExecuteAfter;
         CheckExpectedValues (xLog, aOperation, doCheckExpectedValues);
       end;
@@ -4620,6 +4625,8 @@ begin
       begin
         aLog.RequestBodyMiM := aLog.RequestBody;
         try
+          aOperation.logRequestBody := aLog.RequestBody;
+          aOperation.logReplyBody := aLog.ReplyBody;
           aOperation.ExecuteBefore;
         except
           on e: exception do
@@ -4641,7 +4648,9 @@ begin
       begin
         aLog.ReplyBodyMiM := aLog.ReplyBody;
         try
-          aOperation.ExecuteAfter;
+          aOperation.logRequestBody := aLog.RequestBody;
+          aOperation.logReplyBody := aLog.ReplyBody;
+          //aOperation.ExecuteAfter;
         except
           on e: exception do
             if e.Message <> 'Exit' then
@@ -6879,6 +6888,8 @@ begin
       if (xOperation.StubAction = saStub)
       and (IsActive) then
       begin
+        xOperation.logRequestBody := aLog.RequestBody;
+        xOperation.logReplyBody := aLog.ReplyBody;
         xOperation.ExecuteBefore;
         xOperation.ExecuteRpyStampers;
         if xOperation.doDebug

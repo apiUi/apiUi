@@ -362,6 +362,7 @@ type
       invokeList: TWsdlOperations;
       doDebug: Boolean;
       doSuppressLog: Integer;
+      logReplyBody, logRequestBody: String;
       DelayTimeMs: Integer;
       DelayTimeMsMin: Integer;
       DelayTimeMsMax: Integer;
@@ -4213,6 +4214,8 @@ begin
       try StubMqHeaderXml.Bind ('Mq', fExpress, 1); except end;
     try fExpress.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
     try fExpress.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
+    try fExpress.BindString('rti.operation.logreplybody', logReplyBody); except end;
+    try fExpress.BindString('rti.operation.logrequestbody', logRequestBody); except end;
     BindScriptFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
     BindScriptFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
     BindScriptFunction ('Assigned', @isAssigned, XFG, '(aItem)');
