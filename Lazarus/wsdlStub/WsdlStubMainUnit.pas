@@ -74,7 +74,10 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    ToggleDoScrollMessagesIntoViewAction: TAction;
     MenuItem36 : TMenuItem ;
+    ToolButton71: TToolButton;
+    ToolButton72: TToolButton;
     XmlSampleOperationsMenuItem : TMenuItem ;
     XmlSampleOperations : TAction ;
     EditMessageAfterScriptAction : TAction ;
@@ -607,6 +610,7 @@ type
       TabIndex : Integer ; var ImageIndex : Integer );
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
+    procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
@@ -992,7 +996,6 @@ type
     QueueNameList: TStringList;
     captionFileName: String;
     isOptionsChanged: Boolean;
-    doScrollMessagesIntoView: Boolean;
     doScrollExceptionsIntoView: Boolean;
     DisclaimerAccepted: Boolean;
     ActualXml: TCustomBindable;
@@ -1159,8 +1162,10 @@ type
     procedure SetUiProgress;
     procedure OnRegressionReport (aReport: TRegressionSnapshot);
   private
+    fDoScrollMessagesIntoView: Boolean;
     fdoShowDesignSplitVertical : Boolean ;
     function getHintStrDisabledWhileActive: String;
+    procedure setDoScrollMessagesIntoView(AValue: Boolean);
     procedure setdoShowDesignSplitVertical (AValue : Boolean );
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure ReloadProject;
@@ -1197,6 +1202,7 @@ type
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
+    property doScrollMessagesIntoView: Boolean read fDoScrollMessagesIntoView write setDoScrollMessagesIntoView;
     property doCheckExpectedValues: Boolean read getDoCheckExpectedValues write
       setDoCheckExpectedValues;
     property doValidateRequests: Boolean read getDoValidateRequests write
@@ -4266,6 +4272,7 @@ begin
     setTreeviewColors(GridView);
   except
   end;
+  ToggleDoScrollMessagesIntoViewAction.Checked := doScrollMessagesIntoView;
   ToggleCheckExpectedValuesAction.Checked := doCheckExpectedValues;
   ValidateRepliesAction.Checked := doValidateReplies;
   ValidateRequestsAction.Checked := doValidateRequests;
@@ -9036,6 +9043,13 @@ begin
     result := ' (disabled while Active)';
 end;
 
+procedure TMainForm.setDoScrollMessagesIntoView(AValue: Boolean);
+begin
+  fDoScrollMessagesIntoView := AValue;
+  isOptionsChanged := True;
+  CheckBoxClick(nil);
+end;
+
 procedure TMainForm .setdoShowDesignSplitVertical (AValue : Boolean );
 begin
   if fdoShowDesignSplitVertical = AValue then Exit ;
@@ -13710,6 +13724,17 @@ begin
     result := -1;
   if s1 > s2 then
     result := 1;
+end;
+
+procedure TMainForm.ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject
+  );
+begin
+  se.AcquireLogLock;
+  try
+    doScrollMessagesIntoView := not doScrollMessagesIntoView;
+  finally
+    se.ReleaseLogLock;
+  end;
 end;
 
 procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;

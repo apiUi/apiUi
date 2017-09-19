@@ -1380,6 +1380,20 @@ object MainForm: TMainForm
           Top = 2
           Action = logChartAction
         end
+        object ToolButton71: TToolButton
+          Left = 307
+          Height = 22
+          Top = 2
+          Width = 8
+          Caption = 'ToolButton71'
+          Style = tbsSeparator
+        end
+        object ToolButton72: TToolButton
+          Left = 315
+          Top = 2
+          Action = ToggleDoScrollMessagesIntoViewAction
+          Style = tbsCheck
+        end
       end
       object Panel2: TPanel
         Left = 1
@@ -1575,7 +1589,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 0
+      TabIndex = 3
       Tabs.Strings = (
         'Documentation'
         'Notifications'
@@ -2271,6 +2285,70 @@ object MainForm: TMainForm
       ImageIndex = 67
       OnExecute = ShowLogDifferencesActionExecute
     end
+    object SnapshotsFromFolderAction: TAction
+      Category = 'Reports'
+      Caption = 'SnapshotsFromFolderAction'
+      Hint = 'Find snapshots in project log folder'
+      ImageIndex = 87
+      OnExecute = SnapshotsFromFolderActionExecute
+      OnUpdate = SnapshotsFromFolderActionUpdate
+    end
+    object EditMessageScriptAction: TAction
+      Category = 'Messages'
+      Caption = 'Edit Message Script'
+      OnExecute = EditMessageScriptActionExecute
+    end
+    object EditMessageAfterScriptAction: TAction
+      Category = 'Messages'
+      Caption = 'Edit Message After Script'
+      OnExecute = EditMessageAfterScriptActionExecute
+      OnUpdate = EditMessageAfterScriptActionUpdate
+    end
+    object XmlSampleOperations: TAction
+      Category = 'Project'
+      Caption = 'XmlSample Operations'
+      ImageIndex = 97
+      OnExecute = XmlSampleOperationsExecute
+      OnHint = XmlSampleOperationsHint
+    end
+    object SwiftMtOperationsAction: TAction
+      Category = 'Project'
+      Caption = 'SwiftMT operations...'
+      ImageIndex = 74
+      OnExecute = SwiftMtOperationsActionExecute
+      OnHint = SwiftMtOperationsActionHint
+    end
+    object FreeFormatsAction: TAction
+      Category = 'Project'
+      Caption = 'Freeformat operations...'
+      ImageIndex = 71
+      OnExecute = FreeFormatsActionExecute
+      OnHint = FreeFormatsActionHint
+    end
+    object ProjectOptionsAction: TAction
+      Category = 'Project'
+      Caption = 'Options'
+      OnExecute = ProjectOptionsActionExecute
+    end
+    object ProjectCleanAction: TAction
+      Category = 'Project'
+      Caption = 'Clean'
+      Hint = 'Cleans XML messages from unused elements'
+      ImageIndex = 77
+      OnExecute = ProjectCleanActionExecute
+    end
+    object Properties: TAction
+      Category = 'Project'
+      Caption = 'Properties'
+      OnExecute = EditProjectPropertiesExecute
+    end
+    object ShowResolvedProperties: TAction
+      Category = 'Project'
+      Caption = 'ShowResolvedProperties'
+      Hint = 'Show resolved properties'
+      OnExecute = ShowResolvedPropertiesExecute
+      ShortCut = 24664
+    end
     object ReplyMiMAction: TAction
       Category = 'Log'
       Caption = 'Reply changes due to script'
@@ -2282,6 +2360,13 @@ object MainForm: TMainForm
       Hint = 'Check expected values'
       ImageIndex = 50
       OnExecute = ToggleCheckExpectedValuesActionExecute
+    end
+    object ToggleDoScrollMessagesIntoViewAction: TAction
+      Category = 'Log'
+      Caption = 'ToggleDoScrollMessagesIntoViewAction'
+      Hint = 'Scroll new messages into visible area'
+      ImageIndex = 98
+      OnExecute = ToggleDoScrollMessagesIntoViewActionExecute
     end
     object ShowExpectedXmlAction: TAction
       Category = 'Log'
@@ -2403,76 +2488,12 @@ object MainForm: TMainForm
       ImageIndex = 86
       OnExecute = SummaryReportActionExecute
     end
-    object SnapshotsFromFolderAction: TAction
-      Category = 'Reports'
-      Caption = 'SnapshotsFromFolderAction'
-      Hint = 'Find snapshots in project log folder'
-      ImageIndex = 87
-      OnExecute = SnapshotsFromFolderActionExecute
-      OnUpdate = SnapshotsFromFolderActionUpdate
-    end
-    object EditMessageScriptAction: TAction
-      Category = 'Messages'
-      Caption = 'Edit Message Script'
-      OnExecute = EditMessageScriptActionExecute
-    end
-    object EditMessageAfterScriptAction: TAction
-      Category = 'Messages'
-      Caption = 'Edit Message After Script'
-      OnExecute = EditMessageAfterScriptActionExecute
-      OnUpdate = EditMessageAfterScriptActionUpdate
-    end
-    object XmlSampleOperations: TAction
-      Category = 'Project'
-      Caption = 'XmlSample Operations'
-      ImageIndex = 97
-      OnExecute = XmlSampleOperationsExecute
-      OnHint = XmlSampleOperationsHint
-    end
-    object SwiftMtOperationsAction: TAction
-      Category = 'Project'
-      Caption = 'SwiftMT operations...'
-      ImageIndex = 74
-      OnExecute = SwiftMtOperationsActionExecute
-      OnHint = SwiftMtOperationsActionHint
-    end
-    object FreeFormatsAction: TAction
-      Category = 'Project'
-      Caption = 'Freeformat operations...'
-      ImageIndex = 71
-      OnExecute = FreeFormatsActionExecute
-      OnHint = FreeFormatsActionHint
-    end
-    object ProjectOptionsAction: TAction
-      Category = 'Project'
-      Caption = 'Options'
-      OnExecute = ProjectOptionsActionExecute
-    end
-    object ProjectCleanAction: TAction
-      Category = 'Project'
-      Caption = 'Clean'
-      Hint = 'Cleans XML messages from unused elements'
-      ImageIndex = 77
-      OnExecute = ProjectCleanActionExecute
-    end
-    object Properties: TAction
-      Category = 'Project'
-      Caption = 'Properties'
-      OnExecute = EditProjectPropertiesExecute
-    end
-    object ShowResolvedProperties: TAction
-      Category = 'Project'
-      Caption = 'ShowResolvedProperties'
-      Hint = 'Show resolved properties'
-      OnExecute = ShowResolvedPropertiesExecute
-      ShortCut = 24664
-    end
   end
   object mainImageList: TImageList
     left = 112
     top = 112
     Bitmap = {
-      4C69620000001000000010000000000000000000000000000000000000000000
+      4C69630000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -5605,6 +5626,38 @@ object MainForm: TMainForm
       FFFFFFFFFFFF000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000FF00
+      00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000FF00
+      00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000FF00
+      00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000FFFF00000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000FF00
+      00FFFF0000FF0000FFFFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000FFFF00000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000FF00
+      00FFFF0000FF0000FFFFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      FFFF000000000000FFFF000000000000FFFF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      FFFF0000FFFF0000FFFF0000FFFF0000FFFFFF0000FFFF0000FFFF0000FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000FFFF00000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
