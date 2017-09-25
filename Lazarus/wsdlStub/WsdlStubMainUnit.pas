@@ -76,8 +76,16 @@ type
     Action2 : TAction ;
     ToggleDoScrollMessagesIntoViewAction: TAction;
     MenuItem36 : TMenuItem ;
+    ToolButton36: TToolButton;
+    ToolButton68: TToolButton;
+    ToolButton69: TToolButton;
     ToolButton71: TToolButton;
     ToolButton72: TToolButton;
+    ToolButton73: TToolButton;
+    ToolButton74: TToolButton;
+    ToolButton75: TToolButton;
+    ToolButton76: TToolButton;
+    ToolButton77: TToolButton;
     XmlSampleOperationsMenuItem : TMenuItem ;
     XmlSampleOperations : TAction ;
     EditMessageAfterScriptAction : TAction ;
@@ -146,7 +154,6 @@ type
     ToolButton32: TToolButton;
     ToolButton33: TToolButton;
     ToolButton35: TToolButton;
-    ToolButton36: TToolButton;
     ToolButton37: TToolButton;
     ToolButton39: TToolButton;
     ToolButton40: TToolButton;
@@ -161,8 +168,6 @@ type
     ToolButton65 : TToolButton ;
     ToolButton66 : TToolButton ;
     ToolButton67: TToolButton;
-    ToolButton68: TToolButton;
-    ToolButton69: TToolButton;
     SaveSnapshotsAction : TAction ;
     ReadSnapshotInformationAction : TAction ;
     ReportOnSnapshotsAction : TAction ;
@@ -4321,8 +4326,6 @@ begin
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
-    AddXml(TXml.CreateAsBoolean('ScrollMessagesIntoView',
-        doScrollMessagesIntoView));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
         doScrollExceptionsIntoView));
     AddXml(TXml.CreateAsBoolean('CheckScriptAssignments',
@@ -6643,21 +6646,14 @@ begin
     ['SchemaPropertiesVisible', True];
   XsdPanel.Visible := SchemapropertiesMenuItem.Checked;
   xsdSplitter.Visible := SchemapropertiesMenuItem.Checked;
-  WsdlInformationMenuItem.Checked := xIniFile.BooleanByNameDef
-    ['WsdlInformationVisible', True];
+  WsdlInformationMenuItem.Checked := xIniFile.BooleanByNameDef ['WsdlInformationVisible', True];
   WsdlInfoPanel.Visible := WsdlInformationMenuItem.Checked;
-  se.LogFilter.FilterStyle := TLogFilterStyle
-    (xIniFile.IntegerByNameDef['LogFilter.FilterStyle', 0]);
-  se.LogFilter.MatchAny := xIniFile.BooleanByNameDef['LogFilter.MatchAny',
-    False];
-  se.LogFilter.StubActionEnabled := xIniFile.BooleanByNameDef
-    ['LogFilter.StubActionEnabled', False];
-  se.LogFilter.StubActionEquals := xIniFile.BooleanByNameDef
-    ['LogFilter.StubActionEquals', True];
-  se.LogFilter.StubAction := TStubAction
-    (xIniFile.IntegerByNameDef['LogFilter.StubAction', 0]);
-  se.LogFilter.MiMEnabled := xIniFile.BooleanByNameDef['LogFilter.MiMEnabled',
-    False];
+  se.LogFilter.FilterStyle := TLogFilterStyle (xIniFile.IntegerByNameDef['LogFilter.FilterStyle', 0]);
+  se.LogFilter.MatchAny := xIniFile.BooleanByNameDef['LogFilter.MatchAny', False];
+  se.LogFilter.StubActionEnabled := xIniFile.BooleanByNameDef ['LogFilter.StubActionEnabled', False];
+  se.LogFilter.StubActionEquals := xIniFile.BooleanByNameDef ['LogFilter.StubActionEquals', True];
+  se.LogFilter.StubAction := TStubAction (xIniFile.IntegerByNameDef['LogFilter.StubAction', 0]);
+  se.LogFilter.MiMEnabled := xIniFile.BooleanByNameDef['LogFilter.MiMEnabled', False];
   se.LogFilter.RequestMiMEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.RequestMiMEnabled', True];
   se.LogFilter.ReplyMiMEnabled := xIniFile.BooleanByNameDef
@@ -6877,6 +6873,7 @@ begin
   xIniFile.BooleanByName['WsdlInformationVisible'] :=
     WsdlInformationMenuItem.Checked;
   xIniFile.BooleanByName['doShowDesignSplitVertical'] := doShowDesignSplitVertical;
+  xIniFile.BooleanByName['doScrollMessagesIntoView'] := doScrollMessagesIntoView;
   xIniFile.IntegerByName['GridDataPanelWidth'] := GridDataPanel.Width;
   xIniFile.IntegerByName['GridDataPanelHeight'] := GridDataPanel.Height;
   xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
@@ -9046,7 +9043,6 @@ end;
 procedure TMainForm.setDoScrollMessagesIntoView(AValue: Boolean);
 begin
   fDoScrollMessagesIntoView := AValue;
-  isOptionsChanged := True;
   CheckBoxClick(nil);
 end;
 
@@ -9458,9 +9454,12 @@ begin
   { }
   s := ExceptionStackListString (E);
   { }
-  if MessageDlg(E.Message + #10#13#10#13 + 'Show stack trace?', mtError,
-    [mbNo, mbYes], 0) = mrYes then
-    ShowText('Exception details', E.Message + #10#13#10#13 + s);
+  if MessageDlg( E.Message + LineEnding +  LineEnding + 'Show stack trace?'
+               , mtError
+               , [mbNo, mbYes]
+               , 0
+               ) = mrYes then
+    ShowText('Exception details', E.Message + LineEnding + LineEnding + s);
 end;
 
 procedure TMainForm.LogDisplayedColumnsAddClick(Sender: TObject);
@@ -12703,7 +12702,6 @@ begin
   xmlUtil.doConfirmRemovals := True;
   xmlUtil.doCollapseOnUncheck := True;
   xmlUtil.doExpandOnCheck := True;
-  doScrollMessagesIntoView := False;
   doScrollExceptionsIntoView := False;
   // se.HTTPServer.KeepAlive := True;
   se.HTTPServer.ListenQueue := 15;
@@ -12728,13 +12726,11 @@ begin
     begin
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef
         ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
-      doScrollMessagesIntoView := xXml.Items.XmlCheckedBooleanByTagDef
-        ['ScrollMessagesIntoView', doScrollMessagesIntoView];
       doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef
         ['ScrollExceptionsIntoView', doScrollExceptionsIntoView];
       xsdValidateAssignmentsAgainstSchema :=
         xXml.Items.XmlCheckedBooleanByTagDef['CheckScriptAssignments',
-        doScrollMessagesIntoView];
+        xsdValidateAssignmentsAgainstSchema];
       CollapseHeaders := xXml.Items.XmlCheckedBooleanByTagDef
         ['InitialCollapseHeaders', CollapseHeaders];
       xmlUtil.doCollapseOnUncheck := xXml.Items.XmlCheckedBooleanByTagDef
@@ -13726,8 +13722,7 @@ begin
     result := 1;
 end;
 
-procedure TMainForm.ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject
-  );
+procedure TMainForm.ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
 begin
   se.AcquireLogLock;
   try

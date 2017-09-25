@@ -598,6 +598,8 @@ function xsdOperationCount(aOperation: TWsdlOperation): Extended;
 function wsdlUserName: String;
 function wsdlOperationName(aOper: TWsdlOperation): String;
 function wsdlMessagingProtocol(aOper: TWsdlOperation): String;
+function wsdlLogReplyBody (aOper: TWsdlOperation): String;
+function wsdlLogRequestBody (aOper: TWsdlOperation): String;
 function wsdlMessageName(aOper: TWsdlOperation): String;
 function xsdTodayAsDate: String;
 function sblTodayAsDate: String;
@@ -1816,6 +1818,16 @@ begin
     result := TransportTypeNames [(aOper.Data as TLog).TransportType]
   else
     result := TransportTypeNames [aOper.StubTransport];
+end;
+
+function wsdlLogReplyBody(aOper: TWsdlOperation): String;
+begin
+  result := aOper.logReplyBody;
+end;
+
+function wsdlLogRequestBody(aOper: TWsdlOperation): String;
+begin
+  result := aOper.logRequestBody;
 end;
 
 function wsdlMessageName(aOper: TWsdlOperation): String;
@@ -4214,8 +4226,6 @@ begin
       try StubMqHeaderXml.Bind ('Mq', fExpress, 1); except end;
     try fExpress.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
     try fExpress.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
-    try fExpress.BindString('rti.operation.logreplybody', logReplyBody); except end;
-    try fExpress.BindString('rti.operation.logrequestbody', logRequestBody); except end;
     BindScriptFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
     BindScriptFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
     BindScriptFunction ('Assigned', @isAssigned, XFG, '(aItem)');
@@ -4252,6 +4262,8 @@ begin
     BindScriptFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindScriptFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindScriptFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
+    BindScriptFunction ('MessageReplyBodyAsLogged', @wsdlLogReplyBody, SFOV, '()');
+    BindScriptFunction ('MessageRequestBodyAsLogged', @wsdlLogRequestBody, SFOV, '()');
     BindScriptFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
     BindScriptFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOS, '(aOperation)');
     BindScriptFunction ('NewLine', @xNewLine, SFV, '()');

@@ -332,8 +332,6 @@ Processing continues with unpredictable results
 					<xs:sequence>
 						<xs:element name="DelayMs" type="xs:integer" minOccurs="0"/>
 						<xs:element name="SuppressLog" type="xs:integer" minOccurs="0"/>
-						<xs:element name="LogReplyBody" type="xs:string" minOccurs="0"/>
-						<xs:element name="LogRequestBody" type="xs:string" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1959,13 +1957,6 @@ For an overview of all options visit: doc://wsdlStub_wsdlStubOptions_hlp.htm </x
 								<xs:annotation>
 									<xs:documentation>Default 'true';
 When 'false' wsdlStub will not prompt for certain removals</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="ScrollMessagesIntoView" type="xs:boolean" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default 'false';
-When 'true' wsdlStub will scroll if necessary to show the last created log record in the log view.
-Disadvantage is that you may sometimes click another log-record then intended</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="ScrollExceptionsIntoView" type="xs:boolean" minOccurs="0">

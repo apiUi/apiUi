@@ -1283,60 +1283,42 @@ object MainForm: TMainForm
           Action = SaveMessagesAction
         end
         object ToolButton50: TToolButton
-          Left = 47
+          Left = 271
           Top = 2
           Action = LogDisplayedColumnsAction
         end
-        object ToolButton68: TToolButton
-          Left = 70
-          Height = 22
-          Top = 2
-          Width = 10
-          Caption = 'ToolButton68'
-          ImageIndex = 57
-          Style = tbsSeparator
-        end
         object ToolButton49: TToolButton
-          Left = 113
+          Left = 90
           Top = 2
           Action = ReportUnexpectedValuesAction
         end
         object ToolButton33: TToolButton
-          Left = 136
+          Left = 113
           Top = 2
           Action = MessagesRegressionAction
         end
         object ToolButton67: TToolButton
-          Left = 159
+          Left = 136
           Top = 2
           Action = LogCoverageReportAction
         end
-        object ToolButton69: TToolButton
-          Left = 205
-          Height = 22
-          Top = 2
-          Width = 10
-          Caption = 'ToolButton69'
-          ImageIndex = 57
-          Style = tbsSeparator
-        end
         object ToolButton22: TToolButton
-          Left = 215
+          Left = 192
           Top = 2
           Action = ClearLogItemsAction
         end
         object ToolButton42: TToolButton
-          Left = 238
+          Left = 294
           Top = 2
           Action = FilterLogAction
         end
         object BrowseMqButton: TToolButton
-          Left = 261
+          Left = 215
           Top = 2
           Action = BrowseMqAction
         end
         object ToolButton59: TToolButton
-          Left = 284
+          Left = 238
           Top = 2
           Action = readLog4jEventsAction
         end
@@ -1362,37 +1344,53 @@ object MainForm: TMainForm
           BorderSpacing.CellAlignVertical = ccaRightBottom
           TabOrder = 0
         end
-        object ToolButton36: TToolButton
-          Left = 103
-          Height = 22
-          Top = 2
-          Width = 10
-          Caption = 'ToolButton36'
-          Style = tbsSeparator
-        end
         object ToolButton37: TToolButton
-          Left = 80
+          Left = 57
           Top = 2
           Action = CopyLogGridToClipBoardAction
         end
         object logChartToolButton: TToolButton
-          Left = 182
+          Left = 159
           Top = 2
           Action = logChartAction
         end
-        object ToolButton71: TToolButton
-          Left = 307
-          Height = 22
-          Top = 2
-          Width = 8
-          Caption = 'ToolButton71'
-          Style = tbsSeparator
-        end
         object ToolButton72: TToolButton
-          Left = 315
+          Left = 317
           Top = 2
           Action = ToggleDoScrollMessagesIntoViewAction
           Style = tbsCheck
+        end
+        object ToolButton74: TToolButton
+          Left = 261
+          Height = 22
+          Top = 2
+          Width = 10
+          Caption = 'ToolButton74'
+          Style = tbsSeparator
+        end
+        object ToolButton75: TToolButton
+          Left = 80
+          Height = 22
+          Top = 2
+          Width = 10
+          Caption = 'ToolButton75'
+          Style = tbsSeparator
+        end
+        object ToolButton76: TToolButton
+          Left = 182
+          Height = 22
+          Top = 2
+          Width = 10
+          Caption = 'ToolButton76'
+          Style = tbsSeparator
+        end
+        object ToolButton77: TToolButton
+          Left = 47
+          Height = 22
+          Top = 2
+          Width = 10
+          Caption = 'ToolButton77'
+          Style = tbsSeparator
         end
       end
       object Panel2: TPanel
@@ -1589,7 +1587,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 3
+      TabIndex = 0
       Tabs.Strings = (
         'Documentation'
         'Notifications'
@@ -1602,6 +1600,47 @@ object MainForm: TMainForm
       BorderSpacing.CellAlignVertical = ccaRightBottom
       TabOrder = 4
     end
+  end
+  object ToolButton68: TToolButton
+    Left = 70
+    Height = 22
+    Top = 2
+    Width = 10
+    Caption = 'ToolButton68'
+    ImageIndex = 57
+    Style = tbsSeparator
+  end
+  object ToolButton36: TToolButton
+    Left = 103
+    Height = 22
+    Top = 2
+    Width = 10
+    Caption = 'ToolButton36'
+    Style = tbsSeparator
+  end
+  object ToolButton69: TToolButton
+    Left = 47
+    Height = 22
+    Top = 2
+    Width = 8
+    Caption = 'ToolButton69'
+    Style = tbsSeparator
+  end
+  object ToolButton71: TToolButton
+    Left = 70
+    Height = 22
+    Top = 2
+    Width = 12
+    Caption = 'ToolButton71'
+    Style = tbsSeparator
+  end
+  object ToolButton73: TToolButton
+    Left = 185
+    Height = 22
+    Top = 2
+    Width = 12
+    Caption = 'ToolButton73'
+    Style = tbsDivider
   end
   object alGeneral: TActionList
     Images = mainImageList
@@ -9058,8 +9097,8 @@ object MainForm: TMainForm
   object LogPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = LogPopupMenuPopup
-    left = 256
-    top = 536
+    left = 200
+    top = 392
     object DisplayedcolumnMenuItem: TMenuItem
       Caption = 'Displayed column...'
       Bitmap.Data = {
