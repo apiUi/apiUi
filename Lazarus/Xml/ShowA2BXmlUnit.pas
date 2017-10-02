@@ -26,6 +26,8 @@ type
     MenuItem1: TMenuItem;
     AddToSortColumnsMenuItem: TMenuItem;
     A2BGridMenuItem : TMenuItem ;
+    checkRegExpMenuItem: TMenuItem;
+    checkRegExpFullCapMenuItem: TMenuItem;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -82,6 +84,8 @@ type
     procedure ignoreFullCaptionMenuitemClick(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure checkRegExpMenuItemClick(Sender: TObject);
+    procedure checkRegExpFullCapMenuItemClick(Sender: TObject);
     procedure NextDiffActionUpdate(Sender: TObject);
     procedure PrevDiffActionUpdate(Sender: TObject);
     procedure PrevDiffActionExecute(Sender: TObject);
@@ -147,7 +151,7 @@ type
     procedure SearchDiff (aDown: Boolean);
   public
     RefreshNeeded: Boolean;
-    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkRegExpOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     property Xml: TA2BXml read fXml write SetXml;
     property ColumnHeaderA: String write setColumnHeaderA;
     property ColumnHeaderB: String write setColumnHeaderB;
@@ -165,6 +169,7 @@ uses FindRegExpDialog
    , base64
    , Clipbrd
    , A2BXmlGridUnit
+   , EditRegExpUnit
    ;
 const
   iiGreenBullet = 132;
@@ -588,6 +593,10 @@ begin
                                     and (   (xXml.ChangeKind = ckModify)
                                         );
   ignoreFullCaptionMenuitem.Enabled := ignoreDiffrenvesOnMenuItem.Enabled;
+  checkRegExpMenuItem.Enabled := (Assigned(checkRegExpOn)
+                             and (   (xXml.ChangeKind = ckModify))
+                                 );
+  checkRegExpFullCapMenuItem.Enabled := checkRegExpMenuItem.Enabled;
   IgnoreAddingMenuItem.Enabled := (Assigned (ignoreAddingOn))
                               and (   (xXml.ChangeKind = ckDelete)
                                   );
@@ -606,6 +615,9 @@ begin
                                    and (not regressionSortColumns.Find(xXml.FullUQCaption, f))
                                      ;
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
+  ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
+  checkRegExpMenuItem.Caption := 'Check *.' + rmPrefix(xXml.TagName) + ' against regular expression...';
+  checkRegExpFullCapMenuItem.Caption := 'Check ' + xXml.FullUQCaption + ' against regular expression...';
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
   IgnoreAddingMenuItem.Caption := 'Ignore adding of: *.' + rmPrefix(xXml.TagName);
   IgnoreAddingFullCaptionMenuItem.Caption := 'Ignore adding of: ' + xXml.FullUQCaption;
@@ -881,6 +893,44 @@ end;
 procedure TShowA2BXmlForm.FormShow(Sender: TObject);
 begin
   RefreshNeeded := False;
+end;
+
+procedure TShowA2BXmlForm.checkRegExpMenuItemClick(Sender: TObject);
+var
+  xXml: TA2BXml;
+  xForm: TEditRegExpForm;
+begin
+  xXml := nil;
+  if Assigned (TreeView.FocusedNode) then
+  begin
+    SelectedXml(xXml);
+    Application.CreateForm(TEditRegExpForm, xForm);
+    try
+      xForm.SampleValueEdit.Text := xXml.Value;
+      xform.RegularExpressionEdit.Text := checkRegExpOn.Values['*.' + xXml.UQCaption];
+      xForm.ShowModal;
+      if xForm.ModalResult = mrOK then
+      begin
+        checkRegExpOn.Values['*.' + xXml.UQCaption] := xform.RegularExpressionEdit.Text;
+        RefreshNeeded := True;
+      end;
+    finally
+      FreeAndNil(xForm);
+    end;
+  end;
+end;
+
+procedure TShowA2BXmlForm.checkRegExpFullCapMenuItemClick(Sender: TObject);
+var
+  xXml: TA2BXml;
+begin
+  xXml := nil;
+  if Assigned (TreeView.FocusedNode) then
+  begin
+    SelectedXml(xXml);
+    ignoreDifferencesOn.Add(xXml.FullUQCaption);
+    RefreshNeeded := True;
+  end;
 end;
 
 procedure TShowA2BXmlForm.CloseActionExecute(Sender: TObject);

@@ -11,7 +11,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 291
@@ -92,6 +92,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
     end
     object ToolButton3: TToolButton
       Left = 24
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -110,6 +111,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
     end
     object ToolButton6: TToolButton
       Left = 80
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton6'
@@ -128,6 +130,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
     end
     object ToolButton5: TToolButton
       Left = 136
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton5'
@@ -146,6 +149,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
     end
     object ToolButton11: TToolButton
       Left = 192
+      Height = 22
       Top = 2
       Width = 10
       Caption = 'ToolButton11'
@@ -264,6 +268,14 @@ object ShowA2BXmlForm: TShowA2BXmlForm
     object ignoreFullCaptionMenuitem: TMenuItem
       Caption = 'ignore fullcaption'
       OnClick = ignoreFullCaptionMenuitemClick
+    end
+    object checkRegExpMenuItem: TMenuItem
+      Caption = 'Check tag against regular expression...'
+      OnClick = checkRegExpMenuItemClick
+    end
+    object checkRegExpFullCapMenuItem: TMenuItem
+      Caption = 'Check fullcaption against regular expression...'
+      OnClick = checkRegExpFullCapMenuItemClick
     end
     object N5: TMenuItem
       Caption = '-'

@@ -7908,6 +7908,7 @@ begin
         if bLogs.LogItems[X].PassesFilter then
           xForm.bLogs.AddObject ( '', bLogs.LogItems[X]);
       xForm.ignoreDifferencesOn.Text := se.ignoreDifferencesOn.Text;
+      xForm.checkRegExpOn.Text := se.checkRegExpOn.Text;
       xForm.ignoreAddingon.Text := se.ignoreAddingOn.Text;
       xForm.ignoreRemovingOn.Text := se.ignoreRemovingOn.Text;
       for x := 0 to xForm.ignoreOrderOn.Count - 1 do
@@ -7927,6 +7928,7 @@ begin
         begin
           se.CompareLogOrderBy := xForm.compareLogOrderBy;
           se.ignoreDifferencesOn.Text := xForm.ignoreDifferencesOn.Text;
+          se.checkRegExpOn.Text := xForm.checkRegExpOn.Text;
           se.ignoreAddingOn.Text := xForm.ignoreAddingon.Text;
           se.ignoreRemovingOn.Text := xForm.ignoreRemovingOn.Text;
           for x := 0 to se.ignoreOrderOn.Count - 1 do
@@ -9149,6 +9151,7 @@ begin
   try
     xForm.Caption := 'Changes in Request';
     xForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
+    xForm.checkRegExpOn := se.checkRegExpOn;
     xForm.ignoreAddingOn := se.ignoreAddingOn;
     xForm.ignoreRemovingOn := se.ignoreRemovingOn;
     xForm.Xml := xA2B;
@@ -9188,6 +9191,7 @@ begin
   try
     xForm.Caption := 'Changes in Reply';
     xForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
+    xForm.checkRegExpOn := se.checkRegExpOn;
     xForm.ignoreAddingOn := se.ignoreAddingOn;
     xForm.ignoreRemovingOn := se.ignoreRemovingOn;
     xForm.Xml := xA2B;

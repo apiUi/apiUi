@@ -134,7 +134,7 @@ type
     procedure onSlChanged (aObject: TObject);
   public
     ProgName, StyleSheet: String;
-    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkRegExpOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     aLogs: TLogList;
     bLogs: TLogList;
     ReferenceFileName: String;
@@ -197,6 +197,7 @@ var
   w5: Integer;
 begin
   ignoreDifferencesOn := _stringList(true);
+  checkRegExpOn := _stringList(false);
   ignoreRemovingOn := _stringList(true);
   ignoreOrderOn := _stringList(true);
   ignoreAddingon := _stringList(true);
@@ -226,6 +227,7 @@ begin
   mainVST.Clear;
   Diffs.Free;
   FreeAndNil (ignoreDifferencesOn);
+  FreeAndNil (checkRegExpOn);
   FreeAndNil (ignoreRemovingOn);
   FreeAndNil (ignoreOrderOn);
   FreeAndNil (ignoreAddingon);
@@ -577,6 +579,7 @@ begin
         try
           xForm.Caption := 'Differences in requests';
           xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+          xForm.checkRegExpOn := checkRegExpOn;
           xForm.ignoreAddingOn := ignoreAddingon;
           xForm.ignoreRemovingOn := ignoreRemovingOn;
           xForm.ignoreOrderOn := ignoreOrderOn;
@@ -600,6 +603,7 @@ begin
         try
           xForm.Caption := 'Differences in replies';
           xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+          xForm.checkRegExpOn := checkRegExpOn;
           xForm.ignoreAddingOn := ignoreAddingon;
           xForm.ignoreRemovingOn := ignoreRemovingOn;
           xForm.ignoreOrderOn := ignoreOrderOn;
