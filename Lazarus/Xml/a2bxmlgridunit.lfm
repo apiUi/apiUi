@@ -16,7 +16,7 @@ object A2BXmlGridForm: TA2BXmlGridForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel2: TPanel
     Left = 0
     Height = 506
@@ -98,6 +98,7 @@ object A2BXmlGridForm: TA2BXmlGridForm
       end
       object ToolButton12: TToolButton
         Left = 70
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton12'
@@ -116,6 +117,7 @@ object A2BXmlGridForm: TA2BXmlGridForm
       end
       object ToolButton10: TToolButton
         Left = 126
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton10'
@@ -129,6 +131,7 @@ object A2BXmlGridForm: TA2BXmlGridForm
       end
       object ToolButton2: TToolButton
         Left = 159
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton2'

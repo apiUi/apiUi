@@ -9141,7 +9141,7 @@ begin
   end;
   a2bInitialize;
   try
-    xA2B := TA2BXml.CreateA2B('', aXml, bXml, Nil);
+    xA2B := TA2BXml.CreateA2B('', '', aXml, bXml, Nil, nil);
   finally
     a2bUninitialize;
   end;
@@ -9181,7 +9181,7 @@ begin
   end;
   a2bInitialize;
   try
-    xA2B := TA2BXml.CreateA2B('', aXml, bXml, Nil);
+    xA2B := TA2BXml.CreateA2B('', '', aXml, bXml, Nil, Nil);
   finally
     a2bUninitialize;
   end;
@@ -11254,7 +11254,7 @@ begin
     end;
     a2bInitialize;
     try
-      xA2B := TA2BXml.CreateA2B('', fXml, nXml, Nil);
+      xA2B := TA2BXml.CreateA2B('', '', fXml, nXml, Nil, Nil);
     finally
       a2bUninitialize;
     end;
@@ -12611,7 +12611,7 @@ begin
     end;
     a2bInitialize;
     try
-      xA2B := TA2BXml.CreateA2B('', fXml, nXml, Nil);
+      xA2B := TA2BXml.CreateA2B('', '', fXml, nXml, Nil, Nil);
     finally
       a2bUninitialize;
     end;

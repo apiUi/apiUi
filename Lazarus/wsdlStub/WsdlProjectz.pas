@@ -7284,6 +7284,7 @@ begin
                                       , aReport.RefFileName
                                       , CompareLogOrderBy
                                       , ignoreDifferencesOn
+                                      , checkRegExpOn
                                       , ignoreAddingOn
                                       , ignoreRemovingOn
                                       , ignoreOrderOn
@@ -7450,6 +7451,7 @@ begin
                                   , aReferenceFileName
                                   , CompareLogOrderBy
                                   , ignoreDifferencesOn
+                                  , checkRegExpOn
                                   , ignoreAddingOn
                                   , ignoreRemovingOn
                                   , ignoreOrderOn

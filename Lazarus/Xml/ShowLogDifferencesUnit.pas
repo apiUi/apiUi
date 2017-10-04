@@ -541,7 +541,7 @@ begin
   bXml := xData.bLog.reqBodyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
-  xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, ignoreOrderOn);
+  xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkRegExpOn);
   xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
@@ -551,7 +551,7 @@ begin
   bXml := xData.bLog.rpyBodyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
-  xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, aXml, bXml, ignoreOrderOn);
+  xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkRegExpOn);
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);

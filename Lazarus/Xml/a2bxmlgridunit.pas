@@ -199,7 +199,7 @@ type
     property isAttributeColumn [col: Integer]: Boolean read getIsAttributeColumn write setIsAttributeColumn;
     property ColumnVisible [col: Integer]: Boolean read getColumnVisible write setColumnVisible;
   public
-    ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkRegExpOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     Xml: TA2BXml;
     doConfirmRemovals: Boolean;
     initialExpandStyle: TBindExpandStyle;
@@ -247,6 +247,7 @@ uses igGlobals
    , xmlUtilz
    , a2bStringListUnit
    , ShowA2BXmlUnit
+   , EditRegExpUnit
    , htmlXmlUtilz
    ;
 

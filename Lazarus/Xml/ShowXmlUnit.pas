@@ -536,7 +536,7 @@ begin
           aXml.Name := (Bind as TXml).Name;
           aXml.LoadValues(Bind as TXml, True, False);
           try
-            xA2B := TA2BXml.CreateA2B('', aXml, bXml, Nil);
+            xA2B := TA2BXml.CreateA2B('', '', aXml, bXml, Nil, Nil);
             xA2B.Ignore(ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn);
           finally
             FreeAndNil(aXml);

@@ -593,10 +593,14 @@ begin
                                     and (   (xXml.ChangeKind = ckModify)
                                         );
   ignoreFullCaptionMenuitem.Enabled := ignoreDiffrenvesOnMenuItem.Enabled;
-  checkRegExpMenuItem.Enabled := (Assigned(checkRegExpOn)
-                             and (   (xXml.ChangeKind = ckModify))
+  checkRegExpMenuItem.Enabled := (Assigned(checkRegExpOn))
+                             and (   (xXml.ChangeKind = ckModify)
+                                  or (checkRegExpOn.Values['*.' + xXml.UQCaption] <> '')
                                  );
-  checkRegExpFullCapMenuItem.Enabled := checkRegExpMenuItem.Enabled;
+  checkRegExpFullCapMenuItem.Enabled := (Assigned(checkRegExpOn))
+                                    and (   (xXml.ChangeKind = ckModify)
+                                         or (checkRegExpOn.Values[xXml.FullUQCaption] <> '')
+                                        );
   IgnoreAddingMenuItem.Enabled := (Assigned (ignoreAddingOn))
                               and (   (xXml.ChangeKind = ckDelete)
                                   );
@@ -616,8 +620,8 @@ begin
                                      ;
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
-  checkRegExpMenuItem.Caption := 'Check *.' + rmPrefix(xXml.TagName) + ' against regular expression...';
-  checkRegExpFullCapMenuItem.Caption := 'Check ' + xXml.FullUQCaption + ' against regular expression...';
+  checkRegExpMenuItem.Caption := 'Check regular expression on: *.' + rmPrefix(xXml.TagName) + '...';
+  checkRegExpFullCapMenuItem.Caption := 'Check regular expression on: ' + xXml.FullUQCaption + '...';
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
   IgnoreAddingMenuItem.Caption := 'Ignore adding of: *.' + rmPrefix(xXml.TagName);
   IgnoreAddingFullCaptionMenuItem.Caption := 'Ignore adding of: ' + xXml.FullUQCaption;
@@ -923,13 +927,25 @@ end;
 procedure TShowA2BXmlForm.checkRegExpFullCapMenuItemClick(Sender: TObject);
 var
   xXml: TA2BXml;
+  xForm: TEditRegExpForm;
 begin
   xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
-    ignoreDifferencesOn.Add(xXml.FullUQCaption);
-    RefreshNeeded := True;
+    Application.CreateForm(TEditRegExpForm, xForm);
+    try
+      xForm.SampleValueEdit.Text := xXml.Value;
+      xform.RegularExpressionEdit.Text := checkRegExpOn.Values[xXml.FullUQCaption];
+      xForm.ShowModal;
+      if xForm.ModalResult = mrOK then
+      begin
+        checkRegExpOn.Values[xXml.fullUQCaption] := xform.RegularExpressionEdit.Text;
+        RefreshNeeded := True;
+      end;
+    finally
+      FreeAndNil(xForm);
+    end;
   end;
 end;
 
@@ -979,6 +995,7 @@ begin
   Application.CreateForm(TA2BXmlGridForm, xForm);
   try
     xForm.ignoreDifferencesOn := ignoreDifferencesOn;
+    xForm.checkRegExpOn := checkRegExpOn;
     xForm.ignoreAddingOn := ignoreAddingon;
     xForm.ignoreRemovingOn := ignoreRemovingOn;
     xForm.ignoreOrderOn := ignoreOrderOn;
