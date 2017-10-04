@@ -158,6 +158,11 @@ function htmlReportTestSummary (aProject: TWsdlProject; aList: TSnapshotList): S
     begin
       with AddTr.hleft.vtop do
       begin
+        AddTd.ColSpan(1).AddB(nbsp ('Regular expression checks:'));
+        AddTd.ColSpan(3).AddB(nbsp (aProject.checkRegExpOn.Text));
+      end;
+      with AddTr.hleft.vtop do
+      begin
         AddTd.ColSpan(1).AddB(nbsp ('Ignored differences:'));
         AddTd.ColSpan(3).AddB(nbsp (aProject.ignoreDifferencesOn.Text));
       end;
