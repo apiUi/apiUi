@@ -21,7 +21,7 @@ object MainForm: TMainForm
   LCLVersion = '1.6.0.4'
   object MainToolBar: TToolBar
     Left = 0
-    Height = 29
+    Height = 24
     Top = 0
     Width = 1067
     Caption = 'MainToolBar'
@@ -189,25 +189,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 316
-    Top = 29
+    Height = 321
+    Top = 24
     Width = 1067
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 316
+    ClientHeight = 321
     ClientWidth = 1067
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 221
-      Height = 310
+      Height = 315
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
       Left = 890
-      Height = 310
+      Height = 315
       Top = 3
       Width = 5
       Align = alRight
@@ -216,18 +216,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 310
+      Height = 315
       Top = 3
       Width = 218
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 310
+      ClientHeight = 315
       ClientWidth = 218
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 278
+        Top = 283
         Width = 212
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -297,7 +297,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 275
+        Height = 280
         Top = 3
         Width = 212
         Align = alClient
@@ -346,13 +346,13 @@ object MainForm: TMainForm
     end
     object XsdPanel: TPanel
       Left = 895
-      Height = 310
+      Height = 315
       Top = 3
       Width = 169
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 310
+      ClientHeight = 315
       ClientWidth = 169
       TabOrder = 1
       object Splitter6: TSplitter
@@ -396,7 +396,7 @@ object MainForm: TMainForm
       end
       object DocumentationViewer: TIpHtmlPanel
         Left = 4
-        Height = 151
+        Height = 156
         Top = 155
         Width = 161
         Align = alClient
@@ -435,12 +435,12 @@ object MainForm: TMainForm
     end
     object MiddlePanel: TPanel
       Left = 226
-      Height = 310
+      Height = 315
       Top = 3
       Width = 664
       Align = alClient
       Caption = 'MiddlePanel'
-      ClientHeight = 310
+      ClientHeight = 315
       ClientWidth = 664
       TabOrder = 4
       object WsdlInfoPanel: TPanel
@@ -512,12 +512,12 @@ object MainForm: TMainForm
       end
       object DataPanel: TPanel
         Left = 1
-        Height = 271
+        Height = 276
         Top = 38
         Width = 662
         Align = alClient
         Caption = 'DataPanel'
-        ClientHeight = 271
+        ClientHeight = 276
         ClientWidth = 662
         TabOrder = 1
         object GridDataPanel: TPanel
@@ -532,9 +532,10 @@ object MainForm: TMainForm
           TabOrder = 0
           object GridToolBar: TToolBar
             Left = 1
-            Height = 29
+            Height = 24
             Top = 1
             Width = 658
+            AutoSize = True
             Caption = 'GridToolBar'
             Images = mainImageList
             TabOrder = 0
@@ -701,6 +702,7 @@ object MainForm: TMainForm
               Height = 22
               Top = 2
               Width = 93
+              BorderWidth = 2
               Smooth = True
               Step = 1
               TabOrder = 0
@@ -713,8 +715,8 @@ object MainForm: TMainForm
           end
           object GridView: TVirtualStringTree
             Left = 1
-            Height = 62
-            Top = 30
+            Height = 67
+            Top = 25
             Width = 658
             Align = alClient
             BottomSpace = 10
@@ -783,18 +785,18 @@ object MainForm: TMainForm
         end
         object TreeDataPanel: TPanel
           Left = 1
-          Height = 171
+          Height = 176
           Top = 99
           Width = 660
           Align = alClient
           Caption = 'TreeDataPanel'
-          ClientHeight = 171
+          ClientHeight = 176
           ClientWidth = 660
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
-            Top = 153
+            Top = 158
             Width = 658
             Align = alBottom
             Alignment = taLeftJustify
@@ -803,9 +805,11 @@ object MainForm: TMainForm
           end
           object ToolBar9: TToolBar
             Left = 1
-            Height = 29
+            Height = 24
             Top = 1
             Width = 658
+            AutoSize = True
+            BorderWidth = 2
             Caption = 'ToolBar9'
             Images = mainImageList
             TabOrder = 1
@@ -885,7 +889,7 @@ object MainForm: TMainForm
           object InWsdlTreeView: TVirtualStringTree
             Left = 1
             Height = 59
-            Top = 30
+            Top = 25
             Width = 658
             Align = alTop
             DefaultText = 'Node'
@@ -941,8 +945,8 @@ object MainForm: TMainForm
           end
           object FreeFormatMemo: TMemo
             Left = 1
-            Height = 64
-            Top = 89
+            Height = 74
+            Top = 84
             Width = 658
             Align = alClient
             Font.CharSet = ANSI_CHARSET
@@ -1587,7 +1591,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 0
+      TabIndex = 3
       Tabs.Strings = (
         'Documentation'
         'Notifications'

@@ -199,7 +199,7 @@ type
     property isAttributeColumn [col: Integer]: Boolean read getIsAttributeColumn write setIsAttributeColumn;
     property ColumnVisible [col: Integer]: Boolean read getColumnVisible write setColumnVisible;
   public
-    ignoreDifferencesOn, checkRegExpOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     Xml: TA2BXml;
     doConfirmRemovals: Boolean;
     initialExpandStyle: TBindExpandStyle;

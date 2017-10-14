@@ -60,6 +60,7 @@ end;
 procedure TEditRegExpForm.FormShow(Sender: TObject);
 begin
   CheckRegExp;
+  RegularExpressionEdit.SetFocus;
 end;
 
 procedure TEditRegExpForm.OkButtonClick(Sender: TObject);

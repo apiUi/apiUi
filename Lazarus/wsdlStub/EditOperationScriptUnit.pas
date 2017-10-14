@@ -39,6 +39,9 @@ type
     OkButton : TBitBtn ;
     SynAnySyn1 : TSynAnySyn ;
     ScriptEdit : TSynEdit ;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
     TopPanel: TPanel;
     ScriptNameEdit: TEdit;
     Panel3: TPanel;

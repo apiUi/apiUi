@@ -134,7 +134,7 @@ type
     procedure onSlChanged (aObject: TObject);
   public
     ProgName, StyleSheet: String;
-    ignoreDifferencesOn, checkRegExpOn, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkValueAgainst, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     aLogs: TLogList;
     bLogs: TLogList;
     ReferenceFileName: String;
@@ -197,7 +197,7 @@ var
   w5: Integer;
 begin
   ignoreDifferencesOn := _stringList(true);
-  checkRegExpOn := _stringList(false);
+  checkValueAgainst := _stringList(false);
   ignoreRemovingOn := _stringList(true);
   ignoreOrderOn := _stringList(true);
   ignoreAddingon := _stringList(true);
@@ -227,7 +227,7 @@ begin
   mainVST.Clear;
   Diffs.Free;
   FreeAndNil (ignoreDifferencesOn);
-  FreeAndNil (checkRegExpOn);
+  FreeAndNil (checkValueAgainst);
   FreeAndNil (ignoreRemovingOn);
   FreeAndNil (ignoreOrderOn);
   FreeAndNil (ignoreAddingon);
@@ -541,7 +541,7 @@ begin
   bXml := xData.bLog.reqBodyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
-  xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkRegExpOn);
+  xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
   xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
@@ -551,7 +551,7 @@ begin
   bXml := xData.bLog.rpyBodyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
-  xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkRegExpOn);
+  xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
@@ -579,7 +579,7 @@ begin
         try
           xForm.Caption := 'Differences in requests';
           xForm.ignoreDifferencesOn := ignoreDifferencesOn;
-          xForm.checkRegExpOn := checkRegExpOn;
+          xForm.checkValueAgainst := checkValueAgainst;
           xForm.ignoreAddingOn := ignoreAddingon;
           xForm.ignoreRemovingOn := ignoreRemovingOn;
           xForm.ignoreOrderOn := ignoreOrderOn;
@@ -603,7 +603,7 @@ begin
         try
           xForm.Caption := 'Differences in replies';
           xForm.ignoreDifferencesOn := ignoreDifferencesOn;
-          xForm.checkRegExpOn := checkRegExpOn;
+          xForm.checkValueAgainst := checkValueAgainst;
           xForm.ignoreAddingOn := ignoreAddingon;
           xForm.ignoreRemovingOn := ignoreRemovingOn;
           xForm.ignoreOrderOn := ignoreOrderOn;

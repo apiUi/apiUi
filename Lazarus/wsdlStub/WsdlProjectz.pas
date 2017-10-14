@@ -183,7 +183,7 @@ type
     mqGetThreads: TStringList;
     Listeners: TListeners;
     doValidateRequests, doValidateReplies, doCheckExpectedValues: Boolean;
-    ignoreDifferencesOn, checkRegExpOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     ignoreCoverageOn: TStringList;
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
@@ -1409,7 +1409,7 @@ begin
   ignoreDifferencesOn := TStringList.Create;
   ignoreDifferencesOn.Sorted := True;
   ignoreDifferencesOn.Duplicates := dupIgnore;
-  checkRegExpOn := TStringList.Create;
+  checkValueAgainst := TStringList.Create;
   ignoreAddingOn := TStringList.Create;
   ignoreAddingOn.Sorted := True;
   ignoreAddingOn.Duplicates := dupIgnore;
@@ -1564,7 +1564,7 @@ begin
   FreeAndNil (XmlSampleWsdl);
   FreeAndNil (SwiftMtWsdl);
   ignoreDifferencesOn.Free;
-  checkRegExpOn.Free;
+  checkValueAgainst.Free;
   ignoreAddingOn.Free;
   ignoreRemovingOn.Free;
   ignoreOrderOn.Free;
@@ -2453,7 +2453,7 @@ begin
         end; // Assigned Wsdl
       end; // for each wsdl
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
-      AddXml(TXml.CreateAsString('checkRegExpOn', checkRegExpOn.Text));
+      AddXml(TXml.CreateAsString('checkValueAgainst', checkValueAgainst.Text));
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
       AddXml(TXml.CreateAsString('ignoreRemovingOn', ignoreRemovingOn.Text));
       with AddXml(TXml.CreateAsString('ignoreOrderOn', '')) do
@@ -2559,7 +2559,7 @@ begin
               end;
             end;
           ignoreDifferencesOn.Text := xXml.Items.XmlValueByTag ['ignoreDifferencesOn'];
-          checkRegExpOn.Text := xXml.Items.XmlValueByTag ['checkRegExpOn'];
+          checkValueAgainst.Text := xXml.Items.XmlValueByTag ['checkValueAgainst'];
           ignoreAddingOn.Text := xXml.Items.XmlValueByTag ['ignoreAddingOn'];
           ignoreRemovingOn.Text := xXml.Items.XmlValueByTag ['ignoreRemovingOn'];
           eXml := xXml.Items.XmlItemByTag ['ignoreOrderOn'];
@@ -7284,7 +7284,7 @@ begin
                                       , aReport.RefFileName
                                       , CompareLogOrderBy
                                       , ignoreDifferencesOn
-                                      , checkRegExpOn
+                                      , checkValueAgainst
                                       , ignoreAddingOn
                                       , ignoreRemovingOn
                                       , ignoreOrderOn
@@ -7451,7 +7451,7 @@ begin
                                   , aReferenceFileName
                                   , CompareLogOrderBy
                                   , ignoreDifferencesOn
-                                  , checkRegExpOn
+                                  , checkValueAgainst
                                   , ignoreAddingOn
                                   , ignoreRemovingOn
                                   , ignoreOrderOn
@@ -7885,7 +7885,7 @@ begin
   doCheckExpectedValues := False;
   _WsdlDisableOnCorrelate := False;
   ignoreDifferencesOn.Clear;
-  checkRegExpOn.Clear;
+  checkValueAgainst.Clear;
   ignoreAddingOn.Clear;
   ignoreRemovingOn.Clear;
   with ignoreOrderOn do

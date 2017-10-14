@@ -269,10 +269,6 @@ object ShowA2BXmlForm: TShowA2BXmlForm
       Caption = 'ignore fullcaption'
       OnClick = ignoreFullCaptionMenuitemClick
     end
-    object checkRegExpMenuItem: TMenuItem
-      Caption = 'Check tag against regular expression...'
-      OnClick = checkRegExpMenuItemClick
-    end
     object checkRegExpFullCapMenuItem: TMenuItem
       Caption = 'Check fullcaption against regular expression...'
       OnClick = checkRegExpFullCapMenuItemClick

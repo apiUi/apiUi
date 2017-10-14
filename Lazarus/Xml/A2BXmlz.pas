@@ -12,6 +12,9 @@ uses Classes
    , a2bStringListUnit
    ;
 
+const
+  checkAgainstRegExpPrefix = 'regexp:';
+
 type
 
 { TA2BXml }
@@ -38,7 +41,7 @@ type
     procedure Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList);
     constructor CreateA (aPrefix: String; aXml: TXml; aThisOneDiffers: Boolean); overload;
     constructor CreateB (aPrefix: String; bXml: TXml; aThisOneDiffers: Boolean); overload;
-    constructor CreateA2B (aPrefix, aFullCaption: String; aXml, bXml: TXml; ignoreOrderOn, checkRegExpOn: TStringList); overload;
+    constructor CreateA2B (aPrefix, aFullCaption: String; aXml, bXml: TXml; ignoreOrderOn, checkValueAgainst: TStringList); overload;
     constructor CreateA (aPrefix: String; aXml: TXmlAttribute; aThisOneDiffers: Boolean); overload;
     constructor CreateB (aPrefix: String; bXml: TXmlAttribute; aThisOneDiffers: Boolean); overload;
     constructor CreateA2B (aPrefix: String; aXml, bXml: TXmlAttribute); overload;
@@ -155,13 +158,14 @@ begin
     AddXml (TA2BXml.CreateB(aPrefix, bXml.Items.XmlItems[x], False));
 end;
 
-constructor TA2BXml.CreateA2B(aPrefix, aFullCaption: String; aXml, bXml: TXml; ignoreOrderOn, checkRegExpOn: TStringList);
+constructor TA2BXml.CreateA2B(aPrefix, aFullCaption: String; aXml, bXml: TXml; ignoreOrderOn, checkValueAgainst: TStringList);
 var
   x, a, b, c, f, i, y: Integer;
   Diffs: TA2BStringList;
   childXml: TA2BXml;
   xXml: TXml;
   xCaption: String;
+  xCheckValueAgainst: String;
 begin
   inherited Create;
   xCaption := IfThen(aFullCaption = '', aXml.UQCaption, aFullCaption + '.' + aXml.UQCaption);
@@ -171,9 +175,12 @@ begin
   NameSpace := aXml.NameSpace;
   bValue := bXml.Value;
   bNameSpace := bXml.NameSpace;
-  RegExp := checkRegExpOn.Values[xCaption];
-  if RegExp = '' then
-    RegExp := checkRegExpOn.Values['*.' + UQCaption];
+  if Assigned (checkValueAgainst) then
+  begin
+    xCheckValueAgainst := checkValueAgainst.Values[xCaption];
+    if AnsiStartsStr(checkAgainstRegExpPrefix, xCheckValueAgainst) then
+      RegExp := Copy (xCheckValueAgainst, Length (checkAgainstRegExpPrefix) + 1, MaxInt);
+  end;
   Prefix:=aPrefix;
   ChangeKind := ckCopy;
   if valuesDiffer(Value, bValue) then
@@ -334,7 +341,7 @@ begin
     begin
       while a < Changes[c].x do
       begin
-        childXml := AddXml (TA2BXml.CreateA2B(aPrefix, xCaption, aXml.Items.XmlItems[a], bXml.Items.XmlItems[b], ignoreOrderOn, checkRegExpOn)) as TA2BXml;
+        childXml := AddXml (TA2BXml.CreateA2B(aPrefix, xCaption, aXml.Items.XmlItems[a], bXml.Items.XmlItems[b], ignoreOrderOn, checkValueAgainst)) as TA2BXml;
         Differs := Differs or childXml.Differs;
         inc(a); inc(b);
       end;
@@ -380,7 +387,7 @@ begin
     end;
     while (a < aXml.Items.Count) and (b < bXml.Items.Count) do
     begin
-      childXml := AddXml (TA2BXml.CreateA2B(aPrefix, xCaption, aXml.Items.XmlItems[a], bXml.Items.XmlItems[b], ignoreOrderOn, checkRegExpOn)) as TA2BXml;
+      childXml := AddXml (TA2BXml.CreateA2B(aPrefix, xCaption, aXml.Items.XmlItems[a], bXml.Items.XmlItems[b], ignoreOrderOn, checkValueAgainst)) as TA2BXml;
       Differs := Differs or childXml.Differs;
       inc(a); inc(b);
     end;

@@ -175,7 +175,7 @@ type
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
                             ; aOrderBy: TCompareLogOrderBy
-                            ; ignoreDifferencesOn, checkRegExpOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
+                            ; ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
                             ): TXml;
 function doOrder (List: TStringList; Index1, Index2: Integer): Integer;
 
@@ -225,7 +225,7 @@ end;
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
                             ; aOrderBy: TCompareLogOrderBy
-                            ; ignoreDifferencesOn, checkRegExpOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
+                            ; ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
                             ): TXml;
   function _DetailXml (xLog: TLog): TXml;
   begin
@@ -289,7 +289,7 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     bXml := bLog.reqBodyAsXml;
     bXml.SeparateNsPrefixes;
     bxml.ResolveNameSpaces;
-    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkRegExpOn);
+    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('req.', a2bXml);
     FreeAndNil(a2bXml);
@@ -301,7 +301,7 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     bXml := bLog.rpyBodyAsXml;
     bXml.SeparateNsPrefixes;
     bxml.ResolveNameSpaces;
-    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkRegExpOn);
+    a2bXml := TA2BXml.CreateA2B(aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('rpy.', a2bXml);
     FreeAndNil(a2bXml);
