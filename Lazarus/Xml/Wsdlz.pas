@@ -6950,7 +6950,12 @@ begin
 //Patterns := TStringList.Create;
 {}{
 {}
-  Documentation := aDocumentation;
+  Documentation := IfThen (   (aDocumentation = 'Default reply')
+                           or (aDocumentation = 'Default request')
+                          , ''
+                          , aDocumentation
+                          );
+
   aOperation.Messages.AddObject('', self);
   if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
   begin
@@ -7031,7 +7036,11 @@ begin
     while Patterns.Count < aOperation.CorrelationBindables.Count do
       Patterns.Add(Patterns.Strings[0]);
 {$endif}
-    Documentation := aDocumentation;
+    Documentation := IfThen (   (aDocumentation = 'Default reply')
+                             or (aDocumentation = 'Default request')
+                            , ''
+                            , aDocumentation
+                            );
     aOperation.Messages.AddObject('', self);
     if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
     begin

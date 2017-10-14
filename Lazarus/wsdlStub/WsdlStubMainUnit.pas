@@ -60,7 +60,7 @@ type
     FParentWindow: HWnd;
   end;
 
-  TShowPanel = (spDocumentation, spNotifications, spSnapshots, spMessages);
+  TShowPanel = (spNotifications, spSnapshots, spMessages);
   TShowLogData = (slRequestHeaders, slRequestBody, slReplyHeaders, slReplyBody, slException, slValidation);
   TLogPanelIndex = (lpiFocus, lpiThreads);
   TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
@@ -74,6 +74,8 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    EditMessageDocumentationAction: TAction;
+    MenuItem37: TMenuItem;
     ToggleDoScrollMessagesIntoViewAction: TAction;
     MenuItem36 : TMenuItem ;
     ToolButton36: TToolButton;
@@ -101,7 +103,6 @@ type
     SnapshotsFromFolderAction : TAction ;
     ShowResolvedProperties : TAction ;
     BrowseMqButton: TToolButton;
-    DocumentationMemo: TMemo;
     ExceptionMemo: TMemo;
     ExceptionStatusBar: TStatusBar;
     ExceptionsVTS: TVirtualStringTree;
@@ -117,7 +118,6 @@ type
     MessagesPanel: TPanel;
     Panel2: TPanel;
     SnapshotsPanel: TPanel;
-    DocumentationPanel: TPanel;
     NotificationsPanel: TPanel;
     Panel8: TPanel;
     Properties : TAction ;
@@ -567,8 +567,10 @@ type
     SeparatorToolButton: TToolButton;
     procedure EditMessageAfterScriptActionExecute (Sender : TObject );
     procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
+    procedure EditMessageDocumentationActionExecute(Sender: TObject);
     procedure EditMessageScriptActionExecute (Sender : TObject );
     procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure ImportProjectScriptsActionHint (var HintStr : string ;
       var CanShow : Boolean );
     procedure LogTabControlChange(Sender: TObject);
@@ -790,7 +792,6 @@ type
       Node: PVirtualNode; Column: TColumnIndex);
     procedure VTSEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: Boolean);
-    procedure DocumentationMemoChange(Sender: TObject);
     procedure ClearLogItemsActionExecute(Sender: TObject);
     procedure ClearLogItemsActionUpdate(Sender: TObject);
     procedure WsdlInfoPanelResize(Sender: TObject);
@@ -1333,7 +1334,12 @@ type
     , operationsColumnAfterScript
     , operationsColumnAlias
     );
-  const nMessageButtonColumns = 2;
+  TMessagesColumnEnum =
+    ( messagesColumnBeforeScript
+    , messagesColumnAfterScript
+    , messagesColumnDocumentation
+    );
+  const nMessageButtonColumns = 3;
 
 procedure _SaveLogs(aContext: TObject; aFileName: String);
 var
@@ -2050,8 +2056,9 @@ begin
   begin
     if not Assigned (GridView.FocusedNode) then Exit;
     case GridView.FocusedColumn of
-      Ord (operationsColumnBeforeScript): EditMessageScriptActionExecute(nil);
-      Ord (operationsColumnAfterScript): EditMessageAfterScriptActionExecute(nil);
+      Ord (messagesColumnBeforeScript): EditMessageScriptActionExecute(nil);
+      Ord (messagesColumnAfterScript): EditMessageAfterScriptActionExecute(nil);
+      Ord (messagesColumnDocumentation): EditMessageDocumentationActionExecute(nil);
     end;
   end;
   if (    (Sender = GridView)
@@ -2830,12 +2837,10 @@ end;
 
 procedure TMainForm.ShowChosenLogTab;
 begin
-  DocumentationPanel.Visible := False;
   NotificationsPanel.Visible := False;
   SnapshotsPanel.Visible := False;
   MessagesPanel.Visible := False;
   case LogTabControl.TabIndex of
-    Ord (spDocumentation): DocumentationPanel.Visible := True;
     Ord (spNotifications):
     begin
       LogTabControl.Tabs [Ord (spNotifications)] := notifyTabCaption;
@@ -4199,7 +4204,6 @@ end;
 procedure TMainForm.ClearConsole;
 begin
   RemoveMessageColumns;
-  DocumentationMemo.Clear;
   SnapshotsVTS.Clear;
   SnapshotsVTS.Header.SortColumn := -1;
   SnapshotsVTS.Header.SortDirection := sdAscending;
@@ -4288,10 +4292,6 @@ begin
   WsdlPasteFromClipboardMenuItem.Enabled := True;
   WsdlPopulateMenuItem.Enabled := True;
   FreeFormatMemo.ReadOnly := se.IsActive and False;
-  DocumentationMemo.ReadOnly := se.IsActive and False;
-  DocumentationMemo.ParentColor := DocumentationMemo.ReadOnly;
-  if not DocumentationMemo.ParentColor then
-    DocumentationMemo.Color := clWindow;
   if se.IsActive then
   begin
     LogTabControl.TabIndex := Ord (spMessages);
@@ -4477,7 +4477,7 @@ begin
           if Column < nMessageButtonColumns then
           begin
             case Column of
-              Ord (operationsColumnBeforeScript):
+              Ord (messagesColumnBeforeScript):
                 begin
                    if (xMessage.BeforeScriptLines.Count > 0) then
                    begin
@@ -4489,21 +4489,28 @@ begin
                    else
                      ImageIndex := 4;
                 end;
-              Ord (operationsColumnAfterScript):
-                begin
-                  if wsdlOperation.StubAction <> saStub then
+                Ord (messagesColumnAfterScript):
                   begin
-                    if (xMessage.AfterScriptLines.Count > 0) then
+                    if wsdlOperation.StubAction <> saStub then
                     begin
-                      if (not xMessage.PreparedAfter) then
-                        ImageIndex := 6
+                      if (xMessage.AfterScriptLines.Count > 0) then
+                      begin
+                        if (not xMessage.PreparedAfter) then
+                          ImageIndex := 6
+                        else
+                          ImageIndex := 5;
+                      end
                       else
-                        ImageIndex := 5;
-                    end
-                    else
-                      ImageIndex := 4;
+                        ImageIndex := 4;
+                    end;
                   end;
-                end;
+                Ord (messagesColumnDocumentation):
+                  begin
+                    if (xMessage.Documentation <> '') then
+                      ImageIndex := 33
+                    else
+                      ImageIndex := 32;
+                  end;
               end;
             exit;
           end;
@@ -5114,20 +5121,17 @@ procedure TMainForm.GridViewFocusChanged(Sender: TBaseVirtualTree;
 var
   xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
-  swapNotifyEvent, swapMemoEvent: TNotifyEvent;
+  swapMemoEvent: TNotifyEvent;
 begin
   xMessage := nil; //avoid warning
   InWsdlTreeView.BeginUpdate;
   try
-    swapNotifyEvent := DocumentationMemo.OnChange;
     swapMemoEvent := FreeFormatMemo.OnChange;
-    DocumentationMemo.OnChange := nil;
     FreeFormatMemo.OnChange := nil;
     try
       Sender.Selected[Sender.FocusedNode] := True;
       NodeToMessage(GridView, GridView.FocusedNode, xMessage);
       InWsdlTreeView.Clear;
-      DocumentationMemo.Clear;
       if Assigned(xMessage) then
       begin
         WsdlOperation.LastMessage := xMessage;
@@ -5155,7 +5159,6 @@ begin
             FillBindTreeView(InWsdlTreeView, xMessage.reqBind, nil);
           end;
         end;
-        DocumentationMemo.Text := xMessage.Documentation;
         if (Column - nMessageButtonColumns) > xMessage.CorrelationBindables.Count then
         begin
           swapEvent := GridView.OnFocusChanged;
@@ -5183,7 +5186,6 @@ begin
         end;
       end;
     finally
-      DocumentationMemo.OnChange := swapNotifyEvent;
       FreeFormatMemo.OnChange := swapMemoEvent;
     end;
   finally
@@ -5796,19 +5798,6 @@ begin
     finally
       FreeAndNil(SelectXmlElementForm);
     end;
-end;
-
-procedure TMainForm.DocumentationMemoChange(Sender: TObject);
-var
-  xMessage: TWsdlMessage;
-begin
-  xMessage := nil; //avoid warning
-  NodeToMessage(GridView, GridView.FocusedNode, xMessage);
-  if Assigned(xMessage) then
-  begin
-    xMessage.Documentation := DocumentationMemo.Text;
-    stubChanged := True;
-  end;
 end;
 
 procedure TMainForm.VTSEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -6985,7 +6974,6 @@ begin
   LogTabControl.TabIndex := Ord (spNotifications);
   MessagesTabControl.TabIndex := Ord (slRequestBody);
   ShowChosenLogTab;
-  DocumentationPanel.Align := alClient;
   NotificationsPanel.Align := alClient;
   MessagesPanel.Align := alClient;
   SnapshotsPanel.Align := alClient;
@@ -13546,6 +13534,12 @@ begin
   OpenUrl((Sender as TIpHtmlPanel).HotURL);
 end;
 
+procedure TMainForm.GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode
+  );
+begin
+
+end;
+
 procedure TMainForm .ImportProjectScriptsActionHint (var HintStr : string ;
   var CanShow : Boolean );
 begin
@@ -13639,6 +13633,32 @@ end;
 procedure TMainForm.EditMessageAfterScriptActionUpdate (Sender : TObject );
 begin
   EditMessageAfterScriptAction.Enabled := (WsdlOperation.StubAction <> saStub);
+end;
+
+procedure TMainForm.EditMessageDocumentationActionExecute(Sender: TObject);
+begin
+  if not Assigned(WsdlOperation) then Exit;
+  if not Assigned (WsdlMessage) then Exit;
+  XmlUtil.PushCursor (crHourGlass);
+  try
+    with EditTexttForm do
+    try
+      Application.CreateForm(TEditTexttForm, EditTexttForm);
+      Caption := Format('%s / %s  / Documentation', [WsdlOperation.Alias, WsdlMessage.Name]);
+      ScriptEdit.Lines.Text := WsdlMessage.Documentation;
+      ShowModal;
+      if ModalResult = mrOk then
+      begin
+        stubChanged := True;
+        WsdlMessage.Documentation := ScriptEdit.Lines.Text;
+      end;
+      FillInWsdlEdits;
+    finally
+      FreeAndNil(EditTexttForm);
+    end;
+  finally
+    XmlUtil.PopCursor;
+  end;
 end;
 
 procedure TMainForm.LogTabControlChange(Sender: TObject);
