@@ -1265,6 +1265,7 @@ type
     Report: TSnapshot;
   end;
 
+
   PExceptionTreeRec = ^TExceptionTreeRec;
 
   TExceptionTreeRec = record
@@ -11225,6 +11226,7 @@ begin
         with AddXml (TXml.CreateAsString('Rpy', '')) do
           AddXml (fLog.rpyBodyAsXml);
         fXml.SeparateNsPrefixes;
+        a2bExpandWhenValueIsJson(fXml);
       end;
       nXml := TXml.CreateAsString('nextSelected', '');
       with nXml do
@@ -11236,6 +11238,7 @@ begin
         with AddXml (TXml.CreateAsString('Rpy', '')) do
           AddXml (nLog.rpyBodyAsXml);
         nXml.SeparateNsPrefixes;
+        a2bExpandWhenValueIsJson(nXml);
       end;
     finally
       fLog.Disclaim;
@@ -12529,7 +12532,7 @@ begin
   end;
 end;
 
-procedure TMainForm .ShowGridDifferencesActionExecute (Sender : TObject );
+procedure TMainForm.ShowGridDifferencesActionExecute (Sender : TObject );
 var
   fNode, nNode: PVirtualNode;
   fData, nData: PMessageTreeRec;
@@ -12574,6 +12577,7 @@ begin
           if (fMessage.rpyBind is TIpmItem) then
             AddXml((fMessage.rpyBind as TIpmItem).AsXml);
         end;
+        a2bExpandWhenValueIsJson(fXml);
       end;
       nXml := TXml.CreateAsString('compare', '');
       with nXml do
@@ -12595,6 +12599,7 @@ begin
           if (nMessage.rpyBind is TIpmItem) then
             AddXml((nMessage.rpyBind as TIpmItem).AsXml);
         end;
+        a2bExpandWhenValueIsJson(nXml);
       end;
     finally
     end;

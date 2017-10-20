@@ -286,9 +286,11 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     aXml := aLog.reqBodyAsXml;
     aXml.SeparateNsPrefixes;
     aXml.ResolveNameSpaces;
+    a2bExpandWhenValueIsJson(aXml);
     bXml := bLog.reqBodyAsXml;
     bXml.SeparateNsPrefixes;
     bxml.ResolveNameSpaces;
+    a2bExpandWhenValueIsJson(bXml);
     a2bXml := TA2BXml.CreateA2B(aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('req.', a2bXml);
@@ -298,9 +300,11 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     aXml := aLog.rpyBodyAsXml;
     aXml.SeparateNsPrefixes;
     aXml.ResolveNameSpaces;
+    a2bExpandWhenValueIsJson(aXml);
     bXml := bLog.rpyBodyAsXml;
     bXml.SeparateNsPrefixes;
     bxml.ResolveNameSpaces;
+    a2bExpandWhenValueIsJson(bXml);
     a2bXml := TA2BXml.CreateA2B(aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
     _addChanges ('rpy.', a2bXml);

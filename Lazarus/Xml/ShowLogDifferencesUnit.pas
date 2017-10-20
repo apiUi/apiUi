@@ -538,9 +538,11 @@ begin
   aXml := xData.aLog.reqBodyAsXml;
   aXml.SeparateNsPrefixes;
   aXml.ResolveNameSpaces;
+  a2bExpandWhenValueIsJson(aXml);
   bXml := xData.bLog.reqBodyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
+  a2bExpandWhenValueIsJson(bXml);
   xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
   xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
@@ -548,9 +550,11 @@ begin
   aXml := xData.aLog.rpyBodyAsXml;
   aXml.SeparateNsPrefixes;
   aXml.ResolveNameSpaces;
+  a2bExpandWhenValueIsJson(aXml);
   bXml := xData.bLog.rpyBodyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
+  a2bExpandWhenValueIsJson(bXml);
   xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);

@@ -49,6 +49,7 @@ type
 
 procedure a2bInitialize;
 procedure a2bUninitialize;
+procedure a2bExpandWhenValueIsJson (aXml: TXml);
 
 implementation
 
@@ -62,6 +63,50 @@ end;
 procedure a2bUninitialize;
 begin
   wrdUninitialize;
+end;
+
+procedure a2bExpandWhenValueIsJson(aXml: TXml);
+  procedure _expandWhenJson;
+    function _itMightBeJson: Boolean;
+    var
+       x: Integer;
+    begin
+      result := False;
+      x := 1;
+      while (x <= Length (aXml.Value))
+      and (aXml.Value [x] = ' ') do
+        Inc (x);
+      result := (x <= Length (aXml.Value))
+            and (   (aXml.Value[x] = '{')
+                 or (aXml.Value[x] = '[')
+                );
+    end;
+  var
+     x: Integer;
+     xXml: TXml;
+  begin
+     if _itMightBeJson then
+     begin
+       xXml := TXml.Create;
+       try
+         xXml.LoadJsonFromString(aXml.Value, nil);
+         aXml.AddXml(xXml);
+         aXml.Value := '';
+       except
+         xXml.Free;
+       end;
+     end;
+  end;
+var
+  x: Integer;
+begin
+  if (aXml.Items.Count > 0) then
+  begin
+    for x := 0 to aXml.Items.Count - 1 do
+      a2bExpandWhenValueIsJson(aXml.Items.XmlItems[x]);
+    Exit;
+  end;
+  _expandWhenJson;
 end;
 
 function rmPrefix (aName: String): String;
