@@ -2470,6 +2470,7 @@ begin
       AddXml (TXml.CreateAsString('FocusOperationName', FocusOperationName));
       AddXml (TXml.CreateAsString('FocusOperationNameSpace', FocusOperationNameSpace));
       AddXml (TXml.CreateAsInteger('FocusMessageIndex', FocusMessageIndex));
+      ForgetNamespaces;
       result := AsText(False,0,True,False);
     finally
       Free;

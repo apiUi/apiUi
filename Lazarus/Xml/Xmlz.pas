@@ -205,6 +205,7 @@ type
     procedure CheckExpectedValues;
     procedure CheckDownline (aChecked: Boolean);
     function UpLineAsText: String; Override;
+    procedure ForgetNamespaces;
     procedure ForgetXsd;
     procedure SetXsdReadOnly;
     procedure GetOverrulingsAsStringList (aList: TStringList);
@@ -3205,6 +3206,15 @@ begin
   finally
     srcXml.TagName := swapName;
   end;
+end;
+
+procedure TXml.ForgetNamespaces;
+var
+  x: Integer;
+begin
+  NameSpace := '';
+  for x := 0 to Items.Count - 1 do
+    Items.XmlItems [x].ForgetNamespaces;
 end;
 
 procedure TXml.ForgetXsd;
