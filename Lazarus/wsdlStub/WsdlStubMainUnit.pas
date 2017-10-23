@@ -4508,7 +4508,12 @@ begin
                 Ord (messagesColumnDocumentation):
                   begin
                     if (xMessage.Documentation <> '') then
-                      ImageIndex := 33
+                    begin
+                      if xMessage.DocumentationEdited then
+                        ImageIndex := 33
+                      else
+                        ImageIndex := 34;
+                    end
                     else
                       ImageIndex := 32;
                   end;
@@ -5088,6 +5093,7 @@ begin
       'Reply' + IntToStr(WsdlOperation.Messages.Count),
       'Pattern' + IntToStr(WsdlOperation.Messages.Count),
       xOrgMessage.Documentation);
+  xNewMessage.DocumentationEdited := False;
   if WsdlOperation.DescriptionType = ipmDTFreeFormat then
   begin
     xNewMessage.FreeFormatReq := xOrgMessage.FreeFormatReq;
@@ -13652,10 +13658,13 @@ begin
       Caption := Format('%s / %s  / Documentation', [WsdlOperation.Alias, WsdlMessage.Name]);
       ScriptEdit.Lines.Text := WsdlMessage.Documentation;
       ShowModal;
-      if ModalResult = mrOk then
+      if (ModalResult = mrOk)
+      and (ScriptEdit.Lines.Text <> WsdlMessage.Documentation)
+      then
       begin
         stubChanged := True;
         WsdlMessage.Documentation := ScriptEdit.Lines.Text;
+        WsdlMessage.DocumentationEdited := True;
       end;
       FillInWsdlEdits;
     finally

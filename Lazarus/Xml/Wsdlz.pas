@@ -510,6 +510,7 @@ type
       rpyBodyBind: TCustomBindable; //if Assigned, the body of the reply
       ColumnXmls: TBindableList;
       Documentation: String;
+      DocumentationEdited: Boolean;
       Disabled: Boolean;
       function CheckValues(aOperation: TWsdlOperation): Boolean;
       procedure corBindsInit(aOperation: TWsdlOperation);

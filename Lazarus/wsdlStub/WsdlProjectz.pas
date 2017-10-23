@@ -2428,6 +2428,7 @@ begin
                             _addCheckers (checkerXmls, xMessage.reqBind as TXml);
                           end;
                           AddXml (TXml.CreateAsString('Documentation', xMessage.Documentation));
+                          AddXml (TXml.CreateAsBoolean ('DocumentationEdited', xMessage.DocumentationEdited));
                           if Assigned (xMessage.BeforeScriptLines) then
                             AddXml (TXml.CreateAsString('BeforeScript', xMessage.BeforeScriptLines.Text));
                           if Assigned (xMessage.AfterScriptLines) then
@@ -2841,6 +2842,7 @@ begin
                                                                , xPatterns.Text
                                                                , Items.XmlValueByTag ['Documentation']
                                                                );
+                                  xMessage.DocumentationEdited := Items.XmlBooleanByTagDef ['DocumentationEdited', True];
                                   if Assigned (xMessage.BeforeScriptLines) then
                                     xMessage.BeforeScriptLines.Text := Items.XmlValueByTag ['BeforeScript'];
                                   if Assigned (xMessage.AfterScriptLines) then
