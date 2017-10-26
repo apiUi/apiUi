@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 26/10/2017 21:18:13: Generated with wsdlStub 10.1.0.11350 by Jan -->
+<!-- 26/10/2017 21:58:10: Generated with wsdlStub 10.1.0.11355 by Jan -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\kvkApi\kvkApi.wsdlStub</FileName>
   <Listeners></Listeners>
@@ -61,7 +61,7 @@
   <Environments></Environments>
   <properties></properties>
   <Wsdl>
-    <WsdlLocation>swagger.json</WsdlLocation>
+    <WsdlLocation>https://www.kvk.nl/sites/berichtenportaal/modules/home/views/dist/swagger.json</WsdlLocation>
     <ElementsWhenRepeatable>-1</ElementsWhenRepeatable>
     <Service>
       <Name>/v1/signaaltypes</Name>
@@ -148,9 +148,7 @@
             <Reply>
               <getSignaalTypes>
                 <rspns200>
-                  <body>
-                    <nextLink>jan</nextLink>
-                  </body>
+                  <body></body>
                 </rspns200>
               </getSignaalTypes>
             </Reply>
@@ -5517,10 +5515,10 @@
       </Operation>
     </Service>
     <Service>
-      <Name>/v1/signalen/{signaalId}</Name>
-      <AuthenticationType>1</AuthenticationType>
-      <UserName>rabobank-30046259</UserName>
-      <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
+      <Name>/v1/signalen/{berichtId}</Name>
+      <AuthenticationType>0</AuthenticationType>
+      <UserName></UserName>
+      <Password></Password>
       <PasswordType>0</PasswordType>
       <SuppressXmlComment>false</SuppressXmlComment>
       <SuppressHTTP500>false</SuppressHTTP500>
@@ -5529,16 +5527,10 @@
           <suppressXmlComment>false</suppressXmlComment>
           <suppressHttp500onSoapFaults>false</suppressHttp500onSoapFaults>
         </general>
-        <Authentication>
-          <Basic>
-            <userName>rabobank-30046259</userName>
-            <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
-          </Basic>
-        </Authentication>
       </serviceOptions>
       <Operation>
-        <Name>/v1/signalen/{signaalId}:get</Name>
-        <Action>3</Action>
+        <Name>/v1/signalen/{berichtId}:get</Name>
+        <Action>0</Action>
         <Alias>getSignaal</Alias>
         <HiddenFromUI>false</HiddenFromUI>
         <wsaEnabled>false</wsaEnabled>
@@ -5566,60 +5558,39 @@
         <StubMqPutQueue></StubMqPutQueue>
         <StubMqGetManager></StubMqGetManager>
         <StubMqGetQueue></StubMqGetQueue>
-        <StubMqTimeOut>0</StubMqTimeOut>
-        <StubStompPutHost></StubStompPutHost>
-        <StubStompPutPort></StubStompPutPort>
+        <StubMqTimeOut>30</StubMqTimeOut>
+        <StubStompPutHost>localhost</StubStompPutHost>
+        <StubStompPutPort>61613</StubStompPutPort>
         <StubStompPutClientId></StubStompPutClientId>
-        <StubStompTimeOut>0</StubStompTimeOut>
+        <StubStompTimeOut>30</StubStompTimeOut>
         <endpointConfig>
-          <Https>
+          <Http>
             <Verb>GET</Verb>
-            <ContentEncoding>identity</ContentEncoding>
             <AcceptEncoding>
               <deflate>false</deflate>
               <gzip>false</gzip>
             </AcceptEncoding>
-            <customHeaders>
-              <Header>
-                <Name>Accept</Name>
-                <Value>application/json</Value>
-              </Header>
-            </customHeaders>
-            <SSL>
-              <Version>SSL Version 2.3</Version>
-              <CertificateFile></CertificateFile>
-              <KeyFile></KeyFile>
-              <RootCertificateFile></RootCertificateFile>
-            </SSL>
-          </Https>
+            <customHeaders></customHeaders>
+          </Http>
         </endpointConfig>
         <BeforeScript></BeforeScript>
         <AfterScript></AfterScript>
-        <CorrelationElements>
-          <CorrelationElement>Rpy.getSignaal.rspns200.body.apiVersion</CorrelationElement>
-          <CorrelationElement>Req.getSignaal.signaalId</CorrelationElement>
-        </CorrelationElements>
+        <CorrelationElements></CorrelationElements>
         <ExpectationElements></ExpectationElements>
         <ColumnElements></ColumnElements>
         <LogColumns></LogColumns>
         <Messages>
           <Message>
             <Name>Default</Name>
-            <Patterns>
-              <Pattern>.*</Pattern>
-              <Pattern>.*</Pattern>
-            </Patterns>
+            <Patterns></Patterns>
             <Reply>
             </Reply>
             <replyCheckers></replyCheckers>
             <Request>
-              <getSignaal>
-                <signaalId>c9af5cf7-057a-4a5d-8d98-955ab4d2be0b</signaalId>
-              </getSignaal>
             </Request>
             <requestCheckers></requestCheckers>
             <Documentation></Documentation>
-            <DocumentationEdited>true</DocumentationEdited>
+            <DocumentationEdited>false</DocumentationEdited>
             <BeforeScript></BeforeScript>
             <AfterScript></AfterScript>
           </Message>
@@ -6071,10 +6042,10 @@
           <name>getUpdateBerichten</name>
         </operations>
       </Invoke>
-      <Code>with Rpy.getUpdateBerichten.rspns200.body.data rpy do&#x0D;&#x0A;{&#x0D;&#x0A;  with Req.getUpdateBerichten req do&#x0D;&#x0A;  {&#x0D;&#x0A;    integer ws.page := 0;&#x0D;&#x0A;    integer ws.n := 0;&#x0D;&#x0A;    integer ws.snapshotPage := ws.page;&#x0D;&#x0A;    integer ws.snapshotSize := 20;&#x0D;&#x0A;    ClearLogs ();&#x0D;&#x0A;    ClearSnapshots ();&#x0D;&#x0A;    req.page := NumberToStr (ws.page);&#x0D;&#x0A;    RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    while (rpy.itemsPerPage = req.pagesize) do&#x0D;&#x0A;    {&#x0D;&#x0A;      ws.n := ws.n + 1;&#x0D;&#x0A;      ws.page := ws.page + 1;&#x0D;&#x0A;      if ws.n = ws.snapshotSize then&#x0D;&#x0A;      {&#x0D;&#x0A;        CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;        ClearLogs ();&#x0D;&#x0A;        ws.n := 0;&#x0D;&#x0A;        ws.snapshotPage := ws.page;&#x0D;&#x0A;      }&#x0D;&#x0A;      req.page := NumberToStr (ws.page);&#x0D;&#x0A;      RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    }&#x0D;&#x0A;    CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;  }&#x0D;&#x0A;}&#x0D;&#x0A;&#x0D;&#x0A;</Code>
+      <Code>integer ws.snapshotSize := 20;&#x0D;&#x0A;&#x0D;&#x0A;with Rpy.getUpdateBerichten.rspns200.body.data rpy do&#x0D;&#x0A;{&#x0D;&#x0A;  with Req.getUpdateBerichten req do&#x0D;&#x0A;  {&#x0D;&#x0A;    integer ws.page := 0;&#x0D;&#x0A;    integer ws.n := 0;&#x0D;&#x0A;    integer ws.snapshotPage := ws.page;&#x0D;&#x0A;    ClearLogs ();&#x0D;&#x0A;    ClearSnapshots ();&#x0D;&#x0A;    req.page := NumberToStr (ws.page);&#x0D;&#x0A;    RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    while (rpy.itemsPerPage = req.pagesize) do&#x0D;&#x0A;    {&#x0D;&#x0A;      ws.n := ws.n + 1;&#x0D;&#x0A;      ws.page := ws.page + 1;&#x0D;&#x0A;      if ws.n = ws.snapshotSize then&#x0D;&#x0A;      {&#x0D;&#x0A;        CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;        ClearLogs ();&#x0D;&#x0A;        ws.n := 0;&#x0D;&#x0A;        ws.snapshotPage := ws.page;&#x0D;&#x0A;      }&#x0D;&#x0A;      req.page := NumberToStr (ws.page);&#x0D;&#x0A;      RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    }&#x0D;&#x0A;    CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;  }&#x0D;&#x0A;}&#x0D;&#x0A;&#x0D;&#x0A;</Code>
     </Script>
   </Scripts>
-  <FocusOperationName>/v1/updateberichten:get</FocusOperationName>
+  <FocusOperationName>/v1/signaaltypes:get</FocusOperationName>
   <FocusOperationNameSpace></FocusOperationNameSpace>
   <FocusMessageIndex>0</FocusMessageIndex>
 </WsdlStubCase>
