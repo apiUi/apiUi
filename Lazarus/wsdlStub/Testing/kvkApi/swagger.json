@@ -1,0 +1,536 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "V1",
+    "title" : "Berichten-Portaal API Beschrijving"
+  },
+  "host" : "webservices.kvk.nl",
+  "basePath" : "/api/HR/",
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/v1/signaaltypes" : {
+      "get" : {
+        "summary" : "Retourneer een lijst van beschikbare signaaltypes/versies.",
+        "description" : "",
+        "operationId" : "getSignaalTypes",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "schema" : {
+              "$ref" : "#/definitions/BerichtTypeInfoJsonListData"
+            }
+          }
+        }
+      }
+    },
+    "/v1/signalen" : {
+      "get" : {
+        "summary" : "Een gepagineerd overzicht van signalen gesorteerd op datum.",
+        "description" : "",
+        "operationId" : "getSignalen",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "from",
+          "in" : "query",
+          "description" : "Optioneel: Levert een overzicht vanaf of tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt 30 dagen voor de 'to' parameter gebruikt.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "yyyy-mm-dd hh:mm:ss.S" ]
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "description" : "Optioneel: Levert een overzicht tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt het huidige tijdstip gebruikt.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "yyyy-mm-dd hh:mm:ss.S" ]
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "Optioneel: De volgorde in tijd van de berichten [ASC,DESC]. Indien geen volgorde wordt gespecificeerd dan is de volgorde afhankelijk van de verhouding tussen de 'from' en 'to' parameters.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "ASC", "DESC" ]
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Optioneel: page (numeriek): Paginanummer",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "pagesize",
+          "in" : "query",
+          "description" : "Optioneel: pagesize (0-100): Het aantal resultaten per pagina, gelimiteerd tot 100. Indien geen pagesize wordt meegestuurd dan wordt de default van 25 gebruikt. Een pagesize van 0 retourneert alleen meta-informatie",
+          "required" : false,
+          "type" : "integer",
+          "default" : 25,
+          "format" : "int32"
+        }, {
+          "name" : "type",
+          "in" : "query",
+          "description" : "Optioneel: Filter op signaaltype. Het type wordt aangegeven door het type (optioneel in combinatie met versie) of door de namespace.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "versie",
+          "in" : "query",
+          "description" : "Optioneel: Filter op versie. Wanneer er niet wordt gekozen voor een specifieke versie, dan wordt de Actuele versie getoond.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "tag",
+          "in" : "query",
+          "description" : "Optioneel: Filter op signaaltypes/versies waar een specifieke tag aan gekoppeld zit.",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Een gepagineerde lijst van Signaal-informatie objecten op basis van de ingestelde queryparameters",
+            "schema" : {
+              "$ref" : "#/definitions/SignaalInfoJsonListResponse"
+            }
+          },
+          "400" : {
+            "description" : "Requestparameter niet juist"
+          }
+        }
+      }
+    },
+    "/v1/signalen/{signaalId}" : {
+      "get" : {
+        "summary" : "Retourneert een signaal op basis van signaalId.",
+        "description" : "Afhankelijk van de HTTP 'Accept' header waarmee het signaal wordt bevraagd (\"application/json\" of \"application/xml\") wordt de response als json of XML geretourneerd. Indien geen specifieke Accept-header wordt meegestuurd dan wordt het signaal in JSON geformatteerd. De structuur van het signaal wordt beschreven in de betreffende XSD's uit het aansluitpakket. De JSON structuur is een directe vertaling van de XML structuur naar JSON.",
+        "operationId" : "getSignaal",
+        "produces" : [ "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "signaalId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Een response met als inhoud het opgevraagde signaal. Indien JSON wordt gevraagd dan wordt onderstaande structuur met metadata geretourneerd. Indien XML wordt gevraagd dan wordt direct het signaal als XML geretourneerd.",
+            "schema" : {
+              "$ref" : "#/definitions/BerichtJsonSingleResponse"
+            }
+          },
+          "404" : {
+            "description" : "Signaal niet gevonden"
+          }
+        }
+      }
+    },
+    "/v1/updateberichten" : {
+      "get" : {
+        "summary" : "Een gepagineerd overzicht van updateberichten gesorteerd op datum.",
+        "description" : "",
+        "operationId" : "getUpdateBerichten",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "from",
+          "in" : "query",
+          "description" : "Optioneel: Levert een overzicht vanaf of tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt 30 dagen voor de 'to' parameter gebruikt.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "yyyy-mm-dd hh:mm:ss.S" ]
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "description" : "Optioneel: Levert een overzicht tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt het huidige tijdstip gebruikt.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "yyyy-mm-dd hh:mm:ss.S" ]
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "Optioneel: De volgorde in tijd van de berichten [ASC,DESC]. Indien geen volgorde wordt gespecificeerd dan is de volgorde afhankelijk van de verhouding tussen de 'from' en 'to' parameters.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "ASC", "DESC" ]
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Optioneel: page (numeriek): Paginanummer",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "pagesize",
+          "in" : "query",
+          "description" : "Optioneel: pagesize (0-100): Het aantal resultaten per pagina, gelimiteerd tot 100. Indien geen pagesize wordt meegestuurd dan wordt de default van 25 gebruikt. Een pagesize van 0 retourneert alleen meta-informatie",
+          "required" : false,
+          "type" : "integer",
+          "default" : 25,
+          "format" : "int32"
+        }, {
+          "name" : "versie",
+          "in" : "query",
+          "description" : "Optioneel: Filter op versie. Wanneer er niet wordt gekozen voor een specifieke versie, dan wordt de Actuele versie getoond.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "tag",
+          "in" : "query",
+          "description" : "Optioneel: Filter op updateberichtversies waar een specifieke tag aan gekoppeld zit.",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Een gepagineerde lijst van Updateberichten-informatie objecten op basis van de ingestelde queryparameters",
+            "schema" : {
+              "$ref" : "#/definitions/UpdateBerichtInfoJsonListResponse"
+            }
+          },
+          "400" : {
+            "description" : "Requestparameter niet juist"
+          }
+        }
+      }
+    },
+    "/v1/updateberichten/{berichtId}" : {
+      "get" : {
+        "summary" : "Retourneert een updatebericht.",
+        "description" : "Afhankelijk van de HTTP 'Accept' header waarmee het updatebericht wordt bevraagd (application/json of application/xml) wordt de response als json of XML geretourneerd. Indien geen specifieke Accept-header wordt meegestuurd dan wordt het updatebericht in JSON geformatteerd. De structuur van het updatebericht wordt beschreven in de betreffende XSD's uit het aansluitpakket. De JSON structuur is een directe vertaling van de XML structuur.",
+        "operationId" : "getUpdateBericht",
+        "produces" : [ "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "berichtId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Een response met het opgevraagde updatebericht. Indien JSON wordt gevraagd dan wordt onderstaande structuur met metadata geretourneerd. Indien XML wordt gevraagd dan wordt direct het updatebericht-XML geretourneerd.",
+            "schema" : {
+              "$ref" : "#/definitions/UpdateBerichtJsonSingleResponse"
+            }
+          },
+          "404" : {
+            "description" : "Updatebericht niet gevonden"
+          }
+        }
+      }
+    },
+    "/v1/updateberichttypes" : {
+      "get" : {
+        "summary" : "Retourneer een lijst van beschikbare updateberichtversies.",
+        "description" : "",
+        "operationId" : "getUpdateBerichtTypes",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "schema" : {
+              "$ref" : "#/definitions/BerichtTypeInfoJsonListData"
+            }
+          }
+        }
+      }
+    },
+    "/v1/xsds" : {
+      "get" : {
+        "summary" : "Download een zip met XSDs van geselecteerde schema's.",
+        "description" : "",
+        "operationId" : "getXsdZip",
+        "produces" : [ "application/octet-stream" ],
+        "parameters" : [ {
+          "name" : "selectedXsds",
+          "in" : "query",
+          "description" : "Komma-gescheiden lijst van namespaces van de berichttypes waarvan de schema's in de zip moeten worden toegevoegd",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Octet-stream met zip van geselecteerde XSDs"
+          },
+          "400" : {
+            "description" : "Onbekende namespace"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "basicAuth" : {
+      "type" : "basic"
+    }
+  },
+  "definitions" : {
+    "BerichtInfo" : {
+      "type" : "object",
+      "properties" : {
+        "berichtId" : {
+          "type" : "string",
+          "description" : "Unieke berichtidentifier"
+        },
+        "berichtTijdstip" : {
+          "type" : "string",
+          "description" : "Tijdstip van ontstaan van bericht"
+        },
+        "registratieId" : {
+          "type" : "string",
+          "description" : "Id van originele registratiebericht in handelsregister"
+        },
+        "registratieTijdstip" : {
+          "type" : "string",
+          "description" : "Tijdstip van originele registratiebericht in handelsregister"
+        },
+        "kvkNummer" : {
+          "type" : "string",
+          "description" : "Kvk nummer waarover dit bericht gaat"
+        },
+        "versieInfo" : {
+          "description" : "Versie-informatie over dit specifieke bericht",
+          "$ref" : "#/definitions/VersieInfo"
+        }
+      },
+      "description" : "Metagegevens over een bericht"
+    },
+    "BerichtJsonSingleResponse" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string",
+          "description" : "API versie."
+        },
+        "data" : {
+          "type" : "object",
+          "description" : "Bericht van een specifiek berichttype. Zie betreffende XSD's uit het aansluitpakket voor de structuur."
+        }
+      },
+      "description" : "Response van een bericht indien gevraagd wordt om een JSON response."
+    },
+    "BerichtTypeInfo" : {
+      "type" : "object",
+      "properties" : {
+        "namespace" : {
+          "type" : "string",
+          "description" : "Namespace van dit specifieke berichttype"
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "Naam van dit specifieke berichttype"
+        },
+        "versie" : {
+          "type" : "string",
+          "description" : "Versie van dit specifieke berichttype"
+        },
+        "naam" : {
+          "type" : "string",
+          "description" : "'Human readable' naam van dit berichttype"
+        },
+        "actueel" : {
+          "type" : "boolean",
+          "description" : "Indicatie of deze type- en versie-combinatie actueel is",
+          "default" : false
+        },
+        "tags" : {
+          "type" : "array",
+          "description" : "Lijst van tags voor deze type- en versie-combinatie",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/TagInfo"
+          }
+        }
+      },
+      "description" : "Metagegevens over een BerichtType"
+    },
+    "BerichtTypeInfoJsonListData" : {
+      "type" : "object",
+      "properties" : {
+        "startPage" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Huidige pagina"
+        },
+        "totalItems" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Totaal aantal resultaten"
+        },
+        "nextLink" : {
+          "type" : "string",
+          "description" : "Link naar de volgende pagina"
+        },
+        "previousLink" : {
+          "type" : "string",
+          "description" : "Link naar de vorige pagina"
+        },
+        "itemsPerPage" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Aantal resultaten per pagina"
+        },
+        "items" : {
+          "type" : "array",
+          "description" : "Lijst van resultaten",
+          "items" : {
+            "$ref" : "#/definitions/BerichtTypeInfo"
+          }
+        }
+      },
+      "description" : "Metadata over de lijst met BerichtTypeInfo objecten in een JsonListResponse."
+    },
+    "SignaalInfoJsonListData" : {
+      "type" : "object",
+      "properties" : {
+        "startPage" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Huidige pagina"
+        },
+        "totalItems" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Totaal aantal resultaten"
+        },
+        "nextLink" : {
+          "type" : "string",
+          "description" : "Link naar de volgende pagina"
+        },
+        "previousLink" : {
+          "type" : "string",
+          "description" : "Link naar de vorige pagina"
+        },
+        "itemsPerPage" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Aantal resultaten per pagina"
+        },
+        "items" : {
+          "type" : "array",
+          "description" : "Lijst van resultaten",
+          "items" : {
+            "$ref" : "#/definitions/BerichtInfo"
+          }
+        }
+      },
+      "description" : "Metadata over de lijst met BerichtInfo objecten in een JsonListResponse."
+    },
+    "SignaalInfoJsonListResponse" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string"
+        },
+        "data" : {
+          "$ref" : "#/definitions/SignaalInfoJsonListData"
+        }
+      },
+      "description" : "Gepagineerde lijst van SignaalInfo objecten en corresponderende metadata"
+    },
+    "TagInfo" : {
+      "type" : "object",
+      "properties" : {
+        "tag" : {
+          "type" : "string",
+          "description" : "Tag naam"
+        },
+        "info" : {
+          "type" : "string",
+          "description" : "Tekstuele omschrijving voor deze tag"
+        }
+      },
+      "description" : "Tag gekoppeld aan specifieke berichtypes en versies"
+    },
+    "UpdateBerichtInfoJsonListData" : {
+      "type" : "object",
+      "properties" : {
+        "startPage" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Huidige pagina"
+        },
+        "totalItems" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Totaal aantal resultaten"
+        },
+        "nextLink" : {
+          "type" : "string",
+          "description" : "Link naar de volgende pagina"
+        },
+        "previousLink" : {
+          "type" : "string",
+          "description" : "Link naar de vorige pagina"
+        },
+        "itemsPerPage" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Aantal resultaten per pagina"
+        },
+        "items" : {
+          "type" : "array",
+          "description" : "Lijst van resultaten",
+          "items" : {
+            "$ref" : "#/definitions/BerichtInfo"
+          }
+        }
+      },
+      "description" : "Metadata over de lijst met updateberichtobjecten in een JsonListResponse."
+    },
+    "UpdateBerichtInfoJsonListResponse" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string"
+        },
+        "data" : {
+          "$ref" : "#/definitions/UpdateBerichtInfoJsonListData"
+        }
+      },
+      "description" : "Gepagineerde lijst van UpdateBerichtInfo objecten en corresponderende metadata"
+    },
+    "UpdateBerichtJsonSingleResponse" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string",
+          "description" : "API versie."
+        },
+        "data" : {
+          "type" : "object",
+          "description" : "Updatebericht. Zie betreffende XSD's uit het aansluitpakket voor de structuur."
+        }
+      },
+      "description" : "Response van een updatebericht indien gevraagd wordt om een JSON response."
+    },
+    "VersieInfo" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "description" : "Berichttype"
+        },
+        "versie" : {
+          "type" : "string",
+          "description" : "Berichtversie"
+        },
+        "namespace" : {
+          "type" : "string",
+          "description" : "Berichtnamespace"
+        },
+        "actueel" : {
+          "type" : "boolean",
+          "description" : "Betreft het een 'actueel' bericht",
+          "default" : false
+        },
+        "tags" : {
+          "type" : "array",
+          "description" : "Tags voor deze versie",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/TagInfo"
+          }
+        }
+      },
+      "description" : "Versiegegevens"
+    }
+  }
+}

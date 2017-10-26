@@ -36,11 +36,11 @@
 	<message name="saveLogsToFileRpyMessage">
 		<part name="payload" element="tns:saveLogsToFileRpy"/>
 	</message>
-	<message name="createSavepointReqMessage">
-		<part name="payload" element="tns:createSavepointReq"/>
+	<message name="createSnapshotReqMessage">
+		<part name="payload" element="tns:createSnapshotReq"/>
 	</message>
-	<message name="createSavepointRpyMessage">
-		<part name="payload" element="tns:createSavepointRpy"/>
+	<message name="createSnapshotRpyMessage">
+		<part name="payload" element="tns:createSnapshotRpy"/>
 	</message>
 	<message name="sendAllRequestsReqMessage">
 		<part name="payload" element="tns:sendAllRequestsReq"/>
@@ -145,9 +145,9 @@
 			<output message="client:saveLogsToFileRpyMessage"/>
 			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
 		</operation>
-		<operation name="createSavepoint">
-			<input message="client:createSavepointReqMessage"/>
-			<output message="client:createSavepointRpyMessage"/>
+		<operation name="createSnapshot">
+			<input message="client:createSnapshotReqMessage"/>
+			<output message="client:createSnapshotRpyMessage"/>
 			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
 		</operation>
 		<operation name="sendAllRequests">
@@ -281,8 +281,8 @@
 				<soap:fault name="SOAPFault" use="literal"/>
 			</fault>
 		</operation>
-		<operation name="createSavepoint">
-			<soap:operation soapAction="urn:#createSavepoint" style="document"/>
+		<operation name="createSnapshot">
+			<soap:operation soapAction="urn:#createSnapshot" style="document"/>
 			<input>
 				<soap:body use="literal"/>
 			</input>

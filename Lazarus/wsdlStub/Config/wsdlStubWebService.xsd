@@ -241,9 +241,9 @@ Enter correlation items in an order that correponds with the wsdlStub correlatio
 			<xs:documentation>response on save wsdlStub log request</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="createSavepointReq">
+	<xs:element name="createSnapshotReq">
 		<xs:annotation>
-			<xs:documentation>request to create wsdlStub savepoint</xs:documentation>
+			<xs:documentation>request to create wsdlStub Snapshot</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -251,9 +251,9 @@ Enter correlation items in an order that correponds with the wsdlStub correlatio
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="createSavepointRpy">
+	<xs:element name="createSnapshotRpy">
 		<xs:annotation>
-			<xs:documentation>response on create wsdlStub savepoint request</xs:documentation>
+			<xs:documentation>response on create wsdlStub Snapshot request</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="activateReq">
