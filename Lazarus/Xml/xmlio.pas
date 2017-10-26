@@ -36,6 +36,7 @@ uses StrUtils
    , LazFileUtils
    , versiontypes, versionresource
    , idHTTP
+   , IdSSLOpenSSL
    , idStack
    , LConvEncoding
    , RegExpr
@@ -393,7 +394,7 @@ begin
 end;
 
 function ReadStringFromFile (aFileName: String): String;
-  function _GetURLAsString(aURL: string): string;
+  function _GetURLAsString(aURL: string; useSsl: Boolean): string;
   var
     lHTTP: TIdHTTP;
     lStream: TStringStream;
@@ -402,10 +403,28 @@ function ReadStringFromFile (aFileName: String): String;
     lHTTP := TIdHTTP.Create(nil);
     lStream := TStringStream.Create(Result);
     try
+      if useSsl then
+      begin
+        lHTTP.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+        with (lHTTP.IOHandler as TIdSSLIOHandlerSocketOpenSSL) do
+        begin
+        {
+          SSLOptions.CertFile := aOperation.sslCertificateFile;
+          SSLOptions.KeyFile := aOperation.sslKeyFile;
+          SSLOptions.RootCertFile := aOperation.sslRootCertificateFile;
+        }
+          SSLOptions.Method := sslvTLSv1_2;
+          SSLOptions.Mode := sslmUnassigned;
+          SSLOptions.VerifyMode := [];
+        end;
+      end;
       lHTTP.Get(aURL, lStream);
       lStream.Position := 0;
       Result := lStream.ReadString(lStream.Size);
     finally
+      if Assigned (lHTTP)
+      and Assigned (lHTTP.IOHandler) then
+        lHTTP.IOHandler.Free;
       FreeAndNil(lHTTP);
       FreeAndNil(lStream);
     end;
@@ -413,7 +432,12 @@ function ReadStringFromFile (aFileName: String): String;
 begin
   if (AnsiStartsText('HTTP://', UpperCase(aFileName))) then
   begin
-    result := _GetURLAsString (aFileName);
+    result := _GetURLAsString (aFileName, false);
+    exit;
+  end;
+  if (AnsiStartsText('HTTPS://', UpperCase(aFileName))) then
+  begin
+    result := _GetURLAsString (aFileName, true);
     exit;
   end;
   with TFileStream.Create(aFileName,fmOpenRead or fmShareDenyWrite) do

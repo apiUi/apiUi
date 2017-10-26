@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 26/10/2017 20:55:21: Generated with wsdlStub 10.1.0.11350 by Jan -->
+<!-- 26/10/2017 21:18:13: Generated with wsdlStub 10.1.0.11350 by Jan -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\kvkApi\kvkApi.wsdlStub</FileName>
   <Listeners></Listeners>
@@ -6071,7 +6071,7 @@
           <name>getUpdateBerichten</name>
         </operations>
       </Invoke>
-      <Code>with Rpy.getUpdateBerichten.rspns200.body.data rpy do&#x0D;&#x0A;{&#x0D;&#x0A;  with Req.getUpdateBerichten req do&#x0D;&#x0A;  {&#x0D;&#x0A;    integer ws.page := 0;&#x0D;&#x0A;    integer ws.n := 0;&#x0D;&#x0A;    integer ws.snapshotPage := ws.page;&#x0D;&#x0A;    integer ws.snapshotSize := 20;&#x0D;&#x0A;    ClearLogs ();&#x0D;&#x0A;    ClearSnapshots ();&#x0D;&#x0A;    req.page := NumberToStr (ws.page);&#x0D;&#x0A;    RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    while rpy.itemsPerPage = req.pagesize do&#x0D;&#x0A;    {&#x0D;&#x0A;      ws.n := ws.n + 1;&#x0D;&#x0A;      ws.page := ws.page + 1;&#x0D;&#x0A;      if ws.n = ws.snapshotSize then&#x0D;&#x0A;      {&#x0D;&#x0A;        CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;        ClearLogs ();&#x0D;&#x0A;        ws.n := 0;&#x0D;&#x0A;        ws.snapshotPage := ws.page;&#x0D;&#x0A;      }&#x0D;&#x0A;      req.page := NumberToStr (ws.page);&#x0D;&#x0A;      RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    }&#x0D;&#x0A;    CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;  }&#x0D;&#x0A;}&#x0D;&#x0A;&#x0D;&#x0A;</Code>
+      <Code>with Rpy.getUpdateBerichten.rspns200.body.data rpy do&#x0D;&#x0A;{&#x0D;&#x0A;  with Req.getUpdateBerichten req do&#x0D;&#x0A;  {&#x0D;&#x0A;    integer ws.page := 0;&#x0D;&#x0A;    integer ws.n := 0;&#x0D;&#x0A;    integer ws.snapshotPage := ws.page;&#x0D;&#x0A;    integer ws.snapshotSize := 20;&#x0D;&#x0A;    ClearLogs ();&#x0D;&#x0A;    ClearSnapshots ();&#x0D;&#x0A;    req.page := NumberToStr (ws.page);&#x0D;&#x0A;    RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    while (rpy.itemsPerPage = req.pagesize) do&#x0D;&#x0A;    {&#x0D;&#x0A;      ws.n := ws.n + 1;&#x0D;&#x0A;      ws.page := ws.page + 1;&#x0D;&#x0A;      if ws.n = ws.snapshotSize then&#x0D;&#x0A;      {&#x0D;&#x0A;        CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;        ClearLogs ();&#x0D;&#x0A;        ws.n := 0;&#x0D;&#x0A;        ws.snapshotPage := ws.page;&#x0D;&#x0A;      }&#x0D;&#x0A;      req.page := NumberToStr (ws.page);&#x0D;&#x0A;      RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    }&#x0D;&#x0A;    CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;  }&#x0D;&#x0A;}&#x0D;&#x0A;&#x0D;&#x0A;</Code>
     </Script>
   </Scripts>
   <FocusOperationName>/v1/updateberichten:get</FocusOperationName>
