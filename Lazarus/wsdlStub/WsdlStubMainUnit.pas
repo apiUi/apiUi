@@ -5094,6 +5094,8 @@ begin
       'Pattern' + IntToStr(WsdlOperation.Messages.Count),
       xOrgMessage.Documentation);
   xNewMessage.DocumentationEdited := False;
+  xNewMessage.BeforeScriptLines.Text := xOrgMessage.BeforeScriptLines.Text;
+  xNewMessage.AfterScriptLines.Text := xOrgMessage.AfterScriptLines.Text;
   if WsdlOperation.DescriptionType = ipmDTFreeFormat then
   begin
     xNewMessage.FreeFormatReq := xOrgMessage.FreeFormatReq;
