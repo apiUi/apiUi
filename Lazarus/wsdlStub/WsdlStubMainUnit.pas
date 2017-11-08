@@ -6115,23 +6115,24 @@ end;
 function TMainForm.ChooseTypedefForAddingElement(aXml: TObject): Boolean;
 var
   xWsdl: TWsdl;
-  x: Integer;
+  x, f: Integer;
   xNameSpace: String;
 begin
+  f := 0; // avoid compiler warning
   result := False;
   xWsdl := WsdlOperation.Wsdl;
   xNameSpace := ((aXml as TXml).Parent as TXml).Items.XmlCheckedValueByTag['namespace'];
-  if xNameSpace = '' then
+  if (xNameSpace = '')
+  or (not xWsdl.XsdDescr.NameSpaceList.Find(xNameSpace, f)) then
     raise Exception.Create('First enter valid namespace');
   Application.CreateForm(TChooseStringForm, ChooseStringForm);
   with ChooseStringForm do
   try
     ListBox.Clear;
-    for x := 0 to xWsdl.XsdDescr.NameSpaceList.Count - 1 do
-    begin
-      ListBox.Items.Add
-        (xWsdl.XsdDescr.NameSpaceList.Strings[x]);
-    end;
+    with xWsdl.XsdDescr.TypeDefs do
+      for x := 0 to Count - 1 do with XsdDataTypes[x] do
+        if NameSpace = xNameSpace then
+          ListBox.Items.Add (Name);
     Caption := 'Choose from typedefs';
     ShowModal;
     if ModalResult = mrOk then
@@ -13706,24 +13707,27 @@ end;
 
 procedure TMainForm.AddChildElementMenuItemClick(Sender: TObject);
 var
-  X, m: Integer;
+  X, m, f: Integer;
   xxsd: TXsd;
   xXml, dxml: TXml;
   xBind: TCustomBindable;
   nTypeDef, oTypeDef, cTypeDef: TXsdDataType;
   xPath: String;
-begin
-{
-for x := 0 to aTypeDefs.Count - 1 do with aTypeDefs.XsdDataTypes[x] do
-begin
-  if NameSpace <> '' then
+  isApproved, isValid: Boolean;
+  xNamespace, xTypeDefName, xName, xMessages: String;
+  function _isValid: Boolean;
   begin
-    if not result.Find(NameSpace, f) then
-      f := result.AddObject (NameSpace, TStringList.Create);
-    (result.Objects[f] as TStringlist).Add (Name);
+    result := True;
+    xMessages := '';
+    xNamespace := dXml.Items.XmlCheckedValueByTag['namespace'];
+    xTypeDefName := dXml.Items.XmlCheckedValueByTag['typedefName'];
+    xName := dXml.Items.XmlCheckedValueByTag['name'];
+    result := (xNamespace <> '')
+          and (xTypeDefName <> '')
+          and (xName <> '')
+            ;
   end;
-end;
- }
+begin
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if not Assigned(xBind) then
     raise Exception.Create('no element selected');
@@ -13738,19 +13742,38 @@ end;
   xXsd.EditProcedure := ChooseTypedefForAddingElement;
   dXml := TXml.Create(-1000, _WsdlAddChildDialogXsd);
   try
-    if EditXmlXsdBased ( 'Extra sub element for : ' + xXml.FullCaption
-                       , ''
-                       , ''
-                       , ''
-                       , False
-                       , False
-                       , esUsed
-                       , _WsdlAddChildDialogXsd
-                       , dXml
-                       ) then
+    isApproved := EditXmlXsdBased ( 'Extra sub element for : ' + xXml.FullCaption
+                                  , ''
+                                  , ''
+                                  , ''
+                                  , False
+                                  , False
+                                  , esUsed
+                                  , _WsdlAddChildDialogXsd
+                                  , dXml
+                                  );
+    if isApproved then
     begin
-
+      isValid := _isValid;
+      while isApproved and (not isValid) do
+      begin
+        ShowMessage (xMessages + LineEnding + 'not Valid');
+        isApproved := EditXmlXsdBased ( 'Extra sub element for : ' + xXml.FullCaption
+                                      , ''
+                                      , ''
+                                      , ''
+                                      , False
+                                      , False
+                                      , esUsed
+                                      , _WsdlAddChildDialogXsd
+                                      , dXml
+                                      );
+        if isApproved then
+          isValid := _isValid;
+      end;
     end;
+    if isApproved then
+      ShowMessage('finally approved and valid');
   finally
     dxml.Free;
   end;
