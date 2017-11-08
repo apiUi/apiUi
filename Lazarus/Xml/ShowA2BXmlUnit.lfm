@@ -273,6 +273,10 @@ object ShowA2BXmlForm: TShowA2BXmlForm
       Caption = 'Check fullcaption against regular expression...'
       OnClick = checkRegExpFullCapMenuItemClick
     end
+    object checkPartialFullCapMenuItem: TMenuItem
+      Caption = 'Check full caption partial'
+      OnClick = checkPartialFullCapMenuItemClick
+    end
     object N5: TMenuItem
       Caption = '-'
     end

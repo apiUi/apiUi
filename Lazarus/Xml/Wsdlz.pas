@@ -651,6 +651,7 @@ var
   _WsdlEmailXsd: TXsd;
   _WsdlServiceDefinitionXsd: TXsd;
   _WsdlListOfFilesXsd: TXsd;
+  _WsdlAddChildDialogXsd: TXsd;
   _WsdlTacoConfigXsd: TXsd;
   _WsdlUserNameTokenNumber: Integer;
   _WsdlDisableOnCorrelate: Boolean;

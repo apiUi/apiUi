@@ -1254,6 +1254,16 @@ Setting determines what wsdlStub should do on receiving messages that violate th
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="addChildElementDialog">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="extraXsdFile" type="epc:FileNameType" minOccurs="0"/>
+				<xs:element name="namespace" type="xs:string"/>
+				<xs:element name="typedefName" type="xs:string"/>
+				<xs:element name="Name" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="projectOptions">
 		<xs:annotation>
 			<xs:documentation>Project options;

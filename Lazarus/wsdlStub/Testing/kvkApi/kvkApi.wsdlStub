@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 26/10/2017 21:58:10: Generated with wsdlStub 10.1.0.11355 by Jan -->
+<!-- 08/11/2017 19:17:50: Generated with wsdlStub 10.1.0.11357 by Jan -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\kvkApi\kvkApi.wsdlStub</FileName>
   <Listeners></Listeners>
@@ -5558,14 +5558,15 @@
         <StubMqPutQueue></StubMqPutQueue>
         <StubMqGetManager></StubMqGetManager>
         <StubMqGetQueue></StubMqGetQueue>
-        <StubMqTimeOut>30</StubMqTimeOut>
-        <StubStompPutHost>localhost</StubStompPutHost>
-        <StubStompPutPort>61613</StubStompPutPort>
+        <StubMqTimeOut>0</StubMqTimeOut>
+        <StubStompPutHost></StubStompPutHost>
+        <StubStompPutPort></StubStompPutPort>
         <StubStompPutClientId></StubStompPutClientId>
-        <StubStompTimeOut>30</StubStompTimeOut>
+        <StubStompTimeOut>0</StubStompTimeOut>
         <endpointConfig>
           <Http>
             <Verb>GET</Verb>
+            <ContentEncoding>identity</ContentEncoding>
             <AcceptEncoding>
               <deflate>false</deflate>
               <gzip>false</gzip>
@@ -6013,7 +6014,7 @@
     </Service>
   </Wsdl>
   <ignoreDifferencesOn></ignoreDifferencesOn>
-  <checkValueAgainst>*.totalItems=regexp:&#x0D;&#x0A;getSignalen.Rpy.rspns200.body.data.itemsPerPage=regexp:[0-9]+&#x0D;&#x0A;getSignalen.Rpy.rspns200.body.data.totalItems=regexp:[0-9]+&#x0D;&#x0A;</checkValueAgainst>
+  <checkValueAgainst>*.totalItems=regexp:&#x0D;&#x0A;getSignalen.Rpy.rspns200.body.data.itemsPerPage=regexp:[0-9]+&#x0D;&#x0A;getSignalen.Rpy.rspns200.body.data.totalItems=partialexp:???&#x0D;&#x0A;</checkValueAgainst>
   <ignoreAddingOn>getSignalen.Rpy.rspns200.body.data.items._&#x0D;&#x0A;getSignalen.Rpy.rspns200.body.data.items._.versieInfo.tags._.info&#x0D;&#x0A;getSignalen.Rpy.rspns200.body.data.items._.versieInfo.tags._.tag&#x0D;&#x0A;</ignoreAddingOn>
   <ignoreRemovingOn>getSignalen.Rpy.rspns200.body.data.items._.versieInfo.tags._.info&#x0D;&#x0A;tag&#x0D;&#x0A;</ignoreRemovingOn>
   <ignoreOrderOn>

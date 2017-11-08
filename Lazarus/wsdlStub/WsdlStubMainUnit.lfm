@@ -8551,6 +8551,10 @@ object MainForm: TMainForm
         OnClick = AddChildElementTypeDefMenuItemClick
       end
     end
+    object AddChildElementMenuItem: TMenuItem
+      Caption = 'Add child element...'
+      OnClick = AddChildElementMenuItemClick
+    end
     object ExtendRecursivityMenuItem: TMenuItem
       Caption = 'Extend level'
       Bitmap.Data = {

@@ -76,6 +76,7 @@ type
     Action2 : TAction ;
     EditMessageDocumentationAction: TAction;
     MenuItem37: TMenuItem;
+    AddChildElementMenuItem: TMenuItem;
     ToggleDoScrollMessagesIntoViewAction: TAction;
     MenuItem36 : TMenuItem ;
     ToolButton36: TToolButton;
@@ -565,6 +566,7 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure AddChildElementMenuItemClick(Sender: TObject);
     procedure EditMessageAfterScriptActionExecute (Sender : TObject );
     procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
     procedure EditMessageDocumentationActionExecute(Sender: TObject);
@@ -1132,7 +1134,6 @@ type
       aBind: TCustomBindable): PVirtualNode;
     procedure FocusOnFullCaption(aFullCaption: String);
     procedure HandleException(Sender: TObject; E: Exception);
-    procedure SetBetaMode;
     procedure LogMqMessage(Sender: TObject; aHeader, aBody: String;
       aRfhHeader: AnsiString; MsgType: MQLONG; MsgDesc: MQMD;
       MqReturnCode: String);
@@ -1158,6 +1159,8 @@ type
     procedure ExpressError(Sender: TObject;
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     function EditScript(aXml: TObject): Boolean;
+    function ChooseNameSpaceForAddingElement(aXml: TObject): Boolean;
+    function ChooseTypedefForAddingElement(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
@@ -2282,6 +2285,7 @@ var
 begin
   xMessage := ''; //avoid warning
   try
+  {
     if (Key = VK_F8) then
     begin
       xBind := NodeToBind(Sender as TVirtualStringTree,
@@ -2290,6 +2294,7 @@ begin
         ShowInfoForm('Schema for ' + (xBind as TXml).TypeDef.Name,
           (xBind as TXml).TypeDef.SchemaAsText((xBind as TXml).TypeDef.Name));
     end;
+  }
     if (Key = VK_INSERT) then
     begin
       xBind := NodeToBind(Sender as TVirtualStringTree,
@@ -6078,6 +6083,68 @@ begin
   end;
 end;
 
+function TMainForm.ChooseNameSpaceForAddingElement(aXml: TObject): Boolean;
+var
+  xWsdl: TWsdl;
+  x: Integer;
+begin
+  result := False;
+  xWsdl := WsdlOperation.Wsdl;
+  Application.CreateForm(TChooseStringForm, ChooseStringForm);
+  with ChooseStringForm do
+  try
+    ListBox.Clear;
+    for x := 0 to xWsdl.XsdDescr.NameSpaceList.Count - 1 do
+    begin
+      ListBox.Items.Add
+        (xWsdl.XsdDescr.NameSpaceList.Strings[x]);
+    end;
+    Caption := 'Choose from namespaces';
+    ShowModal;
+    if ModalResult = mrOk then
+    begin
+      (aXml as TXml).Value := ChoosenString;
+      (aXml as TXml).Checked := True;
+      result := True;
+    end;
+  finally
+    FreeAndNil(ChooseStringForm);
+  end;
+end;
+
+function TMainForm.ChooseTypedefForAddingElement(aXml: TObject): Boolean;
+var
+  xWsdl: TWsdl;
+  x: Integer;
+  xNameSpace: String;
+begin
+  result := False;
+  xWsdl := WsdlOperation.Wsdl;
+  xNameSpace := ((aXml as TXml).Parent as TXml).Items.XmlCheckedValueByTag['namespace'];
+  if xNameSpace = '' then
+    raise Exception.Create('First enter valid namespace');
+  Application.CreateForm(TChooseStringForm, ChooseStringForm);
+  with ChooseStringForm do
+  try
+    ListBox.Clear;
+    for x := 0 to xWsdl.XsdDescr.NameSpaceList.Count - 1 do
+    begin
+      ListBox.Items.Add
+        (xWsdl.XsdDescr.NameSpaceList.Strings[x]);
+    end;
+    Caption := 'Choose from typedefs';
+    ShowModal;
+    if ModalResult = mrOk then
+    begin
+      (aXml as TXml).Value := ChoosenString;
+      (aXml as TXml).Checked := True;
+      result := True;
+    end;
+  finally
+    FreeAndNil(ChooseStringForm);
+  end;
+end;
+
 procedure TMainForm.EditBetweenScriptMenuItemClick(Sender: TObject);
 begin
   EditScriptButtonClick(nil);
@@ -6795,7 +6862,6 @@ begin
     (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
   HelpAction.Caption := 'Help on ' + _progName;
   UpdateVisibiltyOfOperations;
-  SetBetaMode;
   _OnParseErrorEvent := ParserError;
   _WsdlOnMessageChange := OnMessageChanged;
   try
@@ -8686,6 +8752,7 @@ begin
   WsdlItemAddMenuItem.Enabled := xEnableAddMenuItems;
   WsdlItemDelMenuItem.Enabled := xEnableDelMenuItems;
   AddChildElementDefMenuItem.Visible := xAddChildVisible;
+  AddChildElementMenuItem.Visible := xAddChildVisible and BetaMode;
   ExtendRecursivityMenuItem.Visible := xExtRecurVisible;
   WsdlItemChangeDataTypeMenuItem.Clear;
   WsdlItemChangeDataTypeMenuItem.Enabled := (xBind is TXml) and
@@ -9998,7 +10065,6 @@ end;
 procedure TMainForm.ToggleBetaModeActionExecute(Sender: TObject);
 begin
   BetaMode := not BetaMode;
-  SetBetaMode;
 end;
 
 procedure TMainForm.SetAbortPressed(const Value: Boolean);
@@ -10006,11 +10072,6 @@ begin
   fAbortPressed := Value;
   se.abortPressed := Value;
   MessagesStatusBar.Invalidate;
-end;
-
-procedure TMainForm.SetBetaMode;
-begin
-  // ScriptsMenuItem.Visible := BetaMode;
 end;
 
 procedure TMainForm.ShowRemarksActionExecute(Sender: TObject);
@@ -13640,6 +13701,58 @@ begin
     end;
   finally
     XmlUtil.PopCursor;
+  end;
+end;
+
+procedure TMainForm.AddChildElementMenuItemClick(Sender: TObject);
+var
+  X, m: Integer;
+  xxsd: TXsd;
+  xXml, dxml: TXml;
+  xBind: TCustomBindable;
+  nTypeDef, oTypeDef, cTypeDef: TXsdDataType;
+  xPath: String;
+begin
+{
+for x := 0 to aTypeDefs.Count - 1 do with aTypeDefs.XsdDataTypes[x] do
+begin
+  if NameSpace <> '' then
+  begin
+    if not result.Find(NameSpace, f) then
+      f := result.AddObject (NameSpace, TStringList.Create);
+    (result.Objects[f] as TStringlist).Add (Name);
+  end;
+end;
+ }
+  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  if not Assigned(xBind) then
+    raise Exception.Create('no element selected');
+  if not(xBind is TXml) then
+    raise Exception.Create('operation only valid on XML elements');
+  xXml := xBind as TXml;
+  if not Assigned(xXml.Xsd) then
+    raise Exception.Create('opeation requires an XSD on the selected element');
+  xXsd := _WsdlAddChildDialogXsd.XsdByCaption ['addChildElementDialog.namespace'];
+  xXsd.EditProcedure := ChooseNameSpaceForAddingElement;
+  xXsd := _WsdlAddChildDialogXsd.XsdByCaption ['addChildElementDialog.typedefName'];
+  xXsd.EditProcedure := ChooseTypedefForAddingElement;
+  dXml := TXml.Create(-1000, _WsdlAddChildDialogXsd);
+  try
+    if EditXmlXsdBased ( 'Extra sub element for : ' + xXml.FullCaption
+                       , ''
+                       , ''
+                       , ''
+                       , False
+                       , False
+                       , esUsed
+                       , _WsdlAddChildDialogXsd
+                       , dXml
+                       ) then
+    begin
+
+    end;
+  finally
+    dxml.Free;
   end;
 end;
 

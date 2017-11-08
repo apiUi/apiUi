@@ -1279,6 +1279,7 @@ begin
       operationOptionsXsd := XsdByName['operationOptions'];
       _WsdlServiceDefinitionXsd := XsdByName['ServiceDefinitions'];
       _WsdlListOfFilesXsd := XsdByName['FileNames'];
+      _WsdlAddChildDialogXsd := XsdByName ['addChildElementDialog'];
       endpointConfigXsd := XsdByName['endpointConfig'];
       listenersConfigXsd := XsdByName['Listeners'];
       _WsdlEmailXsd := XsdByName['Email'];
@@ -1292,6 +1293,7 @@ begin
     if not Assigned (operationOptionsXsd) then raise Exception.Create('XML Element definition for operationOptions not found');
     if not Assigned (_WsdlServiceDefinitionXsd) then raise Exception.Create('XML Element definition for ServiceDefinitions not found');
     if not Assigned (_WsdlListOfFilesXsd) then raise Exception.Create('XML Element definition for FileNames not found');
+    if not Assigned (_WsdlAddChildDialogXsd) then raise Exception.Create('XML Element definition for AddChildDialogXsd not found');
     if not Assigned (endpointConfigXsd) then raise Exception.Create('XML Element definition for endpointConfig not found');
     if not Assigned (listenersConfigXsd) then raise Exception.Create('XML Element definition for listeners configuration not found');
     if Assigned (_WsdlRtiXsd) then

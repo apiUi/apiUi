@@ -27,6 +27,7 @@ type
     AddToSortColumnsMenuItem: TMenuItem;
     A2BGridMenuItem : TMenuItem ;
     checkRegExpFullCapMenuItem: TMenuItem;
+    checkPartialFullCapMenuItem: TMenuItem;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -80,6 +81,7 @@ type
     IgnoreRemovingFullCaptionMenuItem: TMenuItem;
     procedure A2BGridMenuItemClick (Sender : TObject );
     procedure AddToSortColumnsMenuItemClick(Sender: TObject);
+    procedure checkPartialFullCapMenuItemClick(Sender: TObject);
     procedure ignoreFullCaptionMenuitemClick(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -168,6 +170,7 @@ uses FindRegExpDialog
    , Clipbrd
    , A2BXmlGridUnit
    , EditRegExpUnit
+   , EditPartExpUnit
    ;
 const
   iiGreenBullet = 132;
@@ -595,6 +598,10 @@ begin
                                     and (   (xXml.ChangeKind = ckModify)
                                          or (checkValueAgainst.Values[xXml.FullUQCaption] <> '')
                                         );
+  checkPartialFullCapMenuItem.Enabled := (Assigned(checkValueAgainst))
+                                    and (   (xXml.ChangeKind = ckModify)
+                                         or (checkValueAgainst.Values[xXml.FullUQCaption] <> '')
+                                        );
   IgnoreAddingMenuItem.Enabled := (Assigned (ignoreAddingOn))
                               and (   (xXml.ChangeKind = ckDelete)
                                   );
@@ -615,6 +622,7 @@ begin
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
   checkRegExpFullCapMenuItem.Caption := 'Check regular expression on: ' + xXml.FullUQCaption + '...';
+  checkPartialFullCapMenuItem.Caption := 'Check value partial on: ' + xXml.FullUQCaption + '...';
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
   IgnoreAddingMenuItem.Caption := 'Ignore adding of: *.' + rmPrefix(xXml.TagName);
   IgnoreAddingFullCaptionMenuItem.Caption := 'Ignore adding of: ' + xXml.FullUQCaption;
@@ -950,6 +958,37 @@ begin
     SelectedXml(xXml);
     regressionSortColumns.Add(xXml.FullUQCaption);
     RefreshNeeded := True;
+  end;
+end;
+
+procedure TShowA2BXmlForm.checkPartialFullCapMenuItemClick(Sender: TObject);
+var
+  xXml: TA2BXml;
+  xForm: TEditPartExpForm;
+  xExpression: String;
+begin
+  xXml := nil;
+  if Assigned (TreeView.FocusedNode) then
+  begin
+    SelectedXml(xXml);
+    Application.CreateForm(TEditPartExpForm, xForm);
+    try
+      xForm.SampleValueAEdit.Text := xXml.Value;
+      xForm.SampleValueBEdit.Text := xXml.BValue;
+      xExpression := checkValueAgainst.Values[xXml.FullUQCaption];
+      if AnsiStartsStr(checkAgainstPartialPrefix, xExpression) then
+        xform.MaskExpressionEdit.Text := Copy (xExpression, Length(checkAgainstPartialPrefix) + 1, MaxInt)
+      else
+        xForm.MaskExpressionEdit.Text := '';
+      xForm.ShowModal;
+      if xForm.ModalResult = mrOK then
+      begin
+        checkValueAgainst.Values[xXml.fullUQCaption] := checkAgainstPartialPrefix + xform.MaskExpressionEdit.Text;
+        RefreshNeeded := True;
+      end;
+    finally
+      FreeAndNil(xForm);
+    end;
   end;
 end;
 

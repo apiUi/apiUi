@@ -14,9 +14,10 @@ uses Classes
 
 const
   checkAgainstRegExpPrefix = 'regexp:';
+  checkAgainstPartialPrefix = 'partialexp:';
 
 type
-
+  TCheckType = (checktypeNormal, checktypeRegExp, checktypePartial);
 { TA2BXml }
 
  TA2BXml = class (TXml)
@@ -30,8 +31,9 @@ type
     procedure setThisOneDiffers (AValue : Boolean );
   public
     bValue, bNameSpace: String;
-    Prefix, RegExp: String;
+    Prefix, checkExp: String;
     ChangeKind: TChangeKind;
+    CheckType: TCheckType;
     function valuesDiffer (aValue, bValue: String): Boolean;
     function AsTabSeparatedValues: String;
     property ThisOneDiffers: Boolean read fThisOneDiffers write setThisOneDiffers;
@@ -126,18 +128,76 @@ end;
 { TA2BXml }
 
 function TA2BXml.valuesDiffer (aValue, bValue: String): Boolean;
+  function _checkPartial: Boolean;
+  var
+    xA, xB: String;
+    x: Integer;
+  begin
+    result := false;
+    if Length (aValue) > Length (checkExp) then
+      SetLength(xA, Length (aValue))
+    else
+      SetLength(xA, Length (checkExp));
+    x := 1;
+    while (x <= Length (aValue))
+      and (x <= Length (checkExp)) do
+    begin
+      if checkExp [x] = '?' then
+        xA [x] := checkExp [x]
+      else
+        xA [x] := aValue [x];
+      Inc (x);
+    end;
+    while (x <= Length (aValue)) do
+    begin
+      xA [x] := aValue [x];
+      Inc (x);
+    end;
+    if Length (bValue) > Length (checkExp) then
+      SetLength(xB, Length (bValue))
+    else
+      SetLength(xB, Length (checkExp));
+    x := 1;
+    while (x <= Length (bValue))
+      and (x <= Length (checkExp)) do
+    begin
+      if checkExp [x] = '?' then
+        xB [x] := checkExp [x]
+      else
+        xB [x] := bValue [x];
+      Inc (x);
+    end;
+    while (x <= Length (bValue)) do
+    begin
+      xB [x] := bValue [x];
+      Inc (x);
+    end;
+    result := (xA <> xB);
+  end;
+
 var
   aFileName, bFileName: String;
 begin
-  if RegExp <> '' then
+  if CheckType = checktypeRegExp then
   begin
-    with TRegExpr.Create('^(' + RegExp + ')$') do
-    try
-      result := not Exec(aValue);
-    finally
-      Free;
+    if checkExp <> '' then
+    begin
+      with TRegExpr.Create('^(' + checkExp + ')$') do
+      try
+        result := not Exec(aValue);
+      finally
+        Free;
+      end;
+      exit;
     end;
-    exit;
+  end;
+  if CheckType = checktypePartial then
+  begin
+    if checkExp <> '' then
+    begin
+      result := _checkPartial;
+      exit;
+    end;
   end;
   result := (aValue <> bValue);
   if result then
@@ -213,6 +273,7 @@ var
   xCheckValueAgainst: String;
 begin
   inherited Create;
+  CheckType := checktypeNormal;
   xCaption := IfThen(aFullCaption = '', aXml.UQCaption, aFullCaption + '.' + aXml.UQCaption);
   Checked := True;
   TagName := aXml.TagName;
@@ -224,7 +285,15 @@ begin
   begin
     xCheckValueAgainst := checkValueAgainst.Values[xCaption];
     if AnsiStartsStr(checkAgainstRegExpPrefix, xCheckValueAgainst) then
-      RegExp := Copy (xCheckValueAgainst, Length (checkAgainstRegExpPrefix) + 1, MaxInt);
+    begin
+      checkExp := Copy (xCheckValueAgainst, Length (checkAgainstRegExpPrefix) + 1, MaxInt);
+      CheckType := checktypeRegExp;
+    end;
+    if AnsiStartsStr(checkAgainstPartialPrefix, xCheckValueAgainst) then
+    begin
+      checkExp := Copy (xCheckValueAgainst, Length (checkAgainstPartialPrefix) + 1, MaxInt);
+      CheckType := checktypePartial;
+    end;
   end;
   Prefix:=aPrefix;
   ChangeKind := ckCopy;
