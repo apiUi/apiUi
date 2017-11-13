@@ -651,7 +651,6 @@ var
   _WsdlEmailXsd: TXsd;
   _WsdlServiceDefinitionXsd: TXsd;
   _WsdlListOfFilesXsd: TXsd;
-  _WsdlAddChildDialogXsd: TXsd;
   _WsdlTacoConfigXsd: TXsd;
   _WsdlUserNameTokenNumber: Integer;
   _WsdlDisableOnCorrelate: Boolean;
@@ -1959,6 +1958,8 @@ begin
   IpmDescrs := TIpmDescrs.Create;
   IpmDescrs.Sorted := False;
   ExtraXsds := TStringList.Create;
+  ExtraXsds.Sorted := True;
+  ExtraXsds.Duplicates := dupIgnore;
   fMssgs := TWsdlMsgDescrs.Create;
   fMssgs.Sorted := True;
   fMssgs.Duplicates := dupError;
@@ -5249,7 +5250,7 @@ begin
           for y := 0 to nTypeDef.ElementDefs.Count - 1 do
           with nTypeDef.ElementDefs.Xsds[y] do
           begin
-            if _RefElementName <> '' then
+            if _ElementOrTypeDefRef = etElementRef then
             begin
               xKey := Format ('Element;%s;%s;%s', [_RefNameSpace, _RefElementName, ElementName]);
               if not sly.Find(xKey, f) then
@@ -5377,11 +5378,12 @@ begin
                                               , xElementName
                                               , cTypeDef
                                               );
+              xXsd._RefNameSpace := xNameSpace;
+              xXsd._RefElementName := xName;
               if xIsElementRef then
-              begin
-                xXsd._RefNameSpace := xNameSpace;
-                xXsd._RefElementName := xName;
-              end;
+                xXsd._ElementOrTypeDefRef := etElementRef
+              else
+                xXsd._ElementOrTypeDefRef := etTypeDefRef;
               n := 0;
               _updateTypedef ( n
                              , xPath

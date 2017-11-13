@@ -1159,8 +1159,6 @@ type
     procedure ExpressError(Sender: TObject;
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     function EditScript(aXml: TObject): Boolean;
-    function ChooseNameSpaceForAddingElement(aXml: TObject): Boolean;
-    function ChooseTypedefForAddingElement(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
@@ -1301,6 +1299,7 @@ uses
   , htmlXmlUtilz, exceptionUtils, htmlreportz
   , PromptTacoUnit
   , EditTextUnit
+  , QueryNewElementUnit
   ;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -6080,69 +6079,6 @@ begin
   finally
     xOperation.Wsdl.Free;
     xOperation.Free;
-  end;
-end;
-
-function TMainForm.ChooseNameSpaceForAddingElement(aXml: TObject): Boolean;
-var
-  xWsdl: TWsdl;
-  x: Integer;
-begin
-  result := False;
-  xWsdl := WsdlOperation.Wsdl;
-  Application.CreateForm(TChooseStringForm, ChooseStringForm);
-  with ChooseStringForm do
-  try
-    ListBox.Clear;
-    for x := 0 to xWsdl.XsdDescr.NameSpaceList.Count - 1 do
-    begin
-      ListBox.Items.Add
-        (xWsdl.XsdDescr.NameSpaceList.Strings[x]);
-    end;
-    Caption := 'Choose from namespaces';
-    ShowModal;
-    if ModalResult = mrOk then
-    begin
-      (aXml as TXml).Value := ChoosenString;
-      (aXml as TXml).Checked := True;
-      result := True;
-    end;
-  finally
-    FreeAndNil(ChooseStringForm);
-  end;
-end;
-
-function TMainForm.ChooseTypedefForAddingElement(aXml: TObject): Boolean;
-var
-  xWsdl: TWsdl;
-  x, f: Integer;
-  xNameSpace: String;
-begin
-  f := 0; // avoid compiler warning
-  result := False;
-  xWsdl := WsdlOperation.Wsdl;
-  xNameSpace := ((aXml as TXml).Parent as TXml).Items.XmlCheckedValueByTag['namespace'];
-  if (xNameSpace = '')
-  or (not xWsdl.XsdDescr.NameSpaceList.Find(xNameSpace, f)) then
-    raise Exception.Create('First enter valid namespace');
-  Application.CreateForm(TChooseStringForm, ChooseStringForm);
-  with ChooseStringForm do
-  try
-    ListBox.Clear;
-    with xWsdl.XsdDescr.TypeDefs do
-      for x := 0 to Count - 1 do with XsdDataTypes[x] do
-        if NameSpace = xNameSpace then
-          ListBox.Items.Add (Name);
-    Caption := 'Choose from typedefs';
-    ShowModal;
-    if ModalResult = mrOk then
-    begin
-      (aXml as TXml).Value := ChoosenString;
-      (aXml as TXml).Checked := True;
-      result := True;
-    end;
-  finally
-    FreeAndNil(ChooseStringForm);
   end;
 end;
 
@@ -13110,41 +13046,41 @@ begin
       ShowModal;
       if ModalResult = mrOk then
       begin
-        cXsd := Wsdl.XsdDescr.FindElement(ChoosenLeftString, ChoosenRightString);
-        if not Assigned (cXsd) then
-          raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cXsd not assigned');
-        cTypeDef := cXsd.sType;
-        if not Assigned (cTypeDef) then
-          raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cTypeDef not assigned');
-        oTypeDef := xXml.Xsd.sType;
-        xxsd := xXml.Xsd.AddElementDef ( Wsdl.XsdDescr
-                                       , ChoosenRightString
-                                       , cTypeDef
-                                       );
-        xXsd._RefNameSpace := ChoosenLeftString;
-        xXsd._RefElementName := ChoosenRightString;
-        nTypeDef := xXml.Xsd.sType;
-        xPath := IfThen(WsdlMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
-               + xXml.FullCaption
-               ;
-        if not oTypeDef.Manually then
-          WsdlOperation.BindablesWithAddedElement.AddObject (xPath, WsdlOperation.FindBind(xPath));
-        xXml.Checked := True;
-        _updateTypedef ( WsdlOperation
+      cXsd := Wsdl.XsdDescr.FindElement(ChoosenLeftString, ChoosenRightString);
+      if not Assigned (cXsd) then
+        raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cXsd not assigned');
+      cTypeDef := cXsd.sType;
+      if not Assigned (cTypeDef) then
+        raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cTypeDef not assigned');
+      oTypeDef := xXml.Xsd.sType;
+      xxsd := xXml.Xsd.AddElementDef ( Wsdl.XsdDescr
+                                     , ChoosenRightString
+                                     , cTypeDef
+                                     );
+      xXsd._RefNameSpace := ChoosenLeftString;
+      xXsd._RefElementName := ChoosenRightString;
+      nTypeDef := xXml.Xsd.sType;
+      xPath := IfThen(WsdlMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
+             + xXml.FullCaption
+             ;
+      if not oTypeDef.Manually then
+        WsdlOperation.BindablesWithAddedElement.AddObject (xPath, WsdlOperation.FindBind(xPath));
+      xXml.Checked := True;
+      _updateTypedef ( WsdlOperation
+                     , xPath
+                     , nTypeDef
+                     , xxsd
+                     );
+      for m := 0 to WsdlOperation.Messages.Count - 1 do
+      begin
+        _updateTypedef ( WsdlOperation.Messages.Messages[m]
                        , xPath
                        , nTypeDef
                        , xxsd
                        );
-        for m := 0 to WsdlOperation.Messages.Count - 1 do
-        begin
-          _updateTypedef ( WsdlOperation.Messages.Messages[m]
-                         , xPath
-                         , nTypeDef
-                         , xxsd
-                         );
-        end;
-        GridView.OnFocusChanged(GridView, GridView.FocusedNode, GridView.FocusedColumn);
-        stubChanged := True;
+      end;
+      GridView.OnFocusChanged(GridView, GridView.FocusedNode, GridView.FocusedColumn);
+      stubChanged := True;
       end;
     end;
   finally
@@ -13706,27 +13642,40 @@ begin
 end;
 
 procedure TMainForm.AddChildElementMenuItemClick(Sender: TObject);
+  procedure _updateTypedef(aBinder: TWsdlBinder; aPath: String; nType: TXsdDataType; aXsd: TXsd);
+    procedure _update(aXml: TXml; aPath: String);
+    var
+      x: Integer;
+    begin
+      for x := 0 to aXml.Items.Count - 1 do
+        _update(aXml.Items.XmlItems[x], aPath);
+      if aXml.FullCaption = aPath then
+      begin
+        bindRefId := 0;
+        aXml.AddXml(TXml.Create(0, aXsd));
+        aXml.TypeDef := nType;
+      end;
+    end;
+  var
+    xBind: TCustomBindable;
+  begin
+    xBind := aBinder.FindBind(aPath);
+    if Assigned (xBind) then
+    begin
+      if aBinder.reqBind.IsAncestorOf(xBind) then
+        _update(aBinder.reqXml, xBind.FullCaption)
+      else
+        _update(aBinder.rpyXml, xBind.FullCaption);
+    end;
+  end;
 var
-  X, m, f: Integer;
-  xxsd: TXsd;
+  x, m, f: Integer;
   xXml, dxml: TXml;
   xBind: TCustomBindable;
   nTypeDef, oTypeDef, cTypeDef: TXsdDataType;
+  xWsdl: TWsdl;
+  cXsd, xXsd: TXsd;
   xPath: String;
-  isApproved, isValid: Boolean;
-  xNamespace, xTypeDefName, xName, xMessages: String;
-  function _isValid: Boolean;
-  begin
-    result := True;
-    xMessages := '';
-    xNamespace := dXml.Items.XmlCheckedValueByTag['namespace'];
-    xTypeDefName := dXml.Items.XmlCheckedValueByTag['typedefName'];
-    xName := dXml.Items.XmlCheckedValueByTag['name'];
-    result := (xNamespace <> '')
-          and (xTypeDefName <> '')
-          and (xName <> '')
-            ;
-  end;
 begin
   xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
   if not Assigned(xBind) then
@@ -13736,46 +13685,67 @@ begin
   xXml := xBind as TXml;
   if not Assigned(xXml.Xsd) then
     raise Exception.Create('opeation requires an XSD on the selected element');
-  xXsd := _WsdlAddChildDialogXsd.XsdByCaption ['addChildElementDialog.namespace'];
-  xXsd.EditProcedure := ChooseNameSpaceForAddingElement;
-  xXsd := _WsdlAddChildDialogXsd.XsdByCaption ['addChildElementDialog.typedefName'];
-  xXsd.EditProcedure := ChooseTypedefForAddingElement;
-  dXml := TXml.Create(-1000, _WsdlAddChildDialogXsd);
+
+  Application.CreateForm(TQueryNewElementForm, QueryNewElementForm);
+  with QueryNewElementForm do
   try
-    isApproved := EditXmlXsdBased ( 'Extra sub element for : ' + xXml.FullCaption
-                                  , ''
-                                  , ''
-                                  , ''
-                                  , False
-                                  , False
-                                  , esUsed
-                                  , _WsdlAddChildDialogXsd
-                                  , dXml
-                                  );
-    if isApproved then
+    ShowModal;
+    if ModalResult = mrOK then
     begin
-      isValid := _isValid;
-      while isApproved and (not isValid) do
+      xWsdl := WsdlOperation.Wsdl;
+      if not xWsdl.ExtraXsds.Find(FileName, f) then
       begin
-        ShowMessage (xMessages + LineEnding + 'not Valid');
-        isApproved := EditXmlXsdBased ( 'Extra sub element for : ' + xXml.FullCaption
-                                      , ''
-                                      , ''
-                                      , ''
-                                      , False
-                                      , False
-                                      , esUsed
-                                      , _WsdlAddChildDialogXsd
-                                      , dXml
-                                      );
-        if isApproved then
-          isValid := _isValid;
+        xWsdl.ExtraXsds.Add (FileName);
+        xWsdl.LoadExtraXsds;
       end;
+      if ElementOrTypeDefRef = etElementRef then
+      begin
+        cXsd := Wsdl.XsdDescr.FindElement(Namespace, Name);
+        if not Assigned (cXsd) then
+          raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cXsd not assigned');
+        cTypeDef := cXsd.sType;
+        if not Assigned (cTypeDef) then
+          raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cTypeDef not assigned');
+      end
+      else
+      begin
+        cTypeDef := Wsdl.XsdDescr.FindTypeDef(Namespace, Name);
+        if not Assigned (cTypeDef) then
+          raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cTypeDef not assigned');
+      end;
+      oTypeDef := xXml.Xsd.sType;
+      xXsd := xXml.Xsd.AddElementDef ( Wsdl.XsdDescr
+                                     , TagName
+                                     , cTypeDef
+                                     );
+      xXsd._RefNameSpace := Namespace;
+      xXsd._RefElementName := Name;
+      xXsd._ElementOrTypeDefRef := ElementOrTypeDefRef;
+      nTypeDef := xXml.Xsd.sType;
+      xPath := IfThen(WsdlMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
+             + xXml.FullCaption
+             ;
+      if not oTypeDef.Manually then
+        WsdlOperation.BindablesWithAddedElement.AddObject (xPath, WsdlOperation.FindBind(xPath));
+      xXml.Checked := True;
+      _updateTypedef ( WsdlOperation
+                     , xPath
+                     , nTypeDef
+                     , xxsd
+                     );
+      for m := 0 to WsdlOperation.Messages.Count - 1 do
+      begin
+        _updateTypedef ( WsdlOperation.Messages.Messages[m]
+                       , xPath
+                       , nTypeDef
+                       , xxsd
+                       );
+      end;
+      GridView.OnFocusChanged(GridView, GridView.FocusedNode, GridView.FocusedColumn);
+      stubChanged := True;
     end;
-    if isApproved then
-      ShowMessage('finally approved and valid');
   finally
-    dxml.Free;
+    Free;
   end;
 end;
 

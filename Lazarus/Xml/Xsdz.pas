@@ -21,6 +21,7 @@ uses Classes
 type
   TXsdFormDefault = (xsdFDAccordingWsdl, xsdFDQualified, xsdFDUnqualified);
   TXsdType = (dtSimpleType, dtComplexType, dtAttributeType);
+  TElementOrTypeDefRef = (etElementRef, etTypeDefRef)  ;
   TBooleanFunctionObject = function (arg: TObject): Boolean of Object;
 
 
@@ -187,6 +188,7 @@ type
     _SelfRef: Boolean;
     sType: TXsdDataType;
     Manually: Boolean;
+    _ElementOrTypeDefRef: TElementOrTypeDefRef;
     InitialCollapsed: Boolean;
     Documentation: TStringList;
     Appinfo: TStringList;
