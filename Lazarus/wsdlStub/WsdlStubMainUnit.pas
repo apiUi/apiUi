@@ -175,8 +175,6 @@ type
     ClearSnapshotsAction : TAction ;
     ImportProjectScriptsAction : TAction ;
     MenuItem20 : TMenuItem ;
-    MenuItem21 : TMenuItem ;
-    MenuItem22 : TMenuItem ;
     MenuItem4 : TMenuItem ;
     ExportProjectScriptsAction : TAction ;
     MenuItem1 : TMenuItem ;
@@ -426,7 +424,6 @@ type
     Options2: TMenuItem;
     ProjectOptionsAction: TAction;
     ToolButton48: TToolButton;
-    AddChildElementDefMenuItem: TMenuItem;
     All1: TMenuItem;
     Required1: TMenuItem;
     ShowReplyAsXmlGridAction: TAction;
@@ -598,7 +595,6 @@ type
     procedure DesignSplitVerticalMenuItemClick (Sender : TObject );
     procedure MenuItem14Click (Sender : TObject );
     procedure MenuItem17Click (Sender : TObject );
-    procedure AddChildElementRefMenuItemClick (Sender : TObject );
     procedure OperationReqsTreeViewClick(Sender: TObject);
     procedure OperationReqsTreeViewGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
@@ -704,7 +700,6 @@ type
       var Allowed: Boolean);
     procedure ViewStyleComboBoxChange(Sender: TObject);
     function getXmlViewType: TxvViewType;
-    procedure AddChildElementTypeDefMenuItemClick(Sender: TObject);
     procedure ProjectOptionsActionExecute(Sender: TObject);
     procedure CheckTreeActionExecute(Sender: TObject);
     procedure CheckTreeActionUpdate(Sender: TObject);
@@ -1177,7 +1172,6 @@ type
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure ReloadProject;
     function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
-    function createListOfListsForElements (aTypeDef: TXsdDataType): TStringList;
   published
   public
     se: TWsdlProject;
@@ -7420,23 +7414,6 @@ begin
   end;
 end;
 
-function TMainForm.createListOfListsForElements (aTypeDef: TXsdDataType): TStringList;
-var
-  x, f: Integer;
-begin
-  result := TStringList.Create;
-  result.Sorted := True;
-  for x := 0 to aTypeDef.ElementDefs.Count - 1 do with aTypeDef.ElementDefs.Xsds[x] do
-  begin
-    if ElementNameSpace <> '' then
-    begin
-      if not result.Find(ElementNameSpace, f) then
-        f := result.AddObject (ElementNameSpace, TStringList.Create);
-      (result.Objects[f] as TStringlist).Add (ElementName);
-    end;
-  end;
-end;
-
 function TMainForm.ActiveAfterPrompt : Boolean ;
 begin
   result := False;
@@ -8367,33 +8344,33 @@ var
   X: Integer;
   xOperation: TWsdlOperation;
 begin
-  se.AcquireLogLock;
-  se.ProgressMax := WsdlOperation.Messages.Count;
-  se.ReleaseLogLock;
-  for X := 0 to WsdlOperation.Messages.Count - 1 do
-  begin
-    if abortPressed then
-      Break;
-    WsdlOperation.AcquireLock;
-    try
-      xOperation := TWsdlOperation.Create(WsdlOperation); // fresh copy
-    finally
-      WsdlOperation.ReleaseLock;
-    end;
-    try
-      if not WsdlOperation.Messages.Messages[X].Disabled then
+  WsdlOperation.AcquireLock;
+  try
+    xOperation := TWsdlOperation.Create(WsdlOperation); // fresh copy
+  finally
+    WsdlOperation.ReleaseLock;
+  end;
+  try
+    se.AcquireLogLock;
+    se.ProgressMax := xOperation.Messages.Count;
+    se.ReleaseLogLock;
+    for X := 0 to xOperation.Messages.Count - 1 do
+    begin
+      if abortPressed then
+        Break;
+      if not xOperation.Messages.Messages[X].Disabled then
       begin
         se.AcquireLogLock;
         se.ProgressPos := X + 1;
         se.ReleaseLogLock;
         try
-          se.SendMessage(xOperation, WsdlOperation.Messages.Messages[X], '');
+          se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
         except
         end;
       end;
-    finally
-      FreeAndNil(xOperation);
     end;
+  finally
+    FreeAndNil(xOperation);
   end;
 end;
 
@@ -8558,7 +8535,14 @@ begin
       logRequestTreeColumn:
         begin
           xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
-          if (Assigned(xLog)) and (xLog is TLog) and (xLog.RequestBody <> '') then
+          if (   (    (Assigned(xLog))
+                  and (xLog.RequestBody <> '')
+                 )
+              or (    (Assigned (xLog))
+                  and (Assigned (xLog.Operation))
+                  and (xLog.Operation.isOpenApiService)
+                 )
+             ) then
             if (not xLog.RequestValidated) then
               ImageIndex := 40
             else if xLog.RequestValidateResult = '' then
@@ -8688,8 +8672,7 @@ begin
   PasteCobolDataFromClipboardMenuItem.Visible := (xBind is TIpmItem);
   WsdlItemAddMenuItem.Enabled := xEnableAddMenuItems;
   WsdlItemDelMenuItem.Enabled := xEnableDelMenuItems;
-  AddChildElementDefMenuItem.Visible := xAddChildVisible;
-  AddChildElementMenuItem.Visible := xAddChildVisible and BetaMode;
+  AddChildElementMenuItem.Visible := xAddChildVisible;
   ExtendRecursivityMenuItem.Visible := xExtRecurVisible;
   WsdlItemChangeDataTypeMenuItem.Clear;
   WsdlItemChangeDataTypeMenuItem.Enabled := (xBind is TXml) and
@@ -9491,116 +9474,6 @@ begin
     end;
   finally
     FreeAndNil(PromptForm);
-  end;
-end;
-
-procedure TMainForm.AddChildElementTypeDefMenuItemClick(Sender: TObject);
-  procedure _updateTypedef(aBinder: TWsdlBinder; aPath: String; nType: TXsdDataType; aXsd: TXsd);
-    procedure _update(aXml: TXml; aPath: String);
-    var
-      x: Integer;
-    begin
-      for x := 0 to aXml.Items.Count - 1 do
-        _update(aXml.Items.XmlItems[x], aPath);
-      if aXml.FullCaption = aPath then
-      begin
-        bindRefId := 0;
-        aXml.AddXml(TXml.Create(0, aXsd));
-        aXml.TypeDef := nType;
-      end;
-    end;
-  var
-    xBind: TCustomBindable;
-  begin
-    xBind := aBinder.FindBind(aPath);
-    if Assigned (xBind) then
-    begin
-      if aBinder.reqBind.IsAncestorOf(xBind) then
-        _update(aBinder.reqXml, xBind.FullCaption)
-      else
-        _update(aBinder.rpyXml, xBind.FullCaption);
-    end;
-  end;
-var
-  X, m: Integer;
-  xxsd: TXsd;
-  xXml: TXml;
-  xBind: TCustomBindable;
-  nTypeDef, oTypeDef, cTypeDef: TXsdDataType;
-  xPath: String;
-begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
-  if not Assigned(xBind) then
-    raise Exception.Create('no element selected');
-  if not(xBind is TXml) then
-    raise Exception.Create('operation only valid on XML elements');
-  xXml := xBind as TXml;
-  if not Assigned(xXml.Xsd) then
-    raise Exception.Create('opeation requires an XSD on the selected element');
-  Application.CreateForm(TChoose2StringsForm, Choose2StringsForm);
-  try
-    with Choose2StringsForm do
-    begin
-      ListOfLists := createListOfListsForTypeDefs (Wsdl.XsdDescr.TypeDefs);
-      Caption := 'Choose from Types';
-      ShowModal;
-      if ModalResult = mrOk then
-      begin
-        cTypeDef := Wsdl.XsdDescr.FindTypeDef(ChoosenLeftString, ChoosenRightString);
-        if not Assigned (cTypeDef) then
-          raise Exception.Create ('procedure TMainForm.AddChildElementDefMenuItemClick(Sender: TObject): cTypeDef not assigned');
-        Application.CreateForm(TPromptForm, PromptForm);
-        try
-          PromptForm.Caption := 'Name for '
-                              + cTypeDef.NameSpace
-                              + ';'
-                              + cTypeDef.Name
-                              + ' at '
-                              + xXml.FullCaption
-                              ;
-          PromptForm.PromptEdit.Text := cTypeDef.Name;
-          PromptForm.Numeric := False;
-          PromptForm.ShowModal;
-          if PromptForm.ModalResult = mrOk then
-          begin
-            oTypeDef := xXml.Xsd.sType;
-            xxsd := xXml.Xsd.AddElementDef ( Wsdl.XsdDescr
-                                           , PromptForm.PromptEdit.Text
-                                           , cTypeDef
-                                           );
-            nTypeDef := xXml.Xsd.sType;
-            xPath := IfThen(WsdlMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
-                   + xXml.FullCaption
-                   ;
-            if not oTypeDef.Manually then
-              WsdlOperation.BindablesWithAddedElement.AddObject (xPath, WsdlOperation.FindBind(xPath));
-            xXml.Checked := True;
-            _updateTypedef ( WsdlOperation
-                           , xPath
-                           , nTypeDef
-                           , xxsd
-                           );
-            for m := 0 to WsdlOperation.Messages.Count - 1 do
-            begin
-              _updateTypedef ( WsdlOperation.Messages.Messages[m]
-                             , xPath
-                             , nTypeDef
-                             , xxsd
-                             );
-            end;
-            GridView.OnFocusChanged(GridView, GridView.FocusedNode,
-              GridView.FocusedColumn);
-            stubChanged := True;
-          end;
-        finally
-          FreeAndNil(PromptForm);
-        end;
-      end;
-    end;
-  finally
-    if Assigned (Choose2StringsForm.ListOfLists) then
-      Choose2StringsForm.ListOfLists.Free;
-    FreeAndNil(Choose2StringsForm);
   end;
 end;
 
@@ -12206,44 +12079,48 @@ var
   xOpenOptions: TOpenOptions;
   xXml, yXml: TXml;
 begin
-  with OpenFileDialog do
+  ClearSnapshotsActionExecute (nil);
+  if se.displayedSnapshots.Count = 0 then
   begin
-    xOpenOptions := Options;
-    xXml := TXml.Create;
-    try
-      DefaultExt := 'xml';
-      FileName := wsdlStubSnapshotsFileName;
-      Filter := 'XML file (*.xml)|*.xml';
-      Title := 'Read ' + _progName + ' snapshots information from file';
-      Options := Options + [ofAllowMultiSelect];
-      if Execute then
-      begin
-        wsdlStubSnapshotsFileName := FileName;
-        for X := 0 to Files.Count - 1 do
-        try
-          xXml.LoadFromFile(Files.Strings[X], nil);
-          if xXml.Name <> 'wsdlStubSnapshotList' then
-            raise Exception.Create('not a SnapshotList');
-          for Y := 0 to xXml.Items.Count - 1 do
-          begin
-            yXml := xXml.Items.XmlItems[Y];
-            if yXml.Name = 'SnapshotDetails' then
-              se.CreateSnapshot ( yXml.Items.XmlValueByTag ['name']
-                                , yXml.Items.XmlValueByTag ['fileName']
-                                , yXml.Items.XmlValueByTag ['refFileName']
-                                , False
-                                , False
-                                );
+    with OpenFileDialog do
+    begin
+      xOpenOptions := Options;
+      xXml := TXml.Create;
+      try
+        DefaultExt := 'xml';
+        FileName := wsdlStubSnapshotsFileName;
+        Filter := 'XML file (*.xml)|*.xml';
+        Title := 'Read ' + _progName + ' snapshots information from file';
+        Options := Options + [ofAllowMultiSelect];
+        if Execute then
+        begin
+          wsdlStubSnapshotsFileName := FileName;
+          for X := 0 to Files.Count - 1 do
+          try
+            xXml.LoadFromFile(Files.Strings[X], nil);
+            if xXml.Name <> 'wsdlStubSnapshotList' then
+              raise Exception.Create('not a SnapshotList');
+            for Y := 0 to xXml.Items.Count - 1 do
+            begin
+              yXml := xXml.Items.XmlItems[Y];
+              if yXml.Name = 'SnapshotDetails' then
+                se.CreateSnapshot ( yXml.Items.XmlValueByTag ['name']
+                                  , yXml.Items.XmlValueByTag ['fileName']
+                                  , yXml.Items.XmlValueByTag ['refFileName']
+                                  , False
+                                  , False
+                                  );
+            end;
+          except
+            on E: Exception do
+              raise Exception.CreateFmt('Error opening file %s%s%s',
+                [Files.Strings[X], LineEnding, E.Message]);
           end;
-        except
-          on E: Exception do
-            raise Exception.CreateFmt('Error opening file %s%s%s',
-              [Files.Strings[X], LineEnding, E.Message]);
         end;
+      finally
+        Options := xOpenOptions;
+        xXml.Free;
       end;
-    finally
-      Options := xOpenOptions;
-      xXml.Free;
     end;
   end;
 end;
@@ -12993,103 +12870,6 @@ begin
   end;
 end;
 
-procedure TMainForm .AddChildElementRefMenuItemClick (Sender : TObject );
-  procedure _updateTypedef(aBinder: TWsdlBinder; aPath: String; nType: TXsdDataType; aXsd: TXsd);
-    procedure _update(aXml: TXml; aPath: String);
-    var
-      x: Integer;
-    begin
-      for x := 0 to aXml.Items.Count - 1 do
-        _update(aXml.Items.XmlItems[x], aPath);
-      if aXml.FullCaption = aPath then
-      begin
-        bindRefId := 0;
-        aXml.AddXml(TXml.Create(0, aXsd));
-        aXml.TypeDef := nType;
-      end;
-    end;
-  var
-    xBind: TCustomBindable;
-  begin
-    xBind := aBinder.FindBind(aPath);
-    if Assigned (xBind) then
-    begin
-      if aBinder.reqBind.IsAncestorOf(xBind) then
-        _update(aBinder.reqXml, xBind.FullCaption)
-      else
-        _update(aBinder.rpyXml, xBind.FullCaption);
-    end;
-  end;
-var
-  X, m: Integer;
-  xxsd: TXsd;
-  xXml: TXml;
-  xBind: TCustomBindable;
-  cXsd: TXsd;
-  nTypeDef, oTypeDef, cTypeDef: TXsdDataType;
-  xPath: String;
-begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
-  if not Assigned(xBind) then
-    raise Exception.Create('no element selected');
-  if not(xBind is TXml) then
-    raise Exception.Create('operation only valid on XML elements');
-  xXml := xBind as TXml;
-  if not Assigned(xXml.Xsd) then
-    raise Exception.Create('opeation requires an XSD on the selected element');
-  Application.CreateForm(TChoose2StringsForm, Choose2StringsForm);
-  try
-    with Choose2StringsForm do
-    begin
-      ListOfLists := createListOfListsForElements (Wsdl.XsdDescr.TypeDef);
-      Caption := 'Choose from Elements';
-      ShowModal;
-      if ModalResult = mrOk then
-      begin
-      cXsd := Wsdl.XsdDescr.FindElement(ChoosenLeftString, ChoosenRightString);
-      if not Assigned (cXsd) then
-        raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cXsd not assigned');
-      cTypeDef := cXsd.sType;
-      if not Assigned (cTypeDef) then
-        raise Exception.Create ('procedure TMainForm.AddChildElementRefMenuItemClick(Sender: TObject): cTypeDef not assigned');
-      oTypeDef := xXml.Xsd.sType;
-      xxsd := xXml.Xsd.AddElementDef ( Wsdl.XsdDescr
-                                     , ChoosenRightString
-                                     , cTypeDef
-                                     );
-      xXsd._RefNameSpace := ChoosenLeftString;
-      xXsd._RefElementName := ChoosenRightString;
-      nTypeDef := xXml.Xsd.sType;
-      xPath := IfThen(WsdlMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
-             + xXml.FullCaption
-             ;
-      if not oTypeDef.Manually then
-        WsdlOperation.BindablesWithAddedElement.AddObject (xPath, WsdlOperation.FindBind(xPath));
-      xXml.Checked := True;
-      _updateTypedef ( WsdlOperation
-                     , xPath
-                     , nTypeDef
-                     , xxsd
-                     );
-      for m := 0 to WsdlOperation.Messages.Count - 1 do
-      begin
-        _updateTypedef ( WsdlOperation.Messages.Messages[m]
-                       , xPath
-                       , nTypeDef
-                       , xxsd
-                       );
-      end;
-      GridView.OnFocusChanged(GridView, GridView.FocusedNode, GridView.FocusedColumn);
-      stubChanged := True;
-      end;
-    end;
-  finally
-    if Assigned (Choose2StringsForm.ListOfLists) then
-      Choose2StringsForm.ListOfLists.Free;
-    FreeAndNil(Choose2StringsForm);
-  end;
-end;
-
 procedure TMainForm.OperationReqsTreeViewClick(Sender: TObject);
 begin
   if not Assigned (OperationReqsTreeView.FocusedNode) then Exit;
@@ -13319,36 +13099,40 @@ var
   sl: TSnapshotList;
   s: TSnapshot;
 begin
-  sl := TSnapshotList.Create;
-  try
-    sl.Sorted := True;
-    sl.Duplicates := dupAccept;
-    with FileUtil.FindAllFiles(se.CurrentFolder, '*.xml', False) do
+  ClearSnapshotsActionExecute (nil);
+  if se.displayedSnapshots.Count = 0 then
+  begin
+    sl := TSnapshotList.Create;
     try
-      for x := 0 to Count - 1 do
-      begin
-        xName := ExtractFileNameOnly(Strings[x]);
-        s := TRegressionSnapshot.Create ( xName
-                                        , se.CurrentFolder + DirectorySeparator + xName + '.xml'
-                                        , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
-                                        );
-        s.OnReport := se.doRegressionReport;
-        s.timeStamp := xmlio.GetFileChangedTime(s.FileName);
-        sl.SaveObject(xsdFormatDateTime(s.timeStamp, @TIMEZONE_UTC), s);
+      sl.Sorted := True;
+      sl.Duplicates := dupAccept;
+      with FileUtil.FindAllFiles(se.CurrentFolder, '*.xml', False) do
+      try
+        for x := 0 to Count - 1 do
+        begin
+          xName := ExtractFileNameOnly(Strings[x]);
+          s := TRegressionSnapshot.Create ( xName
+                                          , se.CurrentFolder + DirectorySeparator + xName + '.xml'
+                                          , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
+                                          );
+          s.OnReport := se.doRegressionReport;
+          s.timeStamp := xmlio.GetFileChangedTime(s.FileName);
+          sl.SaveObject(xsdFormatDateTime(s.timeStamp, @TIMEZONE_UTC), s);
+        end;
+      finally
+        Free;
       end;
+      se.AcquireLogLock;
+      try
+        for x := 0 to sl.Count - 1 do
+          se.toDisplaySnapshots.AddObject('', sl.SnapshotItems[x]);
+      finally
+        se.ReleaseLogLock;
+      end;
+      sl.Clear;
     finally
-      Free;
+      sl.Free;
     end;
-    se.AcquireLogLock;
-    try
-      for x := 0 to sl.Count - 1 do
-        se.toDisplaySnapshots.AddObject('', sl.SnapshotItems[x]);
-    finally
-      se.ReleaseLogLock;
-    end;
-    sl.Clear;
-  finally
-    sl.Free;
   end;
 end;
 

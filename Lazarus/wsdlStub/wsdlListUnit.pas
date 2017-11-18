@@ -40,15 +40,11 @@ type
     NewAction: TAction;
     NewSdfButton: TButton;
     SaveDialog: TSaveDialog;
-    ExtraXSDAction: TAction;
-    ExtraXsdsButton: TButton;
     PropertiesAction: TAction;
     PropertiesButton: TButton;
     CopyFileNameAction: TAction;
     ListViewPopupMenu: TPopupMenu;
     CopyFileNameAction1: TMenuItem;
-    procedure ExtraXSDActionExecute(Sender: TObject);
-    procedure ExtraXSDActionUpdate(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
     procedure EditActionExecute(Sender: TObject);
     procedure EditActionUpdate(Sender: TObject);
@@ -244,7 +240,6 @@ end;
 
 procedure TwsdlListForm.FormShow(Sender: TObject);
 begin
-  ExtraXsdsButton.Visible := Assigned (_WsdlListOfFilesXsd);
   UpdateListView;
   fStubChanged := False;
 end;
@@ -372,41 +367,6 @@ begin
           _inquire(xXml);
         end;
       end;
-    end;
-  finally
-    FreeAndNil (xXml);
-  end;
-end;
-
-procedure TwsdlListForm.ExtraXSDActionUpdate(Sender: TObject);
-begin
-  ExtraXSDAction.Enabled := (ListView.ItemIndex > -1)
-//                  and (UpperCase (ExtractFileExt (ListView.Selected.Caption)) = '.WSDL')
-                    and Assigned (_WsdlListOfFilesXsd);
-end;
-
-procedure TwsdlListForm.ExtraXSDActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-  xWsdl: TWsdl;
-begin
-  xWsdl := Wsdls.Objects [ListView.ItemIndex] as TWsdl;
-  xXml := xWsdl.ExtraXsdsAsXml;
-  try
-    if EditXmlXsdBased ( 'Extra XML-Schema files for : ' + ListView.Selected.Caption
-                       , ''
-                       , ''
-                       , ''
-                       , False
-                       , False
-                       , esUsed
-                       , _WsdlListOfFilesXsd
-                       , xXml
-                       ) then
-    begin
-      fstubChanged := True;
-      xWsdl.ExtraXsdsFromXml (xXml, False, '');
-      fReloadRequired := True;
     end;
   finally
     FreeAndNil (xXml);

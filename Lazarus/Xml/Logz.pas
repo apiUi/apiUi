@@ -1457,7 +1457,8 @@ begin
                 xSeparator := '&' + XmlItems[x].Name + '=';
               end;
             end;
-            XmlItems[x].ValueToJsonArray(xValue);
+            if xSeparator <> '' then
+              XmlItems[x].ValueToJsonArray(xValue);
           end;
         oppHeader:
           begin

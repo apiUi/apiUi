@@ -741,7 +741,6 @@ object MainForm: TMainForm
                 Width = 23
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
                 Position = 3
                 Text = 'Reply'
                 Width = 200
@@ -904,13 +903,12 @@ object MainForm: TMainForm
             Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
                 Position = 0
                 Text = 'Tag'
                 Width = 200
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
                 Position = 1
                 Width = 23
               end            
@@ -8539,17 +8537,6 @@ object MainForm: TMainForm
       }
       ImageIndex = 15
       OnClick = XmlAddMenuItemClick
-    end
-    object AddChildElementDefMenuItem: TMenuItem
-      Caption = 'Add child...'
-      object MenuItem22: TMenuItem
-        Caption = 'Element Ref'
-        OnClick = AddChildElementRefMenuItemClick
-      end
-      object MenuItem21: TMenuItem
-        Caption = 'Typedef Ref'
-        OnClick = AddChildElementTypeDefMenuItemClick
-      end
     end
     object AddChildElementMenuItem: TMenuItem
       Caption = 'Add child element...'

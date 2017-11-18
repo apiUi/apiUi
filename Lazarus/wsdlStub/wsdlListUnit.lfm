@@ -47,7 +47,7 @@ object wsdlListForm: TwsdlListForm
       Top = 12
       Width = 75
       Action = DeleteAction
-      TabOrder = 6
+      TabOrder = 5
     end
     object EditSdfButton: TButton
       Left = 201
@@ -65,21 +65,13 @@ object wsdlListForm: TwsdlListForm
       Action = NewAction
       TabOrder = 3
     end
-    object ExtraXsdsButton: TButton
-      Left = 386
-      Height = 25
-      Top = 12
-      Width = 75
-      Action = ExtraXSDAction
-      TabOrder = 4
-    end
     object PropertiesButton: TButton
       Left = 489
       Height = 25
       Top = 12
       Width = 75
       Action = PropertiesAction
-      TabOrder = 5
+      TabOrder = 4
     end
   end
   object Panel2: TPanel
@@ -141,12 +133,6 @@ object wsdlListForm: TwsdlListForm
       Caption = 'New SDF...'
       Hint = 'Create a new service description file'
       OnExecute = NewActionExecute
-    end
-    object ExtraXSDAction: TAction
-      Caption = 'Extra &XSDs...'
-      Hint = 'Maintain a list of extra import XSDs'
-      OnExecute = ExtraXSDActionExecute
-      OnUpdate = ExtraXSDActionUpdate
     end
     object PropertiesAction: TAction
       Caption = 'Properties...'
