@@ -261,6 +261,8 @@ type
     procedure CreateLogReply (aLog: TLog; var aProcessed: Boolean; aIsActive: Boolean);
     procedure Clean;
     procedure TacoPingPong;
+    procedure SaveWithFolders;
+    function ProjectDesignAsXml (aMainFileName: String): TXml;
     function ProjectDesignAsString (aMainFileName: String): String;
 {}
 {}
@@ -2149,7 +2151,7 @@ begin
   end;
 end;
 
-function TWsdlProject.ProjectDesignAsString (aMainFileName: String): String;
+function TWsdlProject.ProjectDesignAsXml(aMainFileName: String): TXml;
   procedure _addCheckers (aList, aXml: TXml);
   var
     x: Integer;
@@ -2176,8 +2178,9 @@ var
 begin
   AcquireLock;
   try
-    with TXml.CreateAsString ('WsdlStubCase', '') do
-    try
+    result := TXml.CreateAsString ('WsdlStubCase', '');
+    with result do
+    begin
       AddXml(TXml.CreateAsString('FileName', uncFilename(aMainFileName)));
       with AddXml (TXml.Create) do
         CopyDownLine(Listeners.SpecificationXml, True);
@@ -2472,12 +2475,19 @@ begin
       AddXml (TXml.CreateAsString('FocusOperationNameSpace', FocusOperationNameSpace));
       AddXml (TXml.CreateAsInteger('FocusMessageIndex', FocusMessageIndex));
       ForgetNamespaces;
-      result := AsText(False,0,True,False);
-    finally
-      Free;
     end;
   finally
     ReleaseLock;
+  end;
+end;
+
+function TWsdlProject.ProjectDesignAsString (aMainFileName: String): String;
+begin
+  with ProjectDesignAsXml(aMainFileName) do
+  try
+    result := AsText(False,0,True,False);
+  finally
+    Free;
   end;
 end;
 
@@ -7867,6 +7877,42 @@ begin
     fTacoInterface.PingPong;
   except
     fTacoInterface.Disconnect;
+  end;
+end;
+
+procedure TWsdlProject.SaveWithFolders;
+var
+  xFoldername, xWsdlFolderName, xServiceFolderName, xOperationFolderName, xMessageFolderName: String;
+  xWsdl: TWsdl;
+  w, s, o, m: Integer;
+begin
+  xFoldername := projectFileName + '_Folder';
+  if not LazFileUtils.ForceDirectory(xFoldername) then
+    raise Exception.CreateFmt('Could not create folder "%s"', [xFoldername]);
+  DeleteDirectory(xFoldername, True); // delete all subfolders
+  for w := 0 to Wsdls.Count - 1 do
+  begin
+    xWsdlFolderName := AppendPathDelim(xFoldername) + ExtractFileNameOnly(Wsdls.Strings[w]);
+    CreateDirUTF8(xWsdlFolderName);
+    xWsdl := Wsdls.Objects [w] as TWsdl;
+    for s := 0 to xWsdl.Services.Count - 1 do
+    with xWsdl.Services.Services[s] do
+    begin
+      xServiceFolderName := AppendPathDelim(xWsdlFolderName) + Name;
+      CreateDirUTF8(xServiceFolderName);
+      for o := 0 to Operations.Count - 1 do
+      with Operations.Operations[o] do
+      begin
+        xOperationFolderName := AppendPathDelim(xServiceFolderName) + Alias;
+        CreateDirUTF8(xOperationFolderName);
+        for m := 0 to Messages.Count - 1 do
+        with Messages.Messages[m] do
+        begin
+          xMessageFolderName := AppendPathDelim(xOperationFolderName) + Name;
+          CreateDirUTF8(xMessageFolderName);
+        end;
+      end;
+    end;
   end;
 end;
 

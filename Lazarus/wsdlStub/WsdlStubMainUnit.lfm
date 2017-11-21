@@ -2519,6 +2519,12 @@ object MainForm: TMainForm
       ImageIndex = 65
       OnExecute = EditMessageDocumentationActionExecute
     end
+    object SaveWithFolders: TAction
+      Category = 'File'
+      Caption = 'SaveWithFolders'
+      OnExecute = SaveWithFoldersExecute
+      ShortCut = 24646
+    end
   end
   object mainImageList: TImageList
     left = 112

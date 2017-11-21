@@ -74,6 +74,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    SaveWithFolders: TAction;
     EditMessageDocumentationAction: TAction;
     MenuItem37: TMenuItem;
     AddChildElementMenuItem: TMenuItem;
@@ -601,6 +602,7 @@ type
       var Ghosted : Boolean ; var ImageIndex : Integer );
     procedure PingPongTimerTimer (Sender : TObject );
     procedure EditProjectPropertiesExecute (Sender : TObject );
+    procedure SaveWithFoldersExecute(Sender: TObject);
     procedure ShowResolvedPropertiesExecute (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
     procedure SnapshotCompareMenuitemClick(Sender: TObject);
@@ -2121,12 +2123,20 @@ begin
       end;
     treeValueColumn:
       begin
-        Allowed := (xBind is TXmlAttribute) or
-          ((xBind is TXml) and (not(((xBind as TXml).Group) or
-                ((Assigned((xBind as TXml).Xsd)) and
-                  (((xBind as TXml).TypeDef.ContentModel = 'Empty') or
-                    ((xBind as TXml).TypeDef.ElementDefs.Count > 0))))))
-          or ((xBind is TIpmItem) and (not(xBind as TIpmItem).Group));
+        Allowed := (xBind is TXmlAttribute)
+                or (    (xBind is TXml)
+                    and (not (   ((xBind as TXml).Group)
+                              or (    (Assigned((xBind as TXml).Xsd))
+                                  and (   ((xBind as TXml).TypeDef.ContentModel = 'Empty')
+                                       or ((xBind as TXml).TypeDef.ElementDefs.Count > 0)
+                                      )
+                                 )
+                             )
+                        )
+                   )
+                or (    (xBind is TIpmItem)
+                    and (not (xBind as TIpmItem).Group)
+                   );
       end;
   end;
 end;
@@ -4852,6 +4862,8 @@ begin
     NodeToMessage(Sender, Node, xMessage);
     if Column = nMessageButtonColumns then
     begin
+      if not xmlio.isFileNameAllowed(NewText) then
+        _RaiseError(Format ('"%s" not allowed as filename', [NewText]));
       if NewText <> xMessage.Name then
       begin
         if Node = Sender.GetFirst then
@@ -7001,12 +7013,21 @@ var
   Xml: TXml;
   XmlAttr: TXmlAttribute;
   xMessage: TWsdlMessage;
+  x, n: Integer;
 begin
   xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
   if Column < nMessageButtonColumns then exit;
   if (Column = nMessageButtonColumns) then
   begin
+    n := 0;
+    for x := 0 to WsdlOperation.Messages.Count - 1 do
+    begin
+      if WsdlOperation.Messages.Messages[x].Name = xMessage.Name then
+        Inc (n);
+    end;
+    if n <> 1 then
+      TargetCanvas.Font.Color := clRed;
     if xMessage.Disabled then
       if (Node <> GridView.GetFirst) then
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsStrikeOut] +
@@ -12962,6 +12983,11 @@ begin
   finally
     FreeAndNil(EditListValuesForm);
   end;
+end;
+
+procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);
+begin
+  se.SaveWithFolders;
 end;
 
 procedure TMainForm.ShowResolvedPropertiesExecute (Sender : TObject );

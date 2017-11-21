@@ -10,6 +10,8 @@ uses
 
 function urlDecode(const S: String): String;
 function urlEncode(const S: String): String;
+function isFileNameAllowed (aFileName: String): Boolean;
+procedure EraseAllFolderContent (aFolderName: String);
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
@@ -113,6 +115,57 @@ begin
   finally
     Free;
   end;
+end;
+
+function isFileNameAllowed(aFileName: String): Boolean;
+begin
+  result := False;
+  with TRegExpr.Create('^[^\\\/\:\*\?\"\<\>\|]*[^\\\/\:\*\?\"\<\>\|\. ]$') do
+  try
+    result := Exec(aFileName);
+  finally
+    Free;
+  end;
+end;
+
+procedure EraseAllFolderContent(aFolderName: String);
+const
+  //Don't follow symlinks on *nix, just delete them
+  DeleteMask = faAnyFile {$ifdef unix} or faSymLink {$endif unix};
+var
+  xFileInfo: TSearchRec;
+  xCurSrcDir, xCurFilename: String;
+  xFound: Boolean;
+begin
+  xCurSrcDir := LazFileUtils.CleanAndExpandDirectory(aFolderName);
+  xFound := (LazFileUtils.FindFirstUTF8 ( xCurSrcDir
+                                        +
+                                        {$IFDEF WINDOWS}
+                                        '*.*'
+                                        {$ELSE}
+                                        '*'
+                                        {$ENDIF}
+                                        , DeleteMask
+                                        , xFileInfo
+                                        ) = 0);
+  while xFound do
+  begin
+    if (xFileInfo.Name <> '.')
+    and (xFileInfo.Name <> '..')
+    and (xFileInfo.Name <> '') then
+    begin
+      xCurFilename := xCurSrcDir + xFileInfo.Name;
+      if ((xFileInfo.Attr and faDirectory) > 0)
+      {$ifdef unix}
+      and ((FileInfo.Attr and faSymLink) = 0)
+      {$endif unix}
+      then
+        EraseAllFolderContent(xCurFilename);
+      LazFileUtils.DeleteFileUTF8(xCurFilename);
+    end;
+    xFound := (LazFileUtils.FindNextUTF8(xFileInfo) <> 0);
+  end;
+  LazFileUtils.FindCloseUTF8(xFileInfo);
 end;
 
 function HttpPostDialog (aRequest, aUrl: String): String;
