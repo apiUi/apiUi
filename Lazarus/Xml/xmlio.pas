@@ -1,7 +1,7 @@
 unit xmlio;
 
 {$mode objfpc}{$H+}
-
+{$I+}
 interface
 
 uses
@@ -160,10 +160,18 @@ begin
       and ((FileInfo.Attr and faSymLink) = 0)
       {$endif unix}
       then
+      begin
         EraseAllFolderContent(xCurFilename);
-      LazFileUtils.DeleteFileUTF8(xCurFilename);
+        if not LazFileUtils.RemoveDirUTF8(xCurFilename) then
+          raise Exception.CreateFmt('Could not remove folder "%s"', [xCurFilename]);
+      end
+      else
+      begin
+        if not LazFileUtils.DeleteFileUTF8(xCurFilename) then
+          raise Exception.CreateFmt('Could not delete file "%s"', [xCurFilename]);
+      end;
     end;
-    xFound := (LazFileUtils.FindNextUTF8(xFileInfo) <> 0);
+    xFound := (LazFileUtils.FindNextUTF8(xFileInfo) = 0);
   end;
   LazFileUtils.FindCloseUTF8(xFileInfo);
 end;
@@ -483,12 +491,12 @@ function ReadStringFromFile (aFileName: String): String;
     end;
   end;
 begin
-  if (AnsiStartsText('HTTP://', UpperCase(aFileName))) then
+  if (AnsiStartsText('HTTP://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, false);
     exit;
   end;
-  if (AnsiStartsText('HTTPS://', UpperCase(aFileName))) then
+  if (AnsiStartsText('HTTPS://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, true);
     exit;

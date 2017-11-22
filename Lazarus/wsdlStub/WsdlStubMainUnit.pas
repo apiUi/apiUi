@@ -12986,7 +12986,47 @@ begin
 end;
 
 procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);
+var
+  w1, w0: Integer;
 begin
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    for w1 := 0 to se.Wsdls.Count - 1 do
+    begin
+      with se.Wsdls.Objects[w1] as TWsdl do
+      begin
+        PromptForm.PromptEdit.Text := Name;
+        while Name = '' do
+        begin
+          PromptForm.Caption := 'Name for Wsdl or OpenAPI: ' + FileName;
+          PromptForm.Numeric := False;
+          PromptForm.ShowModal;
+          if PromptForm.ModalResult = mrCancel then
+            raise Exception.Create('aborted by user');
+          if PromptForm.ModalResult = mrOk then
+          begin
+            if not xmlio.isFileNameAllowed(PromptForm.PromptEdit.Text) then
+              ShowMessage (Format('"%s" invalid for filename', [PromptForm.PromptEdit.Text]))
+            else
+            begin
+              Name := PromptForm.PromptEdit.Text;
+              for w0 := 0 to w1 - 1 do
+              begin
+                if (se.Wsdls.Objects[w0] as TWsdl).Name = Name then
+                begin
+                  ShowMessage (Format ('"%s" duplicates name for %s', [Name, (se.Wsdls.Objects[w0] as TWsdl).FileName]));
+                  Name := '';
+                end;
+              end;
+              stubChanged := stubChanged or (Name <> '');
+            end;
+          end;
+        end;
+      end;
+    end;
+  finally
+    FreeAndNil(PromptForm);
+  end;
   se.SaveWithFolders;
 end;
 

@@ -2505,6 +2505,7 @@ begin
         begin
           _appendInfo (Description, Name + ': ' + Value);
         end;
+        self.Name := Items.XmlValueByTag['title'];
         SjowMessage('Info: ' + Description);
       end;
       if Items.XmlItems[x].Name = 'host' then with Items.XmlItems[x] do
