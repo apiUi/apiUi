@@ -2306,8 +2306,8 @@ begin
                   begin
                     AddXml (TXml.CreateAsString('Name', xOperation.Name));
                     AddXml (TXml.CreateAsString('Action', IntToStr(Ord(xOperation.StubAction))));
-                    if (xOperation.Alias <> xOperation.reqTagName)
-                    and (xOperation.Alias <> '') then
+                 {   if (xOperation.Alias <> xOperation.reqTagName)
+                    and (xOperation.Alias <> '') then  }
                       AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
                     AddXml (TXml.CreateAsBoolean('HiddenFromUI', xOperation.HiddenFromUI));
                     asXml := xOperation.AddedTypeDefElementsAsXml as TXml;
@@ -7882,8 +7882,16 @@ begin
 end;
 
 procedure TWsdlProject.SaveWithFolders;
+  procedure _createFolder (aFolderName: String);
+  begin
+    if not LazFileUtils.CreateDirUTF8(aFolderName) then
+      raise Exception.CreateFmt('Could not create folder "%s"', [aFolderName]);
+  end;
 var
-  xFoldername, xWsdlFolderName, xServiceFolderName, xOperationFolderName, xMessageFolderName: String;
+  xFoldername, xWsdlsFolderName, xWsdlFolderName, xWsdlFileName
+    , xServicesFolderName, xServiceFolderName, xServiceFileName
+    , xOperationsFolderName, xOperationFolderName, xOperationFileName
+    , xMessagesFolderName, xMessageFileName: String;
   xWsdl: TWsdl;
   x, w, s, o, m: Integer;
 begin
@@ -7891,63 +7899,70 @@ begin
   if not LazFileUtils.ForceDirectory(xFoldername) then
     raise Exception.CreateFmt('Could not create folder "%s"', [xFoldername]);
   xmlio.EraseAllFolderContent(xFoldername);
+  xWsdlsFolderName := LazFileUtils.AppendPathDelim(xFoldername) + 'Wsdls';
+  _createFolder (xWsdlsFolderName);
   with ProjectDesignAsXml(projectFileName) do
   begin
-    for w := 0 to Items.Count -1 do
-    with Items.XmlItems[w] do
+    for w := Items.Count - 1 downto 0 do
     begin
-      if Name = 'Wsdl' then
+      if Items.XmlItems[w].Name = 'Wsdl' then
       begin
-        xWsdlFolderName := LazFileUtils.AppendPathDelim(xFoldername) + Items.XmlValueByTag['Name'];
-        if not LazFileUtils.CreateDirUTF8(xWsdlFolderName) then
-          raise Exception.CreateFmt('Could not create folder "%s"', [xWsdlFolderName]);
-        for s := 0 to Items.Count - 1 do
-        with Items.XmlItems[s] do
+        xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName)
+                         + Items.XmlItems[w].Items.XmlValueByTag['Name'];
+        _createFolder (xWsdlFolderName);
+        xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'Services';
+        _createFolder (xServicesFolderName);
+        with Items.XmlItems[w] do
+        for s := Items.Count - 1 downto 0 do
         begin
-          if Name = 'Service' then
+          if Items.XmlItems[s].Name = 'Service' then
           begin
-            xServiceFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + Items.XmlValueByTag['Name'];
-            if not LazFileUtils.CreateDirUTF8(xServiceFolderName) then
-              raise Exception.CreateFmt('Could not create folder "%s"', [xServiceFolderName]);
-          end;
-          for o := 0 to Items.Count - 1 do
-          with Items.XmlItems[o] do
-          begin
-            if Name = 'Operation' then
+            xServiceFolderName := LazFileUtils.AppendPathDelim(xServicesFolderName)
+                                + Items.XmlItems[s].Items.XmlValueByTag['Name'];
+            _createFolder (xServiceFolderName);
+            xOperationsFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + 'Operations';
+            _createFolder (xOperationsFolderName);
+            with Items.XmlItems[s] do
+            for o := Items.Count - 1 downto 0 do
             begin
-              xOperationFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + Items.XmlValueByTag['Name'];
-              if not LazFileUtils.CreateDirUTF8(xOperationFolderName) then
-                raise Exception.CreateFmt('Could not create folder "%s"', [xOperationFolderName]);
+              if Items.XmlItems[o].Name = 'Operation' then
+              begin
+                xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName)
+                                      + Items.XmlItems[o].Items.XmlValueByTag['Alias'];
+                _createFolder (xOperationFolderName);
+                xMessagesFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + 'Messages';
+                _createFolder (xMessagesFolderName);
+                with Items.XmlItems[o].ItemByTag['Messages'] do
+                begin
+                  for m := 0 to Items.Count - 1 do
+                  with Items.XmlItems[m] do
+                  begin
+                    xMessageFileName := LazFileUtils.AppendPathDelim(xMessagesFolderName) + Items.XmlValueByTag['Name'] + '.xml';
+                    SaveStringToFile(xMessageFileName, AsText(False,0,True,False));
+                    Free;
+                  end;
+                  Items.ClearListOnly;
+                  Value := 'subfolders';
+                end;
+                xOperationFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + '_Operation.xml';
+                SaveStringToFile(xOperationFileName, Items.XmlItems[o].AsText(False,0,True,False));
+                Items.XmlItems[o].Free;
+                Items.Delete(o);
+              end;
             end;
+            xServiceFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + '_Service.xml';
+            SaveStringToFile(xServiceFileName, Items.XmlItems[s].AsText(False,0,True,False));
+            Items.XmlItems[s].Free;
+            Items.Delete(s);
           end;
         end;
+        xWsdlFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + '_Wsdl.xml';
+        SaveStringToFile(xWsdlFileName, Items.XmlItems[w].AsText(False,0,True,False));
+        Items.XmlItems[w].Free;
+        Items.Delete(w);
       end;
     end;
-  end;
-  if false then
-  for w := 0 to Wsdls.Count - 1 do
-  begin
-    xWsdl := Wsdls.Objects [w] as TWsdl;
-
-
-    for s := 0 to xWsdl.Services.Count - 1 do
-    with xWsdl.Services.Services[s] do
-    begin
-      xServiceFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + Name;
-      LazFileUtils.CreateDirUTF8(xServiceFolderName);
-      for o := 0 to Operations.Count - 1 do
-      with Operations.Operations[o] do
-      begin
-        xOperationFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + Alias;
-        LazFileUtils.CreateDirUTF8(xOperationFolderName);
-        for m := 0 to Messages.Count - 1 do
-        with Messages.Messages[m] do
-        begin
-          xMessageFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + Name;
-          LazFileUtils.CreateDirUTF8(xMessageFolderName);
-        end;
-      end;
-    end;
+    SaveStringToFile(LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml', AsText(False,0,True,False));
   end;
 end;
 
