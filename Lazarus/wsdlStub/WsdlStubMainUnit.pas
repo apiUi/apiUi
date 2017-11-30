@@ -7026,7 +7026,8 @@ begin
       if WsdlOperation.Messages.Messages[x].Name = xMessage.Name then
         Inc (n);
     end;
-    if n <> 1 then
+    if (n <> 1)
+    or (not xmlio.isFileNameAllowed(xMessage.Name)) then
       TargetCanvas.Font.Color := clRed;
     if xMessage.Disabled then
       if (Node <> GridView.GetFirst) then
@@ -12987,7 +12988,9 @@ end;
 
 procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);
 var
-  w1, w0: Integer;
+  w1, w0, s1, s0: Integer;
+  wName, sName, oName, mName: String;
+  xOk: Boolean;
 begin
   XmlUtil.PushCursor (crHourGlass);
   try
@@ -13021,6 +13024,43 @@ begin
                   end;
                 end;
                 stubChanged := stubChanged or (Name <> '');
+              end;
+            end;
+          end;
+          wName := Name;
+          for s1 := 0 to Services.Count - 1 do
+          begin
+            with Services.Services[s1] do
+            begin
+              if FileAlias = '' then FileAlias := Name;
+              PromptForm.PromptEdit.Text := FileAlias;
+              xOk := xmlio.isFileNameAllowed(FileAlias);
+              while not xOk do
+              begin
+                PromptForm.Caption := 'Filename for Service: ' + wName + '/' + Name;
+                PromptForm.Numeric := False;
+                PromptForm.ShowModal;
+                if PromptForm.ModalResult = mrCancel then
+                  raise Exception.Create('aborted by user');
+                if PromptForm.ModalResult = mrOk then
+                begin
+                  xOk := xmlio.isFileNameAllowed(PromptForm.PromptEdit.Text);
+                  if not xOk then
+                    ShowMessage (Format('"%s" invalid for filename', [PromptForm.PromptEdit.Text]))
+                  else
+                  begin
+                    FileAlias := PromptForm.PromptEdit.Text;
+                    for s0 := 0 to s1 - 1 do
+                    begin
+                      if (Services.Services[s0].FileAlias = FileAlias) then
+                      begin
+                        ShowMessage (Format ('"%s" duplicates name for %s', [Name, Services.Services[s0].Name]));
+                        xOk := False;
+                      end;
+                    end;
+                    stubChanged := stubChanged or xOk;
+                  end;
+                end;
               end;
             end;
           end;

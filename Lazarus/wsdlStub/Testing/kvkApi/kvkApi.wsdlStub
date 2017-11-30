@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 18/11/2017 17:03:15: Generated with wsdlStub 10.1.0.11394 by Jan -->
+<!-- 23/11/2017 21:29:40: Generated with wsdlStub 10.2.0.11400 by Jan -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\kvkApi\kvkApi.wsdlStub</FileName>
   <Listeners></Listeners>
@@ -61,10 +61,12 @@
   <Environments></Environments>
   <properties></properties>
   <Wsdl>
+    <Name>Berichten-Portaal API Beschrijving</Name>
     <WsdlLocation>https://www.kvk.nl/sites/berichtenportaal/modules/home/views/dist/swagger.json</WsdlLocation>
     <ElementsWhenRepeatable>-1</ElementsWhenRepeatable>
     <Service>
       <Name>/v1/signaaltypes</Name>
+      <FileAlias>signaaltypes</FileAlias>
       <AuthenticationType>1</AuthenticationType>
       <UserName> rabobank-30046259</UserName>
       <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
@@ -166,6 +168,7 @@
     </Service>
     <Service>
       <Name>/v1/signalen</Name>
+      <FileAlias>signalen</FileAlias>
       <AuthenticationType>1</AuthenticationType>
       <UserName>rabobank-30046259</UserName>
       <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
@@ -9387,6 +9390,7 @@
     </Service>
     <Service>
       <Name>/v1/signalen/{berichtId}</Name>
+      <FileAlias>signalen[berichtId]</FileAlias>
       <AuthenticationType>0</AuthenticationType>
       <UserName></UserName>
       <Password></Password>
@@ -9471,6 +9475,7 @@
     </Service>
     <Service>
       <Name>/v1/updateberichten</Name>
+      <FileAlias>updateberichten</FileAlias>
       <AuthenticationType>1</AuthenticationType>
       <UserName>rabobank-30046259</UserName>
       <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
@@ -9582,6 +9587,7 @@
     </Service>
     <Service>
       <Name>/v1/updateberichten/{berichtId}</Name>
+      <FileAlias>updateberichten[berichtId]</FileAlias>
       <AuthenticationType>1</AuthenticationType>
       <UserName>rabobank-30046259</UserName>
       <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
@@ -9686,6 +9692,7 @@
     </Service>
     <Service>
       <Name>/v1/updateberichttypes</Name>
+      <FileAlias>updateberichttypes</FileAlias>
       <AuthenticationType>1</AuthenticationType>
       <UserName>rabobank-30046259</UserName>
       <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
@@ -9787,6 +9794,7 @@
     </Service>
     <Service>
       <Name>/v1/xsds</Name>
+      <FileAlias>xsds</FileAlias>
       <AuthenticationType>0</AuthenticationType>
       <UserName></UserName>
       <Password></Password>

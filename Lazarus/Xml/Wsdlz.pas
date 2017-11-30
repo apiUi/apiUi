@@ -143,7 +143,7 @@ type
     private
     function getOperationByName(Index: String): TWsdlOperation;
     public
-      Name, openApiPathRegExp, openApiPathMask: String;
+      Name, FileAlias, openApiPathRegExp, openApiPathMask: String;
       AuthenticationType: TAuthenticationType;
       UserName: String;
       Password: String;
