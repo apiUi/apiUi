@@ -7925,7 +7925,10 @@ begin
           if Items.XmlItems[s].Name = 'Service' then
           begin
             xServiceFolderName := LazFileUtils.AppendPathDelim(xServicesFolderName)
-                                + Items.XmlItems[s].Items.XmlValueByTag['FileAlias'];
+                                + Items.XmlItems[s].Items.XmlValueByTagDef[ 'FileAlias'
+                                                                          , Items.XmlItems[s].Items.XmlValueByTag['Name']
+                                                                          ]
+                                ;
             _createFolder (xServiceFolderName);
             xOperationsFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + 'O';
             _createFolder (xOperationsFolderName);

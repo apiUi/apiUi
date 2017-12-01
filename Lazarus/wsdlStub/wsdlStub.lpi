@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="11400"/>
+      <BuildNr Value="11401"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -151,6 +151,7 @@
     <Exceptions Count="21">
       <Item1>
         <Name Value="EAbort"/>
+        <Enabled Value="False"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>
@@ -158,9 +159,11 @@
       </Item2>
       <Item3>
         <Name Value="EFOpenError"/>
+        <Enabled Value="False"/>
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>
+        <Enabled Value="False"/>
       </Item4>
       <Item5>
         <Name Value="EDatabaseError"/>
@@ -168,12 +171,15 @@
       </Item5>
       <Item6>
         <Name Value="Exception"/>
+        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
+        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
+        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
@@ -189,6 +195,7 @@
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
+        <Enabled Value="False"/>
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>
@@ -196,9 +203,11 @@
       </Item13>
       <Item14>
         <Name Value="EIdHTTPProtocolException"/>
+        <Enabled Value="False"/>
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
+        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EODBCException"/>
@@ -214,6 +223,7 @@
       </Item18>
       <Item19>
         <Name Value="EOleSysError"/>
+        <Enabled Value="False"/>
       </Item19>
       <Item20>
         <Name Value="EIdURIException"/>
@@ -221,6 +231,7 @@
       </Item20>
       <Item21>
         <Name Value="EListError"/>
+        <Enabled Value="False"/>
       </Item21>
     </Exceptions>
   </Debugging>
