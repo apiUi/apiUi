@@ -7891,11 +7891,25 @@ procedure TWsdlProject.SaveWithFolders;
     if not LazFileUtils.CreateDirUTF8(aFolderName) then
       raise Exception.CreateFmt('Could not create folder "%s"', [aFolderName]);
   end;
+  procedure _saveChildElementToFile (aXmlList: TXmlList; aTag, aFolderName: String);
+  var
+    xXml: TXml;
+  begin
+    xXml := aXmlList.XmlItemByTag[aTag];
+    if Assigned(xXml) then
+    begin
+      if xXml.Value <> '' then
+        xmlio.SaveStringToFile(LazFileUtils.AppendPathDelim(aFolderName) + aTag + '.txt', xXml.Value);
+      xXml.Checked := False;
+    end;
+  end;
+
 var
-  xFoldername, xWsdlsFolderName, xWsdlFolderName, xWsdlFileName
-    , xServicesFolderName, xServiceFolderName, xServiceFileName
-    , xOperationsFolderName, xOperationFolderName, xOperationFileName
-    , xMessagesFolderName, xMessageFileName: String;
+  xFoldername, xWsdlsFolderName, xWsdlFolderName
+    , xServicesFolderName, xServiceFolderName
+    , xOperationsFolderName, xOperationFolderName
+    , xMessagesFolderName, xMessageFolderName
+    , xString, xFileName: String;
   xWsdl: TWsdl;
   x, w, s, o, m: Integer;
 begin
@@ -7947,27 +7961,37 @@ begin
                   for m := 0 to Items.Count - 1 do
                   with Items.XmlItems[m] do
                   begin
-                    xMessageFileName := LazFileUtils.AppendPathDelim(xMessagesFolderName) + Items.XmlValueByTag['Name'] + '.xml';
-                    SaveStringToFile(xMessageFileName, AsText(False,0,True,False));
+                    xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName) + Items.XmlValueByTag['Name'];
+                    _createFolder (xMessageFolderName);
+                    _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
+                    _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
+                    _saveChildElementToFile(Items, 'replyCheckers', xMessageFolderName);
+                    _saveChildElementToFile(Items, 'requestCheckers', xMessageFolderName);
+                    _saveChildElementToFile(Items, 'Documentation', xMessageFolderName);
+                    xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + '_Message.xml';
+                    SaveStringToFile(xFileName, AsText(False,0,True,False));
                     Free;
                   end;
                   Items.ClearListOnly;
                   Value := 'subfolders';
                 end;
-                xOperationFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + '_Operation.xml';
-                SaveStringToFile(xOperationFileName, Items.XmlItems[o].AsText(False,0,True,False));
+                _saveChildElementToFile(Items.XmlItems[o].Items, 'BeforeScript', xOperationFolderName);
+                _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
+                _saveChildElementToFile(Items.XmlItems[o].Items, 'Documentation', xOperationFolderName);
+                xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + '_Operation.xml';
+                SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,0,True,False));
                 Items.XmlItems[o].Free;
                 Items.Delete(o);
               end;
             end;
-            xServiceFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + '_Service.xml';
-            SaveStringToFile(xServiceFileName, Items.XmlItems[s].AsText(False,0,True,False));
+            xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + '_Service.xml';
+            SaveStringToFile(xFileName, Items.XmlItems[s].AsText(False,0,True,False));
             Items.XmlItems[s].Free;
             Items.Delete(s);
           end;
         end;
-        xWsdlFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + '_Wsdl.xml';
-        SaveStringToFile(xWsdlFileName, Items.XmlItems[w].AsText(False,0,True,False));
+        xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + '_Wsdl.xml';
+        SaveStringToFile(xFileName, Items.XmlItems[w].AsText(False,0,True,False));
         Items.XmlItems[w].Free;
         Items.Delete(w);
       end;
