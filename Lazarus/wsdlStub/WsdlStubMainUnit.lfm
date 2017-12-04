@@ -2525,6 +2525,12 @@ object MainForm: TMainForm
       OnExecute = SaveWithFoldersExecute
       ShortCut = 24646
     end
+    object ReadFromFolders: TAction
+      Category = 'File'
+      Caption = 'ReadFromFolders'
+      OnExecute = ReadFromFoldersExecute
+      ShortCut = 24655
+    end
   end
   object mainImageList: TImageList
     left = 112

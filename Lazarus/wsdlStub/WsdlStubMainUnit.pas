@@ -74,6 +74,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    ReadFromFolders: TAction;
     SaveWithFolders: TAction;
     EditMessageDocumentationAction: TAction;
     MenuItem37: TMenuItem;
@@ -602,6 +603,7 @@ type
       var Ghosted : Boolean ; var ImageIndex : Integer );
     procedure PingPongTimerTimer (Sender : TObject );
     procedure EditProjectPropertiesExecute (Sender : TObject );
+    procedure ReadFromFoldersExecute(Sender: TObject);
     procedure SaveWithFoldersExecute(Sender: TObject);
     procedure ShowResolvedPropertiesExecute (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
@@ -7988,7 +7990,7 @@ end;
 
 procedure TMainForm.CheckGridFieldsActionExecute(Sender: TObject);
 var
-  X, Y, r: Integer;
+  X, Y, ReadFromFolders: Integer;
   xString: String;
   xNode: PVirtualNode;
 begin
@@ -8012,11 +8014,11 @@ begin
                   .IsValueValid(xString))) then
             begin
               xNode := GridView.GetFirst;
-              r := X;
-              while r > 0 do
+              ReadFromFolders := X;
+              while ReadFromFolders > 0 do
               begin
                 xNode := GridView.GetNext(xNode);
-                Dec(r);
+                Dec(ReadFromFolders);
               end;
               GridView.Selected[xNode] := True;
               GridViewFocusedNode(xNode);
@@ -12771,7 +12773,7 @@ procedure TMainForm .InWsdlTreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
   TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
   const CellRect : TRect );
 var
-  r: TRect;
+  ReadFromFolders: TRect;
   xBind: TCustomBindable;
 begin
   if Column = treeTagColumn then
@@ -12782,8 +12784,8 @@ begin
       if Assigned(Xsd)
       and (Xsd.maxOccurs <> '1') then
       begin
-        r := Sender.GetDisplayRect(Node, Column, true);
-        TreeviewImageList.Draw(TargetCanvas, r.Right - 16, CellRect.Top, 31);
+        ReadFromFolders := Sender.GetDisplayRect(Node, Column, true);
+        TreeviewImageList.Draw(TargetCanvas, ReadFromFolders.Right - 16, CellRect.Top, 31);
       end;
     end;
   end;
@@ -12984,6 +12986,11 @@ begin
   finally
     FreeAndNil(EditListValuesForm);
   end;
+end;
+
+procedure TMainForm.ReadFromFoldersExecute(Sender: TObject);
+begin
+  se.OpenWithFolders;
 end;
 
 procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);

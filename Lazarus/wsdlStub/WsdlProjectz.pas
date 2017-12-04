@@ -262,6 +262,7 @@ type
     procedure Clean;
     procedure TacoPingPong;
     procedure SaveWithFolders;
+    procedure OpenWithFolders;
     function ProjectDesignAsXml (aMainFileName: String): TXml;
     function ProjectDesignAsString (aMainFileName: String): String;
 {}
@@ -504,6 +505,7 @@ uses OpenWsdlUnit
    , htmlreportz
    , junitunit
    , IdGlobalProtocols
+   , Clipbrd
    ;
 
 procedure AddRemark(aOperation: TObject; aString: String);
@@ -7899,13 +7901,20 @@ procedure TWsdlProject.SaveWithFolders;
     if Assigned(xXml) then
     begin
       if xXml.Value <> '' then
-        xmlio.SaveStringToFile(LazFileUtils.AppendPathDelim(aFolderName) + aTag + '.txt', xXml.Value);
+        xmlio.SaveStringToFile(LazFileUtils.AppendPathDelim(aFolderName) + aTag + '.txt', xXml.Value)
+      else
+        if xXml.Items.Count > 0 then
+          SaveStringToFile ( LazFileUtils.AppendPathDelim(aFolderName) + aTag + '.xml'
+                           , xXml.AsText(False,2,True,False)
+                           );
       xXml.Checked := False;
     end;
   end;
 
 var
-  xFoldername, xWsdlsFolderName, xWsdlFolderName
+  xFoldername
+    , xWsdlsFolderName, xWsdlFolderName
+    , xScriptsFolderName, xScriptFolderName
     , xServicesFolderName, xServiceFolderName
     , xOperationsFolderName, xOperationFolderName
     , xMessagesFolderName, xMessageFolderName
@@ -8006,8 +8015,30 @@ begin
     _saveChildElementToFile(Items, 'ignoreOrderOn', xFoldername);
     _saveChildElementToFile(Items, 'regressionSortColumns', xFoldername);
     _saveChildElementToFile(Items, 'ignoreCoverageOn', xFoldername);
+    xScriptsFolderName := LazFileUtils.AppendPathDelim(xFoldername) + 'S';
+    _createFolder (xScriptsFolderName);
+    if Assigned (Items.XmlItemByTag['Scripts']) then with Items.XmlItemByTag['Scripts'] do
+    begin
+      for s := 0 to Items.Count - 1 do with Items.XmlItems[s] do
+      begin
+        if Name = 'Script' then
+        begin
+          xScriptFolderName := LazFileUtils.AppendPathDelim(xScriptsFolderName) + Items.XmlValueByTag['Name'];
+          _createFolder (xScriptFolderName);
+          _saveChildElementToFile(Items, 'Code', xScriptFolderName);
+          xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + '_Script.xml';
+          SaveStringToFile(xFileName, AsText(False,2,True,False));
+        end;
+      end;
+    end;
     SaveStringToFile(LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml', AsText(False,2,True,False));
+    Free;
   end;
+end;
+
+procedure TWsdlProject.OpenWithFolders;
+begin
+  Clipbrd.Clipboard.AsText := 'JanBoWasHere';
 end;
 
 procedure TWsdlProject.Clear;
