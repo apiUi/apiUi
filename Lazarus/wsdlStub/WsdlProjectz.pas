@@ -7915,7 +7915,7 @@ var
 begin
   xFoldername := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
                + ExtractFileNameOnly(projectFileName)
-               + '.Proj'
+               + '.svpr'
                ;
   if not LazFileUtils.ForceDirectory(xFoldername) then
     raise Exception.CreateFmt('Could not create folder "%s"', [xFoldername]);
@@ -7969,7 +7969,7 @@ begin
                     _saveChildElementToFile(Items, 'requestCheckers', xMessageFolderName);
                     _saveChildElementToFile(Items, 'Documentation', xMessageFolderName);
                     xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + '_Message.xml';
-                    SaveStringToFile(xFileName, AsText(False,0,True,False));
+                    SaveStringToFile(xFileName, AsText(False,2,True,False));
                     Free;
                   end;
                   Items.ClearListOnly;
@@ -7979,24 +7979,34 @@ begin
                 _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
                 _saveChildElementToFile(Items.XmlItems[o].Items, 'Documentation', xOperationFolderName);
                 xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + '_Operation.xml';
-                SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,0,True,False));
+                SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,2,True,False));
                 Items.XmlItems[o].Free;
                 Items.Delete(o);
               end;
             end;
             xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + '_Service.xml';
-            SaveStringToFile(xFileName, Items.XmlItems[s].AsText(False,0,True,False));
+            SaveStringToFile(xFileName, Items.XmlItems[s].AsText(False,2,True,False));
             Items.XmlItems[s].Free;
             Items.Delete(s);
           end;
         end;
         xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + '_Wsdl.xml';
-        SaveStringToFile(xFileName, Items.XmlItems[w].AsText(False,0,True,False));
+        SaveStringToFile(xFileName, Items.XmlItems[w].AsText(False,2,True,False));
         Items.XmlItems[w].Free;
         Items.Delete(w);
       end;
     end;
-    SaveStringToFile(LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml', AsText(False,0,True,False));
+    _saveChildElementToFile(Items, 'PathPrefixes', xFoldername);
+    _saveChildElementToFile(Items, 'Environments', xFoldername);
+    _saveChildElementToFile(Items, 'properties', xFoldername);
+    _saveChildElementToFile(Items, 'ignoreDifferencesOn', xFoldername);
+    _saveChildElementToFile(Items, 'checkValueAgainst', xFoldername);
+    _saveChildElementToFile(Items, 'ignoreAddingOn', xFoldername);
+    _saveChildElementToFile(Items, 'ignoreRemovingOn', xFoldername);
+    _saveChildElementToFile(Items, 'ignoreOrderOn', xFoldername);
+    _saveChildElementToFile(Items, 'regressionSortColumns', xFoldername);
+    _saveChildElementToFile(Items, 'ignoreCoverageOn', xFoldername);
+    SaveStringToFile(LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml', AsText(False,2,True,False));
   end;
 end;
 
