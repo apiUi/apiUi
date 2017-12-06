@@ -12990,7 +12990,12 @@ end;
 
 procedure TMainForm.ReadFromFoldersExecute(Sender: TObject);
 begin
-  se.OpenWithFolders;
+  XmlUtil.PushCursor(crHourGlass);
+  try
+    se.OpenWithFolders;
+  finally
+    XmlUtil.PopCursor;
+  end;
 end;
 
 procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);
@@ -13007,8 +13012,11 @@ begin
       begin
         with se.Wsdls.Objects[w1] as TWsdl do
         begin
-          PromptForm.PromptEdit.Text := Name;
-          while Name = '' do
+          if FileAlias = '' then FileAlias := Name;
+          PromptForm.PromptEdit.Text := FileAlias;
+          xOk := xmlio.isFileNameAllowed(FileAlias);
+          PromptForm.PromptEdit.Text := FileAlias;
+          while not xOk do
           begin
             PromptForm.Caption := 'Name for Wsdl or OpenAPI: ' + FileName;
             PromptForm.Numeric := False;
@@ -13017,24 +13025,25 @@ begin
               raise Exception.Create('aborted by user');
             if PromptForm.ModalResult = mrOk then
             begin
-              if not xmlio.isFileNameAllowed(PromptForm.PromptEdit.Text) then
+              xOk := xmlio.isFileNameAllowed(PromptForm.PromptEdit.Text);
+              if not xOk then
                 ShowMessage (Format('"%s" invalid for filename', [PromptForm.PromptEdit.Text]))
               else
               begin
-                Name := PromptForm.PromptEdit.Text;
+                FileAlias := PromptForm.PromptEdit.Text;
                 for w0 := 0 to w1 - 1 do
                 begin
-                  if (se.Wsdls.Objects[w0] as TWsdl).Name = Name then
+                  if (se.Wsdls.Objects[w0] as TWsdl).FileAlias = FileAlias then
                   begin
-                    ShowMessage (Format ('"%s" duplicates name for %s', [Name, (se.Wsdls.Objects[w0] as TWsdl).FileName]));
+                    ShowMessage (Format ('"%s" duplicates name for %s', [FileAlias, (se.Wsdls.Objects[w0] as TWsdl).FileName]));
                     Name := '';
                   end;
                 end;
-                stubChanged := stubChanged or (Name <> '');
+                stubChanged := stubChanged or xOk;
               end;
             end;
           end;
-          wName := Name;
+          wName := FileAlias;
           for s1 := 0 to Services.Count - 1 do
           begin
             with Services.Services[s1] do

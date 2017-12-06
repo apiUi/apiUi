@@ -157,7 +157,7 @@ begin
       xCurFilename := xCurSrcDir + xFileInfo.Name;
       if ((xFileInfo.Attr and faDirectory) > 0)
       {$ifdef unix}
-      and ((FileInfo.Attr and faSymLink) = 0)
+      and ((xFileInfo.Attr and faSymLink) = 0)
       {$endif unix}
       then
       begin

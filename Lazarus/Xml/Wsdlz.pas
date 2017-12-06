@@ -79,7 +79,7 @@ type
       function getServiceByName(Index: String): TWsdlService;
       function getOperationByRequest(Index: String): TWsdlOperation;
     public
-      Name, FileName: String;
+      Name, FileAlias, FileName: String;
       Description, Host, basePath, Schemes, Consumes, Produces: String;
       isSoapService: Boolean;
       isOpenApiService: Boolean;

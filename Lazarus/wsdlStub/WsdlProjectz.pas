@@ -2207,6 +2207,9 @@ begin
         with AddXml (TXml.CreateAsString('Wsdl', '')) do
         begin
           AddXml (TXml.CreateAsString('Name', xWsdl.Name));
+          if (xWsdl.FileAlias <> '')
+          and (xWsdl.FileAlias <> xWsdl.Name) then
+            AddXml (TXml.CreateAsString('FileAlias', xWsdl.FileAlias));
           xDone := False;
           if xWsdl = FreeFormatWsdl then
           begin
@@ -2690,6 +2693,7 @@ begin
               end;
               if Assigned (xWsdl) then
               begin
+                xWsdl.FileAlias := wXml.Items.XmlValueByTagDef['FileAlias', xWsdl.Name];
                 xWsdl.xsdElementsWhenRepeatable := wXml.Items.XmlIntegerByTagDef['ElementsWhenRepeatable', -1];
                 if xWsdl.xsdElementsWhenRepeatable > 0 then
                   xWsdl.XsdDescr.xsdElementsWhenRepeatable := xWsdl.xsdElementsWhenRepeatable
@@ -7923,7 +7927,7 @@ var
   x, w, s, o, m: Integer;
 begin
   xFoldername := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
-               + ExtractFileNameOnly(projectFileName)
+               + LazFileUtils.ExtractFileNameOnly(projectFileName)
                + '.svpr'
                ;
   if not LazFileUtils.ForceDirectory(xFoldername) then
@@ -7938,7 +7942,9 @@ begin
       if Items.XmlItems[w].Name = 'Wsdl' then
       begin
         xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName)
-                         + Items.XmlItems[w].Items.XmlValueByTag['Name'];
+                         + Items.XmlItems[w].Items.XmlValueByTagDef[ 'FileAlias'
+                                                                   , Items.XmlItems[w].Items.XmlValueByTag['Name']
+                                                                   ];
         _createFolder (xWsdlFolderName);
         xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'S';
         _createFolder (xServicesFolderName);
@@ -8030,6 +8036,7 @@ begin
           SaveStringToFile(xFileName, AsText(False,2,True,False));
         end;
       end;
+      Checked := False;
     end;
     SaveStringToFile(LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml', AsText(False,2,True,False));
     Free;
@@ -8037,8 +8044,104 @@ begin
 end;
 
 procedure TWsdlProject.OpenWithFolders;
+  procedure _AddTextFiles (aXml: TXml; aFolderName: String);
+  var
+    xSearchRec: TSearchRec;
+    r: Word;
+  begin
+    r := LazFileUtils.FindFirstUTF8(LazFileUtils.AppendPathDelim(aFolderName) + '*.txt', faAnyFile, xSearchRec);
+    while r = 0 do
+    begin
+      aXml.AddXml (TXml.CreateAsString ( LazFileUtils.ExtractFileNameOnly(xSearchRec.Name)
+                                       , xmlio.ReadStringFromFile(LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name)
+                                       )
+                  );
+      r := LazFileUtils.FindNextUTF8(xSearchRec);
+    end;
+    LazFileUtils.FindCloseUTF8(xSearchRec);
+  end;
+
+  procedure _getFolders (aFolderName: String; aList: TStringList);
+  var
+    xSearchRec: TSearchRec;
+    r: Word;
+  begin
+    aList.Clear;
+    r := LazFileUtils.FindFirstUTF8(LazFileUtils.AppendPathDelim(aFolderName) + '*', faDirectory, xSearchRec);
+    while r = 0 do
+    begin
+      if (xSearchRec.Name <> '.')
+      and (xSearchRec.Name <> '..') then
+        aList.Add (xSearchRec.Name);
+      r := LazFileUtils.FindNextUTF8(xSearchRec);
+    end;
+    LazFileUtils.FindCloseUTF8(xSearchRec);
+  end;
+
+var
+  xFoldername
+    , xWsdlsFolderName, xWsdlFolderName
+    , xScriptsFolderName, xScriptFolderName
+    , xServicesFolderName, xServiceFolderName
+    , xOperationsFolderName, xOperationFolderName
+    , xMessagesFolderName, xMessageFolderName
+    , xString, xFileName: String;
+  xWsdl: TWsdl;
+  x, w, s, o, m: Integer;
+  pXml, wXml, sXml, oXml, mXml: TXml;
+  xWList, xSList, xOlist, xMList, xFileList: TStringList;
 begin
-  Clipbrd.Clipboard.AsText := 'JanBoWasHere';
+  xFoldername := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
+               + LazFileUtils.ExtractFileNameOnly(projectFileName)
+               + '.svpr'
+               ;
+  xFileName := LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml';
+  xWList := TStringList.Create;
+  xSList := TStringList.Create;
+  xOList := TStringList.Create;
+  xMList := TStringList.Create;
+  xFileList := TStringList.Create;
+  pXml := TXml.Create;
+  try
+    pXml.LoadFromFile(xFileName, nil);
+    xWsdlsFolderName := LazFileUtils.AppendPathDelim(xFoldername) + 'W';
+    _getFolders (xWsdlsFolderName, xWList);
+    for w := 0 to xWList.Count - 1 do
+    begin
+      xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName) + xWList.Strings[w];
+      xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + '_Wsdl.xml';
+      wXml := pXml.AddXml(TXml.Create);
+      wXml.LoadFromFile(xFileName, nil);
+      xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'S';
+      _getFolders (xServicesFolderName, xSList);
+      for s := 0 to xSList.Count - 1 do
+      begin
+        xServiceFolderName := LazFileUtils.AppendPathDelim(xServicesFolderName) + xSList.Strings[s];
+        xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + '_Service.xml';
+        sXml := wXml.AddXml (TXml.Create);
+        sXml.LoadFromFile(xFileName, nil);
+        xOperationsFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + 'O';
+        _getFolders (xOperationsFolderName, xOList);
+        for o := 0 to xOList.Count - 1 do
+        begin
+          xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName) + xOList.Strings[o];
+          xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + '_Operation.xml';
+          oXml := sXml.AddXml (TXml.Create);
+          oXml.LoadFromFile(xFileName, nil);
+          _AddTextFiles (oXml, xOperationFolderName);
+        end;
+      end;
+    end;
+    SjowMessage(pXml.AsText(False,2,True,False));
+    Clipboard.AsText := pXml.AsText(False,2,True,False);
+  finally
+    FreeAndNil(pXml);
+    FreeAndNil(xWList);
+    FreeAndNil(xSList);
+    FreeAndNil(xOList);
+    FreeAndNil(xMList);
+    FreeAndNil(xFileList);
+  end;
 end;
 
 procedure TWsdlProject.Clear;
