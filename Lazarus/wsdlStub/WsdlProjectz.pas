@@ -262,7 +262,7 @@ type
     procedure Clean;
     procedure TacoPingPong;
     procedure SaveWithFolders;
-    procedure OpenWithFolders;
+    function OpenWithFolders: String;
     function ProjectDesignAsXml (aMainFileName: String): TXml;
     function ProjectDesignAsString (aMainFileName: String): String;
 {}
@@ -7985,10 +7985,8 @@ begin
                     _saveChildElementToFile(Items, 'Documentation', xMessageFolderName);
                     xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + '_Message.xml';
                     SaveStringToFile(xFileName, AsText(False,2,True,False));
-                    Free;
                   end;
-                  Items.ClearListOnly;
-                  Value := 'subfolders';
+                  Checked := False;
                 end;
                 _saveChildElementToFile(Items.XmlItems[o].Items, 'BeforeScript', xOperationFolderName);
                 _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
@@ -8043,19 +8041,25 @@ begin
   end;
 end;
 
-procedure TWsdlProject.OpenWithFolders;
-  procedure _AddTextFiles (aXml: TXml; aFolderName: String);
+function TWsdlProject.OpenWithFolders: String;
+  procedure _AddChildsFromFolder (aXml: TXml; aFolderName: String);
   var
     xSearchRec: TSearchRec;
+    xExtention: String;
     r: Word;
   begin
-    r := LazFileUtils.FindFirstUTF8(LazFileUtils.AppendPathDelim(aFolderName) + '*.txt', faAnyFile, xSearchRec);
+    r := LazFileUtils.FindFirstUTF8(LazFileUtils.AppendPathDelim(aFolderName) + '*.*', faAnyFile, xSearchRec);
     while r = 0 do
     begin
-      aXml.AddXml (TXml.CreateAsString ( LazFileUtils.ExtractFileNameOnly(xSearchRec.Name)
-                                       , xmlio.ReadStringFromFile(LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name)
-                                       )
-                  );
+      xExtention := RightStr(xSearchRec.Name, 4);
+      if xExtention = '.txt' then
+        aXml.AddXml (TXml.CreateAsString ( LazFileUtils.ExtractFileNameOnly(xSearchRec.Name)
+                                         , xmlio.ReadStringFromFile(LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name)
+                                         )
+                    );
+      if (xExtention = '.xml')
+      and (Copy(xSearchRec.Name, 1, 1) <> '_') then
+        aXml.AddXml (TXml.Create).LoadFromFile (LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name, nil);
       r := LazFileUtils.FindNextUTF8(xSearchRec);
     end;
     LazFileUtils.FindCloseUTF8(xSearchRec);
@@ -8088,9 +8092,10 @@ var
     , xString, xFileName: String;
   xWsdl: TWsdl;
   x, w, s, o, m: Integer;
-  pXml, wXml, sXml, oXml, mXml: TXml;
+  pXml, wXml, sXml, oXml, mmXml, mXml: TXml;
   xWList, xSList, xOlist, xMList, xFileList: TStringList;
 begin
+  result := '';
   xFoldername := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
                + LazFileUtils.ExtractFileNameOnly(projectFileName)
                + '.svpr'
@@ -8120,6 +8125,7 @@ begin
         xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + '_Service.xml';
         sXml := wXml.AddXml (TXml.Create);
         sXml.LoadFromFile(xFileName, nil);
+        _AddChildsFromFolder (sXml, xServiceFolderName);
         xOperationsFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + 'O';
         _getFolders (xOperationsFolderName, xOList);
         for o := 0 to xOList.Count - 1 do
@@ -8128,12 +8134,34 @@ begin
           xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + '_Operation.xml';
           oXml := sXml.AddXml (TXml.Create);
           oXml.LoadFromFile(xFileName, nil);
-          _AddTextFiles (oXml, xOperationFolderName);
+          _AddChildsFromFolder (oXml, xOperationFolderName);
+          xMessagesFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + 'M';
+          _getFolders (xMessagesFolderName, xMList);
+          mmXml := oXml.AddXml (TXml.CreateAsString('Messages', ''));
+          for m := 0 to xMList.Count - 1 do
+          begin
+            xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName) + xMList.Strings[m];
+            xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + '_Message.xml';
+            mXml := mmXml.AddXml (TXml.Create);
+            mXml.LoadFromFile(xFileName, nil);
+            _AddChildsFromFolder (mXml, xMessageFolderName);
+          end;
         end;
       end;
     end;
-    SjowMessage(pXml.AsText(False,2,True,False));
-    Clipboard.AsText := pXml.AsText(False,2,True,False);
+    mmXml := pXml.AddXml (TXml.CreateAsString('Scripts', ''));
+    xScriptsFolderName := LazFileUtils.AppendPathDelim(xFoldername) + 'S';
+    _getFolders (xScriptsFolderName, xMList);
+    for m := 0 to xMList.Count - 1 do
+    begin
+      xScriptFolderName := LazFileUtils.AppendPathDelim(xScriptsFolderName) + xMList.Strings[m];
+      xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + '_Script.xml';
+      mXml := mmXml.AddXml (TXml.Create);
+      mXml.LoadFromFile(xFileName, nil);
+      _AddChildsFromFolder (mXml, xScriptFolderName);
+    end;
+    _AddChildsFromFolder(pXml, xFoldername);
+    result := pXml.AsText(False,2,True,False);
   finally
     FreeAndNil(pXml);
     FreeAndNil(xWList);

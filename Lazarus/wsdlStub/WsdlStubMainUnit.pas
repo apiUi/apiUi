@@ -12989,14 +12989,21 @@ begin
 end;
 
 procedure TMainForm.ReadFromFoldersExecute(Sender: TObject);
+var
+  f: Integer;
 begin
-  XmlUtil.PushCursor(crHourGlass);
-  try
-    se.OpenWithFolders;
-  finally
-    XmlUtil.PopCursor;
+  captionFileName := ExtractFileName(se.projectFileName);
+  ProjectDesignFromString(se.OpenWithFolders, se.projectFileName);
+  UpdateReopenList(ReopenCaseList, se.projectFileName);
+  if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
+  begin
+    WsdlOperation := allOperations.Operations[f];
+    if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
+    and (se.FocusMessageIndex > -1) then
+      WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
   end;
 end;
+
 
 procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);
 var
