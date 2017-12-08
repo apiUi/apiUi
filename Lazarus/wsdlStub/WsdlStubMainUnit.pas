@@ -13022,6 +13022,17 @@ begin
           if FileAlias = '' then FileAlias := Name;
           PromptForm.PromptEdit.Text := FileAlias;
           xOk := xmlio.isFileNameAllowed(FileAlias);
+          if xOk then
+          begin
+            for w0 := 0 to w1 - 1 do
+            begin
+              if (se.Wsdls.Objects[w0] as TWsdl).FileAlias = FileAlias then
+              begin
+                ShowMessage (Format ('"%s" duplicates name for %s', [FileAlias, (se.Wsdls.Objects[w0] as TWsdl).FileName]));
+                xok := False;
+              end;
+            end;
+          end;
           PromptForm.PromptEdit.Text := FileAlias;
           while not xOk do
           begin

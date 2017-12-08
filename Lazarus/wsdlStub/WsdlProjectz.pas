@@ -7923,6 +7923,7 @@ var
     , xOperationsFolderName, xOperationFolderName
     , xMessagesFolderName, xMessageFolderName
     , xString, xFileName: String;
+  xMPrefix, xMName: String;
   xWsdl: TWsdl;
   x, w, s, o, m: Integer;
 begin
@@ -7973,10 +7974,17 @@ begin
                 _createFolder (xMessagesFolderName);
                 with Items.XmlItems[o].ItemByTag['Messages'] do
                 begin
+                  xMPrefix := '0';
                   for m := 0 to Items.Count - 1 do
                   with Items.XmlItems[m] do
                   begin
-                    xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName) + Items.XmlValueByTag['Name'];
+                    xMName := Items.XmlValueByTag ['Name'];
+                    if xMName = '' then
+                      xMName := Format ('_%4d', [m]);
+                    xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName)
+                                        + xMPrefix
+                                        + xMName
+                                        ;
                     _createFolder (xMessageFolderName);
                     _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
                     _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
@@ -7985,6 +7993,7 @@ begin
                     _saveChildElementToFile(Items, 'Documentation', xMessageFolderName);
                     xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + '_Message.xml';
                     SaveStringToFile(xFileName, AsText(False,2,True,False));
+                    xMPrefix := '1';
                   end;
                   Checked := False;
                 end;

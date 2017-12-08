@@ -1,11 +1,12 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "version" : "V1",
+    "description" : "Dit is een overzicht van de huidige Berichtenportaal API. Doel van deze API is om Signalen en Updateberichten te verstrekken. De API is een zgn. REST service. Authenticatie gebeurt door middel basic authentication.  De username/password zijn eerder verstrekt door uw accountmanager. De base URL van de API is: https://webservices.kvk.nl/api/HR/v1",
+    "version" : "v1",
     "title" : "Berichten-Portaal API Beschrijving"
   },
   "host" : "webservices.kvk.nl",
-  "basePath" : "/api/HR/",
+  "basePath" : "/api/HR",
   "schemes" : [ "https" ],
   "paths" : {
     "/v1/signaaltypes" : {
@@ -18,7 +19,7 @@
           "200" : {
             "description" : "Ok",
             "schema" : {
-              "$ref" : "#/definitions/BerichtTypeInfoJsonListData"
+              "$ref" : "#/definitions/BerichtTypeInfoJsonListResponse"
             }
           }
         }
@@ -33,21 +34,19 @@
         "parameters" : [ {
           "name" : "from",
           "in" : "query",
-          "description" : "Optioneel: Levert een overzicht vanaf of tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt 30 dagen voor de 'to' parameter gebruikt.",
+          "description" : "Optioneel: Levert een overzicht vanaf of tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt 1 dag voor de 'to' parameter gebruikt. Format: yyyy-MM-dd HH:mm:ss.SSS",
           "required" : false,
-          "type" : "string",
-          "enum" : [ "yyyy-mm-dd hh:mm:ss.S" ]
+          "type" : "string"
         }, {
           "name" : "to",
           "in" : "query",
-          "description" : "Optioneel: Levert een overzicht tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt het huidige tijdstip gebruikt.",
+          "description" : "Optioneel: Levert een overzicht tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt het huidige tijdstip gebruikt. Format: yyyy-MM-dd HH:mm:ss.SSS",
           "required" : false,
-          "type" : "string",
-          "enum" : [ "yyyy-mm-dd hh:mm:ss.S" ]
+          "type" : "string"
         }, {
           "name" : "order",
           "in" : "query",
-          "description" : "Optioneel: De volgorde in tijd van de berichten [ASC,DESC]. Indien geen volgorde wordt gespecificeerd dan is de volgorde afhankelijk van de verhouding tussen de 'from' en 'to' parameters.",
+          "description" : "Optioneel: De volgorde in tijd van de berichtconverters [ASC,DESC]. Indien geen volgorde wordt gespecificeerd dan is de volgorde afhankelijk van de verhouding tussen de 'from' en 'to' parameters.",
           "required" : false,
           "type" : "string",
           "enum" : [ "ASC", "DESC" ]
@@ -98,14 +97,14 @@
         }
       }
     },
-    "/v1/signalen/{signaalId}" : {
+    "/v1/signalen/{berichtId}" : {
       "get" : {
-        "summary" : "Retourneert een signaal op basis van signaalId.",
+        "summary" : "Retourneert een signaal op basis van berichtId.",
         "description" : "Afhankelijk van de HTTP 'Accept' header waarmee het signaal wordt bevraagd (\"application/json\" of \"application/xml\") wordt de response als json of XML geretourneerd. Indien geen specifieke Accept-header wordt meegestuurd dan wordt het signaal in JSON geformatteerd. De structuur van het signaal wordt beschreven in de betreffende XSD's uit het aansluitpakket. De JSON structuur is een directe vertaling van de XML structuur naar JSON.",
         "operationId" : "getSignaal",
         "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
-          "name" : "signaalId",
+          "name" : "berichtId",
           "in" : "path",
           "required" : true,
           "type" : "string"
@@ -123,6 +122,19 @@
         }
       }
     },
+    "/v1/swagger" : {
+      "get" : {
+        "summary" : "Download swagger definitie.",
+        "description" : "",
+        "operationId" : "getSwagger",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "Swagger inhoud"
+          }
+        }
+      }
+    },
     "/v1/updateberichten" : {
       "get" : {
         "summary" : "Een gepagineerd overzicht van updateberichten gesorteerd op datum.",
@@ -132,21 +144,19 @@
         "parameters" : [ {
           "name" : "from",
           "in" : "query",
-          "description" : "Optioneel: Levert een overzicht vanaf of tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt 30 dagen voor de 'to' parameter gebruikt.",
+          "description" : "Optioneel: Levert een overzicht vanaf of tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt 1 dag voor de 'to' parameter gebruikt. Format: yyyy-MM-dd HH:mm:ss.SSS",
           "required" : false,
-          "type" : "string",
-          "enum" : [ "yyyy-mm-dd hh:mm:ss.S" ]
+          "type" : "string"
         }, {
           "name" : "to",
           "in" : "query",
-          "description" : "Optioneel: Levert een overzicht tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt het huidige tijdstip gebruikt.",
+          "description" : "Optioneel: Levert een overzicht tot deze datum/tijd, afhankelijk van parameter 'order'. Indien geen datum wordt gespecificeerd dan wordt het huidige tijdstip gebruikt. Format: yyyy-MM-dd HH:mm:ss.SSS",
           "required" : false,
-          "type" : "string",
-          "enum" : [ "yyyy-mm-dd hh:mm:ss.S" ]
+          "type" : "string"
         }, {
           "name" : "order",
           "in" : "query",
-          "description" : "Optioneel: De volgorde in tijd van de berichten [ASC,DESC]. Indien geen volgorde wordt gespecificeerd dan is de volgorde afhankelijk van de verhouding tussen de 'from' en 'to' parameters.",
+          "description" : "Optioneel: De volgorde in tijd van de berichtconverters [ASC,DESC]. Indien geen volgorde wordt gespecificeerd dan is de volgorde afhankelijk van de verhouding tussen de 'from' en 'to' parameters.",
           "required" : false,
           "type" : "string",
           "enum" : [ "ASC", "DESC" ]
@@ -226,7 +236,7 @@
           "200" : {
             "description" : "Ok",
             "schema" : {
-              "$ref" : "#/definitions/BerichtTypeInfoJsonListData"
+              "$ref" : "#/definitions/BerichtTypeInfoJsonListResponse"
             }
           }
         }
@@ -373,6 +383,18 @@
           "items" : {
             "$ref" : "#/definitions/BerichtTypeInfo"
           }
+        }
+      },
+      "description" : "Metadata over de lijst met BerichtTypeInfo objecten in een JsonListResponse."
+    },
+    "BerichtTypeInfoJsonListResponse" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string"
+        },
+        "data" : {
+          "$ref" : "#/definitions/BerichtTypeInfoJsonListData"
         }
       },
       "description" : "Metadata over de lijst met BerichtTypeInfo objecten in een JsonListResponse."
