@@ -7025,7 +7025,7 @@ begin
     n := 0;
     for x := 0 to WsdlOperation.Messages.Count - 1 do
     begin
-      if WsdlOperation.Messages.Messages[x].Name = xMessage.Name then
+      if UpperCase(WsdlOperation.Messages.Messages[x].Name) = UpperCase(xMessage.Name) then
         Inc (n);
     end;
     if (n <> 1)
@@ -12047,7 +12047,7 @@ begin
     xOperation := NodeToOperation(Sender, Node);
     if Assigned(xOperation) then
       for o := 0 to allOperations.Count - 1 do
-        if allOperations.Operations[o].Alias = xOperation.Alias then
+        if UpperCase(allOperations.Operations[o].Alias) = UpperCase(xOperation.Alias) then
           Inc (n);
     if n <> 1 then with TargetCanvas.Font do
     begin
@@ -13026,7 +13026,7 @@ begin
           begin
             for w0 := 0 to w1 - 1 do
             begin
-              if (se.Wsdls.Objects[w0] as TWsdl).FileAlias = FileAlias then
+              if UpperCase ((se.Wsdls.Objects[w0] as TWsdl).FileAlias) = UpperCase(FileAlias) then
               begin
                 ShowMessage (Format ('"%s" duplicates name for %s', [FileAlias, (se.Wsdls.Objects[w0] as TWsdl).FileName]));
                 xok := False;
@@ -13051,7 +13051,7 @@ begin
                 FileAlias := PromptForm.PromptEdit.Text;
                 for w0 := 0 to w1 - 1 do
                 begin
-                  if (se.Wsdls.Objects[w0] as TWsdl).FileAlias = FileAlias then
+                  if UpperCase ((se.Wsdls.Objects[w0] as TWsdl).FileAlias) = UpperCase(FileAlias) then
                   begin
                     ShowMessage (Format ('"%s" duplicates name for %s', [FileAlias, (se.Wsdls.Objects[w0] as TWsdl).FileName]));
                     Name := '';
@@ -13086,7 +13086,7 @@ begin
                     FileAlias := PromptForm.PromptEdit.Text;
                     for s0 := 0 to s1 - 1 do
                     begin
-                      if (Services.Services[s0].FileAlias = FileAlias) then
+                      if UpperCase (Services.Services[s0].FileAlias) = UpperCase(FileAlias) then
                       begin
                         ShowMessage (Format ('"%s" duplicates name for %s', [Name, Services.Services[s0].Name]));
                         xOk := False;
@@ -13103,7 +13103,7 @@ begin
     finally
       FreeAndNil(PromptForm);
     end;
-    se.SaveWithFolders;
+    UpdateReopenList(ReopenCaseList, se.SaveWithFolders);
   finally
     XmlUtil.PopCursor;
   end;

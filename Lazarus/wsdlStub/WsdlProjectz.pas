@@ -261,7 +261,7 @@ type
     procedure CreateLogReply (aLog: TLog; var aProcessed: Boolean; aIsActive: Boolean);
     procedure Clean;
     procedure TacoPingPong;
-    procedure SaveWithFolders;
+    function SaveWithFolders: String;
     function OpenWithFolders: String;
     function ProjectDesignAsXml (aMainFileName: String): TXml;
     function ProjectDesignAsString (aMainFileName: String): String;
@@ -507,6 +507,9 @@ uses OpenWsdlUnit
    , IdGlobalProtocols
    , Clipbrd
    ;
+
+const ReadmeFilename = 'readme.txt'
+    ;
 
 procedure AddRemark(aOperation: TObject; aString: String);
 begin
@@ -7891,11 +7894,24 @@ begin
   end;
 end;
 
-procedure TWsdlProject.SaveWithFolders;
+function TWsdlProject.SaveWithFolders: String;
+  procedure _createReadMe (aFolderName: String);
+  begin
+    xmlio.SaveStringToFile ( LazFileUtils.AppendPathDelim(aFolderName) + ReadmeFilename
+                           , 'This is a service virtualisation project folder;'
+                           + LineEnding
+                           + 'use "' + _ProgName + '" to examine it.'
+                           + LineEnding
+                           + 'Unless you know how to avoid corrupting this project,'
+                           + LineEnding
+                           + 'do not add, delete, or modify folders or files here.'
+                           );
+  end;
   procedure _createFolder (aFolderName: String);
   begin
     if not LazFileUtils.CreateDirUTF8(aFolderName) then
       raise Exception.CreateFmt('Could not create folder "%s"', [aFolderName]);
+    _createReadMe(aFolderName);
   end;
   procedure _saveChildElementToFile (aXmlList: TXmlList; aTag, aFolderName: String);
   var
@@ -7916,8 +7932,7 @@ procedure TWsdlProject.SaveWithFolders;
   end;
 
 var
-  xFoldername
-    , xWsdlsFolderName, xWsdlFolderName
+      xWsdlsFolderName, xWsdlFolderName
     , xScriptsFolderName, xScriptFolderName
     , xServicesFolderName, xServiceFolderName
     , xOperationsFolderName, xOperationFolderName
@@ -7927,14 +7942,15 @@ var
   xWsdl: TWsdl;
   x, w, s, o, m: Integer;
 begin
-  xFoldername := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
-               + LazFileUtils.ExtractFileNameOnly(projectFileName)
-               + '.svpr'
-               ;
-  if not LazFileUtils.ForceDirectory(xFoldername) then
-    raise Exception.CreateFmt('Could not create folder "%s"', [xFoldername]);
-  xmlio.EraseAllFolderContent(xFoldername);
-  xWsdlsFolderName := LazFileUtils.AppendPathDelim(xFoldername) + 'W';
+  result := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
+          + LazFileUtils.ExtractFileNameOnly(projectFileName)
+          + '.svpr'
+          ;
+  if not LazFileUtils.ForceDirectory(result) then
+    raise Exception.CreateFmt('Could not create folder "%s"', [result]);
+  xmlio.EraseAllFolderContent(result);
+  _createReadMe(result);
+  xWsdlsFolderName := LazFileUtils.AppendPathDelim(result) + 'W';
   _createFolder (xWsdlsFolderName);
   with ProjectDesignAsXml(projectFileName) do
   begin
@@ -8018,17 +8034,17 @@ begin
         Items.Delete(w);
       end;
     end;
-    _saveChildElementToFile(Items, 'PathPrefixes', xFoldername);
-    _saveChildElementToFile(Items, 'Environments', xFoldername);
-    _saveChildElementToFile(Items, 'properties', xFoldername);
-    _saveChildElementToFile(Items, 'ignoreDifferencesOn', xFoldername);
-    _saveChildElementToFile(Items, 'checkValueAgainst', xFoldername);
-    _saveChildElementToFile(Items, 'ignoreAddingOn', xFoldername);
-    _saveChildElementToFile(Items, 'ignoreRemovingOn', xFoldername);
-    _saveChildElementToFile(Items, 'ignoreOrderOn', xFoldername);
-    _saveChildElementToFile(Items, 'regressionSortColumns', xFoldername);
-    _saveChildElementToFile(Items, 'ignoreCoverageOn', xFoldername);
-    xScriptsFolderName := LazFileUtils.AppendPathDelim(xFoldername) + 'S';
+    _saveChildElementToFile(Items, 'PathPrefixes', result);
+    _saveChildElementToFile(Items, 'Environments', result);
+    _saveChildElementToFile(Items, 'properties', result);
+    _saveChildElementToFile(Items, 'ignoreDifferencesOn', result);
+    _saveChildElementToFile(Items, 'checkValueAgainst', result);
+    _saveChildElementToFile(Items, 'ignoreAddingOn', result);
+    _saveChildElementToFile(Items, 'ignoreRemovingOn', result);
+    _saveChildElementToFile(Items, 'ignoreOrderOn', result);
+    _saveChildElementToFile(Items, 'regressionSortColumns', result);
+    _saveChildElementToFile(Items, 'ignoreCoverageOn', result);
+    xScriptsFolderName := LazFileUtils.AppendPathDelim(result) + 'S';
     _createFolder (xScriptsFolderName);
     if Assigned (Items.XmlItemByTag['Scripts']) then with Items.XmlItemByTag['Scripts'] do
     begin
@@ -8045,7 +8061,7 @@ begin
       end;
       Checked := False;
     end;
-    SaveStringToFile(LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml', AsText(False,2,True,False));
+    SaveStringToFile(LazFileUtils.AppendPathDelim(result) + '_Project.xml', AsText(False,2,True,False));
     Free;
   end;
 end;
@@ -8060,15 +8076,18 @@ function TWsdlProject.OpenWithFolders: String;
     r := LazFileUtils.FindFirstUTF8(LazFileUtils.AppendPathDelim(aFolderName) + '*.*', faAnyFile, xSearchRec);
     while r = 0 do
     begin
-      xExtention := RightStr(xSearchRec.Name, 4);
-      if xExtention = '.txt' then
-        aXml.AddXml (TXml.CreateAsString ( LazFileUtils.ExtractFileNameOnly(xSearchRec.Name)
-                                         , xmlio.ReadStringFromFile(LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name)
-                                         )
-                    );
-      if (xExtention = '.xml')
-      and (Copy(xSearchRec.Name, 1, 1) <> '_') then
-        aXml.AddXml (TXml.Create).LoadFromFile (LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name, nil);
+      if xSearchRec.Name <> ReadmeFilename then
+      begin
+        xExtention := RightStr(xSearchRec.Name, 4);
+        if (xExtention = '.txt') then
+          aXml.AddXml (TXml.CreateAsString ( LazFileUtils.ExtractFileNameOnly(xSearchRec.Name)
+                                           , xmlio.ReadStringFromFile(LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name)
+                                           )
+                      );
+        if (xExtention = '.xml')
+        and (Copy(xSearchRec.Name, 1, 1) <> '_') then
+          aXml.AddXml (TXml.Create).LoadFromFile (LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name, nil);
+      end;
       r := LazFileUtils.FindNextUTF8(xSearchRec);
     end;
     LazFileUtils.FindCloseUTF8(xSearchRec);
@@ -8084,7 +8103,8 @@ function TWsdlProject.OpenWithFolders: String;
     while r = 0 do
     begin
       if (xSearchRec.Name <> '.')
-      and (xSearchRec.Name <> '..') then
+      and (xSearchRec.Name <> '..')
+      and (xSearchRec.Name <> ReadmeFilename) then
         aList.Add (xSearchRec.Name);
       r := LazFileUtils.FindNextUTF8(xSearchRec);
     end;

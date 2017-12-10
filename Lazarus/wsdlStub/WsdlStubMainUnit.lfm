@@ -18,7 +18,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.6.0.4'
   object MainToolBar: TToolBar
     Left = 0
     Height = 24
@@ -409,10 +409,6 @@ object MainForm: TMainForm
         PrintSettings.MarginTop = 0.5
         PrintSettings.MarginRight = 0.5
         PrintSettings.MarginBottom = 0.5
-        PrintSettings.Preview.Left = 480
-        PrintSettings.Preview.Top = 270
-        PrintSettings.Preview.Width = 1440
-        PrintSettings.Preview.Height = 810
         ShowHints = False
         TabOrder = 3
         OnHotClick = DocumentationViewerHotClick
@@ -432,10 +428,6 @@ object MainForm: TMainForm
         PrintSettings.MarginTop = 0.5
         PrintSettings.MarginRight = 0.5
         PrintSettings.MarginBottom = 0.5
-        PrintSettings.Preview.Left = 480
-        PrintSettings.Preview.Top = 270
-        PrintSettings.Preview.Width = 1440
-        PrintSettings.Preview.Height = 810
         ShowHints = False
         TabOrder = 4
         OnHotClick = DocumentationViewerHotClick
