@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 12/7/2017 7:42:32: Generated with wsdlStub 10.2.0.11428 by BouwmanJW -->
+<!-- 12/11/2017 15:31:28: Generated with wsdlStub 10.2.0.11436 by BouwmanJW -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\kvkApi\kvkApi.wsdlStub</FileName>
   <Listeners></Listeners>
@@ -9475,9 +9475,9 @@
     </Service>
     <Service>
       <Name>/v1/swagger</Name>
-      <AuthenticationType>0</AuthenticationType>
-      <UserName></UserName>
-      <Password></Password>
+      <AuthenticationType>1</AuthenticationType>
+      <UserName>rabobank-30046259</UserName>
+      <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
       <PasswordType>0</PasswordType>
       <SuppressXmlComment>false</SuppressXmlComment>
       <SuppressHTTP500>false</SuppressHTTP500>
@@ -9486,10 +9486,16 @@
           <suppressXmlComment>false</suppressXmlComment>
           <suppressHttp500onSoapFaults>false</suppressHttp500onSoapFaults>
         </general>
+        <Authentication>
+          <Basic>
+            <userName>rabobank-30046259</userName>
+            <Password>NhxpGQ8MZnIKPDMRX0MPFw==</Password>
+          </Basic>
+        </Authentication>
       </serviceOptions>
       <Operation>
         <Name>/v1/swagger:get</Name>
-        <Action>0</Action>
+        <Action>3</Action>
         <Alias>getSwagger</Alias>
         <HiddenFromUI>false</HiddenFromUI>
         <wsaEnabled>false</wsaEnabled>
@@ -9517,20 +9523,32 @@
         <StubMqPutQueue></StubMqPutQueue>
         <StubMqGetManager></StubMqGetManager>
         <StubMqGetQueue></StubMqGetQueue>
-        <StubMqTimeOut>30</StubMqTimeOut>
-        <StubStompPutHost>localhost</StubStompPutHost>
-        <StubStompPutPort>61613</StubStompPutPort>
+        <StubMqTimeOut>0</StubMqTimeOut>
+        <StubStompPutHost></StubStompPutHost>
+        <StubStompPutPort></StubStompPutPort>
         <StubStompPutClientId></StubStompPutClientId>
-        <StubStompTimeOut>30</StubStompTimeOut>
+        <StubStompTimeOut>0</StubStompTimeOut>
         <endpointConfig>
-          <Http>
+          <Https>
             <Verb>GET</Verb>
+            <ContentEncoding>identity</ContentEncoding>
             <AcceptEncoding>
               <deflate>false</deflate>
               <gzip>false</gzip>
             </AcceptEncoding>
-            <customHeaders></customHeaders>
-          </Http>
+            <customHeaders>
+              <Header>
+                <Name>Accept</Name>
+                <Value>application/json</Value>
+              </Header>
+            </customHeaders>
+            <SSL>
+              <Version>SSL Version 2.3</Version>
+              <CertificateFile></CertificateFile>
+              <KeyFile></KeyFile>
+              <RootCertificateFile></RootCertificateFile>
+            </SSL>
+          </Https>
         </endpointConfig>
         <BeforeScript></BeforeScript>
         <AfterScript></AfterScript>
@@ -10012,7 +10030,7 @@
       <Code>integer ws.snapshotSize := 20;&#x0D;&#x0A;&#x0D;&#x0A;with Rpy.getUpdateBerichten.rspns200.body.data rpy do&#x0D;&#x0A;{&#x0D;&#x0A;  with Req.getUpdateBerichten req do&#x0D;&#x0A;  {&#x0D;&#x0A;    integer ws.page := 0;&#x0D;&#x0A;    integer ws.n := 0;&#x0D;&#x0A;    integer ws.snapshotPage := ws.page;&#x0D;&#x0A;    ClearLogs ();&#x0D;&#x0A;    ClearSnapshots ();&#x0D;&#x0A;    req.page := NumberToStr (ws.page);&#x0D;&#x0A;    RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    while (rpy.itemsPerPage = req.pagesize) do&#x0D;&#x0A;    {&#x0D;&#x0A;      ws.n := ws.n + 1;&#x0D;&#x0A;      ws.page := ws.page + 1;&#x0D;&#x0A;      if ws.n = ws.snapshotSize then&#x0D;&#x0A;      {&#x0D;&#x0A;        CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;        ClearLogs ();&#x0D;&#x0A;        ws.n := 0;&#x0D;&#x0A;        ws.snapshotPage := ws.page;&#x0D;&#x0A;      }&#x0D;&#x0A;      req.page := NumberToStr (ws.page);&#x0D;&#x0A;      RequestOperation (&apos;getUpdateBerichten&apos;);&#x0D;&#x0A;    }&#x0D;&#x0A;    CreateSnapshot (&apos;fromPage&apos; + NumberToStr (ws.snapshotPage));&#x0D;&#x0A;  }&#x0D;&#x0A;}&#x0D;&#x0A;&#x0D;&#x0A;</Code>
     </Script>
   </Scripts>
-  <FocusOperationName>/v1/signalen:get</FocusOperationName>
+  <FocusOperationName>/v1/swagger:get</FocusOperationName>
   <FocusOperationNameSpace></FocusOperationNameSpace>
-  <FocusMessageIndex>28</FocusMessageIndex>
+  <FocusMessageIndex>0</FocusMessageIndex>
 </WsdlStubCase>

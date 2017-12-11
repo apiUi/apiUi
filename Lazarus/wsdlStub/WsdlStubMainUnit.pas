@@ -3169,7 +3169,17 @@ begin
       se.FocusOperationNameSpace := '';
       se.FocusMessageIndex := 0;
     end;
-    SaveStringToFile(aFileName, se.ProjectDesignAsString(aFileName));
+    if UpperCase(RightStr(aFileName, Length('.wsdlStub'))) = '.WSDLSTUB' then
+      SaveStringToFile(aFileName, se.ProjectDesignAsString(aFileName))
+    else
+    begin
+      if UpperCase(RightStr(aFileName, Length('.svpr'))) = '.SVPR' then
+        SaveWithFoldersExecute (nil)
+      else
+      begin
+        raise Exception.Create('unsupported fileextention or not a folder;' + aFileName);
+      end;
+    end;
     stubChanged := False;
     se.stubRead := True; // well,... but logically ...
     UpdateReopenList(ReopenCaseList, aFileName);
@@ -3250,7 +3260,15 @@ var
   f: Integer;
 begin
   captionFileName := ExtractFileName(aFileName);
-  ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName);
+  if LazFileUtils.FileExistsUTF8(aFileName) then
+    ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName)
+  else
+  begin
+    if LazFileUtils.DirectoryExistsUTF8(aFileName) then
+      ProjectDesignFromString(se.OpenWithFolders, aFileName)
+    else
+      raise Exception.Create('No such file or folder: ' + aFileName);
+  end;
   UpdateReopenList(ReopenCaseList, aFileName);
   if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
   begin
