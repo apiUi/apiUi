@@ -3260,12 +3260,12 @@ var
   f: Integer;
 begin
   captionFileName := ExtractFileName(aFileName);
-  if LazFileUtils.FileExistsUTF8(aFileName) then
-    ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName)
+  if LazFileUtils.DirectoryExistsUTF8(aFileName) then
+    ProjectDesignFromString(se.OpenWithFolders, aFileName)
   else
   begin
-    if LazFileUtils.DirectoryExistsUTF8(aFileName) then
-      ProjectDesignFromString(se.OpenWithFolders, aFileName)
+    if LazFileUtils.FileExistsUTF8(aFileName) then
+      ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName)
     else
       raise Exception.Create('No such file or folder: ' + aFileName);
   end;

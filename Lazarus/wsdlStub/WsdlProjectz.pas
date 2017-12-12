@@ -8052,7 +8052,9 @@ begin
       begin
         if Name = 'Script' then
         begin
-          xScriptFolderName := LazFileUtils.AppendPathDelim(xScriptsFolderName) + Items.XmlValueByTag['Name'];
+          xScriptFolderName := LazFileUtils.AppendPathDelim(xScriptsFolderName)
+                             + Format('%d_%s', [10000 + 100 * s, Items.XmlValueByTag['Name']])
+                             ;
           _createFolder (xScriptFolderName);
           _saveChildElementToFile(Items, 'Code', xScriptFolderName);
           xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + '_Script.xml';
