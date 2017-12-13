@@ -1596,6 +1596,11 @@ begin
   result := Copy (s, Trunc (i), Trunc (c));
 end;
 
+function StrToDateX (arg: String): TDateTime;
+begin
+  result := xsdParseDate(arg);
+end;
+
 function StrToFloatX (arg: String): Extended;
 begin
   result := StrToFloatDef(arg, 0);
@@ -4311,6 +4316,7 @@ begin
     BindScriptFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
     BindScriptFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
     BindScriptFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
+    BindScriptFunction ('StrToDate', @StrToDateX, DFS, '(aString)');
     BindScriptFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindScriptFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
     BindScriptFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
