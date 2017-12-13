@@ -6184,6 +6184,7 @@ begin
       BindCheckerFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
       BindCheckerFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
       BindCheckerFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
+      BindCheckerFunction ('StrToDate', @StrToDateX, DFS, '(aString)');
       BindCheckerFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
       BindCheckerFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
       BindCheckerFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
@@ -6254,6 +6255,7 @@ begin
     BindStamperFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
     BindStamperFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
     BindStamperFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
+    BindStamperFunction ('StrToDate', @StrToDateX, DFS, '(aString)');
     BindStamperFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindStamperFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
     BindStamperFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');

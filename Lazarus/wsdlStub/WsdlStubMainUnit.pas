@@ -1298,6 +1298,7 @@ uses
   , PromptTacoUnit
   , EditTextUnit
   , QueryNewElementUnit
+  , SaveProjectAsUnit
   ;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -13273,7 +13274,7 @@ begin
       try
         for x := 0 to Count - 1 do
         begin
-          xName := ExtractFileNameOnly(Strings[x]);
+          xName := LazFileUtils.ExtractFileNameOnly(Strings[x]);
           s := TRegressionSnapshot.Create ( xName
                                           , se.CurrentFolder + DirectorySeparator + xName + '.xml'
                                           , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
