@@ -74,11 +74,15 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem22: TMenuItem;
+    SaveProjectAsFolderAction: TAction;
+    MenuItem21: TMenuItem;
     ReadFromFolders: TAction;
     SaveWithFolders: TAction;
     EditMessageDocumentationAction: TAction;
     MenuItem37: TMenuItem;
     AddChildElementMenuItem: TMenuItem;
+    SelectDirectoryDialog1: TSelectDirectoryDialog;
     ToggleDoScrollMessagesIntoViewAction: TAction;
     MenuItem36 : TMenuItem ;
     ToolButton36: TToolButton;
@@ -310,7 +314,7 @@ type
     XmlZoomValueAsTextMenuItem: TMenuItem;
     XmlZoomValueAsXMLMenuItem: TMenuItem;
     Expand2: TMenuItem;
-    SaveStubCaseAsAction: TAction;
+    SaveStubCaseAsFileAction: TAction;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     SaveFileDialog: TSaveDialog;
@@ -604,6 +608,8 @@ type
     procedure PingPongTimerTimer (Sender : TObject );
     procedure EditProjectPropertiesExecute (Sender : TObject );
     procedure ReadFromFoldersExecute(Sender: TObject);
+    procedure SaveProjectAsFolderActionExecute(Sender: TObject);
+    procedure SaveStubCaseActionUpdate(Sender: TObject);
     procedure SaveWithFoldersExecute(Sender: TObject);
     procedure ShowResolvedPropertiesExecute (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
@@ -838,7 +844,7 @@ type
     procedure About1Click(Sender: TObject);
     procedure ReopenStubCaseActionExecute(Sender: TObject);
     procedure OpenStubCaseActionExecute(Sender: TObject);
-    procedure SaveStubCaseAsActionExecute(Sender: TObject);
+    procedure SaveStubCaseAsFileActionExecute(Sender: TObject);
     procedure EditScriptButtonClick(Sender: TObject);
     procedure Expand2Click(Sender: TObject);
     procedure XmlSampleOperationsExecute (Sender : TObject );
@@ -1298,7 +1304,6 @@ uses
   , PromptTacoUnit
   , EditTextUnit
   , QueryNewElementUnit
-  , SaveProjectAsUnit
   ;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -3135,7 +3140,7 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveStubCaseAsActionExecute(Sender: TObject);
+procedure TMainForm.SaveStubCaseAsFileActionExecute(Sender: TObject);
 begin
   OnlyWhenLicensed;
   try
@@ -3174,7 +3179,7 @@ begin
       SaveStringToFile(aFileName, se.ProjectDesignAsString(aFileName))
     else
     begin
-      if UpperCase(RightStr(aFileName, Length('.svpr'))) = '.SVPR' then
+      if RightStr(aFileName, Length(_ProjectFolderSuffix)) = _ProjectFolderSuffix then
         SaveWithFoldersExecute (nil)
       else
       begin
@@ -5628,7 +5633,7 @@ procedure TMainForm.SaveStubCaseActionExecute(Sender: TObject);
 begin
   EndEdit;
   if not se.stubRead then
-    SaveStubCaseAsActionExecute(Sender)
+    raise Exception.Create('This function should be disabled...')
   else
     SaveWsdlStubCase(se.projectFileName);
 end;
@@ -13021,6 +13026,35 @@ begin
     and (se.FocusMessageIndex > -1) then
       WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
   end;
+end;
+
+procedure TMainForm.SaveProjectAsFolderActionExecute(Sender: TObject);
+begin
+  OnlyWhenLicensed;
+  with TSelectDirectoryDialog.Create(nil) do
+  try
+    EndEdit;
+    FileName := se.projectFileName;
+    Title := 'Save wsdlStub project as folder';
+    Options := Options + [ofOverwritePrompt, ofPathMustExist];
+    if Execute then
+    begin
+      if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
+        raise Exception.Create(Format ('foldername must end with "%s";%s%s', [_ProjectFolderSuffix, LineEnding + FileName]));
+      if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + '_Project.xml') then
+        if not BooleanPromptDialog (Format ('Project "%s" already exists%s, Continue', [FileName, LineEnding])) then
+          raise Exception.Create('Aborted by user');
+      se.projectFileName := FileName;
+      SaveWsdlStubCase(se.projectFileName);
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm.SaveStubCaseActionUpdate(Sender: TObject);
+begin
+  SaveStubCaseAction.Enabled := se.stubRead;
 end;
 
 

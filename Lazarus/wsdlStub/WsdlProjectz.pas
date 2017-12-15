@@ -483,6 +483,8 @@ var
     listenersConfigXsd: TXsd;
     operationOptionsXsd: TXsd;
 
+const _ProjectFolderSuffix = '.svpr'
+    ;
 
 implementation
 
@@ -7944,7 +7946,7 @@ var
 begin
   result := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
           + LazFileUtils.ExtractFileNameOnly(projectFileName)
-          + '.svpr'
+          + _ProjectFolderSuffix
           ;
   if not LazFileUtils.ForceDirectory(result) then
     raise Exception.CreateFmt('Could not create folder "%s"', [result]);
@@ -8129,7 +8131,7 @@ begin
   result := '';
   xFoldername := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
                + LazFileUtils.ExtractFileNameOnly(projectFileName)
-               + '.svpr'
+               + _ProjectFolderSuffix
                ;
   xFileName := LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml';
   xWList := TStringList.Create;

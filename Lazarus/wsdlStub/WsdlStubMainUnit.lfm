@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 197
+  Left = 328
   Height = 678
-  Top = 81
+  Top = 148
   Width = 1067
   Caption = 'MainForm'
   ClientHeight = 659
@@ -18,7 +18,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.2.0'
   object MainToolBar: TToolBar
     Left = 0
     Height = 24
@@ -409,6 +409,10 @@ object MainForm: TMainForm
         PrintSettings.MarginTop = 0.5
         PrintSettings.MarginRight = 0.5
         PrintSettings.MarginBottom = 0.5
+        PrintSettings.Preview.Left = 480
+        PrintSettings.Preview.Top = 270
+        PrintSettings.Preview.Width = 1440
+        PrintSettings.Preview.Height = 810
         ShowHints = False
         TabOrder = 3
         OnHotClick = DocumentationViewerHotClick
@@ -428,6 +432,10 @@ object MainForm: TMainForm
         PrintSettings.MarginTop = 0.5
         PrintSettings.MarginRight = 0.5
         PrintSettings.MarginBottom = 0.5
+        PrintSettings.Preview.Left = 480
+        PrintSettings.Preview.Top = 270
+        PrintSettings.Preview.Width = 1440
+        PrintSettings.Preview.Height = 810
         ShowHints = False
         TabOrder = 4
         OnHotClick = DocumentationViewerHotClick
@@ -1670,13 +1678,6 @@ object MainForm: TMainForm
       OnExecute = XsdOperationsActionExecute
       OnHint = XsdOperationsActionHint
     end
-    object SaveStubCaseAsAction: TAction
-      Category = 'File'
-      Caption = 'S&ave Project as...'
-      Hint = 'Save stub case'
-      ImageIndex = 6
-      OnExecute = SaveStubCaseAsActionExecute
-    end
     object ReopenStubCaseAction: TAction
       Category = 'File'
       Caption = '&Reopen Project...'
@@ -1684,6 +1685,34 @@ object MainForm: TMainForm
       ImageIndex = 4
       OnExecute = ReopenStubCaseActionExecute
       OnUpdate = ReopenStubCaseActionUpdate
+    end
+    object SaveStubCaseAction: TAction
+      Category = 'File'
+      Caption = '&Save Project'
+      Hint = 'Save Stub case'
+      ImageIndex = 6
+      OnExecute = SaveStubCaseActionExecute
+      OnUpdate = SaveStubCaseActionUpdate
+      ShortCut = 16467
+    end
+    object SaveStubCaseAsFileAction: TAction
+      Category = 'File'
+      Caption = 'Single file...'
+      Hint = 'Save stub case'
+      ImageIndex = 6
+      OnExecute = SaveStubCaseAsFileActionExecute
+    end
+    object SaveProjectAsFolderAction: TAction
+      Category = 'File'
+      Caption = 'Folder...'
+      ImageIndex = 6
+      OnExecute = SaveProjectAsFolderActionExecute
+    end
+    object ExportProjectScriptsAction: TAction
+      Category = 'File'
+      Caption = 'Export project scripts...'
+      Hint = 'Save all scripts to fille'
+      OnExecute = ExportProjectScriptsActionExecute
     end
     object ShowExceptAsHtmlAction: TAction
       Category = 'Log'
@@ -1773,14 +1802,6 @@ object MainForm: TMainForm
       Hint = 'Apply setting to others...'
       OnExecute = OperationApplySettingsActionExecute
       OnUpdate = ApplyToActionUpdate
-    end
-    object SaveStubCaseAction: TAction
-      Category = 'File'
-      Caption = '&Save Project'
-      Hint = 'Save Stub case'
-      ImageIndex = 6
-      OnExecute = SaveStubCaseActionExecute
-      ShortCut = 16467
     end
     object ClearLogItemsAction: TAction
       Category = 'Log'
@@ -2248,18 +2269,6 @@ object MainForm: TMainForm
       OnExecute = ShowShortCutActionsActionExecute
       ShortCut = 24665
     end
-    object ExportProjectScriptsAction: TAction
-      Category = 'File'
-      Caption = 'Export project scripts...'
-      Hint = 'Save all scripts to fille'
-      OnExecute = ExportProjectScriptsActionExecute
-    end
-    object ImportProjectScriptsAction: TAction
-      Category = 'File'
-      Caption = 'Import project scripts...'
-      OnExecute = ImportProjectScriptsActionExecute
-      OnHint = ImportProjectScriptsActionHint
-    end
     object Action2: TAction
       Caption = 'Action2'
     end
@@ -2518,6 +2527,12 @@ object MainForm: TMainForm
       Hint = 'Documentation'
       ImageIndex = 65
       OnExecute = EditMessageDocumentationActionExecute
+    end
+    object ImportProjectScriptsAction: TAction
+      Category = 'File'
+      Caption = 'Import project scripts...'
+      OnExecute = ImportProjectScriptsActionExecute
+      OnHint = ImportProjectScriptsActionHint
     end
     object SaveWithFolders: TAction
       Category = 'File'
@@ -5878,7 +5893,7 @@ object MainForm: TMainForm
         }
       end
       object SaveStubCaseas1: TMenuItem
-        Action = SaveStubCaseAsAction
+        Caption = 'S&ave Project as'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000000000000000
@@ -5915,6 +5930,86 @@ object MainForm: TMainForm
           0000000000000000000000000000000000000000000000000000000000000000
           0000000000000000000000000000000000000000000000000000
         }
+        Hint = 'Save stub case'
+        ImageIndex = 6
+        object MenuItem21: TMenuItem
+          Action = SaveStubCaseAsFileAction
+          Bitmap.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+            00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF008080FF0000FFFF0000FFFF000000FF000000FF000000FF0000
+            00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
+            00FF008080FF0000FFFF0000FFFF0000FFFF0000FFFF008080FF008080FF0080
+            80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
+            00FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF000000FF000000FF0000
+            00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
+            FFFF0000FFFF0000FFFF000000000000FFFF0000FFFF0000FFFF000000000000
+            00000000000000000000000000FF008080FF000000FF00000000000000000000
+            FFFF008080FF000000FF00000000000000000000FFFF0000FFFF0000FFFF0000
+            00000000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF000000FF0000000000000000000000000000FFFF0000FFFF0000
+            00000000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF000000FF0000000000000000000000000000FFFF0000FFFF0000
+            FFFF0000FFFF00000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF000000FF00000000000000000000000000000000000000000000
+            FFFF0000FFFF0000FFFF000000FF000000FF000000FF00000000000000000000
+            00FF008080FF000000FF00000000000000000000000000000000000000000000
+            00000000000000000000000000FF00000000000000FF00000000000000000000
+            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000
+          }
+        end
+        object MenuItem22: TMenuItem
+          Action = SaveProjectAsFolderAction
+          Bitmap.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+            00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF008080FF0000FFFF0000FFFF000000FF000000FF000000FF0000
+            00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
+            00FF008080FF0000FFFF0000FFFF0000FFFF0000FFFF008080FF008080FF0080
+            80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
+            00FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF000000FF000000FF0000
+            00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
+            FFFF0000FFFF0000FFFF000000000000FFFF0000FFFF0000FFFF000000000000
+            00000000000000000000000000FF008080FF000000FF00000000000000000000
+            FFFF008080FF000000FF00000000000000000000FFFF0000FFFF0000FFFF0000
+            00000000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF000000FF0000000000000000000000000000FFFF0000FFFF0000
+            00000000000000000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF000000FF0000000000000000000000000000FFFF0000FFFF0000
+            FFFF0000FFFF00000000000000FF008080FF000000FF00000000000000000000
+            00FF008080FF000000FF00000000000000000000000000000000000000000000
+            FFFF0000FFFF0000FFFF000000FF000000FF000000FF00000000000000000000
+            00FF008080FF000000FF00000000000000000000000000000000000000000000
+            00000000000000000000000000FF00000000000000FF00000000000000000000
+            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+            00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000
+          }
+        end
       end
       object MenuItem4: TMenuItem
         Caption = '-'
@@ -10251,5 +10346,10 @@ object MainForm: TMainForm
     OnTimer = PingPongTimerTimer
     left = 1024
     top = 48
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
+    left = 83
+    top = 208
   end
 end
