@@ -38,7 +38,7 @@ uses
    , ComCtrls
    , ExtCtrls
    , FormIniFilez
-   , Menus , PairSplitter
+   , Menus , PairSplitter,EditBtn
    , VirtualTrees
    , LazFileUtils
    , FileUtil
@@ -74,9 +74,10 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
-    MenuItem22: TMenuItem;
+    OpenProjectAction: TAction;
+    MenuItem39: TMenuItem;
+    MenuItem40: TMenuItem;
     SaveProjectAsFolderAction: TAction;
-    MenuItem21: TMenuItem;
     ReadFromFolders: TAction;
     SaveWithFolders: TAction;
     EditMessageDocumentationAction: TAction;
@@ -314,11 +315,11 @@ type
     XmlZoomValueAsTextMenuItem: TMenuItem;
     XmlZoomValueAsXMLMenuItem: TMenuItem;
     Expand2: TMenuItem;
-    SaveStubCaseAsFileAction: TAction;
+    ExportProjectAction: TAction;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     SaveFileDialog: TSaveDialog;
-    OpenStubCaseAction: TAction;
+    ImportProjectAction: TAction;
     ToolButton5: TToolButton;
     OpenStubCase1: TMenuItem;
     SaveStubCaseas1: TMenuItem;
@@ -601,6 +602,7 @@ type
     procedure DesignSplitVerticalMenuItemClick (Sender : TObject );
     procedure MenuItem14Click (Sender : TObject );
     procedure MenuItem17Click (Sender : TObject );
+    procedure OpenProjectActionExecute(Sender: TObject);
     procedure OperationReqsTreeViewClick(Sender: TObject);
     procedure OperationReqsTreeViewGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
@@ -843,8 +845,8 @@ type
     procedure HelpActionExecute(Sender: TObject);
     procedure About1Click(Sender: TObject);
     procedure ReopenStubCaseActionExecute(Sender: TObject);
-    procedure OpenStubCaseActionExecute(Sender: TObject);
-    procedure SaveStubCaseAsFileActionExecute(Sender: TObject);
+    procedure ImportProjectActionExecute(Sender: TObject);
+    procedure ExportProjectActionExecute(Sender: TObject);
     procedure EditScriptButtonClick(Sender: TObject);
     procedure Expand2Click(Sender: TObject);
     procedure XmlSampleOperationsExecute (Sender : TObject );
@@ -3140,19 +3142,31 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveStubCaseAsFileActionExecute(Sender: TObject);
+procedure TMainForm.ExportProjectActionExecute(Sender: TObject);
+var
+  xRead, xChanged: Boolean;
+  xProjectName: String;
 begin
   OnlyWhenLicensed;
   try
     EndEdit;
     SaveFileDialog.DefaultExt := 'wsdlStub';
-    SaveFileDialog.FileName := se.projectFileName;
     SaveFileDialog.Filter := 'wsdlStub Case (*.wsdlStub)|*.wsdlStub';
-    SaveFileDialog.Title := 'Save wsdlStub case';
+    SaveFileDialog.Title := 'Export project';
     if SaveFileDialog.Execute then
     begin
-      se.projectFileName := SaveFileDialog.FileName;
-      SaveWsdlStubCase(se.projectFileName);
+      xRead := se.StubRead;
+      xChanged := se.StubChanged;
+      xProjectName := se.projectFileName;
+      try
+        se.projectFileName := SaveFileDialog.FileName;
+        SaveWsdlStubCase(se.projectFileName);
+      finally
+        se.StubRead := xRead;
+        se.StubChanged := xChanged;
+        se.projectFileName := xProjectName;
+        UpdateCaption;
+      end;
     end;
   finally
   end;
@@ -3180,15 +3194,17 @@ begin
     else
     begin
       if RightStr(aFileName, Length(_ProjectFolderSuffix)) = _ProjectFolderSuffix then
-        SaveWithFoldersExecute (nil)
+      begin
+        SaveWithFoldersExecute (nil);
+        se.stubChanged := False;
+        se.stubRead := True; // well,... but logically ...
+        UpdateReopenList(ReopenCaseList, aFileName);
+      end
       else
       begin
         raise Exception.Create('unsupported fileextention or not a folder;' + aFileName);
       end;
     end;
-    stubChanged := False;
-    se.stubRead := True; // well,... but logically ...
-    UpdateReopenList(ReopenCaseList, aFileName);
   finally
     XmlUtil.PopCursor;
   end;
@@ -3243,7 +3259,7 @@ begin
   end;
 end;
 
-procedure TMainForm.OpenStubCaseActionExecute(Sender: TObject);
+procedure TMainForm.ImportProjectActionExecute(Sender: TObject);
 begin
   if not InactiveAfterPrompt then Exit;
   if OkToOpenStubCase then
@@ -3256,7 +3272,11 @@ begin
     begin
       se.projectFileName := OpenFileDialog.FileName;
       OpenStubCase(se.projectFileName);
-      // TProcedureThread.Create (OpenStubCase, OpenFileDialog.FileName);
+      se.projectFileName := '';
+      captionFileName := '';
+      se.StubRead := False;
+      se.StubChanged := True;
+      UpdateCaption;
     end;
   end;
 end;
@@ -3267,7 +3287,10 @@ var
 begin
   captionFileName := ExtractFileName(aFileName);
   if LazFileUtils.DirectoryExistsUTF8(aFileName) then
-    ProjectDesignFromString(se.OpenWithFolders, aFileName)
+  begin
+    ProjectDesignFromString(se.OpenWithFolders, aFileName);
+    UpdateReopenList(ReopenCaseList, aFileName);
+  end
   else
   begin
     if LazFileUtils.FileExistsUTF8(aFileName) then
@@ -3275,7 +3298,6 @@ begin
     else
       raise Exception.Create('No such file or folder: ' + aFileName);
   end;
-  UpdateReopenList(ReopenCaseList, aFileName);
   if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
   begin
     WsdlOperation := allOperations.Operations[f];
@@ -3512,13 +3534,13 @@ end;
 
 procedure TMainForm.UpdateReopenList(aList: TStringList; aFileName: String);
 var
-  X: Integer;
+  x: Integer;
 begin
-  for X := 0 to aList.Count - 1 do
+  for x := 0 to aList.Count - 1 do
   begin
-    if aList.Strings[X] = aFileName then
+    if aList.Strings[x] = aFileName then
     begin
-      aList.Delete(X);
+      aList.Delete(x);
       Break;
     end;
   end;
@@ -12918,6 +12940,35 @@ begin
   end;
 end;
 
+procedure TMainForm.OpenProjectActionExecute(Sender: TObject);
+begin
+  if not InactiveAfterPrompt then Exit;
+  if OkToOpenStubCase then
+  begin
+    with TSelectDirectoryDialog.Create(nil) do
+    try
+      Options := Options + [ofEnableSizing, ofFileMustExist, ofPathMustExist, ofViewDetail];
+      FileName := se.projectFileName;
+      Title := 'Open project';
+      if Execute then
+      begin
+        if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
+          raise Exception.CreateFmt ( 'Illegal foldername "%s"%sMust end with "%s"'
+                                    , [FileName, LineEnding, _ProjectFolderSuffix]
+                                    );
+        if not LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + _ProjectFileName) then
+          raise Exception.CreateFmt ( 'Project "%s" not found'
+                                    , [FileName]
+                                    );
+        se.projectFileName := FileName;
+        OpenStubCase(se.projectFileName);
+      end;
+    finally
+      Free;
+    end;
+  end;
+end;
+
 procedure TMainForm.OperationReqsTreeViewClick(Sender: TObject);
 begin
   if not Assigned (OperationReqsTreeView.FocusedNode) then Exit;
@@ -13041,7 +13092,7 @@ begin
     begin
       if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
         raise Exception.Create(Format ('foldername must end with "%s";%s%s', [_ProjectFolderSuffix, LineEnding + FileName]));
-      if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + '_Project.xml') then
+      if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + _ProjectFileName) then
         if not BooleanPromptDialog (Format ('Project "%s" already exists%s, Continue', [FileName, LineEnding])) then
           raise Exception.Create('Aborted by user');
       se.projectFileName := FileName;

@@ -483,8 +483,13 @@ var
     listenersConfigXsd: TXsd;
     operationOptionsXsd: TXsd;
 
-const _ProjectFolderSuffix = '.svpr'
-    ;
+const _ProjectFolderSuffix = '.svpr';
+const _ProjectFileName = '_Project.xml';
+const _WsdlFileName = '_Wsdl.xml';
+const _ServiceFileName = '_Service.xml';
+const _OperationFileName = '_Operation.xml';
+const _MessageFileName = '_Message.xml';
+const _ScriptFileName = '_Script.xml';
 
 implementation
 
@@ -8009,7 +8014,7 @@ begin
                     _saveChildElementToFile(Items, 'replyCheckers', xMessageFolderName);
                     _saveChildElementToFile(Items, 'requestCheckers', xMessageFolderName);
                     _saveChildElementToFile(Items, 'Documentation', xMessageFolderName);
-                    xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + '_Message.xml';
+                    xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + _MessageFileName;
                     SaveStringToFile(xFileName, AsText(False,2,True,False));
                     xMPrefix := '1';
                   end;
@@ -8018,19 +8023,19 @@ begin
                 _saveChildElementToFile(Items.XmlItems[o].Items, 'BeforeScript', xOperationFolderName);
                 _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
                 _saveChildElementToFile(Items.XmlItems[o].Items, 'Documentation', xOperationFolderName);
-                xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + '_Operation.xml';
+                xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
                 SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,2,True,False));
                 Items.XmlItems[o].Free;
                 Items.Delete(o);
               end;
             end;
-            xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + '_Service.xml';
+            xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + _ServiceFileName;
             SaveStringToFile(xFileName, Items.XmlItems[s].AsText(False,2,True,False));
             Items.XmlItems[s].Free;
             Items.Delete(s);
           end;
         end;
-        xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + '_Wsdl.xml';
+        xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
         SaveStringToFile(xFileName, Items.XmlItems[w].AsText(False,2,True,False));
         Items.XmlItems[w].Free;
         Items.Delete(w);
@@ -8059,13 +8064,13 @@ begin
                              ;
           _createFolder (xScriptFolderName);
           _saveChildElementToFile(Items, 'Code', xScriptFolderName);
-          xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + '_Script.xml';
+          xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + _ScriptFileName;
           SaveStringToFile(xFileName, AsText(False,2,True,False));
         end;
       end;
       Checked := False;
     end;
-    SaveStringToFile(LazFileUtils.AppendPathDelim(result) + '_Project.xml', AsText(False,2,True,False));
+    SaveStringToFile(LazFileUtils.AppendPathDelim(result) + _ProjectFileName, AsText(False,2,True,False));
     Free;
   end;
 end;
@@ -8133,7 +8138,7 @@ begin
                + LazFileUtils.ExtractFileNameOnly(projectFileName)
                + _ProjectFolderSuffix
                ;
-  xFileName := LazFileUtils.AppendPathDelim(xFoldername) + '_Project.xml';
+  xFileName := LazFileUtils.AppendPathDelim(xFoldername) + _ProjectFileName;
   xWList := TStringList.Create;
   xSList := TStringList.Create;
   xOList := TStringList.Create;
@@ -8147,7 +8152,7 @@ begin
     for w := 0 to xWList.Count - 1 do
     begin
       xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName) + xWList.Strings[w];
-      xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + '_Wsdl.xml';
+      xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
       wXml := pXml.AddXml(TXml.Create);
       wXml.LoadFromFile(xFileName, nil);
       xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'S';
@@ -8155,7 +8160,7 @@ begin
       for s := 0 to xSList.Count - 1 do
       begin
         xServiceFolderName := LazFileUtils.AppendPathDelim(xServicesFolderName) + xSList.Strings[s];
-        xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + '_Service.xml';
+        xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + _ServiceFileName;
         sXml := wXml.AddXml (TXml.Create);
         sXml.LoadFromFile(xFileName, nil);
         _AddChildsFromFolder (sXml, xServiceFolderName);
@@ -8164,7 +8169,7 @@ begin
         for o := 0 to xOList.Count - 1 do
         begin
           xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName) + xOList.Strings[o];
-          xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + '_Operation.xml';
+          xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
           oXml := sXml.AddXml (TXml.Create);
           oXml.LoadFromFile(xFileName, nil);
           _AddChildsFromFolder (oXml, xOperationFolderName);
@@ -8174,7 +8179,7 @@ begin
           for m := 0 to xMList.Count - 1 do
           begin
             xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName) + xMList.Strings[m];
-            xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + '_Message.xml';
+            xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + _MessageFileName;
             mXml := mmXml.AddXml (TXml.Create);
             mXml.LoadFromFile(xFileName, nil);
             _AddChildsFromFolder (mXml, xMessageFolderName);
@@ -8188,7 +8193,7 @@ begin
     for m := 0 to xMList.Count - 1 do
     begin
       xScriptFolderName := LazFileUtils.AppendPathDelim(xScriptsFolderName) + xMList.Strings[m];
-      xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + '_Script.xml';
+      xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + _ScriptFileName;
       mXml := mmXml.AddXml (TXml.Create);
       mXml.LoadFromFile(xFileName, nil);
       _AddChildsFromFolder (mXml, xScriptFolderName);
