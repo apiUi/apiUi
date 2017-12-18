@@ -3199,6 +3199,7 @@ begin
         se.stubChanged := False;
         se.stubRead := True; // well,... but logically ...
         UpdateReopenList(ReopenCaseList, aFileName);
+        UpdateCaption;
       end
       else
       begin
