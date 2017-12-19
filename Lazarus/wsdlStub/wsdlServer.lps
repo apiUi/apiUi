@@ -4,24 +4,24 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="16">
+    <Units Count="17">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="106"/>
-        <CursorPos Y="155"/>
+        <TopLine Value="264"/>
+        <CursorPos Y="278"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="wsdlcontrolz.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="33"/>
-        <CursorPos X="25" Y="40"/>
+        <TopLine Value="321"/>
+        <CursorPos Y="550"/>
         <UsageCount Value="206"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -118,12 +118,25 @@
         <CursorPos X="31" Y="8"/>
         <UsageCount Value="33"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="3285"/>
+        <CursorPos Y="3302"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit16>
     </Units>
     <OtherDefines Count="2">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
     </OtherDefines>
-    <JumpHistory Count="9" HistoryIndex="7">
+    <JumpHistory Count="18" HistoryIndex="17">
       <Position1>
         <Filename Value="wsdlServer.lpr"/>
         <Caret Line="415" Column="3" TopLine="415"/>
@@ -157,9 +170,44 @@
         <Caret Line="154" TopLine="141"/>
       </Position8>
       <Position9>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="253" Column="3" TopLine="251"/>
+        <Filename Value="wsdlcontrolz.pas"/>
+        <Caret Line="40" Column="25" TopLine="33"/>
       </Position9>
+      <Position10>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="155" TopLine="121"/>
+      </Position10>
+      <Position11>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+      </Position11>
+      <Position12>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <Caret Line="3528" TopLine="3504"/>
+      </Position12>
+      <Position13>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="284" TopLine="265"/>
+      </Position13>
+      <Position14>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="265" Column="26" TopLine="251"/>
+      </Position14>
+      <Position15>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="69" Column="43" TopLine="57"/>
+      </Position15>
+      <Position16>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="271" Column="34" TopLine="258"/>
+      </Position16>
+      <Position17>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="272" Column="18" TopLine="258"/>
+      </Position17>
+      <Position18>
+        <Filename Value="wsdlServer.lpr"/>
+        <Caret Line="30" Column="3" TopLine="2"/>
+      </Position18>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

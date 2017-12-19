@@ -8140,9 +8140,13 @@ begin
                ;
   xFileName := LazFileUtils.AppendPathDelim(xFoldername) + _ProjectFileName;
   xWList := TStringList.Create;
+  xWList.Sorted := True;
   xSList := TStringList.Create;
+  xSList.Sorted := True;
   xOList := TStringList.Create;
+  xOList.Sorted := True;
   xMList := TStringList.Create;
+  xMList.Sorted := True;
   xFileList := TStringList.Create;
   pXml := TXml.Create;
   try

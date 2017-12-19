@@ -24,7 +24,10 @@ uses
   , virtualtreeview_package
   , xmlxsdparser
   , HashUtilz, tacoInterface , htmlXmlUtilz
-  , ExtCtrls, Translations;
+  , ExtCtrls
+  , Translations
+  , LazFileUtils
+  ;
 
 type
   longOptsArrayType = array [0..3] of String;
@@ -66,7 +69,7 @@ type
     function RestartCommand: String;
     function ReloadDesignCommand: String;
     procedure ActivateCommand(aActivate: Boolean);
-    procedure OpenProjectCommand(aProject: String);
+    procedure OpenProjectCommand(aFileName: String);
     procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     procedure RefreshLogger;
@@ -262,14 +265,24 @@ begin
   end;
 end;
 
-procedure TMyApplication.OpenProjectCommand(aProject: String);
+procedure TMyApplication.OpenProjectCommand(aFileName: String);
 var
   wasActive: Boolean;
 begin
   wasActive := se.IsActive;
   ActivateCommand(False);
-  se.projectFileName := aProject;
-  se.ProjectDesignFromString(ReadStringFromFile(aProject), aProject);
+  se.projectFileName := aFileName;
+  if LazFileUtils.DirectoryExistsUTF8(aFileName) then
+  begin
+    se.ProjectDesignFromString(se.OpenWithFolders, aFileName);
+  end
+  else
+  begin
+    if LazFileUtils.FileExistsUTF8(aFileName) then
+      se.ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName)
+    else
+      raise Exception.Create('No such file or folder: ' + aFileName);
+  end;
   ActivateCommand(wasActive);
 end;
 
@@ -478,10 +491,10 @@ begin
   WriteLn ('');
   WriteLn ('');
   WriteLn ('Example');
-  WriteLn (ExeName, ' myProject.wsdlStub --port=6161');
+  WriteLn (ExeName, ' myProject.svpr --port=6161');
   WriteLn;
   WriteLn ('This command will ...');
-  WriteLn ('  start with opening project myProject.wsdlStub');
+  WriteLn ('  start with opening project myProject.svpr');
   WriteLn ('  and listen on port 6161 for wsdlStub webservice calls (remoteControl: default 3738)');
   WriteLn;
   WriteLn;
