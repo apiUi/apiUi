@@ -64,7 +64,7 @@ end;
 
 implementation
 
-uses SysUtils, StrUtils, Dialogs, Forms;
+uses SysUtils, StrUtils;
 
 procedure TXmlAnalyser.DebugTokenStringList (arg: TStringList);
 var
@@ -149,7 +149,7 @@ end;
 
 procedure TXmlAnalyser.AnalyserScannerError (Sender: TObject; Data: String);
 begin
-    ShowMessage ('Scanner: ' + Data);
+  raise Exception.Create ('Scanner: ' + Data);
 end;
 
 procedure TXmlAnalyser.AnalyserParserError

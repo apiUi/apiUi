@@ -13,8 +13,6 @@ uses Classes
    , Xsdz
    , Xmlz
    , Bind
-   , Graphics
-   , Dialogs
    ;
 
 type

@@ -140,7 +140,9 @@ implementation
 
 uses Frame
    , SysUtils
+   {$ifndef NoGUI}
    , Dialogs
+   {$endif}
    , Math
    ;
 
@@ -163,7 +165,9 @@ end;
 
 function ShowExtended (arg: Extended): Extended;
 begin
+  {$ifndef NoGUI}
   ShowMessage (FloatToStr (arg));
+  {$endif}
   result := arg;
 end;
 
@@ -258,7 +262,11 @@ end;
 
 procedure TExpress.ScannerError (Sender: TObject; Data: String);
 begin
+  {$ifndef NoGUI}
   ShowMessage ('Scanner: ' + Data);
+  {$else}
+  raise Exception.Create('Scanner: ' + Data);
+  {$endif}
 end;
 
 function TExpress.AsFieldId2FieldId (arg: String): String;

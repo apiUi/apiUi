@@ -76,7 +76,7 @@ end;
 
 implementation
 
-uses SysUtils, StrUtils, Dialogs, ShowMemo, Forms, RegExpr;
+uses SysUtils, StrUtils {$ifndef NoGUI}, Dialogs{$endif}, ShowMemo, Forms, RegExpr;
 
 procedure TyamlAnalyser.DebugTokenStringList (arg: TStringList);
 var
@@ -253,7 +253,11 @@ end;
 
 procedure TyamlAnalyser.AnalyserScannerError (Sender: TObject; Data: String);
 begin
-    ShowMessage ('Scanner: ' + Data);
+  {$ifndef NoGUI}
+  ShowMessage ('Scanner: ' + Data);
+  {$else}
+  raise Exception.CreateFmt('Scanner: %s', [Data]);
+  {$endif}
 end;
 
 procedure TyamlAnalyser.AnalyserParserError
