@@ -353,7 +353,7 @@ begin
   if not Assigned (Xml.Xsd) then
   begin
     fXsdDescr := TXsdDescr.Create(1);
-    XmlUtil.CreateXsdFromXml(fXsdDescr, Xml, True);
+    CreateXsdFromXml(fXsdDescr, Xml, True);
   end;
   _CreateColumns (0, Xml.Xsd);
   ShowGrid (Xml);

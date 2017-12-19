@@ -6,12 +6,18 @@ unit Bind;
 
 interface
 uses Classes
+{$ifndef NoGUI}
    , Graphics
+{$endif}
    ;
 
 resourcestring
   S_XML_REGEXP_LINK = '(?i)((FTP|HTTPS?|FILE|DOC)://([_a-z\d\-/]+(\.[_a-z\d\-/]+)+)((/[ _a-z\d\-\\\./]+)+)*([\?#][a-z0-9=%&_/\+\-\.]+)?)';
 
+{$ifdef NoGUI}
+type TColor = Integer;
+type TFont = Integer;
+{$endif}
 type TBindExpandStyle = (esAll, esOne, esUsed, edBestEffort);
 const TBindExpandStyleStr: array [TBindExpandStyle] of String = ('All', 'One', 'Used', 'BestEffort');
 type TxvViewType = (xvAll, xvRequired, xvUsed, xvReqUsed);
@@ -802,13 +808,13 @@ function TCustomBindable.bgColor (aReadOnly: Boolean; aColumn: Integer): TColor;
 begin
   if aReadOnly
   or (Children.Count > 0) then
-    result := clBtnFace
+    result := {$ifndef NoGUI} clBtnFace {$else} 0 {$endif}
   else
   begin
     if self = nil then
       result := $CFFFFF
     else
-      result := clWhite;
+      result := {$ifndef NoGUI} clWhite {$else} 0 {$endif};
   end;
 end;
 

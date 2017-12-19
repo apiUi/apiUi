@@ -28,6 +28,11 @@ function resolveAliasses (aString: String; aAliasses: TStringList): String;
 function StringHasRegExpr (aString, aExpr: String): String;
 function ExplodeStr(S, Delim: string; const List: Classes.TStrings;
   const AllowEmpty: Boolean = True; const Trim: Boolean = False): Integer;
+function DecryptPassword(aPassword: AnsiString): AnsiString;
+function EncryptPassword(aPassword: AnsiString): AnsiString;
+function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): Integer;
+function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
+function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 
 var
   PathPrefixes: TStringList;
@@ -41,11 +46,106 @@ uses StrUtils
    , IdSSLOpenSSL
    , idStack
    , LConvEncoding
+   , base64
    , RegExpr
+{$ifndef NoGUI}
    , Forms
    , Controls
    , PromptFolderUnit
+{$endif}
    ;
+
+function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
+begin
+  if val then result:=iftrue else result:=iffalse;
+end;
+
+function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): Integer;
+var
+  x, o: Integer;
+  match: Boolean;
+begin
+  if not CaseSensitive then
+  begin
+    ss := UpperCase(ss);
+    ms := UpperCase(ms);
+  end;
+  if not MatchWholeWord then
+  begin
+    result := Pos(ss, ms);
+    exit;
+  end;
+  o := 1;
+  x := Pos (ss, ms);
+  match := False;
+  while (not Match) and (x > 0) do
+  begin
+    Match := True;
+    o := o + x - 1;
+    if (o > 1) then
+      if IsCharAlphanumeric(ms[o-1]) then
+        Match := False;
+    if ((o + Length (ss)) <= Length (ms)) then
+      if IsCharAlphanumeric(ms[o+Length(ss)]) then
+        Match := False;
+    if not Match then
+    begin
+      o := o + Length (ss);
+      x := Pos (ss, Copy (ms, o, Length (ms)));
+    end;
+  end;
+  if Match then
+    result := o
+  else
+    result := 0;
+end;
+
+function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
+var
+  x: Integer;
+begin
+  x := PosSubString(SrchString,OrgString,CaseSensitive,MatchWholeWord);
+  if x > 0 then
+  begin
+    result := Copy (OrgString, 1, x - 1)
+            + RplString
+            + ReplaceStrings (Copy (OrgString, x + Length (SrchString), Length (OrgString))
+                             ,SrchString
+                             ,RplString
+                             ,CaseSensitive
+                             ,MatchWholeWord
+                             );
+  end
+  else
+    result := OrgString;
+end;
+
+function SimpleEncrypt(const Source: AnsiString): AnsiString;
+var
+  Index: Integer;
+  EncryptionSeed: String;
+begin
+  EncryptionSeed := 'th^ruh54bdkjbkjb4k458&*';
+  SetLength(Result, Length(Source));
+  for Index := 1 to Length(Source) do
+    Result[Index] := AnsiChar((Ord(EncryptionSeed[Index mod Length(EncryptionSeed)]) xor Ord(Source[Index])));
+end;
+
+function DecryptPassword(aPassword: AnsiString): AnsiString;
+begin
+  if aPassword <> '' then
+    result :=  SimpleEncrypt(DecodeStringBase64(aPassword))
+  else
+    result := '';
+end;
+
+function EncryptPassword(aPassword: AnsiString): AnsiString;
+begin
+  if aPassword <> '' then
+    result := EncodeStringBase64 (SimpleEncrypt(aPassword))
+  else
+    result := '';
+end;
 
 function ExplodeStr(S, Delim: string; const List: Classes.TStrings;
   const AllowEmpty: Boolean = True; const Trim: Boolean = False): Integer;
@@ -234,6 +334,7 @@ begin
 end;
 
 function PromptFolderName(aCaption, aStart: String): String;
+{$ifndef NoGUI}
 var
   xForm: TPromptFolderForm;
 begin
@@ -249,6 +350,10 @@ begin
   finally
     FreeAndNil(xForm);
   end;
+{$else}
+begin
+  raise Exception.CreateFmt('%s%sno replcement specified%s%s', [aCaption, LineEnding, LineEnding, aStart]);
+{$endif}
 end;
 
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;

@@ -67,41 +67,12 @@ public
   procedure Restore (aIniFile: TFormIniFile);
 end;
 
-function DecryptPassword(aPassword: AnsiString): AnsiString;
-function EncryptPassword(aPassword: AnsiString): AnsiString;
 
 implementation
 
 uses Math
    , VirtualTrees
    ;
-
-function SimpleEncrypt(const Source: AnsiString): AnsiString;
-var
-  Index: Integer;
-  EncryptionSeed: String;
-begin
-  EncryptionSeed := 'th^ruh54bdkjbkjb4k458&*';
-  SetLength(Result, Length(Source));
-  for Index := 1 to Length(Source) do
-    Result[Index] := AnsiChar((Ord(EncryptionSeed[Index mod Length(EncryptionSeed)]) xor Ord(Source[Index])));
-end;
-
-function DecryptPassword(aPassword: AnsiString): AnsiString;
-begin
-  if aPassword <> '' then
-    result :=  SimpleEncrypt(DecodeStringBase64(aPassword))
-  else
-    result := '';
-end;
-
-function EncryptPassword(aPassword: AnsiString): AnsiString;
-begin
-  if aPassword <> '' then
-    result := EncodeStringBase64 (SimpleEncrypt(aPassword))
-  else
-    result := '';
-end;
 
 { TFormIniFile }
 

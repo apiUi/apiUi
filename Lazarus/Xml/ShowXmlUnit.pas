@@ -965,7 +965,7 @@ begin
     begin
       xXsdDescr := TXsdDescr.Create(1);
       try
-        xXsd := xmlUtil.CreateXsdFromXml(xXsdDescr, xXml, False);
+        xXsd := CreateXsdFromXml(xXsdDescr, xXml, False);
         dXml := TXml.Create(-10000, xXsd);
         dXml.LoadValues(xXml, False);
         try
@@ -1600,7 +1600,9 @@ begin
   end;
   with NodeToBind(Node) do
   begin
+{$ifndef NoGUI}
     Font(TargetCanvas.Font);
+{$endif}
     if (Column = treeValueColumn)
     and isValueLink then
       TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];

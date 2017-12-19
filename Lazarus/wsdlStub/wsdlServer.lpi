@@ -113,10 +113,12 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dConsoleApp
--dUseCThreads"/>
-      <OtherDefines Count="2">
+-dUseCThreads
+-dNoGUI"/>
+      <OtherDefines Count="3">
         <Define0 Value="ConsoleApp"/>
         <Define1 Value="UseCThreads"/>
+        <Define2 Value="NoGUI"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>

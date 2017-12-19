@@ -69,8 +69,6 @@ procedure BalancedLine ( Sender: TObject
                        ; LeftAndRight: TOnHaveMatch
                        ; rightOnly: TOnHaveNoMatch
                        );
-function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): Integer;
-function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
 function B64EncodeStream(const S: TMemoryStream): AnsiString;
 function URLDecode(const S: String): String;
 function URLEncode(const S: String): String;
@@ -529,66 +527,6 @@ begin
       end;
     end;
   end;
-end;
-
-function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): Integer;
-var
-  x, o: Integer;
-  match: Boolean;
-begin
-  if not CaseSensitive then
-  begin
-    ss := UpperCase(ss);
-    ms := UpperCase(ms);
-  end;
-  if not MatchWholeWord then
-  begin
-    result := Pos(ss, ms);
-    exit;
-  end;
-  o := 1;
-  x := Pos (ss, ms);
-  match := False;
-  while (not Match) and (x > 0) do
-  begin
-    Match := True;
-    o := o + x - 1;
-    if (o > 1) then
-      if IsCharAlphanumeric(ms[o-1]) then
-        Match := False;
-    if ((o + Length (ss)) <= Length (ms)) then
-      if IsCharAlphanumeric(ms[o+Length(ss)]) then
-        Match := False;
-    if not Match then
-    begin
-      o := o + Length (ss);
-      x := Pos (ss, Copy (ms, o, Length (ms)));
-    end;
-  end;
-  if Match then
-    result := o
-  else
-    result := 0;
-end;
-
-function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
-var
-  x: Integer;
-begin
-  x := PosSubString(SrchString,OrgString,CaseSensitive,MatchWholeWord);
-  if x > 0 then
-  begin
-    result := Copy (OrgString, 1, x - 1)
-            + RplString
-            + ReplaceStrings (Copy (OrgString, x + Length (SrchString), Length (OrgString))
-                             ,SrchString
-                             ,RplString
-                             ,CaseSensitive
-                             ,MatchWholeWord
-                             );
-  end
-  else
-    result := OrgString;
 end;
 
 function GridDuplicateRowsExist ( aGrid: TStringGrid

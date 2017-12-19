@@ -7,19 +7,17 @@ unit WsdlProjectz;
 
 interface
 
-uses
-{$IFnDEF FPC}
-  AdoDb,
-{$ELSE}
-{$ENDIF}
-  Classes
+uses Classes
+  {$IFnDEF FPC}
+   , AdoDb
+  {$ELSE}
+  {$ENDIF}
    , ParserClasses
    , Xmlz
    , Xsdz
    , Bind
    , Ipmz
    , IpmTypes
-   , igGlobals
 {$ifndef FPC}
   , jclDebug
 {$endif}
@@ -49,9 +47,6 @@ uses
   , IdSMTPServer
   , IdHTTPServer
   , Listenerz
-  , Forms
-  , Dialogs
-  , Controls
   , LazFileUtils
   , FileUtil
   , Logz
@@ -59,6 +54,11 @@ uses
   , ExceptionLogz
   , SyncObjs
   , ClaimListz
+{$ifndef NoGUI}
+  , Forms
+  , Dialogs
+  , Controls
+{$endif}
   ;
 
 type TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
@@ -493,8 +493,7 @@ const _ScriptFileName = '_Script.xml';
 
 implementation
 
-uses OpenWsdlUnit
-   , StrUtils
+uses StrUtils
    , exceptionUtils
    , SchemaLocationz
    , smtpInterface
@@ -504,7 +503,10 @@ uses OpenWsdlUnit
    {$ifdef windows}
    , ActiveX
    {$endif}
+   {$ifndef NoGUI}
+   , OpenWsdlUnit
    , xmlUtilz
+   {$endif}
    , wrdFunctionz
    , GZIPUtils
    , xmlio
@@ -2664,6 +2666,7 @@ begin
                 except
                   on e: Exception do
                   begin
+{$ifndef NoGUI}
                     if BooleanPromptDialog ( 'Error: '
                                        + e.Message
                                        + #$D#$A
@@ -2694,6 +2697,10 @@ begin
                     end
                     else
                       xWsdl := nil;
+{$else}
+                    Raise;
+{$endif}
+
                   end;
                 end;
                 if Assigned (xWsdl) then
@@ -5293,8 +5300,10 @@ begin
     xXml.Free;
   end;
 
+{$ifndef NoGUI}
   if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
     StubChanged := True;
+{$endif}
   sList := TStringList.Create;
   try
     sList.Sorted := True;
@@ -5438,8 +5447,10 @@ begin
     xXml.Free;
   end;
 
+{$ifndef NoGUI}
   if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
     StubChanged := True;
+{$endif}
   sList := TStringList.Create;
   try
     sList.Sorted := True;
@@ -5582,8 +5593,10 @@ begin
   sList.Sorted := True;
   xFileNames := TStringList.Create;
   xFileNames.Sorted := True;
+{$ifndef NoGUI}
   if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
     StubChanged := True;
+{$endif}
   _getDescriptionFiles (aXml, xFileNames);
   for x := 0 to xFileNames.Count - 1 do
   begin
@@ -5847,8 +5860,10 @@ begin
 
   sList := TStringList.Create;
   sList.Sorted := True;
+{$ifndef NoGUI}
   if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
     StubChanged := True;
+{$endif}
   try
     for x := 0 to aXml.Items.Count - 1 do
       if (aXml.Items.XmlItems[x].Checked)

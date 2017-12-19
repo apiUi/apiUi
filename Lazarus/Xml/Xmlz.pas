@@ -9,10 +9,15 @@ uses Classes
    , ParserClasses
    , Xsdz
    , Bind
+{$ifndef NoGUI}
    , Graphics
+{$endif}
    ;
 
 
+{$ifdef NoGUI}
+type TColor = Integer;
+{$endif}
 type TOnHaveString = procedure ( aString: String) of Object;
 type TOnStringEvent = procedure (const Msg: String) of Object;
 type TAnsiStringFunctionAnsiString = function (aString: AnsiString): AnsiString of Object;
@@ -38,8 +43,10 @@ public
   function IsValueValidAgainstXsd (var aMessageString: String): Boolean;
   function IsMoveUpPossible: Boolean;
   function IsMoveDownPossible: Boolean;
+{$ifndef NoGUI}
   procedure Font (aFont: TFont); Override;
   function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
+{$endif}
   procedure MoveUp;
   procedure MoveDown;
   procedure Bind (aRoot: String; aExpress: TObject; aMaxOccurrences: Integer); Override;
@@ -245,8 +252,10 @@ type
     function NumberOfSubItemsWithTag (aTag: String; OnlyWhenChecked: Boolean): Integer;
     function IsMoveUpPossible: Boolean;
     function IsMoveDownPossible: Boolean;
+    {$ifndef NoGUI}
     procedure Font (aFont: TFont); Override;
     function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
+    {$endif}
     procedure XsdCreate (aLevel: Integer; aXsd: TXsd);
     procedure MoveUp;
     procedure MoveDown;
@@ -362,6 +371,8 @@ function ColorToHtml (aColor: TColor): String;
 function HtmlToColor (aHtml: String): TColor;
 function textToHtml (aString: String): String;
 procedure SjowMessage (aString: String);
+function CreateXsdFromXml (aXsdDescr: TXsdDescr; aXml: TXml; aLinkXmlToXsd: Boolean): TXsd;
+function CreateXsdFromJsonSchemaFile (aXsdDescr: TXsdDescr; aFileName: String): TXsd;
 
 const BOM = #$EF#$BB#$BF;
 const CheckedAtttributeName = 'checked__';
@@ -409,6 +420,338 @@ uses
    , Ipmz
    , HashUtilz
    ;
+
+function CreateXsdFromXml(aXsdDescr: TXsdDescr; aXml: TXml; aLinkXmlToXsd: Boolean): TXsd;
+  procedure _AddXsdAttribute (aXsd: TXsd; aAtt: TXmlAttribute);
+  var
+    x: Integer;
+    xXsdAtt: TXsdAttr;
+  begin
+    xXsdAtt := nil;
+    for x := 0 to aXsd.sType.AttributeDefs.Count - 1 do
+      if aXsd.sType.AttributeDefs.XsdAttrs [x].Name = aAtt.Name then
+        xXsdAtt := aXsd.sType.AttributeDefs.XsdAttrs [x];
+    if not Assigned (xXsdAtt) then
+    begin
+      xXsdAtt := TXsdAttr.Create (aXsdDescr);
+      aXsdDescr.Garbage.AddObject ('', xXsdAtt);
+      xXsdAtt.Name := aAtt.Name;
+      aXsd.sType.AttributeDefs.AddObject('', xXsdAtt);
+      xXsdAtt._Ficticious := True;
+    end;
+    if aLinkXmlToXsd then
+      aAtt.XsdAttr := xXsdAtt;
+  end;
+  procedure _ChildXml (aXsd: TXsd; aXml: TXml);
+  var
+    x: Integer;
+    xXsd: TXsd;
+    xName: String;
+  begin
+    xXsd := nil;
+    xName := NameWithoutPrefix(aXml.Name);
+    for x := 0 to aXsd.sType.ElementDefs.Count - 1 do
+      if aXsd.sType.ElementDefs.Xsds[x].ElementName = xName then
+        xXsd := aXsd.sType.ElementDefs.Xsds [x];
+    if not Assigned (xXsd) then
+    begin
+      xXsd := TXsd.Create (aXsdDescr);
+      aXsdDescr.Garbage.AddObject ('', xXsd);
+      xXsd.sType := TXsdDataType.Create(aXsdDescr);
+      aXsdDescr.Garbage.AddObject ('', xXsd.sType);
+      aXsd.sType.ElementDefs.AddObject('', xXsd);
+      xXsd.minOccurs := '0';
+      xXsd.maxOccurs := '1';
+      xXsd.ElementName := xName;
+      xXsd.sType.Name := 'Fictitious';
+      xXsd.DoNotEncode := True;
+      xXsd.sType._Ficticious := True;
+    end;
+    if xXsd._Processed then
+      xXsd.maxOccurs := 'unbounded';
+    xXsd._Processed := True;
+    if aLinkXmlToXsd then
+      aXml.Xsd := xXsd;
+    for x := 0 to aXml.Attributes.Count - 1 do
+      _AddXsdAttribute (xXsd, aXml.Attributes.XmlAttributes[x]);
+    for x := 0 to xXsd.sType.ElementDefs.Count - 1 do
+      xXsd.sType.ElementDefs.Xsds [x]._Processed := False;
+    for x := 0 to aXml.Items.Count - 1 do
+      _ChildXml (xXsd, aXml.Items.XmlItems[x]);
+    for x := 0 to xXsd.sType.ElementDefs.Count - 1 do
+      xXsd.sType.ElementDefs.Xsds [x]._Processed := False;
+  end;
+var
+  x: Integer;
+begin
+  if not Assigned (aXml) then Exit;
+  try
+    result := TXsd.Create(aXsdDescr);
+    aXsdDescr.Garbage.AddObject ('', result);
+    result.ElementName := NameWithoutPrefix(aXml.Name);
+    result.maxOccurs := '1';
+    result.sType := TXsdDataType.Create(aXsdDescr);
+    aXsdDescr.Garbage.AddObject('', result.sType);
+    result.sType.Name := 'Fictitious';
+    result.sType._Ficticious := True;
+    result.DoNotEncode := True;
+    if aLinkXmlToXsd then
+      aXml.Xsd := result;
+    for x := 0 to aXml.Attributes.Count - 1 do
+      _AddXsdAttribute (result, aXml.Attributes.XmlAttributes[x]);
+    for x := 0 to aXml.Items.Count - 1 do
+      _ChildXml (result, aXml.Items.XmlItems[x]);
+  finally
+  end;
+end;
+
+function CreateXsdFromJsonSchemaFile(aXsdDescr: TXsdDescr;
+  aFileName: String): TXsd;
+
+  function _CreateXsdFromJsonSchema(aXsdDescr: TXsdDescr; aRoot, aParentXsd: TXsd; aJsonSchema: TXml): TXsd;
+    function _resolveReffedType (aRef: String): TXsdDataType;
+    var
+      x: Integer;
+      s: String;
+    begin
+      result := nil;
+      if aRef = '#' then
+      begin
+        result := aRoot.sType;
+        exit;
+      end;
+      if AnsiStartsText ('#/definitions/', aRef) then
+      begin
+        s := Copy (aRef, Length ('#/definitions/') + 1, 30000);
+        for x := 0 to aXsdDescr.TypeDefs.Count - 1 do
+          if aXsdDescr.TypeDefs.Strings[x] = s then
+            result := aXsdDescr.TypeDefs.XsdDataTypes[x];
+      end;
+    end;
+  var
+    x, y: Integer;
+    xXsdEnum: TXsdEnumeration;
+    cXsd: TXsd;
+    cXml: TXml;
+  begin
+    if not Assigned (aJsonSchema) then Exit;
+    try
+      result := TXsd.Create(aXsdDescr);
+      if not Assigned (aRoot) then
+        aRoot := result;
+      aXsdDescr.Garbage.AddObject ('', result);
+      result.ElementName := NameWithoutPrefix(aJsonSchema.Name);
+      result.minOccurs := '0';
+      result.maxOccurs := '1';
+      result.sType := TXsdDataType.Create(aXsdDescr);
+      aXsdDescr.Garbage.AddObject('', result.sType);
+      result.sType.Name := 'json';
+      result.sType.jsonType := jsonObject;
+      result.sType._Ficticious := False;
+      result.DoNotEncode := True;
+      if Assigned (aParentXsd) then
+        aParentXsd.sType.AddXsd(result);
+      for x := 0 to aJsonSchema.Items.Count - 1 do
+      begin
+        with aJsonSchema.Items.XmlItems[x] do
+        begin
+          if Name = '$ref' then
+          begin
+            result.sType := _resolveReffedType(Value);
+            if not Assigned (result.sType) then
+              raise Exception.CreateFmt('Parsing JSON Schema; Error resolving: %s', [Value]);
+          end;
+          if Name = 'definitions' then
+          begin
+            for y := 0 to Items.Count - 1 do
+            begin
+              cXsd := _CreateXsdFromJsonSchema(aXsdDescr,aRoot,nil,Items.XmlItems[y]); //cXsd gets lost; only in garbagecollction
+              aXsdDescr.TypeDefs.AddObject(Items.XmlItems[y].Name, cXsd.sType);
+            end;
+          end;
+          if Name = 'description' then
+            result.Documentation.Add(Value);
+          if Name = 'type' then
+          begin
+            if Value = 'string' then
+            begin
+              result.sType.BaseDataTypeName := 'string';
+              result.sType.jsonType := jsonString;
+            end;
+            if Value = 'object' then
+            begin
+              result.sType.ContentModel := 'All';
+              result.sType.jsonType := jsonObject;
+      //??
+            end;
+            if Value = 'array' then
+            begin
+              result.sType.jsonType := jsonArray;
+              result.sType.ContentModel := 'All';
+              result.sType.BaseDataTypeName := result.ElementName + 'jsonArray';
+              result.minOccurs := '0';
+              result.maxOccurs := '1';
+            end;
+            if Value = 'boolean' then
+            begin
+              result.sType.BaseDataTypeName := 'boolean';
+              result.sType.jsonType := jsonBoolean;
+            end;
+            if Value = 'number' then
+            begin
+              result.sType.BaseDataTypeName := 'float';
+              result.sType.jsonType := jsonNumber;
+            end;
+            if Value = 'integer' then
+            begin
+              result.sType.BaseDataTypeName := 'integer';
+              result.sType.jsonType := jsonNumber;
+            end;
+            if Value = 'null' then
+            begin
+      //??
+            end;
+            if Value = 'any'  then
+            begin
+              result.sType.BaseDataTypeName := 'anyType';
+              result.sType.jsonType := jsonObject;
+            end;
+          end;
+          if Name = 'properties' then
+          begin
+            result.sType.jsonType := jsonObject;
+            for y := 0 to Items.Count - 1 do
+              with _CreateXsdFromJsonSchema(aXsdDescr,aRoot,result,Items.XmlItems[y]) do
+                ElementName := Items.XmlItems[y].Name;
+          end;
+          if Name = 'optional' then
+            result.minOccurs := '0';
+          if Name = 'required' then
+          begin
+      // ??
+          end;
+          if Name = 'items' then
+          begin
+            result.sType.jsonType := jsonArray;
+            for y := 0 to Items.Count - 1 do // should be one as far I understand
+            begin
+              if Items.XmlItems[y].Value = 'object' then
+                cXsd := _CreateXsdFromJsonSchema(aXsdDescr,aRoot,result,Items.XmlItems[y])
+              else
+              begin
+                cXml := TXml.Create;
+                try
+                  cXml.Items.AddObject('', Items.XmlItems[y]);
+                  cXsd := _CreateXsdFromJsonSchema(aXsdDescr,aRoot,result,cXml);
+                finally
+                  cXml.Items.ClearListOnly;
+                  cXml.Free;
+                end;
+              end;
+              cXsd.ElementName := '_item';
+//            cXsd.sType.jsonType := jsonArrayValue;
+              cXsd.minOccurs := '0';
+              cXsd.maxOccurs := 'unbounded';
+            end;
+            result.DoNotEncode := True;
+          end;
+          if Name = 'additionalProperties' then
+          begin
+            result.sType.jsonType := jsonObject;
+            if (Items.Count > 0)
+            and (Items.XmlItems[0].Name = '$ref') then
+              result.sType := _resolveReffedType(Items.XmlItems[0].Value);
+              if not Assigned (result.sType) then
+                raise Exception.CreateFmt('Parsing JSON Schema; Error resolving: %s', [Items.XmlItems[0].Value]);
+          end;
+          if Name = 'specificity' then
+          begin
+      //??
+          end;
+          if Name = 'unique' then
+          begin
+      //??
+          end;
+          if Name = 'minimum' then
+            result.sType.MinInclusive := Value;
+          if Name = 'maximum' then
+            result.sType.MaxInclusive := Value;
+          if Name = 'pattern' then
+            result.sType.Pattern := Value;
+          if Name = 'maxLength' then
+            result.sType.MaxLength := Value;
+          if Name = 'minLength' then
+            result.sType.MinLength := Value;
+          if Name = 'maxItems' then
+          begin
+      //??   iets met een array
+          end;
+          if Name = 'minItems' then
+          begin
+      //??    ìets met een array
+          end;
+          if Name = 'enum' then
+          begin
+            for y := 0 to Items.Count - 1 do
+            begin
+              xXsdEnum := TXsdEnumeration.Create;
+              xXsdEnum.Value := Items.XmlItems[y].Value;
+              result.sType.Enumerations.AddObject(xXsdEnum.Value, xXsdEnum);
+            end;
+          end;
+          if Name = 'options' then
+          begin
+      //??
+          end;
+          if Name = 'readonly' then
+            result.isReadOnly := True;
+          if Name = 'format' then
+          begin
+      //??
+          end;
+          if Name = 'default' then
+          begin
+      //??
+          end;
+          if Name = 'transient' then
+          begin
+      //??
+          end;
+          if Name = 'maxDecimal' then
+            result.sType.MaxInclusive := Value;
+          if Name = 'hidden' then
+          begin
+      //??
+          end;
+          if Name = 'extends' then
+          begin
+      //??
+          end;
+        end;
+      end;
+{}
+    finally
+    end;
+  end;
+var
+  f: Integer;
+  xJsonXml: TXml;
+begin
+  if aXsdDescr.ReadFileNames.Find(aFileName, f) then
+    result := aXsdDescr.ReadFileNames.Objects[f] as TXsd
+  else
+  begin
+    xJsonXml := TXml.Create;
+    try
+      xJsonXml.LoadJsonFromFile(aFileName, nil);
+      result := _CreateXsdFromJsonSchema(aXsdDescr, nil, nil, xJsonXml);
+      aXsdDescr.TypeDef.AddXsd(result);
+      aXsdDescr.ReadFileNames.AddObject(aFileName, result);
+    finally
+      xJsonXml.Free;
+    end;
+  end;
+end;
 
 procedure SjowMessage (aString: String);
 begin
@@ -543,12 +886,14 @@ end;
 
 procedure xmlSetDefaultColors;
 begin
+{$ifndef NoGUI}
   bgCorrelationItemColor := clMoneyGreen;
   bgExpectedValueColor := $E7FFE7;
   bgNilValueColor := $CFFFFF;
   bgElementValueColor := clWhite;
   fgMissingColor := clRed;
   fgUnknownDatatypeColor := clRed;
+{$endif}
 end;
 
 function xmlDecodeXml (aValue: String): String;
@@ -965,7 +1310,7 @@ function TXml.asAssignments: String;
     else
     begin
       result := _i(i) 
-              + Format('with %s.%s do' , [IfThen(aXml.Xsd.maxOccurs<>'1', 'new '), aXml.Name]) + CRLF 
+              + Format('with %s.%s do' , [IfThen(aXml.Xsd.maxOccurs<>'1', 'new ', ''), aXml.Name]) + CRLF
               + _i(i) + '{' + CRLF;
       for x := 0 to aXml.Items.Count - 1 do
         result := result
@@ -3744,6 +4089,7 @@ begin
     result := bindNilStr;
 end;
 
+{$ifndef NoGUI}
 function TXml.bgColor(aReadOnly: Boolean; aColumn: Integer): TColor;
 begin
   result := bgElementValueColor;
@@ -3847,6 +4193,7 @@ begin
   except
   end;
 end;
+{$endif}
 
 function TXml.getTypeDef: TXsdDataType;
 begin

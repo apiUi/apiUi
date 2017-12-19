@@ -9,13 +9,11 @@ uses Classes
    , Bind
    , Xmlz
    , ParserClasses
-   {$ifdef XMLDOM}
-   , XmlDom
-   , XmlDoc
-   , XmlSchema
-   {$endif}
+   {$ifndef NoGUI}
    , Dialogs
-   , Graphics, FileUtil
+   , Graphics
+   {$endif}
+   , FileUtil
    ;
 
 type
@@ -110,7 +108,9 @@ public
   XmlFileName: String;
   Level88Values: TStringList;
   SkipOnXmlBuild: Boolean;
+  {$ifndef NoGUI}
   function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
+  {$endif}
   procedure Populate(aViewType: TxvViewType); Override;
   function Children: TBindableList; Override;
   function GetFullIndexCaption: String; Override;
@@ -2569,7 +2569,7 @@ end;
 procedure TStringListList.SetStringList(Index: integer;
   const Value: TStringList);
 begin
-  ShowMessage ('HO');
+
 end;
 
 function TIpmItem.GetCaption: String;
@@ -2680,6 +2680,7 @@ begin
   end;
 end;
 
+{$ifndef NoGUI}
 function TIpmItem.bgColor (aReadOnly: Boolean; aColumn: Integer): TColor;
 begin
   if aReadOnly or Group then
@@ -2687,6 +2688,7 @@ begin
   else
     result := clWhite;
 end;
+{$endif}
 
 procedure TIpmItem.LoadValues(aIpm: TIpmItem);
 var

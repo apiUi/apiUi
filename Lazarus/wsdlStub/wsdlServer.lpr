@@ -13,19 +13,14 @@ uses
   , wsdlcontrolz
   , Xmlz
   , xmlio
-  , xmlUtilz
   , Ipmz
   , exceptionUtils
   , Logz
   , ExceptionLogz
   , snapshotz
   , Wsdlz
-  , FormIniFilez, MQAPI, mqInterface, MQRfh2Api, IdStack
-  , virtualtreeview_package
   , xmlxsdparser
-  , HashUtilz, tacoInterface , htmlXmlUtilz
-  , ExtCtrls
-  , Translations
+  , HashUtilz
   , LazFileUtils
   ;
 
@@ -52,7 +47,6 @@ type
   private
     se: TWsdlProject;
     sc: TWsdlControl;
-    IniFile: TFormIniFile;
     scriptName: String;
     terminateAfterScript: Boolean;
     osUserName, CompanyName: String;
@@ -448,7 +442,6 @@ begin
   _xmlLicensed := True;
   DecryptString := doDecryptString;
   EncryptString := doEncryptString;
-  IniFile := TFormIniFile.Create;
   se := TWsdlProject.Create;
   sc := TWsdlControl.Create;
   sc.se := se;
@@ -480,7 +473,6 @@ end;
 destructor TMyApplication.Destroy;
 begin
   FreeAndNil(se);
-  IniFile.Free;
   inherited Destroy;
 end;
 
@@ -491,10 +483,10 @@ begin
   WriteLn ('');
   WriteLn ('');
   WriteLn ('Example');
-  WriteLn (ExeName, ' myProject.svpr --port=6161');
+  WriteLn (ExeName, ' myProject.wsdlStub --port=6161');
   WriteLn;
   WriteLn ('This command will ...');
-  WriteLn ('  start with opening project myProject.svpr');
+  WriteLn ('  start with opening project myProject.wsdlStub');
   WriteLn ('  and listen on port 6161 for wsdlStub webservice calls (remoteControl: default 3738)');
   WriteLn;
   WriteLn;

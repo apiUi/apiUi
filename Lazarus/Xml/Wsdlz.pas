@@ -684,12 +684,12 @@ uses
   StrUtils
    , SysUtils
    , DateUtils
-   , Dialogs
-   , Controls
    , igGlobals
    , RegExpr
+{$ifndef NoGUI}
    , xmlUtilz
    , Forms
+{$endif}
    , Math
    , base64
    , HashUtilz
@@ -2920,7 +2920,7 @@ var
       xXsdDescr := TXsdDescr.Create(xsdDefaultElementsWhenRepeatable);
     sdfXsdDescrs.AddObject('', xXsdDescr);
     try
-      XmlUtil.CreateXsdFromJsonSchemaFile(xXsdDescr, xFileName);
+      CreateXsdFromJsonSchemaFile(xXsdDescr, xFileName);
     except
       on E: Exception do
         raise Exception.Create('Error opening ' + xFileName + ': ' + e.Message);
@@ -3154,6 +3154,7 @@ begin
     isSoapService := False;
     if not Assigned (aXml) then raise Exception.Create('LoadFromSdfXml: XML not asigned');
     if aXml.Name <> 'ServiceDefinitions' then raise Exception.Create(aFileName + ': No ServerDefinitions');
+    {$ifndef NoGUI}
     if xmlUtil.CheckAndPromptFileNames(aFileName, aXml, True) then
     begin
       if (MessageDlg ( 'Save changed file: '
@@ -3165,6 +3166,7 @@ begin
          ) then
         XmlUtil.SaveXmlWithFileNames(aFileName, aXml, True, True);
     end;
+    {$endif}
     aXml.LoadFromString(aXml.AsText(False, 0, True, False), nil); // get rid of unchecked items
     with aXml.Items do
     begin
@@ -3212,7 +3214,9 @@ begin
                             fXml := Items.XmlItemByTag ['DescriptionFile'];
                             if Assigned (fXml) then
                             begin
+                              {$ifndef NoGUI}
                               fXml.Value := CheckAndPromptForExistingFile(fXml.FullIndexCaption, aFileName, fXml.Value);
+                              {$endif}
                               xFilenames.AddObject (fXml.Value, Pointer (xDescrType))
                             end
                             else
@@ -3597,7 +3601,11 @@ begin
   ExtraXsds.Clear;
   for x := 0 to aXml.Items.Count - 1 do
     if aXml.Items.XmlItems[x].Checked then
+    {$ifndef NoGUI}
       ExtraXsds.Add (CheckAndPromptForExistingFile(aXml.FullIndexCaption, aMainFileName, aXml.Items.XmlItems[x].Value));
+    {$else}
+      ExtraXsds.Add (aXml.Items.XmlItems[x].Value);
+    {$endif}
 end;
 
 procedure TWsdl .AddedTypeDefElementsFromXml (aXml : TXml );
@@ -5863,13 +5871,17 @@ end;
 procedure TWsdlOperation.doPromptReply;
 begin
 //SetForegroundWindow(Application.Handle);
+{$ifndef NoGUI}
   xmlUtil.ViewAsXml(rpyBind, False);
+{$endif}
 end;
 
 procedure TWsdlOperation.doPromptRequest;
 begin
 //SetForegroundWindow(Application.Handle);
+{$ifndef NoGUI}
   xmlUtil.ViewAsXml(reqBind, False);
+{$endif}
 end;
 
 function TWsdlOperation.endpointConfigAsXml: TXml;
@@ -6678,9 +6690,11 @@ begin
     begin
       if not aXsds.Find(_TypeName, f) then // lets help the poor people who set up wslds
       begin
+      {$ifndef NoGUI}
         XmlUtil.presentAsText ( 'TWsdlPart.LinkToXsd (aXsds: TXsdList; aWsdl: TWsdl)'
                               , aWsdl.XsdDescr.ReadFileNames.Text
                               );
+      {$endif}
         raise Exception.CreateFmt('Element(%s)nor TypeDef(%s) found for part %s', [_ElementName, _TypeName, Name]);
       end;
       Xsd := aXsds.Xsds[f];

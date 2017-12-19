@@ -628,6 +628,7 @@ type
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
+    procedure ToolButton71Click(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
@@ -7290,7 +7291,7 @@ begin
         XmlUtil.PushCursor (crHourGlass);
         try
           xXml.LoadFromString(aText, nil);
-          xmlUtil.CreateXsdFromXml(xXsdDescr, xXml, True);
+          CreateXsdFromXml(xXsdDescr, xXml, True);
         finally
           XmlUtil.PopCursor;
         end;
@@ -7332,7 +7333,7 @@ begin
             ShowInfoForm(aCaption + ' -- failed parsing', aText);
             exit;
           end;
-        xmlUtil.CreateXsdFromXml(xXsdDescr, xXml, True);
+        CreateXsdFromXml(xXsdDescr, xXml, True);
       finally
         XmlUtil.PopCursor;
       end;
@@ -7451,13 +7452,22 @@ begin
   try
     xChanged := stubChanged;
     xRead := se.stubRead;
-    se.FocusOperationName := ifthen(Assigned (WsdlOperation), WsdlOperation.reqTagName);
-    se.FocusMessageIndex := ifthen(Assigned (WsdlOperation), WsdlOperation.Messages.IndexOfObject(WsdlMessage));
+    if Assigned (WsdlOperation) then
+    begin
+      se.FocusOperationName := WsdlOperation.reqTagName;
+      se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
+    end
+    else
+    begin
+      se.FocusOperationName := '';
+      se.FocusMessageIndex := -1;
+    end;
     ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
     if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
     begin
       WsdlOperation := allOperations.Operations[f];
-      if (se.FocusMessageIndex < WsdlOperation.Messages.Count) then
+      if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
+      and (se.FocusMessageIndex > -1)then
         WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
     end;
     stubChanged := xChanged;
@@ -8375,12 +8385,12 @@ end;
 
 function TMainForm.doDecryptString(aString: AnsiString): AnsiString;
 begin
-  result := FormIniFilez.DecryptPassword(aString);
+  result := DecryptPassword(aString);
 end;
 
 function TMainForm.doEncryptString(aString: AnsiString): AnsiString;
 begin
-  result := FormIniFilez.EncryptPassword(aString);
+  result := EncryptPassword(aString);
 end;
 
 procedure TMainForm.doExecuteRequest;
@@ -13911,6 +13921,11 @@ begin
   finally
     se.ReleaseLogLock;
   end;
+end;
+
+procedure TMainForm.ToolButton71Click(Sender: TObject);
+begin
+
 end;
 
 procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;
