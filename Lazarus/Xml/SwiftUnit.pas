@@ -102,7 +102,6 @@ var
 implementation
 
 uses RegExpr
-   , xmlUtilz
    ;
 
 { TSwiftMT }
@@ -145,7 +144,7 @@ function TSwiftMT.getAsXml: TXml;
       if aXml.Tag = 0 then
       begin
         aXml.Tag := 1;
-        xmlUtil.Add (aXml).Checked := False;
+        AddSibbling (aXml).Checked := False;
       end;
     end
     else
@@ -818,7 +817,7 @@ begin
       if fmaxOccurs
       and (result <> '') then
       begin
-        nXml := xmlUtil.Add (aXml);
+        nXml := AddSibbling (aXml);
         nXml.Checked := False;
         if Copy (result, 1, 2) = CRLF then
           result := Copy (result, 3, 1000);

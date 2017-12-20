@@ -8,6 +8,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp
+  , Interfaces
   , math
   , WsdlProjectz
   , wsdlcontrolz

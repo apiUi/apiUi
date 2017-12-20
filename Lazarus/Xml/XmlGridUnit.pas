@@ -1280,7 +1280,7 @@ end;
 
 procedure TXmlGridForm.AddActionExecute(Sender: TObject);
 begin
-  ShowGrid(xmlUtil.Add(FocusedBind as TXml));
+  ShowGrid(AddSibbling(FocusedBind as TXml));
   fStubChanged := True;
 end;
 

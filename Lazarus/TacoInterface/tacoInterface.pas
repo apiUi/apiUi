@@ -1,4 +1,4 @@
-unit tacoInterface;
+unit TacoInterface;
 
 {$IFDEF FPC}
   {$MODE Delphi}

@@ -14,10 +14,6 @@ uses Classes
 resourcestring
   S_XML_REGEXP_LINK = '(?i)((FTP|HTTPS?|FILE|DOC)://([_a-z\d\-/]+(\.[_a-z\d\-/]+)+)((/[ _a-z\d\-\\\./]+)+)*([\?#][a-z0-9=%&_/\+\-\.]+)?)';
 
-{$ifdef NoGUI}
-type TColor = Integer;
-type TFont = Integer;
-{$endif}
 type TBindExpandStyle = (esAll, esOne, esUsed, edBestEffort);
 const TBindExpandStyleStr: array [TBindExpandStyle] of String = ('All', 'One', 'Used', 'BestEffort');
 type TxvViewType = (xvAll, xvRequired, xvUsed, xvReqUsed);
@@ -249,8 +245,10 @@ public
   function GetExpectedStringData: String; Virtual;
   procedure PutExpectedStringData (aString: String); Virtual;
   function MergeChecked: Boolean; Virtual;
+  {$ifndef NoGUI}
   procedure Font (aFont: TFont); Virtual;
   function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Virtual;
+  {$endif}
   function IsAncestorOf (aBindable: TCustomBindable): Boolean;
   function UpLineAsText: String; Virtual;
   constructor Create; Overload;
@@ -804,24 +802,28 @@ begin
   result := 'function TCustomBindable.UpLineAsText: String;';
 end;
 
+{$ifndef NoGUI}
 function TCustomBindable.bgColor (aReadOnly: Boolean; aColumn: Integer): TColor;
 begin
   if aReadOnly
   or (Children.Count > 0) then
-    result := {$ifndef NoGUI} clBtnFace {$else} 0 {$endif}
+    result :=  clBtnFace
   else
   begin
     if self = nil then
       result := $CFFFFF
     else
-      result := {$ifndef NoGUI} clWhite {$else} 0 {$endif};
+      result := clWhite;
   end;
 end;
+{$endif}
 
+{$ifndef NoGUI}
 procedure TCustomBindable.Font(aFont: TFont);
 begin
   exit;
 end;
+{$endif}
 
 function TCustomBindable.getIsEvaluation: Boolean;
 begin

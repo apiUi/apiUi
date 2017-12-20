@@ -160,7 +160,8 @@ type
 
 implementation
 
-uses FindRegExpDialog
+uses xmlio
+   , FindRegExpDialog
    , igGlobals
    , StrUtils
    , xmlUtilz

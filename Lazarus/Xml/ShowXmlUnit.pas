@@ -1776,7 +1776,7 @@ begin
   xBind := NodeToBind(TreeView.FocusedNode);
   if not(xBind is TXml) then
     Exit;
-  xXml := xmlUtil.Add(xBind as TXml);
+  xXml := AddSibbling(xBind as TXml);
   if Assigned(xXml) then
   begin
     TreeView.FocusedNode := InsertXmlNode(TreeView.FocusedNode, xXml);

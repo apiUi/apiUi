@@ -15,7 +15,6 @@ uses Classes
    , Xsdz
    , igGlobals
    , ClaimListz
-   , xmlUtilz
    , base64
    ;
 

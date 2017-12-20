@@ -15,7 +15,6 @@ uses htmlXmlUtilz
    , xmlz
    , logz
    , xmlio
-   , xmlUtilz
    , wsdlz
    , xmlxsdparser
    ;

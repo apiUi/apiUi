@@ -34,6 +34,10 @@ function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): 
 function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 
+const base64DocxStartStr = 'UEsDBB';
+const base64PdfStartStr = 'JVBERi';
+const base64RtfStartStr = 'e1xyd';
+
 var
   PathPrefixes: TStringList;
 

@@ -689,6 +689,8 @@ uses
 {$ifndef NoGUI}
    , xmlUtilz
    , Forms
+   , Dialogs
+   , Controls
 {$endif}
    , Math
    , base64

@@ -1,4 +1,4 @@
-unit MQAPI;
+unit MqApi;
 
 {$IFDEF FPC}
   {$MODE Delphi}

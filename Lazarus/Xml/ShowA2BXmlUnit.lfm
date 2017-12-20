@@ -1,7 +1,7 @@
 object ShowA2BXmlForm: TShowA2BXmlForm
-  Left = 597
+  Left = 600
   Height = 320
-  Top = 203
+  Top = 205
   Width = 729
   Caption = 'XML Data'
   ClientHeight = 320
@@ -11,7 +11,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.2.0'
   object Panel1: TPanel
     Left = 0
     Height = 291

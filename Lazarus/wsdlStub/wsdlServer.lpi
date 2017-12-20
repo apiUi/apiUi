@@ -23,8 +23,14 @@
       <BuildNr Value="56"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <MacroValues Count="1">
+      <Macro1 Name="LCLWidgetType" Value="nogui"/>
+    </MacroValues>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="532550654958" Modes="Default" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -35,7 +41,7 @@
         <CommandLineParams Value="&quot;testScript.wsdlStub&quot; --script=test --terminate"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="3">
       <Item1>
         <PackageName Value="TurboPowerIPro"/>
       </Item1>
@@ -43,13 +49,10 @@
         <PackageName Value="indylaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="virtualtreeview_package"/>
-      </Item3>
-      <Item4>
         <PackageName Value="LazUtils"/>
-      </Item4>
+      </Item3>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="7">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -67,31 +70,19 @@
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\Mq\MQAPI.pas"/>
+        <Filename Value="..\TacoInterface\tacoInterface.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="..\Mq\mqInterface.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\Mq\MQRfh2Api.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\TacoInterface\tacoInterface.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit7>
-      <Unit8>
         <Filename Value="..\Html\htmlxmlutilz.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="htmlXmlUtilz"/>
-      </Unit8>
-      <Unit9>
+      </Unit5>
+      <Unit6>
         <Filename Value="C:\lazarus\lcl\translations.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Translations"/>
-      </Unit9>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

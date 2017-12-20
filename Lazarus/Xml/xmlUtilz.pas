@@ -12,7 +12,9 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, FileUtil
    , Xsdz
    , Ipmz
    , ParserClasses
+   {$ifndef NoGUI}
    , IpHtml
+   {$endif}
    ;
 
 
@@ -72,7 +74,6 @@ public
   procedure SaveXmlWithFileNames (aFileName: String; aXml: TXml; aUseRelativeNames, aOnlyWhenChecked: Boolean);
   function CheckAndPromptFileNames(aFileName: String; aXml: TXml; aOnlyWhenChecked: Boolean): Boolean;
   procedure ShowInfoForm (aCaption: String; aInfoString: String);
-  function Add (aXml: TXml): TXml;
   function isCheckAllowed (aBind: TCustomBindable): Boolean;
   function isDateTime (aBind: TCustomBindable): Boolean;
   function isDate (aBind: TCustomBindable): Boolean;
@@ -140,9 +141,6 @@ function EditXmlXsdBased ( aCaption, aXsdPath, aInitialFocus, aValidateDuplicate
 procedure ShowText (aCaption, aText: String);
 procedure ShowXml (aCaption: String; aXml: TXml);
 
-const base64DocxStartStr = 'UEsDBB';
-const base64PdfStartStr = 'JVBERi';
-const base64RtfStartStr = 'e1xyd';
 
 var
   XmlUtil: TXmlUtil;
@@ -156,7 +154,9 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   Dialogs
+{$ifndef NoGUI}
    , ShowXmlUnit
+{$endif}
    , ShowTextUnit
    , ChooseEnumUnit
    , xsdDateTimeFormUnit
@@ -356,27 +356,6 @@ end;
 procedure TXmlUtil.ShowInfoForm(aCaption: String; aInfoString: String);
 begin
   ShowText (aCaption, aInfoString);
-end;
-
-function TXmlUtil.Add(aXml: TXml): TXml;
-begin
-  result := TXml.Create (0, aXml.Xsd);
-  try
-    result.Parent := aXml.Parent;
-    result.Checked := True;
-    AcquireLock;
-    try
-      (aXml.Parent as TXml).Items.InsertObject( (aXml.Parent as TXml).Items.IndexOfObject (aXml) + 1
-                                   , result.TagName
-                                   , result
-                                   );
-    finally
-      ReleaseLock;
-    end;
-  except
-    result.Free;
-    raise;
-  end; {try}
 end;
 
 procedure TXmlUtil.SaveXmlWithFileNames (aFileName: String; aXml: TXml; aUseRelativeNames, aOnlyWhenChecked: Boolean);

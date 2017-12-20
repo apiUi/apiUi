@@ -1,7 +1,7 @@
 object ShowXmlForm: TShowXmlForm
-  Left = 485
+  Left = 488
   Height = 459
-  Top = 88
+  Top = 91
   Width = 704
   Caption = 'XML Data'
   ClientHeight = 459
@@ -12,7 +12,7 @@ object ShowXmlForm: TShowXmlForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.2.0'
   object Panel1: TPanel
     Left = 0
     Height = 388

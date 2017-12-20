@@ -55,7 +55,7 @@ procedure a2bExpandWhenValueIsJson (aXml: TXml);
 
 implementation
 
-uses xmlUtilz, wrdFunctionz, StrUtils, igGlobals, base64, RegExpr;
+uses xmlio, wrdFunctionz, StrUtils, igGlobals, base64, RegExpr;
 
 procedure a2bInitialize;
 begin

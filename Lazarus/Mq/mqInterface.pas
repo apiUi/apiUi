@@ -1,4 +1,4 @@
-unit mqInterface;
+unit MqInterface;
 
 {$IFDEF FPC}
   {$MODE Delphi}

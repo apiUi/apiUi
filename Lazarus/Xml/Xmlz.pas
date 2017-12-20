@@ -15,9 +15,6 @@ uses Classes
    ;
 
 
-{$ifdef NoGUI}
-type TColor = Integer;
-{$endif}
 type TOnHaveString = procedure ( aString: String) of Object;
 type TOnStringEvent = procedure (const Msg: String) of Object;
 type TAnsiStringFunctionAnsiString = function (aString: AnsiString): AnsiString of Object;
@@ -367,12 +364,15 @@ function xmlEncodeXml (aValue: String): String;
 function xmlDecodeXml (aValue: String): String;
 function strAdd (aString, aStringToAdd: String): String;
 procedure xmlSetDefaultColors;
+{$ifndef NoGUI}
 function ColorToHtml (aColor: TColor): String;
 function HtmlToColor (aHtml: String): TColor;
+{$endif}
 function textToHtml (aString: String): String;
 procedure SjowMessage (aString: String);
 function CreateXsdFromXml (aXsdDescr: TXsdDescr; aXml: TXml; aLinkXmlToXsd: Boolean): TXsd;
 function CreateXsdFromJsonSchemaFile (aXsdDescr: TXsdDescr; aFileName: String): TXsd;
+function AddSibbling(aXml: TXml): TXml;
 
 const BOM = #$EF#$BB#$BF;
 const CheckedAtttributeName = 'checked__';
@@ -391,12 +391,14 @@ var
   _xmlProgName: String;
   _xmlProgVersion: String;
   _xmlLicensed: Boolean;
+{$ifndef NoGUI}
   bgCorrelationItemColor: TColor;
   bgExpectedValueColor: TColor;
   bgNilValueColor: TColor;
   bgElementValueColor: TColor;
   fgMissingColor: TColor;
   fgUnknownDatatypeColor: TColor;
+{$endif}
   DecryptString: TAnsiStringFunctionAnsiString;
   EncryptString: TAnsiStringFunctionAnsiString;
   OnNotify: TOnStringEvent;
@@ -420,6 +422,22 @@ uses
    , Ipmz
    , HashUtilz
    ;
+
+function AddSibbling(aXml: TXml): TXml;
+begin
+  result := TXml.Create (0, aXml.Xsd);
+  try
+    result.Parent := aXml.Parent;
+    result.Checked := True;
+    (aXml.Parent as TXml).Items.InsertObject( (aXml.Parent as TXml).Items.IndexOfObject (aXml) + 1
+                                 , result.TagName
+                                 , result
+                                 );
+  except
+    result.Free;
+    raise;
+  end; {try}
+end;
 
 function CreateXsdFromXml(aXsdDescr: TXsdDescr; aXml: TXml; aLinkXmlToXsd: Boolean): TXsd;
   procedure _AddXsdAttribute (aXsd: TXsd; aAtt: TXmlAttribute);
@@ -833,6 +851,7 @@ begin
     result := aString;
 end;
 
+{$ifndef NoGUI}
 function ColorToHtml (aColor: TColor): String;
 var
   s: String;
@@ -883,6 +902,7 @@ begin
     raise SysUtils.EConvertError.CreateFmt('''%s'' is not a valid hexadecimal value', [s]);
   result := i;
 end;
+{$endif}
 
 procedure xmlSetDefaultColors;
 begin
@@ -4125,7 +4145,9 @@ begin
     end;
   end;
 end;
+{$endif}
 
+{$ifndef NoGUI}
 function TXmlAttribute.bgColor(aReadOnly: Boolean; aColumn: Integer): TColor;
 begin
   result := clWhite;
@@ -4150,7 +4172,8 @@ begin
     end;
   end;
 end;
-
+{$endif}
+{$ifndef NoGUI}
 procedure TXmlAttribute.Font(aFont: TFont);
 begin
   if (    Assigned (Self.XsdAttr)

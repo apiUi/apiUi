@@ -14,7 +14,6 @@ implementation
 uses xmlz
    , logz
    , xmlio
-   , xmlUtilz
    , wsdlz
    , xmlxsdparser
    ;

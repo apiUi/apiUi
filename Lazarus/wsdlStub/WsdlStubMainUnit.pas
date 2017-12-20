@@ -2578,7 +2578,7 @@ begin
       if not xmlUtil.isAddAllowed(NodeToBind(InWsdlTreeView,
           InWsdlTreeView.FocusedNode), True) then
         exit;
-      xXml := xmlUtil.Add(Xml);
+      xXml := AddSibbling(Xml);
       InWsdlTreeView.FocusedNode := InsertXmlNode(InWsdlTreeView.FocusedNode,
         xXml);
       InWsdlTreeView.FocusedColumn := 0;
