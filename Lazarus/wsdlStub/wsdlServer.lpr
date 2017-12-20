@@ -26,16 +26,18 @@ uses
   ;
 
 type
-  longOptsArrayType = array [0..3] of String;
+  longOptsArrayType = array [0..4] of String;
 
 const
   helpOpt = 'help';
   portOpt = 'port';
   scriptOpt = 'script';
   terminateOpt = 'terminate';
+  contextOpt = 'context';
   longOpts: longOptsArrayType = ( helpOpt
                                 , portOpt + ':'
                                 , scriptOpt + ':'
+                                , contextOpt + ':'
                                 , terminateOpt
                                 );
 type
@@ -103,6 +105,10 @@ begin
     Terminate;
     Exit;
   end;
+  if HasOption('?',contextOpt) then
+  begin
+    WriteLn('option ', contextOpt, ' ', GetOptionValue('?', contextOpt));
+  end;
   if HasOption('?',portOpt) then
   begin
     WriteLn('option ', portOpt, ' ', GetOptionValue('?', portOpt));
@@ -111,12 +117,15 @@ begin
   begin
     WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
   end;
+  se.contextPropertyOverwrite := GetOptionValue(contextOpt);
   terminateAfterScript := HasOption('?',terminateOpt);
   if terminateAfterScript then
     WriteLn('option ', terminateOpt);
   se.projectFileName := ParamStr(1);
   if (Copy (se.projectFileName, 1, 1) = '-')  // switch as first argument ??
-  or (not FileExists(se.projectFileName))
+  or (    (not FileExists(se.projectFileName))
+      and (not DirectoryExistsUTF8(se.projectFileName))
+     )
   then
   begin
     WriteLn ('First argument not a filename: ' + se.projectFileName);
@@ -267,13 +276,13 @@ begin
   wasActive := se.IsActive;
   ActivateCommand(False);
   se.projectFileName := aFileName;
-  if LazFileUtils.DirectoryExistsUTF8(aFileName) then
+  if DirectoryExistsUTF8(aFileName) then
   begin
     se.ProjectDesignFromString(se.OpenWithFolders, aFileName);
   end
   else
   begin
-    if LazFileUtils.FileExistsUTF8(aFileName) then
+    if FileExistsUTF8(aFileName) then
       se.ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName)
     else
       raise Exception.Create('No such file or folder: ' + aFileName);
@@ -494,6 +503,9 @@ begin
   WriteLn ('Switches');
   WriteLn ('  --', helpOpt);
   WriteLn ('     types this helpmessage');
+  WriteLn ('  --', contextOpt, '=');
+  WriteLn ('     sets a value for the "context" project property');
+  WriteLn ('     (see wsdlStub menu Project->Properties)');
   WriteLn ('  --', portOpt, '=');
   WriteLn ('     overrules the portnumber for the wsdlServer webservice');
   WriteLn ('  --', scriptOpt, '=');

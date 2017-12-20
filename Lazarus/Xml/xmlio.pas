@@ -39,7 +39,7 @@ const base64PdfStartStr = 'JVBERi';
 const base64RtfStartStr = 'e1xyd';
 
 var
-  PathPrefixes: TStringList;
+  PathPrefixes, ProjectAliasses: TStringList;
 
 implementation
 uses StrUtils
@@ -600,6 +600,7 @@ function ReadStringFromFile (aFileName: String): String;
     end;
   end;
 begin
+  aFileName := resolveAliasses(aFileName, ProjectAliasses);
   if (AnsiStartsText('HTTP://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, false);
@@ -772,7 +773,7 @@ begin
     S.Size := Length (aString);
     S.Position := 0;
     S.WriteBuffer(aString[1], S.Size);
-    S.SaveToFile(aFileName);
+    S.SaveToFile(resolveAliasses(aFileName, ProjectAliasses));
   finally
     S.Free;
   end;
@@ -848,6 +849,7 @@ end;
 initialization
   PathPrefixes := TStringList.Create;
   PathPrefixes.Sorted := True;
+  ProjectAliasses := nil;
 
 finalization
   PathPrefixes.Free;

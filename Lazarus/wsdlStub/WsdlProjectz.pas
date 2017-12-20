@@ -145,6 +145,7 @@ type
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
   public
+    contextPropertyOverwrite: String;
     projectProperties: TStringList;
     ppLock: TCriticalSection;
     doDisplayLog: Boolean;
@@ -2552,6 +2553,9 @@ begin
             aMainFileName := xXml.Items.XmlValueByTag ['FileName'];
           projectFileName := aMainFileName;
           projectProperties.Text := xXml.Items.XmlValueByTag['properties'];
+          if contextPropertyOverwrite <> '' then
+            projectProperties.Values['context'] := contextPropertyOverwrite;
+          ProjectAliasses := projectProperties;
           sXml := xXml.Items.XmlItemByTag ['Listeners'];
           Listeners.SpecificationXml.Items.Clear;
           if Assigned (sXml) then

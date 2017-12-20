@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 12/18/2017 12:20:56: Generated with wsdlStub 10.2.0.11455 by BouwmanJW -->
+<!-- 20/12/2017 21:47:25: Generated with wsdlStub 10.2.0.11477 by Jan -->
 <WsdlStubCase>
   <FileName>C:\Data\Sources\Lazarus\wsdlStub\Testing\kvkApi\kvkApi.wsdlStub</FileName>
   <Listeners></Listeners>
@@ -59,10 +59,10 @@
   </projectOptions>
   <PathPrefixes></PathPrefixes>
   <Environments></Environments>
-  <properties></properties>
+  <properties>context=swagger&#x0D;&#x0A;</properties>
   <Wsdl>
     <Name>Berichten-Portaal API Beschrijving</Name>
-    <WsdlLocation>swagger.json</WsdlLocation>
+    <WsdlLocation>${context}.json</WsdlLocation>
     <ElementsWhenRepeatable>-1</ElementsWhenRepeatable>
     <Service>
       <Name>/v1/signaaltypes</Name>
