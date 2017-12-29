@@ -171,6 +171,7 @@ type
     function asHtmlString: String;
     function asString: String;
     function asAssignments: String;
+    function DepthBillOfMaterial: Integer;
     function CustomCheck (NewText: String): Boolean;
     function AsText ( aUseNameSpaces: Boolean
                     ; aIndent: Integer
@@ -253,7 +254,7 @@ type
     procedure Font (aFont: TFont); Override;
     function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
     {$endif}
-    procedure XsdCreate (aLevel: Integer; aXsd: TXsd);
+    procedure XsdCreate (aLevel: Integer; aXsd: TXsd; aParent: TXml = nil);
     procedure MoveUp;
     procedure MoveDown;
     procedure Sort (aRecurringElementsPath, aSubElementsPath: String);
@@ -262,7 +263,7 @@ type
     constructor CreateAsBoolean (aTagName: String; aBoolean: Boolean); Overload;
     constructor CreateAsInteger (aTagName: String; aInteger: Integer); Overload;
     constructor CreateAsString (aTagName: String; aString: String); Overload;
-    constructor Create (aLevel: Integer; aXsd: TXsd); Overload;
+    constructor Create (aLevel: Integer; aXsd: TXsd; aParent: TXml = nil); Overload;
     destructor Destroy; override;
   end;
 
@@ -2462,7 +2463,7 @@ begin
         Inc (result);
 end;
 
-procedure TXml.XsdCreate (aLevel: Integer; aXsd: TXsd);
+procedure TXml.XsdCreate (aLevel: Integer; aXsd: TXsd; aParent: TXml = nil);
 var
   ChildXML: TXml;
   xChildIndex: Integer;
@@ -2481,6 +2482,7 @@ begin
     xDataType := TypeDef;
     jsonType := xDataType.jsonType;
     NameSpace := aXsd.ElementNameSpace;
+    Parent := aParent;
     for xAttrIndex := 0 to xDataType.AttributeDefs.Count - 1 do
     begin
       xAttr := TXmlAttribute.Create;
@@ -2490,37 +2492,32 @@ begin
       xAttr.XsdAttr := xDataType.AttributeDefs.XsdAttrs [xAttrIndex];
       AddAttribute (xAttr);
     end;
-    if xDataType._DepthBillOfMaterial >= xsdMaxDepthBillOfMaterials then
+    if DepthBillOfMaterial >= xsdMaxDepthBillOfMaterials then
       exit;
     if aLevel > xsdMaxDepthXmlGen then
       exit;
-    Inc (xDataType._DepthBillOfMaterial);
-    try
-      for xChildIndex := 0 to xDataType.ElementDefs.Count - 1 do
+    for xChildIndex := 0 to xDataType.ElementDefs.Count - 1 do
+    begin
+      minOccurs := StrToIntDef (xDataType.ElementDefs.Xsds [xChildIndex].minOccurs, 1);
+      if xDataType.ElementDefs.Xsds [xChildIndex].maxOccurs = 'unbounded' then
+        maxOccurs := aXsd.XsdDescr.xsdElementsWhenRepeatable
+      else
+        maxOccurs := StrToIntDef (xDataType.ElementDefs.Xsds [xChildIndex].maxOccurs, 1);
+      if minOccurs < 1 then
+        minOccurs := 1; {Create xml even if optional}
+      xOccurs := aXsd.XsdDescr.xsdElementsWhenRepeatable;
+      if minOccurs > xOccurs then
+        xOccurs := minOccurs;
+      if maxOccurs < xOccurs then
+        xOccurs := maxOccurs;
+      while xOccurs > 0 do
       begin
-        minOccurs := StrToIntDef (xDataType.ElementDefs.Xsds [xChildIndex].minOccurs, 1);
-        if xDataType.ElementDefs.Xsds [xChildIndex].maxOccurs = 'unbounded' then
-          maxOccurs := aXsd.XsdDescr.xsdElementsWhenRepeatable
-        else
-          maxOccurs := StrToIntDef (xDataType.ElementDefs.Xsds [xChildIndex].maxOccurs, 1);
-        if minOccurs < 1 then
-          minOccurs := 1; {Create xml even if optional}
-        xOccurs := aXsd.XsdDescr.xsdElementsWhenRepeatable;
-        if minOccurs > xOccurs then
-          xOccurs := minOccurs;
-        if maxOccurs < xOccurs then
-          xOccurs := maxOccurs;
-        while xOccurs > 0 do
-        begin
-          ChildXml := TXml.Create (aLevel + 1, xDataType.ElementDefs.Xsds [xChildIndex]);
-          Items.AddObject(ChildXml.TagName, ChildXml);
-          ChildXml.Parent := self;
-          Dec (xOccurs);
-        end; {while xOccurs > 0}
-      end; {for each elementdef of xsd}
-    finally
-      Dec (xDataType._DepthBillOfMaterial);
-    end;
+        ChildXml := TXml.Create (aLevel + 1, xDataType.ElementDefs.Xsds [xChildIndex], Self);
+        Items.AddObject(ChildXml.TagName, ChildXml);
+        ChildXml.Parent := self;
+        Dec (xOccurs);
+      end; {while xOccurs > 0}
+    end; {for each elementdef of xsd}
   except
     on e: exception do
       raise Exception.CreateFmt ( 'TXml.XsdCreate (aLevel: %d; aXsd: %s): %s'
@@ -2529,7 +2526,7 @@ begin
   end;
 end;
 
-constructor TXml.Create(aLevel: Integer; aXsd: TXsd);
+constructor TXml.Create(aLevel: Integer; aXsd: TXsd; aParent: TXml = nil);
 begin
   if not Assigned (aXsd) then
     raise Exception.Create ('Create(aXsd: TXsd): Argument is nil');
@@ -2541,7 +2538,8 @@ begin
   Attributes := TXmlAttributeList.Create;
   TagName := aXsd.ElementName;
   TypeDef := aXsd.sType;
-  XsdCreate(aLevel, aXsd);
+  Parent := aParent;
+  XsdCreate(aLevel, aXsd, aParent);
 end;
 
 function TXmlList.getXmlBooleanByTag(Index: String): Boolean;
@@ -3108,6 +3106,20 @@ end;
 function TXml.GetGroup: Boolean;
 begin
   result := (Items.Count > 0)
+end;
+
+function TXml.DepthBillOfMaterial: Integer;
+var
+  pXml: TXml;
+begin
+  result := 0;
+  pXml := self.Parent as TXml;
+  while Assigned (pXml) do
+  begin
+    if pXml.TypeDef = self.TypeDef then
+      Inc (result);
+    pXml := pXml.Parent as TXml;
+  end;
 end;
 
 function TXml.ValueFromJsonArray (aUrlEncoded: Boolean): String;

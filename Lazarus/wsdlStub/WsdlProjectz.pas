@@ -38,7 +38,7 @@ uses Classes
   , SwiftUnit
   , SysUtils
   , MqInterface
-  , MqApi
+  , MQAPI
   , StompInterface
   , StompTypes
   , TacoInterface
