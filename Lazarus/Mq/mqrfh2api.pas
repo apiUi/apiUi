@@ -12,7 +12,7 @@ uses
 {$ELSE}
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
-  MQAPI
+  mqapi
    , Xmlz
    ;
 type
@@ -81,7 +81,7 @@ end;
 implementation
 
 uses SysUtils
-   , mqInterface
+   , mqinterface
    , Dialogs
    ;
 

@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="11493"/>
+      <BuildNr Value="11495"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="11">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -110,18 +110,6 @@
         <Filename Value="junitunit.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
-      <Unit11>
-        <Filename Value="..\Mq\MQRfh2Api.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="..\Mq\mqInterface.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="..\Mq\MQAPI.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit13>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

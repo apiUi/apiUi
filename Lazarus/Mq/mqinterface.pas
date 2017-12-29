@@ -1,4 +1,4 @@
-unit mqInterface;
+unit mqinterface;
 
 {$IFDEF FPC}
   {$MODE Delphi}
@@ -15,8 +15,8 @@ uses
   Classes
    , Controls
    , StrUtils
-   , MQAPI
-   , MQRFH2API
+   , mqapi
+   , mqrfh2api
    , Xmlz
    ;
 

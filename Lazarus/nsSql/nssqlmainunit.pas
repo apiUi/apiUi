@@ -9,7 +9,7 @@ interface
 uses
   Classes , SysUtils , FileUtil , SynEdit , SynHighlighterSQL , Forms ,
   Controls , Graphics , Dialogs , Menus , ExtCtrls , ComCtrls , StdCtrls ,
-  ActnList , Grids , LResources , TacoInterface , Definez , FormIniFilez , types
+  ActnList , Grids , LResources , tacoInterface , Definez , FormIniFilez , types
   , QueryScanner
   , Xmlz
   , Xsdz

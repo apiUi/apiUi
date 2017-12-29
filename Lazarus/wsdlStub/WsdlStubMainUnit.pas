@@ -44,13 +44,13 @@ uses
    , FileUtil
    , IpHtml
    , Bind
-   , mqInterface
-   , MQAPI
+   , mqinterface
+   , mqapi
    , SwiftUnit
    , ParserClasses
    , types
    , ClaimListz
-   , tacoInterface
+   , tacointerface
    ;
 
 type

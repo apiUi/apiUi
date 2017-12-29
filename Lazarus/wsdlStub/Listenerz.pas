@@ -8,7 +8,7 @@ interface
 
 uses Classes, SysUtils
    , Xmlz
-   , mqInterface, MQAPI
+   , mqinterface, mqapi
    , StompInterface
    , IdSSLOpenSSL
    , Wsdlz

@@ -37,11 +37,11 @@ uses Classes
   , Wsdlz
   , SwiftUnit
   , SysUtils
-  , MqInterface
-  , MQAPI
+  , mqinterface
+  , mqapi
   , StompInterface
   , StompTypes
-  , TacoInterface
+  , tacointerface
   , IdPOP3Server
   , IdReplyPOP3
   , IdSMTPServer
