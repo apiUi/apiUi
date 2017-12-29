@@ -28,7 +28,6 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="37"/>
         <CursorPos X="11" Y="53"/>
         <UsageCount Value="200"/>
@@ -756,10 +755,12 @@
         <UsageCount Value="18"/>
       </Unit99>
       <Unit100>
-        <Filename Value="..\TacoInterface\tacoInterface.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="19"/>
+        <Filename Value="..\TacoInterface\tacointerface.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="77" Y="6"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit100>
       <Unit101>
         <Filename Value="C:\lazarus\components\lazutils\fileutil.pas"/>
