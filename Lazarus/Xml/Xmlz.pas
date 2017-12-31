@@ -1069,22 +1069,21 @@ end;
 
 procedure TXml.ExtendRecursivity;
 var
-  x, maxElm, curDepth: Integer;
+  x, maxElm, maxDepth: Integer;
 begin
   if (Items.Count > 0)
   or (not Assigned (TypeDef))
   then Exit;
   maxElm := TypeDef.xsdDescr.xsdElementsWhenRepeatable;
-  curDepth := TypeDef._DepthBillOfMaterial;
   TypeDef.xsdDescr.xsdElementsWhenRepeatable := 1;
-  TypeDef._DepthBillOfMaterial := xsdMaxDepthBillOfMaterials + 1;
+  maxDepth := xsdMaxDepthBillOfMaterials;
   xsdMaxDepthBillOfMaterials := 1;
   try
     for x := 0 to TypeDef.ElementDefs.Count - 1 do
       AddXml (TXml.Create(0, TypeDef.ElementDefs.Xsds[x]));
   finally
     TypeDef.xsdDescr.xsdElementsWhenRepeatable := maxElm;
-    TypeDef._DepthBillOfMaterial := curDepth;
+    xsdMaxDepthBillOfMaterials := maxDepth;
   end;
 end;
 
