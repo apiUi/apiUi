@@ -1508,6 +1508,15 @@ begin
         xXml.Name := dXml.Name;
         dXml.LoadValues(xXml, false, true);
       end;
+    end
+    else
+    begin
+      dXml := aOperation.rpyXml.FindXml('undefined.responseCode');
+      if Assigned (dXml) then
+      begin
+        dXml.Value := IntToStr(self.httpResponseCode);
+        dXml.Checked := True;
+      end;
     end;
   finally
     xXml.Free;

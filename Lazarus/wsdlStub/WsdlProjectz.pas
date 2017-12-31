@@ -121,7 +121,7 @@ type
       AHeaders: TIdHeaderList; var VPostStream: TStream);
     procedure HTTPServerCommandPutPut(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-    function ProcessedAsOpenApi (aLog: TLog): Boolean;
+    function tryToProcessAsOpenApi (aLog: TLog): Boolean;
     procedure HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCommandTrace(AContext: TIdContext;
@@ -4188,13 +4188,7 @@ begin
       begin
         if aOperation.isOpenApiService then
         begin
-          aOperation.rpyXml.ResetValues;
-          xXml := TXml.Create;
-          try
-            xLog.OpenApiReplyToBindables(aOperation);
-          finally
-            xXml.Free;
-          end;
+          xLog.OpenApiReplyToBindables(aOperation);
         end
         else
         begin
@@ -6664,7 +6658,7 @@ begin
           xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
           xLog.InboundBody := xLog.RequestBody;
         end;
-        if ProcessedAsOpenApi (xLog) then
+        if tryToProcessAsOpenApi (xLog) then
         begin
           AResponseInfo.ContentText := xLog.ReplyBody;
           Exit;
@@ -6901,7 +6895,7 @@ begin
   AResponseInfo.ResponseNo := 500;
 end;
 
-function TWsdlProject.ProcessedAsOpenApi (aLog: TLog): Boolean;
+function TWsdlProject.tryToProcessAsOpenApi (aLog: TLog): Boolean;
 var
   x, s, o: Integer;
   xOperation: TWsdlOperation;

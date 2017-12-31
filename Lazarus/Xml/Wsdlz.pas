@@ -2711,6 +2711,26 @@ begin
                     end;
                   end;
                 end;
+                xXsd := TXsd.Create(XsdDescr);
+                XsdDescr.Garbage.AddObject('', xXsd);
+                xXsd.ElementName := 'undefined';
+                xXsd.ResponseNo := -1;
+                xXsd.sType := TXsdDataType.Create(XsdDescr);
+                xXsd.sType.jsonType := jsonObject;
+                xXsd.sType.xsdType:= dtComplexType;
+                XsdDescr.Garbage.AddObject('', xXsd.sType);
+                xXsd.sType.Name := 'other';
+                xXsd.minOccurs := '0';
+                xOperation.rpyXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+                yXsd := TXsd.Create(XsdDescr);
+                XsdDescr.Garbage.AddObject('', yXsd);
+                yXsd.ElementName := 'responseCode';
+                yXsd.sType := TXsdDataType.Create(XsdDescr);
+                yXsd.sType.Name := yXsd.ElementName;
+                yXsd.sType.xsdType := dtSimpleType;
+                yXsd.sType.BaseDataTypeName := 'string';
+                yXsd.sType.jsonType := jsonString;
+                xXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
               end;
               if Name = 'schemes' then
               begin
