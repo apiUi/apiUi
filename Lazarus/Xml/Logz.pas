@@ -1511,7 +1511,7 @@ begin
     end
     else
     begin
-      dXml := aOperation.rpyXml.FindXml('undefined.responseCode');
+      dXml := aOperation.rpyXml.FindXml('*.undefined.responseCode');
       if Assigned (dXml) then
       begin
         dXml.Value := IntToStr(self.httpResponseCode);

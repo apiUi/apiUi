@@ -4736,11 +4736,23 @@ begin
               begin
                 yXml := xXml.Items.XmlItems[x];
                 ResponseNo := yXml.Xsd.ResponseNo;
-                for y := 0 to yXml.Items.Count - 1 do
+                if ResponseNo <> -1 then
                 begin
-                  zXml := yXml.Items.XmlItems[y];
-                  if zXml.Xsd.ParametersType <> oppHeader then    // ToDo headers
-                    result := result + zXml.StreamJSON(0, True);
+                  for y := 0 to yXml.Items.Count - 1 do
+                  begin
+                    zXml := yXml.Items.XmlItems[y];
+                    if zXml.Xsd.ParametersType <> oppHeader then    // ToDo headers
+                      result := result + zXml.StreamJSON(0, True);
+                  end;
+                end
+                else
+                begin
+                  zXml := yXml.FindXml('undefined.responseCode');
+                  if Assigned(zXml) then
+                    ResponseNo := StrToIntDef(zXml.Value, 500)
+                  else
+                    ResponseNo := 500;
+                  Result := xmlio.HttpResponseCodeToText(ResponseNo);
                 end;
               end;
             end;

@@ -12,6 +12,7 @@ function urlDecode(const S: String): String;
 function urlEncode(const S: String): String;
 function isFileNameAllowed (aFileName: String): Boolean;
 procedure EraseAllFolderContent (aFolderName: String);
+function HttpResponseCodeToText (aCode: Integer): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
@@ -46,7 +47,7 @@ uses StrUtils
    , LCLIntf, LCLType, LMessages
    , LazFileUtils
    , versiontypes, versionresource
-   , idHTTP
+   , idHTTP, IdCustomHTTPServer
    , IdSSLOpenSSL
    , idStack
    , LConvEncoding
@@ -278,6 +279,17 @@ begin
     xFound := (LazFileUtils.FindNextUTF8(xFileInfo) = 0);
   end;
   LazFileUtils.FindCloseUTF8(xFileInfo);
+end;
+
+function HttpResponseCodeToText(aCode: Integer): String;
+begin
+  with TIdHTTPResponseInfo.Create(nil, nil, nil) do
+  try
+    ResponseNo := aCode;
+    Result := ResponseText;
+  finally
+    Free;
+  end;
 end;
 
 function HttpPostDialog (aRequest, aUrl: String): String;
