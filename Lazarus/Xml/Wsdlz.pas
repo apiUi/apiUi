@@ -33,9 +33,9 @@ type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
 type TOnRequestViolating = (rvsDefault, rvsContinue, rvsRaiseErrorMessage, rvsAddRemark);
+type TProduceType = (ptJson, ptXml);
 type TProcedure = procedure of Object;
-const
-TransportTypeNames: array [ttHttp..ttNone] of String =
+const TransportTypeNames: array [ttHttp..ttNone] of String =
 ( 'Http'
 , 'Https'
 , 'Mq'
@@ -45,7 +45,10 @@ TransportTypeNames: array [ttHttp..ttNone] of String =
 , 'Bmtp'
 , 'None'
 );
-
+const ProduceTypeNames: array [ptJson..ptXml] of String =
+( 'Json'
+, 'Xml'
+);
 
 type
   TWsdl = class;
@@ -292,6 +295,7 @@ type
       isDepricated: Boolean;
       reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
       Schemes, Consumes, Produces, ContentType, Accept: String;
+      ProduceType: TProduceType;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
       reqDescrExpansionFilename, rpyDescrExpansionFilename, fltDescrExpansionFileName: String;
       Documentation: TStringList;
@@ -4625,15 +4629,17 @@ var
   x, y: Integer;
   xXml, yXml, zXml: TXml;
 begin
-  ResponseNo := 200; // default
+  ResponseNo := 200; // nice default
   result := LiteralResult;
   if Result <> '' then
     Exit;
+
   if isFreeFormat then
   begin
     result := FreeformatRpy;
     Exit;
   end;
+
   if WsdlService.DescriptionType in [ipmDTSwiftMT] then
   begin
     with TStwiftMtStreamer.Create(rpyBind as TXml) do
@@ -4644,6 +4650,7 @@ begin
     end;
     Exit;
   end;
+
   if (    isSoapService
       and (rpyXsd.sType.ElementDefs.Count = 0)
      )
@@ -4651,121 +4658,123 @@ begin
       and (rpyBind is TXml)
      ) then // one way
     exit;
-  try
-    if isSoapService then
+
+  if isSoapService then
+  begin
+    result := GenerateXmlHeader(not WsdlService.SuppressXmlComment);
+    result := StrAdd (result, '<soapenv:Envelope');
+    result := StrAdd (result, ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"');
+    result := StrAdd (result, ' xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"');
+    result := StrAdd (result, ' xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"');
+    result := StrAdd (result, ' xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"');
+    result := StrAdd (result, ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"');
+    result := StrAdd (result, ' xmlns:xsi="' + scXMLSchemaInstanceURI + '"');
+    result := StrAdd (result, ' >');
+    if (OutputHeaders.Count > 0)
+    or wsaEnabled then
     begin
-      result := GenerateXmlHeader(not WsdlService.SuppressXmlComment);
-      result := StrAdd (result, '<soapenv:Envelope');
-      result := StrAdd (result, ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"');
-      result := StrAdd (result, ' xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"');
-      result := StrAdd (result, ' xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"');
-      result := StrAdd (result, ' xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"');
-      result := StrAdd (result, ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"');
-      result := StrAdd (result, ' xmlns:xsi="' + scXMLSchemaInstanceURI + '"');
-      result := StrAdd (result, ' >');
-      if (OutputHeaders.Count > 0)
-      or wsaEnabled then
-      begin
-        if wsaEnabled then
-          result := StrAdd (result, '  <soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">')
-        else
-          result := StrAdd (result, '  <soapenv:Header>');
-        for x := 0 to OutputHeaders.Count - 1 do
-        begin
-          xsdGenerated := True;
-          xsiGenerated := True;
-          result := result + (rpyBind as TXml).Items.XmlItems[x].StreamXml
-                                   ( True
-                                   , True
-                                   , 4
-                                   , True
-                                   , (OutputHeaders.Headers[x].Use = scSoapUseEncoded)
-                                   );
-        end;
-        result := result + StreamWsAddressing(rpyWsaXml, False);
-        result := StrAdd (result, '  </soapenv:Header>');
-      end;
-      if SoapBodyOutputUse = scSoapUseEncoded then
-      begin
-        result := StrAdd (result, '  <soapenv:Body soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
-      end
+      if wsaEnabled then
+        result := StrAdd (result, '  <soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">')
       else
-        result := StrAdd (result, '  <soapenv:Body>');
-      for x := OutputHeaders.Count to (rpyBind as TXml).Items.Count - 1 do
+        result := StrAdd (result, '  <soapenv:Header>');
+      for x := 0 to OutputHeaders.Count - 1 do
       begin
         xsdGenerated := True;
         xsiGenerated := True;
-        result := result + (rpyBind as TXml).Items.XmlItems[x].StreamXML
+        result := result + (rpyBind as TXml).Items.XmlItems[x].StreamXml
                                  ( True
                                  , True
                                  , 4
                                  , True
-                                 , (SoapBodyOutputUse = scSoapUseEncoded)
-                                 )
-                         ;
+                                 , (OutputHeaders.Headers[x].Use = scSoapUseEncoded)
+                                 );
       end;
-      result := StrAdd (result, '  </soapenv:Body>');
-      result := StrAdd (result, '</soapenv:Envelope>');
+      result := result + StreamWsAddressing(rpyWsaXml, False);
+      result := StrAdd (result, '  </soapenv:Header>');
+    end;
+    if SoapBodyOutputUse = scSoapUseEncoded then
+    begin
+      result := StrAdd (result, '  <soapenv:Body soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
     end
     else
+      result := StrAdd (result, '  <soapenv:Body>');
+    for x := OutputHeaders.Count to (rpyBind as TXml).Items.Count - 1 do
     begin
-      if rpyBind is TXml then
+      xsdGenerated := True;
+      xsiGenerated := True;
+      result := result + (rpyBind as TXml).Items.XmlItems[x].StreamXML
+                               ( True
+                               , True
+                               , 4
+                               , True
+                               , (SoapBodyOutputUse = scSoapUseEncoded)
+                               )
+                       ;
+    end;
+    result := StrAdd (result, '  </soapenv:Body>');
+    result := StrAdd (result, '</soapenv:Envelope>');
+    exit
+  end;
+
+  if isOpenApiService then
+  begin
+    xXml := (rpyBind as TXml);
+    for x := 0 to xXml.Items.Count - 1 do
+    begin
+      xXml := (rpyBind as TXml);
+      if xXml.Items.XmlItems[x].Checked then
       begin
-        xsiGenerated := False;
-        xsdGenerated := False;
-        xXml := (rpyBind as TXml).Items.XmlItems[0];
-        if WsdlService.DescriptionType <> ipmDTJson then
-          result := result + xXml.StreamXML
-                                 ( (xXml.Xsd.sType.NameSpace <> '')
-                                 , WsdlService.UseNameSpacePrefixes
-                                 , 0
-                                 , True
-                                 , False
-                                 )
+        yXml := xXml.Items.XmlItems[x];
+        ResponseNo := yXml.Xsd.ResponseNo;
+        if ResponseNo > -1 then
+        begin
+          for y := 0 to yXml.Items.Count - 1 do
+          begin
+            zXml := yXml.Items.XmlItems[y];
+            if zXml.Xsd.ParametersType <> oppHeader then    // ToDo headers
+              result := result + zXml.StreamJSON(0, True);
+          end;
+        end
         else
         begin
-          if not isOpenApiService then
-            result := result + xXml.StreamJSON(0, True)
+          zXml := yXml.FindXml('undefined.responseCode');
+          if Assigned(zXml) then
+            ResponseNo := StrToIntDef(zXml.Value, 500)
           else
-          begin
-            xXml := (rpyBind as TXml);
-            for x := 0 to xXml.Items.Count - 1 do
-            begin
-              xXml := (rpyBind as TXml);
-              if xXml.Items.XmlItems[x].Checked then
-              begin
-                yXml := xXml.Items.XmlItems[x];
-                ResponseNo := yXml.Xsd.ResponseNo;
-                if ResponseNo <> -1 then
-                begin
-                  for y := 0 to yXml.Items.Count - 1 do
-                  begin
-                    zXml := yXml.Items.XmlItems[y];
-                    if zXml.Xsd.ParametersType <> oppHeader then    // ToDo headers
-                      result := result + zXml.StreamJSON(0, True);
-                  end;
-                end
-                else
-                begin
-                  zXml := yXml.FindXml('undefined.responseCode');
-                  if Assigned(zXml) then
-                    ResponseNo := StrToIntDef(zXml.Value, 500)
-                  else
-                    ResponseNo := 500;
-                  Result := xmlio.HttpResponseCodeToText(ResponseNo);
-                end;
-              end;
-            end;
-          end;
+            ResponseNo := 500;
+          Result := xmlio.HttpResponseCodeToText(ResponseNo);
         end;
       end;
-      if rpyBind is TIpmItem then
-      begin
-        result := rpyIpm.ValuesToBuffer (nil);
-      end;
     end;
-  finally
+    Exit;
   end;
+
+  if rpyBind is TXml then
+  begin
+    xsiGenerated := False;
+    xsdGenerated := False;
+    xXml := (rpyBind as TXml).Items.XmlItems[0];
+    if WsdlService.DescriptionType <> ipmDTJson then
+      result := result + xXml.StreamXML
+                             ( (xXml.Xsd.sType.NameSpace <> '')
+                             , WsdlService.UseNameSpacePrefixes
+                             , 0
+                             , True
+                             , False
+                             )
+    else
+      result := result + xXml.StreamJSON(0, True);
+    Exit;
+  end;
+
+  if rpyBind is TIpmItem then
+  begin
+    result := rpyIpm.ValuesToBuffer (nil);
+    Exit;
+  end;
+
+  result := _ProgName + ': unrecognised rply type. This statement should not be reached...';
+
 end;
 
 function TWsdlOperation.StamperFunctionPrototypes: TStringList;
@@ -4980,6 +4989,7 @@ begin
   self.Alias := xOperation.Alias;
   self.Schemes := xOperation.Schemes;
   self.Produces := xOperation.Produces;
+  self.ProduceType := xOperation.ProduceType;
   self.Consumes := xOperation.Consumes;
   self.ContentType := xOperation.ContentType;
   self.Accept := xOperation.Accept;
