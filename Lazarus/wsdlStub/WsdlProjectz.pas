@@ -8272,6 +8272,9 @@ begin
   end;
   wsdls.Clear;
   wsdlNames.Clear;
+  allOperations.ClearListOnly;
+  allOperationsRpy.ClearListOnly;
+  allAliasses.ClearListOnly;
   openApiPaths.Clear;
   ScriptsClear;
   DisplayedLogColumns.Clear;
