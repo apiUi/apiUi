@@ -7966,6 +7966,18 @@ begin
           + LazFileUtils.ExtractFileNameOnly(projectFileName)
           + _ProjectFolderSuffix
           ;
+  if XmlUtil.doCreateBackup
+  and LazFileUtils.DirectoryExistsUTF8(result) then
+  begin
+    if LazFileUtils.DirectoryExistsUTF8(Result + '~') then
+    begin
+      xmlio.EraseAllFolderContent(Result + '~');
+      LazFileUtils.RemoveDirUTF8(Result + '~');
+      if LazFileUtils.DirectoryExistsUTF8(Result + '~') then
+        raise Exception.Create('Could not remove backup ' + Result + '~');
+    end;
+    LazFileUtils.RenameFileUTF8(result, Result + '~');
+  end;
   if not LazFileUtils.ForceDirectory(result) then
     raise Exception.CreateFmt('Could not create folder "%s"', [result]);
   xmlio.EraseAllFolderContent(result);

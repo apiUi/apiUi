@@ -1953,6 +1953,12 @@ For an overview of all options visit: doc://wsdlStub_wsdlStubOptions_hlp.htm </x
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
+							<xs:element name="CreateBackup" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default 'true';
+When 'true' wsdlStub will create a backup on saving an existing project (a backup is a folder that has an extra '~' at the end of its name)</xs:documentation>
+								</xs:annotation>
+							</xs:element>
 							<xs:element name="ConfirmRemovals" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default 'true';

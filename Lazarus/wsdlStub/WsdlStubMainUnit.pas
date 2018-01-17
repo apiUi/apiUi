@@ -4385,6 +4385,7 @@ begin
   result := TXml.CreateAsString('wsdlStubOptions', '');
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
+    AddXml(TXml.CreateAsBoolean('CreateBackup', xmlUtil.doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
         doScrollExceptionsIntoView));
@@ -12661,6 +12662,7 @@ begin
 
   enableTacoPingPong := True;
   intervalTacoPingPong := 5 * 60 * 1000;
+  xmlUtil.doCreateBackup := True;
   xmlUtil.doConfirmRemovals := True;
   xmlUtil.doCollapseOnUncheck := True;
   xmlUtil.doExpandOnCheck := True;
@@ -12686,6 +12688,8 @@ begin
     xXml := XmlCheckedItemByTag['General'];
     if Assigned(xXml) then
     begin
+      xmlUtil.doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef
+        ['CreateBackup', xmlUtil.doCreateBackup];
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef
         ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
       doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef
@@ -13102,7 +13106,7 @@ begin
     if Execute then
     begin
       if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
-        raise Exception.Create(Format ('foldername must end with "%s";%s%s', [_ProjectFolderSuffix, LineEnding + FileName]));
+        raise Exception.Create(Format ('foldername must end with "%s";%s%s', [_ProjectFolderSuffix, LineEnding, FileName]));
       if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + _ProjectFileName) then
         if not BooleanPromptDialog (Format ('Project "%s" already exists%s, Continue', [FileName, LineEnding])) then
           raise Exception.Create('Aborted by user');
