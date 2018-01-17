@@ -4732,7 +4732,19 @@ begin
           begin
             zXml := yXml.Items.XmlItems[y];
             if zXml.Xsd.ParametersType <> oppHeader then    // ToDo headers
-              result := result + zXml.StreamJSON(0, True);
+            begin
+              case ProduceType of
+                ptJson: result := result + zXml.StreamJSON(0, True);
+                ptXml: result := result + zXml.StreamXML ( True
+                                                         , True
+                                                         , 0
+                                                         , True
+                                                         , False
+                                                         );
+              end;
+              if ProduceType = ptJson then
+                ;
+            end;
           end;
         end
         else
