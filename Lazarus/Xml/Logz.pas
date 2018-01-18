@@ -1466,6 +1466,13 @@ begin
         oppForm: SjowMessage ('oppForm: not suported');
       end;
     end;
+    if hdrParams.IndexOfName('Accept') > -1 then
+    begin
+      if Pos ('xml', hdrParams.Values['Accept']) > 0 then
+        aOperation.ProduceType := ptXml;
+      if Pos ('json', hdrParams.Values['Accept']) > 0 then   // preference
+        aOperation.ProduceType := ptJson;
+    end;
   finally
     FreeAndNil(pathParams);
     FreeAndNil(pathMask);

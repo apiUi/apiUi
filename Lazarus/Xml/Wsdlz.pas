@@ -33,7 +33,7 @@ type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
 type TOnRequestViolating = (rvsDefault, rvsContinue, rvsRaiseErrorMessage, rvsAddRemark);
-type TProduceType = (ptJson, ptXml);
+type TProduceType = (ptJson, ptXml); // for API's
 type TProcedure = procedure of Object;
 const TransportTypeNames: array [ttHttp..ttNone] of String =
 ( 'Http'
@@ -3972,6 +3972,7 @@ begin
   StubAction := saStub;
   StubHttpAddress := '';
   httpVerb := 'POST';
+  ProduceType := ptJson;
   StubMqPutManager := '';
   StubMqPutQueue := '';
   StubMqGetManager := '';
