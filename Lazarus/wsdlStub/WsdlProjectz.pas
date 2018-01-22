@@ -8414,14 +8414,14 @@ begin
   begin
     ConnectorType := DbsType;
     DatabaseName := DbsDatabaseName;
-    HostName := DbsHostName;
-    Params.Text := ReplaceStrings( DbsParams
+    HostName := resolveAliasses (DbsHostName, projectProperties);
+    Params.Text := ReplaceStrings( resolveAliasses (DbsParams, projectProperties)
                                  , '%pwd%'
                                  , DbsPassword
                                  , false
                                  , false
                                  );
-    UserName := DbsUserName;
+    UserName := resolveAliasses (DbsUserName, projectProperties);
     Password := DbsPassword;
   end;
 end;
