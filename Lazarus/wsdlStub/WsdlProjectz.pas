@@ -2340,12 +2340,14 @@ begin
                     AddXml (TXml.CreateAsBoolean('wsaEnabled', xOperation.wsaEnabled));
                     AddXml (TXml.CreateAsBoolean('wsaSpecificMustUnderstand', xOperation.wsaSpecificMustUnderstand));
                     AddXml (TXml.CreateAsBoolean('wsaMustUnderstand', xOperation.wsaMustUnderstand));
-                    if Assigned(xOperation.reqWsaXml)
+                    if (xOperation.StubAction = saRequest)
+                    and Assigned(xOperation.reqWsaXml)
                     and xOperation.reqWsaXml.Checked
                     and (xOperation.reqWsaXml.Name <> '') then
                       with AddXml (TXml.Create) do
                         CopyDownLine (xOperation.reqWsaXml, True);
-                    if Assigned(xOperation.rpyWsaXml)
+                    if (xOperation.StubAction <> saRequest)
+                    and Assigned(xOperation.rpyWsaXml)
                     and xOperation.rpyWsaXml.Checked
                     and (xOperation.rpyWsaXml.Name <> '') then
                       with AddXml (TXml.Create) do
@@ -2476,7 +2478,7 @@ begin
                 end; // each operation
               end; // service xml
             end; // each service
-          end;  //
+          end; //
         end; // Assigned Wsdl
       end; // for each wsdl
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
@@ -2678,7 +2680,9 @@ begin
                                        + e.Message
                                        + #$D#$A
                                        + 'reading: '
-                                       + ExpandRelativeFileName (aMainFileName, wXml.Items.XmlValueByTag['WsdlLocation'])
+                                       + ExpandRelativeFileName ( aMainFileName
+                                                                , resolveAliasses(wXml.Items.XmlValueByTag['WsdlLocation'], projectProperties)
+                                                                )
                                        + #$D#$A
                                        + Copy (wXml.AsText(False, 1, False, False),2,500)
                                        + #$D#$A
@@ -2723,7 +2727,7 @@ begin
                   xWsdl.XsdDescr.xsdElementsWhenRepeatable := xWsdl.xsdElementsWhenRepeatable
                 else
                   xWsdl.XsdDescr.xsdElementsWhenRepeatable := xsdElementsWhenRepeatable;
-                xWsdl.FileName := ExpandRelativeFileName (aMainFileName
+                xWsdl.FileName := ExpandRelativeFileName ( aMainFileName
                                                          , wXml.Items.XmlValueByTag['WsdlLocation']
                                                          );
                 dXml := wXml.Items.XmlItemByTag ['ExtraXsds'];
@@ -3678,7 +3682,7 @@ function TWsdlProject .WsdlOpenFile (aName : String ;
 var
   xExt: String;
 begin
-  xExt := UpperCase (ExtractFileExt (aName));
+  xExt := UpperCase (ExtractFileExt (resolveAliasses(aName, projectProperties)));
   if xExt = '.SDF' then
   begin
     result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
@@ -3691,7 +3695,7 @@ begin
         result.Free;
         result := nil;
         raise Exception.Create ( 'Error opening '
-                               + aName
+                               + resolveAliasses(aName, projectProperties)
                                + CRLF
                                + e.Message
                                );
