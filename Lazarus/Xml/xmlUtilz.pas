@@ -47,7 +47,6 @@ private
 public
   NewValue: String;
   newChecked: Boolean;
-  doCreateBackup: Boolean;
   doConfirmRemovals: Boolean;
   doCollapseOnUncheck: Boolean;
   doExpandOnCheck: Boolean;

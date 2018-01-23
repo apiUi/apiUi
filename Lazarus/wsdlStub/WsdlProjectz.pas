@@ -145,6 +145,7 @@ type
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
   public
+    doCreateBackup: Boolean;
     contextPropertyOverwrite: String;
     projectProperties: TStringList;
     ppLock: TCriticalSection;
@@ -2664,7 +2665,9 @@ begin
               if not xDone then
               begin
                 try
-                  xWsdl := WsdlOpenFile ( ExpandRelativeFileName (aMainFileName, wXml.Items.XmlValueByTag['WsdlLocation'])
+                  xWsdl := WsdlOpenFile ( ExpandRelativeFileName ( aMainFileName
+                                                                 , wXml.Items.XmlValueByTag['WsdlLocation']
+                                                                 )
                                         , wXml.Items.XmlIntegerByTagDef ['ElementsWhenRepeatable', -1]
                                         );
                 except
@@ -7966,7 +7969,7 @@ begin
           + LazFileUtils.ExtractFileNameOnly(projectFileName)
           + _ProjectFolderSuffix
           ;
-  if XmlUtil.doCreateBackup
+  if doCreateBackup
   and LazFileUtils.DirectoryExistsUTF8(result) then
   begin
     if LazFileUtils.DirectoryExistsUTF8(Result + '~') then
@@ -8414,14 +8417,14 @@ begin
   begin
     ConnectorType := DbsType;
     DatabaseName := DbsDatabaseName;
-    HostName := resolveAliasses (DbsHostName, projectProperties);
-    Params.Text := ReplaceStrings( resolveAliasses (DbsParams, projectProperties)
+    HostName := DbsHostName;
+    Params.Text := ReplaceStrings( DbsParams
                                  , '%pwd%'
                                  , DbsPassword
                                  , false
                                  , false
                                  );
-    UserName := resolveAliasses (DbsUserName, projectProperties);
+    UserName := DbsUserName;
     Password := DbsPassword;
   end;
 end;

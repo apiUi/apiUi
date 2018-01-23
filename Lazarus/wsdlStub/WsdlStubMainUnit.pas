@@ -1001,6 +1001,7 @@ type
     property WsdlMessage: TWsdlMessage read getWsdlMessage write setWsdlMessage;
     property xmlViewType: TxvViewType read getXmlViewType;
   private
+    doCreateBackup: Boolean;
     enableTacoPingPong: Boolean;
     intervalTacoPingPong: Integer;
     editingNode: PVirtualNode;
@@ -3178,6 +3179,7 @@ begin
   captionFileName := ExtractFileName(aFileName);
   XmlUtil.PushCursor (crHourGlass);
   try
+    se.doCreateBackup := doCreateBackup;
     if Assigned (WsdlOperation) then
     begin
       se.FocusOperationName := WsdlOperation.reqTagName;
@@ -4385,7 +4387,7 @@ begin
   result := TXml.CreateAsString('wsdlStubOptions', '');
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
-    AddXml(TXml.CreateAsBoolean('CreateBackup', xmlUtil.doCreateBackup));
+    AddXml(TXml.CreateAsBoolean('CreateBackup', doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
         doScrollExceptionsIntoView));
@@ -12662,7 +12664,7 @@ begin
 
   enableTacoPingPong := True;
   intervalTacoPingPong := 5 * 60 * 1000;
-  xmlUtil.doCreateBackup := True;
+  doCreateBackup := True;
   xmlUtil.doConfirmRemovals := True;
   xmlUtil.doCollapseOnUncheck := True;
   xmlUtil.doExpandOnCheck := True;
@@ -12688,8 +12690,8 @@ begin
     xXml := XmlCheckedItemByTag['General'];
     if Assigned(xXml) then
     begin
-      xmlUtil.doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef
-        ['CreateBackup', xmlUtil.doCreateBackup];
+      doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef
+        ['CreateBackup', doCreateBackup];
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef
         ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
       doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef
