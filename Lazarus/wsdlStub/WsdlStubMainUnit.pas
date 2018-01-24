@@ -1188,6 +1188,8 @@ type
     function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
   published
   public
+    contextPropertyOverwrite: String;
+    doContextPropertyOverwrite: Boolean;
     se: TWsdlProject;
     sc: TWsdlControl;
     claimedLog: TLog;
@@ -3462,6 +3464,7 @@ end;
 procedure TMainForm.ProjectDesignFromString(aString, aMainFileName: String);
 begin
   { }
+  se.contextPropertyOverwrite := contextPropertyOverwrite;
   InWsdlTreeView.BeginUpdate;
   GridView.BeginUpdate;
   OperationReqsTreeView.BeginUpdate;
@@ -4387,6 +4390,7 @@ begin
   result := TXml.CreateAsString('wsdlStubOptions', '');
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
+    AddXml(TXml.CreateAsString('overruleContextProperty', contextPropertyOverwrite));
     AddXml(TXml.CreateAsBoolean('CreateBackup', doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
@@ -12661,7 +12665,7 @@ var
 begin
   if not Assigned(aXml) then
     exit;
-
+  contextPropertyOverwrite := '';
   enableTacoPingPong := True;
   intervalTacoPingPong := 5 * 60 * 1000;
   doCreateBackup := True;
@@ -12690,8 +12694,8 @@ begin
     xXml := XmlCheckedItemByTag['General'];
     if Assigned(xXml) then
     begin
-      doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef
-        ['CreateBackup', doCreateBackup];
+      contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['overruleContextProperty', contextPropertyOverwrite];
+      doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef ['CreateBackup', doCreateBackup];
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef
         ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
       doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef

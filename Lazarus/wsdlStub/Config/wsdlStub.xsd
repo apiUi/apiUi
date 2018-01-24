@@ -1953,6 +1953,13 @@ For an overview of all options visit: doc://wsdlStub_wsdlStubOptions_hlp.htm </x
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
+							<xs:element name="overruleContextProperty" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Overrules the project property 'context'.
+									See also Menu->Project->Properties
+									Needed in case names of reference files (e.g. wsdl's) depend on runtime operating environment</xs:documentation>
+								</xs:annotation>
+							</xs:element>
 							<xs:element name="CreateBackup" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default 'true';
