@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls;
+  Buttons, FormIniFilez, ExtCtrls;
 
 type
 
@@ -25,10 +25,13 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     PromptEdit: TEdit;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure PromptEditChange(Sender: TObject);
   private
     { Private declarations }
+    IniFile: TFormIniFile;
   public
     Numeric: Boolean;
     ReadOnly: Boolean;
@@ -59,6 +62,18 @@ begin
     PromptEdit.SetFocus;
     PromptEdit.SelectAll;
   end;
+end;
+
+procedure TPromptForm.FormCreate(Sender: TObject);
+begin
+  IniFile := TFormIniFile.Create (Self, True);
+  IniFile.Restore;
+end;
+
+procedure TPromptForm.FormDestroy(Sender: TObject);
+begin
+  IniFile.Save;
+  IniFile.Free;
 end;
 
 procedure TPromptForm.PromptEditChange(Sender: TObject);
