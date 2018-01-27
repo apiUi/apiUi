@@ -7969,6 +7969,7 @@ var
   xWsdl: TWsdl;
   x, w, s, o, m: Integer;
 begin
+  xsiGenerated := True; // en dan maar hopen dat er geen andere parallele threads bezig zijn...
   result := LazFileUtils.AppendPathDelim(ExtractFilePath(projectFileName))
           + LazFileUtils.ExtractFileNameOnly(projectFileName)
           + _ProjectFolderSuffix
