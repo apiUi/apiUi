@@ -4393,6 +4393,7 @@ begin
     try
       fXml := TXml.Create;
       fXml.CopyDownLine (aOperation.StubStompHeaderXml, True);
+      fXml.ResolveAliasses(projectProperties);
       try
         try
           if aOperation.isSoapService then
