@@ -74,6 +74,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    ContextsAction: TAction;
     OpenProjectAction: TAction;
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
@@ -571,6 +572,7 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure AddChildElementMenuItemClick(Sender: TObject);
+    procedure ContextsActionExecute(Sender: TObject);
     procedure EditMessageAfterScriptActionExecute (Sender : TObject );
     procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
     procedure EditMessageDocumentationActionExecute(Sender: TObject);
@@ -1309,6 +1311,7 @@ uses
   , htmlXmlUtilz, exceptionUtils, htmlreportz
   , PromptTacoUnit
   , EditTextUnit
+  , EditContextsUnit
   , QueryNewElementUnit
   ;
 {$IFnDEF FPC}
@@ -13800,6 +13803,36 @@ begin
     end;
   finally
     Free;
+  end;
+end;
+
+procedure TMainForm.ContextsActionExecute(Sender: TObject);
+var
+  c, r: Integer;
+begin
+  Application.CreateForm(TEditContextsForm, EditContextsForm);
+  with EditContextsForm do
+  try
+    with StringGrid do
+    begin
+      RowCount := se.projectContexts.RowCount;
+      ColCount := se.projectContexts.ColCount;
+      for r := 0 to RowCount - 1 do
+        for c := 0 to ColCount - 1 do
+          Cells[c, r] := se.projectContexts.CellValue[c, r];
+    end;
+    ShowModal;
+    if ModalResult = mrOK then
+    with StringGrid do
+    begin
+      se.projectContexts.RowCount := RowCount;
+      se.projectContexts.ColCount := ColCount;
+      for r := 0 to RowCount - 1 do
+        for c := 0 to ColCount - 1 do
+          se.projectContexts.CellValue[c, r] := Cells[c, r];
+    end;
+  finally
+    EditContextsForm.Free;
   end;
 end;
 

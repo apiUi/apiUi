@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="11541"/>
+      <BuildNr Value="11550"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="12">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -110,6 +110,11 @@
         <Filename Value="junitunit.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="..\Xml\stringlistlistunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="StringListListUnit"/>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

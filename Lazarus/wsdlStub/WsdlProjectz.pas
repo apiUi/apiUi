@@ -18,6 +18,7 @@ uses Classes
    , Bind
    , Ipmz
    , IpmTypes
+   , StringListListUnit
 {$ifndef FPC}
   , jclDebug
 {$endif}
@@ -148,6 +149,7 @@ type
     doCreateBackup: Boolean;
     contextPropertyOverwrite: String;
     projectProperties: TStringList;
+    projectContexts: TStringListList;
     ppLock: TCriticalSection;
     doDisplayLog: Boolean;
     uiInvalid: Boolean;
@@ -1409,6 +1411,10 @@ begin
   OnReactivateEvent := ReactivateCommand;
   OnReloadDesignEvent := ReloadDesignCommand;
   projectProperties := TStringList.Create;
+  projectContexts := TStringListList.Create;
+  projectContexts.RowCount := 1;
+  projectContexts.ColCount := 1;
+  projectContexts.CellValue[0, 0] := ' ';
   DatabaseConnectionSpecificationXml := TXml.CreateAsString ('DatabaseConnection', '');
   UnknownOpsReqReplactementsXml := TXml.CreateAsString ('reqReplacements', '');
   UnknownOpsRpyReplactementsXml := TXml.CreateAsString ('rpyReplacements', '');
@@ -1544,6 +1550,7 @@ begin
   FreeAndNil (SMTPServer);
   FreeAndNil (SMTPServerSSL);
   projectProperties.Free;
+  projectContexts.Free;
   DatabaseConnectionSpecificationXml.Free;
   UnknownOpsReqReplactementsXml.Free;
   UnknownOpsRpyReplactementsXml.Free;
@@ -2214,6 +2221,15 @@ begin
             with AddXml (TXml.Create) do
               Text := (EnvironmentList.Objects [x] as TXml).Text;
           end;
+      if (projectContexts.RowCount > 1)
+      or (projectContexts.ColCount > 1) then
+      begin
+        with AddXml(TXml.CreateAsString('contexts', '')) do
+        begin
+          for r := 0 to projectContexts.RowCount - 1 do
+            AddXml(TXml.CreateAsString('context', projectContexts.RowText[r]));
+        end;
+      end;
       AddXml (TXml.CreateAsString('properties', projectProperties.Text));
       for w := 0 to Wsdls.Count - 1 do
       begin
@@ -2555,6 +2571,24 @@ begin
           if aMainFileName = '' then
             aMainFileName := xXml.Items.XmlValueByTag ['FileName'];
           projectFileName := aMainFileName;
+          sXml := xXml.Items.XmlItemByTag ['contexts'];
+          if Assigned (sXml) then
+          begin
+            projectContexts.RowCount := sXml.Items.Count;
+            if sXml.Items.Count > 0 then
+              with TStringList.Create do
+              try
+                Text := sXml.Items.XmlItems[0].Value;
+                projectContexts.ColCount := Count;
+              finally
+                free;
+              end;
+            for x := 0 to sXml.Items.Count - 1 do
+              projectContexts.RowText[x] := sXml.Items.XmlItems[x].Value;
+            with projectContexts do
+              if CellValue[ColCount - 1, 0] = '' then
+                ColCount := ColCount - 1;
+          end;
           projectProperties.Text := xXml.Items.XmlValueByTag['properties'];
           if contextPropertyOverwrite <> '' then
             projectProperties.Values['context'] := contextPropertyOverwrite;
@@ -7961,6 +7995,7 @@ function TWsdlProject.SaveWithFolders: String;
 
 var
       xWsdlsFolderName, xWsdlFolderName
+    , xContextsFolderName, xContextFileName
     , xScriptsFolderName, xScriptFolderName
     , xServicesFolderName, xServiceFolderName
     , xOperationsFolderName, xOperationFolderName
@@ -8077,6 +8112,21 @@ begin
     end;
     _saveChildElementToFile(Items, 'PathPrefixes', result);
     _saveChildElementToFile(Items, 'Environments', result);
+    if Assigned (Items.XmlItemByTag['contexts']) then with Items.XmlItemByTag['contexts'] do
+    begin
+      xContextsFolderName := LazFileUtils.AppendPathDelim(result) + 'contexts';
+      _createFolder (xContextsFolderName);
+      for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
+      begin
+        xFileName := LazFileUtils.AppendPathDelim(xContextsFolderName)
+                   + 'context'
+                   + IntToStr(1000 + x)
+                   + '.txt'
+                   ;
+        SaveStringToFile(xFileName, Value);
+      end;
+      Checked := False;
+    end;
     _saveChildElementToFile(Items, 'properties', result);
     _saveChildElementToFile(Items, 'ignoreDifferencesOn', result);
     _saveChildElementToFile(Items, 'checkValueAgainst', result);
@@ -8252,6 +8302,8 @@ procedure TWsdlProject.Clear;
 var
   x: Integer;
 begin
+  projectContexts.RowCount := 1;
+  projectContexts.ColCount := 1;
   projectProperties.Clear;
   DatabaseConnectionSpecificationXml.Items.Clear;
   Scripts.Items.Clear;

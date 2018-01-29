@@ -19,7 +19,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.6.0.4'
   Visible = True
   object MainToolBar: TToolBar
     Left = 0
@@ -2545,6 +2545,12 @@ object MainForm: TMainForm
       Caption = 'ReadFromFolders'
       OnExecute = ReadFromFoldersExecute
       ShortCut = 24655
+    end
+    object ContextsAction: TAction
+      Category = 'Project'
+      Caption = 'ContextsAction'
+      OnExecute = ContextsActionExecute
+      ShortCut = 24643
     end
   end
   object mainImageList: TImageList
