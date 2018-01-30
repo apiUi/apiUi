@@ -81,8 +81,18 @@ procedure TStringListList.FromXml(aXml: TXml);
 var
   r, c, mc: Integer;
 begin
-  if not Assigned (aXml) then Exit;
+  if not Assigned (aXml) then
+    raise Exception.Create('procedure TStringListList.FromXml(aXml: TXml): nil arg');
   mc := 0;
+  for r := 0 to aXml.Items.Count - 1 do
+    with aXml.Items.XmlItems[r] do
+      mc := max (mc, Items.Count);
+  RowCount := aXml.Items.Count;
+  ColCount := mc;
+  for r := 0 to aXml.Items.Count - 1 do
+    with aXml.Items.XmlItems[r] do
+      for c := 0 to Items.Count - 1 do
+        CellValue[c, r] := Items.XmlItems[c].Value;
 end;
 
 procedure TStringListList.setCellValue(aCol, aRow: Integer;

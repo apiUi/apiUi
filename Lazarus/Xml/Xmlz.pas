@@ -392,6 +392,8 @@ var
   _xmlProgName: String;
   _xmlProgVersion: String;
   _xmlLicensed: Boolean;
+  _xmlAliasses: TObject;
+  _xmlContexts: TObject;
 {$ifndef NoGUI}
   bgCorrelationItemColor: TColor;
   bgExpectedValueColor: TColor;

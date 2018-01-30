@@ -6,7 +6,7 @@ interface
 
 uses
   Classes,SysUtils,FileUtil,Forms,Controls,Graphics,Dialogs,Grids,Menus,
-  StdCtrls,ActnList,ExtCtrls,Buttons, FormIniFilez;
+  StdCtrls,ActnList,ExtCtrls,Buttons,ComCtrls, FormIniFilez;
 
 type
 
@@ -14,6 +14,7 @@ type
 
   TEditContextsForm = class(TForm)
     CancelButton: TBitBtn;
+    mainImageList: TImageList;
     MenuItem4: TMenuItem;
     OkButton: TBitBtn;
     Panel2: TPanel;
@@ -29,6 +30,13 @@ type
     AddRowAfter: TMenuItem;
     PopupMenu1: TPopupMenu;
     StringGrid: TStringGrid;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
+    ToolButton5: TToolButton;
+    ToolButton6: TToolButton;
     procedure AddContextActionExecute(Sender: TObject);
     procedure AddPropertyActionExecute(Sender: TObject);
     procedure AddRowBeforeClick(Sender: TObject);
@@ -84,6 +92,7 @@ end;
 procedure TEditContextsForm.AddContextActionExecute(Sender: TObject);
 var
   xForm: TPromptForm;
+  r, c: Integer;
 begin
   Application.CreateForm(TPromptForm, xForm);
   with xForm do
@@ -96,8 +105,11 @@ begin
     if ModalResult = mrOk then with StringGrid do
     begin
       RowCount := RowCount + 1;
+      r := Row;
       Row := RowCount - 1;
       Cells [0, RowCount - 1] := PromptEdit.Text;
+      for c := 1 to ColCount - 1 do
+        Cells [c, RowCount - 1] := Cells [c, r];
     end;
   finally
     Free;
@@ -107,6 +119,7 @@ end;
 procedure TEditContextsForm.AddPropertyActionExecute(Sender: TObject);
 var
   xForm: TPromptForm;
+  r, c: Integer;
 begin
   Application.CreateForm(TPromptForm, xForm);
   with xForm do
@@ -119,8 +132,11 @@ begin
     if ModalResult = mrOk then with StringGrid do
     begin
       ColCount := ColCount + 1;
+      c := Col;
       Col := ColCount - 1;
       Cells [ColCount - 1, 0] := PromptEdit.Text;
+      for r := 1 to RowCount - 1 do
+        Cells [ColCount - 1, r] := Cells [c, r];
     end;
   finally
     Free;

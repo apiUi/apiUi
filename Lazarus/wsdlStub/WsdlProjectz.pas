@@ -494,6 +494,7 @@ const _ServiceFileName = '_Service.xml';
 const _OperationFileName = '_Operation.xml';
 const _MessageFileName = '_Message.xml';
 const _ScriptFileName = '_Script.xml';
+const _ContextsFileName = '_Contexts.xml';
 
 implementation
 
@@ -2224,8 +2225,8 @@ begin
       if (projectContexts.RowCount > 1)
       or (projectContexts.ColCount > 1) then
       begin
-        with AddXml(TXml.CreateAsString('contexts', '')) do
-          AddXml (projectContexts.AsXml);
+        with AddXml(projectContexts.AsXml) do
+          Name := 'contexts';
       end;
       AddXml (TXml.CreateAsString('properties', projectProperties.Text));
       for w := 0 to Wsdls.Count - 1 do
@@ -2570,22 +2571,7 @@ begin
           projectFileName := aMainFileName;
           sXml := xXml.Items.XmlItemByTag ['contexts'];
           if Assigned (sXml) then
-          begin
-            projectContexts.RowCount := sXml.Items.Count;
-            if sXml.Items.Count > 0 then
-              with TStringList.Create do
-              try
-                Text := sXml.Items.XmlItems[0].Value;
-                projectContexts.ColCount := Count;
-              finally
-                free;
-              end;
-            for x := 0 to sXml.Items.Count - 1 do
-              projectContexts.RowText[x] := sXml.Items.XmlItems[x].Value;
-            with projectContexts do
-              if CellValue[ColCount - 1, 0] = '' then
-                ColCount := ColCount - 1;
-          end;
+            projectContexts.FromXml(sXml);
           projectProperties.Text := xXml.Items.XmlValueByTag['properties'];
           if contextPropertyOverwrite <> '' then
             projectProperties.Values['context'] := contextPropertyOverwrite;
@@ -8000,6 +7986,7 @@ var
     , xString, xFileName: String;
   xMPrefix, xMName: String;
   xWsdl: TWsdl;
+  xXml: TXml;
   x, w, s, o, m: Integer;
 begin
   xsiGenerated := True; // en dan maar hopen dat er geen andere parallele threads bezig zijn...
@@ -8109,21 +8096,14 @@ begin
     end;
     _saveChildElementToFile(Items, 'PathPrefixes', result);
     _saveChildElementToFile(Items, 'Environments', result);
-    if Assigned (Items.XmlItemByTag['contexts']) then with Items.XmlItemByTag['contexts'] do
+    xXml := ItemByTag['JanBo'];
+    if Assigned (xXml) then
     begin
-      xContextsFolderName := LazFileUtils.AppendPathDelim(result) + 'contexts';
-      _createFolder (xContextsFolderName);
-      for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
-      begin
-        xFileName := LazFileUtils.AppendPathDelim(xContextsFolderName)
-                   + 'context'
-                   + IntToStr(1000 + x)
-                   + '.txt'
-                   ;
-        SaveStringToFile(xFileName, Value);
-      end;
-      Checked := False;
+      xFileName := LazFileUtils.AppendPathDelim(result) + _ContextsFileName;
+      SaveStringToFile(xFileName, xXml.AsText(False,2,True,False));
+      xXml.Checked := False;
     end;
+    _saveChildElementToFile(Items, 'contexts', result);
     _saveChildElementToFile(Items, 'properties', result);
     _saveChildElementToFile(Items, 'ignoreDifferencesOn', result);
     _saveChildElementToFile(Items, 'checkValueAgainst', result);
