@@ -5,7 +5,7 @@ unit StringListListUnit;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, Xmlz;
 
 type
 
@@ -30,6 +30,8 @@ type
     property CellValue [aCol, aRow: Integer]: String read getCellValue write setCellValue;
     property RowText [Index: integer]: String read getRowText write setRowText;
     property StringLists [Index: integer]: TStringList read GetStringList write SetStringList;
+    function AsXml: TXml;
+    procedure FromXml (aXml: TXml);
   end
   ;
 
@@ -57,6 +59,30 @@ begin
   except
     result := nil;
   end;
+end;
+
+function TStringListList.AsXml: TXml;
+var
+  r, c: Integer;
+begin
+  result := TXml.CreateAsString('grid', '');
+  with result do
+  begin
+    for r := 0 to RowCount - 1 do
+    with AddXml(TXml.CreateAsString('row','')) do
+    begin
+      for c := 0 to ColCount - 1 do
+        AddXml(TXml.CreateAsString('col', CellValue[c, r]));
+    end;
+  end;
+end;
+
+procedure TStringListList.FromXml(aXml: TXml);
+var
+  r, c, mc: Integer;
+begin
+  if not Assigned (aXml) then Exit;
+  mc := 0;
 end;
 
 procedure TStringListList.setCellValue(aCol, aRow: Integer;

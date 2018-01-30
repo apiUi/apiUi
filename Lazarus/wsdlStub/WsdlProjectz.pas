@@ -2225,10 +2225,7 @@ begin
       or (projectContexts.ColCount > 1) then
       begin
         with AddXml(TXml.CreateAsString('contexts', '')) do
-        begin
-          for r := 0 to projectContexts.RowCount - 1 do
-            AddXml(TXml.CreateAsString('context', projectContexts.RowText[r]));
-        end;
+          AddXml (projectContexts.AsXml);
       end;
       AddXml (TXml.CreateAsString('properties', projectProperties.Text));
       for w := 0 to Wsdls.Count - 1 do
