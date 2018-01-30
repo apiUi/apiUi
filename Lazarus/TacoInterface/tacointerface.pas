@@ -321,8 +321,8 @@ begin
     if s = 'LargeIO' then
       result := result + '-B4';
     result := result + '>';
-    result := result + tacoString (resolveAliasses(xXml.Items.XmlValueByTag['Monitor'], fprojectProperties))
-                     + tacoString (resolveAliasses(xXml.Items.XmlValueByTag['Server'], fprojectProperties))
+    result := result + tacoString (resolveAliasses(xXml.Items.XmlValueByTag['Monitor']))
+                     + tacoString (resolveAliasses(xXml.Items.XmlValueByTag['Server']))
                      ;
  {}
   end
@@ -340,11 +340,11 @@ begin
         raise Exception.Create('tacoInterface: Illegal MQ config');
       result := result
               + '<MQSEND>'
-              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['Manager'], fprojectProperties))
-              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['GetQueue'], fprojectProperties))
-              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['PutQueue'], fprojectProperties))
-              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['ReplyToQueue'], fprojectProperties))
-              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['TimeOut'], fprojectProperties))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['Manager']))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['GetQueue']))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['PutQueue']))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['ReplyToQueue']))
+              + tacoString (resolveAliasses(mqXml.Items.XmlValueByTag['TimeOut']))
               ;
     end;
   end;

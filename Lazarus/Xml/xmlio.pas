@@ -25,7 +25,7 @@ function GetFileChangedTime (aFileName:string):TDateTime;
 function GetHostName: String;
 function GetUserName: String;
 function GetVersion: String;
-function resolveAliasses (aString: String; aAliasses: TStringList): String;
+function resolveAliasses (aString: String): String;
 function StringHasRegExpr (aString, aExpr: String): String;
 function ExplodeStr(S, Delim: string; const List: Classes.TStrings;
   const AllowEmpty: Boolean = True; const Trim: Boolean = False): Integer;
@@ -41,6 +41,8 @@ const base64RtfStartStr = 'e1xyd';
 
 var
   PathPrefixes, ProjectAliasses: TStringList;
+  ProjectContext: String;
+  ProjectContexts: TObject;
 
 implementation
 uses StrUtils
@@ -53,6 +55,7 @@ uses StrUtils
    , LConvEncoding
    , base64
    , RegExpr
+   , StringListListUnit
 {$ifndef NoGUI}
    , Forms
    , Controls
@@ -612,7 +615,7 @@ function ReadStringFromFile (aFileName: String): String;
     end;
   end;
 begin
-  aFileName := resolveAliasses(aFileName, ProjectAliasses);
+  aFileName := resolveAliasses(aFileName);
   if (AnsiStartsText('HTTP://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, false);
@@ -700,7 +703,41 @@ begin
   end
 end;
 
-function resolveAliasses (aString : String ; aAliasses : TStringList ): String ;
+function _resolveFromContexts (aString : String): String ;
+  const _regexp = '\$\{[^\{\}]+\}';
+  function _resolv (aString: String): String;
+  var
+    xHasExp: Boolean;
+    function _trans (aString: String): String;
+    begin
+      result := (ProjectContexts as TStringListList).Cell[aString, ProjectContext];
+    end;
+  begin
+    result := aString;
+    try
+      with TRegExpr.Create do
+      try
+        Expression := _regexp;
+        while Exec (result) do
+        begin
+          result := Copy (result, 1, MatchPos[0] - 1)
+                  + _trans (Copy (Match[0], 3, Length (Match[0]) - 3)) // "${property}"
+                  + _resolv (Copy (result, MatchPos[0] + MatchLen[0], Length (result)))
+                  ;
+        end;
+      finally
+        Free;
+      end;
+    except
+      on e: exception do
+        raise Exception.CreateFmt('%s%s resolving %s', [e.Message, LineEnding, aString]);
+    end;
+  end;
+begin
+  result := _resolv (aString);
+end;
+
+function resolveAliasses (aString : String): String ;
   const _regexp = '\$\{[^\{\}]+\}';
   function _resolv (aString: String; aSl: TStringList): String;
   var
@@ -753,14 +790,20 @@ var
   sl: TStringList;
 begin
   result := aString;
-  if not Assigned (aAliasses) then
-    exit;
-  if Pos ('${', aString) > 0 then
+  if Assigned (ProjectContexts)
+  and (ProjectContext <> '') then
+  begin
+    if Pos ('${', aString) > 0 then
+      result := _resolveFromContexts(Result);
+  end;
+  if not Assigned(ProjectAliasses) then
+    Exit;;
+  if Pos ('${', result) > 0 then
   begin
     sl := TStringList.Create;
     try
-      sl.Text := aAliasses.Text; // need to work with a copy since we are gonna set TObjs
-      result := _resolv (aString, sl);
+      sl.Text := ProjectAliasses.Text; // need to work with a copy since we are gonna set TObjs
+      result := _resolv (result, sl);
     finally
       sl.Free;
     end;
@@ -785,7 +828,7 @@ begin
     S.Size := Length (aString);
     S.Position := 0;
     S.WriteBuffer(aString[1], S.Size);
-    S.SaveToFile(resolveAliasses(aFileName, ProjectAliasses));
+    S.SaveToFile(resolveAliasses(aFileName));
   finally
     S.Free;
   end;

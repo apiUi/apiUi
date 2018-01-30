@@ -13252,7 +13252,6 @@ begin
         AddXml (TXml.CreateAsString ( 'value', se.projectProperties.Values[se.projectProperties.Names[x]]));
         AddXml (TXml.CreateAsString ( 'resolvesTo'
                                     , xmlio.resolveAliasses ( '${' + se.projectProperties.Names[x] + '}'
-                                                            , se.projectProperties
                                                             )
                                     )
                );

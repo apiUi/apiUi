@@ -15,6 +15,7 @@ type
   private
     fColCount: Integer;
     fRowCount: Integer;
+    function getCell(aCol, aRow: String): String;
     procedure setRowText(Index: integer; AValue: String);
     procedure SetStringList(Index: integer; const Value: TStringList);
     procedure setColCount(const Value: Integer);
@@ -28,6 +29,7 @@ type
     property RowCount: Integer read fRowCount write setRowCount;
     property ColCount: Integer read fColCount write setColCount;
     property CellValue [aCol, aRow: Integer]: String read getCellValue write setCellValue;
+    property Cell [aCol, aRow: String]: String read getCell;
     property RowText [Index: integer]: String read getRowText write setRowText;
     property StringLists [Index: integer]: TStringList read GetStringList write SetStringList;
     function AsXml: TXml;
@@ -156,6 +158,34 @@ end;
 procedure TStringListList.setRowText(Index: integer; AValue: String);
 begin
   StringLists[Index].Text := AValue;
+end;
+
+function TStringListList.getCell(aCol, aRow: String): String;
+var
+  r, rr, c, cc: Integer;
+begin
+  result := '';
+  rr := -1;
+  r := 0;
+  while (r < RowCount) and (rr = -1) do
+  begin
+    if CellValue[0, r] = aRow then
+      rr := r;
+    Inc (r);
+  end;
+  if rr = -1 then
+    raise Exception.Create('Row not found: ' + aRow);
+  cc := -1;
+  c := 0;
+  while (c < ColCount) and (cc = -1) do
+  begin
+    if CellValue[c, 0] = aCol then
+      cc := c;
+    Inc (c);
+  end;
+  if cc = -1 then
+    raise Exception.Create('Column not found: ' + aCol);
+  result := CellValue[cc, rr];
 end;
 
 

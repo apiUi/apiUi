@@ -204,7 +204,7 @@ type
     procedure LoadValues (aXml: TXml; aAddUnknowns: Boolean); Overload;
     procedure CopyValues (aXml: TXml; aDoReset, aSkipAssignments: Boolean);
     procedure CopyDownLine (aXml: TXml; aOnlyWhenChecked: Boolean);
-    procedure ResolveAliasses (aAliasses: TStringList);
+    procedure ResolveAliasses;
     procedure CopyRelevancy (aXml: TXml);
     procedure ResetExpectedValues;
     procedure CheckExpectedValues;
@@ -3871,13 +3871,13 @@ begin
   _Copy (Self, aXml);
 end;
 
-procedure TXml .ResolveAliasses (aAliasses : TStringList);
+procedure TXml .ResolveAliasses;
   procedure _resolv (aXml: TXml);
   var
     x: Integer;
   begin
     try
-      aXml.Value := xmlio.resolveAliasses(aXml.Value, aAliasses);
+      aXml.Value := xmlio.resolveAliasses(aXml.Value);
     except
       on e: Exception do
       begin
@@ -3891,7 +3891,7 @@ procedure TXml .ResolveAliasses (aAliasses : TStringList);
       _resolv(aXml.Items.XmlItems[x]);
   end;
 begin
-  if not Assigned (aAliasses) then Exit;
+  if not Assigned (xmlio.ProjectAliasses) then Exit;
   _resolv (self);
 end;
 

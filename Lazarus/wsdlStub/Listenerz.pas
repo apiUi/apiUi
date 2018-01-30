@@ -146,7 +146,7 @@ begin
   hXml := TXml.Create;
   try
     hXml.CopyDownLine(SpecificationXml, True);
-    hXml.ResolveAliasses(aliasses);
+    hXml.ResolveAliasses;
     for x := 0 to hXml.Items.Count - 1 do
     begin
       with hXml.Items.XmlItems[x] do

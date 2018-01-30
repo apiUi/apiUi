@@ -2474,7 +2474,7 @@ var
   s: String;
 begin
   try
-    with TIdURI.Create(resolveAliasses(aFileName, ProjectAliasses)) do
+    with TIdURI.Create(resolveAliasses(aFileName)) do
     try
       self.Schemes := Protocol;
       self.Host := Host;

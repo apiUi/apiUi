@@ -2575,7 +2575,8 @@ begin
           projectProperties.Text := xXml.Items.XmlValueByTag['properties'];
           if contextPropertyOverwrite <> '' then
             projectProperties.Values['context'] := contextPropertyOverwrite;
-          ProjectAliasses := projectProperties;
+          xmlio.ProjectAliasses := projectProperties;
+          xmlio.ProjectContext := contextPropertyOverwrite;
           sXml := xXml.Items.XmlItemByTag ['Listeners'];
           Listeners.SpecificationXml.Items.Clear;
           if Assigned (sXml) then
@@ -2698,7 +2699,7 @@ begin
                                        + #$D#$A
                                        + 'reading: '
                                        + ExpandRelativeFileName ( aMainFileName
-                                                                , resolveAliasses(wXml.Items.XmlValueByTag['WsdlLocation'], projectProperties)
+                                                                , resolveAliasses(wXml.Items.XmlValueByTag['WsdlLocation'])
                                                                 )
                                        + #$D#$A
                                        + Copy (wXml.AsText(False, 1, False, False),2,500)
@@ -3699,7 +3700,7 @@ function TWsdlProject .WsdlOpenFile (aName : String ;
 var
   xExt: String;
 begin
-  xExt := UpperCase (ExtractFileExt (resolveAliasses(aName, projectProperties)));
+  xExt := UpperCase (ExtractFileExt (resolveAliasses(aName)));
   if xExt = '.SDF' then
   begin
     result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
@@ -3712,7 +3713,7 @@ begin
         result.Free;
         result := nil;
         raise Exception.Create ( 'Error opening '
-                               + resolveAliasses(aName, projectProperties)
+                               + resolveAliasses(aName)
                                + CRLF
                                + e.Message
                                );
@@ -3805,9 +3806,9 @@ begin
   mq := TMqInterface.Create;
   try
     mq.Use := mqUse;
-    mq.Qmanager := resolveAliasses(aOperation.StubMqPutManager, projectProperties);
-    mq.PutQueue := resolveAliasses(aOperation.StubMqPutQueue, projectProperties);
-    mq.GetQueue := resolveAliasses(aOperation.StubMqGetQueue, projectProperties);
+    mq.Qmanager := resolveAliasses(aOperation.StubMqPutManager);
+    mq.PutQueue := resolveAliasses(aOperation.StubMqPutQueue);
+    mq.GetQueue := resolveAliasses(aOperation.StubMqGetQueue);
     mq.TimeOut := IntToStr (aOperation.StubMqTimeOut);
     mq.Expiry := '-1';
     xIsRequest := True;
@@ -3908,7 +3909,7 @@ begin
       begin
         ppLock.Acquire;
         try
-          sUri := TIdUri.Create(resolveAliasses(aOperation.StubHttpAddress, projectProperties));
+          sUri := TIdUri.Create(resolveAliasses(aOperation.StubHttpAddress));
         finally
           ppLock.Release;
         end;
@@ -4399,18 +4400,18 @@ begin
   if not Assigned (aOperation)
     then raise Exception.Create('SendOperationStompMessage: null arguments');
   Stomp := TStompInterface.Create (nil, HaveStompFrame);
-  Stomp.Host := resolveAliasses(aOperation.StubStompPutHost, projectProperties);
-  Stomp.Port := StrToIntDef(resolveAliasses(aOperation.StubStompPutPort, projectProperties), 61613);
+  Stomp.Host := resolveAliasses(aOperation.StubStompPutHost);
+  Stomp.Port := StrToIntDef(resolveAliasses(aOperation.StubStompPutPort), 61613);
   Stomp.UseCredentials := aOperation.StubStompPutUseCredentials;
   Stomp.UserName := aOperation.StubStompPutUserName;
   Stomp.Password := aOperation.StubStompPutPassword;
-  Stomp.ClientId := resolveAliasses(aOperation.StubStompPutClientId, projectProperties);
+  Stomp.ClientId := resolveAliasses(aOperation.StubStompPutClientId);
   try
     Stomp.Connect;
     try
       fXml := TXml.Create;
       fXml.CopyDownLine (aOperation.StubStompHeaderXml, True);
-      fXml.ResolveAliasses(projectProperties);
+      fXml.ResolveAliasses;
       try
         try
           if aOperation.isSoapService then
@@ -8436,7 +8437,7 @@ begin
   hXml := TXml.Create;
   try
     hXml.CopyDownLine(DatabaseConnectionSpecificationXml, True);
-    hXml.ResolveAliasses(projectProperties);
+    hXml.ResolveAliasses;
     _WsdlDbsEnabled := hXml.Items.XmlCheckedBooleanByTagDef['Enabled', _WsdlDbsEnabled];
     DbsType := hXml.Items.XmlCheckedValueByTagDef['Type', DbsType];
     DbsDatabaseName := hXml.Items.XmlCheckedValueByTagDef['DatabaseName', DbsDatabaseName];
