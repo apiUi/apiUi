@@ -131,12 +131,12 @@ begin
     ShowModal;
     if ModalResult = mrOk then with StringGrid do
     begin
+      if PromptEdit.Text = 'context' then
+        raise Exception.Create('"context" not allowed as property name');
       ColCount := ColCount + 1;
       c := Col;
       Col := ColCount - 1;
       Cells [ColCount - 1, 0] := PromptEdit.Text;
-      for r := 1 to RowCount - 1 do
-        Cells [ColCount - 1, r] := Cells [c, r];
     end;
   finally
     Free;

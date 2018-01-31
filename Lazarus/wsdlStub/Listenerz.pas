@@ -23,7 +23,6 @@ type
     fConnected : Boolean ;
     procedure setConnected (AValue : Boolean );
   public
-    aliasses: TStringList;
     httpProxyPort, httpBmtpPort: Integer;
     sslVersion: TIdSSLVersion;
     sslCertificateFile, sslKeyFile, sslRootCertificateFile: String;

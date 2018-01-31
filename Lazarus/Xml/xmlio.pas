@@ -703,40 +703,6 @@ begin
   end
 end;
 
-function _resolveFromContexts (aString : String): String ;
-  const _regexp = '\$\{[^\{\}]+\}';
-  function _resolv (aString: String): String;
-  var
-    xHasExp: Boolean;
-    function _trans (aString: String): String;
-    begin
-      result := (ProjectContexts as TStringListList).Cell[aString, ProjectContext];
-    end;
-  begin
-    result := aString;
-    try
-      with TRegExpr.Create do
-      try
-        Expression := _regexp;
-        while Exec (result) do
-        begin
-          result := Copy (result, 1, MatchPos[0] - 1)
-                  + _trans (Copy (Match[0], 3, Length (Match[0]) - 3)) // "${property}"
-                  + _resolv (Copy (result, MatchPos[0] + MatchLen[0], Length (result)))
-                  ;
-        end;
-      finally
-        Free;
-      end;
-    except
-      on e: exception do
-        raise Exception.CreateFmt('%s%s resolving %s', [e.Message, LineEnding, aString]);
-    end;
-  end;
-begin
-  result := _resolv (aString);
-end;
-
 function resolveAliasses (aString : String): String ;
   const _regexp = '\$\{[^\{\}]+\}';
   function _resolv (aString: String; aSl: TStringList): String;
@@ -786,7 +752,7 @@ function resolveAliasses (aString : String): String ;
     end;
   end;
 var
-  x: Integer;
+  x, r, c: Integer;
   sl: TStringList;
 begin
   result := aString;
@@ -794,10 +760,30 @@ begin
   and (ProjectContext <> '') then
   begin
     if Pos ('${', aString) > 0 then
-      result := _resolveFromContexts(Result);
+    begin
+      with (ProjectContexts as TStringListList) do
+      begin
+        for r := 1 to RowCount - 1 do
+        begin
+          if CellValue[0, r] = ProjectContext then
+          begin
+            sl := TStringList.Create;
+            try
+              for c := 1 to ColCount - 1 do
+                sl.Values[CellValue[c, 0]] := CellValue[c, r];
+              sl.Values['context'] := ProjectContext;
+              result := _resolv (result, sl);;
+            finally
+              sl.Free;
+            end;
+          end;
+        end;
+      end;
+    end;
+    exit;
   end;
   if not Assigned(ProjectAliasses) then
-    Exit;;
+    Exit;
   if Pos ('${', result) > 0 then
   begin
     sl := TStringList.Create;

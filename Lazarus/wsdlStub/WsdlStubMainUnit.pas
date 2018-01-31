@@ -1191,7 +1191,6 @@ type
   published
   public
     contextPropertyOverwrite: String;
-    doContextPropertyOverwrite: Boolean;
     se: TWsdlProject;
     sc: TWsdlControl;
     claimedLog: TLog;
@@ -3467,7 +3466,8 @@ end;
 procedure TMainForm.ProjectDesignFromString(aString, aMainFileName: String);
 begin
   { }
-  se.contextPropertyOverwrite := contextPropertyOverwrite;
+  se.projectContext := contextPropertyOverwrite;
+  xmlio.ProjectContext := contextPropertyOverwrite;
   InWsdlTreeView.BeginUpdate;
   GridView.BeginUpdate;
   OperationReqsTreeView.BeginUpdate;
@@ -12698,6 +12698,8 @@ begin
     if Assigned(xXml) then
     begin
       contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['overruleContextProperty', contextPropertyOverwrite];
+      se.projectContext := contextPropertyOverwrite;
+      xmlio.ProjectContext := contextPropertyOverwrite;
       doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef ['CreateBackup', doCreateBackup];
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef
         ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
@@ -13239,9 +13241,40 @@ end;
 
 procedure TMainForm.ShowResolvedPropertiesExecute (Sender : TObject );
 var
-  x: Integer;
+  x, r, c: Integer;
   xXml: TXml;
 begin
+  if Assigned (se.projectContexts)
+  and (se.projectContexts.RowCount > 1) then
+  begin
+    xXml := TXml.CreateAsString('resolvedProperties', '');
+    for r := 1 to se.projectContexts.RowCount - 1 do
+    begin
+      if se.projectContexts.CellValue[0, r] = se.projectContext then
+      begin
+        with xXml.AddXml(TXml.CreateAsString('property', '')) do
+        begin
+          AddXml (TXml.CreateAsString ( 'key', '${context}'));
+          AddXml (TXml.CreateAsString ( 'value', se.projectContext));
+        end;
+        for c := 1 to se.projectContexts.ColCount - 1 do
+        begin
+          with xXml.AddXml(TXml.CreateAsString('property', '')) do
+          begin
+            AddXml (TXml.CreateAsString ( 'key', '${' + se.projectContexts.CellValue[c, 0] + '}'));
+            AddXml (TXml.CreateAsString ( 'value', se.projectContexts.CellValue[c, r]));
+            AddXml (TXml.CreateAsString ( 'resolvesTo'
+                                        , xmlio.resolveAliasses ( '${' + se.projectContexts.CellValue[c, 0] + '}'
+                                                                )
+                                        )
+                   );
+          end;
+        end;
+      end;
+    end;
+    ShowXml('project Properties', xXml);
+    exit;
+  end;
   xXml := TXml.CreateAsString('resolvedProperties', '');
   try
     for x := 0 to se.projectProperties.Count - 1 do
@@ -13829,6 +13862,8 @@ begin
       for r := 0 to RowCount - 1 do
         for c := 0 to ColCount - 1 do
           se.projectContexts.CellValue[c, r] := Cells[c, r];
+      se.projectProperties.Clear; // it is one or another
+      stubChanged := True;
     end;
   finally
     EditContextsForm.Free;

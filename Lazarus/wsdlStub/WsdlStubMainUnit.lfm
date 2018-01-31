@@ -2548,7 +2548,7 @@ object MainForm: TMainForm
     end
     object ContextsAction: TAction
       Category = 'Project'
-      Caption = 'ContextsAction'
+      Caption = 'Context properties'
       OnExecute = ContextsActionExecute
       ShortCut = 24643
     end
@@ -6005,7 +6005,7 @@ object MainForm: TMainForm
         Action = ProjectOptionsAction
       end
       object MenuItem27: TMenuItem
-        Action = Properties
+        Action = ContextsAction
       end
       object N5: TMenuItem
         Caption = '-'

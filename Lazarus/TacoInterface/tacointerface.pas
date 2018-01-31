@@ -43,7 +43,6 @@ type
     fOnAuthorize : TNotifyEvent ;
     fPort: Integer;
     fOnHaveTacoMessage: TOnHaveTacoMessage;
-    fprojectProperties : TStringList ;
     fReqTime: TDateTime;
     fRspTime: TDateTime;
     fTacoReply: String;
@@ -64,7 +63,6 @@ type
     UserName, Password: String;
     function tacoString (aString: String): String;
     function decodeTacoString (aString: String; var aOffset: Integer): String;
-    property ProjectProperties: TStringList write fprojectProperties;
     property Host: String read fHost write fHost;
     property Port: Integer read fPort write fPort;
     property Authorized: boolean read fAuthorized write setAuthorized;

@@ -147,7 +147,7 @@ type
     procedure InitSpecialWsdls;
   public
     doCreateBackup: Boolean;
-    contextPropertyOverwrite: String;
+    projectContext: String;
     projectProperties: TStringList;
     projectContexts: TStringListList;
     ppLock: TCriticalSection;
@@ -1457,7 +1457,6 @@ begin
   displayedSnapshots := TSnapshotList.Create;
   toDisplaySnapshots := TSnapshotList.Create;
   Listeners := TListeners.Create;
-  Listeners.aliasses := projectProperties;
   mqGetThreads := TStringList.Create;
   EnvironmentList := TStringList.Create;
   EnvironmentList.Sorted := True;
@@ -2228,7 +2227,8 @@ begin
         with AddXml(projectContexts.AsXml) do
           Name := 'contexts';
       end;
-      AddXml (TXml.CreateAsString('properties', projectProperties.Text));
+      if projectProperties.Count > 0 then
+        AddXml (TXml.CreateAsString('properties', projectProperties.Text));
       for w := 0 to Wsdls.Count - 1 do
       begin
         xWsdl := Wsdls.Objects [w] as TWsdl;
@@ -2573,10 +2573,11 @@ begin
           if Assigned (sXml) then
             projectContexts.FromXml(sXml);
           projectProperties.Text := xXml.Items.XmlValueByTag['properties'];
-          if contextPropertyOverwrite <> '' then
-            projectProperties.Values['context'] := contextPropertyOverwrite;
+          if projectContext <> '' then
+            projectProperties.Values['context'] := projectContext;
           xmlio.ProjectAliasses := projectProperties;
-          xmlio.ProjectContext := contextPropertyOverwrite;
+          xmlio.ProjectContext := projectContext;
+          xmlio.ProjectContexts := projectContexts;
           sXml := xXml.Items.XmlItemByTag ['Listeners'];
           Listeners.SpecificationXml.Items.Clear;
           if Assigned (sXml) then
