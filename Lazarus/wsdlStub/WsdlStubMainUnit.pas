@@ -13847,6 +13847,7 @@ begin
   try
     with StringGrid do
     begin
+      ContextComboBox.Text := contextPropertyOverwrite;
       RowCount := se.projectContexts.RowCount;
       ColCount := se.projectContexts.ColCount;
       for r := 0 to RowCount - 1 do
@@ -13864,6 +13865,13 @@ begin
           se.projectContexts.CellValue[c, r] := Cells[c, r];
       se.projectProperties.Clear; // it is one or another
       stubChanged := True;
+      if ContextComboBox.Text <> contextPropertyOverwrite then
+      begin
+        contextPropertyOverwrite := ContextComboBox.Text;
+        se.projectContext := contextPropertyOverwrite;
+        xmlio.ProjectContext := contextPropertyOverwrite;
+        isOptionsChanged := True;
+      end;
     end;
   finally
     EditContextsForm.Free;

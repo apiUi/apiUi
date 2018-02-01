@@ -13,7 +13,11 @@ type
   { TEditContextsForm }
 
   TEditContextsForm = class(TForm)
+    AddRowAfter: TMenuItem;
+    AddRowBefore: TMenuItem;
     CancelButton: TBitBtn;
+    ContextComboBox: TComboBox;
+    Label1: TLabel;
     mainImageList: TImageList;
     MenuItem4: TMenuItem;
     OkButton: TBitBtn;
@@ -26,8 +30,6 @@ type
     AddContextAction: TAction;
     ActionList1: TActionList;
     MenuItem1: TMenuItem;
-    AddRowBefore: TMenuItem;
-    AddRowAfter: TMenuItem;
     PopupMenu1: TPopupMenu;
     StringGrid: TStringGrid;
     ToolBar1: TToolBar;
@@ -39,10 +41,9 @@ type
     ToolButton6: TToolButton;
     procedure AddContextActionExecute(Sender: TObject);
     procedure AddPropertyActionExecute(Sender: TObject);
-    procedure AddRowBeforeClick(Sender: TObject);
-    procedure AddRowAfterClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
     procedure RemoveContextActionExecute(Sender: TObject);
     procedure RemoveContextActionUpdate(Sender: TObject);
@@ -55,7 +56,9 @@ type
     procedure StringGridSetEditText(Sender: TObject; ACol,ARow: Integer;
       const Value: string);
   private
+    ColWidths: TStringList;
     function BooleanPromptDialog (aCaption: String): Boolean;
+    procedure PopulateContextComboBox;
   public
     { public declarations }
   end;
@@ -71,23 +74,6 @@ implementation
 uses xmlio
    , PromptUnit
    ;
-
-procedure TEditContextsForm.AddRowBeforeClick(Sender: TObject);
-var
-  r, c: Integer;
-begin
-  with StringGrid do
-  begin
-   RowCount := RowCount + 1;
-   for r := RowCount - 2 downto Row do
-     Rows [r + 1] := Rows [r];
-   for c := 0 to ColCount - 1 do
-   begin
-     Cells[c, Row] := '';
-     Objects[c, Row] := nil;
-   end;
-  end;
-end;
 
 procedure TEditContextsForm.AddContextActionExecute(Sender: TObject);
 var
@@ -110,6 +96,7 @@ begin
       Cells [0, RowCount - 1] := PromptEdit.Text;
       for c := 1 to ColCount - 1 do
         Cells [c, RowCount - 1] := Cells [c, r];
+      PopulateContextComboBox;
     end;
   finally
     Free;
@@ -143,43 +130,43 @@ begin
   end;
 end;
 
-procedure TEditContextsForm.AddRowAfterClick(Sender: TObject);
-var
-  r, c: Integer;
-begin
-  with StringGrid do
-  begin
-   RowCount := RowCount + 1;
-   Row := Row + 1;
-   for r := RowCount - 2 downto Row do
-     Rows [r + 1] := Rows [r];
-   for c := 0 to ColCount - 1 do
-   begin
-     Cells[c, Row] := '';
-     Objects[c, Row] := nil;
-   end;
-   Cells [0, Row] := IntToStr(RowCount);
-  end;
-end;
-
 procedure TEditContextsForm.FormCreate(Sender: TObject);
 begin
+  ColWidths := TStringList.Create;
   with TFormIniFile.Create (Self, True) do
   try
     Restore;
+    ColWidths.Text := StringByName['ColWidths'];
   finally
     Free;
   end;
 end;
 
 procedure TEditContextsForm.FormDestroy(Sender: TObject);
+var
+  c: Integer;
 begin
   with TFormIniFile.Create(self, False) do
   try
+    for c := 1 to StringGrid.ColCount - 1 do
+      ColWidths.Values[StringGrid.Cells[c, 0]] := IntToStr(StringGrid.ColWidths[c]);
+    StringByName['ColWidths'] := ColWidths.Text;
     Save;
   finally
     Free;
   end;
+end;
+
+procedure TEditContextsForm.FormShow(Sender: TObject);
+var
+  c, x: Integer;
+begin
+  for c := 1 to StringGrid.ColCount - 1 do
+  begin
+    if ColWidths.IndexOfName(StringGrid.Cells[c, 0]) > -1 then
+      StringGrid.ColWidths[c] := StrToInt(ColWidths.Values[StringGrid.Cells[c, 0]]);
+  end;
+  PopulateContextComboBox;
 end;
 
 procedure TEditContextsForm.PopupMenu1Popup(Sender: TObject);
@@ -198,6 +185,7 @@ begin
     begin
       for r := Row to RowCount - 2 do
         Rows[r] := Rows [r + 1];
+      PopulateContextComboBox;
     end;
     RowCount := RowCount - 1;
   end;
@@ -254,6 +242,15 @@ end;
 function TEditContextsForm.BooleanPromptDialog(aCaption: String): Boolean;
 begin
   result := (MessageDlg(aCaption, mtConfirmation, [mbYes, mbNo], 0) = mrYes);
+end;
+
+procedure TEditContextsForm.PopulateContextComboBox;
+var
+  r: Integer;
+begin
+  ContextComboBox.Items.Clear;
+  for r := 1 to StringGrid.RowCount - 1 do
+    ContextComboBox.Items.Add (StringGrid.Cells[0, r]);
 end;
 
 end.

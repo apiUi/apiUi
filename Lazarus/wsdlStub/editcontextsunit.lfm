@@ -8,12 +8,13 @@ object EditContextsForm: TEditContextsForm
   ClientWidth = 859
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '1.6.0.4'
   object StringGrid: TStringGrid
-    Left = 16
-    Height = 280
+    Left = 24
+    Height = 248
     Top = 40
-    Width = 824
+    Width = 808
     Anchors = [akTop, akLeft, akRight, akBottom]
     ColCount = 1
     ExtendedSelect = False
@@ -35,7 +36,7 @@ object EditContextsForm: TEditContextsForm
     ClientWidth = 859
     TabOrder = 1
     object OkButton: TBitBtn
-      Left = 29
+      Left = 24
       Height = 25
       Top = 8
       Width = 75
@@ -172,6 +173,24 @@ object EditContextsForm: TEditContextsForm
       Caption = 'ToolButton6'
       Style = tbsSeparator
     end
+  end
+  object ContextComboBox: TComboBox
+    Left = 24
+    Height = 21
+    Top = 299
+    Width = 100
+    Anchors = [akLeft, akBottom]
+    ItemHeight = 13
+    TabOrder = 3
+  end
+  object Label1: TLabel
+    Left = 129
+    Height = 13
+    Top = 303
+    Width = 124
+    Anchors = [akLeft, akBottom]
+    Caption = 'Context to use at runtime'
+    ParentColor = False
   end
   object PopupMenu1: TPopupMenu
     Images = mainImageList
