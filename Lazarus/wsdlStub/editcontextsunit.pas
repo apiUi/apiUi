@@ -57,6 +57,7 @@ type
       const Value: string);
   private
     ColWidths: TStringList;
+    function isPassWordColumn (aColumn: Integer): Boolean;
     function BooleanPromptDialog (aCaption: String): Boolean;
     procedure PopulateContextComboBox;
   public
@@ -219,15 +220,14 @@ end;
 procedure TEditContextsForm.StringGridGetEditText(Sender: TObject; ACol,ARow: Integer;
   var Value: string);
 begin
-  if false then Value := xmlio.DecryptPassword(StringGrid.Cells[ACol, ARow]);
+  if isPassWordColumn(ACol) then Value := xmlio.DecryptPassword(StringGrid.Cells[ACol, ARow]);
 end;
 
 procedure TEditContextsForm.StringGridSelectEditor(Sender: TObject; aCol,aRow: Integer;
   var Editor: TWinControl);
 begin
-  if false then
   with (Editor as TCustomEdit) do
-    if aCol = 1 then
+    if isPassWordColumn(aCol) then
       PasswordChar := '*'
     else
       PasswordChar := #0;
@@ -236,7 +236,17 @@ end;
 procedure TEditContextsForm.StringGridSetEditText(Sender: TObject; ACol,ARow: Integer;
   const Value: string);
 begin
-  if false then StringGrid.Cells [ACol, ARow] := xmlio.EncryptPassword(Value);
+  if isPassWordColumn(aCol) then StringGrid.Cells [ACol, ARow] := xmlio.EncryptPassword(Value);
+end;
+
+function TEditContextsForm.isPassWordColumn(aColumn: Integer): Boolean;
+var
+  colName: String;
+begin
+  colName := UpperCase(StringGrid.Cells[aColumn, 0]);
+  result := (RightStr(colName, 3) = 'PWD')
+         or (RightStr(colName, 8) = 'PASSWORD')
+          ;
 end;
 
 function TEditContextsForm.BooleanPromptDialog(aCaption: String): Boolean;

@@ -117,7 +117,7 @@ begin
   begin
     WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
   end;
-  se.contextPropertyOverwrite := GetOptionValue(contextOpt);
+  se.projectContext := GetOptionValue(contextOpt);
   terminateAfterScript := HasOption('?',terminateOpt);
   if terminateAfterScript then
     WriteLn('option ', terminateOpt);
