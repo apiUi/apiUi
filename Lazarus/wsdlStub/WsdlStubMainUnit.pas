@@ -4393,7 +4393,7 @@ begin
   result := TXml.CreateAsString('wsdlStubOptions', '');
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
-    AddXml(TXml.CreateAsString('overruleContextProperty', contextPropertyOverwrite));
+    AddXml(TXml.CreateAsString('Context', contextPropertyOverwrite));
     AddXml(TXml.CreateAsBoolean('CreateBackup', doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
@@ -12697,7 +12697,8 @@ begin
     xXml := XmlCheckedItemByTag['General'];
     if Assigned(xXml) then
     begin
-      contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['overruleContextProperty', contextPropertyOverwrite];
+      contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['overruleContextProperty', contextPropertyOverwrite]; // compatibility
+      contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['Context', contextPropertyOverwrite];
       se.projectContext := contextPropertyOverwrite;
       xmlio.ProjectContext := contextPropertyOverwrite;
       doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef ['CreateBackup', doCreateBackup];

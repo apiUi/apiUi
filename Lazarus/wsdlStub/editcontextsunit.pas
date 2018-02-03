@@ -184,11 +184,9 @@ begin
   begin
     if BooleanPromptDialog('Remove context ' + Cells [0, Row]) then
     begin
-      for r := Row to RowCount - 2 do
-        Rows[r] := Rows [r + 1];
+      DeleteRow(Row);
       PopulateContextComboBox;
     end;
-    RowCount := RowCount - 1;
   end;
 end;
 
@@ -204,11 +202,7 @@ begin
   with StringGrid do
   begin
     if BooleanPromptDialog('Remove property ' + Cells [Col, 0]) then
-    begin
-      for c := Col to ColCount - 2 do
-        Cols[c] := Cols [c + 1];
-    end;
-    ColCount := ColCount - 1;
+      DeleteCol(Col);
   end;
 end;
 

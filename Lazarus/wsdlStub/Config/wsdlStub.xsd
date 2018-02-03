@@ -1953,11 +1953,13 @@ For an overview of all options visit: doc://wsdlStub_wsdlStubOptions_hlp.htm </x
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="overruleContextProperty" type="xs:string" minOccurs="0">
+							<xs:element name="Context" type="xs:string" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>Overrules the project property 'context'.
-									See also Menu->Project->Properties
-									Needed in case names of reference files (e.g. wsdl's) depend on runtime operating environment</xs:documentation>
+									<xs:documentation>
+									See also Menu->Project->Context properties
+									Use context properties to easily switch between endpoints, queuenames, filenames.
+									This option is also in use during opening of a project, useful when reading formal descriptions (wsdl's, api's) via http
+									</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="CreateBackup" type="xs:boolean" minOccurs="0">

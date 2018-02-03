@@ -186,10 +186,10 @@ object EditContextsForm: TEditContextsForm
   object Label1: TLabel
     Left = 129
     Height = 13
-    Top = 303
-    Width = 124
+    Top = 304
+    Width = 152
     Anchors = [akLeft, akBottom]
-    Caption = 'Context to use at runtime'
+    Caption = 'Context to use (general option)'
     ParentColor = False
   end
   object PopupMenu1: TPopupMenu
