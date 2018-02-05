@@ -675,6 +675,54 @@ In case your records do not have any identifying string for operation (listeners
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="JsonSampleOperationType">
+		<xs:sequence>
+			<xs:element name="Name" type="NameType"/>
+			<xs:element name="Req" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SampleFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the JSON sample request file</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Rpy" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SampleFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the JSON sample response file</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Flt" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SampleFile" type="FileNameType">
+							<xs:annotation>
+								<xs:documentation>Name of the JSON sample fault file</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="reqRecognition" type="xsdRecognitionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a message is for this specific operation. Relevant for stub operation and reading logfiles. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="rpyRecognition" type="xsdRecognitionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the way wsdlStub can determine that a message is a response for this specific operation. Relevant for reading logfiles. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="XsdOperationType">
 		<xs:sequence>
 			<xs:element name="Name" type="NameType"/>
@@ -1206,13 +1254,27 @@ Internet standard protocol for e-mail clients to retrieve e-mail from a server.<
 					<xs:annotation>
 						<xs:documentation>XmlSample operations
 
-Sometims you want to mock trafic for wich you do not have a formal description.
-Instead of a formal description (.xsd,...) this operationtype uses a example message to create a (wsdlStub internal) description.
+Sometimes you want to mock trafic for wich you do not have a formal description.
+Instead of a formal description (.xsd,...) this operationtype uses an XML example message to create a (wsdlStub internal) description.
 </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="Operation" type="XmlSampleOperationType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="JsonSampleOperations">
+					<xs:annotation>
+						<xs:documentation>JsonSample operations
+
+Sometimes you want to mock trafic for wich you do not have a formal description.
+Instead of a formal description this operationtype uses a JSON example message to create a (wsdlStub internal) description.
+</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Operation" type="JsonSampleOperationType" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>

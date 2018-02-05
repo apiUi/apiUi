@@ -74,6 +74,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    JsonSampleOperations: TAction;
     ContextsAction: TAction;
     OpenProjectAction: TAction;
     MenuItem39: TMenuItem;
@@ -578,9 +579,9 @@ type
     procedure EditMessageDocumentationActionExecute(Sender: TObject);
     procedure EditMessageScriptActionExecute (Sender : TObject );
     procedure DocumentationViewerHotClick(Sender: TObject);
-    procedure GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure ImportProjectScriptsActionHint (var HintStr : string ;
-      var CanShow : Boolean );
+    procedure JsonSampleOperationsExecute(Sender: TObject);
+    procedure JsonSampleOperationsHint(var HintStr: string; var CanShow: Boolean
+      );
     procedure LogTabControlChange(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
@@ -630,7 +631,6 @@ type
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
-    procedure ToolButton71Click(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
@@ -1506,6 +1506,8 @@ begin
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     if se.Wsdls.Find(se.XmlSampleWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
+    if se.Wsdls.Find(se.JsonSampleWsdl.Name, f) then // not to be seen in list
+      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     if se.Wsdls.Find(se.SwiftMtWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     WsdlListForm.Wsdls := se.Wsdls;
@@ -1520,6 +1522,8 @@ begin
     if se.Wsdls.Find(se.XsdWsdl.Name, f) then // not to be seen in list
       Inc(w);
     if se.Wsdls.Find(se.XmlSampleWsdl.Name, f) then // not to be seen in list
+      Inc(w);
+    if se.Wsdls.Find(se.JsonSampleWsdl.Name, f) then // not to be seen in list
       Inc(w);
     if se.Wsdls.Find(se.SwiftMtWsdl.Name, f) then // not to be seen in list
       Inc(w);
@@ -13635,16 +13639,43 @@ begin
   OpenUrl((Sender as TIpHtmlPanel).HotURL);
 end;
 
-procedure TMainForm.GridViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode
-  );
+procedure TMainForm.JsonSampleOperationsExecute(Sender: TObject);
+var
+  xXml: TXml;
 begin
-
+  if not InactiveAfterPrompt then Exit;
+  xXml := se.jsonSampleOperationsXml('');
+  try
+    if EditXmlXsdBased ( 'JsonSample Operations'
+                       , 'OperationDefs.JsonSampleOperations'
+                       , 'JsonSampleOperations.Operation.Name'
+                       , 'JsonSampleOperations.Operation.Name'
+                       , se.IsActive
+                       , xXml.Items.Count > 1
+                       , esUsed
+                       , OperationDefsXsd
+                       , xXml
+                       ) then
+    begin
+      AcquireLock;
+      try
+        stubChanged := True;
+        se.jsonSampleOperationsUpdate(xXml, se.projectFileName);
+        PrepareOperation;
+      finally
+        ReleaseLock;
+      end;
+      CheckBoxClick(nil);
+    end;
+  finally
+    xXml.Free;
+  end;
 end;
 
-procedure TMainForm .ImportProjectScriptsActionHint (var HintStr : string ;
-  var CanShow : Boolean );
+procedure TMainForm.JsonSampleOperationsHint(var HintStr: string;
+  var CanShow: Boolean);
 begin
-
+  HintStr := 'Maintain list of JsonSample operations ' + HttpActiveHint;
 end;
 
 procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
@@ -14007,11 +14038,6 @@ begin
   finally
     se.ReleaseLogLock;
   end;
-end;
-
-procedure TMainForm.ToolButton71Click(Sender: TObject);
-begin
-
 end;
 
 procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;

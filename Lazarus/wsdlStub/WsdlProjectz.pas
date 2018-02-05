@@ -157,7 +157,7 @@ type
     OnRequestViolatingSchema, OnRequestViolatingAddressPath: TOnRequestViolating;
     DatabaseConnectionSpecificationXml, UnknownOpsReqReplactementsXml, UnknownOpsRpyReplactementsXml: TXml;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
-    FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
+    FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, JsonSampleWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
     Wsdls, wsdlNames, openApiPaths: TStringList;
@@ -230,9 +230,11 @@ type
     function cobolOperationsXml: TXml;
     procedure cobolOperationsUpdate (aXml: TXml; aMainFileName: String);
     function xmlSampleOperationsXml(aMainFileName: String): TXml;
+    function jsonSampleOperationsXml(aMainFileName: String): TXml;
     function xsdOperationsXml(aMainFileName: String): TXml;
     procedure xsdOperationsUpdate (aXml: TXml; aMainFileName: String);
     procedure xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: String);
+    procedure jsonSampleOperationsUpdate (aXml: TXml; aMainFileName: String);
     function swiftMtOperationsXml: TXml;
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
@@ -1587,6 +1589,7 @@ begin
   FreeAndNil (CobolWsdl);
   FreeAndNil (XsdWsdl);
   FreeAndNil (XmlSampleWsdl);
+  FreeAndNil (JsonSampleWsdl);
   FreeAndNil (SwiftMtWsdl);
   ignoreDifferencesOn.Free;
   checkValueAgainst.Free;
@@ -1716,6 +1719,7 @@ begin
   _updtWsdls(CobolWsdl);
   _updtWsdls(XsdWsdl);
   _updtWsdls(XmlSampleWsdl);
+  _updtWsdls(JsonSampleWsdl);
   _updtWsdls(SwiftMtWsdl);
   for w := 0 to Wsdls.Count - 1 do
     _prepWsdl (Wsdls.Objects [w] as TWsdl);
@@ -2269,6 +2273,16 @@ begin
           begin
             if xWsdl.Services.Services[0].Operations.Count > 0 then
               with AddXml (xmlSampleOperationsXml(aMainFileName)) do
+              begin
+                if SaveRelativeFileNames then
+                  SetFileNamesRelative(aMainFileName);
+              end;
+            xDone := True;
+          end;
+          if xWsdl = JsonSampleWsdl then
+          begin
+            if xWsdl.Services.Services[0].Operations.Count > 0 then
+              with AddXml (jsonSampleOperationsXml(aMainFileName)) do
               begin
                 if SaveRelativeFileNames then
                   SetFileNamesRelative(aMainFileName);
@@ -5542,6 +5556,153 @@ begin
   end;
 end;
 
+procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: String);
+  procedure _getDescriptionFiles (aXml: TXml; aFileNames: TStringList);
+  var
+    x, f: Integer;
+  begin
+    if not aXml.Checked then Exit;
+    if aXml.Name = 'DescriptionFile' then
+    begin
+      if not aFileNames.Find(aXml.Value, f) then
+        aFilenames.AddObject (aXml.Value, Pointer (ipmDTCobol));
+    end
+    else
+    begin
+      for x := 0 to aXml.Items.Count - 1 do
+        _getDescriptionFiles(aXml.Items.XmlItems[x], aFileNames);
+    end;
+  end;
+  function _LoadJsonSampleMsg (aLabel: String; sXml: TXml; aXsd: TXsd; var aSampleFileName: String): TXml;
+  var
+    xXsdDescr: TXsdDescr;
+    xXsd: TXsd;
+  begin
+    result := nil;
+    xXsd := nil;
+    try
+      if not Assigned (sXml) then
+        exit;
+      aSampleFileName := LazFileUtils.ExpandFileNameUTF8(ExpandRelativeFileName
+                            (aMainFileName, sXml.Items.XmlCheckedValueByTag ['SampleFile'])
+                          );
+      if xsdElementsWhenRepeatable > 0 then
+        xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
+      else
+        xXsdDescr := TXsdDescr.Create(JsonSampleWsdl.xsdDefaultElementsWhenRepeatable);
+      JsonSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
+      try
+//////////        xXsd := xXsdDescr.LoadXsdFromJsonSampleFile(aSampleFileName, nil);
+      except
+        on E: Exception do
+          raise Exception.Create('Error opening ' + aSampleFileName + ': ' + e.Message);
+      end;
+      if Assigned (xXsd) then
+      begin
+        aXsd.sType.ElementDefs.AddObject('', xXsd);
+        bindRefId := 0;
+        result := TXml.Create (0, aXsd);
+      end;
+    finally
+      if not Assigned (result) then
+        result := TXml.Create;
+      result.Checked := True;
+    end;
+  end;
+var
+  sList: TStringList;
+  oXml, xXml: TXml;
+  xXsd: TXsd;
+  xWsdl: TWsdl;
+  f, x, o: Integer;
+  xOperation: TWsdlOperation;
+const
+  _xsdName = 'OperationDefs.JsonSampleOperations';
+begin
+  xWsdl := JsonSampleWsdl;
+  if aXml.Name <> 'JsonSampleOperations' then
+    raise Exception.Create('??TWsdlProject.JsonSampleOperationsUpdate(aXml: TXml): ' + aXml.Name);
+  xXsd := OperationDefsXsd.FindXsd (_xsdName);
+  if not Assigned (xXsd) then
+    raise  Exception.Create('Xsd not found: ' + _xsdName);
+  xXml := TXml.Create(-1000, xXsd);
+  try
+    xXml.LoadValues(aXml, False);
+    aXml.CopyDownLine(xXml, True); // assigns Xsd to downline
+  finally
+    xXml.Free;
+  end;
+
+{$ifndef NoGUI}
+  if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
+    StubChanged := True;
+{$endif}
+  sList := TStringList.Create;
+  try
+    sList.Sorted := True;
+    for x := 0 to aXml.Items.Count - 1 do
+      if (aXml.Items.XmlItems[x].Checked)
+      and (aXml.Items.XmlItems[x].Name = 'Operation')
+      and (aXml.Items.XmlItems[x].Items.Count > 0) then
+        sList.AddObject(aXml.Items.XmlItems[x].Items.XmlCheckedValueByTag['Name'], aXml.Items.XmlItems[x]);
+    with xWsdl.Services.Services[0] do
+    begin
+      for o := Operations.Count - 1 downto 0 do
+      begin
+        if not (sList.Find(Operations.Operations[o].Name, f)) then
+        begin // remove
+          Operations.Operations[o].Free;
+          Operations.Delete(o);
+        end;
+      end;
+      for x := 0 to sList.Count - 1 do
+      begin
+        oXml := sList.Objects[x] as TXml;
+        if not Operations.Find(sList.Strings[x], f) then
+        begin
+          xOperation := TWsdlOperation.Create (xWsdl);
+          xOperation.Name := sList.Strings[x];
+          xWsdl.Services.Services[0].Operations.AddObject(xOperation.Name, xOperation);
+          xOperation.Wsdl := xWsdl;
+          xOperation.WsdlService := xWsdl.Services.Services[0];
+          xOperation.reqTagName := xOperation.Name + '_Req';
+          xOperation.Alias := xOperation.reqTagName;
+          xOperation.rpyTagName := xOperation.Name + '_Rpy';
+          xOperation.reqRecognition := TStringList.Create;
+          xOperation.rpyRecognition := TStringList.Create;
+          xOperation.RecognitionType := rtSubString;
+          xOperation.reqXsd.ElementName := xOperation.reqTagName;
+          xOperation.rpyXsd.ElementName := xOperation.rpyTagName;
+        end
+        else
+        begin
+          xOperation := Operations.Operations[f];
+        end;
+        with xOperation do
+        begin
+          if Assigned(reqBind) then
+            reqBind.Free;
+          if Assigned(rpyBind) then
+            rpyBind.Free;
+          FreeAndNil (fltBind);
+          reqBind := _LoadJsonSampleMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
+          rpyBind := _LoadJsonSampleMsg('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename);
+          fltBind := _LoadJsonSampleMsg('Flt', oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename);
+          if Alias <> reqTagName then
+          begin
+            if Assigned (reqBind) then reqBind.Name := Alias;
+            if Assigned (rpyBind) then rpyBind.Name := Alias;
+          end;
+          operationRecognitionUpdate (xOperation, reqRecognition, oXml.Items.XmlCheckedItemByTag['reqRecognition']);
+          operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
+        end;
+      end;
+    end;
+  finally
+    FreeAndNil(sList);
+  end;
+end;
+
 procedure TWsdlProject.cobolOperationsUpdate(aXml: TXml; aMainFileName: String);
   procedure _getDescriptionFiles (aXml: TXml; aFileNames: TStringList);
   var
@@ -6034,6 +6195,59 @@ begin
     end;
     xXml.CheckDownline(True);
     result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.XmlSampleOperations'));
+    result.CheckDownline(False);
+    result.LoadValues(xXml, False, True, False, True);
+  finally
+    xXml.Free;
+  end;
+end;
+
+function TWsdlProject.jsonSampleOperationsXml(aMainFileName: String): TXml;
+var
+  x: Integer;
+  xOperation: TWsdlOperation;
+  xXml: TXml;
+begin
+  xXml := TXml.CreateAsString('JsonSampleOperations', '');
+  try
+    for x := 0 to JsonSampleWsdl.Services.Services[0].Operations.Count - 1 do
+    begin
+      xOperation := JsonSampleWsdl.Services.Services[0].Operations.Operations[x];
+      with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
+      begin
+        AddXml (TXml.CreateAsString('Name', xOperation.Name));
+        if Assigned (xOperation.reqBind)
+        and (xOperation.reqDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Req', '')) do
+          begin
+            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.reqDescrFilename));
+            if xOperation.reqBind.Children.Count > 0 then
+              AddXml(TXml.CreateAsString('ElementName', (xOperation.reqBind as TXml).Items.XmlItems[0].Name));
+          end;
+        if Assigned (xOperation.rpyBind)
+        and (xOperation.rpyDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Rpy', '')) do
+          begin
+            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.rpyDescrFilename));
+            if xOperation.rpyBind.Children.Count > 0 then
+              AddXml(TXml.CreateAsString('ElementName', (xOperation.rpyBind as TXml).Items.XmlItems[0].Name));
+          end;
+        if Assigned (xOperation.fltBind)
+        and (xOperation.fltDescrFilename <> '') then
+          with AddXml (TXml.CreateAsString('Flt', '')) do
+          begin
+            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.fltDescrFilename));
+            if xOperation.fltBind.Children.Count > 0 then
+              AddXml(TXml.CreateAsString('ElementName', (xOperation.fltBind as TXml).Items.XmlItems[0].Name));
+          end;
+        if xOperation.reqRecognition.Count > 0 then
+          AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
+        if xOperation.rpyRecognition.Count > 0 then
+          AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
+      end;
+    end;
+    xXml.CheckDownline(True);
+    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.JsonSampleOperations'));
     result.CheckDownline(False);
     result.LoadValues(xXml, False, True, False, True);
   finally
@@ -8318,6 +8532,7 @@ begin
     and (Wsdls.Objects[0] <> CobolWsdl)
     and (Wsdls.Objects[0] <> XsdWsdl)
     and (Wsdls.Objects[0] <> XmlSampleWsdl)
+    and (Wsdls.Objects[0] <> JsonSampleWsdl)
     and (Wsdls.Objects[0] <> SwiftMtWsdl) then
       try Wsdls.Objects[0].Free; except end; // there is a project that fails at this point, not a clue yet why
     Wsdls.Delete(0);
@@ -8408,6 +8623,17 @@ begin
     Services.Objects[0] := TWsdlService.Create;
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTXsd; // ?? maybe better to use a seperate type ??
+  end;
+  FreeAndNil(JsonSampleWsdl);
+  JsonSampleWsdl := TWsdl.Create(EnvVars, 1, 1, False);
+  with JsonSampleWsdl do
+  begin
+    Name := '_JsonSample';
+    isSoapService := False;
+    Services.Add(Name);
+    Services.Objects[0] := TWsdlService.Create;
+    Services.Services[0].Name := Name;
+    Services.Services[0].DescriptionType := ipmDTJson; // ?? maybe better to use a seperate type ??
   end;
   FreeAndNil(SwiftMtWsdl);
   SwiftMtWsdl := TWsdl.Create(EnvVars, 1, 1, False);

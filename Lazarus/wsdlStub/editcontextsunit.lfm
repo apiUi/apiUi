@@ -9,6 +9,7 @@ object EditContextsForm: TEditContextsForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  ShowHint = True
   LCLVersion = '1.6.0.4'
   object StringGrid: TStringGrid
     Left = 24
