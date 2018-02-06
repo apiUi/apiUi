@@ -5592,7 +5592,7 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
         xXsdDescr := TXsdDescr.Create(JsonSampleWsdl.xsdDefaultElementsWhenRepeatable);
       JsonSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       try
-//////////        xXsd := xXsdDescr.LoadXsdFromJsonSampleFile(aSampleFileName, nil);
+        xXsd := xXsdDescr.LoadXsdFromJsonSampleFile(aSampleFileName, nil);
       except
         on E: Exception do
           raise Exception.Create('Error opening ' + aSampleFileName + ': ' + e.Message);

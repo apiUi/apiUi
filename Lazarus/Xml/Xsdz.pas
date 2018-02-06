@@ -269,6 +269,7 @@ type
     procedure AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);
     function LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent): Boolean;
     function LoadXsdFromXmlSampleFile(aFileName: String; ErrorFound: TOnErrorEvent): TXsd;
+    function LoadXsdFromJsonSampleFile(aFileName: String; ErrorFound: TOnErrorEvent): TXsd;
     function LoadXsdFromString(aString: String; ErrorFound: TOnErrorEvent): Boolean;
     function ChangedElementTypedefsAsXml: TObject;
     procedure ChangedElementTypedefsFromXml (aXml: TObject);
@@ -1221,6 +1222,25 @@ begin
     xXml.LoadFromFile(aFileName,nil);
     if xXml.Name = '' then
       raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Xml: ' + aFileName);
+    xXml.SeparateNsPrefixes;
+    xXml.ResolveNameSpaces;
+    result := CreateXsdFromXml (xXml, False);
+  finally
+    xXml.Free;
+  end;
+end;
+
+function TXsdDescr.LoadXsdFromJsonSampleFile (aFileName: String; ErrorFound: TOnErrorEvent): TXsd ;
+var
+  xXml: TXml;
+begin
+  xXml := TXml.Create;
+  try
+    try
+      xXml.LoadJsonFromFile(aFileName,nil);
+    except
+      raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Json: ' + aFileName);
+    end;
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
     result := CreateXsdFromXml (xXml, False);
