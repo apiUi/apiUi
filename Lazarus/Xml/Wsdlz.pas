@@ -4614,7 +4614,11 @@ begin
             if WsdlService.DescriptionType <> ipmDTJson then
               result := result + aXml.StreamXML(aGenerateBodyNameSpaces, WsdlService.UseNameSpacePrefixes, 0, True, False)
             else
+            begin
+              if aXml.jsonType = jsonNone then
+                aXml.jsonType := jsonObject;
               result := result + aXml.StreamJSON(0, True);
+            end;
           end;
         end;
       end;

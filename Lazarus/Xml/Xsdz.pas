@@ -1231,6 +1231,29 @@ begin
 end;
 
 function TXsdDescr.LoadXsdFromJsonSampleFile (aFileName: String; ErrorFound: TOnErrorEvent): TXsd ;
+  procedure _setJsonTypes (aXsd: TXsd);
+  var
+    x: Integer;
+  begin
+    with aXsd.sType do
+    begin
+      if ElementDefs.Count > 0 then
+      begin
+        jsonType := jsonObject;
+        for x := 0 to ElementDefs.Count - 1 do
+          _setJsonTypes(ElementDefs.Xsds[x]);
+      end
+      else
+      begin
+        if BaseDataTypeName = 'integer' then begin jsonType := jsonNumber; exit; end;
+        if BaseDataTypeName = 'decimal' then begin jsonType := jsonNumber; exit; end;
+        if BaseDataTypeName = 'dateTime' then begin jsonType := jsonString; exit; end;
+        if BaseDataTypeName = 'date' then begin jsonType := jsonString; exit; end;
+        if BaseDataTypeName = 'time' then begin jsonType := jsonString; exit; end;
+        if BaseDataTypeName = 'boolean' then begin jsonType := jsonNumber; exit; end;
+      end;
+    end;
+  end;
 var
   xXml: TXml;
 begin
@@ -1244,6 +1267,8 @@ begin
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
     result := CreateXsdFromXml (xXml, False);
+    result.sType.jsonType := jsonObject;
+    _setJsonTypes (result)
   finally
     xXml.Free;
   end;

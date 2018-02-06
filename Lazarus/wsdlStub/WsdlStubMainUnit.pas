@@ -76,6 +76,8 @@ type
     Action2 : TAction ;
     JsonSampleOperations: TAction;
     ContextsAction: TAction;
+    MenuItem21: TMenuItem;
+    MenuItem22: TMenuItem;
     OpenProjectAction: TAction;
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;

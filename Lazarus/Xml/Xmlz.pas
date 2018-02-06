@@ -1546,7 +1546,7 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
       jsonBoolean: result := aXml.Value;
       jsonObject:
         begin
-          result := #$D#$A + IndentString(aIndent) + '{ ';
+          result := LineEnding + IndentString(aIndent) + '{ ';
           xSep := '';
           for x := 0 to aXml.Items.Count - 1 do
           begin
@@ -1556,10 +1556,10 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
                       + xSep
                       + '"' + aXml.Items.XmlItems[x].Name + '": '
                       + _StreamJSONValue (aXml.Items.XmlItems[x], aIndent + 2);
-              xSep := #$D#$A + IndentString(aIndent) + ', ';
+              xSep := lineEnding + IndentString(aIndent) + ', ';
             end;
           end;
-          result := result + #$D#$A + IndentString(aIndent) + '}';
+          result := result + lineEnding + IndentString(aIndent) + '}';
         end;
       jsonArrayValue:
         begin
@@ -1575,7 +1575,7 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
         end;
       jsonArray:
         begin
-          result := #$D#$A + IndentString(aIndent) + '[ ';
+          result := lineEnding + IndentString(aIndent) + '[ ';
           xSep := '';
           for x := 0 to aXml.Items.Count - 1 do
           begin
@@ -1584,10 +1584,10 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
               result := result
                       + xSep
                       + _StreamJSONValue (aXml.Items.XmlItems[x], aIndent + 2);
-              xSep := #$D#$A + IndentString(aIndent) + ', ';
+              xSep := lineEnding + IndentString(aIndent) + ', ';
             end;
           end;
-          result := result + #$D#$A + IndentString(aIndent) + ']';
+          result := result + lineEnding + IndentString(aIndent) + ']';
         end;
     end;
   end;
