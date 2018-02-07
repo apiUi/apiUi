@@ -5607,6 +5607,8 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
       if not Assigned (result) then
         result := TXml.Create;
       result.Checked := True;
+      if result.jsonType = jsonNone then
+        Result.jsonType := jsonObject;
     end;
   end;
 var
@@ -5661,6 +5663,9 @@ begin
         if not Operations.Find(sList.Strings[x], f) then
         begin
           xOperation := TWsdlOperation.Create (xWsdl);
+          (xOperation.reqBind as TXml).jsonType := jsonObject;
+          (xOperation.rpyBind as TXml).jsonType := jsonObject;
+          (xOperation.fltBind as TXml).jsonType := jsonObject;
           xOperation.Name := sList.Strings[x];
           xWsdl.Services.Services[0].Operations.AddObject(xOperation.Name, xOperation);
           xOperation.Wsdl := xWsdl;
