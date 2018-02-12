@@ -254,7 +254,8 @@ type
     ReadFileNames: TStringList;
     TypeDef: TXsdDataType;
     ChangedElementDefs: TObject;
-    function CreateXsdFromXml (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
+    function CreateXsdFromXmlSample (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
+    function CreateXsdFromJsonSample (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
     function GenerateNameSpaceAttributes: String;
     function NameSpacePrefix(aNameSpace: String): String;
     procedure AddNameSpace(aNameSpace: String);
@@ -1224,36 +1225,13 @@ begin
       raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Xml: ' + aFileName);
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
-    result := CreateXsdFromXml (xXml, False);
+    result := CreateXsdFromXmlSample (xXml, False);
   finally
     xXml.Free;
   end;
 end;
 
 function TXsdDescr.LoadXsdFromJsonSampleFile (aFileName: String; ErrorFound: TOnErrorEvent): TXsd ;
-  procedure _setJsonTypes (aXsd: TXsd);
-  var
-    x: Integer;
-  begin
-    with aXsd.sType do
-    begin
-      if ElementDefs.Count > 0 then
-      begin
-        jsonType := jsonObject;
-        for x := 0 to ElementDefs.Count - 1 do
-          _setJsonTypes(ElementDefs.Xsds[x]);
-      end
-      else
-      begin
-        if BaseDataTypeName = 'integer' then begin jsonType := jsonNumber; exit; end;
-        if BaseDataTypeName = 'decimal' then begin jsonType := jsonNumber; exit; end;
-        if BaseDataTypeName = 'dateTime' then begin jsonType := jsonString; exit; end;
-        if BaseDataTypeName = 'date' then begin jsonType := jsonString; exit; end;
-        if BaseDataTypeName = 'time' then begin jsonType := jsonString; exit; end;
-        if BaseDataTypeName = 'boolean' then begin jsonType := jsonNumber; exit; end;
-      end;
-    end;
-  end;
 var
   xXml: TXml;
 begin
@@ -1264,11 +1242,7 @@ begin
     except
       raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Json: ' + aFileName);
     end;
-    xXml.SeparateNsPrefixes;
-    xXml.ResolveNameSpaces;
-    result := CreateXsdFromXml (xXml, False);
-    result.sType.jsonType := jsonObject;
-    _setJsonTypes (result)
+    result := CreateXsdFromJsonSample (xXml, False);
   finally
     xXml.Free;
   end;
@@ -2806,7 +2780,7 @@ begin
   aTypeDef.AddXsd(result);
 end;
 
-function TXsdDescr.CreateXsdFromXml (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
+function TXsdDescr.CreateXsdFromXmlSample (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
   procedure _guessBaseDataType (aType: TXsdDataType; aXml: TXml);
   begin
     if (aXml.Items.Count = 0)
@@ -2913,6 +2887,104 @@ begin
       _ChildXml (result, xXml.Items.XmlItems[x]);
   finally
   end;
+end;
+
+function TXsdDescr.CreateXsdFromJsonSample(aXml: TObject; aLinkXmlToXsd: Boolean
+  ): TXsd;
+  procedure _guessBaseDataTypeJson (aType: TXsdDataType; aXml: TXml);
+  begin
+    aType.BaseNameSpace := scXMLSchemaURI;
+    if aXml.jsonType = jsonNone then
+    begin
+      if (aXml.Items.Count = 0) then with aXml do
+      begin
+        jsonType := jsonString;
+        try xsdParseDecimal(Value); jsonType := jsonNumber; except end;
+        try xsdParseBoolean(aXml.Value); jsonType := jsonBoolean; except end;
+      end
+      else
+      begin
+        aXml.jsonType := jsonObject;
+      end;
+    end;
+    aType.jsonType := aXml.jsonType;
+    with aType do
+    begin
+      case jsonType of
+        jsonNone: ;
+        jsonString: BaseDataTypeName := 'string';
+        jsonNumber: BaseDataTypeName := 'decimal';
+        jsonBoolean: BaseDataTypeName := 'boolean';
+        jsonObject: ;
+        jsonArray: ;
+        jsonArrayValue: ;
+      end;
+    end;
+  end;
+  procedure _ChildXml (aXsd: TXsd; aXml: TXml);
+  var
+    x: Integer;
+    xXsd: TXsd;
+  begin
+    xXsd := nil;
+    for x := 0 to aXsd.sType.ElementDefs.Count - 1 do
+      if (aXsd.sType.ElementDefs.Xsds[x].ElementName = aXml.Name) then
+        xXsd := aXsd.sType.ElementDefs.Xsds [x];
+    if not Assigned (xXsd) then
+    begin
+      xXsd := TXsd.Create (self);
+      self.Garbage.AddObject ('', xXsd);
+      xXsd.sType := TXsdDataType.Create(self);
+      self.Garbage.AddObject ('', xXsd.sType);
+      aXsd.sType.ElementDefs.AddObject('', xXsd);
+      xXsd.minOccurs := '0';
+      xXsd.maxOccurs := '1';
+      xXsd.ElementName := aXml.Name;
+      xXsd.ElementNameSpace := aXml.NameSpace;
+      xXsd.FormDefaultQualified := (aXml.NsPrefix <> '')
+                                or (aXml.AttributeValueByTag['xmlns'] = aXml.NameSpace);
+      xXsd.sType.Name := aXml.Name + 'Type';
+      xXsd.sType.NameSpace := aXml.NameSpace;
+      xXsd.DoNotEncode := True;
+      xXsd.sType._Ficticious := True;
+      _guessBaseDataTypeJson(xXsd.sType, aXml);
+    end;
+    if xXsd._Processed then
+      xXsd.maxOccurs := 'unbounded';
+    xXsd._Processed := True;
+    if aLinkXmlToXsd then
+      aXml.Xsd := xXsd;
+    for x := 0 to xXsd.sType.ElementDefs.Count - 1 do
+      xXsd.sType.ElementDefs.Xsds [x]._Processed := False;
+    for x := 0 to aXml.Items.Count - 1 do
+      _ChildXml (xXsd, aXml.Items.XmlItems[x]);
+    for x := 0 to xXsd.sType.ElementDefs.Count - 1 do
+      xXsd.sType.ElementDefs.Xsds [x]._Processed := False;
+  end;
+var
+  xXml: TXml;
+  x: Integer;
+begin
+  if not Assigned (aXml) then Exit;
+  if not (aXml is TXml) then Exit;
+  result := TXsd.Create(self);
+  self.Garbage.AddObject ('', result);
+  xXml := aXml as TXml;
+  result.ElementName := xXml.Name;
+  result.ElementNameSpace := xXml.NameSpace;
+  result.maxOccurs := '1';
+  result.sType := TXsdDataType.Create(self);
+  self.Garbage.AddObject('', result.sType);
+  Result.sType.NameSpace := xXml.NameSpace;
+  result.sType.Name := xXml.Name + 'Type';
+  result.sType._Ficticious := True;
+  _guessBaseDataTypeJson(result.sType, xXml);
+  result.DoNotEncode := True;
+  if aLinkXmlToXsd then
+    xXml.Xsd := result;
+  for x := 0 to xXml.Items.Count - 1 do
+    _ChildXml (result, xXml.Items.XmlItems[x]);
+  Result.sType.jsonType := jsonObject;
 end;
 
 procedure TXsdDescr.Clear;

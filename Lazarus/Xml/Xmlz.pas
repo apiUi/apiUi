@@ -1521,7 +1521,10 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
     for x := 1 to Length (aValue) do
     begin
       case aValue [x] of
-        '<': result := result + '<';
+        #12: result := result + '\f'; // formfeed
+        LineEnding #13#10
+        '"': result := result + '\"';
+        '\': result := result + '\\';
       else
         result := result + aValue [x];
       end;
@@ -1539,6 +1542,8 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
     if Assigned (aXml.Parent) then with aXml.Parent as TXml do
       if jsonType = jsonArray then
         xJsonType := jsonArrayValue;
+    if xJsonType = jsonNone then
+      xJsonType := jsonString;
     case xJsonType of
       jsonNone: ;
       jsonString: result := '"' + _ValueToJSON(aXml.Value) + '"';

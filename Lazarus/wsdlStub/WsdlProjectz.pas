@@ -2690,6 +2690,13 @@ begin
                 xWsdl := XmlSampleWsdl;
                 xDone := True;
               end;
+              oXml := wXml.Items.XmlItemByTag['JsonSampleOperations'];
+              if Assigned (oXml) then
+              begin
+                jsonSampleOperationsUpdate(oXml, aMainFileName);
+                xWsdl := JsonSampleWsdl;
+                xDone := True;
+              end;
               oXml := wXml.Items.XmlItemByTag['SwiftMtOperations'];
               if Assigned (oXml) then
               begin
