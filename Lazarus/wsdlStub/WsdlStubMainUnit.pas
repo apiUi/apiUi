@@ -1236,6 +1236,7 @@ type
       setdoShowDesignSplitVertical;
     property stubChanged: Boolean read getStubChanged write setStubChanged;
     property Wsdl: TWsdl read getWsdl write setWsdl;
+    function SelectFolderAndSave: Boolean;
     procedure BeginUpdate;
     Procedure EndUpdate;
     procedure PromptForOperationAlias (aOperation: TWsdlOperation);
@@ -5646,23 +5647,9 @@ begin
     begin
       OnlyWhenLicensed;
       if se.stubRead then
-      begin
-        SaveWsdlStubCase(se.projectFileName);
-      end
+        SaveWsdlStubCase(se.projectFileName)
       else
-      begin
-        SaveFileDialog.DefaultExt := 'wsdlStub';
-        SaveFileDialog.FileName := se.projectFileName;
-        SaveFileDialog.Filter := 'wsdlStub Case (*.wsdlStub)|*.wsdlStub';
-        SaveFileDialog.Title := 'Save wsdlStub case';
-        if SaveFileDialog.Execute then
-        begin
-          se.projectFileName := SaveFileDialog.FileName;
-          SaveWsdlStubCase(SaveFileDialog.FileName);
-        end
-        else
-          result := False;
-      end;
+        result := SelectFolderAndSave;
     end;
     if (ret = mrCancel) then
       result := False;
@@ -7536,6 +7523,30 @@ begin
         stopActionExecute (self);
     end;
     result := not se.IsActive;
+  end;
+end;
+
+function TMainForm.SelectFolderAndSave: Boolean;
+begin
+  result := False;
+  with TSelectDirectoryDialog.Create(nil) do
+  try
+    FileName := se.projectFileName;
+    Title := 'Save wsdlStub project as folder';
+    Options := Options + [ofOverwritePrompt];
+    if Execute then
+    begin
+      if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
+        raise Exception.Create(Format ('foldername must end with "%s";%s%s', [_ProjectFolderSuffix, LineEnding, FileName]));
+      if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + _ProjectFileName) then
+        if not BooleanPromptDialog (Format ('Project "%s" already exists%s, Continue', [FileName, LineEnding])) then
+          raise Exception.Create('Aborted by user');
+      se.projectFileName := FileName;
+      SaveWsdlStubCase(se.projectFileName);
+      result := True;
+    end;
+  finally
+    Free;
   end;
 end;
 
@@ -13115,25 +13126,7 @@ end;
 procedure TMainForm.SaveProjectAsFolderActionExecute(Sender: TObject);
 begin
   OnlyWhenLicensed;
-  with TSelectDirectoryDialog.Create(nil) do
-  try
-    EndEdit;
-    FileName := se.projectFileName;
-    Title := 'Save wsdlStub project as folder';
-    Options := Options + [ofOverwritePrompt, ofPathMustExist];
-    if Execute then
-    begin
-      if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
-        raise Exception.Create(Format ('foldername must end with "%s";%s%s', [_ProjectFolderSuffix, LineEnding, FileName]));
-      if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + _ProjectFileName) then
-        if not BooleanPromptDialog (Format ('Project "%s" already exists%s, Continue', [FileName, LineEnding])) then
-          raise Exception.Create('Aborted by user');
-      se.projectFileName := FileName;
-      SaveWsdlStubCase(se.projectFileName);
-    end;
-  finally
-    Free;
-  end;
+  SelectFolderAndSave;
 end;
 
 procedure TMainForm.SaveStubCaseActionUpdate(Sender: TObject);

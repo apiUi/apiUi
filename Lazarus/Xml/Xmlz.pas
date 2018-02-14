@@ -1521,8 +1521,11 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
     for x := 1 to Length (aValue) do
     begin
       case aValue [x] of
+        #8: result := result + '\b'; // backspace
+        #9: result := result + '\t'; // tab
+        #10: result := result + '\n'; // newline
         #12: result := result + '\f'; // formfeed
-        LineEnding #13#10
+        #13: result := result + '\r'; // newline
         '"': result := result + '\"';
         '\': result := result + '\\';
       else

@@ -62,11 +62,6 @@ begin
 end;
 
 function TJsnParser.StringDecode(aString: String): String;
-  function hexVal (aChar: Char): Word;
-  begin
-    result := StrToInt ('$0' + aChar);
-  end;
-
 var
   p, x, n: Integer;
   s: String;
@@ -87,17 +82,6 @@ begin
     'n': s := #10;
     'f': s := #12;
     'r': s := #13;
-    'u':
-      begin
-        w := (hexVal(aString[n    ]) shl 12)
-           + (hexVal(aString[n + 1]) shl  8)
-           + (hexVal(aString[n + 2]) shl  4)
-           + (hexVal(aString[n + 3])       )
-           ;
-        b := Char(w);
-        s := b;
-        n := n + 4;
-      end;
     else
       s := aString [x];
   end;

@@ -3,6 +3,7 @@ object EditContextsForm: TEditContextsForm
   Height = 372
   Top = 212
   Width = 859
+  ActiveControl = ContextComboBox
   Caption = 'Edit properties in their context'
   ClientHeight = 372
   ClientWidth = 859
