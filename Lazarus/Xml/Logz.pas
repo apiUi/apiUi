@@ -36,7 +36,7 @@ type
   TLog = class(TClaimableObject)
   protected
   public
-    doSuppressLog: Boolean;
+    doSuppressLog,doSuppressAsyncReply: Boolean;
     onSnapshot: Boolean;
     displayRef: PDisplayRef;
     DisplayedColumnsValid: Boolean;

@@ -2852,6 +2852,7 @@ begin
                             if Assigned (dXml) then
                               xOperation.OptionsFromXml(dXml);
                             xOperation.doSuppressLog := oXml.Items.XmlIntegerByTagDef ['doSuppressLog', 0];
+                            xOperation.doSuppressAsyncReply := oXml.Items.XmlIntegerByTagDef ['doSuppressAsyncReply', 0];
                             xOperation.DelayTimeMsMin := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMin', -1];
                             if xOperation.DelayTimeMsMin = -1 then
                             begin
@@ -3341,6 +3342,7 @@ begin
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
     aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
+    aLog.doSuppressAsyncReply := (xOperation.doSuppressAsyncReply <> 0);
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
     aLog.OperationName:=xOperation.Alias;
     aLog.ReplyBody := xOperation.StreamReply (_progName, True);
@@ -3406,6 +3408,8 @@ begin
           xLog.Exception := e.Message;
         end;
       end;
+      if xLog.doSuppressAsyncReply then
+        xlog.ReplyBody := '';
       if (xLog.ReplyBody <> '')
       and (   (aFrame.GetHeaders.Value('reply-to') <> '')
            or (aFrame.GetHeaders.Value('ReplyQueue') <> '')
@@ -4186,6 +4190,7 @@ begin
       xLog.TransportType := aOperation.StubTransport;
       xLog.Mssg := aOperation.CorrelatedMessage;
       aOperation.doSuppressLog := 0;
+      aOperation.doSuppressAsyncReply := 0;
       if aOperation.wsaEnabled then
         try
           aOperation.reqWsaOnRequest;
@@ -4284,6 +4289,7 @@ begin
         Stubbed := True;
         StubAction := aOperation.StubAction;
         doSuppressLog := (aOperation.doSuppressLog <> 0);
+        doSuppressAsyncReply := (aOperation.doSuppressAsyncReply <> 0);
       end;
     except
       on e: exception do
@@ -6691,6 +6697,7 @@ begin
       CreateLogReply (xLog, xProcessed, True);
       DelayMS (xLog.DelayTimeMs);
       if (    (xLog.ReplyBody <> '')
+          and (not xLog.doSuppressAsyncReply)
           and (   (MsgType = MQMT_REQUEST)
                or (not aMqInterface.UseReplyToQueue)
               )
@@ -7205,6 +7212,7 @@ begin
       end;
       aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
       aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
+      aLog.doSuppressAsyncReply := (xOperation.doSuppressAsyncReply <> 0);
       aLog.DelayTimeMs := xOperation.DelayTimeMs;
       aLog.OperationName:=xOperation.Alias;
       xOperation.rpyXml.jsonType := jsonObject;

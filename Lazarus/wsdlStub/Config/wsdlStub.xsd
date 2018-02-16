@@ -331,6 +331,7 @@ Processing continues with unpredictable results
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="DelayMs" type="xs:integer" minOccurs="0"/>
+						<xs:element name="SuppressAsyncReply" type="xs:integer" minOccurs="0"/>
 						<xs:element name="SuppressLog" type="xs:integer" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>

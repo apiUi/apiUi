@@ -238,6 +238,7 @@ object MainForm: TMainForm
         object ActionComboBox: TComboBox
           Left = 1
           Height = 21
+          Hint = 'Select action'
           Top = 2
           Width = 66
           ItemHeight = 13
@@ -261,6 +262,7 @@ object MainForm: TMainForm
         end
         object RedirectAddressButton: TToolButton
           Left = 77
+          Hint = 'Set endpoint'
           Top = 2
           Action = RedirectAddressAction
         end
@@ -275,6 +277,7 @@ object MainForm: TMainForm
         end
         object DelayTimeButton: TToolButton
           Left = 110
+          Hint = 'Set delay'
           Top = 2
           Action = OperationDelayResponseTimeAction
         end
@@ -482,6 +485,7 @@ object MainForm: TMainForm
         object WsdlOperationsComboBox: TComboBox
           Left = 412
           Height = 21
+          Hint = 'Select operation'
           Top = 8
           Width = 113
           ItemHeight = 13
@@ -492,6 +496,7 @@ object MainForm: TMainForm
         object WsdlServicesComboBox: TComboBox
           Left = 210
           Height = 21
+          Hint = 'Select service'
           Top = 8
           Width = 140
           ItemHeight = 13
@@ -503,6 +508,7 @@ object MainForm: TMainForm
         object WsdlComboBox: TComboBox
           Left = 34
           Height = 21
+          Hint = 'Select WSDL or API (currently only OpenAPI f.k.a. Swagger)'
           Top = 8
           Width = 106
           ItemHeight = 13
@@ -702,6 +708,7 @@ object MainForm: TMainForm
             object ProgressBar: TProgressBar
               Left = 423
               Height = 22
+              Hint = 'Progress'
               Top = 2
               Width = 93
               BorderWidth = 2
@@ -878,6 +885,7 @@ object MainForm: TMainForm
             object ViewStyleComboBox: TComboBox
               Left = 149
               Height = 21
+              Hint = 'View'
               Top = 2
               Width = 98
               ItemHeight = 13
@@ -9286,8 +9294,8 @@ object MainForm: TMainForm
     )
     Options = []
     Params = <>
-    left = 96
-    top = 320
+    left = 104
+    top = 288
   end
   object LogPopupMenu: TPopupMenu
     Images = mainImageList
@@ -10042,8 +10050,8 @@ object MainForm: TMainForm
     Action = caCommit
     Database = SQLConnector
     Options = []
-    left = 56
-    top = 320
+    left = 64
+    top = 288
   end
   object SQLConnector: TSQLConnector
     Connected = False
@@ -10056,8 +10064,8 @@ object MainForm: TMainForm
     Transaction = SQLTransaction
     LogEvents = []
     Options = []
-    left = 24
-    top = 320
+    left = 32
+    top = 288
   end
   object OperationsPopupMenu: TPopupMenu
     left = 16

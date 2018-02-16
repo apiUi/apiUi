@@ -192,10 +192,10 @@ end;
 
 procedure TEditOperationScriptForm.CheckExecute(Sender: TObject);
 var
-  swapScriptLines: String;
   sl: TStringList;
 begin
   StatusBar.SimpleText := '';
+  ScriptEdit.SetFocus;
   sl := TStringList.Create;
   try
     sl.Text := ScriptEdit.Lines.Text;
