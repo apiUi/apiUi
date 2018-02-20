@@ -27,6 +27,8 @@ type
 
   TXmlGridForm = class(TForm)
     DocumentationViewer: TIpHtmlPanel;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     Panel2: TPanel;
     Grid: TVirtualStringTree;
     Panel4: TPanel;
@@ -103,6 +105,7 @@ type
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
+    procedure MenuItem2Click(Sender: TObject);
     procedure OkButtonClick (Sender : TObject );
     procedure ZoomActionExecute(Sender: TObject);
     procedure Action1Execute(Sender: TObject);
@@ -262,6 +265,7 @@ uses igGlobals
    {$ENDIF}
    , StrUtils
    , xmlUtilz
+   , PromptUnit
    ;
 
 {$IFnDEF FPC}
@@ -1885,6 +1889,24 @@ begin
       r := Sender.GetDisplayRect(Node, Column, true);
       ImageList.Draw(TargetCanvas, r.Right - 17, CellRect.Top, 52);
     end;
+  end;
+end;
+
+procedure TXmlGridForm.MenuItem2Click(Sender: TObject);
+var
+  n, w: Integer;
+begin
+  n := Grid.FocusedColumn;
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    PromptForm.Caption := 'Column width';
+    PromptForm.PromptEdit.Text := IntToStr (Grid.Header.Columns[n].Width);
+    PromptForm.Numeric := True;
+    PromptForm.ShowModal;
+    if PromptForm.ModalResult = mrOk then
+      Grid.Header.Columns[n].Width := StrToInt(PromptForm.PromptEdit.Text);
+  finally
+    FreeAndNil(PromptForm);
   end;
 end;
 

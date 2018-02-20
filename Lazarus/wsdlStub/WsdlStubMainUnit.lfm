@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 370
+  Left = 362
   Height = 678
-  Top = 89
+  Top = 68
   Width = 1028
   Action = OpenProjectAction
   Caption = 'Open Project...'
@@ -771,6 +771,7 @@ object MainForm: TMainForm
             TreeOptions.MiscOptions = [toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toFullRowDrag]
             TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            OnAdvancedHeaderDraw = GridViewAdvancedHeaderDraw
             OnBeforeCellPaint = GridViewBeforeCellPaint
             OnClick = TreeViewClick
             OnEdited = GridViewEdited
@@ -1582,7 +1583,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 0
+      TabIndex = 2
       Tabs.Strings = (
         'Notifications'
         'Snapshots'
@@ -9180,6 +9181,13 @@ object MainForm: TMainForm
       Caption = 'Full Collapse'
       OnClick = FullCollapse1Click
     end
+    object MenuItem42: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem43: TMenuItem
+      Caption = 'Column width...'
+      OnClick = MenuItem43Click
+    end
     object N4: TMenuItem
       Caption = '-'
     end
@@ -9606,6 +9614,13 @@ object MainForm: TMainForm
         0000000000000000000000000000000000000000000000000000
       }
     end
+    object MenuItem44: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem45: TMenuItem
+      Caption = 'Column width...'
+      OnClick = MenuItem45Click
+    end
   end
   object GridPopupMenu: TPopupMenu
     Images = mainImageList
@@ -9749,6 +9764,13 @@ object MainForm: TMainForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
+    end
+    object MenuItem41: TMenuItem
+      Caption = '-'
+    end
+    object GridColumnWidthMenuItem: TMenuItem
+      Caption = 'Column width...'
+      OnClick = GridColumnWidthMenuItemClick
     end
   end
   object LogUsageTimer: TTimer
@@ -10393,6 +10415,13 @@ object MainForm: TMainForm
       }
       ImageIndex = 13
       OnClick = SnapshotShowDetailsMenuitemClick
+    end
+    object MenuItem46: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem47: TMenuItem
+      Caption = 'Column width...'
+      OnClick = MenuItem47Click
     end
   end
   object PingPongTimer: TTimer

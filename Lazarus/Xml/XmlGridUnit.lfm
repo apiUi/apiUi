@@ -2590,5 +2590,12 @@ object XmlGridForm: TXmlGridForm
         OnClick = XML1Click
       end
     end
+    object MenuItem1: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Column width...'
+      OnClick = MenuItem2Click
+    end
   end
 end

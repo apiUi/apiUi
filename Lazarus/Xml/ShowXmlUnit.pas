@@ -29,6 +29,8 @@ type
   TShowXmlForm = class(TForm)
     CancelButton : TBitBtn ;
     DocumentationViewer: TIpHtmlPanel;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     OkButton : TBitBtn ;
     Panel1: TPanel;
     Panel4: TPanel;
@@ -106,6 +108,7 @@ type
     procedure DocumentationViewerMouseMove (Sender : TObject ;
       Shift : TShiftState ; X , Y : Integer );
     procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
     procedure TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
@@ -256,7 +259,7 @@ uses
 {$ELSE}
 {$ENDIF}
   FindRegExpDialog, igGlobals, ClipBrd, Xsdz, xmlUtilz, XmlGridUnit,
-  RegExpr, StrUtils, A2BXmlz, ShowA2BXmlUnit;
+  RegExpr, StrUtils, A2BXmlz, ShowA2BXmlUnit, PromptUnit;
 
 const
   treeTagColumn = 0;
@@ -1948,6 +1951,24 @@ end;
 procedure TShowXmlForm.DocumentationViewerHotClick(Sender: TObject);
 begin
   OpenUrl(DocumentationViewer.HotURL);
+end;
+
+procedure TShowXmlForm.MenuItem2Click(Sender: TObject);
+var
+  n, w: Integer;
+begin
+  n := TreeView.FocusedColumn;
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    PromptForm.Caption := 'Column width';
+    PromptForm.PromptEdit.Text := IntToStr (TreeView.Header.Columns[n].Width);
+    PromptForm.Numeric := True;
+    PromptForm.ShowModal;
+    if PromptForm.ModalResult = mrOk then
+      TreeView.Header.Columns[n].Width := StrToInt(PromptForm.PromptEdit.Text);
+  finally
+    FreeAndNil(PromptForm);
+  end;
 end;
 
 procedure TShowXmlForm .TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;

@@ -78,6 +78,14 @@ type
     ContextsAction: TAction;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
+    MenuItem41: TMenuItem;
+    GridColumnWidthMenuItem: TMenuItem;
+    MenuItem42: TMenuItem;
+    MenuItem43: TMenuItem;
+    MenuItem44: TMenuItem;
+    MenuItem45: TMenuItem;
+    MenuItem46: TMenuItem;
+    MenuItem47: TMenuItem;
     OpenProjectAction: TAction;
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
@@ -581,12 +589,19 @@ type
     procedure EditMessageDocumentationActionExecute(Sender: TObject);
     procedure EditMessageScriptActionExecute (Sender : TObject );
     procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure GridViewAdvancedHeaderDraw(Sender: TVTHeader;
+      var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
     procedure JsonSampleOperationsExecute(Sender: TObject);
     procedure JsonSampleOperationsHint(var HintStr: string; var CanShow: Boolean
       );
     procedure LogTabControlChange(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
+    procedure MenuItem43Click(Sender: TObject);
+    procedure MenuItem45Click(Sender: TObject);
+    procedure MenuItem47Click(Sender: TObject);
+    procedure PromptAndSetColumnWidth (aTreeView: TVirtualStringTree);
+    procedure GridColumnWidthMenuItemClick(Sender: TObject);
     procedure NeedTacoHostData (Sender: TTacoInterface);
     procedure OnTacoAuthorize (Sender: TObject);
     procedure AbortActionUpdate (Sender : TObject );
@@ -13634,6 +13649,12 @@ begin
   OpenUrl((Sender as TIpHtmlPanel).HotURL);
 end;
 
+procedure TMainForm.GridViewAdvancedHeaderDraw(Sender: TVTHeader;
+  var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
+begin
+
+end;
+
 procedure TMainForm.JsonSampleOperationsExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -13952,6 +13973,44 @@ end;
 procedure TMainForm.MenuItem34Click(Sender: TObject);
 begin
   Clipboard.AsText := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode).FullCaption;
+end;
+
+procedure TMainForm.MenuItem43Click(Sender: TObject);
+begin
+  PromptAndSetColumnWidth(InWsdlTreeView);
+end;
+
+procedure TMainForm.MenuItem45Click(Sender: TObject);
+begin
+  PromptAndSetColumnWidth(MessagesVTS);
+end;
+
+procedure TMainForm.MenuItem47Click(Sender: TObject);
+begin
+  PromptAndSetColumnWidth(SnapshotsVTS);
+end;
+
+procedure TMainForm.PromptAndSetColumnWidth(aTreeView: TVirtualStringTree);
+var
+  n, w: Integer;
+begin
+  n := aTreeView.FocusedColumn;
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    PromptForm.Caption := 'Column width';
+    PromptForm.PromptEdit.Text := IntToStr (aTreeView.Header.Columns[n].Width);
+    PromptForm.Numeric := True;
+    PromptForm.ShowModal;
+    if PromptForm.ModalResult = mrOk then
+      aTreeView.Header.Columns[n].Width := StrToInt(PromptForm.PromptEdit.Text);
+  finally
+    FreeAndNil(PromptForm);
+  end;
+end;
+
+procedure TMainForm.GridColumnWidthMenuItemClick(Sender: TObject);
+begin
+  PromptAndSetColumnWidth(GridView);
 end;
 
 procedure TMainForm .OnTacoAuthorize (Sender : TObject );
