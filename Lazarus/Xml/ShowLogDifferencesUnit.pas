@@ -452,11 +452,17 @@ begin
       if Assigned (xData.aLog) then
         CellText := xsdFormatDateTime (xData.aLog.InboundTimeStamp, @TIMEZONE_UTC);
     ceServiceColumn:
-      if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
-        CellText := xData.aLog.Operation.WsdlService.Name;
+      if Assigned (xData.aLog) then
+        if Assigned (xData.aLog.Operation) then
+          CellText := xData.aLog.Operation.WsdlService.Name
+        else
+          CellText := xData.aLog.ServiceName;
     ceOperationColumn:
-      if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
-        CellText := xData.aLog.Operation.Name;
+      if Assigned (xData.aLog) then
+        if Assigned (xData.aLog.Operation) then
+          CellText := xData.aLog.Operation.Alias
+        else
+          CellText := xData.aLog.OperationName;
     ceMessageColumn:
       if Assigned (xData.aLog) and Assigned (xData.aLog.Mssg) then
         CellText := xData.aLog.Mssg.Name;
@@ -467,11 +473,17 @@ begin
       if Assigned (xData.bLog) then
         CellText := xsdFormatDateTime (xData.bLog.InboundTimeStamp, @TIMEZONE_UTC);
     ceRefServiceColumn:
-      if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
-        CellText := xData.bLog.Operation.WsdlService.Name;
+      if Assigned (xData.bLog) then
+        if Assigned (xData.bLog.Operation) then
+          CellText := xData.bLog.Operation.WsdlService.Name
+        else
+          CellText := xData.bLog.ServiceName;
     ceRefOperationColumn:
-      if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
-        CellText := xData.bLog.Operation.Name;
+      if Assigned (xData.bLog) then
+        if Assigned (xData.bLog.Operation) then
+          CellText := xData.bLog.Operation.Alias
+        else
+          CellText := xData.bLog.OperationName;
    ceRefMessageColumn:
      if Assigned (xData.bLog) and Assigned (xData.bLog.Mssg) then
        CellText := xData.bLog.Mssg.Name;

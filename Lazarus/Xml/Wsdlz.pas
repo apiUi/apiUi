@@ -4362,6 +4362,7 @@ begin
     BindScriptFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
     BindScriptFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
     BindScriptFunction ('UserName', @wsdlUserName, SFV, '()');
+    BindScriptFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');
     BindScriptFunction ('OperationName', @wsdlOperationName, SFOV, '()');
   except
     raise;
@@ -6267,6 +6268,7 @@ begin
       BindCheckerFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
       BindCheckerFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
       BindCheckerFunction ('UserName', @wsdlUserName, SFV, '()');
+      BindCheckerFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');
       BindCheckerFunction ('OperationName', @wsdlOperationName, SFOV, '()');
     except
     end;
@@ -6340,6 +6342,7 @@ begin
     BindStamperFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
     BindStamperFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
     BindStamperFunction ('UserName', @wsdlUserName, SFV, '()');
+    BindStamperFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');
     BindStamperFunction ('OperationName', @wsdlOperationName, SFOV, '()');
   except
   end
