@@ -29,6 +29,14 @@ type
   TjsonType = (jsonNone, jsonString, jsonNumber, jsonBoolean, jsonObject,
     jsonArray, jsonArrayValue);
 type TOperationParametersType = (oppBody, oppPath, oppQuery, oppHeader, oppForm);
+const OperationParametersTypeNames: array [oppBody..oppForm] of String =
+( 'Body'
+, 'Path'
+, 'Query'
+, 'Header'
+, 'Form'
+);
+function NameToOperationParametersType (aName:String): TOperationParametersType;
 type TCollectionFormat = (ocfSingle, ocfCSV, ocfSSV, ocfTSV, ocfPipes, ocfMulti);
 
 type
@@ -320,6 +328,17 @@ uses sysutils
    ;
 
 { TXsdList }
+
+function NameToOperationParametersType(aName: String): TOperationParametersType;
+begin
+  result := oppBody; // avoid warning
+  if aName = 'Body' then begin result := oppBody; Exit; end;
+  if aName = 'Path' then begin result := oppPath; Exit; end;
+  if aName = 'Query' then begin result := oppQuery; Exit; end;
+  if aName = 'Header' then begin result := oppHeader; Exit; end;
+  if aName = 'Form' then begin result := oppForm; Exit; end;
+  raise Exception.Create('function OperationParametersType(aName: String): TOperationParametersType; illegal arg: ' + aName);
+end;
 
 function NameWithoutPrefix(aName: String): String;
 begin

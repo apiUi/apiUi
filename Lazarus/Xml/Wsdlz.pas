@@ -1351,7 +1351,12 @@ begin
   if not (TCustomBindable ((aArg as YYSType).yy.yyPointer) is TXml) then
     raise Exception.Create ('asXmlString: Only allowed with XML elements');
   xXml := (TXml ((aArg as YYSType).yy.yyPointer));
-  result := xXml.AsText(True, 2, True, False);
+  result := xXml.StreamXML ( True
+                           , False
+                           , 2
+                           , True
+                           , False
+                           );
 end;
 
 procedure populateFromXmlString (aOwner: TObject; aArg1: TObject; aArg2: String);

@@ -38,7 +38,9 @@ uses
    , ComCtrls
    , ExtCtrls
    , FormIniFilez
-   , Menus , PairSplitter,EditBtn
+   , Menus
+   , PairSplitter
+   , EditBtn
    , VirtualTrees
    , LazFileUtils
    , FileUtil

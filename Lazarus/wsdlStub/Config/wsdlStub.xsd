@@ -8,6 +8,13 @@
 			<xs:enumeration value="IBM Zos"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="OperationParametersType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Header"/>
+			<xs:enumeration value="Path"/>
+			<xs:enumeration value="Query"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="dynEnumString">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
@@ -679,13 +686,50 @@ In case your records do not have any identifying string for operation (listeners
 	<xs:complexType name="JsonSampleOperationType">
 		<xs:sequence>
 			<xs:element name="Name" type="NameType"/>
+			<xs:element name="httpVerb">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="DELETE"/>
+						<xs:enumeration value="GET"/>
+						<xs:enumeration value="HEAD"/>
+						<xs:enumeration value="OPTIONS"/>
+						<xs:enumeration value="POST"/>
+						<xs:enumeration value="PUT"/>
+						<xs:enumeration value="TRACE"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 			<xs:element name="Req" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SampleFile" type="FileNameType">
+						<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Name of the JSON sample request file</xs:documentation>
 							</xs:annotation>
+						</xs:element>
+						<xs:element name="parameters" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="name" type="xs:string"/>
+												<xs:element name="type">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:enumeration value="string"/>
+															<xs:enumeration value="number"/>
+															<xs:enumeration value="boolean"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="optional" type="xs:boolean"/>
+												<xs:element name="in" type="OperationParametersType"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
@@ -693,10 +737,17 @@ In case your records do not have any identifying string for operation (listeners
 			<xs:element name="Rpy" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SampleFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the JSON sample response file</xs:documentation>
-							</xs:annotation>
+						<xs:element name="response" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="code" type="xs:integer"/>
+									<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Name of the JSON sample response file</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
