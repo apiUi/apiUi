@@ -702,11 +702,6 @@ In case your records do not have any identifying string for operation (listeners
 			<xs:element name="Req" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Name of the JSON sample request file</xs:documentation>
-							</xs:annotation>
-						</xs:element>
 						<xs:element name="parameters" minOccurs="0">
 							<xs:complexType>
 								<xs:sequence>
@@ -714,16 +709,7 @@ In case your records do not have any identifying string for operation (listeners
 										<xs:complexType>
 											<xs:sequence>
 												<xs:element name="name" type="xs:string"/>
-												<xs:element name="type">
-													<xs:simpleType>
-														<xs:restriction base="xs:string">
-															<xs:enumeration value="string"/>
-															<xs:enumeration value="number"/>
-															<xs:enumeration value="boolean"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:element>
-												<xs:element name="optional" type="xs:boolean"/>
+												<xs:element name="required" type="xs:boolean"/>
 												<xs:element name="in" type="OperationParametersType"/>
 											</xs:sequence>
 										</xs:complexType>
@@ -731,34 +717,34 @@ In case your records do not have any identifying string for operation (listeners
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
+						<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Name of the JSON sample request file</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="Rpy" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="response" maxOccurs="unbounded">
+						<xs:element name="responses" minOccurs="0">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="code" type="xs:integer"/>
-									<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
-										<xs:annotation>
-											<xs:documentation>Name of the JSON sample response file</xs:documentation>
-										</xs:annotation>
+									<xs:element name="response" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="code" type="xs:integer"/>
+												<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Name of the JSON sample response file</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Flt" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SampleFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the JSON sample fault file</xs:documentation>
-							</xs:annotation>
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>

@@ -4104,8 +4104,7 @@ begin
                 if httpVerb = 'GET' then httpClient.Get(URL, dStream);
                 if httpVerb = 'HEAD' then HttpClient.Head(URL);
                 if httpVerb = 'OPTIONS' then HttpClient.Options(URL);
-                if httpVerb = 'POST' then
-                  HttpClient.Post(URL, HttpRequest, dStream);
+                if httpVerb = 'POST' then HttpClient.Post(URL, HttpRequest, dStream);
                 if httpVerb = 'PUT' then HttpClient.Put(URL, HttpRequest, dStream);
                 if httpVerb = 'TRACE' then httpClient.Trace(URL, dStream);
               end;
@@ -5477,10 +5476,10 @@ procedure TWsdlProject.xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: Str
   end;
 var
   sList: TStringList;
-  oXml, xXml: TXml;
+  oXml, ppXml, pXml, xXml: TXml;
   xXsd: TXsd;
   xWsdl: TWsdl;
-  f, x, o: Integer;
+  f, x, o, p: Integer;
   xOperation: TWsdlOperation;
 const
   _xsdName = 'OperationDefs.XmlSampleOperations';
@@ -5551,7 +5550,17 @@ begin
           if Assigned(rpyBind) then
             rpyBind.Free;
           FreeAndNil (fltBind);
+          Name := oXml.Items.XmlCheckedValueByTagDef['Name', Name];
+          httpVerb := oXml.Items.XmlCheckedValueByTagDef['httpVerb', httpVerb];
           reqBind := _LoadXmlSampleMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
+          ppXml := oXml.Items.XmlCheckedItemByTag['parameters'];
+          if Assigned (ppXml) then
+          begin
+            for p := 0 to ppXml.Items.Count - 1 do
+            begin
+
+            end;
+          end;
           rpyBind := _LoadXmlSampleMsg('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename);
           fltBind := _LoadXmlSampleMsg('Flt', oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename);
           if Alias <> reqTagName then
@@ -5570,52 +5579,75 @@ begin
 end;
 
 procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: String);
-  procedure _getDescriptionFiles (aXml: TXml; aFileNames: TStringList);
-  var
-    x, f: Integer;
-  begin
-    if not aXml.Checked then Exit;
-    if aXml.Name = 'DescriptionFile' then
-    begin
-      if not aFileNames.Find(aXml.Value, f) then
-        aFilenames.AddObject (aXml.Value, Pointer (ipmDTCobol));
-    end
-    else
-    begin
-      for x := 0 to aXml.Items.Count - 1 do
-        _getDescriptionFiles(aXml.Items.XmlItems[x], aFileNames);
-    end;
-  end;
-  function _LoadJsonSampleMsg (aLabel: String; sXml: TXml; aXsd: TXsd; var aSampleFileName: String): TXml;
+  function _LoadJsonSampleReq (aLabel: String; sXml: TXml; aXsd: TXsd): TXml;
   var
     xXsdDescr: TXsdDescr;
     xXsd: TXsd;
+    xXml: TXml;
+    x: Integer;
+    xSampleFileName: String;
   begin
     result := nil;
     xXsd := nil;
     try
       if not Assigned (sXml) then
         exit;
-      aSampleFileName := LazFileUtils.ExpandFileNameUTF8(ExpandRelativeFileName
-                            (aMainFileName, sXml.Items.XmlCheckedValueByTag ['SampleFile'])
-                          );
+      aXsd.sType.ElementDefs.Clear;
       if xsdElementsWhenRepeatable > 0 then
         xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
       else
         xXsdDescr := TXsdDescr.Create(JsonSampleWsdl.xsdDefaultElementsWhenRepeatable);
       JsonSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
-      try
-        xXsd := xXsdDescr.LoadXsdFromJsonSampleFile(aSampleFileName, nil);
-      except
-        on E: Exception do
-          raise Exception.Create('Error opening ' + aSampleFileName + ': ' + e.Message);
-      end;
-      if Assigned (xXsd) then
+      xXml := sXml.ItemByTag['parameters'];
+      if Assigned (xXml) then
       begin
-        aXsd.sType.ElementDefs.AddObject('', xXsd);
-        bindRefId := 0;
-        result := TXml.Create (0, aXsd);
+        for x := 0 to xXml.Items.Count - 1 do
+        begin
+          with xXml.Items.XmlItems[x] do
+          begin
+            if Name = 'parameter' then
+            begin
+              xXsd := TXsd.Create(xXsdDescr);
+              xXsdDescr.Garbage.AddObject('', xXsd);
+              xXsd.ElementName := Items.XmlValueByTag['name'];
+              xXsd.sType := TXsdDataType.Create(xXsdDescr);
+              xXsdDescr.Garbage.AddObject('', xXsd.sType);
+              xXsd.sType.xsdType:= dtSimpleType;
+              xXsd.sType.jsonType := jsonString;
+              xXsd.sType.Name := xXsd.ElementName;
+              if Items.XmlValueByTagDef['', 'false'] = 'true' then
+                xXsd.minOccurs := '1'
+              else
+                xXsd.minOccurs := '0';
+              xXsd.maxOccurs := '1';
+              xXsd.ParametersType := NameToOperationParametersType(Items.XmlValueByTagDef['in', 'Query']);
+              aXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+            end;
+          end;
+        end;
       end;
+      xXml := sXml.ItemByTag['SampleFile'];
+      if Assigned (xXml) then
+      begin
+        xSampleFileName := ExpandFileNameUTF8(ExpandRelativeFileName
+                            (aMainFileName, xXml.Value)
+                          );
+        try
+          xXsd := xXsdDescr.LoadXsdFromJsonSampleFile(xSampleFileName, nil);
+        except
+          on E: Exception do
+            raise Exception.Create('Error opening ' + xSampleFileName + ': ' + e.Message);
+        end;
+        if Assigned (xXsd) then
+        begin
+          xXsd.minOccurs := '1';
+          xXsd.maxOccurs := '1';
+          xXsd.ParametersType := oppBody;
+          aXsd.sType.ElementDefs.AddObject('', xXsd);
+        end;
+      end;
+      bindRefId := 0;
+      result := TXml.Create (0, aXsd);
     finally
       if not Assigned (result) then
         result := TXml.Create;
@@ -5623,6 +5655,83 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
       if result.jsonType = jsonNone then
         Result.jsonType := jsonObject;
     end;
+  end;
+  function _LoadJsonSampleRpy (aLabel: String; sXml: TXml; aXsd: TXsd): TXml;
+  var
+    x: Integer;
+    xXsdDescr: TXsdDescr;
+    xXsd, sXsd: TXsd;
+    xXml: TXml;
+    xFileName: String;
+  begin
+    result := nil;
+    xXsd := nil;
+    try
+      if not Assigned (sXml) then
+        exit;
+      aXsd.sType.ElementDefs.Clear;
+      if xsdElementsWhenRepeatable > 0 then
+        xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
+      else
+        xXsdDescr := TXsdDescr.Create(JsonSampleWsdl.xsdDefaultElementsWhenRepeatable);
+      JsonSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
+      xXml := sXml.ItemByTag['responses'];
+      if Assigned (xXml) then
+      begin
+        for x := 0 to xXml.Items.Count - 1 do
+        begin
+          with xXml.Items.XmlItems[x] do
+          begin
+            if Name = 'response' then
+            begin
+              xXsd := TXsd.Create(xXsdDescr);
+              xXsdDescr.Garbage.AddObject('', xXsd);
+              xXsd.ElementName := 'rspns' + Items.XmlValueByTag['code'];
+              xXsd.sType := TXsdDataType.Create(xXsdDescr);
+              xXsdDescr.Garbage.AddObject('', xXsd.sType);
+              xXsd.sType.xsdType:= dtComplexType;
+              xXsd.sType.jsonType := jsonObject;
+              xXsd.sType.Name := xXsd.ElementName;
+              if Items.XmlValueByTagDef['', 'false'] = 'true' then
+                xXsd.minOccurs := '1'
+              else
+                xXsd.minOccurs := '0';
+              xXsd.maxOccurs := '1';
+              aXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+              if Assigned (Items.XmlCheckedItemByTag['SampleFile']) then
+              begin
+                xFileName := ExpandFileNameUTF8 (ExpandRelativeFileName ( aMainFileName
+                                                                        , Items.XmlValueByTag['SampleFile']
+                                                                        )
+                                                );
+                try
+                  sXsd := xXsdDescr.LoadXsdFromJsonSampleFile (xFileName, nil);
+                except
+                  on E: Exception do
+                    raise Exception.Create('Error opening ' + xFileName + ': ' + e.Message);
+                end;
+                xXsd.sType.ElementDefs.AddObject(sXsd.ElementName, sXsd);
+              end;
+            end;
+          end;
+        end;
+      end;
+      bindRefId := 0;
+      result := TXml.Create (0, aXsd);
+    finally
+      if not Assigned (result) then
+        result := TXml.Create;
+      result.Checked := True;
+      if result.jsonType = jsonNone then
+        Result.jsonType := jsonObject;
+    end;
+  end;
+  function _LoadJsonSampleFlt (aLabel: String): TXml;
+  begin
+    result := TXml.Create;
+    result.Checked := True;
+    result.jsonType := jsonObject;
+    result.Name := aLabel;
   end;
 var
   sList: TStringList;
@@ -5703,9 +5812,10 @@ begin
           if Assigned(rpyBind) then
             rpyBind.Free;
           FreeAndNil (fltBind);
-          reqBind := _LoadJsonSampleMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
-          rpyBind := _LoadJsonSampleMsg('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename);
-          fltBind := _LoadJsonSampleMsg('Flt', oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename);
+          httpVerb := oXml.Items.XmlValueByTagDef['httpVerb', httpVerb];
+          reqBind := _LoadJsonSampleReq('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd);
+          rpyBind := _LoadJsonSampleRpy('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd);
+          fltBind := _LoadJsonSampleFlt('Flt');
           if Alias <> reqTagName then
           begin
             if Assigned (reqBind) then reqBind.Name := Alias;
@@ -6222,7 +6332,7 @@ end;
 
 function TWsdlProject.jsonSampleOperationsXml(aMainFileName: String): TXml;
 var
-  x: Integer;
+  x, y: Integer;
   xOperation: TWsdlOperation;
   xXml: TXml;
 begin
@@ -6234,30 +6344,48 @@ begin
       with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
       begin
         AddXml (TXml.CreateAsString('Name', xOperation.Name));
-        if Assigned (xOperation.reqBind)
-        and (xOperation.reqDescrFilename <> '') then
+        AddXml (TXml.CreateAsString('httpVerb', xOperation.httpVerb));
+        if Assigned (xOperation.reqBind) then
+        begin
           with AddXml (TXml.CreateAsString('Req', '')) do
           begin
-            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.reqDescrFilename));
-            if xOperation.reqBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.reqBind as TXml).Items.XmlItems[0].Name));
+            if xOperation.reqXsd.sType.ElementDefs.Count > 0 then
+            begin
+              with AddXml (TXml.CreateAsString('parameters', '')) do
+              begin
+                with xOperation.reqXsd.sType.ElementDefs do
+                begin
+                  for y := 0 to Count - 1 do
+                  begin
+                    if Xsds[y].ParametersType <> oppBody then
+                    begin
+                      with AddXml (TXml.CreateAsString('parameter', '')) do
+                      begin
+                        AddXml (TXml.CreateAsString('name', Xsds[y].ElementName));
+                        AddXml (TXml.CreateAsString('required', BoolToStr(Xsds[y].minOccurs = '1', 'true', 'false')));
+                        AddXml (TXml.CreateAsString('in', OperationParametersTypeNames[Xsds[y].ParametersType]));
+                      end;
+                    end;
+                  end;
+                end;
+              end;
+              with xOperation.reqXsd.sType.ElementDefs do
+                for y := 0 to Count - 1 do
+                  if Xsds[y].ParametersType = oppBody then
+                    AddXml (TXml.CreateAsString('SampleFile', Xsds[y].FileName));
+            end;
           end;
-        if Assigned (xOperation.rpyBind)
-        and (xOperation.rpyDescrFilename <> '') then
+        end;
+        if Assigned (xOperation.rpyBind) then
+        begin
+          if (xOperation.rpyDescrFilename <> '') then
           with AddXml (TXml.CreateAsString('Rpy', '')) do
           begin
             AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.rpyDescrFilename));
             if xOperation.rpyBind.Children.Count > 0 then
               AddXml(TXml.CreateAsString('ElementName', (xOperation.rpyBind as TXml).Items.XmlItems[0].Name));
           end;
-        if Assigned (xOperation.fltBind)
-        and (xOperation.fltDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Flt', '')) do
-          begin
-            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.fltDescrFilename));
-            if xOperation.fltBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.fltBind as TXml).Items.XmlItems[0].Name));
-          end;
+        end;
         if xOperation.reqRecognition.Count > 0 then
           AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
         if xOperation.rpyRecognition.Count > 0 then

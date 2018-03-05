@@ -1262,6 +1262,7 @@ begin
       raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Json: ' + aFileName);
     end;
     result := CreateXsdFromJsonSample (xXml, False);
+    result.FileName := aFileName;
   finally
     xXml.Free;
   end;
