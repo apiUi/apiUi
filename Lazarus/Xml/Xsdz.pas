@@ -461,6 +461,7 @@ begin
   self.Documentation.Text := aSource.Documentation.Text;
   self.Appinfo.Text := aSource.Appinfo.Text;
   self.ResponseNo := aSource.ResponseNo;
+  self.FileName := aSource.FileName;
 end;
 
 destructor TXsd.Destroy;

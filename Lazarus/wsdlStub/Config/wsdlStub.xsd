@@ -686,6 +686,11 @@ In case your records do not have any identifying string for operation (listeners
 	<xs:complexType name="JsonSampleOperationType">
 		<xs:sequence>
 			<xs:element name="Name" type="NameType"/>
+			<xs:element name="Path" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Refers to a file or directory on the web server. In server mode, wsdlStub will use the path to recognize the (this) operation. In client mode, wsdlStub will use the path to create the endpoint for a request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="httpVerb">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -734,7 +739,17 @@ In case your records do not have any identifying string for operation (listeners
 									<xs:element name="response" minOccurs="0" maxOccurs="unbounded">
 										<xs:complexType>
 											<xs:sequence>
-												<xs:element name="code" type="xs:integer"/>
+												<xs:element name="code" type="xs:integer">
+													<xs:annotation>
+														<xs:documentation>HTTP response status codes
+1xx Informational responses
+2xx Success
+3xx Redirection
+4xx Client errors
+5xx Server errors
+6xx Unofficial codes</xs:documentation>
+													</xs:annotation>
+												</xs:element>
 												<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
 													<xs:annotation>
 														<xs:documentation>Name of the JSON sample response file</xs:documentation>

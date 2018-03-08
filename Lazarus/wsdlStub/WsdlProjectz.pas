@@ -5687,6 +5687,8 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
               xXsd := TXsd.Create(xXsdDescr);
               xXsdDescr.Garbage.AddObject('', xXsd);
               xXsd.ElementName := 'rspns' + Items.XmlValueByTag['code'];
+              xXsd.ResponseNo := Items.XmlIntegerByTag['code'];
+              xXsd.FileName := Items.XmlValueByTag['SampleFile'];
               xXsd.sType := TXsdDataType.Create(xXsdDescr);
               xXsdDescr.Garbage.AddObject('', xXsd.sType);
               xXsd.sType.xsdType:= dtComplexType;
@@ -6378,12 +6380,22 @@ begin
         end;
         if Assigned (xOperation.rpyBind) then
         begin
-          if (xOperation.rpyDescrFilename <> '') then
           with AddXml (TXml.CreateAsString('Rpy', '')) do
           begin
-            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.rpyDescrFilename));
-            if xOperation.rpyBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.rpyBind as TXml).Items.XmlItems[0].Name));
+            with AddXml (TXml.CreateAsString('responses', '')) do
+            begin
+              with xOperation.rpyXsd.sType.ElementDefs do
+              begin
+                for y := 0 to Count - 1 do
+                begin
+                  with AddXml (TXml.CreateAsString('response', '')) do
+                  begin
+                    AddXml (TXml.CreateAsInteger('code', Xsds[y].ResponseNo));
+                    AddXml (TXml.CreateAsString('SampleFile', Xsds[y].FileName));
+                  end;
+                end;
+              end;
+            end;
           end;
         end;
         if xOperation.reqRecognition.Count > 0 then
