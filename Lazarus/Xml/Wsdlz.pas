@@ -326,7 +326,7 @@ type
       StubAction: TStubAction;
       StubTransport: TTransportType;
       StubHttpAddress: String;
-      httpVerb: String;
+      httpPath, httpVerb: String;
       ResponseNo: Integer;
       ContentEncoding: String;
       AcceptGzipEncoding, AcceptDeflateEncoding: Boolean;
@@ -5079,6 +5079,7 @@ begin
   self.AcceptDeflateEncoding := xOperation.AcceptDeflateEncoding;
   self.AcceptGzipEncoding := xOperation.AcceptGzipEncoding;
   self.httpVerb := xOperation.httpVerb;
+  self.httpPath := xOperation.httpPath;
   self.StubMqPutManager := xOperation.StubMqPutManager;
   self.StubMqPutQueue := xOperation.StubMqPutQueue;
   self.StubMqGetManager := xOperation.StubMqGetManager;

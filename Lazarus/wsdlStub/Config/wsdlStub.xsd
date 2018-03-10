@@ -683,31 +683,50 @@ In case your records do not have any identifying string for operation (listeners
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="JsonSampleOperationType">
+	<xs:complexType name="JsonSampleOperationsType">
 		<xs:sequence>
-			<xs:element name="Name" type="NameType"/>
-			<xs:element name="Path" type="xs:string">
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="basePath">
 				<xs:annotation>
 					<xs:documentation>Refers to a file or directory on the web server. In server mode, wsdlStub will use the path to recognize the (this) operation. In client mode, wsdlStub will use the path to create the endpoint for a request</xs:documentation>
 				</xs:annotation>
-			</xs:element>
-			<xs:element name="httpVerb">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="DELETE"/>
-						<xs:enumeration value="GET"/>
-						<xs:enumeration value="HEAD"/>
-						<xs:enumeration value="OPTIONS"/>
-						<xs:enumeration value="POST"/>
-						<xs:enumeration value="PUT"/>
-						<xs:enumeration value="TRACE"/>
+						<xs:pattern value="(/.*[^/])+"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="Req" minOccurs="0">
+			<xs:element name="Operation" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="parameters" minOccurs="0">
+						<xs:element name="Alias" type="xs:string"/>
+						<xs:element name="Path">
+							<xs:annotation>
+								<xs:documentation>Refers to a file or directory on the web server. In server mode, wsdlStub will use the path to recognize the (this) operation. In client mode, wsdlStub will use the path to create the endpoint for a request</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:pattern value="(/.*[^/])*"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Verb">
+							<xs:annotation>
+								<xs:documentation>Make sure the Path/httpVerb  psir is unique within these operations</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="DELETE"/>
+									<xs:enumeration value="GET"/>
+									<xs:enumeration value="HEAD"/>
+									<xs:enumeration value="OPTIONS"/>
+									<xs:enumeration value="POST"/>
+									<xs:enumeration value="PUT"/>
+									<xs:enumeration value="TRACE"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Req" minOccurs="0">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element name="parameter" minOccurs="0" maxOccurs="unbounded">
@@ -719,21 +738,15 @@ In case your records do not have any identifying string for operation (listeners
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Name of the JSON sample request file</xs:documentation>
+										</xs:annotation>
+									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Name of the JSON sample request file</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Rpy" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="responses" minOccurs="0">
+						<xs:element name="Rpy" minOccurs="0">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element name="response" minOccurs="0" maxOccurs="unbounded">
@@ -763,16 +776,6 @@ In case your records do not have any identifying string for operation (listeners
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
-			</xs:element>
-			<xs:element name="reqRecognition" type="xsdRecognitionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can determine that a message is for this specific operation. Relevant for stub operation and reading logfiles. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="rpyRecognition" type="xsdRecognitionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way wsdlStub can determine that a message is a response for this specific operation. Relevant for reading logfiles. </xs:documentation>
-				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
@@ -1320,14 +1323,13 @@ Instead of a formal description (.xsd,...) this operationtype uses an XML exampl
 				<xs:element name="JsonSampleOperations">
 					<xs:annotation>
 						<xs:documentation>JsonSample operations
-
 Sometimes you want to mock trafic for wich you do not have a formal description.
-Instead of a formal description this operationtype uses a JSON example message to create a (wsdlStub internal) description.
+Instead of using a formal description, here you can use JSON sample messages to create (wsdlStub internal) descriptions.
 </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="Operation" type="JsonSampleOperationType" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Service" type="JsonSampleOperationsType" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
