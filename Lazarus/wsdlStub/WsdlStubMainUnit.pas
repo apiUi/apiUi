@@ -76,7 +76,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
-    JsonSampleOperations: TAction;
+    ApiByExampleAction: TAction;
     ContextsAction: TAction;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
@@ -593,8 +593,8 @@ type
     procedure DocumentationViewerHotClick(Sender: TObject);
     procedure GridViewAdvancedHeaderDraw(Sender: TVTHeader;
       var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
-    procedure JsonSampleOperationsExecute(Sender: TObject);
-    procedure JsonSampleOperationsHint(var HintStr: string; var CanShow: Boolean
+    procedure ApiByExampleActionExecute(Sender: TObject);
+    procedure ApiByExampleActionHint(var HintStr: string; var CanShow: Boolean
       );
     procedure LogTabControlChange(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
@@ -1526,7 +1526,7 @@ begin
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     if se.Wsdls.Find(se.XmlSampleWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    if se.Wsdls.Find(se.JsonSampleWsdl.Name, f) then // not to be seen in list
+    if se.Wsdls.Find(se.ApiByExampleWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     if se.Wsdls.Find(se.SwiftMtWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
@@ -1543,7 +1543,7 @@ begin
       Inc(w);
     if se.Wsdls.Find(se.XmlSampleWsdl.Name, f) then // not to be seen in list
       Inc(w);
-    if se.Wsdls.Find(se.JsonSampleWsdl.Name, f) then // not to be seen in list
+    if se.Wsdls.Find(se.ApiByExampleWsdl.Name, f) then // not to be seen in list
       Inc(w);
     if se.Wsdls.Find(se.SwiftMtWsdl.Name, f) then // not to be seen in list
       Inc(w);
@@ -7550,7 +7550,7 @@ begin
   try
     FileName := se.projectFileName;
     Title := 'Save wsdlStub project as folder';
-    Options := Options + [ofOverwritePrompt];
+    Options := Options + [ofOverwritePrompt] - [ofPathMustExist, ofFileMustExist];
     if Execute then
     begin
       if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
@@ -13657,17 +13657,17 @@ begin
 
 end;
 
-procedure TMainForm.JsonSampleOperationsExecute(Sender: TObject);
+procedure TMainForm.ApiByExampleActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
   if not InactiveAfterPrompt then Exit;
-  xXml := se.jsonSampleOperationsXml('');
+  xXml := se.ApiByExampleOperationsXml('');
   try
     if EditXmlXsdBased ( 'JsonSample Operations'
-                       , 'OperationDefs.JsonSampleOperations'
-                       , 'JsonSampleOperations.Operation.Name'
-                       , 'JsonSampleOperations.Operation.Name'
+                       , 'OperationDefs.ApiByExampleOperations'
+                       , 'ApiByExampleOperations.Operation.Name'
+                       , 'ApiByExampleOperations.Operation.Name'
                        , se.IsActive
                        , xXml.Items.Count > 1
                        , esUsed
@@ -13678,8 +13678,8 @@ begin
       AcquireLock;
       try
         stubChanged := True;
-        se.jsonSampleOperationsUpdate(xXml, se.projectFileName);
-        PrepareOperation;
+        se.ApiByExampleOperationsUpdate(xXml, se.projectFileName);
+        ReloadProject; // some datatypes may have changed
       finally
         ReleaseLock;
       end;
@@ -13690,7 +13690,7 @@ begin
   end;
 end;
 
-procedure TMainForm.JsonSampleOperationsHint(var HintStr: string;
+procedure TMainForm.ApiByExampleActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
   HintStr := 'Maintain list of JsonSample operations ' + HttpActiveHint;

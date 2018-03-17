@@ -142,11 +142,13 @@ type
     procedure Clear; override;
   end;
 
+  { TWsdlService }
+
   TWsdlService = class(TObject)
     private
     function getOperationByName(Index: String): TWsdlOperation;
     public
-      Name, FileAlias, openApiPathRegExp, openApiPathMask: String;
+      Name, FileAlias, openApiPath, openApiPathRegExp, openApiPathMask, Host: String;
       AuthenticationType: TAuthenticationType;
       UserName: String;
       Password: String;
@@ -160,6 +162,7 @@ type
       property OperationByName [Index: String]: TWsdlOperation read getOperationByName;
       function OptionsAsXml: TXml;
       procedure OptionsFromXml(aXml: TXml);
+      procedure prepareOpenApiPath;
       constructor Create;
       destructor Destroy; override;
   end;
@@ -267,6 +270,7 @@ type
       fPrepareErrors: String;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
       function getDoExit : Boolean ;
+      function getHost: String;
       function getIsFreeFormat : Boolean ;
       function getIsOneWay: Boolean;
       function getIsOpenApiService: Boolean;
@@ -326,7 +330,7 @@ type
       StubAction: TStubAction;
       StubTransport: TTransportType;
       StubHttpAddress: String;
-      httpPath, httpVerb: String;
+      httpVerb: String;
       ResponseNo: Integer;
       ContentEncoding: String;
       AcceptGzipEncoding, AcceptDeflateEncoding: Boolean;
@@ -374,6 +378,7 @@ type
       FreeOnTerminateRequest: Boolean;
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
+      property Host: String read getHost;
       property DoExit: Boolean read getDoExit write setDoExit;
       property PrepareErrors: String read fPrepareErrors;
       property OnGetAbortPressed: TBooleanFunction write setOnGetAbortPressed;
@@ -2433,32 +2438,6 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
       aExisting := aNew;
   end;
 
-  const
-    pathTemplateRegExp = '\{[^\}]+\}';
-    valueRegExp = '[^/]*';
-  procedure _openApiPathPreparation(aSrvc: TWsdlService);
-  var
-    s, e: Integer;
-    f: Boolean;
-  begin
-    s := 1;
-    with TRegExpr.Create(pathTemplateRegExp) do
-    try
-      f := Exec(aSrvc.Name);
-      while f do
-      begin
-        e := MatchPos[0];
-        aSrvc.openApiPathRegExp := aSrvc.openApiPathRegExp + Copy (aSrvc.Name, s, e - s) + valueRegExp;
-        aSrvc.openApiPathMask := aSrvc.openApiPathMask + Copy (aSrvc.Name, s, e - s) + '%s';
-        s := MatchPos[0] + MatchLen[0];
-        f := ExecNext;
-      end;
-      aSrvc.openApiPathRegExp := aSrvc.openApiPathRegExp + Copy (aSrvc.Name, s, Length (aSrvc.Name));
-      aSrvc.openApiPathMask := aSrvc.openApiPathMask + Copy (aSrvc.Name, s, Length (aSrvc.Name));
-    finally
-      Free;
-    end;
-  end;
   function _trimPath (aPath: String): String;
   begin
     if (Length (aPath) > 0)
@@ -2588,9 +2567,10 @@ begin
       begin
         xService := TWsdlService.Create;
         xService.Name := Name;
+        xService.openApiPath := xService.Name;
         xService.openApiPathRegExp := self.basePath;
         xService.openApiPathMask := self.basePath;
-        _openApiPathPreparation(xService);
+        xService.prepareOpenApiPath;
         Services.AddObject(Name, xService);
         xService.DescriptionType := ipmDTJson;
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
@@ -3796,6 +3776,33 @@ begin
         if zXml.Value = 'Digest' then
           PasswordType := pwDigest;
     end;
+  end;
+end;
+
+procedure TWsdlService.prepareOpenApiPath;
+var
+  s, e: Integer;
+  f: Boolean;
+const
+  pathTemplateRegExp = '\{[^\}]+\}';
+  valueRegExp = '[^/]*';
+begin
+  s := 1;
+  with TRegExpr.Create(pathTemplateRegExp) do
+  try
+    f := Exec(openApiPath);
+    while f do
+    begin
+      e := MatchPos[0];
+      openApiPathRegExp := openApiPathRegExp + Copy (openApiPath, s, e - s) + valueRegExp;
+      openApiPathMask := openApiPathMask + Copy (openApiPath, s, e - s) + '%s';
+      s := MatchPos[0] + MatchLen[0];
+      f := ExecNext;
+    end;
+    openApiPathRegExp := openApiPathRegExp + Copy (openApiPath, s, Length (openApiPath));
+    openApiPathMask := openApiPathMask + Copy (openApiPath, s, Length (openApiPath));
+  finally
+    Free;
   end;
 end;
 
@@ -5079,7 +5086,6 @@ begin
   self.AcceptDeflateEncoding := xOperation.AcceptDeflateEncoding;
   self.AcceptGzipEncoding := xOperation.AcceptGzipEncoding;
   self.httpVerb := xOperation.httpVerb;
-  self.httpPath := xOperation.httpPath;
   self.StubMqPutManager := xOperation.StubMqPutManager;
   self.StubMqPutQueue := xOperation.StubMqPutQueue;
   self.StubMqGetManager := xOperation.StubMqGetManager;
@@ -6370,6 +6376,16 @@ end;
 function TWsdlOperation .getDoExit : Boolean ;
 begin
   result := fDoExit;
+end;
+
+function TWsdlOperation.getHost: String;
+begin
+  result := '';
+  if Assigned (Wsdl) then
+    result := wsdl.Host;
+  if Assigned (WsdlService)
+  and (WsdlService.Host <> '') then
+    result := WsdlService.Host;
 end;
 
 function TWsdlOperation.getIsFreeFormat : Boolean ;

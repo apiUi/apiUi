@@ -157,7 +157,7 @@ type
     OnRequestViolatingSchema, OnRequestViolatingAddressPath: TOnRequestViolating;
     DatabaseConnectionSpecificationXml, UnknownOpsReqReplactementsXml, UnknownOpsRpyReplactementsXml: TXml;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
-    FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, JsonSampleWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
+    FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, ApiByExampleWsdl, CobolWsdl, SwiftMtWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
     Wsdls, wsdlNames, openApiPaths: TStringList;
@@ -230,11 +230,11 @@ type
     function cobolOperationsXml: TXml;
     procedure cobolOperationsUpdate (aXml: TXml; aMainFileName: String);
     function xmlSampleOperationsXml(aMainFileName: String): TXml;
-    function jsonSampleOperationsXml(aMainFileName: String): TXml;
+    function ApiByExampleOperationsXml(aMainFileName: String): TXml;
     function xsdOperationsXml(aMainFileName: String): TXml;
     procedure xsdOperationsUpdate (aXml: TXml; aMainFileName: String);
     procedure xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: String);
-    procedure jsonSampleOperationsUpdate (aXml: TXml; aMainFileName: String);
+    procedure ApiByExampleOperationsUpdate (aXml: TXml; aMainFileName: String);
     function swiftMtOperationsXml: TXml;
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
@@ -1589,7 +1589,7 @@ begin
   FreeAndNil (CobolWsdl);
   FreeAndNil (XsdWsdl);
   FreeAndNil (XmlSampleWsdl);
-  FreeAndNil (JsonSampleWsdl);
+  FreeAndNil (ApiByExampleWsdl);
   FreeAndNil (SwiftMtWsdl);
   ignoreDifferencesOn.Free;
   checkValueAgainst.Free;
@@ -1719,7 +1719,7 @@ begin
   _updtWsdls(CobolWsdl);
   _updtWsdls(XsdWsdl);
   _updtWsdls(XmlSampleWsdl);
-  _updtWsdls(JsonSampleWsdl);
+  _updtWsdls(ApiByExampleWsdl);
   _updtWsdls(SwiftMtWsdl);
   for w := 0 to Wsdls.Count - 1 do
     _prepWsdl (Wsdls.Objects [w] as TWsdl);
@@ -2279,10 +2279,10 @@ begin
               end;
             xDone := True;
           end;
-          if xWsdl = JsonSampleWsdl then
+          if xWsdl = ApiByExampleWsdl then
           begin
             if xWsdl.Services.Services[0].Operations.Count > 0 then
-              with AddXml (jsonSampleOperationsXml(aMainFileName)) do
+              with AddXml (ApiByExampleOperationsXml(aMainFileName)) do
               begin
                 if SaveRelativeFileNames then
                   SetFileNamesRelative(aMainFileName);
@@ -2690,11 +2690,11 @@ begin
                 xWsdl := XmlSampleWsdl;
                 xDone := True;
               end;
-              oXml := wXml.Items.XmlItemByTag['JsonSampleOperations'];
+              oXml := wXml.Items.XmlItemByTag['ApiByExampleOperations'];
               if Assigned (oXml) then
               begin
-                jsonSampleOperationsUpdate(oXml, aMainFileName);
-                xWsdl := JsonSampleWsdl;
+                ApiByExampleOperationsUpdate(oXml, aMainFileName);
+                xWsdl := ApiByExampleWsdl;
                 xDone := True;
               end;
               oXml := wXml.Items.XmlItemByTag['SwiftMtOperations'];
@@ -3917,9 +3917,9 @@ begin
   Result := '';
   if not Assigned (aOperation)
     then raise Exception.Create('SendHttpMessage: null arguments');
-  if aOperation.isOpenApiService then
+  if (aOperation.isOpenApiService) then
   begin
-    URL := ifthen(aOperation.useSsl, 'https://', 'http://') + aOperation.Wsdl.Host;
+    URL := ifthen(aOperation.useSsl, 'https://', 'http://') + aOperation.Host;
     addressFromDescr := URL;
   end
   else
@@ -3974,7 +3974,7 @@ begin
           SetLength(URL, Length (URL) - 1);
         URL := URL
              + aOperation.Wsdl.basePath
-             + aOperation.WsdlService.Name;
+             + aOperation.WsdlService.openApiPath;
         querySep := '?';
         for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
         begin
@@ -5551,7 +5551,6 @@ begin
             rpyBind.Free;
           FreeAndNil (fltBind);
           Name := oXml.Items.XmlCheckedValueByTagDef['Name', Name];
-          httpPath := oXml.Items.XmlCheckedValueByTagDef['httpPath', httpPath];
           httpVerb := oXml.Items.XmlCheckedValueByTagDef['httpVerb', httpVerb];
           reqBind := _LoadXmlSampleMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
           ppXml := oXml.Items.XmlCheckedItemByTag['parameters'];
@@ -5579,8 +5578,8 @@ begin
   end;
 end;
 
-procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: String);
-  function _LoadJsonSampleReq (aLabel: String; sXml: TXml; aXsd: TXsd): TXml;
+procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: String);
+  function _LoadApiByExampleReq (aLabel: String; sXml: TXml; aXsd: TXsd): TXml;
   var
     xXsdDescr: TXsdDescr;
     xXsd: TXsd;
@@ -5597,8 +5596,8 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
       if xsdElementsWhenRepeatable > 0 then
         xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
       else
-        xXsdDescr := TXsdDescr.Create(JsonSampleWsdl.xsdDefaultElementsWhenRepeatable);
-      JsonSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
+        xXsdDescr := TXsdDescr.Create(ApiByExampleWsdl.xsdDefaultElementsWhenRepeatable);
+      ApiByExampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       for x := 0 to sXml.Items.Count - 1 do
       begin
         with sXml.Items.XmlItems[x] do
@@ -5613,7 +5612,7 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
             xXsd.sType.xsdType:= dtSimpleType;
             xXsd.sType.jsonType := jsonString;
             xXsd.sType.Name := xXsd.ElementName;
-            if Items.XmlValueByTagDef['required', 'false'] = 'true' then
+            if Items.XmlValueByTagDef['required', 'true'] = 'true' then
               xXsd.minOccurs := '1'
             else
               xXsd.minOccurs := '0';
@@ -5653,7 +5652,7 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
         Result.jsonType := jsonObject;
     end;
   end;
-  function _LoadJsonSampleRpy (aLabel: String; sXml: TXml; aXsd: TXsd): TXml;
+  function _LoadApiByExampleRpy (aLabel: String; sXml: TXml; aXsd: TXsd): TXml;
   var
     x: Integer;
     xXsdDescr: TXsdDescr;
@@ -5670,8 +5669,8 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
       if xsdElementsWhenRepeatable > 0 then
         xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
       else
-        xXsdDescr := TXsdDescr.Create(JsonSampleWsdl.xsdDefaultElementsWhenRepeatable);
-      JsonSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
+        xXsdDescr := TXsdDescr.Create(ApiByExampleWsdl.xsdDefaultElementsWhenRepeatable);
+      ApiByExampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       for x := 0 to sXml.Items.Count - 1 do
       begin
         with sXml.Items.XmlItems[x] do
@@ -5721,7 +5720,7 @@ procedure TWsdlProject.jsonSampleOperationsUpdate(aXml: TXml; aMainFileName: Str
         Result.jsonType := jsonObject;
     end;
   end;
-  function _LoadJsonSampleFlt (aLabel: String): TXml;
+  function _LoadApiByExampleFlt (aLabel: String): TXml;
   begin
     result := TXml.Create;
     result.Checked := True;
@@ -5737,11 +5736,11 @@ var
   xService: TWsdlService;
   xOperation: TWsdlOperation;
 const
-  _xsdName = 'OperationDefs.JsonSampleOperations';
+  _xsdName = 'OperationDefs.ApiByExampleOperations';
 begin
-  xWsdl := JsonSampleWsdl;
-  if aXml.Name <> 'JsonSampleOperations' then
-    raise Exception.Create('??TWsdlProject.JsonSampleOperationsUpdate(aXml: TXml): ' + aXml.Name);
+  xWsdl := ApiByExampleWsdl;
+  if aXml.Name <> 'ApiByExampleOperations' then
+    raise Exception.Create('??TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml): ' + aXml.Name);
   xXsd := OperationDefsXsd.FindXsd (_xsdName);
   if not Assigned (xXsd) then
     raise  Exception.Create('Xsd not found: ' + _xsdName);
@@ -5785,8 +5784,9 @@ begin
       begin
         xService := xWsdl.Services.Services[f];
       end;
-      xService.openApiPathMask := sXml.Items.XmlValueByTag['basePath'];
-      xService.openApiPathRegExp := xService.openApiPathMask;
+      xService.Host := sXml.Items.XmlValueByTag['Address'];
+      xService.openApiPath := sXml.Items.XmlValueByTag['Path'];
+      xService.prepareOpenApiPath;
       oList := TStringList.Create;
       try
         oList.Sorted := True;
@@ -5842,11 +5842,10 @@ begin
               if Assigned(rpyBind) then
                 rpyBind.Free;
               FreeAndNil (fltBind);
-              httpPath := oXml.Items.XmlValueByTagDef['Path', httpPath];
               httpVerb := oXml.Items.XmlValueByTagDef['Verb', httpVerb];
-              reqBind := _LoadJsonSampleReq('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd);
-              rpyBind := _LoadJsonSampleRpy('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd);
-              fltBind := _LoadJsonSampleFlt('Flt');
+              reqBind := _LoadApiByExampleReq('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd);
+              rpyBind := _LoadApiByExampleRpy('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd);
+              fltBind := _LoadApiByExampleFlt('Flt');
               if Alias <> reqTagName then
               begin
                 if Assigned (reqBind) then reqBind.Name := Alias;
@@ -6365,29 +6364,29 @@ begin
   end;
 end;
 
-function TWsdlProject.jsonSampleOperationsXml(aMainFileName: String): TXml;
+function TWsdlProject.ApiByExampleOperationsXml(aMainFileName: String): TXml;
 var
   x, y, s, o: Integer;
   xService: TWsdlService;
   xOperation: TWsdlOperation;
   xXml: TXml;
 begin
-  xXml := TXml.CreateAsString('JsonSampleOperations', '');
+  xXml := TXml.CreateAsString('ApiByExampleOperations', '');
   try
-    for s := 0 to JsonSampleWsdl.Services.Count - 1 do
+    for s := 0 to ApiByExampleWsdl.Services.Count - 1 do
     begin
-      xService := JsonSampleWsdl.Services.Services[s];
+      xService := ApiByExampleWsdl.Services.Services[s];
       with xXml.AddXml(TXml.CreateAsString('Service', '')) do
       begin
         AddXml (TXml.CreateAsString('Name', xService.Name));
-        AddXml (TXml.CreateAsString('basePath', xService.openApiPathMask));
-        for x := 0 to JsonSampleWsdl.Services.Services[s].Operations.Count - 1 do
+        AddXml (TXml.CreateAsString('Address', xService.Host));
+        AddXml (TXml.CreateAsString('Path', xService.openApiPath));
+        for x := 0 to ApiByExampleWsdl.Services.Services[s].Operations.Count - 1 do
         begin
-          xOperation := JsonSampleWsdl.Services.Services[s].Operations.Operations[x];
+          xOperation := ApiByExampleWsdl.Services.Services[s].Operations.Operations[x];
           with AddXml(TXml.CreateAsString('Operation', '')) do
           begin
             AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
-            AddXml (TXml.CreateAsString('Path', xOperation.httpPath));
             AddXml (TXml.CreateAsString('Verb', xOperation.httpVerb));
             if Assigned (xOperation.reqBind) then
             begin
@@ -6436,7 +6435,7 @@ begin
       end;
     end;
     xXml.CheckDownline(True);
-    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.JsonSampleOperations'));
+    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.ApiByExampleOperations'));
     result.CheckDownline(False);
     result.LoadValues(xXml, False, True, False, True);
   finally
@@ -8723,7 +8722,7 @@ begin
     and (Wsdls.Objects[0] <> CobolWsdl)
     and (Wsdls.Objects[0] <> XsdWsdl)
     and (Wsdls.Objects[0] <> XmlSampleWsdl)
-    and (Wsdls.Objects[0] <> JsonSampleWsdl)
+    and (Wsdls.Objects[0] <> ApiByExampleWsdl)
     and (Wsdls.Objects[0] <> SwiftMtWsdl) then
       try Wsdls.Objects[0].Free; except end; // there is a project that fails at this point, not a clue yet why
     Wsdls.Delete(0);
@@ -8815,12 +8814,13 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTXsd; // ?? maybe better to use a seperate type ??
   end;
-  FreeAndNil(JsonSampleWsdl);
-  JsonSampleWsdl := TWsdl.Create(EnvVars, 1, 1, False);
-  with JsonSampleWsdl do
+  FreeAndNil(ApiByExampleWsdl);
+  ApiByExampleWsdl := TWsdl.Create(EnvVars, 1, 1, False);
+  with ApiByExampleWsdl do
   begin
     Name := '_JsonSample';
     isSoapService := False;
+    isOpenApiService := True;
   end;
   FreeAndNil(SwiftMtWsdl);
   SwiftMtWsdl := TWsdl.Create(EnvVars, 1, 1, False);
