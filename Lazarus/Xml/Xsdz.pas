@@ -247,7 +247,6 @@ type
     function AddAttributeDef (aTypeDef: TXsdDataType; aXml: TObject; aTargetNamespace: String): TXsdAttr;
     function AddElement(aTypeDef: TXsdDataType; aXml: TObject; aTargetNameSpace: String; aRoot: Boolean): TXsd;
   public
-    xsdElementsWhenRepeatable: integer;
     Garbage: TStringList;
     xsdFileNames: TStringList;
     Prefix: String;
@@ -285,7 +284,7 @@ type
     function AddedTypeDefElementsAsXml: TObject;
     procedure AddedTypeDefElementsFromXml(aXml: TObject);
     procedure ChangeElementsDatatype(aNameSpace, aName: String; aNewType: TXsdDataType);
-    constructor Create(aElementsWhenRepeatable: integer);
+    constructor Create;
     destructor Destroy; override;
   end;
 
@@ -309,12 +308,10 @@ var
   xsdElementFormDefaultQualified: Boolean;
   xsdAttributeFormDefaultQualified: Boolean;
   xsdValidateAssignmentsAgainstSchema: Boolean;
-  xsdElementsWhenRepeatable: Integer;
   xsdMaxDepthBillOfMaterials: integer;
   xsdMaxDepthXmlGen: Integer;
   defaultXsdMaxDepthBillOfMaterials: integer;
   defaultXsdMaxDepthXmlGen: Integer;
-  defaultXsdElementsWhenRepeatable: Integer;
   systemStarting: Boolean;
 
 implementation
@@ -513,9 +510,8 @@ begin
   end;
 end;
 
-constructor TXsdDescr.Create(aElementsWhenRepeatable: integer);
+constructor TXsdDescr.Create;
 begin
-  xsdElementsWhenRepeatable := aElementsWhenRepeatable;
   TypeDef := TXsdDataType.Create(self);
   TypeDefs := TXsdDataTypeList.Create;
   TypeDefs.Sorted := True;
@@ -3629,7 +3625,6 @@ end;
 initialization
 
 systemStarting := True;
-defaultXsdElementsWhenRepeatable := 1;
 defaultXsdMaxDepthBillOfMaterials := 1;
 defaultXsdMaxDepthXmlGen := 9999;
 xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;

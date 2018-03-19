@@ -262,10 +262,7 @@ begin
     SelectXmlElementForm.LastCaption := LastCaption;
     SelectXmlElementForm.IncludeRecurring := True;
     SelectXmlElementForm.IncludeInvoked := True;
-    if Assigned (WsdlOperation.Wsdl) then
-      SelectXmlElementForm.maxOccurrences := WsdlOperation.Wsdl.XsdDescr.xsdElementsWhenRepeatable
-    else
-      SelectXmlElementForm.maxOccurrences := 1;
+    SelectXmlElementForm.maxOccurrences := 1;
     SelectXmlElementForm.ElementEnabled := True;
     SelectXmlElementForm.ShowModal;
     if SelectXmlElementForm.ModalResult = mrOk then

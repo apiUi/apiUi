@@ -799,7 +799,7 @@ end;
 procedure TXmlGridForm.CleanActionExecute(Sender: TObject);
 begin
   if not (FocusedBind is TXml) then Exit;
-  (FocusedBind as TXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
+  (FocusedBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
   ShowGrid (FocusedBind);
   fStubChanged := True;
 end;

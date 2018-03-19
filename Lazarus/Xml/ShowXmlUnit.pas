@@ -705,8 +705,8 @@ begin
     ((Bind as TXml).Xsd.maxOccurs <> '1');
   DeleteMenuItem.Enabled := (not isReadOnly) and (Bind is TXml) and Assigned
     ((Bind as TXml).Xsd) and ((Bind as TXml).Xsd.maxOccurs <> '1') and
-    ((Bind as TXml).IndexOfRepeatableItem >= (Bind as TXml)
-      .Xsd.XsdDescr.xsdElementsWhenRepeatable) and Assigned(Bind.Parent)
+    ((Bind as TXml).IndexOfRepeatableItem >= 1)
+    and Assigned(Bind.Parent)
     and False // As long as it access violates and I do not see why??
     ;
   CleanActionMenuItem.Enabled := (not isReadOnly) and (Bind is TXml);
@@ -897,7 +897,7 @@ begin
   if not(SelectedBind is TXml) then
     Exit;
   try
-    (SelectedBind as TXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
+    (SelectedBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
     UpdateTreeViewNode(TreeView, TreeView.FocusedNode);
     isChanged := True;
   finally
@@ -966,7 +966,7 @@ begin
   try
     if not Assigned(xXml.Xsd) then
     begin
-      xXsdDescr := TXsdDescr.Create(1);
+      xXsdDescr := TXsdDescr.Create;
       try
         xXsd := CreateXsdFromXml(xXsdDescr, xXml, False);
         dXml := TXml.Create(-10000, xXsd);

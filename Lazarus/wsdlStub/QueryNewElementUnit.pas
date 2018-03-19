@@ -70,7 +70,7 @@ implementation
 
 procedure TQueryNewElementForm.FormCreate(Sender: TObject);
 begin
-  xsddesc := TXsdDescr.Create(1);
+  xsddesc := TXsdDescr.Create;
   with TFormIniFile.Create (Self, True) do
   try
     Restore;

@@ -40,8 +40,6 @@ type
     NewAction: TAction;
     NewSdfButton: TButton;
     SaveDialog: TSaveDialog;
-    PropertiesAction: TAction;
-    PropertiesButton: TButton;
     CopyFileNameAction: TAction;
     ListViewPopupMenu: TPopupMenu;
     CopyFileNameAction1: TMenuItem;
@@ -56,8 +54,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure PropertiesActionUpdate(Sender: TObject);
-    procedure PropertiesActionExecute(Sender: TObject);
     procedure CopyFileNameActionExecute(Sender: TObject);
     procedure CopyFileNameActionUpdate(Sender: TObject);
   private
@@ -69,7 +65,6 @@ type
     Wsdls: TStringList;
     EnvVars: TStringList;
     IsBetaTestMode: Boolean;
-    xsdElementsWhenRepeatable: Integer;
     ShowOperationsWithEndpointOnly: Boolean;
     SaveRelativeFilenames: Boolean;
     property stubChanged: Boolean read fStubChanged;
@@ -150,7 +145,7 @@ begin
       SwapCursor := Screen.Cursor;
       try
         Screen.Cursor := crHourGlass;
-        Wsdl := TWsdl.Create(EnvVars, -1, xsdElementsWhenRepeatable, ShowOperationsWithEndpointOnly);
+        Wsdl := TWsdl.Create(EnvVars, ShowOperationsWithEndpointOnly);
         try
           xExt := UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text));
           if xExt = '.SDF' then
@@ -184,38 +179,6 @@ procedure TwsdlListForm.OKActionUpdate(Sender: TObject);
 begin
   OKAction.Enabled := True
                  ;
-end;
-
-procedure TwsdlListForm.PropertiesActionExecute(Sender: TObject);
-var
-  xXml, yXml: TXml;
-  xForm: TwsdlPropertiesForm;
-  xWsdl: TWsdl;
-  x: Integer;
-  xTag: String;
-begin
-  xWsdl := Wsdls.Objects [ListView.ItemIndex] as TWsdl;
-  Application.CreateForm(TwsdlPropertiesForm, xForm);
-  try
-    xForm.Caption := 'Properties for : ' + ListView.Selected.Caption;
-    xForm.ElementsWhenRepeatableEdit.Text := IntToStr(xWsdl.xsdElementsWhenRepeatable);
-    xForm.ShowModal;
-    if xForm.ModalResult = mrOk then
-    begin
-      xWsdl.xsdElementsWhenRepeatable := StrToIntDef (xForm.ElementsWhenRepeatableEdit.Text, -1);
-      fStubChanged := True;
-      ShowMessage ('Please reload your project to see the changes');
-    end;
-  finally
-    FreeAndNil (xForm);
-  end;
-end;
-
-procedure TwsdlListForm.PropertiesActionUpdate(Sender: TObject);
-begin
-  PropertiesAction.Enabled := (ListView.ItemIndex > -1)
-                          and (UpperCase (ExtractFileExt (ListView.Selected.Caption)) <> '.SDF')
-                          ;
 end;
 
 procedure TwsdlListForm.FormCreate(Sender: TObject);
@@ -350,7 +313,7 @@ begin
           finally
             free;
           end;
-          xWsdl := TWsdl.Create (EnvVars, -1, xsdElementsWhenRepeatable, ShowOperationsWithEndpointOnly);
+          xWsdl := TWsdl.Create (EnvVars, ShowOperationsWithEndpointOnly);
           try
             xWsdl.LoadFromSdfFile (SaveDialog.FileName);
           except

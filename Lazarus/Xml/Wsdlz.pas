@@ -93,8 +93,6 @@ type
       IpmDescrs: TIpmDescrs;
       ExtraXsds: TStringList;
       SoapVersion: TSOAPVersion;
-      xsdElementsWhenRepeatable: Integer;
-      xsdDefaultElementsWhenRepeatable: Integer;
       OperationsWithEndpointOnly: Boolean;
       EnvVars: TStringList;
       _inXml: TXml;
@@ -110,7 +108,7 @@ type
       procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent);
       procedure LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent);
       procedure LoadFromSdfFile(aFileName: String);
-      constructor Create(aEnvVars: TStringList; aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);
+      constructor Create(aEnvVars: TStringList; aOperationsWithEndpointOnly: Boolean);
       destructor Destroy; override;
   end;
 
@@ -1962,19 +1960,14 @@ begin
   end;
 end;
 
-constructor TWsdl.Create(aEnvVars: TStringList; aElementsWhenRepeatable, aDefaultElementsWhenRepeatable: Integer; aOperationsWithEndpointOnly: Boolean);
+constructor TWsdl.Create(aEnvVars: TStringList; aOperationsWithEndpointOnly: Boolean);
 begin
   inherited Create;
   EnvVars := aEnvVars;
-  xsdElementsWhenRepeatable := aElementsWhenRepeatable;
-  xsdDefaultElementsWhenRepeatable := aDefaultElementsWhenRepeatable;
   OperationsWithEndpointOnly := aOperationsWithEndpointOnly;
   Services := TWsdlServices.Create;
   Services.Sorted := True;
-  if xsdElementsWhenRepeatable > 0 then
-    XsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
-  else
-    XsdDescr := TXsdDescr.Create(xsdDefaultElementsWhenRepeatable);
+  XsdDescr := TXsdDescr.Create;
   sdfXsdDescrs := TXsdDescrList.Create;
   IpmDescrs := TIpmDescrs.Create;
   IpmDescrs.Sorted := False;
@@ -1989,7 +1982,6 @@ begin
   fOpers.Duplicates := dupError;
   fStrs := TStringList.Create;
   fStrs.NameValueSeparator := '=';
-  xsdElementsWhenRepeatable := -1;
 end;
 
 destructor TWsdl.Destroy;
@@ -2901,10 +2893,7 @@ var
     xFileName := uncFilename(ExpandRelativeFileName
                           (aFileName, sXml.Items.XmlValueByTag ['DescriptionFile'])
                         );
-    if xsdElementsWhenRepeatable > 0 then
-      xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
-    else
-      xXsdDescr := TXsdDescr.Create(xsdDefaultElementsWhenRepeatable);
+    xXsdDescr := TXsdDescr.Create;
     sdfXsdDescrs.AddObject('', xXsdDescr);
     try
       xXsdDescr.AddXsdFromFile('', xFileName, _OnParseErrorEvent);
@@ -2925,10 +2914,7 @@ var
     xFileName := uncFilename(ExpandRelativeFileName
                           (aFileName, sXml.Items.XmlValueByTag ['DescriptionFile'])
                         );
-    if xsdElementsWhenRepeatable > 0 then
-      xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
-    else
-      xXsdDescr := TXsdDescr.Create(xsdDefaultElementsWhenRepeatable);
+    xXsdDescr := TXsdDescr.Create;
     sdfXsdDescrs.AddObject('', xXsdDescr);
     try
       CreateXsdFromJsonSchemaFile(xXsdDescr, xFileName);
@@ -3019,7 +3005,7 @@ var
   begin
     xpXmls := TXml.CreateAsString('expansions', '');
     try
-      xXsdDescr := TXsdDescr.Create(1);
+      xXsdDescr := TXsdDescr.Create;
       sdfXsdDescrs.AddObject('', xXsdDescr);
 {$ifdef XMLDOM}
       xXsdDescr.AddFromSchemaDef
@@ -4226,10 +4212,7 @@ begin
   or not Assigned(aBind)
   or (aBind.Name = '') then
     Exit;
-  if Assigned (Wsdl) then
-    aBind.Bind (aRoot, aExpress, Wsdl.XsdDescr.xsdElementsWhenRepeatable)
-  else
-    aBind.Bind (aRoot, aExpress, 1)
+  aBind.Bind (aRoot, aExpress, 1)
 end;
 
 procedure TWsdlOperation.PrepareScripting;
@@ -4262,14 +4245,14 @@ begin
       end;
     end;
     if fltBind is TIpmItem then
-      fltBind.Bind ('Flt', fExpress, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+      fltBind.Bind ('Flt', fExpress, 1);
     if fltBind is TXml then
     begin
       for x := 0 to (fltBind as TXml).Items.Count - 1 do
       begin
         (fltBind as TXml).Items.XmlItems [x].Parent := nil;
         try
-          (fltBind as TXml).Items.XmlItems [x].Bind('Faults', fExpress, Wsdl.xsdElementsWhenRepeatable);
+          (fltBind as TXml).Items.XmlItems [x].Bind('Faults', fExpress, 1);
         finally
           (fltBind as TXml).Items.XmlItems [x].Parent := fltBind;
         end;
@@ -6249,7 +6232,7 @@ begin
       fExpressChecker.OnError := fOnError;
       fLineNumber := 0;
       fExpressChecker.Database := _WsdlDbsConnector;
-      aBind.Bind ('', fExpressChecker, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+      aBind.Bind ('', fExpressChecker, 1);
       fExpressChecker.BindBoolean('Bind_.Checker', aBind.fChecked);
       BindCheckerFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
       BindCheckerFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
@@ -6309,9 +6292,9 @@ begin
     fLineNumber := 0;
     fExpressStamper.Database := _WsdlDbsConnector;
     if Assigned (reqBind) then
-      reqBind.Bind ('Req', fExpressStamper, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+      reqBind.Bind ('Req', fExpressStamper, 1);
     if Assigned (rpyBind) then
-      rpyBind.Bind ('Rpy', fExpressStamper, Wsdl.XsdDescr.xsdElementsWhenRepeatable);
+      rpyBind.Bind ('Rpy', fExpressStamper, 1);
     fExpressStamper.BindString('stamper.uwa', fExpressStamper.uwaString);
     BindStamperFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindStamperFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
@@ -6963,11 +6946,11 @@ end;
 procedure TWsdlMessage.Clean;
 begin
   if reqBind is TXml then
-    (reqBind as TXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
+    (reqBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
   if rpyBind is TXml then
-    (rpyBind as TXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
+    (rpyBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
   if fltBind is TXml then
-    (rpyBind as TXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
+    (rpyBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
 end;
 
 procedure TWsdlMessage.CheckBefore ;

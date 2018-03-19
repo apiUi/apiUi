@@ -1043,7 +1043,6 @@ type
     CompanyName: String;
     xLicenseExpirationDate: String;
     xLicenseString: String;
-    fElementsWhenRepeatable: Integer;
     fDoShowDesignAtTop: Boolean;
     grid_x, grid_y: Integer;
     fAbortPressed: Boolean;
@@ -1070,7 +1069,6 @@ type
     procedure setDoValidateRequests(const Value: Boolean);
     function getIsRequestAction: Boolean;
     procedure setDoShowDesignAtTop(const Value: Boolean);
-    procedure setElementsWhenRepeatable(const Value: Integer);
     procedure setWsdl(const Value: TWsdl);
     procedure setStubChanged(const Value: Boolean);
     function getWsdl: TWsdl;
@@ -1514,7 +1512,6 @@ begin
   Application.CreateForm(TWsdlListForm, WsdlListForm);
   try
     wsdlListForm.EnvVars := se.EnvVars;
-    WsdlListForm.xsdElementsWhenRepeatable := xsdElementsWhenRepeatable;
     WsdlListForm.ShowOperationsWithEndpointOnly :=
       se.OperationsWithEndpointOnly;
     WsdlListForm.SaveRelativeFilenames := se.SaveRelativeFilenames;
@@ -6851,8 +6848,6 @@ begin
     (xIniFile.IntegerByNameDef['ShowLogCobolStyle', Ord(slCobol)]);
   mqServerEnv := GetEnvironmentVariable('MQSERVER');
   ColumnWidths.Text := xIniFile.StringByNameDef['ColumnWidths', ''];
-  xsdElementsWhenRepeatable := StrToIntDef
-    (xIniFile.StringByName['ElementsWhenRepeatable'], 1);
   doShowDesignAtTop := xIniFile.BooleanByNameDef['doShowDesignAtTop', True];
   bgCorrelationItemColor := xIniFile.IntegerByNameDef['bgCorrelationItemColor',
     bgCorrelationItemColor];
@@ -7313,7 +7308,7 @@ begin
   swapMaxDepthXmlGen := xsdMaxDepthXmlGen;
   xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
   try
-    xXsdDescr := TXsdDescr.Create(1);
+    xXsdDescr := TXsdDescr.Create;
     try
       xXml := TXml.Create;
       try
@@ -7349,7 +7344,7 @@ var
   xXsdDescr: TXsdDescr;
 begin
   XmlUtil.PushCursor (crHourGlass);
-  xXsdDescr := TXsdDescr.Create(1);
+  xXsdDescr := TXsdDescr.Create;
   try
     xXml := TXml.Create;
     try
@@ -8072,11 +8067,6 @@ begin
   end;
 end;
 
-procedure TMainForm.setElementsWhenRepeatable(const Value: Integer);
-begin
-  fElementsWhenRepeatable := Value;
-end;
-
 procedure TMainForm.setDoShowDesignAtTop(const Value: Boolean);
 begin
   fDoShowDesignAtTop := Value;
@@ -8780,7 +8770,7 @@ begin
       xEnableAddMenuItems := Assigned(Xsd) and (Xsd.maxOccurs <> '1');
       xEnableDelMenuItems := Assigned(Xsd) and
         ((xBind as TXml).Xsd.maxOccurs <> '1') and
-        ((xBind as TXml).IndexOfRepeatableItem >= xsdElementsWhenRepeatable);
+        ((xBind as TXml).IndexOfRepeatableItem >= 1);
       if Assigned(TypeDef) then
       begin
         if (TypeDef.IsComplex and (TypeDef.ElementDefs.Count = 0))
@@ -10136,7 +10126,7 @@ begin
              + _xmlProgName
              + 'Menu.xsd'
              ;
-  xXsdDescr := TXsdDescr.Create(1);
+  xXsdDescr := TXsdDescr.Create;
   try
     try
       xXsdDescr.LoadXsdFromFile(xFileName, nil);
@@ -10377,8 +10367,6 @@ begin
         StringByName['mqServerEnv'] := mqServerEnv;
         IntegerByName['CompareLogOrderBy'] := Ord(se.CompareLogOrderBy);
         IntegerByName['ShowLogCobolStyle'] := Ord(se.ShowLogCobolStyle);
-        StringByName['ElementsWhenRepeatable'] := IntToStr
-          (xsdElementsWhenRepeatable);
         BooleanByName['doValidateScriptAssignmentAgainstSchema'] :=
           xsdValidateAssignmentsAgainstSchema;
         IntegerByName['bgCorrelationItemColor'] := bgCorrelationItemColor;
@@ -11327,7 +11315,7 @@ begin
   try
     WsdlOperation.AcquireLock;
     try
-      (xBind as TXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
+      (xBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
     finally
       WsdlOperation.ReleaseLock;
     end;

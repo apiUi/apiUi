@@ -1071,20 +1071,17 @@ end;
 
 procedure TXml.ExtendRecursivity;
 var
-  x, maxElm, maxDepth: Integer;
+  x, maxDepth: Integer;
 begin
   if (Items.Count > 0)
   or (not Assigned (TypeDef))
   then Exit;
-  maxElm := TypeDef.xsdDescr.xsdElementsWhenRepeatable;
-  TypeDef.xsdDescr.xsdElementsWhenRepeatable := 1;
   maxDepth := xsdMaxDepthBillOfMaterials;
   xsdMaxDepthBillOfMaterials := 1;
   try
     for x := 0 to TypeDef.ElementDefs.Count - 1 do
       AddXml (TXml.Create(0, TypeDef.ElementDefs.Xsds[x]));
   finally
-    TypeDef.xsdDescr.xsdElementsWhenRepeatable := maxElm;
     xsdMaxDepthBillOfMaterials := maxDepth;
   end;
 end;
@@ -2509,12 +2506,12 @@ begin
     begin
       minOccurs := StrToIntDef (xDataType.ElementDefs.Xsds [xChildIndex].minOccurs, 1);
       if xDataType.ElementDefs.Xsds [xChildIndex].maxOccurs = 'unbounded' then
-        maxOccurs := aXsd.XsdDescr.xsdElementsWhenRepeatable
+        maxOccurs := 1
       else
         maxOccurs := StrToIntDef (xDataType.ElementDefs.Xsds [xChildIndex].maxOccurs, 1);
       if minOccurs < 1 then
         minOccurs := 1; {Create xml even if optional}
-      xOccurs := aXsd.XsdDescr.xsdElementsWhenRepeatable;
+      xOccurs := 1;
       if minOccurs > xOccurs then
         xOccurs := minOccurs;
       if maxOccurs < xOccurs then
@@ -3951,7 +3948,6 @@ begin
     for x := Items.Count - 1 downto 0 do
     begin
       if (Items.XmlItems[x].RefId <= aRefId)
-//      and (x < xsdElementsWhenRepeatable)
       then
       begin
         result := Items.XmlItems[x].FindByRefId(aRefId);

@@ -47,7 +47,7 @@ object wsdlListForm: TwsdlListForm
       Top = 12
       Width = 75
       Action = DeleteAction
-      TabOrder = 5
+      TabOrder = 4
     end
     object EditSdfButton: TButton
       Left = 201
@@ -64,14 +64,6 @@ object wsdlListForm: TwsdlListForm
       Width = 75
       Action = NewAction
       TabOrder = 3
-    end
-    object PropertiesButton: TButton
-      Left = 489
-      Height = 25
-      Top = 12
-      Width = 75
-      Action = PropertiesAction
-      TabOrder = 4
     end
   end
   object Panel2: TPanel
@@ -133,11 +125,6 @@ object wsdlListForm: TwsdlListForm
       Caption = 'New SDF...'
       Hint = 'Create a new service description file'
       OnExecute = NewActionExecute
-    end
-    object PropertiesAction: TAction
-      Caption = 'Properties...'
-      OnExecute = PropertiesActionExecute
-      OnUpdate = PropertiesActionUpdate
     end
     object CopyFileNameAction: TAction
       Caption = 'Copy File Name'

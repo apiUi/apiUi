@@ -352,7 +352,7 @@ procedure TA2BXmlGridForm.FormShow(Sender: TObject);
 begin
   if not Assigned (Xml.Xsd) then
   begin
-    fXsdDescr := TXsdDescr.Create(1);
+    fXsdDescr := TXsdDescr.Create;
     CreateXsdFromXml(fXsdDescr, Xml, True);
   end;
   _CreateColumns (0, Xml.Xsd);
@@ -680,7 +680,7 @@ end;
 procedure TA2BXmlGridForm.CleanActionExecute(Sender: TObject);
 begin
   if not (FocusedBind is TA2BXml) then Exit;
-  (FocusedBind as TA2BXml).Clean(xsdElementsWhenRepeatable, xsdMaxDepthBillOfMaterials);
+  (FocusedBind as TA2BXml).Clean(1, xsdMaxDepthBillOfMaterials);
   ShowGrid (FocusedBind);
   fStubChanged := True;
 end;

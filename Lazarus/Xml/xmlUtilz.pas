@@ -206,20 +206,17 @@ function EditXmlXsdBased ( aCaption, aXsdPath, aInitialFocus, aValidateDuplicate
                          ): Boolean;
 var
   cnfXml: TXml;
-  savexsdElementsWhenRepeatable, savexsdMaxDepthBillOfMaterials: Integer;
+  savexsdMaxDepthBillOfMaterials: Integer;
   xForm: TShowXmlForm;
   gForm: TXmlGridForm;
 begin
   result := False;
   if aXsdPath = '' then
     aXsdPath := aRootXsd.ElementName;
-  savexsdElementsWhenRepeatable := xsdElementsWhenRepeatable;
   savexsdMaxDepthBillOfMaterials := xsdMaxDepthBillOfMaterials;
-  xsdElementsWhenRepeatable := 1;
   try
     cnfXml := TXml.Create (-10000, aRootXsd.FindXsd(aXsdPath));
   finally
-    xsdElementsWhenRepeatable := savexsdElementsWhenRepeatable;
     xsdMaxDepthBillOfMaterials := savexsdMaxDepthBillOfMaterials;
   end;
   try
@@ -473,7 +470,7 @@ begin
         end;
       end;
     end;
-    xXsdDescr := TXsdDescr.Create(1);
+    xXsdDescr := TXsdDescr.Create;
     CreateXsdFromXml(xXsdDescr, xXml, True);
     try
       try
@@ -910,7 +907,7 @@ begin
   n := (aBind as TXml).IndexOfRepeatableItem;
   result := ((aBind as TXml).Xsd.maxOccurs <> '1')
      and (n > StrToIntDef ((aBind as TXml).Xsd.minOccurs, 0))
-     and (n >= (aBind as TXml).Xsd.XsdDescr.xsdElementsWhenRepeatable)
+     and (n >= 1)
        ;
   if (not Result)
   and (n > 1)
@@ -1207,7 +1204,7 @@ begin
               + (aBind as TXmlAttribute).Name;
   end;
   hXml := TXml.Create;
-  xXsdDescr := TXsdDescr.Create(1);
+  xXsdDescr := TXsdDescr.Create;
   try
     hXml.LoadFromString(s, nil);
     CreateXsdFromXml(xXsdDescr, hXml, True);
@@ -1918,7 +1915,7 @@ procedure TXmlUtil.presentString(aCaption, aString: String);
       presentAsHTML(aCaption, aString);
       exit;
     end;
-    xXsdDescr := TXsdDescr.Create(1);
+    xXsdDescr := TXsdDescr.Create;
     xXml := TXml.Create;
     try
       try

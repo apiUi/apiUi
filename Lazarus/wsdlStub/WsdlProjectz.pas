@@ -343,7 +343,7 @@ type
     procedure ProjectScriptsFromXml (aXml: TXml);
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
     function BooleanPromptDialog (aPrompt: String): Boolean;
-    function WsdlOpenFile (aName: String; aElementsWhenRepeatable: Integer): TWsdl;
+    function WsdlOpenFile (aName: String): TWsdl;
     procedure RefuseHttpConnectionsThreaded (aLater, aTime: Extended);
     procedure SaveLogs (aFileName: String);
     procedure SaveSnapshots (aName: String);
@@ -1205,7 +1205,6 @@ procedure IntrospectIniXml;
     result := s;
     p := ExtractFilePath(f);
     result := ReplaceStrings(result, 'schemaLocation="', 'schemaLocation="' + p, True, False);
-    result := _replaceInteger(result, '_xsdElementsWhenRepeatable_', defaultXsdElementsWhenRepeatable);
     result := _replaceInteger(result, '_xsdMaxDepthBillOfMaterials_', defaultXsdMaxDepthBillOfMaterials);
     result := _replaceInteger(result, '_xsdMaxDepthXmlGen_', defaultXsdMaxDepthXmlGen);
   end;
@@ -1238,7 +1237,6 @@ begin
       licenseDatabaseName := ExpandRelativeFileName(xIniFileName, XmlValueByTagDef['DatabaseName', '']);
     end;
     RemoteControlPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
-    xsdElementsWhenRepeatable := defaultXsdElementsWhenRepeatable;
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
     if Assigned (iniXml.ItemByTag ['cssStylesheet']) then with iniXml.ItemByTag ['cssStylesheet'] do
@@ -1250,7 +1248,7 @@ begin
     if wsaXsdFileName <> '' then
     begin
       wsaXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), wsaXsdFileName);
-      wsaXsdDescr := TXsdDescr.Create(1);
+      wsaXsdDescr := TXsdDescr.Create;
       try
         wsaXsdDescr.LoadXsdFromFile (wsaXsdFileName, nil);
         if wsaXsdDescr.TypeDef.ElementDefs.Count > 0 then
@@ -1262,7 +1260,7 @@ begin
     if _swiftMTXsdFileName <> '' then
     begin
       _swiftMTXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), _swiftMTXsdFileName);
-      swiftMTXsdDescr := TXsdDescr.Create(1);
+      swiftMTXsdDescr := TXsdDescr.Create;
       try
         swiftMTXsdDescr.LoadXsdFromFile (_swiftMTXsdFileName, nil);
         if swiftMTXsdDescr.TypeDef.ElementDefs.Count > 0 then
@@ -1278,7 +1276,7 @@ begin
     if wsdlStubXsdFileName <> '' then
     begin
       wsdlStubXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), wsdlStubXsdFileName);
-      webserviceXsdDescr := TXsdDescr.Create(1);
+      webserviceXsdDescr := TXsdDescr.Create;
       try
         webserviceXsdDescr.LoadXsdFromString (_Prep ( wsdlStubXsdFileName
                                                     , ReadStringFromFile(wsdlStubXsdFileName)
@@ -1393,7 +1391,7 @@ begin
     if webserviceWsdlFileName <> '' then
     begin
       webserviceWsdlFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceWsdlFileName);
-      webserviceWsdl := TWsdl.Create(nil, -1, 1, False);
+      webserviceWsdl := TWsdl.Create(nil, False);
       webserviceWsdl.LoadFromSchemaFile(webserviceWsdlFileName, nil);
     end;
     if not Assigned (webserviceWsdl) then
@@ -1449,7 +1447,6 @@ begin
   ignoreOrderOn.Duplicates := dupIgnore;
   regressionSortColumns := TStringList.Create;
   ignoreCoverageOn := TStringList.Create;
-  xsdElementsWhenRepeatable := 1;
   displayedLogsmaxEntries := -1;
   displayedLogs := TLogList.Create;
   toDisplayLogs := TLogList.Create;
@@ -2076,7 +2073,6 @@ begin
   begin
     AddXml (TXml.CreateAsBoolean('PublishDescriptions', PublishDescriptions));
     AddXml (TXml.CreateAsBoolean('OperationsWithEndpointOnly', OperationsWithEndpointOnly));
-    AddXml (TXml.CreateAsInteger('ElementsWhenRepeatable', xsdElementsWhenRepeatable));
     AddXml (TXml.CreateAsInteger('MaxDepthWhenRecursive', xsdMaxDepthBillOfMaterials));
     AddXml (TXml.CreateAsInteger('MaxDepthXmlGen', xsdMaxDepthXmlGen));
   end;
@@ -2327,7 +2323,6 @@ begin
                     SetFileNamesRelative(aMainFileName);
                 end;
             end;
-            AddXml(TXml.CreateAsInteger('ElementsWhenRepeatable', xWsdl.xsdElementsWhenRepeatable));
             asXml := xWsdl.XsdDescr.ChangedElementTypedefsAsXml as TXml;
             if asXml.Items.Count > 0 then
               AddXml (asXml)
@@ -2711,7 +2706,6 @@ begin
                   xWsdl := WsdlOpenFile ( ExpandRelativeFileName ( aMainFileName
                                                                  , wXml.Items.XmlValueByTag['WsdlLocation']
                                                                  )
-                                        , wXml.Items.XmlIntegerByTagDef ['ElementsWhenRepeatable', -1]
                                         );
                 except
                   on e: Exception do
@@ -2737,9 +2731,7 @@ begin
                         OpenWsdlForm.ShowModal;
                         if OpenWsdlForm.ModalResult = mrOK then
                         begin
-                          xWsdl := WsdlOpenFile ( OpenWsdlForm.WsdlLocationEdit.Text
-                                                , wXml.Items.XmlIntegerByTagDef ['ElementsWhenRepeatable', -1]
-                                                );
+                          xWsdl := WsdlOpenFile ( OpenWsdlForm.WsdlLocationEdit.Text);
                           wXml.Items.XmlItemByTag['WsdlLocation'].Value := OpenWsdlForm.WsdlLocationEdit.Text;
                           xReadAnother := True;
                         end;
@@ -2763,11 +2755,6 @@ begin
               if Assigned (xWsdl) then
               begin
                 xWsdl.FileAlias := wXml.Items.XmlValueByTagDef['FileAlias', xWsdl.Name];
-                xWsdl.xsdElementsWhenRepeatable := wXml.Items.XmlIntegerByTagDef['ElementsWhenRepeatable', -1];
-                if xWsdl.xsdElementsWhenRepeatable > 0 then
-                  xWsdl.XsdDescr.xsdElementsWhenRepeatable := xWsdl.xsdElementsWhenRepeatable
-                else
-                  xWsdl.XsdDescr.xsdElementsWhenRepeatable := xsdElementsWhenRepeatable;
                 xWsdl.FileName := ExpandRelativeFileName ( aMainFileName
                                                          , wXml.Items.XmlValueByTag['WsdlLocation']
                                                          );
@@ -3152,7 +3139,6 @@ begin
         end;
       ttTaco: ;
     end;
-    xsdElementsWhenRepeatable := StrToIntDef (aXml.Items.XmlValueByTag ['ElementsWhenRepeatable'], 1);
   end; {END 3.6 style}
 end;
 
@@ -3582,7 +3568,6 @@ begin
   RemoteControlPortNumber := 3738;
   OnRequestViolatingAddressPath:=rvsContinue;
   OnRequestViolatingSchema:=rvsContinue;
-  xsdElementsWhenRepeatable := defaultXsdElementsWhenRepeatable;
   xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
   xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
   _WsdlDisableOnCorrelate := False;
@@ -3616,7 +3601,6 @@ begin
     begin
       PublishDescriptions := xXml.Items.XmlCheckedBooleanByTagDef['PublishDescriptions', False];
       OperationsWithEndpointOnly := xXml.Items.XmlCheckedBooleanByTagDef['OperationsWithEndpointOnly', True];
-      xsdElementsWhenRepeatable := xXml.Items.XmlCheckedIntegerByTagDef['ElementsWhenRepeatable', xsdElementsWhenRepeatable];
       xsdMaxDepthBillOfMaterials := xXml.Items.XmlCheckedIntegerByTagDef['MaxDepthWhenRecursive', xsdMaxDepthBillOfMaterials];
       xsdMaxDepthXmlGen := xXml.Items.XmlCheckedIntegerByTagDef['MaxDepthXmlGen', xsdMaxDepthXmlGen];
     end;
@@ -3722,15 +3706,14 @@ begin
   end;
 end;
 
-function TWsdlProject .WsdlOpenFile (aName : String ;
-  aElementsWhenRepeatable : Integer ): TWsdl ;
+function TWsdlProject .WsdlOpenFile (aName : String): TWsdl ;
 var
   xExt: String;
 begin
   xExt := UpperCase (ExtractFileExt (resolveAliasses(aName)));
   if xExt = '.SDF' then
   begin
-    result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
+    result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
     result.FileName := aName;
     try
       result.LoadFromSdfFile(aName);
@@ -3749,7 +3732,7 @@ begin
   end
   else
   begin
-    result := TWsdl.Create(EnvVars, aElementsWhenRepeatable, xsdElementsWhenRepeatable, OperationsWithEndpointOnly);
+    result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
     if (xExt = '.JSON')
     or (xExt = '.YAML') then
       result.LoadFromJsonYamlFile(aName, nil)
@@ -5306,10 +5289,7 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
       aDescrFileName := LazFileUtils.ExpandFileNameUTF8(ExpandRelativeFileName
                             (aMainFileName, sXml.Items.XmlCheckedValueByTag ['DescriptionFile'])
                           );
-      if xsdElementsWhenRepeatable > 0 then
-        xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
-      else
-        xXsdDescr := TXsdDescr.Create(XsdWsdl.xsdDefaultElementsWhenRepeatable);
+      xXsdDescr := TXsdDescr.Create;
       XsdWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       try
         xXsdDescr.LoadXsdFromFile(aDescrFileName, nil);
@@ -5452,10 +5432,7 @@ procedure TWsdlProject.xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: Str
       aSampleFileName := LazFileUtils.ExpandFileNameUTF8(ExpandRelativeFileName
                             (aMainFileName, sXml.Items.XmlCheckedValueByTag ['SampleFile'])
                           );
-      if xsdElementsWhenRepeatable > 0 then
-        xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
-      else
-        xXsdDescr := TXsdDescr.Create(XmlSampleWsdl.xsdDefaultElementsWhenRepeatable);
+      xXsdDescr := TXsdDescr.Create;
       XmlSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       try
         xXsd := xXsdDescr.LoadXsdFromXmlSampleFile(aSampleFileName, nil);
@@ -5594,10 +5571,7 @@ procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: S
       if not Assigned (sXml) then
         exit;
       aXsd.sType.ElementDefs.Clear;
-      if xsdElementsWhenRepeatable > 0 then
-        xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
-      else
-        xXsdDescr := TXsdDescr.Create(ApiByExampleWsdl.xsdDefaultElementsWhenRepeatable);
+      xXsdDescr := TXsdDescr.Create;
       ApiByExampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       for x := 0 to sXml.Items.Count - 1 do
       begin
@@ -5667,10 +5641,7 @@ procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: S
       if not Assigned (sXml) then
         exit;
       aXsd.sType.ElementDefs.Clear;
-      if xsdElementsWhenRepeatable > 0 then
-        xXsdDescr := TXsdDescr.Create(xsdElementsWhenRepeatable)
-      else
-        xXsdDescr := TXsdDescr.Create(ApiByExampleWsdl.xsdDefaultElementsWhenRepeatable);
+      xXsdDescr := TXsdDescr.Create;
       ApiByExampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       for x := 0 to sXml.Items.Count - 1 do
       begin
@@ -6134,7 +6105,7 @@ procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String
       if not Assigned (sXml) then Exit;
       xpXmls := TXml.CreateAsString('expansions', '');
       try
-        xXsdDescr := TXsdDescr.Create(1);
+        xXsdDescr := TXsdDescr.Create;
         SwiftMtWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
         xXsdDescr.AddXsdFromFile('', _swiftMTXsdFileName, nil);
         aXsd.ElementName := 'FinMessage';
@@ -8176,7 +8147,7 @@ begin
     raise Exception.Create(Format('%s not active', [_progName]));
   with CreateScriptOperation(TXml(aScript)) do
   try
-    Wsdl := TWsdl.Create(EnvVars, 1, 1, True);
+    Wsdl := TWsdl.Create(EnvVars, True);
     try
       if PreparedBefore then
       try
@@ -8737,7 +8708,6 @@ begin
   openApiPaths.Clear;
   ScriptsClear;
   DisplayedLogColumns.Clear;
-  xsdElementsWhenRepeatable := 1;
   stubRead := False;
   projectFileName := '';
   xmlio.PathPrefixes.Clear;
@@ -8776,7 +8746,7 @@ begin
     Name := '_FreeFormat';
     DescriptionType := ipmDTFreeFormat;
   end;
-  FreeFormatWsdl := TWsdl.Create(EnvVars, 1, 1, False);
+  FreeFormatWsdl := TWsdl.Create(EnvVars, False);
   with FreeFormatWsdl do
   begin
     Name := '_Freeformat';
@@ -8784,7 +8754,7 @@ begin
     Services.AddObject(FreeFormatService.Name, FreeFormatService);
   end;
   FreeAndNil(CobolWsdl);
-  CobolWsdl := TWsdl.Create(EnvVars, 1, 1, False);
+  CobolWsdl := TWsdl.Create(EnvVars, False);
   with CobolWsdl do
   begin
     Name := '_Cobol';
@@ -8795,7 +8765,7 @@ begin
     Services.Services[0].DescriptionType := ipmDTCobol;
   end;
   FreeAndNil(XsdWsdl);
-  XsdWsdl := TWsdl.Create(EnvVars, 1, 1, False);
+  XsdWsdl := TWsdl.Create(EnvVars, False);
   with XsdWsdl do
   begin
     Name := '_Xsd';
@@ -8806,7 +8776,7 @@ begin
     Services.Services[0].DescriptionType := ipmDTXsd;
   end;
   FreeAndNil(XmlSampleWsdl);
-  XmlSampleWsdl := TWsdl.Create(EnvVars, 1, 1, False);
+  XmlSampleWsdl := TWsdl.Create(EnvVars, False);
   with XmlSampleWsdl do
   begin
     Name := '_XmlSample';
@@ -8817,7 +8787,7 @@ begin
     Services.Services[0].DescriptionType := ipmDTXsd; // ?? maybe better to use a seperate type ??
   end;
   FreeAndNil(ApiByExampleWsdl);
-  ApiByExampleWsdl := TWsdl.Create(EnvVars, 1, 1, False);
+  ApiByExampleWsdl := TWsdl.Create(EnvVars, False);
   with ApiByExampleWsdl do
   begin
     Name := '_JsonSample';
@@ -8825,7 +8795,7 @@ begin
     isOpenApiService := True;
   end;
   FreeAndNil(SwiftMtWsdl);
-  SwiftMtWsdl := TWsdl.Create(EnvVars, 1, 1, False);
+  SwiftMtWsdl := TWsdl.Create(EnvVars, False);
   with SwiftMtWsdl do
   begin
     Name := '_SwiftMT';
