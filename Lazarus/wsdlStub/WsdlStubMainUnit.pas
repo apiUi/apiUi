@@ -650,6 +650,7 @@ type
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
+    procedure ToolButton71Click(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
@@ -1253,7 +1254,7 @@ type
       setdoShowDesignSplitVertical;
     property stubChanged: Boolean read getStubChanged write setStubChanged;
     property Wsdl: TWsdl read getWsdl write setWsdl;
-    function SelectFolderAndSave: Boolean;
+    function SelecFolderAndSave: Boolean;
     procedure BeginUpdate;
     Procedure EndUpdate;
     procedure PromptForOperationAlias (aOperation: TWsdlOperation);
@@ -3220,11 +3221,11 @@ begin
       se.FocusOperationNameSpace := '';
       se.FocusMessageIndex := 0;
     end;
-    if UpperCase(RightStr(aFileName, Length('.wsdlStub'))) = '.WSDLSTUB' then
+    if ExtractFileExt(aFileName) = _ProjectOldFileExtention then
       SaveStringToFile(aFileName, se.ProjectDesignAsString(aFileName))
     else
     begin
-      if RightStr(aFileName, Length(_ProjectFolderSuffix)) = _ProjectFolderSuffix then
+      if ExtractFileExt(aFileName) = _ProjectFileExtention then
       begin
         SaveWithFoldersExecute (nil);
         se.stubChanged := False;
@@ -3316,19 +3317,23 @@ end;
 procedure TMainForm.OpenStubCase(aFileName: String);
 var
   f: Integer;
+  xProjectFolderName: String;
 begin
   captionFileName := ExtractFileName(aFileName);
-  if LazFileUtils.DirectoryExistsUTF8(aFileName) then
+  if ExtractFileExt(aFileName) = _ProjectFileExtention then
   begin
-    ProjectDesignFromString(se.OpenWithFolders, aFileName);
+    xProjectFolderName := Copy(aFileName, 1, Length(aFileName) - Length(_ProjectFileExtention))
+                        + Copy (_ProjectFileExtention, 2, 100)
+                        ;
+    ProjectDesignFromString(se.OpenWithFolders (aFileName), aFileName);
     UpdateReopenList(ReopenCaseList, aFileName);
   end
   else
   begin
-    if LazFileUtils.FileExistsUTF8(aFileName) then
+    if ExtractFileExt(aFileName) = _ProjectOldFileExtention then
       ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName)
     else
-      raise Exception.Create('No such file or folder: ' + aFileName);
+      raise Exception.Create('Unsupported filename: ' + aFileName);
   end;
   if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
   begin
@@ -3557,6 +3562,10 @@ begin
       begin
         ChoosenString := ChooseStringForm.ChoosenString;
         FileName := Copy(ChoosenString, 3, Length(ChoosenString) - 2);
+        if not LazFileUtils.DirectoryExistsUTF8(FileName) then
+          raise Exception.Create ( FileName
+                                 + ' is not a folder or does not exist'
+                                 );
         se.projectFileName := FileName;
         OpenStubCase(FileName);
       end;
@@ -5666,7 +5675,7 @@ begin
       if se.stubRead then
         SaveWsdlStubCase(se.projectFileName)
       else
-        result := SelectFolderAndSave;
+        result := SelecFolderAndSave;
     end;
     if (ret = mrCancel) then
       result := False;
@@ -7543,21 +7552,23 @@ begin
   end;
 end;
 
-function TMainForm.SelectFolderAndSave: Boolean;
+function TMainForm.SelecFolderAndSave: Boolean;
 begin
   result := False;
   with TSelectDirectoryDialog.Create(nil) do
   try
     FileName := se.projectFileName;
-    Title := 'Save wsdlStub project as folder';
-    Options := Options + [ofOverwritePrompt] - [ofPathMustExist, ofFileMustExist];
+    Title := 'Save service virtualisation project (select or create a folder with a name ending on '
+           + _ProjectFileExtention
+           + ')';
+    Options := Options + [ofOverwritePrompt, ofPathMustExist];
     if Execute then
     begin
-      if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
-        raise Exception.Create(Format ('foldername must end with "%s";%s%s', [_ProjectFolderSuffix, LineEnding, FileName]));
+      if ExtractFileExt(FileName) <> _ProjectFileExtention then
+        raise Exception.Create(Format ('Projectname must end with "%s";%s%s', [_ProjectFileExtention, LineEnding, FileName]));
       if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + _ProjectFileName) then
-        if not BooleanPromptDialog (Format ('Project "%s" already exists%s, Continue', [FileName, LineEnding])) then
-          raise Exception.Create('Aborted by user');
+        if not BooleanPromptDialog('A project named ' + FileName +  ' already exists' + LineEnding + 'Continue') then
+          Exit;
       se.projectFileName := FileName;
       SaveWsdlStubCase(se.projectFileName);
       result := True;
@@ -13008,16 +13019,17 @@ begin
   begin
     with TSelectDirectoryDialog.Create(nil) do
     try
-      Options := Options + [ofEnableSizing, ofFileMustExist, ofPathMustExist, ofViewDetail];
+      Options := Options + [ofEnableSizing, ofFileMustExist, ofPathMustExist];
       FileName := se.projectFileName;
-      Title := 'Open project';
+      DefaultExt := _ProjectFileExtention;
+      Title := 'Open service virtualisation project';
       if Execute then
       begin
-        if RightStr(FileName, Length(_ProjectFolderSuffix)) <> _ProjectFolderSuffix then
-          raise Exception.CreateFmt ( 'Illegal foldername "%s"%sMust end with "%s"'
-                                    , [FileName, LineEnding, _ProjectFolderSuffix]
+        if ExtractFileExt(FileName) <> _ProjectFileExtention then
+          raise Exception.CreateFmt ( 'Illegal filename "%s"%sMust end with "%s"'
+                                    , [FileName, LineEnding, _ProjectFileExtention]
                                     );
-        if not LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + _ProjectFileName) then
+        if not LazFileUtils.DirectoryExistsUTF8(FileName) then
           raise Exception.CreateFmt ( 'Project "%s" not found'
                                     , [FileName]
                                     );
@@ -13129,7 +13141,7 @@ var
   f: Integer;
 begin
   captionFileName := ExtractFileName(se.projectFileName);
-  ProjectDesignFromString(se.OpenWithFolders, se.projectFileName);
+  ProjectDesignFromString(se.OpenWithFolders ('hahah'), se.projectFileName);
   UpdateReopenList(ReopenCaseList, se.projectFileName);
   if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
   begin
@@ -13143,7 +13155,7 @@ end;
 procedure TMainForm.SaveProjectAsFolderActionExecute(Sender: TObject);
 begin
   OnlyWhenLicensed;
-  SelectFolderAndSave;
+  SelecFolderAndSave;
 end;
 
 procedure TMainForm.SaveStubCaseActionUpdate(Sender: TObject);
@@ -14094,6 +14106,11 @@ begin
   finally
     se.ReleaseLogLock;
   end;
+end;
+
+procedure TMainForm.ToolButton71Click(Sender: TObject);
+begin
+
 end;
 
 procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;
