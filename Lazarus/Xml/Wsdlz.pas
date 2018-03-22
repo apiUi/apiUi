@@ -5083,6 +5083,8 @@ begin
   self.StubStompReplyBodyPostFix := xOperation.StubStompReplyBodyPostFix;
   self.StubStompRequestBodyPostFix := xOperation.StubStompRequestBodyPostFix;
   self.StubStompTimeOut := xOperation.StubStompTimeOut;
+  self.smtpHost := xOperation.smtpHost;
+  self.smtpPort := xOperation.smtpPort;
   self.BeforeScriptLines := xOperation.BeforeScriptLines;
   self.AfterScriptLines := xOperation.AfterScriptLines;
   self.CorrelatedMessage := xOperation.CorrelatedMessage;

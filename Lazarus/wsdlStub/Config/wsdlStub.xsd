@@ -1310,6 +1310,101 @@ Internet standard protocol for e-mail clients to retrieve e-mail from a server.<
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="BmtpOperations">
+					<xs:annotation>
+						<xs:documentation>Used to describe service operations that work with COBOL records. Transport protocol (bmtp params) determines Service/Operation</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Service" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Name" type="NameType">
+											<xs:annotation>
+												<xs:documentation>Service name</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Operation" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Describes an unbound number of operations or methods</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Name" type="NameType">
+														<xs:annotation>
+															<xs:documentation>Operation name</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="CobolEnvironment" type="CobolEnvironmentType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Required for handling embedded sign;
+
+Tandem and IBM differ in the way thay handle embedded signs</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Req" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Describes request.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="DescriptionFile" type="FileNameType"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Rpy" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Describes response.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="DescriptionFile" type="FileNameType"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Flt" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Describes the fault message.
+
+Only relevant for stub operation. </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="DescriptionFile" type="FileNameType"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="MailOperations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Operation" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Name" type="NameType">
+											<xs:annotation>
+												<xs:documentation>Used to sent email from wsdlStub to an SMTP server (not needed for receiving emails, all you have to do then is to specify a Listener);
+
+Only in case you want to send emails to more then one service you need to specify more details.
+In that case, specify as many operations as end-points needed.
+After confirming and saving, wsdlStub will show mail operations with action Request (read-only).
+Specify an end-point for each operation and populate messages to complete the configuration.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="SwiftMtOperations">
 					<xs:complexType>
 						<xs:sequence>

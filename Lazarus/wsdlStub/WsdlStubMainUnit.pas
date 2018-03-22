@@ -76,6 +76,8 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    BmtpOperationsAction: TAction;
+    MailOperationsAction: TAction;
     ApiByExampleAction: TAction;
     ContextsAction: TAction;
     MenuItem21: TMenuItem;
@@ -88,6 +90,10 @@ type
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
+    MenuItem48: TMenuItem;
+    MenuItem49: TMenuItem;
+    MenuItem50: TMenuItem;
+    MenuItem51: TMenuItem;
     OpenProjectAction: TAction;
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
@@ -585,18 +591,22 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure AddChildElementMenuItemClick(Sender: TObject);
+    procedure BmtpOperationsActionExecute(Sender: TObject);
+    procedure BmtpOperationsActionHint(var HintStr: string; var CanShow: Boolean
+      );
     procedure ContextsActionExecute(Sender: TObject);
     procedure EditMessageAfterScriptActionExecute (Sender : TObject );
     procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
     procedure EditMessageDocumentationActionExecute(Sender: TObject);
     procedure EditMessageScriptActionExecute (Sender : TObject );
     procedure DocumentationViewerHotClick(Sender: TObject);
-    procedure GridViewAdvancedHeaderDraw(Sender: TVTHeader;
-      var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
     procedure ApiByExampleActionExecute(Sender: TObject);
     procedure ApiByExampleActionHint(var HintStr: string; var CanShow: Boolean
       );
     procedure LogTabControlChange(Sender: TObject);
+    procedure MailOperationsActionExecute(Sender: TObject);
+    procedure MailOperationsActionHint(var HintStr: string; var CanShow: Boolean
+      );
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem43Click(Sender: TObject);
@@ -650,7 +660,6 @@ type
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
-    procedure ToolButton71Click(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
@@ -1518,7 +1527,11 @@ begin
     ClearConsole;
     if se.Wsdls.Find(se.FreeFormatWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
+    if se.Wsdls.Find(se.MailWsdl.Name, f) then // not to be seen in list
+      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     if se.Wsdls.Find(se.CobolWsdl.Name, f) then // not to be seen in list
+      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
+    if se.Wsdls.Find(se.BmtpWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
     if se.Wsdls.Find(se.XsdWsdl.Name, f) then // not to be seen in list
       se.Wsdls.Delete(f); // will be restored again by PrepareOperation
@@ -1535,7 +1548,11 @@ begin
     { }
     if se.Wsdls.Find(se.FreeFormatWsdl.Name, f) then // not to be seen in list
       Inc(w);
+    if se.Wsdls.Find(se.MailWsdl.Name, f) then // not to be seen in list
+      Inc(w);
     if se.Wsdls.Find(se.CobolWsdl.Name, f) then // not to be seen in list
+      Inc(w);
+    if se.Wsdls.Find(se.BmtpWsdl.Name, f) then // not to be seen in list
       Inc(w);
     if se.Wsdls.Find(se.XsdWsdl.Name, f) then // not to be seen in list
       Inc(w);
@@ -13651,12 +13668,6 @@ begin
   OpenUrl((Sender as TIpHtmlPanel).HotURL);
 end;
 
-procedure TMainForm.GridViewAdvancedHeaderDraw(Sender: TVTHeader;
-  var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
-begin
-
-end;
-
 procedure TMainForm.ApiByExampleActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -13664,7 +13675,7 @@ begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.ApiByExampleOperationsXml('');
   try
-    if EditXmlXsdBased ( 'JsonSample Operations'
+    if EditXmlXsdBased ( 'API By Example Operations'
                        , 'OperationDefs.ApiByExampleOperations'
                        , 'ApiByExampleOperations.Operation.Name'
                        , 'ApiByExampleOperations.Operation.Name'
@@ -13888,6 +13899,41 @@ begin
   end;
 end;
 
+procedure TMainForm.BmtpOperationsActionExecute(Sender: TObject);
+var
+  xXml: TXml;
+begin
+  if not InactiveAfterPrompt then Exit;
+  xXml := se.bmtpOperationsXml;
+  if EditXmlXsdBased ( 'Bmtp Operations'
+                     , 'OperationDefs.BmtpOperations'
+                     , ''
+                     , ''
+                     , se.IsActive
+                     , xXml.Items.Count > 1
+                     , esUsed
+                     , OperationDefsXsd
+                     , xXml
+                     ) then
+  begin
+    AcquireLock;
+    try
+      stubChanged := True;
+      se.bmtpOperationsUpdate(xXml, se.projectFileName);
+      PrepareOperation;
+    finally
+      ReleaseLock;
+    end;
+    CheckBoxClick(nil);
+  end;
+end;
+
+procedure TMainForm.BmtpOperationsActionHint(var HintStr: string;
+  var CanShow: Boolean);
+begin
+  HintStr := 'Maintain list of bmtp operations ' + HttpActiveHint;
+end;
+
 procedure TMainForm.ContextsActionExecute(Sender: TObject);
 var
   c, r: Integer;
@@ -13965,6 +14011,41 @@ end;
 procedure TMainForm.LogTabControlChange(Sender: TObject);
 begin
   ShowChosenLogTab;
+end;
+
+procedure TMainForm.MailOperationsActionExecute(Sender: TObject);
+var
+  xXml: TXml;
+begin
+  if not InactiveAfterPrompt then Exit;
+  xXml := se.mailOperationsXml;
+  if EditXmlXsdBased ( 'Mail Operations'
+                     , 'OperationDefs.MailOperations'
+                     , 'MailOperations.Operation.Name'
+                     , 'MailOperations.Operation.Name'
+                     , se.IsActive
+                     , xXml.Items.Count > 1
+                     , esUsed
+                     , OperationDefsXsd
+                     , xXml
+                     ) then
+  begin
+    AcquireLock;
+    try
+      stubChanged := True;
+      se.mailOperationsUpdate(xXml);
+      PrepareOperation;
+    finally
+      ReleaseLock;
+    end;
+    CheckBoxClick(nil);
+  end;
+end;
+
+procedure TMainForm.MailOperationsActionHint(var HintStr: string;
+  var CanShow: Boolean);
+begin
+   HintStr := 'Maintain mail operations (only needed for client mode)' + HttpActiveHint;
 end;
 
 procedure TMainForm.MenuItem33Click(Sender: TObject);
@@ -14094,11 +14175,6 @@ begin
   finally
     se.ReleaseLogLock;
   end;
-end;
-
-procedure TMainForm.ToolButton71Click(Sender: TObject);
-begin
-
 end;
 
 procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;

@@ -13,7 +13,7 @@ object ChooseStringForm: TChooseStringForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 211
@@ -34,6 +34,7 @@ object ChooseStringForm: TChooseStringForm
       ItemHeight = 0
       OnDblClick = ChooseClick
       OnSelectionChange = ListBoxSelectionChange
+      PopupMenu = PopupMenu1
       Sorted = True
       TabOrder = 0
     end
@@ -140,6 +141,15 @@ object ChooseStringForm: TChooseStringForm
       }
       ModalResult = 2
       TabOrder = 1
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    OnPopup = PopupMenu1Popup
+    left = 161
+    top = 54
+    object CopyItemCaptionMenuItem: TMenuItem
+      Caption = 'Copy'
+      OnClick = CopyItemCaptionMenuItemClick
     end
   end
 end

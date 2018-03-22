@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls , Buttons, FormIniFilez;
+  StdCtrls, ExtCtrls , Buttons,Menus, FormIniFilez;
 
 type
 
@@ -21,15 +21,19 @@ type
 
   TChooseStringForm = class(TForm)
     CancelButton : TBitBtn ;
+    CopyItemCaptionMenuItem: TMenuItem;
     OkButton : TBitBtn ;
     Panel1: TPanel;
     Panel2: TPanel;
     ListBox: TListBox;
+    PopupMenu1: TPopupMenu;
     procedure ChooseClick(Sender: TObject);
+    procedure CopyItemCaptionMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListBoxSelectionChange (Sender : TObject ; User : boolean );
+    procedure PopupMenu1Popup(Sender: TObject);
   private
     fChoosenString: String;
     function getChoosenIndex: Integer;
@@ -51,6 +55,9 @@ implementation
   {$R *.lfm}
 {$ENDIF}
 
+uses Clipbrd
+   ;
+
 function TChooseStringForm.GetChoosenString: String;
 begin
   result := fChoosenString;
@@ -69,6 +76,12 @@ begin
     fChoosenString := ListBox.Items.Strings [ListBox.ItemIndex];
     ModalResult := mrOk;
   end;
+end;
+
+procedure TChooseStringForm.CopyItemCaptionMenuItemClick(Sender: TObject);
+begin
+  if ListBox.ItemIndex > -1 then
+    Clipboard.AsText := ListBox.Items.Strings[ListBox.ItemIndex];
 end;
 
 procedure TChooseStringForm.FormCreate(Sender: TObject);
@@ -101,6 +114,11 @@ procedure TChooseStringForm .ListBoxSelectionChange (Sender : TObject ;
   User : boolean );
 begin
   OkButton.Enabled := (ListBox.ItemIndex > -1);
+end;
+
+procedure TChooseStringForm.PopupMenu1Popup(Sender: TObject);
+begin
+  CopyItemCaptionMenuItem.Enabled := (ListBox.ItemIndex > -1);
 end;
 
 function TChooseStringForm.getChoosenIndex: Integer;
