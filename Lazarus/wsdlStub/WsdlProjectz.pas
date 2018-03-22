@@ -1303,7 +1303,6 @@ begin
       projectOptionsXsd := XsdByName['projectOptions'];
       serviceOptionsXsd := XsdByName['serviceOptions'];
       operationOptionsXsd := XsdByName['operationOptions'];
-      _WsdlServiceDefinitionXsd := XsdByName['ServiceDefinitions'];
       _WsdlListOfFilesXsd := XsdByName['FileNames'];
       endpointConfigXsd := XsdByName['endpointConfig'];
       listenersConfigXsd := XsdByName['Listeners'];
@@ -1316,7 +1315,6 @@ begin
     if not Assigned (projectOptionsXsd) then raise Exception.Create('XML Element definition for projectOptions not found');
     if not Assigned (serviceOptionsXsd) then raise Exception.Create('XML Element definition for serviceOptions not found');
     if not Assigned (operationOptionsXsd) then raise Exception.Create('XML Element definition for operationOptions not found');
-    if not Assigned (_WsdlServiceDefinitionXsd) then raise Exception.Create('XML Element definition for ServiceDefinitions not found');
     if not Assigned (_WsdlListOfFilesXsd) then raise Exception.Create('XML Element definition for FileNames not found');
     if not Assigned (endpointConfigXsd) then raise Exception.Create('XML Element definition for endpointConfig not found');
     if not Assigned (listenersConfigXsd) then raise Exception.Create('XML Element definition for listeners configuration not found');
@@ -3846,34 +3844,12 @@ var
   xExt: String;
 begin
   xExt := UpperCase (ExtractFileExt (resolveAliasses(aName)));
-  if xExt = '.SDF' then
-  begin
-    result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
-    result.FileName := aName;
-    try
-      result.LoadFromSdfFile(aName);
-    except
-      on e: Exception do
-      begin
-        result.Free;
-        result := nil;
-        raise Exception.Create ( 'Error opening '
-                               + resolveAliasses(aName)
-                               + CRLF
-                               + e.Message
-                               );
-      end;
-    end;
-  end
+  result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
+  if (xExt = '.JSON')
+  or (xExt = '.YAML') then
+    result.LoadFromJsonYamlFile(aName, nil)
   else
-  begin
-    result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
-    if (xExt = '.JSON')
-    or (xExt = '.YAML') then
-      result.LoadFromJsonYamlFile(aName, nil)
-    else
-      result.LoadFromSchemaFile(aName, nil);
-  end;
+    result.LoadFromSchemaFile(aName, nil);
 end;
 
 procedure TWsdlProject .UpdateMessageRow (aOperation : TWsdlOperation ;

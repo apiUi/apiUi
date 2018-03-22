@@ -35,17 +35,9 @@ type
     AddAction: TAction;
     OKAction: TAction;
     DeleteButton: TButton;
-    EditSdfButton: TButton;
-    EditAction: TAction;
-    NewAction: TAction;
-    NewSdfButton: TButton;
-    SaveDialog: TSaveDialog;
     CopyFileNameAction: TAction;
     ListViewPopupMenu: TPopupMenu;
     CopyFileNameAction1: TMenuItem;
-    procedure NewActionExecute(Sender: TObject);
-    procedure EditActionExecute(Sender: TObject);
-    procedure EditActionUpdate(Sender: TObject);
     procedure DeleteActionUpdate(Sender: TObject);
     procedure AddActionUpdate(Sender: TObject);
     procedure DeleteActionExecute(Sender: TObject);
@@ -148,16 +140,11 @@ begin
         Wsdl := TWsdl.Create(EnvVars, ShowOperationsWithEndpointOnly);
         try
           xExt := UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text));
-          if xExt = '.SDF' then
-            Wsdl.LoadFromSdfFile (OpenWsdlForm.WsdlLocationEdit.Text)
+          if (xExt = '.JSON')
+          or (xExt = '.YAML') then
+            Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil)
           else
-          begin
-            if (xExt = '.JSON')
-            or (xExt = '.YAML') then
-              Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil)
-            else
-              wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil);
-          end;
+            wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil);
           Wsdl.XsdDescr.Finalise;
         except
           Wsdl.Free;
@@ -222,118 +209,6 @@ begin
   if ListView.Items.Count > 0 then
     ListView.ItemIndex := 0;
   ListView.SetFocus;
-end;
-
-procedure TwsdlListForm.EditActionUpdate(Sender: TObject);
-begin
-  EditAction.Enabled := (ListView.ItemIndex > -1)
-                    and (UpperCase (ExtractFileExt (ListView.Selected.Caption)) = '.SDF');
-end;
-
-procedure TwsdlListForm.EditActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-  sl: TStringList;
-begin
-  xXml := TXml.Create;
-  try
-    xXml.LoadFromFile(ListView.Selected.Caption, nil);
-    wsdlConvertSdfFrom36 (xXml);
-    if EditXmlXsdBased( 'ServiceDefinition file: ' + ListView.Selected.Caption
-                      , ''
-                      , 'FreeFormatOperations.Operation.Name'
-                      , 'FreeFormatOperations.Operation.Name'
-                      , False
-                      , False
-                      , esUsed
-                      , _WsdlServiceDefinitionXsd
-                      , xXml
-                      ) then
-    begin
-      if (MessageDlg ('Save changes to ' + #$D#$A + ListView.Selected.Caption, mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-      begin
-        sl := TStringList.Create;
-        try
-          if SaveRelativeFilenames then
-            xXml.SetFileNamesRelative(ListView.Selected.Caption);
-          sl.Text := xXml.AsText(False,0,True,False);
-          sl.SaveToFile(ListView.Selected.Caption);
-          ShowMessage ('Please reload your project to see the changes');
-        finally
-          sl.free;
-        end;
-      end;
-    end;
-  finally
-    FreeAndNil (xXml);
-  end;
-end;
-
-procedure TwsdlListForm.NewActionExecute(Sender: TObject);
-  function _inquire(aXml: TXml): Boolean;
-  begin
-    result := EditXmlXsdBased( 'New serviceDefinition file'
-                             , ''
-                             , ''
-                             , ''
-                             , False
-                             , False
-                             , esUsed
-                             , _WsdlServiceDefinitionXsd
-                             , aXml
-                             );
-  end;
-var
-  xXml: TXml;
-  sl: TStringList;
-  xApprove: Boolean;
-  xRpy: Integer;
-  xWsdl: TWsdl;
-begin
-  xXml := TXml.Create (-10000, _WsdlServiceDefinitionXsd);
-  try
-    xApprove := _inquire(xXml);
-    while xApprove do
-    begin
-      xRpy := MessageDlg ('Save service description', mtConfirmation, [mbYes, mbNo, mbCancel], 0);
-      if xRpy = mrNo then
-        xApprove := False;
-      if xRpy = mrCancel then
-        xApprove := _inquire(xXml);
-      if xRpy = mrYes then
-      begin
-        if SaveDialog.Execute then
-        begin
-          with TStringList.Create do
-          try
-            if SaveRelativeFilenames then
-              xXml.SetFileNamesRelative(SaveDialog.FileName);
-            Text := xXml.AsText(False,0,True,False);
-            SaveToFile(SaveDialog.FileName);
-          finally
-            free;
-          end;
-          xWsdl := TWsdl.Create (EnvVars, ShowOperationsWithEndpointOnly);
-          try
-            xWsdl.LoadFromSdfFile (SaveDialog.FileName);
-          except
-            xWsdl.Free;
-            raise;
-          end;
-          Wsdls.AddObject(SaveDialog.FileName, xWsdl);
-          UpdateListView;
-          fStubChanged := True;
-          xApprove := False;
-        end
-        else
-        begin
-          _inquire(xXml);
-        end;
-      end;
-    end;
-  finally
-    FreeAndNil (xXml);
-  end;
 end;
 
 end.

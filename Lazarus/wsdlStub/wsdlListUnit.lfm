@@ -47,23 +47,7 @@ object wsdlListForm: TwsdlListForm
       Top = 12
       Width = 75
       Action = DeleteAction
-      TabOrder = 4
-    end
-    object EditSdfButton: TButton
-      Left = 201
-      Height = 25
-      Top = 12
-      Width = 75
-      Action = EditAction
       TabOrder = 2
-    end
-    object NewSdfButton: TButton
-      Left = 282
-      Height = 25
-      Top = 12
-      Width = 75
-      Action = NewAction
-      TabOrder = 3
     end
   end
   object Panel2: TPanel
@@ -115,28 +99,11 @@ object wsdlListForm: TwsdlListForm
       Hint = 'Close'
       OnUpdate = OKActionUpdate
     end
-    object EditAction: TAction
-      Caption = 'Edit SDF...'
-      Hint = 'Edit service description file'
-      OnExecute = EditActionExecute
-      OnUpdate = EditActionUpdate
-    end
-    object NewAction: TAction
-      Caption = 'New SDF...'
-      Hint = 'Create a new service description file'
-      OnExecute = NewActionExecute
-    end
     object CopyFileNameAction: TAction
       Caption = 'Copy File Name'
       OnExecute = CopyFileNameActionExecute
       OnUpdate = CopyFileNameActionUpdate
     end
-  end
-  object SaveDialog: TSaveDialog
-    DefaultExt = '.sdf'
-    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    left = 376
-    top = 32
   end
   object ListViewPopupMenu: TPopupMenu
     left = 472
