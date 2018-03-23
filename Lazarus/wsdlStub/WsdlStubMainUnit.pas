@@ -379,7 +379,7 @@ type
     N6: TMenuItem;
     ToolButton15: TToolButton;
     ToolButton23: TToolButton;
-    ClearExceptionsAction: TAction;
+    ClearNotificationsAction: TAction;
     OperationReqsTreeView: TVirtualStringTree;
     SelectMessageColumnsAction: TAction;
     CopyGridAction: TAction;
@@ -824,8 +824,8 @@ type
       var CellText: String);
     procedure ExceptionsVTSFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
-    procedure ClearExceptionsActionExecute(Sender: TObject);
-    procedure ClearExceptionsActionUpdate(Sender: TObject);
+    procedure ClearNotificationsActionExecute(Sender: TObject);
+    procedure ClearNotificationsActionUpdate(Sender: TObject);
     procedure NewStubCaseActionExecute(Sender: TObject);
     procedure MessagesVTSGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -6247,12 +6247,12 @@ begin
   end;
 end;
 
-procedure TMainForm.ClearExceptionsActionUpdate(Sender: TObject);
+procedure TMainForm.ClearNotificationsActionUpdate(Sender: TObject);
 begin
-  ClearExceptionsAction.Enabled := (se.displayedExceptions.Count > 0);
+  ClearNotificationsAction.Enabled := (se.displayedExceptions.Count > 0);
 end;
 
-procedure TMainForm.ClearExceptionsActionExecute(Sender: TObject);
+procedure TMainForm.ClearNotificationsActionExecute(Sender: TObject);
 begin
   ExceptionsVTS.Clear;
   se.AcquireLogLock;
@@ -13705,7 +13705,7 @@ end;
 procedure TMainForm.ApiByExampleActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
-  HintStr := 'Maintain list of JsonSample operations ' + HttpActiveHint;
+  HintStr := 'Maintain list of ApiByExample operations ' + HttpActiveHint;
 end;
 
 procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
