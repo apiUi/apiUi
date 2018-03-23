@@ -13690,6 +13690,7 @@ begin
       try
         stubChanged := True;
         se.ApiByExampleOperationsUpdate(xXml, se.projectFileName);
+        PrepareOperation; // despite next line, do not remove since this rebuilds the wsdls list
         ReloadProject; // some datatypes may have changed
       finally
         ReleaseLock;

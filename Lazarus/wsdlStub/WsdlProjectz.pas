@@ -1696,8 +1696,9 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
   var
     f: Integer;
   begin
-    if (aWsdl.Services.Count > 0)
-    and (aWsdl.Services.Services[0].Operations.Count > 0) then
+    if (    (aWsdl.Services.Count > 0)
+        and (aWsdl.Services.Services[0].Operations.Count > 0)
+       ) then
     begin
       if not Wsdls.Find (aWsdl.Name, f) then
         Wsdls.AddObject(aWsdl.Name, aWsdl);
@@ -1709,7 +1710,7 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
     end;
   end;
 var
-  w, o, m: Integer;
+  w, o, m, f: Integer;
   xMessage: TWsdlMessage;
 begin
   wsdlNames.Clear;
@@ -1722,7 +1723,8 @@ begin
   _updtWsdls(BmtpWsdl);
   _updtWsdls(XsdWsdl);
   _updtWsdls(XmlSampleWsdl);
-  _updtWsdls(ApiByExampleWsdl);
+  if not Wsdls.Find (ApiByExampleWsdl.Name, f) then
+    Wsdls.AddObject(ApiByExampleWsdl.Name, ApiByExampleWsdl);
   _updtWsdls(SwiftMtWsdl);
   _updtWsdls(MailWsdl);
   for w := 0 to Wsdls.Count - 1 do
@@ -9216,7 +9218,7 @@ begin
   ApiByExampleWsdl := TWsdl.Create(EnvVars, False);
   with ApiByExampleWsdl do
   begin
-    Name := '_JsonSample';
+    Name := '_ApiByExample';
     isSoapService := False;
     isOpenApiService := True;
   end;

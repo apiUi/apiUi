@@ -481,10 +481,12 @@ VoidStatement:
           {
             if DoIt then
             begin
+              PushObject (LocalParser as TObject);
               LocalBind := $1.yy.yyObject as TBind;
               LocalParser := LocalBind.yy.yyObject as TParser;
               LocalParser.DoIt := DoIt;
               LocalParser.Execute;
+              LocalParser := PopObject as TParser;
             end;
           }
         |
