@@ -97,6 +97,14 @@ type
     function GetAbortPressed: Boolean;
     function getDoClearSnapshots : Boolean ;
     function getDoClearLogs : Boolean ;
+    function gethasApiByExplampleOperations: Boolean;
+    function gethasBmtpOperations: Boolean;
+    function gethasCobolOperations: Boolean;
+    function gethasFreeformatOperations: Boolean;
+    function gethasMailOperations: Boolean;
+    function gethasSwiftMtOperations: Boolean;
+    function gethasXmlSampleOperations: Boolean;
+    function gethasXsdOperation: Boolean;
     function SendNoneMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
                              ): String;
@@ -120,8 +128,6 @@ type
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCreatePostStream(AContext: TIdContext;
       AHeaders: TIdHeaderList; var VPostStream: TStream);
-    procedure HTTPServerCommandPutPut(AContext: TIdContext;
-      ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     function tryToProcessAsOpenApi (aLog: TLog): Boolean;
     procedure HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
@@ -374,6 +380,14 @@ type
     property doClearSnapshots: Boolean read getDoClearSnapshots write setDoClearSnapshots;
     property IsActive: Boolean read fIsActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
+    property hasApiByExplampleOperations: Boolean read gethasApiByExplampleOperations;
+    property hasXsdOperation: Boolean read gethasXsdOperation;
+    property hasXmlSampleOperations: Boolean read gethasXmlSampleOperations;
+    property hasCobolOperations: Boolean read gethasCobolOperations;
+    property hasBmtpOperations: Boolean read gethasBmtpOperations;
+    property hasSwiftMtOperations: Boolean read gethasSwiftMtOperations;
+    property hasMailOperations: Boolean read gethasMailOperations;
+    property hasFreeformatOperations: Boolean read gethasFreeformatOperations;
     constructor Create;
     destructor Destroy; Override;
   end;
@@ -1723,8 +1737,7 @@ begin
   _updtWsdls(BmtpWsdl);
   _updtWsdls(XsdWsdl);
   _updtWsdls(XmlSampleWsdl);
-  if not Wsdls.Find (ApiByExampleWsdl.Name, f) then
-    Wsdls.AddObject(ApiByExampleWsdl.Name, ApiByExampleWsdl);
+  _updtWsdls(ApiByExampleWsdl);
   _updtWsdls(SwiftMtWsdl);
   _updtWsdls(MailWsdl);
   for w := 0 to Wsdls.Count - 1 do
@@ -2363,12 +2376,14 @@ begin
                 and (xWsdl.Services.Services[s].FileAlias <> xWsdl.Services.Services[s].Name) then
                   AddXml (TXml.CreateAsString('FileAlias', xWsdl.Services.Services[s].FileAlias));
 {BEGIN 3.6 style}
+    {
                 AddXml (TXml.CreateAsInteger('AuthenticationType', Ord (xWsdl.Services.Services[s].AuthenticationType)));
                 AddXml (TXml.CreateAsString('UserName', xWsdl.Services.Services[s].UserName));
                 AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(xWsdl.Services.Services[s].Password)));
                 AddXml (TXml.CreateAsInteger('PasswordType', Ord (xWsdl.Services.Services[s].PasswordType)));
                 AddXml (TXml.CreateAsBoolean('SuppressXmlComment', xWsdl.Services.Services[s].SuppressXmlComment));
                 AddXml (TXml.CreateAsBoolean('SuppressHTTP500', xWsdl.Services.Services[s].SuppressHTTP500));
+    }
 {END 3.6 style}
                 AddXml (xWsdl.Services.Services[s].OptionsAsXml);
                 for o := 0 to xWsdl.Services.Services [s].Operations.Count - 1 do
@@ -2406,6 +2421,7 @@ begin
                     AddXml (TXml.CreateAsString('DelayTimeMsMin', IntToStr(xOperation.DelayTimeMsMin)));
                     AddXml (TXml.CreateAsString('DelayTimeMsMax', IntToStr(xOperation.DelayTimeMsMax)));
 {BEGIN Save in pre 4.0 mode}
+    {
                     AddXml (TXml.CreateAsInteger('StubTransport', Ord (xOperation.StubTransport)));
                     AddXml (TXml.CreateAsString('StubHttpAddress', xOperation.StubHttpAddress));
                     AddXml (TXml.CreateAsString('StubMqPutManager', xOperation.StubMqPutManager));
@@ -2427,6 +2443,7 @@ begin
                     and (xOperation.StubStompHeaderXml.Name <> '') then
                       with AddXml (TXml.Create) do
                         CopyDownLine (xOperation.StubStompHeaderXml, True);
+    }
 {END Save in pre 4.0 mode}
 
                     AddXml (xOperation.endpointConfigAsXml); // seave in 4.0++ style
@@ -4350,7 +4367,7 @@ begin
           aOperation.reqWsaOnRequest;
           with aOperation.reqWsaXml.FindUQXml('wsa.MessageID') do
           begin
-            Value := xLog.CorrId;
+            Value := xLog.MessageId;
             Checked := True;
           end;
         except
@@ -7046,6 +7063,62 @@ begin
   result := Assigned (fClearedLogs);
 end;
 
+function TWsdlProject.gethasApiByExplampleOperations: Boolean;
+begin
+  result := (ApiByExampleWsdl.Services.Count > 0)
+        and (ApiByExampleWsdl.Services.Services[0].Operations.Count > 0)
+          ;
+end;
+
+function TWsdlProject.gethasBmtpOperations: Boolean;
+begin
+    result := (BmtpWsdl.Services.Count > 0)
+          and (BmtpWsdl.Services.Services[0].Operations.Count > 0)
+            ;
+end;
+
+function TWsdlProject.gethasCobolOperations: Boolean;
+begin
+    result := (CobolWsdl.Services.Count > 0)
+          and (CobolWsdl.Services.Services[0].Operations.Count > 0)
+            ;
+end;
+
+function TWsdlProject.gethasFreeformatOperations: Boolean;
+begin
+    result := (FreeFormatWsdl.Services.Count > 0)
+          and (FreeFormatWsdl.Services.Services[0].Operations.Count > 0)
+            ;
+end;
+
+function TWsdlProject.gethasMailOperations: Boolean;
+begin
+    result := (MailWsdl.Services.Count > 0)
+          and (MailWsdl.Services.Services[0].Operations.Count > 0)
+            ;
+end;
+
+function TWsdlProject.gethasSwiftMtOperations: Boolean;
+begin
+    result := (SwiftMtWsdl.Services.Count > 0)
+          and (SwiftMtWsdl.Services.Services[0].Operations.Count > 0)
+            ;
+end;
+
+function TWsdlProject.gethasXmlSampleOperations: Boolean;
+begin
+    result := (XmlSampleWsdl.Services.Count > 0)
+          and (XmlSampleWsdl.Services.Services[0].Operations.Count > 0)
+            ;
+end;
+
+function TWsdlProject.gethasXsdOperation: Boolean;
+begin
+    result := (XsdWsdl.Services.Count > 0)
+          and (XsdWsdl.Services.Services[0].Operations.Count > 0)
+            ;
+end;
+
 function TWsdlProject.SendNoneMessage(aOperation: TWsdlOperation; aMessage: String): String;
 begin
   result := '';
@@ -7455,7 +7528,6 @@ begin
       xLog.TransportType := ttHttp;
       xLog.httpCommand := ARequestInfo.Command;
       xLog.httpDocument := ARequestInfo.Document;
-      xLog.httpSoapAction := ARequestInfo.RawHeaders.Values ['SOAPAction'];
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
       xLog.RequestContentType := ARequestInfo.ContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
@@ -7620,7 +7692,10 @@ begin
           xLog.httpCommand := ARequestInfo.Command;
           xLog.httpDocument := ARequestInfo.Document;
           xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
+          xLog.RequestContentType := ARequestInfo.ContentType;
           xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
+          xLog.httpParams := ARequestInfo.QueryParams;
+          xLog.httpResponseCode := 200;
           with TXml.Create do
           try
             LoadFromString(xLog.RequestBody, nil);
@@ -7648,8 +7723,8 @@ begin
           AResponseInfo.ContentType := ARequestInfo.ContentType;
           xLog.ReplyContentType := AResponseInfo.ContentType;
           xProcessed := False;
-          AResponseInfo.ResponseNo := 200;
           CreateLogReply (xLog, xProcessed, True);
+          AResponseInfo.ResponseNo := xLog.httpResponseCode;
           DelayMS (xLog.DelayTimeMs);
           with TXml.CreateAsString('bmtpEnvelope', '') do
           try
@@ -7696,13 +7771,6 @@ begin
     CoUninitialize;
     {$endif}
   end;
-end;
-
-procedure TWsdlProject.HTTPServerCommandPutPut(AContext: TIdContext;
-  ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-begin
-  AResponseInfo.ContentText := 'JanBo PutPut';
-  AResponseInfo.ResponseNo := 500;
 end;
 
 function TWsdlProject.tryToProcessAsOpenApi (aLog: TLog): Boolean;
@@ -8225,7 +8293,6 @@ begin
     StubAction := saForward;
     httpCommand := AContext.Command;
     httpDocument := AContext.Document;
-    httpSoapAction := AContext.Headers.Values ['SOAPAction'];
   end;
 end;
 
@@ -8363,7 +8430,7 @@ begin
         if TagName = 'RequestReply' then
         begin
           xLog := TLog.Create;
-          xLog.CorrId := Items.XmlValueByTagDef ['Check', xLog.CorrId];
+          xLog.MessageId := Items.XmlValueByTagDef ['MessageId', xLog.MessageId];
           try
             xLog.InboundTimeStamp := XmlToDateTime (Items.XmlValueByTag ['InboundTimeStamp']);
           except
@@ -8396,7 +8463,6 @@ begin
           xLog.httpParams := Items.XmlValueByTag ['httpParams'];
           xLog.RequestContentType := Items.XmlValueByTag ['RequestContentType'];
           xLog.ReplyContentType := Items.XmlValueByTag ['ReplyContentType'];
-          xLog.httpSoapAction := Items.XmlValueByTag ['httpSoapAction'];
           xLog.RequestHeaders := Items.XmlValueByTag ['HttpRequestHeaders'];
           xLog.ReplyHeaders := Items.XmlValueByTag ['HttpReplyHeaders'];
           xLog.RequestBody := Items.XmlValueByTag ['HttpRequestBody'];
@@ -8418,12 +8484,12 @@ begin
           xLog.RequestValidateResult := Items.XmlValueByTag ['RequestValidateResult'];
           xLog.ReplyValidated := Items.XmlBooleanByTag ['ReplyValidated'];
           xLog.ReplyValidateResult := Items.XmlValueByTag ['ReplyValidateResult'];
-          xLog.CorrId := Items.XmlValueByTag ['Check'];
+          xLog.MessageId := Items.XmlValueByTag ['MessageId'];
           if xLog.ServiceName = '' then
             xLog.ServiceName := Items.XmlValueByTag ['ServiceName'];
           if xLog.OperationName = '' then
             xLog.OperationName := Items.XmlValueByTag ['OperationName'];
-          xLog.CorrId := Items.XmlValueByTag ['Check'];
+          xLog.MessageId := Items.XmlValueByTag ['MessageId'];
           try
             xLog.Operation := FindOperationOnRequest ( xLog
                                                      , ''

@@ -2493,10 +2493,11 @@ object MainForm: TMainForm
     end
     object ApiByExampleAction: TAction
       Category = 'Project'
-      Caption = 'API by example'
+      Caption = 'API by example...'
       ImageIndex = 99
       OnExecute = ApiByExampleActionExecute
       OnHint = ApiByExampleActionHint
+      OnUpdate = ApiByExampleActionUpdate
     end
     object CobolOperationsAction: TAction
       Category = 'Project'
@@ -2504,27 +2505,31 @@ object MainForm: TMainForm
       ImageIndex = 72
       OnExecute = CobolOperationsActionExecute
       OnHint = CobolOperationsActionHint
+      OnUpdate = CobolOperationsActionUpdate
     end
     object BmtpOperationsAction: TAction
       Category = 'Project'
-      Caption = 'Bmtp Operations'
+      Caption = 'Bmtp Operations...'
       ImageIndex = 101
       OnExecute = BmtpOperationsActionExecute
       OnHint = BmtpOperationsActionHint
+      OnUpdate = BmtpOperationsActionUpdate
     end
     object XsdOperationsAction: TAction
       Category = 'Project'
-      Caption = 'Xsd operations'
+      Caption = 'Xsd operations...'
       ImageIndex = 75
       OnExecute = XsdOperationsActionExecute
       OnHint = XsdOperationsActionHint
+      OnUpdate = XsdOperationsActionUpdate
     end
     object XmlSampleOperations: TAction
       Category = 'Project'
-      Caption = 'XmlSample Operations'
+      Caption = 'XmlSample Operations...'
       ImageIndex = 97
       OnExecute = XmlSampleOperationsExecute
       OnHint = XmlSampleOperationsHint
+      OnUpdate = XmlSampleOperationsUpdate
     end
     object SwiftMtOperationsAction: TAction
       Category = 'Project'
@@ -2532,6 +2537,7 @@ object MainForm: TMainForm
       ImageIndex = 74
       OnExecute = SwiftMtOperationsActionExecute
       OnHint = SwiftMtOperationsActionHint
+      OnUpdate = SwiftMtOperationsActionUpdate
     end
     object MailOperationsAction: TAction
       Category = 'Project'
@@ -2539,6 +2545,7 @@ object MainForm: TMainForm
       ImageIndex = 100
       OnExecute = MailOperationsActionExecute
       OnHint = MailOperationsActionHint
+      OnUpdate = MailOperationsActionUpdate
     end
     object FreeFormatsAction: TAction
       Category = 'Project'
@@ -2546,6 +2553,7 @@ object MainForm: TMainForm
       ImageIndex = 71
       OnExecute = FreeFormatsActionExecute
       OnHint = FreeFormatsActionHint
+      OnUpdate = FreeFormatsActionUpdate
     end
     object ProjectOptionsAction: TAction
       Category = 'Project'

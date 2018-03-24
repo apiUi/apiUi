@@ -42,7 +42,7 @@ type
     DisplayedColumnsValid: Boolean;
     DisplayedColumns: TStringList;
     Nr: Integer;
-    CorrId: String;
+    MessageId: String;
     InboundTimeStamp, OutBoundTimeStamp: TDateTime;
     TransportType: TTransportType;
     httpUri: String;
@@ -50,7 +50,6 @@ type
     httpCommand: String;
     httpDocument: String;
     httpParams: String;
-    httpSoapAction: String;
     RequestContentType, ReplyContentType: String;
     DestinationIp: String;
     Stubbed: Boolean;
@@ -116,7 +115,6 @@ type
     property Number: Integer read fNumber;
     function SaveLog (aString: String; aLog: TLog): TLog;
     function LogsAsString (aStubFileName: String): String;
-    function LogIncrementAsString(aIndex: Integer; aCheckId: String): String;
     function UnexpectedsAsXml: TXml;
     function PrepareCoverageReportAsXml (aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
     procedure InvalidateDisplayedColumns; overload;
@@ -758,40 +756,6 @@ begin
     LogItems[x].DisplayedColumnsValid := False;
 end;
 
-function TLogList.LogIncrementAsString(aIndex: Integer; aCheckId: String): String;
-var
-  xLog: TLog;
-  x, n: Integer;
-  xXml: TXml;
-begin
-  result := '';
-  n := Count;
-  if aIndex > -1 then
-  begin
-    try
-      xLog := LogItems [aIndex];
-    except
-      raise Exception.Create ('Could not find last log from previous call');
-    end;
-    if xLog.CorrId <> aCheckId then
-      raise Exception.Create ('Could not find last log from previous call');
-  end;
-  xXml := TXml.CreateAsString ('LogIncrement', '');
-  try
-    with xXml.AddXml (TXml.CreateAsString ('refreshInfo', '')) do
-    begin
-      AddXml (TXml.CreateAsInteger ('Index', n - 1));
-      if n > 0 then
-        AddXml (TXml.CreateAsString ('Check', LogItems [n - 1].CorrId));
-    end;
-    for x := aIndex + 1 to n - 1 do
-      xXml.AddXml (LogItems [x].AsXml);
-    result := xXml.AsText(False,0,False,False);
-  finally
-    xXml.Free;
-  end;
-end;
-
 function TLogList.LogsAsString (aStubFileName: String): String;
 var
   x: Integer;
@@ -805,7 +769,7 @@ begin
     begin
       AddXml (TXml.CreateAsInteger ('Index', n - 1));
       if n > 0 then
-        AddXml (TXml.CreateAsString ('Check', LogItems [n - 1].CorrId));
+        AddXml (TXml.CreateAsString ('MessageId', LogItems [n - 1].MessageId));
     end;
     for x := 0 to n - 1 do
       AddXml (LogItems [x].AsXml);
@@ -1061,7 +1025,7 @@ begin
     AddXml (Txml.CreateAsString('CorrelationId', Self.CorrelationId));
     if Assigned (Self.Operation) then
     begin
-      xBodiesAsBase64 := (Self.Operation.WsdlService.DescriptionType = ipmDTCobol);
+      xBodiesAsBase64 := (Self.Operation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp]);
       AddXml (TXml.CreateAsString('Service', Self.Operation.WsdlService.Name));
       AddXml (TXml.CreateAsString('Operation', Self.Operation.Name));
       if Assigned (Self.Mssg) then
@@ -1085,7 +1049,6 @@ begin
     AddXml (Txml.CreateAsString('httpParams', Self.httpParams));
     AddXml (Txml.CreateAsString('RequestContentType', Self.RequestContentType));
     AddXml (Txml.CreateAsString('ReplyContentType', Self.ReplyContentType));
-    AddXml (Txml.CreateAsString('httpSoapAction', Self.httpSoapAction));
     AddXml (Txml.CreateAsString('HttpRequestHeaders', Self.RequestHeaders));
     AddXml (Txml.CreateAsString('HttpReplyHeaders', Self.ReplyHeaders));
     if xBodiesAsBase64 then
@@ -1108,7 +1071,7 @@ begin
     AddXml (Txml.CreateAsBoolean('ReplyValidated', Self.ReplyValidated));
     AddXml (Txml.CreateAsString('ReplyValidateResult', Self.ReplyValidateResult));
     AddXml (Txml.CreateAsString('Nr', IntToStr (Self.Nr)));
-    AddXml (Txml.CreateAsString('Check', Self.CorrId));
+    AddXml (Txml.CreateAsString('MessageId', Self.MessageId));
     AddXml (Txml.CreateAsBoolean('Stubbed', Self.Stubbed));
     AddXml (Txml.CreateAsBoolean('wsaCorrelated', Self.wsaCorrelated));
     AddXml (Txml.CreateAsString('ServiceName', Self.ServiceName));
@@ -1118,7 +1081,7 @@ end;
 
 constructor TLog.Create;
 begin
-  CorrId := 'uuid:' + generateRandomId;
+  MessageId := 'uuid:' + generateRandomId;
   DisplayedColumns := TStringList.Create;
 end;
 

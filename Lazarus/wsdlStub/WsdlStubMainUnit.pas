@@ -591,9 +591,12 @@ type
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
     procedure AddChildElementMenuItemClick(Sender: TObject);
+    procedure ApiByExampleActionUpdate(Sender: TObject);
     procedure BmtpOperationsActionExecute(Sender: TObject);
     procedure BmtpOperationsActionHint(var HintStr: string; var CanShow: Boolean
       );
+    procedure BmtpOperationsActionUpdate(Sender: TObject);
+    procedure CobolOperationsActionUpdate(Sender: TObject);
     procedure ContextsActionExecute(Sender: TObject);
     procedure EditMessageAfterScriptActionExecute (Sender : TObject );
     procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
@@ -603,10 +606,12 @@ type
     procedure ApiByExampleActionExecute(Sender: TObject);
     procedure ApiByExampleActionHint(var HintStr: string; var CanShow: Boolean
       );
+    procedure FreeFormatsActionUpdate(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
     procedure MailOperationsActionExecute(Sender: TObject);
     procedure MailOperationsActionHint(var HintStr: string; var CanShow: Boolean
       );
+    procedure MailOperationsActionUpdate(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem43Click(Sender: TObject);
@@ -659,6 +664,7 @@ type
       TabIndex : Integer ; var ImageIndex : Integer );
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
+    procedure SwiftMtOperationsActionUpdate(Sender: TObject);
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
@@ -884,6 +890,7 @@ type
     procedure XmlSampleOperationsExecute (Sender : TObject );
     procedure XmlSampleOperationsHint (var HintStr : string ;
       var CanShow : Boolean );
+    procedure XmlSampleOperationsUpdate(Sender: TObject);
     procedure XmlZoomValueAsXMLMenuItemClick(Sender: TObject);
     procedure XmlZoomValueAsTextMenuItemClick(Sender: TObject);
     procedure FullCollapse1Click(Sender: TObject);
@@ -960,6 +967,7 @@ type
     procedure stopActionUpdate(Sender: TObject);
     procedure ScriptSplitterCanResize(Sender: TObject; var NewSize: Integer;
       var Accept: Boolean);
+    procedure XsdOperationsActionUpdate(Sender: TObject);
     procedure xsdSplitterCanResize(Sender: TObject; var NewSize: Integer;
       var Accept: Boolean);
     procedure EditScriptMenuItemClick(Sender: TObject);
@@ -1215,6 +1223,7 @@ type
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure ReloadProject;
     function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
+    function prefixWithAsterix (aCaption: String; aBoolean: Boolean): String;
   published
   public
     contextPropertyOverwrite: String;
@@ -3086,6 +3095,12 @@ procedure TMainForm .XmlSampleOperationsHint (var HintStr : string ;
   var CanShow : Boolean );
 begin
   HintStr := 'Maintain list of XmlSample operations ' + HttpActiveHint;
+end;
+
+procedure TMainForm.XmlSampleOperationsUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    XmlSampleOperations.Caption := prefixWithAsterix (XmlSampleOperations.Caption, se.hasXmlSampleOperations);
 end;
 
 procedure TMainForm.AfterRequestScriptButtonClick(Sender: TObject);
@@ -7536,6 +7551,20 @@ begin
   end;
 end;
 
+function TMainForm.prefixWithAsterix(aCaption: String; aBoolean: Boolean
+  ): String;
+begin
+result := aCaption;
+  if aBoolean then
+  begin
+    if result [1] <> '*' then result := '* ' + result;
+  end
+  else
+  begin
+    if result [1] = '*' then result := Copy (result, 3, MaxInt);
+  end;
+end;
+
 function TMainForm.ActiveAfterPrompt : Boolean ;
 begin
   result := False;
@@ -8878,6 +8907,12 @@ procedure TMainForm.ScriptSplitterCanResize(Sender: TObject;
 
 begin
   Accept := (NewSize > SizeOfOperationToolBar);
+end;
+
+procedure TMainForm.XsdOperationsActionUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    XsdOperationsAction.Caption := prefixWithAsterix (XsdOperationsAction.Caption, se.hasXsdOperation);
 end;
 
 procedure TMainForm.FilterLogActionExecute(Sender: TObject);
@@ -13708,6 +13743,12 @@ begin
   HintStr := 'Maintain list of ApiByExample operations ' + HttpActiveHint;
 end;
 
+procedure TMainForm.FreeFormatsActionUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    FreeFormatsAction.Caption := prefixWithAsterix (FreeFormatsAction.Caption, se.hasFreeformatOperations);
+end;
+
 procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
 var
   xOperation: TWsdlOperation;
@@ -13900,6 +13941,12 @@ begin
   end;
 end;
 
+procedure TMainForm.ApiByExampleActionUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    ApiByExampleAction.Caption := prefixWithAsterix (ApiByExampleAction.Caption, se.hasApiByExplampleOperations);
+end;
+
 procedure TMainForm.BmtpOperationsActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -13933,6 +13980,18 @@ procedure TMainForm.BmtpOperationsActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
   HintStr := 'Maintain list of bmtp operations ' + HttpActiveHint;
+end;
+
+procedure TMainForm.BmtpOperationsActionUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    BmtpOperationsAction.Caption := prefixWithAsterix (BmtpOperationsAction.Caption, se.hasBmtpOperations);
+end;
+
+procedure TMainForm.CobolOperationsActionUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    CobolOperationsAction.Caption := prefixWithAsterix (CobolOperationsAction.Caption, se.hasCobolOperations);
 end;
 
 procedure TMainForm.ContextsActionExecute(Sender: TObject);
@@ -14047,6 +14106,12 @@ procedure TMainForm.MailOperationsActionHint(var HintStr: string;
   var CanShow: Boolean);
 begin
    HintStr := 'Maintain mail operations (only needed for client mode)' + HttpActiveHint;
+end;
+
+procedure TMainForm.MailOperationsActionUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    MailOperationsAction.Caption := prefixWithAsterix (MailOperationsAction.Caption, se.hasMailOperations);
 end;
 
 procedure TMainForm.MenuItem33Click(Sender: TObject);
@@ -14166,6 +14231,12 @@ begin
     result := -1;
   if s1 > s2 then
     result := 1;
+end;
+
+procedure TMainForm.SwiftMtOperationsActionUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    SwiftMtOperationsAction.Caption := prefixWithAsterix (SwiftMtOperationsAction.Caption, se.hasSwiftMtOperations);
 end;
 
 procedure TMainForm.ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
