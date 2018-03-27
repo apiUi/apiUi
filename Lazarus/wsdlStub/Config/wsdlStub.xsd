@@ -1812,6 +1812,7 @@ You can hide a password by using a %pwd% placeholder in this connectionstring an
 Visit http://www.connectionstrings.com for more information on connectionstrings and lots of examples </xs:documentation>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="TestConnection" minOccurs="0"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>

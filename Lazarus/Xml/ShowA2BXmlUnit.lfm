@@ -11,7 +11,7 @@ object ShowA2BXmlForm: TShowA2BXmlForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 291
@@ -559,6 +559,13 @@ object ShowA2BXmlForm: TShowA2BXmlForm
     object A2BGridMenuItem: TMenuItem
       Caption = 'View in grid'
       OnClick = A2BGridMenuItemClick
+    end
+    object MenuItem2: TMenuItem
+      Caption = '-'
+    end
+    object ColumnWidthMenuItem: TMenuItem
+      Caption = 'Column width...'
+      OnClick = ColumnWidthMenuItemClick
     end
   end
   object ActionImageList: TImageList

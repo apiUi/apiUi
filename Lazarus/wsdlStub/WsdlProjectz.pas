@@ -100,6 +100,7 @@ type
     function gethasApiByExplampleOperations: Boolean;
     function gethasBmtpOperations: Boolean;
     function gethasCobolOperations: Boolean;
+    function gethasFormalOperations: Boolean;
     function gethasFreeformatOperations: Boolean;
     function gethasMailOperations: Boolean;
     function gethasSwiftMtOperations: Boolean;
@@ -380,6 +381,7 @@ type
     property doClearSnapshots: Boolean read getDoClearSnapshots write setDoClearSnapshots;
     property IsActive: Boolean read fIsActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
+    property hasFormalOperations: Boolean read gethasFormalOperations;
     property hasApiByExplampleOperations: Boolean read gethasApiByExplampleOperations;
     property hasXsdOperation: Boolean read gethasXsdOperation;
     property hasXmlSampleOperations: Boolean read gethasXmlSampleOperations;
@@ -7082,6 +7084,29 @@ begin
     result := (CobolWsdl.Services.Count > 0)
           and (CobolWsdl.Services.Services[0].Operations.Count > 0)
             ;
+end;
+
+function TWsdlProject.gethasFormalOperations: Boolean;
+var
+  x: Integer;
+  xWsdl: TWsdl;
+begin
+  result := False;
+  x := 0;
+  while (x < Wsdls.Count) and (not result) do
+  begin
+    xWsdl := Wsdls.Objects[x] as TWsdl;
+    result := (xWsdl <> FreeFormatWsdl)
+          and (xWsdl <> XsdWsdl)
+          and (xWsdl <> XmlSampleWsdl)
+          and (xWsdl <> ApiByExampleWsdl)
+          and (xWsdl <> CobolWsdl)
+          and (xWsdl <> BmtpWsdl)
+          and (xWsdl <> SwiftMtWsdl)
+          and (xWsdl <> MailWsdl)
+            ;
+    Inc (x);
+  end;
 end;
 
 function TWsdlProject.gethasFreeformatOperations: Boolean;

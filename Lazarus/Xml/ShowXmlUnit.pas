@@ -1524,10 +1524,12 @@ begin
         Bind := NodeToBind(Node);
         if Assigned(Bind) then
         begin
-          if (Bind is TXml) and (Bind.Name <> 'passwordType') and Assigned
-            ((Bind as TXml).TypeDef) and
-            ((Bind as TXml).TypeDef.Name = 'passwordType') and
-            (Bind.Value <> '') then
+          try
+          if (Bind is TXml)
+          and (Bind.Name <> 'passwordType')
+          and Assigned ((Bind as TXml).TypeDef)
+          and ((Bind as TXml).TypeDef.Name = 'passwordType')
+          and (Bind.Value <> '') then
             CellText := '**********'
             // CellText := Bind.Value
           else
@@ -1542,6 +1544,10 @@ begin
                 else
                   CellText := CellText + '*';
             end;
+          end;
+
+          except
+            SjowMessage(bind.Name);
           end;
         end;
       end;

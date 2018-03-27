@@ -12,10 +12,9 @@ uses
 {$ELSE}
   LCLIntf, LCLType,
 {$ENDIF}
-  SysUtils , Classes , Graphics , Controls , Forms , Dialogs,
-  ExtCtrls , VirtualTrees , FileUtil ,
-  FormIniFilez , ComCtrls , ActnList , StdCtrls , Logz , a2bStringListUnit ,
-  Xmlz , A2BXmlz;
+  SysUtils,Classes,Graphics,Controls,Forms,Dialogs,ExtCtrls,VirtualTrees,
+  FileUtil,FormIniFilez,ComCtrls,ActnList,StdCtrls,Menus,Logz,a2bStringListUnit,
+  Xmlz,A2BXmlz;
 
 type
   PVSTreeRec = ^TVSTreeRec;
@@ -41,8 +40,10 @@ type
     CompareLogOrderByComboBox : TComboBox ;
     MaintainLogOrderColumnsAction : TAction ;
     MaintainIgnoredOrderAction : TAction ;
+    ColumnWidthMenuItem: TMenuItem;
     Panel1: TPanel;
     Panel2 : TPanel ;
+    PopupMenu: TPopupMenu;
     ToolBar1: TToolBar;
     leftPanel: TPanel;
     mainVST: TVirtualStringTree;
@@ -75,6 +76,7 @@ type
     ToolButton13: TToolButton;
     MaintainIgnoreAdditionsAction: TAction;
     MaintainIgnoredRemovalsAction: TAction;
+    procedure ColumnWidthMenuItemClick(Sender: TObject);
     procedure CompareLogOrderByComboBoxChange (Sender : TObject );
     procedure HtmlReportActionExecute(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
@@ -132,6 +134,7 @@ type
       var CellText: String);
     procedure setCompareLogOrderBy (AValue : TCompareLogOrderBy );
     procedure onSlChanged (aObject: TObject);
+    procedure PromptAndSetColumnWidth (aTreeView: TVirtualStringTree);
   public
     ProgName, StyleSheet: String;
     ignoreDifferencesOn, checkValueAgainst, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
@@ -161,6 +164,7 @@ uses
   , XmlXsdParser
   , xmlUtilz
   , htmlXmlUtilz
+  , PromptUnit
   ;
 
 {$IFnDEF FPC}
@@ -901,6 +905,25 @@ begin
   fConfigChanged := True;
 end;
 
+procedure TShowLogDifferencesForm.PromptAndSetColumnWidth(
+  aTreeView: TVirtualStringTree);
+var
+  n, w: Integer;
+begin
+  n := aTreeView.FocusedColumn;
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    PromptForm.Caption := 'Column width';
+    PromptForm.PromptEdit.Text := IntToStr (aTreeView.Header.Columns[n].Width);
+    PromptForm.Numeric := True;
+    PromptForm.ShowModal;
+    if PromptForm.ModalResult = mrOk then
+      aTreeView.Header.Columns[n].Width := StrToInt(PromptForm.PromptEdit.Text);
+  finally
+    FreeAndNil(PromptForm);
+  end;
+end;
+
 procedure TShowLogDifferencesForm.CloseActionExecute(Sender: TObject);
 begin
   Close;
@@ -1112,6 +1135,11 @@ procedure TShowLogDifferencesForm .CompareLogOrderByComboBoxChange (
 begin
   fCompareLogOrderBy := TCompareLogOrderBy(CompareLogOrderByComboBox.ItemIndex);
   PopulateMain (True);
+end;
+
+procedure TShowLogDifferencesForm.ColumnWidthMenuItemClick(Sender: TObject);
+begin
+  PromptAndSetColumnWidth(mainVST);
 end;
 
 end.

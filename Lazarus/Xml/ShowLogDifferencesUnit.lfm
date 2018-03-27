@@ -13,7 +13,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 380
@@ -108,6 +108,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
         Images = ActionImageList
         ParentColor = True
         ParentShowHint = False
+        PopupMenu = PopupMenu
         TabOrder = 0
         TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
         TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
@@ -5127,6 +5128,14 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       Caption = 'HTML Report'
       ImageIndex = 103
       OnExecute = HtmlReportActionExecute
+    end
+  end
+  object PopupMenu: TPopupMenu
+    left = 102
+    top = 157
+    object ColumnWidthMenuItem: TMenuItem
+      Caption = 'Column width...'
+      OnClick = ColumnWidthMenuItemClick
     end
   end
 end

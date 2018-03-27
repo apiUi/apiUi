@@ -28,6 +28,8 @@ type
     A2BGridMenuItem : TMenuItem ;
     checkRegExpFullCapMenuItem: TMenuItem;
     checkPartialFullCapMenuItem: TMenuItem;
+    MenuItem2: TMenuItem;
+    ColumnWidthMenuItem: TMenuItem;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -82,6 +84,7 @@ type
     procedure A2BGridMenuItemClick (Sender : TObject );
     procedure AddToSortColumnsMenuItemClick(Sender: TObject);
     procedure checkPartialFullCapMenuItemClick(Sender: TObject);
+    procedure ColumnWidthMenuItemClick(Sender: TObject);
     procedure ignoreFullCaptionMenuitemClick(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -149,6 +152,7 @@ type
     procedure NodeToXml (aNode: PVirtualNode; var Xml: TA2BXml);
     procedure SelectedXml(var aXml: TA2BXml);
     procedure SearchDiff (aDown: Boolean);
+    procedure PromptAndSetColumnWidth (aTreeView: TVirtualStringTree);
   public
     RefreshNeeded: Boolean;
     ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
@@ -172,6 +176,7 @@ uses xmlio
    , A2BXmlGridUnit
    , EditRegExpUnit
    , EditPartExpUnit
+   , PromptUnit
    ;
 const
   iiGreenBullet = 132;
@@ -876,6 +881,25 @@ begin
   TreeView.FocusedNode := xNode;
 end;
 
+procedure TShowA2BXmlForm.PromptAndSetColumnWidth(aTreeView: TVirtualStringTree
+  );
+var
+  n, w: Integer;
+begin
+  n := aTreeView.FocusedColumn;
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    PromptForm.Caption := 'Column width';
+    PromptForm.PromptEdit.Text := IntToStr (aTreeView.Header.Columns[n].Width);
+    PromptForm.Numeric := True;
+    PromptForm.ShowModal;
+    if PromptForm.ModalResult = mrOk then
+      aTreeView.Header.Columns[n].Width := StrToInt(PromptForm.PromptEdit.Text);
+  finally
+    FreeAndNil(PromptForm);
+  end;
+end;
+
 procedure TShowA2BXmlForm.NextDiffActionExecute(Sender: TObject);
 begin
   SearchDiff(True);
@@ -991,6 +1015,11 @@ begin
       FreeAndNil(xForm);
     end;
   end;
+end;
+
+procedure TShowA2BXmlForm.ColumnWidthMenuItemClick(Sender: TObject);
+begin
+  PromptAndSetColumnWidth(TreeView);
 end;
 
 procedure TShowA2BXmlForm .A2BGridMenuItemClick (Sender : TObject );

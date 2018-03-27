@@ -617,6 +617,7 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
+    procedure OpenWsdlActionUpdate(Sender: TObject);
     procedure PromptAndSetColumnWidth (aTreeView: TVirtualStringTree);
     procedure GridColumnWidthMenuItemClick(Sender: TObject);
     procedure NeedTacoHostData (Sender: TTacoInterface);
@@ -1205,6 +1206,7 @@ type
     procedure ExpressError(Sender: TObject;
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     function EditScript(aXml: TObject): Boolean;
+    function TestDbsConnection(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
@@ -6196,6 +6198,48 @@ begin
   end;
 end;
 
+function TMainForm.TestDbsConnection(aXml: TObject): Boolean;
+var
+  xXml, hXml: TXml;
+begin
+  hXml := (aXml as TXml).Parent as TXml;
+  xXml := TXml.Create;
+  try
+    xXml.CopyDownLine(hXml, True);
+    xXml.ResolveAliasses;
+    with TSQLConnector.Create(nil) do
+    try
+      Connected := False;
+      LoginPrompt := False;
+      ConnectorType := xXml.Items.XmlValueByTag['Type'];
+      DatabaseName := xXml.Items.XmlValueByTag['DatabaseName'];
+      HostName := xXml.Items.XmlValueByTag['HostName'];
+      UserName := hXml.Items.XmlValueByTag['UserName'];
+      Password := xmlz.DecryptString(xXml.Items.XmlValueByTag['Password']);
+      Params.Text := ReplaceStrings( xXml.Items.XmlValueByTag['Params']
+                                   , '%pwd%'
+                                   , Password
+                                   , false
+                                   , false
+                                   );
+       try
+         Connected := True;
+         ShowMessage ('Database connected');
+         Connected := False;
+       except
+         on E: Exception do
+         begin
+           raise Exception.Create('Exception connecting database: ' + e.Message);
+         end;
+       end;
+    finally
+      Free;
+    end;
+  finally
+    xXml.Free;
+  end;
+end;
+
 procedure TMainForm.EditBetweenScriptMenuItemClick(Sender: TObject);
 begin
   EditScriptButtonClick(nil);
@@ -9583,7 +9627,10 @@ end;
 procedure TMainForm.ProjectOptionsActionExecute(Sender: TObject);
 var
   xXml: TXml;
+  xXsd: TXsd;
 begin
+  xXsd := projectOptionsXsd.XsdByCaption ['projectOptions.DatabaseConnection.TestConnection'];
+  xXsd.EditProcedure := TestDbsConnection;
   xXml := se.ProjectOptionsAsXml(False, '');
   try
     if EditXmlXsdBased ('Project Options'
@@ -14137,6 +14184,12 @@ end;
 procedure TMainForm.MenuItem47Click(Sender: TObject);
 begin
   PromptAndSetColumnWidth(SnapshotsVTS);
+end;
+
+procedure TMainForm.OpenWsdlActionUpdate(Sender: TObject);
+begin
+  if Assigned (se) then
+    OpenWsdlAction.Caption := prefixWithAsterix (OpenWsdlAction.Caption, se.hasFormalOperations);
 end;
 
 procedure TMainForm.PromptAndSetColumnWidth(aTreeView: TVirtualStringTree);
