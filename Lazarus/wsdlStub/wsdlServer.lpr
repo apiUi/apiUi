@@ -278,7 +278,7 @@ begin
   se.projectFileName := aFileName;
   if DirectoryExistsUTF8(aFileName) then
   begin
-    se.ProjectDesignFromString(se.OpenWithFolders, aFileName);
+    se.ProjectDesignFromString(se.OpenWithFolders (se.projectFileName), aFileName);
   end
   else
   begin

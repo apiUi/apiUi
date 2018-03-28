@@ -6200,12 +6200,11 @@ end;
 
 function TMainForm.TestDbsConnection(aXml: TObject): Boolean;
 var
-  xXml, hXml: TXml;
+  xXml: TXml;
 begin
-  hXml := (aXml as TXml).Parent as TXml;
   xXml := TXml.Create;
   try
-    xXml.CopyDownLine(hXml, True);
+    xXml.CopyDownLine((aXml as TXml).Parent as TXml, True);
     xXml.ResolveAliasses;
     with TSQLConnector.Create(nil) do
     try
@@ -6214,7 +6213,7 @@ begin
       ConnectorType := xXml.Items.XmlValueByTag['Type'];
       DatabaseName := xXml.Items.XmlValueByTag['DatabaseName'];
       HostName := xXml.Items.XmlValueByTag['HostName'];
-      UserName := hXml.Items.XmlValueByTag['UserName'];
+      UserName := xXml.Items.XmlValueByTag['UserName'];
       Password := xmlz.DecryptString(xXml.Items.XmlValueByTag['Password']);
       Params.Text := ReplaceStrings( xXml.Items.XmlValueByTag['Params']
                                    , '%pwd%'
