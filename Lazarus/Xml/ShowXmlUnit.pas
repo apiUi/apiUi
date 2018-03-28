@@ -1623,16 +1623,23 @@ procedure TShowXmlForm.SetBindNodeCheckBox(aTreeView: TVirtualStringTree;
 begin
   if (aBind is TXmlAttribute) or (aBind is TXml) then
   begin
-    if (Assigned(aBind.Parent)) and (Assigned((aBind.Parent as TXml).Xsd)) then
+    if (Assigned(aBind.Parent))
+    and (Assigned((aBind.Parent as TXml).Xsd)) then
     begin
-      if (aBind.Parent as TXml).TypeDef.ContentModel = 'Choice' then
-        aNode.CheckType := ctRadioButton
-      else
-        aNode.CheckType := ctCheckBox;
-      if aBind.Checked then
-        aNode.CheckState := csCheckedNormal
-      else
-        aNode.CheckState := csUnCheckedNormal;
+      if not (    (aBind is TXml)
+              and Assigned ((aBind as TXml).Xsd)
+              and (aBind as TXml).Xsd.isCheckboxDisabled
+             ) then
+      begin
+        if (aBind.Parent as TXml).TypeDef.ContentModel = 'Choice' then
+          aNode.CheckType := ctRadioButton
+        else
+          aNode.CheckType := ctCheckBox;
+        if aBind.Checked then
+          aNode.CheckState := csCheckedNormal
+        else
+          aNode.CheckState := csUnCheckedNormal;
+      end;
     end
     else
     begin

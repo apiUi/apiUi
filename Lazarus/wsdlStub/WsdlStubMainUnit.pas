@@ -9630,6 +9630,7 @@ var
 begin
   xXsd := projectOptionsXsd.XsdByCaption ['projectOptions.DatabaseConnection.TestConnection'];
   xXsd.EditProcedure := TestDbsConnection;
+  xXsd.isCheckboxDisabled := True;
   xXml := se.ProjectOptionsAsXml(False, '');
   try
     if EditXmlXsdBased ('Project Options'

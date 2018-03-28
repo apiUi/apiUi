@@ -184,6 +184,7 @@ type
     FormDefaultQualified: Boolean;
     DoNotEncode: Boolean;
     isReadOnly: Boolean;
+    isCheckboxDisabled: Boolean;
     ParametersType: TOperationParametersType;
     ResponseNo: Integer;
     minOccurs: String;

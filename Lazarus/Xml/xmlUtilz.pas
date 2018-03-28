@@ -1770,6 +1770,7 @@ begin
          or (    (aBind is TXml)
              and ((aBind as TXml).TypeDef.ElementDefs.Count > 0)
              and ((aBind as TXml).Xsd.isReadOnly = False)
+             and ((aBind as TXml).Xsd.isCheckboxDisabled = False)
             )
           ;
 end;
