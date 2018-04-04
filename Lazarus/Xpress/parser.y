@@ -1013,9 +1013,8 @@ DeclareGroup:
             cFed.TokenString := $1.TokenString;
             cFed.Name := $1.TokenString;
             cFed.FirstBind := TCustomBindable(yyTemp.yy.yyObject);
-            if not (cFed.FirstBind is TXml) then
-              yyerror ('only implemented for XML type data');
-            (cFed.FirstBind as TXml).ExtendRecursivity;
+            if (cFed.FirstBind is TXml) then
+              (cFed.FirstBind as TXml).ExtendRecursivity;
             cFed.isSubElement := False;
             cFed.isDynamic := False;
           }

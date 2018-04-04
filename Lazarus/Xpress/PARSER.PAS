@@ -1459,8 +1459,7 @@ begin
          cFed.TokenString := yyv[yysp-0].TokenString;
          cFed.Name := yyv[yysp-0].TokenString;
          cFed.FirstBind := TCustomBindable(yyTemp.yy.yyObject);
-         if not (cFed.FirstBind is TXml) then
-         yyerror ('only implemented for XML type data');
+         if (cFed.FirstBind is TXml) then
          (cFed.FirstBind as TXml).ExtendRecursivity;
          cFed.isSubElement := False;
          cFed.isDynamic := False;

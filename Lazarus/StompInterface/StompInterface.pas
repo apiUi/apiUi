@@ -33,7 +33,7 @@ type
   TStompInterface = class
   private
     fStompClient: IStompClient;
-    fHost, fUserName, fPassword, fClientId, fReplyBodyPostFix, fRequestBodyPostFix: String;
+    fHost, fUserName, fPassword, fClientId: String;
     fUseCredentials: Boolean;
     fPort: Integer;
     fOnHaveFrame: TOnHaveFrame;
@@ -54,8 +54,6 @@ type
     property UseCredentials: Boolean read fUseCredentials write fUseCredentials;
     property UserName: String read fUserName write fUserName;
     property Password: String read fPassword write fPassword;
-    property ReplyBodyPostFix: String read fReplyBodyPostFix write fReplyBodyPostFix;
-    property RequestBodyPostFix: String read fRequestBodyPostFix write fRequestBodyPostFix;
     property ClientId: String read fClientId write fClientId;
     property DequeueOn: String read fDequeueOn write fDequeueOn;
     property GetQueues: TStringList read fGetQueues;
@@ -192,8 +190,6 @@ begin
       Password := Xmlz.DecryptString(XmlCheckedValueByTag['Password']);
     end;
   end;
-  ReplyBodyPostFix := aXml.Items.XmlCheckedValueByTagDef ['ReplyBodyPostFix', ''];
-  RequestBodyPostFix := aXml.Items.XmlCheckedValueByTagDef ['RequestBodyPostFix', ''];
   ClientId := aXml.Items.XmlCheckedValueByTagDef ['ClientId', ''];
   DequeueOn := aXml.Items.XmlCheckedValueByTagDef ['DequeueOn', 'Process'];
   sXml := aXml.Items.XmlCheckedItemByTag ['Queues'];
@@ -246,10 +242,6 @@ begin
         AddXml (TXml.CreateAsString('Name', fUserName));
         AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(fPassword)));
       end;
-    if fReplyBodyPostFix <> '' then
-      AddXml (TXml.CreateAsString ('ReplyBodyPostFix', fReplyBodyPostFix));
-    if fRequestBodyPostFix <> '' then
-      AddXml (TXml.CreateAsString ('RequestBodyPostFix', fRequestBodyPostFix));
     AddXml (TXml.CreateAsString ('ClientId', fClientId));
     AddXml (TXml.CreateAsString ('DequeueOn', DequeueOn));
     with AddXml (TXml.CreateAsString ('Queues', '')) do
@@ -326,7 +318,6 @@ begin
 //mergeHeader (xHeader, aStompHeaderAsXml);
   fStompClient.Send ( xQueueName
                     , aMessage
-                    + ReplyBodyPostFix // WORKAROUND see xsd
                     , xHeader
                     );
   aHeaderAsText := xHeader.OutputAsXmlText;

@@ -1225,7 +1225,7 @@ type
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure ReloadProject;
     function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
-    function prefixWithAsterix (aCaption: String; aBoolean: Boolean): String;
+    function decorateWithAsterix (aCaption: String; aBoolean: Boolean): String;
   published
   public
     contextPropertyOverwrite: String;
@@ -1987,8 +1987,12 @@ begin
     if xBind is TXml then
       with xBind as TXml do
       begin
-        if Group or ((Assigned(Xsd)) and ((TypeDef.ContentModel = 'Empty') or
-              (TypeDef.ElementDefs.Count > 0))) then
+        if Group
+        or (    (Assigned(Xsd))
+            and (   (TypeDef.ContentModel = 'Empty')
+                 or (TypeDef.ElementDefs.Count > 0)
+                )
+           ) then
         begin
           with TargetCanvas do
           begin
@@ -2534,7 +2538,7 @@ begin
   ActualXmlAttr := nil;
   if xBind is TIpmItem then
     StatusPanel.Caption := '[' + IntToStr((xBind as TIpmItem).Offset + 1)
-      + ':' + IntToStr((xBind as TIpmItem).Bytes) + '] ' + xBind.FullCaption
+      + ':' + IntToStr((xBind as TIpmItem).Bytes) + '] ' + xBind.FullIndexCaption
   else
     StatusPanel.Caption := xBind.FullCaption;
   try
@@ -3102,7 +3106,7 @@ end;
 procedure TMainForm.XmlSampleOperationsUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    XmlSampleOperations.Caption := prefixWithAsterix (XmlSampleOperations.Caption, se.hasXmlSampleOperations);
+    XmlSampleOperations.Caption := decorateWithAsterix (XmlSampleOperations.Caption, se.hasXmlSampleOperations);
 end;
 
 procedure TMainForm.AfterRequestScriptButtonClick(Sender: TObject);
@@ -7594,17 +7598,20 @@ begin
   end;
 end;
 
-function TMainForm.prefixWithAsterix(aCaption: String; aBoolean: Boolean
+function TMainForm.decorateWithAsterix(aCaption: String; aBoolean: Boolean
   ): String;
+const decorationString = ' *';
 begin
-result := aCaption;
+  result := aCaption;
   if aBoolean then
   begin
-    if result [1] <> '*' then result := '* ' + result;
+    if RightStr(aCaption, 2) <> decorationString then
+      result := result + decorationString;
   end
   else
   begin
-    if result [1] = '*' then result := Copy (result, 3, MaxInt);
+    if RightStr(aCaption, 2) = decorationString then
+      result := LeftStr (result, Length (Result) - Length (decorationString));
   end;
 end;
 
@@ -7927,16 +7934,8 @@ begin
     xOperation := TWsdlOperation.Create(WsdlOperation);
     try
       xOperation.CorrelatedMessage := WsdlMessage;
-      with xOperation.reqBind as TXml do
-      begin
-        ResetValues;
-        LoadValues((WsdlMessage.reqBind as TXml), False, True, True, True);
-      end;
-      with xOperation.rpyBind as TXml do
-      begin
-        ResetValues;
-        LoadValues((WsdlMessage.rpyBind as TXml), False, True, True, True);
-      end;
+      xOperation.ReqBindablesFromWsdlMessage(WsdlMessage);
+      xOperation.RpyBindablesFromWsdlMessage(WsdlMessage);
       xOperation.ExecuteBefore;
       if xOperation.StubAction = saRequest then
         wsdlz.PromptRequest(xOperation)
@@ -8955,7 +8954,7 @@ end;
 procedure TMainForm.XsdOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    XsdOperationsAction.Caption := prefixWithAsterix (XsdOperationsAction.Caption, se.hasXsdOperation);
+    XsdOperationsAction.Caption := decorateWithAsterix (XsdOperationsAction.Caption, se.hasXsdOperation);
 end;
 
 procedure TMainForm.FilterLogActionExecute(Sender: TObject);
@@ -10494,8 +10493,21 @@ begin
 end;
 
 procedure TMainForm.DebugBeforeScriptActionExecute(Sender: TObject);
+var
+  xOperation: TWsdlOperation;
 begin
-  ShowInfoForm('debug Before', WsdlOperation.BeforeActivatorDebugString);
+  if not Assigned(se) then
+    exit;
+  if Assigned(WsdlOperation) then
+  begin
+    xOperation := TWsdlOperation.Create(WsdlOperation);
+    try
+      xOperation.CorrelatedMessage := WsdlMessage;
+      ShowInfoForm('debug Before', xOperation.BeforeActivatorDebugString);
+    finally
+      xOperation.Free;
+    end;
+  end;
 end;
 
 procedure TMainForm.DebugOperation;
@@ -13793,7 +13805,7 @@ end;
 procedure TMainForm.FreeFormatsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    FreeFormatsAction.Caption := prefixWithAsterix (FreeFormatsAction.Caption, se.hasFreeformatOperations);
+    FreeFormatsAction.Caption := decorateWithAsterix (FreeFormatsAction.Caption, se.hasFreeformatOperations);
 end;
 
 procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
@@ -13991,7 +14003,7 @@ end;
 procedure TMainForm.ApiByExampleActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    ApiByExampleAction.Caption := prefixWithAsterix (ApiByExampleAction.Caption, se.hasApiByExplampleOperations);
+    ApiByExampleAction.Caption := decorateWithAsterix (ApiByExampleAction.Caption, se.hasApiByExplampleOperations);
 end;
 
 procedure TMainForm.BmtpOperationsActionExecute(Sender: TObject);
@@ -14032,13 +14044,13 @@ end;
 procedure TMainForm.BmtpOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    BmtpOperationsAction.Caption := prefixWithAsterix (BmtpOperationsAction.Caption, se.hasBmtpOperations);
+    BmtpOperationsAction.Caption := decorateWithAsterix (BmtpOperationsAction.Caption, se.hasBmtpOperations);
 end;
 
 procedure TMainForm.CobolOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    CobolOperationsAction.Caption := prefixWithAsterix (CobolOperationsAction.Caption, se.hasCobolOperations);
+    CobolOperationsAction.Caption := decorateWithAsterix (CobolOperationsAction.Caption, se.hasCobolOperations);
 end;
 
 procedure TMainForm.ContextsActionExecute(Sender: TObject);
@@ -14158,7 +14170,7 @@ end;
 procedure TMainForm.MailOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    MailOperationsAction.Caption := prefixWithAsterix (MailOperationsAction.Caption, se.hasMailOperations);
+    MailOperationsAction.Caption := decorateWithAsterix (MailOperationsAction.Caption, se.hasMailOperations);
 end;
 
 procedure TMainForm.MenuItem33Click(Sender: TObject);
@@ -14189,7 +14201,7 @@ end;
 procedure TMainForm.OpenWsdlActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    OpenWsdlAction.Caption := prefixWithAsterix (OpenWsdlAction.Caption, se.hasFormalOperations);
+    OpenWsdlAction.Caption := decorateWithAsterix (OpenWsdlAction.Caption, se.hasFormalOperations);
 end;
 
 procedure TMainForm.PromptAndSetColumnWidth(aTreeView: TVirtualStringTree);
@@ -14289,7 +14301,7 @@ end;
 procedure TMainForm.SwiftMtOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
-    SwiftMtOperationsAction.Caption := prefixWithAsterix (SwiftMtOperationsAction.Caption, se.hasSwiftMtOperations);
+    SwiftMtOperationsAction.Caption := decorateWithAsterix (SwiftMtOperationsAction.Caption, se.hasSwiftMtOperations);
 end;
 
 procedure TMainForm.ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);

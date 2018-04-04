@@ -3852,13 +3852,17 @@ procedure TXml.CopyDownLine(aXml: TXml; aOnlyWhenChecked: Boolean);
     dXml.RefId := sXml.RefId;
     for x := 0 to sXml.Attributes.Count - 1 do
     begin
-      xAttr := TXmlAttribute.Create;
-      xAttr.Name := sXml.Attributes.XmlAttributes[x].Name;
-      xAttr.NameSpace := sXml.Attributes.XmlAttributes[x].NameSpace;
-      xAttr.Value := sXml.Attributes.XmlAttributes[x].Value;
-      xAttr.fChecked := sXml.Attributes.XmlAttributes[x].fChecked;
-      xAttr.XsdAttr := sXml.Attributes.XmlAttributes[x].XsdAttr;
-      dXml.AddAttribute(xAttr)
+      if (not aOnlyWhenChecked)
+      or (sXml.Attributes.XmlAttributes[x].Checked) then
+      begin
+        xAttr := TXmlAttribute.Create;
+        xAttr.Name := sXml.Attributes.XmlAttributes[x].Name;
+        xAttr.NameSpace := sXml.Attributes.XmlAttributes[x].NameSpace;
+        xAttr.Value := sXml.Attributes.XmlAttributes[x].Value;
+        xAttr.fChecked := sXml.Attributes.XmlAttributes[x].fChecked;
+        xAttr.XsdAttr := sXml.Attributes.XmlAttributes[x].XsdAttr;
+        dXml.AddAttribute(xAttr);
+      end;
     end;
     for x := 0 to sXml.Items.Count - 1 do
     begin
@@ -3873,7 +3877,9 @@ procedure TXml.CopyDownLine(aXml: TXml; aOnlyWhenChecked: Boolean);
 begin
   Items.Clear;
   Attributes.Clear;
-  _Copy (Self, aXml);
+  if (not aOnlyWhenChecked)
+  or aXml.Checked then
+    _Copy (Self, aXml);
 end;
 
 procedure TXml .ResolveAliasses;

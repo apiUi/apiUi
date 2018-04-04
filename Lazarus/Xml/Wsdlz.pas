@@ -351,7 +351,6 @@ type
       StubStompPutPassword: String;
       StubStompPutClientId: String;
       StubStompTimeOut: Integer;
-      StubStompReplyBodyPostFix, StubStompRequestBodyPostFix: String;
       TacoConfigXml: TXml;
       CorrelatedMessage: TWsdlMessage;
       Messages: TWsdlMessages;
@@ -3109,7 +3108,14 @@ end;
 
 function TWsdlOperation.BeforeActivatorDebugString: String;
 begin
-  result := fExpress.DebugTokenStringList;
+  result := '';
+  DoExit := False;
+  LiteralResult := '';
+  ReturnSoapFault := False;
+  if Assigned (BeforeScriptLines)
+  and (BeforeScriptLines.Count > 0) then
+    result := fExpress.DebugTokenStringList(BeforeScriptLines, nil);
+  DoExit := False;
 end;
 
 constructor TWsdlOperation.Create  (aWsdl: TWsdl);
@@ -3185,8 +3191,6 @@ begin
   StubStompPutUserName := '';
   StubStompPutPassword := '';
   StubStompPutClientId := '';
-  StubStompReplyBodyPostFix := '';
-  StubStompRequestBodyPostFix := '';
   StubStompTimeOut := 30;
   if Assigned (_WsdlWsaXsd) then
   begin
@@ -4282,8 +4286,6 @@ begin
   self.StubStompPutUserName := xOperation.StubStompPutUserName;
   self.StubStompPutPassword := xOperation.StubStompPutPassword;
   self.StubStompPutClientId := xOperation.StubStompPutClientId;
-  self.StubStompReplyBodyPostFix := xOperation.StubStompReplyBodyPostFix;
-  self.StubStompRequestBodyPostFix := xOperation.StubStompRequestBodyPostFix;
   self.StubStompTimeOut := xOperation.StubStompTimeOut;
   self.smtpHost := xOperation.smtpHost;
   self.smtpPort := xOperation.smtpPort;
@@ -4496,7 +4498,7 @@ end;
 
 function TWsdlOperation.getDebugTokenStringBefore: String;
 begin
-  result := fExpress.DebugTokenStringList;
+  result := fExpress.DebugTokenStringList (BeforeScriptLines, nil);
 end;
 
 function TWsdlOperation.AddedTypeDefElementsAsXml : TObject ;
@@ -5222,10 +5224,6 @@ begin
           end;
         end;
         AddXml (TXml.CreateAsString('ClientId', StubStompPutClientId));
-        if StubStompReplyBodyPostFix <> '' then
-          AddXml (TXml.CreateAsString('ReplyBodyPostFix', StubStompReplyBodyPostFix));
-        if StubStompRequestBodyPostFix <> '' then
-          AddXml (TXml.CreateAsString('RequestBodyPostFix', StubStompRequestBodyPostFix));
         AddXml (TXml.CreateAsInteger('Timeout', StubStompTimeOut));
         if Assigned(StubStompHeaderXml)
         and (StubStompHeaderXml.Checked) then
@@ -5292,8 +5290,6 @@ begin
   StubStompPutUserName := '';
   StubStompPutPassword := '';
   StubStompPutClientId := '';
-  StubStompReplyBodyPostFix := '';
-  StubStompRequestBodyPostFix := '';
   StubStompTimeOut := 0;
   StubStompHeaderXml.CheckDownline(False);
   StubCustomHeaderXml.Items.Clear;
@@ -5388,8 +5384,6 @@ begin
             StubStompPutPassword := xmlz.DecryptString (xXml.Items.XmlValueByTag['Password']);
           end;
           StubStompPutClientId := Items.XmlCheckedValueByTag['ClientId'];
-          StubStompRequestBodyPostFix := Items.XmlCheckedValueByTag['RequestBodyPostFix'];
-          StubStompReplyBodyPostFix := Items.XmlCheckedValueByTag['ReplyBodyPostFix'];
           StubStompTimeOut := Items.XmlCheckedIntegerByTag['Timeout'];
           xXml := Items.XmlCheckedItemByTag['stompHeader'];
           if Assigned (xXml) then

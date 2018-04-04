@@ -623,23 +623,6 @@ If the NameValueCCSID is a 2-byte Unicode CCSID (1200, 13488, or 17584), the byt
 			</xs:element>
 			<xs:element name="stompHeader" type="tns:stompHeaderType"/>
 			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
-			<xs:element name="ReplyBodyPostFix" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>WORKAROUND
-Default "" (empty string)
-
-Specified string is appended to the message body on receiving a reply, is a workaround because current STOMP implementation looses last byte;
-Obviously, this will only help in cases you know what that last byte would be.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="RequestBodyPostFix" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>WORKAROUND
-Default "" (empty string)
-
-Specified string is appended to the message body on sending a request, is a workaround because current STOMP implementation looses last byte;</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="stompHeaderType">

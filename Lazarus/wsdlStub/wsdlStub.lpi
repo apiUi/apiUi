@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="11758"/>
+      <BuildNr Value="11770"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -157,7 +157,6 @@
     <Exceptions Count="21">
       <Item1>
         <Name Value="EAbort"/>
-        <Enabled Value="False"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>

@@ -417,23 +417,6 @@ Processing continues with unpredictable results
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="ReplyBodyPostFix" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>WORKAROUND
-Default "" (empty string)
-
-Specified string is appended to the message body on receiving a reply, is a workaround because current STOMP implementation looses last byte;
-Obviously, this will only help in cases you know what that last byte would be.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="RequestBodyPostFix" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>WORKAROUND
-Default "" (empty string)
-
-Specified string is appended to the message body on sending a request, is a workaround because current STOMP implementation looses last byte;</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="SubStringsType">
@@ -2175,11 +2158,6 @@ Specifies the port that this instance will listen to for slave requests</xs:docu
 							<xs:element name="Xml">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="AttributeValues" type="htmlColorType">
-											<xs:annotation>
-												<xs:documentation>Specifies the background color for XML attribute values </xs:documentation>
-											</xs:annotation>
-										</xs:element>
 										<xs:element name="UnassignedValues" type="htmlColorType">
 											<xs:annotation>
 												<xs:documentation>Specifies the background color for unassigned (unchecked) XML values</xs:documentation>
@@ -2194,7 +2172,7 @@ Specifies the port that this instance will listen to for slave requests</xs:docu
 											<xs:annotation>
 												<xs:documentation>Specifies the background color for expected XML values.
 For stub-operation this applies to request values.
-For driver-operation this applies to reponse values.</xs:documentation>
+For driver-operation this applies to response values.</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>

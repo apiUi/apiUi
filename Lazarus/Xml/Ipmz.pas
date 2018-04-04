@@ -606,6 +606,7 @@ var
   xIpm: TIpmItem;
 begin
   inherited Create;
+  fChecked := True;
   Level88Values := TStringList.Create;
   Level88Values.Sorted := True;
   Level88Values.Duplicates := dupIgnore;
@@ -1305,6 +1306,7 @@ end;
 constructor TIpmItem.Create;
 begin
   inherited Create;
+  fChecked := True;
   Level88Values := TStringList.Create;
   Level88Values.Sorted := True;
   Level88Values.Duplicates := dupIgnore;
@@ -2478,8 +2480,6 @@ end;
 function TIpmItem.GetCaption: String;
 begin
   result := Name;
-  if Occurs > 1 then
-    result := result + '[' + IntToStr (Occurrence) + ']';
 end;
 
 function TIpmItem.Children: TBindableList;
@@ -2503,12 +2503,23 @@ end;
 
 function TIpmItem.GetFullIndexCaption: String;
 begin
-  result := GetFullCaption;
+  result := '';
+  if Self = nil then
+    exit;
+  if Parent = nil then
+    result := GetIndexCaption
+  else
+    result := Parent.GetFullIndexCaption
+            + '.'
+            + GetIndexCaption
+            ;
 end;
 
 function TIpmItem.GetIndexCaption: String;
 begin
-  result := GetCaption;
+  result := Name;
+  if Occurs > 1 then
+    result := result + '[' + IntToStr (Occurrence) + ']';
 end;
 
 function TIpmItem.AsXml: TXml;

@@ -3432,8 +3432,7 @@ begin
       xLog.InboundTimestamp := Now;
       xLog.TransportType := ttStomp;
       xLog.RequestHeaders := aFrame.GetHeaders.OutputAsXmlText;
-      xLog.RequestBody := aFrame.GetBody
-                            + aStompInterface.RequestBodyPostFix; // WORKAROUND, see XSD
+      xLog.RequestBody := aFrame.GetBody;
       xLog.InboundBody := xLog.RequestBody;
       try
     {$ifdef windows}
@@ -4623,7 +4622,6 @@ begin
         or (fXml.Items.XmlValueByTag ['reply-to'] = '') then
           try
             Stomp.Put ( aMessage
-                      + aOperation.StubStompRequestBodyPostFix // WORKAROUND, see XSD
                       , fXml
                       , aOperation.StubCustomHeaderXml
                       , aRequestHeader
@@ -4633,14 +4631,12 @@ begin
           end
         else
           Result := Stomp.RequestReply ( aMessage
-                                       + aOperation.StubStompRequestBodyPostFix // WORKAROUND, see XSD
                                        , aOperation.StubStompTimeout
                                        , fXml
                                        , aOperation.StubCustomHeaderXml
                                        , aRequestHeader
                                        , aReplyHeader
                                        )
-                                       + aOperation.StubStompReplyBodyPostFix // WORKAROUND, see XSD
                                        ;
       finally
         fXml.Free;

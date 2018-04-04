@@ -324,6 +324,8 @@ var
   xXml, cXml: TXml;
 begin
   xXml := nil;
+  if not (FirstBind is TXml) then
+    raise Exception.CreateFmt('Error: With New only valid with Xml/Json (%s)', [FirstBind.FullCaption]);
   y := -1;
   cXml := FirstBind.Parent as TXml;
   begin
@@ -375,25 +377,25 @@ procedure TFed.Open;
     end;
     result.Add(ss)
   end;
-  procedure _CreateList (rXml: TXml; aList, Sl: TStringList; i: Integer);
+  procedure _CreateList (rBind: TCustomBindable; aList, Sl: TStringList; i: Integer);
   var
     x: Integer;
   begin
-    if rXml.Checked
-    and (rXml.Name = Sl.Strings[i]) then
+    if rBind.Checked
+    and (rBind.Name = Sl.Strings[i]) then
     begin
       if i < (Sl.Count - 1) then
       begin
-        for x := 0 to rXml.Items.Count - 1 do
-          _CreateList (rXml.Items.XmlItems[x], aList, Sl, i + 1);
+        for x := 0 to rBind.Children.Count - 1 do
+          _CreateList (rBind.Children.Bindables[x], aList, Sl, i + 1);
       end
       else
-        aList.AddObject('', rXml);
+        aList.AddObject('', rBind);
     end;
   end;
 var
   x: Integer;
-  pXml: TXml;
+  pBind: TCustomBindable;
   s: String;
   sl: TStringList;
 begin
@@ -401,20 +403,19 @@ begin
   if isSubElement then
   begin
     if not Assigned (Anchor) then raise Exception.CreateFmt('TFed.Open: No anchor for %s', [Name]);
-    pXml := Anchor.Data as TXml;
-    s := pXml.Name + Name;
+    pBind := Anchor.Data;
+    s := pBind.Name + Name;
   end
   else
   begin
     if not Assigned (FirstBind) then raise Exception.Create('TFed.Open: No FirstBind assigned');
-    if not (FirstBind is TXml) then raise Exception.Create('TFed.Open: Only for XML');
-    if not Assigned (FirstBind.Parent) then raise Exception.Create('TFed.Open: Not for root XMLs');
-    s := (FirstBind as TXml).FullCaption;
-    pXml := (FirstBind as TXml).Root;
+    if not Assigned (FirstBind.Parent) then raise Exception.Create('TFed.Open: Not for root Elements');
+    s := FirstBind.FullCaption;
+    pBind := FirstBind.Root;
   end;
   sl := _Split (s);
   try
-    _CreateList (pXml, List, sl, 0);
+    _CreateList (pBind, List, sl, 0);
   finally
     sl.Free;
   end;

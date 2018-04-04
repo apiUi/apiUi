@@ -319,7 +319,7 @@ begin
   if aBind = nil then
     exit;
   if (not aIncludeRecurring)
-  and Captions.Find(aBind.FullIndexCaption, x) then
+  and Captions.Find(aBind.FullCaption, x) then
     exit;
   if (aBind is TIpmItem)
   and ((aBind as TIpmItem).Occurrence > maxOccurrences) then
@@ -328,8 +328,8 @@ begin
   if (aIpmItem.Occurs > 1) and (not aIncludeRecurring) then
     exit;
 }
-  xChild := aTreeView.Items.AddChildObject (aNode, aBind.GetIndexCaption, aBind);
-  Captions.Add(aBind.GetFullIndexCaption);
+  xChild := aTreeView.Items.AddChildObject (aNode, aBind.GetCaption, aBind);
+  Captions.Add(aBind.GetFullCaption);
   xSubItems := aBind.Children;
   for x := 0 to xSubItems.Count - 1 do
   begin

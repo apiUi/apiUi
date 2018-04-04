@@ -110,6 +110,7 @@ public
   property OnGetDoExit: TBooleanFunction read fOnGetDoExit write SetOnGetDoExit;
   property Context: TObject read getContext write setContext;
   function BindsAsText: String;
+  procedure Scan;
   procedure Prepare;
   procedure Execute;
   procedure CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);
@@ -127,7 +128,7 @@ public
   procedure BindFunctionEx (Id: String; Adr: Pointer; Token: Integer);
   procedure BindFunction (Id: String; Adr: Pointer; Token: Integer; Prototype: String);
   procedure BindBuildIns;
-  function DebugTokenStringList: String;
+  function DebugTokenStringList (aStringList: TStringList; aOnError: TOnErrorEvent): String;
   function FindBind (aId: String): TBind;
   constructor Create (aOwner: TObject);
   destructor Destroy; override;
@@ -231,32 +232,54 @@ begin
   result := Copy (s, Trunc (i), Trunc (c));
 end;
 
-function TExpress.DebugTokenStringList: String;
+function TExpress.DebugTokenStringList (aStringList: TStringList; aOnError: TOnErrorEvent): String;
 var
   Lex: YYSType;
+  Xpress: TExpress;
+  xStringList: TStringList;
+  xBindList: TBindList;
 begin
-  result := '';
-  with TStringList.Create do
+  Xpress := TExpress.Create (Parser.Owner);
   try
-    lex := LexicalList;
-    while (lex <> nil) do
-    begin
-      Add ( IntToStr (Lex.Token)
-          + '  :  '
-          + TokenNames [Lex.Token]
-          + '   '
-          + Lex.TokenString
-          + '  ('
-          + IntToStr (Lex.LineNumber)
-          + ' : '
-          + IntToStr (Lex.ColumnNumber)
-          + ')'
-          );
-      lex := lex.NextToken;
+    Xpress.OnError := aOnError;
+    Xpress.OnGetDoExit := OnGetDoExit;
+    Xpress.OnGetAbortPressed := OnGetAbortPressed;
+    XPress.Database := Database;
+    Xpress.Context := Context;
+    xBindList := Xpress.fBindList;
+    xStringList := Xpress.fTextLines;
+    try
+      XPress.fBindList := fBindList;
+      Xpress.fTextLines := aStringList;
+      Xpress.Scan;
+      with TStringList.Create do
+      try
+        lex := Xpress.LexicalList;
+        while (lex <> nil) do
+        begin
+          Add ( IntToStr (Lex.Token)
+              + '  :  '
+              + TokenNames [Lex.Token]
+              + '   '
+              + Lex.TokenString
+              + '  ('
+              + IntToStr (Lex.LineNumber)
+              + ' : '
+              + IntToStr (Lex.ColumnNumber)
+              + ')'
+              );
+          lex := lex.NextToken;
+        end;
+        result := Text;
+      finally
+        Free;
+      end;
+    finally
+      XPress.fBindList := xBindList;
+      Xpress.fTextLines := xStringList;
     end;
-    result := Text;
   finally
-    Free;
+    Xpress.Free;
   end;
 end;
 
@@ -484,6 +507,38 @@ end;
 function TExpress .BindsAsText : String ;
 begin
   result := fBindList.Text;
+end;
+
+procedure TExpress.Scan;
+begin
+  try
+    XpQueryList.Clear;
+    with Blocks do
+      while Count  > 0 do
+      begin
+        Objects[0].Free;
+        Delete(0);
+      end;
+    prntBlock := nil;
+    currBlock := TBlock.Create;
+    currBlock.Parent := prntBlock;
+    Blocks.AddObject ('', currBlock);
+    prntBlock := currBlock;
+    rootBlock := currBlock;
+    while ObjList.Count  > 0 do
+    begin
+      ObjList.Objects[0].Free;
+      ObjList.Delete(0);
+    end;
+    ClearLexicalList;
+    fTextLineNo := 0;
+    Scanner.OnToken := OnToken;
+    StackIndex := 0;
+    ScannerState := InitialState;
+    Scanner.Execute;
+  except
+    raise;
+  end;
 end;
 
 procedure TExpress.setScriptText(const Value: String);
@@ -1182,30 +1237,7 @@ end;
 procedure TExpress.Prepare;
 begin
   try
-    XpQueryList.Clear;
-    with Blocks do
-      while Count  > 0 do
-      begin
-        Objects[0].Free;
-        Delete(0);
-      end;
-    prntBlock := nil;
-    currBlock := TBlock.Create;
-    currBlock.Parent := prntBlock;
-    Blocks.AddObject ('', currBlock);
-    prntBlock := currBlock;
-    rootBlock := currBlock;
-    while ObjList.Count  > 0 do
-    begin
-      ObjList.Objects[0].Free;
-      ObjList.Delete(0);
-    end;
-    ClearLexicalList;
-    fTextLineNo := 0;
-    Scanner.OnToken := OnToken;
-    StackIndex := 0;
-    ScannerState := InitialState;
-    Scanner.Execute;
+    Scan;
     Parser.LexItems := LexicalList;
     Parser.Prepare;
   except
