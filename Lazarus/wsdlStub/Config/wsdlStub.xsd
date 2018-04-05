@@ -770,6 +770,7 @@ Is default destination in Client mode.Has no relevance in server mode (stub)</xs
 	<xs:complexType name="XsdOperationType">
 		<xs:sequence>
 			<xs:element name="Name" type="NameType"/>
+			<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
 			<xs:element name="Req" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>

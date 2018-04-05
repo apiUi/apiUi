@@ -733,7 +733,7 @@ begin
   end;
 end;
 
-procedure NewDesignMessage(aContext: TObject; xOperationAlias: String);
+procedure NewDesignMessage(aContext: TObject; xOperationAlias, aName: String);
 var
   xProject: TWsdlProject;
   xOperation: TWsdlOperation;
@@ -762,6 +762,7 @@ begin
   xOperation.AcquireLock;
   try
     xMessage := TWsdlMessage.Create (xOperation);
+    xMessage.Name := aName;
     for x := 0 to xMessage.CorrelationBindables.Count - 1 do with xMessage.CorrelationBindables do
       Bindables[x].CorrelationValue := Bindables[x].Value;
     xProject.UpdateMessageRow(xOperation, xMessage);
@@ -5570,6 +5571,7 @@ begin
           if Assigned(rpyBind) then
             rpyBind.Free;
           FreeAndNil (fltBind);
+          Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
           reqBind := _LoadXsdMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
           rpyBind := _LoadXsdMsg('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename);
           fltBind := _LoadXsdMsg('Flt', oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename);
@@ -6852,6 +6854,8 @@ begin
       with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
       begin
         AddXml (TXml.CreateAsString('Name', xOperation.Name));
+        if xOperation.Documentation.Count > 0 then
+          AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
         if Assigned (xOperation.reqBind)
         and (xOperation.reqDescrFilename <> '') then
           with AddXml (TXml.CreateAsString('Req', '')) do

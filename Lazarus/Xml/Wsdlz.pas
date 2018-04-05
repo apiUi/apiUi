@@ -559,7 +559,7 @@ procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
 procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
 function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
-procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
+procedure wsdlNewDesignMessage (aObject: TObject; aOperation, aName: String);
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperationLater (aObject: TObject; aOperation: String; aLaterMs: Extended);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
@@ -627,7 +627,7 @@ var
   allOperationsRpy: TWsdlOperations;
   _ProgName: String;
   _wsdlStubStylesheet: String;
-  _WsdlNewDesignMessage: VFunctionOS;
+  _WsdlNewDesignMessage: VFunctionOSS;
   _wsdlFetchDefaultDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlRequestOperationLater: VFunctionOSX;
@@ -1254,11 +1254,11 @@ begin
   _wsdlFetchDefaultDesignMessage (aObject, aOperation);
 end;
 
-procedure wsdlNewDesignMessage (aObject: TObject; aOperation: String);
+procedure wsdlNewDesignMessage (aObject: TObject; aOperation, aName: String);
 begin
   if not Assigned (_WsdlNewDesignMessage) then
     raise Exception.Create('wsdlNewDesignMessage: implementation missing');
-  _WsdlNewDesignMessage (aObject, aOperation);
+  _WsdlNewDesignMessage (aObject, aOperation, aName);
 end;
 
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
@@ -3512,7 +3512,7 @@ begin
     BindScriptFunction ('MessageReplyBodyAsLogged', @wsdlLogReplyBody, SFOV, '()');
     BindScriptFunction ('MessageRequestBodyAsLogged', @wsdlLogRequestBody, SFOV, '()');
     BindScriptFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
-    BindScriptFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOS, '(aOperation)');
+    BindScriptFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOSS, '(aOperation, aName)');
     BindScriptFunction ('NewLine', @xNewLine, SFV, '()');
     BindScriptFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindScriptFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');

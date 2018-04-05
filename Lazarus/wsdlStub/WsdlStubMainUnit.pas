@@ -1207,6 +1207,7 @@ type
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     function EditScript(aXml: TObject): Boolean;
     function TestDbsConnection(aXml: TObject): Boolean;
+    function EditXmlValueAsText(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
     procedure UpdateVisibiltyTreeView (aFreeFormat: Boolean);
@@ -2860,6 +2861,8 @@ var
   xXml: TXml;
 begin
   if not InactiveAfterPrompt then Exit;
+  OperationDefsXsd.XsdByCaption ['OperationDefs.XsdOperations.Operation.Annotation']
+    .EditProcedure := EditXmlValueAsText;
   xXml := se.xsdOperationsXml('');
   try
     if EditXmlXsdBased ( 'Xsd Operations'
@@ -6240,6 +6243,32 @@ begin
     end;
   finally
     xXml.Free;
+  end;
+end;
+
+function TMainForm.EditXmlValueAsText(aXml: TObject): Boolean;
+begin
+  XmlUtil.PushCursor (crHourGlass);
+  try
+    with EditTexttForm do
+    try
+      Application.CreateForm(TEditTexttForm, EditTexttForm);
+      Caption := (aXml as TXml).FullCaption;
+      ScriptEdit.Lines.Text := (aXml as TXml).Value;
+      ShowModal;
+      if (ModalResult = mrOk)
+      and (ScriptEdit.Lines.Text <> (aXml as TXml).Value)
+      then
+      begin
+        result := True;
+        (aXml as TXml).Value := ScriptEdit.Lines.Text;
+        (aXml as TXml).Checked := True;
+      end;
+    finally
+      FreeAndNil(EditTexttForm);
+    end;
+  finally
+    XmlUtil.PopCursor;
   end;
 end;
 
