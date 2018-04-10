@@ -76,6 +76,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    ToggleTrackIOAction: TAction;
     BmtpOperationsAction: TAction;
     MailOperationsAction: TAction;
     ApiByExampleAction: TAction;
@@ -667,6 +668,7 @@ type
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
     procedure SwiftMtOperationsActionUpdate(Sender: TObject);
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
+    procedure ToggleTrackIOActionExecute(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
@@ -1352,6 +1354,7 @@ uses
   , EditTextUnit
   , EditContextsUnit
   , QueryNewElementUnit
+  , SelectProjectFolderUnit
   ;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -7185,6 +7188,7 @@ begin
   if (not se.Licensed)
   and (GetAuthError <> '') then
     ShowMessage ('Not licenced' + LineEnding + LineEnding + GetAuthError);
+  xmlio.OnNotify := LogServerNotification;
 end;
 
 procedure TMainForm.GridViewPaintText(Sender: TBaseVirtualTree;
@@ -7675,26 +7679,27 @@ end;
 function TMainForm.SelecFolderAndSave: Boolean;
 begin
   result := False;
-  with TSelectDirectoryDialog.Create(nil) do
+  Application.CreateForm(TSelectProjectFolderForm, SelectProjectFolderForm);
+  with SelectProjectFolderForm do
   try
-    FileName := se.projectFileName;
-    Title := 'Save service virtualisation project (select or create a folder with a name ending on '
-           + _ProjectFileExtention
-           + ')';
-    Options := Options + [ofOverwritePrompt, ofPathMustExist];
-    if Execute then
+    Caption := 'Save service virtualisation project (specify a folder with a name ending on '
+             + _ProjectFileExtention
+             + ')';
+    ProjectFolderNameEdit.Text := se.projectFileName;
+    ShowModal;
+    if ModalResult = mrOK then
     begin
-      if ExtractFileExt(FileName) <> _ProjectFileExtention then
-        raise Exception.Create(Format ('Projectname must end with "%s";%s%s', [_ProjectFileExtention, LineEnding, FileName]));
-      if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FileName) + _ProjectFileName) then
-        if not BooleanPromptDialog('A project named ' + FileName +  ' already exists' + LineEnding + 'Continue') then
+      if ExtractFileExt(FolderName) <> _ProjectFileExtention then
+        raise Exception.Create(Format ('Projectname must end with "%s";%s%s', [_ProjectFileExtention, LineEnding, FolderName]));
+      if LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(FolderName) + _ProjectFileName) then
+        if not BooleanPromptDialog('A project named ' + FolderName +  ' already exists' + LineEnding + 'Continue') then
           Exit;
-      se.projectFileName := FileName;
+      se.projectFileName := FolderName;
       SaveWsdlStubCase(se.projectFileName);
       result := True;
     end;
   finally
-    Free;
+    SelectProjectFolderForm.Free;
   end;
 end;
 
@@ -13145,27 +13150,30 @@ begin
   if not InactiveAfterPrompt then Exit;
   if OkToOpenStubCase then
   begin
-    with TSelectDirectoryDialog.Create(nil) do
+    Application.CreateForm(TSelectProjectFolderForm, SelectProjectFolderForm);
+    with SelectProjectFolderForm do
     try
-      Options := Options + [ofEnableSizing, ofFileMustExist, ofPathMustExist];
-      FileName := se.projectFileName;
-      DefaultExt := _ProjectFileExtention;
-      Title := 'Open service virtualisation project';
-      if Execute then
+      FolderName := se.projectFileName;
+      Caption := 'Select service virtualisation project to open (a folder with a name ending on '
+               + _ProjectFileExtention
+               + ')';
+      FolderName := se.projectFileName;
+      ShowModal;
+      if ModalResult = mrOK then
       begin
-        if ExtractFileExt(FileName) <> _ProjectFileExtention then
+        if ExtractFileExt(FolderName) <> _ProjectFileExtention then
           raise Exception.CreateFmt ( 'Illegal filename "%s"%sMust end with "%s"'
-                                    , [FileName, LineEnding, _ProjectFileExtention]
+                                    , [FolderName, LineEnding, _ProjectFileExtention]
                                     );
-        if not LazFileUtils.DirectoryExistsUTF8(FileName) then
+        if not LazFileUtils.DirectoryExistsUTF8(FolderName) then
           raise Exception.CreateFmt ( 'Project "%s" not found'
-                                    , [FileName]
+                                    , [FolderName]
                                     );
-        se.projectFileName := FileName;
+        se.projectFileName := FolderName;
         OpenStubCase(se.projectFileName);
       end;
     finally
-      Free;
+      SelectProjectFolderForm.Free;
     end;
   end;
 end;
@@ -14341,6 +14349,11 @@ begin
   finally
     se.ReleaseLogLock;
   end;
+end;
+
+procedure TMainForm.ToggleTrackIOActionExecute(Sender: TObject);
+begin
+  xmlio.doTrackXmlIO := not xmlio.doTrackXmlIO;
 end;
 
 procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;

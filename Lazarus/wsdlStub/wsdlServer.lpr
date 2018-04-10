@@ -26,19 +26,21 @@ uses
   ;
 
 type
-  longOptsArrayType = array [0..4] of String;
+  longOptsArrayType = array [0..5] of String;
 
 const
   helpOpt = 'help';
   portOpt = 'port';
   scriptOpt = 'script';
   terminateOpt = 'terminate';
+  trackIOOpt = 'trackIO';
   contextOpt = 'context';
   longOpts: longOptsArrayType = ( helpOpt
                                 , portOpt + ':'
                                 , scriptOpt + ':'
                                 , contextOpt + ':'
                                 , terminateOpt
+                                , trackIOOpt
                                 );
 type
 
@@ -121,6 +123,9 @@ begin
   terminateAfterScript := HasOption('?',terminateOpt);
   if terminateAfterScript then
     WriteLn('option ', terminateOpt);
+  xmlio.doTrackXmlIO := HasOption('?',trackIOOpt);
+  if xmlio.doTrackXmlIO then
+    WriteLn('option ', trackIOOpt);
   se.projectFileName := ParamStr(1);
   if (Copy (se.projectFileName, 1, 1) = '-')  // switch as first argument ??
   or (    (not FileExists(se.projectFileName))
@@ -465,6 +470,7 @@ begin
   sc.OnRestartEvent := RestartCommand;
   sc.OnReloadDesignEvent := ReloadDesignCommand;
   xmlz.OnNotify := se.Notify;
+  xmlio.OnNotify := se.Notify;
   IntrospectIniXml;
   try
     se.Licensed := GetAuthorization;
@@ -512,6 +518,8 @@ begin
   WriteLn ('     starts executing the named project-script');
   WriteLn ('  --', terminateOpt);
   WriteLn ('     terminates after executing the named project-script');
+  WriteLn ('  --', trackIOOpt);
+  WriteLn ('     notifies IO operations (currently only I)');
   WriteLn ('');
   WriteLn ('');
 end;

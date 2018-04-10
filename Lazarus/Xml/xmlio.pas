@@ -39,10 +39,14 @@ const base64DocxStartStr = 'UEsDBB';
 const base64PdfStartStr = 'JVBERi';
 const base64RtfStartStr = 'e1xyd';
 
+type TOnStringEvent = procedure (const Msg: String) of Object;
 var
   PathPrefixes, ProjectAliasses: TStringList;
   ProjectContext: String;
   ProjectContexts: TObject;
+  doTrackXmlIO: Boolean;
+  OnNotify: TOnStringEvent;
+
 
 implementation
 uses StrUtils
@@ -62,6 +66,13 @@ uses StrUtils
    , PromptFolderUnit
 {$endif}
    ;
+
+procedure SjowMessage (aString: String);
+begin
+  if Assigned (OnNotify) then
+    OnNotify (aString);
+end;
+
 
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 begin
@@ -616,6 +627,8 @@ function ReadStringFromFile (aFileName: String): String;
   end;
 begin
   aFileName := resolveAliasses(aFileName);
+  if doTrackXmlIO then
+    SjowMessage('ReadStringFromFile: ' + aFileName);
   if (AnsiStartsText('HTTP://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, false);

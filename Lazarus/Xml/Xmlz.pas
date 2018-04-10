@@ -3831,8 +3831,11 @@ procedure TXml.CopyRelevancy(aXml: TXml);
 begin
   Items.Clear;
   Attributes.Clear;
-  aXml.ExploreRelevancy;
-  _Copy (Self, aXml);
+  if aXml.Name <> '' then
+  begin
+    aXml.ExploreRelevancy;
+    _Copy (Self, aXml);
+  end;
 end;
 
 procedure TXml.CopyDownLine(aXml: TXml; aOnlyWhenChecked: Boolean);

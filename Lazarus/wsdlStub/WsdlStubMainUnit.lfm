@@ -2586,6 +2586,12 @@ object MainForm: TMainForm
       OnExecute = ContextsActionExecute
       ShortCut = 24643
     end
+    object ToggleTrackIOAction: TAction
+      Category = 'Miscellaneous'
+      Caption = 'Toggle TrackIO'
+      OnExecute = ToggleTrackIOActionExecute
+      ShortCut = 24649
+    end
   end
   object mainImageList: TImageList
     left = 112

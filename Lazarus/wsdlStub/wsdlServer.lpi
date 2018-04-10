@@ -18,9 +18,10 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MajorVersionNr Value="9"/>
+      <MajorVersionNr Value="10"/>
+      <MinorVersionNr Value="3"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="56"/>
+      <BuildNr Value="103"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <MacroValues Count="1">

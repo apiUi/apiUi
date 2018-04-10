@@ -18,8 +18,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
-      <MinorVersionNr Value="2"/>
-      <BuildNr Value="11777"/>
+      <MinorVersionNr Value="3"/>
+      <BuildNr Value="11797"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -220,7 +220,6 @@
       </Item17>
       <Item18>
         <Name Value="EStringListError"/>
-        <Enabled Value="False"/>
       </Item18>
       <Item19>
         <Name Value="EOleSysError"/>
