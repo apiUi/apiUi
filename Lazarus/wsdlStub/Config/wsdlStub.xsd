@@ -80,6 +80,7 @@ wsdlStub encrypts passwords before storing in a project file or at other locatio
 					<xs:documentation>Operation name</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
 			<xs:element name="CobolEnvironment" type="CobolEnvironmentType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Required for handling embedded sign;
@@ -152,6 +153,7 @@ In case your records do not have any identifying string for operation (listeners
 Specify a name for the operation.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
 			<xs:element name="reqRecognition" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Specifies the way wsdlStub can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
@@ -458,6 +460,7 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 	<xs:complexType name="SwiftMtOperationType">
 		<xs:sequence>
 			<xs:element name="Name" type="NameType"/>
+			<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
 			<xs:element name="Req" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
@@ -620,6 +623,7 @@ In case your records do not have any identifying string for operation (listeners
 	<xs:complexType name="XmlSampleOperationType">
 		<xs:sequence>
 			<xs:element name="Name" type="NameType"/>
+			<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
 			<xs:element name="Req" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -691,6 +695,7 @@ Is default destination in Client mode.Has no relevance in server mode (stub)</xs
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="Alias" type="xs:string"/>
+						<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
 						<xs:element name="Verb">
 							<xs:annotation>
 								<xs:documentation>Make sure the Path/httpVerb pair is unique</xs:documentation>
@@ -1306,6 +1311,7 @@ Internet standard protocol for e-mail clients to retrieve e-mail from a server.<
 															<xs:documentation>Operation name</xs:documentation>
 														</xs:annotation>
 													</xs:element>
+													<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
 													<xs:element name="CobolEnvironment" type="CobolEnvironmentType" minOccurs="0">
 														<xs:annotation>
 															<xs:documentation>Required for handling embedded sign;

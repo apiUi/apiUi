@@ -822,6 +822,8 @@ procedure SaveStringToFile (aFileName: String; aString: AnsiString);
 var
   S: TMemoryStream;
 begin
+  if doTrackXmlIO then
+    SjowMessage('SaveStringToFile: ' + resolveAliasses(aFileName));
   S := TMemoryStream.Create;
   try
     S.Size := Length (aString);

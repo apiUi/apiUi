@@ -5401,6 +5401,7 @@ begin
         begin // adjust
           with Operations.Operations[f] do
           begin
+            Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
             operationRecognitionUpdate (Operations.Operations[f], reqRecognition, oXml.Items.XmlItemByTag['reqRecognition']);
             operationRecognitionUpdate (Operations.Operations[f], rpyRecognition, oXml.Items.XmlItemByTag['rpyRecognition']);
           end;
@@ -5418,6 +5419,7 @@ begin
           xOperation.reqRecognition := TStringList.Create;
           xOperation.rpyRecognition := TStringList.Create;
           xOperation.RecognitionType := rtSubString;
+          xOperation.Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
           operationRecognitionUpdate (xOperation, xOperation.reqRecognition, oXml.Items.XmlItemByTag['reqRecognition']);
           operationRecognitionUpdate (xOperation, xOperation.rpyRecognition, oXml.Items.XmlItemByTag['rpyRecognition']);
         end;
@@ -5717,6 +5719,7 @@ begin
             rpyBind.Free;
           FreeAndNil (fltBind);
           Name := oXml.Items.XmlCheckedValueByTagDef['Name', Name];
+          Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
           httpVerb := oXml.Items.XmlCheckedValueByTagDef['httpVerb', httpVerb];
           reqBind := _LoadXmlSampleMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
           ppXml := oXml.Items.XmlCheckedItemByTag['parameters'];
@@ -6002,6 +6005,7 @@ begin
               if Assigned(rpyBind) then
                 rpyBind.Free;
               FreeAndNil (fltBind);
+              Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
               httpVerb := oXml.Items.XmlValueByTagDef['Verb', httpVerb];
               reqBind := _LoadApiByExampleReq('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd);
               rpyBind := _LoadApiByExampleRpy('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd);
@@ -6165,6 +6169,7 @@ begin
             reqBind.Free;
           if Assigned (rpyBind) then
             rpyBind.Free;
+          Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
           CobolEnvironment := ceTandem;
           if oXml.Items.XmlCheckedValueByTag ['CobolEnvironment'] = 'IBM Zos' then
             CobolEnvironment := ceIbmZOs;
@@ -6416,6 +6421,7 @@ begin
             reqBind.Free;
           if Assigned (rpyBind) then
             rpyBind.Free;
+          Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
           reqBind := _LoadSwiftMtMsg(oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename, reqDescrExpansionFilename);
           rpyBind := _LoadSwiftMtMsg(oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename, rpyDescrExpansionFilename);
           fltBind := _LoadSwiftMtMsg(oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename, fltDescrExpansionFilename);
@@ -6492,6 +6498,8 @@ begin
           with AddXml(TXml.CreateAsString('Operation', '')) do
           begin
             AddXml (TXml.CreateAsString('Name', xOperation.Name));
+            if xOperation.Documentation.Count > 0 then
+              AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
             if xOperation.CobolEnvironment = ceTandem then
               AddXml (TXml.CreateAsString('CobolEnvironment', 'Tandem'));
             if xOperation.CobolEnvironment = ceIbmZOs then
@@ -6691,6 +6699,7 @@ begin
               reqBind.Free;
             if Assigned (rpyBind) then
               rpyBind.Free;
+            Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
             CobolEnvironment := ceTandem;
             if oXml.Items.XmlCheckedValueByTag ['CobolEnvironment'] = 'IBM Zos' then
               CobolEnvironment := ceIbmZOs;
@@ -6722,6 +6731,8 @@ begin
       with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
       begin
         AddXml (TXml.CreateAsString('Name', xOperation.Name));
+        if xOperation.Documentation.Count > 0 then
+          AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
         if Assigned (xOperation.reqBind)
         and (xOperation.reqDescrFilename <> '') then
           with AddXml (TXml.CreateAsString('Req', '')) do
@@ -6784,6 +6795,8 @@ begin
           with AddXml(TXml.CreateAsString('Operation', '')) do
           begin
             AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
+            if xOperation.Documentation.Count > 0 then
+              AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
             AddXml (TXml.CreateAsString('Verb', xOperation.httpVerb));
             if Assigned (xOperation.reqBind) then
             begin
@@ -6909,6 +6922,8 @@ begin
       with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
       begin
         AddXml (TXml.CreateAsString('Name', xOperation.Name));
+        if xOperation.Documentation.Count > 0 then
+          AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
         if xOperation.CobolEnvironment = ceTandem then
           AddXml (TXml.CreateAsString('CobolEnvironment', 'Tandem'));
         if xOperation.CobolEnvironment = ceIbmZOs then
@@ -6955,6 +6970,8 @@ begin
       with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
       begin
         AddXml (TXml.CreateAsString('Name', xOperation.Name));
+        if xOperation.Documentation.Count > 0 then
+          AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
         if Assigned (xOperation.reqBind)
         and (xOperation.reqDescrFilename <> '') then
           with AddXml (TXml.CreateAsString('Req', '')) do
@@ -7003,6 +7020,8 @@ begin
         with AddXml (TXml.CreateAsString('Operation', '')) do
         begin
           AddXml (TXml.CreateAsString('Name', xOperation.Name));
+          if xOperation.Documentation.Count > 0 then
+            AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
           if Assigned (xOperation.reqRecognition)
           and (xOperation.reqRecognition.Count > 0) then
           begin

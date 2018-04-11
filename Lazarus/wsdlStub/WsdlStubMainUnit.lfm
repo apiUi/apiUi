@@ -435,6 +435,7 @@ object MainForm: TMainForm
         PrintSettings.MarginBottom = 0.5
         ShowHints = False
         TabOrder = 4
+        OnClick = OperationDocumentationViewerClick
         OnHotClick = DocumentationViewerHotClick
       end
     end
@@ -2591,6 +2592,12 @@ object MainForm: TMainForm
       Caption = 'Toggle TrackIO'
       OnExecute = ToggleTrackIOActionExecute
       ShortCut = 24649
+    end
+    object OperationBrowseDocumentationAction: TAction
+      Category = 'Operation'
+      Caption = 'Show Documentation in browser'
+      OnExecute = OperationBrowseDocumentationActionExecute
+      OnUpdate = OperationBrowseDocumentationActionUpdate
     end
   end
   object mainImageList: TImageList
@@ -10339,6 +10346,12 @@ object MainForm: TMainForm
   object OperationsPopupMenu: TPopupMenu
     left = 16
     top = 120
+    object MenuItem53: TMenuItem
+      Action = OperationBrowseDocumentationAction
+    end
+    object MenuItem52: TMenuItem
+      Caption = '-'
+    end
     object EditBetweenScriptMenuItem: TMenuItem
       Caption = 'Edit Script'
       OnClick = EditBetweenScriptMenuItemClick

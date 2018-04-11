@@ -76,6 +76,9 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    MenuItem52: TMenuItem;
+    MenuItem53: TMenuItem;
+    OperationBrowseDocumentationAction: TAction;
     ToggleTrackIOAction: TAction;
     BmtpOperationsAction: TAction;
     MailOperationsAction: TAction;
@@ -619,6 +622,9 @@ type
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
     procedure OpenWsdlActionUpdate(Sender: TObject);
+    procedure OperationBrowseDocumentationActionExecute(Sender: TObject);
+    procedure OperationBrowseDocumentationActionUpdate(Sender: TObject);
+    procedure OperationDocumentationViewerClick(Sender: TObject);
     procedure PromptAndSetColumnWidth (aTreeView: TVirtualStringTree);
     procedure GridColumnWidthMenuItemClick(Sender: TObject);
     procedure NeedTacoHostData (Sender: TTacoInterface);
@@ -1488,6 +1494,8 @@ var
 begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.freeFormatOperationsXml;
+  OperationDefsXsd.XsdByCaption ['OperationDefs.FreeFormatOperations.Operation.Annotation']
+    .EditProcedure := EditXmlValueAsText;
   if EditXmlXsdBased ( 'Freeformat Operations'
                      , 'OperationDefs.FreeFormatOperations'
                      , 'FreeFormatOperations.Operation.Name'
@@ -3075,6 +3083,8 @@ var
   xXml: TXml;
 begin
   if not InactiveAfterPrompt then Exit;
+  OperationDefsXsd.XsdByCaption ['OperationDefs.XmlSampleOperations.Operation.Annotation']
+    .EditProcedure := EditXmlValueAsText;
   xXml := se.xmlSampleOperationsXml('');
   try
     if EditXmlXsdBased ( 'XmlSample Operations'
@@ -11802,6 +11812,8 @@ var
 begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.cobolOperationsXml;
+  OperationDefsXsd.XsdByCaption ['OperationDefs.CobolOperations.Operation.Annotation']
+    .EditProcedure := EditXmlValueAsText;
   if EditXmlXsdBased ( 'Cobol Operations'
                      , 'OperationDefs.CobolOperations'
                      , 'CobolOperations.Operation.Name'
@@ -12092,9 +12104,18 @@ var
 begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.swiftMtOperationsXml;
-  if EditXmlXsdBased('SwiftMT Operations', 'OperationDefs.SwiftMtOperations',
-    'SwiftMtOperations.Operation.Name', 'SwiftMtOperations.Operation.Name',
-    se.IsActive, xXml.Items.Count > 1, esUsed, OperationDefsXsd, xXml) then
+  OperationDefsXsd.XsdByCaption ['OperationDefs.SwiftMtOperations.Operation.Annotation']
+    .EditProcedure := EditXmlValueAsText;
+  if EditXmlXsdBased ( 'SwiftMT Operations'
+                     , 'OperationDefs.SwiftMtOperations'
+                     , 'SwiftMtOperations.Operation.Name'
+                     , 'SwiftMtOperations.Operation.Name'
+                     , se.IsActive
+                     , xXml.Items.Count > 1
+                     , esUsed
+                     , OperationDefsXsd
+                     , xXml
+                     ) then
   begin
     AcquireLock;
     try
@@ -13804,6 +13825,8 @@ var
   xXml: TXml;
 begin
   if not InactiveAfterPrompt then Exit;
+  OperationDefsXsd.XsdByCaption ['OperationDefs.ApiByExampleOperations.Service.Operation.Annotation']
+    .EditProcedure := EditXmlValueAsText;
   xXml := se.ApiByExampleOperationsXml('');
   try
     if EditXmlXsdBased ( 'API By Example Operations'
@@ -14049,6 +14072,8 @@ var
 begin
   if not InactiveAfterPrompt then Exit;
   xXml := se.bmtpOperationsXml;
+  OperationDefsXsd.XsdByCaption ['OperationDefs.BmtpOperations.Service.Operation.Annotation']
+    .EditProcedure := EditXmlValueAsText;
   if EditXmlXsdBased ( 'Bmtp Operations'
                      , 'OperationDefs.BmtpOperations'
                      , ''
@@ -14239,6 +14264,30 @@ procedure TMainForm.OpenWsdlActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
     OpenWsdlAction.Caption := decorateWithAsterix (OpenWsdlAction.Caption, se.hasFormalOperations);
+end;
+
+procedure TMainForm.OperationBrowseDocumentationActionExecute(Sender: TObject);
+begin
+  OperationDocumentationViewerClick(nil);
+end;
+
+procedure TMainForm.OperationBrowseDocumentationActionUpdate(Sender: TObject);
+begin
+  OperationBrowseDocumentationAction.Enabled := Assigned(WsdlOperation)
+                                            and (WsdlOperation.Documentation.Count > 0);
+end;
+
+procedure TMainForm.OperationDocumentationViewerClick(Sender: TObject);
+begin
+  if Assigned (WsdlOperation) then
+  begin
+    XmlUtil.PushCursor (crHourGlass);
+    try
+      XmlUtil.presentAsHTML(WsdlOperation.alias + ' annotation', textToHtml(WsdlOperation.Documentation.Text));
+    finally
+      XmlUtil.PopCursor;
+    end;
+  end;
 end;
 
 procedure TMainForm.PromptAndSetColumnWidth(aTreeView: TVirtualStringTree);

@@ -519,7 +519,7 @@ begin
   WriteLn ('  --', terminateOpt);
   WriteLn ('     terminates after executing the named project-script');
   WriteLn ('  --', trackIOOpt);
-  WriteLn ('     notifies IO operations (currently only I)');
+  WriteLn ('     notifies IO operations');
   WriteLn ('');
   WriteLn ('');
 end;
