@@ -1605,8 +1605,14 @@ procedure TXmlUtil.presentAsRTF(aCaption, aString: String);
 var
   TempFileName: String;
 begin
-  TempFileName := GetEnvironmentVariable ('Temp')
-                + '\temp'
+TempFileName :=
+{$ifdef WINDOWS}
+                GetEnvironmentVariable ('Temp')
+{$else}
+                '/tmp'
+{$endif}
+                + DirectorySeparator
+                + 'temp'
                 +  IntToStr (rtfFileCounter mod 100)
                 + '.rtf'
                 ;
@@ -1626,8 +1632,14 @@ procedure TXmlUtil.presentAsPDF(aCaption, aString: String);
 var
   TempFileName: String;
 begin
-  TempFileName := GetEnvironmentVariable ('Temp')
-                + '\temp'
+TempFileName :=
+{$ifdef WINDOWS}
+                GetEnvironmentVariable ('Temp')
+{$else}
+                '/tmp'
+{$endif}
+                + DirectorySeparator
+                + 'temp'
                 +  IntToStr (pdfFileCounter mod 100)
                 + '.pdf'
                 ;
@@ -1651,8 +1663,14 @@ procedure TXmlUtil.presentAsDOCX(aCaption, aString: String);
 var
   TempFileName: String;
 begin
-  TempFileName := GetEnvironmentVariable ('Temp')
-                + '\temp'
+TempFileName :=
+{$ifdef WINDOWS}
+                GetEnvironmentVariable ('Temp')
+{$else}
+                '/tmp'
+{$endif}
+                + DirectorySeparator
+                + 'temp'
                 +  IntToStr (docxFileCounter mod 100)
                 + '.docx'
                 ;
@@ -1672,8 +1690,14 @@ procedure TXmlUtil.presentAsHTML(aCaption, aString: String);
 var
   TempFileName: String;
 begin
-  TempFileName := GetEnvironmentVariable ('Temp')
-                + '\temp'
+  TempFileName :=
+{$ifdef WINDOWS}
+                  GetEnvironmentVariable ('Temp')
+{$else}
+                  '/tmp'
+{$endif}
+                + DirectorySeparator
+                + 'temp'
                 +  IntToStr (htmlFileCounter mod 100)
                 + '.html'
                 ;
