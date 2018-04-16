@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 288
-  Height = 644
-  Top = 98
+  Left = 290
+  Height = 631
+  Top = 118
   Width = 1068
   Action = OpenProjectAction
   Caption = 'Open Project...'
-  ClientHeight = 625
+  ClientHeight = 612
   ClientWidth = 1068
   Color = clBtnFace
   Font.Color = clWindowText
@@ -191,25 +191,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 294
+    Height = 281
     Top = 24
     Width = 1068
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 294
+    ClientHeight = 281
     ClientWidth = 1068
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 221
-      Height = 288
+      Height = 275
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
       Left = 891
-      Height = 288
+      Height = 275
       Top = 3
       Width = 5
       Align = alRight
@@ -218,18 +218,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 288
+      Height = 275
       Top = 3
       Width = 218
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 288
+      ClientHeight = 275
       ClientWidth = 218
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 256
+        Top = 243
         Width = 212
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -302,7 +302,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 253
+        Height = 240
         Top = 3
         Width = 212
         Align = alClient
@@ -351,13 +351,13 @@ object MainForm: TMainForm
     end
     object XsdPanel: TPanel
       Left = 896
-      Height = 288
+      Height = 275
       Top = 3
       Width = 169
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 288
+      ClientHeight = 275
       ClientWidth = 169
       TabOrder = 1
       object Splitter6: TSplitter
@@ -401,7 +401,7 @@ object MainForm: TMainForm
       end
       object DocumentationViewer: TIpHtmlPanel
         Left = 4
-        Height = 129
+        Height = 116
         Top = 155
         Width = 161
         Align = alClient
@@ -441,12 +441,12 @@ object MainForm: TMainForm
     end
     object MiddlePanel: TPanel
       Left = 226
-      Height = 288
+      Height = 275
       Top = 3
       Width = 665
       Align = alClient
       Caption = 'MiddlePanel'
-      ClientHeight = 288
+      ClientHeight = 275
       ClientWidth = 665
       TabOrder = 4
       object WsdlInfoPanel: TPanel
@@ -521,12 +521,12 @@ object MainForm: TMainForm
       end
       object DataPanel: TPanel
         Left = 1
-        Height = 249
+        Height = 236
         Top = 38
         Width = 663
         Align = alClient
         Caption = 'DataPanel'
-        ClientHeight = 249
+        ClientHeight = 236
         ClientWidth = 663
         TabOrder = 1
         object GridDataPanel: TPanel
@@ -799,18 +799,18 @@ object MainForm: TMainForm
         end
         object TreeDataPanel: TPanel
           Left = 1
-          Height = 149
+          Height = 136
           Top = 99
           Width = 661
           Align = alClient
           Caption = 'TreeDataPanel'
-          ClientHeight = 149
+          ClientHeight = 136
           ClientWidth = 661
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
-            Top = 131
+            Top = 118
             Width = 659
             Align = alBottom
             Alignment = taLeftJustify
@@ -959,7 +959,7 @@ object MainForm: TMainForm
           end
           object FreeFormatMemo: TMemo
             Left = 1
-            Height = 47
+            Height = 34
             Top = 84
             Width = 659
             Align = alClient
@@ -980,7 +980,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 318
+    Top = 305
     Width = 1068
     Align = alBottom
     ResizeAnchor = akBottom
@@ -988,7 +988,7 @@ object MainForm: TMainForm
   object LogPanel: TPanel
     Left = 0
     Height = 302
-    Top = 323
+    Top = 310
     Width = 1068
     Align = alBottom
     ClientHeight = 302

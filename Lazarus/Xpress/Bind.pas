@@ -725,7 +725,6 @@ constructor TCustomBindable.Create;
 begin
   inherited Create;
   RefId := bindRefId;
-  fChecked := True;
   Inc (bindRefId);
 end;
 

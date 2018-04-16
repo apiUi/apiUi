@@ -4451,6 +4451,8 @@ begin
         aOperation.logRequestBody := xLog.RequestBody;
         aOperation.logReplyBody := xLog.ReplyBody;
         aOperation.ExecuteAfter;
+        if aOperation.StubTransport = ttNone then
+          xLog.ReplyBody := aOperation.StreamReply (_progName, True);
         CheckExpectedValues (xLog, aOperation, doCheckExpectedValues);
       end;
       with xLog do
@@ -8959,6 +8961,14 @@ begin
                                         + xMPrefix
                                         + xMName
                                         ;
+                    if LazFileUtils.DirectoryExistsUTF8(xMessageFolderName) then
+                    begin
+                      // in case of duplicate message names
+                      // last one will survice
+                      // todo: create a dialogie with Abort, Skip or Overwrite...
+                      xmlio.EraseAllFolderContent (xMessageFolderName);
+                      LazFileUtils.RemoveDirUTF8(xMessageFolderName);
+                    end;
                     _createFolder (xMessageFolderName);
                     _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
                     _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
