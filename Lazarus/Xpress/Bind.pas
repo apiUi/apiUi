@@ -12,7 +12,7 @@ uses Classes
    ;
 
 resourcestring
-  S_XML_REGEXP_LINK = '(?i)((FTP|HTTPS?|FILE|DOC)://([_a-z\d\-/]+(\.[_a-z\d\-/]+)+)((/[ _a-z\d\-\\\./]+)+)*([\?#][a-z0-9=%&_/\+\-\.]+)?)';
+  S_XML_REGEXP_LINK = '(?i)((FTP|HTTPS?|FILE|DOC)://([_a-z\d\-]+(\.[_a-z\d\-]+)+)(((:\d+)?/[_a-z\d\-\+\\\./]+)+)*([\?#][a-z0-9=%&_/\+\-\.]+)?)';
 
 type TBindExpandStyle = (esAll, esOne, esUsed, edBestEffort);
 const TBindExpandStyleStr: array [TBindExpandStyle] of String = ('All', 'One', 'Used', 'BestEffort');
