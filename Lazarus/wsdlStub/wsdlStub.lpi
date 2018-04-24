@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="3"/>
-      <BuildNr Value="11821"/>
+      <BuildNr Value="11834"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="13">
       <Unit0>
         <Filename Value="wsdlStub.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -115,6 +115,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="StringListListUnit"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="..\ProgressStatus\progressinterface.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ProgressInterface"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -125,7 +130,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Mq;..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\Html"/>
+      <OtherUnitFiles Value="..\Mq;..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\Html;..\ProgressStatus"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

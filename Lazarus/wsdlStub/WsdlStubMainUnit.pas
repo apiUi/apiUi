@@ -53,6 +53,7 @@ uses
    , types
    , ClaimListz
    , tacointerface
+   , progressinterface
    ;
 
 type
@@ -657,6 +658,7 @@ type
     procedure ReadFromFoldersExecute(Sender: TObject);
     procedure SaveProjectAsFolderActionExecute(Sender: TObject);
     procedure SaveStubCaseActionUpdate(Sender: TObject);
+    procedure doSaveWithFolders;
     procedure SaveWithFoldersExecute(Sender: TObject);
     procedure ShowResolvedPropertiesExecute (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
@@ -1050,6 +1052,7 @@ type
     property xmlViewType: TxvViewType read getXmlViewType;
   private
     doCreateBackup: Boolean;
+    ProgressInterface: TProgressInterface;
     enableTacoPingPong: Boolean;
     intervalTacoPingPong: Integer;
     editingNode: PVirtualNode;
@@ -1361,6 +1364,7 @@ uses
   , EditContextsUnit
   , QueryNewElementUnit
   , SelectProjectFolderUnit
+  , progressunit
   ;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -6792,6 +6796,8 @@ begin
   se := TWsdlProject.Create;
   sc := TWsdlControl.Create;
   sc.se := se;
+  ProgressInterface := TProgressInterface.Create;
+  se.ProgressInterface := ProgressInterface;
   RefreshLogTimer.Enabled := True;
   NumberOfBlockingThreads := 0;
   se.OnBooleanDialog := BooleanPromptDialog;
@@ -7155,6 +7161,7 @@ begin
   FreeAndNil(se);
   FreeAndNil(sc);
   ColumnWidths.Free;
+  FreeAndNil(ProgressInterface);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -9246,7 +9253,45 @@ begin
     logAdded := _refreshLogging;
     exceptionAdded := _refreshExceptions;
     _refreshSnapshots;
-    SetUiProgress;
+//    SetUiProgress;
+    if Assigned (se.ProgressInterface) then
+    begin
+      {
+      if se.ProgressInterface.doShowProgress then
+      begin
+        if not Assigned (ProgressForm) then
+        begin
+          Application.CreateForm(TProgressForm, ProgressForm);
+          ProgressForm.ProgressInterface := se.ProgressInterface;
+          ProgressForm.Update;
+          ProgressForm.ShowModal;
+        end;
+        ProgressForm.Update;
+      end;
+      if not se.ProgressInterface.doShowProgress then
+      begin
+        if Assigned (ProgressForm) then
+          FreeAndNil (ProgressForm);
+      end;
+      }
+      with se.ProgressInterface do
+      begin
+        if doShowProgress then
+        begin
+          ProgressBar.Max := ProgressMax;
+          ProgressBar.Position := ProgressPos;
+          ProgressBar.Invalidate;
+        end;
+        if not doShowProgress then
+        begin
+          SetUiProgress;
+        end;
+      end;
+    end
+    else
+    begin
+      SetUiProgress;
+    end;
   finally
     se.ReleaseLogLock;
   end;
@@ -13320,6 +13365,11 @@ begin
   SaveStubCaseAction.Enabled := se.stubRead;
 end;
 
+procedure TMainForm.doSaveWithFolders;
+begin
+  se.SaveWithFolders;
+end;
+
 
 procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);
 var
@@ -13419,7 +13469,8 @@ begin
     finally
       FreeAndNil(PromptForm);
     end;
-    UpdateReopenList(ReopenCaseList, se.SaveWithFolders);
+    TProcedureThread.Create(False, True, se, doSaveWithFolders);
+    UpdateReopenList(ReopenCaseList, se.projectFileName);
   finally
     XmlUtil.PopCursor;
   end;

@@ -1,0 +1,51 @@
+object ProgressForm: TProgressForm
+  Left = 493
+  Height = 119
+  Top = 212
+  Width = 552
+  BorderIcons = []
+  BorderWidth = 5
+  Caption = 'ProgressForm'
+  ClientHeight = 119
+  ClientWidth = 552
+  Position = poOwnerFormCenter
+  LCLVersion = '1.6.0.4'
+  object Panel1: TPanel
+    Left = 5
+    Height = 52
+    Top = 5
+    Width = 542
+    Align = alClient
+    Caption = 'dit is de actie die hij nu doet'
+    Font.Height = -15
+    ParentFont = False
+    TabOrder = 0
+  end
+  object Panel2: TPanel
+    Left = 5
+    Height = 37
+    Top = 77
+    Width = 542
+    Align = alBottom
+    ClientHeight = 37
+    ClientWidth = 542
+    TabOrder = 1
+    object Button1: TButton
+      Left = 0
+      Height = 24
+      Top = 6
+      Width = 64
+      Caption = 'Cancel'
+      OnClick = Button1Click
+      TabOrder = 0
+    end
+  end
+  object ProgressBar1: TProgressBar
+    Left = 5
+    Height = 20
+    Top = 57
+    Width = 542
+    Align = alBottom
+    TabOrder = 2
+  end
+end

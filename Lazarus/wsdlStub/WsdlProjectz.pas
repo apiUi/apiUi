@@ -60,6 +60,7 @@ uses Classes
   , Dialogs
   , Controls
 {$endif}
+  , ProgressInterface
   ;
 
 type TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
@@ -152,7 +153,13 @@ type
     procedure doCoverageReport (aReport: TSnapshot);
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
+    function NumberOfOperationsAndMessages: Integer;
+    procedure InitProgress (aCaption: String; aMax: Integer);
+    procedure UpdateProgress (aAction: String; aPos: Integer);
+    procedure IncrementProgress (aAction: String; aInc: Integer);
+    procedure DoShowProgress (aValue: Boolean);
   public
+    ProgressInterface: TProgressInterface;
     doCreateBackup: Boolean;
     projectContext: String;
     projectProperties: TStringList;
@@ -8887,164 +8894,176 @@ var
   xXml: TXml;
   x, w, s, o, m: Integer;
 begin
+  InitProgress('Saving project ' + projectFileName, 100 + NumberOfOperationsAndMessages);
   xsiGenerated := True; // en dan maar hopen dat er geen andere parallele threads bezig zijn...
   result := projectFileName;
 {
   xProjectFolderName := Copy (projectFileName, 1, Length(projectFileName) - Length(_ProjectFileExtention))
                       + Copy (_ProjectFileExtention, 2, 100);
 }
-  xProjectFolderName := projectFileName;
-  if doCreateBackup
-  and LazFileUtils.DirectoryExistsUTF8(xProjectFolderName) then
-  begin
-    if LazFileUtils.DirectoryExistsUTF8(xProjectFolderName + '~') then
-    begin
-      xmlio.EraseAllFolderContent(xProjectFolderName + '~');
-      LazFileUtils.RemoveDirUTF8(xProjectFolderName + '~');
-      if LazFileUtils.DirectoryExistsUTF8(xProjectFolderName + '~') then
-        raise Exception.Create('Could not remove backup ' + xProjectFolderName + '~');
-    end;
-    LazFileUtils.RenameFileUTF8(xProjectFolderName, xProjectFolderName + '~');
-  end;
-  if not LazFileUtils.ForceDirectory(xProjectFolderName) then
-    raise Exception.CreateFmt('Could not create folder "%s"', [xProjectFolderName]);
-  xmlio.EraseAllFolderContent(xProjectFolderName);
-  _createReadMe(xProjectFolderName);
-  xWsdlsFolderName := LazFileUtils.AppendPathDelim(xProjectFolderName) + 'W';
-  _createFolder (xWsdlsFolderName);
-  with ProjectDesignAsXml(projectFileName) do
+  UpdateProgress('Creating Backup', 10);
+  DoShowProgress(True);
   try
-    for w := Items.Count - 1 downto 0 do
+    xProjectFolderName := projectFileName;
+    if doCreateBackup
+    and LazFileUtils.DirectoryExistsUTF8(xProjectFolderName) then
     begin
-      if Items.XmlItems[w].Name = 'Wsdl' then
+      if LazFileUtils.DirectoryExistsUTF8(xProjectFolderName + '~') then
       begin
-        xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName)
-                         + Items.XmlItems[w].Items.XmlValueByTagDef[ 'FileAlias'
-                                                                   , Items.XmlItems[w].Items.XmlValueByTag['Name']
-                                                                   ];
-        _createFolder (xWsdlFolderName);
-        xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'S';
-        _createFolder (xServicesFolderName);
-        with Items.XmlItems[w] do
-        for s := Items.Count - 1 downto 0 do
+        xmlio.EraseAllFolderContent(xProjectFolderName + '~');
+        LazFileUtils.RemoveDirUTF8(xProjectFolderName + '~');
+        if LazFileUtils.DirectoryExistsUTF8(xProjectFolderName + '~') then
+          raise Exception.Create('Could not remove backup ' + xProjectFolderName + '~');
+      end;
+      LazFileUtils.RenameFileUTF8(xProjectFolderName, xProjectFolderName + '~');
+    end;
+    if not LazFileUtils.ForceDirectory(xProjectFolderName) then
+      raise Exception.CreateFmt('Could not create folder "%s"', [xProjectFolderName]);
+    UpdateProgress('Initialising Folder', 20);
+    xmlio.EraseAllFolderContent(xProjectFolderName);
+    _createReadMe(xProjectFolderName);
+    xWsdlsFolderName := LazFileUtils.AppendPathDelim(xProjectFolderName) + 'W';
+    _createFolder (xWsdlsFolderName);
+    UpdateProgress('Analysing', 30);
+    with ProjectDesignAsXml(projectFileName) do
+    try
+      UpdateProgress('Writing', 40);
+      for w := Items.Count - 1 downto 0 do
+      begin
+        if Items.XmlItems[w].Name = 'Wsdl' then
         begin
-          if Items.XmlItems[s].Name = 'Service' then
+          xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName)
+                           + Items.XmlItems[w].Items.XmlValueByTagDef[ 'FileAlias'
+                                                                     , Items.XmlItems[w].Items.XmlValueByTag['Name']
+                                                                     ];
+          _createFolder (xWsdlFolderName);
+          xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'S';
+          _createFolder (xServicesFolderName);
+          with Items.XmlItems[w] do
+          for s := Items.Count - 1 downto 0 do
           begin
-            xServiceFolderName := LazFileUtils.AppendPathDelim(xServicesFolderName)
-                                + Items.XmlItems[s].Items.XmlValueByTagDef[ 'FileAlias'
-                                                                          , Items.XmlItems[s].Items.XmlValueByTag['Name']
-                                                                          ]
-                                ;
-            _createFolder (xServiceFolderName);
-            xOperationsFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + 'O';
-            _createFolder (xOperationsFolderName);
-            with Items.XmlItems[s] do
-            for o := Items.Count - 1 downto 0 do
+            if Items.XmlItems[s].Name = 'Service' then
             begin
-              if Items.XmlItems[o].Name = 'Operation' then
+              xServiceFolderName := LazFileUtils.AppendPathDelim(xServicesFolderName)
+                                  + Items.XmlItems[s].Items.XmlValueByTagDef[ 'FileAlias'
+                                                                            , Items.XmlItems[s].Items.XmlValueByTag['Name']
+                                                                            ]
+                                  ;
+              _createFolder (xServiceFolderName);
+              xOperationsFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + 'O';
+              _createFolder (xOperationsFolderName);
+              with Items.XmlItems[s] do
+              for o := Items.Count - 1 downto 0 do
               begin
-                xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName)
-                                      + Items.XmlItems[o].Items.XmlValueByTag['Alias'];
-                _createFolder (xOperationFolderName);
-                xMessagesFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + 'M';
-                _createFolder (xMessagesFolderName);
-                with Items.XmlItems[o].ItemByTag['Messages'] do
+                if Items.XmlItems[o].Name = 'Operation' then
                 begin
-                  xMPrefix := '0';
-                  for m := 0 to Items.Count - 1 do
-                  with Items.XmlItems[m] do
+                  xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName)
+                                        + Items.XmlItems[o].Items.XmlValueByTag['Alias'];
+                  IncrementProgress('Writing ' + xOperationFolderName, 1);
+                  _createFolder (xOperationFolderName);
+                  xMessagesFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + 'M';
+                  _createFolder (xMessagesFolderName);
+                  with Items.XmlItems[o].ItemByTag['Messages'] do
                   begin
-                    xMName := Items.XmlValueByTag ['Name'];
-                    if xMName = '' then
-                      xMName := Format ('_%4d', [m]);
-                    xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName)
-                                        + xMPrefix
-                                        + xMName
-                                        ;
-                    if LazFileUtils.DirectoryExistsUTF8(xMessageFolderName) then
+                    xMPrefix := '0';
+                    for m := 0 to Items.Count - 1 do
+                    with Items.XmlItems[m] do
                     begin
-                      // in case of duplicate message names
-                      // last one will survice
-                      // todo: create a dialogie with Abort, Skip or Overwrite...
-                      xmlio.EraseAllFolderContent (xMessageFolderName);
-                      LazFileUtils.RemoveDirUTF8(xMessageFolderName);
+                      xMName := Items.XmlValueByTag ['Name'];
+                      if xMName = '' then
+                        xMName := Format ('_%4d', [m]);
+                      IncrementProgress('Writing ' + xMName, 1);
+                      xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName)
+                                          + xMPrefix
+                                          + xMName
+                                          ;
+                      if LazFileUtils.DirectoryExistsUTF8(xMessageFolderName) then
+                      begin
+                        // in case of duplicate message names
+                        // last one will survice
+                        // todo: create a dialogie with Abort, Skip or Overwrite...
+                        xmlio.EraseAllFolderContent (xMessageFolderName);
+                        LazFileUtils.RemoveDirUTF8(xMessageFolderName);
+                      end;
+                      _createFolder (xMessageFolderName);
+                      _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
+                      _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
+                      _saveChildElementToFile(Items, 'replyCheckers', xMessageFolderName);
+                      _saveChildElementToFile(Items, 'requestCheckers', xMessageFolderName);
+                      _saveChildElementToFile(Items, 'Documentation', xMessageFolderName);
+                      xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + _MessageFileName;
+                      SaveStringToFile(xFileName, AsText(False,2,True,False));
+                      xMPrefix := '1';
                     end;
-                    _createFolder (xMessageFolderName);
-                    _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
-                    _saveChildElementToFile(Items, 'BeforeScript', xMessageFolderName);
-                    _saveChildElementToFile(Items, 'replyCheckers', xMessageFolderName);
-                    _saveChildElementToFile(Items, 'requestCheckers', xMessageFolderName);
-                    _saveChildElementToFile(Items, 'Documentation', xMessageFolderName);
-                    xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + _MessageFileName;
-                    SaveStringToFile(xFileName, AsText(False,2,True,False));
-                    xMPrefix := '1';
+                    Checked := False;
                   end;
-                  Checked := False;
+                  _saveChildElementToFile(Items.XmlItems[o].Items, 'BeforeScript', xOperationFolderName);
+                  _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
+                  _saveChildElementToFile(Items.XmlItems[o].Items, 'Documentation', xOperationFolderName);
+                  xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
+                  SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,2,True,False));
+                  Items.XmlItems[o].Free;
+                  Items.Delete(o);
                 end;
-                _saveChildElementToFile(Items.XmlItems[o].Items, 'BeforeScript', xOperationFolderName);
-                _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
-                _saveChildElementToFile(Items.XmlItems[o].Items, 'Documentation', xOperationFolderName);
-                xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
-                SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,2,True,False));
-                Items.XmlItems[o].Free;
-                Items.Delete(o);
               end;
+              xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + _ServiceFileName;
+              SaveStringToFile(xFileName, Items.XmlItems[s].AsText(False,2,True,False));
+              Items.XmlItems[s].Free;
+              Items.Delete(s);
             end;
-            xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + _ServiceFileName;
-            SaveStringToFile(xFileName, Items.XmlItems[s].AsText(False,2,True,False));
-            Items.XmlItems[s].Free;
-            Items.Delete(s);
+          end;
+          xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
+          SaveStringToFile(xFileName, Items.XmlItems[w].AsText(False,2,True,False));
+          Items.XmlItems[w].Free;
+          Items.Delete(w);
+        end;
+      end;
+      _saveChildElementToFile(Items, 'PathPrefixes', xProjectFolderName);
+      _saveChildElementToFile(Items, 'Environments', xProjectFolderName);
+      xXml := ItemByTag['JanBo'];
+      if Assigned (xXml) then
+      begin
+        xFileName := LazFileUtils.AppendPathDelim(xProjectFolderName) + _ContextsFileName;
+        SaveStringToFile(xFileName, xXml.AsText(False,2,True,False));
+        xXml.Checked := False;
+      end;
+      _saveChildElementToFile(Items, 'contexts', xProjectFolderName);
+      _saveChildElementToFile(Items, 'properties', xProjectFolderName);
+      _saveChildElementToFile(Items, 'ignoreDifferencesOn', xProjectFolderName);
+      _saveChildElementToFile(Items, 'checkValueAgainst', xProjectFolderName);
+      _saveChildElementToFile(Items, 'ignoreAddingOn', xProjectFolderName);
+      _saveChildElementToFile(Items, 'ignoreRemovingOn', xProjectFolderName);
+      _saveChildElementToFile(Items, 'ignoreOrderOn', xProjectFolderName);
+      _saveChildElementToFile(Items, 'regressionSortColumns', xProjectFolderName);
+      _saveChildElementToFile(Items, 'ignoreCoverageOn', xProjectFolderName);
+      xScriptsFolderName := LazFileUtils.AppendPathDelim(xProjectFolderName) + 'S';
+      _createFolder (xScriptsFolderName);
+      if Assigned (Items.XmlItemByTag['Scripts']) then with Items.XmlItemByTag['Scripts'] do
+      begin
+        for s := 0 to Items.Count - 1 do with Items.XmlItems[s] do
+        begin
+          if Name = 'Script' then
+          begin
+            xScriptFolderName := LazFileUtils.AppendPathDelim(xScriptsFolderName)
+                               + Format('%d_%s', [10000 + 100 * s, Items.XmlValueByTag['Name']])
+                               ;
+            _createFolder (xScriptFolderName);
+            _saveChildElementToFile(Items, 'Code', xScriptFolderName);
+            xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + _ScriptFileName;
+            SaveStringToFile(xFileName, AsText(False,2,True,False));
           end;
         end;
-        xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
-        SaveStringToFile(xFileName, Items.XmlItems[w].AsText(False,2,True,False));
-        Items.XmlItems[w].Free;
-        Items.Delete(w);
+        Checked := False;
       end;
+      SaveStringToFile(LazFileUtils.AppendPathDelim(xProjectFolderName) + _ProjectFileName, AsText(False,2,True,False));
+  {
+      SaveStringToFile(projectFileName, 'projectdesign is in folder: ' + xProjectFolderName);
+  }
+    finally
+      Free;
     end;
-    _saveChildElementToFile(Items, 'PathPrefixes', xProjectFolderName);
-    _saveChildElementToFile(Items, 'Environments', xProjectFolderName);
-    xXml := ItemByTag['JanBo'];
-    if Assigned (xXml) then
-    begin
-      xFileName := LazFileUtils.AppendPathDelim(xProjectFolderName) + _ContextsFileName;
-      SaveStringToFile(xFileName, xXml.AsText(False,2,True,False));
-      xXml.Checked := False;
-    end;
-    _saveChildElementToFile(Items, 'contexts', xProjectFolderName);
-    _saveChildElementToFile(Items, 'properties', xProjectFolderName);
-    _saveChildElementToFile(Items, 'ignoreDifferencesOn', xProjectFolderName);
-    _saveChildElementToFile(Items, 'checkValueAgainst', xProjectFolderName);
-    _saveChildElementToFile(Items, 'ignoreAddingOn', xProjectFolderName);
-    _saveChildElementToFile(Items, 'ignoreRemovingOn', xProjectFolderName);
-    _saveChildElementToFile(Items, 'ignoreOrderOn', xProjectFolderName);
-    _saveChildElementToFile(Items, 'regressionSortColumns', xProjectFolderName);
-    _saveChildElementToFile(Items, 'ignoreCoverageOn', xProjectFolderName);
-    xScriptsFolderName := LazFileUtils.AppendPathDelim(xProjectFolderName) + 'S';
-    _createFolder (xScriptsFolderName);
-    if Assigned (Items.XmlItemByTag['Scripts']) then with Items.XmlItemByTag['Scripts'] do
-    begin
-      for s := 0 to Items.Count - 1 do with Items.XmlItems[s] do
-      begin
-        if Name = 'Script' then
-        begin
-          xScriptFolderName := LazFileUtils.AppendPathDelim(xScriptsFolderName)
-                             + Format('%d_%s', [10000 + 100 * s, Items.XmlValueByTag['Name']])
-                             ;
-          _createFolder (xScriptFolderName);
-          _saveChildElementToFile(Items, 'Code', xScriptFolderName);
-          xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + _ScriptFileName;
-          SaveStringToFile(xFileName, AsText(False,2,True,False));
-        end;
-      end;
-      Checked := False;
-    end;
-    SaveStringToFile(LazFileUtils.AppendPathDelim(xProjectFolderName) + _ProjectFileName, AsText(False,2,True,False));
-{
-    SaveStringToFile(projectFileName, 'projectdesign is in folder: ' + xProjectFolderName);
-}
   finally
-    Free;
+    DoShowProgress(False);
   end;
 end;
 
@@ -9353,6 +9372,70 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTSwiftMT;
   end;
+end;
+
+function TWsdlProject.NumberOfOperationsAndMessages: Integer;
+var
+  x: Integer;
+begin
+  result := allOperations.Count;
+  for x := 0 to allOperations.Count - 1 do
+    result := result + allOperations.Operations[x].Messages.Count;
+end;
+
+procedure TWsdlProject.InitProgress(aCaption: String; aMax: Integer);
+begin
+    if Assigned (ProgressInterface) then
+    begin
+      AcquireLogLock;
+      try
+        ProgressInterface.Caption := aCaption;
+        ProgressInterface.ProgressMax := aMax;
+      finally
+        ReleaseLogLock;
+      end;
+    end;
+end;
+
+procedure TWsdlProject.UpdateProgress(aAction: String; aPos: Integer);
+begin
+  if Assigned (ProgressInterface) then
+  begin
+    AcquireLogLock;
+    try
+      ProgressInterface.CurrentAction := aAction;
+      ProgressInterface.ProgressPos := aPos;
+    finally
+      ReleaseLogLock;
+    end;
+  end;
+end;
+
+procedure TWsdlProject.IncrementProgress(aAction: String; aInc: Integer);
+begin
+  if Assigned (ProgressInterface) then
+  begin
+    AcquireLogLock;
+    try
+      ProgressInterface.CurrentAction := aAction;
+      ProgressInterface.ProgressPos := ProgressInterface.ProgressPos + aInc;
+    finally
+      ReleaseLogLock;
+    end;
+  end;
+end;
+
+procedure TWsdlProject.DoShowProgress(aValue: Boolean);
+begin
+    if Assigned (ProgressInterface) then
+    begin
+      AcquireLogLock;
+      try
+        ProgressInterface.doShowProgress := aValue;
+      finally
+        ReleaseLogLock;
+      end;
+    end;
 end;
 
 procedure TWsdlProject.DatabaseConnectionSpecificationFromXml ;

@@ -1582,7 +1582,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 0
+      TabIndex = 2
       Tabs.Strings = (
         'Notifications'
         'Snapshots'
