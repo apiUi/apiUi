@@ -10,7 +10,7 @@ uses
   ComCtrls, ProgressInterface;
 
 type
-
+  TProcedure = Procedure of Object;
   { TProgressForm }
 
   TProgressForm = class(TForm)
@@ -18,15 +18,16 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     ProgressBar1: TProgressBar;
+    Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
-    procedure setCurrentAction(AValue: String);
-    procedure setProgressMax(AValue: Integer);
-    procedure setProgressMin(AValue: Integer);
-    procedure setProgressPos(AValue: Integer);
+    lMax, lMin,lPos: Integer;
+    lCaption, lAction:  String;
+    lDoLog: Boolean;
   public
     ProgressInterface: TProgressInterface;
-    procedure Update;
+    AcquireLock, ReleaseLock: TProcedure;
   end;
 
 var
@@ -47,38 +48,25 @@ begin
     raise Exception.Create ('?no OnCancel assigned?');
 end;
 
-procedure TProgressForm.setProgressMax(AValue: Integer);
+procedure TProgressForm.Timer1Timer(Sender: TObject);
 begin
-  ProgressBar1.Max := AValue;
-end;
-
-procedure TProgressForm.setCurrentAction(AValue: String);
-begin
-  Panel1.Caption := AValue;
-end;
-
-procedure TProgressForm.setProgressMin(AValue: Integer);
-begin
-  ProgressBar1.Min := AValue;
-end;
-
-procedure TProgressForm.setProgressPos(AValue: Integer);
-begin
-  ProgressBar1.Position := AValue;
-end;
-
-procedure TProgressForm.Update;
-begin
-  if Assigned (ProgressInterface) then with ProgressInterface do
-  begin
-    self.Caption := Caption;
-    setCurrentAction(CurrentAction);
-    setProgressMax(ProgressMax);
-    setProgressMin(ProgressMin);
-    setProgressPos(ProgressPos);
-    setCurrentAction(CurrentAction);
-    setCurrentAction(CurrentAction);
+  AcquireLock;
+  try
+    lMax := ProgressInterface.ProgressMax;
+    lMin := ProgressInterface.ProgressMin;
+    lPos := ProgressInterface.ProgressPos;
+    lCaption := ProgressInterface.Caption;
+    lAction := ProgressInterface.CurrentAction;
+    lDoLog := ProgressInterface.doShowProgress;
+  finally
+    ReleaseLock;
   end;
+  if not lDoLog then Close;
+  Caption := lCaption;
+  ProgressBar1.Max := lMax;
+  ProgressBar1.Min := lMin;
+  ProgressBar1.Position := lPos;
+  Panel1.Caption := lAction;
 end;
 
 end.

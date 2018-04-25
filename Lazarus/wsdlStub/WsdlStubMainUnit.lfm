@@ -19,7 +19,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.2.0'
   Visible = True
   object MainToolBar: TToolBar
     Left = 0
@@ -414,6 +414,10 @@ object MainForm: TMainForm
         PrintSettings.MarginTop = 0.5
         PrintSettings.MarginRight = 0.5
         PrintSettings.MarginBottom = 0.5
+        PrintSettings.Preview.Left = 480
+        PrintSettings.Preview.Top = 270
+        PrintSettings.Preview.Width = 1440
+        PrintSettings.Preview.Height = 810
         ShowHints = False
         TabOrder = 3
         OnHotClick = DocumentationViewerHotClick
@@ -433,6 +437,10 @@ object MainForm: TMainForm
         PrintSettings.MarginTop = 0.5
         PrintSettings.MarginRight = 0.5
         PrintSettings.MarginBottom = 0.5
+        PrintSettings.Preview.Left = 480
+        PrintSettings.Preview.Top = 270
+        PrintSettings.Preview.Width = 1440
+        PrintSettings.Preview.Height = 810
         ShowHints = False
         TabOrder = 4
         OnClick = OperationDocumentationViewerClick
@@ -1582,7 +1590,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 2
+      TabIndex = 0
       Tabs.Strings = (
         'Notifications'
         'Snapshots'

@@ -156,7 +156,7 @@ type
     function NumberOfOperationsAndMessages: Integer;
     procedure InitProgress (aCaption: String; aMax: Integer);
     procedure UpdateProgress (aAction: String; aPos: Integer);
-    procedure IncrementProgress (aAction: String; aInc: Integer);
+    procedure StepProgress (aAction: String; aInc: Integer);
     procedure DoShowProgress (aValue: Boolean);
   public
     ProgressInterface: TProgressInterface;
@@ -285,7 +285,7 @@ type
     procedure CreateLogReply (aLog: TLog; var aProcessed: Boolean; aIsActive: Boolean);
     procedure Clean;
     procedure TacoPingPong;
-    function SaveWithFolders: String;
+    procedure SaveWithFolders;
     function OpenWithFolders (aFolderName: String): String;
     function ProjectDesignAsXml (aMainFileName: String): TXml;
     function ProjectDesignAsString (aMainFileName: String): String;
@@ -8844,7 +8844,7 @@ begin
   end;
 end;
 
-function TWsdlProject.SaveWithFolders: String;
+procedure TWsdlProject.SaveWithFolders;
   procedure _createReadMe (aFolderName: String);
   begin
     xmlio.SaveStringToFile ( LazFileUtils.AppendPathDelim(aFolderName) + ReadmeFilename
@@ -8889,19 +8889,18 @@ var
     , xOperationsFolderName, xOperationFolderName
     , xMessagesFolderName, xMessageFolderName
     , xString, xFileName, xProjectFolderName: String;
-  xMPrefix, xMName: String;
+  xMPrefix, xMName, xAlias: String;
   xWsdl: TWsdl;
   xXml: TXml;
   x, w, s, o, m: Integer;
 begin
   InitProgress('Saving project ' + projectFileName, 100 + NumberOfOperationsAndMessages);
   xsiGenerated := True; // en dan maar hopen dat er geen andere parallele threads bezig zijn...
-  result := projectFileName;
 {
   xProjectFolderName := Copy (projectFileName, 1, Length(projectFileName) - Length(_ProjectFileExtention))
                       + Copy (_ProjectFileExtention, 2, 100);
 }
-  UpdateProgress('Creating Backup', 10);
+  UpdateProgress('Creating Backup', 20);
   DoShowProgress(True);
   try
     xProjectFolderName := projectFileName;
@@ -8919,15 +8918,14 @@ begin
     end;
     if not LazFileUtils.ForceDirectory(xProjectFolderName) then
       raise Exception.CreateFmt('Could not create folder "%s"', [xProjectFolderName]);
-    UpdateProgress('Initialising Folder', 20);
+    UpdateProgress('Initialising Folder', 30);
     xmlio.EraseAllFolderContent(xProjectFolderName);
     _createReadMe(xProjectFolderName);
     xWsdlsFolderName := LazFileUtils.AppendPathDelim(xProjectFolderName) + 'W';
     _createFolder (xWsdlsFolderName);
-    UpdateProgress('Analysing', 30);
+    UpdateProgress('Analysing', 40);
     with ProjectDesignAsXml(projectFileName) do
     try
-      UpdateProgress('Writing', 40);
       for w := Items.Count - 1 downto 0 do
       begin
         if Items.XmlItems[w].Name = 'Wsdl' then
@@ -8957,9 +8955,9 @@ begin
               begin
                 if Items.XmlItems[o].Name = 'Operation' then
                 begin
-                  xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName)
-                                        + Items.XmlItems[o].Items.XmlValueByTag['Alias'];
-                  IncrementProgress('Writing ' + xOperationFolderName, 1);
+                  xAlias := Items.XmlItems[o].Items.XmlValueByTag['Alias'];
+                  xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName) + xAlias;
+                  StepProgress('Writing ' + xAlias, 1);
                   _createFolder (xOperationFolderName);
                   xMessagesFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + 'M';
                   _createFolder (xMessagesFolderName);
@@ -8972,7 +8970,7 @@ begin
                       xMName := Items.XmlValueByTag ['Name'];
                       if xMName = '' then
                         xMName := Format ('_%4d', [m]);
-                      IncrementProgress('Writing ' + xMName, 1);
+                      StepProgress('Writing ' + xAlias, 1);
                       xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName)
                                           + xMPrefix
                                           + xMName
@@ -9411,7 +9409,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.IncrementProgress(aAction: String; aInc: Integer);
+procedure TWsdlProject.StepProgress(aAction: String; aInc: Integer);
 begin
   if Assigned (ProgressInterface) then
   begin

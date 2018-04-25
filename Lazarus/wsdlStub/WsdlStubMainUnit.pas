@@ -658,7 +658,6 @@ type
     procedure ReadFromFoldersExecute(Sender: TObject);
     procedure SaveProjectAsFolderActionExecute(Sender: TObject);
     procedure SaveStubCaseActionUpdate(Sender: TObject);
-    procedure doSaveWithFolders;
     procedure SaveWithFoldersExecute(Sender: TObject);
     procedure ShowResolvedPropertiesExecute (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
@@ -9253,45 +9252,27 @@ begin
     logAdded := _refreshLogging;
     exceptionAdded := _refreshExceptions;
     _refreshSnapshots;
-//    SetUiProgress;
+    SetUiProgress;
     if Assigned (se.ProgressInterface) then
     begin
-      {
       if se.ProgressInterface.doShowProgress then
       begin
-        if not Assigned (ProgressForm) then
-        begin
-          Application.CreateForm(TProgressForm, ProgressForm);
+        // pass control to another form, so this one should keep quitfor the mean time
+        RefreshLogTimer.Enabled := False;
+        se.ReleaseLogLock;
+        Application.CreateForm(TProgressForm, ProgressForm);
+        try
+          ProgressForm.AcquireLock := se.AcquireLogLock;
+          ProgressForm.ReleaseLock := se.ReleaseLogLock;
           ProgressForm.ProgressInterface := se.ProgressInterface;
-          ProgressForm.Update;
           ProgressForm.ShowModal;
+        finally
+          ProgressForm.Free;
         end;
-        ProgressForm.Update;
-      end;
-      if not se.ProgressInterface.doShowProgress then
-      begin
-        if Assigned (ProgressForm) then
-          FreeAndNil (ProgressForm);
-      end;
-      }
-      with se.ProgressInterface do
-      begin
-        if doShowProgress then
-        begin
-          ProgressBar.Max := ProgressMax;
-          ProgressBar.Position := ProgressPos;
-          ProgressBar.Invalidate;
-        end;
-        if not doShowProgress then
-        begin
-          SetUiProgress;
-        end;
+        se.AcquireLogLock;
+        RefreshLogTimer.Enabled := True;
       end;
     end
-    else
-    begin
-      SetUiProgress;
-    end;
   finally
     se.ReleaseLogLock;
   end;
@@ -13365,12 +13346,6 @@ begin
   SaveStubCaseAction.Enabled := se.stubRead;
 end;
 
-procedure TMainForm.doSaveWithFolders;
-begin
-  se.SaveWithFolders;
-end;
-
-
 procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);
 var
   w1, w0, s1, s0: Integer;
@@ -13469,7 +13444,7 @@ begin
     finally
       FreeAndNil(PromptForm);
     end;
-    TProcedureThread.Create(False, True, se, doSaveWithFolders);
+    TProcedureThread.Create(False, False, se, se.SaveWithFolders);
     UpdateReopenList(ReopenCaseList, se.projectFileName);
   finally
     XmlUtil.PopCursor;

@@ -9,13 +9,14 @@ object ProgressForm: TProgressForm
   ClientHeight = 119
   ClientWidth = 552
   Position = poOwnerFormCenter
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.2.0'
   object Panel1: TPanel
     Left = 5
     Height = 52
     Top = 5
     Width = 542
     Align = alClient
+    Alignment = taLeftJustify
     Caption = 'dit is de actie die hij nu doet'
     Font.Height = -15
     ParentFont = False
@@ -47,5 +48,11 @@ object ProgressForm: TProgressForm
     Width = 542
     Align = alBottom
     TabOrder = 2
+  end
+  object Timer1: TTimer
+    Interval = 100
+    OnTimer = Timer1Timer
+    left = 8
+    top = 8
   end
 end
