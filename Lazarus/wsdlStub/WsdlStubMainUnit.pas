@@ -9269,6 +9269,20 @@ begin
         finally
           ProgressForm.Free;
         end;
+        if se.ProgressInterface.ExceptionRaised then with se.ProgressInterface do
+        begin
+          if MessageDlg( ExceptionMessage + LineEnding +  LineEnding + 'Show stack trace?'
+                       , mtError
+                       , [mbNo, mbYes]
+                       , 0
+                       ) = mrYes then
+            ShowText ( 'Exception details'
+                     , ExceptionMessage
+                     + LineEnding
+                     + LineEnding
+                     + ExceptionStactTrace
+                     );
+        end;
         se.AcquireLogLock;
         RefreshLogTimer.Enabled := True;
       end;

@@ -15,6 +15,7 @@ type
 
   TProgressForm = class(TForm)
     Button1: TButton;
+    ActionEdit: TEdit;
     Panel1: TPanel;
     Panel2: TPanel;
     ProgressBar1: TProgressBar;
@@ -66,7 +67,7 @@ begin
   ProgressBar1.Max := lMax;
   ProgressBar1.Min := lMin;
   ProgressBar1.Position := lPos;
-  Panel1.Caption := lAction;
+  ActionEdit.Text := lAction;
 end;
 
 end.

@@ -1,7 +1,7 @@
 object ProgressForm: TProgressForm
-  Left = 493
+  Left = 495
   Height = 119
-  Top = 212
+  Top = 214
   Width = 552
   BorderIcons = []
   BorderWidth = 5
@@ -17,10 +17,24 @@ object ProgressForm: TProgressForm
     Width = 542
     Align = alClient
     Alignment = taLeftJustify
+    BevelWidth = 2
     Caption = 'dit is de actie die hij nu doet'
+    ClientHeight = 52
+    ClientWidth = 542
     Font.Height = -15
     ParentFont = False
     TabOrder = 0
+    object ActionEdit: TEdit
+      Left = 2
+      Height = 48
+      Top = 2
+      Width = 538
+      Align = alClient
+      ParentColor = True
+      ReadOnly = True
+      TabOrder = 0
+      Text = 'ActionEdit'
+    end
   end
   object Panel2: TPanel
     Left = 5

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 290
+  Left = 291
   Height = 631
-  Top = 118
+  Top = 120
   Width = 1068
   Action = OpenProjectAction
   Caption = 'Open Project...'
