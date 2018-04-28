@@ -14,13 +14,14 @@ type
   { TProgressForm }
 
   TProgressForm = class(TForm)
-    Button1: TButton;
-    ActionEdit: TEdit;
+    CancelButton: TButton;
     Panel1: TPanel;
     Panel2: TPanel;
     ProgressBar1: TProgressBar;
     Timer1: TTimer;
-    procedure Button1Click(Sender: TObject);
+    procedure CancelButtonClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
     lMax, lMin,lPos: Integer;
@@ -40,7 +41,7 @@ implementation
 
 { TProgressForm }
 
-procedure TProgressForm.Button1Click(Sender: TObject);
+procedure TProgressForm.CancelButtonClick(Sender: TObject);
 begin
   if Assigned (ProgressInterface)
   and Assigned(ProgressInterface.OnCancel) then
@@ -49,9 +50,24 @@ begin
     raise Exception.Create ('?no OnCancel assigned?');
 end;
 
+procedure TProgressForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+  CanClose := not (    Assigned(ProgressInterface)
+                   and ProgressInterface.doShowProgress
+                  );
+end;
+
+procedure TProgressForm.FormShow(Sender: TObject);
+begin
+  CancelButton.Enabled := Assigned(ProgressInterface)
+                      and Assigned(ProgressInterface.OnCancel)
+                          ;
+  Timer1Timer(nil); // otherwise first info would not be shown immediately ...
+end;
+
 procedure TProgressForm.Timer1Timer(Sender: TObject);
 begin
-  AcquireLock;
+  if Assigned (AcquireLock) then AcquireLock;
   try
     lMax := ProgressInterface.ProgressMax;
     lMin := ProgressInterface.ProgressMin;
@@ -60,14 +76,14 @@ begin
     lAction := ProgressInterface.CurrentAction;
     lDoLog := ProgressInterface.doShowProgress;
   finally
-    ReleaseLock;
+    if Assigned (ReleaseLock) then ReleaseLock;
   end;
   if not lDoLog then Close;
   Caption := lCaption;
   ProgressBar1.Max := lMax;
   ProgressBar1.Min := lMin;
   ProgressBar1.Position := lPos;
-  ActionEdit.Text := lAction;
+  Panel1.Caption := lAction;
 end;
 
 end.

@@ -286,6 +286,8 @@ type
     procedure Clean;
     procedure TacoPingPong;
     procedure SaveWithFolders;
+    procedure OpenFromFile;
+    procedure OpenFromFolders;
     function OpenWithFolders (aFolderName: String): String;
     function ProjectDesignAsXml (aMainFileName: String): TXml;
     function ProjectDesignAsString (aMainFileName: String): String;
@@ -9078,6 +9080,16 @@ begin
   finally
     DoShowProgress(False);
   end;
+end;
+
+procedure TWsdlProject.OpenFromFile;
+begin
+  ProjectDesignFromString(ReadStringFromFile(projectFileName), projectFileName);
+end;
+
+procedure TWsdlProject.OpenFromFolders;
+begin
+  ProjectDesignFromString(OpenWithFolders(projectFileName), projectFileName);
 end;
 
 function TWsdlProject.OpenWithFolders (aFolderName: String): String;

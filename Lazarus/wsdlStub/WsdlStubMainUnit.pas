@@ -1150,7 +1150,7 @@ type
     procedure UpdateInWsdlCheckBoxes;
     procedure SaveWsdlStubCase(aFileName: String);
     procedure ShowReport (aReport: TSnapshot);
-    procedure OpenStubCase(aFileName: String);
+    procedure OpenStubCase;
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
     procedure ToAllLogList(aLogList: TLogList);
@@ -3358,7 +3358,7 @@ begin
     if OpenFileDialog.Execute then
     begin
       se.projectFileName := OpenFileDialog.FileName;
-      OpenStubCase(se.projectFileName);
+      OpenStubCase;
       se.projectFileName := '';
       captionFileName := '';
       se.StubRead := False;
@@ -3368,33 +3368,56 @@ begin
   end;
 end;
 
-procedure TMainForm.OpenStubCase(aFileName: String);
+procedure TMainForm.OpenStubCase;
 var
   f: Integer;
-  xProjectFolderName: String;
 begin
-  captionFileName := ExtractFileName(aFileName);
-  if ExtractFileExt(aFileName) = _ProjectFileExtention then
-  begin
-    xProjectFolderName := Copy(aFileName, 1, Length(aFileName) - Length(_ProjectFileExtention))
-                        + Copy (_ProjectFileExtention, 2, 100)
-                        ;
-    ProjectDesignFromString(se.OpenWithFolders (aFileName), aFileName);
-    UpdateReopenList(ReopenCaseList, aFileName);
-  end
-  else
-  begin
-    if ExtractFileExt(aFileName) = _ProjectOldFileExtention then
-      ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName)
-    else
-      raise Exception.Create('Unsupported filename: ' + aFileName);
-  end;
-  if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
-  begin
-    WsdlOperation := allOperations.Operations[f];
-    if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
-    and (se.FocusMessageIndex > -1) then
-      WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+  if (ExtractFileExt(se.projectFileName) <> _ProjectFileExtention)
+  and (ExtractFileExt(se.projectFileName) <> _ProjectOldFileExtention) then
+     raise Exception.Create('Unsupported filename: ' + se.projectFileName);
+  InWsdlTreeView.BeginUpdate;
+  GridView.BeginUpdate;
+  OperationReqsTreeView.BeginUpdate;
+  try
+    captionFileName := ExtractFileName(se.projectFileName);
+    se.projectContext := contextPropertyOverwrite;
+    xmlio.ProjectContext := contextPropertyOverwrite;
+    if ExtractFileExt(se.projectFileName) = _ProjectFileExtention then
+    begin
+      se.OpenFromFolders;
+      UpdateReopenList(ReopenCaseList, se.projectFileName);
+    end;
+    if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
+      se.OpenFromFile;
+    GridView.Clear;
+    ClearConsole;
+    AcquireLock;
+    try
+      PrepareOperation;
+      CreateEnvironmentSubMenuItems;
+      CreateScriptsSubMenuItems;
+      LogUpdateColumns;
+      if se.Wsdls.Count > -1 then
+        UpdateConsole(0)
+      else
+        UpdateConsole(-1);
+    finally
+      ReleaseLock;
+    end;
+  finally
+    stubChanged := se.stubChanged;
+    se.stubRead := True;
+    OperationReqsTreeView.EndUpdate;
+    GridView.EndUpdate;
+    InWsdlTreeView.EndUpdate;
+    CheckBoxClick(nil);
+    if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
+    begin
+      WsdlOperation := allOperations.Operations[f];
+      if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
+      and (se.FocusMessageIndex > -1) then
+        WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+    end;
   end;
 end;
 
@@ -3524,7 +3547,7 @@ begin
           ('Reload refused because instance of ' + _progName +
             ' is inactive');
       se.Activate(False);
-      OpenStubCase(se.projectFileName);
+      OpenStubCase;
       se.Activate(True);
     finally
       ReleaseLock;
@@ -3621,7 +3644,7 @@ begin
                                  + ' is not a folder or does not exist'
                                  );
         se.projectFileName := FileName;
-        OpenStubCase(FileName);
+        OpenStubCase;
       end;
     finally
       FreeAndNil(ChooseStringForm);
@@ -4056,7 +4079,8 @@ begin
         ('Reload refused because instance of ' + _progName +
           ' has unsaved changes in design');
     se.Activate(False);
-    OpenStubCase(aProject);
+    se.projectFileName := aProject;
+    OpenStubCase;
   finally
     ReleaseLock;
   end;
@@ -7024,7 +7048,7 @@ begin
   begin
     Update;
     se.projectFileName := ParamStr(1);
-    OpenStubCase(se.projectFileName);
+    OpenStubCase;
     se.Activate(True);
     CheckBoxClick(nil);
     if ParamStr(2) <> '' then
@@ -13214,7 +13238,6 @@ begin
     Application.CreateForm(TSelectProjectFolderForm, SelectProjectFolderForm);
     with SelectProjectFolderForm do
     try
-      FolderName := se.projectFileName;
       Caption := 'Select service virtualisation project to open (a folder with a name ending on '
                + _ProjectFileExtention
                + ')';
@@ -13231,7 +13254,7 @@ begin
                                     , [FolderName]
                                     );
         se.projectFileName := FolderName;
-        OpenStubCase(se.projectFileName);
+        OpenStubCase;
       end;
     finally
       SelectProjectFolderForm.Free;

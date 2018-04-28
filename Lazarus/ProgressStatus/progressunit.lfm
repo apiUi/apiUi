@@ -1,72 +1,62 @@
 object ProgressForm: TProgressForm
-  Left = 495
-  Height = 119
-  Top = 214
-  Width = 552
+  Left = 438
+  Height = 107
+  Top = 229
+  Width = 669
   BorderIcons = []
   BorderWidth = 5
   Caption = 'ProgressForm'
-  ClientHeight = 119
-  ClientWidth = 552
+  ClientHeight = 107
+  ClientWidth = 669
+  OnCloseQuery = FormCloseQuery
+  OnShow = FormShow
   Position = poOwnerFormCenter
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 5
-    Height = 52
+    Height = 40
     Top = 5
-    Width = 542
+    Width = 659
     Align = alClient
     Alignment = taLeftJustify
-    BevelWidth = 2
-    Caption = 'dit is de actie die hij nu doet'
-    ClientHeight = 52
-    ClientWidth = 542
+    BevelOuter = bvNone
+    BorderWidth = 4
     Font.Height = -15
     ParentFont = False
     TabOrder = 0
-    object ActionEdit: TEdit
-      Left = 2
-      Height = 48
-      Top = 2
-      Width = 538
-      Align = alClient
-      ParentColor = True
-      ReadOnly = True
-      TabOrder = 0
-      Text = 'ActionEdit'
-    end
   end
   object Panel2: TPanel
     Left = 5
     Height = 37
-    Top = 77
-    Width = 542
+    Top = 65
+    Width = 659
     Align = alBottom
+    BevelOuter = bvNone
+    BorderWidth = 4
     ClientHeight = 37
-    ClientWidth = 542
+    ClientWidth = 659
     TabOrder = 1
-    object Button1: TButton
+    object CancelButton: TButton
       Left = 0
       Height = 24
-      Top = 6
+      Top = 9
       Width = 64
       Caption = 'Cancel'
-      OnClick = Button1Click
+      OnClick = CancelButtonClick
       TabOrder = 0
     end
   end
   object ProgressBar1: TProgressBar
     Left = 5
     Height = 20
-    Top = 57
-    Width = 542
+    Top = 45
+    Width = 659
     Align = alBottom
+    Smooth = True
     TabOrder = 2
   end
   object Timer1: TTimer
-    Interval = 100
     OnTimer = Timer1Timer
-    left = 8
-    top = 8
+    left = 240
   end
 end
