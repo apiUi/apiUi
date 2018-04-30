@@ -1514,6 +1514,7 @@ begin
     try
       stubChanged := True;
       se.freeFormatOperationsUpdate(xXml);
+      se.PrepareAllOperations;
       PrepareOperation;
     finally
       ReleaseLock;
@@ -1570,6 +1571,7 @@ begin
     WsdlListForm.Wsdls := se.Wsdls;
     WsdlListForm.ShowModal;
     w := WsdlListForm.ListView.ItemIndex;
+    se.PrepareAllOperations;
     PrepareOperation;
     { }
     if se.Wsdls.Find(se.FreeFormatWsdl.Name, f) then // not to be seen in list
@@ -2894,6 +2896,7 @@ begin
       try
         stubChanged := True;
         se.xsdOperationsUpdate(xXml, se.projectFileName);
+        se.PrepareAllOperations;
         PrepareOperation;
       finally
         ReleaseLock;
@@ -3105,6 +3108,7 @@ begin
       try
         stubChanged := True;
         se.xmlSampleOperationsUpdate(xXml, se.projectFileName);
+        se.PrepareAllOperations;
         PrepareOperation;
       finally
         ReleaseLock;
@@ -3393,7 +3397,13 @@ begin
     ClearConsole;
     AcquireLock;
     try
-      PrepareOperation;
+      WsdlOperationsComboBox.Clear;
+      WsdlServicesComboBox.Clear;
+      WsdlComboBox.Items.Text := se.Wsdls.Text;
+      FillOperationReqsTreeView(OperationReqsTreeView, allAliasses);
+      if se.scriptErrorCount > 0 then
+        ShowMessage(IntToStr(se.scriptErrorCount) +
+            ' Script(s) found with errors, see Exceptions log');
       CreateEnvironmentSubMenuItems;
       CreateScriptsSubMenuItems;
       LogUpdateColumns;
@@ -3590,6 +3600,7 @@ begin
       se.ProjectDesignFromString(aString, aMainFileName);
       AcquireLock;
       try
+        se.PrepareAllOperations;
         PrepareOperation;
         CreateEnvironmentSubMenuItems;
         CreateScriptsSubMenuItems;
@@ -4343,7 +4354,6 @@ end;
 
 procedure TMainForm.PrepareOperation;
 begin
-  se.PrepareAllOperations(LogServerException);
   WsdlOperationsComboBox.Clear;
   WsdlServicesComboBox.Clear;
   WsdlComboBox.Items.Text := se.Wsdls.Text;
@@ -6249,6 +6259,7 @@ function TMainForm.TestDbsConnection(aXml: TObject): Boolean;
 var
   xXml: TXml;
 begin
+  result := False;
   xXml := TXml.Create;
   try
     xXml.CopyDownLine((aXml as TXml).Parent as TXml, True);
@@ -6272,6 +6283,7 @@ begin
          Connected := True;
          ShowMessage ('Database connected');
          Connected := False;
+         result := True;
        except
          on E: Exception do
          begin
@@ -9304,7 +9316,7 @@ begin
                      , ExceptionMessage
                      + LineEnding
                      + LineEnding
-                     + ExceptionStactTrace
+                     + ExceptionStackTrace
                      );
         end;
         se.AcquireLogLock;
@@ -11893,6 +11905,7 @@ begin
     try
       stubChanged := True;
       se.cobolOperationsUpdate(xXml, se.projectFileName);
+      se.PrepareAllOperations;
       PrepareOperation;
     finally
       ReleaseLock;
@@ -12185,6 +12198,7 @@ begin
     try
       stubChanged := True;
       se.swiftMtOperationsUpdate(xXml, se.projectFileName);
+      se.PrepareAllOperations;
       PrepareOperation;
     finally
       ReleaseLock;
@@ -12909,6 +12923,7 @@ begin
         try
           stubChanged := True;
           OptionsFromXml(xXml);
+          se.PrepareAllOperations;
           PrepareOperation;
         finally
           ReleaseLock;
@@ -13093,7 +13108,7 @@ begin
           raise Exception.CreateFmt('%s does not contain a valid Script export', [OpenFileDialog.FileName]);
         se.ProjectScriptsFromXml(xXml);
         CreateScriptsSubMenuItems;
-        se.PrepareAllOperations(LogServerException);
+        se.PrepareAllOperations;
         FillInWsdlEdits;
         stubChanged := True;
       finally
@@ -13907,6 +13922,7 @@ begin
       try
         stubChanged := True;
         se.ApiByExampleOperationsUpdate(xXml, se.projectFileName);
+        se.PrepareAllOperations;
         PrepareOperation; // despite next line, do not remove since this rebuilds the wsdls list
         ReloadProject; // some datatypes may have changed
       finally
@@ -14152,6 +14168,7 @@ begin
     try
       stubChanged := True;
       se.bmtpOperationsUpdate(xXml, se.projectFileName);
+      se.PrepareAllOperations;
       PrepareOperation;
     finally
       ReleaseLock;
@@ -14278,6 +14295,7 @@ begin
     try
       stubChanged := True;
       se.mailOperationsUpdate(xXml);
+      se.PrepareAllOperations;
       PrepareOperation;
     finally
       ReleaseLock;

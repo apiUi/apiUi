@@ -14,9 +14,9 @@ public
   ProgressMin: Integer;
   ProgressPos: Integer;
   CurrentAction: String;
-  ExceptionRaised:Boolean;
+  ExceptionRaised: Boolean;
   ExceptionMessage: String;
-  ExceptionStactTrace: String;
+  ExceptionStackTrace: String;
   Caption: String;
   OnCancel: TNotifyEvent;
   OnCanceled: TNotifyEvent;

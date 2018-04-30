@@ -375,7 +375,7 @@ type
     procedure ProjectOptions36FromXml (aXml: TXml);
     procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
     procedure ProjectDesignFromString (aString, aMainFileName: String);
-    procedure PrepareAllOperations (aLogServerException: TOnStringEvent);
+    procedure PrepareAllOperations;
     procedure Activate (aActive: Boolean);
     procedure Clear;
     function httpRequestStreamToString(ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo): String;
@@ -384,6 +384,7 @@ type
       var ConnectionString, UserID, Password: WideString;
       var ConnectOptions: TConnectOption; var EventStatus: TEventStatus);
     {$ENDIF}
+    procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
     property OnNeedTacoHostData: TOnNeedTacoInterfaceData write setOnNeedTacoHostData;
     property OnTacoAutorize: TNotifyEvent write setOnTacoAutorize;
     property doClearLogs: Boolean read getDoClearLogs write setDoClearLogs;
@@ -1660,7 +1661,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent);
+procedure TWsdlProject.PrepareAllOperations;
   procedure _prepWsdl (xWsdl: TWsdl);
   var
     s, o: Integer;
@@ -1688,7 +1689,7 @@ procedure TWsdlProject.PrepareAllOperations(aLogServerException: TOnStringEvent)
                                   , xOperation
                                   );
         except
-          aLogServerException ( 'Duplicate operation name (Req) ('
+          LogServerException ( 'Duplicate operation name (Req) ('
                       + xOperation.Name
                       + '). You may encounter errors due to this name conflict'
                       , False
@@ -1794,7 +1795,7 @@ begin
     end;
   end;
   if scriptErrorCount > 0 then
-    aLogServerException ( IntToStr (scriptErrorCount) + ' Script(s) found with errors', False, nil);
+    LogServerException ( IntToStr (scriptErrorCount) + ' Script(s) found with errors', False, nil);
 end;
 
 procedure TWsdlProject.AcquireLogLock;
@@ -3092,7 +3093,7 @@ begin
           end;
           AcquireLock;
           try
-            PrepareAllOperations (LogServerMessage);
+            PrepareAllOperations;
           finally
             ReleaseLock;
           end;
@@ -3128,6 +3129,7 @@ begin
     finally
       xPatterns.Free;
     end;
+    PrepareAllOperations;
   finally
 {}
 {}
@@ -3536,6 +3538,26 @@ begin
       SetLength(Result, Size);
       Read(Pointer(Result)^, Size);
     end;
+  end;
+end;
+
+procedure TWsdlProject.LogServerException(const Msg: String; aException: Boolean; E: Exception);
+var
+  xLog: TExceptionLog;
+begin
+  if aException then
+    xLog := TExceptionLog.Create ( Msg
+                                 + LineEnding
+                                 + ExceptionStackListString(E)
+                                 )
+  else
+    xLog := TExceptionLog.Create (Msg
+                                 );
+  AcquireLogLock;
+  try
+    toDisplayExceptions.AddEvent (xLog);
+  finally
+    ReleaseLogLock;
   end;
 end;
 
@@ -9071,7 +9093,7 @@ begin
         begin
           ProgressInterface.ExceptionRaised := True;
           ProgressInterface.ExceptionMessage := e.Message;
-          ProgressInterface.ExceptionStactTrace := ExceptionStackListString(e);
+          ProgressInterface.ExceptionStackTrace := ExceptionStackListString(e);
         end
         else
           raise;
@@ -9089,6 +9111,7 @@ end;
 
 procedure TWsdlProject.OpenFromFolders;
 begin
+  InitProgress('Opening ' + projectFileName, 1000);
   ProjectDesignFromString(OpenWithFolders(projectFileName), projectFileName);
 end;
 
