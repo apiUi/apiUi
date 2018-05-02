@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="4"/>
-      <BuildNr Value="583"/>
+      <BuildNr Value="585"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -49,7 +49,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="l4j.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -84,6 +84,13 @@
         <Filename Value="..\Html\htmlxmlutilz.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="..\wsdlStub\EditRegExpUnit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditRegExpForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -94,7 +101,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Xml;..\Xml\IpmScanner;..\Xml\json;..\Xml\yaml;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\Mq;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\Html"/>
+      <OtherUnitFiles Value="..\Xml;..\Xml\IpmScanner;..\Xml\json;..\Xml\yaml;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\Mq;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\Html;..\wsdlStub"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

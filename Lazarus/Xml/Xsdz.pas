@@ -189,6 +189,7 @@ type
     ResponseNo: Integer;
     minOccurs: String;
     maxOccurs: String;
+    ElementsWhenRepeatable: Integer;
     _UnknownType: String;
     _DataTypeName: String;
     _NameSpace: String;
@@ -438,6 +439,7 @@ begin
   xsdDescr := aXsdDescr;
   minOccurs := '1';
   maxOccurs := '1';
+  ElementsWhenRepeatable := 1;
   ResponseNo := 200;
   ParametersType := oppBody;
   FormDefaultQualified := xsdElementFormDefaultQualified;
@@ -453,6 +455,7 @@ begin
   self.ElementNameSpace := aSource.ElementNameSpace;
   self.minOccurs := aSource.minOccurs;
   self.maxOccurs := aSource.maxOccurs;
+  self.ElementsWhenRepeatable := aSource.ElementsWhenRepeatable;
   self.ParametersType := aSource.ParametersType;
   self.sType := aSource.sType;
   self.InitialCollapsed := aSource.InitialCollapsed;
@@ -1106,6 +1109,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
             yXsd.sType.Name := yXsd.ElementName;
             yXsd.minOccurs := '0';
             yXsd.maxOccurs := 'unbounded';
+            yXsd.ElementsWhenRepeatable := 1;
             result.ElementDefs.AddObject(yXsd.ElementName, yXsd);
           end;
           if yXml.Name = '$ref' then
@@ -1134,6 +1138,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
         xXsd.sType.Name := xXsd.ElementName;
         xXsd.minOccurs := '0';
         xXsd.maxOccurs := 'unbounded';
+        xXsd.ElementsWhenRepeatable := 1;
         result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
       end;
       if xXml.Name = 'title' then AppendDoc(xDoc, xXml.Value);

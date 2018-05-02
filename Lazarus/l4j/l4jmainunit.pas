@@ -327,6 +327,7 @@ uses FindRegExpDialog
    , DbFilterDialog
    , xmlxsdparser
    , RegExpr
+   , xmlio
    ;
 
 const treeIndexColumn = 0;
@@ -1511,7 +1512,7 @@ begin
 
     if FileExistsUTF8(l4jXsdFileName) { *Converted from FileExists* } then
     begin
-      l4jXsdDescr := TXsdDescr.Create(1);
+      l4jXsdDescr := TXsdDescr.Create;
       try
         l4jXsdDescr.LoadXsdFromFile (l4jXsdFileName, nil);
         if l4jXsdDescr.TypeDef.ElementDefs.Count = 1 then
@@ -1906,7 +1907,7 @@ begin
       LoadFromString(nString, nil);
     a2bInitialize;
     try
-      xA2B := TA2BXml.CreateA2B('', fXml, nXml, Nil);
+      xA2B := TA2BXml.CreateA2B('', '', fXml, nXml, Nil, Nil);
     finally
       a2bUninitialize;
     end;

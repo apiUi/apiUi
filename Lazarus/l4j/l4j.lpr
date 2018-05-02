@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, L4JMainUnit, abbrevia, IdHTTP, IdStack, l4jTypes,
-  FilterDialog, DbFilterDialog, htmlxmlutilz
+  FilterDialog, DbFilterDialog, htmlxmlutilz,EditRegExpUnit
   { you can add units after this };
 
 {$R *.res}
