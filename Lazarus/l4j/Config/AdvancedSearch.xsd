@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:search="http://testposter.coml/schema/search/1" targetNamespace="http://testposter.coml/schema/search/1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<complexType name="SearchType" abstract="true">
+		<annotation>
+			<documentation>This complex type is used to abstract the unary and binary Searchs.
+      It's function is basically to define a generic Search so that
+      Searchs can be nested and combined according to the basic rules of
+      querying.</documentation>
+		</annotation>
+	</complexType>
+	<complexType name="UnarySearchType" abstract="true">
+		<annotation>
+			<documentation>Unary Searchs are those that only take into account one parameter
+      and an expression to apply to it.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="search:SearchType">
+				<sequence>
+					<element name="Value" type="string"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="FoundType">
+		<annotation>
+			<documentation>Equal Search is an unary Search that expresses the condition to
+      search for a parameter which value is equal to the defined one.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="search:UnarySearchType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="NotFoundType">
+		<annotation>
+			<documentation>Not Equal Search is an unary Search that expresses the condition
+      to search for a parameter which value is different to the defined one.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="search:UnarySearchType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="BinarySearchType" abstract="true">
+		<annotation>
+			<documentation>Binary Searchs are those that take two or more unary Searchs and
+      combine them to produce a more complex query.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="search:SearchType">
+				<sequence>
+					<element name="Search" type="search:SearchType" minOccurs="2" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="AndSearchType">
+		<annotation>
+			<documentation>And Search is a binary Search that states that all conditions
+      (Searchs) as first children of this element shall be met.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="search:BinarySearchType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="OrSearchType">
+		<annotation>
+			<documentation>Or Search is a binary Search that states that at least one
+      condition (Search) as first children of this element shall be met.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="search:BinarySearchType"/>
+		</complexContent>
+	</complexType>
+	<element name="Arg">
+		<complexType>
+			<complexContent>
+				<extension base="search:SearchType">
+					<sequence>
+						<element name="Search" type="search:sType"/>
+					</sequence>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	<complexType name="sType">
+		<choice>
+			<element name="u" type="search:uType"/>
+			<element name="b" type="search:bType"/>
+		</choice>
+	</complexType>
+	<complexType name="bType">
+		<sequence>
+			<element name="type">
+				<simpleType>
+					<restriction base="string">
+						<enumeration value="And"/>
+						<enumeration value="Or"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="s" type="search:sType" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<complexType name="uType">
+		<sequence>
+			<element name="type">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="has"/>
+						<pattern value="has not"/>
+						<enumeration value="has"/>
+						<enumeration value="has not"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="Value"/>
+		</sequence>
+	</complexType>
+</schema>
