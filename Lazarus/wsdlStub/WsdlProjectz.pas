@@ -158,6 +158,7 @@ type
     procedure UpdateProgress (aAction: String; aPos: Integer);
     procedure StepProgress (aAction: String; aInc: Integer);
     procedure UpdateConsole;
+    procedure ExceptionHandlerProgress (E: Exception);
     procedure DoShowProgress (aValue: Boolean);
   public
     ProgressInterface: TProgressInterface;
@@ -9098,11 +9099,7 @@ begin
       on e: exception do
       begin
         if Assigned (ProgressInterface) then
-        begin
-          ProgressInterface.ExceptionRaised := True;
-          ProgressInterface.ExceptionMessage := e.Message;
-          ProgressInterface.ExceptionStackTrace := ExceptionStackListString(e);
-        end
+          ExceptionHandlerProgress(e)
         else
           raise;
       end;
@@ -9114,16 +9111,46 @@ end;
 
 procedure TWsdlProject.OpenFromFile;
 begin
-  ProjectDesignFromString(ReadStringFromFile(projectFileName), projectFileName);
+  InitProgress('Opening ' + projectFileName, 2000);
+  DoShowProgress(True);
+  try
+    try
+      ProjectDesignFromString(ReadStringFromFile(projectFileName), projectFileName);
+      UpdateConsole;
+    except
+      on e: exception do
+      begin
+        if Assigned (ProgressInterface) then
+          ExceptionHandlerProgress(e)
+        else
+          raise;
+      end;
+    end;
+  finally
+    DoShowProgress(False);
+  end;
 end;
 
 procedure TWsdlProject.OpenFromFolders;
 begin
   InitProgress('Opening ' + projectFileName, 2000);
   DoShowProgress(True);
-  ProjectDesignFromString(OpenWithFolders(projectFileName), projectFileName);
-  UpdateConsole;
-  DoShowProgress(False);
+  try
+    try
+      ProjectDesignFromString(OpenWithFolders(projectFileName), projectFileName);
+      UpdateConsole;
+    except
+      on e: exception do
+      begin
+        if Assigned (ProgressInterface) then
+          ExceptionHandlerProgress(e)
+        else
+          raise;
+      end;
+    end;
+  finally
+    DoShowProgress(False);
+  end;
 end;
 
 function TWsdlProject.OpenWithFolders (aFolderName: String): String;
@@ -9500,6 +9527,16 @@ begin
     finally
       ReleaseLogLock;
     end;
+  end;
+end;
+
+procedure TWsdlProject.ExceptionHandlerProgress(E: Exception);
+begin
+  if Assigned (ProgressInterface) then
+  begin
+    ProgressInterface.ExceptionRaised := True;
+    ProgressInterface.ExceptionMessage := E.Message;
+    ProgressInterface.ExceptionStackTrace := ExceptionStackListString(E);
   end;
 end;
 

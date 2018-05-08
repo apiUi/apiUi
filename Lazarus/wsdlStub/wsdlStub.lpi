@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="3"/>
-      <BuildNr Value="11880"/>
+      <BuildNr Value="11890"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -92,6 +92,7 @@
       <Unit6>
         <Filename Value="..\Xml\exceptionutils.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="exceptionUtils"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>

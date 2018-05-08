@@ -4404,6 +4404,7 @@ begin
   WsdlServicesComboBox.Clear;
   WsdlOperationsComboBox.Clear;
   WsdlComboBox.Clear;
+  StatusPanel.Caption := '';
   while MessagesVTS.Header.Columns.Count > Ord(logStdColumnCount) do
     MessagesVTS.Header.Columns.Delete(MessagesVTS.Header.Columns.Count - 1);
 end;
