@@ -1618,6 +1618,7 @@ object MainForm: TMainForm
     Top = 2
     Width = 8
     Caption = 'ToolButton69'
+    OnClick = ToolButton69Click
     Style = tbsSeparator
   end
   object ToolButton71: TToolButton

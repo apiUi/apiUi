@@ -10,6 +10,7 @@ uses
 type TProgressInterface = class
 public
   doShowProgress: Boolean;
+  doUpdateConsole: Boolean;
   ProgressMax: Integer;
   ProgressMin: Integer;
   ProgressPos: Integer;

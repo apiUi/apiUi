@@ -157,6 +157,7 @@ type
     procedure InitProgress (aCaption: String; aMax: Integer);
     procedure UpdateProgress (aAction: String; aPos: Integer);
     procedure StepProgress (aAction: String; aInc: Integer);
+    procedure UpdateConsole;
     procedure DoShowProgress (aValue: Boolean);
   public
     ProgressInterface: TProgressInterface;
@@ -2610,7 +2611,7 @@ procedure TWsdlProject.ProjectDesignFromString(aString, aMainFileName: String);
     end;
   end;
 var
-  w, x, y, s, o, r, p, c, e: Integer;
+  w, x, y, s, o, r, p, c, e, step: Integer;
   xDone: Boolean;
   xOperation: TWsdlOperation;
   xService: TWsdlService;
@@ -2622,6 +2623,7 @@ var
   xReadAnother: Boolean;
   xPatterns: TStringList;
 begin
+  StepProgress('Analyzing...', 100);
   Clear;
   xReadAnother := False;
   try
@@ -2708,11 +2710,17 @@ begin
           FocusOperationName := xXml.Items.XmlValueByTag['FocusOperationName'];
           FocusOperationNameSpace := xXml.Items.XmlValueByTag['FocusOperationNameSpace'];
           FocusMessageIndex := xXml.Items.XmlIntegerByTag['FocusMessageIndex'];
+          step := 0;
+          for w := 0 to xXml.Items.Count - 1 do
+            if xXml.Items.XmlItems [w].TagName = 'Wsdl' then
+              Inc (step);
+          step := 800 div step;
           for w := 0 to xXml.Items.Count - 1 do
           begin
             wXml := xXml.Items.XmlItems [w];
             if wXml.TagName = 'Wsdl' then
             begin
+              StepProgress('Analyzing...', step);
               xDone := False;
               oXml := wXml.Items.XmlItemByTag['FreeFormatOperations'];
               if Assigned (oXml) then
@@ -3091,11 +3099,11 @@ begin
               end;
             end;
           end;
-          AcquireLock;
+//          AcquireLock;
           try
             PrepareAllOperations;
           finally
-            ReleaseLock;
+//            ReleaseLock;
           end;
           cXml := xXml.Items.XmlItemByTag ['Scripts'];
           if Assigned (cXml) then
@@ -9111,8 +9119,11 @@ end;
 
 procedure TWsdlProject.OpenFromFolders;
 begin
-  InitProgress('Opening ' + projectFileName, 1000);
+  InitProgress('Opening ' + projectFileName, 2000);
+  DoShowProgress(True);
   ProjectDesignFromString(OpenWithFolders(projectFileName), projectFileName);
+  UpdateConsole;
+  DoShowProgress(False);
 end;
 
 function TWsdlProject.OpenWithFolders (aFolderName: String): String;
@@ -9168,11 +9179,12 @@ var
     , xMessagesFolderName, xMessageFolderName
     , xString, xFileName: String;
   xWsdl: TWsdl;
-  x, w, s, o, m: Integer;
+  x, w, s, o, m, step: Integer;
   pXml, wXml, sXml, oXml, mmXml, mXml: TXml;
   xWList, xSList, xOlist, xMList, xFileList: TStringList;
 begin
   result := '';
+  StepProgress('Reading filesystem...', 100);
   xFileName := LazFileUtils.AppendPathDelim(aFoldername) + _ProjectFileName;
   xWList := TStringList.Create;
   xWList.Sorted := True;
@@ -9188,9 +9200,11 @@ begin
     pXml.LoadFromFile(xFileName, nil);
     xWsdlsFolderName := LazFileUtils.AppendPathDelim(aFoldername) + 'W';
     _getFolders (xWsdlsFolderName, xWList);
+    step := 800 div xWlist.Count;
     for w := 0 to xWList.Count - 1 do
     begin
       xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName) + xWList.Strings[w];
+      StepProgress(xWsdlFolderName, step);
       xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
       wXml := pXml.AddXml(TXml.Create);
       wXml.LoadFromFile(xFileName, nil);
@@ -9226,6 +9240,7 @@ begin
         end;
       end;
     end;
+    StepProgress('Scripts...', 100);
     mmXml := pXml.AddXml (TXml.CreateAsString('Scripts', ''));
     xScriptsFolderName := LazFileUtils.AppendPathDelim(aFoldername) + 'S';
     _getFolders (xScriptsFolderName, xMList);
@@ -9433,16 +9448,18 @@ end;
 
 procedure TWsdlProject.InitProgress(aCaption: String; aMax: Integer);
 begin
-    if Assigned (ProgressInterface) then
-    begin
-      AcquireLogLock;
-      try
-        ProgressInterface.Caption := aCaption;
-        ProgressInterface.ProgressMax := aMax;
-      finally
-        ReleaseLogLock;
-      end;
+  if Assigned (ProgressInterface) then
+  begin
+    AcquireLogLock;
+    try
+      ProgressInterface.Caption := aCaption;
+      ProgressInterface.ProgressMax := aMax;
+      ProgressInterface.ProgressPos := 0;
+      ProgressInterface.doUpdateConsole := False;
+    finally
+      ReleaseLogLock;
     end;
+  end;
 end;
 
 procedure TWsdlProject.UpdateProgress(aAction: String; aPos: Integer);
@@ -9467,6 +9484,19 @@ begin
     try
       ProgressInterface.CurrentAction := aAction;
       ProgressInterface.ProgressPos := ProgressInterface.ProgressPos + aInc;
+    finally
+      ReleaseLogLock;
+    end;
+  end;
+end;
+
+procedure TWsdlProject.UpdateConsole;
+begin
+  if Assigned (ProgressInterface) then
+  begin
+    AcquireLogLock;
+    try
+      ProgressInterface.doUpdateConsole := True;
     finally
       ReleaseLogLock;
     end;

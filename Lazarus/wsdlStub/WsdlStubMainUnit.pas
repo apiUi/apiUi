@@ -676,6 +676,7 @@ type
     procedure SwiftMtOperationsActionUpdate(Sender: TObject);
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
     procedure ToggleTrackIOActionExecute(Sender: TObject);
+    procedure ToolButton69Click(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
@@ -1261,6 +1262,7 @@ type
     saveToDiskExtention: String;
     FileNameList: TStringList;
     scriptPreparedWell: Boolean;
+    consoleUpdatingHalted: Boolean;
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
@@ -1286,6 +1288,7 @@ type
     function SelecFolderAndSave: Boolean;
     procedure BeginUpdate;
     Procedure EndUpdate;
+    procedure DoUpdateConsole;
     procedure PromptForOperationAlias (aOperation: TWsdlOperation);
     function OptionsAsXml: TXml;
     function doDecryptString(aString: AnsiString): AnsiString;
@@ -2682,12 +2685,42 @@ procedure TMainForm.EndUpdate;
 begin
   GridView.EndUpdate;
   InWsdlTreeView.EndUpdate;
+  OperationReqsTreeView.EndUpdate;
+  consoleUpdatingHalted := False;
+end;
+
+procedure TMainForm.DoUpdateConsole;
+var
+  f: Integer;
+begin
+  captionFileName := ExtractFileName(se.projectFileName);
+  ClearConsole;
+  PrepareOperation;
+  CreateEnvironmentSubMenuItems;
+  CreateScriptsSubMenuItems;
+  LogUpdateColumns;
+  if se.Wsdls.Count > -1 then
+    UpdateConsole(0)
+  else
+    UpdateConsole(-1);
+  CheckBoxClick(nil);
+  if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
+  begin
+    WsdlOperation := allOperations.Operations[f];
+    if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
+    and (se.FocusMessageIndex > -1) then
+      WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+  end;
 end;
 
 procedure TMainForm.BeginUpdate;
 begin
+  ClearConsole;
+  Invalidate;
   GridView.BeginUpdate;
   InWsdlTreeView.BeginUpdate;
+  OperationReqsTreeView.BeginUpdate;
+  consoleUpdatingHalted := True;
 end;
 
 function TMainForm.BooleanPromptDialog(aPrompt: String): Boolean;
@@ -3379,56 +3412,17 @@ begin
   if (ExtractFileExt(se.projectFileName) <> _ProjectFileExtention)
   and (ExtractFileExt(se.projectFileName) <> _ProjectOldFileExtention) then
      raise Exception.Create('Unsupported filename: ' + se.projectFileName);
-  InWsdlTreeView.BeginUpdate;
-  GridView.BeginUpdate;
-  OperationReqsTreeView.BeginUpdate;
-  try
-    captionFileName := ExtractFileName(se.projectFileName);
-    se.projectContext := contextPropertyOverwrite;
-    xmlio.ProjectContext := contextPropertyOverwrite;
-    if ExtractFileExt(se.projectFileName) = _ProjectFileExtention then
-    begin
-      se.OpenFromFolders;
-      UpdateReopenList(ReopenCaseList, se.projectFileName);
-    end;
-    if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
-      se.OpenFromFile;
-    GridView.Clear;
-    ClearConsole;
-    AcquireLock;
-    try
-      WsdlOperationsComboBox.Clear;
-      WsdlServicesComboBox.Clear;
-      WsdlComboBox.Items.Text := se.Wsdls.Text;
-      FillOperationReqsTreeView(OperationReqsTreeView, allAliasses);
-      if se.scriptErrorCount > 0 then
-        ShowMessage(IntToStr(se.scriptErrorCount) +
-            ' Script(s) found with errors, see Exceptions log');
-      CreateEnvironmentSubMenuItems;
-      CreateScriptsSubMenuItems;
-      LogUpdateColumns;
-      if se.Wsdls.Count > -1 then
-        UpdateConsole(0)
-      else
-        UpdateConsole(-1);
-    finally
-      ReleaseLock;
-    end;
-  finally
-    stubChanged := se.stubChanged;
-    se.stubRead := True;
-    OperationReqsTreeView.EndUpdate;
-    GridView.EndUpdate;
-    InWsdlTreeView.EndUpdate;
-    CheckBoxClick(nil);
-    if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
-    begin
-      WsdlOperation := allOperations.Operations[f];
-      if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
-      and (se.FocusMessageIndex > -1) then
-        WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
-    end;
+  BeginUpdate;
+  captionFileName := ExtractFileName(se.projectFileName);
+  se.projectContext := contextPropertyOverwrite;
+  xmlio.ProjectContext := contextPropertyOverwrite;
+  if ExtractFileExt(se.projectFileName) = _ProjectFileExtention then
+  begin
+    TProcedureThread.Create(False, False, se, se.OpenFromFolders);
+    UpdateReopenList(ReopenCaseList, se.projectFileName);
   end;
+  if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
+    TProcedureThread.Create(False, False, se, se.OpenFromFile);
 end;
 
 function TMainForm.ReactivateCommand: String;
@@ -6521,6 +6515,8 @@ var
   xOperation: TWsdlOperation;
   swap: TVTFocusChangeEvent;
 begin
+  if consoleUpdatingHalted then
+    Exit;
   Sender.Selected[Sender.FocusedNode] := True;
   xOperation := NodeToOperation(Sender, Node);
   if Assigned(xOperation) and (xOperation is TWsdlOperation) then
@@ -9302,6 +9298,10 @@ begin
           ProgressForm.ReleaseLock := se.ReleaseLogLock;
           ProgressForm.ProgressInterface := se.ProgressInterface;
           ProgressForm.ShowModal;
+          if se.ProgressInterface.doUpdateConsole then
+            DoUpdateConsole;
+          if consoleUpdatingHalted then
+            EndUpdate;
         finally
           ProgressForm.Free;
         end;
@@ -14484,6 +14484,11 @@ end;
 procedure TMainForm.ToggleTrackIOActionExecute(Sender: TObject);
 begin
   xmlio.doTrackXmlIO := not xmlio.doTrackXmlIO;
+end;
+
+procedure TMainForm.ToolButton69Click(Sender: TObject);
+begin
+
 end;
 
 procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;
