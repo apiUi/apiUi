@@ -1135,8 +1135,17 @@ procedure TXml.LoadFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
 begin
   fFileContents := TStringList.Create;
   try
-    fFileContents.Text := xmlio.ReadStringFromFile (aFileName);
-    LoadXml (ErrorFound);
+    try
+      fFileContents.Text := xmlio.ReadStringFromFile (aFileName);
+      LoadXml (ErrorFound);
+    except
+      on e: Exception do
+        raise Exception.Create ( 'error reading '
+                               + aFileName
+                               + LineEnding
+                               + e.Message
+                               );
+    end;
   finally
     fFileContents.Free;
   end;
@@ -1146,8 +1155,17 @@ procedure TXml.LoadJsonFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
 begin
   fFileContents := TStringList.Create;
   try
-    fFileContents.Text := ReadStringFromFile (aFileName);
-    LoadJson (ErrorFound);
+    try
+      fFileContents.Text := ReadStringFromFile (aFileName);
+      LoadJson (ErrorFound);
+    except
+      on e: Exception do
+        raise Exception.Create ( 'error reading '
+                               + aFileName
+                               + LineEnding
+                               + e.Message
+                               );
+    end;
   finally
     fFileContents.Free;
   end;
@@ -1168,8 +1186,17 @@ procedure TXml.LoadYamlFromFile(aFileName: String; ErrorFound: TOnErrorEvent);
 begin
   fFileContents := TStringList.Create;
   try
-    fFileContents.Text := ReadStringFromFile (aFileName);
-    LoadYaml (ErrorFound);
+    try
+      fFileContents.Text := ReadStringFromFile (aFileName);
+      LoadYaml (ErrorFound);
+    except
+      on e: Exception do
+        raise Exception.Create ( 'error reading '
+                               + aFileName
+                               + LineEnding
+                               + e.Message
+                               );
+    end;
   finally
     fFileContents.Free;
   end;
