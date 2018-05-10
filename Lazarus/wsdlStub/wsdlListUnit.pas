@@ -24,7 +24,11 @@ uses
    ;
 
 type
+
+  { TwsdlListForm }
+
   TwsdlListForm = class(TForm)
+    CancelButton: TButton;
     Panel1: TPanel;
     OKBtn: TButton;
     Panel2: TPanel;
@@ -42,6 +46,7 @@ type
     procedure AddActionUpdate(Sender: TObject);
     procedure DeleteActionExecute(Sender: TObject);
     procedure AddActionExecute(Sender: TObject);
+    procedure OKActionExecute(Sender: TObject);
     procedure OKActionUpdate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -104,19 +109,9 @@ end;
 
 procedure TwsdlListForm.DeleteActionExecute(Sender: TObject);
 begin
-  if MessageDlg ( 'Remove Wsdl from list, loosing data and scripts: '
-                + ListView.Selected.Caption
-                + '?'
-                , mtWarning
-                , [mbYes, mbNo]
-                , 0) = mrYes
-  then
-  begin
-    Wsdls.Objects [ListView.ItemIndex].Free;
-    Wsdls.Delete(ListView.ItemIndex);
-    UpdateListView;
-    fStubChanged := True;
-  end;
+  Wsdls.Delete(ListView.ItemIndex);
+  UpdateListView;
+  fStubChanged := True;
 end;
 
 procedure TwsdlListForm.AddActionExecute(Sender: TObject);
@@ -160,6 +155,11 @@ begin
   finally
     FreeAndNil (OpenWsdlForm);
   end;
+end;
+
+procedure TwsdlListForm.OKActionExecute(Sender: TObject);
+begin
+
 end;
 
 procedure TwsdlListForm.OKActionUpdate(Sender: TObject);

@@ -2482,16 +2482,10 @@ object MainForm: TMainForm
       Hint = 'Save all scripts to fille'
       OnExecute = ExportProjectScriptsActionExecute
     end
-    object SaveWithFolders: TAction
+    object IntrospectDesignAction: TAction
       Category = 'File'
-      Caption = 'SaveWithFolders'
-      OnExecute = SaveWithFoldersExecute
-      ShortCut = 24646
-    end
-    object ReadFromFolders: TAction
-      Category = 'File'
-      Caption = 'ReadFromFolders'
-      OnExecute = ReadFromFoldersExecute
+      Caption = 'Introspect'
+      OnExecute = IntrospectDesignActionExecute
       ShortCut = 24655
     end
     object ApiByExampleAction: TAction

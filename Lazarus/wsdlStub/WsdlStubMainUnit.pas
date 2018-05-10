@@ -103,8 +103,7 @@ type
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
     SaveProjectAsFolderAction: TAction;
-    ReadFromFolders: TAction;
-    SaveWithFolders: TAction;
+    IntrospectDesignAction: TAction;
     EditMessageDocumentationAction: TAction;
     MenuItem37: TMenuItem;
     AddChildElementMenuItem: TMenuItem;
@@ -655,10 +654,10 @@ type
       var Ghosted : Boolean ; var ImageIndex : Integer );
     procedure PingPongTimerTimer (Sender : TObject );
     procedure EditProjectPropertiesExecute (Sender : TObject );
-    procedure ReadFromFoldersExecute(Sender: TObject);
+    procedure IntrospectDesignActionExecute(Sender: TObject);
+    procedure CheckFolderAndFileNames;
     procedure SaveProjectAsFolderActionExecute(Sender: TObject);
     procedure SaveStubCaseActionUpdate(Sender: TObject);
-    procedure SaveWithFoldersExecute(Sender: TObject);
     procedure ShowResolvedPropertiesExecute (Sender : TObject );
     procedure ShowSnapshotDifferencesActionExecute (Sender : TObject );
     procedure SnapshotCompareMenuitemClick(Sender: TObject);
@@ -1062,7 +1061,6 @@ type
     startStopShortCut: TShortCut;
     fLastCaption: String;
     QueueNameList: TStringList;
-    captionFileName: String;
     isOptionsChanged: Boolean;
     doScrollExceptionsIntoView: Boolean;
     DisclaimerAccepted: Boolean;
@@ -1149,8 +1147,8 @@ type
       aNode: PVirtualNode);
     procedure ShowInfoForm(aCaption: String; aInfoString: String);
     procedure UpdateInWsdlCheckBoxes;
-    procedure SaveWsdlStubCase(aFileName: String);
     procedure ShowReport (aReport: TSnapshot);
+    procedure SaveStubCase;
     procedure OpenStubCase;
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
@@ -1229,13 +1227,15 @@ type
     procedure SetUiProgress;
     procedure OnRegressionReport (aReport: TRegressionSnapshot);
   private
+    fCaptionFileName: String;
     fDoScrollMessagesIntoView: Boolean;
     fdoShowDesignSplitVertical : Boolean ;
     function getHintStrDisabledWhileActive: String;
+    procedure SetCaptionFileName(AValue: String);
     procedure setDoScrollMessagesIntoView(AValue: Boolean);
     procedure setdoShowDesignSplitVertical (AValue : Boolean );
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
-    procedure ReloadProject;
+    procedure IntrospectDesign;
     function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
     function decorateWithAsterix (aCaption: String; aBoolean: Boolean): String;
   published
@@ -1262,12 +1262,13 @@ type
     saveToDiskExtention: String;
     FileNameList: TStringList;
     scriptPreparedWell: Boolean;
-    consoleUpdatingHalted: Boolean;
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
     function ActiveAfterPrompt: Boolean;
     function InactiveAfterPrompt: Boolean;
+    property captionFileName: String read fCaptionFileName write SetCaptionFileName;
+
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
@@ -1287,7 +1288,6 @@ type
     property Wsdl: TWsdl read getWsdl write setWsdl;
     function SelecFolderAndSave: Boolean;
     procedure BeginUpdate;
-    Procedure EndUpdate;
     procedure DoUpdateConsole;
     procedure PromptForOperationAlias (aOperation: TWsdlOperation);
     function OptionsAsXml: TXml;
@@ -1546,60 +1546,40 @@ end;
 procedure TMainForm.OpenWsdlActionExecute(Sender: TObject);
 var
   f, w: Integer;
+  xWsdls: TStringList;
+  xWsdl: TWsdl;
 begin
   if not InactiveAfterPrompt then Exit;
-  Application.CreateForm(TWsdlListForm, WsdlListForm);
+  xWsdls := TStringList.Create;
+  for w := 0 to se.Wsdls.Count - 1 do
+  begin
+    if not se.isSpecialWsdl(se.Wsdls.Objects[w] as TWsdl) then
+      xWsdls.AddObject(se.Wsdls.Strings[w], se.Wsdls.Objects[w]);
+  end;
   try
-    wsdlListForm.EnvVars := se.EnvVars;
-    WsdlListForm.ShowOperationsWithEndpointOnly :=
-      se.OperationsWithEndpointOnly;
-    WsdlListForm.SaveRelativeFilenames := se.SaveRelativeFilenames;
-    ClearConsole;
-    if se.Wsdls.Find(se.FreeFormatWsdl.Name, f) then // not to be seen in list
-      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    if se.Wsdls.Find(se.MailWsdl.Name, f) then // not to be seen in list
-      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    if se.Wsdls.Find(se.CobolWsdl.Name, f) then // not to be seen in list
-      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    if se.Wsdls.Find(se.BmtpWsdl.Name, f) then // not to be seen in list
-      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    if se.Wsdls.Find(se.XsdWsdl.Name, f) then // not to be seen in list
-      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    if se.Wsdls.Find(se.XmlSampleWsdl.Name, f) then // not to be seen in list
-      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    if se.Wsdls.Find(se.ApiByExampleWsdl.Name, f) then // not to be seen in list
-      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    if se.Wsdls.Find(se.SwiftMtWsdl.Name, f) then // not to be seen in list
-      se.Wsdls.Delete(f); // will be restored again by PrepareOperation
-    WsdlListForm.Wsdls := se.Wsdls;
-    WsdlListForm.ShowModal;
-    w := WsdlListForm.ListView.ItemIndex;
-    se.PrepareAllOperations;
-    PrepareOperation;
-    { }
-    if se.Wsdls.Find(se.FreeFormatWsdl.Name, f) then // not to be seen in list
-      Inc(w);
-    if se.Wsdls.Find(se.MailWsdl.Name, f) then // not to be seen in list
-      Inc(w);
-    if se.Wsdls.Find(se.CobolWsdl.Name, f) then // not to be seen in list
-      Inc(w);
-    if se.Wsdls.Find(se.BmtpWsdl.Name, f) then // not to be seen in list
-      Inc(w);
-    if se.Wsdls.Find(se.XsdWsdl.Name, f) then // not to be seen in list
-      Inc(w);
-    if se.Wsdls.Find(se.XmlSampleWsdl.Name, f) then // not to be seen in list
-      Inc(w);
-    if se.Wsdls.Find(se.ApiByExampleWsdl.Name, f) then // not to be seen in list
-      Inc(w);
-    if se.Wsdls.Find(se.SwiftMtWsdl.Name, f) then // not to be seen in list
-      Inc(w);
-    { }
-    UpdateConsole(w);
-    stubChanged := (stubChanged or WsdlListForm.stubChanged);
-    if wsdlListForm.ReloadRequired then
-      ReloadProject;
+    Application.CreateForm(TWsdlListForm, WsdlListForm);
+    try
+      wsdlListForm.EnvVars := se.EnvVars;
+      WsdlListForm.ShowOperationsWithEndpointOnly :=
+        se.OperationsWithEndpointOnly;
+      WsdlListForm.SaveRelativeFilenames := se.SaveRelativeFilenames;
+      WsdlListForm.Wsdls := xWsdls;
+      WsdlListForm.ShowModal;
+      if wsdlListForm.ModalResult = mrOK then
+      begin
+        if WsdlListForm.stubChanged then
+        begin
+          stubChanged := True;
+          BeginUpdate;
+          se.UpdateWsdlsList(xWsdls);
+          IntrospectDesign;
+        end;
+      end;
+    finally
+      FreeAndNil(WsdlListForm);
+    end;
   finally
-    FreeAndNil(WsdlListForm);
+    xWsdls.Free;
   end;
 end;
 
@@ -2681,14 +2661,6 @@ begin
   FinishXmlNode(result, aXml);
 end;
 
-procedure TMainForm.EndUpdate;
-begin
-  GridView.EndUpdate;
-  InWsdlTreeView.EndUpdate;
-  OperationReqsTreeView.EndUpdate;
-  consoleUpdatingHalted := False;
-end;
-
 procedure TMainForm.DoUpdateConsole;
 var
   f: Integer;
@@ -2715,12 +2687,23 @@ end;
 
 procedure TMainForm.BeginUpdate;
 begin
+  se.projectContext := contextPropertyOverwrite;
+  xmlio.ProjectContext := contextPropertyOverwrite;
+  se.doCreateBackup := doCreateBackup;
+  if Assigned (WsdlOperation) then
+  begin
+    se.FocusOperationName := WsdlOperation.reqTagName;
+    se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
+    se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
+  end
+  else
+  begin
+    se.FocusOperationName := '';
+    se.FocusOperationNameSpace := '';
+    se.FocusMessageIndex := 0;
+  end;
   ClearConsole;
   Invalidate;
-  GridView.BeginUpdate;
-  InWsdlTreeView.BeginUpdate;
-  OperationReqsTreeView.BeginUpdate;
-  consoleUpdatingHalted := True;
 end;
 
 function TMainForm.BooleanPromptDialog(aPrompt: String): Boolean;
@@ -3265,72 +3248,48 @@ begin
 end;
 
 procedure TMainForm.ExportProjectActionExecute(Sender: TObject);
-var
-  xRead, xChanged: Boolean;
-  xProjectName: String;
 begin
-  OnlyWhenLicensed;
-  try
-    EndEdit;
-    SaveFileDialog.DefaultExt := 'wsdlStub';
-    SaveFileDialog.Filter := 'wsdlStub Case (*.wsdlStub)|*.wsdlStub';
-    SaveFileDialog.Title := 'Export project';
-    if SaveFileDialog.Execute then
-    begin
-      xRead := se.StubRead;
-      xChanged := se.StubChanged;
-      xProjectName := se.projectFileName;
-      try
-        se.projectFileName := SaveFileDialog.FileName;
-        SaveWsdlStubCase(se.projectFileName);
-      finally
-        se.StubRead := xRead;
-        se.StubChanged := xChanged;
-        se.projectFileName := xProjectName;
-        UpdateCaption;
-      end;
-    end;
-  finally
+  EndEdit;
+  SaveFileDialog.DefaultExt := 'wsdlStub';
+  SaveFileDialog.Filter := 'wsdlStub Case (*.wsdlStub)|*.wsdlStub';
+  SaveFileDialog.Title := 'Export project';
+  if SaveFileDialog.Execute then
+  begin
+    se.projectFileName := SaveFileDialog.FileName;
+    SaveStubCase;
   end;
 end;
 
-procedure TMainForm.SaveWsdlStubCase(aFileName: String);
+procedure TMainForm.SaveStubCase;
 begin
-  captionFileName := ExtractFileName(aFileName);
-  XmlUtil.PushCursor (crHourGlass);
-  try
-    se.doCreateBackup := doCreateBackup;
-    if Assigned (WsdlOperation) then
+  captionFileName := ExtractFileName(se.projectFileName);
+  se.doCreateBackup := doCreateBackup;
+  if Assigned (WsdlOperation) then
+  begin
+    se.FocusOperationName := WsdlOperation.reqTagName;
+    se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
+    se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
+  end
+  else
+  begin
+    se.FocusOperationName := '';
+    se.FocusOperationNameSpace := '';
+    se.FocusMessageIndex := 0;
+  end;
+  if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
+    TProcedureThread.Create(False, False, se, se.ExportToFile)
+  else
+  begin
+    if ExtractFileExt(se.projectFileName) = _ProjectFileExtention then
     begin
-      se.FocusOperationName := WsdlOperation.reqTagName;
-      se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
-      se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
+      CheckFolderAndFileNames;
+      TProcedureThread.Create(False, False, se, se.SaveWithFolders);
+      UpdateReopenList(ReopenCaseList, se.projectFileName);
     end
     else
     begin
-      se.FocusOperationName := '';
-      se.FocusOperationNameSpace := '';
-      se.FocusMessageIndex := 0;
+      raise Exception.Create('unsupported fileextention or not a folder;' + se.projectFileName);
     end;
-    if ExtractFileExt(aFileName) = _ProjectOldFileExtention then
-      SaveStringToFile(aFileName, se.ProjectDesignAsString(aFileName))
-    else
-    begin
-      if ExtractFileExt(aFileName) = _ProjectFileExtention then
-      begin
-        SaveWithFoldersExecute (nil);
-        se.stubChanged := False;
-        se.stubRead := True; // well,... but logically ...
-        UpdateReopenList(ReopenCaseList, aFileName);
-        UpdateCaption;
-      end
-      else
-      begin
-        raise Exception.Create('unsupported fileextention or not a folder;' + aFileName);
-      end;
-    end;
-  finally
-    XmlUtil.PopCursor;
   end;
 end;
 
@@ -3396,11 +3355,6 @@ begin
     begin
       se.projectFileName := OpenFileDialog.FileName;
       OpenStubCase;
-      se.projectFileName := '';
-      captionFileName := '';
-      se.StubRead := False;
-      se.StubChanged := True;
-      UpdateCaption;
     end;
   end;
 end;
@@ -3414,15 +3368,13 @@ begin
      raise Exception.Create('Unsupported filename: ' + se.projectFileName);
   BeginUpdate;
   captionFileName := ExtractFileName(se.projectFileName);
-  se.projectContext := contextPropertyOverwrite;
-  xmlio.ProjectContext := contextPropertyOverwrite;
   if ExtractFileExt(se.projectFileName) = _ProjectFileExtention then
   begin
     TProcedureThread.Create(False, False, se, se.OpenFromFolders);
     UpdateReopenList(ReopenCaseList, se.projectFileName);
   end;
   if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
-    TProcedureThread.Create(False, False, se, se.OpenFromFile);
+    TProcedureThread.Create(False, False, se, se.ImportFromFile);
 end;
 
 function TMainForm.ReactivateCommand: String;
@@ -5756,7 +5708,7 @@ begin
     begin
       OnlyWhenLicensed;
       if se.stubRead then
-        SaveWsdlStubCase(se.projectFileName)
+        SaveStubCase
       else
         result := SelecFolderAndSave;
     end;
@@ -5771,7 +5723,7 @@ begin
   if not se.stubRead then
     raise Exception.Create('This function should be disabled...')
   else
-    SaveWsdlStubCase(se.projectFileName);
+    SaveStubCase;
 end;
 
 procedure TMainForm.InWsdlTreeViewExit(Sender: TObject);
@@ -6516,8 +6468,6 @@ var
   xOperation: TWsdlOperation;
   swap: TVTFocusChangeEvent;
 begin
-  if consoleUpdatingHalted then
-    Exit;
   Sender.Selected[Sender.FocusedNode] := True;
   xOperation := NodeToOperation(Sender, Node);
   if Assigned(xOperation) and (xOperation is TWsdlOperation) then
@@ -7046,7 +6996,6 @@ begin
   end;
   xmlUtil.AcquireLock := AcquireLock;
   xmlUtil.ReleaseLock := ReleaseLock;
-  _OnEndUpdate := EndUpdate;
   _OnBeginUpdate := BeginUpdate;
   Xmlz.OnNotify := LogServerNotification;
   // due to a bug in TPageControl, not al tabs are visible....
@@ -7627,40 +7576,11 @@ begin
   end;
 end;
 
-procedure TMainForm.ReloadProject;
-var
-  xChanged, xRead: Boolean;
-  f: Integer;
+procedure TMainForm.IntrospectDesign;
 begin
-  XmlUtil.PushCursor (crHourGlass);
-  Application.ProcessMessages;
-  try
-    xChanged := stubChanged;
-    xRead := se.stubRead;
-    if Assigned (WsdlOperation) then
-    begin
-      se.FocusOperationName := WsdlOperation.reqTagName;
-      se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
-    end
-    else
-    begin
-      se.FocusOperationName := '';
-      se.FocusMessageIndex := -1;
-    end;
-    ProjectDesignFromString(se.ProjectDesignAsString(se.projectFileName), se.projectFileName);
-    if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
-    begin
-      WsdlOperation := allOperations.Operations[f];
-      if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
-      and (se.FocusMessageIndex > -1)then
-        WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
-    end;
-    stubChanged := xChanged;
-    se.StubRead := xRead;
-  finally
-    XmlUtil.PopCursor;
-    Application.ProcessMessages;
-  end;
+  BeginUpdate;
+  captionFileName := ExtractFileName(se.projectFileName);
+  TProcedureThread.Create(False, False, se, se.IntrospectProject);
 end;
 
 function TMainForm.createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList ;
@@ -7744,7 +7664,7 @@ begin
         if not BooleanPromptDialog('A project named ' + FolderName +  ' already exists' + LineEnding + 'Continue') then
           Exit;
       se.projectFileName := FolderName;
-      SaveWsdlStubCase(se.projectFileName);
+      SaveStubCase;
       result := True;
     end;
   finally
@@ -8263,7 +8183,7 @@ end;
 
 procedure TMainForm.CheckGridFieldsActionExecute(Sender: TObject);
 var
-  X, Y, ReadFromFolders: Integer;
+  X, Y, IntrospectDesignAction: Integer;
   xString: String;
   xNode: PVirtualNode;
 begin
@@ -8287,11 +8207,11 @@ begin
                   .IsValueValid(xString))) then
             begin
               xNode := GridView.GetFirst;
-              ReadFromFolders := X;
-              while ReadFromFolders > 0 do
+              IntrospectDesignAction := X;
+              while IntrospectDesignAction > 0 do
               begin
                 xNode := GridView.GetNext(xNode);
-                Dec(ReadFromFolders);
+                Dec(IntrospectDesignAction);
               end;
               GridView.Selected[xNode] := True;
               GridViewFocusedNode(xNode);
@@ -8765,7 +8685,7 @@ begin
             end;
           end;
         end;
-        ReloadProject;
+        IntrospectDesign;
       end;
     end;
   finally
@@ -9301,8 +9221,6 @@ begin
           ProgressForm.ShowModal;
           if se.ProgressInterface.doUpdateConsole then
             DoUpdateConsole;
-          if consoleUpdatingHalted then
-            EndUpdate;
         finally
           ProgressForm.Free;
         end;
@@ -9366,6 +9284,13 @@ begin
   result := '';
   if Assigned(se) and se.IsActive then
     result := ' (disabled while Active)';
+end;
+
+procedure TMainForm.SetCaptionFileName(AValue: String);
+begin
+  if fCaptionFileName = AValue then Exit;
+  fCaptionFileName := AValue;
+  UpdateCaption;
 end;
 
 procedure TMainForm.setDoScrollMessagesIntoView(AValue: Boolean);
@@ -12419,7 +12344,7 @@ end;
 
 procedure TMainForm.ProjectDesignToClipboardActionExecute(Sender: TObject);
 begin
-  Clipboard.AsText := se.ProjectDesignAsString(se.projectFileName);
+  Clipboard.AsText := se.ProjectDesignAsString;
 end;
 
 procedure TMainForm .ExportProjectScriptsActionExecute (Sender : TObject );
@@ -13125,7 +13050,7 @@ procedure TMainForm .InWsdlTreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
   TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
   const CellRect : TRect );
 var
-  ReadFromFolders: TRect;
+  IntrospectDesignAction: TRect;
   xBind: TCustomBindable;
 begin
   if Column = treeTagColumn then
@@ -13136,8 +13061,8 @@ begin
       if Assigned(Xsd)
       and (Xsd.maxOccurs <> '1') then
       begin
-        ReadFromFolders := Sender.GetDisplayRect(Node, Column, true);
-        TreeviewImageList.Draw(TargetCanvas, ReadFromFolders.Right - 16, CellRect.Top, 31);
+        IntrospectDesignAction := Sender.GetDisplayRect(Node, Column, true);
+        TreeviewImageList.Draw(TargetCanvas, IntrospectDesignAction.Right - 16, CellRect.Top, 31);
       end;
     end;
   end;
@@ -13372,20 +13297,9 @@ begin
   end;
 end;
 
-procedure TMainForm.ReadFromFoldersExecute(Sender: TObject);
-var
-  f: Integer;
+procedure TMainForm.IntrospectDesignActionExecute(Sender: TObject);
 begin
-  captionFileName := ExtractFileName(se.projectFileName);
-  ProjectDesignFromString(se.OpenWithFolders ('hahah'), se.projectFileName);
-  UpdateReopenList(ReopenCaseList, se.projectFileName);
-  if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
-  begin
-    WsdlOperation := allOperations.Operations[f];
-    if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
-    and (se.FocusMessageIndex > -1) then
-      WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
-  end;
+  IntrospectDesign;
 end;
 
 procedure TMainForm.SaveProjectAsFolderActionExecute(Sender: TObject);
@@ -13399,7 +13313,7 @@ begin
   SaveStubCaseAction.Enabled := se.stubRead;
 end;
 
-procedure TMainForm.SaveWithFoldersExecute(Sender: TObject);
+procedure TMainForm.CheckFolderAndFileNames;
 var
   w1, w0, s1, s0: Integer;
   wName, sName, oName, mName: String;
@@ -13490,6 +13404,7 @@ begin
                   end;
                 end;
               end;
+              { TODO : operation.messages.filenames.... }
             end;
           end;
         end;
@@ -13497,8 +13412,6 @@ begin
     finally
       FreeAndNil(PromptForm);
     end;
-    TProcedureThread.Create(False, False, se, se.SaveWithFolders);
-    UpdateReopenList(ReopenCaseList, se.projectFileName);
   finally
     XmlUtil.PopCursor;
   end;
@@ -13925,7 +13838,7 @@ begin
         se.ApiByExampleOperationsUpdate(xXml, se.projectFileName);
         se.PrepareAllOperations;
         PrepareOperation; // despite next line, do not remove since this rebuilds the wsdls list
-        ReloadProject; // some datatypes may have changed
+        IntrospectDesign; // some datatypes may have changed
       finally
         ReleaseLock;
       end;

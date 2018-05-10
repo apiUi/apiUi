@@ -154,12 +154,12 @@ type
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
     function NumberOfOperationsAndMessages: Integer;
-    procedure InitProgress (aCaption: String; aMax: Integer);
-    procedure UpdateProgress (aAction: String; aPos: Integer);
-    procedure StepProgress (aAction: String; aInc: Integer);
-    procedure UpdateConsole;
-    procedure ExceptionHandlerProgress (E: Exception);
-    procedure DoShowProgress (aValue: Boolean);
+    procedure ProgressBegin (aCaption: String; aMax: Integer);
+    procedure ProgressUpdate (aAction: String; aPos: Integer);
+    procedure ProgressStep (aAction: String; aInc: Integer);
+    procedure ProgressInvalidateConsole;
+    procedure ProgressException (E: Exception);
+    procedure ProgressEnd;
   public
     ProgressInterface: TProgressInterface;
     doCreateBackup: Boolean;
@@ -238,6 +238,8 @@ type
     procedure DisplayLog (aString: String; aLog: TLog);
     procedure DisplayReport (aString: String; aReport: TSnapshot);
     procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
+    function isSpecialWsdl(aWsdl: TWsdl): Boolean;
+    procedure UpdateWsdlsList (aNewWsdlsList: TStringList);
     function mergeUri (puri, suri: String): String;
     function mailOperationsXml: TXml;
     procedure mailOperationsUpdate (aXml: TXml);
@@ -288,11 +290,13 @@ type
     procedure Clean;
     procedure TacoPingPong;
     procedure SaveWithFolders;
-    procedure OpenFromFile;
+    procedure ExportToFile;
+    procedure ImportFromFile;
     procedure OpenFromFolders;
+    procedure IntrospectProject;
     function OpenWithFolders (aFolderName: String): String;
-    function ProjectDesignAsXml (aMainFileName: String): TXml;
-    function ProjectDesignAsString (aMainFileName: String): String;
+    function ProjectDesignAsXml: TXml;
+    function ProjectDesignAsString: String;
 {}
 {}
     function SendOperationMessage ( aOperation: TWsdlOperation
@@ -2211,7 +2215,7 @@ begin
   end;
 end;
 
-function TWsdlProject.ProjectDesignAsXml(aMainFileName: String): TXml;
+function TWsdlProject.ProjectDesignAsXml: TXml;
   procedure _addCheckers (aList, aXml: TXml);
   var
     x: Integer;
@@ -2241,14 +2245,14 @@ begin
     result := TXml.CreateAsString ('WsdlStubCase', '');
     with result do
     begin
-      AddXml(TXml.CreateAsString('FileName', uncFilename(aMainFileName)));
+      AddXml(TXml.CreateAsString('FileName', uncFilename(projectFileName)));
       with AddXml (TXml.Create) do
         CopyDownLine(Listeners.SpecificationXml, True);
       AddXml(TXml.CreateAsBoolean('ValidateRequests', doValidateRequests));
       AddXml(TXml.CreateAsBoolean('ValidateReplies', doValidateReplies));
       AddXml (TXml.CreateAsBoolean('CheckExpectedValues', doCheckExpectedValues));
       AddXml (TXml.CreateAsBoolean('DisableOnCorrelate', _WsdlDisableOnCorrelate));
-      AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, uncFilename(aMainFileName)));
+      AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, uncFilename(projectFileName)));
       AddXml (TXml.CreateAsString('PathPrefixes', xmlio.PathPrefixes.Text));
       with AddXml(TXml.CreateAsString('Environments', '')) do
         for x := 0 to EnvironmentList.Count - 1 do
@@ -2288,7 +2292,7 @@ begin
               with AddXml (cobolOperationsXml) do
               begin
                 if SaveRelativeFileNames then
-                  SetFileNamesRelative(aMainFileName);
+                  SetFileNamesRelative(projectFileName);
               end;
             xDone := True;
           end;
@@ -2299,27 +2303,27 @@ begin
               with AddXml (bmtpOperationsXml) do
               begin
                 if SaveRelativeFileNames then
-                  SetFileNamesRelative(aMainFileName);
+                  SetFileNamesRelative(projectFileName);
               end;
             xDone := True;
           end;
           if xWsdl = XsdWsdl then
           begin
             if xWsdl.Services.Services[0].Operations.Count > 0 then
-              with AddXml (xsdOperationsXml(aMainFileName)) do
+              with AddXml (xsdOperationsXml(projectFileName)) do
               begin
                 if SaveRelativeFileNames then
-                  SetFileNamesRelative(aMainFileName);
+                  SetFileNamesRelative(projectFileName);
               end;
             xDone := True;
           end;
           if xWsdl = XmlSampleWsdl then
           begin
             if xWsdl.Services.Services[0].Operations.Count > 0 then
-              with AddXml (xmlSampleOperationsXml(aMainFileName)) do
+              with AddXml (xmlSampleOperationsXml(projectFileName)) do
               begin
                 if SaveRelativeFileNames then
-                  SetFileNamesRelative(aMainFileName);
+                  SetFileNamesRelative(projectFileName);
               end;
             xDone := True;
           end;
@@ -2327,10 +2331,10 @@ begin
           begin
             if (xWsdl.Services.Count > 0)
             and (xWsdl.Services.Services[0].Operations.Count > 0) then
-              with AddXml (ApiByExampleOperationsXml(aMainFileName)) do
+              with AddXml (ApiByExampleOperationsXml(projectFileName)) do
               begin
                 if SaveRelativeFileNames then
-                  SetFileNamesRelative(aMainFileName);
+                  SetFileNamesRelative(projectFileName);
               end;
             xDone := True;
           end;
@@ -2340,7 +2344,7 @@ begin
               with AddXml (swiftMtOperationsXml) do
               begin
                 if SaveRelativeFileNames then
-                  SetFileNamesRelative(aMainFileName);
+                  SetFileNamesRelative(projectFileName);
               end;
             xDone := True;
           end;
@@ -2352,10 +2356,10 @@ begin
           end;
           if not xDone then
           begin
-            if (aMainFileName <> '')
+            if (projectFileName <> '')
             and (SaveRelativeFileNames) then
               AddXml(TXml.CreateAsString ( 'WsdlLocation'
-                                         , ExtractRelativeFileName ( aMainFileName
+                                         , ExtractRelativeFileName ( projectFileName
                                                                    , Wsdls.Strings [w]
                                                                    )
                                          )
@@ -2374,7 +2378,7 @@ begin
                 with AddXml (xWsdl.ExtraXsdsAsXml) do
                 begin
                   if SaveRelativeFileNames then
-                    SetFileNamesRelative(aMainFileName);
+                    SetFileNamesRelative(projectFileName);
                 end;
             end;
             asXml := xWsdl.XsdDescr.ChangedElementTypedefsAsXml as TXml;
@@ -2390,16 +2394,6 @@ begin
                 if (xWsdl.Services.Services[s].FileAlias <> '')
                 and (xWsdl.Services.Services[s].FileAlias <> xWsdl.Services.Services[s].Name) then
                   AddXml (TXml.CreateAsString('FileAlias', xWsdl.Services.Services[s].FileAlias));
-{BEGIN 3.6 style}
-    {
-                AddXml (TXml.CreateAsInteger('AuthenticationType', Ord (xWsdl.Services.Services[s].AuthenticationType)));
-                AddXml (TXml.CreateAsString('UserName', xWsdl.Services.Services[s].UserName));
-                AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(xWsdl.Services.Services[s].Password)));
-                AddXml (TXml.CreateAsInteger('PasswordType', Ord (xWsdl.Services.Services[s].PasswordType)));
-                AddXml (TXml.CreateAsBoolean('SuppressXmlComment', xWsdl.Services.Services[s].SuppressXmlComment));
-                AddXml (TXml.CreateAsBoolean('SuppressHTTP500', xWsdl.Services.Services[s].SuppressHTTP500));
-    }
-{END 3.6 style}
                 AddXml (xWsdl.Services.Services[s].OptionsAsXml);
                 for o := 0 to xWsdl.Services.Services [s].Operations.Count - 1 do
                 begin
@@ -2435,32 +2429,6 @@ begin
                     AddXml (xOperation.OptionsAsXml);
                     AddXml (TXml.CreateAsString('DelayTimeMsMin', IntToStr(xOperation.DelayTimeMsMin)));
                     AddXml (TXml.CreateAsString('DelayTimeMsMax', IntToStr(xOperation.DelayTimeMsMax)));
-{BEGIN Save in pre 4.0 mode}
-    {
-                    AddXml (TXml.CreateAsInteger('StubTransport', Ord (xOperation.StubTransport)));
-                    AddXml (TXml.CreateAsString('StubHttpAddress', xOperation.StubHttpAddress));
-                    AddXml (TXml.CreateAsString('StubMqPutManager', xOperation.StubMqPutManager));
-                    AddXml (TXml.CreateAsString('StubMqPutQueue', xOperation.StubMqPutQueue));
-                    AddXml (TXml.CreateAsString('StubMqGetManager', xOperation.StubMqGetManager));
-                    AddXml (TXml.CreateAsString('StubMqGetQueue', xOperation.StubMqGetQueue));
-                    AddXml (TXml.CreateAsInteger('StubMqTimeOut', xOperation.StubMqTimeOut));
-                    AddXml (TXml.CreateAsString('StubStompPutHost', xOperation.StubStompPutHost));
-                    AddXml (TXml.CreateAsString('StubStompPutPort', xOperation.StubStompPutPort));
-                    AddXml (TXml.CreateAsString('StubStompPutClientId', xOperation.StubStompPutClientId));
-                    AddXml (TXml.CreateAsInteger('StubStompTimeOut', xOperation.StubStompTimeOut));
-                    if Assigned(xOperation.StubMqHeaderXml)
-                    and xOperation.StubMqHeaderXml.Checked
-                    and (xOperation.StubMqHeaderXml.Name <> '') then
-                      with AddXml (TXml.Create) do
-                        CopyDownLine (xOperation.StubMqHeaderXml, True);
-                    if Assigned (xOperation.StubStompHeaderXml)
-                    and xOperation.StubStompHeaderXml.Checked
-                    and (xOperation.StubStompHeaderXml.Name <> '') then
-                      with AddXml (TXml.Create) do
-                        CopyDownLine (xOperation.StubStompHeaderXml, True);
-    }
-{END Save in pre 4.0 mode}
-
                     AddXml (xOperation.endpointConfigAsXml); // seave in 4.0++ style
 
                     AddXml (TXml.CreateAsString('BeforeScript', xOperation.BeforeScriptLines.Text));
@@ -2543,16 +2511,6 @@ begin
                             AddXml (TXml.CreateAsString('BeforeScript', xMessage.BeforeScriptLines.Text));
                           if Assigned (xMessage.AfterScriptLines) then
                             AddXml (TXml.CreateAsString('AfterScript', xMessage.AfterScriptLines.Text));
-{
-                          if Assigned (xOperation.FaultMessages) then
-                          begin
-                            with AddXml (TXml.CreateAsString('Faults', '')) do
-                            begin
-                              with AddXml (TXml.CreateAsString(xOperation.rpyBind.Name, '')) do
-                                CopyCheckedDownLine(xMessage.FltBind);
-                            end; // data xml
-                          end; // case faultmessages
-}
                         end; // message xml
                       end; // for each message
                     end; // messagess xml
@@ -2588,9 +2546,9 @@ begin
   end;
 end;
 
-function TWsdlProject.ProjectDesignAsString (aMainFileName: String): String;
+function TWsdlProject.ProjectDesignAsString: String;
 begin
-  with ProjectDesignAsXml(aMainFileName) do
+  with ProjectDesignAsXml do
   try
     result := AsText(False,0,True,False);
   finally
@@ -2624,7 +2582,7 @@ var
   xReadAnother: Boolean;
   xPatterns: TStringList;
 begin
-  StepProgress('Analyzing...', 100);
+  ProgressStep('Analyzing...', 100);
   Clear;
   xReadAnother := False;
   try
@@ -2715,13 +2673,16 @@ begin
           for w := 0 to xXml.Items.Count - 1 do
             if xXml.Items.XmlItems [w].TagName = 'Wsdl' then
               Inc (step);
-          step := 800 div step;
+          if step > 0 then
+            step := 800 div step
+          else
+            step := 1;
           for w := 0 to xXml.Items.Count - 1 do
           begin
             wXml := xXml.Items.XmlItems [w];
             if wXml.TagName = 'Wsdl' then
             begin
-              StepProgress('Analyzing...', step);
+              ProgressStep('Analyzing...', step);
               xDone := False;
               oXml := wXml.Items.XmlItemByTag['FreeFormatOperations'];
               if Assigned (oXml) then
@@ -8927,14 +8888,13 @@ var
   xXml: TXml;
   x, w, s, o, m: Integer;
 begin
-  InitProgress('Saving project ' + projectFileName, 100 + NumberOfOperationsAndMessages);
+  ProgressBegin('Saving project ' + projectFileName, 100 + NumberOfOperationsAndMessages);
   xsiGenerated := True; // en dan maar hopen dat er geen andere parallele threads bezig zijn...
 {
   xProjectFolderName := Copy (projectFileName, 1, Length(projectFileName) - Length(_ProjectFileExtention))
                       + Copy (_ProjectFileExtention, 2, 100);
 }
-  UpdateProgress('Creating Backup', 20);
-  DoShowProgress(True);
+  ProgressStep('Creating Backup', 20);
   try
     try
       xProjectFolderName := projectFileName;
@@ -8953,13 +8913,13 @@ begin
       end;
       if not LazFileUtils.ForceDirectory(xProjectFolderName) then
         raise Exception.CreateFmt('Could not create folder "%s"', [xProjectFolderName]);
-      UpdateProgress('Initialising Folder', 30);
+      ProgressUpdate('Initialising Folder', 30);
       xmlio.EraseAllFolderContent(xProjectFolderName);
       _createReadMe(xProjectFolderName);
       xWsdlsFolderName := LazFileUtils.AppendPathDelim(xProjectFolderName) + 'W';
       _createFolder (xWsdlsFolderName);
-      UpdateProgress('Analysing', 40);
-      with ProjectDesignAsXml(projectFileName) do
+      ProgressUpdate('Analysing', 40);
+      with ProjectDesignAsXml do
       try
         for w := Items.Count - 1 downto 0 do
         begin
@@ -8992,7 +8952,7 @@ begin
                   begin
                     xAlias := Items.XmlItems[o].Items.XmlValueByTag['Alias'];
                     xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName) + xAlias;
-                    StepProgress('Writing ' + xAlias, 1);
+                    ProgressStep('Writing ' + xAlias, 1);
                     _createFolder (xOperationFolderName);
                     xMessagesFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + 'M';
                     _createFolder (xMessagesFolderName);
@@ -9005,7 +8965,7 @@ begin
                         xMName := Items.XmlValueByTag ['Name'];
                         if xMName = '' then
                           xMName := Format ('_%4d', [m]);
-                        StepProgress('Writing ' + xAlias, 1);
+                        ProgressStep('Writing ' + xAlias, 1);
                         xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName)
                                             + xMPrefix
                                             + xMName
@@ -9092,64 +9052,114 @@ begin
     {
         SaveStringToFile(projectFileName, 'projectdesign is in folder: ' + xProjectFolderName);
     }
-      finally
+        stubChanged := False;
+        stubRead := True; // well,... but logically ...
+    finally
         Free;
       end;
     except
       on e: exception do
       begin
         if Assigned (ProgressInterface) then
-          ExceptionHandlerProgress(e)
+          ProgressException(e)
         else
           raise;
       end;
     end;
   finally
-    DoShowProgress(False);
+    ProgressEnd;
   end;
 end;
 
-procedure TWsdlProject.OpenFromFile;
+procedure TWsdlProject.ExportToFile;
 begin
-  InitProgress('Opening ' + projectFileName, 2000);
-  DoShowProgress(True);
+  ProgressBegin('Saving ' + projectFileName, 1000);
   try
     try
-      ProjectDesignFromString(ReadStringFromFile(projectFileName), projectFileName);
-      UpdateConsole;
+      StubRead := False;
+      SaveStringToFile(projectFileName, ProjectDesignAsString);
     except
       on e: exception do
       begin
         if Assigned (ProgressInterface) then
-          ExceptionHandlerProgress(e)
+          ProgressException(e)
         else
           raise;
       end;
     end;
   finally
-    DoShowProgress(False);
+    ProgressEnd;
+  end;
+end;
+
+procedure TWsdlProject.ImportFromFile;
+begin
+  ProgressBegin('Opening ' + projectFileName, 2000);
+  try
+    try
+      ProjectDesignFromString(ReadStringFromFile(projectFileName), projectFileName);
+      StubRead := False;
+      StubChanged := True;
+      ProgressInvalidateConsole;
+    except
+      on e: exception do
+      begin
+        if Assigned (ProgressInterface) then
+          ProgressException(e)
+        else
+          raise;
+      end;
+    end;
+  finally
+    ProgressEnd;
   end;
 end;
 
 procedure TWsdlProject.OpenFromFolders;
 begin
-  InitProgress('Opening ' + projectFileName, 2000);
-  DoShowProgress(True);
+  ProgressBegin('Opening ' + projectFileName, 2000);
   try
     try
       ProjectDesignFromString(OpenWithFolders(projectFileName), projectFileName);
-      UpdateConsole;
+      ProgressInvalidateConsole;
     except
       on e: exception do
       begin
         if Assigned (ProgressInterface) then
-          ExceptionHandlerProgress(e)
+          ProgressException(e)
         else
           raise;
       end;
     end;
   finally
-    DoShowProgress(False);
+    ProgressEnd;
+  end;
+end;
+
+procedure TWsdlProject.IntrospectProject;
+var
+  xChanged, xRead: Boolean;
+begin
+  ProgressBegin('Introspecting', 2000);
+  try
+    try
+      xChanged := stubChanged;
+      xRead := stubRead;
+      ProjectDesignFromString(ProjectDesignAsString, projectFileName);
+      stubChanged := xChanged;
+      stubRead := xRead;
+      ProgressInvalidateConsole;
+    except
+      on e: exception do
+      begin
+        if Assigned (ProgressInterface) then
+          ProgressException(e)
+        else
+          raise;
+      end;
+    end;
+  finally
+    ProgressEnd;
   end;
 end;
 
@@ -9211,7 +9221,7 @@ var
   xWList, xSList, xOlist, xMList, xFileList: TStringList;
 begin
   result := '';
-  StepProgress('Reading filesystem...', 100);
+  ProgressStep('Reading filesystem...', 100);
   xFileName := LazFileUtils.AppendPathDelim(aFoldername) + _ProjectFileName;
   xWList := TStringList.Create;
   xWList.Sorted := True;
@@ -9231,7 +9241,7 @@ begin
     for w := 0 to xWList.Count - 1 do
     begin
       xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName) + xWList.Strings[w];
-      StepProgress(xWsdlFolderName, step);
+      ProgressStep(xWsdlFolderName, step);
       xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
       wXml := pXml.AddXml(TXml.Create);
       wXml.LoadFromFile(xFileName, nil);
@@ -9267,7 +9277,7 @@ begin
         end;
       end;
     end;
-    StepProgress('Scripts...', 100);
+    ProgressStep('Scripts...', 100);
     mmXml := pXml.AddXml (TXml.CreateAsString('Scripts', ''));
     xScriptsFolderName := LazFileUtils.AppendPathDelim(aFoldername) + 'S';
     _getFolders (xScriptsFolderName, xMList);
@@ -9473,7 +9483,7 @@ begin
     result := result + allOperations.Operations[x].Messages.Count;
 end;
 
-procedure TWsdlProject.InitProgress(aCaption: String; aMax: Integer);
+procedure TWsdlProject.ProgressBegin(aCaption: String; aMax: Integer);
 begin
   if Assigned (ProgressInterface) then
   begin
@@ -9483,13 +9493,15 @@ begin
       ProgressInterface.ProgressMax := aMax;
       ProgressInterface.ProgressPos := 0;
       ProgressInterface.doUpdateConsole := False;
+      ProgressInterface.ExceptionRaised := False;
+      ProgressInterface.doShowProgress := True;
     finally
       ReleaseLogLock;
     end;
   end;
 end;
 
-procedure TWsdlProject.UpdateProgress(aAction: String; aPos: Integer);
+procedure TWsdlProject.ProgressUpdate(aAction: String; aPos: Integer);
 begin
   if Assigned (ProgressInterface) then
   begin
@@ -9503,7 +9515,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.StepProgress(aAction: String; aInc: Integer);
+procedure TWsdlProject.ProgressStep(aAction: String; aInc: Integer);
 begin
   if Assigned (ProgressInterface) then
   begin
@@ -9517,7 +9529,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.UpdateConsole;
+procedure TWsdlProject.ProgressInvalidateConsole;
 begin
   if Assigned (ProgressInterface) then
   begin
@@ -9530,7 +9542,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.ExceptionHandlerProgress(E: Exception);
+procedure TWsdlProject.ProgressException(E: Exception);
 begin
   if Assigned (ProgressInterface) then
   begin
@@ -9540,17 +9552,17 @@ begin
   end;
 end;
 
-procedure TWsdlProject.DoShowProgress(aValue: Boolean);
+procedure TWsdlProject.ProgressEnd;
 begin
-    if Assigned (ProgressInterface) then
-    begin
-      AcquireLogLock;
-      try
-        ProgressInterface.doShowProgress := aValue;
-      finally
-        ReleaseLogLock;
-      end;
+  if Assigned (ProgressInterface) then
+  begin
+    AcquireLogLock;
+    try
+      ProgressInterface.doShowProgress := False;
+    finally
+      ReleaseLogLock;
     end;
+  end;
 end;
 
 procedure TWsdlProject.DatabaseConnectionSpecificationFromXml ;
@@ -9612,6 +9624,55 @@ begin
   aStream.Position := 0;
   aStream.Write(Pointer(aString)^, Length (aString));
   aStream.Position := 0;
+end;
+
+function TWsdlProject.isSpecialWsdl(aWsdl: TWsdl): Boolean;
+begin
+  result := (aWsdl = FreeFormatWsdl)
+         or (aWsdl = XsdWsdl)
+         or (aWsdl = XmlSampleWsdl)
+         or (aWsdl = ApiByExampleWsdl)
+         or (aWsdl = CobolWsdl)
+         or (aWsdl = BmtpWsdl)
+         or (aWsdl = SwiftMtWsdl)
+         or (aWsdl = MailWsdl)
+         ;
+end;
+
+procedure TWsdlProject.UpdateWsdlsList(aNewWsdlsList: TStringList);
+var
+  w, s, o: Integer;
+  xOperation: TWsdlOperation;
+begin
+  for w := Wsdls.Count - 1 downto 0 do
+  begin
+    if not isSpecialWsdl(Wsdls.Objects[w] as TWsdl) then
+    begin
+      if aNewWsdlsList.IndexOfObject(Wsdls.Objects[w]) < 0 then
+      begin
+        Wsdls.Objects[w].Free;
+        Wsdls.Delete(w);
+      end;
+    end;
+  end;
+  for w := 0 to aNewWsdlsList.Count - 1 do
+  begin
+    if Wsdls.IndexOfObject(aNewWsdlsList.Objects[w]) < 0 then
+    begin
+      Wsdls.AddObject(aNewWsdlsList.Strings[w], aNewWsdlsList.Objects[w]);
+      with aNewWsdlsList.Objects[w] as TWsdl do
+      begin
+        for s := 0 to Services.Count - 1 do with Services.Services[s] do
+        begin
+          for o := 0 to Operations.Count - 1 do
+          begin
+            xOperation := Operations.Operations[o];
+            TWsdlMessage.CreateReply(xOperation, 'Default', '.*', 'Default reply');
+          end;
+        end;
+      end;
+    end;
+  end;
 end;
 
 // TWsdlProject
