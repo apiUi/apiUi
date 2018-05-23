@@ -4260,9 +4260,11 @@ begin
         HttpClient.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
         with (HttpClient.IOHandler as TIdSSLIOHandlerSocketOpenSSL) do
         begin
-          SSLOptions.CertFile := aOperation.sslCertificateFile;
-          SSLOptions.KeyFile := aOperation.sslKeyFile;
-          SSLOptions.RootCertFile := aOperation.sslRootCertificateFile;
+          SSLOptions.CertFile := resolveAliasses (aOperation.sslCertificateFile);
+          SSLOptions.KeyFile := resolveAliasses (aOperation.sslKeyFile);
+          SSLOptions.RootCertFile := resolveAliasses (aOperation.sslRootCertificateFile);
+          if aOperation.sslPassword <> '' then
+            OnGetPassword := aOperation.OnGetPassword; // TODO resolveAliasses...
           SSLOptions.Method := aOperation.sslVersion;
           SSLOptions.Mode := sslmUnassigned;
           SSLOptions.VerifyMode := [];

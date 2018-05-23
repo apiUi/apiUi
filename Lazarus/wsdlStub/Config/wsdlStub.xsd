@@ -966,9 +966,10 @@ More entries allowed
 												<xs:restriction base="sslVersionType"/>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="CertificateFile" type="FileNameType"/>
-										<xs:element name="KeyFile" type="FileNameType"/>
-										<xs:element name="RootCertificateFile" type="FileNameType"/>
+										<xs:element name="CertificateFile" type="FileNameType" minOccurs="0"/>
+										<xs:element name="KeyFile" type="FileNameType" minOccurs="0"/>
+										<xs:element name="RootCertificateFile" type="FileNameType" minOccurs="0"/>
+										<xs:element name="Password" type="passwordType" minOccurs="0"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>

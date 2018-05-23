@@ -97,9 +97,10 @@ when "true", the server will be allowed to send gzip responses (compression meth
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="Version" type="tns:sslVersionType"/>
-						<xs:element name="CertificateFile" type="tns:FileNameType"/>
-						<xs:element name="KeyFile" type="tns:FileNameType"/>
-						<xs:element name="RootCertificateFile" type="tns:FileNameType"/>
+						<xs:element name="CertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="KeyFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="RootCertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="Password" type="tns:passwordType" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

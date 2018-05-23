@@ -335,7 +335,7 @@ type
       smtpPort: Integer;
       useSsl: Boolean;
       sslVersion: TIdSSLVersion;
-      sslCertificateFile, sslKeyFile, sslRootCertificateFile: String;
+      sslCertificateFile, sslKeyFile, sslRootCertificateFile, sslPassword: String;
       StubMqHeaderXml: TXml;
       StubMqPutManager: String;
       StubMqPutQueue: String;
@@ -392,6 +392,7 @@ type
       property Cloned: TWsdlOperation read fCloned;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
       function AddedTypeDefElementsAsXml: TObject;
+      procedure OnGetPassword (var aPassword: String);
       procedure AddedTypeDefElementsFromXml(aXml: TObject);
       function BeforeBindsAsText: String;
       procedure RebindLists; override;
@@ -4254,6 +4255,7 @@ begin
   self.sslCertificateFile := xOperation.sslCertificateFile;
   self.sslKeyFile := xOperation.sslKeyFile;
   self.sslRootCertificateFile := xOperation.sslRootCertificateFile;
+  self.sslPassword := xOperation.sslPassword;
   self.sslVersion := xOperation.sslVersion;
   if Assigned (_WsdlWsaXsd) then
   begin
@@ -4569,6 +4571,11 @@ begin
     FreeAndNil (sly);
     FreeAndNil (slx);
   end;
+end;
+
+procedure TWsdlOperation.OnGetPassword(var aPassword: String);
+begin
+  aPassword := sslPassword;
 end;
 
 procedure TWsdlOperation.AddedTypeDefElementsFromXml (aXml : TObject );
@@ -5180,6 +5187,8 @@ begin
             AddXml(TXml.CreateAsString('CertificateFile', sslCertificateFile));
             AddXml(TXml.CreateAsString('KeyFile', sslKeyFile));
             AddXml(TXml.CreateAsString('RootCertificateFile', sslRootCertificateFile));
+            if sslPassword <> '' then
+              AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(sslPassword)));
           end;
         end;
       end;
@@ -5278,6 +5287,7 @@ begin
   sslCertificateFile := '';
   sslKeyFile := '';
   sslRootCertificateFile := '';
+  sslPassword := '';
   StubMqPutManager := '';
   StubMqPutQueue := '';
   StubMqGetManager := '';
@@ -5349,6 +5359,15 @@ begin
             sslCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
             sslKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
             sslRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
+            yXml := Items.XmlCheckedItemByTag['Password'];
+            if Assigned (yXml) then
+            begin
+              try
+                sslPassword :=  Xmlz.DecryptString(yXml.Value);
+              except
+                sslPassword :=  '';
+              end;
+            end;
           end;
         end;
         if Name = 'Mq' then
