@@ -217,7 +217,9 @@ public
     fChecked: Boolean;
     fPrevChecked: Boolean;
   isProcessed: Boolean;
+  SourceFileName: String;
   Tag: LongInt;
+  procedure PopulateSourceFileName (aName: String);
   function isValueLink: Boolean;
   function hasNoDuplicatesOn (aCaption: String; aOnlyWhenChecked: Boolean; var oBind, dBind: TCustomBindable): Boolean;
   procedure Reset; Virtual;
@@ -596,6 +598,15 @@ begin
   DecodeTime(AValue,hour,min,sec,msec);
   Value := Format('%.*d-%.*d-%.*dT%.*d:%.*d:%.*d.%.*d'
                 , [4, year, 2, month, 2, day, 2, hour, 2, min, 2, sec, 3, msec]);
+end;
+
+procedure TCustomBindable.PopulateSourceFileName(aName: String);
+var
+  x: Integer;
+begin
+  SourceFileName := aName;
+  for x := 0 to Children.Count - 1 do
+    Children.Bindables[x].PopulateSourceFileName(aName);
 end;
 
 function TCustomBindable.isValueLink: Boolean;

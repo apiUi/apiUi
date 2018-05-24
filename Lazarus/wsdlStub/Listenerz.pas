@@ -25,7 +25,7 @@ type
   public
     httpProxyPort, httpBmtpPort: Integer;
     sslVersion: TIdSSLVersion;
-    sslCertificateFile, sslKeyFile, sslRootCertificateFile: String;
+    sslCertificateFile, sslKeyFile, sslRootCertificateFile, sslPassword: String;
     httpPorts, httpsPorts: TStringList;
     mqInterfaces: TStringList;
     stompInterfaces: TStringList;
@@ -36,6 +36,7 @@ type
     pop3UserName, pop3Password: String;
     SpecificationXml: TXml;
     property Connected: Boolean read fConnected write setConnected;
+    procedure OnGetSslPassword (var aPassword: String);
     procedure Clear;
     procedure FromXml (aOnHaveFrame: TOnHaveFrame);
     constructor Create;
@@ -76,6 +77,8 @@ begin
           AddXml(TXml.CreateAsString('CertificateFile', sslCertificateFile));
           AddXml(TXml.CreateAsString('KeyFile', sslKeyFile));
           AddXml(TXml.CreateAsString('RootCertificateFile', sslRootCertificateFile));
+          if sslPassword <> '' then
+            AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(sslPassword)));
         end;
       end;
     end;
@@ -193,6 +196,15 @@ begin
               sslCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
               sslKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
               sslRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
+              yXml := Items.XmlCheckedItemByTag['Password'];
+              if Assigned (yXml) then
+              begin
+                try
+                  sslPassword :=  Xmlz.DecryptString(yXml.Value);
+                except
+                  sslPassword :=  '';
+                end;
+              end;
             end;
           end;
           if Name = 'Mq' then
@@ -254,6 +266,11 @@ begin
   fConnected := AValue ;
 end;
 
+procedure TListeners.OnGetSslPassword(var aPassword: String);
+begin
+  aPassword := sslPassword;
+end;
+
 procedure TListeners.Clear;
 var
   x: Integer;
@@ -273,6 +290,7 @@ begin
   sslCertificateFile := '';
   sslKeyFile := '';
   sslRootCertificateFile := '';
+  sslPassword := '';
   for x := 0 to mqInterfaces.Count - 1 do
     mqInterfaces.Objects [x].Free;
   mqInterfaces.Clear;

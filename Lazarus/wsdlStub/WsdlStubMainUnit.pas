@@ -9220,7 +9220,9 @@ begin
           ProgressForm.ProgressInterface := se.ProgressInterface;
           ProgressForm.ShowModal;
           if se.ProgressInterface.doUpdateConsole then
-            DoUpdateConsole;
+            DoUpdateConsole
+          else
+            UpdateCaption;
         finally
           ProgressForm.Free;
         end;

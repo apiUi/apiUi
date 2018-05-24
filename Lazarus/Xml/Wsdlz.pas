@@ -392,7 +392,7 @@ type
       property Cloned: TWsdlOperation read fCloned;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
       function AddedTypeDefElementsAsXml: TObject;
-      procedure OnGetPassword (var aPassword: String);
+      procedure OnGetSslPassword (var aPassword: String);
       procedure AddedTypeDefElementsFromXml(aXml: TObject);
       function BeforeBindsAsText: String;
       procedure RebindLists; override;
@@ -4573,7 +4573,7 @@ begin
   end;
 end;
 
-procedure TWsdlOperation.OnGetPassword(var aPassword: String);
+procedure TWsdlOperation.OnGetSslPassword(var aPassword: String);
 begin
   aPassword := sslPassword;
 end;

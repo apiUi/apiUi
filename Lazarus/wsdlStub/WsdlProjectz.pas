@@ -295,6 +295,7 @@ type
     procedure OpenFromFolders;
     procedure IntrospectProject;
     function OpenWithFolders (aFolderName: String): String;
+    function XmlFromFolders (aFolderName: String): TXml;
     function ProjectDesignAsXml: TXml;
     function ProjectDesignAsString: String;
 {}
@@ -1947,6 +1948,8 @@ begin
             KeyFile := Listeners.sslKeyFile;
             RootCertFile := Listeners.sslRootCertificateFile;
           end;
+          if Listeners.sslPassword <> '' then
+            ServerOpenSSL.OnGetPassword := Listeners.OnGetSslPassword; // TODO resolveAliasses...
           for x := 0 to Listeners.httpsPorts.Count - 1 do
           begin
             try
@@ -2750,7 +2753,8 @@ begin
                 except
                   on e: Exception do
                   begin
-{$ifndef NoGUI}
+{%ifndef NoGUI}
+{$ifdef NEVEREVER}
                     if BooleanPromptDialog ( 'Error: '
                                        + e.Message
                                        + #$D#$A
@@ -2782,7 +2786,7 @@ begin
                     else
                       xWsdl := nil;
 {$else}
-                    Raise;
+                    Raise Exception.Create(e.Message + LineEnding + LineEnding + 'Found in ' + wXml.SourceFileName);
 {$endif}
 
                   end;
@@ -4264,7 +4268,7 @@ begin
           SSLOptions.KeyFile := resolveAliasses (aOperation.sslKeyFile);
           SSLOptions.RootCertFile := resolveAliasses (aOperation.sslRootCertificateFile);
           if aOperation.sslPassword <> '' then
-            OnGetPassword := aOperation.OnGetPassword; // TODO resolveAliasses...
+            OnGetPassword := aOperation.OnGetSslPassword; // TODO resolveAliasses...
           SSLOptions.Method := aOperation.sslVersion;
           SSLOptions.Mode := sslmUnassigned;
           SSLOptions.VerifyMode := [];
@@ -9166,6 +9170,16 @@ begin
 end;
 
 function TWsdlProject.OpenWithFolders (aFolderName: String): String;
+begin
+  with XmlFromFolders(aFolderName) do
+  try
+    result := AsText(False,2,True,False);
+  finally
+    Free;
+  end;
+end;
+
+function TWsdlProject.XmlFromFolders(aFolderName: String): TXml;
   procedure _AddChildsFromFolder (aXml: TXml; aFolderName: String);
   var
     xSearchRec: TSearchRec;
@@ -9219,10 +9233,10 @@ var
     , xString, xFileName: String;
   xWsdl: TWsdl;
   x, w, s, o, m, step: Integer;
-  pXml, wXml, sXml, oXml, mmXml, mXml: TXml;
+  wXml, sXml, oXml, mmXml, mXml: TXml;
   xWList, xSList, xOlist, xMList, xFileList: TStringList;
 begin
-  result := '';
+  result := TXml.Create;
   ProgressStep('Reading filesystem...', 100);
   xFileName := LazFileUtils.AppendPathDelim(aFoldername) + _ProjectFileName;
   xWList := TStringList.Create;
@@ -9234,9 +9248,8 @@ begin
   xMList := TStringList.Create;
   xMList.Sorted := True;
   xFileList := TStringList.Create;
-  pXml := TXml.Create;
   try
-    pXml.LoadFromFile(xFileName, nil);
+    result.LoadFromFile(xFileName, nil);
     xWsdlsFolderName := LazFileUtils.AppendPathDelim(aFoldername) + 'W';
     _getFolders (xWsdlsFolderName, xWList);
     step := 800 div xWlist.Count;
@@ -9245,7 +9258,7 @@ begin
       xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName) + xWList.Strings[w];
       ProgressStep(xWsdlFolderName, step);
       xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
-      wXml := pXml.AddXml(TXml.Create);
+      wXml := result.AddXml(TXml.Create);
       wXml.LoadFromFile(xFileName, nil);
       xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'S';
       _getFolders (xServicesFolderName, xSList);
@@ -9280,7 +9293,7 @@ begin
       end;
     end;
     ProgressStep('Scripts...', 100);
-    mmXml := pXml.AddXml (TXml.CreateAsString('Scripts', ''));
+    mmXml := result.AddXml (TXml.CreateAsString('Scripts', ''));
     xScriptsFolderName := LazFileUtils.AppendPathDelim(aFoldername) + 'S';
     _getFolders (xScriptsFolderName, xMList);
     for m := 0 to xMList.Count - 1 do
@@ -9291,10 +9304,8 @@ begin
       mXml.LoadFromFile(xFileName, nil);
       _AddChildsFromFolder (mXml, xScriptFolderName);
     end;
-    _AddChildsFromFolder(pXml, aFoldername);
-    result := pXml.AsText(False,2,True,False);
+    _AddChildsFromFolder(result, aFoldername);
   finally
-    FreeAndNil(pXml);
     FreeAndNil(xWList);
     FreeAndNil(xSList);
     FreeAndNil(xOList);

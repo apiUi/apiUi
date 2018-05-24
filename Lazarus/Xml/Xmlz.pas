@@ -1138,6 +1138,7 @@ begin
     try
       fFileContents.Text := xmlio.ReadStringFromFile (aFileName);
       LoadXml (ErrorFound);
+      PopulateSourceFileName(aFileName);
     except
       on e: Exception do
         raise Exception.Create ( 'error reading '
@@ -1158,6 +1159,7 @@ begin
     try
       fFileContents.Text := ReadStringFromFile (aFileName);
       LoadJson (ErrorFound);
+      PopulateSourceFileName(aFileName);
     except
       on e: Exception do
         raise Exception.Create ( 'error reading '
@@ -1189,6 +1191,7 @@ begin
     try
       fFileContents.Text := ReadStringFromFile (aFileName);
       LoadYaml (ErrorFound);
+      PopulateSourceFileName(aFileName);
     except
       on e: Exception do
         raise Exception.Create ( 'error reading '
