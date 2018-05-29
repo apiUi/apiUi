@@ -382,6 +382,7 @@ type
     procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
     procedure ProjectDesignFromXml (aXml: TXml; aMainFileName: String);
     procedure ProjectDesignFromString (aString, aMainFileName: String);
+    procedure PrepareAllOperationsShowingProgress;
     procedure PrepareAllOperations;
     procedure Activate (aActive: Boolean);
     procedure Clear;
@@ -1745,6 +1746,7 @@ procedure TWsdlProject.PrepareAllOperations;
   end;
 var
   w, o, m, f: Integer;
+  oStep: Integer;
   xMessage: TWsdlMessage;
 begin
   wsdlNames.Clear;
@@ -1763,9 +1765,13 @@ begin
   for w := 0 to Wsdls.Count - 1 do
     _prepWsdl (Wsdls.Objects [w] as TWsdl);
   UpdateOperationAliasses;
-
+  ProgressStep('Preparing operations', 100);
+  oStep := 800;
+  if allOperations.Count > 0 then
+    oStep := oStep div allOperations.Count;
   for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do// here since invokeAll
   begin
+    ProgressStep('Preparing operations', oStep);
     OnGetAbortPressed := self.GetAbortPressed;
     if reqBind is TXml then with reqBind as TXml do Checked := True;
     if rpyBind is TXml then with rpyBind as TXml do Checked := True;
@@ -1803,7 +1809,20 @@ begin
   end;
   if scriptErrorCount > 0 then
     LogServerException ( IntToStr (scriptErrorCount) + ' Script(s) found with errors', False, nil);
+  ProgressStep('Preparing operations', 100);
 end;
+
+procedure TWsdlProject.PrepareAllOperationsShowingProgress;
+begin
+  ProgressBegin('Preparing operations', 1000);
+  try
+    ProgressInvalidateConsole;
+    PrepareAllOperations;
+  finally
+    ProgressEnd;
+  end;
+end;
+
 
 procedure TWsdlProject.AcquireLogLock;
 begin
@@ -3061,12 +3080,6 @@ begin
               end;
             end;
           end;
-        end;
-//          AcquireLock;
-        try
-          PrepareAllOperations;
-        finally
-//            ReleaseLock;
         end;
         cXml := aXml.Items.XmlItemByTag ['Scripts'];
         if Assigned (cXml) then
@@ -9107,7 +9120,7 @@ end;
 
 procedure TWsdlProject.ImportFromFile;
 begin
-  ProgressBegin('Opening ' + projectFileName, 2000);
+  ProgressBegin('Opening ' + projectFileName, 3000);
   try
     try
       ProjectDesignFromString(ReadStringFromFile(projectFileName), projectFileName);
@@ -9132,7 +9145,7 @@ procedure TWsdlProject.OpenFromFolders;
 var
   xXml: TXml;
 begin
-  ProgressBegin('Opening ' + projectFileName, 2000);
+  ProgressBegin('Opening ' + projectFileName, 3000);
   try
     try
       xXml := XmlFromProjectFolders(projectFileName);
@@ -9160,7 +9173,7 @@ procedure TWsdlProject.IntrospectProject;
 var
   xChanged, xRead: Boolean;
 begin
-  ProgressBegin('Introspecting', 2000);
+  ProgressBegin('Introspecting', 3000);
   try
     try
       xChanged := stubChanged;
@@ -9256,7 +9269,10 @@ begin
     result.LoadFromFile(xFileName, nil);
     xWsdlsFolderName := LazFileUtils.AppendPathDelim(aFoldername) + 'W';
     _getFolders (xWsdlsFolderName, xWList);
-    step := 800 div xWlist.Count;
+    if xWList.Count > 0 then
+      step := 800 div xWlist.Count
+    else
+      step := 800;
     for w := 0 to xWList.Count - 1 do
     begin
       xWsdlFolderName := LazFileUtils.AppendPathDelim(xWsdlsFolderName) + xWList.Strings[w];

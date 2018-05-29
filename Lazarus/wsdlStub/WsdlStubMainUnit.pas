@@ -1513,16 +1513,10 @@ begin
                      , xXml
                      ) then
   begin
-    AcquireLock;
-    try
-      stubChanged := True;
-      se.freeFormatOperationsUpdate(xXml);
-      se.PrepareAllOperations;
-      PrepareOperation;
-    finally
-      ReleaseLock;
-    end;
-    CheckBoxClick(nil);
+    stubChanged := True;
+    BeginUpdate;
+    se.freeFormatOperationsUpdate(xXml);
+    IntrospectDesign;
   end;
 end;
 
@@ -2908,16 +2902,10 @@ begin
                        , xXml
                        ) then
     begin
-      AcquireLock;
-      try
-        stubChanged := True;
-        se.xsdOperationsUpdate(xXml, se.projectFileName);
-        se.PrepareAllOperations;
-        PrepareOperation;
-      finally
-        ReleaseLock;
-      end;
-      CheckBoxClick(nil);
+      stubChanged := True;
+      BeginUpdate;
+      se.xsdOperationsUpdate(xXml, se.projectFileName);
+      IntrospectDesign;
     end;
   finally
     xXml.Free;
@@ -3120,16 +3108,10 @@ begin
                        , xXml
                        ) then
     begin
-      AcquireLock;
-      try
-        stubChanged := True;
-        se.xmlSampleOperationsUpdate(xXml, se.projectFileName);
-        se.PrepareAllOperations;
-        PrepareOperation;
-      finally
-        ReleaseLock;
-      end;
-      CheckBoxClick(nil);
+      stubChanged := True;
+      BeginUpdate;
+      se.xmlSampleOperationsUpdate(xXml, se.projectFileName);
+      IntrospectDesign;
     end;
   finally
     xXml.Free;
@@ -3546,7 +3528,6 @@ begin
       se.ProjectDesignFromString(aString, aMainFileName);
       AcquireLock;
       try
-        se.PrepareAllOperations;
         PrepareOperation;
         CreateEnvironmentSubMenuItems;
         CreateScriptsSubMenuItems;
@@ -11829,16 +11810,10 @@ begin
                      , xXml
                      ) then
   begin
-    AcquireLock;
-    try
-      stubChanged := True;
-      se.cobolOperationsUpdate(xXml, se.projectFileName);
-      se.PrepareAllOperations;
-      PrepareOperation;
-    finally
-      ReleaseLock;
-    end;
-    CheckBoxClick(nil);
+    stubChanged := True;
+    BeginUpdate;
+    se.cobolOperationsUpdate(xXml, se.projectFileName);
+    IntrospectDesign;
   end;
 end;
 
@@ -12122,16 +12097,10 @@ begin
                      , xXml
                      ) then
   begin
-    AcquireLock;
-    try
-      stubChanged := True;
-      se.swiftMtOperationsUpdate(xXml, se.projectFileName);
-      se.PrepareAllOperations;
-      PrepareOperation;
-    finally
-      ReleaseLock;
-    end;
-    CheckBoxClick(nil);
+    stubChanged := True;
+    BeginUpdate;
+    se.swiftMtOperationsUpdate(xXml, se.projectFileName);
+    IntrospectDesign;
   end;
 end;
 
@@ -12851,7 +12820,7 @@ begin
         try
           stubChanged := True;
           OptionsFromXml(xXml);
-          se.PrepareAllOperations;
+          TProcedureThread.Create(False, False, se, se.PrepareAllOperationsShowingProgress);
           PrepareOperation;
         finally
           ReleaseLock;
@@ -13036,7 +13005,7 @@ begin
           raise Exception.CreateFmt('%s does not contain a valid Script export', [OpenFileDialog.FileName]);
         se.ProjectScriptsFromXml(xXml);
         CreateScriptsSubMenuItems;
-        se.PrepareAllOperations;
+        TProcedureThread.Create(False, False, se, se.PrepareAllOperationsShowingProgress);
         FillInWsdlEdits;
         stubChanged := True;
       finally
@@ -13834,17 +13803,10 @@ begin
                        , xXml
                        ) then
     begin
-      AcquireLock;
-      try
-        stubChanged := True;
-        se.ApiByExampleOperationsUpdate(xXml, se.projectFileName);
-        se.PrepareAllOperations;
-        PrepareOperation; // despite next line, do not remove since this rebuilds the wsdls list
-        IntrospectDesign; // some datatypes may have changed
-      finally
-        ReleaseLock;
-      end;
-      CheckBoxClick(nil);
+      stubChanged := True;
+      BeginUpdate;
+      se.ApiByExampleOperationsUpdate(xXml, se.projectFileName);
+      IntrospectDesign;
     end;
   finally
     xXml.Free;
@@ -14080,16 +14042,10 @@ begin
                      , xXml
                      ) then
   begin
-    AcquireLock;
-    try
-      stubChanged := True;
-      se.bmtpOperationsUpdate(xXml, se.projectFileName);
-      se.PrepareAllOperations;
-      PrepareOperation;
-    finally
-      ReleaseLock;
-    end;
-    CheckBoxClick(nil);
+    stubChanged := True;
+    BeginUpdate;
+    se.bmtpOperationsUpdate(xXml, se.projectFileName);
+    IntrospectDesign;
   end;
 end;
 
@@ -14207,16 +14163,10 @@ begin
                      , xXml
                      ) then
   begin
-    AcquireLock;
-    try
-      stubChanged := True;
-      se.mailOperationsUpdate(xXml);
-      se.PrepareAllOperations;
-      PrepareOperation;
-    finally
-      ReleaseLock;
-    end;
-    CheckBoxClick(nil);
+    stubChanged := True;
+    BeginUpdate;
+    se.mailOperationsUpdate(xXml);
+    IntrospectDesign;
   end;
 end;
 
