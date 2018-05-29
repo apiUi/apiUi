@@ -9228,7 +9228,7 @@ begin
         end;
         if se.ProgressInterface.ExceptionRaised then with se.ProgressInterface do
         begin
-          if MessageDlg( ExceptionMessage + LineEnding +  LineEnding + 'Show stack trace?'
+          if MessageDlg( ExceptionMessage + LineEnding +  LineEnding + 'Show extra information?'
                        , mtError
                        , [mbNo, mbYes]
                        , 0
@@ -9715,7 +9715,7 @@ begin
   { }
   s := ExceptionStackListString (E);
   { }
-  if MessageDlg( E.Message + LineEnding +  LineEnding + 'Show stack trace?'
+  if MessageDlg( E.Message + LineEnding +  LineEnding + 'Show extra information?'
                , mtError
                , [mbNo, mbYes]
                , 0
