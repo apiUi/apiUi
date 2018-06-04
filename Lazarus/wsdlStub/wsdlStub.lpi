@@ -162,6 +162,7 @@
     <Exceptions Count="21">
       <Item1>
         <Name Value="EAbort"/>
+        <Enabled Value="False"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>
@@ -173,6 +174,7 @@
       </Item3>
       <Item4>
         <Name Value="ERegistryException"/>
+        <Enabled Value="False"/>
       </Item4>
       <Item5>
         <Name Value="EDatabaseError"/>
@@ -180,6 +182,7 @@
       </Item5>
       <Item6>
         <Name Value="Exception"/>
+        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
@@ -187,6 +190,7 @@
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
+        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
@@ -214,6 +218,7 @@
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
+        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EODBCException"/>
@@ -225,6 +230,7 @@
       </Item17>
       <Item18>
         <Name Value="EStringListError"/>
+        <Enabled Value="False"/>
       </Item18>
       <Item19>
         <Name Value="EOleSysError"/>

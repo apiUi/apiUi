@@ -79,6 +79,7 @@ type
     Action2 : TAction ;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
+    WsdlNumberOfReferrableMenuItem: TMenuItem;
     OperationBrowseDocumentationAction: TAction;
     ToggleTrackIOAction: TAction;
     BmtpOperationsAction: TAction;
@@ -621,6 +622,7 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
+    procedure WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
     procedure OpenWsdlActionUpdate(Sender: TObject);
     procedure OperationBrowseDocumentationActionExecute(Sender: TObject);
     procedure OperationBrowseDocumentationActionUpdate(Sender: TObject);
@@ -7560,6 +7562,7 @@ end;
 procedure TMainForm.IntrospectDesign;
 begin
   BeginUpdate;
+  ProjectDesignToClipboardAction.OnExecute(nil);
   captionFileName := ExtractFileName(se.projectFileName);
   TProcedureThread.Create(False, False, se, se.IntrospectProject);
 end;
@@ -8824,6 +8827,7 @@ var
   xEnableDelMenuItems: Boolean;
   xEnableCheck: Boolean;
   xEnableStamp: Boolean;
+  xEnableNumberReferrable: Boolean;
   xExtRecurVisible: Boolean;
   xAddChildVisible: Boolean;
   xRootBase: TXsdDataType;
@@ -8836,10 +8840,12 @@ begin
   xExtRecurVisible := False;
   xEnableCheck := False;
   xEnableStamp := False;
+  xEnableNumberReferrable := False;
   if xBind is TXml then
     with xBind as TXml do
     begin
       xEnableAddMenuItems := Assigned(Xsd) and (Xsd.maxOccurs <> '1');
+      xEnableNumberReferrable := xEnableAddMenuItems;
       xEnableDelMenuItems := Assigned(Xsd) and
         ((xBind as TXml).Xsd.maxOccurs <> '1') and
         ((xBind as TXml).IndexOfRepeatableItem >= 1);
@@ -8871,6 +8877,7 @@ begin
   WsdlItemAddMenuItem.Enabled := xEnableAddMenuItems;
   WsdlItemDelMenuItem.Enabled := xEnableDelMenuItems;
   AddChildElementMenuItem.Visible := xAddChildVisible;
+  WsdlNumberOfReferrableMenuItem.Enabled := xEnableNumberReferrable;
   ExtendRecursivityMenuItem.Visible := xExtRecurVisible;
   WsdlItemChangeDataTypeMenuItem.Clear;
   WsdlItemChangeDataTypeMenuItem.Enabled := (xBind is TXml) and
@@ -14205,6 +14212,11 @@ end;
 procedure TMainForm.MenuItem47Click(Sender: TObject);
 begin
   PromptAndSetColumnWidth(SnapshotsVTS);
+end;
+
+procedure TMainForm.WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
+begin
+  ShowMessage ('Number of referrable elements');
 end;
 
 procedure TMainForm.OpenWsdlActionUpdate(Sender: TObject);

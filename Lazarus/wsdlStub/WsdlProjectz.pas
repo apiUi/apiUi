@@ -203,7 +203,7 @@ type
     mqGetThreads: TStringList;
     Listeners: TListeners;
     doValidateRequests, doValidateReplies, doCheckExpectedValues: Boolean;
-    ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    elementsWhenRepeatable, ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     ignoreCoverageOn: TStringList;
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
@@ -1469,6 +1469,9 @@ begin
   openApiPaths.Sorted := True;
   unknownOperation := TWsdlOperation.Create(TWsdl(nil));
   unknownOperation.StubAction := saRedirect;
+  elementsWhenRepeatable := TStringList.Create;
+  elementsWhenRepeatable.Sorted := True;
+  elementsWhenRepeatable.Duplicates := dupIgnore;
   ignoreDifferencesOn := TStringList.Create;
   ignoreDifferencesOn.Sorted := True;
   ignoreDifferencesOn.Duplicates := dupIgnore;
@@ -1628,6 +1631,7 @@ begin
   FreeAndNil (ApiByExampleWsdl);
   FreeAndNil (SwiftMtWsdl);
   FreeAndNil (MailWsdl);
+  elementsWhenRepeatable.Free;
   ignoreDifferencesOn.Free;
   checkValueAgainst.Free;
   ignoreAddingOn.Free;
@@ -2465,9 +2469,12 @@ begin
                     (xOperation.reqBind as TCustomBindable).Parent := swapReqParent;
                     with AddXml (TXml.CreateAsString('ColumnElements', '')) do
                     begin
-                      for r := 0 to xOperation.Messages.Messages[0].ColumnXmls.Count - 1 do
+                      if xOperation.Messages.Count > 0 then
                       begin
-                        AddXml (TXml.CreateAsString('ColumnElement', xOperation.Messages.Messages[0].ColumnXmls.Strings[r]));
+                        for r := 0 to xOperation.Messages.Messages[0].ColumnXmls.Count - 1 do
+                        begin
+                          AddXml (TXml.CreateAsString('ColumnElement', xOperation.Messages.Messages[0].ColumnXmls.Strings[r]));
+                        end;
                       end;
                     end;
                     AddXml (TXml.CreateAsString('LogColumns',xOperation.LogColumns.Text));
@@ -2543,6 +2550,7 @@ begin
           end; //
         end; // Assigned Wsdl
       end; // for each wsdl
+      AddXml(TXml.CreateAsString('elementsWhenRepeatable', elementsWhenRepeatable.Text));
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
       AddXml(TXml.CreateAsString('checkValueAgainst', checkValueAgainst.Text));
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
@@ -2663,6 +2671,7 @@ begin
               end;
             end;
           end;
+        elementsWhenRepeatable.Text := aXml.Items.XmlValueByTag ['elementsWhenRepeatable'];
         ignoreDifferencesOn.Text := aXml.Items.XmlValueByTag ['ignoreDifferencesOn'];
         checkValueAgainst.Text := aXml.Items.XmlValueByTag ['checkValueAgainst'];
         ignoreAddingOn.Text := aXml.Items.XmlValueByTag ['ignoreAddingOn'];
@@ -3669,6 +3678,13 @@ begin
           xOperation.reqBind.Name := xOperation.Name;
         end;
       end;
+      f := Wsdls.IndexOfObject(MailWsdl);
+      if (Operations.Count > 0)
+      and (f < 0) then
+        Wsdls.AddObject(MailWsdl.Name, MailWsdl);
+      if (Operations.Count = 0)
+      and (f > -1) then
+        Wsdls.Delete(f);
     end;
   finally
     sList.Free;
@@ -5453,6 +5469,13 @@ begin
           operationRecognitionUpdate (xOperation, xOperation.rpyRecognition, oXml.Items.XmlItemByTag['rpyRecognition']);
         end;
       end;
+      f := Wsdls.IndexOfObject(FreeFormatWsdl);
+      if (Operations.Count > 0)
+      and (f < 0) then
+        Wsdls.AddObject(FreeFormatWsdl.Name, FreeFormatWsdl);
+      if (Operations.Count = 0)
+      and (f > -1) then
+        Wsdls.Delete(f);
     end;
   finally
     sList.Free;
@@ -5615,6 +5638,13 @@ begin
           operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
         end;
       end;
+      f := Wsdls.IndexOfObject(XsdWsdl);
+      if (Operations.Count > 0)
+      and (f < 0) then
+        Wsdls.AddObject(XsdWsdl.Name, XsdWsdl);
+      if (Operations.Count = 0)
+      and (f > -1) then
+        Wsdls.Delete(f);
     end;
   finally
     FreeAndNil(sList);
@@ -5770,6 +5800,13 @@ begin
           operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
         end;
       end;
+      f := Wsdls.IndexOfObject(xWsdl);
+      if (Operations.Count > 0)
+      and (f < 0) then
+        Wsdls.AddObject(xWsdl.Name, xWsdl);
+      if (Operations.Count = 0)
+      and (f > -1) then
+        Wsdls.Delete(f);
     end;
   finally
     FreeAndNil(sList);
@@ -6053,6 +6090,13 @@ begin
         FreeAndNil(oList);
       end;
     end;
+    f := Wsdls.IndexOfObject(xWsdl);
+    if (xWsdl.Services.Count > 0)
+    and (f < 0) then
+      Wsdls.AddObject(xWsdl.Name, xWsdl);
+    if (xWsdl.Services.Count = 0)
+    and (f > -1) then
+      Wsdls.Delete(f);
   finally
     FreeAndNil(sList);
   end;
@@ -6209,6 +6253,13 @@ begin
           operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
         end;
       end;
+      f := Wsdls.IndexOfObject(CobolWsdl);
+      if (Operations.Count > 0)
+      and (f < 0) then
+        Wsdls.AddObject(CobolWsdl.Name, CobolWsdl);
+      if (Operations.Count = 0)
+      and (f > -1) then
+        Wsdls.Delete(f);
     end;
   finally
     FreeAndNil(sList);
@@ -6458,6 +6509,13 @@ begin
           operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
         end;
       end;
+      f := Wsdls.IndexOfObject(SwiftMtWsdl);
+      if (Operations.Count > 0)
+      and (f < 0) then
+        Wsdls.AddObject(SwiftMtWsdl.Name, SwiftMtWsdl);
+      if (Operations.Count = 0)
+      and (f > -1) then
+        Wsdls.Delete(f);
     end;
   finally
     FreeAndNil(sList);
@@ -6737,6 +6795,13 @@ begin
             fltBind := _LoadCobolMsg(oXml.Items.XmlCheckedItemByTag['Flt'], xFileNames, fltDescrFileName);
           end;
         end;
+        f := Wsdls.IndexOfObject(BmtpWsdl);
+        if (Operations.Count > 0)
+        and (f < 0) then
+          Wsdls.AddObject(BmtpWsdl.Name, BmtpWsdl);
+        if (Operations.Count = 0)
+        and (f > -1) then
+          Wsdls.Delete(f);
       end;
     end;
   finally
@@ -9048,6 +9113,7 @@ begin
         end;
         _saveChildElementToFile(Items, 'contexts', xProjectFolderName);
         _saveChildElementToFile(Items, 'properties', xProjectFolderName);
+        _saveChildElementToFile(Items, 'elementsWhenRepeatable', xProjectFolderName);
         _saveChildElementToFile(Items, 'ignoreDifferencesOn', xProjectFolderName);
         _saveChildElementToFile(Items, 'checkValueAgainst', xProjectFolderName);
         _saveChildElementToFile(Items, 'ignoreAddingOn', xProjectFolderName);
@@ -9173,11 +9239,12 @@ procedure TWsdlProject.IntrospectProject;
 var
   xChanged, xRead: Boolean;
 begin
-  ProgressBegin('Introspecting', 3000);
+  ProgressBegin('Introspecting', 4000);
   try
     try
       xChanged := stubChanged;
       xRead := stubRead;
+      PrepareAllOperations;
       ProjectDesignFromString(ProjectDesignAsString, projectFileName);
       stubChanged := xChanged;
       stubRead := xRead;
@@ -9353,6 +9420,7 @@ begin
   doValidateReplies := False;
   doCheckExpectedValues := False;
   _WsdlDisableOnCorrelate := False;
+  elementsWhenRepeatable.Clear;
   ignoreDifferencesOn.Clear;
   checkValueAgainst.Clear;
   ignoreAddingOn.Clear;

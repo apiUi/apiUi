@@ -8967,6 +8967,10 @@ object MainForm: TMainForm
         OnClick = ChangeDataTypeMenuItemClick
       end
     end
+    object WsdlNumberOfReferrableMenuItem: TMenuItem
+      Caption = 'Number of referrable elements'
+      OnClick = WsdlNumberOfReferrableMenuItemClick
+    end
     object N2: TMenuItem
       Caption = '-'
     end
