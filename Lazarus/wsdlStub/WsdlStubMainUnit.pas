@@ -7562,7 +7562,6 @@ end;
 procedure TMainForm.IntrospectDesign;
 begin
   BeginUpdate;
-  ProjectDesignToClipboardAction.OnExecute(nil);
   captionFileName := ExtractFileName(se.projectFileName);
   TProcedureThread.Create(False, False, se, se.IntrospectProject);
 end;
@@ -9196,6 +9195,8 @@ begin
     SetUiProgress;
     if Assigned (se.ProgressInterface) then
     begin
+      if se.ProgressInterface.doUpdateConsole then
+        DoUpdateConsole;
       if se.ProgressInterface.doShowProgress then
       begin
         // pass control to another form, so this one should keep quitfor the mean time
@@ -9229,6 +9230,7 @@ begin
                      );
         end;
         se.AcquireLogLock;
+        se.ProgressInterface.doUpdateConsole := False;
         RefreshLogTimer.Enabled := True;
       end;
     end

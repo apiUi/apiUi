@@ -9244,7 +9244,6 @@ begin
     try
       xChanged := stubChanged;
       xRead := stubRead;
-      PrepareAllOperations;
       ProjectDesignFromString(ProjectDesignAsString, projectFileName);
       stubChanged := xChanged;
       stubRead := xRead;
