@@ -9196,7 +9196,10 @@ begin
     if Assigned (se.ProgressInterface) then
     begin
       if se.ProgressInterface.doUpdateConsole then
+      begin
+        se.ProgressInterface.doUpdateConsole := False;
         DoUpdateConsole;
+      end;
       if se.ProgressInterface.doShowProgress then
       begin
         // pass control to another form, so this one should keep quitfor the mean time
