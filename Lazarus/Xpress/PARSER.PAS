@@ -948,7 +948,8 @@ begin
          PutGroupData (yyv[yysp-0].yy.yyObject)
          else
          begin
-         if Children.Count > 0 then
+         if (not (xObject is TXmlAttribute))
+         and (Children.Count > 0) then
          yyerror (Format ('Assignment not allowed: %s := %s', [yyv[yysp-2].TokenString, yyv[yysp-0].yyString]));
          Value := yyv[yysp-0].yyString;
          Checked := True;

@@ -681,7 +681,8 @@ Assignment:
                   PutGroupData ($3.yy.yyObject)
                 else
                 begin
-                  if Children.Count > 0 then
+                  if (not (xObject is TXmlAttribute))
+                  and (Children.Count > 0) then
                     yyerror (Format ('Assignment not allowed: %s := %s', [$1.TokenString, $3.yyString]));
                   Value := $3.yyString;
                   Checked := True;
