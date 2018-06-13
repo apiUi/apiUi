@@ -2648,5 +2648,11 @@ begin
   end;
 end;
 
+{$ifdef windows}
+initialization
+  CoInitialize(nil);
+finalization
+  CoUninitialize;
+{$endif}
 end.
 
