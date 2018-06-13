@@ -283,12 +283,12 @@ begin
   se.projectFileName := aFileName;
   if DirectoryExistsUTF8(aFileName) then
   begin
-    se.ProjectDesignFromString(se.OpenWithFolders (se.projectFileName), aFileName);
+    se.OpenFromFolders;
   end
   else
   begin
     if FileExistsUTF8(aFileName) then
-      se.ProjectDesignFromString(ReadStringFromFile(aFileName), aFileName)
+      se.ImportFromFile
     else
       raise Exception.Create('No such file or folder: ' + aFileName);
   end;
