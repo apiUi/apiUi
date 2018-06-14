@@ -1,20 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- 17-6-2007 11:07:37: Generated with IpmGun by Bouwman -->
 <l4jIni>
-  <licenseDatabase>\\wsrv1919\ipmtools\License\xmlExplorerLicense.mdb</licenseDatabase>
   <xmlExplorerXsd>Config\l4j.xsd</xmlExplorerXsd>
-  <logTypes>
-	<logType name="crmiLog4j">
-	  <sTag>&lt;log4j_event</sTag>
-	  <eTag>&lt;/log4j_event&gt;</eTag>
-	</logType>
-	<logType name="crmiAis">
-	  <sTag>&lt;ais_log_entry</sTag>
-	  <eTag>&lt;/ais_log_entry&gt;</eTag>
-	  <eyeCatchers>
-		<eyeCatcher label="Inbound" >=============[Inbound]============</eyeCatcher>
-		<eyeCatcher label="Outbound">============[Outbound]============</eyeCatcher>
-	  </eyeCatchers>
-	</logType>
-  </logTypes>
 </l4jIni>

@@ -5,12 +5,12 @@ unit L4JMainUnit;
 interface
 
 uses
-  l4jTypes, sqldb, db, odbcconn, oracleconnection, LCLIntf, LCLType, LMessages,
+  l4jTypes, sqldb, db, odbcconn, oracleconnection, LCLIntf, LCLType,
   SysUtils
    , Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ComCtrls, ExtCtrls, VirtualTrees
    , Dialogs
-   , FormIniFilez, ToolWin, ActnList, Menus, ImgList , FileUtil
+   , FormIniFilez, ActnList, Menus, FileUtil
    , FilterDialog
    , Xmlz
     ,A2BXmlz
@@ -136,7 +136,6 @@ type
     FullCollapseAction: TAction;
     FullExpandAction: TAction;
     Help1: TMenuItem;
-    License1: TMenuItem;
     MainMenu1: TMainMenu;
     Memo: TMemo;
     N1: TMenuItem;
@@ -201,21 +200,11 @@ type
     procedure TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
-    procedure TreeViewChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure TvPopupMenuPopup(Sender: TObject);
     procedure WriteXmlActionExecute(Sender: TObject);
     procedure Save1Click(Sender: TObject);
     procedure WraptekstMenuItemClick(Sender: TObject);
-    procedure ElementAttribute1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure Editconfig1Click(Sender: TObject);
-    procedure Saveconfigas1Click(Sender: TObject);
-    procedure Saveconfig1Click(Sender: TObject);
-    procedure Openconfig1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
-    procedure License1Click(Sender: TObject);
-    procedure AllXmlActionHint(var HintStr: string; var CanShow: Boolean);
-    procedure AllXmlActionUpdate(Sender: TObject);
     procedure AllXmlActionExecute(Sender: TObject);
     procedure AbortActionExecute(Sender: TObject);
     procedure OpenFileActionExecute(Sender: TObject);
@@ -232,9 +221,6 @@ type
     procedure TreeViewClick(Sender: TObject);
     procedure TreeViewKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure TreeViewGetImageIndex(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-      var Ghosted: Boolean; var ImageIndex: Integer);
     procedure TreeViewExit(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure CloseActionExecute(Sender: TObject);
@@ -243,7 +229,6 @@ type
       Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
     procedure FormDestroy(Sender: TObject);
-    procedure TreeViewPopupMenuPopup(Sender: TObject);
     procedure TreeViewMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
@@ -259,14 +244,13 @@ type
     fReadOnly: Boolean;
     SaveLog4JFileName, ReadLog4JFileName: String;
     ColumnWidths: TStringList;
-    l4jDbName, l4jIniFileName, l4jXsdFileName, configFileName: String;
+    l4jIniFileName, l4jXsdFileName: String;
     iniXml: TXml;
     l4jXsdDescr: TXsdDescr;
     DisplayedColumns: TStringList;
-    DisplayedColumnsXsd, configXsd: TXsd;
+    DisplayedColumnsXsd: TXsd;
     DisplayedColumnsXml: TXml;
     DisplayedColumnsChanged: Boolean;
-    configRead, configChanged: Boolean;
     function getDoWrapText: Boolean;
     function getReadOnly: Boolean;
     procedure setDoWrapText(AValue: Boolean);
@@ -283,12 +267,6 @@ type
     procedure l4jInit (aIniFile: TFormIniFile);
     procedure ParserError(Sender: TObject; LineNumber, ColumnNumber,
       Offset: Integer; TokenString, Data: String);
-    procedure saveConfig (aFileName: String);
-    procedure readConfig (aFileName: String);
-    function configAsXml: TXml;
-    procedure configFromXml (aXml: TXml);
-    procedure OnlyWhenLicensed;
-    function OkToOpenCase: Boolean;
   public
     isChanged: Boolean;
     Data: TStringList;
@@ -320,10 +298,7 @@ uses FindRegExpDialog
    , IdSync
    , ErrorFound
    , cbAbout
-   , ShowXmlUnit
    , XmlGridUnit
-   , PromptUnit
-   , CommandDialog
    , DbFilterDialog
    , xmlxsdparser
    , RegExpr
@@ -343,7 +318,7 @@ const DbVisTag = '<DbVisualizer-Export>';
 procedure sqlLoop;
 var
   Msg: l4jTypes.TMsg;
-  f, x, y: Integer;
+  f, x: Integer;
   xEventData: String;
   s, sx, nm: String;
   field: TField;
@@ -473,9 +448,8 @@ end;
 function xmlLoop (aXml: TXml): String;
 var
   Msg: l4jTypes.TMsg;
-  f, r, y: Integer;
+  f, r: Integer;
   s, sx, nm: String;
-  field: TField;
   rXml, fXml: TXml;
   xCorrelationId, xMessageId, xUserTaskId, xPGID: String;
   fProcessed: Boolean;
@@ -588,7 +562,7 @@ end;
 
 function TStringThread.DbVis(s: AnsiString): AnsiString;
 var
-  xp, sp: PAnsiChar;
+  xp: PAnsiChar;
   xXml: TXml;
   x: Integer;
 begin
@@ -1037,7 +1011,7 @@ end;
 
 procedure TQueryThread.Execute;
 var
-  cs, qryText: String;
+  qryText: String;
   x: Integer;
 begin
   fEnabled := True;
@@ -1376,7 +1350,6 @@ end;
 
 function TL4JMainForm.GetAtt(aKey, aString: String): String;
 var
-  x: Integer;
   s: String;
 begin
   result := '';
@@ -1465,94 +1438,52 @@ begin
 end;
 
 procedure TL4JMainForm.l4jInit (aIniFile: TFormIniFile);
-var
-  x: Integer;
-  xXml: TXml;
-  xLogType: TLogType;
 begin
   xmlUtil.doExpandFull := True;
   _xmlLicensed := True;
-  try
-    l4jDbName := '';
-    l4jIniFileName := Copy ( ParamStr(0)
-                           , 1
-                           , Length (ParamStr(0)){$ifdef WINDOWS} - 4 {$endif}
-                           )
-                     + 'Ini.xml'
-                     ;
-    if not FileExistsUTF8(l4jIniFileName) { *Converted from FileExists* } then
-      raise Exception.Create('could not find inifile: ' + l4jIniFileName);
-    with iniXml do
-    begin
-      LoadFromFile(l4jIniFileName, nil);
-      if not (TagName = 'l4jIni') then
-        raise Exception.Create(l4jIniFileName + ': Not a valid INI Xmlfile');
-      l4jDbName := ExpandRelativeFileName ( ParamStr(0)
-                                                  , Items.XmlValueByTag ['licenseDatabase']
-                                                  );
-      l4jXsdFileName := ExpandRelativeFileName ( ParamStr(0)
-                                                       , Items.XmlValueByTag ['xmlExplorerXsd']
-                                                       );
-      xXml := Items.XmlItemByTag['logTypes'];
-      if not Assigned (xXml) then
-        raise Exception.Create('Could not find logTypes in iniFile');
-      for x := 0 to xXml.Items.Count - 1 do
-      begin
-        with xXml.Items.XmlItems[x] do
-        begin
-          xLogType := TLogType.Create;
-          xLogType.Name := Attributes.ValueByTag['name'];
-          xLogType.sTag := Items.XmlValueByTag['sTag'];
-          xLogType.eTag := Items.XmlValueByTag['eTag'];
-          xLogType.eyeCatchers := Items.XmlItemByTag['eyeCatchers'];
-          LogTypes.AddObject(xLogType.Name, xLogType);
-        end;
-      end;
-    end;
-
-    if FileExistsUTF8(l4jXsdFileName) { *Converted from FileExists* } then
-    begin
-      l4jXsdDescr := TXsdDescr.Create;
-      try
-        l4jXsdDescr.LoadXsdFromFile (l4jXsdFileName, nil);
-        if l4jXsdDescr.TypeDef.ElementDefs.Count = 1 then
-        begin
-          with l4jXsdDescr.TypeDef.ElementDefs.Xsds[0].sType.ElementDefs do
-          begin
-            DisplayedColumnsXsd := XsdByName ['DisplayedColumns'];
-            configXsd := XsdByName['xmlExplorerConfig'];
-          end;
-        end;
-      except
-        ShowMessage ('Could not parse ' + l4jXsdFileName);
-      end;
-    end;
-
-    if not Assigned (DisplayedColumnsXsd) then
-      raise Exception.Create('Description for DisplayedColumns not found');
-    DisplayedColumnsXml := TXml.Create(0, DisplayedColumnsXsd);
-    DisplayedColumnsXml.LoadFromString(aIniFile.StringByName['DisplayedColumns'], nil);
-    readDisplayedColumnsXml := TXml.Create;
-
-    if FileExistsUTF8(l4jDbName) { *Converted from FileExists* } then
-    begin
-      _xmlLicensed := True;
-      { TODO : logusage }
-//      LogUsage(l4jDbName);
-    end;
-    configFileName := aIniFile.StringByNameDef  ['configFileName', ''];
-  //DragAcceptFiles(Self.Handle, True);
-    _OnParseErrorEvent := @ParserError;
-    if configFileName <> '' then
-      readConfig (configFileName);
-    AdjustDisplayedColumns(DisplayedColumnsXml);
-  finally
-    if not _xmlLicensed then
-      ShowMessage ( 'Since you are not a licensed user,'
-                  + #$D#$A
-                  + 'l4j will only show the first part of values.'
-                  );
+  l4jIniFileName := Copy ( ParamStr(0)
+                         , 1
+                         , Length (ParamStr(0)){$ifdef WINDOWS} - 4 {$endif}
+                         )
+                   + 'Ini.xml'
+                   ;
+  if not FileExistsUTF8(l4jIniFileName) { *Converted from FileExists* } then
+    raise Exception.Create('could not find inifile: ' + l4jIniFileName);
+  with iniXml do
+  begin
+    LoadFromFile(l4jIniFileName, nil);
+    if not (TagName = 'l4jIni') then
+      raise Exception.Create(l4jIniFileName + ': Not a valid INI Xmlfile');
+    l4jXsdFileName := ExpandRelativeFileName ( ParamStr(0)
+                                             , Items.XmlValueByTag ['xmlExplorerXsd']
+                                             );
   end;
+
+  if FileExistsUTF8(l4jXsdFileName) { *Converted from FileExists* } then
+  begin
+    l4jXsdDescr := TXsdDescr.Create;
+    try
+      l4jXsdDescr.LoadXsdFromFile (l4jXsdFileName, nil);
+      if l4jXsdDescr.TypeDef.ElementDefs.Count = 1 then
+      begin
+        with l4jXsdDescr.TypeDef.ElementDefs.Xsds[0].sType.ElementDefs do
+        begin
+          DisplayedColumnsXsd := XsdByName ['DisplayedColumns'];
+        end;
+      end;
+    except
+      ShowMessage ('Could not parse ' + l4jXsdFileName);
+    end;
+  end;
+
+  if not Assigned (DisplayedColumnsXsd) then
+    raise Exception.Create('Description for DisplayedColumns not found');
+  DisplayedColumnsXml := TXml.Create(0, DisplayedColumnsXsd);
+  DisplayedColumnsXml.LoadFromString(aIniFile.StringByName['DisplayedColumns'], nil);
+  readDisplayedColumnsXml := TXml.Create;
+
+  _OnParseErrorEvent := @ParserError;
+  AdjustDisplayedColumns(DisplayedColumnsXml);
 end;
 
 procedure TL4JMainForm.ParserError(Sender: TObject; LineNumber, ColumnNumber,
@@ -1569,36 +1500,6 @@ begin
   finally
     FreeAndnil (ErrorFoundDlg);
   end;
-end;
-
-procedure TL4JMainForm.saveConfig(aFileName: String);
-begin
-
-end;
-
-procedure TL4JMainForm.readConfig(aFileName: String);
-begin
-
-end;
-
-function TL4JMainForm.configAsXml: TXml;
-begin
-
-end;
-
-procedure TL4JMainForm.configFromXml(aXml: TXml);
-begin
-
-end;
-
-procedure TL4JMainForm.OnlyWhenLicensed;
-begin
-
-end;
-
-function TL4JMainForm.OkToOpenCase: Boolean;
-begin
-
 end;
 
 procedure TL4JMainForm.FormCreate(Sender: TObject);
@@ -1666,7 +1567,6 @@ begin
       := IntToStr (TreeView.Header.Columns.Items[x].Width);
     StringByName ['SaveLog4JFileName'] := SaveLog4JFileName;
     StringByName ['ReadLog4JFileName'] := ReadLog4JFileName;
-    StringByName  ['configFileName'] := configFileName;
     StringByName ['ShowDetailed'] := ShowDetailed;
     BooleanByName ['doWrapText'] := doWrapText;
     StringByName ['ColumnWidths'] := ColumnWidths.Text;
@@ -1970,22 +1870,12 @@ begin
   end;
 end;
 
-procedure TL4JMainForm.TreeViewChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-begin
-
-end;
-
 procedure TL4JMainForm.TvPopupMenuPopup(Sender: TObject);
 var
   n: Integer;
 begin
   n := TreeView.SelectedCount;
   CompareNodesMenuItem.Enabled := (n = 2);
-end;
-
-procedure TL4JMainForm.TreeViewPopupMenuPopup(Sender: TObject);
-begin
 end;
 
 procedure TL4JMainForm.UseReadDisplayedColumns;
@@ -2175,12 +2065,6 @@ begin
   TreeView.EndEditNode;
 end;
 
-procedure TL4JMainForm.TreeViewGetImageIndex(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-  var Ghosted: Boolean; var ImageIndex: Integer);
-begin
-end;
-
 procedure TL4JMainForm.TreeViewGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: string);
@@ -2229,8 +2113,6 @@ begin
 end;
 
 procedure TL4JMainForm.FormShow(Sender: TObject);
-var
-  x: Integer;
 begin
   if not Assigned (Data) then
     raise Exception.Create ('arg Data not assigned');
@@ -2509,36 +2391,6 @@ begin
     Memo.ScrollBars := ssBoth;
 end;
 
-procedure TL4JMainForm.ElementAttribute1Click(Sender: TObject);
-begin
-
-end;
-
-procedure TL4JMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-
-end;
-
-procedure TL4JMainForm.Editconfig1Click(Sender: TObject);
-begin
-
-end;
-
-procedure TL4JMainForm.Saveconfigas1Click(Sender: TObject);
-begin
-
-end;
-
-procedure TL4JMainForm.Saveconfig1Click(Sender: TObject);
-begin
-
-end;
-
-procedure TL4JMainForm.Openconfig1Click(Sender: TObject);
-begin
-
-end;
-
 procedure TL4JMainForm.About1Click(Sender: TObject);
 var
   xForm: TAboutBox;
@@ -2552,22 +2404,6 @@ begin
   end;
 end;
 
-
-procedure TL4JMainForm.License1Click(Sender: TObject);
-begin
-
-end;
-
-procedure TL4JMainForm.AllXmlActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-
-end;
-
-procedure TL4JMainForm.AllXmlActionUpdate(Sender: TObject);
-begin
-
-end;
 
 procedure TL4JMainForm.AllXmlActionExecute(Sender: TObject);
 var

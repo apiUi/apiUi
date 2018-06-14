@@ -4,87 +4,6 @@
 	<xs:simpleType name="FileNameType">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
-	<xs:complexType name="RecordDescriptorType">
-		<xs:sequence>
-			<xs:element name="DescriptionType">
-				<xs:annotation>
-					<xs:documentation>Specifies the formal description used forreords</xs:documentation>
-				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="Free Format">
-							<xs:annotation>
-								<xs:documentation>not yet supported</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="Cobol">
-							<xs:annotation>
-								<xs:documentation>not yet supported</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="CobolEnvironment" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Required in case DescriptionType = Cobol; Needed for embedded sign </xs:documentation>
-				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="Tandem"/>
-						<xs:enumeration value="IBM Zos"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="DescriptorFileName" type="FileNameType">
-				<xs:annotation>
-					<xs:documentation>Name of the file the describes the record</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Recognition" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Describes the way to determine if this descripbtion is applicable. Enter substrings and their position</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="Start" type="xs:integer">
-							<xs:annotation>
-								<xs:documentation>The startposition of the substring. Starts with 1</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Length" type="xs:integer">
-							<xs:annotation>
-								<xs:documentation>The length of the substring</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Value" type="xs:string">
-							<xs:annotation>
-								<xs:documentation>The value of the substring. You can omit trailing blanks.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="RecordDescriptorsType">
-		<xs:sequence>
-			<xs:element name="RecordDescriptor" type="RecordDescriptorType" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Specifies the way a record is described and how to determine which description ishould be applied and gives it a name. The order of the descriptors is relevant.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="xmlExplorerConfigType">
-		<xs:sequence>
-			<xs:element name="RecordDescriptors" type="RecordDescriptorsType">
-				<xs:annotation>
-					<xs:documentation>Specifies the way a record is described and how to determine which description ishould be applied and gives it a name. The order of the descriptors is relevant.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
 	<xs:element name="l4jConfig">
 		<xs:annotation>
 			<xs:documentation>Comment describing your root element</xs:documentation>
@@ -306,7 +225,6 @@ Value is displayed as column header.</xs:documentation>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="xmlExplorerConfig" type="xmlExplorerConfigType"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

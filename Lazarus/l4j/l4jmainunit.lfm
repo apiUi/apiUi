@@ -68,7 +68,6 @@ object L4JMainForm: TL4JMainForm
       TreeOptions.PaintOptions = [toShowDropmark, toShowHorzGridLines, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
       TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
       OnBeforeCellPaint = TreeViewBeforeCellPaint
-      OnChange = TreeViewChange
       OnClick = TreeViewClick
       OnColumnClick = TreeViewColumnClick
       OnCompareNodes = TreeViewCompareNodes
@@ -4088,11 +4087,9 @@ object L4JMainForm: TL4JMainForm
       Caption = '&Extra'
       object Openconfig1: TMenuItem
         Caption = 'Read config'
-        OnClick = Openconfig1Click
       end
       object Saveconfig1: TMenuItem
         Caption = 'Save config'
-        OnClick = Saveconfig1Click
       end
       object Saveconfigas1: TMenuItem
         Caption = 'Save config as...'
@@ -4109,10 +4106,6 @@ object L4JMainForm: TL4JMainForm
       object About1: TMenuItem
         Caption = '&About'
         OnClick = About1Click
-      end
-      object License1: TMenuItem
-        Caption = '&License'
-        OnClick = License1Click
       end
     end
   end
