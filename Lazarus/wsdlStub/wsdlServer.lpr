@@ -26,7 +26,7 @@ uses
   ;
 
 type
-  longOptsArrayType = array [0..5] of String;
+  longOptsArrayType = array [0..6] of String;
 
 const
   helpOpt = 'help';
@@ -34,6 +34,7 @@ const
   scriptOpt = 'script';
   terminateOpt = 'terminate';
   trackIOOpt = 'trackIO';
+  debugOpt = 'debug';
   contextOpt = 'context';
   longOpts: longOptsArrayType = ( helpOpt
                                 , portOpt + ':'
@@ -41,6 +42,7 @@ const
                                 , contextOpt + ':'
                                 , terminateOpt
                                 , trackIOOpt
+                                , debugOpt
                                 );
 type
 
@@ -54,6 +56,7 @@ type
     sc: TWsdlControl;
     scriptName: String;
     terminateAfterScript: Boolean;
+    doDebug: Boolean;
     osUserName, CompanyName: String;
     LogUsageTime: TDateTime;
     procedure SetLogUsageTimer;
@@ -87,6 +90,7 @@ var
   ErrorMsg: String;
   sXml: TXml;
 begin
+  WriteLn(_xmlProgName, ' ', _xmlProgVersion);
   if ParamCount = 0 then
   begin
     WriteLn(ExeName, ' --', helpOpt, ' for more information');
@@ -126,6 +130,9 @@ begin
   xmlio.doTrackXmlIO := HasOption('?',trackIOOpt);
   if xmlio.doTrackXmlIO then
     WriteLn('option ', trackIOOpt);
+  doDebug := HasOption('?',debugOpt);
+  if doDebug then
+    WriteLn('option ', debugOpt);
   se.projectFileName := ParamStr(1);
   if (Copy (se.projectFileName, 1, 1) = '-')  // switch as first argument ??
   or (    (not FileExists(se.projectFileName))
@@ -349,6 +356,25 @@ procedure TMyApplication .RefreshLogger ;
                            ]
                          )
                 );
+        if doDebug then
+        begin
+          WriteLn ( Format ( 'Request:%s%s%s%s'
+                           , [ LineEnding
+                             , xLog.RequestHeaders
+                             , LineEnding
+                             , xLog.RequestBody
+                             ]
+                           )
+                  );
+          WriteLn ( Format ( 'Response:%s%s%s%s'
+                           , [ LineEnding
+                             , xLog.ReplyHeaders
+                             , LineEnding
+                             , xLog.ReplyBody
+                             ]
+                           )
+                  );
+        end;
       end;
       if se.displayedLogsmaxEntries > -1 then
       while se.displayedLogs.Count > se.displayedLogsmaxEntries do
@@ -520,6 +546,8 @@ begin
   WriteLn ('     terminates after executing the named project-script');
   WriteLn ('  --', trackIOOpt);
   WriteLn ('     notifies IO operations');
+  WriteLn ('  --', debugOpt);
+  WriteLn ('     types full requests and responses');
   WriteLn ('');
   WriteLn ('');
 end;
