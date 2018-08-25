@@ -10,7 +10,7 @@ uses
    , Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ComCtrls, ExtCtrls, VirtualTrees
    , Dialogs
-   , FormIniFilez, ActnList, Menus, FileUtil
+   , FormIniFilez, ActnList, Menus, LazFileUtils
    , FilterDialog
    , Xmlz
     ,A2BXmlz

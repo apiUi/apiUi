@@ -2,9 +2,9 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <BuildModes Active="Default"/>
-    <Units Count="54">
+    <Units Count="59">
       <Unit0>
         <Filename Value="l4j.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -21,8 +21,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="L4JMainUnit"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="658"/>
-        <CursorPos X="28" Y="306"/>
+        <CursorPos X="49" Y="13"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -31,7 +30,7 @@
         <Filename Value="l4jtypes.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="l4jTypes"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="7"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
@@ -49,13 +48,13 @@
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
         <IsPartOfProject Value="True"/>
         <WindowIndex Value="1"/>
-        <UsageCount Value="191"/>
+        <UsageCount Value="192"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
         <IsPartOfProject Value="True"/>
         <WindowIndex Value="1"/>
-        <UsageCount Value="191"/>
+        <UsageCount Value="192"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Html\htmlxmlutilz.pas"/>
@@ -64,7 +63,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\wsdlStub\EditRegExpUnit.pas"/>
@@ -75,7 +74,7 @@
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="6"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Utils\igGlobals.pas"/>
@@ -110,7 +109,7 @@
       </Unit11>
       <Unit12>
         <Filename Value="l4jini.xml"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="6"/>
         <CursorPos Y="5"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
@@ -227,7 +226,7 @@
       </Unit27>
       <Unit28>
         <Filename Value="..\Components\Indy10\Lib\Core\IdSync.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="89"/>
         <CursorPos X="15" Y="99"/>
         <UsageCount Value="12"/>
@@ -243,11 +242,11 @@
       </Unit29>
       <Unit30>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="1"/>
-        <TopLine Value="266"/>
-        <CursorPos X="17" Y="287"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="18" Y="17"/>
         <UsageCount Value="19"/>
+        <Loaded Value="True"/>
       </Unit30>
       <Unit31>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\libxml\src\xmlxsdparser.pas"/>
@@ -284,7 +283,7 @@
         <ComponentName Value="ShowXmlForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="1395"/>
         <CursorPos X="3" Y="1412"/>
         <UsageCount Value="20"/>
@@ -365,8 +364,8 @@
       </Unit46>
       <Unit47>
         <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <EditorIndex Value="4"/>
-        <CursorPos X="3" Y="1749"/>
+        <EditorIndex Value="7"/>
+        <CursorPos X="74" Y="9"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit47>
@@ -421,6 +420,48 @@
         <CursorPos X="5" Y="290"/>
         <UsageCount Value="10"/>
       </Unit53>
+      <Unit54>
+        <Filename Value="..\Xpress\ParserClasses.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="26"/>
+        <CursorPos X="14" Y="36"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\libxml\src\xmlxsdparser.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="7"/>
+        <CursorPos X="18" Y="8"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <UnitName Value="VersionSupport"/>
+        <EditorIndex Value="8"/>
+        <CursorPos X="104" Y="7"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="C:\lazarus\lcl\interfacebase.pp"/>
+        <UnitName Value="InterfaceBase"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="138"/>
+        <CursorPos X="15" Y="148"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="C:\lazarus\lcl\lclplatformdef.pas"/>
+        <UnitName Value="LCLPlatformDef"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="13"/>
+        <CursorPos X="2" Y="18"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit58>
     </Units>
     <OtherDefines Count="5">
       <Define0 Value="FPCUnixAPI"/>
@@ -432,123 +473,122 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="2122" TopLine="2114"/>
+        <Caret Line="1014" Column="3" TopLine="1004"/>
       </Position1>
       <Position2>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="223" Column="7" TopLine="214"/>
+        <Caret Line="1353" TopLine="1343"/>
       </Position2>
       <Position3>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="239" Column="29" TopLine="230"/>
+        <Caret Line="265" Column="27" TopLine="257"/>
       </Position3>
       <Position4>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="225" Column="59" TopLine="217"/>
+        <Caret Line="1450" Column="10" TopLine="1442"/>
       </Position4>
       <Position5>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="237" Column="27" TopLine="228"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="326" Column="6" TopLine="316"/>
       </Position5>
       <Position6>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="235" Column="29" TopLine="226"/>
+        <Filename Value="..\Xpress\ParserClasses.pas"/>
+        <Caret Line="36" Column="14" TopLine="26"/>
       </Position6>
       <Position7>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="233" Column="7" TopLine="224"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="326" Column="6" TopLine="316"/>
       </Position7>
       <Position8>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="232" Column="50" TopLine="223"/>
+        <Caret Line="1510" Column="3" TopLine="1490"/>
       </Position8>
       <Position9>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="202" Column="7" TopLine="193"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="326" Column="6" TopLine="316"/>
       </Position9>
       <Position10>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="201" Column="50" TopLine="192"/>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\libxml\src\xmlxsdparser.pas"/>
       </Position10>
       <Position11>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="194" Column="33" TopLine="185"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="326" Column="18" TopLine="316"/>
       </Position11>
       <Position12>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1513" Column="3" TopLine="1504"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="284" Column="33" TopLine="251"/>
       </Position12>
       <Position13>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1446" Column="3" TopLine="1436"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="326" Column="6" TopLine="316"/>
       </Position13>
       <Position14>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1444" Column="3" TopLine="1434"/>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\libxml\src\xmlxsdparser.pas"/>
+        <Caret Line="8" Column="18" TopLine="7"/>
       </Position14>
       <Position15>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1443" TopLine="1432"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="326" Column="6" TopLine="316"/>
       </Position15>
       <Position16>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="321" Column="9" TopLine="311"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="1233" Column="22" TopLine="1223"/>
       </Position16>
       <Position17>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="451" Column="9" TopLine="441"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="17" Column="18" TopLine="7"/>
       </Position17>
       <Position18>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="321" Column="7" TopLine="311"/>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <Caret Line="278" Column="13" TopLine="268"/>
       </Position18>
       <Position19>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="451" Column="7" TopLine="441"/>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <Caret Line="9" Column="74"/>
       </Position19>
       <Position20>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="453" TopLine="443"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="158" Column="4" TopLine="154"/>
       </Position20>
       <Position21>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="448" Column="10" TopLine="456"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="10" Column="16" TopLine="7"/>
       </Position21>
       <Position22>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdSync.pas"/>
-        <Caret Line="99" Column="15" TopLine="84"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="158" Column="4" TopLine="148"/>
       </Position22>
       <Position23>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="588" Column="27" TopLine="578"/>
+        <Filename Value="C:\lazarus\lcl\interfacebase.pp"/>
+        <Caret Line="148" Column="15" TopLine="140"/>
       </Position23>
       <Position24>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdSync.pas"/>
-        <Caret Line="99" Column="15" TopLine="89"/>
+        <Filename Value="C:\lazarus\lcl\lclplatformdef.pas"/>
+        <Caret Line="23" Column="10" TopLine="13"/>
       </Position24>
       <Position25>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="595" Column="27" TopLine="586"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="158" Column="4" TopLine="148"/>
       </Position25>
       <Position26>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="565" Column="5" TopLine="553"/>
+        <Filename Value="C:\lazarus\lcl\interfacebase.pp"/>
+        <Caret Line="148" Column="15" TopLine="138"/>
       </Position26>
       <Position27>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1014" Column="3" TopLine="1004"/>
+        <Filename Value="C:\lazarus\lcl\lclplatformdef.pas"/>
+        <Caret Line="18" Column="2" TopLine="13"/>
       </Position27>
       <Position28>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1353" TopLine="1343"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="158" Column="4" TopLine="148"/>
       </Position28>
       <Position29>
-        <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="265" Column="27" TopLine="257"/>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="7" Column="104"/>
       </Position29>
       <Position30>
         <Filename Value="l4jmainunit.pas"/>
-        <Caret Line="1450" Column="10" TopLine="1442"/>
+        <Caret Line="1450" Column="10" TopLine="1432"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

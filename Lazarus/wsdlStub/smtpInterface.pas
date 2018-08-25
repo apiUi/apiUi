@@ -8,7 +8,8 @@ interface
 
 uses Classes
    , SysUtils
-   , IdMessage , FileUtil
+   , IdMessage
+   , LazFileUtils
    , Xmlz
    ;
 

@@ -14,7 +14,7 @@ uses sqldb
    , Express
    , Bind
    , Ipmz
-   , FileUtil
+   , LazFileUtils
    , xmlzConsts
    , IpmTypes
    , IdSSLOpenSSL

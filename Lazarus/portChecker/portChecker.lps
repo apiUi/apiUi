@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <BuildModes Active="Default"/>
     <Units Count="9">
       <Unit0>
@@ -22,7 +22,7 @@
         <UnitName Value="mainUnit"/>
         <IsVisibleTab Value="True"/>
         <TopLine Value="98"/>
-        <CursorPos X="28" Y="119"/>
+        <CursorPos Y="114"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -51,28 +51,27 @@
       </Unit4>
       <Unit5>
         <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <UnitName Value="IdTCPClient"/>
         <EditorIndex Value="3"/>
         <TopLine Value="358"/>
         <CursorPos X="3" Y="362"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
-        <UnitName Value="IdGlobal"/>
         <EditorIndex Value="5"/>
         <TopLine Value="1108"/>
         <CursorPos X="3" Y="1127"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
       <Unit7>
         <Filename Value="AboutUnit.pas"/>
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="AboutUnit"/>
         <EditorIndex Value="1"/>
         <TopLine Value="20"/>
         <CursorPos X="24" Y="58"/>
@@ -82,12 +81,12 @@
       </Unit7>
       <Unit8>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandler.pas"/>
-        <UnitName Value="IdIOHandler"/>
         <EditorIndex Value="4"/>
         <TopLine Value="682"/>
         <CursorPos X="80" Y="712"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
     </Units>
     <JumpHistory Count="29" HistoryIndex="28">
@@ -209,15 +208,4 @@
       </Position29>
     </JumpHistory>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="mainunit.pas"/>
-        <Line Value="114"/>
-      </Item1>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>

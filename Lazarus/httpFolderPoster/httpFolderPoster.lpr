@@ -6,7 +6,7 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, SysUtils, CustApp, abZipper, abUnzper, abZipTyp, IdHTTP,
+  Classes, SysUtils, CustApp, abZipper, abUnzper, abZipTyp, abbrevia, IdHTTP,
   IdHeaderList, IdZLibCompressorBase, IdCompressorZLib, IdZLibHeaders , indylaz;
 var
   doSkipExisting: Boolean;

@@ -81,7 +81,6 @@ implementation
 uses ErrorFound
    , OpenWsdlUnit
    , ShowXmlUnit
-   , wsdlPropertiesUnit
    , xmlUtilz
    , ClipBrd
    ;

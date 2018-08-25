@@ -2,18 +2,14 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <BuildModes Active="Default"/>
     <Units Count="7">
       <Unit0>
         <Filename Value="httpFolderPoster.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="httpFolderPoster"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="190"/>
-        <CursorPos X="34" Y="209"/>
+        <CursorPos X="31" Y="9"/>
         <FoldState Value=" T7lKJ7h"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
@@ -21,58 +17,41 @@
       <Unit1>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="576"/>
         <CursorPos X="29" Y="587"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="18"/>
         <CursorPos X="10" Y="29"/>
         <UsageCount Value="10"/>
       </Unit2>
       <Unit3>
         <Filename Value="C:\lazarus\components\Indy10\Lib\Protocols\IdCompressorZLib.pas"/>
-        <UnitName Value="IdCompressorZLib"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="247"/>
         <CursorPos X="79" Y="261"/>
         <UsageCount Value="10"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Xpress\Bind.pas"/>
-        <UnitName Value="Bind"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\components\Indy10\Lib\indylaz.pas"/>
-        <UnitName Value="indylaz"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
         <CursorPos X="3" Y="10"/>
         <UsageCount Value="10"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\sysutils\osutilsh.inc"/>
-        <EditorIndex Value="2"/>
-        <WindowIndex Value="0"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="44"/>
         <CursorPos X="3" Y="57"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit6>
     </Units>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
-    <JumpHistory Count="6" HistoryIndex="5">
+    <JumpHistory Count="5" HistoryIndex="4">
       <Position1>
         <Filename Value="httpFolderPoster.lpr"/>
         <Caret Line="285" Column="39" TopLine="39"/>
@@ -86,17 +65,13 @@
         <Caret Line="262" Column="2" TopLine="203"/>
       </Position3>
       <Position4>
-        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="69" Column="14" TopLine="60"/>
+        <Filename Value="httpFolderPoster.lpr"/>
+        <Caret Line="262" Column="2" TopLine="203"/>
       </Position4>
       <Position5>
         <Filename Value="httpFolderPoster.lpr"/>
-        <Caret Line="262" Column="2" TopLine="203"/>
+        <Caret Line="209" Column="34" TopLine="190"/>
       </Position5>
-      <Position6>
-        <Filename Value="C:\lazarus\fpc\2.6.4\source\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="601" Column="5" TopLine="593"/>
-      </Position6>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -117,5 +92,4 @@
       </Item2>
     </BreakPoints>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>

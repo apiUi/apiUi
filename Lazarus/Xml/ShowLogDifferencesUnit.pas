@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   SysUtils,Classes,Graphics,Controls,Forms,Dialogs,ExtCtrls,VirtualTrees,
-  FileUtil,FormIniFilez,ComCtrls,ActnList,StdCtrls,Menus,Logz,a2bStringListUnit,
+  LazFileUtils,FormIniFilez,ComCtrls,ActnList,StdCtrls,Menus,Logz,a2bStringListUnit,
   Xmlz,A2BXmlz;
 
 type

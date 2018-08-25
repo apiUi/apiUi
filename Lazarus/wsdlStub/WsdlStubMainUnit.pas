@@ -622,6 +622,18 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
+    procedure OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex;
+      var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
+    procedure OperationReqsTreeViewMouseDown(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+    procedure OperationReqsTreeViewMouseMove(Sender: TObject;
+      Shift: TShiftState; X,Y: Integer);
+    procedure OperationReqsTreeViewMouseUp(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+    procedure OperationReqsTreeViewMouseWheel(Sender: TObject;
+      Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
+      var Handled: Boolean);
     procedure WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
     procedure OpenWsdlActionUpdate(Sender: TObject);
     procedure OperationBrowseDocumentationActionExecute(Sender: TObject);
@@ -14219,6 +14231,48 @@ begin
   PromptAndSetColumnWidth(SnapshotsVTS);
 end;
 
+procedure TMainForm.OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex;
+  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
+var
+  xOperation: TWsdlOperation;
+begin
+  try
+    xOperation := NodeToOperation(Sender, Node);
+    if Assigned(xOperation) then
+    begin;
+      LineBreakStyle := hlbDefault;
+      HintText := xOperation.Documentation.Text;
+    end;
+  finally
+  end;
+end;
+
+procedure TMainForm.OperationReqsTreeViewMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+begin
+
+end;
+
+procedure TMainForm.OperationReqsTreeViewMouseMove(Sender: TObject;
+  Shift: TShiftState; X,Y: Integer);
+begin
+
+end;
+
+procedure TMainForm.OperationReqsTreeViewMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+begin
+
+end;
+
+procedure TMainForm.OperationReqsTreeViewMouseWheel(Sender: TObject;
+  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+
+end;
+
 procedure TMainForm.WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
 begin
   ShowMessage ('Number of referrable elements');
@@ -14243,7 +14297,7 @@ end;
 
 procedure TMainForm.OperationDocumentationViewerClick(Sender: TObject);
 begin
-  if Assigned (WsdlOperation) then
+   if Assigned (WsdlOperation) then
   begin
     XmlUtil.PushCursor (crHourGlass);
     try

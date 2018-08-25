@@ -14,7 +14,7 @@ uses Classes
    , Variants
    , ParserClasses
    , xmlzConsts
-   , FileUtil
+   , LazFileUtils
    , XmlIO
    ;
 
@@ -128,6 +128,7 @@ type
     Manually: Boolean;
     ManuallyUsedAtPath: String;
     dollarRef: String;
+    SourceFileName: String;
 {
     isMaxLengthAdjusted: Boolean;
     MaxOccursAdjusted: Integer;
@@ -204,6 +205,7 @@ type
     Obj: TObject;
     EditProcedure: TBooleanFunctionObject;
     CheckNewValue: TOnCheckNewValue;
+    SourceFileName: String;
     function FindXsd(aString: String): TXsd;
     property NSPrefix: String read getNSPrefix;
     property XsdByCaption[Index: String]: TXsd read getXsdByCaption;
@@ -460,6 +462,7 @@ begin
   self.Appinfo.Text := aSource.Appinfo.Text;
   self.ResponseNo := aSource.ResponseNo;
   self.FileName := aSource.FileName;
+  self.SourceFileName := aSource.SourceFileName;
 end;
 
 destructor TXsd.Destroy;
@@ -691,6 +694,7 @@ begin
     raise Exception.Create('Illegal TXsdDescr.AddAttributeDef(aTypeDef: TXsdDataType; aXml: TObject; aTargetNamespace: String): TXsdAttr');
   xXml := aXml as TXml;
   result := TXsdAttr.Create(self);
+  result.SourceFileName := '->' + xXml.SourceFileName;
   Garbage.AddObject('', result);
   result.Name := xXml.Attributes.ValueByTag[tagName];
   result.NameSpace := aTargetNamespace;
@@ -740,6 +744,7 @@ begin
     raise Exception.Create('Illegal: AddSimpleType(aXml: TObject; aTargetNamespace: String');
   xXml := aXml as TXml;
   result := TXsdDataType.Create(self);
+  result.SourceFileName := '->' + xXml.SourceFileName;
   result.xsdType:= dtSimpleType;
   Garbage.AddObject('', result);
   result.Name := xXml.Attributes.ValueByTag[tagName];
@@ -867,6 +872,7 @@ begin
     raise Exception.Create('Illegal: AddComplexType(aXml: TObject; aTargetNamespace: String; isGlobalDefined: Boolean): TXsdDataType');
   xXml := aXml as TXml;
   result := TXsdDataType.Create(self);
+  result.SourceFileName := '->' + xXml.SourceFileName;
   result.xsdType:= dtComplexType;
   Garbage.AddObject('', result);
   result.Name := xXml.Attributes.ValueByTag[tagName];
@@ -2758,6 +2764,7 @@ begin
     raise Exception.Create('Illegal: AddElement(aTypeDef: TXsdDataType; aXml: TObject): TXsd;');
   xXml := aXml as TXml;
   result := TXsd.Create(self);
+  result.SourceFileName := '->' + xXml.SourceFileName;
   Garbage.AddObject('', Result);
   result.FileName := fMainFileName;
   result.ElementName := xXml.Attributes.ValueByTag[tagName];
