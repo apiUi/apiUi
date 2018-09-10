@@ -163,6 +163,7 @@ type
   public
     ProgressInterface: TProgressInterface;
     doCreateBackup: Boolean;
+    doStartOnOpeningProject: Boolean;
     projectContext: String;
     projectProperties: TStringList;
     projectContexts: TStringListList;
@@ -9217,6 +9218,8 @@ begin
       xXml := XmlFromProjectFolders(projectFileName);
       try
         ProjectDesignFromXml(xXml, projectFileName);
+        if doStartOnOpeningProject then
+          Activate(True);
       finally
         xXml.Free;
       end;

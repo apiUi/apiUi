@@ -128,7 +128,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Mq;..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\Html;..\ProgressStatus;..\Components\Indy10\Lib\System"/>
+      <OtherUnitFiles Value="..\Mq;..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\Html;..\ProgressStatus;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

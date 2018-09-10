@@ -1964,6 +1964,12 @@ For an overview of all options visit: doc://wsdlStub_wsdlStubOptions_hlp.htm </x
 									</xs:documentation>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="StartAfterOpeningProject" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default 'true';
+When 'true' wsdlStub will start running (activate itself) immediately after a project is opened</xs:documentation>
+								</xs:annotation>
+							</xs:element>
 							<xs:element name="CreateBackup" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default 'true';

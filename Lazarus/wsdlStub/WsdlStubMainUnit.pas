@@ -1065,6 +1065,7 @@ type
     property xmlViewType: TxvViewType read getXmlViewType;
   private
     doCreateBackup: Boolean;
+    doStartOnOpeningProject: Boolean;
     ProgressInterface: TProgressInterface;
     enableTacoPingPong: Boolean;
     intervalTacoPingPong: Integer;
@@ -3359,6 +3360,7 @@ procedure TMainForm.OpenStubCase;
 var
   f: Integer;
 begin
+  se.doStartOnOpeningProject := doStartOnOpeningProject;
   if (ExtractFileExt(se.projectFileName) <> _ProjectFileExtention)
   and (ExtractFileExt(se.projectFileName) <> _ProjectOldFileExtention) then
      raise Exception.Create('Unsupported filename: ' + se.projectFileName);
@@ -4457,6 +4459,7 @@ begin
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
     AddXml(TXml.CreateAsString('Context', contextPropertyOverwrite));
+    AddXml(TXml.CreateAsBoolean('StartAfterOpeningProject', doStartOnOpeningProject));
     AddXml(TXml.CreateAsBoolean('CreateBackup', doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
@@ -12870,6 +12873,7 @@ begin
   contextPropertyOverwrite := '';
   enableTacoPingPong := True;
   intervalTacoPingPong := 5 * 60 * 1000;
+  doStartOnOpeningProject := True;
   doCreateBackup := True;
   xmlUtil.doConfirmRemovals := True;
   xmlUtil.doCollapseOnUncheck := True;
@@ -12900,6 +12904,7 @@ begin
       contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['Context', contextPropertyOverwrite];
       se.projectContext := contextPropertyOverwrite;
       xmlio.ProjectContext := contextPropertyOverwrite;
+      doStartOnOpeningProject := xXml.Items.XmlCheckedBooleanByTagDef ['StartAfterOpeningProject', doStartOnOpeningProject];
       doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef ['CreateBackup', doCreateBackup];
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef
         ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
