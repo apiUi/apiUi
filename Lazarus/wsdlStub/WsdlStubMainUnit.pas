@@ -79,6 +79,7 @@ type
     Action2 : TAction ;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
+    ToolButton78: TToolButton;
     WsdlNumberOfReferrableMenuItem: TMenuItem;
     OperationBrowseDocumentationAction: TAction;
     ToggleTrackIOAction: TAction;
@@ -118,7 +119,7 @@ type
     ToolButton72: TToolButton;
     ToolButton73: TToolButton;
     ToolButton74: TToolButton;
-    ToolButton75: TToolButton;
+    LastMessageToolButton: TToolButton;
     ToolButton76: TToolButton;
     ToolButton77: TToolButton;
     XmlSampleOperationsMenuItem : TMenuItem ;
@@ -179,7 +180,7 @@ type
     ToolBar1: TToolBar;
     ToolBar3: TToolBar;
     ToolBar4: TToolBar;
-    ToolBar6: TToolBar;
+    MessagesTabToolBar: TToolBar;
     ToolButton22: TToolButton;
     ToolButton24: TToolButton;
     ToolButton30: TToolButton;
@@ -622,6 +623,7 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
+    procedure MessagesTabToolBarResize(Sender: TObject);
     procedure OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex;
       var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
@@ -1087,12 +1089,14 @@ type
     xLicenseString: String;
     fDoShowDesignAtTop: Boolean;
     grid_x, grid_y: Integer;
+    MessagesTabControlWidth, MessagesTabControlMinLeft: Integer;
     fAbortPressed: Boolean;
     doNotify: Boolean;
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
     procedure ShowChosenLogTab;
+    procedure PositionMessagesTabControl;
     function GetAuthorization: Boolean;
     function GetAuthorizationBaseString: String;
     procedure SetOperationZoomPath(aOperation: TWsdlOperation);
@@ -2965,8 +2969,22 @@ begin
       NotificationsPanel.Visible := True;
     end;
     Ord (spSnapshots): SnapshotsPanel.Visible := True;
-    Ord (spMessages): MessagesPanel.Visible := True;
+    Ord (spMessages):
+    begin
+      MessagesPanel.Visible := True;
+      PositionMessagesTabControl;
+    end;
   end;
+end;
+
+procedure TMainForm.PositionMessagesTabControl;
+var
+  L: Integer;
+begin
+  L := MessagesTabToolBar.Width - MessagesTabControlWidth;
+  if L < MessagesTabControlMinLeft then
+    L := MessagesTabControlMinLeft;
+  MessagesTabControl.Left := L;
 end;
 
 function TMainForm .GetAuthorization : Boolean ;
@@ -4446,6 +4464,7 @@ begin
     startStopButton.Action := startAction;
   end;
   startStopMenuItem.Action := startStopButton.Action;
+  ShowChosenLogTab;
 end;
 
 procedure TMainForm.OptionsActionUpdate(Sender: TObject);
@@ -6768,6 +6787,8 @@ var
   xIniFile: TFormIniFile;
   xXml: TXml;
 begin
+  MessagesTabControlWidth := MessagesTabControl.Width;
+  MessagesTabControlMinLeft := LastMessageToolButton.Left + LastMessageToolButton.Width + 1;
   (MessagesTabControl as TWinControl).Color := Self.Color;
   MessagesTabCaption := LogTabControl.Tabs [Ord (spMessages)];
   notifyTabCaption := LogTabControl.Tabs [Ord (spNotifications)];
@@ -14234,6 +14255,11 @@ end;
 procedure TMainForm.MenuItem47Click(Sender: TObject);
 begin
   PromptAndSetColumnWidth(SnapshotsVTS);
+end;
+
+procedure TMainForm.MessagesTabToolBarResize(Sender: TObject);
+begin
+  PositionMessagesTabControl;
 end;
 
 procedure TMainForm.OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
