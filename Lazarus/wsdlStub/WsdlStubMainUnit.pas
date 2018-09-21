@@ -2973,8 +2973,8 @@ begin
     begin
       MessagesPanel.Visible := True;
       PositionMessagesTabControl;
-    end;
   end;
+end;
 end;
 
 procedure TMainForm.PositionMessagesTabControl;
@@ -5152,7 +5152,6 @@ procedure TMainForm.SelectCorrelationElementActionExecute(Sender: TObject);
 var
   swapBindable: TCustomBindable;
 begin
-  if not InactiveAfterPrompt then Exit;
   with WsdlOperation do
   begin
     if WsdlService.DescriptionType in [ipmDTFreeFormat] then
@@ -5166,13 +5165,30 @@ begin
     SelectElementsForm.doShowRpy := True;
     SelectElementsForm.GroupAllowed := False;
     SelectElementsForm.WsdlOperation := WsdlOperation;
-    SelectElementsForm.ControlBinds := WsdlOperation.CorrelationBindables;
+    SelectElementsForm.ControlBinds := WsdlOperation.CorrelationBindables.Clone;
     SelectElementsForm.ShowModal;
+    if SelectElementsForm.ModalResult = mrOK then
     begin
-      se.UpdateReplyColumns(WsdlOperation);
-      UpdateMessagesGrid;
-      UpdateLogCorrelationIds (WsdlOperation);
-      stubChanged := stubChanged or SelectElementsForm.stubChanged;
+      WsdlOperation.AcquireLock;
+      try
+        WsdlOperation.CorrelationBindables.ClearListOnly;
+        WsdlOperation.CorrelationBindables.Free;
+        WsdlOperation.CorrelationBindables := SelectElementsForm.ControlBinds;
+        se.UpdateReplyColumns(WsdlOperation);
+        UpdateMessagesGrid;
+        UpdateLogCorrelationIds (WsdlOperation);
+        stubChanged := True;
+      finally
+        WsdlOperation.ReleaseLock;
+      end;
+    end
+    else
+    begin
+      with SelectElementsForm.ControlBinds do
+      begin
+        ClearListOnly;
+        Free;
+      end;
     end;
   finally
     GridView.EndUpdate;
@@ -6621,7 +6637,6 @@ end;
 
 procedure TMainForm.SelectMessageColumnsActionExecute(Sender: TObject);
 begin
-  if not InactiveAfterPrompt then Exit;
   Application.CreateForm(TSelectElementsForm, SelectElementsForm);
   try
     GridView.BeginUpdate;
@@ -6629,13 +6644,26 @@ begin
     SelectElementsForm.doShowRpy := True;
     SelectElementsForm.GroupAllowed := True;
     SelectElementsForm.WsdlOperation := WsdlOperation;
-    SelectElementsForm.ControlBinds := WsdlOperation.Messages.Messages[0].ColumnXmls;
+    SelectElementsForm.ControlBinds := WsdlOperation.Messages.Messages[0].ColumnXmls.Clone;
     SelectElementsForm.ShowModal;
-    if SelectElementsForm.stubChanged then
+    if SelectElementsForm.modalResult = mrOk then
     begin
-      se.UpdateReplyColumns(WsdlOperation);
-      UpdateMessagesGrid;
-      stubChanged := stubChanged or SelectElementsForm.stubChanged;
+      WsdlOperation.AcquireLock;
+      try
+        WsdlOperation.Messages.Messages[0].ColumnXmls.ClearListOnly;
+        WsdlOperation.Messages.Messages[0].ColumnXmls.Free;
+        WsdlOperation.Messages.Messages[0].ColumnXmls := SelectElementsForm.ControlBinds;
+        se.UpdateReplyColumns(WsdlOperation);
+        UpdateMessagesGrid;
+        stubChanged := True;
+      finally
+        WsdlOperation.ReleaseLock;
+      end;
+    end
+    else
+    begin
+      SelectElementsForm.ControlBinds.ClearListOnly;
+      SelectElementsForm.ControlBinds.Free;
     end;
   finally
     GridView.EndUpdate;
@@ -11615,7 +11643,6 @@ end;
 
 procedure TMainForm.SelectExpectedElementsActionExecute(Sender: TObject);
 begin
-  if not InactiveAfterPrompt then Exit;
   Application.CreateForm(TSelectElementsForm, SelectElementsForm);
   SelectElementsForm.Caption :=
     'Maintain list of elements to check expected values';
@@ -11623,16 +11650,29 @@ begin
     SelectElementsForm.doShowReq := True;
     SelectElementsForm.doShowRpy := True;
     SelectElementsForm.WsdlOperation := WsdlOperation;
-    SelectElementsForm.ControlBinds := WsdlOperation.ExpectationBindables;
+    SelectElementsForm.ControlBinds := WsdlOperation.ExpectationBindables.Clone;
     SelectElementsForm.DuplicatesAllowed := False;
     SelectElementsForm.GroupAllowed := False;
     SelectElementsForm.ShowModal;
-    // if SelectElementsForm.ModalResult = mrOk then
+    if SelectElementsForm.ModalResult = mrOk then
     begin
-      se.UpdateReplyColumns(WsdlOperation);
-      UpdateMessagesGrid;
-      DoColorBindButtons;
-      stubChanged := stubChanged or SelectElementsForm.stubChanged;
+      WsdlOperation.AcquireLock;
+      try
+        WsdlOperation.ExpectationBindables.ClearListOnly;
+        WsdlOperation.ExpectationBindables.Free;
+        WsdlOperation.ExpectationBindables := SelectElementsForm.ControlBinds;
+        se.UpdateReplyColumns(WsdlOperation);
+        UpdateMessagesGrid;
+        DoColorBindButtons;
+        stubChanged := True;
+      finally
+        WsdlOperation.ReleaseLock;
+      end;
+    end
+    else
+    begin
+      SelectElementsForm.ControlBinds.ClearListOnly;
+      SelectElementsForm.ControlBinds.Free;
     end;
   finally
     FreeAndNil(SelectElementsForm);

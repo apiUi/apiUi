@@ -270,6 +270,8 @@ public
   property CheckedAllUp: Boolean read getCheckedAllUp;
 end;
 
+{ TBindableList }
+
 TBindableList = class (TStringList)
   private
     procedure SetBindable(Index: integer; const Value: TCustomBindable);
@@ -281,6 +283,7 @@ public
   property ValueText: String read getValueText;
   property Bindables [Index: integer]: TCustomBindable read GetBindable write SetBindable;
   procedure Clear; override;
+  function Clone: TBindableList;
 end;
 
 type TBind = class (TObject)
@@ -432,6 +435,15 @@ end;
 procedure TBindableList.Clear;
 begin
   inherited;
+end;
+
+function TBindableList.Clone: TBindableList;
+var
+  x: Integer;
+begin
+  result := TBindableList.Create;
+  for x := 0 to Count - 1 do
+    result.AddObject(Strings[x], Objects[x]);
 end;
 
 procedure TBindableList.ClearListOnly;

@@ -105,6 +105,8 @@ type
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
+    procedure GridHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+    procedure GridHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure MenuItem2Click(Sender: TObject);
     procedure OkButtonClick (Sender : TObject );
     procedure ZoomActionExecute(Sender: TObject);
@@ -145,8 +147,6 @@ type
     procedure ToggleShowEmptyRowsActionExecute(Sender: TObject);
     procedure GridEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex);
-    procedure GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GridFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -583,16 +583,6 @@ procedure TXmlGridForm.FormKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_ESCAPE then
     Close;
-end;
-
-procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  if ColumnSpan [Column] = 0 then Exit;
-  GroupExpanded [Column] := not GroupExpanded [Column];
-  ShowHideColumns;
-  Grid.FocusedColumn := Column;
-  headerClicked := True;
 end;
 
 procedure TXmlGridForm.SetNodesVisibilty;
@@ -1890,6 +1880,25 @@ begin
       ImageList.Draw(TargetCanvas, r.Right - 17, CellRect.Top, 52);
     end;
   end;
+end;
+
+procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
+begin
+  with HitInfo do
+  begin
+    if ColumnSpan [Column] = 0 then Exit;
+    GroupExpanded [Column] := not GroupExpanded [Column];
+    ShowHideColumns;
+    Grid.FocusedColumn := Column;
+//  headerClicked := True;
+  end;
+end;
+
+procedure TXmlGridForm.GridHeaderDblClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
+begin
+
 end;
 
 procedure TXmlGridForm.MenuItem2Click(Sender: TObject);

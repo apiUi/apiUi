@@ -22,7 +22,11 @@ uses
    ;
 
 type
+
+  { TSelectElementsForm }
+
   TSelectElementsForm = class(TForm)
+    Button5: TButton;
     Panel1: TPanel;
     OKBtn: TButton;
     Panel2: TPanel;

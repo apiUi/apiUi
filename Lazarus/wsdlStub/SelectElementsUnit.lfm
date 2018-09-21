@@ -12,7 +12,7 @@ object SelectElementsForm: TSelectElementsForm
   OnShow = FormShow
   ParentFont = True
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     Left = 0
     Height = 51
@@ -34,7 +34,7 @@ object SelectElementsForm: TSelectElementsForm
       TabOrder = 0
     end
     object Button1: TButton
-      Left = 120
+      Left = 225
       Height = 25
       Top = 12
       Width = 75
@@ -42,7 +42,7 @@ object SelectElementsForm: TSelectElementsForm
       TabOrder = 1
     end
     object Button2: TButton
-      Left = 212
+      Left = 317
       Height = 25
       Top = 12
       Width = 75
@@ -50,7 +50,7 @@ object SelectElementsForm: TSelectElementsForm
       TabOrder = 2
     end
     object Button4: TButton
-      Left = 303
+      Left = 408
       Height = 25
       Top = 12
       Width = 75
@@ -58,7 +58,7 @@ object SelectElementsForm: TSelectElementsForm
       TabOrder = 3
     end
     object Button3: TButton
-      Left = 394
+      Left = 499
       Height = 25
       Top = 12
       Width = 75
@@ -66,7 +66,7 @@ object SelectElementsForm: TSelectElementsForm
       TabOrder = 4
     end
     object BitBtn1: TBitBtn
-      Left = 481
+      Left = 586
       Height = 25
       Top = 12
       Width = 31
@@ -110,7 +110,7 @@ object SelectElementsForm: TSelectElementsForm
       TabOrder = 5
     end
     object BitBtn2: TBitBtn
-      Left = 518
+      Left = 623
       Height = 25
       Top = 12
       Width = 31
@@ -160,6 +160,16 @@ object SelectElementsForm: TSelectElementsForm
         00FFFFFF00FDFDFDFDFDFDFDFDFDFDFD00FFFFFF00FDFDFDFDFD
       }
       TabOrder = 6
+    end
+    object Button5: TButton
+      Left = 104
+      Height = 25
+      Top = 12
+      Width = 75
+      Cancel = True
+      Caption = '&Cancel'
+      ModalResult = 2
+      TabOrder = 7
     end
   end
   object Panel2: TPanel
