@@ -51,7 +51,7 @@ type
 
 procedure a2bInitialize;
 procedure a2bUninitialize;
-procedure a2bExpandWhenValueIsJson (aXml: TXml);
+procedure a2bExpandWhenValueIsJsonOrYaml (aXml: TXml);
 
 implementation
 
@@ -67,8 +67,8 @@ begin
   wrdUninitialize;
 end;
 
-procedure a2bExpandWhenValueIsJson(aXml: TXml);
-  procedure _expandWhenJson;
+procedure a2bExpandWhenValueIsJsonOrYaml(aXml: TXml);
+  procedure _expandWhenJsonOrYaml;
     function _itMightBeJson: Boolean;
     var
        x: Integer;
@@ -82,6 +82,26 @@ procedure a2bExpandWhenValueIsJson(aXml: TXml);
             and (   (aXml.Value[x] = '{')
                  or (aXml.Value[x] = '[')
                 );
+    end;
+    function _itMightBeYaml: Boolean;
+    var
+       ls: TStringList;
+    begin
+      result := False;
+      ls := TStringList.Create;
+      try
+        ls.Text := aXml.Value;
+        if (ls.Count > 0)
+        and (ls.Strings[0] <> '') then
+          with TRegExpr.Create('^[A-Za-z][A-Za-z0-9]+\:$') do
+          try
+            result := Exec(ls.Strings[0]);
+          finally
+            Free;
+          end;
+      finally
+        ls.Free;
+      end;
     end;
   var
      x: Integer;
@@ -97,6 +117,19 @@ procedure a2bExpandWhenValueIsJson(aXml: TXml);
        except
          xXml.Free;
        end;
+       Exit;
+     end;
+     if _itMightBeYaml then
+     begin
+       xXml := TXml.Create;
+       try
+         xXml.LoadYamlFromString(aXml.Value, nil);
+         aXml.AddXml(xXml);
+         aXml.Value := '';
+       except
+         xXml.Free;
+       end;
+       Exit;
      end;
   end;
 var
@@ -105,11 +138,12 @@ begin
   if (aXml.Items.Count > 0) then
   begin
     for x := 0 to aXml.Items.Count - 1 do
-      a2bExpandWhenValueIsJson(aXml.Items.XmlItems[x]);
+      a2bExpandWhenValueIsJsonOrYaml(aXml.Items.XmlItems[x]);
     Exit;
   end;
-  _expandWhenJson;
+  _expandWhenJsonOrYaml;
 end;
+
 
 function rmPrefix (aName: String): String;
 var

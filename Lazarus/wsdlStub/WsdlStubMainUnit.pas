@@ -11445,7 +11445,7 @@ begin
         with AddXml (TXml.CreateAsString('Rpy', '')) do
           AddXml (fLog.rpyBodyAsXml);
         fXml.SeparateNsPrefixes;
-        a2bExpandWhenValueIsJson(fXml);
+        a2bExpandWhenValueIsJsonOrYaml(fXml);
       end;
       nXml := TXml.CreateAsString('nextSelected', '');
       with nXml do
@@ -11457,7 +11457,7 @@ begin
         with AddXml (TXml.CreateAsString('Rpy', '')) do
           AddXml (nLog.rpyBodyAsXml);
         nXml.SeparateNsPrefixes;
-        a2bExpandWhenValueIsJson(nXml);
+        a2bExpandWhenValueIsJsonOrYaml(nXml);
       end;
     finally
       fLog.Disclaim;
@@ -12813,7 +12813,7 @@ begin
           if (fMessage.rpyBind is TIpmItem) then
             AddXml((fMessage.rpyBind as TIpmItem).AsXml);
         end;
-        a2bExpandWhenValueIsJson(fXml);
+        a2bExpandWhenValueIsJsonOrYaml(fXml);
       end;
       nXml := TXml.CreateAsString('compare', '');
       with nXml do
@@ -12835,7 +12835,7 @@ begin
           if (nMessage.rpyBind is TIpmItem) then
             AddXml((nMessage.rpyBind as TIpmItem).AsXml);
         end;
-        a2bExpandWhenValueIsJson(nXml);
+        a2bExpandWhenValueIsJsonOrYaml(nXml);
       end;
     finally
     end;
