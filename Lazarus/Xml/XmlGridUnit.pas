@@ -99,14 +99,12 @@ type
     StatusPanel: TPanel;
     CleanAction: TAction;
     CleanMenuItem: TMenuItem;
-    procedure DocumentationViewerClick (Sender : TObject );
     procedure DocumentationViewerHotClick(Sender: TObject);
-    procedure GridAfterAutoFitColumns (Sender : TVTHeader );
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
-    procedure GridHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
-    procedure GridHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+    procedure GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure MenuItem2Click(Sender: TObject);
     procedure OkButtonClick (Sender : TObject );
     procedure ZoomActionExecute(Sender: TObject);
@@ -1846,19 +1844,9 @@ begin
   xmlUtil.presentString (FocusedBind.FullCaption, FocusedBind.Value);
 end;
 
-procedure TXmlGridForm .DocumentationViewerClick (Sender : TObject );
-begin
-
-end;
-
 procedure TXmlGridForm.DocumentationViewerHotClick(Sender: TObject);
 begin
   OpenUrl(DocumentationViewer.HotURL);
-end;
-
-procedure TXmlGridForm .GridAfterAutoFitColumns (Sender : TVTHeader );
-begin
-
 end;
 
 procedure TXmlGridForm .GridAfterCellPaint (Sender : TBaseVirtualTree ;
@@ -1882,23 +1870,14 @@ begin
   end;
 end;
 
-procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader;
-  HitInfo: TVTHeaderHitInfo);
+procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  with HitInfo do
-  begin
-    if ColumnSpan [Column] = 0 then Exit;
-    GroupExpanded [Column] := not GroupExpanded [Column];
-    ShowHideColumns;
-    Grid.FocusedColumn := Column;
-//  headerClicked := True;
-  end;
-end;
-
-procedure TXmlGridForm.GridHeaderDblClick(Sender: TVTHeader;
-  HitInfo: TVTHeaderHitInfo);
-begin
-
+  if ColumnSpan [Column] = 0 then Exit;
+  GroupExpanded [Column] := not GroupExpanded [Column];
+  ShowHideColumns;
+  Grid.FocusedColumn := Column;
+//headerClicked := True;
 end;
 
 procedure TXmlGridForm.MenuItem2Click(Sender: TObject);

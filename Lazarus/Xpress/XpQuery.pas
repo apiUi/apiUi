@@ -2,7 +2,7 @@ unit XpQuery;
 
 interface
 
-uses Classes, Bind, sqldb, mssqlconn, oracleconnection, odbcconn
+uses Classes, Bind, sqldb, mssqlconn, {$ifndef win64}oracleconnection, {$endif}odbcconn
   ;
 
 type TXpQueryVerb = (xqvSelect, xqvInsert, xqvUpdate, xqvDelete);

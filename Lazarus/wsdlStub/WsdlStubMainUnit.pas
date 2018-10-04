@@ -1564,6 +1564,7 @@ var
 begin
   if not InactiveAfterPrompt then Exit;
   xWsdls := TStringList.Create;
+  xWsdls.Sorted := True;
   for w := 0 to se.Wsdls.Count - 1 do
   begin
     if not se.isSpecialWsdl(se.Wsdls.Objects[w] as TWsdl) then
