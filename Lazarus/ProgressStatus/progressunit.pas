@@ -20,6 +20,7 @@ type
     ProgressBar1: TProgressBar;
     Timer1: TTimer;
     procedure CancelButtonClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -48,6 +49,17 @@ begin
     ProgressInterface.OnCancel (self)
   else
     raise Exception.Create ('?no OnCancel assigned?');
+end;
+
+procedure TProgressForm.FormClose(Sender: TObject; var CloseAction: TCloseAction
+  );
+begin
+  if Assigned (AcquireLock) then AcquireLock;
+  try
+    ProgressInterface.ProgressPos := 0;
+  finally
+    if Assigned (ReleaseLock) then ReleaseLock;
+  end;
 end;
 
 procedure TProgressForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);

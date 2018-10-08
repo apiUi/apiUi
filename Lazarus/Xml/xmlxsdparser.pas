@@ -863,7 +863,7 @@ begin
       Inc(P);
     end;
     Milliseconds := (1000*Ms) div I;
-    if (Milliseconds >= 999) or (not AllowMoreThan24h and (Hour = 24) and (Milliseconds > 0)) then
+    if (Milliseconds > 999) or (not AllowMoreThan24h and (Hour = 24) and (Milliseconds > 0)) then
       Exit(False);
   end else
     Milliseconds := 0;

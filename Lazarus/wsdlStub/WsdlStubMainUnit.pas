@@ -1096,6 +1096,7 @@ type
     tacoHost: String;
     tacoPort: Integer;
     procedure ShowChosenLogTab;
+    function ShowProgressForm: Boolean;
     procedure PositionMessagesTabControl;
     function GetAuthorization: Boolean;
     function GetAuthorizationBaseString: String;
@@ -1167,7 +1168,7 @@ type
     procedure ShowInfoForm(aCaption: String; aInfoString: String);
     procedure UpdateInWsdlCheckBoxes;
     procedure ShowReport (aReport: TSnapshot);
-    procedure SaveStubCase;
+    function SaveStubCase: Boolean;
     procedure OpenStubCase;
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
@@ -2978,6 +2979,47 @@ begin
 end;
 end;
 
+function TMainForm.ShowProgressForm: Boolean;
+var
+  swabEnabled: Boolean;
+begin
+  result := False;
+  swabEnabled := RefreshLogTimer.Enabled;
+  RefreshLogTimer.Enabled := False;
+  try
+    Application.CreateForm(TProgressForm, ProgressForm);
+    try
+      ProgressForm.AcquireLock := se.AcquireLogLock;
+      ProgressForm.ReleaseLock := se.ReleaseLogLock;
+      ProgressForm.ProgressInterface := se.ProgressInterface;
+      ProgressForm.ShowModal;
+      if se.ProgressInterface.doUpdateConsole then
+        DoUpdateConsole
+      else
+        UpdateCaption;
+    finally
+      ProgressForm.Free;
+    end;
+    result := not se.ProgressInterface.ExceptionRaised;
+    if se.ProgressInterface.ExceptionRaised then with se.ProgressInterface do
+    begin
+      if MessageDlg( ExceptionMessage + LineEnding +  LineEnding + 'Show extra information?'
+                   , mtError
+                   , [mbNo, mbYes]
+                   , 0
+                   ) = mrYes then
+        ShowText ( 'Exception details'
+                 , ExceptionMessage
+                 + LineEnding
+                 + LineEnding
+                 + ExceptionStackTrace
+                 );
+    end;
+  finally
+    RefreshLogTimer.Enabled:=swabEnabled;
+  end;
+end;
+
 procedure TMainForm.PositionMessagesTabControl;
 var
   L: Integer;
@@ -3276,8 +3318,9 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveStubCase;
+function TMainForm.SaveStubCase: Boolean;
 begin
+  result := False;
   captionFileName := ExtractFileName(se.projectFileName);
   se.doCreateBackup := doCreateBackup;
   if Assigned (WsdlOperation) then
@@ -3293,7 +3336,10 @@ begin
     se.FocusMessageIndex := 0;
   end;
   if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
-    TProcedureThread.Create(False, False, se, se.ExportToFile)
+  begin
+    TProcedureThread.Create(False, False, se, se.ExportToFile);
+    result := ShowProgressForm;
+  end
   else
   begin
     if ExtractFileExt(se.projectFileName) = _ProjectFileExtention then
@@ -3301,6 +3347,7 @@ begin
       CheckFolderAndFileNames;
       TProcedureThread.Create(False, False, se, se.SaveWithFolders);
       UpdateReopenList(ReopenCaseList, se.projectFileName);
+      result := ShowProgressForm;
     end
     else
     begin
@@ -9270,33 +9317,7 @@ begin
         // pass control to another form, so this one should keep quitfor the mean time
         RefreshLogTimer.Enabled := False;
         se.ReleaseLogLock;
-        Application.CreateForm(TProgressForm, ProgressForm);
-        try
-          ProgressForm.AcquireLock := se.AcquireLogLock;
-          ProgressForm.ReleaseLock := se.ReleaseLogLock;
-          ProgressForm.ProgressInterface := se.ProgressInterface;
-          ProgressForm.ShowModal;
-          if se.ProgressInterface.doUpdateConsole then
-            DoUpdateConsole
-          else
-            UpdateCaption;
-        finally
-          ProgressForm.Free;
-        end;
-        if se.ProgressInterface.ExceptionRaised then with se.ProgressInterface do
-        begin
-          if MessageDlg( ExceptionMessage + LineEnding +  LineEnding + 'Show extra information?'
-                       , mtError
-                       , [mbNo, mbYes]
-                       , 0
-                       ) = mrYes then
-            ShowText ( 'Exception details'
-                     , ExceptionMessage
-                     + LineEnding
-                     + LineEnding
-                     + ExceptionStackTrace
-                     );
-        end;
+        ShowProgressForm;
         se.AcquireLogLock;
         se.ProgressInterface.doUpdateConsole := False;
         RefreshLogTimer.Enabled := True;

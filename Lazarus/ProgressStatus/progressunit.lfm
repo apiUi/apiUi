@@ -8,6 +8,7 @@ object ProgressForm: TProgressForm
   Caption = 'ProgressForm'
   ClientHeight = 107
   ClientWidth = 669
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   Position = poOwnerFormCenter
