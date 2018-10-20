@@ -9218,12 +9218,17 @@ begin
       xXml := XmlFromProjectFolders(projectFileName);
       try
         ProjectDesignFromXml(xXml, projectFileName);
+        ProgressInvalidateConsole;
         if doStartOnOpeningProject then
-          Activate(True);
+        try
+           Activate(True);
+        except
+           Activate(False);
+           raise;
+        end;
       finally
         xXml.Free;
       end;
-      ProgressInvalidateConsole;
     except
       on e: exception do
       begin

@@ -1,25 +1,27 @@
 object Daemon1: TDaemon1
-  Left = 147
-  Height = 182
-  Top = 119
-  Width = 223
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  LCLVersion = '1.6.0.4'
+  OldCreateOrder = False
+  left = 147
+  top = 119
+  Height = 228
+  HorizontalOffset = 322
+  VerticalOffset = 225
+  Width = 279
+  PPI = 120
   object IdHTTPServer: TIdHTTPServer
     Bindings = <>
     OnCreatePostStream = IdHTTPServerCreatePostStream
     OnCommandGet = IdHTTPServerCommandGet
-    left = 34
-    top = 40
+    left = 43
+    top = 50
   end
   object SQLTransaction: TSQLTransaction
     Active = False
     Action = caCommit
     Database = SqlConnector
-    Options = []
-    left = 152
-    top = 104
+    left = 190
+    top = 130
   end
   object SQLQuery: TSQLQuery
     FieldDefs = <    
@@ -47,12 +49,11 @@ object Daemon1: TDaemon1
       'Select CompanyName, LicenseExpireDate, LicenseString'
       'from LicenseInformation'
     )
-    Options = []
     Params = <>
     ParseSQL = False
     UsePrimaryKeyAsKey = False
-    left = 58
-    top = 124
+    left = 73
+    top = 155
   end
   object SqlConnector: TODBCConnection
     Connected = False
@@ -63,9 +64,8 @@ object Daemon1: TDaemon1
     )
     Transaction = SQLTransaction
     LogEvents = []
-    Options = []
     Driver = 'Microsoft Access Driver (*.mdb, *.accdb)'
-    left = 157
-    top = 37
+    left = 196
+    top = 46
   end
 end

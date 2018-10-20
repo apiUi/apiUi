@@ -8,7 +8,7 @@ uses
   Classes
   , SysUtils
   , strutils
-  , FileUtil
+  , LazFileUtils
   , IdHTTPServer
   , DaemonApp
   , Xmlz

@@ -2,15 +2,15 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <BuildModes Active="Default"/>
     <Units Count="10">
       <Unit0>
         <Filename Value="portChecker.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <CursorPos Y="20"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -20,9 +20,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainUnit"/>
-        <TopLine Value="100"/>
-        <CursorPos Y="114"/>
-        <UsageCount Value="21"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="101"/>
+        <CursorPos X="8" Y="106"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -50,20 +51,18 @@
       </Unit4>
       <Unit5>
         <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="358"/>
         <CursorPos X="3" Y="362"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1108"/>
         <CursorPos X="3" Y="1127"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
       <Unit7>
@@ -71,153 +70,111 @@
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <TopLine Value="20"/>
-        <CursorPos X="24" Y="58"/>
+        <CursorPos X="48" Y="22"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandler.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="682"/>
         <CursorPos X="80" Y="712"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSLHeaders.pas"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="19563"/>
         <CursorPos X="10" Y="19571"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit9>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="20" HistoryIndex="19">
       <Position1>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <Caret Line="127" Column="26" TopLine="95"/>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="9" Column="32"/>
       </Position1>
       <Position2>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <Caret Line="163" Column="10" TopLine="131"/>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="74" Column="12" TopLine="43"/>
       </Position2>
       <Position3>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <Caret Line="188" Column="22" TopLine="158"/>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="75" Column="31" TopLine="44"/>
       </Position3>
       <Position4>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <Caret Line="203" Column="51" TopLine="187"/>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="47" Column="19" TopLine="45"/>
       </Position4>
       <Position5>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <Caret Line="214" Column="34" TopLine="186"/>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="64" Column="27" TopLine="46"/>
       </Position5>
       <Position6>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="9" Column="32"/>
+        <Caret Line="65" Column="32" TopLine="46"/>
       </Position6>
       <Position7>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="74" Column="12" TopLine="43"/>
+        <Caret Line="82" Column="21" TopLine="47"/>
       </Position7>
       <Position8>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="75" Column="31" TopLine="44"/>
+        <Caret Line="9" Column="13"/>
       </Position8>
       <Position9>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="47" Column="19" TopLine="45"/>
+        <Caret Line="49"/>
       </Position9>
       <Position10>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="64" Column="27" TopLine="46"/>
+        <Caret Line="56" TopLine="18"/>
       </Position10>
       <Position11>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="65" Column="32" TopLine="46"/>
+        <Caret Line="59" TopLine="48"/>
       </Position11>
       <Position12>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="82" Column="21" TopLine="47"/>
+        <Caret Line="9" Column="35"/>
       </Position12>
       <Position13>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="9" Column="13"/>
+        <Caret Line="53" Column="42" TopLine="33"/>
       </Position13>
       <Position14>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="49"/>
+        <Caret Line="43" Column="20" TopLine="36"/>
       </Position14>
       <Position15>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="56" TopLine="18"/>
+        <Caret Line="40" Column="4" TopLine="27"/>
       </Position15>
       <Position16>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="59" TopLine="48"/>
+        <Caret Line="43" Column="4" TopLine="38"/>
       </Position16>
       <Position17>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="9" Column="35"/>
+        <Caret Line="91" Column="38" TopLine="72"/>
       </Position17>
       <Position18>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="53" Column="42" TopLine="33"/>
+        <Caret Line="29" Column="19" TopLine="25"/>
       </Position18>
       <Position19>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="43" Column="20" TopLine="36"/>
+        <Caret Line="89" Column="29" TopLine="53"/>
       </Position19>
       <Position20>
         <Filename Value="mainunit.pas"/>
-        <Caret Line="40" Column="4" TopLine="27"/>
-      </Position20>
-      <Position21>
-        <Filename Value="mainunit.pas"/>
-        <Caret Line="43" Column="4" TopLine="38"/>
-      </Position21>
-      <Position22>
-        <Filename Value="mainunit.pas"/>
-        <Caret Line="91" Column="38" TopLine="72"/>
-      </Position22>
-      <Position23>
-        <Filename Value="mainunit.pas"/>
-        <Caret Line="29" Column="19" TopLine="25"/>
-      </Position23>
-      <Position24>
-        <Filename Value="mainunit.pas"/>
-        <Caret Line="89" Column="29" TopLine="53"/>
-      </Position24>
-      <Position25>
-        <Filename Value="mainunit.pas"/>
         <Caret Line="119" Column="25" TopLine="98"/>
-      </Position25>
-      <Position26>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <Caret Line="223" Column="72" TopLine="222"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <Caret Line="362" Column="3" TopLine="358"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandler.pas"/>
-        <Caret Line="712" Column="53" TopLine="695"/>
-      </Position28>
-      <Position29>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandler.pas"/>
-        <Caret Line="450" Column="20" TopLine="430"/>
-      </Position29>
-      <Position30>
-        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSLHeaders.pas"/>
-      </Position30>
+      </Position20>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

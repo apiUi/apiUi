@@ -2,16 +2,16 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <BuildModes Active="Default"/>
-    <Units Count="16">
+    <Units Count="17">
       <Unit0>
         <Filename Value="wsAuthorizationService.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="1"/>
-        <CursorPos X="55" Y="7"/>
+        <CursorPos Y="12"/>
         <UsageCount Value="48"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -21,7 +21,7 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="wsAuthDaemonUnit"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="1"/>
         <CursorPos X="7" Y="6"/>
         <UsageCount Value="48"/>
@@ -32,11 +32,10 @@
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Daemon1"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
+        <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="wsDaemonUnit"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="268"/>
-        <CursorPos X="3" Y="255"/>
+        <CursorPos X="17" Y="11"/>
         <UsageCount Value="48"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -124,8 +123,17 @@
         <CursorPos X="10" Y="950"/>
         <UsageCount Value="10"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="413"/>
+        <CursorPos X="6" Y="422"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit16>
     </Units>
-    <JumpHistory Count="6" HistoryIndex="5">
+    <JumpHistory Count="11" HistoryIndex="10">
       <Position1>
         <Filename Value="wsdaemonunit.pas"/>
         <Caret Line="445" Column="81" TopLine="398"/>
@@ -150,6 +158,26 @@
         <Filename Value="..\Xml\Ipmz.pas"/>
         <Caret Line="269" Column="6" TopLine="250"/>
       </Position6>
+      <Position7>
+        <Filename Value="wsAuthorizationService.lpr"/>
+        <Caret Line="7" Column="55"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="421" Column="6" TopLine="412"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="422" Column="6" TopLine="413"/>
+      </Position9>
+      <Position10>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="428" Column="10" TopLine="420"/>
+      </Position10>
+      <Position11>
+        <Filename Value="wsdaemonunit.pas"/>
+        <Caret Line="11" Column="17"/>
+      </Position11>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>
