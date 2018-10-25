@@ -5,7 +5,7 @@ unit L4JMainUnit;
 interface
 
 uses
-  l4jTypes, sqldb, db, odbcconn, oracleconnection, LCLIntf, LCLType,
+  l4jTypes, sqldb, db, odbcconn, {$ifndef WIN64}oracleconnection, {$endif}LCLIntf, LCLType,
   SysUtils
    , Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ComCtrls, ExtCtrls, VirtualTrees
