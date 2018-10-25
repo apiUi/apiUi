@@ -1,14 +1,13 @@
 object MainForm: TMainForm
-  Left = 459
-  Height = 682
-  Top = 127
-  Width = 1403
+  Left = 253
+  Height = 631
+  Top = 83
+  Width = 1068
   Action = OpenProjectAction
   Caption = 'Open Project...'
-  ClientHeight = 657
-  ClientWidth = 1403
+  ClientHeight = 612
+  ClientWidth = 1068
   Color = clBtnFace
-  DesignTimePPI = 120
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
@@ -20,13 +19,13 @@ object MainForm: TMainForm
   OnShow = FormShow
   ParentBiDiMode = False
   ShowHint = True
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '1.6.0.4'
   Visible = True
   object MainToolBar: TToolBar
     Left = 0
     Height = 24
     Top = 0
-    Width = 1403
+    Width = 1068
     Caption = 'MainToolBar'
     Images = mainImageList
     TabOrder = 1
@@ -36,140 +35,149 @@ object MainForm: TMainForm
       Action = NewStubCaseAction
     end
     object ToolButton23: TToolButton
-      Left = 30
-      Height = 28
+      Left = 24
+      Height = 22
       Top = 2
+      Width = 8
       Caption = 'ToolButton23'
       ImageIndex = 6
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 38
+      Left = 32
       Top = 2
       Action = OpenProjectAction
     end
     object ToolButton6: TToolButton
-      Left = 67
+      Left = 55
       Top = 2
       Action = ReopenStubCaseAction
     end
     object ToolButton3: TToolButton
-      Left = 96
+      Left = 78
       Top = 2
       Action = SaveStubCaseAction
     end
     object ToolButton4: TToolButton
-      Left = 125
-      Height = 28
+      Left = 101
+      Height = 22
       Top = 2
+      Width = 8
       Caption = 'ToolButton4'
       ImageIndex = 2
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 133
+      Left = 109
       Top = 2
       Action = OpenWsdlAction
       DropdownMenu = WsdlsPopupMenu
       Style = tbsDropDown
     end
     object ToolButton2: TToolButton
-      Left = 177
-      Height = 28
+      Left = 144
+      Height = 22
       Top = 2
+      Width = 8
       Caption = 'ToolButton2'
       ImageIndex = 1
       Style = tbsSeparator
     end
     object ToolButton58: TToolButton
-      Left = 185
+      Left = 152
       Top = 2
       Action = ConfigListenersAction
     end
     object ToolButton48: TToolButton
-      Left = 214
-      Height = 28
+      Left = 175
+      Height = 22
       Top = 2
+      Width = 5
       Caption = 'ToolButton48'
       ImageIndex = 6
       Style = tbsDivider
     end
     object ValidateRepliesButton: TToolButton
-      Left = 248
+      Left = 203
       Top = 2
       Action = ValidateRepliesAction
       Style = tbsCheck
     end
     object ValidateRequestsButton: TToolButton
-      Left = 219
+      Left = 180
       Top = 2
       Action = ValidateRequestsAction
       Style = tbsCheck
     end
     object ToolButton57: TToolButton
-      Left = 277
+      Left = 226
       Top = 2
       Action = ToggleCheckExpectedValuesAction
       Style = tbsCheck
     end
     object ToolButton43: TToolButton
-      Left = 306
-      Height = 28
+      Left = 249
+      Height = 22
       Top = 2
+      Width = 8
       Caption = 'ToolButton43'
       ImageIndex = 6
       Style = tbsSeparator
     end
     object ToolButton60: TToolButton
-      Left = 314
+      Left = 257
       Top = 2
       Action = ConfigLogAction
     end
     object ToolButton61: TToolButton
-      Left = 343
-      Height = 28
+      Left = 280
+      Height = 22
       Top = 2
+      Width = 8
       Caption = 'ToolButton61'
       ImageIndex = 6
       Style = tbsSeparator
     end
     object ToolButton21: TToolButton
-      Left = 351
-      Height = 28
+      Left = 288
+      Height = 22
       Top = 2
+      Width = 5
       Caption = 'ToolButton21'
       ImageIndex = 5
       Style = tbsDivider
     end
     object startStopButton: TToolButton
-      Left = 356
+      Left = 293
       Top = 2
       Action = startAction
     end
     object ToolButton70: TToolButton
-      Left = 385
-      Height = 28
+      Left = 316
+      Height = 22
       Top = 2
+      Width = 8
       Caption = 'ToolButton70'
       ImageIndex = 64
       Style = tbsSeparator
     end
     object AbortToolButton: TToolButton
-      Left = 393
+      Left = 324
       Top = 2
       Action = AbortAction
     end
     object SeparatorToolButton: TToolButton
-      Left = 422
-      Height = 28
+      Left = 347
+      Height = 22
       Top = 2
+      Width = 8
       Caption = 'SeparatorToolButton'
       ImageIndex = 46
       Style = tbsSeparator
     end
     object ThreadsPanel: TPanel
-      Left = 430
-      Height = 28
+      Left = 355
+      Height = 22
       Top = 2
       Width = 87
       BevelOuter = bvNone
@@ -183,25 +191,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 326
+    Height = 281
     Top = 24
-    Width = 1403
+    Width = 1068
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 326
-    ClientWidth = 1403
+    ClientHeight = 281
+    ClientWidth = 1068
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 221
-      Height = 320
+      Height = 275
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 1226
-      Height = 320
+      Left = 891
+      Height = 275
       Top = 3
       Width = 5
       Align = alRight
@@ -210,18 +218,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 320
+      Height = 275
       Top = 3
       Width = 218
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 320
+      ClientHeight = 275
       ClientWidth = 218
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 288
+        Top = 243
         Width = 212
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -229,7 +237,7 @@ object MainForm: TMainForm
         TabOrder = 1
         object ActionComboBox: TComboBox
           Left = 1
-          Height = 28
+          Height = 21
           Hint = 'Select action'
           Top = 2
           Width = 66
@@ -246,8 +254,9 @@ object MainForm: TMainForm
         end
         object ToolButton17: TToolButton
           Left = 67
-          Height = 28
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton17'
           Style = tbsSeparator
         end
@@ -258,30 +267,32 @@ object MainForm: TMainForm
           Action = RedirectAddressAction
         end
         object ToolButton19: TToolButton
-          Left = 104
-          Height = 28
+          Left = 98
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton19'
           ImageIndex = 0
           Style = tbsSeparator
         end
         object DelayTimeButton: TToolButton
-          Left = 112
+          Left = 106
           Hint = 'Set delay'
           Top = 2
           Action = OperationDelayResponseTimeAction
         end
         object ToolButton62: TToolButton
-          Left = 141
-          Height = 28
+          Left = 129
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton62'
           ImageIndex = 1
           Style = tbsSeparator
         end
         object Button1: TButton
-          Left = 149
-          Height = 28
+          Left = 137
+          Height = 22
           Hint = 'Apply to other services or operations...'
           Top = 2
           Width = 54
@@ -291,7 +302,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 285
+        Height = 240
         Top = 3
         Width = 212
         Align = alClient
@@ -337,22 +348,18 @@ object MainForm: TMainForm
         OnPaintText = OperationReqsTreeViewPaintText
         OnGetImageIndex = OperationReqsTreeViewGetImageIndex
         OnGetHint = OperationReqsTreeViewGetHint
-        OnMouseDown = OperationReqsTreeViewMouseDown
-        OnMouseMove = OperationReqsTreeViewMouseMove
-        OnMouseUp = OperationReqsTreeViewMouseUp
-        OnMouseWheel = OperationReqsTreeViewMouseWheel
         OnResize = TreeViewResize
       end
     end
     object XsdPanel: TPanel
-      Left = 1231
-      Height = 320
+      Left = 896
+      Height = 275
       Top = 3
       Width = 169
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 320
+      ClientHeight = 275
       ClientWidth = 169
       TabOrder = 1
       object Splitter6: TSplitter
@@ -396,7 +403,7 @@ object MainForm: TMainForm
       end
       object DocumentationViewer: TIpHtmlPanel
         Left = 4
-        Height = 161
+        Height = 116
         Top = 155
         Width = 161
         Align = alClient
@@ -409,10 +416,6 @@ object MainForm: TMainForm
         PrintSettings.MarginTop = 0.5
         PrintSettings.MarginRight = 0.5
         PrintSettings.MarginBottom = 0.5
-        PrintSettings.Preview.Left = 480
-        PrintSettings.Preview.Top = 270
-        PrintSettings.Preview.Width = 1440
-        PrintSettings.Preview.Height = 810
         ShowHints = False
         TabOrder = 3
         OnHotClick = DocumentationViewerHotClick
@@ -432,10 +435,6 @@ object MainForm: TMainForm
         PrintSettings.MarginTop = 0.5
         PrintSettings.MarginRight = 0.5
         PrintSettings.MarginBottom = 0.5
-        PrintSettings.Preview.Left = 480
-        PrintSettings.Preview.Top = 270
-        PrintSettings.Preview.Width = 1440
-        PrintSettings.Preview.Height = 810
         ShowHints = False
         TabOrder = 4
         OnHotClick = DocumentationViewerHotClick
@@ -443,22 +442,22 @@ object MainForm: TMainForm
     end
     object MiddlePanel: TPanel
       Left = 226
-      Height = 320
+      Height = 275
       Top = 3
-      Width = 1000
+      Width = 665
       Align = alClient
       Caption = 'MiddlePanel'
-      ClientHeight = 320
-      ClientWidth = 1000
+      ClientHeight = 275
+      ClientWidth = 665
       TabOrder = 4
       object WsdlInfoPanel: TPanel
         Left = 1
         Height = 37
         Top = 1
-        Width = 998
+        Width = 663
         Align = alTop
         ClientHeight = 37
-        ClientWidth = 998
+        ClientWidth = 663
         TabOrder = 0
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
@@ -487,7 +486,7 @@ object MainForm: TMainForm
         end
         object WsdlOperationsComboBox: TComboBox
           Left = 412
-          Height = 28
+          Height = 21
           Hint = 'Select operation'
           Top = 8
           Width = 113
@@ -498,7 +497,7 @@ object MainForm: TMainForm
         end
         object WsdlServicesComboBox: TComboBox
           Left = 210
-          Height = 28
+          Height = 21
           Hint = 'Select service'
           Top = 8
           Width = 140
@@ -510,7 +509,7 @@ object MainForm: TMainForm
         end
         object WsdlComboBox: TComboBox
           Left = 34
-          Height = 28
+          Height = 21
           Hint = 'Select WSDL or API (currently only OpenAPI f.k.a. Swagger)'
           Top = 8
           Width = 106
@@ -523,29 +522,29 @@ object MainForm: TMainForm
       end
       object DataPanel: TPanel
         Left = 1
-        Height = 281
+        Height = 236
         Top = 38
-        Width = 998
+        Width = 663
         Align = alClient
         Caption = 'DataPanel'
-        ClientHeight = 281
-        ClientWidth = 998
+        ClientHeight = 236
+        ClientWidth = 663
         TabOrder = 1
         object GridDataPanel: TPanel
           Left = 1
           Height = 93
           Top = 1
-          Width = 996
+          Width = 661
           Align = alTop
           Caption = 'GridDataPanel'
           ClientHeight = 93
-          ClientWidth = 996
+          ClientWidth = 661
           TabOrder = 0
           object GridToolBar: TToolBar
             Left = 1
-            Height = 30
+            Height = 24
             Top = 1
-            Width = 994
+            Width = 659
             AutoSize = True
             Caption = 'GridToolBar'
             Images = mainImageList
@@ -557,150 +556,160 @@ object MainForm: TMainForm
               Action = SelectCorrelationElementAction
             end
             object ToolButton8: TToolButton
-              Left = 30
-              Height = 28
+              Left = 24
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton8'
               ImageIndex = 8
               Style = tbsSeparator
             end
             object ToolButton9: TToolButton
-              Left = 38
+              Left = 32
               Top = 2
               Action = AddMessageAction
               OnDragOver = ToolButton9DragOver
             end
             object ToolButton20: TToolButton
-              Left = 67
-              Height = 28
+              Left = 55
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton20'
               ImageIndex = 34
               Style = tbsSeparator
             end
             object ToolButton63: TToolButton
-              Left = 75
+              Left = 63
               Top = 2
               Action = MessagesFromDiskAction
             end
             object ToolButton10: TToolButton
-              Left = 104
-              Height = 28
+              Left = 86
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton10'
               ImageIndex = 11
               Style = tbsSeparator
             end
             object ToolButton11: TToolButton
-              Left = 112
+              Left = 94
               Top = 2
               Action = DeleteMessageAction
             end
             object ToolButton14: TToolButton
-              Left = 141
-              Height = 28
+              Left = 117
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton14'
               ImageIndex = 11
               Style = tbsSeparator
             end
             object ToolButton12: TToolButton
-              Left = 149
+              Left = 125
               Top = 2
               Action = MoveUpMessageAction
             end
             object ToolButton13: TToolButton
-              Left = 178
+              Left = 148
               Top = 2
               Action = MoveDownMessageAction
             end
             object ToolButton26: TToolButton
-              Left = 207
-              Height = 28
+              Left = 171
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton26'
               ImageIndex = 12
               Style = tbsSeparator
             end
             object ToolButton25: TToolButton
-              Left = 215
+              Left = 179
               Top = 2
               Action = SelectMessageColumnsAction
             end
             object ToolButton56: TToolButton
-              Left = 244
-              Height = 28
+              Left = 202
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton56'
               ImageIndex = 34
               Style = tbsSeparator
             end
             object ToolButton55: TToolButton
-              Left = 252
+              Left = 210
               Top = 2
               Action = SelectExpectedElementsAction
             end
             object ToolButton29: TToolButton
-              Left = 281
-              Height = 28
+              Left = 233
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton29'
               ImageIndex = 25
               Style = tbsSeparator
             end
             object ToolButton27: TToolButton
-              Left = 289
+              Left = 241
               Top = 2
               Action = CopyGridAction
             end
             object ToolButton28: TToolButton
-              Left = 318
+              Left = 264
               Top = 2
               Action = PasteGridAction
             end
             object ToolButton34: TToolButton
-              Left = 347
-              Height = 28
+              Left = 287
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton34'
               ImageIndex = 25
               Style = tbsSeparator
             end
             object ToolButton38: TToolButton
-              Left = 355
+              Left = 295
               Top = 2
               Action = CheckGridFieldsAction
             end
             object ToolButton41: TToolButton
-              Left = 384
-              Height = 28
+              Left = 318
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton41'
               ImageIndex = 13
               Style = tbsSeparator
             end
             object ExecuteRequestToolButton: TToolButton
-              Left = 392
+              Left = 326
               Top = 2
               HelpType = htKeyword
               Action = ExecuteRequestAction
             end
             object ExecuteAllRequestsToolButton: TToolButton
-              Left = 421
+              Left = 349
               Top = 2
               Action = ExecuteAllRequestsAction
             end
             object LastToolButton: TToolButton
-              Left = 479
-              Height = 28
+              Left = 395
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'LastToolButton'
               ImageIndex = 33
               Style = tbsSeparator
             end
             object ProgressBar: TProgressBar
-              Left = 487
-              Height = 28
+              Left = 403
+              Height = 22
               Hint = 'Progress'
               Top = 2
               Width = 93
@@ -710,16 +719,16 @@ object MainForm: TMainForm
               TabOrder = 0
             end
             object ExecuteLoadTextToolbutton: TToolButton
-              Left = 450
+              Left = 372
               Top = 2
               Action = LoadTestAction
             end
           end
           object GridView: TVirtualStringTree
             Left = 1
-            Height = 61
-            Top = 31
-            Width = 994
+            Height = 67
+            Top = 25
+            Width = 659
             Align = alClient
             BottomSpace = 10
             DefaultText = 'Node'
@@ -785,25 +794,25 @@ object MainForm: TMainForm
           Left = 1
           Height = 5
           Top = 94
-          Width = 996
+          Width = 661
           Align = alTop
           ResizeAnchor = akTop
         end
         object TreeDataPanel: TPanel
           Left = 1
-          Height = 181
+          Height = 136
           Top = 99
-          Width = 996
+          Width = 661
           Align = alClient
           Caption = 'TreeDataPanel'
-          ClientHeight = 181
-          ClientWidth = 996
+          ClientHeight = 136
+          ClientWidth = 661
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
-            Top = 163
-            Width = 994
+            Top = 118
+            Width = 659
             Align = alBottom
             Alignment = taLeftJustify
             BevelInner = bvLowered
@@ -811,9 +820,9 @@ object MainForm: TMainForm
           end
           object ToolBar9: TToolBar
             Left = 1
-            Height = 30
+            Height = 24
             Top = 1
-            Width = 994
+            Width = 659
             AutoSize = True
             BorderWidth = 2
             Caption = 'ToolBar9'
@@ -825,46 +834,49 @@ object MainForm: TMainForm
               Action = FindAction
             end
             object ToolButton45: TToolButton
-              Left = 30
+              Left = 24
               Top = 2
               Action = FindNextAction
             end
             object ToolButton46: TToolButton
-              Left = 59
-              Height = 28
+              Left = 47
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton46'
               ImageIndex = 43
               Style = tbsSeparator
             end
             object ToolButton47: TToolButton
-              Left = 67
+              Left = 55
               Top = 2
               Action = CheckTreeAction
             end
             object ToolButton18: TToolButton
-              Left = 96
-              Height = 28
+              Left = 78
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton18'
               ImageIndex = 13
               Style = tbsSeparator
             end
             object ToolButton16: TToolButton
-              Left = 104
+              Left = 86
               Top = 2
               Action = ViewMssgAsTextAction
             end
             object ToolButton54: TToolButton
-              Left = 133
-              Height = 28
+              Left = 109
+              Height = 22
               Top = 2
+              Width = 8
               Caption = 'ToolButton54'
               ImageIndex = 14
               Style = tbsSeparator
             end
             object View: TLabel
-              Left = 141
+              Left = 117
               Height = 13
               Top = 2
               Width = 26
@@ -873,7 +885,7 @@ object MainForm: TMainForm
               ParentColor = False
             end
             object ViewStyleComboBox: TComboBox
-              Left = 167
+              Left = 143
               Height = 21
               Hint = 'View'
               Top = 2
@@ -893,8 +905,8 @@ object MainForm: TMainForm
           object InWsdlTreeView: TVirtualStringTree
             Left = 1
             Height = 59
-            Top = 31
-            Width = 994
+            Top = 25
+            Width = 659
             Align = alTop
             DefaultText = 'Node'
             DragOperations = []
@@ -948,9 +960,9 @@ object MainForm: TMainForm
           end
           object FreeFormatMemo: TMemo
             Left = 1
-            Height = 73
-            Top = 90
-            Width = 994
+            Height = 34
+            Top = 84
+            Width = 659
             Align = alClient
             Font.CharSet = ANSI_CHARSET
             Font.Color = clWindowText
@@ -969,58 +981,59 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 350
-    Width = 1403
+    Top = 305
+    Width = 1068
     Align = alBottom
     ResizeAnchor = akBottom
   end
   object LogPanel: TPanel
     Left = 0
     Height = 302
-    Top = 355
-    Width = 1403
+    Top = 310
+    Width = 1068
     Align = alBottom
     ClientHeight = 302
-    ClientWidth = 1403
+    ClientWidth = 1068
     TabOrder = 3
     object SnapshotsPanel: TPanel
       Left = 1
       Height = 64
       Top = 113
-      Width = 1401
+      Width = 1066
       Align = alTop
       Caption = 'SnapshotsPanel'
       ClientHeight = 64
-      ClientWidth = 1401
+      ClientWidth = 1066
       TabOrder = 0
       Visible = False
       object ToolBar1: TToolBar
         Left = 1
         Height = 25
         Top = 1
-        Width = 1399
+        Width = 1064
         Caption = 'ToolBar1'
         Images = mainImageList
         TabOrder = 0
         object ToolButton39: TToolButton
-          Left = 162
+          Left = 132
           Top = 2
           Action = ClearSnapshotsAction
         end
         object ToolButton40: TToolButton
-          Left = 96
+          Left = 78
           Top = 2
           Action = ReportOnSnapshotsAction
         end
         object ToolButton51: TToolButton
-          Left = 154
-          Height = 28
+          Left = 124
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton51'
           Style = tbsSeparator
         end
         object ToolButton52: TToolButton
-          Left = 30
+          Left = 24
           Top = 2
           Action = SaveSnapshotsAction
         end
@@ -1030,19 +1043,20 @@ object MainForm: TMainForm
           Action = ReadSnapshotInformationAction
         end
         object ToolButton64: TToolButton
-          Left = 88
-          Height = 28
+          Left = 70
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton64'
           Style = tbsSeparator
         end
         object ToolButton65: TToolButton
-          Left = 125
+          Left = 101
           Top = 2
           Action = SummaryReportAction
         end
         object ToolButton66: TToolButton
-          Left = 59
+          Left = 47
           Top = 2
           Action = SnapshotsFromFolderAction
         end
@@ -1051,17 +1065,17 @@ object MainForm: TMainForm
         Left = 1
         Height = 37
         Top = 26
-        Width = 1399
+        Width = 1064
         Align = alClient
         Caption = 'Panel1'
         ClientHeight = 37
-        ClientWidth = 1399
+        ClientWidth = 1064
         TabOrder = 1
         object SnapshotsVTS: TVirtualStringTree
           Left = 1
           Height = 35
           Top = 1
-          Width = 1397
+          Width = 1062
           Align = alClient
           BottomSpace = 10
           Colors.GridLineColor = clWhite
@@ -1122,11 +1136,11 @@ object MainForm: TMainForm
       Left = 1
       Height = 87
       Top = 26
-      Width = 1401
+      Width = 1066
       Align = alTop
       Caption = 'NotificationsPanel'
       ClientHeight = 87
-      ClientWidth = 1401
+      ClientWidth = 1066
       TabOrder = 1
       Visible = False
       object Splitter8: TSplitter
@@ -1147,8 +1161,8 @@ object MainForm: TMainForm
         TabOrder = 1
         object ExceptionStatusBar: TStatusBar
           Left = 1
-          Height = 29
-          Top = 30
+          Height = 20
+          Top = 39
           Width = 617
           Panels = <          
             item
@@ -1158,7 +1172,7 @@ object MainForm: TMainForm
         end
         object ExceptionsVTS: TVirtualStringTree
           Left = 1
-          Height = 29
+          Height = 38
           Top = 1
           Width = 617
           Align = alClient
@@ -1201,7 +1215,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 25
         Top = 1
-        Width = 1399
+        Width = 1064
         BorderWidth = 2
         Caption = 'ToolBar3'
         Images = mainImageList
@@ -1216,7 +1230,7 @@ object MainForm: TMainForm
         Left = 625
         Height = 60
         Top = 26
-        Width = 775
+        Width = 440
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1233,11 +1247,11 @@ object MainForm: TMainForm
       Left = 1
       Height = 96
       Top = 177
-      Width = 1401
+      Width = 1066
       Align = alTop
       Caption = 'MessagesPanel'
       ClientHeight = 96
-      ClientWidth = 1401
+      ClientWidth = 1066
       TabOrder = 2
       Visible = False
       object Splitter7: TSplitter
@@ -1250,7 +1264,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 31
         Top = 1
-        Width = 1399
+        Width = 1064
         Caption = 'MessagesTabToolBar'
         Images = mainImageList
         TabOrder = 1
@@ -1261,47 +1275,47 @@ object MainForm: TMainForm
           Action = ReadMessagesAction
         end
         object ToolButton35: TToolButton
-          Left = 30
+          Left = 24
           Top = 2
           Action = SaveMessagesAction
         end
         object ToolButton50: TToolButton
-          Left = 323
+          Left = 263
           Top = 2
           Action = LogDisplayedColumnsAction
         end
         object ToolButton49: TToolButton
-          Left = 104
+          Left = 86
           Top = 2
           Action = ReportUnexpectedValuesAction
         end
         object ToolButton33: TToolButton
-          Left = 133
+          Left = 109
           Top = 2
           Action = MessagesRegressionAction
         end
         object ToolButton67: TToolButton
-          Left = 162
+          Left = 132
           Top = 2
           Action = LogCoverageReportAction
         end
         object ToolButton22: TToolButton
-          Left = 228
+          Left = 186
           Top = 2
           Action = ClearLogItemsAction
         end
         object ToolButton42: TToolButton
-          Left = 352
+          Left = 286
           Top = 2
           Action = FilterLogAction
         end
         object BrowseMqButton: TToolButton
-          Left = 257
+          Left = 209
           Top = 2
           Action = BrowseMqAction
         end
         object ToolButton59: TToolButton
-          Left = 286
+          Left = 232
           Top = 2
           Action = readLog4jEventsAction
         end
@@ -1328,53 +1342,58 @@ object MainForm: TMainForm
           TabOrder = 0
         end
         object ToolButton37: TToolButton
-          Left = 67
+          Left = 55
           Top = 2
           Action = CopyLogGridToClipBoardAction
         end
         object logChartToolButton: TToolButton
-          Left = 191
+          Left = 155
           Top = 2
           Action = logChartAction
         end
         object ToolButton72: TToolButton
-          Left = 381
+          Left = 309
           Top = 2
           Action = ToggleDoScrollMessagesIntoViewAction
           Style = tbsCheck
         end
         object ToolButton74: TToolButton
-          Left = 315
-          Height = 28
+          Left = 255
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton74'
           Style = tbsSeparator
         end
         object LastMessageToolButton: TToolButton
-          Left = 410
-          Height = 28
+          Left = 332
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'LastMessageToolButton'
           Style = tbsSeparator
         end
         object ToolButton76: TToolButton
-          Left = 220
-          Height = 28
+          Left = 178
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton76'
           Style = tbsSeparator
         end
         object ToolButton77: TToolButton
-          Left = 59
-          Height = 28
+          Left = 47
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton77'
           Style = tbsSeparator
         end
         object ToolButton78: TToolButton
-          Left = 96
-          Height = 28
+          Left = 78
+          Height = 22
           Top = 2
+          Width = 8
           Caption = 'ToolButton78'
           Style = tbsSeparator
         end
@@ -1391,7 +1410,7 @@ object MainForm: TMainForm
         TabOrder = 2
         object MessagesVTS: TVirtualStringTree
           Left = 1
-          Height = 32
+          Height = 41
           Top = 1
           Width = 613
           Align = alClient
@@ -1510,8 +1529,8 @@ object MainForm: TMainForm
         end
         object MessagesStatusBar: TStatusBar
           Left = 1
-          Height = 29
-          Top = 33
+          Height = 20
+          Top = 42
           Width = 613
           Panels = <          
             item
@@ -1530,7 +1549,7 @@ object MainForm: TMainForm
         Left = 621
         Height = 63
         Top = 32
-        Width = 754
+        Width = 419
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1543,7 +1562,7 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object ToolBar4: TToolBar
-        Left = 1375
+        Left = 1040
         Height = 63
         Top = 32
         Width = 25
@@ -1559,7 +1578,7 @@ object MainForm: TMainForm
         end
         object ToolButton32: TToolButton
           Left = 1
-          Top = 30
+          Top = 24
           Action = PresentLogMemoTextAction
         end
       end
@@ -1568,7 +1587,7 @@ object MainForm: TMainForm
       Left = 1
       Height = 19
       Top = 7
-      Width = 1401
+      Width = 1066
       TabStop = False
       Images = mainImageList
       OnChange = LogTabControlChange
@@ -1609,7 +1628,6 @@ object MainForm: TMainForm
     Top = 2
     Width = 8
     Caption = 'ToolButton69'
-    OnClick = ToolButton69Click
     Style = tbsSeparator
   end
   object ToolButton71: TToolButton
@@ -5870,21 +5888,201 @@ object MainForm: TMainForm
       Caption = '&File'
       object NewStubCase1: TMenuItem
         Action = NewStubCaseAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+          00FF000000FF000000FF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object N6: TMenuItem
         Caption = '-'
       end
       object OpenStubCase1: TMenuItem
         Action = OpenProjectAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000FF0000
+          00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF000000FF00000000000000000000000000000000000000FF00FF
+          FFFF000000FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF000000FF000000000000000000000000000000FFFFFF
+          FFFF00FFFFFF000000FF0000FFFF0000FFFF008080FF008080FF008080FF0080
+          80FF008080FF008080FF008080FF000000FF0000000000000000000000FF00FF
+          FFFFFFFFFFFF0000FFFF0000FFFF0000FFFF0000FFFF008080FF008080FF0080
+          80FF008080FF008080FF008080FF008080FF000000FF00000000000000FFFFFF
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          FFFF0000FFFF0000FFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFFFFFF00FF
+          FFFF000000FF0000000000000000000000000000000000000000000000FF0000
+          FFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000FF00FF
+          FFFFFFFFFFFF00FFFFFF000000FF000000FF000000FF0000FFFF0000FFFF0000
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          00FF000000FF000000FF000000FF00000000000000000000FFFF0000FFFF0000
+          FFFF0000FFFF00000000000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          FFFF0000FFFF0000FFFF00000000000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00000000000000000000000000FF00000000000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00FF000000FF000000FF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object ReopenStubcase1: TMenuItem
         Action = ReopenStubCaseAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000FF0000
+          00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF000000FF00000000000000000000000000000000000000FF00FF
+          FFFF000000FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF000000FF000000000000000000000000000000FFFFFF
+          FFFF00FFFFFF000000FF00FF00FF00FF00FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF008080FF000000FF0000000000000000000000FF00FF
+          FFFFFFFFFFFF00FF00FF00FF00FF00FF00FF00FF00FF008080FF008080FF0080
+          80FF008080FF008080FF008080FF008080FF000000FF00000000000000FFFFFF
+          FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF00FF
+          00FF00FF00FF00FF00FFFFFFFFFF00FF00FF00FF00FF00FF00FFFFFFFFFF00FF
+          FFFF000000FF0000000000000000000000000000000000000000000000FF00FF
+          00FF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FF00FF00FF00FF00FF00FFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000FF00FF
+          FFFFFFFFFFFF00FFFFFF000000FF000000FF000000FF00FF00FF00FF00FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          00FF000000FF000000FF000000FF000000000000000000FF00FF00FF00FF00FF
+          00FF00FF00FF000000000000FFFF0000FFFF0000FFFF00000000000000000000
+          00000000000000000000000000000000000000000000000000000000000000FF
+          00FF00FF00FF00FF00FF000000000000FFFF0000FFFF00000000000000000000
+          00000000000000000000000000000000000000000000000000000000FFFF0000
+          000000000000000000000000FFFF000000000000FFFF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          FFFF0000FFFF0000FFFF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object SaveStubCase1: TMenuItem
         Action = SaveStubCaseAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF0000FFFF0000FFFF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
+          00FF008080FF0000FFFF0000FFFF0000FFFF0000FFFF008080FF008080FF0080
+          80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
+          00FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF000000FF000000FF0000
+          00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
+          FFFF0000FFFF0000FFFF000000000000FFFF0000FFFF0000FFFF000000000000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          FFFF008080FF000000FF00000000000000000000FFFF0000FFFF0000FFFF0000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF0000000000000000000000000000FFFF0000FFFF0000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF0000000000000000000000000000FFFF0000FFFF0000
+          FFFF0000FFFF00000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          FFFF0000FFFF0000FFFF000000FF000000FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF00000000000000FF00000000000000000000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object SaveStubCaseas1: TMenuItem
         Action = SaveProjectAsFolderAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF0000FFFF0000FFFF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
+          00FF008080FF0000FFFF0000FFFF0000FFFF0000FFFF008080FF008080FF0080
+          80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
+          00FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF000000FF000000FF0000
+          00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
+          FFFF0000FFFF0000FFFF000000000000FFFF0000FFFF0000FFFF000000000000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          FFFF008080FF000000FF00000000000000000000FFFF0000FFFF0000FFFF0000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF0000000000000000000000000000FFFF0000FFFF0000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF0000000000000000000000000000FFFF0000FFFF0000
+          FFFF0000FFFF00000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          FFFF0000FFFF0000FFFF000000FF000000FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF00000000000000FF00000000000000000000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object MenuItem4: TMenuItem
         Caption = '-'
@@ -5913,6 +6111,42 @@ object MainForm: TMainForm
       Caption = 'Project'
       object Configurelisteners1: TMenuItem
         Action = ConfigListenersAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+          00FFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00
+          FFFF000000FFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF0000
+          00FFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFF
+          FFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFF00
+          00FFFFFFFFFFFF0000FF0000FFFF00000000FFFFFFFF000000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFF0000FFFFFF
+          FFFFFF0000FFFFFFFFFF0000000000000000000000FFFF00FFFF000000FF0000
+          00FF000000FF000000FFFF00FFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          00FFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FF000000FF000000FFFF00
+          FFFF000000FF808080FF000000FFFF00FFFF000000FFFF00FFFFFF00FFFFFF00
+          FFFFFF00FFFFFF00FFFF000000FF000000FF008080FF000000FF000000FF00FF
+          FFFF008080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF008080FF008080FF000000FF000000FFFF00
+          FFFF000000FFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFF
+          FFFF00FFFFFFFFFFFFFF00FFFFFF000000FF008080FF000000FF000000FF0000
+          00FFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FF
+          FFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        }
       end
       object Options2: TMenuItem
         Action = ProjectOptionsAction
@@ -5925,36 +6159,396 @@ object MainForm: TMainForm
       end
       object OpenWSDLfile1: TMenuItem
         Action = OpenWsdlAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+          80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object MenuItem21: TMenuItem
         Action = ApiByExampleAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
+          FFFF0000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF00FFFFFF000000
+          FFFF0000FFFFFFFFFF00FFFFFF000000FFFFFFFFFF000000FFFFFFFFFF00FFFF
+          FF000000FFFFFFFFFF00FFFFFF00FFFFFF000000FFFFFFFFFF000000FFFFFFFF
+          FF00FFFFFF000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF00FFFF
+          FF000000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF000000FFFFFFFF
+          FF00FFFFFF000000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF00FFFF
+          FF000000FFFFFFFFFF000000FFFFFFFFFF00FFFFFF00FFFFFF000000FFFFFFFF
+          FF00FFFFFF000000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF000000
+          FFFF0000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF00FFFFFF000000
+          FFFF0000FFFFFFFFFF00FFFFFF000000FFFFFFFFFF000000FFFFFFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF008080
+          80FFFFFFFF00808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00
+        }
       end
       object Xsdoperations1: TMenuItem
         Action = XsdOperationsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+          80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object XmlSampleOperationsMenuItem: TMenuItem
         Action = XmlSampleOperations
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000000000000000000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+          FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF000000000000000000000000FFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+          FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+          FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000008080
+          80FF00000000808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FF0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object CobolOperationsAction1: TMenuItem
         Action = CobolOperationsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFF0000
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+          FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFF0000
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+          80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object MenuItem51: TMenuItem
         Action = BmtpOperationsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF808080FF8080
+          80FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF808080FF8080
+          80FF808080FF808080FF808080FFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFFFFFF808080FF8080
+          80FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFFFFFF808080FF8080
+          80FF808080FF808080FF808080FFFFFFFFFFFFFFFFFF00000000000000000000
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000808080FF00000000808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FF808080FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object MaintainlistofSwiftMToperations1: TMenuItem
         Action = SwiftMtOperationsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+          80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object MenuItem49: TMenuItem
         Action = MailOperationsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C0000000
+          00FFFFFFFFFF000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000000000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFC0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000000000FFFFFFFFFF800000FFFFFF
+          FFFFFFFFFFFFFFFFFFFF000080FFFFFFFFFF000000FFC0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000000000FFFFFFFFFF800000FFFFFFFFFF8000
+          00FFFFFFFFFF000080FF000080FF000080FFFFFFFFFF000000FFC0C0C000C0C0
+          C000C0C0C000C0C0C000000000FFFFFFFFFF800000FFFFFFFFFF800000FFFFFF
+          FFFFFFFFFFFFFFFFFFFF000080FFFFFFFFFF000000FFFFFFFFFF000000FF0000
+          00FF000000FF000000FFFFFFFFFFFFFFFFFFFFFFFFFF800000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FF000000FF000000FF0080
+          80FF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000FF008080FF000000FF000000FFC0C0
+          C000008080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF008080FF008080FF000000FF000000FFC0C0
+          C000000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000000000FF008080FF000000FF000000FF0000
+          00FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FFC0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000
+        }
       end
       object ViewMssgAsTextAction1: TMenuItem
         Action = FreeFormatsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+          FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFF0000FFFF0000
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFF0000FFFF0000
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+          80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object N34: TMenuItem
         Caption = '-'
       end
       object Clean1: TMenuItem
         Action = ProjectCleanAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000008080
+          80FF000000FF000000FF000000FF000000FF000000FF000000FF808080FF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00FF000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000000000000000000000000000000000000000000000000000000000
+          00FF000000000000000000000000000000000000000000000000000000FF8080
+          80FF000000FF0000000000000000000000000000000000000000000000008080
+          80FF000000FF0000000000000000000000000000000000000000000000FF8080
+          80FF808080FF000000FF00000000000000000000000000000000000000000000
+          0000000000FF00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF0000
+          00FF808080FF808080FF000000FF000000000000000000000000000000000000
+          000000000000000000FF00000000FFFFFFFF00000000FFFFFFFF00000000FFFF
+          FFFF000000FF808080FF808080FF000000FF0000000000000000000000000000
+          00000000000000000000000000FF00000000FFFFFFFF00000000FFFFFFFF0000
+          0000FFFFFFFF000000FF808080FF808080FF808080FF00000000000000000000
+          0000000000000000000000000000000000FF00000000FFFFFFFF00000000FFFF
+          FFFF00000000FFFFFFFF000000FF808080FF000000FF00000000000000000000
+          000000000000000000000000000000000000000000FF00000000FFFFFFFF0000
+          0000FFFFFFFF00000000FFFFFFFF808080FF000000FF00000000000000000000
+          00000000000000000000000000000000000000000000000000FF00000000FFFF
+          FFFF00000000FFFFFFFF0000000000000000000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000808080FF0000
+          00FF000000FF000000FF000000FF808080FF808080FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object N28: TMenuItem
         Caption = '-'
@@ -5976,91 +6570,847 @@ object MainForm: TMainForm
       Caption = 'Service'
       object Options3: TMenuItem
         Action = ServiceOptionsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000808000FF808000FF8080
+          00FF808000FF808000FF808000FF808000FF808000FF808000FF000000000000
+          000000000000000000000000000000000000000000000000FFFF0000FFFFC0C0
+          C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FF808000FF000000000000
+          000000000000000000000000000000000000000000000000FFFF0000FFFFC0C0
+          C0FF00000000000000000000000000000000C0C0C0FF808000FF000000000000
+          000000000000000000000000000000000000000000000000FFFF0000FFFFC0C0
+          C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FF808000FF000000000000
+          000000000000000000000000000000000000000000000000FFFF0000FFFFC0C0
+          C0FF00000000000000000000000000000000C0C0C0FF808000FF000000000000
+          000000000000000000000000000000000000000000000000FFFF0000FFFFC0C0
+          C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FF808000FF000000000000
+          000000000000000000000000000000000000000000000000FFFF0000FFFFC0C0
+          C0FF00000000000000000000000000000000C0C0C0FF808000FF000000000000
+          000000000000000000000000000000000000000000000000FFFF0000FFFFC0C0
+          C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FF808000FF000000008000
+          80FF000000000000FFFF0000FFFF0000FFFF000000000000FFFF0000FFFFC0C0
+          C0FF00000000000000000000000000000000C0C0C0FF808000FF000000000000
+          0000000000000000FFFF000000000000FFFF000000000000FFFF0000FFFFC0C0
+          C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FF808000FF000000000000
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFF000000000000FFFF0000FFFFC0C0
+          C0FF00000000000000000000000000000000C0C0C0FF808000FF000000000000
+          FFFF000000000000FFFF0000000000000000000000000000FFFF0000FFFFC0C0
+          C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FFC0C0C0FF808000FF000000000000
+          FFFF0000FFFF0000FFFF00000000800080FF000000000000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF808000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
     end
     object MessagesMenuItem: TMenuItem
       Caption = 'Messages'
       object Selectcorrelationelements1: TMenuItem
         Action = SelectCorrelationElementAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
+          FFFFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6
+          A6FFA6A6A6FFA6A6A6FF0000FFFF000000000000000000000000000000000000
+          FFFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FF4D4D4DFFD3D3D3FF0000FFFF000000000000000000000000000000000000
+          FFFFD3D3D3FF4D4D4DFF4D4D4DFFD3D3D3FF4D4D4DFF4D4D4DFFD3D3D3FF4D4D
+          4DFF4D4D4DFF4D4D4DFF0000FFFF000000000000000000000000000000000000
+          FFFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FF4D4D4DFF4D4D4DFF4D4D4DFF000000000000000000000000000000000000
+          FFFFD3D3D3FF4D4D4DFF4D4D4DFFD3D3D3FF4D4D4DFF4D4D4DFFD3D3D3FF4D4D
+          4DFF4D4D4DFF4DFFFFFFA6A6A6FF4D4D4DFF0000000000000000000000000000
+          FFFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FF4D4D4DFF4DFFFFFFD3D3D3FF4D4D4DFF0000000000000000000000000000
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF4D4D4DFF4DFFFFFFA6A6A6FF4D4D4DFF00000000000000000000
+          FFFFFFFFFFFF0000FFFF0000FFFFFFFFFFFF0000FFFF0000FFFFFFFFFFFF0000
+          FFFF0000FFFF4D4D4DFF4DFFFFFFD3D3D3FF4D4D4DFF00000000000000000000
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF4D4D4DFF4DFFFFFFA6A6A6FF4D4D4DFF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000004D4D4DFF4DFFFFFFA6A6A6FF4D4D4DFF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000004D4D4DFF4D4D4DFFA64DA6FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000004D4D4DFFA64DA6FFA64DA6FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000004D4D4DFF4D4D4DFF
+        }
       end
       object Selectcolumnelements1: TMenuItem
         Action = SelectMessageColumnsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000A64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D
+          4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFF00000000000000000000
+          000000000000A64D4DFFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6
+          A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA64D4DFF00000000000000000000
+          000000000000A64D4DFFD3D3D3FF4D4D4DFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFA64D4DFF00000000000000000000
+          000000000000A64D4DFF4D4D4DFF4D4D4DFF4D4D4DFFD3D3D3FF4D4D4DFF4D4D
+          4DFFD3D3D3FF4D4D4DFF4D4D4DFFD3D3D3FFA64D4DFF00000000000000000000
+          0000000000004D4D4DFF4D4D4DFF4D4D4DFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFA64D4DFF00000000000000000000
+          00004D4D4DFFA6A6A6FF4DFFFFFF4D4D4DFF4D4D4DFFD3D3D3FF4D4D4DFF4D4D
+          4DFFD3D3D3FF4D4D4DFF4D4D4DFFD3D3D3FFA64D4DFF00000000000000000000
+          00004D4D4DFFD3D3D3FF4DFFFFFF4D4D4DFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFA64D4DFF00000000000000004D4D
+          4DFFA6A6A6FF4DFFFFFF4D4D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D
+          4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFF00000000000000004D4D
+          4DFFD3D3D3FF4DFFFFFF4D4D4DFFA64D4DFFA64D4DFFFFFFFFFFA64D4DFFA64D
+          4DFFFFFFFFFFA64D4DFFA64D4DFFFFFFFFFFA64D4DFF000000004D4D4DFFA6A6
+          A6FF4DFFFFFF4D4D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D
+          4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFF000000004D4D4DFFA6A6
+          A6FF4DFFFFFF4D4D4DFF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000A64DA6FF4D4D
+          4DFF4D4D4DFF0000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000A64DA6FFA64D
+          A6FF4D4D4DFF0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000004D4D4DFF4D4D
+          4DFF000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object N9: TMenuItem
         Caption = '-'
       end
       object Moveup1: TMenuItem
         Action = MoveUpMessageAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF0000000000000000000000000000
+          00000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          0000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000FFFFFFFFFF0000
+          00FF000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object Movedown1: TMenuItem
         Action = MoveDownMessageAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000FFFFFFFFFF0000
+          00FF000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF0000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000
+        }
       end
       object N10: TMenuItem
         Caption = '-'
       end
       object Add1: TMenuItem
         Action = AddMessageAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000808080FF0000FFFF0000FFFF0000
+          FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000808080FF0000FFFF0000FFFF0000
+          FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+          00000000000000000000FFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFF0000
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000000000000000000000000000
+          000000000000808080FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF0000000000000000000000000000
+          000000000000808080FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF0000000000000000000000000000
+          000000000000808080FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF0000000000000000000000000000
+          000000000000808080FF808080FF808080FF808080FF0000FFFF0000FFFF0000
+          FFFF0000FFFF808080FF808080FF000000000000000000000000000000000000
+          000000000000000000000000000000000000808080FF0000FFFF0000FFFF0000
+          FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000808080FF0000FFFF0000FFFF0000
+          FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000808080FF808080FF808080FF8080
+          80FF000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object Readmessagesfromdiskfiles1: TMenuItem
         Action = MessagesFromDiskAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000FF0000
+          00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF000000FF00000000000000000000000000000000000000FF00FF
+          FFFF000000FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF000000FF000000000000000000000000000000FFFFFF
+          FFFF00FFFFFF000000FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF008080FF000000FF0000000000000000000000FF00FF
+          FFFFFFFFFFFF00FFFFFF000000FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF008080FF008080FF000000FF00000000000000FFFFFF
+          FFFF00FFFFFFFFFFFFFF00FFFFFF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF00FF
+          FFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FF
+          FFFF000000FF0000000000000000000000000000000000000000000000FFFFFF
+          FFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000FF00FF
+          FFFFFFFFFFFF00FFFFFF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          00FF000000FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00000000000000000000000000FF00000000000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00FF000000FF000000FF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object Delete1: TMenuItem
         Action = DeleteMessageAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          000000000000000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF00000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FF000000FF000000FF0000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object N11: TMenuItem
         Caption = '-'
       end
       object Copygrid1: TMenuItem
         Action = CopyGridAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000000000FFC0C0C000C0C0C000000000FF000000FF000000FFC0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000000000FF0000
+          00FF000000FF000000FF000000FF000000FF808000FF808000FF000000FF8000
+          00FF800000FF800000FF800000FF800000FF800000FF800000FF000000FF8080
+          80FF808080FF808080FF000000FF808000FFFFFF00FF000000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF800000FFC0C0C0000000
+          00FF808000FF000000FF808000FFFFFF00FF000000FF808000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FFFFFFFFFF800000FFC0C0C000C0C0
+          C000000000FF808000FFFFFF00FF000000FF000000FF000000FF000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF800000FFC0C0C0000000
+          00FF808000FFFFFF00FF000000FF808000FF000000FF800000FFFFFFFFFF0000
+          00FF000000FF000000FF000000FF000000FFFFFFFFFF800000FF000000FFFFFF
+          00FFFFFF00FF000000FF000000FFFFFF00FF808080FF000000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF800000FF000000FF0000
+          00FF000000FF000000FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF0000
+          00FF000000FFFFFFFFFF800000FF800000FF800000FF800000FFC0C0C0008000
+          00FFFFFFFFFF000000FF000000FF000000FF000000FF800000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF800000FFFFFFFFFF800000FFC0C0C000C0C0C0008000
+          00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF800000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF800000FF800000FFC0C0C000C0C0C000C0C0C0008000
+          00FFFFFFFFFF000000FF000000FFFFFFFFFF800000FF800000FF800000FF8000
+          00FF800000FF800000FF800000FFC0C0C000C0C0C000C0C0C000C0C0C0008000
+          00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF800000FFFFFFFFFF800000FFC0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C0008000
+          00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF800000FF800000FFC0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C0008000
+          00FF800000FF800000FF800000FF800000FF800000FFC0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000
+        }
       end
       object Pastegrid1: TMenuItem
         Action = PasteGridAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000000000FF000000FF000000FF8000
+          00FF800000FF800000FF800000FF800000FF800000FF800000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF808000FF808000FF000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF800000FF000000FF8080
+          80FF808080FF808080FF000000FF808000FFFFFF00FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FFFFFFFFFF800000FFC0C0C0000000
+          00FF808000FF000000FF808000FFFFFF00FF000000FF808000FF000000FFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF800000FFC0C0C000C0C0
+          C000000000FF808000FFFFFF00FF000000FF000000FF000000FF000000FF0000
+          00FF000000FFFFFFFFFF800000FF800000FF800000FF800000FFC0C0C0000000
+          00FF808000FFFFFF00FF000000FF808000FF000000FFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF800000FFFFFFFFFF800000FFC0C0C000000000FFFFFF
+          00FFFFFF00FF000000FF000000FFFFFF00FF800000FF000000FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF800000FF800000FFC0C0C000C0C0C000000000FF0000
+          00FF000000FF000000FF808080FF000000FF000000FF000000FF800000FF8000
+          00FF800000FF800000FF800000FFC0C0C000C0C0C000C0C0C000C0C0C0008080
+          80FF008080FF808080FF008080FF808080FF008080FF808080FF008080FF8080
+          80FF008080FF808080FF008080FFC0C0C000C0C0C000C0C0C000C0C0C0000080
+          80FF808080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF808080FF808080FFC0C0C000C0C0C000C0C0C000C0C0C0008080
+          80FF808080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF808080FF008080FFC0C0C000C0C0C000C0C0C000C0C0C0000080
+          80FF808080FF008080FF000000FF00FFFFFF000000FF000000FF00FFFFFF0000
+          00FF808080FF008080FF808080FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C00000FFFFFF00FFFFFFC0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+          C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000
+        }
       end
       object N12: TMenuItem
         Caption = '-'
       end
       object Validategriddataagainstschema1: TMenuItem
         Action = CheckGridFieldsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000FF00FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000FF00FF00FF00FF00FF00FF000000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000FF00FF00FF00FF00FF00FF000000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000000FF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000000FF0000
+          0000000000000000000000000000000000000000000000000000000000008080
+          80FF00FF00FF00FF00FF000000FF0000000000FF00FF00FF00FF00FF00FF0000
+          00FF00000000000000000000000000000000000000000000000000FF00FF00FF
+          00FF000000FF0000000000000000000000000000000000FF00FF00FF00FF0000
+          00FF000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000FF00FF00FF00FF00FF
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000000000000000FF00FF00FF
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000000000000000FF
+          00FF00FF00FF000000FF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000808080FF00FF00FF000000FF000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000808000FF00FF00FF000000FF0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000808000FF00FF00FF000000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object N13: TMenuItem
         Caption = '-'
       end
       object Removeallmessagesfromalloperations1: TMenuItem
         Action = RemoveAllMessagesAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          000000000000000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF0000
+          00FFFFFFFFFF000000FF00000000000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000000000000000000000000000000000
+          0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF000000FF000000000000000000000000000000000000
+          000000000000000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF00000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000FF000000FF000000FF0000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
     end
     object LogMenuItem: TMenuItem
       Caption = '&Log'
       object SaveMessagesAction1: TMenuItem
         Action = SaveMessagesAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
+          00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF008080FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF000000FF000000FF00000000000000000000
+          00FF008080FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF00000000000000FF00000000000000000000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object Displayedcolumns1: TMenuItem
         Action = LogDisplayedColumnsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000A64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D
+          4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFF00000000000000000000
+          000000000000A64D4DFFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6
+          A6FFA6A6A6FFA6A6A6FFA6A6A6FFA6A6A6FFA64D4DFF00000000000000000000
+          000000000000A64D4DFFD3D3D3FF4D4D4DFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFA64D4DFF00000000000000000000
+          000000000000A64D4DFF4D4D4DFF4D4D4DFF4D4D4DFFD3D3D3FF4D4D4DFF4D4D
+          4DFFD3D3D3FF4D4D4DFF4D4D4DFFD3D3D3FFA64D4DFF00000000000000000000
+          0000000000004D4D4DFF4D4D4DFF4D4D4DFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFA64D4DFF00000000000000000000
+          00004D4D4DFFA6A6A6FF4DFFFFFF4D4D4DFF4D4D4DFFD3D3D3FF4D4D4DFF4D4D
+          4DFFD3D3D3FF4D4D4DFF4D4D4DFFD3D3D3FFA64D4DFF00000000000000000000
+          00004D4D4DFFD3D3D3FF4DFFFFFF4D4D4DFFD3D3D3FFD3D3D3FFD3D3D3FFD3D3
+          D3FFD3D3D3FFD3D3D3FFD3D3D3FFD3D3D3FFA64D4DFF00000000000000004D4D
+          4DFFA6A6A6FF4DFFFFFF4D4D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D
+          4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFF00000000000000004D4D
+          4DFFD3D3D3FF4DFFFFFF4D4D4DFFA64D4DFFA64D4DFFFFFFFFFFA64D4DFFA64D
+          4DFFFFFFFFFFA64D4DFFA64D4DFFFFFFFFFFA64D4DFF000000004D4D4DFFA6A6
+          A6FF4DFFFFFF4D4D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D
+          4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFFA64D4DFF000000004D4D4DFFA6A6
+          A6FF4DFFFFFF4D4D4DFF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000A64DA6FF4D4D
+          4DFF4D4D4DFF0000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000A64DA6FFA64D
+          A6FF4D4D4DFF0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000004D4D4DFF4D4D
+          4DFF000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object Comparewithfile1: TMenuItem
         Action = MessagesRegressionAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000808080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF0000000000000000000000000000
+          0000808080FF0000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000FF0000000000000000000000000000
+          0000808080FF00000000787878FF787878FF000000FF000000FF000000FF0000
+          0000000000000000000000000000000000FF0000000000000000000000000000
+          0000808080FF00000000787878FF00000000000000FF000000FF000000FF0000
+          0000000000000000000000000000000000FF0000000000000000000000000000
+          0000808080FF00000000787878FF000000000000000000000000000000000000
+          00FF000000FF000000FF00000000000000FF0000000000000000800000FF0000
+          0000808080FF00000000787878FF0000000000000000787878FF787878FF0000
+          00FF000000FF000000FF00000000000000FF00000000800000FF800000FF8000
+          00FF808080FF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241C
+          EDFF241CEDFF241CEDFF241CEDFF000000FF800000FF800000FF800000FF8000
+          00FF808080FF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241C
+          EDFF241CEDFF241CEDFF241CEDFF000000FF800000FF800000FF800000FF0000
+          0000808080FF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241C
+          EDFF241CEDFF241CEDFF241CEDFF000000FF00000000800000FF000000000000
+          0000808080FF00000000787878FF787878FF000000FF000000FF000000FF0000
+          0000000000000000000000000000000000FF0000000000000000000000000000
+          0000808080FF00000000787878FF00000000000000FF000000FF000000FF0000
+          0000000000000000000000000000000000FF0000000000000000000000000000
+          0000808080FF00000000787878FF000000000000000000000000000000000000
+          0000000000FF000000FF000000FF000000FF0000000000000000000000000000
+          0000808080FF000000FF000000FF000000FF0000000000000000000000000000
+          0000000000FF00000000000000FF000000000000000000000000000000000000
+          0000808080FF000000FF000000FF000000FF0000000000000000000000000000
+          0000000000FF000000FF00000000000000000000000000000000000000000000
+          0000808080FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF000000FF0000000000000000000000000000000000000000
+        }
       end
       object LogCoverageReportAction1: TMenuItem
         Action = LogCoverageReportAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00F2FFFF00F2FFFF00F2FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00F2FFFF00F2FFFF00F2FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF007F7F7FFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF
+          00FF00F2FFFF00F2FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF
+          00FF00F2FFFF00F2FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF00F2FFFF00F2
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF00F2FFFF00F2
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF7F7F7FFF00FF00FF00FF00FF00FF00FF00FF00FF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00808080FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+          80FF808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00
+        }
         ImageIndex = 85
       end
       object ReadMessagesAction1: TMenuItem
         Action = ReadMessagesAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000FF0000
+          00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF000000FF00000000000000000000000000000000000000FF00FF
+          FFFF000000FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF000000FF000000000000000000000000000000FFFFFF
+          FFFF00FFFFFF000000FF008080FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF008080FF000000FF0000000000000000000000FF00FF
+          FFFFFFFFFFFF00FFFFFF000000FF008080FF008080FF008080FF008080FF0080
+          80FF008080FF008080FF008080FF008080FF000000FF00000000000000FFFFFF
+          FFFF00FFFFFFFFFFFFFF00FFFFFF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF00FF
+          FFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FF
+          FFFF000000FF0000000000000000000000000000000000000000000000FFFFFF
+          FFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFF
+          FFFF000000FF0000000000000000000000000000000000000000000000FF00FF
+          FFFFFFFFFFFF00FFFFFF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF0000000000000000000000000000000000000000000000000000
+          00FF000000FF000000FF00000000000000000000000000000000000000000000
+          00000000000000000000000000FF000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000FF000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000FF0000
+          00000000000000000000000000FF00000000000000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00FF000000FF000000FF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object BrowseMqMenuItem: TMenuItem
         Action = BrowseMqAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFFC0C0C0FF0000
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF000000FF00000000FFFF
+          FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFF0000FFFF0000FFFFC0C0C0FF0000FFFF0000FFFFFFFFFFFF0000FFFFFFFF
+          FFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFF0000FFFFC0C0C0FFFFFFFFFFC0C0C0FF0000FFFFFFFFFFFFC0C0C0FF0000
+          FFFF0000FFFF0000FFFFC0C0C0FFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000FFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object readLog4jEventsAction1: TMenuItem
         Action = readLog4jEventsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000000000000000000000000000
+          00000000FFFF0000FFFF0000FFFF0000FFFF0000000000000000000000000000
+          FFFF0000FFFF0000FFFF0000FFFF000000000000000000000000000000000000
+          000000000000000000000000FFFF0000FFFF0000FFFF00000000000000000000
+          FFFF0000FFFF00000000000000000000000000000000000000000000FFFF0000
+          FFFF0000000000000000000000000000FFFF0000FFFF00000000000000000000
+          FFFF0000FFFF00000000000000000000000000000000000000000000FFFF0000
+          FFFF0000000000000000000000000000FFFF0000FFFF00000000000000000000
+          FFFF0000FFFF00000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000000000000000000000000000FFFF0000FFFF00000000000000000000
+          FFFF0000FFFF00000000000000000000FFFF0000FFFF000000000000FFFF0000
+          FFFF0000000000000000000000000000FFFF0000FFFF00000000000000000000
+          FFFF0000FFFF00000000000000000000FFFF0000FFFF000000000000FFFF0000
+          FFFF0000000000000000000000000000FFFF0000FFFF00000000000000000000
+          FFFF0000FFFF0000000000000000000000000000FFFF000000000000FFFF0000
+          FFFF0000000000000000000000000000FFFF0000FFFF00000000000000000000
+          FFFF0000FFFF0000000000000000000000000000FFFF000000000000FFFF0000
+          FFFF00000000000000000000FFFF0000FFFF0000FFFF0000FFFF000000000000
+          FFFF0000FFFF0000000000000000000000000000000000000000000000000000
+          000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object N7: TMenuItem
         Caption = '-'
       end
       object ClearExceptionsAction1: TMenuItem
         Action = ClearLogItemsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000FF00000000000000FF00000000000000FF000000000000
+          00FF00000000000000FF00000000000000FF00000000000000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000FF0000000000000000000000FF00000000000000FF0000
+          0000000000FF00000000000000FF0000000000000000000000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000FF0000000000000000000000FF00000000000000FF0000
+          0000000000FF00000000000000FF0000000000000000000000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000FF00000000000000000000000000000000000000000000
+          0000000000FF00000000000000FF0000000000000000000000FF000080FF0000
+          80FF0000000000000000000080FF000080FF0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          80FF000080FF000080FF000080FF0000000000000000000000FF000000000000
+          00FF00000000000000FF00000000000000FF00000000000000FF000000000000
+          0000000080FF000080FF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          80FF000080FF000080FF000080FF000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000080FF0000
+          80FF0000000000000000000080FF000080FF0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object FilterLogAction1: TMenuItem
         Action = FilterLogAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000040E000FF40E000FF40E000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000040E000FF00FFFFFF40E000FF00000000000000000000
+          00000000000040E000FF40E000FF40E000FF40E000FF40E000FF000000000000
+          0000000000000000000040E000FF40E000FF40E000FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000040E000FF40E000FF40E000FF00000000000000000000
+          00000000000040E000FF40E000FF40E000FF40E000FF40E000FF000000000000
+          00000000000040E000FF40E000FF40E000FF40E000FF40E000FF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000040E000FF40E000FF40E000FF40E000FF40E000FF40E000FF40E000FF0000
+          00000000000000000000000000000000000000000000000000000000000040E0
+          00FFC0C0C0FFFF00FFFFFF00FFFF40E000FFFF00FFFFFF00FFFFC0C0C0FF40E0
+          00FF00000000000000000000000000000000000000000000000040E000FF40E0
+          00FF40E000FF40E000FF40E000FF40E000FF40E000FF40E000FF40E000FF40E0
+          00FF40E000FF0000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
     end
     object View1: TMenuItem
@@ -6094,15 +7444,159 @@ object MainForm: TMainForm
       Caption = '&Run'
       object startStopMenuItem: TMenuItem
         Action = startAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000004CB122FF000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000004CB122FF4CB122FF4CB122FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000004CB122FF4CB122FF4CB122FF4CB122FF4CB122FF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000004CB122FF4CB122FF4CB122FF4CB122FF4CB122FF4CB1
+          22FF4CB122FF0000000000000000000000000000000000000000000000000000
+          000000000000000000004CB122FF4CB122FF4CB122FF4CB122FF4CB122FF4CB1
+          22FF4CB122FF4CB122FF00000000000000000000000000000000000000000000
+          000000000000000000004CB122FF4CB122FF4CB122FF4CB122FF4CB122FF4CB1
+          22FF4CB122FF4CB122FF00000000000000000000000000000000000000000000
+          000000000000000000004CB122FF4CB122FF4CB122FF4CB122FF4CB122FF4CB1
+          22FF4CB122FF0000000000000000000000000000000000000000000000000000
+          000000000000000000004CB122FF4CB122FF4CB122FF4CB122FF4CB122FF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000004CB122FF4CB122FF4CB122FF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000004CB122FF000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object MenuItem2: TMenuItem
         Action = ExecuteRequestAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000FFFF0000FFFF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000FFFF0000FFFF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000FFFF0000FFFF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000808080FF0000FFFF0000FFFF808080FF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000FFFF0000FFFF0000FFFF0000FFFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000FFFF0000FFFF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object MenuItem3: TMenuItem
         Action = ExecuteAllRequestsAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000241CEDFF241CEDFF00000000000000000000
+          0000241CEDFF241CEDFF00000000000000000000000000000000000000000000
+          00000000000000000000241CEDFF241CEDFF241CEDFF241CEDFF00000000241C
+          EDFF241CEDFF241CEDFF241CEDFF000000000000000000000000000000000000
+          00000000000000000000241CEDFF241CEDFF241CEDFF241CEDFF00000000241C
+          EDFF241CEDFF241CEDFF241CEDFF000000000000000000000000000000000000
+          0000000000000000000000000000241CEDFF241CEDFF00000000000000000000
+          0000241CEDFF241CEDFF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000241CEDFF241CEDFF00000000000000000000
+          0000241CEDFF241CEDFF00000000000000000000000000000000000000000000
+          00000000000000000000808080FF241CEDFF241CEDFF808080FF000000008080
+          80FF241CEDFF241CEDFF808080FF000000000000000000000000000000000000
+          00000000000000000000241CEDFF241CEDFF241CEDFF241CEDFF00000000241C
+          EDFF241CEDFF241CEDFF241CEDFF000000000000000000000000000000000000
+          00000000000000000000241CEDFF241CEDFF241CEDFF241CEDFF00000000241C
+          EDFF241CEDFF241CEDFF241CEDFF000000000000000000000000000000000000
+          00000000000000000000241CEDFF241CEDFF241CEDFF241CEDFF00000000241C
+          EDFF241CEDFF241CEDFF241CEDFF000000000000000000000000000000000000
+          00000000000000000000241CEDFF241CEDFF241CEDFF241CEDFF00000000241C
+          EDFF241CEDFF241CEDFF241CEDFF000000000000000000000000000000000000
+          00000000000000000000241CEDFF241CEDFF241CEDFF241CEDFF00000000241C
+          EDFF241CEDFF241CEDFF241CEDFF000000000000000000000000000000000000
+          00000000000000000000241CEDFF241CEDFF241CEDFF241CEDFF00000000241C
+          EDFF241CEDFF241CEDFF241CEDFF000000000000000000000000000000000000
+          0000000000000000000000000000241CEDFF241CEDFF00000000000000000000
+          0000241CEDFF241CEDFF00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
       end
       object AbortMenuItem: TMenuItem
         Action = AbortAction
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000009FA7E9FF0134FFFF3156F7FF00000000000000009FA2
+          DDFF0134FFFF6174E6FF00000000000000000000000000000000000000000000
+          000000000000DFD9E6FF0134FFFF0134FFFF0134FFFF3156F7FF8F98E5FF0134
+          FFFF0134FFFF0134FFFF9F9FD8FF000000000000000000000000000000000000
+          000000000000000000009FA9EDFF0134FFFF0134FFFF0134FFFF0134FFFF0134
+          FFFF0134FFFF6176EBFF00000000000000000000000000000000000000000000
+          0000000000000000000000000000BFC1EAFF1140FDFF0134FFFF0134FFFF0134
+          FFFF6178EEFF0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000009FABF0FF0134FFFF0134FFFF0134FFFF0134
+          FFFF3156F7FF0000000000000000000000000000000000000000000000000000
+          000000000000000000009FAEF5FF0134FFFF0134FFFF0134FFFF0134FFFF0134
+          FFFF0134FFFF3156F7FF00000000000000000000000000000000000000000000
+          000000000000DFE2F8FF0134FFFF0134FFFF0134FFFF617CF6FFCFCDE8FF1140
+          FDFF0134FFFF0134FFFF8F99E6FF000000000000000000000000000000000000
+          000000000000000000009FB0FBFF0134FFFF617EF9FF0000000000000000CFCD
+          E8FF1140FDFF617AF2FF00000000000000000000000000000000000000000000
+          0000000000000000000000000000CFD5F9FF0000000000000000000000000000
+          0000DFD9E6FF0000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
         OnClick = AbortActionExecute
       end
     end
@@ -6163,10 +7657,6 @@ object MainForm: TMainForm
       end
       object N35: TMenuItem
         Caption = '-'
-      end
-      object LicenseMenuItem: TMenuItem
-        Caption = 'License'
-        OnClick = LicenseMenuItemClick
       end
       object About1: TMenuItem
         Caption = 'About'
@@ -7990,6 +9480,7 @@ object MainForm: TMainForm
     DeleteSQL.Strings = (
       'select * from FPD_EXECUTION_PHASES'
     )
+    Options = []
     Params = <>
     left = 104
     top = 288
@@ -8045,21 +9536,165 @@ object MainForm: TMainForm
     end
     object Addtodesign1: TMenuItem
       Action = Log2DesignAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+        000000000000000000000000000000000000808080FF0000FFFF0000FFFF0000
+        FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+        000000000000000000000000000000000000808080FF0000FFFF0000FFFF0000
+        FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+        00000000000000000000FFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFF0000
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000000000000000000000000000
+        000000000000808080FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+        FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF0000000000000000000000000000
+        000000000000808080FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+        FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF0000000000000000000000000000
+        000000000000808080FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+        FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF0000000000000000000000000000
+        000000000000808080FF808080FF808080FF808080FF0000FFFF0000FFFF0000
+        FFFF0000FFFF808080FF808080FF000000000000000000000000000000000000
+        000000000000000000000000000000000000808080FF0000FFFF0000FFFF0000
+        FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+        000000000000000000000000000000000000808080FF0000FFFF0000FFFF0000
+        FFFFFFFFFFFF0000000000000000000000000000000000000000000000000000
+        000000000000000000000000000000000000808080FF808080FF808080FF8080
+        80FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object N30: TMenuItem
       Caption = '-'
     end
     object MenuItem29: TMenuItem
       Action = ShowLogDifferencesAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000082FF000084FF000084FF000084FF0000
+        82FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000008EFF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF00008EFF0000000000000000000000000000000000000000000000000000
+        000000000000000082FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000082FF00000000000000000000000000000000000000000000
+        000000000000000084FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000084FF00000000000000000000000000000000000000000000
+        000000000000000083FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000083FF00000000000000000000000000000000000000000000
+        000000000000000084FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000084FF00000000000000000000000000000000000000000000
+        000000000000000082FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000082FF00000000000000000000000000000000000000000000
+        0000000000000000000000008EFF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF00008EFF0000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000082FF000084FF000084FF000084FF0000
+        82FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem28: TMenuItem
       Caption = '-'
     end
     object ShowrequestinaGrid2: TMenuItem
       Action = ShowSelectedRequestsAsXmlGridAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFFFF
+        FFFF000000FF000000FFFFFFFFFF000000FF000000FFFFFFFFFF000000FF0000
+        00FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFFFF
+        FFFF000000FF000000FFFFFFFFFF000000FF000000FFFFFFFFFF000000FF0000
+        00FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFFFF
+        FFFF000000FF000000FFFFFFFFFF000000FF000000FFFFFFFFFF000000FF0000
+        00FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFFFF
+        FFFF000000FF000000FFFFFFFFFF000000FF000000FFFFFFFFFF000000FF0000
+        00FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFF00
+        00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF00
+        00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FF000000FF000000FFC0C0
+        C0FFC0C0C0FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF00
+        00FFFF0000FFFF0000FFFF0000FFC0C0C0FFC0C0C0FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object Showselectedresponsesinagrid1: TMenuItem
       Action = ShowSelectedResponsesAsXmlGridAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFFFF
+        FFFF000000FF000000FFFFFFFFFF000000FF000000FFFFFFFFFF000000FF0000
+        00FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFFFF
+        FFFF000000FF000000FFFFFFFFFF000000FF000000FFFFFFFFFF000000FF0000
+        00FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFFFF
+        FFFF000000FF000000FFFFFFFFFF000000FF000000FFFFFFFFFF000000FF0000
+        00FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFFFF
+        FFFF000000FF000000FFFFFFFFFF000000FF000000FFFFFFFFFF000000FF0000
+        00FFFFFFFFFF000000FF000000FF000000FFFFFFFFFF000000FF000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FFFF00
+        00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF00
+        00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FF000000FF000000FFC0C0
+        C0FFC0C0C0FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF00
+        00FFFF0000FFFF0000FFFF0000FFC0C0C0FFC0C0C0FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object N29: TMenuItem
       Caption = '-'
@@ -8083,9 +9718,81 @@ object MainForm: TMainForm
     end
     object Saverequeststofile1: TMenuItem
       Action = SaveLogRequestsToFileAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+        80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF000000FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF00000000000000FF00000000000000000000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object Saverequeststofile2: TMenuItem
       Action = SaveLogRepliesToFileAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+        80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF000000FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF00000000000000FF00000000000000000000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem44: TMenuItem
       Caption = '-'
@@ -8108,6 +9815,42 @@ object MainForm: TMainForm
     end
     object MenuItem37: TMenuItem
       Action = EditMessageDocumentationAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        000000000000000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF00000000000000000000000000000000000000000000
+        0000000000FF008080FF00000000008080FF00000000008080FF000000000000
+        00FF808080FF00000000000000FF000000000000000000000000000000000000
+        0000000000FFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFF0000
+        00FF000000FF000000FF000000FF000000000000000000000000000000000000
+        000000000000000000FFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FF
+        FFFF000000FF0000000000000000000000000000000000000000000000000000
+        000000000000000000FF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFF
+        FFFF000000FF0000000000000000000000000000000000000000000000000000
+        00000000000000000000000000FFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFF
+        FFFF00FFFFFF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF00000000008080FF000000000080
+        80FF00000000000000FF00000000000000000000000000000000000000000000
+        0000000000000000000000000000000000FF808080FF808080FF808080FF8080
+        80FF808080FF00000000000000FF000000000000000000000000000000000000
+        000000000000000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF808080FF000000FF000000000000000000000000000000000000
+        000000000000000000FFFFFFFFFF00FFFFFFFFFFFFFF00FFFFFFFFFFFFFF00FF
+        FFFF000000FF808080FF000000FF000000000000000000000000000000000000
+        00000000000000000000000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF00000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem35: TMenuItem
       Caption = '-'
@@ -8123,12 +9866,84 @@ object MainForm: TMainForm
     end
     object MessagesToDiskMenuItem: TMenuItem
       Action = MessagesToDiskAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
+        80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
+        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF008080FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF000000FF000000FF00000000000000000000
+        00FF008080FF000000FF00000000000000000000000000000000000000000000
+        00000000000000000000000000FF00000000000000FF00000000000000000000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem30: TMenuItem
       Caption = '-'
     end
     object MenuItem31: TMenuItem
       Action = ShowGridDifferencesAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000082FF000084FF000084FF000084FF0000
+        82FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000008EFF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF00008EFF0000000000000000000000000000000000000000000000000000
+        000000000000000082FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000082FF00000000000000000000000000000000000000000000
+        000000000000000084FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000084FF00000000000000000000000000000000000000000000
+        000000000000000083FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000083FF00000000000000000000000000000000000000000000
+        000000000000000084FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000084FF00000000000000000000000000000000000000000000
+        000000000000000082FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000082FF00000000000000000000000000000000000000000000
+        0000000000000000000000008EFF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF00008EFF0000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000082FF000084FF000084FF000084FF0000
+        82FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem41: TMenuItem
       Caption = '-'
@@ -8138,45 +9953,363 @@ object MainForm: TMainForm
       OnClick = GridColumnWidthMenuItemClick
     end
   end
-  object LogUsageTimer: TTimer
-    Enabled = False
-    OnTimer = LogUsageTimerTimer
-    left = 944
-    top = 48
-  end
   object WsdlsPopupMenu: TPopupMenu
     Images = mainImageList
     left = 128
     top = 64
     object MaintainlistofWSDLfiles1: TMenuItem
       Action = OpenWsdlAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+        80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+        80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object N33: TMenuItem
       Caption = '-'
     end
     object MenuItem22: TMenuItem
       Action = ApiByExampleAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
+        FFFF0000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF00FFFFFF000000
+        FFFF0000FFFFFFFFFF00FFFFFF000000FFFFFFFFFF000000FFFFFFFFFF00FFFF
+        FF000000FFFFFFFFFF00FFFFFF00FFFFFF000000FFFFFFFFFF000000FFFFFFFF
+        FF00FFFFFF000000FFFFFFFFFF000000FFFFFFFFFF000000FFFFFFFFFF00FFFF
+        FF000000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF000000FFFFFFFF
+        FF00FFFFFF000000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF00FFFF
+        FF000000FFFFFFFFFF000000FFFFFFFFFF00FFFFFF00FFFFFF000000FFFFFFFF
+        FF00FFFFFF000000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF000000
+        FFFF0000FFFFFFFFFF000000FFFF0000FFFF0000FFFFFFFFFF00FFFFFF000000
+        FFFF0000FFFFFFFFFF00FFFFFF000000FFFFFFFFFF000000FFFFFFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00808080FF808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF008080
+        80FFFFFFFF00808080FF808080FF808080FF808080FF808080FF808080FF8080
+        80FF808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00
+      }
     end
     object XsdOperationsAction1: TMenuItem
       Action = XsdOperationsAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+        80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+        80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem36: TMenuItem
       Action = XmlSampleOperations
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        000000000000000000000000000000000000000000000000000000000000FFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+        FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF000000000000000000000000FFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+        FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+        FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000FFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000008080
+        80FF00000000808080FF808080FF808080FF808080FF808080FF808080FF8080
+        80FF808080FF808080FF808080FF808080FF0000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object Maintainlistofcoboloperations1: TMenuItem
       Action = CobolOperationsAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFF0000
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+        FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFF0000
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+        80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+        80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem50: TMenuItem
       Action = BmtpOperationsAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF808080FF8080
+        80FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFF808080FF8080
+        80FF808080FF808080FF808080FFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFFFFFF808080FF8080
+        80FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFF0000FFFF0000FFFF0000FFFFFFFFFFFF808080FF8080
+        80FF808080FF808080FF808080FFFFFFFFFFFFFFFFFF00000000000000000000
+        0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000808080FF00000000808080FF808080FF808080FF808080FF808080FF8080
+        80FF808080FF808080FF808080FF808080FF808080FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MaintainlistofSwiftMToperations2: TMenuItem
       Action = SwiftMtOperationsAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF0000
+        FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+        80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+        80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem48: TMenuItem
       Action = MailOperationsAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C0000000
+        00FFFFFFFFFF000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFF000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000000000FFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFC0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000000000FFFFFFFFFF800000FFFFFF
+        FFFFFFFFFFFFFFFFFFFF000080FFFFFFFFFF000000FFC0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000000000FFFFFFFFFF800000FFFFFFFFFF8000
+        00FFFFFFFFFF000080FF000080FF000080FFFFFFFFFF000000FFC0C0C000C0C0
+        C000C0C0C000C0C0C000000000FFFFFFFFFF800000FFFFFFFFFF800000FFFFFF
+        FFFFFFFFFFFFFFFFFFFF000080FFFFFFFFFF000000FFFFFFFFFF000000FF0000
+        00FF000000FF000000FFFFFFFFFFFFFFFFFFFFFFFFFF800000FFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF000000FF000000FF000000FF0080
+        80FF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFF000000FF000000FF008080FF000000FF000000FFC0C0
+        C000008080FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF008080FF008080FF000000FF000000FFC0C0
+        C000000000FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000000000FF008080FF000000FF000000FF0000
+        00FFC0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FFC0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
+        C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000
+      }
     end
     object Maintainlistoffreeformatoperations1: TMenuItem
       Action = FreeFormatsAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFFFFFF
+        FFFF0000FFFF0000FFFF0000FFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FFFFFFFFFFFFFFFFFF0000FFFF0000
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFF808080FF808080FF808080FF808080FF808080FFFFFFFFFF0000FFFF0000
+        FFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000FF8080
+        80FF000000FF808080FF808080FF808080FF808080FF808080FF808080FF8080
+        80FF808080FF808080FF808080FF808080FF000000FF00000000000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
   end
   object RefreshLogTimer: TTimer
@@ -8190,6 +10323,7 @@ object MainForm: TMainForm
     Active = False
     Action = caCommit
     Database = SQLConnector
+    Options = []
     left = 64
     top = 288
   end
@@ -8203,6 +10337,7 @@ object MainForm: TMainForm
     )
     Transaction = SQLTransaction
     LogEvents = []
+    Options = []
     left = 32
     top = 288
   end
@@ -8329,6 +10464,42 @@ object MainForm: TMainForm
     end
     object MenuItem26: TMenuItem
       Action = ShowSnapshotDifferencesAction
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000082FF000084FF000084FF000084FF0000
+        82FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000008EFF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF00008EFF0000000000000000000000000000000000000000000000000000
+        000000000000000082FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000082FF00000000000000000000000000000000000000000000
+        000000000000000084FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000084FF00000000000000000000000000000000000000000000
+        000000000000000083FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000083FF00000000000000000000000000000000000000000000
+        000000000000000084FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000084FF00000000000000000000000000000000000000000000
+        000000000000000082FF00FF00FF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF0000FFFF000082FF00000000000000000000000000000000000000000000
+        0000000000000000000000008EFF00FF00FF00FF00FF00FFFFFF0000FFFF0000
+        FFFF00008EFF0000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000082FF000084FF000084FF000084FF0000
+        82FF000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
     end
     object MenuItem24: TMenuItem
       Caption = '-'

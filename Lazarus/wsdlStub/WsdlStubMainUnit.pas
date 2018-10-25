@@ -40,7 +40,6 @@ uses
    , FormIniFilez
    , Menus
    , PairSplitter
-   , EditBtn
    , VirtualTrees
    , LazFileUtils
    , FileUtil
@@ -355,7 +354,6 @@ type
     ReopenStubcase1: TMenuItem;
     Help1: TMenuItem;
     wsdStubhelp1: TMenuItem;
-    LicenseMenuItem: TMenuItem;
     About1: TMenuItem;
     HelpAction: TAction;
     Qry: TSQLQuery;
@@ -486,7 +484,6 @@ type
     ServiceOptionsAction: TAction;
     ServiceMenu: TMenuItem;
     Options3: TMenuItem;
-    LogUsageTimer: TTimer;
     ConfigListenersAction: TAction;
     ToolButton58: TToolButton;
     readLog4jEventsAction: TAction;
@@ -627,15 +624,6 @@ type
     procedure OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex;
       var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
-    procedure OperationReqsTreeViewMouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-    procedure OperationReqsTreeViewMouseMove(Sender: TObject;
-      Shift: TShiftState; X,Y: Integer);
-    procedure OperationReqsTreeViewMouseUp(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-    procedure OperationReqsTreeViewMouseWheel(Sender: TObject;
-      Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
-      var Handled: Boolean);
     procedure WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
     procedure OpenWsdlActionUpdate(Sender: TObject);
     procedure OperationBrowseDocumentationActionExecute(Sender: TObject);
@@ -691,7 +679,6 @@ type
     procedure SwiftMtOperationsActionUpdate(Sender: TObject);
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
     procedure ToggleTrackIOActionExecute(Sender: TObject);
-    procedure ToolButton69Click(Sender: TObject);
     procedure VTSHeaderClick (Sender : TVTHeader ;
       Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
       Y : Integer );
@@ -735,7 +722,6 @@ type
     procedure readLog4jEventsActionExecute(Sender: TObject);
     procedure ConfigListenersActionUpdate(Sender: TObject);
     procedure ConfigListenersActionExecute(Sender: TObject);
-    procedure LogUsageTimerTimer(Sender: TObject);
     procedure ServiceOptionsActionExecute(Sender: TObject);
     procedure ServiceOptionsActionUpdate(Sender: TObject);
     procedure ChangeXmlDataType(aXml: TXml; aDataType: TXsdDataType);
@@ -905,7 +891,6 @@ type
     procedure ReopenStubCaseActionUpdate(Sender: TObject);
     procedure WsdlComboBoxChange(Sender: TObject);
     procedure runScriptActionExecute(Sender: TObject);
-    procedure LicenseMenuItemClick(Sender: TObject);
     procedure HelpActionExecute(Sender: TObject);
     procedure About1Click(Sender: TObject);
     procedure ReopenStubCaseActionExecute(Sender: TObject);
@@ -1083,10 +1068,7 @@ type
     DisclaimerAccepted: Boolean;
     ActualXml: TCustomBindable;
     ActualXmlAttr: TXmlAttribute;
-    ErrorReadingLicenseInfo: Boolean;
     CompanyName: String;
-    xLicenseExpirationDate: String;
-    xLicenseString: String;
     fDoShowDesignAtTop: Boolean;
     grid_x, grid_y: Integer;
     MessagesTabControlWidth, MessagesTabControlMinLeft: Integer;
@@ -1098,8 +1080,6 @@ type
     procedure ShowChosenLogTab;
     function ShowProgressForm: Boolean;
     procedure PositionMessagesTabControl;
-    function GetAuthorization: Boolean;
-    function GetAuthorizationBaseString: String;
     procedure SetOperationZoomPath(aOperation: TWsdlOperation);
     function hintStringFromXsd(aPrefix, aSep, aPostFix: String;
       aXsd: TXsd): String;
@@ -1174,11 +1154,6 @@ type
       aLogList: TLogList);
     procedure ToAllLogList(aLogList: TLogList);
     procedure UpdateReopenList(aList: TStringList; aFileName: String);
-    function LogUsage(aUserName: String): Boolean;
-    procedure SetLogUsageTimer;
-    function OpenLogUsageDatabase: Boolean;
-    procedure ValidateLicense;
-    function ValidateLicenseExpirationDate(eDt: String): Boolean;
     procedure PrepareOperation;
     procedure ClearConsole;
     procedure UpdateConsole(aIndex: Integer);
@@ -1222,7 +1197,6 @@ type
     procedure OnMessageChanged(aMessage: TWsdlMessage);
     procedure CheckRpyOrFlt(aBind: TCustomBindable);
     procedure OptionsFromXml(aXml: TXml);
-    function LicenseProvider(aRequest: String): String;
     function ReactivateCommand: String;
     function QuitCommand(aDoRaiseExceptions: Boolean): String;
     function RestartCommand: String;
@@ -1369,8 +1343,8 @@ uses
 {$ENDIF}
   LCLProc, wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
   ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
-  ChooseStringUnit, Choose2StringsUnit, AboutUnit, StrUtils, IpmGunLicense,
-  IpmGunLicenseUnit, DisclaimerUnit,
+  ChooseStringUnit, AboutUnit, StrUtils, IpmGunLicense,
+  DisclaimerUnit,
   PromptUnit, SelectXmlElement, ApplyToUnit, wsaConfigUnit,
   SelectElementsUnit, A2BXmlz,
   ShowLogDifferencesUnit, EditListValuesUnit, AddFavouritesUnit,
@@ -1378,8 +1352,8 @@ uses
   ShowA2BXmlUnit, FindRegExpDialog,
   XmlGridUnit, IpmGridUnit,
   xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
-  EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, base64, xmlxsdparser,
-  HashUtilz, xmlio, xmlzConsts, AbZipper
+  EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, xmlxsdparser,
+  xmlio, xmlzConsts, AbZipper
   , htmlXmlUtilz, exceptionUtils, htmlreportz
   , PromptTacoUnit
   , EditTextUnit
@@ -3030,71 +3004,6 @@ begin
   MessagesTabControl.Left := L;
 end;
 
-function TMainForm .GetAuthorization : Boolean ;
-var
-  Y, m, d: Word;
-  ymd: Integer;
-  xLicenseDate: TDateTime;
-  xRpy, xReq: String;
-  xTimestamp, xKey, xLicensed, xExpireDate: String;
-begin
-{$ifdef TrialVersion}
-  xLicenseExpirationDate := {$I %date%}; // yyyy/mm/dd
-                                         // 1234567890
-  y := StrToInt(Copy (xLicenseExpirationDate, 1, 4));
-  m := StrToInt(Copy (xLicenseExpirationDate, 6, 2));
-  d := StrToInt(Copy (xLicenseExpirationDate, 9, 2));
-  xLicenseDate := EncodeDate(2099, 12, 31);
-  xLicenseExpirationDate := FormatDateTime('yyyy-mm-dd', xLicenseDate);
-  result := ValidateLicenseExpirationDate(xLicenseExpirationDate);
-  LicenseMenuItem.Enabled := False;
-  Exit;
-{$endif}
-  result := False;
-  xTimestamp := xsdNowAsDateTime;
-  with TXml.CreateAsString ('getAuthorization', '') do
-  try
-    AddXml (TXml.CreateAsString('UserName', WindowsUserName));
-    AddXml (TXml.CreateAsString('TimeStamp', xTimestamp));
-    AddXml (TXml.CreateAsString('Program', _ProgName));
-    AddXml (TXml.CreateAsString('Version', _xmlProgVersion));
-    AddXml (TXml.CreateAsString('key', Sha1 (xTimestamp + '_JanBo')));
-    LoadFromString (HttpPostDialog(Text, authorizationServerEndpoint), nil);
-    xLicensed := Items.XmlValueByTag['authorized'];
-    xExpireDate := Items.XmlValueByTag['expireDate'];
-    CompanyName := Items.XmlValueByTag['licensee'];
-    xKey := Items.XmlValueByTag['key'];
-    if (xKey <> Sha1 ( WindowsUserName
-                    + xTimestamp
-                    + '^abra^'
-                    + xLicensed
-                    )) then
-      raise Exception.Create ('Received inalid reply from Authorization server');
-    if (xLicensed = 'true') then
-      result := ValidateLicenseExpirationDate(xExpireDate) // warning...
-    else
-      raise Exception.CreateFmt('Not authorized%sLicense expiredate: %s', [LineEnding, xExpireDate]);
-  finally
-    Free;
-  end;
-end;
-
-function TMainForm .GetAuthorizationBaseString : String ;
-var
-  xTimestamp: String;
-begin
-  result := '';
-  xTimestamp := xsdNowAsDateTime;
-  with TXml.CreateAsString ('getAuthorizationBaseString', '') do
-  try
-    AddXml (TXml.CreateAsString('key', Sha1 (xTimestamp + '_JanBo')));
-    LoadFromString (HttpPostDialog(Text, authorizationServerEndpoint), nil);
-    result := Items.XmlValueByTag['BaseString'];
-  finally
-    Free;
-  end;
-end;
-
 procedure TMainForm.xsdSplitterCanResize(Sender: TObject; var NewSize: Integer;
   var Accept: Boolean);
   function SizeOfToolBar: Integer;
@@ -3890,7 +3799,9 @@ end;
 
 procedure TMainForm.OnlyWhenLicensed;
 begin
-  if not se.Licensed then
+  if False
+  and (not se.Licensed)
+  then
     raise Exception.Create(
       'Function is disabled because you are not a licensed ' + _progName +
         ' user');
@@ -3913,25 +3824,8 @@ end;
 
 procedure TMainForm.wsdlStubInitialise;
 begin
-  se.Licensed := False;
+  se.Licensed := True;
   WindowsUserName := getUserName;
-  if authorizationServerEndpoint <> '' then
-  begin
-    try
-      se.Licensed := GetAuthorization;
-    except
-      on e: Exception do
-        GetAuthError := e.Message;
-    end;
-  end
-  else
-  begin
-    OpenLogUsageDatabase;
-    LogUsage(WindowsUserName);
-    ValidateLicense;
-    SqlConnector.Connected := False;
-  end;
-  SetLogUsageTimer;
   ConfigListenersAction.Hint := hintStringFromXsd('Configure listeners (',
     ', ', ')', listenersConfigXsd);
 end;
@@ -3946,137 +3840,6 @@ begin
     with MessagesVTS.Header.Columns.Add do
       Text := se.DisplayedLogColumns[X];
 end;
-
-function TMainForm.LogUsage(aUserName: String): Boolean;
-var
-  xUpdated: TDateTime;
-  xUsageDate: TDateTime;
-begin
-  result := True;
-{$ifdef linux}
-  exit;
-{$endif}
-  xUpdated := Now;
-  xUsageDate := sysutils.Date;
-  if (aUserName <> 'JanBo')
-  and (aUserName <> 'Bouwman')
-  and (SqlConnector.Connected) then
-  begin
-    SqlConnector.Transaction.StartTransaction;
-    try
-      try
-        Qry.SQL.Clear;
-        Qry.SQL.Add('Insert into UsageNames');
-        Qry.SQL.Add('( UserName');
-        Qry.SQL.Add(', nUsage');
-        Qry.SQL.Add(', Updated');
-        Qry.SQL.Add(') values');
-        Qry.SQL.Add('( :UserName');
-        Qry.SQL.Add(', 1');
-        Qry.SQL.Add(', :Updated');
-        Qry.SQL.Add(')');
-        Qry.Params.ParamValues['UserName'] := aUserName;
-        Qry.Params.ParamValues['Updated'] := xUpdated;
-        Qry.ExecSql;
-      except
-        on E: Exception do
-        begin
-          try
-            Qry.SQL.Clear;
-            Qry.SQL.Add('Update UsageNames');
-            Qry.SQL.Add('set nUsage = nUsage + 1');
-            Qry.SQL.Add('  , Updated = :Updated');
-            Qry.SQL.Add('where UserName = :UserName');
-            Qry.Params.ParamValues['Updated'] := xUpdated;
-            Qry.Params.ParamValues['UserName'] := aUserName;
-            Qry.ExecSql;
-          except
-          end;
-        end; { try to update UsageNames when insert failed }
-      end; { try to insert UsageNames }
-
-      try
-        Qry.SQL.Clear;
-        Qry.SQL.Add('Insert into UsageDates');
-        Qry.SQL.Add('( UsageDate');
-        Qry.SQL.Add(', nUsage');
-        Qry.SQL.Add(', Updated');
-        Qry.SQL.Add(') values');
-        Qry.SQL.Add('( :UsageDate');
-        Qry.SQL.Add(', 1');
-        Qry.SQL.Add(', :Updated');
-        Qry.SQL.Add(')');
-        Qry.Params.ParamValues['UsageDate'] := xUsageDate;
-        Qry.Params.ParamValues['Updated'] := xUpdated;
-        Qry.ExecSql;
-      except
-        on E: Exception do
-        begin
-          try
-            Qry.SQL.Clear;
-            Qry.SQL.Add('Update UsageDates');
-            Qry.SQL.Add('set nUsage = nUsage + 1');
-            Qry.SQL.Add('  , Updated = :Updated');
-            Qry.SQL.Add('where UsageDate = :UsageDate');
-            Qry.Params.ParamValues['Updated'] := xUpdated;
-            Qry.Params.ParamValues['UsageDate'] := xUsageDate;
-            Qry.ExecSql;
-          except
-          end;
-        end; { try to update UsageDates when insert failed }
-      end; { try to insert UsageDates }
-    finally
-      SqlConnector.Transaction.Commit;
-    end; // try
-  end; { if user <> JAN BOUWMAN }
-end;
-
-function TMainForm.OpenLogUsageDatabase: Boolean;
-begin
-  result := False;
-{$ifdef linux}
-  exit;
-{$endif}
-  try
-    try
-      SqlConnector.Connected := False;
-    except
-    end;
-    if LazFileUtils.FileExistsUTF8(licenseDatabaseName) then
-    begin
-      try
-        SQLConnector.ConnectorType := 'odbc';
-        SqlConnector.Params.Text := 'DBQ=' + licenseDatabaseName;
-        SqlConnector.Connected := True;
-      except
-        ShowMessage ( 'Can not open database: '
-                    + licenseDatabaseName
-                    + LineEnding
-                    + LineEnding
-                    + 'Please contact your '
-                    + _ProgName
-                    + ' provider for assistence'
-                    );
-//        Close;
-      end;
-    end
-    else
-    begin
-      ShowMessage ( 'Can not find database: '
-                  + licenseDatabaseName
-                  + LineEnding
-                  + LineEnding
-                  + 'Please contact your '
-                  + _ProgName
-                  + ' provider for assistence'
-                  );
-//      Close;
-    end;
-    result := SqlConnector.Connected;
-  except
-  end;
-end;
-
 
 procedure TMainForm.ActivateCommand(aActivate: Boolean);
 begin
@@ -4106,247 +3869,6 @@ begin
   end;
 end;
 
-procedure TMainForm.ValidateLicense;
-var
-  Y, m, d: Word;
-  ymd: Integer;
-  xLicenseDate: TDateTime;
-const
-  xDisableFunctions = 'Therefore the Save Project as... and some reporting functions are disabled.';
-begin
-{$ifdef TrialVersion}
-  xLicenseExpirationDate := {$I %date%}; // yyyy/mm/dd
-                                         // 1234567890
-  y := StrToInt(Copy (xLicenseExpirationDate, 1, 4));
-  m := StrToInt(Copy (xLicenseExpirationDate, 6, 2));
-  d := StrToInt(Copy (xLicenseExpirationDate, 9, 2));
-  xLicenseDate := EncodeDate(y, m, d) + 180;
-  xLicenseExpirationDate := FormatDateTime('yyyy-mm-dd', xLicenseDate);
-  se.Licensed := ValidateLicenseExpirationDate(xLicenseExpirationDate);
-  LicenseMenuItem.Enabled := False;
-  Exit;
-{$endif}
-{$ifdef linux}
-  se.Licensed := True;
-  exit;
-{$endif}
-  se.Licensed := False;
-  ErrorReadingLicenseInfo := True;
-  if SqlConnector.Connected then
-  try
-    ErrorReadingLicenseInfo := False;
-    Qry.SQL.Clear;
-    Qry.SQL.Add('Select CompanyName, LicenseExpireDate, LicenseString');
-    Qry.SQL.Add('from LicenseInformation');
-    Qry.ParseSQL := False;
-    Qry.Open;
-    while not Qry.EOF do
-    begin
-      CompanyName := Qry.FieldByName('CompanyName').AsString;
-      xLicenseExpirationDate := Qry.FieldByName('LicenseExpireDate').AsString;
-      xLicenseString := Qry.FieldByName('LicenseString').AsString;
-      Qry.Next;
-    end;
-    Qry.Close;
-    se.Licensed := (validateIpmLicense( CompanyName
-                                      + xLicenseExpirationDate
-                                      + generateIpmLicense(licenseDatabaseName)
-                                      , xLicenseString
-                                      )
-                   )
-               and (   (AnsiStartsStr('\\', licenseDatabaseName))
-                    or (WindowsUserName = 'Jan')
-                    or (WindowsUserName = 'Bouwman')
-                    or (WindowsUserName = 'BouwmanJW')
-                   );
-  except
-    on E: Exception do
-    begin
-      { }
-      ShowMessage(E.Message);
-      ErrorReadingLicenseInfo := True;
-      { } {
-        ErrorReadingLicenseInfo := False;
-        se.Licensed := True;
-        xLicenseExpirationDate := '2013-10-01';
-        { }
-    end;
-  end;
-
-  if se.Licensed and (not ErrorReadingLicenseInfo) then
-  begin
-    se.Licensed := ValidateLicenseExpirationDate(xLicenseExpirationDate);
-    if se.Licensed then // set a license for four days for stand alone pc usage
-    begin
-      DecodeDate(Now + 14, Y, m, d);
-      with TFormIniFile.Create(self, False) do
-      try
-        IntegerByName['LicenseExpirationDate'] := 10000 * Y + 100 * m + d;
-        StringByName['LicenseKey'] := generateIpmLicense(IntToStr(10000 * Y + 100 * m + d));
-      finally
-        Free;
-      end;
-    end;
-  end
-  else
-  begin
-    if ErrorReadingLicenseInfo then
-    begin
-      with TFormIniFile.Create(self, False) do
-      try
-        // first try if we have a stand alone license
-        ymd := IntegerByName['LicenseExpirationDate'];
-        d := ymd mod 100;
-        ymd := ymd div 100;
-        m := ymd mod 100;
-        Y := ymd div 100;
-        xLicenseDate := EncodeDate(Y, m, d);
-        if (Now <= xLicenseDate) and ((Now + 16) > xLicenseDate) then
-          se.Licensed := validateIpmLicense(IntToStr(10000 * Y + 100 * m + d),
-            StringByName['LicenseKey']);
-        if se.Licensed then
-          ShowMessage('' + _progName +
-              ' could not read license information from the server.' + LineEnding +
-              LineEnding + 'Your offline license is valid until ' + DateToStr
-              (xLicenseDate))
-        else
-          ShowMessage('' + _progName +
-              ' could not read the license information.' + LineEnding +
-              LineEnding + xDisableFunctions
-              + LineEnding + LineEnding
-              + 'Please contact your ' + _progName + ' provider for assistance.');
-      finally
-        Free;
-      end;
-    end
-    else
-    begin
-      { }
-      ShowMessage('' + _progName + ' did not find a valid licensestring.' +
-          LineEnding + LineEnding + xDisableFunctions
-            + LineEnding + LineEnding +
-          'Please contact your ' + _progName + ' provider for' + LineEnding +
-          'a valid licensestring or technical assistance.');
-      { }
-    end;
-  end;
-end;
-
-function TMainForm.ValidateLicenseExpirationDate(eDt: String): Boolean;
-var
-  xDt: TDateTime;
-  xYear, xMonth, xDay: Word;
-begin
-  // 2007-01-01
-  // 1234567890
-  xYear := StrToInt(Copy(eDt, 1, 4));
-  xMonth := StrToInt(Copy(eDt, 6, 2));
-  xDay := StrToInt(Copy(eDt, 9, 2));
-  xDt := EncodeDate(xYear, xMonth, xDay);
-  result := (Now < xDt);
-  if not result then
-  begin
-    ShowMessage('Your ' + _progName + ' license has expired on ' + DateToStr
-        (xDt) + '.' + LineEnding + LineEnding + 'Therefore ' + _progName +
-        ' will have limited functionallity.' + LineEnding + LineEnding +
-        'Please contact your ' + _progName + ' provider.');
-  end
-  else
-  begin
-    if ((xDt - Now) < 30) then
-      ShowMessage('Your ' + _progName + ' license expires on ' + DateToStr(xDt)
-          + LineEnding + 'Please contact your ' + _progName + ' provider');
-  end;
-end;
-
-procedure TMainForm.LicenseMenuItemClick(Sender: TObject);
-  function _getBaseString: String;
-  begin
-    result := '';
-    with TXml.CreateAsString('getAuthorizationBaseString', '') do
-    try
-      AddXml (TXml.CreateAsString('key', Sha1 (xsdNowAsDateTime + '_JanBo')));
-      LoadFromString (HttpPostDialog(Text, authorizationServerEndpoint), nil);
-      if Name = 'wsAutorizationBaseString' then
-        result := Items.XmlValueByTag['value'];
-    finally
-      Free;
-    end;
-  end;
-var
-  xResult: String;
-begin
-  if ErrorReadingLicenseInfo then
-    raise Exception.Create('' + _progName +
-        ' could not read the license information.' + LineEnding + LineEnding +
-        'Please contact your ' + _progName + ' provider for assistance.');
-
-  Application.CreateForm(TIpmGunLicenseForm, IpmGunLicenseForm);
-  try
-    IpmGunLicenseForm.Caption := '' + _progName + ' - License information';
-    IpmGunLicenseForm.Company := CompanyName;
-    IpmGunLicenseForm.LicenseExpirationDate := xLicenseExpirationDate;
-    IpmGunLicenseForm.BaseString := _getBaseString;
-    IpmGunLicenseForm.ShowModal;
-    if IpmGunLicenseForm.ModalResult = mrOk then
-    begin
-      with TXml.CreateAsString ('setAuthorization', '') do
-      try
-        AddXml (TXml.CreateAsString('Company', IpmGunLicenseForm.Company));
-        AddXml (TXml.CreateAsString('LicenseDate', IpmGunLicenseForm.LicenseExpirationDate));
-        AddXml (TXml.CreateAsString('LicenseString', IpmGunLicenseForm.LicenseString));
-        xResult :=  HttpPostDialog(Text, authorizationServerEndpoint);
-        LoadFromString (xResult, nil);
-        if Name <> 'wsAutorizationSet' then
-          raise Exception.Create ('setAuthorization exception:' + LineEnding + xResult);
-        se.Licensed := GetAuthorization;
-      finally
-        Free;
-      end;
-    end;
-  finally
-    FreeAndNil(IpmGunLicenseForm);
-  end;
-end;
-
-function TMainForm.LicenseProvider(aRequest: String): String;
-var
-  xUser: String;
-  xTimeStamp: String;
-  xReceivedHash: String;
-begin
-  result := '';
-  with TXml.Create do
-    try
-      try
-        if not se.Licensed then
-          raise Exception.Create
-            ('' +
-              _progName + ' license-server not licensed');
-        LoadFromString(aRequest, nil);
-        xUser := Items.XmlValueByTag['User'];
-        if xUser = '' then
-          raise Exception.Create('No UserId found');
-        xTimeStamp := Items.XmlValueByTag['TimeStamp'];
-        if xTimeStamp = '' then
-          raise Exception.Create('No TimeStamp provided');
-        xReceivedHash := Items.XmlValueByTag['Hash'];
-        if Sha1(xUser + ';' + xTimeStamp + xTimeStamp + '..##..')
-          <> xReceivedHash then
-          raise Exception.Create('Suspect request, refused');
-        Items.XmlValueByTag['Hash'] := EncodeStringBase64
-          (xmlUtil.SimpleEncrypt(xReceivedHash));
-        result := Text;
-      except
-        on E: Exception do
-        begin
-          result := E.Message;
-        end;
-      end;
-    finally
-      Free;
-    end;
-end;
 
 procedure TMainForm.runScriptActionExecute(Sender: TObject);
 begin
@@ -11872,35 +11394,6 @@ begin
   end;
 end;
 
-procedure TMainForm.LogUsageTimerTimer(Sender: TObject);
-begin
-  try
-    try
-      if authorizationServerEndpoint <> '' then
-        se.Licensed := GetAuthorization
-      else
-      begin
-        try
-          if OpenLogUsageDatabase then
-            LogUsage(WindowsUserName);
-        finally
-          SqlConnector.Connected := False;
-        end;
-      end;
-    except
-    end;
-  finally
-    SetLogUsageTimer;
-  end;
-end;
-
-procedure TMainForm.SetLogUsageTimer;
-{ Lets the timer trigger just after midnight }
-begin
-  LogUsageTimer.Interval := Ceil(((SysUtils.Date + 1) - Now) * 24 * 60 * 60 * 1000);
-  LogUsageTimer.Enabled := True;
-end;
-
 procedure TMainForm.CobolOperationsActionExecute(Sender: TObject);
 var
   xXml: TXml;
@@ -14341,31 +13834,6 @@ begin
   end;
 end;
 
-procedure TMainForm.OperationReqsTreeViewMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-begin
-
-end;
-
-procedure TMainForm.OperationReqsTreeViewMouseMove(Sender: TObject;
-  Shift: TShiftState; X,Y: Integer);
-begin
-
-end;
-
-procedure TMainForm.OperationReqsTreeViewMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-begin
-
-end;
-
-procedure TMainForm.OperationReqsTreeViewMouseWheel(Sender: TObject;
-  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
-  var Handled: Boolean);
-begin
-
-end;
-
 procedure TMainForm.WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
 begin
   ShowMessage ('Number of referrable elements');
@@ -14514,11 +13982,6 @@ end;
 procedure TMainForm.ToggleTrackIOActionExecute(Sender: TObject);
 begin
   xmlio.doTrackXmlIO := not xmlio.doTrackXmlIO;
-end;
-
-procedure TMainForm.ToolButton69Click(Sender: TObject);
-begin
-
 end;
 
 procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;
