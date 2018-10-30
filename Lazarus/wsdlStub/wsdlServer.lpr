@@ -23,6 +23,9 @@ uses
   , xmlxsdparser
   , HashUtilz
   , LazFileUtils
+  {$ifdef windows}
+  , ActiveX
+  {$endif}
   ;
 
 type
@@ -60,7 +63,6 @@ type
     osUserName, CompanyName: String;
     LogUsageTime: TDateTime;
     procedure SetLogUsageTimer;
-    function ValidateLicenseExpirationDate(eDt: String): Boolean;
     function doDecryptString(aString: AnsiString): AnsiString;
     function doEncryptString(aString: AnsiString): AnsiString;
     procedure HandleException(Sender: TObject; E: Exception);
@@ -76,7 +78,6 @@ type
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     procedure RefreshLogger;
     procedure WriteHelp; virtual;
-    function GetAuthorization : Boolean ;
     procedure OnTerminateThread;
   public
     constructor Create(TheOwner: TComponent); override;
@@ -196,7 +197,7 @@ begin
     Sleep (100);
     if Now > LogUsageTime then
     begin
-      se.Licensed := GetAuthorization;
+      se.Licensed := True;
       SetLogUsageTimer;
     end;
   end;
@@ -208,27 +209,7 @@ end;
 
 procedure TMyApplication .SetLogUsageTimer ;
 begin
-  LogUsageTime := Date + 1 + (Random / (24 * 60));
-end;
-
-function TMyApplication .ValidateLicenseExpirationDate (eDt : String
-  ): Boolean ;
-var
-  xDt: TDateTime;
-  xYear, xMonth, xDay: Word;
-begin
-  // 2007-01-01
-  // 1234567890
-  xYear := StrToInt(Copy(eDt, 1, 4));
-  xMonth := StrToInt(Copy(eDt, 6, 2));
-  xDay := StrToInt(Copy(eDt, 9, 2));
-  xDt := EncodeDate(xYear, xMonth, xDay);
-  result := (Now < xDt);
-  if not result then
-  begin
-    Raise Exception.Create('Your ' + _progName + ' license has expired on ' + DateToStr
-        (xDt) + '.' + LineEnding + 'Please contact your ' + _progName + ' provider.');
-  end;
+  LogUsageTime := SysUtils.Date + 1 + (Random / (24 * 60));
 end;
 
 procedure TMyApplication .Notify (const aString : String );
@@ -499,7 +480,7 @@ begin
   xmlio.OnNotify := se.Notify;
   IntrospectIniXml;
   try
-    se.Licensed := GetAuthorization;
+    se.Licensed := True;
   except
     on e: Exception do
     begin
@@ -552,39 +533,6 @@ begin
   WriteLn ('');
 end;
 
-function TMyApplication.GetAuthorization : Boolean ;
-var
-  xTimestamp, xKey, xLicensed, xExpireDate: String;
-begin
-  result := False;
-  xTimestamp := xsdNowAsDateTime;
-  with TXml.CreateAsString ('getAuthorization', '') do
-  try
-    AddXml (TXml.CreateAsString('UserName', osUserName));
-    AddXml (TXml.CreateAsString('TimeStamp', xTimestamp));
-    AddXml (TXml.CreateAsString('Program', _ProgName));
-    AddXml (TXml.CreateAsString('Version', _xmlProgVersion));
-    AddXml (TXml.CreateAsString('key', Sha1 (xTimestamp + '_JanBo')));
-    LoadFromString (HttpPostDialog(Text, authorizationServerEndpoint), nil);
-    xLicensed := Items.XmlValueByTag['authorized'];
-    xExpireDate := Items.XmlValueByTag['expireDate'];
-    CompanyName := Items.XmlValueByTag['licensee'];
-    xKey := Items.XmlValueByTag['key'];
-    if (xKey <> Sha1 ( osUserName
-                    + xTimestamp
-                    + '^abra^'
-                    + xLicensed
-                    )) then
-      raise Exception.Create ('Received inalid reply from Authorization server');
-    if (xLicensed = 'true') then
-      result := ValidateLicenseExpirationDate(xExpireDate) // warning...
-    else
-      raise Exception.CreateFmt('Not authorized%sLicense expiredate: %s', [LineEnding, xExpireDate]);
-  finally
-    Free;
-  end;
-end;
-
 procedure TMyApplication .OnTerminateThread ;
 begin
   if terminateAfterScript then
@@ -603,4 +551,4 @@ begin
 end.
 
 
-initialize
+

@@ -39,6 +39,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
     procedure NowButtonClick(Sender: TObject);
+    procedure TimeZoneEdirChangeBounds(Sender: TObject);
     procedure YearEditChange(Sender: TObject);
     procedure MonthComboBoxChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -74,9 +75,11 @@ const
 
 procedure TxsdDateTimeForm.FormCreate(Sender: TObject);
 var
-  x: Integer;
+  x, w: Integer;
 begin
+  w := self.Width;
   IniFile := TFormIniFile.Create (Self, True);
+  self.Width := w;
   dtFormat := dtfDateTime;
   MonthComboBox.Clear;
   for x := 1 to 12 do
@@ -214,6 +217,11 @@ begin
   t := t + IntToStr (ms);
   TimeEdit.Text := t;
   OkButton.OnClick (nil);
+end;
+
+procedure TxsdDateTimeForm.TimeZoneEdirChangeBounds(Sender: TObject);
+begin
+
 end;
 
 procedure TxsdDateTimeForm.setDtFormat(const Value: TdtFormat);

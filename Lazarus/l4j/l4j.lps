@@ -20,7 +20,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="L4JMainUnit"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="40" Y="8"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
@@ -430,9 +429,11 @@
       <Unit56>
         <Filename Value="..\Utils\versionsupport.pas"/>
         <UnitName Value="VersionSupport"/>
-        <EditorIndex Value="-1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <CursorPos X="88" Y="7"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit56>
       <Unit57>
         <Filename Value="C:\lazarus\lcl\interfacebase.pp"/>
@@ -458,7 +459,7 @@
       <Define3 Value="UseCThreads"/>
       <Define4 Value="GETENDURANCE"/>
     </OtherDefines>
-    <JumpHistory Count="6" HistoryIndex="5">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="l4jmainunit.pas"/>
         <Caret Line="1353" TopLine="1343"/>
@@ -483,6 +484,10 @@
         <Filename Value="l4jmainunit.pas"/>
         <Caret Line="13" Column="49"/>
       </Position6>
+      <Position7>
+        <Filename Value="..\Utils\versionsupport.pas"/>
+        <Caret Line="7" Column="88"/>
+      </Position7>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

@@ -4,7 +4,7 @@ unit VersionSupport;
 interface
 
 uses
-  Classes, SysUtils, resource, versiontypes, versionresource, LCLVersion, InterfaceBase, lclplatformdef;
+  Classes, SysUtils, resource, versiontypes, versionresource, LCLVersion, InterfaceBase;
 
 const
   WIDGETSET_GTK        = 'GTK widget set';

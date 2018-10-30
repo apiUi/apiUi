@@ -1169,45 +1169,54 @@ begin
       Synchronize(fProject.OnStartNonBlockingThread);
   end;
   try
-    if Assigned (fProcedure) then fProcedure;
-    if Assigned (fProcedureString) then fProcedureString (fString);
-    if Assigned (fProcedureXX) then fProcedureXX (fExtended, fExtended2);
-    if Assigned (fProcedureOperation) then
-    begin
-      if fOperation.PostponementMs > 0 then
-        Sleep (fOperation.PostponementMs);
-      fProcedureOperation (fOperation);
-      if fOperation.FreeOnTerminateRequest then
-        FreeAndNil(fOperation);
-    end;
-    if Assigned (fProcedureObject) then fProcedureObject (fObject);
-    if Assigned (fProcedureClaimableObjectList) then
-    begin
-      try
-        fProcedureClaimableObjectList (fClaimableObjectList);
-      finally
-        fProject.AcquireLogLock;
+    {$ifdef windows}
+    CoInitialize(nil);
+    {$endif}
+    try
+      if Assigned (fProcedure) then fProcedure;
+      if Assigned (fProcedureString) then fProcedureString (fString);
+      if Assigned (fProcedureXX) then fProcedureXX (fExtended, fExtended2);
+      if Assigned (fProcedureOperation) then
+      begin
+        if fOperation.PostponementMs > 0 then
+          Sleep (fOperation.PostponementMs);
+        fProcedureOperation (fOperation);
+        if fOperation.FreeOnTerminateRequest then
+          FreeAndNil(fOperation);
+      end;
+      if Assigned (fProcedureObject) then fProcedureObject (fObject);
+      if Assigned (fProcedureClaimableObjectList) then
+      begin
         try
-          fClaimableObjectList.Clear;
-          fClaimableObjectList.Free;
+          fProcedureClaimableObjectList (fClaimableObjectList);
         finally
-          fProject.ReleaseLogLock;
+          fProject.AcquireLogLock;
+          try
+            fClaimableObjectList.Clear;
+            fClaimableObjectList.Free;
+          finally
+            fProject.ReleaseLogLock;
+          end;
         end;
       end;
+    finally
+      if fBlocking then
+      begin
+        if Assigned (fProject.OnTerminateBlockingThread) then
+          Synchronize(fProject.OnTerminateBlockingThread);
+      end
+      else
+      begin
+        if Assigned (fProject.OnTerminateNonBlockingThread) then
+          Synchronize(fProject.OnTerminateNonBlockingThread);
+      end;
+      if Assigned (fOnFinished) then
+        Synchronize(fOnFinished);
     end;
   finally
-    if fBlocking then
-    begin
-      if Assigned (fProject.OnTerminateBlockingThread) then
-        Synchronize(fProject.OnTerminateBlockingThread);
-    end
-    else
-    begin
-      if Assigned (fProject.OnTerminateNonBlockingThread) then
-        Synchronize(fProject.OnTerminateNonBlockingThread);
-    end;
-    if Assigned (fOnFinished) then
-      Synchronize(fOnFinished);
+    {$ifdef windows}
+    CoUninitialize;
+    {$endif}
   end;
 end;
 

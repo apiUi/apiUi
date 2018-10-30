@@ -5,8 +5,8 @@ unit mainUnit;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, IdTCPClient, AboutUnit;
+  Classes, SysUtils, FileUtil, Controls, Graphics, Dialogs, ExtCtrls,
+  StdCtrls, IdTCPClient, AboutUnit, Forms;
 
 type
 

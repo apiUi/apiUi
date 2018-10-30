@@ -1,16 +1,16 @@
 object Form1: TForm1
   Left = 476
-  Height = 225
+  Height = 249
   Top = 301
   Width = 350
   Caption = 'Port Checker'
-  ClientHeight = 225
+  ClientHeight = 249
   ClientWidth = 350
-  LCLVersion = '1.4.0.2'
+  LCLVersion = '1.6.0.4'
   object Panel2: TPanel
     Left = 0
     Height = 39
-    Top = 186
+    Top = 210
     Width = 350
     Align = alBottom
     Caption = ' '
@@ -40,17 +40,17 @@ object Form1: TForm1
   end
   object Panel3: TPanel
     Left = 0
-    Height = 186
+    Height = 210
     Top = 0
     Width = 350
     Align = alClient
-    ClientHeight = 186
+    ClientHeight = 210
     ClientWidth = 350
     TabOrder = 0
     object HostEdit: TLabeledEdit
       Left = 17
-      Height = 21
-      Top = 20
+      Height = 28
+      Top = 23
       Width = 313
       Anchors = [akTop, akLeft, akRight]
       EditLabel.AnchorSideLeft.Control = HostEdit
@@ -58,8 +58,8 @@ object Form1: TForm1
       EditLabel.AnchorSideRight.Side = asrBottom
       EditLabel.AnchorSideBottom.Control = HostEdit
       EditLabel.Left = 17
-      EditLabel.Height = 13
-      EditLabel.Top = 4
+      EditLabel.Height = 20
+      EditLabel.Top = 0
       EditLabel.Width = 313
       EditLabel.Caption = 'Host'
       EditLabel.ParentColor = False
@@ -69,8 +69,8 @@ object Form1: TForm1
     end
     object PortEdit: TLabeledEdit
       Left = 17
-      Height = 21
-      Top = 61
+      Height = 28
+      Top = 74
       Width = 313
       Anchors = [akTop, akLeft, akRight]
       EditLabel.AnchorSideLeft.Control = PortEdit
@@ -78,8 +78,8 @@ object Form1: TForm1
       EditLabel.AnchorSideRight.Side = asrBottom
       EditLabel.AnchorSideBottom.Control = PortEdit
       EditLabel.Left = 17
-      EditLabel.Height = 13
-      EditLabel.Top = 45
+      EditLabel.Height = 20
+      EditLabel.Top = 51
       EditLabel.Width = 313
       EditLabel.Caption = 'Port'
       EditLabel.ParentColor = False
@@ -90,7 +90,7 @@ object Form1: TForm1
     object testButton: TButton
       Left = 17
       Height = 25
-      Top = 97
+      Top = 109
       Width = 115
       Caption = '&Test connection'
       OnClick = testButtonClick
@@ -98,8 +98,8 @@ object Form1: TForm1
     end
     object ResultEdit: TLabeledEdit
       Left = 17
-      Height = 21
-      Top = 147
+      Height = 28
+      Top = 166
       Width = 313
       Anchors = [akTop, akLeft, akRight]
       EditLabel.AnchorSideLeft.Control = ResultEdit
@@ -107,8 +107,8 @@ object Form1: TForm1
       EditLabel.AnchorSideRight.Side = asrBottom
       EditLabel.AnchorSideBottom.Control = ResultEdit
       EditLabel.Left = 17
-      EditLabel.Height = 13
-      EditLabel.Top = 131
+      EditLabel.Height = 20
+      EditLabel.Top = 143
       EditLabel.Width = 313
       EditLabel.Caption = 'Result'
       EditLabel.ParentColor = False

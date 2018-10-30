@@ -2,14 +2,14 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="10"/>
+    <Version Value="9"/>
     <BuildModes Active="Default"/>
     <Units Count="10">
       <Unit0>
         <Filename Value="portChecker.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos Y="20"/>
+        <CursorPos X="11" Y="10"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -21,8 +21,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainUnit"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="101"/>
-        <CursorPos X="8" Y="106"/>
+        <CursorPos X="47" Y="16"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -94,7 +93,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit9>
     </Units>
-    <JumpHistory Count="20" HistoryIndex="19">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="mainunit.pas"/>
         <Caret Line="9" Column="32"/>
@@ -175,6 +174,22 @@
         <Filename Value="mainunit.pas"/>
         <Caret Line="119" Column="25" TopLine="98"/>
       </Position20>
+      <Position21>
+        <Filename Value="portChecker.lpr"/>
+        <Caret Line="20"/>
+      </Position21>
+      <Position22>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="8" Column="49"/>
+      </Position22>
+      <Position23>
+        <Filename Value="portChecker.lpr"/>
+        <Caret Line="20"/>
+      </Position23>
+      <Position24>
+        <Filename Value="portChecker.lpr"/>
+        <Caret Line="10" Column="10"/>
+      </Position24>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>
