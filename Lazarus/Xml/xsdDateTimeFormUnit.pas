@@ -75,11 +75,13 @@ const
 
 procedure TxsdDateTimeForm.FormCreate(Sender: TObject);
 var
-  x, w: Integer;
+  x, w, h: Integer;
 begin
   w := self.Width;
+  h := self.Height;
   IniFile := TFormIniFile.Create (Self, True);
   self.Width := w;
+  self.Height := h;
   dtFormat := dtfDateTime;
   MonthComboBox.Clear;
   for x := 1 to 12 do

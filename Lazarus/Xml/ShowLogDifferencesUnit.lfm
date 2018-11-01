@@ -1,7 +1,7 @@
 object ShowLogDifferencesForm: TShowLogDifferencesForm
-  Left = 516
+  Left = 536
   Height = 409
-  Top = 172
+  Top = 237
   Width = 777
   Caption = 'wsdlStub - Show Log differences'
   ClientHeight = 409
@@ -37,7 +37,7 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       TabOrder = 0
       object mainVST: TVirtualStringTree
         Left = 4
-        Height = 344
+        Height = 335
         Top = 4
         Width = 761
         Align = alClient
@@ -124,8 +124,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       end
       object OverviewStatusBar: TStatusBar
         Left = 4
-        Height = 20
-        Top = 348
+        Height = 29
+        Top = 339
         Width = 761
         Panels = <        
           item

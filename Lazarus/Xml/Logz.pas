@@ -86,7 +86,8 @@ type
     ServiceName, OperationName: String;
     DelayTimeMs, OperationCount: Integer;
     procedure AddRemark (aRemark: String);
-    function CompareKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TStringList): String;
+    function CompareKey (aCompareBy: TCompareLogOrderBy): String;
+    function SortKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TStringList): String;
     function DurationAsString: String;
     function StubActionAsString: String;
     function AsXml: TXml;
@@ -327,11 +328,11 @@ begin
     try
       for x := 0 to aLogs.Count - 1 do
         if aLogs.LogItems [x].PassesFilter then
-          aSortedLogs.AddObject (aLogs.LogItems[x].CompareKey(aOrderBy, sortColumns), aLogs.LogItems[x]);
+          aSortedLogs.AddObject (aLogs.LogItems[x].SortKey(aOrderBy, sortColumns), aLogs.LogItems[x]);
       aSortedLogs.CustomSort(logz.doOrder);
       for x := 0 to bLogs.Count - 1 do
         if bLogs.LogItems [x].PassesFilter then
-          bSortedLogs.AddObject (bLogs.LogItems[x].CompareKey(aOrderBy, sortColumns), bLogs.LogItems[x]);
+          bSortedLogs.AddObject (bLogs.LogItems[x].SortKey(aOrderBy, sortColumns), bLogs.LogItems[x]);
       bSortedLogs.CustomSort(logz.doOrder);
 
       LA := TStringList.Create;
@@ -1100,9 +1101,8 @@ begin
     Remarks := Remarks + LineEnding + aRemark;
 end;
 
-function TLog.CompareKey (aCompareBy : TCompareLogOrderBy; aSortColumns: TStringList): String ;
+function TLog.CompareKey(aCompareBy: TCompareLogOrderBy): String;
 var
-  xXml, xReqXml, xRpyXml: TXml;
   x: Integer;
 begin
   result := '';
@@ -1132,6 +1132,14 @@ begin
       clCorrelation: result := CorrelationId;
     end;
   end;
+end;
+
+function TLog.SortKey (aCompareBy : TCompareLogOrderBy; aSortColumns: TStringList): String ;
+var
+  xXml, xReqXml, xRpyXml: TXml;
+  x: Integer;
+begin
+  result := CompareKey(aCompareBy);
   if (aSortColumns.Count > 0)
 //and (aCompareBy <> clTimeStamp)
   then

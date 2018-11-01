@@ -261,13 +261,17 @@ begin
     aLogs.Sorted := False;
     aLogs.Duplicates := dupAccept;
     for x := 0 to aLogs.Count - 1 do
-      aLogs.Strings[x] := aLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
+      aLogs.Strings[x] := aLogs.LogItems[x].SortKey(compareLogOrderBy, regressionSortColumns);
     aLogs.CustomSort(logz.doOrder);
+    for x := 0 to aLogs.Count - 1 do
+      aLogs.Strings[x] := aLogs.LogItems[x].CompareKey(compareLogOrderBy);
     bLogs.Sorted := False;
     bLogs.Duplicates := dupAccept;
     for x := 0 to bLogs.Count - 1 do
-      bLogs.Strings[x] := bLogs.LogItems[x].CompareKey(compareLogOrderBy, regressionSortColumns);
+      bLogs.Strings[x] := bLogs.LogItems[x].SortKey(compareLogOrderBy, regressionSortColumns);
     bLogs.CustomSort(logz.doOrder);
+    for x := 0 to bLogs.Count - 1 do
+      bLogs.Strings[x] := bLogs.LogItems[x].CompareKey(compareLogOrderBy);
     a2bInitialize;
     try
       mainVST.BeginUpdate;
