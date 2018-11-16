@@ -135,6 +135,7 @@ procedure a2bExpandWhenValueIsJsonOrYaml(aXml: TXml);
 var
   x: Integer;
 begin
+  // Exit; // uncomment to test performance degradation
   if (aXml.Items.Count > 0) then
   begin
     for x := 0 to aXml.Items.Count - 1 do

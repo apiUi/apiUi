@@ -277,6 +277,7 @@ end;
 procedure wrdInitialize;
 begin
   {$ifdef windows}
+  if not wrdInstalled then
   try
     wrdApplication := CreateOleObject('Word.Application');
     wrdApplication.DisplayAlerts := False;
@@ -291,15 +292,21 @@ end;
 procedure wrdUninitialize;
 begin
   {$ifdef windows}
-  if wrdInstalled
-  and not VarIsNull (wrdApplication) then
-  begin
-    wrdApplication.Quit;
-    wrdApplication := null;
-  end;
   {$endif}
 end;
 
 initialization;
   wrdApplication := null;
+finalization;
+  {$ifdef windows}
+  try
+    if wrdInstalled
+    and not VarIsNull (wrdApplication) then
+    begin
+      wrdApplication.Quit;
+      wrdApplication := null;
+    end;
+  except
+  end;
+  {$endif}
 end.

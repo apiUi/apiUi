@@ -1,12 +1,12 @@
 object MainForm: TMainForm
-  Left = 380
+  Left = 387
   Height = 784
-  Top = 115
-  Width = 1469
+  Top = 66
+  Width = 1470
   Action = OpenProjectAction
   Caption = 'Open Project...'
   ClientHeight = 759
-  ClientWidth = 1469
+  ClientWidth = 1470
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
@@ -25,7 +25,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 24
     Top = 0
-    Width = 1469
+    Width = 1470
     Caption = 'MainToolBar'
     Images = mainImageList
     TabOrder = 1
@@ -193,12 +193,12 @@ object MainForm: TMainForm
     Left = 0
     Height = 428
     Top = 24
-    Width = 1469
+    Width = 1470
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
     ClientHeight = 428
-    ClientWidth = 1469
+    ClientWidth = 1470
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 221
@@ -208,7 +208,7 @@ object MainForm: TMainForm
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 1292
+      Left = 1293
       Height = 422
       Top = 3
       Width = 5
@@ -352,7 +352,7 @@ object MainForm: TMainForm
       end
     end
     object XsdPanel: TPanel
-      Left = 1297
+      Left = 1298
       Height = 422
       Top = 3
       Width = 169
@@ -444,20 +444,20 @@ object MainForm: TMainForm
       Left = 226
       Height = 422
       Top = 3
-      Width = 1066
+      Width = 1067
       Align = alClient
       Caption = 'MiddlePanel'
       ClientHeight = 422
-      ClientWidth = 1066
+      ClientWidth = 1067
       TabOrder = 4
       object WsdlInfoPanel: TPanel
         Left = 1
         Height = 37
         Top = 1
-        Width = 1064
+        Width = 1065
         Align = alTop
         ClientHeight = 37
-        ClientWidth = 1064
+        ClientWidth = 1065
         TabOrder = 0
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
@@ -524,27 +524,27 @@ object MainForm: TMainForm
         Left = 1
         Height = 383
         Top = 38
-        Width = 1064
+        Width = 1065
         Align = alClient
         Caption = 'DataPanel'
         ClientHeight = 383
-        ClientWidth = 1064
+        ClientWidth = 1065
         TabOrder = 1
         object GridDataPanel: TPanel
           Left = 1
           Height = 93
           Top = 1
-          Width = 1062
+          Width = 1063
           Align = alTop
           Caption = 'GridDataPanel'
           ClientHeight = 93
-          ClientWidth = 1062
+          ClientWidth = 1063
           TabOrder = 0
           object GridToolBar: TToolBar
             Left = 1
             Height = 24
             Top = 1
-            Width = 1060
+            Width = 1061
             AutoSize = True
             Caption = 'GridToolBar'
             Images = mainImageList
@@ -728,7 +728,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 67
             Top = 25
-            Width = 1060
+            Width = 1061
             Align = alClient
             BottomSpace = 10
             DefaultText = 'Node'
@@ -794,7 +794,7 @@ object MainForm: TMainForm
           Left = 1
           Height = 5
           Top = 94
-          Width = 1062
+          Width = 1063
           Align = alTop
           ResizeAnchor = akTop
         end
@@ -802,17 +802,17 @@ object MainForm: TMainForm
           Left = 1
           Height = 283
           Top = 99
-          Width = 1062
+          Width = 1063
           Align = alClient
           Caption = 'TreeDataPanel'
           ClientHeight = 283
-          ClientWidth = 1062
+          ClientWidth = 1063
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
             Top = 265
-            Width = 1060
+            Width = 1061
             Align = alBottom
             Alignment = taLeftJustify
             BevelInner = bvLowered
@@ -822,7 +822,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 24
             Top = 1
-            Width = 1060
+            Width = 1061
             AutoSize = True
             BorderWidth = 2
             Caption = 'ToolBar9'
@@ -906,7 +906,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 59
             Top = 25
-            Width = 1060
+            Width = 1061
             Align = alTop
             DefaultText = 'Node'
             DragOperations = []
@@ -962,7 +962,7 @@ object MainForm: TMainForm
             Left = 1
             Height = 181
             Top = 84
-            Width = 1060
+            Width = 1061
             Align = alClient
             Font.CharSet = ANSI_CHARSET
             Font.Color = clWindowText
@@ -982,7 +982,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 5
     Top = 452
-    Width = 1469
+    Width = 1470
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -990,27 +990,27 @@ object MainForm: TMainForm
     Left = 0
     Height = 302
     Top = 457
-    Width = 1469
+    Width = 1470
     Align = alBottom
     ClientHeight = 302
-    ClientWidth = 1469
+    ClientWidth = 1470
     TabOrder = 3
     object SnapshotsPanel: TPanel
       Left = 1
       Height = 64
       Top = 113
-      Width = 1467
+      Width = 1468
       Align = alTop
       Caption = 'SnapshotsPanel'
       ClientHeight = 64
-      ClientWidth = 1467
+      ClientWidth = 1468
       TabOrder = 0
       Visible = False
       object ToolBar1: TToolBar
         Left = 1
         Height = 25
         Top = 1
-        Width = 1465
+        Width = 1466
         Caption = 'ToolBar1'
         Images = mainImageList
         TabOrder = 0
@@ -1065,17 +1065,17 @@ object MainForm: TMainForm
         Left = 1
         Height = 37
         Top = 26
-        Width = 1465
+        Width = 1466
         Align = alClient
         Caption = 'Panel1'
         ClientHeight = 37
-        ClientWidth = 1465
+        ClientWidth = 1466
         TabOrder = 1
         object SnapshotsVTS: TVirtualStringTree
           Left = 1
           Height = 35
           Top = 1
-          Width = 1463
+          Width = 1464
           Align = alClient
           BottomSpace = 10
           Colors.GridLineColor = clWhite
@@ -1136,11 +1136,11 @@ object MainForm: TMainForm
       Left = 1
       Height = 87
       Top = 26
-      Width = 1467
+      Width = 1468
       Align = alTop
       Caption = 'NotificationsPanel'
       ClientHeight = 87
-      ClientWidth = 1467
+      ClientWidth = 1468
       TabOrder = 1
       Visible = False
       object Splitter8: TSplitter
@@ -1215,7 +1215,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 25
         Top = 1
-        Width = 1465
+        Width = 1466
         BorderWidth = 2
         Caption = 'ToolBar3'
         Images = mainImageList
@@ -1230,7 +1230,7 @@ object MainForm: TMainForm
         Left = 625
         Height = 60
         Top = 26
-        Width = 841
+        Width = 842
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1247,11 +1247,11 @@ object MainForm: TMainForm
       Left = 1
       Height = 96
       Top = 177
-      Width = 1467
+      Width = 1468
       Align = alTop
       Caption = 'MessagesPanel'
       ClientHeight = 96
-      ClientWidth = 1467
+      ClientWidth = 1468
       TabOrder = 2
       Visible = False
       object Splitter7: TSplitter
@@ -1264,7 +1264,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 31
         Top = 1
-        Width = 1465
+        Width = 1466
         Caption = 'MessagesTabToolBar'
         Images = mainImageList
         TabOrder = 1
@@ -1320,7 +1320,7 @@ object MainForm: TMainForm
           Action = readLog4jEventsAction
         end
         object MessagesTabControl: TTabControl
-          Left = 881
+          Left = 882
           Height = 23
           Top = 8
           Width = 584
@@ -1549,7 +1549,7 @@ object MainForm: TMainForm
         Left = 621
         Height = 63
         Top = 32
-        Width = 820
+        Width = 821
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1562,7 +1562,7 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object ToolBar4: TToolBar
-        Left = 1441
+        Left = 1442
         Height = 63
         Top = 32
         Width = 25
@@ -1587,7 +1587,7 @@ object MainForm: TMainForm
       Left = 1
       Height = 19
       Top = 7
-      Width = 1467
+      Width = 1468
       TabStop = False
       Images = mainImageList
       OnChange = LogTabControlChange

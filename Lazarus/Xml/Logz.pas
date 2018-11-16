@@ -340,35 +340,9 @@ begin
       Diffs := TA2BStringList.Create;
       try
         for x := 0 to aSortedLogs.Count - 1 do
-        begin
-          with aSortedLogs.LogItems[x] do
-          begin
-            s := '';
-            if Assigned (Operation) then
-              s := s + Operation.WsdlService.Name + ';' + Operation.Name + ';'
-            else
-              s := s + ';;';
-            if Assigned (Mssg) then
-              s := s + Mssg.Name;
-            s := s + ';' + CorrelationId;
-          end;
-          LA.Add(s);
-        end;
+          LA.Add (aLogs.LogItems[x].CompareKey(aOrderBy));
         for x := 0 to bSortedLogs.Count - 1 do
-        begin
-          with bSortedLogs.LogItems[x] do
-          begin
-            s := '';
-            if Assigned (Operation) then
-              s := s + Operation.WsdlService.Name + ';' + Operation.Name + ';'
-            else
-              s := s + ';;';
-            if Assigned (Mssg) then
-              s := s + Mssg.Name;
-            s := s + ';' + CorrelationId;
-          end;
-          LB.Add(s);
-        end;
+          LB.Add (bLogs.LogItems[x].CompareKey(aOrderBy));
         Diffs.Execute(LA, LB);
         bodyXml := result.AddXml(TXml.CreateAsString('Body', ''));
         itemsXml := TXml.CreateAsString('Items', ''); // create in advance
@@ -1141,7 +1115,7 @@ var
 begin
   result := CompareKey(aCompareBy);
   if (aSortColumns.Count > 0)
-//and (aCompareBy <> clTimeStamp)
+  and (aCompareBy <> clTimeStamp)
   then
   begin
     xReqXml := reqBodyAsXml;

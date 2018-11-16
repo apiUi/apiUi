@@ -84,7 +84,7 @@ object xsdDateTimeForm: TxsdDateTimeForm
     Text = 'MonthComboBox'
   end
   object Calendar: TCalendar
-    Left = 62
+    Left = 60
     Height = 205
     Top = 80
     Width = 260

@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
-      <BuildNr Value="12040"/>
+      <BuildNr Value="12050"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -204,7 +204,6 @@
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
-        <Enabled Value="False"/>
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>
@@ -212,7 +211,6 @@
       </Item13>
       <Item14>
         <Name Value="EIdHTTPProtocolException"/>
-        <Enabled Value="False"/>
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
