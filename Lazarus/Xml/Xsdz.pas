@@ -87,7 +87,7 @@ type
     isAbstract: Boolean;
     isMixed: Boolean;
     xsdDescr: TXsdDescr;
-    _Processed: Boolean;
+    _Processed, _isGroup: Boolean;
     _DepthBillOfMaterial: integer;
     _Ficticious: Boolean;
     _Error: Boolean;
@@ -249,6 +249,7 @@ type
     procedure AddDataTypeFacets(aTypeDef: TXsdDataType; aXml: TObject);
     function AddAttributeDef (aTypeDef: TXsdDataType; aXml: TObject; aTargetNamespace: String): TXsdAttr;
     function AddElement(aTypeDef: TXsdDataType; aXml: TObject; aTargetNameSpace: String; aRoot: Boolean): TXsd;
+    procedure AddGroup(aTypeDef: TXsdDataType; aXml: TObject; aTargetNameSpace: String);
   public
     Garbage: TStringList;
     xsdFileNames: TStringList;
@@ -834,7 +835,7 @@ function TXsdDescr.AddComplexType(aXml: TObject; aTargetNamespace: String; isGlo
       if Name = tagAll then result := _ifthen (result = '', 'All', 'Sequence');
       if Name = tagChoice then result := _ifthen (result = '', 'Choice', 'Sequence');
       if Name = tagSequence then result := _ifthen (result = '', 'Sequence', 'Sequence');
-      if Name = tagGroup then result := _ifthen (result = '', 'GroupRef', result);
+      if Name = tagGroup then result := _ifthen (result = '', 'Sequence', result);
     end;
     if Result = '' then Result := 'Empty';  // weet je het zeker ???
   end;
@@ -872,6 +873,9 @@ begin
     raise Exception.Create('Illegal: AddComplexType(aXml: TObject; aTargetNamespace: String; isGlobalDefined: Boolean): TXsdDataType');
   xXml := aXml as TXml;
   result := TXsdDataType.Create(self);
+  result._isGroup := (xXml.Name = tagGroup);
+  if result._isGroup then
+    xXml.Name := tagGroup;
   result.SourceFileName := '->' + xXml.SourceFileName;
   result.xsdType:= dtComplexType;
   Garbage.AddObject('', result);
@@ -1008,7 +1012,8 @@ begin
       if XmlItems[x].Name = tagSimpleType then
         AddSimpleType (XmlItems[x], xTargetNameSpace, True);
     for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
-      if XmlItems[x].Name = tagComplexType then
+      if (XmlItems[x].Name = tagComplexType)
+      or (XmlItems[x].Name = tagGroup) then
         AddComplexType (XmlItems[x], xTargetNameSpace, True);
     for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
       if XmlItems[x].Name = tagElement then
@@ -2803,6 +2808,37 @@ begin
   AddAppinfo(result.Appinfo, xXml);
   result.isRootElement:= aRoot;
   aTypeDef.AddXsd(result);
+end;
+
+procedure TXsdDescr.AddGroup(aTypeDef: TXsdDataType; aXml: TObject;
+  aTargetNameSpace: String);
+var
+  x: Integer;
+  xXml: TXml;
+  xAttr: TXmlAttribute;
+  xGroupType: TXsdDataType;
+  xXsd: TXsd;
+begin
+  xXml := aXml as TXml;
+  xAttr := xXml.Attributes.AttributeByTag[tagRef];
+  if not Assigned(xAttr) then
+  begin
+    SjowMessage(Format ('AddGroup %s %s %s: %s', [xXml.NameSpace, xXml.Name, aTargetNameSpace, 'no ref attr found']));
+    Exit;
+  end;
+  xGroupType := FindTypeDef(xXml.PrefixToNameSpace(xAttr.Value), NameWithoutPrefix(xAttr.Value));
+  if not Assigned (xGroupType) then
+  begin
+    SjowMessage(Format ('AddGroup %s %s %s: %s', [xXml.NameSpace, xXml.Name, aTargetNameSpace, 'Group not found']));
+    Exit;
+  end;
+  SjowMessage(Format ('+++AddGroup %s %s %s', [xXml.NameSpace, xXml.Name, aTargetNameSpace]));
+  for x := 0 to xGroupType.ElementDefs.Count - 1 do
+  begin
+    xXsd := TXsd.Create(self, xGroupType.ElementDefs.Xsds[x]);
+    Garbage.AddObject('', xXsd);
+    aTypeDef.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+  end;
 end;
 
 function TXsdDescr.CreateXsdFromXmlSample (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
