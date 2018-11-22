@@ -176,7 +176,7 @@ type
     function getNSPrefix: String;
     function getXsdByCaption(Index: String): TXsd;
   public
-    _Processed: Boolean;
+    _Processed, _isGroup: Boolean;
     xsdDescr: TXsdDescr;
     isRootElement: Boolean;
     FileName: String;
@@ -850,7 +850,8 @@ function TXsdDescr.AddComplexType(aXml: TObject; aTargetNamespace: String; isGlo
   begin
     if aXml.Name = tagAttribute then
       AddAttributeDef(aTypeDef, aXml, aTargetNameSpace);
-    if aXml.Name = tagElement then
+    if (aXml.Name = tagElement)
+    or (aXml.Name = tagGroup) then
       with AddElement(aTypeDef, aXml, aTargetNameSpace, False) do
       begin
         if aForceOptional then
@@ -874,8 +875,6 @@ begin
   xXml := aXml as TXml;
   result := TXsdDataType.Create(self);
   result._isGroup := (xXml.Name = tagGroup);
-  if result._isGroup then
-    xXml.Name := tagGroup;
   result.SourceFileName := '->' + xXml.SourceFileName;
   result.xsdType:= dtComplexType;
   Garbage.AddObject('', result);
@@ -2769,6 +2768,8 @@ begin
     raise Exception.Create('Illegal: AddElement(aTypeDef: TXsdDataType; aXml: TObject): TXsd;');
   xXml := aXml as TXml;
   result := TXsd.Create(self);
+  if xXml.Name = tagGroup then
+    result._isGroup := True;
   result.SourceFileName := '->' + xXml.SourceFileName;
   Garbage.AddObject('', Result);
   result.FileName := fMainFileName;
@@ -2797,6 +2798,11 @@ begin
       result._RefNameSpace := aTargetNamespace;
     result.ElementName := result._RefElementName;
     result.ElementNameSpace := result._RefNameSpace;
+    if result._isGroup then
+    begin
+      result._NameSpace := result._RefNameSpace;
+      result._DataTypeName := result._RefElementName;
+    end;
   end;
   cXml := xXml.Items.XmlItemByTag[tagComplexType];
   if Assigned (cXml) then
@@ -3244,6 +3250,72 @@ procedure TXsdDescr.Finalise;
     end;
   end;
 
+  procedure _expandGroups (aTrack: String; aTypeDef: TXsdDataType);
+  var
+    x, y, d: Integer;
+    xType, dbType: TXsdDataType;
+    xXsd, dbXsd: TXsd;
+  begin
+    if not Assigned (aTypeDef) then
+      Exit;
+    if aTypeDef._Processed then
+      Exit;
+    aTypeDef._Processed := True;
+    try
+      try
+        with aTypeDef do
+        begin
+          x := 0;
+          while x < ElementDefs.Count do
+          begin
+            while ElementDefs.Xsds[x]._isGroup
+            and Assigned (ElementDefs.Xsds[x].sType) do
+            begin
+              dbXsd := ElementDefs.Xsds[x];
+              dbType := dbXsd.sType;
+              if not ElementDefs.Xsds[x].sType._isGroup then
+              begin
+                ElementDefs.Xsds[x]._isGroup := False;  // to avoid endless looping...
+                SjowMessage
+                     (Format
+                       ( '(expanding Groups) Found datatype (%s:%s) on element (%s:%s) not a group. %s '
+                       , [ ElementDefs.Xsds[x]._NameSpace
+                         , ElementDefs.Xsds[x]._DataTypeName
+                         , ElementDefs.Xsds[x].ElementNameSpace
+                         , ElementDefs.Xsds[x].ElementName
+                         , aTrack
+                         ]
+                       )
+                     )
+              end
+              else
+              begin
+                xType := ElementDefs.Xsds[x].sType;
+                ElementDefs.Delete(x);
+                for d := xType.ElementDefs.Count - 1 downto 0 do
+                begin
+                  xXsd := TXsd.Create(self, xType.ElementDefs.Xsds[d]);
+                  Garbage.AddObject('', xXsd);
+                  ElementDefs.InsertObject(x, xXsd.ElementName, xXsd);
+                end;
+              end;
+            end;
+            if Assigned (ElementDefs.Xsds[x].sType) then
+              _expandGroups(aTrack + '.' + ElementDefs.Xsds[x].ElementName, ElementDefs.Xsds[x].sType);
+            Inc (x);
+          end;
+        end;
+      except
+        on e: Exception do
+        begin
+          raise Exception.Create (aTrack + ' => ' + e.Message);
+        end;
+      end;
+    finally
+      aTypeDef._Processed := False;
+    end;
+  end;
+
   procedure _linkElmntToType(aTrack: String; aTypeDef: TXsdDataType);
   var
     x, d: Integer;
@@ -3259,7 +3331,9 @@ procedure TXsdDescr.Finalise;
           with ElementDefs.Xsds[x] do
           begin
             if not Assigned (sType)
-            and (_DataTypeName <> '') then
+            and (  (_DataTypeName <> '')
+                 or _isGroup
+                ) then
             begin
               sType := FindTypeDef(_NameSpace, _DataTypeName);
               if not Assigned (sType) then
@@ -3563,7 +3637,6 @@ procedure TXsdDescr.Finalise;
 var
   x: integer;
 begin
-
 {
   if not systemStarting then
   begin
@@ -3574,10 +3647,12 @@ begin
       _track('', TypeDefs.XsdDataTypes[x]);
   end;
 }
-
   _LinkElmntToType('', TypeDef);
   for x := 0 to TypeDefs.Count - 1 do
     _LinkElmntToType('', TypeDefs.XsdDataTypes[x]);
+  _expandGroups('', TypeDef);
+  for x := 0 to TypeDefs.Count - 1 do
+    _expandGroups('', TypeDefs.XsdDataTypes[x]);
   _linkElmntToRef(TypeDef);
   for x := 0 to TypeDefs.Count - 1 do
     _linkElmntToRef(TypeDefs.XsdDataTypes[x]);
