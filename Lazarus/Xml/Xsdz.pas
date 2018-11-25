@@ -178,11 +178,10 @@ type
   public
     _Processed, _isGroup: Boolean;
     xsdDescr: TXsdDescr;
-    isRootElement: Boolean;
     FileName: String;
     ElementName: String;
     ElementNameSpace: String;
-    FormDefaultQualified: Boolean;
+    FormQualified: Boolean;
     DoNotEncode: Boolean;
     isReadOnly: Boolean;
     isCheckboxDisabled: Boolean;
@@ -443,7 +442,7 @@ begin
   maxOccurs := '1';
   ResponseNo := 200;
   ParametersType := oppBody;
-  FormDefaultQualified := xsdElementFormDefaultQualified;
+  FormQualified := xsdElementFormDefaultQualified;
 end;
 
 constructor TXsd.Create(aXsdDescr: TXsdDescr; aSource: TXsd);
@@ -464,6 +463,7 @@ begin
   self.ResponseNo := aSource.ResponseNo;
   self.FileName := aSource.FileName;
   self.SourceFileName := aSource.SourceFileName;
+  self.FormQualified := aSource.FormQualified;
 end;
 
 destructor TXsd.Destroy;
@@ -1784,7 +1784,7 @@ begin
   nType.Manually := True;
   result := TXsd.Create(aXsdDescr);
   aXsdDescr.Garbage.AddObject('', result);
-  result.FormDefaultQualified := FormDefaultQualified;
+  result.FormQualified := FormQualified;
   result.Manually := True;
   result.sType := aType;
   result.ElementName := aName;
@@ -2778,9 +2778,14 @@ begin
   AddNameSpace(result.ElementNameSpace);
   result.minOccurs := xXml.Attributes.ValueByTagDef[tagMinOccurs, '1'];
   result.maxOccurs := xXml.Attributes.ValueByTagDef[tagMaxOccurs, '1'];
-  xAtt := xXml.Attributes.AttributeByTag[tagForm];
-  if Assigned (xAtt) then
-    result.FormDefaultQualified := (xAtt.Value = tagQualified);
+  if aRoot then
+    Result.FormQualified := True
+  else
+  begin
+    xAtt := xXml.Attributes.AttributeByTag[tagForm];
+    if Assigned (xAtt) then
+      result.FormQualified := (xAtt.Value = tagQualified);
+  end;
   xAtt := xXml.Attributes.AttributeByTag[tagType];
   if Assigned (xAtt) then
   begin
@@ -2812,7 +2817,6 @@ begin
     result.sType := AddSimpleType(cXml, aTargetNameSpace, False);
   AddDocumentation(result.Documentation, xXml);
   AddAppinfo(result.Appinfo, xXml);
-  result.isRootElement:= aRoot;
   aTypeDef.AddXsd(result);
 end;
 
@@ -2904,7 +2908,7 @@ function TXsdDescr.CreateXsdFromXmlSample (aXml: TObject; aLinkXmlToXsd: Boolean
       xXsd.maxOccurs := '1';
       xXsd.ElementName := aXml.Name;
       xXsd.ElementNameSpace := aXml.NameSpace;
-      xXsd.FormDefaultQualified := (aXml.NsPrefix <> '')
+      xXsd.FormQualified := (aXml.NsPrefix <> '')
                                 or (aXml.AttributeValueByTag['xmlns'] = aXml.NameSpace);
       xXsd.sType.Name := aXml.Name + 'Type';
       xXsd.sType.NameSpace := aXml.NameSpace;
@@ -3008,7 +3012,7 @@ function TXsdDescr.CreateXsdFromJsonSample(aXml: TObject; aLinkXmlToXsd: Boolean
       xXsd.maxOccurs := '1';
       xXsd.ElementName := aXml.Name;
       xXsd.ElementNameSpace := aXml.NameSpace;
-      xXsd.FormDefaultQualified := (aXml.NsPrefix <> '')
+      xXsd.FormQualified := (aXml.NsPrefix <> '')
                                 or (aXml.AttributeValueByTag['xmlns'] = aXml.NameSpace);
       xXsd.sType.Name := aXml.Name + 'Type';
       xXsd.sType.NameSpace := aXml.NameSpace;
@@ -3363,7 +3367,33 @@ procedure TXsdDescr.Finalise;
     end;
   end;
 
-  procedure _linkElmntToRef (aTypeDef: TXsdDataType);
+  procedure _formQualifyNamespaces (aTypeDef: TXsdDataType);
+  var
+    x, y: Integer;
+    refXsd: TXsd;
+  begin
+    if not Assigned (aTypeDef) then Exit;
+    with aTypeDef do
+    begin
+      if _Processed then Exit;
+      _Processed := True;
+      try
+        for x := 0 to ElementDefs.Count - 1 do
+        with ElementDefs.Xsds[x] do
+        begin
+          if ElementName = 'uqelem0' then
+            ElementName := 'uqelem0';
+          if not FormQualified then
+            ElementNameSpace := '';
+          _formQualifyNamespaces (sType);
+        end;
+      finally
+        _Processed := False;
+      end;
+    end;
+  end;
+
+  procedure _linkElmntToRef (aTypeDef: TXsdDataType; aRoot: Boolean);
   var
     x, y: Integer;
     refXsd: TXsd;
@@ -3383,8 +3413,9 @@ procedure TXsdDescr.Finalise;
             refXsd := FindElement(_RefNameSpace, _RefElementName);
             if Assigned (refXsd) then
             begin
-              isRootElement := True;
               sType := refXsd.sType;
+              if not aRoot then
+                FormQualified := refXsd.FormQualified;
               for y := 0 to refXsd.Documentation.Count - 1 do
                 Documentation.Add(refXsd.Documentation.Strings[y]);
             end
@@ -3394,7 +3425,7 @@ procedure TXsdDescr.Finalise;
                      , [_NameSpace, _DataTypeName, ElementNameSpace, ElementName]
                      );
           end;
-          _linkElmntToRef(sType);
+          _linkElmntToRef(sType, False);
         end;
       finally
         _Processed := False;
@@ -3653,9 +3684,12 @@ begin
   _expandGroups('', TypeDef);
   for x := 0 to TypeDefs.Count - 1 do
     _expandGroups('', TypeDefs.XsdDataTypes[x]);
-  _linkElmntToRef(TypeDef);
+  _linkElmntToRef(TypeDef, True);
   for x := 0 to TypeDefs.Count - 1 do
-    _linkElmntToRef(TypeDefs.XsdDataTypes[x]);
+    _linkElmntToRef(TypeDefs.XsdDataTypes[x], False);
+  _formQualifyNamespaces (TypeDef);
+  for x := 0 to TypeDefs.Count - 1 do
+    _formQualifyNamespaces (TypeDefs.XsdDataTypes[x]);
   _linkToBase(TypeDef);
   for x := 0 to TypeDefs.Count - 1 do
     _linkToBase(TypeDefs.XsdDataTypes[x]);

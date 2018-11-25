@@ -1685,16 +1685,7 @@ var
     if (aXml.NameSpace <> '')
     and aAsPrefix
     and (aXml.NsPrefix <> '')
-    and (   (    Assigned (aXml.Xsd)
-             and (   aXml.Xsd.FormDefaultQualified
-                  or aXml.Xsd.isRootElement
-                 )
-            )
-         or (not Assigned (aXml.Xsd))
-         or (   (not Assigned (aXml.Parent))
-             or ((aXml.Parent as TXml).NameSpace <> aXml.NameSpace)
-            )
-        ) then
+    then
       result := aXml.NsPrefix + ':' + aXml.Name
     else
       result := aXml.Name;
@@ -1780,14 +1771,7 @@ var
         if aUseNameSpaces
         and (not aAsPrefix)
         and (aXml.NameSpace <> '')
-        and (   (aXml = self)
-             or (    Assigned (aXml.Xsd)
-                 and aXml.Xsd.FormDefaultQualified
-                )
-             or (    Assigned(aXml.Parent)
-                 and ((aXml.Parent as TXml).NameSpace <> aXml.NameSpace)
-                )
-            ) then
+        then
           xString := xString + ' xmlns="' + aXml.NameSpace+ '"';
       end;
       for x := 0 to aXml.Attributes.Count - 1 do
@@ -3298,7 +3282,8 @@ procedure TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList
     if (not aXml.Checked)
     and (aOnlyWhenChecked) then
       exit;
-    if aXml.NameSpace <> aParentNs then
+    if (aXml.NameSpace <> aParentNs)
+    and (aXml.NameSpace <> '') then
       aSl.Add (aXml.NameSpace);
     for x := 0 to aXml.Items.Count - 1 do
       _scanForNs(aXml.Items.XmlItems[x], aXml.NameSpace);
