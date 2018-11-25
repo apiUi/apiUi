@@ -1276,7 +1276,7 @@ begin
       AddProperty('DerivationMethod', (aBind as TXml).TypeDef.DerivationMethod);
       AddProperty('minOccurs', (aBind as TXml).Xsd.minOccurs);
       AddProperty('maxOccurs', (aBind as TXml).Xsd.maxOccurs);
-      AddProperty('SourceFile', (aBind as TXml).Xsd.SourceFileName);
+      AddProperty('SourceFileElement', (aBind as TXml).Xsd.SourceFileName);
       xDataType := (aBind as TXml).TypeDef;
     end;
   end;
@@ -1285,7 +1285,7 @@ begin
     if Assigned ((aBind as TXmlAttribute).XsdAttr) then
     begin
       AddProperty('Use', (aBind as TXmlAttribute).XsdAttr.Use);
-      AddProperty('SourceFile', (aBind as TXmlAttribute).XsdAttr.SourceFileName);
+      AddProperty('SourceFileAttrib', (aBind as TXmlAttribute).XsdAttr.SourceFileName);
     end;
     xDataType := (aBind as TXmlAttribute).XsdAttr;
   end;
@@ -1307,7 +1307,7 @@ begin
     AddProperty ('Numeric', xDataType.Numeric);
     AddProperty ('TotalDigits', xDataType.TotalDigits);
     AddProperty ('FractionalDigits', xDataType.FractionalDigits);
-    AddProperty ('SourceFile', xDataType.SourceFileName);
+    AddProperty ('SourceFileDataType', xDataType.SourceFileName);
   end;
   if (aBind is TXml) then with aBind as TXml do
   begin

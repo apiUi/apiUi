@@ -695,7 +695,7 @@ begin
     raise Exception.Create('Illegal TXsdDescr.AddAttributeDef(aTypeDef: TXsdDataType; aXml: TObject; aTargetNamespace: String): TXsdAttr');
   xXml := aXml as TXml;
   result := TXsdAttr.Create(self);
-  result.SourceFileName := '->' + xXml.SourceFileName;
+  result.SourceFileName := xXml.SourceFileName;
   Garbage.AddObject('', result);
   result.Name := xXml.Attributes.ValueByTag[tagName];
   result.NameSpace := aTargetNamespace;
@@ -745,7 +745,7 @@ begin
     raise Exception.Create('Illegal: AddSimpleType(aXml: TObject; aTargetNamespace: String');
   xXml := aXml as TXml;
   result := TXsdDataType.Create(self);
-  result.SourceFileName := '->' + xXml.SourceFileName;
+  result.SourceFileName := xXml.SourceFileName;
   result.xsdType:= dtSimpleType;
   Garbage.AddObject('', result);
   result.Name := xXml.Attributes.ValueByTag[tagName];
@@ -875,7 +875,7 @@ begin
   xXml := aXml as TXml;
   result := TXsdDataType.Create(self);
   result._isGroup := (xXml.Name = tagGroup);
-  result.SourceFileName := '->' + xXml.SourceFileName;
+  result.SourceFileName := xXml.SourceFileName;
   result.xsdType:= dtComplexType;
   Garbage.AddObject('', result);
   result.Name := xXml.Attributes.ValueByTag[tagName];
@@ -1218,6 +1218,7 @@ begin
   xXml := TXml.Create;
   try
     xXml.LoadFromString(ReadStringFromFile(aFileName), ErrorFound);
+    xXml.PopulateSourceFileName(aFileName);
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
     if aOverruleNamespace <> '' then
@@ -2770,7 +2771,7 @@ begin
   result := TXsd.Create(self);
   if xXml.Name = tagGroup then
     result._isGroup := True;
-  result.SourceFileName := '->' + xXml.SourceFileName;
+  result.SourceFileName := xXml.SourceFileName;
   Garbage.AddObject('', Result);
   result.FileName := fMainFileName;
   result.ElementName := xXml.Attributes.ValueByTag[tagName];
