@@ -8038,7 +8038,7 @@ begin
   se.ProgressMax := 5;
   se.ProgressPos := 0;
   xScript := se.Scripts.Items.XmlItems[(Sender as TMenuItem).Tag];
-  TProcedureThread.Create(False, False, se, se.ScriptExecute, xScript as TObject);
+  TProcedureThread.Create(False, False, 0, se, se.ScriptExecute, xScript as TObject);
 end;
 
 procedure TMainForm.CreateScriptsSubMenuItems;

@@ -462,7 +462,7 @@ begin
                 begin
                   se.ProgressMax := 5;
                   se.ProgressPos := 0;
-                  TProcedureThread.Create(False, False, se, se.ScriptExecute, sXml as TObject);
+                  TProcedureThread.Create(False, False, 0, se, se.ScriptExecute, sXml as TObject);
                 end
                 else
                   raise Exception.Create('Cannot find script based on: ' + dXml.Value);

@@ -595,6 +595,7 @@ procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 procedure ClearLogs (aObject: TObject);
 procedure ClearSnapshots (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
+procedure ExecuteScriptLater (aObject: TObject; aString: String; aLaterMs: Extended);
 function decVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
 function getVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
 function incVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
@@ -634,6 +635,7 @@ var
   _WsdlRequestOperationLater: VFunctionOSX;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
+  _WsdlExecuteScriptLater: VFunctionOSX;
   _WsdlSaveLogs: VFunctionOS;
   _WsdlSaveSnapshots: VFunctionOS;
   _WsdlCreateSnapshot: VFunctionOSB;
@@ -709,7 +711,7 @@ uses
 
 { TWsdl }
 
-procedure Notify(aString: String);
+procedure Notify(aString: AnsiString);
 begin
   if Assigned (OnNotify) then
     OnNotify (aString);
@@ -783,6 +785,14 @@ begin
   if not Assigned (_WsdlExecuteScript) then
     raise Exception.Create('No OnExecuteScript event assigned: intention was to execute script: ' + aString);
   _WsdlExecuteScript (aObject, aString);
+end;
+
+procedure ExecuteScriptLater(aObject: TObject; aString: String;
+  aLaterMs: Extended);
+begin
+  if not Assigned (_WsdlExecuteScriptLater) then
+    raise Exception.Create('No OnExecuteScriptLater event assigned: intention was to execute script: ' + aString);
+  _WsdlExecuteScriptLater (aObject, aString, aLaterMs);
 end;
 
 procedure AcquireLock;
@@ -1599,10 +1609,7 @@ begin
   result := Length (arg);
 end;
 
-function SubStringX ( s: String
-                    ; i: Extended
-                    ; c: Extended
-                    ): String;
+function SubStringX(s: String; i, c: Extended): String;
 
 begin
   result := Copy (s, Trunc (i), Trunc (c));
@@ -3492,6 +3499,7 @@ begin
     BindScriptFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindScriptFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
+    BindScriptFunction ('ExecuteScriptLater', @ExecuteScriptLater, VFOSX, '(aScript, aLaterMs)');
     BindScriptFunction ('Exit', @RaiseExit, VFOV, '()');
     BindScriptFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
     BindScriptFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');

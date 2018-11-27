@@ -431,6 +431,7 @@ type
     fClaimableObjectList: TClaimableObjectList;
     fBlocking: Boolean;
     fOnFinished: TOnEvent;
+    fPostponementMs: Integer;
   protected
     procedure Execute; override;
   public
@@ -460,6 +461,7 @@ type
                        );
     constructor Create ( aSuspended: Boolean
                        ; aBlocking: Boolean
+                       ; aPostponementMs: Integer
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedureObject
                        ; aObject: TObject
@@ -918,6 +920,26 @@ begin
     raise Exception.Create(Format ('ExecuteScript(''%s''); script not found', [xScriptName]));;
 end;
 
+procedure ExecuteScriptLater(aContext: TObject; xScriptName: String; aLater: Extended);
+var
+  xScript: TXml;
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create(Format ('ExecuteScript(''%s''); unable to determine context', [xScriptName]));
+  xScript := xProject.FindScript(xScriptName);
+  if Assigned(xScript) then
+    TProcedureThread.Create(False, False, Trunc (aLater), xProject, xProject.ScriptExecute, xScript)
+  else
+    raise Exception.Create(Format ('ExecuteScript(''%s''); script not found', [xScriptName]));;
+end;
+
 procedure GetDefaultRequestData(aOperation: String);
 var
   xOperation: TWsdlOperation;
@@ -1118,7 +1140,7 @@ begin
   fOperation := aOperation;
 end;
 
-constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject;
+constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aPostponementMs: Integer; aProject: TWsdlProject;
   aProcedure: TProcedureObject; aObject: TObject);
 begin
   inherited Create (aSuspended);
@@ -1127,6 +1149,7 @@ begin
   fProject := aProject;
   fProcedureObject := aProcedure;
   fObject := aObject;
+  fPostponementMs := aPostponementMs;
 end;
 
 constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject;
@@ -1168,6 +1191,8 @@ begin
     if Assigned (fProject.OnStartNonBlockingThread) then
       Synchronize(fProject.OnStartNonBlockingThread);
   end;
+  if fPostponementMs > 0 then
+    Sleep (fPostponementMs); // for operations still implemented differently
   try
     {$ifdef windows}
     CoInitialize(nil);
@@ -9796,6 +9821,7 @@ end;
 initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
+  _WsdlExecuteScriptLater := ExecuteScriptLater;
   _WsdlRequestOperation := RequestOperation;
   _WsdlRequestOperationLater := RequestOperationLater;
   _WsdlNewDesignMessage := NewDesignMessage;
