@@ -5967,7 +5967,7 @@ begin
   if Assigned(xLog) and (xLog is TExceptionLog) then
   begin
     ExceptionMemo.Text := xLog.Text;
-    ExceptionStatusBar.Panels.Items[0].Text := '[' + IntToStr(xLog.Nr)
+    ExceptionStatusBar.Panels.Items[0].Text := '[' + IntToStr(Sender.FocusedNode.Index + 1)
       + ' : ' + IntToStr(se.displayedExceptions.Count) + ']';
   end
   else

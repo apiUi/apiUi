@@ -1,3 +1,3 @@
-pushd C:\JanBo\Sources\Lazarus\Xmlz\yaml
-C:\JanBo\Sources\Delphi32\lex.exe /v yamlScanner.l YAMLSCANNER.PAS
+pushd C:\Data\Sources\Lazarus\Xml\yaml
+C:\Data\tply\plex.exe -v .\yamlScanner.l .\YAMLSCANNER.PAS
 popd

@@ -1,20 +1,20 @@
 object Form1: TForm1
   Left = 288
-  Height = 559
+  Height = 776
   Top = 132
-  Width = 952
+  Width = 1371
   Caption = 'Form1'
-  ClientHeight = 559
-  ClientWidth = 952
+  ClientHeight = 776
+  ClientWidth = 1371
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '1.6.0.4'
   inline SynEdit: TSynEdit
     Left = 16
-    Height = 280
+    Height = 376
     Top = 8
-    Width = 888
+    Width = 1248
     Font.Height = -13
     Font.Name = 'Courier New'
     Font.Pitch = fpFixed
@@ -1216,9 +1216,9 @@ object Form1: TForm1
   end
   object TreeView: TVirtualStringTree
     Left = 16
-    Height = 238
-    Top = 306
-    Width = 888
+    Height = 360
+    Top = 392
+    Width = 1248
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
     Header.Columns = <    
@@ -1259,19 +1259,19 @@ object Form1: TForm1
     OnGetText = TreeViewGetText
   end
   object Button1: TButton
-    Left = 912
+    Left = 1280
     Height = 25
-    Top = 16
-    Width = 35
+    Top = 8
+    Width = 73
     Caption = 'Parse'
     OnClick = Button1Click
     TabOrder = 2
   end
   object Button2: TButton
-    Left = 912
+    Left = 1280
     Height = 25
     Top = 48
-    Width = 35
+    Width = 73
     Caption = 'AsXml'
     OnClick = Button2Click
     TabOrder = 3

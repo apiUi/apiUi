@@ -182,7 +182,7 @@ begin
   end;
   if Assigned (sXml) then
   begin
-    with TProcedureThread.Create(True, False, se, se.ScriptExecute, sXml as TObject) do
+    with TProcedureThread.Create(True, False, 0, se, se.ScriptExecute, sXml as TObject) do
     begin
       FreeOnTerminate := True;
       OnFinished := OnFinishedScript;

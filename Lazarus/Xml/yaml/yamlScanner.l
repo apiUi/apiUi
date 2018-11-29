@@ -13,7 +13,7 @@ String          {dqString}|{sqString}
 NewLine         \n
 cr              \r
 Space           (\ )
-Pipe            (\|)({Comment})?
+Pipe            (\|)\-?({Comment})?
 IndentSpace     {Space}+
 HyphenSpace     {Space}*\-
 Rest            [^ \n]
