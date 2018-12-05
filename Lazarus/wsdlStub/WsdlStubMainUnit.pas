@@ -78,6 +78,7 @@ type
     Action2 : TAction ;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
+    YamlToClipboardMenuItem: TMenuItem;
     ToolButton78: TToolButton;
     WsdlNumberOfReferrableMenuItem: TMenuItem;
     OperationBrowseDocumentationAction: TAction;
@@ -620,6 +621,7 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
+    procedure YamlToClipboardMenuItemClick(Sender: TObject);
     procedure MessagesTabToolBarResize(Sender: TObject);
     procedure OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex;
@@ -13801,6 +13803,16 @@ end;
 procedure TMainForm.MenuItem47Click(Sender: TObject);
 begin
   PromptAndSetColumnWidth(SnapshotsVTS);
+end;
+
+procedure TMainForm.YamlToClipboardMenuItemClick(Sender: TObject);
+var
+  xBind: TCustomBindable;
+begin
+  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  if Assigned (xBind) then
+    if xBind is TXml then
+      Clipboard.AsText := (xBind as TXml).StreamYAML(0, True);
 end;
 
 procedure TMainForm.MessagesTabToolBarResize(Sender: TObject);

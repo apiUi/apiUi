@@ -231,6 +231,9 @@ type
     function StreamJSON ( aIndent: Integer
                         ; OnlyWhenChecked: Boolean
                         ): String;
+    function StreamYAML ( aIndent: Integer
+                        ; OnlyWhenChecked: Boolean
+                        ): String;
     procedure LoadFromFile (aFileName: String; ErrorFound: TOnErrorEvent);
     procedure LoadFromString (aString: String; ErrorFound: TOnErrorEvent);
     procedure LoadJsonFromFile (aFileName: String; ErrorFound: TOnErrorEvent);
@@ -962,30 +965,31 @@ begin
   Result := '';
   for x := 1 to Length(aValue) do
   begin
-    if (    (aValue [x] = #13)
-        and (x < Length (aValue))
-        and (aValue [x + 1] = #10)
-       )
-    or (    (aValue [x] = #10)
-        and (x > 1)
-        and (aValue [x - 1] = #13)
-       ) then
-      Result := Result + aValue[x]
-    else
+//    if (    (aValue [x] = #13)
+//        and (x < Length (aValue))
+//        and (aValue [x + 1] = #10)
+//       )
+//    or (    (aValue [x] = #10)
+//        and (x > 1)
+//        and (aValue [x - 1] = #13)
+//       ) then
+//      Result := Result + aValue[x]
+//    else
     begin
       case aValue[x] of
-        ' '..'!': Result := Result + aValue[x];
+ //     ' '..'!': Result := Result + aValue[x];
         '"': result := result + '&quot;';
-        '#'..'%': Result := Result + aValue[x];
+ //     '#'..'%': Result := Result + aValue[x];
         '&': result := result + '&amp;';
         '''': result := result + '&apos;';
-        '('..';': Result := Result + aValue[x];
+ //     '('..';': Result := Result + aValue[x];
         '<': result := result + '&lt;';
-        '=': Result := Result + aValue[x];
+ //     '=': Result := Result + aValue[x];
         '>': result := result + '&gt;';
-        '?'..'~': Result := Result + aValue[x];
+ //     '?'..'~': Result := Result + aValue[x];
         else
-          Result := Result + '&#x' + SysUtils.IntToHex(Ord(aValue[x]), 2) + ';';
+ //       Result := Result + '&#x' + SysUtils.IntToHex(Ord(aValue[x]), 2) + ';';
+          Result := Result + aValue[x];
       end;
     end;
   end;
@@ -1630,6 +1634,28 @@ begin
   result := '';
   if OnlyWhenChecked and not Checked then Exit;
   result := _StreamJsonValue(Self, aIndent);
+end;
+
+function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
+  function _StreamYAMLValue (aXml: TXml; aIndent: Integer): String;
+  var
+    x: Integer;
+    xSep: String;
+    xJsonType: TjsonType;
+    xSwapParent: TCustomBindable;
+  begin
+    result := '';
+    if OnlyWhenChecked and not aXml.Checked then Exit;
+    Result := IndentString(aIndent) + aXml.Name + ': ' + aXml.Value;
+    for x := 0 to aXml.Items.Count - 1 do
+      if (aXml.Items.XmlItems[x].Checked)
+      or (not OnlyWhenChecked) then
+        result := result + LineEnding + _StreamYAMLValue(aXml.Items.XmlItems[x], aIndent + 2);
+  end;
+begin
+  result := '';
+  if OnlyWhenChecked and not Checked then Exit;
+  result := _StreamYAMLValue(Self, aIndent);
 end;
 
 function TXml.EncodeXml (aValue: String): String;

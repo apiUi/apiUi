@@ -9020,6 +9020,10 @@ object MainForm: TMainForm
       ImageIndex = 23
       OnClick = Copytoclipboard1Click
     end
+    object YamlToClipboardMenuItem: TMenuItem
+      Caption = 'YAML to clipboard'
+      OnClick = YamlToClipboardMenuItemClick
+    end
     object MenuItem32: TMenuItem
       Caption = 'Copy'
       object MenuItem33: TMenuItem
