@@ -311,7 +311,6 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
   end;
 var
   x, a, b, c, i: Integer;
-  LA, LB: TStringList;
   s: String;
   aSortedLogs, bSortedLogs: TLogList;
   headerXml, bodyXml, itemsXml: TXml;
@@ -335,15 +334,13 @@ begin
           bSortedLogs.AddObject (bLogs.LogItems[x].SortKey(aOrderBy, sortColumns), bLogs.LogItems[x]);
       bSortedLogs.CustomSort(logz.doOrder);
 
-      LA := TStringList.Create;
-      LB := TStringList.Create;
       Diffs := TA2BStringList.Create;
       try
         for x := 0 to aSortedLogs.Count - 1 do
-          LA.Add (aLogs.LogItems[x].CompareKey(aOrderBy));
+          aSortedLogs.Strings[x] := aLogs.LogItems[x].CompareKey(aOrderBy);
         for x := 0 to bSortedLogs.Count - 1 do
-          LB.Add (bLogs.LogItems[x].CompareKey(aOrderBy));
-        Diffs.Execute(LA, LB);
+          aSortedLogs.Strings[x] := aLogs.LogItems[x].CompareKey(aOrderBy);
+        Diffs.Execute(aSortedLogs, aSortedLogs);
         bodyXml := result.AddXml(TXml.CreateAsString('Body', ''));
         itemsXml := TXml.CreateAsString('Items', ''); // create in advance
         a := 0; b := 0;
@@ -418,8 +415,6 @@ begin
         headerXml.AddXml(TXml.CreateAsString('referenceLogFileName', aReferenceFileName));
         headerXml.AddXml(TXml.CreateAsString('Created', xsdNowAsDateTime));
       finally
-        FreeAndNil (LA);
-        FreeAndNil (LB);
         FreeAndNil (Diffs);
       end;
     finally
@@ -1102,8 +1097,16 @@ begin
   else
   begin
     case aCompareBy of
-      clOperation: result := '';
-      clCorrelation: result := CorrelationId;
+      clOperation: result := ServiceName
+                           + ';'
+                           + OperationName
+                           ;
+      clCorrelation: result := ServiceName
+                             + ';'
+                             + OperationName
+                             + ';'
+                             + CorrelationId
+                             ;
     end;
   end;
 end;
