@@ -20,6 +20,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="L4JMainUnit"/>
+        <TopLine Value="4"/>
         <CursorPos X="40" Y="8"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>

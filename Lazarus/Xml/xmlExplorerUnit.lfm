@@ -7,7 +7,7 @@ object MainForm: TMainForm
   BorderIcons = [biHelp]
   BorderStyle = bsSingle
   Caption = 'xmlExplorer'
-  ClientHeight = 48
+  ClientHeight = 42
   ClientWidth = 152
   Color = clBtnFace
   Font.Color = clWindowText
@@ -81,7 +81,7 @@ object MainForm: TMainForm
   object ProgressBar: TProgressBar
     Left = 0
     Height = 16
-    Top = 32
+    Top = 26
     Width = 152
     Align = alBottom
     Max = 4

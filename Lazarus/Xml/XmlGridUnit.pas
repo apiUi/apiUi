@@ -1286,7 +1286,7 @@ end;
 
 procedure TXmlGridForm.CopyToClipBoardActionExecute(Sender: TObject);
 begin
-  XmlUtil.CopyToClipboard(FocusedBind);
+  XmlUtil.CopyToClipboard(tlsXml,FocusedBind);
 end;
 
 procedure TXmlGridForm.PasteFromClipboardActionExecute(Sender: TObject);

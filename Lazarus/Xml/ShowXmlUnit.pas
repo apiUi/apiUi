@@ -31,6 +31,10 @@ type
     DocumentationViewer: TIpHtmlPanel;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
     OkButton : TBitBtn ;
     Panel1: TPanel;
     Panel4: TPanel;
@@ -109,6 +113,9 @@ type
       Shift : TShiftState ; X , Y : Integer );
     procedure DocumentationViewerHotClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
+    procedure MenuItem5Click(Sender: TObject);
+    procedure MenuItem6Click(Sender: TObject);
     procedure TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
@@ -579,9 +586,9 @@ end;
 procedure TShowXmlForm.CopyActionExecute(Sender: TObject);
 begin
   if ToolButtonUsed(Sender) then
-    xmlUtil.CopyToClipboard(Bind)
+    xmlUtil.CopyToClipboard(tlsXml, Bind)
   else
-    xmlUtil.CopyToClipboard(SelectedBind);
+    xmlUtil.CopyToClipboard(tlsXml, SelectedBind);
 end;
 
 procedure TShowXmlForm.FullExpandActionExecute(Sender: TObject);
@@ -1982,6 +1989,21 @@ begin
   finally
     FreeAndNil(PromptForm);
   end;
+end;
+
+procedure TShowXmlForm.MenuItem4Click(Sender: TObject);
+begin
+  XmlUtil.CopyToClipboard(tlsXml, SelectedBind);
+end;
+
+procedure TShowXmlForm.MenuItem5Click(Sender: TObject);
+begin
+  XmlUtil.CopyToClipboard(tlsJson, SelectedBind);
+end;
+
+procedure TShowXmlForm.MenuItem6Click(Sender: TObject);
+begin
+  XmlUtil.CopyToClipboard(tlsYaml, SelectedBind);
 end;
 
 procedure TShowXmlForm .TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;

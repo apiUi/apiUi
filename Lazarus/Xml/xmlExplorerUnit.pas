@@ -483,7 +483,7 @@ begin
 
   if FileExistsUTF8(xmlExplorerXsdFileName) { *Converted from FileExists* } then
   begin
-    xmlExplorerXsdDescr := TXsdDescr.Create(1);
+    xmlExplorerXsdDescr := TXsdDescr.Create;
     try
       xmlExplorerXsdDescr.LoadXsdFromFile (xmlExplorerXsdFileName, nil);
   {$ifdef XMLDOM}
@@ -762,8 +762,8 @@ begin
         end;
       end;
       ShowProgress (nil, 2, 4);
-      xXsdDescr := TXsdDescr.Create(1);
-      xmlUtil.CreateXsdFromXml (xXsdDescr, xXml, True);
+      xXsdDescr := TXsdDescr.Create;
+      CreateXsdFromXml (xXsdDescr, xXml, True);
       try
         Application.CreateForm(TShowXmlForm, xForm);
         try

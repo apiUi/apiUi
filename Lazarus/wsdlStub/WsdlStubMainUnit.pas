@@ -78,6 +78,9 @@ type
     Action2 : TAction ;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
+    CopyToClipboardAs: TMenuItem;
+    MenuItem54: TMenuItem;
+    CopyToClipboardAsJsonMenuItem: TMenuItem;
     YamlToClipboardMenuItem: TMenuItem;
     ToolButton78: TToolButton;
     WsdlNumberOfReferrableMenuItem: TMenuItem;
@@ -602,6 +605,7 @@ type
     procedure BmtpOperationsActionUpdate(Sender: TObject);
     procedure CobolOperationsActionUpdate(Sender: TObject);
     procedure ContextsActionExecute(Sender: TObject);
+    procedure CopyToClipboardAsJsonMenuItemClick(Sender: TObject);
     procedure EditMessageAfterScriptActionExecute (Sender : TObject );
     procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
     procedure EditMessageDocumentationActionExecute(Sender: TObject);
@@ -2743,7 +2747,7 @@ end;
 
 procedure TMainForm.Copytoclipboard1Click(Sender: TObject);
 begin
-  xmlUtil.CopyToClipboard(NodeToBind(InWsdlTreeView,
+  xmlUtil.CopyToClipboard(tlsXml, NodeToBind(InWsdlTreeView,
       InWsdlTreeView.FocusedNode));
 end;
 
@@ -13705,6 +13709,12 @@ begin
   end;
 end;
 
+procedure TMainForm.CopyToClipboardAsJsonMenuItemClick(Sender: TObject);
+begin
+  xmlUtil.CopyToClipboard(tlsJson, NodeToBind(InWsdlTreeView,
+      InWsdlTreeView.FocusedNode));
+end;
+
 procedure TMainForm.EditMessageAfterScriptActionUpdate (Sender : TObject );
 begin
   EditMessageAfterScriptAction.Enabled := (WsdlOperation.StubAction <> saStub);
@@ -13809,10 +13819,8 @@ procedure TMainForm.YamlToClipboardMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
-  if Assigned (xBind) then
-    if xBind is TXml then
-      Clipboard.AsText := (xBind as TXml).StreamYAML(0, True);
+  xmlUtil.CopyToClipboard(tlsYaml, NodeToBind(InWsdlTreeView,
+      InWsdlTreeView.FocusedNode));
 end;
 
 procedure TMainForm.MessagesTabToolBarResize(Sender: TObject);

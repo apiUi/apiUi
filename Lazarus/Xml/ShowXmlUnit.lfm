@@ -481,8 +481,8 @@ object ShowXmlForm: TShowXmlForm
   object TreeViewPopupMenu: TPopupMenu
     Images = ActionImageList
     OnPopup = TreeViewPopupMenuPopup
-    left = 296
-    top = 93
+    left = 376
+    top = 104
     object AddMenuItem: TMenuItem
       Action = AddAction
       Bitmap.Data = {
@@ -681,6 +681,23 @@ object ShowXmlForm: TShowXmlForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
+    end
+    object MenuItem3: TMenuItem
+      Caption = 'Copy as'
+      object MenuItem4: TMenuItem
+        Caption = 'XML'
+        Hint = 'Copy'
+        ImageIndex = 6
+        OnClick = MenuItem4Click
+      end
+      object MenuItem5: TMenuItem
+        Caption = 'JSON'
+        OnClick = MenuItem5Click
+      end
+      object MenuItem6: TMenuItem
+        Caption = 'YAML'
+        OnClick = MenuItem6Click
+      end
     end
     object PasteMenuItem: TMenuItem
       Action = PasteAction

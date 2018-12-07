@@ -26,6 +26,7 @@ type
                           ; aProgress, aProgressMax: Integer
                           ) of Object;
   TSchemaType = (stJsonType, stWsdlType, stXsdType);
+  TLanguageStreamType = (tlsXml, tlsJson, tlsYaml);
   TImageIndex = (iiTree, iiGrid, iiUnchecked, iiChecked, iiDateTime,  iiDate, iiTime, iiEnumeration, iiExtendLevel, iiUrl);
 
 type
@@ -91,7 +92,7 @@ public
   function editXml (aBind: TCustomBindable; aDoUseGrid, aReadOnly: Boolean): Boolean;
   procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
   procedure CheckValidity(aBind: TCustomBindable);
-  procedure CopyToClipboard (aBind: TCustomBindable);
+  procedure CopyToClipboard (aLanguageStreamType: TLanguageStreamType; aBind: TCustomBindable);
   procedure PasteFromClipboard (aBind: TCustomBindable);
   procedure Populate (aBind: TCustomBindable; aViewType: TxvViewType);
   procedure Validate (aBind: TCustomBindable);
@@ -508,20 +509,22 @@ begin
     Result[Index] := AnsiChar((Ord(EncryptionSeed[Index mod Length(EncryptionSeed)]) xor Ord(Source[Index])));
 end;
 
-procedure TXmlUtil.CopyToClipboard(aBind: TCustomBindable);
+procedure TXmlUtil.CopyToClipboard(aLanguageStreamType: TLanguageStreamType; aBind: TCustomBindable);
 begin
   if aBind is TXmlAttribute then
     raise Exception.Create('Not implemented for XML attributes');
   if aBind is TXml then
   with aBind as TXml do
   begin
-    case (jsonType) of
-      jsonNone:
+    case (aLanguageStreamType) of
+      tlsXml:
         Clipboard.AsText := AsText ( False
                                    , 0
                                    , True
                                    , False
                                    );
+      tlsJson: Clipboard.AsText :=  StreamJSON(0, True);
+      tlsYaml: Clipboard.AsText :=  StreamYAML(0, True);
       else
         Clipboard.AsText :=  StreamJSON(0, True);
     end;

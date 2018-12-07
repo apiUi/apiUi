@@ -1,11 +1,11 @@
 object MainForm: TMainForm
   Left = 407
-  Height = 864
-  Top = 66
+  Height = 775
+  Top = 155
   Width = 1496
   Action = OpenProjectAction
   Caption = 'Open Project...'
-  ClientHeight = 839
+  ClientHeight = 750
   ClientWidth = 1496
   Color = clBtnFace
   Font.Color = clWindowText
@@ -191,25 +191,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 508
+    Height = 419
     Top = 24
     Width = 1496
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 508
+    ClientHeight = 419
     ClientWidth = 1496
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 221
-      Height = 502
+      Height = 413
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
       Left = 1319
-      Height = 502
+      Height = 413
       Top = 3
       Width = 5
       Align = alRight
@@ -218,18 +218,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 502
+      Height = 413
       Top = 3
       Width = 218
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 502
+      ClientHeight = 413
       ClientWidth = 218
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 470
+        Top = 381
         Width = 212
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -302,7 +302,7 @@ object MainForm: TMainForm
       end
       object OperationReqsTreeView: TVirtualStringTree
         Left = 3
-        Height = 467
+        Height = 378
         Top = 3
         Width = 212
         Align = alClient
@@ -353,13 +353,13 @@ object MainForm: TMainForm
     end
     object XsdPanel: TPanel
       Left = 1324
-      Height = 502
+      Height = 413
       Top = 3
       Width = 169
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 502
+      ClientHeight = 413
       ClientWidth = 169
       TabOrder = 1
       object Splitter6: TSplitter
@@ -403,7 +403,7 @@ object MainForm: TMainForm
       end
       object DocumentationViewer: TIpHtmlPanel
         Left = 4
-        Height = 343
+        Height = 254
         Top = 155
         Width = 161
         Align = alClient
@@ -442,12 +442,12 @@ object MainForm: TMainForm
     end
     object MiddlePanel: TPanel
       Left = 226
-      Height = 502
+      Height = 413
       Top = 3
       Width = 1093
       Align = alClient
       Caption = 'MiddlePanel'
-      ClientHeight = 502
+      ClientHeight = 413
       ClientWidth = 1093
       TabOrder = 4
       object WsdlInfoPanel: TPanel
@@ -522,12 +522,12 @@ object MainForm: TMainForm
       end
       object DataPanel: TPanel
         Left = 1
-        Height = 463
+        Height = 374
         Top = 38
         Width = 1091
         Align = alClient
         Caption = 'DataPanel'
-        ClientHeight = 463
+        ClientHeight = 374
         ClientWidth = 1091
         TabOrder = 1
         object GridDataPanel: TPanel
@@ -800,18 +800,18 @@ object MainForm: TMainForm
         end
         object TreeDataPanel: TPanel
           Left = 1
-          Height = 363
+          Height = 274
           Top = 99
           Width = 1089
           Align = alClient
           Caption = 'TreeDataPanel'
-          ClientHeight = 363
+          ClientHeight = 274
           ClientWidth = 1089
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
-            Top = 345
+            Top = 256
             Width = 1087
             Align = alBottom
             Alignment = taLeftJustify
@@ -960,7 +960,7 @@ object MainForm: TMainForm
           end
           object FreeFormatMemo: TMemo
             Left = 1
-            Height = 261
+            Height = 172
             Top = 84
             Width = 1087
             Align = alClient
@@ -981,7 +981,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 532
+    Top = 443
     Width = 1496
     Align = alBottom
     ResizeAnchor = akBottom
@@ -989,7 +989,7 @@ object MainForm: TMainForm
   object LogPanel: TPanel
     Left = 0
     Height = 302
-    Top = 537
+    Top = 448
     Width = 1496
     Align = alBottom
     ClientHeight = 302
@@ -9020,9 +9020,20 @@ object MainForm: TMainForm
       ImageIndex = 23
       OnClick = Copytoclipboard1Click
     end
-    object YamlToClipboardMenuItem: TMenuItem
-      Caption = 'YAML to clipboard'
-      OnClick = YamlToClipboardMenuItemClick
+    object CopyToClipboardAs: TMenuItem
+      Caption = 'Copy as'
+      object MenuItem54: TMenuItem
+        Caption = 'XML'
+        OnClick = Copytoclipboard1Click
+      end
+      object CopyToClipboardAsJsonMenuItem: TMenuItem
+        Caption = 'JSON'
+        OnClick = CopyToClipboardAsJsonMenuItemClick
+      end
+      object YamlToClipboardMenuItem: TMenuItem
+        Caption = 'YAML'
+        OnClick = YamlToClipboardMenuItemClick
+      end
     end
     object MenuItem32: TMenuItem
       Caption = 'Copy'

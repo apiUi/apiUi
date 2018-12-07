@@ -37,7 +37,7 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
       TabOrder = 0
       object mainVST: TVirtualStringTree
         Left = 4
-        Height = 349
+        Height = 340
         Top = 4
         Width = 739
         Align = alClient
@@ -98,8 +98,8 @@ object ShowFolderDifferencesForm: TShowFolderDifferencesForm
       end
       object OverviewStatusBar: TStatusBar
         Left = 4
-        Height = 20
-        Top = 353
+        Height = 29
+        Top = 344
         Width = 739
         Panels = <        
           item

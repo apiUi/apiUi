@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="4"/>
-      <BuildNr Value="602"/>
+      <BuildNr Value="603"/>
       <StringTable ProductVersion="4.0.0.601"/>
     </VersionInfo>
     <BuildModes Count="1">

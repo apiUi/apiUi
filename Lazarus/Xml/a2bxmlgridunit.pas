@@ -1069,7 +1069,7 @@ end;
 
 procedure TA2BXmlGridForm.CopyToClipBoardActionExecute(Sender: TObject);
 begin
-  XmlUtil.CopyToClipboard(FocusedBind);
+  XmlUtil.CopyToClipboard(tlsXml, FocusedBind);
 end;
 
 procedure TA2BXmlGridForm.PasteFromClipboardActionExecute(Sender: TObject);

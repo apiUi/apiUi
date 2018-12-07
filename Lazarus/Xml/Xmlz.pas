@@ -1576,14 +1576,14 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
     if Assigned (aXml.Parent) then with aXml.Parent as TXml do
       if jsonType = jsonArray then
         xJsonType := jsonArrayValue;
-    if xJsonType = jsonNone then
+    if (xJsonType = jsonNone)
+    and (aXml <> self) then
       xJsonType := jsonString;
     case xJsonType of
-      jsonNone: ;
       jsonString: result := '"' + _ValueToJSON(aXml.Value) + '"';
       jsonNumber: result := aXml.Value;
       jsonBoolean: result := aXml.Value;
-      jsonObject:
+      jsonObject, jsonNone:
         begin
           result := LineEnding + IndentString(aIndent) + '{ ';
           xSep := '';
@@ -1646,7 +1646,7 @@ function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
   begin
     result := '';
     if OnlyWhenChecked and not aXml.Checked then Exit;
-    Result := IndentString(aIndent) + aXml.Name + ': ' + aXml.Value;
+    Result := IndentString(aIndent) + aXml.Name + ': ' + aXml.yamlValue;
     for x := 0 to aXml.Items.Count - 1 do
       if (aXml.Items.XmlItems[x].Checked)
       or (not OnlyWhenChecked) then

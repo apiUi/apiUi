@@ -192,6 +192,7 @@ type TBindableList = class;
     function getIsExpression: Boolean;
     function getTotalNumberOfSubElements: Integer;
     function getValueAsInteger: Integer;
+    function getYamlValue: String;
     procedure setValueAsInteger(const aValue: Integer);
     function getChecked: Boolean;
     function getRoot: TCustomBindable;
@@ -254,6 +255,7 @@ public
   function IsAncestorOf (aBindable: TCustomBindable): Boolean;
   function UpLineAsText: String; Virtual;
   constructor Create; Overload;
+  property yamlValue: String read getYamlValue;
   property totalNumberOfSubElements: Integer read getTotalNumberOfSubElements;
   property isEvaluation: Boolean read getIsEvaluation;
   property isExpression: Boolean read getIsExpression;
@@ -657,6 +659,37 @@ end;
 function TCustomBindable.getValueAsInteger: Integer;
 begin
   result := StrToIntDef (Value, 0);
+end;
+
+function TCustomBindable.getYamlValue: String;
+  function _needToDQ: Boolean;
+  var
+    x: Integer;
+  begin
+    result := False;
+    for x := 1 to Length(Value) do
+      if not Result then
+        Result := (Pos(Value [x], '":-{}[]!#|>&%@') > 0);
+  end;
+  function _DQ: String;
+  var
+    x: Integer;
+  begin
+    result := '';
+    for x := 1 to Length(Value) do
+    begin
+      if (Value [x] = '"')
+      or (Value [x] = '\') then
+        result := result + '\';
+      Result := Result + Value [x];
+    end;
+  end;
+
+begin
+  if _needToDQ then
+    result := '"' + _DQ + '"'
+  else
+    result := Value;
 end;
 
 function TCustomBindable.hasNoDuplicatesOn(aCaption: String;
