@@ -959,39 +959,14 @@ begin
 end;
 
 function xmlEncodeXml (aValue: String): String;
-var
-  x: Integer; // loops thru characters in string
 begin
   Result := '';
-  for x := 1 to Length(aValue) do
-  begin
-//    if (    (aValue [x] = #13)
-//        and (x < Length (aValue))
-//        and (aValue [x + 1] = #10)
-//       )
-//    or (    (aValue [x] = #10)
-//        and (x > 1)
-//        and (aValue [x - 1] = #13)
-//       ) then
-//      Result := Result + aValue[x]
-//    else
-    begin
-      case aValue[x] of
- //     ' '..'!': Result := Result + aValue[x];
-        '"': result := result + '&quot;';
- //     '#'..'%': Result := Result + aValue[x];
-        '&': result := result + '&amp;';
-        '''': result := result + '&apos;';
- //     '('..';': Result := Result + aValue[x];
-        '<': result := result + '&lt;';
- //     '=': Result := Result + aValue[x];
-        '>': result := result + '&gt;';
- //     '?'..'~': Result := Result + aValue[x];
-        else
- //       Result := Result + '&#x' + SysUtils.IntToHex(Ord(aValue[x]), 2) + ';';
-          Result := Result + aValue[x];
-      end;
-    end;
+  with TXml.Create do
+  try
+    Value := aValue;
+    result := EncodedValue;
+  finally
+    Free;
   end;
 end;
 
@@ -3460,32 +3435,14 @@ begin
   Result := '';
   for x := 1 to Length(Value) do
   begin
-    {
-    if (    (Value [x] = #13)
-        and (x < Length (Value))
-        and (Value [x + 1] = #10)
-       )
-    or (    (Value [x] = #10)
-        and (x > 1)
-        and (Value [x - 1] = #13)
-       ) then
-      Result := Result + Value[x]
-    else }
-    begin
-      case Value[x] of
-        ' '..'!': Result := Result + Value[x];
-        '"': result := result + '&quot;';
-        '#'..'%': Result := Result + Value[x];
-        '&': result := result + '&amp;';
-        '''': result := result + '&apos;';
-        '('..';': Result := Result + Value[x];
-        '<': result := result + '&lt;';
-        '=': Result := Result + Value[x];
-        '>': result := result + '&gt;';
-        '?'..'~': Result := Result + Value[x];
-        else
-          Result := Result + '&#x' + SysUtils.IntToHex(Ord(Value[x]), 2) + ';';
-      end;
+    case Value[x] of
+      #00..#31: Result := Result + '&#x' + SysUtils.IntToHex(Ord(Value[x]), 2) + ';';
+      '"': result := result + '&quot;';
+      '&': result := result + '&amp;';
+      '''': result := result + '&apos;';
+      '<': result := result + '&lt;';
+      '>': result := result + '&gt;';
+      else Result := Result + Value[x];
     end;
   end;
 end;
