@@ -2198,4 +2198,38 @@ For driver-operation this applies to response values.</xs:documentation>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="OAuth2">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="tokenName" type="xs:string"/>
+				<xs:element name="authType">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="AuthorizationCode">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="callback_url" type="xs:string"/>
+										<xs:element name="auth_url" type="xs:string"/>
+										<xs:element name="access_token_url" type="xs:string"/>
+										<xs:element name="client_id" type="xs:string"/>
+										<xs:element name="client_secret" type="passwordType"/>
+										<xs:element name="scope" type="xs:string"/>
+										<xs:element name="state" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="sendClientAuthenticationAs">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Basic Auth Header"/>
+							<xs:enumeration value="ClientCredentialsInBody"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

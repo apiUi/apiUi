@@ -4350,6 +4350,7 @@ begin
         try
           try
             try
+              HttpClient.Request.RawHeaders.Text:= HttpClient.Request.CustomHeaders.Text;
               with aOperation do
               begin
                 if httpVerb = 'DELETE' then HttpClient.Delete(URL);
