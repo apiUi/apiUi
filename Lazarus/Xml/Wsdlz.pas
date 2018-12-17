@@ -2726,7 +2726,7 @@ begin
               end;
               if Name = 'deprecated' then
               begin
-                xOperation.isDepricated := True;
+                xOperation.isDepricated := (Value = 'true');
               end;
               if Name = 'security' then ;
             end;

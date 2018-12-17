@@ -4272,20 +4272,25 @@ begin
       if Assigned (aOperation.StubCustomHeaderXml)
       and aOperation.StubCustomHeaderXml.Checked then with aOperation.StubCustomHeaderXml.Items do
       begin
-        for x := 0 to Count - 1 do
-        begin
-          if (XmlItems[x].Name = 'Header')
-          and (XmlItems[x].Checked) then
+        ppLock.Acquire;
+        try
+          for x := 0 to Count - 1 do
           begin
-            with XmlItems[x].Items do
+            if (XmlItems[x].Name = 'Header')
+            and (XmlItems[x].Checked) then
             begin
-              headerName := XmlCheckedValueByTag ['Name'];
-              if headerName = 'Accept' then
-                HttpClient.Request.Accept := XmlCheckedValueByTag ['Value']
-              else
-                HttpClient.Request.CustomHeaders.Values [headerName] := XmlCheckedValueByTag ['Value'];
+              with XmlItems[x].Items do
+              begin
+                headerName := XmlCheckedValueByTag ['Name'];
+                if headerName = 'Accept' then
+                  HttpClient.Request.Accept := resolveAliasses (XmlCheckedValueByTag ['Value'])
+                else
+                  HttpClient.Request.CustomHeaders.Values [headerName] := resolveAliasses (XmlCheckedValueByTag ['Value']);
+              end;
             end;
           end;
+        finally
+          ppLock.Release;
         end;
       end;
       HttpClient.Request.ContentEncoding := aOperation.ContentEncoding;
@@ -4350,7 +4355,6 @@ begin
         try
           try
             try
-              HttpClient.Request.RawHeaders.Text:= HttpClient.Request.CustomHeaders.Text;
               with aOperation do
               begin
                 if httpVerb = 'DELETE' then HttpClient.Delete(URL);
