@@ -90,6 +90,7 @@ type
   TWsdlProject = class
   private
     fIsActive: Boolean;
+    fIsBusy: Boolean;
     fAbortPressed: Boolean;
     fLogLock: TCriticalSection;
     fClearedLogs: TLogList;
@@ -107,6 +108,7 @@ type
     function gethasSwiftMtOperations: Boolean;
     function gethasXmlSampleOperations: Boolean;
     function gethasXsdOperation: Boolean;
+    function getIsBusy: Boolean;
     function SendNoneMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
                              ): String;
@@ -130,6 +132,7 @@ type
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCreatePostStream(AContext: TIdContext;
       AHeaders: TIdHeaderList; var VPostStream: TStream);
+    procedure setIsBusy(AValue: Boolean);
     function tryToProcessAsOpenApi (aLog: TLog): Boolean;
     procedure HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
@@ -409,6 +412,7 @@ type
     property hasSwiftMtOperations: Boolean read gethasSwiftMtOperations;
     property hasMailOperations: Boolean read gethasMailOperations;
     property hasFreeformatOperations: Boolean read gethasFreeformatOperations;
+    property isBusy: Boolean read getIsBusy write setIsBusy;
     constructor Create;
     destructor Destroy; Override;
   end;
@@ -4282,10 +4286,11 @@ begin
               with XmlItems[x].Items do
               begin
                 headerName := XmlCheckedValueByTag ['Name'];
+                HttpClient.Request.CustomHeaders.Values [headerName] := resolveAliasses (XmlCheckedValueByTag ['Value']);
                 if headerName = 'Accept' then
-                  HttpClient.Request.Accept := resolveAliasses (XmlCheckedValueByTag ['Value'])
-                else
-                  HttpClient.Request.CustomHeaders.Values [headerName] := resolveAliasses (XmlCheckedValueByTag ['Value']);
+                  HttpClient.Request.Accept := resolveAliasses (XmlCheckedValueByTag ['Value']);
+                if headerName = 'Content-Type' then
+                  HttpClient.Request.ContentType := resolveAliasses (XmlCheckedValueByTag ['Value']);
               end;
             end;
           end;
@@ -7297,6 +7302,16 @@ begin
             ;
 end;
 
+function TWsdlProject.getIsBusy: Boolean;
+begin
+  AcquireLogLock;
+  try
+    result := fIsBusy;
+  finally
+    ReleaseLogLock;
+  end;
+end;
+
 function TWsdlProject.SendNoneMessage(aOperation: TWsdlOperation; aMessage: String): String;
 begin
   result := '';
@@ -7841,6 +7856,16 @@ procedure TWsdlProject.HTTPServerCreatePostStream(AContext: TIdContext;
   AHeaders: TIdHeaderList; var VPostStream: TStream);
 begin
   VPostStream := TMemoryStream.Create;
+end;
+
+procedure TWsdlProject.setIsBusy(AValue: Boolean);
+begin
+  AcquireLogLock;
+  try
+    fIsBusy := AValue;
+  finally
+    ReleaseLogLock;
+  end;
 end;
 
 procedure TWsdlProject.HttpServerBmtpCommandGet(AContext: TIdContext;
@@ -9706,6 +9731,7 @@ begin
     AcquireLogLock;
     try
       ProgressInterface.doShowProgress := False;
+      fIsBusy := False;
     finally
       ReleaseLogLock;
     end;

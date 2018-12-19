@@ -5282,11 +5282,8 @@ begin
   and (aXml.Name <> 'Transport')
   then raise Exception.Create('endpointConfigfromXml: invalid XML' + aXml.Text);
   StubTransport := ttHttp;
-  if not isOpenApiService then
-  begin
-    StubHttpAddress := '';
-    httpVerb := 'POST';
-  end;
+  StubHttpAddress := '';
+  httpVerb := 'POST';
   ContentEncoding := 'identity';
   AcceptDeflateEncoding := True;
   AcceptGzipEncoding := True;
@@ -5342,9 +5339,9 @@ begin
         if Name = 'Https' then
         begin
           StubTransport := ttHttp;
+          StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
           if not isOpenApiService then
           begin
-            StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
             httpVerb := Items.XmlCheckedValueByTagDef['Verb', httpVerb];
           end;
           ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];

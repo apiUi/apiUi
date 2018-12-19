@@ -130,6 +130,11 @@
 			<output message="client:regressionReportRpyMessage"/>
 			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
 		</operation>
+		<operation name="openProject">
+			<input message="client:openProjectReqMessage"/>
+			<output message="client:openProjectRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
 		<operation name="activate">
 			<input message="client:activateReqMessage"/>
 			<output message="client:activateRpyMessage"/>
@@ -235,6 +240,18 @@
 		</operation>
 		<operation name="regressionReport">
 			<soap:operation soapAction="urn:#regressionReport" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="openProject">
+			<soap:operation soapAction="urn:#openProject" style="document"/>
 			<input>
 				<soap:body use="literal"/>
 			</input>

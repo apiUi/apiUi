@@ -863,6 +863,7 @@ type
     procedure WsdlServicesComboBoxDropDown(Sender: TObject);
     procedure WsdlComboBoxDropDown(Sender: TObject);
     function CheckHttpAddress (aBind: TObject; aNewValue: String): Boolean;
+    function CheckHttpsAddress (aBind: TObject; aNewValue: String): Boolean;
     procedure RedirectAddressActionExecute(Sender: TObject);
     procedure TreeViewResize(Sender: TObject);
     procedure GridViewExit(Sender: TObject);
@@ -3859,7 +3860,7 @@ begin
   end;
 end;
 
-procedure TMainForm.OpenProjectCommand(aProject: String);
+procedure TMainForm.OpenProjectCommand(aProject: String); // on remote control
 begin
   AcquireLock;
   try
@@ -3869,7 +3870,14 @@ begin
           ' has unsaved changes in design');
     se.Activate(False);
     se.projectFileName := aProject;
+    se.isBusy := True;
     OpenStubCase;
+    while True do
+    begin
+      Sleep (500);
+      if not se.isBusy then
+        Exit;
+    end;
   finally
     ReleaseLock;
   end;
@@ -5361,19 +5369,50 @@ end;
 
 function TMainForm.CheckHttpAddress (aBind: TObject; aNewValue: String): Boolean;
 begin
-  result := True;
-  if WsdlOperation.isOpenApiService then
-  begin
-    with TIdUri.Create(aNewValue) do
-    try
+  result := True;    // avoids losing data entry, warning only
+  with TIdUri.Create(aNewValue) do
+  try
+    if UpperCase(Protocol) <> 'HTTP' then
+    begin
+      ShowMessage ('Protocol must be HTTP');
+      Exit;
+    end;
+    if WsdlOperation.isOpenApiService then
+    begin
       if (Path + Document <> '/') then
       begin
         ShowMessage (Format ('no path (%s) allowed on OpenApi service', [Path + Document]));
-        result := False;
+        Exit;
       end;
-    finally
-      free;
     end;
+    Result := True;
+  finally
+    free;
+  end;
+end;
+
+function TMainForm.CheckHttpsAddress(aBind: TObject; aNewValue: String
+  ): Boolean;
+begin
+  result := True;    // avoids losing data entry, warning only
+  with TIdUri.Create(aNewValue) do
+  try
+    if UpperCase(Protocol) <> 'HTTPS' then
+    begin
+      ShowMessage ('Protocol must be HTTPS');
+      Exit;
+    end;
+    if WsdlOperation.isOpenApiService then
+    begin
+      if (Path + Document <> '/') then
+      begin
+        ShowMessage (Format ('no path (%s) allowed on OpenApi service', [Path + Document]));
+        Exit;
+      end;
+    end;
+    Result := True;
+  finally
+    free;
   end;
 end;
 
@@ -5390,7 +5429,7 @@ begin
       endpointConfigXsd.FindXsd('endpointConfig.Http.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
       endpointConfigXsd.FindXsd('endpointConfig.Https.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
       endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
-      endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpAddress;
+      endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpsAddress;
       if EditXmlXsdBased('Configure Endpoint', '', '', '', False, False, esUsed,
         endpointConfigXsd, xXml) then
       begin
