@@ -5321,10 +5321,7 @@ begin
         begin
           StubTransport := ttHttp;
           StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
-          if not isOpenApiService then
-          begin
-            httpVerb := UpperCase(Items.XmlCheckedValueByTagDef['Verb', httpVerb]);
-          end;
+          httpVerb := UpperCase(Items.XmlCheckedValueByTagDef['Verb', httpVerb]);
           ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
           xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
           if Assigned (xXml) then
@@ -5340,10 +5337,7 @@ begin
         begin
           StubTransport := ttHttp;
           StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
-          if not isOpenApiService then
-          begin
-            httpVerb := Items.XmlCheckedValueByTagDef['Verb', httpVerb];
-          end;
+          httpVerb := Items.XmlCheckedValueByTagDef['Verb', httpVerb];
           ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
           xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
           if Assigned (xXml) then
