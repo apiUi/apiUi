@@ -7825,6 +7825,11 @@ begin
             AResponseInfo.CustomHeaders.Text := xLog.ReplyHeaders;
             RemoveStdHttpHeaders (AResponseInfo.CustomHeaders);
           end;
+          if xLog.ReplyContentType <> '' then
+          begin
+            AResponseInfo.ContentType := xLog.ReplyContentType;
+            xLog.ReplyHeaders := AResponseInfo.CustomHeaders.Text;
+          end;
         end;
       end;
     finally

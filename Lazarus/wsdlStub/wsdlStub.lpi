@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
-      <BuildNr Value="12124"/>
+      <BuildNr Value="12140"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -162,7 +162,6 @@
     <Exceptions Count="21">
       <Item1>
         <Name Value="EAbort"/>
-        <Enabled Value="False"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>
@@ -187,7 +186,6 @@
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
-        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>

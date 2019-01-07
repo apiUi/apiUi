@@ -1551,14 +1551,18 @@ function TXml.StreamJSON(aIndent: Integer; OnlyWhenChecked: Boolean): String;
     if Assigned (aXml.Parent) then with aXml.Parent as TXml do
       if jsonType = jsonArray then
         xJsonType := jsonArrayValue;
-    if (xJsonType = jsonNone)
-    and (aXml <> self) then
-      xJsonType := jsonString;
+    if (xJsonType = jsonNone) then
+    begin
+      if (aXml.Items.Count > 0) then
+        xJsonType := jsonObject
+      else
+        xJsonType := jsonString;
+    end;
     case xJsonType of
       jsonString: result := '"' + _ValueToJSON(aXml.Value) + '"';
       jsonNumber: result := aXml.Value;
       jsonBoolean: result := aXml.Value;
-      jsonObject, jsonNone:
+      jsonObject:
         begin
           result := LineEnding + IndentString(aIndent) + '{ ';
           xSep := '';

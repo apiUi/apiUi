@@ -1421,6 +1421,10 @@ begin
       if Pos ('json', hdrParams.Values['Accept']) > 0 then   // preference
         aOperation.ProduceType := ptJson;
     end;
+    case aOperation.ProduceType of
+      ptJson: ReplyContentType := 'application/json;charset=utf-8';
+      ptXml: ReplyContentType := 'application/xml;charset=utf-8';
+    end;
   finally
     FreeAndNil(pathParams);
     FreeAndNil(pathMask);

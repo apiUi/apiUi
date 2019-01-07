@@ -2208,134 +2208,47 @@ For driver-operation this applies to response values.</xs:documentation>
 							<xs:element name="AuthorizationCode">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="callback_url" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>The callback url is used to extract a token. Should match the one you used during registration of your application</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="auth_url" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Endpoint of the authorisation server. Used to obtain the autorisation  code</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="access_token_url" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Endpoint of authentication server.Used to obtain an access token</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="client_id" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Client Id. The Id you got at registration </xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="client_secret" type="passwordType">
-											<xs:annotation>
-												<xs:documentation>Client Secret. Provided to you at registration</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="scope" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Scope of the access request. Can have more then one value. Separated by space</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="state" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>A vague value used to prevent forgery</xs:documentation>
-											</xs:annotation>
-										</xs:element>
+										<xs:element name="callback_url" type="oauth2_callback_urlType"/>
+										<xs:element name="auth_url" type="oauth2_auth_urlType"/>
+										<xs:element name="access_token_url" type="oauth2_access_token_urlType"/>
+										<xs:element name="client_id" type="oauth2_client_id"/>
+										<xs:element name="client_secret" type="oauth2_client_secret"/>
+										<xs:element name="scope" type="oauth2_scope"/>
+										<xs:element name="state" type="oauth2_state"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="Implicit">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="callback_url" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>The callback url is used to extract a token. Should match the one you used during registration of your application</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="auth_url" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Endpoint of the authorisation server. Used to obtain the autorisation  code</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="client_id" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Client Id. The Id you got at registration </xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="scope" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Scope of the access request. Can have more then one value. Separated by space</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="state" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>A vague value used to prevent forgery</xs:documentation>
-											</xs:annotation>
-										</xs:element>
+										<xs:element name="callback_url" type="oauth2_callback_urlType"/>
+										<xs:element name="auth_url" type="oauth2_auth_urlType"/>
+										<xs:element name="client_id" type="oauth2_client_id"/>
+										<xs:element name="client_secret" type="oauth2_client_secret"/>
+										<xs:element name="scope" type="oauth2_scope"/>
+										<xs:element name="state" type="oauth2_state"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="PasswordCredentials">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="access_token_url" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Endpoint of authentication server.Used to obtain an access token</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="username" type="xs:string">
-											<xs:annotation>
-												<xs:documentation/>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="password" type="epc:passwordType">
-											<xs:annotation>
-												<xs:documentation/>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="client_id" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Client Id. The Id you got at registration </xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="client_secret" type="passwordType">
-											<xs:annotation>
-												<xs:documentation>Client Secret. Provided to you at registration</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="scope" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Scope of the access request. Can have more then one value. Separated by space</xs:documentation>
-											</xs:annotation>
-										</xs:element>
+										<xs:element name="access_token_url" type="oauth2_access_token_urlType"/>
+										<xs:element name="username" type="xs:string"/>
+										<xs:element name="password" type="epc:passwordType"/>
+										<xs:element name="client_id" type="oauth2_client_id"/>
+										<xs:element name="client_secret" type="oauth2_client_secret"/>
+										<xs:element name="scope" type="oauth2_scope"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="ClientCredentials">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="access_token_url" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Endpoint of authentication server.Used to obtain an access token</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="client_id" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Client Id. The Id you got at registration </xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="client_secret" type="passwordType">
-											<xs:annotation>
-												<xs:documentation>Client Secret. Provided to you at registration</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="scope" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Scope of the access request. Can have more then one value. Separated by space</xs:documentation>
-											</xs:annotation>
-										</xs:element>
+										<xs:element name="access_token_url" type="oauth2_access_token_urlType"/>
+										<xs:element name="client_id" type="oauth2_client_id"/>
+										<xs:element name="client_secret" type="oauth2_client_secret"/>
+										<xs:element name="scope" type="oauth2_scope"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
@@ -2353,4 +2266,46 @@ For driver-operation this applies to response values.</xs:documentation>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="oauth2_callback_urlType">
+		<xs:annotation>
+			<xs:documentation>The callback url is used to extract a token. Should match the one you used during registration of your application</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="oauth2_auth_urlType">
+		<xs:annotation>
+			<xs:documentation>Endpoint of the authorisation server. Used to obtain the autorisation  code</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="oauth2_access_token_urlType">
+		<xs:annotation>
+			<xs:documentation>Endpoint of authentication server.Used to obtain an access token</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="oauth2_client_id">
+		<xs:annotation>
+			<xs:documentation>Client Id. The Id you got at registration </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="oauth2_client_secret">
+		<xs:annotation>
+			<xs:documentation>Client Secret. Provided to you at registration</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="passwordType"/>
+	</xs:simpleType>
+	<xs:simpleType name="oauth2_scope">
+		<xs:annotation>
+			<xs:documentation>Scope of the access request. Can have more then one value separated by space</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="oauth2_state">
+		<xs:annotation>
+			<xs:documentation>A vague value used to prevent forgery</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
 </xs:schema>
