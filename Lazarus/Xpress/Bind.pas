@@ -589,11 +589,14 @@ end;
 
 procedure TCustomBindable.setChecked(const aValue: Boolean);
 begin
-  if (aValue)
-  and (Assigned (Parent)) then
-    Parent.Checked := True;
-  fPrevChecked := fChecked;
-  fChecked := aValue;
+  if Assigned(Self) then
+  begin
+    if (aValue)
+    and (Assigned (Parent)) then
+      Parent.Checked := True;
+    fPrevChecked := fChecked;
+    fChecked := aValue;
+  end;
 end;
 
 procedure TCustomBindable.sethasRelevance(const Value: Boolean);

@@ -309,6 +309,19 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     FreeAndNil (aXml);
     FreeAndNil (bXml);
   end;
+  procedure _prepList (aPrepList, aList: TLogList);
+  var
+    x: Integer;
+  begin
+    aPrepList.Duplicates :=  dupAccept;
+    for x := 0 to aList.Count - 1 do
+      if aList.LogItems [x].PassesFilter then
+        aPrepList.AddObject (aList.LogItems[x].SortKey(aOrderBy, sortColumns), aList.LogItems[x]);
+    aPrepList.CustomSort(logz.doOrder);
+    for x := 0 to aPrepList.Count - 1 do
+      aPrepList.Strings[x] := aPrepList.LogItems[x].CompareKey(aOrderBy);
+  end;
+
 var
   x, a, b, c, i: Integer;
   s: String;
@@ -319,25 +332,12 @@ begin
   a2bInitialize;
   try
     aSortedLogs := TLogList.Create;
-    aSortedLogs.Duplicates :=  dupAccept;
     bSortedLogs := TLogList.Create;
-    bSortedLogs.Duplicates :=  dupAccept;
     result := TXml.CreateAsString('logDifferences', '');
     headerXml := result.AddXml(TXml.CreateAsString('Header', ''));
     try
-      for x := 0 to aLogs.Count - 1 do
-        if aLogs.LogItems [x].PassesFilter then
-          aSortedLogs.AddObject (aLogs.LogItems[x].SortKey(aOrderBy, sortColumns), aLogs.LogItems[x]);
-      aSortedLogs.CustomSort(logz.doOrder);
-      for x := 0 to aSortedLogs.Count - 1 do
-        aSortedLogs.Strings[x] := aLogs.LogItems[x].CompareKey(aOrderBy);
-      for x := 0 to bLogs.Count - 1 do
-        if bLogs.LogItems [x].PassesFilter then
-          bSortedLogs.AddObject (bLogs.LogItems[x].SortKey(aOrderBy, sortColumns), bLogs.LogItems[x]);
-      bSortedLogs.CustomSort(logz.doOrder);
-      for x := 0 to bSortedLogs.Count - 1 do
-        aSortedLogs.Strings[x] := aLogs.LogItems[x].CompareKey(aOrderBy);
-
+      _prepList(aSortedLogs, aLogs);
+      _prepList(bSortedLogs, bLogs);
       Diffs := TA2BStringList.Create;
       try
         Diffs.Execute(aSortedLogs, aSortedLogs);

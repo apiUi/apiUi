@@ -12927,7 +12927,7 @@ end;
 
 procedure TMainForm.CheckFolderAndFileNames;
 var
-  w1, w0, s1, s0: Integer;
+  w1, w0, s1, s0, o1, o0: Integer;
   wName, sName, oName, mName: String;
   xOk: Boolean;
 begin
@@ -12940,6 +12940,7 @@ begin
         with se.Wsdls.Objects[w1] as TWsdl do
         begin
           if FileAlias = '' then FileAlias := Name;
+          FileAlias:=xmlio.makeFileNameAllowed(FileAlias);
           PromptForm.PromptEdit.Text := FileAlias;
           xOk := xmlio.isFileNameAllowed(FileAlias);
           if xOk then
@@ -12987,6 +12988,9 @@ begin
             with Services.Services[s1] do
             begin
               if FileAlias = '' then FileAlias := Name;
+              FileAlias:=xmlio.makeFileNameAllowed(FileAlias);
+              if Length (FileAlias) > 30 then
+                FileAlias:=Copy (FileAlias, 1, 27) + IntToStr (s1);
               PromptForm.PromptEdit.Text := FileAlias;
               xOk := xmlio.isFileNameAllowed(FileAlias);
               while not xOk do
@@ -13016,7 +13020,49 @@ begin
                   end;
                 end;
               end;
-              { TODO : operation.messages.filenames.... }
+              sName := FileAlias;
+              for o1 := 0 to Operations.Count - 1 do
+              begin
+                with Operations.Operations[o1] do
+                begin
+                  if FileAlias = '' then FileAlias := Alias;
+                  if FileAlias = '' then FileAlias := Name;
+                  FileAlias:=xmlio.makeFileNameAllowed(FileAlias);
+                  if Length (FileAlias) > 30 then
+                    FileAlias:=Copy (FileAlias, 1, 27) + IntToStr (o1);
+                  PromptForm.PromptEdit.Text := FileAlias;
+                  xOk := xmlio.isFileNameAllowed(FileAlias);
+                  while not xOk do
+                  begin
+                    PromptForm.Caption := 'Filename for Service: ' + wName + '/' + Name;
+                    PromptForm.Numeric := False;
+                    PromptForm.ShowModal;
+                    if PromptForm.ModalResult = mrCancel then
+                      raise Exception.Create('aborted by user');
+                    if PromptForm.ModalResult = mrOk then
+                    begin
+                      xOk := xmlio.isFileNameAllowed(PromptForm.PromptEdit.Text);
+                      if not xOk then
+                        ShowMessage (Format('"%s" invalid for filename', [PromptForm.PromptEdit.Text]))
+                      else
+                      begin
+                        FileAlias := PromptForm.PromptEdit.Text;
+                        for o0 := 0 to o1 - 1 do
+                        begin
+                          if UpperCase (Operations.Operations[o0].FileAlias) = UpperCase(FileAlias) then
+                          begin
+                            ShowMessage (Format ('"%s" duplicates name for %s', [Name, Operations.Operations[o0].Name]));
+                            xOk := False;
+                          end;
+                        end;
+                        stubChanged := stubChanged or xOk;
+                      end;
+                    end;
+                  end;
+                  oName:=FileAlias;
+                  { TODO : operation.messages.filenames.... }
+                end;
+              end;
             end;
           end;
         end;

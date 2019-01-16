@@ -10,6 +10,7 @@ uses
 
 function urlDecode(const S: String): String;
 function urlEncode(const S: String): String;
+function makeFileNameAllowed(aFileName: String): String;
 function isFileNameAllowed (aFileName: String): Boolean;
 procedure EraseAllFolderContent (aFolderName: String);
 function HttpResponseCodeToText (aCode: Integer): String;
@@ -236,10 +237,31 @@ begin
   end;
 end;
 
+function makeFileNameAllowed(aFileName: String): String;
+var
+  naChars: String;
+  x: Integer;
+begin
+  result := aFileName;
+  naChars := '\/:*?"<>|';
+  for x := 1 to Length(Result) do
+  begin
+    if Pos (result [x], naChars) > 0 then
+      result [x] := '_';
+  end;
+  if (Length(Result) > 0) then
+  begin
+    if (Result [Length(Result)] = '\')       // n.a. by Windows
+    or (Result [Length(Result)] = ' ') then  // n.a. by Windows
+      Result [Length(Result)] := '_';
+  end;
+end;
+
 function isFileNameAllowed(aFileName: String): Boolean;
 begin
   result := False;
   with TRegExpr.Create('^[^\\\/\:\*\?\"\<\>\|]*[^\\\/\:\*\?\"\<\>\|\. ]$') do
+//                        ^\\\/\:\*\?\"\<\>\|\.      (second part because windows does not allow a dot or space as last char)
   try
     result := Exec(aFileName);
   finally

@@ -2469,7 +2469,8 @@ begin
                     AddXml (TXml.CreateAsString('Action', IntToStr(Ord(xOperation.StubAction))));
                  {   if (xOperation.Alias <> xOperation.reqTagName)
                     and (xOperation.Alias <> '') then  }
-                      AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
+                    AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
+                    AddXml (TXml.CreateAsString('FileAlias', xOperation.FileAlias));
                     AddXml (TXml.CreateAsBoolean('HiddenFromUI', xOperation.HiddenFromUI));
                     asXml := xOperation.AddedTypeDefElementsAsXml as TXml;
                     if asXml.Items.Count > 0 then
@@ -2925,6 +2926,7 @@ begin
                           if xOperation.Alias = '' then
                             xOperation.Alias := xOperation.reqTagName;
                           xOperation.Alias := oXml.Items.XmlValueByTagDef['Alias', xOperation.Alias];
+                          xOperation.FileAlias := oXml.Items.XmlValueByTagDef['FileAlias', xOperation.Alias];
                           if xOperation.Alias <> xOperation.reqTagName then
                           begin
                             xOperation.reqBind.Name := xOperation.alias;
@@ -6934,6 +6936,7 @@ begin
           with AddXml(TXml.CreateAsString('Operation', '')) do
           begin
             AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
+            AddXml (TXml.CreateAsString('FileAlias', xOperation.FileAlias));
             if xOperation.Documentation.Count > 0 then
               AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
             AddXml (TXml.CreateAsString('Verb', xOperation.httpVerb));
@@ -9111,7 +9114,7 @@ begin
                 begin
                   if Items.XmlItems[o].Name = 'Operation' then
                   begin
-                    xAlias := Items.XmlItems[o].Items.XmlValueByTag['Alias'];
+                    xAlias := Items.XmlItems[o].Items.XmlValueByTag['FileAlias'];
                     xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName) + xAlias;
                     ProgressStep('Writing ' + xAlias, 1);
                     _createFolder (xOperationFolderName);
@@ -9155,18 +9158,21 @@ begin
                     _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
                     _saveChildElementToFile(Items.XmlItems[o].Items, 'Documentation', xOperationFolderName);
                     xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
+                    ItemByTag['FileAlias'].Checked:=False;
                     SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,2,True,False));
                     Items.XmlItems[o].Free;
                     Items.Delete(o);
                   end;
                 end;
                 xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + _ServiceFileName;
+                Items.XmlItems[s].ItemByTag['FileAlias'].Checked:=False;
                 SaveStringToFile(xFileName, Items.XmlItems[s].AsText(False,2,True,False));
                 Items.XmlItems[s].Free;
                 Items.Delete(s);
               end;
             end;
             xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
+            Items.XmlItems[w].ItemByTag['FileAlias'].Checked:=False;
             SaveStringToFile(xFileName, Items.XmlItems[w].AsText(False,2,True,False));
             Items.XmlItems[w].Free;
             Items.Delete(w);
@@ -9383,6 +9389,16 @@ function TWsdlProject.XmlFromProjectFolders(aFolderName: String): TXml;
     end;
     LazFileUtils.FindCloseUTF8(xSearchRec);
   end;
+  procedure _setXmlFileAlias (aXml: TXml; aFileAlias: String);
+  var
+    xXml: TXml;
+  begin
+    xXml := aXml.Items.XmlItemByTag['FileAlias'];
+    if Assigned (xXml) then
+      xXml.Value:=aFileAlias
+    else
+      aXml.AddXml(TXml.CreateAsString('FileAlias', aFileAlias));
+  end;
 
 var
       xWsdlsFolderName, xWsdlFolderName
@@ -9423,6 +9439,7 @@ begin
       xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
       wXml := result.AddXml(TXml.Create);
       wXml.LoadFromFile(xFileName, nil);
+      _setXmlFileAlias(wXml, xWList.Strings[w]);
       xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'S';
       _getFolders (xServicesFolderName, xSList);
       for s := 0 to xSList.Count - 1 do
@@ -9431,6 +9448,7 @@ begin
         xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + _ServiceFileName;
         sXml := wXml.AddXml (TXml.Create);
         sXml.LoadFromFile(xFileName, nil);
+        _setXmlFileAlias(sXml, xSList.Strings[s]);
         _AddChildsFromFolder (sXml, xServiceFolderName);
         xOperationsFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + 'O';
         _getFolders (xOperationsFolderName, xOList);
@@ -9440,6 +9458,7 @@ begin
           xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
           oXml := sXml.AddXml (TXml.Create);
           oXml.LoadFromFile(xFileName, nil);
+          _setXmlFileAlias(oXml, xOList.Strings[o]);
           _AddChildsFromFolder (oXml, xOperationFolderName);
           xMessagesFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + 'M';
           _getFolders (xMessagesFolderName, xMList);

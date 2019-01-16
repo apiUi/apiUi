@@ -291,7 +291,7 @@ type
       Wsdl: TWsdl;
       Owner: TObject;
       Data: TObject;
-      Alias: String;
+      FileAlias, Alias: String;
       HiddenFromUI: Boolean;
       isDepricated: Boolean;
       reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
