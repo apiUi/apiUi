@@ -14117,7 +14117,7 @@ begin
     PromptForm.Caption := 'Alias for operation ' + aOperation.reqTagName + ' ; ' + aOperation.reqTagNameSpace;
     PromptForm.PromptEdit.Text := aOperation.Alias;
     PromptForm.Numeric := False;
-    PromptForm.Pattern := '[A-Za-z]([0-9]|[A-Za-z]|\_|\-|\$)*'; // {id} regexp from express/scanner.l
+    PromptForm.Pattern := S_ALIAS_VALID_PATTERN;
     PromptForm.ShowModal;
     if PromptForm.ModalResult = mrOk then
     begin

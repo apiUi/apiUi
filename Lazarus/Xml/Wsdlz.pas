@@ -26,6 +26,7 @@ resourcestring
   S_MESSAGE_ACCEPTED = '[Message accepted by server]';
   S_NO_OPERATION_FOUND = 'No operation recognised';
   S_INBOUND_IS_A_RESPONSE = '[Inbound is a response]';
+  S_ALIAS_VALID_PATTERN = '[A-Za-z]([0-9]|[A-Za-z]|\_|\-|\$)*'; // {id} regexp from express/scanner.l
 
 type TStubAction = (saStub, saForward, saRedirect, saRequest);
 type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone);
@@ -710,6 +711,37 @@ uses
    ;
 
 { TWsdl }
+function isValidId (aId: String): Boolean;
+begin
+  result := RegExpr.ExecRegExpr('^' + S_ALIAS_VALID_PATTERN + '$', aId);
+end;
+
+function makeValidId (aId: String): String;
+var
+  x: Integer;
+begin
+  if aId = '' then
+    result := 'id'
+  else
+    result := aId;
+  while (Length (Result) > 1)
+  and not isValidId(Result[1]) do
+    result := Copy(Result, 2, Length(Result) - 1);
+  case Result[1] of
+    'A'..'Z', 'a'..'z': ;
+  else
+    Result[1] := 'a';
+  end;
+  for x := 1 to Length (Result) do
+  begin
+    case Result[x] of
+      'A'..'Z', 'a'..'z', '0'..'9', '_', '-', '$': ;
+    else
+      Result[x] := '_';
+    end;
+  end;
+  Result := ReplaceStrings(Result, '__', '_', False, False);
+end;
 
 procedure Notify(aString: AnsiString);
 begin
@@ -2732,6 +2764,12 @@ begin
             end;
             with xOperation do
             begin
+              if not isValidId (Alias) then
+              begin
+                Alias := makeValidId (Alias);
+                reqBind.Name := Alias;
+                rpyBind.Name := Alias;
+              end;
               Documentation.Text := xDoc;
               s := reqBind.Name;
               reqBind.Free;

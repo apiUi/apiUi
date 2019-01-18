@@ -9158,7 +9158,7 @@ begin
                     _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
                     _saveChildElementToFile(Items.XmlItems[o].Items, 'Documentation', xOperationFolderName);
                     xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
-                    ItemByTag['FileAlias'].Checked:=False;
+                    Items.XmlItems[o].ItemByTag['FileAlias'].Checked:=False;
                     SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,2,True,False));
                     Items.XmlItems[o].Free;
                     Items.Delete(o);
