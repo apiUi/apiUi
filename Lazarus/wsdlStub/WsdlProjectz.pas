@@ -8039,6 +8039,7 @@ begin
           OnDebugOperationEvent;
         end;
       end;
+      aLog.CorrelationId := xOperation.CorrelationIdAsText('; ');
       aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
       aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
       aLog.doSuppressAsyncReply := (xOperation.doSuppressAsyncReply <> 0);
@@ -9038,6 +9039,14 @@ procedure TWsdlProject.SaveWithFolders;
       xXml.Checked := False;
     end;
   end;
+  procedure _uncheckFileAlias (aXml: TXml);
+  var
+    xXml: TXml;
+  begin
+    xXml := aXml.ItemByTag['FileAlias'];
+    if Assigned (xXml) then
+      xXml.Checked := False;
+  end;
 
 var
       xWsdlsFolderName, xWsdlFolderName
@@ -9158,21 +9167,21 @@ begin
                     _saveChildElementToFile(Items.XmlItems[o].Items, 'AfterScript', xOperationFolderName);
                     _saveChildElementToFile(Items.XmlItems[o].Items, 'Documentation', xOperationFolderName);
                     xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
-                    Items.XmlItems[o].ItemByTag['FileAlias'].Checked:=False;
+                    _uncheckFileAlias(Items.XmlItems[o]);
                     SaveStringToFile(xFileName, Items.XmlItems[o].AsText(False,2,True,False));
                     Items.XmlItems[o].Free;
                     Items.Delete(o);
                   end;
                 end;
                 xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + _ServiceFileName;
-                Items.XmlItems[s].ItemByTag['FileAlias'].Checked:=False;
+                _uncheckFileAlias(Items.XmlItems[s]);
                 SaveStringToFile(xFileName, Items.XmlItems[s].AsText(False,2,True,False));
                 Items.XmlItems[s].Free;
                 Items.Delete(s);
               end;
             end;
             xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
-            Items.XmlItems[w].ItemByTag['FileAlias'].Checked:=False;
+            _uncheckFileAlias(Items.XmlItems[w]);
             SaveStringToFile(xFileName, Items.XmlItems[w].AsText(False,2,True,False));
             Items.XmlItems[w].Free;
             Items.Delete(w);
