@@ -2603,6 +2603,13 @@ object MainForm: TMainForm
       OnExecute = OperationBrowseDocumentationActionExecute
       OnUpdate = OperationBrowseDocumentationActionUpdate
     end
+    object CheckDuplicateMessagesAction: TAction
+      Category = 'Messages'
+      Caption = 'Check for duplicate messages'
+      OnExecute = CheckDuplicateMessagesActionExecute
+      OnUpdate = CheckDuplicateMessagesActionUpdate
+      ShortCut = 24644
+    end
   end
   object mainImageList: TImageList
     left = 112

@@ -229,6 +229,8 @@ type
     CorrelationBindables: TBindableList;
     BeforeScriptLines: TStringList;
     AfterScriptLines: TStringList;
+    Duplicates: TWsdlBinder;
+    _compareString: String;
     procedure SwiftMtRequestToBindables (aString: String);
     function FindBind (aCaption: String): TCustomBindable;
     procedure RebindLists; virtual;

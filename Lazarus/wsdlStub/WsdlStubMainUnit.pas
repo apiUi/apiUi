@@ -76,6 +76,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    CheckDuplicateMessagesAction: TAction;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
     CopyToClipboardAs: TMenuItem;
@@ -603,6 +604,8 @@ type
     procedure BmtpOperationsActionHint(var HintStr: string; var CanShow: Boolean
       );
     procedure BmtpOperationsActionUpdate(Sender: TObject);
+    procedure CheckDuplicateMessagesActionExecute(Sender: TObject);
+    procedure CheckDuplicateMessagesActionUpdate(Sender: TObject);
     procedure CobolOperationsActionUpdate(Sender: TObject);
     procedure ContextsActionExecute(Sender: TObject);
     procedure CopyToClipboardAsJsonMenuItemClick(Sender: TObject);
@@ -4971,6 +4974,7 @@ procedure TMainForm.DeleteMessageActionExecute(Sender: TObject);
 var
   xMessage: TWsdlMessage;
   cNode, nNode: PVirtualNode;
+  m: Integer;
 begin
   xMessage := nil; //avoid warning
   WsdlOperation.AcquireLock;
@@ -4987,6 +4991,9 @@ begin
         GridView.DeleteNode(cNode, True);
         if Assigned(xMessage) then
         begin
+          for m := 0 to WsdlOperation.Messages.Count - 1 do
+            if WsdlOperation.Messages.Messages[m].Duplicates = xMessage then
+              WsdlOperation.Messages.Messages[m].Duplicates := nil;
           WsdlOperation.Messages.DeleteMessage(xMessage);
           stubChanged := True;
         end;
@@ -6876,11 +6883,15 @@ begin
     or (not xmlio.isFileNameAllowed(xMessage.Name)) then
       TargetCanvas.Font.Color := clRed;
     if xMessage.Disabled then
+    begin
       if (Node <> GridView.GetFirst) then
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsStrikeOut] +
           [fsBold]
       else
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
+    end;
+    if Assigned (xMessage.Duplicates) then
+      TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
     exit;
   end;
   if (Column - nMessageButtonColumns) <= xMessage.CorrelationBindables.Count then
@@ -13746,6 +13757,84 @@ procedure TMainForm.BmtpOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
     BmtpOperationsAction.Caption := decorateWithAsterix (BmtpOperationsAction.Caption, se.hasBmtpOperations);
+end;
+
+procedure TMainForm.CheckDuplicateMessagesActionExecute(Sender: TObject);
+  function _asString (aBind: TCustomBindable): String;
+  begin
+    result := '';
+    if aBind is TXml then
+    with aBind as TXml do
+    begin
+      result := AsText ( False
+                       , 2
+                       , False // yes, also when not checked
+                       , False
+                       );
+    end;
+    if aBind is TIpmItem then
+    begin
+      with (aBind as TIpmItem).AsXml do
+      begin
+        result := AsText ( False
+                         , 2
+                         , False // yes, also when not checked
+                         , False
+                         );
+        Free;
+      end;
+    end;
+  end;
+var
+  m, m1: Integer;
+begin
+  for m := 0 to WsdlOperation.Messages.Count - 1 do
+  with WsdlOperation.Messages.Messages[m] do
+  begin
+    Duplicates := nil;
+    _compareString := 'req:'
+                    + LineEnding
+                    + _asString(reqBind)
+                    + LineEnding
+                    + 'rpy'
+                    + LineEnding
+                    + _asString(rpyBind)
+                    + LineEnding
+                    + 'before'
+                    + LineEnding
+                    + BeforeScriptLines.Text
+                    + LineEnding
+                    + 'after'
+                    + LineEnding
+                    + AfterScriptLines.Text
+                    + LineEnding
+                    ;
+  end;
+  for m := 0 to WsdlOperation.Messages.Count - 2 do
+  with WsdlOperation.Messages do
+  begin
+    if not Assigned(Messages[m].Duplicates) then
+    begin
+      for m1 := m + 1 to WsdlOperation.Messages.Count - 1 do
+      begin
+        if not Assigned(Messages[m1].Duplicates) then
+        begin
+          if Messages[m1]._compareString = Messages[m]._compareString then
+          begin
+            Messages[m1].Duplicates := Messages[m];
+          end;
+        end;
+      end;
+    end;
+  end;
+  GridView.Invalidate;
+end;
+
+procedure TMainForm.CheckDuplicateMessagesActionUpdate(Sender: TObject);
+begin
+  CheckDuplicateMessagesAction.Enabled := Assigned (WsdlOperation)
+                                      and (WsdlOperation.Messages.Count > 1)
+                                        ;
 end;
 
 procedure TMainForm.CobolOperationsActionUpdate(Sender: TObject);
