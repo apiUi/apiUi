@@ -76,12 +76,14 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
-    CheckDuplicateMessagesAction: TAction;
+    ToggleTrackDuplicateMessagesAction: TAction;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
     CopyToClipboardAs: TMenuItem;
     MenuItem54: TMenuItem;
     CopyToClipboardAsJsonMenuItem: TMenuItem;
+    ToolButton75: TToolButton;
+    ToolButton79: TToolButton;
     YamlToClipboardMenuItem: TMenuItem;
     ToolButton78: TToolButton;
     WsdlNumberOfReferrableMenuItem: TMenuItem;
@@ -604,8 +606,6 @@ type
     procedure BmtpOperationsActionHint(var HintStr: string; var CanShow: Boolean
       );
     procedure BmtpOperationsActionUpdate(Sender: TObject);
-    procedure CheckDuplicateMessagesActionExecute(Sender: TObject);
-    procedure CheckDuplicateMessagesActionUpdate(Sender: TObject);
     procedure CobolOperationsActionUpdate(Sender: TObject);
     procedure ContextsActionExecute(Sender: TObject);
     procedure CopyToClipboardAsJsonMenuItemClick(Sender: TObject);
@@ -628,6 +628,7 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
+    procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
     procedure YamlToClipboardMenuItemClick(Sender: TObject);
     procedure MessagesTabToolBarResize(Sender: TObject);
     procedure OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
@@ -1056,6 +1057,7 @@ type
     procedure RefreshLogTimerTimer(Sender: TObject);
     procedure ZoomasScriptAssignments1Click(Sender: TObject);
     procedure XSDreportinClipBoardSpreadSheet1Click(Sender: TObject);
+    procedure UpdateDuplicateMessages;
     property WsdlOperation: TWsdlOperation read getWsdlOperation write
       setWsdlOperation;
     property WsdlMessage: TWsdlMessage read getWsdlMessage write setWsdlMessage;
@@ -1234,10 +1236,12 @@ type
     fCaptionFileName: String;
     fDoScrollMessagesIntoView: Boolean;
     fdoShowDesignSplitVertical : Boolean ;
+    fDoTrackDuplicateMessages: Boolean;
     function getHintStrDisabledWhileActive: String;
     procedure SetCaptionFileName(AValue: String);
     procedure setDoScrollMessagesIntoView(AValue: Boolean);
     procedure setdoShowDesignSplitVertical (AValue : Boolean );
+    procedure setDoTrackDuplicateMessages(AValue: Boolean);
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure IntrospectDesign;
     function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
@@ -1276,6 +1280,7 @@ type
     property HintStrDisabledWhileActive
       : String read getHintStrDisabledWhileActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
+    property doTrackDuplicateMessages: Boolean read fDoTrackDuplicateMessages write setDoTrackDuplicateMessages;
     property doScrollMessagesIntoView: Boolean read fDoScrollMessagesIntoView write setDoScrollMessagesIntoView;
     property doCheckExpectedValues: Boolean read getDoCheckExpectedValues write
       setDoCheckExpectedValues;
@@ -1798,6 +1803,7 @@ begin
       EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
       EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
       UpdateVisibiltyTreeView(Value.WsdlService.DescriptionType = ipmDTFreeFormat);
+      UpdateDuplicateMessages;
     end;
   except
   end;
@@ -2940,6 +2946,22 @@ begin
     Clipboard.AsText := xStrings.Text;
   finally
     xStrings.Free;
+  end;
+end;
+
+procedure TMainForm.UpdateDuplicateMessages;
+begin
+  if Assigned (WsdlOperation) then
+  begin
+    if doTrackDuplicateMessages then
+    begin
+      WsdlOperation.Messages.SetDuplicates;
+    end
+    else
+    begin
+      WsdlOperation.Messages.ResetDuplicates;
+    end;
+    GridView.InvalidateColumn(nMessageButtonColumns);
   end;
 end;
 
@@ -4823,6 +4845,7 @@ begin
       Dec(n);
       cNode := GridView.GetNext(cNode);
     end;
+    UpdateDuplicateMessages;
     GridView.Invalidate;
     GridView.SetFocus;
     DoColorBindButtons;
@@ -4957,6 +4980,7 @@ begin
     end;
   finally
     InWsdlTreeView.EndUpdate;
+    GridView.InvalidateColumn(nMessageButtonColumns);
     if Assigned(InWsdlTreeView.FocusedNode) then
       InWsdlTreeView.ScrollIntoView(InWsdlTreeView.FocusedNode, False, False);
   end;
@@ -5000,6 +5024,7 @@ begin
       end;
       cNode := nNode;
     end;
+    UpdateDuplicateMessages;
     GridView.Invalidate;
     GridView.SetFocus;
     GridViewFocusedNode(GridView.FocusedNode);
@@ -5034,14 +5059,14 @@ begin
         xMessage := pData.Message;
         pData.Message := fData.Message;
         fData.Message := xMessage;
-        InvalidateNode(pNode);
-        InvalidateNode(fNode);
         Selected[pNode] := True;
         Selected[fNode] := False;
         fNode := GetNextSelected(fNode)
       end;
       GridView.FocusedNode := GetFirstSelected;
     end;
+    UpdateDuplicateMessages;
+    GridView.Invalidate;
     stubChanged := True;
   finally
     WsdlOperation.ReleaseLock;
@@ -5093,8 +5118,6 @@ begin
           xMessage := nData.Message;
           nData.Message := fData.Message;
           fData.Message := xMessage;
-          InvalidateNode(nNode);
-          InvalidateNode(fNode);
           Selected[nNode] := True;
           Selected[fNode] := False;
         end;
@@ -5102,6 +5125,8 @@ begin
       end;
       GridView.FocusedNode := GetFirstSelected;
     end;
+    UpdateDuplicateMessages;
+    GridView.Invalidate;
     stubChanged := True;
   finally
     WsdlOperation.ReleaseLock;
@@ -5235,11 +5260,12 @@ procedure TMainForm.GridViewBeforeCellPaint(Sender: TBaseVirtualTree;
     if GridView.FocusedNode = Node then Result := DecColor(Result, 9);
   end;
 var
-  xMessage: TWsdlMessage;
+  xMessage, fMessage: TWsdlMessage;
   xBind: TCustomBindable;
   expXml: TXml;
 begin
   xMessage := nil; //avoid warning
+  fMessage := nil; //avoid warning
   try
     NodeToMessage(Sender, Node, xMessage);
     if not Assigned(xMessage) then
@@ -5260,6 +5286,21 @@ begin
       begin
         Brush.Style := bsSolid;
         Brush.Color := _decColor(bgCorrelationItemColor);
+        if Column = nMessageButtonColumns then
+        begin
+          NodeToMessage(Sender, Sender.FocusedNode, fMessage);
+          if Assigned (fMessage)
+          and (fMessage <> xMessage)
+          and (   (xMessage.Duplicates = fMessage)
+               or (xMessage = fMessage.Duplicates)
+               or (    Assigned (xMessage.Duplicates)
+                   and (xMessage.Duplicates = fMessage.Duplicates)
+                  )
+              ) then
+          begin
+            Brush.Color := DecColor(Brush.Color, 22);
+          end;
+        end;
         FillRect(CellRect);
       end;
       exit;
@@ -7033,6 +7074,7 @@ begin
   finally
     GridViewFocusedNode(swapNode);
     GridView.FocusedColumn := swapColumn;
+    UpdateDuplicateMessages;
     GridView.Invalidate;
     GridView.EndUpdate;
     InWsdlTreeView.Invalidate;
@@ -8983,6 +9025,14 @@ begin
   DesignPanelSplitVerticalMenuItem.Checked := AValue;
 end;
 
+procedure TMainForm.setDoTrackDuplicateMessages(AValue: Boolean);
+begin
+  if fDoTrackDuplicateMessages=AValue then Exit;
+  fDoTrackDuplicateMessages:=AValue;
+  ToggleTrackDuplicateMessagesAction.Checked := fDoTrackDuplicateMessages;
+  UpdateDuplicateMessages;
+end;
+
 procedure TMainForm.setDoValidateReplies(const Value: Boolean);
 begin
   stubChanged := doValidateReplies <> Value;
@@ -10562,6 +10612,7 @@ begin
         end;
       end;
     finally
+      UpdateDuplicateMessages;
       GridView.Invalidate;
       CheckBoxClick(nil);
       AbortAction.Enabled := False;
@@ -13759,84 +13810,6 @@ begin
     BmtpOperationsAction.Caption := decorateWithAsterix (BmtpOperationsAction.Caption, se.hasBmtpOperations);
 end;
 
-procedure TMainForm.CheckDuplicateMessagesActionExecute(Sender: TObject);
-  function _asString (aBind: TCustomBindable): String;
-  begin
-    result := '';
-    if aBind is TXml then
-    with aBind as TXml do
-    begin
-      result := AsText ( False
-                       , 2
-                       , False // yes, also when not checked
-                       , False
-                       );
-    end;
-    if aBind is TIpmItem then
-    begin
-      with (aBind as TIpmItem).AsXml do
-      begin
-        result := AsText ( False
-                         , 2
-                         , False // yes, also when not checked
-                         , False
-                         );
-        Free;
-      end;
-    end;
-  end;
-var
-  m, m1: Integer;
-begin
-  for m := 0 to WsdlOperation.Messages.Count - 1 do
-  with WsdlOperation.Messages.Messages[m] do
-  begin
-    Duplicates := nil;
-    _compareString := 'req:'
-                    + LineEnding
-                    + _asString(reqBind)
-                    + LineEnding
-                    + 'rpy'
-                    + LineEnding
-                    + _asString(rpyBind)
-                    + LineEnding
-                    + 'before'
-                    + LineEnding
-                    + BeforeScriptLines.Text
-                    + LineEnding
-                    + 'after'
-                    + LineEnding
-                    + AfterScriptLines.Text
-                    + LineEnding
-                    ;
-  end;
-  for m := 0 to WsdlOperation.Messages.Count - 2 do
-  with WsdlOperation.Messages do
-  begin
-    if not Assigned(Messages[m].Duplicates) then
-    begin
-      for m1 := m + 1 to WsdlOperation.Messages.Count - 1 do
-      begin
-        if not Assigned(Messages[m1].Duplicates) then
-        begin
-          if Messages[m1]._compareString = Messages[m]._compareString then
-          begin
-            Messages[m1].Duplicates := Messages[m];
-          end;
-        end;
-      end;
-    end;
-  end;
-  GridView.Invalidate;
-end;
-
-procedure TMainForm.CheckDuplicateMessagesActionUpdate(Sender: TObject);
-begin
-  CheckDuplicateMessagesAction.Enabled := Assigned (WsdlOperation)
-                                      and (WsdlOperation.Messages.Count > 1)
-                                        ;
-end;
-
 procedure TMainForm.CobolOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
@@ -13987,6 +13960,11 @@ end;
 procedure TMainForm.MenuItem47Click(Sender: TObject);
 begin
   PromptAndSetColumnWidth(SnapshotsVTS);
+end;
+
+procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
+begin
+  doTrackDuplicateMessages := not doTrackDuplicateMessages;
 end;
 
 procedure TMainForm.YamlToClipboardMenuItemClick(Sender: TObject);

@@ -618,7 +618,7 @@ object MainForm: TMainForm
               Action = MoveDownMessageAction
             end
             object ToolButton26: TToolButton
-              Left = 171
+              Left = 202
               Height = 22
               Top = 2
               Width = 8
@@ -627,12 +627,12 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ToolButton25: TToolButton
-              Left = 179
+              Left = 210
               Top = 2
               Action = SelectMessageColumnsAction
             end
             object ToolButton56: TToolButton
-              Left = 202
+              Left = 233
               Height = 22
               Top = 2
               Width = 8
@@ -641,12 +641,12 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ToolButton55: TToolButton
-              Left = 210
+              Left = 241
               Top = 2
               Action = SelectExpectedElementsAction
             end
             object ToolButton29: TToolButton
-              Left = 233
+              Left = 264
               Height = 22
               Top = 2
               Width = 8
@@ -655,17 +655,17 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ToolButton27: TToolButton
-              Left = 241
+              Left = 272
               Top = 2
               Action = CopyGridAction
             end
             object ToolButton28: TToolButton
-              Left = 264
+              Left = 295
               Top = 2
               Action = PasteGridAction
             end
             object ToolButton34: TToolButton
-              Left = 287
+              Left = 318
               Height = 22
               Top = 2
               Width = 8
@@ -674,12 +674,12 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ToolButton38: TToolButton
-              Left = 295
+              Left = 326
               Top = 2
               Action = CheckGridFieldsAction
             end
             object ToolButton41: TToolButton
-              Left = 318
+              Left = 349
               Height = 22
               Top = 2
               Width = 8
@@ -688,18 +688,18 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ExecuteRequestToolButton: TToolButton
-              Left = 326
+              Left = 357
               Top = 2
               HelpType = htKeyword
               Action = ExecuteRequestAction
             end
             object ExecuteAllRequestsToolButton: TToolButton
-              Left = 349
+              Left = 380
               Top = 2
               Action = ExecuteAllRequestsAction
             end
             object LastToolButton: TToolButton
-              Left = 395
+              Left = 426
               Height = 22
               Top = 2
               Width = 8
@@ -708,7 +708,7 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ProgressBar: TProgressBar
-              Left = 403
+              Left = 434
               Height = 22
               Hint = 'Progress'
               Top = 2
@@ -719,9 +719,22 @@ object MainForm: TMainForm
               TabOrder = 0
             end
             object ExecuteLoadTextToolbutton: TToolButton
-              Left = 372
+              Left = 403
               Top = 2
               Action = LoadTestAction
+            end
+            object ToolButton75: TToolButton
+              Left = 179
+              Top = 2
+              Action = ToggleTrackDuplicateMessagesAction
+            end
+            object ToolButton79: TToolButton
+              Left = 171
+              Height = 22
+              Top = 2
+              Width = 8
+              Caption = 'ToolButton79'
+              Style = tbsSeparator
             end
           end
           object GridView: TVirtualStringTree
@@ -2603,19 +2616,19 @@ object MainForm: TMainForm
       OnExecute = OperationBrowseDocumentationActionExecute
       OnUpdate = OperationBrowseDocumentationActionUpdate
     end
-    object CheckDuplicateMessagesAction: TAction
+    object ToggleTrackDuplicateMessagesAction: TAction
       Category = 'Messages'
-      Caption = 'Check for duplicate messages'
-      OnExecute = CheckDuplicateMessagesActionExecute
-      OnUpdate = CheckDuplicateMessagesActionUpdate
-      ShortCut = 24644
+      Caption = 'Toggle track Duplicate Messages'
+      Hint = 'Toggle track Duplicate Messages'
+      ImageIndex = 102
+      OnExecute = ToggleTrackDuplicateMessagesActionExecute
     end
   end
   object mainImageList: TImageList
     left = 112
     top = 112
     Bitmap = {
-      4C69660000001000000010000000000000000000000000000000000000000000
+      4C69670000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -5879,7 +5892,39 @@ object MainForm: TMainForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000
+      0000000000000000000000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00000000FFFFFFFF00000000FFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00000000FFFFFFFF00000000FF000000FFFFFFFF00000000FFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00000000FFFFFFFF00000000FF000000FFFFFFFF00000000FFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00000000FFFFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241C
+      EDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241C
+      EDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241C
+      EDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241C
+      EDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00
     }
   end
   object OpenFileDialog: TOpenDialog

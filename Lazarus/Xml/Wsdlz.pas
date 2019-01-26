@@ -500,11 +500,15 @@ type
       destructor Destroy; override;
   end;
 
+  { TWsdlMessages }
+
   TWsdlMessages = class (TStringList)
   private
     function GetMessage(Index: integer): TWsdlMessage;
   public
     property Messages [Index: integer]: TWsdlMessage read GetMessage;
+    procedure SetDuplicates;
+    procedure ResetDuplicates;
     procedure DeleteMessage (aMessage: TWsdlMessage); overload;
     procedure DeleteMessage (aIndex: Integer); overload;
     procedure Clear; override;
@@ -6558,6 +6562,83 @@ end;
 function TWsdlMessages.GetMessage(Index: integer): TWsdlMessage;
 begin
   result := TWsdlMessage (Objects [Index]);
+end;
+
+procedure TWsdlMessages.SetDuplicates;
+  function _asString (aBind: TCustomBindable): String;
+  begin
+    result := '';
+    if aBind is TXml then
+    with aBind as TXml do
+    begin
+      result := AsText ( False
+                       , 2
+                       , False // yes, also when not checked
+                       , False
+                       );
+    end;
+    if aBind is TIpmItem then
+    begin
+      with (aBind as TIpmItem).AsXml do
+      begin
+        result := AsText ( False
+                         , 2
+                         , False // yes, also when not checked
+                         , False
+                         );
+        Free;
+      end;
+    end;
+  end;
+var
+  m, m1: Integer;
+begin
+  for m := 0 to Count - 1 do
+  with Messages[m] do
+  begin
+    Duplicates := nil;
+    _compareString := 'req:'
+                    + LineEnding
+                    + _asString(reqBind)
+                    + LineEnding
+                    + 'rpy'
+                    + LineEnding
+                    + _asString(rpyBind)
+                    + LineEnding
+                    + 'before'
+                    + LineEnding
+                    + BeforeScriptLines.Text
+                    + LineEnding
+                    + 'after'
+                    + LineEnding
+                    + AfterScriptLines.Text
+                    + LineEnding
+                    ;
+  end;
+  for m := 0 to Count - 2 do
+  begin
+    if not Assigned(Messages[m].Duplicates) then
+    begin
+      for m1 := m + 1 to Count - 1 do
+      begin
+        if not Assigned(Messages[m1].Duplicates) then
+        begin
+          if Messages[m1]._compareString = Messages[m]._compareString then
+          begin
+            Messages[m1].Duplicates := Messages[m];
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TWsdlMessages.ResetDuplicates;
+var
+  m: Integer;
+begin
+  for m := 0 to Count - 1 do
+    Messages[m].Duplicates := nil;
 end;
 
 procedure TWsdlBinder.SwiftMtRequestToBindables(aString: String);
