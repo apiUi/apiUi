@@ -565,6 +565,7 @@ begin
   if (aMainFileName = '')
   or (aToRelateFileName = '')
   or (AnsiStartsText ('http://', aToRelateFileName))
+  or (AnsiStartsText ('https://', aToRelateFileName))
   then
     exit;
   if (aMainFileName = aToRelateFileName)

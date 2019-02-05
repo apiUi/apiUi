@@ -1,10 +1,10 @@
 object wsaConfigForm: TwsaConfigForm
-  Left = 229
-  Height = 276
-  Top = 166
+  Left = 582
+  Height = 320
+  Top = 289
   Width = 368
   Caption = 'Configure WS-Addressing'
-  ClientHeight = 276
+  ClientHeight = 320
   ClientWidth = 368
   Color = clBtnFace
   Font.Color = clBlack
@@ -13,11 +13,11 @@ object wsaConfigForm: TwsaConfigForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Button1: TButton
     Left = 33
     Height = 25
-    Top = 217
+    Top = 269
     Width = 75
     Caption = '&Ok'
     Default = True
@@ -27,7 +27,7 @@ object wsaConfigForm: TwsaConfigForm
   object Button2: TButton
     Left = 254
     Height = 25
-    Top = 217
+    Top = 269
     Width = 75
     Cancel = True
     Caption = '&Cancel'
@@ -36,36 +36,36 @@ object wsaConfigForm: TwsaConfigForm
   end
   object GroupBox1: TGroupBox
     Left = 33
-    Height = 161
+    Height = 217
     Top = 24
     Width = 296
-    ClientHeight = 157
+    ClientHeight = 199
     ClientWidth = 292
     TabOrder = 2
     object EnabledCheckBox: TCheckBox
-      Left = 55
-      Height = 22
+      Left = 56
+      Height = 23
       Top = 16
-      Width = 105
+      Width = 97
       Caption = 'WS-A Enabled:'
       OnClick = EnableComponents
       TabOrder = 0
     end
     object mustUnderstandCheckBox: TCheckBox
       Left = 55
-      Height = 22
+      Height = 23
       Top = 51
-      Width = 120
+      Width = 106
       Caption = 'Must understand:'
       OnClick = EnableComponents
       TabOrder = 1
     end
     object MustUnderstandComboBox: TComboBox
       Left = 193
-      Height = 27
+      Height = 21
       Top = 49
       Width = 80
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'true'
@@ -77,12 +77,27 @@ object wsaConfigForm: TwsaConfigForm
     end
     object AsynchDialogCheckBox: TCheckBox
       Left = 56
-      Height = 22
+      Height = 23
       Top = 111
-      Width = 143
+      Width = 127
       Caption = 'Asynchronous Dialog:'
       OnClick = EnableComponents
       TabOrder = 3
     end
+    object wsaTypeComboBox: TComboBox
+      Left = 55
+      Height = 21
+      Top = 154
+      Width = 74
+      DropDownCount = 3
+      ItemHeight = 13
+      ItemIndex = 0
+      Items.Strings = (
+        '2005/08'
+        '2004/08'
+      )
+      TabOrder = 4
+      Text = '2005/08'
+    end
   end
-end
+end

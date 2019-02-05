@@ -5189,6 +5189,7 @@ procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
     d.wsaEnabled := s.wsaEnabled;
     d.wsaSpecificMustUnderstand := s.wsaSpecificMustUnderstand;
     d.wsaMustUnderstand := s.wsaMustUnderstand;
+    d.wsaType := s.wsaType;
     d.reqWsaXml.CheckDownLine(False);
     d.reqWsaXml.LoadValues(s.reqWsaXml, False, True);
     d.reqWsaXml.CheckDownLine(False);
@@ -6226,6 +6227,7 @@ begin
         wsaConfigForm.wsaSpecificMustUnderstand :=
           WsdlOperation.wsaSpecificMustUnderstand;
         wsaConfigForm.wsaMustUnderstand := WsdlOperation.wsaMustUnderstand;
+        wsaConfigForm.wsaTypeComboBox.Text := WsdlOperation.wsaType;
         { }
         if WsdlOperation.StubAction = saRequest then
           wsaConfigForm.wsaXml := reqWsaXml;
@@ -6237,6 +6239,7 @@ begin
           WsdlOperation.wsaSpecificMustUnderstand :=
             wsaConfigForm.wsaSpecificMustUnderstand;
           WsdlOperation.wsaMustUnderstand := wsaConfigForm.wsaMustUnderstand;
+          WsdlOperation.wsaType := wsaConfigForm.wsaTypeComboBox.Text;
           WsdlOperation.reqWsaXml.CheckDownLine(False);
           WsdlOperation.reqWsaXml.LoadValues(reqWsaXml, False, True);
           WsdlOperation.rpyWsaXml.CheckDownLine(False);
@@ -6257,8 +6260,7 @@ end;
 
 procedure TMainForm.OperationWsaActionUpdate(Sender: TObject);
 begin
-  OperationWsaAction.Enabled := (not se.IsActive)
-                            and Assigned(_WsdlWsaXsd)
+  OperationWsaAction.Enabled := Assigned(_WsdlWsaXsd)
                             and Assigned(WsdlOperation)
                               ;
 end;
@@ -8651,7 +8653,6 @@ end;
 procedure TMainForm.ExecuteAllRequestsActionUpdate(Sender: TObject);
 begin
   ExecuteAllRequestsAction.Enabled := Assigned(WsdlOperation)
-                                  and Assigned(WsdlMessage)
                                   and (WsdlOperation.StubAction = saRequest)
                                   and (NumberOfBlockingThreads < 1)
                                     ;
@@ -12770,7 +12771,6 @@ procedure TMainForm .LoadTestActionUpdate (Sender : TObject );
 begin
   LoadTestAction.Enabled :=
         Assigned(WsdlOperation)
-    and Assigned(WsdlMessage)
     and (WsdlOperation.StubAction = saRequest)
     and (WsdlOperation.StubTransport <> ttTaco) // server (and client are) is single threaded
     and (NumberOfBlockingThreads < 1)
@@ -14229,11 +14229,13 @@ begin
   PromptForOperationAlias(WsdlOperation);
 end;
 
-{$ifdef windows}
 initialization
+{$ifdef windows}
   CoInitialize(nil);
+{$endif}
   _WsdlSaveLogs := _SaveLogs;
 finalization
+{$ifdef windows}
   CoUninitialize;
 {$endif}
 end.

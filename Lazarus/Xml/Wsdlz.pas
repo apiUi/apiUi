@@ -326,6 +326,7 @@ type
       wsaEnabled: Boolean;
       wsaSpecificMustUnderstand: Boolean;
       wsaMustUnderstand: Boolean;
+      wsaType: String;
       reqWsaXml, rpyWsaXml: TXml;
       StubAction: TStubAction;
       StubTransport: TTransportType;
@@ -3811,7 +3812,7 @@ begin
       or wsaEnabled then
       begin
         if wsaEnabled then
-          result := StrAdd (result, '  <soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">')
+          result := StrAdd (result, Format ('  <soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">', [wsaType]))
         else
           result := StrAdd (result, '  <soapenv:Header>');
         result := result + WsdlService.StreamWsSecurity;
@@ -3936,7 +3937,7 @@ begin
     or wsaEnabled then
     begin
       if wsaEnabled then
-        result := StrAdd (result, '  <soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">')
+        result := StrAdd (result, Format ('  <soapenv:Header xmlns:wsa="http://www.w3.org/%s/addressing">', [wsaType]))
       else
         result := StrAdd (result, '  <soapenv:Header>');
       for x := 0 to OutputHeaders.Count - 1 do
@@ -4303,6 +4304,7 @@ begin
   self.wsaEnabled := xOperation.wsaEnabled;
   self.wsaSpecificMustUnderstand := xOperation.wsaSpecificMustUnderstand;
   self.wsaMustUnderstand := xOperation.wsaMustUnderstand;
+  self.wsaType := xOperation.wsaType;
   self.useSsl := xOperation.useSsl;
   self.sslCertificateFile := xOperation.sslCertificateFile;
   self.sslKeyFile := xOperation.sslKeyFile;
@@ -5014,7 +5016,7 @@ begin
       xAttr := fltXml.Attributes.AttributeByTag['RelationshipType'];
       if Assigned (xAttr) then
       begin
-        xAttr.Value := 'http://www.w3.org/2005/08/addressing/reply';
+        xAttr.Value := Format('http://www.w3.org/%s/addressing/reply', [wsaType]);
         xAttr.Checked := True;
       end;
     end;
@@ -5100,7 +5102,7 @@ begin
       xAttr := rpyXml.Attributes.AttributeByTag['RelationshipType'];
       if Assigned (xAttr) then
       begin
-        xAttr.Value := 'http://www.w3.org/2005/08/addressing/reply';
+        xAttr.Value := Format('http://www.w3.org/%s/addressing/reply', [wsaType]);
         xAttr.Checked := True;
       end;
     end;

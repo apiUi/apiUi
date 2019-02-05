@@ -2480,6 +2480,8 @@ begin
                     AddXml (TXml.CreateAsBoolean('wsaEnabled', xOperation.wsaEnabled));
                     AddXml (TXml.CreateAsBoolean('wsaSpecificMustUnderstand', xOperation.wsaSpecificMustUnderstand));
                     AddXml (TXml.CreateAsBoolean('wsaMustUnderstand', xOperation.wsaMustUnderstand));
+                    if xOperation.wsaType <> '2005/08' then
+                      AddXml (TXml.CreateAsString('wsaType', xOperation.wsaType));
                     if (xOperation.StubAction = saRequest)
                     and Assigned(xOperation.reqWsaXml)
                     and xOperation.reqWsaXml.Checked
@@ -2942,6 +2944,7 @@ begin
                           xOperation.wsaEnabled := oXml.Items.XmlBooleanByTagDef ['wsaEnabled', False];
                           xOperation.wsaSpecificMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaSpecificMustUnderstand', False];
                           xOperation.wsaMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaMustUnderstand', False];
+                          xOperation.wsaType := oXml.Items.XmlValueByTagDef ['wsaType', '2005/08'];
                           if xOperation.StubAction = saRequest then
                             xOperation.reqWsaXml.LoadValues (oXml.Items.XmlItemByTag ['wsa'], False)
                           else

@@ -16,9 +16,13 @@ uses
   Buttons, ExtCtrls, SysUtils, FormIniFilez, Xmlz;
 
 type
+
+  { TwsaConfigForm }
+
   TwsaConfigForm = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    wsaTypeComboBox: TComboBox;
     GroupBox1: TGroupBox;
     EnabledCheckBox: TCheckBox;
     mustUnderstandCheckBox: TCheckBox;
@@ -84,6 +88,7 @@ begin
   MustUnderstandComboBox.Enabled := mustUnderstandCheckBox.Enabled
                                 and mustUnderstandCheckBox.Checked;
   AsynchDialogCheckBox.Enabled := EnabledCheckBox.Checked;
+  wsaTypeComboBox.Enabled := EnabledCheckBox.Checked;
 end;
 
 procedure TwsaConfigForm.FormCreate(Sender: TObject);
