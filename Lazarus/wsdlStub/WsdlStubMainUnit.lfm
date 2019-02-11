@@ -300,7 +300,7 @@ object MainForm: TMainForm
           TabOrder = 1
         end
       end
-      object OperationReqsTreeView: TVirtualStringTree
+      object NavigatorTreeView: TVirtualStringTree
         Left = 3
         Height = 378
         Top = 3
@@ -340,14 +340,14 @@ object MainForm: TMainForm
         TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
         TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toRightClickSelect]
-        OnClick = OperationReqsTreeViewClick
+        OnClick = NavigatorTreeViewClick
         OnColumnClick = TreeViewColumnClick
         OnEditing = VTSEditing
-        OnFocusChanged = OperationReqsTreeViewFocusChanged
-        OnGetText = OperationReqsTreeViewGetText
-        OnPaintText = OperationReqsTreeViewPaintText
-        OnGetImageIndex = OperationReqsTreeViewGetImageIndex
-        OnGetHint = OperationReqsTreeViewGetHint
+        OnFocusChanged = NavigatorTreeViewFocusChanged
+        OnGetText = NavigatorTreeViewGetText
+        OnPaintText = NavigatorTreeViewPaintText
+        OnGetImageIndex = NavigatorTreeViewGetImageIndex
+        OnGetHint = NavigatorTreeViewGetHint
         OnResize = TreeViewResize
       end
     end

@@ -391,7 +391,7 @@ type
     ToolButton15: TToolButton;
     ToolButton23: TToolButton;
     ClearNotificationsAction: TAction;
-    OperationReqsTreeView: TVirtualStringTree;
+    NavigatorTreeView: TVirtualStringTree;
     SelectMessageColumnsAction: TAction;
     CopyGridAction: TAction;
     PasteGridAction: TAction;
@@ -631,7 +631,7 @@ type
     procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
     procedure YamlToClipboardMenuItemClick(Sender: TObject);
     procedure MessagesTabToolBarResize(Sender: TObject);
-    procedure OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
+    procedure NavigatorTreeViewGetHint(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex;
       var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
     procedure WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
@@ -662,8 +662,8 @@ type
     procedure MenuItem14Click (Sender : TObject );
     procedure MenuItem17Click (Sender : TObject );
     procedure OpenProjectActionExecute(Sender: TObject);
-    procedure OperationReqsTreeViewClick(Sender: TObject);
-    procedure OperationReqsTreeViewGetImageIndex (Sender : TBaseVirtualTree ;
+    procedure NavigatorTreeViewClick(Sender: TObject);
+    procedure NavigatorTreeViewGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
       var Ghosted : Boolean ; var ImageIndex : Integer );
     procedure PingPongTimerTimer (Sender : TObject );
@@ -694,7 +694,7 @@ type
       Y : Integer );
     procedure OperationAliasActionExecute (Sender : TObject );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
-    procedure OperationReqsTreeViewPaintText (Sender : TBaseVirtualTree ;
+    procedure NavigatorTreeViewPaintText (Sender : TBaseVirtualTree ;
       const TargetCanvas : TCanvas ; Node : PVirtualNode ;
       Column : TColumnIndex ; TextType : TVSTTextType );
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
@@ -845,7 +845,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure SelectMessageColumnsActionExecute(Sender: TObject);
     procedure SelectMessageColumnsActionUpdate(Sender: TObject);
-    procedure OperationReqsTreeViewFocusChanged(Sender: TBaseVirtualTree;
+    procedure NavigatorTreeViewFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
     procedure ExceptionsVTSGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
@@ -957,7 +957,7 @@ type
     procedure OpenWsdlActionExecute(Sender: TObject);
     procedure OpenWsdlActionHint(var HintStr: string; var CanShow: Boolean);
     procedure GridViewFocusedNode(aNode: PVirtualNode);
-    procedure OperationReqsTreeViewGetText(Sender: TBaseVirtualTree;
+    procedure NavigatorTreeViewGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: string);
     procedure GridViewBeforeCellPaint(Sender: TBaseVirtualTree;
@@ -1057,7 +1057,7 @@ type
     procedure RefreshLogTimerTimer(Sender: TObject);
     procedure ZoomasScriptAssignments1Click(Sender: TObject);
     procedure XSDreportinClipBoardSpreadSheet1Click(Sender: TObject);
-    procedure UpdateDuplicateMessages;
+    procedure UpdateMessagesView;
     property WsdlOperation: TWsdlOperation read getWsdlOperation write
       setWsdlOperation;
     property WsdlMessage: TWsdlMessage read getWsdlMessage write setWsdlMessage;
@@ -1316,9 +1316,9 @@ type
     Bind: TCustomBindable;
   end;
 
-  POperationTreeRec = ^TOperationTreeRec;
+  PNavigatorTreeRec = ^TNavigatorTreeRec;
 
-  TOperationTreeRec = record
+  TNavigatorTreeRec = record
     Operation: TWsdlOperation;
   end;
 
@@ -1661,9 +1661,9 @@ begin
     InWsdlTreeView.Visible := True;
   end;
   saveStubChanged := stubChanged;
-  saveOnChanged := OperationReqsTreeView.OnFocusChanged;
+  saveOnChanged := NavigatorTreeView.OnFocusChanged;
   try
-    OperationReqsTreeView.OnFocusChanged := nil;
+    NavigatorTreeView.OnFocusChanged := nil;
     FillInWsdlEdits;
     GridView.Clear;
     UpdateMessagesGrid;
@@ -1675,7 +1675,7 @@ begin
       FocusOperationsReqVTS;
   finally
     stubChanged := saveStubChanged;
-    OperationReqsTreeView.OnFocusChanged := saveOnChanged;
+    NavigatorTreeView.OnFocusChanged := saveOnChanged;
   end;
 end;
 
@@ -1696,13 +1696,13 @@ procedure TMainForm.FillOperationReqsTreeView(aTreeView: TVirtualStringTree;
   aOperations: TWsdlOperations);
 var
   xNode: PVirtualNode;
-  xData: POperationTreeRec;
+  xData: PNavigatorTreeRec;
   X: Integer;
 begin
   aTreeView.EndEditNode;
   aTreeView.Clear;
   aTreeView.RootNodeCount := 0;
-  aTreeView.NodeDataSize := SizeOf(TOperationTreeRec);
+  aTreeView.NodeDataSize := SizeOf(TNavigatorTreeRec);
   if aOperations = nil then
     exit;
   for X := 0 to aOperations.Count - 1 do
@@ -1803,7 +1803,7 @@ begin
       EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
       EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
       UpdateVisibiltyTreeView(Value.WsdlService.DescriptionType = ipmDTFreeFormat);
-      UpdateDuplicateMessages;
+      UpdateMessagesView;
     end;
   except
   end;
@@ -2949,20 +2949,16 @@ begin
   end;
 end;
 
-procedure TMainForm.UpdateDuplicateMessages;
+procedure TMainForm.UpdateMessagesView;
 begin
   if Assigned (WsdlOperation) then
   begin
     if doTrackDuplicateMessages then
-    begin
-      WsdlOperation.Messages.SetDuplicates;
-    end
+      WsdlOperation.Messages.SetDuplicates
     else
-    begin
       WsdlOperation.Messages.ResetDuplicates;
-    end;
-    GridView.InvalidateColumn(nMessageButtonColumns);
   end;
+  GridView.Invalidate;
 end;
 
 procedure TMainForm.ShowChosenLogTab;
@@ -3525,8 +3521,8 @@ begin
     se.Clean;
   finally
     stubChanged := True;
-    OperationReqsTreeViewFocusChanged(OperationReqsTreeView,
-      OperationReqsTreeView.FocusedNode, OperationReqsTreeView.FocusedColumn);
+    NavigatorTreeViewFocusChanged(NavigatorTreeView,
+      NavigatorTreeView.FocusedNode, NavigatorTreeView.FocusedColumn);
   end;
 end;
 
@@ -3537,7 +3533,7 @@ begin
   xmlio.ProjectContext := contextPropertyOverwrite;
   InWsdlTreeView.BeginUpdate;
   GridView.BeginUpdate;
-  OperationReqsTreeView.BeginUpdate;
+  NavigatorTreeView.BeginUpdate;
   { }
   try
     GridView.Clear;
@@ -3570,7 +3566,7 @@ begin
       { }
     end;
   finally
-    OperationReqsTreeView.EndUpdate;
+    NavigatorTreeView.EndUpdate;
     GridView.EndUpdate;
     InWsdlTreeView.EndUpdate;
     CheckBoxClick(nil);
@@ -3638,11 +3634,11 @@ var
 begin
   UnhideOperationMenuItem.OnClick := nil;
   UnhideOperationMenuItem.Clear;
-  Node := OperationReqsTreeView.GetFirst;
+  Node := NavigatorTreeView.GetFirst;
   while Assigned(Node) do
   begin
-    xOperation := NodeToOperation(OperationReqsTreeView, Node);
-    OperationReqsTreeView.IsVisible[Node] := not xOperation.HiddenFromUI;
+    xOperation := NodeToOperation(NavigatorTreeView, Node);
+    NavigatorTreeView.IsVisible[Node] := not xOperation.HiddenFromUI;
     if xOperation.HiddenFromUI then
     begin
       xMenuItem := TMenuItem.Create(nil);
@@ -3651,7 +3647,7 @@ begin
       xMenuItem.OnClick := UnhideOperationMenuItemClick;
       UnhideOperationMenuItem.Add(xMenuItem);
     end;
-    Node := OperationReqsTreeView.GetNext(Node);
+    Node := NavigatorTreeView.GetNext(Node);
   end;
   UnhideOperationMenuItem.Enabled := (UnhideOperationMenuItem.Count > 0);
   UnhideAllOperationsAction.Enabled := UnhideOperationMenuItem.Enabled;
@@ -3927,7 +3923,7 @@ begin
   WsdlOperationsComboBox.Clear;
   WsdlServicesComboBox.Clear;
   WsdlComboBox.Items.Text := se.Wsdls.Text;
-  FillOperationReqsTreeView(OperationReqsTreeView, allAliasses);
+  FillOperationReqsTreeView(NavigatorTreeView, allAliasses);
   if se.scriptErrorCount > 0 then
     ShowMessage(IntToStr(se.scriptErrorCount) +
         ' Script(s) found with errors, see Exceptions log');
@@ -3972,7 +3968,7 @@ begin
   GridView.Clear;
   ExceptionMemo.Clear;
   ExceptionsVTS.Clear;
-  OperationReqsTreeView.Clear;
+  NavigatorTreeView.Clear;
   // InWSdlEnumerationsListView.Clear;
   InWsdlPropertiesListView.Clear;
   OperationDocumentationViewer.Canvas.Clear;
@@ -4178,12 +4174,12 @@ begin
         (TStubAction(ActionComboBox.ItemIndex) = saRequest)) then
     begin
       WsdlOperation.StubAction := TStubAction(ActionComboBox.ItemIndex);
-      OperationReqsTreeView.OnFocusChanged(OperationReqsTreeView,
-        OperationReqsTreeView.FocusedNode, 0);
+      NavigatorTreeView.OnFocusChanged(NavigatorTreeView,
+        NavigatorTreeView.FocusedNode, 0);
     end;
     WsdlOperation.StubAction := TStubAction(ActionComboBox.ItemIndex);
     stubChanged := True;
-    OperationReqsTreeView.Invalidate;
+    NavigatorTreeView.Invalidate;
     OperationDelayResponseTimeAction.Visible :=
       (WsdlOperation.StubAction <> saRequest);
     if (WsdlOperation.DelayTimeMsMin = 0) and
@@ -4845,8 +4841,7 @@ begin
       Dec(n);
       cNode := GridView.GetNext(cNode);
     end;
-    UpdateDuplicateMessages;
-    GridView.Invalidate;
+    UpdateMessagesView;
     GridView.SetFocus;
     DoColorBindButtons;
     if Assigned(sNode) then
@@ -5015,17 +5010,13 @@ begin
         GridView.DeleteNode(cNode, True);
         if Assigned(xMessage) then
         begin
-          for m := 0 to WsdlOperation.Messages.Count - 1 do
-            if WsdlOperation.Messages.Messages[m].Duplicates = xMessage then
-              WsdlOperation.Messages.Messages[m].Duplicates := nil;
           WsdlOperation.Messages.DeleteMessage(xMessage);
           stubChanged := True;
         end;
       end;
       cNode := nNode;
     end;
-    UpdateDuplicateMessages;
-    GridView.Invalidate;
+    UpdateMessagesView;
     GridView.SetFocus;
     GridViewFocusedNode(GridView.FocusedNode);
     DoColorBindButtons;
@@ -5065,8 +5056,7 @@ begin
       end;
       GridView.FocusedNode := GetFirstSelected;
     end;
-    UpdateDuplicateMessages;
-    GridView.Invalidate;
+    UpdateMessagesView;
     stubChanged := True;
   finally
     WsdlOperation.ReleaseLock;
@@ -5125,8 +5115,7 @@ begin
       end;
       GridView.FocusedNode := GetFirstSelected;
     end;
-    UpdateDuplicateMessages;
-    GridView.Invalidate;
+    UpdateMessagesView;
     stubChanged := True;
   finally
     WsdlOperation.ReleaseLock;
@@ -5239,7 +5228,7 @@ begin
               end;
             end;
         end;
-        OperationReqsTreeView.Invalidate;
+        NavigatorTreeView.Invalidate;
         stubChanged := True;
       finally
         ReleaseLock;
@@ -5774,7 +5763,7 @@ begin
         finally
           GridView.EndUpdate;
           GridView.ScrollIntoView(GridView.FocusedNode, False, False);
-          OperationReqsTreeView.ScrollIntoView(OperationReqsTreeView.FocusedNode,
+          NavigatorTreeView.ScrollIntoView(NavigatorTreeView.FocusedNode,
             False, False);
         end;
       end;
@@ -6074,7 +6063,7 @@ end;
 function TMainForm.NodeToOperation(aTreeView: TBaseVirtualTree;
   aNode: PVirtualNode): TWsdlOperation;
 var
-  Data: POperationTreeRec;
+  Data: PNavigatorTreeRec;
 begin
   result := nil;
   if Assigned(aNode) then
@@ -6159,7 +6148,7 @@ begin
   end;
 end;
 
-procedure TMainForm.OperationReqsTreeViewFocusChanged(Sender: TBaseVirtualTree;
+procedure TMainForm.NavigatorTreeViewFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 var
   xOperation: TWsdlOperation;
@@ -6169,17 +6158,17 @@ begin
   xOperation := NodeToOperation(Sender, Node);
   if Assigned(xOperation) and (xOperation is TWsdlOperation) then
   begin
-    swap := OperationReqsTreeView.OnFocusChanged;
+    swap := NavigatorTreeView.OnFocusChanged;
     try
-      OperationReqsTreeView.OnFocusChanged := nil;
+      NavigatorTreeView.OnFocusChanged := nil;
       WsdlOperation := xOperation;
     finally
-      OperationReqsTreeView.OnFocusChanged := swap;
+      NavigatorTreeView.OnFocusChanged := swap;
     end;
   end;
 end;
 
-procedure TMainForm.OperationReqsTreeViewGetText(Sender: TBaseVirtualTree;
+procedure TMainForm.NavigatorTreeViewGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: string);
 var
@@ -6269,16 +6258,16 @@ procedure TMainForm.FocusOperationsReqVTS;
 var
   xNode: PVirtualNode;
 begin
-  xNode := OperationReqsTreeView.GetFirst;
+  xNode := NavigatorTreeView.GetFirst;
   while not(xNode = nil) do
   begin
-    if NodeToOperation(OperationReqsTreeView, xNode) = WsdlOperation then
+    if NodeToOperation(NavigatorTreeView, xNode) = WsdlOperation then
     begin
-      OperationReqsTreeView.FocusedNode := xNode;
-      OperationReqsTreeView.Selected[xNode] := True;
+      NavigatorTreeView.FocusedNode := xNode;
+      NavigatorTreeView.Selected[xNode] := True;
       exit;
     end;
-    xNode := OperationReqsTreeView.GetNext(xNode);
+    xNode := NavigatorTreeView.GetNext(xNode);
   end;
 end;
 
@@ -6535,8 +6524,8 @@ begin
     MessagesVTS.Header.Columns[X].Width := wBttn;
   for X := 0 to Ord(snapshotDateTimeColumn) - 1 do
     SnapshotsVTS.Header.Columns[X].Width := wBttn;
-  OperationReqsTreeView.Header.Columns[0].Width := wBttn;
-  OperationReqsTreeView.Header.Columns[1].Width := wBttn;
+  NavigatorTreeView.Header.Columns[0].Width := wBttn;
+  NavigatorTreeView.Header.Columns[1].Width := wBttn;
   for x := 0 to nMessageButtonColumns - 1 do
     GridView.Header.Columns[x].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
@@ -6618,8 +6607,8 @@ begin
   CollapseHeaders := xIniFile.BooleanByNameDef['CollapseHeaders', True];
   InWsdlTreeView.NodeDataSize := SizeOf(TXmlTreeRec);
   InWsdlTreeView.RootNodeCount := 0;
-  OperationReqsTreeView.NodeDataSize := SizeOf(TOperationTreeRec);
-  OperationReqsTreeView.RootNodeCount := 0;
+  NavigatorTreeView.NodeDataSize := SizeOf(TNavigatorTreeRec);
+  NavigatorTreeView.RootNodeCount := 0;
   GridView.NodeDataSize := SizeOf(TMessageTreeRec);
   GridView.RootNodeCount := 0;
   SnapshotsVTS.NodeDataSize := SizeOf(TSnapshotTreeRec);
@@ -6914,6 +6903,8 @@ begin
   xMessage := nil; //avoid warning
   NodeToMessage(Sender, Node, xMessage);
   if Column < nMessageButtonColumns then exit;
+  if Assigned (xMessage.Duplicates) then
+    TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
   if (Column = nMessageButtonColumns) then
   begin
     n := 0;
@@ -6933,8 +6924,6 @@ begin
       else
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
     end;
-    if Assigned (xMessage.Duplicates) then
-      TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
     exit;
   end;
   if (Column - nMessageButtonColumns) <= xMessage.CorrelationBindables.Count then
@@ -7076,8 +7065,7 @@ begin
   finally
     GridViewFocusedNode(swapNode);
     GridView.FocusedColumn := swapColumn;
-    UpdateDuplicateMessages;
-    GridView.Invalidate;
+    UpdateMessagesView;
     GridView.EndUpdate;
     InWsdlTreeView.Invalidate;
     InWsdlTreeView.EndUpdate;
@@ -9031,7 +9019,7 @@ begin
   if fDoTrackDuplicateMessages=AValue then Exit;
   fDoTrackDuplicateMessages:=AValue;
   ToggleTrackDuplicateMessagesAction.Checked := fDoTrackDuplicateMessages;
-  UpdateDuplicateMessages;
+  UpdateMessagesView;
 end;
 
 procedure TMainForm.setDoValidateReplies(const Value: Boolean);
@@ -10613,8 +10601,7 @@ begin
         end;
       end;
     finally
-      UpdateDuplicateMessages;
-      GridView.Invalidate;
+      UpdateMessagesView;
       CheckBoxClick(nil);
       AbortAction.Enabled := False;
       abortPressed := False;
@@ -11987,7 +11974,7 @@ begin
   end;
 end;
 
-procedure TMainForm .OperationReqsTreeViewPaintText (
+procedure TMainForm .NavigatorTreeViewPaintText (
   Sender : TBaseVirtualTree ; const TargetCanvas : TCanvas ;
   Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType );
 var
@@ -12831,7 +12818,7 @@ var
   xOperation: TWsdlOperation;
 begin
   xOperation := WsdlOperation;
-  FillOperationReqsTreeView(OperationReqsTreeView, allAliasses);
+  FillOperationReqsTreeView(NavigatorTreeView, allAliasses);
   WsdlOperation := xOperation;
 end;
 
@@ -12877,16 +12864,16 @@ begin
   end;
 end;
 
-procedure TMainForm.OperationReqsTreeViewClick(Sender: TObject);
+procedure TMainForm.NavigatorTreeViewClick(Sender: TObject);
 begin
-  if not Assigned (OperationReqsTreeView.FocusedNode) then Exit;
-  case OperationReqsTreeView.FocusedColumn of
+  if not Assigned (NavigatorTreeView.FocusedNode) then Exit;
+  case NavigatorTreeView.FocusedColumn of
     Ord (operationsColumnBeforeScript): EditScriptButtonClick(nil);
     Ord (operationsColumnAfterScript): AfterRequestScriptButtonClick(nil);
   end;
 end;
 
-procedure TMainForm .OperationReqsTreeViewGetImageIndex (
+procedure TMainForm .NavigatorTreeViewGetImageIndex (
   Sender : TBaseVirtualTree ; Node : PVirtualNode ; Kind : TVTImageKind ;
   Column : TColumnIndex ; var Ghosted : Boolean ; var ImageIndex : Integer );
 var
@@ -13980,7 +13967,7 @@ begin
   PositionMessagesTabControl;
 end;
 
-procedure TMainForm.OperationReqsTreeViewGetHint(Sender: TBaseVirtualTree;
+procedure TMainForm.NavigatorTreeViewGetHint(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex;
   var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
 var
@@ -14213,7 +14200,7 @@ begin
         try aOperation.PrepareBefore; Except end;
         try aOperation.PrepareAfter; Except end;
         FillInWsdlEdits;
-        OperationReqsTreeView.Invalidate;
+        NavigatorTreeView.Invalidate;
         InWsdlTreeView.Invalidate;
       end;
     end;
