@@ -1984,10 +1984,6 @@ object MainForm: TMainForm
     object configAction1: TMenuItem
       Caption = '&Help'
       Hint = 'Configure record descriptors'
-      object License1: TMenuItem
-        Caption = 'License'
-        OnClick = License1Click
-      end
       object About1: TMenuItem
         Caption = 'About'
         OnClick = HelpAboutButtonClick

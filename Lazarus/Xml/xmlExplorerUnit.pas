@@ -1,5 +1,4 @@
 {.$define XMLDOM}
-{.$define JANBOLICENSE}
 unit xmlExplorerUnit;
 
 {$IFDEF FPC}
@@ -44,7 +43,6 @@ type
     editConfigAction: TAction;
     configAction1: TMenuItem;
     About1: TMenuItem;
-    License1: TMenuItem;
     openLog4JAction: TAction;
     FolderAction: TAction;
     ToolButton2: TToolButton;
@@ -52,7 +50,6 @@ type
     Comparefolders1: TMenuItem;
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure openLog4JActionExecute(Sender: TObject);
-    procedure License1Click(Sender: TObject);
     procedure openFileActionExecute(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure HelpAboutButtonClick(Sender: TObject);
@@ -66,7 +63,6 @@ type
     IniFile: TFormIniFile;
     fConfigChanged: Boolean;
     xmlExplorerIniFileName, xmlExplorerDbName: String;
-    function getXmlExplorerLicensed: Boolean;
     procedure OnGetLog4JText( aList: TStringList
                             ; aIndex, aColumn: Integer
                             ; var aText: WideString
@@ -76,9 +72,7 @@ type
                        ; var aPasses: Boolean
                        );
     function StringPassesFilter (aString: String): Boolean;
-    procedure setXmlExplorerLicensed(const Value: Boolean);
     procedure setConfigChanged(const Value: Boolean);
-    procedure OnlyWhenLicensed;
     procedure FinishedEvent(Sender: TObject);
     procedure IgnoreChanged (Sender: TObject);
   public
@@ -90,7 +84,6 @@ type
     configXsd: TXsd;
     SortSpecs: TStringList;
     ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn: TStringList;
-    property xmlExplorerLicensed: Boolean read getXmlExplorerLicensed write setXmlExplorerLicensed;
     property configChanged: Boolean read fConfigChanged write setConfigChanged;
     procedure xmlExplorerInit;
     procedure ParserError(Sender: TObject; LineNumber, ColumnNumber,
@@ -116,7 +109,6 @@ uses
    , cbAbout
    , igGlobals
    , ErrorFound
-// , IpmGunLicense
    , StrUtils
    ;
 {$IFnDEF FPC}
@@ -334,14 +326,6 @@ begin
   end;
 end;
 
-procedure TMainForm.OnlyWhenLicensed;
-begin
-  if (GetUserName <> 'BouwmanJW')
-  and (GetUserName <> 'Bouwman')
-  and (not xmlExplorerLicensed) then
-    raise Exception.Create ('Disabled because you are not a licensed user.');
-end;
-
 procedure TMainForm.Exit1Click(Sender: TObject);
 begin
   Close;
@@ -383,25 +367,6 @@ begin
     end;
 
   end;
-{}{
-  if (not xmlExplorerLicensed)
-  and (xmlUtil.IpmDescrs.Count > 2) then
-  begin
-    while (xmlUtil.IpmDescrs.Count > 2) do
-    begin
-      xmlUtil.IpmDescrs.IpmDescrs [xmlUtil.IpmDescrs.Count - 1].Free;
-      xmlUtil.IpmDescrs.Delete (xmlUtil.IpmDescrs.Count - 1);
-    end;
-    ShowMessage ( 'You are not a licensed user of xmlExplorer'
-                + #$D#$A
-                + #$D#$A
-                + 'Therefore the number of record descriptors is limited to 2.'
-                + #$D#$A
-                + #$D#$A
-                + 'Please contact your xmlExplorer provider.'
-                );
-  end;
-{}
 end;
 
 procedure TMainForm.openFileActionExecute(Sender: TObject);
@@ -457,7 +422,6 @@ end;
 
 procedure TMainForm.xmlExplorerInit;
 begin
-  xmlExplorerLicensed := False;
   xmlExplorerDbName := '';
   xmlExplorerIniFileName := Copy ( ParamStr(0)
                          , 1
@@ -471,9 +435,6 @@ begin
     LoadFromFile(xmlExplorerIniFileName, nil);
     if not (TagName = 'xmlExplorerIni') then
       raise Exception.Create(xmlExplorerIniFileName + ': Not a valid INI Xmlfile');
-    xmlExplorerDbName := ExpandRelativeFileName ( ParamStr(0)
-                                                , Items.XmlValueByTag ['licenseDatabase']
-                                                );
     xmlExplorerXsdFileName := ExpandRelativeFileName ( ParamStr(0)
                                                      , Items.XmlValueByTag ['xmlExplorerXsd']
                                                      );
@@ -495,41 +456,10 @@ begin
     end;
   end;
 
-  {$ifdef JANBOLICENSE}
-  if FileExistsUTF8(xmlExplorerDbName) { *Converted from FileExists* } then
-    xmlExplorerLicensed := ValidateLicense (IniFile, 'xmlExplorer', xmlExplorerDbName);
-  {$else}
-  xmlExplorerLicensed := True;
-  {$endif}
-  if not xmlExplorerLicensed then
-    ShowMessage ( 'Since you are not a licensed user,'
-                + #$D#$A
-                + 'xmlExplorer will only show the first part of values.'
-                );
   configFileName := IniFile.StringByNameDef  ['configFileName', ''];
   xmlUtil.OnProgress := ShowProgress;
   xmlUtil.doEnableCompare := True;
   _OnParseErrorEvent := ParserError;
-end;
-
-procedure TMainForm.License1Click(Sender: TObject);
-begin
-  {$ifdef JANBOLICENSE}
-  UpdateLicense  (IniFile, 'xmlExplorer', xmlExplorerDbName);
-  xmlExplorerLicensed := ValidateLicense (IniFile, 'xmlExplorer', xmlExplorerDbName);
-  {$else}
-  xmlExplorerLicensed := True;
-  {$endif}
-end;
-
-procedure TMainForm.setXmlExplorerLicensed(const Value: Boolean);
-begin
-  _xmllicensed := Value;
-end;
-
-function TMainForm.getXmlExplorerLicensed: Boolean;
-begin
-  result := _xmllicensed;
 end;
 
 procedure TMainForm.OnGetLog4JText(aList: TStringList; aIndex,

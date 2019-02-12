@@ -42,7 +42,7 @@ object AboutBox: TAboutBox
     Height = 13
     Top = 58
     Width = 186
-    Caption = 'Copyright © 2010 - 2017 Jan Bouwman'
+    Caption = 'Copyright © 2010 - 2019 Jan Bouwman'
     ParentColor = False
   end
   object OKButton: TButton

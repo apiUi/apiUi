@@ -1625,7 +1625,7 @@ function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
   begin
     result := '';
     if OnlyWhenChecked and not aXml.Checked then Exit;
-    Result := IndentString(aIndent) + aXml.Name + ': ' + aXml.yamlValue;
+    Result := IndentString(aIndent) + NameWithoutPrefix(aXml.Name) + ': ' + aXml.yamlValue;
     for x := 0 to aXml.Items.Count - 1 do
       if (aXml.Items.XmlItems[x].Checked)
       or (not OnlyWhenChecked) then

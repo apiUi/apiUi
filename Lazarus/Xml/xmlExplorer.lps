@@ -4,13 +4,13 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="79">
+    <Units Count="80">
       <Unit0>
         <Filename Value="xmlExplorer.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="35" Y="10"/>
-        <UsageCount Value="69"/>
+        <UsageCount Value="70"/>
       </Unit0>
       <Unit1>
         <Filename Value="xmlExplorerUnit.pas"/>
@@ -18,10 +18,9 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="755"/>
-        <CursorPos X="7" Y="766"/>
-        <UsageCount Value="69"/>
+        <TopLine Value="266"/>
+        <CursorPos X="30" Y="270"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -33,7 +32,7 @@
         <ResourceBaseClass Value="Form"/>
         <TopLine Value="58"/>
         <CursorPos X="32" Y="73"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="57"/>
       </Unit2>
       <Unit3>
         <Filename Value="ShowXmlUnit.pas"/>
@@ -42,9 +41,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="968"/>
-        <CursorPos X="17" Y="978"/>
-        <UsageCount Value="56"/>
+        <TopLine Value="1990"/>
+        <CursorPos X="34" Y="2006"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
@@ -53,7 +52,7 @@
         <ComponentName Value="XmlGridForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="57"/>
       </Unit4>
       <Unit5>
         <Filename Value="stdvcl.pas"/>
@@ -61,7 +60,7 @@
         <UnitName Value="StdVCL"/>
         <TopLine Value="201"/>
         <CursorPos X="12" Y="13"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="66"/>
       </Unit5>
       <Unit6>
         <Filename Value="cbAbout.pas"/>
@@ -70,9 +69,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="30"/>
-        <CursorPos X="40" Y="59"/>
-        <UsageCount Value="56"/>
+        <TopLine Value="11"/>
+        <CursorPos X="20" Y="22"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit6>
@@ -81,7 +80,7 @@
         <IsPartOfProject Value="True"/>
         <TopLine Value="3634"/>
         <CursorPos Y="3645"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="57"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Utils\versionsupport.pas"/>
@@ -90,12 +89,12 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="208"/>
         <CursorPos Y="229"/>
-        <UsageCount Value="45"/>
+        <UsageCount Value="46"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="42"/>
+        <UsageCount Value="43"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\Html\htmlxmlutilz.pas"/>
@@ -104,7 +103,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="42"/>
+        <UsageCount Value="43"/>
       </Unit10>
       <Unit11>
         <Filename Value="unit1.pas"/>
@@ -136,8 +135,8 @@
       <Unit15>
         <Filename Value="Xmlz.pas"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="414"/>
-        <CursorPos X="6" Y="425"/>
+        <TopLine Value="1618"/>
+        <CursorPos X="56" Y="1628"/>
         <UsageCount Value="14"/>
         <Loaded Value="True"/>
       </Unit15>
@@ -173,7 +172,7 @@
         <ComponentName Value="ShowFolderDifferencesForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="15"/>
         <TopLine Value="585"/>
         <CursorPos X="72" Y="595"/>
         <UsageCount Value="22"/>
@@ -206,7 +205,7 @@
       </Unit25>
       <Unit26>
         <Filename Value="A2BXmlz.pas"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="16"/>
         <TopLine Value="314"/>
         <CursorPos X="3" Y="320"/>
         <UsageCount Value="17"/>
@@ -245,7 +244,7 @@
         <ComponentName Value="ShowA2BXmlForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="166"/>
         <CursorPos X="6" Y="177"/>
         <UsageCount Value="17"/>
@@ -291,9 +290,9 @@
       </Unit37>
       <Unit38>
         <Filename Value="xmlUtilz.pas"/>
-        <EditorIndex Value="13"/>
-        <TopLine Value="51"/>
-        <CursorPos Y="61"/>
+        <EditorIndex Value="14"/>
+        <TopLine Value="512"/>
+        <CursorPos X="3" Y="514"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit38>
@@ -323,9 +322,10 @@
       </Unit41>
       <Unit42>
         <Filename Value="Xsdz.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="263"/>
-        <CursorPos X="17" Y="290"/>
+        <TopLine Value="343"/>
+        <CursorPos X="3" Y="345"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit42>
@@ -444,7 +444,7 @@
       <Unit61>
         <Filename Value="a2bxmlgridunit.pas"/>
         <UnitName Value="A2BXmlGridUnit"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="239"/>
         <CursorPos X="6" Y="250"/>
         <UsageCount Value="15"/>
@@ -455,7 +455,7 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="7780"/>
         <CursorPos X="3" Y="7790"/>
         <UsageCount Value="20"/>
@@ -471,7 +471,7 @@
       </Unit63>
       <Unit64>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="13"/>
         <TopLine Value="2320"/>
         <CursorPos Y="2334"/>
         <UsageCount Value="14"/>
@@ -496,7 +496,7 @@
         <ComponentName Value="ShowLogDifferencesForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="12"/>
         <TopLine Value="820"/>
         <CursorPos X="21" Y="787"/>
         <UsageCount Value="12"/>
@@ -563,7 +563,7 @@
       </Unit75>
       <Unit76>
         <Filename Value="Wsdlz.pas"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="10"/>
         <TopLine Value="979"/>
         <CursorPos Y="992"/>
         <UsageCount Value="12"/>
@@ -578,133 +578,135 @@
       </Unit77>
       <Unit78>
         <Filename Value="..\wsdlStub\EditRegExpUnit.pas"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <CursorPos X="6"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit78>
+      <Unit79>
+        <Filename Value="..\Xpress\Bind.pas"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="197"/>
+        <CursorPos X="3" Y="207"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit79>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="JSON"/>
     </OtherDefines>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="461" TopLine="459"/>
       </Position1>
       <Position2>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="462" TopLine="460"/>
+        <Caret Line="2" Column="13"/>
       </Position2>
       <Position3>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="461" TopLine="459"/>
       </Position3>
       <Position4>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="460" TopLine="458"/>
+        <Caret Line="119" TopLine="109"/>
       </Position4>
       <Position5>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="459" TopLine="457"/>
+        <Caret Line="338" TopLine="329"/>
       </Position5>
       <Position6>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="458" TopLine="456"/>
+        <Caret Line="381" TopLine="376"/>
       </Position6>
       <Position7>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="457" TopLine="455"/>
+        <Caret Line="436" Column="19" TopLine="417"/>
       </Position7>
       <Position8>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="456" TopLine="454"/>
+        <Caret Line="93" Column="14" TopLine="83"/>
       </Position8>
       <Position9>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="455" TopLine="453"/>
+        <Caret Line="69" Column="14" TopLine="58"/>
       </Position9>
       <Position10>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="454" TopLine="452"/>
       </Position10>
       <Position11>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="453" TopLine="451"/>
+        <Caret Line="2"/>
       </Position11>
       <Position12>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="452" TopLine="450"/>
+        <Caret Line="46" Column="10" TopLine="28"/>
       </Position12>
       <Position13>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="451" TopLine="449"/>
+        <Caret Line="492" TopLine="490"/>
       </Position13>
       <Position14>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="450" TopLine="448"/>
+        <Caret Line="491" TopLine="489"/>
       </Position14>
       <Position15>
-        <Filename Value="json\jsnAnalyser.pas"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
       </Position15>
       <Position16>
-        <Filename Value="Xmlz.pas"/>
-        <Caret Line="424" Column="47" TopLine="405"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="52" Column="55" TopLine="42"/>
       </Position16>
       <Position17>
-        <Filename Value="a2bxmlgridunit.pas"/>
-        <Caret Line="202" Column="96" TopLine="202"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
       </Position17>
       <Position18>
-        <Filename Value="a2bxmlgridunit.pas"/>
-        <Caret Line="250" Column="20" TopLine="239"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="66" TopLine="48"/>
       </Position18>
       <Position19>
-        <Filename Value="ShowA2BXmlUnit.pas"/>
-        <Caret Line="990" TopLine="977"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="75" TopLine="57"/>
       </Position19>
       <Position20>
-        <Filename Value="..\wsdlStub\EditRegExpUnit.pas"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="87" TopLine="69"/>
       </Position20>
       <Position21>
-        <Filename Value="ShowFolderDifferencesUnit.pas"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="425" TopLine="406"/>
       </Position21>
       <Position22>
-        <Filename Value="ShowFolderDifferencesUnit.pas"/>
-        <Caret Line="595" Column="68" TopLine="584"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="438" TopLine="423"/>
       </Position22>
       <Position23>
-        <Filename Value="ShowFolderDifferencesUnit.pas"/>
-        <Caret Line="133" Column="60" TopLine="122"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="459" TopLine="447"/>
       </Position23>
       <Position24>
-        <Filename Value="ShowFolderDifferencesUnit.pas"/>
-        <Caret Line="595" Column="72" TopLine="585"/>
+        <Filename Value="xmlExplorerUnit.pas"/>
+        <Caret Line="465" TopLine="446"/>
       </Position24>
       <Position25>
         <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="434" Column="3" TopLine="432"/>
+        <Caret Line="270" Column="30" TopLine="266"/>
       </Position25>
       <Position26>
-        <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="486" Column="44" TopLine="475"/>
+        <Filename Value="ShowXmlUnit.pas"/>
+        <Caret Line="978" Column="17" TopLine="968"/>
       </Position26>
       <Position27>
-        <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="765" Column="36" TopLine="754"/>
+        <Filename Value="ShowXmlUnit.pas"/>
+        <Caret Line="2006" Column="34" TopLine="1990"/>
       </Position27>
       <Position28>
-        <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="766" Column="31" TopLine="755"/>
+        <Filename Value="xmlUtilz.pas"/>
+        <Caret Line="514" Column="3" TopLine="512"/>
       </Position28>
       <Position29>
-        <Filename Value="ShowXmlUnit.pas"/>
-        <Caret Line="284" Column="31" TopLine="269"/>
+        <Filename Value="Xmlz.pas"/>
+        <Caret Line="1628" Column="56" TopLine="1618"/>
       </Position29>
-      <Position30>
-        <Filename Value="xmlExplorerUnit.pas"/>
-        <Caret Line="766" Column="15" TopLine="755"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -714,7 +716,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="xmlExplorerUnit.pas"/>
-        <Line Value="747"/>
+        <Line Value="677"/>
       </Item1>
     </BreakPoints>
   </Debugging>
