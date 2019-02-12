@@ -2618,8 +2618,8 @@ object MainForm: TMainForm
     end
     object ToggleTrackDuplicateMessagesAction: TAction
       Category = 'Messages'
-      Caption = 'Toggle track Duplicate Messages'
-      Hint = 'Toggle track Duplicate Messages'
+      Caption = 'Track duplicate messages'
+      Hint = 'Track duplicate messages'
       ImageIndex = 102
       OnExecute = ToggleTrackDuplicateMessagesActionExecute
     end

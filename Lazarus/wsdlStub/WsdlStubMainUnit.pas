@@ -1319,6 +1319,8 @@ type
   PNavigatorTreeRec = ^TNavigatorTreeRec;
 
   TNavigatorTreeRec = record
+    Wsdl: TWsdl;
+    Service: TWsdlService;
     Operation: TWsdlOperation;
   end;
 
