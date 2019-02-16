@@ -3585,6 +3585,7 @@ begin
     BindScriptFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindScriptFunction ('ResetEnvVar', @ResetEnvVar, VFOS, '(aKey)');
     BindScriptFunction ('ResetEnvVars', @ResetEnvVars, VFOS, '(aRegularExpr)');
+    BindScriptFunction ('ResolveAliasses', @xmlio.resolveAliasses, SFS, '(aString)');
     BindScriptFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindScriptFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
@@ -5832,6 +5833,7 @@ procedure TWsdlOperation.ExecuteReqStampers;
        )
     and (not aBindable.Checked) then
       exit;
+    aBindable.Value := xmlio.resolveAliasses(aBindable.Value);
     if aBindable.isExpression then
     begin
       PrepareReqStamper (aBindable);

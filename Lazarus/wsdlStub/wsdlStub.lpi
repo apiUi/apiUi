@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
-      <BuildNr Value="12183"/>
+      <BuildNr Value="12187"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -34,31 +34,34 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="FCL"/>
+        <PackageName Value="indylaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="Abbrevia"/>
+        <PackageName Value="FCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="TAChartLazarusPkg"/>
+        <PackageName Value="Abbrevia"/>
       </Item3>
       <Item4>
-        <PackageName Value="TurboPowerIPro"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item4>
       <Item5>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item5>
       <Item6>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item6>
       <Item7>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="SynEdit"/>
       </Item7>
       <Item8>
-        <PackageName Value="LCL"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
     </RequiredPackages>
     <Units Count="13">
       <Unit0>
@@ -183,9 +186,11 @@
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
+        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
+        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
@@ -208,6 +213,7 @@
       </Item13>
       <Item14>
         <Name Value="EIdHTTPProtocolException"/>
+        <Enabled Value="False"/>
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>

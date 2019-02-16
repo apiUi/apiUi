@@ -744,6 +744,15 @@ function resolveAliasses (aString : String): String ;
   function _resolv (aString: String; aSl: TStringList): String;
   var
     xHasExp: Boolean;
+    function _isPwd (aString: String): Boolean;
+    var
+      xString: String;
+    begin
+      xString := UpperCase(aString);
+      result := (RightStr(xString, 3) = 'PWD')
+             or (RightStr(xString, 8) = 'PASSWORD')
+              ;
+    end;
     function _trans (aString: String): String;
     var
       f, x: Integer;
@@ -757,7 +766,10 @@ function resolveAliasses (aString : String): String ;
       try
         aSl.Objects[f] := TObject (Pointer (1));
         try
-          result := _resolv (aSl.ValueFromIndex[f], aSl);
+          if _isPwd(aString) then
+            result := _resolv (DecryptPassword(aSl.ValueFromIndex[f]), aSl)
+          else
+            result := _resolv (aSl.ValueFromIndex[f], aSl);
         finally
           aSl.Objects[f] := nil;
         end;
