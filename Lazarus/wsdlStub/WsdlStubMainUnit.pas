@@ -13819,7 +13819,10 @@ begin
       ColCount := se.projectContexts.ColCount;
       for r := 0 to RowCount - 1 do
         for c := 0 to ColCount - 1 do
+        begin
           Cells[c, r] := se.projectContexts.CellValue[c, r];
+          Objects[c, r] := se.projectContexts.CellObject[c, r];
+        end;
     end;
     ShowModal;
     if ModalResult = mrOK then
@@ -13829,7 +13832,10 @@ begin
       se.projectContexts.ColCount := ColCount;
       for r := 0 to RowCount - 1 do
         for c := 0 to ColCount - 1 do
+        begin
           se.projectContexts.CellValue[c, r] := Cells[c, r];
+          se.projectContexts.CellObject[c, r] := Objects[c, r];
+        end;
       se.projectProperties.Clear; // it is one or another
       stubChanged := True;
       if ContextComboBox.Text <> contextPropertyOverwrite then

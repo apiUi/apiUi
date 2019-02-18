@@ -5781,6 +5781,7 @@ procedure TWsdlOperation.ExecuteRpyStampers;
        )
     and (not aBindable.Checked) then
       exit;
+    aBindable.Value := resolveAliasses (aBindable.Value, true);
     if aBindable.isExpression then
     begin
       PrepareRpyStamper (aBindable);
@@ -5833,7 +5834,7 @@ procedure TWsdlOperation.ExecuteReqStampers;
        )
     and (not aBindable.Checked) then
       exit;
-    aBindable.Value := xmlio.resolveAliasses(aBindable.Value);
+    aBindable.Value := xmlio.resolveAliasses(aBindable.Value, true);
     if aBindable.isExpression then
     begin
       PrepareReqStamper (aBindable);

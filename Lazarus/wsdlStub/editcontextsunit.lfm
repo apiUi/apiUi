@@ -178,18 +178,18 @@ object EditContextsForm: TEditContextsForm
   end
   object ContextComboBox: TComboBox
     Left = 24
-    Height = 21
-    Top = 299
+    Height = 28
+    Top = 292
     Width = 100
     Anchors = [akLeft, akBottom]
-    ItemHeight = 13
+    ItemHeight = 20
     TabOrder = 3
   end
   object Label1: TLabel
     Left = 129
-    Height = 13
-    Top = 304
-    Width = 152
+    Height = 20
+    Top = 297
+    Width = 207
     Anchors = [akLeft, akBottom]
     Caption = 'Context to use (general option)'
     ParentColor = False
@@ -361,6 +361,10 @@ object EditContextsForm: TEditContextsForm
         }
       end
     end
+    object MenuItem5: TMenuItem
+      Action = SetPasswordAction
+      Visible = False
+    end
   end
   object ActionList1: TActionList
     Images = mainImageList
@@ -391,6 +395,11 @@ object EditContextsForm: TEditContextsForm
       ImageIndex = 8
       OnExecute = RemovePropertyActionExecute
       OnUpdate = RemovePropertyActionUpdate
+    end
+    object SetPasswordAction: TAction
+      Caption = 'Set column as password'
+      OnExecute = SetPasswordActionExecute
+      OnUpdate = SetPasswordActionUpdate
     end
   end
   object mainImageList: TImageList

@@ -16,6 +16,8 @@ type
     fColCount: Integer;
     fRowCount: Integer;
     function getCell(aCol, aRow: String): String;
+    function getCellObject(aCol, aRow: Integer): TObject;
+    procedure setCellObject(aCol, aRow: Integer; AValue: TObject);
     procedure setRowText(Index: integer; AValue: String);
     procedure SetStringList(Index: integer; const Value: TStringList);
     procedure setColCount(const Value: Integer);
@@ -29,6 +31,7 @@ type
     property RowCount: Integer read fRowCount write setRowCount;
     property ColCount: Integer read fColCount write setColCount;
     property CellValue [aCol, aRow: Integer]: String read getCellValue write setCellValue;
+    property CellObject [aCol, aRow: Integer]: TObject read getCellObject write setCellObject;
     property Cell [aCol, aRow: String]: String read getCell;
     property RowText [Index: integer]: String read getRowText write setRowText;
     property StringLists [Index: integer]: TStringList read GetStringList write SetStringList;
@@ -74,7 +77,9 @@ begin
     with AddXml(TXml.CreateAsString('row','')) do
     begin
       for c := 0 to ColCount - 1 do
-        AddXml(TXml.CreateAsString('col', CellValue[c, r]));
+        with AddXml(TXml.CreateAsString('col', CellValue[c, r])) do
+          if Assigned (CellObject[c, r]) then
+            AddAttribute(TXmlAttribute.CreateAsBoolean('assigned', true));
     end;
   end;
 end;
@@ -94,7 +99,11 @@ begin
   for r := 0 to aXml.Items.Count - 1 do
     with aXml.Items.XmlItems[r] do
       for c := 0 to Items.Count - 1 do
+      begin
         CellValue[c, r] := Items.XmlItems[c].Value;
+        if Items.XmlItems[c].AttributeBooleanByTagDef['assigned', false] then
+          CellObject[c, r] := TObject (Pointer (1));
+      end;
 end;
 
 procedure TStringListList.setCellValue(aCol, aRow: Integer;
@@ -186,6 +195,16 @@ begin
   if cc = -1 then
     raise Exception.Create('Column not found: ' + aCol);
   result := CellValue[cc, rr];
+end;
+
+function TStringListList.getCellObject(aCol, aRow: Integer): TObject;
+begin
+  result := StringLists [aRow].Objects [aCol];
+end;
+
+procedure TStringListList.setCellObject(aCol, aRow: Integer; AValue: TObject);
+begin
+  StringLists [aRow].Objects [aCol] := AValue;
 end;
 
 

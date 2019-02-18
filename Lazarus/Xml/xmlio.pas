@@ -26,7 +26,7 @@ function GetFileChangedTime (aFileName:string):TDateTime;
 function GetHostName: String;
 function GetUserName: String;
 function GetVersion: String;
-function resolveAliasses (aString: String): String;
+function resolveAliasses (aString: String; aDoDecriptPassword: Boolean = false): String;
 function StringHasRegExpr (aString, aExpr: String): String;
 function ExplodeStr(S, Delim: string; const List: Classes.TStrings;
   const AllowEmpty: Boolean = True; const Trim: Boolean = False): Integer;
@@ -739,7 +739,7 @@ begin
   end
 end;
 
-function resolveAliasses (aString : String): String ;
+function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false): String ;
   const _regexp = '\$\{[^\{\}]+\}';
   function _resolv (aString: String; aSl: TStringList): String;
   var
@@ -766,7 +766,8 @@ function resolveAliasses (aString : String): String ;
       try
         aSl.Objects[f] := TObject (Pointer (1));
         try
-          if _isPwd(aString) then
+          if aDoDecriptPassword
+          and _isPwd(aString) then
             result := _resolv (DecryptPassword(aSl.ValueFromIndex[f]), aSl)
           else
             result := _resolv (aSl.ValueFromIndex[f], aSl);

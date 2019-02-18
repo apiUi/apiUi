@@ -13,6 +13,8 @@ type
   { TEditContextsForm }
 
   TEditContextsForm = class(TForm)
+    MenuItem5: TMenuItem;
+    SetPasswordAction: TAction;
     AddRowAfter: TMenuItem;
     AddRowBefore: TMenuItem;
     CancelButton: TBitBtn;
@@ -49,6 +51,8 @@ type
     procedure RemoveContextActionUpdate(Sender: TObject);
     procedure RemovePropertyActionExecute(Sender: TObject);
     procedure RemovePropertyActionUpdate(Sender: TObject);
+    procedure SetPasswordActionExecute(Sender: TObject);
+    procedure SetPasswordActionUpdate(Sender: TObject);
     procedure StringGridGetEditText(Sender: TObject; ACol,ARow: Integer;
       var Value: string);
     procedure StringGridSelectEditor(Sender: TObject; aCol,aRow: Integer;
@@ -174,6 +178,7 @@ procedure TEditContextsForm.PopupMenu1Popup(Sender: TObject);
 begin
   RemovePropertyActionUpdate(nil);
   RemoveContextActionUpdate(nil);
+  SetPasswordActionUpdate(nil);
 end;
 
 procedure TEditContextsForm.RemoveContextActionExecute(Sender: TObject);
@@ -211,6 +216,29 @@ begin
   RemovePropertyAction.Enabled := (StringGrid.Col > 0);
 end;
 
+procedure TEditContextsForm.SetPasswordActionExecute(Sender: TObject);
+begin
+  if Assigned (StringGrid.Objects[StringGrid.Col, 0]) then
+    StringGrid.Objects[StringGrid.Col, 0] := nil
+  else
+    StringGrid.Objects[StringGrid.Col, 0] := TObject (Pointer (1));
+end;
+
+procedure TEditContextsForm.SetPasswordActionUpdate(Sender: TObject);
+begin
+    SetPasswordAction.Enabled := (StringGrid.Col > 0)
+                             and (RightStr(StringGrid.Cells[StringGrid.Col, 0], 3) <> 'PWD')
+                             and (RightStr(StringGrid.Cells[StringGrid.Col, 0], 8) <> 'PASSWORD')
+                               ;
+    if SetPasswordAction.Enabled then
+    begin
+      if isPassWordColumn (StringGrid.Col) then
+        SetPasswordAction.Caption := 'Do not encrypt column values'
+      else
+        SetPasswordAction.Caption := 'Encrypt column values' ;
+    end;
+end;
+
 procedure TEditContextsForm.StringGridGetEditText(Sender: TObject; ACol,ARow: Integer;
   var Value: string);
 begin
@@ -240,6 +268,7 @@ begin
   colName := UpperCase(StringGrid.Cells[aColumn, 0]);
   result := (RightStr(colName, 3) = 'PWD')
          or (RightStr(colName, 8) = 'PASSWORD')
+         or Assigned (StringGrid.Objects[aColumn, 0])
           ;
 end;
 
