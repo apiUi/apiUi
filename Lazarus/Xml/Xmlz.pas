@@ -3640,6 +3640,7 @@ begin
   inherited Create;
   Name := aName;
   ValueAsInteger := aInteger;
+  Checked := True;
 end;
 
 constructor TXml.CreateAsInteger(aTagName: String; aInteger: Integer);

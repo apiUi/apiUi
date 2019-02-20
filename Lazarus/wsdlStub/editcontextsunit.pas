@@ -7,7 +7,9 @@ interface
 uses
   Classes,SysUtils,FileUtil,Forms,Controls,Graphics,Dialogs,Grids,Menus,
   StdCtrls,ActnList,ExtCtrls,Buttons,ComCtrls, FormIniFilez;
-
+const
+  isPasswordProperty = 1;
+  isPersistentProperty = 2;
 type
 
   { TEditContextsForm }
@@ -218,18 +220,12 @@ end;
 
 procedure TEditContextsForm.SetPasswordActionExecute(Sender: TObject);
 begin
-  if Assigned (StringGrid.Objects[StringGrid.Col, 0]) then
-    StringGrid.Objects[StringGrid.Col, 0] := nil
-  else
-    StringGrid.Objects[StringGrid.Col, 0] := TObject (Pointer (1));
+  StringGrid.Objects[StringGrid.Col, 0] := TObject ((QWord(StringGrid.Objects[StringGrid.Col, 0]) xor isPasswordProperty));
 end;
 
 procedure TEditContextsForm.SetPasswordActionUpdate(Sender: TObject);
 begin
-    SetPasswordAction.Enabled := (StringGrid.Col > 0)
-                             and (RightStr(StringGrid.Cells[StringGrid.Col, 0], 3) <> 'PWD')
-                             and (RightStr(StringGrid.Cells[StringGrid.Col, 0], 8) <> 'PASSWORD')
-                               ;
+    SetPasswordAction.Enabled := True;
     if SetPasswordAction.Enabled then
     begin
       if isPassWordColumn (StringGrid.Col) then
@@ -262,14 +258,8 @@ begin
 end;
 
 function TEditContextsForm.isPassWordColumn(aColumn: Integer): Boolean;
-var
-  colName: String;
 begin
-  colName := UpperCase(StringGrid.Cells[aColumn, 0]);
-  result := (RightStr(colName, 3) = 'PWD')
-         or (RightStr(colName, 8) = 'PASSWORD')
-         or Assigned (StringGrid.Objects[aColumn, 0])
-          ;
+  result := ((QWord(StringGrid.Objects[StringGrid.Col, 0]) AND isPasswordProperty) = isPasswordProperty);
 end;
 
 function TEditContextsForm.BooleanPromptDialog(aCaption: String): Boolean;

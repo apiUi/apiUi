@@ -79,7 +79,7 @@ begin
       for c := 0 to ColCount - 1 do
         with AddXml(TXml.CreateAsString('col', CellValue[c, r])) do
           if Assigned (CellObject[c, r]) then
-            AddAttribute(TXmlAttribute.CreateAsBoolean('assigned', true));
+            AddAttribute(TXmlAttribute.CreateAsInteger('attributes', QWord(CellObject[c, r])));
     end;
   end;
 end;
@@ -87,6 +87,7 @@ end;
 procedure TStringListList.FromXml(aXml: TXml);
 var
   r, c, mc: Integer;
+  qw: QWord;
 begin
   if not Assigned (aXml) then
     raise Exception.Create('procedure TStringListList.FromXml(aXml: TXml): nil arg');
@@ -101,8 +102,8 @@ begin
       for c := 0 to Items.Count - 1 do
       begin
         CellValue[c, r] := Items.XmlItems[c].Value;
-        if Items.XmlItems[c].AttributeBooleanByTagDef['assigned', false] then
-          CellObject[c, r] := TObject (Pointer (1));
+        qw := StrToInt64Def(Items.XmlItems[c].AttributeValueByTagDef['attributes', '0'], 0);
+        CellObject[c, r] := TObject (qw);
       end;
 end;
 
