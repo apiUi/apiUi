@@ -2331,7 +2331,10 @@ begin
       or (projectContexts.ColCount > 1) then
       begin
         with AddXml(projectContexts.AsXml) do
+        begin
           Name := 'contexts';
+          AddAttribute (TXmlAttribute.CreateAsInteger('version', 3));
+        end;
       end;
       if projectProperties.Count > 0 then
         AddXml (TXml.CreateAsString('properties', projectProperties.Text));
@@ -2667,7 +2670,16 @@ begin
         projectFileName := aMainFileName;
         sXml := aXml.Items.XmlItemByTag ['contexts'];
         if Assigned (sXml) then
+        begin
           projectContexts.FromXml(sXml);
+          if StrToIntDef (sXml.AttributeValueByTagDef['version', '0'], 0) < 3 then with projectContexts do
+          begin
+            for c := 0 to ColCount - 1 do
+              if (RightStr(UpperCase(CellValue[c, 0]), 3) = 'PWD')
+              or (RightStr(UpperCase(CellValue[c, 0]), 8) = 'PASSWORD') then
+                CellObject[c, 0] := TObject(1);
+          end;
+        end;
         projectProperties.Text := aXml.Items.XmlValueByTag['properties'];
         if projectContext <> '' then
           projectProperties.Values['context'] := projectContext;

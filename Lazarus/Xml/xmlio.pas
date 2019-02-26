@@ -154,7 +154,7 @@ end;
 function DecryptPassword(aPassword: AnsiString): AnsiString;
 begin
   if aPassword <> '' then
-    result :=  SimpleEncrypt(DecodeStringBase64(aPassword))
+    try result :=  SimpleEncrypt(DecodeStringBase64(aPassword)); except result := '' end
   else
     result := '';
 end;
