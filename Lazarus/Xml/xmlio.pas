@@ -35,10 +35,18 @@ function EncryptPassword(aPassword: AnsiString): AnsiString;
 function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): Integer;
 function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
+function isPasswordContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
+function setPasswordContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
+function togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
+function isOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
+function setOneTimeContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
+function toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
 
 const base64DocxStartStr = 'UEsDBB';
 const base64PdfStartStr = 'JVBERi';
 const base64RtfStartStr = 'e1xyd';
+const PasswordContextsOptionValue = 1;
+const OneTimeContextsOptionValue = 2;
 
 type TOnStringEvent = procedure (const Msg: String) of Object;
 var
@@ -78,6 +86,44 @@ end;
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 begin
   if val then result:=iftrue else result:=iffalse;
+end;
+
+function isPasswordContextsColumn(aContexts: TObject; aColumn: Integer): Boolean;
+begin
+  with aContexts as TStringListList do
+    result := ((QWord (CellObject[aColumn, 0]) and PasswordContextsOptionValue) = PasswordContextsOptionValue);
+end;
+
+function setPasswordContextsColumn(aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
+begin
+  if isPasswordContextsColumn(aContexts, aColumn) <> aValue then
+    togglePasswordContextsColumn(aContexts, aColumn);
+end;
+
+function togglePasswordContextsColumn(aContexts: TObject; aColumn: Integer): Boolean;
+begin
+  with aContexts as TStringListList do
+    CellObject[aColumn, 0] := TObject (QWord (CellObject[aColumn, 0]) xor PasswordContextsOptionValue);
+end;
+
+function isOneTimeContextsColumn(aContexts: TObject; aColumn: Integer): Boolean;
+begin
+  with aContexts as TStringListList do
+    result := ((QWord (CellObject[aColumn, 0]) and OneTimeContextsOptionValue) = OneTimeContextsOptionValue);
+end;
+
+function setOneTimeContextsColumn(aContexts: TObject; aColumn: Integer;
+  aValue: Boolean): Boolean;
+begin
+  if isOneTimeContextsColumn(aContexts, aColumn) <> aValue then
+    toggleOneTimeContextsColumn(aContexts, aColumn);
+end;
+
+function toggleOneTimeContextsColumn(aContexts: TObject; aColumn: Integer
+  ): Boolean;
+begin
+  with aContexts as TStringListList do
+    CellObject[aColumn, 0] := TObject (QWord (CellObject[aColumn, 0]) xor OneTimeContextsOptionValue);
 end;
 
 function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): Integer;
@@ -742,17 +788,6 @@ end;
 function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false): String ;
   const _regexp = '\$\{[^\{\}]+\}';
   function _resolv (aString: String; aSl: TStringList): String;
-  var
-    xHasExp: Boolean;
-    function _isPwd (aString: String): Boolean;
-    var
-      xString: String;
-    begin
-      xString := UpperCase(aString);
-      result := (RightStr(xString, 3) = 'PWD')
-             or (RightStr(xString, 8) = 'PASSWORD')
-              ;
-    end;
     function _trans (aString: String): String;
     var
       f, x: Integer;
@@ -767,7 +802,7 @@ function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false)
         aSl.Objects[f] := TObject (Pointer (1));
         try
           if aDoDecriptPassword
-          and _isPwd(aString) then
+          and isPasswordContextsColumn(ProjectContexts,f) then
             result := _resolv (DecryptPassword(aSl.ValueFromIndex[f]), aSl)
           else
             result := _resolv (aSl.ValueFromIndex[f], aSl);

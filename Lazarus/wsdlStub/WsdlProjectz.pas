@@ -2297,7 +2297,7 @@ function TWsdlProject.ProjectDesignAsXml: TXml;
       _addCheckers(aList, aXml.Items.XmlItems[x]);
   end;
 var
-  x, w, s, o, r, p: Integer;
+  c, x, w, s, o, r, p: Integer;
   xOperation: TWsdlOperation;
   xWsdl: TWsdl;
   xMessage: TWsdlMessage;
@@ -2330,10 +2330,19 @@ begin
       if (projectContexts.RowCount > 1)
       or (projectContexts.ColCount > 1) then
       begin
-        with AddXml(projectContexts.AsXml) do
-        begin
-          Name := 'contexts';
-          AddAttribute (TXmlAttribute.CreateAsInteger('version', 3));
+        with TStringListList.Create(projectContexts) do
+        try
+          for c := 1 to ColCount - 1 do
+            if isOneTimeContextsColumn(projectContexts, c) then
+              for r := 1 to RowCount - 1 do
+                CellValue[c, r] := '';
+          with AddXml(AsXml) do
+          begin
+            Name := 'contexts';
+            AddAttribute (TXmlAttribute.CreateAsInteger('version', 3));
+          end;
+        finally
+          Free;
         end;
       end;
       if projectProperties.Count > 0 then
@@ -2677,7 +2686,7 @@ begin
             for c := 0 to ColCount - 1 do
               if (RightStr(UpperCase(CellValue[c, 0]), 3) = 'PWD')
               or (RightStr(UpperCase(CellValue[c, 0]), 8) = 'PASSWORD') then
-                CellObject[c, 0] := TObject(1);
+                setPasswordContextsColumn(projectContexts, c, True);
           end;
         end;
         projectProperties.Text := aXml.Items.XmlValueByTag['properties'];
@@ -9344,16 +9353,23 @@ end;
 
 procedure TWsdlProject.IntrospectProject;
 var
-  xChanged, xRead: Boolean;
+  saveChanged, saveRead: Boolean;
+  saveContexts: TStringListList;
 begin
   ProgressBegin('Introspecting', 4000);
   try
     try
-      xChanged := stubChanged;
-      xRead := stubRead;
-      ProjectDesignFromString(ProjectDesignAsString, projectFileName);
-      stubChanged := xChanged;
-      stubRead := xRead;
+      saveChanged := stubChanged;
+      saveRead := stubRead;
+      saveContexts := TStringListList.Create(projectContexts);
+      try
+        ProjectDesignFromString(ProjectDesignAsString, projectFileName);
+        projectContexts.CopyFrom(saveContexts);
+      finally
+        saveContexts.Free;
+      end;
+      stubChanged := saveChanged;
+      stubRead := saveRead;
       ProgressInvalidateConsole;
     except
       on e: exception do

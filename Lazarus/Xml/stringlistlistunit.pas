@@ -37,6 +37,8 @@ type
     property StringLists [Index: integer]: TStringList read GetStringList write SetStringList;
     function AsXml: TXml;
     procedure FromXml (aXml: TXml);
+    procedure CopyFrom (aGrid: TStringListList);
+    constructor Create (aGrid: TStringListList); Overload;
   end
   ;
 
@@ -105,6 +107,25 @@ begin
         qw := StrToInt64Def(Items.XmlItems[c].AttributeValueByTagDef['attributes', '0'], 0);
         CellObject[c, r] := TObject (qw);
       end;
+end;
+
+procedure TStringListList.CopyFrom(aGrid: TStringListList);
+var
+  c, r: Integer;
+begin
+  RowCount := aGrid.RowCount;
+  ColCount := aGrid.ColCount;
+  for r := 0 to RowCount - 1 do
+    for c := 0 to ColCount - 1 do
+    begin
+      CellValue [c, r] := aGrid.CellValue [c, r];
+      CellObject [c, r] := aGrid.CellObject [c, r];
+    end;
+end;
+
+constructor TStringListList.Create(aGrid: TStringListList);
+begin
+  CopyFrom(aGrid);
 end;
 
 procedure TStringListList.setCellValue(aCol, aRow: Integer;

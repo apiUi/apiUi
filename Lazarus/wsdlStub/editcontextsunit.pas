@@ -7,14 +7,13 @@ interface
 uses
   Classes,SysUtils,FileUtil,Forms,Controls,Graphics,Dialogs,Grids,Menus,
   StdCtrls,ActnList,ExtCtrls,Buttons,ComCtrls, FormIniFilez;
-const
-  isPasswordProperty = 1;
-  isPersistentProperty = 2;
 type
 
   { TEditContextsForm }
 
   TEditContextsForm = class(TForm)
+    MenuItem6: TMenuItem;
+    SetAsOnetimerAction: TAction;
     MenuItem5: TMenuItem;
     SetPasswordAction: TAction;
     AddRowAfter: TMenuItem;
@@ -53,10 +52,14 @@ type
     procedure RemoveContextActionUpdate(Sender: TObject);
     procedure RemovePropertyActionExecute(Sender: TObject);
     procedure RemovePropertyActionUpdate(Sender: TObject);
+    procedure SetAsOnetimerActionExecute(Sender: TObject);
+    procedure SetAsOnetimerActionUpdate(Sender: TObject);
     procedure SetPasswordActionExecute(Sender: TObject);
     procedure SetPasswordActionUpdate(Sender: TObject);
     procedure StringGridGetEditText(Sender: TObject; ACol,ARow: Integer;
       var Value: string);
+    procedure StringGridMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure StringGridSelectEditor(Sender: TObject; aCol,aRow: Integer;
       var Editor: TWinControl);
     procedure StringGridSetEditText(Sender: TObject; ACol,ARow: Integer;
@@ -64,6 +67,7 @@ type
   private
     ColWidths: TStringList;
     function isPassWordColumn (aColumn: Integer): Boolean;
+    function isOneTimerColumn (aColumn: Integer): Boolean;
     function BooleanPromptDialog (aCaption: String): Boolean;
     procedure PopulateContextComboBox;
   public
@@ -218,27 +222,58 @@ begin
   RemovePropertyAction.Enabled := (StringGrid.Col > 0);
 end;
 
-procedure TEditContextsForm.SetPasswordActionExecute(Sender: TObject);
+procedure TEditContextsForm.SetAsOnetimerActionExecute(Sender: TObject);
 begin
-  StringGrid.Objects[StringGrid.Col, 0] := TObject ((QWord(StringGrid.Objects[StringGrid.Col, 0]) xor isPasswordProperty));
+  with StringGrid do
+  begin
+    Objects[Col, 0] := TObject ((QWord(Objects[Col, 0]) xor xmlio.OneTimeContextsOptionValue));
+  end;
+end;
+
+procedure TEditContextsForm.SetAsOnetimerActionUpdate(Sender: TObject);
+begin
+  SetAsOnetimerAction.Enabled := True;
+  SetAsOnetimerAction.Checked := isOneTimerColumn (StringGrid.Col);
+  with StringGrid do
+    SetAsOnetimerAction.Caption := 'Do not save values for column ' + Cells[Col, 0] + ' to project';
+end;
+
+procedure TEditContextsForm.SetPasswordActionExecute(Sender: TObject);
+var
+  r: Integer;
+begin
+  with StringGrid do
+  begin
+    Objects[Col, 0] := TObject ((QWord(Objects[Col, 0]) xor xmlio.PasswordContextsOptionValue));
+    for r := 1 to RowCount - 1 do
+      Cells[Col, r] := '';
+  end;
 end;
 
 procedure TEditContextsForm.SetPasswordActionUpdate(Sender: TObject);
 begin
-    SetPasswordAction.Enabled := True;
-    if SetPasswordAction.Enabled then
-    begin
-      if isPassWordColumn (StringGrid.Col) then
-        SetPasswordAction.Caption := 'Do not encrypt column values'
-      else
-        SetPasswordAction.Caption := 'Encrypt column values' ;
-    end;
+  SetPasswordAction.Enabled := True;
+  SetPasswordAction.Checked := isPassWordColumn (StringGrid.Col);
+  with StringGrid do
+    SetPasswordAction.Caption := 'Encrypt values for column ' + Cells[Col, 0] + ' (switching clears columndata)';
 end;
 
 procedure TEditContextsForm.StringGridGetEditText(Sender: TObject; ACol,ARow: Integer;
   var Value: string);
 begin
   if isPassWordColumn(ACol) then Value := xmlio.DecryptPassword(StringGrid.Cells[ACol, ARow]);
+end;
+
+procedure TEditContextsForm.StringGridMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  row, col: integer;
+begin
+  StringGrid.MouseToCell(X, Y, col, row );
+  if (row > -1) then
+    StringGrid.Row := row;
+  if (col > -1) then
+    StringGrid.Col := col;
 end;
 
 procedure TEditContextsForm.StringGridSelectEditor(Sender: TObject; aCol,aRow: Integer;
@@ -259,7 +294,12 @@ end;
 
 function TEditContextsForm.isPassWordColumn(aColumn: Integer): Boolean;
 begin
-  result := ((QWord(StringGrid.Objects[StringGrid.Col, 0]) AND isPasswordProperty) = isPasswordProperty);
+  result := ((QWord(StringGrid.Objects[StringGrid.Col, 0]) AND xmlio.PasswordContextsOptionValue) = xmlio.PasswordContextsOptionValue);
+end;
+
+function TEditContextsForm.isOneTimerColumn(aColumn: Integer): Boolean;
+begin
+  result := ((QWord(StringGrid.Objects[StringGrid.Col, 0]) AND xmlio.OneTimeContextsOptionValue) = xmlio.OneTimeContextsOptionValue);
 end;
 
 function TEditContextsForm.BooleanPromptDialog(aCaption: String): Boolean;

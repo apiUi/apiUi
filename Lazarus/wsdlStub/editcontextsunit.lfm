@@ -25,6 +25,7 @@ object EditContextsForm: TEditContextsForm
     RowCount = 1
     TabOrder = 0
     OnGetEditText = StringGridGetEditText
+    OnMouseDown = StringGridMouseDown
     OnSelectEditor = StringGridSelectEditor
     OnSetEditText = StringGridSetEditText
   end
@@ -197,7 +198,7 @@ object EditContextsForm: TEditContextsForm
   object PopupMenu1: TPopupMenu
     Images = mainImageList
     OnPopup = PopupMenu1Popup
-    left = 528
+    left = 520
     top = 336
     object MenuItem1: TMenuItem
       Caption = 'Add'
@@ -363,6 +364,10 @@ object EditContextsForm: TEditContextsForm
     end
     object MenuItem5: TMenuItem
       Action = SetPasswordAction
+      AutoCheck = True
+    end
+    object MenuItem6: TMenuItem
+      Action = SetAsOnetimerAction
     end
   end
   object ActionList1: TActionList
@@ -396,9 +401,15 @@ object EditContextsForm: TEditContextsForm
       OnUpdate = RemovePropertyActionUpdate
     end
     object SetPasswordAction: TAction
+      AutoCheck = True
       Caption = 'Set column as password'
       OnExecute = SetPasswordActionExecute
       OnUpdate = SetPasswordActionUpdate
+    end
+    object SetAsOnetimerAction: TAction
+      Caption = 'SetAsOnetimerAction'
+      OnExecute = SetAsOnetimerActionExecute
+      OnUpdate = SetAsOnetimerActionUpdate
     end
   end
   object mainImageList: TImageList
