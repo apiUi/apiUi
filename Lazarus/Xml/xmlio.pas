@@ -787,7 +787,7 @@ end;
 
 function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false): String ;
   const _regexp = '\$\{[^\{\}]+\}';
-  function _resolv (aString: String; aSl: TStringList): String;
+  function _resolv (aString: String; aSl, apwdl: TStringList): String;
     function _trans (aString: String): String;
     var
       f, x: Integer;
@@ -802,10 +802,10 @@ function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false)
         aSl.Objects[f] := TObject (Pointer (1));
         try
           if aDoDecriptPassword
-          and isPasswordContextsColumn(ProjectContexts,f) then
-            result := _resolv (DecryptPassword(aSl.ValueFromIndex[f]), aSl)
+          and apwdl.Find(aString, x) then
+            result := _resolv (DecryptPassword(aSl.ValueFromIndex[f]), aSl, apwdl)
           else
-            result := _resolv (aSl.ValueFromIndex[f], aSl);
+            result := _resolv (aSl.ValueFromIndex[f], aSl, apwdl);
         finally
           aSl.Objects[f] := nil;
         end;
@@ -824,7 +824,7 @@ function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false)
         begin
           result := Copy (result, 1, MatchPos[0] - 1)
                   + _trans (Copy (Match[0], 3, Length (Match[0]) - 3)) // "${property}"
-                  + _resolv (Copy (result, MatchPos[0] + MatchLen[0], Length (result)), aSl)
+                  + _resolv (Copy (result, MatchPos[0] + MatchLen[0], Length (result)), aSl, apwdl)
                   ;
         end;
       finally
@@ -837,7 +837,7 @@ function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false)
   end;
 var
   x, r, c: Integer;
-  sl: TStringList;
+  sl, pwdl: TStringList;
 begin
   result := aString;
   if Assigned (ProjectContexts)
@@ -852,13 +852,20 @@ begin
           if CellValue[0, r] = ProjectContext then
           begin
             sl := TStringList.Create;
+            pwdl := TStringList.Create;
+            pwdl.Sorted := True;
             try
               for c := 1 to ColCount - 1 do
+              begin
                 sl.Values[CellValue[c, 0]] := CellValue[c, r];
+                if isPasswordContextsColumn(ProjectContexts, c) then
+                  pwdl.Add (CellValue[c, 0]);
+              end;
               sl.Values['context'] := ProjectContext;
-              result := _resolv (result, sl);;
+              result := _resolv (result, sl, pwdl);
             finally
-              sl.Free;
+              FreeAndNil(sl);
+              FreeAndNil(pwdl);
             end;
           end;
         end;
@@ -871,11 +878,13 @@ begin
   if Pos ('${', result) > 0 then
   begin
     sl := TStringList.Create;
+    pwdl := TStringList.Create;
     try
       sl.Text := ProjectAliasses.Text; // need to work with a copy since we are gonna set TObjs
-      result := _resolv (result, sl);
+      result := _resolv (result, sl, pwdl);
     finally
-      sl.Free;
+      FreeAndNil(sl);
+      FreeAndNil(pwdl);
     end;
   end;
 end;

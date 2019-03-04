@@ -6,7 +6,7 @@ interface
 
 uses
   Classes,SysUtils,FileUtil,Forms,Controls,Graphics,Dialogs,Grids,Menus,
-  StdCtrls,ActnList,ExtCtrls,Buttons,ComCtrls, FormIniFilez;
+  StdCtrls,ActnList,ExtCtrls,Buttons,ComCtrls, FormIniFilez, StringListListUnit;
 type
 
   { TEditContextsForm }
@@ -71,6 +71,7 @@ type
     function BooleanPromptDialog (aCaption: String): Boolean;
     procedure PopulateContextComboBox;
   public
+    Contexts: TStringListList;
     { public declarations }
   end;
 
@@ -117,7 +118,6 @@ end;
 procedure TEditContextsForm.AddPropertyActionExecute(Sender: TObject);
 var
   xForm: TPromptForm;
-  r, c: Integer;
 begin
   Application.CreateForm(TPromptForm, xForm);
   with xForm do
@@ -131,10 +131,9 @@ begin
     begin
       if PromptEdit.Text = 'context' then
         raise Exception.Create('"context" not allowed as property name');
-      ColCount := ColCount + 1;
-      c := Col;
+      Columns.Add.Title.Caption := PromptEdit.Text;
       Col := ColCount - 1;
-      Cells [ColCount - 1, 0] := PromptEdit.Text;
+      Cells [Col, 0] := PromptEdit.Text;
     end;
   finally
     Free;
@@ -170,14 +169,32 @@ end;
 
 procedure TEditContextsForm.FormShow(Sender: TObject);
 var
-  c, x: Integer;
+  c, r, x: Integer;
 begin
-  for c := 1 to StringGrid.ColCount - 1 do
+  with StringGrid do
   begin
-    if ColWidths.IndexOfName(StringGrid.Cells[c, 0]) > -1 then
-      StringGrid.ColWidths[c] := StrToInt(ColWidths.Values[StringGrid.Cells[c, 0]]);
+    Columns.Clear;
+    for c := 1 to Contexts.ColCount -1 do
+    begin
+      with Columns.Add do
+      begin
+        Title.ImageLayout := blGlyphRight;
+        Title.Caption := Contexts.CellValue [c, 0];
+        if self.ColWidths.IndexOfName(Contexts.CellValue[c, 0]) > -1 then
+          Width := StrToInt(self.ColWidths.Values[Contexts.CellValue[c, 0]]);
+        if Assigned (Contexts.CellObject[c, 0]) then
+          Title.ImageIndex := 2;
+      end;
+    end;
+    RowCount := Contexts.RowCount;
+    for r := 0 to Contexts.RowCount - 1 do
+      for c := 0 to Contexts.ColCount - 1 do
+      begin
+        Cells[c, r] := Contexts.CellValue[c, r];
+        Objects[c, r] := Contexts.CellObject[c, r];
+      end;
+    PopulateContextComboBox;
   end;
-  PopulateContextComboBox;
 end;
 
 procedure TEditContextsForm.PopupMenu1Popup(Sender: TObject);

@@ -1378,6 +1378,7 @@ uses
   , QueryNewElementUnit
   , SelectProjectFolderUnit
   , progressunit
+  , StringListListUnit
   ;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -13812,39 +13813,33 @@ begin
   Application.CreateForm(TEditContextsForm, EditContextsForm);
   with EditContextsForm do
   try
-    with StringGrid do
-    begin
-      ContextComboBox.Text := contextPropertyOverwrite;
-      RowCount := se.projectContexts.RowCount;
-      ColCount := se.projectContexts.ColCount;
-      for r := 0 to RowCount - 1 do
-        for c := 0 to ColCount - 1 do
-        begin
-          Cells[c, r] := se.projectContexts.CellValue[c, r];
-          Objects[c, r] := se.projectContexts.CellObject[c, r];
-        end;
-    end;
-    ShowModal;
-    if ModalResult = mrOK then
-    with StringGrid do
-    begin
-      se.projectContexts.RowCount := RowCount;
-      se.projectContexts.ColCount := ColCount;
-      for r := 0 to RowCount - 1 do
-        for c := 0 to ColCount - 1 do
-        begin
-          se.projectContexts.CellValue[c, r] := Cells[c, r];
-          se.projectContexts.CellObject[c, r] := Objects[c, r];
-        end;
-      se.projectProperties.Clear; // it is one or another
-      stubChanged := True;
-      if ContextComboBox.Text <> contextPropertyOverwrite then
+    ContextComboBox.Text := contextPropertyOverwrite;
+    Contexts := TStringListList.Create(se.projectContexts);
+    try
+      ShowModal;
+      if ModalResult = mrOK then
+      with StringGrid do
       begin
-        contextPropertyOverwrite := ContextComboBox.Text;
-        se.projectContext := contextPropertyOverwrite;
-        xmlio.ProjectContext := contextPropertyOverwrite;
-        isOptionsChanged := True;
+        se.projectContexts.RowCount := RowCount;
+        se.projectContexts.ColCount := ColCount;
+        for r := 0 to RowCount - 1 do
+          for c := 0 to ColCount - 1 do
+          begin
+            se.projectContexts.CellValue[c, r] := Cells[c, r];
+            se.projectContexts.CellObject[c, r] := Objects[c, r];
+          end;
+        se.projectProperties.Clear; // it is one or another
+        stubChanged := True;
+        if ContextComboBox.Text <> contextPropertyOverwrite then
+        begin
+          contextPropertyOverwrite := ContextComboBox.Text;
+          se.projectContext := contextPropertyOverwrite;
+          xmlio.ProjectContext := contextPropertyOverwrite;
+          isOptionsChanged := True;
+        end;
       end;
+    finally
+      Contexts.Free;
     end;
   finally
     EditContextsForm.Free;
