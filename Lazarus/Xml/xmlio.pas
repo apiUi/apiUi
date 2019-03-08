@@ -50,7 +50,7 @@ const OneTimeContextsOptionValue = 2;
 
 type TOnStringEvent = procedure (const Msg: String) of Object;
 var
-  PathPrefixes, ProjectAliasses: TStringList;
+  PathPrefixes: TStringList;
   ProjectContext: String;
   ProjectContexts: TObject;
   doTrackXmlIO: Boolean;
@@ -787,27 +787,30 @@ end;
 
 function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false): String ;
   const _regexp = '\$\{[^\{\}]+\}';
-  function _resolv (aString: String; aSl, apwdl: TStringList): String;
+  function _resolv (aString: String; cContexts: TStringListList; aRow: Integer): String;
     function _trans (aString: String): String;
     var
       f, x: Integer;
     begin
       result := '';
-      f := aSl.IndexOfName(aString);
+      f := -1;
+      for x := 0 to cContexts.ColCount - 1 do
+        if cContexts.CellValue[x, 0] = aString then
+          f := x;
       if f < 0 then
         raise Exception.Create('Alias not found:' + aString);
-      if Assigned (aSl.Objects[f]) then
+      if Assigned (cContexts.CellObject[f, aRow]) then
         raise Exception.Create('Circular reference for alias:' + aString);
       try
-        aSl.Objects[f] := TObject (Pointer (1));
+        cContexts.CellObject[f, aRow] := TObject (Pointer (1));
         try
           if aDoDecriptPassword
-          and apwdl.Find(aString, x) then
-            result := _resolv (DecryptPassword(aSl.ValueFromIndex[f]), aSl, apwdl)
+          and isPasswordContextsColumn(cContexts, f) then
+            result := _resolv (DecryptPassword(cContexts.CellValue[f, aRow]), cContexts, aRow)
           else
-            result := _resolv (aSl.ValueFromIndex[f], aSl, apwdl);
+            result := _resolv (cContexts.CellValue[f, aRow], cContexts, aRow);
         finally
-          aSl.Objects[f] := nil;
+          cContexts.CellObject[f, aRow] := nil;
         end;
       except
         on e: exception do
@@ -824,7 +827,7 @@ function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false)
         begin
           result := Copy (result, 1, MatchPos[0] - 1)
                   + _trans (Copy (Match[0], 3, Length (Match[0]) - 3)) // "${property}"
-                  + _resolv (Copy (result, MatchPos[0] + MatchLen[0], Length (result)), aSl, apwdl)
+                  + _resolv (Copy (result, MatchPos[0] + MatchLen[0], Length (result)), cContexts, aRow)
                   ;
         end;
       finally
@@ -836,8 +839,8 @@ function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false)
     end;
   end;
 var
-  x, r, c: Integer;
-  sl, pwdl: TStringList;
+  r, c: Integer;
+  cContexts: TStringListList; // need to work with a local copy of ProjectContexts
 begin
   result := aString;
   if Assigned (ProjectContexts)
@@ -845,47 +848,24 @@ begin
   begin
     if Pos ('${', aString) > 0 then
     begin
-      with (ProjectContexts as TStringListList) do
-      begin
-        for r := 1 to RowCount - 1 do
+      cContexts := TStringListList.Create(ProjectContexts as TStringListList);
+      try
+        with (cContexts) do
         begin
-          if CellValue[0, r] = ProjectContext then
-          begin
-            sl := TStringList.Create;
-            pwdl := TStringList.Create;
-            pwdl.Sorted := True;
-            try
-              for c := 1 to ColCount - 1 do
-              begin
-                sl.Values[CellValue[c, 0]] := CellValue[c, r];
-                if isPasswordContextsColumn(ProjectContexts, c) then
-                  pwdl.Add (CellValue[c, 0]);
-              end;
-              sl.Values['context'] := ProjectContext;
-              result := _resolv (result, sl, pwdl);
-            finally
-              FreeAndNil(sl);
-              FreeAndNil(pwdl);
-            end;
-          end;
+          CellValue[0, 0] := 'context';
+          c := -1;
+          for r := 1 to RowCount - 1 do
+            if CellValue[0, r] = ProjectContext then
+              c := r;
+          if c < 0 then
+            raise Exception.Create( Format('Unknown contxt "%s" while resolving aliasses for "%s"', [ProjectContext, aString]));
+          result := _resolv (result, cContexts, c);
         end;
+      finally
+        FreeAndNil(cContexts);
       end;
     end;
     exit;
-  end;
-  if not Assigned(ProjectAliasses) then
-    Exit;
-  if Pos ('${', result) > 0 then
-  begin
-    sl := TStringList.Create;
-    pwdl := TStringList.Create;
-    try
-      sl.Text := ProjectAliasses.Text; // need to work with a copy since we are gonna set TObjs
-      result := _resolv (result, sl, pwdl);
-    finally
-      FreeAndNil(sl);
-      FreeAndNil(pwdl);
-    end;
   end;
 end;
 
@@ -985,7 +965,6 @@ end;
 initialization
   PathPrefixes := TStringList.Create;
   PathPrefixes.Sorted := True;
-  ProjectAliasses := nil;
 
 finalization
   PathPrefixes.Free;

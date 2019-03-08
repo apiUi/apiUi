@@ -3908,7 +3908,7 @@ procedure TXml .ResolveAliasses;
       _resolv(aXml.Items.XmlItems[x]);
   end;
 begin
-  if not Assigned (xmlio.ProjectAliasses) then Exit;
+  if not Assigned (xmlio.ProjectContexts) then Exit;
   _resolv (self);
 end;
 

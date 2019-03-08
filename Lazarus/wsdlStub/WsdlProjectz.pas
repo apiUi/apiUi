@@ -168,7 +168,6 @@ type
     doCreateBackup: Boolean;
     doStartOnOpeningProject: Boolean;
     projectContext: String;
-    projectProperties: TStringList;
     projectContexts: TStringListList;
     ppLock: TCriticalSection;
     doDisplayLog: Boolean;
@@ -1488,7 +1487,6 @@ begin
   OnRestartEvent := RestartCommand;
   OnReactivateEvent := ReactivateCommand;
   OnReloadDesignEvent := ReloadDesignCommand;
-  projectProperties := TStringList.Create;
   projectContexts := TStringListList.Create;
   projectContexts.RowCount := 1;
   projectContexts.ColCount := 1;
@@ -1628,7 +1626,6 @@ begin
   FreeAndNil (SmtpOpenSSL);
   FreeAndNil (SMTPServer);
   FreeAndNil (SMTPServerSSL);
-  projectProperties.Free;
   projectContexts.Free;
   DatabaseConnectionSpecificationXml.Free;
   UnknownOpsReqReplactementsXml.Free;
@@ -2345,8 +2342,6 @@ begin
           Free;
         end;
       end;
-      if projectProperties.Count > 0 then
-        AddXml (TXml.CreateAsString('properties', projectProperties.Text));
       for w := 0 to Wsdls.Count - 1 do
       begin
         xWsdl := Wsdls.Objects [w] as TWsdl;
@@ -2689,10 +2684,6 @@ begin
                 setPasswordContextsColumn(projectContexts, c, True);
           end;
         end;
-        projectProperties.Text := aXml.Items.XmlValueByTag['properties'];
-        if projectContext <> '' then
-          projectProperties.Values['context'] := projectContext;
-        xmlio.ProjectAliasses := projectProperties;
         xmlio.ProjectContext := projectContext;
         xmlio.ProjectContexts := projectContexts;
         sXml := aXml.Items.XmlItemByTag ['Listeners'];
@@ -9542,7 +9533,6 @@ var
 begin
   projectContexts.RowCount := 1;
   projectContexts.ColCount := 1;
-  projectProperties.Clear;
   DatabaseConnectionSpecificationXml.Items.Clear;
   Scripts.Items.Clear;
   displayedLogs.Clear;

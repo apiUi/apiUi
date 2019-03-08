@@ -160,7 +160,6 @@ type
     SnapshotsPanel: TPanel;
     NotificationsPanel: TPanel;
     Panel8: TPanel;
-    Properties : TAction ;
     SnapshotsVTS: TVirtualStringTree;
     Splitter7: TSplitter;
     Splitter8: TSplitter;
@@ -667,7 +666,6 @@ type
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
       var Ghosted : Boolean ; var ImageIndex : Integer );
     procedure PingPongTimerTimer (Sender : TObject );
-    procedure EditProjectPropertiesExecute (Sender : TObject );
     procedure IntrospectDesignActionExecute(Sender: TObject);
     procedure CheckFolderAndFileNames;
     procedure SaveProjectAsFolderActionExecute(Sender: TObject);
@@ -12926,41 +12924,6 @@ begin
   se.TacoPingPong;
 end;
 
-procedure TMainForm .EditProjectPropertiesExecute (Sender : TObject );
-begin
-  Application.CreateForm(TEditListValuesForm, EditListValuesForm);
-  try
-    if se.IsActive and False then
-      EditListValuesForm.Caption := 'View project properties'
-    else
-      EditListValuesForm.Caption := 'Edit project properties';
-  {
-  }
-    EditListValuesForm.isReadOnly := se.IsActive and False;
-    se.ppLock.Acquire;
-    try
-      EditListValuesForm.ValueListEditor.Strings.Text := se.projectProperties.Text;
-    finally
-      se.ppLock.Release;
-    end;
-    EditListValuesForm.ValueListEditor.Strings.Sort;
-    EditListValuesForm.ShowModal;
-    if (EditListValuesForm.ModalResult = mrOk)
-    { }{ and (not se.IsActive){ } then
-    begin
-      se.ppLock.Acquire;
-      try
-        stubChanged := True;
-        se.projectProperties.Text := EditListValuesForm.ValueListEditor.Strings.Text;
-      finally
-        se.ppLock.Release;
-      end;
-    end;
-  finally
-    FreeAndNil(EditListValuesForm);
-  end;
-end;
-
 procedure TMainForm.IntrospectDesignActionExecute(Sender: TObject);
 begin
   IntrospectDesign;
@@ -13136,51 +13099,35 @@ begin
   and (se.projectContexts.RowCount > 1) then
   begin
     xXml := TXml.CreateAsString('resolvedProperties', '');
-    for r := 1 to se.projectContexts.RowCount - 1 do
-    begin
-      if se.projectContexts.CellValue[0, r] = se.projectContext then
+    try
+      for r := 1 to se.projectContexts.RowCount - 1 do
       begin
-        with xXml.AddXml(TXml.CreateAsString('property', '')) do
-        begin
-          AddXml (TXml.CreateAsString ( 'key', '${context}'));
-          AddXml (TXml.CreateAsString ( 'value', se.projectContext));
-        end;
-        for c := 1 to se.projectContexts.ColCount - 1 do
+        if se.projectContexts.CellValue[0, r] = se.projectContext then
         begin
           with xXml.AddXml(TXml.CreateAsString('property', '')) do
           begin
-            AddXml (TXml.CreateAsString ( 'key', '${' + se.projectContexts.CellValue[c, 0] + '}'));
-            AddXml (TXml.CreateAsString ( 'value', se.projectContexts.CellValue[c, r]));
-            AddXml (TXml.CreateAsString ( 'resolvesTo'
-                                        , xmlio.resolveAliasses ( '${' + se.projectContexts.CellValue[c, 0] + '}'
-                                                                )
-                                        )
-                   );
+            AddXml (TXml.CreateAsString ( 'key', '${context}'));
+            AddXml (TXml.CreateAsString ( 'value', se.projectContext));
+          end;
+          for c := 1 to se.projectContexts.ColCount - 1 do
+          begin
+            with xXml.AddXml(TXml.CreateAsString('property', '')) do
+            begin
+              AddXml (TXml.CreateAsString ( 'key', '${' + se.projectContexts.CellValue[c, 0] + '}'));
+              AddXml (TXml.CreateAsString ( 'value', se.projectContexts.CellValue[c, r]));
+              AddXml (TXml.CreateAsString ( 'resolvesTo'
+                                          , xmlio.resolveAliasses ( '${' + se.projectContexts.CellValue[c, 0] + '}'
+                                                                  )
+                                          )
+                     );
+            end;
           end;
         end;
       end;
+      ShowXml('project Properties', xXml);
+    finally
+      xXml.Free;
     end;
-    ShowXml('project Properties', xXml);
-    exit;
-  end;
-  xXml := TXml.CreateAsString('resolvedProperties', '');
-  try
-    for x := 0 to se.projectProperties.Count - 1 do
-    begin
-      with xXml.AddXml(TXml.CreateAsString('property', '')) do
-      begin
-        AddXml (TXml.CreateAsString ( 'key', '${' + se.projectProperties.Names[x] + '}'));
-        AddXml (TXml.CreateAsString ( 'value', se.projectProperties.Values[se.projectProperties.Names[x]]));
-        AddXml (TXml.CreateAsString ( 'resolvesTo'
-                                    , xmlio.resolveAliasses ( '${' + se.projectProperties.Names[x] + '}'
-                                                            )
-                                    )
-               );
-      end;
-    end;
-    ShowXml('project Properties', xXml);
-  finally
-    xXml.Free;
   end;
 end;
 
@@ -13828,7 +13775,6 @@ begin
             se.projectContexts.CellValue[c, r] := Cells[c, r];
             se.projectContexts.CellObject[c, r] := Objects[c, r];
           end;
-        se.projectProperties.Clear; // it is one or another
         stubChanged := True;
         if ContextComboBox.Text <> contextPropertyOverwrite then
         begin

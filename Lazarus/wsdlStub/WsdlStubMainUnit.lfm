@@ -2586,11 +2586,6 @@ object MainForm: TMainForm
       ImageIndex = 77
       OnExecute = ProjectCleanActionExecute
     end
-    object Properties: TAction
-      Category = 'Project'
-      Caption = 'Properties'
-      OnExecute = EditProjectPropertiesExecute
-    end
     object ShowResolvedProperties: TAction
       Category = 'Project'
       Caption = 'ShowResolvedProperties'
