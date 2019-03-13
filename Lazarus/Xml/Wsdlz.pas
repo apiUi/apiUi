@@ -718,6 +718,16 @@ uses
    ;
 
 { TWsdl }
+function Latin1(aString: String): String;
+type
+  Latin1String = type AnsiString(28591); // codepage 28591 = ISO-8859-1
+var
+  s: Latin1String;
+begin
+  s := aString;
+  result := s;
+end;
+
 function isValidId (aId: String): Boolean;
 begin
   result := RegExpr.ExecRegExpr('^' + S_ALIAS_VALID_PATTERN + '$', aId);
@@ -3556,6 +3566,7 @@ begin
     BindScriptFunction ('HostName', @GetHostName, SFV, '()');
     BindScriptFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindScriptFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
+    BindScriptFunction ('Latin1Str', @Latin1, SFS, '(aString)');
     BindScriptFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindScriptFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindScriptFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
@@ -5507,6 +5518,7 @@ begin
       BindCheckerFunction ('HostName', @GetHostName, SFV, '()');
       BindCheckerFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
       BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
+      BindCheckerFunction ('Latin1Str', @Latin1, SFS, '(aString)');
       BindCheckerFunction ('LengthStr', @LengthX, XFS, '(aString)');
       BindCheckerFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
       BindCheckerFunction ('NewLine', @xNewLine, SFV, '()');
@@ -5572,6 +5584,7 @@ begin
     BindStamperFunction ('HostName', @GetHostName, SFV, '()');
     BindStamperFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindStamperFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
+    BindStamperFunction ('Latin1Str', @Latin1, SFS, '(aString)');
     BindStamperFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindStamperFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindStamperFunction ('MD5', @MD5, SFS, '(aString)');

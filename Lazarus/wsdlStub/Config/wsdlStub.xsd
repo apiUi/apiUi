@@ -2308,4 +2308,48 @@ For driver-operation this applies to response values.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
+	<xs:complexType name="projectContextsType">
+		<xs:sequence>
+			<xs:element name="Contexts">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Context">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Name">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:pattern value="[A-Za-z0-9\.,]+"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Properties">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Prpoerty">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Name">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:pattern value="[A-Za-z0-9\.,]+"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="isPassword" type="xs:boolean" default="false"/>
+									<xs:element name="isNotSaved" type="xs:boolean" default="false"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 </xs:schema>

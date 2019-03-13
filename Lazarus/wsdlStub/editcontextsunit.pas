@@ -12,6 +12,7 @@ type
   { TEditContextsForm }
 
   TEditContextsForm = class(TForm)
+    mainImageList1: TImageList;
     MenuItem6: TMenuItem;
     SetAsOnetimerAction: TAction;
     MenuItem5: TMenuItem;
