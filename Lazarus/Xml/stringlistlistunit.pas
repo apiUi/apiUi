@@ -35,6 +35,9 @@ type
     property Cell [aCol, aRow: String]: String read getCell;
     property RowText [Index: integer]: String read getRowText write setRowText;
     property StringLists [Index: integer]: TStringList read GetStringList write SetStringList;
+    procedure Delete (arOW: Integer); Overload;
+    procedure DeleteCol (aCol: Integer);
+    procedure DeleteRow (aRow: Integer);
     function AsXml: TXml;
     procedure FromXml (aXml: TXml);
     procedure CopyFrom (aGrid: TStringListList);
@@ -66,6 +69,27 @@ begin
   except
     result := nil;
   end;
+end;
+
+procedure TStringListList.Delete(arOW: Integer);
+begin
+  DeleteRow (aRow);
+end;
+
+procedure TStringListList.DeleteCol(aCol: Integer);
+var
+  xRow: Integer;
+begin
+  for xRow := 0 to RowCount - 1 do
+    StringLists[xRow].Delete(aCol);
+  Dec (fColCount);
+end;
+
+procedure TStringListList.DeleteRow(aRow: Integer);
+begin
+  StringLists[aRow].Free;
+  inherited Delete(aRow);
+  Dec (fRowCount);
 end;
 
 function TStringListList.AsXml: TXml;
@@ -164,11 +188,7 @@ var
 begin
   r := min (Value, fRowCount);
   while (r < fRowCount) do
-  begin
-    StringLists [Value].Free;
     Delete(Value);
-    Inc (r);
-  end;
   while (r < Value) do
   begin
     sl := TStringList.Create;

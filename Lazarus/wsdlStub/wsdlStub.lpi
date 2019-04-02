@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
-      <BuildNr Value="12208"/>
+      <BuildNr Value="12226"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -216,7 +216,6 @@
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
-        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EODBCException"/>
@@ -228,7 +227,6 @@
       </Item17>
       <Item18>
         <Name Value="EStringListError"/>
-        <Enabled Value="False"/>
       </Item18>
       <Item19>
         <Name Value="EOleSysError"/>

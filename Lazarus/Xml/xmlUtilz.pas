@@ -1274,6 +1274,7 @@ begin
           oppQuery: AddProperty('in', 'query');
         end;
       end;
+      AddProperty('MediaType', (aBind as TXml).Xsd.MediaType);
       AddProperty('NameSpace', (aBind as TXml).Xsd.ElementNameSpace);
       AddProperty('ContentModel', (aBind as TXml).TypeDef.ContentModel);
       AddProperty('DerivationMethod', (aBind as TXml).TypeDef.DerivationMethod);

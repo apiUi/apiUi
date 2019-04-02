@@ -1921,7 +1921,9 @@ procedure TMainForm.SetXmlNodeCheckBox(aTreeView: TVirtualStringTree;
 begin
   if (Assigned(aXml.Parent)) and (Assigned((aXml.Parent as TXml).Xsd)) then
   begin
-    if (aXml.Parent as TXml).TypeDef.ContentModel = 'Choice' then
+    if ((aXml.Parent as TXml).TypeDef.ContentModel = 'Choice')
+    or (Assigned (aXml.Xsd) and (aXml.Xsd.isOneOfGroupLevel > 0))
+    then
       aNode.CheckType := ctRadioButton
     else
       aNode.CheckType := ctCheckBox;
@@ -2479,25 +2481,26 @@ begin
     exit;
   end;
   if xBind is TXml then
+  with xBind as TXml do
   begin
-    if (not Assigned((xBind as TXml).Xsd)) then
+    if (not Assigned(Xsd)) then
     begin
       TargetCanvas.Font.Color := clRed { clLtGray } ;
       exit;
     end;
     try
-      if Assigned((xBind as TXml).Xsd) and
-        (StrToIntDef((xBind as TXml).Xsd.minOccurs, 0) > 0) and Assigned
-        (xBind.Parent) and Assigned(TXml(xBind.Parent).Xsd) and
-        (TXml(xBind.Parent).TypeDef.ContentModel <> 'Choice') then
+      if IsRequired then
       begin
+        if Name = 'HeaderVersion' then
+          Name := 'HeaderVersion';
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
         if AllChecked(Sender, Node.Parent) then
-          if not xBind.Checked then
+          if (not Checked)
+          and (not isOneOfGroupOk) then
             TargetCanvas.Font.Color := clRed { clLtGray } ;
       end;
     except
-      ShowMessage((xBind as TXml).Xsd.minOccurs);
+      ShowMessage(Xsd.minOccurs);
     end;
   end;
   if xBind is TIpmItem then
@@ -5458,6 +5461,8 @@ end;
 procedure TMainForm.RedirectAddressActionExecute(Sender: TObject);
 var
   xXml: TXml;
+  x, y: Integer;
+  xEnumeration: TXsdEnumeration;
 begin
   if not Assigned(WsdlOperation) then
     raise Exception.Create('No operation selected');
@@ -5469,6 +5474,22 @@ begin
       endpointConfigXsd.FindXsd('endpointConfig.Https.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
       endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
       endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpsAddress;
+      if Assigned (WsdlOperation.Wsdl.Servers) then
+      begin
+        for x := 0 to WsdlOperation.Wsdl.Servers.Items.Count - 1 do
+        with WsdlOperation.Wsdl.Servers.Items.XmlItems[x] do
+        begin
+          xEnumeration := TXsdEnumeration.Create;
+          xEnumeration.Value := Items.XmlValueByTagDef['url', ''];
+          xEnumeration.Annotation := Items.XmlValueByTagDef['description', ''];
+          endpointConfigXsd.FindXsd('endpointConfig.Http.Address').sType.Enumerations.AddObject(xEnumeration.Value, xEnumeration);
+          xEnumeration := TXsdEnumeration.Create;
+          xEnumeration.Value := Items.XmlValueByTagDef['url', ''];
+          xEnumeration.Annotation := Items.XmlValueByTagDef['description', ''];
+          endpointConfigXsd.FindXsd('endpointConfig.Https.Address').sType.Enumerations.AddObject(xEnumeration.Value, xEnumeration);
+        end;
+      end;
+      with endpointConfigXsd.FindXsd('endpointConfig.Http.Address') do
       if EditXmlXsdBased('Configure Endpoint', '', '', '', False, False, esUsed,
         endpointConfigXsd, xXml) then
       begin
@@ -5482,6 +5503,18 @@ begin
       end;
     finally
       xXml.Free;
+      with endpointConfigXsd.FindXsd('endpointConfig.Http.Address').sType.Enumerations do
+      begin
+        for x:= 0 to Count - 1 do
+          Objects[x].Free;
+        Clear;
+      end;
+      with endpointConfigXsd.FindXsd('endpointConfig.Https.Address').sType.Enumerations do
+      begin
+        for x:= 0 to Count - 1 do
+          Objects[x].Free;
+        Clear;
+      end;
     end;
   end;
 end;
@@ -7025,7 +7058,7 @@ procedure TMainForm.CopyGridActionExecute(Sender: TObject);
 begin
   XmlUtil.PushCursor (crHourGlass);
   try
-    ClipBoard.AsText := vstToGrid(GridView, GridViewGetText);
+    ClipBoard.AsText := vstToGrid(GridView, GridViewGetText, nMessageButtonColumns);
   finally
     XmlUtil.PopCursor;
   end;
@@ -10694,9 +10727,9 @@ begin
     // first check if first line is columnheader line
     copyColumns := TabSepLineToStringGrid(copyLines.Strings[0]);
     c := 0;
-    while (c < copyColumns.Count) and (c < GridView.Header.Columns.Count) do
+    while (c < copyColumns.Count) and (c + nMessageButtonColumns < GridView.Header.Columns.Count) do
     begin
-      if (copyColumns.Strings[c] <> GridView.Header.Columns.Items[c].Text) then
+      if (copyColumns.Strings[c] <> GridView.Header.Columns.Items[c + nMessageButtonColumns].Text) then
         raise Exception.Create('Columnheaders do not match, Operation aborted');
       Inc(c);
     end;
@@ -10710,11 +10743,11 @@ begin
         NodeToMessage(GridView, AddMessage(GridView.GetFirst), xMessage);
       copyColumns := TabSepLineToStringGrid(copyLines.Strings[l]);
       try
-        c := 0 + nMessageButtonColumns;
-        while (c < copyColumns.Count) and (c < GridView.Header.Columns.Count) do
+        c := 0;
+        while (c < copyColumns.Count) and (c + nMessageButtonColumns < GridView.Header.Columns.Count) do
         begin
           // OnNewText (aVst, xNode, c, copyColumns.Strings[c]);
-          if c = 0 + nMessageButtonColumns then
+          if c = 0 then
           begin
             if copyColumns.Strings[c] <> xMessage.Name then
             begin
@@ -10731,11 +10764,11 @@ begin
           end
           else
           begin
-            if c <= xMessage.CorrelationBindables.Count + nMessageButtonColumns then
+            if c <= xMessage.CorrelationBindables.Count then
             begin
               if c < copyColumns.Count then
               begin
-                if copyColumns.Strings[c] <> xMessage.CorrelationBindables.Bindables[c - 1 - nMessageButtonColumns]
+                if copyColumns.Strings[c] <> xMessage.CorrelationBindables.Bindables[c - 1]
                   .CorrelationValue then
                 begin
                   if l = 1 then
@@ -10744,7 +10777,7 @@ begin
                         copyColumns.Strings[c])
                   else
                   begin
-                    xMessage.CorrelationBindables.Bindables[c - 1 - nMessageButtonColumns].CorrelationValue :=
+                    xMessage.CorrelationBindables.Bindables[c - 1].CorrelationValue :=
                       copyColumns.Strings[c];
                     stubChanged := True;
                   end;
@@ -10755,9 +10788,9 @@ begin
             begin
               if (copyColumns.Strings[c] <> '?')
               and (Assigned(xMessage.ColumnXmls.Bindables
-                    [c - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1])) then
+                    [c - xMessage.CorrelationBindables.Count - 1])) then
               begin
-                xBind := xMessage.ColumnXmls.Bindables [c - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1];
+                xBind := xMessage.ColumnXmls.Bindables [c - xMessage.CorrelationBindables.Count - 1];
                 if copyColumns.Strings[c] <> '&nil' then
                 begin
                   if (copyColumns.Strings[c] <> xBind.Value) or
@@ -13765,15 +13798,15 @@ begin
     try
       ShowModal;
       if ModalResult = mrOK then
-      with StringGrid do
+      with Contexts do
       begin
         se.projectContexts.RowCount := RowCount;
         se.projectContexts.ColCount := ColCount;
         for r := 0 to RowCount - 1 do
           for c := 0 to ColCount - 1 do
           begin
-            se.projectContexts.CellValue[c, r] := Cells[c, r];
-            se.projectContexts.CellObject[c, r] := Objects[c, r];
+            se.projectContexts.CellValue[c, r] := CellValue[c, r];
+            se.projectContexts.CellObject[c, r] := CellObject[c, r];
           end;
         stubChanged := True;
         if ContextComboBox.Text <> contextPropertyOverwrite then

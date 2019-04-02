@@ -222,6 +222,7 @@ public
   Tag: LongInt;
   procedure PopulateSourceFileName (aName: String);
   function isValueLink: Boolean;
+  function IsRequired: Boolean; Virtual;
   function hasNoDuplicatesOn (aCaption: String; aOnlyWhenChecked: Boolean; var oBind, dBind: TCustomBindable): Boolean;
   procedure Reset; Virtual;
   procedure ResetExpectedValues; Virtual;
@@ -647,6 +648,11 @@ begin
       end;
     end;
   end;
+end;
+
+function TCustomBindable.IsRequired: Boolean;
+begin
+  result := False;
 end;
 
 function TCustomBindable.getChecked: Boolean;

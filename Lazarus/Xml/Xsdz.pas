@@ -185,7 +185,9 @@ type
     DoNotEncode: Boolean;
     isReadOnly: Boolean;
     isCheckboxDisabled: Boolean;
+    isOneOfGroupLevel: Integer;
     ParametersType: TOperationParametersType;
+    MediaType: String;
     ResponseNo: Integer;
     minOccurs: String;
     maxOccurs: String;
@@ -1052,12 +1054,165 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
       end;
       aType.BaseDataType := self.FindTypeDef(scXMLSchemaURI, aType.BaseDataTypeName);
     end;
+
+    procedure _scan (aXml: TXml; aDoc: String; aMaxExcl, aMinExcl: Boolean);
+    var
+      x, y, z, f: Integer;
+      xXml, yXml, zXml: TXml;
+      xEnum: TXsdEnumeration;
+      xXsd, yXsd: TXsd;
+    begin
+      for x := 0 to aXml.Items.Count - 1 do
+      begin
+        xXml := aXml.Items.XmlItems[x];
+        if (xXml.Name = '_') then
+          for y := 0 to xXml.Items.Count - 1 do
+            _scan(xXml.Items.XmlItems[y], aDoc, aMaxExcl, aMinExcl);
+        if (xXml.Name = 'allOf') then // TODO ...
+          for y := 0 to xXml.Items.Count - 1 do
+            _scan(xXml.Items.XmlItems[y], aDoc, aMaxExcl, aMinExcl);
+        if (xXml.Name = 'anyOf') then // TODO ...
+          for y := 0 to xXml.Items.Count - 1 do
+            _scan(xXml.Items.XmlItems[y], aDoc, aMaxExcl, aMinExcl);
+        if (xXml.Name = 'oneOf') then // TODO ...
+          for y := 0 to xXml.Items.Count - 1 do
+            _scan(xXml.Items.XmlItems[y], aDoc, aMaxExcl, aMinExcl);
+        if (xXml.Name = 'properties') then
+        begin
+          for y := 0 to xXml.Items.Count - 1 do
+          begin
+            yXml := xXml.Items.XmlItems[y];
+            xXsd := TXsd.Create(self);
+            self.Garbage.AddObject('', xXsd);
+            xXsd.ElementName := yXml.Name;
+            xXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, yXml, ErrorFound);
+            xXsd.sType.Name := xXsd.ElementName;
+            xXsd.minOccurs := '0';
+            result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+          end;
+        end;
+        if xXml.Name = '$ref' then
+        begin
+          result.dollarRef := xXml.Value;
+          if result.dollarRef[1] = '#' then
+            result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
+        end;
+        if xXml.Name = 'type' then
+        begin
+          result.BaseDataTypeName := xXml.Value;
+          _baseTypeToJson(result);
+        end;
+        if xXml.Name = 'schema' then
+        begin
+          for y := 0 to xXml.Items.Count - 1 do
+          begin
+            yXml := xXml.Items.XmlItems[y];
+            if (yXml.Name = '_') then
+              for z := 0 to yXml.Items.Count - 1 do
+                _scan(yXml.Items.XmlItems[z], aDoc, aMaxExcl, aMinExcl);
+            if (yXml.Name = 'allOf') then // TODO ...
+              for z := 0 to yXml.Items.Count - 1 do
+                _scan(yXml.Items.XmlItems[z], aDoc, aMaxExcl, aMinExcl);
+            if (yXml.Name = 'anyOf') then // TODO ...
+              for z := 0 to yXml.Items.Count - 1 do
+                _scan(yXml.Items.XmlItems[z], aDoc, aMaxExcl, aMinExcl);
+            if (yXml.Name = 'oneOf') then // TODO ...
+              for z := 0 to yXml.Items.Count - 1 do
+                _scan(yXml.Items.XmlItems[z], aDoc, aMaxExcl, aMinExcl);
+            if yXml.Name = 'type' then
+            begin
+              result.BaseDataTypeName := yXml.Value;
+              _baseTypeToJson(result);
+            end;
+            if yXml.Name = 'items' then
+            begin
+              yXsd := TXsd.Create(self);
+              self.Garbage.AddObject('', yXsd);
+              yXsd.ElementName := '_';
+              yXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, yXml, ErrorFound);
+              yXsd.sType.Name := yXsd.ElementName;
+              yXsd.minOccurs := '0';
+              yXsd.maxOccurs := 'unbounded';
+              result.ElementDefs.AddObject(yXsd.ElementName, yXsd);
+            end;
+            if yXml.Name = '$ref' then
+            begin
+              result.dollarRef := yXml.Value;
+              if result.dollarRef[1] = '#' then
+                result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
+            end;
+          end;
+        end;
+        if xXml.Name = 'collectionFormat' then
+        begin
+          if xXml.Value = 'csv' then result.CollectionFormat := ocfCSV;
+          if xXml.Value = 'ssv' then result.CollectionFormat := ocfSSV;
+          if xXml.Value = 'tsv' then result.CollectionFormat := ocfTSV;
+          if xXml.Value = 'pipes' then result.CollectionFormat := ocfPipes;
+          if xXml.Value = 'multi' then result.CollectionFormat := ocfMulti;
+        end;
+        if xXml.Name = 'format' then;
+        if (xXml.Name = 'items') then
+        begin
+          xXsd := TXsd.Create(self);
+          self.Garbage.AddObject('', xXsd);
+          xXsd.ElementName := '_';
+          xXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, xXml, ErrorFound);
+          xXsd.sType.Name := xXsd.ElementName;
+          xXsd.minOccurs := '0';
+          xXsd.maxOccurs := 'unbounded';
+          result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+        end;
+        if xXml.Name = 'title' then AppendDoc(aDoc, xXml.Value);
+        if xXml.Name = 'description' then AppendDoc(aDoc, xXml.Value);
+        if xXml.Name = 'default ' then result.DefaultValue := xXml.Value;
+        if xXml.Name = 'multipleOf' then ;
+        //if xXml.Name = 'maximum' then result.MaxInclusive := xXml.Value;
+        if xXml.Name = 'exclusiveMaximum' then aMaxExcl := xXml.ValueAsBoolean;
+        if xXml.Name = 'minimum' then result.MinInclusive := xXml.Value;
+        if xXml.Name = 'exclusiveMinimum' then aMinExcl := xXml.ValueAsBoolean;
+        if xXml.Name = 'maxLength' then result.MaxLength := xXml.Value;
+        if xXml.Name = 'minLength' then result.MinLength := xXml.Value;
+        if xXml.Name = 'pattern' then result.Pattern := xXml.Value;
+        if xXml.Name = 'maxItems' then result.MaxItems := xXml.Value;
+        if xXml.Name = 'minItems' then result.MinItems := xXml.Value;
+        if xXml.Name = 'uniqueItems' then result.uniqueItems := xXml.Value;
+        if xXml.Name = 'maxProperties' then result.maxProperties := xXml.Value;
+        if xXml.Name = 'minProperties' then result.minProperties := xXml.Value;
+        if xXml.Name = 'enum' then
+        begin
+          for y := 0 to xXml.Items.Count - 1 do
+          begin
+            xEnum := TXsdEnumeration.Create;
+            xEnum.Value := xXml.Items.XmlItems[y].Value;
+            result.Enumerations.AddObject(xEnum.Value, xEnum);
+          end;
+        end;
+
+        if xXml.Name = 'xml' then
+        begin
+          for y := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[y] do
+          begin
+            if Name = 'name' then result.JsonXmlName := Value;
+          end;
+        end;
+      end;
+
+      xXml := aXml.Items.XmlItemByTag['required'];
+      if Assigned(xXml) then
+      begin
+        for y := 0 to xXml.Items.Count - 1 do
+        begin
+          yXml := xXml.Items.XmlItems[y];
+          xXsd := result.ElementByName[yXml.Value];
+          if Assigned (xXsd) then
+            xXsd.minOccurs := '1';
+        end;
+      end;
+    end;
+
   var
-    x, y, z, f: Integer;
-    xXml, yXml: TXml;
     xDoc: String;
-    xEnum: TXsdEnumeration;
-    xXsd, yXsd: TXsd;
     xMaxExcl, xMinExcl: Boolean;
   begin
     result := TXsdDataType.Create(self);
@@ -1069,118 +1224,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
     xDoc := '';
     xMaxExcl := False;
     xMinExcl := False;
-    for x := 0 to aXml.Items.Count - 1 do
-    begin
-      xXml := aXml.Items.XmlItems[x];
-      if (xXml.Name = 'properties') then
-      begin
-        for y := 0 to xXml.Items.Count - 1 do
-        begin
-          yXml := xXml.Items.XmlItems[y];
-          xXsd := TXsd.Create(self);
-          self.Garbage.AddObject('', xXsd);
-          xXsd.ElementName := yXml.Name;
-          xXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, yXml, ErrorFound);
-          xXsd.sType.Name := xXsd.ElementName;
-          xXsd.minOccurs := '0';
-          result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
-        end;
-      end;
-      if xXml.Name = '$ref' then
-      begin
-        result.dollarRef := xXml.Value;
-        if result.dollarRef[1] = '#' then
-          result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
-      end;
-      if xXml.Name = 'type' then
-      begin
-        result.BaseDataTypeName := xXml.Value;
-        _baseTypeToJson(result);
-      end;
-      if xXml.Name = 'schema' then
-      begin
-        for y := 0 to xXml.Items.Count - 1 do
-        begin
-          yXml := xXml.Items.XmlItems[y];
-          if yXml.Name = 'type' then
-          begin
-            result.BaseDataTypeName := yXml.Value;
-            _baseTypeToJson(result);
-          end;
-          if yXml.Name = 'items' then
-          begin
-            yXsd := TXsd.Create(self);
-            self.Garbage.AddObject('', yXsd);
-            yXsd.ElementName := '_';
-            yXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, yXml, ErrorFound);
-            yXsd.sType.Name := yXsd.ElementName;
-            yXsd.minOccurs := '0';
-            yXsd.maxOccurs := 'unbounded';
-            result.ElementDefs.AddObject(yXsd.ElementName, yXsd);
-          end;
-          if yXml.Name = '$ref' then
-          begin
-            result.dollarRef := yXml.Value;
-            if result.dollarRef[1] = '#' then
-              result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
-          end;
-        end;
-      end;
-      if xXml.Name = 'collectionFormat' then
-      begin
-        if xXml.Value = 'csv' then result.CollectionFormat := ocfCSV;
-        if xXml.Value = 'ssv' then result.CollectionFormat := ocfSSV;
-        if xXml.Value = 'tsv' then result.CollectionFormat := ocfTSV;
-        if xXml.Value = 'pipes' then result.CollectionFormat := ocfPipes;
-        if xXml.Value = 'multi' then result.CollectionFormat := ocfMulti;
-      end;
-      if xXml.Name = 'format' then;
-      if (xXml.Name = 'items') then
-      begin
-        xXsd := TXsd.Create(self);
-        self.Garbage.AddObject('', xXsd);
-        xXsd.ElementName := '_';
-        xXsd.sType := self.AddTypeDefFromJsonXml(aFileName, aNameSpace + '/' + result.Name, xXml, ErrorFound);
-        xXsd.sType.Name := xXsd.ElementName;
-        xXsd.minOccurs := '0';
-        xXsd.maxOccurs := 'unbounded';
-        result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
-      end;
-      if xXml.Name = 'title' then AppendDoc(xDoc, xXml.Value);
-      if xXml.Name = 'description' then AppendDoc(xDoc, xXml.Value);
-      if xXml.Name = 'default ' then result.DefaultValue := xXml.Value;
-      if xXml.Name = 'multipleOf' then ;
-      //if xXml.Name = 'maximum' then result.MaxInclusive := xXml.Value;
-      if xXml.Name = 'exclusiveMaximum' then xMaxExcl := xXml.ValueAsBoolean;
-      if xXml.Name = 'minimum' then result.MinInclusive := xXml.Value;
-      if xXml.Name = 'exclusiveMinimum' then xMinExcl := xXml.ValueAsBoolean;
-      if xXml.Name = 'maxLength' then result.MaxLength := xXml.Value;
-      if xXml.Name = 'minLength' then result.MinLength := xXml.Value;
-      if xXml.Name = 'pattern' then result.Pattern := xXml.Value;
-      if xXml.Name = 'maxItems' then result.MaxItems := xXml.Value;
-      if xXml.Name = 'minItems' then result.MinItems := xXml.Value;
-      if xXml.Name = 'uniqueItems' then result.uniqueItems := xXml.Value;
-      if xXml.Name = 'maxProperties' then result.maxProperties := xXml.Value;
-      if xXml.Name = 'minProperties' then result.minProperties := xXml.Value;
-      if xXml.Name = 'required' then result.required := xXml.ValueAsBoolean;
-      if xXml.Name = 'enum' then
-      begin
-        for y := 0 to xXml.Items.Count - 1 do
-        begin
-          xEnum := TXsdEnumeration.Create;
-          xEnum.Value := xXml.Items.XmlItems[y].Value;
-          result.Enumerations.AddObject(xEnum.Value, xEnum);
-        end;
-      end;
-
-      if xXml.Name = 'xml' then
-      begin
-        for y := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[y] do
-        begin
-          if Name = 'name' then result.JsonXmlName := Value;
-        end;
-      end;
-    end;
+    _scan(aXml, xDoc, xMaxExcl, xMinExcl);
     if xMaxExcl then
     begin
       result.MaxExclusive := result.MaxInclusive;

@@ -1,41 +1,44 @@
 unit EditContextsUnit;
 
-{$mode objfpc}{$H+}
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
 
 interface
 
 uses
-  Classes,SysUtils,FileUtil,Forms,Controls,Graphics,Dialogs,Grids,Menus,
-  StdCtrls,ActnList,ExtCtrls,Buttons,ComCtrls, FormIniFilez, StringListListUnit;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Grids, Menus,
+  StdCtrls, ActnList, ExtCtrls, Buttons, ComCtrls, FormIniFilez,
+  StringListListUnit, VirtualTrees;
 type
+
+  PGridTreeRec = ^TGridTreeRec;
+
+  TGridTreeRec = record
+    Row: Integer;
+  end;
 
   { TEditContextsForm }
 
   TEditContextsForm = class(TForm)
+    GridView: TVirtualStringTree;
     mainImageList1: TImageList;
     MenuItem6: TMenuItem;
     SetAsOnetimerAction: TAction;
     MenuItem5: TMenuItem;
     SetPasswordAction: TAction;
-    AddRowAfter: TMenuItem;
-    AddRowBefore: TMenuItem;
     CancelButton: TBitBtn;
     ContextComboBox: TComboBox;
     Label1: TLabel;
     mainImageList: TImageList;
-    MenuItem4: TMenuItem;
     OkButton: TBitBtn;
     Panel2: TPanel;
     RemovePropertyAction: TAction;
-    MenuItem2: TMenuItem;
-    MenuItem3: TMenuItem;
     RemoveContextAction: TAction;
     AddPropertyAction: TAction;
     AddContextAction: TAction;
     ActionList1: TActionList;
-    MenuItem1: TMenuItem;
     PopupMenu1: TPopupMenu;
-    StringGrid: TStringGrid;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
@@ -45,9 +48,35 @@ type
     ToolButton6: TToolButton;
     procedure AddContextActionExecute(Sender: TObject);
     procedure AddPropertyActionExecute(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GridViewAdvancedHeaderDraw(Sender: TVTHeader;
+      var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
+    procedure GridViewBeforeCellPaint(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
+    procedure GridViewColumnClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
+    procedure GridViewCreateEditor(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex; out EditLink: IVTEditLink);
+    procedure GridViewEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var Allowed: Boolean);
+    procedure GridViewGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+    procedure GridViewHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GridViewHeaderDrawQueryElements(Sender: TVTHeader;
+      var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
+    procedure GridViewHeaderImageClick(Sender: TVTHeader; Column: TColumnIndex;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GridViewKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
+    procedure GridViewNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; const NewText: String);
+    procedure GridViewPaintText(Sender: TBaseVirtualTree;
+      const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType);
     procedure PopupMenu1Popup(Sender: TObject);
     procedure RemoveContextActionExecute(Sender: TObject);
     procedure RemoveContextActionUpdate(Sender: TObject);
@@ -57,20 +86,14 @@ type
     procedure SetAsOnetimerActionUpdate(Sender: TObject);
     procedure SetPasswordActionExecute(Sender: TObject);
     procedure SetPasswordActionUpdate(Sender: TObject);
-    procedure StringGridGetEditText(Sender: TObject; ACol,ARow: Integer;
-      var Value: string);
-    procedure StringGridMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure StringGridSelectEditor(Sender: TObject; aCol,aRow: Integer;
-      var Editor: TWinControl);
-    procedure StringGridSetEditText(Sender: TObject; ACol,ARow: Integer;
-      const Value: string);
   private
     ColWidths: TStringList;
+    procedure GetColAndRow(var aCol, aRow: Integer);
     function isPassWordColumn (aColumn: Integer): Boolean;
     function isOneTimerColumn (aColumn: Integer): Boolean;
     function BooleanPromptDialog (aCaption: String): Boolean;
     procedure PopulateContextComboBox;
+    procedure SetColumnImageIndex (aColumn: Integer);
   public
     Contexts: TStringListList;
     { public declarations }
@@ -82,16 +105,34 @@ var
 implementation
 
 {$R *.lfm}
-
-{ TEditContextsForm }
 uses xmlio
    , PromptUnit
+   , LCLType
    ;
+
+
+{ TPasswordEditLink }
+type
+TPasswordEditLink = class(TStringEditLink, IVTEditLink)
+public
+  constructor Create; override;
+end;
+
+{ TPasswordEditLink }
+
+constructor TPasswordEditLink.Create;
+begin
+  inherited Create;
+  Self.Edit.PasswordChar := '*';
+end;
+
+{ TEditContextsForm }
 
 procedure TEditContextsForm.AddContextActionExecute(Sender: TObject);
 var
   xForm: TPromptForm;
   r, c: Integer;
+  p: PGridTreeRec;
 begin
   Application.CreateForm(TPromptForm, xForm);
   with xForm do
@@ -101,14 +142,13 @@ begin
     Numeric := False;
     Pattern := '[A-Za-z0-9\.,]+';
     ShowModal;
-    if ModalResult = mrOk then with StringGrid do
+    if ModalResult = mrOk then
     begin
-      RowCount := RowCount + 1;
-      r := Row;
-      Row := RowCount - 1;
-      Cells [0, RowCount - 1] := PromptEdit.Text;
-      for c := 1 to ColCount - 1 do
-        Cells [c, RowCount - 1] := Cells [c, r];
+      Contexts.RowCount := Contexts.RowCount + 1;
+      Contexts.CellValue[0, Contexts.RowCount - 1] := PromptEdit.Text;
+      p := GridView.GetNodeData(GridView.AddChild(nil));
+      p.Row := Contexts.RowCount - 1;
+      GridView.Invalidate;
       PopulateContextComboBox;
     end;
   finally
@@ -128,14 +168,36 @@ begin
     Numeric := False;
     Pattern := '[A-Za-z0-9\.,]+';
     ShowModal;
-    if ModalResult = mrOk then with StringGrid do
+    if ModalResult = mrOk then with GridView do
     begin
       if PromptEdit.Text = 'context' then
         raise Exception.Create('"context" not allowed as property name');
-      Columns.Add.Title.Caption := PromptEdit.Text;
-      Col := ColCount - 1;
-      Cells [Col, 0] := PromptEdit.Text;
+      Contexts.ColCount := Contexts.ColCount + 1;
+      with Header.Columns.Add do
+      begin
+        Text := PromptEdit.Text;
+      end;
+      Contexts.CellValue [Contexts.ColCount - 1, 0] := PromptEdit.Text;
+      Invalidate;
+      FocusedColumn := Contexts.ColCount - 1;
+      SetColumnImageIndex(FocusedColumn);
     end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TEditContextsForm.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
+var
+  c: Integer;
+begin
+  with TFormIniFile.Create(self, False) do // here instead of at formdestroy because of references to contetxts
+  try
+    for c := 1 to Contexts.ColCount - 1 do
+      ColWidths.Values[Contexts.CellValue[c, 0]] := IntToStr(GridView.Header.Columns[c].Width);
+    StringByName['ColWidths'] := ColWidths.Text;
+    Save;
   finally
     Free;
   end;
@@ -151,51 +213,159 @@ begin
   finally
     Free;
   end;
-end;
-
-procedure TEditContextsForm.FormDestroy(Sender: TObject);
-var
-  c: Integer;
-begin
-  with TFormIniFile.Create(self, False) do
-  try
-    for c := 1 to StringGrid.ColCount - 1 do
-      ColWidths.Values[StringGrid.Cells[c, 0]] := IntToStr(StringGrid.ColWidths[c]);
-    StringByName['ColWidths'] := ColWidths.Text;
-    Save;
-  finally
-    Free;
-  end;
+  GridView.NodeDataSize := SizeOf(TGridTreeRec);
 end;
 
 procedure TEditContextsForm.FormShow(Sender: TObject);
 var
   c, r, x: Integer;
+  xNode: PVirtualNode;
+  xData: PGridTreeRec;
 begin
-  with StringGrid do
+  with GridView do
   begin
-    Columns.Clear;
-    for c := 1 to Contexts.ColCount -1 do
+    Clear;
+    Header.Columns.Clear;
+    while Header.Columns.Count < Contexts.ColCount do
+      Header.Columns.Add;
+    for c := 0 to Contexts.ColCount - 1 do
     begin
-      with Columns.Add do
+      with Header.Columns[c] do
       begin
-        Title.ImageLayout := blGlyphRight;
-        Title.Caption := Contexts.CellValue [c, 0];
+        Text := Contexts.CellValue [c, 0];
+        if c = 0 then // contexts
+          Font.Style := Font.Style + [fsBold];
         if self.ColWidths.IndexOfName(Contexts.CellValue[c, 0]) > -1 then
           Width := StrToInt(self.ColWidths.Values[Contexts.CellValue[c, 0]]);
-        if Assigned (Contexts.CellObject[c, 0]) then
-          Title.ImageIndex := 2;
+        SetColumnImageIndex(c);
       end;
     end;
-    RowCount := Contexts.RowCount;
-    for r := 0 to Contexts.RowCount - 1 do
-      for c := 0 to Contexts.ColCount - 1 do
-      begin
-        Cells[c, r] := Contexts.CellValue[c, r];
-        Objects[c, r] := Contexts.CellObject[c, r];
-      end;
+    for r := 1 to Contexts.RowCount - 1 do
+    begin
+      xNode := AddChild(nil);
+      xData := GetNodeData(xNode);
+      xData.Row := r;
+    end;
     PopulateContextComboBox;
   end;
+end;
+
+procedure TEditContextsForm.GridViewAdvancedHeaderDraw(Sender: TVTHeader;
+  var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
+begin
+  if hpeBackground in Elements then
+  begin
+    PaintInfo.TargetCanvas.Brush.Color := clBtnFace;
+    PaintInfo.TargetCanvas.FillRect(PaintInfo.PaintRectangle);
+    if Assigned(PaintInfo.Column) then with PaintInfo.TargetCanvas do
+    begin
+      Brush.Color := clBtnText;
+      Pen.Style := psDot;
+      FrameRect(PaintInfo.PaintRectangle);
+    end;
+  end;
+end;
+
+procedure TEditContextsForm.GridViewBeforeCellPaint(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
+begin
+  with TargetCanvas do
+  begin
+    Brush.Style := bsSolid;
+    if Assigned (Node)
+    and (Column > 0) then
+        Brush.Color := clWhite;
+    FillRect(CellRect);
+  end;
+end;
+
+procedure TEditContextsForm.GridViewColumnClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
+begin
+  GridView.FocusedColumn := Column;
+end;
+
+procedure TEditContextsForm.GridViewCreateEditor(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; out EditLink: IVTEditLink);
+begin
+  if isPassWordColumn(Column) then
+    EditLink := TPasswordEditLink.Create
+  else
+    EditLink := TStringEditLink.Create;
+end;
+
+procedure TEditContextsForm.GridViewEditing(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+  Allowed := (Column > 0);
+end;
+
+procedure TEditContextsForm.GridViewGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: String);
+var
+  p: PGridTreeRec;
+begin
+  p := GridView.GetNodeData(Node);
+  if isPassWordColumn(Column) then
+    CellText := '*****'
+  else
+    CellText := Contexts.CellValue[Column, p.Row];
+end;
+
+procedure TEditContextsForm.GridViewHeaderClick(Sender: TVTHeader;
+  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X, Y: Integer
+  );
+begin
+  GridView.FocusedColumn := Column;
+end;
+
+procedure TEditContextsForm.GridViewHeaderDrawQueryElements(Sender: TVTHeader;
+  var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
+begin
+  Elements := [hpeBackground];
+end;
+
+procedure TEditContextsForm.GridViewHeaderImageClick(Sender: TVTHeader;
+  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X, Y: Integer
+  );
+begin
+  GridView.FocusedColumn := Column;
+  PopupMenu1.PopUp;
+end;
+
+procedure TEditContextsForm.GridViewKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key = VK_RETURN) then
+  begin
+    (Sender as TVirtualStringTree).EditNode ( (Sender as TVirtualStringTree).FocusedNode
+                                            , (Sender as TVirtualStringTree).FocusedColumn)
+                                            ;
+    Key := 0;
+  end;
+end;
+
+procedure TEditContextsForm.GridViewNewText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; const NewText: String);
+var
+  p: PGridTreeRec;
+begin
+  p := GridView.GetNodeData(Node);
+  if isPassWordColumn(Column) then
+    Contexts.CellValue[Column, p.Row] := EncryptPassword (NewText)
+  else
+    Contexts.CellValue[Column, p.Row] := NewText;
+end;
+
+procedure TEditContextsForm.GridViewPaintText(Sender: TBaseVirtualTree;
+  const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  TextType: TVSTTextType);
+begin
+  if Assigned (Node)
+  and (Column > 0) then
+    TargetCanvas.Font.Style := TargetCanvas.Font.Style - [fsBold];
 end;
 
 procedure TEditContextsForm.PopupMenu1Popup(Sender: TObject);
@@ -203,121 +373,127 @@ begin
   RemovePropertyActionUpdate(nil);
   RemoveContextActionUpdate(nil);
   SetPasswordActionUpdate(nil);
+  SetAsOnetimerActionUpdate(nil);
 end;
 
 procedure TEditContextsForm.RemoveContextActionExecute(Sender: TObject);
 var
-  r: Integer;
+  aCol, aRow: Integer;
 begin
-  with StringGrid do
+  with GridView do
   begin
-    if BooleanPromptDialog('Remove context ' + Cells [0, Row]) then
+    GetColAndRow (aCol, aRow);
+    if BooleanPromptDialog('Remove context ' + Contexts.CellValue [0, aRow]) then
     begin
-      DeleteRow(Row);
-      PopulateContextComboBox;
+      GridView.Clear;
+      Contexts.Delete(aRow);
+      FormShow(nil);
     end;
   end;
 end;
 
 procedure TEditContextsForm.RemoveContextActionUpdate(Sender: TObject);
 begin
-  RemoveContextAction.Enabled := (StringGrid.Row > 0);
+  RemoveContextAction.Enabled := (GridView.GetNodeData(GridView.FocusedNode) <> Pointer(0));
 end;
 
 procedure TEditContextsForm.RemovePropertyActionExecute(Sender: TObject);
 var
-  c: Integer;
+  aCol, aRow: Integer;
 begin
-  with StringGrid do
+  with Contexts do
   begin
-    if BooleanPromptDialog('Remove property ' + Cells [Col, 0]) then
-      DeleteCol(Col);
+    GetColAndRow (aCol, aRow);
+    if BooleanPromptDialog('Remove property ' + CellValue [aCol, 0]) then
+    begin
+      GridView.Clear;
+      Contexts.DeleteCol(aCol);
+      FormShow(nil);
+      if aCol < ColCount - 1 then
+        GridView.FocusedColumn := aCol
+      else
+        GridView.FocusedColumn := ColCount - 1;
+    end;
   end;
 end;
 
 procedure TEditContextsForm.RemovePropertyActionUpdate(Sender: TObject);
+var
+  aCol, aRow: Integer;
 begin
-  RemovePropertyAction.Enabled := (StringGrid.Col > 0);
+  GetColAndRow (aCol, aRow);
+  RemovePropertyAction.Enabled := (aCol > 0);
 end;
 
 procedure TEditContextsForm.SetAsOnetimerActionExecute(Sender: TObject);
+var
+  aCol, aRow: Integer;
 begin
-  with StringGrid do
+  GetColAndRow (aCol, aRow);
+  with Contexts do
   begin
-    Objects[Col, 0] := TObject ((QWord(Objects[Col, 0]) xor xmlio.OneTimeContextsOptionValue));
+    CellObject[aCol, 0] := TObject ((QWord(CellObject[aCol, 0]) xor xmlio.OneTimeContextsOptionValue));
+    SetColumnImageIndex(aCol);
   end;
 end;
 
 procedure TEditContextsForm.SetAsOnetimerActionUpdate(Sender: TObject);
+var
+  aCol, aRow: Integer;
 begin
+  GetColAndRow (aCol, aRow);
   SetAsOnetimerAction.Enabled := True;
-  SetAsOnetimerAction.Checked := isOneTimerColumn (StringGrid.Col);
-  with StringGrid do
-    SetAsOnetimerAction.Caption := 'Do not save values for column ' + Cells[Col, 0] + ' to project';
+  SetAsOnetimerAction.Checked := isOneTimerColumn (aCol);
+  SetAsOnetimerAction.Caption := 'Do not save values for column ' + Contexts.CellValue[aCol, 0] + ' to project';
 end;
 
 procedure TEditContextsForm.SetPasswordActionExecute(Sender: TObject);
 var
+  aCol, aRow: Integer;
   r: Integer;
 begin
-  with StringGrid do
+  GetColAndRow (aCol, aRow);
+  with Contexts do
   begin
-    Objects[Col, 0] := TObject ((QWord(Objects[Col, 0]) xor xmlio.PasswordContextsOptionValue));
+    CellObject[aCol, 0] := TObject ((QWord(CellObject[aCol, 0]) xor xmlio.PasswordContextsOptionValue));
     for r := 1 to RowCount - 1 do
-      Cells[Col, r] := '';
+      CellValue[aCol, r] := '';
+    SetColumnImageIndex(aCol);
   end;
+  GridView.Invalidate;
 end;
 
 procedure TEditContextsForm.SetPasswordActionUpdate(Sender: TObject);
-begin
-  SetPasswordAction.Enabled := True;
-  SetPasswordAction.Checked := isPassWordColumn (StringGrid.Col);
-  with StringGrid do
-    SetPasswordAction.Caption := 'Encrypt values for column ' + Cells[Col, 0] + ' (switching clears columndata)';
-end;
-
-procedure TEditContextsForm.StringGridGetEditText(Sender: TObject; ACol,ARow: Integer;
-  var Value: string);
-begin
-  if isPassWordColumn(ACol) then Value := xmlio.DecryptPassword(StringGrid.Cells[ACol, ARow]);
-end;
-
-procedure TEditContextsForm.StringGridMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  row, col: integer;
+  aCol, aRow: Integer;
 begin
-  StringGrid.MouseToCell(X, Y, col, row );
-  if (row > -1) then
-    StringGrid.Row := row;
-  if (col > -1) then
-    StringGrid.Col := col;
+  GetColAndRow (aCol, aRow);
+  SetPasswordAction.Enabled := True;
+  SetPasswordAction.Checked := isPassWordColumn (aCol);
+  SetPasswordAction.Caption := 'Encrypt values for column ' + Contexts.CellValue[aCol, 0] + ' (switching clears columndata)';
 end;
 
-procedure TEditContextsForm.StringGridSelectEditor(Sender: TObject; aCol,aRow: Integer;
-  var Editor: TWinControl);
+procedure TEditContextsForm.GetColAndRow(var aCol, aRow: Integer);
+var
+  p: PGridTreeRec;
 begin
-  with (Editor as TCustomEdit) do
-    if isPassWordColumn(aCol) then
-      PasswordChar := '*'
-    else
-      PasswordChar := #0;
-end;
-
-procedure TEditContextsForm.StringGridSetEditText(Sender: TObject; ACol,ARow: Integer;
-  const Value: string);
-begin
-  if isPassWordColumn(aCol) then StringGrid.Cells [ACol, ARow] := xmlio.EncryptPassword(Value);
+  aRow := 0;
+  p := GridView.GetNodeData(GridView.FocusedNode);
+  if Assigned (p) then
+    aRow := p^.Row;
+  aCol := GridView.FocusedColumn;
 end;
 
 function TEditContextsForm.isPassWordColumn(aColumn: Integer): Boolean;
 begin
-  result := ((QWord(StringGrid.Objects[StringGrid.Col, 0]) AND xmlio.PasswordContextsOptionValue) = xmlio.PasswordContextsOptionValue);
+  with Contexts do
+    result := ((QWord(CellObject[aColumn, 0]) AND xmlio.PasswordContextsOptionValue) = xmlio.PasswordContextsOptionValue);
 end;
 
 function TEditContextsForm.isOneTimerColumn(aColumn: Integer): Boolean;
 begin
-  result := ((QWord(StringGrid.Objects[StringGrid.Col, 0]) AND xmlio.OneTimeContextsOptionValue) = xmlio.OneTimeContextsOptionValue);
+  with Contexts do
+    result := ((QWord(CellObject[aColumn, 0]) AND xmlio.OneTimeContextsOptionValue) = xmlio.OneTimeContextsOptionValue);
 end;
 
 function TEditContextsForm.BooleanPromptDialog(aCaption: String): Boolean;
@@ -330,8 +506,16 @@ var
   r: Integer;
 begin
   ContextComboBox.Items.Clear;
-  for r := 1 to StringGrid.RowCount - 1 do
-    ContextComboBox.Items.Add (StringGrid.Cells[0, r]);
+  for r := 1 to Contexts.RowCount - 1 do
+    ContextComboBox.Items.Add (Contexts.CellValue[0, r]);
+end;
+
+procedure TEditContextsForm.SetColumnImageIndex(aColumn: Integer);
+begin
+  if aColumn > 0 then
+    GridView.Header.Columns[aColumn].ImageIndex := QWord (Contexts.CellObject[aColumn, 0])
+  else
+    GridView.Header.Columns[aColumn].ImageIndex := -1;
 end;
 
 end.

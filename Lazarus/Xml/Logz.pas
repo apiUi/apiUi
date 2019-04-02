@@ -85,6 +85,7 @@ type
     relatesTo: TLog;
     ServiceName, OperationName: String;
     DelayTimeMs, OperationCount: Integer;
+    openApiPathMask: String;
     procedure AddRemark (aRemark: String);
     function CompareKey (aCompareBy: TCompareLogOrderBy): String;
     function SortKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TStringList): String;
@@ -1352,12 +1353,12 @@ begin
   hdrParams.NameValueSeparator := ':';
   try
     ExplodeStr (self.httpDocument, '/', pathParams);
-    ExplodeStr (aOperation.WsdlService.openApiPathMask , '/', pathMask);
+    ExplodeStr (openApiPathMask , '/', pathMask);
     if pathParams.Count <> pathMask.Count then
       raise sysutils.Exception.CreateFmt ( '%s document %s and service path %s do not match'
                                          , [ aOperation.Name
                                            ,             self.httpDocument
-                                           ,                                 aOperation.WsdlService.openApiPathMask
+                                           ,                                 openApiPathMask
                                            ]
                                          );
     k := pathParams.Count - 1;

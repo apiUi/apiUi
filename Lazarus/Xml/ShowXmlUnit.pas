@@ -1638,7 +1638,9 @@ begin
               and (aBind as TXml).Xsd.isCheckboxDisabled
              ) then
       begin
-        if (aBind.Parent as TXml).TypeDef.ContentModel = 'Choice' then
+        if ((aBind.Parent as TXml).TypeDef.ContentModel = 'Choice')
+        or (Assigned ((aBind as TXml).Xsd) and ((aBind as TXml).Xsd.isOneOfGroupLevel > 0))
+        then
           aNode.CheckType := ctRadioButton
         else
           aNode.CheckType := ctCheckBox;

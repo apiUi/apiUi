@@ -27,6 +27,7 @@ resourcestring
   S_NO_OPERATION_FOUND = 'No operation recognised';
   S_INBOUND_IS_A_RESPONSE = '[Inbound is a response]';
   S_ALIAS_VALID_PATTERN = '[A-Za-z]([0-9]|[A-Za-z]|\_|\-|\$)*'; // {id} regexp from express/scanner.l
+  S_OPEN_API_VALUE_REGEXP = '[^/]*';
 
 type TStubAction = (saStub, saForward, saRedirect, saRequest);
 type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone);
@@ -84,11 +85,14 @@ type
       function getOperationByRequest(Index: String): TWsdlOperation;
     public
       Name, FileAlias, FileName: String;
-      Description, Host, basePath, Schemes, Consumes, Produces: String;
+      Description, Host, Schemes, Consumes, Produces: String;
       isSoapService: Boolean;
       isOpenApiService: Boolean;
+      OpenApiVersion: String;
 //      xTargetNamespacePrefix: String;
       Services: TWsdlServices;
+      Servers: TXml; // introduced with openapi 3.0, just a copy of the specs
+      BasePaths: TStringList;
       XsdDescr: TXsdDescr;
       sdfXsdDescrs: TXsdDescrList;
       IpmDescrs: TIpmDescrs;
@@ -146,7 +150,7 @@ type
     private
     function getOperationByName(Index: String): TWsdlOperation;
     public
-      Name, FileAlias, openApiPath, openApiPathRegExp, openApiPathMask, Host: String;
+      Name, FileAlias, openApiPath, openApiPathRegExp, Host: String;
       AuthenticationType: TAuthenticationType;
       UserName: String;
       Password: String;
@@ -160,7 +164,6 @@ type
       property OperationByName [Index: String]: TWsdlOperation read getOperationByName;
       function OptionsAsXml: TXml;
       procedure OptionsFromXml(aXml: TXml);
-      procedure prepareOpenApiPath;
       constructor Create;
       destructor Destroy; override;
   end;
@@ -275,6 +278,7 @@ type
       function getIsOneWay: Boolean;
       function getIsOpenApiService: Boolean;
       function getisSoapService: Boolean;
+      function getOpenApiVersion: String;
       procedure setDoExit (AValue : Boolean );
       function getInputXml: TXml;
       function getOutputXml: TXml;
@@ -384,6 +388,7 @@ type
       property OnGetAbortPressed: TBooleanFunction write setOnGetAbortPressed;
       property wsaTo: String read getWsaTo;
       property isSoapService: Boolean read getIsSoapService;
+      property OpenApiVersion: string read getOpenApiVersion;
       property isOpenApiService: Boolean read getIsOpenApiService;
       property isOneWay: Boolean read getIsOneWay;
       property isFreeFormat: Boolean read getIsFreeFormat;
@@ -626,6 +631,7 @@ procedure ReturnString (aOperation: TWsdlOperation; aString: String);
 procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
 procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
 
+procedure prepareOpenApiRegExp (aPath: String; var aRegExp: String);
 function wsdlConvertSdfFrom36 (aXml: TXml): Boolean;
 procedure AcquireLock;
 procedure ReleaseLock;
@@ -758,6 +764,31 @@ begin
     end;
   end;
   Result := ReplaceStrings(Result, '__', '_', False, False);
+end;
+
+procedure prepareOpenApiRegExp (aPath: String; var aRegExp: String);
+var
+  s, e, p: Integer;
+  f: Boolean;
+const
+  pathTemplateRegExp = '\{[^\}]+\}';
+begin
+  aRegExp := '';
+  s := 1;
+  with TRegExpr.Create(pathTemplateRegExp) do
+  try
+    f := Exec(aPath);
+    while f do
+    begin
+      e := MatchPos[0];
+      aRegExp := aRegExp + Copy (aPath, s, e - s) + S_OPEN_API_VALUE_REGEXP;
+      s := MatchPos[0] + MatchLen[0];
+      f := ExecNext;
+    end;
+    aRegExp := aRegExp + Copy (aPath, s, Length (aPath));
+  finally
+    Free;
+  end;
 end;
 
 procedure Notify(aString: AnsiString);
@@ -2021,6 +2052,7 @@ begin
   OperationsWithEndpointOnly := aOperationsWithEndpointOnly;
   Services := TWsdlServices.Create;
   Services.Sorted := True;
+  BasePaths := TStringList.Create;
   XsdDescr := TXsdDescr.Create;
   sdfXsdDescrs := TXsdDescrList.Create;
   IpmDescrs := TIpmDescrs.Create;
@@ -2051,6 +2083,7 @@ begin
   for x := 0 to Services.Count - 1 do
     Services.Services [x].Free;
   FreeAndNil (Services);
+  FreeAndNil (BasePaths);
   ExtraXsds.Clear;
   ExtraXsds.Free;
   fMssgs.ClearListOnly;
@@ -2058,6 +2091,7 @@ begin
   fOpers.ClearListOnly;
   FreeAndNil(fOpers);
   FreeAndNil(fStrs);
+  FreeAndNil(Servers);
   inherited;
 end;
 
@@ -2444,6 +2478,19 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
 //
 // Based on https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 //
+  function _prepareRef (aValue: String): String;
+  var
+    x: Integer;
+  begin
+    if Copy (aValue, 1, 2) <> '#/' then
+      raise Exception.CreateFmt('_prepareRef: preparing for "%s" not yet implemented', [aValue]);
+    SetLength(result, Length(aValue) - 2);
+    for x := 3 to Length (aValue) do
+      if aValue [x] = '/' then
+        result [x - 2] := '.'
+      else
+        result [x - 2] := aValue [x];
+  end;
 
   procedure _ResolveDollarRefs;
     procedure _resolve (aXsd: TXsd);
@@ -2493,8 +2540,317 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
       result := aPath;
   end;
 
+  function _initXsd (aParentXsd: TXsd; aName: String): TXsd;
+  begin
+    result := TXsd.Create(XsdDescr);
+    XsdDescr.Garbage.AddObject('', result);
+    result.ElementName := aName;
+    result.ResponseNo := StrToIntDef(aName, 200);
+    result.sType := TXsdDataType.Create(XsdDescr);
+    result.sType.jsonType := jsonObject;
+    result.sType.xsdType:= dtComplexType;
+    XsdDescr.Garbage.AddObject('', result.sType);
+    result.sType.Name := aName;
+    result.minOccurs := '0';
+    aParentXsd.sType.ElementDefs.AddObject(result.ElementName, result);
+  end;
+
+  procedure _addUndefXsd (aParentXsd: TXsd);
+  var
+    xXsd, yXsd: TXsd;
+  begin
+    xXsd := TXsd.Create(XsdDescr);
+    XsdDescr.Garbage.AddObject('', xXsd);
+    xXsd.ElementName := 'undefined';
+    xXsd.ResponseNo := -1;
+    xXsd.sType := TXsdDataType.Create(XsdDescr);
+    xXsd.sType.jsonType := jsonObject;
+    xXsd.sType.xsdType:= dtComplexType;
+    XsdDescr.Garbage.AddObject('', xXsd.sType);
+    xXsd.sType.Name := 'other';
+    xXsd.minOccurs := '0';
+    aParentXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
+    yXsd := TXsd.Create(XsdDescr);
+    XsdDescr.Garbage.AddObject('', yXsd);
+    yXsd.ElementName := 'responseCode';
+    yXsd.sType := TXsdDataType.Create(XsdDescr);
+    yXsd.sType.Name := yXsd.ElementName;
+    yXsd.sType.xsdType := dtSimpleType;
+    yXsd.sType.BaseDataTypeName := 'string';
+    yXsd.sType.jsonType := jsonString;
+    xXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
+  end;
+
+  procedure _evaluateContent ( aService: TWsdlService
+                             ; aOperation: TWsdlOperation
+                             ; aXsd: TXsd
+                             ; aItems: TXmlList
+                             ; aComponentsXml: TXml
+                             );
+  var
+    x, y, f: Integer;
+    yXsd: TXsd;
+    xName: String;
+  begin
+    for x := 0 to aItems.Count - 1 do
+    begin
+      xName := makeValidId(aItems.XmlItems[x].Name); // Name is filled with a media type
+      if AnsiStartsText('application_', xName) then
+        xName := Copy (xName, Length('application_') + 1, MaxInt);
+      yXsd := TXsd.Create(XsdDescr);
+      yXsd.ParametersType := oppBody;
+      XsdDescr.Garbage.AddObject('', yXsd);
+      yXsd.ElementName := xName;
+      yXsd.MediaType := aItems.XmlItems[x].Name;
+      XsdDescr.TypeDefs.Find(scXMLSchemaURI + ';' + xmlzConsts.xsdString, f);
+      yXsd.sType := XsdDescr.TypeDefs.XsdDataTypes[f];
+      yXsd.sType.Name := aXsd.ElementName+xName;
+      yXsd.isOneOfGroupLevel := 1;
+      aXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
+      for y := 0 to aItems.XmlItems[x].Items.Count - 1 do
+      with aItems.XmlItems[x].Items do
+      begin
+        if XmlItems[y].Name = 'schema' then
+          yXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, XmlItems[y], aOnError);
+        if XmlItems[y].Name = 'example' then ; // TODO
+        if XmlItems[y].Name = 'examples' then ; // TODO
+        if XmlItems[y].Name = 'encoding' then ; // TODO
+      end;
+    end;
+  end;
+
+  procedure _evaluateRequestBody ( aService: TWsdlService
+                                 ; aOperation: TWsdlOperation
+                                 ; var aDoc: String
+                                 ; aItems: TXmlList
+                                 ; aComponentsXml: TXml
+                                 );
+  var
+    x: Integer;
+    yXml: TXml;
+    xXsd: TXsd;
+  begin
+    if (aItems.Count = 1) then
+    with aItems.XmlItems[0] do
+    begin
+      if (Name = '$ref') then
+      begin
+        yXml := aComponentsXml.FindXml(_prepareRef (Value));
+        if not Assigned(yXml) then
+          raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
+        _evaluateRequestBody(aService, aOperation, aDoc, yXml.Items, aComponentsXml);
+        Exit;
+      end;
+    end;
+    for x := 0 to aItems.Count - 1 do with aItems.XmlItems[x] do
+    begin
+      if Name = 'description' then _appendInfo(aDoc, Value);
+      if Name = 'content' then _evaluateContent (aService, aOperation, aOperation.reqXsd, Items, aComponentsXml);
+      if Name = 'required' then ;
+    end;
+  end;
+
+  procedure _evaluateResponses200 ( aService: TWsdlService  // swagger 2.0
+                                  ; aOperation: TWsdlOperation
+                                  ; var aDoc: String
+                                  ; Items: TXmlList
+                                  ; aComponentsXml: TXml
+                                  );
+  var
+    x, y, z, v, w, h: Integer;
+    xXml, yXml, zXml, vXml, wXml, hXml: TXml;
+    xXsd, yXsd, hXsd: TXsd;
+  begin
+    if (Items.Count = 1) then
+    with Items.XmlItems[0] do
+    begin
+      if (Name = '$ref') then
+      begin
+        yXml := aComponentsXml.FindXml(_prepareRef (Value));
+        if not Assigned(yXml) then
+          raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
+        _evaluateResponses200(aService, aOperation, aDoc, yXml.Items, aComponentsXml);
+        Exit;
+      end;
+    end;
+    aOperation.rpyXsd.sType.ContentModel := 'Choice';
+    for v := 0 to Items.Count - 1 do
+    begin
+      vXml := Items.XmlItems[v];
+      xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
+      for w := 0 to vXml.Items.Count - 1 do
+      begin
+        wXml := vXml.Items.XmlItems[w];
+        if wXml.Name = 'description' then xXsd.Documentation.Text := wXml.Value;
+        if wXml.Name = 'schema' then
+        begin
+          yXsd := TXsd.Create(XsdDescr);
+          XsdDescr.Garbage.AddObject('', yXsd);
+          yXsd.ElementName := 'body';
+          yXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
+          yXsd.sType.Name := xXsd.ElementName;
+          xXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
+        end;
+        if wXml.Name = 'headers' then
+        begin
+          for h := 0 to wXml.Items.Count - 1 do
+          begin
+            hXml := wXml.Items.XmlItems[h];
+            hXsd := TXsd.Create(XsdDescr);
+            XsdDescr.Garbage.AddObject('', hXsd);
+            hXsd.ElementName := hXml.Name;
+            hXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, '', hXml, aOnError);
+            hXsd.sType.Name := hXsd.ElementName;
+            hXsd.minOccurs := '0';
+            hXsd.ParametersType := oppHeader;
+            xXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
+          end;
+        end;
+      end;
+    end;
+    _addUndefXsd(aOperation.rpyXsd);
+  end;
+
+  procedure _evaluateResponses300 ( aService: TWsdlService // OpenApi 3.0
+                                  ; aOperation: TWsdlOperation
+                                  ; var aDoc: String
+                                  ; Items: TXmlList
+                                  ; aComponentsXml: TXml
+                                  );
+  var
+    x, y, z, v, w, h: Integer;
+    xXml, yXml, zXml, vXml, wXml, hXml: TXml;
+    xXsd, yXsd, hXsd: TXsd;
+  begin
+    if (Items.Count = 1) then
+    with Items.XmlItems[0] do
+    begin
+      if (Name = '$ref') then
+      begin
+        yXml := aComponentsXml.FindXml(_prepareRef (Value));
+        if not Assigned(yXml) then
+          raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
+        _evaluateResponses300(aService, aOperation, aDoc, yXml.Items, aComponentsXml);
+        Exit;
+      end;
+    end;
+    aOperation.rpyXsd.sType.ContentModel := 'Choice';
+    for v := 0 to Items.Count - 1 do
+    begin
+      vXml := Items.XmlItems[v];
+      xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
+      for w := 0 to vXml.Items.Count - 1 do
+      begin
+        wXml := vXml.Items.XmlItems[w];
+        if wXml.Name = 'description' then xXsd.Documentation.Text := wXml.Value;
+        if wXml.Name = 'content' then _evaluateContent (aService, aOperation, xXsd, wXml.Items, aComponentsXml);
+        if wXml.Name = 'headers' then
+        begin
+          for h := 0 to wXml.Items.Count - 1 do
+          begin
+            hXml := wXml.Items.XmlItems[h];
+            hXsd := TXsd.Create(XsdDescr);
+            XsdDescr.Garbage.AddObject('', hXsd);
+            hXsd.ElementName := hXml.Name;
+            hXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, '', hXml, aOnError);
+            hXsd.sType.Name := hXsd.ElementName;
+            hXsd.minOccurs := '0';
+            hXsd.ParametersType := oppHeader;
+            xXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
+          end;
+        end;
+        if wXml.Name = 'links' then ; // TODO, not yet known, by me, what to...
+      end;
+    end;
+    _addUndefXsd(aOperation.rpyXsd);
+  end;
+
+  procedure _evaluateOperation ( aService: TWsdlService
+                               ; aOperation: TWsdlOperation
+                               ; var aDoc: String
+                               ; aItems: TXmlList
+                               ; aComponentsXml: TXml
+                               );
+  var
+    u, v, w, h: Integer;
+    vXml, wXml, hXml: TXml;
+    xXsd, yXsd, hXsd: TXsd;
+  begin
+    for u := 0 to aItems.Count - 1 do with aitems.XmlItems[u] do
+    begin
+      if Name = 'tags' then ;
+      if Name = 'summary' then _appendInfo(aDoc, Value);
+      if Name = 'description' then _appendInfo(aDoc, Value);
+      if Name = 'externalDocs' then ;
+      if Name = 'operationId' then with aOperation do
+      begin
+        Alias := Value;
+        if Assigned (reqBind) then reqBind.Name := Alias;
+        if Assigned (rpyBind) then rpyBind.Name := Alias;
+      end;
+      if Name = 'consumes' then // swagger 2.0
+      begin
+        aOperation.Consumes := '';
+        for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
+          _appendInfo(aOperation.Consumes, Value);
+      end;
+      if Name = 'produces' then // swagger 2.0
+      begin
+        aOperation.produces := '';
+        for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
+          _appendInfo(aOperation.produces, Value);
+      end;
+      if Name = 'parameters' then
+      begin
+        for v := 0 to Items.Count - 1 do
+        begin
+          vXml := Items.XmlItems[v];
+          xXsd := _initXsd(aOperation.reqXsd, vXml.Items.XmlValueByTag['name']);
+          xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
+          xXsd.sType.jsonType := jsonObject;
+          xXsd.sType.Name := xXsd.ElementName;
+          for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
+          begin
+            if Name = 'in' then
+            begin
+              if Value = 'path' then xXsd.ParametersType := oppPath;
+              if Value = 'query' then xXsd.ParametersType := oppQuery;
+              if Value = 'header' then xXsd.ParametersType := oppHeader;
+              if Value = 'body' then xXsd.ParametersType := oppBody; // swagger 2.0
+              if Value = 'form' then xXsd.ParametersType := oppForm;
+            end;
+            if Name = 'description' then xXsd.Documentation.Text := Value;
+            if Name = 'required' then
+              if Value = 'true' then
+                xXsd.minOccurs := '1'
+              else
+                xXsd.minOccurs := '0';
+          end;
+        end;
+      end;
+      if Name = 'requestBody' then
+        _evaluateRequestBody(aService, aOperation, aDoc, Items, aComponentsXml);
+      if Name = 'responses' then
+        if OpenApiVersion[1] = '2' then
+          _evaluateResponses200 (aService, aOperation, aDoc, Items, aComponentsXml)
+        else
+          _evaluateResponses300 (aService, aOperation, aDoc, Items, aComponentsXml);
+      if Name = 'schemes' then // swagger 2.0
+      begin
+        aOperation.schemes := '';
+        for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
+          _appendInfo(aOperation.schemes, Value);
+      end;
+      if Name = 'deprecated' then
+      begin
+        aOperation.isDepricated := (Value = 'true');
+      end;
+      if Name = 'security' then ; // swagger 2.0
+    end;
+  end;
+
 var
-  xXml, dXml, vXml, wXml, rXml, hXml: TXml;
+  xXml, dXml, eXml, vXml, wXml, rXml, hXml, componentsXml: TXml;
   x, y, z, u, v, w, r, f, h: Integer;
   xService: TWsdlService;
   xOperation: TWsdlOperation;
@@ -2538,6 +2894,15 @@ begin
         isOpenApiService := True;
         if Value <> '2.0' then
           SjowMessage (Format('warning (%s): unexpected version number %s (2.0 expected)', [aFileName, Value]));
+        OpenApiVersion := Value;
+      end;
+      if Items.XmlItems[x].Name = 'openapi' then with Items.XmlItems[x] do
+      begin
+        sl.Add (Name);
+        isOpenApiService := True;
+        if Copy (Value, 1, 1) <> '3' then
+          SjowMessage (Format('warning (%s): unexpected version number %s (3.x.x expected)', [aFileName, Value]));
+        OpenApiVersion := Value;
       end;
       if Items.XmlItems[x].Name = 'info' then with Items.XmlItems[x] do
       begin
@@ -2549,15 +2914,15 @@ begin
         self.Name := Items.XmlValueByTag['title'];
         SjowMessage('Info: ' + Description);
       end;
-      if Items.XmlItems[x].Name = 'host' then with Items.XmlItems[x] do
+      if Items.XmlItems[x].Name = 'host' then with Items.XmlItems[x] do // swagger 2.0
       begin
         sl.Add (Name);
         Host := Value;
       end;
-      if Items.XmlItems[x].Name = 'basePath' then with Items.XmlItems[x] do
+      if Items.XmlItems[x].Name = 'basePath' then with Items.XmlItems[x] do // swagger 2.0
       begin
         sl.Add (Name);
-        basePath := _trimPath(Value);
+        BasePaths.Add (_trimPath(Value));
       end;
       if Items.XmlItems[x].Name = 'schemes' then with Items.XmlItems[x] do
       begin
@@ -2590,6 +2955,27 @@ begin
         sl.Add (Name);
         SjowMessage ('to be implemented: ' + Name + ': ' + Value);
       end;
+      if Items.XmlItems[x].Name = 'servers' then
+      begin
+        Servers := TXml.Create;
+        Servers.CopyDownLine (Items.XmlItems[x], False);
+        with TIdURI.Create do
+        try
+          with Items.XmlItems[x] do
+          begin
+            for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+            begin
+              try
+                URI := Items.XmlValueByTag['url'];
+                BasePaths.Add ('/' + Document);
+              except
+              end;
+            end;
+          end;
+        finally
+          Free;
+        end;
+      end;
       if Items.XmlItems[x].Name = 'tags' then with Items.XmlItems[x] do
       begin
         sl.Add (Name);
@@ -2597,7 +2983,21 @@ begin
       end;
     end;
 
-    dXml := ItemByTag['definitions'];;
+    componentsXml := ItemByTag['components'];
+    if Assigned (componentsXml) then
+    with componentsXml do
+    begin
+      sl.Add (componentsXml.Name);
+      dXml := ItemByTag['schemas'];
+      if Assigned (dXml) then
+      begin
+        sl.Add (dXml.Name);
+        for y := 0 to dXml.Items.Count - 1 do
+          XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName + '/components/schemas', dXml.Items.XmlItems[y], aOnError);
+      end;
+    end;
+
+    dXml := ItemByTag['definitions'];
     if Assigned (dXml) then
     begin
       sl.Add (dXml.Name);
@@ -2605,7 +3005,7 @@ begin
         XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName + '/definitions', dXml.Items.XmlItems[y], aOnError);
     end;
 
-    dXml := ItemByTag['paths'];;
+    dXml := ItemByTag['paths'];
     if Assigned (dXml) then with dXml do
     begin
       sl.Add (Name);
@@ -2614,188 +3014,70 @@ begin
         xService := TWsdlService.Create;
         xService.Name := Name;
         xService.openApiPath := xService.Name;
-        xService.openApiPathRegExp := self.basePath;
-        xService.openApiPathMask := self.basePath;
-        xService.prepareOpenApiPath;
         Services.AddObject(Name, xService);
         xService.DescriptionType := ipmDTJson;
+        with xService do prepareOpenApiRegExp(openApiPath, openApiPathRegExp);
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
         begin
-          if Name = 'parameters' then
+          if (Name = 'parameters')
+          or (Name = 'servers')
+          then
           begin
-            SjowMessage(Format('parameters found at path level %s.%s (not yet implemented)', [aFileName, xService.Name]));
+            SjowMessage(Format('%s found at path level %s.%s (not yet implemented)', [Name, aFileName, xService.Name]));
           end
           else
           begin
-            xOperation := TWsdlOperation.Create (Self);
-            xOperation.Wsdl := self;
-            xOperation.WsdlService := xService;
-            xOperation.Name := xService.Name + ':' + Name;
-            xService.Operations.AddObject(xOperation.Name, xOperation);
-            xOperation.reqTagName := xOperation.Name;
-            xOperation.reqBind.Name := xOperation.reqTagName;
-            xOperation.rpyTagName := xOperation.Name;
-            xOperation.rpyBind.Name := xOperation.rpyTagName;
-            xOperation.Alias := xOperation.reqTagName;
-            xOperation.httpVerb := UpperCase(Name);
-            xOperation.Schemes := Schemes;
-            xOperation.Consumes := Consumes;
-            xOperation.Produces := Produces;
-            xOperation.ContentType := 'application/json';
-            xOperation.Accept := 'application/json';
-            xDoc := '';
-            for u := 0 to Items.Count - 1 do with items.XmlItems[u] do
+            if (Name = 'summary') then
             begin
-              if Name = 'tags' then ;
-              if Name = 'summary' then _appendInfo(xDoc, Value);
-              if Name = 'description' then _appendInfo(xDoc, Value);
-              if Name = 'externalDocs' then ;
-              if Name = 'operationId' then with xOperation do
+              // no wsdlStub doc at this service level...
+            end
+            else
+            begin
+              if (Name = 'description') then
               begin
-                Alias := Value;
-                if Assigned (reqBind) then reqBind.Name := Alias;
-                if Assigned (rpyBind) then rpyBind.Name := Alias;
-              end;
-              if Name = 'consumes' then
+                // no wsdlStub doc at this service level...
+              end
+              else
               begin
-                xOperation.Consumes := '';
-                for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
-                  _appendInfo(xOperation.Consumes, Value);
-              end;
-              if Name = 'produces' then
-              begin
-                xOperation.produces := '';
-                for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
-                  _appendInfo(xOperation.produces, Value);
-              end;
-              if Name = 'parameters' then
-              begin
-                for v := 0 to Items.Count - 1 do
-                begin
-                  vXml := Items.XmlItems[v];
-                  xXsd := TXsd.Create(XsdDescr);
-                  XsdDescr.Garbage.AddObject('', xXsd);
-                  xXsd.ElementName := vXml.Items.XmlValueByTag['name'];
-                  xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
-                  xXsd.sType.jsonType := jsonObject;
-                  xXsd.sType.Name := xXsd.ElementName;
-                  xOperation.reqXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
-                  for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
+                begin  // get, post, put, delete, ...
+                  xOperation := TWsdlOperation.Create (Self);
+                  xOperation.Wsdl := self;
+                  xOperation.WsdlService := xService;
+                  xOperation.Name := xService.Name + ':' + Name;
+                  xService.Operations.AddObject(xOperation.Name, xOperation);
+                  xOperation.reqTagName := xOperation.Name;
+                  xOperation.reqBind.Name := xOperation.reqTagName;
+                  xOperation.rpyTagName := xOperation.Name;
+                  xOperation.rpyBind.Name := xOperation.rpyTagName;
+                  xOperation.Alias := xOperation.reqTagName;
+                  xOperation.httpVerb := UpperCase(Name);
+                  xOperation.Schemes := Schemes;
+                  xOperation.Consumes := Consumes;
+                  xOperation.Produces := Produces;
+                  xOperation.ContentType := 'application/json';
+                  xOperation.Accept := 'application/json';
+                  xDoc := '';
+                  _evaluateOperation (xService, xOperation, xDoc, Items, componentsXml);
+                  with xOperation do
                   begin
-                    if Name = 'in' then
+                    if not isValidId (Alias) then
                     begin
-                      if Value = 'path' then xXsd.ParametersType := oppPath;
-                      if Value = 'query' then xXsd.ParametersType := oppQuery;
-                      if Value = 'header' then xXsd.ParametersType := oppHeader;
-                      if Value = 'body' then xXsd.ParametersType := oppBody;
-                      if Value = 'form' then xXsd.ParametersType := oppForm;
+                      Alias := makeValidId (Alias);
+                      reqBind.Name := Alias;
+                      rpyBind.Name := Alias;
                     end;
-                    if Name = 'description' then xXsd.Documentation.Text := Value;
-                    if Name = 'required' then
-                      if Value = 'true' then
-                        xXsd.minOccurs := '1'
-                      else
-                        xXsd.minOccurs := '0';
+                    Documentation.Text := xDoc;
+                    s := reqBind.Name;
+                    reqBind.Free;
+                    reqBind := TXml.Create(0, reqXsd);
+                    reqBind.Name := s;
+                    s := rpyBind.Name;
+                    rpyBind.Free;
+                    rpyBind := TXml.Create(0, rpyXsd);
+                    rpyBind.Name := s;
                   end;
                 end;
               end;
-              if Name = 'responses' then
-              begin
-                xOperation.rpyXsd.sType.ContentModel := 'Choice';
-                for v := 0 to Items.Count - 1 do
-                begin
-                  vXml := Items.XmlItems[v];
-                  xXsd := TXsd.Create(XsdDescr);
-                  XsdDescr.Garbage.AddObject('', xXsd);
-                  xXsd.ElementName := 'rspns' + vXml.Name;
-                  xXsd.ResponseNo := StrToIntDef(vXml.Name, 200);
-                  xXsd.sType := TXsdDataType.Create(XsdDescr);
-                  xXsd.sType.jsonType := jsonObject;
-                  xXsd.sType.xsdType:= dtComplexType;
-                  XsdDescr.Garbage.AddObject('', xXsd.sType);
-                  xXsd.sType.Name := vXml.Name;
-                  xXsd.minOccurs := '0';
-                  xOperation.rpyXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
-                  for w := 0 to vXml.Items.Count - 1 do
-                  begin
-                    wXml := vXml.Items.XmlItems[w];
-                    if wXml.Name = 'description' then xXsd.Documentation.Text := wXml.Value;
-                    if wXml.Name = 'schema' then
-                    begin
-                      yXsd := TXsd.Create(XsdDescr);
-                      XsdDescr.Garbage.AddObject('', yXsd);
-                      yXsd.ElementName := 'body';
-                      yXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
-                      yXsd.sType.Name := xXsd.ElementName;
-                      xXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
-                    end;
-                    if wXml.Name = 'headers' then
-                    begin
-                      for h := 0 to wXml.Items.Count - 1 do
-                      begin
-                        hXml := wXml.Items.XmlItems[h];
-                        hXsd := TXsd.Create(XsdDescr);
-                        XsdDescr.Garbage.AddObject('', hXsd);
-                        hXsd.ElementName := hXml.Name;
-                        hXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, '', hXml, aOnError);
-                        hXsd.sType.Name := hXsd.ElementName;
-                        hXsd.minOccurs := '0';
-                        hXsd.ParametersType := oppHeader;
-                        xXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
-                      end;
-                    end;
-                  end;
-                end;
-                xXsd := TXsd.Create(XsdDescr);
-                XsdDescr.Garbage.AddObject('', xXsd);
-                xXsd.ElementName := 'undefined';
-                xXsd.ResponseNo := -1;
-                xXsd.sType := TXsdDataType.Create(XsdDescr);
-                xXsd.sType.jsonType := jsonObject;
-                xXsd.sType.xsdType:= dtComplexType;
-                XsdDescr.Garbage.AddObject('', xXsd.sType);
-                xXsd.sType.Name := 'other';
-                xXsd.minOccurs := '0';
-                xOperation.rpyXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
-                yXsd := TXsd.Create(XsdDescr);
-                XsdDescr.Garbage.AddObject('', yXsd);
-                yXsd.ElementName := 'responseCode';
-                yXsd.sType := TXsdDataType.Create(XsdDescr);
-                yXsd.sType.Name := yXsd.ElementName;
-                yXsd.sType.xsdType := dtSimpleType;
-                yXsd.sType.BaseDataTypeName := 'string';
-                yXsd.sType.jsonType := jsonString;
-                xXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
-              end;
-              if Name = 'schemes' then
-              begin
-                xOperation.schemes := '';
-                for v := 0 to Items.Count - 1 do with Items.XmlItems[v] do
-                  _appendInfo(xOperation.schemes, Value);
-              end;
-              if Name = 'deprecated' then
-              begin
-                xOperation.isDepricated := (Value = 'true');
-              end;
-              if Name = 'security' then ;
-            end;
-            with xOperation do
-            begin
-              if not isValidId (Alias) then
-              begin
-                Alias := makeValidId (Alias);
-                reqBind.Name := Alias;
-                rpyBind.Name := Alias;
-              end;
-              Documentation.Text := xDoc;
-              s := reqBind.Name;
-              reqBind.Free;
-              reqBind := TXml.Create(0, reqXsd);
-              reqBind.Name := s;
-              s := rpyBind.Name;
-              rpyBind.Free;
-              rpyBind := TXml.Create(0, rpyXsd);
-              rpyBind.Name := s;
             end;
           end;
         end;
@@ -3026,33 +3308,6 @@ begin
         if zXml.Value = 'Digest' then
           PasswordType := pwDigest;
     end;
-  end;
-end;
-
-procedure TWsdlService.prepareOpenApiPath;
-var
-  s, e: Integer;
-  f: Boolean;
-const
-  pathTemplateRegExp = '\{[^\}]+\}';
-  valueRegExp = '[^/]*';
-begin
-  s := 1;
-  with TRegExpr.Create(pathTemplateRegExp) do
-  try
-    f := Exec(openApiPath);
-    while f do
-    begin
-      e := MatchPos[0];
-      openApiPathRegExp := openApiPathRegExp + Copy (openApiPath, s, e - s) + valueRegExp;
-      openApiPathMask := openApiPathMask + Copy (openApiPath, s, e - s) + '%s';
-      s := MatchPos[0] + MatchLen[0];
-      f := ExecNext;
-    end;
-    openApiPathRegExp := openApiPathRegExp + Copy (openApiPath, s, Length (openApiPath));
-    openApiPathMask := openApiPathMask + Copy (openApiPath, s, Length (openApiPath));
-  finally
-    Free;
   end;
 end;
 
@@ -3790,8 +4045,10 @@ function TWsdlOperation.StreamRequest ( aGeneratedWith: String
 var
   x: Integer;
   aXml: TXml;
+  xName: String;
 begin
   result := '';
+
   if WsdlService.DescriptionType in [ipmDTSwiftMT] then
   begin
     with TStwiftMtStreamer.Create(reqBind as TXml) do
@@ -3802,107 +4059,142 @@ begin
     end;
     Exit;
   end;
+
   if isFreeFormat then
   begin
     result := FreeformatReq;
     Exit;
   end;
-  try
-    if isSoapService then
+
+  if isSoapService then
+  begin
+    result := GenerateXmlHeader(not WsdlService.SuppressXmlComment);
+    result := StrAdd (result, '<soapenv:Envelope');
+    result := StrAdd (result, ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"');
+    result := StrAdd (result, ' xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"');
+    result := StrAdd (result, ' xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"');
+    result := StrAdd (result, ' xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"');
+    result := StrAdd (result, ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"');
+    result := StrAdd (result, ' xmlns:xsi="' + scXMLSchemaInstanceURI + '"');
+    result := StrAdd (result, ' >');
+    if (InputHeaders.Count > 0)
+    or (WsdlService.AuthenticationType = atWsSecurity)
+    or wsaEnabled then
     begin
-      result := GenerateXmlHeader(not WsdlService.SuppressXmlComment);
-      result := StrAdd (result, '<soapenv:Envelope');
-      result := StrAdd (result, ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"');
-      result := StrAdd (result, ' xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"');
-      result := StrAdd (result, ' xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"');
-      result := StrAdd (result, ' xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"');
-      result := StrAdd (result, ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"');
-      result := StrAdd (result, ' xmlns:xsi="' + scXMLSchemaInstanceURI + '"');
-      result := StrAdd (result, ' >');
-      if (InputHeaders.Count > 0)
-      or (WsdlService.AuthenticationType = atWsSecurity)
-      or wsaEnabled then
-      begin
-        if wsaEnabled then
-          result := StrAdd (result, Format ('  <soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">', [wsaType]))
-        else
-          result := StrAdd (result, '  <soapenv:Header>');
-        result := result + WsdlService.StreamWsSecurity;
-        for x := 0 to InputHeaders.Count - 1 do
-        begin
-          xsdGenerated := True;
-          xsiGenerated := True;
-          result := result
-                  + (reqBind as TXml).Items.XmlItems [x].StreamXML
-                                 ( aGenerateHeaderNameSpaces
-                                 , True
-                                 , 4
-                                 , True
-                                 , (InputHeaders.Headers[x].Use = scSoapUseEncoded)
-                                 )
-                  ;
-        end;
-        result := result + StreamWsAddressing(reqWsaXml, True);
-        result := StrAdd (result, '  </soapenv:Header>');
-      end;
-      if SoapBodyInputUse = scSoapUseEncoded then
-      begin
-        result := StrAdd (result, '  <soapenv:Body soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
-      end
+      if wsaEnabled then
+        result := StrAdd (result, Format ('  <soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">', [wsaType]))
       else
-        result := StrAdd (result, '  <soapenv:Body>');
-      for x := InputHeaders.Count to (reqBind as TXml).Items.Count - 1 do
+        result := StrAdd (result, '  <soapenv:Header>');
+      result := result + WsdlService.StreamWsSecurity;
+      for x := 0 to InputHeaders.Count - 1 do
       begin
         xsdGenerated := True;
         xsiGenerated := True;
-        result := result + (reqBind as TXml).Items.XmlItems[x].StreamXML
-                                 ( aGenerateBodyNameSpaces
-                                 , WsdlService.UseNameSpacePrefixes
-                                 , 4
-                                 , True
-                                 , (SoapBodyInputUse = scSoapUseEncoded)
-                                 )
-                         ;
+        result := result
+                + (reqBind as TXml).Items.XmlItems [x].StreamXML
+                               ( aGenerateHeaderNameSpaces
+                               , True
+                               , 4
+                               , True
+                               , (InputHeaders.Headers[x].Use = scSoapUseEncoded)
+                               )
+                ;
       end;
-      result := StrAdd (result, '  </soapenv:Body>');
-      result := StrAdd (result, '</soapenv:Envelope>');
+      result := result + StreamWsAddressing(reqWsaXml, True);
+      result := StrAdd (result, '  </soapenv:Header>');
+    end;
+    if SoapBodyInputUse = scSoapUseEncoded then
+    begin
+      result := StrAdd (result, '  <soapenv:Body soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
     end
     else
+      result := StrAdd (result, '  <soapenv:Body>');
+    for x := InputHeaders.Count to (reqBind as TXml).Items.Count - 1 do
     begin
-      if reqBind is TXml then
+      xsdGenerated := True;
+      xsiGenerated := True;
+      result := result + (reqBind as TXml).Items.XmlItems[x].StreamXML
+                               ( aGenerateBodyNameSpaces
+                               , WsdlService.UseNameSpacePrefixes
+                               , 4
+                               , True
+                               , (SoapBodyInputUse = scSoapUseEncoded)
+                               )
+                       ;
+    end;
+    result := StrAdd (result, '  </soapenv:Body>');
+    result := StrAdd (result, '</soapenv:Envelope>');
+    Exit;
+  end;
+
+  if isOpenApiService
+  and (OpenApiVersion[1] = '3') then
+  begin
+    with reqBind as TXml do
+    for x := 0 to Items.Count - 1 do
+    with Items.XmlItems[x] do
+    begin
+      if Checked
+      and Assigned (Xsd)
+      and (Xsd.ParametersType = oppBody) then
       begin
-        for x := 0 to (reqBind as TXml).Items.Count - 1 do
+        if (pos ('xml', lowercase (Xsd.MediaType)) > 0) then
         begin
-          aXml := (reqBind as TXml).Items.XmlItems[x];
-          if (not isOpenApiService)
-          or (    Assigned (aXml.Xsd)
-              and (aXml.Xsd.ParametersType = oppBody)
-             ) then
-          begin
-            xsiGenerated := False;
-            xsdGenerated := False;
-            if WsdlService.DescriptionType <> ipmDTJson then
-              result := result + aXml.StreamXML(aGenerateBodyNameSpaces, WsdlService.UseNameSpacePrefixes, 0, True, False)
-            else
-            begin
-              if aXml.jsonType = jsonNone then
-                aXml.jsonType := jsonObject;
-              result := result + aXml.StreamJSON(0, True);
-            end;
+          xName := Name;
+          if Xsd.sType.JsonXmlName <> '' then
+            Name := Xsd.sType.JsonXmlName;
+          try
+            result := StreamXML(aGenerateBodyNameSpaces, WsdlService.UseNameSpacePrefixes, 0, True, False)
+          finally
+            Name := xName;
           end;
+        end
+        else
+          result := StreamJSON(0, True);
+      end;
+    end;
+    Exit;
+  end;
+
+  if reqBind is TXml then
+  begin
+    for x := 0 to (reqBind as TXml).Items.Count - 1 do
+    begin
+      aXml := (reqBind as TXml).Items.XmlItems[x];
+      if (not isOpenApiService)
+      or (    Assigned (aXml.Xsd)
+          and (aXml.Xsd.ParametersType = oppBody)
+         ) then
+      begin
+        xsiGenerated := False;
+        xsdGenerated := False;
+        if WsdlService.DescriptionType <> ipmDTJson then
+          result := result + aXml.StreamXML(aGenerateBodyNameSpaces, WsdlService.UseNameSpacePrefixes, 0, True, False)
+        else
+        begin
+          if aXml.jsonType = jsonNone then
+            aXml.jsonType := jsonObject;
+          result := result + aXml.StreamJSON(0, True);
         end;
       end;
-      if reqBind is TIpmItem then
-        result := (reqBind as TIpmItem).ValuesToBuffer (nil);
     end;
-  finally
+    Exit;
   end;
+
+  if reqBind is TIpmItem then
+  begin
+    result := (reqBind as TIpmItem).ValuesToBuffer (nil);
+    Exit;
+  end;
+
+  Raise Exception.Create ('TWsdlOperation.StreamRequest: New stuf??? Statement should not be reached');
 end;
 
 function TWsdlOperation.StreamReply(aGeneratedWith: String; aGenerateTypes: Boolean): String;
 var
   x, y: Integer;
   xXml, yXml, zXml: TXml;
+  xName: String;
 begin
   ResponseNo := 200; // nice default
   result := LiteralResult;
@@ -4003,22 +4295,57 @@ begin
         ResponseNo := yXml.Xsd.ResponseNo;
         if ResponseNo > -1 then
         begin
-          for y := 0 to yXml.Items.Count - 1 do
+          if Copy (OpenApiVersion, 1, 1) <> '2' then
           begin
-            zXml := yXml.Items.XmlItems[y];
-            if zXml.Xsd.ParametersType <> oppHeader then    // ToDo headers
+            for y := 0 to yXml.Items.Count - 1 do
+            with yXml.Items.XmlItems[y] do
             begin
-              case ProduceType of
-                ptJson: result := result + zXml.StreamJSON(0, True);
-                ptXml: result := result + zXml.StreamXML ( True
-                                                         , True
-                                                         , 0
-                                                         , True
-                                                         , False
-                                                         );
+              if (Xsd.ParametersType = oppBody)
+              and Checked then
+              begin
+                if (pos ('xml', LowerCase(Xsd.MediaType)) > 0) then
+                begin
+                  xName := Name;
+                  if Xsd.sType.JsonXmlName <> '' then
+                    Name := Xsd.sType.JsonXmlName;
+                  try
+                    result := StreamXML (True, True, 0, True, False);
+                  finally
+                    Name := xName;
+                  end;
+                end
+                else
+                  result := StreamJSON(0, True);
               end;
-              if ProduceType = ptJson then
-                ;
+            end;
+          end
+          else
+          begin
+            for y := 0 to yXml.Items.Count - 1 do
+            begin
+              zXml := yXml.Items.XmlItems[y];
+              if zXml.Xsd.ParametersType = oppBody then
+              begin
+                case ProduceType of
+                  ptJson: result := result + zXml.StreamJSON(0, True);
+                  ptXml:
+                  begin
+                    xName := zXml.Name;
+                    if zXml.Xsd.sType.JsonXmlName <> '' then
+                      zXml.Name := zXml.Xsd.sType.JsonXmlName;
+                    try
+                      result := result + zXml.StreamXML ( True
+                                                        , True
+                                                        , 0
+                                                        , True
+                                                        , False
+                                                        );
+                    finally
+                      zXml.Name := xName;
+                    end;
+                  end;
+                end;
+              end;
             end;
           end;
         end
@@ -5997,6 +6324,14 @@ end;
 function TWsdlOperation.getisSoapService: Boolean;
 begin
   result := Wsdl.isSoapService;
+end;
+
+function TWsdlOperation.getOpenApiVersion: String;
+begin
+  if Assigned (Wsdl) then
+    result := Wsdl.OpenApiVersion
+  else
+    result := '';
 end;
 
 { TWsdlPart }

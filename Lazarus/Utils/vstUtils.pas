@@ -17,7 +17,7 @@ uses SysUtils
    , VirtualTrees
    ;
 
-function vstToGrid (aVst: TVirtualStringTree; OnGetText: TVSTGetTextEvent): String;
+function vstToGrid (aVst: TVirtualStringTree; OnGetText: TVSTGetTextEvent; aStartColumn: Integer = 0): String;
 procedure vstFromGrid (aVst: TVirtualStringTree; aGrid: String; OnNewText: TVSTNewTextEvent);
 
 implementation
@@ -89,7 +89,7 @@ begin
   end;
 end;
 
-function vstToGrid (aVst: TVirtualStringTree; OnGetText: TVSTGetTextEvent): String;
+function vstToGrid (aVst: TVirtualStringTree; OnGetText: TVSTGetTextEvent; aStartColumn: Integer = 0): String;
 var
   xNode: PVirtualNode;
   xCol: Integer;
@@ -101,7 +101,7 @@ begin
   xNode := aVST.GetFirst;
   result := '';
   xTabSep := '';
-  for xCol := 0 to aVST.Header.Columns.Count - 1 do
+  for xCol := aStartColumn to aVST.Header.Columns.Count - 1 do
   begin
     if (coVisible in aVst.Header.Columns.Items[xCol].Options) then
     begin
@@ -116,7 +116,7 @@ begin
     begin
       result := result + xNLSep;
       xTabSep := '';
-      for xCol := 0 to aVST.Header.Columns.Count - 1 do
+      for xCol := aStartColumn to aVST.Header.Columns.Count - 1 do
       begin
         if (coVisible in aVst.Header.Columns.Items[xCol].Options) then
         begin

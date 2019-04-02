@@ -363,7 +363,7 @@ type
     function FindCcbOperationOnRequest (aLog: TLog; aCobolString: String): TWsdlOperation;
     function FindOperationOnDocument (aDocument: String): TWsdlOperation;
     function FindOperationOnRequest (aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
-    function FindApiOnLog (aLog: TLog): TWsdlOperation;
+    function FindOpenApiOnLog (aLog: TLog): TWsdlOperation;
     function FindOperationOnLog (aLog: TLog): TWsdlOperation;
     procedure RedirectUnknownOperation (aLog: TLog);
     procedure CreateReply ( aLog: TLog; aIsActive: Boolean);
@@ -1712,16 +1712,15 @@ end;
 procedure TWsdlProject.PrepareAllOperations;
   procedure _prepWsdl (xWsdl: TWsdl);
   var
-    s, o: Integer;
+    s, o, p: Integer;
     xOperation: TWsdlOperation;
   begin
     wsdlNames.AddObject(xWsdl.Name, xWsdl);
     for s := 0 to xWsdl.Services.Count - 1 do
     begin
       if xWsdl.isOpenApiService then with xWsdl.Services do
-      begin
-        openApiPaths.AddObject(Services[s].openApiPathRegExp, Services[s]);
-      end;
+        for p := 0 to xWsdl.BasePaths.Count - 1 do
+          openApiPaths.AddObject(xWsdl.BasePaths[p] + Services[s].openApiPathRegExp, Services[s]);
       for o := 0 to xWsdl.Services.Services[s].Operations.Count - 1 do
       begin
         xOperation := xWsdl.Services.Services[s].Operations.Operations [o];
@@ -4244,7 +4243,7 @@ begin
         if URL [Length (URL)] = '/' then
           SetLength(URL, Length (URL) - 1);
         URL := URL
-             + aOperation.Wsdl.basePath
+//           + aOperation.Wsdl.basePath
              + aOperation.WsdlService.openApiPath;
         querySep := '?';
         for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
@@ -4264,6 +4263,11 @@ begin
             if (Xsd.ParametersType = oppHeader) then
             begin
               HttpClient.Request.CustomHeaders.Values [Name] := ValueFromJsonArray(false);
+            end;
+            if (Xsd.ParametersType = oppBody)
+            and (aOperation.Wsdl.OpenApiVersion [1] <> '2') then
+            begin
+              aOperation.ContentType := Xsd.MediaType;
             end;
           end;
         end;
@@ -6077,7 +6081,7 @@ begin
       end;
       xService.Host := sXml.Items.XmlValueByTag['Address'];
       xService.openApiPath := sXml.Items.XmlValueByTag['Path'];
-      xService.prepareOpenApiPath;
+      prepareOpenApiRegExp (xService.openApiPath, xService.openApiPathRegExp);
       oList := TStringList.Create;
       try
         oList.Sorted := True;
@@ -7339,7 +7343,7 @@ function TWsdlProject.FindOperationOnRequest(aLog: TLog; aDocument, aString: Str
 var
   xXml: TXml;
 begin
-  result := FindApiOnLog(aLog);
+  result := FindOpenApiOnLog(aLog);
   if Assigned (Result) then
   begin
     if aDoClone then
@@ -7408,7 +7412,7 @@ begin
   end;
 end;
 
-function TWsdlProject.FindApiOnLog (aLog : TLog): TWsdlOperation;
+function TWsdlProject.FindOpenApiOnLog (aLog : TLog): TWsdlOperation;
   function _ServiceFromPath: TWsdlService;
   var
     x: Integer;
@@ -7421,7 +7425,11 @@ function TWsdlProject.FindApiOnLog (aLog : TLog): TWsdlOperation;
       begin
         Expression := '^(' + openApiPaths.Strings[x] + ')$';
         if Exec(aLog.httpDocument) then
+        begin
           result := openApiPaths.Objects[x] as TWsdlService;
+          aLog.openApiPathMask := ReplaceStrings (openApiPaths.Strings[x], S_OPEN_API_VALUE_REGEXP, '%s', False, False);
+          Exit;
+        end;
       end;
     finally
       free;
@@ -7448,7 +7456,7 @@ function TWsdlProject.FindOperationOnLog (aLog: TLog): TWsdlOperation;
 var
   xXml: TXml;
 begin
-  result := FindApiOnLog (aLog);
+  result := FindOpenApiOnLog (aLog);
   if Assigned (result) then
     Exit;
   xXml := TXml.Create;
@@ -8006,7 +8014,7 @@ var
   xMssg: TWsdlMessage;
 begin
   result := False;
-  aLog.Operation := FindApiOnLog(aLog);
+  aLog.Operation := FindOpenApiOnLog(aLog);
   if Assigned(aLog.Operation) then
   begin
     aLog.Operation.AcquireLock;

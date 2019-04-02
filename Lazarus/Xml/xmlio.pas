@@ -686,6 +686,9 @@ function ReadStringFromFile (aFileName: String): String;
       lHTTP.Get(aURL, lStream);
       lStream.Position := 0;
       Result := lStream.ReadString(lStream.Size);
+      if (lHTTP.ResponseCode < 200)
+      or (lHTTP.ResponseCode > 299) then
+        raise Exception.Create(Format ('Responsecode %d result $s', [lHTTP.ResponseCode, Result]));
     finally
       if Assigned (lHTTP)
       and Assigned (lHTTP.IOHandler) then

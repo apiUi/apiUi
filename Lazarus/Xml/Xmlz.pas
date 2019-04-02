@@ -40,6 +40,7 @@ public
   function IsValueValidAgainstXsd (var aMessageString: String): Boolean;
   function IsMoveUpPossible: Boolean;
   function IsMoveDownPossible: Boolean;
+  function IsRequired: Boolean; Override;
 {$ifndef NoGUI}
   procedure Font (aFont: TFont); Override;
   function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
@@ -173,6 +174,8 @@ type
     function asAssignments: String;
     function DepthBillOfMaterial: Integer;
     function CustomCheck (NewText: String): Boolean;
+    function isOneOfGroupOk: Boolean;
+    function IsRequired: Boolean; Override;
     function AsText ( aUseNameSpaces: Boolean
                     ; aIndent: Integer
                     ; OnlyWhenChecked: Boolean
@@ -1365,6 +1368,35 @@ begin
     result := True;
 end;
 
+function TXml.isOneOfGroupOk: Boolean;
+var
+  x, n: Integer;
+begin
+  result := False;
+  if Assigned (Parent)
+  and Assigned (Xsd)
+  and (Xsd.isOneOfGroupLevel > 0) then
+  begin
+    n := 0;
+    for x := 0 to (Parent as TXml).Items.Count - 1 do
+      if ((Parent as TXml).Items.XmlItems[x].Xsd.isOneOfGroupLevel = self.Xsd.isOneOfGroupLevel)
+      and ((Parent as TXml).Items.XmlItems[x].Checked) then
+        Inc (n);
+    result := (n = 1);
+  end;
+end;
+
+function TXml.IsRequired: Boolean;
+begin
+  Result := Assigned (Xsd)
+        and (StrToIntDef (Xsd.minOccurs, 0) > 0)
+        and not (    Assigned (Parent)
+                 and Assigned ((Parent as TXml).Xsd)
+                 and ((Parent as TXml).Xsd.sType.ContentModel = 'Choice')
+                )
+          ;
+end;
+
 function TXml.asHtmlString: String;
   function _ValueToHtml (aValue: String): String;
   var
@@ -2214,6 +2246,11 @@ begin
     if ((Parent as TXml).Attributes.IndexOfObject(Self) <
        ((Parent as TXml).Attributes.Count - 1)) then
       result := True;
+end;
+
+function TXmlAttribute.IsRequired: Boolean;
+begin
+  Result := Assigned (XsdAttr) and (XsdAttr.Use = 'required');
 end;
 
 procedure TXmlAttribute.MoveDown;
@@ -3348,7 +3385,7 @@ var
 begin
   {
     if we are working with xsd's, the upline is checked when self is checked
-    if self is a element in a choice, siblings with another xsd are unchecked
+    if self is an element in a choice, siblings with another xsd are unchecked
   }
   if (aValue)
   and (Assigned (Parent))
@@ -3364,6 +3401,13 @@ begin
             xParent.Items.XmlItems [x].Checked := False;
       end;
     end;
+    if Assigned (Xsd)
+    and (Xsd.isOneOfGroupLevel > 0) then
+      for x := 0 to xParent.Items.Count - 1 do
+        if (xParent.Items.XmlItems [x] <> self)
+        and Assigned (xParent.Items.XmlItems [x].Xsd)
+        and (xParent.Items.XmlItems [x].Xsd.isOneOfGroupLevel = Xsd.isOneOfGroupLevel)then
+          xParent.Items.XmlItems [x].Checked := False;
   end;
   if (aValue)
   and (Assigned (Parent)) then
