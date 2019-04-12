@@ -2962,6 +2962,7 @@ begin
     else
       WsdlOperation.Messages.ResetDuplicates;
   end;
+  WsdlOperation.Messages.SetNameDuplicates;
   GridView.Invalidate;
 end;
 
@@ -4224,7 +4225,7 @@ var
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
 begin
-  // requires an imagelist attached to treeview
+// requires an imagelist attached to treeview
   xMessage := nil; //avoid warning
   if Column = nMessageButtonColumns then
     Exit;
@@ -4625,6 +4626,8 @@ begin
         else
         begin
           xMessage.Name := NewText;
+          WsdlOperation.Messages.SetNameDuplicates;
+          GridView.InvalidateColumn(Column);
           stubChanged := True;
         end;
       end;
@@ -6939,16 +6942,12 @@ begin
   if Column < nMessageButtonColumns then exit;
   if Assigned (xMessage.Duplicates) then
     TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
+
   if (Column = nMessageButtonColumns) then
   begin
-    n := 0;
-    for x := 0 to WsdlOperation.Messages.Count - 1 do
-    begin
-      if UpperCase(WsdlOperation.Messages.Messages[x].Name) = UpperCase(xMessage.Name) then
-        Inc (n);
-    end;
-    if (n <> 1)
-    or (not xmlio.isFileNameAllowed(xMessage.Name)) then
+    if Assigned (xMessage.DuplicatesName)
+//  or (not xmlio.isFileNameAllowed(xMessage.Name))
+    then
       TargetCanvas.Font.Color := clRed;
     if xMessage.Disabled then
     begin

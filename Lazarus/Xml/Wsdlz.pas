@@ -232,7 +232,7 @@ type
     CorrelationBindables: TBindableList;
     BeforeScriptLines: TStringList;
     AfterScriptLines: TStringList;
-    Duplicates: TWsdlBinder;
+    Duplicates, DuplicatesName: TWsdlBinder;
     _compareString: String;
     procedure SwiftMtRequestToBindables (aString: String);
     function FindBind (aCaption: String): TCustomBindable;
@@ -513,6 +513,8 @@ type
     function GetMessage(Index: integer): TWsdlMessage;
   public
     property Messages [Index: integer]: TWsdlMessage read GetMessage;
+    procedure SetNameDuplicates;
+    procedure ResetNameDuplicates;
     procedure SetDuplicates;
     procedure ResetDuplicates;
     procedure DeleteMessage (aMessage: TWsdlMessage); overload;
@@ -6915,6 +6917,43 @@ end;
 function TWsdlMessages.GetMessage(Index: integer): TWsdlMessage;
 begin
   result := TWsdlMessage (Objects [Index]);
+end;
+
+procedure TWsdlMessages.SetNameDuplicates;
+var
+  m, m1: Integer;
+begin
+  for m := 0 to Count - 1 do
+  with Messages[m] do
+  begin
+    DuplicatesName := nil;
+    _compareString := UpperCase(Name);
+                    ;
+  end;
+  for m := 0 to Count - 2 do
+  begin
+    if not Assigned(Messages[m].DuplicatesName) then
+    begin
+      for m1 := m + 1 to Count - 1 do
+      begin
+        if not Assigned(Messages[m1].DuplicatesName) then
+        begin
+          if Messages[m1]._compareString = Messages[m]._compareString then
+          begin
+            Messages[m1].DuplicatesName := Messages[m];
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TWsdlMessages.ResetNameDuplicates;
+var
+  m: Integer;
+begin
+  for m := 0 to Count - 1 do
+    Messages[m].DuplicatesName := nil;
 end;
 
 procedure TWsdlMessages.SetDuplicates;
