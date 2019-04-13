@@ -2486,12 +2486,14 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
   begin
     if Copy (aValue, 1, 2) <> '#/' then
       raise Exception.CreateFmt('_prepareRef: preparing for "%s" not yet implemented', [aValue]);
-    SetLength(result, Length(aValue) - 2);
-    for x := 3 to Length (aValue) do
+    SetLength(result, Length(aValue));
+    for x := 1 to Length (aValue) do
+    begin
       if aValue [x] = '/' then
-        result [x - 2] := '.'
+        result [x] := '.'
       else
-        result [x - 2] := aValue [x];
+        result [x] := aValue [x];
+    end;
   end;
 
   procedure _ResolveDollarRefs;
@@ -2557,6 +2559,48 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     aParentXsd.sType.ElementDefs.AddObject(result.ElementName, result);
   end;
 
+  procedure _evaluateParameter (aRootXml: TXml; aXml: TXml; aParentXsd: TXsd);
+  var
+    x: Integer;
+    yXml: TXml;
+  begin
+    if (aXml.Items.Count = 1) then
+    with aXml.Items.XmlItems[0] do
+    begin
+      if (Name = '$ref') then
+      begin
+        yXml := aRootXml.FindXml(_prepareRef (Value));
+        if not Assigned(yXml) then
+          raise Exception.CreateFmt('Coud not resolve %s in %s', [Value, aFileName]);
+        _evaluateParameter (aRootXml, yXml, aParentXsd);
+        Exit;
+      end;
+    end;
+    with _initXsd (aParentXsd, aXml.Items.XmlValueByTag['name']) do
+    begin
+      sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, aXml, aOnError);
+      sType.jsonType := jsonObject;
+      sType.Name := ElementName;
+      for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
+      begin
+        if Name = 'in' then
+        begin
+          if Value = 'path' then ParametersType := oppPath;
+          if Value = 'query' then ParametersType := oppQuery;
+          if Value = 'header' then ParametersType := oppHeader;
+          if Value = 'body' then ParametersType := oppBody; // swagger 2.0
+          if Value = 'form' then ParametersType := oppForm;
+        end;
+        if Name = 'description' then Documentation.Text := Value;
+        if Name = 'required' then
+          if Value = 'true' then
+            minOccurs := '1'
+          else
+            minOccurs := '0';
+      end;
+    end;
+  end;
+
   procedure _addUndefXsd (aParentXsd: TXsd);
   var
     xXsd, yXsd: TXsd;
@@ -2587,7 +2631,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
                              ; aOperation: TWsdlOperation
                              ; aXsd: TXsd
                              ; aItems: TXmlList
-                             ; aComponentsXml: TXml
+                             ; aRootXml: TXml
                              );
   var
     x, y, f: Integer;
@@ -2625,7 +2669,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
                                  ; aOperation: TWsdlOperation
                                  ; var aDoc: String
                                  ; aItems: TXmlList
-                                 ; aComponentsXml: TXml
+                                 ; aRootXml: TXml
                                  );
   var
     x: Integer;
@@ -2637,17 +2681,17 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     begin
       if (Name = '$ref') then
       begin
-        yXml := aComponentsXml.FindXml(_prepareRef (Value));
+        yXml := aRootXml.FindXml(_prepareRef (Value));
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
-        _evaluateRequestBody(aService, aOperation, aDoc, yXml.Items, aComponentsXml);
+        _evaluateRequestBody(aService, aOperation, aDoc, yXml.Items, aRootXml);
         Exit;
       end;
     end;
     for x := 0 to aItems.Count - 1 do with aItems.XmlItems[x] do
     begin
       if Name = 'description' then _appendInfo(aDoc, Value);
-      if Name = 'content' then _evaluateContent (aService, aOperation, aOperation.reqXsd, Items, aComponentsXml);
+      if Name = 'content' then _evaluateContent (aService, aOperation, aOperation.reqXsd, Items, aRootXml);
       if Name = 'required' then ;
     end;
   end;
@@ -2656,42 +2700,45 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
                                   ; aOperation: TWsdlOperation
                                   ; var aDoc: String
                                   ; Items: TXmlList
-                                  ; aComponentsXml: TXml
+                                  ; aRootXml: TXml
                                   );
-  var
-    x, y, z, v, w, h: Integer;
-    xXml, yXml, zXml, vXml, wXml, hXml: TXml;
-    xXsd, yXsd, hXsd: TXsd;
-  begin
-    if (Items.Count = 1) then
-    with Items.XmlItems[0] do
+    procedure _evaluateResponse200 ( aService: TWsdlService  // swagger 2.0
+                                   ; aOperation: TWsdlOperation
+                                   ; aXsd: TXsd
+                                   ; var aDoc: String
+                                   ; aXml: TXml
+                                   ; aRootXml: TXml
+                                   );
+    var
+      w, h: Integer;
+      wXml, hXml: TXml;
+      hXsd, yXsd: TXsd;
     begin
-      if (Name = '$ref') then
+      SjowMessage('_evaluateResponse200: ' + aXml.Text);
+      if (aXml.Items.Count = 1) then
+      with aXml.Items.XmlItems[0] do
       begin
-        yXml := aComponentsXml.FindXml(_prepareRef (Value));
-        if not Assigned(yXml) then
-          raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
-        _evaluateResponses200(aService, aOperation, aDoc, yXml.Items, aComponentsXml);
-        Exit;
+        if (Name = '$ref') then
+        begin
+          hXml := aRootXml.FindXml(_prepareRef (Value));
+          if not Assigned(hXml) then
+            raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
+          _evaluateResponse200(aService, aOperation, aXsd, aDoc, hXml, aRootXml);
+          Exit;
+        end;
       end;
-    end;
-    aOperation.rpyXsd.sType.ContentModel := 'Choice';
-    for v := 0 to Items.Count - 1 do
-    begin
-      vXml := Items.XmlItems[v];
-      xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
-      for w := 0 to vXml.Items.Count - 1 do
+      for w := 0 to aXml.Items.Count - 1 do
       begin
-        wXml := vXml.Items.XmlItems[w];
-        if wXml.Name = 'description' then xXsd.Documentation.Text := wXml.Value;
+        wXml := aXml.Items.XmlItems[w];
+        if wXml.Name = 'description' then aXsd.Documentation.Text := wXml.Value;
         if wXml.Name = 'schema' then
         begin
           yXsd := TXsd.Create(XsdDescr);
           XsdDescr.Garbage.AddObject('', yXsd);
           yXsd.ElementName := 'body';
-          yXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
-          yXsd.sType.Name := xXsd.ElementName;
-          xXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
+          yXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, aXml, aOnError);
+          yXsd.sType.Name := aXsd.ElementName;
+          aXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
         end;
         if wXml.Name = 'headers' then
         begin
@@ -2705,10 +2752,36 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
             hXsd.sType.Name := hXsd.ElementName;
             hXsd.minOccurs := '0';
             hXsd.ParametersType := oppHeader;
-            xXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
+            aXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
           end;
         end;
       end;
+    end;
+
+  var
+    x, y, z, v, w, h: Integer;
+    xXml, yXml, zXml, vXml, wXml, hXml: TXml;
+    xXsd, yXsd, hXsd: TXsd;
+  begin
+    sjowmessage ('_evaluateResponses200' + aService.Name + aOperation.Name);
+    if (Items.Count = 1) then
+    with Items.XmlItems[0] do
+    begin
+      if (Name = '$ref') then
+      begin
+        yXml := aRootXml.FindXml(_prepareRef (Value));
+        if not Assigned(yXml) then
+          raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
+        _evaluateResponses200(aService, aOperation, aDoc, yXml.Items, aRootXml);
+        Exit;
+      end;
+    end;
+    aOperation.rpyXsd.sType.ContentModel := 'Choice';
+    for v := 0 to Items.Count - 1 do
+    begin
+      vXml := Items.XmlItems[v];
+      xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
+      _evaluateResponse200 (aService, aOperation, xXsd, aDoc, vXml, aRootXml);
     end;
     _addUndefXsd(aOperation.rpyXsd);
   end;
@@ -2717,7 +2790,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
                                   ; aOperation: TWsdlOperation
                                   ; var aDoc: String
                                   ; Items: TXmlList
-                                  ; aComponentsXml: TXml
+                                  ; aRootXml: TXml
                                   );
   var
     x, y, z, v, w, h: Integer;
@@ -2729,10 +2802,10 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     begin
       if (Name = '$ref') then
       begin
-        yXml := aComponentsXml.FindXml(_prepareRef (Value));
+        yXml := aRootXml.FindXml(_prepareRef (Value));
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
-        _evaluateResponses300(aService, aOperation, aDoc, yXml.Items, aComponentsXml);
+        _evaluateResponses300(aService, aOperation, aDoc, yXml.Items, aRootXml);
         Exit;
       end;
     end;
@@ -2745,7 +2818,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
       begin
         wXml := vXml.Items.XmlItems[w];
         if wXml.Name = 'description' then xXsd.Documentation.Text := wXml.Value;
-        if wXml.Name = 'content' then _evaluateContent (aService, aOperation, xXsd, wXml.Items, aComponentsXml);
+        if wXml.Name = 'content' then _evaluateContent (aService, aOperation, xXsd, wXml.Items, aRootXml);
         if wXml.Name = 'headers' then
         begin
           for h := 0 to wXml.Items.Count - 1 do
@@ -2771,13 +2844,17 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
                                ; aOperation: TWsdlOperation
                                ; var aDoc: String
                                ; aItems: TXmlList
-                               ; aComponentsXml: TXml
+                               ; aRootXml: TXml
+                               ; aServiceParamsXml: TXml
                                );
   var
     u, v, w, h: Integer;
     vXml, wXml, hXml: TXml;
     xXsd, yXsd, hXsd: TXsd;
   begin
+    if Assigned (aServiceParamsXml) then with aServiceParamsXml do
+      for v := 0 to Items.Count - 1 do
+        _evaluateParameter (aRootXml, Items.XmlItems[v], aOperation.reqXsd);
     for u := 0 to aItems.Count - 1 do with aitems.XmlItems[u] do
     begin
       if Name = 'tags' then ;
@@ -2803,40 +2880,15 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
           _appendInfo(aOperation.produces, Value);
       end;
       if Name = 'parameters' then
-      begin
         for v := 0 to Items.Count - 1 do
-        begin
-          vXml := Items.XmlItems[v];
-          xXsd := _initXsd(aOperation.reqXsd, vXml.Items.XmlValueByTag['name']);
-          xXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, vXml, aOnError);
-          xXsd.sType.jsonType := jsonObject;
-          xXsd.sType.Name := xXsd.ElementName;
-          for w := 0 to vXml.Items.Count - 1 do with vXml.Items.XmlItems[w] do
-          begin
-            if Name = 'in' then
-            begin
-              if Value = 'path' then xXsd.ParametersType := oppPath;
-              if Value = 'query' then xXsd.ParametersType := oppQuery;
-              if Value = 'header' then xXsd.ParametersType := oppHeader;
-              if Value = 'body' then xXsd.ParametersType := oppBody; // swagger 2.0
-              if Value = 'form' then xXsd.ParametersType := oppForm;
-            end;
-            if Name = 'description' then xXsd.Documentation.Text := Value;
-            if Name = 'required' then
-              if Value = 'true' then
-                xXsd.minOccurs := '1'
-              else
-                xXsd.minOccurs := '0';
-          end;
-        end;
-      end;
+          _evaluateParameter (aRootXml, Items.XmlItems[v], aOperation.reqXsd);
       if Name = 'requestBody' then
-        _evaluateRequestBody(aService, aOperation, aDoc, Items, aComponentsXml);
+        _evaluateRequestBody(aService, aOperation, aDoc, Items, aRootXml);
       if Name = 'responses' then
         if OpenApiVersion[1] = '2' then
-          _evaluateResponses200 (aService, aOperation, aDoc, Items, aComponentsXml)
+          _evaluateResponses200 (aService, aOperation, aDoc, Items, aRootXml)
         else
-          _evaluateResponses300 (aService, aOperation, aDoc, Items, aComponentsXml);
+          _evaluateResponses300 (aService, aOperation, aDoc, Items, aRootXml);
       if Name = 'schemes' then // swagger 2.0
       begin
         aOperation.schemes := '';
@@ -2852,10 +2904,12 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
   end;
 
 var
-  xXml, dXml, eXml, vXml, wXml, rXml, hXml, componentsXml: TXml;
+  xRootXml, cXml, dXml, eXml, vXml, wXml, rXml, hXml: TXml;
   x, y, z, u, v, w, r, f, h: Integer;
+  zXmlProcessed: Boolean;
   xService: TWsdlService;
-  xOperation: TWsdlOperation;
+  zOperation: TWsdlOperation;
+  xServiceParamsXml: TXml;
   xDoc, xExt: String;
   sl: TStringList;
   xXsd, yXsd, hXsd: TXsd;
@@ -2876,18 +2930,19 @@ begin
   Name := aFileName;
   FileName := aFileName;
   xExt := UpperCase (ExtractFileExt (FileName));
-  xXml := TXml.Create;
+  xRootXml := TXml.Create;
   sl := TStringList.Create;
   sl.Sorted := True;
   sl.Duplicates := dupIgnore;
   XsdDescr.Clear;
   XsdDescr.AddBuiltIns;
-  with xXml do
+  with xRootXml do
   try
     if xExt = '.JSON' then
       LoadJsonFromFile(aFileName, aOnError)
     else
       LoadYamlFromFile(aFileName, aOnError);
+    xRootXml.Name := '#'; // to make it easier to resolve $refs
     for x := 0 to Items.Count - 1 do
     begin
       if Items.XmlItems[x].Name = 'swagger' then with Items.XmlItems[x] do
@@ -2959,6 +3014,7 @@ begin
       end;
       if Items.XmlItems[x].Name = 'servers' then
       begin
+        sl.Add (Items.XmlItems[x].Name);
         Servers := TXml.Create;
         Servers.CopyDownLine (Items.XmlItems[x], False);
         with TIdURI.Create do
@@ -2985,11 +3041,11 @@ begin
       end;
     end;
 
-    componentsXml := ItemByTag['components'];
-    if Assigned (componentsXml) then
-    with componentsXml do
+    cXml := ItemByTag['components'];
+    if Assigned (cXml) then
+    with cXml do
     begin
-      sl.Add (componentsXml.Name);
+      sl.Add (cXml.Name);
       dXml := ItemByTag['schemas'];
       if Assigned (dXml) then
       begin
@@ -3014,6 +3070,7 @@ begin
       for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
       begin
         xService := TWsdlService.Create;
+        xServiceParamsXml := Items.XmlItemByTag['parameters'];
         xService.Name := Name;
         xService.openApiPath := xService.Name;
         Services.AddObject(Name, xService);
@@ -3021,71 +3078,68 @@ begin
         with xService do prepareOpenApiRegExp(openApiPath, openApiPathRegExp);
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
         begin
-          if (Name = 'parameters')
-          or (Name = 'servers')
+          zXmlProcessed := False;
+          if (Name = 'parameters') then
+            zXmlProcessed := True;
+          if (Name = 'servers')
           then
           begin
+            zXmlProcessed := True;
             SjowMessage(Format('%s found at path level %s.%s (not yet implemented)', [Name, aFileName, xService.Name]));
-          end
-          else
+          end;
+          if (Name = 'summary') then
           begin
-            if (Name = 'summary') then
+            zXmlProcessed := True;
+            // no wsdlStub doc at this service level...
+          end;
+          if (Name = 'description') then
+          begin
+            zXmlProcessed := True;
+            // no wsdlStub doc at this service level...
+          end;
+          if not zXmlProcessed then
+          begin  // get, post, put, delete, ...
+            zOperation := TWsdlOperation.Create (Self);
+            zOperation.Wsdl := self;
+            zOperation.WsdlService := xService;
+            zOperation.Name := xService.Name + ':' + Name;
+            xService.Operations.AddObject(zOperation.Name, zOperation);
+            zOperation.reqTagName := zOperation.Name;
+            zOperation.reqBind.Name := zOperation.reqTagName;
+            zOperation.rpyTagName := zOperation.Name;
+            zOperation.rpyBind.Name := zOperation.rpyTagName;
+            zOperation.Alias := zOperation.reqTagName;
+            zOperation.httpVerb := UpperCase(Name);
+            zOperation.Schemes := Schemes;
+            zOperation.Consumes := Consumes;
+            zOperation.Produces := Produces;
+            zOperation.ContentType := 'application/json';
+            zOperation.Accept := 'application/json';
+            xDoc := '';
+            _evaluateOperation (xService, zOperation, xDoc, Items, xRootXml, xServiceParamsXml);
+            with zOperation do
             begin
-              // no wsdlStub doc at this service level...
-            end
-            else
-            begin
-              if (Name = 'description') then
+              if not isValidId (Alias) then
               begin
-                // no wsdlStub doc at this service level...
-              end
-              else
-              begin
-                begin  // get, post, put, delete, ...
-                  xOperation := TWsdlOperation.Create (Self);
-                  xOperation.Wsdl := self;
-                  xOperation.WsdlService := xService;
-                  xOperation.Name := xService.Name + ':' + Name;
-                  xService.Operations.AddObject(xOperation.Name, xOperation);
-                  xOperation.reqTagName := xOperation.Name;
-                  xOperation.reqBind.Name := xOperation.reqTagName;
-                  xOperation.rpyTagName := xOperation.Name;
-                  xOperation.rpyBind.Name := xOperation.rpyTagName;
-                  xOperation.Alias := xOperation.reqTagName;
-                  xOperation.httpVerb := UpperCase(Name);
-                  xOperation.Schemes := Schemes;
-                  xOperation.Consumes := Consumes;
-                  xOperation.Produces := Produces;
-                  xOperation.ContentType := 'application/json';
-                  xOperation.Accept := 'application/json';
-                  xDoc := '';
-                  _evaluateOperation (xService, xOperation, xDoc, Items, componentsXml);
-                  with xOperation do
-                  begin
-                    if not isValidId (Alias) then
-                    begin
-                      Alias := makeValidId (Alias);
-                      reqBind.Name := Alias;
-                      rpyBind.Name := Alias;
-                    end;
-                    Documentation.Text := xDoc;
-                    s := reqBind.Name;
-                    reqBind.Free;
-                    reqBind := TXml.Create(0, reqXsd);
-                    reqBind.Name := s;
-                    s := rpyBind.Name;
-                    rpyBind.Free;
-                    rpyBind := TXml.Create(0, rpyXsd);
-                    rpyBind.Name := s;
-                  end;
-                end;
+                Alias := makeValidId (Alias);
+                reqBind.Name := Alias;
+                rpyBind.Name := Alias;
               end;
+              Documentation.Text := xDoc;
+              s := reqBind.Name;
+              reqBind.Free;
+              reqBind := TXml.Create(0, reqXsd);
+              reqBind.Name := s;
+              s := rpyBind.Name;
+              rpyBind.Free;
+              rpyBind := TXml.Create(0, rpyXsd);
+              rpyBind.Name := s;
             end;
           end;
         end;
       end;
     end;
-    ValidateEvaluatedTags (xXml, sl);
+    ValidateEvaluatedTags (xRootXml, sl);
     sl.Clear;
     _resolveDollarRefs;
     with XsdDescr.TypeDefs do
