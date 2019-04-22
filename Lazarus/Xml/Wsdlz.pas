@@ -590,6 +590,7 @@ procedure DisableMessage (aOperation: TWsdlOperation);
 function OccurrencesX (aObject: TObject): Extended;
 function LengthX (arg: String): Extended;
 function StrToFloatX (arg: String): Extended;
+function StrFromClipboard: String;
 procedure SleepX (aMS: Extended);
 function SubStringX ( s: String; i, c: Extended): String;
 function isAccordingSchema (aObject: TObject): Extended;
@@ -717,6 +718,7 @@ uses
 {$endif}
    , Math
    , base64
+   , Clipbrd
    , HashUtilz
    , IdURI
    , SwiftUnit
@@ -1705,6 +1707,11 @@ end;
 function StrToFloatX (arg: String): Extended;
 begin
   result := StrToFloatDef(arg, 0);
+end;
+
+function StrFromClipboard: String;
+begin
+  result := Clipboard.AsText;
 end;
 
 procedure SleepX (aMS: Extended);
@@ -2702,19 +2709,15 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
                                   ; Items: TXmlList
                                   ; aRootXml: TXml
                                   );
-    procedure _evaluateResponse200 ( aService: TWsdlService  // swagger 2.0
-                                   ; aOperation: TWsdlOperation
-                                   ; aXsd: TXsd
+    procedure _evaluateResponse200 ( aXsd: TXsd
                                    ; var aDoc: String
                                    ; aXml: TXml
-                                   ; aRootXml: TXml
                                    );
     var
       w, h: Integer;
       wXml, hXml: TXml;
       hXsd, yXsd: TXsd;
     begin
-      SjowMessage('_evaluateResponse200: ' + aXml.Text);
       if (aXml.Items.Count = 1) then
       with aXml.Items.XmlItems[0] do
       begin
@@ -2723,7 +2726,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
           hXml := aRootXml.FindXml(_prepareRef (Value));
           if not Assigned(hXml) then
             raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
-          _evaluateResponse200(aService, aOperation, aXsd, aDoc, hXml, aRootXml);
+          _evaluateResponse200(aXsd, aDoc, hXml);
           Exit;
         end;
       end;
@@ -2763,7 +2766,6 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     xXml, yXml, zXml, vXml, wXml, hXml: TXml;
     xXsd, yXsd, hXsd: TXsd;
   begin
-    sjowmessage ('_evaluateResponses200' + aService.Name + aOperation.Name);
     if (Items.Count = 1) then
     with Items.XmlItems[0] do
     begin
@@ -2781,7 +2783,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     begin
       vXml := Items.XmlItems[v];
       xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
-      _evaluateResponse200 (aService, aOperation, xXsd, aDoc, vXml, aRootXml);
+      _evaluateResponse200 (xXsd, aDoc, vXml);
     end;
     _addUndefXsd(aOperation.rpyXsd);
   end;
@@ -2969,7 +2971,6 @@ begin
           _appendInfo (Description, Name + ': ' + Value);
         end;
         self.Name := Items.XmlValueByTag['title'];
-        SjowMessage('Info: ' + Description);
       end;
       if Items.XmlItems[x].Name = 'host' then with Items.XmlItems[x] do // swagger 2.0
       begin
@@ -3928,6 +3929,7 @@ begin
     BindScriptFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
     BindScriptFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
     BindScriptFunction ('Sleep', @SleepX, VFX, '(aMilliSeconds)');
+    BindScriptFunction ('StrFromClipboard', @StrFromClipboard, SFV, '()');
     BindScriptFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
     BindScriptFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
     BindScriptFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
@@ -5911,6 +5913,7 @@ begin
       BindCheckerFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
       BindCheckerFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
       BindCheckerFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
+      BindCheckerFunction ('StrFromClipboard', @StrFromClipboard, SFV, '()');
       BindCheckerFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
       BindCheckerFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
       BindCheckerFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
@@ -5984,6 +5987,7 @@ begin
     BindStamperFunction ('SiebelNowAsStr', @sblNowAsDateTime, SFV, '()');
     BindStamperFunction ('SiebelTodayAsStr', @sblTodayAsDate, SFV, '()');
     BindStamperFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
+    BindStamperFunction ('StrFromClipboard', @StrFromClipboard, SFV, '()');
     BindStamperFunction ('StrHasRegExpr', @StringHasRegExpr, SFSS, '(aString, aRegExpr)');
     BindStamperFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
     BindStamperFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
