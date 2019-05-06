@@ -105,6 +105,7 @@ type
     function gethasFormalOperations: Boolean;
     function gethasFreeformatOperations: Boolean;
     function gethasMailOperations: Boolean;
+    function getHasOneTimeContextsColumn: Boolean;
     function gethasSwiftMtOperations: Boolean;
     function gethasXmlSampleOperations: Boolean;
     function gethasXsdOperation: Boolean;
@@ -165,6 +166,7 @@ type
     procedure ProgressEnd;
   public
     ProgressInterface: TProgressInterface;
+    EditContexts: TThreadMethod;
     doCreateBackup: Boolean;
     doStartOnOpeningProject: Boolean;
     projectContext: String;
@@ -402,6 +404,7 @@ type
     property doClearSnapshots: Boolean read getDoClearSnapshots write setDoClearSnapshots;
     property IsActive: Boolean read fIsActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
+    property hasOneTimeContextsColumn: Boolean read getHasOneTimeContextsColumn;
     property hasFormalOperations: Boolean read gethasFormalOperations;
     property hasApiByExplampleOperations: Boolean read gethasApiByExplampleOperations;
     property hasXsdOperation: Boolean read gethasXsdOperation;
@@ -566,6 +569,7 @@ uses StrUtils
    , htmlreportz
    , junitunit
    , IdGlobalProtocols
+   , IdSync
    , Clipbrd
    ;
 
@@ -7303,6 +7307,17 @@ begin
             ;
 end;
 
+function TWsdlProject.getHasOneTimeContextsColumn: Boolean;
+var
+  c: Integer;
+begin
+  result := False;
+  if Assigned (projectContexts) then
+    for c := 1 to projectContexts.ColCount - 1 do
+      if isOneTimeContextsColumn(projectContexts, c) then
+        result := True;
+end;
+
 function TWsdlProject.gethasSwiftMtOperations: Boolean;
 begin
     result := (SwiftMtWsdl.Services.Count > 0)
@@ -9328,10 +9343,22 @@ begin
         ProgressInvalidateConsole;
         if doStartOnOpeningProject then
         try
-           Activate(True);
+          if hasOneTimeContextsColumn
+          and Assigned (EditContexts) then
+          begin
+            with TIdSync.Create do
+            begin
+              try
+                SynchronizeMethod (EditContexts);
+              finally
+                free;
+              end;
+            end;
+          end;
+          Activate(True);
         except
-           Activate(False);
-           raise;
+          Activate(False);
+          raise;
         end;
       finally
         xXml.Free;

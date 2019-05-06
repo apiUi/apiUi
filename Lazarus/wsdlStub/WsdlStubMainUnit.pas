@@ -1087,6 +1087,7 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
+    procedure EditContexts;
     procedure ShowChosenLogTab;
     function ShowProgressForm: Boolean;
     procedure PositionMessagesTabControl;
@@ -2964,6 +2965,11 @@ begin
   end;
   WsdlOperation.Messages.SetNameDuplicates;
   GridView.Invalidate;
+end;
+
+procedure TMainForm.EditContexts;
+begin
+  ContextsActionExecute(nil);
 end;
 
 procedure TMainForm.ShowChosenLogTab;
@@ -6518,6 +6524,7 @@ begin
   sc.se := se;
   ProgressInterface := TProgressInterface.Create;
   se.ProgressInterface := ProgressInterface;
+  se.EditContexts := EditContexts;
   RefreshLogTimer.Enabled := True;
   NumberOfBlockingThreads := 0;
   se.OnBooleanDialog := BooleanPromptDialog;
@@ -13796,7 +13803,8 @@ begin
     Contexts := TStringListList.Create(se.projectContexts);
     try
       ShowModal;
-      if ModalResult = mrOK then
+      if (ModalResult = mrOK)
+      and isChanged then
       with Contexts do
       begin
         se.projectContexts.RowCount := RowCount;

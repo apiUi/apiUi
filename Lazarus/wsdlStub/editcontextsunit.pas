@@ -96,6 +96,7 @@ type
     procedure SetColumnImageIndex (aColumn: Integer);
   public
     Contexts: TStringListList;
+    isChanged: Boolean;
     { public declarations }
   end;
 
@@ -150,6 +151,7 @@ begin
       p.Row := Contexts.RowCount - 1;
       GridView.Invalidate;
       PopulateContextComboBox;
+      isChanged := True;
     end;
   finally
     Free;
@@ -181,6 +183,7 @@ begin
       Invalidate;
       FocusedColumn := Contexts.ColCount - 1;
       SetColumnImageIndex(FocusedColumn);
+      isChanged := True;
     end;
   finally
     Free;
@@ -214,6 +217,7 @@ begin
     Free;
   end;
   GridView.NodeDataSize := SizeOf(TGridTreeRec);
+  isChanged := False;
 end;
 
 procedure TEditContextsForm.FormShow(Sender: TObject);
@@ -247,6 +251,7 @@ begin
       xData.Row := r;
     end;
     PopulateContextComboBox;
+    isChanged := False;
   end;
 end;
 
@@ -357,6 +362,8 @@ begin
     Contexts.CellValue[Column, p.Row] := EncryptPassword (NewText)
   else
     Contexts.CellValue[Column, p.Row] := NewText;
+  if not isOneTimerColumn(Column) then
+    isChanged := True;
 end;
 
 procedure TEditContextsForm.GridViewPaintText(Sender: TBaseVirtualTree;
@@ -388,6 +395,7 @@ begin
       GridView.Clear;
       Contexts.Delete(aRow);
       FormShow(nil);
+      isChanged := True;
     end;
   end;
 end;
@@ -413,6 +421,7 @@ begin
         GridView.FocusedColumn := aCol
       else
         GridView.FocusedColumn := ColCount - 1;
+      isChanged := True;
     end;
   end;
 end;
@@ -434,6 +443,7 @@ begin
   begin
     CellObject[aCol, 0] := TObject ((QWord(CellObject[aCol, 0]) xor xmlio.OneTimeContextsOptionValue));
     SetColumnImageIndex(aCol);
+    isChanged := True;
   end;
 end;
 
@@ -461,6 +471,7 @@ begin
     SetColumnImageIndex(aCol);
   end;
   GridView.Invalidate;
+  isChanged := True;
 end;
 
 procedure TEditContextsForm.SetPasswordActionUpdate(Sender: TObject);
