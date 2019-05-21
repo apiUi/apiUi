@@ -4186,6 +4186,7 @@ begin
   end;
 
   if isOpenApiService
+  and (OpenApiVersion <> '')
   and (OpenApiVersion[1] = '3') then
   begin
     with reqBind as TXml do

@@ -13803,8 +13803,7 @@ begin
     Contexts := TStringListList.Create(se.projectContexts);
     try
       ShowModal;
-      if (ModalResult = mrOK)
-      and isChanged then
+      if (ModalResult = mrOK) then
       with Contexts do
       begin
         se.projectContexts.RowCount := RowCount;
@@ -13815,7 +13814,7 @@ begin
             se.projectContexts.CellValue[c, r] := CellValue[c, r];
             se.projectContexts.CellObject[c, r] := CellObject[c, r];
           end;
-        stubChanged := True;
+        stubChanged := stubChanged or isChanged;
         if ContextComboBox.Text <> contextPropertyOverwrite then
         begin
           contextPropertyOverwrite := ContextComboBox.Text;
