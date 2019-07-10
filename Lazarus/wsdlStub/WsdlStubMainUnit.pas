@@ -1221,6 +1221,7 @@ type
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     function EditScript(aXml: TObject): Boolean;
     function TestDbsConnection(aXml: TObject): Boolean;
+    function TestProjectFolders(aXml: TObject): Boolean;
     function EditXmlValueAsText(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
     procedure UpdateVisibiltyOfOperations;
@@ -5974,6 +5975,61 @@ begin
   end;
 end;
 
+function TMainForm.TestProjectFolders(aXml: TObject): Boolean;
+var
+  xXml: TXml;
+  xCurrentFolder, xReferenceFolder,xReportsFolder, xMessage: String;
+begin
+  result := True;
+  xMessage := '';
+  xXml := TXml.Create;
+  try
+    xXml.CopyDownLine((aXml as TXml).Parent as TXml, True);
+    xXml.ResolveAliasses;
+    with xXml.Items do
+    begin
+      xCurrentFolder := XmlCheckedValueByTag['current'];
+      xReferenceFolder := XmlCheckedValueByTag['reference'];
+      xReportsFolder := XmlCheckedValueByTagDef['reports', xCurrentFolder];
+    end;
+    if xCurrentFolder <> '' then
+    begin
+      if not LazFileUtils.DirectoryExistsUTF8(xCurrentFolder) then
+      begin
+        xMessage := xMessage + ifthen(Result, '', LineEnding) + Format ('Folder (current) %s does not exist', [xCurrentFolder]);
+        Result := False;
+      end;
+    end;
+    if xReferenceFolder <> '' then
+    begin
+      if not LazFileUtils.DirectoryExistsUTF8(xReferenceFolder) then
+      begin
+        xMessage := xMessage + ifthen(Result, '', LineEnding) + Format ('Folder (reference) %s does not exist', [xReferenceFolder]);
+        Result := False;
+      end;
+    end;
+    if xReportsFolder <> '' then
+    begin
+      if not LazFileUtils.DirectoryExistsUTF8(xReportsFolder) then
+      begin
+        xMessage := xMessage + ifthen(Result, '', LineEnding) + Format ('Folder (reports) %s does not exist', [xReportsFolder]);
+        Result := False;
+      end;
+    end;
+    if (xCurrentFolder <> '')
+    and (xCurrentFolder = xReferenceFolder) then
+    begin
+      xMessage := xMessage + ifthen(Result, '', LineEnding) + 'CurrentFolder and ReferenceFolder can not be the same';
+      Result := False;
+    end;
+    if Result then
+      xMessage := 'Folders seem OK';
+    ShowMessage(xMessage);
+  finally
+    xXml.Free;
+  end;
+end;
+
 function TMainForm.EditXmlValueAsText(aXml: TObject): Boolean;
 begin
   XmlUtil.PushCursor (crHourGlass);
@@ -8673,6 +8729,7 @@ procedure TMainForm.ExecuteRequestActionUpdate(Sender: TObject);
 begin
   ExecuteRequestAction.Enabled :=
         Assigned(WsdlOperation)
+    and (WsdlOperation.StubAction = saRequest)
     and Assigned(WsdlMessage)
     and (NumberOfBlockingThreads < 1)
     ;
@@ -9413,6 +9470,9 @@ var
 begin
   xXsd := projectOptionsXsd.XsdByCaption ['projectOptions.DatabaseConnection.TestConnection'];
   xXsd.EditProcedure := TestDbsConnection;
+  xXsd.isCheckboxDisabled := True;
+  xXsd := projectOptionsXsd.XsdByCaption ['projectOptions.General.projectFolders.TestFolders'];
+  xXsd.EditProcedure := TestProjectFolders();
   xXsd.isCheckboxDisabled := True;
   xXml := se.ProjectOptionsAsXml(False, '');
   try

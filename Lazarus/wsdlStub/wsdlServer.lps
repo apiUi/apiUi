@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="55">
+    <Units Count="57">
       <Unit0>
         <Filename Value="wsdlServer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -84,7 +84,6 @@
       </Unit10>
       <Unit11>
         <Filename Value="WsdlProjectz.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="1"/>
         <TopLine Value="243"/>
@@ -443,13 +442,34 @@
         <CursorPos X="15" Y="1613"/>
         <UsageCount Value="6"/>
       </Unit54>
+      <Unit55>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdNetworkCalculator.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="496"/>
+        <CursorPos X="44" Y="510"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdDNSCommon.pas"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="695"/>
+        <CursorPos X="73" Y="710"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit56>
     </Units>
     <OtherDefines Count="3">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="17" HistoryIndex="16">
+    <JumpHistory Count="22" HistoryIndex="21">
       <Position1>
         <Filename Value="WsdlProjectz.pas"/>
         <Caret Line="8782" TopLine="8757"/>
@@ -517,6 +537,24 @@
         <Filename Value="WsdlProjectz.pas"/>
         <Caret Line="111" Column="32" TopLine="100"/>
       </Position17>
+      <Position18>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdNetworkCalculator.pas"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdNetworkCalculator.pas"/>
+        <Caret Line="510" Column="36" TopLine="495"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdDNSCommon.pas"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdNetworkCalculator.pas"/>
+        <Caret Line="510" Column="36" TopLine="496"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdNetworkCalculator.pas"/>
+        <Caret Line="370" Column="31" TopLine="356"/>
+      </Position22>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

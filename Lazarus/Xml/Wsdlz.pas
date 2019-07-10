@@ -2887,10 +2887,11 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
       if Name = 'requestBody' then
         _evaluateRequestBody(aService, aOperation, aDoc, Items, aRootXml);
       if Name = 'responses' then
-        if OpenApiVersion[1] = '2' then
-          _evaluateResponses200 (aService, aOperation, aDoc, Items, aRootXml)
+        if (OpenApiVersion <> '')
+        and (OpenApiVersion[1] = '3') then
+          _evaluateResponses300 (aService, aOperation, aDoc, Items, aRootXml)
         else
-          _evaluateResponses300 (aService, aOperation, aDoc, Items, aRootXml);
+          _evaluateResponses200 (aService, aOperation, aDoc, Items, aRootXml);
       if Name = 'schemes' then // swagger 2.0
       begin
         aOperation.schemes := '';
