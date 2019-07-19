@@ -4285,9 +4285,7 @@ begin
         end;
       end;
       aLog.httpUri := URL;
-      HttpClient.Request.CharSet := '';
-      HttpClient.Request.ContentType := aOperation.ContentType;
-      aLog.RequestContentType := HttpClient.Request.ContentType;
+      HttpClient.Request.ContentType := aLog.RequestContentType;
       HttpClient.Request.Accept := aOperation.Accept;
       try
         if aOperation.SoapAction <> '' then
@@ -4476,6 +4474,7 @@ begin
       xLog.OperationName := aOperation.reqTagName;
       xLog.TransportType := aOperation.StubTransport;
       xLog.Mssg := aOperation.CorrelatedMessage;
+      xLog.RequestContentType := aOperation.ContentType;
       aOperation.doSuppressLog := 0;
       aOperation.doSuppressAsyncReply := 0;
       if aOperation.wsaEnabled then
@@ -7765,6 +7764,7 @@ begin
       xLog.httpDocument := ARequestInfo.Document;
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
       xLog.RequestContentType := ARequestInfo.ContentType;
+      xLog.ReplyContentType := xLog.RequestContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
       xlog.httpResponseCode := 200;
       AResponseInfo.ContentEncoding := 'identity';
@@ -7796,7 +7796,7 @@ begin
         or (ARequestInfo.Command = 'PUT') then
         begin
           AResponseInfo.ContentType := ARequestInfo.ContentType;
-          AResponseInfo.CharSet := ARequestInfo.CharSet;
+          xLog.RequestContentType := ARequestInfo.ContentType;
           xLog.ReplyContentType := AResponseInfo.ContentType;
           try
             try

@@ -2394,6 +2394,8 @@ begin
       PortTypeName := SoapAddress;  // SoapAdress contains PortTypeName
       ServiceName := fStrs.Values[PortTypeName + '.Service'];
       Srvc := ServiceByName[ServiceName];
+      ContentType := 'application/xml;charset=utf-8';
+      Accept := 'application/xml';
       if Assigned (Srvc) then
       begin
         Srvc.Operations.AddObject(fOpers.Operations[o].Name, fOpers.Operations[o]);
@@ -3115,7 +3117,7 @@ begin
             zOperation.Schemes := Schemes;
             zOperation.Consumes := Consumes;
             zOperation.Produces := Produces;
-            zOperation.ContentType := 'application/json';
+            zOperation.ContentType := 'application/json;charset=utf-8';
             zOperation.Accept := 'application/json';
             xDoc := '';
             _evaluateOperation (xService, zOperation, xDoc, Items, xRootXml, xServiceParamsXml);
