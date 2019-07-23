@@ -302,7 +302,7 @@ type
       HiddenFromUI: Boolean;
       isDepricated: Boolean;
       reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
-      Schemes, Consumes, Produces, ContentType, Accept: String;
+      Schemes, Consumes, Produces, ContentType, OverruleContentType, Accept: String;
       ProduceType: TProduceType;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
       reqDescrExpansionFilename, rpyDescrExpansionFilename, fltDescrExpansionFileName: String;
@@ -2394,7 +2394,7 @@ begin
       PortTypeName := SoapAddress;  // SoapAdress contains PortTypeName
       ServiceName := fStrs.Values[PortTypeName + '.Service'];
       Srvc := ServiceByName[ServiceName];
-      ContentType := 'application/xml;charset=utf-8';
+      ContentType := 'application/soap+xml;charset=utf-8';
       Accept := 'application/xml';
       if Assigned (Srvc) then
       begin
@@ -4669,6 +4669,7 @@ begin
   self.ProduceType := xOperation.ProduceType;
   self.Consumes := xOperation.Consumes;
   self.ContentType := xOperation.ContentType;
+  self.OverruleContentType := xOperation.OverruleContentType;
   self.Accept := xOperation.Accept;
   self.reqTagNameSpace := xOperation.reqTagNameSpace;
   self.rpyMessageName := xOperation.rpyMessageName;
@@ -5622,6 +5623,8 @@ begin
         if StubHttpAddress <> '' then
           AddXml (TXml.CreateAsString('Address', StubHttpAddress));
         AddXml (TXml.CreateAsString('Verb', httpVerb));
+        if OverruleContentType <> '' then
+          AddXml (TXml.CreateAsString('ContentType', OverruleContentType));
         if ContentEncoding <> '' then
           AddXml (TXml.CreateAsString('ContentEncoding', ContentEncoding));
         with AddXml (TXml.CreateAsString('AcceptEncoding', '')) do
@@ -5731,6 +5734,7 @@ begin
   StubTransport := ttHttp;
   StubHttpAddress := '';
   httpVerb := 'POST';
+  OverruleContentType := '';
   ContentEncoding := 'identity';
   AcceptDeflateEncoding := True;
   AcceptGzipEncoding := True;
@@ -5769,6 +5773,7 @@ begin
           StubTransport := ttHttp;
           StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
           httpVerb := UpperCase(Items.XmlCheckedValueByTagDef['Verb', httpVerb]);
+          OverruleContentType := Items.XmlCheckedValueByTagDef['ContentType', OverruleContentType];
           ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
           xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
           if Assigned (xXml) then
@@ -5785,6 +5790,7 @@ begin
           StubTransport := ttHttp;
           StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
           httpVerb := Items.XmlCheckedValueByTagDef['Verb', httpVerb];
+          OverruleContentType := Items.XmlCheckedValueByTagDef['ContentType', OverruleContentType];
           ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
           xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
           if Assigned (xXml) then

@@ -5171,6 +5171,8 @@ procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
       d.httpVerb := s.httpVerb;
     end;
     d.ContentEncoding := s.ContentEncoding;
+    d.ContentType := s.ContentType;
+    d.OverruleContentType := s.OverruleContentType;
     d.AcceptGzipEncoding := s.AcceptGzipEncoding;
     d.AcceptDeflateEncoding := s.AcceptDeflateEncoding;
     d.StubMqPutManager := s.StubMqPutManager;

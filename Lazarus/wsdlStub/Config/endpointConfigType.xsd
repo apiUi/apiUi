@@ -77,6 +77,7 @@ when "true", the server will be allowed to send gzip responses (compression meth
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Verb" type="tns:httpVerbType" minOccurs="0"/>
+			<xs:element name="ContentType" type="xs:string" minOccurs="0"/>
 			<xs:element name="ContentEncoding" type="tns:contentEncodingType" minOccurs="0"/>
 			<xs:element name="AcceptEncoding" type="tns:acceptEncodingType" minOccurs="0"/>
 			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
@@ -90,6 +91,7 @@ when "true", the server will be allowed to send gzip responses (compression meth
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Verb" type="tns:httpVerbType" minOccurs="0"/>
+			<xs:element name="ContentType" type="xs:string" minOccurs="0"/>
 			<xs:element name="ContentEncoding" type="tns:contentEncodingType" minOccurs="0"/>
 			<xs:element name="AcceptEncoding" type="tns:acceptEncodingType" minOccurs="0"/>
 			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>

@@ -4285,6 +4285,8 @@ begin
         end;
       end;
       aLog.httpUri := URL;
+      if aOperation.OverruleContentType <> '' then
+        aLog.RequestContentType := aOperation.OverruleContentType;
       HttpClient.Request.ContentType := aLog.RequestContentType;
       HttpClient.Request.Accept := aOperation.Accept;
       try
