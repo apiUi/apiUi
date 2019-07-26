@@ -388,7 +388,7 @@ begin
     xStream := TMemoryStream.Create;
     try
       try
-        HttpClient.Request.ContentType := 'text/xml';
+        HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
         HttpClient.Request.CharSet := '';
         HttpRequest.WriteString (aRequest);
         HttpClient.ProxyParams.ProxyServer := '';

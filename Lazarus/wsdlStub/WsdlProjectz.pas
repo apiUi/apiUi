@@ -4887,7 +4887,7 @@ begin
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := aSoapAction;
       except
       end;
-      HttpClient.Request.ContentType := 'text/xml';
+      HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
       HttpClient.Request.CharSet := '';
       WriteStringToStream(aCommand, HttpRequest);
       try
@@ -4950,7 +4950,7 @@ begin
         HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := aSoapAction;
       except
       end;
-      HttpClient.Request.ContentType := 'text/xml';
+      HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
       HttpClient.Request.CharSet := '';
       WriteStringToStream(aCommand, HttpRequest);
       try
@@ -7765,7 +7765,7 @@ begin
       xLog.httpCommand := ARequestInfo.Command;
       xLog.httpDocument := ARequestInfo.Document;
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
-      xLog.RequestContentType := ARequestInfo.ContentType;
+      xLog.RequestContentType := ARequestInfo.RawHeaders.Values['Content-Type'];
       xLog.ReplyContentType := xLog.RequestContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
       xlog.httpResponseCode := 200;
@@ -7797,9 +7797,6 @@ begin
         if (ARequestInfo.Command = 'POST')
         or (ARequestInfo.Command = 'PUT') then
         begin
-          AResponseInfo.ContentType := ARequestInfo.ContentType;
-          xLog.RequestContentType := ARequestInfo.ContentType;
-          xLog.ReplyContentType := AResponseInfo.ContentType;
           try
             try
               CreateLogReply (xLog, xProcessed, True);

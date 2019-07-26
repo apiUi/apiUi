@@ -2258,6 +2258,10 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent)
             begin
               if Name = tagOperation then
               begin
+                if NameSpace = 'http://schemas.xmlsoap.org/wsdl/soap/' then
+                  SoapVersion := svSOAP11;
+                if NameSpace = 'http://schemas.xmlsoap.org/wsdl/soap12/' then
+                  SoapVersion := svSOAP12;
                 Oper.SoapAction := AttributeValueByTag[tagSoapAction];
                 Oper.SoapBindingStyle := AttributeValueByTagDef[tagStyle, Oper.SoapBindingStyle];
               end;
@@ -2394,8 +2398,18 @@ begin
       PortTypeName := SoapAddress;  // SoapAdress contains PortTypeName
       ServiceName := fStrs.Values[PortTypeName + '.Service'];
       Srvc := ServiceByName[ServiceName];
-      ContentType := 'application/soap+xml;charset=utf-8';
-      Accept := 'application/xml';
+      case SoapVersion of
+        svSOAP11, svUnspecified:
+          begin
+            ContentType := 'text/xml;charset=utf-8';
+            Accept := ContentType;
+          end;
+        svSOAP12:
+          begin
+            ContentType := 'application/soap+xml;charset=utf-8';
+            Accept := ContentType;
+          end;
+      end;
       if Assigned (Srvc) then
       begin
         Srvc.Operations.AddObject(fOpers.Operations[o].Name, fOpers.Operations[o]);
@@ -3552,8 +3566,8 @@ begin
   Documentation := TstringList.Create;
   BeforeScriptLines := TStringList.Create;
   AfterScriptLines := TStringList.Create;
-  ContentType := 'text/xml';
-  Accept := 'text/xml';
+  ContentType := 'text/xml;charset=utf-8';
+  Accept := ContentType;
   StubAction := saStub;
   StubHttpAddress := '';
   httpVerb := 'POST';
