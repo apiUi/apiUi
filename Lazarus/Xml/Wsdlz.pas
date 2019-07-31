@@ -85,7 +85,7 @@ type
       function getOperationByRequest(Index: String): TWsdlOperation;
     public
       Name, FileAlias, FileName: String;
-      Description, Host, Schemes, Consumes, Produces: String;
+      Description, basePathV2, Host, Schemes, Consumes, Produces: String;
       isSoapService: Boolean;
       isOpenApiService: Boolean;
       OpenApiVersion: String;
@@ -2998,6 +2998,7 @@ begin
       begin
         sl.Add (Name);
         BasePaths.Add (_trimPath(Value));
+        basePathV2 := Value;
       end;
       if Items.XmlItems[x].Name = 'schemes' then with Items.XmlItems[x] do
       begin

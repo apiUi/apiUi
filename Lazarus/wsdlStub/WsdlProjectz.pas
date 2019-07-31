@@ -4247,7 +4247,7 @@ begin
         if URL [Length (URL)] = '/' then
           SetLength(URL, Length (URL) - 1);
         URL := URL
-//           + aOperation.Wsdl.basePath
+             + aOperation.Wsdl.basePathV2 // only filled with openapi 3..
              + aOperation.WsdlService.openApiPath;
         querySep := '?';
         for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
