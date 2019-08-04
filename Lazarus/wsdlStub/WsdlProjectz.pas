@@ -3584,9 +3584,12 @@ begin
     xStream := TMemoryStream.Create;
     try
       GZIPUtils.ZUncompressStream(ARequestInfo.PostStream as TMemoryStream, xStream);
+    {
       xStream.Position := 0;
       SetLength(Result,xStream.Size);
       xStream.Read(Pointer(Result)^,xStream.Size);
+    }
+      result := IdGlobal.ReadStringFromStream(xStream);
     finally
       xStream.Free;
     end;
@@ -3594,12 +3597,15 @@ begin
   else
   begin
     AResponseInfo.ContentEncoding := 'identity';
+  {
     with ARequestInfo.PostStream as TMemoryStream do
     begin
       Position := 0;
       SetLength(Result, Size);
       Read(Pointer(Result)^, Size);
     end;
+  }
+    result := IdGlobal.ReadStringFromStream(ARequestInfo.PostStream);
   end;
 end;
 
@@ -7880,9 +7886,9 @@ begin
     end;
   finally
     // setup for HTTP reply
+    aResponseInfo.ContentStream := TMemoryStream.Create;
     if AResponseInfo.ContentEncoding <> 'identity' then
     begin
-      aResponseInfo.ContentStream := TMemoryStream.Create;
       xStream := TMemoryStream.Create;
       try
         WriteStringToStream(AResponseInfo.ContentText, xStream);
@@ -7893,8 +7899,10 @@ begin
       finally
         xStream.Free;
       end;
-      aResponseInfo.ContentText := '';
-    end;
+    end
+    else
+      WriteStringToStream(AResponseInfo.ContentText, AResponseInfo.ContentStream as TMemoryStream);
+    aResponseInfo.ContentText := '';
   end;
 end;
 
@@ -9883,9 +9891,13 @@ end;
 procedure TWsdlProject .WriteStringToStream (aString : String ;
   aStream : TMemoryStream );
 begin
+{
   aStream.Position := 0;
   aStream.Write(Pointer(aString)^, Length (aString));
   aStream.Position := 0;
+}
+  IdGlobal.WriteStringToStream(aStream, aString, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
+
 end;
 
 function TWsdlProject.isSpecialWsdl(aWsdl: TWsdl): Boolean;
