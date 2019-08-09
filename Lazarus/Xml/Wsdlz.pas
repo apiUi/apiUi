@@ -341,6 +341,7 @@ type
       AcceptGzipEncoding, AcceptDeflateEncoding: Boolean;
       smtpHost: String;
       smtpPort: Integer;
+      resolveRequestAliasses, resolveReplyAliasses: Boolean;
       useSsl: Boolean;
       sslVersion: TIdSSLVersion;
       sslCertificateFile, sslKeyFile, sslRootCertificateFile, sslPassword: String;
@@ -3609,6 +3610,8 @@ begin
   end;
   StubCustomHeaderXml := TXml.CreateAsString('customHeaders', '');
   doReadReplyFromFile := False;
+  resolveRequestAliasses := True;
+  resolveReplyAliasses := True;
   ReadReplyFromFileXml := TXml.CreateAsString('ReadReplyFromFile', '');
 end;
 
@@ -4764,6 +4767,8 @@ begin
   self.smtpPort := xOperation.smtpPort;
   self.BeforeScriptLines := xOperation.BeforeScriptLines;
   self.AfterScriptLines := xOperation.AfterScriptLines;
+  self.resolveRequestAliasses := xOperation.resolveRequestAliasses;
+  self.resolveReplyAliasses := xOperation.resolveReplyAliasses;
   self.CorrelatedMessage := xOperation.CorrelatedMessage;
   self.Messages := xOperation.Messages;
 //  self.faultcode, faultstring, faultactor := xOperation.String;
@@ -6107,6 +6112,11 @@ begin
       if OnRequestViolatingAddressPath = rvsAddRemark then
         AddXml (TXml.CreateAsString('AddRemark',''));
     end;
+    with AddXml (TXml.CreateAsString('ResolveAliasses', '')) do
+    begin
+      AddXml(TXml.CreateAsBoolean('BeforeOutboundRequest', resolveRequestAliasses));
+      AddXml(TXml.CreateAsBoolean('BeforeOutboundReply', resolveReplyAliasses));
+    end;
     with AddXml (TXml.CreateAsString('scripts', '')) do
     begin
       with AddXml (TXml.CreateAsString('invoke', '')) do
@@ -6161,6 +6171,14 @@ begin
     if Assigned (xXml.Items.XmlCheckedItemByTag ['AddRemark']) then
       OnRequestViolatingAddressPath := rvsAddRemark;
   end;
+  xXml := aXml.Items.XmlCheckedItemByTag['ResolveAliasses'];
+  resolveRequestAliasses := True;
+  resolveReplyAliasses := True;
+  if Assigned (xXml) then
+  begin
+    resolveRequestAliasses := xXml.Items.XmlBooleanByTagDef['BeforeOutboundRequest', resolveRequestAliasses];
+    resolveReplyAliasses := xXml.Items.XmlBooleanByTagDef['BeforeOutboundReply', resolveReplyAliasses];
+  end;
   xXml := aXml.Items.XmlCheckedItemByTag['scripts'];
   if Assigned (xXml) then
   begin
@@ -6206,7 +6224,8 @@ procedure TWsdlOperation.ExecuteRpyStampers;
        )
     and (not aBindable.Checked) then
       exit;
-    aBindable.Value := resolveAliasses (aBindable.Value, true);
+    if resolveReplyAliasses then
+      aBindable.Value := resolveAliasses (aBindable.Value, true);
     if aBindable.isExpression then
     begin
       PrepareRpyStamper (aBindable);
@@ -6259,7 +6278,8 @@ procedure TWsdlOperation.ExecuteReqStampers;
        )
     and (not aBindable.Checked) then
       exit;
-    aBindable.Value := xmlio.resolveAliasses(aBindable.Value, true);
+    if resolveRequestAliasses then
+      aBindable.Value := xmlio.resolveAliasses(aBindable.Value, true);
     if aBindable.isExpression then
     begin
       PrepareReqStamper (aBindable);

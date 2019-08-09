@@ -1450,6 +1450,25 @@ For an overview of all options visit: doc://wsdlStub_operationOptions_hlp.htm </
 Setting determines what wsdlStub should do on receiving messages that violate the schema. This setting has no effect in case Request Message Validation is switched off </xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="ResolveAliasses" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Should aliasses (format ${alias}) be resolved during operation</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BeforeOutboundRequest" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default "true"</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="BeforeOutboundReply" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default "true"</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="scripts" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>

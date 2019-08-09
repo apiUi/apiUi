@@ -10451,6 +10451,7 @@ object MainForm: TMainForm
     end
     object MenuItem10: TMenuItem
       Action = OperationOptionsAction
+      Caption = 'Options...'
     end
     object MenuItem13: TMenuItem
       Caption = '-'

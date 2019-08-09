@@ -2504,7 +2504,12 @@ begin
                     and (xOperation.rpyWsaXml.Name <> '') then
                       with AddXml (TXml.Create) do
                         CopyDownLine (xOperation.rpyWsaXml, True);
-                    AddXml (xOperation.OptionsAsXml);
+                    with AddXml (xOperation.OptionsAsXml) do
+                    begin
+                      if xOperation.resolveRequestAliasses
+                      and xOperation.resolveReplyAliasses then
+                        Items.XmlItemByTag['ResolveAliasses'].Checked := False; // to avoid lots of changed files...
+                    end;
                     AddXml (TXml.CreateAsString('DelayTimeMsMin', IntToStr(xOperation.DelayTimeMsMin)));
                     AddXml (TXml.CreateAsString('DelayTimeMsMax', IntToStr(xOperation.DelayTimeMsMax)));
                     AddXml (xOperation.endpointConfigAsXml); // seave in 4.0++ style
