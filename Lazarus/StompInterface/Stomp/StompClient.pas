@@ -32,6 +32,7 @@ uses
   IdTCPClient,
   IdException,
   IdExceptionCore,
+  IdGlobal,
 {$ELSE}
   synsock,
   blcksock,
@@ -412,12 +413,12 @@ function TStompClient.Receive(ATimeout: Integer): IStompFrame;
           FTCP.IOHandler.CheckForDataOnSource(1);
           while True do
           begin
-            c := FTCP.IOHandler.ReadChar;
+            c := FTCP.IOHandler.ReadChar (IndyTextEncoding_OSDefault);
             if c <> CHAR0 then
               s := s + c
             else
             begin
-              FTCP.IOHandler.ReadChar;
+              FTCP.IOHandler.ReadChar (IndyTextEncoding_OSDefault);
               Break;
             end;
           end;
@@ -491,8 +492,8 @@ begin
 {$IFDEF USESYNAPSE}
   FSynapseTCP.SendString(AFrame.output);
 {$ELSE}
-//JanBo  FTCP.IOHandler.write(TEncoding.ASCII.GetBytes(AFrame.output));
-  FTCP.IOHandler.write({TEncoding.ASCII.GetBytes(}AFrame.output{)});
+//FTCP.IOHandler.write( TEncoding.ASCII.GetBytes(AFrame.output));
+  FTCP.IOHandler.write(AFrame.output, IndyTextEncoding_OSDefault);
 {$ENDIF}
 end;
 
