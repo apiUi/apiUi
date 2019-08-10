@@ -4204,8 +4204,20 @@ begin
     then raise Exception.Create('SendHttpMessage: null arguments');
   if (aOperation.isOpenApiService) then
   begin
-    URL := ifthen(aOperation.useSsl, 'https://', 'http://') + aOperation.Host;
-    addressFromDescr := URL;
+    if (aOperation.OpenApiVersion[1] = '2') then
+    begin
+      URL := ifthen(aOperation.useSsl, 'https://', 'http://') + aOperation.Host;
+      addressFromDescr := URL;
+    end
+    else
+    begin
+      if Assigned (aOperation.Wsdl.Servers)
+      and (aOperation.Wsdl.Servers.Items.Count > 0) then
+      begin
+        URL := aOperation.Wsdl.Servers.Items.XmlItems[0].Items.XmlValueByTagDef['url', ''];
+        addressFromDescr := URL;
+      end;
+    end;
   end
   else
   begin
@@ -4258,7 +4270,7 @@ begin
         if URL [Length (URL)] = '/' then
           SetLength(URL, Length (URL) - 1);
         URL := URL
-             + aOperation.Wsdl.basePathV2 // only filled with openapi 3..
+             + aOperation.Wsdl.basePathV2 // only filled with openapi 2..
              + aOperation.WsdlService.openApiPath;
         querySep := '?';
         for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
@@ -4280,7 +4292,6 @@ begin
               HttpClient.Request.CustomHeaders.Values [Name] := ValueFromJsonArray(false);
             end;
             if (Xsd.ParametersType = oppBody)
-            and (aOperation.Wsdl.OpenApiVersion <> '')
             and (aOperation.Wsdl.OpenApiVersion [1] <> '2') then
             begin
               aOperation.ContentType := Xsd.MediaType;

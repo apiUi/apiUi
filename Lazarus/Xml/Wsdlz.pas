@@ -2621,6 +2621,15 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
             minOccurs := '1'
           else
             minOccurs := '0';
+        if Name = 'collectionFormat' then
+        begin
+          sType.jsonType := jsonArray;
+          if Value = 'csv' then sType.CollectionFormat := ocfCSV;
+          if Value = 'ssv' then sType.CollectionFormat := ocfSSV;
+          if Value = 'tsv' then sType.CollectionFormat := ocfTSV;
+          if Value = 'pipes' then sType.CollectionFormat := ocfPipes;
+          if Value = 'multi' then sType.CollectionFormat := ocfMulti;
+        end;
       end;
     end;
   end;
@@ -2956,6 +2965,7 @@ begin
   sl.Duplicates := dupIgnore;
   XsdDescr.Clear;
   XsdDescr.AddBuiltIns;
+  OpenApiVersion := '2.0';
   with xRootXml do
   try
     if xExt = '.JSON' then
@@ -6434,7 +6444,12 @@ end;
 function TWsdlOperation.getOpenApiVersion: String;
 begin
   if Assigned (Wsdl) then
-    result := Wsdl.OpenApiVersion
+  begin
+    if wsdl.OpenApiVersion = '' then
+      result := '2.0'
+    else
+      result := Wsdl.OpenApiVersion;
+  end
   else
     result := '';
 end;
