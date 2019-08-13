@@ -413,12 +413,20 @@ function TStompClient.Receive(ATimeout: Integer): IStompFrame;
           FTCP.IOHandler.CheckForDataOnSource(1);
           while True do
           begin
+        {$ifdef windows}
             c := FTCP.IOHandler.ReadChar (IndyTextEncoding_OSDefault);
+        {$else}
+            c := FTCP.IOHandler.ReadChar (IndyTextEncoding_UTF8);
+        {$endif}
             if c <> CHAR0 then
               s := s + c
             else
             begin
-              FTCP.IOHandler.ReadChar (IndyTextEncoding_OSDefault);
+          {$ifdef windows}
+              c := FTCP.IOHandler.ReadChar (IndyTextEncoding_OSDefault);
+          {$else}
+              c := FTCP.IOHandler.ReadChar (IndyTextEncoding_UTF8);
+          {$endif}
               Break;
             end;
           end;
@@ -493,7 +501,11 @@ begin
   FSynapseTCP.SendString(AFrame.output);
 {$ELSE}
 //FTCP.IOHandler.write( TEncoding.ASCII.GetBytes(AFrame.output));
+  {$ifdef windows}
   FTCP.IOHandler.write(AFrame.output, IndyTextEncoding_OSDefault);
+  {$else}
+  FTCP.IOHandler.write(AFrame.output, IndyTextEncoding_UTF8);
+  {$endif}
 {$ENDIF}
 end;
 
