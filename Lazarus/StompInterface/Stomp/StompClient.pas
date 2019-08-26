@@ -416,7 +416,7 @@ function TStompClient.Receive(ATimeout: Integer): IStompFrame;
         {$ifdef windows}
             c := FTCP.IOHandler.ReadChar (IndyTextEncoding_OSDefault);
         {$else}
-            c := FTCP.IOHandler.ReadChar (IndyTextEncoding_UTF8);
+            c := FTCP.IOHandler.ReadChar;
         {$endif}
             if c <> CHAR0 then
               s := s + c
@@ -425,7 +425,7 @@ function TStompClient.Receive(ATimeout: Integer): IStompFrame;
           {$ifdef windows}
               c := FTCP.IOHandler.ReadChar (IndyTextEncoding_OSDefault);
           {$else}
-              c := FTCP.IOHandler.ReadChar (IndyTextEncoding_UTF8);
+              c := FTCP.IOHandler.ReadChar;
           {$endif}
               Break;
             end;
