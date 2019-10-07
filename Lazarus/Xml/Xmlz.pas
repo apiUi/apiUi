@@ -3849,9 +3849,9 @@ procedure TXml.CopyRelevancy(aXml: TXml);
     dXml.Value := sXml.Value;
     dXml.Xsd := sXml.Xsd;
     dXml.TypeDef := sXml.TypeDef;
-    dXml.fChecked := sXml.fChecked;
+    dXml.fChecked := True; // real checked info stored in extra attribute with name CheckedAtttributeName
     dXml.RefId := sXml.RefId;
-    dXml.AddAttribute(TXmlAttribute.CreateAsBoolean(CheckedAtttributeName, sXml.Checked));
+    dXml.AddAttribute(TXmlAttribute.CreateAsBoolean(CheckedAtttributeName, sXml.Checked)).fChecked := True;
     for x := 0 to sXml.Attributes.Count - 1 do with sXml.Attributes.XmlAttributes[x] do
     begin
       xAttr := TXmlAttribute.Create;
@@ -3862,7 +3862,7 @@ procedure TXml.CopyRelevancy(aXml: TXml);
                   + Name
                   ;
       xAttr.Value := Value;
-      xAttr.fChecked := fChecked;
+      xAttr.fChecked := True;
       xAttr.XsdAttr := XsdAttr;
       dXml.AddAttribute(xAttr)
     end;

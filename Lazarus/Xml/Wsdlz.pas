@@ -561,7 +561,7 @@ function RandomX (aLow, aHigh: Extended): Extended;
 function FormatDateX (aDate: TDateTime; Mask: String): String;
 function GenerateRandomId: String;
 function dbLookUp (aTable, aValueColumn, aReferenceColumn, aReferenceValue: String): String;
-function NonceAsString: String;
+function NonceAsString (aString: String): String;
 function xsdDateTime(aDT: TDateTime): String;
 function XmlToDateTime (aString: String): TDateTime;
 function xsdNowAsDateTime: String;
@@ -1109,9 +1109,9 @@ begin
   end;
 end;
 
-function NonceAsString: String;
+function NonceAsString (aString: String): String;
 begin
-  result := Copy (Sha1 (xsdNowAsDateTime), 1, 16);
+  result := Copy (Sha1 (aString), 1, 16);
 end;
 
 function xsdDateTime(aDT: TDateTime): String;
@@ -3440,7 +3440,7 @@ var
 begin
   result := '';
   xCreated := xsdNowAsDateTime;
-  xNonce := NonceAsString;
+  xNonce := NonceAsString (xCreated);
 {
   xCreated := '2010-09-23T18:16:40.813Z';
   xNonce := b64decode('hrtgto221GRsecgiGXbKCg==');
@@ -4217,7 +4217,6 @@ begin
   end;
 
   if isOpenApiService
-  and (OpenApiVersion <> '')
   and (OpenApiVersion[1] = '3') then
   begin
     with reqBind as TXml do
@@ -6451,7 +6450,7 @@ begin
       result := Wsdl.OpenApiVersion;
   end
   else
-    result := '';
+    result := '2.0';
 end;
 
 { TWsdlPart }

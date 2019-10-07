@@ -4292,8 +4292,7 @@ begin
               HttpClient.Request.CustomHeaders.Values [Name] := ValueFromJsonArray(false);
             end;
             if (Xsd.ParametersType = oppBody)
-            and (aOperation.Wsdl.OpenApiVersion <> '')
-            and (aOperation.Wsdl.OpenApiVersion [1] <> '2') then
+            and (aOperation.OpenApiVersion [1] <> '2') then
             begin
               aOperation.ContentType := Xsd.MediaType;
             end;
