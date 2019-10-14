@@ -2618,6 +2618,12 @@ object MainForm: TMainForm
       ImageIndex = 102
       OnExecute = ToggleTrackDuplicateMessagesActionExecute
     end
+    object GenerateSwaggerAction: TAction
+      Category = 'Service'
+      Caption = 'GenerateSwaggerAction'
+      OnExecute = GenerateSwaggerActionExecute
+      ShortCut = 24663
+    end
   end
   object mainImageList: TImageList
     left = 112

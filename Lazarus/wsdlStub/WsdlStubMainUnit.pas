@@ -76,6 +76,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    GenerateSwaggerAction: TAction;
     ToggleTrackDuplicateMessagesAction: TAction;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
@@ -617,6 +618,7 @@ type
     procedure ApiByExampleActionHint(var HintStr: string; var CanShow: Boolean
       );
     procedure FreeFormatsActionUpdate(Sender: TObject);
+    procedure GenerateSwaggerActionExecute(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
     procedure MailOperationsActionExecute(Sender: TObject);
     procedure MailOperationsActionHint(var HintStr: string; var CanShow: Boolean
@@ -13610,6 +13612,97 @@ procedure TMainForm.FreeFormatsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
     FreeFormatsAction.Caption := decorateWithAsterix (FreeFormatsAction.Caption, se.hasFreeformatOperations);
+end;
+
+procedure TMainForm.GenerateSwaggerActionExecute(Sender: TObject);
+var
+  xHost, xPath, xProtocol: String;
+  o: Integer;
+  xOper: TWsdlOperation;
+begin
+  if not Assigned (WsdlOperation) then
+    raise Exception.Create('No service selected');
+  if (WsdlOperation.DescriptionType <> ipmDTWsdl) then
+    raise Exception.Create('Only meant for soap services');
+  with TXml.CreateAsString('swagger', '') do
+  try
+    AddXml(TXml.CreateAsString('swagger','2.0'));
+    with AddXml(TXml.CreateAsString('info', '')) do
+    begin
+      AddXml(TXml.CreateAsString('description', WsdlOperation.Wsdl.Description));
+      AddXml(TXml.CreateAsString('version', ''));
+      AddXml(TXml.CreateAsString('title', ''));
+    end;
+    try
+      with TIdURI.Create(WsdlOperation.SoapAddress) do
+      try
+        xHost := Host;
+        xProtocol := Protocol;
+      finally
+        free;
+      end;
+    except
+      xHost := 'unknownHost';
+      xProtocol := 'http';
+    end;
+    AddXml(TXml.CreateAsString('host',xHost));
+    with AddXml(TXml.CreateAsString('schemes','')) do
+    begin
+      jsonType := jsonArray;
+      AddXml(TXml.CreateAsString('-', xProtocol));
+    end;
+    with AddXml(TXml.CreateAsString('paths','')) do
+    begin
+      for o := 0 to WsdlOperation.WsdlService.Operations.Count - 1 do
+      begin
+        xOper := WsdlOperation.WsdlService.Operations.Operations[o];
+        try
+          with TIdURI.Create(WsdlOperation.SoapAddress) do
+          try
+            xPath := Document;
+          finally
+            free;
+          end;
+        except
+          xPath := 'unknownPath';
+        end;
+        with AddXml (TXml.CreateAsString('/' + xPath, '')) do
+        begin
+          with AddXml (TXml.CreateAsString('post', '')) do
+          begin
+            AddXml (TXml.CreateAsString('summary', 'summary'));
+            AddXml (TXml.CreateAsString('description', xOper.Documentation.Text));
+            AddXml (TXml.CreateAsString('operationId', xOper.Alias));
+            with AddXml (TXml.CreateAsString('consumes', '')) do
+            begin
+              jsonType := jsonArray;
+              AddXml(TXml.CreateAsString('-', 'application/json'))
+            end;
+            with AddXml (TXml.CreateAsString('produces', '')) do
+            begin
+              jsonType := jsonArray;
+              AddXml(TXml.CreateAsString('-', 'application/json'))
+            end;
+            with AddXml (TXml.CreateAsString('parameters', '')) do
+            begin
+              jsonType := jsonArray;
+              with AddXml(TXml.CreateAsString('-', '')) do
+              begin
+                AddXml (TXml.CreateAsString('name', 'rabobank-apikey'));
+                AddXml (TXml.CreateAsString('in', 'header'));
+                AddXml (TXml.CreateAsString('decsription', 'rabobank-apikey'));
+                AddXml (TXml.CreateAsString('required', 'true'));
+                AddXml (TXml.CreateAsString('type', 'string'));
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+    Clipboard.AsText := StreamJSON(0, True)
+  finally
+    free;
+  end;
 end;
 
 procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
