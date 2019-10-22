@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
-      <BuildNr Value="12324"/>
+      <BuildNr Value="12340"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -139,6 +139,7 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
@@ -233,7 +234,6 @@
       </Item19>
       <Item20>
         <Name Value="EIdURIException"/>
-        <Enabled Value="False"/>
       </Item20>
       <Item21>
         <Name Value="EListError"/>

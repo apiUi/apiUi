@@ -13694,9 +13694,63 @@ begin
                 AddXml (TXml.CreateAsString('required', 'true'));
                 AddXml (TXml.CreateAsString('type', 'string'));
               end;
+              if xOper.reqXml.Items.Count > xOper.InputHeaders.Count then
+              with AddXml(TXml.CreateAsString('-', '')) do
+              begin
+                AddXml (TXml.CreateAsString('name', 'body'));
+                AddXml (TXml.CreateAsString('in', 'body'));
+                AddXml (TXml.CreateAsString('decsription', xOper.Documentation.Text));
+                AddXml (TXml.CreateAsString('required', 'true'));
+                with AddXml (TXml.CreateAsString('schema', '')) do
+                begin
+                  AddXml (TXml.CreateAsString('$ref', '#/definitions/' + xOper.reqXml.Items.XmlItems[xOper.InputHeaders.Count].Xsd.ElementName));
+                end;
+              end;
+            end;
+            with AddXml (TXml.CreateAsString('responses', '')) do
+            begin
+              if xOper.rpyXml.Items.Count > xOper.OutputHeaders.Count then
+              begin
+                with AddXml(TXml.CreateAsString('200', '')) do
+                begin
+                  AddXml (TXml.CreateAsString('decsription', 'Success response'));
+                  with AddXml (TXml.CreateAsString('schema', '')) do
+                  begin
+                    AddXml (TXml.CreateAsString('$ref', '#/definitions/' + xOper.rpyXml.Items.XmlItems[xOper.OutputHeaders.Count].Xsd.ElementName));
+                  end;
+                end;
+              end;
+              if  (Assigned (xOper.FaultXsd))
+              and (Assigned (xOper.FaultXsd.sType))
+              and (xOper.FaultXsd.sType.ElementDefs.Count > 0) then
+              begin
+                with AddXml(TXml.CreateAsString('500', '')) do
+                begin
+                  AddXml (TXml.CreateAsString('decsription', 'Fault response'));
+                  with AddXml (TXml.CreateAsString('schema', '')) do
+                  begin
+                    AddXml (TXml.CreateAsString('$ref', '#/definitions/' + xOper.FaultXsd.sType.ElementDefs.Xsds[0].ElementName));
+                  end;
+                end;
+              end;
             end;
           end;
         end;
+      end;
+    end;
+    with AddXml(TXml.CreateAsString('definitions','')) do
+    begin
+      for o := 0 to WsdlOperation.WsdlService.Operations.Count - 1 do
+      begin
+        xOper := WsdlOperation.WsdlService.Operations.Operations[o];
+        if xOper.reqXml.Items.Count > xOper.InputHeaders.Count then
+          AddXml (xOper.reqXml.Items.XmlItems[xOper.InputHeaders.Count].Xsd.JsonSchemaAsXml as TXml);
+        if xOper.rpyXml.Items.Count > xOper.OutputHeaders.Count then
+          AddXml (xOper.rpyXml.Items.XmlItems[xOper.OutputHeaders.Count].Xsd.JsonSchemaAsXml as TXml);
+        if (Assigned (xOper.FaultXsd))
+        and (Assigned (xOper.FaultXsd.sType))
+        and (xOper.FaultXsd.sType.ElementDefs.Count > 0) then
+          AddXml (xOper.FaultXsd.sType.ElementDefs.Xsds[0].JsonSchemaAsXml as TXml);
       end;
     end;
     Clipboard.AsText := StreamJSON(0, True)

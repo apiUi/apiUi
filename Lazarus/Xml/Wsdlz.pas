@@ -2573,7 +2573,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     result := TXsd.Create(XsdDescr);
     XsdDescr.Garbage.AddObject('', result);
     result.ElementName := aName;
-    result.ResponseNo := StrToIntDef(aName, 200);
+    result.ResponseNo := StrToIntDef(Copy (aName, 6, 3), 200);
     result.sType := TXsdDataType.Create(XsdDescr);
     result.sType.jsonType := jsonObject;
     result.sType.xsdType:= dtComplexType;
