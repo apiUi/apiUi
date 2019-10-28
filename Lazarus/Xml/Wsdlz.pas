@@ -569,6 +569,7 @@ function sblNowAsDateTime: String;
 procedure OperationFetchMessage (aObject : TObject; aIndex: Integer);
 function OperationMessageList (aObject : TObject ; aAlias: String): TParserStringList ;
 function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
+function SeparatedStringList (aObject: TObject; aString, aSep: String): TParserStringList;
 function xNewLine: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
@@ -1242,6 +1243,30 @@ begin
     end;
   finally
     Free;
+  end;
+end;
+
+function SeparatedStringList(aObject: TObject;aString, aSep: String
+  ): TParserStringList;
+  procedure _AddSeparated (aList: TParserStringList; aString, aSep: String);
+  var
+    p: Integer;
+  begin
+    p := PosSubString(aSep, aString, True,False);
+    if p < 1 then
+      aList.Add (aString)
+    else
+    begin
+      aList.Add (Copy (aString, 1, p - 1));
+      _AddSeparated (aList, Copy (aString, p + 1, MaxInt), aSep);
+    end;
+  end;
+begin
+  result := TParserStringList.Create;
+  if (aString <> '')
+  and (aSep <> '') then
+  begin
+    _AddSeparated (result, aString, aSep);
   end;
 end;
 
@@ -3948,6 +3973,7 @@ begin
     BindScriptFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindScriptFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
     BindScriptFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
+    BindScriptFunction ('SeparatedString', @SeparatedStringList, SLFOSS, '(aString, aSeparator)');
     BindScriptFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindScriptFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
     BindScriptFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
