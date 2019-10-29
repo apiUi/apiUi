@@ -6,7 +6,7 @@
 %}
 
 %token DF DFS DFX FRAME_ SFBSS SFD SFDS SFS SFSS SFSSS SFSSSS SFSX SFSXX SFV SFX
-%token SFOG, SFOV, SFOS, SFOSB, SFOSS, SFOSX, SFOSSS, SFOSSSS
+%token SFOG, SFOV, SFOS, SFOSB, SFOSS, SFOSX, SFOSSX, SFOSSSX, SFOSSS, SFOSSSS
 %token VFV VFS VFSS VFSX VFSSS VFSSX VFSSSS VFX VFOGS
 %token VFOV VFOS VFOSB VFOSS VFOSX VFOSSS VFOSSSB VFOSSX VFOSSSS VFOB VFOX VFOD
 %token SLFOS SLFOSS
@@ -639,7 +639,13 @@ Assignment:
               if Assigned (xObject) then with xObject as TCustomBindable do
               begin
                 Value := $3.ValueAsString;
-                Checked := True;
+                if Value = bindNilStr then
+                begin
+                  Value := '';
+                  Checked := False;
+                end
+                else
+                  Checked := True;
               end;
             end;
           }
@@ -685,7 +691,13 @@ Assignment:
                   and (Children.Count > 0) then
                     yyerror (Format ('Assignment not allowed: %s := %s', [$1.TokenString, $3.yyString]));
                   Value := $3.yyString;
-                  Checked := True;
+                  if Value = bindNilStr then
+                  begin
+                    Value := '';
+                    Checked := False;
+                  end
+                  else
+                    Checked := True;
                 end;
               end;
             end;
@@ -794,6 +806,8 @@ sExpr:    sExpr _PLUS sExpr	{ $$.yyString := $1.yyString + $3.yyString; }
         | SFOSB _LPAREN sExpr _COMMA bExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOSB (Owner, $3.yyString, $5.yy.yyBoolean); }
         | SFOSS _LPAREN sExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOSS (Owner, $3.yyString, $5.yyString); }
         | SFOSX _LPAREN sExpr _COMMA xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOSX (Owner, $3.yyString, $5.yy.yyExtended); }
+        | SFOSSX _LPAREN sExpr _COMMA sExpr _COMMA xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOSSX (Owner, $3.yyString, $5.yyString, $7.yy.yyExtended); }
+        | SFOSSSX _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOSSSX (Owner, $3.yyString, $5.yyString, $7.yyString, $9.yy.yyExtended); }
         | SFOSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOSSS (Owner, $3.yyString, $5.yyString, $7.yyString); }
         | SFOSSSS _LPAREN sExpr _COMMA sExpr _COMMA sExpr _COMMA sExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionOSSSS (Owner, $3.yyString, $5.yyString, $7.yyString, $9.yyString); }
         | SFX _LPAREN xExpr _RPAREN { if DoIt then $$.yyString := ($1.yy.yyObject as TBind).yy.yySFunctionX ($3.yy.yyExtended); }

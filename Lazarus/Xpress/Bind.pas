@@ -87,6 +87,7 @@ type SFunctionOSB = function (obj: TObject; arg1: String; arg2: Boolean): String
 type SFunctionOSS = function (obj: TObject; arg1, arg2: String): String;
 type SFunctionOSX = function (obj: TObject; arg1: String; arg2: Extended): String;
 type SFunctionOSSX = function (obj: TObject; arg1, arg2: String; arg3: Extended): String;
+type SFunctionOSSSX = function (obj: TObject; arg1, arg2, arg3: String; arg4: Extended): String;
 type SFunctionOSSI = function (obj: TObject; arg1, arg2: String; arg3: Integer): String;
 type SFunctionOSSS = function (obj: TObject; arg1, arg2, arg3: String): String;
 type SFunctionOSSSB = function (obj: TObject; arg1, arg2, arg3: String; arg4: Boolean): String;
@@ -172,11 +173,12 @@ type YYRType = record
   65: (yySFunctionOSS : SFunctionOSS);
   66: (yySFunctionOSX : SFunctionOSX);
   67: (yySFunctionOSSX : SFunctionOSSX);
-  68: (yySFunctionOSSI : SFunctionOSSI);
-  69: (yySFunctionOSSS : SFunctionOSSS);
-  70: (yySFunctionOSSSB : SFunctionOSSSB);
-  71: (yySFunctionOSSSS : SFunctionOSSSS);
-  72: (yyXFunctionOSX : XFunctionOSX);
+  68: (yySFunctionOSSSX : SFunctionOSSSX);
+  69: (yySFunctionOSSI : SFunctionOSSI);
+  70: (yySFunctionOSSS : SFunctionOSSS);
+  71: (yySFunctionOSSSB : SFunctionOSSSB);
+  72: (yySFunctionOSSSS : SFunctionOSSSS);
+  73: (yyXFunctionOSX : XFunctionOSX);
 
 
 end;
@@ -414,6 +416,11 @@ procedure TCustomBindable.PutStringData (aString: String);
 begin
   if Self = nil then Exit;
   Value := aString;
+  if Value = bindNilStr then
+  begin
+    Value := '';
+    fChecked := False;
+  end;
 end;
 
 procedure TCustomBindable.PutExtendedData (aExtended: Extended);

@@ -1058,7 +1058,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
       aType.BaseDataType := self.FindTypeDef(scXMLSchemaURI, aType.BaseDataTypeName);
     end;
 
-    procedure _scan (aXml: TXml; aDoc: String);
+    procedure _scan (aXml: TXml);
     var
       x, y, z, f: Integer;
       xXml, yXml, zXml: TXml;
@@ -1073,16 +1073,16 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
         xXml := aXml.Items.XmlItems[x];
         if (xXml.Name = '_') then
           for y := 0 to xXml.Items.Count - 1 do
-            _scan(xXml.Items.XmlItems[y], aDoc);
+            _scan(xXml.Items.XmlItems[y]);
         if (xXml.Name = 'allOf') then // TODO ...
           for y := 0 to xXml.Items.Count - 1 do
-            _scan(xXml.Items.XmlItems[y], aDoc);
+            _scan(xXml.Items.XmlItems[y]);
         if (xXml.Name = 'anyOf') then // TODO ...
           for y := 0 to xXml.Items.Count - 1 do
-            _scan(xXml.Items.XmlItems[y], aDoc);
+            _scan(xXml.Items.XmlItems[y]);
         if (xXml.Name = 'oneOf') then // TODO ...
           for y := 0 to xXml.Items.Count - 1 do
-            _scan(xXml.Items.XmlItems[y], aDoc);
+            _scan(xXml.Items.XmlItems[y]);
         if (xXml.Name = 'properties') then
         begin
           for y := 0 to xXml.Items.Count - 1 do
@@ -1115,16 +1115,16 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
             yXml := xXml.Items.XmlItems[y];
             if (yXml.Name = '_') then
               for z := 0 to yXml.Items.Count - 1 do
-                _scan(yXml.Items.XmlItems[z], aDoc);
+                _scan(yXml.Items.XmlItems[z]);
             if (yXml.Name = 'allOf') then // TODO ...
               for z := 0 to yXml.Items.Count - 1 do
-                _scan(yXml.Items.XmlItems[z], aDoc);
+                _scan(yXml.Items.XmlItems[z]);
             if (yXml.Name = 'anyOf') then // TODO ...
               for z := 0 to yXml.Items.Count - 1 do
-                _scan(yXml.Items.XmlItems[z], aDoc);
+                _scan(yXml.Items.XmlItems[z]);
             if (yXml.Name = 'oneOf') then // TODO ...
               for z := 0 to yXml.Items.Count - 1 do
-                _scan(yXml.Items.XmlItems[z], aDoc);
+                _scan(yXml.Items.XmlItems[z]);
             if yXml.Name = 'type' then
             begin
               result.BaseDataTypeName := yXml.Value;
@@ -1169,8 +1169,11 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           xXsd.maxOccurs := 'unbounded';
           result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
         end;
-        if xXml.Name = 'title' then AppendDoc(aDoc, xXml.Value);
-        if xXml.Name = 'description' then AppendDoc(aDoc, xXml.Value);
+        if xXml.Name = 'title' then result.Documentation.Add(xXml.Value);
+        if xXml.Name = 'description' then
+        begin
+          result.Documentation.Add (xXml.Value);
+        end;
         if xXml.Name = 'default ' then result.DefaultValue := xXml.Value;
         if xXml.Name = 'multipleOf' then ;
         if xXml.Name = 'maximum' then result.MaxInclusive := xXml.Value;
@@ -1238,8 +1241,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
     result.NameSpace := aNameSpace;
     self.TypeDefs.AddObject(result.NameSpace + '/' + result.Name, result);
     xDoc := '';
-    _scan(aXml, xDoc);
-    result.Documentation.Text := xDoc;
+    _scan(aXml);
   end;
 begin
   if not (aXml is TXml) then raise Exception.Create('Illegal arg: TXsdDescr.AddXsdFromJsonXml(aXml: TObject; ErrorFound: TOnErrorEvent)');

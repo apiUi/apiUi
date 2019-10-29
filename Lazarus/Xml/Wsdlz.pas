@@ -570,6 +570,7 @@ procedure OperationFetchMessage (aObject : TObject; aIndex: Integer);
 function OperationMessageList (aObject : TObject ; aAlias: String): TParserStringList ;
 function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
 function SeparatedStringList (aObject: TObject; aString, aSep: String): TParserStringList;
+function SeparatedStringN (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
 function xNewLine: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
@@ -620,6 +621,7 @@ function incVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
 function getVarNumberDef (aOperation: TWsdlOperation; aName: String; aDefault: Extended): Extended;
 function getVar (aOperation: TWsdlOperation; aName: String): String;
 function getVarDef (aOperation: TWsdlOperation; aName, aDefault: String): String;
+function getVarDefN (aOperation: TWsdlOperation; aName, aDefault, aSeparator: String; aIndex: Extended): String;
 function xsdOperationCount(aOperation: TWsdlOperation): Extended;
 function wsdlUserName: String;
 function wsdlOperationName(aOper: TWsdlOperation): String;
@@ -1270,6 +1272,29 @@ begin
   end;
 end;
 
+function SeparatedStringN(aObject: TObject;aString, aSep: String;
+  aIndex: Extended): String;
+var
+  xInteger: Integer;
+begin
+  result := '';
+  xInteger := Trunc (aIndex);
+  if xInteger < 1 then
+    raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringN"', [xInteger]);
+  with SeparatedStringList(nil, aString, aSep) do
+  try
+    if Count > 0 then
+    begin
+      if xInteger > Count - 1 then
+        result := Strings[Count - 1]
+      else
+        result := Strings[xInteger - 1];
+    end;
+  finally
+    Free;
+  end;
+end;
+
 function xNewLine : String ;
 begin
   result := LineEnding;
@@ -1890,6 +1915,22 @@ begin
   finally
     ReleaseEnvVarLock;
   end;
+end;
+
+function getVarDefN(aOperation: TWsdlOperation;aName, aDefault,
+  aSeparator: String;aIndex: Extended): String;
+var
+  xValue: String;
+begin
+  result := aDefault;
+  result := SeparatedStringN ( nil
+                             , getVarDef( aOperation
+                                        , aName
+                                        , aDefault
+                                        )
+                             , aSeparator
+                             , aIndex
+                             );
 end;
 
 function getVar (aOperation: TWsdlOperation; aName: String): String;
@@ -3930,6 +3971,7 @@ begin
     BindScriptFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
     BindScriptFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
     BindScriptFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
+    BindScriptFunction ('GetEnvVarDefN', @getVarDefN, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
     BindScriptFunction ('DisableMessage', @DisableMessage, VFOV, '()');
     BindScriptFunction ('HostName', @GetHostName, SFV, '()');
     BindScriptFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
@@ -3974,6 +4016,7 @@ begin
     BindScriptFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
     BindScriptFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindScriptFunction ('SeparatedString', @SeparatedStringList, SLFOSS, '(aString, aSeparator)');
+    BindScriptFunction ('SeparatedStringN', @SeparatedStringN, SFOSSX, '(aString, aSeparator, aIndex)');
     BindScriptFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindScriptFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
     BindScriptFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
@@ -5965,6 +6008,7 @@ begin
       BindCheckerFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
       BindCheckerFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
       BindCheckerFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
+      BindCheckerFunction ('GetEnvVarDefN', @getVarDefN, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
       BindCheckerFunction ('HostName', @GetHostName, SFV, '()');
       BindCheckerFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
       BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
@@ -6032,6 +6076,7 @@ begin
     BindStamperFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
     BindStamperFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
     BindStamperFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
+    BindStamperFunction ('GetEnvVarDefN', @getVarDefN, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
     BindStamperFunction ('HostName', @GetHostName, SFV, '()');
     BindStamperFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindStamperFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
