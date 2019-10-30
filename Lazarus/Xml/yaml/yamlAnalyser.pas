@@ -165,7 +165,7 @@ begin
           if lx_1.Token = _LINECONT then
             lx.yyStringRead := lx.yyStringRead + ' '
           else
-            lx.yyStringRead := lx.yyStringRead + lx_1.yyStringRead;
+            lx.yyStringRead := lx.yyStringRead + LineEnding + lx_1.yyStringRead;
           lx_1 := lx_1.NextToken;
         end;
         lx.NextToken := lx_1;

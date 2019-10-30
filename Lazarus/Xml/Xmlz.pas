@@ -4307,7 +4307,7 @@ begin
   result := '';
   if Assigned (Self.Xsd) then
     result := Self.Xsd.Documentation.Text;
-  if (result = '') or true then
+  if (result = '') then
     if Assigned (Self.TypeDef) then
       result := Self.TypeDef.Documentation.Text;
 end;
