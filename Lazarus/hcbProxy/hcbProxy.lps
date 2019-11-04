@@ -4,18 +4,18 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="36">
+    <Units Count="43">
       <Unit0>
-        <Filename Value="wsdlServer.lpr"/>
+        <Filename Value="hcbProxy.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="166"/>
-        <CursorPos X="11" Y="187"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="393"/>
+        <CursorPos Y="388"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="wsdlcontrolz.pas"/>
+        <Filename Value="..\wsdlStub\wsdlcontrolz.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
@@ -31,9 +31,8 @@
       <Unit3>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="13"/>
-        <CursorPos X="7" Y="35"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="9" Y="10"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit3>
@@ -66,29 +65,28 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="151"/>
+        <UsageCount Value="218"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Mq\MQAPI.pas"/>
         <TopLine Value="705"/>
         <CursorPos X="25" Y="724"/>
-        <UsageCount Value="187"/>
+        <UsageCount Value="180"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\Mq\mqInterface.pas"/>
-        <UsageCount Value="187"/>
+        <UsageCount Value="180"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\Mq\MQRfh2Api.pas"/>
-        <UsageCount Value="187"/>
+        <UsageCount Value="180"/>
       </Unit10>
       <Unit11>
-        <Filename Value="WsdlProjectz.pas"/>
-        <EditorIndex Value="1"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="16"/>
         <CursorPos X="10" Y="38"/>
-        <UsageCount Value="103"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="96"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\Xml\Logz.pas"/>
@@ -96,22 +94,21 @@
         <WindowIndex Value="1"/>
         <TopLine Value="4"/>
         <CursorPos Y="18"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="21"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\Xml\Wsdlz.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="3957"/>
         <CursorPos Y="3975"/>
-        <UsageCount Value="79"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="73"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\Components\Indy10\Lib\Core\IdSocketHandle.pas"/>
         <WindowIndex Value="1"/>
         <TopLine Value="375"/>
         <CursorPos Y="385"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="21"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
@@ -119,29 +116,25 @@
         <WindowIndex Value="1"/>
         <TopLine Value="9"/>
         <CursorPos X="49" Y="25"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="21"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\Xpress\XpQuery.pas"/>
         <WindowIndex Value="1"/>
         <CursorPos X="31" Y="8"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="13"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <TopLine Value="148"/>
-        <CursorPos X="3" Y="163"/>
-        <UsageCount Value="77"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="71"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\Xpress\Bind.pas"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="317"/>
-        <CursorPos X="10" Y="330"/>
-        <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="86"/>
+        <CursorPos X="2" Y="97"/>
+        <UsageCount Value="6"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\Xml\ShowXmlUnit.pas"/>
@@ -151,7 +144,7 @@
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="25" Y="16"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
@@ -159,7 +152,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="5868"/>
         <CursorPos X="3" Y="5871"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdNetworkCalculator.pas"/>
@@ -167,7 +160,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="496"/>
         <CursorPos X="44" Y="510"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="42"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit21>
       <Unit22>
@@ -176,7 +169,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="695"/>
         <CursorPos X="73" Y="710"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="42"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit22>
       <Unit23>
@@ -185,14 +178,14 @@
         <WindowIndex Value="1"/>
         <TopLine Value="5"/>
         <CursorPos X="37" Y="21"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="42"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\StompInterface\StompInterface.pas"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="11" Y="22"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="42"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\StompInterface\Stomp\StompClient.pas"/>
@@ -200,7 +193,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="415"/>
         <CursorPos Y="427"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="42"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\Components\delphistompclient-master\StompClient.pas"/>
@@ -208,7 +201,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="1481"/>
         <CursorPos X="75" Y="1394"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="42"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
@@ -216,7 +209,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="231"/>
         <CursorPos X="3" Y="236"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="42"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit27>
       <Unit28>
@@ -225,7 +218,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="1466"/>
         <CursorPos X="3" Y="1473"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit28>
       <Unit29>
@@ -234,7 +227,7 @@
         <WindowIndex Value="1"/>
         <TopLine Value="436"/>
         <CursorPos X="14" Y="444"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit29>
       <Unit30>
@@ -243,46 +236,107 @@
         <WindowIndex Value="1"/>
         <TopLine Value="204"/>
         <CursorPos X="3" Y="166"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1384"/>
         <CursorPos X="3" Y="1397"/>
-        <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="6"/>
       </Unit31>
       <Unit32>
         <Filename Value="..\Xpress\ParserClasses.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="357"/>
         <CursorPos X="13" Y="359"/>
-        <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="6"/>
       </Unit32>
       <Unit33>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="3" Y="778"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="2028"/>
+        <CursorPos X="10" Y="2030"/>
+        <UsageCount Value="4"/>
       </Unit33>
       <Unit34>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\objpas.pp"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="22"/>
         <CursorPos X="8" Y="33"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="4"/>
       </Unit34>
       <Unit35>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\inc\systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="563"/>
         <CursorPos X="3" Y="574"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
       </Unit35>
+      <Unit36>
+        <Filename Value="..\wsdlStub\wsdlServer.lpr"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="139"/>
+        <CursorPos Y="157"/>
+        <UsageCount Value="44"/>
+        <Loaded Value="True"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="C:\lazarus\fpc\3.0.0\source\packages\fcl-base\src\custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="40"/>
+        <CursorPos X="17" Y="51"/>
+        <UsageCount Value="43"/>
+        <Loaded Value="True"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="hcbproxymain.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="hcbProxyMain"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="147"/>
+        <CursorPos Y="166"/>
+        <UsageCount Value="43"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdCustomHTTPServer.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="485"/>
+        <CursorPos X="14" Y="495"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdAssignedNumbers.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="66"/>
+        <CursorPos X="3" Y="101"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="C:\lazarus\fpc\3.0.0\source\packages\regexpr\src\regexpr.pas"/>
+        <UnitName Value="RegExpr"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="782"/>
+        <CursorPos X="21" Y="782"/>
+        <UsageCount Value="39"/>
+        <Loaded Value="True"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="379"/>
+        <CursorPos X="36" Y="383"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit42>
     </Units>
     <OtherDefines Count="3">
       <Define0 Value="ConsoleApp"/>
@@ -291,121 +345,121 @@
     </OtherDefines>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1247" TopLine="1222"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="232" TopLine="224"/>
       </Position1>
       <Position2>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="634" Column="12" TopLine="613"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="233" TopLine="224"/>
       </Position2>
       <Position3>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="2"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="235" TopLine="224"/>
       </Position3>
       <Position4>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1255" Column="9" TopLine="1249"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="237" TopLine="224"/>
       </Position4>
       <Position5>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="11" Column="13"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="238" TopLine="224"/>
       </Position5>
       <Position6>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="772" Column="20" TopLine="757"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="240" TopLine="224"/>
       </Position6>
       <Position7>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="173" Column="3" TopLine="169"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="242" TopLine="224"/>
       </Position7>
       <Position8>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="772" Column="20" TopLine="757"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="4310" Column="19" TopLine="4369"/>
       </Position8>
       <Position9>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="817" Column="34" TopLine="813"/>
       </Position9>
       <Position10>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1255" Column="27" TopLine="1244"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
       </Position10>
       <Position11>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1261" Column="56" TopLine="1244"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="8" Column="9"/>
       </Position11>
       <Position12>
-        <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\objpas.pp"/>
-        <Caret Line="33" Column="8" TopLine="22"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="22" Column="7" TopLine="3"/>
       </Position12>
       <Position13>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1260" Column="43" TopLine="1244"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="236" TopLine="219"/>
       </Position13>
       <Position14>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1267" Column="12" TopLine="1241"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="263" Column="63" TopLine="211"/>
       </Position14>
       <Position15>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="571" Column="26" TopLine="561"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="34" TopLine="8"/>
       </Position15>
       <Position16>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1228" Column="26" TopLine="1209"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="295" TopLine="270"/>
       </Position16>
       <Position17>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3976" Column="43" TopLine="3957"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="59" TopLine="49"/>
       </Position17>
       <Position18>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="3975" Column="58" TopLine="3958"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="277" Column="51" TopLine="272"/>
       </Position18>
       <Position19>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <Filename Value="hcbProxy.lpr"/>
       </Position19>
       <Position20>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="571" Column="26" TopLine="552"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="57" Column="40" TopLine="38"/>
       </Position20>
       <Position21>
-        <Filename Value="..\Xml\Wsdlz.pas"/>
-        <Caret Line="1228" Column="26" TopLine="1209"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="120" TopLine="100"/>
       </Position21>
       <Position22>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <Caret Line="121" Column="26" TopLine="108"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="109" TopLine="105"/>
       </Position22>
       <Position23>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <Caret Line="1397" Column="3" TopLine="1384"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="57" TopLine="55"/>
       </Position23>
       <Position24>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="149" Column="54" TopLine="140"/>
+        <Filename Value="hcbproxymain.pas"/>
       </Position24>
       <Position25>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="4310" Column="19" TopLine="4305"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="21" Column="40" TopLine="2"/>
       </Position25>
       <Position26>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="184" Column="5" TopLine="173"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="52" Column="3" TopLine="49"/>
       </Position26>
       <Position27>
-        <Filename Value="wsdlServer.lpr"/>
-        <Caret Line="449" Column="45" TopLine="436"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="342" TopLine="328"/>
       </Position27>
       <Position28>
-        <Filename Value="..\Xpress\Bind.pas"/>
-        <Caret Line="97" Column="2" TopLine="86"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="240" TopLine="220"/>
       </Position28>
       <Position29>
-        <Filename Value="..\Xpress\Bind.pas"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="318" Column="11" TopLine="308"/>
       </Position29>
       <Position30>
-        <Filename Value="..\Xpress\Bind.pas"/>
-        <Caret Line="320" Column="11" TopLine="301"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="67" TopLine="55"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

@@ -1,0 +1,48 @@
+object Form1: TForm1
+  Left = 998
+  Height = 240
+  Top = 279
+  Width = 320
+  Caption = 'Form1'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.6.0.4'
+  object httpProxyServer: TIdHTTPServer
+    Active = True
+    Bindings = <>
+    DefaultPort = 8080
+    OnCommandOther = httpProxyServerCommandOther
+    OnCreatePostStream = httpProxyServerCreatePostStream
+    OnCommandGet = httpProxyServerCommandGet
+    left = 144
+    top = 101
+  end
+  object IdHTTP1: TIdHTTP
+    ProxyParams.BasicAuthentication = False
+    ProxyParams.ProxyPort = 0
+    Request.ContentLength = -1
+    Request.ContentRangeEnd = -1
+    Request.ContentRangeStart = -1
+    Request.ContentRangeInstanceLength = -1
+    Request.Date = 0
+    Request.Expires = 0
+    Request.LastModified = 0
+    Request.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    Request.BasicAuthentication = False
+    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
+    Request.Ranges.Units = 'bytes'
+    Request.Ranges = <>
+    HTTPOptions = [hoForceEncodeParams]
+    left = 242
+    top = 19
+  end
+  object httpConfigureServer: TIdHTTPServer
+    Active = True
+    Bindings = <>
+    DefaultPort = 3739
+    OnCommandOther = httpConfigureServerCommandGet
+    OnCommandGet = httpConfigureServerCommandGet
+    left = 168
+    top = 168
+  end
+end
