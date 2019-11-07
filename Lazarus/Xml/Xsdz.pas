@@ -1777,7 +1777,11 @@ var
   xJsonType: TjsonType;
 begin
   {TODO Make recurisive}
-  if _Processed then Exit;
+  if _Processed then
+  begin
+    result := TXml.CreateAsString(ElementName, 'RECURSIVE');
+    Exit;
+  end;
   _Processed := True;
   try
     result := TXml.CreateAsString(ElementName, '');
@@ -1848,9 +1852,7 @@ begin
         with AddXml(TXml.CreateAsString('properties', '')) do
         begin
           for x := 0 to sType.ElementDefs.Count - 1 do
-          begin
             AddXml (sType.ElementDefs.Xsds[x].JsonSchemaAsXml as TXml);
-          end;
         end;
       end;
     end;

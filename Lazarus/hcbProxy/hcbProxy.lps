@@ -4,13 +4,11 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="43">
+    <Units Count="44">
       <Unit0>
         <Filename Value="hcbProxy.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="393"/>
-        <CursorPos Y="388"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -31,7 +29,7 @@
       <Unit3>
         <Filename Value="..\Xml\Xmlz.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <CursorPos X="9" Y="10"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -276,7 +274,7 @@
       </Unit35>
       <Unit36>
         <Filename Value="..\wsdlStub\wsdlServer.lpr"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="139"/>
         <CursorPos Y="157"/>
         <UsageCount Value="44"/>
@@ -285,11 +283,10 @@
       <Unit37>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="17" Y="51"/>
         <UsageCount Value="43"/>
-        <Loaded Value="True"/>
       </Unit37>
       <Unit38>
         <Filename Value="hcbproxymain.pas"/>
@@ -297,7 +294,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="hcbProxyMain"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="147"/>
         <CursorPos Y="166"/>
         <UsageCount Value="43"/>
@@ -323,144 +320,144 @@
       <Unit41>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\packages\regexpr\src\regexpr.pas"/>
         <UnitName Value="RegExpr"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="782"/>
         <CursorPos X="21" Y="782"/>
         <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit41>
       <Unit42>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="379"/>
         <CursorPos X="36" Y="383"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit42>
+      <Unit43>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="33" Y="20"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit43>
     </Units>
     <OtherDefines Count="3">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="232" TopLine="224"/>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="817" Column="34" TopLine="813"/>
       </Position1>
       <Position2>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="233" TopLine="224"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
       </Position2>
       <Position3>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="235" TopLine="224"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="8" Column="9"/>
       </Position3>
       <Position4>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="237" TopLine="224"/>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Caret Line="22" Column="7" TopLine="3"/>
       </Position4>
       <Position5>
         <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="238" TopLine="224"/>
+        <Caret Line="236" TopLine="219"/>
       </Position5>
       <Position6>
         <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="240" TopLine="224"/>
+        <Caret Line="263" Column="63" TopLine="211"/>
       </Position6>
       <Position7>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="242" TopLine="224"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="34" TopLine="8"/>
       </Position7>
       <Position8>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="4310" Column="19" TopLine="4369"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="295" TopLine="270"/>
       </Position8>
       <Position9>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="817" Column="34" TopLine="813"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="59" TopLine="49"/>
       </Position9>
       <Position10>
-        <Filename Value="..\Xml\Xsdz.pas"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="277" Column="51" TopLine="272"/>
       </Position10>
       <Position11>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="8" Column="9"/>
+        <Filename Value="hcbProxy.lpr"/>
       </Position11>
       <Position12>
-        <Filename Value="..\Xml\Xsdz.pas"/>
-        <Caret Line="22" Column="7" TopLine="3"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="57" Column="40" TopLine="38"/>
       </Position12>
       <Position13>
         <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="236" TopLine="219"/>
+        <Caret Line="120" TopLine="100"/>
       </Position13>
       <Position14>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="263" Column="63" TopLine="211"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="109" TopLine="105"/>
       </Position14>
       <Position15>
         <Filename Value="hcbproxymain.pas"/>
-        <Caret Line="34" TopLine="8"/>
+        <Caret Line="57" TopLine="55"/>
       </Position15>
       <Position16>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="295" TopLine="270"/>
+        <Filename Value="hcbproxymain.pas"/>
       </Position16>
       <Position17>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="59" TopLine="49"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="21" Column="40" TopLine="2"/>
       </Position17>
       <Position18>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="277" Column="51" TopLine="272"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="52" Column="3" TopLine="49"/>
       </Position18>
       <Position19>
         <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="342" TopLine="328"/>
       </Position19>
       <Position20>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="57" Column="40" TopLine="38"/>
+        <Filename Value="hcbproxymain.pas"/>
+        <Caret Line="240" TopLine="220"/>
       </Position20>
       <Position21>
         <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="120" TopLine="100"/>
+        <Caret Line="318" Column="11" TopLine="308"/>
       </Position21>
       <Position22>
-        <Filename Value="hcbproxymain.pas"/>
-        <Caret Line="109" TopLine="105"/>
+        <Filename Value="hcbProxy.lpr"/>
+        <Caret Line="67" TopLine="55"/>
       </Position22>
       <Position23>
-        <Filename Value="hcbproxymain.pas"/>
-        <Caret Line="57" TopLine="55"/>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
       </Position23>
       <Position24>
-        <Filename Value="hcbproxymain.pas"/>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
+        <Caret Line="216" Column="3" TopLine="203"/>
       </Position24>
       <Position25>
-        <Filename Value="hcbproxymain.pas"/>
-        <Caret Line="21" Column="40" TopLine="2"/>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
       </Position25>
       <Position26>
-        <Filename Value="hcbproxymain.pas"/>
-        <Caret Line="52" Column="3" TopLine="49"/>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
+        <Caret Line="818" TopLine="796"/>
       </Position26>
       <Position27>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="342" TopLine="328"/>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
+        <Caret Line="4227" Column="5" TopLine="4205"/>
       </Position27>
       <Position28>
-        <Filename Value="hcbproxymain.pas"/>
-        <Caret Line="240" TopLine="220"/>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
       </Position28>
       <Position29>
         <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="318" Column="11" TopLine="308"/>
+        <Caret Line="388" TopLine="388"/>
       </Position29>
-      <Position30>
-        <Filename Value="hcbProxy.lpr"/>
-        <Caret Line="67" TopLine="55"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

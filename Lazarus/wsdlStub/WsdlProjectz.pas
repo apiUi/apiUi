@@ -7862,7 +7862,6 @@ begin
                    or (not xLog.Operation.WsdlService.SuppressHTTP500)
                   ) then
                 xLog.httpResponseCode := 500;
-              DelayMS (xLog.DelayTimeMs);
             except
               on e: exception do
               begin
@@ -7880,6 +7879,7 @@ begin
       finally
         if Assigned (xLog) then {still}
         begin
+          DelayMS (xLog.DelayTimeMs);
           xLog.OutboundTimeStamp := Now;
           DisplayLog ('', xLog);
           AResponseInfo.ResponseNo := xLog.httpResponseCode;

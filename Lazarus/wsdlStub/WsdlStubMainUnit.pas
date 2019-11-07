@@ -76,6 +76,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    Action3: TAction;
     GenerateSwaggerAction: TAction;
     ToggleTrackDuplicateMessagesAction: TAction;
     MenuItem52: TMenuItem;

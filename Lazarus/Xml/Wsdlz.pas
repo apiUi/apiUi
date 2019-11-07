@@ -1260,7 +1260,7 @@ function SeparatedStringList(aObject: TObject;aString, aSep: String
     else
     begin
       aList.Add (Copy (aString, 1, p - 1));
-      _AddSeparated (aList, Copy (aString, p + 1, MaxInt), aSep);
+      _AddSeparated (aList, Copy (aString, p + Length (aSep), MaxInt), aSep);
     end;
   end;
 begin

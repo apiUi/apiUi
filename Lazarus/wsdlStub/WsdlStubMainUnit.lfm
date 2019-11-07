@@ -2624,6 +2624,9 @@ object MainForm: TMainForm
       OnExecute = GenerateSwaggerActionExecute
       ShortCut = 24663
     end
+    object Action3: TAction
+      Caption = 'Action3'
+    end
   end
   object mainImageList: TImageList
     left = 112
