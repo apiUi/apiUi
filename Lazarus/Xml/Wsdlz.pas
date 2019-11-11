@@ -2998,6 +2998,111 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     end;
   end;
 
+  procedure _ReadDefinitions (sl: TStringList);
+  var
+    x, y: Integer;
+    cXml, dXml: TXml;
+  begin
+    for x := 0 to XsdDescr.ReadFileNames.Count - 1 do
+    begin
+      with XsdDescr.ReadFileNames.Objects[x] as TXml do
+      begin
+        cXml := ItemByTag['components'];
+        if Assigned (cXml) then
+        with cXml do
+        begin
+          sl.Add (cXml.Name);
+          dXml := ItemByTag['schemas'];
+          if Assigned (dXml) then
+          begin
+            sl.Add (dXml.Name);
+            for y := 0 to dXml.Items.Count - 1 do
+              XsdDescr.AddTypeDefFromJsonXml ( XsdDescr.ReadFileNames [x]
+                                             , XsdDescr.ReadFileNames [x] + '#/components/schemas'
+                                             , dXml.Items.XmlItems[y], aOnError
+                                             );
+          end;
+        end;
+
+        dXml := ItemByTag['definitions'];
+        if Assigned (dXml) then
+        begin
+          sl.Add (dXml.Name);
+          for y := 0 to dXml.Items.Count - 1 do
+            XsdDescr.AddTypeDefFromJsonXml ( XsdDescr.ReadFileNames [x]
+                                           , XsdDescr.ReadFileNames [x] + '#/definitions'
+                                           , dXml.Items.XmlItems[y], aOnError
+                                           );
+        end;
+      end;
+    end;
+
+
+  end;
+
+  function _FindReferencedXml (aString: String): TXml;
+  var
+    x: Integer;
+    s, s1, s2: String;
+  begin
+    result := nil;
+    s1 := SeparatedStringN(nil, aString, '#/', 1);
+    s2 := SeparatedStringN(nil, aString, '#/', 2);
+    for x := 1 to Length(s2) do
+      if s2[x] = '/' then
+        s2[x] := ',';
+    s := s1 + '.' + s2;
+    x := 0;
+    while (x < XsdDescr.ReadFileNames.Count)
+      and (not Assigned (result)) do
+    begin
+      result := (XsdDescr.ReadFileNames.Objects[x] as TXml).FindXml(s);
+      Inc (x);
+    end;
+  end;
+
+  procedure _ReadDollarReferencedFiles (aFileName: String; aXml: TXml);
+    procedure __ReadDollarReferencedFile (aaFileName: String);
+    var
+      f: Integer;
+      xXml: TXml;
+      xExt: String;
+    begin
+      if not XsdDescr.ReadFileNames.Find(aaFileName, f)
+      then begin
+        xExt := UpperCase (ExtractFileExt (aaFileName));
+        xXml := TXml.Create;
+        if (xExt = 'JSON')
+        or (xExt = 'JSN') then
+          xXml.LoadJsonFromFile(aaFileName, aOnError)
+        else
+          xXml.LoadYamlFromFile(aaFileName, aOnError);
+        xXml.Name := aaFileName; // to make it easier to resolve $refs
+        XsdDescr.ReadFileNames.AddObject(aaFileName, xXml);
+        _ReadDollarReferencedFiles(aaFileName, xXml);
+      end;
+    end;
+  var
+    x: Integer;
+    xFileName, xPath: String;
+  begin
+    if (aXml.Name = '$ref') then
+    begin
+      if (Length(aXml.Value) > 0)
+      and (aXml.Value[1] <> '#')
+      then begin
+        xFileName := xmlio.ExpandRelativeFileName(aFileName, SeparatedStringN(nil, aXml.Value, '#/', 1));
+        xPath := SeparatedStringN(nil, aXml.Value, '#/', 2);
+        __ReadDollarReferencedFile(xFileName);
+        aXml.Value := xFileName + '#/' + xPath;
+      end
+      else
+        aXml.Value := aFileName + aXml.Value;
+    end;
+    for x := 0 to aXml.Items.Count - 1 do
+      _ReadDollarReferencedFiles(aFileName, aXml.Items.XmlItems[x]);
+  end;
+
 var
   xRootXml, cXml, dXml, eXml, vXml, wXml, rXml, hXml: TXml;
   x, y, z, u, v, w, r, f, h: Integer;
@@ -3038,7 +3143,10 @@ begin
       LoadJsonFromFile(aFileName, aOnError)
     else
       LoadYamlFromFile(aFileName, aOnError);
-    xRootXml.Name := '#'; // to make it easier to resolve $refs
+    xRootXml.Name := aFileName;
+    XsdDescr.ReadFileNames.AddObject(aFileName, xRootXml);
+    _ReadDollarReferencedFiles (aFileName, xRootXml);
+    _ReadDefinitions (sl);
     for x := 0 to Items.Count - 1 do
     begin
       if Items.XmlItems[x].Name = 'swagger' then with Items.XmlItems[x] do
@@ -3137,6 +3245,7 @@ begin
       end;
     end;
 
+{
     cXml := ItemByTag['components'];
     if Assigned (cXml) then
     with cXml do
@@ -3158,7 +3267,7 @@ begin
       for y := 0 to dXml.Items.Count - 1 do
         XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName + '/definitions', dXml.Items.XmlItems[y], aOnError);
     end;
-
+}
     dXml := ItemByTag['paths'];
     if Assigned (dXml) then with dXml do
     begin
@@ -3268,7 +3377,7 @@ begin
       end;
     end;
   finally
-    Free;
+//  Free; // done by xsddescr.clear via readfilenamea
     FreeAndNil(sl);
   end;
 end;

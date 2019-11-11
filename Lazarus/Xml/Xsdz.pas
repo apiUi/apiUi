@@ -544,6 +544,7 @@ begin
   FreeAndNil(TypeDef);
   FreeAndNil(FileContents);
   FreeAndNil(Garbage);
+  FreeAndNil(xsdFileNames);
   FreeAndNil(ReadFileNames);
   if Assigned(NameSpaceList) then
     NameSpaceList.Clear;
@@ -1101,7 +1102,9 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
         begin
           result.dollarRef := xXml.Value;
           if result.dollarRef[1] = '#' then
-            result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
+            result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000)
+          else
+            result.dollarRef := ExpandRelativeFileName(aFileName, result.dollarRef);
         end;
         if xXml.Name = 'type' then
         begin
@@ -1145,7 +1148,9 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
             begin
               result.dollarRef := yXml.Value;
               if result.dollarRef[1] = '#' then
-                result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000);
+                result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000)
+              else
+                result.dollarRef := ExpandRelativeFileName(aFileName, result.dollarRef);
             end;
           end;
         end;
@@ -3210,8 +3215,13 @@ begin
       Garbage.Objects[x].Free;
     Garbage.Clear;
   end;
-  if Assigned (ReadFileNames) then
-    ReadFileNames.Clear;
+  if Assigned (ReadFileNames) then with ReadFileNames do
+  begin
+    for x := 0 to Count - 1 do
+      if Assigned(Objects[x]) then
+        Objects[x].Free;
+    Clear;
+  end;
   if Assigned (xsdFileNames) then
     xsdFileNames.Clear;
   if Assigned (NameSpaceList) then
