@@ -239,6 +239,7 @@ type
     ValidateDuplicatesOn: String;
     InitialFocusOn: String;
     ProgName: String;
+    ConfirmCallBack: TProcedureBoolean;
     property doEnableCompare: Boolean read fdoEnableCompare write
       setdoEnableCompare;
     property isChanged: Boolean read fIsChanged write setIsChanged;
@@ -423,18 +424,28 @@ end;
 procedure TShowXmlForm.OkButtonClick(Sender: TObject);
 var
   oBind, dBind: TCustomBindable;
+  xConfirmed: Boolean;
 begin
   oBind := nil;
   dBind := nil;
   TreeView.EndEditNode;
   ModalResult := mrOk;
   if ValidateDuplicatesOn <> '' then
+  begin
     if not Bind.hasNoDuplicatesOn(ValidateDuplicatesOn, True, oBind, dBind) then
     begin
       ModalResult := mrNone;
       ShowMessageFmt('Dusplicate found on %s: %s', [ValidateDuplicatesOn,
         dBind.Value]);
     end;
+  end;
+  if isChanged
+  and Assigned(ConfirmCallBack) then
+  begin
+    ConfirmCallBack (xConfirmed);
+    if not xConfirmed then
+      ModalResult := mrNone;
+  end;
 end;
 
 procedure TShowXmlForm.ActionList1Update(Action: TBasicAction;

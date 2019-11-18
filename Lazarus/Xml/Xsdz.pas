@@ -18,6 +18,9 @@ uses Classes
    , XmlIO
    ;
 
+resourcestring
+  S_DOLLARREF = '$ref';
+
 type
   TXsdFormDefault = (xsdFDAccordingWsdl, xsdFDQualified, xsdFDUnqualified);
   TXsdType = (dtSimpleType, dtComplexType, dtAttributeType);
@@ -1098,7 +1101,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
             result.ElementDefs.AddObject(xXsd.ElementName, xXsd);
           end;
         end;
-        if xXml.Name = '$ref' then
+        if xXml.Name = S_DOLLARREF then
         begin
           result.dollarRef := xXml.Value;
           if result.dollarRef[1] = '#' then
@@ -1144,7 +1147,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
               yXsd.maxOccurs := 'unbounded';
               result.ElementDefs.AddObject(yXsd.ElementName, yXsd);
             end;
-            if yXml.Name = '$ref' then
+            if yXml.Name = S_DOLLARREF then
             begin
               result.dollarRef := yXml.Value;
               if result.dollarRef[1] = '#' then

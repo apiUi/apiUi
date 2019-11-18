@@ -228,6 +228,7 @@ type
     initialExpandStyle: TBindExpandStyle;
     ValidateDuplicatesOn: String;
     ProgName: String;
+    ConfirmCallBack: TProcedureBoolean;
     property doShowAttributeColumns: Boolean read getDoShowAttributeColumns;
     property doShowEmptyColumns: Boolean read getDoShowEmptyColumns;
     property doShowEmptyRows: Boolean read getDoShowEmptyRows;
@@ -1901,17 +1902,27 @@ end;
 procedure TXmlGridForm .OkButtonClick (Sender : TObject );
 var
   oBind, dBind: TCustomBindable;
+  aConfirmed: Boolean;
 begin
   oBind := nil;
   dBind := nil;
   ModalResult := mrOk;
   if ValidateDuplicatesOn <> '' then
+  begin
     if not Xml.hasNoDuplicatesOn(ValidateDuplicatesOn, True, oBind, dBind) then
     begin
       ModalResult := mrNone;
       ShowMessageFmt('Dusplicate found on %s: %s', [ValidateDuplicatesOn,
         dBind.Value]);
     end;
+  end;
+  if stubChanged
+  and Assigned(ConfirmCallBack) then
+  begin
+    ConfirmCallBack (aConfirmed);
+    if not aConfirmed then
+      ModalResult := mrNone;
+  end;
 end;
 
 { TPasswordEditLink }

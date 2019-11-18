@@ -15,6 +15,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls , Buttons,Menus, FormIniFilez;
 
+type TProcedureBoolean = procedure (var aConfirm : Boolean) of object;
 type
 
   { TChooseStringForm }
@@ -40,6 +41,7 @@ type
     function GetChoosenString: String;
     procedure SetChoosenString (aString: String);
   public
+    ConfirmPromptCallBack: TProcedureBoolean;
     property ChoosenString: String read GetChoosenString write SetChoosenString;
     property ChoosenIndex: Integer read getChoosenIndex;
   end;
@@ -70,11 +72,19 @@ begin
 end;
 
 procedure TChooseStringForm.ChooseClick(Sender: TObject);
+var
+  xConfirmed: Boolean;
 begin
   if ListBox.ItemIndex > -1 then
   begin
     fChoosenString := ListBox.Items.Strings [ListBox.ItemIndex];
     ModalResult := mrOk;
+    if Assigned (ConfirmPromptCallBack) then
+    begin
+      ConfirmPromptCallBack (xConfirmed);
+      if not xConfirmed then
+        ModalResult := mrNone;
+    end;
   end;
 end;
 

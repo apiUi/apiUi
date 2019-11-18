@@ -1354,6 +1354,7 @@ begin
   try
     ExplodeStr (self.httpDocument, '/', pathParams);
     ExplodeStr (openApiPathMask , '/', pathMask);
+  {
     if pathParams.Count <> pathMask.Count then
       raise sysutils.Exception.CreateFmt ( '%s document %s and service path %s do not match'
                                          , [ aOperation.Name
@@ -1361,6 +1362,7 @@ begin
                                            ,                                 openApiPathMask
                                            ]
                                          );
+  }
     k := pathParams.Count - 1;
     while (k > -1)
     and (pathMask.Strings[k] <> '%s') do

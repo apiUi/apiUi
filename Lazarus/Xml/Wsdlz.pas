@@ -28,6 +28,7 @@ resourcestring
   S_INBOUND_IS_A_RESPONSE = '[Inbound is a response]';
   S_ALIAS_VALID_PATTERN = '[A-Za-z]([0-9]|[A-Za-z]|\_|\-|\$)*'; // {id} regexp from express/scanner.l
   S_OPEN_API_VALUE_REGEXP = '[^/]*';
+  S_DOLLARREF = '$ref';
 
 type TStubAction = (saStub, saForward, saRedirect, saRequest);
 type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone);
@@ -571,6 +572,7 @@ function OperationMessageList (aObject : TObject ; aAlias: String): TParserStrin
 function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
 function SeparatedStringList (aObject: TObject; aString, aSep: String): TParserStringList;
 function SeparatedStringN (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
+function SeparatedStringT (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
 function xNewLine: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
@@ -621,7 +623,7 @@ function incVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
 function getVarNumberDef (aOperation: TWsdlOperation; aName: String; aDefault: Extended): Extended;
 function getVar (aOperation: TWsdlOperation; aName: String): String;
 function getVarDef (aOperation: TWsdlOperation; aName, aDefault: String): String;
-function getVarDefN (aOperation: TWsdlOperation; aName, aDefault, aSeparator: String; aIndex: Extended): String;
+function getVarDefT (aOperation: TWsdlOperation; aName, aDefault, aSeparator: String; aIndex: Extended): String;
 function xsdOperationCount(aOperation: TWsdlOperation): Extended;
 function wsdlUserName: String;
 function wsdlOperationName(aOper: TWsdlOperation): String;
@@ -1286,6 +1288,29 @@ begin
     if Count > 0 then
     begin
       if xInteger > Count - 1 then
+        raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringT"', [xInteger])
+      else
+        result := Strings[xInteger - 1];
+    end;
+  finally
+    Free;
+  end;
+end;
+
+function SeparatedStringT(aObject: TObject;aString, aSep: String;
+  aIndex: Extended): String;
+var
+  xInteger: Integer;
+begin
+  result := '';
+  xInteger := Trunc (aIndex);
+  if (xInteger < 1) then
+    raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringT"', [xInteger]);
+  with SeparatedStringList(nil, aString, aSep) do
+  try
+    if Count > 0 then
+    begin
+      if xInteger > Count - 1 then
         result := Strings[Count - 1]
       else
         result := Strings[xInteger - 1];
@@ -1917,13 +1942,13 @@ begin
   end;
 end;
 
-function getVarDefN(aOperation: TWsdlOperation;aName, aDefault,
+function getVarDefT(aOperation: TWsdlOperation;aName, aDefault,
   aSeparator: String;aIndex: Extended): String;
 var
   xValue: String;
 begin
   result := aDefault;
-  result := SeparatedStringN ( nil
+  result := SeparatedStringT ( nil
                              , getVarDef( aOperation
                                         , aName
                                         , aDefault
@@ -2570,6 +2595,24 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
 //
 // Based on https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 //
+  function _FindReferencedXml (aString: String): TXml;
+  var
+    x: Integer;
+    xFilename, xPath: String;
+  begin
+    result := nil;
+    xFilename := SeparatedStringN(nil, aString, '#/', 1);
+    xPath := '#/' + SeparatedStringN(nil, aString, '#/', 2);
+    x := 0;
+    while (x < XsdDescr.ReadFileNames.Count)
+      and (not Assigned (result)) do
+    begin
+      if XsdDescr.ReadFileNames[x] = xFilename then
+        result := (XsdDescr.ReadFileNames.Objects[x] as TXml).FindXml(xPath, '/');
+      Inc (x);
+    end;
+  end;
+
   function _prepareRef (aValue: String): String;
   var
     x: Integer;
@@ -2657,9 +2700,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     if (aXml.Items.Count = 1) then
     with aXml.Items.XmlItems[0] do
     begin
-      if (Name = '$ref') then
+      if (Name = S_DOLLARREF) then
       begin
-        yXml := aRootXml.FindXml(_prepareRef (Value));
+        yXml := _FindReferencedXml(Value);
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s in %s', [Value, aFileName]);
         _evaluateParameter (aRootXml, yXml, aParentXsd);
@@ -2778,9 +2821,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     if (aItems.Count = 1) then
     with aItems.XmlItems[0] do
     begin
-      if (Name = '$ref') then
+      if (Name = S_DOLLARREF) then
       begin
-        yXml := aRootXml.FindXml(_prepareRef (Value));
+        yXml := _FindReferencedXml(Value);
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateRequestBody(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -2813,9 +2856,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
       if (aXml.Items.Count = 1) then
       with aXml.Items.XmlItems[0] do
       begin
-        if (Name = '$ref') then
+        if (Name = S_DOLLARREF) then
         begin
-          hXml := aRootXml.FindXml(_prepareRef (Value));
+          hXml := _FindReferencedXml(Value);
           if not Assigned(hXml) then
             raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
           _evaluateResponse200(aXsd, aDoc, hXml);
@@ -2861,9 +2904,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     if (Items.Count = 1) then
     with Items.XmlItems[0] do
     begin
-      if (Name = '$ref') then
+      if (Name = S_DOLLARREF) then
       begin
-        yXml := aRootXml.FindXml(_prepareRef (Value));
+        yXml := _FindReferencedXml(Value);
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateResponses200(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -2894,9 +2937,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     if (Items.Count = 1) then
     with Items.XmlItems[0] do
     begin
-      if (Name = '$ref') then
+      if (Name = S_DOLLARREF) then
       begin
-        yXml := aRootXml.FindXml(_prepareRef (Value));
+        yXml := _FindReferencedXml(Value);
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateResponses300(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -3040,27 +3083,6 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
 
   end;
 
-  function _FindReferencedXml (aString: String): TXml;
-  var
-    x: Integer;
-    s, s1, s2: String;
-  begin
-    result := nil;
-    s1 := SeparatedStringN(nil, aString, '#/', 1);
-    s2 := SeparatedStringN(nil, aString, '#/', 2);
-    for x := 1 to Length(s2) do
-      if s2[x] = '/' then
-        s2[x] := ',';
-    s := s1 + '.' + s2;
-    x := 0;
-    while (x < XsdDescr.ReadFileNames.Count)
-      and (not Assigned (result)) do
-    begin
-      result := (XsdDescr.ReadFileNames.Objects[x] as TXml).FindXml(s);
-      Inc (x);
-    end;
-  end;
-
   procedure _ReadDollarReferencedFiles (aFileName: String; aXml: TXml);
     procedure __ReadDollarReferencedFile (aaFileName: String);
     var
@@ -3077,7 +3099,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
           xXml.LoadJsonFromFile(aaFileName, aOnError)
         else
           xXml.LoadYamlFromFile(aaFileName, aOnError);
-        xXml.Name := aaFileName; // to make it easier to resolve $refs
+        xXml.Name := '#'; // to make it easier to resolve $refs
         XsdDescr.ReadFileNames.AddObject(aaFileName, xXml);
         _ReadDollarReferencedFiles(aaFileName, xXml);
       end;
@@ -3086,7 +3108,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
     x: Integer;
     xFileName, xPath: String;
   begin
-    if (aXml.Name = '$ref') then
+    if (aXml.Name = S_DOLLARREF) then
     begin
       if (Length(aXml.Value) > 0)
       and (aXml.Value[1] <> '#')
@@ -3143,7 +3165,7 @@ begin
       LoadJsonFromFile(aFileName, aOnError)
     else
       LoadYamlFromFile(aFileName, aOnError);
-    xRootXml.Name := aFileName;
+    xRootXml.Name := '#';
     XsdDescr.ReadFileNames.AddObject(aFileName, xRootXml);
     _ReadDollarReferencedFiles (aFileName, xRootXml);
     _ReadDefinitions (sl);
@@ -4080,7 +4102,7 @@ begin
     BindScriptFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
     BindScriptFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
     BindScriptFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
-    BindScriptFunction ('GetEnvVarDefN', @getVarDefN, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
+    BindScriptFunction ('GetEnvVarDefT', @getVarDefT, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
     BindScriptFunction ('DisableMessage', @DisableMessage, VFOV, '()');
     BindScriptFunction ('HostName', @GetHostName, SFV, '()');
     BindScriptFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
@@ -6117,7 +6139,7 @@ begin
       BindCheckerFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
       BindCheckerFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
       BindCheckerFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
-      BindCheckerFunction ('GetEnvVarDefN', @getVarDefN, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
+      BindCheckerFunction ('GetEnvVarDefT', @getVarDefT, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
       BindCheckerFunction ('HostName', @GetHostName, SFV, '()');
       BindCheckerFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
       BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
@@ -6185,7 +6207,7 @@ begin
     BindStamperFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
     BindStamperFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
     BindStamperFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
-    BindStamperFunction ('GetEnvVarDefN', @getVarDefN, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
+    BindStamperFunction ('GetEnvVarDefT', @getVarDefT, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
     BindStamperFunction ('HostName', @GetHostName, SFV, '()');
     BindStamperFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindStamperFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');

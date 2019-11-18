@@ -1065,6 +1065,7 @@ type
     property xmlViewType: TxvViewType read getXmlViewType;
   private
     doCreateBackup: Boolean;
+    doConfirmTemporaryInactivity: Boolean;
     doStartOnOpeningProject: Boolean;
     ProgressInterface: TProgressInterface;
     enableTacoPingPong: Boolean;
@@ -1151,6 +1152,7 @@ type
     // procedure NodeToXml (aTreeView: TBaseVirtualTree; aNode: PVirtualNode; var Xml: TXml; var Attribute: TXmlAttribute);
     procedure RevalidateXmlTreeView(aTreeView: TVirtualStringTree);
     function InsertXmlNode(aNode: PVirtualNode; aXml: TXml): PVirtualNode;
+    procedure ConfirmTemporarelyInactivity(var aPrompt: Boolean);
     function BooleanPromptDialog(aPrompt: String): Boolean;
     procedure FinishXmlNode(aNode: PVirtualNode; aXml: TXml);
     procedure EndEdit;
@@ -2675,6 +2677,14 @@ begin
   FinishXmlNode(result, aXml);
 end;
 
+procedure TMainForm.ConfirmTemporarelyInactivity(var aPrompt: Boolean);
+begin
+  aPrompt := (not se.IsActive)
+          or (not doConfirmTemporaryInactivity)
+          or BooleanPromptDialog(Format ('%s will temporarely become inactive, OK to continue?', [_ProgName]))
+          ;
+end;
+
 procedure TMainForm.DoUpdateConsole;
 var
   f: Integer;
@@ -3594,7 +3604,6 @@ var
   ChoosenString: String;
   FileName: String;
 begin
-  if not InactiveAfterPrompt then Exit;
   if OkToOpenStubCase then
   begin
     Application.CreateForm(TChooseStringForm, ChooseStringForm);
@@ -3606,6 +3615,7 @@ begin
           (IntToStr(X) + ' ' + ReopenCaseList.Strings[X]);
       end;
       ChooseStringForm.Caption := 'Open recent Stub case';
+      ChooseStringForm.ConfirmPromptCallBack := ConfirmTemporarelyInactivity;
       ChooseStringForm.ShowModal;
       if ChooseStringForm.ModalResult = mrOk then
       begin
@@ -4089,7 +4099,8 @@ end;
 
 procedure TMainForm.OptionsActionUpdate(Sender: TObject);
 begin
-  OptionsAction.Enabled := (not se.IsActive);
+//OptionsAction.Enabled := (not se.IsActive);
+  OptionsAction.Enabled := True;
 end;
 
 function TMainForm.OptionsAsXml: TXml;
@@ -4101,6 +4112,7 @@ begin
     AddXml(TXml.CreateAsBoolean('StartAfterOpeningProject', doStartOnOpeningProject));
     AddXml(TXml.CreateAsBoolean('CreateBackup', doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
+    AddXml(TXml.CreateAsBoolean('ConfirmTemporaryInactivity', doConfirmTemporaryInactivity));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
         doScrollExceptionsIntoView));
     AddXml(TXml.CreateAsBoolean('CheckScriptAssignments',
@@ -4169,7 +4181,7 @@ var
 begin
   xXml := OptionsAsXml;
   try
-    if EditXmlXsdBased('Options', '', '', '', se.IsActive, False, esUsed, optionsXsd, xXml) then
+    if EditXmlXsdBased('Options', '', '', '', False, False, esUsed, optionsXsd, xXml, ConfirmTemporarelyInactivity) then
     begin
       isOptionsChanged := True;
       OptionsFromXml(xXml);
@@ -6573,6 +6585,7 @@ var
   xIniFile: TFormIniFile;
   xXml: TXml;
 begin
+  doConfirmTemporaryInactivity := True;
   MessagesTabControlWidth := MessagesTabControl.Width;
   MessagesTabControlMinLeft := LastMessageToolButton.Left + LastMessageToolButton.Width + 1;
   (MessagesTabControl as TWinControl).Color := Self.Color;
@@ -7444,7 +7457,7 @@ begin
   begin
     if se.IsActive then
     begin
-      if BooleanPromptDialog('wsdlStub active' + LineEnding + 'Deactivate now') then
+      if BooleanPromptDialog(_ProgName + ' is active' + LineEnding + 'Deactivate now') then
         stopActionExecute (self);
     end;
     result := not se.IsActive;
@@ -7492,6 +7505,7 @@ begin
       ShowXmlForm.Caption := 'Request as XML';
       ShowXmlForm.isCheckedOnly := True;
       ShowXmlForm.isReadOnly := True;
+      se.FindOpenApiOnLog(claimedLog);
       ShowXmlForm.Bind := claimedLog.reqBodyAsXml;
       try
         ShowXmlForm.ShowModal;
@@ -8550,7 +8564,16 @@ begin
       logExceptionColumn:
         begin
           xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
-          if Assigned(xLog) and (xLog.Exception <> '') then
+          if Assigned(xLog)
+          and (   (xLog.Exception <> '')
+               or (    (   (xLog.TransportType = ttHttp)
+                        or (xLog.TransportType = ttHttps)
+                       )
+                   and (   (xLog.httpResponseCode < 200)
+                        or (xLog.httpResponseCode > 299)
+                       )
+                  )
+              ) then
             ImageIndex := 84
           else
             ImageIndex := -1;
@@ -9472,6 +9495,7 @@ procedure TMainForm.ProjectOptionsActionExecute(Sender: TObject);
 var
   xXml: TXml;
   xXsd: TXsd;
+  xWasActive: Boolean;
 begin
   xXsd := projectOptionsXsd.XsdByCaption ['projectOptions.DatabaseConnection.TestConnection'];
   xXsd.EditProcedure := TestDbsConnection;
@@ -9485,18 +9509,30 @@ begin
                        , ''
                        , ''
                        , ''
-                       , se.IsActive
+                       , False
                        , False
                        , esOne
                        , projectOptionsXsd
                        , xXml
+                       , ConfirmTemporarelyInactivity
                        ) then
     begin
       AcquireLock;
       try
         stubChanged := True;
+        xWasActive := se.IsActive;
+        if xWasActive then
+        begin
+          se.Activate (False);
+          CheckBoxClick(nil);
+        end;
         se.ProjectOptionsFromXml(xXml);
         LogUpdateColumns;
+        if xWasActive then
+        begin
+          se.Activate (True);
+          CheckBoxClick(nil);
+        end;
       finally
         ReleaseLock;
       end;
@@ -11629,15 +11665,27 @@ end;
 procedure TMainForm.ConfigListenersActionExecute(Sender: TObject);
 var
   xXml: TXml;
+  xWasActive: Boolean;
 begin
   xXml := TXml.Create;
   try
     xXml.CopyDownLine(se.Listeners.SpecificationXml, True);
-    if EditXmlXsdBased('Configure Listeners', '', '', '', se.IsActive, False, esUsed, listenersConfigXsd, xXml) then
+    if EditXmlXsdBased('Configure Listeners', '', '', '', False, False, esUsed, listenersConfigXsd, xXml, ConfirmTemporarelyInactivity) then
     begin
       stubChanged := True;
       se.Listeners.SpecificationXml.CopyDownLine(xXml, True);
+      xWasActive := se.IsActive;
+      if xWasActive then
+      begin
+        se.Activate(False);
+        CheckBoxClick(nil);
+      end;
       se.Listeners.FromXml(se.HaveStompFrame);
+      if xWasActive then
+      begin
+        se.Activate(True);
+        CheckBoxClick(nil);
+      end;
     end;
   finally
     xXml.Free;
@@ -12634,15 +12682,23 @@ end;
 procedure TMainForm.OptionsFromXml(aXml: TXml);
 var
   xXml, yXml: TXml;
+  xWasActive: Boolean;
 begin
   if not Assigned(aXml) then
     exit;
+  xWasActive := se.IsActive;
+  if se.IsActive then
+  begin
+    se.Activate(False);
+    CheckBoxClick(nil)
+  end;
   contextPropertyOverwrite := '';
   enableTacoPingPong := True;
   intervalTacoPingPong := 5 * 60 * 1000;
   doStartOnOpeningProject := True;
   doCreateBackup := True;
   xmlUtil.doConfirmRemovals := True;
+  doConfirmTemporaryInactivity := True;
   xmlUtil.doCollapseOnUncheck := True;
   xmlUtil.doExpandOnCheck := True;
   doScrollExceptionsIntoView := False;
@@ -12673,10 +12729,9 @@ begin
       xmlio.ProjectContext := contextPropertyOverwrite;
       doStartOnOpeningProject := xXml.Items.XmlCheckedBooleanByTagDef ['StartAfterOpeningProject', doStartOnOpeningProject];
       doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef ['CreateBackup', doCreateBackup];
-      xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef
-        ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
-      doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef
-        ['ScrollExceptionsIntoView', doScrollExceptionsIntoView];
+      xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
+      doConfirmTemporaryInactivity := xXml.Items.XmlCheckedBooleanByTagDef ['ConfirmTemporaryInactivity', doConfirmTemporaryInactivity];
+      doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef ['ScrollExceptionsIntoView', doScrollExceptionsIntoView];
       xsdValidateAssignmentsAgainstSchema :=
         xXml.Items.XmlCheckedBooleanByTagDef['CheckScriptAssignments',
         xsdValidateAssignmentsAgainstSchema];
@@ -12766,6 +12821,11 @@ begin
             ColorToHtml(bgElementValueColor)]);
         end;
     end;
+  end;
+  if xWasActive then
+  begin
+    se.Activate(True);
+    CheckBoxClick(nil)
   end;
 end;
 

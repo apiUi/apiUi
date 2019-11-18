@@ -2002,6 +2002,13 @@ When 'true' wsdlStub will create a backup on saving an existing project (a backu
 When 'false' wsdlStub will not prompt for certain removals</xs:documentation>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="ConfirmTemporaryInactivity" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default 'true';
+Default wsdlStub will prompt when certain actions require temporary inactivity.
+When "false", wsdlStub will not prompt</xs:documentation>
+								</xs:annotation>
+							</xs:element>
 							<xs:element name="ScrollExceptionsIntoView" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default 'false';

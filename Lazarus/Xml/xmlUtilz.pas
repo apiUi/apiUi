@@ -138,6 +138,7 @@ function EditXmlXsdBased ( aCaption, aXsdPath, aInitialFocus, aValidateDuplicate
                          ; initialExpandStyle: TBindExpandStyle
                          ; aRootXsd: TXsd
                          ; aXml: TXml
+                         ; aConfirmCallBack: TProcedureBoolean = nil
                          ): Boolean;
 procedure ShowText (aCaption, aText: String);
 procedure ShowXml (aCaption: String; aXml: TXml);
@@ -204,6 +205,7 @@ function EditXmlXsdBased ( aCaption, aXsdPath, aInitialFocus, aValidateDuplicate
                          ; initialExpandStyle: TBindExpandStyle
                          ; aRootXsd: TXsd
                          ; aXml: TXml
+                         ; aConfirmCallBack: TProcedureBoolean = nil
                          ): Boolean;
 var
   cnfXml: TXml;
@@ -234,6 +236,7 @@ begin
         gForm.initialExpandStyle := initialExpandStyle;
         gForm.doShowCancelButton := True;
         gForm.ValidateDuplicatesOn := aValidateDuplicatesOn;
+        gForm.ConfirmCallBack := aConfirmCallBack;
         gForm.ShowModal;
         result := (gForm.ModalResult = mrOk)
               and (gForm.stubChanged);
@@ -257,6 +260,7 @@ begin
         xForm.doShowCancelButton := True;
         xForm.InitialFocusOn := aInitialFocus;
         xForm.ValidateDuplicatesOn := aValidateDuplicatesOn;
+        xForm.ConfirmCallBack := aConfirmCallBack;
         xForm.ShowModal;
         result := (xForm.ModalResult = mrOk)
               and (xForm.isChanged);

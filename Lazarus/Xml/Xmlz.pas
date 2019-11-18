@@ -22,6 +22,7 @@ type TAnsiStringFunctionAnsiString = function (aString: AnsiString): AnsiString 
 type TXmlTagsCase = (xmlTCDontChange, xmlTCUpperCase, xmlTCLowerCase);
 type TXmlTagsHyphen = (xmlTHDontChange, xmlTHHyphen, xmlTHReplaceBy);
 type TXmlBrowser = (xmlBInternal, xmlBShell);
+type TProcedureBoolean = procedure (var aConfirm : Boolean) of object;
 type
 
   { TXmlAttribute }
@@ -249,7 +250,7 @@ type
     function FindUQXml (aName: String): TXml;
     function FindUQBind (aName: String): TCustomBindable;
     function FindCheckedXml (aName: String): TXml;
-    function FindXml (aName: String): TXml;
+    function FindXml (aName: String; aSeparator: String = '.'): TXml;
     function IsValueValidAgainstXsd (var aMessageString: String): Boolean;
     function IndexOfRepeatableItem: Integer;
     function IndexOfRecursiveItem: Integer;
@@ -1648,25 +1649,43 @@ begin
 end;
 
 function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
-  function _StreamYAMLValue (aXml: TXml; aIndent: Integer): String;
+  function _IndentString (x: Integer; aHyphen: Boolean): String;
+  begin
+    SetLength(result, x);
+    while x > 0 do
+    begin
+      result[x] := ' ';
+      Dec (x);
+    end;
+    if aHyphen
+    and (Length(Result) > 2) then
+      result [Length(Result) - 1] := '-';
+  end;
+  function _StreamYAMLValue (aXml: TXml; aHyphen: Boolean; aIndent: Integer): String;
   var
     x: Integer;
-    xSep: String;
-    xJsonType: TjsonType;
     xSwapParent: TCustomBindable;
+    xName: String;
   begin
     result := '';
     if OnlyWhenChecked and not aXml.Checked then Exit;
-    Result := IndentString(aIndent) + NameWithoutPrefix(aXml.Name) + ': ' + aXml.yamlValue;
+
+    xName := NameWithoutPrefix(aXml.Name);
+    if xName = '_' then
+      Result := _IndentString(aIndent, aHyphen) + '- ' + aXml.yamlValue
+    else
+      Result := _IndentString(aIndent, aHyphen) + xName + ': ' + aXml.yamlValue;
     for x := 0 to aXml.Items.Count - 1 do
       if (aXml.Items.XmlItems[x].Checked)
       or (not OnlyWhenChecked) then
-        result := result + LineEnding + _StreamYAMLValue(aXml.Items.XmlItems[x], aIndent + 2);
+      begin
+        result := result + LineEnding + _StreamYAMLValue(aXml.Items.XmlItems[x], False, aIndent + 2);
+      end;
   end;
 begin
   result := '';
   if OnlyWhenChecked and not Checked then Exit;
-  result := _StreamYAMLValue(Self, aIndent);
+  result := _StreamYAMLValue(Self, False, aIndent);
 end;
 
 function TXml.EncodeXml (aValue: String): String;
@@ -3076,7 +3095,7 @@ begin
   end;
 end;
 
-function TXml.FindXml(aName: String): TXml;
+function TXml.FindXml(aName: String; aSeparator: String = '.'): TXml;
 var
   x: Integer;
   y: Integer;
@@ -3084,7 +3103,7 @@ var
   newName: String;
 begin
   result := nil;
-  x := Pos ('.', aName);
+  x := Pos (aSeparator, aName);
   if x = 0 then
     xName := aName
   else
@@ -3096,10 +3115,10 @@ begin
       result := self
     else
     begin
-      newName := Copy(aName, x + 1, Length (aName));
+      newName := Copy(aName, x + Length(aSeparator), Length (aName));
       for y := 0 to Items.Count - 1 do
       begin
-        result := Items.XmlItems [y].FindXml(newName);
+        result := Items.XmlItems [y].FindXml(newName, aSeparator);
         if result <> nil then
           exit;
       end;
