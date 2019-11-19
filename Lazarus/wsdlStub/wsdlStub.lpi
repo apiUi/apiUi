@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
-      <BuildNr Value="12404"/>
+      <BuildNr Value="12406"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -166,6 +166,7 @@
     <Exceptions Count="21">
       <Item1>
         <Name Value="EAbort"/>
+        <Enabled Value="False"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>
@@ -184,6 +185,7 @@
       </Item5>
       <Item6>
         <Name Value="Exception"/>
+        <Enabled Value="False"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
@@ -194,6 +196,7 @@
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
+        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
@@ -216,6 +219,7 @@
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
+        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EODBCException"/>
@@ -231,6 +235,7 @@
       </Item18>
       <Item19>
         <Name Value="EOleSysError"/>
+        <Enabled Value="False"/>
       </Item19>
       <Item20>
         <Name Value="EIdURIException"/>

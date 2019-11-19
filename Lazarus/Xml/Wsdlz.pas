@@ -1287,8 +1287,8 @@ begin
   try
     if Count > 0 then
     begin
-      if xInteger > Count - 1 then
-        raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringT"', [xInteger])
+      if xInteger > Count then
+        raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringN"', [xInteger])
       else
         result := Strings[xInteger - 1];
     end;
