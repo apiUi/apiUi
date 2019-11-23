@@ -27,7 +27,7 @@ resourcestring
   S_NO_OPERATION_FOUND = 'No operation recognised';
   S_INBOUND_IS_A_RESPONSE = '[Inbound is a response]';
   S_ALIAS_VALID_PATTERN = '[A-Za-z]([0-9]|[A-Za-z]|\_|\-|\$)*'; // {id} regexp from express/scanner.l
-  S_OPEN_API_VALUE_REGEXP = '[^/]*';
+  S_OPEN_API_PATHVALUE_REGEXP = '[^/]+';
   S_DOLLARREF = '$ref';
 
 type TStubAction = (saStub, saForward, saRedirect, saRequest);
@@ -86,14 +86,14 @@ type
       function getOperationByRequest(Index: String): TWsdlOperation;
     public
       Name, FileAlias, FileName: String;
-      Description, basePathV2, Host, Schemes, Consumes, Produces: String;
+      Description, Host, Schemes, Consumes, Produces: String;
       isSoapService: Boolean;
       isOpenApiService: Boolean;
       OpenApiVersion: String;
 //      xTargetNamespacePrefix: String;
       Services: TWsdlServices;
       Servers: TXml; // introduced with openapi 3.0, just a copy of the specs
-      BasePaths: TStringList;
+      ServerPathNames: TStringList;
       XsdDescr: TXsdDescr;
       sdfXsdDescrs: TXsdDescrList;
       IpmDescrs: TIpmDescrs;
@@ -151,7 +151,7 @@ type
     private
     function getOperationByName(Index: String): TWsdlOperation;
     public
-      Name, FileAlias, openApiPath, openApiPathRegExp, Host: String;
+      Name, FileAlias, openApiPath, Host: String;
       AuthenticationType: TAuthenticationType;
       UserName: String;
       Password: String;
@@ -161,6 +161,7 @@ type
       UseNameSpacePrefixes: Boolean;
       DescriptionType: TIpmDescrType;
       Operations: TWsdlOperations;
+      PathInfos: TStringList;
       function StreamWsSecurity: String;
       property OperationByName [Index: String]: TWsdlOperation read getOperationByName;
       function OptionsAsXml: TXml;
@@ -640,7 +641,6 @@ procedure ReturnString (aOperation: TWsdlOperation; aString: String);
 procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
 procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
 
-procedure prepareOpenApiRegExp (aPath: String; var aRegExp: String);
 function wsdlConvertSdfFrom36 (aXml: TXml): Boolean;
 procedure AcquireLock;
 procedure ReleaseLock;
@@ -774,31 +774,6 @@ begin
     end;
   end;
   Result := ReplaceStrings(Result, '__', '_', False, False);
-end;
-
-procedure prepareOpenApiRegExp (aPath: String; var aRegExp: String);
-var
-  s, e, p: Integer;
-  f: Boolean;
-const
-  pathTemplateRegExp = '\{[^\}]+\}';
-begin
-  aRegExp := '';
-  s := 1;
-  with TRegExpr.Create(pathTemplateRegExp) do
-  try
-    f := Exec(aPath);
-    while f do
-    begin
-      e := MatchPos[0];
-      aRegExp := aRegExp + Copy (aPath, s, e - s) + S_OPEN_API_VALUE_REGEXP;
-      s := MatchPos[0] + MatchLen[0];
-      f := ExecNext;
-    end;
-    aRegExp := aRegExp + Copy (aPath, s, Length (aPath));
-  finally
-    Free;
-  end;
 end;
 
 procedure Notify(aString: AnsiString);
@@ -2153,7 +2128,7 @@ begin
   OperationsWithEndpointOnly := aOperationsWithEndpointOnly;
   Services := TWsdlServices.Create;
   Services.Sorted := True;
-  BasePaths := TStringList.Create;
+  ServerPathNames := TStringList.Create;
   XsdDescr := TXsdDescr.Create;
   sdfXsdDescrs := TXsdDescrList.Create;
   IpmDescrs := TIpmDescrs.Create;
@@ -2184,7 +2159,7 @@ begin
   for x := 0 to Services.Count - 1 do
     Services.Services [x].Free;
   FreeAndNil (Services);
-  FreeAndNil (BasePaths);
+  FreeAndNil (ServerPathNames);
   ExtraXsds.Clear;
   ExtraXsds.Free;
   fMssgs.ClearListOnly;
@@ -3127,7 +3102,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
 
 var
   xRootXml, cXml, dXml, eXml, vXml, wXml, rXml, hXml: TXml;
-  x, y, z, u, v, w, r, f, h: Integer;
+  x, y, z, u, v, w, r, f, h, p: Integer;
   zXmlProcessed: Boolean;
   xService: TWsdlService;
   zOperation: TWsdlOperation;
@@ -3204,8 +3179,8 @@ begin
       if Items.XmlItems[x].Name = 'basePath' then with Items.XmlItems[x] do // swagger 2.0
       begin
         sl.Add (Name);
-        BasePaths.Add (_trimPath(Value));
-        basePathV2 := Value;
+        ServerPathNames.Add (_trimPath(Value));
+        SjowMessage(_trimPath(Value));
       end;
       if Items.XmlItems[x].Name = 'schemes' then with Items.XmlItems[x] do
       begin
@@ -3251,7 +3226,7 @@ begin
             begin
               try
                 URI := Items.XmlValueByTag['url'];
-                BasePaths.Add ('/' + Document);
+                ServerPathNames.Add ('/' + Document);
               except
               end;
             end;
@@ -3300,9 +3275,10 @@ begin
         xServiceParamsXml := Items.XmlItemByTag['parameters'];
         xService.Name := Name;
         xService.openApiPath := xService.Name;
+        for p := 0 to ServerPathNames.Count - 1 do
+          xService.PathInfos.Add (ServerPathNames.Strings[p] + xService.Name);
         Services.AddObject(Name, xService);
         xService.DescriptionType := ipmDTJson;
-        with xService do prepareOpenApiRegExp(openApiPath, openApiPathRegExp);
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
         begin
           zXmlProcessed := False;
@@ -3528,6 +3504,7 @@ end;
 constructor TWsdlService.Create;
 begin
   UseNameSpacePrefixes := True;
+  PathInfos := TStringList.Create;
   Operations := TWsdlOperations.Create;
   Operations.Sorted := True;
 end;
@@ -3535,6 +3512,7 @@ end;
 destructor TWsdlService.Destroy;
 begin
   Operations.Clear;
+  FreeAndNil(PathInfos);
   FreeAndNil (Operations);
   inherited;
 end;

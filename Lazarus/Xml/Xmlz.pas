@@ -1649,7 +1649,7 @@ begin
 end;
 
 function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
-  function _IndentString (x: Integer; aHyphen: Boolean): String;
+  function _IndentString (x: Integer): String;
   begin
     SetLength(result, x);
     while x > 0 do
@@ -1657,9 +1657,6 @@ function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
       result[x] := ' ';
       Dec (x);
     end;
-    if aHyphen
-    and (Length(Result) > 2) then
-      result [Length(Result) - 1] := '-';
   end;
   function _StreamYAMLValue (aXml: TXml; aHyphen: Boolean; aIndent: Integer): String;
   var
@@ -1672,9 +1669,9 @@ function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
 
     xName := NameWithoutPrefix(aXml.Name);
     if xName = '_' then
-      Result := _IndentString(aIndent, aHyphen) + '- ' + aXml.yamlValue
+      Result := _IndentString(aIndent) + '- ' + aXml.yamlValue
     else
-      Result := _IndentString(aIndent, aHyphen) + xName + ': ' + aXml.yamlValue;
+      Result := _IndentString(aIndent) + xName + ': ' + aXml.yamlValue;
     for x := 0 to aXml.Items.Count - 1 do
       if (aXml.Items.XmlItems[x].Checked)
       or (not OnlyWhenChecked) then
@@ -1682,10 +1679,13 @@ function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
         result := result + LineEnding + _StreamYAMLValue(aXml.Items.XmlItems[x], False, aIndent + 2);
       end;
   end;
+var
+  x: Integer;
 begin
   result := '';
   if OnlyWhenChecked and not Checked then Exit;
-  result := _StreamYAMLValue(Self, False, aIndent);
+  for x := 0 to self.Items.Count - 1 do
+    result := result + _StreamYAMLValue(Self.Items.XmlItems[x], False, aIndent) + LineEnding;
 end;
 
 function TXml.EncodeXml (aValue: String): String;

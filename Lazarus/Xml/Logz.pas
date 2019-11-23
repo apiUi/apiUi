@@ -85,7 +85,7 @@ type
     relatesTo: TLog;
     ServiceName, OperationName: String;
     DelayTimeMs, OperationCount: Integer;
-    openApiPathMask: String;
+    PathFormat: String;
     procedure AddRemark (aRemark: String);
     function CompareKey (aCompareBy: TCompareLogOrderBy): String;
     function SortKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TStringList): String;
@@ -1047,6 +1047,7 @@ begin
     AddXml (Txml.CreateAsBoolean('wsaCorrelated', Self.wsaCorrelated));
     AddXml (Txml.CreateAsString('ServiceName', Self.ServiceName));
     AddXml (Txml.CreateAsString('OperationName', Self.OperationName));
+    AddXml (Txml.CreateAsString('PathFormat', Self.PathFormat));
   end;
 end;
 
@@ -1353,20 +1354,23 @@ begin
   hdrParams.NameValueSeparator := ':';
   try
     ExplodeStr (self.httpDocument, '/', pathParams);
-    ExplodeStr (openApiPathMask , '/', pathMask);
+    ExplodeStr (PathFormat , '/', pathMask);
   {
     if pathParams.Count <> pathMask.Count then
       raise sysutils.Exception.CreateFmt ( '%s document %s and service path %s do not match'
                                          , [ aOperation.Name
                                            ,             self.httpDocument
-                                           ,                                 openApiPathMask
+                                           ,                                 PathFormat
                                            ]
                                          );
   }
     k := pathParams.Count - 1;
-    while (k > -1)
-    and (pathMask.Strings[k] <> '%s') do
-      k := k - 1;
+    if pathMask.Count > 0 then
+    begin
+      while (k > -1)
+      and (pathMask.Strings[k] <> '%s') do
+        k := k - 1;
+    end;
     ExplodeStr (urlDecode(self.httpParams), '&', qryParams);
     hdrParams.Text := self.RequestHeaders;
     with aOperation.reqXml.Items do for x := Count - 1 downto 0 do

@@ -6606,6 +6606,7 @@ begin
   se.OnTerminateBlockingThread := TerminateBlockingThreadEvent;
   se.OnStartNonBlockingThread := StartNonBlockingThreadEvent;
   se.OnTerminateNonBlockingThread := TerminateNonBlockingThreadEvent;
+  se.OnQuitEvent := QuitCommand;
   sc.OnActivateEvent := ActivateCommand;
   sc.OnOpenProjectEvent := OpenProjectCommand;
   se.Notify := Notify;
@@ -13690,9 +13691,9 @@ begin
     AddXml(TXml.CreateAsString('swagger','2.0'));
     with AddXml(TXml.CreateAsString('info', '')) do
     begin
-      AddXml(TXml.CreateAsString('description', WsdlOperation.Wsdl.Description));
-      AddXml(TXml.CreateAsString('version', ''));
-      AddXml(TXml.CreateAsString('title', ''));
+      AddXml(TXml.CreateAsString('description', ifthen(WsdlOperation.Wsdl.Description <> '',WsdlOperation.Wsdl.Description, 'your description here')));
+      AddXml(TXml.CreateAsString('version', 'version'));
+      AddXml(TXml.CreateAsString('title', 'your title here'));
     end;
     try
       with TIdURI.Create(WsdlOperation.SoapAddress) do
@@ -13710,8 +13711,9 @@ begin
     with AddXml(TXml.CreateAsString('schemes','')) do
     begin
       jsonType := jsonArray;
-      AddXml(TXml.CreateAsString('-', xProtocol));
+      AddXml(TXml.CreateAsString('_', xProtocol));
     end;
+    AddXml(TXml.CreateAsString('basePath', '/your/BasePath/here'));
     with AddXml(TXml.CreateAsString('paths','')) do
     begin
       for o := 0 to WsdlOperation.WsdlService.Operations.Count - 1 do
@@ -13725,7 +13727,19 @@ begin
             free;
           end;
         except
-          xPath := 'unknownPath';
+          xPath := '/unknownPath';
+        end;
+        if xPath = '' then
+          xPath := xOper.Alias;
+        if xOper.reqXml.Items.Count > 0 then
+        begin
+          with SeparatedStringList(nil, xOper.reqXml.Items.XmlItems[1].NameSpace, '/') do
+          try
+            if Count > 2 then
+              xPath := Strings[Count - 3] + '/' + Strings[Count - 2];
+          finally
+            Free;
+          end;
         end;
         with AddXml (TXml.CreateAsString('/' + xPath, '')) do
         begin
@@ -13737,17 +13751,17 @@ begin
             with AddXml (TXml.CreateAsString('consumes', '')) do
             begin
               jsonType := jsonArray;
-              AddXml(TXml.CreateAsString('-', 'application/json'))
+              AddXml(TXml.CreateAsString('_', 'application/json'))
             end;
             with AddXml (TXml.CreateAsString('produces', '')) do
             begin
               jsonType := jsonArray;
-              AddXml(TXml.CreateAsString('-', 'application/json'))
+              AddXml(TXml.CreateAsString('_', 'application/json'))
             end;
             with AddXml (TXml.CreateAsString('parameters', '')) do
             begin
               jsonType := jsonArray;
-              with AddXml(TXml.CreateAsString('-', '')) do
+              with AddXml(TXml.CreateAsString('_', '')) do
               begin
                 AddXml (TXml.CreateAsString('name', 'rabobank-apikey'));
                 AddXml (TXml.CreateAsString('in', 'header'));
@@ -13756,7 +13770,7 @@ begin
                 AddXml (TXml.CreateAsString('type', 'string'));
               end;
               if xOper.reqXml.Items.Count > xOper.InputHeaders.Count then
-              with AddXml(TXml.CreateAsString('-', '')) do
+              with AddXml(TXml.CreateAsString('_', '')) do
               begin
                 AddXml (TXml.CreateAsString('name', 'body'));
                 AddXml (TXml.CreateAsString('in', 'body'));
@@ -13814,7 +13828,8 @@ begin
           AddXml (xOper.FaultXsd.sType.ElementDefs.Xsds[0].JsonSchemaAsXml as TXml);
       end;
     end;
-    Clipboard.AsText := StreamJSON(0, True)
+//  Clipboard.AsText := StreamJSON(0, True)
+    Clipboard.AsText := StreamYAML(0, True)
   finally
     free;
   end;

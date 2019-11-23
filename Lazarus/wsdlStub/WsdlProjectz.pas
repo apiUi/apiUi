@@ -127,6 +127,8 @@ type
     procedure HTTPProxyServerHTTPDocument(
       AContext: TIdHTTPProxyServerContext; var VStream: TStream);
     procedure RemoveStdHttpHeaders (aHeaderList: TIdHeaderList);
+    procedure HTTPServerRemoteControlApi(AContext: TIdContext;
+      ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HttpServerBmtpCommandGet(AContext: TIdContext;
@@ -181,7 +183,8 @@ type
     FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, ApiByExampleWsdl, CobolWsdl, BmtpWsdl, SwiftMtWsdl, MailWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
-    Wsdls, wsdlNames, openApiPaths: TStringList;
+    Wsdls, wsdlNames: TStringList;
+    PathInfos, PathRegexps, PathFormats: TStringList;
     Scripts: TXml;
     DisplayedLogColumns: TStringList;
     projectFileName, LicenseDbName: String;
@@ -235,6 +238,7 @@ type
     FocusOperationName, FocusOperationNameSpace: String;
     FocusMessageIndex: Integer;
     OnBooleanDialog: TBooleanFunctionString;
+    OnQuitEvent: TStringFunctionBoolean;
     procedure doRegressionReport (aReport: TSnapshot);
     procedure DatabaseConnectionSpecificationFromXml;
     procedure UpdateOperationAliasses;
@@ -1506,8 +1510,10 @@ begin
   Wsdls.Sorted := True;
   wsdlNames := TStringList.Create;
   wsdlNames.Sorted := True;
-  openApiPaths := TStringList.Create;
-  openApiPaths.Sorted := True;
+  PathInfos := TStringList.Create;
+  PathInfos.Sorted := True;
+  PathRegexps := TStringList.Create;
+  PathFormats := TStringList.Create;
   unknownOperation := TWsdlOperation.Create(TWsdl(nil));
   unknownOperation.StubAction := saRedirect;
   elementsWhenRepeatable := TStringList.Create;
@@ -1662,7 +1668,9 @@ begin
   FreeAndNil (unknownOperation);
   Wsdls.Free;
   wsdlNames.Free;
-  openApiPaths.Free;
+  PathInfos.Free;
+  PathRegexps.Free;
+  PathFormats.Free;
   FreeAndNil (FreeFormatWsdl);
   FreeAndNil (CobolWsdl);
   FreeAndNil (BmtpWsdl);
@@ -1717,17 +1725,18 @@ procedure TWsdlProject.PrepareAllOperations;
   procedure _prepWsdl (xWsdl: TWsdl);
   var
     s, o, p: Integer;
+    xService: TWsdlService;
     xOperation: TWsdlOperation;
   begin
     wsdlNames.AddObject(xWsdl.Name, xWsdl);
     for s := 0 to xWsdl.Services.Count - 1 do
     begin
-      if xWsdl.isOpenApiService then with xWsdl.Services do
-        for p := 0 to xWsdl.BasePaths.Count - 1 do
-          openApiPaths.AddObject(xWsdl.BasePaths[p] + Services[s].openApiPathRegExp, Services[s]);
-      for o := 0 to xWsdl.Services.Services[s].Operations.Count - 1 do
+      xService := xWsdl.Services.Services[s];
+      for p := 0 to xService.PathInfos.Count - 1 do
+        self.PathInfos.AddObject (xService.PathInfos.Strings[p], xService);
+      for o := 0 to xService.Operations.Count - 1 do
       begin
-        xOperation := xWsdl.Services.Services[s].Operations.Operations [o];
+        xOperation := xService.Operations.Operations [o];
         if xOperation.WsdlService.DescriptionType = ipmDTEmail then
           xOperation.StubAction := saRequest;
         if Assigned (xOperation.reqBind) then
@@ -1788,12 +1797,16 @@ procedure TWsdlProject.PrepareAllOperations;
     end;
   end;
 var
-  w, o, m, f: Integer;
+  x, w, o, m, s, e: Integer;
+  f: Boolean;
+  xPathRegexp, xPathFormat: String;
   oStep: Integer;
   xMessage: TWsdlMessage;
 begin
   wsdlNames.Clear;
-  openApiPaths.Clear;
+  PathInfos.Clear;
+  PathRegexps.Clear;
+  PathFormats.Clear;
   allOperations.ClearListOnly;
   allOperationsRpy.ClearListOnly;
   scriptErrorCount := 0;
@@ -1807,6 +1820,30 @@ begin
   _updtWsdls(MailWsdl);
   for w := 0 to Wsdls.Count - 1 do
     _prepWsdl (Wsdls.Objects [w] as TWsdl);
+    // path may look like /api/something/{aId}/{anotherId}
+  with TRegExpr.Create ('\{[^\}]+\}') do
+  try
+    for w := 0 to PathInfos.Count - 1 do
+    begin
+      xPathRegexp := '';
+      s := 1;
+      f := Exec(PathInfos.Strings[w]);
+      while f do
+      begin
+        e := MatchPos[0];
+        xPathRegexp := xPathRegexp + Copy (PathInfos.Strings[w], s, e - s) + S_OPEN_API_PATHVALUE_REGEXP;
+        s := MatchPos[0] + MatchLen[0];
+        f := ExecNext;
+      end;
+      xPathRegexp := xPathRegexp + Copy (PathInfos.Strings[w], s, Length (PathInfos.Strings[w]));
+      xPathFormat := ReplaceStrings (xPathRegexp, S_OPEN_API_PATHVALUE_REGEXP, '%s', False, False);
+      xPathRegexp := '^(' + xPathRegexp + ')$';
+      PathRegexps.AddObject(xPathRegexp, PathInfos.Objects[w]);
+      PathFormats.AddObject(xPathFormat, PathInfos.Objects[w]);
+    end;
+  finally
+    Free;
+  end;
   UpdateOperationAliasses;
   ProgressStep('Preparing operations', 100);
   oStep := 800;
@@ -4270,7 +4307,6 @@ begin
         if URL [Length (URL)] = '/' then
           SetLength(URL, Length (URL) - 1);
         URL := URL
-             + aOperation.Wsdl.basePathV2 // only filled with openapi 2..
              + aOperation.WsdlService.openApiPath;
         querySep := '?';
         for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
@@ -6109,7 +6145,6 @@ begin
       end;
       xService.Host := sXml.Items.XmlValueByTag['Address'];
       xService.openApiPath := sXml.Items.XmlValueByTag['Path'];
-      prepareOpenApiRegExp (xService.openApiPath, xService.openApiPathRegExp);
       oList := TStringList.Create;
       try
         oList.Sorted := True;
@@ -7456,17 +7491,19 @@ function TWsdlProject.FindOpenApiOnLog (aLog : TLog): TWsdlOperation;
   var
     x: Integer;
     xService: TWsdlService;
+    s: String;
   begin
     result := nil;
     with TRegExpr.Create do
     try
-      for x := 0 to openApiPaths.Count - 1 do
+      for x := 0 to PathRegexps.Count - 1 do
       begin
-        Expression := '^(' + openApiPaths.Strings[x] + ')$';
+        s := PathRegexps.Strings[x];
+        Expression := s;
         if Exec(aLog.httpDocument) then
         begin
-          result := openApiPaths.Objects[x] as TWsdlService;
-          aLog.openApiPathMask := ReplaceStrings (openApiPaths.Strings[x], S_OPEN_API_VALUE_REGEXP, '%s', False, False);
+          result := PathInfos.Objects[x] as TWsdlService;
+          aLog.PathFormat := PathFormats.Strings[x];
           Exit;
         end;
       end;
@@ -7486,7 +7523,11 @@ begin
     with xService.Operations do
     begin
       if Operations[x].httpVerb = aLog.httpCommand then
+      begin
         result := Operations[x];
+        aLog.OperationName := Operations[x].Name;
+        aLog.ServiceName := xService.Name;
+      end;
     end;
   end;
 end;
@@ -7750,6 +7791,144 @@ begin
   end;
 end;
 
+procedure TWsdlProject.HTTPServerRemoteControlApi(AContext: TIdContext;
+  ARequestInfo: TIdHTTPRequestInfo;AResponseInfo: TIdHTTPResponseInfo);
+
+var
+  x: Integer;
+  xRequestBody: String;
+  xBodyXml, nameXml, valueXml, fXml: TXml;
+  xName: String;
+  xStream: TMemoryStream;
+begin
+  xBodyXml := nil;
+  AResponseInfo.ContentEncoding := 'identity';
+  AResponseInfo.ResponseNo := 200;
+  try   // finally
+    try  // Except
+      if (ARequestInfo.Command = 'POST')
+      or (ARequestInfo.Command = 'PUT') then
+      begin
+        xRequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
+        xBodyXml := TXml.Create;
+        xBodyXml.LoadJsonFromString(xRequestBody, nil);
+      end;
+      with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/Api/Rest
+      try
+        if Strings[3] = 'clearLogs' then
+        begin
+          doClearLogs := True;
+          Exit;
+        end;
+        if Strings[3] = 'clearSnapshots' then
+        begin
+          doClearSnapshots := True;
+          Exit;
+        end;
+        if Strings[3] = 'createSnapshot' then
+        begin
+          nameXml := xBodyXml.FindXml('json.name');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          CreateSnapshot ( nameXml.Value
+                         , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
+                         , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
+                         , True
+                         , False
+                         );
+          Exit;
+        end;
+        if Strings[3] = 'executeScript' then
+        begin
+          nameXml := xBodyXml.FindXml('json.name');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          fXml := FindScript (nameXml.Value);
+          if Assigned (fXml) then
+          begin
+            ProgressMax := 5;
+            ProgressPos := 0;
+            TProcedureThread.Create(False, False, 0, Self, Self.ScriptExecute, fXml as TObject);
+          end
+          else
+            raise Exception.Create('Cannot find script based on: ' + nameXml.Value);
+          Exit;
+        end;
+        if Strings[3] = 'resetEnvVar' then
+        begin
+          nameXml := xBodyXml.FindXml('json.name');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+            wsdlz.resetEnvVar(allOperations.Operations[0], nameXml.Value);
+          Exit;
+        end;
+        if Strings[3] = 'resetEnvVars' then
+        begin
+          nameXml := xBodyXml.FindXml('json.regularExpression');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+            wsdlz.ResetEnvVars(allOperations.Operations[0], nameXml.Value);
+          Exit;
+        end;
+        if Strings[3] = 'setEnvVar' then
+        begin
+          nameXml := xBodyXml.FindXml('json.name');
+          valueXml := xBodyXml.FindXml('json.value');
+          if not Assigned (nameXml)
+          or not Assigned (valueXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+            wsdlz.setEnvVar(allOperations.Operations[0], nameXml.Value, valueXml.Value);
+          Exit;
+        end;
+      finally
+        free;
+      end;
+    except
+      on e: Exception do
+      begin
+        AResponseInfo.ResponseNo := 500;
+        AResponseInfo.ContentText := e.Message;
+      end;
+    end;
+  finally
+    FreeAndNil(xBodyXml);
+    aResponseInfo.ContentStream := TMemoryStream.Create;
+    if AResponseInfo.ContentEncoding <> 'identity' then
+    begin
+      xStream := TMemoryStream.Create;
+      try
+        WriteStringToStream(AResponseInfo.ContentText, xStream);
+        if AResponseInfo.ContentEncoding = 'deflate' then
+          GZIPUtils.deflate(xStream, aResponseInfo.ContentStream as TMemoryStream);
+        if AResponseInfo.ContentEncoding = 'gzip' then
+          GZIPUtils.GZip(xStream, aResponseInfo.ContentStream as TMemoryStream);
+      finally
+        xStream.Free;
+      end;
+    end
+    else
+    begin
+      WriteStringToStream(AResponseInfo.ContentText, AResponseInfo.ContentStream as TMemoryStream);
+    end;
+    aResponseInfo.ContentText := '';
+  end;
+end;
+
 procedure TWsdlProject.HTTPServerCommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
   function _relatesToKey(aRequestBody: String): String;
@@ -7774,6 +7953,11 @@ var
   xRelatesTo, xNotification: String;
   xOnRequestViolatingAddressPath: TOnRequestViolating;
 begin
+  if AnsiStartsStr('/' + _ProgName + '/Api/', ARequestInfo.Document) then
+  begin
+    HTTPServerRemoteControlApi(AContext, ARequestInfo, AResponseInfo);
+    Exit;
+  end;
   xProcessed := False;
   try // finally set for hhtp reply
     {$ifdef windows}
@@ -8727,6 +8911,7 @@ begin
           xLog.CorrelationId := Items.XmlValueByTag ['CorrelationId'];
           xLog.ServiceName := Items.XmlValueByTag ['Service'];
           xLog.OperationName := Items.XmlValueByTag ['Operation'];
+          xLog.PathFormat := Items.XmlValueByTag ['PathFormat'];
           xLog.Exception := Items.XmlValueByTag ['Error'];
           xLog.Remarks := Items.XmlValueByTag ['Remarks'];
           xLog.Notifications := Items.XmlValueByTag ['Notifications'];
@@ -9639,7 +9824,9 @@ begin
   allOperations.ClearListOnly;
   allOperationsRpy.ClearListOnly;
   allAliasses.ClearListOnly;
-  openApiPaths.Clear;
+  PathInfos.Clear;
+  PathRegexps.Clear;
+  PathFormats.Clear;
   ScriptsClear;
   DisplayedLogColumns.Clear;
   stubRead := False;

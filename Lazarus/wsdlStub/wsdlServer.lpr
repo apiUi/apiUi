@@ -470,6 +470,7 @@ begin
   se.Notify := Notify;
   se.LogServerMessage := LogServerException;
   se.FoundErrorInBuffer := FoundErrorInBuffer;
+  se.OnOpenProjectEvent := OpenProjectCommand;
   sc.OnActivateEvent := ActivateCommand;
   sc.OnOpenProjectEvent := OpenProjectCommand;
   sc.OnReactivateEvent := ReactivateCommand;
