@@ -1511,7 +1511,6 @@ begin
   wsdlNames := TStringList.Create;
   wsdlNames.Sorted := True;
   PathInfos := TStringList.Create;
-  PathInfos.Sorted := True;
   PathRegexps := TStringList.Create;
   PathFormats := TStringList.Create;
   unknownOperation := TWsdlOperation.Create(TWsdl(nil));
@@ -1721,6 +1720,27 @@ begin
   end;
 end;
 
+function CompareApiPathNames(List: TStringList; Index1, Index2: Integer): Integer;
+  function _doCompare(s1, s2: String):Integer;
+  begin
+    if s1 > s2 then
+    begin
+      result := 1;
+      Exit;
+    end;
+    if s1 < s2 then
+    begin
+      result := -1;
+      Exit;
+    end;
+    result := 0;;
+  end;
+var
+  s1, s2: String;
+begin
+  result := _doCompare(List.Strings[Index1] + '~', List.Strings[Index2] + '~');
+end;
+
 procedure TWsdlProject.PrepareAllOperations;
   procedure _prepWsdl (xWsdl: TWsdl);
   var
@@ -1802,6 +1822,7 @@ var
   xPathRegexp, xPathFormat: String;
   oStep: Integer;
   xMessage: TWsdlMessage;
+
 begin
   wsdlNames.Clear;
   PathInfos.Clear;
@@ -1821,6 +1842,7 @@ begin
   for w := 0 to Wsdls.Count - 1 do
     _prepWsdl (Wsdls.Objects [w] as TWsdl);
     // path may look like /api/something/{aId}/{anotherId}
+  PathInfos.CustomSort(CompareApiPathNames);
   with TRegExpr.Create ('\{[^\}]+\}') do
   try
     for w := 0 to PathInfos.Count - 1 do
@@ -1843,6 +1865,12 @@ begin
     end;
   finally
     Free;
+  end;
+  if False then
+  begin
+    sjowmessage (PathInfos.Text);
+    sjowmessage (PathRegexps.Text);
+    sjowmessage (PathFormats.Text);
   end;
   UpdateOperationAliasses;
   ProgressStep('Preparing operations', 100);
@@ -4241,19 +4269,11 @@ begin
     then raise Exception.Create('SendHttpMessage: null arguments');
   if (aOperation.isOpenApiService) then
   begin
-    if (aOperation.OpenApiVersion[1] = '2') then
+    if Assigned (aOperation.Wsdl.Servers)
+    and (aOperation.Wsdl.Servers.Count > 0) then
     begin
-      URL := ifthen(aOperation.useSsl, 'https://', 'http://') + aOperation.Host;
+      URL := aOperation.Wsdl.Servers.Strings[0];
       addressFromDescr := URL;
-    end
-    else
-    begin
-      if Assigned (aOperation.Wsdl.Servers)
-      and (aOperation.Wsdl.Servers.Items.Count > 0) then
-      begin
-        URL := aOperation.Wsdl.Servers.Items.XmlItems[0].Items.XmlValueByTagDef['url', ''];
-        addressFromDescr := URL;
-      end;
     end;
   end
   else
@@ -4306,6 +4326,12 @@ begin
           raise Exception.CreateFmt ('Operation: %s URL empty', [aOperation.Name]);
         if URL [Length (URL)] = '/' then
           SetLength(URL, Length (URL) - 1);
+        with TIdURI.Create(URL) do
+        try
+          aLog.PathFormat := '/' + Document + aOperation.WsdlService.openApiPath;
+        finally
+          Free;
+        end;
         URL := URL
              + aOperation.WsdlService.openApiPath;
         querySep := '?';
@@ -4317,6 +4343,7 @@ begin
             if (Xsd.ParametersType = oppPath) then
             begin
               URL := ReplaceStr(URL, '{' + Name + '}', ValueFromJsonArray(true));
+              aLog.PathFormat := ReplaceStr(aLog.PathFormat, '{' + Name + '}', '%s');
             end;
             if (Xsd.ParametersType = oppQuery) then
             begin
@@ -6143,7 +6170,7 @@ begin
       begin
         xService := xWsdl.Services.Services[f];
       end;
-      xService.Host := sXml.Items.XmlValueByTag['Address'];
+//      xService.Host := sXml.Items.XmlValueByTag['Address'];
       xService.openApiPath := sXml.Items.XmlValueByTag['Path'];
       oList := TStringList.Create;
       try
@@ -7010,7 +7037,7 @@ begin
       with xXml.AddXml(TXml.CreateAsString('Service', '')) do
       begin
         AddXml (TXml.CreateAsString('Name', xService.Name));
-        AddXml (TXml.CreateAsString('Address', xService.Host));
+//        AddXml (TXml.CreateAsString('Address', xService.Host));
         AddXml (TXml.CreateAsString('Path', xService.openApiPath));
         for x := 0 to ApiByExampleWsdl.Services.Services[s].Operations.Count - 1 do
         begin

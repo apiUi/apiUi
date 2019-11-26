@@ -5503,16 +5503,14 @@ begin
       endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpsAddress;
       if Assigned (WsdlOperation.Wsdl.Servers) then
       begin
-        for x := 0 to WsdlOperation.Wsdl.Servers.Items.Count - 1 do
-        with WsdlOperation.Wsdl.Servers.Items.XmlItems[x] do
+        for x := 0 to WsdlOperation.Wsdl.Servers.Count - 1 do
+        with WsdlOperation.Wsdl.Servers do
         begin
           xEnumeration := TXsdEnumeration.Create;
-          xEnumeration.Value := Items.XmlValueByTagDef['url', ''];
-          xEnumeration.Annotation := Items.XmlValueByTagDef['description', ''];
+          xEnumeration.Value := Strings[x];
           endpointConfigXsd.FindXsd('endpointConfig.Http.Address').sType.Enumerations.AddObject(xEnumeration.Value, xEnumeration);
           xEnumeration := TXsdEnumeration.Create;
-          xEnumeration.Value := Items.XmlValueByTagDef['url', ''];
-          xEnumeration.Annotation := Items.XmlValueByTagDef['description', ''];
+          xEnumeration.Value := Strings[x];
           endpointConfigXsd.FindXsd('endpointConfig.Https.Address').sType.Enumerations.AddObject(xEnumeration.Value, xEnumeration);
         end;
       end;

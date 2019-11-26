@@ -92,7 +92,7 @@ type
       OpenApiVersion: String;
 //      xTargetNamespacePrefix: String;
       Services: TWsdlServices;
-      Servers: TXml; // introduced with openapi 3.0, just a copy of the specs
+      Servers: TStringList; // introduced with openapi 3.0
       ServerPathNames: TStringList;
       XsdDescr: TXsdDescr;
       sdfXsdDescrs: TXsdDescrList;
@@ -151,7 +151,7 @@ type
     private
     function getOperationByName(Index: String): TWsdlOperation;
     public
-      Name, FileAlias, openApiPath, Host: String;
+      Name, FileAlias, openApiPath: String;
       AuthenticationType: TAuthenticationType;
       UserName: String;
       Password: String;
@@ -2126,6 +2126,7 @@ begin
   inherited Create;
   EnvVars := aEnvVars;
   OperationsWithEndpointOnly := aOperationsWithEndpointOnly;
+  Servers := TStringList.Create;
   Services := TWsdlServices.Create;
   Services.Sorted := True;
   ServerPathNames := TStringList.Create;
@@ -3110,7 +3111,7 @@ var
   xDoc, xExt: String;
   sl: TStringList;
   xXsd, yXsd, hXsd: TXsd;
-  s: String;
+  s, xHost, xBasePath: String;
 begin
   try
     with TIdURI.Create(resolveAliasses(aFileName)) do
@@ -3146,13 +3147,22 @@ begin
     _ReadDefinitions (sl);
     for x := 0 to Items.Count - 1 do
     begin
-      if Items.XmlItems[x].Name = 'swagger' then with Items.XmlItems[x] do
+      if Items.XmlItems[x].Name = 'swagger' then
       begin
-        sl.Add (Name);
+        sl.Add (Items.XmlItems[x].Name);
         isOpenApiService := True;
-        if Value <> '2.0' then
-          SjowMessage (Format('warning (%s): unexpected version number %s (2.0 expected)', [aFileName, Value]));
-        OpenApiVersion := Value;
+        if Items.XmlItems[x].Value <> '2.0' then
+          SjowMessage (Format('warning (%s): unexpected version number %s (2.0 expected)', [aFileName, Items.XmlItems[x].Value]));
+        OpenApiVersion := Items.XmlItems[x].Value;
+        // simulate openApi v3 servers
+        xHost := Items.XmlValueByTag['host'];
+        xBasePath := _trimPath(Items.XmlValueByTag['basePath']);
+        dXml := Items.XmlItemByTag['schemes'];
+        for p := 0 to dXml.Items.Count - 1 do
+        begin
+          Servers.Add (dXml.Items.XmlItems[p].Value + '://' + xHost + xBasePath);
+          ServerPathNames.Add (xBasePath);
+        end;
       end;
       if Items.XmlItems[x].Name = 'openapi' then with Items.XmlItems[x] do
       begin
@@ -3171,16 +3181,32 @@ begin
         end;
         self.Name := Items.XmlValueByTag['title'];
       end;
-      if Items.XmlItems[x].Name = 'host' then with Items.XmlItems[x] do // swagger 2.0
+      if Items.XmlItems[x].Name = 'servers' then
       begin
-        sl.Add (Name);
-        Host := Value;
+        sl.Add (Items.XmlItems[x].Name);
+        with TIdURI.Create do
+        try
+          with Items.XmlItems[x] do
+          begin
+            for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+            begin
+              try
+                URI := Items.XmlValueByTag['url'];
+                ServerPathNames.Add ('/' + Document);
+                Servers.Add (URI);
+                SjowMessage(URI);
+              except
+              end;
+            end;
+          end;
+        finally
+          Free;
+        end;
       end;
-      if Items.XmlItems[x].Name = 'basePath' then with Items.XmlItems[x] do // swagger 2.0
-      begin
-        sl.Add (Name);
-        ServerPathNames.Add (_trimPath(Value));
-        SjowMessage(_trimPath(Value));
+      if (Items.XmlItems[x].Name = 'host') // swagger 2.0
+      or (Items.XmlItems[x].Name = 'basePath') // swagger 2.0
+      then begin
+        sl.Add (Items.XmlItems[x].Name);
       end;
       if Items.XmlItems[x].Name = 'schemes' then with Items.XmlItems[x] do
       begin
@@ -3212,28 +3238,6 @@ begin
       begin
         sl.Add (Name);
         SjowMessage ('to be implemented: ' + Name + ': ' + Value);
-      end;
-      if Items.XmlItems[x].Name = 'servers' then
-      begin
-        sl.Add (Items.XmlItems[x].Name);
-        Servers := TXml.Create;
-        Servers.CopyDownLine (Items.XmlItems[x], False);
-        with TIdURI.Create do
-        try
-          with Items.XmlItems[x] do
-          begin
-            for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
-            begin
-              try
-                URI := Items.XmlValueByTag['url'];
-                ServerPathNames.Add ('/' + Document);
-              except
-              end;
-            end;
-          end;
-        finally
-          Free;
-        end;
       end;
       if Items.XmlItems[x].Name = 'tags' then with Items.XmlItems[x] do
       begin
@@ -6248,9 +6252,6 @@ begin
   result := '';
   if Assigned (Wsdl) then
     result := wsdl.Host;
-  if Assigned (WsdlService)
-  and (WsdlService.Host <> '') then
-    result := WsdlService.Host;
 end;
 
 function TWsdlOperation.getIsFreeFormat : Boolean ;

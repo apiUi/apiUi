@@ -1780,7 +1780,7 @@ end;
 
 function TXsd.JsonSchemaAsXml: TObject;
 var
-  x: Integer;
+  x, n: Integer;
   xXml: TXml;
   xJsonType: TjsonType;
 begin
@@ -1861,6 +1861,15 @@ begin
         begin
           for x := 0 to sType.ElementDefs.Count - 1 do
             AddXml (sType.ElementDefs.Xsds[x].JsonSchemaAsXml as TXml);
+        end;
+        n := 0;
+        for x := 0 to sType.ElementDefs.Count - 1 do
+          if sType.ElementDefs.Xsds[x].minOccurs <> '0' then
+            Inc (n);
+        if (n > 0) then with AddXml(TXml.CreateAsString('required', '')) do
+        begin
+          for x := 0 to sType.ElementDefs.Count - 1 do
+            AddXml (TXml.CreateAsString ('_', sType.ElementDefs.Xsds[x].ElementName));
         end;
       end;
     end;
