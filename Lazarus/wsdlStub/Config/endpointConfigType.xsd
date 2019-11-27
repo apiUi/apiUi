@@ -69,23 +69,12 @@ when "true", the server will be allowed to send gzip responses (compression meth
 			<xs:enumeration value="TRACE"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="httpAddressType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
 	<xs:complexType name="httpType">
 		<xs:sequence>
-			<xs:element name="Address" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>e.g. http://localhost:6060/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Verb" type="tns:httpVerbType" minOccurs="0"/>
-			<xs:element name="ContentType" type="xs:string" minOccurs="0"/>
-			<xs:element name="ContentEncoding" type="tns:contentEncodingType" minOccurs="0"/>
-			<xs:element name="AcceptEncoding" type="tns:acceptEncodingType" minOccurs="0"/>
-			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="httpsType">
-		<xs:sequence>
-			<xs:element name="Address" type="xs:string" minOccurs="0">
+			<xs:element name="Address" type="tns:httpAddressType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
 				</xs:annotation>
@@ -95,7 +84,7 @@ when "true", the server will be allowed to send gzip responses (compression meth
 			<xs:element name="ContentEncoding" type="tns:contentEncodingType" minOccurs="0"/>
 			<xs:element name="AcceptEncoding" type="tns:acceptEncodingType" minOccurs="0"/>
 			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
-			<xs:element name="SSL">
+			<xs:element name="SSL" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="Version" type="tns:sslVersionType"/>
@@ -787,7 +776,6 @@ If the NameValueCCSID is a 2-byte Unicode CCSID (1200, 13488, or 17584), the byt
 Functions as a request-response protocol in the client-server configurations.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="Https" type="tns:httpsType"/>
 			<xs:element name="Mq" type="tns:mqType">
 				<xs:annotation>
 					<xs:documentation>IBM(C) Websphere MQ

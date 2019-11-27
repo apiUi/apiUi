@@ -5847,15 +5847,19 @@ begin
         and (StubCustomHeaderXml.Checked) then
           with AddXml (TXml.CreateAsString ('customHeaders', '')) do
             CopyDownLine(StubCustomHeaderXml, True);
-        if useSsl then
+        if (sslVersion <> sslvTLSv1_2)
+        or (sslCertificateFile <> '')
+        or (sslKeyFile <> '')
+        or (sslRootCertificateFile <> '')
+        or (sslPassword <> '')
+        then
         begin
-          TagName := 'Https';
           with AddXml(TXml.CreateAsString('SSL', '')) do
           begin
-            AddXml(TXml.CreateAsString('Version', sslVersionToString(sslVersion)));
-            AddXml(TXml.CreateAsString('CertificateFile', sslCertificateFile));
-            AddXml(TXml.CreateAsString('KeyFile', sslKeyFile));
-            AddXml(TXml.CreateAsString('RootCertificateFile', sslRootCertificateFile));
+            if (sslVersion <> sslvTLSv1_2) then AddXml(TXml.CreateAsString('Version', sslVersionToString(sslVersion)));
+            if (sslCertificateFile <> '') then AddXml(TXml.CreateAsString('CertificateFile', sslCertificateFile));
+            if (sslKeyFile <> '') then AddXml(TXml.CreateAsString('KeyFile', sslKeyFile));
+            if (sslRootCertificateFile <> '') then AddXml(TXml.CreateAsString('RootCertificateFile', sslRootCertificateFile));
             if sslPassword <> '' then
               AddXml (TXml.CreateAsString('Password', Xmlz.EncryptString(sslPassword)));
           end;
@@ -5950,7 +5954,7 @@ begin
   AcceptDeflateEncoding := True;
   AcceptGzipEncoding := True;
   useSsl := False;
-  sslVersion := sslvSSLv3;
+  sslVersion := sslvTLSv1_2;
   sslCertificateFile := '';
   sslKeyFile := '';
   sslRootCertificateFile := '';
@@ -5979,8 +5983,9 @@ begin
     begin
       if Checked then
       begin
-        if Name = 'Http' then
-        begin
+        if (Name = 'Http')
+        or (Name = 'Https')
+        then begin
           StubTransport := ttHttp;
           StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
           httpVerb := UpperCase(Items.XmlCheckedValueByTagDef['Verb', httpVerb]);
@@ -5995,27 +6000,12 @@ begin
           xXml := Items.XmlCheckedItemByTag['customHeaders'];
           if Assigned (xXml) then
             StubCustomHeaderXml.LoadValues (xXml, True, True);
-        end;
-        if Name = 'Https' then
-        begin
-          StubTransport := ttHttp;
-          StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
-          httpVerb := Items.XmlCheckedValueByTagDef['Verb', httpVerb];
-          OverruleContentType := Items.XmlCheckedValueByTagDef['ContentType', OverruleContentType];
-          ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
-          xXml := Items.XmlCheckedItemByTag['AcceptEncoding'];
-          if Assigned (xXml) then
-          begin
-            AcceptDeflateEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['deflate', AcceptDeflateEncoding];
-            AcceptGzipEncoding := xXml.Items.XmlCheckedBooleanByTagDef ['gzip', AcceptGzipEncoding];
-          end;
-          xXml := Items.XmlCheckedItemByTag['customHeaders'];
-          if Assigned (xXml) then
-            StubCustomHeaderXml.LoadValues (xXml, True, True);
-          useSsl := True;
+          useSsl := (UpperCase(Copy (StubHttpAddress, 1, 8)) = 'HTTPS://');
           xXml := Items.XmlCheckedItemByTag['SSL'];
           if Assigned (xXml) then with xXml do
           begin
+            if (StubHttpAddress = '') then
+              useSsl := True;
             yXml := Items.XmlCheckedItemByTag['Version'];
             if Assigned (yXml) then
               sslVersion := sslVersionFromString(yXml.Value);

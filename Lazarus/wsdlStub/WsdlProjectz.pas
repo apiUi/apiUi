@@ -4301,10 +4301,8 @@ begin
               sUri.Protocol := oUri.Protocol;
             if aOperation.useSsl then
               sUri.Protocol := 'https';
-            if (not aOperation.isOpenApiService)
-            and (sUri.Path = '/')
-            and (sUri.Document = '') then
-            begin
+            if (sUri.Path + sUri.Document = '/')
+            then begin
               sUri.Path := oUri.Path;
               sUri.Document := oUri.Document;
             end;
@@ -4320,7 +4318,7 @@ begin
         HttpClient.Request.CustomHeaders.Text := aLog.RequestHeaders;
         RemoveStdHttpHeaders(HttpClient.Request.CustomHeaders);
       end;
-      if aOperation.isOpenApiService then
+      if aOperation.isOpenApiService then // URL is still without Service specific (one of those Paths) part
       begin
         if URL = '' then
           raise Exception.CreateFmt ('Operation: %s URL empty', [aOperation.Name]);
@@ -4328,7 +4326,7 @@ begin
           SetLength(URL, Length (URL) - 1);
         with TIdURI.Create(URL) do
         try
-          aLog.PathFormat := '/' + Document + aOperation.WsdlService.openApiPath;
+          aLog.PathFormat := Path + Document + aOperation.WsdlService.openApiPath;
         finally
           Free;
         end;
@@ -4451,7 +4449,7 @@ begin
         HttpClient.Request.Username := aOperation.WsdlService.Username;
         HttpClient.Request.Password := aOperation.WsdlService.Password;
       end;
-      if aOperation.useSsl then
+      if (UpperCase(Copy (URL, 1, 8)) = 'HTTPS://') then
       begin
         HttpClient.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
         with (HttpClient.IOHandler as TIdSSLIOHandlerSocketOpenSSL) do

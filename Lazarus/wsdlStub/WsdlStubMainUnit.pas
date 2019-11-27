@@ -868,7 +868,6 @@ type
     procedure WsdlServicesComboBoxDropDown(Sender: TObject);
     procedure WsdlComboBoxDropDown(Sender: TObject);
     function CheckHttpAddress (aBind: TObject; aNewValue: String): Boolean;
-    function CheckHttpsAddress (aBind: TObject; aNewValue: String): Boolean;
     procedure RedirectAddressActionExecute(Sender: TObject);
     procedure TreeViewResize(Sender: TObject);
     procedure GridViewExit(Sender: TObject);
@@ -5441,36 +5440,6 @@ begin
   result := True;    // avoids losing data entry, warning only
   with TIdUri.Create(aNewValue) do
   try
-    if UpperCase(Protocol) <> 'HTTP' then
-    begin
-      ShowMessage ('Protocol must be HTTP');
-      Exit;
-    end;
-    if WsdlOperation.isOpenApiService then
-    begin
-      if (Path + Document <> '/') then
-      begin
-        ShowMessage (Format ('no path (%s) allowed on OpenApi service', [Path + Document]));
-        Exit;
-      end;
-    end;
-    Result := True;
-  finally
-    free;
-  end;
-end;
-
-function TMainForm.CheckHttpsAddress(aBind: TObject; aNewValue: String
-  ): Boolean;
-begin
-  result := True;    // avoids losing data entry, warning only
-  with TIdUri.Create(aNewValue) do
-  try
-    if UpperCase(Protocol) <> 'HTTPS' then
-    begin
-      ShowMessage ('Protocol must be HTTPS');
-      Exit;
-    end;
     if WsdlOperation.isOpenApiService then
     begin
       if (Path + Document <> '/') then
@@ -5498,9 +5467,7 @@ begin
     xXml := endpointConfigAsXml;
     try
       endpointConfigXsd.FindXsd('endpointConfig.Http.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
-      endpointConfigXsd.FindXsd('endpointConfig.Https.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
       endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
-      endpointConfigXsd.FindXsd('endpointConfig.Https.Address').CheckNewValue := CheckHttpsAddress;
       if Assigned (WsdlOperation.Wsdl.Servers) then
       begin
         for x := 0 to WsdlOperation.Wsdl.Servers.Count - 1 do
@@ -5509,12 +5476,8 @@ begin
           xEnumeration := TXsdEnumeration.Create;
           xEnumeration.Value := Strings[x];
           endpointConfigXsd.FindXsd('endpointConfig.Http.Address').sType.Enumerations.AddObject(xEnumeration.Value, xEnumeration);
-          xEnumeration := TXsdEnumeration.Create;
-          xEnumeration.Value := Strings[x];
-          endpointConfigXsd.FindXsd('endpointConfig.Https.Address').sType.Enumerations.AddObject(xEnumeration.Value, xEnumeration);
         end;
       end;
-      with endpointConfigXsd.FindXsd('endpointConfig.Http.Address') do
       if EditXmlXsdBased('Configure Endpoint', '', '', '', False, False, esUsed,
         endpointConfigXsd, xXml) then
       begin
@@ -5529,12 +5492,6 @@ begin
     finally
       xXml.Free;
       with endpointConfigXsd.FindXsd('endpointConfig.Http.Address').sType.Enumerations do
-      begin
-        for x:= 0 to Count - 1 do
-          Objects[x].Free;
-        Clear;
-      end;
-      with endpointConfigXsd.FindXsd('endpointConfig.Https.Address').sType.Enumerations do
       begin
         for x:= 0 to Count - 1 do
           Objects[x].Free;

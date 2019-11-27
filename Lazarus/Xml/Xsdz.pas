@@ -1869,7 +1869,8 @@ begin
         if (n > 0) then with AddXml(TXml.CreateAsString('required', '')) do
         begin
           for x := 0 to sType.ElementDefs.Count - 1 do
-            AddXml (TXml.CreateAsString ('_', sType.ElementDefs.Xsds[x].ElementName));
+            if sType.ElementDefs.Xsds[x].minOccurs <> '0' then
+              AddXml (TXml.CreateAsString ('_', sType.ElementDefs.Xsds[x].ElementName));
         end;
       end;
     end;
