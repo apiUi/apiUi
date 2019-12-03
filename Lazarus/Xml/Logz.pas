@@ -1331,7 +1331,7 @@ end;
 
 procedure TLog.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
 begin
-  (aObject as TIpmItem).Value := '?wsdlStub Error found: ' + ErrorString;
+  (aObject as TIpmItem).Value := '?' + _ProgName + 'wsdlStub Error found: ' + ErrorString;
 end;
 
 procedure TLog.OpenApiRequestToBindables (aOperation: TWsdlOperation);

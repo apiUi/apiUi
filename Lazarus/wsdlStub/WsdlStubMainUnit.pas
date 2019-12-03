@@ -4195,13 +4195,16 @@ procedure TMainForm.ActionComboBoxChange(Sender: TObject);
 begin
   if Assigned(WsdlOperation) then
   begin
-    if (WsdlOperation.StubAction <> TStubAction(ActionComboBox.ItemIndex)) and
-      ((WsdlOperation.StubAction = saRequest) or
-        (TStubAction(ActionComboBox.ItemIndex) = saRequest)) then
+    if (WsdlOperation.StubAction <> TStubAction(ActionComboBox.ItemIndex))
+    and (   (WsdlOperation.StubAction = saRequest)
+         or (TStubAction(ActionComboBox.ItemIndex) = saRequest)
+        ) then
     begin
       WsdlOperation.StubAction := TStubAction(ActionComboBox.ItemIndex);
-      NavigatorTreeView.OnFocusChanged(NavigatorTreeView,
-        NavigatorTreeView.FocusedNode, 0);
+      NavigatorTreeView.OnFocusChanged ( NavigatorTreeView
+                                       , NavigatorTreeView.FocusedNode
+                                       , 0
+                                       );
     end;
     WsdlOperation.StubAction := TStubAction(ActionComboBox.ItemIndex);
     stubChanged := True;
@@ -4213,8 +4216,8 @@ begin
       OperationDelayResponseTimeAction.ImageIndex := 60
     else
       OperationDelayResponseTimeAction.ImageIndex := 61;
-    RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRedirect) or
-      (WsdlOperation.StubAction = saRequest);
+    RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRedirect)
+                                  or (WsdlOperation.StubAction = saRequest);
     if WsdlOperation.StubAction = saStub then
       EditMessageScriptAction.Caption := 'Edit Message Script'
     else
@@ -4222,20 +4225,6 @@ begin
     EditBetweenScriptMenuItem.Visible := (WsdlOperation.StubAction = saStub);
     EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
     EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
-    {
-      if (WsdlOperation.StubAction = saRequest) then
-      begin
-      MessagesMenuItem.Caption := 'Request';
-      AddMessageAction.Caption := 'Add request';
-      DeleteMessageAction.Caption := 'Delete request';
-      end
-      else
-      begin
-      MessagesMenuItem.Caption := 'Reply';
-      AddMessageAction.Caption := 'Add reply';
-      DeleteMessageAction.Caption := 'Delete reply';
-      end;
-    }
   end;
 end;
 
@@ -7399,7 +7388,7 @@ begin
   begin
     if not se.IsActive then
     begin
-      if BooleanPromptDialog('wsdlStub not active' + LineEnding + 'Activate now') then
+      if BooleanPromptDialog(_ProgName + ' not active' + LineEnding + 'Activate now') then
         startActionExecute (self);
     end;
     result := se.IsActive;
@@ -12349,7 +12338,7 @@ end;
 
 procedure TMainForm.SummaryReport (aList: TClaimableObjectList);
 begin
-  XmlUtil.presentAsHTML('wsdlStub - Test summary report', htmlReportTestSummary(se, aList as TSnapshotList));
+  XmlUtil.presentAsHTML(_ProgName + ' - Test summary report', htmlReportTestSummary(se, aList as TSnapshotList));
 end;
 
 procedure TMainForm .SummaryReportActionExecute (Sender : TObject );
