@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="apiUi"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <MajorVersionNr Value="10"/>
+      <MinorVersionNr Value="4"/>
+      <RevisionNr Value="1"/>
+      <BuildNr Value="12440"/>
+      <StringTable ProductVersion="10.3.0.11959"/>
+    </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <DestinationDirectory Value="C:\Data\publish"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="9">
+      <Item1>
+        <PackageName Value="indylaz"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="Abbrevia"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="TAChartLazarusPkg"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="TurboPowerIPro"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="SQLDBLaz"/>
+      </Item6>
+      <Item7>
+        <PackageName Value="SynEdit"/>
+      </Item7>
+      <Item8>
+        <PackageName Value="virtualtreeview_package"/>
+      </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
+    </RequiredPackages>
+    <Units Count="13">
+      <Unit0>
+        <Filename Value="apiUi.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\Xml\claimlistz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ClaimListz"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="WsdlStubMainUnit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdExceptionCore.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\Xml\snapshotz.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\Xml\exceptionutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="exceptionUtils"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\Html\htmlxmlutilz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="htmlXmlUtilz"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="htmlreportz.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="junitunit.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\Xml\stringlistlistunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="StringListListUnit"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\ProgressStatus\progressinterface.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ProgressInterface"/>
+      </Unit12>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="apiUi"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\Mq;..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\Html;..\ProgressStatus;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseValgrind Value="True"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <Verbosity>
+        <ShowNotes Value="False"/>
+      </Verbosity>
+      <CompilerMessages>
+        <IgnoredMessages idx5028="True" idx5025="True" idx5024="True" idx5023="True"/>
+      </CompilerMessages>
+      <CustomOptions Value="-dUseCThreads"/>
+      <OtherDefines Count="2">
+        <Define0 Value="UseCThreads"/>
+        <Define1 Value="TrialVersion"/>
+      </OtherDefines>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="21">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+        <Enabled Value="False"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+        <Enabled Value="False"/>
+      </Item3>
+      <Item4>
+        <Name Value="ERegistryException"/>
+      </Item4>
+      <Item5>
+        <Name Value="EDatabaseError"/>
+        <Enabled Value="False"/>
+      </Item5>
+      <Item6>
+        <Name Value="Exception"/>
+      </Item6>
+      <Item7>
+        <Name Value="EIdSocketError"/>
+      </Item7>
+      <Item8>
+        <Name Value="EIdCouldNotBindSocket"/>
+      </Item8>
+      <Item9>
+        <Name Value="EStomp"/>
+        <Enabled Value="False"/>
+      </Item9>
+      <Item10>
+        <Name Value="EIdReadTimeout"/>
+        <Enabled Value="False"/>
+      </Item10>
+      <Item11>
+        <Name Value="EOraDatabaseError"/>
+        <Enabled Value="False"/>
+      </Item11>
+      <Item12>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item12>
+      <Item13>
+        <Name Value="ERegExpr"/>
+        <Enabled Value="False"/>
+      </Item13>
+      <Item14>
+        <Name Value="EIdHTTPProtocolException"/>
+        <Enabled Value="False"/>
+      </Item14>
+      <Item15>
+        <Name Value="EConvertError"/>
+        <Enabled Value="False"/>
+      </Item15>
+      <Item16>
+        <Name Value="EODBCException"/>
+        <Enabled Value="False"/>
+      </Item16>
+      <Item17>
+        <Name Value="EInterfaceCritical"/>
+        <Enabled Value="False"/>
+      </Item17>
+      <Item18>
+        <Name Value="EStringListError"/>
+        <Enabled Value="False"/>
+      </Item18>
+      <Item19>
+        <Name Value="EOleSysError"/>
+        <Enabled Value="False"/>
+      </Item19>
+      <Item20>
+        <Name Value="EIdURIException"/>
+      </Item20>
+      <Item21>
+        <Name Value="EListError"/>
+        <Enabled Value="False"/>
+      </Item21>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
