@@ -1,0 +1,390 @@
+swagger: '2.0'
+info:
+  description: ''
+  version: ''
+  title: ''
+host: laptop-0l3gn7em
+schemes:
+  - http
+basePath: /apiUi/Api
+paths:
+  /clearLogs:
+    post:
+      summary: summary
+      description: ''
+      operationId: clearLogs
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      responses:
+        '200':
+          decsription: Success response
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /snapshots/clear:
+    post:
+      summary: summary
+      description: ''
+      operationId: clearSnapshots
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      responses:
+        '200':
+          decsription: Success response
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /snapshot:
+    post:
+      summary: summary
+      description: ''
+      operationId: snapshot
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/createSnapshotReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/createSnapshotRpy'
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /executeScript:
+    post:
+      summary: summary
+      description: ''
+      operationId: executeScript
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/executeScriptReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/executeScriptRpy'
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /regressionReport:
+    post:
+      summary: summary
+      description: ''
+      operationId: regressionReport
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/regressionReportReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/regressionReportRpy'
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /resetEnvVar:
+    post:
+      summary: summary
+      description: ''
+      operationId: resetEnvVar
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/resetEnvVarReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/resetEnvVarRpy'
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /resetEnvVars:
+    post:
+      summary: summary
+      description: ''
+      operationId: resetEnvVars
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/resetEnvVarsReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/resetEnvVarsRpy'
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /setEnvVar:
+    post:
+      summary: summary
+      description: ''
+      operationId: setEnvVar
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/setEnvVarReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/setEnvVarRpy'
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /shutDown:
+    post:
+      summary: summary
+      description: ''
+      operationId: shutDown
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/shutDownReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/shutDownRpy'
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+  /unexpectedValuesReport:
+    post:
+      summary: summary
+      description: ''
+      operationId: unexpectedValuesReport
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/unexpectedValuesReportReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/unexpectedValuesReportRpy'
+        '500':
+          decsription: Fault response
+          schema:
+            $ref: '#/definitions/SOAPFault'
+definitions:
+  createSnapshotReq:
+    type: object
+    properties:
+      name:
+        type: string
+  createSnapshotRpy:
+    type: object
+    properties:
+      result:
+        type: string
+  executeScriptReq:
+    type: object
+    properties:
+      name:
+        type: string
+  executeScriptRpy:
+    type: string
+  regressionReportReq:
+    type: object
+    properties:
+      referenceFileName:
+        type: string
+  regressionReportRpy:
+    type: object
+    properties:
+      Header:
+        type: object
+        properties:
+          differencesFound:
+            type: boolean
+          referenceLogFileName:
+            type: string
+          Created:
+            type: dateTime
+      Body:
+        type: object
+        properties:
+          Detail:
+            type: array
+            items:
+              type: object
+              properties:
+                messageTimestamp:
+                  type: dateTime
+                Service:
+                  type: string
+                Operation:
+                  type: string
+                Message:
+                  type: string
+                Correlation:
+                  type: string
+                Type:
+                  type: string
+                Items:
+                  type: object
+                  properties:
+                    Item:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          Tag:
+                            type: string
+                          Type:
+                            type: string
+                          currentValue:
+                            type: string
+                          referenceValue:
+                            type: string
+  resetEnvVarReq:
+    type: object
+    properties:
+      name:
+        type: string
+  resetEnvVarRpy:
+    type: string
+  resetEnvVarsReq:
+    type: object
+    properties:
+      regularExpression:
+        type: string
+  resetEnvVarsRpy:
+    type: string
+  setEnvVarReq:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+  setEnvVarRpy:
+    type: string
+  shutDownReq:
+    type: string
+  shutDownRpy:
+    type: string
+  unexpectedValuesReportReq:
+    type: string
+  unexpectedValuesReportRpy:
+    type: object
+    properties:
+      Header:
+        type: object
+        properties:
+          unexpectedValuesFound:
+            type: boolean
+          Created:
+            type: dateTime
+      Body:
+        type: object
+        properties:
+          Detail:
+            type: array
+            items:
+              type: object
+              properties:
+                messageTimestamp:
+                  type: dateTime
+                Service:
+                  type: string
+                Operation:
+                  type: string
+                Message:
+                  type: string
+                Correlation:
+                  type: string
+                Type:
+                  type: string
+                Items:
+                  type: object
+                  properties:
+                    Item:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          Tag:
+                            type: string
+                          Type:
+                            type: string
+                          currentValue:
+                            type: string
+                          referenceValue:
+                            type: string

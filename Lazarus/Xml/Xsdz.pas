@@ -220,7 +220,7 @@ type
     function IsTypeDefEnabled: Boolean;
     function ccbOccursClause: String;
     function isRequired: Boolean;
-    function JsonSchemaAsXml: TObject;
+    function SchemaAsJson: TObject;
     procedure ClearNameSpace;
     procedure GenerateHtmlReport(aStringList: TStringList);
     procedure GenerateReport(aStringList: TStringList);
@@ -1034,7 +1034,7 @@ end;
 
 function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
   function _AddTypeDefFromJsonXml (aList: TXsdDataTypeList; aXml: TXml): TXsdDataType;
-    procedure _baseTypeToJson (aType: TXsdDataType);
+    procedure _baseTypeToJson (aType: TXsdDataType; aFormat: String);
     begin
       if aType.BaseDataTypeName = 'string' then aType.jsonType := jsonString;
       if aType.BaseDataTypeName = 'object' then
@@ -1058,6 +1058,18 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
       begin
         aType.jsonType := jsonObject;
         aType.BaseDataTypeName := 'anyType';
+      end;
+      if aFormat <> '' then
+      begin
+        if aFormat = 'float' then aType.BaseDataTypeName := xsdDecimal;
+        if aFormat = 'double' then aType.BaseDataTypeName := xsdDouble;
+        if aFormat = 'date-time' then aType.BaseDataTypeName := xsdDateTime;
+        if aFormat = 'date' then aType.BaseDataTypeName := xsdDate;
+        if aFormat = 'byte' then aType.BaseDataTypeName := xsdBase64Binary;
+        if aFormat = 'int32' then aType.BaseDataTypeName := xsdInteger;
+        if aFormat = 'int64' then aType.BaseDataTypeName := xsdLong;
+        if aFormat = 'int16' then aType.BaseDataTypeName := xsdShort;
+        if aFormat = 'int8' then aType.BaseDataTypeName := xsdByte;
       end;
       aType.BaseDataType := self.FindTypeDef(scXMLSchemaURI, aType.BaseDataTypeName);
     end;
@@ -1112,7 +1124,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
         if xXml.Name = 'type' then
         begin
           result.BaseDataTypeName := xXml.Value;
-          _baseTypeToJson(result);
+          _baseTypeToJson(result, aXml.Items.XmlValueByTag['format']);
         end;
         if xXml.Name = 'schema' then
         begin
@@ -1134,7 +1146,7 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
             if yXml.Name = 'type' then
             begin
               result.BaseDataTypeName := yXml.Value;
-              _baseTypeToJson(result);
+              _baseTypeToJson(result, xXml.Items.XmlValueByTag['format']);
             end;
             if yXml.Name = 'items' then
             begin
@@ -1778,7 +1790,7 @@ begin
   result := (StrToIntDef(minOccurs, 0) > 0);
 end;
 
-function TXsd.JsonSchemaAsXml: TObject;
+function TXsd.SchemaAsJson: TObject;
 var
   x, n: Integer;
   xXml: TXml;
@@ -1804,16 +1816,164 @@ begin
       if sType.ElementDefs.Count = 0 then
       begin
         xJsonType := jsonString;
-        if sType.BaseDataTypeName = 'boolan' then xJsonType := jsonBoolean;
-        if sType.BaseDataTypeName = 'decimal' then xJsonType := jsonNumber;
-        if sType.BaseDataTypeName = 'integer' then xJsonType := jsonNumber;
-        if sType.BaseDataTypeName = 'byte' then xJsonType := jsonNumber;
-        with AddXml(TXml.CreateAsString('type', sType.BaseDataTypeName)) do
-        begin
-          if Value = 'time' then Value := 'dateTime';
-          if Value = 'decimal' then Value := 'float';
-          if Value = 'duration' then Value := 'string';
-        end;
+        if sType.BaseDataTypeName = xsdString then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+	end;
+        if sType.BaseDataTypeName = xsdBoolean then
+	begin
+          AddXml(TXml.CreateAsString('type', 'boolean'));
+          xJsonType := jsonBoolean;
+	end;
+        if sType.BaseDataTypeName = xsdDecimal then
+	begin
+          AddXml(TXml.CreateAsString('type', 'number'));
+          AddXml(TXml.CreateAsString('format', 'float'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdFloat then
+	begin
+          AddXml(TXml.CreateAsString('type', 'number'));
+          AddXml(TXml.CreateAsString('format', 'float'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdDouble then
+	begin
+          AddXml(TXml.CreateAsString('type', 'number'));
+          AddXml(TXml.CreateAsString('format', 'double'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdDuration then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+	end;
+        if sType.BaseDataTypeName = xsdDateTime then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+          AddXml(TXml.CreateAsString('format', 'date-time'));
+	end;
+        if sType.BaseDataTypeName = xsdTime then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+          AddXml(TXml.CreateAsString('format', 'date-time'));
+	end;
+        if sType.BaseDataTypeName = xsdDate then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+          AddXml(TXml.CreateAsString('format', 'date'));
+	end;
+        if sType.BaseDataTypeName = xsdHexBinary then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+          AddXml(TXml.CreateAsString('format', 'hex-binary'));
+	end;
+        if sType.BaseDataTypeName = xsdBase64Binary then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+          AddXml(TXml.CreateAsString('format', 'byte'));
+	end;
+        if sType.BaseDataTypeName = xsdAnyUri then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+	end;
+        if sType.BaseDataTypeName = xsdName then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+	end;
+        if sType.BaseDataTypeName = xsdNCName then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+	end;
+        if sType.BaseDataTypeName = xsdInteger then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int32'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdNonPositiveInteger then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int32'));
+          xJsonType := jsonNumber;
+          AddXml (TXml.CreateAsString('maximum', '0')).jsonType := xJsonType;
+	end;
+        if sType.BaseDataTypeName = xsdNegativeInteger then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int32'));
+          xJsonType := jsonNumber;
+          AddXml (TXml.CreateAsString('maximum', '-1')).jsonType := xJsonType;
+	end;
+        if sType.BaseDataTypeName = xsdLong then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int64'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdInt then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int32'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdShort then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int16'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdByte then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int8'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdNonNegativeInteger then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int64'));
+          xJsonType := jsonNumber;
+          AddXml (TXml.CreateAsString('minimum', '0')).jsonType := xJsonType;
+	end;
+        if sType.BaseDataTypeName = xsdUnsignedLong then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int64'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdUnsignedInt then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int32'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdUnsignedShort then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int16'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdUnsignedByte then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int8'));
+          xJsonType := jsonNumber;
+	end;
+        if sType.BaseDataTypeName = xsdPositiveInteger then
+	begin
+          AddXml(TXml.CreateAsString('type', 'integer'));
+          AddXml(TXml.CreateAsString('format', 'int64'));
+          xJsonType := jsonNumber;
+          AddXml (TXml.CreateAsString('minimum', '1')).jsonType := xJsonType;
+	end;
+        if sType.BaseDataTypeName = xsdanySimpleType then
+	begin
+          AddXml(TXml.CreateAsString('type', 'string'));
+	end;
+        if sType.BaseDataTypeName = xsdanyType then
+	begin
+          AddXml(TXml.CreateAsString('type', 'object')).jsonType := jsonObject;
+	end;
         if sType.MaxInclusive <> '' then
           AddXml (TXml.CreateAsString('maximum', sType.MaxInclusive)).jsonType := xJsonType;
         if sType.MaxExclusive <> '' then
@@ -1860,7 +2020,7 @@ begin
         with AddXml(TXml.CreateAsString('properties', '')) do
         begin
           for x := 0 to sType.ElementDefs.Count - 1 do
-            AddXml (sType.ElementDefs.Xsds[x].JsonSchemaAsXml as TXml);
+            AddXml (sType.ElementDefs.Xsds[x].SchemaAsJson as TXml);
         end;
         n := 0;
         for x := 0 to sType.ElementDefs.Count - 1 do

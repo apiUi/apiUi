@@ -270,6 +270,7 @@ type
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
+    function UpsertSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
     function CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
     procedure CreateJUnitReport (aName: String);
     procedure CreateSummaryReport (aName: String);
@@ -7825,6 +7826,7 @@ var
   xBodyXml, nameXml, valueXml, fXml: TXml;
   xName: String;
   xStream: TMemoryStream;
+  xSnapshot: TSnapshot;
 begin
   xBodyXml := nil;
   AResponseInfo.ContentEncoding := 'identity';
@@ -7845,12 +7847,17 @@ begin
           doClearLogs := True;
           Exit;
         end;
-        if Strings[3] = 'clearSnapshots' then
+        if Strings[3] = 'snapshots' then
         begin
-          doClearSnapshots := True;
-          Exit;
+          if (Count > 4)
+          and (Strings[4] = 'clear')
+          then begin
+            doClearSnapshots := True;
+            Exit;
+          end;
         end;
-        if Strings[3] = 'createSnapshot' then
+        if (Strings[3] = 'snapshot')
+        and (ARequestInfo.Command = 'POST') then
         begin
           nameXml := xBodyXml.FindXml('json.name');
           if not Assigned (nameXml) then
@@ -7858,12 +7865,20 @@ begin
             AResponseInfo.ResponseNo := 400;
             Exit;
           end;
-          CreateSnapshot ( nameXml.Value
-                         , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
-                         , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
-                         , True
-                         , False
-                         );
+          xSnapshot := UpsertSnapshot ( nameXml.Value
+                                      , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
+                                      , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
+                                      , True
+                                      , False
+                                      );
+          xSnapshot.doReport;
+          with TXml.CreateAsString('json', '') do
+          try
+            AddXml (TXml.CreateAsString('result', xSnapshot.statusAsText));
+            AResponseInfo.ContentText := StreamJSON(0, False);
+          finally
+            free;
+          end;
           Exit;
         end;
         if Strings[3] = 'executeScript' then
@@ -9123,6 +9138,35 @@ begin
   end;
 end;
 
+function TWsdlProject.UpsertSnapshot(aName, aFileName, aRefFileName: String;
+  aDoSave, aDoRun: Boolean): TSnapshot;
+var
+  x, f: Integer;
+begin
+  f := displayedSnapshots.IndexOf(aName);
+  if (f > -1) then
+    result := displayedSnapshots.SnapshotItems[f]
+  else
+    result := CreateSnapshot(aName, aFileName, aRefFileName, False, False);
+  result.FileName := ExpandRelativeFileName(projectFileName, aFileName);
+  result.RefFileName := ExpandRelativeFileName(projectFileName, aRefFileName);
+  with TLogList.Create do
+  try
+    for x := 0 to displayedLogs.Count - 1 do
+      if not displayedLogs.LogItems[x].onSnapshot then
+        SaveLog('', displayedLogs.LogItems[x]);
+    for x := 0 to toDisplayLogs.Count - 1 do
+      if not toDisplayLogs.LogItems[x].onSnapshot then
+        SaveLog('', toDisplayLogs.LogItems[x]);
+    SaveStringToFile(result.FileName, LogsAsString (projectFileName));
+    for x := 0 to Count - 1 do
+      LogItems[x].onSnapshot := True;
+    Clear;
+  finally
+    Free;
+  end;
+end;
+
 function TWsdlProject.CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
 var
   x: Integer;
@@ -9135,7 +9179,7 @@ begin
                                         , ExpandRelativeFileName(projectFileName, aRefFileName)
                                         );
     result.OnReport := doRegressionReport;
-    toDisplaySnapshots.AddObject('', result);
+    toDisplaySnapshots.AddObject(aName, result);
     if aDoSave then
     begin
       with TLogList.Create do

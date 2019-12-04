@@ -8946,7 +8946,7 @@ procedure TMainForm.RefreshLog;
     for x := 0 to se.toDisplaySnapshots.Count - 1 do
     begin
       xReport := se.toDisplaySnapshots.SnapshotItems[x];
-      se.displayedSnapshots.AddObject('', xReport);
+      se.displayedSnapshots.AddObject(xReport.Name, xReport);
       result := True;
       xNode := SnapshotsVTS.AddChild(nil);
       xData := SnapshotsVTS.GetNodeData(xNode);
@@ -13374,7 +13374,7 @@ begin
       se.AcquireLogLock;
       try
         for x := 0 to sl.Count - 1 do
-          se.toDisplaySnapshots.AddObject('', sl.SnapshotItems[x]);
+          se.toDisplaySnapshots.AddObject(sl.SnapshotItems[x].Name, sl.SnapshotItems[x]);
       finally
         se.ReleaseLogLock;
       end;
@@ -13763,13 +13763,13 @@ begin
       begin
         xOper := WsdlOperation.WsdlService.Operations.Operations[o];
         if xOper.reqXml.Items.Count > xOper.InputHeaders.Count then
-          AddXml (xOper.reqXml.Items.XmlItems[xOper.InputHeaders.Count].Xsd.JsonSchemaAsXml as TXml);
+          AddXml (xOper.reqXml.Items.XmlItems[xOper.InputHeaders.Count].Xsd.SchemaAsJson as TXml);
         if xOper.rpyXml.Items.Count > xOper.OutputHeaders.Count then
-          AddXml (xOper.rpyXml.Items.XmlItems[xOper.OutputHeaders.Count].Xsd.JsonSchemaAsXml as TXml);
+          AddXml (xOper.rpyXml.Items.XmlItems[xOper.OutputHeaders.Count].Xsd.SchemaAsJson as TXml);
         if (Assigned (xOper.FaultXsd))
         and (Assigned (xOper.FaultXsd.sType))
         and (xOper.FaultXsd.sType.ElementDefs.Count > 0) then
-          AddXml (xOper.FaultXsd.sType.ElementDefs.Xsds[0].JsonSchemaAsXml as TXml);
+          AddXml (xOper.FaultXsd.sType.ElementDefs.Xsds[0].SchemaAsJson as TXml);
       end;
     end;
 //  Clipboard.AsText := StreamJSON(0, True)
