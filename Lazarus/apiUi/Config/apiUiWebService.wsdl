@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by BouwmanJW (EMBRACE) -->
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://www.rabobank.nl/XMLHeader/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.apiUi.com/webService" xmlns:client="http://www.apiUi.com/webService.wsdl" name="apiUiWebService" targetNamespace="http://www.apiUi.com/webService.wsdl">
+	<types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://www.apiUi.com/webService" schemaLocation="apiUiWebService.xsd"/>
+		</xsd:schema>
+	</types>
+	<message name="regressionReportReqMessage">
+		<part name="payload" element="tns:regressionReportReq"/>
+	</message>
+	<message name="regressionReportRpyMessage">
+		<part name="payload" element="tns:regressionReportRpy"/>
+	</message>
+	<message name="openProjectReqMessage">
+		<part name="payload" element="tns:openProjectReq"/>
+	</message>
+	<message name="openProjectRpyMessage">
+		<part name="payload" element="tns:openProjectRpy"/>
+	</message>
+	<message name="activateReqMessage">
+		<part name="payload" element="tns:activateReq"/>
+	</message>
+	<message name="activateRpyMessage">
+		<part name="payload" element="tns:activateRpy"/>
+	</message>
+	<message name="unexpectedValuesReportReqMessage">
+		<part name="payload" element="tns:unexpectedValuesReportReq"/>
+	</message>
+	<message name="unexpectedValuesReportRpyMessage">
+		<part name="payload" element="tns:unexpectedValuesReportRpy"/>
+	</message>
+	<message name="saveLogsToFileReqMessage">
+		<part name="payload" element="tns:saveLogsToFileReq"/>
+	</message>
+	<message name="saveLogsToFileRpyMessage">
+		<part name="payload" element="tns:saveLogsToFileRpy"/>
+	</message>
+	<message name="createSnapshotReqMessage">
+		<part name="payload" element="tns:createSnapshotReq"/>
+	</message>
+	<message name="createSnapshotRpyMessage">
+		<part name="payload" element="tns:createSnapshotRpy"/>
+	</message>
+	<message name="sendAllRequestsReqMessage">
+		<part name="payload" element="tns:sendAllRequestsReq"/>
+	</message>
+	<message name="sendAllRequestsRpyMessage">
+		<part name="payload" element="tns:sendAllRequestsRpy"/>
+	</message>
+	<message name="sendRequestReqMessage">
+		<part name="payload" element="tns:sendRequestReq"/>
+	</message>
+	<message name="sendRequestRpyMessage">
+		<part name="payload" element="tns:sendRequestRpy"/>
+	</message>
+	<message name="SOAPFaultMessage">
+		<part name="applicationFault" element="tns:applicationFault"/>
+	</message>
+	<message name="setEnvVarReqMessage">
+		<part name="payload" element="tns:setEnvVarReq"/>
+	</message>
+	<message name="setEnvVarRpyMessage">
+		<part name="payload" element="tns:setEnvVarRpy"/>
+	</message>
+	<message name="executeScriptReqMessage">
+		<part name="payload" element="tns:executeScriptReq"/>
+	</message>
+	<message name="executeScriptRpyMessage">
+		<part name="payload" element="tns:executeScriptRpy"/>
+	</message>
+	<message name="resetEnvVarReqMessage">
+		<part name="payload" element="tns:resetEnvVarReq"/>
+	</message>
+	<message name="resetEnvVarRpyMessage">
+		<part name="payload" element="tns:resetEnvVarRpy"/>
+	</message>
+	<message name="resetEnvVarsReqMessage">
+		<part name="payload" element="tns:resetEnvVarsReq"/>
+	</message>
+	<message name="resetEnvVarsRpyMessage">
+		<part name="payload" element="tns:resetEnvVarsRpy"/>
+	</message>
+	<message name="shutDownReqMessage">
+		<part name="payload" element="tns:shutDownReq"/>
+	</message>
+	<message name="shutDownRpyMessage">
+		<part name="payload" element="tns:shutDownRpy"/>
+	</message>
+	<message name="clearLogsReqMessage">
+		<part name="payload" element="tns:clearLogsReq"/>
+	</message>
+	<message name="clearLogsRpyMessage">
+		<part name="payload" element="tns:clearLogsRpy"/>
+	</message>
+	<message name="clearSnapshotsReqMessage">
+		<part name="payload" element="tns:clearSnapshotsReq"/>
+	</message>
+	<message name="clearSnapshotsRpyMessage">
+		<part name="payload" element="tns:clearSnapshotsRpy"/>
+	</message>
+	<portType name="apiUiPortType">
+		<operation name="executeScript">
+			<input message="client:executeScriptReqMessage"/>
+			<output message="client:executeScriptRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="setEnvVar">
+			<input message="client:setEnvVarReqMessage"/>
+			<output message="client:setEnvVarRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="resetEnvVar">
+			<input message="client:resetEnvVarReqMessage"/>
+			<output message="client:resetEnvVarRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="resetEnvVars">
+			<input message="client:resetEnvVarsReqMessage"/>
+			<output message="client:resetEnvVarsRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="shutDown">
+			<input message="client:shutDownReqMessage"/>
+			<output message="client:shutDownRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="regressionReport">
+			<input message="client:regressionReportReqMessage"/>
+			<output message="client:regressionReportRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="openProject">
+			<input message="client:openProjectReqMessage"/>
+			<output message="client:openProjectRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="activate">
+			<input message="client:activateReqMessage"/>
+			<output message="client:activateRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="unexpectedValuesReport">
+			<input message="client:unexpectedValuesReportReqMessage"/>
+			<output message="client:unexpectedValuesReportRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="saveLogsToFile">
+			<input message="client:saveLogsToFileReqMessage"/>
+			<output message="client:saveLogsToFileRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="createSnapshot">
+			<input message="client:createSnapshotReqMessage"/>
+			<output message="client:createSnapshotRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="sendAllRequests">
+			<input message="client:sendAllRequestsReqMessage"/>
+			<output message="client:sendAllRequestsRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="sendRequest">
+			<input message="client:sendRequestReqMessage"/>
+			<output message="client:sendRequestRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="clearLogs">
+			<input message="client:clearLogsReqMessage"/>
+			<output message="client:clearLogsRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+		<operation name="clearSnapshots">
+			<input message="client:clearSnapshotsReqMessage"/>
+			<output message="client:clearSnapshotsRpyMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultMessage"/>
+		</operation>
+	</portType>
+	<binding name="apiUiPortTypeBinding" type="client:apiUiPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="executeScript">
+			<soap:operation soapAction="urn:#executeScriptVar"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="setEnvVar">
+			<soap:operation soapAction="urn:#setEnvVar"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="resetEnvVar">
+			<soap:operation soapAction="urn:#resetEnvVar"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="resetEnvVars">
+			<soap:operation soapAction="urn:#resetEnvVasr"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="shutDown">
+			<soap:operation soapAction="urn:#shutDown"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="regressionReport">
+			<soap:operation soapAction="urn:#regressionReport" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="openProject">
+			<soap:operation soapAction="urn:#openProject" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="activate">
+			<soap:operation soapAction="urn:#activate" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="unexpectedValuesReport">
+			<soap:operation soapAction="urn:#unexpectedValuesReport" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="saveLogsToFile">
+			<soap:operation soapAction="urn:#saveLogsToFile" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="createSnapshot">
+			<soap:operation soapAction="urn:#createSnapshot" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="sendAllRequests">
+			<soap:operation soapAction="urn:#sendAllRequests" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="sendRequest">
+			<soap:operation soapAction="urn:#sendRequest" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="clearLogs">
+			<soap:operation soapAction="urn:#clearLogs"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="clearSnapshots">
+			<soap:operation soapAction="urn:#clearSnapshots"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+	</binding>
+	<service name="apiUiWebService">
+		<port name="apiUiPortType" binding="client:apiUiPortTypeBinding">
+			<soap:address location="http://localhost:3738/apiUiWebService"/>
+		</port>
+	</service>
+</definitions>

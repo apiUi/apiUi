@@ -526,7 +526,6 @@ var
     mqPutHeaderEditAllowedFileName: String;
     authorizationServerEndpoint: String;
     stompPutHeaderEditAllowedFileName: String;
-    licenseDatabaseName, licenseOdbcDriver: String;
     RemoteControlPortNumber: Integer;
     wsaXsdDescr: TXsdDescr;
     swiftMTXsdDescr: TXsdDescr;
@@ -1307,21 +1306,15 @@ begin
   iniXml := TXml.Create;
   try
     iniXml.LoadFromFile(xIniFileName, nil);
-    webserviceWsdlFileName := iniXml.Items.XmlValueByTag ['wsdlStubWebServiceWsdl'];
-    webserviceXsdFileName := iniXml.Items.XmlValueByTag ['wsdlStubWebServiceXsd'];
+    webserviceWsdlFileName := iniXml.Items.XmlValueByTag ['WebServiceWsdl'];
+    webserviceXsdFileName := iniXml.Items.XmlValueByTag ['WebServiceXsd'];
     indexHtmlFileName := iniXml.Items.XmlValueByTag ['indexHtml'];
     indexWsdlsHtmlFileName  := iniXml.Items.XmlValueByTag ['indexWsdlsHtml'];
-    wsdlStubXsdFileName := iniXml.Items.XmlValueByTag ['wsdlStubXsd'];
+    wsdlStubXsdFileName := iniXml.Items.XmlValueByTag ['Xsd'];
     wsaXsdFileName := iniXml.Items.XmlValueByTag ['wsaXsd'];
     _swiftMTXsdFileName := iniXml.Items.XmlValueByTag ['swiftMTXsd'];
     mqPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed'];
     stompPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed'];
-    authorizationServerEndpoint := iniXml.Items.XmlValueByTag ['authorizationServerEndpoint'];
-    if Assigned (iniXml.ItemByTag['licenseDatabase']) then with iniXml.ItemByTag['licenseDatabase'].Items do
-    begin
-      licenseOdbcDriver := XmlValueByTagDef['OdbcDriver', 'Microsoft Access Driver'];
-      licenseDatabaseName := ExpandRelativeFileName(xIniFileName, XmlValueByTagDef['DatabaseName', '']);
-    end;
     RemoteControlPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
@@ -1379,7 +1372,7 @@ begin
     with webserviceXsdDescr.TypeDef.ElementDefs do
     begin
       _WsdlRtiXsd := XsdByName['rti'];
-      optionsXsd := XsdByName['wsdlStubOptions'];
+      optionsXsd := XsdByName['Options'];
       ScriptsXsd := XsdByName['Scripts'];
       OperationDefsXsd := XsdByName['OperationDefs'];
       projectOptionsXsd := XsdByName['projectOptions'];
@@ -7840,25 +7833,21 @@ begin
         xBodyXml := TXml.Create;
         xBodyXml.LoadJsonFromString(xRequestBody, nil);
       end;
-      with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/Api/Rest
+      with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
       try
-        if Strings[3] = 'clearLogs' then
-        begin
+        if (Count = 4)
+        and (Strings[3] = 'logs')
+        and (ARequestInfo.Command = 'DELETE')
+        then begin
           doClearLogs := True;
           Exit;
         end;
-        if Strings[3] = 'snapshots' then
-        begin
-          if (Count > 4)
-          and (Strings[4] = 'clear')
-          then begin
-            doClearSnapshots := True;
-            Exit;
-          end;
-        end;
-        if (Strings[3] = 'snapshot')
-        and (ARequestInfo.Command = 'POST') then
-        begin
+
+        if (Count = 5)
+        and (Strings[3] = 'logs')
+        and ((Strings[4] = 'snapshot'))
+        and (ARequestInfo.Command = 'POST')
+        then begin
           nameXml := xBodyXml.FindXml('json.name');
           if not Assigned (nameXml) then
           begin
@@ -7881,8 +7870,18 @@ begin
           end;
           Exit;
         end;
-        if Strings[3] = 'executeScript' then
-        begin
+
+        if (Count = 4)
+        and (Strings[3] = 'snapshots')
+        and (ARequestInfo.Command = 'DELETE')
+        then begin
+          doClearSnapshots := True;
+          Exit;
+        end;
+
+        if (Count = 4)
+        and (Strings[3] = 'executeScript')
+        then begin
           nameXml := xBodyXml.FindXml('json.name');
           if not Assigned (nameXml) then
           begin
@@ -7900,30 +7899,36 @@ begin
             raise Exception.Create('Cannot find script based on: ' + nameXml.Value);
           Exit;
         end;
-        if Strings[3] = 'resetEnvVar' then
-        begin
+
+        if (Count = 4)
+        and (Strings[3] = 'resetEnvVar')
+        then begin
           nameXml := xBodyXml.FindXml('json.name');
           if not Assigned (nameXml) then
           begin
             AResponseInfo.ResponseNo := 400;
             Exit;
           end;
-            wsdlz.resetEnvVar(allOperations.Operations[0], nameXml.Value);
+          wsdlz.resetEnvVar(allOperations.Operations[0], nameXml.Value);
           Exit;
         end;
-        if Strings[3] = 'resetEnvVars' then
-        begin
+
+        if (Count = 4)
+        and (Strings[3] = 'resetEnvVars')
+        then begin
           nameXml := xBodyXml.FindXml('json.regularExpression');
           if not Assigned (nameXml) then
           begin
             AResponseInfo.ResponseNo := 400;
             Exit;
           end;
-            wsdlz.ResetEnvVars(allOperations.Operations[0], nameXml.Value);
+          wsdlz.ResetEnvVars(allOperations.Operations[0], nameXml.Value);
           Exit;
         end;
-        if Strings[3] = 'setEnvVar' then
-        begin
+
+        if (Count = 4)
+        and (Strings[3] = 'setEnvVar')
+        then begin
           nameXml := xBodyXml.FindXml('json.name');
           valueXml := xBodyXml.FindXml('json.value');
           if not Assigned (nameXml)
@@ -7932,9 +7937,10 @@ begin
             AResponseInfo.ResponseNo := 400;
             Exit;
           end;
-            wsdlz.setEnvVar(allOperations.Operations[0], nameXml.Value, valueXml.Value);
+          wsdlz.setEnvVar(allOperations.Operations[0], nameXml.Value, valueXml.Value);
           Exit;
         end;
+
       finally
         free;
       end;
@@ -7993,7 +7999,7 @@ var
   xRelatesTo, xNotification: String;
   xOnRequestViolatingAddressPath: TOnRequestViolating;
 begin
-  if AnsiStartsStr('/' + _ProgName + '/Api/', ARequestInfo.Document) then
+  if AnsiStartsStr('/' + _ProgName + '/api/', ARequestInfo.Document) then
   begin
     HTTPServerRemoteControlApi(AContext, ARequestInfo, AResponseInfo);
     Exit;
@@ -8719,6 +8725,7 @@ begin
           and (not abortPressed) then with xXml do
           begin
             df := xXml.FindUQValue('logDifferences.Header.differencesFound');
+            if (df = '') then raise Exception.Create('df not found: "logDifferences.Header.differencesFound"');
             if df = 'true' then
               aReport.Status := rsNok;
             if df = 'false' then
@@ -9148,6 +9155,7 @@ begin
     result := displayedSnapshots.SnapshotItems[f]
   else
     result := CreateSnapshot(aName, aFileName, aRefFileName, False, False);
+  result.timeStamp := Now;
   result.FileName := ExpandRelativeFileName(projectFileName, aFileName);
   result.RefFileName := ExpandRelativeFileName(projectFileName, aRefFileName);
   with TLogList.Create do
