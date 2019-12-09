@@ -3,7 +3,7 @@ info:
   description: ''
   version: ''
   title: ''
-host: laptop-0l3gn7em
+host: __hostname__
 schemes:
   - http
   - https

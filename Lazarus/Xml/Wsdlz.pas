@@ -650,7 +650,6 @@ procedure ReleaseEnvVarLock;
 var
   allOperations, allAliasses: TWsdlOperations;
   allOperationsRpy: TWsdlOperations;
-  _ProgName: String;
   _wsdlStubStylesheet: String;
   _WsdlNewDesignMessage: VFunctionOSS;
   _wsdlFetchDefaultDesignMessage: VFunctionOS;

@@ -1965,7 +1965,7 @@ apiUi encrypts passwords before storing in a project file or at other locations<
 		<xs:annotation>
 			<xs:documentation>apiUi options;
 
-For an overview of all options visit: doc://apiUi_apiUiOptions_hlp.htm </xs:documentation>
+For an overview of all options visit: doc://apiUi_Options_hlp.htm </xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>

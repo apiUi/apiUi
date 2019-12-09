@@ -1276,7 +1276,7 @@ begin
       begin
         AddAttribute(TXmlAttribute.CreateAsString('name', 'top'));
         AddAttribute(TXmlAttribute.CreateAsString('src',
-            _xmlProgName + '_' + xBind.Name + '_hlptop.htm'));
+            _progName + '_' + xBind.Name + '_hlptop.htm'));
       end;
       with AddXml(TXml.CreateAsString('frameset', '')) do
       begin
@@ -1285,18 +1285,18 @@ begin
         begin
           AddAttribute(TXmlAttribute.CreateAsString('name', 'toc'));
           AddAttribute(TXmlAttribute.CreateAsString('src',
-              _xmlProgName + '_' + xBind.Name + '_hlptoc.htm'));
+              _progName + '_' + xBind.Name + '_hlptoc.htm'));
         end;
         with AddXml(TXml.CreateAsString('frame', '')) do
         begin
           AddAttribute(TXmlAttribute.CreateAsString('name', 'dtl'));
           AddAttribute(TXmlAttribute.CreateAsString('src',
-              _xmlProgName + '_' + xBind.Name + '_hlpdtl.htm'));
+              _progName + '_' + xBind.Name + '_hlpdtl.htm'));
         end;
       end;
     end;
     SaveStringToFile(ExtractFilePath(ParamStr(0))
-        + '\Documentation\' + _xmlProgName + '_' + xBind.Name + '_hlp.htm',
+        + '\Documentation\' + _progName + '_' + xBind.Name + '_hlp.htm',
       xXml.asHtmlString);
     xXml.Items.Clear;
     xXml.Name := 'html';
@@ -1304,25 +1304,25 @@ begin
     begin
       with AddXml(TXml.CreateAsString('p', '')) do
       begin
-        with AddXml(TXml.CreateAsString('a', 'wsdlStub')) do
+        with AddXml(TXml.CreateAsString('a', _progName)) do
         begin
-          AddAttribute(TXmlAttribute.CreateAsString('href', 'wsdlStub.htm'));
+          AddAttribute(TXmlAttribute.CreateAsString('href', _progName + '.htm'));
           AddAttribute(TXmlAttribute.CreateAsString('target', '_top'));
         end;
         AddXml(TXml.CreateAsString('a', ' - ' + xBind.Name));
       end;
     end;
     SaveStringToFile(ExtractFilePath(ParamStr(0))
-        + '\Documentation\' + _xmlProgName + '_' + xBind.Name + '_hlptop.htm',
+        + '\Documentation\' + _progName + '_' + xBind.Name + '_hlptop.htm',
       xXml.asHtmlString);
     xXml.Items.Clear;
     xXml.Name := 'html';
     dXml := xXml.AddXml(TXml.CreateAsString('body', ''));
     refKey := 0;
-    _toc(_xmlProgName + '_' + xBind.Name + '_hlpdtl.htm', 0, dXml,
+    _toc(_progName + '_' + xBind.Name + '_hlpdtl.htm', 0, dXml,
       (xBind as TXml));
     SaveStringToFile(ExtractFilePath(ParamStr(0))
-        + '\Documentation\' + _xmlProgName + '_' + xBind.Name + '_hlptoc.htm',
+        + '\Documentation\' + _progName + '_' + xBind.Name + '_hlptoc.htm',
       xXml.asHtmlString);
     xXml.Items.Clear;
     refKey := 0;
@@ -1333,7 +1333,7 @@ begin
       _dtl(dXml, (xBind as TXml));
     end;
     SaveStringToFile(ExtractFilePath(ParamStr(0))
-        + '\Documentation\' + _xmlProgName + '_' + xBind.Name + '_hlpdtl.htm',
+        + '\Documentation\' + _progName + '_' + xBind.Name + '_hlpdtl.htm',
       xXml.asHtmlString);
     xXml.Items.Clear;
   finally

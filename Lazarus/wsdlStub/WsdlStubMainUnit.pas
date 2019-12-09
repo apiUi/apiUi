@@ -10051,7 +10051,7 @@ begin
              + DirectorySeparator
              + 'Config'
              + DirectorySeparator
-             + _xmlProgName
+             + _ProgName
              + 'Menu.xsd'
              ;
   xXsdDescr := TXsdDescr.Create;

@@ -4,7 +4,7 @@
 	<xs:simpleType name="passwordType">
 		<xs:annotation>
 			<xs:documentation>Password;
-wsdlStub encrypts passwords before storing in a project file or at other locations</xs:documentation>
+passwords are encripted before storing in a project file or at other locations</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
@@ -805,7 +805,7 @@ Internet standard for electronic mail transmission across IP networks</xs:docume
 			<xs:element name="None">
 				<xs:annotation>
 					<xs:documentation>No Transfer Protocol
-Used to use wsdlStub operation functionality without sending a message</xs:documentation>
+Used to execute operation-scripts without really sending a message</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:choice>

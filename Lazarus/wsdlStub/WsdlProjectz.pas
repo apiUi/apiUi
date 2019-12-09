@@ -519,7 +519,7 @@ procedure IntrospectIniXml;
 
 var
   BetaMode: Boolean;
-  webserviceWsdlFileName, webserviceXsdFileName, wsdlStubXsdFileName: String;
+  webserviceWsdlFileName, webserviceXsdFileName, wsdlStubXsdFileName, swaggerYamlFileName: String;
     indexHtmlFileName: String;
     indexWsdlsHtmlFileName: String;
     wsaXsdFileName: String;
@@ -1306,6 +1306,7 @@ begin
   iniXml := TXml.Create;
   try
     iniXml.LoadFromFile(xIniFileName, nil);
+    swaggerYamlFileName := iniXml.Items.XmlValueByTag ['swaggerYaml'];
     webserviceWsdlFileName := iniXml.Items.XmlValueByTag ['WebServiceWsdl'];
     webserviceXsdFileName := iniXml.Items.XmlValueByTag ['WebServiceXsd'];
     indexHtmlFileName := iniXml.Items.XmlValueByTag ['indexHtml'];
@@ -7823,7 +7824,7 @@ var
 begin
   xBodyXml := nil;
   AResponseInfo.ContentEncoding := 'identity';
-  AResponseInfo.ResponseNo := 200;
+  AResponseInfo.ResponseNo := 200; // nice default
   try   // finally
     try  // Except
       if (ARequestInfo.Command = 'POST')
@@ -7835,6 +7836,19 @@ begin
       end;
       with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
       try
+        if (Count = 4)
+        and (Strings[3] = 'swagger.yaml')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          AResponseInfo.ContentText := ReplaceStrings ( xmlio.ReadStringFromFile(swaggerYamlFileName)
+                                                      , '__hostname__'
+                                                      , xmlio.GetHostName
+                                                      , False
+                                                      , False
+                                                      );
+          Exit;
+        end;
+
         if (Count = 4)
         and (Strings[3] = 'logs')
         and (ARequestInfo.Command = 'DELETE')
@@ -10250,7 +10264,6 @@ initialization
   _WsdlSendOperationRequestLater := SendOperationRequestLater;
   _WsdlRefuseHttpConnections := doRefuseHttpConnections;
   _WsdlSaveSnapshots := SaveSnapshots;
-  _ProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   IntrospectIniXml;
 
 

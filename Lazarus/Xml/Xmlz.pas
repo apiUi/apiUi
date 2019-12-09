@@ -387,6 +387,7 @@ const CheckedAtttributeName = 'checked__';
 const UncheckedAtttributeName = 'unchecked__';
 
 var
+  _progName: String;
   XmlConvention: String;
   XmlVersion: String;
   XmlEncoding: String;
@@ -396,7 +397,6 @@ var
   XmlBrowser: TXmlBrowser;
   CDataString: String;
   _xmlUserName: String;
-  _xmlProgName: String;
   _xmlProgVersion: String;
   _xmlLicensed: Boolean;
   _xmlAliasses: TObject;
@@ -1005,7 +1005,7 @@ begin
                      + ' '
                      + TimeToStr (Now)
                      + ': Generated with '
-                     + _xmlProgName
+                     + _ProgName
                      + ' '
                      + _xmlProgVersion
                      + ' by '
@@ -4822,8 +4822,8 @@ begin
 end;
 
 initialization
+  _ProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   _xmlUserName := GetUserName;
-  _xmlProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   _xmlProgVersion := xmlio.GetVersion;
   _xmlLicensed := True;
   xmlSetDefaultColors;
