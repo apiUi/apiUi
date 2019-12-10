@@ -519,7 +519,7 @@ procedure IntrospectIniXml;
 
 var
   BetaMode: Boolean;
-  webserviceWsdlFileName, webserviceXsdFileName, wsdlStubXsdFileName, swaggerYamlFileName: String;
+  webserviceWsdlFileName, webserviceXsdFileName, wsdlStubXsdFileName, swaggerYamlFileName, faviconIcoFileName: String;
     indexHtmlFileName: String;
     indexWsdlsHtmlFileName: String;
     wsaXsdFileName: String;
@@ -1306,6 +1306,7 @@ begin
   iniXml := TXml.Create;
   try
     iniXml.LoadFromFile(xIniFileName, nil);
+    faviconIcoFileName := iniXml.Items.XmlValueByTag ['faviconIco'];
     swaggerYamlFileName := iniXml.Items.XmlValueByTag ['swaggerYaml'];
     webserviceWsdlFileName := iniXml.Items.XmlValueByTag ['WebServiceWsdl'];
     webserviceXsdFileName := iniXml.Items.XmlValueByTag ['WebServiceXsd'];
@@ -7813,6 +7814,28 @@ end;
 
 procedure TWsdlProject.HTTPServerRemoteControlApi(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo;AResponseInfo: TIdHTTPResponseInfo);
+  function _htmlreportTestSummary: String;
+  var
+    xList: TSnapshotList;
+    x: Integer;
+  begin
+    result := '';
+    xList := TSnapshotList.Create;
+    try
+      AcquireLogLock;
+      try
+        for x := 0 to displayedSnapshots.Count - 1 do
+          xList.AddObject('', displayedSnapshots.SnapshotItems[x]);
+      finally
+        ReleaseLogLock;
+      end;
+      result := htmlReportTestSummary(self, xList);
+    finally
+      xList.clear;
+      xList.Free;
+    end;
+  end;
+
 
 var
   x: Integer;
@@ -7824,7 +7847,8 @@ var
 begin
   xBodyXml := nil;
   AResponseInfo.ContentEncoding := 'identity';
-  AResponseInfo.ResponseNo := 200; // nice default
+  ARequestInfo.ContentType := 'application/json';
+  AResponseInfo.ResponseNo := 200; // nice defaults
   try   // finally
     try  // Except
       if (ARequestInfo.Command = 'POST')
@@ -7835,7 +7859,29 @@ begin
         xBodyXml.LoadJsonFromString(xRequestBody, nil);
       end;
       with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
+                                                                   //0/1        /2  /3...
       try
+        if (Count = 2)
+        and (Strings[1] = 'favicon.ico')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          AResponseInfo.ContentText := xmlio.ReadStringFromFile(faviconIcoFileName);
+          Exit;
+        end;
+        if (   (Count = 3)
+            or ((Count = 4) and (Strings[3] = 'index.html'))
+           )
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          AResponseInfo.ContentText := ReplaceStrings ( xmlio.ReadStringFromFile(indexHtmlFileName)
+                                                      , '__progname__'
+                                                      , _progName
+                                                      , False
+                                                      , False
+                                                      );
+          Exit;
+        end;
+
         if (Count = 4)
         and (Strings[3] = 'swagger.yaml')
         and (ARequestInfo.Command = 'GET')
@@ -7846,6 +7892,15 @@ begin
                                                       , False
                                                       , False
                                                       );
+          Exit;
+        end;
+
+        if (Count = 4)
+        and (Strings[3] = 'testSummaryReport')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          AResponseInfo.ContentText := _htmlreportTestSummary;
+          AResponseInfo.ContentType := 'text/html; charset=UTF-8';
           Exit;
         end;
 
@@ -7954,7 +8009,7 @@ begin
           wsdlz.setEnvVar(allOperations.Operations[0], nameXml.Value, valueXml.Value);
           Exit;
         end;
-
+        AResponseInfo.ResponseNo := 400;
       finally
         free;
       end;
@@ -8010,11 +8065,14 @@ var
   xProcessed: Boolean;
   f: Integer;
   xStream: TMemoryStream;
-  xRelatesTo, xNotification: String;
+  xRelatesTo, xNotification, xDocument: String;
   xOnRequestViolatingAddressPath: TOnRequestViolating;
 begin
-  if AnsiStartsStr('/' + _ProgName + '/api/', ARequestInfo.Document) then
-  begin
+  xDocument := '/' + _ProgName + '/api';
+  if (ARequestInfo.Document = xDocument)
+  or AnsiStartsStr(xDocument + '/', ARequestInfo.Document)
+  or (ARequestInfo.Document = '/favicon.ico')
+  then begin
     HTTPServerRemoteControlApi(AContext, ARequestInfo, AResponseInfo);
     Exit;
   end;

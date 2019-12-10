@@ -1,6 +1,7 @@
 <Ini>
   <indexWsdlsHtml>Config\wsdlIndex.html</indexWsdlsHtml>
   <indexHtml>Config\index.html</indexHtml>
+  <faviconIco>Config\apiUi.ico</faviconIco>
   <cssStylesheet>Config\apiUi.css</cssStylesheet>
   <WebServiceWsdl>Config\apiUiWebService.wsdl</WebServiceWsdl>
   <WebServiceXsd>Config\apiUiWebService.xsd</WebServiceXsd>
