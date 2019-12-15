@@ -270,7 +270,8 @@ type
     procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
-    function UpsertSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
+    function FindSnapshot (aName: String): TSnapshot;
+    function UpsertSnapshot (aName, aFileName, aRefFileName: String): TSnapshot;
     function CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
     procedure CreateJUnitReport (aName: String);
     procedure CreateSummaryReport (aName: String);
@@ -7923,12 +7924,27 @@ begin
             AResponseInfo.ResponseNo := 400;
             Exit;
           end;
-          xSnapshot := UpsertSnapshot ( nameXml.Value
-                                      , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
-                                      , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
-                                      , True
-                                      , False
-                                      );
+          UpsertSnapshot ( nameXml.Value
+                         , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
+                         , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
+                         );
+          Exit;
+        end;
+
+        if (Count = 5)
+        and (Strings[3] = 'snapshot')
+        and ((Strings[4] = 'checkregression'))
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          nameXml := xBodyXml.FindXml('json.name');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          xSnapshot := FindSnapshot (nameXml.Value);
+          if not Assigned (xSnapshot) then
+            raise Exception.Create(nameXml.Value + ' not found');
           xSnapshot.doReport;
           with TXml.CreateAsString('json', '') do
           try
@@ -9217,15 +9233,22 @@ begin
   end;
 end;
 
-function TWsdlProject.UpsertSnapshot(aName, aFileName, aRefFileName: String;
-  aDoSave, aDoRun: Boolean): TSnapshot;
+function TWsdlProject.FindSnapshot(aName: String): TSnapshot;
 var
   x, f: Integer;
 begin
+  result := nil;
   f := displayedSnapshots.IndexOf(aName);
   if (f > -1) then
-    result := displayedSnapshots.SnapshotItems[f]
-  else
+    result := displayedSnapshots.SnapshotItems[f];
+end;
+
+function TWsdlProject.UpsertSnapshot(aName, aFileName, aRefFileName: String): TSnapshot;
+var
+  x, f: Integer;
+begin
+  result := FindSnapshot(aName);
+  if not Assigned (result) then
     result := CreateSnapshot(aName, aFileName, aRefFileName, False, False);
   result.timeStamp := Now;
   result.FileName := ExpandRelativeFileName(projectFileName, aFileName);

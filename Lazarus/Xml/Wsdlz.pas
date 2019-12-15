@@ -577,7 +577,6 @@ function SeparatedStringT (aObject: TObject; aString, aSep: String; aIndex: Exte
 function xNewLine: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
-procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
 procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
 function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
@@ -587,9 +586,6 @@ procedure wsdlRequestOperationLater (aObject: TObject; aOperation: String; aLate
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation: String; aLater: Extended);
 function RefuseHttpConnections (aObject: TObject; aLater, aWhile: Extended): Extended;
-function Sum (aSAObject, aSEObject: TObject): Extended;
-procedure AssignRecurring (aDAObject, aDEObject, aSAObject, aSEObject: TObject);
-procedure CheckRecurringElement (aDAObject, aDEObject, aSAObject, aSEObject: TObject);
 procedure EnableMessage (aOperation: TWsdlOperation);
 procedure EnableAllMessages;
 procedure DisableMessage (aOperation: TWsdlOperation);
@@ -1310,23 +1306,6 @@ begin
   result := StringOfChar(c, Trunc (aNumber));
 end;
 
-procedure mergeGroup (aDstGroup, aSrcGroup: TObject);
-var
-  swapTagName: String;
-begin
-  with TXml ((aDstGroup as YYSType).yy.yyPointer) do
-  begin
-    swapTagname := TagName;
-    TagName := TXml ((aSrcGroup as YYSType).yy.yyPointer).TagName;
-    try
-      CopyValues (TXml ((aSrcGroup as YYSType).yy.yyPointer), True, True);
-      MergePreviousChecked;
-    finally
-      TagName := swapTagName;
-    end;
-  end;
-end;
-
 procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
   procedure _copy (dst, src: TXml);
   var
@@ -1431,64 +1410,6 @@ begin
   _WsdlSendOperationRequestLater (aOperation, aCorrelation, xLater);
 end;
 
-function Sum (aSAObject, aSEObject: TObject): Extended;
-  procedure _Sum (var aSum: Extended; aXml: TXml; aCaption: String);
-  var
-    x, p: Integer;
-    xSum: Extended;
-    xCaption: String;
-  begin
-    if not aXml.Checked then
-      Exit;
-    p := Pos('.', aCaption);
-    if p = 0 then
-    begin
-      if aXml.Name = aCaption then
-      begin
-        try
-          xSum := StrToFloat(aXml.Value);
-          aSum := aSum + xSum;
-        except
-        end;
-      end;
-      Exit;
-    end;
-    xCaption := Copy (aCaption, 1, p - 1);
-    if xCaption <> aXml.Name then
-      Exit;
-    xCaption := Copy (aCaption, p + 1, 1000000);
-    for x := 0 to aXml.Items.Count - 1 do
-      _Sum ( result
-           , aXml.Items.XmlItems[x]
-           , xCaption
-           );
-  end;
-var
-  sa, se: TXml;
-  saCAption, seCaption: String;
-begin
-  result := 0;
-  if not (TCustomBindable ((aSAObject as YYSType).yy.yyPointer) is TXml)
-  or not (TCustomBindable ((aSEObject as YYSType).yy.yyPointer) is TXml) then
-    raise Exception.Create ('Sum: Only implemented for XML elements');
-  sa := TCustomBindable((aSAObject as YYSType).yy.yyPointer) as TXml;
-  saCaption := sa.FullUQCaption;
-  se := TCustomBindable((aSEObject as YYSType).yy.yyPointer) as TXml;
-  seCaption := se.FullUQCaption;
-  if (AnsiLeftStr(seCaption, Length (saCaption)) <> saCaption)
-  or (saCaption = seCaption) then
-    raise Exception.Create( 'Sum: Element '
-                          + seCaption
-                          + ' must be a child of'
-                          + saCaption
-                          );
-  _Sum ( result
-       , sa
-       , sa.Name
-       + AnsiRightStr(seCaption, Length (seCaption) - Length (saCAption))
-       );
-end;
-
 function asXmlString (aOwner: TObject; aArg: TObject): String;
 var
   xXml: TXml;
@@ -1518,157 +1439,6 @@ begin
     xXml.Checked := True;
   finally
     yXml.Free;
-  end;
-end;
-
-procedure AssignRecurring (aDAObject, aDEObject, aSAObject, aSEObject: TObject);
-  procedure _AssignRecurring (da, de, sa, se: TXml);
-  var
-    dp, sp, currentDE, currentSE: TXml;
-    daCaption, deCaption, saCaption, seCaption, deFind, seFind, swapTagname: String;
-    x: Integer;
-  begin
-    daCaption := da.FullUQCaption;
-    deCaption := de.FullUQCaption;
-    saCaption := sa.FullUQCaption;
-    seCaption := se.FullUQCaption;
-    if AnsiLeftStr(deCaption, Length (daCaption)) <> daCaption then
-      raise Exception.Create( 'AssignRecurring: Element '
-                            + deCaption
-                            + ' must be the same or child of'
-                            + daCaption
-                            );
-    if AnsiLeftStr(seCaption, Length (saCaption)) <> saCaption then
-      raise Exception.Create( 'AssignRecurring: Element '
-                            + seCaption
-                            + ' must be the same or child of'
-                            + saCaption
-                            );
-    deFind := AnsiRightStr(deCaption, Length (deCaption) - Length (daCaption) - 1);
-    seFind := AnsiRightStr(seCaption, Length (SeCaption) - Length (saCaption) - 1);
-    {reset all destination occurrences}
-    dp := da.Parent as TXml;
-    for x := 0 to dp.Items.Count - 1 do
-      if dp.Items.XmlItems[x].TagName = da.TagName then
-        dp.Items.XmlItems[x].Checked := False;
-
-    sp := sa.Parent as TXml;
-    x := 0;
-    while (x < sp.Items.Count)
-    and (x < dp.Items.Count) do
-    begin
-      if (sp.Items.XmlItems[x].Checked) then
-      begin
-        if seFind = '' then
-          currentSe := sp.Items.XmlItems[x]
-        else
-          currentSe := sp.Items.XmlItems[x].FindUQXml(sp.Items.XmlItems[x].Name + '.' + seFind);
-        if Assigned (currentSe)
-        and currentSe.Checked then
-        begin
-          if deFind = '' then
-            currentDe := dp.Items.XmlItems[x]
-          else
-            currentDe := dp.Items.XmlItems[x].FindUQXml(dp.Items.XmlItems[x].TagName + '.' + deFind);
-          if Assigned (currentDe) then
-          begin
-            currentDE.Checked := True;
-            currentDE.Value := currentSE.Value;
-            swapTagname := currentDE.Name;
-            currentDE.Name := currentSE.Name;
-            try
-              currentDE.CopyValues (currentSE, True, True);
-              currentDE.MergePreviousChecked;
-            finally
-              currentDE.Name := swapTagName;
-            end;
-          end;
-        end;
-      end;
-      Inc (x);
-    end;
-  end;
-begin
-  if not (TCustomBindable ((aDAObject as YYSType).yy.yyPointer) is TXml)
-  or not (TCustomBindable ((aDEObject as YYSType).yy.yyPointer) is TXml)
-  or not (TCustomBindable ((aSAObject as YYSType).yy.yyPointer) is TXml)
-  or not (TCustomBindable ((aSEObject as YYSType).yy.yyPointer) is TXml) then
-    raise Exception.Create ('AssignRecurring: Only allowed with XML elements');
-  _AssignRecurring ( TXml ((aDAObject as YYSType).yy.yyPointer)
-                   , TXml ((aDEObject as YYSType).yy.yyPointer)
-                   , TXml ((aSAObject as YYSType).yy.yyPointer)
-                   , TXml ((aSEObject as YYSType).yy.yyPointer)
-                   );
-end;
-
-procedure CheckRecurringElement (aDAObject, aDEObject, aSAObject, aSEObject: TObject);
-var
-  da, de, dp, sa, se, sp, currentDE, currentSE: TXml;
-  daCaption, deCaption, saCaption, seCaption, deFind, seFind: String;
-  d, s: Integer;
-begin
-  if not (TCustomBindable ((aDAObject as YYSType).yy.yyPointer) is TXml) then
-    raise Exception.Create ('CheckRecurringElement: Only allowed with XML elements');
-  da := TXml ((aDAObject as YYSType).yy.yyPointer);
-  de := TXml ((aDEObject as YYSType).yy.yyPointer);
-  sa := TXml ((aSAObject as YYSType).yy.yyPointer);
-  se := TXml ((aSEObject as YYSType).yy.yyPointer);
-  daCaption := da.FullUQCaption;
-  deCaption := de.FullUQCaption;
-  saCaption := sa.FullUQCaption;
-  seCaption := se.FullUQCaption;
-
-  if AnsiLeftStr(deCaption, Length (daCaption)) <> daCaption then
-    raise Exception.Create( 'CheckRecurringElement: Element '
-                          + deCaption
-                          + ' must be child of'
-                          + daCaption
-                          );
-  if AnsiLeftStr(seCaption, Length (saCaption)) <> saCaption then
-    raise Exception.Create( 'CheckRecurringElement: Element '
-                          + deCaption
-                          + ' must be child of'
-                          + daCaption
-                          );
-  deFind := AnsiRightStr(deCaption, Length (deCaption) - Length (daCaption) - 1);
-  seFind := AnsiRightStr(seCaption, Length (SeCaption) - Length (saCaption) - 1);
-  dp := da.Parent as TXml;
-  for d := 0 to dp.Items.Count - 1 do
-    if dp.Items.XmlItems[d].TagName = da.TagName then
-    begin
-      dp.Items.XmlItems[d].fPrevChecked := dp.Items.XmlItems[d].fChecked;
-      dp.Items.XmlItems[d].fChecked := False;
-    end;
-
-  sp := sa.Parent as TXml;
-  for s := 0 to sp.Items.Count - 1 do
-  begin
-    if (sp.Items.XmlItems[s].TagName = sa.TagName)
-    and (sp.Items.XmlItems[s].Checked) then
-    begin
-      if seFind = '' then
-        currentSe := sp.Items.XmlItems[s]
-      else
-        currentSe := sp.Items.XmlItems[s].FindUQXml(sp.Items.XmlItems[s].Name + '.' + seFind);
-      if Assigned (currentSe)
-      and currentSe.Checked then
-      begin
-        for d := 0 to dp.Items.Count - 1 do
-        begin
-          if (dp.Items.XmlItems[d].TagName = da.TagName)
-          and (not dp.Items.XmlItems[d].Checked) then
-          begin
-            if deFind = '' then
-              currentDe := dp.Items.XmlItems[d]
-            else
-              currentDe := dp.Items.XmlItems[d].FindUQXml(dp.Items.XmlItems[d].TagName + '.' + deFind);
-            if Assigned (currentDe)
-            and currentDe.Checked then
-              dp.Items.XmlItems[d].fChecked := (currentSe.Value = currentDe.Value);
-          end;
-        end;
-      end;
-    end;
   end;
 end;
 
@@ -4060,8 +3830,6 @@ begin
     BindScriptFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
     BindScriptFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
     BindScriptFunction ('Assigned', @isAssigned, XFG, '(aItem)');
-    BindScriptFunction ('AssignRecurring', @AssignRecurring, VFGGGG, '(aDestRecurringElm, aDestElm, aSrcRecurringElm, aSrcElm)');
-    BindScriptFunction ('CheckRecurringElement', @CheckRecurringElement, VFGGGG, '(aDestElm, aDestCorrElm, aSrcElm, aSrcCorrElm)');
     BindScriptFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindScriptFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
     BindScriptFunction ('AssignAnyType', @assignAnyType, VFGG, '(aDestGroup, aSrcGroup)');
@@ -4093,7 +3861,6 @@ begin
     BindScriptFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindScriptFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
     BindScriptFunction ('MD5', @MD5, SFS, '(aString)');
-    BindScriptFunction ('MergeGroup', @mergeGroup, VFGG, '(aDestGroup, aSrcGroup)');
     BindScriptFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindScriptFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
     BindScriptFunction ('MessageReplyBodyAsLogged', @wsdlLogReplyBody, SFOV, '()');
@@ -4148,7 +3915,6 @@ begin
     BindScriptFunction ('StrToDate', @StrToDateX, DFS, '(aString)');
     BindScriptFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindScriptFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-    BindScriptFunction ('Sum', @Sum, XFGG, '(aGroup, aElement)');
     BindScriptFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
     BindScriptFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
     BindScriptFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');

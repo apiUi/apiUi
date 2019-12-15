@@ -4104,7 +4104,7 @@ end;
 
 function TMainForm.OptionsAsXml: TXml;
 begin
-  result := TXml.CreateAsString('wsdlStubOptions', '');
+  result := TXml.CreateAsString('Options', '');
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
     AddXml(TXml.CreateAsString('Context', contextPropertyOverwrite));
@@ -6732,8 +6732,7 @@ begin
   xXml := TXml.Create;
   try
     xXml.LoadFromString(xIniFile.StringByName['Options'], nil);
-    if xXml.Name = 'wsdlStubOptions' then
-      OptionsFromXml(xXml);
+    OptionsFromXml(xXml);
   finally
     xXml.Free;
   end;
@@ -10277,29 +10276,6 @@ begin
     begin
       with TFormIniFile.Create(self, False) do
       try
-        BooleanByName['doViaProxyServer'] := se.doViaProxyServer;
-        BooleanByName['doScrollMessagesIntoView'] :=
-          doScrollMessagesIntoView;
-        BooleanByName['doScrollExceptionsIntoView'] :=
-          doScrollExceptionsIntoView;
-        BooleanByName['doConfirmRemovals'] := xmlUtil.doConfirmRemovals;
-        // BooleanByName ['HTTPServer.KeepAlive'] := se.HTTPServer.KeepAlive;
-        IntegerByName['HTTPServer.ListenQueue'] :=
-          se.HTTPServer.ListenQueue;
-        IntegerByName['HTTPServer.MaxConnections'] :=
-          se.HTTPServer.MaxConnections;
-        StringByName['ViaProxyServer'] := se.ViaProxyServer;
-        StringByName['ViaProxyPort'] := IntToStr(se.ViaProxyPort);
-        StringByName['mqUse'] := IntToStr(Ord(se.mqUse));
-        IntegerByName['MaxWorkingThreads'] := se.mqMaxWorkingThreads;
-        StringByName['mqServerEnv'] := mqServerEnv;
-        IntegerByName['CompareLogOrderBy'] := Ord(se.CompareLogOrderBy);
-        IntegerByName['ShowLogCobolStyle'] := Ord(se.ShowLogCobolStyle);
-        BooleanByName['doValidateScriptAssignmentAgainstSchema'] :=
-          xsdValidateAssignmentsAgainstSchema;
-        IntegerByName['bgCorrelationItemColor'] := bgCorrelationItemColor;
-        IntegerByName['bgExpectedValueColor'] := bgExpectedValueColor;
-        IntegerByName['bgNilValueColor'] := bgNilValueColor;
         xXml := OptionsAsXml;
         try
           StringByName['Options'] := xXml.Text;

@@ -28,12 +28,6 @@ paths:
       responses:
         '200':
           decsription: Success response
-          schema:
-            $ref: '#/definitions/createSnapshotRpy'
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
   /logs:
     delete:
       summary: removes list of logitems from Ui
@@ -47,10 +41,27 @@ paths:
       responses:
         '200':
           decsription: Success response
-        '500':
-          decsription: Fault response
+  /snapshot/checkregression:
+    post:
+      summary: summary
+      description: ''
+      operationId: checkSnapshotRegression
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
           schema:
-            $ref: '#/definitions/SOAPFault'
+            $ref: '#/definitions/checkRegressionReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/checkRegresssionRpy'
   /snapshots:
     delete:
       summary: removes entries from the list of snapshots
@@ -66,10 +77,6 @@ paths:
       responses:
         '200':
           decsription: Success response
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
   /executeScript:
     post:
       summary: summary
@@ -91,10 +98,6 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/executeScriptRpy'
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
   /regressionReport:
     post:
       summary: summary
@@ -116,10 +119,6 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/regressionReportRpy'
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
   /resetEnvVar:
     post:
       summary: summary
@@ -141,10 +140,6 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/resetEnvVarRpy'
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
   /resetEnvVars:
     post:
       summary: summary
@@ -166,10 +161,6 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/resetEnvVarsRpy'
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
   /setEnvVar:
     post:
       summary: summary
@@ -191,10 +182,6 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/setEnvVarRpy'
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
   /shutDown:
     post:
       summary: summary
@@ -216,10 +203,6 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/shutDownRpy'
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
   /unexpectedValuesReport:
     post:
       summary: summary
@@ -241,20 +224,21 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/unexpectedValuesReportRpy'
-        '500':
-          decsription: Fault response
-          schema:
-            $ref: '#/definitions/SOAPFault'
 definitions:
-  createSnapshotReq:
+  checkRegressionReq:
     type: object
     properties:
       name:
         type: string
-  createSnapshotRpy:
+  checkRegresssionRpy:
     type: object
     properties:
       result:
+        type: string
+  createSnapshotReq:
+    type: object
+    properties:
+      name:
         type: string
   executeScriptReq:
     type: object
