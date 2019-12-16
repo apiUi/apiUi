@@ -76,7 +76,8 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
-    Action3: TAction;
+    GenerateJsonSchemaInYaml: TAction;
+    Action4: TAction;
     GenerateSwaggerAction: TAction;
     ToggleTrackDuplicateMessagesAction: TAction;
     MenuItem52: TMenuItem;
@@ -619,6 +620,7 @@ type
     procedure ApiByExampleActionHint(var HintStr: string; var CanShow: Boolean
       );
     procedure FreeFormatsActionUpdate(Sender: TObject);
+    procedure GenerateJsonSchemaInYamlExecute(Sender: TObject);
     procedure GenerateSwaggerActionExecute(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
     procedure MailOperationsActionExecute(Sender: TObject);
@@ -13594,6 +13596,24 @@ procedure TMainForm.FreeFormatsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
     FreeFormatsAction.Caption := decorateWithAsterix (FreeFormatsAction.Caption, se.hasFreeformatOperations);
+end;
+
+procedure TMainForm.GenerateJsonSchemaInYamlExecute(Sender: TObject);
+var
+  xBind: TCustomBindable;
+begin
+  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  if (xBind is TXml) and (Assigned((xBind as TXml).Xsd)) then
+  begin
+    with (xBind as TXml).Xsd.SchemaAsJson as TXml do
+    try
+      Clipboard.AsText := StreamYAML(0, True);
+    finally
+      Free;
+    end;
+  end
+  else
+    ShowMessage ('Action only implemented for XMLs that have an Schema');
 end;
 
 procedure TMainForm.GenerateSwaggerActionExecute(Sender: TObject);

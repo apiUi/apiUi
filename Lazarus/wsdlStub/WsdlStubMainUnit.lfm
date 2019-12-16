@@ -2151,11 +2151,6 @@ object MainForm: TMainForm
       OnExecute = DebugBeforeScriptActionExecute
       ShortCut = 24697
     end
-    object GenerateMenuHelpAction: TAction
-      Caption = 'GenerateMenuHelpAction'
-      OnExecute = GenerateMenuHelpActionExecute
-      ShortCut = 49224
-    end
     object ToggleNotifyAction: TAction
       Category = 'Miscellaneous'
       Caption = 'ToggleNotifyAction'
@@ -2191,12 +2186,6 @@ object MainForm: TMainForm
       Category = 'Help'
       Caption = 'Main Menu'
       OnExecute = HelpMainMenuActionExecute
-    end
-    object GenerateScriptAssignmentAction: TAction
-      Category = 'Edit'
-      Caption = 'Generate Script Assignments'
-      OnExecute = GenerateScriptAssignmentActionExecute
-      ShortCut = 49217
     end
     object ProjectDesignToClipboardAction: TAction
       Caption = 'ProjectDesign To Clipboard'
@@ -2618,14 +2607,30 @@ object MainForm: TMainForm
       ImageIndex = 102
       OnExecute = ToggleTrackDuplicateMessagesActionExecute
     end
+    object GenerateJsonSchemaInYaml: TAction
+      Caption = 'GenerateJsonSchemaInYaml'
+      OnExecute = GenerateJsonSchemaInYamlExecute
+      ShortCut = 24650
+    end
+    object GenerateMenuHelpAction: TAction
+      Caption = 'GenerateMenuHelpAction'
+      OnExecute = GenerateMenuHelpActionExecute
+      ShortCut = 49224
+    end
     object GenerateSwaggerAction: TAction
       Category = 'Service'
       Caption = 'GenerateSwaggerAction'
       OnExecute = GenerateSwaggerActionExecute
       ShortCut = 24663
     end
-    object Action3: TAction
-      Caption = 'Action3'
+    object GenerateScriptAssignmentAction: TAction
+      Category = 'Edit'
+      Caption = 'Generate Script Assignments'
+      OnExecute = GenerateScriptAssignmentActionExecute
+      ShortCut = 49217
+    end
+    object Action4: TAction
+      Caption = 'Action4'
     end
   end
   object mainImageList: TImageList

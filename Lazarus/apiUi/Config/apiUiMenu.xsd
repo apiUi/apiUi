@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://apiUiMenu.xsd">
 	<xs:element name="Menu">
 		<xs:annotation>
 			<xs:documentation>
