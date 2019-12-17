@@ -1,0 +1,509 @@
+---
+swagger: '2.0'
+info:
+  description:  apiUiMenu
+host: localhost
+basePath: "/v1"
+schemes:
+- https
+- http
+paths:
+  "/menuDescription":
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            "$ref": "#/definitions/MenuDesc"
+definitions:
+  MenuDesc:
+    type: object
+    properties:
+      Menu:
+        type: object
+        properties: 
+          File: 
+            type: object
+            properties: 
+              New_Project: 
+                type: string
+                description:
+                  Start a new project.
+                  You are prompted to save current project in case there are unsaved changes.
+              Open_Project: 
+                type: string
+                description:
+                  Open an existing project.
+                  You are prompted to save current project in case there are unsaved changes.
+              Reopen_Project: 
+                type: string
+                description:
+                  Open a recently used project.
+                  You are prompted to save current project in case there are unsaved changes.
+              Save_Project: 
+                type: string
+                description:
+                  Save current project.
+                  When working in a new project, you are prompted for a project filename, otherwise, apiUi will use the filename of most recently read projectfile.
+              Save_Project_As: 
+                type: string
+                description:
+                  Save current project under a new name.
+                  You are prompted for a project filename, in case you use an existing filename, you will receive a warning
+              Exit: 
+                type: string
+                description:
+                  Quit program
+                  You are prompted to save current project in case there are unsaved changes.
+            required: 
+              - New_Project
+              - Open_Project
+              - Reopen_Project
+              - Save_Project
+              - Save_Project_As
+              - Exit
+          Project: 
+            type: object
+            properties: 
+              Configure_Listeners: 
+                type: string
+                description:
+                  Specify listeners here.
+                  Listeners are able to receive messages.
+                  Beware of firewall settings.
+                  'For an overview configuration options on Listeners visit: doc://apiUi_Listeners_hlp.htm'
+              Options: 
+                type: string
+                description:
+                  Project options;
+                  'For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm'
+              Maintain_List_of_Wsdl_Files: 
+                type: object
+                properties: 
+                  Buttons: 
+                    type: object
+                    properties: 
+                      Close: 
+                        type: string
+                        description: Closes screen and accepts changes
+                      Cancel: 
+                        type: string
+                        description: Closes screen while discarding changes
+                      Add: 
+                        type: string
+                        description:
+                          Adds an existing Wsdl or OpenApi (f.k.a. Swagger) file.
+                          May also be on http(s) 
+                      Delete: 
+                        type: string
+                        description:
+                          Delete selected Wsdl or OpenApi (f.k.a. Swagger).\
+                          You are prompted to confirm deletion.
+                description:
+                  Maintain list of Wsdl files for your project.
+                  You can open as many Wsdl files as needed.
+              Xsd_Operations: 
+                type: string
+                description:
+                  Specify services that use an XML schema but do not work with SOAP envelopes.
+                  "Visit: doc://apiUi_XsdOperations_hlp.htm for details."
+              Cobol_operations: 
+                type: string
+                description:
+                  Specify services that use COBOL records.
+                  "Visit: doc://apiUi_CobolOperations_hlp.htm for details."
+              SwiftMT_operations: 
+                type: string
+                description:
+                  Specify services for SwiftMT messages.
+                  "Visit: doc://apiUi_SwiftMTOperations_hlp.htm for details."
+              Freeformat_operations: 
+                type: string
+                description:
+                  Specify Freeformat services.
+                  "Visit doc://apiUi_FreeFormatOperations_hlp.htm for details."
+              Clean: 
+                type: string
+                description:
+                  Cleans your project from unused data.
+                  Every message for every operation is searched for data that is unchecked and therefor cannot be part of a message at runtime.
+                  Use this command only if you are satisfied with current data and do not need unchecked data for any other testing.
+              Hide_all_operations: 
+                type: string
+                description:
+                  Hides all operations from display.
+                  Usefull if the service you are working on publishes a lot of operations that are not under test.
+                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
+              Hide_operation: 
+                type: string
+                description:
+                  Hides a specific operation from display.
+                  Usefull if the service you are working on publishes a lot of operations that are not under test.
+                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
+              Unhide_all_operations: 
+                type: string
+                description:
+                  Unhides all operations from display.
+                  Usefull if the service you are working on publishes a lot of operations that are not under test.
+                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
+              Unhide_operation: 
+                type: string
+                description:
+                  Unhides a specific operation from display.
+                  Usefull if the service you are working on publishes a lot of operations that are not under test.
+                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
+            required: 
+              - Configure_Listeners
+              - Options
+              - Maintain_List_of_Wsdl_Files
+              - Xsd_Operations
+              - Cobol_operations
+              - SwiftMT_operations
+              - Freeformat_operations
+              - Clean
+              - Hide_all_operations
+              - Hide_operation
+              - Unhide_all_operations
+              - Unhide_operation
+          Service: 
+            type: object
+            properties: 
+              Options: 
+                type: string
+                description:
+                  Service options;
+                  "For an overview of all options visit doc://apiUi_serviceOptions_hlp.htm"
+            required: 
+              - Options
+          Operation: 
+            type: object
+            properties: 
+              To_address: 
+                type: string
+              WS_Addressing: 
+                type: string
+              Apply_settings_to: 
+                type: string
+              Options: 
+                type: string
+                description:
+                  Service options;
+                  "For an overview of all options visit doc://apiUi_operationOptions_hlp.htm"
+              Edit_Before_script: 
+                type: string
+              Edit_After_script: 
+                type: string
+              Edit_Script: 
+                type: string
+            required: 
+              - To_address
+              - WS_Addressing
+              - Apply_settings_to
+              - Options
+              - Edit_Before_script
+              - Edit_After_script
+              - Edit_Script
+          Messages: 
+            type: object
+            properties: 
+              Select_correlation_elements: 
+                type: string
+              Select_column_elements: 
+                type: string
+              Move_up: 
+                type: string
+              Move_down: 
+                type: string
+              Add: 
+                type: string
+              Read_Messages_from_Diskfiles: 
+                type: string
+              Delete: 
+                type: string
+              Copy_grid: 
+                type: string
+              Paste_grid: 
+                type: string
+              Validate_grid_data_against_schema: 
+                type: string
+              Send_request: 
+                type: string
+              Send_all_requests: 
+                type: string
+              Remove_all_messages_from_all_operations: 
+                type: string
+            required: 
+              - Select_correlation_elements
+              - Select_column_elements
+              - Move_up
+              - Move_down
+              - Add
+              - Read_Messages_from_Diskfiles
+              - Delete
+              - Copy_grid
+              - Paste_grid
+              - Validate_grid_data_against_schema
+              - Send_request
+              - Send_all_requests
+              - Remove_all_messages_from_all_operations
+          Log: 
+            type: object
+            properties: 
+              Save_log_items_to_file: 
+                type: string
+                description:
+                  
+                  Save all log items to a file.
+                  Saved log files can be read from disk again for analysing or it can be used for comparison after a next run (regression testing).
+              Displayed_columns: 
+                type: string
+                description:
+                  
+                  Maintain the number of extra displayed log columns and their headers.
+                  "The source element that is shown in such a column depends on the operation that is shown in a log-entry."
+                  Change the source element by clicking in the corresponding cell.
+                  "See also doc://apiUi_DisplayedColumns_hlp.htm"
+                  "or doc://apiUi_Listeners_hlpdtl.htm#Listeners_HttpProxy_10"
+                  
+              Compare_with_file: 
+                type: string
+                description:
+                  
+                  Compare current log with an earlier saved log file.
+                  Both current and the saved log file are filtered, see help on Filter_Log.
+                  After deployment of new services, rerun your tests and use this function to obtain a detailed overview of changes (regression testing)
+                  See also the CompareLogsOrdered option of the Project_Options.
+                  
+              Coverage_report: 
+                type: string
+                description:
+                  
+                  Create a Coverage Report.
+                  This report tells which parts of your messages have been tested and which parts not.
+                  Helps to determine whether or not additional testing is needed.
+                  
+              Read_from_file: 
+                type: string
+                description:
+                  
+                  Read a previously saved logfile.
+                  After reading a logfile, you are able to analyse an earlier testrun in the same way as you are with a current testrun.
+                  
+              Browse_MQ: 
+                type: string
+                description:
+                  
+                  Browse an IBM(C) Websphere MQ message queue.
+                  Prerequisite is that you installed the appropriate software.
+                  
+              Discover_service_calls_from_log: 
+                type: string
+                description:
+                  
+                  Discover operations from a log.
+                  This function scans a logfile and tries to discover service calls stipulated that the log events are written as an XML file.
+                  Discovered service can be promoted to testware.
+                  
+              Clear_log_items: 
+                type: string
+                description:
+                  
+                  Clears the log.
+                  
+              Filter_log: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Show_request_as_XML: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Show_reply_as_XML: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Show_request_in_a_grid: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Show_reply_in_a_grid: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+            required: 
+              - Save_log_items_to_file
+              - Displayed_columns
+              - Compare_with_file
+              - Coverage_report
+              - Read_from_file
+              - Browse_MQ
+              - Discover_service_calls_from_log
+              - Clear_log_items
+              - Filter_log
+              - Show_request_as_XML
+              - Show_reply_as_XML
+              - Show_request_in_a_grid
+              - Show_reply_in_a_grid
+          View: 
+            type: object
+            properties: 
+              Operations: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Schema_properties: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Wsdl_information: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Design_panel_at_Top: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+            required: 
+              - Operations
+              - Schema_properties
+              - Wsdl_information
+              - Design_panel_at_Top
+          Scripts: 
+            type: object
+            properties: 
+              New: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Edit: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Remove: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+            required: 
+              - New
+              - Edit
+              - Remove
+          Environment: 
+            type: object
+            properties: 
+              Re-enable_all_messages: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Reset: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Edit: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Add_current_environment: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              Remove_environment: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+            required: 
+              - "Re-enable_all_messages"
+              - Reset
+              - Edit
+              - Add_current_environment
+              - Remove_environment
+          Extra: 
+            type: object
+            properties: 
+              Options: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+            required: 
+              - Options
+          Help: 
+            type: object
+            properties: 
+              Help: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              License: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+              About: 
+                type: string
+                description:
+                  
+                  HIER
+                  
+            required: 
+              - Help
+              - License
+              - About
+        required: 
+          - File
+          - Project
+          - Service
+          - Operation
+          - Messages
+          - Log
+          - View
+          - Scripts
+          - Environment
+          - Extra
+          - Help
+        description:
+          
+          Main Menu documentation.
+          
+        

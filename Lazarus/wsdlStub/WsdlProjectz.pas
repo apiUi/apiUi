@@ -1511,7 +1511,7 @@ begin
   PathRegexps := TStringList.Create;
   PathFormats := TStringList.Create;
   unknownOperation := TWsdlOperation.Create(TWsdl(nil));
-  unknownOperation.StubAction := saRedirect;
+  unknownOperation.StubAction := saStub;
   elementsWhenRepeatable := TStringList.Create;
   elementsWhenRepeatable.Sorted := True;
   elementsWhenRepeatable.Duplicates := dupIgnore;
@@ -8606,7 +8606,7 @@ begin
         end;
       end;
     end;
-    RedirectUnknownOperation(aLog);
+    aLog.httpResponseCode := 404;
   finally
     AResponseInfo.ContentText := alog.ReplyBody;
   end;

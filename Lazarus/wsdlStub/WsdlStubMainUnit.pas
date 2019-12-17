@@ -1692,7 +1692,10 @@ procedure TMainForm.FillInWsdlEdits;
 begin
   if (WsdlOperation <> nil) then
   begin
-    ActionComboBox.ItemIndex := Ord(WsdlOperation.StubAction);
+    if (WsdlOperation.StubAction = saStub) then
+      ActionComboBox.ItemIndex := 0
+    else
+      ActionComboBox.ItemIndex := 1;
     // SoapActionEdit.Text := WsdlOperation.SoapAction;
     try
       OperationDocumentationViewer.SetHtmlFromStr(textToHtml(WsdlOperation.Documentation.Text));
@@ -4194,21 +4197,23 @@ begin
 end;
 
 procedure TMainForm.ActionComboBoxChange(Sender: TObject);
+var
+  xStubAction: TStubAction;
 begin
+  xStubAction := saStub;
+  if ActionComboBox.ItemIndex <> 0 then
+    xStubAction := saRequest;
   if Assigned(WsdlOperation) then
   begin
-    if (WsdlOperation.StubAction <> TStubAction(ActionComboBox.ItemIndex))
-    and (   (WsdlOperation.StubAction = saRequest)
-         or (TStubAction(ActionComboBox.ItemIndex) = saRequest)
-        ) then
+    if (WsdlOperation.StubAction <> xStubAction) then
     begin
-      WsdlOperation.StubAction := TStubAction(ActionComboBox.ItemIndex);
+      WsdlOperation.StubAction := xStubAction;
       NavigatorTreeView.OnFocusChanged ( NavigatorTreeView
                                        , NavigatorTreeView.FocusedNode
                                        , 0
                                        );
     end;
-    WsdlOperation.StubAction := TStubAction(ActionComboBox.ItemIndex);
+    WsdlOperation.StubAction := xStubAction;
     stubChanged := True;
     NavigatorTreeView.Invalidate;
     OperationDelayResponseTimeAction.Visible :=

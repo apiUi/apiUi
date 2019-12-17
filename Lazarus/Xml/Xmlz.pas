@@ -1658,9 +1658,19 @@ function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
       Dec (x);
     end;
   end;
+  function _yamlValue (aValue: String): String;
+  begin
+    with TXml.CreateAsString('a', aValue) do
+    try
+      Result := yamlValue;
+    finally
+      Free;
+    end;
+  end;
+
   function _StreamYAMLValue (aXml: TXml; aHyphen: Boolean; aIndent: Integer): String;
   var
-    x: Integer;
+    x, v: Integer;
     xSwapParent: TCustomBindable;
     xName: String;
   begin
@@ -1671,7 +1681,22 @@ function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
     if xName = '_' then
       Result := _IndentString(aIndent) + '- ' + aXml.yamlValue
     else
-      Result := _IndentString(aIndent) + xName + ': ' + aXml.yamlValue;
+    begin
+      with TStringList.Create do
+      try
+        Text := aXml.Value;
+        if Count < 2 then
+          Result := _IndentString(aIndent) + xName + ': ' + aXml.yamlValue
+        else
+        begin
+          Result := _IndentString(aIndent) + xName + ':';
+          for v := 0 to Count - 1 do
+            result := result + LineEnding + _IndentString(aIndent + 2) + _yamlValue(Trim (Strings[v]));
+        end;
+      finally
+        free;
+      end;
+    end;
     for x := 0 to aXml.Items.Count - 1 do
       if (aXml.Items.XmlItems[x].Checked)
       or (not OnlyWhenChecked) then

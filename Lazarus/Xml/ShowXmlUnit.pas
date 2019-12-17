@@ -1234,7 +1234,7 @@ var
             AddAttribute(TXmlAttribute.CreateAsString('name',
                 _name(sXml) + '_' + IntToStr(refKey)));
       Inc(refKey);
-      sl.Text := sXml.Xsd.Documentation.Text;
+      sl.Text := sXml.Xsd.Documentation.Text + sXml.Xsd.sType.Documentation.Text;
       while (sl.Count > 0)
       and StringMatchesRegExpr(sl.Strings[0], '[ \t]*') do
         sl.Delete(0);

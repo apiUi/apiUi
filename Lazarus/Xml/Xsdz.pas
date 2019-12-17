@@ -1795,6 +1795,8 @@ var
   x, n: Integer;
   xXml: TXml;
   xJsonType: TjsonType;
+  xDocumentation: String;
+  xSeparator: String;
 begin
   {TODO Make recurisive}
   if _Processed then
@@ -2033,6 +2035,22 @@ begin
               AddXml (TXml.CreateAsString ('_', sType.ElementDefs.Xsds[x].ElementName));
         end;
       end;
+      xDocumentation := '';
+      xSeparator := '';
+      if Assigned (Documentation)
+      and (Documentation.Count > 0) then
+      begin
+        xDocumentation := xDocumentation + xSeparator + Documentation.Text;
+        xSeparator := LineEnding;
+      end;
+      if Assigned (sType.Documentation)
+      and (sType.Documentation.Count > 0) then
+      begin
+        xDocumentation := xDocumentation + xSeparator + sType.Documentation.Text;
+        xSeparator := LineEnding;
+      end;
+      if xSeparator <> '' then
+        AddXml(TXml.CreateAsString('description', xDocumentation));
     end;
   finally
     _Processed := False;

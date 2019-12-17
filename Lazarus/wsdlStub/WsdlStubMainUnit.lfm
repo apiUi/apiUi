@@ -244,8 +244,6 @@ object MainForm: TMainForm
           ItemHeight = 13
           Items.Strings = (
             'Stub'
-            'Forward'
-            'Redirect'
             'Request'
           )
           OnChange = ActionComboBoxChange
