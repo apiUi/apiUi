@@ -250,9 +250,16 @@ Use this field to send extra data which you can use in the apiUi activators ( be
 	<xs:complexType name="invokeType">
 		<xs:sequence>
 			<xs:element name="operations" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Maintain a list of operations</xs:documentation>
+				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="name" type="dynEnumString" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="name" type="dynEnumString" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Click the ellipsis button to choose from a list</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1492,11 +1499,7 @@ Setting determines what apiUi should do on receiving messages that violate the s
 		<xs:annotation>
 			<xs:documentation>Project options;
 
-For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm 
-Project options;
-
-For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm 
-</xs:documentation>
+For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm </xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -1624,25 +1627,24 @@ Determines the way apiUi will display Cocol data from log records.</xs:documenta
 								</xs:simpleType>
 							</xs:element>
 							<xs:element name="DisplayedColumns" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Maintain a list of (extra) displayed columns in the log panel</xs:documentation>
+								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="DisplayedColumn" minOccurs="0" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:sequence>
-													<xs:element name="Header" type="xs:string" minOccurs="0"/>
+													<xs:element name="Header" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>Acts as column header;
+Which data will be displayed in a column depends on the logged message;
+Sspecifying which data to display is done in the log panel, click in the cell and select desired item. Repeat this for each distinct opration (obviously not possible before such a message is logged)</xs:documentation>
+														</xs:annotation>
+													</xs:element>
 												</xs:sequence>
 											</xs:complexType>
 										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="Diskcopy" minOccurs="0">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Enabled" minOccurs="0"/>
-										<xs:element name="Path"/>
-										<xs:element name="MaxNumber" minOccurs="0"/>
-										<xs:element name="MaxSize" minOccurs="0"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
@@ -1666,22 +1668,6 @@ Http Get: wsdlName?WSDL </xs:documentation>
 
 When "true", apiUi will not show operations that lack an end-point.
 When "false", operations without endpoint will also be shown.
-
-CHANGING THIS SETTING REQUIERS SAVE AND RELOAD OF YOUR PROJECT</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="ElementsWhenRepeatable" type="xs:integer" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default "_xsdElementsWhenRepeatable_"
-
-Applies to XML messages.
-Specifies the number of addressable elements in case of maxCoccurs > "1"
-Addressable elements are accessable from script.
-Also specifies the initial number of repeating elements (unchecked) in a message.
-If for instance maxOccurs of an element is "20" and you specify a 'ElementsWhenRepeatable' = "3" it is possible to reference elements 1, 2 en 3 from scripts.
-Specially in case of nested repeating groups, keep this number as low as possible for better performance.
-
-Obviously you can edit as many elements as you wish in messages.
 
 CHANGING THIS SETTING REQUIERS SAVE AND RELOAD OF YOUR PROJECT</xs:documentation>
 								</xs:annotation>
@@ -1932,14 +1918,30 @@ apiUi encrypts passwords before storing in a project file or at other locations<
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Scripts">
+		<xs:annotation>
+			<xs:documentation>Maintain a list of scripts</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="Script" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="Name" type="xs:string"/>
-							<xs:element name="Invoke" type="invokeType" minOccurs="0"/>
-							<xs:element name="Code" type="xs:string" minOccurs="0"/>
+							<xs:element name="Name" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Specify the name for this script.
+The name you use here will be the name of the menu-item added to the script menu. Click this added menu-item to execute the script </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Invoke" type="invokeType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Specify which operations you want to use in the script.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Code" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Press the ellipsis button to write your script. Right click in the editor to get more help or to select elements availlable from the operations mentioned under Invoke</xs:documentation>
+								</xs:annotation>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>

@@ -200,6 +200,7 @@ procedure TShowLogDifferencesForm.FormCreate(Sender: TObject);
 var
   w5: Integer;
 begin
+  Caption := Format(Caption, [_progName]);
   ignoreDifferencesOn := _stringList(true);
   checkValueAgainst := _stringList(false);
   ignoreRemovingOn := _stringList(true);
@@ -601,7 +602,7 @@ begin
       begin
         Application.CreateForm(TShowA2BXmlForm, xForm);
         try
-          xForm.Caption := 'Differences in requests';
+          xForm.Caption := _progName + ' - Differences in requests';
           xForm.ignoreDifferencesOn := ignoreDifferencesOn;
           xForm.checkValueAgainst := checkValueAgainst;
           xForm.ignoreAddingOn := ignoreAddingon;
@@ -625,7 +626,7 @@ begin
       begin
         Application.CreateForm(TShowA2BXmlForm, xForm);
         try
-          xForm.Caption := 'Differences in replies';
+          xForm.Caption := _progName + ' - Differences in replies';
           xForm.ignoreDifferencesOn := ignoreDifferencesOn;
           xForm.checkValueAgainst := checkValueAgainst;
           xForm.ignoreAddingOn := ignoreAddingon;
@@ -725,7 +726,7 @@ begin
     Dsts.Text := aList.Text;
     Application.CreateForm(TdualListForm, dualListForm);
     try
-      dualListForm.Caption := aCaptian;
+      dualListForm.Caption := _progName + ' - ' + aCaptian;
       dualListForm.DstList.Items.Text := Dsts.Text;
       dualListForm.SrcList.Items.Text := '';
       dualListForm.DstCaption := 'Selected elements';

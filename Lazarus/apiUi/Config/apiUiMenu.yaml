@@ -1,7 +1,11 @@
 ---
 swagger: '2.0'
 info:
-  description:  apiUiMenu
+  title: apiUi menu voor help
+  description: |
+    apiUiMenu - Only purpose is to generate Menu Help
+    Open this OpenApi definition, click on the Menu XML-treeview from response and type Ctrl-Alt-H 
+  version: '1.0'
 host: localhost
 basePath: "/v1"
 schemes:
@@ -25,64 +29,81 @@ definitions:
     properties:
       Menu:
         type: object
+        description: |
+          Main Menu documentation.
         properties: 
           File: 
             type: object
             properties: 
               New_Project: 
                 type: string
-                description:
+                description: |
                   Start a new project.
                   You are prompted to save current project in case there are unsaved changes.
               Open_Project: 
                 type: string
-                description:
+                description: |
                   Open an existing project.
                   You are prompted to save current project in case there are unsaved changes.
               Reopen_Project: 
                 type: string
-                description:
+                description: |
                   Open a recently used project.
                   You are prompted to save current project in case there are unsaved changes.
               Save_Project: 
                 type: string
-                description:
+                description: |
                   Save current project.
                   When working in a new project, you are prompted for a project filename, otherwise, apiUi will use the filename of most recently read projectfile.
               Save_Project_As: 
                 type: string
-                description:
+                description: |
                   Save current project under a new name.
                   You are prompted for a project filename, in case you use an existing filename, you will receive a warning
+              Import_Project: 
+                type: string
+                description: |
+                  Open an old stype project.
+                  Single file with extention .wsdlStub
+                  You are prompted to save current project in case there are unsaved changes.
+              Export_Project: 
+                type: string
+                description: |
+                  Save current project in old style as single file with extention .wsdlStub
+                  When working in a new project, you are prompted for a project filename, otherwise, apiUi will use the filename of most recently read projectfile.
               Exit: 
                 type: string
-                description:
+                description: |
                   Quit program
                   You are prompted to save current project in case there are unsaved changes.
-            required: 
-              - New_Project
-              - Open_Project
-              - Reopen_Project
-              - Save_Project
-              - Save_Project_As
-              - Exit
           Project: 
             type: object
             properties: 
               Configure_Listeners: 
                 type: string
-                description:
+                description: |
                   Specify listeners here.
                   Listeners are able to receive messages.
                   Beware of firewall settings.
                   'For an overview configuration options on Listeners visit: doc://apiUi_Listeners_hlp.htm'
               Options: 
                 type: string
-                description:
+                description: |
                   Project options;
-                  'For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm'
-              Maintain_List_of_Wsdl_Files: 
+                  For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm'
+              Context_Properties: 
+                type: string
+                description: |
+                  Context properties;
+                  Opens a screen in which you can add contexts, properties and maintain values.
+                  In project-desing you can reference property-values by a ${property-name}.
+                  In that same screen you can configure which context to use. E.g. Prod, PAT of Systest 
+              Maintain_List_of_Wsdl_And_API_Files: 
                 type: object
+                description: |
+                  Opens a screen in which you can add wsdl's or API's.
+                  You can open as many Wsdl or API files as needed.
+                  Such a file can be read from a file or from a URL.
                 properties: 
                   Buttons: 
                     type: object
@@ -95,415 +116,429 @@ definitions:
                         description: Closes screen while discarding changes
                       Add: 
                         type: string
-                        description:
+                        description: |
                           Adds an existing Wsdl or OpenApi (f.k.a. Swagger) file.
                           May also be on http(s) 
                       Delete: 
                         type: string
-                        description:
+                        description: |
                           Delete selected Wsdl or OpenApi (f.k.a. Swagger).\
                           You are prompted to confirm deletion.
-                description:
-                  Maintain list of Wsdl files for your project.
-                  You can open as many Wsdl files as needed.
+              API_by_example: 
+                type: string
+                description: |
+                  'Specify services that use an XML schema but do not work with SOAP envelopes.
+                  Visit: doc://apiUi_XsdOperations_hlp.htm for details.'
               Xsd_Operations: 
                 type: string
-                description:
+                description: |
                   Specify services that use an XML schema but do not work with SOAP envelopes.
-                  "Visit: doc://apiUi_XsdOperations_hlp.htm for details."
+                  Visit: doc://apiUi_XsdOperations_hlp.htm for details.
+              XmlSample_Operations: 
+                type: string
+                description: |
+                  Specify services that use an XML schema but do not work with SOAP envelopes.
+                  Visit: doc://apiUi_XsdOperations_hlp.htm for details.
               Cobol_operations: 
                 type: string
-                description:
+                description: |
                   Specify services that use COBOL records.
-                  "Visit: doc://apiUi_CobolOperations_hlp.htm for details."
+                  Visit: doc://apiUi_CobolOperations_hlp.htm for details.
+              Bmtp_operations: 
+                type: string
+                description: |
+                  Specify services that use COBOL records and communicate by BinaryMessageTransportProtocol.
+                  (specific for Rabo with Tandem/Guardian)
+                  Visit: doc://apiUi_CobolOperations_hlp.htm for details.
               SwiftMT_operations: 
                 type: string
-                description:
+                description: |
                   Specify services for SwiftMT messages.
-                  "Visit: doc://apiUi_SwiftMTOperations_hlp.htm for details."
+                  Visit: doc://apiUi_SwiftMTOperations_hlp.htm for details.
+              Mail_operations: 
+                type: string
+                description: |
+                  Specify services for SwiftMT messages.
+                  Visit: doc://apiUi_SwiftMTOperations_hlp.htm for details.
               Freeformat_operations: 
                 type: string
-                description:
+                description: |
                   Specify Freeformat services.
-                  "Visit doc://apiUi_FreeFormatOperations_hlp.htm for details."
+                  Visit: doc://apiUi_FreeFormatOperations_hlp.htm for details.
               Clean: 
                 type: string
-                description:
+                description: |
                   Cleans your project from unused data.
                   Every message for every operation is searched for data that is unchecked and therefor cannot be part of a message at runtime.
                   Use this command only if you are satisfied with current data and do not need unchecked data for any other testing.
-              Hide_all_operations: 
-                type: string
-                description:
-                  Hides all operations from display.
-                  Usefull if the service you are working on publishes a lot of operations that are not under test.
-                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
-              Hide_operation: 
-                type: string
-                description:
-                  Hides a specific operation from display.
-                  Usefull if the service you are working on publishes a lot of operations that are not under test.
-                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
-              Unhide_all_operations: 
-                type: string
-                description:
-                  Unhides all operations from display.
-                  Usefull if the service you are working on publishes a lot of operations that are not under test.
-                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
-              Unhide_operation: 
-                type: string
-                description:
-                  Unhides a specific operation from display.
-                  Usefull if the service you are working on publishes a lot of operations that are not under test.
-                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
-            required: 
-              - Configure_Listeners
-              - Options
-              - Maintain_List_of_Wsdl_Files
-              - Xsd_Operations
-              - Cobol_operations
-              - SwiftMT_operations
-              - Freeformat_operations
-              - Clean
-              - Hide_all_operations
-              - Hide_operation
-              - Unhide_all_operations
-              - Unhide_operation
           Service: 
             type: object
             properties: 
               Options: 
                 type: string
-                description:
+                description: |
                   Service options;
-                  "For an overview of all options visit doc://apiUi_serviceOptions_hlp.htm"
-            required: 
-              - Options
-          Operation: 
-            type: object
-            properties: 
-              To_address: 
-                type: string
-              WS_Addressing: 
-                type: string
-              Apply_settings_to: 
-                type: string
-              Options: 
-                type: string
-                description:
-                  Service options;
-                  "For an overview of all options visit doc://apiUi_operationOptions_hlp.htm"
-              Edit_Before_script: 
-                type: string
-              Edit_After_script: 
-                type: string
-              Edit_Script: 
-                type: string
-            required: 
-              - To_address
-              - WS_Addressing
-              - Apply_settings_to
-              - Options
-              - Edit_Before_script
-              - Edit_After_script
-              - Edit_Script
+                  For an overview of all options visit: doc://apiUi_serviceOptions_hlp.htm
           Messages: 
             type: object
             properties: 
               Select_correlation_elements: 
                 type: string
+                description: |
+                  Opens a screen in which you specify which elements to use for message correlation.
+                  When a request comes in for an operation, apiUi will choose which message(candidate) to use for response, based on these correlation elements.
+                  For the purpose of regression-testing it is als possible to select response elements.
+                  Visit: doc://apiUi.htm for more information.
+                properties: 
+                  Buttons: 
+                    type: object
+                    properties: 
+                      Ok: 
+                        type: string
+                        description: Closes screen and accepts changes
+                      Cancel: 
+                        type: string
+                        description: Closes screen while discarding changes
+                      Add: 
+                        type: string
+                        description: |
+                          Opens a form to select an element and add it to the list.
+                      Delete: 
+                        type: string
+                        description: |
+                          Deletes selected entry from the list
+                      Delete_all: 
+                        type: string
+                        description: |
+                          Deletes all entries from the list
+                      Up_arrow: 
+                        type: string
+                        description: |
+                          Move selected entry one position up.
+                      Down_arrow: 
+                        type: string
+                        description: |
+                          Move selected entry one position up.
               Select_column_elements: 
                 type: string
+                description: |
+                  Opens a screen to specify which elements to use as columns in the grid.
+                  It is possible to select a grouping element, you will be prompted to tell whether you want to expand the group (resulting in adding the underlying elements) or that you want to add a single column representing the group.
+                properties: 
+                  Buttons: 
+                    type: object
+                    properties: 
+                      Ok: 
+                        type: string
+                        description: Closes screen and accepts changes
+                      Cancel: 
+                        type: string
+                        description: Closes screen while discarding changes
+                      Add: 
+                        type: string
+                        description: |
+                          Opens a form to select an element and add it to the list.
+                      Delete: 
+                        type: string
+                        description: |
+                          Deletes selected entry from the list
+                      Delete_all: 
+                        type: string
+                        description: |
+                          Deletes all entries from the list
+                      Up_arrow: 
+                        type: string
+                        description: |
+                          Move selected entry one position up.
+                      Down_arrow: 
+                        type: string
+                        description: |
+                          Move selected entry one position up.
               Move_up: 
                 type: string
+                description: |
+                  Move selected entries one position up.
+                  It is not possible to change position with the first (default) message
               Move_down: 
                 type: string
+                description: |
+                  Move selected entries one position up.
+                  It is not possible to move the first (default) message down
               Add: 
                 type: string
-              Read_Messages_from_Diskfiles: 
-                type: string
+                description: |
+                  Adds a message (candidate) to the selected operation.
               Delete: 
                 type: string
+                description: |
+                  Deleted the selected message (candidate).
+                  It is not possible to delete the first (Default) message.
               Copy_grid: 
                 type: string
+                description: |
+                  Copies the data as shown in the grid to the clipboard, tab-separated.
+                  Because it is tab-separated, you can paste the data to a spreadsheet.
               Paste_grid: 
                 type: string
-              Validate_grid_data_against_schema: 
-                type: string
-              Send_request: 
-                type: string
-              Send_all_requests: 
+                description: |
+                  Pastes data from the clipboard to the grid.
+                  You may not have a column in your grid for every element so an explanation what happens to the other elements.
+                  For the rows that already existed on moment of pasting, values in other elements remain unchanged. For rows that not yet existed, values for the other elements are copied from the first (Default) row. When you paste less rows then existed in the grid, the remaining rows will be left unchanged.
+                  Pasting is only possible when certain conditions are met
+                  . The clipboard contains text, a grid tab separated values and rows sepatated by a new-line
+                  . The number of columns in the grid equals the number of columns in your grid
+                  . Values in the first row of the clipboard must all have a value that equals the coumn name in the grid
+                  Together with the Copy-grid function, you can easily add karge number of messages to your design.
+                Validate_grid_data_against_schema: 
                 type: string
               Remove_all_messages_from_all_operations: 
                 type: string
-            required: 
-              - Select_correlation_elements
-              - Select_column_elements
-              - Move_up
-              - Move_down
-              - Add
-              - Read_Messages_from_Diskfiles
-              - Delete
-              - Copy_grid
-              - Paste_grid
-              - Validate_grid_data_against_schema
-              - Send_request
-              - Send_all_requests
-              - Remove_all_messages_from_all_operations
+                description: |
+                  Removes all, except for the first (Default) messages from all operations.
+                  May be helpfull in case of copying a project to start another.
           Log: 
             type: object
             properties: 
               Save_log_items_to_file: 
                 type: string
-                description:
-                  
+                description: |
                   Save all log items to a file.
-                  Saved log files can be read from disk again for analysing or it can be used for comparison after a next run (regression testing).
+                  Saved log files can be read from disk again for analysing or it can be used for comparison after a next run.
               Displayed_columns: 
                 type: string
-                description:
-                  
+                description: |
                   Maintain the number of extra displayed log columns and their headers.
-                  "The source element that is shown in such a column depends on the operation that is shown in a log-entry."
+                  The source element that is shown in such a column depends on the operation that is shown in a log-entry.
                   Change the source element by clicking in the corresponding cell.
-                  "See also doc://apiUi_DisplayedColumns_hlp.htm"
-                  "or doc://apiUi_Listeners_hlpdtl.htm#Listeners_HttpProxy_10"
-                  
               Compare_with_file: 
                 type: string
-                description:
-                  
+                description: |
                   Compare current log with an earlier saved log file.
                   Both current and the saved log file are filtered, see help on Filter_Log.
                   After deployment of new services, rerun your tests and use this function to obtain a detailed overview of changes (regression testing)
                   See also the CompareLogsOrdered option of the Project_Options.
-                  
               Coverage_report: 
                 type: string
-                description:
-                  
+                description: |
                   Create a Coverage Report.
                   This report tells which parts of your messages have been tested and which parts not.
                   Helps to determine whether or not additional testing is needed.
-                  
               Read_from_file: 
                 type: string
-                description:
-                  
+                description: |
                   Read a previously saved logfile.
                   After reading a logfile, you are able to analyse an earlier testrun in the same way as you are with a current testrun.
-                  
               Browse_MQ: 
                 type: string
-                description:
-                  
+                description: |
                   Browse an IBM(C) Websphere MQ message queue.
                   Prerequisite is that you installed the appropriate software.
-                  
               Discover_service_calls_from_log: 
                 type: string
-                description:
-                  
+                description: |
                   Discover operations from a log.
                   This function scans a logfile and tries to discover service calls stipulated that the log events are written as an XML file.
                   Discovered service can be promoted to testware.
-                  
               Clear_log_items: 
                 type: string
-                description:
-                  
-                  Clears the log.
-                  
+                description: |
+                  Clears the log. 
               Filter_log: 
                 type: string
-                description:
-                  
-                  HIER
-                  
-              Show_request_as_XML: 
-                type: string
-                description:
-                  
-                  HIER
-                  
-              Show_reply_as_XML: 
-                type: string
-                description:
-                  
-                  HIER
-                  
-              Show_request_in_a_grid: 
-                type: string
-                description:
-                  
-                  HIER
-                  
-              Show_reply_in_a_grid: 
-                type: string
-                description:
-                  
-                  HIER
-                  
-            required: 
-              - Save_log_items_to_file
-              - Displayed_columns
-              - Compare_with_file
-              - Coverage_report
-              - Read_from_file
-              - Browse_MQ
-              - Discover_service_calls_from_log
-              - Clear_log_items
-              - Filter_log
-              - Show_request_as_XML
-              - Show_reply_as_XML
-              - Show_request_in_a_grid
-              - Show_reply_in_a_grid
+                description: |
+                  Opens a form which allows you to filter or emphasise log records.
+                  When reporting, e.g. regression testing, the same filter is applied to the reference file.
+                  One option, Filtering enabled, is off at the start of an apiUi session.   
           View: 
             type: object
+            description: |
+              The apiUi main form has a few panels that can be hidden to save space for the others.
+              It is also possible to display the log panel at the top and to change the split-direction of the message area.  
             properties: 
               Operations: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: Toggle visibility of the list of operations
               Schema_properties: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: Toggle visibility of the schema properties
               Wsdl_information: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: Toggle visibility of the Wsdl/Service/Operation panel
               Design_panel_at_Top: 
                 type: string
-                description:
-                  
-                  HIER
-                  
-            required: 
-              - Operations
-              - Schema_properties
-              - Wsdl_information
-              - Design_panel_at_Top
-          Scripts: 
+                description: Switch the order of design panel and log panel on your screen
+              Design_panel_split_Vertical: 
+                type: string
+                description: Switch the splitting of the design panel from vertical to horizontal or the other way around
+          Run: 
             type: object
             properties: 
-              New: 
+              Start_Stop: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: |
+                  Activates or Deactivates apiUi. All listeners are turned off as long as apiUi is not Active.
+              Send_Request:
+                type: string
+                description: |
+                  Enabled in case selected Operation is in request (consumer) mode.
+                  The selected message-candidate is sent to specified endpoint.
+              Send_all_Request:
+                type: string
+                description: |
+                  Enabled in case selected Operation is in request (consumer) mode.
+                  All selected message-candidate are sent to the specified endpoint.
+                  Abort will stop this sending of messages.
+              Abort: 
+                type: string
+                description: |
+                  Abort immediatly stops all currently executing scripts and will also stop the 'Sending of all Requests'.
+                  Does not stop threads that are waiting for an event (receiving a response or a timer to elapse). After these events, these threads will end immediatly.
+          Scripts: 
+            type: object
+              description: |
+                apiUi has a powerful built-in script language with lots of built-in functions. 
+                For each script you create (see Edit), apiUi will add an entry to this menu. 
+                Clickng such an entry will start execution of that script.
+            properties: 
               Edit: 
                 type: string
-                description:
-                  
-                  HIER
-                  
-              Remove: 
-                type: string
-                description:
-                  
-                  HIER
-                  
-            required: 
-              - New
-              - Edit
-              - Remove
+                description: |
+                  For a description of how to configure scripts, visit: doc://apiUi_Scripts_hlp.htm
           Environment: 
             type: object
             properties: 
               Re-enable_all_messages: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: |
+                  apiUi has the option (see Project->Options->OnCorrelate) to disable a message candidate. Message candidates can also be disabled from script, see function DisableMessage ().
+                  apiUi will not correlate a disabled message. 
+                  Maybe usefull in case you do not want apiUi to use a certain (or all) message candidate more then once.
+                  This function re-enables all message candidates for all operations. 
+                  See also the script function EnableAllMessages ().
               Reset: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: |
+                  Resets (deletes) all the apiUi environment variables. See also script functions ResetEnvVar (aKey) and ResetEnvVars (aRegularExpr)
               Edit: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: |
+                  Presents a screen showing current environment variables allowing you to view, add, delete or modify environt variables.
+                  See also the scriptfunctions with regard to environment variables (SetEnv..., GetEnv..., ResetEnv...)
               Add_current_environment: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: |
+                  Presents a dialogue to save current environment variables. 
+                  For each saved set of environment variables, an entry is added to this Environment menu to restore its values.
               Remove_environment: 
                 type: string
-                description:
-                  
-                  HIER
-                  
-            required: 
-              - "Re-enable_all_messages"
-              - Reset
-              - Edit
-              - Add_current_environment
-              - Remove_environment
+                description: |
+                  Presents a list of currently existing environments allowing you to remove environments.
           Extra: 
             type: object
             properties: 
               Options: 
                 type: string
-                description:
-                  
-                  HIER
-                  
-            required: 
-              - Options
+                description: |
+                  Visit: doc://apiUi_Options_hlp.htm for details. 
           Help: 
             type: object
             properties: 
-              Help: 
+              Help_on_apiUi: 
                 type: string
-                description:
-                  
-                  HIER
-                  
-              License: 
+                description: |
+                  Shows: doc://apiUi.htm
+              Main_menu: 
                 type: string
-                description:
-                  
-                  HIER
-                  
+                description: |
+                  Opens this page in a browser
               About: 
                 type: string
-                description:
-                  
-                  HIER
-                  
-            required: 
-              - Help
-              - License
-              - About
-        required: 
-          - File
-          - Project
-          - Service
-          - Operation
-          - Messages
-          - Log
-          - View
-          - Scripts
-          - Environment
-          - Extra
-          - Help
-        description:
+                description: |
+                  Shows an About screen with some copyright information
+      PopUpMenus:        
+        type: object
+        properties:
+          Operations_Popup_Menu:
+            type: object
+            properties:
+              Show_Documentaion_in_browser:
+                type: string
+                description: |
+                  Shows documentation from description (Wsdl / OpenApi / ...) in a browser.
+              Edit script:
+                type: string
+                description: |
+                  In case operation acts as Stub (procducer).
+                  Opens a script editor. Script is executed between receiving a message and sending a response.
+                  Allows you to assign values like timestamps and results of computations
+              Edit before script:
+                type: string
+                description: |
+                  In case operation acts as Requestor (consumer).
+                  Opens a script editor. Script is executed before sending a request.
+                  Allows you to assign values like timestamps and results of computations
+              Edit after script:
+                type: string
+                description: |
+                  In case operation acts as Requestor (consumer).
+                  Opens a script editor. Script is executed after receiving the response to a request.
+                  Allows you to do checks.
+              To_address: 
+                type: string
+                description: |
+                  In case operation acts as Requestor (consumer).
+                  Opens the Endpoint configuration form.
+                  Choose from Http(s), MQ, Stomp (e.g. bridging to JMS), Smtp of None
+                  Visit: doc://apiUi_endpointConfig_hlp.htm for more information
+              WS_Addressing: 
+                type: string
+                description: |
+                  Opens a form for WS-Addressing, a standardized way of including message routing data in SOAP headers
+              Apply_settings_to: 
+                type: string
+                description: |
+                  Opens a form to quickly copy some Operation properties for this operation to other operations.
+                  Applies to properties like:
+                  . Action (Stub / Request)
+                  . Endpoint and Http Verb (except for APIs)
+                  . Extra delaytime
+              Alias: 
+                type: string
+                description: |
+                  Opens a form to assign an Alias to this operation.
+                  Defaults to an Alias based on the schema (Wsdl / OpenApi / ...)
+              Options: 
+                type: string
+                description: |
+                  Service options;
+                  For an overview of all options visit: doc://apiUi_operationOptions_hlp.htm
+              Hide_all_operations: 
+                type: string
+                description: |
+                  Hides all operations from display.
+                  Usefull if the service you are working on publishes a lot of operations that are not under test.
+                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
+              Hide_operation: 
+                type: string
+                description: |
+                  Hides a specific operation from display.
+                  Usefull if the service you are working on publishes a lot of operations that are not under test.
+                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
+              Unhide_all_operations: 
+                type: string
+                description: |
+                  Unhides all operations from display.
+                  Usefull if the service you are working on publishes a lot of operations that are not under test.
+                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
+              Unhide_operation: 
+                type: string
+                description: |
+                  Unhides a specific operation from display.
+                  Usefull if the service you are working on publishes a lot of operations that are not under test.
+                  Combined with the other Hide/Unhide functions you can limit the number of operations shown.
+              Refresh: 
+                type: string
+                description: |
+                  Redisplays the operations list in alphabetical order.
+                  After changing some alisases for operations, a Refresh displays the operations in the new order.
           
-          Main Menu documentation.
-          
-        

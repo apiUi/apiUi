@@ -425,7 +425,6 @@ begin
   DeleteMenuItem.Enabled := (Bind is TXml)
                         and Assigned((Bind as TXml).Xsd)
                         and ((Bind as TXml).Xsd.maxOccurs <> '1')
-                        and ((Bind as TXml).IndexOfRepeatableItem >= xsdElementsWhenRepeatable)
                         and False // As long as it access violates and I do not see why??
                         ;
   PasteMenuItem.Enabled := not isReadOnly;

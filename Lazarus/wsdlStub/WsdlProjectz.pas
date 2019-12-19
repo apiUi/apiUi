@@ -211,7 +211,7 @@ type
     mqGetThreads: TStringList;
     Listeners: TListeners;
     doValidateRequests, doValidateReplies, doCheckExpectedValues: Boolean;
-    elementsWhenRepeatable, ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     ignoreCoverageOn: TStringList;
     notStubbedExceptionMessage: String;
     FoundErrorInBuffer : TOnFoundErrorInBufferEvent;
@@ -1512,9 +1512,6 @@ begin
   PathFormats := TStringList.Create;
   unknownOperation := TWsdlOperation.Create(TWsdl(nil));
   unknownOperation.StubAction := saStub;
-  elementsWhenRepeatable := TStringList.Create;
-  elementsWhenRepeatable.Sorted := True;
-  elementsWhenRepeatable.Duplicates := dupIgnore;
   ignoreDifferencesOn := TStringList.Create;
   ignoreDifferencesOn.Sorted := True;
   ignoreDifferencesOn.Duplicates := dupIgnore;
@@ -1675,7 +1672,6 @@ begin
   FreeAndNil (ApiByExampleWsdl);
   FreeAndNil (SwiftMtWsdl);
   FreeAndNil (MailWsdl);
-  elementsWhenRepeatable.Free;
   ignoreDifferencesOn.Free;
   checkValueAgainst.Free;
   ignoreAddingOn.Free;
@@ -2669,7 +2665,6 @@ begin
           end; //
         end; // Assigned Wsdl
       end; // for each wsdl
-      AddXml(TXml.CreateAsString('elementsWhenRepeatable', elementsWhenRepeatable.Text));
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
       AddXml(TXml.CreateAsString('checkValueAgainst', checkValueAgainst.Text));
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
@@ -2795,7 +2790,6 @@ begin
               end;
             end;
           end;
-        elementsWhenRepeatable.Text := aXml.Items.XmlValueByTag ['elementsWhenRepeatable'];
         ignoreDifferencesOn.Text := aXml.Items.XmlValueByTag ['ignoreDifferencesOn'];
         checkValueAgainst.Text := aXml.Items.XmlValueByTag ['checkValueAgainst'];
         ignoreAddingOn.Text := aXml.Items.XmlValueByTag ['ignoreAddingOn'];
@@ -9439,7 +9433,6 @@ procedure TWsdlProject.SaveWithFolders;
   begin
     if not LazFileUtils.CreateDirUTF8(aFolderName) then
       raise Exception.CreateFmt('Could not create folder "%s"', [aFolderName]);
-    _createReadMe(aFolderName);
   end;
   procedure _saveChildElementToFile (aXmlList: TXmlList; aTag, aFolderName: String);
   var
@@ -9617,7 +9610,6 @@ begin
         end;
         _saveChildElementToFile(Items, 'contexts', xProjectFolderName);
         _saveChildElementToFile(Items, 'properties', xProjectFolderName);
-        _saveChildElementToFile(Items, 'elementsWhenRepeatable', xProjectFolderName);
         _saveChildElementToFile(Items, 'ignoreDifferencesOn', xProjectFolderName);
         _saveChildElementToFile(Items, 'checkValueAgainst', xProjectFolderName);
         _saveChildElementToFile(Items, 'ignoreAddingOn', xProjectFolderName);
@@ -9961,7 +9953,6 @@ begin
   doValidateReplies := False;
   doCheckExpectedValues := False;
   _WsdlDisableOnCorrelate := False;
-  elementsWhenRepeatable.Clear;
   ignoreDifferencesOn.Clear;
   checkValueAgainst.Clear;
   ignoreAddingOn.Clear;

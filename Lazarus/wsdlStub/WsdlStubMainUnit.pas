@@ -79,6 +79,8 @@ type
     GenerateJsonSchemaInYaml: TAction;
     Action4: TAction;
     GenerateSwaggerAction: TAction;
+    MenuItem55: TMenuItem;
+    OperationsPopupHelpItem: TMenuItem;
     ToggleTrackDuplicateMessagesAction: TAction;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
@@ -525,7 +527,6 @@ type
     ThrowExceptionAction: TAction;
     Configurelisteners1: TMenuItem;
     MessagesFromDiskAction: TAction;
-    Readmessagesfromdiskfiles1: TMenuItem;
     LogDisplayedColumnsAction: TAction;
     Displayedcolumns1: TMenuItem;
     startStopButton: TToolButton;
@@ -632,6 +633,7 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
+    procedure OperationsPopupHelpItemClick(Sender: TObject);
     procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
     procedure YamlToClipboardMenuItemClick(Sender: TObject);
     procedure MessagesTabToolBarResize(Sender: TObject);
@@ -971,8 +973,6 @@ type
     procedure OperationWsaActionExecute(Sender: TObject);
     procedure OperationWsaActionUpdate(Sender: TObject);
     procedure ThrowExceptionActionExecute(Sender: TObject);
-    procedure MessagesFromDiskActionUpdate(Sender: TObject);
-    procedure MessagesFromDiskActionExecute(Sender: TObject);
     procedure GridViewGetImageIndex(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer);
@@ -7757,59 +7757,6 @@ begin
     and { } (se.Wsdls.Count > 0);
 end;
 
-procedure TMainForm.MessagesFromDiskActionExecute(Sender: TObject);
-  function _filenames(aSl: TStrings): String;
-  var
-    X: Integer;
-  begin
-    result := '';
-    for X := 0 to aSl.Count - 1 do
-      result := result + '"' + aSl.Strings[X] + '" ';
-  end;
-
-begin
-  if WsdlOperation.CorrelationBindables.Count = 0 then
-  begin
-    ShowMessage ( 'Function requires correlation data'
-                + LineEnding
-                + 'Please provide correlation data first'
-                );
-    Exit;
-  end;
-  if not InactiveAfterPrompt then Exit;
-  with TOpenDialog.Create(nil) do
-    try
-      DefaultExt := 'xml';
-      FileName := '';
-      Filter := 'XML file (*.xml)|*.xml';
-      Title := 'Read messages from disk';
-      Options := Options + [ofAllowMultiSelect, ofFileMustExist];
-      if Execute then
-      begin
-        Application.CreateForm(TmessagesFromDiskForm, messagesFromDiskForm);
-        try
-          messagesFromDiskForm.FileNamesEdit.Text := _filenames(Files);
-          messagesFromDiskForm.ShowModal;
-          if messagesFromDiskForm.ModalResult = mrOk then
-          begin
-            saveToDiskSeparator := messagesFromDiskForm.SeparatorEdit.Text;
-            FileNameList.Text := Files.Text;
-            TProcedureThread.Create(False, True, se, doReadMessagesFromDisk);
-          end;
-        finally
-          FreeAndNil(messagesFromDiskForm);
-        end;
-      end;
-    finally
-      Free;
-    end;
-end;
-
-procedure TMainForm.MessagesFromDiskActionUpdate(Sender: TObject);
-begin
-  MessagesFromDiskAction.Enabled := Assigned (WsdlOperation);
-end;
-
 procedure TMainForm.MessagesRegressionActionExecute(Sender: TObject);
 var
   xLogList: TLogList;
@@ -14165,6 +14112,22 @@ end;
 procedure TMainForm.MenuItem47Click(Sender: TObject);
 begin
   PromptAndSetColumnWidth(SnapshotsVTS);
+end;
+
+procedure TMainForm.OperationsPopupHelpItemClick(Sender: TObject);
+var
+  xFileName: String;
+begin
+  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
+                                + 'Documentation'
+                                + DirectorySeparator
+                                + _progName
+                                + '_Operations_Popup_Menu_hlp.htm'
+                                );
+  if not LazFileUtils.FileExistsUTF8(xFileName) { *Converted from FileExists* } then
+    raise Exception.Create('Could not find helpfile: ' + xFileName);
+  if not OpenDocument(xFileName) then
+    raise Exception.Create('Could not open ' + xFileName);
 end;
 
 procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
