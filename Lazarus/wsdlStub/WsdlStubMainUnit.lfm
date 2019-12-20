@@ -945,7 +945,7 @@ object MainForm: TMainForm
             Header.Font.Name = 'MS Sans Serif'
             Header.Options = [hoColumnResize, hoDblClickResize, hoVisible]
             Images = TreeviewImageList
-            PopupMenu = WsdlPopupMenu
+            PopupMenu = TreePopupMenu
             TabOrder = 2
             TreeOptions.MiscOptions = [toCheckSupport, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
             TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
@@ -2018,23 +2018,10 @@ object MainForm: TMainForm
       ImageIndex = 38
       OnExecute = ValidateRepliesActionExecute
     end
-    object RequestMiMAction: TAction
-      Category = 'Log'
-      Caption = 'Request changes due to script'
-      OnExecute = RequestMiMActionExecute
-    end
     object ShowExceptionAsHtmlAction: TAction
       Caption = 'SwohHttpReplyAsXMLAction'
       Hint = 'Show in XML viewer'
       ImageIndex = 25
-    end
-    object MessagesToDiskAction: TAction
-      Category = 'Messages'
-      Caption = 'Write message(s) to diskfile(s)...'
-      Hint = 'Save message(s) to disk file(s)..'
-      ImageIndex = 3
-      OnExecute = MessagesToDiskActionExecute
-      OnUpdate = MessagesToDiskActionUpdate
     end
     object ServiceOptionsAction: TAction
       Category = 'Service'
@@ -2289,11 +2276,6 @@ object MainForm: TMainForm
       OnExecute = EditMessageAfterScriptActionExecute
       OnUpdate = EditMessageAfterScriptActionUpdate
     end
-    object ReplyMiMAction: TAction
-      Category = 'Log'
-      Caption = 'Reply changes due to script'
-      OnExecute = ReplyMiMActionExecute
-    end
     object ToggleCheckExpectedValuesAction: TAction
       Category = 'Log'
       Caption = 'Check expected values'
@@ -2375,14 +2357,12 @@ object MainForm: TMainForm
       Category = 'Log'
       Caption = 'Save requests to file...'
       ImageIndex = 3
-      OnExecute = SaveLogRequestsToFileActionExecute
       OnUpdate = SaveLogRequestsToFileActionUpdate
     end
     object SaveLogRepliesToFileAction: TAction
       Category = 'Log'
       Caption = 'Save replies to file...'
       ImageIndex = 3
-      OnExecute = SaveLogRepliesToFileActionExecute
       OnUpdate = SaveLogRepliesToFileActionUpdate
     end
     object ReportUnexpectedValuesAction: TAction
@@ -8841,9 +8821,9 @@ object MainForm: TMainForm
       FF00FFFFFF00FFFFFF00FFFFFF00
     }
   end
-  object WsdlPopupMenu: TPopupMenu
+  object TreePopupMenu: TPopupMenu
     Images = mainImageList
-    OnPopup = WsdlPopupMenuPopup
+    OnPopup = TreePopupMenuPopup
     left = 376
     top = 120
     object WsdlItemAddMenuItem: TMenuItem
@@ -9021,10 +9001,6 @@ object MainForm: TMainForm
         Caption = 'Datatype depending'
         OnClick = ChangeDataTypeMenuItemClick
       end
-    end
-    object WsdlNumberOfReferrableMenuItem: TMenuItem
-      Caption = 'Number of referrable elements'
-      OnClick = WsdlNumberOfReferrableMenuItemClick
     end
     object N2: TMenuItem
       Caption = '-'
@@ -9418,13 +9394,13 @@ object MainForm: TMainForm
       ImageIndex = 16
       OnClick = Expand2Click
     end
-    object FullExpand1: TMenuItem
-      Caption = 'Full Expand'
-      OnClick = FullExpand1Click
-    end
     object FullCollapse1: TMenuItem
       Caption = 'Full Collapse'
       OnClick = FullCollapse1Click
+    end
+    object FullExpand1: TMenuItem
+      Caption = 'Full Expand'
+      OnClick = FullExpand1Click
     end
     object MenuItem42: TMenuItem
       Caption = '-'
@@ -9525,9 +9501,16 @@ object MainForm: TMainForm
         OnClick = ZoomasScriptAssignments1Click
       end
       object XSDreportinClipBoardSpreadSheet1: TMenuItem
-        Caption = 'XSD report in ClipBoard(SpreadSheet)'
+        Caption = 'Schema report in ClipBoard(SpreadSheet)'
         OnClick = XSDreportinClipBoardSpreadSheet1Click
       end
+    end
+    object MenuItem59: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem60: TMenuItem
+      Caption = 'Help'
+      OnClick = MenuItem60Click
     end
   end
   object SaveFileDialog: TSaveDialog
@@ -9764,107 +9747,22 @@ object MainForm: TMainForm
     object N29: TMenuItem
       Caption = '-'
     end
-    object RequestMiMAction1: TMenuItem
-      Action = RequestMiMAction
-      Caption = 'Show Request changes due to script'
-    end
-    object ChangesduetoAfterscript1: TMenuItem
-      Action = ReplyMiMAction
-      Caption = 'Show Reply changes due to script'
-    end
-    object N19: TMenuItem
-      Caption = '-'
-    end
     object ShowLogdetails1: TMenuItem
       Action = ShowLogDetailsAction
     end
     object N27: TMenuItem
       Caption = '-'
     end
-    object Saverequeststofile1: TMenuItem
-      Action = SaveLogRequestsToFileAction
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
-        80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF000000FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF00000000000000FF00000000000000000000
-        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000
-      }
-    end
-    object Saverequeststofile2: TMenuItem
-      Action = SaveLogRepliesToFileAction
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
-        80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF000000FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF00000000000000FF00000000000000000000
-        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000
-      }
+    object MenuItem45: TMenuItem
+      Caption = 'Column width...'
+      OnClick = MenuItem45Click
     end
     object MenuItem44: TMenuItem
       Caption = '-'
     end
-    object MenuItem45: TMenuItem
-      Caption = 'Column width...'
-      OnClick = MenuItem45Click
+    object MenuItem61: TMenuItem
+      Caption = 'Help'
+      OnClick = MenuItem61Click
     end
   end
   object GridPopupMenu: TPopupMenu
@@ -9929,48 +9827,6 @@ object MainForm: TMainForm
     object N17: TMenuItem
       Caption = '-'
     end
-    object MessagesToDiskMenuItem: TMenuItem
-      Action = MessagesToDiskAction
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF008080FF008080FF008080FF008080FF008080FF0080
-        80FF008080FF008080FF008080FF008080FF000000FF00000000000000000000
-        00FF008080FF008080FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF008080FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF008080FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF000000FF000000FF00000000000000000000
-        00FF008080FF000000FF00000000000000000000000000000000000000000000
-        00000000000000000000000000FF00000000000000FF00000000000000000000
-        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF000000FF000000FF00000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000
-      }
-    end
-    object MenuItem30: TMenuItem
-      Caption = '-'
-    end
     object MenuItem31: TMenuItem
       Action = ShowGridDifferencesAction
       Bitmap.Data = {
@@ -10016,6 +9872,13 @@ object MainForm: TMainForm
     object GridColumnWidthMenuItem: TMenuItem
       Caption = 'Column width...'
       OnClick = GridColumnWidthMenuItemClick
+    end
+    object MenuItem30: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem58: TMenuItem
+      Caption = 'Help'
+      OnClick = MenuItem58Click
     end
   end
   object WsdlsPopupMenu: TPopupMenu
@@ -10411,20 +10274,24 @@ object MainForm: TMainForm
     top = 120
     object MenuItem53: TMenuItem
       Action = OperationBrowseDocumentationAction
+      Hint = 'Shows documentation from description (Wsdl / OpenApi / ...) in a browser.'
     end
     object MenuItem52: TMenuItem
       Caption = '-'
     end
     object EditBetweenScriptMenuItem: TMenuItem
       Caption = 'Edit Script'
+      Hint = 'In case operation acts as Stub (procducer).'#13#10'Opens a script editor. Script is executed between receiving a message and sending a response.'#13#10'Allows you to assign values like timestamps and results of computations'
       OnClick = EditBetweenScriptMenuItemClick
     end
     object EditBeforeScriptMenuItem: TMenuItem
       Caption = 'Edit Before Script'
+      Hint = 'In case operation acts as Requestor (consumer).'#13#10'Opens a script editor. Script is executed before sending a request.'#13#10'Allows you to assign values like timestamps and results of computations'
       OnClick = EditBeforeScriptMenuItemClick
     end
     object EditAfterScriptMenuItem: TMenuItem
       Caption = 'Edit After Script'
+      Hint = 'In case operation acts as Requestor (consumer).'#13#10'Opens a script editor. Script is executed after receiving the response to a request.'#13#10'Allows you to do checks.'
       OnClick = EditAfterScriptMenuItemClick
     end
     object MenuItem19: TMenuItem
@@ -10433,21 +10300,25 @@ object MainForm: TMainForm
     object MenuItem5: TMenuItem
       Action = RedirectAddressAction
       Caption = 'To address ...'
+      Hint = 'In case operation acts as Requestor (consumer).'#13#10'Opens the Endpoint configuration form.'#13#10'Choose from Http(s), MQ, Stomp (e.g. bridging to JMS), Smtp of None'#13#10'Visit: doc://apiUi_endpointConfig_hlp.htm for more information'
     end
     object MenuItem6: TMenuItem
       Action = OperationDelayResponseTimeAction
     end
     object MenuItem7: TMenuItem
       Action = OperationWsaAction
+      Hint = 'Opens a form for WS-Addressing, a standardized way of including message routing data in SOAP headers'
     end
     object MenuItem8: TMenuItem
       Action = OperationApplySettingsAction
+      Hint = 'Opens a form to quickly copy some Operation properties for this operation to other operations.'#13#10'Applies to properties like:'#13#10'. Action (Stub / Request)'#13#10'. Endpoint and Http Verb (except for APIs)'#13#10'. Extra delaytime'
     end
     object MenuItem11: TMenuItem
       Caption = '-'
     end
     object MenuItem9: TMenuItem
       Action = OperationAliasAction
+      Hint = 'Opens a form to assign an Alias to this operation.'#13#10'Defaults to an Alias based on the schema (Wsdl / OpenApi / ...)'
     end
     object MenuItem12: TMenuItem
       Caption = '-'
@@ -10461,16 +10332,20 @@ object MainForm: TMainForm
     end
     object MenuItem16: TMenuItem
       Action = HideAllOperationsAction
+      Hint = 'Hides all operations from display.'#13#10'Usefull if the service you are working on publishes a lot of operations that are not under test.'#13#10'Combined with the other Hide/Unhide functions you can limit the number of operations shown.'
     end
     object MenuItem17: TMenuItem
       Caption = 'Hide'
+      Hint = 'Hides a specific operation from display.'#13#10'Usefull if the service you are working on publishes a lot of operations that are not under test.'#13#10'Combined with the other Hide/Unhide functions you can limit the number of operations shown.'
       OnClick = MenuItem17Click
     end
     object MenuItem18: TMenuItem
       Action = UnhideAllOperationsAction
+      Hint = 'Unhides all operations from display.'#13#10'Usefull if the service you are working on publishes a lot of operations that are not under test.'#13#10'Combined with the other Hide/Unhide functions you can limit the number of operations shown.'
     end
     object UnhideOperationMenuItem: TMenuItem
       Caption = 'Unhide'
+      Hint = 'Unhides a specific operation from display.'#13#10'Usefull if the service you are working on publishes a lot of operations that are not under test.'#13#10'Combined with the other Hide/Unhide functions you can limit the number of operations shown.'
       OnClick = UnhideOperationMenuItemClick
     end
     object MenuItem15: TMenuItem
@@ -10478,6 +10353,7 @@ object MainForm: TMainForm
     end
     object MenuItem14: TMenuItem
       Caption = 'Refresh'
+      Hint = 'Redisplays the operations list in alphabetical order.'
       ShortCut = 116
       OnClick = MenuItem14Click
     end
@@ -10753,6 +10629,13 @@ object MainForm: TMainForm
     object MenuItem47: TMenuItem
       Caption = 'Column width...'
       OnClick = MenuItem47Click
+    end
+    object MenuItem56: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem57: TMenuItem
+      Caption = 'Help'
+      OnClick = MenuItem57Click
     end
   end
   object PingPongTimer: TTimer

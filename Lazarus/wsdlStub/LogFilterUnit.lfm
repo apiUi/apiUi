@@ -3,8 +3,8 @@ object LogFilterForm: TLogFilterForm
   Height = 579
   Top = 143
   Width = 545
-  HorzScrollBar.Page = 517
-  VertScrollBar.Page = 552
+  HorzScrollBar.Page = 499
+  VertScrollBar.Page = 511
   AutoScroll = True
   Caption = 'LogFilterForm'
   ClientHeight = 579
@@ -16,7 +16,7 @@ object LogFilterForm: TLogFilterForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object FilteringPanel: TPanel
     Left = 0
     Height = 41
@@ -28,9 +28,9 @@ object LogFilterForm: TLogFilterForm
     TabOrder = 0
     object EnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 11
-      Width = 117
+      Width = 103
       Caption = 'Filtering Enabled'
       OnClick = SetEnabled
       TabOrder = 0
@@ -47,19 +47,19 @@ object LogFilterForm: TLogFilterForm
     TabOrder = 5
     object ActionEnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 58
+      Width = 54
       Caption = 'Action'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object ActionEqualsCombo: TComboBox
       Left = 96
-      Height = 27
+      Height = 21
       Top = 8
       Width = 75
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'Is'
@@ -70,10 +70,10 @@ object LogFilterForm: TLogFilterForm
     end
     object ActionsCombo: TComboBox
       Left = 220
-      Height = 27
+      Height = 21
       Top = 9
       Width = 145
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'Stub'
@@ -96,19 +96,19 @@ object LogFilterForm: TLogFilterForm
     TabOrder = 1
     object ServiceEnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 66
+      Width = 59
       Caption = 'Service'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object ServiceEqualsCombo: TComboBox
       Left = 96
-      Height = 27
+      Height = 21
       Top = 8
       Width = 75
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'Is'
@@ -119,16 +119,16 @@ object LogFilterForm: TLogFilterForm
     end
     object ServiceEdit: TEdit
       Left = 219
-      Height = 24
+      Height = 21
       Top = 6
       Width = 145
       TabOrder = 2
     end
     object ServiceRegExpCheckBox: TCheckBox
       Left = 381
-      Height = 22
+      Height = 23
       Top = 8
-      Width = 134
+      Width = 116
       Caption = 'Regular expression'
       TabOrder = 3
     end
@@ -144,19 +144,19 @@ object LogFilterForm: TLogFilterForm
     TabOrder = 2
     object OperationEnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 9
-      Width = 80
+      Width = 72
       Caption = 'Operation'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object OperationEqualsCombo: TComboBox
       Left = 96
-      Height = 27
+      Height = 21
       Top = 8
       Width = 75
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'Is'
@@ -167,16 +167,16 @@ object LogFilterForm: TLogFilterForm
     end
     object OperationEdit: TEdit
       Left = 219
-      Height = 24
+      Height = 21
       Top = 6
       Width = 145
       TabOrder = 2
     end
     object OperationRegExpCheckBox: TCheckBox
       Left = 381
-      Height = 22
+      Height = 23
       Top = 8
-      Width = 134
+      Width = 116
       Caption = 'Regular expression'
       TabOrder = 3
     end
@@ -192,19 +192,19 @@ object LogFilterForm: TLogFilterForm
     TabOrder = 3
     object CorrelationEnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 87
+      Width = 77
       Caption = 'Correlation'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object CorrelationEqualsCombo: TComboBox
       Left = 96
-      Height = 27
+      Height = 21
       Top = 8
       Width = 75
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'Is'
@@ -215,16 +215,16 @@ object LogFilterForm: TLogFilterForm
     end
     object CorrelationEdit: TEdit
       Left = 219
-      Height = 24
+      Height = 21
       Top = 6
       Width = 145
       TabOrder = 2
     end
     object CorrelationRegExpCheckBox: TCheckBox
       Left = 381
-      Height = 22
+      Height = 23
       Top = 8
-      Width = 134
+      Width = 116
       Caption = 'Regular expression'
       TabOrder = 3
     end
@@ -232,7 +232,7 @@ object LogFilterForm: TLogFilterForm
   object ButtonPanel: TPanel
     Left = 0
     Height = 60
-    Top = 492
+    Top = 451
     Width = 545
     Align = alTop
     ClientHeight = 60
@@ -270,26 +270,26 @@ object LogFilterForm: TLogFilterForm
     TabOrder = 6
     object ValidationErrorEnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 206
+      Width = 175
       Caption = 'XML-Schema validation error on'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object RequestValidationCheckBox: TCheckBox
       Left = 220
-      Height = 22
+      Height = 23
       Top = 2
-      Width = 70
+      Width = 64
       Caption = 'Request'
       TabOrder = 1
     end
     object ReplyValidationCheckBox: TCheckBox
       Left = 220
-      Height = 22
+      Height = 23
       Top = 19
-      Width = 56
+      Width = 51
       Caption = 'Reply'
       TabOrder = 2
     end
@@ -305,19 +305,19 @@ object LogFilterForm: TLogFilterForm
     TabOrder = 4
     object ExceptionEnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 78
+      Width = 71
       Caption = 'Exception'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object ExceptionEqualsCombo: TComboBox
       Left = 96
-      Height = 27
+      Height = 21
       Top = 8
       Width = 75
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'Is'
@@ -328,53 +328,18 @@ object LogFilterForm: TLogFilterForm
     end
     object ExceptionEdit: TEdit
       Left = 219
-      Height = 24
+      Height = 21
       Top = 6
       Width = 145
       TabOrder = 2
     end
     object ExceptionRegExpCheckBox: TCheckBox
       Left = 381
-      Height = 22
+      Height = 23
       Top = 8
-      Width = 134
+      Width = 116
       Caption = 'Regular expression'
       TabOrder = 3
-    end
-  end
-  object MiMPanel: TPanel
-    Left = 0
-    Height = 41
-    Top = 369
-    Width = 545
-    Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
-    TabOrder = 8
-    object MiMEnabledCheckBox: TCheckBox
-      Left = 6
-      Height = 22
-      Top = 10
-      Width = 174
-      Caption = 'Man-in-the-middle changes'
-      OnClick = SetEnabled
-      TabOrder = 0
-    end
-    object RequestMiMCheckBox: TCheckBox
-      Left = 220
-      Height = 22
-      Top = 2
-      Width = 70
-      Caption = 'Request'
-      TabOrder = 1
-    end
-    object ReplyMiMCheckBox: TCheckBox
-      Left = 220
-      Height = 22
-      Top = 19
-      Width = 56
-      Caption = 'Reply'
-      TabOrder = 2
     end
   end
   object ReqPanel: TPanel
@@ -385,22 +350,22 @@ object LogFilterForm: TLogFilterForm
     Align = alTop
     ClientHeight = 41
     ClientWidth = 545
-    TabOrder = 9
+    TabOrder = 8
     object RequestEnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 11
-      Width = 69
+      Width = 64
       Caption = 'Request'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object RequestEqualsComboBox: TComboBox
       Left = 96
-      Height = 27
+      Height = 21
       Top = 8
       Width = 75
-      ItemHeight = 0
+      ItemHeight = 13
       Items.Strings = (
         'Contains'
         'Not contains'
@@ -410,16 +375,16 @@ object LogFilterForm: TLogFilterForm
     end
     object RequestEdit: TEdit
       Left = 220
-      Height = 24
+      Height = 21
       Top = 8
       Width = 145
       TabOrder = 2
     end
     object CheckBox1: TCheckBox
       Left = 382
-      Height = 22
+      Height = 23
       Top = 9
-      Width = 134
+      Width = 116
       Caption = 'Regular expression'
       Checked = True
       Enabled = False
@@ -435,22 +400,22 @@ object LogFilterForm: TLogFilterForm
     Align = alTop
     ClientHeight = 41
     ClientWidth = 545
-    TabOrder = 10
+    TabOrder = 9
     object ReplyEnabledCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 56
+      Width = 51
       Caption = 'Reply'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object ReplyEqualsComboBox: TComboBox
       Left = 95
-      Height = 27
+      Height = 21
       Top = 7
       Width = 76
-      ItemHeight = 0
+      ItemHeight = 13
       Items.Strings = (
         'Contains'
         'Not contains'
@@ -460,16 +425,16 @@ object LogFilterForm: TLogFilterForm
     end
     object ReplyEdit: TEdit
       Left = 220
-      Height = 24
+      Height = 21
       Top = 8
       Width = 145
       TabOrder = 2
     end
     object CheckBox2: TCheckBox
       Left = 382
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 134
+      Width = 116
       Caption = 'Regular expression'
       Checked = True
       Enabled = False
@@ -480,26 +445,26 @@ object LogFilterForm: TLogFilterForm
   object Panel1: TPanel
     Left = 0
     Height = 41
-    Top = 410
+    Top = 369
     Width = 545
     Align = alTop
     ClientHeight = 41
     ClientWidth = 545
-    TabOrder = 11
+    TabOrder = 10
     object UnexpectedValuesCheckBox: TCheckBox
       Left = 6
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 132
+      Width = 116
       Caption = 'Unexpected values'
       OnClick = SetEnabled
       TabOrder = 0
     end
     object RemarksCheckBox: TCheckBox
       Left = 219
-      Height = 22
+      Height = 23
       Top = 10
-      Width = 74
+      Width = 65
       Caption = 'Remarks'
       OnClick = SetEnabled
       TabOrder = 1
@@ -508,18 +473,18 @@ object LogFilterForm: TLogFilterForm
   object Panel2: TPanel
     Left = 0
     Height = 41
-    Top = 451
+    Top = 410
     Width = 545
     Align = alTop
     ClientHeight = 41
     ClientWidth = 545
-    TabOrder = 12
+    TabOrder = 11
     object MatchStyleCombo: TComboBox
       Left = 6
-      Height = 27
+      Height = 21
       Top = 9
       Width = 99
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'Match all'
@@ -530,10 +495,10 @@ object LogFilterForm: TLogFilterForm
     end
     object FilterStyleCombo: TComboBox
       Left = 219
-      Height = 27
+      Height = 21
       Top = 8
       Width = 145
-      ItemHeight = 0
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'Show matching'
@@ -546,4 +511,4 @@ object LogFilterForm: TLogFilterForm
       Text = 'Show matching'
     end
   end
-end
+end

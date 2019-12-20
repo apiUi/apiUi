@@ -260,7 +260,9 @@
       <Unit39>
         <Filename Value="..\wsdlStub\LogFilterUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="LogFilterForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit39>
       <Unit40>
         <Filename Value="..\wsdlStub\messagesFromDiskUnit.pas"/>
@@ -270,7 +272,9 @@
       <Unit41>
         <Filename Value="..\wsdlStub\messagesToDiskUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="messagesToDiskForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit41>
       <Unit42>
         <Filename Value="..\wsdlStub\mqBrowseUnit.pas"/>
@@ -285,7 +289,9 @@
       <Unit44>
         <Filename Value="..\wsdlStub\QueryNewElementUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="QueryNewElementForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit44>
       <Unit45>
         <Filename Value="..\wsdlStub\SaveProjectAsUnit.pas"/>

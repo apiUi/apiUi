@@ -135,9 +135,6 @@ type
     StubActionEnabled: Boolean;
     StubActionEquals: Boolean;
     StubAction: TStubAction;
-    MiMEnabled: Boolean;
-    RequestMiMEnabled: Boolean;
-    ReplyMiMEnabled: Boolean;
     MessageValidationEnabled: Boolean;
     RequestValidationEnabled: Boolean;
     ReplyValidationEnabled: Boolean;
@@ -830,7 +827,6 @@ procedure TLogFilter.Execute(aLog: TLog);
   begin
     result := 0;
     if StubActionEnabled then Inc (result);
-    if MiMEnabled then Inc (result);
     if MessageValidationEnabled then Inc (result);
     if ExceptionEnabled then Inc (result);
     if ServiceEnabled then Inc (result);
@@ -880,17 +876,6 @@ begin
                 );
     if xMatches and xMatchAny then Exit;
 
-    if (xMatches or xMatchAny)
-    and MiMEnabled then
-      xMatches := (   (    (RequestMiMEnabled)
-                     and (aLog.RequestBodyMiM <> '')
-                     and (aLog.RequestBodyMiM <> aLog.RequestBody)
-                    )
-                 or (    (ReplyMiMEnabled)
-                     and (aLog.ReplyBodyMiM <> '')
-                     and (aLog.ReplyBodyMiM <> aLog.ReplyBody)
-                    )
-                );
     if xMatches and xMatchAny then Exit;
 
     if (xMatches or xMatchAny)

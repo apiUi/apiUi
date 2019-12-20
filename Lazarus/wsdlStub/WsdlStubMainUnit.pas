@@ -79,7 +79,15 @@ type
     GenerateJsonSchemaInYaml: TAction;
     Action4: TAction;
     GenerateSwaggerAction: TAction;
+    MenuItem30: TMenuItem;
+    MenuItem44: TMenuItem;
     MenuItem55: TMenuItem;
+    MenuItem56: TMenuItem;
+    MenuItem57: TMenuItem;
+    MenuItem58: TMenuItem;
+    MenuItem59: TMenuItem;
+    MenuItem60: TMenuItem;
+    MenuItem61: TMenuItem;
     OperationsPopupHelpItem: TMenuItem;
     ToggleTrackDuplicateMessagesAction: TAction;
     MenuItem52: TMenuItem;
@@ -91,7 +99,6 @@ type
     ToolButton79: TToolButton;
     YamlToClipboardMenuItem: TMenuItem;
     ToolButton78: TToolButton;
-    WsdlNumberOfReferrableMenuItem: TMenuItem;
     OperationBrowseDocumentationAction: TAction;
     ToggleTrackIOAction: TAction;
     BmtpOperationsAction: TAction;
@@ -104,7 +111,6 @@ type
     GridColumnWidthMenuItem: TMenuItem;
     MenuItem42: TMenuItem;
     MenuItem43: TMenuItem;
-    MenuItem44: TMenuItem;
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
@@ -173,7 +179,6 @@ type
     ShowSnapshotDifferencesAction : TAction ;
     LoadRefSavepointMessagesMenuItem : TMenuItem ;
     LoadSavepointMessagesMenuItem : TMenuItem ;
-    MenuItem30 : TMenuItem ;
     MenuItem31 : TMenuItem ;
     ShowGridDifferencesAction : TAction ;
     MenuItem28 : TMenuItem ;
@@ -339,7 +344,7 @@ type
     TreeviewImageList: TImageList;
     InWsdlPropertiesListView: TListView;
     Splitter4: TSplitter;
-    WsdlPopupMenu: TPopupMenu;
+    TreePopupMenu: TPopupMenu;
     WsdlItemAddMenuItem: TMenuItem;
     N2: TMenuItem;
     Copytoclipboard1: TMenuItem;
@@ -453,10 +458,6 @@ type
     ValidateRequestsAction: TAction;
     ValidateRepliesAction: TAction;
     LogPopupMenu: TPopupMenu;
-    RequestMiMAction: TAction;
-    RequestMiMAction1: TMenuItem;
-    ReplyMiMAction: TAction;
-    ChangesduetoAfterscript1: TMenuItem;
     FindAction: TAction;
     FindNextAction: TAction;
     N14: TMenuItem;
@@ -478,8 +479,6 @@ type
     BrowseMqMenuItem: TMenuItem;
     ShowRequestHeaderAsXmlAction: TAction;
     GridPopupMenu: TPopupMenu;
-    MessagesToDiskMenuItem: TMenuItem;
-    MessagesToDiskAction: TAction;
     Log2DesignAction: TAction;
     Addtodesign1: TMenuItem;
     ViewMssgAsTextAction: TAction;
@@ -512,7 +511,6 @@ type
     Removeallmessagesfromalloperations1: TMenuItem;
     ShowLogDetailsAction: TAction;
     ShowLogdetails1: TMenuItem;
-    N19: TMenuItem;
     ToolButton60: TToolButton;
     ToolButton61: TToolButton;
     ConfigLogAction: TAction;
@@ -550,9 +548,7 @@ type
     ToggleNotifyAction: TAction;
     SaveLogRequestsToFileAction: TAction;
     N27: TMenuItem;
-    Saverequeststofile1: TMenuItem;
     SaveLogRepliesToFileAction: TAction;
-    Saverequeststofile2: TMenuItem;
     ShowRequestAsHtmlAction: TAction;
     ShowReplyAsHtmlAction: TAction;
     ShowExceptAsHtmlAction: TAction;
@@ -633,6 +629,10 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
+    procedure MenuItem57Click(Sender: TObject);
+    procedure MenuItem58Click(Sender: TObject);
+    procedure MenuItem60Click(Sender: TObject);
+    procedure MenuItem61Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
     procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
     procedure YamlToClipboardMenuItemClick(Sender: TObject);
@@ -640,7 +640,6 @@ type
     procedure NavigatorTreeViewGetHint(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex;
       var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
-    procedure WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
     procedure OpenWsdlActionUpdate(Sender: TObject);
     procedure OperationBrowseDocumentationActionExecute(Sender: TObject);
     procedure OperationBrowseDocumentationActionUpdate(Sender: TObject);
@@ -755,8 +754,6 @@ type
     procedure ViewMssgAsTextActionExecute(Sender: TObject);
     procedure ViewMssgAsTextActionUpdate(Sender: TObject);
     procedure Log2DesignActionExecute(Sender: TObject);
-    procedure MessagesToDiskActionExecute(Sender: TObject);
-    procedure MessagesToDiskActionUpdate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure BrowseMqActionExecute(Sender: TObject);
     procedure BrowseMqActionUpdate(Sender: TObject);
@@ -785,8 +782,6 @@ type
     procedure FindNextActionUpdate(Sender: TObject);
     procedure FindActionExecute(Sender: TObject);
     procedure FindActionUpdate(Sender: TObject);
-    procedure ReplyMiMActionExecute(Sender: TObject);
-    procedure RequestMiMActionExecute(Sender: TObject);
     procedure LogPopupMenuPopup(Sender: TObject);
     procedure FilterLogActionExecute(Sender: TObject);
     procedure AfterRequestScriptButtonClick(Sender: TObject);
@@ -797,7 +792,7 @@ type
     procedure ExecuteAllRequestsActionExecute(Sender: TObject);
     procedure WsdlItemChangeDataTypeMenuItemClick(Sender: TObject);
     procedure WsdlItemDelMenuItemClick(Sender: TObject);
-    procedure WsdlPopupMenuPopup(Sender: TObject);
+    procedure TreePopupMenuPopup(Sender: TObject);
     procedure MessagesVTSClick(Sender: TObject);
     procedure MessagesVTSGetImageIndex(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
@@ -1007,9 +1002,7 @@ type
     procedure PasteSwiftdatafromclipboardMenuItemClick(Sender: TObject);
     procedure ToggleNotifyActionExecute(Sender: TObject);
     procedure SaveLogRequestsToFileActionUpdate(Sender: TObject);
-    procedure SaveLogRequestsToFileActionExecute(Sender: TObject);
     procedure SaveLogRepliesToFileActionUpdate(Sender: TObject);
-    procedure SaveLogRepliesToFileActionExecute(Sender: TObject);
     procedure ShowRequestAsHtmlActionUpdate(Sender: TObject);
     procedure ShowRequestAsHtmlActionExecute(Sender: TObject);
     procedure ShowReplyAsHtmlActionExecute(Sender: TObject);
@@ -6618,11 +6611,6 @@ begin
   se.LogFilter.StubActionEnabled := xIniFile.BooleanByNameDef ['LogFilter.StubActionEnabled', False];
   se.LogFilter.StubActionEquals := xIniFile.BooleanByNameDef ['LogFilter.StubActionEquals', True];
   se.LogFilter.StubAction := TStubAction (xIniFile.IntegerByNameDef['LogFilter.StubAction', 0]);
-  se.LogFilter.MiMEnabled := xIniFile.BooleanByNameDef['LogFilter.MiMEnabled', False];
-  se.LogFilter.RequestMiMEnabled := xIniFile.BooleanByNameDef
-    ['LogFilter.RequestMiMEnabled', True];
-  se.LogFilter.ReplyMiMEnabled := xIniFile.BooleanByNameDef
-    ['LogFilter.ReplyMiMEnabled', True];
   se.LogFilter.MessageValidationEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.MessageValidationEnabled', False];
   se.LogFilter.RequestValidationEnabled := xIniFile.BooleanByNameDef
@@ -6849,11 +6837,6 @@ begin
   xIniFile.BooleanByName['LogFilter.StubActionEquals'] :=
     se.LogFilter.StubActionEquals;
   xIniFile.IntegerByName['LogFilter.StubAction'] := Ord(se.LogFilter.StubAction);
-  xIniFile.BooleanByName['LogFilter.MiMEnabled'] := se.LogFilter.MiMEnabled;
-  xIniFile.BooleanByName['LogFilter.RequestMiMEnabled'] :=
-    se.LogFilter.RequestMiMEnabled;
-  xIniFile.BooleanByName['LogFilter.ReplyMiMEnabled'] :=
-    se.LogFilter.ReplyMiMEnabled;
   xIniFile.BooleanByName['LogFilter.MessageValidationEnabled'] :=
     se.LogFilter.MessageValidationEnabled;
   xIniFile.BooleanByName['LogFilter.RequestValidationEnabled'] :=
@@ -7638,35 +7621,9 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveLogRepliesToFileActionExecute(Sender: TObject);
-begin
-  SaveFileDialog.DefaultExt := 'txt';
-  SaveFileDialog.FileName := saveToDiskFileName;
-  SaveFileDialog.Filter := 'Text file (*.txt)|*.txt';
-  SaveFileDialog.Title := 'Save ' + _progName + ' replies from log';
-  if SaveFileDialog.Execute then
-  begin
-    saveToDiskFileName := SaveFileDialog.FileName;
-    doSaveLogRepliesToDisk;
-  end;
-end;
-
 procedure TMainForm.SaveLogRepliesToFileActionUpdate(Sender: TObject);
 begin
   SaveLogRepliesToFileAction.Enabled := (se.displayedLogs.Count > 0);
-end;
-
-procedure TMainForm.SaveLogRequestsToFileActionExecute(Sender: TObject);
-begin
-  SaveFileDialog.DefaultExt := 'txt';
-  SaveFileDialog.FileName := saveToDiskFileName;
-  SaveFileDialog.Filter := 'Text file (*.txt)|*.txt';
-  SaveFileDialog.Title := 'Save ' + _progName + ' requests from log';
-  if SaveFileDialog.Execute then
-  begin
-    saveToDiskFileName := SaveFileDialog.FileName;
-    doSaveLogRequestsToDisk;
-  end;
 end;
 
 procedure TMainForm.SaveLogRequestsToFileActionUpdate(Sender: TObject);
@@ -8544,7 +8501,7 @@ begin
   end;
 end;
 
-procedure TMainForm.WsdlPopupMenuPopup(Sender: TObject);
+procedure TMainForm.TreePopupMenuPopup(Sender: TObject);
   procedure _createTypeSubMenuItems(aRootMenuItem: TMenuItem;
     aCurrent, aBase: TXsdDataType);
   var
@@ -8620,7 +8577,6 @@ begin
   WsdlItemAddMenuItem.Enabled := xEnableAddMenuItems;
   WsdlItemDelMenuItem.Enabled := xEnableDelMenuItems;
   AddChildElementMenuItem.Visible := xAddChildVisible;
-  WsdlNumberOfReferrableMenuItem.Enabled := xEnableNumberReferrable;
   ExtendRecursivityMenuItem.Visible := xExtRecurVisible;
   WsdlItemChangeDataTypeMenuItem.Clear;
   WsdlItemChangeDataTypeMenuItem.Enabled := (xBind is TXml) and
@@ -8702,9 +8658,6 @@ begin
     LogFilterForm.ActionEnabled := se.LogFilter.StubActionEnabled;
     LogFilterForm.ActionEquals := se.LogFilter.StubActionEquals;
     LogFilterForm.ActionValue := se.LogFilter.StubAction;
-    LogFilterForm.MiMEnabled := se.LogFilter.MiMEnabled;
-    LogFilterForm.RequestMiMEnabled := se.LogFilter.RequestMiMEnabled;
-    LogFilterForm.ReplyMiMEnabled := se.LogFilter.ReplyMiMEnabled;
     LogFilterForm.MessageValidationEnabled :=
       se.LogFilter.MessageValidationEnabled;
     LogFilterForm.RequestValidationEnabled :=
@@ -8746,9 +8699,6 @@ begin
         se.LogFilter.StubActionEnabled := LogFilterForm.ActionEnabled;
         se.LogFilter.StubActionEquals := LogFilterForm.ActionEquals;
         se.LogFilter.StubAction := LogFilterForm.ActionValue;
-        se.LogFilter.MiMEnabled := LogFilterForm.MiMEnabled;
-        se.LogFilter.RequestMiMEnabled := LogFilterForm.RequestMiMEnabled;
-        se.LogFilter.ReplyMiMEnabled := LogFilterForm.ReplyMiMEnabled;
         se.LogFilter.MessageValidationEnabled :=
           LogFilterForm.MessageValidationEnabled;
         se.LogFilter.RequestValidationEnabled :=
@@ -9079,100 +9029,12 @@ begin
   n := MessagesVTS.SelectedCount;
   xLog := NodeToMsgLog(False,MessagesVTS, MessagesVTS.FocusedNode);
   ShowLogDifferencesAction.Enabled := (n = 2);
-  RequestMiMAction.Enabled := Assigned(xLog)
-                          and (xLog.RequestBodyMiM <> '')
-                          and (xLog.RequestBodyMiM <> xLog.RequestBody)
-                            ;
-  ReplyMiMAction.Enabled := Assigned(xLog)
-                        and (xLog.ReplyBodyMiM <> '')
-                        and (xLog.ReplyBodyMiM <> xLog.ReplyBody)
-                          ;
   Log2DesignAction.Enabled := (n > 0);
   DisplayedcolumnMenuItem.Enabled := Assigned (xLog)
                                  and Assigned (xLog.Operation)
                                  and (n = 1)
                                  and (MessagesVTS.FocusedColumn >= Ord (logStdColumnCount))
                                    ;
-end;
-
-procedure TMainForm.RequestMiMActionExecute(Sender: TObject);
-var
-  xLog: TLog;
-  aXml, bXml: TXml;
-  xA2B: TA2BXml;
-  xForm: TShowA2BXmlForm;
-begin
-  xLog := NodeToMsgLog(True,MessagesVTS, MessagesVTS.FocusedNode);
-  try
-    aXml := TXml.Create;
-    aXml.LoadFromString(xLog.RequestBody, nil);
-    bXml := TXml.Create;
-    bXml.LoadFromString(xLog.RequestBodyMiM, nil);
-  finally
-    xLog.Disclaim;
-  end;
-  a2bInitialize;
-  try
-    xA2B := TA2BXml.CreateA2B('', '', aXml, bXml, Nil, nil);
-  finally
-    a2bUninitialize;
-  end;
-  FreeAndNil(aXml);
-  FreeAndNil(bXml);
-  Application.CreateForm(TShowA2BXmlForm, xForm);
-  try
-    xForm.Caption := 'Changes in Request';
-    xForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
-    xForm.checkValueAgainst := se.checkValueAgainst;
-    xForm.ignoreAddingOn := se.ignoreAddingOn;
-    xForm.ignoreRemovingOn := se.ignoreRemovingOn;
-    xForm.Xml := xA2B;
-    xForm.ShowModal;
-    if xForm.RefreshNeeded then
-      FormShow(nil);
-  finally
-    FreeAndNil(xForm);
-  end;
-end;
-
-procedure TMainForm.ReplyMiMActionExecute(Sender: TObject);
-var
-  xLog: TLog;
-  aXml, bXml: TXml;
-  xA2B: TA2BXml;
-  xForm: TShowA2BXmlForm;
-begin
-  xLog := NodeToMsgLog(False,MessagesVTS, MessagesVTS.FocusedNode);
-  try
-    aXml := TXml.Create;
-    aXml.LoadFromString(xLog.ReplyBodyMiM, nil);
-    bXml := TXml.Create;
-    bXml.LoadFromString(xLog.ReplyBody, nil);
-  finally
-    xLog.Disclaim;
-  end;
-  a2bInitialize;
-  try
-    xA2B := TA2BXml.CreateA2B('', '', aXml, bXml, Nil, Nil);
-  finally
-    a2bUninitialize;
-  end;
-  FreeAndNil(aXml);
-  FreeAndNil(bXml);
-  Application.CreateForm(TShowA2BXmlForm, xForm);
-  try
-    xForm.Caption := 'Changes in Reply';
-    xForm.ignoreDifferencesOn := se.ignoreDifferencesOn;
-    xForm.checkValueAgainst := se.checkValueAgainst;
-    xForm.ignoreAddingOn := se.ignoreAddingOn;
-    xForm.ignoreRemovingOn := se.ignoreRemovingOn;
-    xForm.Xml := xA2B;
-    xForm.ShowModal;
-    if xForm.RefreshNeeded then
-      FormShow(nil);
-  finally
-    FreeAndNil(xForm);
-  end;
 end;
 
 procedure TMainForm.FindActionUpdate(Sender: TObject);
@@ -10283,29 +10145,6 @@ begin
     finally
       Free;
     end;
-  end;
-end;
-
-procedure TMainForm.MessagesToDiskActionUpdate(Sender: TObject);
-begin
-  MessagesToDiskAction.Enabled := not se.IsActive;
-end;
-
-procedure TMainForm.MessagesToDiskActionExecute(Sender: TObject);
-begin
-  EndEdit;
-  Application.CreateForm(TmessagesToDiskForm, messagesToDiskForm);
-  try
-    messagesToDiskForm.ShowModal;
-    if messagesToDiskForm.ModalResult = mrOk then
-    begin
-      saveToDiskDirectory := messagesToDiskForm.DirectoryEdit.Text;
-      saveToDiskExtention := messagesToDiskForm.ExtentionEdit.Text;
-      saveToDiskSeparator := messagesToDiskForm.SeparatorEdit.Text;
-      TProcedureThread.Create(False, True, se, doSaveMessagesToDisk);
-    end;
-  finally
-    FreeAndNil(messagesToDiskForm);
   end;
 end;
 
@@ -14016,7 +13855,8 @@ end;
 
 procedure TMainForm.EditMessageAfterScriptActionUpdate (Sender : TObject );
 begin
-  EditMessageAfterScriptAction.Enabled := (WsdlOperation.StubAction <> saStub);
+  if Assigned (WsdlOperation) then
+    EditMessageAfterScriptAction.Enabled := (WsdlOperation.StubAction <> saStub);
 end;
 
 procedure TMainForm.EditMessageDocumentationActionExecute(Sender: TObject);
@@ -14114,6 +13954,70 @@ begin
   PromptAndSetColumnWidth(SnapshotsVTS);
 end;
 
+procedure TMainForm.MenuItem57Click(Sender: TObject);
+var
+  xFileName: String;
+begin
+  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
+                                + 'Documentation'
+                                + DirectorySeparator
+                                + _progName
+                                + '_Snapshots_Popup_Menu_hlp.htm'
+                                );
+  if not LazFileUtils.FileExistsUTF8(xFileName) { *Converted from FileExists* } then
+    raise Exception.Create('Could not find helpfile: ' + xFileName);
+  if not OpenDocument(xFileName) then
+    raise Exception.Create('Could not open ' + xFileName);
+end;
+
+procedure TMainForm.MenuItem58Click(Sender: TObject);
+var
+  xFileName: String;
+begin
+  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
+                                + 'Documentation'
+                                + DirectorySeparator
+                                + _progName
+                                + '_Grid_Popup_Menu_hlp.htm'
+                                );
+  if not LazFileUtils.FileExistsUTF8(xFileName) then
+    raise Exception.Create('Could not find helpfile: ' + xFileName);
+  if not OpenDocument(xFileName) then
+    raise Exception.Create('Could not open ' + xFileName);
+end;
+
+procedure TMainForm.MenuItem60Click(Sender: TObject);
+var
+  xFileName: String;
+begin
+  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
+                                + 'Documentation'
+                                + DirectorySeparator
+                                + _progName
+                                + '_Tree_Popup_Menu_hlp.htm'
+                                );
+  if not LazFileUtils.FileExistsUTF8(xFileName) then
+    raise Exception.Create('Could not find helpfile: ' + xFileName);
+  if not OpenDocument(xFileName) then
+    raise Exception.Create('Could not open ' + xFileName);
+end;
+
+procedure TMainForm.MenuItem61Click(Sender: TObject);
+var
+  xFileName: String;
+begin
+  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
+                                + 'Documentation'
+                                + DirectorySeparator
+                                + _progName
+                                + '_Log_Popup_Menu_hlp.htm'
+                                );
+  if not LazFileUtils.FileExistsUTF8(xFileName) then
+    raise Exception.Create('Could not find helpfile: ' + xFileName);
+  if not OpenDocument(xFileName) then
+    raise Exception.Create('Could not open ' + xFileName);
+end;
+
 procedure TMainForm.OperationsPopupHelpItemClick(Sender: TObject);
 var
   xFileName: String;
@@ -14163,11 +14067,6 @@ begin
     end;
   finally
   end;
-end;
-
-procedure TMainForm.WsdlNumberOfReferrableMenuItemClick(Sender: TObject);
-begin
-  ShowMessage ('Number of referrable elements');
 end;
 
 procedure TMainForm.OpenWsdlActionUpdate(Sender: TObject);

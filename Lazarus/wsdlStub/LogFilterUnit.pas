@@ -52,10 +52,6 @@ type
     ExceptionEdit: TEdit;
     ExceptionRegExpCheckBox: TCheckBox;
     ExceptionEnabledCheckBox: TCheckBox;
-    MiMPanel: TPanel;
-    MiMEnabledCheckBox: TCheckBox;
-    RequestMiMCheckBox: TCheckBox;
-    ReplyMiMCheckBox: TCheckBox;
     ReqPanel: TPanel;
     RpyPanel: TPanel;
     RequestEnabledCheckBox: TCheckBox;
@@ -91,12 +87,6 @@ type
     procedure setRequestEnabled(const Value: Boolean);
     procedure setRequestEquals(const Value: Boolean);
     procedure setRequestValue(const Value: String);
-    function getMiMEnabled: Boolean;
-    function getReplyMiMEnabled: Boolean;
-    function getRequestMiMEnabled: Boolean;
-    procedure setMiMEnabled(const Value: Boolean);
-    procedure setReplyMiMEnabled(const Value: Boolean);
-    procedure setRequestMiMEnabled(const Value: Boolean);
     function getMessageValidationEnabled: Boolean;
     function getReplyValidationEnabled: Boolean;
     function getRequestValidationEnabled: Boolean;
@@ -156,9 +146,6 @@ type
     property ActionEnabled: Boolean read getActionEnabled write setActionEnabled;
     property ActionEquals: Boolean read getActionEquals write setActionEquals;
     property ActionValue: TStubAction read getActionValue write setActionValue;
-    property MiMEnabled: Boolean read getMiMEnabled write setMiMEnabled;
-    property RequestMiMEnabled: Boolean read getRequestMiMEnabled write setRequestMiMEnabled;
-    property ReplyMiMEnabled: Boolean read getReplyMiMEnabled write setReplyMiMEnabled;
     property MessageValidationEnabled: Boolean read getMessageValidationEnabled write setMessageValidationEnabled;
     property RequestValidationEnabled: Boolean read getRequestValidationEnabled write setRequestValidationEnabled;
     property ReplyValidationEnabled: Boolean read getReplyValidationEnabled write setReplyValidationEnabled;
@@ -254,7 +241,6 @@ procedure TLogFilterForm.SetEnabled (Sender: TObject);
   begin
     result := 0;
     if ActionEnabled then Inc (result);
-    if MiMEnabled then Inc (result);
     if MessageValidationEnabled then Inc (result);
     if ExceptionEnabled then Inc (result);
     if ServiceEnabled then Inc (result);
@@ -270,9 +256,6 @@ begin
   ActionEnabledCheckBox.Enabled := FilterEnabled;
   ActionEqualsCombo.Enabled := FilterEnabled and ActionEnabled;
   ActionsCombo.Enabled := FilterEnabled and ActionEnabled;
-  MiMEnabledCheckBox.Enabled := FilterEnabled;
-  RequestMiMCheckBox.Enabled := FilterEnabled and MiMEnabled;
-  ReplyMiMCheckBox.Enabled := FilterEnabled and MiMEnabled;
   ValidationErrorEnabledCheckBox.Enabled := FilterEnabled;
   RequestValidationCheckBox.Enabled := FilterEnabled and MessageValidationEnabled;
   ReplyValidationCheckBox.Enabled := FilterEnabled and MessageValidationEnabled;
@@ -549,36 +532,6 @@ end;
 procedure TLogFilterForm.setRequestValidationEnabled(const Value: Boolean);
 begin
   RequestValidationCheckBox.Checked := Value;
-end;
-
-function TLogFilterForm.getMiMEnabled: Boolean;
-begin
-  result := MimEnabledCheckBox.Checked;
-end;
-
-function TLogFilterForm.getReplyMiMEnabled: Boolean;
-begin
-  result := ReplyMiMCheckBox.Checked;
-end;
-
-function TLogFilterForm.getRequestMiMEnabled: Boolean;
-begin
-  result := RequestMiMCheckBox.Checked;
-end;
-
-procedure TLogFilterForm.setMiMEnabled(const Value: Boolean);
-begin
-  MimEnabledCheckBox.Checked := Value;
-end;
-
-procedure TLogFilterForm.setReplyMiMEnabled(const Value: Boolean);
-begin
-  ReplyMiMCheckBox.Checked := Value;
-end;
-
-procedure TLogFilterForm.setRequestMiMEnabled(const Value: Boolean);
-begin
-  RequestMiMCheckBox.Checked := Value;
 end;
 
 function TLogFilterForm.getRemarksEnabled: Boolean;

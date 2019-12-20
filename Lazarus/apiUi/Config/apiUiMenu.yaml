@@ -5,6 +5,7 @@ info:
   description: |
     apiUiMenu - Only purpose is to generate Menu Help
     Open this OpenApi definition, click on the Menu XML-treeview from response and type Ctrl-Alt-H 
+    Repeat these steps for each distinct pop-up-menu.
   version: '1.0'
 host: localhost
 basePath: "/v1"
@@ -97,7 +98,7 @@ definitions:
                   Context properties;
                   Opens a screen in which you can add contexts, properties and maintain values.
                   In project-desing you can reference property-values by a ${property-name}.
-                  In that same screen you can configure which context to use. E.g. Prod, PAT of Systest 
+                  In that same screen you can configure which context to use. E.g. Prod, PAT or Systest 
               Maintain_List_of_Wsdl_And_API_Files: 
                 type: object
                 description: |
@@ -458,8 +459,231 @@ definitions:
       PopUpMenus:        
         type: object
         properties:
+          Tree_Popup_Menu:
+            type: object
+            description: |
+              Help on Data Tree popup menu items.
+            properties:
+              Add_occurrence:
+                type: string
+                description: |
+                  On repeatable elements (Occurs...). 
+                  apiUi then shows a little '+' at the right side of item names.
+                  Adds another occurence for the selected item
+              Add_child_element:
+                type: string
+                description: |
+                  Only visible on certain data types like anyType.
+                  Shows a screen in which you can search for a datatype and assign an element-name.
+                  After submit, apiUi will add the specified element as a child-element to the selected element.
+                  (sometimes you need to test an interface that has a closed-envelope schema)
+              Extend_level:
+                type: string
+                description: |
+                  With recursive data structures (and also on very deep nesting), apiUi does not expand all levels but shows a placeholder for the expansion.
+                  Use this function to extend the selected level
+              Delete:
+                type: string
+                description: |
+                  On repeatable elements (Occurs...) when more occurrences exists then required.
+                  Delete selected node from the tree.
+              Clean:
+                type: string
+                description: |
+                  Removes values from unchecked nodes.
+                  Unchecked nodes are never part of sent messages but are stored in a project for later reference,
+                  The clean operation removes unchecked values in the downline of the selected element.
+              Change_datatype_to:
+                type: string
+                description: |
+                  Enabled on nodes where there are sub-types.
+                  A list of sub-types to choose from is presented.
+              Copy_to_clipboard:
+                type: string
+                description: |
+                  Copies the selected node, including the checked downline, as XML to the clipboard.
+                  Clipboard can be pasted on another node to copy data.
+              Copy_as:
+                type: object
+                properties:
+                  XML:
+                    type: string
+                    description: |
+                      Same as Copy_to_clipboard.
+                      Copies the selected node, including the checked downline, in XML format to the clipboard..
+                      Clipboard can be pasted on another node to copy data.
+                  JSON:
+                    type: string
+                    description: |
+                      Copies the selected node, including the checked downline, in JSON format to the clipboard.
+                  YAML:
+                    type: string
+                    description: |
+                      Copies the selected node, including the checked downline, in YAML format to the clipboard.
+              Copy:
+                type: object
+                properties:
+                  Name:
+                    type: string
+                    description: |
+                      Copies node name to the clipboard.
+                  Full_name:
+                    type: string
+                    description: |
+                      Copies node full-name to the clipboard (starting with the root node and separated by dots).
+              Copy_Cobol_data_to_clipboard:
+                type: string
+                description: |
+                  Only applicable on COBOL Copy Book services.
+                  Copies the downline as COBOL data to the clipboard. 
+              Copy_Swift_data_to_clipboard:
+                type: string
+                description: |
+                  Only applicable on SwiftMT services.
+                  Copies the downline as SwiftMT data to the clipboard. 
+              Paste_from_clipboard:
+                type: string
+                description: |
+                  Pastes data from the clipboard to the selected node and downline.
+                  For convenience, the name of the top-level node in the clipboard may differ from the name of the selected node and diffrences in (XML) namespaces are ignored.
+                  For sub nodes, data will only be pasted whene node names match.
+              Paste_Cobol_data_from_clipboard:
+                type: string
+                description: |
+                  Only applicable on COBOL Copy Book services.
+                  Pastes the clipboard as COBOL data (may have unexpected results). 
+              Paste_Swift_data_from_clipboard:
+                type: string
+                description: |
+                  Only applicable on SwiftMT Copy Book services.
+                  Pastes the clipboard as SwiftMT data (may have unexpected results). 
+              Runtime_copy_element:
+                type: string
+                description: |
+                  Not on group elements. 
+                  You can select another element from the same operation.
+                  On run-time, data from that element will be copied into the selected element. 
+              Runtime_expression:
+                type: string
+                description: |
+                  Not on group elements.
+                  Allows you to specify a formula that will be applied at run-time. 
+              Include_element_in_case...:
+                type: string
+                description: |
+                  Only on group elements.
+                  Allows you to specify a boolean formula that will be applied at run-time.
+                  When the outcome of the boolean formula is false, the group element will not be part of the message (be treated as unchecked).
+                  Comparable with assigning nil in scripts.
+              Populate:
+                type: object
+                properties:
+                  All:
+                    type: string
+                    description: |
+                      Quickly assign values to the downline of a node. Assigns values to required and to optional elements.
+                      Assigned values may violate patterns.
+                  Required:
+                    type: string
+                    description: |
+                      Quickly assign values to the downline of a node. Assigns values to required elements only.
+                      Assigned values may violate patterns.
+              Validate:
+                type: string
+                description: |
+                  Checks the current value of the element against its validation rules and shows a message with the result.
+              Expand:
+                type: string
+                description: |
+                  Expands the selected node one level.
+              Full_Collapse:
+                type: string
+                description: |
+                  Collapes the selected node.
+              Full_Expand:
+                type: string
+                description: |
+                  Fully Expand the selected node.
+              Column_width:
+                type: string
+                description: |
+                  A pop-up screen allows to adjust column width
+              Zoom_value_as_Text:
+                type: string
+                description: |
+                  Displays the value for the selected node in a text editor.
+                  In case the node is not read-only, you can edit the value here.
+              Zoon_value_as_XML:
+                type: string
+                description: |
+                  Sometimes data in a node has a XML structure on its own.
+                  This functon will expand that data and show it in a tree-view.
+              Generate:
+                type: object
+                properties:
+                  Script_Assignments:
+                    type: string
+                    description: |
+                      To support you in scripting, this function generates assignemnts that will result in data as currently exists in the selected node and its downline.
+                  Schema_report_in_ClipBoard:
+                    type: string
+                    description: |
+                      For documentation purposes, this function generates a tab-separated report of the schema of the selected node.
+                      Past it in a spreadsheet to have a quickstart with your documentation.
+          Grid_Popup_Menu:
+            type: object
+            description: |
+              Help on Grid popup menu items.
+            properties:
+              Edit_Message_Script:
+                type: string
+                description: |
+                  Applies when operation is in stub (producer) mode.
+                  It is possible, though not recommended, to have separate scripts for message candidates,
+                  Script is executed after receiving a request and before responding.
+              Edit_Message_Before_Script:
+                type: string
+                description: |
+                  Applies when operation is in requestor (consumer) mode.
+                  It is possible, though not recommended, to have separate scripts for message candidates,
+                  Script is executed before sending a request.
+              Edit_Message_After_Script:
+                type: string
+                description: |
+                  Applies when operation is in requestor (consumer) mode.
+                  It is possible, though not recommended, to have separate scripts for message candidates,
+                  Script is executed after receiving a response to a request.
+              Edit_Message_Documentation:
+                type: string
+                description: |
+                  Allows you to document around this specific message candidate
+              Re-enable message:
+                type: string
+                description: |
+                  apiUi has the option (see Project->Options->OnCorrelate) to disable a message candidate.
+                  Message candidates can also be disabled from script, see function DisableMessage ().
+                  apiUi will not correlate a disabled message. 
+                  This function re-enables selected message candidatess 
+                  See also the script function EnableAllMessages ().
+              Disable message:
+                type: string
+                description: |
+                  apiUi has the option (see Project->Options->OnCorrelate) to disable a message candidate.
+                  Message candidates can also be disabled from script, see function DisableMessage ().
+                  This menu-item lets you manually disable selected message candidatess 
+              Compare:
+                type: string
+                description: |
+                  Requires that you have two rows selected.
+                  Will show a screen with differences found in the two selected rows
+              Column_width:
+                type: string
+                description: |
+                  A pop-up screen allows to adjust column width
           Operations_Popup_Menu:
             type: object
+            description: |
+              Help on Operations popup menu items.
             properties:
               Show_Documentaion_in_browser:
                 type: string
@@ -510,7 +734,7 @@ definitions:
               Options: 
                 type: string
                 description: |
-                  Service options;
+                  Operation options;
                   For an overview of all options visit: doc://apiUi_operationOptions_hlp.htm
               Hide_all_operations: 
                 type: string
@@ -542,3 +766,80 @@ definitions:
                   Redisplays the operations list in alphabetical order.
                   After changing some alisases for operations, a Refresh displays the operations in the new order.
           
+          Snapshots_Popup_Menu:
+            type: object
+            description: |
+              Help on Snapshots popup menu items.
+            properties:
+              Compare_with_reference:
+                type: string
+                description: |
+                  Compares the snaphot with the refernce snapshot.
+                  Result will be reflected in the first column and can be a
+                  green bullet for no differences found, 
+                  a red bullet in case differences were found
+                  a red cross in case of an error, mostly indicating that no reference exists yet
+              Compare:
+                type: string
+                description: |
+                  Requires that you have two snapshots selected.
+                  Will show a screen with differences found in the two selected snapshots
+              Reload_checkpoint_data:
+                type: string
+                description: |
+                  To investigate an existing snapshot, just reload, switch to the log-tab and inspect the logging 
+              Reload_checkpoint_reference_data:
+                type: string
+                description: |
+                  To investigate a reference snapshot, just load it, switch to the log-tab and inspect the logging 
+              Promote_to_reference:
+                type: string
+                description: |
+                  The current snapshot will become the reference snapshot.
+                  Results in a green bullet for the promoted snapshot.
+              Show_details:
+                type: string
+                description: |
+                  Shows all kinds of details of the selected snapshot.
+              Column_width:
+                type: string
+                description: |
+                  A pop-up screen allows to adjust column width
+          Log_Popup_Menu:
+            type: object
+            description: |
+              Help on Logs popup menu items.
+            properties:
+              Displayed_column:
+                type: string
+                description: |
+                  Requires that you have specified extra column (headers) for the logs.
+                  See Main Menu->Logs->Displayed Columns.
+                  Depending on the operation that belongs to the selected log-item, you can select which data to display in the extra column. 
+              Add_to_design:
+                type: string
+                description: |
+                  Selected log items will be added to the design.
+                  A quick way to add message-candidates.
+              Compare:
+                type: string
+                description: |
+                  Requires two selected rows.
+                  Will show a screen with information about differences in the logged items.
+              Show_selected_requests_in_a_grid:
+                type: string
+                description: |
+                  In case of multiple selected items, apiUi will show the requests in a grid.
+              Show_selected_responses_in_a_grid:
+                type: string
+                description: |
+                  In case of multiple selected items, apiUi will show the responses in a grid.
+              Show_Log_details:
+                type: string
+                description: |
+                  Shows all kinds of details of the selected log item(s).
+              Column_width:
+                type: string
+                description: |
+                  A pop-up screen allows to adjust column width
+              
