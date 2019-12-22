@@ -14,7 +14,7 @@ object AboutBox: TAboutBox
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '1.6.0.4'
   object ProgramLabel: TLabel
     Left = 18
     Height = 13
@@ -36,7 +36,7 @@ object AboutBox: TAboutBox
     Height = 13
     Top = 46
     Width = 186
-    Caption = 'Copyright © 2009 - 2018 Jan Bouwman'
+    Caption = 'Copyright © 2009 - 2020 Jan Bouwman'
     ParentColor = False
   end
   object LicensedLabel: TLabel

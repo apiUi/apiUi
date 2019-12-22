@@ -376,7 +376,7 @@ type
       oldInvokeSpec: String;
       invokeList: TWsdlOperations;
       doDebug: Boolean;
-      doSuppressLog, doSuppressAsyncReply: Integer;
+      doSuppressLog: Integer;
       logReplyBody, logRequestBody: String;
       DelayTimeMs: Integer;
       DelayTimeMsMin: Integer;
@@ -3476,7 +3476,6 @@ begin
   fCloned := nil;
   fLock := SyncObjs.TCriticalSection.Create;
   doSuppressLog := 0;
-  doSuppressAsyncReply := 0;
   if Assigned (aWsdl) then
   begin
     Wsdl := aWsdl;
@@ -3826,7 +3825,6 @@ begin
       try StubMqHeaderXml.Bind ('Mq', fExpress, 1); except end;
     try fExpress.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
     try fExpress.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
-    try fExpress.BindInteger('rti.operation.suppressAsyncReply', doSuppressAsyncReply); except end;
     BindScriptFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
     BindScriptFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
     BindScriptFunction ('Assigned', @isAssigned, XFG, '(aItem)');
@@ -4628,7 +4626,6 @@ begin
   self.fCloned := xOperation;
   self.fLock := xOperation.fLock;
   self.doSuppressLog := xOperation.doSuppressLog;
-  self.doSuppressAsyncReply := xOperation.doSuppressAsyncReply;
   self.Owner := xOperation.Owner;
   self.Data := xOperation.Data;
   self.fOnGetAbortPressed := xOperation.fOnGetAbortPressed;

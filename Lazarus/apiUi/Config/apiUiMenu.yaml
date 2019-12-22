@@ -91,7 +91,7 @@ definitions:
                 type: string
                 description: |
                   Project options;
-                  For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm'
+                  For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm
               Context_Properties: 
                 type: string
                 description: |

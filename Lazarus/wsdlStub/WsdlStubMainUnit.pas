@@ -260,12 +260,6 @@ type
     logChartAction : TAction ;
     LoadTestAction : TAction ;
     CopyLogGridToClipBoardAction : TAction ;
-    MasterClearLogAction : TAction ;
-    MasterReactivateActon : TAction ;
-    MasterReloadDesignAction : TAction ;
-    MasterReloadDesignMenuItem : TMenuItem ;
-    MasterRestartAction : TAction ;
-    MasterRestartAction1 : TMenuItem ;
     OperationLabel : TLabel ;
     OperationsPopupMenu: TPopupMenu;
     PairSplitter1 : TPairSplitter ;
@@ -276,7 +270,6 @@ type
     DataPanel : TPanel ;
     TreeDataPanel : TPanel ;
     ProgressBar : TProgressBar ;
-    Reactivatemaster1 : TMenuItem ;
     RunMenuItem : TMenuItem ;
     MenuItem2 : TMenuItem ;
     MenuItem3 : TMenuItem ;
@@ -517,7 +510,6 @@ type
     ToolButton62: TToolButton;
     DelayTimeButton: TToolButton;
     ToggleFileLogAction: TAction;
-    N20: TMenuItem;
     RedirectAddressAction: TAction;
     OperationDelayResponseTimeAction: TAction;
     OperationApplySettingsAction: TAction;
@@ -554,7 +546,6 @@ type
     ShowExceptAsHtmlAction: TAction;
     OperationOptionsAction: TAction;
     HideAllOperationsAction: TAction;
-    N28: TMenuItem;
     UnhideAllOperationsAction: TAction;
     N29: TMenuItem;
     N30: TMenuItem;
@@ -1085,6 +1076,7 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
+    procedure ShowHelpDocumentation (aName: String);
     procedure EditContexts;
     procedure ShowChosenLogTab;
     function ShowProgressForm: Boolean;
@@ -2978,6 +2970,24 @@ begin
   GridView.Invalidate;
 end;
 
+procedure TMainForm.ShowHelpDocumentation(aName: String);
+var
+  xFileName: String;
+begin
+  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
+                                + 'Documentation'
+                                + DirectorySeparator
+                                + _progName
+                                + '_'
+                                + aName
+                                + '_hlp.htm'
+                                );
+  if not LazFileUtils.FileExistsUTF8(xFileName) then
+    raise Exception.Create('Could not find helpfile: ' + xFileName);
+  if not OpenDocument(xFileName) then
+    raise Exception.Create('Could not open ' + xFileName);
+end;
+
 procedure TMainForm.EditContexts;
 begin
   ContextsActionExecute(nil);
@@ -3801,19 +3811,8 @@ begin
 end;
 
 procedure TMainForm.HelpMainMenuActionExecute(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation'
-                                + DirectorySeparator
-                                + _progName
-                                + '_Menu_hlp.htm'
-                                );
-  if not LazFileUtils.FileExistsUTF8(xFileName) { *Converted from FileExists* } then
-    raise Exception.Create('Could not find helpfile: ' + xFileName);
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
+  ShowHelpDocumentation('Menu');
 end;
 
 procedure TMainForm.HideAllOperationsActionExecute(Sender: TObject);
@@ -13955,83 +13954,28 @@ begin
 end;
 
 procedure TMainForm.MenuItem57Click(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation'
-                                + DirectorySeparator
-                                + _progName
-                                + '_Snapshots_Popup_Menu_hlp.htm'
-                                );
-  if not LazFileUtils.FileExistsUTF8(xFileName) { *Converted from FileExists* } then
-    raise Exception.Create('Could not find helpfile: ' + xFileName);
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
+  ShowHelpDocumentation('Snapshots_Popup_Menu');
 end;
 
 procedure TMainForm.MenuItem58Click(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation'
-                                + DirectorySeparator
-                                + _progName
-                                + '_Grid_Popup_Menu_hlp.htm'
-                                );
-  if not LazFileUtils.FileExistsUTF8(xFileName) then
-    raise Exception.Create('Could not find helpfile: ' + xFileName);
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
+  ShowHelpDocumentation('Grid_Popup_Menu');
 end;
 
 procedure TMainForm.MenuItem60Click(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation'
-                                + DirectorySeparator
-                                + _progName
-                                + '_Tree_Popup_Menu_hlp.htm'
-                                );
-  if not LazFileUtils.FileExistsUTF8(xFileName) then
-    raise Exception.Create('Could not find helpfile: ' + xFileName);
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
+  ShowHelpDocumentation('Tree_Popup_Menu');
 end;
 
 procedure TMainForm.MenuItem61Click(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation'
-                                + DirectorySeparator
-                                + _progName
-                                + '_Log_Popup_Menu_hlp.htm'
-                                );
-  if not LazFileUtils.FileExistsUTF8(xFileName) then
-    raise Exception.Create('Could not find helpfile: ' + xFileName);
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
+  ShowHelpDocumentation('Log_Popup_Menu');
 end;
 
 procedure TMainForm.OperationsPopupHelpItemClick(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation'
-                                + DirectorySeparator
-                                + _progName
-                                + '_Operations_Popup_Menu_hlp.htm'
-                                );
-  if not LazFileUtils.FileExistsUTF8(xFileName) { *Converted from FileExists* } then
-    raise Exception.Create('Could not find helpfile: ' + xFileName);
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
+  ShowHelpDocumentation('Operations_Popup_Menu');
 end;
 
 procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);

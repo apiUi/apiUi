@@ -1725,18 +1725,6 @@ Settings determine what apiUi should do on receiving messages for unknown (not s
 									<xs:documentation>Default 'Unknown operation'</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="Redirect" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>When checked, apiUi will route webservice calls for unknown operations to the end-point specified.</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Transport" type="epc:endpointConfigType"/>
-										<xs:element name="reqReplacements" type="replacementsType" minOccurs="0"/>
-										<xs:element name="rpyReplacements" type="replacementsType" minOccurs="0"/>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
 						</xs:choice>
 					</xs:complexType>
 				</xs:element>
@@ -2379,6 +2367,13 @@ For driver-operation this applies to response values.</xs:documentation>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RedirectType">
+		<xs:sequence>
+			<xs:element name="Transport" type="epc:endpointConfigType"/>
+			<xs:element name="reqReplacements" type="replacementsType" minOccurs="0"/>
+			<xs:element name="rpyReplacements" type="replacementsType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>

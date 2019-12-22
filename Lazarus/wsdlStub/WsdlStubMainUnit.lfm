@@ -2062,14 +2062,6 @@ object MainForm: TMainForm
       OnExecute = RemoveAllMessagesActionExecute
       OnUpdate = RemoveAllMessagesActionUpdate
     end
-    object MasterReloadDesignAction: TAction
-      Category = 'MasterSlave'
-      Caption = 'Reload master design'
-    end
-    object MasterClearLogAction: TAction
-      Category = 'MasterSlave'
-      Caption = 'Clear master log'
-    end
     object RedirectAddressAction: TAction
       Category = 'Operation'
       Caption = 'To address'
@@ -2093,19 +2085,11 @@ object MainForm: TMainForm
       OnExecute = OperationWsaActionExecute
       OnUpdate = OperationWsaActionUpdate
     end
-    object MasterReactivateActon: TAction
-      Category = 'MasterSlave'
-      Caption = 'Reactivate master'
-    end
     object ThrowExceptionAction: TAction
       Category = 'Miscellaneous'
       Caption = 'ThrowExceptionAction'
       OnExecute = ThrowExceptionActionExecute
       ShortCut = 8309
-    end
-    object MasterRestartAction: TAction
-      Category = 'MasterSlave'
-      Caption = 'Shut down and restart master'
     end
     object startAction: TAction
       Category = 'Miscellaneous'
@@ -6618,21 +6602,6 @@ object MainForm: TMainForm
           0000000000000000000000000000000000000000000000000000000000000000
           0000000000000000000000000000000000000000000000000000
         }
-      end
-      object N28: TMenuItem
-        Caption = '-'
-      end
-      object N20: TMenuItem
-        Action = MasterClearLogAction
-      end
-      object MasterReloadDesignMenuItem: TMenuItem
-        Action = MasterReloadDesignAction
-      end
-      object Reactivatemaster1: TMenuItem
-        Action = MasterReactivateActon
-      end
-      object MasterRestartAction1: TMenuItem
-        Action = MasterRestartAction
       end
     end
     object ServiceMenu: TMenuItem

@@ -19,8 +19,8 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="12500"/>
+      <RevisionNr Value="2"/>
+      <BuildNr Value="12511"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -167,7 +167,9 @@
       <Unit20>
         <Filename Value="..\wsdlStub\AboutUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\wsdlStub\AddFavouritesUnit.pas"/>

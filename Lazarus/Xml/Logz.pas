@@ -36,7 +36,7 @@ type
   TLog = class(TClaimableObject)
   protected
   public
-    doSuppressLog,doSuppressAsyncReply: Boolean;
+    doSuppressLog: Boolean;
     onSnapshot: Boolean;
     displayRef: PDisplayRef;
     DisplayedColumnsValid: Boolean;
@@ -77,9 +77,6 @@ type
     ReplyValidateResult: String;
     ExpectedValuesChecked: Boolean;
     HasUnexpectedValue: Boolean;
-    wsaCorrelated: Boolean;
-    isAsynchronousRequest: Boolean;
-    isAsynchronousReply: Boolean;
     Stream: TStream;
     markDeleted: Boolean;
     relatesTo: TLog;
@@ -1029,7 +1026,6 @@ begin
     AddXml (Txml.CreateAsString('Nr', IntToStr (Self.Nr)));
     AddXml (Txml.CreateAsString('MessageId', Self.MessageId));
     AddXml (Txml.CreateAsBoolean('Stubbed', Self.Stubbed));
-    AddXml (Txml.CreateAsBoolean('wsaCorrelated', Self.wsaCorrelated));
     AddXml (Txml.CreateAsString('ServiceName', Self.ServiceName));
     AddXml (Txml.CreateAsString('OperationName', Self.OperationName));
     AddXml (Txml.CreateAsString('PathFormat', Self.PathFormat));

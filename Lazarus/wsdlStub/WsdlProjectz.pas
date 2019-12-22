@@ -194,7 +194,6 @@ type
     displayedLogsmaxEntries: Integer;
     CompareLogOrderBy: TCompareLogOrderBy;
     ShowLogCobolStyle: TShowLogCobolStyle;
-    unknownOperation: TWsdlOperation;
     LogFilter: TLogFilter;
     refreshNr: Integer;
     refreshCheck: String;
@@ -332,25 +331,6 @@ type
                                       ; var aRequestHeader: String
                                       ; var aReplyHeader: String
                                       ): String;
-    function RedirectCommandStomp ( aCommand: String
-                                  ; aHost: String
-                                  ; aPort: Integer
-                                  ; aDestination: String
-                                  ; aReplyTo: String
-                                  ; aTimeOut: Integer
-                                  ): String;
-    function RedirectCommandMQ ( aCommand: String
-                               ; aPutManager: String
-                               ; aPutQueue: String
-                               ; aReplyToManager: String
-                               ; aReplyToQueue: String
-                               ; aGetManager: String
-                               ; aGetQueue: String
-                               ; aTimeOut: Integer
-                               ): String;
-    function RedirectCommandURC (aCommand: String): String;
-    function RedirectCommandHTTP ( aCommand, aStubAddress, aDocument, aSoapAction: String): String;
-    function RedirectCommandString ( aCommand: String; aAddress, aSoapAction: String): String;
     procedure CreateLogReplyPostProcess (aLog: TLog; aOperation: TWsdlOperation);
     procedure SendOperationInThread (aOperation: TWsdlOperation);
     procedure SendOperation (aOperation: TWsdlOperation);
@@ -373,7 +353,6 @@ type
     function FindOperationOnRequest (aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
     function FindOpenApiOnLog (aLog: TLog): TWsdlOperation;
     function FindOperationOnLog (aLog: TLog): TWsdlOperation;
-    procedure RedirectUnknownOperation (aLog: TLog);
     procedure CreateReply ( aLog: TLog; aIsActive: Boolean);
     function ProjectLogOptionsAsXml: TXml;
     function ProjectScriptsAsXml: TXml;
@@ -389,7 +368,6 @@ type
     procedure ProjectLogOptionsFromXml(aXml: TXml);
     function ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
     procedure ProjectOptionsFromXml(aXml: TXml);
-    procedure ProjectOptions36FromXml (aXml: TXml);
     procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
     procedure ProjectDesignFromXml (aXml: TXml; aMainFileName: String);
     procedure ProjectDesignFromString (aString, aMainFileName: String);
@@ -1510,8 +1488,6 @@ begin
   PathInfos := TStringList.Create;
   PathRegexps := TStringList.Create;
   PathFormats := TStringList.Create;
-  unknownOperation := TWsdlOperation.Create(TWsdl(nil));
-  unknownOperation.StubAction := saStub;
   ignoreDifferencesOn := TStringList.Create;
   ignoreDifferencesOn.Sorted := True;
   ignoreDifferencesOn.Duplicates := dupIgnore;
@@ -1658,7 +1634,6 @@ begin
   displayedSnapshots.Free;
   toDisplaySnapshots.Clear;
   toDisplaySnapshots.Free;
-  FreeAndNil (unknownOperation);
   Wsdls.Free;
   wsdlNames.Free;
   PathInfos.Free;
@@ -2245,23 +2220,7 @@ begin
   end;
   with result.AddXml (TXml.CreateAsString('UnknownOperations', '')) do
   begin
-    case unknownOperation.StubAction of
-      saStub: AddXml (TXml.CreateAsString('RaiseErrorMessage', notStubbedExceptionMessage));
-      saForward: ;
-      saRedirect:
-        with AddXml (TXml.CreateAsString('Redirect', '')) do
-        begin
-          with AddXml (unknownOperation.endpointConfigAsXml) do
-          begin
-            Name := 'Transport'; // 10.x style
-          end;
-          with AddXml (TXml.Create) do
-            CopyDownLine(UnknownOpsReqReplactementsXml, True);
-          with AddXml (TXml.Create) do
-            CopyDownLine(UnknownOpsRpyReplactementsXml, True);
-        end;
-      saRequest: ;
-    end;
+    AddXml (TXml.CreateAsString('RaiseErrorMessage', notStubbedExceptionMessage));
   end;
   with result.AddXml (TXml.CreateAsString('OperationDefaults', '')) do
   begin
@@ -2762,9 +2721,6 @@ begin
         doValidateReplies := (aXml.Items.XmlValueByTag ['ValidateReplies'] = 'true');
         doCheckExpectedValues := aXml.Items.XmlBooleanByTagDef['CheckExpectedValues', False];
         _WsdlDisableOnCorrelate := aXml.Items.XmlBooleanByTagDef['DisableOnCorrelate', False];
-        eXml := aXml.Items.XmlItemByTag ['ProjectOptions'];
-        if Assigned (eXml) then
-          ProjectOptions36FromXml(eXml);
         eXml := aXml.Items.XmlItemByTag ['projectOptions'];
         if Assigned (eXml) then
         begin
@@ -3029,7 +2985,6 @@ begin
                           if Assigned (dXml) then
                             xOperation.OptionsFromXml(dXml);
                           xOperation.doSuppressLog := oXml.Items.XmlIntegerByTagDef ['doSuppressLog', 0];
-                          xOperation.doSuppressAsyncReply := oXml.Items.XmlIntegerByTagDef ['doSuppressAsyncReply', 0];
                           xOperation.DelayTimeMsMin := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMin', -1];
                           if xOperation.DelayTimeMsMin = -1 then
                           begin
@@ -3038,24 +2993,6 @@ begin
                           end
                           else
                             xOperation.DelayTimeMsMax := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMax', 0];
-{BEGIN 3.6 Style}
-                          xOperation.StubTransport := TTransportType (StrToIntDef (oXml.Items.XmlValueByTag ['StubTransport'], 0));
-                          xOperation.StubHttpAddress := oXml.Items.XmlValueByTag ['Address'];
-                          if xOperation.StubHttpAddress = '' then
-                            xOperation.StubHttpAddress := oXml.Items.XmlValueByTag ['StubHttpAddress'];
-                          xOperation.StubMqPutManager := oXml.Items.XmlValueByTag ['StubMqPutManager'];
-                          xOperation.StubMqPutQueue := oXml.Items.XmlValueByTag ['StubMqPutQueue'];
-                          xOperation.StubMqGetManager := oXml.Items.XmlValueByTag ['StubMqGetManager'];
-                          xOperation.StubMqGetQueue := oXml.Items.XmlValueByTag ['StubMqGetQueue'];
-                          xOperation.StubMqTimeOut := StrToIntDef(oXml.Items.XmlValueByTag ['StubMqTimeOut'], 30);
-                          xOperation.StubMqHeaderXml.LoadValues (oXml.Items.XmlItemByTag ['mqHeader'], False);
-                          xOperation.StubStompPutHost := oXml.Items.XmlValueByTag ['StubStompPutHost'];
-                          xOperation.StubStompPutPort := oXml.Items.XmlValueByTagDef ['StubStompPutPort', '61613'];
-                          xOperation.StubStompPutClientId := oXml.Items.XmlValueByTag ['StubStompPutClientId'];
-                          xOperation.StubStompTimeOut := StrToIntDef(oXml.Items.XmlValueByTag ['StubStompTimeOut'], 30);
-                          xOperation.StubStompHeaderXml.LoadValues (oXml.Items.XmlItemByTag ['stompHeader'], False);
-                          xOperation.TacoConfigXml.LoadValues (oXml.Items.XmlItemByTag ['tacoConfig'], False);
-{END 3.6 Style}
                           dXml := oXml.Items.XmlItemByTag ['endpointConfig'];
                           if Assigned (dXml) then
                             xOperation.endpointConfigFromXml(dXml);
@@ -3259,83 +3196,6 @@ begin
   end;
 end;
 
-procedure TWsdlProject.ProjectOptions36FromXml(aXml: TXml);
-var
-  xXml, yXml: TXml;
-begin
-  _WsdlDbsEnabled := False;
-  DbsType := '';
-  DbsDatabaseName := '';
-  DbsParams := '';
-  DbsPassword := '';
-  _WsdlDbsConnector.LoginPrompt := False;
-  if Assigned (aXml) then {BEGIN 3.6 style}
-  begin
-    unknownOperation.StubAction := TStubAction (StrToIntDef (aXml.Items.XmlValueByTag ['notStubbedOperationAction'], 0));
-    if unknownOperation.StubAction = saStub then
-      notStubbedExceptionMessage := aXml.Items.XmlValueByTag ['notStubbedExceptionMessage'];
-    unknownOperation.StubTransport := TTransportType (StrToIntDef (aXml.Items.XmlValueByTag ['notStubbedOperationTransportType'], 0));
-    case unknownOperation.StubTransport of
-      ttHttp: unknownOperation.StubHttpAddress := aXml.Items.XmlValueByTag ['notStubbedRedirectionUrl'];
-      ttMq:
-        begin
-          unknownOperation.StubMqPutManager := aXml.Items.XmlValueByTag ['notStubbedMqPutManager'];
-          unknownOperation.StubMqPutQueue := aXml.Items.XmlValueByTag ['notStubbedMqPutQueue'];
-          if Assigned (endpointConfigXsd) then
-          begin
-            xXml := aXml.Items.XmlItemByTag ['notStubbedMqReplyToManager'];
-            if Assigned (xXml) then
-            begin
-              yXml := unknownOperation.StubMqHeaderXml
-                                      .Items.XmlItemByTag['mqmd']
-                                      .Items.XmlItemByTag['ReplyToQMgr'];
-              yXml.Checked := True;
-              yXml.Value := xXml.Value;
-            end;
-            xXml := aXml.Items.XmlItemByTag ['notStubbedMqReplyToQueue'];
-            if Assigned (xXml) then
-            begin
-              yXml := unknownOperation.StubMqHeaderXml
-                                      .Items.XmlItemByTag['mqmd']
-                                      .Items.XmlItemByTag['ReplyToQ'];
-              yXml.Checked := True;
-              yXml.Value := xXml.Value;
-            end;
-          end;
-          unknownOperation.StubMqGetManager := aXml.Items.XmlValueByTag ['notStubbedMqGetManager'];
-          unknownOperation.StubMqGetQueue := aXml.Items.XmlValueByTag ['notStubbedMqGetQueue'];
-          unknownOperation.StubMqTimeOut := StrToIntdef (aXml.Items.XmlValueByTag ['notStubbedMqTimeOut'], 30);
-        end;
-      ttStomp:
-        begin
-          if Assigned (endpointConfigXsd) then
-          begin
-            unknownOperation.StubStompPutHost := aXml.Items.XmlValueByTag ['notStubbedStompHost'];
-            unknownOperation.StubStompPutPort := aXml.Items.XmlValueByTag ['notStubbedStompPort'];
-            xXml := aXml.Items.XmlItemByTag ['notStubbedStompDestination'];
-            if Assigned (xXml) then
-            begin
-              yXml := unknownOperation.StubStompHeaderXml
-                                      .Items.XmlItemByTag['destination'];
-              yXml.Checked := True;
-              yXml.Value := xXml.Value;
-            end;
-            xXml := aXml.Items.XmlItemByTag ['notStubbedStompReplyTo'];
-            if Assigned (xXml) then
-            begin
-              yXml := unknownOperation.StubStompHeaderXml
-                                      .Items.XmlItemByTag['reply-to'];
-              yXml.Checked := True;
-              yXml.Value := xXml.Value;
-            end;
-            unknownOperation.StubStompTimeOut := aXml.Items.XmlIntegerByTag ['notStubbedStompTimeOut'];
-          end;
-        end;
-      ttTaco: ;
-    end;
-  end; {END 3.6 style}
-end;
-
 procedure TWsdlProject .CreateLogReply (aLog : TLog ;
   var aProcessed : Boolean ; aIsActive : Boolean );
 begin
@@ -3356,84 +3216,6 @@ begin
   end; //except
 end;
 
-procedure TWsdlProject.RedirectUnknownOperation (aLog : TLog );
-  function _doReplacements (aSpecXml: TXml; aString: String): String;
-  var
-    x: Integer;
-    oldString, newString: String;
-    xReplaceAll, xIgnoreCase: Boolean;
-    xFlags: TReplaceFlags;
-  begin
-    result := aString;
-    if not Assigned (aSpecXml) then Exit;
-    with aSpecXml.Items do
-    begin
-      for x := 0 to Count - 1 do with XmlItems[x] do
-      begin
-        oldString := Items.XmlCheckedValueByTagDef['OldString', ''];
-        newString := Items.XmlCheckedValueByTagDef['NewString', ''];
-        xReplaceAll := Items.XmlCheckedBooleanByTagDef['ReplaceAll', false];
-        xIgnoreCase := Items.XmlCheckedBooleanByTagDef['IgnoreCase', false];
-        xFlags := [];
-        if xReplaceAll then xFlags := xFlags + [rfReplaceAll];
-        if xIgnoreCase then xFlags := xFlags + [rfIgnoreCase];
-        if oldString <> '' then
-          Result := StringReplace(Result, oldString, newString, xFlags);
-      end;
-    end;
-  end;
-var
-  xOperation: TWsdlOperation;
-  xXml, yXml: TXml;
-begin
-  aLog.ReplyBody := '';
-  aLog.Exception := '';
-  aLog.StubAction := saRedirect;
-  aLog.ServiceName := 'unknown';
-  alog.OperationName := 'unknown';
-  if Pos ('xml', aLog.RequestContentType) > 0 then
-  begin
-    xXml := TXml.Create;
-    try
-      xXml.LoadFromString(aLog.RequestBody, nil);
-      if xXml.Name <> '' then
-      begin
-        xXml.SeparateNsPrefixes;
-        xXml.ResolveNameSpaces;
-        yXml := xXml.FindXml('Envelope.Body');
-        if Assigned (yXml)
-        and (yXml.Items.Count > 0) then
-          aLog.OperationName := yXml.Items.XmlItems[0].Name;
-      end;
-    finally
-      xXml.Free;
-    end;
-  end;
-  alog.RequestBodyMiM := alog.RequestBody;
-  aLog.RequestBody := _doReplacements (UnknownOpsReqReplactementsXml, aLog.RequestBody);
-  xOperation := TWsdlOperation.Create(unknownOperation);
-  try
-    case aLog.TransportType of
-      ttHttp, ttHttps, ttSmtp:
-      begin
-        xOperation.httpVerb := aLog.httpCommand;
-        xOperation.StubHttpAddress := mergeUri(xOperation.StubHttpAddress, aLog.httpUri);
-      end;
-    end;
-    case xOperation.StubTransport of
-      ttHttp: aLog.ReplyBody := SendHttpMessage (xOperation, aLog);
-      ttMq: aLog.ReplyBody := SendOperationMqMessage (xOperation, aLog.RequestBody, aLog.RequestHeaders);
-      ttStomp: aLog.ReplyBody := SendOperationStompMessage (xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
-      ttTaco: aLog.ReplyBody := SendOperationTacoMessage(xOperation, aLog.RequestBody, aLog.RequestHeaders, aLog.ReplyHeaders);
-      ttNone: aLog.ReplyBody := SendNoneMessage(xOperation, aLog.RequestBody);
-    end;
-    aLog.ReplyBodyMiM := aLog.ReplyBody;
-    aLog.ReplyBody := _doReplacements (UnknownOpsRpyReplactementsXml, aLog.ReplyBody);
-  finally
-    xOperation.Free;
-  end;
-end;
-
 procedure TWsdlProject.CreateReply (aLog: TLog; aIsActive: Boolean);
 var
   xOperation: TWsdlOperation;
@@ -3447,22 +3229,12 @@ begin
   xOperation := FindOperationOnRequest(aLog, aLog.httpDocument, aLog.RequestBody, True);
   if not Assigned (xOperation) then
   begin
-    case unknownOperation.StubAction of
-      saRedirect:
-        begin
-          RedirectUnknownOperation(aLog);
-          exit;
-        end;
-      else
-        begin
-          aLog.Exception := notStubbedExceptionMessage;
-          aLog.ReplyBody := aLog.Exception;
-          if (aLog.TransportType = ttHttp)
-          or (aLog.TransportType = ttHttps) then
-            aLog.httpResponseCode := 500;
-          exit;
-        end;
-    end;
+    aLog.Exception := notStubbedExceptionMessage;
+    aLog.ReplyBody := aLog.Exception;
+    if (aLog.TransportType = ttHttp)
+    or (aLog.TransportType = ttHttps) then
+      aLog.httpResponseCode := 500;
+    exit;
   end;
   try
     xOperation.Data := aLog;
@@ -3484,11 +3256,6 @@ begin
     if not Assigned (aLog.Mssg) then
       Raise Exception.Create('Could not find any reply based on request');
     aLog.CorrelationId := xOperation.CorrelationIdAsText ('; ');
-    if (xOperation.StubAction = saStub)
-    and (aIsActive)
-    and xOperation.wsaEnabled
-    and Assigned (xOperation.reqWsaXml.FindUQXml('wsa.ReplyTo.Address')) then
-      alog.isAsynchronousRequest := True;
     if xOperation.doReadReplyFromFile then
       xOperation.ReadReplyFromFile
     else
@@ -3523,16 +3290,12 @@ begin
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
     aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
-    aLog.doSuppressAsyncReply := (xOperation.doSuppressAsyncReply <> 0);
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
     aLog.OperationName:=xOperation.Alias;
     aLog.ReplyBody := xOperation.StreamReply (_progName, True);
     if xOperation.ReturnSoapFault then
       aLog.Exception := aLog.ReplyBody;
-    if not aLog.isAsynchronousRequest then
-    begin
-      CreateLogReplyPostProcess(aLog, xOperation);
-    end;
+    CreateLogReplyPostProcess(aLog, xOperation);
   finally
     if Assigned (xOperation.Cloned) then
       xOperation.Free;
@@ -3588,8 +3351,6 @@ begin
           xLog.Exception := e.Message;
         end;
       end;
-      if xLog.doSuppressAsyncReply then
-        xlog.ReplyBody := '';
       if (xLog.ReplyBody <> '')
       and (   (aFrame.GetHeaders.Value('reply-to') <> '')
            or (aFrame.GetHeaders.Value('ReplyQueue') <> '')
@@ -3892,7 +3653,6 @@ begin
   xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
   xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
   _WsdlDisableOnCorrelate := False;
-  unknownOperation.StubAction := saStub;
   PublishDescriptions := False;
   OperationsWithEndpointOnly := True;
   SaveRelativeFileNames := True;
@@ -3936,24 +3696,7 @@ begin
       yXml := xXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage'];
       if Assigned (yXml) then
       begin
-        unknownOperation.StubAction := saStub;
         notStubbedExceptionMessage := xXml.Items.XmlCheckedValueByTagDef['RaiseErrorMessage', notStubbedExceptionMessage];
-      end;
-      yXml := xXml.Items.XmlCheckedItemByTag ['Redirect'];
-      if Assigned (yXml) then
-      begin
-        unknownOperation.StubAction := saRedirect;
-        hXml := yXml.Items.XmlCheckedItemByTag ['Transport'];
-        if Assigned (hXml) then
-          unknownOperation.endpointConfigFromXml(hXml)  // 10.x
-        else
-          unknownOperation.endpointConfigFromXml(yXml); // 9.x
-        hXml := yXml.Items.XmlCheckedItemByTag ['reqReplacements'];
-        if Assigned (hXml) then
-          UnknownOpsReqReplactementsXml.CopyDownLine(hXml, True);
-        hXml := yXml.Items.XmlCheckedItemByTag ['rpyReplacements'];
-        if Assigned (hXml) then
-          UnknownOpsRpyReplactementsXml.CopyDownLine(hXml, True);
       end;
     end;
     xXml := XmlCheckedItemByTag ['OperationDefaults'];
@@ -4552,7 +4295,6 @@ begin
       xLog.Mssg := aOperation.CorrelatedMessage;
       xLog.RequestContentType := aOperation.ContentType;
       aOperation.doSuppressLog := 0;
-      aOperation.doSuppressAsyncReply := 0;
       if aOperation.wsaEnabled then
         try
           aOperation.reqWsaOnRequest;
@@ -4653,7 +4395,6 @@ begin
         Stubbed := True;
         StubAction := aOperation.StubAction;
         doSuppressLog := (aOperation.doSuppressLog <> 0);
-        doSuppressAsyncReply := (aOperation.doSuppressAsyncReply <> 0);
       end;
     except
       on e: exception do
@@ -4841,80 +4582,6 @@ begin
   end;
 end;
 
-function TWsdlProject .RedirectCommandStomp (aCommand : String ;
-  aHost : String ; aPort : Integer ; aDestination : String ;
-  aReplyTo : String ; aTimeOut : Integer ): String ;
-var
-  stomp: TStompInterface;
-  xXml: TXml;
-  xReqHeader, xRpyHeader: String;
-begin
-  Result := '';
-  xReqHeader := '';
-  xRpyHeader := '';
-  stomp := TStompInterface.Create (nil, HaveStompFrame);
-  try
-    Stomp.Host := aHost;
-    Stomp.Port := aPort;
-    Stomp.ClientId := '';
-    Stomp.Connect;
-    try
-      xXml := TXml.Create;
-      try
-        xXml.AddXml (TXml.CreateAsString ('destination', aDestination));
-        xXml.AddXml (TXml.CreateAsString ('reply-to', aReplyTo));
-        Result := Stomp.RequestReply ( aCommand
-                                     , aTimeout
-                                     , xXml
-                                     , nil
-                                     , xReqHeader
-                                     , xRpyHeader
-                                     );
-      finally
-        xXml.Free;
-      end;
-    finally
-      Stomp.Disconnect;
-    end;
-  finally
-    FreeAndNil (Stomp);
-  end;
-end;
-
-
-function TWsdlProject .RedirectCommandMQ (aCommand : String ;
-  aPutManager : String ; aPutQueue : String ; aReplyToManager : String ;
-  aReplyToQueue : String ; aGetManager : String ; aGetQueue : String ;
-  aTimeOut : Integer ): String ;
-var
-  mq: TMqInterface;
-begin
-  Result := '';
-  mq := TMqInterface.Create;
-  try
-    mq.Use := mqUse;
-    mq.Qmanager := aPutManager;
-    mq.PutQueue := aPutQueue;
-    // aReplyToManager
-    mq.ReplyToQueue := aReplyToQueue;
-    // aGetManager
-    mq.GetQueue := aGetQueue;
-    mq.TimeOut := IntToStr (aTimeOut);
-    mq.Expiry := '-1';
-    try
-      Result := mq.RequestReply (aCommand, nil);
-    finally
-    end;
-  finally
-    FreeAndNil (mq);
-  end;
-end;
-
-function TWsdlProject .RedirectCommandURC (aCommand : String ): String ;
-begin
-  result := SendOperationMessage(unknownOperation, aCommand);
-end;
-
 function doRefuseHttpConnections(aObject: TObject; aLater, aTime: Extended): Extended;
 var
   xProject: TWsdlProject;
@@ -4944,115 +4611,6 @@ begin
     HTTPServer.Active := True;
   finally
     ReleaseLock;
-  end;
-end;
-
-function TWsdlProject .RedirectCommandString (aCommand : String ; aAddress ,
-  aSoapAction : String ): String ;
-var
-  HttpClient: TIdHTTP;
-  HttpRequest: TMemoryStream;
-begin
-  HttpClient := TIdHTTP.Create;
-  try
-    HttpRequest := TMemoryStream.Create;
-    try
-      try
-        HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := aSoapAction;
-      except
-      end;
-      HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
-      HttpClient.Request.CharSet := '';
-      WriteStringToStream(aCommand, HttpRequest);
-      try
-        if doViaProxyServer then
-        begin
-          HttpClient.ProxyParams.ProxyServer := ViaProxyServer;
-          HttpClient.ProxyParams.ProxyPort := ViaProxyPort;
-        end
-        else
-        begin
-          HttpClient.ProxyParams.ProxyServer := '';
-          HttpClient.ProxyParams.ProxyPort := 0;
-        end;
-        try
-          Result := HttpClient.Post(aAddress, HttpRequest);
-        finally
-        end;
-        if HttpClient.ResponseCode = 500 then
-          raise Exception.Create(Result);
-      finally
-{}{
-        if HttpClient.Connected then //in case server s-alive
-          HttpClient.Disconnect;
-{}
-      end;
-    finally
-      FreeAndNil (HttpRequest);
-    end;
-  finally
-    FreeAndNil (HttpClient);
-  end;
-end;
-
-function TWsdlProject .RedirectCommandHTTP (aCommand , aStubAddress ,
-  aDocument , aSoapAction : String ): String ;
-var
-  HttpClient: TIdHTTP;
-  HttpRequest: TMemoryStream;
-  URL: String;
-  destUri, docUri: TidURI;
-begin
-  HttpClient := TIdHTTP.Create;
-  try
-    HttpRequest := TMemoryStream.Create;
-    try
-      destUri := TIdURI.Create(aStubAddress);
-      docUri := TidUri.Create('http://localhost:6060' + aDocument);
-      try
-        if (destUri.Path = '')
-        or (destUri.Path = '/') then
-          destUri.Path  := docUri.Path;
-        if destUri.Document = '' then
-          destUri.Document  := docUri.Document;
-        URL := destUri.URI;
-      finally
-        FreeAndNil(destUri);
-        FreeAndNil(docUri);
-      end;
-      try
-        HttpClient.Request.CustomHeaders.Values ['SOAPAction'] := aSoapAction;
-      except
-      end;
-      HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
-      HttpClient.Request.CharSet := '';
-      WriteStringToStream(aCommand, HttpRequest);
-      try
-        if doViaProxyServer then
-        begin
-          HttpClient.ProxyParams.ProxyServer := ViaProxyServer;
-          HttpClient.ProxyParams.ProxyPort := ViaProxyPort;
-        end
-        else
-        begin
-          HttpClient.ProxyParams.ProxyServer := '';
-          HttpClient.ProxyParams.ProxyPort := 0;
-        end;
-        try
-          Result := HttpClient.Post(URL, HttpRequest);
-        finally
-        end;
-        if HttpClient.ResponseCode = 500 then
-          raise Exception.Create(Result);
-      finally
-        if HttpClient.Connected then {in case server s-alive}
-          HttpClient.Disconnect;
-      end;
-    finally
-      FreeAndNil (HttpRequest);
-    end;
-  finally
-    FreeAndNil (HttpClient);
   end;
 end;
 
@@ -7635,7 +7193,6 @@ begin
       CreateLogReply (xLog, xProcessed, True);
       DelayMS (xLog.DelayTimeMs);
       if (    (xLog.ReplyBody <> '')
-          and (not xLog.doSuppressAsyncReply)
           and (   (MsgType = MQMT_REQUEST)
                or (not aMqInterface.UseReplyToQueue)
               )
@@ -8056,20 +7613,6 @@ end;
 
 procedure TWsdlProject.HTTPServerCommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-  function _relatesToKey(aRequestBody: String): String;
-  begin
-    result := '';
-    with TXml.Create do
-    try
-      try
-        LoadFromString(aRequestBody, nil);
-        result := FindUQXml ('Envelope.Header.RelatesTo').Value;
-      except
-      end;
-    finally
-      free;
-    end;
-  end;
 var
   xLog: TLog;
   xProcessed: Boolean;
@@ -8416,7 +7959,6 @@ begin
       aLog.CorrelationId := xOperation.CorrelationIdAsText('; ');
       aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
       aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
-      aLog.doSuppressAsyncReply := (xOperation.doSuppressAsyncReply <> 0);
       aLog.DelayTimeMs := xOperation.DelayTimeMs;
       aLog.OperationName:=xOperation.Alias;
       xOperation.rpyXml.jsonType := jsonObject;
@@ -8490,8 +8032,7 @@ procedure TWsdlProject.HTTPServerCommandGetGet(aLog: TLog; AContext: TIdContext;
       sLoc := SchemaLocations.SchemaLocations[aUri];
       if not Assigned (sLoc) then
       begin
-        RedirectUnknownOperation(aLog);
-        result := aLog.ReplyBody;
+        Raise Exception.CreateFmt('schemalocation "%s" not found', [aUri]);
       end
       else
       begin
