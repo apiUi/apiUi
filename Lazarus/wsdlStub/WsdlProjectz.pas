@@ -331,6 +331,11 @@ type
                                       ; var aRequestHeader: String
                                       ; var aReplyHeader: String
                                       ): String;
+    function SendOperationKafkaMessage ( aOperation: TWsdlOperation
+                                       ; aMessage: String
+                                       ; var aRequestHeader: String
+                                       ; var aReplyHeader: String
+                                       ): String;
     procedure CreateLogReplyPostProcess (aLog: TLog; aOperation: TWsdlOperation);
     procedure SendOperationInThread (aOperation: TWsdlOperation);
     procedure SendOperation (aOperation: TWsdlOperation);
@@ -535,6 +540,7 @@ uses StrUtils
    , exceptionUtils
    , SchemaLocationz
    , smtpInterface
+   , kafkaclient
    , RegExpr
    , jwbBase64
    , base64
@@ -1440,9 +1446,11 @@ begin
       end;
     end;
 
-    if Assigned (endpointConfigXsd)
-    and (endpointConfigXsd.sType.ElementDefs.Count > Ord (ttTaco)) then
-      _WsdlTacoConfigXsd := endpointConfigXsd.sType.ElementDefs.Xsds [Ord (ttTaco)];
+    if Assigned (endpointConfigXsd) then
+    begin
+      _WsdlTacoConfigXsd := endpointConfigXsd.FindXsd('endpointConfig.Taco');
+      _WsdlKafkaConfigXsd := endpointConfigXsd.FindXsd('endpointConfig.Kafka');
+    end;
 
     if webserviceXsdFileName <> '' then
       webserviceXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), webserviceXsdFileName);
@@ -3840,6 +3848,7 @@ begin
     ttMq: result := SendOperationMqMessage (aOperation, aMessage, reqheader);
     ttStomp: result := SendOperationStompMessage (aOperation, aMessage, reqheader, rpyheader);
     ttTaco: result := SendOperationTacoMessage(aOperation, aMessage, reqheader, rpyheader);
+    ttKafka: result := SendOperationKafkaMessage(aOperation, aMessage, reqheader, rpyheader);
     ttNone: result := SendNoneMessage(aOperation, aMessage);
   end;
 end;
@@ -4325,6 +4334,7 @@ begin
           ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttTaco: xLog.ReplyBody := SendOperationTacoMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
+          ttKafka: xLog.ReplyBody := SendOperationKafkaMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody);
         end;
       finally
@@ -4482,6 +4492,45 @@ begin
   if not Assigned (aOperation)
     then raise Exception.Create('SendOperationTacoMessage: null arguments');
   result := fTacoInterface.RequestReply(aMessage, 0, aOperation.TacoConfigXml);
+end;
+
+function TWsdlProject.SendOperationKafkaMessage(aOperation: TWsdlOperation;
+  aMessage: String;var aRequestHeader: String;var aReplyHeader: String): String;
+var
+  xBroker, xTopic,xClientConfig: String;
+  sl: TStringList;
+begin
+  result := '';
+  aRequestHeader := '';
+  aReplyHeader := '';
+  sl := TStringList.Create;
+  try
+    xBroker := aOperation.KafkaConfigXml.Items.XmlCheckedValueByTag['Broker'];
+    xTopic := aOperation.KafkaConfigXml.Items.XmlCheckedValueByTag['Topic'];
+    xClientConfig := aOperation.KafkaConfigXml.Items.XmlCheckedValueByTag['ClientConfig'];
+    aRequestHeader := Format( 'Broker=%s%sTopic=%s%s[ClientConfig]%s%s'
+                            , [ xBroker, LineEnding
+                              , xTopic, LineEnding, LineEnding
+                              , xClientConfig, LineEnding
+                              ]
+                            );
+    with TKafkaProducer.Create do
+    try
+      if (xClientConfig <> '') then
+      begin
+        sl.Text := xClientConfig;
+        ConfigureParamList(sl);
+      end;
+      StartBroker(xBroker);
+    //  SetDeliveryReportCallback(..);
+      CreateProducerTopic(xTopic);
+      ProduceMessage('aKey', aMessage);
+    finally
+      Free;
+    end;
+  finally
+    FreeAndNil (sl);
+  end;
 end;
 
 procedure TWsdlProject.SetAbortPressed(const Value: Boolean);

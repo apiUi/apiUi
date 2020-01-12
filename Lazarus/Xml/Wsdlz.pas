@@ -31,14 +31,14 @@ resourcestring
   S_DOLLARREF = '$ref';
 
 type TStubAction = (saStub, saForward, saRedirect, saRequest);
-type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone);
+type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone, ttKafka);
 type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
 type TOnRequestViolating = (rvsDefault, rvsContinue, rvsRaiseErrorMessage, rvsAddRemark);
 type TProduceType = (ptJson, ptXml); // for API's
 type TProcedure = procedure of Object;
-const TransportTypeNames: array [ttHttp..ttNone] of String =
+const TransportTypeNames: array [ttHttp..ttKafka] of String =
 ( 'Http'
 , 'Https'
 , 'Mq'
@@ -47,6 +47,7 @@ const TransportTypeNames: array [ttHttp..ttNone] of String =
 , 'Smtp'
 , 'Bmtp'
 , 'None'
+, 'Kafka'
 );
 const ProduceTypeNames: array [ptJson..ptXml] of String =
 ( 'Json'
@@ -363,6 +364,7 @@ type
       StubStompPutClientId: String;
       StubStompTimeOut: Integer;
       TacoConfigXml: TXml;
+      KafkaConfigXml: TXml;
       CorrelatedMessage: TWsdlMessage;
       Messages: TWsdlMessages;
       doReadReplyFromFile: Boolean;
@@ -677,6 +679,7 @@ var
   _WsdlEmailXsd: TXsd;
   _WsdlListOfFilesXsd: TXsd;
   _WsdlTacoConfigXsd: TXsd;
+  _WsdlKafkaConfigXsd: TXsd;
   _WsdlUserNameTokenNumber: Integer;
   _WsdlDisableOnCorrelate: Boolean;
   _WsdlOnMessageChange: TOnMessageChange;
@@ -1732,7 +1735,7 @@ function decVarNumber (aOperation: TWsdlOperation; aName: String): Extended;
 begin
   AcquireEnvVarLock; // nests lock....
   try
-    result := getVarNumberDef(aOperation, aName, 0) + 1;
+    result := getVarNumberDef(aOperation, aName, 0) - 1;
     setEnvNumber(aOperation, aName, result);
   finally
     ReleaseEnvVarLock;
@@ -2340,6 +2343,20 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
 //
 // Based on https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 //
+  function _makeValidName (aName: String): String;
+  var
+    naChars: String;
+    x: Integer;
+  begin
+    result := aName;
+    naChars := ' \/:*?"<>|';
+    for x := 1 to Length(Result) do
+    begin
+      if Pos (result [x], naChars) > 0 then
+        result [x] := '_';
+    end;
+  end;
+
   function _FindReferencedXml (aString: String): TXml;
   var
     x: Integer;
@@ -2454,7 +2471,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent)
         Exit;
       end;
     end;
-    with _initXsd (aParentXsd, aXml.Items.XmlValueByTag['name']) do
+    with _initXsd (aParentXsd, _makeValidName (aXml.Items.XmlValueByTag['name'])) do
     begin
       sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, aXml, aOnError);
       sType.jsonType := jsonObject;
@@ -2927,9 +2944,18 @@ begin
         xHost := Items.XmlValueByTag['host'];
         xBasePath := _trimPath(Items.XmlValueByTag['basePath']);
         dXml := Items.XmlItemByTag['schemes'];
-        for p := 0 to dXml.Items.Count - 1 do
+        if Assigned (dXml) then
         begin
-          Servers.Add (dXml.Items.XmlItems[p].Value + '://' + xHost + xBasePath);
+          for p := 0 to dXml.Items.Count - 1 do
+          begin
+            Servers.Add (dXml.Items.XmlItems[p].Value + '://' + xHost + xBasePath);
+            ServerPathNames.Add (xBasePath);
+          end;
+        end
+        else
+        begin
+          Servers.Add ('http://' + xHost + xBasePath);
+          Servers.Add ('https://' + xHost + xBasePath);
           ServerPathNames.Add (xBasePath);
         end;
       end;
@@ -3565,6 +3591,11 @@ begin
     TacoConfigXml := TXml.Create(-10000, _WsdlTacoConfigXsd);
     TacoConfigXml.CheckDownline(False);
   end;
+  if Assigned (_WsdlKafkaConfigXsd) then
+  begin
+    KafkaConfigXml := TXml.Create(-10000, _WsdlKafkaConfigXsd);
+    KafkaConfigXml.CheckDownline(False);
+  end;
   StubCustomHeaderXml := TXml.CreateAsString('customHeaders', '');
   doReadReplyFromFile := False;
   resolveRequestAliasses := True;
@@ -3615,6 +3646,7 @@ begin
     FreeAndNil (StubMqHeaderXml);
     FreeAndNil (StubCustomHeaderXml);
     FreeAndNil (TacoConfigXml);
+    FreeAndNil (KafkaConfigXml);
     FreeAndNil (ReadReplyFromFileXml);
     FreeAndNil (fLock);
   end;
@@ -4695,6 +4727,7 @@ begin
   self.StubStompHeaderXml := xOperation.StubStompHeaderXml;
   self.StubCustomHeaderXml := xOperation.StubCustomHeaderXml;
   self.TacoConfigXml := xOperation.TacoConfigXml;
+  self.KafkaConfigXml := xOperation.KafkaConfigXml;
   self.doReadReplyFromFile := xOperation.doReadReplyFromFile;
   self.ReadReplyFromFileXml := xOperation.ReadReplyFromFileXml;
   self.StubAction := xOperation.StubAction;
@@ -5685,6 +5718,9 @@ begin
     ttTaco:
       with result.AddXml(TXml.CreateAsString('Taco', '')) do
         CopyDownLine(TacoConfigXml, True);
+    ttKafka:
+      with result.AddXml(TXml.CreateAsString('Kafka', '')) do
+        CopyDownLine(KafkaConfigXml, True);
     ttSmtp:
       with result.AddXml(TXml.CreateAsString('Smtp', '')) do
       begin
@@ -5739,6 +5775,7 @@ begin
   smtpHost := '';
   smtpPort := 0;
   TacoConfigXml.CheckDownline(False);
+  KafkaConfigXml.CheckDownline(False);
   for x := 0 to aXml.Items.Count - 1 do
   begin
     with aXml.Items.XmlItems[x] do
@@ -5836,6 +5873,11 @@ begin
         begin
           StubTransport := ttTaco;
           TacoConfigXml.LoadValues (aXml.Items.XmlItems[x], False, True);
+        end;
+        if Name = 'Kafka' then
+        begin
+          StubTransport := ttKafka;
+          KafkaConfigXml.LoadValues (aXml.Items.XmlItems[x], False, True);
         end;
         if Name = 'None' then
         begin

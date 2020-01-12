@@ -162,6 +162,7 @@ uses
    , ShowTextUnit
    , ChooseEnumUnit
    , xsdDateTimeFormUnit
+   , EditListValuesUnit
    , igGlobals
    , StrUtils
    , SysUtils
@@ -703,6 +704,23 @@ function TXmlUtil.editXml(aBind: TCustomBindable; aDoUseGrid, aReadOnly: Boolean
       end;
     end;
     if (aBind is TXml)
+    and Assigned ((aBind as TXml).Xsd)
+    and (   ((aBind as TXml).TypeDef.Name = 'NameValuePairsType')
+        ) then
+    begin
+      Application.CreateForm(TEditListValuesForm, EditListValuesForm);
+      try
+        EditListValuesForm.Caption := 'Edit environment variables';
+        EditListValuesForm.isReadOnly := ReadOnly;
+        EditListValuesForm.ValueListEditor.Strings.Text := (aBind as TXml).Value;
+        EditListValuesForm.ShowModal;
+        Result := (EditListValuesForm.ModalResult = mrOk);
+        NewValue := EditListValuesForm.ValueListEditor.Strings.Text;
+      finally
+        FreeAndNil(EditListValuesForm);
+      end;
+    end;
+    if (aBind is TXml)
     and (Assigned ((aBind as TXml).Xsd))
     and (   ((aBind as TXml).TypeDef.Name = 'FolderNameType')
         )
@@ -996,6 +1014,7 @@ begin
                       or ((aBind as TXml).TypeDef.Name = 'FileNameType')
                       or ((aBind as TXml).TypeDef.Name = 'FolderNameType')
                       or ((aBind as TXml).TypeDef.Name = 'htmlColorType')
+                      or ((aBind as TXml).TypeDef.Name = 'NameValuePairsType')
                       or Assigned ((aBind as TXml).TypeDef.OnDoSelectValue)
                       or ((aBind as TXml).TypeDef.Enumerations.Count > 0)
                       or Assigned ((aBind as TXml).Xsd.EditProcedure)

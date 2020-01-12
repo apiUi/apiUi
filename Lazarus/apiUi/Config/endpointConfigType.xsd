@@ -23,6 +23,9 @@ passwords are encripted before storing in a project file or at other locations</
 	<xs:simpleType name="FileNameType">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
+	<xs:simpleType name="NameValuePairsType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
 	<xs:simpleType name="sslVersionType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="SSL Version 2"/>
@@ -639,6 +642,21 @@ If the NameValueCCSID is a 2-byte Unicode CCSID (1200, 13488, or 17584), the byt
 			<xs:enumeration value="False"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:complexType name="kafkaInterfaceType">
+		<xs:sequence>
+			<xs:element name="Broker" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The address of the server where the kafka broker is running</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Topic" type="xs:string"/>
+			<xs:element name="ClientConfig" type="tns:NameValuePairsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>see https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="smtpConfigType">
 		<xs:sequence>
 			<xs:element name="Host" type="xs:string">
@@ -787,6 +805,13 @@ Requires either MQ Local Client or MQ Local Server</xs:documentation>
 					<xs:documentation>Simple Text Oriented Messaging Protocol
 Provides an interoperable format so clients can communicate with any STOMP message broker.
 Often used with Active MQ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Kafka" type="tns:kafkaInterfaceType">
+				<xs:annotation>
+					<xs:documentation>
+Communicate with an Apache Kafka streaming platform.
+See https://kafka.apache.org/</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Taco" type="tns:tacoConfigType">
