@@ -577,6 +577,7 @@ function SeparatedStringList (aObject: TObject; aString, aSep: String): TParserS
 function SeparatedStringN (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
 function SeparatedStringT (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
 function xNewLine: String;
+function xTab: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
 function StringMatchesRegExpr (aString, aExpr: String): String;
 procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
@@ -1296,6 +1297,11 @@ end;
 function xNewLine : String ;
 begin
   result := LineEnding;
+end;
+
+function xTab : String ;
+begin
+  result := Chr (9);
 end;
 
 function xStringOfChar (aString : String ; aNumber : Extended ): String ;
@@ -3898,6 +3904,7 @@ begin
     BindScriptFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
     BindScriptFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOSS, '(aOperation, aName)');
     BindScriptFunction ('NewLine', @xNewLine, SFV, '()');
+    BindScriptFunction ('Tab', @xTab, SFV, '()');
     BindScriptFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindScriptFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
     BindScriptFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
@@ -5923,6 +5930,7 @@ begin
       BindCheckerFunction ('LengthStr', @LengthX, XFS, '(aString)');
       BindCheckerFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
       BindCheckerFunction ('NewLine', @xNewLine, SFV, '()');
+      BindCheckerFunction ('Tab', @xTab, SFV, '()');
       BindCheckerFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
       BindCheckerFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
       BindCheckerFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
@@ -5992,6 +6000,7 @@ begin
     BindStamperFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
     BindStamperFunction ('MD5', @MD5, SFS, '(aString)');
     BindStamperFunction ('NewLine', @xNewLine, SFV, '()');
+    BindStamperFunction ('Tab', @xTab, SFV, '()');
     BindStamperFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
     BindStamperFunction ('NowAsStr', @xsdNowAsDateTime, SFV, '()');
     BindStamperFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');

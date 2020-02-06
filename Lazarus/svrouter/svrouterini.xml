@@ -1,0 +1,9 @@
+<svrouterini>
+  <doLog>true</doLog>
+  <mainPort>443</mainPort>
+  <ssl>
+    <certificateFile>svrouterssl.pem</certificateFile>
+    <keyFile>svrouterssl.pem</keyFile>
+	<password>Aw0yERoFUART</password>
+  </ssl>
+</svrouterini>

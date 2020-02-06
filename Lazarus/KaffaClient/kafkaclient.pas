@@ -53,7 +53,6 @@ type
   TKafkaProducer = class (TKafkaClient)
   public
     procedure StartBroker(aBrokerName: String);
-    procedure SetDeliveryReportCallback (InProcCallBack: TProc_dr_msg_cb);
     procedure ProduceMessage (aKey, aMessage: String);
     procedure CreateProducerTopic(InTopicName: String);
     constructor Create;
@@ -63,7 +62,6 @@ type
 implementation
 
 { TKafkaProducer }
-
 procedure TKafkaProducer.StartBroker(aBrokerName: String);
 var
   errstr: array[0..512] of char;
@@ -77,29 +75,24 @@ begin
     CheckForKafkaError('StartBroker "' + aBrokerName + '"');
 end;
 
-procedure TKafkaProducer.SetDeliveryReportCallback (InProcCallBack: TProc_dr_msg_cb);
-begin
-  rd_kafka_conf_set_dr_msg_cb(KafkaConf, InProcCallBack);
-  CheckForKafkaError ('SetDeliveryReportCallback');
-end;
-
 procedure TKafkaProducer.ProduceMessage (aKey, aMessage: String);
 var
-  xMessageLen, xKetLen: Integer;
+  xMessageLen, xRetLen: Integer;
   xRetVal: Trd_kafka_conf_res_t;
   xTopicName: String;
 begin
   xTopicName := rd_kafka_topic_name(_rkt);
   xMessageLen := Length(aMessage);
-  xKetLen := Length(aKey);
-  xRetVal := rd_kafka_produce(_rkt,
-                              RD_KAFKA_PARTITION_UA,
-                              RD_KAFKA_MSG_F_COPY,
-                              @aMessage[1],
-                              xMessageLen,
-                              @aKey[1],
-                              xKetLen,
-                              nil);
+  xRetLen := Length(aKey);
+  xRetVal := rd_kafka_produce ( _rkt
+                              , RD_KAFKA_PARTITION_UA
+                              , RD_KAFKA_MSG_F_COPY
+                              , @aMessage[1]
+                              , xMessageLen
+                              , @aKey[1]
+                              , xRetLen
+                              , self
+                              );
 
   if xRetVal <> RD_KAFKA_CONF_OK then
     CheckForKafkaError('ProduceMessage');

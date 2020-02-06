@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="49">
+      <Unit0>
+        <Filename Value="svrouter.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="92"/>
+        <CursorPos Y="112"/>
+        <UsageCount Value="218"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\wsdlStub\wsdlcontrolz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="231"/>
+        <CursorPos X="6" Y="242"/>
+        <UsageCount Value="206"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="200"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="200"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\TacoInterface\tacoInterface.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="324"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\Html\htmlxmlutilz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="htmlXmlUtilz"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <CursorPos X="6"/>
+        <UsageCount Value="320"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="C:\lazarus\lcl\translations.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Translations"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <UsageCount Value="316"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\ProgressStatus\progressinterface.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="218"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\Mq\MQAPI.pas"/>
+        <TopLine Value="705"/>
+        <CursorPos X="25" Y="724"/>
+        <UsageCount Value="178"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\Mq\mqInterface.pas"/>
+        <UsageCount Value="178"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\Mq\MQRfh2Api.pas"/>
+        <UsageCount Value="178"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2923"/>
+        <CursorPos X="60" Y="2953"/>
+        <UsageCount Value="97"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\Xml\Logz.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="4"/>
+        <CursorPos Y="18"/>
+        <UsageCount Value="19"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\Xml\Wsdlz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3957"/>
+        <CursorPos Y="3975"/>
+        <UsageCount Value="71"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdSocketHandle.pas"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="375"/>
+        <CursorPos Y="385"/>
+        <UsageCount Value="19"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\Xml\exceptionutils.pas"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="9"/>
+        <CursorPos X="49" Y="25"/>
+        <UsageCount Value="19"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="..\Xpress\XpQuery.pas"/>
+        <WindowIndex Value="1"/>
+        <CursorPos X="31" Y="8"/>
+        <UsageCount Value="11"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="69"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\Xpress\Bind.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="86"/>
+        <CursorPos X="2" Y="97"/>
+        <UsageCount Value="4"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="..\Xml\ShowXmlUnit.pas"/>
+        <ComponentName Value="ShowXmlForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <CursorPos X="25" Y="16"/>
+        <UsageCount Value="1"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="5868"/>
+        <CursorPos X="3" Y="5871"/>
+        <UsageCount Value="1"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdNetworkCalculator.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="496"/>
+        <CursorPos X="44" Y="510"/>
+        <UsageCount Value="40"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdDNSCommon.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="695"/>
+        <CursorPos X="73" Y="710"/>
+        <UsageCount Value="40"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="..\Xml\IpmTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="5"/>
+        <CursorPos X="37" Y="21"/>
+        <UsageCount Value="40"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="..\StompInterface\StompInterface.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <CursorPos X="11" Y="22"/>
+        <UsageCount Value="40"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="..\StompInterface\Stomp\StompClient.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="415"/>
+        <CursorPos Y="427"/>
+        <UsageCount Value="40"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="..\Components\delphistompclient-master\StompClient.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1481"/>
+        <CursorPos X="75" Y="1394"/>
+        <UsageCount Value="40"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="231"/>
+        <CursorPos X="3" Y="236"/>
+        <UsageCount Value="40"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandler.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="1466"/>
+        <CursorPos X="3" Y="1473"/>
+        <UsageCount Value="1"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdTCPConnection.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="436"/>
+        <CursorPos X="14" Y="444"/>
+        <UsageCount Value="1"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandlerSocket.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="204"/>
+        <CursorPos X="3" Y="166"/>
+        <UsageCount Value="1"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1384"/>
+        <CursorPos X="3" Y="1397"/>
+        <UsageCount Value="4"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="..\Xpress\ParserClasses.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="357"/>
+        <CursorPos X="13" Y="359"/>
+        <UsageCount Value="4"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2028"/>
+        <CursorPos X="10" Y="2030"/>
+        <UsageCount Value="2"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\objpas.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="22"/>
+        <CursorPos X="8" Y="33"/>
+        <UsageCount Value="2"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\inc\systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="563"/>
+        <CursorPos X="3" Y="574"/>
+        <UsageCount Value="1"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="..\wsdlStub\wsdlServer.lpr"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="139"/>
+        <CursorPos Y="157"/>
+        <UsageCount Value="56"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="C:\lazarus\fpc\3.0.0\source\packages\fcl-base\src\custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="40"/>
+        <CursorPos X="17" Y="51"/>
+        <UsageCount Value="41"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="hcbproxymain.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="hcbProxyMain"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="147"/>
+        <CursorPos Y="166"/>
+        <UsageCount Value="55"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdCustomHTTPServer.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="485"/>
+        <CursorPos X="14" Y="495"/>
+        <UsageCount Value="1"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdAssignedNumbers.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="66"/>
+        <CursorPos X="3" Y="101"/>
+        <UsageCount Value="1"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="C:\lazarus\fpc\3.0.0\source\packages\regexpr\src\regexpr.pas"/>
+        <UnitName Value="RegExpr"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="782"/>
+        <CursorPos X="21" Y="782"/>
+        <UsageCount Value="37"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="379"/>
+        <CursorPos X="36" Y="383"/>
+        <UsageCount Value="23"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="221"/>
+        <CursorPos X="87" Y="237"/>
+        <UsageCount Value="22"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdURI.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="84"/>
+        <CursorPos X="17" Y="98"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="..\wsdlStub\Listenerz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="24"/>
+        <CursorPos Y="40"/>
+        <UsageCount Value="10"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="..\..\LazarusG\trunk\Lazarus\Xml\ShowXmlUnit.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="317"/>
+        <CursorPos X="20" Y="333"/>
+        <UsageCount Value="10"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="..\..\LazarusG\trunk\Lazarus\Xml\ShowXmlCoverageUnit.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1106"/>
+        <CursorPos X="18" Y="1126"/>
+        <UsageCount Value="10"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="..\..\LazarusG\trunk\Lazarus\wsdlStub\WsdlStubMainUnit.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="8261"/>
+        <CursorPos X="28" Y="8263"/>
+        <UsageCount Value="10"/>
+      </Unit48>
+    </Units>
+    <OtherDefines Count="3">
+      <Define0 Value="ConsoleApp"/>
+      <Define1 Value="UseCThreads"/>
+      <Define2 Value="NoGUI"/>
+    </OtherDefines>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="35" Column="30" TopLine="16"/>
+      </Position1>
+      <Position2>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="38" Column="45" TopLine="19"/>
+      </Position2>
+      <Position3>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="60" Column="31" TopLine="41"/>
+      </Position3>
+      <Position4>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="76" Column="13" TopLine="57"/>
+      </Position4>
+      <Position5>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="99" Column="31" TopLine="81"/>
+      </Position5>
+      <Position6>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="100" Column="50" TopLine="82"/>
+      </Position6>
+      <Position7>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="191" Column="52" TopLine="172"/>
+      </Position7>
+      <Position8>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="199" Column="30" TopLine="180"/>
+      </Position8>
+      <Position9>
+        <Filename Value="svrouter.lpr"/>
+      </Position9>
+      <Position10>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="30" TopLine="16"/>
+      </Position10>
+      <Position11>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="67" TopLine="59"/>
+      </Position11>
+      <Position12>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="146" TopLine="141"/>
+      </Position12>
+      <Position13>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="42" TopLine="20"/>
+      </Position13>
+      <Position14>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="124" Column="10" TopLine="114"/>
+      </Position14>
+      <Position15>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="66" TopLine="53"/>
+      </Position15>
+      <Position16>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="10" Column="5"/>
+      </Position16>
+      <Position17>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="73" TopLine="61"/>
+      </Position17>
+      <Position18>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="71" Column="32" TopLine="56"/>
+      </Position18>
+      <Position19>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="69" TopLine="57"/>
+      </Position19>
+      <Position20>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="68" Column="52" TopLine="57"/>
+      </Position20>
+      <Position21>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="71" Column="32" TopLine="61"/>
+      </Position21>
+      <Position22>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="81" TopLine="69"/>
+      </Position22>
+      <Position23>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="51" Column="72" TopLine="40"/>
+      </Position23>
+      <Position24>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="88" TopLine="67"/>
+      </Position24>
+      <Position25>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="90" TopLine="73"/>
+      </Position25>
+      <Position26>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="97" Column="63" TopLine="79"/>
+      </Position26>
+      <Position27>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="98" Column="69" TopLine="80"/>
+      </Position27>
+      <Position28>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="100" Column="39" TopLine="82"/>
+      </Position28>
+      <Position29>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="92" Column="12" TopLine="85"/>
+      </Position29>
+      <Position30>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="182" TopLine="163"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\Xml\Xsdz.pas"/>
+        <Line Value="2752"/>
+      </Item1>
+    </BreakPoints>
+  </Debugging>
+</CONFIG>
