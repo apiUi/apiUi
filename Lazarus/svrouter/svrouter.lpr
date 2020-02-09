@@ -12,6 +12,7 @@ uses
   , math
   , xmlio
   , Xmlz
+  , xmlxsdparser
   , exceptionUtils
   , LazFileUtils
   , IdHTTPServer
@@ -46,7 +47,7 @@ type
       AHeaders: TIdHeaderList;var VPostStream: TStream);
     procedure OnGetSslPassword (var aPassword: String);
   public
-    doLog: Boolean;
+    doLog, isSslServer: Boolean;
     mainPortnumber, sslCerticateFileName, sslKeyFileName: String;
     httpMainServer: TIdHTTPServer;
     property SslPassword: String read fSslPassword write SetSslPassword;
@@ -60,41 +61,45 @@ type
 procedure TMyApplication.DoRun;
 var
   ErrorMsg: String;
-  sslXml: TXml;
+  serverHttpXml, sslXml: TXml;
 begin
-  with TXml.Create do
   try
+    with TXml.Create do
     try
-      LoadFromFile(_progName + 'ini.xml', nil);
-    except
-      raise Exception.Create ('Could not read ' + _progName + 'ini.xml');
+      try
+        LoadFromFile(_progName + 'ini.xml', nil);
+      except
+        raise Exception.Create ('Could not read ' + _progName + 'ini.xml');
+      end;
+      if Name <> 'svrouterini' then
+        raise Exception.Create (_progName + 'ini.xml does not contain valid xml');
+      doLog := Items.XmlBooleanByTagDef['doLog', False];
+      serverHttpXml := ItemByTag['serverHttp'];
+      if not Assigned (serverHttpXml) then
+        raise Exception.Create (_progName + 'ini.xml: serverHttpXml not found');
+      with serverHttpXml do
+      begin
+        mainPortnumber := Items.XmlValueByTag['port'];
+        if mainPortnumber = '' then
+          raise Exception.Create (_progName + 'ini.xml: serverHttpXml.port not found');
+        sslXml := ItemByTag['ssl'];
+        if not Assigned (sslXml) then
+          raise Exception.Create (_progName + 'ini.xml: serverHttpXml.ssl not found');
+        with sslXml do
+        begin
+          isSslServer := Items.XmlBooleanByTagDef['useSsl', True];
+          sslCerticateFileName := Items.XmlValueByTag['certificateFile'];
+          sslKeyFileName := Items.XmlValueByTag['keyFile'];
+          SslPassword := Items.XmlValueByTag['password'];
+        end;
+      end;
+    finally
+      Free;
     end;
-    if Name <> 'svrouterini' then
-      raise Exception.Create (_progName + 'ini.xml does not contain valid xml');
-    doLog := Items.XmlBooleanByTagDef['doLog', False];
-    mainPortnumber := Items.XmlValueByTag['mainPort'];
-    if mainPortnumber = '' then
-      raise Exception.Create (_progName + 'ini.xml does not contain element "mainPort"');
-    sslXml := ItemByTag['ssl'];
-    if not Assigned (sslXml) then
-      raise Exception.Create (_progName + 'ini.xml does not contain element "ssl"');
-    with sslXml do
-    begin
-      sslCerticateFileName := Items.XmlValueByTag['certificateFile'];
-      sslKeyFileName := Items.XmlValueByTag['keyFile'];
-      SslPassword := Items.XmlValueByTag['password'];
-    end;
-    if mainPortnumber = '' then
-      raise Exception.Create (_progName + 'ini.xml does not contain element "svrouterini"');
-  finally
-    Free;
-  end;
-
-  try
     httpMainServer.DefaultPort := StrToInt(mainPortnumber);
     httpMainServer.OnCommandGet := httpServerCommandGet;
     httpMainServer.OnCommandOther := httpServerCommandGet;
-    if mainPortnumber = '443' then
+    if isSslServer then
     begin
       httpMainServer.IOHandler := TIdServerIOHandlerSSLOpenSSL.Create(nil);
       with (httpMainServer.IOHandler as TIdServerIOHandlerSSLOpenSSL) do
@@ -109,7 +114,7 @@ begin
       end;
     end;
     httpMainServer.Active := True;
-    if doLog then WriteLn('Listening to port: ' + mainPortnumber);
+    WriteLn('Listening to port: ' + mainPortnumber);
     while not Terminated do
     begin
       CheckSynchronize;
@@ -141,7 +146,7 @@ end;
 
 procedure TMyApplication .Notify (const aString : String );
 begin
-  WriteLn ({xsdFormatDateTime(now, @TIMEZONE_UTC),} ' notify: ', aString);
+  WriteLn (xsdFormatDateTime(now, @TIMEZONE_UTC), ' notify: ', aString);
 end;
 
 procedure TMyApplication.SetSslPassword(AValue: String);
