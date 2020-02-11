@@ -331,11 +331,13 @@ type
                                       ; var aRequestHeader: String
                                       ; var aReplyHeader: String
                                       ): String;
+    {$ifdef windows}
     function SendOperationKafkaMessage ( aOperation: TWsdlOperation
                                        ; aMessage: String
                                        ; var aRequestHeader: String
                                        ; var aReplyHeader: String
                                        ): String;
+    {$endif}
     procedure CreateLogReplyPostProcess (aLog: TLog; aOperation: TWsdlOperation);
     procedure SendOperationInThread (aOperation: TWsdlOperation);
     procedure SendOperation (aOperation: TWsdlOperation);
@@ -540,7 +542,9 @@ uses StrUtils
    , exceptionUtils
    , SchemaLocationz
    , smtpInterface
+   {$ifdef windows}
    , kafkaclient
+   {$endif}
    , RegExpr
    , jwbBase64
    , base64
@@ -3848,7 +3852,11 @@ begin
     ttMq: result := SendOperationMqMessage (aOperation, aMessage, reqheader);
     ttStomp: result := SendOperationStompMessage (aOperation, aMessage, reqheader, rpyheader);
     ttTaco: result := SendOperationTacoMessage(aOperation, aMessage, reqheader, rpyheader);
+    {$ifdef windows}
     ttKafka: result := SendOperationKafkaMessage(aOperation, aMessage, reqheader, rpyheader);
+    {$else}
+    ttKafka: result := _progName +': Producing om Kafka only implemented on Windows';
+    {$endif}
     ttNone: result := SendNoneMessage(aOperation, aMessage);
   end;
 end;
@@ -4334,7 +4342,9 @@ begin
           ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
           ttTaco: xLog.ReplyBody := SendOperationTacoMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
+    {$ifdef windows}
           ttKafka: xLog.ReplyBody := SendOperationKafkaMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
+    {$endif}
           ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody);
         end;
       finally
@@ -4494,6 +4504,7 @@ begin
   result := fTacoInterface.RequestReply(aMessage, 0, aOperation.TacoConfigXml);
 end;
 
+    {$ifdef windows}
 function TWsdlProject.SendOperationKafkaMessage(aOperation: TWsdlOperation;
   aMessage: String;var aRequestHeader: String;var aReplyHeader: String): String;
 var
@@ -4532,7 +4543,7 @@ begin
     FreeAndNil (sl);
   end;
 end;
-
+{$endif}
 procedure TWsdlProject.SetAbortPressed(const Value: Boolean);
 begin
   fAbortPressed := Value;

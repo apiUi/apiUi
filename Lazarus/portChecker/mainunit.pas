@@ -112,7 +112,8 @@ procedure TForm1.testButtonClick(Sender: TObject);
   procedure IsPortActive(AHost : string; APort : Integer);
   begin
     ResultEdit.Text :='...';
-    Application.ProcessMessages;
+//  Application.ProcessMessages;
+    ResultEdit.Repaint;
     with TIdTCPClient.Create(nil) do
     try
       try
