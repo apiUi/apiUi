@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="3">
+      <Unit0>
+        <Filename Value="decr.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="decrmainunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="40"/>
+        <CursorPos X="64" Y="51"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="51"/>
+        <CursorPos X="5" Y="61"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit2>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="203" Column="33" TopLine="200"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\Xml\xmlio.pas"/>
+      </Position2>
+      <Position3>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="46" Column="3" TopLine="33"/>
+      </Position3>
+      <Position4>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="26" TopLine="9"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="189" Column="23" TopLine="179"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\Xml\xmlio.pas"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="810" Column="23" TopLine="805"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Xml\xmlio.pas"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="29" Column="53" TopLine="10"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="791" Column="54" TopLine="772"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="810" Column="23" TopLine="791"/>
+      </Position11>
+      <Position12>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="27" Column="18" TopLine="17"/>
+      </Position12>
+      <Position13>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="8" Column="76"/>
+      </Position13>
+      <Position14>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="25" TopLine="17"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="203" Column="52" TopLine="193"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\Xml\xmlio.pas"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="203" Column="52" TopLine="184"/>
+      </Position17>
+      <Position18>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="69" TopLine="47"/>
+      </Position18>
+      <Position19>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="39" TopLine="25"/>
+      </Position19>
+      <Position20>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="42" Column="49" TopLine="31"/>
+      </Position20>
+      <Position21>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="26" Column="39" TopLine="16"/>
+      </Position21>
+      <Position22>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="56" Column="49" TopLine="43"/>
+      </Position22>
+      <Position23>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="42" Column="27" TopLine="31"/>
+      </Position23>
+      <Position24>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="59" Column="70" TopLine="51"/>
+      </Position24>
+      <Position25>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="24" Column="27" TopLine="13"/>
+      </Position25>
+      <Position26>
+        <Filename Value="decrmainunit.pas"/>
+      </Position26>
+      <Position27>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="24" Column="27" TopLine="5"/>
+      </Position27>
+      <Position28>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="45" Column="50" TopLine="26"/>
+      </Position28>
+      <Position29>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="67" TopLine="51"/>
+      </Position29>
+      <Position30>
+        <Filename Value="decrmainunit.pas"/>
+        <Caret Line="51" Column="41" TopLine="45"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
