@@ -5,7 +5,9 @@ unit xmlio;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils
+  , IdHTTP, IdCustomHTTPServer
+  ;
 
 
 function urlDecode(const S: String): String;
@@ -62,7 +64,6 @@ uses StrUtils
    , LCLIntf, LCLType, LMessages
    , LazFileUtils
    , versiontypes, versionresource
-   , idHTTP, IdCustomHTTPServer
    , IdSSLOpenSSL
    , idStack
    , LConvEncoding

@@ -1,12 +1,13 @@
 <svrouterini>
   <doLog>true</doLog>
   <serverHttp>
-	<port>4430</port>
+	<port>443</port>
+	<listenQueue>150</listenQueue>
 	<ssl>
 		<useSsl>true</useSsl>
 		<certificateFile>svrouterssl.pem</certificateFile>
 		<keyFile>svrouterssl.pem</keyFile>
-		<password>Aw0yERoFUART</password>
+		<encryptedPassword>Aw0yERoFUART</encryptedPassword>
 	</ssl>
   </serverHttp>
 </svrouterini>

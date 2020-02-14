@@ -9939,7 +9939,6 @@ initialization
   _WsdlSaveSnapshots := SaveSnapshots;
   IntrospectIniXml;
 
-
 finalization
   FreeAndNil (webserviceWsdl);
   FreeAndNil (webserviceXsdDescr);

@@ -1,0 +1,377 @@
+swagger: '2.0'
+info:
+  description: ''
+  version: ''
+  title: ''
+host: __hostname__
+schemes:
+  - http
+  - https
+basePath: /apiUi/api
+paths:
+  /logs/snapshot:
+    post:
+      summary: summary
+      description: ''
+      operationId: takeSnapshot
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/createSnapshotReq'
+      responses:
+        '200':
+          decsription: Success response
+  /logs:
+    delete:
+      summary: removes list of logitems from Ui
+      description: ''
+      operationId: clearLogs
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      responses:
+        '200':
+          decsription: Success response
+  /snapshot/checkregression:
+    post:
+      summary: summary
+      description: ''
+      operationId: checkSnapshotRegression
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/checkRegressionReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/checkRegresssionRpy'
+  /snapshots:
+    delete:
+      summary: removes entries from the list of snapshots
+      description:
+        removes entries from the list of snapshots.
+        The snapshots are not removed from your filesystem.
+      operationId: clearSnapshots
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      responses:
+        '200':
+          decsription: Success response
+  /executeScript:
+    post:
+      summary: summary
+      description: ''
+      operationId: executeScript
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/executeScriptReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/executeScriptRpy'
+  /regressionReport:
+    post:
+      summary: summary
+      description: ''
+      operationId: regressionReport
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/regressionReportReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/regressionReportRpy'
+  /resetEnvVar:
+    post:
+      summary: summary
+      description: ''
+      operationId: resetEnvVar
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/resetEnvVarReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/resetEnvVarRpy'
+  /resetEnvVars:
+    post:
+      summary: summary
+      description: ''
+      operationId: resetEnvVars
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/resetEnvVarsReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/resetEnvVarsRpy'
+  /setEnvVar:
+    post:
+      summary: summary
+      description: ''
+      operationId: setEnvVar
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/setEnvVarReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/setEnvVarRpy'
+  /shutDown:
+    post:
+      summary: summary
+      description: ''
+      operationId: shutDown
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/shutDownReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/shutDownRpy'
+  /unexpectedValuesReport:
+    post:
+      summary: summary
+      description: ''
+      operationId: unexpectedValuesReport
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/unexpectedValuesReportReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/unexpectedValuesReportRpy'
+definitions:
+  checkRegressionReq:
+    type: object
+    properties:
+      name:
+        type: string
+  checkRegresssionRpy:
+    type: object
+    properties:
+      result:
+        type: string
+  createSnapshotReq:
+    type: object
+    properties:
+      name:
+        type: string
+  executeScriptReq:
+    type: object
+    properties:
+      name:
+        type: string
+  executeScriptRpy:
+    type: string
+  regressionReportReq:
+    type: object
+    properties:
+      referenceFileName:
+        type: string
+  regressionReportRpy:
+    type: object
+    properties:
+      Header:
+        type: object
+        properties:
+          differencesFound:
+            type: boolean
+          referenceLogFileName:
+            type: string
+          Created:
+            type: dateTime
+      Body:
+        type: object
+        properties:
+          Detail:
+            type: array
+            items:
+              type: object
+              properties:
+                messageTimestamp:
+                  type: dateTime
+                Service:
+                  type: string
+                Operation:
+                  type: string
+                Message:
+                  type: string
+                Correlation:
+                  type: string
+                Type:
+                  type: string
+                Items:
+                  type: object
+                  properties:
+                    Item:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          Tag:
+                            type: string
+                          Type:
+                            type: string
+                          currentValue:
+                            type: string
+                          referenceValue:
+                            type: string
+  resetEnvVarReq:
+    type: object
+    properties:
+      name:
+        type: string
+  resetEnvVarRpy:
+    type: string
+  resetEnvVarsReq:
+    type: object
+    properties:
+      regularExpression:
+        type: string
+  resetEnvVarsRpy:
+    type: string
+  setEnvVarReq:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+  setEnvVarRpy:
+    type: string
+  shutDownReq:
+    type: string
+  shutDownRpy:
+    type: string
+  unexpectedValuesReportReq:
+    type: string
+  unexpectedValuesReportRpy:
+    type: object
+    properties:
+      Header:
+        type: object
+        properties:
+          unexpectedValuesFound:
+            type: boolean
+          Created:
+            type: dateTime
+      Body:
+        type: object
+        properties:
+          Detail:
+            type: array
+            items:
+              type: object
+              properties:
+                messageTimestamp:
+                  type: dateTime
+                Service:
+                  type: string
+                Operation:
+                  type: string
+                Message:
+                  type: string
+                Correlation:
+                  type: string
+                Type:
+                  type: string
+                Items:
+                  type: object
+                  properties:
+                    Item:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          Tag:
+                            type: string
+                          Type:
+                            type: string
+                          currentValue:
+                            type: string
+                          referenceValue:
+                            type: string

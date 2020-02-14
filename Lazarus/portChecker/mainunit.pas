@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, IdTCPClient, AboutUnit, Forms;
+  StdCtrls, IdTCPClient, IdHTTP, AboutUnit, Forms;
 
 type
 
@@ -114,10 +114,12 @@ procedure TForm1.testButtonClick(Sender: TObject);
     ResultEdit.Text :='...';
 //  Application.ProcessMessages;
     ResultEdit.Repaint;
-    with TIdTCPClient.Create(nil) do
+    with TIdHTTP.Create(nil) do
     try
       try
+        {$ifdef windows}
         ConnectTimeout := 3000;
+        {$endif}
         Connect(AHost, APort);
         ResultEdit.Text := 'Ok';
       except

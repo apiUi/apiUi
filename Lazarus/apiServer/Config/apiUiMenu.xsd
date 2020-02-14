@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://apiUiMenu.xsd">
+	<xs:element name="Menu">
+		<xs:annotation>
+			<xs:documentation>
+			Main Menu documentation.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="File">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="New_Project">
+								<xs:annotation>
+									<xs:documentation>
+									Start a new project.
+									You are prompted to save current project in case there are unsaved changes.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Open_Project">
+								<xs:annotation>
+									<xs:documentation>
+									Open an existing project.
+									You are prompted to save current project in case there are unsaved changes.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Reopen_Project">
+								<xs:annotation>
+									<xs:documentation>
+									Open a recently used project.
+									You are prompted to save current project in case there are unsaved changes.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Save_Project">
+								<xs:annotation>
+									<xs:documentation>
+									Save current project.
+									When working in a new project, you are prompted for a project filename, otherwise, apiUi will use the filename of most recently read projectfile.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Save_Project_As">
+								<xs:annotation>
+									<xs:documentation>
+									Save current project under a new name.
+									You are prompted for a project filename, in case you use an existing filename, you will receive a warning</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Exit">
+								<xs:annotation>
+									<xs:documentation>
+									Quit program
+									You are prompted to save current project in case there are unsaved changes.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Project">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Configure_Listeners">
+								<xs:annotation>
+									<xs:documentation>
+									Specify listeners here. 
+									Listeners are able to receive messages.
+									Beware of firewall settings.
+									For an overview configuration options on Listeners visit: doc://apiUi_Listeners_hlp.htm
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Options">
+								<xs:annotation>
+									<xs:documentation>Project options;
+For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Maintain_List_of_Wsdl_Files">
+								<xs:annotation>
+									<xs:documentation>Maintain list of Wsdl files for your project.
+You can open as many Wsdl files as needed.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Buttons">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Close">
+														<xs:annotation>
+															<xs:documentation>Closes screen and accepts changes</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Add">
+														<xs:annotation>
+															<xs:documentation>Adds an existing Wsdl or SDF file.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Edit_SDF">
+														<xs:annotation>
+															<xs:documentation>Only when an SDF file is selected.
+Describe services that are not described with a Wsdl.
+Visit doc://apiUi_ServiceDefinitions_hlp.htm for more information.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="New_SDF">
+														<xs:annotation>
+															<xs:documentation>Use this function to create a new SDF. Describe services that are not described with a Wsdl.
+Visit doc://apiUi_ServiceDefinitions_hlp.htm for more information.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Extra_XSDs">
+														<xs:annotation>
+															<xs:documentation>Maintain a list of files that contain extra XSD's. Usefull for testing services that publish incomplete WSDLS, e.g. AnyTypes.
+Extra XSD's enable you to specify which element to use on an AnyType element. Right-click on such an element in the main tree view.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Properties">
+														<xs:annotation>
+															<xs:documentation>Properties that override Project Options.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Delete">
+														<xs:annotation>
+															<xs:documentation>Delete selected Wsdl or SDF.
+You are prompted to confirm deletion.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Xsd_Operations">
+								<xs:annotation>
+									<xs:documentation>Specify services that use an XML schema but do not work with SOAP envelopes.
+Visit: doc://apiUi_XsdOperations_hlp.htm for details.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Cobol_operations">
+								<xs:annotation>
+									<xs:documentation>Specify services that use COBOL records.
+Visit: doc://apiUi_CobolOperations_hlp.htm for details.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="SwiftMT_operations">
+								<xs:annotation>
+									<xs:documentation>Specify services for SwiftMT messages.
+Visit: doc://apiUi_SwiftMTOperations_hlp.htm for details.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Freeformat_operations">
+								<xs:annotation>
+									<xs:documentation>Specify Freeformat services.
+Visit doc://apiUi_FreeFormatOperations_hlp.htm for details.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Clean">
+								<xs:annotation>
+									<xs:documentation>Cleans your project from unused data.
+Every message for every operation is searched for data that is unchecked and therefor cannot be part of a message at runtime.
+Use this command only if you are satisfied with current data and do not need unchecked data for any other testing.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Hide_all_operations">
+								<xs:annotation>
+									<xs:documentation>Hides all operations from display.
+Usefull if the service you are working on publishes a lot of operations that are not under test. 
+Combined with the other Hide/Unhide functions you can limit the number of operations shown.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Hide_operation">
+								<xs:annotation>
+									<xs:documentation>Hides a specific operation from display.
+Usefull if the service you are working on publishes a lot of operations that are not under test. 
+Combined with the other Hide/Unhide functions you can limit the number of operations shown.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Unhide_all_operations">
+								<xs:annotation>
+									<xs:documentation>Unhides all operations from display.
+Usefull if the service you are working on publishes a lot of operations that are not under test. 
+Combined with the other Hide/Unhide functions you can limit the number of operations shown.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Unhide_operation">
+								<xs:annotation>
+									<xs:documentation>Unhides a specific operation from display.
+Usefull if the service you are working on publishes a lot of operations that are not under test. 
+Combined with the other Hide/Unhide functions you can limit the number of operations shown.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Service">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Options">
+								<xs:annotation>
+									<xs:documentation>Service options;
+For an overview of all options visit doc://apiUi_serviceOptions_hlp.htm </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Operation">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="To_address"/>
+							<xs:element name="WS_Addressing"/>
+							<xs:element name="Apply_settings_to"/>
+							<xs:element name="Options">
+								<xs:annotation>
+									<xs:documentation>Service options;
+For an overview of all options visit doc://apiUi_operationOptions_hlp.htm </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Edit_Before_script"/>
+							<xs:element name="Edit_After_script"/>
+							<xs:element name="Edit_Script"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Messages">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Select_correlation_elements"/>
+							<xs:element name="Select_column_elements"/>
+							<xs:element name="Move_up"/>
+							<xs:element name="Move_down"/>
+							<xs:element name="Add"/>
+							<xs:element name="Read_Messages_from_Diskfiles"/>
+							<xs:element name="Delete"/>
+							<xs:element name="Copy_grid"/>
+							<xs:element name="Paste_grid"/>
+							<xs:element name="Validate_grid_data_against_schema"/>
+							<xs:element name="Send_request"/>
+							<xs:element name="Send_all_requests"/>
+							<xs:element name="Remove_all_messages_from_all_operations"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Log">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Save_log_items_to_file">
+								<xs:annotation>
+									<xs:documentation>
+									Save all log items to a file.
+									Saved log files can be read from disk again for analysing or it can be used for comparison after a next run (regression testing).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Displayed_columns">
+								<xs:annotation>
+									<xs:documentation>
+									Maintain the number of extra displayed log columns and their headers.
+									The source element that is shown in such a column depends on the operation that is shown in a log-entry.
+									Change the source element by clicking in the corresponding cell.
+									See also doc://apiUi_DisplayedColumns_hlp.htm
+									or doc://apiUi_Listeners_hlpdtl.htm#Listeners_HttpProxy_10
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Compare_with_file">
+								<xs:annotation>
+									<xs:documentation>
+									Compare current log with an earlier saved log file.
+									Both current and the saved log file are filtered, see help on Filter_Log.
+									After deployment of new services, rerun your tests and use this function to obtain a detailed overview of changes (regression testing)
+									See also the CompareLogsOrdered option of the Project_Options.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Coverage_report">
+								<xs:annotation>
+									<xs:documentation>
+									Create a Coverage Report.
+									This report tells which parts of your messages have been tested and which parts not. 
+									Helps to determine whether or not additional testing is needed.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Read_from_file">
+								<xs:annotation>
+									<xs:documentation>
+									Read a previously saved logfile.
+									After reading a logfile, you are able to analyse an earlier testrun in the same way as you are with a current testrun. 
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Browse_MQ">
+								<xs:annotation>
+									<xs:documentation>
+									Browse an IBM(C) Websphere MQ message queue.
+									Prerequisite is that you installed the appropriate software.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Discover_service_calls_from_log">
+								<xs:annotation>
+									<xs:documentation>
+									Discover operations from a log.
+									This function scans a logfile and tries to discover service calls stipulated that the log events are written as an XML file.
+									Discovered service can be promoted to testware.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Clear_log_items">
+								<xs:annotation>
+									<xs:documentation>
+									Clears the log.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Filter_log">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Show_request_as_XML">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Show_reply_as_XML">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Show_request_in_a_grid">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Show_reply_in_a_grid">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="View">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Operations">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Schema_properties">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Wsdl_information">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Design_panel_at_Top">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Scripts">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="New">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Edit">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Remove">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Environment">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Re-enable_all_messages">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Reset">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Edit">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Add_current_environment">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Remove_environment">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Extra">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Options">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Help">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Help">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="License">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="About">
+								<xs:annotation>
+									<xs:documentation>
+									HIER
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

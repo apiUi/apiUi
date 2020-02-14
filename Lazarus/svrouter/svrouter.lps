@@ -4,12 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="51">
+    <Units Count="55">
       <Unit0>
         <Filename Value="svrouter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="17" Y="15"/>
+        <TopLine Value="2"/>
+        <CursorPos X="59" Y="15"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -106,7 +106,6 @@
         <TopLine Value="375"/>
         <CursorPos Y="385"/>
         <UsageCount Value="19"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\Xml\exceptionutils.pas"/>
@@ -123,8 +122,10 @@
       </Unit16>
       <Unit17>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="69"/>
+        <EditorIndex Value="2"/>
+        <CursorPos Y="9"/>
+        <UsageCount Value="70"/>
+        <Loaded Value="True"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\Xpress\Bind.pas"/>
@@ -158,7 +159,6 @@
         <TopLine Value="496"/>
         <CursorPos X="44" Y="510"/>
         <UsageCount Value="40"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdDNSCommon.pas"/>
@@ -167,7 +167,6 @@
         <TopLine Value="695"/>
         <CursorPos X="73" Y="710"/>
         <UsageCount Value="40"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit22>
       <Unit23>
         <Filename Value="..\Xml\IpmTypes.pas"/>
@@ -207,7 +206,6 @@
         <TopLine Value="231"/>
         <CursorPos X="3" Y="236"/>
         <UsageCount Value="40"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandler.pas"/>
@@ -216,7 +214,6 @@
         <TopLine Value="1466"/>
         <CursorPos X="3" Y="1473"/>
         <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit28>
       <Unit29>
         <Filename Value="..\Components\Indy10\Lib\Core\IdTCPConnection.pas"/>
@@ -225,7 +222,6 @@
         <TopLine Value="436"/>
         <CursorPos X="14" Y="444"/>
         <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandlerSocket.pas"/>
@@ -234,7 +230,6 @@
         <TopLine Value="204"/>
         <CursorPos X="3" Y="166"/>
         <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\Xml\xmlUtilz.pas"/>
@@ -303,7 +298,6 @@
         <TopLine Value="485"/>
         <CursorPos X="14" Y="495"/>
         <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit39>
       <Unit40>
         <Filename Value="..\Components\Indy10\Lib\Core\IdAssignedNumbers.pas"/>
@@ -311,7 +305,6 @@
         <TopLine Value="66"/>
         <CursorPos X="3" Y="101"/>
         <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit40>
       <Unit41>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\packages\regexpr\src\regexpr.pas"/>
@@ -331,10 +324,9 @@
       <Unit43>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSL.pas"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="221"/>
+        <TopLine Value="226"/>
         <CursorPos X="87" Y="237"/>
         <UsageCount Value="22"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit43>
       <Unit44>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdURI.pas"/>
@@ -342,7 +334,6 @@
         <TopLine Value="84"/>
         <CursorPos X="17" Y="98"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit44>
       <Unit45>
         <Filename Value="..\wsdlStub\Listenerz.pas"/>
@@ -374,19 +365,52 @@
       </Unit48>
       <Unit49>
         <Filename Value="..\Components\Indy10\Lib\Core\IdExceptionCore.pas"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="80"/>
-        <CursorPos X="16" Y="93"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <CursorPos X="50" Y="93"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
       </Unit49>
       <Unit50>
         <Filename Value="..\Xml\xmlxsdparser.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="7"/>
         <CursorPos X="10" Y="446"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit50>
+      <Unit51>
+        <Filename Value="svrouterini.xml"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="6"/>
+        <CursorPos X="29" Y="7"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdGlobalProtocols.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="578"/>
+        <CursorPos X="14" Y="591"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdIPAddress.pas"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="91"/>
+        <CursorPos X="3" Y="103"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="61"/>
+        <CursorPos X="3" Y="73"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit54>
     </Units>
     <OtherDefines Count="3">
       <Define0 Value="ConsoleApp"/>
@@ -396,126 +420,122 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="199" Column="30" TopLine="180"/>
+        <Caret Line="110" Column="28" TopLine="89"/>
       </Position1>
       <Position2>
         <Filename Value="svrouter.lpr"/>
+        <Caret Line="267" TopLine="249"/>
       </Position2>
       <Position3>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="30" TopLine="16"/>
+        <Caret Line="252" Column="25" TopLine="243"/>
       </Position3>
       <Position4>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="67" TopLine="59"/>
       </Position4>
       <Position5>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="146" TopLine="141"/>
+        <Caret Line="230" TopLine="212"/>
       </Position5>
       <Position6>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="42" TopLine="20"/>
+        <Caret Line="238" Column="24" TopLine="220"/>
       </Position6>
       <Position7>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="124" Column="10" TopLine="114"/>
+        <Caret Line="159" Column="51" TopLine="146"/>
       </Position7>
       <Position8>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="66" TopLine="53"/>
+        <Caret Line="295" Column="13" TopLine="277"/>
       </Position8>
       <Position9>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="10" Column="5"/>
+        <Caret Line="53" Column="9" TopLine="41"/>
       </Position9>
       <Position10>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="73" TopLine="61"/>
       </Position10>
       <Position11>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="71" Column="32" TopLine="56"/>
+        <Caret Line="67" TopLine="56"/>
       </Position11>
       <Position12>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="69" TopLine="57"/>
+        <Caret Line="102" TopLine="91"/>
       </Position12>
       <Position13>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="68" Column="52" TopLine="57"/>
+        <Caret Line="263" TopLine="222"/>
       </Position13>
       <Position14>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="71" Column="32" TopLine="61"/>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdExceptionCore.pas"/>
+        <Caret Line="93" Column="16" TopLine="80"/>
       </Position14>
       <Position15>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="81" TopLine="69"/>
+        <Caret Line="155" Column="8" TopLine="145"/>
       </Position15>
       <Position16>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="51" Column="72" TopLine="40"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
       </Position16>
       <Position17>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="88" TopLine="67"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="65" Column="12" TopLine="52"/>
       </Position17>
       <Position18>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="90" TopLine="73"/>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdGlobalProtocols.pas"/>
       </Position18>
       <Position19>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="97" Column="63" TopLine="79"/>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdIPAddress.pas"/>
       </Position19>
       <Position20>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="98" Column="69" TopLine="80"/>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdIPAddress.pas"/>
+        <Caret Line="103" Column="3" TopLine="90"/>
       </Position20>
       <Position21>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="100" Column="39" TopLine="82"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="65" TopLine="53"/>
       </Position21>
       <Position22>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="92" Column="12" TopLine="85"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="10"/>
       </Position22>
       <Position23>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="182" TopLine="163"/>
+        <Caret Line="47" Column="7" TopLine="37"/>
       </Position23>
       <Position24>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="112" TopLine="92"/>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
       </Position24>
       <Position25>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="74" TopLine="73"/>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
+        <Caret Line="73" Column="64" TopLine="60"/>
       </Position25>
       <Position26>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="148" Column="30" TopLine="164"/>
+        <Caret Line="23" Column="19" TopLine="11"/>
       </Position26>
       <Position27>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="77" Column="16" TopLine="67"/>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
+        <Caret Line="73" Column="3" TopLine="61"/>
       </Position27>
       <Position28>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="89" Column="65" TopLine="78"/>
+        <Caret Line="24" Column="5" TopLine="12"/>
       </Position28>
       <Position29>
-        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="11" Column="5"/>
       </Position29>
       <Position30>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="148" Column="29" TopLine="137"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="9" Column="2"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="3">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -523,6 +543,20 @@
         <Source Value="..\Xml\Xsdz.pas"/>
         <Line Value="2752"/>
       </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="svrouter.lpr"/>
+        <Line Value="108"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="svrouter.lpr"/>
+        <Line Value="69"/>
+      </Item3>
     </BreakPoints>
   </Debugging>
 </CONFIG>

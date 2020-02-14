@@ -49,7 +49,7 @@ object Form1: TForm1
     TabOrder = 0
     object HostEdit: TLabeledEdit
       Left = 17
-      Height = 28
+      Height = 23
       Top = 23
       Width = 313
       Anchors = [akTop, akLeft, akRight]
@@ -58,8 +58,8 @@ object Form1: TForm1
       EditLabel.AnchorSideRight.Side = asrBottom
       EditLabel.AnchorSideBottom.Control = HostEdit
       EditLabel.Left = 17
-      EditLabel.Height = 20
-      EditLabel.Top = 0
+      EditLabel.Height = 13
+      EditLabel.Top = 7
       EditLabel.Width = 313
       EditLabel.Caption = 'Host'
       EditLabel.ParentColor = False
@@ -69,18 +69,18 @@ object Form1: TForm1
     end
     object PortEdit: TLabeledEdit
       Left = 17
-      Height = 28
-      Top = 72
-      Width = 313
+      Height = 23
+      Top = 77
+      Width = 113
       Anchors = [akTop, akLeft, akRight]
       EditLabel.AnchorSideLeft.Control = PortEdit
       EditLabel.AnchorSideRight.Control = PortEdit
       EditLabel.AnchorSideRight.Side = asrBottom
       EditLabel.AnchorSideBottom.Control = PortEdit
       EditLabel.Left = 17
-      EditLabel.Height = 20
-      EditLabel.Top = 49
-      EditLabel.Width = 313
+      EditLabel.Height = 13
+      EditLabel.Top = 61
+      EditLabel.Width = 113
       EditLabel.Caption = 'Port'
       EditLabel.ParentColor = False
       TabOrder = 1
@@ -88,9 +88,9 @@ object Form1: TForm1
       OnChange = EditChange
     end
     object testButton: TButton
-      Left = 17
-      Height = 25
-      Top = 109
+      Left = 15
+      Height = 28
+      Top = 104
       Width = 115
       Caption = '&Test connection'
       OnClick = testButtonClick
@@ -98,8 +98,8 @@ object Form1: TForm1
     end
     object ResultEdit: TLabeledEdit
       Left = 17
-      Height = 28
-      Top = 166
+      Height = 23
+      Top = 164
       Width = 313
       Anchors = [akTop, akLeft, akRight]
       EditLabel.AnchorSideLeft.Control = ResultEdit
@@ -107,8 +107,8 @@ object Form1: TForm1
       EditLabel.AnchorSideRight.Side = asrBottom
       EditLabel.AnchorSideBottom.Control = ResultEdit
       EditLabel.Left = 17
-      EditLabel.Height = 20
-      EditLabel.Top = 143
+      EditLabel.Height = 13
+      EditLabel.Top = 148
       EditLabel.Width = 313
       EditLabel.Caption = 'Result'
       EditLabel.ParentColor = False

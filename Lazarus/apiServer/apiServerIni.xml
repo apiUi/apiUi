@@ -1,0 +1,14 @@
+<Ini>
+  <indexWsdlsHtml>Config\wsdlIndex.html</indexWsdlsHtml>
+  <indexHtml>Config\index.html</indexHtml>
+  <faviconIco>Config\apiUi.ico</faviconIco>
+  <cssStylesheet>Config\apiUi.css</cssStylesheet>
+  <WebServiceWsdl>Config\apiUiWebService.wsdl</WebServiceWsdl>
+  <WebServiceXsd>Config\apiUiWebService.xsd</WebServiceXsd>
+  <swaggerYaml>Config\apiUiSwagger.yaml</swaggerYaml>
+  <Xsd>Config\apiUi.xsd</Xsd>
+  <wsaXsd>Config\wsa.xsd</wsaXsd>
+  <swiftMTXsd>Config\SwiftMT.xsd</swiftMTXsd>
+  <mqPutHeaderEditAllowed>Config\mqPutHeaderEditAllowed.xml</mqPutHeaderEditAllowed>
+  <stompPutHeaderEditAllowed>Config\stompPutHeaderEditAllowed.xml</stompPutHeaderEditAllowed>
+</Ini>

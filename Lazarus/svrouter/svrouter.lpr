@@ -10,10 +10,6 @@ uses
   Classes, SysUtils, CustApp
   , Interfaces
   , math
-  , xmlio
-  , Xmlz
-  , xmlxsdparser
-  , exceptionUtils
   , LazFileUtils
   , IdHTTPServer
   , IdCustomHTTPServer
@@ -23,8 +19,14 @@ uses
   , IdURI
   , IdGlobal
   , IdSSLOpenSSL
+  , IdException
+  , IdSocketHandle
   , GZIPUtils
   , SyncObjs
+  , xmlio
+  , Xmlz
+  , xmlxsdparser
+  , exceptionUtils
   ;
 
 
@@ -50,6 +52,7 @@ type
     doLog, isSslServer: Boolean;
     mainPortnumber, sslCerticateFileName, sslKeyFileName: String;
     httpMainServer: TIdHTTPServer;
+    serverListenQueue: Integer;
     property SslPassword: String read fSslPassword write SetSslPassword;
     procedure RemoveSomeHttpHeaders (aHeaderList: TIdHeaderList);
     constructor Create(TheOwner: TComponent); override;
@@ -61,8 +64,9 @@ type
 procedure TMyApplication.DoRun;
 var
   ErrorMsg: String;
-  serverHttpXml, sslXml: TXml;
+  httpXml, sslXml: TXml;
 begin
+  serverListenQueue := 15;
   try
     with TXml.Create do
     try
@@ -74,14 +78,15 @@ begin
       if Name <> 'svrouterini' then
         raise Exception.Create (_progName + 'ini.xml does not contain valid xml');
       doLog := Items.XmlBooleanByTagDef['doLog', False];
-      serverHttpXml := ItemByTag['serverHttp'];
-      if not Assigned (serverHttpXml) then
+      httpXml := ItemByTag['serverHttp'];
+      if not Assigned (httpXml) then
         raise Exception.Create (_progName + 'ini.xml: serverHttpXml not found');
-      with serverHttpXml do
+      with httpXml do
       begin
         mainPortnumber := Items.XmlValueByTag['port'];
         if mainPortnumber = '' then
           raise Exception.Create (_progName + 'ini.xml: serverHttpXml.port not found');
+        serverListenQueue := Items.XmlIntegerByTagDef['listenQueue', serverListenQueue];
         sslXml := ItemByTag['ssl'];
         if not Assigned (sslXml) then
           raise Exception.Create (_progName + 'ini.xml: serverHttpXml.ssl not found');
@@ -90,12 +95,17 @@ begin
           isSslServer := Items.XmlBooleanByTagDef['useSsl', True];
           sslCerticateFileName := Items.XmlValueByTag['certificateFile'];
           sslKeyFileName := Items.XmlValueByTag['keyFile'];
-          SslPassword := Items.XmlValueByTag['password'];
+          SslPassword := Items.XmlValueByTag['encryptedPassword'];
         end;
+      end;
+      httpXml := ItemByTag['clientHttp'];
+      if Assigned (httpXml) then
+      begin
       end;
     finally
       Free;
     end;
+    httpMainServer.ListenQueue := serverListenQueue;
     httpMainServer.DefaultPort := StrToInt(mainPortnumber);
     httpMainServer.OnCommandGet := httpServerCommandGet;
     httpMainServer.OnCommandOther := httpServerCommandGet;
@@ -217,7 +227,6 @@ begin
         xProtocol := 'https'
       else
         xProtocol := 'http';
-      if doLog then WriteLn (Format('protocol: "%s" Host: "%s" Port: "%s" Document: "%s"', [xProtocol, xHost, xPort, xDocument]));
       with TIdURI.Create(xProtocol + '://' + xHost + ':' + xPort) do
       try
         Document := xDocument;
@@ -226,7 +235,7 @@ begin
       finally
         free;
       end;
-      if doLog then WriteLn(ARequestInfo.RemoteIP + ':' + ARequestInfo.URI + ' => ' + xUri);
+      if doLog then WriteLn(xsdFormatDateTime(now, @TIMEZONE_UTC), ':: ', ARequestInfo.RemoteIP + ':' + ARequestInfo.URI + ' => ' + xUri);
       with TIdHTTP.Create do
       try
         sStream := ARequestInfo.PostStream;
@@ -253,7 +262,6 @@ begin
               SSLOptions.VerifyMode := [];
             end;
           end;
-          if doLog then WriteLn(Request.CustomHeaders.Text);
           if ARequestInfo.Command = 'DELETE' then Delete(xUri);
           if ARequestInfo.Command = 'GET' then Get(xUri, dStream);
           if ARequestInfo.Command = 'HEAD' then Head(xUri);
@@ -283,7 +291,7 @@ begin
       begin
         AResponseInfo.ResponseNo := 500;
         AResponseInfo.ContentText := e.Message;
-        WriteLn(e.Message);
+        WriteLn(xsdFormatDateTime(now, @TIMEZONE_UTC), ':: Exception: ', e.Message);
       end;
     end;
   finally
