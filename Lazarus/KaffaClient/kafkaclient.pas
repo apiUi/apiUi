@@ -1,6 +1,8 @@
 unit kafkaclient;
 
-{$mode objfpc}{$H+}
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
 
 interface
 
@@ -142,7 +144,7 @@ var
   xErrNoStr: String;
   xErrName: String;
 begin
-  xErrNo := Kafka.rd_kafka_last_error;
+  xErrNo := rd_kafka_last_error;
   if xErrNo <> RD_KAFKA_RESP_ERR_NO_ERROR then
   begin
     xErrNoStr := string (Kafka.rd_kafka_err2str (xErrNo));
@@ -188,6 +190,8 @@ begin
   _FormatSettings.ShortDateFormat:='yyyy-mm-dd';
   _FormatSettings.LongTimeFormat:='hh:nn:ss.zzz';
   _FormatSettings.ShortTimeFormat:='hh:nn:ss.zzz';
+  if kafka.rd_kafka_handle = 0 then
+    raise Exception.CreateFmt ('kafka library "%s" not loaded', [kafka.RD_EXPORT]);
   KafkaConf := rd_kafka_conf_new();
 end;
 
