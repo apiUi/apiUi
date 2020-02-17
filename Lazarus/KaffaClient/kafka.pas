@@ -431,6 +431,174 @@ type
   PProc_logger = ^TProc_logger;
   TProc_logger = function(rk: Prd_kafka_t; level: Int32; fac: PChar; buf: PChar): Pointer; cdecl;
 
+{ function and procedure prototypes, base for type, var and CheckProcAddress (dynlib:getprocaddress)
+
+function  rd_kafka_version: Int32; cdecl;
+function  rd_kafka_version_str: PChar; cdecl;
+function  rd_kafka_get_debug_contexts: PChar; cdecl;
+
+procedure rd_kafka_get_err_descs (errdescs: Prd_kafka_err_desc; var cntp: size_t); cdecl;
+
+function  rd_kafka_err2str (err: Trd_kafka_resp_err_t): PChar; cdecl;
+function  rd_kafka_err2name (err: Trd_kafka_resp_err_t): PChar; cdecl;
+function  rd_kafka_last_error: Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_errno2err(errnox: Int32): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_errno: Int32; cdecl;
+
+procedure rd_kafka_topic_partition_destroy (rktpar: Prd_kafka_topic_partition_t); cdecl;
+function  rd_kafka_topic_partition_list_new (size: Int32): Prd_kafka_topic_partition_list_t; cdecl;
+procedure rd_kafka_topic_partition_list_destroy (rkparlist: Prd_kafka_topic_partition_list_t); cdecl;
+function  rd_kafka_topic_partition_list_add (rktparlist: Prd_kafka_topic_partition_list_t; topic: PChar; partition: Int32): Prd_kafka_topic_partition_t; cdecl;
+procedure rd_kafka_topic_partition_list_add_range (rktparlist: Prd_kafka_topic_partition_list_t; topic: PChar; start: Int32; stop: Int32); cdecl;
+function  rd_kafka_topic_partition_list_del (rktparlist: Prd_kafka_topic_partition_list_t; topic: PChar; partition: Int32): Int32; cdecl;
+function  rd_kafka_topic_partition_list_del_by_idx (rktparlist: Prd_kafka_topic_partition_list_t; idx: Int32): Int32; cdecl;
+function  rd_kafka_topic_partition_list_copy (src: Prd_kafka_topic_partition_list_t): Prd_kafka_topic_partition_list_t; cdecl;
+function  rd_kafka_topic_partition_list_set_offset (rktparlist: Prd_kafka_topic_partition_list_t; topic: PChar; partition: Int32; offset: Int64): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_topic_partition_list_find (rktparlist: Prd_kafka_topic_partition_list_t; topic: PChar; partition: Int32): Prd_kafka_topic_partition_t; cdecl;
+procedure rd_kafka_topic_partition_list_sort (rktparlist: Prd_kafka_topic_partition_list_t; compareFunction: Pointer; opaque: Pointer); cdecl;
+
+procedure rd_kafka_message_destroy(rkmessage: Prd_kafka_message_t); cdecl;
+function  rd_kafka_message_timestamp (rkmessage: Prd_kafka_message_t; var tstype: Trd_kafka_timestamp_type_t): Int64; cdecl;
+function  rd_kafka_message_latency (rkmessage: Prd_kafka_message_t): Int64; cdecl;
+function  rd_kafka_conf_new: Prd_kafka_conf_t; cdecl;
+procedure rd_kafka_conf_destroy(conf: Prd_kafka_conf_t); cdecl;
+function  rd_kafka_conf_dup(conf: Prd_kafka_conf_t): Prd_kafka_conf_t; cdecl;
+function  rd_kafka_conf_set(conf: Prd_kafka_conf_t; name: PChar; value: PChar; errstr: PChar; errstr_size: size_t): Trd_kafka_conf_res_t; cdecl;
+procedure rd_kafka_conf_set_events(conf: Prd_kafka_conf_t; events: Int32); cdecl;
+procedure rd_kafka_conf_set_dr_cb(conf: Prd_kafka_conf_t; callback: Pointer); cdecl;
+
+procedure rd_kafka_conf_set_dr_msg_cb(conf: Prd_kafka_conf_t; dr_msg_cb: TProc_dr_msg_cb); cdecl;
+
+procedure rd_kafka_conf_set_consume_cb (conf: Prd_kafka_conf_t; consume: PProc_Consume);cdecl;
+procedure rd_kafka_conf_set_rebalance_cb (conf: Prd_kafka_conf_t; rebalance: PProc_rebalance_cb);cdecl;
+procedure rd_kafka_conf_set_offset_commit_cb (conf: Prd_kafka_conf_t; offset_commit_cb: PProc_offset_commit_cb);cdecl;
+procedure rd_kafka_conf_set_error_cb(conf: Prd_kafka_conf_t; error_cb: PProc_error_cb);cdecl;
+procedure rd_kafka_conf_set_throttle_cb (conf: Prd_kafka_conf_t; throttle_cb: PProc_throttle_cb);cdecl;
+procedure rd_kafka_conf_set_log_cb(conf: Prd_kafka_conf_t; log_cb: PProc_log_cb);cdecl;
+procedure rd_kafka_conf_set_stats_cb(conf: Prd_kafka_conf_t; stats_cb: PFunc_stats_cb);cdecl;
+procedure rd_kafka_conf_set_socket_cb(conf: Prd_kafka_conf_t; socket_cb: PFunc_socket_cb);cdecl;
+procedure rd_kafka_conf_set_connect_cb (conf: Prd_kafka_conf_t; connect_cb: PFunc_connect_cb);cdecl;
+procedure rd_kafka_conf_set_closesocket_cb (conf: Prd_kafka_conf_t; closesocket_cb: PFunc_closesocket_cb);cdecl;
+procedure rd_kafka_conf_set_open_cb (conf: Prd_kafka_conf_t; open_cb: PFunc_open_cb);cdecl;
+procedure rd_kafka_conf_set_opaque(conf: Prd_kafka_conf_t; opaque: Pointer);cdecl;
+function  rd_kafka_opaque(conf: Prd_kafka_conf_t): Pointer;cdecl;
+procedure rd_kafka_conf_set_default_topic_conf (conf: Prd_kafka_conf_t; tconf: Prd_kafka_topic_conf_t);cdecl;
+
+function  rd_kafka_topic_conf_new: Prd_kafka_topic_conf_t; cdecl;
+function  rd_kafka_topic_conf_dup(conf: Prd_kafka_topic_conf_t): Prd_kafka_topic_conf_t; cdecl;
+procedure rd_kafka_topic_conf_destroy(var topic_conf: Trd_kafka_topic_conf_t); cdecl;
+function  rd_kafka_topic_conf_set(conf: Prd_kafka_topic_conf_t;name: PChar;value: PChar;errstr: PChar;errstr_size: size_t): Trd_kafka_conf_res_t;cdecl;
+procedure rd_kafka_topic_conf_set_opaque(conf: Prd_kafka_topic_conf_t; opaque: Pointer);cdecl;
+procedure rd_kafka_topic_conf_set_partitioner_cb (topic_conf: Prd_kafka_topic_conf_t; partitioner: PFunc_partitioner);cdecl;
+function  rd_kafka_topic_partition_available(rkt: Prd_kafka_topic_t; partition: int32): Int32;cdecl;
+function  rd_kafka_msg_partitioner_random(rkt: Prd_kafka_topic_t; var key: Pointer; keylen: size_t; partition_cnt: int32; var opaque: Pointer; var msg_opaque: Pointer): int32;cdecl;
+function  rd_kafka_msg_partitioner_consistent (rkt: Prd_kafka_topic_t;var key: Pointer; keylen: size_t;partition_cnt: int32;var opaque: Pointer; var msg_opaque: Pointer): Int32;cdecl;
+function  rd_kafka_msg_partitioner_consistent_random (rkt: Prd_kafka_topic_t;var key: Pointer; keylen: size_t;partition_cnt: Int32;var opaque: Pointer; var msg_opaque: Pointer): Int32;cdecl;
+
+
+function  rd_kafka_new(rdktype: Trd_kafka_type_t; conf: Prd_kafka_conf_t; errstr: PChar; errstr_size: size_t): Prd_kafka_t; cdecl;
+procedure rd_kafka_destroy(rk: Prd_kafka_t); cdecl;
+function  rd_kafka_name(rk: Prd_kafka_t): PChar; cdecl;
+function  rd_kafka_type(rk: Prd_kafka_t): Trd_kafka_type_t; cdecl;
+function  rd_kafka_memberid (rk: Prd_kafka_t): PChar; cdecl;
+
+function rd_kafka_clusterid (rk: Prd_kafka_t; timeout_ms: Int32 ): PChar; cdecl;
+function  rd_kafka_topic_new(rk: Prd_kafka_t; topic: PChar; conf: Prd_kafka_topic_conf_t): Prd_kafka_topic_t; cdecl;
+procedure rd_kafka_topic_destroy(rkt: Prd_kafka_topic_t); cdecl;
+function  rd_kafka_topic_name(rkt: Prd_kafka_topic_t): PChar; cdecl;
+procedure rd_kafka_topic_opaque (rkt: Prd_kafka_topic_t); cdecl;
+function  rd_kafka_poll(rk: Prd_kafka_t; timeout_ms: Int32): Int32; cdecl;
+procedure rd_kafka_yield (rk: Prd_kafka_t); cdecl;
+function  rd_kafka_pause_partitions (rk: Prd_kafka_t; partitions: Prd_kafka_topic_partition_list_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_resume_partitions (rk: Prd_kafka_t; partitions: Prd_kafka_topic_partition_list_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_query_watermark_offsets (rk: Prd_kafka_t; topic: PChar; partition: int32; var low: int64; var high: int64; timeout_ms: Int32): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_get_watermark_offsets (rk: Prd_kafka_t; topic: PChar; partition: int32; var low: int64; var high: int64): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_offsets_for_times (rk: Prd_kafka_t; offsets: Prd_kafka_topic_partition_list_t; timeout_ms: Int32): Trd_kafka_resp_err_t; cdecl;
+procedure rd_kafka_mem_free (rk: Prd_kafka_t; ptr: Pointer); cdecl;
+
+
+function  rd_kafka_queue_new(rk: Prd_kafka_t): Prd_kafka_queue_t; cdecl;
+procedure rd_kafka_queue_destroy(rkqu: Prd_kafka_queue_t); cdecl;
+function  rd_kafka_queue_get_main (rk: Prd_kafka_t): Prd_kafka_queue_t; cdecl;
+function  rd_kafka_queue_get_consumer (rk: Prd_kafka_t): prd_kafka_queue_t; cdecl;
+function  rd_kafka_queue_get_partition (rk: Prd_kafka_t; topic: PChar; partition: Int32): Prd_kafka_queue_t; cdecl;
+procedure rd_kafka_queue_forward (src: Prd_kafka_queue_t; dst: Prd_kafka_queue_t); cdecl;
+function  rd_kafka_set_log_queue (rk: Prd_kafka_t; rkqu: Prd_kafka_queue_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_queue_length (rkqu: Prd_kafka_queue_t): size_t; cdecl;
+procedure rd_kafka_queue_io_event_enable (rkqu: Prd_kafka_queue_t; fd: int32; payload: Pointer; size: size_t); cdecl;
+
+
+function  rd_kafka_consume_start(rkt: Prd_kafka_topic_t; partition: Int32; offset: int64): Int32; cdecl;
+function  rd_kafka_consume_start_queue(rkt: Prd_kafka_topic_t; partition: Int32; offset: Int64; rkqu: Prd_kafka_queue_t): Int32; cdecl;
+function  rd_kafka_consume_stop(rkt: Prd_kafka_topic_t; partition: Int32): Int32; cdecl;
+function  rd_kafka_seek (rkt: Prd_kafka_topic_t; partition: int32; offset: int64; timeout_ms: int32): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_consume(rkt: Prd_kafka_topic_t; partition: int32; timeout_ms: int32): Prd_kafka_message_t; cdecl;
+function  rd_kafka_consume_batch(rkt: Prd_kafka_topic_t; partition: int32; timeout_ms: int32; rkmessages: Prd_kafka_message_t; rkmessages_size: size_t ): size_t; cdecl;  // ssize_t
+function  rd_kafka_consume_batch_queue(rkqu: Prd_kafka_queue_t; timeout_ms: Int32; rkmessages: Prd_kafka_message_t; rkmessages_size: size_t): size_t; cdecl;  // ssize_t
+function  rd_kafka_consume_callback_queue(rkqu: Prd_kafka_queue_t; timeout_ms: int32; consume_cb: PProc_consume_cb; opaque: Pointer): Int32; cdecl;
+
+
+function  rd_kafka_offset_store(rkt: Prd_kafka_topic_t; partition: int32; offset: int64): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_offsets_store(rk: Prd_kafka_t; offsets: Prd_kafka_topic_partition_list_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_subscribe (rk: Prd_kafka_t; topics: Prd_kafka_topic_partition_list_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_unsubscribe (rk: Prd_kafka_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_subscription (rk: Prd_kafka_t; topics: Prd_kafka_topic_partition_list_t): Trd_kafka_resp_err_t; cdecl;
+
+function  rd_kafka_consumer_poll (rk: Prd_kafka_t; timeout_ms: Int32): Prd_kafka_message_t; cdecl;
+function  rd_kafka_consumer_close (rk: Prd_kafka_t): Trd_kafka_resp_err_t; cdecl;
+
+function  rd_kafka_assign (rk: Prd_kafka_t; partitions: Prd_kafka_topic_partition_list_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_assignment (rk: Prd_kafka_t; partitions: Prd_kafka_topic_partition_list_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_commit (rk: Prd_kafka_t; offsets: Prd_kafka_topic_partition_list_t; async: Int32): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_commit_message (rk: Prd_kafka_t; rkmessage: Prd_kafka_message_t; async: Int32): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_commit_queue (rk: Prd_kafka_t; offsets: Prd_kafka_topic_partition_list_t; rkqu: Prd_kafka_queue_t; cb: PProc_cb; opaque: Pointer): Trd_kafka_resp_err_t; cdecl;
+
+function  rd_kafka_committed (rk: Prd_kafka_t; partitions: Prd_kafka_topic_partition_list_t; timeout_ms: int32): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_position (rk: Prd_kafka_t; partitions: Prd_kafka_topic_partition_list_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_produce(rkt: Prd_kafka_topic_t; partition: int32; msgflags: int32; payload: Pointer; len: size_t; key: Pointer; keylen: size_t; msg_opaque: Pointer): int32; cdecl;
+
+function  rd_kafka_producev (rk: Prd_kafka_t; var Args: array of const): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_producev (rk: Prd_kafka_t; Args: Pointer): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_produce_batch(rkt: Prd_kafka_topic_t; partition: int32; msgflags: int32; rkmessages: Prd_kafka_message_t; message_cnt: Int32): Int32; cdecl;
+function  rd_kafka_flush (rk: Prd_kafka_t; timeout_ms: Int32): Trd_kafka_resp_err_t; cdecl;
+
+
+function  rd_kafka_metadata (rk: Prd_kafka_t; all_topics: Int32; only_rkt: Prd_kafka_topic_t; metadatap: Prd_kafka_metadata; timeout_ms: Int32): Trd_kafka_resp_err_t; cdecl;
+
+procedure rd_kafka_metadata_destroy(metadata: Prd_kafka_metadata); cdecl;
+function  rd_kafka_list_groups (rk: Prd_kafka_t; group: PChar; grplistp: Prd_kafka_group_list;timeout_ms: Int32): Trd_kafka_resp_err_t; cdecl;
+procedure rd_kafka_group_list_destroy (grplist: Prd_kafka_group_list); cdecl;
+
+function  rd_kafka_brokers_add(rk: Prd_kafka_t; brokerlist: PChar ): Int32; cdecl;
+procedure rd_kafka_set_logger(rk: Prd_kafka_t; proc_logger: PProc_logger); cdecl;
+procedure rd_kafka_set_log_level(rk: Prd_kafka_t; level: int32); cdecl;
+procedure rd_kafka_log_print(rk: Prd_kafka_t; level: Int32; fac: PChar; buf: PChar); cdecl;
+procedure rd_kafka_log_syslog(rk: Prd_kafka_t; level: int32; fac: PChar; buf: PChar); cdecl;
+function  rd_kafka_outq_len(rk: Prd_kafka_t): Int32; cdecl;
+procedure rd_kafka_dump(fp: Pointer; rk: Prd_kafka_t); cdecl;
+function  rd_kafka_thread_cnt: Int32; cdecl;
+function  rd_kafka_wait_destroyed(timeout_ms: Int32): Int32; cdecl;
+
+function  rd_kafka_poll_set_consumer (rk: Prd_kafka_t): Trd_kafka_resp_err_t; cdecl;
+
+function  rd_kafka_event_type (rkev: Prd_kafka_event_t): Trd_kafka_event_type_t; cdecl;
+function  rd_kafka_event_name (rkev: Prd_kafka_event_t): PChar; cdecl;
+procedure rd_kafka_event_destroy (rkev: Prd_kafka_event_t); cdecl;
+function  rd_kafka_event_message_next (rkev: Prd_kafka_event_t): Prd_kafka_event_t; cdecl;
+function  rd_kafka_event_message_array(rkev: Prd_kafka_event_t; rkmessages: Prd_kafka_message_t; size: size_t): size_t; cdecl;
+function  rd_kafka_event_message_count (rkev: Prd_kafka_event_t): size_t; cdecl;
+function  rd_kafka_event_error (rkev: Prd_kafka_event_t): Trd_kafka_resp_err_t; cdecl;
+function  rd_kafka_event_error_string (rkev: Prd_kafka_event_t): PChar; cdecl;
+function  rd_kafka_event_opaque(rkev: Prd_kafka_event_t): Pointer; cdecl;
+function  rd_kafka_event_log (rkev: Prd_kafka_event_t; var fac: PChar; var str: PChar; var level: int32): Int32; cdecl;
+
+function  rd_kafka_event_topic_partition_list (rkev: Prd_kafka_event_t): Prd_kafka_topic_partition_list_t; cdecl;
+function  rd_kafka_event_topic_partition (rkev: Prd_kafka_event_t): Prd_kafka_topic_partition_t; cdecl;
+function  rd_kafka_queue_poll (rkqu: Prd_kafka_queue_t; timeout_ms: Int32): Prd_kafka_event_t; cdecl;
+function  rd_kafka_queue_poll_callback (rkqu: Prd_kafka_queue_t; timeout_ms: Int32): Int32; cdecl;
+
+}
+
 type Trd_kafka_new = function (rdktype: Trd_kafka_type_t; conf: Prd_kafka_conf_t; errstr: PChar; errstr_size: size_t): Prd_kafka_t; cdecl;
 type Trd_kafka_produce = function (rkt: Prd_kafka_topic_t; partition: int32; msgflags: int32; payload: Pointer; len: size_t; key: Pointer; keylen: size_t; msg_opaque: Pointer): int32; cdecl;
 type Trd_kafka_poll = function (rk: Prd_kafka_t; timeout_ms: Int32): Int32; cdecl;
