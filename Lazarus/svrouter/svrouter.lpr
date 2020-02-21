@@ -50,7 +50,7 @@ type
     procedure OnGetSslPassword (var aPassword: String);
   public
     doLog, isSslServer: Boolean;
-    mainPortnumber, sslCerticateFileName, sslKeyFileName: String;
+    mainPortnumber, sslCerticateFileName, sslRootCerticateFileName, sslKeyFileName: String;
     httpMainServer: TIdHTTPServer;
     serverListenQueue: Integer;
     property SslPassword: String read fSslPassword write SetSslPassword;
@@ -95,6 +95,7 @@ begin
           isSslServer := Items.XmlBooleanByTagDef['useSsl', True];
           sslCerticateFileName := Items.XmlValueByTag['certificateFile'];
           sslKeyFileName := Items.XmlValueByTag['keyFile'];
+          sslRootCerticateFileName := Items.XmlValueByTag['rootCertificateFile'];
           SslPassword := Items.XmlValueByTag['encryptedPassword'];
         end;
       end;
@@ -120,6 +121,7 @@ begin
           Method := sslvTLSv1_2;
           CertFile := sslCerticateFileName;
           KeyFile := sslKeyFileName;
+          RootCertFile := sslRootCerticateFileName;
         end;
       end;
     end;

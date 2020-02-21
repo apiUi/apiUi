@@ -7,6 +7,7 @@
 		<useSsl>true</useSsl>
 		<certificateFile>svrouterssl.pem</certificateFile>
 		<keyFile>svrouterssl.pem</keyFile>
+		<rootCertificateFile>svrouterssl.pem</rootCertificateFile>
 		<encryptedPassword>Aw0yERoFUART</encryptedPassword>
 	</ssl>
   </serverHttp>

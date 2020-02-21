@@ -7487,7 +7487,8 @@ begin
         then begin
           AResponseInfo.ContentText := ReplaceStrings ( xmlio.ReadStringFromFile(indexHtmlFileName)
                                                       , '__progname__'
-                                                      , _progName
+//                                                    , _progName
+                                                      , 'apiUi'
                                                       , False
                                                       , False
                                                       );
@@ -7681,7 +7682,8 @@ var
   xRelatesTo, xNotification, xDocument: String;
   xOnRequestViolatingAddressPath: TOnRequestViolating;
 begin
-  xDocument := '/' + _ProgName + '/api';
+//xDocument := '/' + _ProgName + '/api';
+  xDocument := '/apiUi/api';
   if (ARequestInfo.Document = xDocument)
   or AnsiStartsStr(xDocument + '/', ARequestInfo.Document)
   or (ARequestInfo.Document = '/favicon.ico')

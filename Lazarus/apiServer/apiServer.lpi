@@ -38,7 +38,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;testScript.svpr&quot; --script=test --terminate"/>
+        <CommandLineParams Value="&quot;testScript.svpr&quot;"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -102,7 +102,6 @@
     </SearchPaths>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
     </Linking>
