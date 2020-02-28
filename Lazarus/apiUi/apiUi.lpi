@@ -20,7 +20,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="12550"/>
+      <BuildNr Value="12570"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -219,7 +219,9 @@
       <Unit30>
         <Filename Value="..\wsdlStub\EditOperationScriptUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditOperationScriptForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\wsdlStub\EditPartExpUnit.pas"/>
@@ -312,7 +314,9 @@
       <Unit48>
         <Filename Value="..\wsdlStub\SelectElementsUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="SelectElementsForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit48>
       <Unit49>
         <Filename Value="..\wsdlStub\SelectItemUnit.pas"/>
@@ -327,7 +331,9 @@
       <Unit51>
         <Filename Value="..\wsdlStub\SelectXmlElement.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="SelectXmlElementForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit51>
       <Unit52>
         <Filename Value="..\wsdlStub\smtpInterface.pas"/>
@@ -377,7 +383,6 @@
     </SearchPaths>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>

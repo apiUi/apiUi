@@ -276,7 +276,7 @@ begin
   finally
     Free;
   end;
-  maxOccurrences := MaxInt;
+  maxOccurrences := MaxInt - 1;
   ElementEnabled := False;
 end;
 
@@ -323,6 +323,9 @@ begin
     exit;
   if (aBind is TIpmItem)
   and ((aBind as TIpmItem).Occurrence > maxOccurrences) then
+    Exit;
+  if (aBind is TXml)
+  and ((aBind as TXml).Occurrence > maxOccurrences) then
     Exit;
 {
   if (aIpmItem.Occurs > 1) and (not aIncludeRecurring) then

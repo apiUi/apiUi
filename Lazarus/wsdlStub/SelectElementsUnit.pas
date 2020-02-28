@@ -175,6 +175,7 @@ begin
     SelectXmlElementForm.doShowRti := doShowRti;
     SelectXmlElementForm.WsdlOperation := WsdlOperation;
     SelectXmlElementForm.IncludeRecurring := True;
+    SelectXmlElementForm.maxOccurrences := 1;
     SelectXmlElementForm.ShowModal;
     if SelectXmlElementForm.ModalResult = mrOk then
     begin
@@ -208,6 +209,7 @@ begin
       SelectXmlElementForm.doShowRti := doShowRti;
       SelectXmlElementForm.WsdlOperation := WsdlOperation;
       SelectXmlElementForm.IncludeRecurring := True;
+      SelectXmlElementForm.maxOccurrences := 1;
       SelectXmlElementForm.ShowModal;
       if SelectXmlElementForm.ModalResult = mrOk then
       begin

@@ -38,7 +38,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;testScript.svpr&quot;"/>
+        <CommandLineParams Value="&quot;C:\Data\Sources\Lazarus\apiServer\apiUiStub.svpr&quot;"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">

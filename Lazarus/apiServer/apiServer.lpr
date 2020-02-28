@@ -390,7 +390,7 @@ procedure TMyApplication .RefreshLogger ;
     for x := 0 to se.toDisplaySnapshots.Count - 1 do
     begin
       xSnapshot := se.toDisplaySnapshots.SnapshotItems[x];
-      se.displayedSnapshots.AddObject('', xSnapshot);
+      se.displayedSnapshots.AddObject(xSnapshot.Name, xSnapshot);
       WriteLn ( Format ( '%s %s %s'
                        , [ xsdFormatDateTime(xSnapshot.timeStamp, @TIMEZONE_UTC)
                          , 'created snapshot '

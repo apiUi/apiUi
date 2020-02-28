@@ -198,6 +198,7 @@ type TBindableList = class;
     procedure setValueAsInteger(const aValue: Integer);
     function getChecked: Boolean;
     function getRoot: TCustomBindable;
+    function GetOccurrence: Integer;
     function getValueAsBoolean: Boolean;
     function getCheckedAllUp: Boolean;
     procedure setValueAsBoolean(const aValue: Boolean);
@@ -258,6 +259,7 @@ public
   function IsAncestorOf (aBindable: TCustomBindable): Boolean;
   function UpLineAsText: String; Virtual;
   constructor Create; Overload;
+  property Occurrence: Integer read GetOccurrence;
   property yamlValue: String read getYamlValue;
   property totalNumberOfSubElements: Integer read getTotalNumberOfSubElements;
   property isEvaluation: Boolean read getIsEvaluation;
@@ -593,6 +595,24 @@ begin
     result := Parent.Root
   else
     result := self;
+end;
+
+function TCustomBindable.GetOccurrence: Integer;
+var
+  x: Integer;
+begin
+  result := 1;
+  if Assigned (Parent) then
+  begin
+    result := 0;
+    for x := 0 to Parent.Children.Count - 1 do
+    begin
+      if Parent.Children.Bindables[x].Name = self.Name then
+        Inc (result);
+      if Parent.Children.Bindables[x] = self then
+        Exit;
+    end;
+  end;
 end;
 
 procedure TCustomBindable.setChecked(const aValue: Boolean);

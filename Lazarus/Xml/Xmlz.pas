@@ -3558,11 +3558,11 @@ begin
   xRoot := aRoot;
   if xRoot <> '' then
     xRoot := xRoot + '.';
-  if Assigned ((aExpress as TExpress).FindBind (xRoot + FullIndexCaption)) then
+  if Assigned ((aExpress as TExpress).FindBind (xRoot + FullCaption)) then
     exit;
   if Group = True then
   begin
-    (aExpress as TExpress).BindGroupObject (xRoot + FullIndexCaption, Self);
+    (aExpress as TExpress).BindGroupObject (xRoot + FullCaption, Self);
     xSubItems := Items as TXmlList;
     for x := 0 to xSubItems.Count - 1 do
     begin
@@ -3578,7 +3578,7 @@ begin
         aExpress.BindExtendedObject (xRoot + FullCaption, Self)
       else
 }
-        (aExpress as TExpress).BindStringObject (xRoot + FullIndexCaption, Self);
+        (aExpress as TExpress).BindStringObject (xRoot + FullCaption, Self);
 {
     end;
 }
