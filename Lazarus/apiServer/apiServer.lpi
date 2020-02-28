@@ -19,9 +19,10 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="10"/>
-      <MinorVersionNr Value="3"/>
-      <RevisionNr Value="4"/>
-      <BuildNr Value="110"/>
+      <MinorVersionNr Value="4"/>
+      <RevisionNr Value="2"/>
+      <BuildNr Value="12570"/>
+      <StringTable ProductVersion="10.3.4.110"/>
     </VersionInfo>
     <MacroValues Count="1">
       <Macro1 Name="LCLWidgetType" Value="nogui"/>
@@ -102,6 +103,7 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
     </Linking>

@@ -10,8 +10,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="401"/>
-        <CursorPos X="12" Y="370"/>
+        <TopLine Value="377"/>
+        <CursorPos X="32" Y="384"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -334,7 +334,7 @@
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="27" HistoryIndex="26">
+    <JumpHistory Count="26" HistoryIndex="25">
       <Position1>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="7685" TopLine="7675"/>
@@ -439,14 +439,10 @@
         <Filename Value="apiServer.lpr"/>
         <Caret Line="403" Column="5" TopLine="316"/>
       </Position26>
-      <Position27>
-        <Filename Value="apiServer.lpr"/>
-        <Caret Line="393" Column="53" TopLine="417"/>
-      </Position27>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="3">
+    <BreakPoints Count="1">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -454,20 +450,6 @@
         <Source Value="..\Xml\Xsdz.pas"/>
         <Line Value="2752"/>
       </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="apiServer.lpr"/>
-        <Line Value="414"/>
-      </Item2>
-      <Item3>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="apiServer.lpr"/>
-        <Line Value="421"/>
-      </Item3>
     </BreakPoints>
   </Debugging>
 </CONFIG>
