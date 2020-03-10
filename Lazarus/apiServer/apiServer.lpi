@@ -21,7 +21,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="12570"/>
+      <BuildNr Value="12580"/>
       <StringTable ProductVersion="10.3.4.110"/>
     </VersionInfo>
     <MacroValues Count="1">
@@ -39,7 +39,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;C:\Data\Sources\Lazarus\apiServer\apiUiStub.svpr&quot;"/>
+        <CommandLineParams Value="&quot;D:\Data\AppyThings\PetStore\PetStore.svpr&quot;"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -119,7 +119,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="6">
+    <Exceptions Count="7">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -138,6 +138,9 @@
       <Item6>
         <Name Value="EIdCouldNotBindSocket"/>
       </Item6>
+      <Item7>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item7>
     </Exceptions>
   </Debugging>
 </CONFIG>

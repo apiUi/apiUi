@@ -76,6 +76,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    SnapshotsFromHttpGetAction: TAction;
     GenerateJsonSchemaInYaml: TAction;
     Action4: TAction;
     GenerateSwaggerAction: TAction;
@@ -97,6 +98,7 @@ type
     CopyToClipboardAsJsonMenuItem: TMenuItem;
     ToolButton75: TToolButton;
     ToolButton79: TToolButton;
+    ToolButton80: TToolButton;
     YamlToClipboardMenuItem: TMenuItem;
     ToolButton78: TToolButton;
     OperationBrowseDocumentationAction: TAction;
@@ -625,6 +627,7 @@ type
     procedure MenuItem60Click(Sender: TObject);
     procedure MenuItem61Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
+    procedure SnapshotsFromHttpGetActionExecute(Sender: TObject);
     procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
     procedure YamlToClipboardMenuItemClick(Sender: TObject);
     procedure MessagesTabToolBarResize(Sender: TObject);
@@ -1076,6 +1079,8 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
+    procedure GetSnapshotsFromFolder (aList: TSnapshotList; aFolder: String);
+    procedure GetSnapshotsFromRemoteServer (aList: TSnapshotList; aUrl: String);
     procedure ShowHelpDocumentation (aName: String);
     procedure EditContexts;
     procedure ShowChosenLogTab;
@@ -1140,6 +1145,7 @@ type
     function InsertXmlNode(aNode: PVirtualNode; aXml: TXml): PVirtualNode;
     procedure ConfirmTemporarelyInactivity(var aPrompt: Boolean);
     function BooleanPromptDialog(aPrompt: String): Boolean;
+    function PromptDialog(aPrompt, aDefault: String): String;
     procedure FinishXmlNode(aNode: PVirtualNode; aXml: TXml);
     procedure EndEdit;
     procedure XmlAnalyserError(Sender: TObject;
@@ -1246,7 +1252,7 @@ type
     claimedReport: TSnapshot;
     mqServerEnv: String;
     CollapseHeaders: Boolean;
-    wsdlStubMessagesFileName, wsdlStubSnapshotsFileName: String;
+    wsdlStubMessagesFileName, wsdlStubSnapshotsFileName, wsdlStubRemoteServerUrl: String;
     log4jEventsFileName: String;
     nStubs: Integer;
     freeStubs: Integer;
@@ -2722,6 +2728,22 @@ end;
 function TMainForm.BooleanPromptDialog(aPrompt: String): Boolean;
 begin
   result := (MessageDlg(aPrompt, mtConfirmation, [mbYes, mbNo], 0) = mrYes);
+end;
+
+function TMainForm.PromptDialog(aPrompt, aDefault: String): String;
+begin
+  Application.CreateForm(TPromptForm, PromptForm);
+  try
+    PromptForm.Caption := aPrompt;
+    PromptForm.Value := aDefault;
+    PromptForm.ShowModal;
+    if PromptForm.ModalResult = mrOk then
+      Result := PromptForm.Value
+    else
+      raise Exception.Create('aborted by user');
+  finally
+    FreeAndNil(PromptForm);
+  end;
 end;
 
 procedure TMainForm.FinishXmlNode(aNode: PVirtualNode; aXml: TXml);
@@ -6592,6 +6614,7 @@ begin
     GridView.Header.Columns[x].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
+  wsdlStubRemoteServerUrl := xIniFile.StringByNameDef['wsdlStubRemoteServerUrl', 'http://localhost:80'];
   wsdlStubSnapshotsFileName := xIniFile.StringByName['wsdlStubSnapshotsFileName'];
   DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
   BetaMode := xIniFile.BooleanByNameDef['BetaMode', False];
@@ -6826,6 +6849,7 @@ begin
   xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
   xIniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
   xIniFile.StringByName['wsdlStubSnapshotsFileName'] := wsdlStubSnapshotsFileName;
+  xIniFile.StringByName['wsdlStubRemoteServerUrl'] := wsdlStubRemoteServerUrl;
   xIniFile.StringByName['tacoHost'] := tacoHost;
   xIniFile.IntegerByName['tacoPort'] := tacoPort;
   xIniFile.IntegerByName['LogFilter.FilterStyle'] := Ord
@@ -11757,7 +11781,10 @@ end;
 
 procedure TMainForm.CheckRpyOrFlt(aBind: TCustomBindable);
 begin
-  if (not(aBind is TIpmItem)) and (WsdlOperation.StubAction <> saRequest) then
+  if (not(aBind is TIpmItem))
+  and (WsdlOperation.StubAction <> saRequest)
+  and (not WsdlOperation.isOpenApiService)
+  and (aBind.Root <> WsdlMessage.reqBind) then
   begin
     if aBind.Root = WsdlMessage.rpyBind then
       WsdlMessage.fltBind.Checked := False
@@ -13109,6 +13136,31 @@ begin
   end;
 end;
 
+procedure TMainForm.GetSnapshotsFromFolder (aList: TSnapshotList; aFolder: String);
+var
+  x: Integer;
+  xName: String;
+  s: TRegressionSnapshot;
+begin
+  with FileUtil.FindAllFiles(aFolder, '*.xml', False) do
+  try
+    for x := 0 to Count - 1 do
+    begin
+      xName := LazFileUtils.ExtractFileNameOnly(Strings[x]);
+      s := TRegressionSnapshot.Create ( xName
+                                      , se.CurrentFolder + DirectorySeparator + xName + '.xml'
+                                      , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
+                                      );
+      s.OnReport := se.doRegressionReport;
+      s.timeStamp := xmlio.GetFileChangedTime(s.FileName);
+//    aList.SaveObject(xsdFormatDateTime(s.timeStamp, @TIMEZONE_UTC), s);
+      aList.SaveObject(xName, s);
+    end;
+  finally
+    Free;
+  end;
+end;
+
 procedure TMainForm .SnapshotsFromFolderActionExecute (Sender : TObject );
 var
   x: Integer;
@@ -13123,22 +13175,7 @@ begin
     try
       sl.Sorted := True;
       sl.Duplicates := dupAccept;
-      with FileUtil.FindAllFiles(se.CurrentFolder, '*.xml', False) do
-      try
-        for x := 0 to Count - 1 do
-        begin
-          xName := LazFileUtils.ExtractFileNameOnly(Strings[x]);
-          s := TRegressionSnapshot.Create ( xName
-                                          , se.CurrentFolder + DirectorySeparator + xName + '.xml'
-                                          , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
-                                          );
-          s.OnReport := se.doRegressionReport;
-          s.timeStamp := xmlio.GetFileChangedTime(s.FileName);
-          sl.SaveObject(xsdFormatDateTime(s.timeStamp, @TIMEZONE_UTC), s);
-        end;
-      finally
-        Free;
-      end;
+      GetSnapshotsFromFolder(sl, se.CurrentFolder);
       se.AcquireLogLock;
       try
         for x := 0 to sl.Count - 1 do
@@ -13976,6 +14013,92 @@ end;
 procedure TMainForm.OperationsPopupHelpItemClick(Sender: TObject);
 begin
   ShowHelpDocumentation('Operations_Popup_Menu');
+end;
+
+procedure TMainForm.GetSnapshotsFromRemoteServer (aList: TSnapshotList; aUrl: String);
+var
+  x, f: Integer;
+  xXml, dXml: TXml;
+  snapshot: TSnapshot;
+  xName: String;
+  xDateTime: TDateTime;
+begin
+  xXml := TXml.Create;
+  try
+    xXml.LoadJsonFromString ( xmlio.HttpGetDialog ( aUrl + '/apiUi/api/snapshots'
+                                                  , 'application/json'
+                                                  )
+                            , nil
+                            );
+    dXml := xXml.FindXml('json.snapshots');
+    if not Assigned (dXml) then
+      raise Exception.Create('unexpected result from get:' + wsdlStubRemoteServerUrl + '/apiUi/api/snapshots');
+    for x := 0 to dXml.Items.Count - 1 do
+    with dXml.Items.XmlItems[x] do
+    begin
+      xName := Items.XmlValueByTag['name'];
+      if aList.Find (xName, f) then
+      begin
+        snapshot := aList.SnapshotItems[f];
+        xDateTime := XmlToDateTime(Items.XmlValueByTag['createdOn']);
+        if xDateTime > snapshot.timeStamp then
+        begin
+          xmlio.HttpDownloadToFile ( aUrl + '/apiUi/api/snapshots/download/' + xName
+                                   , snapshot.FileName
+                                   );
+          snapshot.timeStamp := xDateTime;
+          xmlio.SetFileChangedTime (snapshot.FileName, xDateTime);
+        end;
+      end
+      else
+      begin
+        snapshot := TRegressionSnapshot.Create ( xName
+                                               , se.CurrentFolder + DirectorySeparator + xName + '.xml'
+                                               , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
+                                               )
+                                               ;
+        snapshot.timeStamp := XmlToDateTime(Items.XmlValueByTag['createdOn']);
+        snapshot.OnReport := se.doRegressionReport;
+        aList.SaveObject(xName, snapshot);
+        xmlio.HttpDownloadToFile ( aUrl + '/apiUi/api/snapshots/download/' + xName
+                                 , snapshot.FileName
+                                 );
+      end;
+    end;
+  finally
+    FreeAndNil(xXml);
+  end;
+end;
+
+procedure TMainForm.SnapshotsFromHttpGetActionExecute(Sender: TObject);
+var
+  x: Integer;
+  xName: String;
+  sl: TSnapshotList;
+  s: TSnapshot;
+begin
+  wsdlStubRemoteServerUrl := PromptDialog('URL of remote apiServer', wsdlStubRemoteServerUrl);
+  ClearSnapshotsActionExecute (nil);
+  if se.displayedSnapshots.Count = 0 then
+  begin
+    sl := TSnapshotList.Create;
+    try
+      sl.Sorted := True;
+      sl.Duplicates := dupAccept;
+      GetSnapshotsFromFolder (sl, se.CurrentFolder);
+      GetSnapshotsFromRemoteServer (sl, wsdlStubRemoteServerUrl);
+      se.AcquireLogLock;
+      try
+        for x := 0 to sl.Count - 1 do
+          se.toDisplaySnapshots.AddObject(sl.SnapshotItems[x].Name, sl.SnapshotItems[x]);
+      finally
+        se.ReleaseLogLock;
+      end;
+      sl.Clear;
+    finally
+      sl.Free;
+    end;
+  end;
 end;
 
 procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);

@@ -16,6 +16,8 @@ function makeFileNameAllowed(aFileName: String): String;
 function isFileNameAllowed (aFileName: String): Boolean;
 procedure EraseAllFolderContent (aFolderName: String);
 function HttpResponseCodeToText (aCode: Integer): String;
+procedure HttpDownloadToFile (aUrl, aFileName: String);
+function HttpGetDialog (aUrl, aAcceptContentType: String): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
@@ -25,6 +27,7 @@ function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): Strin
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function uncFilename (aFileName: String): String;
 function GetFileChangedTime (aFileName:string):TDateTime;
+procedure SetFileChangedTime (aFileName:string; aDateTime: TDateTime);
 function GetHostName: String;
 function GetUserName: String;
 function GetVersion: String;
@@ -372,6 +375,131 @@ begin
     Result := ResponseText;
   finally
     Free;
+  end;
+end;
+
+procedure HttpDownloadToFile(aUrl, aFileName: String);
+var
+  HttpClient: TIdHTTP;
+  xResponse: String;
+  xStream: TMemoryStream;
+begin
+  HttpClient := TIdHTTP.Create;
+  try
+    xStream := TMemoryStream.Create;
+    try
+      try
+        if UpperCase(Copy (aURL, 1, 8)) = 'HTTPS://' then
+        begin
+          HttpClient.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+          with (HttpClient.IOHandler as TIdSSLIOHandlerSocketOpenSSL) do
+          begin
+            SSLOptions.Method := sslvTLSv1_2;
+            SSLOptions.Mode := sslmUnassigned;
+            SSLOptions.VerifyMode := [];
+          end;
+        end;
+        HttpClient.ProxyParams.ProxyServer := '';
+        HttpClient.ProxyParams.ProxyPort := 0;
+        HttpClient.Request.Accept := 'application/octet-stream';
+        HttpClient.Get(aUrl, xStream);
+        if (Pos ('attachment', HttpClient.Response.ContentDisposition) > 0)
+        and (Pos ('filename', HttpClient.Response.ContentDisposition) > 0) then
+        begin
+          xStream.SaveToFile(aFileName);
+        end
+        else
+        begin
+          raise Exception.CreateFmt ( '%d: %s'
+                                    , [ HttpClient.ResponseCode
+                                      , HttpClient.ResponseText
+                                      ]
+                                    );
+        end;
+      except
+        on e: Exception do
+          raise Exception.Create (e.Message);
+      end;
+    finally
+      FreeAndNil (xStream);
+    end;
+  finally
+    if Assigned (HttpClient) then
+    begin
+      if Assigned (HttpClient.IOHandler) then
+      begin
+        HttpClient.IOHandler.Free;
+        HttpClient.IOHandler := nil;
+      end;
+      if Assigned (HttpClient.Compressor) then
+      begin
+        HttpClient.Compressor.Free;
+        HttpClient.Compressor := nil;
+      end;
+    end;
+    FreeAndNil (HttpClient);
+  end;
+end;
+
+function HttpGetDialog(aUrl, aAcceptContentType: String): String;
+var
+  HttpClient: TIdHTTP;
+  xResponse: String;
+  xStream: TMemoryStream;
+begin
+  Result := '';
+  HttpClient := TIdHTTP.Create;
+  try
+    xStream := TMemoryStream.Create;
+    try
+      try
+        if UpperCase(Copy (aURL, 1, 8)) = 'HTTPS://' then
+        begin
+          HttpClient.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+          with (HttpClient.IOHandler as TIdSSLIOHandlerSocketOpenSSL) do
+          begin
+            SSLOptions.Method := sslvTLSv1_2;
+            SSLOptions.Mode := sslmUnassigned;
+            SSLOptions.VerifyMode := [];
+          end;
+        end;
+        HttpClient.Request.Accept := aAcceptContentType;
+        HttpClient.ProxyParams.ProxyServer := '';
+        HttpClient.ProxyParams.ProxyPort := 0;
+        HttpClient.Get(aUrl, xStream);
+        SetLength(Result,xStream.Size);
+        xStream.Position := 0;;
+        xStream.Read(Pointer(Result)^,xStream.Size);
+        if HttpClient.ResponseCode <> 200 then
+          raise Exception.CreateFmt ( '%d: %s%s%s'
+                                    , [ HttpClient.ResponseCode
+                                      , HttpClient.ResponseText
+                                      , LineEnding
+                                      , Result
+                                      ]
+                                    );
+      except
+        on e: Exception do
+          raise Exception.Create (e.Message);
+      end;
+    finally
+      FreeAndNil (xStream);
+    end;
+  finally
+    if Assigned (HttpClient) then
+    begin
+      if Assigned (HttpClient.IOHandler) then
+      begin
+        HttpClient.IOHandler.Free;
+        HttpClient.IOHandler := nil;
+      end;
+      if Assigned (HttpClient.Compressor) then
+      begin
+        HttpClient.Compressor.Free;
+        HttpClient.Compressor := nil;
+      end;
+    end;
+    FreeAndNil (HttpClient);
   end;
 end;
 
@@ -871,6 +999,11 @@ begin
     end;
     exit;
   end;
+end;
+
+procedure SetFileChangedTime(aFileName: string;aDateTime: TDateTime);
+begin
+  LazFileUtils.FileSetDateUTF8 (aFileName, DateTimeToFileDate(aDateTime));
 end;
 
 function GetFileChangedTime (aFileName:string):TDateTime;

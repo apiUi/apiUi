@@ -32,10 +32,13 @@ type
   private
     { Private declarations }
     IniFile: TFormIniFile;
+    function GetValue: String;
+    procedure SetValue(AValue: String);
   public
     Numeric: Boolean;
     ReadOnly: Boolean;
     Pattern: String;
+    property Value: String read GetValue write SetValue;
   end;
 
 var
@@ -104,6 +107,16 @@ begin
     end;
   end;
   OkButton.Enabled := DoEnable;
+end;
+
+function TPromptForm.GetValue: String;
+begin
+  result := PromptEdit.Text;
+end;
+
+procedure TPromptForm.SetValue(AValue: String);
+begin
+  PromptEdit.Text := AValue;
 end;
 
 end.

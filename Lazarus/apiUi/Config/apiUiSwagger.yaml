@@ -77,6 +77,22 @@ paths:
       responses:
         '200':
           decsription: Success response
+    get:
+      summary: retrieves list of snapshots (in project folder)
+      description:
+        retrieves list of snapshots.
+        Scans project folder for snapshots.
+      operationId: listSnapshots
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      responses:
+        '200':
+          description: Success response
+          schema:
+            $ref: '#/definitions/listOfSnapshots'
   /executeScript:
     post:
       summary: summary
@@ -375,3 +391,15 @@ definitions:
                             type: string
                           referenceValue:
                             type: string
+  listOfSnapshots:
+    type: object
+    properties:
+      snapshots:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            createdOn:
+              type: dateTime

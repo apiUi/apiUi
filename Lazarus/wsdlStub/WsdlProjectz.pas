@@ -7448,18 +7448,32 @@ procedure TWsdlProject.HTTPServerRemoteControlApi(AContext: TIdContext;
     end;
   end;
 
+  procedure _sjow (aString: String);
+  var
+    x: Integer;
+  begin
+    with SeparatedStringList(nil, aString, '/') do
+    try
+      SjowMessage(Format ('Count: %d %s', [Count, aString]));
+      for x := 0 to Count - 1 do
+        SjowMessage(Strings [x]);
+    finally
+      Free;
+    end;
+  end;
 
 var
   x: Integer;
   xRequestBody: String;
-  xBodyXml, nameXml, valueXml, fXml: TXml;
+  xBodyXml, nameXml, valueXml, fXml, xXml: TXml;
   xName: String;
-  xStream: TMemoryStream;
+  xStream: TStream;
   xSnapshot: TSnapshot;
+  sl: TStringList;
 begin
   xBodyXml := nil;
   AResponseInfo.ContentEncoding := 'identity';
-  ARequestInfo.ContentType := 'application/json';
+  AResponseInfo.ContentType := 'application/json';
   AResponseInfo.ResponseNo := 200; // nice defaults
   try   // finally
     try  // Except
@@ -7470,6 +7484,7 @@ begin
         xBodyXml := TXml.Create;
         xBodyXml.LoadJsonFromString(xRequestBody, nil);
       end;
+ //   _sjow (ARequestInfo.Document);
       with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
                                                                    //0/1        /2  /3...
       try
@@ -7570,6 +7585,51 @@ begin
 
         if (Count = 4)
         and (Strings[3] = 'snapshots')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          with TXml.CreateAsString('json', '') do
+          try
+            with AddXml (TXml.CreateAsString('snapshots', '')) do
+            begin
+              jsonType := jsonArray;
+              sl := FileUtil.FindAllFiles(CurrentFolder, '*.xml', False);
+              try
+                for x := 0 to sl.Count - 1 do
+                begin
+                  with AddXml (TXml.CreateAsString('_', '')) do
+                  begin
+                    AddXml (TXml.CreateAsString('name' , LazFileUtils.ExtractFileNameOnly(sl.Strings[x])));
+                    AddXml (TXml.CreateAsTimeStamp('createdOn', xmlio.GetFileChangedTime(sl.Strings[x])));
+                  end;
+                end;
+              finally
+                sl.Free;
+              end;
+            end;
+            AResponseInfo.ContentText := StreamJSON(0, False);
+          finally
+            free;
+          end;
+          Exit;
+        end;
+
+        if (Count = 6)
+        and (Strings[3] = 'snapshots')
+        and (Strings[4] = 'download')
+        and (Strings[5] <> '')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          if not FileUtil.FileExistsUTF8(CurrentFolder + DirectorySeparator + Strings[5] + '.xml') then
+            raise Exception.CreateFmt ('Snapshot %s not found', [Strings[5]]);
+          AResponseInfo.SmartServeFile ( AContext
+                                       , ARequestInfo
+                                       , CurrentFolder + DirectorySeparator + Strings[5] + '.xml'
+                                       );
+          Exit;
+        end;
+
+        if (Count = 4)
+        and (Strings[3] = 'snapshots')
         and (ARequestInfo.Command = 'DELETE')
         then begin
           doClearSnapshots := True;
@@ -7655,11 +7715,11 @@ begin
     begin
       xStream := TMemoryStream.Create;
       try
-        WriteStringToStream(AResponseInfo.ContentText, xStream);
+        WriteStringToStream(AResponseInfo.ContentText, xStream as TMemoryStream);
         if AResponseInfo.ContentEncoding = 'deflate' then
-          GZIPUtils.deflate(xStream, aResponseInfo.ContentStream as TMemoryStream);
+          GZIPUtils.deflate(xStream as TMemoryStream, aResponseInfo.ContentStream as TMemoryStream);
         if AResponseInfo.ContentEncoding = 'gzip' then
-          GZIPUtils.GZip(xStream, aResponseInfo.ContentStream as TMemoryStream);
+          GZIPUtils.GZip(xStream as TMemoryStream, aResponseInfo.ContentStream as TMemoryStream);
       finally
         xStream.Free;
       end;
