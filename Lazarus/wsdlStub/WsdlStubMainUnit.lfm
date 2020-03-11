@@ -2600,6 +2600,7 @@ object MainForm: TMainForm
     object SnapshotsFromHttpGetAction: TAction
       Category = 'Reports'
       Caption = 'SnapshotsFromHttpGetAction'
+      Hint = 'Get snapshots from remote apiUi/apiServer'
       ImageIndex = 104
       OnExecute = SnapshotsFromHttpGetActionExecute
     end

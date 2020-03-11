@@ -67,7 +67,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="166"/>
+        <UsageCount Value="167"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\Mq\MQAPI.pas"/>
@@ -86,8 +86,8 @@
       <Unit11>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="7605"/>
-        <CursorPos Y="7622"/>
+        <TopLine Value="8315"/>
+        <CursorPos X="3" Y="8317"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit11>
@@ -322,8 +322,8 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="14016"/>
-        <CursorPos Y="14037"/>
+        <TopLine Value="13346"/>
+        <CursorPos Y="13358"/>
         <UsageCount Value="17"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -391,7 +391,7 @@
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="8" HistoryIndex="7">
       <Position1>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="7480" TopLine="7469"/>
@@ -408,6 +408,22 @@
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="7622" TopLine="7605"/>
       </Position4>
+      <Position5>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="14037" TopLine="14016"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="14097" Column="11" TopLine="14080"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="13348" Column="3" TopLine="13346"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="395" Column="14" TopLine="386"/>
+      </Position8>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

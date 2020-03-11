@@ -17,7 +17,6 @@ type
   private
   protected
   public
-    Nr: Integer;
     TimeStamp: TDateTime;
     Text: String;
     constructor Create (aText: String);

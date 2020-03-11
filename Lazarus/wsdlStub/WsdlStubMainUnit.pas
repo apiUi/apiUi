@@ -14047,6 +14047,7 @@ begin
                                    , snapshot.FileName
                                    );
           snapshot.timeStamp := xDateTime;
+          snapshot.Status := rsUndefined;
           xmlio.SetFileChangedTime (snapshot.FileName, xDateTime);
         end;
       end
@@ -14078,15 +14079,22 @@ var
   s: TSnapshot;
 begin
   wsdlStubRemoteServerUrl := PromptDialog('URL of remote apiServer', wsdlStubRemoteServerUrl);
-  ClearSnapshotsActionExecute (nil);
-  if se.displayedSnapshots.Count = 0 then
+//ClearSnapshotsActionExecute (nil);
+//if se.displayedSnapshots.Count = 0 then
   begin
     sl := TSnapshotList.Create;
     try
       sl.Sorted := True;
       sl.Duplicates := dupAccept;
-      GetSnapshotsFromFolder (sl, se.CurrentFolder);
+      se.AcquireLogLock;
+      try
+        for x := 0 to se.displayedSnapshots.Count - 1 do
+          sl.AddObject(se.displayedSnapshots.SnapshotItems[x].Name, se.displayedSnapshots.SnapshotItems[x]);
+      finally
+        se.ReleaseLogLock;
+      end;
       GetSnapshotsFromRemoteServer (sl, wsdlStubRemoteServerUrl);
+      se.doClearSnapshots := True;
       se.AcquireLogLock;
       try
         for x := 0 to sl.Count - 1 do

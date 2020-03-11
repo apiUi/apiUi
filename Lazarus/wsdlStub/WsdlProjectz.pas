@@ -7613,6 +7613,36 @@ begin
           Exit;
         end;
 
+        if (Count = 4)
+        and (Strings[3] = 'notifications')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          with TXml.CreateAsString('json', '') do
+          try
+            with AddXml (TXml.CreateAsString('notifications', '')) do
+            begin
+              jsonType := jsonArray;
+              AcquireLogLock;
+              try
+                for x := 0 to displayedExceptions.Count - 1 do
+                begin
+                  with AddXml (TXml.CreateAsString('_', '')) do
+                  begin
+                    AddXml (TXml.CreateAsTimeStamp('createdOn', displayedExceptions.EventItems[x].TimeStamp));
+                    AddXml (TXml.CreateAsString('text' , displayedExceptions.EventItems[x].Text));
+                  end;
+                end;
+              finally
+                ReleaseLogLock;
+              end;
+            end;
+            AResponseInfo.ContentText := StreamJSON(0, False);
+          finally
+            free;
+          end;
+          Exit;
+        end;
+
         if (Count = 6)
         and (Strings[3] = 'snapshots')
         and (Strings[4] = 'download')
