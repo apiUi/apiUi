@@ -28,7 +28,6 @@ uses
    , Ipmz
    , IpmTypes
    , WsdlProjectz
-   , wsdlcontrolz
    , Wsdlz
    , Xmlz
    , Xsdz
@@ -76,6 +75,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    GenerateFunctopnPrototypeListAction: TAction;
     SnapshotsFromHttpGetAction: TAction;
     GenerateJsonSchemaInYaml: TAction;
     Action4: TAction;
@@ -610,6 +610,7 @@ type
     procedure ApiByExampleActionHint(var HintStr: string; var CanShow: Boolean
       );
     procedure FreeFormatsActionUpdate(Sender: TObject);
+    procedure GenerateFunctopnPrototypeListActionExecute(Sender: TObject);
     procedure GenerateJsonSchemaInYamlExecute(Sender: TObject);
     procedure GenerateSwaggerActionExecute(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
@@ -1079,8 +1080,9 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
+    procedure SnapshotsFromRemoteServer(aUrl: String);
     procedure GetSnapshotsFromFolder (aList: TSnapshotList; aFolder: String);
-    procedure GetSnapshotsFromRemoteServer (aList: TSnapshotList; aUrl: String);
+    procedure GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList; aUrl: String);
     procedure ShowHelpDocumentation (aName: String);
     procedure EditContexts;
     procedure ShowChosenLogTab;
@@ -1145,7 +1147,7 @@ type
     function InsertXmlNode(aNode: PVirtualNode; aXml: TXml): PVirtualNode;
     procedure ConfirmTemporarelyInactivity(var aPrompt: Boolean);
     function BooleanPromptDialog(aPrompt: String): Boolean;
-    function PromptDialog(aPrompt, aDefault: String): String;
+    function BooleanStringDialog(aPrompt, aDefault: String; var aValue: String): Boolean;
     procedure FinishXmlNode(aNode: PVirtualNode; aXml: TXml);
     procedure EndEdit;
     procedure XmlAnalyserError(Sender: TObject;
@@ -1247,7 +1249,6 @@ type
   public
     contextPropertyOverwrite: String;
     se: TWsdlProject;
-    sc: TWsdlControl;
     claimedLog: TLog;
     claimedReport: TSnapshot;
     mqServerEnv: String;
@@ -2730,17 +2731,18 @@ begin
   result := (MessageDlg(aPrompt, mtConfirmation, [mbYes, mbNo], 0) = mrYes);
 end;
 
-function TMainForm.PromptDialog(aPrompt, aDefault: String): String;
+function TMainForm.BooleanStringDialog(aPrompt, aDefault: String; var aValue: String): Boolean;
 begin
+  result := False;
+  aValue := aDefault;
   Application.CreateForm(TPromptForm, PromptForm);
   try
     PromptForm.Caption := aPrompt;
     PromptForm.Value := aDefault;
     PromptForm.ShowModal;
-    if PromptForm.ModalResult = mrOk then
-      Result := PromptForm.Value
-    else
-      raise Exception.Create('aborted by user');
+    result := (PromptForm.ModalResult = mrOk);
+    if Result then
+      aValue := PromptForm.Value;
   finally
     FreeAndNil(PromptForm);
   end;
@@ -3645,11 +3647,17 @@ begin
       end;
       ChooseStringForm.Caption := 'Open recent Stub case';
       ChooseStringForm.ConfirmPromptCallBack := ConfirmTemporarelyInactivity;
+      ChooseStringForm.AllowRemovingEntries := True;
       ChooseStringForm.ShowModal;
       if ChooseStringForm.ModalResult = mrOk then
       begin
         ChoosenString := ChooseStringForm.ChoosenString;
         FileName := Copy(ChoosenString, 3, Length(ChoosenString) - 2);
+        ReopenCaseList.Clear;
+        for X := 0 to ChooseStringForm.ListBox.Count - 1 do
+        begin
+          ReopenCaseList.Add (Copy (ChooseStringForm.ListBox.Items.Strings[x], 3, MaxInt));
+        end;
         if not LazFileUtils.DirectoryExistsUTF8(FileName) then
           raise Exception.Create ( FileName
                                  + ' is not a folder or does not exist'
@@ -4185,11 +4193,6 @@ begin
       AddXml(TXml.CreateAsBoolean('Enabled', enableTacoPingPong));
       AddXml(TXml.CreateAsInteger('interval', intervalTacoPingPong));
     end;
-  end;
-  with result.AddXml(TXml.CreateAsString('RemoteControl', '')) do
-  begin
-    AddXml(TXml.CreateAsBoolean('Enabled', sc.Enabled));
-    AddXml(TXml.CreateAsInteger('Port', sc.portNumber));
   end;
 end;
 
@@ -4842,10 +4845,9 @@ end;
 
 procedure TMainForm.AddMessageActionUpdate(Sender: TObject);
 begin
-  AddMessageAction.Enabled := Assigned(WsdlOperation) and
-    ((WsdlOperation.CorrelationBindables.Count > 0) or
-      (WsdlOperation.StubAction = saRequest)) and Assigned
-    (GridView.FocusedNode);
+  AddMessageAction.Enabled := Assigned(WsdlOperation)
+                          and Assigned (GridView.FocusedNode)
+                            ;
 end;
 
 procedure TMainForm.AddMessageActionExecute(Sender: TObject);
@@ -6559,8 +6561,6 @@ begin
   notifyTabImageIndex := 66;
 //  ExceptionTabSheet.ImageIndex := -1;
   se := TWsdlProject.Create;
-  sc := TWsdlControl.Create;
-  sc.se := se;
   ProgressInterface := TProgressInterface.Create;
   se.ProgressInterface := ProgressInterface;
   se.EditContexts := EditContexts;
@@ -6572,14 +6572,11 @@ begin
   se.OnStartNonBlockingThread := StartNonBlockingThreadEvent;
   se.OnTerminateNonBlockingThread := TerminateNonBlockingThreadEvent;
   se.OnQuitEvent := QuitCommand;
-  sc.OnActivateEvent := ActivateCommand;
-  sc.OnOpenProjectEvent := OpenProjectCommand;
   se.Notify := Notify;
   se.LogServerMessage := LogServerException;
   se.OnDebugOperationEvent := DebugOperation;
   se.FoundErrorInBuffer := FoundErrorInBuffer;
   se.OnReactivateEvent := ReactivateCommand;
-  sc.OnQuitEvent := QuitCommand;
   se.OnRestartEvent := RestartCommand;
   se.OnReloadDesignEvent := ReloadDesignCommand;
   se.OnNeedTacoHostData := NeedTacoHostData;
@@ -6796,10 +6793,6 @@ begin
   end;
   MainToolBarDesignedButtonCount := MainToolBar.ButtonCount;
   CreateScriptsSubMenuItems;
-  try
-    sc.Active := True;
-  except
-  end;
   systemStarting := False;
 end;
 
@@ -6916,7 +6909,6 @@ begin
   FileNameList.Free;
   WsdlPaths.Free;
   FreeAndNil(se);
-  FreeAndNil(sc);
   ColumnWidths.Free;
   FreeAndNil(ProgressInterface);
 end;
@@ -12451,8 +12443,6 @@ begin
   se.mqUse := mquUndefined;
   se.mqMaxWorkingThreads := 15;
   xsdValidateAssignmentsAgainstSchema := False;
-  sc.Enabled := False;
-  sc.portNumber:=3738;
   CollapseHeaders := False;
   xmlSetDefaultColors;
 
@@ -12509,19 +12499,6 @@ begin
       begin
         enableTacoPingPong := XmlCheckedBooleanByTagDef['Enabled', enableTacoPingPong];
         intervalTacoPingPong := XmlCheckedIntegerByTagDef['interval', intervalTacoPingPong];
-      end;
-    end;
-    xXml := XmlCheckedItemByTag['RemoteControl'];
-    if Assigned(xXml) then
-    begin
-      sc.Enabled:=xXml.Items.XmlCheckedBooleanByTagDef['Enabled', sc.Enabled];
-      try
-        sc.portNumber := xXml.Items.XmlCheckedIntegerByTagDef['Port', sc.portNumber];
-      except
-        on e: exception do
-        begin
-          LogServerException (e.Message + LineEnding + 'while setting portnumber for remote control' +LineEnding, True, e);
-        end;
       end;
     end;
     xXml := XmlCheckedItemByTag['Mq'];
@@ -13425,6 +13402,13 @@ begin
     FreeFormatsAction.Caption := decorateWithAsterix (FreeFormatsAction.Caption, se.hasFreeformatOperations);
 end;
 
+procedure TMainForm.GenerateFunctopnPrototypeListActionExecute(Sender: TObject);
+begin
+  ShowInfoForm( 'ScriptAssignments'
+              , WsdlOperation.FunctionPrototypes(True).Text
+              );
+end;
+
 procedure TMainForm.GenerateJsonSchemaInYamlExecute(Sender: TObject);
 var
   xBind: TCustomBindable;
@@ -14015,7 +13999,7 @@ begin
   ShowHelpDocumentation('Operations_Popup_Menu');
 end;
 
-procedure TMainForm.GetSnapshotsFromRemoteServer (aList: TSnapshotList; aUrl: String);
+procedure TMainForm.GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList; aUrl: String);
 var
   x, f: Integer;
   xXml, dXml: TXml;
@@ -14037,17 +14021,16 @@ begin
     with dXml.Items.XmlItems[x] do
     begin
       xName := Items.XmlValueByTag['name'];
-      if aList.Find (xName, f) then
+      if slx.Find (xName, f) then
       begin
-        snapshot := aList.SnapshotItems[f];
+        snapshot := slx.SnapshotItems[f];
         xDateTime := XmlToDateTime(Items.XmlValueByTag['createdOn']);
         if xDateTime > snapshot.timeStamp then
         begin
+          slc.SaveObject (Items.XmlValueByTag['createdOn'], snapshot);
           xmlio.HttpDownloadToFile ( aUrl + '/apiUi/api/snapshots/download/' + xName
                                    , snapshot.FileName
                                    );
-          snapshot.timeStamp := xDateTime;
-          snapshot.Status := rsUndefined;
           xmlio.SetFileChangedTime (snapshot.FileName, xDateTime);
         end;
       end
@@ -14060,7 +14043,7 @@ begin
                                                ;
         snapshot.timeStamp := XmlToDateTime(Items.XmlValueByTag['createdOn']);
         snapshot.OnReport := se.doRegressionReport;
-        aList.SaveObject(xName, snapshot);
+        sln.SaveObject(xName, snapshot);
         xmlio.HttpDownloadToFile ( aUrl + '/apiUi/api/snapshots/download/' + xName
                                  , snapshot.FileName
                                  );
@@ -14071,42 +14054,60 @@ begin
   end;
 end;
 
-procedure TMainForm.SnapshotsFromHttpGetActionExecute(Sender: TObject);
+procedure TMainForm.SnapshotsFromRemoteServer(aUrl: String);
 var
   x: Integer;
   xName: String;
-  sl: TSnapshotList;
+  slx, sln, slc: TSnapshotList;
   s: TSnapshot;
 begin
-  wsdlStubRemoteServerUrl := PromptDialog('URL of remote apiServer', wsdlStubRemoteServerUrl);
-//ClearSnapshotsActionExecute (nil);
-//if se.displayedSnapshots.Count = 0 then
-  begin
-    sl := TSnapshotList.Create;
+  slx := TSnapshotList.Create;  // existing, displayed
+  sln := TSnapshotList.Create;  // new ones
+  slc := TSnapshotList.Create;  // changed ones (subset of slx)
+  try
     try
-      sl.Sorted := True;
-      sl.Duplicates := dupAccept;
+      sln.Sorted := True;
+      sln.Duplicates := dupAccept;
+      slx.Sorted := True;
+      slx.Duplicates := dupAccept;
       se.AcquireLogLock;
       try
         for x := 0 to se.displayedSnapshots.Count - 1 do
-          sl.AddObject(se.displayedSnapshots.SnapshotItems[x].Name, se.displayedSnapshots.SnapshotItems[x]);
+          slx.AddObject(se.displayedSnapshots.SnapshotItems[x].Name, se.displayedSnapshots.SnapshotItems[x]);
       finally
         se.ReleaseLogLock;
       end;
-      GetSnapshotsFromRemoteServer (sl, wsdlStubRemoteServerUrl);
-      se.doClearSnapshots := True;
+      GetSnapshotsFromRemoteServer (slx, sln, slc, wsdlStubRemoteServerUrl);
       se.AcquireLogLock;
       try
-        for x := 0 to sl.Count - 1 do
-          se.toDisplaySnapshots.AddObject(sl.SnapshotItems[x].Name, sl.SnapshotItems[x]);
+        for x := 0 to slc.Count - 1 do with slc.SnapshotItems[x] do
+        begin
+          Status := rsUndefined;
+          timeStamp := XmlToDateTime (slc.Strings[x]);
+        end;
+        for x := 0 to sln.Count - 1 do
+          se.toDisplaySnapshots.AddObject(sln.SnapshotItems[x].Name, sln.SnapshotItems[x]);
       finally
         se.ReleaseLogLock;
       end;
-      sl.Clear;
-    finally
-      sl.Free;
+      slx.Clear;
+      slc.Clear;
+      sln.Clear;
+    except
+      on e: Exception do
+        LogServerException (e.Message, True, e);
     end;
+  finally
+    FreeAndNil(slx);
+    FreeAndNil(sln);
+    FreeAndNil(slc);
   end;
+end;
+
+procedure TMainForm.SnapshotsFromHttpGetActionExecute(Sender: TObject);
+begin
+  if BooleanStringDialog('URL of remote apiServer', wsdlStubRemoteServerUrl, wsdlStubRemoteServerUrl) then
+    TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer, wsdlStubRemoteServerUrl);
 end;
 
 procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);

@@ -11,7 +11,6 @@ uses
   , Interfaces
   , math
   , WsdlProjectz
-  , wsdlcontrolz
   , Xmlz
   , xmlio
   , Ipmz
@@ -29,18 +28,16 @@ uses
   ;
 
 type
-  longOptsArrayType = array [0..6] of String;
+  longOptsArrayType = array [0..5] of String;
 
 const
   helpOpt = 'help';
-  portOpt = 'port';
   scriptOpt = 'script';
   terminateOpt = 'terminate';
   trackIOOpt = 'trackIO';
   debugOpt = 'debug';
   contextOpt = 'context';
   longOpts: longOptsArrayType = ( helpOpt
-                                , portOpt + ':'
                                 , scriptOpt + ':'
                                 , contextOpt + ':'
                                 , terminateOpt
@@ -56,7 +53,6 @@ type
     procedure DoRun; override;
   private
     se: TWsdlProject;
-    sc: TWsdlControl;
     scriptName: String;
     terminateAfterScript: Boolean;
     doDebug: Boolean;
@@ -116,10 +112,6 @@ begin
   begin
     WriteLn('option ', contextOpt, ' ', GetOptionValue('?', contextOpt));
   end;
-  if HasOption('?',portOpt) then
-  begin
-    WriteLn('option ', portOpt, ' ', GetOptionValue('?', portOpt));
-  end;
   if HasOption('?',scriptOpt) then
   begin
     WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
@@ -167,10 +159,7 @@ begin
       Exit;
     end;
   end;
-  if HasOption('?', portOpt) then
-    sc.portNumber := StrToInt(GetOptionValue(portOpt));
   try
-    sc.Active := True;
     ActivateCommand(True);
   except
     on e: Exception do
@@ -465,17 +454,9 @@ begin
   DecryptString := doDecryptString;
   EncryptString := doEncryptString;
   se := TWsdlProject.Create;
-  sc := TWsdlControl.Create;
-  sc.se := se;
   se.Notify := Notify;
   se.LogServerMessage := LogServerException;
   se.FoundErrorInBuffer := FoundErrorInBuffer;
-  sc.OnActivateEvent := ActivateCommand;
-  sc.OnOpenProjectEvent := OpenProjectCommand;
-  sc.OnReactivateEvent := ReactivateCommand;
-  sc.OnQuitEvent := QuitCommand;
-  sc.OnRestartEvent := RestartCommand;
-  sc.OnReloadDesignEvent := ReloadDesignCommand;
   xmlz.OnNotify := se.Notify;
   xmlio.OnNotify := se.Notify;
   IntrospectIniXml;
@@ -506,11 +487,11 @@ begin
   WriteLn ('');
   WriteLn ('');
   WriteLn ('Example');
-  WriteLn (ExeName, ' myProject.wsdlStub --port=6161');
+  WriteLn (ExeName, ' myProject.svpr --', scriptOpt, '=setup');
   WriteLn;
   WriteLn ('This command will ...');
-  WriteLn ('  start with opening project myProject.wsdlStub');
-  WriteLn ('  and listen on port 6161 for wsdlStub webservice calls (remoteControl: default 3738)');
+  WriteLn ('  start with opening project myProject.svpr');
+  WriteLn ('  and execute the named project-script');
   WriteLn;
   WriteLn;
   WriteLn ('Switches');
@@ -518,9 +499,7 @@ begin
   WriteLn ('     types this helpmessage');
   WriteLn ('  --', contextOpt, '=');
   WriteLn ('     sets a value for the "context" project property');
-  WriteLn ('     (see wsdlStub menu Project->Properties)');
-  WriteLn ('  --', portOpt, '=');
-  WriteLn ('     overrules the portnumber for the ' + _progName + ' webservice');
+  WriteLn ('     (see apiUi menu Project->Properties)');
   WriteLn ('  --', scriptOpt, '=');
   WriteLn ('     starts executing the named project-script');
   WriteLn ('  --', terminateOpt);

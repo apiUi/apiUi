@@ -67,6 +67,7 @@ type TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
 type TProcedure = procedure of Object;
 type TProcedureB = procedure (arg: Boolean) of Object;
 type TProcedureS = procedure (arg: String) of Object;
+type TProcedureSS = procedure (arg, arg2: String) of Object;
 type TProcedureXX = procedure (arg, arg2: Extended) of Object;
 type TProcedureOperation = procedure (arg: TWsdlOperation) of Object;
 type TProcedureOperationS = procedure (arg: TWsdlOperation; arg2: String) of Object;
@@ -416,12 +417,13 @@ type
   private
     fProject: TWsdlProject;
     fProcedure: TProcedure;
-    fProcedureString: TProcedureS;
+    fProcedureS: TProcedureS;
+    fProcedureSS: TProcedureSS;
     fProcedureXX: TProcedureXX;
     fProcedureOperation: TProcedureOperation;
     fProcedureObject: TProcedureObject;
     fProcedureClaimableObjectList: TProcedureClaimableObjectList;
-    fString: String;
+    fString, fString2: String;
     fExtended, fExtended2: Extended;
     fOperation: TWsdlOperation;
     fObject: TObject;
@@ -443,6 +445,14 @@ type
                        ; aProject: TWsdlProject
                        ; aProcedure: TProcedureS
                        ; aString: String
+                       ); overload;
+    constructor Create ( aSuspended: Boolean
+                       ; aBlocking: Boolean
+                       ; aPostponementMs: Integer
+                       ; aProject: TWsdlProject
+                       ; aProcedure: TProcedureSS
+                       ; aString: String
+                       ; aString2: String
                        ); overload;
     constructor Create ( aSuspended: Boolean
                        ; aBlocking: Boolean
@@ -1125,8 +1135,21 @@ begin
   fBlocking := aBlocking;
   FreeOnTerminate := True;
   fProject := aProject;
-  fProcedureString := aProcedure;
+  fProcedureS := aProcedure;
   fString := aString;
+end;
+
+constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aPostponementMs: Integer; aProject: TWsdlProject; aProcedure: TProcedureSS;
+  aString, aString2: String);
+begin
+  inherited Create (aSuspended);
+  fBlocking := aBlocking;
+  fPostponementMs := aPostponementMs;
+  FreeOnTerminate := True;
+  fProject := aProject;
+  fProcedureSS := aProcedure;
+  fString := aString;
+  fString2 := aString2;
 end;
 
 constructor TProcedureThread.CreateProcedureOperation(aSuspended, aBlocking: Boolean; aProject: TWsdlProject; aProcedure: TProcedureOperation;
@@ -1199,7 +1222,8 @@ begin
     {$endif}
     try
       if Assigned (fProcedure) then fProcedure;
-      if Assigned (fProcedureString) then fProcedureString (fString);
+      if Assigned (fProcedureS) then fProcedureS (fString);
+      if Assigned (fProcedureSS) then fProcedureSS (fString, fString2);
       if Assigned (fProcedureXX) then fProcedureXX (fExtended, fExtended2);
       if Assigned (fProcedureOperation) then
       begin
@@ -7482,7 +7506,10 @@ begin
       begin
         xRequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
         xBodyXml := TXml.Create;
-        xBodyXml.LoadJsonFromString(xRequestBody, nil);
+        if pos ('XML', UpperCase(ARequestInfo.ContentType)) < 1 then
+          xBodyXml.LoadJsonFromString(xRequestBody, nil)
+        else
+          xBodyXml.LoadFromString(xRequestBody, nil);
       end;
  //   _sjow (ARequestInfo.Document);
       with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
@@ -7492,7 +7519,11 @@ begin
         and (Strings[1] = 'favicon.ico')
         and (ARequestInfo.Command = 'GET')
         then begin
-          AResponseInfo.ContentText := xmlio.ReadStringFromFile(faviconIcoFileName);
+          AResponseInfo.SmartServeFile ( AContext
+                                       , ARequestInfo
+                                       , faviconIcoFileName
+                                       );
+//          AResponseInfo.ContentText := xmlio.ReadStringFromFile(faviconIcoFileName);
           Exit;
         end;
         if (   (Count = 3)
@@ -7500,6 +7531,7 @@ begin
            )
         and (ARequestInfo.Command = 'GET')
         then begin
+          AResponseInfo.ContentType := 'text/html';
           AResponseInfo.ContentText := ReplaceStrings ( xmlio.ReadStringFromFile(indexHtmlFileName)
                                                       , '__progname__'
 //                                                    , _progName
@@ -7643,6 +7675,31 @@ begin
           Exit;
         end;
 
+        if (Count = 4)
+        and (LowerCase(Strings[3]) = 'projectdesign')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          AResponseInfo.ContentText := ProjectDesignAsString;
+          AResponseInfo.ContentType := 'application/xml';
+          Exit;
+        end;
+
+        if (Count = 4)
+        and (LowerCase(Strings[3]) = 'projectdesign')
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          AResponseInfo.ResponseNo := 202;
+          nameXml := xBodyXml.FindXml('WsdlStubCase.FileName');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          SjowMessage('projectdesign received: ' + nameXml.Value);
+          TProcedureThread.Create(False, True, 200, self, ProjectDesignFromString, xRequestBody, projectFileName);
+          Exit;
+        end;
+
         if (Count = 6)
         and (Strings[3] = 'snapshots')
         and (Strings[4] = 'download')
@@ -7678,6 +7735,7 @@ begin
           fXml := FindScript (nameXml.Value);
           if Assigned (fXml) then
           begin
+            AResponseInfo.ResponseNo := 202;
             ProgressMax := 5;
             ProgressPos := 0;
             TProcedureThread.Create(False, False, 0, Self, Self.ScriptExecute, fXml as TObject);
@@ -8115,6 +8173,12 @@ begin
       aLog.OperationName:=xOperation.Alias;
       xOperation.rpyXml.jsonType := jsonObject;
       aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+      aLog.ReplyContentType := xOperation.apiReplyMediaType;
+      if aLog.ReplyContentType = '' then
+        try
+          aLog.ReplyContentType := SeparatedStringN(nil, xOperation.Produces, LineEnding, 1);
+        except
+        end;
       aLog.httpResponseCode := xOperation.ResponseNo;
       CreateLogReplyPostProcess(aLog, xOperation);
     finally

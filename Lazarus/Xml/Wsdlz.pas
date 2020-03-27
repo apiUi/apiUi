@@ -275,6 +275,7 @@ type
       fOnGetAbortPressed: TBooleanFunction;
       fPrepareErrors: String;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
+      function getApiReplyMediaType: String;
       function getDoExit : Boolean ;
       function getHost: String;
       function getIsFreeFormat : Boolean ;
@@ -397,6 +398,7 @@ type
       property isOpenApiService: Boolean read getIsOpenApiService;
       property isOneWay: Boolean read getIsOneWay;
       property isFreeFormat: Boolean read getIsFreeFormat;
+      property apiReplyMediaType: String read getApiReplyMediaType;
       property InputXml: TXml read getInputXml;
       property OutputXml: TXml read getOutputXml;
       property LastMessage: TWsdlMessage read getLastMessage write fLastMessage;
@@ -3950,6 +3952,7 @@ begin
     BindScriptFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
     BindScriptFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
     BindScriptFunction ('StrToDate', @StrToDateX, DFS, '(aString)');
+    BindScriptFunction ('StrToDateTime', @XmlToDateTime, DFS, '(aString)');
     BindScriptFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindScriptFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
     BindScriptFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
@@ -5942,6 +5945,7 @@ begin
       BindCheckerFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
       BindCheckerFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
       BindCheckerFunction ('StrToDate', @StrToDateX, DFS, '(aString)');
+      BindCheckerFunction ('StrToDateTime', @XmlToDateTime, DFS, '(aString)');
       BindCheckerFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
       BindCheckerFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
       BindCheckerFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
@@ -6018,6 +6022,7 @@ begin
     BindStamperFunction ('StrMatchesRegExpr', @StringMatchesRegExpr, SFSS, '(aString, aRegExpr)');
     BindStamperFunction ('StrOfChar', @xStringOfChar, SFSX, '(aChar, aNumber)');
     BindStamperFunction ('StrToDate', @StrToDateX, DFS, '(aString)');
+    BindStamperFunction ('StrToDateTime', @XmlToDateTime, DFS, '(aString)');
     BindStamperFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindStamperFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
     BindStamperFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
@@ -6043,6 +6048,32 @@ procedure TWsdlOperation.BufferToValuesErrorFound(aMessage: String;
 begin
   if aObject is TCustomBindable then with aObject as TCustomBindable do
     Value := aMessage;
+end;
+
+function TWsdlOperation.getApiReplyMediaType: String;
+var
+  x, y: Integer;
+  yXml: TXml;
+begin
+  result := '';
+  // depending on openApi version, answer can be found on first or on second level
+  if isOpenApiService then with rpyBind as TXml do
+  begin
+    for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
+    begin
+      if Checked then
+        result := Xsd.MediaType;
+      if result <> '' then
+        Exit;
+      for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+      begin
+        if Checked then
+          result := Xsd.MediaType;
+        if result <> '' then
+          Exit;
+      end;
+    end;
+  end;
 end;
 
 function TWsdlOperation .getDoExit : Boolean ;

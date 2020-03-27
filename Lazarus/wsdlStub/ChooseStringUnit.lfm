@@ -147,6 +147,13 @@ object ChooseStringForm: TChooseStringForm
     OnPopup = PopupMenu1Popup
     left = 161
     top = 54
+    object RemoveMenuItem: TMenuItem
+      Caption = 'Remove from list'
+      OnClick = RemoveMenuItemClick
+    end
+    object MenuItem1: TMenuItem
+      Caption = '-'
+    end
     object CopyItemCaptionMenuItem: TMenuItem
       Caption = 'Copy'
       OnClick = CopyItemCaptionMenuItemClick

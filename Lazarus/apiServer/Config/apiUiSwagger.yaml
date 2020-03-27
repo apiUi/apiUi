@@ -110,10 +110,8 @@ paths:
           schema:
             $ref: '#/definitions/executeScriptReq'
       responses:
-        '200':
-          decsription: Success response
-          schema:
-            $ref: '#/definitions/executeScriptRpy'
+        '202':
+          decsription: Accepted
   /regressionReport:
     post:
       summary: summary
@@ -261,8 +259,6 @@ definitions:
     properties:
       name:
         type: string
-  executeScriptRpy:
-    type: string
   regressionReportReq:
     type: object
     properties:

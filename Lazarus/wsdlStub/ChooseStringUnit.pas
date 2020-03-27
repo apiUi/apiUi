@@ -23,6 +23,8 @@ type
   TChooseStringForm = class(TForm)
     CancelButton : TBitBtn ;
     CopyItemCaptionMenuItem: TMenuItem;
+    MenuItem1: TMenuItem;
+    RemoveMenuItem: TMenuItem;
     OkButton : TBitBtn ;
     Panel1: TPanel;
     Panel2: TPanel;
@@ -35,7 +37,9 @@ type
     procedure FormShow(Sender: TObject);
     procedure ListBoxSelectionChange (Sender : TObject ; User : boolean );
     procedure PopupMenu1Popup(Sender: TObject);
+    procedure RemoveMenuItemClick(Sender: TObject);
   private
+    fAllowRemovingEntries: Boolean;
     fChoosenString: String;
     function getChoosenIndex: Integer;
     function GetChoosenString: String;
@@ -44,6 +48,7 @@ type
     ConfirmPromptCallBack: TProcedureBoolean;
     property ChoosenString: String read GetChoosenString write SetChoosenString;
     property ChoosenIndex: Integer read getChoosenIndex;
+    property AllowRemovingEntries: Boolean read fAllowRemovingEntries write fAllowRemovingEntries;
   end;
 
 var
@@ -129,6 +134,19 @@ end;
 procedure TChooseStringForm.PopupMenu1Popup(Sender: TObject);
 begin
   CopyItemCaptionMenuItem.Enabled := (ListBox.ItemIndex > -1);
+  RemoveMenuItem.Enabled := (ListBox.ItemIndex > -1)
+                        and AllowRemovingEntries
+                          ;
+end;
+
+procedure TChooseStringForm.RemoveMenuItemClick(Sender: TObject);
+begin
+  if ListBox.ItemIndex > -1 then
+  begin
+    ListBox.Items.Delete(ListBox.ItemIndex);
+    ListBox.ItemHeight := -1;
+    ListBoxSelectionChange(nil, false);
+  end;
 end;
 
 function TChooseStringForm.getChoosenIndex: Integer;

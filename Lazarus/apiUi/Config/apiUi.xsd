@@ -2158,28 +2158,6 @@ Minimum value "30000" which is half a minute in milliseconds.</xs:documentation>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="RemoteControl" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>RemoteControl;
-apiUi webservice
-When enabled, this apiUi instance will also act as a webservice. Visit http://localhost:port for a list of supported operations.</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default 'false'</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="Port" type="xs:string" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default "3738"";
-Specifies the port that this instance will listen to for slave requests</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="Colors" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Customise colors</xs:documentation>

@@ -358,13 +358,10 @@ end;
 
 procedure TEditOperationScriptForm.Helponfunctions1Click(Sender: TObject);
 begin
-   OpenDocument(PChar (ChangeFileExt ( ExtractFilePath (ParamStr(0))
-                                      + '\Documentation\BuiltIn'
-                                      + ExtractFileName (ParamStr(0))
-                                      , '.htm'
-                                      )
-                       )
-               ); { *Converted from ShellExecute* }
+  OpenDocument(PChar ( ExtractFilePath (ParamStr(0))
+                      + '\Documentation\BuiltInapiUi.htm'
+                      )
+              ); { *Converted from ShellExecute* }
 end;
 
 procedure TEditOperationScriptForm.EmbeddedSQLMenuItemClick(Sender: TObject);
