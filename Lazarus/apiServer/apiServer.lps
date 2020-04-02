@@ -10,8 +10,6 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="480"/>
-        <CursorPos X="26" Y="494"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -395,7 +393,7 @@
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="7693" Column="66" TopLine="7680"/>
@@ -508,6 +506,10 @@
         <Filename Value="apiServer.lpr"/>
         <Caret Line="107" Column="14" TopLine="99"/>
       </Position29>
+      <Position30>
+        <Filename Value="apiServer.lpr"/>
+        <Caret Line="494" Column="26" TopLine="480"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

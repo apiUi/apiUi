@@ -368,9 +368,7 @@ type
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
     function BooleanPromptDialog (aPrompt: String): Boolean;
     function WsdlOpenFile (aName: String): TWsdl;
-    procedure RefuseHttpConnectionsThreaded (aLater, aTime: Extended);
     procedure SaveLogs (aFileName: String);
-    procedure SaveSnapshots (aName: String);
     procedure UpdateReplyColumns (aOperation: TWsdlOperation);
     procedure ProjectOptionsLogDisplayedColumnsFromXml(aXml: TXml);
     procedure ProjectLogOptionsFromXml(aXml: TXml);
@@ -632,21 +630,6 @@ begin
     result := aOper.StreamReply(_progName, True)
   else
     raise Exception.Create(Format ('RequestAsText: Operation ''%s'' not found', [xOperationAlias]));
-end;
-
-procedure SaveSnapshots(aContext: TObject; aName: String);
-var
-  xProject: TWsdlProject;
-begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create(Format ('SaveSnapshots(''%s''); unable to determine context', [aName]));
-  xProject.SaveSnapshots(aName);
 end;
 
 procedure RequestOperation(aContext: TObject; xOperationAlias: String);
@@ -4663,38 +4646,6 @@ begin
     end;
   finally
     FreeAndNil (Stomp);
-  end;
-end;
-
-function doRefuseHttpConnections(aObject: TObject; aLater, aTime: Extended): Extended;
-var
-  xProject: TWsdlProject;
-begin
-  result := 1;
-  if aObject is TWsdlOperation then
-    xProject := (aObject as TWsdlOperation).Owner as TWsdlProject
-  else
-    xProject := aObject as TWsdlProject;
-  TProcedureThread.Create(False, False, xProject, xProject.RefuseHttpConnectionsThreaded, aLater, aTime);
-end;
-
-procedure TWsdlProject.RefuseHttpConnectionsThreaded(aLater, aTime: Extended);
-begin
-  if (aLater > 0) then
-    Sleep (Trunc(aLater));
-  AcquireLock;
-  try
-    HTTPServer.Active := False;
-  finally
-    ReleaseLock;
-  end;
-  if (aTime > 0) then
-    Sleep (Trunc(aTime));
-  AcquireLock;
-  try
-    HTTPServer.Active := True;
-  finally
-    ReleaseLock;
   end;
 end;
 
@@ -8882,32 +8833,6 @@ begin
   end;
 end;
 
-procedure TWsdlProject.SaveSnapshots(aName: String);
-var
-  x: Integer;
-begin
-  if (CurrentFolder = '') then
-    raise Exception.Create('SaveSnapshots: config (ProjectOptions.General.projectFolders) invalid');
-  AcquireLogLock;
-  try
-    with displayedSnapshots.AsXml do
-    try
-      for x := 0 to toDisplaySnapshots.Count - 1 do
-        AddXml (toDisplaySnapshots.SnapshotItems[x].AsXml);
-      SaveStringToFile ( ReportsFolder
-                       + DirectorySeparator
-                       + aName
-                       + '.xml'
-                       , Text
-                       );
-    finally
-      Free;
-    end;
-  finally
-    ReleaseLogLock;
-  end;
-end;
-
 procedure TWsdlProject.DisplayLog(aString: String; aLog: TLog);
 begin
   if not Assigned (aLog) then Exit;
@@ -10091,8 +10016,6 @@ initialization
   _WsdlCreateCoverageReport := CreateCoverageReport;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;
-  _WsdlRefuseHttpConnections := doRefuseHttpConnections;
-  _WsdlSaveSnapshots := SaveSnapshots;
   IntrospectIniXml;
 
 finalization

@@ -75,6 +75,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    SnapshotsFromHttpGetAgainAction: TAction;
     GenerateFunctopnPrototypeListAction: TAction;
     SnapshotsFromHttpGetAction: TAction;
     GenerateJsonSchemaInYaml: TAction;
@@ -99,6 +100,7 @@ type
     ToolButton75: TToolButton;
     ToolButton79: TToolButton;
     ToolButton80: TToolButton;
+    ToolButton81: TToolButton;
     YamlToClipboardMenuItem: TMenuItem;
     ToolButton78: TToolButton;
     OperationBrowseDocumentationAction: TAction;
@@ -212,15 +214,11 @@ type
     ToolButton49: TToolButton;
     ToolButton50: TToolButton;
     ToolButton51: TToolButton;
-    ToolButton52: TToolButton;
-    ToolButton53: TToolButton;
     ToolButton59: TToolButton;
     ToolButton64: TToolButton;
     ToolButton65 : TToolButton ;
     ToolButton66 : TToolButton ;
     ToolButton67: TToolButton;
-    SaveSnapshotsAction : TAction ;
-    ReadSnapshotInformationAction : TAction ;
     ReportOnSnapshotsAction : TAction ;
     ClearSnapshotsAction : TAction ;
     ImportProjectScriptsAction : TAction ;
@@ -629,6 +627,8 @@ type
     procedure MenuItem61Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
     procedure SnapshotsFromHttpGetActionExecute(Sender: TObject);
+    procedure SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
+    procedure SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
     procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
     procedure YamlToClipboardMenuItemClick(Sender: TObject);
     procedure MessagesTabToolBarResize(Sender: TObject);
@@ -700,7 +700,6 @@ type
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
     procedure ExportProjectScriptsActionExecute (Sender : TObject );
-    procedure ReadSnapshotInformationActionExecute (Sender : TObject );
     procedure ReportOnSnapshots (aList: TClaimableObjectList);
     procedure ReportOnSnapshotsActionExecute (Sender : TObject );
     procedure SnapshotsPopupMenuPopup (Sender : TObject );
@@ -715,7 +714,6 @@ type
       var CellText : String );
     procedure SummaryReport (aList: TClaimableObjectList);
     procedure SummaryReportActionExecute (Sender : TObject );
-    procedure SaveSnapshotsActionExecute (Sender : TObject );
     procedure SchemasToZipExecute (Sender : TObject );
     procedure ShowGridDifferencesActionExecute (Sender : TObject );
     procedure ShowLogDetailsActionExecute(Sender: TObject);
@@ -11921,58 +11919,6 @@ begin
   end;
 end;
 
-procedure TMainForm.ReadSnapshotInformationActionExecute (Sender: TObject );
-var
-  X, Y: Integer;
-  xOpenOptions: TOpenOptions;
-  xXml, yXml: TXml;
-begin
-  ClearSnapshotsActionExecute (nil);
-  if se.displayedSnapshots.Count = 0 then
-  begin
-    with OpenFileDialog do
-    begin
-      xOpenOptions := Options;
-      xXml := TXml.Create;
-      try
-        DefaultExt := 'xml';
-        FileName := wsdlStubSnapshotsFileName;
-        Filter := 'XML file (*.xml)|*.xml';
-        Title := 'Read ' + _progName + ' snapshots information from file';
-        Options := Options + [ofAllowMultiSelect];
-        if Execute then
-        begin
-          wsdlStubSnapshotsFileName := FileName;
-          for X := 0 to Files.Count - 1 do
-          try
-            xXml.LoadFromFile(Files.Strings[X], nil);
-            if xXml.Name <> 'wsdlStubSnapshotList' then
-              raise Exception.Create('not a SnapshotList');
-            for Y := 0 to xXml.Items.Count - 1 do
-            begin
-              yXml := xXml.Items.XmlItems[Y];
-              if yXml.Name = 'SnapshotDetails' then
-                se.CreateSnapshot ( yXml.Items.XmlValueByTag ['name']
-                                  , yXml.Items.XmlValueByTag ['fileName']
-                                  , yXml.Items.XmlValueByTag ['refFileName']
-                                  , False
-                                  , False
-                                  );
-            end;
-          except
-            on E: Exception do
-              raise Exception.CreateFmt('Error opening file %s%s%s',
-                [Files.Strings[X], LineEnding, E.Message]);
-          end;
-        end;
-      finally
-        Options := xOpenOptions;
-        xXml.Free;
-      end;
-    end;
-  end;
-end;
-
 procedure TMainForm.ReportOnSnapshots (aList: TClaimableObjectList);
 var
   x: Integer;
@@ -12142,27 +12088,6 @@ begin
     se.ReleaseLogLock;
   end;
   TProcedureThread.Create(False, True, se, SummaryReport, xList);
-end;
-
-procedure TMainForm.SaveSnapshotsActionExecute (Sender : TObject );
-begin
-  if Assigned (se) then
-  begin
-    SaveFileDialog.DefaultExt := 'xml';
-    SaveFileDialog.FileName := wsdlStubSnapshotsFileName;
-    SaveFileDialog.Filter := 'XML file (*.xml)|*.xml';
-    SaveFileDialog.Title := 'Save ' + _progName + ' snapshots information';
-    if SaveFileDialog.Execute then
-    begin
-      wsdlStubSnapshotsFileName := SaveFileDialog.FileName;
-      with se.displayedSnapshots.AsXml do
-      try
-        SaveStringToFile(wsdlStubSnapshotsFileName, Text);
-      finally
-        Free;
-      end;
-    end;
-  end;
 end;
 
 procedure TMainForm .SchemasToZipExecute (Sender : TObject );
@@ -14108,6 +14033,16 @@ procedure TMainForm.SnapshotsFromHttpGetActionExecute(Sender: TObject);
 begin
   if BooleanStringDialog('URL of remote apiServer', wsdlStubRemoteServerUrl, wsdlStubRemoteServerUrl) then
     TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer, wsdlStubRemoteServerUrl);
+end;
+
+procedure TMainForm.SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
+begin
+  TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer, wsdlStubRemoteServerUrl);
+end;
+
+procedure TMainForm.SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
+begin
+  SnapshotsFromHttpGetAgainAction.Enabled := (wsdlStubRemoteServerUrl <> '');
 end;
 
 procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);

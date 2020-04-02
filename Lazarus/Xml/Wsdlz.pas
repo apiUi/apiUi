@@ -590,7 +590,6 @@ procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperationLater (aObject: TObject; aOperation: String; aLaterMs: Extended);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation: String; aLater: Extended);
-function RefuseHttpConnections (aObject: TObject; aLater, aWhile: Extended): Extended;
 procedure EnableMessage (aOperation: TWsdlOperation);
 procedure EnableAllMessages;
 procedure DisableMessage (aOperation: TWsdlOperation);
@@ -610,7 +609,6 @@ function setEnvNumber (aOperation: TWsdlOperation; aName: String; aValue: Extend
 function setEnvVar (aOperation: TWsdlOperation; aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
 procedure SaveLogs (aObject: TObject; aString: String);
-procedure SaveSnapshots (aObject: TObject; aString: String);
 procedure CreateSnapshot (aObject: TObject; aName: String);
 procedure CreateJUnitReport (aObject: TObject; aName: String);
 procedure CreateSummaryReport (aObject: TObject; aName: String);
@@ -630,8 +628,6 @@ function xsdOperationCount(aOperation: TWsdlOperation): Extended;
 function wsdlUserName: String;
 function wsdlOperationName(aOper: TWsdlOperation): String;
 function wsdlMessagingProtocol(aOper: TWsdlOperation): String;
-function wsdlLogReplyBody (aOper: TWsdlOperation): String;
-function wsdlLogRequestBody (aOper: TWsdlOperation): String;
 function wsdlMessageName(aOper: TWsdlOperation): String;
 function xsdTodayAsDate: String;
 function sblTodayAsDate: String;
@@ -660,7 +656,6 @@ var
   _WsdlExecuteScript: VFunctionOS;
   _WsdlExecuteScriptLater: VFunctionOSX;
   _WsdlSaveLogs: VFunctionOS;
-  _WsdlSaveSnapshots: VFunctionOS;
   _WsdlCreateSnapshot: VFunctionOSB;
   _WsdlCreateJUnitReport: VFunctionOS;
   _WsdlCreateSummaryReport: VFunctionOS;
@@ -670,7 +665,6 @@ var
   _WsdlAddRemark: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
   _WsdlSendOperationRequestLater: VFunctionSSI;
-  _WsdlRefuseHttpConnections: XFunctionOXX;
   _WsdlHostName: String;
   _WsdlPortNumber: String;
   _WsdlProgName: String;
@@ -809,13 +803,6 @@ begin
   if not Assigned (_WsdlSaveLogs) then
     raise Exception.Create('No OnSaveLogs event assigned: intention was to write to: ' + aString);
   _WsdlSaveLogs (aObject, aString);
-end;
-
-procedure SaveSnapshots (aObject : TObject ; aString : String );
-begin
-  if not Assigned (_WsdlSaveSnapshots) then
-    raise Exception.Create('No OnSaveSnapshots event assigned: intention was to write to: ' + aString);
-  _WsdlSaveSnapshots (aObject, aString);
 end;
 
 procedure CreateSnapshot (aObject : TObject ; aName: String);
@@ -1403,14 +1390,6 @@ begin
   _WsdlSendOperationRequest (aOperation, aCorrelation);
 end;
 
-function RefuseHttpConnections (aObject: TObject; aLater, aWhile: Extended): Extended;
-begin
-  if not Assigned (_WsdlRefuseHttpConnections) then
-    raise Exception.Create('WsdlRefuseHttpConnections: implementation missing');
-  _WsdlRefuseHttpConnections (aObject, aLater, aWhile);
-  result := 1;
-end;
-
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation: String; aLater: Extended);
 var
   xLater: Integer;
@@ -1779,16 +1758,6 @@ begin
     result := TransportTypeNames [(aOper.Data as TLog).TransportType]
   else
     result := TransportTypeNames [aOper.StubTransport];
-end;
-
-function wsdlLogReplyBody(aOper: TWsdlOperation): String;
-begin
-  result := aOper.logReplyBody;
-end;
-
-function wsdlLogRequestBody(aOper: TWsdlOperation): String;
-begin
-  result := aOper.logRequestBody;
 end;
 
 function wsdlMessageName(aOper: TWsdlOperation): String;
@@ -3901,8 +3870,6 @@ begin
     BindScriptFunction ('MD5', @MD5, SFS, '(aString)');
     BindScriptFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindScriptFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
-    BindScriptFunction ('MessageReplyBodyAsLogged', @wsdlLogReplyBody, SFOV, '()');
-    BindScriptFunction ('MessageRequestBodyAsLogged', @wsdlLogRequestBody, SFOV, '()');
     BindScriptFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
     BindScriptFunction ('NewDesignMessage', @wsdlNewDesignMessage, VFOSS, '(aOperation, aName)');
     BindScriptFunction ('NewLine', @xNewLine, SFV, '()');
@@ -3917,8 +3884,6 @@ begin
     BindScriptFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
     BindScriptFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindScriptFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
-    BindScriptFunction ('RefuseHttpConnections', @RefuseHttpConnections, XFOXX, '(aWait, aWhile)');
-    BindScriptFunction ('ReportCoverage', @CreateCoverageReport, VFOB, '(aDoRunNow)');
     BindScriptFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
     BindScriptFunction ('ReplyAsText', @wsdlReplyAsText, SFOS, '(aOperation)');
     BindScriptFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
@@ -3928,7 +3893,6 @@ begin
     BindScriptFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindScriptFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
-    BindScriptFunction ('SaveSnapshots', @SaveSnapshots, VFOS, '(aFileName)');
     BindScriptFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindScriptFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindScriptFunction ('OperationCount', @xsdOperationCount, XFOV, '()');

@@ -1024,35 +1024,25 @@ object MainForm: TMainForm
         Images = mainImageList
         TabOrder = 0
         object ToolButton39: TToolButton
-          Left = 155
+          Left = 132
           Top = 2
           Action = ClearSnapshotsAction
         end
         object ToolButton40: TToolButton
-          Left = 101
+          Left = 78
           Top = 2
           Action = ReportOnSnapshotsAction
         end
         object ToolButton51: TToolButton
-          Left = 147
+          Left = 124
           Height = 22
           Top = 2
           Width = 8
           Caption = 'ToolButton51'
           Style = tbsSeparator
         end
-        object ToolButton52: TToolButton
-          Left = 24
-          Top = 2
-          Action = SaveSnapshotsAction
-        end
-        object ToolButton53: TToolButton
-          Left = 1
-          Top = 2
-          Action = ReadSnapshotInformationAction
-        end
         object ToolButton64: TToolButton
-          Left = 93
+          Left = 70
           Height = 22
           Top = 2
           Width = 8
@@ -1060,19 +1050,24 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object ToolButton65: TToolButton
-          Left = 124
+          Left = 101
           Top = 2
           Action = SummaryReportAction
         end
         object ToolButton66: TToolButton
-          Left = 47
+          Left = 1
           Top = 2
           Action = SnapshotsFromFolderAction
         end
         object ToolButton80: TToolButton
-          Left = 70
+          Left = 24
           Top = 2
           Action = SnapshotsFromHttpGetAction
+        end
+        object ToolButton81: TToolButton
+          Left = 47
+          Top = 2
+          Action = SnapshotsFromHttpGetAgainAction
         end
       end
       object Panel1: TPanel
@@ -1606,7 +1601,7 @@ object MainForm: TMainForm
       Images = mainImageList
       OnChange = LogTabControlChange
       OnGetImageIndex = MessagesTabControlGetImageIndex
-      TabIndex = 0
+      TabIndex = 1
       Tabs.Strings = (
         'Notifications'
         'Snapshots'
@@ -2212,20 +2207,6 @@ object MainForm: TMainForm
       ImageIndex = 51
       OnExecute = ReportOnSnapshotsActionExecute
     end
-    object ReadSnapshotInformationAction: TAction
-      Category = 'Reports'
-      Caption = 'Read snapshot information'
-      Hint = 'Read snapshot information from file'
-      ImageIndex = 2
-      OnExecute = ReadSnapshotInformationActionExecute
-    end
-    object SaveSnapshotsAction: TAction
-      Category = 'Reports'
-      Caption = 'Write snapshots information'
-      Hint = 'Write snapshots information to file'
-      ImageIndex = 3
-      OnExecute = SaveSnapshotsActionExecute
-    end
     object ShowGridDifferencesAction: TAction
       Category = 'Messages'
       Caption = 'Compare (requires 2 selected nodes)'
@@ -2603,6 +2584,12 @@ object MainForm: TMainForm
       ImageIndex = 104
       OnExecute = SnapshotsFromHttpGetActionExecute
     end
+    object SnapshotsFromHttpGetAgainAction: TAction
+      Caption = 'SnapshotsFromHttpGetAgainAction'
+      ImageIndex = 105
+      OnExecute = SnapshotsFromHttpGetAgainActionExecute
+      OnUpdate = SnapshotsFromHttpGetAgainActionUpdate
+    end
     object GenerateFunctopnPrototypeListAction: TAction
       Caption = 'GenerateFunctopnPrototypeListAction'
       OnExecute = GenerateFunctopnPrototypeListActionExecute
@@ -2613,7 +2600,7 @@ object MainForm: TMainForm
     left = 112
     top = 112
     Bitmap = {
-      4C69690000001000000010000000000000000000000000000000000000000000
+      4C696A0000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -5973,7 +5960,39 @@ object MainForm: TMainForm
       0000000000FF000000FF000000FF000000FF000000FF00000000000000000000
       00000000FFFF000080FF000000FF000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      000000000000000000FF000000FF
+      000000000000000000FF000000FFE7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800800000FF800000FF800000FF800000FF800000FFE7BFC800E7BFC800E7BF
+      C800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800800000FF8000
+      00FFFF0000FF000000FFFF0000FFFF0000FFFF0000FF800000FF800000FFE7BF
+      C800E7BFC800E7BFC800E7BFC800E7BFC800E7BFC800800000FF000000FFFF00
+      00FF000000FF008000FF008000FF008000FF008000FF008000FFFF0000FF8000
+      00FFE7BFC800E7BFC800E7BFC800E7BFC800800000FF000000FFFF0000FF0080
+      00FF008000FF008000FF008000FF008000FF008000FF008000FF008000FF0080
+      00FFE7BFC800E7BFC800E7BFC800E7BFC800800000FFFF0000FF008000FF0080
+      00FFFF0000FFFF0000FFFF0000FF008000FFFF0000FF008000FF008000FF0080
+      00FFE7BFC800E7BFC800E7BFC800800000FFFF0000FF000000FFFF0000FFFF00
+      00FFFF0000FFFF0000FF000000FF000000FF000000FF000000FF008000FF0080
+      00FF800000FFE7BFC800E7BFC800800000FF000000FFFF0000FFFF0000FF0080
+      00FF008000FF000000FF808080FFFFFF00FF000000FF808080FF000000FFFF00
+      00FF800000FFE7BFC800E7BFC800800000FFFF0000FF000000FFFF0000FFFF00
+      00FF000000FF808080FFFFFF00FFFFFF00FFFFFF00FF000000FF808080FFE7BF
+      C800800000FFE7BFC800E7BFC800800000FF008000FFFF0000FFFF0000FFFF00
+      00FF000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFE7BFC800E7BF
+      C800800000FFE7BFC800E7BFC800800000FF008000FFFF0000FFFF0000FFFF00
+      00FF000000FF000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFFFFFFE7BF
+      C800800000FFE7BFC800E7BFC800E7BFC800800000FF008000FFFF0000FFFF00
+      00FF000000FF808080FF000000FFFFFF00FFFFFF00FFFFFFFFFF808080FFE7BF
+      C800E7BFC800E7BFC800E7BFC800E7BFC800800000FF008000FFFF0000FFFF00
+      00FF008000FF000000FF808080FFE7BFC800FFFFFFFF808080FF000000FF0000
+      80FFE7BFC800E7BFC800E7BFC800E7BFC800E7BFC800800000FFFF0000FFFF00
+      00FFFF0000FF008000FFE7BFC800E7BFC800E7BFC800E7BFC8000000FFFFFFFF
+      FFFF000080FFE7BFC800E7BFC800E7BFC800E7BFC800E7BFC800800000FF8000
+      00FF800000FF800000FF800000FF800000FF800000FFE7BFC800E7BFC8000000
+      FFFFFFFFFFFF000080FFE7BFC800E7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800E7BFC800241CEDFF241CEDFFE7BFC800E7BFC800241CEDFF241CEDFFE7BF
+      C8000000FFFF241CEDFF241CEDFFE7BFC800E7BFC800E7BFC800E7BFC800E7BF
+      C800E7BFC800241CEDFF241CEDFFE7BFC800E7BFC800241CEDFF241CEDFFE7BF
+      C800E7BFC800241CEDFF241CEDFF
     }
   end
   object OpenFileDialog: TOpenDialog
