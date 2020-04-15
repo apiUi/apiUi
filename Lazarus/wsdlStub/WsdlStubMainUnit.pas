@@ -10414,17 +10414,16 @@ begin
                 xPatterns.Text,
                 xsdNowAsDateTime + '  Read from ' + FileNameList.Strings[f]);
               if xMessage.reqBind is TIpmItem then
-  (xMessage.reqBind as TIpmItem)
-                .BufferToValues(FoundErrorInBuffer, xMsgString)
+                with xMessage.reqBind as TIpmItem do
+                  BufferToValues(FoundErrorInBuffer, xMsgString)
               else
               begin
                 xXml := TXml.Create;
                 try
                   xXml.LoadFromString(xMsgString, nil);
-                  WsdlOperation.SoapXmlRequestToBindables(xXml, False);
-(xMessage.reqBind as TXml)
-                  .Reset; (xMessage.reqBind as TXml)
-                  .LoadValues((WsdlOperation.reqBind as TXml), True, True);
+                  WsdlOperation.XmlRequestToBindables (xXml, False);
+                  (xMessage.reqBind as TXml).Reset;
+                  (xMessage.reqBind as TXml).LoadValues((WsdlOperation.reqBind as TXml), True, True);
                 finally
                   xXml.Free;
                 end;
@@ -10437,14 +10436,13 @@ begin
                 xPatterns.Text,
                 xsdNowAsDateTime + '  Read from ' + FileNameList.Strings[f]);
               if xMessage.rpyBind is TIpmItem then
-  (xMessage.rpyBind as TIpmItem)
-                .BufferToValues(FoundErrorInBuffer, xMsgString)
+                 (xMessage.rpyBind as TIpmItem).BufferToValues(FoundErrorInBuffer, xMsgString)
               else
               begin
                 xXml := TXml.Create;
                 try
                   xXml.LoadFromString(xMsgString, nil);
-                  WsdlOperation.SoapXmlReplyToBindables(xXml, False);
+                  WsdlOperation.XmlReplyToBindables (xXml, False);
                   (xMessage.rpyBind as TXml).Reset;
                   (xMessage.rpyBind as TXml).LoadValues((WsdlOperation.rpyBind as TXml), True, True);
                 finally
@@ -10680,24 +10678,30 @@ begin
       if MessagesVTS.Selected[xNode] then
       begin
         xLog := NodeToMsgLog(False,MessagesVTS, xNode);
-        if Assigned(xLog) and Assigned(xLog.Operation) and
-          (xLog.Exception = '') then
+        if Assigned(xLog)
+        and Assigned(xLog.Operation)
+        and (xLog.Exception = '') then
         begin
           xLog.toBindables(xLog.Operation);
           if xLog.Operation.StubAction = saRequest then
           begin
-            xMessage := TWsdlMessage.CreateRequest(xLog.Operation,
-              'Request' + IntToStr(xLog.Operation.Messages.Count),
-              xLog.Operation.CorrelationBindables.ValueText,
-              'Logged at ' + DateTimeToStr(xLog.InboundTimeStamp));
+            xMessage := TWsdlMessage.CreateRequest
+                        ( xLog.Operation
+                        , 'Request' + IntToStr(xLog.Operation.Messages.Count)
+                        , xLog.Operation.CorrelationBindables.ValueText
+                        , 'Logged at ' + DateTimeToStr(xLog.InboundTimeStamp)
+                        );
           end
           else
           begin
-            xMessage := TWsdlMessage.CreateReply(xLog.Operation,
-              'Reply' + IntToStr(xLog.Operation.Messages.Count),
-              xLog.Operation.CorrelationBindables.ValueText,
-              'Logged at ' + DateTimeToStr(xLog.InboundTimeStamp));
+            xMessage := TWsdlMessage.CreateReply
+                       ( xLog.Operation
+                       , 'Reply' + IntToStr(xLog.Operation.Messages.Count)
+                       , xLog.Operation.CorrelationBindables.ValueText
+                       , 'Logged at ' + DateTimeToStr(xLog.InboundTimeStamp)
+                       );
           end;
+          xMessage.DocumentationEdited := True;
           if xLog.Operation.reqBind is TIpmItem then
           begin
             (xMessage.reqBind as TIpmItem).BufferToValues(FoundErrorInBuffer, xLog.RequestBody);

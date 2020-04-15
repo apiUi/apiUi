@@ -1723,7 +1723,7 @@ begin
   end;
   if (BaseDataTypeName = 'dateTime') then
   begin
-    result := '1999-09-20T04:05:06.12300';
+    result := '1999-09-20T04:05:06.123';
   end;
   if (BaseDataTypeName = 'duration') then
   begin
@@ -1755,11 +1755,11 @@ begin
   end;
   if (BaseDataTypeName = 'time') then
   begin
-    result := '13:20:00.100000';
+    result := '13:20:00.100';
   end;
   if (BaseDataTypeName = 'dateTime') then
   begin
-    result := '2010-12-11T13:30:00.200000';
+    result := '2010-12-11T13:30:00.200';
   end;
   if (BaseDataTypeName = 'qName') then
   begin

@@ -4390,7 +4390,7 @@ begin
                     raise Exception.CreateFmt('%s could not parse XML reply (%s)', [_ProgName, e.Message]);
                 end;
                 if xXml.Name <> '' then
-                  aOperation.SoapXmlReplyToBindables(xXml, True);
+                  aOperation.XmlReplyToBindables (xXml, True);
             //              aOperation.rpyBind.LoadValues(xXml, True, False);
               finally
                 xXml.Free;
@@ -4925,7 +4925,7 @@ begin
       if result.reqBind is TIpmItem then
         (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString)
       else
-        result.SoapXmlReplyToBindables (xXml, False);
+        result.XmlReplyToBindables (xXml, False);
     end;
   finally
     FreeAndNil (xXml);
@@ -7081,10 +7081,10 @@ begin
       case result.WsdlService.DescriptionType of
         ipmDTFreeFormat: result.FreeFormatReq := aString;
         ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
-        ipmDTXml: result.SoapXmlRequestToBindables (xXml, False);
-        ipmDTXsd: result.SoapXmlRequestToBindables (xXml, True);
-        ipmDTWsdl: result.SoapXmlRequestToBindables (xXml, True);
-        ipmDTEmail: result.SoapXmlRequestToBindables (xXml, False);
+        ipmDTXml: result.XmlRequestToBindables (xXml, False);
+        ipmDTXsd: result.XmlRequestToBindables (xXml, True);
+        ipmDTWsdl: result.XmlRequestToBindables (xXml, True);
+        ipmDTEmail: result.XmlRequestToBindables (xXml, False);
         ipmDTSwiftMT: result.SwiftMtRequestToBindables(aString);
       end;
     finally
@@ -7444,6 +7444,7 @@ var
   xName: String;
   xStream: TStream;
   xSnapshot: TSnapshot;
+  xOperation: TWsdlOperation;
   sl: TStringList;
 begin
   xBodyXml := nil;
@@ -7520,6 +7521,61 @@ begin
         and (ARequestInfo.Command = 'DELETE')
         then begin
           doClearLogs := True;
+          Exit;
+        end;
+
+        //   /operations/{operationAlias}/delay:
+        if (Count = 6)
+        and (Strings[3] = 'operations')
+        and ((Strings[5] = 'delay'))
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          xOperation := allOperations.FindOnAliasName(Strings[4]);
+          if not Assigned (xOperation) then
+          begin
+            AResponseInfo.ResponseNo := 404;
+            Exit;
+          end;
+          xOperation.AcquireLock;
+          try
+            with TXml.CreateAsString('json', '') do
+            try
+              with AddXml (TXml.CreateAsString('randomBetween', xSnapshot.statusAsText)) do
+              begin
+                AddXml (TXml.CreateAsInteger('min', xOperation.DelayTimeMsMin)).jsonType := jsonNumber;
+                AddXml (TXml.CreateAsInteger('max', xOperation.DelayTimeMsMax)).jsonType := jsonNumber;
+              end;
+              AResponseInfo.ContentText := StreamJSON(0, False);
+              Exit;
+            finally
+              free;
+            end;
+          finally
+            xOperation.ReleaseLock;
+          end;
+        end;
+
+        if (Count = 6)
+        and (Strings[3] = 'operations')
+        and ((Strings[5] = 'delay'))
+        and (ARequestInfo.Command = 'PUT')
+        then begin
+          xOperation := allOperations.FindOnAliasName(Strings[4]);
+          if not Assigned (xOperation) then
+          begin
+            AResponseInfo.ResponseNo := 404;
+            Exit;
+          end;
+          xXml := xBodyXml.ItemByTag['randomBetween'];
+          if not Assigned (xXml) then
+            raise Exception.Create('"randomBetween" expected as root element');
+          xOperation.AcquireLock;
+          try
+            xOperation.DelayTimeMsMin := xXml.Items.XmlIntegerByTagDef['min', 0];
+            xOperation.DelayTimeMsMax := xXml.Items.XmlIntegerByTagDef['max', xOperation.DelayTimeMsMin];
+          finally
+            xOperation.ReleaseLock;
+          end;
           Exit;
         end;
 

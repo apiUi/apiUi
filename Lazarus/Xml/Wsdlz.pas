@@ -428,8 +428,8 @@ type
       procedure RpyBindablesFromWsdlMessage (aMessage: TWsdlMessage);
       procedure RpyBindablesToWsdlMessage (aMessage: TWsdlMessage);
       procedure FreeFormatToBindables (aRequestXml: TXml; aRequestString: String);
-      procedure SoapXmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
-      procedure SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
+      procedure XmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
+      procedure XmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
       procedure RequestStringToBindables (aRequest: String);
       procedure ReplyStringToBindables (aReply: String);
       function CorrelationIdAsText (aSeparator: String): String;
@@ -4837,7 +4837,7 @@ begin
 end;
 
 
-procedure TWsdlOperation.SoapXmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
+procedure TWsdlOperation.XmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
 var
   x, s, d: Integer;
   xXml: TXml;
@@ -4847,7 +4847,7 @@ begin
   aReply.SeparateNsPrefixes;
   aReply.ResolveNameSpaces;
   if aReply.Name = '' then Exit;
-  if aReply.isSoapEnvelope then
+  if self.isSoapService then
   begin
     for x := 0 to aReply.Items.Count - 1 do
     begin
@@ -4877,7 +4877,7 @@ begin
   end;
 end;
 
-procedure TWsdlOperation.SoapXmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
+procedure TWsdlOperation.XmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
 var
   x, s, d: Integer;
   xXml: TXml;
@@ -5277,7 +5277,7 @@ begin
     xXml := TXml.Create (0, (reqBind as TXml).Xsd);
     try
       xXml.LoadFromString(aString, nil);
-      SoapXmlReplyToBindables(xXml, Assigned(Cloned));
+      XmlReplyToBindables(xXml, Assigned(Cloned));
     finally
       FreeAndNil (xXml);
     end;
@@ -5335,7 +5335,7 @@ begin
     xXml := TXml.Create (0, (rpyBind as TXml).Xsd);
     try
       xXml.LoadFromString(aString, nil);
-      SoapXmlReplyToBindables(xXml, Assigned(Cloned));
+      XmlReplyToBindables(xXml, Assigned(Cloned));
     finally
       FreeAndNil (xXml);
     end;
@@ -6361,7 +6361,7 @@ begin
       xXml := TXml.Create;
       try
         xXml.LoadFromString(aReply, nil);
-        SoapXmlReplyToBindables (xXml, Assigned(Cloned));
+        XmlReplyToBindables (xXml, Assigned(Cloned));
       finally
         xXml.Free;
       end;
@@ -6384,7 +6384,7 @@ begin
       xXml := TXml.Create;
       try
         xXml.LoadFromString(aRequest, nil);
-        SoapXmlRequestToBindables (xXml, Assigned (Cloned));
+        XmlRequestToBindables (xXml, Assigned (Cloned));
       finally
         xXml.Free;
       end;
@@ -6416,7 +6416,8 @@ end;
 
 function TWsdlOperation.getisSoapService: Boolean;
 begin
-  result := Wsdl.isSoapService;
+  result := Assigned (Wsdl)
+        and Wsdl.isSoapService;
 end;
 
 function TWsdlOperation.getOpenApiVersion: String;
