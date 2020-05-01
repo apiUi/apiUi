@@ -197,7 +197,7 @@ begin
   result := StringReplace
             ( aXml.asHtmlString
             , '--stylesheet--'
-            , xmlio.ReadStringFromFile(aStylesheet)
+            , xmlio.ReadStringFromFile(aStylesheet, nil)
             , [rfReplaceAll]
             );
 end;

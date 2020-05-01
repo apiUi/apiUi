@@ -8,6 +8,17 @@ uses
   Classes, SysUtils
   , IdHTTP, IdCustomHTTPServer
   ;
+type
+
+{ TStringProvider }
+
+TStringProvider = class(TObject)
+  private
+    s: String;
+  public
+    procedure OnGetString (var aString: String);
+    constructor Create(aString: String);
+end;
 
 
 function urlDecode(const S: String): String;
@@ -17,11 +28,13 @@ function isFileNameAllowed (aFileName: String): Boolean;
 procedure EraseAllFolderContent (aFolderName: String);
 function HttpResponseCodeToText (aCode: Integer): String;
 procedure HttpDownloadToFile (aUrl, aFileName: String);
+procedure apiUiServerDownload (aConfigXml: TObject; aPath, aFileName: String);
+function apiUiServerDialog (aConfigXml: TObject; aPath, aQuery, aVerb, aAcceptContentType: String; aBody: String = ''): String;
 function HttpGetDialog (aUrl, aAcceptContentType: String): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
-function ReadStringFromFile (aFileName: String): String;
+function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject): String;
 procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
@@ -78,6 +91,8 @@ uses StrUtils
    , Controls
    , PromptFolderUnit
 {$endif}
+   , Xmlz
+   , xmlzConsts
    ;
 
 procedure SjowMessage (aString: String);
@@ -560,6 +575,232 @@ begin
   end;
 end;
 
+function apiUiServerDialog (aConfigXml: TObject; aPath, aQuery, aVerb, aAcceptContentType: String; aBody: String = ''): String;
+var
+  x: Integer;
+  HttpClient: TIdHTTP;
+  xResponse, xUrl, xName, xSslVersion: String;
+  xStream: TMemoryStream;
+  dXml: TXml;
+  xStringProvider: TStringProvider;
+begin
+  result := '';
+  xStringProvider := nil;
+  if not Assigned (aConfigXml) then
+    raise Exception.Create ('function HttpDialog no Config assigned');
+  if not (aConfigXml is TXml) then
+    raise Exception.Create ('function HttpDialog no Config XML assigned');
+  if (Length (aPath) = 0)
+  or (aPath[1] <> '/') then
+    raise Exception.Create ('function HttpDialog path must begin with a slash');
+  if (Length (aQuery) > 0)
+  and (aQuery[1] <> '?') then
+    raise Exception.Create ('function HttpDialog query must begin with a questionmark');
+  with TXml.Create do
+  try
+    CopyDownLine (aConfigXml as TXml, True);
+    ResolveAliasses;
+    xUrl := Items.XmlValueByTag['Address'] + aPath + aQuery;
+    HttpClient := TIdHTTP.Create;
+    try
+      xStream := TMemoryStream.Create;
+      try
+        try
+          if UpperCase(Copy (xURL, 1, 8)) = 'HTTPS://' then
+          begin
+            HttpClient.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+            with (HttpClient.IOHandler as TIdSSLIOHandlerSocketOpenSSL) do
+            begin
+              SSLOptions.Method := sslvTLSv1_2;
+              SSLOptions.Mode := sslmUnassigned;
+              SSLOptions.VerifyMode := [];
+              dXml := Items.XmlItemByTag['SSL'];
+              if Assigned (dXml) then with dXml do
+              begin
+                SSLOptions.Method := xmlzConsts.sslVersionFromString(items.XmlValueByTag['Vesrion']);
+                SSLOptions.CertFile := Items.XmlValueByTag['CertificateFile'];
+                SSLOptions.KeyFile := Items.XmlValueByTag['KeyFile'];
+                SSLOptions.RootCertFile := Items.XmlValueByTag['RootCertificateFile'];
+                xStringProvider := TStringProvider.Create(Items.XmlValueByTag['Password']);
+                OnGetPassword := @xStringProvider.OnGetString;
+              end;
+            end;
+          end;
+          dXml := Items.XmlItemByTag['customHeaders'];
+          if Assigned (dXml) then with dXml.Items do
+          begin
+            for x := 0 to Count - 1 do
+            begin
+              if (XmlItems[x].Name = 'Header') then
+              begin
+                with XmlItems[x].Items do
+                begin
+                  xName := XmlCheckedValueByTag ['Name'];
+                  HttpClient.Request.CustomHeaders.Values [xName] := XmlValueByTag ['Value'];
+                  if xName = 'Accept' then
+                    HttpClient.Request.Accept := XmlValueByTag ['Value'];
+                  if xName = 'Content-Type' then
+                    HttpClient.Request.ContentType := XmlValueByTag ['Value'];
+                end;
+              end;
+            end;
+          end;
+          HttpClient.Request.Accept := aAcceptContentType;
+          HttpClient.ProxyParams.ProxyServer := '';
+          HttpClient.ProxyParams.ProxyPort := 0;
+          if UpperCase(aVerb) = 'GET' then HttpClient.Get(xUrl, xStream);
+          SetLength(Result,xStream.Size);
+          xStream.Position := 0;;
+          xStream.Read(Pointer(Result)^,xStream.Size);
+          if HttpClient.ResponseCode <> 200 then
+            raise Exception.CreateFmt ( '%d: %s%s%s'
+                                      , [ HttpClient.ResponseCode
+                                        , HttpClient.ResponseText
+                                        , LineEnding
+                                        , Result
+                                        ]
+                                      );
+        except
+          on e: Exception do
+            raise Exception.Create (e.Message);
+        end;
+      finally
+        FreeAndNil (xStream);
+      end;
+    finally
+      FreeAndNil(xStringProvider);
+      if Assigned (HttpClient) then
+      begin
+        if Assigned (HttpClient.IOHandler) then
+        begin
+          HttpClient.IOHandler.Free;
+          HttpClient.IOHandler := nil;
+        end;
+        if Assigned (HttpClient.Compressor) then
+        begin
+          HttpClient.Compressor.Free;
+          HttpClient.Compressor := nil;
+        end;
+      end;
+      FreeAndNil (HttpClient);
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure apiUiServerDownload(aConfigXml: TObject;aPath, aFileName: String);
+var
+  x: Integer;
+  HttpClient: TIdHTTP;
+  xUrl, xName, xSslVersion: String;
+  xStream: TMemoryStream;
+  dXml: TXml;
+  xStringProvider: TStringProvider;
+begin
+  xStringProvider := nil;
+  if not Assigned (aConfigXml) then
+    raise Exception.Create ('function HttpDialog no Config assigned');
+  if not (aConfigXml is TXml) then
+    raise Exception.Create ('function HttpDialog no Config XML assigned');
+  if (Length (aPath) = 0)
+  or (aPath[1] <> '/') then
+    raise Exception.Create ('function HttpDialog path must begin with a slash');
+  with TXml.Create do
+  try
+    CopyDownLine (aConfigXml as TXml, True);
+    ResolveAliasses;
+    xUrl := Items.XmlValueByTag['Address'] + aPath;
+    HttpClient := TIdHTTP.Create;
+    try
+      xStream := TMemoryStream.Create;
+      try
+        try
+          if UpperCase(Copy (xURL, 1, 8)) = 'HTTPS://' then
+          begin
+            HttpClient.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+            with (HttpClient.IOHandler as TIdSSLIOHandlerSocketOpenSSL) do
+            begin
+              SSLOptions.Method := sslvTLSv1_2;
+              SSLOptions.Mode := sslmUnassigned;
+              SSLOptions.VerifyMode := [];
+              dXml := Items.XmlItemByTag['SSL'];
+              if Assigned (dXml) then with dXml do
+              begin
+                SSLOptions.Method := xmlzConsts.sslVersionFromString(items.XmlValueByTag['Vesrion']);
+                SSLOptions.CertFile := Items.XmlValueByTag['CertificateFile'];
+                SSLOptions.KeyFile := Items.XmlValueByTag['KeyFile'];
+                SSLOptions.RootCertFile := Items.XmlValueByTag['RootCertificateFile'];
+                xStringProvider := TStringProvider.Create(Items.XmlValueByTag['Password']);
+                OnGetPassword := @xStringProvider.OnGetString;
+              end;
+            end;
+          end;
+          dXml := Items.XmlItemByTag['customHeaders'];
+          if Assigned (dXml) then with dXml.Items do
+          begin
+            for x := 0 to Count - 1 do
+            begin
+              if (XmlItems[x].Name = 'Header') then
+              begin
+                with XmlItems[x].Items do
+                begin
+                  xName := XmlCheckedValueByTag ['Name'];
+                  HttpClient.Request.CustomHeaders.Values [xName] := XmlValueByTag ['Value'];
+                  if xName = 'Accept' then
+                    HttpClient.Request.Accept := XmlValueByTag ['Value'];
+                  if xName = 'Content-Type' then
+                    HttpClient.Request.ContentType := XmlValueByTag ['Value'];
+                end;
+              end;
+            end;
+          end;
+          HttpClient.Request.Accept := 'application/octet-stream';
+          HttpClient.ProxyParams.ProxyServer := '';
+          HttpClient.ProxyParams.ProxyPort := 0;
+          HttpClient.Get(xUrl, xStream);
+          if (Pos ('attachment', HttpClient.Response.ContentDisposition) > 0)
+          and (Pos ('filename', HttpClient.Response.ContentDisposition) > 0) then
+          begin
+            xStream.SaveToFile(aFileName);
+          end
+          else
+          begin
+            raise Exception.CreateFmt ( '%d: %s'
+                                      , [ HttpClient.ResponseCode
+                                        , HttpClient.ResponseText
+                                        ]
+                                      );
+          end;
+        except
+          on e: Exception do
+            raise Exception.Create (e.Message);
+        end;
+      finally
+        FreeAndNil (xStream);
+      end;
+    finally
+      FreeAndNil(xStringProvider);
+      if Assigned (HttpClient) then
+      begin
+        if Assigned (HttpClient.IOHandler) then
+        begin
+          HttpClient.IOHandler.Free;
+          HttpClient.IOHandler := nil;
+        end;
+        if Assigned (HttpClient.Compressor) then
+        begin
+          HttpClient.Compressor.Free;
+          HttpClient.Compressor := nil;
+        end;
+      end;
+      FreeAndNil (HttpClient);
+    end;
+  finally
+    Free;
+  end;
+end;
+
 function PromptFolderName(aCaption, aStart: String): String;
 {$ifndef NoGUI}
 var
@@ -689,6 +930,7 @@ function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): Strin
   end;
 var
   httpPath: String;
+  x: Integer;
 begin
   aToRelateFileName := PrepareFileNameSpace(aMainFileName, aToRelateFileName);
   if (AnsiStartsText('http://', aToRelateFileName))
@@ -715,6 +957,9 @@ begin
   or (AnsiStartsText('https://', aMainFileName))
   then
   begin
+    for x := 1 to Length (aMainFileName) do
+      if aMainFileName [x] = '\' then
+        aMainFileName [x] := '/';
     httpPath := _ExtractHttpPath(aMainFileName);
     if (AnsiRightStr(httpPath, 1) = '/')
     and (AnsiLeftStr(aToRelateFileName, 1) = '/') then
@@ -787,7 +1032,7 @@ begin
   end;
 end;
 
-function ReadStringFromFile (aFileName: String): String;
+function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject): String;
   function _GetURLAsString(aURL: string; useSsl: Boolean): string;
   var
     lHTTP: TIdHTTP;
@@ -817,7 +1062,7 @@ function ReadStringFromFile (aFileName: String): String;
       Result := lStream.ReadString(lStream.Size);
       if (lHTTP.ResponseCode < 200)
       or (lHTTP.ResponseCode > 299) then
-        raise Exception.Create(Format ('Responsecode %d result $s', [lHTTP.ResponseCode, Result]));
+        raise Exception.Create(Format ('Responsecode %d result %s', [lHTTP.ResponseCode, Result]));
     finally
       if Assigned (lHTTP)
       and Assigned (lHTTP.IOHandler) then
@@ -838,6 +1083,16 @@ begin
   if (AnsiStartsText('HTTPS://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, true);
+    exit;
+  end;
+  if Assigned (aApiUiServerConfig) then
+  begin
+    result := apiUiServerDialog ( aApiUiServerConfig
+                                , '/apiUi/api/projectdesign/files/' + aFileName
+                                , ''
+                                , 'GET'
+                                , ''
+                                );
     exit;
   end;
   with TFileStream.Create(aFileName,fmOpenRead or fmShareDenyWrite) do
@@ -1096,6 +1351,18 @@ begin
       else Result := Result + '%' + SysUtils.IntToHex(Ord(S[Idx]), 2);
     end;
   end;
+end;
+
+{ TStringProvider }
+
+procedure TStringProvider.OnGetString(var aString: String);
+begin
+  aString := s;
+end;
+
+constructor TStringProvider.Create(aString: String);
+begin
+  s := aString;
 end;
 
 

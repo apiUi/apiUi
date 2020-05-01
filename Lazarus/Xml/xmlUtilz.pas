@@ -138,6 +138,7 @@ function EditXmlXsdBased ( aCaption, aXsdPath, aInitialFocus, aValidateDuplicate
                          ; initialExpandStyle: TBindExpandStyle
                          ; aRootXsd: TXsd
                          ; aXml: TXml
+                         ; aOnlyWhenChanged: Boolean
                          ; aConfirmCallBack: TProcedureBoolean = nil
                          ): Boolean;
 procedure ShowText (aCaption, aText: String);
@@ -206,6 +207,7 @@ function EditXmlXsdBased ( aCaption, aXsdPath, aInitialFocus, aValidateDuplicate
                          ; initialExpandStyle: TBindExpandStyle
                          ; aRootXsd: TXsd
                          ; aXml: TXml
+                         ; aOnlyWhenChanged: Boolean
                          ; aConfirmCallBack: TProcedureBoolean = nil
                          ): Boolean;
 var
@@ -240,7 +242,9 @@ begin
         gForm.ConfirmCallBack := aConfirmCallBack;
         gForm.ShowModal;
         result := (gForm.ModalResult = mrOk)
-              and (gForm.stubChanged);
+              and (   gForm.stubChanged
+                   or (not aOnlyWhenChanged)
+                  );
         if result then
         begin
           aXml.CheckDownline(False);
@@ -264,7 +268,9 @@ begin
         xForm.ConfirmCallBack := aConfirmCallBack;
         xForm.ShowModal;
         result := (xForm.ModalResult = mrOk)
-              and (xForm.isChanged);
+              and (   xForm.isChanged
+                   or (not aOnlyWhenChanged)
+                  );
         if result then
         begin
           aXml.CheckDownline(False);

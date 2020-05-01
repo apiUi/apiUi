@@ -835,4 +835,26 @@ Used to execute operation-scripts without really sending a message</xs:documenta
 			</xs:element>
 		</xs:choice>
 	</xs:complexType>
+	<xs:complexType name="remoteServerConnectionType">
+		<xs:sequence>
+			<xs:element name="Address" type="tns:httpAddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+			<xs:element name="SSL" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Version" type="tns:sslVersionType"/>
+						<xs:element name="CertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="KeyFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="RootCertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="Password" type="tns:passwordType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TestConnection" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
 </xs:schema>

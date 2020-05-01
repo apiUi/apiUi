@@ -75,6 +75,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    CopyRemoteApiUiProjectAction: TAction;
     SnapshotsFromHttpGetAgainAction: TAction;
     GenerateFunctopnPrototypeListAction: TAction;
     SnapshotsFromHttpGetAction: TAction;
@@ -598,6 +599,7 @@ type
     procedure BmtpOperationsActionUpdate(Sender: TObject);
     procedure CobolOperationsActionUpdate(Sender: TObject);
     procedure ContextsActionExecute(Sender: TObject);
+    procedure CopyRemoteApiUiProjectActionExecute(Sender: TObject);
     procedure CopyToClipboardAsJsonMenuItemClick(Sender: TObject);
     procedure EditMessageAfterScriptActionExecute (Sender : TObject );
     procedure EditMessageAfterScriptActionUpdate (Sender : TObject );
@@ -626,6 +628,7 @@ type
     procedure MenuItem60Click(Sender: TObject);
     procedure MenuItem61Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
+    function EditRemoteServerConnectionParams (aCaption: String): Boolean;
     procedure SnapshotsFromHttpGetActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
@@ -1078,9 +1081,9 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
-    procedure SnapshotsFromRemoteServer(aUrl: String);
+    procedure SnapshotsFromRemoteServer;
     procedure GetSnapshotsFromFolder (aList: TSnapshotList; aFolder: String);
-    procedure GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList; aUrl: String);
+    procedure GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
     procedure ShowHelpDocumentation (aName: String);
     procedure EditContexts;
     procedure ShowChosenLogTab;
@@ -1218,6 +1221,7 @@ type
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     function EditScript(aXml: TObject): Boolean;
     function TestDbsConnection(aXml: TObject): Boolean;
+    function TestRemoteServerConnection(aXml: TObject): Boolean;
     function TestProjectFolders(aXml: TObject): Boolean;
     function EditXmlValueAsText(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
@@ -1251,7 +1255,7 @@ type
     claimedReport: TSnapshot;
     mqServerEnv: String;
     CollapseHeaders: Boolean;
-    wsdlStubMessagesFileName, wsdlStubSnapshotsFileName, wsdlStubRemoteServerUrl: String;
+    wsdlStubMessagesFileName, wsdlStubSnapshotsFileName: String;
     log4jEventsFileName: String;
     nStubs: Integer;
     freeStubs: Integer;
@@ -1519,6 +1523,7 @@ begin
                      , esUsed
                      , OperationDefsXsd
                      , xXml
+                     , True
                      ) then
   begin
     stubChanged := True;
@@ -2941,11 +2946,12 @@ begin
                        , esUsed
                        , OperationDefsXsd
                        , xXml
+                       , True
                        ) then
     begin
       stubChanged := True;
       BeginUpdate;
-      se.xsdOperationsUpdate(xXml, se.projectFileName);
+      se.xsdOperationsUpdate(xXml, se.projectFileName, nil);
       IntrospectDesign;
     end;
   finally
@@ -3173,11 +3179,12 @@ begin
                        , esUsed
                        , OperationDefsXsd
                        , xXml
+                       , True
                        ) then
     begin
       stubChanged := True;
       BeginUpdate;
-      se.xmlSampleOperationsUpdate(xXml, se.projectFileName);
+      se.xmlSampleOperationsUpdate(xXml, se.projectFileName, nil);
       IntrospectDesign;
     end;
   finally
@@ -3598,7 +3605,7 @@ begin
     _WsdlDisableOnCorrelate := False;
     XmlUtil.PushCursor (crHourGlass);
     try
-      se.ProjectDesignFromString(aString, aMainFileName);
+      se.ProjectDesignFromString(aString, aMainFileName, nil);
       AcquireLock;
       try
         PrepareOperation;
@@ -4200,7 +4207,7 @@ var
 begin
   xXml := OptionsAsXml;
   try
-    if EditXmlXsdBased('Options', '', '', '', False, False, esUsed, optionsXsd, xXml, ConfirmTemporarelyInactivity) then
+    if EditXmlXsdBased('Options', '', '', '', False, False, esUsed, optionsXsd, xXml, True, ConfirmTemporarelyInactivity) then
     begin
       isOptionsChanged := True;
       OptionsFromXml(xXml);
@@ -5489,7 +5496,7 @@ begin
         end;
       end;
       if EditXmlXsdBased('Configure Endpoint', '', '', '', False, False, esUsed,
-        endpointConfigXsd, xXml) then
+        endpointConfigXsd, xXml, True) then
       begin
         AcquireLock;
         try
@@ -5957,6 +5964,27 @@ begin
   end;
 end;
 
+function TMainForm.TestRemoteServerConnection(aXml: TObject): Boolean;
+var
+  xXml: TXml;
+begin
+  result := False;
+  xXml := TXml.Create;
+  try
+    try
+      xXml.CopyDownLine((aXml as TXml).Parent as TXml, True);
+      xmlio.apiUiServerDialog(xXml, '/apiUi/api/testconnection', '', 'GET', 'application/json');
+      ShowMessage('Remote apiUi server connected OK');
+      result := True;
+    except
+      on e: exception do
+        ShowMessage(e.Message);
+    end;
+  finally
+    xXml.Free;
+  end;
+end;
+
 function TMainForm.TestProjectFolders(aXml: TObject): Boolean;
 var
   xXml: TXml;
@@ -6076,6 +6104,7 @@ begin
                        , esUsed
                        , ScriptsXsd
                        , xXml
+                       , True
                        ) then
     begin
       stubChanged := True;
@@ -6608,8 +6637,9 @@ begin
   for x := 0 to nMessageButtonColumns - 1 do
     GridView.Header.Columns[x].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
+  se.remoteServerConnectionXml.LoadFromString(xIniFile.StringByName['remoteServerConnectionXml'], nil);
+  se.remoteServerConnectionXml.Name := 'remoteServerConnection';
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
-  wsdlStubRemoteServerUrl := xIniFile.StringByNameDef['wsdlStubRemoteServerUrl', 'http://localhost:80'];
   wsdlStubSnapshotsFileName := xIniFile.StringByName['wsdlStubSnapshotsFileName'];
   DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
   BetaMode := xIniFile.BooleanByNameDef['BetaMode', False];
@@ -6840,7 +6870,7 @@ begin
   xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
   xIniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
   xIniFile.StringByName['wsdlStubSnapshotsFileName'] := wsdlStubSnapshotsFileName;
-  xIniFile.StringByName['wsdlStubRemoteServerUrl'] := wsdlStubRemoteServerUrl;
+  xIniFile.StringByName['remoteServerConnectionXml'] := se.remoteServerConnectionXml.Text;
   xIniFile.StringByName['tacoHost'] := tacoHost;
   xIniFile.IntegerByName['tacoPort'] := tacoPort;
   xIniFile.IntegerByName['LogFilter.FilterStyle'] := Ord
@@ -9287,6 +9317,7 @@ begin
                        , esOne
                        , projectOptionsXsd
                        , xXml
+                       , True
                        , ConfirmTemporarelyInactivity
                        ) then
     begin
@@ -9885,11 +9916,11 @@ begin
   xXsdDescr := TXsdDescr.Create;
   try
     try
-      xXsdDescr.LoadXsdFromFile(xFileName, nil);
+      xXsdDescr.LoadXsdFromFile(xFileName, nil, nil);
       xXml := TXml.Create(0, xXsdDescr.TypeDef.ElementDefs.Xsds[0]);
       try
         EditXmlXsdBased('Press Ctrl_Alt_H to generate Help file', 'Menu',
-          'Menu', '', True, False, esUsed, xXsdDescr.TypeDef.ElementDefs.Xsds[0], xXml);
+          'Menu', '', True, False, esUsed, xXsdDescr.TypeDef.ElementDefs.Xsds[0], xXml, True);
       finally
         FreeAndNil(xXml);
       end;
@@ -10406,7 +10437,7 @@ begin
                 False) <> WsdlOperation.CorrelationBindables.Count) then
               raise Exception.Create('Filename: ' + xFileName +
                   ' does not fit correlation');
-            xMsgString := ReadStringFromFile(FileNameList.Strings[f]);
+            xMsgString := ReadStringFromFile(FileNameList.Strings[f], nil);
             if WsdlOperation.StubAction = saRequest then
             begin
               xMessage := TWsdlMessage.CreateRequest(WsdlOperation,
@@ -10847,6 +10878,7 @@ begin
                     , esUsed
                     , projectOptionsXsd
                     , xXml
+                    , True
                     ) then
   begin
     AcquireLock;
@@ -11345,7 +11377,7 @@ begin
   begin
     xXml := OptionsAsXml;
     try
-      if EditXmlXsdBased('Service Options', '', '', '', False, False, esUsed, serviceOptionsXsd, xXml) then
+      if EditXmlXsdBased('Service Options', '', '', '', False, False, esUsed, serviceOptionsXsd, xXml, True) then
       begin
         AcquireLock;
         try
@@ -11378,6 +11410,7 @@ begin
                      , esUsed
                      , OperationDefsXsd
                      , xXml
+                     , True
                      ) then
   begin
     stubChanged := True;
@@ -11401,7 +11434,7 @@ begin
   xXml := TXml.Create;
   try
     xXml.CopyDownLine(se.Listeners.SpecificationXml, True);
-    if EditXmlXsdBased('Configure Listeners', '', '', '', False, False, esUsed, listenersConfigXsd, xXml, ConfirmTemporarelyInactivity) then
+    if EditXmlXsdBased('Configure Listeners', '', '', '', False, False, esUsed, listenersConfigXsd, xXml, True, ConfirmTemporarelyInactivity) then
     begin
       stubChanged := True;
       se.Listeners.SpecificationXml.CopyDownLine(xXml, True);
@@ -11436,7 +11469,7 @@ begin
   xXml := se.ProjectLogOptionsAsXml;
   try
     if EditXmlXsdBased('Project log options', 'projectOptions.Log',
-      'Log.maxEntries', '', False, False, esUsed, projectOptionsXsd, xXml) then
+      'Log.maxEntries', '', False, False, esUsed, projectOptionsXsd, xXml, True) then
     begin
       AcquireLock;
       try
@@ -11588,7 +11621,7 @@ begin
     xLog := TLog.Create;
     try
       if aIsFileName then
-        xXml.LoadFromFile(aString, nil)
+        xXml.LoadFromFile(aString, nil, nil)
       else
         xXml.LoadFromString(aString, nil);
       xXml.SeparateNsPrefixes;
@@ -11677,11 +11710,12 @@ begin
                      , esUsed
                      , OperationDefsXsd
                      , xXml
+                     , True
                      ) then
   begin
     stubChanged := True;
     BeginUpdate;
-    se.swiftMtOperationsUpdate(xXml, se.projectFileName);
+    se.swiftMtOperationsUpdate(xXml, se.projectFileName, nil);
     IntrospectDesign;
   end;
 end;
@@ -12149,7 +12183,7 @@ procedure TMainForm .SchemasToZipExecute (Sender : TObject );
           begin
             xXml := TXml.Create;
             try
-              xXml.LoadFromFile(slFileNames.Strings[n], nil);
+              xXml.LoadFromFile(slFileNames.Strings[n], nil, nil);
               _scanXml (xXml, slFileNames.Strings[n]);
               MS := TStringStream.Create(xXml.Text);
               try
@@ -12317,6 +12351,7 @@ begin
                          , esUsed
                          , operationOptionsXsd
                          , xXml
+                         , True
                          ) then
       begin
         AcquireLock;
@@ -12502,7 +12537,7 @@ begin
     try
       xXml := TXml.Create;
       try
-        xXml.LoadFromFile(OpenFileDialog.FileName, nil);
+        xXml.LoadFromFile(OpenFileDialog.FileName, nil, nil);
         if xXml.Name <> 'projectScripts' then
           raise Exception.CreateFmt('%s does not contain a valid Script export', [OpenFileDialog.FileName]);
         se.ProjectScriptsFromXml(xXml);
@@ -13018,7 +13053,7 @@ begin
         and (xReport is TRegressionSnapshot) then
         try
           xmlio.SaveStringToFile ( xReport.RefFileName
-                                 , xmlio.ReadStringFromFile (xReport.FileName)
+                                 , xmlio.ReadStringFromFile (xReport.FileName, nil)
                                  );
           xReport.Status := rsOk;
           xReport.Message := '';
@@ -13307,11 +13342,12 @@ begin
                        , esUsed
                        , OperationDefsXsd
                        , xXml
+                       , True
                        ) then
     begin
       stubChanged := True;
       BeginUpdate;
-      se.ApiByExampleOperationsUpdate(xXml, se.projectFileName);
+      se.ApiByExampleOperationsUpdate(xXml, se.projectFileName, nil);
       IntrospectDesign;
     end;
   finally
@@ -13654,7 +13690,7 @@ begin
       if not xWsdl.ExtraXsds.Find(FileName, f) then
       begin
         xWsdl.ExtraXsds.Add (FileName);
-        xWsdl.LoadExtraXsds;
+        xWsdl.LoadExtraXsds (nil);
       end;
       if ElementOrTypeDefRef = etElementRef then
       begin
@@ -13730,6 +13766,7 @@ begin
                      , esUsed
                      , OperationDefsXsd
                      , xXml
+                     , True
                      ) then
   begin
     stubChanged := True;
@@ -13796,6 +13833,16 @@ begin
   end;
 end;
 
+procedure TMainForm.CopyRemoteApiUiProjectActionExecute(Sender: TObject);
+begin
+  if EditRemoteServerConnectionParams('Remote apiUi server connection') then
+  begin
+    BeginUpdate;
+    captionFileName := se.RemoteServerUrl;
+    TProcedureThread.Create(False, False, se, se.OpenFromServerUrl);
+  end;
+end;
+
 procedure TMainForm.CopyToClipboardAsJsonMenuItemClick(Sender: TObject);
 begin
   xmlUtil.CopyToClipboard(tlsJson, NodeToBind(InWsdlTreeView,
@@ -13857,6 +13904,7 @@ begin
                      , esUsed
                      , OperationDefsXsd
                      , xXml
+                     , True
                      ) then
   begin
     stubChanged := True;
@@ -13928,24 +13976,28 @@ begin
   ShowHelpDocumentation('Operations_Popup_Menu');
 end;
 
-procedure TMainForm.GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList; aUrl: String);
+procedure TMainForm.GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
 var
   x, f: Integer;
   xXml, dXml: TXml;
   snapshot: TSnapshot;
-  xName: String;
+  xName, xUrl: String;
   xDateTime: TDateTime;
 begin
   xXml := TXml.Create;
+  xUrl := se.remoteServerConnectionXml.items.XmlValueByTag['Address'];
   try
-    xXml.LoadJsonFromString ( xmlio.HttpGetDialog ( aUrl + '/apiUi/api/snapshots'
-                                                  , 'application/json'
-                                                  )
+    xXml.LoadJsonFromString ( xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                                      , '/apiUi/api/snapshots'
+                                                      , ''
+                                                      , 'GET'
+                                                      , 'application/json'
+                                                      )
                             , nil
                             );
     dXml := xXml.FindXml('json.snapshots');
     if not Assigned (dXml) then
-      raise Exception.Create('unexpected result from get:' + wsdlStubRemoteServerUrl + '/apiUi/api/snapshots');
+      raise Exception.Create('unexpected result from get:' + xUrl + '/apiUi/api/snapshots');
     for x := 0 to dXml.Items.Count - 1 do
     with dXml.Items.XmlItems[x] do
     begin
@@ -13957,9 +14009,10 @@ begin
         if xDateTime > snapshot.timeStamp then
         begin
           slc.SaveObject (Items.XmlValueByTag['createdOn'], snapshot);
-          xmlio.HttpDownloadToFile ( aUrl + '/apiUi/api/snapshots/download/' + xName
-                                   , snapshot.FileName
-                                   );
+          xmlio.apiUiServerDownload ( se.remoteServerConnectionXml
+                                    , '/apiUi/api/snapshots/download/' + xName
+                                    , snapshot.FileName
+                                    );
           xmlio.SetFileChangedTime (snapshot.FileName, xDateTime);
         end;
       end
@@ -13973,7 +14026,7 @@ begin
         snapshot.timeStamp := XmlToDateTime(Items.XmlValueByTag['createdOn']);
         snapshot.OnReport := se.doRegressionReport;
         sln.SaveObject(xName, snapshot);
-        xmlio.HttpDownloadToFile ( aUrl + '/apiUi/api/snapshots/download/' + xName
+        xmlio.HttpDownloadToFile ( xUrl + '/apiUi/api/snapshots/download/' + xName
                                  , snapshot.FileName
                                  );
       end;
@@ -13983,7 +14036,7 @@ begin
   end;
 end;
 
-procedure TMainForm.SnapshotsFromRemoteServer(aUrl: String);
+procedure TMainForm.SnapshotsFromRemoteServer;
 var
   x: Integer;
   xName: String;
@@ -14006,7 +14059,7 @@ begin
       finally
         se.ReleaseLogLock;
       end;
-      GetSnapshotsFromRemoteServer (slx, sln, slc, wsdlStubRemoteServerUrl);
+      GetSnapshotsFromRemoteServer (slx, sln, slc);
       se.AcquireLogLock;
       try
         for x := 0 to slc.Count - 1 do with slc.SnapshotItems[x] do
@@ -14033,20 +14086,52 @@ begin
   end;
 end;
 
+function TMainForm.EditRemoteServerConnectionParams(aCaption: String): Boolean;
+var
+  xXml: TXml;
+  xXsd: TXsd;
+begin
+  result := False;
+  xXsd := remoteServerConnectionXsd.XsdByCaption ['remoteServerConnection.TestConnection'];
+  xXsd.EditProcedure := TestRemoteServerConnection;
+  xXsd.isCheckboxDisabled := True;
+  xXml := TXml.Create;
+  try
+    xXml.CopyDownLine(se.remoteServerConnectionXml, True);
+    if EditXmlXsdBased (aCaption
+                       , ''
+                       , ''
+                       , ''
+                       , False
+                       , False
+                       , esOne
+                       , remoteServerConnectionXsd
+                       , xXml
+                       , False
+                       ) then
+    begin
+      se.remoteServerConnectionXml.CopyDownLine(xXml, True);
+      Result := True;
+    end;
+  finally
+    xXml.Free;
+  end;
+end;
+
 procedure TMainForm.SnapshotsFromHttpGetActionExecute(Sender: TObject);
 begin
-  if BooleanStringDialog('URL of remote apiServer', wsdlStubRemoteServerUrl, wsdlStubRemoteServerUrl) then
-    TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer, wsdlStubRemoteServerUrl);
+  if EditRemoteServerConnectionParams('Remote apiUi server connection') then
+    TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer);
 end;
 
 procedure TMainForm.SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
 begin
-  TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer, wsdlStubRemoteServerUrl);
+  TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer);
 end;
 
 procedure TMainForm.SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
 begin
-  SnapshotsFromHttpGetAgainAction.Enabled := (wsdlStubRemoteServerUrl <> '');
+  SnapshotsFromHttpGetAgainAction.Enabled := Assigned (se) and Assigned (se.remoteServerConnectionXml);
 end;
 
 procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);

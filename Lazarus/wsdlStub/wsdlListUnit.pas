@@ -136,9 +136,9 @@ begin
           xExt := UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text));
           if (xExt = '.JSON')
           or (xExt = '.YAML') then
-            Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil)
+            Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil, nil)
           else
-            wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil);
+            wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil, nil);
           Wsdl.XsdDescr.Finalise;
         except
           Wsdl.Free;

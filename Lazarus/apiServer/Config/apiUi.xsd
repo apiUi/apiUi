@@ -1951,6 +1951,7 @@ The name you use here will be the name of the menu-item added to the script menu
 			<xs:documentation>Describes Tandem client configuration</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="remoteServerConnection" type="epc:remoteServerConnectionType"/>
 	<xs:element name="Options">
 		<xs:annotation>
 			<xs:documentation>apiUi options;

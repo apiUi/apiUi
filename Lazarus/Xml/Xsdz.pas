@@ -283,13 +283,13 @@ type
     function FindElement(aNameSpace, aName: String): TXsd;
     function xsdFindTypeDef(aNameSpace, aName: String): TXsdDataType;
     procedure AddBuiltIns;
-    procedure AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent);
+    procedure AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject);
     function AddTypeDefFromJsonXml(aFileName, aNameSpace: String; aXml: TObject; ErrorFound: TOnErrorEvent): TXsdDataType;
-    procedure AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);
-    function LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent): Boolean;
-    function LoadXsdFromXmlSampleFile(aFileName: String; ErrorFound: TOnErrorEvent): TXsd;
-    function LoadXsdFromJsonSampleFile(aFileName: String; ErrorFound: TOnErrorEvent): TXsd;
-    function LoadXsdFromString(aString: String; ErrorFound: TOnErrorEvent): Boolean;
+    procedure AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject);
+    function LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject): Boolean;
+    function LoadXsdFromXmlSampleFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject): TXsd;
+    function LoadXsdFromJsonSampleFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject): TXsd;
+    function LoadXsdFromString(aString: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject): Boolean;
     function ChangedElementTypedefsAsXml: TObject;
     procedure ChangedElementTypedefsFromXml (aXml: TObject);
     function AddedTypeDefElementsAsXml: TObject;
@@ -979,7 +979,7 @@ begin
   end;
 end;
 
-procedure TXsdDescr.AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent);
+procedure TXsdDescr.AddXsdFromXml(aXml: TObject; aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject);
 var
   x: Integer;
   xXml: TXml;
@@ -1001,7 +1001,7 @@ begin
     begin
       for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
         if XmlItems[x].Name = tagSchema then
-          AddXsdFromXml (XmlItems[x], aFileName, ErrorFound);
+          AddXsdFromXml (XmlItems[x], aFileName, ErrorFound, aApiUiServerConfig);
       exit; // only here for the schema(s)
     end;
     xTargetNameSpace := xXml.Attributes.ValueByTag[tagTargetNamespace];
@@ -1009,10 +1009,19 @@ begin
     begin
       if (XmlItems[x].Name = tagImport)
       then
-        AddXsdFromFile ('', ExpandRelativeFileName(aFileName, XmlItems[x].Attributes.ValueByTag[tagSchemaLocation]), ErrorFound);
+        AddXsdFromFile ( ''
+                       , ExpandRelativeFileName(aFileName
+                       , XmlItems[x].Attributes.ValueByTag[tagSchemaLocation])
+                       , ErrorFound
+                       , aApiUiServerConfig
+                       );
       if (XmlItems[x].Name = tagInclude)
       then
-        AddXsdFromFile (xTargetNameSpace, ExpandRelativeFileName(aFileName, XmlItems[x].Attributes.ValueByTag[tagSchemaLocation]), ErrorFound);
+        AddXsdFromFile ( xTargetNameSpace
+                       , ExpandRelativeFileName(aFileName, XmlItems[x].Attributes.ValueByTag[tagSchemaLocation])
+                       , ErrorFound
+                       , aApiUiServerConfig
+                       );
     end;
     xsdElementFormDefaultQualified := (xXml.Attributes.ValueByTag[tagElementFormDefault] = tagQualified);
     xsdAttributeFormDefaultQualified := (xXml.Attributes.ValueByTag[tagAttributeFormDefault] = tagQualified);
@@ -1268,7 +1277,7 @@ begin
   result := _AddTypeDefFromJsonXml (TypeDefs, aXml as TXml);
 end;
 
-procedure TXsdDescr.AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent);
+procedure TXsdDescr.AddXsdFromFile(aOverruleNamespace, aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject);
   procedure _inheritTargetNamespace (aXml: TXml);
   var
     xAttr: TXmlAttribute;
@@ -1287,19 +1296,19 @@ begin
   ReadFileNames.Add(aOverruleNamespace + ';' + aFileName);
   xXml := TXml.Create;
   try
-    xXml.LoadFromString(ReadStringFromFile(aFileName), ErrorFound);
+    xXml.LoadFromString(ReadStringFromFile(aFileName, aApiUiServerConfig), ErrorFound);
     xXml.PopulateSourceFileName(aFileName);
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
     if aOverruleNamespace <> '' then
       _inheritTargetNamespace (xXml);
-    AddXsdFromXml(xXml, aFileName, ErrorFound);
+    AddXsdFromXml(xXml, aFileName, ErrorFound,aApiUiServerConfig);
   finally
     xXml.Free;
   end;
 end;
 
-function TXsdDescr.LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent): Boolean;
+function TXsdDescr.LoadXsdFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject): Boolean;
 begin
   result := False;
   Clear;
@@ -1308,17 +1317,17 @@ begin
     fMainFileName := ExpandFileNameUTF8(aFileName)
   else
     fMainFileName := aFileName;
-  AddXsdFromFile ('', fMainFileName, ErrorFound);
+  AddXsdFromFile ('', fMainFileName, ErrorFound, aApiUiServerConfig);
   Finalise;
 end;
 
-function TXsdDescr.LoadXsdFromXmlSampleFile (aFileName: String; ErrorFound: TOnErrorEvent): TXsd ;
+function TXsdDescr.LoadXsdFromXmlSampleFile (aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject): TXsd ;
 var
   xXml: TXml;
 begin
   xXml := TXml.Create;
   try
-    xXml.LoadFromFile(aFileName,nil);
+    xXml.LoadFromFile(aFileName,nil, aApiUiServerConfig);
     if xXml.Name = '' then
       raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Xml: ' + aFileName);
     xXml.SeparateNsPrefixes;
@@ -1329,14 +1338,14 @@ begin
   end;
 end;
 
-function TXsdDescr.LoadXsdFromJsonSampleFile (aFileName: String; ErrorFound: TOnErrorEvent): TXsd ;
+function TXsdDescr.LoadXsdFromJsonSampleFile (aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject): TXsd ;
 var
   xXml: TXml;
 begin
   xXml := TXml.Create;
   try
     try
-      xXml.LoadJsonFromFile(aFileName,nil);
+      xXml.LoadJsonFromFile(aFileName,nil, aApiUiServerConfig);
     except
       raise Exception.Create('LoadXsdFromXmlSampleFile: Could not read as Json: ' + aFileName);
     end;
@@ -1347,8 +1356,10 @@ begin
   end;
 end;
 
-function TXsdDescr .LoadXsdFromString (aString : String ;
-  ErrorFound : TOnErrorEvent ): Boolean ;
+function TXsdDescr .LoadXsdFromString ( aString : String
+                                      ; ErrorFound : TOnErrorEvent
+                                      ; aApiUiServerConfig: TObject
+                                      ): Boolean ;
 var
   xXml: TXml;
 begin
@@ -1360,7 +1371,7 @@ begin
     xXml.LoadFromString(aString, ErrorFound);
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
-    AddXsdFromXml(xXml, '', ErrorFound);
+    AddXsdFromXml(xXml, '', ErrorFound, aApiUiServerConfig);
   finally
     xXml.Free;
   end;
