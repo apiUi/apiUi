@@ -75,6 +75,7 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    SaveRemoteApiUiProjectAction: TAction;
     CopyRemoteApiUiProjectAction: TAction;
     SnapshotsFromHttpGetAgainAction: TAction;
     GenerateFunctopnPrototypeListAction: TAction;
@@ -629,6 +630,7 @@ type
     procedure MenuItem61Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
     function EditRemoteServerConnectionParams (aCaption: String): Boolean;
+    procedure SaveRemoteApiUiProjectActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
@@ -14010,7 +14012,7 @@ begin
         begin
           slc.SaveObject (Items.XmlValueByTag['createdOn'], snapshot);
           xmlio.apiUiServerDownload ( se.remoteServerConnectionXml
-                                    , '/apiUi/api/snapshots/download/' + xName
+                                    , '/apiUi/api/snapshots/download/' + urlPercentEncode(xName)
                                     , snapshot.FileName
                                     );
           xmlio.SetFileChangedTime (snapshot.FileName, xDateTime);
@@ -14026,9 +14028,10 @@ begin
         snapshot.timeStamp := XmlToDateTime(Items.XmlValueByTag['createdOn']);
         snapshot.OnReport := se.doRegressionReport;
         sln.SaveObject(xName, snapshot);
-        xmlio.HttpDownloadToFile ( xUrl + '/apiUi/api/snapshots/download/' + xName
-                                 , snapshot.FileName
-                                 );
+        xmlio.apiUiServerDownload ( se.remoteServerConnectionXml
+                                  , '/apiUi/api/snapshots/download/' + urlPercentEncode(xName)
+                                  , snapshot.FileName
+                                  );
       end;
     end;
   finally
@@ -14115,6 +14118,20 @@ begin
     end;
   finally
     xXml.Free;
+  end;
+end;
+
+procedure TMainForm.SaveRemoteApiUiProjectActionExecute(Sender: TObject);
+begin
+  if EditRemoteServerConnectionParams('Remote apiUi server connection') then
+  begin
+    xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                            , '/apiUi/api/projectdesign'
+                            , ''
+                            , 'POST'
+                            , 'application/json'
+                            , se.ProjectDesignAsString
+                            );
   end;
 end;
 

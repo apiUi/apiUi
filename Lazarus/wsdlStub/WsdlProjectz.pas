@@ -111,6 +111,7 @@ type
     function gethasXmlSampleOperations: Boolean;
     function gethasXsdOperation: Boolean;
     function getIsBusy: Boolean;
+    function getRemoteServerUrl: String;
     function SendNoneMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
                              ): String;
@@ -190,7 +191,7 @@ type
     PathInfos, PathRegexps, PathFormats: TStringList;
     Scripts: TXml;
     DisplayedLogColumns: TStringList;
-    projectFileName, RemoteServerUrl, LicenseDbName: String;
+    projectFileName, LicenseDbName: String;
     displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs: TLogList;
     displayedSnapshots, toDisplaySnapshots: TSnapshotList;
@@ -392,6 +393,7 @@ type
       var ConnectOptions: TConnectOption; var EventStatus: TEventStatus);
     {$ENDIF}
     procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
+    property RemoteServerUrl: String read getRemoteServerUrl;
     property OnNeedTacoHostData: TOnNeedTacoInterfaceData write setOnNeedTacoHostData;
     property OnTacoAutorize: TNotifyEvent write setOnTacoAutorize;
     property doClearLogs: Boolean read getDoClearLogs write setDoClearLogs;
@@ -7032,6 +7034,13 @@ begin
   end;
 end;
 
+function TWsdlProject.getRemoteServerUrl: String;
+begin
+  result := '';
+  if Assigned(remoteServerConnectionXml) then
+    result := remoteServerConnectionXml.Items.XmlValueByTag['Address'];
+end;
+
 function TWsdlProject.SendNoneMessage(aOperation: TWsdlOperation; aMessage: String): String;
 begin
   result := '';
@@ -7446,9 +7455,11 @@ procedure TWsdlProject.HTTPServerRemoteControlApi ( AContext: TIdContext
   begin
     with SeparatedStringList(nil, aString, '/') do
     try
-      SjowMessage(Format ('Count: %d %s', [Count, aString]));
+      SjowMessage(Format ('%s Count: %d %s', [ARequestInfo.Command, Count, aString]));
+{
       for x := 0 to Count - 1 do
         SjowMessage(Strings [x]);
+}
     finally
       Free;
     end;
@@ -9494,13 +9505,12 @@ begin
     try
       xXml := TXml.Create;
       try
-        xXml.LoadFromString(xmlio.HttpGetDialog(RemoteServerUrl, 'application/xml'), nil);
+        xXml.LoadFromString(xmlio.apiUiServerDialog(remoteServerConnectionXml, '/apiUi/api/projectdesign', '', 'GET', 'application/xml'), nil);
         if xXml.Name = '' then
           raise Exception.Create('Could not read Xml read from ' + RemoteServerUrl);
         dXml := xXml.FindXml('WsdlStubCase.FileName', '.');
         if not Assigned(dXml) then
           raise Exception.Create('Invalid Xml read from ' + RemoteServerUrl);
-        dXml.Value := RemoteServerUrl + '/files/';
         ProjectDesignFromXml(xXml, dXml.Value, remoteServerConnectionXml);
         StubRead := False;
         StubChanged := True;

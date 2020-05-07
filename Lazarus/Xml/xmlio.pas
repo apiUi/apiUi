@@ -23,6 +23,7 @@ end;
 
 function urlDecode(const S: String): String;
 function urlEncode(const S: String): String;
+function urlPercentEncode(const S: String): String;
 function makeFileNameAllowed(aFileName: String): String;
 function isFileNameAllowed (aFileName: String): Boolean;
 procedure EraseAllFolderContent (aFolderName: String);
@@ -82,6 +83,7 @@ uses StrUtils
    , versiontypes, versionresource
    , IdSSLOpenSSL
    , idStack
+   , IdGlobal
    , LConvEncoding
    , base64
    , RegExpr
@@ -580,11 +582,13 @@ var
   x: Integer;
   HttpClient: TIdHTTP;
   xResponse, xUrl, xName, xSslVersion: String;
-  xStream: TMemoryStream;
+  xStream, sStream: TMemoryStream;
   dXml: TXml;
   xStringProvider: TStringProvider;
 begin
   result := '';
+  sStream := nil;
+  aVerb := UpperCase(aVerb);
   xStringProvider := nil;
   if not Assigned (aConfigXml) then
     raise Exception.Create ('function HttpDialog no Config assigned');
@@ -604,6 +608,14 @@ begin
     HttpClient := TIdHTTP.Create;
     try
       xStream := TMemoryStream.Create;
+      if (aVerb = 'POST')
+      or (aVerb = 'PUT') then
+      begin
+        sStream := TMemoryStream.Create;
+        IdGlobal.WriteStringToStream(sStream, aBody, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
+        HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
+        HttpClient.Request.CharSet := '';
+      end;
       try
         try
           if UpperCase(Copy (xURL, 1, 8)) = 'HTTPS://' then
@@ -648,11 +660,14 @@ begin
           HttpClient.Request.Accept := aAcceptContentType;
           HttpClient.ProxyParams.ProxyServer := '';
           HttpClient.ProxyParams.ProxyPort := 0;
-          if UpperCase(aVerb) = 'GET' then HttpClient.Get(xUrl, xStream);
+          if aVerb = 'GET' then HttpClient.Get (xUrl, xStream);
+          if aVerb = 'POST' then HttpClient.Post (xUrl, sStream, xStream);
+          if aVerb = 'PUT' then HttpClient.Put (xUrl, sStream, xStream);
           SetLength(Result,xStream.Size);
           xStream.Position := 0;;
           xStream.Read(Pointer(Result)^,xStream.Size);
-          if HttpClient.ResponseCode <> 200 then
+          if (HttpClient.ResponseCode < 200)
+          or (HttpClient.ResponseCode > 299) then
             raise Exception.CreateFmt ( '%d: %s%s%s'
                                       , [ HttpClient.ResponseCode
                                         , HttpClient.ResponseText
@@ -666,6 +681,7 @@ begin
         end;
       finally
         FreeAndNil (xStream);
+        FreeAndNil (sStream);
       end;
     finally
       FreeAndNil(xStringProvider);
@@ -1088,7 +1104,7 @@ begin
   if Assigned (aApiUiServerConfig) then
   begin
     result := apiUiServerDialog ( aApiUiServerConfig
-                                , '/apiUi/api/projectdesign/files/' + aFileName
+                                , '/apiUi/api/projectdesign/files/' + urlPercentEncode (aFileName)
                                 , ''
                                 , 'GET'
                                 , ''
@@ -1348,6 +1364,20 @@ begin
     case S[Idx] of
       'A'..'Z', 'a'..'z', '0'..'9', '-', '_', '.': Result := Result + S[Idx];
       ' ': Result := Result + '+';
+      else Result := Result + '%' + SysUtils.IntToHex(Ord(S[Idx]), 2);
+    end;
+  end;
+end;
+
+function urlPercentEncode(const S: String): String;
+var
+  Idx: Integer; // loops thru characters in string
+begin
+  Result := '';
+  for Idx := 1 to Length(S) do
+  begin
+    case S[Idx] of
+      'A'..'Z', 'a'..'z', '0'..'9', '-', '_', '.': Result := Result + S[Idx];
       else Result := Result + '%' + SysUtils.IntToHex(Ord(S[Idx]), 2);
     end;
   end;
