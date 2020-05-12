@@ -19,6 +19,7 @@ TStringProvider = class(TObject)
     procedure OnGetString (var aString: String);
     constructor Create(aString: String);
 end;
+type TProcedureS = procedure (arg: String) of Object;
 
 
 function urlDecode(const S: String): String;
@@ -36,7 +37,7 @@ function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
 function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject): String;
-procedure SaveStringToFile (aFileName: String; aString: String);
+procedure SaveStringToFile (aFileName: String; aString: String; aOnBeforeRead: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function uncFilename (aFileName: String): String;
@@ -60,6 +61,7 @@ function togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer): Bo
 function isOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
 function setOneTimeContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
 function toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
+function osDirectorySeparators (aName: String): String;
 
 const base64DocxStartStr = 'UEsDBB';
 const base64PdfStartStr = 'JVBERi';
@@ -145,6 +147,16 @@ function toggleOneTimeContextsColumn(aContexts: TObject; aColumn: Integer
 begin
   with aContexts as TStringListList do
     CellObject[aColumn, 0] := TObject (QWord (CellObject[aColumn, 0]) xor OneTimeContextsOptionValue);
+end;
+
+function osDirectorySeparators(aName: String): String;
+begin
+  result := ReplaceStrings ( aName
+                           , {$ifdef windows} '/' {$else} '\' {$endif}
+                           , DirectorySeparator
+                           , false
+                           , false
+                           );
 end;
 
 function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): Integer;

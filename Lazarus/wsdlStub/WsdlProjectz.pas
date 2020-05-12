@@ -1308,17 +1308,17 @@ begin
   iniXml := TXml.Create;
   try
     iniXml.LoadFromFile(xIniFileName, nil, nil);
-    faviconIcoFileName := iniXml.Items.XmlValueByTag ['faviconIco'];
-    swaggerYamlFileName := iniXml.Items.XmlValueByTag ['swaggerYaml'];
-    webserviceWsdlFileName := iniXml.Items.XmlValueByTag ['WebServiceWsdl'];
-    webserviceXsdFileName := iniXml.Items.XmlValueByTag ['WebServiceXsd'];
-    indexHtmlFileName := iniXml.Items.XmlValueByTag ['indexHtml'];
-    indexWsdlsHtmlFileName  := iniXml.Items.XmlValueByTag ['indexWsdlsHtml'];
-    wsdlStubXsdFileName := iniXml.Items.XmlValueByTag ['Xsd'];
-    wsaXsdFileName := iniXml.Items.XmlValueByTag ['wsaXsd'];
-    _swiftMTXsdFileName := iniXml.Items.XmlValueByTag ['swiftMTXsd'];
-    mqPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed'];
-    stompPutHeaderEditAllowedFileName := iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed'];
+    faviconIcoFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['faviconIco']);
+    swaggerYamlFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['swaggerYaml']);
+    webserviceWsdlFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['WebServiceWsdl']);
+    webserviceXsdFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['WebServiceXsd']);
+    indexHtmlFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['indexHtml']);
+    indexWsdlsHtmlFileName  := osDirectorySeparators (iniXml.Items.XmlValueByTag ['indexWsdlsHtml']);
+    wsdlStubXsdFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['Xsd']);
+    wsaXsdFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['wsaXsd']);
+    _swiftMTXsdFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['swiftMTXsd']);
+    mqPutHeaderEditAllowedFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed']);
+    stompPutHeaderEditAllowedFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed']);
     RemoteControlPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
