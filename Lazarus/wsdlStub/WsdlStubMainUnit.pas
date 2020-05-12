@@ -9918,7 +9918,7 @@ begin
   xXsdDescr := TXsdDescr.Create;
   try
     try
-      xXsdDescr.LoadXsdFromFile(xFileName, nil, nil);
+      xXsdDescr.LoadXsdFromFile(xFileName, nil, nil, nil);
       xXml := TXml.Create(0, xXsdDescr.TypeDef.ElementDefs.Xsds[0]);
       try
         EditXmlXsdBased('Press Ctrl_Alt_H to generate Help file', 'Menu',
@@ -10439,7 +10439,7 @@ begin
                 False) <> WsdlOperation.CorrelationBindables.Count) then
               raise Exception.Create('Filename: ' + xFileName +
                   ' does not fit correlation');
-            xMsgString := ReadStringFromFile(FileNameList.Strings[f], nil);
+            xMsgString := ReadStringFromFile(FileNameList.Strings[f], nil, nil);
             if WsdlOperation.StubAction = saRequest then
             begin
               xMessage := TWsdlMessage.CreateRequest(WsdlOperation,
@@ -11623,7 +11623,7 @@ begin
     xLog := TLog.Create;
     try
       if aIsFileName then
-        xXml.LoadFromFile(aString, nil, nil)
+        xXml.LoadFromFile(aString, nil, nil, nil)
       else
         xXml.LoadFromString(aString, nil);
       xXml.SeparateNsPrefixes;
@@ -12185,7 +12185,7 @@ procedure TMainForm .SchemasToZipExecute (Sender : TObject );
           begin
             xXml := TXml.Create;
             try
-              xXml.LoadFromFile(slFileNames.Strings[n], nil, nil);
+              xXml.LoadFromFile(slFileNames.Strings[n], nil, nil, nil);
               _scanXml (xXml, slFileNames.Strings[n]);
               MS := TStringStream.Create(xXml.Text);
               try
@@ -12539,7 +12539,7 @@ begin
     try
       xXml := TXml.Create;
       try
-        xXml.LoadFromFile(OpenFileDialog.FileName, nil, nil);
+        xXml.LoadFromFile(OpenFileDialog.FileName, nil, nil, nil);
         if xXml.Name <> 'projectScripts' then
           raise Exception.CreateFmt('%s does not contain a valid Script export', [OpenFileDialog.FileName]);
         se.ProjectScriptsFromXml(xXml);
@@ -13055,7 +13055,7 @@ begin
         and (xReport is TRegressionSnapshot) then
         try
           xmlio.SaveStringToFile ( xReport.RefFileName
-                                 , xmlio.ReadStringFromFile (xReport.FileName, nil)
+                                 , xmlio.ReadStringFromFile (xReport.FileName, nil, nil)
                                  );
           xReport.Status := rsOk;
           xReport.Message := '';
@@ -13692,7 +13692,7 @@ begin
       if not xWsdl.ExtraXsds.Find(FileName, f) then
       begin
         xWsdl.ExtraXsds.Add (FileName);
-        xWsdl.LoadExtraXsds (nil);
+        xWsdl.LoadExtraXsds (nil, se.OnBeforeFileRead);
       end;
       if ElementOrTypeDefRef = etElementRef then
       begin

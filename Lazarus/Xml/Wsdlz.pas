@@ -20,6 +20,7 @@ uses sqldb
    , IdSSLOpenSSL
    , IdSync
    , SyncObjs
+   , xmlio
    ;
 
 resourcestring
@@ -111,9 +112,9 @@ type
       function ExtraXsdsAsXml: TXml;
       procedure ExtraXsdsFromXml (aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);
       procedure AddedTypeDefElementsFromXml (aXml: TXml);
-      procedure LoadExtraXsds (aApiUiServerConfig: TObject);
-      procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject);
-      procedure LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject);
+      procedure LoadExtraXsds (aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+      procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+      procedure LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
       constructor Create(aEnvVars: TStringList; aOperationsWithEndpointOnly: Boolean);
       destructor Destroy; override;
   end;
@@ -724,7 +725,6 @@ uses
    , IdURI
    , SwiftUnit
    , xmlxsdparser
-   , xmlio
    , Logz
    ;
 
@@ -1959,7 +1959,7 @@ begin
       SjowMessage(Format('not evaluated %s at %s', [aXml.Items.XmlItems[x].Name, aXml.FullCaption]));
 end;
 
-procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject);
+procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
   procedure _LoadFromXml (aXml: TXml; aFileName: String);
     procedure _LoadFromFile (aFileName : String);
     var
@@ -1967,7 +1967,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent;
     begin
       xXml := TXml.Create;
       try
-        xXml.LoadFromFile(aFileName, aOnError, aApiUiServerConfig);
+        xXml.LoadFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
         xXml.SeparateNsPrefixes;
         xXml.ResolveNameSpaces;
         _LoadFromXml(xXml, aFileName);
@@ -1998,7 +1998,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent;
     begin
       if (XmlItems[x].Name = tagTypes)
       or (XmlItems[x].Name = tagSchema) then
-        XsdDescr.AddXsdFromXml (XmlItems[x], aFileName, aOnError, aApiUiServerConfig);
+        XsdDescr.AddXsdFromXml (XmlItems[x], aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
     end;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items do
     begin
@@ -2185,7 +2185,7 @@ begin
   XsdDescr.ReadFileNames.Add(aFileName);
   xXml := TXml.Create;
   try
-    xXml.LoadFromFile(aFileName, aOnError, aApiUiServerConfig);
+    xXml.LoadFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
     if (xXml.Name <> tagDefinitions)
@@ -2316,7 +2316,7 @@ begin
   fMssgs.ClearListOnly;
 end;
 
-procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject);
+procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
 //
 // Based on https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 //
@@ -2835,9 +2835,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
         xXml := TXml.Create;
         if (xExt = 'JSON')
         or (xExt = 'JSN') then
-          xXml.LoadJsonFromFile(aaFileName, aOnError, aApiUiServerConfig)
+          xXml.LoadJsonFromFile(aaFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
         else
-          xXml.LoadYamlFromFile(aaFileName, aOnError, aApiUiServerConfig);
+          xXml.LoadYamlFromFile(aaFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
         xXml.Name := '#'; // to make it easier to resolve $refs
         XsdDescr.ReadFileNames.AddObject(aaFileName, xXml);
         _ReadDollarReferencedFiles(aaFileName, xXml);
@@ -2901,9 +2901,9 @@ begin
   with xRootXml do
   try
     if xExt = '.JSON' then
-      LoadJsonFromFile(aFileName, aOnError, aApiUiServerConfig)
+      LoadJsonFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
     else
-      LoadYamlFromFile(aFileName, aOnError, aApiUiServerConfig);
+      LoadYamlFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
     xRootXml.Name := '#';
     XsdDescr.ReadFileNames.AddObject(aFileName, xRootXml);
     _ReadDollarReferencedFiles (aFileName, xRootXml);
@@ -3248,13 +3248,13 @@ begin
   end;
 end;
 
-procedure TWsdl.LoadExtraXsds (aApiUiServerConfig: TObject);
+procedure TWsdl.LoadExtraXsds (aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
 var
   x, f: Integer;
 begin
   for x := 0 to ExtraXsds.Count - 1 do
     if not XsdDescr.ReadFileNames.Find (ExtraXsds.Strings[x], f) then
-      XsdDescr.AddXsdFromFile ('', ExtraXsds.Strings[x], _OnParseErrorEvent, aApiUiServerConfig);
+      XsdDescr.AddXsdFromFile ('', ExtraXsds.Strings[x], _OnParseErrorEvent, aApiUiServerConfig, aOnbeforeRead);
   if ExtraXsds.Count > 0 then
     XsdDescr.Finalise; // again
 end;
@@ -6342,7 +6342,7 @@ begin
   xFileName := ReadReplyFromFileName;
   if not FileExists(xFileName) then
     xFileName := DefaultReadReplyFromFileName;
-  xString := xmlio.ReadStringFromFile(xFileName, nil);
+  xString := xmlio.ReadStringFromFile(xFileName, nil, nil);
   ReplyStringToBindables(xString);
 end;
 

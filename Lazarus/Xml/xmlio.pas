@@ -36,8 +36,8 @@ function HttpGetDialog (aUrl, aAcceptContentType: String): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
-function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject): String;
-procedure SaveStringToFile (aFileName: String; aString: String; aOnBeforeRead: String);
+function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS): String;
+procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function uncFilename (aFileName: String): String;
@@ -1060,7 +1060,7 @@ begin
   end;
 end;
 
-function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject): String;
+function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS): String;
   function _GetURLAsString(aURL: string; useSsl: Boolean): string;
   var
     lHTTP: TIdHTTP;
@@ -1101,6 +1101,8 @@ function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject): St
   end;
 begin
   aFileName := resolveAliasses(aFileName);
+  if Assigned (aOnBeforeRead) then
+    aOnBeforeRead (aFileName);
   if doTrackXmlIO then
     SjowMessage('ReadStringFromFile: ' + aFileName);
   if (AnsiStartsText('HTTP://', aFileName)) then
