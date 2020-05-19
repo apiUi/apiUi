@@ -1,9 +1,9 @@
 object MainForm: TMainForm
   Left = 87
-  Height = 790
-  Top = 105
+  Height = 759
+  Top = 136
   Width = 1457
-  ClientHeight = 765
+  ClientHeight = 738
   ClientWidth = 1457
   Color = clBtnFace
   Font.Color = clWindowText
@@ -189,25 +189,25 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 434
+    Height = 407
     Top = 24
     Width = 1457
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 434
+    ClientHeight = 407
     ClientWidth = 1457
     TabOrder = 0
     object ScriptSplitter: TSplitter
       Left = 221
-      Height = 428
+      Height = 401
       Top = 3
       Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
       Left = 1280
-      Height = 428
+      Height = 401
       Top = 3
       Width = 5
       Align = alRight
@@ -216,18 +216,18 @@ object MainForm: TMainForm
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 428
+      Height = 401
       Top = 3
       Width = 218
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 428
+      ClientHeight = 401
       ClientWidth = 218
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
         Height = 29
-        Top = 396
+        Top = 369
         Width = 212
         Align = alBottom
         Caption = 'ActionToolBar'
@@ -239,7 +239,7 @@ object MainForm: TMainForm
           Hint = 'Select action'
           Top = 2
           Width = 66
-          ItemHeight = 13
+          ItemHeight = 0
           Items.Strings = (
             'Stub'
             'Request'
@@ -298,7 +298,7 @@ object MainForm: TMainForm
       end
       object NavigatorTreeView: TVirtualStringTree
         Left = 3
-        Height = 393
+        Height = 366
         Top = 3
         Width = 212
         Align = alClient
@@ -349,13 +349,13 @@ object MainForm: TMainForm
     end
     object XsdPanel: TPanel
       Left = 1285
-      Height = 428
+      Height = 401
       Top = 3
       Width = 169
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 428
+      ClientHeight = 401
       ClientWidth = 169
       TabOrder = 1
       object Splitter6: TSplitter
@@ -399,7 +399,7 @@ object MainForm: TMainForm
       end
       object DocumentationViewer: TIpHtmlPanel
         Left = 4
-        Height = 269
+        Height = 242
         Top = 155
         Width = 161
         Align = alClient
@@ -438,12 +438,12 @@ object MainForm: TMainForm
     end
     object MiddlePanel: TPanel
       Left = 226
-      Height = 428
+      Height = 401
       Top = 3
       Width = 1054
       Align = alClient
       Caption = 'MiddlePanel'
-      ClientHeight = 428
+      ClientHeight = 401
       ClientWidth = 1054
       TabOrder = 4
       object WsdlInfoPanel: TPanel
@@ -458,25 +458,25 @@ object MainForm: TMainForm
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
           Left = 361
-          Height = 13
+          Height = 14
           Top = 12
-          Width = 49
+          Width = 60
           Caption = 'Operation:'
           ParentColor = False
         end
         object ServiceLabel: TLabel
           Left = 169
-          Height = 13
+          Height = 14
           Top = 12
-          Width = 39
+          Width = 46
           Caption = 'Service:'
           ParentColor = False
         end
         object WsdlLabel: TLabel
           Left = 6
-          Height = 13
+          Height = 14
           Top = 12
-          Width = 27
+          Width = 31
           Caption = 'Wsdl:'
           ParentColor = False
         end
@@ -486,7 +486,7 @@ object MainForm: TMainForm
           Hint = 'Select operation'
           Top = 8
           Width = 113
-          ItemHeight = 13
+          ItemHeight = 0
           OnChange = WsdlOperationsComboBoxChange
           Style = csDropDownList
           TabOrder = 2
@@ -497,7 +497,7 @@ object MainForm: TMainForm
           Hint = 'Select service'
           Top = 8
           Width = 140
-          ItemHeight = 13
+          ItemHeight = 0
           OnChange = WsdlServicesComboBoxChange
           OnDropDown = WsdlServicesComboBoxDropDown
           Style = csDropDownList
@@ -509,7 +509,7 @@ object MainForm: TMainForm
           Hint = 'Select WSDL or API (currently only OpenAPI f.k.a. Swagger)'
           Top = 8
           Width = 106
-          ItemHeight = 13
+          ItemHeight = 0
           OnChange = WsdlComboBoxChange
           OnDropDown = WsdlComboBoxDropDown
           Style = csDropDownList
@@ -518,12 +518,12 @@ object MainForm: TMainForm
       end
       object DataPanel: TPanel
         Left = 1
-        Height = 389
+        Height = 362
         Top = 38
         Width = 1052
         Align = alClient
         Caption = 'DataPanel'
-        ClientHeight = 389
+        ClientHeight = 362
         ClientWidth = 1052
         TabOrder = 1
         object GridDataPanel: TPanel
@@ -809,18 +809,18 @@ object MainForm: TMainForm
         end
         object TreeDataPanel: TPanel
           Left = 1
-          Height = 289
+          Height = 262
           Top = 99
           Width = 1050
           Align = alClient
           Caption = 'TreeDataPanel'
-          ClientHeight = 289
+          ClientHeight = 262
           ClientWidth = 1050
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
             Height = 17
-            Top = 271
+            Top = 244
             Width = 1048
             Align = alBottom
             Alignment = taLeftJustify
@@ -829,7 +829,7 @@ object MainForm: TMainForm
           end
           object ToolBar9: TToolBar
             Left = 1
-            Height = 24
+            Height = 29
             Top = 1
             Width = 1048
             AutoSize = True
@@ -886,20 +886,20 @@ object MainForm: TMainForm
             end
             object View: TLabel
               Left = 117
-              Height = 13
+              Height = 14
               Top = 2
-              Width = 26
+              Width = 30
               Caption = 'View:'
               Layout = tlCenter
               ParentColor = False
             end
             object ViewStyleComboBox: TComboBox
-              Left = 143
-              Height = 21
+              Left = 147
+              Height = 27
               Hint = 'View'
               Top = 2
               Width = 98
-              ItemHeight = 13
+              ItemHeight = 0
               Items.Strings = (
                 'All'
                 'Required'
@@ -914,7 +914,7 @@ object MainForm: TMainForm
           object InWsdlTreeView: TVirtualStringTree
             Left = 1
             Height = 59
-            Top = 25
+            Top = 30
             Width = 1048
             Align = alTop
             DefaultText = 'Node'
@@ -969,8 +969,8 @@ object MainForm: TMainForm
           end
           object FreeFormatMemo: TMemo
             Left = 1
-            Height = 187
-            Top = 84
+            Height = 155
+            Top = 89
             Width = 1048
             Align = alClient
             Font.CharSet = ANSI_CHARSET
@@ -990,7 +990,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 458
+    Top = 431
     Width = 1457
     Align = alBottom
     ResizeAnchor = akBottom
@@ -998,7 +998,7 @@ object MainForm: TMainForm
   object LogPanel: TPanel
     Left = 0
     Height = 302
-    Top = 463
+    Top = 436
     Width = 1457
     Align = alBottom
     ClientHeight = 302
@@ -1170,8 +1170,8 @@ object MainForm: TMainForm
         TabOrder = 1
         object ExceptionStatusBar: TStatusBar
           Left = 1
-          Height = 29
-          Top = 30
+          Height = 17
+          Top = 42
           Width = 617
           Panels = <          
             item
@@ -1181,7 +1181,7 @@ object MainForm: TMainForm
         end
         object ExceptionsVTS: TVirtualStringTree
           Left = 1
-          Height = 29
+          Height = 41
           Top = 1
           Width = 617
           Align = alClient
@@ -1419,7 +1419,7 @@ object MainForm: TMainForm
         TabOrder = 2
         object MessagesVTS: TVirtualStringTree
           Left = 1
-          Height = 32
+          Height = 44
           Top = 1
           Width = 613
           Align = alClient
@@ -1538,8 +1538,8 @@ object MainForm: TMainForm
         end
         object MessagesStatusBar: TStatusBar
           Left = 1
-          Height = 29
-          Top = 33
+          Height = 17
+          Top = 45
           Width = 613
           Panels = <          
             item
@@ -2185,7 +2185,14 @@ object MainForm: TMainForm
       OnExecute = SchemasToZipExecute
       ShortCut = 24666
     end
+    object ToggleTrackIOAction: TAction
+      Category = 'Miscellaneous'
+      Caption = 'Toggle TrackIO'
+      OnExecute = ToggleTrackIOActionExecute
+      ShortCut = 24649
+    end
     object ShowShortCutActionsAction: TAction
+      Category = 'Miscellaneous'
       Caption = 'ShowShortCutActionsAction'
       OnExecute = ShowShortCutActionsActionExecute
       ShortCut = 24665
@@ -2533,12 +2540,6 @@ object MainForm: TMainForm
       OnExecute = ContextsActionExecute
       ShortCut = 24643
     end
-    object ToggleTrackIOAction: TAction
-      Category = 'Miscellaneous'
-      Caption = 'Toggle TrackIO'
-      OnExecute = ToggleTrackIOActionExecute
-      ShortCut = 24649
-    end
     object OperationBrowseDocumentationAction: TAction
       Category = 'Operation'
       Caption = 'Show Documentation in browser'
@@ -2593,6 +2594,7 @@ object MainForm: TMainForm
     object GenerateFunctopnPrototypeListAction: TAction
       Caption = 'GenerateFunctopnPrototypeListAction'
       OnExecute = GenerateFunctopnPrototypeListActionExecute
+      OnUpdate = GenerateFunctopnPrototypeListActionUpdate
       ShortCut = 57410
     end
     object CopyRemoteApiUiProjectAction: TAction
@@ -2603,9 +2605,15 @@ object MainForm: TMainForm
     end
     object SaveRemoteApiUiProjectAction: TAction
       Category = 'Project'
-      Caption = 'SaveRemoteApiUiProjectAction'
+      Caption = 'PasteRemoteApiUiProjectAction'
       OnExecute = SaveRemoteApiUiProjectActionExecute
       ShortCut = 57427
+    end
+    object CheckReferencedFilenamesLocalAbsoluteAction: TAction
+      Category = 'Project'
+      Caption = 'CheckReferencedFilenamesLocalAbsoluteAction'
+      OnExecute = CheckReferencedFilenamesLocalAbsoluteActionExecute
+      ShortCut = 57426
     end
   end
   object mainImageList: TImageList
@@ -10696,5 +10704,10 @@ object MainForm: TMainForm
     Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
     left = 83
     top = 208
+  end
+  object EasterEggPopupMenu: TPopupMenu
+    Images = mainImageList
+    left = 992
+    top = 331
   end
 end

@@ -4138,7 +4138,7 @@ systemStarting := True;
 defaultXsdMaxDepthBillOfMaterials := 1;
 defaultXsdMaxDepthXmlGen := 9999;
 xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
-xsdValidateAssignmentsAgainstSchema := True;
+xsdValidateAssignmentsAgainstSchema := False;
 
 finalization
 

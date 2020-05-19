@@ -187,7 +187,7 @@ type
     FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, ApiByExampleWsdl, CobolWsdl, BmtpWsdl, SwiftMtWsdl, MailWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
-    Wsdls, wsdlNames: TStringList;
+    Wsdls, wsdlNames, referencedFilenames: TStringList;
     PathInfos, PathRegexps, PathFormats: TStringList;
     Scripts: TXml;
     DisplayedLogColumns: TStringList;
@@ -1516,6 +1516,9 @@ begin
   Wsdls.Sorted := True;
   wsdlNames := TStringList.Create;
   wsdlNames.Sorted := True;
+  referencedFilenames := TStringList.Create;
+  referencedFilenames.Sorted := True;
+  referencedFilenames.Duplicates := dupIgnore;
   PathInfos := TStringList.Create;
   PathRegexps := TStringList.Create;
   PathFormats := TStringList.Create;
@@ -1668,6 +1671,7 @@ begin
   toDisplaySnapshots.Free;
   Wsdls.Free;
   wsdlNames.Free;
+  referencedFilenames.Free;
   PathInfos.Free;
   PathRegexps.Free;
   PathFormats.Free;
@@ -2050,7 +2054,7 @@ begin
           begin
             try
               Binding := HTTPServer.Bindings.Add;
-              Binding.Port := StrToInt(Listeners.httpPorts.Strings[x]);
+              Binding.Port := StrToInt(resolveAliasses(Listeners.httpPorts.Strings[x]));
               Binding.IP := '0.0.0.0';
               Notify(format( 'Listening for HTTP trafic on %s:%d.'
                            , [HTTPServer.Bindings[x].IP, HTTPServer.Bindings[x].Port]
@@ -2081,7 +2085,7 @@ begin
           begin
             try
               Binding := HTTPServerSSL.Bindings.Add;
-              Binding.Port := StrToInt(Listeners.httpsPorts.Strings[x]);
+              Binding.Port := StrToInt(resolveAliasses(Listeners.httpsPorts.Strings[x]));
               Binding.IP := '0.0.0.0';
               Notify(format('Listening for HTTPS connections on %s:%d.',[HTTPServerSSL.Bindings[x].IP, HTTPServerSSL.Bindings[x].Port]));
             except
@@ -3709,9 +3713,9 @@ begin
       yXml := xXml.Items.XmlCheckedItemByTag['projectFolders'];
       if Assigned (yXml) then with yXml.Items do
       begin
-        CurrentFolder := XmlCheckedValueByTag['current'];
-        ReferenceFolder := XmlCheckedValueByTag['reference'];
-        ReportsFolder := XmlCheckedValueByTagDef['reports', CurrentFolder];
+        CurrentFolder := osDirectorySeparators (XmlCheckedValueByTag['current']);
+        ReferenceFolder := osDirectorySeparators (XmlCheckedValueByTag['reference']);
+        ReportsFolder := osDirectorySeparators (XmlCheckedValueByTagDef['reports', CurrentFolder]);
       end;
     end;
     ProjectLogOptionsFromXml (XmlCheckedItemByTag ['Log']);
@@ -4300,7 +4304,8 @@ end;
 
 procedure TWsdlProject.OnBeforeFileRead(aFileName: String);
 begin
-  SjowMessage(aFileName);
+  if Assigned (referencedFilenames) then
+    referencedFilenames.Add (aFileName);
 end;
 
 procedure TWsdlProject .SendOperation (aOperation : TWsdlOperation);
@@ -7764,6 +7769,8 @@ begin
             Exit;
           end;
           SjowMessage('projectdesign received: ' + nameXml.Value);
+          if nameXml.Value <> projectFileName then
+            raise Exception.CreateFmt('Received project name (%s) differs from current projectname (%s)', [nameXml.Value, projectFileName]);
           TProcedureThread.Create(False, True, 200, self, ProjectDesignFromApiRequestString, xRequestBody, projectFileName);
           Exit;
         end;
@@ -9782,6 +9789,7 @@ begin
   displayedLogs.Clear;
   archiveLogs.Clear;
   displayedSnapshots.Clear;
+  referencedFilenames.Clear;
   doUseMq := False;
   Listeners.Clear;
   mqGetThreads.Clear;

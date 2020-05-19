@@ -75,6 +75,8 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    CheckReferencedFilenamesLocalAbsoluteAction: TAction;
+    EasterEggPopupMenu: TPopupMenu;
     SaveRemoteApiUiProjectAction: TAction;
     CopyRemoteApiUiProjectAction: TAction;
     SnapshotsFromHttpGetAgainAction: TAction;
@@ -592,6 +594,7 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure CheckReferencedFilenamesLocalAbsoluteActionExecute(Sender: TObject);
     procedure AddChildElementMenuItemClick(Sender: TObject);
     procedure ApiByExampleActionUpdate(Sender: TObject);
     procedure BmtpOperationsActionExecute(Sender: TObject);
@@ -612,6 +615,7 @@ type
       );
     procedure FreeFormatsActionUpdate(Sender: TObject);
     procedure GenerateFunctopnPrototypeListActionExecute(Sender: TObject);
+    procedure GenerateFunctopnPrototypeListActionUpdate(Sender: TObject);
     procedure GenerateJsonSchemaInYamlExecute(Sender: TObject);
     procedure GenerateSwaggerActionExecute(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
@@ -1083,6 +1087,7 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
+    procedure CheckReferencedFilenamesLocalAbsolute;
     procedure SnapshotsFromRemoteServer;
     procedure GetSnapshotsFromFolder (aList: TSnapshotList; aFolder: String);
     procedure GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
@@ -6580,6 +6585,9 @@ var
   X, wBttn: Integer;
   xIniFile: TFormIniFile;
   xXml: TXml;
+  xKey: Word;
+  xShift : TShiftState;
+  xMenuItem, sMenuItem: TMenuItem;
 begin
   doConfirmTemporaryInactivity := True;
   MessagesTabControlWidth := MessagesTabControl.Width;
@@ -6809,6 +6817,18 @@ begin
   // statements below make all tabs visible again...??
 //  DownPageControl.TabPosition := tpBottom;
 //  DownPageControl.TabPosition := tpTop;
+  sMenuItem := TMenuItem.Create(self);
+  for x := 0 to alGeneral.ActionCount - 1 do with alGeneral.Actions[x] as TCustomAction do
+  begin
+    xMenuItem := TMenuItem.Create(self);
+    xMenuItem.Action := alGeneral.Actions[x];
+    ShortCutToKey(ShortCut, xKey, xShift);
+    if xKey <> 0 then
+      EasterEggPopupMenu.Items.Add(xMenuItem)
+    else
+      sMenuItem.Add(xMenuItem);
+  end;
+  EasterEggPopupMenu.Items.Add (sMenuItem);
   if ParamStr(1) <> '' then
   begin
     Update;
@@ -11041,7 +11061,10 @@ var
   xKey: Word;
   xShift : TShiftState;
   xKeyString: String;
+  xPopUpMenu: TPopupMenu;
+  xMenuItem: TMenuItem;
 begin
+{
   sl := TStringList.Create;
   try
     for x := 0 to alGeneral.ActionCount - 1 do with alGeneral.Actions[x] as TCustomAction do
@@ -11064,6 +11087,8 @@ begin
   finally
     sl.Free;
   end;
+}
+  EasterEggPopupMenu.PopUp(10, 10);
 end;
 
 procedure TMainForm.CleanMenuItemClick(Sender: TObject);
@@ -13376,6 +13401,11 @@ begin
               );
 end;
 
+procedure TMainForm.GenerateFunctopnPrototypeListActionUpdate(Sender: TObject);
+begin
+  GenerateFunctopnPrototypeListAction.Enabled := Assigned(WsdlOperation);
+end;
+
 procedure TMainForm.GenerateJsonSchemaInYamlExecute(Sender: TObject);
 var
   xBind: TCustomBindable;
@@ -13743,6 +13773,43 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TMainForm.CheckReferencedFilenamesLocalAbsolute;
+var
+  x: Integer;
+  xFileName: String;
+begin
+  try
+    if Assigned (se)
+    and Assigned (se.referencedFilenames) then
+    begin
+      for x := 0 to se.referencedFilenames.Count - 1 do
+      begin
+        xFileName := se.referencedFilenames.Strings[x];
+        if (AnsiStartsText('HTTP://', xFileName))
+        or (AnsiStartsText('HTTPS://', xFileName)) then
+        begin
+          if not xmlio.urlexists(xFileName) then
+            raise Exception.CreateFmt('URL not found/reached: %', [xFileName]);
+        end
+        else
+        begin
+          if not FileExistsUTF8(xmlio.osDirectorySeparators(xFileName)) then
+            raise Exception.CreateFmt('File not found: %', [osDirectorySeparators(xFileName)]);
+        end;
+      end;
+      ShowMessage('All referenced files/urls found (Local/Absolute)');
+    end;
+  except
+    on e: Exception do
+      Raise Exception.CreateFmt ('Not all referenced diskfiles found (Local/Absolute)%s%s', [LineEnding, e.Message])
+  end;
+end;
+
+procedure TMainForm.CheckReferencedFilenamesLocalAbsoluteActionExecute(Sender: TObject);
+begin
+  CheckReferencedFilenamesLocalAbsolute;
 end;
 
 procedure TMainForm.ApiByExampleActionUpdate(Sender: TObject);

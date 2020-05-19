@@ -22,6 +22,7 @@ end;
 type TProcedureS = procedure (arg: String) of Object;
 
 
+function urlExists (aURL: string): Boolean;
 function urlDecode(const S: String): String;
 function urlEncode(const S: String): String;
 function urlPercentEncode(const S: String): String;
@@ -404,6 +405,32 @@ begin
     Result := ResponseText;
   finally
     Free;
+  end;
+end;
+
+function urlExists (aURL: string): Boolean;
+var
+  xHTTP: TIdHTTP;
+begin
+  Result := False;
+  xHTTP := TIdHTTP.Create(nil);
+  try
+    xHTTP.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+    with (xHTTP.IOHandler as TIdSSLIOHandlerSocketOpenSSL) do
+    begin
+      SSLOptions.Method := sslvTLSv1_2;
+      SSLOptions.Mode := sslmUnassigned;
+      SSLOptions.VerifyMode := [];
+    end;
+    xHTTP.Head(aURL);
+    result := (xHTTP.ResponseCode > 199)
+          and (xHTTP.ResponseCode < 300)
+            ;
+  finally
+    if Assigned (xHTTP)
+    and Assigned (xHTTP.IOHandler) then
+      xHTTP.IOHandler.Free;
+    FreeAndNil(xHTTP);
   end;
 end;
 
@@ -1125,7 +1152,7 @@ begin
                                 );
     exit;
   end;
-  with TFileStream.Create(aFileName,fmOpenRead or fmShareDenyWrite) do
+  with TFileStream.Create(osDirectorySeparators(aFileName),fmOpenRead or fmShareDenyWrite) do
   begin
     try
       SetLength(result, Size);
