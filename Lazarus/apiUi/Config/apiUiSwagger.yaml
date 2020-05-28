@@ -281,6 +281,20 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/unexpectedValuesReportRpy'
+  /versionInfo:
+    post:
+      summary: get apiUi version information
+      description: ''
+      operationId: versionInfo
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/versionInfo'
 definitions:
   checkRegressionReq:
     type: object
@@ -454,3 +468,8 @@ definitions:
               type: string
             createdOn:
               type: dateTime
+  versionInfo:
+    type: object
+    properties:
+      vesrion:
+        type: string

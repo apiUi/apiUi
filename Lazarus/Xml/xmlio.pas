@@ -879,6 +879,7 @@ begin
 {$endif}
 end;
 
+// to deal with oracles oms:/
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
 var
   xPrefix, xAlias, xSpec, xSep: String;
@@ -988,15 +989,15 @@ var
   x: Integer;
 begin
   aToRelateFileName := PrepareFileNameSpace(aMainFileName, aToRelateFileName);
+  // both linux and windows conventios because of 'remote' filenames
   if (AnsiStartsText('http://', aToRelateFileName))
   or (AnsiStartsText('https://', aToRelateFileName))
   or (AnsiStartsText('file://', aToRelateFileName))
-{$ifdef UNIX}
   or (AnsiStartsText('/', aToRelateFileName))
-{$endif}
-{$ifdef WINDOWS}
-  or (ExtractFileDrive(aToRelateFileName) <> '')
-{$endif}
+  or (    (Length (aToRelateFileName) > 3)
+      and (aToRelateFileName [2] = ':')
+      and (aToRelateFileName [3] = '\')
+     )
   then
   begin
     result := aToRelateFileName;

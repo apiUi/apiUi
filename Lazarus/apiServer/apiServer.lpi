@@ -21,7 +21,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="12640"/>
+      <BuildNr Value="12646"/>
       <StringTable ProductVersion="10.3.4.110"/>
     </VersionInfo>
     <MacroValues Count="1">
@@ -39,7 +39,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;D:\Data\AppyThings\PetStore\PetStore.svpr&quot;"/>
+        <CommandLineParams Value="&quot;..\wsdlStub\Testing\crmi\crmiStub.svpr&quot;"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">

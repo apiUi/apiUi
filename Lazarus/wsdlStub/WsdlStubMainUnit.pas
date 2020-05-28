@@ -3664,7 +3664,9 @@ begin
       if ChooseStringForm.ModalResult = mrOk then
       begin
         ChoosenString := ChooseStringForm.ChoosenString;
-        FileName := Copy(ChoosenString, 3, Length(ChoosenString) - 2);
+        FileName := ExpandRelativeFileName ( GetCurrentDirUTF8 + DirectorySeparator
+                                           , Copy(ChoosenString, 3, Length(ChoosenString) - 2)
+                                           );
         ReopenCaseList.Clear;
         for X := 0 to ChooseStringForm.ListBox.Count - 1 do
         begin
@@ -6832,7 +6834,9 @@ begin
   if ParamStr(1) <> '' then
   begin
     Update;
-    se.projectFileName := ParamStr(1);
+    se.projectFileName := ExpandRelativeFileName ( GetCurrentDirUTF8 + DirectorySeparator
+                                                 , ParamStr(1)
+                                                 );
     OpenStubCase;
     se.Activate(True);
     CheckBoxClick(nil);

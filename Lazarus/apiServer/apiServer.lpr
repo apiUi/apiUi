@@ -126,14 +126,17 @@ begin
   doDebug := HasOption('?',debugOpt);
   if doDebug then
     WriteLn('option ', debugOpt);
-  se.projectFileName := ParamStr(1);
+  se.projectFileName := ExpandRelativeFileName(GetCurrentDirUTF8 + DirectorySeparator, ParamStr(1));
+
   if (Copy (se.projectFileName, 1, 1) = '-')  // switch as first argument ??
+{
   or (    (not FileExists(se.projectFileName))
       and (not DirectoryExistsUTF8(se.projectFileName))
      )
+}
   then
   begin
-    WriteLn ('First argument not a filename: ' + se.projectFileName);
+    WriteLn ('First argument not an apiUi project name: ' + se.projectFileName);
     Terminate;
     Exit;
   end;

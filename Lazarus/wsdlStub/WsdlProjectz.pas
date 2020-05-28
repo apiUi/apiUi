@@ -1296,10 +1296,15 @@ procedure IntrospectIniXml;
     result := _replaceInteger(result, '_xsdMaxDepthBillOfMaterials_', defaultXsdMaxDepthBillOfMaterials);
     result := _replaceInteger(result, '_xsdMaxDepthXmlGen_', defaultXsdMaxDepthXmlGen);
   end;
+
 var
   x: Integer;
   Xml, xXml, iniXml: TXml;
   xIniFileName: String;
+  function _abs (aFileName: String): String;
+  begin
+    result := ExpandRelativeFileName(xIniFileName, osDirectorySeparators (aFileName));
+  end;
 begin
   xIniFileName := Copy(ParamStr(0), 1, Length(ParamStr(0)){$ifdef windows} - 4{$endif}) + 'Ini.xml';
   if not LazFileUtils.FileExistsUTF8(xIniFileName) { *Converted from FileExists* } then
@@ -1309,29 +1314,26 @@ begin
   iniXml := TXml.Create;
   try
     iniXml.LoadFromFile(xIniFileName, nil, nil, nil);
-    faviconIcoFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['faviconIco']);
-    swaggerYamlFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['swaggerYaml']);
-    webserviceWsdlFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['WebServiceWsdl']);
-    webserviceXsdFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['WebServiceXsd']);
-    indexHtmlFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['indexHtml']);
-    indexWsdlsHtmlFileName  := osDirectorySeparators (iniXml.Items.XmlValueByTag ['indexWsdlsHtml']);
-    wsdlStubXsdFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['Xsd']);
-    wsaXsdFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['wsaXsd']);
-    _swiftMTXsdFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['swiftMTXsd']);
-    mqPutHeaderEditAllowedFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed']);
-    stompPutHeaderEditAllowedFileName := osDirectorySeparators (iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed']);
+    faviconIcoFileName := _abs (iniXml.Items.XmlValueByTag ['faviconIco']);
+    swaggerYamlFileName := _abs(iniXml.Items.XmlValueByTag ['swaggerYaml']);
+    webserviceWsdlFileName := _abs (iniXml.Items.XmlValueByTag ['WebServiceWsdl']);
+    webserviceXsdFileName := _abs (iniXml.Items.XmlValueByTag ['WebServiceXsd']);
+    indexHtmlFileName := _abs (iniXml.Items.XmlValueByTag ['indexHtml']);
+    indexWsdlsHtmlFileName  := _abs (iniXml.Items.XmlValueByTag ['indexWsdlsHtml']);
+    wsdlStubXsdFileName := _abs (iniXml.Items.XmlValueByTag ['Xsd']);
+    wsaXsdFileName := _abs (iniXml.Items.XmlValueByTag ['wsaXsd']);
+    _swiftMTXsdFileName := _abs (iniXml.Items.XmlValueByTag ['swiftMTXsd']);
+    mqPutHeaderEditAllowedFileName := _abs (iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed']);
+    stompPutHeaderEditAllowedFileName := _abs (iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed']);
     RemoteControlPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
     if Assigned (iniXml.ItemByTag ['cssStylesheet']) then with iniXml.ItemByTag ['cssStylesheet'] do
     begin
-      _wsdlStubStylesheet := ExpandRelativeFileName ( ExtractFilePath (ParamStr(0))
-                                                                             , Value
-                                                     );
+      _wsdlStubStylesheet := _abs (Value);
     end;
     if wsaXsdFileName <> '' then
     begin
-      wsaXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), wsaXsdFileName);
       wsaXsdDescr := TXsdDescr.Create;
       try
         wsaXsdDescr.LoadXsdFromFile (wsaXsdFileName, nil, nil, nil);
@@ -1343,7 +1345,6 @@ begin
     end;
     if _swiftMTXsdFileName <> '' then
     begin
-      _swiftMTXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), _swiftMTXsdFileName);
       swiftMTXsdDescr := TXsdDescr.Create;
       try
         swiftMTXsdDescr.LoadXsdFromFile (_swiftMTXsdFileName, nil, nil, nil);
@@ -1359,7 +1360,6 @@ begin
 
     if wsdlStubXsdFileName <> '' then
     begin
-      wsdlStubXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), wsdlStubXsdFileName);
       webserviceXsdDescr := TXsdDescr.Create;
       try
         webserviceXsdDescr.LoadXsdFromString (_Prep ( wsdlStubXsdFileName
@@ -7860,6 +7860,19 @@ begin
           wsdlz.setEnvVar(allOperations.Operations[0], nameXml.Value, valueXml.Value);
           Exit;
         end;
+
+        if (Count = 4)
+        and (LowerCase(Strings[3]) = 'versioninfo')
+        and (ARequestInfo.Command = 'GET')
+        then with TXml.CreateAsString('json', '') do
+        try
+          AddXml (TXml.CreateAsString('version', _xmlProgVersion));
+          AResponseInfo.ContentText := StreamJSON(0, False);
+          Exit;
+        finally
+          Free;
+        end;
+
 
         AResponseInfo.ResponseNo := 400;
       finally

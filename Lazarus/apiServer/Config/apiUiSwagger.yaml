@@ -110,8 +110,51 @@ paths:
           schema:
             $ref: '#/definitions/executeScriptReq'
       responses:
-        '202':
-          decsription: Accepted
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/executeScriptRpy'
+
+  /operations/{operationAlias}/delay:
+    get:
+      summary: gets delay as set for operation
+      description:
+        delays are random between min and max value.
+      operationId: operationDelayGet
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: operationAlias
+          in: path
+          type: string
+      responses:
+        '200':
+          description: Success response
+          schema:
+            $ref: '#/definitions/operationDelaySetting'
+    put:
+      summary: set delay to random between min and max milliseconds
+      description:
+        Set the extra time that  apiUi should wait before sending response.
+        The snapshots are not removed from your filesystem.
+      operationId: operationDelayPut
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: operationAlias
+          in: path
+          type: string
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/operationDelaySetting'
+      responses:
+        '200':
+          description: Success response
   /regressionReport:
     post:
       summary: summary
@@ -259,6 +302,18 @@ definitions:
     properties:
       name:
         type: string
+  executeScriptRpy:
+    type: string
+  operationDelaySetting:
+    type: object
+    properties:
+      randomBetween:
+       type: object
+       properties:
+         min:
+          type: integer
+         max:
+          type: integer
   regressionReportReq:
     type: object
     properties:
