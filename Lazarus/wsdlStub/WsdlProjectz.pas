@@ -275,7 +275,7 @@ type
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
     function FindSnapshot (aName: String): TSnapshot;
-    function UpsertSnapshot (aName, aFileName, aRefFileName: String): TSnapshot;
+    function UpsertSnapshot (aName, aFileName, aRefFileName: String; aDoClearLoggedOnes: Boolean): TSnapshot;
     function CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
     procedure CreateJUnitReport (aName: String);
     procedure CreateSummaryReport (aName: String);
@@ -7586,7 +7586,7 @@ begin
           try
             with TXml.CreateAsString('json', '') do
             try
-              with AddXml (TXml.CreateAsString('randomBetween', xSnapshot.statusAsText)) do
+              with AddXml (TXml.CreateAsString('randomBetween', '')) do
               begin
                 AddXml (TXml.CreateAsInteger('min', xOperation.DelayTimeMsMin)).jsonType := jsonNumber;
                 AddXml (TXml.CreateAsInteger('max', xOperation.DelayTimeMsMax)).jsonType := jsonNumber;
@@ -7639,6 +7639,7 @@ begin
           UpsertSnapshot ( nameXml.Value
                          , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
                          , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
+                         , True
                          );
           Exit;
         end;
@@ -9057,7 +9058,7 @@ begin
     result := displayedSnapshots.SnapshotItems[f];
 end;
 
-function TWsdlProject.UpsertSnapshot(aName, aFileName, aRefFileName: String): TSnapshot;
+function TWsdlProject.UpsertSnapshot(aName, aFileName, aRefFileName: String; aDoClearLoggedOnes: Boolean): TSnapshot;
 var
   x, f: Integer;
 begin
@@ -9067,20 +9068,34 @@ begin
   result.timeStamp := Now;
   result.FileName := ExpandRelativeFileName(projectFileName, aFileName);
   result.RefFileName := ExpandRelativeFileName(projectFileName, aRefFileName);
-  with TLogList.Create do
+  AcquireLogLock;
   try
-    for x := 0 to displayedLogs.Count - 1 do
-      if not displayedLogs.LogItems[x].onSnapshot then
-        SaveLog('', displayedLogs.LogItems[x]);
-    for x := 0 to toDisplayLogs.Count - 1 do
-      if not toDisplayLogs.LogItems[x].onSnapshot then
-        SaveLog('', toDisplayLogs.LogItems[x]);
-    SaveStringToFile(result.FileName, LogsAsString (projectFileName));
-    for x := 0 to Count - 1 do
-      LogItems[x].onSnapshot := True;
-    Clear;
+    with TLogList.Create do
+    try
+      for x := 0 to displayedLogs.Count - 1 do
+        if not displayedLogs.LogItems[x].onSnapshot then
+          SaveLog('', displayedLogs.LogItems[x]);
+      for x := 0 to toDisplayLogs.Count - 1 do
+        if not toDisplayLogs.LogItems[x].onSnapshot then
+          SaveLog('', toDisplayLogs.LogItems[x]);
+      SaveStringToFile(result.FileName, LogsAsString (projectFileName));
+      for x := 0 to Count - 1 do
+        LogItems[x].onSnapshot := True;
+      Clear;
+      if aDoClearLoggedOnes then
+      begin
+        for x := 0 to displayedLogs.Count - 1 do
+          if displayedLogs.LogItems[x].onSnapshot then
+            displayedLogs.LogItems[x].Disclaim;
+        for x := 0 to toDisplayLogs.Count - 1 do
+          if toDisplayLogs.LogItems[x].onSnapshot then
+            toDisplayLogs.LogItems[x].Disclaim;
+      end;
+    finally
+      Free;
+    end;
   finally
-    Free;
+    ReleaseLogLock;
   end;
 end;
 

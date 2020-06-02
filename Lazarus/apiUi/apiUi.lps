@@ -773,19 +773,17 @@
       </Unit85>
       <Unit86>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\sysutils\finah.inc"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="12"/>
         <CursorPos X="10" Y="24"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit86>
       <Unit87>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\sysutils\fina.inc"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="66"/>
         <CursorPos X="3" Y="73"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit87>
     </Units>
     <OtherDefines Count="2">
