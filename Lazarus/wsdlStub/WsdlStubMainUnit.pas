@@ -6600,6 +6600,7 @@ begin
   notifyTabImageIndex := 66;
 //  ExceptionTabSheet.ImageIndex := -1;
   se := TWsdlProject.Create;
+  se.hasGui := True;
   ProgressInterface := TProgressInterface.Create;
   se.ProgressInterface := ProgressInterface;
   se.EditContexts := EditContexts;

@@ -171,6 +171,7 @@ type
     procedure ProgressException (E: Exception);
     procedure ProgressEnd;
   public
+    hasGui: Boolean;
     ProgressInterface: TProgressInterface;
     EditContexts: TThreadMethod;
     doCreateBackup: Boolean;
@@ -7639,7 +7640,7 @@ begin
           UpsertSnapshot ( nameXml.Value
                          , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
                          , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
-                         , True
+                         , (hasGui = False)
                          );
           Exit;
         end;
@@ -9084,12 +9085,8 @@ begin
       Clear;
       if aDoClearLoggedOnes then
       begin
-        for x := 0 to displayedLogs.Count - 1 do
-          if displayedLogs.LogItems[x].onSnapshot then
-            displayedLogs.LogItems[x].Disclaim;
-        for x := 0 to toDisplayLogs.Count - 1 do
-          if toDisplayLogs.LogItems[x].onSnapshot then
-            toDisplayLogs.LogItems[x].Disclaim;
+        displayedLogs.Clear;
+        toDisplayLogs.Clear;
       end;
     finally
       Free;

@@ -88,7 +88,7 @@
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="7625"/>
+        <TopLine Value="7589"/>
         <CursorPos X="98" Y="7638"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
@@ -232,7 +232,7 @@
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="apiServer.lpr"/>
         <Caret Line="90" Column="42" TopLine="65"/>
@@ -334,24 +334,20 @@
       </Position25>
       <Position26>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Caret Line="801" Column="11" TopLine="807"/>
+        <Caret Line="9092" Column="3" TopLine="9078"/>
       </Position26>
       <Position27>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Caret Line="9092" Column="3" TopLine="9078"/>
+        <Caret Line="7639" Column="25" TopLine="7619"/>
       </Position27>
       <Position28>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Caret Line="7639" Column="25" TopLine="7619"/>
+        <Caret Line="278" Column="68" TopLine="267"/>
       </Position28>
       <Position29>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Caret Line="278" Column="68" TopLine="267"/>
-      </Position29>
-      <Position30>
-        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="9084" Column="7" TopLine="9070"/>
-      </Position30>
+      </Position29>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
