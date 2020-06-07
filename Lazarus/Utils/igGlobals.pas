@@ -102,8 +102,6 @@ function ReadBinaryStringFromFile (aFileName: String): String;
 function ReadStringFromFile (aFileName: String): String;
 procedure SaveBinaryStringToFile (aFileName: String; aString: String);
 procedure SaveStringToFile (aFileName: String; aString: AnsiString);
-function ExpandRelativeFileName(aMainFileName,
-  aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName,
   aToRelateFileName: String): String;
 function EbcdicToAscii (const aString: String): String;
@@ -813,90 +811,6 @@ begin
   SetLength (result, Length (aString));
   for x := 1 to Length (aString) do
     result [x] := Char (_EbcdicByteToAsciiByte (Byte (aString [x])));
-end;
-
-function ExpandRelativeFileName(aMainFileName,
-  aToRelateFileName: String): String;
-  function _ExtractHttpPath(aFileName: String): String;
-  var
-    l, x: Integer;
-  begin
-    l := 0;
-    for x := 1 to length (aFileName) do
-      if aFileName [x] = '/' then
-        l := x;
-    result := Copy (aFileName, 1, l);
-  end;
-  function _ExpandHttpName (aFileName: String): String;
-  var
-    l, x: Integer;
-  begin
-    SetLength (result, Length (aFileName));
-    x := 1;
-    l := 0;
-    while x <= Length (aFileName) do
-    begin
-      if aFileName [x] <> '.' then
-      begin
-        Inc (l);
-        result [l] := aFileName [x];
-        Inc (x);
-      end
-      else
-      begin
-        if (Copy (aFileName, x, 3) = '../') then
-        begin
-          Dec (l);
-          while (l > 0) and (result [l] <> '/') do
-            Dec (l);
-          if l = 0 then
-            raise Exception.Create ( 'Could not expand: '
-                                   + aFileName
-                                   );
-          Inc (x, 3);
-        end
-        else
-        begin
-          if (Copy (aFileName, x, 2) = './') then
-          begin
-            Inc (x, 2);
-          end
-          else
-          begin
-            Inc (l);
-            result [l] := aFileName [x];
-            Inc (x);
-          end;
-        end;
-      end;
-    end;
-    SetLength (Result, l);
-  end;
-var
-  httpPath: String;
-begin
-  if (AnsiStartsText('http://', aToRelateFileName))
-  or (AnsiStartsText('https://', aToRelateFileName))
-  or (ExtractFileDrive(aToRelateFileName) <> '')
-  then
-  begin
-    result := aToRelateFileName;
-    exit;
-  end;
-  if (AnsiStartsText('http://', aMainFileName))
-  or (AnsiStartsText('https://', aMainFileName))
-  then
-  begin
-    httpPath := _ExtractHttpPath(aMainFileName);
-    if (AnsiRightStr(httpPath, 1) = '/')
-    and (AnsiLeftStr(aToRelateFileName, 1) = '/') then
-      httpPath := AnsiLeftStr(httpPath, Length(httpPath) - 1);
-    result := _ExpandHttpName (httpPath + aToRelateFileName);
-  end
-  else
-    result := ExpandFileNameUTF8(ExtractFilePath(aMainFileName)
-                              + aToRelateFileName
-                             ); { *Converted from ExpandFileName* }
 end;
 
 function ExtractRelativeFileName(aMainFileName,

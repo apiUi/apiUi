@@ -625,6 +625,7 @@ var
   dXml: TXml;
   xStringProvider: TStringProvider;
 begin
+//SjowMessage(aPath + ' : ' + aQuery + ' : ' + aVerb + ' : ' + aBody);
   result := '';
   sStream := nil;
   aVerb := UpperCase(aVerb);
@@ -753,6 +754,7 @@ var
   dXml: TXml;
   xStringProvider: TStringProvider;
 begin
+//SjowMessage(aPath + ' : ' + aFileName);
   xStringProvider := nil;
   if not Assigned (aConfigXml) then
     raise Exception.Create ('function HttpDialog no Config assigned');
@@ -939,10 +941,13 @@ function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): Strin
         l := x;
     result := Copy (aFileName, 1, l);
   end;
-  function _ExpandHttpName (aFileName: String): String;
+  function _ExpandFolderName (aFileName, aSeparator: String): String;
   var
     l, x: Integer;
+    xUpFolder, xThisFolder: String;
   begin
+    xUpFolder := '..' + aSeparator;
+    xThisFolder := '.' + aSeparator;
     SetLength (result, Length (aFileName));
     x := 1;
     l := 0;
@@ -956,10 +961,10 @@ function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): Strin
       end
       else
       begin
-        if (Copy (aFileName, x, 3) = '../') then
+        if (Copy (aFileName, x, 3) = xUpFolder) then
         begin
           Dec (l);
-          while (l > 0) and (result [l] <> '/') do
+          while (l > 0) and (result [l] <> aSeparator) do
             Dec (l);
           if l = 0 then
             raise Exception.Create ( 'Could not expand: '
@@ -969,7 +974,7 @@ function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): Strin
         end
         else
         begin
-          if (Copy (aFileName, x, 2) = './') then
+          if (Copy (aFileName, x, 2) = xThisFolder) then
           begin
             Inc (x, 2);
           end
@@ -1020,12 +1025,19 @@ begin
     if (AnsiRightStr(httpPath, 1) = '/')
     and (AnsiLeftStr(aToRelateFileName, 1) = '/') then
       httpPath := AnsiLeftStr(httpPath, Length(httpPath) - 1);
-    result := _ExpandHttpName (httpPath + aToRelateFileName);
+    result := _ExpandFolderName (httpPath + aToRelateFileName, '/');
   end
   else
-    result := ExpandFileName (  ExtractFilePath(aMainFileName)
-                              + aToRelateFileName
-                             );
+    DoDirSeparators (aMainfileName);
+    DoDirSeparators (aToRelateFileName);
+    aMainFileName := ExtractFilePath(aMainFileName);
+    if (AnsiRightStr(aMainfileName, 1) = '/')
+    and (AnsiLeftStr(aToRelateFileName, 1) = '/') then
+      SetLength(aMainfileName, Length(aMainfileName) - 1);
+    result := _ExpandFolderName ( ExtractFilePath(aMainFileName)
+                                + aToRelateFileName
+                                , DirectorySeparator
+                                );
 end;
 
 function ExtractRelativeFileName(aMainFileName,
@@ -1133,6 +1145,7 @@ begin
     aOnBeforeRead (aFileName);
   if doTrackXmlIO then
     SjowMessage('ReadStringFromFile: ' + aFileName);
+//  SjowMessage('ReadStringFromFile: ' + aFileName);
   if (AnsiStartsText('HTTP://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, false);

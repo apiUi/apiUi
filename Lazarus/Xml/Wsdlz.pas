@@ -1990,9 +1990,9 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
     begin
       if Name = tagImport then
-        _LoadFromFile (ExpandRelativeFileName(aFileName, Attributes.ValueByTag[tagLocation]));
+        _LoadFromFile (xmlio.ExpandRelativeFileName (aFileName, Attributes.ValueByTag[tagLocation]));
       if Name = tagInclude then
-        _LoadFromFile (ExpandRelativeFileName(aFileName, Attributes.ValueByTag[tagLocation]));
+        _LoadFromFile (xmlio.ExpandRelativeFileName(aFileName, Attributes.ValueByTag[tagLocation]));
     end;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items do
     begin
@@ -2178,11 +2178,8 @@ begin
   fOpers.ClearListOnly;
   Services.Clear;
   XsdDescr.AddBuiltIns;
-  if UpperCase(LeftStr(aFileName, 7)) <> 'HTTP://' then
-    FileName := ExpandFileNameUTF8(aFileName)
-  else
-    FileName := aFileName;
   XsdDescr.ReadFileNames.Add(aFileName);
+  FileName := aFileName;
   xXml := TXml.Create;
   try
     xXml.LoadFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
@@ -2192,7 +2189,7 @@ begin
     or (     (xXml.NameSpace <> scWsdlNameSpace)
        ) and (xXml.NameSpace <> '')then
       raise Exception.CreateFmt ('%s is not a WSDL file', [aFileName]);
-    _LoadFromXml (xXml, FileName);
+    _LoadFromXml (xXml, aFileName);
     XsdDescr.Finalise;
 
     xXsds := TXsdList.Create;
@@ -2889,8 +2886,7 @@ begin
   except
   end;
   Name := aFileName;
-  FileName := aFileName;
-  xExt := UpperCase (ExtractFileExt (FileName));
+  xExt := UpperCase (ExtractFileExt (aFileName));
   xRootXml := TXml.Create;
   sl := TStringList.Create;
   sl.Sorted := True;

@@ -1315,10 +1315,7 @@ begin
   result := False;
   Clear;
   AddBuiltIns;
-  if UpperCase(LeftStr(aFileName, 7)) <> 'HTTP://' then
-    fMainFileName := ExpandFileNameUTF8(aFileName)
-  else
-    fMainFileName := aFileName;
+  fMainFileName := aFileName;
   AddXsdFromFile ('', fMainFileName, ErrorFound, aApiUiServerConfig, aOnbeforeRead);
   Finalise;
 end;

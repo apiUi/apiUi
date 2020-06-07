@@ -2882,9 +2882,9 @@ begin
             if not xDone then
             begin
               try
-                xWsdl := WsdlOpenFile ( ExpandRelativeFileName ( aMainFileName
-                                                               , wXml.Items.XmlValueByTag['WsdlLocation']
-                                                               )
+                xWsdl := WsdlOpenFile ( xmlio.ExpandRelativeFileName ( aMainFileName
+                                                                     , wXml.Items.XmlValueByTag['WsdlLocation']
+                                                                     )
                                       , aApiUiServerConfig
                                       );
               except
@@ -4344,7 +4344,7 @@ begin
         xLog.Operation := xLog.Operation.Cloned;
       _OperationCount(xLog);
       xLog.ServiceName := aOperation.WsdlService.Name;
-      xLog.OperationName := aOperation.reqTagName;
+      xLog.OperationName := aOperation.Alias;
       xLog.TransportType := aOperation.StubTransport;
       xLog.Mssg := aOperation.CorrelatedMessage;
       xLog.RequestContentType := aOperation.ContentType;
@@ -4688,7 +4688,7 @@ begin
     aLog.StubAction := aOperation.StubAction;
   if Assigned (aOperation) then
   begin
-    aLog.OperationName:=aOperation.reqTagName;
+    aLog.OperationName := aOperation.Alias;
     CheckExpectedValues(aLog, aOperation, doCheckExpectedValues);
     if aOperation.StubAction = saRequest then
     begin
@@ -5025,7 +5025,7 @@ begin
       if allOperations.Operations [o].WsdlService.DescriptionType = ipmDTBmtp then
       begin
         if (allOperations.Operations [o].WsdlService.Name = aLog.ServiceName)
-        and (allOperations.Operations [o].Name = aLog.OperationName) then
+        and (allOperations.Operations [o].Alias = aLog.OperationName) then
         begin
           result := allOperations.Operations [o];
           exit;
@@ -5296,9 +5296,7 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String; aA
     try
       if not Assigned (sXml) then
         exit;
-      aDescrFileName := LazFileUtils.ExpandFileNameUTF8(ExpandRelativeFileName
-                            (aMainFileName, sXml.Items.XmlCheckedValueByTag ['DescriptionFile'])
-                          );
+      aDescrFileName := ExpandRelativeFileName (aMainFileName, sXml.Items.XmlCheckedValueByTag ['DescriptionFile']);
       xXsdDescr := TXsdDescr.Create;
       XsdWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       try
@@ -5447,9 +5445,7 @@ procedure TWsdlProject.xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: Str
     try
       if not Assigned (sXml) then
         exit;
-      aSampleFileName := LazFileUtils.ExpandFileNameUTF8(ExpandRelativeFileName
-                            (aMainFileName, sXml.Items.XmlCheckedValueByTag ['SampleFile'])
-                          );
+      aSampleFileName := ExpandRelativeFileName (aMainFileName, sXml.Items.XmlCheckedValueByTag ['SampleFile']);
       xXsdDescr := TXsdDescr.Create;
       XmlSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       try
@@ -5626,9 +5622,7 @@ procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: S
       xXml := sXml.ItemByTag['SampleFile'];
       if Assigned (xXml) then
       begin
-        xSampleFileName := ExpandFileNameUTF8(ExpandRelativeFileName
-                            (aMainFileName, xXml.Value)
-                          );
+        xSampleFileName := ExpandRelativeFileName (aMainFileName, xXml.Value);
         try
           xXsd := xXsdDescr.LoadXsdFromJsonSampleFile(xSampleFileName, nil, aApiUiServerConfig, OnBeforeFileRead);
         except
@@ -5693,10 +5687,9 @@ procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: S
             aXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
             if Assigned (Items.XmlCheckedItemByTag['SampleFile']) then
             begin
-              xFileName := ExpandFileNameUTF8 (ExpandRelativeFileName ( aMainFileName
-                                                                      , Items.XmlValueByTag['SampleFile']
-                                                                      )
-                                              );
+              xFileName := ExpandRelativeFileName ( aMainFileName
+                                                  , Items.XmlValueByTag['SampleFile']
+                                                  );
               try
                 sXsd := xXsdDescr.LoadXsdFromJsonSampleFile (xFileName, nil, aApiUiServerConfig, OnBeforeFileRead);
               except
@@ -7101,7 +7094,7 @@ begin
           result := FindCcbOperationOnRequest (aLog, aString);
       end;
       if Assigned (result) then
-        aLog.OperationName:=result.reqTagName;
+        aLog.OperationName:=result.Alias;
     finally
       //ReleaseLock;
     end;
@@ -7171,7 +7164,7 @@ begin
       if Operations[x].httpVerb = aLog.httpCommand then
       begin
         result := Operations[x];
-        aLog.OperationName := Operations[x].Name;
+        aLog.OperationName := Operations[x].Alias;
         aLog.ServiceName := xService.Name;
       end;
     end;
@@ -7206,7 +7199,7 @@ begin
         result := FindCcbOperationOnRequest (aLog, aLog.RequestBody);
     end;
     if Assigned (result) then
-      aLog.OperationName:=result.reqTagName;
+      aLog.OperationName:=result.Alias;
   finally
     FreeAndNil (xXml);
   end;
@@ -8261,7 +8254,7 @@ begin
       aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
       aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
       aLog.DelayTimeMs := xOperation.DelayTimeMs;
-      aLog.OperationName:=xOperation.Alias;
+      aLog.OperationName := xOperation.Alias;
       xOperation.rpyXml.jsonType := jsonObject;
       aLog.ReplyBody := xOperation.StreamReply (_progName, True);
       aLog.ReplyContentType := xOperation.apiReplyMediaType;
@@ -8938,7 +8931,7 @@ begin
           try
             xLog.Operation := FindOperationOnReply(xLog.ReplyBody);
             if Assigned (xLog.Operation) then
-              xLog.OperationName:=xLog.Operation.reqTagName;
+              xLog.OperationName:=xLog.Operation.Alias;
           except
           end;
           if Assigned (xLog.Operation) then

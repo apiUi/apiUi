@@ -2722,7 +2722,7 @@ begin
   se.doCreateBackup := doCreateBackup;
   if Assigned (WsdlOperation) then
   begin
-    se.FocusOperationName := WsdlOperation.reqTagName;
+    se.FocusOperationName := WsdlOperation.Alias;
     se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
     se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
   end
@@ -3330,7 +3330,7 @@ begin
   se.doCreateBackup := doCreateBackup;
   if Assigned (WsdlOperation) then
   begin
-    se.FocusOperationName := WsdlOperation.reqTagName;
+    se.FocusOperationName := WsdlOperation.Alias;
     se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
     se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
   end
@@ -5857,7 +5857,7 @@ begin
             CellText := xLog.ServiceName;
         logOperationColumn:
           if Assigned(xLog.Operation) then
-            CellText := xLog.Operation.Name
+            CellText := xLog.Operation.Alias
           else
             CellText := xLog.OperationName;
         logCorrelationIdColumn:
