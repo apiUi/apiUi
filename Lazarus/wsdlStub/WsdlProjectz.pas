@@ -371,6 +371,7 @@ type
     function ProjectLogOptionsAsXml: TXml;
     function ProjectScriptsAsXml: TXml;
     procedure ProjectScriptsFromXml (aXml: TXml);
+    procedure RefreshCommand;
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
     function BooleanPromptDialog (aPrompt: String): Boolean;
     function WsdlOpenFile (aName: String; aApiUiServerConfig: TObject): TWsdl;
@@ -2334,6 +2335,26 @@ begin
   end;
 end;
 
+procedure TWsdlProject.RefreshCommand;
+var
+  wasActive: Boolean;
+begin
+  wasActive := IsActive;
+  Activate(False);
+  if DirectoryExistsUTF8(projectFileName) then
+  begin
+    OpenFromFolders;
+  end
+  else
+  begin
+    if FileExistsUTF8(projectFileName) then
+      ImportFromFile
+    else
+      raise Exception.Create('No such file or folder: ' + projectFileName);
+  end;
+  Activate(wasActive);
+end;
+
 function TWsdlProject.ProjectDesignAsXml: TXml;
   procedure _addCheckers (aList, aXml: TXml);
   var
@@ -2929,9 +2950,11 @@ begin
                 end;
               end;
               if Assigned (xWsdl) then
+              begin
                 Wsdls.AddObject ( xWsdl.FileName
                                 , xWsdl
                                 );
+              end;
             end;
             if Assigned (xWsdl) then
             begin
@@ -3824,6 +3847,8 @@ begin
     result.LoadFromJsonYamlFile(aName, nil, aApiUiServerConfig, OnBeforeFileRead)
   else
     result.LoadFromSchemaFile(aName, nil, aApiUiServerConfig, OnBeforeFileRead);
+  if Result.FileName = '' then
+    SjowMessage(format('(%s)if Result.FileName = ''''? hoe kan dat dan?', [aName]));
 end;
 
 procedure TWsdlProject .UpdateMessageRow (aOperation : TWsdlOperation ;
@@ -7767,6 +7792,15 @@ begin
           if nameXml.Value <> projectFileName then
             raise Exception.CreateFmt('Received project name (%s) differs from current projectname (%s)', [nameXml.Value, projectFileName]);
           TProcedureThread.Create(False, True, 200, self, ProjectDesignFromApiRequestString, xRequestBody, projectFileName);
+          Exit;
+        end;
+
+        if (Count = 4)
+        and (LowerCase(Strings[3]) = 'refresh')
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          AResponseInfo.ResponseNo := 202;
+          TProcedureThread.Create(False, True, self, RefreshCommand);
           Exit;
         end;
 

@@ -6,7 +6,9 @@ interface
 
 uses
   Classes, SysUtils
-  , IdHTTP, IdCustomHTTPServer
+  , IdHTTP
+  , IdCustomHTTPServer
+  , GZIPUtils
   ;
 type
 
@@ -621,13 +623,14 @@ var
   x: Integer;
   HttpClient: TIdHTTP;
   xResponse, xUrl, xName, xSslVersion: String;
-  xStream, sStream: TMemoryStream;
+  sStream, xStream, cStream: TMemoryStream;
   dXml: TXml;
   xStringProvider: TStringProvider;
 begin
 //SjowMessage(aPath + ' : ' + aQuery + ' : ' + aVerb + ' : ' + aBody);
   result := '';
   sStream := nil;
+  cStream := nil;
   aVerb := UpperCase(aVerb);
   xStringProvider := nil;
   if not Assigned (aConfigXml) then
@@ -651,10 +654,16 @@ begin
       if (aVerb = 'POST')
       or (aVerb = 'PUT') then
       begin
-        sStream := TMemoryStream.Create;
-        IdGlobal.WriteStringToStream(sStream, aBody, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
         HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
         HttpClient.Request.CharSet := '';
+        HttpClient.Request.ContentEncoding := 'gzip';
+        sStream := TMemoryStream.Create;
+        cStream := TMemoryStream.Create;
+        IdGlobal.WriteStringToStream(sStream, aBody, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
+        sStream.Position := 0;
+        GZIPUtils.GZip(sStream, cStream);
+        cStream.Position := 0;
+        FreeAndNil(sStream);
       end;
       try
         try
@@ -669,7 +678,7 @@ begin
               dXml := Items.XmlItemByTag['SSL'];
               if Assigned (dXml) then with dXml do
               begin
-                SSLOptions.Method := xmlzConsts.sslVersionFromString(items.XmlValueByTag['Vesrion']);
+                SSLOptions.Method := xmlzConsts.sslVersionFromString(items.XmlValueByTag['Version']);
                 SSLOptions.CertFile := Items.XmlValueByTag['CertificateFile'];
                 SSLOptions.KeyFile := Items.XmlValueByTag['KeyFile'];
                 SSLOptions.RootCertFile := Items.XmlValueByTag['RootCertificateFile'];
@@ -701,11 +710,14 @@ begin
           HttpClient.ProxyParams.ProxyServer := '';
           HttpClient.ProxyParams.ProxyPort := 0;
           if aVerb = 'GET' then HttpClient.Get (xUrl, xStream);
-          if aVerb = 'POST' then HttpClient.Post (xUrl, sStream, xStream);
-          if aVerb = 'PUT' then HttpClient.Put (xUrl, sStream, xStream);
+          if aVerb = 'POST' then HttpClient.Post (xUrl, cStream, xStream);
+          if aVerb = 'PUT' then HttpClient.Put (xUrl, cStream, xStream);
+//          result := IdGlobal.ReadStringFromStream(xStream, xStream.Size, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
+{ }
           SetLength(Result,xStream.Size);
           xStream.Position := 0;;
           xStream.Read(Pointer(Result)^,xStream.Size);
+{}
           if (HttpClient.ResponseCode < 200)
           or (HttpClient.ResponseCode > 299) then
             raise Exception.CreateFmt ( '%d: %s%s%s'
@@ -722,6 +734,7 @@ begin
       finally
         FreeAndNil (xStream);
         FreeAndNil (sStream);
+        FreeAndNil (cStream);
       end;
     finally
       FreeAndNil(xStringProvider);
@@ -742,6 +755,8 @@ begin
     end;
   finally
     Free;
+    //SjowMessage(result);
+
   end;
 end;
 
@@ -999,6 +1014,7 @@ begin
   or (AnsiStartsText('https://', aToRelateFileName))
   or (AnsiStartsText('file://', aToRelateFileName))
   or (AnsiStartsText('/', aToRelateFileName))
+  or (AnsiStartsText('\', aToRelateFileName))
   or (    (Length (aToRelateFileName) > 3)
       and (aToRelateFileName [2] = ':')
       and (aToRelateFileName [3] = '\')
@@ -1049,6 +1065,7 @@ var
   xMainPath: String;
   xToRelatePath: String;
 begin
+//SjowMessage('ExtractRelativeFileName:' + aMainFileName + ' , ' + aToRelateFileName);
   result := aToRelateFileName;
   if (aMainFileName = '')
   or (aToRelateFileName = '')
@@ -1145,7 +1162,7 @@ begin
     aOnBeforeRead (aFileName);
   if doTrackXmlIO then
     SjowMessage('ReadStringFromFile: ' + aFileName);
-//  SjowMessage('ReadStringFromFile: ' + aFileName);
+//SjowMessage('ReadStringFromFile: ' + aFileName);
   if (AnsiStartsText('HTTP://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, false);

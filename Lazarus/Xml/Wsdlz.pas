@@ -2873,6 +2873,7 @@ var
   xXsd, yXsd, hXsd: TXsd;
   s, xHost, xBasePath: String;
 begin
+  FileName := aFileName;
   try
     with TIdURI.Create(resolveAliasses(aFileName)) do
     try

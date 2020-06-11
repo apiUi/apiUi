@@ -3191,7 +3191,7 @@ begin
     SjowMessage(Format ('AddGroup %s %s %s: %s', [xXml.NameSpace, xXml.Name, aTargetNameSpace, 'Group not found']));
     Exit;
   end;
-  SjowMessage(Format ('+++AddGroup %s %s %s', [xXml.NameSpace, xXml.Name, aTargetNameSpace]));
+//SjowMessage(Format ('+++AddGroup %s %s %s', [xXml.NameSpace, xXml.Name, aTargetNameSpace]));
   for x := 0 to xGroupType.ElementDefs.Count - 1 do
   begin
     xXsd := TXsd.Create(self, xGroupType.ElementDefs.Xsds[x]);

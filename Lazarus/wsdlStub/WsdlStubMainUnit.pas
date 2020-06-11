@@ -4031,8 +4031,10 @@ begin
   MessagesVTS.Header.SortDirection := sdAscending;
   LogMemo.Clear;
   GridView.Clear;
+{
   ExceptionMemo.Clear;
   ExceptionsVTS.Clear;
+}
   NavigatorTreeView.Clear;
   // InWSdlEnumerationsListView.Clear;
   InWsdlPropertiesListView.Clear;
