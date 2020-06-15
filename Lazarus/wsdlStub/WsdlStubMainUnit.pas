@@ -14196,16 +14196,24 @@ begin
 end;
 
 procedure TMainForm.SaveRemoteApiUiProjectActionExecute(Sender: TObject);
+var
+  saveSaveRelativeFileNames: Boolean;
 begin
-  if EditRemoteServerConnectionParams('Remote apiUi server connection') then
-  begin
-    xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                            , '/apiUi/api/projectdesign'
-                            , ''
-                            , 'POST'
-                            , 'application/json'
-                            , se.ProjectDesignAsString
-                            );
+  saveSaveRelativeFileNames := se.SaveRelativeFileNames;
+  se.SaveRelativeFileNames := False;
+  try
+    if EditRemoteServerConnectionParams('Remote apiUi server connection') then
+    begin
+      xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                              , '/apiUi/api/projectdesign'
+                              , ''
+                              , 'POST'
+                              , 'application/json'
+                              , se.ProjectDesignAsString
+                              );
+    end;
+  finally
+    se.SaveRelativeFileNames := saveSaveRelativeFileNames;
   end;
 end;
 
