@@ -155,6 +155,27 @@ paths:
       responses:
         '200':
           description: Success response
+  /refresh:
+    post:
+      summary: reloads project from project definition as at is on the server filesystem
+      description: ''
+      operationId: refresh
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/refreshReq'
+      responses:
+        '202':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/refreshRpy'
   /regressionReport:
     post:
       summary: summary
@@ -328,6 +349,10 @@ definitions:
           type: integer
          max:
           type: integer
+  refreshReq:
+    type: string
+  refreshRpy:
+    type: string
   regressionReportReq:
     type: object
     properties:
@@ -471,5 +496,5 @@ definitions:
   versionInfo:
     type: object
     properties:
-      vesrion:
+      version:
         type: string

@@ -75,8 +75,15 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    LogsFromHttpGetAction: TAction;
+    MenuItem64: TMenuItem;
+    MenuItem65: TMenuItem;
+    SetApiServerConnectionAction: TAction;
+    SnapshotFromHttpGetAction: TAction;
     CheckReferencedFilenamesLocalAbsoluteAction: TAction;
     EasterEggPopupMenu: TPopupMenu;
+    MenuItem62: TMenuItem;
+    MenuItem63: TMenuItem;
     SaveRemoteApiUiProjectAction: TAction;
     CopyRemoteApiUiProjectAction: TAction;
     SnapshotsFromHttpGetAgainAction: TAction;
@@ -101,6 +108,8 @@ type
     CopyToClipboardAs: TMenuItem;
     MenuItem54: TMenuItem;
     CopyToClipboardAsJsonMenuItem: TMenuItem;
+    ToolButton52: TToolButton;
+    ToolButton53: TToolButton;
     ToolButton75: TToolButton;
     ToolButton79: TToolButton;
     ToolButton80: TToolButton;
@@ -618,6 +627,10 @@ type
     procedure GenerateFunctopnPrototypeListActionUpdate(Sender: TObject);
     procedure GenerateJsonSchemaInYamlExecute(Sender: TObject);
     procedure GenerateSwaggerActionExecute(Sender: TObject);
+    procedure LogsFromHttpGetActionExecute(Sender: TObject);
+    procedure LogsFromHttpGetActionHint(var HintStr: string;var CanShow: Boolean
+      );
+    procedure LogsFromHttpGetActionUpdate(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
     procedure MailOperationsActionExecute(Sender: TObject);
     procedure MailOperationsActionHint(var HintStr: string; var CanShow: Boolean
@@ -632,9 +645,12 @@ type
     procedure MenuItem58Click(Sender: TObject);
     procedure MenuItem60Click(Sender: TObject);
     procedure MenuItem61Click(Sender: TObject);
+    procedure MenuItem62Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
     function EditRemoteServerConnectionParams (aCaption: String): Boolean;
     procedure SaveRemoteApiUiProjectActionExecute(Sender: TObject);
+    procedure SetApiServerConnectionActionExecute(Sender: TObject);
+    procedure SnapshotFromHttpGetActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
@@ -1088,9 +1104,12 @@ type
     tacoHost: String;
     tacoPort: Integer;
     procedure CheckReferencedFilenamesLocalAbsolute;
+    procedure SnapshotFromRemoteServer (aList: TClaimableObjectList);
     procedure SnapshotsFromRemoteServer;
+    procedure LogsFromRemoteServer;
     procedure GetSnapshotsFromFolder (aList: TSnapshotList; aFolder: String);
     procedure GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
+    procedure GetSnapshotFromRemoteServer (aSnapshot: TSnapshot);
     procedure ShowHelpDocumentation (aName: String);
     procedure EditContexts;
     procedure ShowChosenLogTab;
@@ -13590,6 +13609,24 @@ begin
   end;
 end;
 
+procedure TMainForm.LogsFromHttpGetActionExecute(Sender: TObject);
+begin
+  TProcedureThread.Create(False, True, se, LogsFromRemoteServer);
+end;
+
+procedure TMainForm.LogsFromHttpGetActionHint(var HintStr: string;
+  var CanShow: Boolean);
+begin
+  HintStr := 'Append logs from remote apiServer.';
+  if not LogsFromHttpGetAction.Enabled then
+    HintStr := HintStr + ' (remote apiServer connection not yet specified, see menu Extra.)';
+end;
+
+procedure TMainForm.LogsFromHttpGetActionUpdate(Sender: TObject);
+begin
+  LogsFromHttpGetAction.Enabled := Assigned (se) and Assigned (se.remoteServerConnectionXml);
+end;
+
 procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
 var
   xOperation: TWsdlOperation;
@@ -13812,6 +13849,15 @@ begin
     on e: Exception do
       Raise Exception.CreateFmt ('Not all referenced diskfiles found (Local/Absolute)%s%s', [LineEnding, e.Message])
   end;
+end;
+
+procedure TMainForm.SnapshotFromRemoteServer (aList: TClaimableObjectList);
+var
+  x: Integer;
+begin
+  with aList as TSnapshotList do
+  for x := 0 to Count - 1 do
+    GetSnapshotFromRemoteServer (SnapshotItems[x]);
 end;
 
 procedure TMainForm.CheckReferencedFilenamesLocalAbsoluteActionExecute(Sender: TObject);
@@ -14047,6 +14093,11 @@ begin
   ShowHelpDocumentation('Log_Popup_Menu');
 end;
 
+procedure TMainForm.MenuItem62Click(Sender: TObject);
+begin
+
+end;
+
 procedure TMainForm.OperationsPopupHelpItemClick(Sender: TObject);
 begin
   ShowHelpDocumentation('Operations_Popup_Menu');
@@ -14113,6 +14164,27 @@ begin
   end;
 end;
 
+procedure TMainForm.GetSnapshotFromRemoteServer(aSnapshot: TSnapshot);
+var
+  xTimeStamp: TDateTime;
+begin
+  xTimeStamp := now();
+  try
+    xmlio.apiUiServerDownload ( se.remoteServerConnectionXml
+                              , '/apiUi/api/snapshots/download/' + urlPercentEncode(aSnapshot.Name)
+                              , aSnapshot.FileName
+                              );
+    aSnapshot.Status := rsUndefined;
+    aSnapshot.timeStamp := xTimeStamp;
+  except
+    on e: Exception do
+    begin
+      aSnapshot.Message := e.Message;
+      aSnapshot.Status := rsException;
+    end;
+  end;
+end;
+
 procedure TMainForm.SnapshotsFromRemoteServer;
 var
   x: Integer;
@@ -14160,6 +14232,32 @@ begin
     FreeAndNil(slx);
     FreeAndNil(sln);
     FreeAndNil(slc);
+  end;
+end;
+
+procedure TMainForm.LogsFromRemoteServer;
+var
+  x: Integer;
+  s: String;
+  xLogList: TLogList;
+begin
+  s := xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                               , '/apiUi/api/logs/getandremove'
+                               , ''
+                               , 'PUT'
+                               , 'application/xml'
+                               );
+  xLogList := TLogList.Create;
+  try
+    se.OpenMessagesLog(s, False, False, xLogList);
+    for x := 0 to xLogList.Count - 1 do
+    begin
+      se.DisplayLog('', xLogList.LogItems[x]);
+    end;
+  finally
+    s:= '';
+    xLogList.Clear;
+    FreeAndNil(xLogList);
   end;
 end;
 
@@ -14214,6 +14312,31 @@ begin
     end;
   finally
     se.SaveRelativeFileNames := saveSaveRelativeFileNames;
+  end;
+end;
+
+procedure TMainForm.SetApiServerConnectionActionExecute(Sender: TObject);
+begin
+  EditRemoteServerConnectionParams('Remote apiUi server connection');
+end;
+
+procedure TMainForm.SnapshotFromHttpGetActionExecute(Sender: TObject);
+var
+  xReport: TSnapshot;
+  xNode: PVirtualNode;
+  xSnapshotList: TSnapshotList;
+begin
+  if EditRemoteServerConnectionParams('Remote apiUi server connection') then
+  begin
+    xSnapshotList := TSnapshotList.Create;
+    xNode := SnapshotsVTS.GetFirstSelected;
+    while Assigned (xNode) do
+    begin
+      xReport := NodeToSnapshot(True, SnapshotsVTS, xNode);
+      xSnapshotList.SaveObject(xReport.Name, xReport);
+      xNode := SnapshotsVTS.GetNextSelected(xNode);
+    end;
+    TProcedureThread.Create(False, True, se, SnapshotFromRemoteServer, xSnapshotList);
   end;
 end;
 

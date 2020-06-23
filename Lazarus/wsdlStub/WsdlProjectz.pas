@@ -7589,6 +7589,35 @@ begin
           Exit;
         end;
 
+        if (Count = 5)
+        and (Strings[3] = 'logs')
+        and (Strings[4] = 'getandremove')
+        and (ARequestInfo.Command = 'PUT')
+        then begin
+          AcquireLogLock;
+          try
+            if Assigned (fClearedLogs) then
+            begin
+              raise Exception.Create('Service temporarely unavaillable');
+            end;
+            fClearedLogs := TLogList.Create;
+            with fClearedLogs do
+            begin
+              for x := 0 to displayedLogs.Count - 1 do
+                SaveLog('', displayedLogs.LogItems[x]);
+              for x := 0 to toDisplayLogs.Count - 1 do
+                SaveLog('', toDisplayLogs.LogItems[x]);
+              displayedLogs.Clear;
+              toDisplayLogs.Clear;
+              AResponseInfo.ContentText := LogsAsString (projectFileName);
+              AResponseInfo.ContentType := 'text/xml; charset=UTF-8';
+            end;
+            Exit;
+          finally
+            ReleaseLogLock;
+          end;
+        end;
+
         //   /operations/{operationAlias}/delay:
         if (Count = 6)
         and (Strings[3] = 'operations')

@@ -619,6 +619,32 @@ begin
 end;
 
 function apiUiServerDialog (aConfigXml: TObject; aPath, aQuery, aVerb, aAcceptContentType: String; aBody: String = ''): String;
+  function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
+  var
+    xStream: TMemoryStream;
+  begin
+    result := '';
+    aStream.Position := 0;
+    if (aContentEncoding <> '')
+    and (aContentEncoding <> 'identity') then
+    begin
+      xStream := TMemoryStream.Create;
+      try
+        GZIPUtils.ZUncompressStream(aStream, xStream);
+        xStream.Position := 0;
+        SetLength(Result,xStream.Size);
+        xStream.Read(Pointer(Result)^,xStream.Size);
+      finally
+        xStream.Free;
+      end;
+    end
+    else
+    begin
+      SetLength(Result,aStream.Size);
+      aStream.Read(Pointer(Result)^,aStream.Size);
+    end;
+  end;
+
 var
   x: Integer;
   HttpClient: TIdHTTP;
@@ -713,11 +739,7 @@ begin
           if aVerb = 'POST' then HttpClient.Post (xUrl, cStream, xStream);
           if aVerb = 'PUT' then HttpClient.Put (xUrl, cStream, xStream);
 //          result := IdGlobal.ReadStringFromStream(xStream, xStream.Size, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
-{ }
-          SetLength(Result,xStream.Size);
-          xStream.Position := 0;;
-          xStream.Read(Pointer(Result)^,xStream.Size);
-{}
+          result := _Decompress (HttpClient.Response.ContentEncoding, xStream);
           if (HttpClient.ResponseCode < 200)
           or (HttpClient.ResponseCode > 299) then
             raise Exception.CreateFmt ( '%d: %s%s%s'
