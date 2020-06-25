@@ -1361,10 +1361,10 @@ begin
           begin
             xXml := TXml.Create;
             try
-              if Pos ('json', self.RequestContentType) > 0 then
-                xXml.LoadJsonFromString(self.RequestBody, nil)
+              if Pos ('xml', self.RequestContentType) > 0 then
+                xXml.LoadFromString(self.RequestBody, nil)
               else
-                xXml.LoadFromString(self.RequestBody, nil);
+                xXml.LoadJsonFromString(self.RequestBody, nil);
               xXml.Name := XmlItems[x].Name;
               XmlItems[x].LoadValues (xXml, false, False, True, False);
             finally

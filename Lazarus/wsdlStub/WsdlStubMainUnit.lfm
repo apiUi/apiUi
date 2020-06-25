@@ -1024,17 +1024,17 @@ object MainForm: TMainForm
         Images = mainImageList
         TabOrder = 0
         object ToolButton39: TToolButton
-          Left = 132
+          Left = 117
           Top = 2
           Action = ClearSnapshotsAction
         end
         object ToolButton40: TToolButton
-          Left = 78
+          Left = 63
           Top = 2
           Action = ReportOnSnapshotsAction
         end
         object ToolButton51: TToolButton
-          Left = 124
+          Left = 109
           Height = 22
           Top = 2
           Width = 8
@@ -1042,7 +1042,7 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object ToolButton64: TToolButton
-          Left = 70
+          Left = 55
           Height = 22
           Top = 2
           Width = 8
@@ -1050,7 +1050,7 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object ToolButton65: TToolButton
-          Left = 101
+          Left = 86
           Top = 2
           Action = SummaryReportAction
         end
@@ -1059,15 +1059,18 @@ object MainForm: TMainForm
           Top = 2
           Action = SnapshotsFromFolderAction
         end
-        object ToolButton80: TToolButton
-          Left = 24
-          Top = 2
-          Action = SnapshotsFromHttpGetAction
-        end
         object ToolButton81: TToolButton
-          Left = 47
+          Left = 32
           Top = 2
           Action = SnapshotsFromHttpGetAgainAction
+        end
+        object ToolButton80: TToolButton
+          Left = 24
+          Height = 22
+          Top = 2
+          Width = 8
+          Caption = 'ToolButton80'
+          Style = tbsSeparator
         end
       end
       object Panel1: TPanel
@@ -2596,7 +2599,6 @@ object MainForm: TMainForm
       Caption = 'SnapshotsFromHttpGetAction'
       Hint = 'Get snapshots from remote apiUi/apiServer'
       ImageIndex = 104
-      OnExecute = SnapshotsFromHttpGetActionExecute
     end
     object SnapshotsFromHttpGetAgainAction: TAction
       Caption = 'Download snapshots from apiUi in the cloud'
@@ -2637,10 +2639,11 @@ object MainForm: TMainForm
       OnExecute = SnapshotFromHttpGetActionExecute
     end
     object SetApiServerConnectionAction: TAction
-      Caption = 'Set apiUi in the cloud connection'
+      Caption = 'Set apiUi cloud connection'
       Hint = 'Set connection properties to apiUi in the cloud'
       ImageIndex = 106
       OnExecute = SetApiServerConnectionActionExecute
+      ShortCut = 57411
     end
     object LogsFromHttpGetAction: TAction
       Caption = 'Append logs from remote apiServer'

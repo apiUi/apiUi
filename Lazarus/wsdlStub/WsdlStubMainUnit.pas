@@ -645,13 +645,11 @@ type
     procedure MenuItem58Click(Sender: TObject);
     procedure MenuItem60Click(Sender: TObject);
     procedure MenuItem61Click(Sender: TObject);
-    procedure MenuItem62Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
     function EditRemoteServerConnectionParams (aCaption: String): Boolean;
     procedure SaveRemoteApiUiProjectActionExecute(Sender: TObject);
     procedure SetApiServerConnectionActionExecute(Sender: TObject);
     procedure SnapshotFromHttpGetActionExecute(Sender: TObject);
-    procedure SnapshotsFromHttpGetActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
     procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
@@ -14093,11 +14091,6 @@ begin
   ShowHelpDocumentation('Log_Popup_Menu');
 end;
 
-procedure TMainForm.MenuItem62Click(Sender: TObject);
-begin
-
-end;
-
 procedure TMainForm.OperationsPopupHelpItemClick(Sender: TObject);
 begin
   ShowHelpDocumentation('Operations_Popup_Menu');
@@ -14338,12 +14331,6 @@ begin
     end;
     TProcedureThread.Create(False, True, se, SnapshotFromRemoteServer, xSnapshotList);
   end;
-end;
-
-procedure TMainForm.SnapshotsFromHttpGetActionExecute(Sender: TObject);
-begin
-  if EditRemoteServerConnectionParams('Remote apiUi server connection') then
-    TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer);
 end;
 
 procedure TMainForm.SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);

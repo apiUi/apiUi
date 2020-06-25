@@ -89,8 +89,8 @@
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="7480"/>
-        <CursorPos Y="7493"/>
+        <TopLine Value="7489"/>
+        <CursorPos X="8" Y="7502"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit11>
