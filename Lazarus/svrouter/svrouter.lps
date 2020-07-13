@@ -8,9 +8,8 @@
       <Unit0>
         <Filename Value="svrouter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="119"/>
-        <CursorPos X="10" Y="132"/>
+        <TopLine Value="199"/>
+        <CursorPos X="3" Y="202"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -382,8 +381,9 @@
       </Unit50>
       <Unit51>
         <Filename Value="svrouterini.xml"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
-        <CursorPos X="37" Y="10"/>
+        <CursorPos Y="17"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="XML"/>
@@ -421,116 +421,116 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="67" TopLine="56"/>
+        <Caret Line="102" TopLine="91"/>
       </Position1>
       <Position2>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="102" TopLine="91"/>
+        <Caret Line="263" TopLine="222"/>
       </Position2>
       <Position3>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="263" TopLine="222"/>
-      </Position3>
-      <Position4>
         <Filename Value="..\Components\Indy10\Lib\Core\IdExceptionCore.pas"/>
         <Caret Line="93" Column="16" TopLine="80"/>
-      </Position4>
-      <Position5>
+      </Position3>
+      <Position4>
         <Filename Value="svrouter.lpr"/>
         <Caret Line="155" Column="8" TopLine="145"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\Xml\xmlio.pas"/>
       </Position5>
       <Position6>
         <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="65" Column="12" TopLine="52"/>
       </Position6>
       <Position7>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="65" Column="12" TopLine="52"/>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdGlobalProtocols.pas"/>
       </Position7>
       <Position8>
-        <Filename Value="..\Components\Indy10\Lib\Protocols\IdGlobalProtocols.pas"/>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdIPAddress.pas"/>
       </Position8>
       <Position9>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIPAddress.pas"/>
+        <Caret Line="103" Column="3" TopLine="90"/>
       </Position9>
       <Position10>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdIPAddress.pas"/>
-        <Caret Line="103" Column="3" TopLine="90"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="65" TopLine="53"/>
       </Position10>
       <Position11>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="65" TopLine="53"/>
+        <Caret Line="10"/>
       </Position11>
       <Position12>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="10"/>
-      </Position12>
-      <Position13>
         <Filename Value="svrouter.lpr"/>
         <Caret Line="47" Column="7" TopLine="37"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
       </Position13>
       <Position14>
         <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
+        <Caret Line="73" Column="64" TopLine="60"/>
       </Position14>
       <Position15>
-        <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
-        <Caret Line="73" Column="64" TopLine="60"/>
-      </Position15>
-      <Position16>
         <Filename Value="svrouter.lpr"/>
         <Caret Line="23" Column="19" TopLine="11"/>
-      </Position16>
-      <Position17>
+      </Position15>
+      <Position16>
         <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
         <Caret Line="73" Column="3" TopLine="61"/>
+      </Position16>
+      <Position17>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="24" Column="5" TopLine="12"/>
       </Position17>
       <Position18>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="24" Column="5" TopLine="12"/>
+        <Caret Line="11" Column="5"/>
       </Position18>
       <Position19>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="11" Column="5"/>
-      </Position19>
-      <Position20>
         <Filename Value="..\Xml\xmlio.pas"/>
         <Caret Line="9" Column="2"/>
+      </Position19>
+      <Position20>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="15" Column="59" TopLine="2"/>
       </Position20>
       <Position21>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="15" Column="59" TopLine="2"/>
       </Position21>
       <Position22>
         <Filename Value="svrouter.lpr"/>
+        <Caret Line="96" Column="17" TopLine="78"/>
       </Position22>
       <Position23>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="96" Column="17" TopLine="78"/>
+        <Caret Line="98" Column="79" TopLine="81"/>
       </Position23>
       <Position24>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="98" Column="79" TopLine="81"/>
       </Position24>
       <Position25>
         <Filename Value="svrouter.lpr"/>
+        <Caret Line="96" Column="31" TopLine="78"/>
       </Position25>
       <Position26>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="96" Column="31" TopLine="78"/>
       </Position26>
       <Position27>
         <Filename Value="svrouter.lpr"/>
+        <Caret Line="53" Column="41" TopLine="34"/>
       </Position27>
       <Position28>
         <Filename Value="svrouter.lpr"/>
-        <Caret Line="53" Column="41" TopLine="34"/>
+        <Caret Line="96" Column="31" TopLine="78"/>
       </Position28>
       <Position29>
-        <Filename Value="svrouter.lpr"/>
-        <Caret Line="96" Column="31" TopLine="78"/>
-      </Position29>
-      <Position30>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\classes\classesh.inc"/>
         <Caret Line="2030" Column="10" TopLine="2028"/>
+      </Position29>
+      <Position30>
+        <Filename Value="svrouter.lpr"/>
+        <Caret Line="112" Column="34" TopLine="92"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

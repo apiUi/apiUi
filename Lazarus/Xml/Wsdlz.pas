@@ -277,6 +277,8 @@ type
       fPrepareErrors: String;
       procedure BufferToValuesErrorFound (aMessage: String; aObject: TObject);
       function getApiReplyMediaType: String;
+      function getConsumesOnlyJson: Boolean;
+      function getConsumesOnlyXml: Boolean;
       function getDoExit : Boolean ;
       function getHost: String;
       function getIsFreeFormat : Boolean ;
@@ -371,7 +373,7 @@ type
       Messages: TWsdlMessages;
       doReadReplyFromFile: Boolean;
       ReadReplyFromFileXml: TXml;
-      ExpectationBindables, LogColumns, BindablesWithAddedElement: TBindableList;
+      LogColumns, BindablesWithAddedElement: TBindableList;
       faultcode, faultstring, faultactor, LiteralResult: String;
       ReturnSoapFault: Boolean;
       RecognitionType: TRecognitionType;
@@ -407,6 +409,8 @@ type
       property MessageBasedOnRequest: TWsdlMessage read getReplyBasedOnRequest;
       property OnError: TOnErrorEvent read fOnError write fOnError;
       property Cloned: TWsdlOperation read fCloned;
+      property ConsumesJsonOnly: Boolean read getConsumesOnlyJson;
+      property ConsumesXmlOnly: Boolean read getConsumesOnlyXml;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
       function AddedTypeDefElementsAsXml: TObject;
       procedure OnGetSslPassword (var aPassword: String);
@@ -541,7 +545,6 @@ type
       Documentation: String;
       DocumentationEdited: Boolean;
       Disabled: Boolean;
-      function CheckValues(aOperation: TWsdlOperation): Boolean;
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
       procedure CheckBefore;
@@ -3516,7 +3519,6 @@ begin
     (fltBind as TXml).Xsd := FaultXsd;
     Messages := TWsdlMessages.Create;
     CorrelationBindables := TBindableList.Create;
-    ExpectationBindables := TBindableList.Create;
     LogColumns := TBindableList.Create;
     BindablesWithAddedElement := TBindableList.Create;
     invokeList := TWsdlOperations.Create;
@@ -3633,7 +3635,6 @@ begin
     FreeAndNil (fExpressStamper);
     FreeAndNil (fExpressChecker);
     FreeAndNil (CorrelationBindables);
-    FreeAndNil (ExpectationBindables);
     FreeAndNil (LogColumns);
     FreeAndNil (BindablesWithAddedElement);
     FreeAndNil (freqBind);
@@ -4760,8 +4761,6 @@ begin
   self.OnError := xOperation.OnError;
   if Assigned (xOperation.CorrelationBindables) then
     self.CorrelationBindables := _cloneBindables(xOperation.CorrelationBindables);
-  if Assigned (xOperation.ExpectationBindables) then
-    self.ExpectationBindables := _cloneBindables(xOperation.ExpectationBindables);
   if Assigned (xOperation.BindablesWithAddedElement) then
     self.BindablesWithAddedElement := _cloneBindables(xOperation.BindablesWithAddedElement);
   if Assigned (xOperation.LogColumns) then
@@ -5139,9 +5138,6 @@ begin
   if Assigned (CorrelationBindables) then with CorrelationBindables do
     for x := 0 to Count - 1 do
       Bindables[x] := FindBind(Strings[x]);
-  if Assigned (ExpectationBindables) then with ExpectationBindables do
-    for x := 0 to Count - 1 do
-      Bindables[x] := FindBind(Strings[x]);
   if Assigned (LogColumns) then with LogColumns do
     for x := 0 to Count - 1 do
       Bindables[x] := FindBind(Strings[x]);
@@ -5254,7 +5250,6 @@ var
   m: Integer;
 begin
   _refresh(self, CorrelationBindables);
-  _refresh(self, ExpectationBindables);
   _refresh(self, LogColumns);
   _refresh(self, BindablesWithAddedElement);
   for m := 0 to Messages.Count - 1 do
@@ -6035,6 +6030,20 @@ begin
       end;
     end;
   end;
+end;
+
+function TWsdlOperation.getConsumesOnlyJson: Boolean;
+begin
+  result := (Pos ('json', Consumes) > 0)
+        and (Pos ('xml', Consumes) < 1)
+          ;
+end;
+
+function TWsdlOperation.getConsumesOnlyXml: Boolean;
+begin
+  result := (Pos ('xml', Consumes) > 0)
+        and (Pos ('json', Consumes) < 1)
+          ;
 end;
 
 function TWsdlOperation .getDoExit : Boolean ;
@@ -6928,53 +6937,6 @@ begin
   FreeAndNil(BeforeScriptLines);
   FreeAndNil(AfterScriptLines);
   inherited;
-end;
-
-function TWsdlMessage.CheckValues(aOperation: TWsdlOperation): Boolean;
-  procedure _setDoXpctd (aBind: TCustomBindable);
-  begin
-    if Assigned (aBind) then
-    begin
-      aBind.DoExpectValue := True;
-      _setDoXpctd(aBind.Parent as TCustomBindable);
-    end;
-  end;
-  function _getXbind (aObind: TCustomBindable): TCustomBindable;
-  begin
-    if aOperation.reqBind.isAncestorOf (aObind) then
-      result := self.reqBind.FindUQ(aObind.FullIndexCaption)
-    else
-      result := self.rpyBind.FindUQ(aObind.FullIndexCaption);
-  end;
-var
-  x: Integer;
-  oBind: TCustomBindable; // the Bind that has the recieved value
-  xBind: TCustomBindable; // the Bind that has the expected value
-begin
-  aOperation.reqBind.ResetExpectedValues;
-  aOperation.rpyBind.ResetExpectedValues;
-  for x := 0 to aOperation.ExpectationBindables.Count - 1 do
-  begin
-    oBind := aOperation.ExpectationBindables.Bindables [x];
-    xBind := _getXbind (oBind);
-    if Assigned (xBind) then
-    begin
-      _setDoXpctd (oBind);
-      if xBind.Checked then
-        oBind.ExpectedValue := xBind.Value
-      else
-        oBind.ExpectedValue := '&nil';
-      if oBind.Checked <> xBind.Checked then
-        oBind.HasUnExpectedValue := True
-      else
-      begin
-        if xBind.Checked then
-          oBind.HasUnExpectedValue := (StringMatchesRegExpr(oBind.Value, xBind.Value) <> xBind.Value);
-      end;
-    end;
-  end;
-  result := aOperation.reqBind.HasUnExpectedValue
-         or aOperation.rpyBind.HasUnExpectedValue;
 end;
 
 { TWsdlMessages }

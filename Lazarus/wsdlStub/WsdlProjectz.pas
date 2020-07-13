@@ -214,7 +214,7 @@ type
     StompInterface: TStompInterface;
     mqGetThreads: TStringList;
     Listeners: TListeners;
-    doValidateRequests, doValidateReplies, doCheckExpectedValues: Boolean;
+    doValidateRequests, doValidateReplies: Boolean;
     ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
     ignoreCoverageOn: TStringList;
     notStubbedExceptionMessage: String;
@@ -299,7 +299,6 @@ type
                             ; MqReturnCode: String
                             );
     function MessagesRegressionReportAsXml(aReferenceFileName: String; aPromptUser: Boolean): TXml;
-    procedure CheckExpectedValues(aLog: TLog; aOperation: TWsdlOperation; aDoCheck: Boolean);
     procedure UpdateMessageRow (aOperation: TWsdlOperation; aMessage: TWsdlMessage);
     procedure DelayMS (aDelayMS: Integer);
     procedure CreateLogReply (aLog: TLog; var aProcessed: Boolean; aIsActive: Boolean);
@@ -310,6 +309,7 @@ type
     procedure ImportFromFile;
     procedure OpenFromFolders;
     procedure OpenFromServerUrl;
+    procedure OpenProjectFromString (aString: String);
     procedure IntrospectProject;
     function XmlFromProjectFolders (aFolderName: String): TXml;
     function ProjectDesignAsXml: TXml;
@@ -2390,7 +2390,6 @@ begin
         CopyDownLine(Listeners.SpecificationXml, True);
       AddXml(TXml.CreateAsBoolean('ValidateRequests', doValidateRequests));
       AddXml(TXml.CreateAsBoolean('ValidateReplies', doValidateReplies));
-      AddXml (TXml.CreateAsBoolean('CheckExpectedValues', doCheckExpectedValues));
       AddXml (TXml.CreateAsBoolean('DisableOnCorrelate', _WsdlDisableOnCorrelate));
       AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, uncFilename(projectFileName)));
       AddXml (TXml.CreateAsString('PathPrefixes', xmlio.PathPrefixes.Text));
@@ -2595,9 +2594,6 @@ begin
                     with AddXml (TXml.CreateAsString('CorrelationElements', '')) do
                       for r := 0 to xOperation.CorrelationBindables.Count - 1 do
                         AddXml (TXml.CreateAsString('CorrelationElement', xOperation.CorrelationBindables.Strings[r]));
-                    with AddXml (TXml.CreateAsString('ExpectationElements', '')) do
-                      for r := 0 to xOperation.ExpectationBindables.Count - 1 do
-                        AddXml (TXml.CreateAsString('ExpectationElement', xOperation.ExpectationBindables.Strings[r]));
                     (xOperation.reqBind as TCustomBindable).Parent := swapReqParent;
                     with AddXml (TXml.CreateAsString('ColumnElements', '')) do
                     begin
@@ -2777,7 +2773,6 @@ begin
         end;
         doValidateRequests := (aXml.Items.XmlValueByTag ['ValidateRequests'] = 'true');
         doValidateReplies := (aXml.Items.XmlValueByTag ['ValidateReplies'] = 'true');
-        doCheckExpectedValues := aXml.Items.XmlBooleanByTagDef['CheckExpectedValues', False];
         _WsdlDisableOnCorrelate := aXml.Items.XmlBooleanByTagDef['DisableOnCorrelate', False];
         eXml := aXml.Items.XmlItemByTag ['projectOptions'];
         if Assigned (eXml) then
@@ -3066,13 +3061,6 @@ begin
                             for c := 0 to cXml.Items.Count - 1 do
                               if cXml.Items.XmlItems [c].TagName = 'CorrelationElement' then
                                 xOperation.CorrelationBindables.AddObject ( cXml.Items.XmlItems [c].Value
-                                                                          , xOperation.FindBind (cXml.Items.XmlItems [c].Value)
-                                                                          );
-                          cXml := oXml.Items.XmlItemByTag ['ExpectationElements'];
-                          if Assigned (cXml) then
-                            for c := 0 to cXml.Items.Count - 1 do
-                              if cXml.Items.XmlItems [c].TagName = 'ExpectationElement' then
-                                xOperation.ExpectationBindables.AddObject ( cXml.Items.XmlItems [c].Value
                                                                           , xOperation.FindBind (cXml.Items.XmlItems [c].Value)
                                                                           );
                           xOperation.LogColumns.Text := oXml.Items.XmlValueByTag['LogColumns'];
@@ -4466,7 +4454,6 @@ begin
         aOperation.ExecuteAfter;
         if aOperation.StubTransport = ttNone then
           xLog.ReplyBody := aOperation.StreamReply (_progName, True);
-        CheckExpectedValues (xLog, aOperation, doCheckExpectedValues);
       end;
       with xLog do
       begin
@@ -4537,19 +4524,6 @@ begin
     FreeAndNil (sl);
   end;
   SendOperation(aOperation);
-end;
-
-procedure TWsdlProject .CheckExpectedValues (aLog : TLog ;
-  aOperation : TWsdlOperation ; aDoCheck : Boolean );
-begin
-  if Assigned (aOperation)
-  and aDoCheck
-  and Assigned (aLog.Mssg)
-  and (aOperation.ExpectationBindables.Count > 0) then
-  begin
-    aLog.HasUnexpectedValue := aLog.Mssg.CheckValues(aOperation);
-    aLog.ExpectedValuesChecked := True;
-  end;
 end;
 
 function TWsdlProject .SendOperationTacoMessage (aOperation : TWsdlOperation ;
@@ -4714,7 +4688,6 @@ begin
   if Assigned (aOperation) then
   begin
     aLog.OperationName := aOperation.Alias;
-    CheckExpectedValues(aLog, aOperation, doCheckExpectedValues);
     if aOperation.StubAction = saRequest then
     begin
       aLog.ReplyBody := _progName + ' - Operation itself is a requestor ('+ aOperation.Name +')';
@@ -7786,6 +7759,46 @@ begin
           Exit;
         end;
 
+        if (Count = 5)
+        and (LowerCase(Strings[3]) = 'projectdesign')
+        and (LowerCase(Strings[4]) = 'files')
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          if xBodyXml.Name <> 'name' then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          xFileName := ExpandRelativeFileName(projectFileName, xBodyXml.Value);
+          AResponseInfo.ServeFile(AContext, xFileName);
+{
+          AResponseInfo.SmartServeFile ( AContext
+                                       , ARequestInfo
+                                       , xFileName
+                                       );
+}
+          Exit;
+        end;
+
+        if (Count = 5)
+        and (LowerCase(Strings[3]) = 'projectdesign')
+        and (LowerCase(Strings[4]) = 'files')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          xFilename := ARequestInfo.Params.Values['name'];
+          if xFileName = '' then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          xFileName := ExpandRelativeFileName(projectFileName, xFileName);
+          AResponseInfo.SmartServeFile ( AContext
+                                       , ARequestInfo
+                                       , xFileName
+                                       );
+          Exit;
+        end;
+
         if (Count > 5)
         and (LowerCase(Strings[3]) = 'projectdesign')
         and (LowerCase(Strings[4]) = 'files')
@@ -7945,25 +7958,6 @@ begin
     end;
   finally
     FreeAndNil(xBodyXml);
-    aResponseInfo.ContentStream := TMemoryStream.Create;
-    if AResponseInfo.ContentEncoding <> 'identity' then
-    begin
-      xStream := TMemoryStream.Create;
-      try
-        WriteStringToStream(AResponseInfo.ContentText, xStream as TMemoryStream);
-        if AResponseInfo.ContentEncoding = 'deflate' then
-          GZIPUtils.deflate(xStream as TMemoryStream, aResponseInfo.ContentStream as TMemoryStream);
-        if AResponseInfo.ContentEncoding = 'gzip' then
-          GZIPUtils.GZip(xStream as TMemoryStream, aResponseInfo.ContentStream as TMemoryStream);
-      finally
-        xStream.Free;
-      end;
-    end
-    else
-    begin
-      WriteStringToStream(AResponseInfo.ContentText, AResponseInfo.ContentStream as TMemoryStream);
-    end;
-    aResponseInfo.ContentText := '';
   end;
 end;
 
@@ -7977,17 +7971,17 @@ var
   xRelatesTo, xNotification, xDocument: String;
   xOnRequestViolatingAddressPath: TOnRequestViolating;
 begin
-//xDocument := '/' + _ProgName + '/api';
-  xDocument := '/apiUi/api';
-  if (ARequestInfo.Document = xDocument)
-  or AnsiStartsStr(xDocument + '/', ARequestInfo.Document)
-  or (ARequestInfo.Document = '/favicon.ico')
-  then begin
-    HTTPServerRemoteControlApi(AContext, ARequestInfo, AResponseInfo);
-    Exit;
-  end;
   xProcessed := False;
   try // finally set for hhtp reply
+  //xDocument := '/' + _ProgName + '/api';
+    xDocument := '/apiUi/api';
+    if (ARequestInfo.Document = xDocument)
+    or AnsiStartsStr(xDocument + '/', ARequestInfo.Document)
+    or (ARequestInfo.Document = '/favicon.ico')
+    then begin
+      HTTPServerRemoteControlApi(AContext, ARequestInfo, AResponseInfo);
+      Exit;
+    end;
     {$ifdef windows}
     CoInitialize (nil);
     {$endif}
@@ -9594,13 +9588,55 @@ end;
 procedure TWsdlProject.OpenFromServerUrl;
 var
   xXml, dXml: TXml;
+  sProjectDesign: String;
 begin
   ProgressBegin('Opening ' + projectFileName, 3000);
   try
     try
       xXml := TXml.Create;
       try
-        xXml.LoadFromString(xmlio.apiUiServerDialog(remoteServerConnectionXml, '/apiUi/api/projectdesign', '', 'GET', 'application/xml'), nil);
+        sProjectDesign := xmlio.apiUiServerDialog(remoteServerConnectionXml, '/apiUi/api/projectdesign', '', 'GET', 'application/xml');
+        SjowMessage(sProjectDesign);
+        xXml.LoadFromString(sProjectDesign, nil);
+        if xXml.Name = '' then
+          raise Exception.Create('Could not read Xml read from ' + RemoteServerUrl);
+        dXml := xXml.FindXml('WsdlStubCase.FileName', '.');
+        if not Assigned(dXml) then
+          raise Exception.Create('Invalid Xml read from ' + RemoteServerUrl);
+        ProjectDesignFromXml(xXml, dXml.Value, remoteServerConnectionXml);
+        StubRead := False;
+        StubChanged := True;
+        ProgressInvalidateConsole;
+      finally
+        xXml.Free;
+      end;
+    except
+      on e: exception do
+      begin
+        if Assigned (ProgressInterface) then
+          ProgressException(e)
+        else
+          raise;
+      end;
+    end;
+  finally
+    ProgressEnd;
+  end;
+end;
+
+procedure TWsdlProject.OpenProjectFromString (aString: String);
+var
+  xXml, dXml: TXml;
+  sProjectDesign: String;
+begin
+  ProgressBegin('Opening ' + projectFileName, 3000);
+  try
+    try
+      xXml := TXml.Create;
+      try
+        sProjectDesign := aString;
+        SjowMessage(sProjectDesign);
+        xXml.LoadFromString(sProjectDesign, nil);
         if xXml.Name = '' then
           raise Exception.Create('Could not read Xml read from ' + RemoteServerUrl);
         dXml := xXml.FindXml('WsdlStubCase.FileName', '.');
@@ -9876,7 +9912,6 @@ begin
   mqGetThreads.Clear;
   doValidateRequests := False;
   doValidateReplies := False;
-  doCheckExpectedValues := False;
   _WsdlDisableOnCorrelate := False;
   ignoreDifferencesOn.Clear;
   checkValueAgainst.Clear;

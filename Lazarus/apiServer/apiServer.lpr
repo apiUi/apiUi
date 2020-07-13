@@ -7,9 +7,11 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, SysUtils, CustApp
+  Classes, CustApp
   , Interfaces
   , math
+  , dateutils
+  , sysutils
   , WsdlProjectz
   , Xmlz
   , xmlio
@@ -28,16 +30,18 @@ uses
   ;
 
 type
-  longOptsArrayType = array [0..5] of String;
+  longOptsArrayType = array [0..6] of String;
 
 const
   helpOpt = 'help';
+  lstLogOpt = 'lstLog';
   scriptOpt = 'script';
   terminateOpt = 'terminate';
   trackIOOpt = 'trackIO';
   debugOpt = 'debug';
   contextOpt = 'context';
   longOpts: longOptsArrayType = ( helpOpt
+                                , lstLogOpt + ':'
                                 , scriptOpt + ':'
                                 , contextOpt + ':'
                                 , terminateOpt
@@ -53,7 +57,8 @@ type
     procedure DoRun; override;
   private
     se: TWsdlProject;
-    scriptName: String;
+    scriptName, lstLogFileName: String;
+    lstLogFile: TextFile;
     terminateAfterScript: Boolean;
     doDebug: Boolean;
     osUserName, CompanyName: String;
@@ -112,6 +117,10 @@ begin
   begin
     WriteLn('option ', contextOpt, ' ', GetOptionValue('?', contextOpt));
   end;
+  if HasOption('?', lstLogOpt) then
+  begin
+    WriteLn('option ', lstLogOpt, ' ', GetOptionValue('?', lstLogOpt));
+  end;
   if HasOption('?',scriptOpt) then
   begin
     WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
@@ -150,6 +159,7 @@ begin
       Exit;
     end;
   end;
+  lstLogFileName := GetOptionValue(lstLogOpt);
   scriptName := GetOptionValue(scriptOpt);
   sXml := nil;
   if (scriptName <> '') then
@@ -172,30 +182,42 @@ begin
       Exit;
     end;
   end;
-  if Assigned (sXml) then
+  if lstLogFileName <> '' then
   begin
-    with TProcedureThread.Create(True, False, 0, se, se.ScriptExecute, sXml as TObject) do
-    begin
-      FreeOnTerminate := True;
-      OnFinished := OnFinishedScript;
-      Start;
-    end;
+    AssignFile(lstLogFile, lstLogFileName);
+    Rewrite(lstLogFile);
   end;
-  SetLogUsageTimer;
-  while not Terminated do
-  begin
-    CheckSynchronize;
+  try
+    if Assigned (sXml) then
+    begin
+      with TProcedureThread.Create(True, False, 0, se, se.ScriptExecute, sXml as TObject) do
+      begin
+        FreeOnTerminate := True;
+        OnFinished := OnFinishedScript;
+        Start;
+      end;
+    end;
+    SetLogUsageTimer;
+    while not Terminated do
+    begin
+      CheckSynchronize;
+      RefreshLogger;
+      Sleep (100);
+      if Now > LogUsageTime then
+      begin
+        se.Licensed := True;
+        SetLogUsageTimer;
+      end;
+    end;
+    ActivateCommand(False);
     RefreshLogger;
-    Sleep (100);
-    if Now > LogUsageTime then
+  finally
+    if lstLogFileName <> '' then
     begin
-      se.Licensed := True;
-      SetLogUsageTimer;
+      Flush(lstLogFile);
+      CloseFile(lstLogFile);
     end;
   end;
-  ActivateCommand(False);
-  RefreshLogger;
-  Terminate;
   Notify ('quit');
 end;
 
@@ -285,6 +307,10 @@ begin
 end;
 
 procedure TMyApplication .RefreshLogger ;
+  function _unixms (aValue: TDateTime): Int64;
+  begin
+    Result:= Round ((AValue - UnixEpoch) * MSecsPerDay);
+  end;
   function _time (aLog: TLog): String;
   begin
     if aLog.StubAction = saRequest then
@@ -329,6 +355,22 @@ procedure TMyApplication .RefreshLogger ;
                            ]
                          )
                 );
+        if lstLogFileName <> '' then
+        begin
+          WriteLn ( lstLogFile
+                  , Format ( '%d;%d;%s;%s;%s;%s;%d;%d'
+                           , [ _unixms (xlog.InboundTimeStamp)
+                             , _unixms (xlog.OutBoundTimeStamp)
+                             , xLog.DurationAsString
+                             , xLog.StubActionAsString
+                             , _servicename(xLog)
+                             , _operationname(xLog)
+                             , Length (xLog.InboundBody)
+                             , Length (xLog.OutboundBody)
+                             ]
+                           )
+                  );
+        end;
         if doDebug then
         begin
           WriteLn ( Format ( 'Request:%s%s%s%s'
@@ -503,6 +545,8 @@ begin
   WriteLn ('  --', contextOpt, '=');
   WriteLn ('     sets a value for the "context" project property');
   WriteLn ('     (see apiUi menu Project->Properties)');
+  WriteLn ('  --', lstLogOpt, '=');
+  WriteLn ('     writes lst information to the named file');
   WriteLn ('  --', scriptOpt, '=');
   WriteLn ('     starts executing the named project-script');
   WriteLn ('  --', terminateOpt);

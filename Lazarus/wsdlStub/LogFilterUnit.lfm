@@ -451,23 +451,14 @@ object LogFilterForm: TLogFilterForm
     ClientHeight = 41
     ClientWidth = 545
     TabOrder = 10
-    object UnexpectedValuesCheckBox: TCheckBox
-      Left = 6
-      Height = 23
-      Top = 10
-      Width = 116
-      Caption = 'Unexpected values'
-      OnClick = SetEnabled
-      TabOrder = 0
-    end
     object RemarksCheckBox: TCheckBox
-      Left = 219
+      Left = 6
       Height = 23
       Top = 10
       Width = 65
       Caption = 'Remarks'
       OnClick = SetEnabled
-      TabOrder = 1
+      TabOrder = 0
     end
   end
   object Panel2: TPanel

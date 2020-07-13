@@ -189,7 +189,6 @@ type TBindableList = class;
 
   TCustomBindable = class (TObject)
   private
-    fHasUnExpectedValue: Boolean;
     fhasRelevance: Boolean;
     function getIsExpression: Boolean;
     function getTotalNumberOfSubElements: Integer;
@@ -202,7 +201,6 @@ type TBindableList = class;
     function getValueAsBoolean: Boolean;
     function getCheckedAllUp: Boolean;
     procedure setValueAsBoolean(const aValue: Boolean);
-    procedure setHasUnexpectedValue(const Value: Boolean);
     function getIsEvaluation: Boolean;
     procedure sethasRelevance(const Value: Boolean);
     procedure setValueAsTimeStamp (AValue : TDateTime );
@@ -212,8 +210,6 @@ public
   Value: String;
   NsPrefix: String;
   Checker: String;
-  DoExpectValue: Boolean;
-  ExpectedValue: String;
   NullValue: Boolean;
   CorrelationValue: String;
   Parent: TCustomBindable;
@@ -228,7 +224,6 @@ public
   function IsRequired: Boolean; Virtual;
   function hasNoDuplicatesOn (aCaption: String; aOnlyWhenChecked: Boolean; var oBind, dBind: TCustomBindable): Boolean;
   procedure Reset; Virtual;
-  procedure ResetExpectedValues; Virtual;
   procedure setChecked(const aValue: Boolean); Virtual;
   procedure ExploreRelevancy;
   procedure Populate (aViewType: TxvViewType); Virtual;
@@ -249,8 +244,6 @@ public
   procedure PutExtendedData (aExtended: Extended); Virtual;
   procedure PutIntegerData (aExtended: Extended); Virtual;
   procedure PutGroupData (aObject: TObject); Virtual;
-  function GetExpectedStringData: String; Virtual;
-  procedure PutExpectedStringData (aString: String); Virtual;
   function MergeChecked: Boolean; Virtual;
   {$ifndef NoGUI}
   procedure Font (aFont: TFont); Virtual;
@@ -270,7 +263,6 @@ public
   property FullIndexCaption: String read GetFullIndexCaption;
   property FullCaption: string read getFullCaption;
   property Root: TCustomBindable read getRoot;
-  property HasUnExpectedValue: Boolean read fHasUnExpectedValue write setHasUnexpectedValue;
   property ValueAsBoolean: Boolean read getValueAsBoolean write setValueAsBoolean;
   property ValueAsTimeStamp: TDateTime write setValueAsTimeStamp;
   property ValueAsInteger: Integer read getValueAsInteger write setValueAsInteger;
@@ -497,37 +489,6 @@ procedure TBindableList.SetBindable(Index: integer;
   const Value: TCustomBindable);
 begin
   Objects [Index] := Value;
-end;
-
-function TCustomBindable.GetExpectedStringData: String;
-begin
-  result := ExpectedValue;
-end;
-
-procedure TCustomBindable.PutExpectedStringData(aString: String);
-  procedure _setDoExpects (aBind: TCustomBindable);
-  begin
-    if aBind = nil then
-      exit;
-    aBind.DoExpectValue := True;
-    _setDoExpects (aBind.Parent);
-  end;
-begin
-  if Self = nil then Exit;
-  ExpectedValue := aString;
-  DoExpectValue := True;
-  if aString <> bindNilStr then
-    _setDoExpects (Self.Parent);
-end;
-
-procedure TCustomBindable.setHasUnexpectedValue(const Value: Boolean);
-begin
-  fHasUnExpectedValue := Value;
-  if (Value)
-  and (Assigned (Parent)) then
-  begin
-    Parent.HasUnExpectedValue := True;
-  end;
 end;
 
 function TCustomBindable.GetFullIndexCaption: String;
@@ -872,21 +833,6 @@ procedure TCustomBindable.Reset;
 begin
   if Assigned (self) then
     _reset (self);
-end;
-
-procedure TCustomBindable.ResetExpectedValues;
-  procedure _reset (a: TCustomBindable);
-  var
-    x: Integer;
-  begin
-    for x := 0 to a.Children.Count - 1 do
-      _reset (a.Children.Bindables [x]);
-    a.HasUnExpectedValue := False;
-    a.DoExpectValue := False;
-    a.ExpectedValue := '';
-  end;
-begin
-  _reset (self);
 end;
 
 function TCustomBindable.UpLineAsText: String;

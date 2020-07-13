@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 87
+  Left = 404
   Height = 759
-  Top = 136
+  Top = 125
   Width = 1457
   ClientHeight = 734
   ClientWidth = 1457
@@ -107,14 +107,8 @@ object MainForm: TMainForm
       Action = ValidateRequestsAction
       Style = tbsCheck
     end
-    object ToolButton57: TToolButton
-      Left = 226
-      Top = 2
-      Action = ToggleCheckExpectedValuesAction
-      Style = tbsCheck
-    end
     object ToolButton43: TToolButton
-      Left = 249
+      Left = 226
       Height = 22
       Top = 2
       Width = 8
@@ -123,12 +117,12 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton60: TToolButton
-      Left = 257
+      Left = 234
       Top = 2
       Action = ConfigLogAction
     end
     object ToolButton61: TToolButton
-      Left = 280
+      Left = 257
       Height = 22
       Top = 2
       Width = 8
@@ -137,7 +131,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton21: TToolButton
-      Left = 288
+      Left = 265
       Height = 22
       Top = 2
       Width = 5
@@ -146,12 +140,12 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object startStopButton: TToolButton
-      Left = 293
+      Left = 270
       Top = 2
       Action = startAction
     end
     object ToolButton70: TToolButton
-      Left = 316
+      Left = 293
       Height = 22
       Top = 2
       Width = 8
@@ -160,12 +154,12 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object AbortToolButton: TToolButton
-      Left = 324
+      Left = 301
       Top = 2
       Action = AbortAction
     end
     object SeparatorToolButton: TToolButton
-      Left = 347
+      Left = 324
       Height = 22
       Top = 2
       Width = 8
@@ -174,7 +168,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ThreadsPanel: TPanel
-      Left = 355
+      Left = 332
       Height = 22
       Top = 2
       Width = 87
@@ -638,8 +632,10 @@ object MainForm: TMainForm
             end
             object ToolButton55: TToolButton
               Left = 241
+              Hint = 'Select elements to check for expected values'
               Top = 2
-              Action = SelectExpectedElementsAction
+              Caption = 'SelectExpectedElementsAction'
+              ImageIndex = 53
             end
             object ToolButton29: TToolButton
               Left = 264
@@ -1292,42 +1288,37 @@ object MainForm: TMainForm
           Action = SaveMessagesAction
         end
         object ToolButton50: TToolButton
-          Left = 302
+          Left = 271
           Top = 2
           Action = LogDisplayedColumnsAction
         end
-        object ToolButton49: TToolButton
-          Left = 117
-          Top = 2
-          Action = ReportUnexpectedValuesAction
-        end
         object ToolButton33: TToolButton
-          Left = 148
+          Left = 117
           Top = 2
           Action = MessagesRegressionAction
         end
         object ToolButton67: TToolButton
-          Left = 171
+          Left = 140
           Top = 2
           Action = LogCoverageReportAction
         end
         object ToolButton22: TToolButton
-          Left = 225
+          Left = 194
           Top = 2
           Action = ClearLogItemsAction
         end
         object ToolButton42: TToolButton
-          Left = 325
+          Left = 294
           Top = 2
           Action = FilterLogAction
         end
         object BrowseMqButton: TToolButton
-          Left = 248
+          Left = 217
           Top = 2
           Action = BrowseMqAction
         end
         object ToolButton59: TToolButton
-          Left = 271
+          Left = 240
           Top = 2
           Action = readLog4jEventsAction
         end
@@ -1359,18 +1350,18 @@ object MainForm: TMainForm
           Action = CopyLogGridToClipBoardAction
         end
         object logChartToolButton: TToolButton
-          Left = 194
+          Left = 163
           Top = 2
           Action = logChartAction
         end
         object ToolButton72: TToolButton
-          Left = 348
+          Left = 317
           Top = 2
           Action = ToggleDoScrollMessagesIntoViewAction
           Style = tbsCheck
         end
         object ToolButton74: TToolButton
-          Left = 294
+          Left = 263
           Height = 22
           Top = 2
           Width = 8
@@ -1386,7 +1377,7 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object ToolButton76: TToolButton
-          Left = 217
+          Left = 186
           Height = 22
           Top = 2
           Width = 8
@@ -1407,14 +1398,6 @@ object MainForm: TMainForm
           Top = 2
           Width = 8
           Caption = 'ToolButton78'
-          Style = tbsSeparator
-        end
-        object ToolButton52: TToolButton
-          Left = 140
-          Height = 22
-          Top = 2
-          Width = 8
-          Caption = 'ToolButton52'
           Style = tbsSeparator
         end
         object ToolButton53: TToolButton
@@ -1444,85 +1427,79 @@ object MainForm: TMainForm
           Colors.UnfocusedSelectionColor = clWhite
           DefaultText = 'Node'
           DragOperations = []
-          Header.AutoSizeIndex = 0
+          Header.AutoSizeIndex = -1
           Header.Columns = <          
-            item
-              ImageIndex = 67
-              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
-              Position = 0
-              Width = 23
-            end          
             item
               ImageIndex = 65
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
-              Position = 1
+              Position = 0
               Width = 23
             end          
             item
               ImageIndex = 84
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
-              Position = 2
+              Position = 1
               Width = 23
             end          
             item
               ImageIndex = 31
+              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
+              Position = 2
+              Width = 23
+            end          
+            item
+              ImageIndex = 30
               Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 3
               Width = 23
             end          
             item
-              ImageIndex = 30
+              ImageIndex = 31
               Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 4
               Width = 23
             end          
             item
-              ImageIndex = 31
+              ImageIndex = 30
               Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 5
               Width = 23
             end          
             item
-              ImageIndex = 30
-              Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 6
-              Width = 23
-            end          
-            item
-              Position = 7
               Text = 'Time'
               Width = 100
             end          
             item
-              Position = 8
+              Position = 7
               Text = 'Duration'
               Width = 60
             end          
             item
-              Position = 9
+              Position = 8
               Text = 'Action'
               Width = 60
             end          
             item
-              Position = 10
+              Position = 9
               Text = 'Verb'
             end          
             item
-              Position = 11
+              Position = 10
               Text = 'Status'
             end          
             item
-              Position = 12
+              Position = 11
               Text = 'Service'
               Width = 70
             end          
             item
-              Position = 13
+              Position = 12
               Text = 'Operation'
               Width = 70
             end          
             item
-              Position = 14
+              Position = 13
               Text = 'CorrelationId'
               Width = 70
             end>
@@ -1531,6 +1508,7 @@ object MainForm: TMainForm
           Header.Font.Height = -11
           Header.Font.Name = 'Tahoma'
           Header.Images = mainImageList
+          Header.MainColumn = 1
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowImages, hoShowSortGlyphs, hoVisible]
           HintMode = hmHint
           Images = mainImageList
@@ -1734,14 +1712,6 @@ object MainForm: TMainForm
       ImageIndex = 21
       OnExecute = SelectMessageColumnsActionExecute
       OnUpdate = SelectMessageColumnsActionUpdate
-    end
-    object SelectExpectedElementsAction: TAction
-      Category = 'Messages'
-      Caption = 'SelectExpectedElementsAction'
-      Hint = 'Select elements to check for expected values'
-      ImageIndex = 53
-      OnExecute = SelectExpectedElementsActionExecute
-      OnUpdate = SelectExpectedElementsActionUpdate
     end
     object AddMessageAction: TAction
       Category = 'Messages'
@@ -2267,24 +2237,12 @@ object MainForm: TMainForm
       OnExecute = EditMessageAfterScriptActionExecute
       OnUpdate = EditMessageAfterScriptActionUpdate
     end
-    object ToggleCheckExpectedValuesAction: TAction
-      Category = 'Log'
-      Caption = 'Check expected values'
-      Hint = 'Check expected values'
-      ImageIndex = 50
-      OnExecute = ToggleCheckExpectedValuesActionExecute
-    end
     object ToggleDoScrollMessagesIntoViewAction: TAction
       Category = 'Log'
       Caption = 'ToggleDoScrollMessagesIntoViewAction'
       Hint = 'Scroll new messages into visible area'
       ImageIndex = 98
       OnExecute = ToggleDoScrollMessagesIntoViewActionExecute
-    end
-    object ShowExpectedXmlAction: TAction
-      Category = 'Log'
-      Caption = 'ShowExpectedXmlAction'
-      OnExecute = ShowExpectedXmlActionExecute
     end
     object CopyLogMemoTextToClipBrdAction: TAction
       Category = 'Log'
@@ -2355,14 +2313,6 @@ object MainForm: TMainForm
       Caption = 'Save replies to file...'
       ImageIndex = 3
       OnUpdate = SaveLogRepliesToFileActionUpdate
-    end
-    object ReportUnexpectedValuesAction: TAction
-      Category = 'Log'
-      Caption = 'ReportUnexpectedValuesAction'
-      Hint = 'Unexpected values report'
-      ImageIndex = 14
-      OnExecute = ReportUnexpectedValuesActionExecute
-      OnUpdate = ReportUnexpectedValuesActionUpdate
     end
     object MessagesRegressionAction: TAction
       Category = 'Log'
@@ -2623,19 +2573,21 @@ object MainForm: TMainForm
     object SaveRemoteApiUiProjectAction: TAction
       Category = 'Project'
       Caption = 'PasteRemoteApiUiProjectAction'
+      ImageIndex = 106
       OnExecute = SaveRemoteApiUiProjectActionExecute
       ShortCut = 57427
     end
-    object CheckReferencedFilenamesLocalAbsoluteAction: TAction
+    object CheckReferencedFilesExistInCloudAction: TAction
       Category = 'Project'
-      Caption = 'CheckReferencedFilenamesLocalAbsoluteAction'
-      OnExecute = CheckReferencedFilenamesLocalAbsoluteActionExecute
+      Caption = 'Check if referenced files do exist in the cloud'
+      ImageIndex = 106
+      OnExecute = CheckReferencedFilesExistInCloudActionExecute
       ShortCut = 57426
     end
     object SnapshotFromHttpGetAction: TAction
       Category = 'Reports'
-      Caption = 'Download checkpoint from apiServer'
-      ImageIndex = 104
+      Caption = 'Download checkpoint from cloud'
+      ImageIndex = 106
       OnExecute = SnapshotFromHttpGetActionExecute
     end
     object SetApiServerConnectionAction: TAction
@@ -2653,6 +2605,12 @@ object MainForm: TMainForm
       OnHint = LogsFromHttpGetActionHint
       OnUpdate = LogsFromHttpGetActionUpdate
       ShortCut = 57420
+    end
+    object PasteProjectFromClipboardAction: TAction
+      Caption = 'Paste Project Design from Clipboard'
+      ImageIndex = 106
+      OnExecute = PasteProjectFromClipboardActionExecute
+      ShortCut = 57430
     end
   end
   object mainImageList: TImageList
@@ -10755,39 +10713,39 @@ object MainForm: TMainForm
       Action = SnapshotFromHttpGetAction
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000000000000000000000000000000000000000000FF000000FF000000000000
-        0000000000000000000000000000000000FF000000FF000000FF000000FF0000
-        00FF0000000000000000000000000000FFFF000080FF000000FF000000000000
-        000000000000800000FF800000FF800000FF800000FF800000FF800000FF8000
-        00FF000000FF000000FF0000FFFFFFFFFFFF000080FF000000FF000000000000
-        0000800000FFFF0000FFFF0000FFFF0000FF008000FF000000FF000000FF0000
-        00FF000000FF0000FFFFFFFFFFFF000080FF000000FF00000000000000008000
-        00FF008000FFFF0000FFFF0000FF008000FF000000FF808080FF00000000FFFF
-        FFFF808080FF000000FF000080FF000000FF0000000000000000000000008000
-        00FF008000FFFF0000FFFF0000FF000000FF808080FF00000000FFFF00FF0000
-        0000FFFFFFFF808080FF000000FF000000FF0000000000000000800000FF0080
-        00FFFF0000FFFF0000FFFF0000FF000000FF00000000FFFF00FF00000000FFFF
-        00FF00000000FFFFFFFF000000FF800000FF000000FF00000000800000FF0080
-        00FFFF0000FFFF0000FFFF0000FF000000FFFFFF00FFFFFFFFFFFFFF00FF0000
-        0000FFFF00FF00000000000000FF800000FF000000FF00000000800000FFFF00
-        00FF00000000FF0000FFFF0000FF000000FF808080FFFFFFFFFFFFFFFFFFFFFF
-        00FF00000000808080FF000000FF800000FF000000FF00000000800000FF0000
-        0000FF0000FFFF0000FF008000FF008000FF000000FF808080FFFFFF00FF0000
-        0000808080FF000000FFFF0000FF800000FF000000FF00000000800000FFFF00
-        00FF00000000FF0000FFFF0000FFFF0000FFFF0000FF000000FF000000FF0000
-        00FF000000FF008000FF008000FF800000FF000000FF00000000000000008000
-        00FFFF0000FF008000FF008000FFFF0000FFFF0000FFFF0000FF008000FFFF00
-        00FF008000FF008000FF008000FF000000FF0000000000000000000000008000
-        00FF00000000FF0000FF008000FF008000FF008000FF008000FF008000FF0080
-        00FF008000FF008000FF008000FF000000FF0000000000000000000000000000
-        0000800000FF00000000FF0000FF00000000008000FF008000FF008000FF0080
-        00FF008000FFFF0000FF800000FF000000000000000000000000000000000000
-        000000000000800000FF800000FFFF0000FF00000000FF0000FFFF0000FFFF00
-        00FF800000FF800000FF00000000000000000000000000000000000000000000
-        0000000000000000000000000000800000FF800000FF800000FF800000FF8000
-        00FF000000000000000000000000000000000000000000000000
+        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00C0C0C0FF0000FFFFC0C0
+        C0FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00C0C0C0FF0000FFFFC0C0C0FF0000
+        FFFFC0C0C0FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00C0C0C0FF0000FFFFC0C0C0FFFFFFFF00C0C0
+        C0FF0000FFFFC0C0C0FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF008080
+        80FF000000FFFFFFFF00C0C0C0FF0000FFFFFFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00C0C0C0FF0000FFFFC0C0C0FFFFFFFF00000000FFFFFFFF00808080FF8080
+        80FFC0C0C0FFFFFFFF000000FFFF0000FFFF0000FFFFC0C0C0FFFFFFFF00C0C0
+        C0FF0000FFFF0000FFFF0000FFFFFFFFFF00000000FF808080FF000000FFC0C0
+        C0FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000FFFFFFFFFF000000
+        FFFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00000000FF000000FFFFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000FFFFFFFFFF000000
+        FFFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00C0C0C0FF000000FF808080FFC0C0
+        C0FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000FFFFFFFFFF000000
+        FFFFFFFFFF00FFFFFF00FFFFFF00000000FF000000FFFFFFFF00C0C0C0FF0000
+        00FF808080FF000000FFFFFFFF00FFFFFF00FFFFFF000000FFFF0000FFFF0000
+        FFFFFFFFFF00FFFFFF00FFFFFF00C0C0C0FFFFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00000000FF000000FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00808080FFFFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00808080FFC0C0C0FFFFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00808080FF808080FF808080FF808080FFFFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00C0C0C0FF000000FFC0C0C0FFFFFFFF00FFFFFF008080
+        80FF808080FF808080FFC0C0C0FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00C0C0C0FF808080FF000000FF000000FF8080
+        80FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
     end
     object MenuItem63: TMenuItem

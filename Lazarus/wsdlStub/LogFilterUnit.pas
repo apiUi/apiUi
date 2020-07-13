@@ -63,7 +63,6 @@ type
     ReplyEdit: TEdit;
     CheckBox2: TCheckBox;
     Panel1: TPanel;
-    UnexpectedValuesCheckBox: TCheckBox;
     MatchStyleCombo: TComboBox;
     Panel2: TPanel;
     FilterStyleCombo: TComboBox;
@@ -73,8 +72,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    function getUnexpectedValuesEnabled: Boolean;
-    procedure setUnexpectedValuesEnabled(const Value: Boolean);
     function getReplyEnabled: Boolean;
     function getReplyEquals: Boolean;
     function getReplyValue: String;
@@ -171,7 +168,6 @@ type
     property ReplyEnabled: Boolean read getReplyEnabled write setReplyEnabled;
     property ReplyEquals: Boolean read getReplyEquals write setReplyEquals;
     property ReplyValue: String read getReplyValue write setReplyValue;
-    property UnexpectedValuesEnabled: Boolean read getUnexpectedValuesEnabled write setUnexpectedValuesEnabled;
     property RemarksEnabled: Boolean read getRemarksEnabled write setRemarksEnabled;
   end;
 
@@ -248,7 +244,7 @@ procedure TLogFilterForm.SetEnabled (Sender: TObject);
     if CorrelationEnabled then Inc (result);
     if RequestEnabled then Inc (result);
     if ReplyEnabled then Inc (result);
-    if UnexpectedValuesEnabled then Inc (result);
+    if RemarksEnabled then Inc (result);
   end;
 begin
   FilterStyleCombo.Enabled := FilterEnabled;
@@ -281,7 +277,6 @@ begin
   ReplyEnabledCheckBox.Enabled := FilterEnabled;
   ReplyEqualsCombobox.Enabled := FilterEnabled and ReplyEnabled;
   ReplyEdit.Enabled := FilterEnabled and ReplyEnabled;
-  UnexpectedValuesCheckBox.Enabled := FilterEnabled;
   RemarksCheckBox.Enabled := FilterEnabled;
 end;
 
@@ -608,16 +603,6 @@ end;
 procedure TLogFilterForm.setRequestValue(const Value: String);
 begin
   RequestEdit.Text := Value;
-end;
-
-function TLogFilterForm.getUnexpectedValuesEnabled: Boolean;
-begin
-  result := UnexpectedValuesCheckBox.Checked;
-end;
-
-procedure TLogFilterForm.setUnexpectedValuesEnabled(const Value: Boolean);
-begin
-  UnexpectedValuesCheckBox.Checked := Value;
 end;
 
 end.

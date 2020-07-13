@@ -75,12 +75,13 @@ type
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    PasteProjectFromClipboardAction: TAction;
     LogsFromHttpGetAction: TAction;
     MenuItem64: TMenuItem;
     MenuItem65: TMenuItem;
     SetApiServerConnectionAction: TAction;
     SnapshotFromHttpGetAction: TAction;
-    CheckReferencedFilenamesLocalAbsoluteAction: TAction;
+    CheckReferencedFilesExistInCloudAction: TAction;
     EasterEggPopupMenu: TPopupMenu;
     MenuItem62: TMenuItem;
     MenuItem63: TMenuItem;
@@ -108,7 +109,6 @@ type
     CopyToClipboardAs: TMenuItem;
     MenuItem54: TMenuItem;
     CopyToClipboardAsJsonMenuItem: TMenuItem;
-    ToolButton52: TToolButton;
     ToolButton53: TToolButton;
     ToolButton75: TToolButton;
     ToolButton79: TToolButton;
@@ -224,7 +224,6 @@ type
     ToolButton39: TToolButton;
     ToolButton40: TToolButton;
     ToolButton42: TToolButton;
-    ToolButton49: TToolButton;
     ToolButton50: TToolButton;
     ToolButton51: TToolButton;
     ToolButton59: TToolButton;
@@ -477,9 +476,7 @@ type
     Required1: TMenuItem;
     ShowReplyAsXmlGridAction: TAction;
     ShowRequestAsXmlGridAction: TAction;
-    ToggleCheckExpectedValuesAction: TAction;
     ToggleBetaModeAction: TAction;
-    ShowExpectedXmlAction: TAction;
     Action1: TAction;
     BrowseMqAction: TAction;
     BrowseMqMenuItem: TMenuItem;
@@ -492,9 +489,6 @@ type
     PasteCobolDataFromClipboardMenuItem: TMenuItem;
     ElementvalueMenuItem: TMenuItem;
     AssignExpressionMenuItem: TMenuItem;
-    SelectExpectedElementsAction: TAction;
-    ToolButton57: TToolButton;
-    ReportUnexpectedValuesAction: TAction;
     WsdlItemChangeDataTypeMenuItem: TMenuItem;
     DataTypeDependingMenu: TMenuItem;
     ServiceOptionsAction: TAction;
@@ -603,7 +597,8 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
-    procedure CheckReferencedFilenamesLocalAbsoluteActionExecute(Sender: TObject);
+    procedure PasteProjectFromClipboardActionExecute(Sender: TObject);
+    procedure CheckReferencedFilesExistInCloudActionExecute(Sender: TObject);
     procedure AddChildElementMenuItemClick(Sender: TObject);
     procedure ApiByExampleActionUpdate(Sender: TObject);
     procedure BmtpOperationsActionExecute(Sender: TObject);
@@ -756,10 +751,6 @@ type
     procedure ServiceOptionsActionUpdate(Sender: TObject);
     procedure ChangeXmlDataType(aXml: TXml; aDataType: TXsdDataType);
     procedure ChangeDataTypeMenuItemClick(Sender: TObject);
-    procedure ReportUnexpectedValuesActionExecute(Sender: TObject);
-    procedure ReportUnexpectedValuesActionUpdate(Sender: TObject);
-    procedure SelectExpectedElementsActionUpdate(Sender: TObject);
-    procedure SelectExpectedElementsActionExecute(Sender: TObject);
     procedure AssignExpressionMenuItemClick(Sender: TObject);
     procedure ElementvalueMenuItemClick(Sender: TObject);
     procedure PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
@@ -774,10 +765,8 @@ type
     procedure BrowseMqActionExecute(Sender: TObject);
     procedure BrowseMqActionUpdate(Sender: TObject);
     procedure Action1Execute(Sender: TObject);
-    procedure ShowExpectedXmlActionExecute(Sender: TObject);
     procedure ShowRemarksActionExecute(Sender: TObject);
     procedure ToggleBetaModeActionExecute(Sender: TObject);
-    procedure ToggleCheckExpectedValuesActionExecute(Sender: TObject);
     procedure ShowRequestAsXmlGridActionExecute(Sender: TObject);
     procedure ShowRequestAsXmlGridActionUpdate(Sender: TObject);
     procedure ShowReplyAsXmlGridActionExecute(Sender: TObject);
@@ -1101,7 +1090,7 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
-    procedure CheckReferencedFilenamesLocalAbsolute;
+    procedure CheckReferencedFilenamesExistsInCloud;
     procedure SnapshotFromRemoteServer (aList: TClaimableObjectList);
     procedure SnapshotsFromRemoteServer;
     procedure LogsFromRemoteServer;
@@ -1117,8 +1106,6 @@ type
     function hintStringFromXsd(aPrefix, aSep, aPostFix: String;
       aXsd: TXsd): String;
     function inImageArea: Boolean;
-    function getDoCheckExpectedValues: Boolean;
-    procedure setDoCheckExpectedValues(const Value: Boolean);
     procedure ParserError(Sender: TObject;
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     procedure ShowHtml(aCaption, aInfoString: String);
@@ -1306,8 +1293,6 @@ type
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
     property doTrackDuplicateMessages: Boolean read fDoTrackDuplicateMessages write setDoTrackDuplicateMessages;
     property doScrollMessagesIntoView: Boolean read fDoScrollMessagesIntoView write setDoScrollMessagesIntoView;
-    property doCheckExpectedValues: Boolean read getDoCheckExpectedValues write
-      setDoCheckExpectedValues;
     property doValidateRequests: Boolean read getDoValidateRequests write
       setDoValidateRequests;
     property doValidateReplies: Boolean read getDoValidateReplies write
@@ -1392,7 +1377,7 @@ uses
   LogFilterUnit,
   ShowA2BXmlUnit, FindRegExpDialog,
   XmlGridUnit, IpmGridUnit,
-  xmlUtilz, ShowExpectedXml, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
+  xmlUtilz, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, xmlxsdparser,
   xmlio, xmlzConsts, AbZipper
   , htmlXmlUtilz, exceptionUtils, htmlreportz
@@ -1412,8 +1397,7 @@ uses
 
 type
   TLogColumnEnum =
-    ( logExpectedColumn
-    , logRemarksColumn
+    ( logRemarksColumn
     , logExceptionColumn
     , logRequestTreeColumn
     , logReplyTreeColumn
@@ -3625,7 +3609,6 @@ begin
     ClearConsole;
     doValidateRequests := False;
     doValidateReplies := False;
-    doCheckExpectedValues := False;
     _WsdlDisableOnCorrelate := False;
     XmlUtil.PushCursor (crHourGlass);
     try
@@ -4122,7 +4105,6 @@ begin
   except
   end;
   ToggleDoScrollMessagesIntoViewAction.Checked := doScrollMessagesIntoView;
-  ToggleCheckExpectedValuesAction.Checked := doCheckExpectedValues;
   ValidateRepliesAction.Checked := doValidateReplies;
   ValidateRequestsAction.Checked := doValidateRequests;
   ActionComboBox.Enabled := Assigned(WsdlOperation) and
@@ -5202,10 +5184,6 @@ begin
     SelectCorrelationElementAction.ImageIndex := 8
   else
     SelectCorrelationElementAction.ImageIndex := 7;
-  if WsdlOperation.ExpectationBindables.Count > 0 then
-    SelectExpectedElementsAction.ImageIndex := 62
-  else
-    SelectExpectedElementsAction.ImageIndex := 53;
 end;
 
 procedure TMainForm.ApplyToActionUpdate(Sender: TObject);
@@ -5512,7 +5490,7 @@ begin
     xXml := endpointConfigAsXml;
     try
       endpointConfigXsd.FindXsd('endpointConfig.Http.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
-      endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
+//    endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
       if Assigned (WsdlOperation.Wsdl.Servers) then
       begin
         for x := 0 to WsdlOperation.Wsdl.Servers.Count - 1 do
@@ -6651,7 +6629,7 @@ begin
   { }
   Randomize;
   startStopShortCut := startAction.ShortCut;
-  wBttn := MessagesVTS.Header.Columns[Ord(logExpectedColumn)].Width;
+  wBttn := MessagesVTS.Header.Columns[Ord(logRemarksColumn)].Width;
   xIniFile := TFormIniFile.Create(Self, True);
   doShowDesignSplitVertical := xIniFile.BooleanByNameDef['doShowDesignSplitVertical', False];
   xIniFile.Restore;
@@ -6735,8 +6713,6 @@ begin
   se.LogFilter.ReplyEquals := xIniFile.BooleanByNameDef['LogFilter.ReplyEquals',
     True];
   se.LogFilter.Reply := xIniFile.StringByNameDef['LogFilter.Reply', ''];
-  se.LogFilter.UnexpectedValuesEnabled := xIniFile.BooleanByNameDef
-    ['LogFilter.UnexpectedValuesEnabled', False];
   se.LogFilter.RemarksEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.RemarksEnabled', False];
   tacoHost := xIniFile.StringByNameDef['tacoHost', 'localhost'];
@@ -6969,8 +6945,6 @@ begin
   xIniFile.BooleanByName['LogFilter.ReplyEnabled'] := se.LogFilter.ReplyEnabled;
   xIniFile.BooleanByName['LogFilter.ReplyEquals'] := se.LogFilter.ReplyEquals;
   xIniFile.StringByName['LogFilter.Reply'] := se.LogFilter.Reply;
-  xIniFile.BooleanByName['LogFilter.UnexpectedValuesEnabled'] :=
-    se.LogFilter.UnexpectedValuesEnabled;
   xIniFile.BooleanByName['LogFilter.RemarksEnabled'] :=
     se.LogFilter.RemarksEnabled;
   xIniFile.BooleanByName['CollapseHeaders'] := CollapseHeaders;
@@ -7696,8 +7670,6 @@ begin
               raise Exception.Create('Operation aborted');
             end;
           end;
-          for X := 0 to xLogList.Count - 1 do
-            se.CheckExpectedValues(xLogList.LogItems[X], xLogList.LogItems[X].Operation, doCheckExpectedValues);
           ToAllLogList(xLogList);
         finally
           xLogList.Clear;
@@ -8464,8 +8436,6 @@ begin
   if Column < Ord(logStdColumnCount) then
   begin
     case TLogColumnEnum(Column) of
-      logExpectedColumn:
-        HintText := 'Expected Values';
       logRemarksColumn:
         HintText := 'Remarks';
       logRequestTreeColumn:
@@ -8488,15 +8458,6 @@ var
 begin
   try
     case TLogColumnEnum(Column) of
-      logExpectedColumn:
-        begin
-          xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
-          if Assigned(xLog) and xLog.ExpectedValuesChecked then
-            if xLog.HasUnexpectedValue then
-              ImageIndex := 48
-            else
-              ImageIndex := 47;
-        end;
       logRemarksColumn:
         begin
           xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
@@ -8575,7 +8536,6 @@ begin
   if Assigned (claimedLog) then
   try
     case TLogColumnEnum((Sender as TVirtualStringTree).FocusedColumn) of
-      logExpectedColumn: ShowExpectedXmlActionExecute(nil);
       logRemarksColumn: ShowRemarksActionExecute(nil);
       logExceptionColumn: xmlUtil.presentString('Exception', claimedLog.Exception);
       logRequestTreeColumn: ShowHttpRequestAsXMLActionExecute(nil);
@@ -8774,8 +8734,6 @@ begin
     LogFilterForm.ReplyEnabled := se.LogFilter.ReplyEnabled;
     LogFilterForm.ReplyEquals := se.LogFilter.ReplyEquals;
     LogFilterForm.ReplyValue := se.LogFilter.Reply;
-    LogFilterForm.UnexpectedValuesEnabled :=
-      se.LogFilter.UnexpectedValuesEnabled;
     LogFilterForm.RemarksEnabled := se.LogFilter.RemarksEnabled;
     LogFilterForm.ShowModal;
     if LogFilterForm.ModalResult = mrOk then
@@ -8816,8 +8774,6 @@ begin
         se.LogFilter.ReplyEnabled := LogFilterForm.ReplyEnabled;
         se.LogFilter.ReplyEquals := LogFilterForm.ReplyEquals;
         se.LogFilter.Reply := LogFilterForm.ReplyValue;
-        se.LogFilter.UnexpectedValuesEnabled :=
-          LogFilterForm.UnexpectedValuesEnabled;
         se.LogFilter.RemarksEnabled := LogFilterForm.RemarksEnabled;
         if se.LogFilter.Enabled then
           if (se.LogFilter.FilterStyle = fsShowMatch) or
@@ -9799,38 +9755,6 @@ begin
   end;
 end;
 
-function TMainForm.getDoCheckExpectedValues: Boolean;
-begin
-  result := Assigned(se) and se.doCheckExpectedValues;
-end;
-
-procedure TMainForm.setDoCheckExpectedValues(const Value: Boolean);
-begin
-  if Assigned(se) then
-    se.doCheckExpectedValues := Value;
-  stubChanged := True;
-  CheckBoxClick(nil);
-end;
-
-procedure TMainForm.ToggleCheckExpectedValuesActionExecute(Sender: TObject);
-begin
-  AcquireLock;
-  try
-    stubChanged := True;
-    doCheckExpectedValues := not doCheckExpectedValues;
-    if Assigned(WsdlOperation) then
-    begin
-      try
-        with InWsdlTreeView do
-          IsVisible[GetNextSibling(GetFirst)] := doCheckExpectedValues;
-      except
-      end;
-    end;
-  finally
-    ReleaseLock;
-  end;
-end;
-
 procedure TMainForm.ToggleBetaModeActionExecute(Sender: TObject);
 begin
   BetaMode := not BetaMode;
@@ -9848,46 +9772,6 @@ begin
   if Assigned (claimedLog)
   and (claimedLog.Remarks <> '') then
     xmlUtil.presentString('Remarks', claimedLog.Remarks);
-end;
-
-procedure TMainForm.ShowExpectedXmlActionExecute(Sender: TObject);
-var
-  xHasUnexpectedValue: Boolean;
-  xExpectedValuesChecked: Boolean;
-begin
-  XmlUtil.PushCursor (crHourGlass);
-  try
-    if Assigned(claimedLog) and Assigned(claimedLog.Operation) and Assigned(claimedLog.Mssg) then
-    begin
-//    AcquireLock;
-      try
-        xHasUnexpectedValue := claimedLog.HasUnexpectedValue;
-        xExpectedValuesChecked := claimedLog.ExpectedValuesChecked;
-        claimedLog.toBindables(claimedLog.Operation);
-        claimedLog.HasUnexpectedValue := claimedLog.Mssg.CheckValues(claimedLog.Operation);
-        claimedLog.ExpectedValuesChecked := True;
-        MessagesVTS.InvalidateNode(MessagesVTS.FocusedNode);
-      finally
-//      ReleaseLock;
-      end;
-      if (xHasUnexpectedValue = claimedLog.HasUnexpectedValue) and
-        (xExpectedValuesChecked = claimedLog.ExpectedValuesChecked) then
-      begin
-        Application.CreateForm(TShowExpectedXmlForm, ShowExpectedXmlForm);
-        try
-          if claimedLog.StubAction <> saRequest then
-            ShowExpectedXmlForm.Bind := claimedLog.Operation.reqBind
-          else
-            ShowExpectedXmlForm.Bind := claimedLog.Operation.rpyBind;
-          ShowExpectedXmlForm.ShowModal;
-        finally
-          FreeAndNil(ShowExpectedXmlForm);
-        end;
-      end;
-    end;
-  finally
-    XmlUtil.PopCursor;
-  end;
 end;
 
 procedure TMainForm.ShowHtml(aCaption, aInfoString: String);
@@ -11231,139 +11115,6 @@ begin
       end;
     finally
       FreeAndNil(EditStamperForm);
-    end;
-  end;
-end;
-
-procedure TMainForm.SelectExpectedElementsActionExecute(Sender: TObject);
-begin
-  Application.CreateForm(TSelectElementsForm, SelectElementsForm);
-  SelectElementsForm.Caption :=
-    'Maintain list of elements to check expected values';
-  try
-    SelectElementsForm.doShowReq := True;
-    SelectElementsForm.doShowRpy := True;
-    SelectElementsForm.WsdlOperation := WsdlOperation;
-    SelectElementsForm.ControlBinds := WsdlOperation.ExpectationBindables.Clone;
-    SelectElementsForm.DuplicatesAllowed := False;
-    SelectElementsForm.GroupAllowed := False;
-    SelectElementsForm.ShowModal;
-    if SelectElementsForm.ModalResult = mrOk then
-    begin
-      WsdlOperation.AcquireLock;
-      try
-        WsdlOperation.ExpectationBindables.ClearListOnly;
-        WsdlOperation.ExpectationBindables.Free;
-        WsdlOperation.ExpectationBindables := SelectElementsForm.ControlBinds;
-        se.UpdateReplyColumns(WsdlOperation);
-        UpdateMessagesGrid;
-        DoColorBindButtons;
-        stubChanged := True;
-      finally
-        WsdlOperation.ReleaseLock;
-      end;
-    end
-    else
-    begin
-      SelectElementsForm.ControlBinds.ClearListOnly;
-      SelectElementsForm.ControlBinds.Free;
-    end;
-  finally
-    FreeAndNil(SelectElementsForm);
-  end;
-end;
-
-procedure TMainForm.SelectExpectedElementsActionUpdate(Sender: TObject);
-begin
-  SelectExpectedElementsAction.Enabled := Assigned(WsdlOperation);
-end;
-
-procedure TMainForm.ReportUnexpectedValuesActionUpdate(Sender: TObject);
-begin
-  ReportUnexpectedValuesAction.Enabled := { }{ not se.IsActive
-    and{ } (se.Wsdls.Count > 0);
-end;
-
-procedure TMainForm.ReportUnexpectedValuesActionExecute(Sender: TObject);
-var
-  d, X, nDiffs: Integer;
-  xXml: THtmlXml;
-  tableXml: THtmlTableXml;
-  xLog: TLog;
-  xBind: TCustomBindable;
-  showReqRep: Boolean;
-begin
-  OnlyWhenLicensed;
-  xXml := htmlCreateXml(_ProgName, 'Unexpected values report');
-  with htmlFindContentXml(xXml) do
-  begin
-    try
-      XmlUtil.PushCursor (crHourGlass);
-      try
-        AddP;
-        tableXml := AddTable.Border(1);
-        with tableXml do
-        begin
-          with AddTr do
-          begin
-            AddTh.ColSpan(3).AddB('Messages with unexpected values');
-            AddTh.ColSpan(3).AddB('_');
-          end;
-          with AddTr do
-          begin
-            AddTh.AddB('Row_');
-            AddTh.AddB('Sent_');
-            AddTh.AddB('Correlation_');
-            AddTh.AddB('Tag_');
-            AddTh.AddB('Value_');
-            AddTh.AddB('Reference_');
-          end;
-          AcquireLock;
-          try
-            for X := 0 to se.displayedLogs.Count - 1 do
-            begin
-              xLog := se.displayedLogs.LogItems[X];
-              xLog.toBindables(xLog.Operation);
-              se.CheckExpectedValues(xLog, xLog.Operation, True);
-              if xLog.HasUnexpectedValue then
-              begin
-                nDiffs := 0;
-                for d := 0 to xLog.Operation.ExpectationBindables.Count - 1 do
-                  if xLog.Operation.ExpectationBindables.Bindables[d].HasUnexpectedValue then
-                    Inc(nDiffs);
-                showReqRep := True;
-                for d := 0 to xLog.Operation.ExpectationBindables.Count - 1 do
-                begin
-                  xBind := xLog.Operation.ExpectationBindables.Bindables[d];
-                  if xBind.HasUnexpectedValue then
-                  begin
-                    with tableXml.AddTr.vtop do
-                    begin
-                      if showReqRep then
-                      begin
-                        AddTd.RowSpan(nDiffs).AddB(IntToStr(X + 1));
-                        AddTd.RowSpan(nDiffs).AddB(FormatDateTime('hh:nn:ss', xLog.InboundTimeStamp));
-                        AddTd.RowSpan(nDiffs).AddB(xLog.CorrelationId);
-                        showReqRep := False;
-                      end;
-                      AddTd.AddB(xBind.FullIndexCaption);
-                      AddTd.AddB(xBind.Value + '_');
-                      AddTd.AddB(xBind.ExpectedValue + '_');
-                    end; // with row xml
-                  end; // if unexpected
-                end; // for each expected value
-              end; // with atleast a unexpected value
-            end; // for each log
-          finally
-            ReleaseLock;
-          end;
-        end; // table
-      finally
-        XmlUtil.PopCursor;
-      end;
-      ShowHtml(_progName + ' - Unexpected values report', htmlXmlAsString (xXml, _wsdlStubStylesheet));
-    finally
-      xXml.Free;
     end;
   end;
 end;
@@ -13817,35 +13568,53 @@ begin
   end;
 end;
 
-procedure TMainForm.CheckReferencedFilenamesLocalAbsolute;
+procedure TMainForm.CheckReferencedFilenamesExistsInCloud;
 var
   x: Integer;
-  xFileName: String;
+  s, xFileName, xRelativeFilename: String;
 begin
+  s := '';
   try
-    if Assigned (se)
-    and Assigned (se.referencedFilenames) then
-    begin
-      for x := 0 to se.referencedFilenames.Count - 1 do
+    try
+      if Assigned (se)
+      and Assigned (se.referencedFilenames) then
       begin
-        xFileName := se.referencedFilenames.Strings[x];
-        if (AnsiStartsText('HTTP://', xFileName))
-        or (AnsiStartsText('HTTPS://', xFileName)) then
+        s := s + xmlio.osDirectorySeparators(se.projectFileName) + LineEnding;
+        SjowMessage(se.projectFileName + LineEnding + se.referencedFilenames.Text);
+        for x := 0 to se.referencedFilenames.Count - 1 do
         begin
-          if not xmlio.urlexists(xFileName) then
-            raise Exception.CreateFmt('URL not found/reached: %', [xFileName]);
-        end
-        else
-        begin
-          if not FileExistsUTF8(xmlio.osDirectorySeparators(xFileName)) then
-            raise Exception.CreateFmt('File not found: %', [osDirectorySeparators(xFileName)]);
+          xFileName := se.referencedFilenames.Strings[x];
+          if (AnsiStartsText('HTTP://', xFileName))
+          or (AnsiStartsText('HTTPS://', xFileName)) then
+          begin
+            if not xmlio.urlexists(xFileName) then
+              raise Exception.CreateFmt('URL not found/reached: %', [xFileName]);
+          end
+          else
+          begin
+            s := s + ExtractRelativeFileName ( xmlio.osDirectorySeparators(se.projectFileName)
+                                             , xmlio.osDirectorySeparators (xFileName)
+                                             )
+                   + LineEnding
+                   ;
+            ReadStringFromFile ( ExtractRelativeFileName ( xmlio.osDirectorySeparators(se.projectFileName)
+                                                         , xmlio.osDirectorySeparators (xFileName)
+                                                         )
+                               , se.remoteServerConnectionXml
+                               , nil
+                               );
+//          if not FileExistsUTF8(xmlio.osDirectorySeparators(xFileName)) then
+//            raise Exception.CreateFmt('File not found: %', [osDirectorySeparators(xFileName)]);
+          end;
         end;
+        ShowMessage('All referenced files/urls found (Local/Absolute)');
       end;
-      ShowMessage('All referenced files/urls found (Local/Absolute)');
+    except
+      on e: Exception do
+        Raise Exception.CreateFmt ('Not all referenced diskfiles found (Local/Absolute)%s%s', [LineEnding, e.Message])
     end;
-  except
-    on e: Exception do
-      Raise Exception.CreateFmt ('Not all referenced diskfiles found (Local/Absolute)%s%s', [LineEnding, e.Message])
+  finally
+    SjowMessage(s);
   end;
 end;
 
@@ -13858,9 +13627,19 @@ begin
     GetSnapshotFromRemoteServer (SnapshotItems[x]);
 end;
 
-procedure TMainForm.CheckReferencedFilenamesLocalAbsoluteActionExecute(Sender: TObject);
+procedure TMainForm.CheckReferencedFilesExistInCloudActionExecute(Sender: TObject);
 begin
-  CheckReferencedFilenamesLocalAbsolute;
+  CheckReferencedFilenamesExistsInCloud;
+end;
+
+procedure TMainForm.PasteProjectFromClipboardActionExecute(Sender: TObject);
+begin
+  if EditRemoteServerConnectionParams('Remote apiUi server connection') then
+  begin
+    BeginUpdate;
+    captionFileName := se.RemoteServerUrl;
+    TProcedureThread.Create(False, False, se, se.OpenProjectFromString, Clipboard.AsText);
+  end;
 end;
 
 procedure TMainForm.ApiByExampleActionUpdate(Sender: TObject);
@@ -14293,7 +14072,7 @@ begin
   saveSaveRelativeFileNames := se.SaveRelativeFileNames;
   se.SaveRelativeFileNames := False;
   try
-    if EditRemoteServerConnectionParams('Remote apiUi server connection') then
+    if EditRemoteServerConnectionParams('Upload apiUi projectdesign to cloud instance') then
     begin
       xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
                               , '/apiUi/api/projectdesign'
@@ -14319,18 +14098,15 @@ var
   xNode: PVirtualNode;
   xSnapshotList: TSnapshotList;
 begin
-  if EditRemoteServerConnectionParams('Remote apiUi server connection') then
+  xSnapshotList := TSnapshotList.Create;
+  xNode := SnapshotsVTS.GetFirstSelected;
+  while Assigned (xNode) do
   begin
-    xSnapshotList := TSnapshotList.Create;
-    xNode := SnapshotsVTS.GetFirstSelected;
-    while Assigned (xNode) do
-    begin
-      xReport := NodeToSnapshot(True, SnapshotsVTS, xNode);
-      xSnapshotList.SaveObject(xReport.Name, xReport);
-      xNode := SnapshotsVTS.GetNextSelected(xNode);
-    end;
-    TProcedureThread.Create(False, True, se, SnapshotFromRemoteServer, xSnapshotList);
+    xReport := NodeToSnapshot(True, SnapshotsVTS, xNode);
+    xSnapshotList.SaveObject(xReport.Name, xReport);
+    xNode := SnapshotsVTS.GetNextSelected(xNode);
   end;
+  TProcedureThread.Create(False, True, se, SnapshotFromRemoteServer, xSnapshotList);
 end;
 
 procedure TMainForm.SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
@@ -14467,7 +14243,6 @@ begin
   s1 := '';
   s2 := '';
   case TLogColumnEnum(Column) of
-    logExpectedColumn: ;
     logRemarksColumn:
       begin
         log1 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node1);

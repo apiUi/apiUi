@@ -82,7 +82,6 @@ public
   SignLeading: Boolean;
   SignSeparate: Boolean;
 { Value: String; } {now in CustomBindable}
-{  ExpectedValue: String; } {now in CustomBindable}
 {  Parent: TIpmItem; } {now in custombindable}
   Items: TIpmItemList;
   Loaded: Boolean;
@@ -472,7 +471,6 @@ begin
   result.SignLeading := SignLeading;
   result.SignSeparate := SignSeparate;
   result.Value := Value;
-  result.ExpectedValue := ExpectedValue;
   result.Parent := aParent;
   for x := 0 to Items.Count - 1 do
     result.Items.AddObject ( Items.Strings [x]
@@ -674,24 +672,7 @@ procedure TIpmItem.BufferToValues (OnFoundError: TOnFoundError; aBuffer: AnsiStr
     xByte: Byte;
     xComp: CompType;
     xSignByteIndex: Integer;
-    procedure _setDoExpectValue (aItem: TIpmItem);
-    begin
-      if aItem = nil then
-        exit;
-      aItem.DoExpectValue := True;
-      _setDoExpectValue (aItem.Parent as TIpmItem);
-    end;
-{
-    procedure _setHasUnexpectedValue (aItem: TIpmItem);
-    begin
-      if aItem = nil then
-        exit;
-      aItem.HasUnExpectedValue := True;
-      _setHasUnexpectedValue (aItem.Parent as TIpmItem);
-    end;
-}
   begin
-    aItem.HasUnExpectedValue := False;
     if not aItem.Group then
     begin
       try
@@ -827,19 +808,12 @@ procedure TIpmItem.BufferToValues (OnFoundError: TOnFoundError; aBuffer: AnsiStr
         begin {alpha}
           aItem.Value := _BufferToString (aItem, BaseOffset);
         end;
-        if aItem.DoExpectValue then
-        begin
-          _setDoExpectValue (aItem);
-          if aItem.Value <> aItem.ExpectedValue then
-            aItem.HasUnExpectedValue := True;
-        end;
       except
         on E: Exception do OnFoundError (E.Message, aItem);
       end; {try}
     end {if not a group}
     else
     begin {if a group}
-      aItem.DoExpectValue := False; {may be set from an elementairy item later}
       xItemList := aItem.Items as TIpmItemList;
       for x := 0 to xItemList.Count - 1 do
       begin
@@ -1620,7 +1594,6 @@ var
   x: Integer;
 begin
   Loaded := False;
-  HasUnExpectedValue := False;
   if not aKeepValues then
     Value := '';
   for x := 0 to (Items as TIpmItemList).Count - 1 do
@@ -1726,11 +1699,6 @@ begin
     then
     begin
       (Items as TIpmItemList).IpmItems [0].Value := aXml.Value;
-      if (Items as TIpmItemList).IpmItems [0].DoExpectValue then
-        if (Items as TIpmItemList).IpmItems [0].ExpectedValue
-        <> (Items as TIpmItemList).IpmItems [0].Value
-        then
-          (Items as TIpmItemList).IpmItems [0].HasUnExpectedValue := True;
       (Items as TIpmItemList).IpmItems [0].Loaded := True;
     end
     else
@@ -1748,9 +1716,6 @@ begin
     if aXml.Group = False then
     begin
       Value := aXml.Value;
-      if DoExpectValue then
-        if Value <> ExpectedValue then
-          HasUnExpectedValue := True;
     end
     else
     begin

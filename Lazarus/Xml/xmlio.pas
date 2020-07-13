@@ -1197,12 +1197,26 @@ begin
   end;
   if Assigned (aApiUiServerConfig) then
   begin
-    result := apiUiServerDialog ( aApiUiServerConfig
-                                , '/apiUi/api/projectdesign/files/' + urlPercentEncode (aFileName)
-                                , ''
-                                , 'GET'
-                                , ''
-                                );
+    with TXml.CreateAsString('name', aFileName) do
+    try
+      result := apiUiServerDialog ( aApiUiServerConfig
+                                  , '/apiUi/api/projectdesign/files'
+                                  , '?name=' + aFileName
+                                  , 'GET'
+                                  , ''
+                                  );
+ {
+      result := apiUiServerDialog ( aApiUiServerConfig
+                                  , '/apiUi/api/projectdesign/files'
+                                  , ''
+                                  , 'POST'
+                                  , ''
+                                  , Text
+                                  );
+ }
+    finally
+      Free;
+    end;
     exit;
   end;
   with TFileStream.Create(osDirectorySeparators(aFileName),fmOpenRead or fmShareDenyWrite) do

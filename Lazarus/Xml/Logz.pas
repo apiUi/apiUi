@@ -76,7 +76,6 @@ type
     ReplyValidated: Boolean;
     ReplyValidateResult: String;
     ExpectedValuesChecked: Boolean;
-    HasUnexpectedValue: Boolean;
     Stream: TStream;
     markDeleted: Boolean;
     relatesTo: TLog;
@@ -114,7 +113,6 @@ type
     property Number: Integer read fNumber;
     function SaveLog (aString: String; aLog: TLog): TLog;
     function LogsAsString (aStubFileName: String): String;
-    function UnexpectedsAsXml: TXml;
     function PrepareCoverageReportAsXml (aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
     procedure InvalidateDisplayedColumns; overload;
     procedure InvalidateDisplayedColumns(aOperation: TWsdlOperation); overload;
@@ -157,7 +155,6 @@ type
     ReplyEnabled: Boolean;
     ReplyEquals: Boolean;
     Reply: String;
-    UnexpectedValuesEnabled: Boolean;
     RemarksEnabled: Boolean;
     procedure Execute (aLog: TLog);
     constructor Create;
@@ -744,61 +741,6 @@ begin
   end;
 end;
 
-function TLogList.UnexpectedsAsXml: TXml;
-var
-  x, d: Integer;
-  headerXml, bodyXml: TXml;
-  xLog: TLog;
-  xBind: TCustomBindable;
-begin
-  result := TXml.CreateAsString('logUnexpecteds', '');
-  headerXml := result.AddXml(TXml.CreateAsString('Header', ''));
-  bodyXml := result.AddXml(TXml.CreateAsString('Body', ''));
-  for x := 0 to Count - 1 do
-  begin
-    xLog := LogItems[x];
-    if Assigned (xLog.Operation)
-    and (xLog.Operation.ExpectationBindables.Count > 0)
-    and Assigned (xLog.Mssg)
-    and (xLog.Exception = '') then
-    begin
-      xLog.toBindables (xLog.Operation);
-      xLog.HasUnexpectedValue := xLog.Mssg.CheckValues(xLog.Operation);
-      xLog.ExpectedValuesChecked := True;
-      if xLog.HasUnexpectedValue then
-      begin
-        with bodyXml.AddXml(TXml.CreateAsString('Detail','')) do
-        begin
-          AddXml (TXml.CreateAsString('messageTimestamp', xsdDateTime(xLog.InboundTimeStamp)));
-          AddXml (TXml.CreateAsString('Service', xLog.Operation.WsdlService.Name));
-          AddXml (TXml.CreateAsString('Operation', xLog.Operation.Name));
-          AddXml (TXml.CreateAsString('Message', xLog.Mssg.Name));
-          AddXml (TXml.CreateAsString('Correlation', xLog.CorrelationId));
-          with AddXml (TXml.CreateAsString('Items','')) do
-          begin
-            for d := 0 to xLog.Operation.ExpectationBindables.Count - 1 do
-            begin
-              xBind := xLog.Operation.ExpectationBindables.Bindables[d];
-              if xBind.HasUnExpectedValue then
-              begin
-                with AddXml (TXml.CreateAsString('Item','')) do
-                begin
-                  AddXml (TXml.CreateAsString('Tag', xBind.FullIndexCaption));
-                  AddXml (TXml.CreateAsString('currentValue', xBind.Value));
-                  AddXml (TXml.CreateAsString('referenceValue', xBind.ExpectedValue));
-                end;
-              end;
-            end;
-          end;
-        end;
-      end;
-    end;
-  end;
-  headerXml.AddXml(Txml.CreateAsBoolean('unexpectedValuesFound', (bodyXml.Items.Count > 0)));
-  headerXml.AddXml(Txml.CreateAsString('Created', xsdNowAsDateTime));
-  result.CheckDownline(True);
-end;
-
 procedure TLogList.SetLog(Index: integer; const Value: TLog);
 begin
   Objects [Index] := Value;
@@ -831,7 +773,6 @@ procedure TLogFilter.Execute(aLog: TLog);
     if CorrelationEnabled then Inc (result);
     if RequestEnabled then Inc (result);
     if ReplyEnabled then Inc (result);
-    if UnexpectedValuesEnabled then Inc (result);
     if RemarksEnabled then Inc (result);
   end;
   function _StringMatchesRegExpr (aString, aExpr: String; Contains: Boolean): Boolean;
@@ -919,12 +860,6 @@ begin
     and ReplyEnabled
     then
       xMatches := _Matches (aLog.ReplyBody, Reply, ReplyEquals, True, True);
-    if xMatches and xMatchAny then Exit;
-
-    if (xMatches or xMatchAny)
-    and UnexpectedValuesEnabled
-    then
-      xMatches := aLog.HasUnexpectedValue;
     if xMatches and xMatchAny then Exit;
 
     if (xMatches or xMatchAny)
@@ -1361,10 +1296,16 @@ begin
           begin
             xXml := TXml.Create;
             try
-              if Pos ('xml', self.RequestContentType) > 0 then
-                xXml.LoadFromString(self.RequestBody, nil)
+              if aOperation.ConsumesJsonOnly then
+                xXml.LoadJsonFromString(self.RequestBody, nil)
               else
-                xXml.LoadJsonFromString(self.RequestBody, nil);
+                if aOperation.ConsumesXmlOnly then
+                  xXml.LoadFromString(self.RequestBody, nil)
+                else
+                  if Pos ('xml', self.RequestContentType) > 0 then
+                    xXml.LoadFromString(self.RequestBody, nil)
+                  else
+                    xXml.LoadJsonFromString(self.RequestBody, nil);
               xXml.Name := XmlItems[x].Name;
               XmlItems[x].LoadValues (xXml, false, False, True, False);
             finally

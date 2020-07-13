@@ -11,4 +11,7 @@
 		<encryptedPassword>Aw0yERoFUART</encryptedPassword>
 	</ssl>
   </serverHttp>
+  <clientHttp>
+	<port>7777</port>
+  </clientHttp>
 </svrouterini>

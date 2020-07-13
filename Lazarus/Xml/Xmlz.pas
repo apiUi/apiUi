@@ -211,8 +211,6 @@ type
     procedure CopyDownLine (aXml: TXml; aOnlyWhenChecked: Boolean);
     procedure ResolveAliasses;
     procedure CopyRelevancy (aXml: TXml);
-    procedure ResetExpectedValues;
-    procedure CheckExpectedValues;
     procedure CheckDownline (aChecked: Boolean);
     function UpLineAsText: String; Override;
     procedure ForgetNamespaces;
@@ -3159,8 +3157,6 @@ begin
   CData := aXml.CData;
   jsonType := aXml.jsonType;
   Value := aXml.Value;
-  DoExpectValue := aXml.DoExpectValue;
-  ExpectedValue := aXml.ExpectedValue;
 //Parent := aXml.Parent;
   Items.Clear;
   Items.Free;
@@ -3777,55 +3773,6 @@ begin
     Value := 'true'
   else
     Value := 'false';
-end;
-
-procedure TXml.CheckExpectedValues;
-  procedure _reset (aXml: TXml);
-  var
-    x: Integer;
-  begin
-    for x := 0 to aXml.Items.Count - 1 do
-      _reset (aXml.Items.XmlItems [x]);
-    aXml.HasUnExpectedValue := False;
-  end;
-  procedure _set (aXml: TXml);
-  var
-    x: Integer;
-  begin
-    for x := 0 to aXml.Items.Count - 1 do
-      _set (aXml.Items.XmlItems [x]);
-    if aXml.DoExpectValue then
-    begin
-      if aXml.Checked then
-      begin
-        if (aXml.Value <> aXml.ExpectedValue) then
-          aXml.HasUnExpectedValue := True;
-      end
-      else
-      begin
-        if aXml.ExpectedValue <> bindNilStr then
-          aXml.HasUnExpectedValue := True;
-      end;
-    end;
-  end;
-begin
-  _reset (self);
-  _set (self);
-end;
-
-procedure TXml.ResetExpectedValues;
-  procedure _reset (aXml: TXml);
-  var
-    x: Integer;
-  begin
-    for x := 0 to aXml.Items.Count - 1 do
-      _reset (aXml.Items.XmlItems [x]);
-    aXml.HasUnExpectedValue := False;
-    aXml.DoExpectValue := False;
-    aXml.ExpectedValue := '';
-  end;
-begin
-  _reset (self);
 end;
 
 function TXml.getRoot: TXml;
