@@ -49,6 +49,7 @@ type
     httpResponseCode: Integer;
     httpCommand: String;
     httpDocument: String;
+    apiDocument: String;
     httpParams: String;
     RequestContentType, ReplyContentType: String;
     DestinationIp: String;
@@ -934,6 +935,9 @@ begin
     AddXml (Txml.CreateAsInteger('httpResponseCode', Self.httpResponseCode));
     AddXml (Txml.CreateAsString('httpCommand', Self.httpCommand));
     AddXml (Txml.CreateAsString('httpDocument', Self.httpDocument));
+    if (Self.apiDocument <> '')
+    and (Self.apiDocument <> Self.httpDocument) then
+      AddXml (Txml.CreateAsString('apiDocument', Self.apiDocument));
     AddXml (Txml.CreateAsString('httpParams', Self.httpParams));
     AddXml (Txml.CreateAsString('RequestContentType', Self.RequestContentType));
     AddXml (Txml.CreateAsString('ReplyContentType', Self.ReplyContentType));
@@ -1269,7 +1273,7 @@ begin
   hdrParams := TStringList.Create;
   hdrParams.NameValueSeparator := ':';
   try
-    ExplodeStr (self.httpDocument, '/', pathParams);
+    ExplodeStr (self.PathFormat, '/', pathParams);
     ExplodeStr (PathFormat , '/', pathMask);
   {
     if pathParams.Count <> pathMask.Count then

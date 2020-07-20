@@ -1868,6 +1868,10 @@ begin
       xPathRegexp := '^(' + xPathRegexp + ')$';
       PathRegexps.AddObject(xPathRegexp, PathInfos.Objects[w]);
       PathFormats.AddObject(xPathFormat, PathInfos.Objects[w]);
+      with PathInfos.Objects[w] as TWsdlService do
+      begin
+        logPathRegExp := xPathRegexp;
+      end;
     end;
   finally
     Free;
@@ -4119,12 +4123,15 @@ begin
           raise Exception.CreateFmt ('Operation: %s URL empty', [aOperation.Name]);
         if URL [Length (URL)] = '/' then
           SetLength(URL, Length (URL) - 1);
+    {
         with TIdURI.Create(URL) do
         try
           aLog.PathFormat := Path + Document + aOperation.WsdlService.openApiPath;
         finally
           Free;
         end;
+    }
+        aLog.PathFormat := aOperation.WsdlService.logPathFormat;
         URL := URL
              + aOperation.WsdlService.openApiPath;
         querySep := '?';
@@ -7128,16 +7135,18 @@ function TWsdlProject.FindOpenApiOnLog (aLog : TLog): TWsdlOperation;
   var
     x: Integer;
     xService: TWsdlService;
-    s: String;
+    sx, sd: String;
   begin
     result := nil;
     with TRegExpr.Create do
     try
       for x := 0 to PathRegexps.Count - 1 do
       begin
-        s := PathRegexps.Strings[x];
-        Expression := s;
-        if Exec(aLog.httpDocument) then
+        sx := PathRegexps.Strings[x];
+        Expression := sx;
+//        sd := ifthen(aLog.apiDocument <> '', alog.apiDocument, aLog.httpDocument);
+        sd := aLog.PathFormat;
+        if Exec(sd) then
         begin
           result := PathInfos.Objects[x] as TWsdlService;
           aLog.PathFormat := PathFormats.Strings[x];
@@ -8946,6 +8955,7 @@ begin
           xLog.httpResponseCode := Items.XmlIntegerByTag ['httpResponseCode'];
           xLog.httpCommand := Items.XmlValueByTag ['httpCommand'];
           xLog.httpDocument := Items.XmlValueByTag ['httpDocument'];
+          xLog.apiDocument := Items.XmlValueByTag ['apiDocument'];
           xLog.httpParams := Items.XmlValueByTag ['httpParams'];
           xLog.RequestContentType := Items.XmlValueByTag ['RequestContentType'];
           xLog.ReplyContentType := Items.XmlValueByTag ['ReplyContentType'];

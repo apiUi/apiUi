@@ -666,9 +666,6 @@ begin
   if (Length (aPath) = 0)
   or (aPath[1] <> '/') then
     raise Exception.Create ('function HttpDialog path must begin with a slash');
-  if (Length (aQuery) > 0)
-  and (aQuery[1] <> '?') then
-    raise Exception.Create ('function HttpDialog query must begin with a questionmark');
   with TXml.Create do
   try
     CopyDownLine (aConfigXml as TXml, True);
@@ -1201,19 +1198,10 @@ begin
     try
       result := apiUiServerDialog ( aApiUiServerConfig
                                   , '/apiUi/api/projectdesign/files'
-                                  , '?name=' + aFileName
+                                  , '?name=' + urlPercentEncode (aFileName)
                                   , 'GET'
                                   , ''
                                   );
- {
-      result := apiUiServerDialog ( aApiUiServerConfig
-                                  , '/apiUi/api/projectdesign/files'
-                                  , ''
-                                  , 'POST'
-                                  , ''
-                                  , Text
-                                  );
- }
     finally
       Free;
     end;

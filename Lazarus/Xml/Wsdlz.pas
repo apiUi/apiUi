@@ -153,7 +153,8 @@ type
     private
     function getOperationByName(Index: String): TWsdlOperation;
     public
-      Name, FileAlias, openApiPath: String;
+      Name, FileAlias, openApiPath, logPathRegExp, logPathFormat: String;
+      // at least one pathformat for the logging of requests
       AuthenticationType: TAuthenticationType;
       UserName: String;
       Password: String;
@@ -2875,6 +2876,7 @@ var
   sl: TStringList;
   xXsd, yXsd, hXsd: TXsd;
   s, xHost, xBasePath: String;
+  sIdUri: TIdURI;
 begin
   FileName := aFileName;
   try
@@ -2956,7 +2958,8 @@ begin
       if Items.XmlItems[x].Name = 'servers' then
       begin
         sl.Add (Items.XmlItems[x].Name);
-        with TIdURI.Create do
+        sIdUri := TIdURI.Create;
+        with sIdUri do
         try
           with Items.XmlItems[x] do
           begin
@@ -2964,7 +2967,7 @@ begin
             begin
               try
                 URI := Items.XmlValueByTag['url'];
-                ServerPathNames.Add ('/' + Document);
+                ServerPathNames.Add (Path + Document);
                 Servers.Add (URI);
                 SjowMessage(URI);
               except
@@ -3053,6 +3056,7 @@ begin
         xService.openApiPath := xService.Name;
         for p := 0 to ServerPathNames.Count - 1 do
           xService.PathInfos.Add (ServerPathNames.Strings[p] + xService.Name);
+        xService.logPathFormat := ServerPathNames.Strings[0] + Name;
         Services.AddObject(Name, xService);
         xService.DescriptionType := ipmDTJson;
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
