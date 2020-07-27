@@ -21,7 +21,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="12694"/>
+      <BuildNr Value="12698"/>
       <StringTable ProductVersion="10.3.4.110"/>
     </VersionInfo>
     <MacroValues Count="1">
@@ -39,7 +39,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="&quot;..\..\..\ServiceVirtualisation\apiRaboDistributionResponders.svpr&quot; &quot;--script=startUp&quot;"/>
+        <CommandLineParams Value="&quot;..\..\..\ServiceVirtualisation\Responders\RaboResponders.svpr&quot; &quot;--script=startUp&quot;"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -119,7 +119,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="7">
+    <Exceptions Count="8">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -141,6 +141,9 @@
       <Item7>
         <Name Value="EIdConnClosedGracefully"/>
       </Item7>
+      <Item8>
+        <Name Value="EConvertError"/>
+      </Item8>
     </Exceptions>
   </Debugging>
 </CONFIG>

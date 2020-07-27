@@ -192,7 +192,7 @@ type
     PathInfos, PathRegexps, PathFormats: TStringList;
     Scripts: TXml;
     DisplayedLogColumns: TStringList;
-    projectFileName, LicenseDbName: String;
+    projectFileName, remoteProjectName, LicenseDbName: String;
     displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs: TLogList;
     displayedSnapshots, toDisplaySnapshots: TSnapshotList;
@@ -7840,8 +7840,8 @@ begin
             Exit;
           end;
           SjowMessage('projectdesign received: ' + nameXml.Value);
-          if nameXml.Value <> projectFileName then
-            raise Exception.CreateFmt('Received project name (%s) differs from current projectname (%s)', [nameXml.Value, projectFileName]);
+//        if nameXml.Value <> projectFileName then
+//          raise Exception.CreateFmt('Received project name (%s) differs from current projectname (%s)', [nameXml.Value, projectFileName]);
           TProcedureThread.Create(False, True, 200, self, ProjectDesignFromApiRequestString, xRequestBody, projectFileName);
           Exit;
         end;
@@ -8001,6 +8001,7 @@ begin
       xLog.TransportType := ttHttp;
       xLog.httpCommand := ARequestInfo.Command;
       xLog.httpDocument := ARequestInfo.Document;
+      xLog.PathFormat := xLog.httpDocument;
       xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
       xLog.RequestContentType := ARequestInfo.RawHeaders.Values['Content-Type'];
       xLog.ReplyContentType := xLog.RequestContentType;
@@ -9598,10 +9599,11 @@ end;
 procedure TWsdlProject.OpenFromServerUrl;
 var
   xXml, dXml: TXml;
-  sProjectDesign: String;
+  sProjectDesign, sProjectFileName, sRemoteProjectFileName: String;
 begin
   ProgressBegin('Opening ' + projectFileName, 3000);
   try
+    sProjectFileName := projectFileName;
     try
       xXml := TXml.Create;
       try
@@ -9613,7 +9615,11 @@ begin
         dXml := xXml.FindXml('WsdlStubCase.FileName', '.');
         if not Assigned(dXml) then
           raise Exception.Create('Invalid Xml read from ' + RemoteServerUrl);
-        ProjectDesignFromXml(xXml, dXml.Value, remoteServerConnectionXml);
+//      ProjectDesignFromXml(xXml, dXml.Value, remoteServerConnectionXml);
+        sRemoteProjectFileName := dXml.Value;
+        dXml.Value := sProjectFileName;
+        ProjectDesignFromXml(xXml, dXml.Value, nil);
+        remoteProjectName := sRemoteProjectFileName;
         StubRead := False;
         StubChanged := True;
         ProgressInvalidateConsole;
@@ -9909,6 +9915,7 @@ procedure TWsdlProject.Clear;
 var
   x: Integer;
 begin
+  remoteProjectName := '';
   projectContexts.RowCount := 1;
   projectContexts.ColCount := 1;
   DatabaseConnectionSpecificationXml.Items.Clear;
