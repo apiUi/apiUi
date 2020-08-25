@@ -9,11 +9,37 @@ schemes:
   - https
 basePath: /apiUi/api
 paths:
+  /logs:
+    delete:
+      summary: removes list of logitems from Ui
+      description: ''
+      operationId: zzClearLogs
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      responses:
+        '200':
+          decsription: Success response
+  /logs/fetchfromremoteserver:
+    post:
+      summary: fetches list of logitems from apiUi in the cloud
+      description: ''
+      operationId: zzFetchLogsFromRemoteServer
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      responses:
+        '200':
+          decsription: Success response
   /logs/snapshot:
     post:
       summary: summary
       description: ''
-      operationId: takeSnapshot
+      operationId: zzTakeSnapshot
       consumes:
         - application/json
       produces:
@@ -28,24 +54,11 @@ paths:
       responses:
         '200':
           decsription: Success response
-  /logs:
-    delete:
-      summary: removes list of logitems from Ui
-      description: ''
-      operationId: clearLogs
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-      responses:
-        '200':
-          decsription: Success response
   /snapshot/checkregression:
     post:
       summary: summary
       description: ''
-      operationId: checkSnapshotRegression
+      operationId: zzCheckSnapshotRegression
       consumes:
         - application/json
       produces:
@@ -68,7 +81,7 @@ paths:
       description:
         removes entries from the list of snapshots.
         The snapshots are not removed from your filesystem.
-      operationId: clearSnapshots
+      operationId: zzClearSnapshots
       consumes:
         - application/json
       produces:
@@ -82,7 +95,7 @@ paths:
       description:
         retrieves list of snapshots.
         Scans project folder for snapshots.
-      operationId: listSnapshots
+      operationId: zzListSnapshots
       consumes:
         - application/json
       produces:
@@ -97,7 +110,7 @@ paths:
     post:
       summary: summary
       description: ''
-      operationId: executeScript
+      operationId: zzExecuteScript
       consumes:
         - application/json
       produces:
@@ -120,7 +133,7 @@ paths:
       summary: gets delay as set for operation
       description:
         delays are random between min and max value.
-      operationId: operationDelayGet
+      operationId: zzGetOperationDelay
       consumes:
         - application/json
       produces:
@@ -139,7 +152,7 @@ paths:
       description:
         Set the extra time that  apiUi should wait before sending response.
         The snapshots are not removed from your filesystem.
-      operationId: operationDelayPut
+      operationId: zzSetOperationDelay
       consumes:
         - application/json
       produces:
@@ -159,7 +172,7 @@ paths:
     post:
       summary: reloads project from project definition as at is on the server filesystem
       description: ''
-      operationId: refresh
+      operationId: zzRefresh
       consumes:
         - application/json
       produces:
@@ -180,7 +193,7 @@ paths:
     post:
       summary: summary
       description: ''
-      operationId: regressionReport
+      operationId: zzRegressionReport
       consumes:
         - application/json
       produces:
@@ -201,7 +214,7 @@ paths:
     post:
       summary: summary
       description: ''
-      operationId: resetEnvVar
+      operationId: zzResetEnvVar
       consumes:
         - application/json
       produces:
@@ -222,7 +235,7 @@ paths:
     post:
       summary: summary
       description: ''
-      operationId: resetEnvVars
+      operationId: zzResetEnvVars
       consumes:
         - application/json
       produces:
@@ -243,7 +256,7 @@ paths:
     post:
       summary: summary
       description: ''
-      operationId: setEnvVar
+      operationId: zzSetEnvVar
       consumes:
         - application/json
       produces:
@@ -264,7 +277,7 @@ paths:
     post:
       summary: summary
       description: ''
-      operationId: shutDown
+      operationId: zzShutDown
       consumes:
         - application/json
       produces:
@@ -281,32 +294,11 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/shutDownRpy'
-  /unexpectedValuesReport:
-    post:
-      summary: summary
-      description: ''
-      operationId: unexpectedValuesReport
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: body
-          in: body
-          decsription: ''
-          required: 'true'
-          schema:
-            $ref: '#/definitions/unexpectedValuesReportReq'
-      responses:
-        '200':
-          decsription: Success response
-          schema:
-            $ref: '#/definitions/unexpectedValuesReportRpy'
   /versionInfo:
     post:
       summary: get apiUi version information
       description: ''
-      operationId: versionInfo
+      operationId: zzVersionInfo
       consumes:
         - application/json
       produces:

@@ -247,6 +247,7 @@ type
     procedure doRegressionReport (aReport: TSnapshot);
     procedure DatabaseConnectionSpecificationFromXml;
     procedure UpdateOperationAliasses;
+    procedure LogsFromRemoteServer;
     procedure AcquireLogLock;
     procedure ReleaseLogLock;
     procedure DisplayLog (aString: String; aLog: TLog);
@@ -7657,6 +7658,15 @@ begin
 
         if (Count = 5)
         and (Strings[3] = 'logs')
+        and ((Strings[4] = 'fetchfromremoteserver'))
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          LogsFromRemoteServer;
+          Exit;
+        end;
+
+        if (Count = 5)
+        and (Strings[3] = 'logs')
         and ((Strings[4] = 'snapshot'))
         and (ARequestInfo.Command = 'POST')
         then begin
@@ -10229,6 +10239,43 @@ begin
   allAliasses.ClearListOnly;
   for o := 0 to allOperations.Count - 1 do with allOperations do
     allAliasses.AddObject(Operations[o].Alias, Operations[o]);
+end;
+
+procedure TWsdlProject.LogsFromRemoteServer;
+var
+  x: Integer;
+  s: String;
+  xLogList: TLogList;
+  eLog: TLog;
+begin
+  try
+    s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                               , '/apiUi/api/logs/getandremove'
+                               , ''
+                               , 'PUT'
+                               , 'application/xml'
+                               );
+
+    xLogList := TLogList.Create;
+    try
+      OpenMessagesLog(s, False, False, xLogList);
+      for x := 0 to xLogList.Count - 1 do
+      begin
+        DisplayLog('', xLogList.LogItems[x]);
+      end;
+    finally
+      s:= '';
+      xLogList.Clear;
+      FreeAndNil(xLogList);
+    end;
+  except
+    on e: exception do
+    begin
+      eLog := TLog.Create;
+      eLog.Exception := 'exception retrieving logs: ' + e.Message;
+      DisplayLog('', eLog);
+    end;
+  end;
 end;
 
 procedure TWsdlProject .WriteStringToStream (aString : String ;

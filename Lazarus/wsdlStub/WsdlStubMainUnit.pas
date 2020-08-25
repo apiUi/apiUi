@@ -1093,7 +1093,6 @@ type
     procedure CheckReferencedFilenamesExistsInCloud;
     procedure SnapshotFromRemoteServer (aList: TClaimableObjectList);
     procedure SnapshotsFromRemoteServer;
-    procedure LogsFromRemoteServer;
     procedure GetSnapshotsFromFolder (aList: TSnapshotList; aFolder: String);
     procedure GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
     procedure GetSnapshotFromRemoteServer (aSnapshot: TSnapshot);
@@ -13360,7 +13359,7 @@ end;
 
 procedure TMainForm.LogsFromHttpGetActionExecute(Sender: TObject);
 begin
-  TProcedureThread.Create(False, True, se, LogsFromRemoteServer);
+  TProcedureThread.Create(False, True, se, se.LogsFromRemoteServer);
 end;
 
 procedure TMainForm.LogsFromHttpGetActionHint(var HintStr: string;
@@ -14004,32 +14003,6 @@ begin
     FreeAndNil(slx);
     FreeAndNil(sln);
     FreeAndNil(slc);
-  end;
-end;
-
-procedure TMainForm.LogsFromRemoteServer;
-var
-  x: Integer;
-  s: String;
-  xLogList: TLogList;
-begin
-  s := xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                               , '/apiUi/api/logs/getandremove'
-                               , ''
-                               , 'PUT'
-                               , 'application/xml'
-                               );
-  xLogList := TLogList.Create;
-  try
-    se.OpenMessagesLog(s, False, False, xLogList);
-    for x := 0 to xLogList.Count - 1 do
-    begin
-      se.DisplayLog('', xLogList.LogItems[x]);
-    end;
-  finally
-    s:= '';
-    xLogList.Clear;
-    FreeAndNil(xLogList);
   end;
 end;
 
