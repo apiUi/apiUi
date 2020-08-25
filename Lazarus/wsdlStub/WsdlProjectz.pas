@@ -7575,7 +7575,7 @@ begin
         if (Count = 5)
         and (Strings[3] = 'logs')
         and (Strings[4] = 'getandremove')
-        and (ARequestInfo.Command = 'PUT')
+//      and (   (ARequestInfo.Command = 'PUT')
         then begin
           AcquireLogLock;
           try
@@ -10252,7 +10252,7 @@ begin
     s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
                                , '/apiUi/api/logs/getandremove'
                                , ''
-                               , 'PUT'
+                               , 'GET'
                                , 'application/xml'
                                );
 
