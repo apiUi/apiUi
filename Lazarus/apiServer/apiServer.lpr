@@ -58,6 +58,7 @@ type
   private
     se: TWsdlProject;
     scriptName, lstLogFileName: String;
+    nFlush, cFlush: Integer;
     lstLogFile: TextFile;
     terminateAfterScript: Boolean;
     doDebug: Boolean;
@@ -187,6 +188,8 @@ begin
     AssignFile(lstLogFile, lstLogFileName);
     Rewrite(lstLogFile);
   end;
+  nFlush := 50; // flush every 5 seconds, refresh 10 times a second
+  cFlush := 0;
   try
     if Assigned (sXml) then
     begin
@@ -370,6 +373,12 @@ procedure TMyApplication .RefreshLogger ;
                              ]
                            )
                   );
+          Inc (cFlush);
+          if cFlush >= nFlush then
+          begin
+            Flush(lstLogFile);
+            cFlush := 0;
+          end;
         end;
         if doDebug then
         begin

@@ -1256,7 +1256,7 @@ end;
 
 procedure TLog.OpenApiRequestToBindables (aOperation: TWsdlOperation);
 var
-  x, y, k, f: Integer;
+  x, y, kMask, kPath, f: Integer;
   pathParams, pathMask, qryParams, hdrParams: TStringList;
   xXml: TXml;
   xValue, xSeparator: String;
@@ -1273,7 +1273,7 @@ begin
   hdrParams := TStringList.Create;
   hdrParams.NameValueSeparator := ':';
   try
-    ExplodeStr (self.PathFormat, '/', pathParams);
+    ExplodeStr (self.httpDocument, '/', pathParams);
     ExplodeStr (PathFormat , '/', pathMask);
   {
     if pathParams.Count <> pathMask.Count then
@@ -1284,12 +1284,16 @@ begin
                                            ]
                                          );
   }
-    k := pathParams.Count - 1;
+    kMask := pathMask.Count - 1;
+    kPath := pathParams.Count - 1;
     if pathMask.Count > 0 then
     begin
-      while (k > -1)
-      and (pathMask.Strings[k] <> '%s') do
-        k := k - 1;
+      while (kMask > -1)
+      and (pathMask.Strings[kMask] <> '%s') do
+      begin
+        kMask := kMask - 1;
+        kPath := kPath - 1;
+      end;
     end;
     ExplodeStr (urlDecode(self.httpParams), '&', qryParams);
     hdrParams.Text := self.RequestHeaders;
@@ -1318,11 +1322,15 @@ begin
           end;
         oppPath:
           begin
-            XmlItems[x].ValueToJsonArray(pathParams.Strings[k]);
-            k := k - 1;
-            while (k > -1)
-            and (pathMask.Strings[k] <> '%s') do
-              k := k - 1;
+            XmlItems[x].ValueToJsonArray(pathParams.Strings[kPath]);
+            kMask := kMask - 1;
+            kPath := kPath - 1;
+            while (kMask > -1)
+            and (pathMask.Strings[kMask] <> '%s') do
+            begin
+              kMask := kMask - 1;
+              kPath := kPath - 1;
+            end;
           end;
         oppQuery:
           begin
