@@ -361,15 +361,17 @@ procedure TMyApplication .RefreshLogger ;
         if lstLogFileName <> '' then
         begin
           WriteLn ( lstLogFile
-                  , Format ( '%d;%d;%s;%s;%s;%s;%d;%d'
-                           , [ _unixms (xlog.InboundTimeStamp)
-                             , _unixms (xlog.OutBoundTimeStamp)
-                             , xLog.DurationAsString
-                             , xLog.StubActionAsString
-                             , _servicename(xLog)
-                             , _operationname(xLog)
-                             , Length (xLog.InboundBody)
-                             , Length (xLog.OutboundBody)
+                  , Format ( '%d;%d;%s;%s;%s;%s;%d;%d,%s %d'
+                           , [xsdFormatDateTime(xLog.InboundTimeStamp, @TIMEZONE_UTC)
+                             ,   xsdFormatDateTime(xLog.OutboundTimeStamp, @TIMEZONE_UTC)
+                             ,      xLog.DurationAsString
+                             ,         xLog.StubActionAsString
+                             ,            _servicename(xLog)
+                             ,               _operationname(xLog)
+                             ,                  Length (xLog.InboundBody)
+                             ,                     Length (xLog.OutboundBody)
+                             ,                        xlog.httpCommand
+                             ,                           xLog.httpResponseCode
                              ]
                            )
                   );

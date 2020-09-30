@@ -5843,6 +5843,7 @@ begin
             saForward: CellText := 'Forward';
             saRedirect: CellText := 'Redirect';
             saRequest: CellText := 'Request';
+            saException: CellText := 'Exception';
           end;
         logVerbColumn: CellText := xLog.httpCommand;
         logStatusColumn: CellText := IntToStr(xLog.httpResponseCode);

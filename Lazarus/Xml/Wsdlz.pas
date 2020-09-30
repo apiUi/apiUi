@@ -31,7 +31,7 @@ resourcestring
   S_OPEN_API_PATHVALUE_REGEXP = '[^/]+';
   S_DOLLARREF = '$ref';
 
-type TStubAction = (saStub, saForward, saRedirect, saRequest);
+type TStubAction = (saStub, saForward, saRedirect, saRequest, saException);
 type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone, ttKafka);
 type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
@@ -2834,8 +2834,8 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
       then begin
         xExt := UpperCase (ExtractFileExt (aaFileName));
         xXml := TXml.Create;
-        if (xExt = 'JSON')
-        or (xExt = 'JSN') then
+        if (xExt = '.JSON')
+        or (xExt = '.JSN') then
           xXml.LoadJsonFromFile(aaFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
         else
           xXml.LoadYamlFromFile(aaFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);

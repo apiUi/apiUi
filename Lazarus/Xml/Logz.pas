@@ -1391,7 +1391,16 @@ begin
     if pos('xml', LowerCase(self.ReplyContentType)) > 0 then
       xXml.LoadFromString(self.ReplyBody, nil);
     if pos('json', LowerCase(self.ReplyContentType)) > 0 then
+    try
       xXml.LoadJsonFromString(self.ReplyBody, nil);
+    except
+      on e: sysUtils.Exception do
+      begin
+        xXml.Items.Clear;
+        xXml.Name := 'unknown';
+        xXml.Value := e.Message;
+      end;
+    end;
     if xXml.Name = '' then
       xXml.Name := 'unknown';
     dXml := nil;

@@ -1,3 +1,3 @@
-pushd C:\JanBo\Sources\Lazarus\Xmlz\json
-C:\JanBo\Sources\Delphi32\lex.exe /v jsnScanner.l jsnScanner.PAS
+pushd C:\Data\Sources\Lazarus\Xml\json
+C:\Data\tply\plex.exe -v .\jsnScanner.l .\jsnScanner.pas
 popd

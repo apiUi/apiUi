@@ -10247,8 +10247,10 @@ var
   s: String;
   xLogList: TLogList;
   eLog: TLog;
+  iTimeStamp: TDateTime;
 begin
   try
+    iTimeStamp := now;
     s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
                                , '/apiUi/api/logs/getandremove'
                                , ''
@@ -10272,6 +10274,9 @@ begin
     on e: exception do
     begin
       eLog := TLog.Create;
+      eLog.InboundTimeStamp := iTimeStamp;
+      eLog.OutBoundTimeStamp := Now;
+      eLog.StubAction := saException;
       eLog.Exception := 'exception retrieving logs: ' + e.Message;
       DisplayLog('', eLog);
     end;
