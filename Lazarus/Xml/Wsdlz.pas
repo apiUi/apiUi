@@ -382,6 +382,8 @@ type
       rpyRecognition: TStringList;
       oldInvokeSpec: String;
       invokeList: TWsdlOperations;
+      invokeEndpointConfig: Boolean;
+      endpointConfigBind: TCustomBindable;
       doDebug: Boolean;
       doSuppressLog: Integer;
       logReplyBody, logRequestBody: String;
@@ -613,6 +615,7 @@ procedure ResetEnvVar (aOperation: TWsdlOperation; aName: String);
 function setEnvNumber (aOperation: TWsdlOperation; aName: String; aValue: Extended): Extended;
 function setEnvVar (aOperation: TWsdlOperation; aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
+function SetContext (aName: String): String;
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure CreateSnapshot (aObject: TObject; aName: String);
 procedure CreateJUnitReport (aObject: TObject; aName: String);
@@ -653,6 +656,7 @@ var
   allOperations, allAliasses: TWsdlOperations;
   allOperationsRpy: TWsdlOperations;
   _wsdlStubStylesheet: String;
+  _wsdlSetContext: SFunctionS;
   _WsdlNewDesignMessage: VFunctionOSS;
   _wsdlFetchDefaultDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
@@ -700,6 +704,7 @@ var
   UILock: TCriticalSection;
   EnvVarLock: TCriticalSection;
   doOperationLock, doUILock: Boolean;
+  endpointConfigXsd: TXsd;
 
 const ESCAPEDCRLF = '_CRLF_';
 
@@ -800,6 +805,13 @@ begin
   if not Assigned (_WsdlClearSnapshots) then
     raise Exception.Create('No OnClearSnapshots event assigned');
   _WsdlClearSnapshots (aObject);
+end;
+
+function SetContext(aName: String): String;
+begin
+  if not Assigned (_wsdlSetContext) then
+    raise Exception.CreateFmt('No SetContext event assigned, intention was to set as (%s)', [aName]);
+  result := _wsdlSetContext (aName);
 end;
 
 procedure SaveLogs (aObject : TObject ; aString : String );
@@ -3644,6 +3656,7 @@ begin
     FreeAndNil (freqBind);
     FreeAndNil (frpyBind);
     FreeAndNil (fltBind);
+    FreeAndNil (endpointConfigBind);
     FreeAndNil (reqWsaXml);
     FreeAndNil (rpyWsaXml);
   end;
@@ -3802,6 +3815,7 @@ begin
       Bind ('Req', reqBind, fExpress);
       Bind ('Rpy', rpyBind, fExpress);
     end;
+    Bind ('endpointConfig', endpointConfigBind, fExpress);
     if Assigned (invokeList) then
     begin
       for x := 0 to invokeList.Count - 1 do
@@ -3894,6 +3908,7 @@ begin
     BindScriptFunction ('ResolveAliasses', @xmlio.resolveAliasses, SFS, '(aString)');
     BindScriptFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindScriptFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
+    BindScriptFunction ('SetContext', @SetContext, SFS, '(aContextName)');
     BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
     BindScriptFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindScriptFunction ('EnableMessage', @EnableMessage, VFOV, '()');
@@ -4735,6 +4750,7 @@ begin
   self.Messages := xOperation.Messages;
 //  self.faultcode, faultstring, faultactor := xOperation.String;
   self.RecognitionType := xOperation.RecognitionType;
+  self.invokeEndpointConfig := xOperation.invokeEndpointConfig;
   self.reqRecognition := xOperation.reqRecognition;
   self.rpyRecognition := xOperation.rpyRecognition;
 //  self.doDebug: Boolean;
@@ -4761,6 +4777,12 @@ begin
       self.rpyBind := TXml.Create (-10000, self.rpyXsd);
       self.rpyBind.Name := xOperation.rpyBind.Name;
     end;
+  end;
+  if self.invokeEndpointConfig
+  and Assigned(endpointConfigXsd) then
+  begin
+    self.endpointConfigBind := TXml.Create (-10000, endpointConfigXsd);
+    self.endpointConfigBind.Name := xOperation.Alias;
   end;
   self.OnError := xOperation.OnError;
   if Assigned (xOperation.CorrelationBindables) then
@@ -6119,6 +6141,7 @@ begin
     begin
       with AddXml (TXml.CreateAsString('invoke', '')) do
       begin
+        AddXml(TXml.CreateAsBoolean('endpointConfig', invokeEndpointConfig));
         with AddXml (TXml.CreateAsString('operations', '')) do
         begin
           for x := 0 to invokeList.Count - 1 do
@@ -6145,6 +6168,7 @@ begin
   ReadReplyFromFileXml.Items.Clear;
   xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingSchema'];
   OnRequestViolatingSchema := rvsDefault;
+  invokeEndpointConfig := False;
   if Assigned (xXml) then
   begin
     if Assigned (xXml.Items.XmlCheckedItemByTag ['UseProjectDefault']) then
@@ -6185,6 +6209,7 @@ begin
     xXml := xXml.Items.XmlCheckedItemByTag['invoke'];
     if Assigned (xXml) then
     begin
+      invokeEndpointConfig := xXml.Items.XmlBooleanByTagDef['endpointConfig', False];
       xXml := xXml.Items.XmlCheckedItemByTag['operations'];
       if Assigned (xXml) then
       begin

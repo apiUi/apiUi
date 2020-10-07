@@ -1283,6 +1283,7 @@ type
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
+    function setContextProperty (aName: String): String;
     function ActiveAfterPrompt: Boolean;
     function InactiveAfterPrompt: Boolean;
     property captionFileName: String read fCaptionFileName write SetCaptionFileName;
@@ -1444,6 +1445,11 @@ begin
     raise Exception.Create(Format ('SaveLogs(''%s''); unable to determine context', [aFileName]));
   MainForm.RefreshLog;
   xProject.SaveLogs(ExpandRelativeFileName(xProject.projectFileName, aFileName));
+end;
+
+function _mainformSetContext (aName: String): String;
+begin
+  result := MainForm.setContextProperty(aName);
 end;
 
 function AllChecked(Sender: TBaseVirtualTree; aNode: PVirtualNode): Boolean;
@@ -7433,6 +7439,14 @@ begin
   end;
 end;
 
+function TMainForm.setContextProperty(aName: String): String;
+begin
+  result := se.projectContext;
+  contextPropertyOverwrite := aName;
+  se.projectContext := contextPropertyOverwrite;
+  xmlio.ProjectContext := contextPropertyOverwrite;
+end;
+
 function TMainForm.ActiveAfterPrompt : Boolean ;
 begin
   result := False;
@@ -12142,6 +12156,9 @@ begin
   end;
   with WsdlOperation do
   begin
+    se.FocusOperationName := Alias;
+    se.FocusOperationNameSpace := reqTagNameSpace;
+    se.FocusMessageIndex := Messages.IndexOfObject(WsdlMessage);
     xXml := OptionsAsXml;
     try
       if EditXmlXsdBased ( 'Operation options for ' + WsdlOperation.Alias
@@ -14359,6 +14376,7 @@ initialization
   CoInitialize(nil);
 {$endif}
   _WsdlSaveLogs := _SaveLogs;
+  _wsdlSetContext := _mainformSetContext;
 finalization
 {$ifdef windows}
   CoUninitialize;

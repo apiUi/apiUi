@@ -59,7 +59,7 @@ uses
     IncludeRecurring, IncludeInvoked: Boolean;
     maxOccurrences: Integer;
     ElementEnabled: Boolean;
-    doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti: Boolean;
+    doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti, doShowEndpointConfig: Boolean;
     property CurrentCaption: String read getCurrentCaption;
     property SkipRootNode: Boolean read fSkipRootNode write fSkipRootNode;
     property WsdlOperation: TWsdlOperation read fWsdlOperation write setWsdlOperation;
@@ -220,6 +220,11 @@ begin
     end;
     if Assigned (SrceBind) then
       ShowXmls (SrceBind, SrceBind.Name);
+    if doShowEndpointConfig
+    and Assigned (WsdlOperation.endpointConfigBind) then
+    begin
+      ShowXmls (WsdlOperation.endpointConfigBind, 'endpointConfig');
+    end;
     if Assigned (WsdlOperation) then
     begin
       if doShowRpy

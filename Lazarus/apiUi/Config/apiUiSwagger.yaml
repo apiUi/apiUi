@@ -252,6 +252,27 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/resetEnvVarsRpy'
+  /setContext:
+    post:
+      summary: summary
+      description: ''
+      operationId: zzSetContext
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/setContextReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/setContextRpy'
   /setEnvVar:
     post:
       summary: summary
@@ -412,6 +433,19 @@ definitions:
         type: string
   resetEnvVarsRpy:
     type: string
+  setContextReq:
+    type: object
+    properties:
+      name:
+        type: string
+  setContextRpy:
+    type: object
+    properties:
+      previousContext:
+        type: object
+        properties:
+          name:
+            type: string
   setEnvVarReq:
     type: object
     properties:

@@ -65,6 +65,7 @@ type
     osUserName, CompanyName: String;
     LogUsageTime: TDateTime;
     procedure SetLogUsageTimer;
+    function setContextProperty (aName: String): String;
     function doDecryptString(aString: AnsiString): AnsiString;
     function doEncryptString(aString: AnsiString): AnsiString;
     procedure HandleException(Sender: TObject; E: Exception);
@@ -85,6 +86,13 @@ type
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
+var
+  Application: TMyApplication;
+
+function _mainSetContext (aName: String): String;
+begin
+  result := Application.setContextProperty(aName);
+end;
 
 { TMyApplication }
 
@@ -126,7 +134,9 @@ begin
   begin
     WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
   end;
-  se.projectContext := GetOptionValue(contextOpt);
+
+  _wsdlSetContext := _mainSetContext;
+  setContextProperty(GetOptionValue(contextOpt));
   terminateAfterScript := HasOption('?',terminateOpt);
   if terminateAfterScript then
     WriteLn('option ', terminateOpt);
@@ -205,6 +215,15 @@ begin
     begin
       CheckSynchronize;
       RefreshLogger;
+      if lstLogFileName <> '' then
+      begin
+        Inc (cFlush);
+        if cFlush >= nFlush then
+        begin
+          Flush(lstLogFile);
+          cFlush := 0;
+        end;
+      end;
       Sleep (100);
       if Now > LogUsageTime then
       begin
@@ -227,6 +246,13 @@ end;
 procedure TMyApplication .SetLogUsageTimer ;
 begin
   LogUsageTime := SysUtils.Date + 1 + (Random / (24 * 60));
+end;
+
+function TMyApplication.setContextProperty(aName: String): String;
+begin
+  result := se.projectContext;
+  se.projectContext := aName;
+  xmlio.ProjectContext := aName;
 end;
 
 procedure TMyApplication .Notify (const aString : String );
@@ -361,26 +387,20 @@ procedure TMyApplication .RefreshLogger ;
         if lstLogFileName <> '' then
         begin
           WriteLn ( lstLogFile
-                  , Format ( '%d;%d;%s;%s;%s;%s;%d;%d,%s %d'
+                  , Format ( '%s;%s;%s;%s;%s;%s;%d;%d,%s %d'
                            , [xsdFormatDateTime(xLog.InboundTimeStamp, @TIMEZONE_UTC)
                              ,   xsdFormatDateTime(xLog.OutboundTimeStamp, @TIMEZONE_UTC)
                              ,      xLog.DurationAsString
                              ,         xLog.StubActionAsString
                              ,            _servicename(xLog)
                              ,               _operationname(xLog)
-                             ,                  Length (xLog.InboundBody)
-                             ,                     Length (xLog.OutboundBody)
+                             ,                  Length (xLog.RequestBody)
+                             ,                     Length (xLog.ReplyBody)
                              ,                        xlog.httpCommand
                              ,                           xLog.httpResponseCode
                              ]
                            )
                   );
-          Inc (cFlush);
-          if cFlush >= nFlush then
-          begin
-            Flush(lstLogFile);
-            cFlush := 0;
-          end;
         end;
         if doDebug then
         begin
@@ -576,8 +596,6 @@ begin
     Terminate;
 end;
 
-var
-  Application: TMyApplication;
 
 {$R *.res}
 

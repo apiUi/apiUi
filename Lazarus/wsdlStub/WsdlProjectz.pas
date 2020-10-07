@@ -534,7 +534,7 @@ var
     wsaXsdDescr: TXsdDescr;
     swiftMTXsdDescr: TXsdDescr;
     optionsXsd: TXsd;
-    endpointConfigXsd, remoteServerConnectionXsd: TXsd;
+    remoteServerConnectionXsd: TXsd;
     webserviceXsdDescr: TXsdDescr;
     webserviceWsdl: TWsdl;
     ScriptsXsd: TXsd;
@@ -1896,6 +1896,12 @@ begin
     if rpyBind is TXml then with rpyBind as TXml do Checked := True;
     if fltBind is TXml then with fltBind as TXml do Checked := True;
     Owner := Self;
+    if invokeEndpointConfig
+    and not Assigned (endpointConfigBind) then
+    begin
+      endpointConfigBind := TXml.Create (-10000, endpointConfigXsd);
+      endpointConfigBind.Name := Alias;
+    end;
     doInvokeOperations;
     try
       PrepareBefore;
@@ -4384,6 +4390,8 @@ begin
         aOperation.PrepareBefore;
       aOperation.ExecuteBefore;
       aOperation.ExecuteReqStampers;
+      if Assigned (aOperation.endpointConfigBind) then
+        aOperation.endpointConfigFromXml(aOperation.endpointConfigBind as TXml);
       if doValidateRequests then
       begin
         if not aOperation.reqBind.IsValueValid (xMessage) then
@@ -4516,6 +4524,20 @@ begin
     then raise Exception.Create('SendMessage: null arguments');
   if Assigned (aRequest) then
     aOperation.ReqBindablesFromWsdlMessage(aRequest);
+  if Assigned(aOperation.endpointConfigBind) then
+  begin
+    xXml := aOperation.endpointConfigAsXml;
+    try
+      with (aOperation.endpointConfigBind as TXml) do
+      begin
+        Name := xXml.Name;
+        CheckDownline(false);
+        LoadValues (xXml, False, True);
+      end;
+    finally
+      xXml.Free;
+    end;
+  end;
   aOperation.Data := nil;
   sl := TStringList.Create;
   try
@@ -7933,6 +7955,30 @@ begin
             Exit;
           end;
           wsdlz.ResetEnvVars(allOperations.Operations[0], nameXml.Value);
+          Exit;
+        end;
+
+        if (Count = 4)
+        and (Strings[3] = 'setContext')
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          nameXml := xBodyXml.FindXml('json.name');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          with TXml.CreateAsString('json', '') do
+          try
+            with AddXml (TXml.CreateAsString('previousContext', '')) do
+            begin
+              AddXml (TXml.CreateAsString('name', wsdlz.SetContext(nameXml.Value)));
+            end;
+            AResponseInfo.ContentText := StreamJSON(0, False);
+            Exit;
+          finally
+            free;
+          end;
           Exit;
         end;
 
