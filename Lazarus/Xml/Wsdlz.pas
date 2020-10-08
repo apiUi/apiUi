@@ -615,6 +615,7 @@ procedure ResetEnvVar (aOperation: TWsdlOperation; aName: String);
 function setEnvNumber (aOperation: TWsdlOperation; aName: String; aValue: Extended): Extended;
 function setEnvVar (aOperation: TWsdlOperation; aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
+function GetContext: String;
 function SetContext (aName: String): String;
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure CreateSnapshot (aObject: TObject; aName: String);
@@ -656,6 +657,7 @@ var
   allOperations, allAliasses: TWsdlOperations;
   allOperationsRpy: TWsdlOperations;
   _wsdlStubStylesheet: String;
+  _wsdlGetContext: SFunctionV;
   _wsdlSetContext: SFunctionS;
   _WsdlNewDesignMessage: VFunctionOSS;
   _wsdlFetchDefaultDesignMessage: VFunctionOS;
@@ -812,6 +814,13 @@ begin
   if not Assigned (_wsdlSetContext) then
     raise Exception.CreateFmt('No SetContext event assigned, intention was to set as (%s)', [aName]);
   result := _wsdlSetContext (aName);
+end;
+
+function GetContext: String;
+begin
+  if not Assigned (_wsdlGetContext) then
+    raise Exception.Create('No GetContext event assigned');
+  result := _wsdlGetContext;
 end;
 
 procedure SaveLogs (aObject : TObject ; aString : String );
@@ -3820,11 +3829,14 @@ begin
     begin
       for x := 0 to invokeList.Count - 1 do
       begin
-        if Assigned (invokeList.Operations[x])
-        and (not invokeList.Operations[x].isFreeFormat) then
+        if Assigned (invokeList.Operations[x]) then
         begin
-          Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
-          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
+          if (not invokeList.Operations[x].isFreeFormat) then
+          begin
+            Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
+            Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
+          end;
+          Bind ('endpointConfig', invokeList.Operations[x].endpointConfigBind, fExpress);
         end;
       end;
     end;
@@ -3870,6 +3882,7 @@ begin
     BindScriptFunction ('Exit', @RaiseExit, VFOV, '()');
     BindScriptFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
     BindScriptFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
+    BindScriptFunction ('GetContext', @GetContext, SFV, '()');
     BindScriptFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
     BindScriptFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
@@ -4641,6 +4654,7 @@ constructor TWsdlOperation.Create(aOperation: TWsdlOperation);
 var
   f: Integer;
   xOperation: TWsdlOperation;
+  xXml: TXml;
 begin
   xOperation := aOperation;
   while Assigned(xOperation.Cloned) do
@@ -4782,6 +4796,17 @@ begin
   and Assigned(endpointConfigXsd) then
   begin
     self.endpointConfigBind := TXml.Create (-10000, endpointConfigXsd);
+    xXml := self.endpointConfigAsXml;
+    try
+      with self.endpointConfigBind as TXml do
+      begin
+        Name := xXml.Name;
+        CheckDownline(false);
+        LoadValues (xXml, False, True);
+      end;
+    finally
+      xXml.Free;
+    end;
     self.endpointConfigBind.Name := xOperation.Alias;
   end;
   self.OnError := xOperation.OnError;

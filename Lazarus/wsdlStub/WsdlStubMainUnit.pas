@@ -1284,6 +1284,7 @@ type
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
     function setContextProperty (aName: String): String;
+    function getContextProperty: String;
     function ActiveAfterPrompt: Boolean;
     function InactiveAfterPrompt: Boolean;
     property captionFileName: String read fCaptionFileName write SetCaptionFileName;
@@ -1450,6 +1451,11 @@ end;
 function _mainformSetContext (aName: String): String;
 begin
   result := MainForm.setContextProperty(aName);
+end;
+
+function _mainformGetContext: String;
+begin
+  result := MainForm.getContextProperty;
 end;
 
 function AllChecked(Sender: TBaseVirtualTree; aNode: PVirtualNode): Boolean;
@@ -7445,6 +7451,11 @@ begin
   contextPropertyOverwrite := aName;
   se.projectContext := contextPropertyOverwrite;
   xmlio.ProjectContext := contextPropertyOverwrite;
+end;
+
+function TMainForm.getContextProperty: String;
+begin
+  result := se.projectContext;
 end;
 
 function TMainForm.ActiveAfterPrompt : Boolean ;
@@ -14377,6 +14388,7 @@ initialization
 {$endif}
   _WsdlSaveLogs := _SaveLogs;
   _wsdlSetContext := _mainformSetContext;
+  _wsdlGetContext := _mainformGetContext;
 finalization
 {$ifdef windows}
   CoUninitialize;

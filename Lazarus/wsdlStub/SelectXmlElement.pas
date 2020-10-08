@@ -220,10 +220,39 @@ begin
     end;
     if Assigned (SrceBind) then
       ShowXmls (SrceBind, SrceBind.Name);
-    if doShowEndpointConfig
-    and Assigned (WsdlOperation.endpointConfigBind) then
+    if doShowEndpointConfig then
     begin
-      ShowXmls (WsdlOperation.endpointConfigBind, 'endpointConfig');
+      Captions.Clear;
+      rChild := TreeView.Items.AddChildObject (nil, 'endpointConfig', nil);
+      for x := 0 to allOperations.Count - 1 do
+      begin
+        if (allOperations.Operations[x] = WsdlOperation)
+        or (allOperations.Operations[x] = WsdlOperation.Cloned)
+        or (    IncludeInvoked
+            and Assigned (WsdlOperation.invokeList)
+            and WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)
+           ) then
+        begin
+          if (allOperations.Operations[x] = WsdlOperation.Cloned) then
+            xOperation := WsdlOperation
+          else
+            xOperation := allOperations.Operations [x];
+          if Assigned (xOperation.endpointConfigBind) then
+          begin
+            xChild := rChild;
+            xBindName := xOperation.endpointConfigBind.Name;
+            if xOperation.Alias <> xOperation.reqTagName then  // yes, compare with tagname
+              xOperation.endpointConfigBind.Name := xOperation.Alias;
+            ViewXmlItem ( TreeView
+                        , xChild
+                        , xOperation.endpointConfigBind
+                        , IncludeRecurring
+                        );
+            xOperation.endpointConfigBind.Name := xBindName;
+          end;
+        end;
+      end;
+      rChild.Collapse(True);
     end;
     if Assigned (WsdlOperation) then
     begin

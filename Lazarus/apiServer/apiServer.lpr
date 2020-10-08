@@ -65,6 +65,7 @@ type
     osUserName, CompanyName: String;
     LogUsageTime: TDateTime;
     procedure SetLogUsageTimer;
+    function getContextProperty: String;
     function setContextProperty (aName: String): String;
     function doDecryptString(aString: AnsiString): AnsiString;
     function doEncryptString(aString: AnsiString): AnsiString;
@@ -92,6 +93,11 @@ var
 function _mainSetContext (aName: String): String;
 begin
   result := Application.setContextProperty(aName);
+end;
+
+function _mainGetContext: String;
+begin
+  result := Application.getContextProperty;
 end;
 
 { TMyApplication }
@@ -136,6 +142,7 @@ begin
   end;
 
   _wsdlSetContext := _mainSetContext;
+  _wsdlGetContext := _mainGetContext;
   setContextProperty(GetOptionValue(contextOpt));
   terminateAfterScript := HasOption('?',terminateOpt);
   if terminateAfterScript then
@@ -253,6 +260,11 @@ begin
   result := se.projectContext;
   se.projectContext := aName;
   xmlio.ProjectContext := aName;
+end;
+
+function TMyApplication.getContextProperty: String;
+begin
+  result := se.projectContext;
 end;
 
 procedure TMyApplication .Notify (const aString : String );

@@ -714,6 +714,11 @@ begin
     end;
     if reqBind is TIpmItem then
       ReqIpm.BufferToValues(nil, xOperation.ReqIpm.ValuesToBuffer(nil));
+    if Assigned (endpointConfigBind) then with endpointConfigBind as TXml do
+    begin
+      ResetValues;
+      LoadValues (xOperation.endpointConfigBind as TXml, False, True);
+    end;
     StubAction := saRequest;
     PostponementMs := Trunc (aLater);
     FreeOnTerminateRequest := True;
@@ -4352,7 +4357,7 @@ var
   xNow: TDateTime;
   x: Integer;
   xLog: TLog;
-  xMessage: String;
+  xMessage, s: String;
 begin
   xNow := Now;
   xMessage := '';
@@ -4391,7 +4396,12 @@ begin
       aOperation.ExecuteBefore;
       aOperation.ExecuteReqStampers;
       if Assigned (aOperation.endpointConfigBind) then
+      begin
+        s := aOperation.endpointConfigBind.Name;
+        aOperation.endpointConfigBind.Name := 'endpointConfig';
         aOperation.endpointConfigFromXml(aOperation.endpointConfigBind as TXml);
+        aOperation.endpointConfigBind.Name := s;
+      end;
       if doValidateRequests then
       begin
         if not aOperation.reqBind.IsValueValid (xMessage) then
@@ -4524,20 +4534,6 @@ begin
     then raise Exception.Create('SendMessage: null arguments');
   if Assigned (aRequest) then
     aOperation.ReqBindablesFromWsdlMessage(aRequest);
-  if Assigned(aOperation.endpointConfigBind) then
-  begin
-    xXml := aOperation.endpointConfigAsXml;
-    try
-      with (aOperation.endpointConfigBind as TXml) do
-      begin
-        Name := xXml.Name;
-        CheckDownline(false);
-        LoadValues (xXml, False, True);
-      end;
-    finally
-      xXml.Free;
-    end;
-  end;
   aOperation.Data := nil;
   sl := TStringList.Create;
   try
@@ -7959,7 +7955,22 @@ begin
         end;
 
         if (Count = 4)
-        and (Strings[3] = 'setContext')
+        and (Strings[3] = 'context')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          with TXml.CreateAsString('json', '') do
+          try
+            AddXml (TXml.CreateAsString('name', wsdlz.GetContext));
+            AResponseInfo.ContentText := StreamJSON(0, False);
+            Exit;
+          finally
+            free;
+          end;
+          Exit;
+        end;
+
+        if (Count = 4)
+        and (Strings[3] = 'context')
         and (ARequestInfo.Command = 'POST')
         then begin
           nameXml := xBodyXml.FindXml('json.name');
