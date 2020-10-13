@@ -3228,7 +3228,7 @@ function TXml.ValueFromJsonArray (aUrlEncoded: Boolean): String;
   function _urlEncode (aValue: String): String;
   begin
     if aUrlEncoded then
-      result := urlEncode (aValue)
+      result := urlPercentEncode (aValue)
     else
       result := Value;
   end;

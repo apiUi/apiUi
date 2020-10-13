@@ -82,6 +82,14 @@ when "true", the server will be allowed to send gzip responses (compression meth
 					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="AddressIsComplete" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default "false"
+Only relavant on API's.
+When "true" apiUi does not apply pathparams nor queryparams to adjust the URL but assumes that the URL alread contains a correct value.
+Applicable when a callback url is provided. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="Verb" type="tns:httpVerbType" minOccurs="0"/>
 			<xs:element name="ContentType" type="xs:string" minOccurs="0"/>
 			<xs:element name="ContentEncoding" type="tns:contentEncodingType" minOccurs="0"/>

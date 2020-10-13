@@ -4129,7 +4129,8 @@ begin
         HttpClient.Request.CustomHeaders.Text := aLog.RequestHeaders;
         RemoveStdHttpHeaders(HttpClient.Request.CustomHeaders);
       end;
-      if aOperation.isOpenApiService then // URL is still without Service specific (one of those Paths) part
+      if aOperation.isOpenApiService
+      and (not aOperation.HttpAddressIsComplete) then // URL is still without Service specific (one of those Paths) part
       begin
         if URL = '' then
           raise Exception.CreateFmt ('Operation: %s URL empty', [aOperation.Name]);
@@ -4294,6 +4295,7 @@ begin
                 if httpVerb = 'TRACE' then httpClient.Trace(URL, dStream);
               end;
             finally
+              aOperation.HttpAddressIsComplete := False;
               aLog.RequestHeaders := HttpClient.Request.RawHeaders.Text;
               aLog.ReplyHeaders := HttpClient.Response.RawHeaders.Text;
               aLog.ReplyContentType := HttpClient.Response.ContentType;

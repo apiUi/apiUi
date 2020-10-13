@@ -343,6 +343,7 @@ type
       StubAction: TStubAction;
       StubTransport: TTransportType;
       StubHttpAddress: String;
+      HttpAddressIsComplete: Boolean; // only here for use from scripting, in case a callback address is provided
       httpVerb: String;
       ResponseNo: Integer;
       ContentEncoding: String;
@@ -5763,6 +5764,7 @@ begin
   then raise Exception.Create('endpointConfigfromXml: invalid XML' + aXml.Text);
   StubTransport := ttHttp;
   StubHttpAddress := '';
+  HttpAddressIsComplete := False;
   httpVerb := 'POST';
   OverruleContentType := '';
   ContentEncoding := 'identity';
@@ -5804,6 +5806,7 @@ begin
         then begin
           StubTransport := ttHttp;
           StubHttpAddress := Items.XmlCheckedValueByTag['Address'];
+          HttpAddressIsComplete := Items.XmlCheckedBooleanByTagDef['AddressIsComplete', False];
           httpVerb := UpperCase(Items.XmlCheckedValueByTagDef['Verb', httpVerb]);
           OverruleContentType := Items.XmlCheckedValueByTagDef['ContentType', OverruleContentType];
           ContentEncoding := Items.XmlCheckedValueByTagDef['ContentEncoding', ContentEncoding];
