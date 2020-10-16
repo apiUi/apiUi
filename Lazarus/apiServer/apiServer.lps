@@ -114,8 +114,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="14360"/>
-        <CursorPos X="32" Y="14380"/>
+        <TopLine Value="14343"/>
+        <CursorPos X="32" Y="14342"/>
         <UsageCount Value="191"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>

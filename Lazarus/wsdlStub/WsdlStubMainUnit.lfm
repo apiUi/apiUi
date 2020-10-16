@@ -95,20 +95,8 @@ object MainForm: TMainForm
       ImageIndex = 6
       Style = tbsDivider
     end
-    object ValidateRepliesButton: TToolButton
-      Left = 203
-      Top = 2
-      Action = ValidateRepliesAction
-      Style = tbsCheck
-    end
-    object ValidateRequestsButton: TToolButton
-      Left = 180
-      Top = 2
-      Action = ValidateRequestsAction
-      Style = tbsCheck
-    end
     object ToolButton43: TToolButton
-      Left = 226
+      Left = 180
       Height = 22
       Top = 2
       Width = 8
@@ -117,12 +105,12 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton60: TToolButton
-      Left = 234
+      Left = 188
       Top = 2
       Action = ConfigLogAction
     end
     object ToolButton61: TToolButton
-      Left = 257
+      Left = 211
       Height = 22
       Top = 2
       Width = 8
@@ -131,7 +119,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton21: TToolButton
-      Left = 265
+      Left = 219
       Height = 22
       Top = 2
       Width = 5
@@ -140,12 +128,12 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object startStopButton: TToolButton
-      Left = 270
+      Left = 224
       Top = 2
       Action = startAction
     end
     object ToolButton70: TToolButton
-      Left = 293
+      Left = 247
       Height = 22
       Top = 2
       Width = 8
@@ -154,12 +142,12 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object AbortToolButton: TToolButton
-      Left = 301
+      Left = 255
       Top = 2
       Action = AbortAction
     end
     object SeparatorToolButton: TToolButton
-      Left = 324
+      Left = 278
       Height = 22
       Top = 2
       Width = 8
@@ -168,7 +156,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ThreadsPanel: TPanel
-      Left = 332
+      Left = 286
       Height = 22
       Top = 2
       Width = 87
@@ -1987,20 +1975,6 @@ object MainForm: TMainForm
       Hint = 'Set filter on log'
       ImageIndex = 33
       OnExecute = FilterLogActionExecute
-    end
-    object ValidateRequestsAction: TAction
-      Category = 'Log'
-      Caption = 'ValidateRequestsAction'
-      Hint = 'Validate requests against schema'
-      ImageIndex = 37
-      OnExecute = ValidateRequestsActionExecute
-    end
-    object ValidateRepliesAction: TAction
-      Category = 'Log'
-      Caption = 'ValidateRepliesAction'
-      Hint = 'Validate replies against schema'
-      ImageIndex = 38
-      OnExecute = ValidateRepliesActionExecute
     end
     object ShowExceptionAsHtmlAction: TAction
       Caption = 'SwohHttpReplyAsXMLAction'

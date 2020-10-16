@@ -1549,6 +1549,26 @@ When 'true', stored filenames will be relative to the projectfilename.</xs:docum
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="Validate" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Requests" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default "true"
+
+When "true" requests will be validated against schema.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Responses" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default "true"
+
+When "true" responses will be validated against schema.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="Log" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>

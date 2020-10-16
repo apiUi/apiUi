@@ -458,10 +458,6 @@ type
     FilterLogAction: TAction;
     FilterLogAction1: TMenuItem;
     ToolButton43: TToolButton;
-    ValidateRequestsButton: TToolButton;
-    ValidateRepliesButton: TToolButton;
-    ValidateRequestsAction: TAction;
-    ValidateRepliesAction: TAction;
     LogPopupMenu: TPopupMenu;
     FindAction: TAction;
     FindNextAction: TAction;
@@ -983,8 +979,6 @@ type
     procedure FreeFormatMemoChange(Sender: TObject);
     procedure LogDisplayedColumnsActionExecute(Sender: TObject);
     procedure LogUpdateColumns;
-    procedure ValidateRequestsActionExecute(Sender: TObject);
-    procedure ValidateRepliesActionExecute(Sender: TObject);
     procedure startActionUpdate(Sender: TObject);
     procedure startActionExecute(Sender: TObject);
     procedure stopActionExecute(Sender: TObject);
@@ -1109,10 +1103,6 @@ type
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     procedure ShowHtml(aCaption, aInfoString: String);
     procedure PopulateXml(aViewType: TxvViewType);
-    function getDoValidateReplies: Boolean;
-    function getDoValidateRequests: Boolean;
-    procedure setDoValidateReplies(const Value: Boolean);
-    procedure setDoValidateRequests(const Value: Boolean);
     function getIsRequestAction: Boolean;
     procedure setDoShowDesignAtTop(const Value: Boolean);
     procedure setWsdl(const Value: TWsdl);
@@ -1294,10 +1284,6 @@ type
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
     property doTrackDuplicateMessages: Boolean read fDoTrackDuplicateMessages write setDoTrackDuplicateMessages;
     property doScrollMessagesIntoView: Boolean read fDoScrollMessagesIntoView write setDoScrollMessagesIntoView;
-    property doValidateRequests: Boolean read getDoValidateRequests write
-      setDoValidateRequests;
-    property doValidateReplies: Boolean read getDoValidateReplies write
-      setDoValidateReplies;
     property isRequestAction: Boolean read getIsRequestAction;
     property doShowDesignAtTop: Boolean read fDoShowDesignAtTop write
       setDoShowDesignAtTop;
@@ -3618,8 +3604,6 @@ begin
   try
     GridView.Clear;
     ClearConsole;
-    doValidateRequests := False;
-    doValidateReplies := False;
     _WsdlDisableOnCorrelate := False;
     XmlUtil.PushCursor (crHourGlass);
     try
@@ -4116,8 +4100,6 @@ begin
   except
   end;
   ToggleDoScrollMessagesIntoViewAction.Checked := doScrollMessagesIntoView;
-  ValidateRepliesAction.Checked := doValidateReplies;
-  ValidateRequestsAction.Checked := doValidateRequests;
   ActionComboBox.Enabled := Assigned(WsdlOperation) and
     (WsdlOperation.WsdlService.DescriptionType <> ipmDTEmail);
   WsdlItemAddMenuItem.Enabled := True;
@@ -9002,16 +8984,6 @@ begin
   RefreshLog;
 end;
 
-function TMainForm.getDoValidateReplies: Boolean;
-begin
-  result := Assigned(se) and se.doValidateReplies;
-end;
-
-function TMainForm.getDoValidateRequests: Boolean;
-begin
-  result := Assigned(se) and se.doValidateRequests;
-end;
-
 function TMainForm.getHintStrDisabledWhileActive: String;
 begin
   result := '';
@@ -9063,32 +9035,6 @@ begin
   fDoTrackDuplicateMessages:=AValue;
   ToggleTrackDuplicateMessagesAction.Checked := fDoTrackDuplicateMessages;
   UpdateMessagesView;
-end;
-
-procedure TMainForm.setDoValidateReplies(const Value: Boolean);
-begin
-  stubChanged := doValidateReplies <> Value;
-  if Assigned(se) then
-    se.doValidateReplies := Value;
-  CheckBoxClick(nil);
-end;
-
-procedure TMainForm.setDoValidateRequests(const Value: Boolean);
-begin
-  stubChanged := doValidateRequests <> Value;
-  if Assigned(se) then
-    se.doValidateRequests := Value;
-  CheckBoxClick(nil);
-end;
-
-procedure TMainForm.ValidateRequestsActionExecute(Sender: TObject);
-begin
-  doValidateRequests := not doValidateRequests;
-end;
-
-procedure TMainForm.ValidateRepliesActionExecute(Sender: TObject);
-begin
-  doValidateReplies := not doValidateReplies;
 end;
 
 procedure TMainForm.LogPopupMenuPopup(Sender: TObject);

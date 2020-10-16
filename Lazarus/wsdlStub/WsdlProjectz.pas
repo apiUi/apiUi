@@ -1505,6 +1505,8 @@ begin
   jclDebug.JclStartExceptionTracking;
   {$endif}
   doDisplayLog := True;
+  doValidateRequests := True;
+  doValidateReplies := True;
   OnRestartEvent := RestartCommand;
   OnReactivateEvent := ReactivateCommand;
   OnReloadDesignEvent := ReloadDesignCommand;
@@ -2260,6 +2262,11 @@ begin
       end;
     end;
   end;
+  with result.AddXml (TXml.CreateAsString('Validate', '')) do
+  begin
+    AddXml (TXml.CreateAsBoolean('Requests', doValidateRequests));
+    AddXml (TXml.CreateAsBoolean('Responses', doValidateReplies));
+  end;
   result.AddXml(ProjectLogOptionsAsXml);
   with result.AddXml (TXml.CreateAsString('Wsdl', '')) do
   begin
@@ -2404,8 +2411,6 @@ begin
       AddXml(TXml.CreateAsString('FileName', uncFilename(projectFileName)));
       with AddXml (TXml.Create) do
         CopyDownLine(Listeners.SpecificationXml, True);
-      AddXml(TXml.CreateAsBoolean('ValidateRequests', doValidateRequests));
-      AddXml(TXml.CreateAsBoolean('ValidateReplies', doValidateReplies));
       AddXml (TXml.CreateAsBoolean('DisableOnCorrelate', _WsdlDisableOnCorrelate));
       AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, uncFilename(projectFileName)));
       AddXml (TXml.CreateAsString('PathPrefixes', xmlio.PathPrefixes.Text));
@@ -2787,8 +2792,6 @@ begin
           Listeners.SpecificationXml.CopyDownLine(sXml, True);
           Listeners.FromXml(HaveStompFrame);
         end;
-        doValidateRequests := (aXml.Items.XmlValueByTag ['ValidateRequests'] = 'true');
-        doValidateReplies := (aXml.Items.XmlValueByTag ['ValidateReplies'] = 'true');
         _WsdlDisableOnCorrelate := aXml.Items.XmlBooleanByTagDef['DisableOnCorrelate', False];
         eXml := aXml.Items.XmlItemByTag ['projectOptions'];
         if Assigned (eXml) then
@@ -3711,6 +3714,8 @@ var
 begin
   if not Assigned (aXml) then Exit;
   if aXml.Name <> 'projectOptions' then raise Exception.Create('ProjectOptionsFromXml illegal XML' + aXml.Text);
+  doValidateRequests := True;
+  doValidateReplies := True;
   DatabaseConnectionSpecificationXml.Items.Clear;
   UnknownOpsReqReplactementsXml.Items.Clear;
   UnknownOpsRpyReplactementsXml.Items.Clear;
@@ -3745,6 +3750,12 @@ begin
         ReferenceFolder := osDirectorySeparators (XmlCheckedValueByTag['reference']);
         ReportsFolder := osDirectorySeparators (XmlCheckedValueByTagDef['reports', CurrentFolder]);
       end;
+    end;
+    xXml := XmlCheckedItemByTag ['Validate'];
+    if Assigned (xXml) then with xXml.Items do
+    begin
+      doValidateRequests := XmlCheckedBooleanByTagDef['Requests', doValidateRequests];
+      doValidateReplies := XmlCheckedBooleanByTagDef['Responses', doValidateReplies];
     end;
     ProjectLogOptionsFromXml (XmlCheckedItemByTag ['Log']);
     xXml := XmlCheckedItemByTag ['Wsdl'];
@@ -4443,11 +4454,25 @@ begin
         if aOperation.isOpenApiService then
         begin
           xLog.OpenApiReplyToBindables(aOperation);
+          if doValidateReplies then
+          begin
+            if not aOperation.rpyBind.IsValueValid (xMessage) then
+              xLog.ReplyValidateResult := xMessage;
+            xLog.ReplyValidated := True;
+          end;
         end
         else
         begin
           if aOperation.isFreeFormat then
-            aOperation.FreeFormatRpy := xLog.ReplyBody
+          begin
+            aOperation.FreeFormatRpy := xLog.ReplyBody;
+            if doValidateReplies then
+            begin
+              if not aOperation.rpyBind.IsValueValid (xMessage) then
+                xLog.ReplyValidateResult := xMessage;
+              xLog.ReplyValidated := True;
+            end;
+          end
           else
           begin
             if aOperation.reqBind is TXml then
@@ -9996,8 +10021,8 @@ begin
   doUseMq := False;
   Listeners.Clear;
   mqGetThreads.Clear;
-  doValidateRequests := False;
-  doValidateReplies := False;
+  doValidateRequests := True;
+  doValidateReplies := True;
   _WsdlDisableOnCorrelate := False;
   ignoreDifferencesOn.Clear;
   checkValueAgainst.Clear;
