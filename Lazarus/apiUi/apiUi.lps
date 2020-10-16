@@ -117,8 +117,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="4449"/>
-        <CursorPos Y="4457"/>
+        <TopLine Value="2361"/>
+        <CursorPos X="8" Y="2373"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit13>
@@ -676,7 +676,7 @@
       <Define0 Value="UseCThreads"/>
       <Define1 Value="TrialVersion"/>
     </OtherDefines>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="2795" Column="27" TopLine="2787"/>
@@ -787,6 +787,10 @@
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="3757" Column="85" TopLine="3737"/>
       </Position28>
+      <Position29>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="4457" TopLine="4449"/>
+      </Position29>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

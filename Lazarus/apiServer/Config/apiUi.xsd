@@ -249,6 +249,17 @@ Use this field to send extra data which you can use in the apiUi activators ( be
 	</xs:complexType>
 	<xs:complexType name="invokeType">
 		<xs:sequence>
+			<xs:element name="endpointConfig" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Default "false"
+
+When"true", it is possible to change endpoint configuration from script.
+
+Useful for scripts that do 'callback' operations
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="operations" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Maintain a list of operations</xs:documentation>
@@ -1534,6 +1545,26 @@ When 'true', stored filenames will be relative to the projectfilename.</xs:docum
 										<xs:element name="TestFolders" minOccurs="0"/>
 									</xs:sequence>
 								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Validate" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Requests" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default "true"
+
+When "true" requests will be validated against schema.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Responses" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Default "true"
+
+When "true" responses will be validated against schema.</xs:documentation>
+								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
 					</xs:complexType>

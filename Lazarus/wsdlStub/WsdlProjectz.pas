@@ -3980,18 +3980,30 @@ end;
 function TWsdlProject.SendHttpMessage (aOperation: TWsdlOperation; aLog: TLog): String;
   function _download (dStream: TMemoryStream; aResponse: TIdHTTPResponse): String;
   begin
-    with TRegExpr.Create('filename=[^\;]*') do
-    try
-      if Exec(aResponse.ContentDisposition) then
-      begin
-        result := CurrentFolder
-                   + DirectorySeparator
-                   + Copy(Match[0], Length('filename=') + 1, MaxInt)
-                   ;
-        dStream.SaveToFile(result);
+    if (Pos ('attachment', aResponse.ContentDisposition) > 0)
+    and (Pos ('filename', aResponse.ContentDisposition) > 0) then
+    begin
+      with TRegExpr.Create('filename=[^\;]*') do
+      try
+        if Exec(aResponse.ContentDisposition) then
+        begin
+          result := CurrentFolder
+                     + DirectorySeparator
+                     + Copy(Match[0], Length('filename=') + 1, MaxInt)
+                     ;
+          dStream.SaveToFile(result);
+        end;
+      finally
+        free;
       end;
-    finally
-      free;
+    end
+    else
+    begin
+      result := CurrentFolder
+                 + DirectorySeparator
+                 + 'stream ' + xsdNowAsDateTime + '.tmp'
+                 ;
+      dStream.SaveToFile(result);
     end;
   end;
 
@@ -4313,8 +4325,9 @@ begin
               alog.httpResponseCode := HttpClient.ResponseCode;
             end;
             if (HttpClient.Response.ContentType = 'application/octet-stream')
-            and (Pos ('attachment', HttpClient.Response.ContentDisposition) > 0)
-            and (Pos ('filename', HttpClient.Response.ContentDisposition) > 0) then
+//          and (Pos ('attachment', HttpClient.Response.ContentDisposition) > 0)
+//          and (Pos ('filename', HttpClient.Response.ContentDisposition) > 0) then
+            then
             begin
               result := _download (dStream, HttpClient.Response)
             end
