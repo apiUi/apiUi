@@ -258,7 +258,7 @@ begin
     SelectXmlElementForm.doShowMq := True;
     SelectXmlElementForm.doShowWsa := True;
     SelectXmlElementForm.doShowRti := True;
-    SelectXmlElementForm.doShowEndpointConfig := True;
+    SelectXmlElementForm.doShowReqRpyInfo := True;
     SelectXmlElementForm.WsdlOperation := WsdlOperation;
     SelectXmlElementForm.LastCaption := LastCaption;
     SelectXmlElementForm.IncludeRecurring := True;

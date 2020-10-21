@@ -94,6 +94,10 @@ type
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     procedure OpenApiRequestToBindables (aOperation: TWsdlOperation);
     procedure OpenApiReplyToBindables (aOperation: TWsdlOperation);
+    procedure HeadersInfoToBindables (aHeaders: String; aBind: TCustomBindable);
+    procedure RequestInfoToBindables (aOperation: TWsdlOperation);
+    procedure ReplyInfoToBindables (aOperation: TWsdlOperation);
+    procedure ReplyInfoFromBindables (aOperation: TWsdlOperation);
     procedure toBindables (aOperation: TWsdlOperation);
     procedure InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TStringList);
     constructor Create;
@@ -1429,6 +1433,89 @@ begin
     end;
   finally
     xXml.Free;
+  end;
+end;
+
+procedure TLog.HeadersInfoToBindables(aHeaders: String; aBind: TCustomBindable);
+var
+  x: Integer;
+  xXml: TXml;
+  xSl: TStringList;
+begin
+  if not (aBind is TXml) then
+    Exit;
+  with aBind as TXml do
+  begin
+    ResetValues;
+    Checked := True;
+    xSl := TStringList.Create;
+    try
+      xSl.NameValueSeparator := ':';
+      xSl.Text := aHeaders;
+      xXml := TXml.CreateAsString(Name, '');
+      try
+        with xXml.AddXml(TXml.CreateAsString('Http', '')) do // ToDo MQ, Stomp,....
+        begin
+          with AddXml (TXml.CreateAsString('customHeaders', '')) do
+          begin
+            for x := 0 to xSl.Count - 1 do
+            begin
+              with AddXml (TXml.CreateAsString('Header', '')) do
+              begin
+                AddXml (TXml.CreateAsString('Name', xSl.Names[x]));
+                AddXml (TXml.CreateAsString('Value', TrimLeft(xSl.ValueFromIndex[x])));
+              end;
+            end;
+          end;
+        end;
+        LoadValues(xXml, False, True);
+      finally
+        xXml.Free;
+      end;
+    finally
+      xSl.Free;
+    end;
+  end;
+end;
+
+procedure TLog.RequestInfoToBindables(aOperation: TWsdlOperation);
+begin
+  if not Assigned (aOperation) then
+    raise SysUtils.Exception.Create('procedure TLog.RequestInfoToBindables (aOperation: TWsdlOperation); nil arg');
+  HeadersInfoToBindables(RequestHeaders, aOperation.requestInfoBind);
+end;
+
+procedure TLog.ReplyInfoToBindables(aOperation: TWsdlOperation);
+begin
+  if not Assigned (aOperation) then
+    raise SysUtils.Exception.Create('procedure TLog.ReplyInfoToBindables (aOperation: TWsdlOperation); nil arg');
+  HeadersInfoToBindables(ReplyHeaders, aOperation.replyInfoBind);
+end;
+
+procedure TLog.ReplyInfoFromBindables(aOperation: TWsdlOperation);
+var
+  xSep: String;
+  x: Integer;
+  xXml: TXml;
+begin
+  ReplyHeaders := '';
+  if Assigned (aOperation.replyInfoBind) then with aOperation.replyInfoBind as TXml do
+  begin
+    xSep := '';
+    xXml := FindCheckedXml(Name + '.Http.customHeaders');
+    if Assigned (xXml) then
+    begin
+      for x := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[x].Items do
+      begin
+        ReplyHeaders := ReplyHeaders
+                      + xSep
+                      + XmlValueByTag['Name']
+                      + ': '
+                      + XmlValueByTag['Value']
+                      ;
+        xSep := LineEnding;
+      end;
+    end;
   end;
 end;
 

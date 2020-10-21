@@ -249,7 +249,7 @@ Use this field to send extra data which you can use in the apiUi activators ( be
 	</xs:complexType>
 	<xs:complexType name="invokeType">
 		<xs:sequence>
-			<xs:element name="endpointConfig" type="xs:boolean" minOccurs="0">
+			<xs:element name="requestInfo" type="xs:boolean" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>
 Default "false"
@@ -258,6 +258,14 @@ When"true", it is possible to change endpoint configuration from script.
 
 Useful for scripts that do 'callback' operations
 					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="replyInfo" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Default "false"
+
+When"true", it is possible to change response headers from script.					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="operations" minOccurs="0">
@@ -929,6 +937,7 @@ Value is displayed as column header.</xs:documentation>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Email" type="emailType"/>
+	<xs:element name="replyInfo" type="epc:replyInfoType"/>
 	<xs:element name="endpointConfig" type="epc:endpointConfigType">
 		<xs:annotation>
 			<xs:documentation>Configure endpoint</xs:documentation>

@@ -865,4 +865,15 @@ Used to execute operation-scripts without really sending a message</xs:documenta
 			<xs:element name="TestConnection" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="replyInfoType">
+		<xs:sequence>
+			<xs:element name="Http" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 </xs:schema>

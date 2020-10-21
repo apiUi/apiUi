@@ -59,7 +59,7 @@ uses
     IncludeRecurring, IncludeInvoked: Boolean;
     maxOccurrences: Integer;
     ElementEnabled: Boolean;
-    doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti, doShowEndpointConfig: Boolean;
+    doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti, doShowReqRpyInfo: Boolean;
     property CurrentCaption: String read getCurrentCaption;
     property SkipRootNode: Boolean read fSkipRootNode write fSkipRootNode;
     property WsdlOperation: TWsdlOperation read fWsdlOperation write setWsdlOperation;
@@ -220,10 +220,10 @@ begin
     end;
     if Assigned (SrceBind) then
       ShowXmls (SrceBind, SrceBind.Name);
-    if doShowEndpointConfig then
+    if doShowReqRpyInfo then
     begin
       Captions.Clear;
-      rChild := TreeView.Items.AddChildObject (nil, 'endpointConfig', nil);
+      rChild := TreeView.Items.AddChildObject (nil, 'requestInfo', nil);
       for x := 0 to allOperations.Count - 1 do
       begin
         if (allOperations.Operations[x] = WsdlOperation)
@@ -237,18 +237,52 @@ begin
             xOperation := WsdlOperation
           else
             xOperation := allOperations.Operations [x];
-          if Assigned (xOperation.endpointConfigBind) then
+          if Assigned (xOperation.requestInfoBind) then
           begin
             xChild := rChild;
-            xBindName := xOperation.endpointConfigBind.Name;
+            xBindName := xOperation.requestInfoBind.Name;
             if xOperation.Alias <> xOperation.reqTagName then  // yes, compare with tagname
-              xOperation.endpointConfigBind.Name := xOperation.Alias;
+              xOperation.requestInfoBind.Name := xOperation.Alias;
             ViewXmlItem ( TreeView
                         , xChild
-                        , xOperation.endpointConfigBind
+                        , xOperation.requestInfoBind
                         , IncludeRecurring
                         );
-            xOperation.endpointConfigBind.Name := xBindName;
+            xOperation.requestInfoBind.Name := xBindName;
+          end;
+        end;
+      end;
+      rChild.Collapse(True);
+    end;
+    if doShowReqRpyInfo then
+    begin
+      Captions.Clear;
+      rChild := TreeView.Items.AddChildObject (nil, 'replyInfo', nil);
+      for x := 0 to allOperations.Count - 1 do
+      begin
+        if (allOperations.Operations[x] = WsdlOperation)
+        or (allOperations.Operations[x] = WsdlOperation.Cloned)
+        or (    IncludeInvoked
+            and Assigned (WsdlOperation.invokeList)
+            and WsdlOperation.invokeList.Find(allOperations.Operations[x].Alias, f)
+           ) then
+        begin
+          if (allOperations.Operations[x] = WsdlOperation.Cloned) then
+            xOperation := WsdlOperation
+          else
+            xOperation := allOperations.Operations [x];
+          if Assigned (xOperation.replyInfoBind) then
+          begin
+            xChild := rChild;
+            xBindName := xOperation.replyInfoBind.Name;
+            if xOperation.Alias <> xOperation.rpyTagName then  // yes, compare with tagname
+              xOperation.replyInfoBind.Name := xOperation.Alias;
+            ViewXmlItem ( TreeView
+                        , xChild
+                        , xOperation.replyInfoBind
+                        , IncludeRecurring
+                        );
+            xOperation.replyInfoBind.Name := xBindName;
           end;
         end;
       end;

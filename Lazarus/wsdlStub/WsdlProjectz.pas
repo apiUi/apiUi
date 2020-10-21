@@ -714,10 +714,10 @@ begin
     end;
     if reqBind is TIpmItem then
       ReqIpm.BufferToValues(nil, xOperation.ReqIpm.ValuesToBuffer(nil));
-    if Assigned (endpointConfigBind) then with endpointConfigBind as TXml do
+    if Assigned (requestInfoBind) then with requestInfoBind as TXml do
     begin
       ResetValues;
-      LoadValues (xOperation.endpointConfigBind as TXml, False, True);
+      LoadValues (xOperation.requestInfoBind as TXml, False, True);
     end;
     StubAction := saRequest;
     PostponementMs := Trunc (aLater);
@@ -1395,6 +1395,7 @@ begin
       operationOptionsXsd := XsdByName['operationOptions'];
       _WsdlListOfFilesXsd := XsdByName['FileNames'];
       endpointConfigXsd := XsdByName['endpointConfig'];
+      replyInfoXsd := XsdByName['replyInfo'];
       remoteServerConnectionXsd := XsdByName['remoteServerConnection'];
       listenersConfigXsd := XsdByName['Listeners'];
       _WsdlEmailXsd := XsdByName['Email'];
@@ -1408,6 +1409,7 @@ begin
     if not Assigned (operationOptionsXsd) then raise Exception.Create('XML Element definition for operationOptions not found');
     if not Assigned (_WsdlListOfFilesXsd) then raise Exception.Create('XML Element definition for FileNames not found');
     if not Assigned (endpointConfigXsd) then raise Exception.Create('XML Element definition for endpointConfig not found');
+    if not Assigned (replyInfoXsd) then raise Exception.Create('XML Element definition for replyInfo not found');
     if not Assigned (remoteServerConnectionXsd) then raise Exception.Create('XML Element definition for remoteServerConnection not found');
     if not Assigned (listenersConfigXsd) then raise Exception.Create('XML Element definition for listeners configuration not found');
     if Assigned (_WsdlRtiXsd) then
@@ -1903,11 +1905,17 @@ begin
     if rpyBind is TXml then with rpyBind as TXml do Checked := True;
     if fltBind is TXml then with fltBind as TXml do Checked := True;
     Owner := Self;
-    if invokeEndpointConfig
-    and not Assigned (endpointConfigBind) then
+    if invokeRequestInfo
+    and not Assigned (requestInfoBind) then
     begin
-      endpointConfigBind := TXml.Create (-10000, endpointConfigXsd);
-      endpointConfigBind.Name := Alias;
+      requestInfoBind := TXml.Create (-10000, endpointConfigXsd);
+      requestInfoBind.Name := Alias;
+    end;
+    if invokeReplyInfo
+    and not Assigned (replyInfoBind) then
+    begin
+      replyInfoBind := TXml.Create (-10000, replyInfoXsd);
+      replyInfoBind.Name := Alias;
     end;
     doInvokeOperations;
     try
@@ -3366,6 +3374,7 @@ begin
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
     aLog.OperationName:=xOperation.Alias;
     aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+    aLog.ReplyInfoFromBindables(xOperation);
     if xOperation.ReturnSoapFault then
       aLog.Exception := aLog.ReplyBody;
     CreateLogReplyPostProcess(aLog, xOperation);
@@ -4421,12 +4430,12 @@ begin
         aOperation.PrepareBefore;
       aOperation.ExecuteBefore;
       aOperation.ExecuteReqStampers;
-      if Assigned (aOperation.endpointConfigBind) then
+      if Assigned (aOperation.requestInfoBind) then
       begin
-        s := aOperation.endpointConfigBind.Name;
-        aOperation.endpointConfigBind.Name := 'endpointConfig';
-        aOperation.endpointConfigFromXml(aOperation.endpointConfigBind as TXml);
-        aOperation.endpointConfigBind.Name := s;
+        s := aOperation.requestInfoBind.Name;
+        aOperation.requestInfoBind.Name := 'endpointConfig';
+        aOperation.endpointConfigFromXml(aOperation.requestInfoBind as TXml);
+        aOperation.requestInfoBind.Name := s;
       end;
       if doValidateRequests then
       begin
@@ -4452,6 +4461,7 @@ begin
       finally
         xLog.InboundTimeStamp := Now;
       end;
+      xLog.ReplyInfoToBindables(aOperation);
       if xLog.ReplyBody = S_MESSAGE_ACCEPTED then
       begin
         xLog.ReplyBody := '';
@@ -7133,6 +7143,7 @@ begin
       end;
     end;
     aLog.OpenApiRequestToBindables(Result);
+    aLog.RequestInfoToBindables (Result);
     Exit;
   end;
   xXml := TXml.Create;
@@ -7158,7 +7169,9 @@ begin
           result := FindCcbOperationOnRequest (aLog, aString);
       end;
       if Assigned (result) then
+      begin
         aLog.OperationName:=result.Alias;
+      end;
     finally
       //ReleaseLock;
     end;
@@ -7172,6 +7185,7 @@ begin
         if result.PrepareErrors <> '' then
           raise Exception.CreateFmt('%s (%s)', [result.PrepareErrors, result.reqTagName]);
       end;
+      aLog.RequestInfoToBindables (Result);
       case result.WsdlService.DescriptionType of
         ipmDTFreeFormat: result.FreeFormatReq := aString;
         ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
@@ -8390,6 +8404,7 @@ begin
       if xOperation.PrepareErrors <> '' then
         raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
       aLog.OpenApiRequestToBindables(xOperation);
+      aLog.RequestInfoToBindables(xOperation);
       xOperation.Data := aLog;
       if IsActive then with xOperation.Cloned do
       begin
@@ -8432,6 +8447,7 @@ begin
       xOperation.rpyXml.jsonType := jsonObject;
       aLog.ReplyBody := xOperation.StreamReply (_progName, True);
       aLog.ReplyContentType := xOperation.apiReplyMediaType;
+      aLog.ReplyInfoFromBindables(xOperation);
       if aLog.ReplyContentType = '' then
         try
           aLog.ReplyContentType := SeparatedStringN(nil, xOperation.Produces, LineEnding, 1);

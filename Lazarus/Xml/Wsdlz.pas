@@ -383,8 +383,8 @@ type
       rpyRecognition: TStringList;
       oldInvokeSpec: String;
       invokeList: TWsdlOperations;
-      invokeEndpointConfig: Boolean;
-      endpointConfigBind: TCustomBindable;
+      invokeRequestInfo, invokeReplyInfo: Boolean;
+      requestInfoBind, replyInfoBind: TCustomBindable;
       doDebug: Boolean;
       doSuppressLog: Integer;
       logReplyBody, logRequestBody: String;
@@ -707,7 +707,7 @@ var
   UILock: TCriticalSection;
   EnvVarLock: TCriticalSection;
   doOperationLock, doUILock: Boolean;
-  endpointConfigXsd: TXsd;
+  endpointConfigXsd, replyInfoXsd: TXsd;
 
 const ESCAPEDCRLF = '_CRLF_';
 
@@ -3666,7 +3666,8 @@ begin
     FreeAndNil (freqBind);
     FreeAndNil (frpyBind);
     FreeAndNil (fltBind);
-    FreeAndNil (endpointConfigBind);
+    FreeAndNil (requestInfoBind);
+    FreeAndNil (replyInfoBind);
     FreeAndNil (reqWsaXml);
     FreeAndNil (rpyWsaXml);
   end;
@@ -3825,7 +3826,8 @@ begin
       Bind ('Req', reqBind, fExpress);
       Bind ('Rpy', rpyBind, fExpress);
     end;
-    Bind ('endpointConfig', endpointConfigBind, fExpress);
+    Bind ('requestInfo', requestInfoBind, fExpress);
+    Bind ('replyInfo', replyInfoBind, fExpress);
     if Assigned (invokeList) then
     begin
       for x := 0 to invokeList.Count - 1 do
@@ -3837,7 +3839,8 @@ begin
             Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
             Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
           end;
-          Bind ('endpointConfig', invokeList.Operations[x].endpointConfigBind, fExpress);
+          Bind ('requestInfo', invokeList.Operations[x].requestInfoBind, fExpress);
+          Bind ('replyInfo', invokeList.Operations[x].replyInfoBind, fExpress);
         end;
       end;
     end;
@@ -4765,7 +4768,8 @@ begin
   self.Messages := xOperation.Messages;
 //  self.faultcode, faultstring, faultactor := xOperation.String;
   self.RecognitionType := xOperation.RecognitionType;
-  self.invokeEndpointConfig := xOperation.invokeEndpointConfig;
+  self.invokeRequestInfo := xOperation.invokeRequestInfo;
+  self.invokeReplyInfo := xOperation.invokeReplyInfo;
   self.reqRecognition := xOperation.reqRecognition;
   self.rpyRecognition := xOperation.rpyRecognition;
 //  self.doDebug: Boolean;
@@ -4793,13 +4797,13 @@ begin
       self.rpyBind.Name := xOperation.rpyBind.Name;
     end;
   end;
-  if self.invokeEndpointConfig
+  if self.invokeRequestInfo
   and Assigned(endpointConfigXsd) then
   begin
-    self.endpointConfigBind := TXml.Create (-10000, endpointConfigXsd);
+    self.requestInfoBind := TXml.Create (-10000, endpointConfigXsd);
     xXml := self.endpointConfigAsXml;
     try
-      with self.endpointConfigBind as TXml do
+      with self.requestInfoBind as TXml do
       begin
         Name := xXml.Name;
         CheckDownline(false);
@@ -4808,7 +4812,13 @@ begin
     finally
       xXml.Free;
     end;
-    self.endpointConfigBind.Name := xOperation.Alias;
+    self.requestInfoBind.Name := xOperation.Alias;
+  end;
+  if self.invokeReplyInfo
+  and Assigned(replyInfoXsd) then
+  begin
+    self.replyInfoBind := TXml.Create (-10000, replyInfoXsd);
+    self.replyInfoBind.Name := xOperation.Alias;
   end;
   self.OnError := xOperation.OnError;
   if Assigned (xOperation.CorrelationBindables) then
@@ -6169,7 +6179,8 @@ begin
     begin
       with AddXml (TXml.CreateAsString('invoke', '')) do
       begin
-        AddXml(TXml.CreateAsBoolean('endpointConfig', invokeEndpointConfig));
+        AddXml(TXml.CreateAsBoolean('requestInfo', invokeRequestInfo));
+        AddXml(TXml.CreateAsBoolean('replyInfo', invokeReplyInfo));
         with AddXml (TXml.CreateAsString('operations', '')) do
         begin
           for x := 0 to invokeList.Count - 1 do
@@ -6196,7 +6207,8 @@ begin
   ReadReplyFromFileXml.Items.Clear;
   xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingSchema'];
   OnRequestViolatingSchema := rvsDefault;
-  invokeEndpointConfig := False;
+  invokeRequestInfo := False;
+  invokeReplyInfo := False;
   if Assigned (xXml) then
   begin
     if Assigned (xXml.Items.XmlCheckedItemByTag ['UseProjectDefault']) then
@@ -6237,7 +6249,8 @@ begin
     xXml := xXml.Items.XmlCheckedItemByTag['invoke'];
     if Assigned (xXml) then
     begin
-      invokeEndpointConfig := xXml.Items.XmlBooleanByTagDef['endpointConfig', False];
+      invokeRequestInfo := xXml.Items.XmlBooleanByTagDef['requestInfo', False];
+      invokeReplyInfo := xXml.Items.XmlBooleanByTagDef['replyInfo', False];
       xXml := xXml.Items.XmlCheckedItemByTag['operations'];
       if Assigned (xXml) then
       begin
