@@ -7733,6 +7733,8 @@ begin
         and ((Strings[4] = 'fetchfromremoteserver'))
         and (ARequestInfo.Command = 'POST')
         then begin
+          if ARequestInfo.Params.Values['initclientlog'] = 'true' then
+            doClearLogs := True;
           LogsFromRemoteServer;
           Exit;
         end;
@@ -7767,6 +7769,12 @@ begin
             AResponseInfo.ResponseNo := 400;
             Exit;
           end;
+          if ARequestInfo.Params.Values['createsnapshot'] = 'true' then
+            UpsertSnapshot ( nameXml.Value
+                           , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
+                           , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
+                           , (hasGui = False)
+                           );
           xSnapshot := FindSnapshot (nameXml.Value);
           if not Assigned (xSnapshot) then
             raise Exception.Create(nameXml.Value + ' not found');

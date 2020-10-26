@@ -32,6 +32,9 @@ paths:
       produces:
         - application/json
       parameters:
+        - name: initclientlog
+          in: query
+          type: boolean
       responses:
         '200':
           decsription: Success response
@@ -70,6 +73,9 @@ paths:
           required: 'true'
           schema:
             $ref: '#/definitions/checkRegressionReq'
+        - name: createsnapshot
+          in: query
+          type: boolean
       responses:
         '200':
           decsription: Success response

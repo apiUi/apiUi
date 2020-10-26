@@ -9219,9 +9219,11 @@ begin
       begin // first check elements
         lastNode := xNode; // remember for next testloop
         xBind := NodeToBind(InWsdlTreeView, xNode);
-        if (xBind is TXml) and (xBind as TXml).CheckedAllUp and
-          (not(xBind as TXml).Group) and (not xBind.IsExpression) and
-          (not(xBind as TXml).IsValueValidAgainstXsd(xMessage)) then
+        if (xBind is TXml)
+        and (xBind as TXml).CheckedAllUp
+        and (not(xBind as TXml).Group)
+        and (not xBind.IsExpression)
+        and (not(xBind as TXml).IsValueValidAgainstXsd(xMessage)) then
         begin
           InWsdlTreeView.FocusedNode := xNode;
           InWsdlTreeView.FocusedColumn := treeValueColumn;
@@ -9229,13 +9231,14 @@ begin
           Raise Exception.Create(xMessage);
         end;
         if (xBind is TXml) // check for missing mandatory element or group
-          and (not(xBind as TXml).Checked) and
-          ((xBind as TXml).Xsd.minOccurs <> '0') and
-          ((xBind as TXml).Xsd.maxOccurs = '1') // better not check in case more ocurrences possible
-          and ((not Assigned((xBind as TXml).Parent)) or
-            ((xBind as TXml).Parent.CheckedAllUp and
-              (LowerCase((xBind.Parent as TXml).Xsd.sType.ContentModel)
-                <> 'choice'))) then
+        and (not(xBind as TXml).Checked)
+        and ((xBind as TXml).Xsd.minOccurs <> '0')
+        and ((xBind as TXml).Xsd.maxOccurs = '1') // better not check in case more ocurrences possible
+        and (   (not Assigned((xBind as TXml).Parent))
+             or (    (xBind as TXml).Parent.CheckedAllUp
+                 and (LowerCase((xBind.Parent as TXml).Xsd.sType.ContentModel) <> 'choice')
+                )
+            ) then
         begin
           InWsdlTreeView.FocusedNode := xNode;
           InWsdlTreeView.FocusedColumn := treeValueColumn;
@@ -9250,9 +9253,10 @@ begin
       while Assigned(xNode) do
       begin
         xBind := NodeToBind(InWsdlTreeView, xNode);
-        if (xBind is TXml) and (xBind as TXml).CheckedAllUp and
-          ((xBind as TXml).Group) and (not(xBind as TXml).TypeDef.IsValidXml
-            ((xBind as TXml), xMessage)) then
+        if (xBind is TXml)
+        and (xBind as TXml).CheckedAllUp
+        and ((xBind as TXml).Group)
+        and (not(xBind as TXml).TypeDef.IsValidXml ((xBind as TXml), xMessage)) then
         begin
           InWsdlTreeView.FocusedNode := xNode;
           InWsdlTreeView.FocusedColumn := InWsdlTreeView.Header.MainColumn;

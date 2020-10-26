@@ -2524,6 +2524,7 @@ var
   x, y, n: Integer;
   xXml: TXml;
   xXsd: TXsd;
+  xResult: Boolean;
 begin
   result := True;
   xXml := aXml as TXml;
@@ -2546,7 +2547,6 @@ begin
                                        ]
                                      );
     aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
-    Exit;
   end;
 
 
@@ -2558,7 +2558,6 @@ begin
       result := False;
       aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
     end;
-    Exit;
   end;
 
   // unexpected elements
@@ -2570,7 +2569,6 @@ begin
       result := False;
       xXml.ValidationMesssage := 'Unexpected element ' + NameSpace + ':' + Name;
       aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
-      Exit;
     end;
   end;
 
@@ -2591,7 +2589,6 @@ begin
                                          , [n, ElementDefs.Xsds[x].maxOccurs, ElementDefs.Xsds[x].ElementName]
                                          );
         aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
-        Exit;
       end;
     end;
   end;
@@ -2616,7 +2613,6 @@ begin
                                            , [n, ElementDefs.Xsds[x].minOccurs, ElementDefs.Xsds[x].ElementName]
                                            );
           aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
-          Exit;
         end;
       end;
     end;
@@ -2639,7 +2635,6 @@ begin
                                              , [Name, xXsd.ElementName]
                                              );
             aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
-            Exit;
           end
         else
           xXsd := Xsd;
@@ -2654,9 +2649,14 @@ begin
   end;
 
   for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
+  begin
     if (XmlItems[x].Checked)
     and Assigned (XmlItems[x].TypeDef) then
-      result := XmlItems[x].TypeDef.IsValidXml(XmlItems[x], aMessage);
+    begin
+      xResult := XmlItems[x].TypeDef.IsValidXml(XmlItems[x], aMessage);
+      result := result and xResult; // xResult between just to be sure that recursive call will be done
+    end;
+  end;
 end;
 
 function TXsdDataType.IsValidValue(aName, aValue: String;

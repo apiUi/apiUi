@@ -1561,18 +1561,14 @@ When 'true', stored filenames will be relative to the projectfilename.</xs:docum
 				<xs:element name="Validate" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="Requests" type="xs:boolean" minOccurs="0">
+							<xs:element name="Requests" type="SchemaValidationType" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>Default "true"
-
-When "true" requests will be validated against schema.</xs:documentation>
+									<xs:documentation/>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="Responses" type="xs:boolean" minOccurs="0">
+							<xs:element name="Responses" type="SchemaValidationType" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>Default "true"
-
-When "true" responses will be validated against schema.</xs:documentation>
+									<xs:documentation/>
 								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
@@ -2395,4 +2391,16 @@ For driver-operation this applies to response values.</xs:documentation>
 			<xs:element name="rpyReplacements" type="replacementsType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:simpleType name="SchemaValidationType">
+		<xs:annotation>
+			<xs:documentation>Default "reportSchemaValidations"
+</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="accordingProject"/>
+			<xs:enumeration value="noSchemaValidation"/>
+			<xs:enumeration value="reportSchemaValidations"/>
+			<xs:enumeration value="raiseExceptionOnViolation"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>
