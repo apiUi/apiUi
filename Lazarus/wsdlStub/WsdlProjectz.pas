@@ -7770,11 +7770,13 @@ begin
             Exit;
           end;
           if ARequestInfo.Params.Values['createsnapshot'] = 'true' then
+          begin
             UpsertSnapshot ( nameXml.Value
                            , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
                            , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
                            , (hasGui = False)
                            );
+          end;
           xSnapshot := FindSnapshot (nameXml.Value);
           if not Assigned (xSnapshot) then
             raise Exception.Create(nameXml.Value + ' not found');
@@ -9246,9 +9248,20 @@ var
   x, f: Integer;
 begin
   result := nil;
-  f := displayedSnapshots.IndexOf(aName);
-  if (f > -1) then
-    result := displayedSnapshots.SnapshotItems[f];
+  AcquireLogLock;
+  try
+    f := displayedSnapshots.IndexOf(aName);
+    if (f > -1) then
+      result := displayedSnapshots.SnapshotItems[f]
+    else
+    begin
+      f := toDisplaySnapshots.IndexOf(aName);
+      if (f > -1) then
+        result := toDisplaySnapshots.SnapshotItems[f]
+    end;
+  finally
+    ReleaseLogLock;
+  end;
 end;
 
 function TWsdlProject.UpsertSnapshot(aName, aFileName, aRefFileName: String; aDoClearLoggedOnes: Boolean): TSnapshot;
