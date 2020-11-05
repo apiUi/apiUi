@@ -337,7 +337,7 @@ begin
       _prepList(bSortedLogs, bLogs);
       Diffs := TA2BStringList.Create;
       try
-        Diffs.Execute(aSortedLogs, aSortedLogs);
+        Diffs.Execute(aSortedLogs, bSortedLogs);
         bodyXml := result.AddXml(TXml.CreateAsString('Body', ''));
         itemsXml := TXml.CreateAsString('Items', ''); // create in advance
         a := 0; b := 0;
@@ -1004,7 +1004,7 @@ begin
   if Assigned (Operation) then
   begin
     case aCompareBy of
-      clCorrelation:
+      clTimeStamp, clCorrelation:
       begin
         result := Operation.WsdlService.Name
                 + ';'
@@ -1027,7 +1027,7 @@ begin
                            + ';'
                            + OperationName
                            ;
-      clCorrelation: result := ServiceName
+      clTimeStamp, clCorrelation: result := ServiceName
                              + ';'
                              + OperationName
                              + ';'
@@ -1042,7 +1042,9 @@ var
   xXml, xReqXml, xRpyXml: TXml;
   x: Integer;
 begin
-  result := CompareKey(aCompareBy);
+  result := '';
+  if (aCompareBy <> clTimeStamp) then
+    result := CompareKey(aCompareBy);
   if (aSortColumns.Count > 0)
   and (aCompareBy <> clTimeStamp)
   then
@@ -1091,10 +1093,11 @@ function TLog.StubActionAsString : String ;
 begin
   result := '';
   case StubAction of
-    saStub: result := 'Stub';
+    saStub: result := 'Inbound';
     saForward: result := 'Forward';
     saRedirect: result := 'Redirect';
-    saRequest: result := 'Request';
+    saRequest: result := 'Outbound';
+    saException: result := 'Exception';
   end;
 end;
 

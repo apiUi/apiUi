@@ -1470,12 +1470,111 @@ For an overview of all options visit: doc://apiUi_operationOptions_hlp.htm </xs:
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="OnRequestViolatingAddressPath" type="OnRequestViolatingSchemaType" minOccurs="0"/>
-				<xs:element name="OnRequestViolatingSchema" type="OnRequestViolatingSchemaType" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>Default 'Continue'
-
-Setting determines what apiUi should do on receiving messages that violate the schema. This setting has no effect in case Request Message Validation is switched off </xs:documentation>
-					</xs:annotation>
+				<xs:element name="schemaValidation" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="inboundRequests" minOccurs="0">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accordingProject">
+											<xs:annotation>
+												<xs:documentation>Default value</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="noSchemaValidation">
+											<xs:annotation>
+												<xs:documentation>Messages will not be validated against schema</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reportSchemaViolations">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema</xs:documentation>
+												<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="raiseExceptionOnViolation">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema;
+On viloation an exception will be raised</xs:documentation>
+												<xs:documentation>Violations will be reported and result in an exception response</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="responseCode" type="xs:integer" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="outboundReplies" minOccurs="0">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accordingProject">
+											<xs:annotation>
+												<xs:documentation>Default value</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="noSchemaValidation">
+											<xs:annotation>
+												<xs:documentation>Messages will not be validated against schema</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reportSchemaViolations">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema</xs:documentation>
+												<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="outboundRequests" minOccurs="0">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accordingProject">
+											<xs:annotation>
+												<xs:documentation>Default value</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="noSchemaValidation">
+											<xs:annotation>
+												<xs:documentation>Messages will not be validated against schema</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reportSchemaViolations">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema</xs:documentation>
+												<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="inboundReplies" minOccurs="0">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accordingProject">
+											<xs:annotation>
+												<xs:documentation>Default value</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="noSchemaValidation">
+											<xs:annotation>
+												<xs:documentation>Messages will not be validated against schema</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reportSchemaViolations">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema</xs:documentation>
+												<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 				<xs:element name="ResolveAliasses" minOccurs="0">
 					<xs:annotation>
@@ -1554,22 +1653,6 @@ When 'true', stored filenames will be relative to the projectfilename.</xs:docum
 										<xs:element name="TestFolders" minOccurs="0"/>
 									</xs:sequence>
 								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="Validate" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Requests" type="SchemaValidationType" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation/>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="Responses" type="SchemaValidationType" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation/>
-								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
@@ -1765,10 +1848,97 @@ Settings determine what apiUi should do on receiving messages for unknown (not s
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="OperationDefaults" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Propeties that can be overruled at Operation level</xs:documentation>
+					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="OnRequestViolatingAddressPath" type="OnRequestViolatingSchemaType" minOccurs="0"/>
-							<xs:element name="OnRequestViolatingSchema" type="OnRequestViolatingSchemaType" minOccurs="0"/>
+							<xs:element name="schemaValidation" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="inboundRequests" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:element name="noSchemaValidation">
+														<xs:annotation>
+															<xs:documentation>Messages will not be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="reportSchemaViolations">
+														<xs:annotation>
+															<xs:documentation>Default value
+Messages will be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="raiseExceptionOnViolation">
+														<xs:annotation>
+															<xs:documentation>Messages will be validated against schema;
+On violation an exception will be raised</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="responseCode" type="xs:integer" minOccurs="0"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="outboundReplies" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:element name="noSchemaValidation">
+														<xs:annotation>
+															<xs:documentation>Messages will not be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="reportSchemaViolations">
+														<xs:annotation>
+															<xs:documentation>Default value
+Messages will be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="outboundRequests" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:element name="noSchemaValidation">
+														<xs:annotation>
+															<xs:documentation>Messages will not be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="reportSchemaViolations">
+														<xs:annotation>
+															<xs:documentation>Default value
+Messages will be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="inboundReplies" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:element name="noSchemaValidation">
+														<xs:annotation>
+															<xs:documentation>Messages will not be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="reportSchemaViolations">
+														<xs:annotation>
+															<xs:documentation>Default value
+Messages will be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -2391,16 +2561,31 @@ For driver-operation this applies to response values.</xs:documentation>
 			<xs:element name="rpyReplacements" type="replacementsType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="SchemaValidationType">
-		<xs:annotation>
-			<xs:documentation>Default "reportSchemaValidations"
-</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="accordingProject"/>
-			<xs:enumeration value="noSchemaValidation"/>
-			<xs:enumeration value="reportSchemaValidations"/>
-			<xs:enumeration value="raiseExceptionOnViolation"/>
-		</xs:restriction>
-	</xs:simpleType>
+	<xs:complexType name="OperationSchemaValidationType">
+		<xs:choice>
+			<xs:element name="accordingProject">
+				<xs:annotation>
+					<xs:documentation>Default value</xs:documentation>
+					<xs:documentation>see project options</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="noSchemaValidation">
+				<xs:annotation>
+					<xs:documentation>Messages will not be validated against schema</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="reportSchemaViolations">
+				<xs:annotation>
+					<xs:documentation>Messages will be validated against schema</xs:documentation>
+					<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="raiseExceptionOnViolation">
+				<xs:annotation>
+					<xs:documentation>Messages will be validated against schema</xs:documentation>
+					<xs:documentation>Violations will be reported and result in an exception response</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
 </xs:schema>

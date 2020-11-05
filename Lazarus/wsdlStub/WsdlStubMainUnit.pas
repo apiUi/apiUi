@@ -5190,7 +5190,7 @@ procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
     if (d = s) then
       exit; // you would loose the mqheader or wsa data entered
     d.StubAction := s.StubAction;
-    d.OnRequestViolatingSchema := s.OnRequestViolatingSchema;
+//    d.OnRequestViolatingSchema := s.OnRequestViolatingSchema;
     d.OnRequestViolatingAddressPath := s.OnRequestViolatingAddressPath;
     d.DelayTimeMsMin := s.DelayTimeMsMin;
     d.DelayTimeMsMax := s.DelayTimeMsMax;
@@ -5831,14 +5831,7 @@ begin
             CellText := xLog.DurationAsString;
           except
           end;
-        logActionColumn:
-          case xLog.StubAction of
-            saStub: CellText := 'Stub';
-            saForward: CellText := 'Forward';
-            saRedirect: CellText := 'Redirect';
-            saRequest: CellText := 'Request';
-            saException: CellText := 'Exception';
-          end;
+        logActionColumn: CellText := xLog.StubActionAsString;
         logVerbColumn: CellText := xLog.httpCommand;
         logStatusColumn: CellText := IntToStr(xLog.httpResponseCode);
         logServiceColumn:

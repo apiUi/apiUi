@@ -220,18 +220,18 @@ object MainForm: TMainForm
           Height = 28
           Hint = 'Select action'
           Top = 2
-          Width = 66
+          Width = 74
           ItemHeight = 13
           Items.Strings = (
-            'Stub'
-            'Request'
+            'Inbound'
+            'Outbound'
           )
           OnChange = ActionComboBoxChange
           Style = csDropDownList
           TabOrder = 0
         end
         object ToolButton17: TToolButton
-          Left = 67
+          Left = 75
           Height = 22
           Top = 2
           Width = 8
@@ -239,13 +239,13 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object RedirectAddressButton: TToolButton
-          Left = 75
+          Left = 83
           Hint = 'Set endpoint'
           Top = 2
           Action = RedirectAddressAction
         end
         object ToolButton19: TToolButton
-          Left = 98
+          Left = 106
           Height = 22
           Top = 2
           Width = 8
@@ -254,13 +254,13 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object DelayTimeButton: TToolButton
-          Left = 106
+          Left = 114
           Hint = 'Set delay'
           Top = 2
           Action = OperationDelayResponseTimeAction
         end
         object ToolButton62: TToolButton
-          Left = 129
+          Left = 137
           Height = 22
           Top = 2
           Width = 8
@@ -269,7 +269,7 @@ object MainForm: TMainForm
           Style = tbsSeparator
         end
         object Button1: TButton
-          Left = 137
+          Left = 145
           Height = 22
           Hint = 'Apply to other services or operations...'
           Top = 2

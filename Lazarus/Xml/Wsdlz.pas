@@ -37,6 +37,7 @@ type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
 type TOnRequestViolating = (rvsDefault, rvsContinue, rvsRaiseErrorMessage, rvsAddRemark);
+type TSchemaValidationType = (svAccordingProject, svNo, svReportOnly, svRaiseException);
 type TProduceType = (ptJson, ptXml); // for API's
 type TProcedure = procedure of Object;
 const TransportTypeNames: array [ttHttp..ttKafka] of String =
@@ -309,6 +310,8 @@ type
       FileAlias, Alias: String;
       HiddenFromUI: Boolean;
       isDepricated: Boolean;
+      inboundRequestSchemaValidationType, outboundReplySchemaValidationType, outboundRequestSchemaValidationType, inboundReplySchemaValidationType: TSchemaValidationType;
+      schemaValidationVioloationHttpResponseCode: Integer;
       reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
       Schemes, Consumes, Produces, ContentType, OverruleContentType, Accept: String;
       ProduceType: TProduceType;
@@ -321,7 +324,7 @@ type
       InputHeaders: TWsdlHeaders;
       OutputHeaders: TWsdlHeaders;
       OperationCounter: Integer;
-      OnRequestViolatingSchema, OnRequestViolatingAddressPath: TOnRequestViolating;
+      OnRequestViolatingAddressPath: TOnRequestViolating;
       BindName: String;
       SoapTransport: String;
       SoapAction: String;
@@ -2924,7 +2927,9 @@ begin
   OpenApiVersion := '2.0';
   with xRootXml do
   try
-    if xExt = '.JSON' then
+    if (xExt = '.JSON')
+    or (xExt = '.JSN')
+    then
       LoadJsonFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
     else
       LoadYamlFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
@@ -2989,7 +2994,10 @@ begin
             begin
               try
                 URI := Items.XmlValueByTag['url'];
-                ServerPathNames.Add (Path + Document);
+                if Path <> '/' then
+                  ServerPathNames.Add (Path + Document)
+                else
+                  ServerPathNames.Add (Document);
                 Servers.Add (URI);
                 SjowMessage(URI);
               except
@@ -4692,7 +4700,11 @@ begin
   self.InputHeaders := xOperation.InputHeaders;
   self.OutputHeaders := xOperation.OutputHeaders;
   self.BindName := xOperation.BindName;
-  self.OnRequestViolatingSchema := xOperation.OnRequestViolatingSchema;
+  self.inboundRequestSchemaValidationType := xOperation.inboundRequestSchemaValidationType;
+  self.outboundReplySchemaValidationType := xOperation.outboundReplySchemaValidationType;
+  self.outboundRequestSchemaValidationType := xOperation.outboundRequestSchemaValidationType;
+  self.inboundReplySchemaValidationType := xOperation.inboundReplySchemaValidationType;
+  self.schemaValidationVioloationHttpResponseCode := xOperation.schemaValidationVioloationHttpResponseCode;
   self.OnRequestViolatingAddressPath := xOperation.OnRequestViolatingAddressPath;
   self.SoapAction := xOperation.SoapAction;
   self.SoapBindingStyle := xOperation.SoapBindingStyle;
@@ -6148,16 +6160,46 @@ begin
   result := TXml.CreateAsString ('operationOptions','');
   with result do
   begin
-    with result.AddXml (Txml.CreateAsString('OnRequestViolatingSchema', '')) do
+    with result.AddXml (TXml.CreateAsString('schemaValidation', '')) do
     begin
-      if OnRequestViolatingSchema = rvsDefault then
-        AddXml (TXml.CreateAsString('UseProjectDefault',''));
-      if OnRequestViolatingSchema = rvsContinue then
-        AddXml (TXml.CreateAsString('Continue',''));
-      if OnRequestViolatingSchema = rvsRaiseErrorMessage then
-        AddXml (TXml.CreateAsString('RaiseErrorMessage',''));
-      if OnRequestViolatingSchema = rvsAddRemark then
-        AddXml (TXml.CreateAsString('AddRemark',''));
+      with AddXml (TXml.CreateAsString('inboundRequests', '')) do
+      begin
+        case inboundRequestSchemaValidationType of
+          svAccordingProject: AddXml (TXml.CreateAsString ('accordingProject', ''));
+          svNo: AddXml (TXml.CreateAsString ('noSchemaValidation', ''));
+          svReportOnly: AddXml (TXml.CreateAsString ('reportSchemaViolations', ''));
+          svRaiseException:
+            AddXml (TXml.CreateAsString ('raiseExceptionOnViolation', ''))
+             .AddXml (TXml.CreateAsInteger('responseCode', schemaValidationVioloationHttpResponseCode));
+        end;
+      end;
+      with AddXml (TXml.CreateAsString('outboundReplies', '')) do
+      begin
+        case outboundReplySchemaValidationType of
+          svAccordingProject: AddXml (TXml.CreateAsString ('accordingProject', ''));
+          svNo: AddXml (TXml.CreateAsString ('noSchemaValidation', ''));
+          svReportOnly: AddXml (TXml.CreateAsString ('reportSchemaViolations', ''));
+          svRaiseException: AddXml (TXml.CreateAsString ('raiseExceptionOnViolation', ''));
+        end;
+      end;
+      with AddXml (TXml.CreateAsString('outboundRequests', '')) do
+      begin
+        case outboundRequestSchemaValidationType of
+          svAccordingProject: AddXml (TXml.CreateAsString ('accordingProject', ''));
+          svNo: AddXml (TXml.CreateAsString ('noSchemaValidation', ''));
+          svReportOnly: AddXml (TXml.CreateAsString ('reportSchemaViolations', ''));
+          svRaiseException: AddXml (TXml.CreateAsString ('raiseExceptionOnViolation', ''));
+        end;
+      end;
+      with AddXml (TXml.CreateAsString('inboundReplies', '')) do
+      begin
+        case inboundReplySchemaValidationType of
+          svAccordingProject: AddXml (TXml.CreateAsString ('accordingProject', ''));
+          svNo: AddXml (TXml.CreateAsString ('noSchemaValidation', ''));
+          svReportOnly: AddXml (TXml.CreateAsString ('reportSchemaViolations', ''));
+          svRaiseException: AddXml (TXml.CreateAsString ('raiseExceptionOnViolation', ''));
+        end;
+      end;
     end;
     with result.AddXml (Txml.CreateAsString('OnRequestViolatingAddressPath', '')) do
     begin
@@ -6197,7 +6239,7 @@ end;
 
 procedure TWsdlOperation.OptionsFromXml(aXml: TXml);
 var
-  xXml, yXml: TXml;
+  xXml, yXml, iXml: TXml;
   x: Integer;
 begin
   if not Assigned (aXml) then raise Exception.Create('operationOptionsFromXml: No XML assigned');
@@ -6205,20 +6247,53 @@ begin
   oldInvokeSpec := 'none';
   doReadReplyFromFile := False;
   ReadReplyFromFileXml.Items.Clear;
-  xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingSchema'];
-  OnRequestViolatingSchema := rvsDefault;
+  inboundRequestSchemaValidationType := svAccordingProject;
+  outboundReplySchemaValidationType := svAccordingProject;
+  outboundRequestSchemaValidationType := svAccordingProject;
+  inboundReplySchemaValidationType := svAccordingProject;
+  schemaValidationVioloationHttpResponseCode := 417;
   invokeRequestInfo := False;
   invokeReplyInfo := False;
+  xXml := aXml.Items.XmlCheckedItemByTag ['schemaValidation'];
   if Assigned (xXml) then
   begin
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['UseProjectDefault']) then
-      OnRequestViolatingSchema := rvsDefault;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['Continue']) then
-      OnRequestViolatingSchema := rvsContinue;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
-      OnRequestViolatingSchema := rvsRaiseErrorMessage;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['AddRemark']) then
-      OnRequestViolatingSchema := rvsAddRemark;
+    yXml := xXml.Items.XmlCheckedItemByTag ['inboundRequests'];
+    if Assigned (yXml) then with yXml.Items do
+    begin
+      if Assigned (XmlCheckedItemByTag ['accordingProject']) then inboundRequestSchemaValidationType := svAccordingProject;
+      if Assigned (XmlCheckedItemByTag ['noSchemaValidation']) then inboundRequestSchemaValidationType := svNo;
+      if Assigned (XmlCheckedItemByTag ['reportSchemaViolations']) then inboundRequestSchemaValidationType := svReportOnly;
+      iXml := yXml.Items.XmlCheckedItemByTag ['raiseExceptionOnViolation'];
+      if Assigned (iXml) then with iXml.Items do
+      begin
+        inboundRequestSchemaValidationType := svRaiseException;
+        schemaValidationVioloationHttpResponseCode := XmlCheckedIntegerByTagDef['responseCode', schemaValidationVioloationHttpResponseCode];
+      end;
+    end;
+    yXml := xXml.Items.XmlCheckedItemByTag ['outboundReplies'];
+    if Assigned (yXml) then with yXml.Items do
+    begin
+      if Assigned (XmlCheckedItemByTag ['accordingProject']) then outboundReplySchemaValidationType := svAccordingProject;
+      if Assigned (XmlCheckedItemByTag ['noSchemaValidation']) then outboundReplySchemaValidationType := svNo;
+      if Assigned (XmlCheckedItemByTag ['reportSchemaViolations']) then outboundReplySchemaValidationType := svReportOnly;
+      if Assigned (XmlCheckedItemByTag ['raiseExceptionOnViolation']) then outboundReplySchemaValidationType := svRaiseException;
+    end;
+    yXml := xXml.Items.XmlCheckedItemByTag ['outboundRequests'];
+    if Assigned (yXml) then with yXml.Items do
+    begin
+      if Assigned (XmlCheckedItemByTag ['accordingProject']) then outboundRequestSchemaValidationType := svAccordingProject;
+      if Assigned (XmlCheckedItemByTag ['noSchemaValidation']) then outboundRequestSchemaValidationType := svNo;
+      if Assigned (XmlCheckedItemByTag ['reportSchemaViolations']) then outboundRequestSchemaValidationType := svReportOnly;
+      if Assigned (XmlCheckedItemByTag ['raiseExceptionOnViolation']) then outboundRequestSchemaValidationType := svRaiseException;
+    end;
+    yXml := xXml.Items.XmlCheckedItemByTag ['inboundReplies'];
+    if Assigned (yXml) then with yXml.Items do
+    begin
+      if Assigned (XmlCheckedItemByTag ['accordingProject']) then inboundReplySchemaValidationType := svAccordingProject;
+      if Assigned (XmlCheckedItemByTag ['noSchemaValidation']) then inboundReplySchemaValidationType := svNo;
+      if Assigned (XmlCheckedItemByTag ['reportSchemaViolations']) then inboundReplySchemaValidationType := svReportOnly;
+      if Assigned (XmlCheckedItemByTag ['raiseExceptionOnViolation']) then inboundReplySchemaValidationType := svRaiseException;
+    end;
   end;
   xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingAddressPath'];
   OnRequestViolatingAddressPath := rvsDefault;

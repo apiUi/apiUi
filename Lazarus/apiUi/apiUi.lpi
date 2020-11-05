@@ -18,9 +18,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
-      <MinorVersionNr Value="4"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="12744"/>
+      <MinorVersionNr Value="5"/>
+      <BuildNr Value="12752"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -387,7 +386,6 @@
     </SearchPaths>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>

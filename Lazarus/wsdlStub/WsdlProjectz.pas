@@ -182,7 +182,9 @@ type
     doDisplayLog: Boolean;
     uiInvalid: Boolean;
     ProgressMax, ProgressPos: Integer;
-    OnRequestViolatingSchema, OnRequestViolatingAddressPath: TOnRequestViolating;
+    OnRequestViolatingAddressPath: TOnRequestViolating;
+    inboundRequestSchemaValidationType, outboundReplySchemaValidationType, outboundRequestSchemaValidationType, inboundReplySchemaValidationType: TSchemaValidationType;
+    schemaValidationVioloationHttpResponseCode: Integer;
     remoteServerConnectionXml, DatabaseConnectionSpecificationXml, UnknownOpsReqReplactementsXml, UnknownOpsRpyReplactementsXml: TXml;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
     FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, ApiByExampleWsdl, CobolWsdl, BmtpWsdl, SwiftMtWsdl, MailWsdl: TWsdl;
@@ -254,6 +256,11 @@ type
     procedure DisplayReport (aString: String; aReport: TSnapshot);
     procedure WriteStringToStream (aString: String; aStream: TMemoryStream);
     function isSpecialWsdl(aWsdl: TWsdl): Boolean;
+    function doValidateOutboundRequests (aOperation: TWsdlOperation): Boolean;
+    function doValidateInboundReplies (aOperation: TWsdlOperation): Boolean;
+    function doValidateInboundRequests (aOperation: TWsdlOperation): Boolean;
+    function doReturnExceptionOnViolatingInboundRequest (aOperation: TWsdlOperation): Boolean;
+    function doValidateOutboundReplies (aOperation: TWsdlOperation): Boolean;
     procedure UpdateWsdlsList (aNewWsdlsList: TStringList);
     function mergeUri (puri, suri: String): String;
     function mailOperationsXml: TXml;
@@ -1635,6 +1642,7 @@ begin
     {$IFnDEF FPC}
   _WsdlDbsAdoConnection.OnWillConnect := ADOConnectionWillConnect;
     {$endif}
+  Clear;
 end;
 
 destructor TWsdlProject.Destroy;
@@ -2270,11 +2278,6 @@ begin
       end;
     end;
   end;
-  with result.AddXml (TXml.CreateAsString('Validate', '')) do
-  begin
-    AddXml (TXml.CreateAsBoolean('Requests', doValidateRequests));
-    AddXml (TXml.CreateAsBoolean('Responses', doValidateReplies));
-  end;
   result.AddXml(ProjectLogOptionsAsXml);
   with result.AddXml (TXml.CreateAsString('Wsdl', '')) do
   begin
@@ -2302,13 +2305,45 @@ begin
         rvsRaiseErrorMessage: AddXml (TXml.CreateAsString('RaiseErrorMessage', ''));
       end;
     end;
-    with AddXml (TXml.CreateAsString('OnRequestViolatingSchema', '')) do
+    with AddXml (TXml.CreateAsString('schemaValidation', '')) do
     begin
-      case OnRequestViolatingSchema of
-        rvsDefault: AddXml (TXml.CreateAsString('Continue', '')); // YES!!
-        rvsContinue: AddXml (TXml.CreateAsString('Continue', ''));
-        rvsAddRemark: AddXml (TXml.CreateAsString('AddRemark', ''));
-        rvsRaiseErrorMessage: AddXml (TXml.CreateAsString('RaiseErrorMessage', ''));
+      with AddXml (TXml.CreateAsString('inboundRequests', '')) do
+      begin
+        case inboundRequestSchemaValidationType of
+          svAccordingProject: AddXml (TXml.CreateAsString ('accordingProject', ''));
+          svNo: AddXml (TXml.CreateAsString ('noSchemaValidation', ''));
+          svReportOnly: AddXml (TXml.CreateAsString ('reportSchemaViolations', ''));
+          svRaiseException:
+          with AddXml (TXml.CreateAsString ('raiseExceptionOnViolation', '')) do
+            AddXml (TXml.CreateAsInteger('responseCode', schemaValidationVioloationHttpResponseCode));
+        end;
+      end;
+      with AddXml (TXml.CreateAsString('outboundReplies', '')) do
+      begin
+        case outboundReplySchemaValidationType of
+          svAccordingProject: AddXml (TXml.CreateAsString ('accordingProject', ''));
+          svNo: AddXml (TXml.CreateAsString ('noSchemaValidation', ''));
+          svReportOnly: AddXml (TXml.CreateAsString ('reportSchemaViolations', ''));
+          svRaiseException: AddXml (TXml.CreateAsString ('raiseExceptionOnViolation', ''));
+        end;
+      end;
+      with AddXml (TXml.CreateAsString('outboundRequests', '')) do
+      begin
+        case outboundRequestSchemaValidationType of
+          svAccordingProject: AddXml (TXml.CreateAsString ('accordingProject', ''));
+          svNo: AddXml (TXml.CreateAsString ('noSchemaValidation', ''));
+          svReportOnly: AddXml (TXml.CreateAsString ('reportSchemaViolations', ''));
+          svRaiseException: AddXml (TXml.CreateAsString ('raiseExceptionOnViolation', ''));
+        end;
+      end;
+      with AddXml (TXml.CreateAsString('inboundReplies', '')) do
+      begin
+        case inboundReplySchemaValidationType of
+          svAccordingProject: AddXml (TXml.CreateAsString ('accordingProject', ''));
+          svNo: AddXml (TXml.CreateAsString ('noSchemaValidation', ''));
+          svReportOnly: AddXml (TXml.CreateAsString ('reportSchemaViolations', ''));
+          svRaiseException: AddXml (TXml.CreateAsString ('raiseExceptionOnViolation', ''));
+        end;
       end;
     end;
   end;
@@ -3719,12 +3754,17 @@ end;
 
 procedure TWsdlProject .ProjectOptionsFromXml (aXml : TXml );
 var
-  xXml, yXml, hXml: TXml;
+  xXml, yXml, hXml, iXml: TXml;
 begin
   if not Assigned (aXml) then Exit;
   if aXml.Name <> 'projectOptions' then raise Exception.Create('ProjectOptionsFromXml illegal XML' + aXml.Text);
   doValidateRequests := True;
   doValidateReplies := True;
+  inboundRequestSchemaValidationType := svReportOnly;
+  outboundReplySchemaValidationType := svReportOnly;
+  outboundRequestSchemaValidationType := svReportOnly;
+  inboundReplySchemaValidationType := svReportOnly;
+  schemaValidationVioloationHttpResponseCode := 417;
   DatabaseConnectionSpecificationXml.Items.Clear;
   UnknownOpsReqReplactementsXml.Items.Clear;
   UnknownOpsRpyReplactementsXml.Items.Clear;
@@ -3733,7 +3773,6 @@ begin
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
   RemoteControlPortNumber := 3738;
   OnRequestViolatingAddressPath:=rvsContinue;
-  OnRequestViolatingSchema:=rvsContinue;
   xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
   xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
   _WsdlDisableOnCorrelate := False;
@@ -3759,12 +3798,6 @@ begin
         ReferenceFolder := osDirectorySeparators (XmlCheckedValueByTag['reference']);
         ReportsFolder := osDirectorySeparators (XmlCheckedValueByTagDef['reports', CurrentFolder]);
       end;
-    end;
-    xXml := XmlCheckedItemByTag ['Validate'];
-    if Assigned (xXml) then with xXml.Items do
-    begin
-      doValidateRequests := XmlCheckedBooleanByTagDef['Requests', doValidateRequests];
-      doValidateReplies := XmlCheckedBooleanByTagDef['Responses', doValidateReplies];
     end;
     ProjectLogOptionsFromXml (XmlCheckedItemByTag ['Log']);
     xXml := XmlCheckedItemByTag ['Wsdl'];
@@ -3800,13 +3833,42 @@ begin
         if Assigned (yXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
           OnRequestViolatingAddressPath:=rvsRaiseErrorMessage;
       end;
-      yXml := xXml.Items.XmlCheckedItemByTag ['OnRequestViolatingSchema'];
+      yXml := xXml.Items.XmlCheckedItemByTag ['schemaValidation'];
       if Assigned (yXml) then
       begin
-        if Assigned (yXml.Items.XmlCheckedItemByTag ['AddRemark']) then
-          OnRequestViolatingSchema:=rvsAddRemark;
-        if Assigned (yXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
-          OnRequestViolatingSchema:=rvsRaiseErrorMessage;
+        hXml := yXml.Items.XmlCheckedItemByTag ['inboundRequests'];
+        if Assigned (hXml) then with hXml.Items do
+        begin
+          if Assigned (XmlCheckedItemByTag ['noSchemaValidation']) then inboundRequestSchemaValidationType := svNo;
+          if Assigned (XmlCheckedItemByTag ['reportSchemaViolations']) then inboundRequestSchemaValidationType := svReportOnly;
+          iXml := hXml.Items.XmlCheckedItemByTag ['raiseExceptionOnViolation'];
+          if Assigned (iXml) then with iXml.Items do
+          begin
+            inboundRequestSchemaValidationType := svRaiseException;
+            schemaValidationVioloationHttpResponseCode := XmlCheckedIntegerByTagDef['responseCode', schemaValidationVioloationHttpResponseCode];
+          end;
+        end;
+        hXml := yXml.Items.XmlCheckedItemByTag ['outboundReplies'];
+        if Assigned (hXml) then with hXml.Items do
+        begin
+          if Assigned (XmlCheckedItemByTag ['noSchemaValidation']) then outboundReplySchemaValidationType := svNo;
+          if Assigned (XmlCheckedItemByTag ['reportSchemaViolations']) then outboundReplySchemaValidationType := svReportOnly;
+          if Assigned (XmlCheckedItemByTag ['raiseExceptionOnViolation']) then outboundReplySchemaValidationType := svRaiseException;
+        end;
+        hXml := yXml.Items.XmlCheckedItemByTag ['outboundRequests'];
+        if Assigned (hXml) then with hXml.Items do
+        begin
+          if Assigned (XmlCheckedItemByTag ['noSchemaValidation']) then outboundRequestSchemaValidationType := svNo;
+          if Assigned (XmlCheckedItemByTag ['reportSchemaViolations']) then outboundRequestSchemaValidationType := svReportOnly;
+          if Assigned (XmlCheckedItemByTag ['raiseExceptionOnViolation']) then outboundRequestSchemaValidationType := svRaiseException;
+        end;
+        hXml := yXml.Items.XmlCheckedItemByTag ['inboundReplies'];
+        if Assigned (hXml) then with hXml.Items do
+        begin
+          if Assigned (XmlCheckedItemByTag ['noSchemaValidation']) then inboundReplySchemaValidationType := svNo;
+          if Assigned (XmlCheckedItemByTag ['reportSchemaViolations']) then inboundReplySchemaValidationType := svReportOnly;
+          if Assigned (XmlCheckedItemByTag ['raiseExceptionOnViolation']) then inboundReplySchemaValidationType := svRaiseException;
+        end;
       end;
     end;
     xXml := XmlCheckedItemByTag ['DatabaseConnection'];
@@ -4437,7 +4499,7 @@ begin
         aOperation.endpointConfigFromXml(aOperation.requestInfoBind as TXml);
         aOperation.requestInfoBind.Name := s;
       end;
-      if doValidateRequests then
+      if doValidateOutboundRequests(aOperation) then
       begin
         if not aOperation.reqBind.IsValueValid (xMessage) then
           xLog.RequestValidateResult := xMessage;
@@ -4477,7 +4539,7 @@ begin
         if aOperation.isOpenApiService then
         begin
           xLog.OpenApiReplyToBindables(aOperation);
-          if doValidateReplies then
+          if doValidateInboundReplies(aOperation) then
           begin
             if not aOperation.rpyBind.IsValueValid (xMessage) then
               xLog.ReplyValidateResult := xMessage;
@@ -4489,7 +4551,7 @@ begin
           if aOperation.isFreeFormat then
           begin
             aOperation.FreeFormatRpy := xLog.ReplyBody;
-            if doValidateReplies then
+            if doValidateInboundReplies(aOperation) then
             begin
               if not aOperation.rpyBind.IsValueValid (xMessage) then
                 xLog.ReplyValidateResult := xMessage;
@@ -4517,7 +4579,7 @@ begin
             end;
             if aOperation.reqBind is TIpmItem then
               (aOperation.rpyBind as TIpmItem).BufferToValues (FoundErrorInBuffer, xLog.ReplyBody);
-            if doValidateReplies then
+            if doValidateInboundReplies(aOperation) then
             begin
               if not aOperation.rpyBind.IsValueValid (xMessage) then
                 xLog.ReplyValidateResult := xMessage;
@@ -4757,7 +4819,6 @@ end;
 procedure TWsdlProject.CreateLogReplyPostProcess (aLog: TLog; aOperation: TWsdlOperation);
 var
   xMessage: String;
-  xOnRequestViolatingSchema: TOnRequestViolating;
 begin
   if Assigned (aOperation) then
     aLog.StubAction := aOperation.StubAction;
@@ -4823,7 +4884,7 @@ begin
     begin
       with aLog do
       begin
-        if doValidateRequests
+        if doValidateInboundRequests(aOperation)
         and (aOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
         and Assigned (aOperation.reqBind)
         and (aOperation.reqBind is TXml) then
@@ -4831,18 +4892,13 @@ begin
           xMessage := '';
           if not aOperation.reqBind.IsValueValid (xMessage) then
           begin
-            xOnRequestViolatingSchema := aOperation.OnRequestViolatingSchema;
-            if xOnRequestViolatingSchema = rvsDefault then
-              xOnRequestViolatingSchema := OnRequestViolatingSchema;
             RequestValidateResult := xMessage;
-            if (xOnRequestViolatingSchema = rvsRaiseErrorMessage) then
+            if doReturnExceptionOnViolatingInboundRequest(aOperation) then
               raise SysUtils.Exception.Create('Schema validation error on request:' + LineEnding + xMessage);
-            if (xOnRequestViolatingSchema = rvsAddRemark) then
-              aLog.AddRemark ('Schema validation error on request:' + LineEnding + xMessage);
           end;
           RequestValidated := True;
         end;
-        if doValidateReplies
+        if doValidateOutboundReplies(aOperation)
         and (aOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
         and Assigned (aOperation.rpyBind)
         and (aOperation.rpyBind is TXml)
@@ -8411,60 +8467,85 @@ begin
     end;
     try
       Result := True;
-      if xOperation.PrepareErrors <> '' then
-        raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
-      aLog.OpenApiRequestToBindables(xOperation);
-      aLog.RequestInfoToBindables(xOperation);
-      xOperation.Data := aLog;
-      if IsActive then with xOperation.Cloned do
-      begin
-        AcquireLock;
-        Inc (OperationCounter);
-        aLog.OperationCount := OperationCounter;
-        ReleaseLock;
-      end;
-      xOperation.InitDelayTime;
-      if xOperation.doReadReplyFromFile then
-      begin
-        xMssg := xOperation.Messages.Messages[0];
-        xOperation.ReadReplyFromFile;
-      end
-      else
-        xMssg := xOperation.MessageBasedOnRequest;
-      if not Assigned (xMssg) then
-        Raise Exception.Create('Could not find any reply based on request');
-      xOperation.rpyXml.ResetValues;
-      xOperation.rpyXml.LoadValues (xMssg.rpyXml, True, True);
-      if (xOperation.StubAction = saStub)
-      and (IsActive) then
-      begin
-        xOperation.logRequestBody := aLog.RequestBody;
-        xOperation.logReplyBody := aLog.ReplyBody;
-        xOperation.ExecuteBefore;
-        xOperation.ExecuteRpyStampers;
-        if xOperation.doDebug
-        and Assigned (OnDebugOperationEvent) then
-        begin
-          DebugOperation := xOperation;
-          OnDebugOperationEvent;
-        end;
-      end;
-      aLog.CorrelationId := xOperation.CorrelationIdAsText('; ');
-      aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
-      aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
-      aLog.DelayTimeMs := xOperation.DelayTimeMs;
       aLog.OperationName := xOperation.Alias;
-      xOperation.rpyXml.jsonType := jsonObject;
-      aLog.ReplyBody := xOperation.StreamReply (_progName, True);
-      aLog.ReplyContentType := xOperation.apiReplyMediaType;
-      aLog.ReplyInfoFromBindables(xOperation);
-      if aLog.ReplyContentType = '' then
-        try
-          aLog.ReplyContentType := SeparatedStringN(nil, xOperation.Produces, LineEnding, 1);
-        except
+      try
+        if xOperation.PrepareErrors <> '' then
+          raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
+        aLog.OpenApiRequestToBindables(xOperation);
+        aLog.RequestInfoToBindables(xOperation);
+        xOperation.Data := aLog;
+        if IsActive then with xOperation.Cloned do
+        begin
+          AcquireLock;
+          Inc (OperationCounter);
+          aLog.OperationCount := OperationCounter;
+          ReleaseLock;
         end;
-      aLog.httpResponseCode := xOperation.ResponseNo;
-      CreateLogReplyPostProcess(aLog, xOperation);
+        if doValidateInboundRequests(xOperation) then
+        begin
+          aLog.RequestValidateResult := '';
+          aLog.RequestValidated := True;
+          if not xOperation.reqBind.IsValueValid (aLog.RequestValidateResult) then
+          begin
+            if doReturnExceptionOnViolatingInboundRequest(xOperation) then
+            begin
+              if xOperation.inboundRequestSchemaValidationType = svAccordingProject then
+                aLog.httpResponseCode := schemaValidationVioloationHttpResponseCode
+              else
+                aLog.httpResponseCode := xOperation.schemaValidationVioloationHttpResponseCode;
+              raise Exception.Create('Schema validation error on request:' + LineEnding + aLog.RequestValidateResult);
+            end;
+          end;
+        end;
+        xOperation.InitDelayTime;
+        if xOperation.doReadReplyFromFile then
+        begin
+          xMssg := xOperation.Messages.Messages[0];
+          xOperation.ReadReplyFromFile;
+        end
+        else
+          xMssg := xOperation.MessageBasedOnRequest;
+        if not Assigned (xMssg) then
+          Raise Exception.Create('Could not find any reply based on request');
+        xOperation.rpyXml.ResetValues;
+        xOperation.rpyXml.LoadValues (xMssg.rpyXml, True, True);
+        if (xOperation.StubAction = saStub)
+        and (IsActive) then
+        begin
+          xOperation.logRequestBody := aLog.RequestBody;
+          xOperation.logReplyBody := aLog.ReplyBody;
+          xOperation.ExecuteBefore;
+          xOperation.ExecuteRpyStampers;
+          if xOperation.doDebug
+          and Assigned (OnDebugOperationEvent) then
+          begin
+            DebugOperation := xOperation;
+            OnDebugOperationEvent;
+          end;
+        end;
+        aLog.CorrelationId := xOperation.CorrelationIdAsText('; ');
+        aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
+        aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
+        aLog.DelayTimeMs := xOperation.DelayTimeMs;
+        xOperation.rpyXml.jsonType := jsonObject;
+        aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+        aLog.ReplyContentType := xOperation.apiReplyMediaType;
+        aLog.ReplyInfoFromBindables(xOperation);
+        if aLog.ReplyContentType = '' then
+          try
+            aLog.ReplyContentType := SeparatedStringN(nil, xOperation.Produces, LineEnding, 1);
+          except
+          end;
+        aLog.httpResponseCode := xOperation.ResponseNo;
+        CreateLogReplyPostProcess(aLog, xOperation);
+      except
+        on e: exception do
+        begin
+          if ((aLog.httpResponseCode div 100) = 2) then
+            aLog.httpResponseCode := 500;
+          aLog.ReplyBody := e.Message;
+        end;
+      end;
     finally
       xOperation.Free;
     end;
@@ -8890,13 +8971,13 @@ begin
         while Assigned(xLog.Operation.Cloned) do
           xLog.Operation := xLog.Operation.Cloned;
         xLog.Mssg := xOperation.MessageBasedOnRequest;
-        if doValidateRequests then
+        if doValidateInboundRequests(xOperation) then
         begin
           if not xOperation.reqBind.IsValueValid (xMessage) then
             xLog.RequestValidateResult := xMessage;
           xLog.RequestValidated := True;
         end;
-        if doValidateReplies then
+        if doValidateOutboundReplies(xOperation) then
         begin
           if not xOperation.rpyBind.IsValueValid (xMessage) then
             xLog.ReplyValidateResult := xMessage;
@@ -10073,6 +10154,11 @@ begin
   mqGetThreads.Clear;
   doValidateRequests := True;
   doValidateReplies := True;
+  inboundRequestSchemaValidationType := svReportOnly;
+  outboundReplySchemaValidationType := svReportOnly;
+  outboundRequestSchemaValidationType := svReportOnly;
+  inboundReplySchemaValidationType := svReportOnly;
+  schemaValidationVioloationHttpResponseCode := 417;
   _WsdlDisableOnCorrelate := False;
   ignoreDifferencesOn.Clear;
   checkValueAgainst.Clear;
@@ -10440,6 +10526,51 @@ begin
          or (aWsdl = SwiftMtWsdl)
          or (aWsdl = MailWsdl)
          ;
+end;
+
+function TWsdlProject.doValidateOutboundRequests(aOperation: TWsdlOperation
+  ): Boolean;
+begin
+  if aOperation.outboundRequestSchemaValidationType = svAccordingProject then
+    result := (outboundRequestSchemaValidationType <> svNo)
+  else
+    result := (aOperation.outboundRequestSchemaValidationType <> svNo);
+end;
+
+function TWsdlProject.doValidateInboundReplies(aOperation: TWsdlOperation
+  ): Boolean;
+begin
+  if aOperation.inboundReplySchemaValidationType = svAccordingProject then
+    result := (inboundReplySchemaValidationType <> svNo)
+  else
+    result := (aOperation.inboundReplySchemaValidationType <> svNo);
+end;
+
+function TWsdlProject.doValidateInboundRequests(aOperation: TWsdlOperation
+  ): Boolean;
+begin
+  if aOperation.inboundRequestSchemaValidationType = svAccordingProject then
+    result := (inboundRequestSchemaValidationType <> svNo)
+  else
+    result := (aOperation.inboundRequestSchemaValidationType <> svNo);
+end;
+
+function TWsdlProject.doReturnExceptionOnViolatingInboundRequest(
+  aOperation: TWsdlOperation): Boolean;
+begin
+  if aOperation.inboundRequestSchemaValidationType = svAccordingProject then
+    result := (inboundRequestSchemaValidationType = svRaiseException)
+  else
+    result := (aOperation.inboundRequestSchemaValidationType = svRaiseException);
+end;
+
+function TWsdlProject.doValidateOutboundReplies(aOperation: TWsdlOperation
+  ): Boolean;
+begin
+  if aOperation.outboundReplySchemaValidationType = svAccordingProject then
+    result := (outboundReplySchemaValidationType <> svNo)
+  else
+    result := (aOperation.outboundReplySchemaValidationType <> svNo);
 end;
 
 procedure TWsdlProject.UpdateWsdlsList(aNewWsdlsList: TStringList);
