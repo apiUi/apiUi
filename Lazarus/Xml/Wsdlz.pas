@@ -390,7 +390,6 @@ type
       requestInfoBind, replyInfoBind: TCustomBindable;
       doDebug: Boolean;
       doSuppressLog: Integer;
-      logReplyBody, logRequestBody: String;
       DelayTimeMs: Integer;
       DelayTimeMsMin: Integer;
       DelayTimeMsMax: Integer;

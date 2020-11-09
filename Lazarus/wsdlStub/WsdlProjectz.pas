@@ -3325,9 +3325,9 @@ begin
     begin {}
       aLog.ReplyBody := e.message;
       aLog.Exception := e.Message;
-      LogServerMessage(e.Message, True, e);
       if aLog.TransportType = ttHttp then
-        aLog.httpResponseCode := 500;
+        if (aLog.httpResponseCode div 100) = 2 then
+          aLog.httpResponseCode := 500;
     end;
   end; //except
 end;
@@ -3355,6 +3355,8 @@ begin
   try
     xOperation.Data := aLog;
     aLog.Operation := xOperation;
+    aLog.OperationName := xOperation.Alias;
+    aLog.StubAction := saStub;
     while Assigned(aLog.Operation.Cloned) do
       aLog.Operation := aLog.Operation.Cloned;
     if aIsActive then
@@ -3363,6 +3365,25 @@ begin
       Inc (aLog.Operation.OperationCounter);
       aLog.OperationCount := aLog.Operation.OperationCounter;
       aLog.Operation.ReleaseLock;
+    end;
+    if doValidateInboundRequests(xOperation)
+    and (xOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+    and Assigned (xOperation.reqBind)
+    and (xOperation.reqBind is TXml) then
+    begin
+      aLog.RequestValidateResult := '';
+      aLog.RequestValidated := True;
+      if not xOperation.reqBind.IsValueValid (aLog.RequestValidateResult) then
+      begin
+        if doReturnExceptionOnViolatingInboundRequest(xOperation) then
+        begin
+          if xOperation.inboundRequestSchemaValidationType = svAccordingProject then
+            aLog.httpResponseCode := schemaValidationVioloationHttpResponseCode
+          else
+            aLog.httpResponseCode := xOperation.schemaValidationVioloationHttpResponseCode;
+          raise Exception.Create('Schema validation error on request:' + LineEnding + aLog.RequestValidateResult);
+        end;
+      end;
     end;
     xOperation.InitDelayTime;
     if xOperation.doReadReplyFromFile then
@@ -3394,7 +3415,6 @@ begin
     and (aIsActive) then
     begin
       xOperation.rpyWsaOnRequest;
-      xOperation.logRequestBody := aLog.RequestBody;
       xOperation.ExecuteBefore;
       xOperation.ExecuteRpyStampers;
       if xOperation.doDebug
@@ -3402,6 +3422,16 @@ begin
       begin
         DebugOperation := xOperation;
         OnDebugOperationEvent;
+      end;
+      if doValidateOutboundReplies(xOperation)
+      and (xOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+      and Assigned (xOperation.rpyBind)
+      and (xOperation.rpyBind is TXml)
+      and (not xOperation.ReturnSoapFault) then
+      begin
+        aLog.ReplyValidated := True;
+        aLog.ReplyValidateResult := '';
+        xOperation.rpyBind.IsValueValid (aLog.ReplyValidateResult);
       end;
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
@@ -3412,7 +3442,11 @@ begin
     aLog.ReplyInfoFromBindables(xOperation);
     if xOperation.ReturnSoapFault then
       aLog.Exception := aLog.ReplyBody;
-    CreateLogReplyPostProcess(aLog, xOperation);
+    if xOperation.StubAction = saRequest then
+    begin
+      aLog.ReplyBody := _progName + ' - Operation itself is a requestor ('+ xOperation.Alias +')';
+      raise SysUtils.Exception.Create(aLog.ReplyBody);
+    end;
   finally
     if Assigned (xOperation.Cloned) then
       xOperation.Free;
@@ -4529,8 +4563,6 @@ begin
         xLog.ReplyBody := '';
         if aOperation.rpyBind.Name = '' then
         begin
-          aOperation.logRequestBody := xLog.RequestBody;
-          aOperation.logReplyBody := xLog.ReplyBody;
           aOperation.ExecuteAfter;
         end;
       end
@@ -4587,8 +4619,6 @@ begin
             end;
           end;
         end;
-        aOperation.logRequestBody := xLog.RequestBody;
-        aOperation.logReplyBody := xLog.ReplyBody;
         aOperation.ExecuteAfter;
         if aOperation.StubTransport = ttNone then
           xLog.ReplyBody := aOperation.StreamReply (_progName, True);
@@ -4599,7 +4629,6 @@ begin
         if not Assigned (Mssg) then
           Mssg := aOperation.Messages.Messages[0];
         CorrelationId := aOperation.CorrelationIdAsText ('; ');
-        Stubbed := True;
         StubAction := aOperation.StubAction;
         doSuppressLog := (aOperation.doSuppressLog <> 0);
       end;
@@ -4613,7 +4642,6 @@ begin
             InboundTimeStamp := Now;
 //          RequestHeaders := HttpClient.Request.CustomHeaders.Text;
           Mssg := aOperation.CorrelatedMessage;
-          Stubbed := True;
           StubAction := aOperation.StubAction;
           Exception := e.Message;
           if OutboundTimeStamp = 0 then
@@ -4821,97 +4849,9 @@ var
   xMessage: String;
 begin
   if Assigned (aOperation) then
-    aLog.StubAction := aOperation.StubAction;
-  if Assigned (aOperation) then
   begin
-    aLog.OperationName := aOperation.Alias;
-    if aOperation.StubAction = saRequest then
+    with aLog do
     begin
-      aLog.ReplyBody := _progName + ' - Operation itself is a requestor ('+ aOperation.Name +')';
-      raise Exception.Create(aLog.ReplyBody);
-    end;
-    if aOperation.StubAction = saForward then
-    begin
-      aLog.ReplyBody := _progName + ' - Forwarding not supported';
-      raise Exception.Create(aLog.ReplyBody);
-    end;
-    if aOperation.StubAction = saRedirect then
-    begin
-      if aOperation.BeforeScriptLines.Count > 0 then // MIM before
-      begin
-        aLog.RequestBodyMiM := aLog.RequestBody;
-        try
-          aOperation.logRequestBody := aLog.RequestBody;
-          aOperation.logReplyBody := aLog.ReplyBody;
-          aOperation.ExecuteBefore;
-        except
-          on e: exception do
-            if e.Message <> 'Exit' then
-              raise;
-        end;
-        aLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
-      end;
-      if aLog.TransportType = ttHttp then
-      begin
-        aOperation.httpVerb := aLog.httpCommand;
-        aOperation.StubHttpAddress := mergeUri(aOperation.StubHttpAddress, aLog.httpUri);
-        aLog.ReplyBody := SendHttpMessage (aOperation, aLog);
-      end
-      else
-        aLog.ReplyBody := SendOperationMessage (aOperation, aLog.RequestBody);
-      aOperation.RpyBindablesFromString (aLog.ReplyBody);
-      if aOperation.AfterScriptLines.Count > 0 then // MIM after action
-      begin
-        aLog.ReplyBodyMiM := aLog.ReplyBody;
-        try
-          aOperation.logRequestBody := aLog.RequestBody;
-          aOperation.logReplyBody := aLog.ReplyBody;
-          //aOperation.ExecuteAfter;
-        except
-          on e: exception do
-            if e.Message <> 'Exit' then
-              raise;
-        end;
-        if aOperation.rpyBind is TXml then
-          aLog.ReplyBody := aOperation.StreamReply (_progName, True);
-        if aOperation.rpyBind is TIpmItem then
-          aLog.ReplyBody := (aOperation.rpyBind as TIpmItem).ValuesToBuffer (nil);
-      end;
-      aLog.Mssg := nil;
-      aLog.Stubbed := False;
-    end;
-    if Assigned (aOperation) then
-    begin
-      with aLog do
-      begin
-        if doValidateInboundRequests(aOperation)
-        and (aOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
-        and Assigned (aOperation.reqBind)
-        and (aOperation.reqBind is TXml) then
-        begin
-          xMessage := '';
-          if not aOperation.reqBind.IsValueValid (xMessage) then
-          begin
-            RequestValidateResult := xMessage;
-            if doReturnExceptionOnViolatingInboundRequest(aOperation) then
-              raise SysUtils.Exception.Create('Schema validation error on request:' + LineEnding + xMessage);
-          end;
-          RequestValidated := True;
-        end;
-        if doValidateOutboundReplies(aOperation)
-        and (aOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
-        and Assigned (aOperation.rpyBind)
-        and (aOperation.rpyBind is TXml)
-        and (not aOperation.ReturnSoapFault) then
-        begin
-          xMessage := '';
-          if not aOperation.rpyBind.IsValueValid (xMessage) then
-            ReplyValidateResult := xMessage;
-          ReplyValidated := True;
-        end;
-        BeforeScript := aOperation.BeforeScriptLines.Text;
-        Stubbed := True;
-      end;
     end;
   end;
 end;
@@ -8261,6 +8201,7 @@ begin
               and (xLog.Operation.StubAction = saStub) then
                 xLog.httpResponseCode := 202;
               if (xLog.Exception <> '')
+              and ((xLog.httpResponseCode div 100) = 2)
               and (   (not Assigned (xLog.Operation))
                    or (not xLog.Operation.WsdlService.SuppressHTTP500)
                   ) then
@@ -8272,7 +8213,8 @@ begin
                 xLog.Exception := e.Message;
                 if (not Assigned (xLog.Operation))
                 or (not xLog.Operation.WsdlService.SuppressHTTP500) then
-                  xLog.httpResponseCode := 500;
+                  if (xLog.httpResponseCode div 100) = 2 then
+                    xLog.httpResponseCode := 500;
               end;
             end;  // except
           finally
@@ -8468,6 +8410,7 @@ begin
     try
       Result := True;
       aLog.OperationName := xOperation.Alias;
+      alog.StubAction := saStub;
       try
         if xOperation.PrepareErrors <> '' then
           raise Exception.CreateFmt('%s (%s)', [xOperation.PrepareErrors, xOperation.Alias]);
@@ -8512,8 +8455,6 @@ begin
         if (xOperation.StubAction = saStub)
         and (IsActive) then
         begin
-          xOperation.logRequestBody := aLog.RequestBody;
-          xOperation.logReplyBody := aLog.ReplyBody;
           xOperation.ExecuteBefore;
           xOperation.ExecuteRpyStampers;
           if xOperation.doDebug
@@ -8521,6 +8462,12 @@ begin
           begin
             DebugOperation := xOperation;
             OnDebugOperationEvent;
+          end;
+          if doValidateOutboundReplies(xOperation) then
+          begin
+            aLog.ReplyValidated := True;
+            aLog.ReplyValidateResult := '';
+            xOperation.rpyBind.IsValueValid (aLog.ReplyValidateResult);
           end;
         end;
         aLog.CorrelationId := xOperation.CorrelationIdAsText('; ');
@@ -8537,7 +8484,11 @@ begin
           except
           end;
         aLog.httpResponseCode := xOperation.ResponseNo;
-        CreateLogReplyPostProcess(aLog, xOperation);
+        if xOperation.StubAction = saRequest then
+        begin
+          aLog.ReplyBody := _progName + ' - Operation itself is a requestor ('+ xOperation.Alias +')';
+          raise SysUtils.Exception.Create(aLog.ReplyBody);
+        end;
       except
         on e: exception do
         begin

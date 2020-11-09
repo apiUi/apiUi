@@ -53,15 +53,12 @@ type
     httpParams: String;
     RequestContentType, ReplyContentType: String;
     DestinationIp: String;
-    Stubbed: Boolean;
     CorrelationId: String;
     Operation: TWsdlOperation;
     Mssg: TWsdlMessage;
     Exception: String;
     Remarks: String;
     Notifications: String;
-    BeforeScript: String;
-    AfterScript: String;
     RequestHeaders: String;
     RequestBody: String;
     RequestBodyMiM: String;
@@ -968,7 +965,6 @@ begin
     AddXml (Txml.CreateAsString('ReplyValidateResult', Self.ReplyValidateResult));
     AddXml (Txml.CreateAsString('Nr', IntToStr (Self.Nr)));
     AddXml (Txml.CreateAsString('MessageId', Self.MessageId));
-    AddXml (Txml.CreateAsBoolean('Stubbed', Self.Stubbed));
     AddXml (Txml.CreateAsString('ServiceName', Self.ServiceName));
     AddXml (Txml.CreateAsString('OperationName', Self.OperationName));
     AddXml (Txml.CreateAsString('PathFormat', Self.PathFormat));
@@ -1094,9 +1090,8 @@ begin
   result := '';
   case StubAction of
     saStub: result := 'Inbound';
-    saForward: result := 'Forward';
-    saRedirect: result := 'Redirect';
     saRequest: result := 'Outbound';
+    saForward: result := 'Forward';
     saException: result := 'Exception';
   end;
 end;

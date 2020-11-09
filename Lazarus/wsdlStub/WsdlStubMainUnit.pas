@@ -4248,8 +4248,7 @@ begin
       OperationDelayResponseTimeAction.ImageIndex := 60
     else
       OperationDelayResponseTimeAction.ImageIndex := 61;
-    RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRedirect)
-                                  or (WsdlOperation.StubAction = saRequest);
+    RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRequest);
     if WsdlOperation.StubAction = saStub then
       EditMessageScriptAction.Caption := 'Edit Message Script'
     else
