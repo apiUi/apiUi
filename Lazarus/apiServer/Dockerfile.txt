@@ -1,0 +1,10 @@
+# Parent Image
+
+FROM ubuntu:latest
+
+# Create Image using apiServer
+
+COPY APIServer Lazarus\apiServer 
+
+
+
