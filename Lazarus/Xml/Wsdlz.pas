@@ -1340,6 +1340,9 @@ procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
   begin
     dst.Checked := True;
     dst.NameSpace := src.NameSpace;
+    dst.jsonType := src.jsonType;
+    dst.Xsd := src.Xsd;
+    dst.TypeDef := src.TypeDef;
     for x := 0 to src.Attributes.Count - 1 do
       with src.Attributes.XmlAttributes[x] do
         if Checked then
@@ -5363,7 +5366,7 @@ begin
     if reqBind is TXml then
     begin
       (reqBind as TXml).ResetValues;
-      (reqBind as TXml).LoadValues ((aMessage.reqBind as TXml), False, True);
+      (reqBind as TXml).LoadValues ((aMessage.reqBind as TXml), True, True);
     end;
     if reqBind is TIpmItem then
     begin
@@ -5381,7 +5384,7 @@ begin
     if reqBind is TXml then
     begin
       (aMessage.reqBind as TXml).ResetValues;
-      (aMessage.reqBind as TXml).LoadValues ((reqBind as TXml), False, True);
+      (aMessage.reqBind as TXml).LoadValues ((reqBind as TXml), True, True);
     end;
     if reqBind is TIpmItem then
     begin

@@ -2114,6 +2114,13 @@ begin
     Checker := aXml.Checker;
   fChecked := aXml.Checked;
   Value := aXml.Value;
+  if Assigned (aXml.Xsd) then
+  begin
+    Xsd := aXml.Xsd;
+    TypeDef := aXml.TypeDef;
+    jsonType := aXml.jsonType;
+  end;
+//jsonType := aXml.jsonType;
   for x := 0 to aXml.Items.Count - 1 do
   begin
     xXml := aXml.Items.XmlItems [x];

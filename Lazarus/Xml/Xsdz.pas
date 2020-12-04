@@ -31,6 +31,16 @@ type
 type
   TjsonType = (jsonNone, jsonString, jsonNumber, jsonBoolean, jsonObject,
     jsonArray, jsonArrayValue);
+const JsonTypeNames: array [jsonNone..jsonArrayValue] of String =
+( 'jsonNone'
+, 'jsonString'
+, 'jsonNumber'
+, 'jsonBoolean'
+, 'jsonObject'
+, 'jsonArray'
+, 'jsonArrayValue'
+);
+
 type TOperationParametersType = (oppBody, oppPath, oppQuery, oppHeader, oppForm);
 const OperationParametersTypeNames: array [oppBody..oppForm] of String =
 ( 'Body'

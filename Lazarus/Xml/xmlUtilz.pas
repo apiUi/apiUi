@@ -1327,6 +1327,7 @@ begin
     if xDataType._Error then
       AddProperty ('Error', 'Parse failure');
     AddProperty ('DataType', xDataType.Name);
+    AddProperty ('JsonType', JsonTypeNames[xDataType.jsonType]);
     AddProperty ('BaseDataType', xDataType.BaseDataTypeName);
     AddProperty ('Length', xDataType.Length);
     AddProperty ('minLength', xDataType.minLength);
