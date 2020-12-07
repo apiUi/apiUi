@@ -320,7 +320,11 @@ procedure TyamlAnalyser.ScannerNeedsData ( Sender:TObject
                                     );
 begin
   if Assigned (FOnNeedData) then
-    FOnNeedData (Self, MoreData, Data)
+  begin
+    FOnNeedData (Self, MoreData, Data);
+    if MoreData then
+      Data := TrimRight(Data);
+  end
   else
     MoreData := False;
 end;
