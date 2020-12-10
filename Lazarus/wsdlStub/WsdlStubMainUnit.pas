@@ -10814,7 +10814,7 @@ begin
       if WsdlOperation.reqBind is TXml then with WsdlOperation.reqBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlMessage.reqBind as TXml), False, True);
+        LoadValues((WsdlMessage.reqBind as TXml), True, True);
         xMessage := WsdlOperation.StreamRequest(_progName, True, True, True);
       end
       else
@@ -14260,7 +14260,11 @@ begin
       Sender.SortColumn := Column;
       Sender.SortDirection := sdAscending;
     end;
-    Sender.Treeview.SortTree(Column, Sender.SortDirection, True);
+    with Sender.Treeview do
+    begin
+      SortTree(Column, Sender.SortDirection, True);
+      ScrollIntoView(FocusedNode, False, False);
+    end;
   finally
     XmlUtil.PopCursor;
   end;

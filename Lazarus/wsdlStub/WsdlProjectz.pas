@@ -4418,6 +4418,7 @@ begin
                 if httpVerb = 'GET' then httpClient.Get(URL, dStream);
                 if httpVerb = 'HEAD' then HttpClient.Head(URL);
                 if httpVerb = 'OPTIONS' then HttpClient.Options(URL);
+                if httpVerb = 'PATCH' then HttpClient.Patch(URL, HttpRequest, dStream);
                 if httpVerb = 'POST' then HttpClient.Post(URL, HttpRequest, dStream);
                 if httpVerb = 'PUT' then HttpClient.Put(URL, HttpRequest, dStream);
                 if httpVerb = 'TRACE' then httpClient.Trace(URL, dStream);
@@ -7563,7 +7564,8 @@ begin
   AResponseInfo.ResponseNo := 200; // nice defaults
   try   // finally
     try  // Except
-      if (ARequestInfo.Command = 'POST')
+      if (ARequestInfo.Command = 'PATCH')
+      or (ARequestInfo.Command = 'POST')
       or (ARequestInfo.Command = 'PUT') then
       begin
         xRequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
@@ -8136,7 +8138,8 @@ begin
       xlog.httpResponseCode := 200;
       AResponseInfo.ContentEncoding := 'identity';
       try
-        if (ARequestInfo.Command = 'POST')
+        if (ARequestInfo.Command = 'PATCH')
+        or (ARequestInfo.Command = 'POST')
         or (ARequestInfo.Command = 'PUT') then
         begin
           xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
@@ -8159,7 +8162,8 @@ begin
           HTTPServerCommandTrace(AContext, ARequestInfo, AResponseInfo);
         end;
         // fromHERE
-        if (ARequestInfo.Command = 'POST')
+        if (ARequestInfo.Command = 'PATCH')
+        or (ARequestInfo.Command = 'POST')
         or (ARequestInfo.Command = 'PUT') then
         begin
           try

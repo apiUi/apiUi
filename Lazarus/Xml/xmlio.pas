@@ -674,7 +674,8 @@ begin
     HttpClient := TIdHTTP.Create;
     try
       xStream := TMemoryStream.Create;
-      if (aVerb = 'POST')
+      if (aVerb = 'PATCH')
+      or (aVerb = 'POST')
       or (aVerb = 'PUT') then
       begin
         HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
@@ -733,6 +734,7 @@ begin
           HttpClient.ProxyParams.ProxyServer := '';
           HttpClient.ProxyParams.ProxyPort := 0;
           if aVerb = 'GET' then HttpClient.Get (xUrl, xStream);
+          if aVerb = 'PATCH' then HttpClient.Patch (xUrl, cStream, xStream);
           if aVerb = 'POST' then HttpClient.Post (xUrl, cStream, xStream);
           if aVerb = 'PUT' then HttpClient.Put (xUrl, cStream, xStream);
 //          result := IdGlobal.ReadStringFromStream(xStream, xStream.Size, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
