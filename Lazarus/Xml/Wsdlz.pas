@@ -1340,6 +1340,9 @@ procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
   begin
     dst.Checked := True;
     dst.NameSpace := src.NameSpace;
+    dst.jsonType := src.jsonType;
+    dst.Xsd := src.Xsd;
+    dst.TypeDef := src.TypeDef;
     for x := 0 to src.Attributes.Count - 1 do
       with src.Attributes.XmlAttributes[x] do
         if Checked then
@@ -2907,6 +2910,8 @@ begin
     with TIdURI.Create(resolveAliasses(aFileName)) do
     try
       self.Schemes := Protocol;
+      if UpperCase(Protocol) = 'APIARY' then
+        self.Schemes := 'https';
       self.Host := Host;
       if Port <> '' then
         self.Host := self.Host + ':' + Port;
@@ -2926,12 +2931,13 @@ begin
   OpenApiVersion := '2.0';
   with xRootXml do
   try
-    if (xExt = '.JSON')
-    or (xExt = '.JSN')
+    if (xExt = '.YAML')
+    or (xExt = '.YML')
+    or (AnsiStartsText('APIARY://', aFileName))
     then
-      LoadJsonFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
+      LoadYamlFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
     else
-      LoadYamlFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
+      LoadJsonFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
     xRootXml.Name := '#';
     XsdDescr.ReadFileNames.AddObject(aFileName, xRootXml);
     _ReadDollarReferencedFiles (aFileName, xRootXml);
@@ -5363,7 +5369,7 @@ begin
     if reqBind is TXml then
     begin
       (reqBind as TXml).ResetValues;
-      (reqBind as TXml).LoadValues ((aMessage.reqBind as TXml), False, True);
+      (reqBind as TXml).LoadValues ((aMessage.reqBind as TXml), True, True);
     end;
     if reqBind is TIpmItem then
     begin
@@ -5381,7 +5387,7 @@ begin
     if reqBind is TXml then
     begin
       (aMessage.reqBind as TXml).ResetValues;
-      (aMessage.reqBind as TXml).LoadValues ((reqBind as TXml), False, True);
+      (aMessage.reqBind as TXml).LoadValues ((reqBind as TXml), True, True);
     end;
     if reqBind is TIpmItem then
     begin

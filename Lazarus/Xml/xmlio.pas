@@ -6,6 +6,7 @@ interface
 
 uses
   Classes, SysUtils
+  , IdURI
   , IdHTTP
   , IdCustomHTTPServer
   , GZIPUtils
@@ -79,6 +80,7 @@ var
   ProjectContexts: TObject;
   doTrackXmlIO: Boolean;
   OnNotify: TOnStringEvent;
+  apiaryToken: String;
 
 
 implementation
@@ -663,8 +665,8 @@ begin
     raise Exception.Create ('function HttpDialog no Config assigned');
   if not (aConfigXml is TXml) then
     raise Exception.Create ('function HttpDialog no Config XML assigned');
-  if (Length (aPath) = 0)
-  or (aPath[1] <> '/') then
+  if (Length (aPath) > 0)
+  and (aPath[1] <> '/') then
     raise Exception.Create ('function HttpDialog path must begin with a slash');
   with TXml.Create do
   try
@@ -674,7 +676,8 @@ begin
     HttpClient := TIdHTTP.Create;
     try
       xStream := TMemoryStream.Create;
-      if (aVerb = 'POST')
+      if (aVerb = 'PATCH')
+      or (aVerb = 'POST')
       or (aVerb = 'PUT') then
       begin
         HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
@@ -733,6 +736,7 @@ begin
           HttpClient.ProxyParams.ProxyServer := '';
           HttpClient.ProxyParams.ProxyPort := 0;
           if aVerb = 'GET' then HttpClient.Get (xUrl, xStream);
+          if aVerb = 'PATCH' then HttpClient.Patch (xUrl, cStream, xStream);
           if aVerb = 'POST' then HttpClient.Post (xUrl, cStream, xStream);
           if aVerb = 'PUT' then HttpClient.Put (xUrl, cStream, xStream);
 //          result := IdGlobal.ReadStringFromStream(xStream, xStream.Size, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
@@ -936,7 +940,8 @@ begin
         begin
           result := xPrefix + xSpec;
           if not (AnsiStartsText('http://', result))
-          and not (AnsiStartsText('https://', result)) then
+          and not (AnsiStartsText('https://', result))
+          and not (AnsiStartsText('apiary://', result)) then
             ForcePathDelims(result);
           Exit;
         end;
@@ -953,7 +958,8 @@ begin
         end;
         xPrefix := PromptFolderName('Specify replacement for alias ' + xAlias, xPrefix) + '/';
         if not (AnsiStartsText('http://', xPrefix))
-        and not (AnsiStartsText('https://', xPrefix)) then
+        and not (AnsiStartsText('https://', xPrefix))
+        and not (AnsiStartsText('apiary://', xPrefix)) then
           ForcePathDelims(xPrefix);
         PathPrefixes.Values[xAlias] := xPrefix;
         result := xPrefix + xSpec;
@@ -1031,6 +1037,7 @@ begin
   // both linux and windows conventios because of 'remote' filenames
   if (AnsiStartsText('http://', aToRelateFileName))
   or (AnsiStartsText('https://', aToRelateFileName))
+  or (AnsiStartsText('apiary://', aToRelateFileName))
   or (AnsiStartsText('file://', aToRelateFileName))
   or (AnsiStartsText('/', aToRelateFileName))
   or (AnsiStartsText('\', aToRelateFileName))
@@ -1051,6 +1058,7 @@ begin
   end;
   if (AnsiStartsText('http://', aMainFileName))
   or (AnsiStartsText('https://', aMainFileName))
+  or (AnsiStartsText('apiary://', aMainFileName))
   then
   begin
     for x := 1 to Length (aMainFileName) do
@@ -1090,6 +1098,7 @@ begin
   or (aToRelateFileName = '')
   or (AnsiStartsText ('http://', aToRelateFileName))
   or (AnsiStartsText ('https://', aToRelateFileName))
+  or (AnsiStartsText ('apiary://', aToRelateFileName))
   then
     exit;
   if (aMainFileName = aToRelateFileName)
@@ -1137,6 +1146,61 @@ begin
 end;
 
 function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS): String;
+  function _GetFromApiAryAsString (aURL: string): string;
+  var
+    xApiaryConfig: TXml;
+    s: String;
+    rXml: TXml;
+  begin
+    result := '';
+    xApiaryConfig := TXml.CreateAsString('http', '');
+    try
+      with tiduri.Create(aURL) do
+      try
+        Protocol := 'https';
+        xApiaryConfig.AddXml(TXml.CreateAsString('Address', URI));
+        with xApiaryConfig.AddXml(TXml.CreateAsString('customHeaders', '')) do
+        begin
+          with AddXml (TXml.CreateAsString('Header', '')) do
+          begin
+            AddXml (TXml.CreateAsString('Name', 'authentication'));
+            AddXml (TXml.CreateAsString('Value', 'Token ' + apiaryToken)); // TODO aliass
+          end;
+        end;
+        s := apiUiServerDialog ( xApiaryConfig
+                               , ''
+                               , ''
+                               , 'GET'
+                               , '*/*'
+                               );
+        with TXml.Create do
+        try
+          try
+            LoadJsonFromString(s, nil);
+          except
+            on e: exception do
+              raise Exception.Create ('apiary: Could not parse JSON:' + LineEnding + s);
+          end;
+          rXml := ItemByTag['error'];
+          if Assigned (rXml)
+          and (rXml.Value = 'true') then
+            raise Exception.Create(ItemByTag['message'].Value);
+          rXml := ItemByTag['code'];
+          if Assigned (rXml) then
+            result := rXml.Value
+          else
+            raise Exception.Create ('apiary: Could not find JSON tag "code":' + LineEnding + s);
+        finally
+          Free;
+        end;
+      finally
+        Free;
+      end;
+    finally
+      FreeAndNil(xApiaryConfig);
+    end;
+  end;
+
   function _GetURLAsString(aURL: string; useSsl: Boolean): string;
   var
     lHTTP: TIdHTTP;
@@ -1190,6 +1254,11 @@ begin
   if (AnsiStartsText('HTTPS://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, true);
+    exit;
+  end;
+  if (AnsiStartsText('APIARY://', aFileName)) then
+  begin
+    result := _GetFromApiAryAsString (aFileName);
     exit;
   end;
   if Assigned (aApiUiServerConfig) then

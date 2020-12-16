@@ -4,7 +4,7 @@
 	<xs:simpleType name="passwordType">
 		<xs:annotation>
 			<xs:documentation>Password;
-wsdlStub encrypts passwords before storing in a project file or at other locations</xs:documentation>
+passwords are encripted before storing in a project file or at other locations</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
@@ -80,6 +80,14 @@ when "true", the server will be allowed to send gzip responses (compression meth
 			<xs:element name="Address" type="tns:httpAddressType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AddressIsComplete" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default "false"
+Only relavant on API's.
+When "true" apiUi does not apply pathparams nor queryparams to adjust the URL but assumes that the URL alread contains a correct value.
+Applicable when a callback url is provided. </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Verb" type="tns:httpVerbType" minOccurs="0"/>
@@ -650,8 +658,11 @@ If the NameValueCCSID is a 2-byte Unicode CCSID (1200, 13488, or 17584), the byt
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Topic" type="xs:string"/>
-			<xs:element name="InterfaceConfig" type="tns:NameValuePairsType" minOccurs="0"/>
-			<xs:element name="TopicConfig" type="tns:NameValuePairsType" minOccurs="0"/>
+			<xs:element name="ClientConfig" type="tns:NameValuePairsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>see https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="smtpConfigType">
@@ -804,9 +815,9 @@ Provides an interoperable format so clients can communicate with any STOMP messa
 Often used with Active MQ</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="Kafka" type="tns:stompInterfaceType">
+			<xs:element name="Kafka" type="tns:kafkaInterfaceType">
 				<xs:annotation>
-					<xs:documentation>Simple Text Oriented Messaging Protocol
+					<xs:documentation>
 Communicate with an Apache Kafka streaming platform.
 See https://kafka.apache.org/</xs:documentation>
 				</xs:annotation>
@@ -827,9 +838,42 @@ Internet standard for electronic mail transmission across IP networks</xs:docume
 			<xs:element name="None">
 				<xs:annotation>
 					<xs:documentation>No Transfer Protocol
-Used to use wsdlStub operation functionality without sending a message</xs:documentation>
+Used to execute operation-scripts without really sending a message</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="remoteServerConnectionType">
+		<xs:sequence>
+			<xs:element name="Address" type="tns:httpAddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+			<xs:element name="SSL" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Version" type="tns:sslVersionType"/>
+						<xs:element name="CertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="KeyFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="RootCertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="Password" type="tns:passwordType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TestConnection" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="replyInfoType">
+		<xs:sequence>
+			<xs:element name="Http" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 </xs:schema>
