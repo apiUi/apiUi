@@ -2910,6 +2910,8 @@ begin
     with TIdURI.Create(resolveAliasses(aFileName)) do
     try
       self.Schemes := Protocol;
+      if UpperCase(Protocol) = 'APIARY' then
+        self.Schemes := 'https';
       self.Host := Host;
       if Port <> '' then
         self.Host := self.Host + ':' + Port;
@@ -2929,12 +2931,13 @@ begin
   OpenApiVersion := '2.0';
   with xRootXml do
   try
-    if (xExt = '.JSON')
-    or (xExt = '.JSN')
+    if (xExt = '.YAML')
+    or (xExt = '.YML')
+    or (AnsiStartsText('APIARY://', aFileName))
     then
-      LoadJsonFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
+      LoadYamlFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
     else
-      LoadYamlFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
+      LoadJsonFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
     xRootXml.Name := '#';
     XsdDescr.ReadFileNames.AddObject(aFileName, xRootXml);
     _ReadDollarReferencedFiles (aFileName, xRootXml);

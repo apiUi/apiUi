@@ -1340,6 +1340,7 @@ begin
     _swiftMTXsdFileName := _abs (iniXml.Items.XmlValueByTag ['swiftMTXsd']);
     mqPutHeaderEditAllowedFileName := _abs (iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed']);
     stompPutHeaderEditAllowedFileName := _abs (iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed']);
+    apiaryToken := DecryptPassword(iniXml.Items.XmlValueByTag ['apiaryToken']);
     RemoteControlPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
@@ -3963,7 +3964,8 @@ begin
   xExt := UpperCase (ExtractFileExt (resolveAliasses(aName)));
   result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
   if (xExt = '.JSON')
-  or (xExt = '.YAML') then
+  or (xExt = '.YAML')
+  or (AnsiStartsText('APIARY://', aName)) then
     result.LoadFromJsonYamlFile(aName, nil, aApiUiServerConfig, OnBeforeFileRead)
   else
     result.LoadFromSchemaFile(aName, nil, aApiUiServerConfig, OnBeforeFileRead);
@@ -7555,6 +7557,7 @@ var
   xName: String;
   xStream: TStream;
   xSnapshot: TSnapshot;
+  xLogList: TLogList;
   xOperation: TWsdlOperation;
   sl: TStringList;
 begin
@@ -7753,6 +7756,43 @@ begin
                          , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
                          , (hasGui = False)
                          );
+          Exit;
+        end;
+
+        if (Count = 5)
+        and (Strings[3] = 'snapshot')
+        and ((Strings[4] = 'checkschemacompliancy'))
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          nameXml := xBodyXml.FindXml('json.name');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          if ARequestInfo.Params.Values['createsnapshot'] = 'true' then
+          begin
+            UpsertSnapshot ( nameXml.Value
+                           , CurrentFolder + DirectorySeparator + nameXml.Value + '.xml'
+                           , ReferenceFolder + DirectorySeparator + nameXml.Value + '.xml'
+                           , (hasGui = False)
+                           );
+          end;
+          xSnapshot := FindSnapshot (nameXml.Value);
+          if not Assigned (xSnapshot) then
+            raise Exception.Create(nameXml.Value + ' not found');
+          xLogList := TLogList.Create;
+          try
+            OpenMessagesLog(xSnapshot.FileName, True, False, xLogList);
+            with xLogList.SchemaCompliancyAsXml do
+            try
+              AResponseInfo.ContentText := StreamJSON(0, False);
+            finally
+              Free;
+            end;
+          finally
+            xLogList.Free;
+          end;
           Exit;
         end;
 

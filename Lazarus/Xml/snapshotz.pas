@@ -28,19 +28,19 @@ type
     function getAsXml : TXml ; virtual; abstract;
     function getStatusAsText : String ;
     function getTypeAsText: string; virtual; abstract;
-    public
-      Status: TSnapshotStatus;
-      Name, FileName, RefFileName, Message: String;
-      timeStamp: TDateTime;
-      procedure doReport; virtual abstract;
-      function Verdict: String;
-      function VerdictColorAsString: String;
-      property typeAsText: string read getTypeAsText;
-      property statusAsText: String read getStatusAsText;
-      procedure FromXml (aXml: TXml);
-      property AsXml: TXml read getAsXml;
-      property OnReport: TSnapshotEvent read fOnReport write fOnReport;
-      constructor Create;
+  public
+    Status: TSnapshotStatus;
+    Name, FileName, RefFileName, Message: String;
+    timeStamp: TDateTime;
+    procedure doReport; virtual abstract;
+    function Verdict: String;
+    function VerdictColorAsString: String;
+    property typeAsText: string read getTypeAsText;
+    property statusAsText: String read getStatusAsText;
+    procedure FromXml (aXml: TXml);
+    property AsXml: TXml read getAsXml;
+    property OnReport: TSnapshotEvent read fOnReport write fOnReport;
+    constructor Create;
   end;
 
   { TRegressionSnapshot }

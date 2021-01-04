@@ -1229,6 +1229,65 @@ begin
 end;
 
 procedure TXml.LoadYAML(aErrorFound: TOnErrorEvent);
+  procedure _splitenumsinvalue (aXml: TXml);
+    procedure _enumstringtoxml (s: String);
+    var
+      cpos: Integer;
+    begin
+      s := trim (s);
+      if s <> '' then
+      begin
+        if s[1] = ',' then
+          raise Exception.Create(s + ': illegal to start with comma');
+        if s[length (s)] = ',' then
+          raise Exception.Create(s + ': illegal to end with comma');
+        if (s[1] = '''')
+        or (s[1] = '"')
+        then
+        begin
+          cpos := pos (s[1], copy (s, 2, MaxInt)) + 1;
+          if cpos < 2 then
+            raise Exception.Create(s + ': illegal use of quote(s)');
+          aXml.AddXml(TXml.CreateAsString('', copy (s, 2, cpos - 2)));
+          s := Trim (Copy (s, cpos + 1 , MaxInt));
+          if s <> '' then
+          begin
+            if s[1] <> ',' then
+              raise Exception.Create (s + ': Missing comma');
+            _enumstringtoxml(copy (s, 2, MaxInt));
+          end;
+        end
+        else
+        begin
+          cpos := pos (',', s);
+          if cpos < 1 then
+            aXml.AddXml(TXml.CreateAsString('', s))
+          else
+          begin
+            aXml.AddXml(TXml.CreateAsString('', copy (s, 1, cpos - 1)));
+            _enumstringtoxml (copy (s, cpos + 1, MaxInt));
+          end;
+        end;
+      end;
+    end;
+  var
+    x: Integer;
+    s: String;
+  begin
+    for x := 0 to aXml.Items.Count - 1 do
+      _splitenumsinvalue(aXml.Items.XmlItems[x]);
+    if (aXml.Name <> 'pattern') then
+    begin
+      if (aXml.Value <> '')
+      and (aXml.Value [1] = '[')
+      and (aXml.Value [Length (aXml.Value)] = ']') then
+      begin
+        _enumstringtoxml(Copy (aXml.Value, 2, Length (aXml.Value) - 2));
+        aXml.Value := '';
+      end;
+    end;
+  end;
+
 var
   yamlAnalyser: TyamlAnalyser;
 begin
@@ -1243,6 +1302,7 @@ begin
     yamlAnalyser.Prepare;
     scanLineNumber := 0;
     yamlAnalyser.Execute;
+    _splitenumsinvalue (self);
   finally
     yamlAnalyser.Free;
   end;
