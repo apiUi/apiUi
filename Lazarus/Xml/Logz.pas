@@ -116,6 +116,7 @@ type
     function SaveLog (aString: String; aLog: TLog): TLog;
     function LogsAsString (aStubFileName: String): String;
     function PrepareCoverageReportAsXml (aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
+    function SchemaCompliancyAsXml: TXml;
     procedure InvalidateDisplayedColumns; overload;
     procedure InvalidateDisplayedColumns(aOperation: TWsdlOperation); overload;
     constructor Create; overload;
@@ -161,6 +162,19 @@ type
     procedure Execute (aLog: TLog);
     constructor Create;
     destructor Destroy; override;
+  end;
+
+  type
+
+  { TSchemaCompliancyCounters }
+
+ TSchemaCompliancyCounters = class (TObject)
+    public
+      Name: String;
+      InboundRequestsPassed, InboundRequestsFailed, InboundRequestsUnchecked
+    , OutboundRepliesPassed, OutboundRepliesFailed, OutboundRepliesUnchecked
+    , OutBoundRequestsPassed, OutBoundRequestsFailed, OutBoundRequestsUnchecked
+    , InboundRepliesPassed, InboundRepliesFailed, InboundRepliesUnchecked: Integer;
   end;
 
 function logDifferencesAsXml( aLogs, bLogs: TLogList
@@ -420,6 +434,8 @@ begin
     result.CheckDownline(True);
   end;
 end;
+
+{ TSchemaCompliancyCounters }
 
 { TLogList }
 
@@ -695,6 +711,214 @@ begin
     xXmlCvrg := TXmlCvrg(result.FindUQXml(ignoreCoverageOn.Strings[x]));
     if Assigned (xXmlCvrg) then
       xXmlCvrg.Ignore := True;
+  end;
+end;
+
+function TLogList.SchemaCompliancyAsXml: TXml;
+var
+  x, f: Integer;
+  sl: TStringList;
+  xCntr: TSchemaCompliancyCounters;
+  xInboundRequestsPassed, xInboundRequestsFailed, xInboundRequestsUnchecked
+, xOutboundRepliesPassed, xOutboundRepliesFailed, xOutboundRepliesUnchecked
+, xOutBoundRequestsPassed, xOutBoundRequestsFailed, xOutBoundRequestsUnchecked
+, xInboundRepliesPassed, xInboundRepliesFailed, xInboundRepliesUnchecked: Integer;
+  xOkNok: String;
+begin
+  xInboundRequestsPassed := 0;
+  xInboundRequestsFailed := 0;
+  xInboundRequestsUnchecked := 0;
+  xOutboundRepliesPassed := 0;
+  xOutboundRepliesFailed := 0;
+  xOutboundRepliesUnchecked := 0;
+  xOutBoundRequestsPassed := 0;
+  xOutBoundRequestsFailed := 0;
+  xOutBoundRequestsUnchecked := 0;
+  xInboundRepliesPassed := 0;
+  xInboundRepliesFailed := 0;
+  xInboundRepliesUnchecked := 0;
+  sl := TStringList.Create;
+  try
+    sl.Sorted := True;
+    for x := 0 to Count - 1 do with LogItems[x] do
+    begin
+      if not sl.Find(OperationName, f) then
+      begin
+        xCntr := TSchemaCompliancyCounters.Create;
+        xCntr.Name := OperationName;
+        sl.AddObject(xCntr.Name, xCntr);
+      end
+      else
+        xCntr := sl.Objects[f] as TSchemaCompliancyCounters;
+      if StubAction = saRequest then
+      begin
+        if RequestValidated then
+        begin
+          if RequestValidateResult = '' then
+            Inc (xCntr.OutboundRequestsPassed)
+          else
+            Inc (xCntr.OutboundRequestsFailed);
+        end
+        else
+          Inc (xCntr.OutboundRequestsUnchecked);
+        if ReplyValidated then
+        begin
+          if ReplyValidateResult = '' then
+            Inc (xCntr.InboundRepliesPassed)
+          else
+            Inc (xCntr.InboundRepliesFailed);
+        end
+        else
+          Inc (xCntr.InboundRepliesUnchecked);
+      end
+      else
+      begin
+        if RequestValidated then
+        begin
+          if RequestValidateResult = '' then
+            Inc (xCntr.InboundRequestsPassed)
+          else
+            Inc (xCntr.InboundRequestsFailed);
+        end
+        else
+          Inc (xCntr.InboundRequestsUnchecked);
+        if ReplyValidated then
+        begin
+          if ReplyValidateResult = '' then
+            Inc (xCntr.OutboundRepliesPassed)
+          else
+            Inc (xCntr.OutboundRepliesFailed);
+        end
+        else
+          Inc (xCntr.OutboundRepliesUnchecked);
+      end;
+    end;
+    for x:= 0 to sl.Count - 1 do
+    begin
+      xCntr:= sl.Objects[x] as TSchemaCompliancyCounters;
+      xInboundRequestsPassed := xInboundRequestsPassed + xCntr.InboundRequestsPassed;
+      xInboundRequestsFailed := xInboundRequestsFailed + xCntr.InboundRequestsFailed;
+      xInboundRequestsUnchecked := xInboundRequestsUnchecked + xCntr.InboundRequestsUnchecked;
+      xOutboundRepliesPassed := xOutboundRepliesPassed + xCntr.OutboundRepliesPassed;
+      xOutboundRepliesFailed := xOutboundRepliesFailed + xCntr.OutboundRepliesFailed;
+      xOutboundRepliesUnchecked := xOutboundRepliesUnchecked + xCntr.OutboundRepliesUnchecked;
+      xOutBoundRequestsPassed := xOutBoundRequestsPassed + xCntr.OutBoundRequestsPassed;
+      xOutBoundRequestsFailed := xOutBoundRequestsFailed + xCntr.OutBoundRequestsFailed;
+      xOutBoundRequestsUnchecked := xOutBoundRequestsUnchecked + xCntr.OutBoundRequestsUnchecked;
+      xInboundRepliesPassed := xInboundRepliesPassed + xCntr.InboundRepliesPassed;
+      xInboundRepliesFailed := xInboundRepliesFailed + xCntr.InboundRepliesFailed;
+      xInboundRepliesUnchecked := xInboundRepliesUnchecked + xCntr.InboundRepliesUnchecked;
+    end;
+    if ( xInboundRequestsFailed + xOutboundRepliesFailed
+       + xOutBoundRequestsFailed + xInboundRepliesFailed
+       > 0
+       ) then
+      xOkNok := 'nok'
+    else
+      xOkNok := 'ok'
+            ;
+    result := TXml.Create;
+    with result do
+    begin
+      AddXml(TXml.CreateAsString('result', xOkNok));
+      with AddXml (TXml.CreateAsString('summary', '')) do
+      begin
+        with AddXml (TXml.CreateAsString('total', '')) do
+        begin
+            AddXml (TXml.CreateAsInteger('passed', xInboundRequestsPassed
+                                                 + xOutboundRepliesPassed
+                                                 + xOutBoundRequestsPassed
+                                                 + xInboundRepliesPassed
+                                                 )
+                   );
+            AddXml (TXml.CreateAsInteger('failed', xInboundRequestsFailed
+                                                 + xOutboundRepliesFailed
+                                                 + xOutBoundRequestsFailed
+                                                 + xInboundRepliesFailed
+                                                 )
+                   );
+            AddXml (TXml.CreateAsInteger('unchecked', xInboundRequestsUnchecked
+                                                    + xOutboundRepliesUnchecked
+                                                    + xOutBoundRequestsUnchecked
+                                                    + xInboundRepliesUnchecked
+                                                    )
+                   );
+        end;
+        with AddXml (TXml.CreateAsString('inboundRequests', '')) do
+        begin
+          AddXml (TXml.CreateAsInteger('passed', xInboundRequestsPassed));
+          AddXml (TXml.CreateAsInteger('failed', xInboundRequestsFailed));
+          AddXml (TXml.CreateAsInteger('unckecked', xInboundRequestsUnchecked));
+        end;
+        with AddXml (TXml.CreateAsString('outboundReplies', '')) do
+        begin
+          AddXml (TXml.CreateAsInteger('passed', xOutboundRepliesPassed));
+          AddXml (TXml.CreateAsInteger('failed', xOutboundRepliesFailed));
+          AddXml (TXml.CreateAsInteger('unckecked', xOutboundRepliesUnchecked));
+        end;
+        with AddXml (TXml.CreateAsString('outboundRequests', '')) do
+        begin
+          AddXml (TXml.CreateAsInteger('passed', xOutBoundRequestsPassed));
+          AddXml (TXml.CreateAsInteger('failed', xOutBoundRequestsFailed));
+          AddXml (TXml.CreateAsInteger('unckecked', xOutBoundRequestsUnchecked));
+        end;
+        with AddXml (TXml.CreateAsString('inboundReplies', '')) do
+        begin
+          AddXml (TXml.CreateAsInteger('passed', xInboundRepliesPassed));
+          AddXml (TXml.CreateAsInteger('failed', xInboundRepliesFailed));
+          AddXml (TXml.CreateAsInteger('unckecked', xInboundRepliesUnchecked));
+        end;
+      end;
+      with AddXml (TXml.CreateAsString('operations', '')) do
+      begin
+        for x := 0 to sl.Count - 1 do
+        begin
+          xCntr := sl.Objects[x] as TSchemaCompliancyCounters;
+          with AddXml (TXml.CreateAsString('_', '')) do
+          begin
+            AddXml(TXml.CreateAsString('name', xCntr.Name));
+            if (xCntr.InboundRequestsPassed > 0)
+            or (xCntr.InboundRequestsFailed > 0)
+            or (xCntr.InboundRequestsUnchecked > 0)
+            then with AddXml(TXml.CreateAsString('inboundRequests', '')) do
+            begin
+              AddXml (TXml.CreateAsInteger('passed', xCntr.InboundRequestsPassed));
+              AddXml (TXml.CreateAsInteger('failed', xCntr.InboundRequestsFailed));
+              AddXml (TXml.CreateAsInteger('unchecked', xCntr.InboundRequestsUnchecked));
+            end;
+            if (xCntr.OutboundRepliesPassed > 0)
+            or (xCntr.OutboundRepliesFailed > 0)
+            or (xCntr.OutboundRepliesUnchecked > 0)
+            then with AddXml(TXml.CreateAsString('OutboundReplies', '')) do
+            begin
+              AddXml (TXml.CreateAsInteger('passed', xCntr.OutboundRepliesPassed));
+              AddXml (TXml.CreateAsInteger('failed', xCntr.OutboundRepliesFailed));
+              AddXml (TXml.CreateAsInteger('unchecked', xCntr.OutboundRepliesUnchecked));
+            end;
+            if (xCntr.OutboundRequestsPassed > 0)
+            or (xCntr.OutboundRequestsFailed > 0)
+            or (xCntr.OutboundRequestsUnchecked > 0)
+            then with AddXml(TXml.CreateAsString('OutboundRequest', '')) do
+            begin
+              AddXml (TXml.CreateAsInteger('passed', xCntr.OutboundRequestsPassed));
+              AddXml (TXml.CreateAsInteger('failed', xCntr.OutboundRequestsFailed));
+              AddXml (TXml.CreateAsInteger('unchecked', xCntr.OutboundRequestsUnchecked));
+            end;
+            if (xCntr.InboundRepliesPassed > 0)
+            or (xCntr.InboundRepliesFailed > 0)
+            or (xCntr.InboundRepliesUnchecked > 0)
+            then with AddXml(TXml.CreateAsString('inboundReplies', '')) do
+            begin
+              AddXml (TXml.CreateAsInteger('passed', xCntr.InboundRepliesPassed));
+              AddXml (TXml.CreateAsInteger('failed', xCntr.InboundRepliesFailed));
+              AddXml (TXml.CreateAsInteger('unchecked', xCntr.InboundRepliesUnchecked));
+            end;
+          end;
+        end;
+      end;
+    end;
+  finally
+    sl.Free;
   end;
 end;
 

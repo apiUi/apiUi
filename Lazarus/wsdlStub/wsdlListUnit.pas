@@ -83,6 +83,7 @@ uses ErrorFound
    , ShowXmlUnit
    , xmlUtilz
    , ClipBrd
+   , strutils
    ;
 
 procedure TwsdlListForm.DeleteActionUpdate(Sender: TObject);
@@ -135,7 +136,8 @@ begin
         try
           xExt := UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text));
           if (xExt = '.JSON')
-          or (xExt = '.YAML') then
+          or (xExt = '.YAML')
+          or (AnsiStartsText('APIARY://', OpenWsdlForm.WsdlLocationEdit.Text)) then
             Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil, nil, nil)
           else
             wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil, nil, nil);

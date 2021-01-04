@@ -81,6 +81,30 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/checkRegresssionRpy'
+  /snapshot/checkschemacompliancy:
+    post:
+      summary: summary
+      description: ''
+      operationId: zzCheckSnapshotSchemaCompliancy
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/checkSchemaCompliancyReq'
+        - name: createsnapshot
+          in: query
+          type: boolean
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/checkSchemaCompliancyRpy'
   /snapshots:
     delete:
       summary: removes entries from the list of snapshots
@@ -359,6 +383,53 @@ definitions:
     properties:
       result:
         type: string
+  checkSchemaCompliancyReq:
+    type: object
+    properties:
+      name:
+        type: string
+  checkSchemaCompliancyRpy:
+    type: object
+    properties:
+      result:
+        type: string
+      summary:
+        schema:
+          $ref: '#/definitions/compliancyAllNumbers'
+      operations:
+        type: array
+        items:
+          schema:
+            $ref: '#/definitions/compliancyAllNumbers'
+  compliancyAllNumbers:
+        type: object
+        properties:
+          name:
+            string;
+          total:
+            schema:
+              $ref: '#/definitions/compliancyNumbers'
+          inboundRequests:
+            schema:
+              $ref: '#/definitions/compliancyNumbers'
+          outputReplies:
+            schema:
+              $ref: '#/definitions/compliancyNumbers'
+          outboundRequests:
+            schema:
+              $ref: '#/definitions/compliancyNumbers'
+          inboundReplies:
+            schema:
+              $ref: '#/definitions/compliancyNumbers'
+  compliancyNumbers:
+     type: Object
+     properties:
+       passed:
+         type: string
+       failed:
+         type: string
+       notchecked:
+         type: string
   createSnapshotReq:
     type: object
     properties:

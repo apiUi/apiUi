@@ -11,4 +11,5 @@
   <swiftMTXsd>Config\SwiftMT.xsd</swiftMTXsd>
   <mqPutHeaderEditAllowed>Config\mqPutHeaderEditAllowed.xml</mqPutHeaderEditAllowed>
   <stompPutHeaderEditAllowed>Config\stompPutHeaderEditAllowed.xml</stompPutHeaderEditAllowed>
+  <apiaryToken>Rlw9QEALVgFUAVlbA1kLW1JfAVNbE2VMCWxKR1kHAVI=</apiaryToken>
 </Ini>

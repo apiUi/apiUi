@@ -249,10 +249,36 @@ Use this field to send extra data which you can use in the apiUi activators ( be
 	</xs:complexType>
 	<xs:complexType name="invokeType">
 		<xs:sequence>
+			<xs:element name="requestInfo" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Default "false"
+
+When"true", it is possible to change endpoint configuration from script.
+
+Useful for scripts that do 'callback' operations
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="replyInfo" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Default "false"
+
+When"true", it is possible to change response headers from script.					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="operations" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Maintain a list of operations</xs:documentation>
+				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="name" type="dynEnumString" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="name" type="dynEnumString" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Click the ellipsis button to choose from a list</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -911,6 +937,7 @@ Value is displayed as column header.</xs:documentation>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Email" type="emailType"/>
+	<xs:element name="replyInfo" type="epc:replyInfoType"/>
 	<xs:element name="endpointConfig" type="epc:endpointConfigType">
 		<xs:annotation>
 			<xs:documentation>Configure endpoint</xs:documentation>
@@ -1443,12 +1470,111 @@ For an overview of all options visit: doc://apiUi_operationOptions_hlp.htm </xs:
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="OnRequestViolatingAddressPath" type="OnRequestViolatingSchemaType" minOccurs="0"/>
-				<xs:element name="OnRequestViolatingSchema" type="OnRequestViolatingSchemaType" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>Default 'Continue'
-
-Setting determines what apiUi should do on receiving messages that violate the schema. This setting has no effect in case Request Message Validation is switched off </xs:documentation>
-					</xs:annotation>
+				<xs:element name="schemaValidation" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="inboundRequests" minOccurs="0">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accordingProject">
+											<xs:annotation>
+												<xs:documentation>Default value</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="noSchemaValidation">
+											<xs:annotation>
+												<xs:documentation>Messages will not be validated against schema</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reportSchemaViolations">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema</xs:documentation>
+												<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="raiseExceptionOnViolation">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema;
+On viloation an exception will be raised</xs:documentation>
+												<xs:documentation>Violations will be reported and result in an exception response</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="responseCode" type="xs:integer" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="outboundReplies" minOccurs="0">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accordingProject">
+											<xs:annotation>
+												<xs:documentation>Default value</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="noSchemaValidation">
+											<xs:annotation>
+												<xs:documentation>Messages will not be validated against schema</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reportSchemaViolations">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema</xs:documentation>
+												<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="outboundRequests" minOccurs="0">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accordingProject">
+											<xs:annotation>
+												<xs:documentation>Default value</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="noSchemaValidation">
+											<xs:annotation>
+												<xs:documentation>Messages will not be validated against schema</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reportSchemaViolations">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema</xs:documentation>
+												<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="inboundReplies" minOccurs="0">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accordingProject">
+											<xs:annotation>
+												<xs:documentation>Default value</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="noSchemaValidation">
+											<xs:annotation>
+												<xs:documentation>Messages will not be validated against schema</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reportSchemaViolations">
+											<xs:annotation>
+												<xs:documentation>Messages will be validated against schema</xs:documentation>
+												<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 				<xs:element name="ResolveAliasses" minOccurs="0">
 					<xs:annotation>
@@ -1492,11 +1618,7 @@ Setting determines what apiUi should do on receiving messages that violate the s
 		<xs:annotation>
 			<xs:documentation>Project options;
 
-For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm 
-Project options;
-
-For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm 
-</xs:documentation>
+For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm </xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -1624,25 +1746,24 @@ Determines the way apiUi will display Cocol data from log records.</xs:documenta
 								</xs:simpleType>
 							</xs:element>
 							<xs:element name="DisplayedColumns" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Maintain a list of (extra) displayed columns in the log panel</xs:documentation>
+								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="DisplayedColumn" minOccurs="0" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:sequence>
-													<xs:element name="Header" type="xs:string" minOccurs="0"/>
+													<xs:element name="Header" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>Acts as column header;
+Which data will be displayed in a column depends on the logged message;
+Sspecifying which data to display is done in the log panel, click in the cell and select desired item. Repeat this for each distinct opration (obviously not possible before such a message is logged)</xs:documentation>
+														</xs:annotation>
+													</xs:element>
 												</xs:sequence>
 											</xs:complexType>
 										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="Diskcopy" minOccurs="0">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Enabled" minOccurs="0"/>
-										<xs:element name="Path"/>
-										<xs:element name="MaxNumber" minOccurs="0"/>
-										<xs:element name="MaxSize" minOccurs="0"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
@@ -1666,22 +1787,6 @@ Http Get: wsdlName?WSDL </xs:documentation>
 
 When "true", apiUi will not show operations that lack an end-point.
 When "false", operations without endpoint will also be shown.
-
-CHANGING THIS SETTING REQUIERS SAVE AND RELOAD OF YOUR PROJECT</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="ElementsWhenRepeatable" type="xs:integer" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default "_xsdElementsWhenRepeatable_"
-
-Applies to XML messages.
-Specifies the number of addressable elements in case of maxCoccurs > "1"
-Addressable elements are accessable from script.
-Also specifies the initial number of repeating elements (unchecked) in a message.
-If for instance maxOccurs of an element is "20" and you specify a 'ElementsWhenRepeatable' = "3" it is possible to reference elements 1, 2 en 3 from scripts.
-Specially in case of nested repeating groups, keep this number as low as possible for better performance.
-
-Obviously you can edit as many elements as you wish in messages.
 
 CHANGING THIS SETTING REQUIERS SAVE AND RELOAD OF YOUR PROJECT</xs:documentation>
 								</xs:annotation>
@@ -1739,26 +1844,101 @@ Settings determine what apiUi should do on receiving messages for unknown (not s
 									<xs:documentation>Default 'Unknown operation'</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="Redirect" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>When checked, apiUi will route webservice calls for unknown operations to the end-point specified.</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Transport" type="epc:endpointConfigType"/>
-										<xs:element name="reqReplacements" type="replacementsType" minOccurs="0"/>
-										<xs:element name="rpyReplacements" type="replacementsType" minOccurs="0"/>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
 						</xs:choice>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="OperationDefaults" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Propeties that can be overruled at Operation level</xs:documentation>
+					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="OnRequestViolatingAddressPath" type="OnRequestViolatingSchemaType" minOccurs="0"/>
-							<xs:element name="OnRequestViolatingSchema" type="OnRequestViolatingSchemaType" minOccurs="0"/>
+							<xs:element name="schemaValidation" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="inboundRequests" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:element name="noSchemaValidation">
+														<xs:annotation>
+															<xs:documentation>Messages will not be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="reportSchemaViolations">
+														<xs:annotation>
+															<xs:documentation>Default value
+Messages will be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="raiseExceptionOnViolation">
+														<xs:annotation>
+															<xs:documentation>Messages will be validated against schema;
+On violation an exception will be raised</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="responseCode" type="xs:integer" minOccurs="0"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="outboundReplies" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:element name="noSchemaValidation">
+														<xs:annotation>
+															<xs:documentation>Messages will not be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="reportSchemaViolations">
+														<xs:annotation>
+															<xs:documentation>Default value
+Messages will be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="outboundRequests" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:element name="noSchemaValidation">
+														<xs:annotation>
+															<xs:documentation>Messages will not be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="reportSchemaViolations">
+														<xs:annotation>
+															<xs:documentation>Default value
+Messages will be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="inboundReplies" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:element name="noSchemaValidation">
+														<xs:annotation>
+															<xs:documentation>Messages will not be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="reportSchemaViolations">
+														<xs:annotation>
+															<xs:documentation>Default value
+Messages will be validated against schema</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -1932,14 +2112,30 @@ apiUi encrypts passwords before storing in a project file or at other locations<
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Scripts">
+		<xs:annotation>
+			<xs:documentation>Maintain a list of scripts</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="Script" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="Name" type="xs:string"/>
-							<xs:element name="Invoke" type="invokeType" minOccurs="0"/>
-							<xs:element name="Code" type="xs:string" minOccurs="0"/>
+							<xs:element name="Name" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Specify the name for this script.
+The name you use here will be the name of the menu-item added to the script menu. Click this added menu-item to execute the script </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Invoke" type="invokeType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Specify which operations you want to use in the script.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Code" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Press the ellipsis button to write your script. Right click in the editor to get more help or to select elements availlable from the operations mentioned under Invoke</xs:documentation>
+								</xs:annotation>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -1961,11 +2157,12 @@ apiUi encrypts passwords before storing in a project file or at other locations<
 			<xs:documentation>Describes Tandem client configuration</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="apiUiOptions">
+	<xs:element name="remoteServerConnection" type="epc:remoteServerConnectionType"/>
+	<xs:element name="Options">
 		<xs:annotation>
 			<xs:documentation>apiUi options;
 
-For an overview of all options visit: doc://apiUi_apiUiOptions_hlp.htm </xs:documentation>
+For an overview of all options visit: doc://apiUi_Options_hlp.htm </xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -2168,28 +2365,6 @@ Minimum value "30000" which is half a minute in milliseconds.</xs:documentation>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="RemoteControl" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>RemoteControl;
-apiUi webservice
-When enabled, this apiUi instance will also act as a webservice. Visit http://localhost:port for a list of supported operations.</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default 'false'</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="Port" type="xs:string" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default "3738"";
-Specifies the port that this instance will listen to for slave requests</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="Colors" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Customise colors</xs:documentation>
@@ -2378,5 +2553,39 @@ For driver-operation this applies to response values.</xs:documentation>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RedirectType">
+		<xs:sequence>
+			<xs:element name="Transport" type="epc:endpointConfigType"/>
+			<xs:element name="reqReplacements" type="replacementsType" minOccurs="0"/>
+			<xs:element name="rpyReplacements" type="replacementsType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OperationSchemaValidationType">
+		<xs:choice>
+			<xs:element name="accordingProject">
+				<xs:annotation>
+					<xs:documentation>Default value</xs:documentation>
+					<xs:documentation>see project options</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="noSchemaValidation">
+				<xs:annotation>
+					<xs:documentation>Messages will not be validated against schema</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="reportSchemaViolations">
+				<xs:annotation>
+					<xs:documentation>Messages will be validated against schema</xs:documentation>
+					<xs:documentation>Violations will be reported; Processing will continu</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="raiseExceptionOnViolation">
+				<xs:annotation>
+					<xs:documentation>Messages will be validated against schema</xs:documentation>
+					<xs:documentation>Violations will be reported and result in an exception response</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
 	</xs:complexType>
 </xs:schema>
