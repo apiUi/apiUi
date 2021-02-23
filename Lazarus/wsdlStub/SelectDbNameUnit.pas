@@ -14,6 +14,7 @@ uses
 {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls
+  , xmlio
   , Ipmz
   , FormIniFilez
   ;
@@ -85,12 +86,12 @@ end;
 
 procedure TSelectDbNameForm.TreeViewChange(Sender: TObject; Node: TTreeNode);
 var
-  ColumnList: TStringList;
+  ColumnList: TJBStringList;
   y: Integer;
 begin
   if Node.Count = 0 then
   begin
-    ColumnList := TStringList.Create;
+    ColumnList := TJBStringList.Create;
     try
       DataBase.Transaction.StartTransaction;
       try
@@ -114,7 +115,7 @@ var
   x: Integer;
   TableList: TStrings;
 begin
-  TableList := TStringList.Create;
+  TableList := TJBStringList.Create;
   TreeView.BeginUpdate;
   try
     TreeView.Items.Clear;

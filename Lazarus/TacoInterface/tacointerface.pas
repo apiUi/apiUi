@@ -10,17 +10,13 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType,
+  LCLType,
 {$ENDIF}
   Classes
-   , Controls
    , StrUtils
    , Xmlz
    , IdTCPClient
-   , IdGlobal
-   , IdSync
    , SyncObjs
-   , ExtCtrls
    ;
 
 type
@@ -92,7 +88,6 @@ implementation
 
 uses SysUtils
    , xmlio
-   , igGlobals
    ;
 { TTacoInterface }
 
@@ -364,14 +359,7 @@ begin
   if fAuthorized = AValue then Exit ;
   fAuthorized := AValue ;
   if Assigned (fOnAuthorize) then
-    with TIdSync.Create do
-    begin
-      try
-        SynchronizeMethod (syncOnAuthorize);
-      finally
-        free;
-      end;
-    end;
+    SynchronizeMethode(syncOnAuthorize);
 end;
 
 procedure TTacoInterface .syncDoAuthorize ;
@@ -393,14 +381,7 @@ begin
     raise Exception.Create('TTacoInterface: no OnNeedHostData assigned');
   Authorisation := '';
   fClient.Disconnect;
-  with TIdSync.Create do
-  begin
-    try
-      SynchronizeMethod (syncDoAuthorize);
-    finally
-      free;
-    end;
-  end;
+  SynchronizeMethode(syncDoAuthorize);
   if Authorisation = '' then
     raise Exception.Create('TacoInterface: aborted due to user action');
   fClient.Host := Host;

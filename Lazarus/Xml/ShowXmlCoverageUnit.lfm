@@ -1,10 +1,10 @@
 object ShowXmlCoverageForm: TShowXmlCoverageForm
   Left = 384
-  Height = 761
-  Top = 135
+  Height = 660
+  Top = 236
   Width = 1342
   Caption = 'XML Data'
-  ClientHeight = 761
+  ClientHeight = 660
   ClientWidth = 1342
   Color = clBtnFace
   OnClose = FormClose
@@ -16,17 +16,17 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
   LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
-    Height = 695
+    Height = 594
     Top = 29
     Width = 1342
     Align = alClient
     BorderWidth = 3
-    ClientHeight = 695
+    ClientHeight = 594
     ClientWidth = 1342
     TabOrder = 0
     object Splitter1: TSplitter
       Left = 1088
-      Height = 687
+      Height = 586
       Top = 4
       Width = 5
       Align = alRight
@@ -34,7 +34,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object TreeView: TVirtualStringTree
       Left = 4
-      Height = 687
+      Height = 586
       Top = 4
       Width = 1084
       Align = alClient
@@ -110,11 +110,11 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
     end
     object Panel2: TPanel
       Left = 1093
-      Height = 687
+      Height = 586
       Top = 4
       Width = 245
       Align = alRight
-      ClientHeight = 687
+      ClientHeight = 586
       ClientWidth = 245
       TabOrder = 1
       object Splitter2: TSplitter
@@ -145,19 +145,24 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
         TabOrder = 0
         ViewStyle = vsReport
       end
-      object DocumentationMemo: TMemo
+      object DocumentationViewer: TIpHtmlPanel
         Left = 1
-        Height = 576
+        Height = 475
         Top = 110
         Width = 243
         Align = alClient
-        Lines.Strings = (
-          'DocumentationMemo'
-        )
-        OnClick = DocumentationMemoClick
-        ParentColor = True
-        ReadOnly = True
+        BorderStyle = bsSingle
+        FixedTypeface = 'Courier New'
+        DefaultTypeFace = 'default'
+        DefaultFontSize = 11
+        FlagErrors = False
+        PrintSettings.MarginLeft = 0.5
+        PrintSettings.MarginTop = 0.5
+        PrintSettings.MarginRight = 0.5
+        PrintSettings.MarginBottom = 0.5
+        ShowHints = False
         TabOrder = 2
+        OnHotClick = DocumentationViewerHotClick
       end
     end
   end
@@ -252,7 +257,7 @@ object ShowXmlCoverageForm: TShowXmlCoverageForm
   object Panel3: TPanel
     Left = 0
     Height = 37
-    Top = 724
+    Top = 623
     Width = 1342
     Align = alBottom
     ClientHeight = 37

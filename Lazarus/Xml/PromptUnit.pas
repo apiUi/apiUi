@@ -96,6 +96,7 @@ begin
       end;
     end;
     if (Pattern <> '')
+    and (PromptEdit.Text <> '')
     then begin
       with TRegExpr.Create do
       try

@@ -10,25 +10,23 @@ uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType,
 {$ENDIF}
   SysUtils
    , Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ComCtrls, ExtCtrls, VirtualTrees
+  ComCtrls, ExtCtrls, VirtualTrees
    , Bind
    , Xmlz
    , Ipmz
    , Dialogs
-   , FormIniFilez, ToolWin, ActnList, Menus, ImgList,
-  Express
-   ;
+   , FormIniFilez, ActnList, Menus, IpHtml;
 
 type
 
   { TShowXmlCoverageForm }
 
   TShowXmlCoverageForm = class(TForm)
-    DocumentationMemo : TMemo ;
+    DocumentationViewer: TIpHtmlPanel;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -70,7 +68,7 @@ type
     ToolButton13: TToolButton;
     ToolButton14: TToolButton;
     AsHtmlAction: TAction;
-    procedure DocumentationMemoClick (Sender : TObject );
+    procedure DocumentationViewerHotClick(Sender: TObject);
     procedure FormClose (Sender : TObject ; var CloseAction : TCloseAction );
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure TreeViewClick(Sender: TObject);
@@ -107,10 +105,6 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure CancelActionExecute(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
-    procedure XsdDocumentationMemoMouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
-    procedure XsdDocumentationMemoMouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ToggleIgnoreActionExecute(Sender: TObject);
     procedure downActionExecute(Sender: TObject);
     procedure upActionExecute(Sender: TObject);
@@ -127,7 +121,6 @@ type
     fReadOnly: Boolean;
     fBind: TXmlCvrg;
     FileContents: TStringList;
-    fdoEnableCompare: Boolean;
     procedure SearchMissing (aDown: Boolean);
     procedure HaveLink(Sender: TObject; aLink: String);
     procedure ShowBind (Bind: TXmlCvrg; aNode: PVirtualNode);
@@ -142,7 +135,6 @@ type
     function SelectedBind: TXmlCvrg;
     procedure RevalidateXmlTreeView (aTreeView: TVirtualStringTree);
     procedure setIsChanged(const Value: Boolean);
-    procedure setdoEnableCompare(const Value: Boolean);
     function getDoShowIgnoreds: Boolean;
     procedure setDoShowIgnoreds(const Value: Boolean);
   public
@@ -151,7 +143,6 @@ type
     doShowCancelButton: Boolean;
     initialExpandStyle: TBindExpandStyle;
     property doShowIgnoreds: Boolean read getDoShowIgnoreds write setDoShowIgnoreds;
-    property doEnableCompare: Boolean read fdoEnableCompare write setdoEnableCompare;
     property Bind: TXmlCvrg read fBind write SetBind;
     property Changed: Boolean read fIsChanged write fIsChanged;
     function NodeToBind (aNode: PVirtualNode): TXmlCvrg;
@@ -179,17 +170,8 @@ uses
 {$ENDIF}
   FindRegExpDialog
    , igGlobals
-   , ClipBrd
-   , Xsdz
    , xmlUtilz
    , XmlGridUnit
-   , RegExpr
-   , StrUtils
-   , A2BXmlz
-   , ShowA2BXmlUnit
-{$ifndef fpc}
-   , ShowHtmlUnit
-{$endif}
    ;
 
 const treeTagColumn = 0;
@@ -232,7 +214,7 @@ begin
   FileContents := TStringList.Create;
   doConfirmRemovals := True;
   TreeView.Colors.GridLineColor := clBtnHighlight;
-  DocumentationMemo.Color := self.Color;
+  DocumentationViewer.Color := self.Color;
 end;
 
 procedure TShowXmlCoverageForm.ShowBind (Bind: TXmlCvrg; aNode: PVirtualNode);
@@ -331,18 +313,6 @@ begin
   xAnsiLink := aLink;
    OpenDocument(PChar ( xAnsiLink )
                ); { *Converted from ShellExecute* }
-end;
-
-procedure TShowXmlCoverageForm.XsdDocumentationMemoMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  MemoMouseDown(Sender as TMemo, X, Y, HaveLink);
-end;
-
-procedure TShowXmlCoverageForm.XsdDocumentationMemoMouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  MemoMouseMove(Sender as TMemo, X, Y);
 end;
 
 procedure TShowXmlCoverageForm.SearchMissing(aDown: Boolean);
@@ -591,7 +561,7 @@ begin
   Sender.Selected [Sender.FocusedNode] := True;
   xBind := SelectedBind;
   try XmlUtil.ListXsdProperties(XsdPropertiesListView, xBind); except end;
-  try XmlUtil.ListXsdDocumentation(DocumentationMemo, xBind, False, False); except end;
+  try XmlUtil.ListXsdDocumentation(DocumentationViewer, xBind, False, False); except end;
   TreeView.Invalidate;
 end;
 
@@ -835,10 +805,6 @@ end;
 function TShowXmlCoverageForm.getReadOnly: Boolean;
 begin
   result := fReadOnly;
-end;
-
-procedure TShowXmlCoverageForm.setdoEnableCompare(const Value: Boolean);
-begin
 end;
 
 procedure TShowXmlCoverageForm.setDoShowIgnoreds(const Value: Boolean);
@@ -1105,9 +1071,9 @@ begin
   xmlUtil.presentString (SelectedBind.FullCaption, SelectedBind.Value);
 end;
 
-procedure TShowXmlCoverageForm .DocumentationMemoClick (Sender : TObject );
+procedure TShowXmlCoverageForm.DocumentationViewerHotClick(Sender: TObject);
 begin
-  OpenUrl(MemoIsLink(DocumentationMemo));
+  OpenUrl(DocumentationViewer.HotURL);
 end;
 
 procedure TShowXmlCoverageForm .FormClose (Sender : TObject ;

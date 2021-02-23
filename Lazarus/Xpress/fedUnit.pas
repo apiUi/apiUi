@@ -15,7 +15,7 @@ private
 public
   Name, Alias: String;
   FirstBind: TCustomBindable;
-  List: TStringList;
+  List: TJBStringList;
   Parent: TFed;
   isSubElement: Boolean;
   isCursor: Boolean;
@@ -102,7 +102,7 @@ end;
 constructor TFed.Create;
 begin
   inherited;
-  List := TStringList.Create;
+  List := TJBStringList.Create;
 end;
 
 destructor TFed.Destroy;
@@ -167,12 +167,12 @@ begin
 end;
 
 procedure TFed.Open;
-  function _split (s: String): TStringList;
+  function _split (s: String): TJBStringList;
   var
     x: Integer;
     ss: String;
   begin
-    result := TStringList.Create;
+    result := TJBStringList.Create;
     x := 1;
     ss := '';
     while x <= Length (s) do
@@ -188,7 +188,7 @@ procedure TFed.Open;
     end;
     result.Add(ss)
   end;
-  procedure _CreateList (rXml: TXml; aList, Sl: TStringList; i: Integer);
+  procedure _CreateList (rXml: TXml; aList, Sl: TJBStringList; i: Integer);
   var
     x: Integer;
   begin
@@ -208,7 +208,7 @@ var
   x: Integer;
   pXml: TXml;
   s: String;
-  sl: TStringList;
+  sl: TJBStringList;
 begin
   List.Clear;
   if isSubElement then

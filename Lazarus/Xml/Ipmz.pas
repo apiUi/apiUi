@@ -6,6 +6,7 @@ interface
 
 uses Classes
    , Express
+   , xmlio
    , Bind
    , Xmlz
    , ParserClasses
@@ -32,14 +33,16 @@ type
 
   TIpmItemList = class;
 
+  { TIpmItem }
+
   TIpmItem = class(TCustomBindable)
   private
     function GetFullCaption: String;
     function getIsAlignedData: boolean;
     function getRootIpmItem: TIpmItem;
 private
-  sl: TStringList;
-  TypeDefs: TStringList;
+  sl: TJBStringList;
+  TypeDefs: TJBStringList;
     fCobolEnvironment: TCobolEnvironmentType;
   procedure HaveString (aString: String);
   procedure Int64ToValue (aInteger: Int64);
@@ -49,8 +52,8 @@ private
   function TagToXml (aValue: String): String;
   function IndentString (x: Integer): String;
   procedure _BuildXSDLocal (OnHaveString: TOnHaveString; aIndent: Integer);
-  procedure _BuildXSDGlobalSimpleTypedefs (OnHaveString: TOnHaveString; aIndent: Integer; aTypeDefs: TStringList);
-  procedure _BuildXSDGlobalComplexTypedefs (OnHaveString: TOnHaveString; aIndent: Integer; aTypeDefs: TStringList);
+  procedure _BuildXSDGlobalSimpleTypedefs (OnHaveString: TOnHaveString; aIndent: Integer; aTypeDefs: TJBStringList);
+  procedure _BuildXSDGlobalComplexTypedefs (OnHaveString: TOnHaveString; aIndent: Integer; aTypeDefs: TJBStringList);
   procedure _BuildXML (OnHaveString: TOnHaveString; OnlyWhenFilled: Boolean);
   function GetSoapBodyItem: TIpmItem;
   function GetSoapHeaderItem: TIpmItem;
@@ -87,7 +90,7 @@ public
   Loaded: Boolean;
   Filled: Boolean;
   XmlFileName: String;
-  Level88Values: TStringList;
+  Level88Values: TJBStringList;
   SkipOnXmlBuild: Boolean;
   {$ifndef NoGUI}
   function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
@@ -123,6 +126,7 @@ public
   procedure BuildCobolWS (OnHaveString: TOnHaveString);
   procedure Bind (aRoot: String; aExpress: TObject; aMaxOccurs: Integer); Override;
   function AsXml: TXml;
+  function IsEditingAllowed: Boolean; Override;
   function IsValueValid (var aMessage: String): Boolean; Override;
   function ValueToBuffer (aValue: AnsiString): AnsiString; // ansi because of bnary data in Cobol records
   function ValuesToBuffer (OnFoundError: TOnFoundError): AnsiString;
@@ -181,9 +185,9 @@ public
   Alias: String;
   FileName: String;
   IpmItem: TIpmItem;
-  FileContents: TStringList;
-  Replacing: TStringList;
-  Recogs: TStringList;
+  FileContents: TJBStringList;
+  Replacing: TJBStringList;
+  Recogs: TJBStringList;
   function DuplicateSelf: TIpmDescr;
   property CobolEnvironment: TCobolEnvironmentType read fCobolEnvironment write setCobolEnvironment;
   property ReplacingAsString: String read GetReplacingAsQString write SetReplacingAsQString;
@@ -195,7 +199,7 @@ public
   destructor Destroy; override;
 end;
 
-type TIpmDescrs = class (TStringList)
+type TIpmDescrs = class (TJBStringList)
   private
     fIpmIndex: Integer;
     fRecordDescrTypeDefaultAlias: String;
@@ -208,7 +212,7 @@ protected
   function GetIpmDescr (Index: integer): TIpmDescr;
 public
   RecordDescrTypeValues: TStringListList;
-  RecordDescrTypeAliasses: TStringList;
+  RecordDescrTypeAliasses: TJBStringList;
   property RecordDescrTypeBinds: TBindableList read fRecordDescrTypeBinds write setRecordDescrTypeBinds;
   property RecordDescrTypeDefaultAlias: String read fRecordDescrTypeDefaultAlias write setRecordDescrTypeDefaultAlias;
   property IpmIndex: Integer read fIpmIndex write setIpmIndex;
@@ -248,7 +252,6 @@ uses SysUtils
    , Math
    , ErrorFound
    , IpmAnalyser
-   , xmlio
    ;
 
 function ExtendPictureClause (arg: String): String;
@@ -443,7 +446,7 @@ begin
     result := result.Parent as TIpmItem;
 end;
 
-function TipmItem.DuplicateSelf (aParent: TIpmItem): TIpmItem;
+function TIpmItem.DuplicateSelf(aParent: TIpmItem): TIpmItem;
 var
   x: Integer;
 begin
@@ -605,7 +608,7 @@ var
 begin
   inherited Create;
   fChecked := True;
-  Level88Values := TStringList.Create;
+  Level88Values := TJBStringList.Create;
   Level88Values.Sorted := True;
   Level88Values.Duplicates := dupIgnore;
   Level := aIpm.Level;
@@ -1281,7 +1284,7 @@ constructor TIpmItem.Create;
 begin
   inherited Create;
   fChecked := True;
-  Level88Values := TStringList.Create;
+  Level88Values := TJBStringList.Create;
   Level88Values.Sorted := True;
   Level88Values.Duplicates := dupIgnore;
   SkipOnXmlBuild := False;
@@ -1535,7 +1538,7 @@ begin
   Duplicates := dupError;
   fRecordDescrTypeBinds := TBindableList.Create;
   RecordDescrTypeValues := TStringListList.Create;
-  RecordDescrTypeAliasses := TStringList.Create;
+  RecordDescrTypeAliasses := TJBStringList.Create;
 end;
 
 destructor TIpmDescrs.Destroy;
@@ -1570,10 +1573,10 @@ end;
 constructor TIpmDescr.Create;
 begin
   inherited;
-  FileContents := TStringList.Create;
-  Replacing := TStringList.Create;
+  FileContents := TJBStringList.Create;
+  Replacing := TJBStringList.Create;
   IpmItem := TIpmItem.Create;
-  Recogs := TStringList.Create;
+  Recogs := TJBStringList.Create;
 end;
 
 destructor TIpmDescr.Destroy;
@@ -1906,7 +1909,7 @@ end;
 procedure TIpmItem.BuildXSDGlobal(OnHaveString: TOnHaveString;
   aIndent: Integer);
 begin
-  TypeDefs := TStringList.Create;
+  TypeDefs := TJBStringList.Create;
   try
     TypeDefs.Sorted := True;
     OnHaveString ( IndentString (Indent)
@@ -1934,7 +1937,7 @@ begin
 end;
 
 procedure TIpmItem._BuildXSDGlobalSimpleTypedefs(OnHaveString: TOnHaveString;
-  aIndent: Integer; aTypeDefs: TStringList);
+  aIndent: Integer; aTypeDefs: TJBStringList);
 var
   Str: String;
   SaveName: String;
@@ -2045,7 +2048,7 @@ begin
 end;
 
 procedure TIpmItem._BuildXSDGlobalComplexTypedefs(OnHaveString: TOnHaveString;
-  aIndent: Integer; aTypeDefs: TStringList);
+  aIndent: Integer; aTypeDefs: TJBStringList);
 var
   Str: String;
   SaveName: String;
@@ -2489,11 +2492,11 @@ end;
 
 function TIpmItem.AsXml: TXml;
 var
-  xsl: TStringList;
+  xsl: TJBStringList;
 begin
   result := TXml.Create;
   xsl := sl;
-  sl := TStringList.Create;
+  sl := TJBStringList.Create;
   try
     BuildXml  (HaveString, 0, True);
     result.LoadFromString (sl.Text, nil);
@@ -2501,6 +2504,11 @@ begin
     sl.Free;
     sl := xsl;
   end;
+end;
+
+function TIpmItem.IsEditingAllowed: Boolean;
+begin
+  result := not (Group);
 end;
 
 procedure TIpmItem.HaveString(aString: String);

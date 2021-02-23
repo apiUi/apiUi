@@ -7,6 +7,7 @@ unit A2BXmlz;
 interface
 uses Classes
    , SysUtils
+   , xmlio
    , Xmlz
    , Bind
    , a2bStringListUnit
@@ -40,10 +41,10 @@ type
     property Differs: Boolean read fDiffers write setDiffers;
     property Ignored: Boolean read fIgnored write setIgnored;
     property NumberOfDiffs: Integer read getNumberOfDiffs;
-    procedure Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList);
+    procedure Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TJBStringList);
     constructor CreateA (aPrefix: String; aXml: TXml; aThisOneDiffers: Boolean); overload;
     constructor CreateB (aPrefix: String; bXml: TXml; aThisOneDiffers: Boolean); overload;
-    constructor CreateA2B (aPrefix, aFullCaption: String; aXml, bXml: TXml; ignoreOrderOn, checkValueAgainst: TStringList); overload;
+    constructor CreateA2B (aPrefix, aFullCaption: String; aXml, bXml: TXml; ignoreOrderOn, checkValueAgainst: TJBStringList); overload;
     constructor CreateA (aPrefix: String; aXml: TXmlAttribute; aThisOneDiffers: Boolean); overload;
     constructor CreateB (aPrefix: String; bXml: TXmlAttribute; aThisOneDiffers: Boolean); overload;
     constructor CreateA2B (aPrefix: String; aXml, bXml: TXmlAttribute); overload;
@@ -55,7 +56,7 @@ procedure a2bExpandWhenValueIsJsonOrYaml (aXml: TXml);
 
 implementation
 
-uses xmlio, wrdFunctionz, StrUtils, igGlobals, base64, RegExpr;
+uses wrdFunctionz, StrUtils, igGlobals, base64, RegExpr;
 
 procedure a2bInitialize;
 begin
@@ -85,10 +86,10 @@ procedure a2bExpandWhenValueIsJsonOrYaml(aXml: TXml);
     end;
     function _itMightBeYaml: Boolean;
     var
-       ls: TStringList;
+       ls: TJBStringList;
     begin
       result := False;
-      ls := TStringList.Create;
+      ls := TJBStringList.Create;
       try
         ls.Text := aXml.Value;
         if (ls.Count > 0)
@@ -215,7 +216,8 @@ var
 begin
   if CheckType = checktypeRegExp then
   begin
-    if checkExp <> '' then
+    if (checkExp <> '')
+    and (aValue <> '') then
     begin
       with TRegExpr.Create('^(' + checkExp + ')$') do
       try
@@ -298,7 +300,7 @@ begin
     AddXml (TA2BXml.CreateB(aPrefix, bXml.Items.XmlItems[x], False));
 end;
 
-constructor TA2BXml.CreateA2B(aPrefix, aFullCaption: String; aXml, bXml: TXml; ignoreOrderOn, checkValueAgainst: TStringList);
+constructor TA2BXml.CreateA2B(aPrefix, aFullCaption: String; aXml, bXml: TXml; ignoreOrderOn, checkValueAgainst: TJBStringList);
 var
   x, a, b, c, f, i, y: Integer;
   Diffs: TA2BStringList;
@@ -457,7 +459,7 @@ begin
   begin
     for x := 0 to aXml.Items.Count - 1 do
     begin
-      with ignoreOrderOn.Objects[f] as TStringList do
+      with ignoreOrderOn.Objects[f] as TJBStringList do
       begin
         for y := 0 to Count - 1 do
         begin
@@ -470,7 +472,7 @@ begin
     aXml.Items.Sort;
     for x := 0 to bXml.Items.Count - 1 do
     begin
-      with ignoreOrderOn.Objects[f] as TStringList do
+      with ignoreOrderOn.Objects[f] as TJBStringList do
       begin
         for y := 0 to Count - 1 do
         begin
@@ -684,7 +686,7 @@ begin
       result := result + (Items.XmlItems[x] as TA2BXml).NumberOfDiffs;
 end;
 
-procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TStringList);
+procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: TJBStringList);
   procedure _set (aXml: TA2BXml);
   var
     x, f: Integer;

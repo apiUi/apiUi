@@ -68,10 +68,10 @@ type
     FilterStyleCombo: TComboBox;
     RemarksCheckBox: TCheckBox;
     procedure FormShow(Sender: TObject);
-    procedure SetEnabled (Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
+    procedure SetEnableds (Sender: TObject);
     function getReplyEnabled: Boolean;
     function getReplyEquals: Boolean;
     function getReplyValue: String;
@@ -232,7 +232,7 @@ begin
   result := TLogFilterStyle(FilterStyleCombo.ItemIndex);
 end;
 
-procedure TLogFilterForm.SetEnabled (Sender: TObject);
+procedure TLogFilterForm.SetEnableds (Sender: TObject);
   function nEnabledConditions: Integer;
   begin
     result := 0;
@@ -287,7 +287,7 @@ end;
 
 procedure TLogFilterForm.FormShow(Sender: TObject);
 begin
-  SetEnabled (nil);
+  SetEnableds (nil);
 end;
 
 function TLogFilterForm.getOperationEnabled: Boolean;

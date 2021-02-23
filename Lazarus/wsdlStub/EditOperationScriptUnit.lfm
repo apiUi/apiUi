@@ -1,46 +1,48 @@
 object EditOperationScriptForm: TEditOperationScriptForm
-  Left = 287
-  Height = 484
+  Left = 333
+  Height = 605
   Top = 139
-  Width = 1004
+  Width = 1209
   Anchors = []
   Caption = 'Edit script'
-  ClientHeight = 484
-  ClientWidth = 1004
+  ClientHeight = 605
+  ClientWidth = 1209
   Color = clBtnFace
+  DesignTimePPI = 120
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ParentFont = True
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '2.0.10.0'
   object TopPanel: TPanel
     Left = 0
-    Height = 57
+    Height = 71
     Top = 0
-    Width = 1004
+    Width = 1209
     Align = alTop
-    ClientHeight = 57
-    ClientWidth = 1004
+    ClientHeight = 71
+    ClientWidth = 1209
+    ParentFont = False
     TabOrder = 0
     object ScriptNameEdit: TEdit
       Left = 1
       Height = 28
-      Top = 27
-      Width = 1002
+      Top = 33
+      Width = 1207
       Align = alTop
       ParentColor = True
+      ParentFont = False
       ReadOnly = True
       TabOrder = 0
     end
     object ToolBar1: TToolBar
       Left = 1
-      Height = 26
       Top = 1
-      Width = 1002
+      Width = 1207
       Caption = 'ToolBar1'
       Images = ImageList1
+      ParentFont = False
       TabOrder = 1
       object ToolButton1: TToolButton
         Left = 1
@@ -48,7 +50,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
         Action = FindAction
       end
       object ToolButton2: TToolButton
-        Left = 24
+        Left = 30
         Top = 2
         Action = FindNextAction
       end
@@ -56,29 +58,31 @@ object EditOperationScriptForm: TEditOperationScriptForm
   end
   object Panel3: TPanel
     Left = 0
-    Height = 386
-    Top = 57
-    Width = 1004
+    Height = 483
+    Top = 71
+    Width = 1209
     Align = alClient
     BorderWidth = 3
     Caption = 'Panel3'
-    ClientHeight = 386
-    ClientWidth = 1004
+    ClientHeight = 483
+    ClientWidth = 1209
+    ParentFont = False
     TabOrder = 1
     object StatusBar: TStatusBar
       Left = 4
       Height = 29
-      Top = 353
-      Width = 996
+      Top = 450
+      Width = 1201
       Panels = <>
+      ParentFont = False
     end
     inline ScriptEdit: TSynEdit
       Left = 4
-      Height = 349
+      Height = 446
       Top = 4
-      Width = 996
+      Width = 1201
       Align = alClient
-      Font.Height = -13
+      Font.Height = -16
       Font.Name = 'Courier New'
       Font.Pitch = fpFixed
       Font.Quality = fqNonAntialiased
@@ -86,7 +90,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
       ParentFont = False
       PopupMenu = MemoPopUpMenu
       TabOrder = 1
-      Gutter.Width = 57
+      Gutter.Width = 72
       Gutter.MouseActions = <>
       RightGutter.Width = 0
       RightGutter.MouseActions = <>
@@ -542,11 +546,11 @@ object EditOperationScriptForm: TEditOperationScriptForm
       OnChange = ScriptEditChange
       inline SynLeftGutterPartList1: TSynGutterPartList
         object SynGutterMarks1: TSynGutterMarks
-          Width = 24
+          Width = 30
           MouseActions = <>
         end
         object SynGutterLineNumber1: TSynGutterLineNumber
-          Width = 17
+          Width = 21
           MouseActions = <>
           MarkupInfo.Background = clBtnFace
           MarkupInfo.Foreground = clNone
@@ -556,18 +560,19 @@ object EditOperationScriptForm: TEditOperationScriptForm
           LeadingZeros = False
         end
         object SynGutterChanges1: TSynGutterChanges
-          Width = 4
+          Width = 5
           MouseActions = <>
           ModifiedColor = 59900
           SavedColor = clGreen
         end
         object SynGutterSeparator1: TSynGutterSeparator
-          Width = 2
+          Width = 3
           MouseActions = <>
           MarkupInfo.Background = clWhite
           MarkupInfo.Foreground = clGray
         end
         object SynGutterCodeFolding1: TSynGutterCodeFolding
+          Width = 13
           MouseActions = <>
           MarkupInfo.Background = clNone
           MarkupInfo.Foreground = clGray
@@ -579,26 +584,28 @@ object EditOperationScriptForm: TEditOperationScriptForm
   end
   object Panel2: TPanel
     Left = 0
-    Height = 41
-    Top = 443
-    Width = 1004
+    Height = 51
+    Top = 554
+    Width = 1209
     Align = alBottom
-    ClientHeight = 41
-    ClientWidth = 1004
+    ClientHeight = 51
+    ClientWidth = 1209
+    ParentFont = False
     TabOrder = 2
     object CheckButton: TButton
-      Left = 4
-      Height = 25
-      Top = 7
-      Width = 75
+      Left = 5
+      Height = 31
+      Top = 9
+      Width = 94
       Action = CheckAction
+      ParentFont = False
       TabOrder = 0
     end
     object OkButton: TBitBtn
-      Left = 96
-      Height = 25
-      Top = 7
-      Width = 75
+      Left = 120
+      Height = 31
+      Top = 9
+      Width = 94
       Action = OkAction
       Default = True
       Glyph.Data = {
@@ -638,13 +645,14 @@ object EditOperationScriptForm: TEditOperationScriptForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
       ModalResult = 1
+      ParentFont = False
       TabOrder = 1
     end
     object CancelButton: TBitBtn
-      Left = 192
-      Height = 25
-      Top = 8
-      Width = 75
+      Left = 240
+      Height = 31
+      Top = 10
+      Width = 94
       Action = CancelAction
       Cancel = True
       Glyph.Data = {
@@ -684,13 +692,14 @@ object EditOperationScriptForm: TEditOperationScriptForm
         FF00FFFFFF00FFFFFF006360F80AFFFFFF00FFFFFF00FFFFFF00
       }
       ModalResult = 2
+      ParentFont = False
       TabOrder = 2
     end
   end
   object MemoPopUpMenu: TPopupMenu
     OnPopup = MemoPopUpMenuPopup
-    left = 96
-    top = 104
+    Left = 120
+    Top = 130
     object IpmFieldMenuItem: TMenuItem
       Caption = 'Xml Element'
       OnClick = IpmFieldMenuItemClick
@@ -776,13 +785,13 @@ object EditOperationScriptForm: TEditOperationScriptForm
     Entity = False
     DollarVariables = False
     ActiveDot = False
-    left = 247
-    top = 142
+    Left = 309
+    Top = 178
   end
   object ActionList1: TActionList
     Images = ImageList1
-    left = 96
-    top = 160
+    Left = 120
+    Top = 200
     object CheckAction: TAction
       Caption = '&Check'
       OnExecute = CheckExecute
@@ -812,8 +821,8 @@ object EditOperationScriptForm: TEditOperationScriptForm
     end
   end
   object ImageList1: TImageList
-    left = 270
-    top = 60
+    Left = 338
+    Top = 75
     Bitmap = {
       4C69100000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF009A6B2731AA7E43A192601805FFFFFF00FFFFFF00FFFF

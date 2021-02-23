@@ -131,6 +131,7 @@ end;
 function TQueryNewElementForm.NameIsOk: Boolean;
 begin
   result := false;
+  if (TagNameEdit.Text <> '') then
   with TRegExpr.Create('^[a-zA-Z0-9\-_]+$') do
   try
     result := Exec(TagNameEdit.Text);

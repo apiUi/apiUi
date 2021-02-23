@@ -12,7 +12,7 @@ uses
 {$IFnDEF FPC}
   AdoDb, Windows,
 {$ELSE}
-  sqldb , odbcconn, LCLIntf, LCLType,
+  sqldb, LCLIntf, LCLType,
 {$ENDIF}
   Messages
    , SysUtils
@@ -28,11 +28,11 @@ uses
    , Ipmz
    , IpmTypes
    , WsdlProjectz
+   , xmlio
    , Wsdlz
    , Xmlz
    , Xsdz
    , StdCtrls
-   , IdSync
    , IdUri
    , ComCtrls
    , ExtCtrls
@@ -61,8 +61,8 @@ type
     FParentWindow: HWnd;
   end;
 
-  TShowPanel = (spNotifications, spSnapshots, spMessages);
-  TShowLogData = (slRequestHeaders, slRequestBody, slReplyHeaders, slReplyBody, slException, slValidation);
+  TShowKindOfInformation = (spNotifications, spSnapshots, spMessages);
+  TShowKindOfLogData = (slRequestHeaders, slRequestBody, slReplyHeaders, slReplyBody, slException, slValidation);
   TLogPanelIndex = (lpiFocus, lpiThreads);
   TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
   TProcedure = procedure of Object;
@@ -72,9 +72,57 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    AboutApiServerAction: TAction;
+    FocusOnOperationMenuItem: TMenuItem;
+    MenuItem14: TMenuItem;
+    MenuItem70: TMenuItem;
+    MenuItem72: TMenuItem;
+    NavigateOperationsPopupMenu: TPopupMenu;
+    NvgtView: TVirtualStringTree;
+    ToolButton49: TToolButton;
+    ToolButton52: TToolButton;
+    WsdlServiceNameEdit: TEdit;
+    WsdlNameEdit: TEdit;
+    NavigateHierarchyAction: TAction;
+    WsdlOperationNameEdit: TEdit;
+    procedure AboutApiServerActionExecute(Sender: TObject);
+    procedure AboutApiServerActionUpdate(Sender: TObject);
+    procedure EditCloudEnvironmentActionUpdate(Sender: TObject);
+    procedure FocusOnOperationMenuItemClick(Sender: TObject);
+    procedure MenuItem14Click(Sender: TObject);
+    procedure MenuItem65Click(Sender: TObject);
+    procedure MessagesVTSColumnClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
+    procedure MessagesVTSHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+    procedure NavigateHierarchyActionExecute(Sender: TObject);
+    procedure NavigateHierarchyActionUpdate(Sender: TObject);
+    procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
+  private
+    fFocusedBind: TCustomBindable;
+    fFocusedOperation: TWsdlOperation;
+    fFocusedMessage: TWsdlMessage;
+    fFocusedDocumentationObject: TObject;
+    fIpmDescrType: TIpmDescrType;
+    fShowKindOfInformation: TShowKindOfInformation;
+    fShowKindOfLogData: TShowKindOfLogData;
+    procedure setFocusedBind(Value: TCustomBindable);
+    procedure setIpmDescrType(Value: TIpmDescrType);
+    procedure setShowKindOfInformation(Value: TShowKindOfInformation);
+    procedure setShowKindOfLogData(Value: TShowKindOfLogData);
+  published
     AbortMenuItem : TMenuItem ;
     AbortAction : TAction ;
     Action2 : TAction ;
+    EditCloudEnvironmentAction: TAction;
+    CloudProjectInformationAction: TAction;
+    MenuItem67: TMenuItem;
+    MenuItem68: TMenuItem;
+    MenuItem69: TMenuItem;
+    MenuItem71: TMenuItem;
+    ShowProjectInfoAction: TAction;
+    MenuItem66: TMenuItem;
+    ShowOperationInfoAction: TAction;
     PasteProjectFromClipboardAction: TAction;
     LogsFromHttpGetAction: TAction;
     MenuItem64: TMenuItem;
@@ -249,14 +297,14 @@ type
     FreeFormatMemo : TMemo ;
     GridToolBar : TToolBar ;
     GridView : TVirtualStringTree ;
-    InWsdlTreeView : TVirtualStringTree ;
+    TreeView : TVirtualStringTree ;
     LastToolButton : TToolButton ;
     MenuItem10: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     DesignPanelSplitVerticalMenuItem : TMenuItem ;
     MenuItem13 : TMenuItem ;
-    MenuItem14 : TMenuItem ;
+    OperationRefreshMenuItem : TMenuItem ;
     MenuItem15 : TMenuItem ;
     MenuItem16 : TMenuItem ;
     MenuItem17 : TMenuItem ;
@@ -320,19 +368,14 @@ type
     ToolButton46 : TToolButton ;
     ToolButton47 : TToolButton ;
     ToolButton54 : TToolButton ;
-    ToolButton55 : TToolButton ;
-    ToolButton56 : TToolButton ;
     ToolButton63 : TToolButton ;
     ToolButton7 : TToolButton ;
     ToolButton8 : TToolButton ;
     ToolButton9 : TToolButton ;
     View : TLabel ;
     ViewStyleComboBox : TComboBox ;
-    WsdlComboBox : TComboBox ;
     WsdlInfoPanel : TPanel ;
     WsdlLabel : TLabel ;
-    WsdlOperationsComboBox : TComboBox ;
-    WsdlServicesComboBox : TComboBox ;
     XsdPanel: TPanel;
     MainToolBar: TToolBar;
     mainImageList: TImageList;
@@ -405,7 +448,6 @@ type
     ToolButton15: TToolButton;
     ToolButton23: TToolButton;
     ClearNotificationsAction: TAction;
-    NavigatorTreeView: TVirtualStringTree;
     SelectMessageColumnsAction: TAction;
     CopyGridAction: TAction;
     PasteGridAction: TAction;
@@ -593,6 +635,10 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure FocusNavigatorOnOperation;
+    procedure CloudProjectInformationActionExecute(Sender: TObject);
+    procedure CloudProjectInformationActionUpdate(Sender: TObject);
+    procedure EditCloudEnvironmentActionExecute(Sender: TObject);
     procedure PasteProjectFromClipboardActionExecute(Sender: TObject);
     procedure CheckReferencedFilesExistInCloudActionExecute(Sender: TObject);
     procedure AddChildElementMenuItemClick(Sender: TObject);
@@ -640,13 +686,17 @@ type
     function EditRemoteServerConnectionParams (aCaption: String): Boolean;
     procedure SaveRemoteApiUiProjectActionExecute(Sender: TObject);
     procedure SetApiServerConnectionActionExecute(Sender: TObject);
+    procedure ShowOperationInfoActionExecute(Sender: TObject);
+    procedure ShowOperationInfoActionUpdate(Sender: TObject);
+    procedure ShowProjectInfoActionExecute(Sender: TObject);
+    procedure ShowProjectInfoActionUpdate(Sender: TObject);
     procedure SnapshotFromHttpGetActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
     procedure SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
     procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
     procedure YamlToClipboardMenuItemClick(Sender: TObject);
     procedure MessagesTabToolBarResize(Sender: TObject);
-    procedure NavigatorTreeViewGetHint(Sender: TBaseVirtualTree;
+    procedure NvgtViewGetHint(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex;
       var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
     procedure OpenWsdlActionUpdate(Sender: TObject);
@@ -665,7 +715,7 @@ type
     procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
     procedure GridPopupMenuPopup (Sender : TObject );
     procedure ImportProjectScriptsActionExecute (Sender : TObject );
-    procedure InWsdlTreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
+    procedure TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
     procedure LoadTestActionExecute (Sender : TObject );
@@ -673,11 +723,11 @@ type
     procedure logChartActionExecute (Sender : TObject );
     procedure DesignSplitHorizontalMenuItemClick (Sender : TObject );
     procedure DesignSplitVerticalMenuItemClick (Sender : TObject );
-    procedure MenuItem14Click (Sender : TObject );
+    procedure OperationRefreshMenuItemClick (Sender : TObject );
     procedure MenuItem17Click (Sender : TObject );
     procedure OpenProjectActionExecute(Sender: TObject);
-    procedure NavigatorTreeViewClick(Sender: TObject);
-    procedure NavigatorTreeViewGetImageIndex (Sender : TBaseVirtualTree ;
+    procedure NvgtViewClick(Sender: TObject);
+    procedure NvgtViewGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
       var Ghosted : Boolean ; var ImageIndex : Integer );
     procedure PingPongTimerTimer (Sender : TObject );
@@ -702,12 +752,9 @@ type
     procedure SwiftMtOperationsActionUpdate(Sender: TObject);
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
     procedure ToggleTrackIOActionExecute(Sender: TObject);
-    procedure VTSHeaderClick (Sender : TVTHeader ;
-      Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
-      Y : Integer );
     procedure OperationAliasActionExecute (Sender : TObject );
     procedure OperationDelayResponseTimeActionExecute(Sender: TObject);
-    procedure NavigatorTreeViewPaintText (Sender : TBaseVirtualTree ;
+    procedure NvgtViewPaintText (Sender : TBaseVirtualTree ;
       const TargetCanvas : TCanvas ; Node : PVirtualNode ;
       Column : TColumnIndex ; TextType : TVSTTextType );
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
@@ -744,7 +791,6 @@ type
     procedure ConfigListenersActionUpdate(Sender: TObject);
     procedure ConfigListenersActionExecute(Sender: TObject);
     procedure ServiceOptionsActionExecute(Sender: TObject);
-    procedure ServiceOptionsActionUpdate(Sender: TObject);
     procedure ChangeXmlDataType(aXml: TXml; aDataType: TXsdDataType);
     procedure ChangeDataTypeMenuItemClick(Sender: TObject);
     procedure AssignExpressionMenuItemClick(Sender: TObject);
@@ -770,7 +816,7 @@ type
     procedure All1Click(Sender: TObject);
     procedure AbortActionExecute(Sender: TObject);
     procedure GridToolBarResize(Sender: TObject);
-    procedure InWsdlTreeViewFocusChanging(Sender: TBaseVirtualTree;
+    procedure TreeViewFocusChanging(Sender: TBaseVirtualTree;
       OldNode, NewNode: PVirtualNode; OldColumn, NewColumn: TColumnIndex;
       var Allowed: Boolean);
     procedure ViewStyleComboBoxChange(Sender: TObject);
@@ -809,10 +855,9 @@ type
     procedure RemoveEnvironmentAction1Click(Sender: TObject);
     procedure AddEnvironmentActionExecute(Sender: TObject);
     procedure RemoveEnvironmentActionUpdate(Sender: TObject);
-    procedure EditEnvironmentActionUpdate(Sender: TObject);
     procedure AddEnvironmentActionUpdate(Sender: TObject);
     procedure EditEnvironmentActionExecute(Sender: TObject);
-    procedure InWsdlTreeViewChecking(Sender: TBaseVirtualTree;
+    procedure TreeViewChecking(Sender: TBaseVirtualTree;
       Node: PVirtualNode; var NewState: TCheckState; var Allowed: Boolean);
     procedure DesignPanelAtTopMenuItemClick(Sender: TObject);
     procedure CheckGridFieldsActionExecute(Sender: TObject);
@@ -846,7 +891,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure SelectMessageColumnsActionExecute(Sender: TObject);
     procedure SelectMessageColumnsActionUpdate(Sender: TObject);
-    procedure NavigatorTreeViewFocusChanged(Sender: TBaseVirtualTree;
+    procedure NvgtViewFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
     procedure ExceptionsVTSGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
@@ -865,13 +910,11 @@ type
     procedure ClearLogItemsActionExecute(Sender: TObject);
     procedure ClearLogItemsActionUpdate(Sender: TObject);
     procedure WsdlInfoPanelResize(Sender: TObject);
-    procedure WsdlServicesComboBoxDropDown(Sender: TObject);
-    procedure WsdlComboBoxDropDown(Sender: TObject);
     function CheckHttpAddress (aBind: TObject; aNewValue: String): Boolean;
     procedure RedirectAddressActionExecute(Sender: TObject);
     procedure TreeViewResize(Sender: TObject);
     procedure GridViewExit(Sender: TObject);
-    procedure InWsdlTreeViewExit(Sender: TObject);
+    procedure TreeViewExit(Sender: TObject);
     procedure SaveStubCaseActionExecute(Sender: TObject);
     procedure GridViewEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex);
@@ -900,7 +943,6 @@ type
     procedure OptionsActionUpdate(Sender: TObject);
     procedure CheckBoxClick(Sender: TObject);
     procedure ReopenStubCaseActionUpdate(Sender: TObject);
-    procedure WsdlComboBoxChange(Sender: TObject);
     procedure runScriptActionExecute(Sender: TObject);
     procedure HelpActionExecute(Sender: TObject);
     procedure About1Click(Sender: TObject);
@@ -920,50 +962,45 @@ type
     procedure WsdlPasteFromClipboardMenuItemClick(Sender: TObject);
     procedure Copytoclipboard1Click(Sender: TObject);
     procedure XmlAddMenuItemClick(Sender: TObject);
-    procedure InWsdlTreeViewFocusChanged(Sender: TBaseVirtualTree;
+    procedure TreeViewFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
-    procedure WsdlServicesComboBoxChange(Sender: TObject);
-    procedure InWsdlTreeViewPaintText(Sender: TBaseVirtualTree;
+    procedure TreeViewPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType);
-    procedure InWsdlTreeViewNewText(Sender: TBaseVirtualTree;
+    procedure TreeViewNewText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; NewText: String);
     procedure TreeViewMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure TreeViewKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure InWsdlTreeViewGetText(Sender: TBaseVirtualTree;
+    procedure TreeViewGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: String);
-    procedure InWsdlTreeViewGetImageIndex(Sender: TBaseVirtualTree;
+    procedure TreeViewGetImageIndex(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer);
-    procedure InWsdlTreeViewEditing(Sender: TBaseVirtualTree;
+    procedure TreeViewEditing(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex;
       var Allowed: Boolean);
-    procedure InWsdlTreeViewEdited(Sender: TBaseVirtualTree;
+    procedure TreeViewEdited(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
-    procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
-      Column: TColumnIndex; Shift: TShiftState);
     procedure TreeViewClick(Sender: TObject);
-    procedure InWsdlTreeViewChecked(Sender: TBaseVirtualTree;
+    procedure TreeViewChecked(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
-    procedure setWsdlMessage(const Value: TWsdlMessage);
-    function getWsdlMessage: TWsdlMessage;
-    function getWsdlOperation: TWsdlOperation;
-    procedure setWsdlOperation(const Value: TWsdlOperation);
-    procedure WsdlOperationsComboBoxChange(Sender: TObject);
+    procedure ShowFocusedMessageInTreeView;
+    procedure setFocusedMessage(const Value: TWsdlMessage);
+    procedure setFocusedOperation(const Value: TWsdlOperation);
     procedure Exit1Click(Sender: TObject);
     procedure OpenWsdlActionExecute(Sender: TObject);
     procedure OpenWsdlActionHint(var HintStr: string; var CanShow: Boolean);
     procedure GridViewFocusedNode(aNode: PVirtualNode);
-    procedure NavigatorTreeViewGetText(Sender: TBaseVirtualTree;
+    procedure NvgtViewGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: string);
     procedure GridViewBeforeCellPaint(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
-    procedure InWsdlTreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
+    procedure TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
     procedure OperationWsaActionExecute(Sender: TObject);
@@ -1052,11 +1089,16 @@ type
     procedure ZoomasScriptAssignments1Click(Sender: TObject);
     procedure XSDreportinClipBoardSpreadSheet1Click(Sender: TObject);
     procedure UpdateMessagesView;
-    property WsdlOperation: TWsdlOperation read getWsdlOperation write
-      setWsdlOperation;
-    property WsdlMessage: TWsdlMessage read getWsdlMessage write setWsdlMessage;
+    property IpmDescrType: TIpmDescrType read fIpmDescrType write setIpmDescrType;
+    property FocusedOperation: TWsdlOperation read fFocusedOperation write
+      setFocusedOperation;
+    property FocusedMessage: TWsdlMessage read fFocusedMessage write setFocusedMessage;
+    property FocusedBind: TCustomBindable read fFocusedBind write setFocusedBind;
     property xmlViewType: TxvViewType read getXmlViewType;
+    property ShowKindOfInformation: TShowKindOfInformation read fShowKindOfInformation write setShowKindOfInformation;
+    property ShowKindOfLogData: TShowKindOfLogData read fShowKindOfLogData write setShowKindOfLogData;
   private
+    fWsdlService: TWsdlService;
     doCreateBackup: Boolean;
     doConfirmTemporaryInactivity: Boolean;
     doStartOnOpeningProject: Boolean;
@@ -1069,12 +1111,10 @@ type
     logValidationTabImageIndex: Integer;
     startStopShortCut: TShortCut;
     fLastCaption: String;
-    QueueNameList: TStringList;
+    QueueNameList: TJBStringList;
     isOptionsChanged: Boolean;
     doScrollExceptionsIntoView: Boolean;
     DisclaimerAccepted: Boolean;
-    ActualXml: TCustomBindable;
-    ActualXmlAttr: TXmlAttribute;
     CompanyName: String;
     fDoShowDesignAtTop: Boolean;
     grid_x, grid_y: Integer;
@@ -1084,6 +1124,7 @@ type
     GetAuthError: String;
     tacoHost: String;
     tacoPort: Integer;
+    procedure GridViewUnselect;
     procedure CheckReferencedFilenamesExistsInCloud;
     procedure SnapshotFromRemoteServer (aList: TClaimableObjectList);
     procedure SnapshotsFromRemoteServer;
@@ -1105,22 +1146,17 @@ type
     procedure PopulateXml(aViewType: TxvViewType);
     function getIsRequestAction: Boolean;
     procedure setDoShowDesignAtTop(const Value: Boolean);
-    procedure setWsdl(const Value: TWsdl);
     procedure setStubChanged(const Value: Boolean);
     function getWsdl: TWsdl;
-    procedure DisplayServerMessage(const Msg: String);
     procedure LogServerNotification(const Msg: String);
     procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
     function HttpActiveHint: String;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
-    procedure WsdlPopulateServices(aWsdl: TWsdl);
-    procedure WsdlPopulateOperations(aService: TWsdlService);
     procedure FillInWsdlEdits;
     function FillBindTreeView(aTreeView: TVirtualStringTree;
       aBind: TCustomBindable; aParentNode: PVirtualNode): PVirtualNode;
-    procedure FillOperationReqsTreeView(aTreeView: TVirtualStringTree;
-      aOperations: TWsdlOperations);
-    procedure FillGridTreeView(aTreeView: TVirtualStringTree;
+    procedure FillNvgtView(aOperations: TWsdlOperations);
+    procedure FillGridView(aTreeView: TVirtualStringTree;
       aMessages: TWsdlMessages);
     function xmlVisibility(aXml: TXml): Boolean;
     procedure SetXmlNodeVisibility(aTreeView: TVirtualStringTree; aXml: TXml;
@@ -1139,8 +1175,7 @@ type
       aNode: PVirtualNode): TExceptionLog;
     function NodeToSnapshot(aDoClaimReport: Boolean; aTreeView: TBaseVirtualTree;
       aNode: PVirtualNode): TSnapshot;
-    procedure NodeToMessage(aTreeView: TBaseVirtualTree; aNode: PVirtualNode;
-      var aMessage: TWsdlMessage);
+    function NodeToMessage(aTreeView: TBaseVirtualTree; aNode: PVirtualNode): TWsdlMessage;
     function NodeToBind(aTreeView: TBaseVirtualTree;
       aNode: PVirtualNode): TCustomBindable;
     // procedure NodeToXml (aTreeView: TBaseVirtualTree; aNode: PVirtualNode; var Xml: TXml; var Attribute: TXmlAttribute);
@@ -1164,10 +1199,9 @@ type
     procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
       aLogList: TLogList);
     procedure ToAllLogList(aLogList: TLogList);
-    procedure UpdateReopenList(aList: TStringList; aFileName: String);
+    procedure UpdateReopenList(aList: TJBStringList; aFileName: String);
     procedure PrepareOperation;
     procedure ClearConsole;
-    procedure UpdateConsole(aIndex: Integer);
     procedure DoColorBindButtons;
     procedure UpdateCaption;
     function OkToOpenStubCase: Boolean;
@@ -1177,12 +1211,13 @@ type
     procedure UpdateLogCorrelationIds (aWsdlOperation: TWsdlOperation);
     procedure UpdateLogTabs (aLog: TLog);
     procedure RemoveMessageColumns;
-    procedure FocusOnBind(aBind: TCustomBindable);
+    procedure SelectFocusedBindInViews;
     function AddMessage(aCopyNode: PVirtualNode): PVirtualNode;
     procedure PasteGridFromPasteBoard;
     procedure PasteGridOnNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; NewText: String);
     procedure ShowXmlInGrid(aXml: TXml; aReadOnly: Boolean);
+    procedure ShowXmlExtended(aCaption: String; aXml: TXml);
     procedure ShowXml(aCaption: String; aXml: TXml);
     procedure ShowIpm(aCaption: String; aIpm: TIpmItem);
     procedure ShowTextAsGrid(aCaption, aText: String);
@@ -1194,7 +1229,7 @@ type
     procedure RefreshLogList;
     function XmlBindToNode(aTreeView: TVirtualStringTree;
       aBind: TCustomBindable): PVirtualNode;
-    procedure FocusOnFullCaption(aFullCaption: String);
+    procedure FocusOnFullCaptionOrFirst(aFullCaption: String);
     procedure HandleException(Sender: TObject; E: Exception);
     procedure LogMqMessage(Sender: TObject; aHeader, aBody: String;
       aRfhHeader: AnsiString; MsgType: MQLONG; MsgDesc: MQMD;
@@ -1204,7 +1239,6 @@ type
     procedure DebugOperationViewAsXml;
     procedure DebugOperation;
     procedure SynchronizedOnMessageChanged;
-    procedure OnChange;
     procedure OnMessageChanged(aMessage: TWsdlMessage);
     procedure CheckRpyOrFlt(aBind: TCustomBindable);
     procedure OptionsFromXml(aXml: TXml);
@@ -1222,6 +1256,7 @@ type
     function EditScript(aXml: TObject): Boolean;
     function TestDbsConnection(aXml: TObject): Boolean;
     function TestRemoteServerConnection(aXml: TObject): Boolean;
+    procedure ProjectInfoFromRemoteServer;
     function TestProjectFolders(aXml: TObject): Boolean;
     function EditXmlValueAsText(aXml: TObject): Boolean;
     procedure SetAbortPressed(const Value: Boolean);
@@ -1245,7 +1280,7 @@ type
     procedure setDoTrackDuplicateMessages(AValue: Boolean);
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure IntrospectDesign;
-    function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList;
+    function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TJBStringList;
     function decorateWithAsterix (aCaption: String; aBoolean: Boolean): String;
   published
   public
@@ -1258,25 +1293,29 @@ type
     wsdlStubMessagesFileName, wsdlStubSnapshotsFileName: String;
     log4jEventsFileName: String;
     nStubs: Integer;
-    freeStubs: Integer;
-    ColumnWidths: TStringList;
-    lastWsdlOperation: TWsdlOperation;
-    WsdlPaths: TStringList;
-    ReopenCaseList: TStringList;
+    ColumnWidths: TJBStringList;
+    WsdlPaths: TJBStringList;
+    ReopenCaseList: TJBStringList;
     WindowsUserName: String;
     saveToDiskFileName: String;
     saveToDiskDirectory: String;
     saveToDiskSeparator: String;
     saveToDiskExtention: String;
-    FileNameList: TStringList;
+    FileNameList: TJBStringList;
     scriptPreparedWell: Boolean;
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
+    SaveNvgtViewOnFocusChanged: TVTFocusChangeEvent;
+    SaveGridViewOnFocusChanged: TVTFocusChangeEvent;
+    SaveTreeViewOnFocusChanged: TVTFocusChangeEvent;
+    procedure DisableViewOnFocusChangeEvents;
+    procedure EnableViewOnFocusChangeEvents;
     function setContextProperty (aName: String): String;
     function getContextProperty: String;
     function ActiveAfterPrompt: Boolean;
     function InactiveAfterPrompt: Boolean;
+    procedure ShowFocusedBindDocumentation;
     property captionFileName: String read fCaptionFileName write SetCaptionFileName;
 
     property HintStrDisabledWhileActive
@@ -1290,7 +1329,7 @@ type
     property doShowDesignSplitVertical: Boolean read fdoShowDesignSplitVertical write
       setdoShowDesignSplitVertical;
     property stubChanged: Boolean read getStubChanged write setStubChanged;
-    property Wsdl: TWsdl read getWsdl write setWsdl;
+    property Wsdl: TWsdl read getWsdl;
     function SelecFolderAndSave: Boolean;
     procedure BeginUpdate;
     procedure DoUpdateConsole;
@@ -1354,20 +1393,20 @@ uses
   ShellApi,
 {$ELSE}
 {$ENDIF}
-  LCLProc, wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
+  wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
   ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
-  ChooseStringUnit, AboutUnit, StrUtils, IpmGunLicense,
+  ChooseStringUnit, AboutUnit, StrUtils,
   DisclaimerUnit,
   PromptUnit, SelectXmlElement, ApplyToUnit, wsaConfigUnit,
   SelectElementsUnit, A2BXmlz,
-  ShowLogDifferencesUnit, EditListValuesUnit, AddFavouritesUnit,
+  ShowLogDifferencesUnit, AddFavouritesUnit,
   LogFilterUnit,
   ShowA2BXmlUnit, FindRegExpDialog,
   XmlGridUnit, IpmGridUnit,
-  xmlUtilz, mqBrowseUnit, messagesToDiskUnit, messagesFromDiskUnit{$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
+  xmlUtilz, mqBrowseUnit {$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, xmlxsdparser,
-  xmlio, xmlzConsts, AbZipper
-  , htmlXmlUtilz, exceptionUtils, htmlreportz
+  xmlzConsts, AbZipper
+  , exceptionUtils, htmlreportz
   , PromptTacoUnit
   , EditTextUnit
   , EditContextsUnit
@@ -1486,14 +1525,6 @@ begin
   end;
 end;
 
-procedure TMainForm.DisplayServerMessage(const Msg: String);
-begin
-  {
-    if EnableLog then
-    LogServerException(Msg);
-  }
-end;
-
 procedure TMainForm.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
 begin
   (aObject as TIpmItem).Value := '?' + _progName + ' Error found: ' + ErrorString;
@@ -1501,12 +1532,12 @@ end;
 
 procedure TMainForm.FreeFormatMemoChange(Sender: TObject);
 begin
-  if Assigned(WsdlMessage) then
+  if Assigned(FocusedMessage) then
   begin
-    if WsdlOperation.StubAction = saRequest then
-      WsdlMessage.FreeFormatReq := FreeFormatMemo.Text
+    if FocusedOperation.StubAction = saRequest then
+      FocusedMessage.FreeFormatReq := FreeFormatMemo.Text
     else
-      WsdlMessage.FreeFormatRpy := FreeFormatMemo.Text;
+      FocusedMessage.FreeFormatRpy := FreeFormatMemo.Text;
     stubChanged := True;
   end;
 end;
@@ -1558,11 +1589,11 @@ end;
 procedure TMainForm.OpenWsdlActionExecute(Sender: TObject);
 var
   f, w: Integer;
-  xWsdls: TStringList;
+  xWsdls: TJBStringList;
   xWsdl: TWsdl;
 begin
   if not InactiveAfterPrompt then Exit;
-  xWsdls := TStringList.Create;
+  xWsdls := TJBStringList.Create;
   xWsdls.Sorted := True;
   for w := 0 to se.Wsdls.Count - 1 do
   begin
@@ -1572,6 +1603,7 @@ begin
   try
     Application.CreateForm(TWsdlListForm, WsdlListForm);
     try
+      wsdlListForm.remoteServerConnectionXml := se.remoteServerConnectionXml;
       wsdlListForm.EnvVars := se.EnvVars;
       WsdlListForm.ShowOperationsWithEndpointOnly :=
         se.OperationsWithEndpointOnly;
@@ -1601,141 +1633,62 @@ begin
   Close;
 end;
 
-procedure TMainForm.WsdlPopulateServices(aWsdl: TWsdl);
-var
-  X: Integer;
-begin
-  WsdlServicesComboBox.Clear;
-  WsdlOperationsComboBox.Clear;
-  if not Assigned(Wsdl) then
-    exit;
-  for X := 0 to aWsdl.Services.Count - 1 do
-  begin
-    WsdlServicesComboBox.Items.Add(aWsdl.Services.Services[X].Name);
-  end;
-  { }{
-    if (aWsdl.Services.Count > 0)
-    and (aWsdl.Services.Services[0].Operations.Count > 0) then
-    WsdlOperation := aWsdl.Services.Services[0].Operations.Operations[0];
-    { }{ }
-  if aWsdl.Services.Count > 0 then
-  begin
-    WsdlServicesComboBox.ItemIndex := 0;
-    if Assigned(WsdlServicesComboBox.OnChange) then
-      WsdlServicesComboBox.OnChange(Self);
-  end;
-  { }
-end;
-
-procedure TMainForm.WsdlPopulateOperations(aService: TWsdlService);
-var
-  X: Integer;
-begin
-  WsdlOperationsComboBox.Clear;
-  for X := 0 to aService.Operations.Count - 1 do
-  begin
-    WsdlOperationsComboBox.Items.Add(aService.Operations.Operations[X].Name);
-  end;
-  if aService.Operations.Count > 0 then
-  begin
-    WsdlOperationsComboBox.ItemIndex := 0;
-    if Assigned(WsdlOperationsComboBox.OnChange) then
-      WsdlOperationsComboBox.OnChange(Self);
-  end;
-end;
-
-procedure TMainForm.WsdlOperationsComboBoxChange(Sender: TObject);
-var
-  xs: Integer;
-  xo: Integer;
-  saveStubChanged: Boolean;
-  saveOnChanged: TVTFocusChangeEvent;
-begin
-  xs := WsdlServicesComboBox.ItemIndex;
-  xo := WsdlOperationsComboBox.ItemIndex;
-  if (xs < 0) or (xo < 0) then
-    exit;
-  if Wsdl.Services.Services[xs].DescriptionType = ipmDTFreeFormat then
-  begin
-    InWsdlTreeView.Align := alLeft;
-    InWsdlTreeView.Visible := False;
-    FreeFormatMemo.Align := alClient;
-    FreeFormatMemo.Visible := True;
-  end
-  else
-  begin
-    FreeFormatMemo.Align := alRight;
-    FreeFormatMemo.Visible := False;
-    InWsdlTreeView.Align := alClient;
-    InWsdlTreeView.Visible := True;
-  end;
-  saveStubChanged := stubChanged;
-  saveOnChanged := NavigatorTreeView.OnFocusChanged;
-  try
-    NavigatorTreeView.OnFocusChanged := nil;
-    FillInWsdlEdits;
-    GridView.Clear;
-    UpdateMessagesGrid;
-    FillGridTreeView(GridView, WsdlOperation.Messages);
-    DoColorBindButtons;
-    if Assigned(WsdlOperation) and Assigned(ActionComboBox.OnChange) then
-      ActionComboBox.OnChange(nil);
-    if Assigned(saveOnChanged) then
-      FocusOperationsReqVTS;
-  finally
-    stubChanged := saveStubChanged;
-    NavigatorTreeView.OnFocusChanged := saveOnChanged;
-  end;
-end;
-
 procedure TMainForm.FillInWsdlEdits;
 begin
-  if (WsdlOperation <> nil) then
+  if (FocusedOperation <> nil) then
   begin
-    if (WsdlOperation.StubAction = saStub) then
+    if (FocusedOperation.StubAction = saStub) then
       ActionComboBox.ItemIndex := 0
     else
       ActionComboBox.ItemIndex := 1;
-    // SoapActionEdit.Text := WsdlOperation.SoapAction;
+    // SoapActionEdit.Text := FocusedOperation.SoapAction;
     try
-      OperationDocumentationViewer.SetHtmlFromStr(textToHtml(WsdlOperation.Documentation.Text));
+      OperationDocumentationViewer.SetHtmlFromStr(textToHtml(FocusedOperation.Documentation.Text));
     except
     end;
   end;
 end;
 
-procedure TMainForm.FillOperationReqsTreeView(aTreeView: TVirtualStringTree;
-  aOperations: TWsdlOperations);
+procedure TMainForm.FillNvgtView(aOperations: TWsdlOperations);
 var
   xNode: PVirtualNode;
   xData: PNavigatorTreeRec;
   X: Integer;
+  xNvgtViewOnFocusChanged: TVTFocusChangeEvent;
 begin
-  aTreeView.EndEditNode;
-  aTreeView.Clear;
-  aTreeView.RootNodeCount := 0;
-  aTreeView.NodeDataSize := SizeOf(TNavigatorTreeRec);
-  if aOperations = nil then
-    exit;
-  for X := 0 to aOperations.Count - 1 do
-  begin
-    xNode := aTreeView.AddChild(nil);
-    xData := aTreeView.GetNodeData(xNode);
-    xData.Operation := aOperations.Operations[X];
+  DisableViewOnFocusChangeEvents;
+  try
+    NvgtView.EndEditNode;
+    NvgtView.Clear;
+    NvgtView.RootNodeCount := 0;
+    NvgtView.NodeDataSize := SizeOf(TNavigatorTreeRec);
+    if aOperations = nil then
+      exit;
+    for X := 0 to aOperations.Count - 1 do
+    begin
+      xNode := NvgtView.AddChild(nil);
+      xData := NvgtView.GetNodeData(xNode);
+      xData.Operation := aOperations.Operations[X];
+    end;
+    UpdateVisibiltyOfOperations;
+    if Assigned (se.LastFocusedOperation) then
+      FocusedOperation := se.LastFocusedOperation
+    else
+      FocusedOperation := NodeToOperation(NvgtView, NvgtView.GetFirst);
+  finally
+    EnableViewOnFocusChangeEvents;
   end;
-  xNode := aTreeView.GetFirst;
-  aTreeView.Selected[xNode] := True;
-  aTreeView.FocusedNode := xNode;
-  UpdateVisibiltyOfOperations;
 end;
 
-procedure TMainForm.FillGridTreeView(aTreeView: TVirtualStringTree;
+procedure TMainForm.FillGridView(aTreeView: TVirtualStringTree;
   aMessages: TWsdlMessages);
 var
   xNode: PVirtualNode;
   xData: PMessageTreeRec;
   X: Integer;
+  s: String;
 begin
+  s := FocusedOperation.LastFullCaption;
   aTreeView.EndEditNode;
   aTreeView.Clear;
   aTreeView.RootNodeCount := 0;
@@ -1746,16 +1699,6 @@ begin
   begin
     xData := aTreeView.GetNodeData(aTreeView.AddChild(nil));
     xData.Message := aMessages.Messages[X];
-  end;
-  if Assigned(WsdlOperation.LastMessage) then
-    WsdlMessage := WsdlOperation.LastMessage;
-  if Assigned(WsdlMessage) then
-    FocusOnFullCaption(WsdlOperation.LastFullCaption)
-  else
-  begin
-    xNode := aTreeView.GetFirst;
-    aTreeView.Selected[xNode] := True;
-    aTreeView.FocusedNode := xNode;
   end;
 end;
 
@@ -1776,15 +1719,15 @@ begin
   begin
     if aBind is TXml then
     begin
-      if WsdlOperation.StubAction = saRequest then
+      if FocusedOperation.StubAction = saRequest then
       begin
-        xHeaders := WsdlOperation.InputHeaders;
-        xXml := WsdlOperation.reqBind as TXml;
+        xHeaders := FocusedOperation.InputHeaders;
+        xXml := FocusedOperation.reqBind as TXml;
       end
       else
       begin
-        xHeaders := WsdlOperation.OutputHeaders;
-        xXml := WsdlOperation.rpyBind as TXml;
+        xHeaders := FocusedOperation.OutputHeaders;
+        xXml := FocusedOperation.rpyBind as TXml;
       end;
       for X := 0 to xHeaders.Count - 1 do
       begin
@@ -1796,41 +1739,49 @@ begin
   end;
 end;
 
-procedure TMainForm.setWsdlOperation(const Value: TWsdlOperation);
+procedure TMainForm.setFocusedOperation(const Value: TWsdlOperation);
 begin
+  if (Value = fFocusedOperation) then Exit;
+  fFocusedOperation := Value;
+  FocusedMessage := nil;
   try
-    if Assigned(Value) and (Value is TWsdlOperation) then
-    begin
-      Wsdl := Value.Wsdl;
-      WsdlPopulateServices(Wsdl);
-      WsdlServicesComboBox.ItemIndex := Wsdl.Services.IndexOfObject
-        (Value.WsdlService);
-      WsdlPopulateOperations
-        (Wsdl.Services.Services[WsdlServicesComboBox.ItemIndex]);
-      WsdlOperationsComboBox.ItemIndex :=
-        Value.WsdlService.Operations.IndexOfObject(Value);
-      WsdlOperationsComboBoxChange(nil);
-      ActionComboBox.Enabled := (Value.WsdlService.DescriptionType <> ipmDTEmail);
-      EditBetweenScriptMenuItem.Visible := (Value.StubAction = saStub);
-      EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
-      EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
-      UpdateVisibiltyTreeView(Value.WsdlService.DescriptionType = ipmDTFreeFormat);
-      UpdateMessagesView;
+    DisableViewOnFocusChangeEvents;
+    try
+      FocusNavigatorOnOperation;
+      if Assigned (fFocusedOperation) then
+      begin
+        se.LastFocusedOperation := Value;
+        WsdlNameEdit.Text := Wsdl.FileName;
+        IpmDescrType := Value.WsdlService.DescriptionType;
+        WsdlServiceNameEdit.Text := Value.WsdlService.Name;
+        WsdlOperationNameEdit.Text := Value.Name;
+        FillInWsdlEdits;
+        GridView.Clear;
+        UpdateMessagesGrid;
+        FillGridView(GridView, FocusedOperation.Messages);
+        DoColorBindButtons;
+        ActionComboBox.Enabled := (Value.WsdlService.DescriptionType <> ipmDTEmail);
+        EditBetweenScriptMenuItem.Visible := (Value.StubAction = saStub);
+        EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
+        EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
+        UpdateVisibiltyTreeView(Value.WsdlService.DescriptionType = ipmDTFreeFormat);
+        UpdateMessagesView;
+        if Assigned (value.LastFocusedMessage) then
+          FocusedMessage := Value.LastFocusedMessage
+        else
+          FocusedMessage := Value.Messages.Messages[0];
+        if Assigned (FocusedMessage) then
+          FocusOnFullCaptionOrFirst(FocusedOperation.LastFullCaption);
+      end
+      else
+      begin
+        FocusedMessage := nil;
+      end;
+    finally
+      EnableViewOnFocusChangeEvents;
     end;
   except
   end;
-end;
-
-function TMainForm.getWsdlOperation: TWsdlOperation;
-begin
-  result := nil;
-  if (WsdlServicesComboBox.ItemIndex > -1) and
-    (WsdlOperationsComboBox.ItemIndex > -1) then
-    try
-      result := Wsdl.Services.Services[WsdlServicesComboBox.ItemIndex]
-        .Operations.Operations[WsdlOperationsComboBox.ItemIndex];
-    except
-    end;
 end;
 
 function TMainForm.FillNodeWithIpm(aTreeView: TVirtualStringTree;
@@ -1964,23 +1915,22 @@ begin
   end;
 end;
 
-procedure TMainForm.NodeToMessage(aTreeView: TBaseVirtualTree;
-  aNode: PVirtualNode; var aMessage: TWsdlMessage);
+function TMainForm.NodeToMessage(aTreeView: TBaseVirtualTree; aNode: PVirtualNode): TWsdlMessage;
 var
   Data: PMessageTreeRec;
 begin
-  aMessage := nil;
+  result := nil;
   if Assigned(aNode) then
   begin
     Data := aTreeView.GetNodeData(aNode);
     if Assigned(Data) then
     begin
-      aMessage := Data.Message;
+      result := Data.Message;
     end;
   end;
 end;
 
-procedure TMainForm.InWsdlTreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellPaintMode: TVTCellPaintMode; CellRect: TRect;
   var ContentRect: TRect);
@@ -1989,29 +1939,43 @@ var
   expXml: TXml;
   xMessage: TWsdlMessage;
 begin
-  xMessage := nil; //avoid warning
-  if Column = treeValueColumn then
-  begin
-    xBind := NodeToBind(Sender, Node);
-    if not AllChecked(Sender, Node) then
+  try
+    if Column = treeValueColumn then
     begin
-      with TargetCanvas do
+      xBind := NodeToBind(Sender, Node);
+      if not AllChecked(Sender, Node) then
       begin
-        Brush.Style := bsSolid;
-        Brush.Color := bgNilValueColor;
-        FillRect(CellRect);
+        with TargetCanvas do
+        begin
+          Brush.Style := bsSolid;
+          Brush.Color := bgNilValueColor;
+          FillRect(CellRect);
+        end;
+        exit;
       end;
-      exit;
-    end;
-    if xBind is TXml then
-      with xBind as TXml do
+      if xBind is TXml then
+        with xBind as TXml do
+        begin
+          if Group
+          or (    (Assigned(Xsd))
+              and (   (TypeDef.ContentModel = 'Empty')
+                   or (TypeDef.ElementDefs.Count > 0)
+                  )
+             ) then
+          begin
+            with TargetCanvas do
+            begin
+              Brush.Style := bsSolid;
+              Brush.Color := clBtnFace;
+              FillRect(CellRect);
+            end;
+          end;
+
+        end;
+
+      if xBind is TIpmItem then
       begin
-        if Group
-        or (    (Assigned(Xsd))
-            and (   (TypeDef.ContentModel = 'Empty')
-                 or (TypeDef.ElementDefs.Count > 0)
-                )
-           ) then
+        if ((xBind as TIpmItem).Group) then
         begin
           with TargetCanvas do
           begin
@@ -2023,54 +1987,42 @@ begin
 
       end;
 
-    if xBind is TIpmItem then
-    begin
-      if ((xBind as TIpmItem).Group) then
-      begin
-        with TargetCanvas do
-        begin
-          Brush.Style := bsSolid;
-          Brush.Color := clBtnFace;
-          FillRect(CellRect);
-        end;
-      end;
-
     end;
-
-  end;
-  if Column = treeTagColumn then
-  begin
-    xBind := NodeToBind(Sender, Node);
-    NodeToMessage(GridView, GridView.FocusedNode, xMessage);
-    if (xBind is TXml) or (xBind is TXmlAttribute) then
+    if Column = treeTagColumn then
     begin
-      expXml := nil;
-      if Assigned(WsdlOperation) and Assigned(xMessage) then
-        if (WsdlOperation.StubAction = saRequest) then
-          expXml := xMessage.rpyBind as TXml
-        else
-          expXml := xMessage.reqBind as TXml;
-      if Assigned(xMessage) and (expXml.IsAncestorOf(xBind) or (expXml = xBind)
-        ) then
+      xBind := NodeToBind(Sender, Node);
+      xMessage := NodeToMessage(GridView, GridView.FocusedNode);
+      if (xBind is TXml) or (xBind is TXmlAttribute) then
       begin
-        with TargetCanvas do
+        expXml := nil;
+        if Assigned(FocusedOperation) and Assigned(xMessage) then
+          if (FocusedOperation.StubAction = saRequest) then
+            expXml := xMessage.rpyBind as TXml
+          else
+            expXml := xMessage.reqBind as TXml;
+        if Assigned(xMessage) and (expXml.IsAncestorOf(xBind) or (expXml = xBind)
+          ) then
         begin
-          Brush.Style := bsSolid;
-          // Brush.Color := bgCorrelationItemColor;
-          Brush.Color := bgExpectedValueColor;
-          FillRect(CellRect);
+          with TargetCanvas do
+          begin
+            Brush.Style := bsSolid;
+            // Brush.Color := bgCorrelationItemColor;
+            Brush.Color := bgExpectedValueColor;
+            FillRect(CellRect);
+          end;
         end;
       end;
     end;
+  except
   end;
 end;
 
-procedure TMainForm.InWsdlTreeViewChecked(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewChecked(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var
   xBind: TCustomBindable;
 begin
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
   try
     xBind := NodeToBind(Sender, Node);
     stubChanged := True;
@@ -2078,7 +2030,7 @@ begin
     if (not xBind.Checked) then
     begin
       if xmlUtil.doCollapseOnUncheck then
-        InWsdlTreeView.FullCollapse(Node)
+        TreeView.FullCollapse(Node)
     end
     else
     begin
@@ -2093,11 +2045,11 @@ begin
       end;
       CheckRpyOrFlt(xBind);
       if xmlUtil.doExpandOnCheck then
-        InWsdlTreeView.FullExpand(Node);
+        TreeView.FullExpand(Node);
     end;
     RevalidateXmlTreeView(Sender as TVirtualStringTree);
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
 end;
 
@@ -2152,24 +2104,24 @@ begin
   if (    (Sender = GridView)
       and (inImageArea)
      )
-  or (    (Sender = InWsdlTreeView)
-      and (InWsdlTreeView.FocusedColumn = treeButtonColumn)
+  or (    (Sender = TreeView)
+      and (TreeView.FocusedColumn = treeButtonColumn)
      )
   then
   begin
-    xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+    xBind := NodeToBind(TreeView, TreeView.FocusedNode);
     if xmlUtil.isExtendAdviced(xBind) then
       ExtendRecursivityMenuItemClick(nil)
     else
     begin
-      xChanged := xmlUtil.editXml(xBind, Sender = InWsdlTreeView, False);
+      xChanged := xmlUtil.editXml(xBind, Sender = TreeView, False);
       if xChanged then
       begin
-        UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
-        RevalidateXmlTreeView(InWsdlTreeView);
+        UpdateXmlTreeViewNode(TreeView, TreeView.FocusedNode);
+        RevalidateXmlTreeView(TreeView);
       end;
       stubChanged := stubChanged or xChanged;
-      InWsdlTreeView.FocusedColumn := treeValueColumn;
+      TreeView.FocusedColumn := treeValueColumn;
     end;
   end
   else
@@ -2184,13 +2136,7 @@ begin
   end;
 end;
 
-procedure TMainForm.TreeViewColumnClick(Sender: TBaseVirtualTree;
-  Column: TColumnIndex; Shift: TShiftState);
-begin
-  Sender.FocusedColumn := Column;
-end;
-
-procedure TMainForm.InWsdlTreeViewEdited(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewEdited(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 begin
   if Column = treeValueColumn then
@@ -2199,12 +2145,9 @@ begin
   end;
 end;
 
-procedure TMainForm.InWsdlTreeViewEditing(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
-var
-  xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(Sender, Node);
   case Column of
     treeTagColumn, treeButtonColumn:
       begin
@@ -2212,25 +2155,12 @@ begin
       end;
     treeValueColumn:
       begin
-        Allowed := (xBind is TXmlAttribute)
-                or (    (xBind is TXml)
-                    and (not (   ((xBind as TXml).Group)
-                              or (    (Assigned((xBind as TXml).Xsd))
-                                  and (   ((xBind as TXml).TypeDef.ContentModel = 'Empty')
-                                       or ((xBind as TXml).TypeDef.ElementDefs.Count > 0)
-                                      )
-                                 )
-                             )
-                        )
-                   )
-                or (    (xBind is TIpmItem)
-                    and (not (xBind as TIpmItem).Group)
-                   );
+        Allowed := FocusedBind.IsEditingAllowed;
       end;
   end;
 end;
 
-procedure TMainForm.InWsdlTreeViewGetImageIndex(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
 var
@@ -2342,7 +2272,7 @@ begin
   end;
 end;
 
-procedure TMainForm.InWsdlTreeViewGetText(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: String);
 var
@@ -2375,7 +2305,7 @@ var
   xBind: TCustomBindable;
   xMessage: String;
 begin
-  xMessage := ''; //avoid warning
+  xMessage := ''; // avoid warning
   try
   {
     if (Key = VK_F8) then
@@ -2413,12 +2343,12 @@ begin (Sender as TVirtualStringTree)
   );
 end;
 
-procedure TMainForm.InWsdlTreeViewNewText(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewNewText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; NewText: String);
 var
   xBind: TCustomBindable;
 begin
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
   try
     xBind := NodeToBind(Sender, Node);
     if Assigned(xBind) then
@@ -2457,11 +2387,11 @@ begin
       RevalidateXmlTreeView(Sender as TVirtualStringTree);
     end;
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
 end;
 
-procedure TMainForm.InWsdlTreeViewPaintText(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType);
 var
@@ -2502,8 +2432,6 @@ begin
     try
       if IsRequired then
       begin
-        if Name = 'HeaderVersion' then
-          Name := 'HeaderVersion';
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
         if AllChecked(Sender, Node.Parent) then
           if (not Checked)
@@ -2520,80 +2448,22 @@ begin
   end;
 end;
 
-procedure TMainForm.WsdlServicesComboBoxChange(Sender: TObject);
-begin
-  WsdlPopulateOperations(Wsdl.Services.Services[WsdlServicesComboBox.ItemIndex]
-    );
-end;
-
-procedure TMainForm.InWsdlTreeViewFocusChanged(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 var
   f: Integer;
   Xml: TXml;
-  xBind: TCustomBindable;
-  xMessage: TWsdlMessage;
   swapEvent: TVTFocusChangeEvent;
 begin
-  xMessage := nil; //avoid warning
   Sender.Selected[Sender.FocusedNode] := True;
-  xBind := NodeToBind(Sender, Sender.FocusedNode);
-  if not Assigned(xBind) then
-    exit;
-  if xBind is TXmlAttribute then
-  begin
-    Xml := xBind.Parent as TXml;
-  end;
-  if xBind is TXml then
-  begin
-    Xml := xBind as TXml;
-  end;
-  if xBind is TIpmItem then
-  begin
-    Xml := nil;
-  end;
-  xmlUtil.ListXsdProperties(InWsdlPropertiesListView, xBind);
-  // InWsdlEnumerationsListView.Clear;
-  ActualXml := nil;
-  ActualXmlAttr := nil;
-  if xBind is TIpmItem then
-    StatusPanel.Caption := '[' + IntToStr((xBind as TIpmItem).Offset + 1)
-      + ':' + IntToStr((xBind as TIpmItem).Bytes) + '] ' + xBind.FullIndexCaption
-  else
-    StatusPanel.Caption := xBind.FullCaption;
-  try
-    xmlUtil.ListXsdDocumentation(DocumentationViewer, xBind, False, False);
-  except
-  end;
-  if not(tsUpdating in InWsdlTreeView.TreeStates) then
-    WsdlOperation.LastFullCaption := StatusPanel.Caption;
-  swapEvent := GridView.OnFocusChanged;
-  if Assigned(swapEvent) then
-  begin
-    NodeToMessage(GridView, GridView.FocusedNode, xMessage);
-    f := xMessage.ColumnXmls.IndexOfObject(Xml);
-    if f > -1 then
-    begin
-      try
-        GridView.OnFocusChanged := nil;
-        GridView.FocusedColumn := f + 1 + nMessageButtonColumns + WsdlOperation.CorrelationBindables.Count;
-      finally
-        GridView.OnFocusChanged := swapEvent;
-      end;
-    end;
-  end;
-  { }{
-    if (Column = treeValueColumn)
-    and (xmlutil.isEditAllowed(xBind)) then
-    InWsdlTreeView.EditNode(Sender.FocusedNode, Sender.FocusedColumn);
-    { }
+  FocusedBind := NodeToBind(Sender, Sender.FocusedNode);
 end;
 
 procedure TMainForm.WsdlItemDelMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if (xBind is TXml) and (Assigned((xBind as TXml).Xsd)) then
   begin
     if (LowerCase((xBind as TXml).Xsd.maxOccurs) = 'unbounded') or
@@ -2601,21 +2471,21 @@ begin
     begin
       if not xmlUtil.isDeleteAllowed(xBind, True) then
         exit;
-      InWsdlTreeView.BeginUpdate;
+      TreeView.BeginUpdate;
       try
         xmlUtil.Delete((xBind as TXml));
-        InWsdlTreeView.DeleteNode(InWsdlTreeView.FocusedNode, True);
-        WsdlOperation.AcquireLock;
+        TreeView.DeleteNode(TreeView.FocusedNode, True);
+        FocusedOperation.AcquireLock;
         try
-          se.UpdateMessageRow(WsdlOperation, WsdlMessage);
+          se.UpdateMessageRow(FocusedOperation, FocusedMessage);
         finally
-          WsdlOperation.ReleaseLock;
+          FocusedOperation.ReleaseLock;
         end;
-        InWsdlTreeView.Invalidate;
+        TreeView.Invalidate;
         GridView.InvalidateNode(GridView.FocusedNode);
         stubChanged := True;
       finally
-        InWsdlTreeView.EndUpdate;
+        TreeView.EndUpdate;
       end;
     end; { if maxOccurs greater than 1 }
   end; { if xml clicked; just to be sure }
@@ -2625,19 +2495,19 @@ procedure TMainForm.ExtendRecursivityMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if (xBind is TXml) then
     with xBind as TXml do
     begin
       ExtendRecursivity;
-      UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
-      InWsdlTreeView.FocusedColumn := 0;
-      InWsdlTreeView.FullExpand(InWsdlTreeView.FocusedNode);
-      se.UpdateMessageRow(WsdlOperation, WsdlMessage);
-      InWsdlTreeView.Invalidate;
+      UpdateXmlTreeViewNode(TreeView, TreeView.FocusedNode);
+      TreeView.FocusedColumn := 0;
+      TreeView.FullExpand(TreeView.FocusedNode);
+      se.UpdateMessageRow(FocusedOperation, FocusedMessage);
+      TreeView.Invalidate;
       GridView.InvalidateNode(GridView.FocusedNode);
-      InWsdlTreeViewFocusChanged(InWsdlTreeView, InWsdlTreeView.FocusedNode,
-        InWsdlTreeView.FocusedColumn);
+      TreeViewFocusChanged(TreeView, TreeView.FocusedNode,
+        TreeView.FocusedColumn);
     end;
 end;
 
@@ -2647,28 +2517,28 @@ var
   xXml: TXml; { new created }
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if (xBind is TXml) and (Assigned((xBind as TXml).Xsd)) then
   begin
     Xml := xBind as TXml;
     if (LowerCase(Xml.Xsd.maxOccurs) = 'unbounded') or
       (StrToInt(Xml.Xsd.maxOccurs) > 1) then
     begin
-      if not xmlUtil.isAddAllowed(NodeToBind(InWsdlTreeView,
-          InWsdlTreeView.FocusedNode), True) then
+      if not xmlUtil.isAddAllowed(NodeToBind(TreeView,
+          TreeView.FocusedNode), True) then
         exit;
       xXml := AddSibbling(Xml);
-      InWsdlTreeView.FocusedNode := InsertXmlNode(InWsdlTreeView.FocusedNode,
+      TreeView.FocusedNode := InsertXmlNode(TreeView.FocusedNode,
         xXml);
-      InWsdlTreeView.FocusedColumn := 0;
-      InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
-      WsdlOperation.AcquireLock;
+      TreeView.FocusedColumn := 0;
+      TreeView.Expanded[TreeView.FocusedNode] := True;
+      FocusedOperation.AcquireLock;
       try
-        se.UpdateMessageRow(WsdlOperation, WsdlMessage);
+        se.UpdateMessageRow(FocusedOperation, FocusedMessage);
       finally
-        WsdlOperation.ReleaseLock;
+        FocusedOperation.ReleaseLock;
       end;
-      InWsdlTreeView.Invalidate;
+      TreeView.Invalidate;
       GridView.InvalidateNode(GridView.FocusedNode);
       stubChanged := True;
     end; { if maxOccurs greater than 1 }
@@ -2677,7 +2547,7 @@ end;
 
 function TMainForm.InsertXmlNode(aNode: PVirtualNode; aXml: TXml): PVirtualNode;
 begin
-  result := InWsdlTreeView.InsertNode(aNode, amInsertAfter);
+  result := TreeView.InsertNode(aNode, amInsertAfter);
   FinishXmlNode(result, aXml);
 end;
 
@@ -2690,26 +2560,19 @@ begin
 end;
 
 procedure TMainForm.DoUpdateConsole;
-var
-  f: Integer;
 begin
-  captionFileName := ExtractFileName(se.projectFileName);
-  ClearConsole;
-  PrepareOperation;
-  CreateEnvironmentSubMenuItems;
-  CreateScriptsSubMenuItems;
-  LogUpdateColumns;
-  if se.Wsdls.Count > -1 then
-    UpdateConsole(0)
-  else
-    UpdateConsole(-1);
-  CheckBoxClick(nil);
-  if allOperations.Find (se.FocusOperationName + ';' + se.FocusOperationNameSpace, f) then
-  begin
-    WsdlOperation := allOperations.Operations[f];
-    if (se.FocusMessageIndex < WsdlOperation.Messages.Count)
-    and (se.FocusMessageIndex > -1) then
-      WsdlMessage := WsdlOperation.Messages.Messages[se.FocusMessageIndex];
+  DisableViewOnFocusChangeEvents;
+  try
+    captionFileName := ExtractFileName(se.projectFileName);
+    ClearConsole;
+    PrepareOperation;
+    CreateEnvironmentSubMenuItems;
+    CreateScriptsSubMenuItems;
+    LogUpdateColumns;
+    CheckBoxClick(nil);
+    FocusedOperation := se.LastFocusedOperation;
+  finally
+    EnableViewOnFocusChangeEvents;
   end;
 end;
 
@@ -2718,19 +2581,8 @@ begin
   se.projectContext := contextPropertyOverwrite;
   xmlio.ProjectContext := contextPropertyOverwrite;
   se.doCreateBackup := doCreateBackup;
-  if Assigned (WsdlOperation) then
-  begin
-    se.FocusOperationName := WsdlOperation.Alias;
-    se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
-    se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
-  end
-  else
-  begin
-    se.FocusOperationName := '';
-    se.FocusOperationNameSpace := '';
-    se.FocusMessageIndex := 0;
-  end;
-  ClearConsole;
+  se.LastFocusedOperation := FocusedOperation;
+  FocusedOperation := nil;
   Invalidate;
 end;
 
@@ -2762,7 +2614,7 @@ var
   Data: PXmlTreeRec;
   I: Integer;
 begin
-  Data := InWsdlTreeView.GetNodeData(aNode);
+  Data := TreeView.GetNodeData(aNode);
   Data.Bind := aXml;
   if Assigned((aXml.Parent as TXml).Xsd) then
   begin
@@ -2782,48 +2634,48 @@ begin
   end;
   for I := 0 to aXml.Attributes.Count - 1 do
   begin
-    attrNode := InWsdlTreeView.AddChild(aNode);
+    attrNode := TreeView.AddChild(aNode);
     attrNode.CheckType := ctCheckBox;
     if aXml.Attributes.XmlAttributes[I].Checked then
       attrNode.CheckState := csCheckedNormal
     else
       attrNode.CheckState := csUnCheckedNormal;
-    Data := InWsdlTreeView.GetNodeData(attrNode);
+    Data := TreeView.GetNodeData(attrNode);
     Data.Bind := aXml.Attributes.XmlAttributes[I];
   end;
   for I := 0 to aXml.Items.Count - 1 do
-    FinishXmlNode(InWsdlTreeView.AddChild(aNode), aXml.Items.XmlItems[I]);
+    FinishXmlNode(TreeView.AddChild(aNode), aXml.Items.XmlItems[I]);
 end;
 
 procedure TMainForm.Copytoclipboard1Click(Sender: TObject);
 begin
-  xmlUtil.CopyToClipboard(tlsXml, NodeToBind(InWsdlTreeView,
-      InWsdlTreeView.FocusedNode));
+  xmlUtil.CopyToClipboard(tlsXml, NodeToBind(TreeView,
+      TreeView.FocusedNode));
 end;
 
 procedure TMainForm.EndEdit;
 begin
   GridView.EndEditNode;
-  InWsdlTreeView.EndEditNode;
+  TreeView.EndEditNode;
 end;
 
 procedure TMainForm.PopulateXml(aViewType: TxvViewType);
 begin
-  xmlUtil.Populate(NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode),
+  xmlUtil.Populate(NodeToBind(TreeView, TreeView.FocusedNode),
     aViewType);
   stubChanged := True;
-  RevalidateXmlTreeView(InWsdlTreeView);
+  RevalidateXmlTreeView(TreeView);
 end;
 
 procedure TMainForm.WsdlPasteFromClipboardMenuItemClick(Sender: TObject);
 begin
   try
-    xmlUtil.PasteFromClipboard(NodeToBind(InWsdlTreeView,
-        InWsdlTreeView.FocusedNode));
-    UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+    xmlUtil.PasteFromClipboard(NodeToBind(TreeView,
+        TreeView.FocusedNode));
+    UpdateXmlTreeViewNode(TreeView, TreeView.FocusedNode);
     stubChanged := True;
   finally
-    RevalidateXmlTreeView(InWsdlTreeView);
+    RevalidateXmlTreeView(TreeView);
   end;
 end;
 
@@ -2901,35 +2753,33 @@ end;
 
 procedure TMainForm.FullExpand1Click(Sender: TObject);
 begin
-  if Assigned(InWsdlTreeView.FocusedNode) then
-    InWsdlTreeView.FullExpand(InWsdlTreeView.FocusedNode);
+  if Assigned(TreeView.FocusedNode) then
+    TreeView.FullExpand(TreeView.FocusedNode);
 end;
 
 procedure TMainForm.FullCollapse1Click(Sender: TObject);
 begin
-  if Assigned(InWsdlTreeView.FocusedNode) then
-    InWsdlTreeView.FullCollapse(InWsdlTreeView.FocusedNode);
+  if Assigned(TreeView.FocusedNode) then
+    TreeView.FullCollapse(TreeView.FocusedNode);
 end;
 
 procedure TMainForm.XmlZoomValueAsTextMenuItemClick(Sender: TObject);
 var
   editAllowed: Boolean;
 begin
-  editAllowed := False;
-  InWsdlTreeViewEditing(InWsdlTreeView, InWsdlTreeView.FocusedNode,
-    treeValueColumn, editAllowed);
-  xmlUtil.ZoomAsText(NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode),
+  editAllowed := FocusedBind.IsEditingAllowed;
+  xmlUtil.ZoomAsText(NodeToBind(TreeView, TreeView.FocusedNode),
     not editAllowed);
   if editAllowed then
   begin
-    InWsdlTreeViewNewText(InWsdlTreeView, InWsdlTreeView.FocusedNode,
+    TreeViewNewText(TreeView, TreeView.FocusedNode,
       treeValueColumn, xmlUtil.NewValue);
   end;
 end;
 
 procedure TMainForm.XmlZoomValueAsXMLMenuItemClick(Sender: TObject);
 begin
-  xmlUtil.ZoomAsXml(NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode),
+  xmlUtil.ZoomAsXml(NodeToBind(TreeView, TreeView.FocusedNode),
     True);
 end;
 
@@ -2973,15 +2823,15 @@ end;
 procedure TMainForm.XSDreportinClipBoardSpreadSheet1Click(Sender: TObject);
 var
   xXml: TXml;
-  xStrings: TStringList;
+  xStrings: TJBStringList;
 begin
-  if not (NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode) is TXml) then
+  if not (NodeToBind(TreeView, TreeView.FocusedNode) is TXml) then
     raise Exception.Create('Only implemented for Xml');
-  xXml := (NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode) as TXml);
+  xXml := (NodeToBind(TreeView, TreeView.FocusedNode) as TXml);
   if not Assigned (xXml.Xsd)  then
     raise Exception.Create('Only possible for XSD based Xml''s');
 
-  xStrings := TStringList.Create;
+  xStrings := TJBStringList.Create;
   try
     xXml.Xsd.GenerateReport(xStrings);
     Clipboard.AsText := xStrings.Text;
@@ -2992,15 +2842,27 @@ end;
 
 procedure TMainForm.UpdateMessagesView;
 begin
-  if Assigned (WsdlOperation) then
+  if Assigned (FocusedOperation) then
   begin
     if doTrackDuplicateMessages then
-      WsdlOperation.Messages.SetDuplicates
+      FocusedOperation.Messages.SetDuplicates
     else
-      WsdlOperation.Messages.ResetDuplicates;
+      FocusedOperation.Messages.ResetDuplicates;
   end;
-  WsdlOperation.Messages.SetNameDuplicates;
+  FocusedOperation.Messages.SetNameDuplicates;
   GridView.Invalidate;
+end;
+
+procedure TMainForm.GridViewUnselect;
+var
+  xNode: PVirtualNode;
+begin
+  xNode := GridView.GetFirstSelected;
+  while Assigned (xNode) do
+  begin
+    GridView.Selected[xNode] := False;
+    xNode := GridView.GetNextSelected(xNode);
+  end;
 end;
 
 procedure TMainForm.ShowHelpDocumentation(aName: String);
@@ -3028,22 +2890,6 @@ end;
 
 procedure TMainForm.ShowChosenLogTab;
 begin
-  NotificationsPanel.Visible := False;
-  SnapshotsPanel.Visible := False;
-  MessagesPanel.Visible := False;
-  case LogTabControl.TabIndex of
-    Ord (spNotifications):
-    begin
-      LogTabControl.Tabs [Ord (spNotifications)] := notifyTabCaption;
-      NotificationsPanel.Visible := True;
-    end;
-    Ord (spSnapshots): SnapshotsPanel.Visible := True;
-    Ord (spMessages):
-    begin
-      MessagesPanel.Visible := True;
-      PositionMessagesTabControl;
-  end;
-end;
 end;
 
 function TMainForm.ShowProgressForm: Boolean;
@@ -3116,10 +2962,10 @@ end;
 
 procedure TMainForm.ZoomasScriptAssignments1Click(Sender: TObject);
 begin
-  if not (NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode) is TXml) then
+  if not (NodeToBind(TreeView, TreeView.FocusedNode) is TXml) then
     raise Exception.Create('Only implemented for Xml');
   ShowInfoForm( 'ScriptAssignments'
-              , (NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode) as TXml).asAssignments
+              , (NodeToBind(TreeView, TreeView.FocusedNode) as TXml).asAssignments
               );
 end;
 
@@ -3148,21 +2994,21 @@ end;
 
 procedure TMainForm.OperationZoomOnActionExecute(Sender: TObject);
 begin
-  SetOperationZoomPath(WsdlOperation);
+  SetOperationZoomPath(FocusedOperation);
 end;
 
 procedure TMainForm.OperationZoomOnActionUpdate(Sender: TObject);
 begin
-  OperationZoomOnAction.Enabled := (Assigned(WsdlOperation)) and
-    (Assigned(WsdlOperation.reqBind) or Assigned(WsdlOperation.rpyBind));
+  OperationZoomOnAction.Enabled := (Assigned(FocusedOperation)) and
+    (Assigned(FocusedOperation.reqBind) or Assigned(FocusedOperation.rpyBind));
 end;
 
 procedure TMainForm.Expand2Click(Sender: TObject);
 begin
-  if Assigned(InWsdlTreeView.FocusedNode) then
+  if Assigned(TreeView.FocusedNode) then
   begin
-    InWsdlTreeView.FullCollapse(nil);
-    InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
+    TreeView.FullCollapse(nil);
+    TreeView.Expanded[TreeView.FocusedNode] := True;
   end;
 end;
 
@@ -3173,6 +3019,12 @@ begin
   if not InactiveAfterPrompt then Exit;
   OperationDefsXsd.XsdByCaption ['OperationDefs.XmlSampleOperations.Operation.Annotation']
     .EditProcedure := EditXmlValueAsText;
+  if not BooleanPromptDialog ( Format ( 'XmlSample Operations is now depricated;%sSwitch to Api By Example which now also supports XML%sContinue'
+                                      , [LineEnding, LineEnding, LineEnding]
+                                      )
+                             )
+  then
+    Exit;
   xXml := se.xmlSampleOperationsXml('');
   try
     if EditXmlXsdBased ( 'XmlSample Operations'
@@ -3213,9 +3065,9 @@ procedure TMainForm.AfterRequestScriptButtonClick(Sender: TObject);
 var
   xOperation: TWsdlOperation;
 begin
-  if not Assigned(WsdlOperation) then
+  if not Assigned(FocusedOperation) then
     Raise Exception.Create('First get a Wsdl');
-  xOperation := TWsdlOperation.Create(WsdlOperation);
+  xOperation := TWsdlOperation.Create(FocusedOperation);
   if xOperation.StubAction = saStub then Exit;
   try
     Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
@@ -3228,9 +3080,9 @@ begin
       if EditOperationScriptForm.ModalResult = mrOk then
       begin
         stubChanged := True;
-        WsdlOperation.AfterScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
-        try WsdlOperation.PrepareBefore; Except end;
-        try WsdlOperation.PrepareAfter; Except end;
+        FocusedOperation.AfterScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
+        try FocusedOperation.PrepareBefore; Except end;
+        try FocusedOperation.PrepareAfter; Except end;
       end;
       FillInWsdlEdits;
     finally
@@ -3252,11 +3104,11 @@ var
   xOperation: TWsdlOperation;
   xScriptName: String;
 begin
-  if not Assigned(WsdlOperation) then
+  if not Assigned(FocusedOperation) then
     Raise Exception.Create('First get a Wsdl');
   XmlUtil.PushCursor (crHourGlass);
   try
-    xOperation := TWsdlOperation.Create(WsdlOperation);
+    xOperation := TWsdlOperation.Create(FocusedOperation);
     if xOperation.StubAction = saStub then
       xScriptName := ' / Main Script'
     else
@@ -3272,9 +3124,9 @@ begin
         if EditOperationScriptForm.ModalResult = mrOk then
         begin
           stubChanged := True;
-          WsdlOperation.BeforeScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
-          try WsdlOperation.PrepareBefore; Except end;
-          try WsdlOperation.PrepareAfter; Except end;
+          FocusedOperation.BeforeScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
+          try FocusedOperation.PrepareBefore; Except end;
+          try FocusedOperation.PrepareAfter; Except end;
         end;
         FillInWsdlEdits;
       finally
@@ -3293,10 +3145,10 @@ var
   xNode: PVirtualNode;
   xData: PXmlTreeRec;
 begin
-  xNode := InWsdlTreeView.GetFirst;
+  xNode := TreeView.GetFirst;
   while Assigned(xNode) do
   begin
-    xData := InWsdlTreeView.GetNodeData(xNode);
+    xData := TreeView.GetNodeData(xNode);
     if Assigned(xData.Bind) then
     begin
       if xData.Bind.Checked then
@@ -3304,7 +3156,7 @@ begin
       else
         xNode.CheckState := csUnCheckedNormal;
     end;
-    xNode := InWsdlTreeView.GetNext(xNode);
+    xNode := TreeView.GetNext(xNode);
   end;
 end;
 
@@ -3326,18 +3178,6 @@ begin
   result := False;
   captionFileName := ExtractFileName(se.projectFileName);
   se.doCreateBackup := doCreateBackup;
-  if Assigned (WsdlOperation) then
-  begin
-    se.FocusOperationName := WsdlOperation.Alias;
-    se.FocusOperationNameSpace := WsdlOperation.reqTagNameSpace;
-    se.FocusMessageIndex := WsdlOperation.Messages.IndexOfObject(WsdlMessage);
-  end
-  else
-  begin
-    se.FocusOperationName := '';
-    se.FocusOperationNameSpace := '';
-    se.FocusMessageIndex := 0;
-  end;
   if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
   begin
     TProcedureThread.Create(False, False, se, se.ExportToFile);
@@ -3429,6 +3269,7 @@ procedure TMainForm.OpenStubCase;
 var
   f: Integer;
 begin
+  FocusedOperation := nil;
   se.doStartOnOpeningProject := doStartOnOpeningProject;
   if (ExtractFileExt(se.projectFileName) <> _ProjectFileExtention)
   and (ExtractFileExt(se.projectFileName) <> _ProjectOldFileExtention) then
@@ -3562,7 +3403,7 @@ begin
         raise Exception.Create
           ('Reload refused because instance of ' + _progName +
             ' has unsaved changes in design');
-      if not Assigned(WsdlOperation) then
+      if not Assigned(FocusedOperation) then
         raise Exception.Create(
           'Reload refused because instance has no project loaded');
       if not se.IsActive then
@@ -3587,8 +3428,8 @@ begin
     se.Clean;
   finally
     stubChanged := True;
-    NavigatorTreeViewFocusChanged(NavigatorTreeView,
-      NavigatorTreeView.FocusedNode, NavigatorTreeView.FocusedColumn);
+    NvgtViewFocusChanged(NvgtView,
+      NvgtView.FocusedNode, NvgtView.FocusedColumn);
   end;
 end;
 
@@ -3597,9 +3438,9 @@ begin
   { }
   se.projectContext := contextPropertyOverwrite;
   xmlio.ProjectContext := contextPropertyOverwrite;
-  InWsdlTreeView.BeginUpdate;
+  TreeView.BeginUpdate;
   GridView.BeginUpdate;
-  NavigatorTreeView.BeginUpdate;
+  NvgtView.BeginUpdate;
   { }
   try
     GridView.Clear;
@@ -3614,10 +3455,6 @@ begin
         CreateEnvironmentSubMenuItems;
         CreateScriptsSubMenuItems;
         LogUpdateColumns;
-        if se.Wsdls.Count > -1 then
-          UpdateConsole(0)
-        else
-          UpdateConsole(-1);
       finally
         ReleaseLock;
       end;
@@ -3629,9 +3466,10 @@ begin
       { }
     end;
   finally
-    NavigatorTreeView.EndUpdate;
+    FocusedOperation := se.LastFocusedOperation;
+    NvgtView.EndUpdate;
     GridView.EndUpdate;
-    InWsdlTreeView.EndUpdate;
+    TreeView.EndUpdate;
     CheckBoxClick(nil);
   end;
 end;
@@ -3659,7 +3497,7 @@ begin
       if ChooseStringForm.ModalResult = mrOk then
       begin
         ChoosenString := ChooseStringForm.ChoosenString;
-        FileName := ExpandRelativeFileName ( GetCurrentDirUTF8 + DirectorySeparator
+        FileName := ExpandRelativeFileName ( LazFileUtils.GetCurrentDirUTF8 + DirectorySeparator
                                            , Copy(ChoosenString, 3, Length(ChoosenString) - 2)
                                            );
         ReopenCaseList.Clear;
@@ -3680,7 +3518,7 @@ begin
   end;
 end;
 
-procedure TMainForm.UpdateReopenList(aList: TStringList; aFileName: String);
+procedure TMainForm.UpdateReopenList(aList: TJBStringList; aFileName: String);
 var
   x: Integer;
 begin
@@ -3705,11 +3543,11 @@ var
 begin
   UnhideOperationMenuItem.OnClick := nil;
   UnhideOperationMenuItem.Clear;
-  Node := NavigatorTreeView.GetFirst;
+  Node := NvgtView.GetFirst;
   while Assigned(Node) do
   begin
-    xOperation := NodeToOperation(NavigatorTreeView, Node);
-    NavigatorTreeView.IsVisible[Node] := not xOperation.HiddenFromUI;
+    xOperation := NodeToOperation(NvgtView, Node);
+    NvgtView.IsVisible[Node] := not xOperation.HiddenFromUI;
     if xOperation.HiddenFromUI then
     begin
       xMenuItem := TMenuItem.Create(nil);
@@ -3718,7 +3556,7 @@ begin
       xMenuItem.OnClick := UnhideOperationMenuItemClick;
       UnhideOperationMenuItem.Add(xMenuItem);
     end;
-    Node := NavigatorTreeView.GetNext(Node);
+    Node := NvgtView.GetNext(Node);
   end;
   UnhideOperationMenuItem.Enabled := (UnhideOperationMenuItem.Count > 0);
   UnhideAllOperationsAction.Enabled := UnhideOperationMenuItem.Enabled;
@@ -3728,8 +3566,8 @@ procedure TMainForm.UpdateVisibiltyTreeView(aFreeFormat: Boolean);
 begin
   if aFreeFormat then
   begin
-    InWsdlTreeView.Align := alLeft;
-    InWsdlTreeView.Visible := False;
+    TreeView.Align := alLeft;
+    TreeView.Visible := False;
     FreeFormatMemo.Align := alClient;
     FreeFormatMemo.Visible := True;
   end
@@ -3737,8 +3575,8 @@ begin
   begin
     FreeFormatMemo.Align := alRight;
     FreeFormatMemo.Visible := False;
-    InWsdlTreeView.Align := alClient;
-    InWsdlTreeView.Visible := True;
+    TreeView.Align := alClient;
+    TreeView.Visible := True;
   end;
 end;
 
@@ -3771,7 +3609,7 @@ begin
     end;
     UpdateInWsdlCheckBoxes;
     GridView.Invalidate;
-    InWsdlTreeView.Invalidate;
+    TreeView.Invalidate;
   end;
 end;
 
@@ -3779,7 +3617,7 @@ procedure TMainForm.StartNonBlockingThreadEvent ;
 begin
   if NumberOfNonBlockingThreads = 0 then
   begin
-    LogTabControl.TabIndex := Ord (spMessages);
+    ShowKindOfInformation := spMessages;
     abortPressed := False;
   end;
   Inc (NumberOfNonBlockingThreads);
@@ -3790,7 +3628,7 @@ begin
   Dec (NumberOfNonBlockingThreads);
   if (NumberOfNonBlockingThreads <= 0) then
   begin
-    LogTabControl.TabIndex := Ord (spMessages);
+    ShowKindOfInformation := spMessages;
     if NumberOfBlockingThreads <= 0 then
       abortPressed := False;
   end;
@@ -3980,39 +3818,17 @@ end;
 
 procedure TMainForm.PrepareOperation;
 begin
-  WsdlOperationsComboBox.Clear;
-  WsdlServicesComboBox.Clear;
-  WsdlComboBox.Items.Text := se.Wsdls.Text;
-  FillOperationReqsTreeView(NavigatorTreeView, allAliasses);
+  WsdlOperationNameEdit.Clear;
+  WsdlServiceNameEdit.Clear;
+  FillNvgtView(allAliasses);
   if se.scriptErrorCount > 0 then
     ShowMessage(IntToStr(se.scriptErrorCount) +
         ' Script(s) found with errors, see Exceptions log');
 end;
 
-procedure TMainForm.setWsdl(const Value: TWsdl);
-begin
-  if Assigned(Value) and (Value is TWsdl) then
-    WsdlComboBox.ItemIndex := se.Wsdls.IndexOfObject(Value)
-  else
-    WsdlComboBox.ItemIndex := -1;
-end;
-
 function TMainForm.getWsdl: TWsdl;
 begin
-  if WsdlComboBox.ItemIndex < 0 then
-    result := nil
-  else
-  begin
-    try
-      result := se.Wsdls.Objects[WsdlComboBox.ItemIndex]
-        as TWsdl except result := nil;
-    end;
-  end;
-end;
-
-procedure TMainForm.WsdlComboBoxChange(Sender: TObject);
-begin
-  WsdlPopulateServices(Wsdl);
+  result := FocusedOperation.Wsdl;
 end;
 
 procedure TMainForm.ClearConsole;
@@ -4030,23 +3846,16 @@ begin
   ExceptionMemo.Clear;
   ExceptionsVTS.Clear;
 }
-  NavigatorTreeView.Clear;
-  // InWSdlEnumerationsListView.Clear;
+  NvgtView.Clear;
   InWsdlPropertiesListView.Clear;
   OperationDocumentationViewer.Canvas.Clear;
-  InWsdlTreeView.Clear;
-  WsdlServicesComboBox.Clear;
-  WsdlOperationsComboBox.Clear;
-  WsdlComboBox.Clear;
+  TreeView.Clear;
+  WsdlServiceNameEdit.Text := '';
+  WsdlOperationNameEdit.Text := '';
+  WsdlNameEdit.Text := '';
   StatusPanel.Caption := '';
   while MessagesVTS.Header.Columns.Count > Ord(logStdColumnCount) do
     MessagesVTS.Header.Columns.Delete(MessagesVTS.Header.Columns.Count - 1);
-end;
-
-procedure TMainForm.UpdateConsole(aIndex: Integer);
-begin
-  WsdlComboBox.ItemIndex := aIndex;
-  WsdlPopulateServices(Wsdl);
 end;
 
 procedure TMainForm.ReopenStubCaseActionUpdate(Sender: TObject);
@@ -4092,7 +3901,7 @@ begin
   except
   end;
   try
-    setTreeviewColors(InWsdlTreeView);
+    setTreeviewColors(TreeView);
   except
   end;
   try
@@ -4100,16 +3909,16 @@ begin
   except
   end;
   ToggleDoScrollMessagesIntoViewAction.Checked := doScrollMessagesIntoView;
-  ActionComboBox.Enabled := Assigned(WsdlOperation) and
-    (WsdlOperation.WsdlService.DescriptionType <> ipmDTEmail);
+  ActionComboBox.Enabled := Assigned(FocusedOperation) and
+    (FocusedOperation.WsdlService.DescriptionType <> ipmDTEmail);
   WsdlItemAddMenuItem.Enabled := True;
   WsdlPasteFromClipboardMenuItem.Enabled := True;
   WsdlPopulateMenuItem.Enabled := True;
   FreeFormatMemo.ReadOnly := se.IsActive and False;
   if se.IsActive then
   begin
-    LogTabControl.TabIndex := Ord (spMessages);
-    MessagesTabControl.TabIndex := Ord(slRequestBody);
+    ShowKindOfInformation := spMessages;
+    ShowKindOfLogData := slRequestBody;
     if se.IsActive then
     begin
       Application.Title := '' + _progName + ' (Active)';
@@ -4117,8 +3926,6 @@ begin
       stopAction.ShortCut := startStopShortCut;
       startStopButton.Action := stopAction;
     end;
-    if nStubs > freeStubs then
-      freeStubs := nStubs + 10 + Random(10);
   end
   else
   begin
@@ -4228,34 +4035,36 @@ begin
   xStubAction := saStub;
   if ActionComboBox.ItemIndex <> 0 then
     xStubAction := saRequest;
-  if Assigned(WsdlOperation) then
+  if Assigned(FocusedOperation) then
   begin
-    if (WsdlOperation.StubAction <> xStubAction) then
+    if (FocusedOperation.StubAction <> xStubAction) then
     begin
-      WsdlOperation.StubAction := xStubAction;
-      NavigatorTreeView.OnFocusChanged ( NavigatorTreeView
-                                       , NavigatorTreeView.FocusedNode
+      FocusedOperation.StubAction := xStubAction;
+      NvgtView.OnFocusChanged ( NvgtView
+                                       , NvgtView.FocusedNode
                                        , 0
                                        );
     end;
-    WsdlOperation.StubAction := xStubAction;
+    FocusedOperation.StubAction := xStubAction;
     stubChanged := True;
-    NavigatorTreeView.Invalidate;
-    OperationDelayResponseTimeAction.Visible :=
-      (WsdlOperation.StubAction <> saRequest);
-    if (WsdlOperation.DelayTimeMsMin = 0) and
-      (WsdlOperation.DelayTimeMsMax = 0) then
+    NvgtView.Invalidate;
+    OperationDelayResponseTimeAction.Visible := (FocusedOperation.StubAction <> saRequest);
+    if (FocusedOperation.DelayTimeMsMin = 0)
+    and (FocusedOperation.DelayTimeMsMax = 0)
+    then
       OperationDelayResponseTimeAction.ImageIndex := 60
     else
       OperationDelayResponseTimeAction.ImageIndex := 61;
-    RedirectAddressAction.Visible := (WsdlOperation.StubAction = saRequest);
-    if WsdlOperation.StubAction = saStub then
+    RedirectAddressAction.Visible := (FocusedOperation.StubAction = saRequest);
+    if FocusedOperation.StubAction = saStub then
       EditMessageScriptAction.Caption := 'Edit Message Script'
     else
       EditMessageScriptAction.Caption := 'Edit Message Before Script';
-    EditBetweenScriptMenuItem.Visible := (WsdlOperation.StubAction = saStub);
+    EditBetweenScriptMenuItem.Visible := (FocusedOperation.StubAction = saStub);
     EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
     EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
+    ShowFocusedMessageInTreeView;
+    TreeView.FocusedNode := TreeView.GetFirst;
   end;
 end;
 
@@ -4267,12 +4076,11 @@ var
   xBind: TCustomBindable;
 begin
 // requires an imagelist attached to treeview
-  xMessage := nil; //avoid warning
   if Column = nMessageButtonColumns then
     Exit;
-  if not Assigned(wsdlOperation) then
+  if not Assigned(FocusedOperation) then
     exit;
-  NodeToMessage(Sender, Node, xMessage);
+  xMessage := NodeToMessage(Sender, Node);
   if not Assigned(xMessage) then
     exit;
   try
@@ -4296,7 +4104,7 @@ begin
                 end;
                 Ord (messagesColumnAfterScript):
                   begin
-                    if wsdlOperation.StubAction <> saStub then
+                    if FocusedOperation.StubAction <> saStub then
                     begin
                       if (xMessage.AfterScriptLines.Count > 0) then
                       begin
@@ -4401,9 +4209,8 @@ begin
   n columns correlation values
   m columns displayed columns
 }
-  xMessage := nil; //avoid warning
   CellText := '';
-  NodeToMessage(Sender, Node, xMessage);
+  xMessage := NodeToMessage(Sender, Node);
   if not Assigned(xMessage) then Exit;
   if Column < nMessageButtonColumns then Exit;
   try
@@ -4468,18 +4275,18 @@ begin
   begin
     if Column = 0 then
     begin
-      xOrgMessage := WsdlOperation.Messages.Messages[0];
-      if (WsdlOperation.StubAction = saRequest) then
-        xMessage := TWsdlMessage.CreateRequest(WsdlOperation,
-          'Request' + IntToStr(WsdlOperation.Messages.Count),
-          'Pattern' + IntToStr(WsdlOperation.Messages.Count),
+      xOrgMessage := FocusedOperation.Messages.Messages[0];
+      if (FocusedOperation.StubAction = saRequest) then
+        xMessage := TWsdlMessage.CreateRequest(FocusedOperation,
+          'Request' + IntToStr(FocusedOperation.Messages.Count),
+          'Pattern' + IntToStr(FocusedOperation.Messages.Count),
           xOrgMessage.Documentation)
       else
-        xMessage := TWsdlMessage.CreateReply(WsdlOperation,
-          'Reply' + IntToStr(WsdlOperation.Messages.Count),
-          'Pattern' + IntToStr(WsdlOperation.Messages.Count),
+        xMessage := TWsdlMessage.CreateReply(FocusedOperation,
+          'Reply' + IntToStr(FocusedOperation.Messages.Count),
+          'Pattern' + IntToStr(FocusedOperation.Messages.Count),
           xOrgMessage.Documentation);
-      if WsdlOperation.reqBind is TIpmItem then
+      if FocusedOperation.reqBind is TIpmItem then
       begin (xMessage.reqBind as TIpmItem)
         .LoadValues(xOrgMessage.reqBind as TIpmItem);
 (xMessage.rpyBind as TIpmItem)
@@ -4492,12 +4299,12 @@ begin
         .LoadValues(xOrgMessage.reqBind as TXml, False, True);
 (xMessage.rpyBind as TXml)
         .LoadValues(xOrgMessage.rpyBind as TXml, False, True);
-        se.UpdateMessageRow(WsdlOperation, xMessage);
-        if Assigned(WsdlOperation.FaultMessages) then
+        se.UpdateMessageRow(FocusedOperation, xMessage);
+        if Assigned(FocusedOperation.FaultMessages) then
         begin
           xMessage.fltBind.Name := xOrgMessage.fltBind.Name;
 (xMessage.fltBind as TXml)
-          .Xsd := WsdlOperation.FaultXsd; (xMessage.fltBind as TXml)
+          .Xsd := FocusedOperation.FaultXsd; (xMessage.fltBind as TXml)
           .LoadValues(xOrgMessage.fltBind as TXml, True);
         end;
       end;
@@ -4509,12 +4316,12 @@ begin
     else
     begin
       Node := GridView.GetLast;
-      NodeToMessage(Sender, Node, xMessage);
+      xMessage := NodeToMessage(Sender, Node);
     end;
   end
   else
   begin
-    NodeToMessage(Sender, Node, xMessage);
+    xMessage := NodeToMessage(Sender, Node);
   end;
 
   if Column = 0 then
@@ -4582,7 +4389,7 @@ var
   X: Integer;
 begin
   try
-    dXml := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode) as TXml;
+    dXml := NodeToBind(TreeView, TreeView.FocusedNode) as TXml;
     fXml := dXml;
     while fXml.Name <> 'FinMessage' do
       fXml := fXml.Parent as TXml;
@@ -4597,7 +4404,7 @@ begin
         try
           sXml := AsXml;
           try
-            WsdlOperation.AcquireLock;
+            FocusedOperation.AcquireLock;
             try
               if sXml.Name = dXml.Name then
               begin
@@ -4620,7 +4427,7 @@ begin
                 dXml.LoadValues(bXml, False, True);
               end;
             finally
-              WsdlOperation.ReleaseLock;
+              FocusedOperation.ReleaseLock;
               stubChanged := True;
             end;
           finally
@@ -4634,7 +4441,7 @@ begin
         ShowInfoForm('Error parsing ClipBoard as SwiftMt message', E.Message);
     end;
   finally
-    RevalidateXmlTreeView(InWsdlTreeView);
+    RevalidateXmlTreeView(TreeView);
   end;
 end;
 
@@ -4652,10 +4459,9 @@ var
   xBind: TCustomBindable;
   xMessage: TWsdlMessage;
 begin
-  xMessage := nil; //avoid warning
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
   try
-    NodeToMessage(Sender, Node, xMessage);
+    xMessage := NodeToMessage(Sender, Node);
     if Column = nMessageButtonColumns then
     begin
       if not xmlio.isFileNameAllowed(NewText) then
@@ -4667,7 +4473,7 @@ begin
         else
         begin
           xMessage.Name := NewText;
-          WsdlOperation.Messages.SetNameDuplicates;
+          FocusedOperation.Messages.SetNameDuplicates;
           GridView.InvalidateColumn(Column);
           stubChanged := True;
         end;
@@ -4680,7 +4486,7 @@ begin
         xNode := GridView.GetFirstSelected;
         while Assigned(xNode) do
         begin
-          NodeToMessage(Sender, xNode, xMessage);
+          xMessage := NodeToMessage(Sender, xNode);
           if NewText <> xMessage.CorrelationBindables.Bindables[Column - nMessageButtonColumns - 1]
             .CorrelationValue then
           begin
@@ -4699,7 +4505,7 @@ begin
       begin
         { }{
           if (Assigned (xMessage.ColumnXmls.Bindables[Column - xMessage.CorrelationBindables.Count - 1])) then
-          InWsdlTreeView.OnNewText ( InWsdlTreeView
+          TreeView.OnNewText ( TreeView
           , editingNode
           , treeValueColumn
           , NewText
@@ -4708,7 +4514,7 @@ begin
         xNode := GridView.GetFirstSelected;
         while Assigned(xNode) do
         begin
-          NodeToMessage(Sender, xNode, xMessage);
+          xMessage := NodeToMessage(Sender, xNode);
           xBind := xMessage.ColumnXmls.Bindables
             [Column - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1];
           if (xBind is TXml) or (xBind is TXmlAttribute) then
@@ -4742,24 +4548,18 @@ begin
           end;
           xNode := GridView.GetNextSelected(xNode);
         end;
-        RevalidateXmlTreeView(InWsdlTreeView);
+        RevalidateXmlTreeView(TreeView);
       end;
     end;
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
 end;
 
 procedure TMainForm.GridViewEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
-var
-  xMessage: TWsdlMessage;
-  swapEvent: TVTFocusChangeEvent;
-  xDataIndex: Integer;
 begin
-  xMessage := nil; //avoid warning
-  NodeToMessage(Sender, Node, xMessage);
-  editingNode := InWsdlTreeView.FocusedNode;
+  editingNode := TreeView.FocusedNode;
   if Column < nMessageButtonColumns then
   begin
     Allowed := False;
@@ -4770,34 +4570,21 @@ begin
     Allowed := (Node <> Sender.GetFirst) and (GridView.SelectedCount = 1);
     exit;
   end;
-  if (Column - nMessageButtonColumns) <= xMessage.CorrelationBindables.Count then
+  if (Column - nMessageButtonColumns) <= FocusedMessage.CorrelationBindables.Count then
   begin
     Allowed := (Node <> Sender.GetFirst)
-           and (Assigned (xMessage.CorrelationBindables.Bindables[Column- nMessageButtonColumns - 1]))
+           and (Assigned (FocusedMessage.CorrelationBindables.Bindables[Column- nMessageButtonColumns - 1]))
              ;
     exit;
   end;
-  xDataIndex := Column - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1;
-  Allowed := Assigned(xMessage.ColumnXmls.Bindables [xDataIndex])
-         and (xMessage.ColumnXmls.Bindables [xDataIndex].Children.Count = 0)
-           ;
-  if Allowed then
-  begin
-    swapEvent := InWsdlTreeView.OnFocusChanged;
-    try
-      InWsdlTreeView.OnFocusChanged := nil;
-      FocusOnBind(xMessage.ColumnXmls.Bindables [xDataIndex]);
-    finally
-      InWsdlTreeView.OnFocusChanged := swapEvent;
-    end;
-  end;
+  Allowed := FocusedBind.IsEditingAllowed;
 end;
 
 procedure TMainForm.SelectCorrelationElementActionUpdate(Sender: TObject);
 begin
-  SelectCorrelationElementAction.Enabled := Assigned(WsdlOperation);
-  // and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
-  // and (WsdlOperation.StubAction <> saRequest)
+  SelectCorrelationElementAction.Enabled := Assigned(FocusedOperation);
+  // and (FocusedOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+  // and (FocusedOperation.StubAction <> saRequest)
                                           ;
 end;
 
@@ -4805,7 +4592,7 @@ procedure TMainForm.SelectCorrelationElementActionExecute(Sender: TObject);
 var
   swapBindable: TCustomBindable;
 begin
-  with WsdlOperation do
+  with FocusedOperation do
   begin
     if WsdlService.DescriptionType in [ipmDTFreeFormat] then
       FreeFormatReq := Messages.Messages[0].FreeFormatReq; // always and only from first
@@ -4817,22 +4604,22 @@ begin
     SelectElementsForm.doShowReq := True;
     SelectElementsForm.doShowRpy := True;
     SelectElementsForm.GroupAllowed := False;
-    SelectElementsForm.WsdlOperation := WsdlOperation;
-    SelectElementsForm.ControlBinds := WsdlOperation.CorrelationBindables.Clone;
+    SelectElementsForm.WsdlOperation := FocusedOperation;
+    SelectElementsForm.ControlBinds := FocusedOperation.CorrelationBindables.Clone;
     SelectElementsForm.ShowModal;
     if SelectElementsForm.ModalResult = mrOK then
     begin
-      WsdlOperation.AcquireLock;
+      FocusedOperation.AcquireLock;
       try
-        WsdlOperation.CorrelationBindables.ClearListOnly;
-        WsdlOperation.CorrelationBindables.Free;
-        WsdlOperation.CorrelationBindables := SelectElementsForm.ControlBinds;
-        se.UpdateReplyColumns(WsdlOperation);
+        FocusedOperation.CorrelationBindables.ClearListOnly;
+        FocusedOperation.CorrelationBindables.Free;
+        FocusedOperation.CorrelationBindables := SelectElementsForm.ControlBinds;
+        se.UpdateReplyColumns(FocusedOperation);
         UpdateMessagesGrid;
-        UpdateLogCorrelationIds (WsdlOperation);
+        UpdateLogCorrelationIds (FocusedOperation);
         stubChanged := True;
       finally
-        WsdlOperation.ReleaseLock;
+        FocusedOperation.ReleaseLock;
       end;
     end
     else
@@ -4852,7 +4639,7 @@ end;
 
 procedure TMainForm.AddMessageActionUpdate(Sender: TObject);
 begin
-  AddMessageAction.Enabled := Assigned(WsdlOperation)
+  AddMessageAction.Enabled := Assigned(FocusedOperation)
                           and Assigned (GridView.FocusedNode)
                             ;
 end;
@@ -4863,19 +4650,18 @@ var
   cNode, nNode, sNode: PVirtualNode;
   n: Integer;
 begin
-  xMessage := nil; //avoid warning
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
   try
     nNode := nil;
     sNode := nil;
     cNode := GridView.GetFirst;
-    n := WsdlOperation.Messages.Count;
+    n := FocusedOperation.Messages.Count;
     while Assigned(cNode) and (n > 0) do
     begin
       if GridView.Selected[cNode] then
       begin
         GridView.Selected[cNode] := False;
-        NodeToMessage(GridView, cNode, xMessage);
+        xMessage := NodeToMessage(GridView, cNode);
         if Assigned(xMessage) then
         begin
           nNode := AddMessage(cNode);
@@ -4894,7 +4680,7 @@ begin
     if Assigned(sNode) then
       GridView.FocusedNode := sNode;
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
 end;
 
@@ -4903,43 +4689,42 @@ var
   xOrgMessage, xNewMessage: TWsdlMessage;
   xData: PMessageTreeRec;
 begin
-  xOrgMessage := nil; //avoid warning
   result := nil;
-  NodeToMessage(GridView, aCopyNode, xOrgMessage);
-  if (WsdlOperation.StubAction = saRequest) then
-    xNewMessage := TWsdlMessage.CreateRequest(WsdlOperation,
-      'Request' + IntToStr(WsdlOperation.Messages.Count),
-      'Pattern' + IntToStr(WsdlOperation.Messages.Count),
+  xOrgMessage := NodeToMessage(GridView, aCopyNode);
+  if (FocusedOperation.StubAction = saRequest) then
+    xNewMessage := TWsdlMessage.CreateRequest(FocusedOperation,
+      'Request' + IntToStr(FocusedOperation.Messages.Count),
+      'Pattern' + IntToStr(FocusedOperation.Messages.Count),
       xOrgMessage.Documentation)
   else
-    xNewMessage := TWsdlMessage.CreateReply(WsdlOperation,
-      'Reply' + IntToStr(WsdlOperation.Messages.Count),
-      'Pattern' + IntToStr(WsdlOperation.Messages.Count),
+    xNewMessage := TWsdlMessage.CreateReply(FocusedOperation,
+      'Reply' + IntToStr(FocusedOperation.Messages.Count),
+      'Pattern' + IntToStr(FocusedOperation.Messages.Count),
       xOrgMessage.Documentation);
   xNewMessage.DocumentationEdited := False;
   xNewMessage.BeforeScriptLines.Text := xOrgMessage.BeforeScriptLines.Text;
   xNewMessage.AfterScriptLines.Text := xOrgMessage.AfterScriptLines.Text;
-  if WsdlOperation.DescriptionType = ipmDTFreeFormat then
+  if FocusedOperation.DescriptionType = ipmDTFreeFormat then
   begin
     xNewMessage.FreeFormatReq := xOrgMessage.FreeFormatReq;
     xNewMessage.FreeFormatRpy := xOrgMessage.FreeFormatRpy;
   end;
-  if WsdlOperation.reqBind is TIpmItem then
+  if FocusedOperation.reqBind is TIpmItem then
   begin
     (xNewMessage.reqBind as TIpmItem).LoadValues(xOrgMessage.reqBind as TIpmItem);
     (xNewMessage.rpyBind as TIpmItem).LoadValues(xOrgMessage.rpyBind as TIpmItem);
     (xNewMessage.fltBind as TIpmItem).LoadValues(xOrgMessage.fltBind as TIpmItem);
-    se.UpdateMessageRow(WsdlOperation, xNewMessage);
+    se.UpdateMessageRow(FocusedOperation, xNewMessage);
   end
   else
   begin
     (xNewMessage.reqBind as TXml).LoadValues(xOrgMessage.reqBind as TXml, False, True);
     (xNewMessage.rpyBind as TXml).LoadValues(xOrgMessage.rpyBind as TXml, False, True);
-    se.UpdateMessageRow(WsdlOperation, xNewMessage);
-    if Assigned(WsdlOperation.FaultMessages) then
+    se.UpdateMessageRow(FocusedOperation, xNewMessage);
+    if Assigned(FocusedOperation.FaultMessages) then
     begin
       xNewMessage.fltBind.Name := xOrgMessage.fltBind.Name;
-      (xNewMessage.fltBind as TXml).Xsd := WsdlOperation.FaultXsd;
+      (xNewMessage.fltBind as TXml).Xsd := FocusedOperation.FaultXsd;
       (xNewMessage.fltBind as TXml).LoadValues(xOrgMessage.fltBind as TXml, True);
     end;
   end;
@@ -4950,82 +4735,17 @@ end;
 
 procedure TMainForm.GridViewFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
-var
-  xMessage: TWsdlMessage;
-  swapEvent: TVTFocusChangeEvent;
-  swapMemoEvent: TNotifyEvent;
 begin
-  xMessage := nil; //avoid warning
-  InWsdlTreeView.BeginUpdate;
-  try
-    swapMemoEvent := FreeFormatMemo.OnChange;
-    FreeFormatMemo.OnChange := nil;
-    try
-      Sender.Selected[Sender.FocusedNode] := True;
-      NodeToMessage(GridView, GridView.FocusedNode, xMessage);
-      InWsdlTreeView.Clear;
-      if Assigned(xMessage) then
-      begin
-        WsdlOperation.LastMessage := xMessage;
-        InWsdlTreeView.EndEditNode;
-        InWsdlTreeView.Clear;
-        InWsdlTreeView.RootNodeCount := 0;
-        InWsdlTreeView.NodeDataSize := SizeOf(TXmlTreeRec);
-        if WsdlOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-        begin
-          if WsdlOperation.StubAction = saRequest then
-            FreeFormatMemo.Text := WsdlMessage.FreeFormatReq
-          else
-            FreeFormatMemo.Text := WsdlMessage.FreeFormatRpy;
-        end
-        else
-        begin
-          if WsdlOperation.StubAction = saRequest then
-          begin
-            FillBindTreeView(InWsdlTreeView, xMessage.reqBind, nil);
-            FillBindTreeView(InWsdlTreeView, xMessage.rpyBind, nil);
-          end
-          else
-          begin
-            FillBindTreeView(InWsdlTreeView, xMessage.rpyBind, nil);
-            FillBindTreeView(InWsdlTreeView, xMessage.reqBind, nil);
-          end;
-        end;
-        if (Column - nMessageButtonColumns) > xMessage.CorrelationBindables.Count then
-        begin
-          swapEvent := GridView.OnFocusChanged;
-          try
-            GridView.OnFocusChanged := nil;
-            FocusOnBind
-              (xMessage.ColumnXmls.Bindables
-                [Column - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1]);
-          finally
-            GridView.OnFocusChanged := swapEvent;
-          end;
-        end
-        else
-          with InWsdlTreeView do
-          begin
-            Selected[GetFirst] := True;
-            FocusedNode := GetFirst;
-          end;
-        try
-          with InWsdlTreeView do
-          begin
-            // IsVisible [GetNextSibling (GetFirst)] := doCheckExpectedValues;
-          end;
-        except
-        end;
-      end;
-    finally
-      FreeFormatMemo.OnChange := swapMemoEvent;
-    end;
-  finally
-    InWsdlTreeView.EndUpdate;
-    GridView.InvalidateColumn(nMessageButtonColumns);
-    if Assigned(InWsdlTreeView.FocusedNode) then
-      InWsdlTreeView.ScrollIntoView(InWsdlTreeView.FocusedNode, False, False);
-  end;
+  Sender.Selected[Sender.FocusedNode] := True;
+  FocusedMessage := NodeToMessage(GridView, GridView.FocusedNode);
+  if (Column - nMessageButtonColumns) > FocusedMessage.CorrelationBindables.Count then
+    FocusedBind := FocusedMessage.ColumnXmls.Bindables[ Column
+                                                      - nMessageButtonColumns
+                                                      - FocusedMessage.CorrelationBindables.Count
+                                                      - 1
+                                                      ]
+  else
+    FocusedBind := NodeToBind(TreeView, TreeView.GetFirst);
 end;
 
 procedure TMainForm.DeleteMessageActionUpdate(Sender: TObject);
@@ -5038,37 +4758,47 @@ end;
 
 procedure TMainForm.DeleteMessageActionExecute(Sender: TObject);
 var
-  xMessage: TWsdlMessage;
+  xMessage, nMessage: TWsdlMessage;
   cNode, nNode: PVirtualNode;
   m: Integer;
 begin
-  xMessage := nil; //avoid warning
-  WsdlOperation.AcquireLock;
+  DisableViewOnFocusChangeEvents;
   try
-    cNode := GridView.GetFirst;
-    if Assigned(cNode) then
-      cNode := GridView.GetNext(cNode); // never delete default
-    while Assigned(cNode) do
-    begin
-      nNode := GridView.GetNext(cNode);  // because it still can
-      if GridView.Selected[cNode] then
+    FocusedOperation.AcquireLock;
+    try
+      cNode := GridView.GetFirst;
+      nMessage := nil;
+      if Assigned(cNode) then
+        cNode := GridView.GetNext(cNode); // never delete default
+      while Assigned(cNode) do
       begin
-        NodeToMessage(GridView, cNode, xMessage);
-        GridView.DeleteNode(cNode, True);
-        if Assigned(xMessage) then
+        nNode := GridView.GetNext(cNode);  // because it still can
+        if GridView.Selected[cNode] then
         begin
-          WsdlOperation.Messages.DeleteMessage(xMessage);
-          stubChanged := True;
+          xMessage := NodeToMessage(GridView, cNode);
+          if Assigned (nNode) then
+            nMessage := NodeToMessage(GridView, nNode);
+          GridView.DeleteNode(cNode, True);
+          if Assigned(xMessage) then
+          begin
+            FocusedOperation.Messages.DeleteMessage(xMessage);
+            stubChanged := True;
+          end;
         end;
+        cNode := nNode;
       end;
-      cNode := nNode;
+      UpdateMessagesView;
+      GridView.SetFocus;
+      if Assigned (nMessage) then
+        FocusedMessage := nMessage
+      else
+        FocusedMessage := NodeToMessage(GridView, GridView.GetLast);
+      DoColorBindButtons;
+    finally
+      FocusedOperation.ReleaseLock;
     end;
-    UpdateMessagesView;
-    GridView.SetFocus;
-    GridViewFocusedNode(GridView.FocusedNode);
-    DoColorBindButtons;
   finally
-    WsdlOperation.ReleaseLock;
+    EnableViewOnFocusChangeEvents;
   end;
 end;
 
@@ -5081,7 +4811,8 @@ var
   pData: PMessageTreeRec;
 begin
   EndEdit;
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
+  DisableViewOnFocusChangeEvents;
   try
     with GridView do
     begin
@@ -5106,7 +4837,8 @@ begin
     UpdateMessagesView;
     stubChanged := True;
   finally
-    WsdlOperation.ReleaseLock;
+    EnableViewOnFocusChangeEvents;
+    FocusedOperation.ReleaseLock;
   end;
 end;
 
@@ -5137,7 +4869,8 @@ var
   nData: PMessageTreeRec;
 begin
   EndEdit;
-  WsdlOperation.AcquireLock;
+  DisableViewOnFocusChangeEvents;
+  FocusedOperation.AcquireLock;
   try
     with GridView do
     begin
@@ -5165,14 +4898,15 @@ begin
     UpdateMessagesView;
     stubChanged := True;
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
+    EnableViewOnFocusChangeEvents;
   end;
 end;
 
 procedure TMainForm.DoColorBindButtons;
 begin
-  if ((WsdlOperation.CorrelationBindables.Count > 0) or
-      (WsdlOperation.StubAction = saRequest)) then
+  if ((FocusedOperation.CorrelationBindables.Count > 0) or
+      (FocusedOperation.StubAction = saRequest)) then
     SelectCorrelationElementAction.ImageIndex := 8
   else
     SelectCorrelationElementAction.ImageIndex := 7;
@@ -5180,7 +4914,7 @@ end;
 
 procedure TMainForm.ApplyToActionUpdate(Sender: TObject);
 begin
-  ApplyToAction.Enabled := Assigned(WsdlOperation);
+  ApplyToAction.Enabled := Assigned(FocusedOperation);
 end;
 
 procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
@@ -5244,10 +4978,9 @@ begin
         case ApplyToForm.RadioGroup.ItemIndex of
           0:
             begin
-              s := WsdlServicesComboBox.ItemIndex;
-              for o := 0 to Wsdl.Services.Services[s].Operations.Count - 1 do
-                _Apply(Wsdl.Services.Services[s].Operations.Operations[o],
-                  WsdlOperation);
+              for o := 0 to FocusedOperation.WsdlService.Operations.Count - 1 do
+                _Apply(FocusedOperation.WsdlService.Operations.Operations[o],
+                  FocusedOperation);
             end;
           1:
             begin
@@ -5255,7 +4988,7 @@ begin
               begin
                 for o := 0 to Wsdl.Services.Services[s].Operations.Count - 1 do
                   _Apply(Wsdl.Services.Services[s].Operations.Operations[o],
-                    WsdlOperation);
+                    FocusedOperation);
               end;
             end;
           2:
@@ -5268,12 +5001,12 @@ begin
                   for o := 0 to xWsdl.Services.Services[s].Operations.Count - 1
                     do
                     _Apply(xWsdl.Services.Services[s].Operations.Operations[o],
-                      WsdlOperation);
+                      FocusedOperation);
                 end;
               end;
             end;
         end;
-        NavigatorTreeView.Invalidate;
+        NvgtView.Invalidate;
         stubChanged := True;
       finally
         ReleaseLock;
@@ -5299,10 +5032,8 @@ var
   xBind: TCustomBindable;
   expXml: TXml;
 begin
-  xMessage := nil; //avoid warning
-  fMessage := nil; //avoid warning
   try
-    NodeToMessage(Sender, Node, xMessage);
+    xMessage := NodeToMessage(Sender, Node);
     if not Assigned(xMessage) then
       exit;
     if Column < nMessageButtonColumns then
@@ -5323,7 +5054,7 @@ begin
         Brush.Color := _decColor(bgCorrelationItemColor);
         if Column = nMessageButtonColumns then
         begin
-          NodeToMessage(Sender, Sender.FocusedNode, fMessage);
+          fMessage := NodeToMessage(Sender, Sender.FocusedNode);
           if Assigned (fMessage)
           and (fMessage <> xMessage)
           and (   (xMessage.Duplicates = fMessage)
@@ -5347,9 +5078,9 @@ begin
       exit;
     end;
     if ((xBind is TXml) or (xBind is TXmlAttribute))
-    and Assigned (WsdlOperation) then
+    and Assigned (FocusedOperation) then
     begin
-      if WsdlOperation.StubAction = saRequest then
+      if FocusedOperation.StubAction = saRequest then
         expXml := xMessage.rpyBind as TXml
       else
         expXml := xMessage.reqBind as TXml;
@@ -5388,9 +5119,9 @@ end;
 procedure TMainForm.GridViewEdited(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 begin
-  if (Column - nMessageButtonColumns) > WsdlOperation.CorrelationBindables.Count then
+  if (Column - nMessageButtonColumns) > FocusedOperation.CorrelationBindables.Count then
   begin
-    InWsdlTreeView.OnEdited(InWsdlTreeView, editingNode, treeValueColumn);
+    TreeView.OnEdited(TreeView, editingNode, treeValueColumn);
   end;
   editingNode := nil;
 end;
@@ -5426,9 +5157,9 @@ begin
     SaveStubCase;
 end;
 
-procedure TMainForm.InWsdlTreeViewExit(Sender: TObject);
+procedure TMainForm.TreeViewExit(Sender: TObject);
 begin
-  InWsdlTreeView.EndEditNode;
+  TreeView.EndEditNode;
 end;
 
 procedure TMainForm.GridViewExit(Sender: TObject);
@@ -5455,7 +5186,7 @@ begin
   result := True;    // avoids losing data entry, warning only
   with TIdUri.Create(aNewValue) do
   try
-    if WsdlOperation.isOpenApiService then
+    if FocusedOperation.isOpenApiService then
     begin
       if (Path + Document <> '/') then
       begin
@@ -5475,9 +5206,9 @@ var
   x, y: Integer;
   xEnumeration: TXsdEnumeration;
 begin
-  if not Assigned(WsdlOperation) then
+  if not Assigned(FocusedOperation) then
     raise Exception.Create('No operation selected');
-  with WsdlOperation do
+  with FocusedOperation do
   begin
     xXml := endpointConfigAsXml;
     try
@@ -5514,18 +5245,6 @@ begin
       end;
     end;
   end;
-end;
-
-procedure TMainForm.WsdlComboBoxDropDown(Sender: TObject);
-begin
-  // bug van delphi??
-  WsdlServicesComboBox.ItemIndex := 0;
-  WsdlOperationsComboBox.ItemIndex := 0;
-end;
-
-procedure TMainForm.WsdlServicesComboBoxDropDown(Sender: TObject);
-begin
-  WsdlOperationsComboBox.ItemIndex := 0;
 end;
 
 function TMainForm.getStubChanged: Boolean;
@@ -5596,9 +5315,9 @@ begin
   spc := 3;
   lft := spc;
   wdth := (Sender as TPanel).Width;
-  lft := _adjust(lft, wdth div 2, spc, WsdlLabel, WsdlComboBox);
-  lft := _adjust(lft, wdth div 4, spc, ServiceLabel, WsdlServicesComboBox);
-  lft := _adjust(lft, wdth - lft, spc, OperationLabel, WsdlOperationsComboBox);
+  lft := _adjust(lft, wdth div 2, spc, WsdlLabel, WsdlNameEdit);
+  lft := _adjust(lft, wdth div 4, spc, ServiceLabel, WsdlServiceNameEdit);
+  lft := _adjust(lft, wdth - lft, spc, OperationLabel, WsdlOperationNameEdit);
 end;
 
 procedure TMainForm.ClearLogItemsActionUpdate(Sender: TObject);
@@ -5690,13 +5409,13 @@ begin
     LogMemo.Text := '';
     Exit;
   end;
-  case MessagesTabControl.TabIndex of
-    Ord (slRequestHeaders): LogMemo.Text := aLog.RequestHeaders;
-    Ord (slRequestBody): LogMemo.Text := aLog.RequestBody;
-    Ord (slReplyHeaders): LogMemo.Text := aLog.ReplyHeaders;
-    Ord (slReplyBody): LogMemo.Text := aLog.ReplyBody;
-    Ord (slException): LogMemo.Text := aLog.Exception;
-    Ord (slValidation):
+  case ShowKindOfLogData of
+    slRequestHeaders: LogMemo.Text := aLog.RequestHeaders;
+    slRequestBody: LogMemo.Text := aLog.RequestBody;
+    slReplyHeaders: LogMemo.Text := aLog.ReplyHeaders;
+    slReplyBody: LogMemo.Text := aLog.ReplyBody;
+    slException: LogMemo.Text := aLog.Exception;
+    slValidation:
     begin
       s := '';
       if aLog.RequestValidateResult <> '' then
@@ -5774,29 +5493,11 @@ begin
         + ' : ' + IntToStr(se.displayedLogs.Number) + ']';
       if Assigned(xLog.Operation) and (xLog.Operation is TWsdlOperation) then
       begin
-        GridView.BeginUpdate;
-        try
-          WsdlOperation := xLog.Operation;
-          if Assigned(xLog.Mssg) and (xLog.Mssg is TWsdlMessage) then
-          begin
-            xNode := GridView.GetFirst;
-            while Assigned(xNode) do
-            begin
-              xData := GridView.GetNodeData(xNode);
-              if xData.Message = xLog.Mssg then
-              begin
-                GridView.Selected[xNode] := True;
-                GridViewFocusedNode(xNode);
-              end;
-              xNode := GridView.GetNext(xNode);
-            end;
-          end;
-        finally
-          GridView.EndUpdate;
-          GridView.ScrollIntoView(GridView.FocusedNode, False, False);
-          NavigatorTreeView.ScrollIntoView(NavigatorTreeView.FocusedNode,
-            False, False);
-        end;
+        FocusedMessage := nil;
+        GridViewUnselect;
+        xLog.Operation.LastFocusedMessage := xLog.Mssg;
+        FocusedOperation := xLog.Operation;
+        FocusedMessage := FocusedOperation.LastFocusedMessage;
       end;
     end
     else
@@ -5957,23 +5658,52 @@ begin
 end;
 
 function TMainForm.TestRemoteServerConnection(aXml: TObject): Boolean;
+begin
+  result := False;
+  with TXml.Create do
+  try
+    try
+      CopyDownLine((aXml as TXml).Parent as TXml, True);
+      ResolveAliasses;
+      xmlio.apiUiServerDialog(thisXml, '/apiUi/api/testconnection', '', 'GET', 'application/json');
+      ShowMessage(Format('Remote apiUi server (%s) connected OK', [Items.XmlValueByTag['Address']]));
+      result := True;
+    except
+      on e: exception do
+        ShowMessage(Format ('exception: %s%strying to connect to %s', [e.Message, LineEnding, Items.XmlValueByTag['Address']]));
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm.ProjectInfoFromRemoteServer;
 var
   xXml: TXml;
 begin
-  result := False;
+  if not Assigned (se) then
+    raise Exception.Create('ProjectInfoFromRemoteServer requires an assigned Project');
+  if not Assigned (se.remoteServerConnectionXml) then
+    raise Exception.Create('ProjectInfoFromRemoteServer requires a Remote Server Connection');
   xXml := TXml.Create;
   try
     try
-      xXml.CopyDownLine((aXml as TXml).Parent as TXml, True);
-      xmlio.apiUiServerDialog(xXml, '/apiUi/api/testconnection', '', 'GET', 'application/json');
-      ShowMessage('Remote apiUi server connected OK');
-      result := True;
+      xXml.LoadJsonFromString ( xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                                        , '/apiUi/api/project/information'
+                                                        , ''
+                                                        , 'GET'
+                                                        , 'application/json'
+                                                        )
+                          , nil
+                          );
+      xXml.Name := 'projectInformation';
+      ShowXmlExtended('Information from remote project', xXml);
     except
       on e: exception do
         ShowMessage(e.Message);
     end;
   finally
-    xXml.Free;
+    FreeAndNil(xXml);
   end;
 end;
 
@@ -6118,7 +5848,7 @@ begin
     captionFileName := '';
     se.Clear;
     CreateScriptsSubMenuItems;
-    Wsdl := nil;
+    FocusedOperation := nil;
     UpdateCaption;
     UpdateVisibiltyOfOperations;
     se.Clear;
@@ -6250,27 +5980,14 @@ begin
   end;
 end;
 
-procedure TMainForm.NavigatorTreeViewFocusChanged(Sender: TBaseVirtualTree;
+procedure TMainForm.NvgtViewFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
-var
-  xOperation: TWsdlOperation;
-  swap: TVTFocusChangeEvent;
 begin
   Sender.Selected[Sender.FocusedNode] := True;
-  xOperation := NodeToOperation(Sender, Node);
-  if Assigned(xOperation) and (xOperation is TWsdlOperation) then
-  begin
-    swap := NavigatorTreeView.OnFocusChanged;
-    try
-      NavigatorTreeView.OnFocusChanged := nil;
-      WsdlOperation := xOperation;
-    finally
-      NavigatorTreeView.OnFocusChanged := swap;
-    end;
-  end;
+  FocusedOperation := NodeToOperation(Sender, Node);
 end;
 
-procedure TMainForm.NavigatorTreeViewGetText(Sender: TBaseVirtualTree;
+procedure TMainForm.NvgtViewGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: string);
 var
@@ -6301,40 +6018,40 @@ begin
   if not Assigned(_WsdlWsaXsd) then
     raise Exception.Create
       ('Function should be disabled since wsdXsd not known');
-  if Assigned(WsdlOperation) then
+  if Assigned(FocusedOperation) then
   begin
     reqWsaXml := TXml.Create(-10000, _WsdlWsaXsd);
     rpyWsaXml := TXml.Create(-10000, _WsdlWsaXsd);
     try
       reqWsaXml.CheckDownLine(False);
-      reqWsaXml.LoadValues(WsdlOperation.reqWsaXml, False, True);
+      reqWsaXml.LoadValues(FocusedOperation.reqWsaXml, False, True);
       rpyWsaXml.CheckDownLine(False);
-      rpyWsaXml.LoadValues(WsdlOperation.rpyWsaXml, False, True);
+      rpyWsaXml.LoadValues(FocusedOperation.rpyWsaXml, False, True);
       Application.CreateForm(TwsaConfigForm, wsaConfigForm);
       try
         wsaConfigForm.doReadOnly := se.IsActive;
         wsaConfigForm.Caption := 'Configure WS-Addressing';
-        wsaConfigForm.wsaEnabled := WsdlOperation.wsaEnabled;
+        wsaConfigForm.wsaEnabled := FocusedOperation.wsaEnabled;
         wsaConfigForm.wsaSpecificMustUnderstand :=
-          WsdlOperation.wsaSpecificMustUnderstand;
-        wsaConfigForm.wsaMustUnderstand := WsdlOperation.wsaMustUnderstand;
-        wsaConfigForm.wsaTypeComboBox.Text := WsdlOperation.wsaType;
+          FocusedOperation.wsaSpecificMustUnderstand;
+        wsaConfigForm.wsaMustUnderstand := FocusedOperation.wsaMustUnderstand;
+        wsaConfigForm.wsaTypeComboBox.Text := FocusedOperation.wsaType;
         { }
-        if WsdlOperation.StubAction = saRequest then
+        if FocusedOperation.StubAction = saRequest then
           wsaConfigForm.wsaXml := reqWsaXml;
         { }
         wsaConfigForm.ShowModal;
         if wsaConfigForm.ModalResult = mrOk then
         begin
-          WsdlOperation.wsaEnabled := wsaConfigForm.wsaEnabled;
-          WsdlOperation.wsaSpecificMustUnderstand :=
+          FocusedOperation.wsaEnabled := wsaConfigForm.wsaEnabled;
+          FocusedOperation.wsaSpecificMustUnderstand :=
             wsaConfigForm.wsaSpecificMustUnderstand;
-          WsdlOperation.wsaMustUnderstand := wsaConfigForm.wsaMustUnderstand;
-          WsdlOperation.wsaType := wsaConfigForm.wsaTypeComboBox.Text;
-          WsdlOperation.reqWsaXml.CheckDownLine(False);
-          WsdlOperation.reqWsaXml.LoadValues(reqWsaXml, False, True);
-          WsdlOperation.rpyWsaXml.CheckDownLine(False);
-          WsdlOperation.rpyWsaXml.LoadValues(rpyWsaXml, False, True);
+          FocusedOperation.wsaMustUnderstand := wsaConfigForm.wsaMustUnderstand;
+          FocusedOperation.wsaType := wsaConfigForm.wsaTypeComboBox.Text;
+          FocusedOperation.reqWsaXml.CheckDownLine(False);
+          FocusedOperation.reqWsaXml.LoadValues(reqWsaXml, False, True);
+          FocusedOperation.rpyWsaXml.CheckDownLine(False);
+          FocusedOperation.rpyWsaXml.LoadValues(rpyWsaXml, False, True);
           stubChanged := True;
         end;
       finally
@@ -6352,7 +6069,7 @@ end;
 procedure TMainForm.OperationWsaActionUpdate(Sender: TObject);
 begin
   OperationWsaAction.Enabled := Assigned(_WsdlWsaXsd)
-                            and Assigned(WsdlOperation)
+                            and Assigned(FocusedOperation)
                               ;
 end;
 
@@ -6360,16 +6077,16 @@ procedure TMainForm.FocusOperationsReqVTS;
 var
   xNode: PVirtualNode;
 begin
-  xNode := NavigatorTreeView.GetFirst;
+  xNode := NvgtView.GetFirst;
   while not(xNode = nil) do
   begin
-    if NodeToOperation(NavigatorTreeView, xNode) = WsdlOperation then
+    if NodeToOperation(NvgtView, xNode) = FocusedOperation then
     begin
-      NavigatorTreeView.FocusedNode := xNode;
-      NavigatorTreeView.Selected[xNode] := True;
+      NvgtView.FocusedNode := xNode;
+      NvgtView.Selected[xNode] := True;
       exit;
     end;
-    xNode := NavigatorTreeView.GetNext(xNode);
+    xNode := NvgtView.GetNext(xNode);
   end;
 end;
 
@@ -6377,18 +6094,18 @@ procedure TMainForm.ExchangeMessages(fReply, pReply: TWsdlMessage);
 var
   f, p: Integer;
 begin
-  f := WsdlOperation.Messages.IndexOfObject(fReply);
-  p := WsdlOperation.Messages.IndexOfObject(pReply);
+  f := FocusedOperation.Messages.IndexOfObject(fReply);
+  p := FocusedOperation.Messages.IndexOfObject(pReply);
   if (f > -1) and (p > -1) then
   begin
-    WsdlOperation.Messages.Objects[f] := pReply;
-    WsdlOperation.Messages.Objects[p] := fReply;
+    FocusedOperation.Messages.Objects[f] := pReply;
+    FocusedOperation.Messages.Objects[p] := fReply;
   end;
 end;
 
 procedure TMainForm.SelectMessageColumnsActionUpdate(Sender: TObject);
 begin
-  SelectMessageColumnsAction.Enabled := Assigned(WsdlOperation);
+  SelectMessageColumnsAction.Enabled := Assigned(FocusedOperation);
 end;
 
 procedure TMainForm.SelectMessageColumnsActionExecute(Sender: TObject);
@@ -6399,21 +6116,21 @@ begin
     SelectElementsForm.doShowReq := True;
     SelectElementsForm.doShowRpy := True;
     SelectElementsForm.GroupAllowed := True;
-    SelectElementsForm.WsdlOperation := WsdlOperation;
-    SelectElementsForm.ControlBinds := WsdlOperation.Messages.Messages[0].ColumnXmls.Clone;
+    SelectElementsForm.WsdlOperation := FocusedOperation;
+    SelectElementsForm.ControlBinds := FocusedOperation.Messages.Messages[0].ColumnXmls.Clone;
     SelectElementsForm.ShowModal;
     if SelectElementsForm.modalResult = mrOk then
     begin
-      WsdlOperation.AcquireLock;
+      FocusedOperation.AcquireLock;
       try
-        WsdlOperation.Messages.Messages[0].ColumnXmls.ClearListOnly;
-        WsdlOperation.Messages.Messages[0].ColumnXmls.Free;
-        WsdlOperation.Messages.Messages[0].ColumnXmls := SelectElementsForm.ControlBinds;
-        se.UpdateReplyColumns(WsdlOperation);
+        FocusedOperation.Messages.Messages[0].ColumnXmls.ClearListOnly;
+        FocusedOperation.Messages.Messages[0].ColumnXmls.Free;
+        FocusedOperation.Messages.Messages[0].ColumnXmls := SelectElementsForm.ControlBinds;
+        se.UpdateReplyColumns(FocusedOperation);
         UpdateMessagesGrid;
         stubChanged := True;
       finally
-        WsdlOperation.ReleaseLock;
+        FocusedOperation.ReleaseLock;
       end;
     end
     else
@@ -6435,16 +6152,16 @@ begin
   for c := GridView.Header.Columns.Count - 1 downto nMessageButtonColumns do
     ColumnWidths.Values[GridView.Header.Columns[c].Text] :=
       IntToStr (GridView.Header.Columns[c].Width);
-  if Assigned(WsdlOperation) then
+  if Assigned(FocusedOperation) then
   begin
     try
       while GridView.Header.Columns.Count >
-        (nMessageButtonColumns + 1 + WsdlOperation.CorrelationBindables.Count +
-          WsdlOperation.Messages.Messages[0].ColumnXmls.Count) do
+        (nMessageButtonColumns + 1 + FocusedOperation.CorrelationBindables.Count +
+          FocusedOperation.Messages.Messages[0].ColumnXmls.Count) do
         GridView.Header.Columns.Delete(GridView.Header.Columns.Count - 1);
       while GridView.Header.Columns.Count <
-        (nMessageButtonColumns + 1 + WsdlOperation.CorrelationBindables.Count +
-          WsdlOperation.Messages.Messages[0].ColumnXmls.Count) do
+        (nMessageButtonColumns + 1 + FocusedOperation.CorrelationBindables.Count +
+          FocusedOperation.Messages.Messages[0].ColumnXmls.Count) do
         GridView.Header.Columns.Add;
     except
     end;
@@ -6452,6 +6169,18 @@ begin
 end;
 
 procedure TMainForm.UpdateMessagesGrid;
+  function _LastCaption (aCaption: String): String;
+  var
+    x, p: Integer;
+  begin
+    result := '';
+    p := 1;
+    for x := 1 to Length (aCaption) do
+      if aCaption [x] = '.' then
+        p := x + 1;
+    result := Copy (aCaption, p, MaxInt);
+  end;
+
 var
   X, c: Integer;
   vc: TVirtualTreeColumn;
@@ -6459,15 +6188,15 @@ begin
   RemoveMessageColumns;
   c := nMessageButtonColumns;
   vc := GridView.Header.Columns.Items[c];
-  if WsdlOperation.StubAction = saRequest then
+  if FocusedOperation.StubAction = saRequest then
     vc.Text := 'Request'
   else
     vc.Text := 'Reply';
   vc.Width := StrToIntDef(ColumnWidths.Values[vc.Text], 50);
   Inc(c);
-  if WsdlOperation.Messages.Count > 0 then
+  if FocusedOperation.Messages.Count > 0 then
   begin
-    with WsdlOperation.Messages.Messages[0] do
+    with FocusedOperation.Messages.Messages[0] do
     begin
       for X := 0 to CorrelationBindables.Count - 1 do
       begin
@@ -6482,13 +6211,12 @@ begin
       for X := 0 to ColumnXmls.Count - 1 do
       begin
         vc := GridView.Header.Columns.Items[c];
-        vc.Text := LastCaption(ColumnXmls.Strings[X]);
+        vc.Text := _LastCaption(ColumnXmls.Strings[X]);
         vc.Width := StrToIntDef(ColumnWidths.Values[vc.Text], 50);
         Inc(c);
       end;
     end;
   end;
-  lastWsdlOperation := WsdlOperation;
 end;
 
 procedure TMainForm .UpdateLogCorrelationIds (aWsdlOperation : TWsdlOperation );
@@ -6511,58 +6239,111 @@ begin
   end;
 end;
 
-procedure TMainForm.FocusOnBind(aBind: TCustomBindable);
+procedure TMainForm.SelectFocusedBindInViews;
   procedure _ForceVisibility(aNode: PVirtualNode);
   begin
     if aNode = aNode.NextSibling then
       exit;
     _ForceVisibility(aNode.Parent);
-    InWsdlTreeView.IsVisible[aNode] := True;
+    TreeView.IsVisible[aNode] := True;
   end;
 
 var
   xNode: PVirtualNode;
   xBind: TCustomBindable;
+  f: Integer;
 begin
-  xNode := InWsdlTreeView.GetFirst; // search from begin
+  xNode := TreeView.GetFirst; // search from begin
   while not(xNode = nil) do
   begin
-    xBind := NodeToBind(InWsdlTreeView, xNode);
-    if xBind = aBind then
+    xBind := NodeToBind(TreeView, xNode);
+    if xBind = FocusedBind then
     begin
       _ForceVisibility(xNode);
-      InWsdlTreeView.InvalidateNode(xNode);
-      InWsdlTreeView.FocusedNode := xNode;
-      InWsdlTreeView.FocusedColumn := treeValueColumn;
+      TreeView.InvalidateNode(xNode);
+      TreeView.FocusedNode := xNode;
+      TreeView.FocusedColumn := treeValueColumn;
+      TreeView.Selected [xNode] := True;
+      f := FocusedMessage.ColumnXmls.IndexOfObject(FocusedBind);
+      if f > -1 then
+      begin
+        GridView.FocusedColumn := f + 1 + nMessageButtonColumns + FocusedOperation.CorrelationBindables.Count;
+      end;
       exit;
     end;
-    xNode := InWsdlTreeView.GetNext(xNode);
+    xNode := TreeView.GetNext(xNode);
   end;
 end;
 
-procedure TMainForm.setWsdlMessage(const Value: TWsdlMessage);
+procedure TMainForm.ShowFocusedMessageInTreeView;
+var
+  swapMemoEvent: TNotifyEvent;
+begin
+  swapMemoEvent := FreeFormatMemo.OnChange;
+  TreeView.BeginUpdate;
+  try
+    FreeFormatMemo.OnChange := nil;
+    TreeView.Clear;
+    if Assigned(FocusedMessage) then
+    begin
+      if FocusedOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+      begin
+        if FocusedOperation.StubAction = saRequest then
+          FreeFormatMemo.Text := FocusedMessage.FreeFormatReq
+        else
+          FreeFormatMemo.Text := FocusedMessage.FreeFormatRpy;
+      end
+      else
+      begin
+        if FocusedOperation.StubAction = saRequest then
+        begin
+          FillBindTreeView(TreeView, FocusedMessage.reqBind, nil);
+          FillBindTreeView(TreeView, FocusedMessage.rpyBind, nil);
+        end
+        else
+        begin
+          FillBindTreeView(TreeView, FocusedMessage.rpyBind, nil);
+          FillBindTreeView(TreeView, FocusedMessage.reqBind, nil);
+        end;
+      end;
+    end;
+  finally
+    FreeFormatMemo.OnChange := swapMemoEvent;
+    TreeView.EndUpdate;
+    GridView.InvalidateColumn(nMessageButtonColumns);
+    if Assigned(TreeView.FocusedNode) then
+      TreeView.ScrollIntoView(TreeView.FocusedNode, False, False);
+  end;
+end;
+
+procedure TMainForm.setFocusedMessage(const Value: TWsdlMessage);
 var
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
 begin
-  xMessage := nil; //avoid warning
-  xNode := GridView.GetFirst;
-  while Assigned(xNode) do
-  begin
-    NodeToMessage(GridView, xNode, xMessage);
-    if xMessage = Value then
+  if Value = fFocusedMessage then Exit;
+  fFocusedMessage := Value;
+  if Assigned (FocusedOperation)
+  and Assigned (Value) then
+    FocusedOperation.LastFocusedMessage := Value;
+  DisableViewOnFocusChangeEvents;
+  try
+    xNode := GridView.GetFirst;
+    while Assigned(xNode) do
     begin
-      GridViewFocusedNode(xNode);
-      exit;
+      xMessage := NodeToMessage(GridView, xNode);
+      if xMessage = Value then
+      begin
+        GridView.Selected[xNode] := True;
+        GridView.FocusedNode := xNode;
+        ShowFocusedMessageInTreeView;
+        exit;
+      end;
+      xNode := GridView.GetNext(xNode);
     end;
-    xNode := GridView.GetNext(xNode);
+  finally
+    EnableViewOnFocusChangeEvents;
   end;
-end;
-
-function TMainForm.getWsdlMessage: TWsdlMessage;
-begin
-  Result := nil; //avod warning
-  NodeToMessage(GridView, GridView.FocusedNode, result);
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -6574,6 +6355,10 @@ var
   xShift : TShiftState;
   xMenuItem, sMenuItem: TMenuItem;
 begin
+  fShowKindOfInformation := TShowKindOfInformation (-1);
+  SaveNvgtViewOnFocusChanged := NvgtView.OnFocusChanged;
+  SaveGridViewOnFocusChanged := GridView.OnFocusChanged;
+  SaveTreeViewOnFocusChanged := TreeView.OnFocusChanged;
   doConfirmTemporaryInactivity := True;
   MessagesTabControlWidth := MessagesTabControl.Width;
   MessagesTabControlMinLeft := LastMessageToolButton.Left + LastMessageToolButton.Width + 1;
@@ -6581,7 +6366,6 @@ begin
   MessagesTabCaption := LogTabControl.Tabs [Ord (spMessages)];
   notifyTabCaption := LogTabControl.Tabs [Ord (spNotifications)];
   notifyTabImageIndex := 66;
-//  ExceptionTabSheet.ImageIndex := -1;
   se := TWsdlProject.Create;
   se.hasGui := True;
   ProgressInterface := TProgressInterface.Create;
@@ -6607,12 +6391,11 @@ begin
   DecryptString := doDecryptString;
   EncryptString := doEncryptString;
   xmlUtil.doExpandFull := True;
-  ColumnWidths := TStringList.Create;
-  QueueNameList := TStringList.Create;
+  ColumnWidths := TJBStringList.Create;
+  QueueNameList := TJBStringList.Create;
   QueueNameList.Sorted := True;
   QueueNameList.Duplicates := dupIgnore;
   Application.OnException := HandleException;
-  { }
   Randomize;
   startStopShortCut := startAction.ShortCut;
   wBttn := MessagesVTS.Header.Columns[Ord(logRemarksColumn)].Width;
@@ -6628,13 +6411,11 @@ begin
     MessagesVTS.Header.Columns[X].Width := wBttn;
   for X := 0 to Ord(snapshotDateTimeColumn) - 1 do
     SnapshotsVTS.Header.Columns[X].Width := wBttn;
-  NavigatorTreeView.Header.Columns[0].Width := wBttn;
-  NavigatorTreeView.Header.Columns[1].Width := wBttn;
+  NvgtView.Header.Columns[0].Width := wBttn;
+  NvgtView.Header.Columns[1].Width := wBttn;
   for x := 0 to nMessageButtonColumns - 1 do
     GridView.Header.Columns[x].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
-  se.remoteServerConnectionXml.LoadFromString(xIniFile.StringByName['remoteServerConnectionXml'], nil);
-  se.remoteServerConnectionXml.Name := 'remoteServerConnection';
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
   wsdlStubSnapshotsFileName := xIniFile.StringByName['wsdlStubSnapshotsFileName'];
   DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
@@ -6704,10 +6485,10 @@ begin
   tacoHost := xIniFile.StringByNameDef['tacoHost', 'localhost'];
   tacoPort := xIniFile.IntegerByNameDef['tacoPort', 1025];
   CollapseHeaders := xIniFile.BooleanByNameDef['CollapseHeaders', True];
-  InWsdlTreeView.NodeDataSize := SizeOf(TXmlTreeRec);
-  InWsdlTreeView.RootNodeCount := 0;
-  NavigatorTreeView.NodeDataSize := SizeOf(TNavigatorTreeRec);
-  NavigatorTreeView.RootNodeCount := 0;
+  TreeView.NodeDataSize := SizeOf(TXmlTreeRec);
+  TreeView.RootNodeCount := 0;
+  NvgtView.NodeDataSize := SizeOf(TNavigatorTreeRec);
+  NvgtView.RootNodeCount := 0;
   GridView.NodeDataSize := SizeOf(TMessageTreeRec);
   GridView.RootNodeCount := 0;
   SnapshotsVTS.NodeDataSize := SizeOf(TSnapshotTreeRec);
@@ -6716,10 +6497,10 @@ begin
   MessagesVTS.RootNodeCount := 0;
   ExceptionsVTS.NodeDataSize := SizeOf(TExceptionTreeRec);
   ExceptionsVTS.RootNodeCount := 0;
-  FileNameList := TStringList.Create;
-  ReopenCaseList := TStringList.Create;
+  FileNameList := TJBStringList.Create;
+  ReopenCaseList := TJBStringList.Create;
   ReopenCaseList.Text := xIniFile.StringByName['RecentFiles'];
-  WsdlPaths := TStringList.Create;
+  WsdlPaths := TJBStringList.Create;
   WsdlPaths.Sorted := True;
 
   se.notStubbedExceptionMessage := xIniFile.StringByNameDef
@@ -6777,7 +6558,6 @@ begin
   se.stubRead := False;
   stubChanged := False;
   nStubs := 0;
-  freeStubs := -1;
   logChartToolButton.Visible := (WindowsUserName = 'Jan')
                              or (WindowsUserName = 'BouwmanJW')
                               ;
@@ -6813,10 +6593,11 @@ begin
       sMenuItem.Add(xMenuItem);
   end;
   EasterEggPopupMenu.Items.Add (sMenuItem);
+  IpmDescrType := ipmDTXml;
   if ParamStr(1) <> '' then
   begin
     Update;
-    se.projectFileName := ExpandRelativeFileName ( GetCurrentDirUTF8 + DirectorySeparator
+    se.projectFileName := ExpandRelativeFileName ( LazFileUtils.GetCurrentDirUTF8 + DirectorySeparator
                                                  , ParamStr(1)
                                                  );
     OpenStubCase;
@@ -6858,6 +6639,7 @@ var
 begin
   if Assigned(se) then
     se.Activate(False);
+  DisableViewOnFocusChangeEvents;
   ClearConsole;
   xIniFile := TFormIniFile.Create(self, False);
   xIniFile.BooleanByName['DisclaimerAccepted'] := DisclaimerAccepted;
@@ -6878,7 +6660,6 @@ begin
   xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
   xIniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
   xIniFile.StringByName['wsdlStubSnapshotsFileName'] := wsdlStubSnapshotsFileName;
-  xIniFile.StringByName['remoteServerConnectionXml'] := se.remoteServerConnectionXml.Text;
   xIniFile.StringByName['tacoHost'] := tacoHost;
   xIniFile.IntegerByName['tacoPort'] := tacoPort;
   xIniFile.IntegerByName['LogFilter.FilterStyle'] := Ord
@@ -6971,12 +6752,8 @@ begin
     end;
   end;
   ActionComboBoxChange(nil);
-  // next loop somehow prevents that an excception is thrown when another tab is choosen (???)
-//  for X := 0 to DownPageControl.PageCount - 1 do
-//    DownPageControl.ActivePageIndex := X;
-  LogTabControl.TabIndex := Ord (spNotifications);
+  ShowKindOfInformation := spMessages;
   MessagesTabControl.TabIndex := Ord (slRequestBody);
-  ShowChosenLogTab;
   NotificationsPanel.Align := alClient;
   MessagesPanel.Align := alClient;
   SnapshotsPanel.Align := alClient;
@@ -7001,8 +6778,7 @@ var
   xMessage: TWsdlMessage;
   x, n: Integer;
 begin
-  xMessage := nil; //avoid warning
-  NodeToMessage(Sender, Node, xMessage);
+  xMessage := NodeToMessage(Sender, Node);
   if Column < nMessageButtonColumns then exit;
   if Assigned (xMessage.Duplicates) then
     TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
@@ -7130,7 +6906,7 @@ end;
 procedure TMainForm.CopyGridActionUpdate(Sender: TObject);
 begin
   try
-    CopyGridAction.Enabled := Assigned(WsdlOperation)
+    CopyGridAction.Enabled := Assigned(FocusedOperation)
                             ;
   except
   end;
@@ -7138,7 +6914,7 @@ end;
 
 procedure TMainForm.PasteGridActionUpdate(Sender: TObject);
 begin
-  PasteGridAction.Enabled := Assigned(WsdlOperation)
+  PasteGridAction.Enabled := Assigned(FocusedOperation)
                            ;
 end;
 
@@ -7152,7 +6928,7 @@ begin
   if not InactiveAfterPrompt then Exit;
   try
     GridView.BeginUpdate;
-    InWsdlTreeView.BeginUpdate;
+    TreeView.BeginUpdate;
     swapNode := GridView.FocusedNode;
     swapColumn := GridView.FocusedColumn;
     XmlUtil.PushCursor (crHourGlass);
@@ -7164,8 +6940,8 @@ begin
     GridView.FocusedColumn := swapColumn;
     UpdateMessagesView;
     GridView.EndUpdate;
-    InWsdlTreeView.Invalidate;
-    InWsdlTreeView.EndUpdate;
+    TreeView.Invalidate;
+    TreeView.EndUpdate;
     GridView.SetFocus;
     XmlUtil.PopCursor;
   end;
@@ -7194,6 +6970,28 @@ begin
     XmlGridForm.ShowModal;
   finally
     FreeAndNil(XmlGridForm);
+  end;
+end;
+
+procedure TMainForm.ShowXmlExtended(aCaption: String;aXml: TXml);
+var
+  xXsdDescr: TXsdDescr;
+begin
+  try
+    if not Assigned (aXml.Xsd) then
+    begin
+      xXsdDescr := TXsdDescr.Create;
+      CreateXsdFromXml(xXsdDescr, aXml, True);
+    end;
+    Application.CreateForm(TShowXmlForm, ShowXmlForm);
+    ShowXmlForm.Caption := aCaption;
+    ShowXmlForm.isReadOnly := True;
+    ShowXmlForm.isCheckedOnly := True;
+    ShowXmlForm.Bind := aXml;
+    ShowXmlForm.ShowModal;
+  finally
+    FreeAndNil(ShowXmlForm);
+    FreeAndNil(xXsdDescr);
   end;
 end;
 
@@ -7380,24 +7178,23 @@ end;
 
 procedure TMainForm.IntrospectDesign;
 begin
-  BeginUpdate;
   captionFileName := ExtractFileName(se.projectFileName);
   TProcedureThread.Create(False, False, se, se.IntrospectProject);
 end;
 
-function TMainForm.createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TStringList ;
+function TMainForm.createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TJBStringList ;
 var
   x, f: Integer;
 begin
-  result := TStringList.Create;
+  result := TJBStringList.Create;
   result.Sorted := True;
   for x := 0 to aTypeDefs.Count - 1 do with aTypeDefs.XsdDataTypes[x] do
   begin
     if NameSpace <> '' then
     begin
       if not result.Find(NameSpace, f) then
-        f := result.AddObject (NameSpace, TStringList.Create);
-      (result.Objects[f] as TStringlist).Add (Name);
+        f := result.AddObject (NameSpace, TJBStringList.Create);
+      (result.Objects[f] as TJBStringList).Add (Name);
     end;
   end;
 end;
@@ -7417,6 +7214,20 @@ begin
     if RightStr(aCaption, 2) = decorationString then
       result := LeftStr (result, Length (Result) - Length (decorationString));
   end;
+end;
+
+procedure TMainForm.DisableViewOnFocusChangeEvents;
+begin
+  NvgtView.OnFocusChanged := nil;
+  GridView.OnFocusChanged := nil;
+  TreeView.OnFocusChanged := nil;
+end;
+
+procedure TMainForm.EnableViewOnFocusChangeEvents;
+begin
+  NvgtView.OnFocusChanged := SaveNvgtViewOnFocusChanged;
+  GridView.OnFocusChanged := SaveGridViewOnFocusChanged;
+  TreeView.OnFocusChanged := SaveTreeViewOnFocusChanged;
 end;
 
 function TMainForm.setContextProperty(aName: String): String;
@@ -7720,13 +7531,13 @@ begin
     exit;
   if not ActiveAfterPrompt then
     exit;
-  if Assigned(WsdlOperation) then
+  if Assigned(FocusedOperation) then
   begin
-    xOperation := TWsdlOperation.Create(WsdlOperation);
+    xOperation := TWsdlOperation.Create(FocusedOperation);
     try
-      xOperation.CorrelatedMessage := WsdlMessage;
-      xOperation.ReqBindablesFromWsdlMessage(WsdlMessage);
-      xOperation.RpyBindablesFromWsdlMessage(WsdlMessage);
+      xOperation.CorrelatedMessage := FocusedMessage;
+      xOperation.ReqBindablesFromWsdlMessage(FocusedMessage);
+      xOperation.RpyBindablesFromWsdlMessage(FocusedMessage);
       xOperation.ExecuteBefore;
       if xOperation.StubAction = saRequest then
         wsdlz.PromptRequest(xOperation)
@@ -7764,7 +7575,7 @@ begin
   finally
     MessagesVTS.EndUpdate;
     XmlUtil.PopCursor;
-    LogTabControl.TabIndex := Ord (spMessages);
+    ShowKindOfInformation := spMessages;
   end;
 end;
 
@@ -7851,9 +7662,9 @@ begin
       xForm.ignoreOrderOn.Text := se.ignoreOrderOn.Text;
       for x := 0 to xForm.ignoreOrderOn.Count - 1 do
       begin
-        xForm.ignoreOrderOn.Objects[x] := TStringList.Create;
-        (xForm.ignoreOrderOn.Objects[x] as TStringList).Text :=
-          (se.ignoreOrderOn.Objects[x] as TStringList).Text;
+        xForm.ignoreOrderOn.Objects[x] := TJBStringList.Create;
+        (xForm.ignoreOrderOn.Objects[x] as TJBStringList).Text :=
+          (se.ignoreOrderOn.Objects[x] as TJBStringList).Text;
       end;
       xForm.regressionSortColumns.Text := se.regressionSortColumns.Text;
       xForm.ShowModal;
@@ -7871,9 +7682,9 @@ begin
           se.ignoreOrderOn.Text := xForm.ignoreOrderOn.Text;
           for x := 0 to se.ignoreOrderOn.Count - 1 do
           begin
-            se.ignoreOrderOn.Objects[x] := TStringList.Create;
-            (se.ignoreOrderOn.Objects[x] as TStringList).Text
-              := (xForm.ignoreOrderOn.Objects[x] as TStringList).Text;
+            se.ignoreOrderOn.Objects[x] := TJBStringList.Create;
+            (se.ignoreOrderOn.Objects[x] as TJBStringList).Text
+              := (xForm.ignoreOrderOn.Objects[x] as TJBStringList).Text;
           end;
           se.regressionSortColumns.Text := xForm.regressionSortColumns.Text;
           stubChanged := True;
@@ -7910,9 +7721,9 @@ end;
 
 procedure TMainForm.CheckGridFieldsActionUpdate(Sender: TObject);
 begin
-  CheckGridFieldsAction.Enabled := Assigned(WsdlOperation)
-                               and (WsdlOperation.Messages.Count > 0)
-                               and (WsdlOperation.Messages.Messages[0].ColumnXmls.Count > 0)
+  CheckGridFieldsAction.Enabled := Assigned(FocusedOperation)
+                               and (FocusedOperation.Messages.Count > 0)
+                               and (FocusedOperation.Messages.Messages[0].ColumnXmls.Count > 0)
                                  ;
 end;
 
@@ -7925,7 +7736,7 @@ begin
   xString := ''; //avoid warning
   try
     XmlUtil.PushCursor (crHourGlass);
-    with WsdlOperation.Messages do
+    with FocusedOperation.Messages do
     begin
       for X := 0 to Count - 1 do
       begin
@@ -7951,7 +7762,7 @@ begin
               GridView.Selected[xNode] := True;
               GridViewFocusedNode(xNode);
               GridView.FocusedColumn :=
-                Y + WsdlOperation.CorrelationBindables.Count + 1;
+                Y + FocusedOperation.CorrelationBindables.Count + 1;
               GridView.Update;
               GridView.SetFocus;
               raise Exception.Create(xString);
@@ -7971,7 +7782,7 @@ begin
   doShowDesignAtTop := DesignPanelAtTopMenuItem.Checked;
 end;
 
-procedure TMainForm.InWsdlTreeViewChecking(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewChecking(Sender: TBaseVirtualTree;
   Node: PVirtualNode; var NewState: TCheckState; var Allowed: Boolean);
 begin
   { }{
@@ -7990,65 +7801,25 @@ begin
 end;
 
 procedure TMainForm.EditEnvironmentActionExecute(Sender: TObject);
+var
+  xXml, eXml: TXml;
 begin
-  Application.CreateForm(TEditListValuesForm, EditListValuesForm);
+  xXml := se.EnvVarsAsXml;
+  eXml := TXml.Create(-1000, namevaluepairsXsd);
+  eXml.Name := xXml.Name;
+  eXml.LoadValues(xXml, False);
   try
-    if se.IsActive and False then
-      EditListValuesForm.Caption := 'View environment variables'
-    else
-      EditListValuesForm.Caption := 'Edit environment variables';
-{
-Environment Variables
-
-These variables can be manipulated from script with:
-- DecEnvNumber (aKey)
-- IncEnvNumber (aKey)
-- ResetEnvVar (aKey)
-- ResetEnvVars (aRegularExpr)
-- SetEnvNumber (aKey, aNumber)
-- SetEnvVar (aKey, aValue)
-and be read with:
-- GetEnvNumber (aKey)
-- GetEnvNumberDef (aKey, aDefault)
-- GetEnvVar (aKey)
-- GetEnvVarDef (aKey, aDefault)
-- for each MatchingEnvVar (aRegExpr) as [stringvar] do ...
-}
-    EditListValuesForm.isReadOnly := se.IsActive and False;
-    EnvVarLock.Acquire;
-    try
-      EditListValuesForm.ValueListEditor.Strings.Text := se.EnvVars.Text;
-    finally
-      EnvVarLock.Release;
-    end;
-    EditListValuesForm.ValueListEditor.Strings.Sort;
-    EditListValuesForm.ShowModal;
-    if (EditListValuesForm.ModalResult = mrOk)
-    { }{ and (not se.IsActive){ } then
-    begin
-      EnvVarLock.Acquire;;
-      try
-        se.EnvVars.Text := EditListValuesForm.ValueListEditor.Strings.Text;
-      finally
-        EnvVarLock.Release;
-      end;
-    end;
+    if XmlUtil.editXml(eXml, True, False) then
+      se.EnvVarsFromXml(eXml);
   finally
-    FreeAndNil(EditListValuesForm);
+    FreeAndNil(xXml);
+    FreeAndNil(eXml);
   end;
 end;
 
 procedure TMainForm.AddEnvironmentActionUpdate(Sender: TObject);
 begin
   AddEnvironmentAction.Enabled := (se.EnvVars.Count > 0);
-end;
-
-procedure TMainForm.EditEnvironmentActionUpdate(Sender: TObject);
-begin
-  if se.IsActive and False then
-    EditEnvironmentAction.Caption := 'Show ...'
-  else
-    EditEnvironmentAction.Caption := 'Edit ...';
 end;
 
 procedure TMainForm.RemoveEnvironmentActionUpdate(Sender: TObject);
@@ -8111,8 +7882,8 @@ var
   xMenuItem: TMenuItem;
   X: Integer;
 begin
-  while EnvironmentMenuItem.Count > 7 do
-    EnvironmentMenuItem.Delete(7);
+  while EnvironmentMenuItem.Count > 8 do
+    EnvironmentMenuItem.Delete(8);
   { in case you want to use this code: ADJUST to current menu design
     EnvironmentMenuItem.Clear;
     xMenuItem := TMenuItem.Create(Self);
@@ -8248,8 +8019,8 @@ end;
 
 function TMainForm.getIsRequestAction: Boolean;
 begin
-  if Assigned(WsdlOperation) then
-    result := (WsdlOperation.StubAction = saRequest)
+  if Assigned(FocusedOperation) then
+    result := (FocusedOperation.StubAction = saRequest)
   else
     result := False;
 end;
@@ -8268,17 +8039,17 @@ procedure TMainForm.doExecuteRequest;
 var
   xOperation: TWsdlOperation;
 begin
-  if not Assigned (WsdlOperation) then
+  if not Assigned (FocusedOperation) then
     raise Exception.Create ('TMainForm.doExecuteRequest: wsdlOp ...');
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
   try
-    xOperation := TWsdlOperation.Create(WsdlOperation);
+    xOperation := TWsdlOperation.Create(FocusedOperation);
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
   try
-    xOperation.CorrelatedMessage := WsdlMessage;
-    se.SendMessage(xOperation, WsdlMessage, '');
+    xOperation.CorrelatedMessage := FocusedMessage;
+    se.SendMessage(xOperation, FocusedMessage, '');
   finally
     xOperation.Free;
   end;
@@ -8287,7 +8058,7 @@ end;
 procedure TMainForm.ExecuteRequestActionExecute(Sender: TObject);
 begin
   if not ActiveAfterPrompt then exit;
-  LogTabControl.TabIndex := Ord (spMessages);
+  ShowKindOfInformation := spMessages;
   TProcedureThread.Create(False, True, se, doExecuteRequest);
 end;
 
@@ -8296,11 +8067,11 @@ var
   X: Integer;
   xOperation: TWsdlOperation;
 begin
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
   try
-    xOperation := TWsdlOperation.Create(WsdlOperation); // fresh copy
+    xOperation := TWsdlOperation.Create(FocusedOperation); // fresh copy
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
   try
     se.AcquireLogLock;
@@ -8333,11 +8104,11 @@ var
   doSleep: Boolean;
 begin
   doSleep := False;
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
   try
-    xOperation := TWsdlOperation.Create(WsdlOperation);
+    xOperation := TWsdlOperation.Create(FocusedOperation);
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
   try
     for y := 0 to StressTestLoopsPerThread - 1 do
@@ -8372,7 +8143,7 @@ end;
 procedure TMainForm.ExecuteAllRequestsActionExecute(Sender: TObject);
 begin
   if not ActiveAfterPrompt then exit;
-  LogTabControl.TabIndex := Ord (spMessages);
+  ShowKindOfInformation := spMessages;
   TProcedureThread.Create(False, True, se, ExecuteAllRequests);
 end;
 
@@ -8382,7 +8153,7 @@ var
   xTypeDef: TXsdDataType;
   x, f: Integer;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if not Assigned (xBind)
   or not (xBind is TXml)
   or not Assigned ((xBind as TXml).Xsd) then
@@ -8494,34 +8265,34 @@ begin
                  )
              ) then
             if (not xLog.RequestValidated) then
-              ImageIndex := 40
+              ImageIndex := 40 // 108
             else if xLog.RequestValidateResult = '' then
-              ImageIndex := 39
+              ImageIndex := 39 // 109
             else
-              ImageIndex := 25;
+              ImageIndex := 25; // 110;
         end;
       logReplyTreeColumn:
         begin
           xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
           if (Assigned(xLog)) and (xLog is TLog) and (xLog.ReplyBody <> '') then
             if (not xLog.ReplyValidated) then
-              ImageIndex := 40
+              ImageIndex := 40 // 108
             else if xLog.ReplyValidateResult = '' then
-              ImageIndex := 39
+              ImageIndex := 39 // 109
             else
-              ImageIndex := 25;
+              ImageIndex := 25; // 110;
         end;
       logRequestGridColumn:
         begin
           xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
           if (Assigned(xLog)) and (xLog is TLog) and (xLog.RequestBody <> '') then
-            ImageIndex := 76;
+            ImageIndex := 46; // 76;
         end;
       logReplyGridColumn:
         begin
           xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
           if (Assigned(xLog)) and (xLog is TLog) and (xLog.ReplyBody <> '') then
-            ImageIndex := 76;
+            ImageIndex := 46; // 76;
         end;
     end;
   except
@@ -8581,7 +8352,7 @@ var
   xRootBase: TXsdDataType;
 begin
   EndEdit;
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   xEnableAddMenuItems := False;
   xEnableDelMenuItems := False;
   xAddChildVisible := False;
@@ -8610,12 +8381,12 @@ begin
       xEnableCheck := Items.Count > 0;
       xEnableStamp := Items.Count = 0;
       CopySwiftdatatoclipboardMenuItem.Visible :=
-        WsdlOperation.WsdlService.DescriptionType in [ipmDTSwiftMT];
+        FocusedOperation.WsdlService.DescriptionType in [ipmDTSwiftMT];
       CopySwiftdatatoclipboardMenuItem.Enabled := Assigned(Xsd) and
         (Xsd.Obj is TSwiftMtProps or (Name = 'FinMessage') or
           (Assigned(Parent) and (Parent.Name = 'FinMessage')));
       PasteSwiftdatafromclipboardMenuItem.Visible :=
-        WsdlOperation.WsdlService.DescriptionType in [ipmDTSwiftMT];
+        FocusedOperation.WsdlService.DescriptionType in [ipmDTSwiftMT];
       PasteSwiftdatafromclipboardMenuItem.Enabled := Assigned(Xsd) and
         ((Name = 'FinMessage') or (Assigned(Parent) and
             (Parent.Name = 'FinMessage')));
@@ -8658,17 +8429,17 @@ end;
 procedure TMainForm.ExecuteRequestActionUpdate(Sender: TObject);
 begin
   ExecuteRequestAction.Enabled :=
-        Assigned(WsdlOperation)
-    and (WsdlOperation.StubAction = saRequest)
-    and Assigned(WsdlMessage)
+        Assigned(FocusedOperation)
+    and (FocusedOperation.StubAction = saRequest)
+    and Assigned(FocusedMessage)
     and (NumberOfBlockingThreads < 1)
     ;
 end;
 
 procedure TMainForm.ExecuteAllRequestsActionUpdate(Sender: TObject);
 begin
-  ExecuteAllRequestsAction.Enabled := Assigned(WsdlOperation)
-                                  and (WsdlOperation.StubAction = saRequest)
+  ExecuteAllRequestsAction.Enabled := Assigned(FocusedOperation)
+                                  and (FocusedOperation.StubAction = saRequest)
                                   and (NumberOfBlockingThreads < 1)
                                     ;
 end;
@@ -8900,11 +8671,12 @@ procedure TMainForm.RefreshLog;
       xData.Report := xReport;
     end;
     se.toDisplaySnapshots.Clear;
-    if LogTabControl.TabIndex = Ord (spSnapshots) then
+    if ShowKindOfInformation = spSnapshots then
       SnapshotsVTS.Invalidate;
   end;
 var
   logAdded, exceptionAdded, uiInvalidated: Boolean;
+  xFocusedOperation: TWsdlOperation;
 begin
   if not Assigned (se) then Exit;
   se.AcquireLogLock;
@@ -8953,20 +8725,24 @@ begin
     se.ReleaseLogLock;
   end;
   if uiInvalidated then
-    setWsdlOperation(WsdlOperation);
+  begin
+    xFocusedOperation := FocusedOperation;
+    FocusedOperation := nil;
+    FocusedOperation := xFocusedOperation;
+  end;
   if logAdded then
     if doScrollMessagesIntoView then
       MessagesVTS.ScrollIntoView(MessagesVTS.GetLast, True, False);
   if exceptionAdded then
   begin
-    if LogTabControl.TabIndex <> Ord (spNotifications) then
+    if ShowKindOfInformation <> spNotifications then
     begin
       LogTabControl.Tabs [Ord (spNotifications)] := notifyTabCaption + ' [*]';
     end;
     if doScrollExceptionsIntoView then
     begin
       ExceptionsVTS.ScrollIntoView(ExceptionsVTS.GetLast, True, False);
-      LogTabControl.TabIndex := Ord (spNotifications);
+      ShowKindOfInformation := spNotifications;
     end;
   end;
 end;
@@ -9047,7 +8823,7 @@ end;
 
 procedure TMainForm.FindActionUpdate(Sender: TObject);
 begin
-  FindAction.Enabled := (Assigned(WsdlMessage));
+  FindAction.Enabled := (Assigned(FocusedMessage));
 end;
 
 procedure TMainForm.FindActionExecute(Sender: TObject);
@@ -9069,26 +8845,26 @@ begin
       xmlUtil.SearchUseRegExp := FindDlg.RegularExpressionCheckBox.Checked;
       Found := False;
       if xmlUtil.SearchScope = 0 then // Search from next object
-        CurItem := InWsdlTreeView.GetNext(InWsdlTreeView.FocusedNode);
+        CurItem := TreeView.GetNext(TreeView.FocusedNode);
       if (CurItem = nil) // if next object is nil
         or (xmlUtil.SearchScope = 1) then // or search entire scope
-        CurItem := InWsdlTreeView.GetFirst; // search from begin
+        CurItem := TreeView.GetFirst; // search from begin
       while not(CurItem = nil) and not Found do
       begin
         if xmlUtil.SearchIn = treeButtonColumn then
           xmlUtil.SearchIn := treeValueColumn;
-        InWsdlTreeViewGetText(InWsdlTreeView, CurItem, xmlUtil.SearchIn,
+        TreeViewGetText(TreeView, CurItem, xmlUtil.SearchIn,
           ttNormal, xNodeText);
         Found := StringMatchesMask(xNodeText, xmlUtil.SearchString, False,
           xmlUtil.SearchUseRegExp);
         if not Found then
-          CurItem := InWsdlTreeView.GetNext(CurItem);
+          CurItem := TreeView.GetNext(CurItem);
       end;
       if not Found then
         ShowMessage(xmlUtil.SearchString + ' not found')
       else
       begin
-        InWsdlTreeView.FocusedNode := CurItem;
+        TreeView.FocusedNode := CurItem;
       end;
     end;
   finally
@@ -9101,7 +8877,7 @@ end;
 
 procedure TMainForm.FindNextActionUpdate(Sender: TObject);
 begin
-  FindNextAction.Enabled := (Assigned(WsdlMessage)) and
+  FindNextAction.Enabled := (Assigned(FocusedMessage)) and
     (xmlUtil.SearchString <> '');
 end;
 
@@ -9115,21 +8891,21 @@ begin
   if True then
   begin
     Found := False;
-    CurNode := InWsdlTreeView.GetNext(InWsdlTreeView.FocusedNode);
+    CurNode := TreeView.GetNext(TreeView.FocusedNode);
     while not(CurNode = nil) and not Found do
     begin
-      InWsdlTreeViewGetText(InWsdlTreeView, CurNode, xmlUtil.SearchIn,
+      TreeViewGetText(TreeView, CurNode, xmlUtil.SearchIn,
         ttNormal, xNodeText);
       Found := StringMatchesMask(xNodeText, xmlUtil.SearchString, False,
         xmlUtil.SearchUseRegExp);
       if not Found then
-        CurNode := InWsdlTreeView.GetNext(CurNode);
+        CurNode := TreeView.GetNext(CurNode);
     end;
     if not Found then
       ShowMessage(xmlUtil.SearchString + ' not found')
     else
     begin
-      InWsdlTreeView.FocusedNode := CurNode;
+      TreeView.FocusedNode := CurNode;
     end;
   end;
   {
@@ -9139,7 +8915,7 @@ end;
 
 procedure TMainForm.Validate1Click(Sender: TObject);
 begin
-  xmlUtil.Validate(NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode));
+  xmlUtil.Validate(NodeToBind(TreeView, TreeView.FocusedNode));
 end;
 
 function TMainForm.XmlBindToNode(aTreeView: TVirtualStringTree;
@@ -9157,33 +8933,33 @@ begin
   end;
 end;
 
-procedure TMainForm.FocusOnFullCaption(aFullCaption: String);
+procedure TMainForm.FocusOnFullCaptionOrFirst(aFullCaption: String);
 var
   xNode: PVirtualNode;
   xBind: TCustomBindable;
 begin
   if aFullCaption <> '' then
   begin
-    xNode := InWsdlTreeView.GetFirst;
+    xNode := TreeView.GetFirst;
     while Assigned(xNode) do
     begin
-      xBind := NodeToBind(InWsdlTreeView, xNode);
+      xBind := NodeToBind(TreeView, xNode);
       if (xBind.FullCaption = aFullCaption) then
       begin
-        InWsdlTreeView.FocusedNode := xNode;
-        InWsdlTreeView.FocusedColumn := treeValueColumn;
+        FocusedBind := xBind;
         exit;
       end;
-      xNode := InWsdlTreeView.GetNext(xNode);
+      xNode := TreeView.GetNext(xNode);
     end;
   end;
+  FocusedBind := NodeToBind (TreeView, TreeView.GetFirst);
 end;
 
 procedure TMainForm.CheckTreeActionUpdate(Sender: TObject);
 begin
-  CheckTreeAction.Enabled := (Assigned(WsdlOperation))
-                         and (WsdlOperation.Messages.Count > 0)
-                         and (WsdlOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+  CheckTreeAction.Enabled := (Assigned(FocusedOperation))
+                         and (FocusedOperation.Messages.Count > 0)
+                         and (FocusedOperation.WsdlService.DescriptionType <> ipmDTFreeFormat)
                            ;
 end;
 
@@ -9193,33 +8969,33 @@ var
   xBind: TCustomBindable;
   xMessage: String;
 begin
-  xMessage := ''; //avoid warning
+  xMessage := ''; // avoid warning
   try
     XmlUtil.PushCursor (crHourGlass);
-    xNode := InWsdlTreeView.GetFirst;
-    xBind := NodeToBind(InWsdlTreeView, xNode);
+    xNode := TreeView.GetFirst;
+    xBind := NodeToBind(TreeView, xNode);
     if (xBind is TIpmItem) then
       raise Exception.Create('Not implemented for Cobol');
-    if WsdlOperation.WsdlService.DescriptionType = ipmDTFreeFormat then
+    if FocusedOperation.WsdlService.DescriptionType = ipmDTFreeFormat then
       raise Exception.Create('Not implemented for FreeFormat');
     if (not(xBind as TXml).TypeDef.IsValidXml((xBind as TXml), xMessage)) then
     // at least one error; try to come close
     // might be an assignment
     begin
-      while Assigned(xNode) and ((xNode.Parent <> InWsdlTreeView.RootNode) or
-          (xNode = InWsdlTreeView.GetFirst)) do
+      while Assigned(xNode) and ((xNode.Parent <> TreeView.RootNode) or
+          (xNode = TreeView.GetFirst)) do
       begin // first check elements
         lastNode := xNode; // remember for next testloop
-        xBind := NodeToBind(InWsdlTreeView, xNode);
+        xBind := NodeToBind(TreeView, xNode);
         if (xBind is TXml)
         and (xBind as TXml).CheckedAllUp
         and (not(xBind as TXml).Group)
         and (not xBind.IsExpression)
         and (not(xBind as TXml).IsValueValidAgainstXsd(xMessage)) then
         begin
-          InWsdlTreeView.FocusedNode := xNode;
-          InWsdlTreeView.FocusedColumn := treeValueColumn;
-          InWsdlTreeView.SetFocus;
+          TreeView.FocusedNode := xNode;
+          TreeView.FocusedColumn := treeValueColumn;
+          TreeView.SetFocus;
           Raise Exception.Create(xMessage);
         end;
         if (xBind is TXml) // check for missing mandatory element or group
@@ -9232,30 +9008,30 @@ begin
                 )
             ) then
         begin
-          InWsdlTreeView.FocusedNode := xNode;
-          InWsdlTreeView.FocusedColumn := treeValueColumn;
-          InWsdlTreeView.SetFocus;
+          TreeView.FocusedNode := xNode;
+          TreeView.FocusedColumn := treeValueColumn;
+          TreeView.SetFocus;
           Raise Exception.Create((xBind as TXml).TagName + ' expected');
         end;
-        xNode := InWsdlTreeView.GetNext(xNode);
+        xNode := TreeView.GetNext(xNode);
       end;
 
-      // xNode := InWsdlTreeView.GetLast; // check groups, from last to first to be most specific
+      // xNode := TreeView.GetLast; // check groups, from last to first to be most specific
       xNode := lastNode; // check groups, from last to first to be most specific
       while Assigned(xNode) do
       begin
-        xBind := NodeToBind(InWsdlTreeView, xNode);
+        xBind := NodeToBind(TreeView, xNode);
         if (xBind is TXml)
         and (xBind as TXml).CheckedAllUp
         and ((xBind as TXml).Group)
         and (not(xBind as TXml).TypeDef.IsValidXml ((xBind as TXml), xMessage)) then
         begin
-          InWsdlTreeView.FocusedNode := xNode;
-          InWsdlTreeView.FocusedColumn := InWsdlTreeView.Header.MainColumn;
-          InWsdlTreeView.SetFocus;
+          TreeView.FocusedNode := xNode;
+          TreeView.FocusedColumn := TreeView.Header.MainColumn;
+          TreeView.SetFocus;
           Raise Exception.Create(xMessage);
         end;
-        xNode := InWsdlTreeView.GetPrevious(xNode);
+        xNode := TreeView.GetPrevious(xNode);
       end;
     end;
   finally
@@ -9368,12 +9144,12 @@ procedure TMainForm.ViewStyleComboBoxChange(Sender: TObject);
 begin
   if Assigned(Wsdl) then
   begin
-    RevalidateXmlTreeView(InWsdlTreeView);
-    InWsdlTreeView.ScrollIntoView(InWsdlTreeView.FocusedNode, True, False);
+    RevalidateXmlTreeView(TreeView);
+    TreeView.ScrollIntoView(TreeView.FocusedNode, True, False);
   end;
 end;
 
-procedure TMainForm.InWsdlTreeViewFocusChanging(Sender: TBaseVirtualTree;
+procedure TMainForm.TreeViewFocusChanging(Sender: TBaseVirtualTree;
   OldNode, NewNode: PVirtualNode; OldColumn, NewColumn: TColumnIndex;
   var Allowed: Boolean);
 var
@@ -9439,79 +9215,89 @@ procedure TMainForm.ShowReplyAsXmlGridActionExecute(Sender: TObject);
 var
   cForm: TIpmGridForm;
   xString: String;
+  xXsdDescr: TXsdDescr;
 begin
+  xXsdDescr := nil;
   xString := IfThen(Assigned(claimedLog) and (claimedLog is TLog), claimedLog.ReplyBody, '');
-  if (xString <> '') then
-  begin
-    if Assigned(claimedLog.Mssg) and (claimedLog.Operation.rpyBind is TIpmItem) then
+  try
+    if (xString <> '') then
     begin
-      if se.ShowLogCobolStyle = slCobol then
+      if Assigned(claimedLog.Mssg) and (claimedLog.Operation.rpyBind is TIpmItem) then
       begin
-        Application.CreateForm(TIpmGridForm, cForm);
-        try
-          cForm.isReadOnly := False;
-          cForm.doConfirmRemovals := True;
-          cForm.Ipm := claimedLog.Operation.rpyBind as TIpmItem;
-          cForm.Ipm.BufferToValues(FoundErrorInBuffer, xString);
-          cForm.Caption := 'Reply as Grid';
-          cForm.ShowModal;
-        finally
-          FreeAndNil(cForm);
-        end;
-      end
-      else
-      begin
-        with claimedLog.rpyBodyAsXml do
+        if se.ShowLogCobolStyle = slCobol then
+        begin
+          Application.CreateForm(TIpmGridForm, cForm);
           try
-            ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
+            cForm.isReadOnly := False;
+            cForm.doConfirmRemovals := True;
+            cForm.Ipm := claimedLog.Operation.rpyBind as TIpmItem;
+            cForm.Ipm.BufferToValues(FoundErrorInBuffer, xString);
+            cForm.Caption := 'Reply as Grid';
+            cForm.ShowModal;
           finally
-            Free;
+            FreeAndNil(cForm);
           end;
-      end;
-      exit;
-    end;
-    if Assigned(claimedLog.Operation) then
-    begin
-      if claimedLog.Operation.WsdlService.DescriptionType = ipmDTSwiftMT then
-      begin
-        with claimedLog.rpyBodyAsXml do
-          try
-            ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
-          finally
-            Free;
-          end;
-        exit;
-      end;
-      if claimedLog.Operation.WsdlService.DescriptionType = ipmDTFreeFormat then
-      begin
-        xmlUtil.presentString('Reply freeformat', claimedLog.ReplyBody);
-        exit;
-      end;
-      if claimedLog.Operation.WsdlService.DescriptionType = ipmDTEmail then
-      begin
-        xmlUtil.presentString('Reply freeformat', claimedLog.ReplyBody);
-        exit;
-      end;
-      if claimedLog.Operation.WsdlService.DescriptionType = ipmDTWsdl then
-      begin
-        XmlUtil.PushCursor (crHourGlass);
-        try
-          xmlUtil.ShowSoapBodyInGrid(claimedLog.ReplyBody);
-        finally
-          XmlUtil.PopCursor;
+        end
+        else
+        begin
+          with claimedLog.rpyBodyAsXml do
+            try
+              ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
+            finally
+              Free;
+            end;
         end;
         exit;
       end;
-    end;
-    { }{
-      with claimedLog.rpyBodyAsXml do
-      try
-      ShowTextAsGrid ('Reply as Grid', asText(False, 0, False, False));
-      finally
-      Free;
+      if Assigned(claimedLog.Operation) then
+      begin
+        if claimedLog.Operation.WsdlService.DescriptionType = ipmDTSwiftMT then
+        begin
+          with claimedLog.rpyBodyAsXml do
+            try
+              ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
+            finally
+              Free;
+            end;
+          exit;
+        end;
+        if claimedLog.Operation.WsdlService.DescriptionType = ipmDTFreeFormat then
+        begin
+          xmlUtil.presentString('Reply freeformat', claimedLog.ReplyBody);
+          exit;
+        end;
+        if claimedLog.Operation.WsdlService.DescriptionType = ipmDTEmail then
+        begin
+          xmlUtil.presentString('Reply freeformat', claimedLog.ReplyBody);
+          exit;
+        end;
+        if claimedLog.Operation.WsdlService.DescriptionType = ipmDTWsdl then
+        begin
+          XmlUtil.PushCursor (crHourGlass);
+          try
+            xmlUtil.ShowSoapBodyInGrid(claimedLog.ReplyBody);
+          finally
+            XmlUtil.PopCursor;
+          end;
+          exit;
+        end;
+        if claimedLog.Operation.Wsdl.isOpenApiService then
+        begin
+          with claimedLog.rpyBodyAsXml do
+          try
+            xXsdDescr := TXsdDescr.Create;
+            CreateXsdFromXml(xXsdDescr, thisXml, True);
+            ShowXmlInGrid (thisXml, True);
+          finally
+            Free;
+          end;
+          exit;
+        end;
       end;
-      { }
-    xmlUtil.presentString('Reply', claimedLog.ReplyBody);
+      xmlUtil.presentString('Reply', claimedLog.ReplyBody);
+    end;
+  finally
+    FreeAndNil(xXsdDescr);
   end;
 end;
 
@@ -9753,7 +9539,10 @@ end;
 
 procedure TMainForm.Action1Execute(Sender: TObject);
 begin
-  XmlUtil.presentAsText('AllOps', allOperations.Text);
+//XmlUtil.presentAsText('AllOps', allOperations.Text);
+  SjowMessage('se.PathFormats' + LineEnding + se.PathFormats.Text);
+  SjowMessage('se.PathInfos' + LineEnding + se.PathInfos.Text);
+  SjowMessage('se.PathRegexps' + LineEnding + se.PathRegexps.Text);
 end;
 
 procedure TMainForm.GenerateScriptAssignmentActionExecute(Sender: TObject);
@@ -9790,8 +9579,8 @@ var
   xXml: TXml;
   xStmnt: String;
 begin
-  xXml := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode) as TXml;
-  xStmnt := 'with ' + IfThen(xXml.Root = WsdlOperation.reqBind, 'Req.', 'Rpy.')
+  xXml := NodeToBind(TreeView, TreeView.FocusedNode) as TXml;
+  xStmnt := 'with ' + IfThen(xXml.Root = FocusedOperation.reqBind, 'Req.', 'Rpy.')
     + xXml.Parent.FullCaption + ' do' + LineEnding + '{' + LineEnding + _indent(2)
     + '.' + xXml.Name + ' := nil;' + LineEnding + _xml(xXml, 2) + '}' + LineEnding;
   ClipBoard.AsText := xStmnt;
@@ -9888,7 +9677,7 @@ begin
     if MqBrowseForm.ModalResult = mrOk then
     begin
       QueueNameList.Add(MqBrowseForm.GetQueueEdit.Text);
-      LogTabControl.TabIndex := Ord (spMessages);
+      ShowKindOfInformation := spMessages;
       XmlUtil.PushCursor (crHourGlass);
       try
         xMqInterface := TMqInterface.Create;
@@ -9985,20 +9774,20 @@ procedure TMainForm.GridViewFocusedNode(aNode: PVirtualNode);
 begin
   if (toMultiSelect in GridView.TreeOptions.SelectionOptions) then
   begin
-    GridView.TreeOptions.SelectionOptions :=
-      GridView.TreeOptions.SelectionOptions - [toMultiSelect];
+    GridView.TreeOptions.SelectionOptions := GridView.TreeOptions.SelectionOptions - [toMultiSelect];
     GridView.Selected[aNode] := True;
-    GridView.TreeOptions.SelectionOptions :=
-      GridView.TreeOptions.SelectionOptions + [toMultiSelect];
-  end;
+    GridView.TreeOptions.SelectionOptions := GridView.TreeOptions.SelectionOptions + [toMultiSelect];
+  end
+  else
   GridView.Selected[aNode] := True;
   GridView.FocusedNode := aNode;
+  ShowFocusedMessageInTreeView;
 end;
 
 procedure TMainForm.CopySwiftdatatoclipboardMenuItemClick(Sender: TObject);
 begin
-  with TStwiftMtStreamer.Create(NodeToBind(InWsdlTreeView,
-      InWsdlTreeView.FocusedNode) as TXml) do
+  with TStwiftMtStreamer.Create(NodeToBind(TreeView,
+      TreeView.FocusedNode) as TXml) do
     try
       ClipBoard.AsText := AsText;
     finally
@@ -10044,9 +9833,7 @@ begin
       end;
     end;
     if (ret = mrCancel) then
-      CanClose := False
-    else
-      NewStubCaseActionExecute(nil);
+      CanClose := False;
   end;
 end;
 
@@ -10061,11 +9848,11 @@ var
 begin
   if not Assigned(se) then
     exit;
-  if Assigned(WsdlOperation) then
+  if Assigned(FocusedOperation) then
   begin
-    xOperation := TWsdlOperation.Create(WsdlOperation);
+    xOperation := TWsdlOperation.Create(FocusedOperation);
     try
-      xOperation.CorrelatedMessage := WsdlMessage;
+      xOperation.CorrelatedMessage := FocusedMessage;
       ShowInfoForm('debug Before', xOperation.BeforeActivatorDebugString);
     finally
       xOperation.Free;
@@ -10075,25 +9862,14 @@ end;
 
 procedure TMainForm.DebugOperation;
 begin
-  // ReleaseLock;
-  // SetForegroundWindow(Application.Handle);
-  // xmlUtil.ViewAsXml(fDebugOperation.rpyBind, False);
-  // AcquireLock;
-  with TIdSync.Create do
-  begin
-    try
-      SynchronizeMethod(DebugOperationViewAsXml);
-    finally
-      Free;
-    end;
-  end;
+  SynchronizeMethode(DebugOperationViewAsXml);
 end;
 
 procedure TMainForm.doSaveLogRepliesToDisk;
 var
   xNode: PVirtualNode;
   xLog: TLog;
-  sl: TStringList;
+  sl: TJBStringList;
 begin
   AcquireLock;
   try
@@ -10103,7 +9879,7 @@ begin
     ProgressBar.Max := se.displayedLogs.Count + 20;
     ProgressBar.Position := 0;
     try
-      sl := TStringList.Create;
+      sl := TJBStringList.Create;
       try
         xNode := MessagesVTS.GetFirst;
         while Assigned(xNode) do
@@ -10134,7 +9910,7 @@ procedure TMainForm.doSaveLogRequestsToDisk;
 var
   xNode: PVirtualNode;
   xLog: TLog;
-  sl: TStringList;
+  sl: TJBStringList;
 begin
   AcquireLock;
   try
@@ -10144,7 +9920,7 @@ begin
     ProgressBar.Max := se.displayedLogs.Count + 20;
     ProgressBar.Position := 0;
     try
-      sl := TStringList.Create;
+      sl := TJBStringList.Create;
       try
         xNode := MessagesVTS.GetFirst;
         while Assigned(xNode) do
@@ -10178,13 +9954,12 @@ var
   xMessage: TWsdlMessage;
   xFileName, xSeparator, xMsgString: String;
 begin
-  xMessage := nil; //avoid warning
   AcquireLock;
   try
     XmlUtil.PushCursor (crHourGlass);
     ProgressBar.Min := 0;
     ProgressBar.Position := 0;
-    ProgressBar.Max := WsdlOperation.Messages.Count;
+    ProgressBar.Max := FocusedOperation.Messages.Count;
     ProgressBar.Position := 0;
     abortPressed := False;
     AbortAction.Enabled := True;
@@ -10203,7 +9978,7 @@ begin
         ProgressBar.Position := ProgressBar.Position + 1;
         if GridView.Selected[xNode] then
         begin
-          NodeToMessage(GridView, xNode, xMessage);
+          xMessage := NodeToMessage(GridView, xNode);
           if Assigned(xMessage) then
           begin
             try
@@ -10217,41 +9992,41 @@ begin
               end;
               if saveToDiskExtention <> '' then
                 xFileName := xFileName + '.' + saveToDiskExtention;
-              if WsdlOperation.StubAction = saRequest then
+              if FocusedOperation.StubAction = saRequest then
               begin
-                if WsdlOperation.reqBind is TIpmItem then
+                if FocusedOperation.reqBind is TIpmItem then
                 begin
-                  WsdlOperation.reqIpm.LoadValues(xMessage.reqIpm);
-                  WsdlOperation.ExecuteBefore;
-                  WsdlOperation.ExecuteReqStampers;
-                  xMsgString := WsdlOperation.reqIpm.ValuesToBuffer(nil)
+                  FocusedOperation.reqIpm.LoadValues(xMessage.reqIpm);
+                  FocusedOperation.ExecuteBefore;
+                  FocusedOperation.ExecuteReqStampers;
+                  xMsgString := FocusedOperation.reqIpm.ValuesToBuffer(nil)
                 end
                 else
-                begin (WsdlOperation.reqBind as TXml)
-                  .ResetValues; (WsdlOperation.reqBind as TXml)
+                begin (FocusedOperation.reqBind as TXml)
+                  .ResetValues; (FocusedOperation.reqBind as TXml)
                   .LoadValues(xMessage.reqBind as TXml, True, True);
-                  WsdlOperation.ExecuteBefore;
-                  WsdlOperation.ExecuteReqStampers;
-                  xMsgString := WsdlOperation.StreamRequest(_progName, True,
+                  FocusedOperation.ExecuteBefore;
+                  FocusedOperation.ExecuteReqStampers;
+                  xMsgString := FocusedOperation.StreamRequest(_progName, True,
                     True, True);
                 end;
               end
               else
               begin
-                if WsdlOperation.rpyBind is TIpmItem then
+                if FocusedOperation.rpyBind is TIpmItem then
                 begin
-                  WsdlOperation.rpyIpm.LoadValues(xMessage.rpyIpm);
-                  WsdlOperation.ExecuteBefore;
-                  WsdlOperation.ExecuteRpyStampers;
-                  xMsgString := WsdlOperation.rpyIpm.ValuesToBuffer(nil)
+                  FocusedOperation.rpyIpm.LoadValues(xMessage.rpyIpm);
+                  FocusedOperation.ExecuteBefore;
+                  FocusedOperation.ExecuteRpyStampers;
+                  xMsgString := FocusedOperation.rpyIpm.ValuesToBuffer(nil)
                 end
                 else
-                begin (WsdlOperation.rpyBind as TXml)
-                  .ResetValues; (WsdlOperation.rpyBind as TXml)
+                begin (FocusedOperation.rpyBind as TXml)
+                  .ResetValues; (FocusedOperation.rpyBind as TXml)
                   .LoadValues(xMessage.rpyBind as TXml, True, True);
-                  WsdlOperation.ExecuteBefore;
-                  WsdlOperation.ExecuteRpyStampers;
-                  xMsgString := WsdlOperation.StreamReply(_progName, True);
+                  FocusedOperation.ExecuteBefore;
+                  FocusedOperation.ExecuteRpyStampers;
+                  xMsgString := FocusedOperation.StreamReply(_progName, True);
                 end;
               end;
               SaveStringToFile(xFileName, xMsgString);
@@ -10285,11 +10060,11 @@ end;
 
 procedure TMainForm.DownPageControlChange(Sender: TObject);
 begin
-  if LogTabControl.TabIndex = Ord (spMessages) then
+  if ShowKindOfInformation = spMessages then
   begin
     LogTabControl.Tabs[Ord (spMessages)] := MessagesTabCaption; // remove asterix since exceptions can be viewed now
   end;
-  if LogTabControl.TabIndex = Ord (spNotifications) then
+  if ShowKindOfInformation = spNotifications then
   begin
     LogTabControl.Tabs[Ord (spNotifications)] := notifyTabCaption; // remove asterix since exceptions can be viewed now
   end;
@@ -10300,7 +10075,7 @@ var
   f: Integer;
   xMessage: TWsdlMessage;
   xFileName, xMsgString: String;
-  xPatterns: TStringList;
+  xPatterns: TJBStringList;
   nErrors: Integer;
   xXml: TXml;
   mNode: PVirtualNode;
@@ -10315,14 +10090,14 @@ begin
   abortPressed := False;
   AbortAction.Enabled := True;
   CheckBoxClick(nil);
-  xPatterns := TStringList.Create;
+  xPatterns := TJBStringList.Create;
   try
     try
       for f := 0 to FileNameList.Count - 1 do
       begin
         if abortPressed then
           Break;
-        WsdlOperation.AcquireLock;
+        FocusedOperation.AcquireLock;
         try
           ProgressBar.Position := ProgressBar.Position + 1;
           try
@@ -10331,14 +10106,14 @@ begin
               Length(xFileName) - Length
                 (ExtractFileExt(FileNameList.Strings[f])));
             if (ExplodeStr(xFileName, saveToDiskSeparator[1], xPatterns, True,
-                False) <> WsdlOperation.CorrelationBindables.Count) then
+                False) <> FocusedOperation.CorrelationBindables.Count) then
               raise Exception.Create('Filename: ' + xFileName +
                   ' does not fit correlation');
             xMsgString := ReadStringFromFile(FileNameList.Strings[f], nil, nil);
-            if WsdlOperation.StubAction = saRequest then
+            if FocusedOperation.StubAction = saRequest then
             begin
-              xMessage := TWsdlMessage.CreateRequest(WsdlOperation,
-                'Request' + IntToStr(WsdlOperation.Messages.Count),
+              xMessage := TWsdlMessage.CreateRequest(FocusedOperation,
+                'Request' + IntToStr(FocusedOperation.Messages.Count),
                 xPatterns.Text,
                 xsdNowAsDateTime + '  Read from ' + FileNameList.Strings[f]);
               if xMessage.reqBind is TIpmItem then
@@ -10349,9 +10124,9 @@ begin
                 xXml := TXml.Create;
                 try
                   xXml.LoadFromString(xMsgString, nil);
-                  WsdlOperation.XmlRequestToBindables (xXml, False);
+                  FocusedOperation.XmlRequestToBindables (xXml, False);
                   (xMessage.reqBind as TXml).Reset;
-                  (xMessage.reqBind as TXml).LoadValues((WsdlOperation.reqBind as TXml), True, True);
+                  (xMessage.reqBind as TXml).LoadValues((FocusedOperation.reqBind as TXml), True, True);
                 finally
                   xXml.Free;
                 end;
@@ -10359,8 +10134,8 @@ begin
             end
             else
             begin
-              xMessage := TWsdlMessage.CreateReply(WsdlOperation,
-                'Reply' + IntToStr(WsdlOperation.Messages.Count),
+              xMessage := TWsdlMessage.CreateReply(FocusedOperation,
+                'Reply' + IntToStr(FocusedOperation.Messages.Count),
                 xPatterns.Text,
                 xsdNowAsDateTime + '  Read from ' + FileNameList.Strings[f]);
               if xMessage.rpyBind is TIpmItem then
@@ -10370,15 +10145,15 @@ begin
                 xXml := TXml.Create;
                 try
                   xXml.LoadFromString(xMsgString, nil);
-                  WsdlOperation.XmlReplyToBindables (xXml, False);
+                  FocusedOperation.XmlReplyToBindables (xXml, False);
                   (xMessage.rpyBind as TXml).Reset;
-                  (xMessage.rpyBind as TXml).LoadValues((WsdlOperation.rpyBind as TXml), True, True);
+                  (xMessage.rpyBind as TXml).LoadValues((FocusedOperation.rpyBind as TXml), True, True);
                 finally
                   xXml.Free;
                 end;
               end;
             end;
-            se.UpdateMessageRow(WsdlOperation, xMessage);
+            se.UpdateMessageRow(FocusedOperation, xMessage);
             mNode := GridView.AddChild(nil);
             mData := GridView.GetNodeData(mNode);
             mData.Message := xMessage;
@@ -10391,7 +10166,7 @@ begin
             end;
           end;
         finally
-          WsdlOperation.ReleaseLock;
+          FocusedOperation.ReleaseLock;
         end;
       end;
     finally
@@ -10413,13 +10188,12 @@ var
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
 begin
-  WsdlOperation.AcquireLock;
-  xMessage := nil; //avoid warning
+  FocusedOperation.AcquireLock;
   try
     xNode := GridView.GetFirstSelected;
     while Assigned(xNode) do
     begin
-      NodeToMessage(GridView, xNode, xMessage);
+      xMessage := NodeToMessage(GridView, xNode);
       if Assigned(xMessage) and (xNode <> GridView.GetFirst) then
       // can not disable the default message
         xMessage.Disabled := True;
@@ -10427,7 +10201,7 @@ begin
     end;
     GridView.InvalidateColumn(0);
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
 end;
 
@@ -10436,30 +10210,29 @@ var
   xNode: PVirtualNode;
   xMessage: TWsdlMessage;
 begin
-  xMessage := nil; //avoid warning
-  WsdlOperation.AcquireLock;
+  FocusedOperation.AcquireLock;
   try
     xNode := GridView.GetFirstSelected;
     while Assigned(xNode) do
     begin
-      NodeToMessage(GridView, xNode, xMessage);
+      xMessage := NodeToMessage(GridView, xNode);
       if Assigned(xMessage) then
         xMessage.Disabled := False;
       xNode := GridView.GetNextSelected(xNode);
     end;
     GridView.InvalidateColumn(0);
   finally
-    WsdlOperation.ReleaseLock;
+    FocusedOperation.ReleaseLock;
   end;
 end;
 
 procedure TMainForm.PasteGridFromPasteBoard;
-  function TabSepLineToStringGrid(aLine: String): TStringList;
+  function TabSepLineToStringGrid(aLine: String): TJBStringList;
   var
     c: Integer;
     col: String;
   begin
-    result := TStringList.Create;
+    result := TJBStringList.Create;
     col := '';
     for c := 1 to Length(aLine) do
     begin
@@ -10476,12 +10249,12 @@ procedure TMainForm.PasteGridFromPasteBoard;
   end;
 
 var
-  copyLines, copyColumns: TStringList;
+  copyLines, copyColumns: TJBStringList;
   l, c: Integer;
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
 begin
-  copyLines := TStringList.Create;
+  copyLines := TJBStringList.Create;
   try
     copyLines.Text := ClipBoard.AsText;
     // first check if first line is columnheader line
@@ -10497,10 +10270,10 @@ begin
     l := 1; // line zero contains columnheaders
     while (l < copyLines.Count) do
     begin
-      if l <= WsdlOperation.Messages.Count then
-        xMessage := WsdlOperation.Messages.Messages[l - 1]
+      if l <= FocusedOperation.Messages.Count then
+        xMessage := FocusedOperation.Messages.Messages[l - 1]
       else
-        NodeToMessage(GridView, AddMessage(GridView.GetFirst), xMessage);
+        xMessage := NodeToMessage(GridView, AddMessage(GridView.GetFirst));
       copyColumns := TabSepLineToStringGrid(copyLines.Strings[l]);
       try
         c := 0;
@@ -10649,7 +10422,7 @@ begin
             end;
           end;
           se.UpdateMessageRow(xLog.Operation, xMessage);
-          if xLog.Operation = WsdlOperation then
+          if xLog.Operation = FocusedOperation then
           begin
             mNode := GridView.AddChild(nil);
             mData := GridView.GetNodeData(mNode);
@@ -10683,7 +10456,7 @@ begin
 end;
 
 procedure TMainForm.CoverageReport(aList: TLogList);
-  procedure _updateIgnoreCoverageOn(xXml: TXmlCvrg; sl: TStringList);
+  procedure _updateIgnoreCoverageOn(xXml: TXmlCvrg; sl: TJBStringList);
   var
     X: Integer;
   begin
@@ -10758,7 +10531,7 @@ end;
 
 procedure TMainForm.LogCoverageReportActionUpdate(Sender: TObject);
 begin
-  LogCoverageReportAction.Enabled := Assigned(WsdlOperation);
+  LogCoverageReportAction.Enabled := Assigned(FocusedOperation);
 end;
 
 procedure TMainForm.LogDisplayedColumnsActionExecute(Sender: TObject);
@@ -10797,7 +10570,7 @@ end;
 
 procedure TMainForm.ViewMssgAsTextActionUpdate(Sender: TObject);
 begin
-  ViewMssgAsTextAction.Enabled := Assigned(WsdlMessage);
+  ViewMssgAsTextAction.Enabled := Assigned(FocusedMessage);
 end;
 
 procedure TMainForm.ViewMssgAsTextActionExecute(Sender: TObject);
@@ -10805,48 +10578,48 @@ var
   xMessage: String;
 begin
   EndEdit;
-  if not Assigned(WsdlMessage) then
+  if not Assigned(FocusedMessage) then
     raise Exception.Create('No message selected');
-  if WsdlOperation.StubAction = saRequest then
+  if FocusedOperation.StubAction = saRequest then
   begin
-    WsdlOperation.AcquireLock;
+    FocusedOperation.AcquireLock;
     try
-      if WsdlOperation.reqBind is TXml then with WsdlOperation.reqBind as TXml do
+      if FocusedOperation.reqBind is TXml then with FocusedOperation.reqBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlMessage.reqBind as TXml), True, True);
-        xMessage := WsdlOperation.StreamRequest(_progName, True, True, True);
+        LoadValues((FocusedMessage.reqBind as TXml), True, True);
+        xMessage := FocusedOperation.StreamRequest(_progName, True, True, True);
       end
       else
       begin
-        xMessage := (WsdlMessage.reqBind as TIpmItem).ValuesToBuffer(nil);
+        xMessage := (FocusedMessage.reqBind as TIpmItem).ValuesToBuffer(nil);
       end;
     finally
-      WsdlOperation.ReleaseLock;
+      FocusedOperation.ReleaseLock;
     end;
     ShowInfoForm('Request', xMessage);
   end
   else
   begin
     try
-      WsdlOperation.AcquireLock;
-      if WsdlOperation.rpyBind is TXml then with WsdlOperation.rpyBind as TXml do
+      FocusedOperation.AcquireLock;
+      if FocusedOperation.rpyBind is TXml then with FocusedOperation.rpyBind as TXml do
       begin
         ResetValues;
-        LoadValues((WsdlMessage.rpyBind as TXml), False, True);
-        (WsdlOperation.fltBind as TXml).ResetValues;
-        (WsdlOperation.fltBind as TXml).LoadValues((WsdlMessage.fltBind as TXml), False, True);
-        if WsdlMessage.fltBind.Checked then
-          xMessage := WsdlOperation.StreamFault(_progName, True)
+        LoadValues((FocusedMessage.rpyBind as TXml), False, True);
+        (FocusedOperation.fltBind as TXml).ResetValues;
+        (FocusedOperation.fltBind as TXml).LoadValues((FocusedMessage.fltBind as TXml), False, True);
+        if FocusedMessage.fltBind.Checked then
+          xMessage := FocusedOperation.StreamFault(_progName, True)
         else
-          xMessage := WsdlOperation.StreamReply(_progName, True);
+          xMessage := FocusedOperation.StreamReply(_progName, True);
       end
       else
       begin
-        xMessage := (WsdlMessage.rpyBind as TIpmItem).ValuesToBuffer(nil);
+        xMessage := (FocusedMessage.rpyBind as TIpmItem).ValuesToBuffer(nil);
       end;
     finally
-      WsdlOperation.ReleaseLock;
+      FocusedOperation.ReleaseLock;
     end;
     ShowInfoForm('Reply', xMessage);
   end;
@@ -10854,8 +10627,8 @@ end;
 
 procedure TMainForm.CopyCobolDataToClipboardMenuItemClick(Sender: TObject);
 begin
-  ClipBoard.AsText := (NodeToBind(InWsdlTreeView,
-      InWsdlTreeView.FocusedNode) as TIpmItem).ValuesToBuffer(nil);
+  ClipBoard.AsText := (NodeToBind(TreeView,
+      TreeView.FocusedNode) as TIpmItem).ValuesToBuffer(nil);
 end;
 
 procedure TMainForm .ShowLogDifferencesActionExecute (Sender : TObject );
@@ -10931,7 +10704,7 @@ end;
 
 procedure TMainForm.ShowShortCutActionsActionExecute (Sender : TObject );
 var
-  sl: TStringList;
+  sl: TJBStringList;
   x: Integer;
   xKey: Word;
   xShift : TShiftState;
@@ -10940,7 +10713,7 @@ var
   xMenuItem: TMenuItem;
 begin
 {
-  sl := TStringList.Create;
+  sl := TJBStringList.Create;
   try
     for x := 0 to alGeneral.ActionCount - 1 do with alGeneral.Actions[x] as TCustomAction do
     begin
@@ -10970,27 +10743,27 @@ procedure TMainForm.CleanMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if not(xBind is TXml) then
     raise Exception.Create('FocusedNode not an XML element');
   try
-    WsdlOperation.AcquireLock;
+    FocusedOperation.AcquireLock;
     try
       (xBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
     finally
-      WsdlOperation.ReleaseLock;
+      FocusedOperation.ReleaseLock;
     end;
-    UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+    UpdateXmlTreeViewNode(TreeView, TreeView.FocusedNode);
     stubChanged := True;
   finally
-    RevalidateXmlTreeView(InWsdlTreeView);
+    RevalidateXmlTreeView(TreeView);
   end;
 end;
 
 procedure TMainForm.PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
-begin (NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode) as TIpmItem)
+begin (NodeToBind(TreeView, TreeView.FocusedNode) as TIpmItem)
   .BufferToValues(nil, ClipBoard.AsText);
-  InWsdlTreeView.Invalidate;
+  TreeView.Invalidate;
 end;
 
 procedure TMainForm.ParserError(Sender: TObject;
@@ -11013,14 +10786,14 @@ procedure TMainForm.ElementvalueMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if Assigned(xBind) then
   begin
     Application.CreateForm(TSelectXmlElementForm, SelectXmlElementForm);
     try
       SelectXmlElementForm.doShowReq := True;
       SelectXmlElementForm.doShowRpy := True;
-      SelectXmlElementForm.WsdlOperation := WsdlOperation;
+      SelectXmlElementForm.WsdlOperation := FocusedOperation;
       if xBind.IsExpression then
         SelectXmlElementForm.LastCaption := Trim(Copy(xBind.Value, 3, 30000))
       else
@@ -11031,7 +10804,7 @@ begin
       begin
         fLastCaption := SelectXmlElementForm.SelectedCaption;
         xBind.Value := ':=' + fLastCaption;
-        WsdlOperation.PrepareRpyStamper(xBind);
+        FocusedOperation.PrepareRpyStamper(xBind);
       end;
     finally
       FreeAndNil(SelectXmlElementForm);
@@ -11043,14 +10816,14 @@ procedure TMainForm.AssignEvaluationMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if Assigned(xBind) then
   begin
-    WsdlOperation.BindChecker(xBind);
+    FocusedOperation.BindChecker(xBind);
     Application.CreateForm(TEditCheckerForm, EditCheckerForm);
     try
       EditCheckerForm.ScriptMemo.ReadOnly := False;
-      EditCheckerForm.WsdlOperation := WsdlOperation;
+      EditCheckerForm.WsdlOperation := FocusedOperation;
       EditCheckerForm.Bindable := xBind;
       EditCheckerForm.ShowModal;
       if EditCheckerForm.ModalResult = mrOk then
@@ -11067,13 +10840,13 @@ procedure TMainForm.AssignExpressionMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if Assigned(xBind) then
   begin
     Application.CreateForm(TEditStamperForm, EditStamperForm);
     try
       EditStamperForm.ScriptMemo.ReadOnly := False;
-      EditStamperForm.WsdlOperation := WsdlOperation;
+      EditStamperForm.WsdlOperation := FocusedOperation;
       EditStamperForm.Bindable := xBind;
       EditStamperForm.ShowModal;
       if EditStamperForm.ModalResult = mrOk then
@@ -11116,33 +10889,28 @@ procedure TMainForm.ChangeDataTypeMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if (xBind is TXml) and (Assigned((xBind as TXml).Xsd)) then
   begin
     ChangeXmlDataType(xBind as TXml, TXsdDataType((Sender as TMenuItem).Tag));
-    UpdateXmlTreeViewNode(InWsdlTreeView, InWsdlTreeView.FocusedNode);
-    InWsdlTreeView.FocusedColumn := 0;
-    InWsdlTreeView.Expanded[InWsdlTreeView.FocusedNode] := True;
-    se.UpdateMessageRow(WsdlOperation, WsdlMessage);
-    InWsdlTreeView.Invalidate;
+    UpdateXmlTreeViewNode(TreeView, TreeView.FocusedNode);
+    TreeView.FocusedColumn := 0;
+    TreeView.Expanded[TreeView.FocusedNode] := True;
+    se.UpdateMessageRow(FocusedOperation, FocusedMessage);
+    TreeView.Invalidate;
     GridView.InvalidateNode(GridView.FocusedNode);
-    InWsdlTreeViewFocusChanged(InWsdlTreeView, InWsdlTreeView.FocusedNode,
-      InWsdlTreeView.FocusedColumn);
+    TreeViewFocusChanged(TreeView, TreeView.FocusedNode,
+      TreeView.FocusedColumn);
   end;
-end;
-
-procedure TMainForm.ServiceOptionsActionUpdate(Sender: TObject);
-begin
-  ServiceOptionsAction.Enabled := (WsdlServicesComboBox.ItemIndex > -1);
 end;
 
 procedure TMainForm.ServiceOptionsActionExecute(Sender: TObject);
 var
   xXml: TXml;
 begin
-  if WsdlServicesComboBox.ItemIndex < 0 then
+  if not Assigned (FocusedOperation) then
     raise Exception.Create('No service selected');
-  with Wsdl.Services.Services[WsdlServicesComboBox.ItemIndex] do
+  with FocusedOperation.WsdlService do
   begin
     xXml := OptionsAsXml;
     try
@@ -11270,7 +11038,7 @@ begin
       OpenLog4jEvents(log4jEventsFileName, True, xLogList);
       try
         ToAllLogList(xLogList);
-        MessagesTabControl.TabIndex := Ord (slRequestBody);
+        ShowKindOfLogData := slRequestBody;
       except
         xLogList.Clear;
         raise ;
@@ -11500,25 +11268,9 @@ begin
   GridView.InvalidateColumn(0);
 end;
 
-procedure TMainForm.OnChange;
-begin
-  with TIdSync.Create do
-    try
-      SynchronizeMethod(SynchronizedOnMessageChanged);
-      // maybe someday more updates required //
-    finally
-      Free;
-    end;
-end;
-
 procedure TMainForm.OnMessageChanged(aMessage: TWsdlMessage);
 begin
-  with TIdSync.Create do
-    try
-      SynchronizeMethod(SynchronizedOnMessageChanged);
-    finally
-      Free;
-    end;
+  SynchronizeMethode(SynchronizedOnMessageChanged);
 end;
 
 procedure TMainForm.RemoveAllMessagesActionExecute(Sender: TObject);
@@ -11568,9 +11320,9 @@ begin
       ReleaseLock;
     end;
     if aXml.Items.Count = 1 then
-      ShowXml('LogDetails', aXml.Items.XmlItems[0])
+      ShowXmlExtended('LogDetails', aXml.Items.XmlItems[0])
     else
-      ShowXml('LogDetails', aXml);
+      ShowXmlExtended('LogDetails', aXml);
   finally
     aXml.Free;
   end;
@@ -11579,14 +11331,14 @@ end;
 procedure TMainForm.CheckRpyOrFlt(aBind: TCustomBindable);
 begin
   if (not(aBind is TIpmItem))
-  and (WsdlOperation.StubAction <> saRequest)
-  and (not WsdlOperation.isOpenApiService)
-  and (aBind.Root <> WsdlMessage.reqBind) then
+  and (FocusedOperation.StubAction <> saRequest)
+  and (not FocusedOperation.isOpenApiService)
+  and (aBind.Root <> FocusedMessage.reqBind) then
   begin
-    if aBind.Root = WsdlMessage.rpyBind then
-      WsdlMessage.fltBind.Checked := False
-    else if Assigned(WsdlMessage.rpyBodyBind) then
-      WsdlMessage.rpyBodyBind.Checked := False;
+    if aBind.Root = FocusedMessage.rpyBind then
+      FocusedMessage.fltBind.Checked := False
+    else if Assigned(FocusedMessage.rpyBodyBind) then
+      FocusedMessage.rpyBodyBind.Checked := False;
   end;
 end;
 
@@ -11608,31 +11360,30 @@ var
   w, s, o: Integer;
   xWsdl: TWsdl;
 begin
-  if not Assigned(WsdlOperation) then
+  if not Assigned(FocusedOperation) then
     raise Exception.Create('no operation');
   Application.CreateForm(TDelayTimeForm, DelayTimeForm);
   try
-    DelayTimeForm.Caption := 'Delay response for ' + WsdlOperation.Name +
+    DelayTimeForm.Caption := 'Delay response for ' + FocusedOperation.Name +
       ' (ms)';
-    DelayTimeForm.DelayMsMin := WsdlOperation.DelayTimeMsMin;
-    DelayTimeForm.DelayMsMax := WsdlOperation.DelayTimeMsMax;
+    DelayTimeForm.DelayMsMin := FocusedOperation.DelayTimeMsMin;
+    DelayTimeForm.DelayMsMax := FocusedOperation.DelayTimeMsMax;
     DelayTimeForm.ShowModal;
     if DelayTimeForm.ModalResult = mrOk then
     begin
-      WsdlOperation.DelayTimeMsMin := DelayTimeForm.DelayMsMin;
-      WsdlOperation.DelayTimeMsMax := DelayTimeForm.DelayMsMax;
-      if (WsdlOperation.DelayTimeMsMin = 0) and
-        (WsdlOperation.DelayTimeMsMax = 0) then
+      FocusedOperation.DelayTimeMsMin := DelayTimeForm.DelayMsMin;
+      FocusedOperation.DelayTimeMsMax := DelayTimeForm.DelayMsMax;
+      if (FocusedOperation.DelayTimeMsMin = 0) and
+        (FocusedOperation.DelayTimeMsMax = 0) then
         OperationDelayResponseTimeAction.ImageIndex := 60
       else
         OperationDelayResponseTimeAction.ImageIndex := 61;
       case DelayTimeForm.ApplyToRadioGroup.ItemIndex of
         1:
           begin
-            s := WsdlServicesComboBox.ItemIndex;
-            for o := 0 to Wsdl.Services.Services[s].Operations.Count - 1 do
-              _Apply(Wsdl.Services.Services[s].Operations.Operations[o],
-                WsdlOperation);
+            for o := 0 to FocusedOperation.WsdlService.Operations.Count - 1 do
+              _Apply(FocusedOperation.WsdlService.Operations.Operations[o],
+                FocusedOperation);
           end;
         2:
           begin
@@ -11640,7 +11391,7 @@ begin
             begin
               for o := 0 to Wsdl.Services.Services[s].Operations.Count - 1 do
                 _Apply(Wsdl.Services.Services[s].Operations.Operations[o],
-                  WsdlOperation);
+                  FocusedOperation);
             end;
           end;
         3:
@@ -11652,7 +11403,7 @@ begin
               begin
                 for o := 0 to xWsdl.Services.Services[s].Operations.Count - 1 do
                   _Apply(xWsdl.Services.Services[s].Operations.Operations[o],
-                    WsdlOperation);
+                    FocusedOperation);
               end;
             end;
           end;
@@ -11664,7 +11415,7 @@ begin
   end;
 end;
 
-procedure TMainForm .NavigatorTreeViewPaintText (
+procedure TMainForm .NvgtViewPaintText (
   Sender : TBaseVirtualTree ; const TargetCanvas : TCanvas ;
   Node : PVirtualNode ; Column : TColumnIndex ; TextType : TVSTTextType );
 var
@@ -11693,7 +11444,7 @@ end;
 
 procedure TMainForm .PresentLogMemoTextActionExecute (Sender : TObject );
 begin
-  xmlUtil.presentString(MessagesTabControl.Tabs[MessagesTabControl.TabIndex], LogMemo.Text);
+  xmlUtil.presentString(MessagesTabControl.Tabs[Ord (ShowKindOfLogData)], LogMemo.Text);
 end;
 
 procedure TMainForm .PresentLogMemoTextActionUpdate (Sender : TObject );
@@ -11901,7 +11652,7 @@ procedure TMainForm .SchemasToZipExecute (Sender : TObject );
   procedure _wsdlZipper (aZipFileName: String);
   var
     x, w, n, f: Integer;
-    slFileNames, slNames: TStringList;
+    slFileNames, slNames: TJBStringList;
     xXml: TXml;
     newText: String;
     zipper: TAbZipper;
@@ -11931,7 +11682,7 @@ procedure TMainForm .SchemasToZipExecute (Sender : TObject );
       zipper.AutoSave:=True;
       while zipper.Count > 0 do
         zipper.DeleteAt(0);
-      slFileNames := TStringList.Create;
+      slFileNames := TJBStringList.Create;
       try
         slFileNames.Sorted := True;
         slFileNames.Duplicates := dupError;
@@ -11941,7 +11692,7 @@ procedure TMainForm .SchemasToZipExecute (Sender : TObject );
             if not slFileNames.Find(XsdDescr.ReadFileNames.Strings[n], f) then
               slFileNames.Add(XsdDescr.ReadFileNames.Strings[n]);
         end;
-        slNames := TStringList.Create;
+        slNames := TJBStringList.Create;
         try
           slNames.Sorted := False;
           for n := 0 to slFileNames.Count - 1 do
@@ -11995,7 +11746,7 @@ var
   xA2B: TA2BXml;
   xForm: TShowA2BXmlForm;
 begin
-  if WsdlOperation.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
+  if FocusedOperation.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
   begin
     ShowMessage('not implemented for freeformat operations');
     Exit;
@@ -12018,7 +11769,7 @@ begin
         with AddXml (TXml.CreateAsString('Req', '')) do
         begin
           if fMessage.reqBind is TXml then
-            with AddXml (TXml.CreateAsString(WsdlOperation.reqTagName, '')) do
+            with AddXml (TXml.CreateAsString(FocusedOperation.reqTagName, '')) do
               CopyDownLine(fMessage.reqBind as TXml, True);
           if (fMessage.reqBind is TIpmItem) then
             AddXml((fMessage.reqBind as TIpmItem).AsXml);
@@ -12026,7 +11777,7 @@ begin
         with AddXml (TXml.CreateAsString('Rpy', '')) do
         begin
           if fMessage.rpyBind is TXml then
-            with AddXml (TXml.CreateAsString(WsdlOperation.rpyTagName, '')) do
+            with AddXml (TXml.CreateAsString(FocusedOperation.rpyTagName, '')) do
               CopyDownLine(fMessage.rpyBind as TXml, True);
           if (fMessage.rpyBind is TIpmItem) then
             AddXml((fMessage.rpyBind as TIpmItem).AsXml);
@@ -12040,7 +11791,7 @@ begin
         with AddXml (TXml.CreateAsString('Req', '')) do
         begin
           if nMessage.reqBind is TXml then
-            with AddXml (TXml.CreateAsString(WsdlOperation.reqTagName, '')) do
+            with AddXml (TXml.CreateAsString(FocusedOperation.reqTagName, '')) do
               CopyDownLine(nMessage.reqBind as TXml, True);
           if (nMessage.reqBind is TIpmItem) then
             AddXml((nMessage.reqBind as TIpmItem).AsXml);
@@ -12048,7 +11799,7 @@ begin
         with AddXml (TXml.CreateAsString('Rpy', '')) do
         begin
           if nMessage.rpyBind is TXml then
-            with AddXml (TXml.CreateAsString(WsdlOperation.rpyTagName, '')) do
+            with AddXml (TXml.CreateAsString(FocusedOperation.rpyTagName, '')) do
               CopyDownLine(nMessage.rpyBind as TXml, True);
           if (nMessage.rpyBind is TIpmItem) then
             AddXml((nMessage.rpyBind as TIpmItem).AsXml);
@@ -12089,8 +11840,9 @@ var
   xXsd: TXsd;
   xEnum: TXsdEnumeration;
   o: Integer;
+  xOperation: TWsdlOperation;
 begin
-  if not Assigned(WsdlOperation) then
+  if not Assigned(FocusedOperation) then
     raise Exception.Create('No operation selected');
   xXsd := operationOptionsXsd.XsdByCaption ['operationOptions.scripts.invoke.operations.name'];
   while xXsd.sType.Enumerations.Count > 0 do
@@ -12100,18 +11852,16 @@ begin
   end;
   for o := 0 to allAliasses.Count - 1 do
   begin
-    if allAliasses.Operations[o] <> WsdlOperation then
+    if allAliasses.Operations[o] <> FocusedOperation then
     begin
       xEnum := TXsdEnumeration.Create;
       xEnum.Value := allAliasses.Operations[o].Alias;
       xXsd.sType.Enumerations.AddObject(xEnum.Value, xEnum);
     end;
   end;
-  with WsdlOperation do
+  xOperation := FocusedOperation;
+  with FocusedOperation do
   begin
-    se.FocusOperationName := Alias;
-    se.FocusOperationNameSpace := reqTagNameSpace;
-    se.FocusMessageIndex := Messages.IndexOfObject(WsdlMessage);
     xXml := OptionsAsXml;
     try
       if EditXmlXsdBased ( 'Operation options for ' + WsdlOperation.Alias
@@ -12130,8 +11880,9 @@ begin
         try
           stubChanged := True;
           OptionsFromXml(xXml);
+          BeginUpdate;
+          ClearConsole;
           TProcedureThread.Create(False, False, se, se.PrepareAllOperationsShowingProgress);
-          PrepareOperation;
         finally
           ReleaseLock;
         end;
@@ -12144,7 +11895,7 @@ end;
 
 procedure TMainForm.OperationOptionsActionUpdate(Sender: TObject);
 begin
-  OperationOptionsAction.Enabled := (WsdlOperationsComboBox.ItemIndex > -1);
+  OperationOptionsAction.Enabled := Assigned (FocusedOperation);
 end;
 
 procedure TMainForm.OptionsFromXml(aXml: TXml);
@@ -12326,7 +12077,7 @@ begin
   end;
 end;
 
-procedure TMainForm .InWsdlTreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
+procedure TMainForm .TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
   TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
   const CellRect : TRect );
 var
@@ -12353,10 +12104,10 @@ var
   x: Integer;
 begin
   if not ActiveAfterPrompt then exit;
-  LogTabControl.TabIndex := Ord(spMessages);
+  ShowKindOfInformation := spMessages;
   Application.CreateForm(TStressTestForm, StressTestForm);
   try
-    StressTestForm.Caption := 'Loadtest operation: ' + WsdlOperation.Name;
+    StressTestForm.Caption := 'Loadtest operation: ' + FocusedOperation.Name;
     StressTestForm.ShowModal;
     if StressTestForm.ModalResult = mrOk then
     begin
@@ -12375,9 +12126,9 @@ end;
 procedure TMainForm .LoadTestActionUpdate (Sender : TObject );
 begin
   LoadTestAction.Enabled :=
-        Assigned(WsdlOperation)
-    and (WsdlOperation.StubAction = saRequest)
-    and (WsdlOperation.StubTransport <> ttTaco) // server (and client are) is single threaded
+        Assigned(FocusedOperation)
+    and (FocusedOperation.StubAction = saRequest)
+    and (FocusedOperation.StubTransport <> ttTaco) // server (and client are) is single threaded
     and (NumberOfBlockingThreads < 1)
     ;
 end;
@@ -12431,20 +12182,20 @@ begin
   DataPanelSplitter.Align := alLeft;
 end;
 
-procedure TMainForm .MenuItem14Click (Sender : TObject );
+procedure TMainForm .OperationRefreshMenuItemClick (Sender : TObject );
 var
   xOperation: TWsdlOperation;
 begin
-  xOperation := WsdlOperation;
-  FillOperationReqsTreeView(NavigatorTreeView, allAliasses);
-  WsdlOperation := xOperation;
+  xOperation := FocusedOperation;
+  FillNvgtView(allAliasses);
+  FocusedOperation := xOperation;
 end;
 
 procedure TMainForm .MenuItem17Click (Sender : TObject );
 begin
-  if Assigned (WsdlOperation) then
+  if Assigned (FocusedOperation) then
   begin
-    WsdlOperation.HiddenFromUI := True;
+    FocusedOperation.HiddenFromUI := True;
     UpdateVisibiltyOfOperations;
     stubChanged := True;
   end;
@@ -12482,16 +12233,16 @@ begin
   end;
 end;
 
-procedure TMainForm.NavigatorTreeViewClick(Sender: TObject);
+procedure TMainForm.NvgtViewClick(Sender: TObject);
 begin
-  if not Assigned (NavigatorTreeView.FocusedNode) then Exit;
-  case NavigatorTreeView.FocusedColumn of
+  if not Assigned (NvgtView.FocusedNode) then Exit;
+  case NvgtView.FocusedColumn of
     Ord (operationsColumnBeforeScript): EditScriptButtonClick(nil);
     Ord (operationsColumnAfterScript): AfterRequestScriptButtonClick(nil);
   end;
 end;
 
-procedure TMainForm .NavigatorTreeViewGetImageIndex (
+procedure TMainForm .NvgtViewGetImageIndex (
   Sender : TBaseVirtualTree ; Node : PVirtualNode ; Kind : TVTImageKind ;
   Column : TColumnIndex ; var Ghosted : Boolean ; var ImageIndex : Integer );
 var
@@ -12855,7 +12606,7 @@ var
   xName: String;
   s: TRegressionSnapshot;
 begin
-  with FileUtil.FindAllFiles(aFolder, '*.xml', False) do
+  with FindAllFiles(aFolder, '*.xml', False) do
   try
     for x := 0 to Count - 1 do
     begin
@@ -13142,20 +12893,20 @@ end;
 procedure TMainForm.GenerateFunctopnPrototypeListActionExecute(Sender: TObject);
 begin
   ShowInfoForm( 'ScriptAssignments'
-              , WsdlOperation.FunctionPrototypes(True).Text
+              , FocusedOperation.FunctionPrototypes(True).Text
               );
 end;
 
 procedure TMainForm.GenerateFunctopnPrototypeListActionUpdate(Sender: TObject);
 begin
-  GenerateFunctopnPrototypeListAction.Enabled := Assigned(WsdlOperation);
+  GenerateFunctopnPrototypeListAction.Enabled := Assigned(FocusedOperation);
 end;
 
 procedure TMainForm.GenerateJsonSchemaInYamlExecute(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if (xBind is TXml) and (Assigned((xBind as TXml).Xsd)) then
   begin
     with (xBind as TXml).Xsd.SchemaAsJson as TXml do
@@ -13175,21 +12926,21 @@ var
   o: Integer;
   xOper: TWsdlOperation;
 begin
-  if not Assigned (WsdlOperation) then
+  if not Assigned (FocusedOperation) then
     raise Exception.Create('No service selected');
-  if (WsdlOperation.DescriptionType <> ipmDTWsdl) then
-    raise Exception.Create('Only meant for soap services');
+//  if (FocusedOperation.DescriptionType <> ipmDTWsdl) then
+  //  raise Exception.Create('Only meant for soap services');
   with TXml.CreateAsString('swagger', '') do
   try
     AddXml(TXml.CreateAsString('swagger','2.0'));
     with AddXml(TXml.CreateAsString('info', '')) do
     begin
-      AddXml(TXml.CreateAsString('description', ifthen(WsdlOperation.Wsdl.Description <> '',WsdlOperation.Wsdl.Description, 'your description here')));
+      AddXml(TXml.CreateAsString('description', ifthen(FocusedOperation.Wsdl.Description <> '',FocusedOperation.Wsdl.Description, 'your description here')));
       AddXml(TXml.CreateAsString('version', 'version'));
       AddXml(TXml.CreateAsString('title', 'your title here'));
     end;
     try
-      with TIdURI.Create(WsdlOperation.SoapAddress) do
+      with TIdURI.Create(FocusedOperation.SoapAddress) do
       try
         xHost := Host;
         xProtocol := Protocol;
@@ -13209,11 +12960,11 @@ begin
     AddXml(TXml.CreateAsString('basePath', '/your/BasePath/here'));
     with AddXml(TXml.CreateAsString('paths','')) do
     begin
-      for o := 0 to WsdlOperation.WsdlService.Operations.Count - 1 do
+      for o := 0 to FocusedOperation.WsdlService.Operations.Count - 1 do
       begin
-        xOper := WsdlOperation.WsdlService.Operations.Operations[o];
+        xOper := FocusedOperation.WsdlService.Operations.Operations[o];
         try
-          with TIdURI.Create(WsdlOperation.SoapAddress) do
+          with TIdURI.Create(FocusedOperation.SoapAddress) do
           try
             xPath := Document;
           finally
@@ -13226,7 +12977,7 @@ begin
           xPath := xOper.Alias;
         if xOper.reqXml.Items.Count > 0 then
         begin
-          with SeparatedStringList(nil, xOper.reqXml.Items.XmlItems[1].NameSpace, '/') do
+          with SeparatedStringList(nil, xOper.reqXml.Items.XmlItems[xOper.reqXml.Items.Count - 1].NameSpace, '/') do
           try
             if Count > 2 then
               xPath := Strings[Count - 3] + '/' + Strings[Count - 2];
@@ -13308,9 +13059,9 @@ begin
     end;
     with AddXml(TXml.CreateAsString('definitions','')) do
     begin
-      for o := 0 to WsdlOperation.WsdlService.Operations.Count - 1 do
+      for o := 0 to FocusedOperation.WsdlService.Operations.Count - 1 do
       begin
-        xOper := WsdlOperation.WsdlService.Operations.Operations[o];
+        xOper := FocusedOperation.WsdlService.Operations.Operations[o];
         if xOper.reqXml.Items.Count > xOper.InputHeaders.Count then
           AddXml (xOper.reqXml.Items.XmlItems[xOper.InputHeaders.Count].Xsd.SchemaAsJson as TXml);
         if xOper.rpyXml.Items.Count > xOper.OutputHeaders.Count then
@@ -13338,12 +13089,12 @@ procedure TMainForm.LogsFromHttpGetActionHint(var HintStr: string;
 begin
   HintStr := 'Append logs from remote apiServer.';
   if not LogsFromHttpGetAction.Enabled then
-    HintStr := HintStr + ' (remote apiServer connection not yet specified, see menu Extra.)';
+    HintStr := HintStr + ' (remote apiServer connection not yet specified, see menu Project.)';
 end;
 
 procedure TMainForm.LogsFromHttpGetActionUpdate(Sender: TObject);
 begin
-  LogsFromHttpGetAction.Enabled := Assigned (se) and Assigned (se.remoteServerConnectionXml);
+  LogsFromHttpGetAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
 end;
 
 procedure TMainForm .EditMessageScriptActionExecute (Sender : TObject );
@@ -13351,30 +13102,30 @@ var
   xOperation: TWsdlOperation;
   xScriptName: String;
 begin
-  if not Assigned(WsdlOperation) then
+  if not Assigned(FocusedOperation) then
     Raise Exception.Create('First get a Wsdl');
-  if not Assigned (WsdlMessage) then Exit;
+  if not Assigned (FocusedMessage) then Exit;
   XmlUtil.PushCursor (crHourGlass);
   try
-    xOperation := TWsdlOperation.Create(WsdlOperation);
+    xOperation := TWsdlOperation.Create(FocusedOperation);
     if xOperation.StubAction = saStub then
-      xScriptName := Format('%s / %s  / Main Script', [WsdlOperation.Alias, WsdlMessage.Name])
+      xScriptName := Format('%s / %s  / Main Script', [FocusedOperation.Alias, FocusedMessage.Name])
     else
-      xScriptName := Format('%s / %s  / Before Script', [WsdlOperation.Alias, WsdlMessage.Name]);
+      xScriptName := Format('%s / %s  / Before Script', [FocusedOperation.Alias, FocusedMessage.Name]);
     try
       Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
       try
         EditOperationScriptForm.ScriptName := xScriptName;
         EditOperationScriptForm.After := False;
         EditOperationScriptForm.WsdlOperation := xOperation;
-        EditOperationScriptForm.ScriptEdit.Lines.Text := WsdlMessage.BeforeScriptLines.Text;
+        EditOperationScriptForm.ScriptEdit.Lines.Text := FocusedMessage.BeforeScriptLines.Text;
         EditOperationScriptForm.ShowModal;
         if EditOperationScriptForm.ModalResult = mrOk then
         begin
           stubChanged := True;
-          WsdlMessage.BeforeScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
-          try WsdlMessage.CheckBefore; Except end;
-          try WsdlMessage.CheckAfter; Except end;
+          FocusedMessage.BeforeScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
+          try FocusedMessage.CheckBefore; Except end;
+          try FocusedMessage.CheckAfter; Except end;
         end;
         FillInWsdlEdits;
       finally
@@ -13393,30 +13144,30 @@ var
   xOperation: TWsdlOperation;
   xScriptName: String;
 begin
-  if not Assigned(WsdlOperation) then
+  if not Assigned(FocusedOperation) then
     Raise Exception.Create('First get a Wsdl');
-  if not Assigned (WsdlMessage) then Exit;
+  if not Assigned (FocusedMessage) then Exit;
   XmlUtil.PushCursor (crHourGlass);
   try
-    xOperation := TWsdlOperation.Create(WsdlOperation);
+    xOperation := TWsdlOperation.Create(FocusedOperation);
     if xOperation.StubAction = saStub then
-      xScriptName := Format('%s / %s  / Main Script', [WsdlOperation.Alias, WsdlMessage.Name])
+      xScriptName := Format('%s / %s  / Main Script', [FocusedOperation.Alias, FocusedMessage.Name])
     else
-      xScriptName := Format('%s / %s  / After Script', [WsdlOperation.Alias, WsdlMessage.Name]);
+      xScriptName := Format('%s / %s  / After Script', [FocusedOperation.Alias, FocusedMessage.Name]);
     try
       Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
       try
         EditOperationScriptForm.ScriptName := xScriptName;
         EditOperationScriptForm.After := True;
         EditOperationScriptForm.WsdlOperation := xOperation;
-        EditOperationScriptForm.ScriptEdit.Lines.Text := WsdlMessage.AfterScriptLines.Text;
+        EditOperationScriptForm.ScriptEdit.Lines.Text := FocusedMessage.AfterScriptLines.Text;
         EditOperationScriptForm.ShowModal;
         if EditOperationScriptForm.ModalResult = mrOk then
         begin
           stubChanged := True;
-          WsdlMessage.AfterScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
-          try WsdlMessage.CheckBefore; Except end;
-          try WsdlMessage.CheckAfter; Except end;
+          FocusedMessage.AfterScriptLines.Text := EditOperationScriptForm.ScriptEdit.Lines.Text;
+          try FocusedMessage.CheckBefore; Except end;
+          try FocusedMessage.CheckAfter; Except end;
         end;
         FillInWsdlEdits;
       finally
@@ -13466,7 +13217,7 @@ var
   cXsd, xXsd: TXsd;
   xPath: String;
 begin
-  xBind := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode);
+  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
   if not Assigned(xBind) then
     raise Exception.Create('no element selected');
   if not(xBind is TXml) then
@@ -13481,7 +13232,7 @@ begin
     ShowModal;
     if ModalResult = mrOK then
     begin
-      xWsdl := WsdlOperation.Wsdl;
+      xWsdl := FocusedOperation.Wsdl;
       if not xWsdl.ExtraXsds.Find(FileName, f) then
       begin
         xWsdl.ExtraXsds.Add (FileName);
@@ -13511,20 +13262,20 @@ begin
       xXsd._RefElementName := Name;
       xXsd._ElementOrTypeDefRef := ElementOrTypeDefRef;
       nTypeDef := xXml.Xsd.sType;
-      xPath := IfThen(WsdlMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
+      xPath := IfThen(FocusedMessage.reqBind.IsAncestorOf(xXml), 'Req.', 'Rpy.')
              + xXml.FullCaption
              ;
       if not oTypeDef.Manually then
-        WsdlOperation.BindablesWithAddedElement.AddObject (xPath, WsdlOperation.FindBind(xPath));
+        FocusedOperation.BindablesWithAddedElement.AddObject (xPath, FocusedOperation.FindBind(xPath));
       xXml.Checked := True;
-      _updateTypedef ( WsdlOperation
+      _updateTypedef ( FocusedOperation
                      , xPath
                      , nTypeDef
                      , xxsd
                      );
-      for m := 0 to WsdlOperation.Messages.Count - 1 do
+      for m := 0 to FocusedOperation.Messages.Count - 1 do
       begin
-        _updateTypedef ( WsdlOperation.Messages.Messages[m]
+        _updateTypedef ( FocusedOperation.Messages.Messages[m]
                        , xPath
                        , nTypeDef
                        , xxsd
@@ -13610,6 +13361,344 @@ begin
     captionFileName := se.RemoteServerUrl;
     TProcedureThread.Create(False, False, se, se.OpenProjectFromString, Clipboard.AsText);
   end;
+end;
+
+procedure TMainForm.CloudProjectInformationActionUpdate(Sender: TObject);
+begin
+  CloudProjectInformationAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+end;
+
+procedure TMainForm.EditCloudEnvironmentActionExecute(Sender: TObject);
+var
+  xXml, eXml: TXml;
+begin
+  if not Assigned (se) then
+    raise Exception.Create('Edit RemoteServer Environment requires an assigned Project');
+  if not Assigned (se.remoteServerConnectionXml) then
+    raise Exception.Create('Edit RemoteServer Environment requires a Remote Server Connection');
+  xXml := TXml.Create;
+  try
+    try
+      xXml.LoadJsonFromString ( xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                                        , '/apiUi/api/envvars'
+                                                        , ''
+                                                        , 'GET'
+                                                        , 'application/json'
+                                                        )
+                          , nil
+                          );
+      eXml := TXml.Create(-1000, namevaluepairsXsd);
+      eXml.Name := xXml.Name;
+      eXml.LoadValues(xXml, False);
+      try
+        if XmlUtil.editXml(eXml, True, False) then
+          xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                  , '/apiUi/api/envvars'
+                                  , ''
+                                  , 'POST'
+                                  , 'application/json'
+                                  , eXml.StreamJSON(0, True)
+                                  )
+      finally
+        FreeAndNil(xXml);
+        FreeAndNil(eXml);
+      end;
+    except
+      on e: exception do
+        ShowMessage(e.Message);
+    end;
+  finally
+    FreeAndNil(xXml);
+  end;
+end;
+
+procedure TMainForm.NavigateHierarchyActionExecute(Sender: TObject);
+var
+  w, s, o: Integer;
+  wMenuItem, sMenuItem, oMenuItem: TMenuItem;
+begin
+  while NavigateOperationsPopupMenu.Items.Count > 0 do
+    NavigateOperationsPopupMenu.Items.Delete(0);
+  for w := 0 to se.Wsdls.Count - 1 do with se.Wsdls.Objects[w] as TWsdl do
+  begin
+    if Services.Count > 0 then
+    begin
+      wMenuItem := TMenuItem.Create(Self);
+      if FileName = '' then
+        wMenuItem.Caption := FileAlias
+      else
+        wMenuItem.Caption := LazFileUtils.ExtractFileNameOnly(FileName);
+      NavigateOperationsPopupMenu.Items.Add(wMenuItem);
+      for s := 0 to Services.Count - 1 do with Services.Services[s] do
+      begin
+        if not se.isSpecialWsdl(thisWsdl) then
+        begin
+          sMenuItem := TMenuItem.Create(Self);
+          sMenuItem.Caption := Name;
+          wMenuItem.Add(sMenuItem);
+        end
+        else
+        begin
+          sMenuItem := wMenuItem;
+          sMenuItem.Caption := thisWsdl.Name;
+        end;
+        for o := 0 to Operations.Count - 1 do with Operations.Operations[o] do
+        begin
+          oMenuItem := TMenuItem.Create(Self);
+          oMenuItem.Caption := Name;
+          sMenuItem.Add(oMenuItem);
+          oMenuItem.OnClick := FocusOnOperationMenuItemClick;
+          oMenuItem.Tag := PtrInt(thisOperation);
+        end;
+      end;
+    end;
+  end;
+  NavigateOperationsPopupMenu.PopUp;
+end;
+
+procedure TMainForm.NavigateHierarchyActionUpdate(Sender: TObject);
+begin
+  NavigateHierarchyAction.Enabled := (Assigned (se)) and (se.Wsdls.Count > 0);
+end;
+
+procedure TMainForm.TreeViewColumnClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
+begin
+  Sender.FocusedColumn := Column;
+end;
+
+procedure TMainForm.FocusOnOperationMenuItemClick(Sender: TObject);
+begin
+  if Sender is TMenuItem then with Sender as TMenuItem do
+    FocusedOperation := TWsdlOperation(tag);
+end;
+
+procedure TMainForm.MenuItem14Click(Sender: TObject);
+begin
+    if not (FocusedBind is TXml) then
+      raise Exception.Create('Only implemented for Xml');
+    with (FocusedBind as TXml).Xsd.SchemaAsJson as TXml do
+    try
+      ShowInfoForm('YAML schema', thisXml.StreamYAML(0, True));
+    finally
+      Free;
+    end;
+end;
+
+procedure TMainForm.EditCloudEnvironmentActionUpdate(Sender: TObject);
+begin
+  EditCloudEnvironmentAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+end;
+
+procedure TMainForm.AboutApiServerActionUpdate(Sender: TObject);
+begin
+  AboutApiServerAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+end;
+
+procedure TMainForm.AboutApiServerActionExecute(Sender: TObject);
+begin
+  if not Assigned (se) then
+    raise Exception.Create('ProjectInfoFromRemoteServer requires an assigned Project');
+  if not Assigned (se.remoteServerConnectionXml) then
+    raise Exception.Create('ProjectInfoFromRemoteServer requires a Remote Server Connection');
+  with TXml.Create do
+  try
+    try
+      LoadJsonFromString ( xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                                   , '/apiUi/api/about'
+                                                   , ''
+                                                   , 'GET'
+                                                   , 'application/json'
+                                                   )
+                          , nil
+                          );
+      Name := 'about';
+      ShowXmlExtended('about apiUi in the cloud', thisXml);
+    except
+      on e: exception do
+        ShowMessage(e.Message);
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm.MenuItem65Click(Sender: TObject);
+begin
+  ShowMessage ( 'This functionality is moved to the Project main-menu-item'
+              + LineEnding + LineEnding
+              + '(meaning that you can have different connection properties for each project)'
+              );
+end;
+
+procedure TMainForm.MessagesVTSColumnClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
+begin
+  Sender.FocusedColumn := Column;
+end;
+
+procedure TMainForm.MessagesVTSHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+begin
+  XmlUtil.PushCursor (crHourGlass);
+  try
+    if Sender.SortColumn = HitInfo.Column then
+    begin
+      if Sender.SortDirection = sdAscending then
+        Sender.SortDirection := sdDescending
+      else
+        Sender.SortDirection := sdAscending;
+    end
+    else
+    begin
+      Sender.SortColumn := HitInfo.Column;
+      Sender.SortDirection := sdAscending;
+    end;
+    with Sender.Treeview do
+    begin
+      SortTree(HitInfo.Column, Sender.SortDirection, True);
+      ScrollIntoView(FocusedNode, False, False);
+    end;
+  finally
+    XmlUtil.PopCursor;
+  end;
+end;
+
+procedure TMainForm.setIpmDescrType(Value: TIpmDescrType);
+begin
+  if fIpmDescrType = Value then
+    Exit;
+  fIpmDescrType := Value;
+  if fIpmDescrType = ipmDTFreeFormat then
+  begin
+    TreeView.Align := alLeft;
+    TreeView.Visible := False;
+    FreeFormatMemo.Align := alClient;
+    FreeFormatMemo.Visible := True;
+  end
+  else
+  begin
+    FreeFormatMemo.Align := alRight;
+    FreeFormatMemo.Visible := False;
+    TreeView.Align := alClient;
+    TreeView.Visible := True;
+  end;
+end;
+
+procedure TMainForm.setShowKindOfInformation(Value: TShowKindOfInformation);
+var
+  saveOnEvent: TNotifyEvent;
+begin
+  if fShowKindOfInformation = Value then Exit;
+  fShowKindOfInformation := Value;
+  saveOnEvent := LogTabControl.OnChange;
+  try
+    LogTabControl.TabIndex := Ord (Value);
+    NotificationsPanel.Visible := False;
+    SnapshotsPanel.Visible := False;
+    MessagesPanel.Visible := False;
+    case LogTabControl.TabIndex of
+      Ord (spNotifications):
+      begin
+        LogTabControl.Tabs [Ord (spNotifications)] := notifyTabCaption;
+        NotificationsPanel.Visible := True;
+      end;
+      Ord (spSnapshots): SnapshotsPanel.Visible := True;
+      Ord (spMessages):
+      begin
+        MessagesPanel.Visible := True;
+        PositionMessagesTabControl;
+      end;
+    end;
+  finally
+    LogTabControl.OnChange:=saveOnEvent;
+  end;
+end;
+
+procedure TMainForm.setShowKindOfLogData(Value: TShowKindOfLogData);
+var
+  saveOnEvent: TNotifyEvent;
+begin
+  if fShowKindOfLogData = Value then Exit;
+  fShowKindOfLogData := Value;
+  saveOnEvent := MessagesTabControl.OnChange;
+  try
+    MessagesTabControl.TabIndex := Ord (Value);
+    UpdateLogTabs (NodeToMsgLog (False, MessagesVTS, MessagesVTS.FocusedNode));
+  finally
+    MessagesTabControl.OnChange := saveOnEvent;
+  end;
+end;
+
+procedure TMainForm.ShowFocusedBindDocumentation;
+var
+  xObject: TObject;
+begin
+  xObject := FocusedBind;
+  if Assigned (FocusedBind) then
+  begin
+    if FocusedBind is TXml then with FocusedBind as Txml do
+      xObject := Xsd
+    else
+      if FocusedBind is TXmlAttribute then with FocusedBind as TXmlAttribute do
+        xObject := XsdAttr;
+  end;
+  if xObject = fFocusedDocumentationObject then Exit;
+  fFocusedDocumentationObject := xObject;
+  xmlUtil.ListXsdProperties(InWsdlPropertiesListView, FocusedBind);
+  try
+    xmlUtil.ListXsdDocumentation(DocumentationViewer, FocusedBind, False, False);
+  except
+  end;
+end;
+
+procedure TMainForm.setFocusedBind(Value: TCustomBindable);
+begin
+  if fFocusedBind = Value then Exit;
+  fFocusedBind := Value;
+  if fFocusedBind = nil then
+  begin
+    InWsdlPropertiesListView.Clear;
+    DocumentationViewer.Canvas.Clear;
+    StatusPanel.Caption := '';
+    Exit;
+  end;
+  DisableViewOnFocusChangeEvents;
+  try
+    FocusedOperation.LastFullCaption := FocusedBind.FullCaption;
+    SelectFocusedBindInViews;
+    ShowFocusedBindDocumentation;
+    if FocusedBind is TIpmItem then
+      StatusPanel.Caption := '[' + IntToStr((FocusedBind as TIpmItem).Offset + 1)
+        + ':' + IntToStr((FocusedBind as TIpmItem).Bytes) + '] ' + FocusedBind.FullIndexCaption
+    else
+      StatusPanel.Caption := FocusedBind.FullCaption;
+  finally
+    EnableViewOnFocusChangeEvents;
+  end;
+end;
+
+procedure TMainForm.FocusNavigatorOnOperation;
+var
+  xNode: PVirtualNode;
+begin
+  with NvgtView do
+  begin
+    xNode := GetFirst;
+    while Assigned(xNode) do
+    begin
+      if NodeToOperation(NvgtView, xNode) = FocusedOperation then
+      begin
+        FocusedNode := xNode;
+        Selected[FocusedNode] := True;
+      end;
+      xNode := GetNext(xNode);
+    end;
+  end;
+end;
+
+procedure TMainForm.CloudProjectInformationActionExecute(Sender: TObject);
+begin
+  ProjectInfoFromRemoteServer;
 end;
 
 procedure TMainForm.ApiByExampleActionUpdate(Sender: TObject);
@@ -13714,35 +13803,35 @@ end;
 
 procedure TMainForm.CopyToClipboardAsJsonMenuItemClick(Sender: TObject);
 begin
-  xmlUtil.CopyToClipboard(tlsJson, NodeToBind(InWsdlTreeView,
-      InWsdlTreeView.FocusedNode));
+  xmlUtil.CopyToClipboard(tlsJson, NodeToBind(TreeView,
+      TreeView.FocusedNode));
 end;
 
 procedure TMainForm.EditMessageAfterScriptActionUpdate (Sender : TObject );
 begin
-  if Assigned (WsdlOperation) then
-    EditMessageAfterScriptAction.Enabled := (WsdlOperation.StubAction <> saStub);
+  if Assigned (FocusedOperation) then
+    EditMessageAfterScriptAction.Enabled := (FocusedOperation.StubAction <> saStub);
 end;
 
 procedure TMainForm.EditMessageDocumentationActionExecute(Sender: TObject);
 begin
-  if not Assigned(WsdlOperation) then Exit;
-  if not Assigned (WsdlMessage) then Exit;
+  if not Assigned(FocusedOperation) then Exit;
+  if not Assigned (FocusedMessage) then Exit;
   XmlUtil.PushCursor (crHourGlass);
   try
     with EditTexttForm do
     try
       Application.CreateForm(TEditTexttForm, EditTexttForm);
-      Caption := Format('%s / %s  / Documentation', [WsdlOperation.Alias, WsdlMessage.Name]);
-      ScriptEdit.Lines.Text := WsdlMessage.Documentation;
+      Caption := Format('%s / %s  / Documentation', [FocusedOperation.Alias, FocusedMessage.Name]);
+      ScriptEdit.Lines.Text := FocusedMessage.Documentation;
       ShowModal;
       if (ModalResult = mrOk)
-      and (ScriptEdit.Lines.Text <> WsdlMessage.Documentation)
+      and (ScriptEdit.Lines.Text <> FocusedMessage.Documentation)
       then
       begin
         stubChanged := True;
-        WsdlMessage.Documentation := ScriptEdit.Lines.Text;
-        WsdlMessage.DocumentationEdited := True;
+        FocusedMessage.Documentation := ScriptEdit.Lines.Text;
+        FocusedMessage.DocumentationEdited := True;
       end;
       FillInWsdlEdits;
     finally
@@ -13755,7 +13844,7 @@ end;
 
 procedure TMainForm.LogTabControlChange(Sender: TObject);
 begin
-  ShowChosenLogTab;
+  ShowKindOfInformation := TShowKindOfInformation (LogTabControl.TabIndex);
 end;
 
 procedure TMainForm.MailOperationsActionExecute(Sender: TObject);
@@ -13797,17 +13886,17 @@ end;
 
 procedure TMainForm.MenuItem33Click(Sender: TObject);
 begin
-   Clipboard.AsText := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode).Name;
+   Clipboard.AsText := NodeToBind(TreeView, TreeView.FocusedNode).Name;
 end;
 
 procedure TMainForm.MenuItem34Click(Sender: TObject);
 begin
-  Clipboard.AsText := NodeToBind(InWsdlTreeView, InWsdlTreeView.FocusedNode).FullCaption;
+  Clipboard.AsText := NodeToBind(TreeView, TreeView.FocusedNode).FullCaption;
 end;
 
 procedure TMainForm.MenuItem43Click(Sender: TObject);
 begin
-  PromptAndSetColumnWidth(InWsdlTreeView);
+  PromptAndSetColumnWidth(TreeView);
 end;
 
 procedure TMainForm.MenuItem45Click(Sender: TObject);
@@ -13979,16 +14068,14 @@ end;
 
 function TMainForm.EditRemoteServerConnectionParams(aCaption: String): Boolean;
 var
-  xXml: TXml;
   xXsd: TXsd;
 begin
   result := False;
   xXsd := remoteServerConnectionXsd.XsdByCaption ['remoteServerConnection.TestConnection'];
   xXsd.EditProcedure := TestRemoteServerConnection;
   xXsd.isCheckboxDisabled := True;
-  xXml := TXml.Create;
+  with se.remoteServerConnectionAsXml do
   try
-    xXml.CopyDownLine(se.remoteServerConnectionXml, True);
     if EditXmlXsdBased (aCaption
                        , ''
                        , ''
@@ -13997,15 +14084,16 @@ begin
                        , False
                        , esOne
                        , remoteServerConnectionXsd
-                       , xXml
+                       , thisXml
                        , False
                        ) then
     begin
-      se.remoteServerConnectionXml.CopyDownLine(xXml, True);
+      se.remoteServerConnectionFromXml(thisXml);
+      stubChanged := True;
       Result := True;
     end;
   finally
-    xXml.Free;
+    Free;
   end;
 end;
 
@@ -14036,6 +14124,44 @@ begin
   EditRemoteServerConnectionParams('Remote apiUi server connection');
 end;
 
+procedure TMainForm.ShowOperationInfoActionExecute(Sender: TObject);
+var
+  xXml: TXml;
+begin
+  if not Assigned (FocusedOperation) then
+    raise Exception.Create('ShowOperationInfoAction requires a selected Operation');
+  try
+    xXml := FocusedOperation.InformationAsXml;
+    ShowXmlExtended('Information for ' + FocusedOperation.Alias, xXml);
+  finally
+    FreeAndNil(xXml);
+  end;
+end;
+
+procedure TMainForm.ShowOperationInfoActionUpdate(Sender: TObject);
+begin
+  ShowOperationInfoAction.Enabled := Assigned (FocusedOperation);
+end;
+
+procedure TMainForm.ShowProjectInfoActionExecute(Sender: TObject);
+var
+  xXml: TXml;
+begin
+  if not Assigned (se) then
+    raise Exception.Create('ShowProjectInfoAction requires an assigned Project');
+  try
+    xXml := se.InformationAsXml;
+    ShowXmlExtended('Information for project ' + Caption, xXml);
+  finally
+    FreeAndNil(xXml);
+  end;
+end;
+
+procedure TMainForm.ShowProjectInfoActionUpdate(Sender: TObject);
+begin
+  ShowProjectInfoAction.Enabled := Assigned (se);
+end;
+
 procedure TMainForm.SnapshotFromHttpGetActionExecute(Sender: TObject);
 var
   xReport: TSnapshot;
@@ -14060,7 +14186,7 @@ end;
 
 procedure TMainForm.SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
 begin
-  SnapshotsFromHttpGetAgainAction.Enabled := Assigned (se) and Assigned (se.remoteServerConnectionXml);
+  SnapshotsFromHttpGetAgainAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
 end;
 
 procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
@@ -14072,8 +14198,8 @@ procedure TMainForm.YamlToClipboardMenuItemClick(Sender: TObject);
 var
   xBind: TCustomBindable;
 begin
-  xmlUtil.CopyToClipboard(tlsYaml, NodeToBind(InWsdlTreeView,
-      InWsdlTreeView.FocusedNode));
+  xmlUtil.CopyToClipboard(tlsYaml, NodeToBind(TreeView,
+      TreeView.FocusedNode));
 end;
 
 procedure TMainForm.MessagesTabToolBarResize(Sender: TObject);
@@ -14081,7 +14207,7 @@ begin
   PositionMessagesTabControl;
 end;
 
-procedure TMainForm.NavigatorTreeViewGetHint(Sender: TBaseVirtualTree;
+procedure TMainForm.NvgtViewGetHint(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex;
   var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
 var
@@ -14111,17 +14237,17 @@ end;
 
 procedure TMainForm.OperationBrowseDocumentationActionUpdate(Sender: TObject);
 begin
-  OperationBrowseDocumentationAction.Enabled := Assigned(WsdlOperation)
-                                            and (WsdlOperation.Documentation.Count > 0);
+  OperationBrowseDocumentationAction.Enabled := Assigned(FocusedOperation)
+                                            and (FocusedOperation.Documentation.Count > 0);
 end;
 
 procedure TMainForm.OperationDocumentationViewerClick(Sender: TObject);
 begin
-   if Assigned (WsdlOperation) then
+   if Assigned (FocusedOperation) then
   begin
     XmlUtil.PushCursor (crHourGlass);
     try
-      XmlUtil.presentAsHTML(WsdlOperation.alias + ' annotation', textToHtml(WsdlOperation.Documentation.Text));
+      XmlUtil.presentAsHTML(FocusedOperation.alias + ' annotation', textToHtml(FocusedOperation.Documentation.Text));
     finally
       XmlUtil.PopCursor;
     end;
@@ -14167,7 +14293,7 @@ end;
 
 procedure TMainForm .MessagesTabControlChange (Sender : TObject );
 begin
-  UpdateLogTabs(NodeToMsgLog(False,MessagesVTS, MessagesVTS.FocusedNode));
+  ShowKindOfLogData := TShowKindOfLogData(MessagesTabControl.TabIndex);
 end;
 
 procedure TMainForm .MessagesTabControlGetImageIndex (Sender : TObject ;
@@ -14181,6 +14307,7 @@ procedure TMainForm .MessagesVTSCompareNodes (Sender : TBaseVirtualTree ;
   Node1 , Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
 var
   s1, s2: String;
+  x1, x2: Extended;
   log1, log2: TLog;
 begin
   Result := 0;
@@ -14205,6 +14332,28 @@ begin
         if Assigned (log2) then
           s2 := log2.Exception;
       end;
+      logDurationColumn:
+        begin
+          log1 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node1);
+          if Assigned (log1) then with log1 do
+          begin
+            x1 := 24 * 60 * (OutBoundTimeStamp - InboundTimeStamp);
+            if x1 < 0 then
+              x1 := -1 * x1;
+          end;
+          log2 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node2);
+          if Assigned (log2) then with log2 do
+          begin
+            x2 := 24 * 60 * (OutBoundTimeStamp - InboundTimeStamp);
+            if x2 < 0 then
+              x2 := -1 * x2;
+          end;
+          if  x1 < x2 then
+            result := -1;
+          if x1 > x2 then
+            result := 1;
+          Exit;
+        end;
     logRequestTreeColumn: ;
     logReplyTreeColumn: ;
     logRequestGridColumn: ;
@@ -14240,34 +14389,6 @@ end;
 procedure TMainForm.ToggleTrackIOActionExecute(Sender: TObject);
 begin
   xmlio.doTrackXmlIO := not xmlio.doTrackXmlIO;
-end;
-
-procedure TMainForm .VTSHeaderClick (Sender : TVTHeader ;
-  Column : TColumnIndex ; Button : TMouseButton ; Shift : TShiftState ; X ,
-  Y : Integer );
-begin
-  XmlUtil.PushCursor (crHourGlass);
-  try
-    if Sender.SortColumn = Column then
-    begin
-      if Sender.SortDirection = sdAscending then
-        Sender.SortDirection := sdDescending
-      else
-        Sender.SortDirection := sdAscending;
-    end
-    else
-    begin
-      Sender.SortColumn := Column;
-      Sender.SortDirection := sdAscending;
-    end;
-    with Sender.Treeview do
-    begin
-      SortTree(Column, Sender.SortDirection, True);
-      ScrollIntoView(FocusedNode, False, False);
-    end;
-  finally
-    XmlUtil.PopCursor;
-  end;
 end;
 
 procedure TMainForm .PromptForOperationAlias (aOperation : TWsdlOperation );
@@ -14312,8 +14433,8 @@ begin
         try aOperation.PrepareBefore; Except end;
         try aOperation.PrepareAfter; Except end;
         FillInWsdlEdits;
-        NavigatorTreeView.Invalidate;
-        InWsdlTreeView.Invalidate;
+        NvgtView.Invalidate;
+        TreeView.Invalidate;
       end;
     end;
   finally
@@ -14323,9 +14444,9 @@ end;
 
 procedure TMainForm .OperationAliasActionExecute (Sender : TObject );
 begin
-  if not Assigned(WsdlOperation) then
+  if not Assigned(FocusedOperation) then
     raise Exception.Create('No operation selected');
-  PromptForOperationAlias(WsdlOperation);
+  PromptForOperationAlias(FocusedOperation);
 end;
 
 initialization

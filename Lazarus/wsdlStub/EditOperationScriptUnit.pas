@@ -18,6 +18,7 @@ uses
   , Express, Bind, ComCtrls
   , Wsdlz
   , Xmlz
+  , xmlio
   , Menus , ActnList
   , FormIniFilez
   , WsdlProjectz , SynHighlighterAny , SynEdit
@@ -192,11 +193,11 @@ end;
 
 procedure TEditOperationScriptForm.CheckExecute(Sender: TObject);
 var
-  sl: TStringList;
+  sl: TJBStringList;
 begin
   StatusBar.SimpleText := '';
   ScriptEdit.SetFocus;
-  sl := TStringList.Create;
+  sl := TJBStringList.Create;
   try
     sl.Text := ScriptEdit.Lines.Text;
     WsdlOperation.CheckScript(sl, ExpressError);

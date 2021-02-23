@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
   Messages , SysUtils , Variants , Classes , Graphics , Controls , Forms ,
-  Dialogs , FormIniFilez , StdCtrls , ExtCtrls , Xsdz , A2BXmlz , Xmlz, VirtualTrees ,
+  Dialogs , FormIniFilez , StdCtrls , ExtCtrls, xmlio , Xsdz , A2BXmlz , Xmlz, VirtualTrees ,
   ComCtrls , ImgList , ToolWin , ActnList , Menus , Bind
 {$IFnDEF FPC}
   , OleCtrls
@@ -126,8 +126,7 @@ type
     procedure CreateHtmlReportActionExecute(Sender: TObject);
     procedure GridPopupMenuPopup(Sender: TObject);
     procedure ToggleShowEmptyRowsActionExecute(Sender: TObject);
-    procedure GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GridHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GridFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -150,7 +149,6 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure CleanActionExecute(Sender: TObject);
   private
-    headerClicked: Boolean;
     grid_x, grid_y: Integer;
     IniFile: TFormIniFile;
     nCols, nRows: Integer;
@@ -199,7 +197,7 @@ type
     property isAttributeColumn [col: Integer]: Boolean read getIsAttributeColumn write setIsAttributeColumn;
     property ColumnVisible [col: Integer]: Boolean read getColumnVisible write setColumnVisible;
   public
-    ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TJBStringList;
     Xml: TA2BXml;
     doConfirmRemovals: Boolean;
     initialExpandStyle: TBindExpandStyle;
@@ -502,14 +500,12 @@ begin
     Close;
 end;
 
-procedure TA2BXmlGridForm.GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TA2BXmlGridForm.GridHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
 begin
-  if ColumnSpan [Column] = 0 then Exit;
-  GroupExpanded [Column] := not GroupExpanded [Column];
+  if ColumnSpan [HitInfo.Column] = 0 then Exit;
+  GroupExpanded [HitInfo.Column] := not GroupExpanded [HitInfo.Column];
   ShowHideColumns;
-  Grid.FocusedColumn := Column;
-  headerClicked := True;
+  Grid.FocusedColumn := HitInfo.Column;
 end;
 
 procedure TA2BXmlGridForm.SetNodesVisibilty;
@@ -1366,11 +1362,6 @@ var
   xBind: TA2BXml;
   xForm: TShowA2BXmlForm;
 begin
-  if headerClicked then
-  begin
-    headerClicked:=False;
-    Exit;
-  end;
   if (Assigned(Grid.FocusedNode)) then
   begin
     xBind := FocusedBind;

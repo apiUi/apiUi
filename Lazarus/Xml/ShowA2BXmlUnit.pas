@@ -15,6 +15,7 @@ uses
    , Classes, Graphics, Forms, Controls,
   ComCtrls, ExtCtrls, VirtualTrees
 //   , IpmGunMainForm
+   , xmlio
    , A2BXmlz, Xmlz, Xsdz, a2bStringListUnit, Menus, Dialogs, ActnList, FormIniFilez
    ;
 
@@ -143,7 +144,7 @@ type
     SearchScope: Integer;
     SearchIn: Integer;
     SearchUseRegExp: Boolean;
-    FileContents: TStringList;
+    FileContents: TJBStringList;
     procedure HaveString (aString: String);
     procedure setColumnHeaderA (AValue : String );
     procedure setColumnHeaderB (AValue : String );
@@ -155,7 +156,7 @@ type
     procedure PromptAndSetColumnWidth (aTreeView: TVirtualStringTree);
   public
     RefreshNeeded: Boolean;
-    ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TJBStringList;
     property Xml: TA2BXml read fXml write SetXml;
     property ColumnHeaderA: String write setColumnHeaderA;
     property ColumnHeaderB: String write setColumnHeaderB;
@@ -164,8 +165,7 @@ type
 
 implementation
 
-uses xmlio
-   , FindRegExpDialog
+uses FindRegExpDialog
    , igGlobals
    , StrUtils
    , xmlUtilz
@@ -229,7 +229,7 @@ begin
   TreeView.Header.Columns [Ord(buttonColumn)].Width := wBttn;
   TreeView.NodeDataSize := SizeOf(TXmlTreeRec);
   TreeView.RootNodeCount := 0;
-  FileContents := TStringList.Create;
+  FileContents := TJBStringList.Create;
   CloseAction.ShortCut := VK_ESCAPE;
 end;
 
@@ -401,6 +401,7 @@ procedure TShowA2BXmlForm .TreeViewNewText (Sender : TBaseVirtualTree ;
 var
   oldText: String;
 begin
+  oldText := ''; // avoid warning
   TreeViewGetText(Sender, Node, Column, ttNormal, oldText);
   if NewText <> oldText then
     ShowMessage('Change not accepted because form is readonly');
@@ -623,7 +624,7 @@ begin
                                             ;
   AddToSortColumnsMenuItem.Enabled := (Assigned(regressionSortColumns))
                                    and (xXml.Items.Count = 0)
-                                   and (not regressionSortColumns.Find(xXml.FullUQCaption, f))
+                                   and (regressionSortColumns.IndexOf(xXml.FullUQCaption) < 0)
                                      ;
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
@@ -1050,7 +1051,7 @@ begin
 end;
 
 procedure TShowA2BXmlForm.IgnoreOrderFullCaptionInclPrefixMenuItemClick(Sender: TObject);
-  procedure _fill (aXml: TXml; aSl, aSr: TStringList; aTag: String);
+  procedure _fill (aXml: TXml; aSl, aSr: TJBStringList; aTag: String);
   var
     x, f: Integer;
   begin
@@ -1066,19 +1067,19 @@ var
   s: String;
   xExisting: Boolean;
   x, f: Integer;
-  sl, sr, snew: TStringList;
+  sl, sr, snew: TJBStringList;
 begin
   xXml := nil;
   if Assigned (TreeView.FocusedNode) then
   begin
     SelectedXml(xXml);
-    sl := TStringList.Create;
-    sr := TStringList.Create;
+    sl := TJBStringList.Create;
+    sr := TJBStringList.Create;
     s := xXml.Prefix + '.' + xXml.FullUQCaption;
     try
       xExisting := ignoreOrderOn.Find (s, f);
       if xExisting then
-        sr.Text := (ignoreOrderOn.Objects[f] as TStringList).Text;
+        sr.Text := (ignoreOrderOn.Objects[f] as TJBStringList).Text;
       for x := 0 to xXml.Items.Count - 1 do
         _fill (xXml.Items.XmlItems[x], sl, sr, xXml.Items.XmlItems[x].Name);
       Application.CreateForm(TdualListForm, dualListForm);
@@ -1098,13 +1099,13 @@ begin
             if sr.Count = 0 then
               IgnoreOrderOn.Delete(f)
             else
-              (ignoreOrderOn.Objects[f] as TStringList).Text := sr.Text
+              (ignoreOrderOn.Objects[f] as TJBStringList).Text := sr.Text
           end
           else
           begin
             if sr.Count > 0 then
             begin
-              snew := TStringList.Create;
+              snew := TJBStringList.Create;
               snew.Text := sr.Text;
               ignoreOrderOn.AddObject(s, snew);
             end;
@@ -1122,7 +1123,7 @@ begin
 end;
 
 procedure TShowA2BXmlForm.IgnoreOrderOfTagMenuItemClick(Sender: TObject);
-  procedure _createLists (aXml: TXml; aThread: String; aDsts, aSrcs: TStringList);
+  procedure _createLists (aXml: TXml; aThread: String; aDsts, aSrcs: TJBStringList);
   var
     x, f: Integer;
   begin
@@ -1140,7 +1141,7 @@ procedure TShowA2BXmlForm.IgnoreOrderOfTagMenuItemClick(Sender: TObject);
 
 var
   xXml: TA2BXml;
-  Srcs, Dsts, sl: TStringList;
+  Srcs, Dsts, sl: TJBStringList;
 begin
   xXml := nil;
   if Assigned (TreeView.FocusedNode) then
@@ -1148,14 +1149,14 @@ begin
     SelectedXml(xXml);
     if (xXml.Items.Count = 0) then
     begin
-      sl := TStringList.Create;
+      sl := TJBStringList.Create;
       sl.Add(xXml.TagName);
       ignoreOrderOn.AddObject('*.' + xXml.TagName, sl);
     end
     else
     begin
-      Srcs := TStringList.Create;
-      Dsts := TStringList.Create;
+      Srcs := TJBStringList.Create;
+      Dsts := TJBStringList.Create;
       _createLists (xXml, xXml.Name, Dsts, Srcs);
       try
         Application.CreateForm(TdualListForm, dualListForm);
@@ -1169,7 +1170,7 @@ begin
           dualListForm.ShowModal;
           if dualListForm.ModalResult = mrOk then
           begin
-            sl := TStringList.Create;
+            sl := TJBStringList.Create;
             sl.Text := dualListForm.DstList.Items.Text;
             ignoreOrderOn.AddObject('*.' + xXml.TagName, sl);
           end;

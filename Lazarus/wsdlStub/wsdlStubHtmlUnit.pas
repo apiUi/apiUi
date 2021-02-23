@@ -8,6 +8,7 @@ interface
 
 uses IdCustomHTTPServer
    , WsdlProjectz
+   , xmlio
    ;
 
 function createHtmlResponse (aProject: TWsdlProject; aRequest: TIdHTTPRequestInfo): String;
@@ -19,7 +20,6 @@ uses Wsdlz
    , igGlobals
    , SysUtils
    , Classes
-   , xmlio
    ;
 const CRLF = #13#10;
 
@@ -50,12 +50,12 @@ function createHtmlResponse (aProject: TWsdlProject; aRequest: TIdHTTPRequestInf
   function _prepIndex(fn: String):String;
   var
     s: String;
-    sl, dl: TStringList;
+    sl, dl: TJBStringList;
     x: Integer;
   begin
     result :='';
-    sl := TStringlist.Create;
-    dl := TStringList.Create;
+    sl := TJBStringList.Create;
+    dl := TJBStringList.Create;
     try
       try
         s := ReadStringFromFile(fn);

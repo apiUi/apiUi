@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -16,10 +16,10 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="5"/>
-      <BuildNr Value="12772"/>
+      <RevisionNr Value="1"/>
+      <BuildNr Value="12948"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -30,9 +30,10 @@
       <DestinationDirectory Value="C:\Data\publish"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <FormatVersion Value="1"/>
-      </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default"/>
+      </Modes>
     </RunParams>
     <RequiredPackages Count="9">
       <Item1>
@@ -63,7 +64,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="59">
+    <Units Count="60">
       <Unit0>
         <Filename Value="apiUi.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -150,7 +151,9 @@
       <Unit17>
         <Filename Value="..\wsdlStub\IpmGridUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="IpmGridForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\wsdlStub\Listenerz.pas"/>
@@ -183,7 +186,9 @@
       <Unit23>
         <Filename Value="..\wsdlStub\BitWiseUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="BitWiseForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\wsdlStub\ccbGenerationParamsUnit.pas"/>
@@ -213,7 +218,9 @@
       <Unit29>
         <Filename Value="..\wsdlStub\EditListValuesUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditListValuesForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\wsdlStub\EditOperationScriptUnit.pas"/>
@@ -230,7 +237,9 @@
       <Unit32>
         <Filename Value="..\wsdlStub\EditRegExpUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditRegExpForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\wsdlStub\EditStamperUnit.pas"/>
@@ -262,7 +271,9 @@
       <Unit38>
         <Filename Value="..\wsdlStub\IpmGunLicenseUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="IpmGunLicenseForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit38>
       <Unit39>
         <Filename Value="..\wsdlStub\LogFilterUnit.pas"/>
@@ -291,7 +302,9 @@
       <Unit43>
         <Filename Value="..\wsdlStub\OpenWsdlUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="OpenWsdlForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit43>
       <Unit44>
         <Filename Value="..\wsdlStub\QueryNewElementUnit.pas"/>
@@ -324,7 +337,9 @@
       <Unit49>
         <Filename Value="..\wsdlStub\SelectItemUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="SelectItemForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit49>
       <Unit50>
         <Filename Value="..\wsdlStub\SelectProjectFolderUnit.pas"/>
@@ -366,11 +381,16 @@
         <Filename Value="..\wsdlStub\wsdaemonunit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="wsDaemonUnit"/>
       </Unit57>
       <Unit58>
         <Filename Value="..\wsdlStub\wsdlStubHtmlUnit.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit58>
+      <Unit59>
+        <Filename Value="..\wsdlStub\httpmultipart.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit59>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -412,7 +432,6 @@
     <Exceptions Count="21">
       <Item1>
         <Name Value="EAbort"/>
-        <Enabled Value="False"/>
       </Item1>
       <Item2>
         <Name Value="ECodetoolError"/>
@@ -427,14 +446,12 @@
       </Item4>
       <Item5>
         <Name Value="EDatabaseError"/>
-        <Enabled Value="False"/>
       </Item5>
       <Item6>
         <Name Value="Exception"/>
       </Item6>
       <Item7>
         <Name Value="EIdSocketError"/>
-        <Enabled Value="False"/>
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
@@ -458,15 +475,12 @@
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>
-        <Enabled Value="False"/>
       </Item13>
       <Item14>
         <Name Value="EIdHTTPProtocolException"/>
-        <Enabled Value="False"/>
       </Item14>
       <Item15>
         <Name Value="EConvertError"/>
-        <Enabled Value="False"/>
       </Item15>
       <Item16>
         <Name Value="EODBCException"/>

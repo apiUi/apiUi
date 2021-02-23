@@ -18,6 +18,7 @@ uses
    , Dialogs
    , Wsdlz
    , Xsdz
+   , xmlio
    , Xmlz
    , Bind
    , Menus
@@ -58,9 +59,10 @@ type
     fReloadRequired: Boolean;
     procedure UpdateListView;
   public
+    remoteServerConnectionXml: TXml;
     wsdlFileName: String;
-    Wsdls: TStringList;
-    EnvVars: TStringList;
+    Wsdls: TJBStringList;
+    EnvVars: TJBStringList;
     IsBetaTestMode: Boolean;
     ShowOperationsWithEndpointOnly: Boolean;
     SaveRelativeFilenames: Boolean;
@@ -124,6 +126,7 @@ var
 begin
   Application.CreateForm(TOpenWsdlForm, OpenWsdlForm);
   try
+    OpenWsdlForm.remoteServerConnectionXml := remoteServerConnectionXml;
     OpenWsdlForm.ShowModal;
     if OpenWsdlForm.ModalResult = mrOK then
     begin

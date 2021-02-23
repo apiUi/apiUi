@@ -49,7 +49,7 @@ var
   l, c: Integer;
 begin
   if not Assigned(OnNewText) then
-    raise Exception.Create('vstToGrid: OnNewText needed for vst: ' + aVst.Name);
+    raise Exception.Create('vstFromGrid: OnNewText needed for vst: ' + aVst.Name);
   copyLines := TStringList.Create;
   try
     copyLines.Text := aGrid;
@@ -96,6 +96,7 @@ var
   xNLSep, xTabSep: String;
   xText: String;
 begin
+  xText := ''; // avoid warning
   if not Assigned(OnGetText) then
     raise Exception.Create('vstToGrid: OnGetText needed for vst: ' + aVst.Name);
   xNode := aVST.GetFirst;

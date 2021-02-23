@@ -862,6 +862,20 @@ Is default destination in Client mode.Has no relevance in server mode (stub)</xs
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:element name="namevaluepairs">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="_" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string"/>
+							<xs:element name="value" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:complexType name="xsdRecognitionType">
 		<xs:choice>
 			<xs:element name="XmlElement">
@@ -1622,6 +1636,16 @@ For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm </xs:do
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="versionInfo" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="major" type="xs:integer"/>
+							<xs:element name="minor" type="xs:integer"/>
+							<xs:element name="revision" type="xs:integer"/>
+							<xs:element name="build" type="xs:integer" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="General" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
@@ -2158,6 +2182,25 @@ The name you use here will be the name of the menu-item added to the script menu
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="remoteServerConnection" type="epc:remoteServerConnectionType"/>
+	<xs:element name="operationInformation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="0"/>
+				<xs:element name="description" type="xs:string" minOccurs="0"/>
+				<xs:element name="servers" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="service" type="xs:string" minOccurs="0"/>
+				<xs:element name="path" type="xs:string" minOccurs="0"/>
+				<xs:element name="verb" type="xs:string" minOccurs="0"/>
+				<xs:element name="soapAddress" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="Options">
 		<xs:annotation>
 			<xs:documentation>apiUi options;

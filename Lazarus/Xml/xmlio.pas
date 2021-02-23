@@ -22,9 +22,18 @@ TStringProvider = class(TObject)
     procedure OnGetString (var aString: String);
     constructor Create(aString: String);
 end;
+
+{ TJBStringList }
+
+TJBStringList = class (TStringList)
+  public
+    function Find(const S: string; Out Index: Integer): Boolean; override;
+end;
+
 type TProcedureS = procedure (arg: String) of Object;
 
 
+procedure SynchronizeMethode (AMethod: TThreadMethod);
 function urlExists (aURL: string): Boolean;
 function urlDecode(const S: String): String;
 function urlEncode(const S: String): String;
@@ -60,11 +69,10 @@ function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): 
 function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 function isPasswordContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
-function setPasswordContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
-function togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
+procedure setPasswordContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean);
+procedure togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer);
 function isOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
-function setOneTimeContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
-function toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
+procedure toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer);
 function osDirectorySeparators (aName: String): String;
 
 const base64DocxStartStr = 'UEsDBB';
@@ -85,8 +93,7 @@ var
 
 implementation
 uses StrUtils
-   , LCLIntf, LCLType, LMessages
-   , LazFileUtils
+   , LCLIntf, LCLType, LazFileUtils
    , versiontypes, versionresource
    , IdSSLOpenSSL
    , idStack
@@ -122,13 +129,13 @@ begin
     result := ((QWord (CellObject[aColumn, 0]) and PasswordContextsOptionValue) = PasswordContextsOptionValue);
 end;
 
-function setPasswordContextsColumn(aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
+procedure setPasswordContextsColumn(aContexts: TObject; aColumn: Integer; aValue: Boolean);
 begin
   if isPasswordContextsColumn(aContexts, aColumn) <> aValue then
     togglePasswordContextsColumn(aContexts, aColumn);
 end;
 
-function togglePasswordContextsColumn(aContexts: TObject; aColumn: Integer): Boolean;
+procedure togglePasswordContextsColumn(aContexts: TObject; aColumn: Integer);
 begin
   with aContexts as TStringListList do
     CellObject[aColumn, 0] := TObject (QWord (CellObject[aColumn, 0]) xor PasswordContextsOptionValue);
@@ -140,15 +147,8 @@ begin
     result := ((QWord (CellObject[aColumn, 0]) and OneTimeContextsOptionValue) = OneTimeContextsOptionValue);
 end;
 
-function setOneTimeContextsColumn(aContexts: TObject; aColumn: Integer;
-  aValue: Boolean): Boolean;
-begin
-  if isOneTimeContextsColumn(aContexts, aColumn) <> aValue then
-    toggleOneTimeContextsColumn(aContexts, aColumn);
-end;
-
-function toggleOneTimeContextsColumn(aContexts: TObject; aColumn: Integer
-  ): Boolean;
+procedure toggleOneTimeContextsColumn(aContexts: TObject; aColumn: Integer
+  );
 begin
   with aContexts as TStringListList do
     CellObject[aColumn, 0] := TObject (QWord (CellObject[aColumn, 0]) xor OneTimeContextsOptionValue);
@@ -344,6 +344,7 @@ end;
 function isFileNameAllowed(aFileName: String): Boolean;
 begin
   result := False;
+  if aFileName <> '' then
   with TRegExpr.Create('^[^\\\/\:\*\?\"\<\>\|]*[^\\\/\:\*\?\"\<\>\|\. ]$') do
 //                        ^\\\/\:\*\?\"\<\>\|\.      (second part because windows does not allow a dot or space as last char)
   try
@@ -410,6 +411,11 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure SynchronizeMethode(AMethod: TThreadMethod);
+begin
+  TThread.Synchronize (nil, AMethod);
 end;
 
 function urlExists (aURL: string): Boolean;
@@ -680,7 +686,7 @@ begin
       or (aVerb = 'POST')
       or (aVerb = 'PUT') then
       begin
-        HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
+        HttpClient.Request.ContentType := aAcceptContentType;
         HttpClient.Request.CharSet := '';
         HttpClient.Request.ContentEncoding := 'gzip';
         sStream := TMemoryStream.Create;
@@ -743,8 +749,11 @@ begin
           result := _Decompress (HttpClient.Response.ContentEncoding, xStream);
           if (HttpClient.ResponseCode < 200)
           or (HttpClient.ResponseCode > 299) then
-            raise Exception.CreateFmt ( '%d: %s%s%s'
+            raise Exception.CreateFmt ( '%d: %s%s%s%s%s%s'
                                       , [ HttpClient.ResponseCode
+                                        , HttpClient.Response.RawHeaders.Text
+                                        , LineEnding
+                                        , LineEnding
                                         , HttpClient.ResponseText
                                         , LineEnding
                                         , Result
@@ -752,7 +761,16 @@ begin
                                       );
         except
           on e: Exception do
-            raise Exception.Create (e.Message);
+            raise Exception.CreateFmt ( '%d: %s%s%s%s%s%s'
+                                      , [ HttpClient.ResponseCode
+                                        , HttpClient.Response.RawHeaders.Text
+                                        , LineEnding
+                                        , LineEnding
+                                        , HttpClient.ResponseText
+                                        , LineEnding
+                                        , e.Message
+                                        ]
+                                      );
         end;
       finally
         FreeAndNil (xStream);
@@ -926,6 +944,7 @@ var
   x: Integer;
 begin
   result := aFileName;
+  if aFileName <> '' then
   with TRegExpr.Create do
   try
     Expression:= '^[A-Za-z0-9]+\:/[^/]';
@@ -941,7 +960,9 @@ begin
           result := xPrefix + xSpec;
           if not (AnsiStartsText('http://', result))
           and not (AnsiStartsText('https://', result))
-          and not (AnsiStartsText('apiary://', result)) then
+          and not (AnsiStartsText('apiary://', result))
+          and not (AnsiStartsText('apiui://', result))
+          then
             ForcePathDelims(result);
           Exit;
         end;
@@ -1388,6 +1409,7 @@ function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false)
   begin
     result := aString;
     try
+      if result <> '' then
       with TRegExpr.Create do
       try
         Expression := _regexp;
@@ -1547,6 +1569,21 @@ begin
     end;
   end;
 end;
+
+{ TJBStringList }
+
+function TJBStringList.Find(const S: string; out Index: Integer): Boolean;
+begin
+  if not Sorted then
+  begin
+    Index := IndexOf(S);
+    result := (Index > -1);
+    Exit;
+  end;
+  Result := inherited Find(S, Index);
+end;
+
+{ TJBStringList }
 
 { TStringProvider }
 

@@ -12,14 +12,13 @@ uses
 {$ELSE}
   LCLIntf, LCLType,
 {$ENDIF}
-  SysUtils , Classes , Graphics , Forms , Controls , Buttons ,StdCtrls,
-  ComCtrls , ExtCtrls , VirtualTrees , Bind , Xmlz , Ipmz , Dialogs ,
+  SysUtils , Classes , Graphics , Forms , Controls , Buttons ,
+  ComCtrls , ExtCtrls , VirtualTrees, xmlio , Bind , Xmlz , Ipmz , Dialogs ,
   FormIniFilez , ActnList , Menus, IpHtml
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  , Express
   ;
 
 type
@@ -107,10 +106,6 @@ type
     CleanAction: TAction;
     CleanActionMenuItem: TMenuItem;
     ZoomasAssignment1: TMenuItem;
-    procedure Button1Click (Sender : TObject );
-    procedure DocumentationViewerClick (Sender : TObject );
-    procedure DocumentationViewerMouseMove (Sender : TObject ;
-      Shift : TShiftState ; X , Y : Integer );
     procedure DocumentationViewerHotClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
@@ -203,10 +198,10 @@ type
     fReadOnly: Boolean;
     fBind: TCustomBindable;
     FileName: String;
-    FileContents: TStringList;
+    FileContents: TJBStringList;
     fIsCheckedOnly: Boolean;
     fdoEnableCompare: Boolean;
-    fHideNodes: TStringList;
+    fHideNodes: TJBStringList;
     function getDoHideNodes: Boolean;
     procedure setDoHideNodes(const Value: Boolean);
     function getDoHideXmlNs: Boolean;
@@ -232,7 +227,7 @@ type
     procedure setIsChanged(const Value: Boolean);
     procedure setdoEnableCompare(const Value: Boolean);
   public
-    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn: TStringList;
+    ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn: TJBStringList;
     doConfirmRemovals: Boolean;
     doShowCancelButton: Boolean;
     initialExpandStyle: TBindExpandStyle;
@@ -266,7 +261,7 @@ uses
   ShellApi,
 {$ELSE}
 {$ENDIF}
-  FindRegExpDialog, igGlobals, ClipBrd, Xsdz, xmlUtilz, XmlGridUnit,
+  FindRegExpDialog, igGlobals, Xsdz, xmlUtilz, XmlGridUnit,
   RegExpr, StrUtils, A2BXmlz, ShowA2BXmlUnit, PromptUnit;
 
 const
@@ -294,7 +289,7 @@ procedure TShowXmlForm.FormCreate(Sender: TObject);
 var
   wBttn: Integer;
 begin
-  fHideNodes := TStringList.Create;
+  fHideNodes := TJBStringList.Create;
   fHideNodes.Sorted := true;
   ProgName := SysUtils.ChangeFileExt(SysUtils.ExtractFileName(ParamStr(0)), '');
   wBttn := TreeView.Header.Columns[treeButtonColumn].Width;
@@ -310,7 +305,7 @@ begin
   TreeView.Header.Columns[treeButtonColumn].Width := wBttn;
   TreeView.NodeDataSize := SizeOf(TBindTreeRec);
   TreeView.RootNodeCount := 0;
-  FileContents := TStringList.Create;
+  FileContents := TJBStringList.Create;
   isChanged := False;
   doConfirmRemovals := True;
 end;
@@ -426,6 +421,7 @@ var
   oBind, dBind: TCustomBindable;
   xConfirmed: Boolean;
 begin
+  xConfirmed := False; // avoid warning
   oBind := nil;
   dBind := nil;
   TreeView.EndEditNode;
@@ -937,6 +933,7 @@ procedure TShowXmlForm.ZoomAsTextMenuItemClick(Sender: TObject);
 var
   xAllowEdit: Boolean;
 begin
+  xAllowEdit := False; // avoid warning
   TreeViewEditing(TreeView, TreeView.FocusedNode, treeValueColumn, xAllowEdit);
   xmlUtil.ZoomAsText(SelectedBind, not xAllowEdit);
   if xAllowEdit then
@@ -1121,6 +1118,7 @@ var
   function StringMatchesRegExpr (aString, aExpr: String): Boolean;
   begin
     result := False;
+    if aString <> '' then
     with TRegExpr.Create do
     try
       Expression := '^(' + aExpr + ')$';  // bol and eol: must match entire string
@@ -1164,6 +1162,7 @@ var
     rslt: Boolean;
     p: Integer;
   begin
+    if aString = '' then Exit;
     rx := TRegExpr.Create;
     try
       rx.Expression := S_XML_REGEXP_LINK;
@@ -1223,9 +1222,9 @@ var
   var
     X: Integer;
     xXml, dXml: TXml;
-    sl: TStringList;
+    sl: TJBStringList;
   begin
-    sl := TStringList.Create;
+    sl := TJBStringList.Create;
     try
       aXml.Name := 'dl';
       with aXml.AddXml(TXml.CreateAsString('dt', '')) do
@@ -1681,9 +1680,12 @@ begin
   with TargetCanvas do
   begin
     Brush.Style := bsSolid;
-    if isReadOnly and (Column = treeValueColumn) and Assigned(refBind) and
-      (refBind <> Bind) and (refBind.Value = Bind.Value) and
-      (refBind.Value <> '') then
+    if isReadOnly
+    and (Column = treeValueColumn)
+    and Assigned(refBind)
+    and (refBind <> Bind)
+    and (refBind.Value = Bind.Value)
+    and (refBind.Value <> '') then
       Brush.Color := clLime
     else
       Brush.Color := NodeToBind(Node).bgColor(isReadOnly, Column);
@@ -1965,20 +1967,6 @@ end;
 procedure TShowXmlForm.ZoomMenuItemClick(Sender: TObject);
 begin
   xmlUtil.presentString(SelectedBind.FullCaption, SelectedBind.Value);
-end;
-
-procedure TShowXmlForm .Button1Click (Sender : TObject );
-begin
-end;
-
-procedure TShowXmlForm .DocumentationViewerClick (Sender : TObject );
-begin
-end;
-
-
-procedure TShowXmlForm .DocumentationViewerMouseMove (Sender : TObject ;
-  Shift : TShiftState ; X , Y : Integer );
-begin
 end;
 
 procedure TShowXmlForm.DocumentationViewerHotClick(Sender: TObject);

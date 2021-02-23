@@ -9,7 +9,6 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, CustApp
   , Interfaces
-  , math
   , dateutils
   , sysutils
   , WsdlProjectz
@@ -22,11 +21,7 @@ uses
   , snapshotz
   , Wsdlz
   , xmlxsdparser
-  , HashUtilz
   , LazFileUtils
-  {$ifdef windows}
-  , ActiveX
-  {$endif}
   ;
 
 type

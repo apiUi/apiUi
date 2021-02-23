@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Grids, Menus,
   StdCtrls, ActnList, ExtCtrls, Buttons, ComCtrls, FormIniFilez,
-  StringListListUnit, VirtualTrees;
+  StringListListUnit, xmlio, VirtualTrees;
 type
 
   PGridTreeRec = ^TGridTreeRec;
@@ -64,8 +64,7 @@ type
       Column: TColumnIndex; var Allowed: Boolean);
     procedure GridViewGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
-    procedure GridViewHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GridViewHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure GridViewHeaderDrawQueryElements(Sender: TVTHeader;
       var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
     procedure GridViewHeaderImageClick(Sender: TVTHeader; Column: TColumnIndex;
@@ -87,7 +86,7 @@ type
     procedure SetPasswordActionExecute(Sender: TObject);
     procedure SetPasswordActionUpdate(Sender: TObject);
   private
-    ColWidths: TStringList;
+    ColWidths: TJBStringList;
     procedure GetColAndRow(var aCol, aRow: Integer);
     function isPassWordColumn (aColumn: Integer): Boolean;
     function isOneTimerColumn (aColumn: Integer): Boolean;
@@ -106,8 +105,7 @@ var
 implementation
 
 {$R *.lfm}
-uses xmlio
-   , PromptUnit
+uses PromptUnit
    , LCLType
    ;
 
@@ -208,7 +206,7 @@ end;
 
 procedure TEditContextsForm.FormCreate(Sender: TObject);
 begin
-  ColWidths := TStringList.Create;
+  ColWidths := TJBStringList.Create;
   with TFormIniFile.Create (Self, True) do
   try
     Restore;
@@ -320,10 +318,9 @@ begin
 end;
 
 procedure TEditContextsForm.GridViewHeaderClick(Sender: TVTHeader;
-  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X, Y: Integer
-  );
+  HitInfo: TVTHeaderHitInfo);
 begin
-  GridView.FocusedColumn := Column;
+  GridView.FocusedColumn := HitInfo.Column;
 end;
 
 procedure TEditContextsForm.GridViewHeaderDrawQueryElements(Sender: TVTHeader;
@@ -387,6 +384,7 @@ procedure TEditContextsForm.RemoveContextActionExecute(Sender: TObject);
 var
   aCol, aRow: Integer;
 begin
+  aCol := 0; aRow := 0; // avoid warning
   with GridView do
   begin
     GetColAndRow (aCol, aRow);
@@ -411,6 +409,7 @@ var
 begin
   with Contexts do
   begin
+    aCol := 0; aRow := 0; // avoid warning
     GetColAndRow (aCol, aRow);
     if BooleanPromptDialog('Remove property ' + CellValue [aCol, 0]) then
     begin
@@ -430,6 +429,7 @@ procedure TEditContextsForm.RemovePropertyActionUpdate(Sender: TObject);
 var
   aCol, aRow: Integer;
 begin
+  aCol := 0; aRow := 0; // avoid warning
   GetColAndRow (aCol, aRow);
   RemovePropertyAction.Enabled := (aCol > 0);
 end;
@@ -438,6 +438,7 @@ procedure TEditContextsForm.SetAsOnetimerActionExecute(Sender: TObject);
 var
   aCol, aRow: Integer;
 begin
+  aCol := 0; aRow := 0; // avoid warning
   GetColAndRow (aCol, aRow);
   with Contexts do
   begin
@@ -451,6 +452,7 @@ procedure TEditContextsForm.SetAsOnetimerActionUpdate(Sender: TObject);
 var
   aCol, aRow: Integer;
 begin
+  aCol := 0; aRow := 0; // avoid warning
   GetColAndRow (aCol, aRow);
   SetAsOnetimerAction.Enabled := True;
   SetAsOnetimerAction.Checked := isOneTimerColumn (aCol);
@@ -462,6 +464,7 @@ var
   aCol, aRow: Integer;
   r: Integer;
 begin
+  aCol := 0; aRow := 0; // avoid warning
   GetColAndRow (aCol, aRow);
   with Contexts do
   begin
@@ -478,6 +481,7 @@ procedure TEditContextsForm.SetPasswordActionUpdate(Sender: TObject);
 var
   aCol, aRow: Integer;
 begin
+  aCol := 0; aRow := 0; // avoid warning
   GetColAndRow (aCol, aRow);
   SetPasswordAction.Enabled := True;
   SetPasswordAction.Checked := isPassWordColumn (aCol);

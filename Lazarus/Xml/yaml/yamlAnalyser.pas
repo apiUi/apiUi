@@ -147,7 +147,7 @@ end;
 
 procedure TyamlAnalyser .PrepareParsing ;
 var
-  lx, lx_1: YYSType;
+  lx, lx_1, lx_2: YYSType;
   sep: String;
 begin
   try
@@ -191,6 +191,7 @@ begin
   end;
   lx := LexicalList;
   lx_1 := lx;
+  lx_2 := lx_1;
   while Assigned (lx) do
   begin
     if lx.Token = _NAME then
@@ -213,6 +214,15 @@ begin
     end;
     if Assigned (lx) then
     begin
+      if (lx_2.Token = _HYPHENINDENT)
+      and (lx_1.Token = _HYPHENINDENT)
+      and (lx.Token = _VALUE) then
+      begin
+        lx_2.Token := _ARRAYVALUE;
+        lx_2.yyStringRead := lx_1.yyStringRead + lx.yyStringRead;
+        lx_1.Token := _COMMENT;
+        lx_2.NextToken := lx.NextToken;
+      end;
       if (lx.Token = _VALUE)
       and (lx_1.Token = _HYPHENINDENT)
       then
@@ -221,6 +231,7 @@ begin
         lx_1.yyStringRead := lx.yyStringRead;
         lx_1.NextToken := lx.NextToken;
       end;
+      lx_2 := lx_1;
       lx_1 := lx;
       lx := lx.NextToken;
     end;

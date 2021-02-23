@@ -15,6 +15,7 @@ uses Classes
    , ParserClasses
    , xmlzConsts
    , LazFileUtils
+   , Bind
    , XmlIO
    ;
 
@@ -28,26 +29,13 @@ type
   TBooleanFunctionObject = function (arg: TObject): Boolean of Object;
 
 
-type
-  TjsonType = (jsonNone, jsonString, jsonNumber, jsonBoolean, jsonObject,
-    jsonArray, jsonArrayValue);
-const JsonTypeNames: array [jsonNone..jsonArrayValue] of String =
-( 'jsonNone'
-, 'jsonString'
-, 'jsonNumber'
-, 'jsonBoolean'
-, 'jsonObject'
-, 'jsonArray'
-, 'jsonArrayValue'
-);
-
-type TOperationParametersType = (oppBody, oppPath, oppQuery, oppHeader, oppForm);
-const OperationParametersTypeNames: array [oppBody..oppForm] of String =
+type TOperationParametersType = (oppBody, oppPath, oppQuery, oppHeader, oppFormData);
+const OperationParametersTypeNames: array [oppBody..oppFormData] of String =
 ( 'Body'
 , 'Path'
 , 'Query'
 , 'Header'
-, 'Form'
+, 'FormData'
 );
 function NameToOperationParametersType (aName:String): TOperationParametersType;
 type TCollectionFormat = (ocfSingle, ocfCSV, ocfSSV, ocfTSV, ocfPipes, ocfMulti);
@@ -69,7 +57,7 @@ type
   TXsd = class;
   TXsdDescr = class;
 
-  TXsdDataTypeList = class(TStringList)
+  TXsdDataTypeList = class(TJBStringList)
   protected
     function GetXsdDataType(Index: integer): TXsdDataType;
   public
@@ -134,9 +122,9 @@ type
     Numeric: String;
     TotalDigits: String;
     FractionalDigits: String;
-    Enumerations: TStringList;
-    Documentation: TStringList;
-    Appinfo: TStringList;
+    Enumerations: TJBStringList;
+    Documentation: TJBStringList;
+    Appinfo: TJBStringList;
     ExtendedByList: TXsdDataTypeList;
     ElementDefs: TXsdList;
     AttributeDefs: TXsdAttrList;
@@ -178,7 +166,7 @@ type
     destructor Destroy; override;
   end;
 
-  TXsdAttrList = class(TStringList)
+  TXsdAttrList = class(TJBStringList)
   protected
     function GetXsdAttr(Index: integer): TXsdAttr;
   public
@@ -216,8 +204,8 @@ type
     Manually: Boolean;
     _ElementOrTypeDefRef: TElementOrTypeDefRef;
     InitialCollapsed: Boolean;
-    Documentation: TStringList;
-    Appinfo: TStringList;
+    Documentation: TJBStringList;
+    Appinfo: TJBStringList;
     Obj: TObject;
     EditProcedure: TBooleanFunctionObject;
     CheckNewValue: TOnCheckNewValue;
@@ -232,16 +220,16 @@ type
     function isRequired: Boolean;
     function SchemaAsJson: TObject;
     procedure ClearNameSpace;
-    procedure GenerateHtmlReport(aStringList: TStringList);
-    procedure GenerateReport(aStringList: TStringList);
+    procedure GenerateHtmlReport(aStringList: TJBStringList);
+    procedure GenerateReport(aStringList: TJBStringList);
     procedure GenerateCopyBook(aPrefix, aSuffix, a88Prefix, a88Suffix,
-      aLevel: String; aStringList: TStringList);
+      aLevel: String; aStringList: TJBStringList);
     constructor Create(aXsdDescr: TXsdDescr); Overload;
     constructor Create(aXsdDescr: TXsdDescr; aSource: TXsd); Overload;
     destructor Destroy; override;
   end;
 
-  TXsdList = class(TStringList)
+  TXsdList = class(TJBStringList)
   private
     function GetXsdByName(Index: String): TXsd;
   protected
@@ -268,8 +256,8 @@ type
     function AddElement(aTypeDef: TXsdDataType; aXml: TObject; aTargetNameSpace: String; aRoot: Boolean): TXsd;
     procedure AddGroup(aTypeDef: TXsdDataType; aXml: TObject; aTargetNameSpace: String);
   public
-    Garbage: TStringList;
-    xsdFileNames: TStringList;
+    Garbage: TJBStringList;
+    xsdFileNames: TJBStringList;
     Prefix: String;
     SchemaName: String;
     Alias: String;
@@ -277,9 +265,9 @@ type
     TargetNSPrefix: String;
     NamespaceURI: String;
     TypeDefs: TXsdDataTypeList;
-    FileContents: TStringList;
-    NameSpaceList: TStringList;
-    ReadFileNames: TStringList;
+    FileContents: TJBStringList;
+    NameSpaceList: TJBStringList;
+    ReadFileNames: TJBStringList;
     TypeDef: TXsdDataType;
     ChangedElementDefs: TObject;
     function CreateXsdFromXmlSample (aXml: TObject; aLinkXmlToXsd: Boolean): TXsd;
@@ -309,7 +297,7 @@ type
     destructor Destroy; override;
   end;
 
-  TXsdDescrList = class(TStringList)
+  TXsdDescrList = class(TJBStringList)
   private
     function GetXsdDescr(Index: integer): TXsdDescr;
   public
@@ -354,7 +342,8 @@ begin
   if aName = 'Path' then begin result := oppPath; Exit; end;
   if aName = 'Query' then begin result := oppQuery; Exit; end;
   if aName = 'Header' then begin result := oppHeader; Exit; end;
-  if aName = 'Form' then begin result := oppForm; Exit; end;
+  if aName = 'Form' then begin result := oppFormData; Exit; end;
+  if aName = 'FormData' then begin result := oppFormData; Exit; end;
   raise Exception.Create('function OperationParametersType(aName: String): TOperationParametersType; illegal arg: ' + aName);
 end;
 
@@ -363,7 +352,7 @@ begin
   result := Copy (aName, Pos (':', aName) + 1, MaxInt);
 end;
 
-procedure AddDocumentation(aStringList: TStringList; aXml: TXml);
+procedure AddDocumentation(aStringList: TJBStringList; aXml: TXml);
 var
   x, y: integer;
 begin
@@ -378,7 +367,7 @@ begin
   end;
 end;
 
-procedure AddAppInfo(aStringList: TStringList; aXml: TXml);
+procedure AddAppInfo(aStringList: TJBStringList; aXml: TXml);
 var
   x, y: integer;
 begin
@@ -453,8 +442,8 @@ end;
 constructor TXsd.Create(aXsdDescr: TXsdDescr);
 begin
   inherited Create;
-  Documentation := TStringList.Create;
-  Appinfo := TStringList.Create;
+  Documentation := TJBStringList.Create;
+  Appinfo := TJBStringList.Create;
   xsdDescr := aXsdDescr;
   minOccurs := '1';
   maxOccurs := '1';
@@ -467,8 +456,8 @@ constructor TXsd.Create(aXsdDescr: TXsdDescr; aSource: TXsd);
 begin
   inherited Create;
   self.xsdDescr := aXsdDescr;
-  self.Documentation := TStringList.Create;
-  self.Appinfo := TStringList.Create;
+  self.Documentation := TJBStringList.Create;
+  self.Appinfo := TJBStringList.Create;
   self.ElementName := aSource.ElementName;
   self.ElementNameSpace := aSource.ElementNameSpace;
   self.minOccurs := aSource.minOccurs;
@@ -539,8 +528,8 @@ begin
   TypeDefs := TXsdDataTypeList.Create;
   TypeDefs.Sorted := True;
   TypeDefs.CaseSensitive := True;
-  FileContents := TStringList.Create;
-  Garbage := TStringList.Create;
+  FileContents := TJBStringList.Create;
+  Garbage := TJBStringList.Create;
   ReadFileNames := TXsdList.Create;
   ReadFileNames.Sorted := True;
   ReadFileNames.CaseSensitive := False;
@@ -1342,6 +1331,7 @@ begin
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
     result := CreateXsdFromXmlSample (xXml, False);
+    result.FileName := aFileName;
   finally
     xXml.Free;
   end;
@@ -1403,7 +1393,7 @@ begin
             );
 end;
 
-procedure TXsd.GenerateReport(aStringList: TStringList);
+procedure TXsd.GenerateReport(aStringList: TJBStringList);
   function IndentString(x: integer): String;
   begin
     result := '';
@@ -1484,7 +1474,7 @@ begin
 end;
 
 procedure TXsd.GenerateCopyBook(aPrefix, aSuffix, a88Prefix, a88Suffix,
-  aLevel: String; aStringList: TStringList);
+  aLevel: String; aStringList: TJBStringList);
   function IndentString(x: integer): String;
   begin
     result := '';
@@ -1579,7 +1569,7 @@ begin
     result := ' occurs ' + maxOccurs + ' times';
 end;
 
-procedure TXsd.GenerateHtmlReport(aStringList: TStringList);
+procedure TXsd.GenerateHtmlReport(aStringList: TJBStringList);
   function IndentString(x: integer): String;
   begin
     result := '';
@@ -2182,12 +2172,12 @@ begin
   _Error := False;
   jsonType := jsonNone;
   xsdDescr := aXsdDescr;
-  Enumerations := TStringList.Create;
+  Enumerations := TJBStringList.Create;
   Enumerations.Sorted := True;
   Enumerations.Duplicates := dupIgnore;
   Enumerations.CaseSensitive := True;
-  Documentation := TStringList.Create;
-  Appinfo := TStringList.Create;
+  Documentation := TJBStringList.Create;
+  Appinfo := TJBStringList.Create;
   ExtendedByList := TXsdDataTypeList.Create;
   ElementDefs := TXsdList.Create;
   AttributeDefs := TXsdAttrList.Create;
@@ -2223,7 +2213,7 @@ begin
   self.Numeric := aSource.Numeric;
   self.TotalDigits := aSource.TotalDigits;
   self.FractionalDigits := aSource.FractionalDigits;
-  self.Enumerations := TStringList.Create;
+  self.Enumerations := TJBStringList.Create;
   self.Enumerations.Sorted := True;
   self.Enumerations.Duplicates := dupIgnore;
   self.Enumerations.CaseSensitive := True;
@@ -2231,9 +2221,9 @@ begin
   for x := 0 to aSource.Enumerations.Count - 1 do
     self.Enumerations.Objects[x] :=
       (aSource.Enumerations.Objects[x] as TXsdEnumeration).Clone;
-  self.Documentation := TStringList.Create;
+  self.Documentation := TJBStringList.Create;
   self.Documentation.Text := aSource.Documentation.Text;
-  self.Appinfo := TStringList.Create;
+  self.Appinfo := TJBStringList.Create;
   self.Appinfo.Text := aSource.Appinfo.Text;
   self.ExtendedByList := TXsdDataTypeList.Create;
   self.ElementDefs := TXsdList.Create;
@@ -2307,7 +2297,7 @@ end;
 function TXsdDataType.SchemaAsXml(aName: String): TObject;
 var
   xXml: TXml;
-  idList: TStringList;
+  idList: TJBStringList;
   function _typeAsXml(aType: TXsdDataType): TXml;
   var
     x, E: integer;
@@ -2474,7 +2464,7 @@ var
   end;
 
 begin
-  idList := TStringList.Create;
+  idList := TJBStringList.Create;
   try
     idList.Sorted := True;
     xXml := TXml.CreateAsString('xs:schema', '');

@@ -96,7 +96,6 @@ type
     procedure SearchDiff (aDown: Boolean);
   public
     RefreshNeeded: Boolean;
-    ignoreDifferencesOn: TStringList;
     property Bind: TCustomBindable read fBind write SetBind;
   end;
 

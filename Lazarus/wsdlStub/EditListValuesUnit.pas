@@ -60,27 +60,6 @@ implementation
   {$R *.lfm}
 {$ENDIF}
 
-procedure MemoSetSelectedText (Memo: TCustomMemo; Line: Integer; Column: Integer; Width: Integer);
-var
-  x: Integer;
-  Offset: Integer;
-begin
-  if not (Memo is TCustomMemo) then
-    raise Exception.Create ('First arg is not a TCustomMemo');
-  if Line > Memo.Lines.Count then
-    raise Exception.Create ('Line out of index for memo');
-  Offset := Column - 1;
-  x := 0;
-  while (x < Line - 1) do
-  begin
-    Offset := Offset + system.Length (Memo.Lines[x]) + 2;
-    Inc (x);
-  end;
-  Memo.SetFocus;
-  Memo.SelStart := Offset;
-  Memo.SelLength := Width;
-end;
-
 procedure TEditListValuesForm.FormShow(Sender: TObject);
 begin
   ValueListEditor.ParentColor := isReadOnly;

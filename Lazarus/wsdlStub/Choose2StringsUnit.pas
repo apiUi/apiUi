@@ -37,14 +37,14 @@ type
   private
     fChoosenLeftString: String;
     fChoosenRightString: String;
-    fListOfLists : TStringList ;
+    fListOfLists : TJBStringList ;
     function getChoosenIndex : Integer ;
     function GetChoosenLeftString : String ;
     function GetChoosenRightString : String ;
     procedure SetChoosenLeftString (AValue : String );
     procedure SetChoosenRightString (AValue : String );
   public
-    property ListOfLists: TStringList read fListOfLists write fListOfLists;
+    property ListOfLists: TJBStringList read fListOfLists write fListOfLists;
     property ChoosenLeftString: String read GetChoosenLeftString write SetChoosenLeftString;
     property ChoosenRightString: String read GetChoosenRightString write SetChoosenRightString;
     property ChoosenIndex: Integer read getChoosenIndex;
@@ -137,7 +137,7 @@ procedure TChoose2StringsForm .LeftListBoxSelectionChange (Sender : TObject ;
   User : boolean );
 begin
   if LeftListBox.ItemIndex > -1 then
-    RightListBox.Items.Text := (fListOfLists.Objects[LeftListBox.ItemIndex] as TStringList).Text;
+    RightListBox.Items.Text := (fListOfLists.Objects[LeftListBox.ItemIndex] as TJBStringList).Text;
   OkButton.Enabled := (RightListBox.ItemIndex > -1);
 end;
 

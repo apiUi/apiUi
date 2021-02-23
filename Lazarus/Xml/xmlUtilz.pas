@@ -7,6 +7,7 @@ unit xmlUtilz;
 interface
 
 uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, LazFileUtils
+   , xmlio
    , Bind
    , Xmlz
    , Xsdz
@@ -60,7 +61,7 @@ public
   OnProgress: TOnprogress;
   IpmDescrs: TIpmDescrs;
   IgnoreOrderOfElements: Boolean;
-  ignoreDifferencesOn: TStringList;
+  ignoreDifferencesOn: TJBStringList;
   property AcquireLock: TProcedure read getAcquireLock write fAcquireLock;
   property ReleaseLock: TProcedure read getReleaseLock write fReleaseLock;
   function SimpleEncrypt(Source: AnsiString): AnsiString;
@@ -172,7 +173,6 @@ uses
 // , XsBuiltIns
    , SwiftUnit
    , base64
-   , xmlio
    ;
 
 procedure ShowText (aCaption, aText: String);
@@ -374,7 +374,7 @@ begin
     LoadValues(aXml, False, aOnlyWhenChecked);
     if aUseRelativeNames then
       SetFileNamesRelative(aFileName);
-    with TStringList.Create do
+    with TJBStringList.Create do
     try
       Text := AsText(False,0,True,False);
       SaveToFile(aFileName);
@@ -696,6 +696,7 @@ function TXmlUtil.editXml(aBind: TCustomBindable; aDoUseGrid, aReadOnly: Boolean
     if (aBind is TXml)
     and (Assigned ((aBind as TXml).Xsd))
     and (   ((aBind as TXml).TypeDef.Name = 'FileNameType')
+         or ((aBind as TXml).TypeDef.Name = 'file')
         )
     and (not ReadOnly) then
     begin
@@ -711,7 +712,7 @@ function TXmlUtil.editXml(aBind: TCustomBindable; aDoUseGrid, aReadOnly: Boolean
     end;
     if (aBind is TXml)
     and Assigned ((aBind as TXml).Xsd)
-    and (   ((aBind as TXml).TypeDef.Name = 'NameValuePairsType')
+    and (   ((aBind as TXml).TypeDef.Name = 'NameValuePairsStringType')
         ) then
     begin
       Application.CreateForm(TEditListValuesForm, EditListValuesForm);
@@ -827,6 +828,7 @@ begin
       result := xmlUtil.ViewAsXml(aBind, aReadOnly);
       exit;
     end;
+    result := xmlUtil.ViewAsXml(aBind, aReadOnly);
   end;
 end;
 
@@ -1017,6 +1019,7 @@ begin
                       or ((aBind as TXml).TypeDef.BaseDataTypeName = 'dateTime')
                       or ((aBind as TXml).TypeDef.BaseDataTypeName = 'boolean')
                       or ((aBind as TXml).TypeDef.BaseDataTypeName = 'base64Binary')
+                      or ((aBind as TXml).TypeDef.BaseDataTypeName = 'file')
                       or ((aBind as TXml).TypeDef.Name = 'FileNameType')
                       or ((aBind as TXml).TypeDef.Name = 'FolderNameType')
                       or ((aBind as TXml).TypeDef.Name = 'htmlColorType')
@@ -1108,6 +1111,7 @@ procedure TXmlUtil.Validate(aBind: TCustomBindable);
 var
   xMessage: String;
 begin
+  xMessage := ''; // avoid warning
   if aBind is TXmlAttribute then
     raise Exception.Create ('Not implemented for XML atributes');
   if not Assigned (aBind) then
@@ -1296,7 +1300,7 @@ begin
       if (aBind as TXml).Xsd.ParametersType <> oppBody then
       begin
         case (aBind as TXml).Xsd.ParametersType of
-          oppForm: AddProperty('in', 'formData');
+          oppFormData: AddProperty('in', 'formData');
           oppBody: AddProperty('in', 'body');
           oppHeader: AddProperty('in', 'header');
           oppPath: AddProperty('in', 'path');
@@ -1785,6 +1789,7 @@ procedure TXmlUtil.CheckValidity(aBind: TCustomBindable);
 var
   xMessage: String;
 begin
+  xMessage := ''; // avoid warning
   if aBind.Checked then
   begin
     if aBind.IsExpression then
@@ -1820,6 +1825,10 @@ begin
              and Assigned ((aBind as TXml).Xsd)
              and ((aBind as TXml).TypeDef.ElementDefs.Count = 0)
              and ((aBind as TXml).Xsd.isReadOnly = False)
+            )
+         or (    (aBind is TXml)
+             and (not Assigned ((aBind as TXml).Xsd))
+             and (aBind.Children.Count = 0)
             )
          or (    (aBind is TIpmItem)
              and ((aBind as TIpmItem).Items.Count = 0)

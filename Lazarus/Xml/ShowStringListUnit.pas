@@ -119,8 +119,7 @@ type
     procedure WriteXmlActionExecute(Sender: TObject);
     procedure TreeViewInitNode(Sender: TBaseVirtualTree; ParentNode,
       Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
-    procedure TreeViewHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure TreeViewHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure TreeViewCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure ZoomMenuActionClick(Sender: TObject);
@@ -741,9 +740,7 @@ begin
     result := 1;
 end;
 
-procedure TShowStringListForm.TreeViewHeaderClick(Sender: TVTHeader;
-  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
-  Y: Integer);
+procedure TShowStringListForm.TreeViewHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
 var
   xCursor: TCursor;
 begin

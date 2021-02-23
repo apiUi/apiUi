@@ -259,6 +259,18 @@ begin
 end;
 
 procedure TSelectElementsForm.UpdateListView;
+  function _LastCaption (aCaption: String): String;
+  var
+    x, p: Integer;
+  begin
+    result := '';
+    p := 1;
+    for x := 1 to Length (aCaption) do
+      if aCaption [x] = '.' then
+        p := x + 1;
+    result := Copy (aCaption, p, MaxInt);
+  end;
+
 var
   x: Integer;
   ListItem: TListItem;
@@ -267,7 +279,7 @@ begin
   for x := 0 to ControlBinds.Count - 1 do
   begin
     ListItem := ListView.Items.Add;
-    ListItem.Caption := LastCaption (ControlBinds.Strings [x]);
+    ListItem.Caption := _LastCaption (ControlBinds.Strings [x]);
     ListItem.SubItems.Add(ControlBinds.Strings [x]);
   end;
   if ListView.Items.Count > 0 then

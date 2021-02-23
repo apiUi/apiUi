@@ -80,6 +80,7 @@ procedure TChooseStringForm.ChooseClick(Sender: TObject);
 var
   xConfirmed: Boolean;
 begin
+  xConfirmed := False; // avoid warning
   if ListBox.ItemIndex > -1 then
   begin
     fChoosenString := ListBox.Items.Strings [ListBox.ItemIndex];
