@@ -141,9 +141,9 @@ begin
           if (xExt = '.JSON')
           or (xExt = '.YAML')
           or (AnsiStartsText('APIARY://', OpenWsdlForm.WsdlLocationEdit.Text)) then
-            Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil, nil, nil)
+            Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil, nil)
           else
-            wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil, nil, nil);
+            wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil, nil);
           Wsdl.XsdDescr.Finalise;
         except
           Wsdl.Free;

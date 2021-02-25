@@ -1044,7 +1044,7 @@ begin
     aXml := TXml.Create;
     try
       FocusedIpm.XmlFileName := OpenFileDialog.FileName;
-      aXml.LoadFromFile (FocusedIpm.XmlFileName, nil, nil, nil);
+      aXml.LoadFromFile (FocusedIpm.XmlFileName, nil, nil);
       FocusedIpm.ResetLoaded (True);
       aXml.TagName := FocusedIpm.Name; // Ignore name conflict at first level
       FocusedIpm.LoadValues (aXml);

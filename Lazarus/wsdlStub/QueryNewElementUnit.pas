@@ -189,7 +189,7 @@ begin
   NameSpaceEdit.Items.Clear;
   NameEdit.Items.Clear;
   xsddesc.Clear;
-  xsddesc.LoadXsdFromFile(Value, nil, nil, nil);
+  xsddesc.LoadXsdFromFile(Value, nil, nil);
   NameSpaceEdit.Items.Text := xsddesc.NameSpaceList.Text;
   EnableOkButton;
 end;

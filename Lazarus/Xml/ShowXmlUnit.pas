@@ -537,7 +537,7 @@ begin
         a2bInitialize;
         try
           bXml := TXml.Create;
-          bXml.LoadFromFile(FileName, nil, nil, nil);
+          bXml.LoadFromFile(FileName, nil, nil);
           if bXml.Name = '' then
           begin
             bXml.Free;

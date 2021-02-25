@@ -49,7 +49,7 @@ function HttpGetDialog (aUrl, aAcceptContentType: String): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
-function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS): String;
+function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): String;
 procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
@@ -80,6 +80,7 @@ const base64PdfStartStr = 'JVBERi';
 const base64RtfStartStr = 'e1xyd';
 const PasswordContextsOptionValue = 1;
 const OneTimeContextsOptionValue = 2;
+const apiuidescribtorspath = '/project/describtors';
 
 type TOnStringEvent = procedure (const Msg: String) of Object;
 var
@@ -89,6 +90,7 @@ var
   doTrackXmlIO: Boolean;
   OnNotify: TOnStringEvent;
   apiaryToken: String;
+  apiUiConnectionConfig: TObject;
 
 
 implementation
@@ -661,7 +663,6 @@ var
   dXml: TXml;
   xStringProvider: TStringProvider;
 begin
-//SjowMessage(aPath + ' : ' + aQuery + ' : ' + aVerb + ' : ' + aBody);
   result := '';
   sStream := nil;
   cStream := nil;
@@ -960,8 +961,8 @@ begin
           result := xPrefix + xSpec;
           if not (AnsiStartsText('http://', result))
           and not (AnsiStartsText('https://', result))
-          and not (AnsiStartsText('apiary://', result))
           and not (AnsiStartsText('apiui://', result))
+          and not (AnsiStartsText('apiary://', result))
           then
             ForcePathDelims(result);
           Exit;
@@ -980,6 +981,7 @@ begin
         xPrefix := PromptFolderName('Specify replacement for alias ' + xAlias, xPrefix) + '/';
         if not (AnsiStartsText('http://', xPrefix))
         and not (AnsiStartsText('https://', xPrefix))
+        and not (AnsiStartsText('apiui://', xPrefix))
         and not (AnsiStartsText('apiary://', xPrefix)) then
           ForcePathDelims(xPrefix);
         PathPrefixes.Values[xAlias] := xPrefix;
@@ -1058,6 +1060,7 @@ begin
   // both linux and windows conventios because of 'remote' filenames
   if (AnsiStartsText('http://', aToRelateFileName))
   or (AnsiStartsText('https://', aToRelateFileName))
+  or (AnsiStartsText('apiui://', aToRelateFileName))
   or (AnsiStartsText('apiary://', aToRelateFileName))
   or (AnsiStartsText('file://', aToRelateFileName))
   or (AnsiStartsText('/', aToRelateFileName))
@@ -1079,6 +1082,7 @@ begin
   end;
   if (AnsiStartsText('http://', aMainFileName))
   or (AnsiStartsText('https://', aMainFileName))
+  or (AnsiStartsText('apiui://', aMainFileName))
   or (AnsiStartsText('apiary://', aMainFileName))
   then
   begin
@@ -1119,6 +1123,7 @@ begin
   or (aToRelateFileName = '')
   or (AnsiStartsText ('http://', aToRelateFileName))
   or (AnsiStartsText ('https://', aToRelateFileName))
+  or (AnsiStartsText ('apiui://', aToRelateFileName))
   or (AnsiStartsText ('apiary://', aToRelateFileName))
   then
     exit;
@@ -1166,7 +1171,24 @@ begin
   end;
 end;
 
-function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS): String;
+function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): String;
+  function _GetFromApiUiCloudAsString (aURL: string): string;
+  var
+    p: Integer;
+  begin
+    result := '';
+    p := Pos(apiuidescribtorspath + '/', aFileName);
+    SjowMessage(Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt));
+    if p < 1 then
+      raise Exception.Create ('reading from apiUi cloud connection, illegal filename: ' + aFileName);
+    result := apiUiServerDialog ( apiUiConnectionConfig
+                                , '/apiUi/api' + apiuidescribtorspath
+                                , '?filename=' + Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt)
+                                , 'GET'
+                                , '*/*'
+                                );
+  end;
+
   function _GetFromApiAryAsString (aURL: string): string;
   var
     xApiaryConfig: TXml;
@@ -1277,24 +1299,14 @@ begin
     result := _GetURLAsString (aFileName, true);
     exit;
   end;
+  if (AnsiStartsText('APIUI://', aFileName)) then
+  begin
+    result := _GetFromApiUiCloudAsString (aFileName);
+    exit;
+  end;
   if (AnsiStartsText('APIARY://', aFileName)) then
   begin
     result := _GetFromApiAryAsString (aFileName);
-    exit;
-  end;
-  if Assigned (aApiUiServerConfig) then
-  begin
-    with TXml.CreateAsString('name', aFileName) do
-    try
-      result := apiUiServerDialog ( aApiUiServerConfig
-                                  , '/apiUi/api/projectdesign/files'
-                                  , '?name=' + urlPercentEncode (aFileName)
-                                  , 'GET'
-                                  , ''
-                                  );
-    finally
-      Free;
-    end;
     exit;
   end;
   with TFileStream.Create(osDirectorySeparators(aFileName),fmOpenRead or fmShareDenyWrite) do

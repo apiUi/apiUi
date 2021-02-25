@@ -239,11 +239,11 @@ type
     function StreamYAML ( aIndent: Integer
                         ; OnlyWhenChecked: Boolean
                         ): String;
-    procedure LoadFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS);
+    procedure LoadFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aOnBeforeRead: TProcedureS);
     procedure LoadFromString (aString: String; ErrorFound: TOnErrorEvent);
-    procedure LoadJsonFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+    procedure LoadJsonFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aOnbeforeRead: TProcedureS);
     procedure LoadJsonFromString (aString: String; ErrorFound: TOnErrorEvent);
-    procedure LoadYamlFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+    procedure LoadYamlFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aOnbeforeRead: TProcedureS);
     procedure LoadYamlFromString (aString: String; ErrorFound: TOnErrorEvent);
     function FindByRefId (aRefId: Integer): TXml;
     function FindUQ (aName: String): TCustomBindable; Override;
@@ -771,7 +771,7 @@ begin
   begin
     xJsonXml := TXml.Create;
     try
-      xJsonXml.LoadJsonFromFile(aFileName, nil, aApiUiServerConfig, aOnbeforeRead);
+      xJsonXml.LoadJsonFromFile(aFileName, nil, aOnbeforeRead);
       result := _CreateXsdFromJsonSchema(aXsdDescr, nil, nil, xJsonXml);
       aXsdDescr.TypeDef.AddXsd(result);
       aXsdDescr.ReadFileNames.AddObject(aFileName, result);
@@ -1118,12 +1118,12 @@ begin
   result := TXml (Objects [index]);
 end;
 
-procedure TXml.LoadFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS);
+procedure TXml.LoadFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aOnBeforeRead: TProcedureS);
 begin
   fFileContents := TJBStringList.Create;
   try
     try
-      fFileContents.Text := xmlio.ReadStringFromFile (aFileName, aApiUiServerConfig, aOnBeforeRead);
+      fFileContents.Text := xmlio.ReadStringFromFile (aFileName, aOnBeforeRead);
       LoadXml (ErrorFound);
       PopulateSourceFileName(aFileName);
     except
@@ -1139,12 +1139,12 @@ begin
   end;
 end;
 
-procedure TXml.LoadJsonFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+procedure TXml.LoadJsonFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aOnbeforeRead: TProcedureS);
 begin
   fFileContents := TJBStringList.Create;
   try
     try
-      fFileContents.Text := ReadStringFromFile (aFileName, aApiUiServerConfig, aOnbeforeRead);
+      fFileContents.Text := ReadStringFromFile (aFileName, aOnbeforeRead);
       LoadJson (ErrorFound);
       PopulateSourceFileName(aFileName);
     except
@@ -1171,12 +1171,12 @@ begin
   end;
 end;
 
-procedure TXml.LoadYamlFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+procedure TXml.LoadYamlFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aOnbeforeRead: TProcedureS);
 begin
   fFileContents := TJBStringList.Create;
   try
     try
-      fFileContents.Text := ReadStringFromFile (aFileName, aApiUiServerConfig, aOnbeforeRead);
+      fFileContents.Text := ReadStringFromFile (aFileName, aOnbeforeRead);
       LoadYaml (ErrorFound);
       PopulateSourceFileName(aFileName);
     except

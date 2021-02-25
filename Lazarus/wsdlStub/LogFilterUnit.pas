@@ -18,6 +18,9 @@ uses
   , Logz, Wsdlz;
 
 type
+
+  { TLogFilterForm }
+
   TLogFilterForm = class(TForm)
     FilteringPanel: TPanel;
     ActionPanel: TPanel;
@@ -70,8 +73,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure SetEnableds(Sender: TObject);
   private
-    procedure SetEnableds (Sender: TObject);
     function getReplyEnabled: Boolean;
     function getReplyEquals: Boolean;
     function getReplyValue: String;
@@ -192,47 +195,7 @@ begin
   end;
 end;
 
-procedure TLogFilterForm.FormDestroy(Sender: TObject);
-begin
-  with TFormIniFile.Create(self, False) do
-  try
-    Save;
-  finally
-    Free;
-  end;
-end;
-
-procedure TLogFilterForm.setActionEnabled(const Value: Boolean);
-begin
-  ActionEnabledCheckBox.Checked := Value;
-end;
-
-procedure TLogFilterForm.setServiceEnabled(const Value: Boolean);
-begin
-  ServiceEnabledCheckBox.Checked := Value;
-end;
-
-procedure TLogFilterForm.setFilterEnabled(const Value: Boolean);
-begin
-  EnabledCheckBox.Checked := Value;
-end;
-
-procedure TLogFilterForm.setFilterStyle(const Value: TLogFilterStyle);
-begin
-  FilterStyleCombo.ItemIndex := Ord (Value);
-end;
-
-function TLogFilterForm.getFilterEnabled: Boolean;
-begin
-  result := EnabledCheckBox.Checked;
-end;
-
-function TLogFilterForm.getFilterStyle: TLogFilterStyle;
-begin
-  result := TLogFilterStyle(FilterStyleCombo.ItemIndex);
-end;
-
-procedure TLogFilterForm.SetEnableds (Sender: TObject);
+procedure TLogFilterForm.SetEnableds(Sender: TObject);
   function nEnabledConditions: Integer;
   begin
     result := 0;
@@ -278,6 +241,46 @@ begin
   ReplyEqualsCombobox.Enabled := FilterEnabled and ReplyEnabled;
   ReplyEdit.Enabled := FilterEnabled and ReplyEnabled;
   RemarksCheckBox.Enabled := FilterEnabled;
+end;
+
+procedure TLogFilterForm.FormDestroy(Sender: TObject);
+begin
+  with TFormIniFile.Create(self, False) do
+  try
+    Save;
+  finally
+    Free;
+  end;
+end;
+
+procedure TLogFilterForm.setActionEnabled(const Value: Boolean);
+begin
+  ActionEnabledCheckBox.Checked := Value;
+end;
+
+procedure TLogFilterForm.setServiceEnabled(const Value: Boolean);
+begin
+  ServiceEnabledCheckBox.Checked := Value;
+end;
+
+procedure TLogFilterForm.setFilterEnabled(const Value: Boolean);
+begin
+  EnabledCheckBox.Checked := Value;
+end;
+
+procedure TLogFilterForm.setFilterStyle(const Value: TLogFilterStyle);
+begin
+  FilterStyleCombo.ItemIndex := Ord (Value);
+end;
+
+function TLogFilterForm.getFilterEnabled: Boolean;
+begin
+  result := EnabledCheckBox.Checked;
+end;
+
+function TLogFilterForm.getFilterStyle: TLogFilterStyle;
+begin
+  result := TLogFilterStyle(FilterStyleCombo.ItemIndex);
 end;
 
 function TLogFilterForm.getActionEnabled: Boolean;

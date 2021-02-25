@@ -277,11 +277,11 @@ type
     function xmlSampleOperationsXml(aMainFileName: String): TXml;
     function ApiByExampleOperationsXml(aMainFileName: String): TXml;
     function xsdOperationsXml(aMainFileName: String): TXml;
-    procedure xsdOperationsUpdate (aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
-    procedure xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
-    procedure ApiByExampleOperationsUpdate (aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
+    procedure xsdOperationsUpdate (aXml: TXml; aMainFileName: String);
+    procedure xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: String);
+    procedure ApiByExampleOperationsUpdate (aXml: TXml; aMainFileName: String);
     function swiftMtOperationsXml: TXml;
-    procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
+    procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
     function FindSnapshot (aName: String): TSnapshot;
@@ -387,7 +387,7 @@ type
     procedure RefreshCommand;
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
     function BooleanPromptDialog (aPrompt: String): Boolean;
-    function WsdlOpenFile (aName: String; aApiUiServerConfig: TObject): TWsdl;
+    function WsdlOpenFile (aName: String): TWsdl;
     procedure SaveLogs (aFileName: String);
     procedure UpdateReplyColumns (aOperation: TWsdlOperation);
     procedure ProjectOptionsLogDisplayedColumnsFromXml(aXml: TXml);
@@ -395,8 +395,8 @@ type
     function ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
     procedure ProjectOptionsFromXml(aXml: TXml);
     procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
-    procedure ProjectDesignFromXml (aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
-    procedure ProjectDesignFromString (aString, aMainFileName: String; aApiUiServerConfig: TObject);
+    procedure ProjectDesignFromXml (aXml: TXml; aMainFileName: String);
+    procedure ProjectDesignFromString (aString, aMainFileName: String);
     procedure ProjectDesignFromApiRequestString (aString, aMainFileName: String);
     procedure PrepareAllOperationsShowingProgress;
     procedure PrepareAllOperations;
@@ -1331,7 +1331,7 @@ begin
       [_progName, xIniFileName, CRLF, _progName]);
   iniXml := TXml.Create;
   try
-    iniXml.LoadFromFile(xIniFileName, nil, nil, nil);
+    iniXml.LoadFromFile(xIniFileName, nil, nil);
     faviconIcoFileName := _abs (iniXml.Items.XmlValueByTag ['faviconIco']);
     swaggerYamlFileName := _abs(iniXml.Items.XmlValueByTag ['swaggerYaml']);
     indexHtmlFileName := _abs (iniXml.Items.XmlValueByTag ['indexHtml']);
@@ -1352,7 +1352,7 @@ begin
     begin
       wsaXsdDescr := TXsdDescr.Create;
       try
-        wsaXsdDescr.LoadXsdFromFile (wsaXsdFileName, nil, nil, nil);
+        wsaXsdDescr.LoadXsdFromFile (wsaXsdFileName, nil, nil);
         if wsaXsdDescr.TypeDef.ElementDefs.Count > 0 then
           _WsdlWsaXsd := wsaXsdDescr.TypeDef.ElementDefs.Xsds [wsaXsdDescr.TypeDef.ElementDefs.Count - 1];
       except
@@ -1363,7 +1363,7 @@ begin
     begin
       swiftMTXsdDescr := TXsdDescr.Create;
       try
-        swiftMTXsdDescr.LoadXsdFromFile (_swiftMTXsdFileName, nil, nil, nil);
+        swiftMTXsdDescr.LoadXsdFromFile (_swiftMTXsdFileName, nil, nil);
         if swiftMTXsdDescr.TypeDef.ElementDefs.Count > 0 then
         begin
           _swiftMTXsd := swiftMTXsdDescr.TypeDef.ElementDefs.Xsds [swiftMTXsdDescr.TypeDef.ElementDefs.Count - 1];
@@ -1379,9 +1379,8 @@ begin
       apiUiXsdDescr := TXsdDescr.Create;
       try
         apiUiXsdDescr.LoadXsdFromString (_Prep ( apiUiXsdFileName
-                                                    , ReadStringFromFile(apiUiXsdFileName, nil, nil)
+                                                    , ReadStringFromFile(apiUiXsdFileName, nil)
                                                     )
-                                             , nil
                                              , nil
                                              , nil
                                              );
@@ -1441,7 +1440,7 @@ begin
               try
                 xXml := TXml.Create (-10000, _WsdlmqHeaderXsd);
                 try
-                  Xml.LoadFromFile (mqPutHeaderEditAllowedFileName, nil, nil, nil);
+                  Xml.LoadFromFile (mqPutHeaderEditAllowedFileName, nil, nil);
                   xXml.CopyValues (Xml, True, False);
                   xXml.SetXsdReadOnly;
                 finally
@@ -1473,7 +1472,7 @@ begin
               try
                 xXml := TXml.Create (-10000, _WsdlstompHeaderXsd);
                 try
-                  Xml.LoadFromFile (stompPutHeaderEditAllowedFileName, nil, nil, nil);
+                  Xml.LoadFromFile (stompPutHeaderEditAllowedFileName, nil, nil);
                   xXml.CopyValues (Xml, True, False);
                   xXml.SetXsdReadOnly;
                 finally
@@ -2777,7 +2776,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.ProjectDesignFromXml(aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
+procedure TWsdlProject.ProjectDesignFromXml(aXml: TXml; aMainFileName: String);
   procedure _loadCheckers (aList, aXml: TXml);
   var
     x: Integer;
@@ -2925,28 +2924,28 @@ begin
             oXml := wXml.Items.XmlItemByTag['XsdOperations'];
             if Assigned (oXml) then
             begin
-              xsdOperationsUpdate(oXml, aMainFileName, aApiUiServerConfig);
+              xsdOperationsUpdate(oXml, aMainFileName);
               xWsdl := XsdWsdl;
               xDone := True;
             end;
             oXml := wXml.Items.XmlItemByTag['XmlSampleOperations'];
             if Assigned (oXml) then
             begin
-              xmlSampleOperationsUpdate(oXml, aMainFileName, aApiUiServerConfig);
+              xmlSampleOperationsUpdate(oXml, aMainFileName);
               xWsdl := XmlSampleWsdl;
               xDone := True;
             end;
             oXml := wXml.Items.XmlItemByTag['ApiByExampleOperations'];
             if Assigned (oXml) then
             begin
-              ApiByExampleOperationsUpdate(oXml, aMainFileName, aApiUiServerConfig);
+              ApiByExampleOperationsUpdate(oXml, aMainFileName);
               xWsdl := ApiByExampleWsdl;
               xDone := True;
             end;
             oXml := wXml.Items.XmlItemByTag['SwiftMtOperations'];
             if Assigned (oXml) then
             begin
-              swiftMtOperationsUpdate(oXml, aMainFileName, aApiUiServerConfig);
+              swiftMtOperationsUpdate(oXml, aMainFileName);
               xWsdl := SwiftMtWsdl;
               xDone := True;
             end;
@@ -2963,7 +2962,6 @@ begin
                 xWsdl := WsdlOpenFile ( xmlio.ExpandRelativeFileName ( aMainFileName
                                                                      , wXml.Items.XmlValueByTag['WsdlLocation']
                                                                      )
-                                      , aApiUiServerConfig
                                       );
               except
                 on e: Exception do
@@ -3025,7 +3023,7 @@ begin
                 if dXml.Items.Count = 1 then
                 begin
                   xWsdl.ExtraXsdsFromXml (dXml.Items.XmlItems[0], SaveRelativeFileNames, aMainFileName);
-                  xWsdl.LoadExtraXsds (aApiUiServerConfig, OnBeforeFileRead);
+                  xWsdl.LoadExtraXsds (OnBeforeFileRead);
                 end;
               end;
               dXml := wXml.Items.XmlItemByTag ['ChangedElementDefs'];
@@ -3299,14 +3297,14 @@ begin
   end;
 end;
 
-procedure TWsdlProject.ProjectDesignFromString(aString, aMainFileName: String; aApiUiServerConfig: TObject);
+procedure TWsdlProject.ProjectDesignFromString(aString, aMainFileName: String);
 var
   xXml: TXml;
 begin
   xXml := TXml.Create;
   try
     xXml.LoadFromString(aString, nil);
-    ProjectDesignFromXml(xXml, aMainFileName, aApiUiServerConfig);
+    ProjectDesignFromXml(xXml, aMainFileName);
   finally
     xXml.Free;
   end;
@@ -3314,7 +3312,7 @@ end;
 
 procedure TWsdlProject.ProjectDesignFromApiRequestString(aString, aMainFileName: String);
 begin
-  ProjectDesignFromString (aString, aMainFileName, nil);
+  ProjectDesignFromString (aString, aMainFileName);
 end;
 
 procedure TWsdlProject .CreateLogReply (aLog : TLog ;
@@ -3964,7 +3962,7 @@ begin
   end;
 end;
 
-function TWsdlProject .WsdlOpenFile (aName : String; aApiUiServerConfig: TObject): TWsdl ;
+function TWsdlProject .WsdlOpenFile (aName : String): TWsdl ;
 var
   xExt: String;
 begin
@@ -3973,9 +3971,9 @@ begin
   if (xExt = '.JSON')
   or (xExt = '.YAML')
   or (AnsiStartsText('APIARY://', aName)) then
-    result.LoadFromJsonYamlFile(aName, nil, aApiUiServerConfig, OnBeforeFileRead)
+    result.LoadFromJsonYamlFile(aName, nil, OnBeforeFileRead)
   else
-    result.LoadFromSchemaFile(aName, nil, aApiUiServerConfig, OnBeforeFileRead);
+    result.LoadFromSchemaFile(aName, nil, OnBeforeFileRead);
   if Result.FileName = '' then
     SjowMessage(format('(%s)if Result.FileName = ''''? hoe kan dat dan?', [aName]));
 end;
@@ -5353,7 +5351,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
+procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
   procedure _getDescriptionFiles (aXml: TXml; aFileNames: TJBStringList);
   var
     x, f: Integer;
@@ -5402,7 +5400,7 @@ procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String; aA
       xXsdDescr := TXsdDescr.Create;
       XsdWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       try
-        xXsdDescr.LoadXsdFromFile(aDescrFileName, nil, aApiUiServerConfig, OnBeforeFileRead);
+        xXsdDescr.LoadXsdFromFile(aDescrFileName, nil, OnBeforeFileRead);
       except
         on E: Exception do
           raise Exception.Create('Error opening ' + aDescrFileName + ': ' + e.Message);
@@ -5520,7 +5518,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
+procedure TWsdlProject.xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: String);
   procedure _getDescriptionFiles (aXml: TXml; aFileNames: TJBStringList);
   var
     x, f: Integer;
@@ -5551,7 +5549,7 @@ procedure TWsdlProject.xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: Str
       xXsdDescr := TXsdDescr.Create;
       XmlSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
       try
-        xXsd := xXsdDescr.LoadXsdFromXmlSampleFile(aSampleFileName, nil,aApiUiServerConfig, OnBeforeFileRead);
+        xXsd := xXsdDescr.LoadXsdFromXmlSampleFile(aSampleFileName, nil,OnBeforeFileRead);
       except
         on E: Exception do
           raise Exception.Create('Error opening ' + aSampleFileName + ': ' + e.Message);
@@ -5680,7 +5678,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
+procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: String);
   function _LoadApiByExampleReq (aLabel: String; sXml: TXml; aXsd: TXsd): TXml;
   var
     xXsdDescr: TXsdDescr;
@@ -5727,9 +5725,9 @@ procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: S
         xSampleFileName := ExpandRelativeFileName (aMainFileName, xXml.Value);
         try
           if UpperCase(ExtractFileExt(xSampleFileName)) = '.XML' then
-            xXsd := xXsdDescr.LoadXsdFromXmlSampleFile(xSampleFileName, nil, aApiUiServerConfig, OnBeforeFileRead)
+            xXsd := xXsdDescr.LoadXsdFromXmlSampleFile(xSampleFileName, nil, OnBeforeFileRead)
           else
-            xXsd := xXsdDescr.LoadXsdFromJsonSampleFile(xSampleFileName, nil, aApiUiServerConfig, OnBeforeFileRead);
+            xXsd := xXsdDescr.LoadXsdFromJsonSampleFile(xSampleFileName, nil, OnBeforeFileRead);
         except
           on E: Exception do
             raise Exception.Create('Error opening ' + xSampleFileName + ': ' + e.Message);
@@ -5796,9 +5794,9 @@ procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: S
                                                   );
               try
                 if UpperCase(ExtractFileExt(xFileName)) = '.XML' then
-                  sXsd := xXsdDescr.LoadXsdFromXmlSampleFile(xFileName, nil, aApiUiServerConfig, OnBeforeFileRead)
+                  sXsd := xXsdDescr.LoadXsdFromXmlSampleFile(xFileName, nil, OnBeforeFileRead)
                 else
-                  sXsd := xXsdDescr.LoadXsdFromJsonSampleFile (xFileName, nil, aApiUiServerConfig, OnBeforeFileRead);
+                  sXsd := xXsdDescr.LoadXsdFromJsonSampleFile (xFileName, nil, OnBeforeFileRead);
               except
                 on E: Exception do
                   raise Exception.Create('Error opening ' + xFileName + ': ' + e.Message);
@@ -6151,7 +6149,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String; aApiUiServerConfig: TObject);
+procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String);
   procedure _getDescriptionFiles (aXml: TXml; aFileNames: TJBStringList);
   var
     x, f: Integer;
@@ -6264,7 +6262,7 @@ procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String
       try
         xXsdDescr := TXsdDescr.Create;
         SwiftMtWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
-        xXsdDescr.AddXsdFromFile('', _swiftMTXsdFileName, nil, aApiUiServerConfig, OnBeforeFileRead);
+        xXsdDescr.AddXsdFromFile('', _swiftMTXsdFileName, nil, OnBeforeFileRead);
         aXsd.ElementName := 'FinMessage';
         fXsd := _refXsd ( xXsdDescr, 'FinMessage');
         if Assigned (fXsd) then
@@ -6278,13 +6276,13 @@ procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String
           if sXml.Items.XmlItems[x].Name = 'DescriptionFile' then
           begin
           aDescrFileName := uncFilename(ExpandRelativeFileName(aMainFileName, sXml.Items.XmlItems[x].Value));
-            xXsdDescr.AddXsdFromFile('', aDescrFileName, nil, aApiUiServerConfig, OnBeforeFileRead);
+            xXsdDescr.AddXsdFromFile('', aDescrFileName, nil, OnBeforeFileRead);
           end;
           if sXml.Items.XmlItems[x].Name = 'DescriptionExpansionFile' then
             with xpXmls.AddXml(TXml.Create) do
             begin
               aDescrExpansionFileName := uncFilename(ExpandRelativeFileName(aMainFileName, sXml.Items.XmlItems[x].Value));
-              LoadFromFile(aDescrExpansionFileName, nil, aApiUiServerConfig, OnBeforeFileRead);
+              LoadFromFile(aDescrExpansionFileName, nil, OnBeforeFileRead);
             end;
         end;
         b4Xsd := aXsd.FindXsd('FinMessage.Block4');
@@ -7647,7 +7645,7 @@ begin
         and (ARequestInfo.Command = 'GET')
         then begin
           AResponseInfo.ContentType := 'text/html';
-          AResponseInfo.ContentText := ReplaceStrings ( xmlio.ReadStringFromFile(indexHtmlFileName, nil, nil)
+          AResponseInfo.ContentText := ReplaceStrings ( xmlio.ReadStringFromFile(indexHtmlFileName, nil)
                                                       , '__progname__'
 //                                                    , _progName
                                                       , 'apiUi'
@@ -7661,7 +7659,7 @@ begin
         and (Strings[3] = 'swagger.yaml')
         and (ARequestInfo.Command = 'GET')
         then begin
-          AResponseInfo.ContentText := ReplaceStrings ( xmlio.ReadStringFromFile(swaggerYamlFileName, nil, nil)
+          AResponseInfo.ContentText := ReplaceStrings ( xmlio.ReadStringFromFile(swaggerYamlFileName, nil)
                                                       , '__hostname__'
                                                       , xmlio.GetHostName
                                                       , False
@@ -7850,6 +7848,22 @@ begin
         and (Strings[4] = 'describtors')
         and (ARequestInfo.Command = 'GET')
         then begin
+          sl := TJBStringList.Create;
+          try
+            ExplodeStr(ARequestInfo.QueryParams, '&', sl);
+            for x := 0 to sl.Count - 1 do
+            begin
+              if sl.Names[x] = 'filename' then
+              begin
+                xFileName := xmlio.ExpandRelativeFileName(projectFileName, sl.ValueFromIndex[x]);
+                AResponseInfo.ContentType := GetMIMETypeFromFile(xFileName);
+                AResponseInfo.ContentText := xmlio.ReadStringFromFile(xFileName, nil);
+                Exit;
+              end;
+            end;
+          finally
+            sl.Free;
+          end;
           with TXml.Create do
           try
             Name := 'json';
@@ -9143,6 +9157,7 @@ begin
     CopyDownLine(aXml, True);
     remoteServerConnectionEnabled := Items.XmlBooleanByTagDef['Enabled', False];
   end;
+  xmlio.apiUiConnectionConfig := remoteServerConnectionXml;
 end;
 
 procedure TWsdlProject.EnvVarsFromXml(aXml: TXml);
@@ -9173,7 +9188,7 @@ begin
   xXml :=TXml.Create;
   try
     if aIsFileName then
-      xXml.LoadFromFile(aString, nil, nil, nil)
+      xXml.LoadFromFile(aString, nil, nil)
     else
       xXml.LoadFromString(aString, nil);
     if xXml.TagName <> 'LogIncrement' then
@@ -9866,7 +9881,7 @@ begin
   ProgressBegin('Opening ' + projectFileName, 3000);
   try
     try
-      ProjectDesignFromString(ReadStringFromFile(projectFileName, nil, nil), projectFileName, nil);
+      ProjectDesignFromString(ReadStringFromFile(projectFileName, nil), projectFileName);
       StubRead := False;
       StubChanged := True;
       ProgressInvalidateConsole;
@@ -9906,7 +9921,7 @@ begin
 //      ProjectDesignFromXml(xXml, dXml.Value, remoteServerConnectionXml);
         sRemoteProjectFileName := dXml.Value;
         dXml.Value := sProjectFileName;
-        ProjectDesignFromXml(xXml, dXml.Value, nil);
+        ProjectDesignFromXml(xXml, dXml.Value);
         remoteProjectName := sRemoteProjectFileName;
         StubRead := False;
         StubChanged := True;
@@ -9945,7 +9960,7 @@ begin
         dXml := xXml.FindXml('WsdlStubCase.FileName', '.');
         if not Assigned(dXml) then
           raise Exception.Create('Invalid Xml read from ' + RemoteServerUrl);
-        ProjectDesignFromXml(xXml, dXml.Value, remoteServerConnectionXml);
+        ProjectDesignFromXml(xXml, dXml.Value);
         StubRead := False;
         StubChanged := True;
         ProgressInvalidateConsole;
@@ -9975,7 +9990,7 @@ begin
     try
       xXml := XmlFromProjectFolders(projectFileName);
       try
-        ProjectDesignFromXml(xXml, projectFileName, nil);
+        ProjectDesignFromXml(xXml, projectFileName);
         ProgressInvalidateConsole;
         if doStartOnOpeningProject then
         try
@@ -10018,7 +10033,7 @@ begin
       saveRead := stubRead;
       saveContexts := TStringListList.Create(projectContexts);
       try
-        ProjectDesignFromString(ProjectDesignAsString, projectFileName, nil);
+        ProjectDesignFromString(ProjectDesignAsString, projectFileName);
         projectContexts.CopyFrom(saveContexts);
       finally
         saveContexts.Free;
@@ -10055,12 +10070,12 @@ function TWsdlProject.XmlFromProjectFolders(aFolderName: String): TXml;
         xExtention := RightStr(xSearchRec.Name, 4);
         if (xExtention = '.txt') then
           aXml.AddXml (TXml.CreateAsString ( LazFileUtils.ExtractFileNameOnly(xSearchRec.Name)
-                                           , xmlio.ReadStringFromFile(LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name, nil, nil)
+                                           , xmlio.ReadStringFromFile(LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name, nil)
                                            )
                       );
         if (xExtention = '.xml')
         and (Copy(xSearchRec.Name, 1, 1) <> '_') then
-          aXml.AddXml (TXml.Create).LoadFromFile (LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name, nil, nil, nil);
+          aXml.AddXml (TXml.Create).LoadFromFile (LazFileUtils.AppendPathDelim(aFolderName) + xSearchRec.Name, nil, nil);
       end;
       r := LazFileUtils.FindNextUTF8(xSearchRec);
     end;
@@ -10119,7 +10134,7 @@ begin
   xMList.Sorted := True;
   xFileList := TJBStringList.Create;
   try
-    result.LoadFromFile(xFileName, nil, nil, nil);
+    result.LoadFromFile(xFileName, nil, nil);
     xWsdlsFolderName := LazFileUtils.AppendPathDelim(aFoldername) + 'W';
     _getFolders (xWsdlsFolderName, xWList);
     if xWList.Count > 0 then
@@ -10132,7 +10147,7 @@ begin
       ProgressStep(xWsdlFolderName, step);
       xFileName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + _WsdlFileName;
       wXml := result.AddXml(TXml.Create);
-      wXml.LoadFromFile(xFileName, nil, nil, nil);
+      wXml.LoadFromFile(xFileName, nil, nil);
       _setXmlFileAlias(wXml, xWList.Strings[w]);
       xServicesFolderName := LazFileUtils.AppendPathDelim(xWsdlFolderName) + 'S';
       _getFolders (xServicesFolderName, xSList);
@@ -10141,7 +10156,7 @@ begin
         xServiceFolderName := LazFileUtils.AppendPathDelim(xServicesFolderName) + xSList.Strings[s];
         xFileName := LazFileUtils.AppendPathDelim(xServiceFolderName) + _ServiceFileName;
         sXml := wXml.AddXml (TXml.Create);
-        sXml.LoadFromFile(xFileName, nil, nil, nil);
+        sXml.LoadFromFile(xFileName, nil, nil);
         _setXmlFileAlias(sXml, xSList.Strings[s]);
         _AddChildsFromFolder (sXml, xServiceFolderName);
         xOperationsFolderName := LazFileUtils.AppendPathDelim(xServiceFolderName) + 'O';
@@ -10151,7 +10166,7 @@ begin
           xOperationFolderName := LazFileUtils.AppendPathDelim(xOperationsFolderName) + xOList.Strings[o];
           xFileName := LazFileUtils.AppendPathDelim(xOperationFolderName) + _OperationFileName;
           oXml := sXml.AddXml (TXml.Create);
-          oXml.LoadFromFile(xFileName, nil, nil, nil);
+          oXml.LoadFromFile(xFileName, nil, nil);
           _setXmlFileAlias(oXml, xOList.Strings[o]);
           _AddChildsFromFolder (oXml, xOperationFolderName);
           xMessagesFolderName := LazFileUtils.AppendPathDelim(xOperationFolderName) + 'M';
@@ -10162,7 +10177,7 @@ begin
             xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName) + xMList.Strings[m];
             xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + _MessageFileName;
             mXml := mmXml.AddXml (TXml.Create);
-            mXml.LoadFromFile(xFileName, nil, nil, nil);
+            mXml.LoadFromFile(xFileName, nil, nil);
             _AddChildsFromFolder (mXml, xMessageFolderName);
           end;
         end;
@@ -10177,7 +10192,7 @@ begin
       xScriptFolderName := LazFileUtils.AppendPathDelim(xScriptsFolderName) + xMList.Strings[m];
       xFileName := LazFileUtils.AppendPathDelim(xScriptFolderName) + _ScriptFileName;
       mXml := mmXml.AddXml (TXml.Create);
-      mXml.LoadFromFile(xFileName, nil, nil, nil);
+      mXml.LoadFromFile(xFileName, nil, nil);
       _AddChildsFromFolder (mXml, xScriptFolderName);
     end;
     _AddChildsFromFolder(result, aFoldername);

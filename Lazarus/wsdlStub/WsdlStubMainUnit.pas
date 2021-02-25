@@ -1331,7 +1331,7 @@ type
     property stubChanged: Boolean read getStubChanged write setStubChanged;
     property Wsdl: TWsdl read getWsdl;
     function SelecFolderAndSave: Boolean;
-    procedure BeginUpdate;
+    procedure BeginConsoleUpdate;
     procedure DoUpdateConsole;
     procedure PromptForOperationAlias (aOperation: TWsdlOperation);
     function OptionsAsXml: TXml;
@@ -1563,7 +1563,7 @@ begin
                      ) then
   begin
     stubChanged := True;
-    BeginUpdate;
+    BeginConsoleUpdate;
     se.freeFormatOperationsUpdate(xXml);
     IntrospectDesign;
   end;
@@ -1615,7 +1615,7 @@ begin
         if WsdlListForm.stubChanged then
         begin
           stubChanged := True;
-          BeginUpdate;
+          BeginConsoleUpdate;
           se.UpdateWsdlsList(xWsdls);
           IntrospectDesign;
         end;
@@ -2576,14 +2576,14 @@ begin
   end;
 end;
 
-procedure TMainForm.BeginUpdate;
+procedure TMainForm.BeginConsoleUpdate;
 begin
   se.projectContext := contextPropertyOverwrite;
   xmlio.ProjectContext := contextPropertyOverwrite;
   se.doCreateBackup := doCreateBackup;
   se.LastFocusedOperation := FocusedOperation;
   FocusedOperation := nil;
-  Invalidate;
+  ClearConsole;
 end;
 
 function TMainForm.BooleanPromptDialog(aPrompt: String): Boolean;
@@ -2805,8 +2805,8 @@ begin
                        ) then
     begin
       stubChanged := True;
-      BeginUpdate;
-      se.xsdOperationsUpdate(xXml, se.projectFileName, nil);
+      BeginConsoleUpdate;
+      se.xsdOperationsUpdate(xXml, se.projectFileName);
       IntrospectDesign;
     end;
   finally
@@ -3040,8 +3040,8 @@ begin
                        ) then
     begin
       stubChanged := True;
-      BeginUpdate;
-      se.xmlSampleOperationsUpdate(xXml, se.projectFileName, nil);
+      BeginConsoleUpdate;
+      se.xmlSampleOperationsUpdate(xXml, se.projectFileName);
       IntrospectDesign;
     end;
   finally
@@ -3274,7 +3274,7 @@ begin
   if (ExtractFileExt(se.projectFileName) <> _ProjectFileExtention)
   and (ExtractFileExt(se.projectFileName) <> _ProjectOldFileExtention) then
      raise Exception.Create('Unsupported filename: ' + se.projectFileName);
-  BeginUpdate;
+  BeginConsoleUpdate;
   captionFileName := ExtractFileName(se.projectFileName);
   if ExtractFileExt(se.projectFileName) = _ProjectFileExtention then
   begin
@@ -3448,7 +3448,7 @@ begin
     _WsdlDisableOnCorrelate := False;
     XmlUtil.PushCursor (crHourGlass);
     try
-      se.ProjectDesignFromString(aString, aMainFileName, nil);
+      se.ProjectDesignFromString(aString, aMainFileName);
       AcquireLock;
       try
         PrepareOperation;
@@ -3832,30 +3832,35 @@ begin
 end;
 
 procedure TMainForm.ClearConsole;
+var
+  xEnabledFocusEvents: Boolean;
 begin
-  RemoveMessageColumns;
-  SnapshotsVTS.Clear;
-  SnapshotsVTS.Header.SortColumn := -1;
-  SnapshotsVTS.Header.SortDirection := sdAscending;
-  MessagesVTS.Clear;
-  MessagesVTS.Header.SortColumn := -1;
-  MessagesVTS.Header.SortDirection := sdAscending;
-  LogMemo.Clear;
-  GridView.Clear;
-{
-  ExceptionMemo.Clear;
-  ExceptionsVTS.Clear;
-}
-  NvgtView.Clear;
-  InWsdlPropertiesListView.Clear;
-  OperationDocumentationViewer.Canvas.Clear;
-  TreeView.Clear;
-  WsdlServiceNameEdit.Text := '';
-  WsdlOperationNameEdit.Text := '';
-  WsdlNameEdit.Text := '';
-  StatusPanel.Caption := '';
-  while MessagesVTS.Header.Columns.Count > Ord(logStdColumnCount) do
-    MessagesVTS.Header.Columns.Delete(MessagesVTS.Header.Columns.Count - 1);
+  xEnabledFocusEvents := Assigned (NvgtView.OnFocusChanged);
+  DisableViewOnFocusChangeEvents;
+  try
+    RemoveMessageColumns;
+    SnapshotsVTS.Clear;
+    SnapshotsVTS.Header.SortColumn := -1;
+    SnapshotsVTS.Header.SortDirection := sdAscending;
+    MessagesVTS.Clear;
+    MessagesVTS.Header.SortColumn := -1;
+    MessagesVTS.Header.SortDirection := sdAscending;
+    LogMemo.Clear;
+    GridView.Clear;
+    NvgtView.Clear;
+    InWsdlPropertiesListView.Clear;
+    OperationDocumentationViewer.Canvas.Clear;
+    TreeView.Clear;
+    WsdlServiceNameEdit.Text := '';
+    WsdlOperationNameEdit.Text := '';
+    WsdlNameEdit.Text := '';
+    StatusPanel.Caption := '';
+    while MessagesVTS.Header.Columns.Count > Ord(logStdColumnCount) do
+      MessagesVTS.Header.Columns.Delete(MessagesVTS.Header.Columns.Count - 1);
+  finally
+    if xEnabledFocusEvents then
+      EnableViewOnFocusChangeEvents;
+  end;
 end;
 
 procedure TMainForm.ReopenStubCaseActionUpdate(Sender: TObject);
@@ -6575,7 +6580,7 @@ begin
   end;
   xmlUtil.AcquireLock := AcquireLock;
   xmlUtil.ReleaseLock := ReleaseLock;
-  _OnBeginUpdate := BeginUpdate;
+  _OnBeginUpdate := BeginConsoleUpdate;
   Xmlz.OnNotify := LogServerNotification;
   // due to a bug in TPageControl, not al tabs are visible....
   // statements below make all tabs visible again...??
@@ -6925,7 +6930,7 @@ var
 begin
   if not ClipBoard.HasFormat(CF_TEXT) then
     raise Exception.Create('Clipboard does not contain text');
-  if not InactiveAfterPrompt then Exit;
+  FocusedOperation.AcquireLock;
   try
     GridView.BeginUpdate;
     TreeView.BeginUpdate;
@@ -6936,6 +6941,7 @@ begin
     PasteGridFromPasteBoard;
     DoColorBindButtons;
   finally
+    FocusedOperation.ReleaseLock;
     GridViewFocusedNode(swapNode);
     GridView.FocusedColumn := swapColumn;
     UpdateMessagesView;
@@ -9602,7 +9608,7 @@ begin
   xXsdDescr := TXsdDescr.Create;
   try
     try
-      xXsdDescr.LoadXsdFromFile(xFileName, nil, nil, nil);
+      xXsdDescr.LoadXsdFromFile(xFileName, nil, nil);
       xXml := TXml.Create(0, xXsdDescr.TypeDef.ElementDefs.Xsds[0]);
       try
         EditXmlXsdBased('Press Ctrl_Alt_H to generate Help file', 'Menu',
@@ -10109,7 +10115,7 @@ begin
                 False) <> FocusedOperation.CorrelationBindables.Count) then
               raise Exception.Create('Filename: ' + xFileName +
                   ' does not fit correlation');
-            xMsgString := ReadStringFromFile(FileNameList.Strings[f], nil, nil);
+            xMsgString := ReadStringFromFile(FileNameList.Strings[f], nil);
             if FocusedOperation.StubAction = saRequest then
             begin
               xMessage := TWsdlMessage.CreateRequest(FocusedOperation,
@@ -10951,7 +10957,7 @@ begin
                      ) then
   begin
     stubChanged := True;
-    BeginUpdate;
+    BeginConsoleUpdate;
     se.cobolOperationsUpdate(xXml, se.projectFileName);
     IntrospectDesign;
   end;
@@ -11158,7 +11164,7 @@ begin
     xLog := TLog.Create;
     try
       if aIsFileName then
-        xXml.LoadFromFile(aString, nil, nil, nil)
+        xXml.LoadFromFile(aString, nil, nil)
       else
         xXml.LoadFromString(aString, nil);
       xXml.SeparateNsPrefixes;
@@ -11251,8 +11257,8 @@ begin
                      ) then
   begin
     stubChanged := True;
-    BeginUpdate;
-    se.swiftMtOperationsUpdate(xXml, se.projectFileName, nil);
+    BeginConsoleUpdate;
+    se.swiftMtOperationsUpdate(xXml, se.projectFileName);
     IntrospectDesign;
   end;
 end;
@@ -11703,7 +11709,7 @@ procedure TMainForm .SchemasToZipExecute (Sender : TObject );
           begin
             xXml := TXml.Create;
             try
-              xXml.LoadFromFile(slFileNames.Strings[n], nil, nil, nil);
+              xXml.LoadFromFile(slFileNames.Strings[n], nil, nil);
               _scanXml (xXml, slFileNames.Strings[n]);
               MS := TStringStream.Create(xXml.Text);
               try
@@ -11880,8 +11886,7 @@ begin
         try
           stubChanged := True;
           OptionsFromXml(xXml);
-          BeginUpdate;
-          ClearConsole;
+          BeginConsoleUpdate;
           TProcedureThread.Create(False, False, se, se.PrepareAllOperationsShowingProgress);
         finally
           ReleaseLock;
@@ -12060,7 +12065,7 @@ begin
     try
       xXml := TXml.Create;
       try
-        xXml.LoadFromFile(OpenFileDialog.FileName, nil, nil, nil);
+        xXml.LoadFromFile(OpenFileDialog.FileName, nil, nil);
         if xXml.Name <> 'projectScripts' then
           raise Exception.CreateFmt('%s does not contain a valid Script export', [OpenFileDialog.FileName]);
         se.ProjectScriptsFromXml(xXml);
@@ -12576,7 +12581,7 @@ begin
         and (xReport is TRegressionSnapshot) then
         try
           xmlio.SaveStringToFile ( xReport.RefFileName
-                                 , xmlio.ReadStringFromFile (xReport.FileName, nil, nil)
+                                 , xmlio.ReadStringFromFile (xReport.FileName, nil)
                                  );
           xReport.Status := rsOk;
           xReport.Message := '';
@@ -12869,8 +12874,8 @@ begin
                        ) then
     begin
       stubChanged := True;
-      BeginUpdate;
-      se.ApiByExampleOperationsUpdate(xXml, se.projectFileName, nil);
+      BeginConsoleUpdate;
+      se.ApiByExampleOperationsUpdate(xXml, se.projectFileName);
       IntrospectDesign;
     end;
   finally
@@ -13236,7 +13241,7 @@ begin
       if not xWsdl.ExtraXsds.Find(FileName, f) then
       begin
         xWsdl.ExtraXsds.Add (FileName);
-        xWsdl.LoadExtraXsds (nil, se.OnBeforeFileRead);
+        xWsdl.LoadExtraXsds (se.OnBeforeFileRead);
       end;
       if ElementOrTypeDefRef = etElementRef then
       begin
@@ -13321,7 +13326,6 @@ begin
             ReadStringFromFile ( ExtractRelativeFileName ( xmlio.osDirectorySeparators(se.projectFileName)
                                                          , xmlio.osDirectorySeparators (xFileName)
                                                          )
-                               , se.remoteServerConnectionXml
                                , nil
                                );
 //          if not FileExistsUTF8(xmlio.osDirectorySeparators(xFileName)) then
@@ -13357,7 +13361,7 @@ procedure TMainForm.PasteProjectFromClipboardActionExecute(Sender: TObject);
 begin
   if EditRemoteServerConnectionParams('Remote apiUi server connection') then
   begin
-    BeginUpdate;
+    BeginConsoleUpdate;
     captionFileName := se.RemoteServerUrl;
     TProcedureThread.Create(False, False, se, se.OpenProjectFromString, Clipboard.AsText);
   end;
@@ -13728,7 +13732,7 @@ begin
                      ) then
   begin
     stubChanged := True;
-    BeginUpdate;
+    BeginConsoleUpdate;
     se.bmtpOperationsUpdate(xXml, se.projectFileName);
     IntrospectDesign;
   end;
@@ -13795,7 +13799,7 @@ procedure TMainForm.CopyRemoteApiUiProjectActionExecute(Sender: TObject);
 begin
   if EditRemoteServerConnectionParams('Remote apiUi server connection') then
   begin
-    BeginUpdate;
+    BeginConsoleUpdate;
     captionFileName := se.RemoteServerUrl;
     TProcedureThread.Create(False, False, se, se.OpenFromServerUrl);
   end;
@@ -13866,7 +13870,7 @@ begin
                      ) then
   begin
     stubChanged := True;
-    BeginUpdate;
+    BeginConsoleUpdate;
     se.mailOperationsUpdate(xXml);
     IntrospectDesign;
   end;
