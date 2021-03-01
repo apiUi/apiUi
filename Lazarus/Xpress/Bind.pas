@@ -9,10 +9,24 @@ uses Classes
 {$ifndef NoGUI}
    , Graphics
 {$endif}
+   , xmlio
    ;
 
 resourcestring
-  S_XML_REGEXP_LINK = '(?i)((FTP|HTTPS?|FILE|DOC)://([_a-z\d\-]+(\.[_a-z\d\-]+)+)(((:\d+)?/[_a-z\d\-\+\\\./]+)+)*([\?#][a-z0-9=%&_/\+\-\.]+)?)';
+  S_XML_REGEXP_LINK = '(?i)((FTP|HTTPS?|FILE|DOC)://([_a-z\d\-\/]+(\.[_a-z\d\-\/]+)+)(((:\d+)?/[_a-z\d\-\+\\\./]+)+)*([\?#][a-z0-9=%&_/\+\-\.]+)?)';
+
+type
+  TjsonType = (jsonNone, jsonString, jsonNumber, jsonBoolean, jsonObject,
+    jsonArray, jsonArrayValue);
+const JsonTypeNames: array [jsonNone..jsonArrayValue] of String =
+( 'jsonNone'
+, 'jsonString'
+, 'jsonNumber'
+, 'jsonBoolean'
+, 'jsonObject'
+, 'jsonArray'
+, 'jsonArrayValue'
+);
 
 type TBindExpandStyle = (esAll, esOne, esUsed, edBestEffort);
 const TBindExpandStyleStr: array [TBindExpandStyle] of String = ('All', 'One', 'Used', 'BestEffort');
@@ -95,7 +109,7 @@ type SFunctionOSSSS = function (obj: TObject; arg1, arg2, arg3, arg4: String): S
 
 { TParserStringList }
 
- TParserStringList = class (TStringList)
+ TParserStringList = class (TJBStringList)
 public
   aObject: TObject;
   aIndexProcedure: VFunctionOI;
@@ -218,8 +232,10 @@ public
     fPrevChecked: Boolean;
   isProcessed: Boolean;
   SourceFileName: String;
-  Tag: LongInt;
+  Tag: PtrInt;
+  jsonType: TjsonType;
   procedure PopulateSourceFileName (aName: String);
+  function thisBind: TCustomBindable;
   function isValueLink: Boolean;
   function IsRequired: Boolean; Virtual;
   function hasNoDuplicatesOn (aCaption: String; aOnlyWhenChecked: Boolean; var oBind, dBind: TCustomBindable): Boolean;
@@ -230,6 +246,7 @@ public
   function FindUQ (aName: String): TCustomBindable; Virtual;
   function Children: TBindableList; Virtual;
   procedure Bind(aRoot: String; aExpress: TObject; aMaxOccurrences: Integer); Virtual;
+  function IsEditingAllowed: Boolean; Virtual;
   function IsValueValid (var aMessage: String): Boolean; Virtual;
   function GetFullIndexCaption: String; Virtual;
   function GetIndexCaption: String; Virtual;
@@ -271,7 +288,7 @@ end;
 
 { TBindableList }
 
-TBindableList = class (TStringList)
+TBindableList = class (TJBStringList)
   private
     procedure SetBindable(Index: integer; const Value: TCustomBindable);
     function getValueText: String;
@@ -299,7 +316,7 @@ public
   procedure Init;
 end;
 
-type TBindList = class (TStringList)
+type TBindList = class (TJBStringList)
 protected
   function GetBind (Index: integer): TBind;
 public
@@ -462,10 +479,10 @@ end;
 
 function TBindableList.getValueText: String;
 var
-  sl: TStringList;
+  sl: TJBStringList;
   x: Integer;
 begin
-  sl := TStringList.Create;
+  sl := TJBStringList.Create;
   try
     for x := 0 to Count - 1 do
     begin
@@ -519,6 +536,12 @@ end;
 
 procedure TCustomBindable.Bind(aRoot: String; aExpress: TObject; aMaxOccurrences: Integer);
 begin
+  raise Exception.Create ('Should be overridden');
+end;
+
+function TCustomBindable.IsEditingAllowed: Boolean;
+begin
+  result := False; // avoid warning
   raise Exception.Create ('Should be overridden');
 end;
 
@@ -615,6 +638,11 @@ begin
     Children.Bindables[x].PopulateSourceFileName(aName);
 end;
 
+function TCustomBindable.thisBind: TCustomBindable;
+begin
+  result := self;
+end;
+
 function TCustomBindable.isValueLink: Boolean;
 var
   s: String;
@@ -692,7 +720,7 @@ end;
 function TCustomBindable.hasNoDuplicatesOn(aCaption: String;
   aOnlyWhenChecked: Boolean; var oBind, dBind: TCustomBindable): Boolean;
 var
-  slist: TStringList;
+  slist: TJBStringList;
   cBind: TCustomBindable;
   function _right (s: String): String;
   var
@@ -745,7 +773,7 @@ begin
   dBind := nil;
   if self = nil then Exit;
   if _left (aCaption) <> Name then Exit;
-  slist := TStringList.Create;
+  slist := TJBStringList.Create;
   slist.Sorted := True;
   try
     _scan (self, aCaption);

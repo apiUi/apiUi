@@ -75,6 +75,7 @@ type
   public
     property SnapshotItems [Index: integer]: TSnapshot read GeTSnapshot write SeTSnapshot;
     property AsXml: TXml read getAsXml;
+    function thisSnapshotList: TSnapshotList;
     constructor Create; overload;
   end;
 
@@ -249,6 +250,11 @@ end;
 function TSnapshotList.GeTSnapshot (Index: integer): TSnapshot;
 begin
   result := TSnapshot (Objects [Index]);
+end;
+
+function TSnapshotList.thisSnapshotList: TSnapshotList;
+begin
+  result := self;
 end;
 
 constructor TSnapshotList .Create ;

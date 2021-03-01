@@ -1,67 +1,71 @@
 object SelectItemForm: TSelectItemForm
   Left = 419
-  Height = 246
+  Height = 308
   Top = 114
-  Width = 438
+  Width = 548
   Anchors = []
-  BorderStyle = bsDialog
   Caption = 'Dialog'
-  ClientHeight = 246
-  ClientWidth = 438
+  ClientHeight = 308
+  ClientWidth = 548
   Color = clBtnFace
+  DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ParentFont = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '2.0.10.0'
   object Panel1: TPanel
     Left = 0
-    Height = 43
-    Top = 203
-    Width = 438
+    Height = 54
+    Top = 254
+    Width = 548
     Align = alBottom
-    ClientHeight = 43
-    ClientWidth = 438
+    ClientHeight = 54
+    ClientWidth = 548
+    ParentFont = False
     TabOrder = 0
     object OKBtn: TButton
-      Left = 21
-      Height = 25
-      Top = 8
-      Width = 75
+      Left = 26
+      Height = 31
+      Top = 10
+      Width = 94
       Caption = 'OK'
       Default = True
       ModalResult = 1
+      ParentFont = False
       TabOrder = 0
     end
     object CancelBtn: TButton
-      Left = 114
-      Height = 25
-      Top = 8
-      Width = 75
+      Left = 142
+      Height = 31
+      Top = 10
+      Width = 94
       Cancel = True
       Caption = 'Cancel'
       ModalResult = 2
+      ParentFont = False
       TabOrder = 1
     end
   end
   object Panel2: TPanel
     Left = 0
-    Height = 203
+    Height = 254
     Top = 0
-    Width = 438
+    Width = 548
     Align = alClient
     BorderWidth = 3
-    ClientHeight = 203
-    ClientWidth = 438
+    ClientHeight = 254
+    ClientWidth = 548
+    ParentFont = False
     TabOrder = 1
     object ListBox: TListBox
       Left = 4
-      Height = 195
+      Height = 246
       Top = 4
-      Width = 430
+      Width = 540
       Align = alClient
       ItemHeight = 0
       OnDblClick = ListBoxDblClick
+      ParentFont = False
       Sorted = True
       TabOrder = 0
     end

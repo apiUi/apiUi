@@ -8,6 +8,7 @@ uses Bind
    , Parser
    , CustParser, Scanner, CustScanner
    , sqldb
+   , xmlio
    , XpQuery
 ;
 
@@ -32,7 +33,7 @@ private
   fBindList: TBindList;
   Scanner: TScanner;
   Parser: TParser;
-  Blocks: TStringList;
+  Blocks: TJBStringList;
   ObjList: TParserClassList;
   FDatabase: TSQLConnection;
   XpQueryList: TXpQueryList;
@@ -42,8 +43,8 @@ private
   FOnNeedData: TOnNeedDataEvent;
   OneLiner: String;
   FirstData: Boolean;
-  fFunctionProtoTypes: TStringList;
-  fTextLines: TStringList;
+  fFunctionProtoTypes: TJBStringList;
+  fTextLines: TJBStringList;
   fTextLineNo: Integer;
   fOnGetAbortPressed, fOnGetDoExit: TBooleanFunction;
   function GetSqlUsed: Boolean;
@@ -103,7 +104,7 @@ published
 public
   uwaString: String;
   property uwaLoopQry: TXpQuery read fXpLoopQuery;
-  property FunctionProtoTypes: TStringList read fFunctionProtoTypes;
+  property FunctionProtoTypes: TJBStringList read fFunctionProtoTypes;
   property SqlUsed: Boolean read GetSqlUsed;
   property ScannedItems: YYSType read LexicalList;
   property OnGetAbortPressed: TBooleanFunction read fOnGetAbortPressed write SetOnGetAbortPressed;
@@ -113,8 +114,8 @@ public
   procedure Scan;
   procedure Prepare;
   procedure Execute;
-  procedure CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);
-  procedure ExecuteScript (aStringList: TStringList; aOnError: TOnErrorEvent);
+  procedure CheckScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);
+  procedure ExecuteScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);
   procedure BindBoolean (Id: String; var Adress: Boolean);
   procedure BindDateTime (Id: String; var Adress: TDateTime);
   procedure BindInteger (Id: String; var Adress: Integer);
@@ -128,7 +129,7 @@ public
   procedure BindFunctionEx (Id: String; Adr: Pointer; Token: Integer);
   procedure BindFunction (Id: String; Adr: Pointer; Token: Integer; Prototype: String);
   procedure BindBuildIns;
-  function DebugTokenStringList (aStringList: TStringList; aOnError: TOnErrorEvent): String;
+  function DebugTokenStringList (aStringList: TJBStringList; aOnError: TOnErrorEvent): String;
   function FindBind (aId: String): TBind;
   constructor Create (aOwner: TObject);
   destructor Destroy; override;
@@ -232,11 +233,11 @@ begin
   result := Copy (s, Trunc (i), Trunc (c));
 end;
 
-function TExpress.DebugTokenStringList (aStringList: TStringList; aOnError: TOnErrorEvent): String;
+function TExpress.DebugTokenStringList (aStringList: TJBStringList; aOnError: TOnErrorEvent): String;
 var
   Lex: YYSType;
   Xpress: TExpress;
-  xStringList: TStringList;
+  xStringList: TJBStringList;
   xBindList: TBindList;
 begin
   Xpress := TExpress.Create (Parser.Owner);
@@ -252,7 +253,7 @@ begin
       XPress.fBindList := fBindList;
       Xpress.fTextLines := aStringList;
       Xpress.Scan;
-      with TStringList.Create do
+      with TJBStringList.Create do
       try
         lex := Xpress.LexicalList;
         while (lex <> nil) do
@@ -369,10 +370,10 @@ begin
   end;
 end;
 
-procedure TExpress.CheckScript (aStringList : TStringList; aOnError: TOnErrorEvent);
+procedure TExpress.CheckScript (aStringList : TJBStringList; aOnError: TOnErrorEvent);
 var
   Xpress: TExpress;
-  xStringList: TStringList;
+  xStringList: TJBStringList;
   xBindList: TBindList;
 begin
   Xpress := TExpress.Create (Parser.Owner);
@@ -393,10 +394,10 @@ begin
   end;
 end;
 
-procedure TExpress.ExecuteScript (aStringList: TStringList; aOnError: TOnErrorEvent);
+procedure TExpress.ExecuteScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);
 var
   Xpress: TExpress;
-  xStringList: TStringList;
+  xStringList: TJBStringList;
   xBindList: TBindList;
 begin
   Xpress := TExpress.Create (Parser.Owner);
@@ -463,14 +464,14 @@ function TExpress.TokenToFloat (arg: String): Extended;
 var
   SwapSeparator: Char;
 begin
-  SwapSeparator := DecimalSeparator;
+  SwapSeparator := DefaultFormatSettings.DecimalSeparator;
   if SwapSeparator <> '.' then
-    DecimalSeparator := '.';
+    DefaultFormatSettings.DecimalSeparator := '.';
   try
     result := StrToFloat (arg);
   finally
-    if SwapSeparator <> DecimalSeparator then
-      DecimalSeparator := SwapSeparator;
+    if SwapSeparator <> DefaultFormatSettings.DecimalSeparator then
+      DefaultFormatSettings.DecimalSeparator := SwapSeparator;
   end;
 end;
 
@@ -1497,14 +1498,14 @@ end;
 
 constructor TExpress.Create (aOwner: TObject);
 begin
-  fTextLines := TStringList.Create;
+  fTextLines := TJBStringList.Create;
   fOnNeedData := PassText;
-  fFunctionProtoTypes := TStringList.Create;
+  fFunctionProtoTypes := TJBStringList.Create;
   fFunctionProtoTypes.Sorted := True;
   fFunctionProtoTypes.Duplicates := dupError;
   fFunctionProtoTypes.CaseSensitive := False;
   XpQueryList := TXpQueryList.Create;
-  Blocks := TStringList.Create;
+  Blocks := TJBStringList.Create;
   ObjList := TParserClassList.Create;
   Scanner := TScanner.Create;
   Scanner.OnNeedData := ScannerNeedsData;

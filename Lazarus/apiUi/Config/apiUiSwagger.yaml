@@ -9,6 +9,72 @@ schemes:
   - https
 basePath: /apiUi/api
 paths:
+  /context:
+    get:
+      summary: Get apiUi project context
+      description: ''
+      operationId: zzGetContext
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/getContextRpy'
+    post:
+      summary: Set apiUi project context
+      description: ''
+      operationId: zzSetContext
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/setContextReq'
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/setContextRpy'
+  /envvars:
+    get:
+      summary: Get apiUi environment variables
+      description: ''
+      operationId: zzGetEnvVars
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/getEnvvarsRpy'
+    post:
+      summary: Set apiUi environment variables
+      description: ''
+      operationId: zzSetEnvVars
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          decsription: ''
+          required: 'true'
+          schema:
+            $ref: '#/definitions/setEnvvarsReq'
+      responses:
+        '200':
+          decsription: Success response
   /logs:
     delete:
       summary: removes list of logitems from Ui
@@ -136,6 +202,18 @@ paths:
           description: Success response
           schema:
             $ref: '#/definitions/listOfSnapshots'
+  /snapshots/testsummaryreport:
+    get:
+      summary: creates a test summary report over all currently available snapshots
+      operationId: zzTestSummaryReport
+      consumes:
+        - application/json
+      produces:
+        - text/html
+      parameters:
+      responses:
+        '200':
+          description: Success response
   /executeScript:
     post:
       summary: summary
@@ -198,6 +276,20 @@ paths:
       responses:
         '200':
           description: Success response
+  /project/information:
+    get:
+      summary: Get apiUi project information
+      description: ''
+      operationId: zzGetProjectInformation
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            $ref: '#/definitions/getProjectInformationRpy'
   /refresh:
     post:
       summary: reloads project from project definition as at is on the server filesystem
@@ -282,40 +374,6 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/resetEnvVarsRpy'
-  /context:
-    get:
-      summary: Get apiUi project context
-      description: ''
-      operationId: zzGetContext
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      responses:
-        '200':
-          decsription: Success response
-          schema:
-            $ref: '#/definitions/getContextRpy'
-    post:
-      summary: Set apiUi project context
-      description: ''
-      operationId: zzSetContext
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: body
-          in: body
-          decsription: ''
-          required: 'true'
-          schema:
-            $ref: '#/definitions/setContextReq'
-      responses:
-        '200':
-          decsription: Success response
-          schema:
-            $ref: '#/definitions/setContextRpy'
   /setEnvVar:
     post:
       summary: summary
@@ -359,7 +417,7 @@ paths:
           schema:
             $ref: '#/definitions/shutDownRpy'
   /versionInfo:
-    post:
+    get:
       summary: get apiUi version information
       description: ''
       operationId: zzVersionInfo
@@ -442,6 +500,38 @@ definitions:
         type: string
   executeScriptRpy:
     type: string
+  getProjectInformationRpy:
+    type: object
+    properties:
+      project:
+        type: string
+      operations:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            descriptionFrom:
+              type: string
+            direction:
+              type: string
+            servers:
+              type: array
+              items:
+                type: string
+            service:
+              type: string
+            path:
+              type: string
+            verb:
+              type: string
+            messageCandidates:
+              type: integer
+            correlationElements:
+              type: array
+              items:
+                type: string
   operationDelaySetting:
     type: object
     properties:
@@ -539,6 +629,24 @@ definitions:
     properties:
       name:
         type: string
+  setEnvvarsReq:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+  getEnvvarsRpy:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
   setEnvVarReq:
     type: object
     properties:

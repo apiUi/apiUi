@@ -732,9 +732,26 @@ Is default destination in Client mode.Has no relevance in server mode (stub)</xs
 									<xs:enumeration value="GET"/>
 									<xs:enumeration value="HEAD"/>
 									<xs:enumeration value="OPTIONS"/>
+									<xs:enumeration value="PATCH"/>
 									<xs:enumeration value="POST"/>
 									<xs:enumeration value="PUT"/>
 									<xs:enumeration value="TRACE"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="consumes" minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="application/json"/>
+									<xs:enumeration value="application/xml"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="produces" minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="application/json"/>
+									<xs:enumeration value="application/xml"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -862,6 +879,20 @@ Is default destination in Client mode.Has no relevance in server mode (stub)</xs
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:element name="namevaluepairs">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="_" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string"/>
+							<xs:element name="value" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:complexType name="xsdRecognitionType">
 		<xs:choice>
 			<xs:element name="XmlElement">
@@ -1622,6 +1653,16 @@ For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm </xs:do
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="versionInfo" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="major" type="xs:integer"/>
+							<xs:element name="minor" type="xs:integer"/>
+							<xs:element name="revision" type="xs:integer"/>
+							<xs:element name="build" type="xs:integer" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="General" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
@@ -1773,14 +1814,6 @@ Sspecifying which data to display is done in the log panel, click in the cell an
 				<xs:element name="Wsdl" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="PublishDescriptions" type="xs:boolean" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default "false"
-
-When "true", apiUi will publish the description of the web services meaning that service consuming applications can query for the Wslds and imported schemas.
-Http Get: wsdlName?WSDL </xs:documentation>
-								</xs:annotation>
-							</xs:element>
 							<xs:element name="OperationsWithEndpointOnly" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default "true"
@@ -1946,6 +1979,7 @@ Messages will be validated against schema</xs:documentation>
 					<xs:annotation>
 						<xs:documentation>Specifies a database connection;
 When a database is connected, you can retrieve data from that database to populate requests or responses.
+
 See also doc://TipsAndTricks/HowToDbLookUp.htm</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
@@ -2158,6 +2192,25 @@ The name you use here will be the name of the menu-item added to the script menu
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="remoteServerConnection" type="epc:remoteServerConnectionType"/>
+	<xs:element name="operationInformation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="0"/>
+				<xs:element name="description" type="xs:string" minOccurs="0"/>
+				<xs:element name="servers" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="service" type="xs:string" minOccurs="0"/>
+				<xs:element name="path" type="xs:string" minOccurs="0"/>
+				<xs:element name="verb" type="xs:string" minOccurs="0"/>
+				<xs:element name="soapAddress" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="Options">
 		<xs:annotation>
 			<xs:documentation>apiUi options;

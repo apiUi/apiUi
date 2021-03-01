@@ -281,6 +281,7 @@ function TSwiftMT.getAsXml: TXml;
     p: Integer;
     fXml, xpctdXml: TXml;
   begin
+    xpctdXml := nil; // avoid warning
     try
     //example: {3:{103:EBA}{108:1320929948356871}}
       with TRegExpr.Create do
@@ -311,6 +312,7 @@ function TSwiftMT.getAsXml: TXml;
     s, e: Integer;
     fXml, xpctdXml: TXml;
   begin
+    xpctdXml := nil; // avoid warning
     try
       with TRegExpr.Create do
       try
@@ -719,6 +721,7 @@ var
   xSeparatorLength: Integer;
   nXml: TXml;
 begin
+  xMessage := ''; // avoid warning
   result := aValue;
   xValue := aValue;
   if aXml.Items.Count = 0 then

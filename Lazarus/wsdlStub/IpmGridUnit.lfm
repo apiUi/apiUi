@@ -1,7 +1,7 @@
 object IpmGridForm: TIpmGridForm
-  Left = 454
+  Left = 474
   Height = 380
-  Top = 102
+  Top = 115
   Width = 777
   Caption = 'Ipm Grid'
   ClientHeight = 380
@@ -16,7 +16,7 @@ object IpmGridForm: TIpmGridForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.6.0.4'
   object Panel2: TPanel
     Left = 0
     Height = 380
@@ -28,7 +28,7 @@ object IpmGridForm: TIpmGridForm
     TabOrder = 0
     object MainSplitter: TSplitter
       Left = 553
-      Height = 329
+      Height = 320
       Top = 30
       Width = 6
       Align = alRight
@@ -36,7 +36,7 @@ object IpmGridForm: TIpmGridForm
     end
     object Grid: TVirtualStringTree
       Left = 1
-      Height = 329
+      Height = 320
       Top = 30
       Width = 552
       Align = alClient
@@ -69,8 +69,8 @@ object IpmGridForm: TIpmGridForm
     end
     object GridStatusBar: TStatusBar
       Left = 1
-      Height = 20
-      Top = 359
+      Height = 29
+      Top = 350
       Width = 775
       Panels = <      
         item
@@ -98,6 +98,7 @@ object IpmGridForm: TIpmGridForm
       end
       object ToolButton2: TToolButton
         Left = 47
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton2'
@@ -111,6 +112,7 @@ object IpmGridForm: TIpmGridForm
       end
       object ToolButton7: TToolButton
         Left = 80
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton7'
@@ -124,6 +126,7 @@ object IpmGridForm: TIpmGridForm
       end
       object ToolButton4: TToolButton
         Left = 113
+        Height = 22
         Top = 2
         Width = 10
         Caption = 'ToolButton4'
@@ -138,12 +141,12 @@ object IpmGridForm: TIpmGridForm
     end
     object PropertiesPanel: TPanel
       Left = 559
-      Height = 329
+      Height = 320
       Top = 30
       Width = 217
       Align = alRight
       Caption = 'PropertiesPanel'
-      ClientHeight = 329
+      ClientHeight = 320
       ClientWidth = 217
       TabOrder = 3
       object Splitter2: TSplitter
@@ -201,7 +204,7 @@ object IpmGridForm: TIpmGridForm
       end
       object DataTypeDocumentationMemo: TMemo
         Left = 1
-        Height = 32
+        Height = 23
         Top = 296
         Width = 215
         Align = alClient
@@ -1443,10 +1446,6 @@ object IpmGridForm: TIpmGridForm
       OnExecute = PasteCobolActionExecute
       OnUpdate = PasteCobolActionUpdate
     end
-    object BitWiseAction: TAction
-      Caption = 'Bit wise...'
-      OnExecute = BitWiseActionExecute
-    end
     object GenerateCobolWsAction: TAction
       Caption = 'Generate cobol Working Storage'
       OnExecute = GenerateCobolWsActionExecute
@@ -1664,12 +1663,6 @@ object IpmGridForm: TIpmGridForm
     end
     object PasteCobolMenuItem: TMenuItem
       Action = PasteCobolAction
-    end
-    object N3: TMenuItem
-      Caption = '-'
-    end
-    object N2: TMenuItem
-      Action = BitWiseAction
     end
     object N4: TMenuItem
       Caption = '-'

@@ -11,6 +11,7 @@ uses Classes, SysUtils
    , mqinterface, mqapi
    , StompInterface
    , IdSSLOpenSSL
+   , xmlio
    , Wsdlz
    ;
 
@@ -26,9 +27,9 @@ type
     httpProxyPort, httpBmtpPort: Integer;
     sslVersion: TIdSSLVersion;
     sslCertificateFile, sslKeyFile, sslRootCertificateFile, sslPassword: String;
-    httpPorts, httpsPorts: TStringList;
-    mqInterfaces: TStringList;
-    stompInterfaces: TStringList;
+    httpPorts, httpsPorts: TJBStringList;
+    mqInterfaces: TJBStringList;
+    stompInterfaces: TJBStringList;
     smtpPort: Integer;
     smtpsPort: Integer;
     smtpTlsCertificateFile, smtpTlsKeyFile, smtpTlsRootCertificateFile: String;
@@ -48,7 +49,6 @@ type
 implementation
 
 uses xmlzConsts
-   , xmlio
    ;
 
 { TListeners }
@@ -302,11 +302,11 @@ end;
 constructor TListeners.Create;
 begin
   SpecificationXml := TXml.CreateAsString('Listeners', '');
-  httpPorts:= TStringList.Create;
-  httpsPorts := TStringList.Create;
+  httpPorts:= TJBStringList.Create;
+  httpsPorts := TJBStringList.Create;
   httpBmtpPort := 0;
-  mqInterfaces := TStringList.Create;
-  stompInterfaces := TStringList.Create;
+  mqInterfaces := TJBStringList.Create;
+  stompInterfaces := TJBStringList.Create;
   smtpPort := 0;
   pop3Port := 0;
 end;

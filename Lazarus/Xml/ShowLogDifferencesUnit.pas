@@ -14,7 +14,7 @@ uses
 {$ENDIF}
   SysUtils,Classes,Graphics,Controls,Forms,Dialogs,ExtCtrls,VirtualTrees,
   LazFileUtils,FormIniFilez,ComCtrls,ActnList,StdCtrls,Menus,Logz,a2bStringListUnit,
-  Xmlz,A2BXmlz;
+  xmlio, Xmlz,A2BXmlz;
 
 type
   PVSTreeRec = ^TVSTreeRec;
@@ -124,7 +124,7 @@ type
     fRpyDiffsFound : Boolean ;
     function getDiffsFound : Boolean ;
     procedure PopulateMain (aChanged: Boolean);
-    procedure MaintainList (aCaptian: String; aList: TStringList; aDoOrder: Boolean);
+    procedure MaintainList (aCaptian: String; aList: TJBStringList; aDoOrder: Boolean);
     procedure CreateA (xData: PVSTreeRec);
     procedure CreateB (xData: PVSTreeRec);
     procedure CompareAB (xData: PVSTreeRec);
@@ -137,7 +137,7 @@ type
     procedure PromptAndSetColumnWidth (aTreeView: TVirtualStringTree);
   public
     ProgName, StyleSheet: String;
-    ignoreDifferencesOn, checkValueAgainst, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TStringList;
+    ignoreDifferencesOn, checkValueAgainst, ignoreAddingon, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TJBStringList;
     aLogs: TLogList;
     bLogs: TLogList;
     ReferenceFileName: String;
@@ -189,9 +189,9 @@ type ceColumnEnum =
 );
 
 procedure TShowLogDifferencesForm.FormCreate(Sender: TObject);
-  function _stringList (aSorted: Boolean): TStringList;
+  function _stringList (aSorted: Boolean): TJBStringList;
   begin
-    result := TStringList.Create;
+    result := TJBStringList.Create;
     Result.Sorted := aSorted;
     Result.Duplicates := dupIgnore;
     Result.OnChange := onSlChanged;
@@ -712,14 +712,14 @@ begin
                                   and (ignoreRemovingOn.Count > 0);
 end;
 
-procedure TShowLogDifferencesForm.MaintainList(aCaptian: String; aList: TStringList; aDoOrder: Boolean);
+procedure TShowLogDifferencesForm.MaintainList(aCaptian: String; aList: TJBStringList; aDoOrder: Boolean);
 var
-  Srcs, Dsts: TStringList;
+  Srcs, Dsts: TJBStringList;
 begin
-  Srcs := TStringList.Create;
+  Srcs := TJBStringList.Create;
   Srcs.Sorted := not aDoOrder;
   Srcs.Duplicates := dupIgnore;
-  Dsts := TStringList.Create;
+  Dsts := TJBStringList.Create;
   Dsts.Sorted := not aDoOrder;
   Dsts.Duplicates := dupIgnore;
   try

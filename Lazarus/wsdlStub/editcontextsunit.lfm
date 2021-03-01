@@ -1,31 +1,33 @@
 object EditContextsForm: TEditContextsForm
   Left = 558
-  Height = 372
+  Height = 465
   Top = 258
-  Width = 859
+  Width = 1074
   ActiveControl = ContextComboBox
   Caption = 'Edit properties in their context'
-  ClientHeight = 372
-  ClientWidth = 859
+  ClientHeight = 465
+  ClientWidth = 1074
+  DesignTimePPI = 120
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '2.0.10.0'
   object Panel2: TPanel
     Left = 0
-    Height = 41
-    Top = 331
-    Width = 859
+    Height = 51
+    Top = 414
+    Width = 1074
     Align = alBottom
-    ClientHeight = 41
-    ClientWidth = 859
+    ClientHeight = 51
+    ClientWidth = 1074
+    ParentFont = False
     TabOrder = 0
     object OkButton: TBitBtn
-      Left = 24
-      Height = 25
-      Top = 8
-      Width = 75
+      Left = 30
+      Height = 31
+      Top = 10
+      Width = 94
       Caption = '&Ok'
       Default = True
       Glyph.Data = {
@@ -65,13 +67,14 @@ object EditContextsForm: TEditContextsForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
       ModalResult = 1
+      ParentFont = False
       TabOrder = 0
     end
     object CancelButton: TBitBtn
-      Left = 125
-      Height = 25
-      Top = 8
-      Width = 75
+      Left = 156
+      Height = 31
+      Top = 10
+      Width = 94
       Cancel = True
       Caption = 'Cancel'
       Glyph.Data = {
@@ -111,17 +114,18 @@ object EditContextsForm: TEditContextsForm
         FF00FFFFFF00FFFFFF006360F80AFFFFFF00FFFFFF00FFFFFF00
       }
       ModalResult = 2
+      ParentFont = False
       TabOrder = 1
     end
   end
   object ToolBar1: TToolBar
     Left = 0
-    Height = 26
     Top = 0
-    Width = 859
+    Width = 1074
     Caption = 'ToolBar1'
     HotImages = mainImageList
     Images = mainImageList
+    ParentFont = False
     TabOrder = 1
     object ToolButton1: TToolButton
       Left = 1
@@ -129,64 +133,65 @@ object EditContextsForm: TEditContextsForm
       Action = AddContextAction
     end
     object ToolButton2: TToolButton
-      Left = 24
+      Left = 30
       Top = 2
       Action = AddPropertyAction
     end
     object ToolButton3: TToolButton
-      Left = 47
-      Height = 22
+      Left = 59
+      Height = 28
       Top = 2
-      Width = 8
       Caption = 'ToolButton3'
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 55
+      Left = 69
       Top = 2
       Action = RemoveContextAction
     end
     object ToolButton5: TToolButton
-      Left = 78
+      Left = 98
       Top = 2
       Action = RemovePropertyAction
     end
     object ToolButton6: TToolButton
-      Left = 101
-      Height = 22
+      Left = 127
+      Height = 28
       Top = 2
-      Width = 8
       Caption = 'ToolButton6'
       Style = tbsSeparator
     end
   end
   object ContextComboBox: TComboBox
-    Left = 24
+    Left = 30
     Height = 28
-    Top = 292
-    Width = 100
+    Top = 372
+    Width = 125
     Anchors = [akLeft, akBottom]
     ItemHeight = 20
+    ParentFont = False
     TabOrder = 2
   end
   object Label1: TLabel
-    Left = 129
+    Left = 161
     Height = 20
-    Top = 297
+    Top = 376
     Width = 207
     Anchors = [akLeft, akBottom]
     Caption = 'Context to use (general option)'
     ParentColor = False
+    ParentFont = False
   end
   object GridView: TVirtualStringTree
-    Left = 24
-    Height = 224
-    Top = 48
-    Width = 808
+    Left = 30
+    Height = 280
+    Top = 60
+    Width = 1010
     Anchors = [akTop, akLeft, akRight, akBottom]
     BottomSpace = 10
     Color = clBtnFace
     Colors.GridLineColor = clBtnText
+    DefaultNodeHeight = 20
     DefaultText = 'Node'
     DragOperations = []
     EditDelay = 0
@@ -203,8 +208,8 @@ object EditContextsForm: TEditContextsForm
     Header.Height = 20
     Header.Images = mainImageList1
     Header.Options = [hoColumnResize, hoDblClickResize, hoOwnerDraw, hoShowImages, hoVisible]
-    Header.Style = hsXPStyle
     LineMode = lmBands
+    ParentFont = False
     TabOrder = 3
     TreeOptions.AnimationOptions = [toAnimatedToggle]
     TreeOptions.MiscOptions = [toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toFullRowDrag]
@@ -219,15 +224,14 @@ object EditContextsForm: TEditContextsForm
     OnPaintText = GridViewPaintText
     OnHeaderClick = GridViewHeaderClick
     OnHeaderDrawQueryElements = GridViewHeaderDrawQueryElements
-    OnHeaderImageClick = GridViewHeaderImageClick
     OnKeyDown = GridViewKeyDown
     OnNewText = GridViewNewText
   end
   object PopupMenu1: TPopupMenu
     Images = mainImageList
     OnPopup = PopupMenu1Popup
-    left = 520
-    top = 336
+    Left = 650
+    Top = 420
     object MenuItem5: TMenuItem
       Action = SetPasswordAction
       AutoCheck = True
@@ -238,8 +242,8 @@ object EditContextsForm: TEditContextsForm
   end
   object ActionList1: TActionList
     Images = mainImageList
-    left = 592
-    top = 336
+    Left = 740
+    Top = 420
     object AddContextAction: TAction
       Caption = 'context...'
       Hint = 'Add context'
@@ -279,8 +283,8 @@ object EditContextsForm: TEditContextsForm
     end
   end
   object mainImageList: TImageList
-    left = 648
-    top = 336
+    Left = 810
+    Top = 420
     Bitmap = {
       4C69090000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -574,8 +578,8 @@ object EditContextsForm: TEditContextsForm
     }
   end
   object mainImageList1: TImageList
-    left = 688
-    top = 336
+    Left = 860
+    Top = 420
     Bitmap = {
       4C69040000001000000010000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000

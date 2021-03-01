@@ -22,9 +22,18 @@ TStringProvider = class(TObject)
     procedure OnGetString (var aString: String);
     constructor Create(aString: String);
 end;
+
+{ TJBStringList }
+
+TJBStringList = class (TStringList)
+  public
+    function Find(const S: string; Out Index: Integer): Boolean; override;
+end;
+
 type TProcedureS = procedure (arg: String) of Object;
 
 
+procedure SynchronizeMethode (AMethod: TThreadMethod);
 function urlExists (aURL: string): Boolean;
 function urlDecode(const S: String): String;
 function urlEncode(const S: String): String;
@@ -35,12 +44,16 @@ procedure EraseAllFolderContent (aFolderName: String);
 function HttpResponseCodeToText (aCode: Integer): String;
 procedure HttpDownloadToFile (aUrl, aFileName: String);
 procedure apiUiServerDownload (aConfigXml: TObject; aPath, aFileName: String);
-function apiUiServerDialog (aConfigXml: TObject; aPath, aQuery, aVerb, aAcceptContentType: String; aBody: String = ''): String;
+function apiUiServerDialog ( aConfigXml: TObject
+                           ; aPath, aQuery, aVerb, aAcceptContentType: String
+                           ; aBody: String = ''
+                           ; aContentType: String = ''
+                           ): String;
 function HttpGetDialog (aUrl, aAcceptContentType: String): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
 function PrepareFileNameSpace(aMainFileName, aFileName: String): String;
-function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS): String;
+function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): String;
 procedure SaveStringToFile (aFileName: String; aString: String);
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
 function ExtractRelativeFileName(aMainFileName, aToRelateFileName: String): String;
@@ -60,11 +73,10 @@ function PosSubString (ss, ms: String; CaseSensitive, MatchWholeWord: Boolean): 
 function ReplaceStrings (OrgString, SrchString, RplString: String; CaseSensitive, MatchWholeWord: Boolean): String;
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 function isPasswordContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
-function setPasswordContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
-function togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
+procedure setPasswordContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean);
+procedure togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer);
 function isOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
-function setOneTimeContextsColumn (aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
-function toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
+procedure toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer);
 function osDirectorySeparators (aName: String): String;
 
 const base64DocxStartStr = 'UEsDBB';
@@ -72,6 +84,7 @@ const base64PdfStartStr = 'JVBERi';
 const base64RtfStartStr = 'e1xyd';
 const PasswordContextsOptionValue = 1;
 const OneTimeContextsOptionValue = 2;
+const apiuidescribtorspath = '/project/describtors';
 
 type TOnStringEvent = procedure (const Msg: String) of Object;
 var
@@ -81,12 +94,12 @@ var
   doTrackXmlIO: Boolean;
   OnNotify: TOnStringEvent;
   apiaryToken: String;
+  apiUiConnectionConfig: TObject;
 
 
 implementation
 uses StrUtils
-   , LCLIntf, LCLType, LMessages
-   , LazFileUtils
+   , LCLIntf, LCLType, LazFileUtils
    , versiontypes, versionresource
    , IdSSLOpenSSL
    , idStack
@@ -122,13 +135,13 @@ begin
     result := ((QWord (CellObject[aColumn, 0]) and PasswordContextsOptionValue) = PasswordContextsOptionValue);
 end;
 
-function setPasswordContextsColumn(aContexts: TObject; aColumn: Integer; aValue: Boolean): Boolean;
+procedure setPasswordContextsColumn(aContexts: TObject; aColumn: Integer; aValue: Boolean);
 begin
   if isPasswordContextsColumn(aContexts, aColumn) <> aValue then
     togglePasswordContextsColumn(aContexts, aColumn);
 end;
 
-function togglePasswordContextsColumn(aContexts: TObject; aColumn: Integer): Boolean;
+procedure togglePasswordContextsColumn(aContexts: TObject; aColumn: Integer);
 begin
   with aContexts as TStringListList do
     CellObject[aColumn, 0] := TObject (QWord (CellObject[aColumn, 0]) xor PasswordContextsOptionValue);
@@ -140,15 +153,8 @@ begin
     result := ((QWord (CellObject[aColumn, 0]) and OneTimeContextsOptionValue) = OneTimeContextsOptionValue);
 end;
 
-function setOneTimeContextsColumn(aContexts: TObject; aColumn: Integer;
-  aValue: Boolean): Boolean;
-begin
-  if isOneTimeContextsColumn(aContexts, aColumn) <> aValue then
-    toggleOneTimeContextsColumn(aContexts, aColumn);
-end;
-
-function toggleOneTimeContextsColumn(aContexts: TObject; aColumn: Integer
-  ): Boolean;
+procedure toggleOneTimeContextsColumn(aContexts: TObject; aColumn: Integer
+  );
 begin
   with aContexts as TStringListList do
     CellObject[aColumn, 0] := TObject (QWord (CellObject[aColumn, 0]) xor OneTimeContextsOptionValue);
@@ -344,6 +350,7 @@ end;
 function isFileNameAllowed(aFileName: String): Boolean;
 begin
   result := False;
+  if aFileName <> '' then
   with TRegExpr.Create('^[^\\\/\:\*\?\"\<\>\|]*[^\\\/\:\*\?\"\<\>\|\. ]$') do
 //                        ^\\\/\:\*\?\"\<\>\|\.      (second part because windows does not allow a dot or space as last char)
   try
@@ -410,6 +417,11 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure SynchronizeMethode(AMethod: TThreadMethod);
+begin
+  TThread.Synchronize (nil, AMethod);
 end;
 
 function urlExists (aURL: string): Boolean;
@@ -620,7 +632,11 @@ begin
   end;
 end;
 
-function apiUiServerDialog (aConfigXml: TObject; aPath, aQuery, aVerb, aAcceptContentType: String; aBody: String = ''): String;
+function apiUiServerDialog ( aConfigXml: TObject
+                           ; aPath, aQuery, aVerb, aAcceptContentType: String
+                           ; aBody: String = ''
+                           ; aContentType: String = ''
+                           ): String;
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
     xStream: TMemoryStream;
@@ -655,7 +671,6 @@ var
   dXml: TXml;
   xStringProvider: TStringProvider;
 begin
-//SjowMessage(aPath + ' : ' + aQuery + ' : ' + aVerb + ' : ' + aBody);
   result := '';
   sStream := nil;
   cStream := nil;
@@ -680,7 +695,10 @@ begin
       or (aVerb = 'POST')
       or (aVerb = 'PUT') then
       begin
-        HttpClient.Request.ContentType := 'text/xml;charset=utf-8';
+        if aContentType <> '' then
+          HttpClient.Request.ContentType := aContentType
+        else
+          HttpClient.Request.ContentType := aAcceptContentType;
         HttpClient.Request.CharSet := '';
         HttpClient.Request.ContentEncoding := 'gzip';
         sStream := TMemoryStream.Create;
@@ -743,8 +761,11 @@ begin
           result := _Decompress (HttpClient.Response.ContentEncoding, xStream);
           if (HttpClient.ResponseCode < 200)
           or (HttpClient.ResponseCode > 299) then
-            raise Exception.CreateFmt ( '%d: %s%s%s'
+            raise Exception.CreateFmt ( '%d: %s%s%s%s%s%s'
                                       , [ HttpClient.ResponseCode
+                                        , HttpClient.Response.RawHeaders.Text
+                                        , LineEnding
+                                        , LineEnding
                                         , HttpClient.ResponseText
                                         , LineEnding
                                         , Result
@@ -752,7 +773,16 @@ begin
                                       );
         except
           on e: Exception do
-            raise Exception.Create (e.Message);
+            raise Exception.CreateFmt ( '%d: %s%s%s%s%s%s'
+                                      , [ HttpClient.ResponseCode
+                                        , HttpClient.Response.RawHeaders.Text
+                                        , LineEnding
+                                        , LineEnding
+                                        , HttpClient.ResponseText
+                                        , LineEnding
+                                        , e.Message
+                                        ]
+                                      );
         end;
       finally
         FreeAndNil (xStream);
@@ -926,6 +956,7 @@ var
   x: Integer;
 begin
   result := aFileName;
+  if aFileName <> '' then
   with TRegExpr.Create do
   try
     Expression:= '^[A-Za-z0-9]+\:/[^/]';
@@ -941,7 +972,9 @@ begin
           result := xPrefix + xSpec;
           if not (AnsiStartsText('http://', result))
           and not (AnsiStartsText('https://', result))
-          and not (AnsiStartsText('apiary://', result)) then
+          and not (AnsiStartsText('apiui://', result))
+          and not (AnsiStartsText('apiary://', result))
+          then
             ForcePathDelims(result);
           Exit;
         end;
@@ -959,6 +992,7 @@ begin
         xPrefix := PromptFolderName('Specify replacement for alias ' + xAlias, xPrefix) + '/';
         if not (AnsiStartsText('http://', xPrefix))
         and not (AnsiStartsText('https://', xPrefix))
+        and not (AnsiStartsText('apiui://', xPrefix))
         and not (AnsiStartsText('apiary://', xPrefix)) then
           ForcePathDelims(xPrefix);
         PathPrefixes.Values[xAlias] := xPrefix;
@@ -971,6 +1005,28 @@ begin
 end;
 
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
+  function _SeparatedSL(aString, aSep: String): TJBStringList;
+    procedure _AddSeparated (aList: TJBStringList; aString, aSep: String);
+    var
+      p: Integer;
+    begin
+      p := PosSubString(aSep, aString, True,False);
+      if p < 1 then
+        aList.Add (aString)
+      else
+      begin
+        aList.Add (Copy (aString, 1, p - 1));
+        _AddSeparated (aList, Copy (aString, p + Length (aSep), MaxInt), aSep);
+      end;
+    end;
+  begin
+    result := TJBStringList.Create;
+    if (aString <> '')
+    and (aSep <> '') then
+    begin
+      _AddSeparated (result, aString, aSep);
+    end;
+  end;
   function _ExtractHttpPath(aFileName: String): String;
   var
     l, x: Integer;
@@ -1029,14 +1085,61 @@ function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): Strin
     end;
     SetLength (Result, l);
   end;
+  procedure _toslash (var aString: String);
+  var
+    x: Integer;
+  begin
+    for x := 1 to Length (aString) do
+      if aString [x] = '\' then
+        aString [x] := '/';
+  end;
+
+  function _expandapiui (aMainFileName, aToRelateFileName: String): String;
+  var
+    resultsl, torelatesl: TStringList;
+    x: Integer;
+    sep: String;
+  begin
+    // we'r not gonna change start of amain since it is already a torelatefname
+    result := '';
+    _toslash (aMainFileName);
+    _toslash (aToRelateFileName);
+    resultsl := _SeparatedSL (Copy (aMainFileName, Length ('apiui://') + 1, MaxInt), '/');
+    resultsl.Delete(resultsl.Count - 1);
+    torelatesl := _SeparatedSL (aToRelateFileName, '/');
+    for x := 0 to torelatesl.Count - 1 do
+    begin
+      if torelatesl.Strings[x] = '..' then
+      begin
+        if resultsl.Count < 1 then
+          raise exception.CreateFmt('can not relate filenames %s and %s', [aMainFileName, aToRelateFileName]);
+        resultsl.Delete(resultsl.Count - 1);
+      end
+      else
+      begin
+        if torelatesl.Strings[x] <> '.' then
+        begin
+          resultsl.Add (torelatesl.Strings[x]);
+        end
+      end;
+    end;
+    sep := 'apiui://';
+    for x := 0 to resultsl.Count - 1 do
+    begin
+      result := result + sep + resultsl.Strings[x];
+      sep := '/';
+    end;
+  end;
+
 var
   httpPath: String;
   x: Integer;
 begin
   aToRelateFileName := PrepareFileNameSpace(aMainFileName, aToRelateFileName);
-  // both linux and windows conventios because of 'remote' filenames
+  // both linux and windows conventions because of 'remote' filenames
   if (AnsiStartsText('http://', aToRelateFileName))
   or (AnsiStartsText('https://', aToRelateFileName))
+  or (AnsiStartsText('apiui://', aToRelateFileName))
   or (AnsiStartsText('apiary://', aToRelateFileName))
   or (AnsiStartsText('file://', aToRelateFileName))
   or (AnsiStartsText('/', aToRelateFileName))
@@ -1056,8 +1159,14 @@ begin
     result := aToRelateFileName;
     exit;
   end;
+  if (AnsiStartsText('apiui://', aMainFileName)) then
+  begin
+    result := _expandapiui (aMainFileName, aToRelateFileName);
+    Exit;
+  end;
   if (AnsiStartsText('http://', aMainFileName))
   or (AnsiStartsText('https://', aMainFileName))
+  or (AnsiStartsText('apiui://', aMainFileName))
   or (AnsiStartsText('apiary://', aMainFileName))
   then
   begin
@@ -1098,6 +1207,7 @@ begin
   or (aToRelateFileName = '')
   or (AnsiStartsText ('http://', aToRelateFileName))
   or (AnsiStartsText ('https://', aToRelateFileName))
+  or (AnsiStartsText ('apiui://', aToRelateFileName))
   or (AnsiStartsText ('apiary://', aToRelateFileName))
   then
     exit;
@@ -1145,7 +1255,26 @@ begin
   end;
 end;
 
-function ReadStringFromFile (aFileName: String; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS): String;
+function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): String;
+  function _GetFromApiUiCloudAsString (aURL: string): string;
+  var
+    p: Integer;
+  begin
+    result := '';
+    p := Pos(apiuidescribtorspath + '/', aFileName);
+    SjowMessage(Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt));
+    if p < 1 then
+      raise Exception.Create ('reading from apiUi cloud connection, illegal filename: ' + aFileName);
+    result := apiUiServerDialog ( apiUiConnectionConfig
+                                , '/apiUi/api' + apiuidescribtorspath
+                                , ''
+                                , 'POST'
+                                , '*/*'
+                                , '{"name": "' + Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt) + '"}'
+                                );
+    // should be a get but to work around some security checks...
+  end;
+
   function _GetFromApiAryAsString (aURL: string): string;
   var
     xApiaryConfig: TXml;
@@ -1256,24 +1385,14 @@ begin
     result := _GetURLAsString (aFileName, true);
     exit;
   end;
+  if (AnsiStartsText('APIUI://', aFileName)) then
+  begin
+    result := _GetFromApiUiCloudAsString (aFileName);
+    exit;
+  end;
   if (AnsiStartsText('APIARY://', aFileName)) then
   begin
     result := _GetFromApiAryAsString (aFileName);
-    exit;
-  end;
-  if Assigned (aApiUiServerConfig) then
-  begin
-    with TXml.CreateAsString('name', aFileName) do
-    try
-      result := apiUiServerDialog ( aApiUiServerConfig
-                                  , '/apiUi/api/projectdesign/files'
-                                  , '?name=' + urlPercentEncode (aFileName)
-                                  , 'GET'
-                                  , ''
-                                  );
-    finally
-      Free;
-    end;
     exit;
   end;
   with TFileStream.Create(osDirectorySeparators(aFileName),fmOpenRead or fmShareDenyWrite) do
@@ -1388,6 +1507,7 @@ function resolveAliasses (aString : String; aDoDecriptPassword: Boolean = false)
   begin
     result := aString;
     try
+      if result <> '' then
       with TRegExpr.Create do
       try
         Expression := _regexp;
@@ -1547,6 +1667,21 @@ begin
     end;
   end;
 end;
+
+{ TJBStringList }
+
+function TJBStringList.Find(const S: string; out Index: Integer): Boolean;
+begin
+  if not Sorted then
+  begin
+    Index := IndexOf(S);
+    result := (Index > -1);
+    Exit;
+  end;
+  Result := inherited Find(S, Index);
+end;
+
+{ TJBStringList }
 
 { TStringProvider }
 

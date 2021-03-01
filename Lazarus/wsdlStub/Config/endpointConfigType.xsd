@@ -23,7 +23,7 @@ passwords are encripted before storing in a project file or at other locations</
 	<xs:simpleType name="FileNameType">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
-	<xs:simpleType name="NameValuePairsType">
+	<xs:simpleType name="NameValuePairsStringType">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="sslVersionType">
@@ -658,7 +658,7 @@ If the NameValueCCSID is a 2-byte Unicode CCSID (1200, 13488, or 17584), the byt
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Topic" type="xs:string"/>
-			<xs:element name="ClientConfig" type="tns:NameValuePairsType" minOccurs="0">
+			<xs:element name="ClientConfig" type="tns:NameValuePairsStringType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>see https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md</xs:documentation>
 				</xs:annotation>
@@ -845,6 +845,11 @@ Used to execute operation-scripts without really sending a message</xs:documenta
 	</xs:complexType>
 	<xs:complexType name="remoteServerConnectionType">
 		<xs:sequence>
+			<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default: False</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="Address" type="tns:httpAddressType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
@@ -870,6 +875,7 @@ Used to execute operation-scripts without really sending a message</xs:documenta
 			<xs:element name="Http" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
+						<xs:element name="responseCode" type="xs:string" minOccurs="0"/>
 						<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>

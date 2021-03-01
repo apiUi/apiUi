@@ -1,79 +1,103 @@
 object LogFilterForm: TLogFilterForm
   Left = 444
-  Height = 579
+  Height = 724
   Top = 143
-  Width = 545
-  HorzScrollBar.Page = 499
-  VertScrollBar.Page = 511
+  Width = 681
+  HorzScrollBar.Page = 618
+  VertScrollBar.Page = 636
   AutoScroll = True
   Caption = 'LogFilterForm'
-  ClientHeight = 579
-  ClientWidth = 545
+  ClientHeight = 724
+  ClientWidth = 681
   Color = clBtnFace
+  DesignTimePPI = 120
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -14
   Font.Name = 'Tahoma'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '2.0.10.0'
   object FilteringPanel: TPanel
     Left = 0
-    Height = 41
+    Height = 51
     Top = 0
-    Width = 545
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 0
     object EnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 11
-      Width = 103
+      Top = 14
+      Width = 122
       Caption = 'Filtering Enabled'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
   end
   object ActionPanel: TPanel
     Left = 0
-    Height = 41
-    Top = 205
-    Width = 545
+    Height = 51
+    Top = 255
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 5
     object ActionEnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 10
-      Width = 54
+      Top = 12
+      Width = 62
       Caption = 'Action'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
     object ActionEqualsCombo: TComboBox
-      Left = 96
-      Height = 21
-      Top = 8
-      Width = 75
-      ItemHeight = 13
+      Left = 120
+      Height = 25
+      Top = 10
+      Width = 94
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 0
       Items.Strings = (
         'Is'
         'Is Not'
       )
+      ParentFont = False
       TabOrder = 1
       Text = 'Is'
     end
     object ActionsCombo: TComboBox
-      Left = 220
-      Height = 21
-      Top = 9
-      Width = 145
-      ItemHeight = 13
+      Left = 275
+      Height = 25
+      Top = 11
+      Width = 181
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 0
       Items.Strings = (
         'Stub'
@@ -81,415 +105,583 @@ object LogFilterForm: TLogFilterForm
         'Redirect'
         'Request'
       )
+      ParentFont = False
       TabOrder = 2
       Text = 'Stub'
     end
   end
   object ServicePanel: TPanel
     Left = 0
-    Height = 41
-    Top = 41
-    Width = 545
+    Height = 51
+    Top = 51
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 1
     object ServiceEnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 10
-      Width = 59
+      Top = 12
+      Width = 68
       Caption = 'Service'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
     object ServiceEqualsCombo: TComboBox
-      Left = 96
-      Height = 21
-      Top = 8
-      Width = 75
-      ItemHeight = 13
+      Left = 120
+      Height = 25
+      Top = 10
+      Width = 94
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 0
       Items.Strings = (
         'Is'
         'Is Not'
       )
+      ParentFont = False
       TabOrder = 1
       Text = 'Is'
     end
     object ServiceEdit: TEdit
-      Left = 219
-      Height = 21
-      Top = 6
-      Width = 145
+      Left = 274
+      Height = 25
+      Top = 8
+      Width = 181
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 2
     end
     object ServiceRegExpCheckBox: TCheckBox
-      Left = 381
+      Left = 476
       Height = 23
-      Top = 8
-      Width = 116
+      Top = 10
+      Width = 139
       Caption = 'Regular expression'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 3
     end
   end
   object OperationPanel: TPanel
     Left = 0
-    Height = 41
-    Top = 82
-    Width = 545
+    Height = 51
+    Top = 102
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 2
     object OperationEnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 9
-      Width = 72
+      Top = 11
+      Width = 84
       Caption = 'Operation'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
     object OperationEqualsCombo: TComboBox
-      Left = 96
-      Height = 21
-      Top = 8
-      Width = 75
-      ItemHeight = 13
+      Left = 120
+      Height = 25
+      Top = 10
+      Width = 94
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 0
       Items.Strings = (
         'Is'
         'Is Not'
       )
+      ParentFont = False
       TabOrder = 1
       Text = 'Is'
     end
     object OperationEdit: TEdit
-      Left = 219
-      Height = 21
-      Top = 6
-      Width = 145
+      Left = 274
+      Height = 25
+      Top = 8
+      Width = 181
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 2
     end
     object OperationRegExpCheckBox: TCheckBox
-      Left = 381
+      Left = 476
       Height = 23
-      Top = 8
-      Width = 116
+      Top = 10
+      Width = 139
       Caption = 'Regular expression'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 3
     end
   end
   object CorrelationPanel: TPanel
     Left = 0
-    Height = 41
-    Top = 123
-    Width = 545
+    Height = 51
+    Top = 153
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 3
     object CorrelationEnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 10
-      Width = 77
+      Top = 12
+      Width = 90
       Caption = 'Correlation'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
     object CorrelationEqualsCombo: TComboBox
-      Left = 96
-      Height = 21
-      Top = 8
-      Width = 75
-      ItemHeight = 13
+      Left = 120
+      Height = 25
+      Top = 10
+      Width = 94
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 0
       Items.Strings = (
         'Is'
         'Is Not'
       )
+      ParentFont = False
       TabOrder = 1
       Text = 'Is'
     end
     object CorrelationEdit: TEdit
-      Left = 219
-      Height = 21
-      Top = 6
-      Width = 145
+      Left = 274
+      Height = 25
+      Top = 8
+      Width = 181
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 2
     end
     object CorrelationRegExpCheckBox: TCheckBox
-      Left = 381
+      Left = 476
       Height = 23
-      Top = 8
-      Width = 116
+      Top = 10
+      Width = 139
       Caption = 'Regular expression'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 3
     end
   end
   object ButtonPanel: TPanel
     Left = 0
-    Height = 60
-    Top = 451
-    Width = 545
+    Height = 75
+    Top = 561
+    Width = 681
     Align = alTop
-    ClientHeight = 60
-    ClientWidth = 545
+    ClientHeight = 75
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 7
     object Button1: TButton
-      Left = 6
-      Height = 25
-      Top = 16
-      Width = 97
+      Left = 8
+      Height = 31
+      Top = 20
+      Width = 121
       Caption = '&Ok'
       Default = True
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
       ModalResult = 1
+      ParentFont = False
       TabOrder = 0
     end
     object Button2: TButton
-      Left = 393
-      Height = 25
-      Top = 16
-      Width = 75
+      Left = 491
+      Height = 31
+      Top = 20
+      Width = 94
       Cancel = True
       Caption = '&Cancel'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
       ModalResult = 2
+      ParentFont = False
       TabOrder = 1
     end
   end
   object ValidationPanel: TPanel
     Left = 0
-    Height = 41
-    Top = 328
-    Width = 545
+    Height = 51
+    Top = 408
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 6
     object ValidationErrorEnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 10
-      Width = 175
+      Top = 12
+      Width = 218
       Caption = 'XML-Schema validation error on'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
     object RequestValidationCheckBox: TCheckBox
-      Left = 220
+      Left = 275
       Height = 23
       Top = 2
-      Width = 64
+      Width = 74
       Caption = 'Request'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 1
     end
     object ReplyValidationCheckBox: TCheckBox
-      Left = 220
+      Left = 275
       Height = 23
-      Top = 19
-      Width = 51
+      Top = 24
+      Width = 58
       Caption = 'Reply'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 2
     end
   end
   object ExceptionPanel: TPanel
     Left = 0
-    Height = 41
-    Top = 164
-    Width = 545
+    Height = 51
+    Top = 204
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 4
     object ExceptionEnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 10
-      Width = 71
+      Top = 12
+      Width = 85
       Caption = 'Exception'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
     object ExceptionEqualsCombo: TComboBox
-      Left = 96
-      Height = 21
-      Top = 8
-      Width = 75
-      ItemHeight = 13
+      Left = 120
+      Height = 25
+      Top = 10
+      Width = 94
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 0
       Items.Strings = (
         'Is'
         'Is Not'
       )
+      ParentFont = False
       TabOrder = 1
       Text = 'Is'
     end
     object ExceptionEdit: TEdit
-      Left = 219
-      Height = 21
-      Top = 6
-      Width = 145
+      Left = 274
+      Height = 25
+      Top = 8
+      Width = 181
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 2
     end
     object ExceptionRegExpCheckBox: TCheckBox
-      Left = 381
+      Left = 476
       Height = 23
-      Top = 8
-      Width = 116
+      Top = 10
+      Width = 139
       Caption = 'Regular expression'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 3
     end
   end
   object ReqPanel: TPanel
     Left = 0
-    Height = 41
-    Top = 246
-    Width = 545
+    Height = 51
+    Top = 306
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 8
     object RequestEnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 11
-      Width = 64
+      Top = 14
+      Width = 74
       Caption = 'Request'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
     object RequestEqualsComboBox: TComboBox
-      Left = 96
-      Height = 21
-      Top = 8
-      Width = 75
-      ItemHeight = 13
+      Left = 120
+      Height = 25
+      Top = 10
+      Width = 94
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       Items.Strings = (
         'Contains'
         'Not contains'
       )
+      ParentFont = False
       TabOrder = 1
       Text = 'Like'
     end
     object RequestEdit: TEdit
-      Left = 220
-      Height = 21
-      Top = 8
-      Width = 145
+      Left = 275
+      Height = 25
+      Top = 10
+      Width = 181
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 2
     end
     object CheckBox1: TCheckBox
-      Left = 382
+      Left = 478
       Height = 23
-      Top = 9
-      Width = 116
+      Top = 11
+      Width = 139
       Caption = 'Regular expression'
       Checked = True
       Enabled = False
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       State = cbChecked
       TabOrder = 3
     end
   end
   object RpyPanel: TPanel
     Left = 0
-    Height = 41
-    Top = 287
-    Width = 545
+    Height = 51
+    Top = 357
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 9
     object ReplyEnabledCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 10
-      Width = 51
+      Top = 12
+      Width = 58
       Caption = 'Reply'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
     object ReplyEqualsComboBox: TComboBox
-      Left = 95
-      Height = 21
-      Top = 7
-      Width = 76
-      ItemHeight = 13
+      Left = 119
+      Height = 25
+      Top = 9
+      Width = 95
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       Items.Strings = (
         'Contains'
         'Not contains'
       )
+      ParentFont = False
       TabOrder = 1
       Text = 'Like'
     end
     object ReplyEdit: TEdit
-      Left = 220
-      Height = 21
-      Top = 8
-      Width = 145
+      Left = 275
+      Height = 25
+      Top = 10
+      Width = 181
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 2
     end
     object CheckBox2: TCheckBox
-      Left = 382
+      Left = 478
       Height = 23
-      Top = 10
-      Width = 116
+      Top = 12
+      Width = 139
       Caption = 'Regular expression'
       Checked = True
       Enabled = False
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       State = cbChecked
       TabOrder = 3
     end
   end
   object Panel1: TPanel
     Left = 0
-    Height = 41
-    Top = 369
-    Width = 545
+    Height = 51
+    Top = 459
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 10
     object RemarksCheckBox: TCheckBox
-      Left = 6
+      Left = 8
       Height = 23
-      Top = 10
-      Width = 65
+      Top = 12
+      Width = 77
       Caption = 'Remarks'
-      OnClick = SetEnabled
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      OnClick = SetEnableds
+      ParentFont = False
       TabOrder = 0
     end
   end
   object Panel2: TPanel
     Left = 0
-    Height = 41
-    Top = 410
-    Width = 545
+    Height = 51
+    Top = 510
+    Width = 681
     Align = alTop
-    ClientHeight = 41
-    ClientWidth = 545
+    ClientHeight = 51
+    ClientWidth = 681
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 11
     object MatchStyleCombo: TComboBox
-      Left = 6
-      Height = 21
-      Top = 9
-      Width = 99
-      ItemHeight = 13
+      Left = 8
+      Height = 25
+      Top = 11
+      Width = 124
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 0
       Items.Strings = (
         'Match all'
         'Match any'
       )
+      ParentFont = False
       TabOrder = 0
       Text = 'Match all'
     end
     object FilterStyleCombo: TComboBox
-      Left = 219
-      Height = 21
-      Top = 8
-      Width = 145
-      ItemHeight = 13
+      Left = 274
+      Height = 25
+      Top = 10
+      Width = 181
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 0
       Items.Strings = (
         'Show matching'
@@ -498,6 +690,7 @@ object LogFilterForm: TLogFilterForm
         'Highlight non matching'
         ''
       )
+      ParentFont = False
       TabOrder = 1
       Text = 'Show matching'
     end

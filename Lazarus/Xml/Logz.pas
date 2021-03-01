@@ -8,6 +8,7 @@ interface
 
 uses Classes
    , RegExpr
+   , xmlio
    , Bind
    , Xmlz
    , Ipmz
@@ -40,7 +41,7 @@ type
     onSnapshot: Boolean;
     displayRef: PDisplayRef;
     DisplayedColumnsValid: Boolean;
-    DisplayedColumns: TStringList;
+    DisplayedColumns: TJBStringList;
     Nr: Integer;
     MessageId: String;
     InboundTimeStamp, OutBoundTimeStamp: TDateTime;
@@ -82,7 +83,7 @@ type
     PathFormat: String;
     procedure AddRemark (aRemark: String);
     function CompareKey (aCompareBy: TCompareLogOrderBy): String;
-    function SortKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TStringList): String;
+    function SortKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TJBStringList): String;
     function DurationAsString: String;
     function StubActionAsString: String;
     function AsXml: TXml;
@@ -96,7 +97,7 @@ type
     procedure ReplyInfoToBindables (aOperation: TWsdlOperation);
     procedure ReplyInfoFromBindables (aOperation: TWsdlOperation);
     procedure toBindables (aOperation: TWsdlOperation);
-    procedure InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TStringList);
+    procedure InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TJBStringList);
     constructor Create;
     destructor Destroy; override;
   end;
@@ -115,7 +116,7 @@ type
     property Number: Integer read fNumber;
     function SaveLog (aString: String; aLog: TLog): TLog;
     function LogsAsString (aStubFileName: String): String;
-    function PrepareCoverageReportAsXml (aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
+    function PrepareCoverageReportAsXml (aOperations: TWsdlOperations; ignoreCoverageOn: TJBStringList): TXmlCvrg;
     function SchemaCompliancyAsXml: TXml;
     procedure InvalidateDisplayedColumns; overload;
     procedure InvalidateDisplayedColumns(aOperation: TWsdlOperation); overload;
@@ -180,13 +181,14 @@ type
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
                             ; aOrderBy: TCompareLogOrderBy
-                            ; ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
+                            ; ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TJBStringList
                             ): TXml;
 function doOrder (List: TStringList; Index1, Index2: Integer): Integer;
 
 implementation
 
 uses SysUtils
+   , StrUtils
    , a2bStringListUnit
    , A2BXmlz
    , IpmTypes
@@ -230,7 +232,7 @@ end;
 function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; aReferenceFileName: String
                             ; aOrderBy: TCompareLogOrderBy
-                            ; ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TStringList
+                            ; ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TJBStringList
                             ): TXml;
   function _DetailXml (xLog: TLog): TXml;
   begin
@@ -452,7 +454,7 @@ begin
   fNumber := 0;
 end;
 
-function TLogList.PrepareCoverageReportAsXml(aOperations: TWsdlOperations; ignoreCoverageOn: TStringList): TXmlCvrg;
+function TLogList.PrepareCoverageReportAsXml(aOperations: TWsdlOperations; ignoreCoverageOn: TJBStringList): TXmlCvrg;
 var
   o, lg, p, e, d, x: Integer;
   xXml, faultXml, detailXml: TXml;
@@ -717,7 +719,7 @@ end;
 function TLogList.SchemaCompliancyAsXml: TXml;
 var
   x, f: Integer;
-  sl: TStringList;
+  sl: TJBStringList;
   xCntr: TSchemaCompliancyCounters;
   xInboundRequestsPassed, xInboundRequestsFailed, xInboundRequestsUnchecked
 , xOutboundRepliesPassed, xOutboundRepliesFailed, xOutboundRepliesUnchecked
@@ -737,7 +739,7 @@ begin
   xInboundRepliesPassed := 0;
   xInboundRepliesFailed := 0;
   xInboundRepliesUnchecked := 0;
-  sl := TStringList.Create;
+  sl := TJBStringList.Create;
   try
     sl.Sorted := True;
     for x := 0 to Count - 1 do with LogItems[x] do
@@ -1003,6 +1005,9 @@ procedure TLogFilter.Execute(aLog: TLog);
   end;
   function _StringMatchesRegExpr (aString, aExpr: String; Contains: Boolean): Boolean;
   begin
+    result := False;
+    if (aString <> '')
+    and (aExpr <> '') then
     try
       if Contains then
         rx.Expression := aExpr
@@ -1198,7 +1203,7 @@ end;
 constructor TLog.Create;
 begin
   MessageId := 'uuid:' + generateRandomId;
-  DisplayedColumns := TStringList.Create;
+  DisplayedColumns := TJBStringList.Create;
 end;
 
 destructor TLog.Destroy;
@@ -1257,7 +1262,7 @@ begin
   end;
 end;
 
-function TLog.SortKey (aCompareBy : TCompareLogOrderBy; aSortColumns: TStringList): String ;
+function TLog.SortKey (aCompareBy : TCompareLogOrderBy; aSortColumns: TJBStringList): String ;
 var
   xXml, xReqXml, xRpyXml: TXml;
   x: Integer;
@@ -1395,7 +1400,7 @@ begin
       try result := (Operation.rpyBind as TIpmItem).AsXml; except end;
     except
       result := TXml.CreateAsString('UnableToPresentReplyAsXml', '');
-      with TStringList.Create do
+      with TJBStringList.Create do
       try
         Text := ReplyBody;
         for x := 0 to Count - 1 do
@@ -1483,8 +1488,8 @@ end;
 procedure TLog.OpenApiRequestToBindables (aOperation: TWsdlOperation);
 var
   x, y, kMask, kPath, f: Integer;
-  pathParams, pathMask, qryParams, hdrParams: TStringList;
-  xXml: TXml;
+  pathParams, pathMask, qryParams, hdrParams: TJBStringList;
+  xXml, mpbParams, mpbParam: TXml;
   xValue, xSeparator: String;
 begin
   if not Assigned (aOperation) then
@@ -1493,11 +1498,12 @@ begin
     raise SysUtils.Exception.Create('procedure TLog.OpenApiRequestToBindables (aOperation: TWsdlOperation); not an openApi operation');
   aOperation.reqXml.ResetValues;
   aOperation.reqXml.Checked := True;
-  pathParams := TStringList.Create;
-  pathMask := TStringList.Create;
-  qryParams := TStringList.Create;
-  hdrParams := TStringList.Create;
+  pathParams := TJBStringList.Create;
+  pathMask := TJBStringList.Create;
+  qryParams := TJBStringList.Create;
+  hdrParams := TJBStringList.Create;
   hdrParams.NameValueSeparator := ':';
+  mpbParams := TXml.Create;
   try
     ExplodeStr (self.httpDocument, '/', pathParams);
     ExplodeStr (PathFormat , '/', pathMask);
@@ -1523,6 +1529,8 @@ begin
     end;
     ExplodeStr (urlDecode(self.httpParams), '&', qryParams);
     hdrParams.Text := self.RequestHeaders;
+    if StartsText('multipart', RequestContentType) then
+      mpbParams.LoadJsonFromString(RequestBody, nil);
     with aOperation.reqXml.Items do for x := Count - 1 downto 0 do
     begin
       case XmlItems[x].Xsd.ParametersType of
@@ -1539,9 +1547,10 @@ begin
                   if Pos ('xml', self.RequestContentType) > 0 then
                     xXml.LoadFromString(self.RequestBody, nil)
                   else
-                    xXml.LoadJsonFromString(self.RequestBody, nil);
+                    if Pos ('json', self.RequestContentType) > 0 then
+                      xXml.LoadJsonFromString(self.RequestBody, nil);
               xXml.Name := XmlItems[x].Name;
-              XmlItems[x].LoadValues (xXml, false, False, True, False);
+              XmlItems[x].LoadValues (xXml, true, False, True, False);
             finally
               xXml.Free;
             end;
@@ -1578,7 +1587,15 @@ begin
             if hdrParams.IndexOfName(XmlItems[x].Name) > -1 then
               XmlItems[x].ValueToJsonArray(Copy(hdrParams.Values[XmlItems[x].Name], 2, MaxInt));
           end;
-        oppForm: SjowMessage ('oppForm: not suported');
+        oppFormData:
+          begin
+            mpbParam := mpbParams.items.XmlItemByTag [XmlItems[x].Name];
+            if Assigned (mpbParam) then
+            begin
+              XmlItems[x].Value := mpbParam.Value;
+              XmlItems[x].Checked := True;
+            end;
+          end;
       end;
     end;
     if hdrParams.IndexOfName('Accept') > -1 then
@@ -1603,7 +1620,7 @@ end;
 procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation);
 var
   x, y, k, f: Integer;
-  hdrParams: TStringList;
+  hdrParams: TJBStringList;
   xXml, dXml: TXml;
   xValue, xSeparator: String;
 begin
@@ -1641,7 +1658,7 @@ begin
       begin
         dXml := dXml.Items.XmlItems[0];
         xXml.Name := dXml.Name;
-        dXml.LoadValues(xXml, false, true);
+        dXml.LoadValues(xXml, true, true);
       end;
     end
     else
@@ -1661,36 +1678,31 @@ end;
 procedure TLog.HeadersInfoToBindables(aHeaders: String; aBind: TCustomBindable);
 var
   x: Integer;
-  xXml: TXml;
-  xSl: TStringList;
+  xXml, dXml: TXml;
+  xSl: TJBStringList;
 begin
   if not (aBind is TXml) then
     Exit;
-  with aBind as TXml do
+  dXml := (aBind as TXml).FindUQ(aBind.Name + '.Http.customHeaders') as TXml;
+  if Assigned (dXml) then
   begin
-    ResetValues;
-    Checked := True;
-    xSl := TStringList.Create;
+    dXml.ResetValues;
+    dXml.Checked := True;
+    xSl := TJBStringList.Create;
     try
       xSl.NameValueSeparator := ':';
       xSl.Text := aHeaders;
-      xXml := TXml.CreateAsString(Name, '');
+      xXml := TXml.CreateAsString('customHeaders', '');
       try
-        with xXml.AddXml(TXml.CreateAsString('Http', '')) do // ToDo MQ, Stomp,....
+        for x := 0 to xSl.Count - 1 do
         begin
-          with AddXml (TXml.CreateAsString('customHeaders', '')) do
+          with xXml.AddXml (TXml.CreateAsString('Header', '')) do
           begin
-            for x := 0 to xSl.Count - 1 do
-            begin
-              with AddXml (TXml.CreateAsString('Header', '')) do
-              begin
-                AddXml (TXml.CreateAsString('Name', xSl.Names[x]));
-                AddXml (TXml.CreateAsString('Value', TrimLeft(xSl.ValueFromIndex[x])));
-              end;
-            end;
+            AddXml (TXml.CreateAsString('Name', xSl.Names[x]));
+            AddXml (TXml.CreateAsString('Value', TrimLeft(xSl.ValueFromIndex[x])));
           end;
         end;
-        LoadValues(xXml, False, True);
+        dXml.LoadValues(xXml, False, True);
       finally
         xXml.Free;
       end;
@@ -1708,9 +1720,18 @@ begin
 end;
 
 procedure TLog.ReplyInfoToBindables(aOperation: TWsdlOperation);
+var
+  xXml: TCustomBindable;
 begin
   if not Assigned (aOperation) then
     raise SysUtils.Exception.Create('procedure TLog.ReplyInfoToBindables (aOperation: TWsdlOperation); nil arg');
+  if not Assigned (aOperation.replyInfoBind) then Exit;
+  xXml := aOperation.replyInfoBind.FindUQ(aOperation.replyInfoBind.Name + '.Http.responseCode');
+  if Assigned (xXml) then
+  begin
+    xXml.Value := IntToStr(httpResponseCode);
+    xXml.Checked := True;
+  end;
   HeadersInfoToBindables(ReplyHeaders, aOperation.replyInfoBind);
 end;
 
@@ -1723,6 +1744,11 @@ begin
   ReplyHeaders := '';
   if Assigned (aOperation.replyInfoBind) then with aOperation.replyInfoBind as TXml do
   begin
+    xXml := FindCheckedXml(Name + '.Http.responseCode');
+    if Assigned (xXml) then
+    begin
+      httpResponseCode := StrToInt(xXml.Value);
+    end;
     xSep := '';
     xXml := FindCheckedXml(Name + '.Http.customHeaders');
     if Assigned (xXml) then
@@ -1745,7 +1771,7 @@ end;
   requires that the Operation.Bindables are filled with the correct values
   use .toBindables in case not
 }
-procedure TLog.InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TStringList);
+procedure TLog.InitDisplayedColumns(aOperation: TWsdlOperation; aDisplayedLogColumns: TJBStringList);
 var
   x, c: Integer;
 begin

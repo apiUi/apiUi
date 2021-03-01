@@ -51,6 +51,7 @@ public
   procedure MoveDown;
   procedure Bind (aRoot: String; aExpress: TObject; aMaxOccurrences: Integer); Override;
   function GetStringData: String; override;
+  function IsEditingAllowed: Boolean; Override;
   procedure PutStringData (aString: String); override;
   constructor CreateAsTimeStamp (aTagName: String; aTimeStame: TDateTime); Overload;
   constructor CreateAsString(aName, aString: String);
@@ -62,7 +63,7 @@ type
 
 { TXmlAttributeList }
 
- TXmlAttributeList = class (TStringList)
+ TXmlAttributeList = class (TJBStringList)
   private
     function getAttributeByTag(Index: String): TXmlAttribute;
     function getBooleanByTag(Index: String): Boolean;
@@ -89,7 +90,7 @@ type
   TXml = class(TCustomBindable)
   private
     scanLineNumber: Integer;
-    fFileContents: TStringList;
+    fFileContents: TJBStringList;
     fTypeDef: TXsdDataType;
     function getAttributeBooleanByTag (Index : String ): Boolean ;
     function getAttributeBooleanByTagDef (Index : String ; aDefault : Boolean
@@ -130,7 +131,6 @@ type
     function GetGroup: Boolean;
   public
     CData: Boolean;
-    jsonType: TjsonType;
     NameSpace: String;
     {Value: String; now in TCustomBindable }
     {Parent: TXml; now in TCustomBindable}
@@ -163,11 +163,13 @@ type
     property FullUQCaption: String read GetFullUQCaption;
     property Text: String read getText write setText;
     property Root: TXml read getRoot;
+    function IsEditingAllowed: Boolean; Override;
     function ValueFromJsonArray (aUrlEncoded: Boolean): String;
     procedure ValueToJsonArray (aValue:String);
     procedure SeparateNsPrefixes;
+    function thisXml: TXml;
     function PrefixToNameSpace(aPrefix: String): String;
-    procedure NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList);
+    procedure NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TJBStringList);
     function ExpandPrefixedName (aDefaultNS, aName: String): String;
     function IndentString (x: Integer): String;
     function EncodeXml (aValue: String): String;
@@ -216,7 +218,7 @@ type
     procedure ForgetNamespaces;
     procedure ForgetXsd;
     procedure SetXsdReadOnly;
-    procedure GetOverrulingsAsStringList (aList: TStringList);
+    procedure GetOverrulingsAsStringList (aList: TJBStringList);
     procedure SetFileNamesRelative (aFileName: String);
     function Stream: String;
     function StreamXML ( aUseNameSpaces: Boolean
@@ -237,11 +239,11 @@ type
     function StreamYAML ( aIndent: Integer
                         ; OnlyWhenChecked: Boolean
                         ): String;
-    procedure LoadFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS);
+    procedure LoadFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aOnBeforeRead: TProcedureS);
     procedure LoadFromString (aString: String; ErrorFound: TOnErrorEvent);
-    procedure LoadJsonFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+    procedure LoadJsonFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aOnbeforeRead: TProcedureS);
     procedure LoadJsonFromString (aString: String; ErrorFound: TOnErrorEvent);
-    procedure LoadYamlFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+    procedure LoadYamlFromFile (aFileName: String; ErrorFound: TOnErrorEvent; aOnbeforeRead: TProcedureS);
     procedure LoadYamlFromString (aString: String; ErrorFound: TOnErrorEvent);
     function FindByRefId (aRefId: Integer): TXml;
     function FindUQ (aName: String): TCustomBindable; Override;
@@ -322,7 +324,7 @@ type
   private
     fIgnore: Boolean;
     fPresent: Boolean;
-    distinctValues: TStringList;
+    distinctValues: TJBStringList;
     function getIsIgnored: Boolean;
     procedure setIgnore(const aValue: Boolean);
     function getXmlItems(Index: integer): TXmlCvrg;
@@ -769,7 +771,7 @@ begin
   begin
     xJsonXml := TXml.Create;
     try
-      xJsonXml.LoadJsonFromFile(aFileName, nil, aApiUiServerConfig, aOnbeforeRead);
+      xJsonXml.LoadJsonFromFile(aFileName, nil, aOnbeforeRead);
       result := _CreateXsdFromJsonSchema(aXsdDescr, nil, nil, xJsonXml);
       aXsdDescr.TypeDef.AddXsd(result);
       aXsdDescr.ReadFileNames.AddObject(aFileName, result);
@@ -818,8 +820,11 @@ begin
     try
       with AddXml (TXml.CreateAsString('body','')) do
       begin
-        AddAttribute(TXmlAttribute.CreateAsString('bgcolor', '#D4D0C8')); // bg read-only gray
+        AddAttribute(TXmlAttribute.CreateAsString('bgcolor', '#F0F0F0')); // bg read-only buttonface color
+        AddAttribute(TXmlAttribute.CreateAsString('style', 'font-size:18px;')); //  style="font-size:18px;"
+//      AddAttribute(TXmlAttribute.CreateAsString('bgcolor', ColorToHtml(clBtnFace))); // bg read-only buttonface color
         with AddXml (TXml.CreateAsString('p',' ')) do
+        if aString <> '' then
         begin
           p := 1;
           rslt := Rx.Exec(aString);
@@ -920,7 +925,8 @@ begin
   bgNilValueColor := $CFFFFF;
   bgElementValueColor := clWhite;
   fgMissingColor := clRed;
-  fgUnknownDatatypeColor := clRed;
+//fgUnknownDatatypeColor := clRed;
+  fgUnknownDatatypeColor := clBlack;
 {$endif}
 end;
 
@@ -1112,12 +1118,12 @@ begin
   result := TXml (Objects [index]);
 end;
 
-procedure TXml.LoadFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnBeforeRead: TProcedureS);
+procedure TXml.LoadFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aOnBeforeRead: TProcedureS);
 begin
-  fFileContents := TStringList.Create;
+  fFileContents := TJBStringList.Create;
   try
     try
-      fFileContents.Text := xmlio.ReadStringFromFile (aFileName, aApiUiServerConfig, aOnBeforeRead);
+      fFileContents.Text := xmlio.ReadStringFromFile (aFileName, aOnBeforeRead);
       LoadXml (ErrorFound);
       PopulateSourceFileName(aFileName);
     except
@@ -1133,12 +1139,12 @@ begin
   end;
 end;
 
-procedure TXml.LoadJsonFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+procedure TXml.LoadJsonFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aOnbeforeRead: TProcedureS);
 begin
-  fFileContents := TStringList.Create;
+  fFileContents := TJBStringList.Create;
   try
     try
-      fFileContents.Text := ReadStringFromFile (aFileName, aApiUiServerConfig, aOnbeforeRead);
+      fFileContents.Text := ReadStringFromFile (aFileName, aOnbeforeRead);
       LoadJson (ErrorFound);
       PopulateSourceFileName(aFileName);
     except
@@ -1156,7 +1162,7 @@ end;
 
 procedure TXml.LoadJsonFromString(aString: String; ErrorFound: TOnErrorEvent);
 begin
-  fFileContents := TStringList.Create;
+  fFileContents := TJBStringList.Create;
   try
     fFileContents.Text := aString;
     LoadJson (ErrorFound);
@@ -1165,12 +1171,12 @@ begin
   end;
 end;
 
-procedure TXml.LoadYamlFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+procedure TXml.LoadYamlFromFile(aFileName: String; ErrorFound: TOnErrorEvent; aOnbeforeRead: TProcedureS);
 begin
-  fFileContents := TStringList.Create;
+  fFileContents := TJBStringList.Create;
   try
     try
-      fFileContents.Text := ReadStringFromFile (aFileName, aApiUiServerConfig, aOnbeforeRead);
+      fFileContents.Text := ReadStringFromFile (aFileName, aOnbeforeRead);
       LoadYaml (ErrorFound);
       PopulateSourceFileName(aFileName);
     except
@@ -1188,7 +1194,7 @@ end;
 
 procedure TXml.LoadYamlFromString(aString: String; ErrorFound: TOnErrorEvent);
 begin
-  fFileContents := TStringList.Create;
+  fFileContents := TJBStringList.Create;
   try
     fFileContents.Text := aString;
     LoadYaml (ErrorFound);
@@ -1199,7 +1205,7 @@ end;
 
 procedure TXml.LoadFromString(aString: String; ErrorFound: TOnErrorEvent);
 begin
-  fFileContents := TStringList.Create;
+  fFileContents := TJBStringList.Create;
   try
     fFileContents.Text := aString;
     LoadXml (ErrorFound);
@@ -1343,7 +1349,7 @@ begin
   end;
 end;
 
-procedure TXml.GetOverrulingsAsStringList (aList: TStringList);
+procedure TXml.GetOverrulingsAsStringList (aList: TJBStringList);
   procedure _get (aXml: TXml);
   var
     x: Integer;
@@ -1740,7 +1746,7 @@ function TXml.StreamYAML(aIndent: Integer; OnlyWhenChecked: Boolean): String;
       Result := _IndentString(aIndent) + '- ' + aXml.yamlValue
     else
     begin
-      with TStringList.Create do
+      with TJBStringList.Create do
       try
         Text := aXml.Value;
         if Count < 2 then
@@ -1797,7 +1803,7 @@ function TXml.StreamXML ( aUseNameSpaces: Boolean
                         ; aEncoded: Boolean
                         ): String;
 var
-  nsAttributes: TStringList;
+  nsAttributes: TJBStringList;
   function _doEncode (aXml: TXml): Boolean;
   begin
     if aXml.Name = 'GenericData' then
@@ -1976,7 +1982,7 @@ var
   end;
 begin
   result := '';
-  nsAttributes := TStringList.Create;
+  nsAttributes := TJBStringList.Create;
   try
     NamespacesToPrefixes (aOnlyWhenChecked, nsAttributes);
     if aIndent = 0 then
@@ -2174,7 +2180,8 @@ begin
     Checker := aXml.Checker;
   fChecked := aXml.Checked;
   Value := aXml.Value;
-  if Assigned (aXml.Xsd) then
+  if (not Assigned (Xsd))
+  and Assigned (aXml.Xsd) then
   begin
     Xsd := aXml.Xsd;
     TypeDef := aXml.TypeDef;
@@ -3277,6 +3284,18 @@ begin
   result := (Items.Count > 0)
 end;
 
+function TXml.IsEditingAllowed: Boolean;
+begin
+  result := not (   (Group)
+                 or (    (Assigned(Xsd))
+                     and (   (TypeDef.ContentModel = 'Empty')
+                          or (TypeDef.ElementDefs.Count > 0)
+                         )
+                    )
+                );
+
+end;
+
 function TXml.DepthBillOfMaterial: Integer;
 var
   pXml: TXml;
@@ -3337,7 +3356,7 @@ end;
 procedure TXml.ValueToJsonArray(aValue: String);
 var
   valueSep: String;
-  sl: TStringList;
+  sl: TJBStringList;
   x: Integer;
 begin
   if (not Assigned (Xsd))
@@ -3357,7 +3376,7 @@ begin
     ocfTSV: valueSep := #9;
     ocfSSV: valueSep := ' ';
   end;
-  sl := TStringList.Create;
+  sl := TJBStringList.Create;
   try
     ExplodeStr(aValue, valueSep, sl);
     while Items.Count < sl.Count do
@@ -3398,6 +3417,11 @@ begin
 
 end;
 
+function TXml.thisXml: TXml;
+begin
+  result := Self;
+end;
+
 function TXml.PrefixToNameSpace(aPrefix: String): String;
   function _ResolveNamespace (aXml: TXml; aNsPrefix: String): String;
   var
@@ -3423,7 +3447,7 @@ begin
     result := _ResolveNamespace(self, Copy (aPrefix, 1, p - 1));
 end;
 
-procedure TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList);
+procedure TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TJBStringList);
   procedure _scanForNs (aXml: TXml; aParentNs: String);
   var
     x: Integer;
@@ -3458,7 +3482,7 @@ procedure TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList
   end;
 begin
   if not Assigned (aSl) then
-    raise Exception.Create ('TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TStringList):: aSl not asigned');
+    raise Exception.Create ('TXml.NamespacesToPrefixes (aOnlyWhenChecked: Boolean; aSl: TJBStringList):: aSl not asigned');
   aSl.Clear;
   aSl.Sorted := True;
   aSl.Duplicates := dupIgnore;
@@ -3545,6 +3569,8 @@ begin
   begin
     Items.AddObject(aChildXml.TagName, aChildXml);
     aChildXml.Parent := self;
+    if jsonType = jsonString then
+      jsonType := jsonObject;
   end;
   result := aChildXml;
 end;
@@ -3765,7 +3791,7 @@ end;
 constructor TXml.CreateAsTimeStamp (aTagName: String; aTimeStame: TDateTime); Overload;
 begin
   inherited Create;
-  jsonType := jsonNone;
+  jsonType := jsonString;
   CData := False;
   Items := TXmlList.Create;
   Attributes := TXmlAttributeList.Create;
@@ -3777,7 +3803,7 @@ end;
 constructor TXml.CreateAsBoolean(aTagName: String; aBoolean: Boolean);
 begin
   inherited Create;
-  jsonType := jsonNone;
+  jsonType := jsonBoolean;
   CData := False;
   Items := TXmlList.Create;
   Attributes := TXmlAttributeList.Create;
@@ -3797,7 +3823,7 @@ end;
 constructor TXml.CreateAsInteger(aTagName: String; aInteger: Integer);
 begin
   inherited Create;
-  jsonType := jsonNone;
+  jsonType := jsonNumber;
   CData := False;
   Items := TXmlList.Create;
   Attributes := TXmlAttributeList.Create;
@@ -3809,7 +3835,7 @@ end;
 constructor TXml.CreateAsString(aTagName: String; aString: String);
 begin
   inherited Create;
-  jsonType := jsonNone;
+  jsonType := jsonString;
   CData := False;
   Items := TXmlList.Create;
   Attributes := TXmlAttributeList.Create;
@@ -4127,9 +4153,9 @@ procedure TXml.Sort(aRecurringElementsPath, aSubElementsPath: String);
   procedure _sortElms (aParent: TXml; aRecurringPath, aSubPath: String);
   var
     x, y: Integer;
-    sl: TStringList;
+    sl: TJBStringList;
   begin
-    sl := TStringList.Create;
+    sl := TJBStringList.Create;
     try
       for x := 0 to aParent.Items.Count - 1 do
         if NameWithoutPrefix (aParent.Items.XmlItems[x].Name) = aRecurringPath then
@@ -4238,6 +4264,11 @@ begin
     result := Value
   else
     result := bindNilStr;
+end;
+
+function TXmlAttribute.IsEditingAllowed: Boolean;
+begin
+  result := True;
 end;
 
 {$ifndef NoGUI}
@@ -4585,7 +4616,7 @@ end;
 constructor TXmlCvrg.Create;
 begin
   inherited Create;
-  distinctValues := TStringList.Create;
+  distinctValues := TJBStringList.Create;
   distinctValues.Sorted := True;
   distinctValues.Duplicates := dupIgnore;
 end;
@@ -4593,7 +4624,7 @@ end;
 constructor TXmlCvrg.CreateAsString(aName, aString: String);
 begin
   inherited CreateAsString(aName, aString);
-  distinctValues := TStringList.Create;
+  distinctValues := TJBStringList.Create;
   distinctValues.Sorted := True;
   distinctValues.Duplicates := dupIgnore;
 end;
@@ -4609,7 +4640,7 @@ constructor TXmlCvrg.CreateFromXsd(aName: String; aXsd: TXsd);
     aXml.TypeDef := aXsd.sType;
     if not Assigned (aXml.distinctValues) then
     begin
-      aXml.distinctValues := TStringList.Create;
+      aXml.distinctValues := TJBStringList.Create;
       aXml.distinctValues.Sorted := True;
       aXml.distinctValues.Duplicates := dupIgnore;
     end;
@@ -4680,7 +4711,7 @@ constructor TXmlCvrg.CreateFromIpm(aName: String; aIpm: TObject);
     if aIpm.Occurrence > 1  then Exit;
     aXml.Name := aName;
     aXml.Ipm := aIpm;
-    aXml.distinctValues := TStringList.Create;
+    aXml.distinctValues := TJBStringList.Create;
     aXml.distinctValues.Sorted := True;
     aXml.distinctValues.Duplicates := dupIgnore;
     for x := 0 to aIpm.Items.Count - 1 do

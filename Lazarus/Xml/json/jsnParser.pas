@@ -7,6 +7,7 @@ uses Classes
    , igGlobals
    , Xmlz
    , Xsdz
+   , Bind
    ;
 
 

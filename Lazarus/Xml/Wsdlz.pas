@@ -1,5 +1,6 @@
 unit Wsdlz;
 
+//    SjowMessage({$INCLUDE %FILE%} + ' ' + {$INCLUDE %LINE%} + LineEnding + reqXml.Text);
 
 {$IFDEF FPC}
   {$MODE Delphi}
@@ -18,7 +19,6 @@ uses sqldb
    , xmlzConsts
    , IpmTypes
    , IdSSLOpenSSL
-   , IdSync
    , SyncObjs
    , xmlio
    ;
@@ -38,7 +38,7 @@ type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
 type TOnRequestViolating = (rvsDefault, rvsContinue, rvsRaiseErrorMessage, rvsAddRemark);
 type TSchemaValidationType = (svAccordingProject, svNo, svReportOnly, svRaiseException);
-type TProduceType = (ptJson, ptXml); // for API's
+type TConsumeProduceType = (ptJson, ptXml); // for API's
 type TProcedure = procedure of Object;
 const TransportTypeNames: array [ttHttp..ttKafka] of String =
 ( 'Http'
@@ -51,7 +51,7 @@ const TransportTypeNames: array [ttHttp..ttKafka] of String =
 , 'None'
 , 'Kafka'
 );
-const ProduceTypeNames: array [ptJson..ptXml] of String =
+const ConsumeProduceTypeNames: array [ptJson..ptXml] of String =
 ( 'Json'
 , 'Xml'
 );
@@ -84,7 +84,7 @@ type
     private
       fMssgs: TWsdlMsgDescrs;
       fOpers: TWsdlOperations;
-      fStrs: TStringList;
+      fStrs: TJBStringList;
       function getServiceByName(Index: String): TWsdlService;
       function getOperationByRequest(Index: String): TWsdlOperation;
     public
@@ -95,32 +95,33 @@ type
       OpenApiVersion: String;
 //      xTargetNamespacePrefix: String;
       Services: TWsdlServices;
-      Servers: TStringList; // introduced with openapi 3.0
-      ServerPathNames: TStringList;
+      Servers: TJBStringList; // introduced with openapi 3.0
+      ServerPathNames: TJBStringList;
       XsdDescr: TXsdDescr;
       sdfXsdDescrs: TXsdDescrList;
       IpmDescrs: TIpmDescrs;
-      ExtraXsds: TStringList;
+      ExtraXsds: TJBStringList;
       SoapVersion: TSOAPVersion;
       OperationsWithEndpointOnly: Boolean;
-      EnvVars: TStringList;
+      EnvVars: TJBStringList;
       _inXml: TXml;
       _outXml: TXml;
       _expectXml: TXml;
       property ServiceByName [Index: String]: TWsdlService read getServiceByName;
       property OperationByRequest [Index: String]: TWsdlOperation read getOperationByRequest;
-      procedure ValidateEvaluatedTags (aXml: TXml; aSl: TStringList);
+      procedure ValidateEvaluatedTags (aXml: TXml; aSl: TJBStringList);
+      function thisWsdl: TWsdl;
       function ExtraXsdsAsXml: TXml;
       procedure ExtraXsdsFromXml (aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);
       procedure AddedTypeDefElementsFromXml (aXml: TXml);
-      procedure LoadExtraXsds (aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
-      procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
-      procedure LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
-      constructor Create(aEnvVars: TStringList; aOperationsWithEndpointOnly: Boolean);
+      procedure LoadExtraXsds (aOnbeforeRead: TProcedureS);
+      procedure LoadFromSchemaFile(aFileName: String; aOnError: TOnErrorEvent; aOnbeforeRead: TProcedureS);
+      procedure LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent; aOnbeforeRead: TProcedureS);
+      constructor Create(aEnvVars: TJBStringList; aOperationsWithEndpointOnly: Boolean);
       destructor Destroy; override;
   end;
 
-  TWsdlHeaders = class (TStringList)
+  TWsdlHeaders = class (TJBStringList)
   private
     function GetHeader(Index: integer): TWsdlHeader;
   public
@@ -140,7 +141,7 @@ type
       destructor Destroy; override;
   end;
 
-  TWsdlServices = class (TStringList)
+  TWsdlServices = class (TJBStringList)
   private
     function GetService(Index: integer): TWsdlService;
   public
@@ -165,7 +166,8 @@ type
       UseNameSpacePrefixes: Boolean;
       DescriptionType: TIpmDescrType;
       Operations: TWsdlOperations;
-      PathInfos: TStringList;
+      PathInfos: TJBStringList;
+      function thisService: TWsdlService;
       function StreamWsSecurity: String;
       property OperationByName [Index: String]: TWsdlOperation read getOperationByName;
       function OptionsAsXml: TXml;
@@ -174,7 +176,7 @@ type
       destructor Destroy; override;
   end;
 
-  TWsdlMsgDescrs = class (TStringList)
+  TWsdlMsgDescrs = class (TJBStringList)
   private
     function GetMessage(Index: integer): TWsdlMsgDescr;
     protected
@@ -186,7 +188,7 @@ type
 
   { TWsdlOperations }
 
-  TWsdlOperations = class (TStringList)
+  TWsdlOperations = class (TJBStringList)
   private
     function GetOperation(Index: integer): TWsdlOperation;
     protected
@@ -236,14 +238,14 @@ type
     FaultXsd: TXsd;
     fltBind: TCustomBindable;
     CorrelationBindables: TBindableList;
-    BeforeScriptLines: TStringList;
-    AfterScriptLines: TStringList;
+    BeforeScriptLines: TJBStringList;
+    AfterScriptLines: TJBStringList;
     Duplicates, DuplicatesName: TWsdlBinder;
     _compareString: String;
     procedure SwiftMtRequestToBindables (aString: String);
     function FindBind (aCaption: String): TCustomBindable;
     procedure RebindLists; virtual;
-    procedure PopulateCorrelation (aPatternsList: TStringList);
+    procedure PopulateCorrelation (aPatternsList: TJBStringList);
     property DescriptionType: TIpmDescrType read getDescriptionType;
     property reqXsd: TXsd read getInputXsd write setInputXsd;
     property reqBind: TCustomBindable read getReqBind write setReqBind;
@@ -273,7 +275,7 @@ type
       fDoExit: Boolean;
       fLineNumber: Integer;
       fOnError: TOnErrorEvent;
-      fLastMessage: TWsdlMessage;
+      fLastFocusedMessage: TWsdlMessage;
       fLastFullCaption: String;
       fOnGetAbortPressed: TBooleanFunction;
       fPrepareErrors: String;
@@ -292,7 +294,7 @@ type
       function getInputXml: TXml;
       function getOutputXml: TXml;
       function getLastFullCaption: String;
-      function getLastMessage: TWsdlMessage;
+      function getLastFocusedMessage: TWsdlMessage;
       function getReplyBasedOnRequest: TWsdlMessage;
       procedure NeedBeforeData(Sender: TObject; var MoreData: Boolean; var Data: String);
       procedure NeedAfterData(Sender: TObject; var MoreData: Boolean; var Data: String);
@@ -314,10 +316,10 @@ type
       schemaValidationVioloationHttpResponseCode: Integer;
       reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
       Schemes, Consumes, Produces, ContentType, OverruleContentType, Accept: String;
-      ProduceType: TProduceType;
+      ConsumeType, ProduceType: TConsumeProduceType;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
       reqDescrExpansionFilename, rpyDescrExpansionFilename, fltDescrExpansionFileName: String;
-      Documentation: TStringList;
+      Documentation: TJBStringList;
       _InputMessageName: String;
       _OutputMessageName: String;
       FaultMessages: TWsdlMsgDescrs;
@@ -382,8 +384,8 @@ type
       faultcode, faultstring, faultactor, LiteralResult: String;
       ReturnSoapFault: Boolean;
       RecognitionType: TRecognitionType;
-      reqRecognition: TStringList;
-      rpyRecognition: TStringList;
+      reqRecognition: TJBStringList;
+      rpyRecognition: TJBStringList;
       oldInvokeSpec: String;
       invokeList: TWsdlOperations;
       invokeRequestInfo, invokeReplyInfo: Boolean;
@@ -410,7 +412,7 @@ type
       property apiReplyMediaType: String read getApiReplyMediaType;
       property InputXml: TXml read getInputXml;
       property OutputXml: TXml read getOutputXml;
-      property LastMessage: TWsdlMessage read getLastMessage write fLastMessage;
+      property LastFocusedMessage: TWsdlMessage read getLastFocusedMessage write fLastFocusedMessage;
       property LastFullCaption: String read getLastFullCaption write fLastFullCaption;
       property MessageBasedOnRequest: TWsdlMessage read getReplyBasedOnRequest;
       property OnError: TOnErrorEvent read fOnError write fOnError;
@@ -418,6 +420,7 @@ type
       property ConsumesJsonOnly: Boolean read getConsumesOnlyJson;
       property ConsumesXmlOnly: Boolean read getConsumesOnlyXml;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
+      function thisOperation: TWsdlOperation;
       function AddedTypeDefElementsAsXml: TObject;
       procedure OnGetSslPassword (var aPassword: String);
       procedure AddedTypeDefElementsFromXml(aXml: TObject);
@@ -461,17 +464,17 @@ type
       procedure PrepareRpyStamper (aBind: TCustomBindable);
       procedure ExecuteRpyStampers;
       procedure InitExecute;
-      procedure CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);
-      procedure Execute (aStringList: TStringList; aOnError: TOnErrorEvent);
+      procedure CheckScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);
+      procedure Execute (aStringList: TJBStringList; aOnError: TOnErrorEvent);
       procedure ExecuteBefore;
       procedure ExecuteAfter;
       procedure reqWsaOnRequest;
       procedure rpyWsaOnRequest;
       procedure fltWsaOnRequest;
       procedure Clean;
-      function FunctionPrototypes (aAfter: Boolean): TStringList;
-      function CheckerFunctionPrototypes: TStringList;
-      function StamperFunctionPrototypes: TStringList;
+      function FunctionPrototypes (aAfter: Boolean): TJBStringList;
+      function CheckerFunctionPrototypes: TJBStringList;
+      function StamperFunctionPrototypes: TJBStringList;
       function StreamRequest ( aGeneratedWith: String
                              ; aGenerateTypes: Boolean
                              ; aGenerateHeaderNameSpaces: Boolean
@@ -485,6 +488,7 @@ type
       procedure endpointConfigFromXml (aXml: TXml);
       function OptionsAsXml: TXml;
       procedure OptionsFromXml(aXml: TXml);
+      function InformationAsXml: TXml;
       constructor Create (aWsdl: TWsdl); Overload;
       constructor Create (aOperation: TWsdlOperation); Overload;
       constructor CreateFromScriptXml (aOwner: TObject; aOnGetAbortPressed: TBooleanFunction; aScript: TXml);
@@ -501,7 +505,7 @@ type
       destructor Destroy; override;
   end;
 
-  TWsdlParts = class (TStringList)
+  TWsdlParts = class (TJBStringList)
   private
     function GetPart(Index: integer): TWsdlPart;
     protected
@@ -526,7 +530,7 @@ type
 
   { TWsdlMessages }
 
-  TWsdlMessages = class (TStringList)
+  TWsdlMessages = class (TJBStringList)
   private
     function GetMessage(Index: integer): TWsdlMessage;
   public
@@ -545,12 +549,13 @@ type
   TWsdlMessage = class(TWsdlBinder)
   private
     public
-//      Patterns: TStringList;
+//      Patterns: TJBStringList;
       rpyBodyBind: TCustomBindable; //if Assigned, the body of the reply
       ColumnXmls: TBindableList;
       Documentation: String;
       DocumentationEdited: Boolean;
       Disabled: Boolean;
+      function thisMessage: TWsdlMessage;
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
       procedure CheckBefore;
@@ -1333,42 +1338,20 @@ begin
 end;
 
 procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
-  procedure _copy (dst, src: TXml);
-  var
-    x: Integer;
-    cXml: TXml;
-  begin
-    dst.Checked := True;
-    dst.NameSpace := src.NameSpace;
-    dst.jsonType := src.jsonType;
-    dst.Xsd := src.Xsd;
-    dst.TypeDef := src.TypeDef;
-    for x := 0 to src.Attributes.Count - 1 do
-      with src.Attributes.XmlAttributes[x] do
-        if Checked then
-          dst.AddAttribute(TXmlAttribute.CreateAsString(Name, Value));
-    for x := 0 to src.Items.Count - 1 do
-    begin
-      if src.Items.XmlItems[x].Checked then
-      begin
-        cXml := dst.AddXml (TXml.CreateAsString(src.Items.XmlItems[x].Name, src.Items.XmlItems[x].Value));
-        _copy(cXml, src.Items.XmlItems[x]);
-      end;
-    end;
-  end;
 var
-  xSaveNamespace: String;
+  xSaveName: String;
   dXml, sXml: TXml;
 begin
   dXml := TXml ((aDstGroup as YYSType).yy.yyPointer);
   sXml := TXml ((aSrcGroup as YYSType).yy.yyPointer);
-  dXml.Items.Clear;
-  dXml.Attributes.Clear;
-  if sXml.Checked then
-  begin
-    xSaveNamespace := dXml.NameSpace;
-    _copy(dXml, sXml);
-    dXml.NameSpace := xSaveNamespace;
+  xSaveName := dXml.Name;
+  dXml.Name := sXml.Name;
+  try
+    dXml.ResetValues;
+    dXml.LoadValues(sXml, True, True);
+    dXml.Checked := sXml.Checked;
+  finally
+    dXml.Name := xSaveName;
   end;
 end;
 
@@ -1774,7 +1757,7 @@ end;
 
 function wsdlUserName: String;
 begin
-  result := igGlobals.getUserName;
+  result := xmlio.getUserName;
 end;
 
 function wsdlOperationName(aOper: TWsdlOperation): String;
@@ -1811,26 +1794,12 @@ end;
 
 procedure PromptReply(aOperation: TWsdlOperation);
 begin
-  with TIdSync.Create do
-  begin
-    try
-      SynchronizeMethod (aOperation.doPromptReply);
-    finally
-      free;
-    end;
-  end;
+  SynchronizeMethode(aOperation.doPromptReply);
 end;
 
 procedure PromptRequest(aOperation: TWsdlOperation);
 begin
-  with TIdSync.Create do
-  begin
-    try
-      SynchronizeMethod (aOperation.doPromptRequest);
-    finally
-      free;
-    end;
-  end;
+  SynchronizeMethode(aOperation.doPromptRequest);
 end;
 
 procedure RaiseExit(aOperation: TWsdlOperation);
@@ -1901,20 +1870,20 @@ begin
   end;
 end;
 
-constructor TWsdl.Create(aEnvVars: TStringList; aOperationsWithEndpointOnly: Boolean);
+constructor TWsdl.Create(aEnvVars: TJBStringList; aOperationsWithEndpointOnly: Boolean);
 begin
   inherited Create;
   EnvVars := aEnvVars;
   OperationsWithEndpointOnly := aOperationsWithEndpointOnly;
-  Servers := TStringList.Create;
+  Servers := TJBStringList.Create;
   Services := TWsdlServices.Create;
   Services.Sorted := True;
-  ServerPathNames := TStringList.Create;
+  ServerPathNames := TJBStringList.Create;
   XsdDescr := TXsdDescr.Create;
   sdfXsdDescrs := TXsdDescrList.Create;
   IpmDescrs := TIpmDescrs.Create;
   IpmDescrs.Sorted := False;
-  ExtraXsds := TStringList.Create;
+  ExtraXsds := TJBStringList.Create;
   ExtraXsds.Sorted := True;
   ExtraXsds.Duplicates := dupIgnore;
   fMssgs := TWsdlMsgDescrs.Create;
@@ -1923,7 +1892,7 @@ begin
   fOpers := TWsdlOperations.Create;
   fOpers.Sorted := True;
   fOpers.Duplicates := dupError;
-  fStrs := TStringList.Create;
+  fStrs := TJBStringList.Create;
   fStrs.NameValueSeparator := '=';
 end;
 
@@ -1981,7 +1950,12 @@ begin
       end;
 end;
 
-procedure TWsdl .ValidateEvaluatedTags (aXml : TXml ; aSl : TStringList );
+function TWsdl.thisWsdl: TWsdl;
+begin
+  result := self;
+end;
+
+procedure TWsdl .ValidateEvaluatedTags (aXml : TXml ; aSl : TJBStringList );
 var
   x, f: Integer;
 begin
@@ -1990,7 +1964,7 @@ begin
       SjowMessage(Format('not evaluated %s at %s', [aXml.Items.XmlItems[x].Name, aXml.FullCaption]));
 end;
 
-procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent; aOnbeforeRead: TProcedureS);
   procedure _LoadFromXml (aXml: TXml; aFileName: String);
     procedure _LoadFromFile (aFileName : String);
     var
@@ -1998,7 +1972,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent;
     begin
       xXml := TXml.Create;
       try
-        xXml.LoadFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
+        xXml.LoadFromFile(aFileName, aOnError, aOnbeforeRead);
         xXml.SeparateNsPrefixes;
         xXml.ResolveNameSpaces;
         _LoadFromXml(xXml, aFileName);
@@ -2029,7 +2003,7 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent;
     begin
       if (XmlItems[x].Name = tagTypes)
       or (XmlItems[x].Name = tagSchema) then
-        XsdDescr.AddXsdFromXml (XmlItems[x], aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
+        XsdDescr.AddXsdFromXml (XmlItems[x], aFileName, aOnError, aOnbeforeRead);
     end;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items do
     begin
@@ -2213,7 +2187,7 @@ begin
   FileName := aFileName;
   xXml := TXml.Create;
   try
-    xXml.LoadFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
+    xXml.LoadFromFile(aFileName, aOnError, aOnbeforeRead);
     xXml.SeparateNsPrefixes;
     xXml.ResolveNameSpaces;
     if (xXml.Name <> tagDefinitions)
@@ -2344,7 +2318,7 @@ begin
   fMssgs.ClearListOnly;
 end;
 
-procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent; aOnbeforeRead: TProcedureS);
 //
 // Based on https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 //
@@ -2489,7 +2463,8 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
           if Value = 'query' then ParametersType := oppQuery;
           if Value = 'header' then ParametersType := oppHeader;
           if Value = 'body' then ParametersType := oppBody; // swagger 2.0
-          if Value = 'form' then ParametersType := oppForm;
+          if Value = 'form' then ParametersType := oppFormData;
+          if Value = 'formData' then ParametersType := oppFormData;
         end;
         if Name = 'description' then Documentation.Text := Value;
         if Name = 'required' then
@@ -2808,7 +2783,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     end;
   end;
 
-  procedure _ReadDefinitions (sl: TStringList);
+  procedure _ReadDefinitions (sl: TJBStringList);
   var
     x, y: Integer;
     cXml, dXml: TXml;
@@ -2863,9 +2838,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
         xXml := TXml.Create;
         if (xExt = '.JSON')
         or (xExt = '.JSN') then
-          xXml.LoadJsonFromFile(aaFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
+          xXml.LoadJsonFromFile(aaFileName, aOnError, aOnbeforeRead)
         else
-          xXml.LoadYamlFromFile(aaFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
+          xXml.LoadYamlFromFile(aaFileName, aOnError, aOnbeforeRead);
         xXml.Name := '#'; // to make it easier to resolve $refs
         XsdDescr.ReadFileNames.AddObject(aaFileName, xXml);
         _ReadDollarReferencedFiles(aaFileName, xXml);
@@ -2900,7 +2875,7 @@ var
   zOperation: TWsdlOperation;
   xServiceParamsXml: TXml;
   xDoc, xExt: String;
-  sl: TStringList;
+  sl: TJBStringList;
   xXsd, yXsd, hXsd: TXsd;
   s, xHost, xBasePath: String;
   sIdUri: TIdURI;
@@ -2910,7 +2885,8 @@ begin
     with TIdURI.Create(resolveAliasses(aFileName)) do
     try
       self.Schemes := Protocol;
-      if UpperCase(Protocol) = 'APIARY' then
+      if (UpperCase(Protocol) = 'APIARY')
+      or (UpperCase(Protocol) = 'APIUI') then
         self.Schemes := 'https';
       self.Host := Host;
       if Port <> '' then
@@ -2923,7 +2899,7 @@ begin
   Name := aFileName;
   xExt := UpperCase (ExtractFileExt (aFileName));
   xRootXml := TXml.Create;
-  sl := TStringList.Create;
+  sl := TJBStringList.Create;
   sl.Sorted := True;
   sl.Duplicates := dupIgnore;
   XsdDescr.Clear;
@@ -2935,9 +2911,9 @@ begin
     or (xExt = '.YML')
     or (AnsiStartsText('APIARY://', aFileName))
     then
-      LoadYamlFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead)
+      LoadYamlFromFile(aFileName, aOnError, aOnbeforeRead)
     else
-      LoadJsonFromFile(aFileName, aOnError, aApiUiServerConfig, aOnbeforeRead);
+      LoadJsonFromFile(aFileName, aOnError, aOnbeforeRead);
     xRootXml.Name := '#';
     XsdDescr.ReadFileNames.AddObject(aFileName, xRootXml);
     _ReadDollarReferencedFiles (aFileName, xRootXml);
@@ -3004,7 +2980,6 @@ begin
                 else
                   ServerPathNames.Add (Document);
                 Servers.Add (URI);
-                SjowMessage(URI);
               except
               end;
             end;
@@ -3287,13 +3262,13 @@ begin
   end;
 end;
 
-procedure TWsdl.LoadExtraXsds (aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS);
+procedure TWsdl.LoadExtraXsds (aOnbeforeRead: TProcedureS);
 var
   x, f: Integer;
 begin
   for x := 0 to ExtraXsds.Count - 1 do
     if not XsdDescr.ReadFileNames.Find (ExtraXsds.Strings[x], f) then
-      XsdDescr.AddXsdFromFile ('', ExtraXsds.Strings[x], _OnParseErrorEvent, aApiUiServerConfig, aOnbeforeRead);
+      XsdDescr.AddXsdFromFile ('', ExtraXsds.Strings[x], _OnParseErrorEvent, aOnbeforeRead);
   if ExtraXsds.Count > 0 then
     XsdDescr.Finalise; // again
 end;
@@ -3319,7 +3294,7 @@ end;
 constructor TWsdlService.Create;
 begin
   UseNameSpacePrefixes := True;
-  PathInfos := TStringList.Create;
+  PathInfos := TJBStringList.Create;
   Operations := TWsdlOperations.Create;
   Operations.Sorted := True;
 end;
@@ -3345,6 +3320,11 @@ begin
       Exit;
     end;
   end;
+end;
+
+function TWsdlService.thisService: TWsdlService;
+begin
+  result := self;
 end;
 
 procedure TWsdlService.OptionsFromXml(aXml: TXml);
@@ -3563,14 +3543,15 @@ begin
     invokeList := TWsdlOperations.Create;
     invokeList.Sorted := True;
   end;
-  Documentation := TstringList.Create;
-  BeforeScriptLines := TStringList.Create;
-  AfterScriptLines := TStringList.Create;
+  Documentation := TJBStringList.Create;
+  BeforeScriptLines := TJBStringList.Create;
+  AfterScriptLines := TJBStringList.Create;
   ContentType := 'text/xml;charset=utf-8';
   Accept := ContentType;
   StubAction := saStub;
   StubHttpAddress := '';
   httpVerb := 'POST';
+  ConsumeType := ptJson;
   ProduceType := ptJson;
   StubMqPutManager := '';
   StubMqPutQueue := '';
@@ -3619,7 +3600,7 @@ begin
 end;
 
 destructor TWsdlOperation.Destroy;
-  procedure _FreeRecog (sl: TStringList);
+  procedure _FreeRecog (sl: TJBStringList);
   var
     x: Integer;
   begin
@@ -4136,6 +4117,27 @@ var
 begin
   result := '';
 
+  if StartsText('multipart', Consumes)
+  and (reqBind is TXml) then
+  begin
+    aXml := TXml.Create;
+    try
+      aXml.jsonType := jsonObject;
+      for x := 0 to reqXml.Items.Count - 1 do
+      with reqXml.Items.XmlItems[x] do
+      begin
+        if Checked
+        and Assigned (Xsd)
+        and (Xsd.ParametersType = oppFormData) then
+          aXml.AddXml (TXml.CreateAsString(Name, Value));
+      end;
+      result := aXml.StreamJSON(0, False);
+    finally
+      aXml.Free;
+    end;
+    Exit;
+  end;
+
   if WsdlService.DescriptionType in [ipmDTSwiftMT] then
   begin
     with TStwiftMtStreamer.Create(reqBind as TXml) do
@@ -4255,7 +4257,7 @@ begin
       begin
         xsiGenerated := False;
         xsdGenerated := False;
-        if WsdlService.DescriptionType <> ipmDTJson then
+        if ConsumeType = ptXml then
           result := result + aXml.StreamXML(aGenerateBodyNameSpaces, WsdlService.UseNameSpacePrefixes, 0, True, False)
         else
         begin
@@ -4478,7 +4480,7 @@ begin
 
 end;
 
-function TWsdlOperation.StamperFunctionPrototypes: TStringList;
+function TWsdlOperation.StamperFunctionPrototypes: TJBStringList;
 begin
   result := fExpressStamper.FunctionProtoTypes;
 end;
@@ -4581,11 +4583,11 @@ begin
   end;
 end;
 
-function TWsdlOperation.getLastMessage: TWsdlMessage;
+function TWsdlOperation.getLastFocusedMessage: TWsdlMessage;
 begin
-  Result := fLastMessage;
-  if Assigned (fLastMessage) then
-    if Messages.IndexOfObject(fLastMessage) < 0 then
+  Result := fLastFocusedMessage;
+  if Assigned (fLastFocusedMessage) then
+    if Messages.IndexOfObject(fLastFocusedMessage) < 0 then
       result := nil;
 end;
 
@@ -4594,7 +4596,7 @@ begin
   Result := fLastFullCaption;
 end;
 
-function TWsdlOperation.CheckerFunctionPrototypes: TStringList;
+function TWsdlOperation.CheckerFunctionPrototypes: TJBStringList;
 begin
   result := fExpressChecker.FunctionProtoTypes;
 end;
@@ -4691,6 +4693,7 @@ begin
   self.Alias := xOperation.Alias;
   self.Schemes := xOperation.Schemes;
   self.Produces := xOperation.Produces;
+  self.ConsumeType := xOperation.ConsumeType;
   self.ProduceType := xOperation.ProduceType;
   self.Consumes := xOperation.Consumes;
   self.ContentType := xOperation.ContentType;
@@ -4880,7 +4883,7 @@ begin
   WsdlOperation := self;
   fCloned := nil;
   fLock := SyncObjs.TCriticalSection.Create;
-  BeforeScriptLines := TStringList.Create;
+  BeforeScriptLines := TJBStringList.Create;
   invokeList := TWsdlOperations.Create;
   invokeList.Sorted := True;
   Owner := aOwner;
@@ -5014,19 +5017,24 @@ begin
   result := fExpress.DebugTokenStringList (BeforeScriptLines, nil);
 end;
 
+function TWsdlOperation.thisOperation: TWsdlOperation;
+begin
+  result := Self;
+end;
+
 function TWsdlOperation.AddedTypeDefElementsAsXml : TObject ;
 var
   x, y, f: integer;
   nTypeDef: TXsdDataType;
   XmlResult: TXml;
   sXml: TXml;
-  slx, sly: TStringList; // to avoid duplicates
+  slx, sly: TJBStringList; // to avoid duplicates
   xKey: String;
 begin
   XmlResult := TXml.CreateAsString('AddedTypeDefElements', '');
   result := XmlResult;
-  slx := TStringList.Create;
-  sly := TStringList.Create;
+  slx := TJBStringList.Create;
+  sly := TJBStringList.Create;
   try
     sly.Sorted := True;
     slx.Sorted := True;
@@ -5491,7 +5499,7 @@ begin
   end;
 end;
 
-function TWsdlOperation.FunctionPrototypes(aAfter: Boolean): TStringList;
+function TWsdlOperation.FunctionPrototypes(aAfter: Boolean): TJBStringList;
 begin
   result := fExpress.FunctionProtoTypes;
 end;
@@ -6349,6 +6357,64 @@ begin
   end;
 end;
 
+function TWsdlOperation.InformationAsXml: TXml;
+var
+  x: Integer;
+begin
+  result := TXml.CreateAsString('operationInformation', '');
+  with result do
+  begin
+    AddXml(Txml.CreateAsString('name', Alias));
+    AddXml(Txml.CreateAsString('fileAlias', './W/'
+                                          + Wsdl.FileAlias
+                                          + '/S/'
+                                          + WsdlService.FileAlias
+                                          + '/O/'
+                                          + FileAlias
+                                          )
+                              );
+    AddXml(Txml.CreateAsString('descriptionFrom', Wsdl.FileName));
+    case StubAction of
+      saStub: AddXml(TXml.CreateAsString('direction', 'inbound'));
+      saRequest: AddXml(TXml.CreateAsString('direction', 'outbound'));
+      saForward: AddXml(TXml.CreateAsString('direction', 'forward'));
+    end;
+    if Assigned (Wsdl.Servers)
+    and (Wsdl.Servers.Count > 0) then
+    with Wsdl.Servers do
+    with AddXml(Txml.CreateAsString('servers', '')) do
+    begin
+      jsonType := jsonArray;
+      for x := 0 to Count - 1 do
+        AddXml(Txml.CreateAsString('_', Strings[x]));
+    end;
+    AddXml(Txml.CreateAsString('service', WsdlService.Name));
+    if WsdlService.logPathFormat <> '' then
+      AddXml(Txml.CreateAsString('path', WsdlService.logPathFormat));
+    AddXml(Txml.CreateAsString('verb', httpVerb));
+    if SoapAddress <> '' then
+      AddXml (TXml.CreateAsString('soapAddress', SoapAddress));
+    AddXml (TXml.CreateAsInteger('messageCandidates', Messages.Count));
+    if CorrelationBindables.Count > 0 then
+    begin
+      with AddXml (TXml.CreateAsString('correlationElements', '')) do
+      begin
+        jsonType := jsonArray;
+        for x := 0 to CorrelationBindables.Count - 1 do
+        begin
+          AddXml (TXml.CreateAsString('_', CorrelationBindables.Strings[x]));
+        end;
+      end;
+    end;
+    if Assigned (BeforeScriptLines)
+    and (BeforeScriptLines.Count > 0) then
+      AddXml (TXml.CreateAsString('beforeScript', BeforeScriptLines.Text));
+    if Assigned (AfterScriptLines)
+    and (AfterScriptLines.Count > 0) then
+      AddXml (TXml.CreateAsString('afterScript', AfterScriptLines.Text));
+  end;
+end;
+
 procedure TWsdlOperation.PrepareRpyStamper (aBind: TCustomBindable);
 begin
 //fStamperStatement := 'Rpy.' + aBind.FullIndexCaption + aBind.Value + ';';
@@ -6400,12 +6466,12 @@ procedure TWsdlOperation .InitExecute ;
 begin
 end;
 
-procedure TWsdlOperation.CheckScript (aStringList: TStringList; aOnError: TOnErrorEvent);
+procedure TWsdlOperation.CheckScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);
 begin
   fExpress.CheckScript(aStringList, aOnError);
 end;
 
-procedure TWsdlOperation.Execute (aStringList: TStringList; aOnError: TOnErrorEvent);
+procedure TWsdlOperation.Execute (aStringList: TJBStringList; aOnError: TOnErrorEvent);
 begin
   if Assigned (aStringList)
   and (aStringList.Count > 0) then
@@ -6498,7 +6564,7 @@ begin
   xFileName := ReadReplyFromFileName;
   if not FileExists(xFileName) then
     xFileName := DefaultReadReplyFromFileName;
-  xString := xmlio.ReadStringFromFile(xFileName, nil, nil);
+  xString := xmlio.ReadStringFromFile(xFileName, nil);
   ReplyStringToBindables(xString);
 end;
 
@@ -6847,6 +6913,11 @@ begin
   end;
 end;
 
+function TWsdlMessage.thisMessage: TWsdlMessage;
+begin
+  result := self;
+end;
+
 procedure TWsdlMessage.corBindsInit(aOperation: TWsdlOperation);
 var
   x: Integer;
@@ -6865,14 +6936,14 @@ begin
   reqBind := TXml.Create;
   rpyBind := TXml.Create;
   fltBind := TXml.Create;
-  BeforeScriptLines := TStringList.Create;
-  AfterScriptLines := TStringList.Create;
+  BeforeScriptLines := TJBStringList.Create;
+  AfterScriptLines := TJBStringList.Create;
 end;
 
 constructor TWsdlMessage.Create(aOperation: TWsdlOperation);
 begin
-  BeforeScriptLines := TStringList.Create;
-  AfterScriptLines := TStringList.Create;
+  BeforeScriptLines := TJBStringList.Create;
+  AfterScriptLines := TJBStringList.Create;
   ColumnXmls := TBindableList.Create;
   WsdlOperation := aOperation;
   while Assigned(WsdlOperation.Cloned) do
@@ -6912,9 +6983,9 @@ begin
   Name := aName;
   WsdlOperation:= aOperation;
   CorrelationBindables := TBindableList.Create;
-  BeforeScriptLines := TStringList.Create;
-  AfterScriptLines := TStringList.Create;
-//Patterns := TStringList.Create;
+  BeforeScriptLines := TJBStringList.Create;
+  AfterScriptLines := TJBStringList.Create;
+//Patterns := TJBStringList.Create;
 {}{
 {}
   Documentation := IfThen (   (aDocumentation = 'Default reply')
@@ -6965,7 +7036,7 @@ begin
   corBindsInit(aOperation);
   if aOperation.CorrelationBindables.Count > 0 then
   begin
-    with TStringList.Create do
+    with TJBStringList.Create do
     try
       Text := aPatterns;
       x := 0;
@@ -6995,10 +7066,10 @@ begin
     Name := aName;
     WsdlOperation := aOperation;
     CorrelationBindables := TBindableList.Create;
-    BeforeScriptLines := TStringList.Create;
-    AfterScriptLines := TStringList.Create;
+    BeforeScriptLines := TJBStringList.Create;
+    AfterScriptLines := TJBStringList.Create;
 {$ifdef jwbPatterns}
-    Patterns := TStringList.Create;
+    Patterns := TJBStringList.Create;
     Patterns.Text := aPatterns;
     while Patterns.Count < aOperation.CorrelationBindables.Count do
       Patterns.Add(Patterns.Strings[0]);
@@ -7056,7 +7127,7 @@ begin
     corBindsInit (aOperation);
     if aOperation.CorrelationBindables.Count > 0 then
     begin
-      with TStringList.Create do
+      with TJBStringList.Create do
       try
         Text := aPatterns;
         x := 0;
@@ -7295,7 +7366,7 @@ begin
   end;
 end;
 
-procedure TWsdlBinder.PopulateCorrelation (aPatternsList : TStringList );
+procedure TWsdlBinder.PopulateCorrelation (aPatternsList : TJBStringList );
 var
   x: Integer;
 begin
@@ -7384,12 +7455,12 @@ end;
 
 procedure TWsdlBinder.setFreeFormatReq(const aValue: String);
 var
-  sl: TStringList;
+  sl: TJBStringList;
   x: Integer;
 begin
 //  if Value = fFreeFormatReq then Exit;
   fFreeFormatReq := aValue;
-  sl := TStringList.Create;
+  sl := TJBStringList.Create;
   try
     for x := 0 to CorrelationBindables.Count - 1 do
       if Assigned (CorrelationBindables.Bindables[x]) then

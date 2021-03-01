@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, FormIniFilez, StdCtrls, ExtCtrls, Ipmz, VirtualTrees, ComCtrls,
+  Dialogs, FormIniFilez, StdCtrls, ExtCtrls, xmlio, Ipmz, VirtualTrees, ComCtrls,
   ActnList, Menus;
 
 type
@@ -53,7 +53,6 @@ type
     PasteAction: TAction;
     CopyColbolAction: TAction;
     PasteCobolAction: TAction;
-    BitWiseAction: TAction;
     GenerateCobolWsAction: TAction;
     ReadFromFileMenuItem: TMenuItem;
     SaveAction1: TMenuItem;
@@ -62,8 +61,6 @@ type
     PasteMenuItem: TMenuItem;
     CopyColbolAction1: TMenuItem;
     PasteCobolMenuItem: TMenuItem;
-    N2: TMenuItem;
-    N3: TMenuItem;
     N4: TMenuItem;
     GenerateCobolWsAction1: TMenuItem;
     N5: TMenuItem;
@@ -73,7 +70,6 @@ type
     procedure PasteActionUpdate(Sender: TObject);
     procedure ReadActionUpdate(Sender: TObject);
     procedure GenerateCobolWsActionExecute(Sender: TObject);
-    procedure BitWiseActionExecute(Sender: TObject);
     procedure PasteCobolActionExecute(Sender: TObject);
     procedure CopyColbolActionExecute(Sender: TObject);
     procedure PasteActionExecute(Sender: TObject);
@@ -103,8 +99,8 @@ type
       Column: TColumnIndex);
     procedure GridGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-    procedure GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GridHeaderClick(Sender: TVTHeader;
+      HitInfo: TVTHeaderHitInfo);
     procedure GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GridNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; NewText: string);
@@ -117,12 +113,12 @@ type
   private
     Ipms: TIpmItemList;
     nCols, nRows: Integer;
-    Lists: TStringList;
-    ColumnWidths: TStringList;
+    Lists: TJBStringList;
+    ColumnWidths: TJBStringList;
     fGridForm: TIpmGridForm;
     fStubChanged: Boolean;
     fReadOnly: Boolean;
-    fStringList: TStringList;
+    fStringList: TJBStringList;
     procedure ListProperties(aListView: TListView; aIpm: TIpmItem);
     function getPropertiesVisible: Boolean;
     procedure setPropertiesVisible(const Value: Boolean);
@@ -181,7 +177,6 @@ uses ClipBrd
    , Bind
    , Xmlz
    , EditValueUnit
-   , BitWiseUnit
    ;
 
 {$IFnDEF FPC}
@@ -199,8 +194,8 @@ begin
     Restore;
     ToggleShowNillsAction.Checked := BooleanByNameDef ['doShowNillsInXmlGrid', True];
     PropertiesVisible := BooleanByNameDef ['PropertiesVisible', False];
-    Lists := TStringList.Create;
-    ColumnWidths := TStringList.Create;
+    Lists := TJBStringList.Create;
+    ColumnWidths := TJBStringList.Create;
     ColumnWidths.Text := StringByName['DataGridColumnWidths'];
   finally
     Free;
@@ -382,16 +377,15 @@ begin
   end;
 end;
 
-procedure TIpmGridForm.GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TIpmGridForm.GridHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
 var
   xIpm: TipmItem;
 begin
-  xIpm := Ipms.IpmItems [Column];
+  xIpm := Ipms.IpmItems [HitInfo.Column];
   if xIpm.Items.Count = 0 then Exit;
-  GroupVisible [Column] := not GroupVisible [Column];
+  GroupVisible [HitInfo.Column] := not GroupVisible [HitInfo.Column];
   ShowHideColumns;
-  Grid.FocusedColumn := Column;
+  Grid.FocusedColumn := HitInfo.Column;
 end;
 
 procedure TIpmGridForm.GridKeyDown(Sender: TObject; var Key: Word;
@@ -1050,7 +1044,7 @@ begin
     aXml := TXml.Create;
     try
       FocusedIpm.XmlFileName := OpenFileDialog.FileName;
-      aXml.LoadFromFile (FocusedIpm.XmlFileName, nil, nil, nil);
+      aXml.LoadFromFile (FocusedIpm.XmlFileName, nil, nil);
       FocusedIpm.ResetLoaded (True);
       aXml.TagName := FocusedIpm.Name; // Ignore name conflict at first level
       FocusedIpm.LoadValues (aXml);
@@ -1071,7 +1065,7 @@ begin
   if SaveFileDialog.Execute = True then
   begin
     FocusedIpm.XmlFileName := SaveFileDialog.FileName;
-    fStringList := TStringList.Create;
+    fStringList := TJBStringList.Create;
     try
       FocusedIpm.BuildXML (HaveString, 0, False);
       fStringList.SaveToFile (FocusedIpm.XmlFileName);
@@ -1089,7 +1083,7 @@ end;
 procedure TIpmGridForm.CopyActionExecute(Sender: TObject);
 begin
   if not Assigned (FocusedIpm) then Exit;
-  fStringList := TStringList.Create;
+  fStringList := TJBStringList.Create;
   try
     FocusedIpm.BuildXML (HaveString, 0, False);
     Clipboard.AsText := fStringList.Text;
@@ -1130,26 +1124,10 @@ begin
   Grid.Invalidate;
 end;
 
-procedure TIpmGridForm.BitWiseActionExecute(Sender: TObject);
-begin
-  if not Assigned (FocusedIpm) then Exit;
-  Application.CreateForm(TBitWiseForm, BitWiseForm);
-  try
-    BitWiseForm.Caption := 'Bit wise data entry for '
-                         + FocusedIpm.FullCaption;
-                         ;
-    BitWiseForm.Ipm := FocusedIpm;
-    BitWiseForm.ReadOnly := isReadOnly;
-    BitWiseForm.ShowModal;
-  finally
-    FreeAndNil (BitWiseForm);
-  end;
-end;
-
 procedure TIpmGridForm.GenerateCobolWsActionExecute(Sender: TObject);
 begin
   if not Assigned (FocusedIpm) then Exit;
-  fStringList := TStringList.Create;
+  fStringList := TJBStringList.Create;
   try
     FocusedIpm.BuildCobolWS (HaveString);
     xmlUtilz.ShowText('IpmGun - Cobol Working-Storage with Values', fStringList.Text);

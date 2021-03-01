@@ -5,7 +5,7 @@ unit ClaimListz ;
 interface
 
 uses
-  Classes , SysUtils ;
+  Classes , SysUtils, xmlio ;
 
 
 type
@@ -24,10 +24,10 @@ end;
 
 { TClaimableObjectList }
 
-TClaimableObjectList = class (TStringList)
+TClaimableObjectList = class (TJBStringList)
 public
   function SaveObject (aString: String; aObject: TClaimableObject): TClaimableObject;
-  function AddObject(const S: string; AObject: TObject): Integer; override;
+  function AddObject(const S: string; AObject: TObject): TClaimableObject;
   procedure Delete(Index: Integer); override;
   procedure Clear; override;
 end;
@@ -46,11 +46,11 @@ begin
 end;
 
 function TClaimableObjectList .AddObject (const S : string ; AObject : TObject
-  ): Integer ;
+  ): TClaimableObject ;
 begin
   if not (AObject is TClaimableObject) then
     raise Exception.Create('Only decendents of type TClaimableObject allowed');
-  SaveObject(S, AObject as TClaimableObject);
+  result := SaveObject(S, AObject as TClaimableObject);
 end;
 
 procedure TClaimableObjectList .Delete (Index : Integer );

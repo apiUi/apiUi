@@ -14,6 +14,7 @@ uses
 {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls
+  , xmlio
   , Wsdlz
   , Xmlz
   , Bind
@@ -40,7 +41,7 @@ uses
     procedure FormDestroy(Sender: TObject);
     procedure ElementButtonClick(Sender: TObject);
   private
-    Captions: TStringList;
+    Captions: TJBStringList;
     fSkipRootNode: Boolean;
     fWsdlOperation: TWsdlOperation;
     procedure ViewXmlItem ( aTreeView: TTreeView
@@ -133,7 +134,7 @@ var
     end;
   end;
 begin
-  Captions := TStringList.Create;
+  Captions := TJBStringList.Create;
   Captions.Sorted := True;
   if not ElementEnabled then
   begin
@@ -454,14 +455,36 @@ begin
 end;
 
 procedure TSelectXmlElementForm.SelectNodeWithCaption(aCaption: String);
+  function _NextFullCaption (aCaption: String): String;
+  var
+    dotPos: Integer;
+  begin
+    dotPos := Pos ('.', aCaption);
+    if dotPos = 0 then
+      result := ''
+    else
+      result := Copy (aCaption, dotPos + 1, Length (aCaption));
+  end;
+
+  function _ThisCaption (aCaption: String): String;
+  var
+    dotPos: Integer;
+  begin
+    dotPos := Pos ('.', aCaption);
+    if dotPos = 0 then
+      result := aCaption
+    else
+      result := LeftStr (aCaption, dotPos - 1);
+  end;
+
   procedure _select (aNode: TTreeNode; cCaption, nCaption: String);
   var
     xNode: TTreeNode;
   begin
     if aNode.Text <> cCaption then Exit;
     TreeView.Selected := aNode;
-    cCaption := ThisCaption(nCaption);
-    nCaption := NextFullCaption(nCaption);
+    cCaption := _ThisCaption(nCaption);
+    nCaption := _NextFullCaption(nCaption);
     xNode := aNode.getFirstChild;
     while Assigned (xNode) do
     begin
@@ -474,8 +497,8 @@ var
   x: Integer;
 begin
   TreeView.Selected := nil;
-  cCaption := ThisCaption(aCaption);
-  nCaption := NextFullCaption(aCaption);
+  cCaption := _ThisCaption(aCaption);
+  nCaption := _NextFullCaption(aCaption);
   for x := 0 to TreeView.Items.Count - 1 do
     if not Assigned (TreeView.Items.Item[x].Parent) then
       _select (TreeView.Items.Item[x], cCaption, nCaption);

@@ -1,87 +1,95 @@
 object wsdlListForm: TwsdlListForm
   Left = 458
-  Height = 321
+  Height = 401
   Top = 241
-  Width = 844
+  Width = 1055
   Caption = 'List of Wsdl and API files'
-  ClientHeight = 321
-  ClientWidth = 844
+  ClientHeight = 401
+  ClientWidth = 1055
   Color = clBtnFace
+  DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ParentFont = True
   ShowHint = True
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '2.0.10.0'
   object Panel1: TPanel
     Left = 0
-    Height = 57
-    Top = 264
-    Width = 844
+    Height = 71
+    Top = 330
+    Width = 1055
     Align = alBottom
     BorderWidth = 3
-    ClientHeight = 57
-    ClientWidth = 844
+    ClientHeight = 71
+    ClientWidth = 1055
+    ParentFont = False
     TabOrder = 0
     object OKBtn: TButton
-      Left = 11
-      Height = 25
-      Top = 12
-      Width = 75
+      Left = 14
+      Height = 31
+      Top = 15
+      Width = 94
       Action = OKAction
       Default = True
       ModalResult = 1
+      ParentFont = False
       TabOrder = 0
     end
     object AddButton: TButton
-      Left = 288
-      Height = 25
-      Top = 12
-      Width = 75
+      Left = 360
+      Height = 31
+      Top = 15
+      Width = 94
       Action = AddAction
+      ParentFont = False
       TabOrder = 1
     end
     object DeleteButton: TButton
-      Left = 386
-      Height = 25
-      Top = 12
-      Width = 75
+      Left = 482
+      Height = 31
+      Top = 15
+      Width = 94
       Action = DeleteAction
+      ParentFont = False
       TabOrder = 2
     end
     object CancelButton: TButton
-      Left = 120
-      Height = 25
-      Top = 12
-      Width = 75
+      Left = 150
+      Height = 31
+      Top = 15
+      Width = 94
       Cancel = True
       Caption = 'Cancel'
       ModalResult = 2
+      ParentFont = False
       TabOrder = 3
     end
   end
   object Panel2: TPanel
     Left = 0
-    Height = 264
+    Height = 330
     Top = 0
-    Width = 844
+    Width = 1055
     Align = alClient
     BorderWidth = 3
     Caption = 'Panel2'
-    ClientHeight = 264
-    ClientWidth = 844
+    ClientHeight = 330
+    ClientWidth = 1055
+    ParentFont = False
     TabOrder = 1
     object ListView: TListView
       Left = 4
-      Height = 256
+      Height = 322
       Top = 4
-      Width = 836
+      Width = 1047
       Align = alClient
       Columns = <      
         item
           Caption = 'Location'
+          Width = 62
         end>
       HideSelection = False
+      ParentFont = False
       PopupMenu = ListViewPopupMenu
       ReadOnly = True
       RowSelect = True
@@ -90,8 +98,8 @@ object wsdlListForm: TwsdlListForm
     end
   end
   object ActionList1: TActionList
-    left = 296
-    top = 32
+    Left = 370
+    Top = 40
     object DeleteAction: TAction
       Caption = '&Delete...'
       Hint = 'Remove service description'
@@ -117,8 +125,8 @@ object wsdlListForm: TwsdlListForm
     end
   end
   object ListViewPopupMenu: TPopupMenu
-    left = 472
-    top = 32
+    Left = 590
+    Top = 40
     object CopyFileNameAction1: TMenuItem
       Action = CopyFileNameAction
     end

@@ -131,6 +131,7 @@ end;
 function TQueryNewElementForm.NameIsOk: Boolean;
 begin
   result := false;
+  if (TagNameEdit.Text <> '') then
   with TRegExpr.Create('^[a-zA-Z0-9\-_]+$') do
   try
     result := Exec(TagNameEdit.Text);
@@ -188,7 +189,7 @@ begin
   NameSpaceEdit.Items.Clear;
   NameEdit.Items.Clear;
   xsddesc.Clear;
-  xsddesc.LoadXsdFromFile(Value, nil, nil, nil);
+  xsddesc.LoadXsdFromFile(Value, nil, nil);
   NameSpaceEdit.Items.Text := xsddesc.NameSpaceList.Text;
   EnableOkButton;
 end;

@@ -103,8 +103,7 @@ type
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
-    procedure GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GridHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure MenuItem2Click(Sender: TObject);
     procedure OkButtonClick (Sender : TObject );
     procedure ZoomActionExecute(Sender: TObject);
@@ -173,7 +172,6 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure CleanActionExecute(Sender: TObject);
   private
-    headerClicked: Boolean;
     grid_x, grid_y: Integer;
     IniFile: TFormIniFile;
     nCols, nRows: Integer;
@@ -632,20 +630,9 @@ procedure TXmlGridForm.CheckValueAgainstXsd(aXml: TXml);
 var
   xMessage: String;
 begin
-{
-  if Assigned (XmlAttr) then
-  begin
-    if not XmlAttr.IsValueValidAgainstXsd(xMessage) then
-      ShowMessage (xMessage);
-  end
-  else
-  begin
-}
-    if not aXml.IsValueValidAgainstXsd(xMessage) then
-      ShowMessage (xMessage);
-{
-  end;
-}
+  xMessage := ''; // avoid warning
+  if not aXml.IsValueValidAgainstXsd(xMessage) then
+    ShowMessage (xMessage);
 end;
 
 procedure TXmlGridForm.GridEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -850,6 +837,7 @@ procedure TXmlGridForm.ShowHideColumns;
   var
     e, xCol: Integer;
   begin
+    if not Assigned(aXsd) then Exit;
     if aXsd.sType._DepthBillOfMaterial >= xmlGridMaxBom then Exit;
     if aLevel > xsdMaxDepthXmlGen then Exit;
     Inc (aXsd.sType._DepthBillOfMaterial);
@@ -904,8 +892,9 @@ begin
     end
     else
     begin
-      xXml.LoadValues(FocusedBind as TXml, True, True);
+      xXml := TXml.Create;
       try
+        xXml.LoadValues(FocusedBind as TXml, True, True);
         xXml.Checked := True;
         xXml.Name := (FocusedBind as TXml).Name;
         fGridForm.Xml := xXml;
@@ -1083,6 +1072,7 @@ function TXmlGridForm.CreateHtmlReport: String;
     col: Integer;
     xText: String;
   begin
+    xText := ''; // avoid warning
     result := TXml.CreateAsString('tr', '');
     with result do
     begin
@@ -1090,7 +1080,7 @@ function TXmlGridForm.CreateHtmlReport: String;
       begin
         if ColumnVisible [col] then
         begin
-          GridGetText(Grid, aNode, col, ttNormal,xText);
+          GridGetText(Grid, aNode, col, ttNormal, xText);
 {
           if xText = '' then
             xText := '_';
@@ -1143,12 +1133,13 @@ procedure TXmlGridForm.CopySpreadSheetFormatActionExecute(Sender: TObject);
   begin
     result := '';
     xSep := '';
+    xText := ''; // avoid warning
     for col := 0 to Grid.Header.Columns.Count - 1 do
     begin
       if ColumnVisible [col] then
       begin
-        GridGetText(Grid, aNode, col, ttNormal,xText);
-        result := result + xSep + xText;
+        GridGetText(Grid, aNode, col, ttNormal, xText);
+        result := result + xSep + '"' + xText + '"';
         xSep := #9;
       end;
     end;
@@ -1172,7 +1163,7 @@ begin
     while Assigned (xNode) do
     begin
       if Grid.IsVisible [xNode] then
-        s := s + #$D#$A + _Columns (xNode);
+        s := s + LineEnding + _Columns (xNode);
       xNode := Grid.GetNext(xNode);
     end;
     Clipboard.AsText := s;
@@ -1442,6 +1433,7 @@ var
   xGosthed: Boolean;
 begin
   result := False;
+  xGosthed := False; // avoid warning
   xImageIndex := -1;
   if Assigned (Grid.FocusedNode) then
   begin
@@ -1643,11 +1635,6 @@ var
   xChanged: Boolean;
   xBind: TCustomBindable;
 begin
-  if headerClicked then
-  begin
-    headerClicked:=False;
-    Exit;
-  end;
   if (Assigned(Grid.FocusedNode)) then
   begin
     xBind := FocusedBind;
@@ -1871,14 +1858,13 @@ begin
   end;
 end;
 
-procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
 begin
-  if ColumnSpan [Column] = 0 then Exit;
-  GroupExpanded [Column] := not GroupExpanded [Column];
+  if ColumnSpan [HitInfo.Column] = 0 then Exit;
+  GroupExpanded [HitInfo.Column] := not GroupExpanded [HitInfo.Column];
   ShowHideColumns;
-  Grid.FocusedColumn := Column;
-//headerClicked := True;
+  Grid.FocusedColumn := HitInfo.Column;
 end;
 
 procedure TXmlGridForm.MenuItem2Click(Sender: TObject);
@@ -1904,6 +1890,7 @@ var
   oBind, dBind: TCustomBindable;
   aConfirmed: Boolean;
 begin
+  aConfirmed := False; // avoid warning
   oBind := nil;
   dBind := nil;
   ModalResult := mrOk;
