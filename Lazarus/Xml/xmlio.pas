@@ -1269,7 +1269,7 @@ function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): Str
                                 , '/apiUi/api' + apiuidescribtorspath
                                 , ''
                                 , 'POST'
-                                , '*/*'
+                                , 'application/json'
                                 , '{"name": "' + Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt) + '"}'
                                 );
     // should be a get but to work around some security checks...
