@@ -44,7 +44,11 @@ procedure EraseAllFolderContent (aFolderName: String);
 function HttpResponseCodeToText (aCode: Integer): String;
 procedure HttpDownloadToFile (aUrl, aFileName: String);
 procedure apiUiServerDownload (aConfigXml: TObject; aPath, aFileName: String);
-function apiUiServerDialog (aConfigXml: TObject; aPath, aQuery, aVerb, aAcceptContentType: String; aBody: String = ''): String;
+function apiUiServerDialog ( aConfigXml: TObject
+                           ; aPath, aQuery, aVerb, aAcceptContentType: String
+                           ; aBody: String = ''
+                           ; aContentType: String = ''
+                           ): String;
 function HttpGetDialog (aUrl, aAcceptContentType: String): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
 function PromptFolderName(aCaption, aStart: String): String;
@@ -628,7 +632,11 @@ begin
   end;
 end;
 
-function apiUiServerDialog (aConfigXml: TObject; aPath, aQuery, aVerb, aAcceptContentType: String; aBody: String = ''): String;
+function apiUiServerDialog ( aConfigXml: TObject
+                           ; aPath, aQuery, aVerb, aAcceptContentType: String
+                           ; aBody: String = ''
+                           ; aContentType: String = ''
+                           ): String;
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
     xStream: TMemoryStream;
@@ -687,7 +695,10 @@ begin
       or (aVerb = 'POST')
       or (aVerb = 'PUT') then
       begin
-        HttpClient.Request.ContentType := aAcceptContentType;
+        if aContentType <> '' then
+          HttpClient.Request.ContentType := aContentType
+        else
+          HttpClient.Request.ContentType := aAcceptContentType;
         HttpClient.Request.CharSet := '';
         HttpClient.Request.ContentEncoding := 'gzip';
         sStream := TMemoryStream.Create;
@@ -994,6 +1005,28 @@ begin
 end;
 
 function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): String;
+  function _SeparatedSL(aString, aSep: String): TJBStringList;
+    procedure _AddSeparated (aList: TJBStringList; aString, aSep: String);
+    var
+      p: Integer;
+    begin
+      p := PosSubString(aSep, aString, True,False);
+      if p < 1 then
+        aList.Add (aString)
+      else
+      begin
+        aList.Add (Copy (aString, 1, p - 1));
+        _AddSeparated (aList, Copy (aString, p + Length (aSep), MaxInt), aSep);
+      end;
+    end;
+  begin
+    result := TJBStringList.Create;
+    if (aString <> '')
+    and (aSep <> '') then
+    begin
+      _AddSeparated (result, aString, aSep);
+    end;
+  end;
   function _ExtractHttpPath(aFileName: String): String;
   var
     l, x: Integer;
@@ -1052,12 +1085,58 @@ function ExpandRelativeFileName(aMainFileName, aToRelateFileName: String): Strin
     end;
     SetLength (Result, l);
   end;
+  procedure _toslash (var aString: String);
+  var
+    x: Integer;
+  begin
+    for x := 1 to Length (aString) do
+      if aString [x] = '\' then
+        aString [x] := '/';
+  end;
+
+  function _expandapiui (aMainFileName, aToRelateFileName: String): String;
+  var
+    resultsl, torelatesl: TStringList;
+    x: Integer;
+    sep: String;
+  begin
+    // we'r not gonna change start of amain since it is already a torelatefname
+    result := '';
+    _toslash (aMainFileName);
+    _toslash (aToRelateFileName);
+    resultsl := _SeparatedSL (Copy (aMainFileName, Length ('apiui://') + 1, MaxInt), '/');
+    resultsl.Delete(resultsl.Count - 1);
+    torelatesl := _SeparatedSL (aToRelateFileName, '/');
+    for x := 0 to torelatesl.Count - 1 do
+    begin
+      if torelatesl.Strings[x] = '..' then
+      begin
+        if resultsl.Count < 1 then
+          raise exception.CreateFmt('can not relate filenames %s and %s', [aMainFileName, aToRelateFileName]);
+        resultsl.Delete(resultsl.Count - 1);
+      end
+      else
+      begin
+        if torelatesl.Strings[x] <> '.' then
+        begin
+          resultsl.Add (torelatesl.Strings[x]);
+        end
+      end;
+    end;
+    sep := 'apiui://';
+    for x := 0 to resultsl.Count - 1 do
+    begin
+      result := result + sep + resultsl.Strings[x];
+      sep := '/';
+    end;
+  end;
+
 var
   httpPath: String;
   x: Integer;
 begin
   aToRelateFileName := PrepareFileNameSpace(aMainFileName, aToRelateFileName);
-  // both linux and windows conventios because of 'remote' filenames
+  // both linux and windows conventions because of 'remote' filenames
   if (AnsiStartsText('http://', aToRelateFileName))
   or (AnsiStartsText('https://', aToRelateFileName))
   or (AnsiStartsText('apiui://', aToRelateFileName))
@@ -1079,6 +1158,11 @@ begin
   begin
     result := aToRelateFileName;
     exit;
+  end;
+  if (AnsiStartsText('apiui://', aMainFileName)) then
+  begin
+    result := _expandapiui (aMainFileName, aToRelateFileName);
+    Exit;
   end;
   if (AnsiStartsText('http://', aMainFileName))
   or (AnsiStartsText('https://', aMainFileName))
@@ -1183,10 +1267,12 @@ function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): Str
       raise Exception.Create ('reading from apiUi cloud connection, illegal filename: ' + aFileName);
     result := apiUiServerDialog ( apiUiConnectionConfig
                                 , '/apiUi/api' + apiuidescribtorspath
-                                , '?filename=' + Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt)
-                                , 'GET'
+                                , ''
+                                , 'POST'
                                 , '*/*'
+                                , '{"name": "' + Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt) + '"}'
                                 );
+    // should be a get but to work around some security checks...
   end;
 
   function _GetFromApiAryAsString (aURL: string): string;

@@ -27,6 +27,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NameEditChange(Sender: TObject);
+    procedure OkButtonClick(Sender: TObject);
   private
     IniFile: TFormIniFile;
     function getFavName: String;
@@ -55,6 +56,11 @@ end;
 procedure TAddFavouritesForm.NameEditChange(Sender: TObject);
 begin
   OkButton.Enabled := (FavouriteName <> '');
+end;
+
+procedure TAddFavouritesForm.OkButtonClick(Sender: TObject);
+begin
+
 end;
 
 procedure TAddFavouritesForm.setFavName(const Value: String);

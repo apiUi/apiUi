@@ -7846,6 +7846,23 @@ begin
         if (Count = 5)
         and (Strings[3] = 'project')
         and (Strings[4] = 'describtors')
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          nameXml := xBodyXml.FindXml('json.name');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          xFileName := xmlio.ExpandRelativeFileName(projectFileName, nameXml.Value);
+          AResponseInfo.ContentType := GetMIMETypeFromFile(xFileName);
+          AResponseInfo.ContentText := xmlio.ReadStringFromFile(xFileName, nil);
+          Exit;
+        end;
+
+        if (Count = 5)
+        and (Strings[3] = 'project')
+        and (Strings[4] = 'describtors')
         and (ARequestInfo.Command = 'GET')
         then begin
           sl := TJBStringList.Create;
