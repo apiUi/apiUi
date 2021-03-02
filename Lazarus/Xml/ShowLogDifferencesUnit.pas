@@ -556,11 +556,11 @@ procedure TShowLogDifferencesForm.CompareAB(xData: PVSTreeRec);
 var
   aXml, bXml: TXml;
 begin
-  aXml := xData.aLog.reqBodyAsXml;
+  aXml := xData.aLog.requestAsXml;
   aXml.SeparateNsPrefixes;
   aXml.ResolveNameSpaces;
   a2bExpandWhenValueIsJsonOrYaml(aXml);
-  bXml := xData.bLog.reqBodyAsXml;
+  bXml := xData.bLog.requestAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
   a2bExpandWhenValueIsJsonOrYaml(bXml);
@@ -568,11 +568,11 @@ begin
   xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
   FreeAndNil (aXml);
   FreeAndNil (bXml);
-  aXml := xData.aLog.rpyBodyAsXml;
+  aXml := xData.aLog.replyAsXml;
   aXml.SeparateNsPrefixes;
   aXml.ResolveNameSpaces;
   a2bExpandWhenValueIsJsonOrYaml(aXml);
-  bXml := xData.bLog.rpyBodyAsXml;
+  bXml := xData.bLog.replyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
   a2bExpandWhenValueIsJsonOrYaml(bXml);
@@ -649,11 +649,11 @@ procedure TShowLogDifferencesForm.CreateA(xData: PVSTreeRec);
 var
   aXml: TXml;
 begin
-  aXml := xData.aLog.reqBodyAsXml;
+  aXml := xData.aLog.requestAsXml;
   xData.reqA2B := TA2BXml.CreateA (xData.aLog.OperationName, aXml, True);
   FreeAndNil (aXml);
   fReqDiffsFound := True;
-  aXml := xData.aLog.rpyBodyAsXml;
+  aXml := xData.aLog.replyAsXml;
   xData.rpyA2B := TA2BXml.CreateA(xData.aLog.OperationName, aXml, True);
   FreeAndNil (aXml);
   fRpyDiffsFound := True;
@@ -663,11 +663,11 @@ procedure TShowLogDifferencesForm.CreateB(xData: PVSTreeRec);
 var
   bXml: TXml;
 begin
-  bXml := xData.bLog.reqBodyAsXml;
+  bXml := xData.bLog.requestAsXml;
   xData.reqA2B := TA2BXml.CreateB (xData.bLog.OperationName, bXml, True);
   FreeAndNil (bXml);
   fReqDiffsFound := True;
-  bXml := xData.bLog.rpyBodyAsXml;
+  bXml := xData.bLog.replyAsXml;
   xData.rpyA2B := TA2BXml.CreateB (xData.bLog.OperationName, bXml, True);
   FreeAndNil (bXml);
   fRpyDiffsFound := True;

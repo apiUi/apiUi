@@ -6269,10 +6269,14 @@ begin
       TreeView.FocusedNode := xNode;
       TreeView.FocusedColumn := treeValueColumn;
       TreeView.Selected [xNode] := True;
-      f := FocusedMessage.ColumnXmls.IndexOfObject(FocusedBind);
-      if f > -1 then
+      if Assigned (FocusedMessage)
+      and Assigned(FocusedMessage.ColumnXmls) then
       begin
-        GridView.FocusedColumn := f + 1 + nMessageButtonColumns + FocusedOperation.CorrelationBindables.Count;
+        f := FocusedMessage.ColumnXmls.IndexOfObject(FocusedBind);
+        if f > -1 then
+        begin
+          GridView.FocusedColumn := f + 1 + nMessageButtonColumns + FocusedOperation.CorrelationBindables.Count;
+        end;
       end;
       exit;
     end;
@@ -7110,20 +7114,20 @@ var
   xXml: TXml;
   xString: String;
 begin
+  if Assigned (claimedLog.Operation)
+  and (claimedLog.Operation.isOpenApiService) then
+  begin
+    with claimedLog.replyAsXml do
+    try
+      ShowTextAsXml('Reply as XML', AsText(False, 0, False, False));
+    finally
+      Free;
+    end;
+    exit;
+  end;
   xString := IfThen(Assigned(claimedLog) and (claimedLog is TLog), claimedLog.ReplyBody, '');
   if (xString <> '') then
   begin
-    if Assigned (claimedLog.Operation)
-    and (claimedLog.Operation.isOpenApiService) then
-    begin
-      with claimedLog.rpyBodyAsXml do
-      try
-        ShowTextAsXml('Reply as XML', AsText(False, 0, False, False));
-      finally
-        Free;
-      end;
-      exit;
-    end;
     if Assigned(claimedLog.Mssg) then
     begin
       case claimedLog.Operation.WsdlService.DescriptionType of
@@ -7139,7 +7143,7 @@ begin
             end
             else
             begin
-              with claimedLog.rpyBodyAsXml do
+              with claimedLog.replyAsXml do
                 try
                   ShowTextAsXml('Reply as XML', AsText(False, 0, False, False));
                 finally
@@ -7157,7 +7161,7 @@ begin
           ShowInfoForm('Reply freeformat', xString);
         ipmDTSwiftMT:
           begin
-            xXml := claimedLog.rpyBodyAsXml;
+            xXml := claimedLog.replyAsXml;
             try
               Application.CreateForm(TShowXmlForm, ShowXmlForm);
               try
@@ -7319,7 +7323,7 @@ begin
       ShowXmlForm.isCheckedOnly := True;
       ShowXmlForm.isReadOnly := True;
       se.FindOpenApiOnLog(claimedLog);
-      ShowXmlForm.Bind := claimedLog.reqBodyAsXml;
+      ShowXmlForm.Bind := claimedLog.requestAsXml;
       try
         ShowXmlForm.ShowModal;
       finally
@@ -7349,7 +7353,7 @@ begin
             end
             else
             begin
-              with claimedLog.reqBodyAsXml do
+              with claimedLog.requestAsXml do
                 try
                   ShowTextAsXml('Request as XML',
                     AsText(False, 0, False, False));
@@ -7368,7 +7372,7 @@ begin
           ShowInfoForm('Request freeformat', xString);
         ipmDTSwiftMT:
           begin
-            xXml := claimedLog.reqBodyAsXml;
+            xXml := claimedLog.requestAsXml;
             try
               Application.CreateForm(TShowXmlForm, ShowXmlForm);
               try
@@ -9246,7 +9250,7 @@ begin
         end
         else
         begin
-          with claimedLog.rpyBodyAsXml do
+          with claimedLog.replyAsXml do
             try
               ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
             finally
@@ -9259,7 +9263,7 @@ begin
       begin
         if claimedLog.Operation.WsdlService.DescriptionType = ipmDTSwiftMT then
         begin
-          with claimedLog.rpyBodyAsXml do
+          with claimedLog.replyAsXml do
             try
               ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
             finally
@@ -9289,7 +9293,7 @@ begin
         end;
         if claimedLog.Operation.Wsdl.isOpenApiService then
         begin
-          with claimedLog.rpyBodyAsXml do
+          with claimedLog.replyAsXml do
           try
             xXsdDescr := TXsdDescr.Create;
             CreateXsdFromXml(xXsdDescr, thisXml, True);
@@ -9328,7 +9332,7 @@ begin
         xData := MessagesVTS.GetNodeData(xNode);
         if Assigned(xData.Log) and (xData.Log is TLog) then
         with xData.Log as TLog do
-          aXml.AddXml(reqBodyAsXml);
+          aXml.AddXml(requestAsXml);
         xNode := MessagesVTS.GetNextSelected(xNode);
       end;
       ShowTextAsGrid('Requests as Grid', aXml.AsText(False, 0, False, False));
@@ -9363,7 +9367,7 @@ begin
         xData := MessagesVTS.GetNodeData(xNode);
         if Assigned(xData.Log) and (xData.Log is TLog) then
         with xData.Log as TLog do
-          aXml.AddXml(rpyBodyAsXml);
+          aXml.AddXml(replyAsXml);
         xNode := MessagesVTS.GetNextSelected(xNode);
       end;
       ShowTextAsGrid('Responses as Grid', aXml.AsText(False, 0, False, False));
@@ -9409,9 +9413,9 @@ begin
     begin
       try
         if Copy(xLog.Operation.ZoomElementCaption, 1, 4) = 'Req.' then
-          xXml := xLog.reqBodyAsXml
+          xXml := xLog.requestAsXml
         else
-          xXml := xLog.rpyBodyAsXml;
+          xXml := xLog.replyAsXml;
         xCaption := Copy(xLog.Operation.ZoomElementCaption, 5, 300000);
         if xLog.Operation.WsdlService.DescriptionType = ipmDTWsdl then
         begin
@@ -9468,7 +9472,7 @@ begin
       end
       else
       begin
-        with claimedLog.reqBodyAsXml do
+        with claimedLog.requestAsXml do
           try
             ShowTextAsGrid('Request as Grid', AsText(False, 0, False, False));
           finally
@@ -9481,7 +9485,7 @@ begin
     begin
       if (claimedLog.Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
       begin
-        with claimedLog.reqBodyAsXml do
+        with claimedLog.requestAsXml do
           try
             ShowTextAsGrid('Request as Grid', AsText(False, 0, False, False));
           finally
@@ -10660,9 +10664,9 @@ begin
         AddXml (TXml.CreateAsTimeStamp('inboundTimestamp', fLog.InboundTimeStamp));
         AddXml (TXml.CreateAsTimeStamp('outboundTimestamp', fLog.OutboundTimeStamp));
         with AddXml (TXml.CreateAsString('Req', '')) do
-          AddXml (fLog.reqBodyAsXml);
+          AddXml (fLog.requestAsXml);
         with AddXml (TXml.CreateAsString('Rpy', '')) do
-          AddXml (fLog.rpyBodyAsXml);
+          AddXml (fLog.replyAsXml);
         fXml.SeparateNsPrefixes;
         a2bExpandWhenValueIsJsonOrYaml(fXml);
       end;
@@ -10672,9 +10676,9 @@ begin
         AddXml (TXml.CreateAsTimeStamp('inboundTimestamp', nLog.InboundTimeStamp));
         AddXml (TXml.CreateAsTimeStamp('outboundTimestamp', nLog.OutboundTimeStamp));
         with AddXml (TXml.CreateAsString('Req', '')) do
-          AddXml (nLog.reqBodyAsXml);
+          AddXml (nLog.requestAsXml);
         with AddXml (TXml.CreateAsString('Rpy', '')) do
-          AddXml (nLog.rpyBodyAsXml);
+          AddXml (nLog.replyAsXml);
         nXml.SeparateNsPrefixes;
         a2bExpandWhenValueIsJsonOrYaml(nXml);
       end;

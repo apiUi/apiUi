@@ -87,8 +87,8 @@ type
     function DurationAsString: String;
     function StubActionAsString: String;
     function AsXml: TXml;
-    function reqBodyAsXml: TXml;
-    function rpyBodyAsXml: TXml;
+    function requestAsXml: TXml;
+    function replyAsXml: TXml;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
     procedure OpenApiRequestToBindables (aOperation: TWsdlOperation);
     procedure OpenApiReplyToBindables (aOperation: TWsdlOperation);
@@ -290,11 +290,11 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     aXml, bXml: TXml;
     a2bXml: TA2bXml;
   begin
-    aXml := aLog.reqBodyAsXml;
+    aXml := aLog.requestAsXml;
     aXml.SeparateNsPrefixes;
     aXml.ResolveNameSpaces;
     a2bExpandWhenValueIsJsonOrYaml(aXml);
-    bXml := bLog.reqBodyAsXml;
+    bXml := bLog.requestAsXml;
     bXml.SeparateNsPrefixes;
     bxml.ResolveNameSpaces;
     a2bExpandWhenValueIsJsonOrYaml(bXml);
@@ -304,11 +304,11 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     FreeAndNil(a2bXml);
     FreeAndNil (aXml);
     FreeAndNil (bXml);
-    aXml := aLog.rpyBodyAsXml;
+    aXml := aLog.replyAsXml;
     aXml.SeparateNsPrefixes;
     aXml.ResolveNameSpaces;
     a2bExpandWhenValueIsJsonOrYaml(aXml);
-    bXml := bLog.rpyBodyAsXml;
+    bXml := bLog.replyAsXml;
     bXml.SeparateNsPrefixes;
     bxml.ResolveNameSpaces;
     a2bExpandWhenValueIsJsonOrYaml(bXml);
@@ -542,7 +542,7 @@ begin
           mXml := oXml.Items.XmlItemByTag['Req'] as TXmlCvrg;
           if not Assigned (mXml) then
             raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.reqTagName);
-          xXml := xLog.reqBodyAsXml;
+          xXml := xLog.requestAsXml;
           try
             xXml.Name := mXml.Name;
             mXml.CountUsage(xXml, False);
@@ -555,7 +555,7 @@ begin
           mXml := oXml.Items.XmlItemByTag['Rpy'] as TXmlCvrg;
           if not Assigned (mXml) then
             raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.rpyTagName);
-          xXml := xLog.rpyBodyAsXml;
+          xXml := xLog.replyAsXml;
           try
             if (xXml.Name = xLog.Operation.Alias)
             and (xXml.Items.Count = 1)
@@ -581,7 +581,7 @@ begin
               mXml := oXml.Items.XmlItemByTag[xLog.Operation.reqBind.Name] as TXmlCvrg;
               if not Assigned (mXml) then
                 raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.reqBind.Name);
-              xXml := xLog.reqBodyAsXml;
+              xXml := xLog.requestAsXml;
               try
                 mXml.CountUsage(xXml, false);
               finally
@@ -593,7 +593,7 @@ begin
               mXml := oXml.Items.XmlItemByTag[xLog.Operation.rpyBind.Name] as TXmlCvrg;
               if not Assigned (mXml) then
                 raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.rpyBind.Name);
-              xXml := xLog.rpyBodyAsXml;
+              xXml := xLog.replyAsXml;
               try
                 mXml.CountUsage(xXml, false);
               finally
@@ -630,7 +630,7 @@ begin
                 raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.reqTagName);
               xXml := TXml.CreateAsString(mXml.Name, '');
               try
-                xXml.AddXml (xLog.reqBodyAsXml);
+                xXml.AddXml (xLog.requestAsXml);
                 mXml.CountUsage(xXml, xLog.Operation.WsdlService.DescriptionType in [ipmDTSwiftMT]);
               finally
                 xXml.Free;
@@ -644,7 +644,7 @@ begin
                 raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.rpyTagName);
               xXml := TXml.CreateAsString(mXml.Name, '');
               try
-                xXml.AddXml (xLog.rpyBodyAsXml);
+                xXml.AddXml (xLog.replyAsXml);
                 mXml.CountUsage(xXml, xLog.Operation.WsdlService.DescriptionType in [ipmDTSwiftMT]);
               finally
                 xXml.Free;
@@ -658,7 +658,7 @@ begin
             if not Assigned (oXml) then
               raise Exception.Create('Operation Lookup failed for ' + xLog.Operation.reqTagName);
             Inc (oXml.Counter);
-            xXml := xLog.reqBodyAsXml;
+            xXml := xLog.requestAsXml;
             try
               if NameWithoutPrefix(xXml.Name) = 'Envelope' then
               begin
@@ -674,7 +674,7 @@ begin
             finally
               xXml.Free;
             end;
-            xXml := xLog.rpyBodyAsXml;
+            xXml := xLog.replyAsXml;
             try
               if NameWithoutPrefix(xXml.Name) = 'Envelope' then
               begin
@@ -1274,8 +1274,8 @@ begin
   and (aCompareBy <> clTimeStamp)
   then
   begin
-    xReqXml := reqBodyAsXml;
-    xRpyXml := rpyBodyAsXml;
+    xReqXml := requestAsXml;
+    xRpyXml := replyAsXml;
     try
       for x := 0 to aSortColumns.Count - 1 do
       begin
@@ -1325,7 +1325,7 @@ begin
   end;
 end;
 
-function TLog.reqBodyAsXml: TXml;
+function TLog.requestAsXml: TXml;
 begin
   if Assigned (Operation)
   and (Operation.reqBind is TIpmItem)
@@ -1386,7 +1386,7 @@ begin
   end;
 end;
 
-function TLog.rpyBodyAsXml: TXml;
+function TLog.replyAsXml: TXml;
 var
   x, y, f: Integer;
   hXml: TXml;
@@ -1437,6 +1437,11 @@ begin
   if Assigned (Operation)
   and (Operation.isOpenApiService) then
   begin
+    OpenApiReplyToBindables(Operation);
+    result := TXml.Create;
+    result.CopyDownLine(Operation.rpyXml, True);
+    Exit;
+{
     result := TXml.CreateAsString(Operation.Alias, '');
     with result.AddXml(TXml.CreateAsString('Rpy', '')) do
     begin
@@ -1458,6 +1463,7 @@ begin
         end;
       end;
     end;
+}
   end;
 
   result := TXml.Create;
@@ -1618,6 +1624,42 @@ begin
 end;
 
 procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation);
+  procedure _FillHeaders (aXml: TXml; aHeaders: String);
+  var
+    x, h: Integer;
+    hdrParams: TJBStringList;
+  begin
+    hdrParams := TJBStringList.Create;
+    try
+      hdrParams.NameValueSeparator := ':';
+      hdrParams.Text := aHeaders;
+      for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
+      begin
+        if Assigned (Xsd)
+        and (Xsd.ParametersType = oppHeader) then
+          if hdrParams.IndexOfName(Name) > -1 then
+            ValueToJsonArray(Copy(hdrParams.Values[Name], 2, MaxInt));
+      end;
+    finally
+      hdrParams.Free;
+    end;
+  end;
+  function _FindBodyParamOrNew (aXml: TXml): TXml;
+  var
+    x: Integer;
+  begin
+    result := nil;
+    for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
+    begin
+      if Xsd.ParametersType = oppBody then
+      begin
+        result := thisXml;
+        Exit;
+      end;
+    end;
+    result := aXml.AddXml(TXml.CreateAsString('newbody', ''));
+  end;
+
 var
   x, y, k, f: Integer;
   hdrParams: TJBStringList;
@@ -1654,11 +1696,11 @@ begin
     if Assigned(dXml) then
     begin
       dXml.Checked := True;
-      if (dXml.Items.Count > 0) then
+      _FillHeaders (dXml, ReplyHeaders);
+      with _FindBodyParamOrNew(dXml) do
       begin
-        dXml := dXml.Items.XmlItems[0];
-        xXml.Name := dXml.Name;
-        dXml.LoadValues(xXml, true, true);
+        Name := xXml.Name;
+        LoadValues(xXml, true, true);
       end;
     end
     else
@@ -1668,6 +1710,7 @@ begin
       begin
         dXml.Value := IntToStr(self.httpResponseCode);
         dXml.Checked := True;
+        dXml.LoadValues(xXml, true, true);
       end;
     end;
   finally
@@ -1738,9 +1781,10 @@ end;
 procedure TLog.ReplyInfoFromBindables(aOperation: TWsdlOperation);
 var
   xSep: String;
-  x: Integer;
+  x, y: Integer;
   xXml: TXml;
 begin
+  xSep := '';
   ReplyHeaders := '';
   if Assigned (aOperation.replyInfoBind) then with aOperation.replyInfoBind as TXml do
   begin
@@ -1749,7 +1793,6 @@ begin
     begin
       httpResponseCode := StrToInt(xXml.Value);
     end;
-    xSep := '';
     xXml := FindCheckedXml(Name + '.Http.customHeaders');
     if Assigned (xXml) then
     begin
@@ -1762,6 +1805,30 @@ begin
                       + XmlValueByTag['Value']
                       ;
         xSep := LineEnding;
+      end;
+    end;
+  end;
+  if Assigned (aOperation.rpyBind)
+  and (aOperation.rpyBind is TXml) then
+  with aOperation.rpyXml do
+  begin
+    for x := 0 to items.Count - 1 do with Items.XmlItems[x] do
+    begin
+      if Checked then
+      begin
+        for y := 0 to Items.Count - 1 do with Items.XmlItems[y] do
+        begin
+          if Xsd.ParametersType = oppHeader then
+          begin
+            ReplyHeaders := ReplyHeaders
+                          + xSep
+                          + Name
+                          + ': '
+                          + Value
+                          ;
+            xSep := LineEnding;
+          end;
+        end;
       end;
     end;
   end;
