@@ -117,6 +117,7 @@ type
     function getVersionInfoAsString: String;
     function SendNoneMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
+                             ; aLog: TLog
                              ): String;
     function SendHttpMessage ( aOperation: TWsdlOperation; aLog: TLog): String;
     procedure POP3ServerCheckUser(aContext: TIdContext;
@@ -4038,7 +4039,7 @@ begin
     {$else}
     ttKafka: result := _progName +': Producing om Kafka only implemented on Windows';
     {$endif}
-    ttNone: result := SendNoneMessage(aOperation, aMessage);
+    ttNone: result := SendNoneMessage(aOperation, aMessage, nil);
   end;
 end;
 
@@ -4598,7 +4599,7 @@ begin
     {$ifdef windows}
           ttKafka: xLog.ReplyBody := SendOperationKafkaMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
     {$endif}
-          ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody);
+          ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody, xLog);
         end;
       finally
         xLog.InboundTimeStamp := Now;
@@ -4667,7 +4668,11 @@ begin
         end;
         aOperation.ExecuteAfter;
         if aOperation.StubTransport = ttNone then
+        begin
+          xLog.ReplyContentType := aOperation.Produces;
           xLog.ReplyBody := aOperation.StreamReply (_progName, True);
+          xLog.httpResponseCode := aOperation.ResponseNo;
+        end;
       end;
       with xLog do
       begin
@@ -7175,9 +7180,59 @@ begin
   result := Format('%d.%d.%d.%d', [majorVersion, minorVersion, revision, build]);
 end;
 
-function TWsdlProject.SendNoneMessage(aOperation: TWsdlOperation; aMessage: String): String;
+function TWsdlProject.SendNoneMessage(aOperation: TWsdlOperation; aMessage: String; aLog: TLog): String;
+var
+  URL, querySep, headerSep: String;
+  x: Integer;
 begin
-  result := '';
+  if aOperation.isOpenApiService then
+  begin
+    URL := 'http://none';
+    aLog.PathFormat := aOperation.WsdlService.logPathFormat;
+    URL := URL
+         + aOperation.WsdlService.openApiPath;
+    querySep := '?';
+    headerSep := '';
+    for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
+    begin
+      if Checked
+      and Assigned (Xsd) then
+      begin
+        if (Xsd.ParametersType = oppPath) then
+        begin
+          URL := ReplaceStr(URL, '{' + Name + '}', ValueFromJsonArray(true));
+          aLog.PathFormat := ReplaceStr(aLog.PathFormat, '{' + Name + '}', '%s');
+        end;
+        if (Xsd.ParametersType = oppQuery) then
+        begin
+          URL := URL + querySep + Name + '=' + ValueFromJsonArray(true);
+          querySep := '&';
+        end;
+        if (Xsd.ParametersType = oppHeader) then
+        begin
+          aLog.RequestHeaders := aLog.RequestHeaders
+                               + headerSep
+                               + Name
+                               + ': '
+                               + ValueFromJsonArray(false)
+                               ;
+          headerSep := LineEnding;
+        end;
+        if (Xsd.ParametersType = oppBody)
+        and (aOperation.OpenApiVersion [1] <> '2') then
+        begin
+          aOperation.ContentType := Xsd.MediaType;
+        end;
+      end;
+    end;
+    with TIdURI.Create(URL) do
+    try
+      aLog.httpDocument := Path + Document;
+      alog.httpParams := Params;
+    finally
+      Free;
+    end;
+  end;
 end;
 
 function TWsdlProject.FindOperationOnRequest(aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
