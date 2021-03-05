@@ -19,7 +19,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="12969"/>
+      <BuildNr Value="12972"/>
       <StringTable ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -335,7 +335,9 @@
       <Unit47>
         <Filename Value="..\wsdlStub\SelectDbNameUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="SelectDbNameForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit47>
       <Unit48>
         <Filename Value="..\wsdlStub\SelectElementsUnit.pas"/>
@@ -441,7 +443,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="21">
+    <Exceptions Count="22">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -518,6 +520,9 @@
         <Name Value="EListError"/>
         <Enabled Value="False"/>
       </Item21>
+      <Item22>
+        <Name Value="ESQLDatabaseError"/>
+      </Item22>
     </Exceptions>
   </Debugging>
 </CONFIG>

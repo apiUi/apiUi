@@ -536,7 +536,7 @@ type
 procedure IntrospectIniXml;
 
 var
-  BetaMode: Boolean;
+  DebugLogMode: Boolean;
   apiUiXsdFileName, swaggerYamlFileName, faviconIcoFileName: String;
     indexHtmlFileName: String;
     wsaXsdFileName: String;
@@ -10560,6 +10560,7 @@ begin
   _WsdlDbsConnector.Connected := False;
   _WsdlDbsConnector.LoginPrompt := False;
   _WsdlDbsEnabled := False;
+  _WsdlDbsConnector.OnLog := _WsdlSQLConnectorLog;
   DbsType := '';
   DbsDatabaseName := '';
   DbsHostName:='';

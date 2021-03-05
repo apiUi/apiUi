@@ -626,61 +626,62 @@ end;
 procedure TExpress.NeedSqlExec ( Sender:TObject
                                ; Query: TObject
                                );
-var
-  Qry: TXpQuery;
-  xTransaction: TSQLTransaction;
-  x: Integer;
-  Bindable: TCustomBindable;
-begin
-  Qry := Query as TXpQuery;
-  for x := 0 to Qry.ParamList.Count - 1 do
+  procedure _fillparams (Qry: TXpQuery);
+  var
+    x: Integer;
+    Bindable: TCustomBindable;
   begin
-    if (x < Qry.Params.Count) then {just to make sure}
+    with Qry do
     begin
-      if (Qry.ParamList.Binds [x].BindsAnObject)
-      then
+      Params.Clear;
+      for x := 0 to Qry.ParamList.Count - 1 do
       begin
-        Bindable := TCustomBindable (Qry.ParamList.Binds [x].yy.yyPointer);
-        case Qry.ParamList.Binds [x].Token of
-          DFLD: Qry.Params.Items [x].Value := Bindable.GetDateTimeData;
-          SFLD: Qry.Params.Items [x].Value := Bindable.GetStringData;
-          IFLD: Qry.Params.Items [x].Value := Bindable.GetIntegerData;
-          XFLD: Qry.Params.Items [x].Value := Bindable.GetExtendedData;
-        end;
-      end
-      else
-      begin
-        case Qry.ParamList.Binds [x].Token of
-          DFLD: Qry.Params.Items [x].Value := PTDateTime (Qry.ParamList.Binds [x].yy.yyPointer)^;
-          SFLD: Qry.Params.Items [x].Value := PString (Qry.ParamList.Binds [x].yy.yyPointer)^;
-          IFLD: Qry.Params.Items [x].Value := PInteger (Qry.ParamList.Binds [x].yy.yyPointer)^;
-          XFLD: Qry.Params.Items [x].Value := PExtended (Qry.ParamList.Binds [x].yy.yyPointer)^;
+        Params.Add;
+        if (ParamList.Binds [x].BindsAnObject)
+        then
+        begin
+          Bindable := TCustomBindable (ParamList.Binds [x].yy.yyPointer);
+          case ParamList.Binds [x].Token of
+            DFLD: Params.Items [x].Value := Bindable.GetDateTimeData;
+            SFLD: Params.Items [x].Value := Bindable.GetStringData;
+            IFLD: Params.Items [x].Value := Bindable.GetIntegerData;
+            XFLD: Params.Items [x].Value := Bindable.GetExtendedData;
+          end;
+        end
+        else
+        begin
+          case ParamList.Binds [x].Token of
+            DFLD: Params.Items [x].Value := PTDateTime (ParamList.Binds [x].yy.yyPointer)^;
+            SFLD: Params.Items [x].Value := PString (ParamList.Binds [x].yy.yyPointer)^;
+            IFLD: Params.Items [x].Value := PInteger (ParamList.Binds [x].yy.yyPointer)^;
+            XFLD: Params.Items [x].Value := PExtended (ParamList.Binds [x].yy.yyPointer)^;
+          end;
         end;
       end;
     end;
   end;
-  xTransaction := TSQLTransaction.Create(nil);
-  xTransaction.DataBase := Qry.Database;
-  Qry.Transaction := xTransaction;
+var
+  Qry: TXpQuery;
+begin
+  Qry := Query as TXpQuery;
   if Qry.DataBase is TSqlConnector then with Qry.DataBase as TSqlConnector do
   begin
-    if ConnectorType = 'Oracle' then
+    if (ConnectorType = 'Oracle') then
     begin
-      ExecuteDirect('commit');
-      ExecuteDirect('set transaction read write');
+//    try ExecuteDirect('commit'); except end;
+      try ExecuteDirect('begin transaction'); except end;
 //    ExecuteDirect(Qry.SQL.Text);
+      _fillparams(Qry);
       Qry.ExecSQL;
       ExecuteDirect('commit');
     end
     else
     begin
-      try
-        xTransaction.StartTransaction;
-        Qry.ExecSQL;
-      finally
-        xTransaction.Commit;
-        xTransaction.Free;
-      end;
+      _fillparams(Qry);
+      (Qry.Transaction as TSQLTransaction).Action := caCommit;
+      Qry.Transaction.Active := True;
+      Qry.ExecSQL;
+      Qry.Transaction.Active := False;
     end;
   end;
 end;

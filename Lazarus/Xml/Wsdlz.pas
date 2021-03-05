@@ -705,6 +705,7 @@ var
   _ipmGun: Boolean;
   _WsdlDbsEnabled: Boolean;
   _WsdlDbsConnector: TSQLConnector;
+  _WsdlSQLConnectorLog: TDBLogNotifyEvent;
   _WsdlDbsTransaction: TSQLTransaction;
   _WsdlDbsConnectorType: String;
   _WsdlDbsDatabaseName: String;
@@ -7683,6 +7684,8 @@ initialization
   allAliasses.Duplicates := dupAccept;
   _WsdlDbsConnector := TSQLConnector.Create(nil);
   _WsdlDbsTransaction := TSQLTransaction.Create(nil);
+  _WsdlDbsTransaction.Active := False;
+  _WsdlDbsTransaction.Action := caCommit;
   _WsdlDbsTransaction.DataBase := _WsdlDbsConnector;
   _WsdlDbsConnector.Transaction := _WsdlDbsTransaction; // linked to each other...
   UILock := SyncObjs.TCriticalSection.Create;

@@ -23,6 +23,14 @@ TStringProvider = class(TObject)
     constructor Create(aString: String);
 end;
 
+{ TXmlioLogger }
+
+TXmlioLogger = class (TObject)
+  public
+    procedure doLog (msg: String);
+end;
+
+
 { TJBStringList }
 
 TJBStringList = class (TStringList)
@@ -78,6 +86,7 @@ procedure togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer);
 function isOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
 procedure toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer);
 function osDirectorySeparators (aName: String): String;
+procedure SjowMessage (aString: String);
 
 const base64DocxStartStr = 'UEsDBB';
 const base64PdfStartStr = 'JVBERi';
@@ -95,6 +104,7 @@ var
   OnNotify: TOnStringEvent;
   apiaryToken: String;
   apiUiConnectionConfig: TObject;
+  xmlioLogger: TXmlioLogger;
 
 
 implementation
@@ -1668,6 +1678,13 @@ begin
   end;
 end;
 
+{ TXmlioLogger }
+
+procedure TXmlioLogger.doLog(msg: String);
+begin
+  SjowMessage(msg);
+end;
+
 { TJBStringList }
 
 function TJBStringList.Find(const S: string; out Index: Integer): Boolean;
@@ -1699,9 +1716,9 @@ end;
 initialization
   PathPrefixes := TStringList.Create;
   PathPrefixes.Sorted := True;
-
+  xmlioLogger := TXmlioLogger.Create;
 finalization
   PathPrefixes.Free;
-
+  xmlioLogger.Free;
 end.
 

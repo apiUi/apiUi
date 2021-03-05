@@ -96,6 +96,8 @@ type
     procedure MessagesVTSHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure NavigateHierarchyActionExecute(Sender: TObject);
     procedure NavigateHierarchyActionUpdate(Sender: TObject);
+    procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
+      const Msg: String);
     procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
   private
@@ -808,7 +810,7 @@ type
     procedure BrowseMqActionUpdate(Sender: TObject);
     procedure Action1Execute(Sender: TObject);
     procedure ShowRemarksActionExecute(Sender: TObject);
-    procedure ToggleBetaModeActionExecute(Sender: TObject);
+    procedure ToggleDebugLogModeActionExecute(Sender: TObject);
     procedure ShowRequestAsXmlGridActionExecute(Sender: TObject);
     procedure ShowRequestAsXmlGridActionUpdate(Sender: TObject);
     procedure ShowReplyAsXmlGridActionExecute(Sender: TObject);
@@ -5645,7 +5647,7 @@ begin
                                    );
        try
          Connected := True;
-         ShowMessage ('Database connected');
+         ShowMessage ('Database ' + DatabaseName + ' connected OK');
          Connected := False;
          result := True;
        except
@@ -6428,7 +6430,6 @@ begin
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
   wsdlStubSnapshotsFileName := xIniFile.StringByName['wsdlStubSnapshotsFileName'];
   DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
-  BetaMode := xIniFile.BooleanByNameDef['BetaMode', False];
   ListofOperationsMenuItem.Checked := xIniFile.BooleanByNameDef
     ['ListofOperationsVisible', True];
   ScriptPanel.Visible := ListofOperationsMenuItem.Checked;
@@ -6578,6 +6579,7 @@ begin
   UpdateVisibiltyOfOperations;
   _OnParseErrorEvent := ParserError;
   _WsdlOnMessageChange := OnMessageChanged;
+  _WsdlSQLConnectorLog := SQLConnectorLog;
   try
     UpdateVisibiltyTreeView(False);
   except
@@ -6652,7 +6654,6 @@ begin
   ClearConsole;
   xIniFile := TFormIniFile.Create(self, False);
   xIniFile.BooleanByName['DisclaimerAccepted'] := DisclaimerAccepted;
-  xIniFile.BooleanByName['BetaMode'] := BetaMode;
   xIniFile.BooleanByName['doShowDesignAtTop'] := doShowDesignAtTop;
   xIniFile.StringByName['RecentFiles'] := ReopenCaseList.Text;
   xIniFile.StringByName['ColumnWidths'] := ColumnWidths.Text;
@@ -8387,7 +8388,7 @@ begin
         if (Items.Count = 0) and (TypeDef.ElementDefs.Count > 0) then
           xExtRecurVisible := True;
       end;
-      xAddChildVisible := xAddChildVisible { }{ and BetaMode{ } ;
+      xAddChildVisible := xAddChildVisible { }{ and DebugLogMode{ } ;
       xEnableCheck := Items.Count > 0;
       xEnableStamp := Items.Count = 0;
       CopySwiftdatatoclipboardMenuItem.Visible :=
@@ -9518,9 +9519,9 @@ begin
   end;
 end;
 
-procedure TMainForm.ToggleBetaModeActionExecute(Sender: TObject);
+procedure TMainForm.ToggleDebugLogModeActionExecute(Sender: TObject);
 begin
-  BetaMode := not BetaMode;
+  DebugLogMode := not DebugLogMode;
 end;
 
 procedure TMainForm.SetAbortPressed(const Value: Boolean);
@@ -13467,6 +13468,25 @@ end;
 procedure TMainForm.NavigateHierarchyActionUpdate(Sender: TObject);
 begin
   NavigateHierarchyAction.Enabled := (Assigned (se)) and (se.Wsdls.Count > 0);
+end;
+
+procedure TMainForm.SQLConnectorLog(Sender: TSQLConnection;
+  EventType: TDBEventType; const Msg: String);
+var
+  s: String;
+begin
+  if not DebugLogMode then Exit;
+  case EventType of
+    detCustom: s := 'detCustom';
+    detPrepare: s := 'detPrepare';
+    detExecute: s := 'detExecute';
+    detFetch: s := 'detFetch';
+    detCommit: s := 'detCommit';
+    detRollBack: s := 'detRollBack';
+    detParamValue: s := 'detParamValue';
+    detActualSQL: s := 'detActualSQL';
+  end;
+  try SjowMessage(s + ': ' + Msg); except end;
 end;
 
 procedure TMainForm.TreeViewColumnClick(Sender: TBaseVirtualTree;

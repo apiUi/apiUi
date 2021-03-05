@@ -1996,6 +1996,7 @@ When "true" apiUi will try to connect the database when apiUi gets activated</xs
 										<xs:enumeration value="MSSQLServer"/>
 										<xs:enumeration value="ODBC"/>
 										<xs:enumeration value="Oracle"/>
+										<xs:enumeration value="SQLite3"/>
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:element>
