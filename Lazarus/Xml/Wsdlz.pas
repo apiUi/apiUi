@@ -463,7 +463,6 @@ type
       procedure ExecuteReqStampers;
       procedure PrepareRpyStamper (aBind: TCustomBindable);
       procedure ExecuteRpyStampers;
-      procedure InitExecute;
       procedure CheckScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);
       procedure Execute (aStringList: TJBStringList; aOnError: TOnErrorEvent);
       procedure ExecuteBefore;
@@ -554,7 +553,6 @@ type
       ColumnXmls: TBindableList;
       Documentation: String;
       DocumentationEdited: Boolean;
-      Disabled: Boolean;
       function thisMessage: TWsdlMessage;
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
@@ -617,6 +615,7 @@ function SubStringX ( s: String; i, c: Extended): String;
 function isAccordingSchema (aObject: TObject): Extended;
 function isAssigned (aObject: TObject): Extended;
 procedure ResetOperationCounters;
+function SqlSelectResultRow (aOperation: TWsdlOperation; aQuery: String): TParserStringList;
 function EnvVarMatchList (aOperation: TWsdlOperation; aExpr: String): TParserStringList;
 procedure ResetEnvVars (aOperation: TWsdlOperation; aRegExp: String);
 procedure ResetEnvVar (aOperation: TWsdlOperation; aName: String);
@@ -667,6 +666,7 @@ var
   _wsdlStubStylesheet: String;
   _wsdlGetContext: SFunctionV;
   _wsdlSetContext: SFunctionS;
+  _WsdlExecSql: VFunctionOS;
   _WsdlNewDesignMessage: VFunctionOSS;
   _wsdlFetchDefaultDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
@@ -697,7 +697,6 @@ var
   _WsdlTacoConfigXsd: TXsd;
   _WsdlKafkaConfigXsd: TXsd;
   _WsdlUserNameTokenNumber: Integer;
-  _WsdlDisableOnCorrelate: Boolean;
   _WsdlOnMessageChange: TOnMessageChange;
   _WsdlOnOperationChange: TOnOperationChange;
   _OnChange: TOnChange;
@@ -1171,6 +1170,39 @@ begin
   end;
 end;
 
+function SqlSelectResultRow(aOperation: TWsdlOperation; aQuery: String
+  ): TParserStringList;
+var
+  xRow: String;
+  xSep: String;
+  x: Integer;
+begin
+  _WsdlDbsConnector.Connected := True;
+  result := TParserStringList.Create;
+  with TSQLQuery.Create(nil) do
+  try
+    Database := _WsdlDbsConnector;
+    Transaction := _WsdlDbsTransaction;
+    SQL.Text := aQuery;
+    Open;
+    while not EOF do
+    begin
+      xRow := '';
+      xSep := '';
+      for x := 0 to FieldCount - 1 do
+      begin
+        xRow := xRow + xSep + Fields.Fields[x].Text;
+        xSep := Chr (9);
+      end;
+      result.Add(xRow);
+      Next;
+    end;
+    Close;
+  finally
+    Free;
+  end;
+end;
+
 function EnvVarMatchList (aOperation: TWsdlOperation; aExpr: String): TParserStringList;
 var
   i: Integer;
@@ -1391,6 +1423,13 @@ begin
   _wsdlFetchDefaultDesignMessage (aObject, aOperation);
 end;
 
+procedure wsdlExecSql (aObject: TObject; aQuery: String);
+begin
+  if not Assigned (_WsdlExecSql) then
+    raise Exception.Create('WsdlExecSql: implementation missing');
+  _WsdlExecSql (aObject, aQuery);
+end;
+
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation, aName: String);
 begin
   if not Assigned (_WsdlNewDesignMessage) then
@@ -1449,44 +1488,14 @@ end;
 
 procedure EnableMessage (aOperation: TWsdlOperation);
 begin
-  if Assigned (aOperation)
-  and Assigned (aOperation.CorrelatedMessage)
-  and aOperation.CorrelatedMessage.Disabled then
-  begin
-    aOperation.CorrelatedMessage.Disabled := False;
-    if Assigned (_WsdlOnMessageChange) then
-      _WsdlOnMessageChange (aOperation.CorrelatedMessage);
-  end;
 end;
 
 procedure EnableAllMessages;
-var
-  o, m: Integer;
 begin
-  for o := 0 to allOperations.Count - 1 do
-  begin
-    with allOperations.Operations[o] do
-    begin
-      for m := 0 to Messages.Count - 1 do
-      begin
-        Messages.Messages[m].Disabled := False;
-      end;
-    end;
-  end;
-  if Assigned (_OnChange) then
-    _OnChange;
 end;
 
 procedure DisableMessage (aOperation: TWsdlOperation);
 begin
-  if Assigned (aOperation)
-  and Assigned (aOperation.CorrelatedMessage)
-  and not aOperation.CorrelatedMessage.Disabled then
-  begin
-    aOperation.CorrelatedMessage.Disabled := True;
-    if Assigned (_WsdlOnMessageChange) then
-      _WsdlOnMessageChange (aOperation.CorrelatedMessage);
-  end;
 end;
 
 function OccurrencesX (aObject: TObject): Extended;
@@ -3550,6 +3559,7 @@ begin
   ContentType := 'text/xml;charset=utf-8';
   Accept := ContentType;
   StubAction := saStub;
+  sslVersion := sslvTLSv1_2;
   StubHttpAddress := '';
   httpVerb := 'POST';
   ConsumeType := ptJson;
@@ -3743,8 +3753,7 @@ begin
           xDefault := Messages.Messages [x]
         else
         begin
-          if (not Messages.Messages[x].Disabled)
-          and _Match (Messages.Messages[x].CorrelationBindables, CorrelationBindables) then
+          if _Match (Messages.Messages[x].CorrelationBindables, CorrelationBindables) then
           begin
             result := Messages.Messages [x];
           end;
@@ -3753,16 +3762,6 @@ begin
       end;
       if not Assigned (Result) then
         Result := xDefault;
-      if Assigned (Result) then
-      begin
-        if not Result.Disabled then // optimized...
-        begin
-          result.Disabled := _WsdlDisableOnCorrelate;
-          if result.Disabled
-          and Assigned (_WsdlOnMessageChange) then
-            _WsdlOnMessageChange (result);
-        end;
-      end;
     except
       result := xDefault;
     end;
@@ -3878,6 +3877,7 @@ begin
     BindScriptFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindScriptFunction ('ExecuteScriptLater', @ExecuteScriptLater, VFOSX, '(aScript, aLaterMs)');
+    BindScriptFunction ('ExecSql', @wsdlExecSql, VFOS, '(aQuery)');
     BindScriptFunction ('Exit', @RaiseExit, VFOV, '()');
     BindScriptFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
     BindScriptFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
@@ -3921,6 +3921,7 @@ begin
     BindScriptFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindScriptFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindScriptFunction ('SetContext', @SetContext, SFS, '(aContextName)');
+    BindScriptFunction ('SqlSelectResultRow', @SqlSelectResultRow, SLFOS, '(aSqlSelectQuery)');
     BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
     BindScriptFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindScriptFunction ('EnableMessage', @EnableMessage, VFOV, '()');
@@ -3928,6 +3929,7 @@ begin
     BindScriptFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindScriptFunction ('SeparatedString', @SeparatedStringList, SLFOSS, '(aString, aSeparator)');
     BindScriptFunction ('SeparatedStringN', @SeparatedStringN, SFOSSX, '(aString, aSeparator, aIndex)');
+    BindScriptFunction ('SeparatedStringT', @SeparatedStringT, SFOSSX, '(aString, aSeparator, aIndex)');
     BindScriptFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindScriptFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
     BindScriptFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
@@ -6311,17 +6313,6 @@ begin
   end;
   xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingAddressPath'];
   OnRequestViolatingAddressPath := rvsDefault;
-  if Assigned (xXml) then
-  begin
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['UseProjectDefault']) then
-      OnRequestViolatingAddressPath := rvsDefault;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['Continue']) then
-      OnRequestViolatingAddressPath := rvsContinue;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
-      OnRequestViolatingAddressPath := rvsRaiseErrorMessage;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['AddRemark']) then
-      OnRequestViolatingAddressPath := rvsAddRemark;
-  end;
   xXml := aXml.Items.XmlCheckedItemByTag['ResolveAliasses'];
   resolveRequestAliasses := True;
   resolveReplyAliasses := True;
@@ -6461,10 +6452,6 @@ procedure TWsdlOperation.ExecuteRpyStampers;
   end;
 begin
   _Stamp (rpyBind);
-end;
-
-procedure TWsdlOperation .InitExecute ;
-begin
 end;
 
 procedure TWsdlOperation.CheckScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);

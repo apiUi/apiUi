@@ -1,14 +1,24 @@
 swagger: '2.0'
 info:
   description: ''
-  version: ''
-  title: ''
+  version: '10.5.1'
+  title: 'apiUi interface'
 host: __hostname__
 schemes:
   - http
   - https
 basePath: /apiUi/api
 paths:
+  /about:
+    get:
+      summary: return about informaton
+      description: ''
+      operationId: zzAbout
+      produces:
+        - application/json
+      responses:
+        '200':
+          decsription: Success response
   /context:
     get:
       summary: Get apiUi project context
@@ -106,7 +116,7 @@ paths:
           decsription: Success response
   /logs/snapshot:
     post:
-      summary: summary
+      summary: Save current logs to a snapshot
       description: ''
       operationId: zzTakeSnapshot
       consumes:
@@ -123,9 +133,20 @@ paths:
       responses:
         '200':
           decsription: Success response
+  /notifications:
+    get:
+      summary: retrieves list of notifications
+      description:
+      operationId: zzNotifications
+      produces:
+        - application/json
+      parameters:
+      responses:
+        '200':
+          decsription: Success response
   /snapshot/checkregression:
     post:
-      summary: summary
+      summary: Create a json Regression report 
       description: ''
       operationId: zzCheckSnapshotRegression
       consumes:
@@ -149,7 +170,7 @@ paths:
             $ref: '#/definitions/checkRegresssionRpy'
   /snapshot/checkschemacompliancy:
     post:
-      summary: summary
+      summary: Create a json SchemaCompliancy report 
       description: ''
       operationId: zzCheckSnapshotSchemaCompliancy
       consumes:
@@ -214,10 +235,10 @@ paths:
       responses:
         '200':
           description: Success response
-  /executeScript:
+  /executescript:
     post:
-      summary: summary
-      description: ''
+      summary: execute the named script
+      description: 'The message is accepted and execution of the named script has started'
       operationId: zzExecuteScript
       consumes:
         - application/json
@@ -231,7 +252,7 @@ paths:
           schema:
             $ref: '#/definitions/executeScriptReq'
       responses:
-        '200':
+        '202':
           decsription: Success response
           schema:
             $ref: '#/definitions/executeScriptRpy'
@@ -311,7 +332,7 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/refreshRpy'
-  /regressionReport:
+  /regressionreport:
     post:
       summary: summary
       description: ''
@@ -334,7 +355,7 @@ paths:
             $ref: '#/definitions/regressionReportRpy'
   /resetEnvVar:
     post:
-      summary: summary
+      summary: resets the named environment variable
       description: ''
       operationId: zzResetEnvVar
       consumes:
@@ -355,7 +376,7 @@ paths:
             $ref: '#/definitions/resetEnvVarRpy'
   /resetEnvVars:
     post:
-      summary: summary
+      summary: Will reset all the environment variables that match the regular expression
       description: ''
       operationId: zzResetEnvVars
       consumes:
@@ -376,7 +397,7 @@ paths:
             $ref: '#/definitions/resetEnvVarsRpy'
   /setEnvVar:
     post:
-      summary: summary
+      summary: sets an envirnment variable
       description: ''
       operationId: zzSetEnvVar
       consumes:
@@ -416,6 +437,36 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/shutDownRpy'
+  /swagger.yaml:
+    get:
+      summary: return this yaml
+      description: ''
+      operationId: zzSwaggerYaml
+      produces:
+        - application/yaml
+      responses:
+        '200':
+          decsription: Success response
+  /testconnection:
+    get:
+      summary: testconnection
+      description: ''
+      operationId: zzTestConnection
+      produces:
+        - application/yaml
+      responses:
+        '200':
+          decsription: Success response
+  /testsummaryreport:
+    get:
+      summary: get the testsummary in html
+      description: ''
+      operationId: zzSummaryInHtml
+      produces:
+        - text/html
+      responses:
+        '200':
+          decsription: Success response
   /versionInfo:
     get:
       summary: get apiUi version information

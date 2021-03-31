@@ -208,6 +208,7 @@ implementation
 
 function sslVersionToString (aSslVersion : TIdSSLVersion ): String ;
 begin
+  result := 'TLS Version 1.2';
   case aSslVersion of
     sslvSSLv2:   result := 'SSL Version 2';
     sslvSSLv23:  result := 'SSL Version 2.3';

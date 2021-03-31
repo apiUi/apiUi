@@ -1439,6 +1439,7 @@ begin
   begin
     OpenApiReplyToBindables(Operation);
     result := TXml.Create;
+    result.Name := Operation.rpyXml.Name;
     result.CopyDownLine(Operation.rpyXml, True);
     Exit;
 {

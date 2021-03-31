@@ -173,6 +173,7 @@ uses
 // , XsBuiltIns
    , SwiftUnit
    , base64
+   , MarkdownProcessor
    ;
 
 procedure ShowText (aCaption, aText: String);
@@ -1433,10 +1434,18 @@ begin
     s := s + (aBind as TXmlAttribute).XsdAttr.Appinfo.Text;
   if aBind is TXml then
     s := s + (aBind as TXml).AppinfoText;
+  aHtmlViewer.SetHtmlFromStr(textToHtml(s));
+{
   try
-    aHtmlViewer.SetHtmlFromStr(textToHtml(s));
+    with TMarkdownProcessor.createDialect(mdCommonMark) do
+    try
+      aHtmlViewer.SetHtmlFromStr(process(s)));
+    finally
+      free;
+    end;
   except
   end;
+}
 end;
 
 {

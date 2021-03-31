@@ -1364,6 +1364,7 @@ function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): Str
           SSLOptions.VerifyMode := [];
         end;
       end;
+      lHTTP.Request.UserAgent := 'Mozilla/4.0 (compatible; httpget)';
       lHTTP.Get(aURL, lStream);
       lStream.Position := 0;
       Result := lStream.ReadString(lStream.Size);

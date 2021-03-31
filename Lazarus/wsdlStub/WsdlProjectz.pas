@@ -66,6 +66,7 @@ uses Classes
   ;
 
 type TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
+type TCORSType = (corsException, corsRefuse, corsAcceptWithoutLogging, corsAcceptWithLogging);
 type TProcedure = procedure of Object;
 type TProcedureB = procedure (arg: Boolean) of Object;
 type TProcedureS = procedure (arg: String) of Object;
@@ -247,6 +248,8 @@ type
     OnBooleanDialog: TBooleanFunctionString;
     OnQuitEvent: TStringFunctionBoolean;
     LastFocusedOperation: TWsdlOperation;
+    CORS: TCORSType;
+    corsExceptionHttpCode: Integer;
     procedure OnBeforeFileRead (aFileName: String);
     procedure doRegressionReport (aReport: TSnapshot);
     procedure DatabaseConnectionSpecificationFromXml;
@@ -383,8 +386,6 @@ type
     function FindOperationOnLog (aLog: TLog): TWsdlOperation;
     procedure CreateReply ( aLog: TLog; aIsActive: Boolean);
     function ProjectLogOptionsAsXml: TXml;
-    function ProjectScriptsAsXml: TXml;
-    procedure ProjectScriptsFromXml (aXml: TXml);
     procedure RefreshCommand;
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
     function BooleanPromptDialog (aPrompt: String): Boolean;
@@ -770,6 +771,39 @@ begin
       dOperation.reqXml.LoadValues (xMessage.reqXml, True, True);
     if dOperation.rpyBind is TXml then
       dOperation.rpyXml.LoadValues (xMessage.rpyXml, True, True);
+  end;
+end;
+
+procedure ExecSql(aContext: TObject; aSqlCommand: String);
+var
+  xProject: TWsdlProject;
+  xOperation: TWsdlOperation;
+  xMessage: TWsdlMessage;
+  x: Integer;
+  xDoCommit: Boolean;
+begin
+  xProject := nil; //candidate context
+  xOperation := nil; //candidate context
+  xMessage := nil;
+  xDoCommit := True;
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    xProject := Owner as TWsdlProject;
+  end
+  else
+  begin
+    if aContext is TWsdlProject then
+    begin
+      xProject := aContext as TWsdlProject;
+    end;
+  end;
+  if not Assigned (xProject) then
+   raise Exception.Create('ExecSql(aContext: TObject; aUseTransAction, aSqlCommand: String)');
+  if xDoCommit then _WsdlDbsConnector.Transaction.Active := True;
+  try
+    _WsdlDbsConnector.ExecuteDirect(aSqlCommand);
+  finally
+    if xDoCommit then _WsdlDbsConnector.Transaction.Commit;
   end;
 end;
 
@@ -1518,6 +1552,7 @@ begin
   projectContexts.CellValue[0, 0] := ' ';
   remoteServerConnectionXml := TXml.CreateAsString ('remoteServerConnection', '');
   DatabaseConnectionSpecificationXml := TXml.CreateAsString ('DatabaseConnection', '');
+  DatabaseConnectionSpecificationXml.Checked := False;
   UnknownOpsReqReplactementsXml := TXml.CreateAsString ('reqReplacements', '');
   UnknownOpsRpyReplactementsXml := TXml.CreateAsString ('rpyReplacements', '');
   ppLock := TCriticalSection.Create;
@@ -2283,9 +2318,22 @@ begin
     AddXml (TXml.CreateAsInteger('MaxDepthWhenRecursive', xsdMaxDepthBillOfMaterials));
     AddXml (TXml.CreateAsInteger('MaxDepthXmlGen', xsdMaxDepthXmlGen));
   end;
-  with result.AddXml (TXml.CreateAsString('OnCorrelate', '')) do
+  with result.AddXml (TXml.CreateAsString('CORS', '')) do
   begin
-    AddXml (TXml.CreateAsBoolean('DisableMessage', _WsdlDisableOnCorrelate));
+    if CORS = corsException then
+    with AddXml (TXml.CreateAsString('exceptionResponse', '')) do
+    begin
+      AddXml (TXml.CreateAsInteger('responseCode', corsExceptionHttpCode));
+    end;
+    if CORS = corsRefuse then
+      AddXml (TXml.CreateAsString('refuse', ''));
+    if CORS in [corsAcceptWithLogging, corsAcceptWithoutLogging] then
+    begin
+      with AddXml (TXml.CreateAsString('accept', '')) do
+      begin
+        AddXml (TXml.CreateAsBoolean('showInLog', CORS = corsAcceptWithLogging));
+      end;
+    end;;
   end;
   with result.AddXml (TXml.CreateAsString('UnknownOperations', '')) do
   begin
@@ -2348,56 +2396,6 @@ begin
     CopyDownLine(DatabaseConnectionSpecificationXml, True);
 end;
 
-function TWsdlProject.ProjectScriptsAsXml : TXml ;
-var
-  x: Integer;
-begin
-  result := TXml.CreateAsString('projectScripts', '');
-  with result.AddXml (TXml.CreateAsString('Scripts', '')) do
-    CopyDownLine(Scripts, True);
-  with result.AddXml (TXml.CreateAsString('Operations', '')) do
-  begin
-    for x := 0 to allAliasses.Count - 1 do
-    begin
-      with AddXml (TXml.CreateAsString('Operation', '')) do
-      begin
-        AddXml (TXml.CreateAsString('Alias', allAliasses.Operations[x].Alias));
-        AddXml (TXml.CreateAsString('BeforeScript', allAliasses.Operations[x].BeforeScriptLines.Text));
-        AddXml (TXml.CreateAsString('AfterScript', allAliasses.Operations[x].AfterScriptLines.Text));
-      end;
-    end;
-  end;
-end;
-
-procedure TWsdlProject.ProjectScriptsFromXml (aXml : TXml );
-var
-  xXml, oXml: TXml;
-  x, f: Integer;
-begin
-  if (not Assigned (aXml))
-  or (aXml.Name <> 'projectScripts') then
-    Exit;
-  xXml := aXml.Items.XmlItemByTag['Scripts'];
-  if Assigned (xXml) then
-    Scripts.CopyDownLine(xXml, True);
-  xXml := aXml.Items.XmlItemByTag['Operations'];
-  if Assigned (xXml) then
-  begin
-    for x := 0 to xXml.Items.Count -1 do
-    begin
-      oXml := xXml.Items.XmlItems[x];
-      if allAliasses.Find(oXml.Items.XmlValueByTag['Alias'], f) then
-      begin
-        with allAliasses.Operations[f] do
-        begin
-          BeforeScriptLines.Text := oXml.Items.XmlValueByTag['BeforeScript'];
-          AfterScriptLines.Text := oXml.Items.XmlValueByTag['AfterScript'];
-        end;
-      end;
-    end;
-  end;
-end;
-
 procedure TWsdlProject.RefreshCommand;
 var
   wasActive: Boolean;
@@ -2452,7 +2450,6 @@ begin
       with AddXml (TXml.Create) do
         CopyDownLine(Listeners.SpecificationXml, True);
       AddXml (remoteServerConnectionAsXml);
-      AddXml (TXml.CreateAsBoolean('DisableOnCorrelate', _WsdlDisableOnCorrelate));
       AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, uncFilename(projectFileName)));
       AddXml (TXml.CreateAsString('PathPrefixes', xmlio.PathPrefixes.Text));
       with AddXml(TXml.CreateAsString('Environments', '')) do
@@ -2838,7 +2835,6 @@ begin
           Listeners.SpecificationXml.CopyDownLine(sXml, True);
           Listeners.FromXml(HaveStompFrame);
         end;
-        _WsdlDisableOnCorrelate := aXml.Items.XmlBooleanByTagDef['DisableOnCorrelate', False];
         eXml := aXml.Items.XmlItemByTag ['projectOptions'];
         if Assigned (eXml) then
         begin
@@ -3807,16 +3803,17 @@ begin
   wrdFunctionz.wrdNewDocumentAsReference := False;
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
   RemoteControlPortNumber := 3738;
-  OnRequestViolatingAddressPath:=rvsContinue;
+  OnRequestViolatingAddressPath := rvsRaiseErrorMessage;
   xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
   xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
-  _WsdlDisableOnCorrelate := False;
   OperationsWithEndpointOnly := True;
   SaveRelativeFileNames := True;
   CurrentFolder := '';
   ReferenceFolder := '';
   ReportsFolder := '';
   notStubbedExceptionMessage := 'No operation recognised';
+  CORS := corsAcceptWithoutLogging;
+  corsExceptionHttpCode := 500;
 
   if not aXml.Checked then Exit;
   with aXml.Items do
@@ -3849,10 +3846,26 @@ begin
       xsdMaxDepthBillOfMaterials := xXml.Items.XmlCheckedIntegerByTagDef['MaxDepthWhenRecursive', xsdMaxDepthBillOfMaterials];
       xsdMaxDepthXmlGen := xXml.Items.XmlCheckedIntegerByTagDef['MaxDepthXmlGen', xsdMaxDepthXmlGen];
     end;
-    xXml := XmlCheckedItemByTag ['OnCorrelate'];
+    xXml := XmlCheckedItemByTag ['CORS'];
     if Assigned (xXml) then
     begin
-      _WsdlDisableOnCorrelate := xXml.Items.XmlCheckedBooleanByTagDef['DisableMessage', _WsdlDisableOnCorrelate];
+      if Assigned (xXml.Items.XmlCheckedItemByTag ['exceptionResponse']) then
+      begin
+        CORS := corsException;
+        with xXml.Items.XmlItemByTag ['exceptionResponse'].Items do
+        begin
+          corsExceptionHttpCode := XmlIntegerByTagDef['responseCode', corsExceptionHttpCode];
+        end;
+      end;
+      if Assigned (xXml.Items.XmlCheckedItemByTag ['refuse']) then
+        CORS := corsRefuse;
+      if Assigned (xXml.Items.XmlCheckedItemByTag ['accept']) then
+      begin
+        if xXml.Items.XmlCheckedItemByTag ['accept'].Items.XmlCheckedBooleanByTagDef['showInLog', False] then
+          CORS := corsAcceptWithLogging
+        else
+          CORS := corsAcceptWithoutLogging;
+      end;
     end;
     xXml := XmlCheckedItemByTag ['UnknownOperations'];
     if Assigned (xXml) then
@@ -7768,7 +7781,7 @@ begin
         end;
 
         if (Count = 4)
-        and (Strings[3] = 'testSummaryReport')
+        and (Strings[3] = 'testsummaryreport')
         and (ARequestInfo.Command = 'GET')
         then begin
           AResponseInfo.ContentText := _htmlreportTestSummary;
@@ -8241,7 +8254,7 @@ begin
         end;
 
         if (Count = 4)
-        and (Strings[3] = 'executeScript')
+        and (Strings[3] = 'executescript')
         then begin
           nameXml := xBodyXml.FindXml('json.name');
           if not Assigned (nameXml) then
@@ -8373,6 +8386,24 @@ end;
 
 procedure TWsdlProject.HTTPServerCommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+  function _hasCorsHeaders (aList: TStringList): boolean;
+  var
+    x: Integer;
+  begin
+    result := false;
+    for x := 0 to aList.count - 1 do
+    begin
+      if AnsiStartsText('Access-Control-Request', aList.Strings[x]) then
+        result := true;
+    end;
+  end;
+  procedure _acceptCorsRequest (aRpyList: TStringList);
+  begin
+    aRpyList.Add ('Access-Control-Allow-Origin: *');
+    aRpyList.Add ('Access-Control-Allow-Methods: *');
+    aRpyList.Add ('Access-Control-Allow-Headers: *');
+    aRpyList.Add ('Access-Control-Max-Age: 600');
+  end;
 var
   xLog: TLog;
   xProcessed: Boolean;
@@ -8383,6 +8414,22 @@ begin
   xProcessed := False;
   try // finally set for hhtp reply
   //xDocument := '/' + _ProgName + '/api';
+    if (ARequestInfo.Command = 'OPTIONS')
+    and _hasCorsHeaders (ARequestInfo.RawHeaders) then
+    begin
+      AResponseInfo.ResponseNo := 204;
+      AResponseInfo.ContentEncoding := 'identity';
+      if CORS = corsException then
+      begin
+        AResponseInfo.ResponseNo := corsExceptionHttpCode;
+        Exit;
+      end;
+      if CORS = corsRefuse then
+        Exit;
+      _acceptCorsRequest (AResponseInfo.CustomHeaders);
+      if CORS = corsAcceptWithoutLogging then
+        exit;
+    end;
     xDocument := '/apiUi/api';
     if (ARequestInfo.Document = xDocument)
     or AnsiStartsStr(xDocument + '/', ARequestInfo.Document)
@@ -8396,6 +8443,7 @@ begin
     {$endif}
     try
       xLog := TLog.Create;
+      xLog.ReplyHeaders := AResponseInfo.CustomHeaders.Text;
       xLog.InboundTimeStamp := Now;
       xLog.httpUri := ARequestInfo.URI;
       xLog.TransportType := ttHttp;
@@ -8406,7 +8454,10 @@ begin
       xLog.RequestContentType := ARequestInfo.RawHeaders.Values['Content-Type'];
       xLog.ReplyContentType := xLog.RequestContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
-      xlog.httpResponseCode := 200;
+      if AResponseInfo.ResponseNo = 0 then
+        xlog.httpResponseCode := 200
+      else
+        xLog.httpResponseCode := AResponseInfo.ResponseNo;
       AResponseInfo.ContentEncoding := 'identity';
       try
         if (ARequestInfo.Command = 'PATCH')
@@ -9663,8 +9714,7 @@ var
   x: Integer;
 begin
   for x := 0 to aOperation.Messages.Count - 1 do
-    if not aOperation.Messages.Messages[x].Disabled then
-      SendMessage (aOperation, aOperation.Messages.Messages[x], '');
+    SendMessage (aOperation, aOperation.Messages.Messages[x], '');
 end;
 
 procedure TWsdlProject.Clean;
@@ -10289,6 +10339,8 @@ begin
   projectContexts.RowCount := 1;
   projectContexts.ColCount := 1;
   DatabaseConnectionSpecificationXml.Items.Clear;
+  DatabaseConnectionSpecificationXml.Reset;
+  DbsType := '';
   Scripts.Items.Clear;
   displayedLogs.Clear;
   archiveLogs.Clear;
@@ -10304,7 +10356,6 @@ begin
   outboundRequestSchemaValidationType := svReportOnly;
   inboundReplySchemaValidationType := svReportOnly;
   schemaValidationVioloationHttpResponseCode := 417;
-  _WsdlDisableOnCorrelate := False;
   ignoreDifferencesOn.Clear;
   checkValueAgainst.Clear;
   ignoreAddingOn.Clear;
@@ -10320,6 +10371,8 @@ begin
   ignoreCoverageOn.Clear;
   DisplayedLogColumns.Clear;
   EnvironmentListClear;
+  CORS := corsAcceptWithoutLogging;
+  corsExceptionHttpCode := 500;
   LastFocusedOperation := nil;
   while Wsdls.Count > 0 do
   begin
@@ -10568,6 +10621,8 @@ begin
   DbsUserName:='';
   DbsPassword := '';
   hXml := TXml.Create;
+  if DatabaseConnectionSpecificationXml.Checked = False then
+    Exit;
   try
     hXml.CopyDownLine(DatabaseConnectionSpecificationXml, True);
     hXml.ResolveAliasses;
@@ -10582,6 +10637,8 @@ begin
   finally
     hXml.Free;
   end;
+  if DbsType = '' then
+    Exit;
   with _WsdlDbsConnector do
   begin
     ConnectorType := DbsType;
@@ -10763,6 +10820,7 @@ initialization
   _WsdlRequestOperation := RequestOperation;
   _WsdlRequestOperationLater := RequestOperationLater;
   _WsdlNewDesignMessage := NewDesignMessage;
+  _WsdlExecSql := ExecSql;
   _wsdlFetchDefaultDesignMessage := FetchDefaultDesignMessage;
   _WsdlRequestAsText := RequestAsText;
   _WsdlReplyAsText := ReplyAsText;

@@ -352,26 +352,17 @@ end;
 
 procedure TEditOperationScriptForm.Grammar1Click(Sender: TObject);
 begin
-   OpenDocument(PChar ( ExtractFilePath (ParamStr(0))
-                       + '\Documentation\Grammar.htm'
-                       )
-               ); { *Converted from ShellExecute* }
+  OpenDocument(PChar ('https://www.apiui.org/scripting/#grammar'));
 end;
 
 procedure TEditOperationScriptForm.Helponfunctions1Click(Sender: TObject);
 begin
-  OpenDocument(PChar ( ExtractFilePath (ParamStr(0))
-                      + '\Documentation\BuiltInapiUi.htm'
-                      )
-              ); { *Converted from ShellExecute* }
+  OpenDocument(PChar ('https://www.apiui.org/scripting/#scripting'));
 end;
 
 procedure TEditOperationScriptForm.EmbeddedSQLMenuItemClick(Sender: TObject);
 begin
-   OpenDocument(PChar ( ExtractFilePath (ParamStr(0))
-                       + '\Documentation\EmbeddedSQL.htm'
-                       )
-               ); { *Converted from ShellExecute* }
+  OpenDocument(PChar ('https://www.apiui.org/scripting/#databasesql'));
 end;
 
 function TEditOperationScriptForm.getScriptName: String;

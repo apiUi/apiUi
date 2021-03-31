@@ -1,14 +1,13 @@
 object MainForm: TMainForm
-  Left = 434
-  Height = 807
+  Left = 315
+  Height = 646
   Top = 152
-  Width = 1436
-  ClientHeight = 782
-  ClientWidth = 1436
+  Width = 1467
+  ClientHeight = 618
+  ClientWidth = 1467
   Color = clBtnFace
-  DesignTimePPI = 120
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Menu = MainMenu1
   OnCloseQuery = FormCloseQuery
@@ -21,12 +20,12 @@ object MainForm: TMainForm
   Visible = True
   object MainToolBar: TToolBar
     Left = 0
-    Height = 30
+    Height = 24
     Top = 0
-    Width = 1436
+    Width = 1467
     Caption = 'MainToolBar'
     Font.Color = clWindowText
-    Font.Height = -14
+    Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Images = mainImageList
     ParentFont = False
@@ -37,140 +36,140 @@ object MainForm: TMainForm
       Action = NewStubCaseAction
     end
     object ToolButton23: TToolButton
-      Left = 30
-      Height = 28
+      Left = 24
+      Height = 22
       Top = 2
       Caption = 'ToolButton23'
       ImageIndex = 6
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 38
+      Left = 30
       Top = 2
       Action = OpenProjectAction
     end
     object ToolButton6: TToolButton
-      Left = 67
+      Left = 53
       Top = 2
       Action = ReopenStubCaseAction
     end
     object ToolButton3: TToolButton
-      Left = 96
+      Left = 76
       Top = 2
       Action = SaveStubCaseAction
     end
     object ToolButton4: TToolButton
-      Left = 162
-      Height = 28
+      Left = 128
+      Height = 22
       Top = 2
       Caption = 'ToolButton4'
       ImageIndex = 2
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 170
+      Left = 134
       Top = 2
       Action = OpenWsdlAction
       DropdownMenu = WsdlsPopupMenu
       Style = tbsDropDown
     end
     object ToolButton2: TToolButton
-      Left = 214
-      Height = 28
+      Left = 169
+      Height = 22
       Top = 2
       Caption = 'ToolButton2'
       ImageIndex = 1
       Style = tbsSeparator
     end
     object ToolButton58: TToolButton
-      Left = 222
+      Left = 175
       Top = 2
       Action = ConfigListenersAction
     end
     object ToolButton48: TToolButton
-      Left = 251
-      Height = 28
+      Left = 198
+      Height = 22
       Top = 2
       Caption = 'ToolButton48'
       ImageIndex = 6
       Style = tbsDivider
     end
     object ToolButton43: TToolButton
-      Left = 256
-      Height = 28
+      Left = 202
+      Height = 22
       Top = 2
       Caption = 'ToolButton43'
       ImageIndex = 6
       Style = tbsSeparator
     end
     object ToolButton60: TToolButton
-      Left = 264
+      Left = 208
       Top = 2
       Action = ConfigLogAction
     end
     object ToolButton61: TToolButton
-      Left = 293
-      Height = 28
+      Left = 231
+      Height = 22
       Top = 2
       Caption = 'ToolButton61'
       ImageIndex = 6
       Style = tbsSeparator
     end
     object ToolButton21: TToolButton
-      Left = 301
-      Height = 28
+      Left = 237
+      Height = 22
       Top = 2
       Caption = 'ToolButton21'
       ImageIndex = 5
       Style = tbsDivider
     end
     object startStopButton: TToolButton
-      Left = 306
+      Left = 241
       Top = 2
       Action = startAction
     end
     object ToolButton70: TToolButton
-      Left = 335
-      Height = 28
+      Left = 264
+      Height = 22
       Top = 2
       Caption = 'ToolButton70'
       ImageIndex = 64
       Style = tbsSeparator
     end
     object AbortToolButton: TToolButton
-      Left = 343
+      Left = 270
       Top = 2
       Action = AbortAction
     end
     object SeparatorToolButton: TToolButton
-      Left = 372
-      Height = 28
+      Left = 293
+      Height = 22
       Top = 2
       Caption = 'SeparatorToolButton'
       ImageIndex = 46
       Style = tbsSeparator
     end
     object ThreadsPanel: TPanel
-      Left = 380
-      Height = 28
+      Left = 299
+      Height = 22
       Top = 2
-      Width = 109
+      Width = 87
       BevelOuter = bvNone
       Font.Color = clRed
-      Font.Height = -14
+      Font.Height = -11
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 0
     end
     object ToolButton49: TToolButton
-      Left = 133
+      Left = 105
       Top = 2
       Action = NavigateHierarchyAction
     end
     object ToolButton52: TToolButton
-      Left = 125
-      Height = 28
+      Left = 99
+      Height = 22
       Top = 2
       Caption = 'ToolButton52'
       Style = tbsSeparator
@@ -178,72 +177,72 @@ object MainForm: TMainForm
   end
   object DesignPanel: TPanel
     Left = 0
-    Height = 368
-    Top = 30
-    Width = 1436
+    Height = 287
+    Top = 24
+    Width = 1467
     Align = alClient
     BorderWidth = 2
     Caption = 'DesignPanel'
-    ClientHeight = 368
-    ClientWidth = 1436
+    ClientHeight = 287
+    ClientWidth = 1467
     Font.Color = clWindowText
-    Font.Height = -14
+    Font.Height = -11
     Font.Name = 'MS Sans Serif'
     ParentFont = False
     TabOrder = 0
     object ScriptSplitter: TSplitter
-      Left = 275
-      Height = 362
+      Left = 221
+      Height = 281
       Top = 3
-      Width = 6
+      Width = 5
       OnCanResize = ScriptSplitterCanResize
     end
     object xsdSplitter: TSplitter
-      Left = 1216
-      Height = 362
+      Left = 1290
+      Height = 281
       Top = 3
-      Width = 6
+      Width = 5
       Align = alRight
       OnCanResize = xsdSplitterCanResize
       ResizeAnchor = akRight
     end
     object ScriptPanel: TPanel
       Left = 3
-      Height = 362
+      Height = 281
       Top = 3
-      Width = 272
+      Width = 218
       Align = alLeft
       BorderWidth = 2
-      ClientHeight = 362
-      ClientWidth = 272
+      ClientHeight = 281
+      ClientWidth = 218
       Font.Color = clWindowText
-      Font.Height = -14
+      Font.Height = -11
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       TabOrder = 0
       object ActionToolBar: TToolBar
         Left = 3
-        Height = 36
-        Top = 323
-        Width = 266
+        Height = 29
+        Top = 249
+        Width = 212
         Align = alBottom
         Caption = 'ActionToolBar'
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         Images = mainImageList
         ParentFont = False
         TabOrder = 1
         object ActionComboBox: TComboBox
           Left = 1
-          Height = 24
+          Height = 27
           Hint = 'Select action'
           Top = 2
-          Width = 92
+          Width = 74
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
-          ItemHeight = 16
+          ItemHeight = 0
           Items.Strings = (
             'Inbound'
             'Outbound'
@@ -254,66 +253,53 @@ object MainForm: TMainForm
           TabOrder = 0
         end
         object ToolButton17: TToolButton
-          Left = 93
-          Height = 28
+          Left = 75
+          Height = 22
           Top = 2
           Caption = 'ToolButton17'
           Style = tbsSeparator
         end
         object RedirectAddressButton: TToolButton
-          Left = 101
+          Left = 81
           Hint = 'Set endpoint'
           Top = 2
           Action = RedirectAddressAction
         end
         object ToolButton19: TToolButton
-          Left = 130
-          Height = 28
+          Left = 104
+          Height = 22
           Top = 2
           Caption = 'ToolButton19'
           ImageIndex = 0
           Style = tbsSeparator
         end
         object DelayTimeButton: TToolButton
-          Left = 138
+          Left = 110
           Hint = 'Set delay'
           Top = 2
           Action = OperationDelayResponseTimeAction
         end
         object ToolButton62: TToolButton
-          Left = 167
-          Height = 28
+          Left = 133
+          Height = 22
           Top = 2
           Caption = 'ToolButton62'
           ImageIndex = 1
           Style = tbsSeparator
         end
-        object Button1: TButton
-          Left = 175
-          Height = 28
-          Hint = 'Apply to other services or operations...'
-          Top = 2
-          Width = 68
-          Action = ApplyToAction
-          Font.Color = clWindowText
-          Font.Height = -14
-          Font.Name = 'MS Sans Serif'
-          ParentFont = False
-          TabOrder = 1
-        end
       end
       object NvgtView: TVirtualStringTree
         Left = 3
-        Height = 320
+        Height = 246
         Top = 3
-        Width = 266
+        Width = 212
         Align = alClient
         BottomSpace = 10
         Colors.GridLineColor = clWhite
         Colors.UnfocusedSelectionColor = clWhite
         DefaultNodeHeight = 20
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         Header.AutoSizeIndex = 0
         Header.Columns = <        
@@ -359,55 +345,55 @@ object MainForm: TMainForm
       end
     end
     object XsdPanel: TPanel
-      Left = 1222
-      Height = 362
+      Left = 1295
+      Height = 281
       Top = 3
-      Width = 211
+      Width = 169
       Align = alRight
       BorderWidth = 3
       Caption = 'PropertiesPanel'
-      ClientHeight = 362
-      ClientWidth = 211
+      ClientHeight = 281
+      ClientWidth = 169
       Font.Color = clWindowText
-      Font.Height = -14
+      Font.Height = -11
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       TabOrder = 1
       object Splitter6: TSplitter
         Cursor = crVSplit
         Left = 4
-        Height = 6
-        Top = 66
-        Width = 203
+        Height = 5
+        Top = 54
+        Width = 161
         Align = alTop
         ResizeAnchor = akTop
       end
       object Splitter4: TSplitter
         Cursor = crVSplit
         Left = 4
-        Height = 6
-        Top = 163
-        Width = 203
+        Height = 5
+        Top = 132
+        Width = 161
         Align = alTop
         ResizeAnchor = akTop
       end
       object InWsdlPropertiesListView: TListView
         Left = 4
-        Height = 91
-        Top = 72
-        Width = 203
+        Height = 73
+        Top = 59
+        Width = 161
         Align = alTop
         Columns = <        
           item
             Caption = 'Property'
-            Width = 88
+            Width = 70
           end        
           item
             Caption = 'Value'
-            Width = 89
+            Width = 76
           end>
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         ParentColor = True
         ParentFont = False
@@ -418,9 +404,9 @@ object MainForm: TMainForm
       end
       object DocumentationViewer: TIpHtmlPanel
         Left = 4
-        Height = 189
-        Top = 169
-        Width = 203
+        Height = 140
+        Top = 137
+        Width = 161
         Align = alClient
         BorderStyle = bsSingle
         FixedTypeface = 'Courier New'
@@ -441,9 +427,9 @@ object MainForm: TMainForm
       end
       object OperationDocumentationViewer: TIpHtmlPanel
         Left = 4
-        Height = 62
+        Height = 50
         Top = 4
-        Width = 203
+        Width = 161
         Align = alTop
         BorderStyle = bsSingle
         FixedTypeface = 'Courier New'
@@ -464,76 +450,76 @@ object MainForm: TMainForm
       end
     end
     object MiddlePanel: TPanel
-      Left = 281
-      Height = 362
+      Left = 226
+      Height = 281
       Top = 3
-      Width = 935
+      Width = 1064
       Align = alClient
       Caption = 'MiddlePanel'
-      ClientHeight = 362
-      ClientWidth = 935
+      ClientHeight = 281
+      ClientWidth = 1064
       Font.Color = clWindowText
-      Font.Height = -14
+      Font.Height = -11
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       TabOrder = 4
       object WsdlInfoPanel: TPanel
         Left = 1
-        Height = 46
+        Height = 37
         Top = 1
-        Width = 933
+        Width = 1062
         Align = alTop
-        ClientHeight = 46
-        ClientWidth = 933
+        ClientHeight = 37
+        ClientWidth = 1062
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         ParentFont = False
         TabOrder = 0
         OnResize = WsdlInfoPanelResize
         object OperationLabel: TLabel
-          Left = 448
-          Height = 16
-          Top = 15
-          Width = 62
+          Left = 358
+          Height = 14
+          Top = 12
+          Width = 60
           Caption = 'Operation:'
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentColor = False
           ParentFont = False
         end
         object ServiceLabel: TLabel
-          Left = 208
-          Height = 16
-          Top = 15
-          Width = 49
+          Left = 166
+          Height = 14
+          Top = 12
+          Width = 46
           Caption = 'Service:'
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentColor = False
           ParentFont = False
         end
         object WsdlLabel: TLabel
-          Left = 4
-          Height = 16
-          Top = 15
-          Width = 34
+          Left = 3
+          Height = 14
+          Top = 12
+          Width = 31
           Caption = 'Wsdl:'
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentColor = False
           ParentFont = False
         end
         object WsdlNameEdit: TEdit
-          Left = 41
-          Height = 24
-          Top = 10
-          Width = 159
+          Left = 33
+          Height = 31
+          Top = 8
+          Width = 127
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentColor = True
           ParentFont = False
@@ -542,12 +528,12 @@ object MainForm: TMainForm
           TabOrder = 0
         end
         object WsdlServiceNameEdit: TEdit
-          Left = 259
-          Height = 24
-          Top = 10
-          Width = 182
+          Left = 207
+          Height = 31
+          Top = 8
+          Width = 146
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentColor = True
           ParentFont = False
@@ -556,12 +542,12 @@ object MainForm: TMainForm
           TabOrder = 1
         end
         object WsdlOperationNameEdit: TEdit
-          Left = 514
-          Height = 24
-          Top = 10
-          Width = 182
+          Left = 411
+          Height = 31
+          Top = 8
+          Width = 146
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentColor = True
           ParentFont = False
@@ -572,41 +558,41 @@ object MainForm: TMainForm
       end
       object DataPanel: TPanel
         Left = 1
-        Height = 314
-        Top = 47
-        Width = 933
+        Height = 242
+        Top = 38
+        Width = 1062
         Align = alClient
         Caption = 'DataPanel'
-        ClientHeight = 314
-        ClientWidth = 933
+        ClientHeight = 242
+        ClientWidth = 1062
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         ParentFont = False
         TabOrder = 1
         object GridDataPanel: TPanel
           Left = 1
-          Height = 116
+          Height = 93
           Top = 1
-          Width = 931
+          Width = 1060
           Align = alTop
           Caption = 'GridDataPanel'
-          ClientHeight = 116
-          ClientWidth = 931
+          ClientHeight = 93
+          ClientWidth = 1060
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentFont = False
           TabOrder = 0
           object GridToolBar: TToolBar
             Left = 1
-            Height = 30
+            Height = 24
             Top = 1
-            Width = 929
+            Width = 1058
             AutoSize = True
             Caption = 'GridToolBar'
             Font.Color = clWindowText
-            Font.Height = -14
+            Font.Height = -11
             Font.Name = 'MS Sans Serif'
             Images = mainImageList
             ParentFont = False
@@ -618,143 +604,143 @@ object MainForm: TMainForm
               Action = SelectCorrelationElementAction
             end
             object ToolButton8: TToolButton
-              Left = 30
-              Height = 28
+              Left = 24
+              Height = 22
               Top = 2
               Caption = 'ToolButton8'
               ImageIndex = 8
               Style = tbsSeparator
             end
             object ToolButton9: TToolButton
-              Left = 38
+              Left = 30
               Top = 2
               Action = AddMessageAction
               OnDragOver = ToolButton9DragOver
             end
             object ToolButton20: TToolButton
-              Left = 67
-              Height = 28
+              Left = 53
+              Height = 22
               Top = 2
               Caption = 'ToolButton20'
               ImageIndex = 34
               Style = tbsSeparator
             end
             object ToolButton63: TToolButton
-              Left = 75
+              Left = 59
               Top = 2
               Action = MessagesFromDiskAction
             end
             object ToolButton10: TToolButton
-              Left = 104
-              Height = 28
+              Left = 82
+              Height = 22
               Top = 2
               Caption = 'ToolButton10'
               ImageIndex = 11
               Style = tbsSeparator
             end
             object ToolButton11: TToolButton
-              Left = 112
+              Left = 88
               Top = 2
               Action = DeleteMessageAction
             end
             object ToolButton14: TToolButton
-              Left = 141
-              Height = 28
+              Left = 111
+              Height = 22
               Top = 2
               Caption = 'ToolButton14'
               ImageIndex = 11
               Style = tbsSeparator
             end
             object ToolButton12: TToolButton
-              Left = 149
+              Left = 117
               Top = 2
               Action = MoveUpMessageAction
             end
             object ToolButton13: TToolButton
-              Left = 178
+              Left = 140
               Top = 2
               Action = MoveDownMessageAction
             end
             object ToolButton26: TToolButton
-              Left = 244
-              Height = 28
+              Left = 192
+              Height = 22
               Top = 2
               Caption = 'ToolButton26'
               ImageIndex = 12
               Style = tbsSeparator
             end
             object ToolButton25: TToolButton
-              Left = 252
+              Left = 198
               Top = 2
               Action = SelectMessageColumnsAction
             end
             object ToolButton29: TToolButton
-              Left = 281
-              Height = 28
+              Left = 221
+              Height = 22
               Top = 2
               Caption = 'ToolButton29'
               ImageIndex = 25
               Style = tbsSeparator
             end
             object ToolButton27: TToolButton
-              Left = 289
+              Left = 227
               Top = 2
               Action = CopyGridAction
             end
             object ToolButton28: TToolButton
-              Left = 318
+              Left = 250
               Top = 2
               Action = PasteGridAction
             end
             object ToolButton34: TToolButton
-              Left = 347
-              Height = 28
+              Left = 273
+              Height = 22
               Top = 2
               Caption = 'ToolButton34'
               ImageIndex = 25
               Style = tbsSeparator
             end
             object ToolButton38: TToolButton
-              Left = 355
+              Left = 279
               Top = 2
               Action = CheckGridFieldsAction
             end
             object ToolButton41: TToolButton
-              Left = 384
-              Height = 28
+              Left = 302
+              Height = 22
               Top = 2
               Caption = 'ToolButton41'
               ImageIndex = 13
               Style = tbsSeparator
             end
             object ExecuteRequestToolButton: TToolButton
-              Left = 392
+              Left = 308
               Top = 2
               HelpType = htKeyword
               Action = ExecuteRequestAction
             end
             object ExecuteAllRequestsToolButton: TToolButton
-              Left = 421
+              Left = 331
               Top = 2
               Action = ExecuteAllRequestsAction
             end
             object LastToolButton: TToolButton
-              Left = 479
-              Height = 28
+              Left = 377
+              Height = 22
               Top = 2
               Caption = 'LastToolButton'
               ImageIndex = 33
               Style = tbsSeparator
             end
             object ProgressBar: TProgressBar
-              Left = 487
-              Height = 28
+              Left = 383
+              Height = 22
               Hint = 'Progress'
               Top = 2
-              Width = 116
+              Width = 93
               BorderWidth = 2
               Font.Color = clWindowText
-              Font.Height = -14
+              Font.Height = -11
               Font.Name = 'MS Sans Serif'
               ParentFont = False
               Smooth = True
@@ -762,18 +748,18 @@ object MainForm: TMainForm
               TabOrder = 0
             end
             object ExecuteLoadTextToolbutton: TToolButton
-              Left = 450
+              Left = 354
               Top = 2
               Action = LoadTestAction
             end
             object ToolButton75: TToolButton
-              Left = 215
+              Left = 169
               Top = 2
               Action = ToggleTrackDuplicateMessagesAction
             end
             object ToolButton79: TToolButton
-              Left = 207
-              Height = 28
+              Left = 163
+              Height = 22
               Top = 2
               Caption = 'ToolButton79'
               Style = tbsSeparator
@@ -781,9 +767,9 @@ object MainForm: TMainForm
           end
           object GridView: TVirtualStringTree
             Left = 1
-            Height = 84
-            Top = 31
-            Width = 929
+            Height = 67
+            Top = 25
+            Width = 1058
             Align = alClient
             BottomSpace = 10
             DefaultNodeHeight = 20
@@ -791,7 +777,7 @@ object MainForm: TMainForm
             DragOperations = []
             EditDelay = 0
             Font.Color = clWindowText
-            Font.Height = -14
+            Font.Height = -11
             Font.Name = 'MS Sans Serif'
             Header.AutoSizeIndex = 0
             Header.Columns = <            
@@ -854,50 +840,50 @@ object MainForm: TMainForm
           AnchorSideTop.Control = GridDataPanel
           Cursor = crVSplit
           Left = 1
-          Height = 6
-          Top = 117
-          Width = 931
+          Height = 5
+          Top = 94
+          Width = 1060
           Align = alTop
           ResizeAnchor = akTop
         end
         object TreeDataPanel: TPanel
           Left = 1
-          Height = 190
-          Top = 123
-          Width = 931
+          Height = 142
+          Top = 99
+          Width = 1060
           Align = alClient
           Caption = 'TreeDataPanel'
-          ClientHeight = 190
-          ClientWidth = 931
+          ClientHeight = 142
+          ClientWidth = 1060
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentFont = False
           TabOrder = 2
           object StatusPanel: TPanel
             Left = 1
-            Height = 21
-            Top = 168
-            Width = 929
+            Height = 17
+            Top = 124
+            Width = 1058
             Align = alBottom
             Alignment = taLeftJustify
             BevelInner = bvLowered
             Font.Color = clWindowText
-            Font.Height = -14
+            Font.Height = -11
             Font.Name = 'MS Sans Serif'
             ParentFont = False
             TabOrder = 0
           end
           object ToolBar9: TToolBar
             Left = 1
-            Height = 30
+            Height = 29
             Top = 1
-            Width = 929
+            Width = 1058
             AutoSize = True
             BorderWidth = 2
             Caption = 'ToolBar9'
             Font.Color = clWindowText
-            Font.Height = -14
+            Font.Height = -11
             Font.Name = 'MS Sans Serif'
             Images = mainImageList
             ParentFont = False
@@ -908,67 +894,67 @@ object MainForm: TMainForm
               Action = FindAction
             end
             object ToolButton45: TToolButton
-              Left = 30
+              Left = 24
               Top = 2
               Action = FindNextAction
             end
             object ToolButton46: TToolButton
-              Left = 59
-              Height = 28
+              Left = 47
+              Height = 22
               Top = 2
               Caption = 'ToolButton46'
               ImageIndex = 43
               Style = tbsSeparator
             end
             object ToolButton47: TToolButton
-              Left = 67
+              Left = 53
               Top = 2
               Action = CheckTreeAction
             end
             object ToolButton18: TToolButton
-              Left = 96
-              Height = 28
+              Left = 76
+              Height = 22
               Top = 2
               Caption = 'ToolButton18'
               ImageIndex = 13
               Style = tbsSeparator
             end
             object ToolButton16: TToolButton
-              Left = 104
+              Left = 82
               Top = 2
               Action = ViewMssgAsTextAction
             end
             object ToolButton54: TToolButton
-              Left = 133
-              Height = 28
+              Left = 105
+              Height = 22
               Top = 2
               Caption = 'ToolButton54'
               ImageIndex = 14
               Style = tbsSeparator
             end
             object View: TLabel
-              Left = 141
-              Height = 16
+              Left = 111
+              Height = 14
               Top = 2
-              Width = 32
+              Width = 30
               Caption = 'View:'
               Font.Color = clWindowText
-              Font.Height = -14
+              Font.Height = -11
               Font.Name = 'MS Sans Serif'
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
             end
             object ViewStyleComboBox: TComboBox
-              Left = 173
-              Height = 24
+              Left = 141
+              Height = 27
               Hint = 'View'
               Top = 2
-              Width = 122
+              Width = 98
               Font.Color = clWindowText
-              Font.Height = -14
+              Font.Height = -11
               Font.Name = 'MS Sans Serif'
-              ItemHeight = 16
+              ItemHeight = 0
               Items.Strings = (
                 'All'
                 'Required'
@@ -983,15 +969,15 @@ object MainForm: TMainForm
           end
           object TreeView: TVirtualStringTree
             Left = 1
-            Height = 74
-            Top = 31
-            Width = 929
+            Height = 59
+            Top = 30
+            Width = 1058
             Align = alTop
             DefaultText = 'Node'
             DragOperations = []
             EditDelay = 0
             Font.Color = clWindowText
-            Font.Height = -14
+            Font.Height = -11
             Font.Name = 'MS Sans Serif'
             Header.AutoSizeIndex = -1
             Header.Columns = <            
@@ -1044,13 +1030,13 @@ object MainForm: TMainForm
           end
           object FreeFormatMemo: TMemo
             Left = 1
-            Height = 63
-            Top = 105
-            Width = 929
+            Height = 35
+            Top = 89
+            Width = 1058
             Align = alClient
             Font.CharSet = ANSI_CHARSET
             Font.Color = clWindowText
-            Font.Height = -19
+            Font.Height = -15
             Font.Name = 'Courier New'
             OnChange = FreeFormatMemoChange
             ParentFont = False
@@ -1064,78 +1050,78 @@ object MainForm: TMainForm
   object Splitter1: TSplitter
     Cursor = crVSplit
     Left = 0
-    Height = 6
-    Top = 398
-    Width = 1436
+    Height = 5
+    Top = 311
+    Width = 1467
     Align = alBottom
     ResizeAnchor = akBottom
   end
   object LogPanel: TPanel
     Left = 0
-    Height = 378
-    Top = 404
-    Width = 1436
+    Height = 302
+    Top = 316
+    Width = 1467
     Align = alBottom
-    ClientHeight = 378
-    ClientWidth = 1436
+    ClientHeight = 302
+    ClientWidth = 1467
     Font.Color = clWindowText
-    Font.Height = -14
+    Font.Height = -11
     Font.Name = 'MS Sans Serif'
     ParentFont = False
     TabOrder = 3
     object SnapshotsPanel: TPanel
       Left = 1
-      Height = 80
-      Top = 142
-      Width = 1434
+      Height = 64
+      Top = 113
+      Width = 1465
       Align = alTop
       Caption = 'SnapshotsPanel'
-      ClientHeight = 80
-      ClientWidth = 1434
+      ClientHeight = 64
+      ClientWidth = 1465
       Font.Color = clWindowText
-      Font.Height = -14
+      Font.Height = -11
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       TabOrder = 0
       Visible = False
       object ToolBar1: TToolBar
         Left = 1
-        Height = 31
+        Height = 25
         Top = 1
-        Width = 1432
+        Width = 1463
         Caption = 'ToolBar1'
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         Images = mainImageList
         ParentFont = False
         TabOrder = 0
         object ToolButton39: TToolButton
-          Left = 141
+          Left = 111
           Top = 2
           Action = ClearSnapshotsAction
         end
         object ToolButton40: TToolButton
-          Left = 75
+          Left = 59
           Top = 2
           Action = ReportOnSnapshotsAction
         end
         object ToolButton51: TToolButton
-          Left = 133
-          Height = 28
+          Left = 105
+          Height = 22
           Top = 2
           Caption = 'ToolButton51'
           Style = tbsSeparator
         end
         object ToolButton64: TToolButton
-          Left = 67
-          Height = 28
+          Left = 53
+          Height = 22
           Top = 2
           Caption = 'ToolButton64'
           Style = tbsSeparator
         end
         object ToolButton65: TToolButton
-          Left = 104
+          Left = 82
           Top = 2
           Action = SummaryReportAction
         end
@@ -1145,13 +1131,13 @@ object MainForm: TMainForm
           Action = SnapshotsFromFolderAction
         end
         object ToolButton81: TToolButton
-          Left = 38
+          Left = 30
           Top = 2
           Action = SnapshotsFromHttpGetAgainAction
         end
         object ToolButton80: TToolButton
-          Left = 30
-          Height = 28
+          Left = 24
+          Height = 22
           Top = 2
           Caption = 'ToolButton80'
           Style = tbsSeparator
@@ -1159,23 +1145,23 @@ object MainForm: TMainForm
       end
       object Panel1: TPanel
         Left = 1
-        Height = 47
-        Top = 32
-        Width = 1432
+        Height = 37
+        Top = 26
+        Width = 1463
         Align = alClient
         Caption = 'Panel1'
-        ClientHeight = 47
-        ClientWidth = 1432
+        ClientHeight = 37
+        ClientWidth = 1463
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         ParentFont = False
         TabOrder = 1
         object SnapshotsVTS: TVirtualStringTree
           Left = 1
-          Height = 45
+          Height = 35
           Top = 1
-          Width = 1430
+          Width = 1461
           Align = alClient
           BottomSpace = 10
           Colors.GridLineColor = clWhite
@@ -1184,7 +1170,7 @@ object MainForm: TMainForm
           DefaultText = 'Node'
           DragOperations = []
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           Header.AutoSizeIndex = -1
           Header.Columns = <          
@@ -1238,66 +1224,66 @@ object MainForm: TMainForm
     end
     object NotificationsPanel: TPanel
       Left = 1
-      Height = 109
-      Top = 33
-      Width = 1434
+      Height = 87
+      Top = 26
+      Width = 1465
       Align = alTop
       Caption = 'NotificationsPanel'
-      ClientHeight = 109
-      ClientWidth = 1434
+      ClientHeight = 87
+      ClientWidth = 1465
       Font.Color = clWindowText
-      Font.Height = -14
+      Font.Height = -11
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       TabOrder = 1
       Visible = False
       object Splitter8: TSplitter
-        Left = 775
-        Height = 76
-        Top = 32
-        Width = 6
+        Left = 620
+        Height = 60
+        Top = 26
+        Width = 5
       end
       object Panel8: TPanel
         Left = 1
-        Height = 76
-        Top = 32
-        Width = 774
+        Height = 60
+        Top = 26
+        Width = 619
         Align = alLeft
         Caption = 'Panel8'
-        ClientHeight = 76
-        ClientWidth = 774
+        ClientHeight = 60
+        ClientWidth = 619
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         ParentFont = False
         TabOrder = 1
         object ExceptionStatusBar: TStatusBar
           Left = 1
-          Height = 29
-          Top = 46
-          Width = 772
+          Height = 22
+          Top = 37
+          Width = 617
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           Panels = <          
             item
-              Width = 62
+              Width = 50
             end>
           ParentFont = False
           SimplePanel = False
         end
         object ExceptionsVTS: TVirtualStringTree
           Left = 1
-          Height = 45
+          Height = 36
           Top = 1
-          Width = 772
+          Width = 617
           Align = alClient
           Colors.GridLineColor = clWhite
           Colors.UnfocusedSelectionColor = clCaptionText
           DefaultText = 'Node'
           DragOperations = []
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           Header.AutoSizeIndex = 0
           Header.Columns = <          
@@ -1333,13 +1319,13 @@ object MainForm: TMainForm
       end
       object ToolBar3: TToolBar
         Left = 1
-        Height = 31
+        Height = 25
         Top = 1
-        Width = 1432
+        Width = 1463
         BorderWidth = 2
         Caption = 'ToolBar3'
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         Images = mainImageList
         ParentFont = False
@@ -1351,14 +1337,14 @@ object MainForm: TMainForm
         end
       end
       object ExceptionMemo: TMemo
-        Left = 781
-        Height = 76
-        Top = 32
-        Width = 652
+        Left = 625
+        Height = 60
+        Top = 26
+        Width = 839
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
-        Font.Height = -16
+        Font.Height = -13
         Font.Name = 'Courier New'
         ParentColor = True
         ParentFont = False
@@ -1369,33 +1355,33 @@ object MainForm: TMainForm
     end
     object MessagesPanel: TPanel
       Left = 1
-      Height = 120
-      Top = 222
-      Width = 1434
+      Height = 96
+      Top = 177
+      Width = 1465
       Align = alTop
       Caption = 'MessagesPanel'
-      ClientHeight = 120
-      ClientWidth = 1434
+      ClientHeight = 96
+      ClientWidth = 1465
       Font.Color = clWindowText
-      Font.Height = -14
+      Font.Height = -11
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       TabOrder = 2
       Visible = False
       object Splitter7: TSplitter
-        Left = 770
-        Height = 79
-        Top = 40
-        Width = 6
+        Left = 616
+        Height = 63
+        Top = 32
+        Width = 5
       end
       object MessagesTabToolBar: TToolBar
         Left = 1
-        Height = 39
+        Height = 31
         Top = 1
-        Width = 1432
+        Width = 1463
         Caption = 'MessagesTabToolBar'
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         Images = mainImageList
         ParentFont = False
@@ -1407,50 +1393,40 @@ object MainForm: TMainForm
           Action = ReadMessagesAction
         end
         object ToolButton35: TToolButton
-          Left = 30
+          Left = 24
           Top = 2
           Action = SaveMessagesAction
         end
         object ToolButton50: TToolButton
-          Left = 331
+          Left = 215
           Top = 2
           Action = LogDisplayedColumnsAction
         end
         object ToolButton33: TToolButton
-          Left = 141
+          Left = 111
           Top = 2
           Action = MessagesRegressionAction
         end
         object ToolButton67: TToolButton
-          Left = 170
+          Left = 134
           Top = 2
           Action = LogCoverageReportAction
         end
         object ToolButton22: TToolButton
-          Left = 236
+          Left = 186
           Top = 2
           Action = ClearLogItemsAction
         end
         object ToolButton42: TToolButton
-          Left = 360
+          Left = 238
           Top = 2
           Action = FilterLogAction
         end
-        object BrowseMqButton: TToolButton
-          Left = 265
-          Top = 2
-          Action = BrowseMqAction
-        end
-        object ToolButton59: TToolButton
-          Left = 294
-          Top = 2
-          Action = readLog4jEventsAction
-        end
         object MessagesTabControl: TTabControl
-          Left = 723
+          Left = 869
           Height = 23
           Top = 8
-          Width = 730
+          Width = 584
           Images = mainImageList
           OnChange = MessagesTabControlChange
           OnGetImageIndex = MessagesTabControlGetImageIndex
@@ -1464,90 +1440,90 @@ object MainForm: TMainForm
             'Validation'
           )
           Align = alRight
-          BorderSpacing.Top = 8
+          BorderSpacing.Top = 6
           BorderSpacing.CellAlignVertical = ccaRightBottom
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           ParentFont = False
           TabOrder = 0
         end
         object ToolButton37: TToolButton
-          Left = 104
+          Left = 82
           Top = 2
           Action = CopyLogGridToClipBoardAction
         end
         object logChartToolButton: TToolButton
-          Left = 199
+          Left = 157
           Top = 2
           Action = logChartAction
         end
         object ToolButton72: TToolButton
-          Left = 389
+          Left = 261
           Top = 2
           Action = ToggleDoScrollMessagesIntoViewAction
           Style = tbsCheck
         end
         object ToolButton74: TToolButton
-          Left = 323
-          Height = 28
+          Left = 209
+          Height = 22
           Top = 2
           Caption = 'ToolButton74'
           Style = tbsSeparator
         end
         object LastMessageToolButton: TToolButton
-          Left = 96
-          Height = 28
+          Left = 76
+          Height = 22
           Top = 2
           Caption = 'LastMessageToolButton'
           Style = tbsSeparator
         end
         object ToolButton76: TToolButton
-          Left = 228
-          Height = 28
+          Left = 180
+          Height = 22
           Top = 2
           Caption = 'ToolButton76'
           Style = tbsSeparator
         end
         object ToolButton77: TToolButton
-          Left = 59
-          Height = 28
+          Left = 47
+          Height = 22
           Top = 2
           Caption = 'ToolButton77'
           Style = tbsSeparator
         end
         object ToolButton78: TToolButton
-          Left = 133
-          Height = 28
+          Left = 105
+          Height = 22
           Top = 2
           Caption = 'ToolButton78'
           Style = tbsSeparator
         end
         object ToolButton53: TToolButton
-          Left = 67
+          Left = 53
           Top = 2
           Action = LogsFromHttpGetAction
         end
       end
       object Panel2: TPanel
         Left = 1
-        Height = 79
-        Top = 40
-        Width = 769
+        Height = 63
+        Top = 32
+        Width = 615
         Align = alLeft
         Caption = 'Panel2'
-        ClientHeight = 79
-        ClientWidth = 769
+        ClientHeight = 63
+        ClientWidth = 615
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         ParentFont = False
         TabOrder = 2
         object MessagesVTS: TVirtualStringTree
           Left = 1
-          Height = 48
+          Height = 39
           Top = 1
-          Width = 767
+          Width = 613
           Align = alClient
           BottomSpace = 10
           Colors.GridLineColor = clWhite
@@ -1556,7 +1532,7 @@ object MainForm: TMainForm
           DefaultText = 'Node'
           DragOperations = []
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           Header.AutoSizeIndex = -1
           Header.Columns = <          
@@ -1665,35 +1641,35 @@ object MainForm: TMainForm
         end
         object MessagesStatusBar: TStatusBar
           Left = 1
-          Height = 29
-          Top = 49
-          Width = 767
+          Height = 22
+          Top = 40
+          Width = 613
           Font.Color = clWindowText
-          Font.Height = -14
+          Font.Height = -11
           Font.Name = 'MS Sans Serif'
           Panels = <          
             item
-              Width = 125
+              Width = 100
             end          
             item
-              Width = 125
+              Width = 100
             end          
             item
-              Width = 125
+              Width = 100
             end>
           ParentFont = False
           SimplePanel = False
         end
       end
       object LogMemo: TMemo
-        Left = 776
-        Height = 79
-        Top = 40
-        Width = 626
+        Left = 621
+        Height = 63
+        Top = 32
+        Width = 818
         Align = alClient
         Font.CharSet = ANSI_CHARSET
         Font.Color = clWindowText
-        Font.Height = -16
+        Font.Height = -13
         Font.Name = 'Courier New'
         ParentColor = True
         ParentFont = False
@@ -1702,15 +1678,15 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object ToolBar4: TToolBar
-        Left = 1402
-        Height = 79
-        Top = 40
-        Width = 31
+        Left = 1439
+        Height = 63
+        Top = 32
+        Width = 25
         Align = alRight
         BorderWidth = 2
         Caption = 'ToolBar4'
         Font.Color = clWindowText
-        Font.Height = -14
+        Font.Height = -11
         Font.Name = 'MS Sans Serif'
         Images = mainImageList
         ParentFont = False
@@ -1722,16 +1698,16 @@ object MainForm: TMainForm
         end
         object ToolButton32: TToolButton
           Left = 1
-          Top = 30
+          Top = 24
           Action = PresentLogMemoTextAction
         end
       end
     end
     object LogTabControl: TTabControl
       Left = 1
-      Height = 24
-      Top = 9
-      Width = 1434
+      Height = 19
+      Top = 7
+      Width = 1465
       TabStop = False
       Images = mainImageList
       OnChange = LogTabControlChange
@@ -1744,61 +1720,61 @@ object MainForm: TMainForm
       )
       Align = alTop
       Anchors = []
-      BorderSpacing.Top = 8
+      BorderSpacing.Top = 6
       BorderSpacing.CellAlignVertical = ccaRightBottom
       Font.Color = clWindowText
-      Font.Height = -14
+      Font.Height = -11
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       TabOrder = 3
     end
   end
   object ToolButton68: TToolButton
-    Left = 88
-    Height = 8
+    Left = 70
+    Height = 6
     Top = 2
-    Width = 8
+    Width = 6
     Caption = 'ToolButton68'
     ImageIndex = 57
     Style = tbsSeparator
   end
   object ToolButton36: TToolButton
-    Left = 129
-    Height = 8
+    Left = 103
+    Height = 6
     Top = 2
-    Width = 8
+    Width = 6
     Caption = 'ToolButton36'
     Style = tbsSeparator
   end
   object ToolButton69: TToolButton
-    Left = 59
-    Height = 8
+    Left = 47
+    Height = 6
     Top = 2
-    Width = 8
+    Width = 6
     Caption = 'ToolButton69'
     Style = tbsSeparator
   end
   object ToolButton71: TToolButton
-    Left = 88
-    Height = 8
+    Left = 70
+    Height = 6
     Top = 2
-    Width = 8
+    Width = 6
     Caption = 'ToolButton71'
     Style = tbsSeparator
   end
   object ToolButton73: TToolButton
-    Left = 231
-    Height = 5
+    Left = 185
+    Height = 4
     Top = 2
-    Width = 5
+    Width = 4
     Caption = 'ToolButton73'
     Style = tbsDivider
   end
   object alGeneral: TActionList
     Images = mainImageList
     OnExecute = alGeneralExecute
-    Left = 20
-    Top = 90
+    Left = 16
+    Top = 72
     object NewStubCaseAction: TAction
       Category = 'File'
       Caption = '&New Project...'
@@ -1889,13 +1865,6 @@ object MainForm: TMainForm
       ImageIndex = 11
       OnExecute = MoveDownMessageActionExecute
       OnUpdate = MoveDownMessageActionUpdate
-    end
-    object ApplyToAction: TAction
-      Category = 'Operation'
-      Caption = 'Apply to...'
-      Hint = 'Apply setting to others...'
-      OnExecute = OperationApplySettingsActionExecute
-      OnUpdate = ApplyToActionUpdate
     end
     object ClearLogItemsAction: TAction
       Category = 'Log'
@@ -2165,7 +2134,6 @@ object MainForm: TMainForm
     object DisableMessageAction: TAction
       Category = 'Messages'
       Caption = 'Disable message(s)'
-      OnExecute = DisableMessageActionExecute
     end
     object RemoveAllMessagesAction: TAction
       Category = 'Messages'
@@ -2190,7 +2158,6 @@ object MainForm: TMainForm
     object OperationApplySettingsAction: TAction
       Category = 'Operation'
       Caption = 'Apply settings to...'
-      OnExecute = OperationApplySettingsActionExecute
     end
     object OperationWsaAction: TAction
       Category = 'Operation'
@@ -2265,7 +2232,6 @@ object MainForm: TMainForm
     object HelpMainMenuAction: TAction
       Category = 'Help'
       Caption = 'Main Menu'
-      OnExecute = HelpMainMenuActionExecute
     end
     object ProjectDesignToClipboardAction: TAction
       Caption = 'ProjectDesign To Clipboard'
@@ -2395,24 +2361,6 @@ object MainForm: TMainForm
       ImageIndex = 15
       OnExecute = Log2DesignActionExecute
     end
-    object BrowseMqAction: TAction
-      Category = 'Log'
-      Caption = 'Browse Mq'
-      Hint = 'Browse Message Queue'
-      ImageIndex = 44
-      OnExecute = BrowseMqActionExecute
-      OnHint = BrowseMqActionHint
-      OnUpdate = BrowseMqActionUpdate
-    end
-    object readLog4jEventsAction: TAction
-      Category = 'Log'
-      Caption = 'Discover service calls from log'
-      Hint = 'Discover service calls from an event log'
-      ImageIndex = 56
-      OnExecute = readLog4jEventsActionExecute
-      OnHint = readLog4jEventsActionHint
-      OnUpdate = readLog4jEventsActionUpdate
-    end
     object ConfigLogAction: TAction
       Category = 'Log'
       Caption = 'Configure Log'
@@ -2528,17 +2476,6 @@ object MainForm: TMainForm
       Caption = 'Export Project...'
       Hint = 'Save stub case'
       OnExecute = ExportProjectActionExecute
-    end
-    object ImportProjectScriptsAction: TAction
-      Category = 'File'
-      Caption = 'Import project scripts...'
-      OnExecute = ImportProjectScriptsActionExecute
-    end
-    object ExportProjectScriptsAction: TAction
-      Category = 'File'
-      Caption = 'Export project scripts...'
-      Hint = 'Save all scripts to fille'
-      OnExecute = ExportProjectScriptsActionExecute
     end
     object IntrospectDesignAction: TAction
       Category = 'File'
@@ -2785,8 +2722,8 @@ object MainForm: TMainForm
     end
   end
   object mainImageList: TImageList
-    Left = 208
-    Top = 140
+    Left = 166
+    Top = 112
     Bitmap = {
       4C69730000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6473,13 +6410,13 @@ object MainForm: TMainForm
   end
   object OpenFileDialog: TOpenDialog
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 760
-    Top = 144
+    Left = 608
+    Top = 115
   end
   object MainMenu1: TMainMenu
     Images = mainImageList
-    Left = 70
-    Top = 90
+    Left = 56
+    Top = 72
     object File1: TMenuItem
       Caption = '&File'
       object NewStubCase1: TMenuItem
@@ -6501,21 +6438,6 @@ object MainForm: TMainForm
         Action = SaveProjectAsFolderAction
       end
       object MenuItem4: TMenuItem
-        Caption = '-'
-      end
-      object MenuItem40: TMenuItem
-        Action = ImportProjectAction
-      end
-      object MenuItem39: TMenuItem
-        Action = ExportProjectAction
-      end
-      object MenuItem20: TMenuItem
-        Action = ImportProjectScriptsAction
-      end
-      object MenuItem1: TMenuItem
-        Action = ExportProjectScriptsAction
-      end
-      object N1: TMenuItem
         Caption = '-'
       end
       object Exit1: TMenuItem
@@ -6655,12 +6577,6 @@ object MainForm: TMainForm
       object ReadMessagesAction1: TMenuItem
         Action = ReadMessagesAction
       end
-      object BrowseMqMenuItem: TMenuItem
-        Action = BrowseMqAction
-      end
-      object readLog4jEventsAction1: TMenuItem
-        Action = readLog4jEventsAction
-      end
       object N7: TMenuItem
         Caption = '-'
       end
@@ -6763,24 +6679,11 @@ object MainForm: TMainForm
       object Options1: TMenuItem
         Action = OptionsAction
       end
-      object MenuItem64: TMenuItem
-        Caption = '-'
-      end
-      object MenuItem65: TMenuItem
-        Caption = 'Set cloud connection'
-        Hint = 'Set connection properties to apiUi in the cloud'
-        ImageIndex = 106
-        ShortCut = 57411
-        OnClick = MenuItem65Click
-      end
     end
     object Help1: TMenuItem
       Caption = '&Help'
       object wsdStubhelp1: TMenuItem
         Action = HelpAction
-      end
-      object HelpMainMenuAction1: TMenuItem
-        Action = HelpMainMenuAction
       end
       object N35: TMenuItem
         Caption = '-'
@@ -6795,8 +6698,8 @@ object MainForm: TMainForm
     end
   end
   object TreeviewImageList: TImageList
-    Left = 320
-    Top = 140
+    Left = 256
+    Top = 112
     Bitmap = {
       4C69230000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7924,8 +7827,8 @@ object MainForm: TMainForm
   object TreePopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = TreePopupMenuPopup
-    Left = 456
-    Top = 280
+    Left = 365
+    Top = 224
     object WsdlItemAddMenuItem: TMenuItem
       Caption = 'Add occurrence'
       ImageIndex = 15
@@ -8115,8 +8018,8 @@ object MainForm: TMainForm
   end
   object SaveFileDialog: TSaveDialog
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    Left = 808
-    Top = 160
+    Left = 646
+    Top = 128
   end
   object Qry: TSQLQuery
     FieldDefs = <>
@@ -8129,14 +8032,14 @@ object MainForm: TMainForm
       'select * from FPD_EXECUTION_PHASES'
     )
     Params = <>
-    Left = 130
-    Top = 360
+    Left = 104
+    Top = 288
   end
   object LogPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = LogPopupMenuPopup
-    Left = 400
-    Top = 264
+    Left = 320
+    Top = 211
     object DisplayedcolumnMenuItem: TMenuItem
       Caption = 'Displayed column...'
       ImageIndex = 8
@@ -8187,8 +8090,8 @@ object MainForm: TMainForm
   object GridPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = GridPopupMenuPopup
-    Left = 496
-    Top = 304
+    Left = 397
+    Top = 243
     object EditMessageScriptMenuItem: TMenuItem
       Action = EditMessageScriptAction
     end
@@ -8230,8 +8133,8 @@ object MainForm: TMainForm
   end
   object WsdlsPopupMenu: TPopupMenu
     Images = mainImageList
-    Left = 160
-    Top = 80
+    Left = 128
+    Top = 64
     object MaintainlistofWSDLfiles1: TMenuItem
       Action = OpenWsdlAction
     end
@@ -8267,15 +8170,15 @@ object MainForm: TMainForm
     Enabled = False
     Interval = 100
     OnTimer = RefreshLogTimerTimer
-    Left = 952
-    Top = 144
+    Left = 762
+    Top = 115
   end
   object SQLTransaction: TSQLTransaction
     Active = False
     Action = caCommit
     Database = SQLConnector
-    Left = 80
-    Top = 360
+    Left = 64
+    Top = 288
   end
   object SQLConnector: TSQLConnector
     Connected = False
@@ -8288,12 +8191,12 @@ object MainForm: TMainForm
     Transaction = SQLTransaction
     OnLog = SQLConnectorLog
     LogEvents = [detCustom, detPrepare, detExecute, detFetch, detCommit, detRollBack, detParamValue, detActualSQL]
-    Left = 40
-    Top = 360
+    Left = 32
+    Top = 288
   end
   object OperationsPopupMenu: TPopupMenu
-    Left = 50
-    Top = 190
+    Left = 40
+    Top = 152
     object MenuItem53: TMenuItem
       Action = OperationBrowseDocumentationAction
       Hint = 'Shows documentation from description (Wsdl / OpenApi / ...) in a browser.'
@@ -8333,10 +8236,6 @@ object MainForm: TMainForm
     object MenuItem7: TMenuItem
       Action = OperationWsaAction
       Hint = 'Opens a form for WS-Addressing, a standardized way of including message routing data in SOAP headers'
-    end
-    object MenuItem8: TMenuItem
-      Action = OperationApplySettingsAction
-      Hint = 'Opens a form to quickly copy some Operation properties for this operation to other operations.'#13#10'Applies to properties like:'#13#10'. Action (Stub / Request)'#13#10'. Endpoint and Http Verb (except for APIs)'#13#10'. Extra delaytime'
     end
     object MenuItem11: TMenuItem
       Caption = '-'
@@ -8393,8 +8292,8 @@ object MainForm: TMainForm
   object SnapshotsPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = SnapshotsPopupMenuPopup
-    Left = 360
-    Top = 248
+    Left = 288
+    Top = 198
     object SnapshotCompareMenuitem: TMenuItem
       Caption = 'Compare with reference'
       ImageIndex = 43
@@ -8456,22 +8355,22 @@ object MainForm: TMainForm
   object PingPongTimer: TTimer
     Enabled = False
     OnTimer = PingPongTimerTimer
-    Left = 992
-    Top = 144
+    Left = 794
+    Top = 115
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
-    Left = 712
-    Top = 128
+    Left = 570
+    Top = 102
   end
   object EasterEggPopupMenu: TPopupMenu
     Images = mainImageList
-    Left = 592
-    Top = 264
+    Left = 474
+    Top = 211
   end
   object NavigateOperationsPopupMenu: TPopupMenu
-    Left = 200
-    Top = 210
+    Left = 160
+    Top = 168
     object FocusOnOperationMenuItem: TMenuItem
       Caption = 'New Item1'
       OnClick = FocusOnOperationMenuItemClick

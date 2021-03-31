@@ -732,9 +732,26 @@ Is default destination in Client mode.Has no relevance in server mode (stub)</xs
 									<xs:enumeration value="GET"/>
 									<xs:enumeration value="HEAD"/>
 									<xs:enumeration value="OPTIONS"/>
+									<xs:enumeration value="PATCH"/>
 									<xs:enumeration value="POST"/>
 									<xs:enumeration value="PUT"/>
 									<xs:enumeration value="TRACE"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="consumes" minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="application/json"/>
+									<xs:enumeration value="application/xml"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="produces" minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="application/json"/>
+									<xs:enumeration value="application/xml"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -1483,7 +1500,6 @@ For an overview of all options visit: doc://apiUi_operationOptions_hlp.htm </xs:
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="OnRequestViolatingAddressPath" type="OnRequestViolatingSchemaType" minOccurs="0"/>
 				<xs:element name="schemaValidation" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
@@ -1613,15 +1629,6 @@ On viloation an exception will be raised</xs:documentation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="invoke" type="invokeType" minOccurs="0"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="ReadReplyFromFile" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Enabled" type="xs:boolean" minOccurs="0"/>
-							<xs:element name="DefaultFileName" type="FileNameType" minOccurs="0"/>
-							<xs:element name="FileNameFormat" type="xs:string" minOccurs="0"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -1797,14 +1804,6 @@ Sspecifying which data to display is done in the log panel, click in the cell an
 				<xs:element name="Wsdl" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="PublishDescriptions" type="xs:boolean" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default "false"
-
-When "true", apiUi will publish the description of the web services meaning that service consuming applications can query for the Wslds and imported schemas.
-Http Get: wsdlName?WSDL </xs:documentation>
-								</xs:annotation>
-							</xs:element>
 							<xs:element name="OperationsWithEndpointOnly" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default "true"
@@ -1838,22 +1837,53 @@ Lower this number in case initial loading of XML takes a long time.</xs:document
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="OnCorrelate" minOccurs="0">
+				<xs:element name="CORS" minOccurs="0">
 					<xs:annotation>
-						<xs:documentation>Options regarding correlatiion</xs:documentation>
+						<xs:documentation>Cross-Origin Resource Sharing
+https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+
+Default is to accept without logging</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="DisableMessage" type="xs:boolean" minOccurs="0">
+						<xs:choice>
+							<xs:element name="exceptionResponse">
 								<xs:annotation>
-									<xs:documentation>Default "false"
-When "true", apiUi will disable messages on correlation.
-Disabled messages will not be matched when apiUi searches for candidate messages.
-Note: Default messages will never get disabled.
-For more information read: doc://TipsAndTricks/HowToSimulateUpdates.htm</xs:documentation>
+									<xs:documentation>apiUi will respond with an exception</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="responseCode" type="xs:integer" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>default "500"
+enter the http responsecode </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="refuse">
+								<xs:annotation>
+									<xs:documentation>apiUi will respond with http "204"
+but with no requested  access permitted
+</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-						</xs:sequence>
+							<xs:element name="accept">
+								<xs:annotation>
+									<xs:documentation>apiUi will respond with a "204"
+and all requested access permitted</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="showInLog" type="xs:boolean" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Default "false"</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="UnknownOperations" minOccurs="0">
@@ -1877,7 +1907,6 @@ Settings determine what apiUi should do on receiving messages for unknown (not s
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="OnRequestViolatingAddressPath" type="OnRequestViolatingSchemaType" minOccurs="0"/>
 							<xs:element name="schemaValidation" minOccurs="0">
 								<xs:complexType>
 									<xs:sequence>
@@ -1970,6 +1999,7 @@ Messages will be validated against schema</xs:documentation>
 					<xs:annotation>
 						<xs:documentation>Specifies a database connection;
 When a database is connected, you can retrieve data from that database to populate requests or responses.
+
 See also doc://TipsAndTricks/HowToDbLookUp.htm</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
@@ -1986,6 +2016,7 @@ When "true" apiUi will try to connect the database when apiUi gets activated</xs
 										<xs:enumeration value="MSSQLServer"/>
 										<xs:enumeration value="ODBC"/>
 										<xs:enumeration value="Oracle"/>
+										<xs:enumeration value="SQLite3"/>
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:element>
