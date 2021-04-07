@@ -377,7 +377,7 @@ procedure xmlSetDefaultColors;
 function ColorToHtml (aColor: TColor): String;
 function HtmlToColor (aHtml: String): TColor;
 {$endif}
-function textToHtml (aString: String): String;
+function prepareMarkDownText (aString: String): String;
 procedure SjowMessage (aString: String);
 function CreateXsdFromXml (aXsdDescr: TXsdDescr; aXml: TXml; aLinkXmlToXsd: Boolean): TXsd;
 function CreateXsdFromJsonSchemaFile (aXsdDescr: TXsdDescr; aFileName: String; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS): TXsd;
@@ -788,7 +788,7 @@ begin
   Xmlz.OnNotify (aString);
 end;
 
-function textToHtml (aString: String): String;
+function prepareMarkDownText (aString: String): String;
   function _docLink (aString: String): TXml;
   begin
     result := TXml.CreateAsString ( 'a'
@@ -813,47 +813,7 @@ var
   p: Integer;
 begin
   result := '';
-  rx := TRegExpr.Create;
-  try
-    rx.Expression := S_XML_REGEXP_LINK;
-    with TXml.CreateAsString('html', '') do
-    try
-      with AddXml (TXml.CreateAsString('body','')) do
-      begin
-        AddAttribute(TXmlAttribute.CreateAsString('bgcolor', '#F0F0F0')); // bg read-only buttonface color
-        AddAttribute(TXmlAttribute.CreateAsString('style', 'font-size:18px;')); //  style="font-size:18px;"
-//      AddAttribute(TXmlAttribute.CreateAsString('bgcolor', ColorToHtml(clBtnFace))); // bg read-only buttonface color
-        with AddXml (TXml.CreateAsString('p',' ')) do
-        if aString <> '' then
-        begin
-          p := 1;
-          rslt := Rx.Exec(aString);
-          while rslt do
-          begin
-            if rx.MatchPos [0] > p then
-              AddXml(TXml.CreateAsString('', Copy (aString, p, rx.MatchPos[0] - p)));
-            if uppercase (copy (rx.Match[0],1 , 6)) = 'DOC://' then
-              AddXml (_DocLink(rx.Match[0]))
-            else
-              with AddXml (TXml.CreateAsString('a', rx.Match[0])) do
-              begin
-                AddAttribute (TXmlAttribute.CreateAsString('href', rx.Match[0]));
-                AddAttribute (TXmlAttribute.CreateAsString('target', '_blank'));
-              end;
-            p := rx.MatchPos[0] + rx.MatchLen[0];
-            rslt := Rx.ExecNext;
-          end;
-          if p < Length (aString) then
-            AddXml(TXml.CreateAsString('', Copy (aString, p, Length (aString))));
-        end;
-      end;
-      result := asHtmlString;
-    finally
-      free;
-    end;
-  finally
-    rx.Free;
-  end;
+  result := ReplaceText(aString, '<br>', '  ' + LineEnding);
 end;
 
 function strAdd (aString, aStringToAdd: String): String;

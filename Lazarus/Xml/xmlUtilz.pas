@@ -14,8 +14,10 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, LazFileUtils
    , Ipmz
    , ParserClasses
    {$ifndef NoGUI}
-   , IpHtml
+   , HtmlView
    {$endif}
+   , MarkdownUtils
+   , MarkdownProcessor
    ;
 
 
@@ -119,7 +121,7 @@ public
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
                                  ); overload;
-  procedure ListXsdDocumentation ( aHtmlViewer: TIpHtmlPanel
+  procedure ListXsdDocumentation ( aHtmlViewer: THtmlViewer
                                  ; aBind: TCustomBindable
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
@@ -173,7 +175,6 @@ uses
 // , XsBuiltIns
    , SwiftUnit
    , base64
-   , MarkdownProcessor
    ;
 
 procedure ShowText (aCaption, aText: String);
@@ -1416,7 +1417,7 @@ begin
   aMemo.Lines.Text := s;
 end;
 
-procedure TXmlUtil.ListXsdDocumentation(aHtmlViewer: TIpHtmlPanel;
+procedure TXmlUtil.ListXsdDocumentation(aHtmlViewer: THtmlViewer;
   aBind: TCustomBindable; aShowPath: Boolean; aShowValue: Boolean);
 var
   s: String;
@@ -1434,7 +1435,17 @@ begin
     s := s + (aBind as TXmlAttribute).XsdAttr.Appinfo.Text;
   if aBind is TXml then
     s := s + (aBind as TXml).AppinfoText;
-  aHtmlViewer.SetHtmlFromStr(textToHtml(s));
+  with TMarkdownProcessor.createDialect(mdCommonMark) do
+  try
+    UnSafe := false;
+    //    aHtmlViewer.LoadFromString(prepareMarkDownText(process(s)));
+    //    s := '# EEN ' + LineEnding + 'een txt' + LineEnding + '## twee' + LineEnding + 'tweede tekst';
+    SjowMessage(s);
+    SjowMessage(process(s));
+    aHtmlViewer.LoadFromString(process(prepareMarkDownText(s)));
+  finally
+    Free;
+  end;
 {
   try
     with TMarkdownProcessor.createDialect(mdCommonMark) do

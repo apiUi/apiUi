@@ -14,12 +14,12 @@ uses
 {$ENDIF}
   SysUtils , Classes , Graphics , Forms , Controls , Buttons ,
   ComCtrls , ExtCtrls , VirtualTrees, xmlio , Bind , Xmlz , Ipmz , Dialogs ,
-  FormIniFilez , ActnList , Menus, IpHtml
+  FormIniFilez , ActnList , Menus, HtmlView, IpHtml
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  ;
+  , HtmlGlobals;
 
 type
 
@@ -27,7 +27,7 @@ type
 
   TShowXmlForm = class(TForm)
     CancelButton : TBitBtn ;
-    DocumentationViewer: TIpHtmlPanel;
+    DocumentationViewer: THtmlViewer;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -106,7 +106,8 @@ type
     CleanAction: TAction;
     CleanActionMenuItem: TMenuItem;
     ZoomasAssignment1: TMenuItem;
-    procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -1969,11 +1970,6 @@ begin
   xmlUtil.presentString(SelectedBind.FullCaption, SelectedBind.Value);
 end;
 
-procedure TShowXmlForm.DocumentationViewerHotClick(Sender: TObject);
-begin
-  OpenUrl(DocumentationViewer.HotURL);
-end;
-
 procedure TShowXmlForm.MenuItem2Click(Sender: TObject);
 var
   n, w: Integer;
@@ -1990,6 +1986,12 @@ begin
   finally
     FreeAndNil(PromptForm);
   end;
+end;
+
+procedure TShowXmlForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
 end;
 
 procedure TShowXmlForm.MenuItem4Click(Sender: TObject);

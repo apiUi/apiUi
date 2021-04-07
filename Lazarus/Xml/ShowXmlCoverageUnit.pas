@@ -19,14 +19,14 @@ uses
    , Xmlz
    , Ipmz
    , Dialogs
-   , FormIniFilez, ActnList, Menus, IpHtml;
+   , FormIniFilez, ActnList, Menus, HtmlView, IpHtml, HtmlGlobals;
 
 type
 
   { TShowXmlCoverageForm }
 
   TShowXmlCoverageForm = class(TForm)
-    DocumentationViewer: TIpHtmlPanel;
+    DocumentationViewer: THtmlViewer;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -68,7 +68,8 @@ type
     ToolButton13: TToolButton;
     ToolButton14: TToolButton;
     AsHtmlAction: TAction;
-    procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
     procedure FormClose (Sender : TObject ; var CloseAction : TCloseAction );
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure TreeViewClick(Sender: TObject);
@@ -1071,15 +1072,16 @@ begin
   xmlUtil.presentString (SelectedBind.FullCaption, SelectedBind.Value);
 end;
 
-procedure TShowXmlCoverageForm.DocumentationViewerHotClick(Sender: TObject);
-begin
-  OpenUrl(DocumentationViewer.HotURL);
-end;
-
 procedure TShowXmlCoverageForm .FormClose (Sender : TObject ;
   var CloseAction : TCloseAction );
 begin
   XmlUtil.PopCursor;
+end;
+
+procedure TShowXmlCoverageForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
 end;
 
 { TPasswordEditLink }

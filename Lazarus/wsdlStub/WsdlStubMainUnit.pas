@@ -38,7 +38,7 @@ uses
    , ExtCtrls
    , FormIniFilez
    , Menus
-   , PairSplitter
+   , PairSplitter, HtmlView
    , VirtualTrees
    , LazFileUtils
    , FileUtil
@@ -52,7 +52,9 @@ uses
    , ClaimListz
    , tacointerface
    , progressinterface
-   ;
+   , MarkdownUtils
+   , MarkdownProcessor
+   , HtmlGlobals;
 
 type
   THackControl = class(TWinControl)
@@ -74,11 +76,14 @@ type
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
     FocusOnOperationMenuItem: TMenuItem;
+    DocumentationViewer: THtmlViewer;
+    OperationDocumentationViewer: THtmlViewer;
     MenuItem14: TMenuItem;
     MenuItem70: TMenuItem;
     MenuItem72: TMenuItem;
     NavigateOperationsPopupMenu: TPopupMenu;
     NvgtView: TVirtualStringTree;
+    Splitter2: TSplitter;
     ToggleDebugLogModeAction: TAction;
     ToolButton49: TToolButton;
     ToolButton52: TToolButton;
@@ -96,6 +101,8 @@ type
     procedure MessagesVTSHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure NavigateHierarchyActionExecute(Sender: TObject);
     procedure NavigateHierarchyActionUpdate(Sender: TObject);
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
     procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
       const Msg: String);
     procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
@@ -206,8 +213,6 @@ type
     XmlSampleOperations : TAction ;
     EditMessageAfterScriptAction : TAction ;
     EditMessageScriptAction : TAction ;
-    DocumentationViewer: TIpHtmlPanel;
-    OperationDocumentationViewer : TIpHtmlPanel ;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
@@ -604,7 +609,6 @@ type
     XsdOperationsAction1: TMenuItem;
     Xsdoperations1: TMenuItem;
     ShowReplyHeaderAsXmlAction: TAction;
-    CleanMenuItem: TMenuItem;
     N34: TMenuItem;
     ProjectCleanAction: TAction;
     Clean1: TMenuItem;
@@ -1047,7 +1051,6 @@ type
     procedure XsdOperationsActionHint(var HintStr: string;
       var CanShow: Boolean);
     procedure XsdOperationsActionExecute(Sender: TObject);
-    procedure CleanMenuItemClick(Sender: TObject);
     procedure ProjectCleanActionExecute(Sender: TObject);
     procedure GenerateMenuHelpActionExecute(Sender: TObject);
     procedure GenerateScriptAssignmentActionExecute(Sender: TObject);
@@ -1608,7 +1611,12 @@ begin
       ActionComboBox.ItemIndex := 1;
     // SoapActionEdit.Text := FocusedOperation.SoapAction;
     try
-      OperationDocumentationViewer.SetHtmlFromStr(textToHtml(FocusedOperation.Documentation.Text));
+      with TMarkdownProcessor.CreateDialect(mdCommonMark) do
+      try
+        OperationDocumentationViewer.LoadFromString(process(prepareMarkDownText(FocusedOperation.Documentation.Text)));
+      finally
+        Free;
+      end;
     except
     end;
   end;
@@ -3797,7 +3805,7 @@ begin
     GridView.Clear;
     NvgtView.Clear;
     InWsdlPropertiesListView.Clear;
-    OperationDocumentationViewer.Canvas.Clear;
+    OperationDocumentationViewer.LoadFromString('');
     TreeView.Clear;
     WsdlServiceNameEdit.Text := '';
     WsdlOperationNameEdit.Text := '';
@@ -10510,27 +10518,6 @@ begin
   EasterEggPopupMenu.PopUp(10, 10);
 end;
 
-procedure TMainForm.CleanMenuItemClick(Sender: TObject);
-var
-  xBind: TCustomBindable;
-begin
-  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
-  if not(xBind is TXml) then
-    raise Exception.Create('FocusedNode not an XML element');
-  try
-    FocusedOperation.AcquireLock;
-    try
-      (xBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
-    finally
-      FocusedOperation.ReleaseLock;
-    end;
-    UpdateXmlTreeViewNode(TreeView, TreeView.FocusedNode);
-    stubChanged := True;
-  finally
-    RevalidateXmlTreeView(TreeView);
-  end;
-end;
-
 procedure TMainForm.PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
 begin (NodeToBind(TreeView, TreeView.FocusedNode) as TIpmItem)
   .BufferToValues(nil, ClipBoard.AsText);
@@ -12984,6 +12971,12 @@ begin
   NavigateHierarchyAction.Enabled := (Assigned (se)) and (se.Wsdls.Count > 0);
 end;
 
+procedure TMainForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
+end;
+
 procedure TMainForm.SQLConnectorLog(Sender: TSQLConnection;
   EventType: TDBEventType; const Msg: String);
 var
@@ -13192,7 +13185,7 @@ begin
   if fFocusedBind = nil then
   begin
     InWsdlPropertiesListView.Clear;
-    DocumentationViewer.Canvas.Clear;
+    DocumentationViewer.LoadFromString('');
     StatusPanel.Caption := '';
     Exit;
   end;
@@ -13454,8 +13447,12 @@ begin
 end;
 
 procedure TMainForm.MenuItem60Click(Sender: TObject);
+var
+  xFileName: String;
 begin
-  ShowHelpDocumentation('Tree_Popup_Menu');
+  xFileName := 'https://apiui.org/treeview-popup';
+  if not OpenDocument(xFileName) then
+    raise Exception.Create('Could not open ' + xFileName);
 end;
 
 procedure TMainForm.MenuItem61Click(Sender: TObject);
@@ -13781,7 +13778,7 @@ begin
   begin
     XmlUtil.PushCursor (crHourGlass);
     try
-      XmlUtil.presentAsHTML(FocusedOperation.alias + ' annotation', textToHtml(FocusedOperation.Documentation.Text));
+      XmlUtil.presentAsHTML(FocusedOperation.alias + ' annotation', prepareMarkDownText(FocusedOperation.Documentation.Text));
     finally
       XmlUtil.PopCursor;
     end;

@@ -14,19 +14,19 @@ uses
 {$ENDIF}
   Messages , SysUtils , Variants , Classes , Graphics , Controls , Forms ,
   Dialogs , FormIniFilez , StdCtrls , ExtCtrls , Xsdz , Xmlz , VirtualTrees ,
-  ComCtrls , ImgList , ToolWin , ActnList , Menus, IpHtml , Bind
+  ComCtrls , ImgList , ToolWin , ActnList , Menus, HtmlView, IpHtml , Bind
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  ;
+  , HtmlGlobals;
 
 type
 
   { TXmlGridForm }
 
   TXmlGridForm = class(TForm)
-    DocumentationViewer: TIpHtmlPanel;
+    DocumentationViewer: THtmlViewer;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     Panel2: TPanel;
@@ -99,7 +99,8 @@ type
     StatusPanel: TPanel;
     CleanAction: TAction;
     CleanMenuItem: TMenuItem;
-    procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
@@ -1832,11 +1833,6 @@ begin
   xmlUtil.presentString (FocusedBind.FullCaption, FocusedBind.Value);
 end;
 
-procedure TXmlGridForm.DocumentationViewerHotClick(Sender: TObject);
-begin
-  OpenUrl(DocumentationViewer.HotURL);
-end;
-
 procedure TXmlGridForm .GridAfterCellPaint (Sender : TBaseVirtualTree ;
   TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
   const CellRect : TRect );
@@ -1856,6 +1852,12 @@ begin
       ImageList.Draw(TargetCanvas, r.Right - 17, CellRect.Top, 52);
     end;
   end;
+end;
+
+procedure TXmlGridForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
 end;
 
 procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader;
