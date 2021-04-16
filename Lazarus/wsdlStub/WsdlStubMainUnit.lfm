@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 129
+  Left = 296
   Height = 808
-  Top = 118
+  Top = 125
   Width = 1718
   ClientHeight = 783
   ClientWidth = 1718
@@ -266,27 +266,11 @@ object MainForm: TMainForm
           Top = 2
           Action = RedirectAddressAction
         end
-        object ToolButton19: TToolButton
-          Left = 130
-          Height = 28
-          Top = 2
-          Caption = 'ToolButton19'
-          ImageIndex = 0
-          Style = tbsSeparator
-        end
         object DelayTimeButton: TToolButton
-          Left = 138
+          Left = 130
           Hint = 'Set delay'
           Top = 2
           Action = OperationDelayResponseTimeAction
-        end
-        object ToolButton62: TToolButton
-          Left = 167
-          Height = 28
-          Top = 2
-          Caption = 'ToolButton62'
-          ImageIndex = 1
-          Style = tbsSeparator
         end
       end
       object NvgtView: TVirtualStringTree
@@ -2497,14 +2481,6 @@ object MainForm: TMainForm
       OnHint = CobolOperationsActionHint
       OnUpdate = CobolOperationsActionUpdate
     end
-    object BmtpOperationsAction: TAction
-      Category = 'Project'
-      Caption = 'Bmtp Operations...'
-      ImageIndex = 101
-      OnExecute = BmtpOperationsActionExecute
-      OnHint = BmtpOperationsActionHint
-      OnUpdate = BmtpOperationsActionUpdate
-    end
     object XsdOperationsAction: TAction
       Category = 'Project'
       Caption = 'Xsd operations...'
@@ -2520,22 +2496,6 @@ object MainForm: TMainForm
       OnExecute = XmlSampleOperationsExecute
       OnHint = XmlSampleOperationsHint
       OnUpdate = XmlSampleOperationsUpdate
-    end
-    object SwiftMtOperationsAction: TAction
-      Category = 'Project'
-      Caption = 'SwiftMT operations...'
-      ImageIndex = 74
-      OnExecute = SwiftMtOperationsActionExecute
-      OnHint = SwiftMtOperationsActionHint
-      OnUpdate = SwiftMtOperationsActionUpdate
-    end
-    object MailOperationsAction: TAction
-      Category = 'Project'
-      Caption = 'Maill operations...'
-      ImageIndex = 100
-      OnExecute = MailOperationsActionExecute
-      OnHint = MailOperationsActionHint
-      OnUpdate = MailOperationsActionUpdate
     end
     object FreeFormatsAction: TAction
       Category = 'Project'
@@ -6469,15 +6429,6 @@ object MainForm: TMainForm
       object CobolOperationsAction1: TMenuItem
         Action = CobolOperationsAction
       end
-      object MenuItem51: TMenuItem
-        Action = BmtpOperationsAction
-      end
-      object MaintainlistofSwiftMToperations1: TMenuItem
-        Action = SwiftMtOperationsAction
-      end
-      object MenuItem49: TMenuItem
-        Action = MailOperationsAction
-      end
       object ViewMssgAsTextAction1: TMenuItem
         Action = FreeFormatsAction
       end
@@ -7893,11 +7844,6 @@ object MainForm: TMainForm
       ImageIndex = 23
       OnClick = CopyCobolDataToClipboardMenuItemClick
     end
-    object CopySwiftdatatoclipboardMenuItem: TMenuItem
-      Caption = 'Copy Swift data to clipboard'
-      ImageIndex = 23
-      OnClick = CopySwiftdatatoclipboardMenuItemClick
-    end
     object WsdlPasteFromClipboardMenuItem: TMenuItem
       Caption = 'Paste from clipboard'
       ImageIndex = 24
@@ -7907,11 +7853,6 @@ object MainForm: TMainForm
       Caption = 'Paste Cobol data from clipboard'
       ImageIndex = 24
       OnClick = PasteCobolDataFromClipboardMenuItemClick
-    end
-    object PasteSwiftdatafromclipboardMenuItem: TMenuItem
-      Caption = 'Paste Swift data from clipboard'
-      ImageIndex = 24
-      OnClick = PasteSwiftdatafromclipboardMenuItemClick
     end
     object N24: TMenuItem
       Caption = '-'
@@ -8025,14 +7966,14 @@ object MainForm: TMainForm
       'select * from FPD_EXECUTION_PHASES'
     )
     Params = <>
-    Left = 130
-    Top = 360
+    Left = 184
+    Top = 288
   end
   object LogPopupMenu: TPopupMenu
     Images = mainImageList
     OnPopup = LogPopupMenuPopup
-    Left = 400
-    Top = 264
+    Left = 368
+    Top = 328
     object DisplayedcolumnMenuItem: TMenuItem
       Caption = 'Displayed column...'
       ImageIndex = 8
@@ -8146,15 +8087,6 @@ object MainForm: TMainForm
     object Maintainlistofcoboloperations1: TMenuItem
       Action = CobolOperationsAction
     end
-    object MenuItem50: TMenuItem
-      Action = BmtpOperationsAction
-    end
-    object MaintainlistofSwiftMToperations2: TMenuItem
-      Action = SwiftMtOperationsAction
-    end
-    object MenuItem48: TMenuItem
-      Action = MailOperationsAction
-    end
     object Maintainlistoffreeformatoperations1: TMenuItem
       Action = FreeFormatsAction
     end
@@ -8170,8 +8102,8 @@ object MainForm: TMainForm
     Active = False
     Action = caCommit
     Database = SQLConnector
-    Left = 80
-    Top = 360
+    Left = 104
+    Top = 304
   end
   object SQLConnector: TSQLConnector
     Connected = False
@@ -8185,7 +8117,7 @@ object MainForm: TMainForm
     OnLog = SQLConnectorLog
     LogEvents = [detCustom, detPrepare, detExecute, detFetch, detCommit, detRollBack, detParamValue, detActualSQL]
     Left = 40
-    Top = 360
+    Top = 304
   end
   object OperationsPopupMenu: TPopupMenu
     Left = 50

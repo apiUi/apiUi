@@ -11,7 +11,7 @@ uses
   IdExceptionCore, IdStack, IdHTTP, WsdlStubMainUnit, snapshotz, exceptionUtils,
   htmlXmlUtilz, htmlreportz, WsdlProjectz, junitunit, StringListListUnit,
   ChooseStringUnit, EditContextsUnit, IpmGridUnit, Listenerz, wsdlListUnit,
-  httpmultipart;
+  httpmultipart, apiuiconsts;
 
 {$R *.res}
 

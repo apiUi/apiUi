@@ -192,7 +192,6 @@ uses SysUtils
    , a2bStringListUnit
    , A2BXmlz
    , IpmTypes
-   , SwiftUnit
    , xmlxsdparser
    ;
 
@@ -615,7 +614,7 @@ begin
             end;
   }
           end;
-          ipmDTXsd, ipmDTSwiftMT:
+          ipmDTXsd:
           begin
             Inc (result.Counter);
             oXml := result.Items.XmlItemByTag[xLog.Operation.Alias] as TXmlCvrg;
@@ -631,7 +630,7 @@ begin
               xXml := TXml.CreateAsString(mXml.Name, '');
               try
                 xXml.AddXml (xLog.requestAsXml);
-                mXml.CountUsage(xXml, xLog.Operation.WsdlService.DescriptionType in [ipmDTSwiftMT]);
+                mXml.CountUsage(xXml, False);
               finally
                 xXml.Free;
               end;
@@ -645,7 +644,7 @@ begin
               xXml := TXml.CreateAsString(mXml.Name, '');
               try
                 xXml.AddXml (xLog.replyAsXml);
-                mXml.CountUsage(xXml, xLog.Operation.WsdlService.DescriptionType in [ipmDTSwiftMT]);
+                mXml.CountUsage(xXml, False);
               finally
                 xXml.Free;
               end;
@@ -1144,7 +1143,7 @@ begin
     AddXml (Txml.CreateAsString('CorrelationId', Self.CorrelationId));
     if Assigned (Self.Operation) then
     begin
-      xBodiesAsBase64 := (Self.Operation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp]);
+      xBodiesAsBase64 := (Self.Operation.WsdlService.DescriptionType in [ipmDTCobol]);
       AddXml (TXml.CreateAsString('Service', Self.Operation.WsdlService.Name));
       AddXml (TXml.CreateAsString('Operation', Self.Operation.Name));
       if Assigned (Self.Mssg) then
@@ -1336,28 +1335,6 @@ begin
   end;
 
   if Assigned (Operation)
-  and (Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
-  begin
-    with TSwiftMT.Create(RequestBody, Operation.reqXsd) do
-    try
-      try
-        result := AsXml;
-        Exit;
-      except
-        on e: sysUtils.Exception do
-        begin
-          result := TXml.Create;
-          result.Checked := True;
-          result.Name := 'Exception';
-          result.Value := e.Message;
-        end;
-      end;
-    finally
-      Free;
-    end;
-  end;
-
-  if Assigned (Operation)
   and (Operation.isOpenApiService) then
   begin
     OpenApiRequestToBindables(Operation);
@@ -1408,28 +1385,6 @@ begin
       finally
         Free;
       end;
-    end;
-    Exit;
-  end;
-
-  if Assigned (Operation)
-  and (Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
-  begin
-    with TSwiftMT.Create(ReplyBody, Operation.rpyXsd) do
-    try
-      try
-        result := AsXml;
-      except
-        on e: sysUtils.Exception do
-        begin
-          result := TXml.Create;
-          result.Checked := True;
-          result.Name := 'Exception';
-          result.Value := e.Message
-        end;
-      end;
-    finally
-      Free;
     end;
     Exit;
   end;

@@ -1,4 +1,3 @@
-//  Search for ZoomElement, it is available
 unit WsdlStubMainUnit;
 {$IFDEF FPC}
   {$MODE Delphi}
@@ -46,7 +45,6 @@ uses
    , Bind
    , mqinterface
    , mqapi
-   , SwiftUnit
    , ParserClasses
    , types
    , ClaimListz
@@ -173,8 +171,6 @@ type
     ToolButton78: TToolButton;
     OperationBrowseDocumentationAction: TAction;
     ToggleTrackIOAction: TAction;
-    BmtpOperationsAction: TAction;
-    MailOperationsAction: TAction;
     ApiByExampleAction: TAction;
     ContextsAction: TAction;
     MenuItem21: TMenuItem;
@@ -186,10 +182,6 @@ type
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
-    MenuItem48: TMenuItem;
-    MenuItem49: TMenuItem;
-    MenuItem50: TMenuItem;
-    MenuItem51: TMenuItem;
     OpenProjectAction: TAction;
     SaveProjectAsFolderAction: TAction;
     IntrospectDesignAction: TAction;
@@ -431,7 +423,6 @@ type
     ActionComboBox: TComboBox;
     ToolButton17: TToolButton;
     RedirectAddressButton: TToolButton;
-    ToolButton19: TToolButton;
     Splitter6: TSplitter;
     ToolButton21: TToolButton;
     ClearLogItemsAction: TAction;
@@ -541,7 +532,6 @@ type
     ToolButton60: TToolButton;
     ToolButton61: TToolButton;
     ConfigLogAction: TAction;
-    ToolButton62: TToolButton;
     DelayTimeButton: TToolButton;
     ToggleFileLogAction: TAction;
     RedirectAddressAction: TAction;
@@ -569,8 +559,6 @@ type
     EditBetweenScriptMenuItem: TMenuItem;
     EditBeforeScriptMenuItem: TMenuItem;
     EditAfterScriptMenuItem: TMenuItem;
-    CopySwiftdatatoclipboardMenuItem: TMenuItem;
-    PasteSwiftdatafromclipboardMenuItem: TMenuItem;
     ToggleNotifyAction: TAction;
     SaveLogRequestsToFileAction: TAction;
     N27: TMenuItem;
@@ -597,12 +585,9 @@ type
     ViewMssgAsTextAction1: TMenuItem;
     CobolOperationsAction: TAction;
     CobolOperationsAction1: TMenuItem;
-    SwiftMtOperationsAction: TAction;
-    MaintainlistofSwiftMToperations1: TMenuItem;
     WsdlsPopupMenu: TPopupMenu;
     Maintainlistoffreeformatoperations1: TMenuItem;
     Maintainlistofcoboloperations1: TMenuItem;
-    MaintainlistofSwiftMToperations2: TMenuItem;
     MaintainlistofWSDLfiles1: TMenuItem;
     N33: TMenuItem;
     XsdOperationsAction: TAction;
@@ -630,10 +615,6 @@ type
     procedure CheckReferencedFilesExistInCloudActionExecute(Sender: TObject);
     procedure AddChildElementMenuItemClick(Sender: TObject);
     procedure ApiByExampleActionUpdate(Sender: TObject);
-    procedure BmtpOperationsActionExecute(Sender: TObject);
-    procedure BmtpOperationsActionHint(var HintStr: string; var CanShow: Boolean
-      );
-    procedure BmtpOperationsActionUpdate(Sender: TObject);
     procedure CobolOperationsActionUpdate(Sender: TObject);
     procedure ContextsActionExecute(Sender: TObject);
     procedure CopyRemoteApiUiProjectActionExecute(Sender: TObject);
@@ -656,10 +637,6 @@ type
       );
     procedure LogsFromHttpGetActionUpdate(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
-    procedure MailOperationsActionExecute(Sender: TObject);
-    procedure MailOperationsActionHint(var HintStr: string; var CanShow: Boolean
-      );
-    procedure MailOperationsActionUpdate(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem43Click(Sender: TObject);
@@ -733,7 +710,6 @@ type
       TabIndex : Integer ; var ImageIndex : Integer );
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
-    procedure SwiftMtOperationsActionUpdate(Sender: TObject);
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
     procedure ToggleTrackIOActionExecute(Sender: TObject);
     procedure OperationAliasActionExecute (Sender : TObject );
@@ -1007,8 +983,6 @@ type
     procedure EditBetweenScriptMenuItemClick(Sender: TObject);
     procedure EditBeforeScriptMenuItemClick(Sender: TObject);
     procedure EditAfterScriptMenuItemClick(Sender: TObject);
-    procedure CopySwiftdatatoclipboardMenuItemClick(Sender: TObject);
-    procedure PasteSwiftdatafromclipboardMenuItemClick(Sender: TObject);
     procedure ToggleNotifyActionExecute(Sender: TObject);
     procedure SaveLogRequestsToFileActionUpdate(Sender: TObject);
     procedure SaveLogRepliesToFileActionUpdate(Sender: TObject);
@@ -1045,9 +1019,6 @@ type
     procedure CobolOperationsActionExecute(Sender: TObject);
     procedure CobolOperationsActionHint(var HintStr: string;
       var CanShow: Boolean);
-    procedure SwiftMtOperationsActionHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure SwiftMtOperationsActionExecute(Sender: TObject);
     procedure XsdOperationsActionHint(var HintStr: string;
       var CanShow: Boolean);
     procedure XsdOperationsActionExecute(Sender: TObject);
@@ -1252,7 +1223,6 @@ type
     function decorateWithAsterix (aCaption: String; aBoolean: Boolean): String;
   published
   public
-    contextPropertyOverwrite: String;
     se: TWsdlProject;
     claimedLog: TLog;
     claimedReport: TSnapshot;
@@ -1364,6 +1334,7 @@ uses
   wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
   ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
   ChooseStringUnit, AboutUnit, StrUtils,
+  apiuiconsts,
   DisclaimerUnit,
   PromptUnit, SelectXmlElement, ApplyToUnit, wsaConfigUnit,
   SelectElementsUnit, A2BXmlz,
@@ -1603,6 +1574,8 @@ end;
 
 procedure TMainForm.FillInWsdlEdits;
 begin
+  if (FocusedOperation = nil) then
+    ActionComboBox.ItemIndex := -1;
   if (FocusedOperation <> nil) then
   begin
     if (FocusedOperation.StubAction = saStub) then
@@ -1733,7 +1706,6 @@ begin
         UpdateMessagesGrid;
         FillGridView(GridView, FocusedOperation.Messages);
         DoColorBindButtons;
-        ActionComboBox.Enabled := (Value.WsdlService.DescriptionType <> ipmDTEmail);
         EditBetweenScriptMenuItem.Visible := (Value.StubAction = saStub);
         EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
         EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
@@ -1909,7 +1881,6 @@ procedure TMainForm.TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
   var ContentRect: TRect);
 var
   xBind: TCustomBindable;
-  expXml: TXml;
   xMessage: TWsdlMessage;
 begin
   try
@@ -1965,22 +1936,21 @@ begin
     begin
       xBind := NodeToBind(Sender, Node);
       xMessage := NodeToMessage(GridView, GridView.FocusedNode);
-      if (xBind is TXml) or (xBind is TXmlAttribute) then
+      if (xBind is TXml)
+      or (xBind is TXmlAttribute) then
       begin
-        expXml := nil;
-        if Assigned(FocusedOperation) and Assigned(xMessage) then
-          if (FocusedOperation.StubAction = saRequest) then
-            expXml := xMessage.rpyBind as TXml
-          else
-            expXml := xMessage.reqBind as TXml;
-        if Assigned(xMessage) and (expXml.IsAncestorOf(xBind) or (expXml = xBind)
-          ) then
+        if Assigned(FocusedOperation)
+        and Assigned(xMessage)
+        and (   xMessage.reqBind.IsAncestorOf(xBind)
+             or (xMessage.reqBind = xBind)
+            )
+        then
         begin
           with TargetCanvas do
           begin
             Brush.Style := bsSolid;
             // Brush.Color := bgCorrelationItemColor;
-            Brush.Color := bgExpectedValueColor;
+            Brush.Color := bgRequestTagNameColumnColor;
             FillRect(CellRect);
           end;
         end;
@@ -2551,8 +2521,6 @@ end;
 
 procedure TMainForm.BeginConsoleUpdate;
 begin
-  se.projectContext := contextPropertyOverwrite;
-  xmlio.ProjectContext := contextPropertyOverwrite;
   se.doCreateBackup := doCreateBackup;
   se.LastFocusedOperation := FocusedOperation;
   FocusedOperation := nil;
@@ -3405,8 +3373,6 @@ end;
 procedure TMainForm.ProjectDesignFromString(aString, aMainFileName: String);
 begin
   { }
-  se.projectContext := contextPropertyOverwrite;
-  xmlio.ProjectContext := contextPropertyOverwrite;
   TreeView.BeginUpdate;
   GridView.BeginUpdate;
   NvgtView.BeginUpdate;
@@ -3640,12 +3606,8 @@ begin
 end;
 
 procedure TMainForm.HelpActionExecute(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := 'https://www.apiui.org/apiuigui/';
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
+  OpenURL(apiuiconsts.apiuiGui);
 end;
 
 procedure TMainForm.HideAllOperationsActionExecute(Sender: TObject);
@@ -3870,8 +3832,7 @@ begin
   except
   end;
   ToggleDoScrollMessagesIntoViewAction.Checked := doScrollMessagesIntoView;
-  ActionComboBox.Enabled := Assigned(FocusedOperation) and
-    (FocusedOperation.WsdlService.DescriptionType <> ipmDTEmail);
+  ActionComboBox.Enabled := Assigned(FocusedOperation);
   WsdlItemAddMenuItem.Enabled := True;
   WsdlPasteFromClipboardMenuItem.Enabled := True;
   WsdlPopulateMenuItem.Enabled := True;
@@ -3909,11 +3870,9 @@ begin
   result := TXml.CreateAsString('Options', '');
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
-    AddXml(TXml.CreateAsString('Context', contextPropertyOverwrite));
     AddXml(TXml.CreateAsBoolean('StartAfterOpeningProject', doStartOnOpeningProject));
     AddXml(TXml.CreateAsBoolean('CreateBackup', doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
-    AddXml(TXml.CreateAsBoolean('ConfirmTemporaryInactivity', doConfirmTemporaryInactivity));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
         doScrollExceptionsIntoView));
     AddXml(TXml.CreateAsBoolean('CheckScriptAssignments',
@@ -3956,8 +3915,8 @@ begin
             ColorToHtml(bgNilValueColor)));
         AddXml(TXml.CreateAsString('CorrelationValues',
             ColorToHtml(bgCorrelationItemColor)));
-        AddXml(TXml.CreateAsString('ExpectedValues',
-            ColorToHtml(bgExpectedValueColor)));
+        AddXml(TXml.CreateAsString('RequestTagNameColumn',
+            ColorToHtml(bgRequestTagNameColumnColor)));
       end;
     end;
   end;
@@ -4340,68 +4299,6 @@ begin
         end;
       end;
     end;
-  end;
-end;
-
-procedure TMainForm.PasteSwiftdatafromclipboardMenuItemClick(Sender: TObject);
-var
-  dXml, fXml, sXml, bXml: TXml;
-  X: Integer;
-begin
-  try
-    dXml := NodeToBind(TreeView, TreeView.FocusedNode) as TXml;
-    fXml := dXml;
-    while fXml.Name <> 'FinMessage' do
-      fXml := fXml.Parent as TXml;
-  except
-    on E: Exception do
-      raise Exception.Create
-        ('PasteSwiftdatafromclipboardMenuItemClick: ' + E.Message);
-  end;
-  try
-    try
-      with TSwiftMt.Create(ClipBoard.AsText, fXml.Xsd) do
-        try
-          sXml := AsXml;
-          try
-            FocusedOperation.AcquireLock;
-            try
-              if sXml.Name = dXml.Name then
-              begin
-                for X := 0 to sXml.Items.Count - 1 do
-                begin
-                  if sXml.Items.XmlItems[X].Checked then
-                    with dXml.Items.XmlItemByTag[sXml.Items.XmlItems[X].Name] do
-                    begin
-                      Reset;
-                      Checked := True;
-                      LoadValues(sXml.Items.XmlItems[X], False, True);
-                    end;
-                end;
-              end
-              else
-              begin
-                bXml := sXml.Items.XmlItemByTag[dXml.Name];
-                dXml.Reset;
-                dXml.Checked := True;
-                dXml.LoadValues(bXml, False, True);
-              end;
-            finally
-              FocusedOperation.ReleaseLock;
-              stubChanged := True;
-            end;
-          finally
-            sXml.Free;
-          end;
-        finally
-          Free;
-        end;
-    except
-      on E: Exception do
-        ShowInfoForm('Error parsing ClipBoard as SwiftMt message', E.Message);
-    end;
-  finally
-    RevalidateXmlTreeView(TreeView);
   end;
 end;
 
@@ -4944,7 +4841,7 @@ begin
         with TargetCanvas do
         begin
           Brush.Style := bsSolid;
-          Brush.Color := _decColor(bgExpectedValueColor);
+          Brush.Color := _decColor(bgRequestTagNameColumnColor);
           FillRect(CellRect);
         end;
         exit;
@@ -6218,7 +6115,7 @@ begin
   SaveNvgtViewOnFocusChanged := NvgtView.OnFocusChanged;
   SaveGridViewOnFocusChanged := GridView.OnFocusChanged;
   SaveTreeViewOnFocusChanged := TreeView.OnFocusChanged;
-  doConfirmTemporaryInactivity := True;
+  doConfirmTemporaryInactivity := False;
   MessagesTabControlWidth := MessagesTabControl.Width;
   MessagesTabControlMinLeft := LastMessageToolButton.Left + LastMessageToolButton.Width + 1;
   (MessagesTabControl as TWinControl).Color := Self.Color;
@@ -6399,8 +6296,8 @@ begin
   doShowDesignAtTop := xIniFile.BooleanByNameDef['doShowDesignAtTop', True];
   bgCorrelationItemColor := xIniFile.IntegerByNameDef['bgCorrelationItemColor',
     bgCorrelationItemColor];
-  bgExpectedValueColor := xIniFile.IntegerByNameDef['bgExpectedValueColor',
-    bgExpectedValueColor];
+  bgRequestTagNameColumnColor := xIniFile.IntegerByNameDef['RequestTagNameColumn',
+    bgRequestTagNameColumnColor];
   bgNilValueColor := xIniFile.IntegerByNameDef['bgNilValueColor',
     bgNilValueColor];
   DesignPanelAtTopMenuItem.Checked := doShowDesignAtTop;
@@ -6970,7 +6867,7 @@ begin
       case claimedLog.Operation.WsdlService.DescriptionType of
         ipmDTFreeFormat:
           ShowInfoForm('Reply freeformat', xString);
-        ipmDTCobol, ipmDTBmtp:
+        ipmDTCobol:
           begin
             if se.ShowLogCobolStyle = slCobol then
             begin (claimedLog.Operation.rpyBind as TIpmItem)
@@ -6994,26 +6891,6 @@ begin
           ShowTextAsXml('Reply as XML', xString);
         ipmDTWsdl:
           ShowTextAsXml('Reply as XML', xString);
-        ipmDTEmail:
-          ShowInfoForm('Reply freeformat', xString);
-        ipmDTSwiftMT:
-          begin
-            xXml := claimedLog.replyAsXml;
-            try
-              Application.CreateForm(TShowXmlForm, ShowXmlForm);
-              try
-                ShowXmlForm.Caption := 'Reply as XML';
-                ShowXmlForm.isCheckedOnly := True;
-                ShowXmlForm.isReadOnly := True;
-                ShowXmlForm.Bind := xXml;
-                ShowXmlForm.ShowModal;
-              finally
-                FreeAndNil(ShowXmlForm);
-              end;
-            finally
-              xXml.Free;
-            end;
-          end;
         ipmDTJson:
           ShowTextAsXml('Reply as XML', xString);
       end;
@@ -7080,9 +6957,6 @@ end;
 function TMainForm.setContextProperty(aName: String): String;
 begin
   result := se.projectContext;
-  contextPropertyOverwrite := aName;
-  se.projectContext := contextPropertyOverwrite;
-  xmlio.ProjectContext := contextPropertyOverwrite;
 end;
 
 function TMainForm.getContextProperty: String;
@@ -7180,7 +7054,7 @@ begin
       case claimedLog.Operation.WsdlService.DescriptionType of
         ipmDTFreeFormat:
           ShowInfoForm('Request freeformat', xString);
-        ipmDTCobol, ipmDTBmtp:
+        ipmDTCobol:
           begin
             if se.ShowLogCobolStyle = slCobol then
             begin (claimedLog.Operation.reqBind as TIpmItem)
@@ -7205,26 +7079,6 @@ begin
           ShowTextAsXml('Request as XML', xString);
         ipmDTWsdl:
           ShowTextAsXml('Request as XML', xString);
-        ipmDTEmail:
-          ShowInfoForm('Request freeformat', xString);
-        ipmDTSwiftMT:
-          begin
-            xXml := claimedLog.requestAsXml;
-            try
-              Application.CreateForm(TShowXmlForm, ShowXmlForm);
-              try
-                ShowXmlForm.Caption := 'Request as XML';
-                ShowXmlForm.isCheckedOnly := True;
-                ShowXmlForm.isReadOnly := True;
-                ShowXmlForm.Bind := xXml;
-                ShowXmlForm.ShowModal;
-              finally
-                FreeAndNil(ShowXmlForm);
-              end;
-            finally
-              xXml.Free;
-            end;
-          end;
         ipmDTJson:
           ShowTextAsXml('Request as XML', xString);
       end;
@@ -8221,16 +8075,6 @@ begin
       xAddChildVisible := xAddChildVisible { }{ and DebugLogMode{ } ;
       xEnableCheck := Items.Count > 0;
       xEnableStamp := Items.Count = 0;
-      CopySwiftdatatoclipboardMenuItem.Visible :=
-        FocusedOperation.WsdlService.DescriptionType in [ipmDTSwiftMT];
-      CopySwiftdatatoclipboardMenuItem.Enabled := Assigned(Xsd) and
-        (Xsd.Obj is TSwiftMtProps or (Name = 'FinMessage') or
-          (Assigned(Parent) and (Parent.Name = 'FinMessage')));
-      PasteSwiftdatafromclipboardMenuItem.Visible :=
-        FocusedOperation.WsdlService.DescriptionType in [ipmDTSwiftMT];
-      PasteSwiftdatafromclipboardMenuItem.Enabled := Assigned(Xsd) and
-        ((Name = 'FinMessage') or (Assigned(Parent) and
-            (Parent.Name = 'FinMessage')));
     end;
   CopyCobolDataToClipboardMenuItem.Visible := (xBind is TIpmItem);
   PasteCobolDataFromClipboardMenuItem.Visible := (xBind is TIpmItem);
@@ -9092,22 +8936,7 @@ begin
       end;
       if Assigned(claimedLog.Operation) then
       begin
-        if claimedLog.Operation.WsdlService.DescriptionType = ipmDTSwiftMT then
-        begin
-          with claimedLog.replyAsXml do
-            try
-              ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
-            finally
-              Free;
-            end;
-          exit;
-        end;
         if claimedLog.Operation.WsdlService.DescriptionType = ipmDTFreeFormat then
-        begin
-          xmlUtil.presentString('Reply freeformat', claimedLog.ReplyBody);
-          exit;
-        end;
-        if claimedLog.Operation.WsdlService.DescriptionType = ipmDTEmail then
         begin
           xmlUtil.presentString('Reply freeformat', claimedLog.ReplyBody);
           exit;
@@ -9314,24 +9143,9 @@ begin
     end;
     if Assigned(claimedLog.Operation) then
     begin
-      if (claimedLog.Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
-      begin
-        with claimedLog.requestAsXml do
-          try
-            ShowTextAsGrid('Request as Grid', AsText(False, 0, False, False));
-          finally
-            Free;
-          end;
-        exit;
-      end;
       if claimedLog.Operation.WsdlService.DescriptionType = ipmDTFreeFormat then
       begin
         xmlUtil.presentString('Request', claimedLog.RequestBody);
-        exit;
-      end;
-      if claimedLog.Operation.WsdlService.DescriptionType = ipmDTEmail then
-      begin
-        ShowInfoForm('Request freeformat', claimedLog.RequestBody);
         exit;
       end;
       if claimedLog.Operation.WsdlService.DescriptionType = ipmDTWsdl then
@@ -9585,17 +9399,6 @@ begin
   GridView.Selected[aNode] := True;
   GridView.FocusedNode := aNode;
   ShowFocusedMessageInTreeView;
-end;
-
-procedure TMainForm.CopySwiftdatatoclipboardMenuItemClick(Sender: TObject);
-begin
-  with TStwiftMtStreamer.Create(NodeToBind(TreeView,
-      TreeView.FocusedNode) as TXml) do
-    try
-      ClipBoard.AsText := AsText;
-    finally
-      Free;
-    end;
 end;
 
 procedure TMainForm.NeedMqInterfaceCaption(aSender, aObject: TObject;
@@ -10802,39 +10605,6 @@ begin
   doRevalidateMessages;
 end;
 
-procedure TMainForm.SwiftMtOperationsActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  xXml := se.swiftMtOperationsXml;
-  OperationDefsXsd.XsdByCaption ['OperationDefs.SwiftMtOperations.Operation.Annotation']
-    .EditProcedure := EditXmlValueAsText;
-  if EditXmlXsdBased ( 'SwiftMT Operations'
-                     , 'OperationDefs.SwiftMtOperations'
-                     , 'SwiftMtOperations.Operation.Name'
-                     , 'SwiftMtOperations.Operation.Name'
-                     , se.IsActive
-                     , xXml.Items.Count > 1
-                     , esUsed
-                     , OperationDefsXsd
-                     , xXml
-                     , True
-                     ) then
-  begin
-    stubChanged := True;
-    BeginConsoleUpdate;
-    se.swiftMtOperationsUpdate(xXml, se.projectFileName);
-    IntrospectDesign;
-  end;
-end;
-
-procedure TMainForm.SwiftMtOperationsActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  HintStr := 'Maintain list of SwiftMt operations ' + HttpActiveHint;
-end;
-
 procedure TMainForm.SynchronizedOnMessageChanged;
 begin
   GridView.InvalidateColumn(0);
@@ -11298,7 +11068,7 @@ var
   xA2B: TA2BXml;
   xForm: TShowA2BXmlForm;
 begin
-  if FocusedOperation.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
+  if FocusedOperation.DescriptionType in [ipmDTFreeFormat] then
   begin
     ShowMessage('not implemented for freeformat operations');
     Exit;
@@ -11462,13 +11232,12 @@ begin
     se.Activate(False);
     CheckBoxClick(nil)
   end;
-  contextPropertyOverwrite := '';
   enableTacoPingPong := True;
   intervalTacoPingPong := 5 * 60 * 1000;
   doStartOnOpeningProject := True;
   doCreateBackup := True;
   xmlUtil.doConfirmRemovals := True;
-  doConfirmTemporaryInactivity := True;
+  doConfirmTemporaryInactivity := False;
   xmlUtil.doCollapseOnUncheck := True;
   xmlUtil.doExpandOnCheck := True;
   doScrollExceptionsIntoView := False;
@@ -11491,14 +11260,10 @@ begin
     xXml := XmlCheckedItemByTag['General'];
     if Assigned(xXml) then
     begin
-      contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['overruleContextProperty', contextPropertyOverwrite]; // compatibility
-      contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['Context', contextPropertyOverwrite];
-      se.projectContext := contextPropertyOverwrite;
-      xmlio.ProjectContext := contextPropertyOverwrite;
       doStartOnOpeningProject := xXml.Items.XmlCheckedBooleanByTagDef ['StartAfterOpeningProject', doStartOnOpeningProject];
       doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef ['CreateBackup', doCreateBackup];
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
-      doConfirmTemporaryInactivity := xXml.Items.XmlCheckedBooleanByTagDef ['ConfirmTemporaryInactivity', doConfirmTemporaryInactivity];
+      doConfirmTemporaryInactivity := False;
       doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef ['ScrollExceptionsIntoView', doScrollExceptionsIntoView];
       xsdValidateAssignmentsAgainstSchema :=
         xXml.Items.XmlCheckedBooleanByTagDef['CheckScriptAssignments',
@@ -11562,18 +11327,14 @@ begin
       if Assigned(yXml) then
         with yXml.Items do
         begin
-          bgCorrelationItemColor := HtmlToColor
-            (XmlCheckedValueByTagDef['CorrelationValues',
-            ColorToHtml(bgCorrelationItemColor)]);
-          bgExpectedValueColor := HtmlToColor
-            (XmlCheckedValueByTagDef['ExpectedValues',
-            ColorToHtml(bgExpectedValueColor)]);
-          bgNilValueColor := HtmlToColor
-            (XmlCheckedValueByTagDef['UnassignedValues',
-            ColorToHtml(bgNilValueColor)]);
-          bgElementValueColor := HtmlToColor
-            (XmlCheckedValueByTagDef['ElementValues',
-            ColorToHtml(bgElementValueColor)]);
+          bgCorrelationItemColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['CorrelationValues', ColorToHtml(bgCorrelationItemColor)]);
+          bgRequestTagNameColumnColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['RequestTagNameColumn', ColorToHtml(bgRequestTagNameColumnColor)]);
+          bgNilValueColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['UnassignedValues', ColorToHtml(bgNilValueColor)]);
+          bgElementValueColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['ElementValues', ColorToHtml(bgElementValueColor)]);
         end;
     end;
   end;
@@ -13234,45 +12995,6 @@ begin
     ApiByExampleAction.Caption := decorateWithAsterix (ApiByExampleAction.Caption, se.hasApiByExplampleOperations);
 end;
 
-procedure TMainForm.BmtpOperationsActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  xXml := se.bmtpOperationsXml;
-  OperationDefsXsd.XsdByCaption ['OperationDefs.BmtpOperations.Service.Operation.Annotation']
-    .EditProcedure := EditXmlValueAsText;
-  if EditXmlXsdBased ( 'Bmtp Operations'
-                     , 'OperationDefs.BmtpOperations'
-                     , ''
-                     , ''
-                     , se.IsActive
-                     , xXml.Items.Count > 1
-                     , esUsed
-                     , OperationDefsXsd
-                     , xXml
-                     , True
-                     ) then
-  begin
-    stubChanged := True;
-    BeginConsoleUpdate;
-    se.bmtpOperationsUpdate(xXml, se.projectFileName);
-    IntrospectDesign;
-  end;
-end;
-
-procedure TMainForm.BmtpOperationsActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  HintStr := 'Maintain list of bmtp operations ' + HttpActiveHint;
-end;
-
-procedure TMainForm.BmtpOperationsActionUpdate(Sender: TObject);
-begin
-  if Assigned (se) then
-    BmtpOperationsAction.Caption := decorateWithAsterix (BmtpOperationsAction.Caption, se.hasBmtpOperations);
-end;
-
 procedure TMainForm.CobolOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
@@ -13286,7 +13008,7 @@ begin
   Application.CreateForm(TEditContextsForm, EditContextsForm);
   with EditContextsForm do
   try
-    ContextComboBox.Text := contextPropertyOverwrite;
+    ContextComboBox.Text := se.projectContext;
     Contexts := TStringListList.Create(se.projectContexts);
     try
       ShowModal;
@@ -13302,12 +13024,10 @@ begin
             se.projectContexts.CellObject[c, r] := CellObject[c, r];
           end;
         stubChanged := stubChanged or isChanged;
-        if ContextComboBox.Text <> contextPropertyOverwrite then
+        if ContextComboBox.Text <> se.projectContext then
         begin
-          contextPropertyOverwrite := ContextComboBox.Text;
-          se.projectContext := contextPropertyOverwrite;
-          xmlio.ProjectContext := contextPropertyOverwrite;
-          isOptionsChanged := True;
+          se.projectContext := ContextComboBox.Text;
+          stubChanged := True;
         end;
       end;
     finally
@@ -13374,43 +13094,6 @@ begin
   ShowKindOfInformation := TShowKindOfInformation (LogTabControl.TabIndex);
 end;
 
-procedure TMainForm.MailOperationsActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  xXml := se.mailOperationsXml;
-  if EditXmlXsdBased ( 'Mail Operations'
-                     , 'OperationDefs.MailOperations'
-                     , 'MailOperations.Operation.Name'
-                     , 'MailOperations.Operation.Name'
-                     , se.IsActive
-                     , xXml.Items.Count > 1
-                     , esUsed
-                     , OperationDefsXsd
-                     , xXml
-                     , True
-                     ) then
-  begin
-    stubChanged := True;
-    BeginConsoleUpdate;
-    se.mailOperationsUpdate(xXml);
-    IntrospectDesign;
-  end;
-end;
-
-procedure TMainForm.MailOperationsActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-   HintStr := 'Maintain mail operations (only needed for client mode)' + HttpActiveHint;
-end;
-
-procedure TMainForm.MailOperationsActionUpdate(Sender: TObject);
-begin
-  if Assigned (se) then
-    MailOperationsAction.Caption := decorateWithAsterix (MailOperationsAction.Caption, se.hasMailOperations);
-end;
-
 procedure TMainForm.MenuItem33Click(Sender: TObject);
 begin
    Clipboard.AsText := NodeToBind(TreeView, TreeView.FocusedNode).Name;
@@ -13447,12 +13130,8 @@ begin
 end;
 
 procedure TMainForm.MenuItem60Click(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := 'https://apiui.org/treeview-popup';
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
+  OpenURL(apiuiconsts.apiuiMessageTreeview);
 end;
 
 procedure TMainForm.MenuItem61Click(Sender: TObject);
@@ -13462,7 +13141,7 @@ end;
 
 procedure TMainForm.OperationsPopupHelpItemClick(Sender: TObject);
 begin
-  ShowHelpDocumentation('Operations_Popup_Menu');
+  OpenURL (apiuiconsts.apiuiOperationContextMenu);
 end;
 
 procedure TMainForm.GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
@@ -13899,12 +13578,6 @@ begin
     result := -1;
   if s1 > s2 then
     result := 1;
-end;
-
-procedure TMainForm.SwiftMtOperationsActionUpdate(Sender: TObject);
-begin
-  if Assigned (se) then
-    SwiftMtOperationsAction.Caption := decorateWithAsterix (SwiftMtOperationsAction.Caption, se.hasSwiftMtOperations);
 end;
 
 procedure TMainForm.ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);

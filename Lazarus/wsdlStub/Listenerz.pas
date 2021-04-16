@@ -30,11 +30,6 @@ type
     httpPorts, httpsPorts: TJBStringList;
     mqInterfaces: TJBStringList;
     stompInterfaces: TJBStringList;
-    smtpPort: Integer;
-    smtpsPort: Integer;
-    smtpTlsCertificateFile, smtpTlsKeyFile, smtpTlsRootCertificateFile: String;
-    pop3Port: Integer;
-    pop3UserName, pop3Password: String;
     SpecificationXml: TXml;
     property Connected: Boolean read fConnected write setConnected;
     procedure OnGetSslPassword (var aPassword: String);
@@ -215,43 +210,6 @@ begin
             for y := 0 to Items.Count - 1 do
               if Items.XmlItems[y].Checked then
                 stompInterfaces.AddObject ('', TStompInterface.CreateFromXml (Items.XmlItems [y], aOnHaveFrame));
-          if Name = 'Mail' then
-          begin
-            for m := 0 to Items.Count - 1 do
-            begin
-              if Items.XmlItems[m].Checked then
-              begin
-                with Items.XmlItems[m] do
-                begin
-                  if Name = 'Smtp' then
-                  begin
-                    smtpPort := Items.XmlCheckedIntegerByTag['Port'];
-                  end;
-                  if Name = 'Smtps' then
-                  begin
-                    smtpsPort := Items.XmlCheckedIntegerByTag['Port'];
-                    xXml := Items.XmlCheckedItemByTag['TLS'];
-                    if Assigned (xXml) then with xXml do
-                    begin
-                      smtpTlsCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
-                      smtpTlsKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
-                      smtpTlsRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
-                    end;
-                  end;
-                  if Name = 'Pop3' then
-                  begin
-                    pop3Port := Items.XmlCheckedIntegerByTag['Port'];
-                    xXml := Items.XmlCheckedItemByTag['User'];
-                    if Assigned (xXml) then with xXml do
-                    begin
-                      pop3UserName := Items.XmlCheckedValueByTag['Name'];
-                      pop3Password := DecryptString (Items.XmlCheckedValueByTag['Password']);
-                    end;
-                  end;
-                end;
-              end;
-            end;
-          end;
         end;
       end;
     end;
@@ -279,14 +237,6 @@ begin
   httpsPorts.Clear;
   httpProxyPort := 0;
   httpBmtpPort := 0;
-  smtpPort := 0;
-  smtpsPort := 0;
-  smtpTlsCertificateFile := '';
-  smtpTlsKeyFile := '';
-  smtpTlsRootCertificateFile := '';
-  pop3Port := 0;
-  pop3Username := '';
-  pop3Password := '';
   sslCertificateFile := '';
   sslKeyFile := '';
   sslRootCertificateFile := '';
@@ -307,8 +257,6 @@ begin
   httpBmtpPort := 0;
   mqInterfaces := TJBStringList.Create;
   stompInterfaces := TJBStringList.Create;
-  smtpPort := 0;
-  pop3Port := 0;
 end;
 
 destructor TListeners.Destroy;

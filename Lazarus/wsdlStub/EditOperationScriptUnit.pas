@@ -14,6 +14,7 @@ uses
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, Dialogs
+  , apiuiconsts
   , ParserClasses
   , Express, Bind, ComCtrls
   , Wsdlz
@@ -352,17 +353,17 @@ end;
 
 procedure TEditOperationScriptForm.Grammar1Click(Sender: TObject);
 begin
-  OpenDocument(PChar ('https://www.apiui.org/scripting/#grammar'));
+  OpenURL (apiuiconsts.apiuiScriptGrammar);
 end;
 
 procedure TEditOperationScriptForm.Helponfunctions1Click(Sender: TObject);
 begin
-  OpenDocument(PChar ('https://www.apiui.org/scripting/#scripting'));
+  OpenURL(apiuiconsts.apiuiAllFunctions);
 end;
 
 procedure TEditOperationScriptForm.EmbeddedSQLMenuItemClick(Sender: TObject);
 begin
-  OpenDocument(PChar ('https://www.apiui.org/scripting/#databasesql'));
+  OpenURL(apiuiconsts.apiuiEmbeddedSQL);
 end;
 
 function TEditOperationScriptForm.getScriptName: String;

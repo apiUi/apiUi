@@ -404,7 +404,7 @@ var
   _xmlContexts: TObject;
 {$ifndef NoGUI}
   bgCorrelationItemColor: TColor;
-  bgExpectedValueColor: TColor;
+  bgRequestTagNameColumnColor: TColor;
   bgNilValueColor: TColor;
   bgElementValueColor: TColor;
   fgMissingColor: TColor;
@@ -881,7 +881,7 @@ procedure xmlSetDefaultColors;
 begin
 {$ifndef NoGUI}
   bgCorrelationItemColor := clMoneyGreen;
-  bgExpectedValueColor := $E7FFE7;
+  bgRequestTagNameColumnColor := $E7FFE7;
   bgNilValueColor := $CFFFFF;
   bgElementValueColor := clWhite;
   fgMissingColor := clRed;

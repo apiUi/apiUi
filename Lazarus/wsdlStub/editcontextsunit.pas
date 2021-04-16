@@ -22,6 +22,7 @@ type
 
   TEditContextsForm = class(TForm)
     GridView: TVirtualStringTree;
+    Label1: TLabel;
     mainImageList1: TImageList;
     MenuItem6: TMenuItem;
     SetAsOnetimerAction: TAction;
@@ -29,7 +30,6 @@ type
     SetPasswordAction: TAction;
     CancelButton: TBitBtn;
     ContextComboBox: TComboBox;
-    Label1: TLabel;
     mainImageList: TImageList;
     OkButton: TBitBtn;
     Panel2: TPanel;

@@ -242,7 +242,6 @@ type
     AfterScriptLines: TJBStringList;
     Duplicates, DuplicatesName: TWsdlBinder;
     _compareString: String;
-    procedure SwiftMtRequestToBindables (aString: String);
     function FindBind (aCaption: String): TCustomBindable;
     procedure RebindLists; virtual;
     procedure PopulateCorrelation (aPatternsList: TJBStringList);
@@ -572,8 +571,6 @@ type TOnStringEvent = procedure (const Msg: String) of Object;
 
 procedure Notify(aString: AnsiString);
 function DateTimeToJulianStr (aDateTime: TDateTime): String;
-function SwiftStrToNumber (aString: String): Extended;
-function SwiftNumberToStr (aNumber: Extended): String;
 function DateTimeToTandemJulianStr (aDateTime: TDateTime): String;
 function RoundedX (aSource, aNumber: Extended): Extended;
 function RandomX (aLow, aHigh: Extended): Extended;
@@ -692,7 +689,6 @@ var
   _WsdlWsaXsd: TXsd;
   _WsdlMqHeaderXsd: TXsd;
   _WsdlStompHeaderXsd: TXsd;
-  _WsdlEmailXsd: TXsd;
   _WsdlListOfFilesXsd: TXsd;
   _WsdlTacoConfigXsd: TXsd;
   _WsdlKafkaConfigXsd: TXsd;
@@ -742,7 +738,6 @@ uses
    , Clipbrd
    , HashUtilz
    , IdURI
-   , SwiftUnit
    , xmlxsdparser
    , Logz
    ;
@@ -909,28 +904,6 @@ end;
 function DateTimeToTandemJulianStr (aDateTime: TDateTime): String;
 begin
   result := FloatToStrF(DateTimeToJulianDate(aDateTime)*24*60*60*1000000,ffGeneral,18,3);
-end;
-
-function SwiftStrToNumber (aString: String): Extended;
-var
-  x: Integer;
-begin
-  x := Pos(',', aString);
-  if x > 0 then
-    aString[x] := '.';
-  result := StrToFloat (aString);
-end;
-
-function SwiftNumberToStr (aNumber: Extended): String;
-var
-  x: Integer;
-begin
-  result := FloatToStr (aNumber);
-  x := Pos('.', result);
-  if x > 0 then
-    result [x] := ','
-  else
-    result := result + ',';
 end;
 
 function RoundedX (aSource, aNumber: Extended): Extended;
@@ -1317,7 +1290,7 @@ begin
     if Count > 0 then
     begin
       if xInteger > Count then
-        raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringN"', [xInteger])
+        result := ''
       else
         result := Strings[xInteger - 1];
     end;
@@ -2847,7 +2820,8 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
         xExt := UpperCase (ExtractFileExt (aaFileName));
         xXml := TXml.Create;
         if (xExt = '.JSON')
-        or (xExt = '.JSN') then
+        or (xExt = '.JSN')
+        or (xExt = '') then
           xXml.LoadJsonFromFile(aaFileName, aOnError, aOnbeforeRead)
         else
           xXml.LoadYamlFromFile(aaFileName, aOnError, aOnbeforeRead);
@@ -2868,7 +2842,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
         xFileName := xmlio.ExpandRelativeFileName(aFileName, SeparatedStringN(nil, aXml.Value, '#/', 1));
         xPath := SeparatedStringN(nil, aXml.Value, '#/', 2);
         __ReadDollarReferencedFile(xFileName);
-        aXml.Value := xFileName + '#/' + xPath;
+        aXml.Value := xFileName;
+        if xPath <> '' then
+          aXml.Value := aXml.Value + '#/' + xPath;
       end
       else
         aXml.Value := aFileName + aXml.Value;
@@ -3508,6 +3484,7 @@ begin
   fCloned := nil;
   fLock := SyncObjs.TCriticalSection.Create;
   doSuppressLog := 0;
+  StubAction := saStub;
   if Assigned (aWsdl) then
   begin
     Wsdl := aWsdl;
@@ -3950,8 +3927,6 @@ begin
     BindScriptFunction ('StrToDateTime', @XmlToDateTime, DFS, '(aString)');
     BindScriptFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindScriptFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-    BindScriptFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
-    BindScriptFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
     BindScriptFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
     BindScriptFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
     BindScriptFunction ('UserName', @wsdlUserName, SFV, '()');
@@ -4141,17 +4116,6 @@ begin
     Exit;
   end;
 
-  if WsdlService.DescriptionType in [ipmDTSwiftMT] then
-  begin
-    with TStwiftMtStreamer.Create(reqBind as TXml) do
-    try
-      result := AsText;
-    finally
-      Free;
-    end;
-    Exit;
-  end;
-
   if isFreeFormat then
   begin
     result := FreeformatReq;
@@ -4296,17 +4260,6 @@ begin
   if isFreeFormat then
   begin
     result := FreeformatRpy;
-    Exit;
-  end;
-
-  if WsdlService.DescriptionType in [ipmDTSwiftMT] then
-  begin
-    with TStwiftMtStreamer.Create(rpyBind as TXml) do
-    try
-      result := AsText;
-    finally
-      Free;
-    end;
     Exit;
   end;
 
@@ -6073,8 +6026,6 @@ begin
     BindStamperFunction ('StrToDateTime', @XmlToDateTime, DFS, '(aString)');
     BindStamperFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindStamperFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-    BindStamperFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
-    BindStamperFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
     BindStamperFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
     BindStamperFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
     BindStamperFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
@@ -6560,7 +6511,7 @@ procedure TWsdlOperation.ReplyStringToBindables(aReply: String);
 var
   xXml: TXml;
 begin
-  if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTSwiftMT] then
+  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
     FreeFormatRpy := aReply
   else
   begin
@@ -6583,7 +6534,7 @@ procedure TWsdlOperation.RequestStringToBindables(aRequest: String);
 var
   xXml: TXml;
 begin
-  if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTSwiftMT] then
+  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
     FreeFormatReq := aRequest
   else
   begin
@@ -6611,7 +6562,7 @@ begin
     if WsdlService.DescriptionType = ipmDTCobol then
       result := ((rpyBind as TIpmItem).Bytes = 0)
     else
-      if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
+      if WsdlService.DescriptionType in [ipmDTFreeFormat] then
         result := (FreeFormatRpy = '')
       else
         result := (rpyXsd.sType.ElementDefs.Count = 0)
@@ -6983,7 +6934,7 @@ begin
                           );
 
   aOperation.Messages.AddObject('', self);
-  if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
+  if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol] then
   begin
     if Assigned (aOperation.reqBind) then
       reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
@@ -7068,7 +7019,7 @@ begin
                             , aDocumentation
                             );
     aOperation.Messages.AddObject('', self);
-    if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
+    if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol] then
     begin
       if Assigned (aOperation.reqBind) then
         reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
@@ -7298,17 +7249,6 @@ begin
     Messages[m].Duplicates := nil;
 end;
 
-procedure TWsdlBinder.SwiftMtRequestToBindables(aString: String);
-begin
-  (reqBind as TXml).ResetValues;
-  with TSwiftMT.Create(aString, reqXsd) do
-  try
-    (reqBind as TXml).LoadValues (AsXml, False, True);
-  finally
-    Free;
-  end;
-end;
-
 function TWsdlBinder.getDescriptionType: TIpmDescrType;
 begin
   result := WsdlOperation.WsdlService.DescriptionType;
@@ -7388,8 +7328,8 @@ function TWsdlBinder .getRequestAsString : String ;
 begin
   case DescriptionType of
     ipmDTFreeFormat: result := FreeFormatReq;
-    ipmDTCobol, ipmDTBmtp: ;
-    ipmDTXml, ipmDTXsd, ipmDTWsdl, ipmDTEmail, ipmDTSwiftMT, ipmDTJson: result := '';
+    ipmDTCobol: ;
+    ipmDTXml, ipmDTXsd, ipmDTWsdl, ipmDTJson: result := '';
   end;
 end;
 
@@ -7582,9 +7522,8 @@ begin
         FreeFormatReq := AValue;
         reqXml.LoadFromString(AValue, nil);
       end;
-    ipmDTCobol, ipmDTBmtp: (reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, AValue);
-    ipmDTSwiftMT: SwiftMtRequestToBindables(AValue);
-    ipmDTXml, ipmDTXsd, ipmDTWsdl, ipmDTEmail: _XmlRequestToBindables;
+    ipmDTCobol: (reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, AValue);
+    ipmDTXml, ipmDTXsd, ipmDTWsdl: _XmlRequestToBindables;
   end;
 end;
 

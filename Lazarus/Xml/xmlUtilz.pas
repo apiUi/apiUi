@@ -173,7 +173,6 @@ uses
    , ClipBrd
    , XmlGridUnit
 // , XsBuiltIns
-   , SwiftUnit
    , base64
    ;
 
@@ -1349,26 +1348,6 @@ begin
     AddProperty ('FractionalDigits', xDataType.FractionalDigits);
     AddProperty ('SourceFileDataType', xDataType.SourceFileName);
   end;
-  if (aBind is TXml) then with aBind as TXml do
-  begin
-    if Assigned (Xsd)
-    and (Xsd.Obj is TSwiftMtProps) then with Xsd.Obj as TSwiftMtProps do
-    begin
-      AddProperty('mtTag', mtTag);
-      AddProperty('mtFinFormat', mtFinFormat);
-      if mtMatchContent then
-        AddProperty('mtMatchContent', BooleanAsString(mtMatchContent));
-      AddProperty('mtSepPrefix', mtSepPrefix);
-      AddProperty('mtSepSuffix', mtSepSuffix);
-      AddProperty('mtSeparator', mtSeparator);
-      AddProperty('mtMatchUntilPattern', mtMatchUntilPattern);
-      AddProperty('mtLookAheadPattern', mtLookAheadPattern);
-      if mtIncludeNext then
-        AddProperty('mtIncludeNext', BooleanAsString(mtIncludeNext));
-      if mtIncludePrefix then
-        AddProperty('mtIncludePrefix', BooleanAsString(mtIncludePrefix));
-    end;
-  end;
   if aBind is TIpmItem then
   begin
     AddProperty('Name', (aBind as TIpmItem).Name);
@@ -1787,14 +1766,6 @@ begin
   result := aBind.Name;
   if aBind is TXmlAttribute then
     result := '@' + aBind.Name;
-  if aBind is TXml then with aBind as TXml do
-  begin
-    if Assigned (Xsd)
-    and Assigned (Xsd.Obj)
-    and (Xsd.Obj is TSwiftMtProps) then with Xsd.Obj as TSwiftMtProps do
-      if expansionName <> '' then
-        result := result + ' [' + expansionName + ']';
-  end;
 end;
 
 function TXmlUtil.BooleanAsString(aBoolean: Boolean): String;
