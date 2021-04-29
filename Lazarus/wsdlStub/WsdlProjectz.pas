@@ -185,7 +185,6 @@ type
     hasGui: Boolean;
     ProgressInterface: TProgressInterface;
     EditContexts: TThreadMethod;
-    doCreateBackup: Boolean;
     doStartOnOpeningProject: Boolean;
     projectContexts: TStringListList;
     ppLock: TCriticalSection;
@@ -8903,26 +8902,13 @@ begin
   xProjectFolderName := Copy (projectFileName, 1, Length(projectFileName) - Length(_ProjectFileExtention))
                       + Copy (_ProjectFileExtention, 2, 100);
 }
-  ProgressStep('Creating Backup', 20);
+  ProgressStep('Initializing', 20);
   try
     try
       xProjectFolderName := projectFileName;
-      if doCreateBackup
-      and LazFileUtils.DirectoryExistsUTF8(xProjectFolderName)
-      and LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(xProjectFolderName) + _ProjectFileName) then
-      begin
-        if LazFileUtils.DirectoryExistsUTF8(xProjectFolderName + '~') then
-        begin
-          xmlio.EraseAllFolderContent(xProjectFolderName + '~');
-          LazFileUtils.RemoveDirUTF8(xProjectFolderName + '~');
-          if LazFileUtils.DirectoryExistsUTF8(xProjectFolderName + '~') then
-            raise Exception.Create('Could not remove backup ' + xProjectFolderName + '~');
-        end;
-        LazFileUtils.RenameFileUTF8(xProjectFolderName, xProjectFolderName + '~');
-      end;
       if not LazFileUtils.ForceDirectory(xProjectFolderName) then
         raise Exception.CreateFmt('Could not create folder "%s"', [xProjectFolderName]);
-      ProgressUpdate('Initialising Folder', 30);
+      ProgressUpdate('Initializing Folder', 30);
       xmlio.EraseAllFolderContent(xProjectFolderName);
       _createReadMe(xProjectFolderName);
       xWsdlsFolderName := LazFileUtils.AppendPathDelim(xProjectFolderName) + 'W';

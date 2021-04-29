@@ -1,0 +1,63 @@
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://www.rabobank.nl/XMLHeader/10" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:req="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Req" xmlns:rpy="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Rpy"  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:client="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest"  xmlns:rgf="http://www.rabobank.nl/XMLFault/10" xmlns:ns3="http://schemas.xmlsoap.org/soap/encoding/" name="CreateServiceRequest" targetNamespace="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest">
+	<types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Req" schemaLocation="CreateServiceRequest_2_REQ.xsd"/>
+		</xsd:schema>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Rpy" schemaLocation="CreateServiceRequest_2_RPY.xsd"/>
+		</xsd:schema>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://www.rabobank.nl/XMLHeader/10" schemaLocation="RaboGroupHeader_10.xsd"/>
+		</xsd:schema>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://www.rabobank.nl/XMLFault/10" schemaLocation="RaboXMLFault_10.xsd"/>
+		</xsd:schema>
+	</types>
+	<message name="RaboHeaderMessage">
+		<part name="payload" element="ns1:RaboHeader"/>
+	</message>
+	<message name="CreateServiceRequestResponseMessage">
+		<part name="payload" element="rpy:CreateServiceRequest_Rpy"/>
+	</message>
+	<message name="CreateServiceRequestRequestMessage">
+		<part name="payload" element="req:CreateServiceRequest_Req"/>
+	</message>
+	<message name="SOAPFaultDetailsMessageAsString">
+		<part name="applicationfaultcode" element="rgf:applicationfaultcode"/>
+		<part name="applicationfaulttext" element="rgf:applicationfaulttext"/>
+	</message>
+	<portType name="CreateServiceRequest">
+		<operation name="process">
+			<input message="client:CreateServiceRequestRequestMessage"/>
+			<output message="client:CreateServiceRequestResponseMessage"/>
+			<fault name="SOAPFault" message="client:SOAPFaultDetailsMessageAsString"/>
+		</operation>
+	</portType>
+	<binding name="CreateServiceRequestBinding" type="client:CreateServiceRequest">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="process">
+			<soap:operation soapAction="process" style="document"/>
+			<input>
+				<soap:header message="client:RaboHeaderMessage" part="payload" use="literal"/>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:header message="client:RaboHeaderMessage" part="payload" use="literal"/>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SOAPFault">
+				<soap:fault name="SOAPFault" use="literal"/>
+			</fault>
+		</operation>
+	</binding>
+	<service name="CreateServiceRequest">
+		<port name="CreateServiceRequestPort" binding="client:CreateServiceRequestBinding">
+			<soap:address location="http://ToBeReplacedByServer:7777/orabpel/default/CreateServiceRequest/2/"/>
+		</port>
+	</service>
+	<plnk:partnerLinkType name="CreateServiceRequest">
+		<plnk:role name="CreateServiceRequestProvider">
+			<plnk:portType name="client:CreateServiceRequest"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

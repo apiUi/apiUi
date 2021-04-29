@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 296
+  Left = 128
   Height = 808
-  Top = 125
+  Top = 119
   Width = 1718
   ClientHeight = 783
   ClientWidth = 1718
@@ -348,16 +348,7 @@ object MainForm: TMainForm
         Cursor = crVSplit
         Left = 4
         Height = 6
-        Top = 54
-        Width = 203
-        Align = alTop
-        ResizeAnchor = akTop
-      end
-      object Splitter4: TSplitter
-        Cursor = crVSplit
-        Left = 4
-        Height = 6
-        Top = 4
+        Top = 48
         Width = 203
         Align = alTop
         ResizeAnchor = akTop
@@ -365,7 +356,7 @@ object MainForm: TMainForm
       object InWsdlPropertiesListView: TListView
         Left = 4
         Height = 73
-        Top = 60
+        Top = 54
         Width = 203
         Align = alTop
         Columns = <        
@@ -389,10 +380,10 @@ object MainForm: TMainForm
       end
       object DocumentationViewer: THtmlViewer
         Left = 4
-        Height = 220
-        Top = 139
+        Height = 226
+        Top = 133
         Width = 203
-        BorderStyle = htFocused
+        BorderStyle = htSingle
         HistoryMaxCount = 0
         NoSelect = False
         PrintMarginBottom = 2
@@ -402,14 +393,14 @@ object MainForm: TMainForm
         PrintScale = 1
         OnHotSpotClick = DocumentationViewerHotSpotClick
         Align = alClient
-        TabOrder = 3
+        TabOrder = 2
       end
       object OperationDocumentationViewer: THtmlViewer
         Left = 4
         Height = 44
-        Top = 10
+        Top = 4
         Width = 203
-        BorderStyle = htFocused
+        BorderStyle = htSingle
         HistoryMaxCount = 0
         NoSelect = False
         PrintMarginBottom = 2
@@ -419,13 +410,13 @@ object MainForm: TMainForm
         PrintScale = 1
         OnHotSpotClick = DocumentationViewerHotSpotClick
         Align = alTop
-        TabOrder = 4
+        TabOrder = 3
       end
       object Splitter2: TSplitter
         Cursor = crVSplit
         Left = 4
         Height = 6
-        Top = 133
+        Top = 127
         Width = 203
         Align = alTop
         ResizeAnchor = akTop
@@ -1369,38 +1360,23 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 1
         OnResize = MessagesTabToolBarResize
-        object ToolButton31: TToolButton
-          Left = 1
-          Top = 2
-          Action = ReadMessagesAction
-        end
-        object ToolButton35: TToolButton
-          Left = 30
-          Top = 2
-          Action = SaveMessagesAction
-        end
         object ToolButton50: TToolButton
-          Left = 273
+          Left = 178
           Top = 2
           Action = LogDisplayedColumnsAction
         end
-        object ToolButton33: TToolButton
-          Left = 141
-          Top = 2
-          Action = MessagesRegressionAction
-        end
         object ToolButton67: TToolButton
-          Left = 170
+          Left = 75
           Top = 2
           Action = LogCoverageReportAction
         end
         object ToolButton22: TToolButton
-          Left = 236
+          Left = 141
           Top = 2
           Action = ClearLogItemsAction
         end
         object ToolButton42: TToolButton
-          Left = 302
+          Left = 207
           Top = 2
           Action = FilterLogAction
         end
@@ -1431,58 +1407,51 @@ object MainForm: TMainForm
           TabOrder = 0
         end
         object ToolButton37: TToolButton
-          Left = 104
+          Left = 38
           Top = 2
           Action = CopyLogGridToClipBoardAction
         end
         object logChartToolButton: TToolButton
-          Left = 199
+          Left = 104
           Top = 2
           Action = logChartAction
         end
         object ToolButton72: TToolButton
-          Left = 331
+          Left = 236
           Top = 2
           Action = ToggleDoScrollMessagesIntoViewAction
           Style = tbsCheck
         end
         object ToolButton74: TToolButton
-          Left = 265
+          Left = 170
           Height = 28
           Top = 2
           Caption = 'ToolButton74'
           Style = tbsSeparator
         end
         object LastMessageToolButton: TToolButton
-          Left = 96
+          Left = 30
           Height = 28
           Top = 2
           Caption = 'LastMessageToolButton'
           Style = tbsSeparator
         end
         object ToolButton76: TToolButton
-          Left = 228
+          Left = 133
           Height = 28
           Top = 2
           Caption = 'ToolButton76'
           Style = tbsSeparator
         end
-        object ToolButton77: TToolButton
-          Left = 59
-          Height = 28
-          Top = 2
-          Caption = 'ToolButton77'
-          Style = tbsSeparator
-        end
         object ToolButton78: TToolButton
-          Left = 133
+          Left = 67
           Height = 28
           Top = 2
           Caption = 'ToolButton78'
           Style = tbsSeparator
         end
         object ToolButton53: TToolButton
-          Left = 67
+          Left = 1
           Top = 2
           Action = LogsFromHttpGetAction
         end
@@ -1566,7 +1535,7 @@ object MainForm: TMainForm
             end          
             item
               Position = 8
-              Text = 'Action'
+              Text = 'Direction'
               Width = 60
             end          
             item
@@ -2053,23 +2022,6 @@ object MainForm: TMainForm
       ImageIndex = 68
       OnExecute = ShowLogZoomElementActionExecute
     end
-    object ReadMessagesAction: TAction
-      Category = 'Log'
-      Caption = 'Read from file...'
-      Hint = 'Read apiUi log items from file'
-      ImageIndex = 2
-      OnExecute = ReadMessagesActionExecute
-      OnHint = ReadMessagesActionHint
-      OnUpdate = ReadMessagesActionUpdate
-    end
-    object SaveMessagesAction: TAction
-      Category = 'Log'
-      Caption = 'Save log items to file...'
-      Hint = 'Save log items to file'
-      ImageIndex = 3
-      OnExecute = SaveMessagesActionExecute
-      OnUpdate = SaveMessagesActionUpdate
-    end
     object CopyExceptionToClipboardAction: TAction
       Category = 'Log'
       Caption = 'CopyExceptionToClipboardAction'
@@ -2372,14 +2324,6 @@ object MainForm: TMainForm
       Caption = 'Save replies to file...'
       ImageIndex = 3
       OnUpdate = SaveLogRepliesToFileActionUpdate
-    end
-    object MessagesRegressionAction: TAction
-      Category = 'Log'
-      Caption = 'Compare with file... '
-      Hint = 'Show differences with a previous run'
-      ImageIndex = 43
-      OnExecute = MessagesRegressionActionExecute
-      OnUpdate = MessagesRegressionActionUpdate
     end
     object LogCoverageReportAction: TAction
       Category = 'Log'
@@ -6510,21 +6454,17 @@ object MainForm: TMainForm
     end
     object LogMenuItem: TMenuItem
       Caption = '&Log'
-      object SaveMessagesAction1: TMenuItem
-        Action = SaveMessagesAction
-      end
       object Displayedcolumns1: TMenuItem
         Action = LogDisplayedColumnsAction
       end
       object Comparewithfile1: TMenuItem
-        Action = MessagesRegressionAction
+        Caption = 'Compare with file... '
+        Hint = 'Show differences with a previous run'
+        ImageIndex = 43
       end
       object LogCoverageReportAction1: TMenuItem
         Action = LogCoverageReportAction
         ImageIndex = 85
-      end
-      object ReadMessagesAction1: TMenuItem
-        Action = ReadMessagesAction
       end
       object N7: TMenuItem
         Caption = '-'

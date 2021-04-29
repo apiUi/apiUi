@@ -1,0 +1,45 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <CreateServiceRequest2 checked__="false"></CreateServiceRequest2>
+    </Reply>
+    <Request>
+      <CreateServiceRequest2 checked__="true">
+        <RaboHeader checked__="true">
+          <HeaderVersion checked__="true">HeaderVersion</HeaderVersion>
+          <MessageId checked__="true">MessageId</MessageId>
+          <ServiceRequestorDomain checked__="true">ServiceRequestorDomain</ServiceRequestorDomain>
+          <ServiceRequestorId checked__="true">ServiceRequestorId</ServiceRequestorId>
+          <ServiceProviderDomain checked__="true">ServiceProviderDomain</ServiceProviderDomain>
+          <ServiceId checked__="true">ServiceId</ServiceId>
+          <ServiceVersion checked__="true">Ser</ServiceVersion>
+          <FaultIndication checked__="true">False</FaultIndication>
+          <MessageTimestamp checked__="true">2010-12-11T13:30:00.200</MessageTimestamp>
+        </RaboHeader>
+        <CreateServiceRequest_Req checked__="true">
+          <Relation checked__="true">
+            <RelationId checked__="true">RelationId</RelationId>
+          </Relation>
+          <LocalBank checked__="true">
+            <BankCode checked__="true">122.745</BankCode>
+          </LocalBank>
+          <ServiceRequest checked__="true">
+            <SourceSystemId checked__="true">SourceSystemId</SourceSystemId>
+            <OriginDescriptionCode checked__="true">OriginDescriptionCode</OriginDescriptionCode>
+            <TypeCode checked__="true">TypeCode</TypeCode>
+            <StatusCode checked__="true">StatusCode</StatusCode>
+            <EmployeeReadOnlyFlag checked__="true">E</EmployeeReadOnlyFlag>
+            <Description checked__="true">Description</Description>
+            <CategoryCode checked__="true">CategoryCode</CategoryCode>
+            <MeansOfCommunicationCode checked__="true">MeansOfCommunicationCode</MeansOfCommunicationCode>
+            <FulfillmentAreaCode checked__="true">FulfillmentAreaCode</FulfillmentAreaCode>
+            <StartDate checked__="true">2010-12-11T13:30:00.200</StartDate>
+            <PlannedEndDate checked__="true">2010-12-11T13:30:00.200</PlannedEndDate>
+          </ServiceRequest>
+        </CreateServiceRequest_Req>
+      </CreateServiceRequest2>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

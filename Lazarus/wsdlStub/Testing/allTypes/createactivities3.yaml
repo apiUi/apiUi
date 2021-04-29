@@ -1,0 +1,267 @@
+---
+swagger: '2.0'
+info:
+  description: ''
+  version: ''
+  title: ''
+host: distributie-api.intern.rabobank.nl
+basePath: "/crmi/api/klant"
+schemes:
+- https
+paths:
+  "/createactivities/3":
+    post:
+      summary: summary
+      description: ''
+      operationId: CreateActivities
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        decsription: ''
+        required: 'true'
+        schema:
+          "$ref": "#/definitions/CreateActivities_Req"
+      responses:
+        '200':
+          decsription: Success response
+          schema:
+            "$ref": "#/definitions/CreateActivities_Rpy"
+        '500':
+          decsription: Fault response
+          schema:
+            "$ref": "#/definitions/SOAPFault"
+definitions:
+  CreateActivities_Req: 
+    type: object
+    properties: 
+      Relation: 
+        type: object
+        properties: 
+          RelationId: 
+            type: string
+            maxLength: 15
+        required: 
+          - RelationId
+      LocalBank: 
+        type: object
+        properties: 
+          BankCode: 
+            type: number
+            format: float
+        required: 
+          - BankCode
+      ServiceRequest: 
+        type: object
+        properties: 
+          Reference: 
+            type: string
+            maxLength: 30
+        required: 
+          - Reference
+      Order: 
+        type: object
+        properties: 
+          OrderId: 
+            type: string
+            maxLength: 15
+        required: 
+          - OrderId
+      OrderLine: 
+        type: object
+        properties: 
+          OrderLineId: 
+            type: string
+            maxLength: 30
+        required: 
+          - OrderLineId
+      Opportunity: 
+        type: object
+        properties: 
+          OpportunityId: 
+            type: string
+            maxLength: 15
+        required: 
+          - OpportunityId
+      Quote: 
+        type: object
+        properties: 
+          QuoteId: 
+            type: string
+            maxLength: 15
+        required: 
+          - QuoteId
+      QuoteLine: 
+        type: object
+        properties: 
+          QuoteLineId: 
+            type: string
+            maxLength: 30
+        required: 
+          - QuoteLineId
+      ListOfActivities: 
+        type: object
+        properties: 
+          Activity: 
+            type: array
+            items: 
+              type: object
+              properties: 
+                StatusCode: 
+                  type: string
+                  maxLength: 30
+                TaskReference: 
+                  type: string
+                  maxLength: 30
+                SourceSystemId: 
+                  type: string
+                  maxLength: 30
+                SourceFunctionId: 
+                  type: string
+                  maxLength: 30
+                OriginDescriptionCode: 
+                  type: string
+                  maxLength: 30
+                TypeCode: 
+                  type: string
+                  maxLength: 30
+                Description: 
+                  type: string
+                  maxLength: 150
+                Comment: 
+                  type: string
+                  maxLength: 1500
+                SubjectGroupCode: 
+                  type: string
+                  maxLength: 30
+                SubjectCode: 
+                  type: string
+                  maxLength: 30
+                StartDate: 
+                  type: string
+                  format: "date-time"
+                EndDate: 
+                  type: string
+                  format: "date-time"
+                PlannedEndDate: 
+                  type: string
+                  format: "date-time"
+                PriorityCode: 
+                  type: string
+                  maxLength: 3
+                RequiredForClosingInd: 
+                  type: string
+                  maxLength: 1
+                ExternalReference: 
+                  type: string
+                  maxLength: 30
+                GroupCode: 
+                  type: string
+                  maxLength: 30
+                ActivityEmployee: 
+                  type: object
+                  properties: 
+                    Employee: 
+                      type: object
+                      properties: 
+                        EmployeeId: 
+                          type: string
+                          maxLength: 10
+                      required: 
+                        - EmployeeId
+                  required: 
+                    - Employee
+                DocumentVersion: 
+                  type: object
+                  properties: 
+                    DocumentType: 
+                      type: string
+                      maxLength: 30
+                    ProductType: 
+                      type: string
+                      maxLength: 30
+                    Title: 
+                      type: string
+                      maxLength: 255
+                    DocumentFile: 
+                      type: object
+                      properties: 
+                        Content: 
+                          type: string
+                          format: byte
+                        FileName: 
+                          type: string
+                          maxLength: 200
+                        ExpirationDate: 
+                          type: string
+                          format: date
+                        DocumentFormat: 
+                          type: string
+                          maxLength: 10
+                      required: 
+                        - Content
+                        - FileName
+                    Employee: 
+                      type: object
+                      properties: 
+                        EmployeeId: 
+                          type: string
+                          maxLength: 10
+                      required: 
+                        - EmployeeId
+                  required: 
+                    - DocumentType
+                    - ProductType
+                    - Title
+                    - DocumentFile
+              required: 
+                - SourceSystemId
+                - TypeCode
+                - Description
+        required: 
+          - Activity
+    required: 
+      - Relation
+      - LocalBank
+      - ListOfActivities
+  CreateActivities_Rpy: 
+    type: object
+    properties: 
+      ListOfActivities: 
+        type: object
+        properties: 
+          Activity: 
+            type: array
+            items: 
+              type: object
+              properties: 
+                TaskReference: 
+                  type: string
+                  maxLength: 30
+                Document: 
+                  type: object
+                  properties: 
+                    StorageStatus: 
+                      type: string
+                      maxLength: 20
+                  required: 
+                    - StorageStatus
+              required: 
+                - TaskReference
+        required: 
+          - Activity
+    required: 
+      - ListOfActivities
+  SOAPFault: 
+    type: object
+    properties: 
+      applicationfaultcode: 
+        type: string
+      applicationfaulttext: 
+        type: string
+    required: 
+      - applicationfaultcode
+      - applicationfaulttext

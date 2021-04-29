@@ -1,0 +1,37 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <CreateServiceRequest2 checked__="true">
+        <RaboHeader checked__="true">
+          <HeaderVersion checked__="true">HeaderVersion</HeaderVersion>
+          <MessageId checked__="true">MessageId</MessageId>
+          <ServiceRequestorDomain checked__="true">ServiceRequestorDomain</ServiceRequestorDomain>
+          <ServiceRequestorId checked__="true">ServiceRequestorId</ServiceRequestorId>
+          <ServiceProviderDomain checked__="true">ServiceProviderDomain</ServiceProviderDomain>
+          <ServiceId checked__="true">ServiceId</ServiceId>
+          <ServiceVersion checked__="true">Ser</ServiceVersion>
+          <FaultIndication checked__="true">False</FaultIndication>
+          <MessageTimestamp checked__="true">2010-12-11T13:30:00.200</MessageTimestamp>
+        </RaboHeader>
+        <CreateServiceRequest_Rpy checked__="true">
+          <ServiceRequest checked__="true">
+            <Reference checked__="true">Reference</Reference>
+            <ListOfActivities checked__="true">
+              <Activity checked__="true">
+                <TaskReference checked__="true">TaskReference</TaskReference>
+                <Document checked__="true">
+                  <StorageStatus checked__="true">StorageStatus</StorageStatus>
+                </Document>
+              </Activity>
+            </ListOfActivities>
+          </ServiceRequest>
+        </CreateServiceRequest_Rpy>
+      </CreateServiceRequest2>
+    </Reply>
+    <Request>
+      <CreateServiceRequest2 checked__="false"></CreateServiceRequest2>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

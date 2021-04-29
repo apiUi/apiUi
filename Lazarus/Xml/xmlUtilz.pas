@@ -1419,8 +1419,6 @@ begin
     UnSafe := false;
     //    aHtmlViewer.LoadFromString(prepareMarkDownText(process(s)));
     //    s := '# EEN ' + LineEnding + 'een txt' + LineEnding + '## twee' + LineEnding + 'tweede tekst';
-    SjowMessage(s);
-    SjowMessage(process(s));
     aHtmlViewer.LoadFromString(process(prepareMarkDownText(s)));
   finally
     Free;

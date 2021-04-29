@@ -475,7 +475,7 @@ begin
           with AddXml (TXmlCvrg.CreateAsString(Alias, '')) do
           begin
             AddXml (TXmlCvrg.CreateFromXsd ('Req', (ReqBind as TXml).Xsd));
-            AddXml (TXmlCvrg.CreateFromXsd ('Rpy', (RpyBind as TXml).Xsd));
+            AddXml (TXmlCvrg.CreateFromXsd (Alias, (RpyBind as TXml).Xsd));
           end;
         end
         else
@@ -551,15 +551,13 @@ begin
         end;
         if Assigned (xLog.Operation.rpyBind) then
         begin
-          mXml := oXml.Items.XmlItemByTag['Rpy'] as TXmlCvrg;
+          mXml := oXml.Items.XmlItemByTag[xLog.Operation.Alias] as TXmlCvrg;
           if not Assigned (mXml) then
             raise Exception.Create('Operation Bind Lookup failed for ' + xLog.Operation.rpyTagName);
           xXml := xLog.replyAsXml;
           try
-            if (xXml.Name = xLog.Operation.Alias)
-            and (xXml.Items.Count = 1)
-            and (xXml.Items.XmlItems[0].Name = 'Rpy') then
-              mXml.CountUsage(xXml.Items.XmlItems[0], False);
+            if (xXml.Name = xLog.Operation.Alias) then
+              mXml.CountUsage(xXml, False);
           finally
             xXml.Free;
           end;
@@ -1634,6 +1632,7 @@ begin
     if pos('json', LowerCase(self.ReplyContentType)) > 0 then
     try
       xXml.LoadJsonFromString(self.ReplyBody, nil);
+      xXml.Name := 'body';
     except
       on e: sysUtils.Exception do
       begin

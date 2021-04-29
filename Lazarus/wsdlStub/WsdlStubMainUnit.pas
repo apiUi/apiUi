@@ -200,7 +200,6 @@ type
     ToolButton74: TToolButton;
     LastMessageToolButton: TToolButton;
     ToolButton76: TToolButton;
-    ToolButton77: TToolButton;
     XmlSampleOperationsMenuItem : TMenuItem ;
     XmlSampleOperations : TAction ;
     EditMessageAfterScriptAction : TAction ;
@@ -258,10 +257,7 @@ type
     ToolButton22: TToolButton;
     ToolButton24: TToolButton;
     ToolButton30: TToolButton;
-    ToolButton31: TToolButton;
     ToolButton32: TToolButton;
-    ToolButton33: TToolButton;
-    ToolButton35: TToolButton;
     ToolButton37: TToolButton;
     ToolButton39: TToolButton;
     ToolButton40: TToolButton;
@@ -378,7 +374,6 @@ type
     OpenWSDLfile1: TMenuItem;
     TreeviewImageList: TImageList;
     InWsdlPropertiesListView: TListView;
-    Splitter4: TSplitter;
     TreePopupMenu: TPopupMenu;
     WsdlItemAddMenuItem: TMenuItem;
     N2: TMenuItem;
@@ -441,11 +436,8 @@ type
     View1: TMenuItem;
     SchemapropertiesMenuItem: TMenuItem;
     ListofOperationsMenuItem: TMenuItem;
-    SaveMessagesAction: TAction;
     WsdlInformationMenuItem: TMenuItem;
     WsdlPopulateMenuItem: TMenuItem;
-    ReadMessagesAction: TAction;
-    MessagesRegressionAction: TAction;
     CheckGridFieldsAction: TAction;
     DesignPanelAtTopMenuItem: TMenuItem;
     CopyExceptionToClipboardAction: TAction;
@@ -461,8 +453,6 @@ type
     ExecuteRequestAction: TAction;
     ExecuteAllRequestsAction: TAction;
     LogMenuItem: TMenuItem;
-    ReadMessagesAction1: TMenuItem;
-    SaveMessagesAction1: TMenuItem;
     Comparewithfile1: TMenuItem;
     N7: TMenuItem;
     ClearExceptionsAction1: TMenuItem;
@@ -813,14 +803,7 @@ type
     procedure DesignPanelAtTopMenuItemClick(Sender: TObject);
     procedure CheckGridFieldsActionExecute(Sender: TObject);
     procedure CheckGridFieldsActionUpdate(Sender: TObject);
-    procedure MessagesRegressionActionUpdate(Sender: TObject);
-    procedure MessagesRegressionActionExecute(Sender: TObject);
-    procedure ReadMessagesActionHint(var HintStr: string; var CanShow: Boolean);
-    procedure ReadMessagesActionExecute(Sender: TObject);
-    procedure ReadMessagesActionUpdate(Sender: TObject);
     procedure WsdlInformationMenuItemClick(Sender: TObject);
-    procedure SaveMessagesActionExecute(Sender: TObject);
-    procedure SaveMessagesActionUpdate(Sender: TObject);
     procedure ListofOperationsMenuItemClick(Sender: TObject);
     procedure SchemapropertiesMenuItemClick(Sender: TObject);
     procedure MessagesVTSPaintText(Sender: TBaseVirtualTree;
@@ -1041,7 +1024,6 @@ type
     property ShowKindOfLogData: TShowKindOfLogData read fShowKindOfLogData write setShowKindOfLogData;
   private
     fWsdlService: TWsdlService;
-    doCreateBackup: Boolean;
     doConfirmTemporaryInactivity: Boolean;
     doStartOnOpeningProject: Boolean;
     ProgressInterface: TProgressInterface;
@@ -2521,7 +2503,6 @@ end;
 
 procedure TMainForm.BeginConsoleUpdate;
 begin
-  se.doCreateBackup := doCreateBackup;
   se.LastFocusedOperation := FocusedOperation;
   FocusedOperation := nil;
   ClearConsole;
@@ -2729,6 +2710,12 @@ var
   xXml: TXml;
 begin
   if not InactiveAfterPrompt then Exit;
+  if not BooleanPromptDialog ( Format ( 'XSD Operations is now depricated;%sSwitch to Api By Example which now also supports XML%sContinue with XSD Operations'
+                                      , [LineEnding, LineEnding, LineEnding]
+                                      )
+                             )
+  then
+    Exit;
   OperationDefsXsd.XsdByCaption ['OperationDefs.XsdOperations.Operation.Annotation']
     .EditProcedure := EditXmlValueAsText;
   xXml := se.xsdOperationsXml('');
@@ -2956,7 +2943,7 @@ begin
   if not InactiveAfterPrompt then Exit;
   OperationDefsXsd.XsdByCaption ['OperationDefs.XmlSampleOperations.Operation.Annotation']
     .EditProcedure := EditXmlValueAsText;
-  if not BooleanPromptDialog ( Format ( 'XmlSample Operations is now depricated;%sSwitch to Api By Example which now also supports XML%sContinue'
+  if not BooleanPromptDialog ( Format ( 'XmlSample Operations is now depricated;%sSwitch to Api By Example which now also supports XML%sContinue with XmlSample Operations'
                                       , [LineEnding, LineEnding, LineEnding]
                                       )
                              )
@@ -3114,7 +3101,6 @@ function TMainForm.SaveStubCase: Boolean;
 begin
   result := False;
   captionFileName := ExtractFileName(se.projectFileName);
-  se.doCreateBackup := doCreateBackup;
   if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
   begin
     TProcedureThread.Create(False, False, se, se.ExportToFile);
@@ -3871,7 +3857,6 @@ begin
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
     AddXml(TXml.CreateAsBoolean('StartAfterOpeningProject', doStartOnOpeningProject));
-    AddXml(TXml.CreateAsBoolean('CreateBackup', doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
         doScrollExceptionsIntoView));
@@ -7125,72 +7110,10 @@ begin
   ScriptPanel.Visible := ListofOperationsMenuItem.Checked;
 end;
 
-procedure TMainForm.SaveMessagesActionUpdate(Sender: TObject);
-begin
-  SaveMessagesAction.Enabled := (se.displayedLogs.Count > 0);
-end;
-
 procedure TMainForm.WsdlInformationMenuItemClick(Sender: TObject);
 begin
   WsdlInformationMenuItem.Checked := not WsdlInformationMenuItem.Checked;
   WsdlInfoPanel.Visible := WsdlInformationMenuItem.Checked;
-end;
-
-procedure TMainForm.ReadMessagesActionUpdate(Sender: TObject);
-begin
-  ReadMessagesAction.Enabled := (se.Wsdls.Count > 0);
-end;
-
-procedure TMainForm.ReadMessagesActionExecute(Sender: TObject);
-var
-  xLogList: TLogList;
-  X: Integer;
-  xOpenOptions: TOpenOptions;
-begin
-  if not LogMaxEntriesEqualsUnbounded (ReadMessagesAction.Caption) then Exit;
-  with OpenFileDialog do
-  begin
-    xOpenOptions := Options;
-    try
-      DefaultExt := 'xml';
-      FileName := wsdlStubMessagesFileName;
-      Filter := 'XML file (*.xml)|*.xml';
-      Title := 'Read ' + _progName + ' messages from files';
-      Options := Options + [ofAllowMultiSelect];
-      if Execute then
-      begin
-        wsdlStubMessagesFileName := FileName;
-        xLogList := TLogList.Create;
-        try
-          for X := 0 to Files.Count - 1 do
-            try
-              se.OpenMessagesLog(Files.Strings[X], True, True, xLogList);
-            except
-              on E: Exception do
-                raise Exception.CreateFmt('Error opening file %s%s%s',
-                  [Files.Strings[X], LineEnding, E.Message]);
-            end;
-          if xLogList.designSuspect then
-          begin
-            if not BooleanPromptDialog(
-              'Maybe due to differences in current design or Wsdls,' + LineEnding +
-                'some Operations or Messages could not be relocated;'
-                + LineEnding + LineEnding + 'Continue') then
-            begin
-              xLogList.Clear;
-              raise Exception.Create('Operation aborted');
-            end;
-          end;
-          ToAllLogList(xLogList);
-        finally
-          xLogList.Clear;
-          FreeAndNil(xLogList);
-        end;
-      end;
-    finally
-      Options := xOpenOptions;
-    end;
-  end;
 end;
 
 procedure TMainForm.SaveLogRepliesToFileActionUpdate(Sender: TObject);
@@ -7201,27 +7124,6 @@ end;
 procedure TMainForm.SaveLogRequestsToFileActionUpdate(Sender: TObject);
 begin
   SaveLogRequestsToFileAction.Enabled := (se.displayedLogs.Count > 0);
-end;
-
-procedure TMainForm.SaveMessagesActionExecute(Sender: TObject);
-begin
-  EndEdit;
-  SaveFileDialog.DefaultExt := 'xml';
-  SaveFileDialog.FileName := wsdlStubMessagesFileName;
-  SaveFileDialog.Filter := 'XML file (*.xml)|*.xml';
-  SaveFileDialog.Title := 'Save ' + _progName + ' messages';
-  if SaveFileDialog.Execute then
-  begin
-    wsdlStubMessagesFileName := SaveFileDialog.FileName;
-    se.SaveLogs(SaveFileDialog.FileName);
-  end;
-end;
-
-procedure TMainForm.ReadMessagesActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (se.Wsdls.Count = 0) then
-    HintStr := HintStr + ' (no WSDLS read)';
 end;
 
 procedure TMainForm.TestBeforeScriptActionExecute(Sender: TObject);
@@ -7277,59 +7179,6 @@ begin
     MessagesVTS.EndUpdate;
     XmlUtil.PopCursor;
     ShowKindOfInformation := spMessages;
-  end;
-end;
-
-procedure TMainForm.MessagesRegressionActionUpdate(Sender: TObject);
-begin
-  MessagesRegressionAction.Enabled := { }{ not se.IsActive
-    and { } (se.Wsdls.Count > 0);
-end;
-
-procedure TMainForm.MessagesRegressionActionExecute(Sender: TObject);
-var
-  xLogList: TLogList;
-begin
-  OnlyWhenLicensed;
-  if not LogMaxEntriesEqualsUnbounded (MessagesRegressionAction.Caption) then Exit;
-  OpenFileDialog.DefaultExt := 'xml';
-  OpenFileDialog.FileName := wsdlStubMessagesFileName;
-  OpenFileDialog.Filter := 'XML file (*.xml)|*.xml';
-  OpenFileDialog.Title := 'Compare ' + _progName + ' log items from file';
-  if OpenFileDialog.Execute then
-  begin
-    XmlUtil.PushCursor(crHourGlass);
-    wsdlStubMessagesFileName := OpenFileDialog.FileName;
-    xLogList := TLogList.Create;
-    try
-      try
-        se.OpenMessagesLog(OpenFileDialog.FileName, True, True, xLogList);
-      except
-        on E: Exception do
-        begin
-          raise Exception.Create(
-            'Can not compare with log file because next exception was raised' +
-              LineEnding + E.Message);
-        end;
-      end;
-{
-      if xLogList.designSuspect then
-      begin
-        if not BooleanPromptDialog(
-          'Maybe due to differences in design or Wsdls,' + LineEnding +
-            'some Operations or Messages could not be relocated;' + LineEnding +
-            LineEnding + 'Continue') then
-        begin
-          raise Exception.Create('Operation aborted');
-        end;
-      end;
-}
-      ShowLogDifferences(se.displayedLogs, xLogList, 'Current', wsdlStubMessagesFileName);
-    finally
-      xLogList.Clear;
-      FreeAndNil(xLogList);
-      XmlUtil.PopCursor;
-    end;
   end;
 end;
 
@@ -9109,12 +8958,14 @@ procedure TMainForm.ShowRequestAsXmlGridActionExecute(Sender: TObject);
 var
   cForm: TIpmGridForm;
   xString: String;
+  xXsdDescr: TXsdDescr;
 begin
+  xXsdDescr := nil;
   xString := IfThen(Assigned(claimedLog) and (claimedLog is TLog), claimedLog.RequestBody, '');
   if (xString <> '') then
-  begin
-    if Assigned(claimedLog.Mssg) and Assigned(claimedLog.Operation) and
-      (claimedLog.Operation.reqBind is TIpmItem) then
+  try
+    if Assigned(claimedLog.Mssg) and Assigned(claimedLog.Operation)
+    and (claimedLog.Operation.reqBind is TIpmItem) then
     begin
       if se.ShowLogCobolStyle = slCobol then
       begin
@@ -9158,8 +9009,23 @@ begin
         end;
         exit;
       end;
+      if Assigned(claimedLog.Operation)
+      and (claimedLog.Operation.isOpenApiService) then
+      begin
+        with claimedLog.requestAsXml do
+        try
+          xXsdDescr := TXsdDescr.Create;
+          CreateXsdFromXml(xXsdDescr, thisXml, True);
+          ShowXmlInGrid (thisXml, True);
+        finally
+          Free;
+        end;
+        exit;
+      end;
     end;
     xmlUtil.presentString('Request', claimedLog.RequestBody);
+  finally
+    FreeAndNil(xXsdDescr);
   end;
 end;
 
@@ -11235,7 +11101,6 @@ begin
   enableTacoPingPong := True;
   intervalTacoPingPong := 5 * 60 * 1000;
   doStartOnOpeningProject := True;
-  doCreateBackup := True;
   xmlUtil.doConfirmRemovals := True;
   doConfirmTemporaryInactivity := False;
   xmlUtil.doCollapseOnUncheck := True;
@@ -11261,7 +11126,6 @@ begin
     if Assigned(xXml) then
     begin
       doStartOnOpeningProject := xXml.Items.XmlCheckedBooleanByTagDef ['StartAfterOpeningProject', doStartOnOpeningProject];
-      doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef ['CreateBackup', doCreateBackup];
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
       doConfirmTemporaryInactivity := False;
       doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef ['ScrollExceptionsIntoView', doScrollExceptionsIntoView];

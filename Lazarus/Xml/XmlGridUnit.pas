@@ -723,10 +723,7 @@ procedure TXmlGridForm.ShowGrid (aFocusBind: TCustomBindable);
           r := aRow;
           for x := 0 to aXml.Items.Count - 1 do
           begin
-            if{ (   doShowNills
-                or aXml.Items.XmlItems[x].CheckedAllUp
-               )
-            and} (aXml.Items.XmlItems[x].Xsd = aXml.TypeDef.ElementDefs.Xsds[e]) then
+            if (aXml.Items.XmlItems[x].Xsd.ElementName = aXml.TypeDef.ElementDefs.Xsds[e].ElementName) then
             begin
               aCol := sCol;
               _LinkXml (aLevel + 1, aXml.Items.XmlItems[x], aCol, r);

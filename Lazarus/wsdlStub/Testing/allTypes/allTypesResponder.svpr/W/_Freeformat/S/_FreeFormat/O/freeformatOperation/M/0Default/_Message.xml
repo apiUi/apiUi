@@ -1,0 +1,8 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>this is a free format response&#x0D;&#x0A;</Reply>
+    <Request></Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

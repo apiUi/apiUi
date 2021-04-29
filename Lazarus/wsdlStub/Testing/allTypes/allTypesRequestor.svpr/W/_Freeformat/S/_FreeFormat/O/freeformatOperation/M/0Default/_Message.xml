@@ -1,0 +1,8 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply></Reply>
+    <Request>cbl</Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

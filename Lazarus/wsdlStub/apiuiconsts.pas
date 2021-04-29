@@ -17,8 +17,8 @@ const
   apiuiGettingStarted = 'https://www.apiui.org/gettingstarted/';
   apiuiGui = 'https://www.apiui.org/apiuigui/';
   apiuiHome = 'https://www.apiui.org/';
-  apiuiMessageTreeview = 'https://apiui.org/treeview-popup';
-  apiuiOperationContextMenu = 'https://www.apiui.org/operations-popup';
+  apiuiMessageTreeview = 'https://apiui.org/tree-view-context';
+  apiuiOperationContextMenu = 'https://www.apiui.org/operation-context';
   apiuiScriptGrammar = 'https://www.apiui.org/scripting/#grammar';
   apiuiScripting = 'https://www.apiui.org/scripting/#scripting';
 

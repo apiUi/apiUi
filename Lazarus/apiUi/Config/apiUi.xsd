@@ -1942,12 +1942,6 @@ For an overview of all options visit: doc://apiUi_Options_hlp.htm </xs:documenta
 When 'true' apiUi will start running (activate itself) immediately after a project is opened</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="CreateBackup" type="xs:boolean" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default 'true';  
-When 'true' apiUi will create a backup on saving an existing project (a backup is a folder that has an extra '~' at the end of its name)</xs:documentation>
-								</xs:annotation>
-							</xs:element>
 							<xs:element name="ConfirmRemovals" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default 'true';  
