@@ -67,7 +67,7 @@ type
     fLastCaption: String;
     procedure UpdateListView;
   public
-    doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti: Boolean;
+    doShowReq, doShowRpy, doShowWsa, doShowRti: Boolean;
     WsdlOperation: TWsdlOperation;
     SrceBind: TCustomBindable;
     ControlBinds: TBindableList;
@@ -170,7 +170,6 @@ begin
     SelectXmlElementForm.LastCaption := fLastCaption;
     SelectXmlElementForm.doShowReq := doShowReq;
     SelectXmlElementForm.doShowRpy := doShowRpy;
-    SelectXmlElementForm.doShowMq := doShowMq;
     SelectXmlElementForm.doShowWsa := doShowWsa;
     SelectXmlElementForm.doShowRti := doShowRti;
     SelectXmlElementForm.WsdlOperation := WsdlOperation;
@@ -204,7 +203,6 @@ begin
       SelectXmlElementForm.LastCaption := fLastCaption;
       SelectXmlElementForm.doShowReq := doShowReq;
       SelectXmlElementForm.doShowRpy := doShowRpy;
-      SelectXmlElementForm.doShowMq := doShowMq;
       SelectXmlElementForm.doShowWsa := doShowWsa;
       SelectXmlElementForm.doShowRti := doShowRti;
       SelectXmlElementForm.WsdlOperation := WsdlOperation;

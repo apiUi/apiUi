@@ -1,3 +1,3 @@
-pushd C:\JanBo\Sources\Lazarus\Xmlz\yaml
-C:\JanBo\Sources\Delphi32\Yacc.exe /v yamlParser.y YAMLPARSER.PAS
+pushd D:\Data\gitrepo\APIUI\Lazarus\Xml\yaml
+D:\Data\tply\pyacc.exe -v yamlParser.y YAMLPARSER.PAS
 popd

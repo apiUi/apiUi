@@ -257,7 +257,6 @@ begin
   try
     SelectXmlElementForm.doShowReq := True;
     SelectXmlElementForm.doShowRpy := True;
-    SelectXmlElementForm.doShowMq := True;
     SelectXmlElementForm.doShowWsa := True;
     SelectXmlElementForm.doShowRti := True;
     SelectXmlElementForm.doShowReqRpyInfo := True;

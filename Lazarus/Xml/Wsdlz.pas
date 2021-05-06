@@ -32,7 +32,7 @@ resourcestring
   S_DOLLARREF = '$ref';
 
 type TStubAction = (saStub, saForward, saRedirect, saRequest, saException);
-type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone, ttKafka);
+type TTransportType = (ttHttp, ttHttps, ttMqDepricated, ttStomp, ttTacoDepricated, ttSmtpDepricated, ttBmtpDepricated, ttNone, ttKafka);
 type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
@@ -358,12 +358,6 @@ type
       useSsl: Boolean;
       sslVersion: TIdSSLVersion;
       sslCertificateFile, sslKeyFile, sslRootCertificateFile, sslPassword: String;
-      StubMqHeaderXml: TXml;
-      StubMqPutManager: String;
-      StubMqPutQueue: String;
-      StubMqGetManager: String;
-      StubMqGetQueue: String;
-      StubMqTimeOut: Integer;
       StubStompHeaderXml: TXml;
       StubCustomHeaderXml: TXml;
       StubStompPutHost: String;
@@ -373,8 +367,6 @@ type
       StubStompPutPassword: String;
       StubStompPutClientId: String;
       StubStompTimeOut: Integer;
-      TacoConfigXml: TXml;
-      KafkaConfigXml: TXml;
       CorrelatedMessage: TWsdlMessage;
       Messages: TWsdlMessages;
       doReadReplyFromFile: Boolean;
@@ -687,11 +679,8 @@ var
   _WsdlRtiXsd: TXsd;
   _WsdlRtiXml: TXml;
   _WsdlWsaXsd: TXsd;
-  _WsdlMqHeaderXsd: TXsd;
   _WsdlStompHeaderXsd: TXsd;
   _WsdlListOfFilesXsd: TXsd;
-  _WsdlTacoConfigXsd: TXsd;
-  _WsdlKafkaConfigXsd: TXsd;
   _WsdlUserNameTokenNumber: Integer;
   _WsdlOnMessageChange: TOnMessageChange;
   _WsdlOnOperationChange: TOnOperationChange;
@@ -3052,7 +3041,10 @@ begin
         xService.openApiPath := xService.Name;
         for p := 0 to ServerPathNames.Count - 1 do
           xService.PathInfos.Add (ServerPathNames.Strings[p] + xService.Name);
-        xService.logPathFormat := ServerPathNames.Strings[0] + Name;
+        if ServerPathNames.Count > 0 then
+          xService.logPathFormat := ServerPathNames.Strings[0] + Name
+        else
+          xService.logPathFormat := Name;
         Services.AddObject(Name, xService);
         xService.DescriptionType := ipmDTJson;
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
@@ -3541,11 +3533,6 @@ begin
   httpVerb := 'POST';
   ConsumeType := ptJson;
   ProduceType := ptJson;
-  StubMqPutManager := '';
-  StubMqPutQueue := '';
-  StubMqGetManager := '';
-  StubMqGetQueue := '';
-  StubMqTimeOut := 30;
   StubStompPutHost := 'localhost';
   StubStompPutPort := '61613';
   StubStompPutUseCredentials := False;
@@ -3560,25 +3547,10 @@ begin
     rpyWsaXml := TXml.Create(-1000, _WsdlWsaXsd);
     rpyWsaXml.CheckDownline(False);
   end;
-  if Assigned (_WsdlMqHeaderXsd) then
-  begin
-    StubMqHeaderXml := TXml.Create(-10000, _WsdlMqHeaderXsd);
-    StubMqHeaderXml.CheckDownline(False);
-  end;
   if Assigned (_WsdlStompHeaderXsd) then
   begin
     StubStompHeaderXml := TXml.Create(-10000, _WsdlStompHeaderXsd);
     StubStompHeaderXml.CheckDownline(False);
-  end;
-  if Assigned (_WsdlTacoConfigXsd) then
-  begin
-    TacoConfigXml := TXml.Create(-10000, _WsdlTacoConfigXsd);
-    TacoConfigXml.CheckDownline(False);
-  end;
-  if Assigned (_WsdlKafkaConfigXsd) then
-  begin
-    KafkaConfigXml := TXml.Create(-10000, _WsdlKafkaConfigXsd);
-    KafkaConfigXml.CheckDownline(False);
   end;
   StubCustomHeaderXml := TXml.CreateAsString('customHeaders', '');
   doReadReplyFromFile := False;
@@ -3627,10 +3599,7 @@ begin
     _FreeRecog (reqRecognition);
     _FreeRecog (rpyRecognition);
     FreeAndNil (StubStompHeaderXml);
-    FreeAndNil (StubMqHeaderXml);
     FreeAndNil (StubCustomHeaderXml);
-    FreeAndNil (TacoConfigXml);
-    FreeAndNil (KafkaConfigXml);
     FreeAndNil (ReadReplyFromFileXml);
     FreeAndNil (fLock);
   end;
@@ -3833,8 +3802,6 @@ begin
       try reqWsaXml.Bind ('reqWsa', fExpress, 1); except end;
     if Assigned (rpyWsaXml) then
       try rpyWsaXml.Bind ('rpyWsa', fExpress, 1); except end;
-    if Assigned (StubMqHeaderXml) then
-      try StubMqHeaderXml.Bind ('Mq', fExpress, 1); except end;
     try fExpress.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
     try fExpress.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
     BindScriptFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
@@ -4708,11 +4675,8 @@ begin
     rpyWsaXml := TXml.Create(-1000, _WsdlWsaXsd);
     rpyWsaXml.CheckDownline(False);
   end;
-  self.StubMqHeaderXml := xOperation.StubMqHeaderXml;
   self.StubStompHeaderXml := xOperation.StubStompHeaderXml;
   self.StubCustomHeaderXml := xOperation.StubCustomHeaderXml;
-  self.TacoConfigXml := xOperation.TacoConfigXml;
-  self.KafkaConfigXml := xOperation.KafkaConfigXml;
   self.doReadReplyFromFile := xOperation.doReadReplyFromFile;
   self.ReadReplyFromFileXml := xOperation.ReadReplyFromFileXml;
   self.StubAction := xOperation.StubAction;
@@ -4722,11 +4686,6 @@ begin
   self.AcceptDeflateEncoding := xOperation.AcceptDeflateEncoding;
   self.AcceptGzipEncoding := xOperation.AcceptGzipEncoding;
   self.httpVerb := xOperation.httpVerb;
-  self.StubMqPutManager := xOperation.StubMqPutManager;
-  self.StubMqPutQueue := xOperation.StubMqPutQueue;
-  self.StubMqGetManager := xOperation.StubMqGetManager;
-  self.StubMqGetQueue := xOperation.StubMqGetQueue;
-  self.StubMqTimeOut := xOperation.StubMqTimeOut;
   self.StubStompPutHost := xOperation.StubStompPutHost;
   self.StubStompPutPort := xOperation.StubStompPutPort;
   self.StubStompPutUseCredentials := xOperation.StubStompPutUseCredentials;
@@ -5253,8 +5212,6 @@ begin
         else
           result := SoapAddress;
       end;
-    ttMq:
-      result := 'queue//getWsaTo_not_yet_implemented';
     ttStomp:
       result := 'queue//getWsaTo_not_yet_implemented';
   end;
@@ -5669,33 +5626,6 @@ begin
           end;
         end;
       end;
-    ttMq:
-      with result.AddXml(TXml.CreateAsString('Mq', '')) do
-      begin
-        with AddXml(TXml.CreateAsString('putRequest', '')) do
-        begin
-          AddXml (TXml.CreateAsString('Manager', StubMqPutManager));
-          AddXml (TXml.CreateAsString('Queue', StubMqPutQueue));
-        end;
-        if (StubMqGetManager <> '')
-        or (StubMqGetQueue <> '') then
-        begin
-          with AddXml(TXml.CreateAsString('getRequest', '')) do
-          begin
-            AddXml (TXml.CreateAsString('Manager', StubMqGetManager));
-            AddXml (TXml.CreateAsString('Queue', StubMqGetQueue));
-            AddXml (TXml.CreateAsInteger('Timeout', StubMqTimeOut));
-          end;
-        end;
-        if Assigned(StubMqHeaderXml)
-        and (StubMqHeaderXml.Checked) then
-        begin
-          with AddXml (TXml.CreateAsString ('mqHeader', '')) do
-          begin
-            CopyDownLine(StubMqHeaderXml, True);
-          end;
-        end;
-      end;
     ttStomp:
       with result.AddXml(TXml.CreateAsString('Stomp', '')) do
       begin
@@ -5723,18 +5653,6 @@ begin
         and (StubCustomHeaderXml.Checked) then
           with AddXml (TXml.CreateAsString ('customHeaders', '')) do
             CopyDownLine(StubCustomHeaderXml, True);
-      end;
-    ttTaco:
-      with result.AddXml(TXml.CreateAsString('Taco', '')) do
-        CopyDownLine(TacoConfigXml, True);
-    ttKafka:
-      with result.AddXml(TXml.CreateAsString('Kafka', '')) do
-        CopyDownLine(KafkaConfigXml, True);
-    ttSmtp:
-      with result.AddXml(TXml.CreateAsString('Smtp', '')) do
-      begin
-        AddXml (TXml.CreateAsString('Host', smtpHost));
-        AddXml (TXml.CreateAsInteger('Port', smtpPort));
       end;
     ttNone:
       result.AddXml(TXml.CreateAsString('None', ''));
@@ -5767,12 +5685,6 @@ begin
   sslKeyFile := '';
   sslRootCertificateFile := '';
   sslPassword := '';
-  StubMqPutManager := '';
-  StubMqPutQueue := '';
-  StubMqGetManager := '';
-  StubMqGetQueue := '';
-  StubMqTimeOut := 0;
-  StubMqHeaderXml.CheckDownline(False);
   StubStompPutHost := '';
   StubStompPutPort := '';
   StubStompPutUseCredentials := False;
@@ -5784,8 +5696,6 @@ begin
   StubCustomHeaderXml.Items.Clear;
   smtpHost := '';
   smtpPort := 0;
-  TacoConfigXml.CheckDownline(False);
-  KafkaConfigXml.CheckDownline(False);
   for x := 0 to aXml.Items.Count - 1 do
   begin
     with aXml.Items.XmlItems[x] do
@@ -5833,26 +5743,6 @@ begin
             end;
           end;
         end;
-        if Name = 'Mq' then
-        begin
-          StubTransport := ttMq;
-          xXml := Items.XmlCheckedItemByTag['putRequest'];
-          if Assigned (xXml) then
-          begin
-            StubMqPutManager := xXml.Items.XmlCheckedValueByTag['Manager'];
-            StubMqPutQueue := xXml.Items.XmlCheckedValueByTag['Queue'];
-          end;
-          xXml := Items.XmlCheckedItemByTag['getRequest'];
-          if Assigned (xXml) then
-          begin
-            StubMqGetManager := xXml.Items.XmlCheckedValueByTag['Manager'];
-            StubMqGetQueue := xXml.Items.XmlCheckedValueByTag['Queue'];
-            StubMqTimeOut := xXml.Items.XmlCheckedIntegerByTag['Timeout'];
-          end;
-          xXml := Items.XmlCheckedItemByTag['mqHeader'];
-          if Assigned (xXml) then
-            StubMqHeaderXml.LoadValues (xXml, False, True);
-        end;
         if Name = 'Stomp' then
         begin
           StubTransport := ttStomp;
@@ -5873,22 +5763,6 @@ begin
           xXml := Items.XmlCheckedItemByTag['customHeaders'];
           if Assigned (xXml) then
             StubCustomHeaderXml.LoadValues (xXml, True, True);
-        end;
-        if Name = 'Smtp' then
-        begin
-          StubTransport := ttSmtp;
-          smtpHost := Items.XmlCheckedValueByTagDef['Host', 'localhost'];
-          smtpPort := Items.XmlCheckedIntegerByTagDef['Port', 25];
-        end;
-        if Name = 'Taco' then
-        begin
-          StubTransport := ttTaco;
-          TacoConfigXml.LoadValues (aXml.Items.XmlItems[x], False, True);
-        end;
-        if Name = 'Kafka' then
-        begin
-          StubTransport := ttKafka;
-          KafkaConfigXml.LoadValues (aXml.Items.XmlItems[x], False, True);
         end;
         if Name = 'None' then
         begin

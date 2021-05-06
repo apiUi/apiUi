@@ -140,6 +140,8 @@ begin
           xExt := UpperCase (ExtractFileExt (OpenWsdlForm.WsdlLocationEdit.Text));
           if (xExt = '.JSON')
           or (xExt = '.YAML')
+          or (xExt = '.JSN')
+          or (xExt = '.YML')
           or (AnsiStartsText('APIARY://', OpenWsdlForm.WsdlLocationEdit.Text)) then
             Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil, nil)
           else

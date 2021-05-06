@@ -261,33 +261,6 @@ Processing continues with unpredictable results
 			</xs:element>
 		</xs:choice>
 	</xs:complexType>
-	<xs:complexType name="PathsendType">
-		<xs:sequence>
-			<xs:element name="Monitor" type="xs:string"/>
-			<xs:element name="Server" type="xs:string"/>
-			<xs:element name="TMF" minOccurs="0">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="No">
-							<xs:annotation>
-								<xs:documentation>Do not use the Transaction Moinotor Facility</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="Commit">
-							<xs:annotation>
-								<xs:documentation>Commit transaction</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="Abort">
-							<xs:annotation>
-								<xs:documentation>Abort transaction</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
 	<xs:complexType name="replacementsType">
 		<xs:sequence>
 			<xs:element name="Replacement" minOccurs="0" maxOccurs="unbounded">
@@ -349,7 +322,7 @@ Processing continues with unpredictable results
 			</xs:element>
 			<xs:element name="Port" type="xs:integer" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>The prort to which the stomp broker is listening; Default = 61613</xs:documentation>
+					<xs:documentation>The port to which the stomp broker is listening; Default = 61613</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="ClientId" type="xs:string" minOccurs="0"/>
@@ -426,152 +399,10 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="tacoConfigType">
-		<xs:sequence>
-			<xs:element name="hostConnection" type="hostConnectionType">
-				<xs:annotation>
-					<xs:documentation>Hostconnection parameters; addresses the Tacoserver</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Transport" type="TransportType">
-				<xs:annotation>
-					<xs:documentation>On the Tandem, both Pathsend and MQ are supported</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="TransportType">
-		<xs:choice>
-			<xs:element name="Pathsend" type="PathsendType"/>
-			<xs:element name="Mq">
-				<xs:complexType>
-					<xs:choice>
-						<xs:element name="RequestReply">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="Manager" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="PutQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue to put the message</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="ReplyToQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue where the MQ serviceproducer should put its reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="GetQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue where the Tandem server will try to get the reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="TimeOut" type="xs:int">
-										<xs:annotation>
-											<xs:documentation>The number of seconds the Tandem server should wait for a reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="FireAndForget">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="Manager" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="PutQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue to put the message</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="GetFirst">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="Manager" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the MQ manager that the Tandem server will connect to</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="GetQueue" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>The name of the queue where the Tandem server will try to get the reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="TimeOut" type="xs:int">
-										<xs:annotation>
-											<xs:documentation>The number of seconds the Tandem server should wait for a reply</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-					</xs:choice>
-				</xs:complexType>
-			</xs:element>
-		</xs:choice>
-	</xs:complexType>
 	<xs:complexType name="UserType">
 		<xs:sequence>
 			<xs:element name="Name" type="xs:string"/>
 			<xs:element name="Password" type="passwordType"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="XmlSampleOperationType">
-		<xs:sequence>
-			<xs:element name="Name" type="NameType"/>
-			<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
-			<xs:element name="Req" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SampleFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XML sample request file</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Rpy" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SampleFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XML sample response file</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Flt" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SampleFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XML sample fault file</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="reqRecognition" type="xsdRecognitionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way apiUi can determine that a message is for this specific operation. Relevant for stub operation and reading logfiles. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="rpyRecognition" type="xsdRecognitionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way apiUi can determine that a message is a response for this specific operation. Relevant for reading logfiles. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="ApiByExampleOperationsType">
@@ -694,70 +525,6 @@ Is default destination in Client mode.Has no relevance in server mode (stub)</xs
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="XsdOperationType">
-		<xs:sequence>
-			<xs:element name="Name" type="NameType"/>
-			<xs:element name="Annotation" type="xs:string" minOccurs="0"/>
-			<xs:element name="Req" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XSD file that contains the request description.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="ElementName" type="NameType">
-							<xs:annotation>
-								<xs:documentation>Name of the element to use.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Rpy" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XSD file that contains the response description.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="ElementName" type="NameType">
-							<xs:annotation>
-								<xs:documentation>Name of the element to use.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Flt" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="DescriptionFile" type="FileNameType">
-							<xs:annotation>
-								<xs:documentation>Name of the XSD file that contains the fault description.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="ElementName" type="NameType">
-							<xs:annotation>
-								<xs:documentation>Name of the element to use.</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="reqRecognition" type="xsdRecognitionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way apiUi can determine that a message is for this specific operation. Relevant for stub operation and reading logfiles. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="rpyRecognition" type="xsdRecognitionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way apiUi can determine that a message is a response for this specific operation. Relevant for reading logfiles. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
 	<xs:element name="namevaluepairs">
 		<xs:complexType>
 			<xs:sequence>
@@ -772,34 +539,6 @@ Is default destination in Client mode.Has no relevance in server mode (stub)</xs
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:complexType name="xsdRecognitionType">
-		<xs:choice>
-			<xs:element name="XmlElement">
-				<xs:annotation>
-					<xs:documentation>An XML element or an XML attribute</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="Path" type="xs:string">
-							<xs:annotation>
-								<xs:documentation>A dot-separated string that identifies the element or attribute</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Value" type="xs:string" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Regular expresion for the value </xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="HttpDocument" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>only with HTTP; Document part of the URI</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:choice>
-	</xs:complexType>
 	<xs:element name="DisplayedColumns">
 		<xs:annotation>
 			<xs:documentation>A list of displayed columns.</xs:documentation>
@@ -927,116 +666,13 @@ apiUi as Proxy server enables you to log traffic between a client and a server. 
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="Mq" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>List of IBM(C) Websphere MQ queues. Requires either MQ Local Client or MQ Local Server installed on the machine that runs apiUi
-Read more about how to use MQ with apiUi: doc://apiUiMq.htm</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Queue" minOccurs="0" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>IBM(C) Websphere MQ message broker(s)</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Manager" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Mq manager name</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="Name" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Mq get-queue name</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="ReplyTo" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Default is AcccordingRequest;  
-When AccordingRequest the data in the MQ message header of the request determines if a reply will be sent and to which queue.</xs:documentation>
-											</xs:annotation>
-											<xs:complexType>
-												<xs:choice>
-													<xs:element name="AccordingRequest">
-														<xs:annotation>
-															<xs:documentation>This is the default;  
-Data in the MQ message header of the request determines if a reply will be sent and to which queue.</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-													<xs:element name="Queue">
-														<xs:annotation>
-															<xs:documentation>'Hard coded' reply-to queue manager and queue name.</xs:documentation>
-														</xs:annotation>
-														<xs:complexType>
-															<xs:sequence>
-																<xs:element name="Manager" type="xs:string">
-																	<xs:annotation>
-																		<xs:documentation>Mq manager name</xs:documentation>
-																	</xs:annotation>
-																</xs:element>
-																<xs:element name="Name" type="xs:string">
-																	<xs:annotation>
-																		<xs:documentation>Mq put-queue name</xs:documentation>
-																	</xs:annotation>
-																</xs:element>
-															</xs:sequence>
-														</xs:complexType>
-													</xs:element>
-												</xs:choice>
-											</xs:complexType>
-										</xs:element>
-										<xs:element name="BrowseTypes" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Settings of subelements determine which message types (MsgType) will be browsed; 
-Default is to browse messages with MsgType=MQMT_REQUEST only.</xs:documentation>
-											</xs:annotation>
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="Request" type="xs:boolean" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Default 'true';  
-															Messages of this type require a reply</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-													<xs:element name="Reply" type="xs:boolean" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Default 'false';  
-															Messages with this type are the reply to an earlier message</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-													<xs:element name="Report" type="xs:boolean" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Default 'false';  
-															These messages are reporting on some expected or unexpected occurrence</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-													<xs:element name="Datagram" type="xs:boolean" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Default 'false';  
-															These messages do not require a reply</xs:documentation>
-														</xs:annotation>
-													</xs:element>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-										<xs:element name="DeleteOnBrowse" type="xs:boolean" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>default 'true';  
-												When set, browsed messages will be removed from the queue. Otherwis</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="Stomp" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Simple Text Oriented Messaging Protocol
 Provides an interoperable format so clients can communicate with any STOMP message broker.
 Often used with Active MQ
-Visit http://stomp.github.com for more iinformation</xs:documentation>
+
+Visit [STOMP](https://stomp.github.io) for more information</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -1129,13 +765,6 @@ Adding an extra byte may avoid the problem.</xs:documentation>
 	<xs:element name="OperationDefs">
 		<xs:complexType>
 			<xs:choice>
-				<xs:element name="XsdOperations">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Operation" type="XsdOperationType" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="CobolOperations">
 					<xs:complexType>
 						<xs:sequence>
@@ -1147,20 +776,6 @@ Adding an extra byte may avoid the problem.</xs:documentation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="Operation" type="FreeFormatOperationType" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="XmlSampleOperations">
-					<xs:annotation>
-						<xs:documentation>XmlSample operations
-
-Sometimes you want to mock trafic for wich you do not have a formal description.
-Instead of a formal description (.xsd,...) this operationtype uses an XML example message to create a (apiUi internal) description.
-</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Operation" type="XmlSampleOperationType" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -1897,11 +1512,6 @@ The name you use here will be the name of the menu-item added to the script menu
 			<xs:documentation>Describes a stompHeader</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="tacoConfig" type="tacoConfigType">
-		<xs:annotation>
-			<xs:documentation>Describes Tandem client configuration</xs:documentation>
-		</xs:annotation>
-	</xs:element>
 	<xs:element name="remoteServerConnection" type="epc:remoteServerConnectionType"/>
 	<xs:element name="operationInformation">
 		<xs:complexType>
@@ -2021,84 +1631,6 @@ Functions as a request-response protocol in the client-server configurations.
 											<xs:annotation>
 												<xs:documentation>Port number of theProxy server</xs:documentation>
 											</xs:annotation>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="Mq" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>IBM(C) Websphere MQ;
-Using Mq requires MQ to be installed on the machine where apiUi is running.
-Both Local Client and Local Server are supported. </xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Use">
-								<xs:annotation>
-									<xs:documentation>Piclist; Specifies use of MQ local server or MQ local client connection</xs:documentation>
-								</xs:annotation>
-								<xs:simpleType>
-									<xs:restriction base="xs:string">
-										<xs:enumeration value="Undefined">
-											<xs:annotation>
-												<xs:documentation/>
-											</xs:annotation>
-										</xs:enumeration>
-										<xs:enumeration value="LocalServer">
-											<xs:annotation>
-												<xs:documentation>Requires MQ Local Server to be installed on the machine running apiUi</xs:documentation>
-											</xs:annotation>
-										</xs:enumeration>
-										<xs:enumeration value="LocalClient">
-											<xs:annotation>
-												<xs:documentation>Requires MQ Local Client to be installed on the machine running apiUi. MQ Local Client is software provided by IBM for free. To be able to use queues on a server, that server must allow local client connections</xs:documentation>
-											</xs:annotation>
-										</xs:enumeration>
-									</xs:restriction>
-								</xs:simpleType>
-							</xs:element>
-							<xs:element name="MaxWorkingThreads" type="xs:integer" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default "15"  
-Max number of MQ working threads that will be active simultaniously</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="TaCo" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>TaCo - Tandem Communication Protocol
-Developed for Rabobank by Lars Jansen and Jan Bouwman
-</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="pingpong" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Enable PingPong if you want to keep your TaCo connection healthywhen no other requests are send using this transport protocol.
-New settings become active on (re)connecting to the TaCo server.</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Default 'true'</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="interval" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Default "300000" which is 5 miutes in milliseconds.
-Minimum value "30000" which is half a minute in milliseconds.</xs:documentation>
-											</xs:annotation>
-											<xs:simpleType>
-												<xs:restriction base="xs:integer">
-													<xs:minInclusive value="30000"/>
-												</xs:restriction>
-											</xs:simpleType>
 										</xs:element>
 									</xs:sequence>
 								</xs:complexType>

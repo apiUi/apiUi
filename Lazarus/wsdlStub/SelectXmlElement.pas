@@ -60,7 +60,7 @@ uses
     IncludeRecurring, IncludeInvoked: Boolean;
     maxOccurrences: Integer;
     ElementEnabled: Boolean;
-    doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti, doShowReqRpyInfo: Boolean;
+    doShowReq, doShowRpy, doShowWsa, doShowRti, doShowReqRpyInfo: Boolean;
     property CurrentCaption: String read getCurrentCaption;
     property SkipRootNode: Boolean read fSkipRootNode write fSkipRootNode;
     property WsdlOperation: TWsdlOperation read fWsdlOperation write setWsdlOperation;
@@ -303,8 +303,6 @@ begin
                       , IncludeRecurring
                       );
       end;
-      if doShowMq then
-        ShowXmls (WsdlOperation.StubMqHeaderXml, 'Mq');
       if doShowWsa then
       begin
         ShowXmls (WsdlOperation.reqWsaXml, 'reqWsa');

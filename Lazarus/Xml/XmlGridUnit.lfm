@@ -245,9 +245,10 @@ object XmlGridForm: TXmlGridForm
         BevelInner = bvLowered
         BevelOuter = bvNone
         BorderWidth = 2
+        BorderStyle = bsSingle
         Caption = 'Panel4'
-        ClientHeight = 159
-        ClientWidth = 269
+        ClientHeight = 155
+        ClientWidth = 265
         Font.Color = clWindowText
         Font.Height = -14
         Font.Name = 'Tahoma'
@@ -255,10 +256,10 @@ object XmlGridForm: TXmlGridForm
         TabOrder = 4
         object DocumentationViewer: THtmlViewer
           Left = 3
-          Height = 153
+          Height = 149
           Top = 3
-          Width = 263
-          BorderStyle = htFocused
+          Width = 259
+          BorderStyle = htSingle
           HistoryMaxCount = 0
           NoSelect = False
           PrintMarginBottom = 2

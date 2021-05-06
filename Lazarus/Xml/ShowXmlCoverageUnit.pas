@@ -526,7 +526,7 @@ begin
   if doShowIgnoreds then
     HintStr := 'Hide ignored elements'
   else
-    HintStr := 'Show ignored elemets';
+    HintStr := 'Show ignored elements';
 end;
 
 function TShowXmlCoverageForm.ToolButtonUsed(Sender: TObject): Boolean;

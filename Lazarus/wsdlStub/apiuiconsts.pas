@@ -21,6 +21,7 @@ const
   apiuiOperationContextMenu = 'https://www.apiui.org/operation-context';
   apiuiScriptGrammar = 'https://www.apiui.org/scripting/#grammar';
   apiuiScripting = 'https://www.apiui.org/scripting/#scripting';
+  apiuiSnapshots = 'https://www.apiui.org/snapshots/#snapshots';
 
 implementation
 
