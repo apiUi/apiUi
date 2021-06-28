@@ -6,8 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  MarkdownUtils,
-  MarkdownProcessor;
+  HtmlView, MarkdownUtils, MarkdownProcessor, HtmlGlobals, LCLIntf;
 
 type
 
@@ -15,8 +14,11 @@ type
 
   TMainForm = class(TForm)
     B_Convert: TButton;
+    HtmlViewer1: THtmlViewer;
     Memo1: TMemo;
     procedure B_ConvertClick(Sender: TObject);
+    procedure HtmlViewer1HotSpotClick(Sender: TObject; const SRC: ThtString;
+      var Handled: Boolean);
   private
 
   public
@@ -38,8 +40,14 @@ var
 begin
   md := TMarkdownProcessor.createDialect(mdDaringFireball);
   md.UnSafe := true;
-  Memo1.Text:=md.process(Memo1.Text);
+  HtmlViewer1.LoadFromString(md.process(Memo1.Text));
   md.free;
+end;
+
+procedure TMainForm.HtmlViewer1HotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
 end;
 
 end.

@@ -97,7 +97,7 @@ var
   s, n: String;
 begin
   s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                             , '/apiUi/api/project/describtors'
+                             , '/apiUi/api/project/descriptors'
                              , ''
                              , 'GET'
                              , 'application/json'
@@ -117,7 +117,7 @@ begin
         then
           SelectItemForm.ListBox.Items.Add (Items.XmlItems[x].Value)
         else
-          SelectItemForm.ListBox.Items.Add ( 'apiui://project/describtors/'
+          SelectItemForm.ListBox.Items.Add ( 'apiui://project/descriptors/'
                                            + Items.XmlItems[x].Value
                                            )
       end;

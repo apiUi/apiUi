@@ -696,6 +696,7 @@ procedure TXmlGridForm.ShowGrid (aFocusBind: TCustomBindable);
   procedure _LinkXml (aLevel: Integer; aXml: TXml; aCol, aRow: Integer);
   var
     e, x, r, sCol: Integer;
+    sx, se: String;
   begin
     if aXml.TypeDef._DepthBillOfMaterial >= xmlGridMaxBom then
       exit;
@@ -723,10 +724,19 @@ procedure TXmlGridForm.ShowGrid (aFocusBind: TCustomBindable);
           r := aRow;
           for x := 0 to aXml.Items.Count - 1 do
           begin
-            if (aXml.Items.XmlItems[x].Xsd.ElementName = aXml.TypeDef.ElementDefs.Xsds[e].ElementName) then
+            if (aXml.Items.XmlItems[x].Xsd = aXml.TypeDef.ElementDefs.Xsds[e]) then
             begin
               aCol := sCol;
-              _LinkXml (aLevel + 1, aXml.Items.XmlItems[x], aCol, r);
+              try
+                _LinkXml (aLevel + 1, aXml.Items.XmlItems[x], aCol, r);
+              except
+                on eee: exception do
+                begin
+                  sx := aXml.Items.XmlItems[x].Xsd.ElementName;
+                  se := aXml.TypeDef.ElementDefs.Xsds[e].ElementName;
+                  SjowMessage(eee.Message + LineEnding + sx + LineEnding + se);
+                end;
+              end;
               r := r + _nRows(aXml.Items.XmlItems[x]);
             end
           end;

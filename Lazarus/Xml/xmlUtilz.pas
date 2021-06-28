@@ -1403,9 +1403,9 @@ var
 begin
   s := '';
   if aShowPath then
-    s := s + 'Path: ' + aBind.GetFullCaption + #$A#$D;
+    s := s + 'Path: ' + aBind.GetFullCaption + '  ' + LineEnding;
   if aShowValue then
-    s := s + 'Value: ' + aBind.Value + #$A#$D;
+    s := s + 'Value: ' + aBind.Value + '  ' + LineEnding;
   if aBind is TXmlAttribute then
     s := s + (aBind as TXmlAttribute).XsdAttr.Documentation.Text;
   if aBind is TXml then

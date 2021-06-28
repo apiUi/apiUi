@@ -8620,8 +8620,6 @@ begin
         begin
           with claimedLog.replyAsXml do
           try
-            xXsdDescr := TXsdDescr.Create;
-            CreateXsdFromXml(xXsdDescr, thisXml, True);
             ShowXmlInGrid (thisXml, True);
           finally
             Free;
@@ -8830,8 +8828,6 @@ begin
       begin
         with claimedLog.requestAsXml do
         try
-          xXsdDescr := TXsdDescr.Create;
-          CreateXsdFromXml(xXsdDescr, thisXml, True);
           ShowXmlInGrid (thisXml, True);
         finally
           Free;

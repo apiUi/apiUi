@@ -9,7 +9,7 @@
         <Filename Value="yamlTest.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos Y="20"/>
-        <UsageCount Value="141"/>
+        <UsageCount Value="142"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -19,10 +19,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="yamlTestUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="26"/>
         <CursorPos X="28" Y="35"/>
-        <UsageCount Value="141"/>
+        <UsageCount Value="142"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -31,7 +32,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="9"/>
         <CursorPos Y="31"/>
-        <UsageCount Value="127"/>
+        <UsageCount Value="128"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit2>
@@ -43,14 +44,13 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="438"/>
-        <CursorPos Y="411"/>
+        <TopLine Value="375"/>
+        <CursorPos Y="400"/>
         <UsageCount Value="66"/>
         <Loaded Value="True"/>
       </Unit4>
@@ -58,7 +58,7 @@
         <Filename Value="..\Xml\yaml\YAMLSCANNER.PAS"/>
         <UnitName Value="yamlScanner"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="40"/>
+        <TopLine Value="1719"/>
         <CursorPos X="41" Y="49"/>
         <UsageCount Value="63"/>
         <Loaded Value="True"/>
@@ -136,7 +136,7 @@
       <Unit15>
         <Filename Value="..\Xml\yaml\yamlParser.y"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="141"/>
+        <TopLine Value="144"/>
         <CursorPos X="15" Y="163"/>
         <UsageCount Value="65"/>
         <Loaded Value="True"/>
@@ -315,120 +315,121 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="50" Column="24" TopLine="31"/>
       </Position1>
       <Position2>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="15" Column="6"/>
+        <Caret Line="64" Column="24" TopLine="45"/>
       </Position2>
       <Position3>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="22" Column="12" TopLine="3"/>
+        <Caret Line="107" Column="24" TopLine="88"/>
       </Position3>
       <Position4>
-        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="50" Column="24" TopLine="31"/>
-      </Position4>
-      <Position5>
-        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="64" Column="24" TopLine="45"/>
-      </Position5>
-      <Position6>
-        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="107" Column="24" TopLine="88"/>
-      </Position6>
-      <Position7>
         <Filename Value="..\Xml\yaml\YAMLSCANNER.PAS"/>
         <Caret Line="49" Column="41" TopLine="40"/>
-      </Position7>
-      <Position8>
+      </Position4>
+      <Position5>
         <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
         <Caret Line="168" TopLine="157"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
+        <Caret Line="207" TopLine="196"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
+        <Caret Line="168" TopLine="157"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Xml\yaml\YAMLSCANNER.PAS"/>
+        <Caret Line="49" Column="41" TopLine="40"/>
       </Position8>
       <Position9>
         <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Caret Line="207" TopLine="196"/>
+        <Caret Line="168" TopLine="157"/>
       </Position9>
       <Position10>
         <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Caret Line="168" TopLine="157"/>
+        <Caret Line="207" TopLine="196"/>
       </Position10>
       <Position11>
-        <Filename Value="..\Xml\yaml\YAMLSCANNER.PAS"/>
-        <Caret Line="49" Column="41" TopLine="40"/>
+        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
+        <Caret Line="168" TopLine="157"/>
       </Position11>
       <Position12>
-        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Caret Line="168" TopLine="157"/>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="7" Column="20"/>
       </Position12>
       <Position13>
-        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Caret Line="207" TopLine="196"/>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="107" Column="24" TopLine="85"/>
       </Position13>
       <Position14>
-        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Caret Line="168" TopLine="157"/>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
       </Position14>
       <Position15>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="7" Column="20"/>
+        <Caret Line="22" Column="12" TopLine="3"/>
       </Position15>
       <Position16>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="107" Column="24" TopLine="85"/>
+        <Caret Line="50" Column="24" TopLine="43"/>
       </Position16>
       <Position17>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="108" Column="17" TopLine="88"/>
       </Position17>
       <Position18>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="22" Column="12" TopLine="3"/>
       </Position18>
       <Position19>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="50" Column="24" TopLine="43"/>
+        <Caret Line="24" Column="5" TopLine="5"/>
       </Position19>
       <Position20>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="108" Column="17" TopLine="88"/>
+        <Caret Line="25" Column="5" TopLine="6"/>
       </Position20>
       <Position21>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="59" Column="17" TopLine="40"/>
       </Position21>
       <Position22>
         <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="24" Column="5" TopLine="5"/>
+        <Caret Line="92" Column="17" TopLine="73"/>
       </Position22>
       <Position23>
-        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="25" Column="5" TopLine="6"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="59" Column="17" TopLine="40"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="92" Column="17" TopLine="73"/>
-      </Position25>
-      <Position26>
         <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
         <Caret Line="207" TopLine="196"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
+        <Caret Line="452" Column="15" TopLine="444"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
+        <Caret Line="448" Column="49" TopLine="438"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <Caret Line="108" Column="17" TopLine="88"/>
       </Position26>
       <Position27>
         <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Caret Line="452" Column="15" TopLine="444"/>
+        <Caret Line="449" Column="43" TopLine="429"/>
       </Position27>
       <Position28>
-        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Caret Line="448" Column="49" TopLine="438"/>
+        <Filename Value="yamltestunit.pas"/>
+        <Caret Line="35" Column="28" TopLine="26"/>
       </Position28>
       <Position29>
-        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
-        <Caret Line="108" Column="17" TopLine="88"/>
+        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
+        <Caret Line="172" TopLine="156"/>
       </Position29>
       <Position30>
         <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Caret Line="449" Column="43" TopLine="429"/>
+        <Caret Line="207" TopLine="148"/>
       </Position30>
     </JumpHistory>
     <RunParams>
@@ -436,29 +437,4 @@
       <Modes Count="0" ActiveMode="default"/>
     </RunParams>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints Count="3">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Line Value="172"/>
-      </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Line Value="168"/>
-      </Item2>
-      <Item3>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\yaml\yamlAnalyser.pas"/>
-        <Line Value="207"/>
-      </Item3>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>

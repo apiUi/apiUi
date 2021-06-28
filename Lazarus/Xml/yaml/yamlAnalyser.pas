@@ -397,8 +397,6 @@ begin
   if Assigned (FOnNeedData) then
   begin
     FOnNeedData (Self, MoreData, Data);
-    if MoreData then
-      Data := TrimRight(Data);
   end
   else
     MoreData := False;

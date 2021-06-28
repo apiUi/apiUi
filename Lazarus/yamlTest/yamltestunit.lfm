@@ -1,21 +1,23 @@
 object Form1: TForm1
-  Left = 261
+  Left = 485
   Height = 820
-  Top = 81
-  Width = 1343
+  Top = 127
+  Width = 1401
   Caption = 'Form1'
   ClientHeight = 820
-  ClientWidth = 1343
+  ClientWidth = 1401
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '2.0.12.0'
+  WindowState = wsMaximized
   inline SynEdit: TSynEdit
-    Left = 20
-    Height = 518
-    Top = 10
-    Width = 1124
+    Left = 0
+    Height = 358
+    Top = 0
+    Width = 1401
+    Align = alTop
     Font.Height = -16
     Font.Name = 'Courier New'
     Font.Pitch = fpFixed
@@ -452,17 +454,45 @@ object Form1: TForm1
     MouseTextActions = <>
     MouseSelActions = <>
     Lines.Strings = (
-      '---'
-      '      description: |'
-      '        # Separators'
-      '        There are three types of separators.<br>'
-      '        *Time-separator* '';''.<br>'
-      '        *Occurrences separator* ''+'' (applicable for lists)<br>'
-      '        *Values separator* ''||''.<br>'
-      '        # Examples'
-      '        If you want a relation to be a customer the first two times of retrieval and to be an ex-customer for the rest of retrievals, specify<br>'
-      '        ````plaintext<br>'
-      '      operationId: aaConfigureStub'
+      'swagger: ''2.0'''
+      'info:'
+      '  description: '''''
+      '  version: ''10.6.0'''
+      '  title: ''apiUi interface'''
+      'host: __hostname__'
+      'schemes:'
+      '  - http'
+      '  - https'
+      'basePath: /apiUi/api'
+      'paths:'
+      '  /about:'
+      '    get:'
+      '      summary: return about informaton'
+      '      description: '''''
+      '      operationId: zzAbout'
+      '      produces:'
+      '        - application/json'
+      '      responses:'
+      '        ''200'':'
+      '          decsription: Success response'
+      '  /context:'
+      '    get:'
+      '      summary: Get apiUi project context from cloud.  '
+      '      description: |-'
+      '        Returns the current value for the context.  '
+      '        See [Context switching](www.apiui.org/contextswitching/) for more information.  '
+      '        See [Context switching](https://www.apiui.org/contextswitching/) for more information.  '
+      '        See [Context switching](www.apiui.org/contextswitching/) for more information.'
+      '      operationId: zzGetContext'
+      '      consumes:'
+      '        - application/json'
+      '      produces:'
+      '        - application/json'
+      '      responses:'
+      '        ''200'':'
+      '          decsription: Success response'
+      '          schema:'
+      '            $ref: ''#/definitions/getContextRpy'''
     )
     Options = [eoAutoIndent, eoBracketHighlight, eoGroupUndo]
     VisibleSpecialChars = [vscSpace, vscTabAtLast]
@@ -523,10 +553,11 @@ object Form1: TForm1
     end
   end
   object TreeView: TVirtualStringTree
-    Left = 20
-    Height = 408
-    Top = 544
-    Width = 1124
+    Left = 0
+    Height = 406
+    Top = 414
+    Width = 1401
+    Align = alClient
     DefaultNodeHeight = 20
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
@@ -569,24 +600,34 @@ object Form1: TForm1
     OnFocusChanged = TreeViewFocusChanged
     OnGetText = TreeViewGetText
   end
-  object Button1: TButton
-    Left = 1192
-    Height = 31
-    Top = 32
-    Width = 91
-    Caption = 'Parse'
-    OnClick = Button1Click
-    ParentFont = False
+  object Panel1: TPanel
+    Left = 0
+    Height = 56
+    Top = 358
+    Width = 1401
+    Align = alTop
+    ClientHeight = 56
+    ClientWidth = 1401
     TabOrder = 2
-  end
-  object Button2: TButton
-    Left = 1184
-    Height = 31
-    Top = 96
-    Width = 91
-    Caption = 'AsXml'
-    OnClick = Button2Click
-    ParentFont = False
-    TabOrder = 3
+    object Button2: TButton
+      Left = 176
+      Height = 31
+      Top = 13
+      Width = 91
+      Caption = 'AsXml'
+      OnClick = Button2Click
+      ParentFont = False
+      TabOrder = 0
+    end
+    object Button1: TButton
+      Left = 48
+      Height = 31
+      Top = 13
+      Width = 91
+      Caption = 'Parse'
+      OnClick = Button1Click
+      ParentFont = False
+      TabOrder = 1
+    end
   end
 end

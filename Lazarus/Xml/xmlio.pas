@@ -93,7 +93,7 @@ const base64PdfStartStr = 'JVBERi';
 const base64RtfStartStr = 'e1xyd';
 const PasswordContextsOptionValue = 1;
 const OneTimeContextsOptionValue = 2;
-const apiuidescribtorspath = '/project/describtors';
+const apiuidescriptorspath = '/project/descriptors';
 
 type TOnStringEvent = procedure (const Msg: String) of Object;
 var
@@ -1271,15 +1271,15 @@ function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): Str
     p: Integer;
   begin
     result := '';
-    p := Pos(apiuidescribtorspath + '/', aFileName);
+    p := Pos(apiuidescriptorspath + '/', aFileName);
     if p < 1 then
       raise Exception.Create ('reading from apiUi cloud connection, illegal filename: ' + aFileName);
     result := apiUiServerDialog ( apiUiConnectionConfig
-                                , '/apiUi/api' + apiuidescribtorspath
+                                , '/apiUi/api' + apiuidescriptorspath
                                 , ''
                                 , 'POST'
                                 , 'application/json'
-                                , '{"name": "' + Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt) + '"}'
+                                , '{"name": "' + Copy (aFileName, p + Length(apiuidescriptorspath) + 1, MaxInt) + '"}'
                                 );
     // should be a get but to work around some security checks...
   end;

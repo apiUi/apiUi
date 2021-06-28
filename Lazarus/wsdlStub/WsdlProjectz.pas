@@ -482,7 +482,6 @@ uses LazVersion
    , StrUtils
    , exceptionUtils
    , RegExpr
-   , jwbBase64
    , base64
    {$ifdef windows}
    , ActiveX
@@ -5965,7 +5964,7 @@ begin
 
         if (Count = 5)
         and (Strings[3] = 'project')
-        and (Strings[4] = 'describtors')
+        and (Strings[4] = 'descriptors')
         and (ARequestInfo.Command = 'POST')
         then begin
           nameXml := xBodyXml.FindXml('json.name');
@@ -5982,7 +5981,7 @@ begin
 
         if (Count = 5)
         and (Strings[3] = 'project')
-        and (Strings[4] = 'describtors')
+        and (Strings[4] = 'descriptors')
         and (ARequestInfo.Command = 'GET')
         then begin
           sl := TJBStringList.Create;
@@ -6154,6 +6153,7 @@ begin
           finally
             Free;
           end;
+          Exit;
         end;
 
         if (Count = 4)

@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: ''
-  version: '10.5.1'
+  version: '10.6.0'
   title: 'apiUi interface'
 host: __hostname__
 schemes:
@@ -21,8 +21,10 @@ paths:
           decsription: Success response
   /context:
     get:
-      summary: Get apiUi project context
-      description: ''
+      summary: Get apiUi project context from cloud.  
+      description: |-
+        Returns the current value for the context.  
+        See [Context switching](www.apiui.org/contextswitching/) for more information.  
       operationId: zzGetContext
       consumes:
         - application/json
@@ -111,12 +113,15 @@ paths:
         - name: initclientlog
           in: query
           type: boolean
+          description: |-
+            Default `false`  
+            When `true` then the fetched log lines will be cleared in the cloud instance
       responses:
         '200':
           decsription: Success response
   /logs/snapshot:
     post:
-      summary: Save current logs to a snapshot
+      summary: Save current logs to a snapshot  
       description: ''
       operationId: zzTakeSnapshot
       consumes:
@@ -163,6 +168,9 @@ paths:
         - name: createsnapshot
           in: query
           type: boolean
+          description: |-
+            Default `false`  
+            When `true` then available log lines will first be saved to the named snapshot
       responses:
         '200':
           decsription: Success response
@@ -187,6 +195,9 @@ paths:
         - name: createsnapshot
           in: query
           type: boolean
+          description: |-
+            Default `false`  
+            When `true` then available log lines will first be saved to the named snapshot
       responses:
         '200':
           decsription: Success response
@@ -195,7 +206,7 @@ paths:
   /snapshots:
     delete:
       summary: removes entries from the list of snapshots
-      description:
+      description: |-
         removes entries from the list of snapshots.
         The snapshots are not removed from your filesystem.
       operationId: zzClearSnapshots
@@ -208,9 +219,9 @@ paths:
         '200':
           decsription: Success response
     get:
-      summary: retrieves list of snapshots (in project folder)
-      description:
-        retrieves list of snapshots.
+      summary: retrieves list of snapshots (in project folder)  
+      description: |-
+        retrieves list of snapshots.  
         Scans project folder for snapshots.
       operationId: zzListSnapshots
       consumes:
@@ -271,6 +282,7 @@ paths:
         - name: operationAlias
           in: path
           type: string
+          description: The aliasname for the operation
       responses:
         '200':
           description: Success response
@@ -278,8 +290,8 @@ paths:
             $ref: '#/definitions/operationDelaySetting'
     put:
       summary: set delay to random between min and max milliseconds
-      description:
-        Set the extra time that  apiUi should wait before sending response.
+      description: |-
+        Set the extra time that  apiUi should wait before sending response.  
         The snapshots are not removed from your filesystem.
       operationId: zzSetOperationDelay
       consumes:
@@ -290,6 +302,7 @@ paths:
         - name: operationAlias
           in: path
           type: string
+          description: The aliasname for the operation
         - name: body
           in: body
           schema:
@@ -332,27 +345,6 @@ paths:
           decsription: Success response
           schema:
             $ref: '#/definitions/refreshRpy'
-  /regressionreport:
-    post:
-      summary: summary
-      description: ''
-      operationId: zzRegressionReport
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: body
-          in: body
-          decsription: ''
-          required: 'true'
-          schema:
-            $ref: '#/definitions/regressionReportReq'
-      responses:
-        '200':
-          decsription: Success response
-          schema:
-            $ref: '#/definitions/regressionReportRpy'
   /resetEnvVar:
     post:
       summary: resets the named environment variable
@@ -377,7 +369,6 @@ paths:
   /resetEnvVars:
     post:
       summary: Will reset all the environment variables that match the regular expression
-      description: ''
       operationId: zzResetEnvVars
       consumes:
         - application/json
@@ -398,7 +389,6 @@ paths:
   /setEnvVar:
     post:
       summary: sets an envirnment variable
-      description: ''
       operationId: zzSetEnvVar
       consumes:
         - application/json
@@ -450,7 +440,6 @@ paths:
   /testconnection:
     get:
       summary: testconnection
-      description: ''
       operationId: zzTestConnection
       produces:
         - application/yaml
@@ -460,7 +449,6 @@ paths:
   /testsummaryreport:
     get:
       summary: get the testsummary in html
-      description: ''
       operationId: zzSummaryInHtml
       produces:
         - text/html
@@ -470,7 +458,6 @@ paths:
   /versionInfo:
     get:
       summary: get apiUi version information
-      description: ''
       operationId: zzVersionInfo
       consumes:
         - application/json

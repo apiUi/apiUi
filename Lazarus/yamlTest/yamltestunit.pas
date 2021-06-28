@@ -8,8 +8,9 @@ unit yamlTestUnit ;
 interface
 
 uses
-  Classes , SysUtils , FileUtil , SynEdit , Forms , Controls , Graphics ,
-  Dialogs , StdCtrls , VirtualTrees, yamlAnalyser, YAMLSCANNER, YAMLPARSER, ParserClasses, CustScanner, Xmlz;
+  Classes, SysUtils, FileUtil, SynEdit, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, ExtCtrls, VirtualTrees, yamlAnalyser, YAMLSCANNER, YAMLPARSER,
+  ParserClasses, CustScanner, Xmlz;
 
 const InternalStackSize = 256;
 const InitState = 2; {taken from Scanner.pas}
@@ -20,8 +21,9 @@ type
   { TForm1 }
 
   TForm1 = class(TForm )
-    Button1 : TButton ;
-    Button2 : TButton ;
+    Button1: TButton;
+    Button2: TButton;
+    Panel1: TPanel;
     SynEdit : TSynEdit ;
     TreeView : TVirtualStringTree ;
     procedure Button1Click (Sender : TObject );
