@@ -692,10 +692,7 @@ var
   _WsdlSQLConnectorLog: TDBLogNotifyEvent;
   _WsdlDbsTransaction: TSQLTransaction;
   _WsdlDbsConnectorType: String;
-  _WsdlDbsDatabaseName: String;
   _WsdlDbsParams: String;
-  _WsdlDbsPassword: String;
-
   UILock: TCriticalSection;
   EnvVarLock: TCriticalSection;
   doOperationLock, doUILock: Boolean;

@@ -408,12 +408,6 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 	<xs:complexType name="ApiByExampleOperationsType">
 		<xs:sequence>
 			<xs:element name="Name" type="xs:string"/>
-			<xs:element name="Address" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>including port number.
-Is default destination in Client mode.Has no relevance in server mode (stub)</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="Path">
 				<xs:annotation>
 					<xs:documentation>Refers to a file or directory on the web server. In server mode, apiUi will use the path to recognize the (this) service/operation. In client mode, apiUi will use the path to create the endpoint for a request</xs:documentation>

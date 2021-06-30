@@ -5205,6 +5205,12 @@ begin
       LoginPrompt := False;
       ConnectorType := xXml.Items.XmlValueByTag['Type'];
       DatabaseName := xXml.Items.XmlValueByTag['DatabaseName'];
+      if (ConnectorType = 'SQLite3')
+      and (se.projectFileName <> '')
+      and (DatabaseName <> '')
+      and (DatabaseName[1] = '.')
+      then
+        DatabaseName := ExpandRelativeFileName(se.projectFileName, DatabaseName);
       HostName := xXml.Items.XmlValueByTag['HostName'];
       UserName := xXml.Items.XmlValueByTag['UserName'];
       Password := xmlz.DecryptString(xXml.Items.XmlValueByTag['Password']);

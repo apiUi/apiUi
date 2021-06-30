@@ -1429,9 +1429,6 @@ begin
   OperationsWithEndpointOnly := True;
   SaveRelativeFileNames := True;
   InitSpecialWsdls;
-    {$IFnDEF FPC}
-  _WsdlDbsAdoConnection.OnWillConnect := ADOConnectionWillConnect;
-    {$endif}
   Clear;
 end;
 
@@ -1771,12 +1768,6 @@ begin
       Active := false;
       Bindings.Clear;
     end;
-    {$IFnDEF FPC}
-    try
-      _WsdlDbsAdoConnection.Connected := False;
-    except
-    end;
-    {$endif}
 
     fIsActive := aActive;
 
@@ -1789,16 +1780,6 @@ begin
             ReqBindablesFromWsdlMessage(Messages.Messages[0]);
             RpyBindablesFromWsdlMessage(Messages.Messages[0]);
           end;
-    {$IFnDEF FPC}
-        try
-          _WsdlDbsAdoConnection.Connected := _WsdlDbsEnabled;
-        except
-          on e: Exception do
-          begin
-            LogServerMessage(format('Exception %s in Activate Dbs. Exception is:"%s".', [e.ClassName, e.Message]), True);
-          end;
-        end;
-    {$endif}
         Listeners.FromXml(HaveStompFrame); // because of properties...
         DatabaseConnectionSpecificationFromXml; // because of properties...
         for x := 0 to Listeners.stompInterfaces.Count - 1 do
@@ -4843,7 +4824,6 @@ begin
       begin
         xService := xWsdl.Services.Services[f];
       end;
-//      xService.Host := sXml.Items.XmlValueByTag['Address'];
       xService.openApiPath := sXml.Items.XmlValueByTag['Path'];
       xService.PathInfos.Add(xService.openApiPath);
       oList := TJBStringList.Create;
@@ -8448,7 +8428,14 @@ begin
   with _WsdlDbsConnector do
   begin
     ConnectorType := DbsType;
-    DatabaseName := DbsDatabaseName;
+    if (ConnectorType = 'SQLite3')
+    and (projectFileName <> '')
+    and (DbsDatabaseName <> '')
+    and (DbsDatabaseName[1] = '.')
+    then
+      DatabaseName := ExpandRelativeFileName(projectFileName, DbsDatabaseName)
+    else
+      DatabaseName := DbsDatabaseName;
     HostName := DbsHostName;
     Params.Text := ReplaceStrings( DbsParams
                                  , '%pwd%'
