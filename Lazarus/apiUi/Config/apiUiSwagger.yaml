@@ -18,7 +18,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /context:
     get:
       summary: Get apiUi project context from cloud.  
@@ -32,7 +32,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getContextRpy'
     post:
@@ -46,13 +46,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setContextReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/setContextRpy'
   /envvars:
@@ -66,7 +66,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getEnvvarsRpy'
     post:
@@ -80,13 +80,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setEnvvarsReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs:
     delete:
       summary: removes list of logitems from Ui
@@ -96,10 +96,9 @@ paths:
         - application/json
       produces:
         - application/json
-      parameters:
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs/fetchfromremoteserver:
     post:
       summary: fetches list of logitems from apiUi in the cloud
@@ -118,7 +117,7 @@ paths:
             When `true` then the fetched log lines will be cleared in the cloud instance
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs/snapshot:
     post:
       summary: Save current logs to a snapshot  
@@ -131,24 +130,22 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/createSnapshotReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /notifications:
     get:
       summary: retrieves list of notifications
-      description:
       operationId: zzNotifications
       produces:
         - application/json
-      parameters:
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /snapshot/checkregression:
     post:
       summary: Create a json Regression report 
@@ -161,8 +158,8 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/checkRegressionReq'
         - name: createsnapshot
@@ -173,7 +170,7 @@ paths:
             When `true` then available log lines will first be saved to the named snapshot
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/checkRegresssionRpy'
   /snapshot/checkschemacompliancy:
@@ -188,8 +185,8 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/checkSchemaCompliancyReq'
         - name: createsnapshot
@@ -200,7 +197,7 @@ paths:
             When `true` then available log lines will first be saved to the named snapshot
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/checkSchemaCompliancyRpy'
   /snapshots:
@@ -214,10 +211,9 @@ paths:
         - application/json
       produces:
         - application/json
-      parameters:
       responses:
         '200':
-          decsription: Success response
+          description: Success response
     get:
       summary: retrieves list of snapshots (in project folder)  
       description: |-
@@ -228,7 +224,6 @@ paths:
         - application/json
       produces:
         - application/json
-      parameters:
       responses:
         '200':
           description: Success response
@@ -242,7 +237,6 @@ paths:
         - application/json
       produces:
         - text/html
-      parameters:
       responses:
         '200':
           description: Success response
@@ -258,13 +252,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/executeScriptReq'
       responses:
         '202':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/executeScriptRpy'
 
@@ -282,6 +276,7 @@ paths:
         - name: operationAlias
           in: path
           type: string
+          required: true
           description: The aliasname for the operation
       responses:
         '200':
@@ -302,6 +297,7 @@ paths:
         - name: operationAlias
           in: path
           type: string
+          required: true
           description: The aliasname for the operation
         - name: body
           in: body
@@ -321,7 +317,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getProjectInformationRpy'
   /refresh:
@@ -336,13 +332,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/refreshReq'
       responses:
         '202':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/refreshRpy'
   /resetEnvVar:
@@ -357,13 +353,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/resetEnvVarReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/resetEnvVarRpy'
   /resetEnvVars:
@@ -377,13 +373,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/resetEnvVarsReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/resetEnvVarsRpy'
   /setEnvVar:
@@ -397,13 +393,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setEnvVarReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/setEnvVarRpy'
   /shutDown:
@@ -418,13 +414,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/shutDownReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/shutDownRpy'
   /swagger.yaml:
@@ -436,7 +432,7 @@ paths:
         - application/yaml
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /testconnection:
     get:
       summary: testconnection
@@ -445,7 +441,7 @@ paths:
         - application/yaml
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /testsummaryreport:
     get:
       summary: get the testsummary in html
@@ -454,7 +450,7 @@ paths:
         - text/html
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /versionInfo:
     get:
       summary: get apiUi version information
@@ -465,7 +461,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/versionInfo'
 definitions:
@@ -490,35 +486,28 @@ definitions:
       result:
         type: string
       summary:
-        schema:
-          $ref: '#/definitions/compliancyAllNumbers'
+        $ref: '#/definitions/compliancyAllNumbers'
       operations:
         type: array
         items:
-          schema:
             $ref: '#/definitions/compliancyAllNumbers'
   compliancyAllNumbers:
         type: object
         properties:
           name:
-            string;
+            type: string
           total:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
           inboundRequests:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
           outputReplies:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
           outboundRequests:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
           inboundReplies:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
   compliancyNumbers:
-     type: Object
+     type: object
      properties:
        passed:
          type: string
@@ -600,7 +589,8 @@ definitions:
           referenceLogFileName:
             type: string
           Created:
-            type: dateTime
+            type: string
+            format: dateTime
       Body:
         type: object
         properties:
@@ -610,7 +600,8 @@ definitions:
               type: object
               properties:
                 messageTimestamp:
-                  type: dateTime
+                  type: string
+                  format: dateTime
                 Service:
                   type: string
                 Operation:
@@ -660,8 +651,7 @@ definitions:
     type: object
     properties:
       previousContext:
-       schema:
-         $ref: '#/definitions/getContextRpy'
+        $ref: '#/definitions/getContextRpy'
   getContextRpy:
     type: object
     properties:
@@ -709,7 +699,8 @@ definitions:
           unexpectedValuesFound:
             type: boolean
           Created:
-            type: dateTime
+            type: string
+            format: dateTime
       Body:
         type: object
         properties:
@@ -719,7 +710,8 @@ definitions:
               type: object
               properties:
                 messageTimestamp:
-                  type: dateTime
+                  type: string
+                  format: dateTime
                 Service:
                   type: string
                 Operation:
@@ -757,7 +749,8 @@ definitions:
             name:
               type: string
             createdOn:
-              type: dateTime
+              type: string
+              format: dateTime
   versionInfo:
     type: object
     properties:

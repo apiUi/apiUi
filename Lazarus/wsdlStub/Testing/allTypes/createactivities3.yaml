@@ -21,17 +21,17 @@ paths:
       parameters:
       - name: body
         in: body
-        decsription: ''
-        required: 'true'
+        description: ''
+        required: true
         schema:
           "$ref": "#/definitions/CreateActivities_Req"
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             "$ref": "#/definitions/CreateActivities_Rpy"
         '500':
-          decsription: Fault response
+          description: Fault response
           schema:
             "$ref": "#/definitions/SOAPFault"
 definitions:

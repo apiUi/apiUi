@@ -1,3 +1,15 @@
+{
+    This file is part of the apiUi project
+    Copyright (c) 2009-2021 by Jan Bouwman
+
+    See the file COPYING.FPC, included in this distribution,
+    for details about the copyright.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+}
 unit Wsdlz;
 
 //    SjowMessage({$INCLUDE %FILE%} + ' ' + {$INCLUDE %LINE%} + LineEnding + reqXml.Text);
@@ -470,7 +482,7 @@ type
                              ; aGenerateHeaderNameSpaces: Boolean
                              ; aGenerateBodyNameSpaces: Boolean
                              ): String;
-      function StreamReply ( aGeneratedWith: String
+      function PrepareReply ( aGeneratedWith: String
                            ; aGenerateTypes: Boolean
                            ): String;
       function StreamFault (aGeneratedWith: String; aGenerateTypes: Boolean): String;
@@ -641,6 +653,7 @@ procedure PromptRequest(aOperation: TWsdlOperation);
 procedure RaiseExit(aOperation: TWsdlOperation);
 procedure ReturnString (aOperation: TWsdlOperation; aString: String);
 procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
+procedure RaiseHttpFault (aOperation: TWsdlOperation; aResponseCode, aResponseText, aResponseContentType: String);
 procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
 
 function wsdlConvertSdfFrom36 (aXml: TXml): Boolean;
@@ -1789,6 +1802,28 @@ begin
   aOperation.faultactor := faultactor;
   aOperation.LiteralResult := aOperation.StreamFault('', False);
   aOperation.ReturnSoapFault := True;
+  aOperation.ResponseNo := 500;
+  aOperation.DoExit := True;
+end;
+
+procedure RaiseHttpFault (aOperation: TWsdlOperation; aResponseCode, aResponseText, aResponseContentType: String);
+var
+  x: Integer;
+begin
+  aOperation.LiteralResult := aResponseText;
+  aOperation.ContentType := aResponseContentType;
+  try
+    aOperation.ResponseNo := StrToInt(aResponseCode);
+  except
+    aOperation.ResponseNo := 500;
+    aOperation.LiteralResult := 'exception, could not convert  '
+                              + aResponseCode
+                              + ' to integer.'
+                              + LineEnding
+                              + aOperation.LiteralResult
+                              ;
+  end;
+  aOperation.ReturnSoapFault := True;
   aOperation.DoExit := True;
 end;
 
@@ -1834,6 +1869,7 @@ begin
     aOperation.LiteralResult := AsText(False, 0, False, False);
     aOperation.ReturnSoapFault := True;
     aOperation.DoExit := True;
+    aOperation.ResponseNo := 500;
   finally
     Free;
   end;
@@ -3850,6 +3886,7 @@ begin
     BindScriptFunction ('PromptReply', @PromptReply, VFOV, '()');
     BindScriptFunction ('PromptRequest', @PromptRequest, VFOV, '()');
     BindScriptFunction ('RaiseError', @RaiseError, VFS, '(aString)');
+    BindScriptFunction ('RaiseHttpFault', @RaiseHttpFault, VFOSSS, '(aHttpCode, aResponseText, aResponseContentType)');
     BindScriptFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
     BindScriptFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindScriptFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
@@ -4210,13 +4247,14 @@ begin
   Raise Exception.Create ('TWsdlOperation.StreamRequest: New stuf??? Statement should not be reached');
 end;
 
-function TWsdlOperation.StreamReply(aGeneratedWith: String; aGenerateTypes: Boolean): String;
+function TWsdlOperation.PrepareReply(aGeneratedWith: String; aGenerateTypes: Boolean): String;
 var
   x, y: Integer;
   xXml, yXml, zXml: TXml;
   xName: String;
 begin
-  ResponseNo := 200; // nice default
+  if ResponseNo = 0 then
+    ResponseNo := 200; // nice default
   result := LiteralResult;
   if Result <> '' then
     Exit;

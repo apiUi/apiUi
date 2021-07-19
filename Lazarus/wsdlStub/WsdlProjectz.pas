@@ -1,6 +1,6 @@
 {
     This file is part of the apiUi project
-    Copyright (c) 2009-201 by Jan Bouwman
+    Copyright (c) 2009-2021 by Jan Bouwman
 
     See the file COPYING.FPC, included in this distribution,
     for details about the copyright.
@@ -553,7 +553,7 @@ begin
   result := '';
   aOper := OperationFromContext(aContext, xOperationAlias);
   if Assigned (aOper) then
-    result := aOper.StreamReply(_progName, True)
+    result := aOper.PrepareReply(_progName, True)
   else
     raise Exception.Create(Format ('RequestAsText: Operation ''%s'' not found', [xOperationAlias]));
 end;
@@ -2984,10 +2984,14 @@ begin
     aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
     aLog.OperationName:=xOperation.Alias;
-    aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+    aLog.ReplyBody := xOperation.PrepareReply (_progName, True);
     aLog.ReplyInfoFromBindables(xOperation);
     if xOperation.ReturnSoapFault then
+    begin
       aLog.Exception := aLog.ReplyBody;
+      aLog.httpResponseCode := xOperation.ResponseNo;
+      aLog.ReplyContentType := xOperation.ContentType;
+    end;
     if xOperation.StubAction = saRequest then
     begin
       aLog.ReplyBody := _progName + ' - Operation itself is a requestor ('+ xOperation.Alias +')';
@@ -4033,7 +4037,7 @@ begin
         if aOperation.StubTransport = ttNone then
         begin
           xLog.ReplyContentType := aOperation.Produces;
-          xLog.ReplyBody := aOperation.StreamReply (_progName, True);
+          xLog.ReplyBody := aOperation.PrepareReply (_progName, True);
           xLog.httpResponseCode := aOperation.ResponseNo;
         end;
       end;
@@ -6733,7 +6737,7 @@ begin
         aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
         aLog.DelayTimeMs := xOperation.DelayTimeMs;
         xOperation.rpyXml.jsonType := jsonObject;
-        aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+        aLog.ReplyBody := xOperation.PrepareReply (_progName, True);
         aLog.ReplyContentType := xOperation.apiReplyMediaType;
         aLog.ReplyInfoFromBindables(xOperation);
         if aLog.ReplyContentType = '' then

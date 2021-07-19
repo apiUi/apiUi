@@ -20,7 +20,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getContextRpy'
     post:
@@ -34,13 +34,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setContextReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/setContextRpy'
   /envvars:
@@ -54,7 +54,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getEnvvarsRpy'
     post:
@@ -68,13 +68,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setEnvvarsReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs:
     delete:
       summary: removes list of logitems from Ui
@@ -87,7 +87,7 @@ paths:
       parameters:
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs/fetchfromremoteserver:
     post:
       summary: fetches list of logitems from apiUi in the cloud
@@ -103,7 +103,7 @@ paths:
           type: boolean
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs/snapshot:
     post:
       summary: summary
@@ -116,13 +116,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/createSnapshotReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /snapshot/checkregression:
     post:
       summary: summary
@@ -135,8 +135,8 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/checkRegressionReq'
         - name: createsnapshot
@@ -144,7 +144,7 @@ paths:
           type: boolean
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/checkRegresssionRpy'
   /snapshot/checkschemacompliancy:
@@ -159,8 +159,8 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/checkSchemaCompliancyReq'
         - name: createsnapshot
@@ -168,7 +168,7 @@ paths:
           type: boolean
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/checkSchemaCompliancyRpy'
   /snapshots:
@@ -185,7 +185,7 @@ paths:
       parameters:
       responses:
         '200':
-          decsription: Success response
+          description: Success response
     get:
       summary: retrieves list of snapshots (in project folder)
       description:
@@ -226,13 +226,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/executeScriptReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/executeScriptRpy'
 
@@ -287,7 +287,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getProjectInformationRpy'
   /refresh:
@@ -302,13 +302,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/refreshReq'
       responses:
         '202':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/refreshRpy'
   /regressionReport:
@@ -323,13 +323,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/regressionReportReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/regressionReportRpy'
   /resetEnvVar:
@@ -344,13 +344,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/resetEnvVarReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/resetEnvVarRpy'
   /resetEnvVars:
@@ -365,13 +365,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/resetEnvVarsReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/resetEnvVarsRpy'
   /setEnvVar:
@@ -386,13 +386,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setEnvVarReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/setEnvVarRpy'
   /shutDown:
@@ -407,13 +407,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/shutDownReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/shutDownRpy'
   /versionInfo:
@@ -427,7 +427,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/versionInfo'
 definitions:

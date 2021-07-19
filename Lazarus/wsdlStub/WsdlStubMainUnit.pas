@@ -1,3 +1,15 @@
+{
+    This file is part of the apiUi project
+    Copyright (c) 2009-2021 by Jan Bouwman
+
+    See the file COPYING.FPC, included in this distribution,
+    for details about the copyright.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+}
 unit WsdlStubMainUnit;
 {$IFDEF FPC}
   {$MODE Delphi}
@@ -9237,7 +9249,7 @@ begin
                   .LoadValues(xMessage.rpyBind as TXml, True, True);
                   FocusedOperation.ExecuteBefore;
                   FocusedOperation.ExecuteRpyStampers;
-                  xMsgString := FocusedOperation.StreamReply(_progName, True);
+                  xMsgString := FocusedOperation.PrepareReply(_progName, True);
                 end;
               end;
               SaveStringToFile(xFileName, xMsgString);
@@ -9799,7 +9811,7 @@ begin
         if FocusedMessage.fltBind.Checked then
           xMessage := FocusedOperation.StreamFault(_progName, True)
         else
-          xMessage := FocusedOperation.StreamReply(_progName, True);
+          xMessage := FocusedOperation.PrepareReply(_progName, True);
       end
       else
       begin

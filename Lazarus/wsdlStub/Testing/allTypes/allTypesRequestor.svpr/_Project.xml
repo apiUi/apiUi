@@ -5,17 +5,17 @@
     <projectOptions>
       <ProjectContext></ProjectContext>
       <versionInfo>
-        <major>0</major>
-        <minor>1</minor>
-        <revision>0</revision>
-        <build>0</build>
+        <major>1</major>
+        <minor>2</minor>
+        <revision>3</revision>
+        <build>4</build>
       </versionInfo>
       <General>
         <SaveRelativeFileNames>true</SaveRelativeFileNames>
         <projectFolders>
-          <current>..\..\..\..\..\..\apiUi\</current>
-          <reference>..\..\..\..\..\..\apiUi\</reference>
-          <reports>..\..\..\..\..\..\apiUi\</reports>
+          <current>Current</current>
+          <reference>Reference</reference>
+          <reports>Reports</reports>
         </projectFolders>
       </General>
       <Log>
