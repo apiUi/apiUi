@@ -4,10 +4,23 @@
 //  Modulname ......... :  gziputils.pas
 //  Type .............. :  Unit
 //  Author ............ :  Udo Schmal
-//  Development Status  :  15.12.2014
+//  Development Status  :  20.03.2016
 //  Operating System .. :  Win32/Win64
 //  IDE ............... :  Delphi & Lazarus
 // *****************************************************************************
+
+(*Copyright (c) 2007-2018, Udo Schmal < udo.schmal@t-online.de >
+
+Permission to use, copy, modify, and / or distribute the Software for any purpose with or
+without the provision of any copyright notice.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO
+THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT
+SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR
+ANY DAMAGES WHATSOEVER RESULTS FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN ACTION OF
+CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
+USE OR PERFORMANCE OF THIS SOFTWARE.
+*)
 unit GZIPUtils;
 {$ifdef fpc}
   {$mode objfpc}

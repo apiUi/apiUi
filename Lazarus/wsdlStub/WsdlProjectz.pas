@@ -1825,6 +1825,7 @@ begin
             CertFile := Listeners.sslCertificateFile;
             KeyFile := Listeners.sslKeyFile;
             RootCertFile := Listeners.sslRootCertificateFile;
+            Mode := sslmServer;
           end;
           if Listeners.sslPassword <> '' then
             ServerOpenSSL.OnGetPassword := Listeners.OnGetSslPassword; // TODO resolveAliasses...
@@ -3828,7 +3829,7 @@ begin
           if aOperation.sslPassword <> '' then
             OnGetPassword := aOperation.OnGetSslPassword; // TODO resolveAliasses...
           SSLOptions.Method := aOperation.sslVersion;
-          SSLOptions.Mode := sslmUnassigned;
+          SSLOptions.Mode := sslmClient;
           SSLOptions.VerifyMode := [];
         end;
       end;

@@ -2,13 +2,14 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <BuildModes Active="Default"/>
     <Units Count="55">
       <Unit0>
         <Filename Value="svrouter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="199"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="291"/>
         <CursorPos X="3" Y="202"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
@@ -122,7 +123,7 @@
       </Unit16>
       <Unit17>
         <Filename Value="..\Xml\xmlio.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <CursorPos Y="9"/>
         <UsageCount Value="70"/>
         <Loaded Value="True"/>
@@ -247,11 +248,10 @@
       </Unit32>
       <Unit33>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="2020"/>
         <CursorPos Y="2030"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit33>
       <Unit34>
         <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\objpas.pp"/>
@@ -366,7 +366,7 @@
       </Unit48>
       <Unit49>
         <Filename Value="..\Components\Indy10\Lib\Core\IdExceptionCore.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="80"/>
         <CursorPos X="50" Y="93"/>
         <UsageCount Value="12"/>
@@ -374,15 +374,14 @@
       </Unit49>
       <Unit50>
         <Filename Value="..\Xml\xmlxsdparser.pas"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="7"/>
         <CursorPos X="10" Y="446"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit50>
       <Unit51>
         <Filename Value="svrouterini.xml"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="6"/>
         <CursorPos Y="17"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
@@ -390,7 +389,7 @@
       </Unit51>
       <Unit52>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdGlobalProtocols.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="578"/>
         <CursorPos X="14" Y="591"/>
         <UsageCount Value="11"/>
@@ -398,7 +397,7 @@
       </Unit52>
       <Unit53>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIPAddress.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="91"/>
         <CursorPos X="3" Y="103"/>
         <UsageCount Value="11"/>
@@ -406,7 +405,7 @@
       </Unit53>
       <Unit54>
         <Filename Value="..\Components\Indy10\Lib\Core\IdContext.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <TopLine Value="61"/>
         <CursorPos X="3" Y="73"/>
         <UsageCount Value="11"/>
@@ -418,7 +417,7 @@
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="svrouter.lpr"/>
         <Caret Line="102" TopLine="91"/>
@@ -525,14 +524,14 @@
         <Caret Line="96" Column="31" TopLine="78"/>
       </Position28>
       <Position29>
-        <Filename Value="C:\lazarus\fpc\3.0.0\source\rtl\objpas\classes\classesh.inc"/>
-        <Caret Line="2030" Column="10" TopLine="2028"/>
-      </Position29>
-      <Position30>
         <Filename Value="svrouter.lpr"/>
         <Caret Line="112" Column="34" TopLine="92"/>
-      </Position30>
+      </Position29>
     </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
   </ProjectSession>
   <Debugging>
     <BreakPoints Count="2">
