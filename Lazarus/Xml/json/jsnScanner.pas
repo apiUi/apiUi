@@ -1,5 +1,3 @@
-
-unit jsnScanner;
 {
     This file is part of the apiUi project
     Copyright (c) 2009-2021 by Jan Bouwman
@@ -12,6 +10,8 @@ unit jsnScanner;
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 }
+
+unit jsnScanner;
 
 interface
 uses CustScanner, Classes, jsnParser;

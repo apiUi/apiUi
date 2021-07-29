@@ -1,4 +1,3 @@
-
 {
     This file is part of the apiUi project
     Copyright (c) 2009-2021 by Jan Bouwman
@@ -11,6 +10,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 }
+
 unit IpmScanner;
 
 interface
@@ -899,7 +899,7 @@ label startlabel, scan, action;
 
 begin
 
-startlabel:
+  startlabel:
 
   (* initialize: *)
 

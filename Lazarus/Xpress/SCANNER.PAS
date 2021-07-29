@@ -1835,11 +1835,11 @@ yyth : array [0..yynstates-1] of Integer = (
 
 var yyn : Integer;
 
-label _start, scan, action;
+label startlabel, scan, action;
 
 begin
 
-_start:
+startlabel:
 
   (* initialize: *)
 
@@ -1886,7 +1886,7 @@ action:
       return (0);
     end;
 
-  if not yydone then goto _start;
+  if not yydone then goto startlabel;
 
   yylex := FToken;
 

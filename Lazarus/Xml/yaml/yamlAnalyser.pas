@@ -160,7 +160,7 @@ end;
 procedure TyamlAnalyser .PrepareParsing ;
 var
   lx, lx_1, lx_2: YYSType;
-  sep: String;
+  sep, s: String;
 begin
   try
     // from multi-line to one token...
@@ -277,15 +277,14 @@ begin
     begin
       if lx.yyStringRead <> '' then
       begin
-        if (    (    (lx.yyStringRead[1] = '"')
-                 and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '"')
-                )
-            or  (    (lx.yyStringRead[1] = '''')
-                 and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '''')
-                )
-           )
-        then
-          lx.yyStringRead := Copy(lx.yyStringRead, 2, system.Length(lx.yyStringRead) - 2);
+        if (lx.yyStringRead[1] = '"')
+        or (lx.yyStringRead[1] = '''') then
+        begin
+          s := TrimRight(lx.yyStringRead);
+          if (Length(s) > 1)
+          and (s [system.Length(s)] = s [1]) then
+            lx.yyStringRead := Copy(s, 2, system.Length(s) - 2);
+        end;
       end;
     end;
     if Assigned (lx) then
