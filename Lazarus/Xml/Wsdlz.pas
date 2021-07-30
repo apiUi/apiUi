@@ -221,11 +221,11 @@ type
     fReqBind: TCustomBindable;
     fOutputXsd: TXsd;
     fRpyBind: TCustomBindable;
-    fFreeFormatReq: String;
-    fFreeFormatRpy: String;
     fPreparedBefore: Boolean;
     fPreparedAfter: Boolean;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
+    function getFreeFormatReq: String;
+    function getFreeFormatRpy: String;
     function getRequestAsString : String ;
     function getRpyXml: TXml;
     function getReqXml: TXml;
@@ -262,8 +262,8 @@ type
     property reqBind: TCustomBindable read getReqBind write setReqBind;
     property rpyXsd: TXsd read getOutputXsd write setOutputXsd;
     property rpyBind: TCustomBindable read getRpyBind write setRpyBind;
-    property FreeFormatReq: String read fFreeFormatReq write setFreeFormatReq;
-    property FreeFormatRpy: String read fFreeFormatRpy write setFreeFormatRpy;
+    property FreeFormatReq: String read getFreeFormatReq write setFreeFormatReq;
+    property FreeFormatRpy: String read getFreeFormatRpy write setFreeFormatRpy;
     property RequestAsString: String read getRequestAsString write setRequestAsString;
     property ReqIpm: TIpmItem read getReqIpm;
     property RpyIpm: TIpmItem read getRpyIpm;
@@ -444,7 +444,6 @@ type
       procedure RpyBindablesFromString (aString: String);
       procedure RpyBindablesFromWsdlMessage (aMessage: TWsdlMessage);
       procedure RpyBindablesToWsdlMessage (aMessage: TWsdlMessage);
-      procedure FreeFormatToBindables (aRequestXml: TXml; aRequestString: String);
       procedure XmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
       procedure XmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
       procedure RequestStringToBindables (aRequest: String);
@@ -3794,11 +3793,8 @@ begin
     fExpress.OnGetDoExit := getDoExit;
     fExpress.OnError := fOnError;
     fExpress.Database := _WsdlDbsConnector;
-    if not isFreeFormat then
-    begin
-      Bind ('Req', reqBind, fExpress);
-      Bind ('Rpy', rpyBind, fExpress);
-    end;
+    Bind ('Req', reqBind, fExpress);
+    Bind ('Rpy', rpyBind, fExpress);
     Bind ('requestInfo', requestInfoBind, fExpress);
     Bind ('replyInfo', replyInfoBind, fExpress);
     if Assigned (invokeList) then
@@ -3807,11 +3803,8 @@ begin
       begin
         if Assigned (invokeList.Operations[x]) then
         begin
-          if (not invokeList.Operations[x].isFreeFormat) then
-          begin
-            Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
-            Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
-          end;
+          Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
+          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
           Bind ('requestInfo', invokeList.Operations[x].requestInfoBind, fExpress);
           Bind ('replyInfo', invokeList.Operations[x].replyInfoBind, fExpress);
         end;
@@ -4750,10 +4743,18 @@ begin
     self.reqBind := TIpmItem.Create(xOperation.reqBind as TIpmItem)
   else
   begin
-    if Assigned (self.reqXsd) then
+    if xOperation.isFreeFormat then
     begin
-      self.reqBind := TXml.Create (-10000, self.reqXsd);
-      self.reqBind.Name := xOperation.reqBind.Name;
+      reqBind := TXml.CreateAsString(xOperation.reqBind.Name, '');
+      reqXml.AddXml(TXml.CreateAsString('Body', ''));
+    end
+    else
+    begin
+      if Assigned (self.reqXsd) then
+      begin
+        self.reqBind := TXml.Create (-10000, self.reqXsd);
+        self.reqBind.Name := xOperation.reqBind.Name;
+      end;
     end;
   end;
   self.rpyXsd := xOperation.rpyXsd;
@@ -4761,10 +4762,18 @@ begin
     self.rpyBind := TIpmItem.Create(xOperation.rpyBind as TIpmItem)
   else
   begin
-    if Assigned (self.rpyXsd) then
+    if xOperation.isFreeFormat then
     begin
-      self.rpyBind := TXml.Create (-10000, self.rpyXsd);
-      self.rpyBind.Name := xOperation.rpyBind.Name;
+      rpyBind := TXml.CreateAsString(xOperation.rpyBind.Name, '');
+      rpyXml.AddXml(TXml.CreateAsString('Body', ''));
+    end
+    else
+    begin
+      if Assigned (self.rpyXsd) then
+      begin
+        self.rpyBind := TXml.Create (-10000, self.rpyXsd);
+        self.rpyBind.Name := xOperation.rpyBind.Name;
+      end;
     end;
   end;
   if self.invokeRequestInfo
@@ -4954,12 +4963,6 @@ begin
   begin
     (reqBind as TXml).Items.XmlItems[0].LoadValues (aRequest, aAddUnknowns, False, True, False);
   end;
-end;
-
-procedure TWsdlOperation .FreeFormatToBindables (aRequestXml : TXml ;
-  aRequestString : String );
-begin
-  FreeFormatReq := aRequestString;
 end;
 
 function TWsdlOperation.getDebugTokenStringBefore: String;
@@ -7291,45 +7294,17 @@ begin
 end;
 
 procedure TWsdlBinder.setFreeFormatReq(const aValue: String);
-var
-  sl: TJBStringList;
-  x: Integer;
 begin
-//  if Value = fFreeFormatReq then Exit;
-  fFreeFormatReq := aValue;
-  sl := TJBStringList.Create;
-  try
-    for x := 0 to CorrelationBindables.Count - 1 do
-      if Assigned (CorrelationBindables.Bindables[x]) then
-        sl.Add (CorrelationBindables.Bindables[x].CorrelationValue)
-      else
-        sl.Add ('?');
-    if reqBind is TXml then with reqBind as TXml do
-    begin
-      try
-        LoadFromString(aValue, nil);
-        RebindLists;
-      except
-      end;
-    end;
-    PopulateCorrelation(sl);
-  finally
-    sl.Free;
-  end;
+  if reqXml.Items.Count = 0 then
+    reqXml.AddXml(TXml.CreateAsString('Body', ''));
+  reqXml.Items.XmlItems[0].Value := aValue;
 end;
 
 procedure TWsdlBinder.setFreeFormatRpy(const aValue: String);
 begin
-//  if aValue = fFreeFormatRpy then Exit;
-  fFreeFormatRpy := aValue;
-  if rpyBind is TXml then with rpyBind as TXml do
-  begin
-    try
-      LoadFromString(aValue, nil);
-      RebindLists;
-    except
-    end;
-  end;
+  if rpyXml.Items.Count = 0 then
+    rpyXml.AddXml(TXml.CreateAsString('Body', ''));
+  rpyXml.Items.XmlItems[0].Value := aValue;
 end;
 
 procedure TWsdlBinder.setInputXsd(const Value: TXsd);
@@ -7365,6 +7340,16 @@ end;
 procedure TWsdlBinder.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
 begin
   (aObject as TIpmItem).Value := '?' + _progName + ' Error found: ' + ErrorString;
+end;
+
+function TWsdlBinder.getFreeFormatReq: String;
+begin
+  result := reqXml.Items.XmlItems[0].Value;
+end;
+
+function TWsdlBinder.getFreeFormatRpy: String;
+begin
+  result := rpyXml.Items.XmlItems[0].Value;
 end;
 
 procedure TWsdlBinder.setRequestAsString (AValue : String );

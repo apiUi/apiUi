@@ -2540,10 +2540,10 @@ begin
   xXml.ValidationMesssage := '';
   if not xXml.Checked then
     Exit;
-
+  if not Assigned (xXml.Xsd) then
+    Exit;
   // check namespace
-  if Assigned (xXml.Xsd)
-  and (xXml.NameSpace <> '')
+  if (xXml.NameSpace <> '')
   and (xXml.NameSpace <> xXml.Xsd.ElementNameSpace)
   //and (NameSpace <> scXMLSchemaURI)
   then

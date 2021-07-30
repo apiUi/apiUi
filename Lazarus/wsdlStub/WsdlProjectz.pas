@@ -4599,6 +4599,10 @@ begin
         else
         begin
           xOperation := TWsdlOperation.Create (FreeFormatWsdl);
+          if xOperation.reqXml.Items.Count = 0 then
+            xOperation.reqXml.AddXml(TXml.CreateAsString('Body', ''));
+          if xOperation.rpyXml.Items.Count = 0 then
+            xOperation.rpyXml.AddXml(TXml.CreateAsString('Body', ''));
           xOperation.Name := sList.Strings[x];
           FreeFormatService.Operations.AddObject(xOperation.Name, xOperation);
           xOperation.Wsdl := FreeFormatWsdl;
@@ -4612,6 +4616,8 @@ begin
           xOperation.Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
           operationRecognitionUpdate (xOperation, xOperation.reqRecognition, oXml.Items.XmlItemByTag['reqRecognition']);
           operationRecognitionUpdate (xOperation, xOperation.rpyRecognition, oXml.Items.XmlItemByTag['rpyRecognition']);
+          xOperation.reqXml.Name := xOperation.Alias;
+          xOperation.rpyXml.Name := xOperation.Alias;
         end;
       end;
       f := Wsdls.IndexOfObject(FreeFormatWsdl);
