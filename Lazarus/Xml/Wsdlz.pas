@@ -1,14 +1,16 @@
 {
-    This file is part of the apiUi project
-    Copyright (c) 2009-2021 by Jan Bouwman
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
 
-    See the file COPYING.FPC, included in this distribution,
-    for details about the copyright.
+See the file COPYING, included in this distribution,
+for details about the copyright.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
 unit Wsdlz;
 
@@ -738,6 +740,7 @@ uses
    , IdURI
    , xmlxsdparser
    , Logz
+   , LazUTF8
    ;
 
 { TWsdl }
@@ -749,6 +752,21 @@ var
 begin
   s := aString;
   result := s;
+end;
+
+function UpperCaseStr (aString: String): String;
+begin
+  result := UTF8UpperCase(aString);
+end;
+
+function LowerCaseStr (aString: String): String;
+begin
+  result := UTF8LowerCase(aString);
+end;
+
+function StrToNameCase (aString: String): String;
+begin
+  result := UTF8ProperCase(aString, [' ', ',', '.', '/', ';', ':', '''', '-', '&']);
 end;
 
 function isValidId (aId: String): Boolean;
@@ -902,6 +920,16 @@ end;
 function DateTimeToTandemJulianStr (aDateTime: TDateTime): String;
 begin
   result := FloatToStrF(DateTimeToJulianDate(aDateTime)*24*60*60*1000000,ffGeneral,18,3);
+end;
+
+function xDateTimeToUnix (aDateTime: TDateTime): Extended;
+begin
+  result := DateTimeToUnix(aDateTime);
+end;
+
+function xUnixToDateTime (aUnixDateTime: Extended): TDateTime;
+begin
+  result := UnixToDateTime(Trunc(aUnixDateTime));
 end;
 
 function RoundedX (aSource, aNumber: Extended): Extended;
@@ -3843,6 +3871,7 @@ begin
     BindScriptFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindScriptFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindScriptFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
+    BindScriptFunction ('DateTimeToUnix', @xDateTimeToUnix, XFD, '(aDateTime)');
     BindScriptFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindScriptFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
@@ -3862,8 +3891,9 @@ begin
     BindScriptFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindScriptFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('Latin1Str', @Latin1, SFS, '(aString)');
+    BindScriptFunction ('NameCaseStr', @StrToNameCase, SFS, '(aString)');
     BindScriptFunction ('LengthStr', @LengthX, XFS, '(aString)');
-    BindScriptFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+    BindScriptFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
     BindScriptFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
     BindScriptFunction ('MD5', @MD5, SFS, '(aString)');
     BindScriptFunction ('MessageName', @wsdlMessageName, SFOV, '()');
@@ -3922,7 +3952,8 @@ begin
     BindScriptFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindScriptFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
     BindScriptFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
-    BindScriptFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
+    BindScriptFunction ('UnixToDateTime', @xUnixToDateTime, DFX, '(aUnixDateTime)');
+    BindScriptFunction ('UppercaseStr', @UpperCaseStr, SFS, '(aString)');
     BindScriptFunction ('UserName', @wsdlUserName, SFV, '()');
     BindScriptFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');
     BindScriptFunction ('OperationName', @wsdlOperationName, SFOV, '()');
@@ -5843,8 +5874,9 @@ begin
       BindCheckerFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
       BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
       BindCheckerFunction ('Latin1Str', @Latin1, SFS, '(aString)');
+      BindCheckerFunction ('NameCaseStr', @StrToNameCase, SFS, '(aString)');
       BindCheckerFunction ('LengthStr', @LengthX, XFS, '(aString)');
-      BindCheckerFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+      BindCheckerFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
       BindCheckerFunction ('NewLine', @xNewLine, SFV, '()');
       BindCheckerFunction ('Tab', @xTab, SFV, '()');
       BindCheckerFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
@@ -5862,7 +5894,7 @@ begin
       BindCheckerFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
       BindCheckerFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
       BindCheckerFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
-      BindCheckerFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
+      BindCheckerFunction ('UppercaseStr', @UpperCaseStr, SFS, '(aString)');
       BindCheckerFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
       BindCheckerFunction ('UserName', @wsdlUserName, SFV, '()');
       BindCheckerFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');
@@ -5901,6 +5933,7 @@ begin
     BindStamperFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindStamperFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindStamperFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
+    BindStamperFunction ('DateTimeToUnix', @xDateTimeToUnix, XFD, '(aDateTime)');
     BindStamperFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindStamperFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
@@ -5913,8 +5946,9 @@ begin
     BindStamperFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindStamperFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('Latin1Str', @Latin1, SFS, '(aString)');
+    BindStamperFunction ('NameCaseStr', @StrToNameCase, SFS, '(aString)');
     BindStamperFunction ('LengthStr', @LengthX, XFS, '(aString)');
-    BindStamperFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+    BindStamperFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
     BindStamperFunction ('MD5', @MD5, SFS, '(aString)');
     BindStamperFunction ('NewLine', @xNewLine, SFV, '()');
     BindStamperFunction ('Tab', @xTab, SFV, '()');
@@ -5939,7 +5973,8 @@ begin
     BindStamperFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindStamperFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
     BindStamperFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
-    BindStamperFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
+    BindStamperFunction ('UnixToDateTime', @xUnixToDateTime, DFX, '(aUnixDateTime)');
+    BindStamperFunction ('UppercaseStr', @UpperCaseStr, SFS, '(aString)');
     BindStamperFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
     BindStamperFunction ('UserName', @wsdlUserName, SFV, '()');
     BindStamperFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');

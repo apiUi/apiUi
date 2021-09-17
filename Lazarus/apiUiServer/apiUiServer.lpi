@@ -20,7 +20,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="6"/>
-      <BuildNr Value="13113"/>
+      <BuildNr Value="13118"/>
       <StringTable ProductVersion="10.3.4.110"/>
     </VersionInfo>
     <MacroValues Count="1">
@@ -93,6 +93,7 @@
       <Unit7>
         <Filename Value="..\ProgressStatus\progressinterface.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ProgressInterface"/>
       </Unit7>
     </Units>
   </ProjectOptions>
