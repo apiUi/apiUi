@@ -56,6 +56,7 @@ type
 implementation
 
 uses xmlzConsts
+   , LazFileUtils
    ;
 
 { TListeners }
@@ -102,6 +103,22 @@ end;
 }
 
 procedure TListeners.FromXml(aOnHaveFrame: TOnHaveFrame);
+  function _certFile (aFileName: String): String;
+  var
+    s: String;
+  begin
+    result := aFileName;
+    if LazFileUtils.FileExistsUTF8(aFileName) then
+      Exit;
+    if openSslCertsFolder <> '' then
+    begin
+      if openSslCertsFolder [Length (openSslCertsFolder)] <> DirectorySeparator then
+        result := openSslCertsFolder + DirectorySeparator + aFileName
+      else
+        result := openSslCertsFolder + aFileName;
+    end;
+  end;
+
 var
   m, x, y: Integer;
   xXml, yXml, hXml: TXml;
@@ -154,9 +171,9 @@ begin
               yXml := Items.XmlCheckedItemByTag['Version'];
               if Assigned (yXml) then
                 sslVersion := sslVersionFromString(yXml.Value);
-              sslCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
-              sslKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
-              sslRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
+              sslCertificateFile := _certFile (Items.XmlCheckedValueByTag['CertificateFile']);
+              sslKeyFile := _certFile (Items.XmlCheckedValueByTag['KeyFile']);
+              sslRootCertificateFile := _certFile (Items.XmlCheckedValueByTag['RootCertificateFile']);
               yXml := Items.XmlCheckedItemByTag['Password'];
               if Assigned (yXml) then
               begin

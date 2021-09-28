@@ -12,4 +12,6 @@
   <mqPutHeaderEditAllowed>Config\mqPutHeaderEditAllowed.xml</mqPutHeaderEditAllowed>
   <stompPutHeaderEditAllowed>Config\stompPutHeaderEditAllowed.xml</stompPutHeaderEditAllowed>
   <apiaryToken>Rlw9QEALVgFUAVlbA1kLW1JfAVNbE2VMCWxKR1kHAVI=</apiaryToken>
+  <openSslCertificatesDefaultLocationWindows>c:\openssl\certs</openSslCertificatesDefaultLocationWindows>
+  <openSslCertificatesDefaultLocationUnix>/etc/certs</openSslCertificatesDefaultLocationUnix>
 </Ini>

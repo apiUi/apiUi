@@ -1314,6 +1314,7 @@ uses
   , SelectProjectFolderUnit
   , progressunit
   , StringListListUnit
+  , optionsunit
   ;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -6175,18 +6176,20 @@ begin
   end;
   EasterEggPopupMenu.Items.Add (sMenuItem);
   IpmDescrType := ipmDTXml;
-  if ParamStr(1) <> '' then
+  if hasOption(openSslLocOpt) then
+    openSslCertsFolder := getOption(openSslLocOpt);
+  if hasOption(projectOpt) then
   begin
     Update;
     se.projectFileName := ExpandRelativeFileName ( LazFileUtils.GetCurrentDirUTF8 + DirectorySeparator
-                                                 , ParamStr(1)
+                                                 , getOption(projectOpt)
                                                  );
     OpenStubCase;
     se.Activate(True);
     CheckBoxClick(nil);
-    if ParamStr(2) <> '' then
+    if hasOption(scriptOpt) then
     begin
-      ExecuteScript(se, ParamStr(2));
+      ExecuteScript(se, getOption(scriptOpt));
     end;
   end;
   MainToolBarDesignedButtonCount := MainToolBar.ButtonCount;

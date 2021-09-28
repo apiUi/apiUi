@@ -36,25 +36,9 @@ uses
   , Wsdlz
   , xmlxsdparser
   , LazFileUtils
+  , optionsunit
   ;
 
-type
-  longOptsArrayType = array [0..5] of String;
-
-const
-  helpOpt = 'help';
-  lstLogOpt = 'lstLog';
-  scriptOpt = 'script';
-  terminateOpt = 'terminate';
-  trackIOOpt = 'trackIO';
-  debugOpt = 'debug';
-  longOpts: longOptsArrayType = ( helpOpt
-                                , lstLogOpt + ':'
-                                , scriptOpt + ':'
-                                , terminateOpt
-                                , trackIOOpt
-                                , debugOpt
-                                );
 type
 
   { TMyApplication }
@@ -149,26 +133,28 @@ begin
   terminateAfterScript := HasOption('?',terminateOpt);
   if terminateAfterScript then
     WriteLn('option ', terminateOpt);
+  if HasOption('?',openSslLocOpt) then
+  begin
+    openSslCertsFolder := GetOptionValue('?', openSslLocOpt);
+    WriteLn('option ', openSslLocOpt, ' ', openSslCertsFolder);
+  end;
   xmlio.doTrackXmlIO := HasOption('?',trackIOOpt);
   if xmlio.doTrackXmlIO then
     WriteLn('option ', trackIOOpt);
   doDebug := HasOption('?',debugOpt);
   if doDebug then
     WriteLn('option ', debugOpt);
-  se.projectFileName := ExpandRelativeFileName(GetCurrentDirUTF8 + DirectorySeparator, ParamStr(1));
-
-  if (Copy (se.projectFileName, 1, 1) = '-')  // switch as first argument ??
-{
-  or (    (not FileExists(se.projectFileName))
-      and (not DirectoryExistsUTF8(se.projectFileName))
-     )
-}
-  then
   begin
-    WriteLn ('First argument not an apiUi project name: ' + se.projectFileName);
+    WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
+  end;
+  if not HasOption('?',projectOpt) then
+  begin
+    WriteLn ('missing --project= option');
     Terminate;
     Exit;
   end;
+
+  se.projectFileName := ExpandRelativeFileName(GetCurrentDirUTF8 + DirectorySeparator, GetOptionValue('?', projectOpt));
   try
     OpenProjectCommand(se.projectFileName);
   except
@@ -573,11 +559,11 @@ end;
 procedure TMyApplication.WriteHelp;
 begin
   WriteLn (ExeName);
-  WriteLn (ApplicationName, ' projectFileName [switches]');
+  WriteLn (ApplicationName, ' [switches]');
   WriteLn ('');
   WriteLn ('');
   WriteLn ('Example');
-  WriteLn (ExeName, ' myProject.svpr --', scriptOpt, '=setup');
+  WriteLn (ExeName, ' --project=myProject.svpr --', scriptOpt, '=setup');
   WriteLn;
   WriteLn ('This command will ...');
   WriteLn ('  start with opening project myProject.svpr');
@@ -585,6 +571,8 @@ begin
   WriteLn;
   WriteLn;
   WriteLn ('Switches');
+  WriteLn ('  --', projectOpt);
+  WriteLn ('     opens the named project');
   WriteLn ('  --', helpOpt);
   WriteLn ('     types this helpmessage');
   WriteLn ('  --', lstLogOpt, '=');
@@ -597,6 +585,8 @@ begin
   WriteLn ('     notifies IO operations');
   WriteLn ('  --', debugOpt);
   WriteLn ('     types full requests and responses');
+  WriteLn ('  --', openSslLocOpt, '=');
+  WriteLn ('     openSSL certificates folder');
   WriteLn ('');
   WriteLn ('');
 end;

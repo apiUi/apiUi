@@ -108,6 +108,15 @@ const base64RtfStartStr = 'e1xyd';
 const PasswordContextsOptionValue = 1;
 const OneTimeContextsOptionValue = 2;
 const apiuidescriptorspath = '/project/descriptors';
+{$ifdef unix}
+const OperatingSystem = 'unix';
+{$else}
+  {$ifdef windows}
+  const OperatingSystem = 'windows';
+  {$else}
+    const OperatingSystem = 'unknown';
+  {$endif}
+{$endif}
 
 type TOnStringEvent = procedure (const Msg: String) of Object;
 var
@@ -119,6 +128,7 @@ var
   apiaryToken: String;
   apiUiConnectionConfig: TObject;
   xmlioLogger: TXmlioLogger;
+  openSslCertsFolder: String;
 
 
 implementation

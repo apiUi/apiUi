@@ -50,6 +50,16 @@
 			<xs:pattern value="[^ /\\]+"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="openSllFileType">
+		<xs:annotation>
+			<xs:documentation>Warning: AliasResolving ${alias} is ***NOT*** applied on this filename.  
+  
+Either specify the path + filename or only the filename.  
+In case you only provide the filename, apiUi will search for the file in the OpenSsl Certificates folder.  
+The name for tis folder is taken from the openSslCertificatesDefaultLocation parameter from the apiUi-inifile and can be overruled with the startup-parameter --certsFolder</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
 	<xs:simpleType name="passwordType">
 		<xs:annotation>
 			<xs:documentation>Password;
@@ -635,9 +645,9 @@ More entries allowed
 												<xs:restriction base="sslVersionType"/>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="CertificateFile" type="FileNameType" minOccurs="0"/>
-										<xs:element name="KeyFile" type="FileNameType" minOccurs="0"/>
-										<xs:element name="RootCertificateFile" type="FileNameType" minOccurs="0"/>
+										<xs:element name="CertificateFile" type="openSllFileType" minOccurs="0"/>
+										<xs:element name="KeyFile" type="openSllFileType" minOccurs="0"/>
+										<xs:element name="RootCertificateFile" type="openSllFileType" minOccurs="0"/>
 										<xs:element name="Password" type="passwordType" minOccurs="0"/>
 									</xs:sequence>
 								</xs:complexType>

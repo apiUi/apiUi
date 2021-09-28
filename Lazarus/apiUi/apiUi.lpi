@@ -22,7 +22,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="6"/>
-      <BuildNr Value="13118"/>
+      <BuildNr Value="13121"/>
       <StringTable CompanyName="apiUi.org" FileDescription="apiUi - api tester and mocker" ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -33,9 +33,16 @@
       <DestinationDirectory Value="C:\Data\publish"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <CommandLineParams Value="--certsFolder=abrkadabars"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default"/>
+        <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="--certsFolder=abrkadabars"/>
+          </local>
+        </Mode0>
       </Modes>
     </RunParams>
     <RequiredPackages Count="11">
@@ -73,7 +80,7 @@
         <PackageName Value="LCL"/>
       </Item11>
     </RequiredPackages>
-    <Units Count="49">
+    <Units Count="50">
       <Unit0>
         <Filename Value="apiUi.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -349,6 +356,10 @@
         <Filename Value="..\wsdlStub\apiuiconsts.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit48>
+      <Unit49>
+        <Filename Value="..\wsdlStub\optionsunit.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit49>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

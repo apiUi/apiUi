@@ -1235,6 +1235,12 @@ begin
     RemoteControlPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
+    {$ifdef unix}
+    openSslCertsFolder := iniXml.Items.XmlValueByTag ['openSslCertificatesDefaultLocationUnix'];
+    {$endif}
+    {$ifdef windows}
+    openSslCertsFolder := iniXml.Items.XmlValueByTag ['openSslCertificatesDefaultLocationWindows'];
+    {$endif}
     if Assigned (iniXml.ItemByTag ['cssStylesheet']) then with iniXml.ItemByTag ['cssStylesheet'] do
     begin
       _wsdlStubStylesheet := _abs (Value);
