@@ -103,21 +103,8 @@ object MainForm: TMainForm
       ImageIndex = 6
       Style = tbsSeparator
     end
-    object ToolButton60: TToolButton
-      Left = 264
-      Top = 2
-      Action = ConfigLogAction
-    end
-    object ToolButton61: TToolButton
-      Left = 293
-      Height = 28
-      Top = 2
-      Caption = 'ToolButton61'
-      ImageIndex = 6
-      Style = tbsSeparator
-    end
     object ToolButton21: TToolButton
-      Left = 301
+      Left = 264
       Height = 28
       Top = 2
       Caption = 'ToolButton21'
@@ -125,12 +112,12 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object startStopButton: TToolButton
-      Left = 306
+      Left = 269
       Top = 2
       Action = startAction
     end
     object ToolButton70: TToolButton
-      Left = 335
+      Left = 298
       Height = 28
       Top = 2
       Caption = 'ToolButton70'
@@ -138,12 +125,12 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object AbortToolButton: TToolButton
-      Left = 343
+      Left = 306
       Top = 2
       Action = AbortAction
     end
     object SeparatorToolButton: TToolButton
-      Left = 372
+      Left = 335
       Height = 28
       Top = 2
       Caption = 'SeparatorToolButton'
@@ -151,7 +138,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ThreadsPanel: TPanel
-      Left = 380
+      Left = 343
       Height = 28
       Top = 2
       Width = 109
@@ -1441,6 +1428,11 @@ object MainForm: TMainForm
           Left = 1
           Top = 2
           Action = LogsFromHttpGetAction
+        end
+        object ToolButton62: TToolButton
+          Left = 265
+          Top = 2
+          Action = ConfigLogAction
         end
       end
       object Panel2: TPanel

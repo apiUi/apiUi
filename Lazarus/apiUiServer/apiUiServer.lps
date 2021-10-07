@@ -8,7 +8,8 @@
       <Unit0>
         <Filename Value="apiUiServer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
+        <TopLine Value="127"/>
+        <CursorPos X="7" Y="135"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -68,9 +69,10 @@
       </Unit7>
       <Unit8>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="478"/>
-        <CursorPos X="20" Y="502"/>
+        <TopLine Value="7072"/>
+        <CursorPos Y="7091"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit8>
@@ -78,7 +80,7 @@
         <Filename Value="..\Xml\xmlio.pas"/>
         <EditorIndex Value="1"/>
         <TopLine Value="107"/>
-        <CursorPos X="30" Y="131"/>
+        <CursorPos X="3" Y="124"/>
         <UsageCount Value="468"/>
         <Loaded Value="True"/>
       </Unit9>
@@ -87,9 +89,11 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos Y="13"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="11318"/>
+        <CursorPos X="24" Y="11335"/>
         <UsageCount Value="32"/>
+        <Loaded Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\Xml\Xsdz.pas"/>
@@ -537,7 +541,7 @@
       <Unit82>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="185"/>
         <CursorPos X="3" Y="30"/>
         <UsageCount Value="13"/>
@@ -552,9 +556,7 @@
       </Unit83>
       <Unit84>
         <Filename Value="..\wsdlStub\optionsunit.pas"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="26"/>
-        <CursorPos Y="42"/>
+        <EditorIndex Value="4"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit84>
@@ -566,120 +568,124 @@
     </OtherDefines>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="582" Column="52" TopLine="579"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="165" Column="5" TopLine="151"/>
       </Position1>
       <Position2>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="594" Column="29" TopLine="579"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="344" Column="14" TopLine="332"/>
       </Position2>
       <Position3>
-        <Filename Value="apiUiServer.lpr"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="1358" Column="3" TopLine="1344"/>
       </Position3>
       <Position4>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="47" Column="12" TopLine="25"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="1361" Column="3" TopLine="1344"/>
       </Position4>
       <Position5>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="54" Column="44" TopLine="32"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="1450" Column="3" TopLine="1437"/>
       </Position5>
       <Position6>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="161" Column="21" TopLine="148"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2091" Column="11" TopLine="2079"/>
       </Position6>
       <Position7>
-        <Filename Value="apiUiServer.lpr"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2092" Column="11" TopLine="2079"/>
       </Position7>
       <Position8>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="47" Column="12" TopLine="25"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2094" Column="37" TopLine="2079"/>
       </Position8>
       <Position9>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="54" Column="44" TopLine="32"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2097" Column="40" TopLine="2079"/>
       </Position9>
       <Position10>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="144" Column="29" TopLine="135"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2398" Column="11" TopLine="2385"/>
       </Position10>
       <Position11>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="146" Column="69" TopLine="135"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2399" Column="89" TopLine="2385"/>
       </Position11>
       <Position12>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="190" Column="41" TopLine="181"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2404" Column="43" TopLine="2385"/>
       </Position12>
       <Position13>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="608" TopLine="585"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2410" Column="15" TopLine="2389"/>
       </Position13>
       <Position14>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Caret Line="1242" Column="23" TopLine="1237"/>
+        <Caret Line="5393" Column="16" TopLine="5379"/>
       </Position14>
       <Position15>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Caret Line="503" Column="17" TopLine="485"/>
+        <Caret Line="5394" Column="19" TopLine="5379"/>
       </Position15>
       <Position16>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="41" TopLine="34"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="5395" Column="34" TopLine="5379"/>
       </Position16>
       <Position17>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Caret Line="180" Column="12" TopLine="180"/>
+        <Caret Line="6646" Column="27" TopLine="6633"/>
       </Position17>
       <Position18>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="108" Column="27" TopLine="82"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="6648" Column="7" TopLine="6633"/>
       </Position18>
       <Position19>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="39" Column="16" TopLine="14"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="6650" Column="9" TopLine="6633"/>
       </Position19>
       <Position20>
-        <Filename Value="apiUiServer.lpr"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="7999" Column="46" TopLine="7986"/>
       </Position20>
       <Position21>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="20" Column="5"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="8002" Column="9" TopLine="7986"/>
       </Position21>
       <Position22>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="126" Column="29" TopLine="34"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="8182" Column="3" TopLine="8169"/>
       </Position22>
       <Position23>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="109" Column="39" TopLine="83"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="8183" Column="3" TopLine="8169"/>
       </Position23>
       <Position24>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="75" Column="24" TopLine="51"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="6788" Column="16" TopLine="6775"/>
       </Position24>
       <Position25>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="581" TopLine="518"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="6793" Column="16" TopLine="6775"/>
       </Position25>
       <Position26>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="69" Column="19" TopLine="43"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="11330" Column="19" TopLine="11341"/>
       </Position26>
       <Position27>
-        <Filename Value="apiUiServer.lpr"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="11331" Column="11" TopLine="11318"/>
       </Position27>
       <Position28>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="153" Column="41" TopLine="141"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="11335" Column="24" TopLine="11318"/>
       </Position28>
       <Position29>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="151" TopLine="138"/>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="124" Column="3" TopLine="107"/>
       </Position29>
       <Position30>
-        <Filename Value="apiUiServer.lpr"/>
-        <Caret Line="574" Column="30" TopLine="555"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="8183" Column="3" TopLine="8169"/>
       </Position30>
     </JumpHistory>
     <RunParams>
@@ -722,14 +728,14 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Line Value="8153"/>
+        <Line Value="8154"/>
       </Item5>
       <Item6>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Line Value="8156"/>
+        <Line Value="8157"/>
       </Item6>
     </BreakPoints>
   </Debugging>

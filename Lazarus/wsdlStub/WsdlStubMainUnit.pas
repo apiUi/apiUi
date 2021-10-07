@@ -96,6 +96,7 @@ type
     ToggleDebugLogModeAction: TAction;
     ToolButton49: TToolButton;
     ToolButton52: TToolButton;
+    ToolButton62: TToolButton;
     WsdlServiceNameEdit: TEdit;
     WsdlNameEdit: TEdit;
     NavigateHierarchyAction: TAction;
@@ -524,8 +525,6 @@ type
     Removeallmessagesfromalloperations1: TMenuItem;
     ShowLogDetailsAction: TAction;
     ShowLogdetails1: TMenuItem;
-    ToolButton60: TToolButton;
-    ToolButton61: TToolButton;
     ConfigLogAction: TAction;
     DelayTimeButton: TToolButton;
     ToggleFileLogAction: TAction;

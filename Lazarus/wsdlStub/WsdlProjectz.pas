@@ -1897,17 +1897,6 @@ begin
   with result do
   begin
     AddXml(TXml.CreateAsString('maxEntries', IfThen(displayedLogsMaxEntries > -1, IntToStr(displayedLogsMaxEntries), 'unbounded')));
-    case CompareLogOrderBy of
-      clTimeStamp: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'As is'));
-      clOperation: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'Service, Operation'));
-      clCorrelation: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'Service, Operation, Correlation'));
-    end;
-    with AddXml (TXml.CreateAsString('DocumentComparison','')) do
-    begin
-      AddXml (TXml.CreateAsBoolean('DetectDocumentFormatChanges', wrdFunctionz.wrdDetectFormatChanges));
-      AddXml (TXml.CreateAsBoolean('NewDocumentAsReference', wrdFunctionz.wrdNewDocumentAsReference));
-      AddXml (TXml.CreateAsInteger('ExpectedDifferenceCount', wrdFunctionz.wrdExpectedDifferenceCount));
-    end;
     case ShowLogCobolStyle of
       slCobol: AddXml(TXml.CreateAsString('ShowCobolDataAs', 'Cobol'));
       slXml: AddXml(TXml.CreateAsString('ShowCobolDataAs', 'Xml'));
@@ -1919,16 +1908,15 @@ end;
 function TWsdlProject.ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
 begin
   result := TXml.CreateAsString('projectOptions', '');
-  result.AddXml (TXml.CreateAsString('ProjectContext', ProjectContext));
-  with result.AddXml (TXml.CreateAsString('versionInfo', '')) do
-  begin
-    AddXml (TXml.CreateAsInteger('major', majorVersion));
-    AddXml (TXml.CreateAsInteger('minor', minorVersion));
-    AddXml (TXml.CreateAsInteger('revision', revision));
-    AddXml (TXml.CreateAsInteger('build', build));
-  end;
   with result.AddXml (TXml.CreateAsString('General', '')) do
   begin
+    with AddXml (TXml.CreateAsString('versionInfo', '')) do
+    begin
+      AddXml (TXml.CreateAsInteger('major', majorVersion));
+      AddXml (TXml.CreateAsInteger('minor', minorVersion));
+      AddXml (TXml.CreateAsInteger('revision', revision));
+      AddXml (TXml.CreateAsInteger('build', build));
+    end;
     AddXml (TXml.CreateAsBoolean('SaveRelativeFileNames', SaveRelativeFileNames));
     if (CurrentFolder <> '')
     or (ReferenceFolder <> '')
@@ -3205,7 +3193,6 @@ var
   yXml: TXml;
 begin
   displayedLogsMaxEntries := -1;
-  CompareLogOrderBy := clTimeStamp;
   ShowLogCobolStyle := slCobol;
   if Assigned (aXml) then
   begin
@@ -3213,20 +3200,6 @@ begin
       displayedLogsMaxEntries := aXml.Items.XmlIntegerByTagDef['maxEntries', -1];
     except
       displayedLogsMaxEntries := -1;
-    end;
-    yXml := aXml.Items.XmlCheckedItemByTag['CompareLogsOrdered'];
-    if Assigned (yXml) then
-    begin
-      if yXml.Value = 'As is' then CompareLogOrderBy := clTimeStamp;
-      if yXml.Value = 'Service, Operation' then CompareLogOrderBy := clOperation;
-      if yXml.Value = 'Service, Operation, Correlation' then CompareLogOrderBy := clCorrelation;
-    end;
-    yXml := aXml.Items.XmlCheckedItemByTag['DocumentComparison'];
-    if Assigned (yXml) then
-    begin
-      wrdFunctionz.wrdDetectFormatChanges := yXml.Items.XmlBooleanByTagDef['DetectDocumentFormatChanges', False];
-      wrdFunctionz.wrdNewDocumentAsReference := yXml.Items.XmlBooleanByTagDef['NewDocumentAsReference', False];
-      wrdFunctionz.wrdExpectedDifferenceCount := yXml.Items.XmlIntegerByTagDef['ExpectedDifferenceCount', 0];
     end;
     yXml := aXml.Items.XmlCheckedItemByTag['ShowCobolDataAs'];
     if Assigned (yXml) then
@@ -3244,7 +3217,6 @@ var
 begin
   if not Assigned (aXml) then Exit;
   if aXml.Name <> 'projectOptions' then raise Exception.Create('ProjectOptionsFromXml illegal XML' + aXml.Text);
-  ProjectContext := ''; // BEWARE: updated on Contexts screen and not as option
   majorVersion := 0;
   minorVersion := 1;
   revision := 0;
@@ -3259,9 +3231,11 @@ begin
   DatabaseConnectionSpecificationXml.Items.Clear;
   UnknownOpsReqReplactementsXml.Items.Clear;
   UnknownOpsRpyReplactementsXml.Items.Clear;
+    {
   wrdFunctionz.wrdDetectFormatChanges := False;
   wrdFunctionz.wrdNewDocumentAsReference := False;
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
+    }
   RemoteControlPortNumber := 3738;
   OnRequestViolatingAddressPath := rvsRaiseErrorMessage;
   xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
@@ -3278,8 +3252,7 @@ begin
   if not aXml.Checked then Exit;
   with aXml.Items do
   begin
-    ProjectContext := XmlCheckedValueByTagDef['ProjectContext', ProjectContext]; // BEWARE: updated on Contexts screen and not as option
-    xXml := XmlCheckedItemByTag ['versionInfo'];
+    xXml := XmlCheckedItemByTag ['versionInfo']; // Old style (up to 10.6.0.13121
     if Assigned (xXml) then
     begin
       majorVersion := xXml.Items.XmlCheckedIntegerByTagDef['major', majorVersion];
@@ -3290,6 +3263,14 @@ begin
     xXml := XmlCheckedItemByTag ['General'];
     if Assigned (xXml) then
     begin
+      yXml := xXml.Items.XmlCheckedItemByTag ['versionInfo'];
+      if Assigned (yXml) then
+      begin
+        majorVersion := yXml.Items.XmlCheckedIntegerByTagDef['major', majorVersion];
+        minorVersion := yXml.Items.XmlCheckedIntegerByTagDef['minor', minorVersion];
+        revision := yXml.Items.XmlCheckedIntegerByTagDef['revision', revision];
+        build := yXml.Items.XmlCheckedIntegerByTagDef['build', build];
+      end;
       SaveRelativeFileNames := xXml.Items.XmlCheckedBooleanByTagDef['SaveRelativeFileNames', True];
       yXml := xXml.Items.XmlCheckedItemByTag['projectFolders'];
       if Assigned (yXml) then with yXml.Items do
@@ -7106,6 +7087,7 @@ begin
   begin
     AddXml (TXml.CreateAsString('project', projectFileName));
     AddXml (TXml.CreateAsString('version', versionInfoAsString));
+    AddXml (TXml.CreateAsString('context', ProjectContext));
     with AddXml (TXml.CreateAsString('operations', '')) do
     begin
       jsonType := jsonArray;

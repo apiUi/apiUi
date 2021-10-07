@@ -4,13 +4,13 @@
     <remoteServerConnection></remoteServerConnection>
     <projectOptions>
       <ProjectContext></ProjectContext>
-      <versionInfo>
-        <major>1</major>
-        <minor>2</minor>
-        <revision>3</revision>
-        <build>4</build>
-      </versionInfo>
       <General>
+        <versionInfo>
+          <major>1</major>
+          <minor>2</minor>
+          <revision>3</revision>
+          <build>4</build>
+        </versionInfo>
         <SaveRelativeFileNames>true</SaveRelativeFileNames>
         <projectFolders>
           <current>Current</current>

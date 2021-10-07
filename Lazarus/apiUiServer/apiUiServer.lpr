@@ -128,6 +128,11 @@ begin
     WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
   end;
 
+  if HasOption('?',contextOpt) then
+  begin
+    WriteLn('option ', contextOpt, ' ', GetOptionValue('?', contextOpt));
+    _mainSetContext(GetOptionValue('?', contextOpt));
+  end;
   _wsdlSetContext := _mainSetContext;
   _wsdlGetContext := _mainGetContext;
   terminateAfterScript := HasOption('?',terminateOpt);
@@ -144,15 +149,14 @@ begin
   doDebug := HasOption('?',debugOpt);
   if doDebug then
     WriteLn('option ', debugOpt);
-  begin
-    WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
-  end;
   if not HasOption('?',projectOpt) then
   begin
     WriteLn ('missing --project= option');
     Terminate;
     Exit;
-  end;
+  end
+  else
+    WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
 
   se.projectFileName := ExpandRelativeFileName(GetCurrentDirUTF8 + DirectorySeparator, GetOptionValue('?', projectOpt));
   try
@@ -573,6 +577,8 @@ begin
   WriteLn ('Switches');
   WriteLn ('  --', projectOpt);
   WriteLn ('     opens the named project');
+  WriteLn ('  --', contextOpt);
+  WriteLn ('     use the named context');
   WriteLn ('  --', helpOpt);
   WriteLn ('     types this helpmessage');
   WriteLn ('  --', lstLogOpt, '=');

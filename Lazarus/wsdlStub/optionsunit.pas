@@ -22,7 +22,7 @@ uses
   Classes, SysUtils;
 
 type
-  longOptsArrayType = array [0..7] of String;
+  longOptsArrayType = array [0..8] of String;
 
 const
   helpOpt = 'help';
@@ -33,8 +33,10 @@ const
   terminateOpt = 'terminate';
   trackIOOpt = 'trackIO';
   debugOpt = 'debug';
+  contextOpt = 'context';
   longOpts: longOptsArrayType = ( helpOpt
                                 , projectOpt + ':'
+                                , contextOpt + ':'
                                 , lstLogOpt + ':'
                                 , scriptOpt + ':'
                                 , terminateOpt

@@ -953,26 +953,28 @@ On viloation an exception will be raised</xs:documentation>
 		<xs:annotation>
 			<xs:documentation>Project options;
 
-For an overview of all options visit: doc://apiUi_projectOptions_hlp.htm </xs:documentation>
+For more information visit: [apiUi Project options](https://www.apiui.org/project-options/)
+</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="versionInfo" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="major" type="xs:integer"/>
-							<xs:element name="minor" type="xs:integer"/>
-							<xs:element name="revision" type="xs:integer"/>
-							<xs:element name="build" type="xs:integer" minOccurs="0"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="General" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
+							<xs:element name="versionInfo" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="major" type="xs:integer"/>
+										<xs:element name="minor" type="xs:integer"/>
+										<xs:element name="revision" type="xs:integer"/>
+										<xs:element name="build" type="xs:integer" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
 							<xs:element name="SaveRelativeFileNames" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default 'true'  
+
 When 'true', stored filenames will be relative to the projectfilename.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
@@ -1010,61 +1012,6 @@ When 'true', stored filenames will be relative to the projectfilename.</xs:docum
 										<xs:pattern value="(unbounded)|(\d+)"/>
 									</xs:restriction>
 								</xs:simpleType>
-							</xs:element>
-							<xs:element name="CompareLogsOrdered" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Default 'As is';  
-Applies to 'Show differences with a previous run'
-Determines the order while comparing log records.</xs:documentation>
-								</xs:annotation>
-								<xs:simpleType>
-									<xs:restriction base="xs:string">
-										<xs:enumeration value="As is">
-											<xs:annotation>
-												<xs:documentation>log records are compared in the order they appeared (time). Usefull in case the order should be the same</xs:documentation>
-											</xs:annotation>
-										</xs:enumeration>
-										<xs:enumeration value="Service, Operation">
-											<xs:annotation>
-												<xs:documentation>usefull in case order is not predictable (e.g. in case of parallel threads) but correlation causes undesired mismatches</xs:documentation>
-											</xs:annotation>
-										</xs:enumeration>
-										<xs:enumeration value="Service, Operation, Correlation">
-											<xs:annotation>
-												<xs:documentation>usefull in case order is not predictable (e.g. in case of parallel threads)</xs:documentation>
-											</xs:annotation>
-										</xs:enumeration>
-									</xs:restriction>
-								</xs:simpleType>
-							</xs:element>
-							<xs:element name="DocumentComparison" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Options regarding comparison of Word Documents (.docx)</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="DetectDocumentFormatChanges" type="xs:boolean" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Default "false"  
-Should MsWord report format changes</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="NewDocumentAsReference" type="xs:boolean" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Default "false"  
-When "true", msWord will show the differences between the new version and old version in such a way that it will show how to change the old version to get the new version.
-
-When "false" (default), MsWord will show how to change the new version to get the old (reference) version.</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="ExpectedDifferenceCount" type="xs:nonNegativeInteger" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Default "0"  
-In case the new document version alwais differs from previous version, e.g. due to derived data such as system date, document comparison will alllow this and only this number of differences. </xs:documentation>
-											</xs:annotation>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
 							</xs:element>
 							<xs:element name="ShowCobolDataAs" minOccurs="0">
 								<xs:annotation>
@@ -1863,5 +1810,29 @@ The background color for names of responds elements in the message treewiew is w
 				</xs:annotation>
 			</xs:element>
 		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="DocumentComparisonType">
+		<xs:sequence>
+			<xs:element name="DetectDocumentFormatChanges" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default "false"  
+Should MsWord report format changes</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NewDocumentAsReference" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default "false"  
+When "true", msWord will show the differences between the new version and old version in such a way that it will show how to change the old version to get the new version.
+
+When "false" (default), MsWord will show how to change the new version to get the old (reference) version.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExpectedDifferenceCount" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default "0"  
+In case the new document version alwais differs from previous version, e.g. due to derived data such as system date, document comparison will alllow this and only this number of differences. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 </xs:schema>
