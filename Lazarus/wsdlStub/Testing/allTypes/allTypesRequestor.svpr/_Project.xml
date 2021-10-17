@@ -1,9 +1,8 @@
   <WsdlStubCase>
-    <FileName>D:\Data\gitrepo\APIUI\Lazarus\wsdlStub\Testing\allTypes\allTypesRequestor.svpr</FileName>
+    <FileName>/home/developer/data/gitrepo/APIUI/Lazarus/wsdlStub/Testing/allTypes/allTypesRequestor.svpr</FileName>
     <Listeners></Listeners>
     <remoteServerConnection></remoteServerConnection>
     <projectOptions>
-      <ProjectContext></ProjectContext>
       <General>
         <versionInfo>
           <major>1</major>
@@ -20,12 +19,6 @@
       </General>
       <Log>
         <maxEntries>unbounded</maxEntries>
-        <CompareLogsOrdered>As is</CompareLogsOrdered>
-        <DocumentComparison>
-          <DetectDocumentFormatChanges>false</DetectDocumentFormatChanges>
-          <NewDocumentAsReference>false</NewDocumentAsReference>
-          <ExpectedDifferenceCount>0</ExpectedDifferenceCount>
-        </DocumentComparison>
         <ShowCobolDataAs>Cobol</ShowCobolDataAs>
         <DisplayedColumns></DisplayedColumns>
       </Log>

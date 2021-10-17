@@ -93,7 +93,6 @@ type TStringFunction = function: String of Object;
 type TStringFunctionBoolean = function (arg: Boolean): String of Object;
 type TBooleanFunctionString = function (arg: String): Boolean of Object;
 
-
 type
 
   { TWsdlProject }
@@ -141,6 +140,7 @@ type
     procedure setIsBusy(AValue: Boolean);
     procedure SetProjectContext(AValue: String);
     function tryToProcessAsOpenApi (aLog: TLog): Boolean;
+    procedure HttpQuerySSLPort(aPort: Word; var aUseSSL: boolean);
     procedure HTTPServerCommandTrace(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure setDoClearSnapshots (AValue : Boolean );
@@ -446,6 +446,7 @@ type
                        );
   end;
 
+
 procedure IntrospectIniXml;
 
 var
@@ -498,6 +499,7 @@ uses LazVersion
    , htmlreportz
    , junitunit
    , IdGlobalProtocols
+   , IdSSLOpenSSLHeaders
    , Clipbrd
    , httpmultipart
    ;
@@ -1431,6 +1433,7 @@ begin
     OnCommandGet := HttpServerCommandGet;
     OnCommandOther := HttpServerCommandGet;
     OnCreatePostStream := HttpServerCreatePostStream;
+    OnQuerySSLPort := HttpQuerySSLPort;
   end;
   Scripts := TXml.CreateAsString('Scripts', '');
   DisplayedLogColumns := TJBStringList.Create;
@@ -6761,6 +6764,11 @@ begin
   end;
 end;
 
+procedure TWsdlProject.HttpQuerySSLPort(aPort: Word; var aUseSSL: boolean);
+begin
+  aUseSSL := (aPort <> 80);
+end;
+
 procedure TWsdlProject.HTTPServerCommandTrace(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 var
@@ -8634,6 +8642,7 @@ initialization
       raise;
     end;
   end;
+  IdOpenSSLSetLibPath (ExtractFileDir(ParamStr(0)));
 
 finalization
   FreeAndNil (apiUiXsdDescr);

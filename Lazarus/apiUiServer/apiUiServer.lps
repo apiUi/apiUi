@@ -71,7 +71,7 @@
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="7072"/>
+        <TopLine Value="6886"/>
         <CursorPos Y="7091"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
@@ -566,7 +566,7 @@
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="165" Column="5" TopLine="151"/>
@@ -669,24 +669,20 @@
       </Position25>
       <Position26>
         <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
-        <Caret Line="11330" Column="19" TopLine="11341"/>
+        <Caret Line="11331" Column="11" TopLine="11318"/>
       </Position26>
       <Position27>
         <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
-        <Caret Line="11331" Column="11" TopLine="11318"/>
+        <Caret Line="11335" Column="24" TopLine="11318"/>
       </Position27>
       <Position28>
-        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
-        <Caret Line="11335" Column="24" TopLine="11318"/>
-      </Position28>
-      <Position29>
         <Filename Value="..\Xml\xmlio.pas"/>
         <Caret Line="124" Column="3" TopLine="107"/>
-      </Position29>
-      <Position30>
+      </Position28>
+      <Position29>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="8183" Column="3" TopLine="8169"/>
-      </Position30>
+      </Position29>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>

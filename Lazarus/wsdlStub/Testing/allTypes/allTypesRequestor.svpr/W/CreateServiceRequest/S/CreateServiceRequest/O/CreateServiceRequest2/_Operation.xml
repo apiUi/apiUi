@@ -39,7 +39,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
-        <Address>http://localhost:7777</Address>
+        <Address>https://localhost:7777</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>

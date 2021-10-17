@@ -1,35 +1,35 @@
   <WsdlStubCase>
-    <FileName>D:\Data\gitrepo\APIUI\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr</FileName>
+    <FileName>/home/developer/data/gitrepo/APIUI/Lazarus/wsdlStub/Testing/allTypes/allTypesResponder.svpr</FileName>
     <Listeners>
-      <Http>
+      <Https>
         <Port>7777</Port>
-      </Http>
+        <SSL>
+          <Version>TLS Version 1.2</Version>
+          <CertificateFile>client.pem</CertificateFile>
+          <KeyFile>client.pem</KeyFile>
+          <RootCertificateFile>root.pem</RootCertificateFile>
+          <Password>FRg3BxwDRkQV</Password>
+        </SSL>
+      </Https>
     </Listeners>
     <remoteServerConnection></remoteServerConnection>
     <projectOptions>
-      <ProjectContext></ProjectContext>
-      <versionInfo>
-        <major>0</major>
-        <minor>1</minor>
-        <revision>0</revision>
-        <build>0</build>
-      </versionInfo>
       <General>
+        <versionInfo>
+          <major>0</major>
+          <minor>1</minor>
+          <revision>0</revision>
+          <build>0</build>
+        </versionInfo>
         <SaveRelativeFileNames>true</SaveRelativeFileNames>
         <projectFolders>
-          <current>..\..\..\..\..\..\apiUi\</current>
-          <reference>..\..\..\..\..\..\apiUi\</reference>
-          <reports>..\..\..\..\..\..\apiUi\</reports>
+          <current>../../../../../../apiUi/</current>
+          <reference>../../../../../../apiUi/</reference>
+          <reports>../../../../../../apiUi/</reports>
         </projectFolders>
       </General>
       <Log>
         <maxEntries>unbounded</maxEntries>
-        <CompareLogsOrdered>As is</CompareLogsOrdered>
-        <DocumentComparison>
-          <DetectDocumentFormatChanges>false</DetectDocumentFormatChanges>
-          <NewDocumentAsReference>false</NewDocumentAsReference>
-          <ExpectedDifferenceCount>0</ExpectedDifferenceCount>
-        </DocumentComparison>
         <ShowCobolDataAs>Cobol</ShowCobolDataAs>
         <DisplayedColumns></DisplayedColumns>
       </Log>
