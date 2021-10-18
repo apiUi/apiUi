@@ -5727,7 +5727,7 @@ begin
         else
           xBodyXml.LoadFromString(xRequestBody, nil);
       end;
-    _sjow (ARequestInfo.Document);
+//    _sjow (ARequestInfo.Document);
       with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
                                                                    //0/1        /2  /3...
       try
