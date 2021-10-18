@@ -17,7 +17,7 @@ object LogFilterForm: TLogFilterForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object FilteringPanel: TPanel
     Left = 0
     Height = 51
@@ -62,8 +62,8 @@ object LogFilterForm: TLogFilterForm
       Left = 8
       Height = 23
       Top = 12
-      Width = 62
-      Caption = 'Action'
+      Width = 78
+      Caption = 'Direction'
       Font.Color = clWindowText
       Font.Height = -14
       Font.Name = 'Tahoma'
@@ -98,16 +98,12 @@ object LogFilterForm: TLogFilterForm
       Font.Height = -14
       Font.Name = 'Tahoma'
       ItemHeight = 17
-      ItemIndex = 0
       Items.Strings = (
-        'Stub'
-        'Forward'
-        'Redirect'
-        'Request'
+        'Inbound'
+        'Outbound'
       )
       ParentFont = False
       TabOrder = 2
-      Text = 'Stub'
     end
   end
   object ServicePanel: TPanel

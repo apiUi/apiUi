@@ -1619,7 +1619,8 @@ procedure TLog.OpenApiReplyToBindables (aOperation: TWsdlOperation);
     result := nil;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
     begin
-      if Xsd.ParametersType = oppBody then
+      if Assigned (Xsd)
+      and (Xsd.ParametersType = oppBody) then
       begin
         result := thisXml;
         Exit;

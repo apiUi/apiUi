@@ -1278,7 +1278,7 @@ When "true" apiUi will try to connect the database when apiUi gets activated</xs
 							</xs:element>
 							<xs:element name="DatabaseName" type="xs:string" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>In case of ODBC and working without DSN, specify the name of the ODBC driver; e.g.: MS Access Database
+									<xs:documentation>In case of ODBC and working without DSN, specify the name of the ODBC driver; e.g.: `MS Access Database`
  For other databases this will be the name of a known pre-configured connection, or the location of the database file.
 									</xs:documentation>
 								</xs:annotation>
@@ -1291,7 +1291,9 @@ When "true" apiUi will try to connect the database when apiUi gets activated</xs
 							<xs:element name="Params" type="xs:string" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>A string that contains name/value pairs, separated by semicolons. E.g:
+```plaintext
 DBQ=C:\yourFolder\yourAccesDb.mdb;Uid=Admin;Pwd=%pwd%
+```
 You can avoid having your password readable in a file by replacing it by %pwd% and enter your password in the Password parameter. Then your password will be encripted.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
@@ -1308,10 +1310,11 @@ This user must have sufficient privileges to perform the tasks that you want to 
 							</xs:element>
 							<xs:element name="ConnectionString" type="xs:string" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>A string that specifies the means of connecting to a data source. Most commonly used for database connections but also for spreadsheets or text files. May include the name of the driver, server and database, user name and password.
-You can hide a password by using a %pwd% placeholder in this connectionstring and provide the password in the next field.
+									<xs:documentation>A string that specifies the means of connecting to a data source.  
+Most commonly used for database connections but also for spreadsheets or text files. May include the name of the driver, server and database, user name and password.
+You can hide a password by using a %pwd% placeholder in this connectionstring and provide the password as property.
 									
-Visit http://www.connectionstrings.com for more information on connectionstrings and lots of examples </xs:documentation>
+Visit [http://www.connectionstrings.com](http://www.connectionstrings.com) for more information on connectionstrings and lots of examples.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="TestConnection" minOccurs="0"/>

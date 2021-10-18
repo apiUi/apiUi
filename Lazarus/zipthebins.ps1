@@ -19,4 +19,6 @@ Copy-Item -path .\apiUi\apiUi -Destination $folder
 Copy-Item -path .\apiUi\apiUiIni.xml -Destination $folder
 Copy-Item -path .\apiUiServer\apiUiServer -Destination $folder
 Copy-Item -path .\apiUiServer\apiUiServerIni.xml -Destination $folder
+Copy-Item -path .\apiUiServer\libssl.so -Destination $folder
+Copy-Item -path .\apiUiServer\libcrypto.so -Destination $folder
 Compress-Archive -path $folder -DestinationPath $zip -Force
