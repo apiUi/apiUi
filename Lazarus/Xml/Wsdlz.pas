@@ -7379,12 +7379,20 @@ end;
 
 function TWsdlBinder.getFreeFormatReq: String;
 begin
-  result := reqXml.Items.XmlItems[0].Value;
+  try
+    result := reqXml.Items.XmlItems[0].Value;
+  except
+    result := '';
+  end;
 end;
 
 function TWsdlBinder.getFreeFormatRpy: String;
 begin
-  result := rpyXml.Items.XmlItems[0].Value;
+  try
+    result := rpyXml.Items.XmlItems[0].Value;
+  except
+    result := '';
+  end;
 end;
 
 procedure TWsdlBinder.setRequestAsString (AValue : String );

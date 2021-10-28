@@ -1058,14 +1058,16 @@ Sspecifying which data to display is done in the log panel, click in the cell an
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="Wsdl" minOccurs="0">
+				<xs:element name="formGeneration" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="OperationsWithEndpointOnly" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default "true"  
-When "true", apiUi will not show operations that lack an end-point.
-When "false", operations without endpoint will also be shown.
+When "true", apiUi will not show operations that lack an end-point.  
+When "false", operations without endpoint will also be shown.  
+  
+
 
 CHANGING THIS SETTING REQUIERS SAVE AND RELOAD OF YOUR PROJECT</xs:documentation>
 								</xs:annotation>
@@ -1080,7 +1082,7 @@ Keep this number as low as possible for better performance.
 CHANGING THIS SETTING REQUIERS SAVE AND RELOAD OF YOUR PROJECT</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="MaxDepthXmlGen" type="xs:string" minOccurs="0">
+							<xs:element name="MaxDepthStructure" type="xs:string" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default "_xsdMaxDepthXmlGen_";  
 Applies to XML messages. 

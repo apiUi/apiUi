@@ -84,6 +84,8 @@ type
     AsHtmlAction: TAction;
     procedure DocumentationViewerHotSpotClick(Sender: TObject;
       const SRC: ThtString; var Handled: Boolean);
+    procedure DocumentationViewerKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure FormClose (Sender : TObject ; var CloseAction : TCloseAction );
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure TreeViewClick(Sender: TObject);
@@ -1096,6 +1098,13 @@ procedure TShowXmlCoverageForm.DocumentationViewerHotSpotClick(Sender: TObject;
   const SRC: ThtString; var Handled: Boolean);
 begin
   Handled := OpenURL(SRC);
+end;
+
+procedure TShowXmlCoverageForm.DocumentationViewerKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = Word('C')) and (Shift = [ssCtrl]) then
+    (Sender as THtmlViewer).CopyToClipboard;
 end;
 
 { TPasswordEditLink }

@@ -115,6 +115,8 @@ type
     CleanMenuItem: TMenuItem;
     procedure DocumentationViewerHotSpotClick(Sender: TObject;
       const SRC: ThtString; var Handled: Boolean);
+    procedure DocumentationViewerKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
@@ -1879,6 +1881,13 @@ procedure TXmlGridForm.DocumentationViewerHotSpotClick(Sender: TObject;
   const SRC: ThtString; var Handled: Boolean);
 begin
   Handled := OpenURL(SRC);
+end;
+
+procedure TXmlGridForm.DocumentationViewerKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = Word('C')) and (Shift = [ssCtrl]) then
+    (Sender as THtmlViewer).CopyToClipboard;
 end;
 
 procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader;

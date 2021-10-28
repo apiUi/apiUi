@@ -122,6 +122,8 @@ type
     ZoomasAssignment1: TMenuItem;
     procedure DocumentationViewerHotSpotClick(Sender: TObject;
       const SRC: ThtString; var Handled: Boolean);
+    procedure DocumentationViewerKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -2006,6 +2008,13 @@ procedure TShowXmlForm.DocumentationViewerHotSpotClick(Sender: TObject;
   const SRC: ThtString; var Handled: Boolean);
 begin
   Handled := OpenURL(SRC);
+end;
+
+procedure TShowXmlForm.DocumentationViewerKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = Word('C')) and (Shift = [ssCtrl]) then
+    (Sender as THtmlViewer).CopyToClipboard;
 end;
 
 procedure TShowXmlForm.MenuItem4Click(Sender: TObject);

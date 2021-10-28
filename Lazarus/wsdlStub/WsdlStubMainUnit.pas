@@ -113,6 +113,8 @@ type
     procedure NavigateHierarchyActionUpdate(Sender: TObject);
     procedure DocumentationViewerHotSpotClick(Sender: TObject;
       const SRC: ThtString; var Handled: Boolean);
+    procedure HtmlViewerKeyDown(Sender: TObject;
+      var Key: Word; Shift: TShiftState);
     procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
       const Msg: String);
     procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
@@ -12296,6 +12298,13 @@ procedure TMainForm.DocumentationViewerHotSpotClick(Sender: TObject;
   const SRC: ThtString; var Handled: Boolean);
 begin
   Handled := OpenURL(SRC);
+end;
+
+procedure TMainForm.HtmlViewerKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = Word('C')) and (Shift = [ssCtrl]) then
+    (Sender as THtmlViewer).CopyToClipboard;
 end;
 
 procedure TMainForm.SQLConnectorLog(Sender: TSQLConnection;

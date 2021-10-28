@@ -381,6 +381,7 @@ object MainForm: TMainForm
         OnHotSpotClick = DocumentationViewerHotSpotClick
         Align = alClient
         TabOrder = 2
+        OnKeyDown = HtmlViewerKeyDown
       end
       object OperationDocumentationViewer: THtmlViewer
         Left = 4
@@ -398,6 +399,7 @@ object MainForm: TMainForm
         OnHotSpotClick = DocumentationViewerHotSpotClick
         Align = alTop
         TabOrder = 3
+        OnKeyDown = HtmlViewerKeyDown
       end
       object Splitter2: TSplitter
         Cursor = crVSplit

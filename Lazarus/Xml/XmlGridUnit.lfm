@@ -270,6 +270,7 @@ object XmlGridForm: TXmlGridForm
           OnHotSpotClick = DocumentationViewerHotSpotClick
           Align = alClient
           TabOrder = 0
+          OnKeyDown = DocumentationViewerKeyDown
         end
       end
     end

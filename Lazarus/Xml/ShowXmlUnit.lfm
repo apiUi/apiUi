@@ -164,6 +164,7 @@ object ShowXmlForm: TShowXmlForm
           OnHotSpotClick = DocumentationViewerHotSpotClick
           Align = alClient
           TabOrder = 0
+          OnKeyDown = DocumentationViewerKeyDown
         end
       end
     end
@@ -193,17 +194,17 @@ object ShowXmlForm: TShowXmlForm
       Style = tbsSeparator
     end
     object ToolButton7: TToolButton
-      Left = 40
+      Left = 38
       Top = 2
       Action = FullExpandAction
     end
     object ToolButton8: TToolButton
-      Left = 69
+      Left = 67
       Top = 2
       Action = FullCollapseAction
     end
     object ToolButton6: TToolButton
-      Left = 98
+      Left = 96
       Height = 28
       Top = 2
       Caption = 'ToolButton6'
@@ -211,17 +212,17 @@ object ShowXmlForm: TShowXmlForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 108
+      Left = 104
       Top = 2
       Action = FindAction
     end
     object ToolButton2: TToolButton
-      Left = 137
+      Left = 133
       Top = 2
       Action = FindNextAction
     end
     object ToolButton5: TToolButton
-      Left = 166
+      Left = 162
       Height = 28
       Top = 2
       Caption = 'ToolButton5'
@@ -229,12 +230,12 @@ object ShowXmlForm: TShowXmlForm
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 176
+      Left = 170
       Top = 2
       Action = CompareAction
     end
     object ToolButton11: TToolButton
-      Left = 205
+      Left = 199
       Height = 28
       Top = 2
       Caption = 'ToolButton11'
@@ -242,13 +243,13 @@ object ShowXmlForm: TShowXmlForm
       Style = tbsSeparator
     end
     object ToggleHideButton: TToolButton
-      Left = 215
+      Left = 207
       Top = 2
       Action = ToggleShowHiddenAction
       Style = tbsCheck
     end
     object ToolButton10: TToolButton
-      Left = 244
+      Left = 236
       Top = 2
       Action = ToggleHideXmlNsAction
     end
