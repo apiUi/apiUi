@@ -1,17 +1,18 @@
 {
-This file is part of the apiUi project
-Copyright (c) 2009-2021 by Jan Bouwman
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
 
-See the file COPYING, included in this distribution,
-for details about the copyright.
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
+
 unit WsdlStubMainUnit;
 {$IFDEF FPC}
   {$MODE Delphi}
@@ -6139,6 +6140,10 @@ begin
   finally
     xXml.Free;
   end;
+  if hasOption(contextOpt) then
+    setContextProperty(getOption(contextOpt))
+  else
+    setContextProperty(xIniFile.StringByNameDef['Context', '']);
   xIniFile.Free;
   wsdlStubInitialise;
   se.stubRead := False;
@@ -6160,10 +6165,6 @@ begin
   xmlUtil.ReleaseLock := ReleaseLock;
   _OnBeginUpdate := BeginConsoleUpdate;
   Xmlz.OnNotify := LogServerNotification;
-  // due to a bug in TPageControl, not al tabs are visible....
-  // statements below make all tabs visible again...??
-//  DownPageControl.TabPosition := tpBottom;
-//  DownPageControl.TabPosition := tpTop;
   sMenuItem := TMenuItem.Create(self);
   for x := 0 to alGeneral.ActionCount - 1 do with alGeneral.Actions[x] as TCustomAction do
   begin
@@ -6227,6 +6228,7 @@ begin
   DisableViewOnFocusChangeEvents;
   ClearConsole;
   xIniFile := TFormIniFile.Create(self, False);
+  xIniFile.StringByName['Context'] := getContextProperty;
   xIniFile.BooleanByName['DisclaimerAccepted'] := DisclaimerAccepted;
   xIniFile.BooleanByName['doShowDesignAtTop'] := doShowDesignAtTop;
   xIniFile.StringByName['RecentFiles'] := ReopenCaseList.Text;
@@ -6788,6 +6790,8 @@ end;
 function TMainForm.setContextProperty(aName: String): String;
 begin
   result := se.projectContext;
+  se.projectContext := aName;
+  xmlio.ProjectContext := aName;
 end;
 
 function TMainForm.getContextProperty: String;

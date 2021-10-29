@@ -114,6 +114,7 @@ type
     function gethasFormalOperations: Boolean;
     function gethasFreeformatOperations: Boolean;
     function getHasOneTimeContextsColumn: Boolean;
+    function getIfContextNeedsUpdate: Boolean;
     function getIsBusy: Boolean;
     function getRemoteServerUrl: String;
     function getVersionInfoAsString: String;
@@ -348,6 +349,7 @@ type
     property doClearSnapshots: Boolean read getDoClearSnapshots write setDoClearSnapshots;
     property IsActive: Boolean read fIsActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
+    property ifContextNeedsUpdate: Boolean read getIfContextNeedsUpdate;
     property hasOneTimeContextsColumn: Boolean read getHasOneTimeContextsColumn;
     property hasFormalOperations: Boolean read gethasFormalOperations;
     property hasApiByExplampleOperations: Boolean read gethasApiByExplampleOperations;
@@ -5406,6 +5408,18 @@ begin
         result := True;
 end;
 
+function TWsdlProject.getIfContextNeedsUpdate: Boolean;
+var
+  r: Integer;
+begin
+  result := Assigned (projectContexts)
+        and (projectContexts.RowCount > 1);
+  if result then
+    for r := 1 to projectContexts.RowCount - 1 do
+      if projectContexts.CellValue [0, r] = ProjectContext then
+        result := False;
+end;
+
 function TWsdlProject.getIsBusy: Boolean;
 begin
   AcquireLogLock;
@@ -7975,10 +7989,13 @@ begin
         ProgressInvalidateConsole;
         if doStartOnOpeningProject then
         try
-          if hasOneTimeContextsColumn
-          and Assigned (EditContexts) then
+          if Assigned (EditContexts) then
           begin
-            SynchronizeMethode(EditContexts);
+            if hasOneTimeContextsColumn
+            or ifContextNeedsUpdate then
+            begin
+              SynchronizeMethode(EditContexts);
+            end;
           end;
           Activate(True);
         except
