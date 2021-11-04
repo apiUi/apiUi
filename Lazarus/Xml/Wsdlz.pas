@@ -589,6 +589,7 @@ function xsdNowAsDateTime: String;
 function sblNowAsDateTime: String;
 procedure OperationFetchMessage (aObject : TObject; aIndex: Integer);
 function OperationMessageList (aObject : TObject ; aAlias: String): TParserStringList ;
+function RegExprSafeStr (aString: String): String;
 function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
 function SeparatedStringList (aObject: TObject; aString, aSep: String): TParserStringList;
 function SeparatedStringN (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
@@ -1254,6 +1255,20 @@ begin
       for x := 0 to Messages.Count - 1 do
         result.Add(Messages.Messages[x].Name);
     end;
+  end;
+end;
+
+function RegExprSafeStr(aString: String): String;
+const xRegExprChars = '\^$*+?.(){}[]|';
+var
+  x: Integer;
+begin
+  result := '';
+  for x := 1 to Length (aString) do
+  begin
+    if Pos (aString [x], xRegExprChars) > 0 then
+      result := result + '\';
+    result := result + aString [x];
   end;
 end;
 
@@ -3913,6 +3928,7 @@ begin
     BindScriptFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
     BindScriptFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindScriptFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
+    BindScriptFunction ('RegExprSafeStr', @RegExprSafeStr, SFS, '(aString)');
     BindScriptFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
     BindScriptFunction ('ReplyAsText', @wsdlReplyAsText, SFOS, '(aOperation)');
     BindScriptFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
@@ -5882,6 +5898,7 @@ begin
       BindCheckerFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
       BindCheckerFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
       BindCheckerFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
+      BindCheckerFunction ('RegExprSafeStr', @RegExprSafeStr, SFS, '(aString)');
       BindCheckerFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
       BindCheckerFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
       BindCheckerFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');

@@ -8,8 +8,9 @@
       <Unit0>
         <Filename Value="apiUiServer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="127"/>
-        <CursorPos X="7" Y="135"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="250"/>
+        <CursorPos Y="255"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -554,10 +555,9 @@
       </Unit83>
       <Unit84>
         <Filename Value="..\wsdlStub\optionsunit.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <TopLine Value="57"/>
-        <CursorPos X="13" Y="36"/>
+        <CursorPos X="6" Y="58"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit84>
@@ -567,7 +567,7 @@
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="10" HistoryIndex="9">
+    <JumpHistory Count="12" HistoryIndex="11">
       <Position1>
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <Caret Line="671" Column="3" TopLine="658"/>
@@ -607,6 +607,14 @@
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <Caret Line="835" Column="28" TopLine="821"/>
       </Position10>
+      <Position11>
+        <Filename Value="apiUiServer.lpr"/>
+        <Caret Line="135" Column="7" TopLine="127"/>
+      </Position11>
+      <Position12>
+        <Filename Value="apiUiServer.lpr"/>
+        <Caret Line="60" Column="24" TopLine="34"/>
+      </Position12>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
