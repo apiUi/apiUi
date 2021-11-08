@@ -8666,7 +8666,10 @@ initialization
       raise;
     end;
   end;
-  IdOpenSSLSetLibPath (ExtractFileDir(ParamStr(0)));
+  {$ifdef unix}
+    if LazFileUtils.FileExistsUTF8(ExtractFilePath (ParamStr(0)) + 'libssl.so') then
+      IdOpenSSLSetLibPath (ExtractFileDir(ParamStr(0)));
+  {$endif}
 
 finalization
   FreeAndNil (apiUiXsdDescr);

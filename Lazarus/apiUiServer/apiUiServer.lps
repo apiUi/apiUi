@@ -4,13 +4,10 @@
     <PathDelim Value="\"/>
     <Version Value="11"/>
     <BuildModes Active="Default"/>
-    <Units Count="85">
+    <Units Count="86">
       <Unit0>
         <Filename Value="apiUiServer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="250"/>
-        <CursorPos Y="255"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -70,8 +67,10 @@
       </Unit7>
       <Unit8>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos Y="16"/>
+        <TopLine Value="8650"/>
+        <CursorPos X="14" Y="8673"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit8>
@@ -561,13 +560,19 @@
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit84>
+      <Unit85>
+        <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\objpas\sysutils\finah.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="10" Y="27"/>
+        <UsageCount Value="10"/>
+      </Unit85>
     </Units>
     <OtherDefines Count="3">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="12" HistoryIndex="11">
+    <JumpHistory Count="18" HistoryIndex="17">
       <Position1>
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <Caret Line="671" Column="3" TopLine="658"/>
@@ -615,6 +620,29 @@
         <Filename Value="apiUiServer.lpr"/>
         <Caret Line="60" Column="24" TopLine="34"/>
       </Position12>
+      <Position13>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="16"/>
+      </Position13>
+      <Position14>
+        <Filename Value="apiUiServer.lpr"/>
+        <Caret Line="255" TopLine="250"/>
+      </Position14>
+      <Position15>
+        <Filename Value="apiUiServer.lpr"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="1226" TopLine="1212"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="8672" Column="30" TopLine="8650"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="8671" Column="3" TopLine="8650"/>
+      </Position18>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -622,7 +650,7 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="6">
+    <BreakPoints Count="7">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -665,6 +693,13 @@
         <Source Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Line Value="8157"/>
       </Item6>
+      <Item7>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Line Value="8671"/>
+      </Item7>
     </BreakPoints>
   </Debugging>
 </CONFIG>

@@ -1,16 +1,16 @@
 {
-This file is part of the apiUi project
-Copyright (c) 2009-2021 by Jan Bouwman
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
 
-See the file COPYING, included in this distribution,
-for details about the copyright.
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
 unit Wsdlz;
 
@@ -2718,6 +2718,42 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
                                   ; Items: TXmlList
                                   ; aRootXml: TXml
                                   );
+    procedure _evalresponsecode (aXml: TXml; aXsd: TXsd);
+    var
+      w, h: Integer;
+      hXsd: TXsd;
+      yXml: TXml;
+    begin
+      for w := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[w] do
+      begin
+        if (Name = S_DOLLARREF) then
+        begin
+          yXml := _FindReferencedXml(Value);
+          if not Assigned(yXml) then
+            raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
+          _evalresponsecode(yXml, aXsd);
+        end;
+        if Name = 'description' then aXsd.Documentation.Text := Value;
+        if Name = 'content' then _evaluateContent (aService, aOperation, aXsd, thisXml.Items, aRootXml);
+        if Name = 'headers' then
+        begin
+          for h := 0 to Items.Count - 1 do with Items.XmlItems[h] do
+          begin
+            hXsd := TXsd.Create(XsdDescr);
+            XsdDescr.Garbage.AddObject('', hXsd);
+            hXsd.ElementName := Name;
+            hXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, '', thisXml, aOnError);
+            hXsd.sType.Name := hXsd.ElementName;
+            hXsd.minOccurs := '0';
+            hXsd.ParametersType := oppHeader;
+            aXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
+          end;
+        end;
+        if Name = 'links' then ; // TODO, not yet known, by me, what to...
+      end;
+
+    end;
+
   var
     x, y, z, v, w, h: Integer;
     xXml, yXml, zXml, vXml, wXml, hXml: TXml;
@@ -2740,28 +2776,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       vXml := Items.XmlItems[v];
       xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
-      for w := 0 to vXml.Items.Count - 1 do
-      begin
-        wXml := vXml.Items.XmlItems[w];
-        if wXml.Name = 'description' then xXsd.Documentation.Text := wXml.Value;
-        if wXml.Name = 'content' then _evaluateContent (aService, aOperation, xXsd, wXml.Items, aRootXml);
-        if wXml.Name = 'headers' then
-        begin
-          for h := 0 to wXml.Items.Count - 1 do
-          begin
-            hXml := wXml.Items.XmlItems[h];
-            hXsd := TXsd.Create(XsdDescr);
-            XsdDescr.Garbage.AddObject('', hXsd);
-            hXsd.ElementName := hXml.Name;
-            hXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, '', hXml, aOnError);
-            hXsd.sType.Name := hXsd.ElementName;
-            hXsd.minOccurs := '0';
-            hXsd.ParametersType := oppHeader;
-            xXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
-          end;
-        end;
-        if wXml.Name = 'links' then ; // TODO, not yet known, by me, what to...
-      end;
+      _evalresponsecode(vXml, xXsd);
     end;
     _addUndefXsd(aOperation.rpyXsd);
   end;
@@ -2851,6 +2866,16 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
             for y := 0 to dXml.Items.Count - 1 do
               XsdDescr.AddTypeDefFromJsonXml ( XsdDescr.ReadFileNames [x]
                                              , XsdDescr.ReadFileNames [x] + '#/components/schemas'
+                                             , dXml.Items.XmlItems[y], aOnError
+                                             );
+          end;
+          dXml := ItemByTag['responses'];
+          if Assigned (dXml) then
+          begin
+            sl.Add (dXml.Name);
+            for y := 0 to dXml.Items.Count - 1 do
+              XsdDescr.AddTypeDefFromJsonXml ( XsdDescr.ReadFileNames [x]
+                                             , XsdDescr.ReadFileNames [x] + '#/components/responses'
                                              , dXml.Items.XmlItems[y], aOnError
                                              );
           end;
