@@ -69,8 +69,8 @@
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="8650"/>
-        <CursorPos X="14" Y="8673"/>
+        <TopLine Value="8632"/>
+        <CursorPos Y="8671"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit8>
@@ -448,7 +448,7 @@
         <UsageCount Value="9"/>
       </Unit67>
       <Unit68>
-        <Filename Value="..\apiUi\apiUi.lpr"/>
+        <Filename Value="apiUi.lpr"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="14"/>
         <UsageCount Value="9"/>
@@ -650,7 +650,7 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="7">
+    <BreakPoints Count="6">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -693,13 +693,6 @@
         <Source Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Line Value="8157"/>
       </Item6>
-      <Item7>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <Line Value="8671"/>
-      </Item7>
     </BreakPoints>
   </Debugging>
 </CONFIG>
