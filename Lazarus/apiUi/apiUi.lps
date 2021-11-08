@@ -455,7 +455,6 @@
       <Unit47>
         <Filename Value="..\wsdlStub\httpmultipart.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <TopLine Value="74"/>
         <CursorPos Y="95"/>
@@ -589,9 +588,10 @@
       </Unit62>
       <Unit63>
         <Filename Value="..\Xml\Xsdz.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="1048"/>
-        <CursorPos X="9" Y="1151"/>
+        <TopLine Value="1095"/>
+        <CursorPos Y="1107"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit63>
@@ -953,6 +953,15 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\Xml\Xsdz.pas"/>
+        <Line Value="1107"/>
+      </Item1>
+    </BreakPoints>
     <Watches Count="1">
       <Item1>
         <Expression Value="xoperation.responseno"/>
