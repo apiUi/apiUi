@@ -591,9 +591,6 @@ procedure OperationFetchMessage (aObject : TObject; aIndex: Integer);
 function OperationMessageList (aObject : TObject ; aAlias: String): TParserStringList ;
 function RegExprSafeStr (aString: String): String;
 function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
-function SeparatedStringList (aObject: TObject; aString, aSep: String): TParserStringList;
-function SeparatedStringN (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
-function SeparatedStringT (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
 function xNewLine: String;
 function xTab: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
@@ -1287,76 +1284,6 @@ begin
     begin
       result.Add (Match[0]);
       f := ExecNext;
-    end;
-  finally
-    Free;
-  end;
-end;
-
-function SeparatedStringList(aObject: TObject;aString, aSep: String
-  ): TParserStringList;
-  procedure _AddSeparated (aList: TParserStringList; aString, aSep: String);
-  var
-    p: Integer;
-  begin
-    p := PosSubString(aSep, aString, True,False);
-    if p < 1 then
-      aList.Add (aString)
-    else
-    begin
-      aList.Add (Copy (aString, 1, p - 1));
-      _AddSeparated (aList, Copy (aString, p + Length (aSep), MaxInt), aSep);
-    end;
-  end;
-begin
-  result := TParserStringList.Create;
-  if (aString <> '')
-  and (aSep <> '') then
-  begin
-    _AddSeparated (result, aString, aSep);
-  end;
-end;
-
-function SeparatedStringN(aObject: TObject;aString, aSep: String;
-  aIndex: Extended): String;
-var
-  xInteger: Integer;
-begin
-  result := '';
-  xInteger := Trunc (aIndex);
-  if xInteger < 1 then
-    raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringN"', [xInteger]);
-  with SeparatedStringList(nil, aString, aSep) do
-  try
-    if Count > 0 then
-    begin
-      if xInteger > Count then
-        result := ''
-      else
-        result := Strings[xInteger - 1];
-    end;
-  finally
-    Free;
-  end;
-end;
-
-function SeparatedStringT(aObject: TObject;aString, aSep: String;
-  aIndex: Extended): String;
-var
-  xInteger: Integer;
-begin
-  result := '';
-  xInteger := Trunc (aIndex);
-  if (xInteger < 1) then
-    raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringT"', [xInteger]);
-  with SeparatedStringList(nil, aString, aSep) do
-  try
-    if Count > 0 then
-    begin
-      if xInteger > Count - 1 then
-        result := Strings[Count - 1]
-      else
-        result := Strings[xInteger - 1];
     end;
   finally
     Free;
@@ -2383,24 +2310,6 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     end;
   end;
 
-  function _FindReferencedXml (aString: String): TXml;
-  var
-    x: Integer;
-    xFilename, xPath: String;
-  begin
-    result := nil;
-    xFilename := SeparatedStringN(nil, aString, '#/', 1);
-    xPath := '#/' + SeparatedStringN(nil, aString, '#/', 2);
-    x := 0;
-    while (x < XsdDescr.ReadFileNames.Count)
-      and (not Assigned (result)) do
-    begin
-      if XsdDescr.ReadFileNames[x] = xFilename then
-        result := (XsdDescr.ReadFileNames.Objects[x] as TXml).FindXml(xPath, '/');
-      Inc (x);
-    end;
-  end;
-
   function _prepareRef (aValue: String): String;
   var
     x: Integer;
@@ -2490,7 +2399,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       if (Name = S_DOLLARREF) then
       begin
-        yXml := _FindReferencedXml(Value);
+        yXml := XsdDescr.FindReferencedXml(Value) as TXml;
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s in %s', [Value, aFileName]);
         _evaluateParameter (aRootXml, yXml, aParentXsd);
@@ -2612,7 +2521,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       if (Name = S_DOLLARREF) then
       begin
-        yXml := _FindReferencedXml(Value);
+        yXml := XsdDescr.FindReferencedXml(Value) as TXml;
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateRequestBody(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -2647,7 +2556,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
       begin
         if (Name = S_DOLLARREF) then
         begin
-          hXml := _FindReferencedXml(Value);
+          hXml := XsdDescr.FindReferencedXml(Value) as TXml;
           if not Assigned(hXml) then
             raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
           _evaluateResponse200(aXsd, aDoc, hXml);
@@ -2695,7 +2604,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       if (Name = S_DOLLARREF) then
       begin
-        yXml := _FindReferencedXml(Value);
+        yXml := XsdDescr.FindReferencedXml(Value) as TXml;
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateResponses200(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -2728,7 +2637,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
       begin
         if (Name = S_DOLLARREF) then
         begin
-          yXml := _FindReferencedXml(Value);
+          yXml := XsdDescr.FindReferencedXml(Value) as TXml;
           if not Assigned(yXml) then
             raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
           _evalresponsecode(yXml, aXsd);
@@ -2764,7 +2673,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       if (Name = S_DOLLARREF) then
       begin
-        yXml := _FindReferencedXml(Value);
+        yXml := XsdDescr.FindReferencedXml(Value) as TXml;
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateResponses300(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -2866,16 +2775,6 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
             for y := 0 to dXml.Items.Count - 1 do
               XsdDescr.AddTypeDefFromJsonXml ( XsdDescr.ReadFileNames [x]
                                              , XsdDescr.ReadFileNames [x] + '#/components/schemas'
-                                             , dXml.Items.XmlItems[y], aOnError
-                                             );
-          end;
-          dXml := ItemByTag['responses'];
-          if Assigned (dXml) then
-          begin
-            sl.Add (dXml.Name);
-            for y := 0 to dXml.Items.Count - 1 do
-              XsdDescr.AddTypeDefFromJsonXml ( XsdDescr.ReadFileNames [x]
-                                             , XsdDescr.ReadFileNames [x] + '#/components/responses'
                                              , dXml.Items.XmlItems[y], aOnError
                                              );
           end;

@@ -193,6 +193,7 @@ type
     function DepthBillOfMaterial: Integer;
     function CustomCheck (NewText: String): Boolean;
     function isOneOfGroupOk: Boolean;
+    function isAnyOfGroupOk: Boolean;
     function IsRequired: Boolean; Override;
     function AsText ( aUseNameSpaces: Boolean
                     ; aIndent: Integer
@@ -1411,17 +1412,35 @@ function TXml.isOneOfGroupOk: Boolean;
 var
   x, n: Integer;
 begin
-  result := False;
+  result := True;
   if Assigned (Parent)
   and Assigned (Xsd)
-  and (Xsd.isOneOfGroupLevel > 0) then
+  and (Xsd.isOneOfGroupLevel > 0) then with (Parent as TXml) do
   begin
     n := 0;
-    for x := 0 to (Parent as TXml).Items.Count - 1 do
-      if ((Parent as TXml).Items.XmlItems[x].Xsd.isOneOfGroupLevel = self.Xsd.isOneOfGroupLevel)
-      and ((Parent as TXml).Items.XmlItems[x].Checked) then
+    for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
+      if (Xsd.isOneOfGroupLevel = self.Xsd.isOneOfGroupLevel)
+      and (Checked) then
         Inc (n);
     result := (n = 1);
+  end;
+end;
+
+function TXml.isAnyOfGroupOk: Boolean;
+var
+  x, n: Integer;
+begin
+  result := True;
+  if Assigned (Parent)
+  and Assigned (Xsd)
+  and (Xsd.isAnyOfGroupLevel > 0) then with (Parent as TXml) do
+  begin
+    n := 0;
+    for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
+      if (Xsd.isAnyOfGroupLevel = self.Xsd.isAnyOfGroupLevel)
+      and (Checked) then
+        Inc (n);
+    result := (n > 0);
   end;
 end;
 

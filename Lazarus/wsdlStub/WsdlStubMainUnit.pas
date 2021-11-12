@@ -2333,7 +2333,7 @@ begin
   begin
     if (not Assigned(Xsd)) then
     begin
-      TargetCanvas.Font.Color := clRed { clLtGray } ;
+      TargetCanvas.Font.Color := clRed;
       exit;
     end;
     try
@@ -2342,8 +2342,8 @@ begin
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
         if AllChecked(Sender, Node.Parent) then
           if (not Checked)
-          and (not isOneOfGroupOk) then
-            TargetCanvas.Font.Color := clRed { clLtGray } ;
+          and ((not isOneOfGroupOk) or (not isAnyOfGroupOk)) then
+            TargetCanvas.Font.Color := clRed;
       end;
     except
       ShowMessage(Xsd.minOccurs);
