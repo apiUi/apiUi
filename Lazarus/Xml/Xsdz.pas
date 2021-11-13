@@ -1350,13 +1350,13 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           for x := 0 to result.ElementDefs.Count - 1 do with result.ElementDefs.Xsds[x] do
           begin
             minOccurs := '0';
-            isOneOfGroupLevel := 1;
+//          isOneOfGroupLevel := 1;  // as long as I can not make sennce of how json schema works here
           end;
         if xAllOneAnyOf = 'anyOf' then
           for x := 0 to result.ElementDefs.Count - 1 do with result.ElementDefs.Xsds[x] do
           begin
             minOccurs := '0';
-            isAnyOfGroupLevel := 1;
+//          isOneOfGroupLevel := 1;  // as long as I can not make sennce of how json schema works here
           end;
       end;
 

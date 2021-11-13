@@ -37,7 +37,9 @@ paths:
             $ref: '#/definitions/getContextRpy'
     post:
       summary: Set apiUi project context
-      description: ''
+      description: |-
+        Sets a new value for the context, returning the old value.  
+        See [Context switching](www.apiui.org/contextswitching/) for more information.  
       operationId: zzSetContext
       consumes:
         - application/json

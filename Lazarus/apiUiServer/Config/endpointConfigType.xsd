@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 (http://www.altova.com) by Rabobank Nederland (Rabobank Nederland) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="endpointConfigDef" targetNamespace="endpointConfigDef" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="passwordType">
+		<xs:annotation>
+			<xs:documentation>Password;
+passwords are encripted before storing in a project file or at other locations</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:complexType name="nameValuePairType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Value" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UserType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Password" type="tns:passwordType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="FileNameType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="NameValuePairsStringType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="sslVersionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SSL Version 2"/>
+			<xs:enumeration value="SSL Version 2.3"/>
+			<xs:enumeration value="SSL Version 3"/>
+			<xs:enumeration value="TLS Version 1"/>
+			<xs:enumeration value="TLS Version 1.1"/>
+			<xs:enumeration value="TLS Version 1.2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="acceptEncodingType">
+		<xs:sequence>
+			<xs:element name="deflate" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>default "true"
+
+when "true", the server will be allowed to send deflate responses (compression method)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="gzip" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>default "true"
+
+when "true", the server will be allowed to send gzip responses (compression method)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="contentEncodingType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="identity"/>
+			<xs:enumeration value="deflate"/>
+			<xs:enumeration value="gzip"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="httpVerbType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DELETE"/>
+			<xs:enumeration value="GET"/>
+			<xs:enumeration value="HEAD"/>
+			<xs:enumeration value="OPTIONS"/>
+			<xs:enumeration value="POST"/>
+			<xs:enumeration value="PUT"/>
+			<xs:enumeration value="TRACE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="httpAddressType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:complexType name="httpType">
+		<xs:sequence>
+			<xs:element name="Address" type="tns:httpAddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AddressIsComplete" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default "false"
+Only relavant on API's.
+When "true" apiUi does not apply pathparams nor queryparams to adjust the URL but assumes that the URL alread contains a correct value.
+Applicable when a callback url is provided. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Verb" type="tns:httpVerbType" minOccurs="0"/>
+			<xs:element name="ContentType" type="xs:string" minOccurs="0"/>
+			<xs:element name="ContentEncoding" type="tns:contentEncodingType" minOccurs="0"/>
+			<xs:element name="AcceptEncoding" type="tns:acceptEncodingType" minOccurs="0"/>
+			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+			<xs:element name="SSL" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Version" type="tns:sslVersionType"/>
+						<xs:element name="CertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="KeyFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="RootCertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="Password" type="tns:passwordType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="jmsType">
+		<xs:sequence>
+			<xs:element name="Dst" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSDestination </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Exp" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSExpiration </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Pri" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSPriority </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Dlv" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSDeliveryMode</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Cid" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSCorrelationID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Rto" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSReplyTo</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Tms" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSTimestamp</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Gid" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSXGroupID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Seq" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>JMSXGroupSeq</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mcdType">
+		<xs:sequence>
+			<xs:element name="Msd" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="jms_none|jms_text|jms_bytes|jms_map|jms_stream|jms_object"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Type" minOccurs="0"/>
+			<xs:element name="Set" minOccurs="0"/>
+			<xs:element name="Fmt" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="stompInterfaceType">
+		<xs:sequence>
+			<xs:element name="Host" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The address of the server where the stomp broker is running</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Port" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The prort to which the stomp broker is listening; Default = 61613</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Credentials" type="tns:UserType" minOccurs="0"/>
+			<xs:element name="ClientId" type="xs:string" minOccurs="0"/>
+			<xs:element name="Timeout" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>Number of seconds to wait for response</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="stompHeader" type="tns:stompHeaderType"/>
+			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="stompHeaderType">
+		<xs:sequence>
+			<xs:element name="correlation-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="destination" type="xs:string"/>
+			<xs:element name="expiration" type="xs:integer" minOccurs="0"/>
+			<xs:element name="group" type="xs:string" minOccurs="0"/>
+			<xs:element name="message-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="persistent" type="tns:stompPersistentType" minOccurs="0"/>
+			<xs:element name="priority" type="xs:integer" minOccurs="0"/>
+			<xs:element name="redelivered" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="reply-to" type="xs:string" minOccurs="0"/>
+			<xs:element name="sequence" type="xs:integer" minOccurs="0"/>
+			<xs:element name="timestamp" type="xs:string" minOccurs="0"/>
+			<xs:element name="type" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="stompPersistentType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="True"/>
+			<xs:enumeration value="False"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="customHeadersType">
+		<xs:sequence>
+			<xs:element name="Header" type="tns:nameValuePairType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="endpointConfigType">
+		<xs:choice>
+			<xs:element name="Http" type="tns:httpType">
+				<xs:annotation>
+					<xs:documentation>Hypertext Transfer Protocol
+Functions as a request-response protocol in the client-server configurations.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Stomp" type="tns:stompInterfaceType">
+				<xs:annotation>
+					<xs:documentation>Simple Text Oriented Messaging Protocol
+Provides an interoperable format so clients can communicate with any STOMP message broker.
+Often used with Active MQ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="None">
+				<xs:annotation>
+					<xs:documentation>No Transfer Protocol
+Used to execute operation-scripts without really sending a message</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="remoteServerConnectionType">
+		<xs:sequence>
+			<xs:element name="Enabled" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default: False</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Address" type="tns:httpAddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>e.g. https://localhost:6161/stub; when blank or omitted, the endpoint as specified in the wsdl is used. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+			<xs:element name="SSL" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Version" type="tns:sslVersionType"/>
+						<xs:element name="CertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="KeyFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="RootCertificateFile" type="tns:FileNameType" minOccurs="0"/>
+						<xs:element name="Password" type="tns:passwordType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TestConnection" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="replyInfoType">
+		<xs:sequence>
+			<xs:element name="Http" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="responseCode" type="xs:string" minOccurs="0"/>
+						<xs:element name="customHeaders" type="tns:customHeadersType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

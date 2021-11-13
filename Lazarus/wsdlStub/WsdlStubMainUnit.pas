@@ -85,6 +85,7 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    ChangeToolBarColorTest: TAction;
     FocusOnOperationMenuItem: TMenuItem;
     DocumentationViewer: THtmlViewer;
     OperationDocumentationViewer: THtmlViewer;
@@ -104,6 +105,7 @@ type
     WsdlOperationNameEdit: TEdit;
     procedure AboutApiServerActionExecute(Sender: TObject);
     procedure AboutApiServerActionUpdate(Sender: TObject);
+    procedure ChangeToolBarColorTestExecute(Sender: TObject);
     procedure EditCloudEnvironmentActionUpdate(Sender: TObject);
     procedure FocusOnOperationMenuItemClick(Sender: TObject);
     procedure MenuItem14Click(Sender: TObject);
@@ -12362,6 +12364,20 @@ end;
 procedure TMainForm.AboutApiServerActionUpdate(Sender: TObject);
 begin
   AboutApiServerAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+end;
+
+procedure TMainForm.ChangeToolBarColorTestExecute(Sender: TObject);
+var
+  xColor: TColor;
+  x: Integer;
+begin
+  if MainToolBar.Color = clBtnFace then
+    xColor := clInfoBk
+  else
+    xColor := clBtnFace;
+  for x := 0 to ComponentCount - 1 do
+    if Components[x] is TToolBar then
+      (Components[x] as TToolBar).Color := xColor;
 end;
 
 procedure TMainForm.AboutApiServerActionExecute(Sender: TObject);

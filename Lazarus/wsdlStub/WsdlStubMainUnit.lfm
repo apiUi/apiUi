@@ -2581,6 +2581,12 @@ object MainForm: TMainForm
       OnExecute = AboutApiServerActionExecute
       OnUpdate = AboutApiServerActionUpdate
     end
+    object ChangeToolBarColorTest: TAction
+      Category = 'Miscellaneous'
+      Caption = 'ChangeToolBarColorTest'
+      OnExecute = ChangeToolBarColorTestExecute
+      ShortCut = 57424
+    end
   end
   object mainImageList: TImageList
     Left = 208
