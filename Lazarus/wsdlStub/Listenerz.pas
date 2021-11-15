@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit Listenerz;
 
 {$IFDEF FPC}
@@ -8,7 +22,6 @@ interface
 
 uses Classes, SysUtils
    , Xmlz
-   , mqinterface, mqapi
    , StompInterface
    , IdSSLOpenSSL
    , xmlio
@@ -24,17 +37,11 @@ type
     fConnected : Boolean ;
     procedure setConnected (AValue : Boolean );
   public
-    httpProxyPort, httpBmtpPort: Integer;
+    httpProxyPort: Integer;
     sslVersion: TIdSSLVersion;
     sslCertificateFile, sslKeyFile, sslRootCertificateFile, sslPassword: String;
     httpPorts, httpsPorts: TJBStringList;
-    mqInterfaces: TJBStringList;
     stompInterfaces: TJBStringList;
-    smtpPort: Integer;
-    smtpsPort: Integer;
-    smtpTlsCertificateFile, smtpTlsKeyFile, smtpTlsRootCertificateFile: String;
-    pop3Port: Integer;
-    pop3UserName, pop3Password: String;
     SpecificationXml: TXml;
     property Connected: Boolean read fConnected write setConnected;
     procedure OnGetSslPassword (var aPassword: String);
@@ -49,6 +56,7 @@ type
 implementation
 
 uses xmlzConsts
+   , LazFileUtils
    ;
 
 { TListeners }
@@ -85,58 +93,32 @@ begin
     if httpProxyPort > 0 then
       with AddXml(TXml.CreateAsString('HttpProxy', '')) do
         AddXml(TXml.CreateAsInteger('Port', httpProxyPort));
-    if httpBmtpPort > 0 then
-      with AddXml(TXml.CreateAsString('Bmtp', '')) do
-        AddXml(TXml.CreateAsInteger('Port', httpBmtpPort));
-    if mqInterfaces.Count > 0 then
-      with AddXml(TXml.CreateAsString('Mq', '')) do
-        for x := 0 to mqInterfaces.Count - 1 do
-          AddXml ((mqInterfaces.Objects [x] as TMqInterface).AsXml);
     if stompInterfaces.Count > 0 then
       with AddXml(TXml.CreateAsString('Stomp', '')) do
         for x := 0 to stompInterfaces.Count - 1 do
            AddXml((stompInterfaces.Objects[x] as TStompInterface).AsXml);
-    if (smtpPort > 0)
-    or (smtpsPort > 0)
-    or (pop3Port > 0)
-    then begin
-      with AddXml(TXml.CreateAsString('Mail', '')) do
-      begin
-        if smtpPort > 0 then
-          with AddXml(TXml.CreateAsString('Smtp', '')) do
-            AddXml(TXml.CreateAsInteger('Port', smtpPort));
-        if smtpsPort > 0 then
-        begin
-          with AddXml(TXml.CreateAsString('Smtps', '')) do
-          begin
-            AddXml(TXml.CreateAsInteger('Port', smtpsPort));
-            with AddXml(TXml.CreateAsString('TLS', '')) do
-            begin
-              AddXml(TXml.CreateAsString('CertificateFile', smtpTlsCertificateFile));
-              AddXml(TXml.CreateAsString('KeyFile', smtpTlsKeyFile));
-              AddXml(TXml.CreateAsString('RootCertificateFile', smtpTlsRootCertificateFile));
-            end;
-          end;
-        end;
-        if pop3Port > 0 then
-        begin
-          with AddXml(TXml.CreateAsString('Pop3', '')) do
-          begin
-            AddXml(TXml.CreateAsInteger('Port', pop3Port));
-            with AddXml(TXml.CreateAsString('User', '')) do
-            begin
-              AddXml(TXml.CreateAsString('Name', pop3UserName));
-              AddXml(TXml.CreateAsString('Password', EncryptString(pop3Password)));
-            end;
-          end;
-        end;
-      end;
     end;
   end;
 end;
 }
 
 procedure TListeners.FromXml(aOnHaveFrame: TOnHaveFrame);
+  function _certFile (aFileName: String): String;
+  var
+    s: String;
+  begin
+    result := aFileName;
+    if LazFileUtils.FileExistsUTF8(aFileName) then
+      Exit;
+    if openSslCertsFolder <> '' then
+    begin
+      if openSslCertsFolder [Length (openSslCertsFolder)] <> DirectorySeparator then
+        result := openSslCertsFolder + DirectorySeparator + aFileName
+      else
+        result := openSslCertsFolder + aFileName;
+    end;
+  end;
+
 var
   m, x, y: Integer;
   xXml, yXml, hXml: TXml;
@@ -171,10 +153,6 @@ begin
           begin
             httpProxyPort := Items.XmlCheckedIntegerByTag['Port'];
           end;
-          if Name = 'Bmtp' then
-          begin
-            httpBmtpPort := Items.XmlCheckedIntegerByTag['Port'];
-          end;
           if Name = 'Https' then
           begin
             for y := 0 to Items.Count - 1 do
@@ -193,9 +171,9 @@ begin
               yXml := Items.XmlCheckedItemByTag['Version'];
               if Assigned (yXml) then
                 sslVersion := sslVersionFromString(yXml.Value);
-              sslCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
-              sslKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
-              sslRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
+              sslCertificateFile := _certFile (Items.XmlCheckedValueByTag['CertificateFile']);
+              sslKeyFile := _certFile (Items.XmlCheckedValueByTag['KeyFile']);
+              sslRootCertificateFile := _certFile (Items.XmlCheckedValueByTag['RootCertificateFile']);
               yXml := Items.XmlCheckedItemByTag['Password'];
               if Assigned (yXml) then
               begin
@@ -207,51 +185,10 @@ begin
               end;
             end;
           end;
-          if Name = 'Mq' then
-            for y := 0 to Items.Count - 1 do
-              if Items.XmlItems[y].Checked then
-                mqInterfaces.AddObject ('', TMqInterface.CreateFromXml (Items.XmlItems [y]));
           if Name = 'Stomp' then
             for y := 0 to Items.Count - 1 do
               if Items.XmlItems[y].Checked then
                 stompInterfaces.AddObject ('', TStompInterface.CreateFromXml (Items.XmlItems [y], aOnHaveFrame));
-          if Name = 'Mail' then
-          begin
-            for m := 0 to Items.Count - 1 do
-            begin
-              if Items.XmlItems[m].Checked then
-              begin
-                with Items.XmlItems[m] do
-                begin
-                  if Name = 'Smtp' then
-                  begin
-                    smtpPort := Items.XmlCheckedIntegerByTag['Port'];
-                  end;
-                  if Name = 'Smtps' then
-                  begin
-                    smtpsPort := Items.XmlCheckedIntegerByTag['Port'];
-                    xXml := Items.XmlCheckedItemByTag['TLS'];
-                    if Assigned (xXml) then with xXml do
-                    begin
-                      smtpTlsCertificateFile := Items.XmlCheckedValueByTag['CertificateFile'];
-                      smtpTlsKeyFile := Items.XmlCheckedValueByTag['KeyFile'];
-                      smtpTlsRootCertificateFile := Items.XmlCheckedValueByTag['RootCertificateFile'];
-                    end;
-                  end;
-                  if Name = 'Pop3' then
-                  begin
-                    pop3Port := Items.XmlCheckedIntegerByTag['Port'];
-                    xXml := Items.XmlCheckedItemByTag['User'];
-                    if Assigned (xXml) then with xXml do
-                    begin
-                      pop3UserName := Items.XmlCheckedValueByTag['Name'];
-                      pop3Password := DecryptString (Items.XmlCheckedValueByTag['Password']);
-                    end;
-                  end;
-                end;
-              end;
-            end;
-          end;
         end;
       end;
     end;
@@ -278,22 +215,10 @@ begin
   httpPorts.Clear;
   httpsPorts.Clear;
   httpProxyPort := 0;
-  httpBmtpPort := 0;
-  smtpPort := 0;
-  smtpsPort := 0;
-  smtpTlsCertificateFile := '';
-  smtpTlsKeyFile := '';
-  smtpTlsRootCertificateFile := '';
-  pop3Port := 0;
-  pop3Username := '';
-  pop3Password := '';
   sslCertificateFile := '';
   sslKeyFile := '';
   sslRootCertificateFile := '';
   sslPassword := '';
-  for x := 0 to mqInterfaces.Count - 1 do
-    mqInterfaces.Objects [x].Free;
-  mqInterfaces.Clear;
   for x := 0 to stompInterfaces.Count - 1 do
     stompInterfaces.Objects [x].Free;
   stompInterfaces.Clear;
@@ -304,11 +229,7 @@ begin
   SpecificationXml := TXml.CreateAsString('Listeners', '');
   httpPorts:= TJBStringList.Create;
   httpsPorts := TJBStringList.Create;
-  httpBmtpPort := 0;
-  mqInterfaces := TJBStringList.Create;
   stompInterfaces := TJBStringList.Create;
-  smtpPort := 0;
-  pop3Port := 0;
 end;
 
 destructor TListeners.Destroy;
@@ -317,7 +238,6 @@ begin
   Clear;
   httpPorts.Free;
   httpsPorts.Free;
-  mqInterfaces.Free;
   stompInterfaces.Free;
   SpecificationXml.Free;
 end;

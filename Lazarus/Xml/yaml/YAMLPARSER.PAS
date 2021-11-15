@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit yamlParser;
 
 interface
@@ -50,7 +64,13 @@ const _NULL = 276;
 const _TRUE = 277;
 const _IS = 278;
 const _IGNORE = 279;
-const _NOTUSEDLASTONE = 280;
+const _REPLCRANDSTRIP = 280;
+const _REPLCRANDKEEP = 281;
+const _REPLCRANDCLIP = 282;
+const _KEEPCRANDSTRIP = 283;
+const _KEEPCRANDKEEP = 284;
+const _KEEPCRANDCLIP = 285;
+const _NOTUSEDLASTONE = 286;
 
 
 
@@ -179,6 +199,20 @@ begin
          yyval := yyv[yysp-1];
        end;
    7 : begin
+         yyval := yyv[yysp-0];
+       end;
+   8 : begin
+       end;
+   9 : begin
+         yyval := yyv[yysp-0];
+       end;
+  10 : begin
+         yyval := yyv[yysp-0];
+       end;
+  11 : begin
+         yyval := yyv[yysp-1];
+       end;
+  12 : begin
          
          CurrentXml := TXml.Create;
          CurrentXml.Checked := True;
@@ -186,7 +220,7 @@ begin
          CurrentXml.jsonType := jsonObject;
          
        end;
-   8 : begin
+  13 : begin
          
          if not Assigned (PreviousXml) then
          Xml.AddXml (CurrentXml)
@@ -195,38 +229,38 @@ begin
          PreviousXml := CurrentXml;
          
        end;
-   9 : begin
+  14 : begin
          
          CurrentXml.Name := yyv[yysp-1].yyString;
          CurrentXml.Tag := yyv[yysp-1].yy.yyInteger;
          
        end;
-  10 : begin
+  15 : begin
          yyval := yyv[yysp-0];
        end;
-  11 : begin
+  16 : begin
          yyval := yyv[yysp-0];
        end;
-  12 : begin
+  17 : begin
          
          CurrentXml.Name := '_';
          CurrentXml.jsonType := jsonArrayValue;
          CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
          
        end;
-  13 : begin
+  18 : begin
          
          CurrentXml.Value := yyv[yysp-0].yyString;
          CurrentXml.jsonType := jsonString;
          CurrentXml.Tag := yyv[yysp-0].yy.yyInteger;
          
        end;
-  14 : begin
+  19 : begin
        end;
-  15 : begin
+  20 : begin
          yyval := yyv[yysp-0];
        end;
-  16 : begin
+  21 : begin
          
          CurrentXml.Value := yyv[yysp-0].yyString;
          CurrentXml.jsonType := jsonString;
@@ -247,46 +281,61 @@ type YYARec = record
 
 const
 
-yynacts   = 17;
-yyngotos  = 13;
-yynstates = 17;
-yynrules  = 16;
+yynacts   = 27;
+yyngotos  = 17;
+yynstates = 22;
+yynrules  = 21;
 
 yya : array [1..yynacts] of YYARec = (
 { 0: }
 { 1: }
+  ( sym: 257; act: 6 ),
   ( sym: 0; act: -3 ),
-  ( sym: 259; act: -7 ),
-  ( sym: 263; act: -7 ),
-  ( sym: 265; act: -7 ),
+  ( sym: 259; act: -3 ),
+  ( sym: 263; act: -3 ),
+  ( sym: 265; act: -3 ),
 { 2: }
   ( sym: 0; act: 0 ),
 { 3: }
-  ( sym: 259; act: 10 ),
-  ( sym: 263; act: 11 ),
-  ( sym: 265; act: 12 ),
 { 4: }
-{ 5: }
+  ( sym: 257; act: 6 ),
   ( sym: 0; act: -4 ),
-  ( sym: 259; act: -7 ),
-  ( sym: 263; act: -7 ),
-  ( sym: 265; act: -7 ),
+  ( sym: 259; act: -4 ),
+  ( sym: 263; act: -4 ),
+  ( sym: 265; act: -4 ),
+{ 5: }
+  ( sym: 0; act: -8 ),
+  ( sym: 259; act: -12 ),
+  ( sym: 263; act: -12 ),
+  ( sym: 265; act: -12 ),
 { 6: }
 { 7: }
 { 8: }
+  ( sym: 259; act: 15 ),
+  ( sym: 263; act: 16 ),
+  ( sym: 265; act: 17 ),
 { 9: }
 { 10: }
-  ( sym: 264; act: 16 ),
-  ( sym: 0; act: -14 ),
-  ( sym: 259; act: -14 ),
-  ( sym: 263; act: -14 ),
-  ( sym: 265; act: -14 )
+  ( sym: 0; act: -9 ),
+  ( sym: 259; act: -12 ),
+  ( sym: 263; act: -12 ),
+  ( sym: 265; act: -12 ),
 { 11: }
 { 12: }
 { 13: }
 { 14: }
 { 15: }
+  ( sym: 264; act: 21 ),
+  ( sym: 0; act: -19 ),
+  ( sym: 259; act: -19 ),
+  ( sym: 263; act: -19 ),
+  ( sym: 265; act: -19 )
 { 16: }
+{ 17: }
+{ 18: }
+{ 19: }
+{ 20: }
+{ 21: }
 );
 
 yyg : array [1..yyngotos] of YYARec = (
@@ -294,151 +343,190 @@ yyg : array [1..yyngotos] of YYARec = (
   ( sym: -4; act: 1 ),
   ( sym: -2; act: 2 ),
 { 1: }
-  ( sym: -8; act: 3 ),
+  ( sym: -7; act: 3 ),
   ( sym: -6; act: 4 ),
-  ( sym: -5; act: 5 ),
-  ( sym: -3; act: 6 ),
+  ( sym: -3; act: 5 ),
 { 2: }
 { 3: }
-  ( sym: -11; act: 7 ),
-  ( sym: -10; act: 8 ),
-  ( sym: -7; act: 9 ),
 { 4: }
+  ( sym: -7; act: 7 ),
 { 5: }
-  ( sym: -8; act: 3 ),
-  ( sym: -6; act: 13 ),
+  ( sym: -11; act: 8 ),
+  ( sym: -9; act: 9 ),
+  ( sym: -8; act: 10 ),
+  ( sym: -5; act: 11 ),
 { 6: }
 { 7: }
 { 8: }
+  ( sym: -14; act: 12 ),
+  ( sym: -13; act: 13 ),
+  ( sym: -10; act: 14 ),
 { 9: }
 { 10: }
-  ( sym: -12; act: 14 ),
-  ( sym: -9; act: 15 )
+  ( sym: -11; act: 8 ),
+  ( sym: -9; act: 18 ),
 { 11: }
 { 12: }
 { 13: }
 { 14: }
 { 15: }
+  ( sym: -15; act: 19 ),
+  ( sym: -12; act: 20 )
 { 16: }
+{ 17: }
+{ 18: }
+{ 19: }
+{ 20: }
+{ 21: }
 );
 
 yyd : array [0..yynstates-1] of Integer = (
 { 0: } -1,
 { 1: } 0,
 { 2: } 0,
-{ 3: } 0,
-{ 4: } -5,
+{ 3: } -5,
+{ 4: } 0,
 { 5: } 0,
-{ 6: } -2,
-{ 7: } -11,
-{ 8: } -10,
-{ 9: } -8,
+{ 6: } -7,
+{ 7: } -6,
+{ 8: } 0,
+{ 9: } -10,
 { 10: } 0,
-{ 11: } -12,
-{ 12: } -13,
-{ 13: } -6,
-{ 14: } -15,
-{ 15: } -9,
-{ 16: } -16
+{ 11: } -2,
+{ 12: } -16,
+{ 13: } -15,
+{ 14: } -13,
+{ 15: } 0,
+{ 16: } -17,
+{ 17: } -18,
+{ 18: } -11,
+{ 19: } -20,
+{ 20: } -14,
+{ 21: } -21
 );
 
 yyal : array [0..yynstates-1] of Integer = (
 { 0: } 1,
 { 1: } 1,
-{ 2: } 5,
-{ 3: } 6,
-{ 4: } 9,
-{ 5: } 9,
-{ 6: } 13,
-{ 7: } 13,
-{ 8: } 13,
-{ 9: } 13,
-{ 10: } 13,
-{ 11: } 18,
-{ 12: } 18,
-{ 13: } 18,
-{ 14: } 18,
-{ 15: } 18,
-{ 16: } 18
+{ 2: } 6,
+{ 3: } 7,
+{ 4: } 7,
+{ 5: } 12,
+{ 6: } 16,
+{ 7: } 16,
+{ 8: } 16,
+{ 9: } 19,
+{ 10: } 19,
+{ 11: } 23,
+{ 12: } 23,
+{ 13: } 23,
+{ 14: } 23,
+{ 15: } 23,
+{ 16: } 28,
+{ 17: } 28,
+{ 18: } 28,
+{ 19: } 28,
+{ 20: } 28,
+{ 21: } 28
 );
 
 yyah : array [0..yynstates-1] of Integer = (
 { 0: } 0,
-{ 1: } 4,
-{ 2: } 5,
-{ 3: } 8,
-{ 4: } 8,
-{ 5: } 12,
-{ 6: } 12,
-{ 7: } 12,
-{ 8: } 12,
-{ 9: } 12,
-{ 10: } 17,
-{ 11: } 17,
-{ 12: } 17,
-{ 13: } 17,
-{ 14: } 17,
-{ 15: } 17,
-{ 16: } 17
+{ 1: } 5,
+{ 2: } 6,
+{ 3: } 6,
+{ 4: } 11,
+{ 5: } 15,
+{ 6: } 15,
+{ 7: } 15,
+{ 8: } 18,
+{ 9: } 18,
+{ 10: } 22,
+{ 11: } 22,
+{ 12: } 22,
+{ 13: } 22,
+{ 14: } 22,
+{ 15: } 27,
+{ 16: } 27,
+{ 17: } 27,
+{ 18: } 27,
+{ 19: } 27,
+{ 20: } 27,
+{ 21: } 27
 );
 
 yygl : array [0..yynstates-1] of Integer = (
 { 0: } 1,
 { 1: } 3,
-{ 2: } 7,
-{ 3: } 7,
-{ 4: } 10,
-{ 5: } 10,
-{ 6: } 12,
-{ 7: } 12,
-{ 8: } 12,
-{ 9: } 12,
-{ 10: } 12,
-{ 11: } 14,
-{ 12: } 14,
-{ 13: } 14,
-{ 14: } 14,
-{ 15: } 14,
-{ 16: } 14
+{ 2: } 6,
+{ 3: } 6,
+{ 4: } 6,
+{ 5: } 7,
+{ 6: } 11,
+{ 7: } 11,
+{ 8: } 11,
+{ 9: } 14,
+{ 10: } 14,
+{ 11: } 16,
+{ 12: } 16,
+{ 13: } 16,
+{ 14: } 16,
+{ 15: } 16,
+{ 16: } 18,
+{ 17: } 18,
+{ 18: } 18,
+{ 19: } 18,
+{ 20: } 18,
+{ 21: } 18
 );
 
 yygh : array [0..yynstates-1] of Integer = (
 { 0: } 2,
-{ 1: } 6,
-{ 2: } 6,
-{ 3: } 9,
-{ 4: } 9,
-{ 5: } 11,
-{ 6: } 11,
-{ 7: } 11,
-{ 8: } 11,
-{ 9: } 11,
-{ 10: } 13,
-{ 11: } 13,
-{ 12: } 13,
-{ 13: } 13,
-{ 14: } 13,
-{ 15: } 13,
-{ 16: } 13
+{ 1: } 5,
+{ 2: } 5,
+{ 3: } 5,
+{ 4: } 6,
+{ 5: } 10,
+{ 6: } 10,
+{ 7: } 10,
+{ 8: } 13,
+{ 9: } 13,
+{ 10: } 15,
+{ 11: } 15,
+{ 12: } 15,
+{ 13: } 15,
+{ 14: } 15,
+{ 15: } 17,
+{ 16: } 17,
+{ 17: } 17,
+{ 18: } 17,
+{ 19: } 17,
+{ 20: } 17,
+{ 21: } 17
 );
 
 yyr : array [1..yynrules] of YYRRec = (
 { 1: } ( len: 0; sym: -4 ),
-{ 2: } ( len: 2; sym: -2 ),
+{ 2: } ( len: 3; sym: -2 ),
 { 3: } ( len: 0; sym: -3 ),
 { 4: } ( len: 1; sym: -3 ),
-{ 5: } ( len: 1; sym: -5 ),
-{ 6: } ( len: 2; sym: -5 ),
-{ 7: } ( len: 0; sym: -8 ),
-{ 8: } ( len: 2; sym: -6 ),
-{ 9: } ( len: 2; sym: -7 ),
-{ 10: } ( len: 1; sym: -7 ),
-{ 11: } ( len: 1; sym: -7 ),
-{ 12: } ( len: 1; sym: -10 ),
-{ 13: } ( len: 1; sym: -11 ),
-{ 14: } ( len: 0; sym: -9 ),
-{ 15: } ( len: 1; sym: -9 ),
-{ 16: } ( len: 1; sym: -12 )
+{ 5: } ( len: 1; sym: -6 ),
+{ 6: } ( len: 2; sym: -6 ),
+{ 7: } ( len: 1; sym: -7 ),
+{ 8: } ( len: 0; sym: -5 ),
+{ 9: } ( len: 1; sym: -5 ),
+{ 10: } ( len: 1; sym: -8 ),
+{ 11: } ( len: 2; sym: -8 ),
+{ 12: } ( len: 0; sym: -11 ),
+{ 13: } ( len: 2; sym: -9 ),
+{ 14: } ( len: 2; sym: -10 ),
+{ 15: } ( len: 1; sym: -10 ),
+{ 16: } ( len: 1; sym: -10 ),
+{ 17: } ( len: 1; sym: -13 ),
+{ 18: } ( len: 1; sym: -14 ),
+{ 19: } ( len: 0; sym: -12 ),
+{ 20: } ( len: 1; sym: -12 ),
+{ 21: } ( len: 1; sym: -15 )
 );
 
 

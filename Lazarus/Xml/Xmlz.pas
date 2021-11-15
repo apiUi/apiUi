@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 {$MODE Delphi}
 
 {$define IPMZ}
@@ -179,6 +193,7 @@ type
     function DepthBillOfMaterial: Integer;
     function CustomCheck (NewText: String): Boolean;
     function isOneOfGroupOk: Boolean;
+    function isAnyOfGroupOk: Boolean;
     function IsRequired: Boolean; Override;
     function AsText ( aUseNameSpaces: Boolean
                     ; aIndent: Integer
@@ -377,7 +392,7 @@ procedure xmlSetDefaultColors;
 function ColorToHtml (aColor: TColor): String;
 function HtmlToColor (aHtml: String): TColor;
 {$endif}
-function textToHtml (aString: String): String;
+function prepareMarkDownText (aString: String): String;
 procedure SjowMessage (aString: String);
 function CreateXsdFromXml (aXsdDescr: TXsdDescr; aXml: TXml; aLinkXmlToXsd: Boolean): TXsd;
 function CreateXsdFromJsonSchemaFile (aXsdDescr: TXsdDescr; aFileName: String; aApiUiServerConfig: TObject; aOnbeforeRead: TProcedureS): TXsd;
@@ -404,7 +419,7 @@ var
   _xmlContexts: TObject;
 {$ifndef NoGUI}
   bgCorrelationItemColor: TColor;
-  bgExpectedValueColor: TColor;
+  bgRequestTagNameColumnColor: TColor;
   bgNilValueColor: TColor;
   bgElementValueColor: TColor;
   fgMissingColor: TColor;
@@ -788,7 +803,7 @@ begin
   Xmlz.OnNotify (aString);
 end;
 
-function textToHtml (aString: String): String;
+function prepareMarkDownText (aString: String): String;
   function _docLink (aString: String): TXml;
   begin
     result := TXml.CreateAsString ( 'a'
@@ -813,47 +828,7 @@ var
   p: Integer;
 begin
   result := '';
-  rx := TRegExpr.Create;
-  try
-    rx.Expression := S_XML_REGEXP_LINK;
-    with TXml.CreateAsString('html', '') do
-    try
-      with AddXml (TXml.CreateAsString('body','')) do
-      begin
-        AddAttribute(TXmlAttribute.CreateAsString('bgcolor', '#F0F0F0')); // bg read-only buttonface color
-        AddAttribute(TXmlAttribute.CreateAsString('style', 'font-size:18px;')); //  style="font-size:18px;"
-//      AddAttribute(TXmlAttribute.CreateAsString('bgcolor', ColorToHtml(clBtnFace))); // bg read-only buttonface color
-        with AddXml (TXml.CreateAsString('p',' ')) do
-        if aString <> '' then
-        begin
-          p := 1;
-          rslt := Rx.Exec(aString);
-          while rslt do
-          begin
-            if rx.MatchPos [0] > p then
-              AddXml(TXml.CreateAsString('', Copy (aString, p, rx.MatchPos[0] - p)));
-            if uppercase (copy (rx.Match[0],1 , 6)) = 'DOC://' then
-              AddXml (_DocLink(rx.Match[0]))
-            else
-              with AddXml (TXml.CreateAsString('a', rx.Match[0])) do
-              begin
-                AddAttribute (TXmlAttribute.CreateAsString('href', rx.Match[0]));
-                AddAttribute (TXmlAttribute.CreateAsString('target', '_blank'));
-              end;
-            p := rx.MatchPos[0] + rx.MatchLen[0];
-            rslt := Rx.ExecNext;
-          end;
-          if p < Length (aString) then
-            AddXml(TXml.CreateAsString('', Copy (aString, p, Length (aString))));
-        end;
-      end;
-      result := asHtmlString;
-    finally
-      free;
-    end;
-  finally
-    rx.Free;
-  end;
+  result := ReplaceText(aString, '<br>', '  ' + LineEnding);
 end;
 
 function strAdd (aString, aStringToAdd: String): String;
@@ -921,7 +896,7 @@ procedure xmlSetDefaultColors;
 begin
 {$ifndef NoGUI}
   bgCorrelationItemColor := clMoneyGreen;
-  bgExpectedValueColor := $E7FFE7;
+  bgRequestTagNameColumnColor := $E7FFE7;
   bgNilValueColor := $CFFFFF;
   bgElementValueColor := clWhite;
   fgMissingColor := clRed;
@@ -1437,17 +1412,35 @@ function TXml.isOneOfGroupOk: Boolean;
 var
   x, n: Integer;
 begin
-  result := False;
+  result := True;
   if Assigned (Parent)
   and Assigned (Xsd)
-  and (Xsd.isOneOfGroupLevel > 0) then
+  and (Xsd.isOneOfGroupLevel > 0) then with (Parent as TXml) do
   begin
     n := 0;
-    for x := 0 to (Parent as TXml).Items.Count - 1 do
-      if ((Parent as TXml).Items.XmlItems[x].Xsd.isOneOfGroupLevel = self.Xsd.isOneOfGroupLevel)
-      and ((Parent as TXml).Items.XmlItems[x].Checked) then
+    for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
+      if (Xsd.isOneOfGroupLevel = self.Xsd.isOneOfGroupLevel)
+      and (Checked) then
         Inc (n);
     result := (n = 1);
+  end;
+end;
+
+function TXml.isAnyOfGroupOk: Boolean;
+var
+  x, n: Integer;
+begin
+  result := True;
+  if Assigned (Parent)
+  and Assigned (Xsd)
+  and (Xsd.isAnyOfGroupLevel > 0) then with (Parent as TXml) do
+  begin
+    n := 0;
+    for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
+      if (Xsd.isAnyOfGroupLevel = self.Xsd.isAnyOfGroupLevel)
+      and (Checked) then
+        Inc (n);
+    result := (n > 0);
   end;
 end;
 

@@ -11,20 +11,19 @@ state 0:
 
 state 1:
 
-	start : $$1 _ OptionalYamlObjects
-	OptionalYamlObjects : _	(3)
-	$$2 : _	(7)
+	start : $$1 _ OptionalComments OptionalYamlObjects
+	OptionalComments : _	(3)
 
+	_COMMENT	shift 6
 	$end	reduce 3
-	_NAME	reduce 7
-	_HYPHENINDENT	reduce 7
-	_ARRAYVALUE	reduce 7
+	_NAME	reduce 3
+	_HYPHENINDENT	reduce 3
+	_ARRAYVALUE	reduce 3
 	.	error
 
-	$$2	goto 3
-	YamlObject	goto 4
-	YamlObjects	goto 5
-	OptionalYamlObjects	goto 6
+	Comment	goto 3
+	Comments	goto 4
+	OptionalComments	goto 5
 
 state 2:
 
@@ -35,110 +34,159 @@ state 2:
 
 state 3:
 
-	YamlObject : $$2 _ NameValuePair
-
-	_NAME	shift 10
-	_HYPHENINDENT	shift 11
-	_ARRAYVALUE	shift 12
-	.	error
-
-	arrayValueWithoutName	goto 7
-	arrayEntry	goto 8
-	NameValuePair	goto 9
-
-state 4:
-
-	YamlObjects : YamlObject _	(5)
+	Comments : Comment _	(5)
 
 	.	reduce 5
 
-state 5:
+state 4:
 
-	OptionalYamlObjects : YamlObjects _	(4)
-	YamlObjects : YamlObjects _ YamlObject
-	$$2 : _	(7)
+	OptionalComments : Comments _	(4)
+	Comments : Comments _ Comment
 
+	_COMMENT	shift 6
 	$end	reduce 4
-	_NAME	reduce 7
-	_HYPHENINDENT	reduce 7
-	_ARRAYVALUE	reduce 7
+	_NAME	reduce 4
+	_HYPHENINDENT	reduce 4
+	_ARRAYVALUE	reduce 4
 	.	error
 
-	$$2	goto 3
-	YamlObject	goto 13
+	Comment	goto 7
+
+state 5:
+
+	start : $$1 OptionalComments _ OptionalYamlObjects
+	OptionalYamlObjects : _	(8)
+	$$2 : _	(12)
+
+	$end	reduce 8
+	_NAME	reduce 12
+	_HYPHENINDENT	reduce 12
+	_ARRAYVALUE	reduce 12
+	.	error
+
+	$$2	goto 8
+	YamlObject	goto 9
+	YamlObjects	goto 10
+	OptionalYamlObjects	goto 11
 
 state 6:
 
-	start : $$1 OptionalYamlObjects _	(2)
+	Comment : _COMMENT _	(7)
 
-	.	reduce 2
+	.	reduce 7
 
 state 7:
 
-	NameValuePair : arrayValueWithoutName _	(11)
-
-	.	reduce 11
-
-state 8:
-
-	NameValuePair : arrayEntry _	(10)
-
-	.	reduce 10
-
-state 9:
-
-	YamlObject : $$2 NameValuePair _	(8)
-
-	.	reduce 8
-
-state 10:
-
-	NameValuePair : _NAME _ OptionalValue
-	OptionalValue : _	(14)
-
-	_VALUE	shift 16
-	$end	reduce 14
-	_NAME	reduce 14
-	_HYPHENINDENT	reduce 14
-	_ARRAYVALUE	reduce 14
-	.	error
-
-	Value	goto 14
-	OptionalValue	goto 15
-
-state 11:
-
-	arrayEntry : _HYPHENINDENT _	(12)
-
-	.	reduce 12
-
-state 12:
-
-	arrayValueWithoutName : _ARRAYVALUE _	(13)
-
-	.	reduce 13
-
-state 13:
-
-	YamlObjects : YamlObjects YamlObject _	(6)
+	Comments : Comments Comment _	(6)
 
 	.	reduce 6
 
-state 14:
+state 8:
 
-	OptionalValue : Value _	(15)
+	YamlObject : $$2 _ NameValuePair
+
+	_NAME	shift 15
+	_HYPHENINDENT	shift 16
+	_ARRAYVALUE	shift 17
+	.	error
+
+	arrayValueWithoutName	goto 12
+	arrayEntry	goto 13
+	NameValuePair	goto 14
+
+state 9:
+
+	YamlObjects : YamlObject _	(10)
+
+	.	reduce 10
+
+state 10:
+
+	OptionalYamlObjects : YamlObjects _	(9)
+	YamlObjects : YamlObjects _ YamlObject
+	$$2 : _	(12)
+
+	$end	reduce 9
+	_NAME	reduce 12
+	_HYPHENINDENT	reduce 12
+	_ARRAYVALUE	reduce 12
+	.	error
+
+	$$2	goto 8
+	YamlObject	goto 18
+
+state 11:
+
+	start : $$1 OptionalComments OptionalYamlObjects _	(2)
+
+	.	reduce 2
+
+state 12:
+
+	NameValuePair : arrayValueWithoutName _	(16)
+
+	.	reduce 16
+
+state 13:
+
+	NameValuePair : arrayEntry _	(15)
 
 	.	reduce 15
 
+state 14:
+
+	YamlObject : $$2 NameValuePair _	(13)
+
+	.	reduce 13
+
 state 15:
 
-	NameValuePair : _NAME OptionalValue _	(9)
+	NameValuePair : _NAME _ OptionalValue
+	OptionalValue : _	(19)
 
-	.	reduce 9
+	_VALUE	shift 21
+	$end	reduce 19
+	_NAME	reduce 19
+	_HYPHENINDENT	reduce 19
+	_ARRAYVALUE	reduce 19
+	.	error
+
+	Value	goto 19
+	OptionalValue	goto 20
 
 state 16:
 
-	Value : _VALUE _	(16)
+	arrayEntry : _HYPHENINDENT _	(17)
 
-	.	reduce 16
+	.	reduce 17
+
+state 17:
+
+	arrayValueWithoutName : _ARRAYVALUE _	(18)
+
+	.	reduce 18
+
+state 18:
+
+	YamlObjects : YamlObjects YamlObject _	(11)
+
+	.	reduce 11
+
+state 19:
+
+	OptionalValue : Value _	(20)
+
+	.	reduce 20
+
+state 20:
+
+	NameValuePair : _NAME OptionalValue _	(14)
+
+	.	reduce 14
+
+state 21:
+
+	Value : _VALUE _	(21)
+
+	.	reduce 21
 

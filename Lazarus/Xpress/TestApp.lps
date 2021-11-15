@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <BuildModes Active="Default"/>
     <Units Count="34">
       <Unit0>
@@ -17,17 +17,16 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TestAppUnit"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="12"/>
         <CursorPos X="7" Y="32"/>
         <UsageCount Value="69"/>
-        <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Xml\xmlio.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="xmlio"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="9"/>
         <CursorPos X="49" Y="13"/>
         <UsageCount Value="20"/>
@@ -35,10 +34,9 @@
       </Unit2>
       <Unit3>
         <Filename Value="..\Utils\igGlobals.pas"/>
-        <UnitName Value="igGlobals"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="891"/>
-        <CursorPos Y="910"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="406"/>
+        <CursorPos Y="498"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit3>
@@ -50,8 +48,7 @@
       </Unit4>
       <Unit5>
         <Filename Value="..\Xml\Xmlz.pas"/>
-        <UnitName Value="Xmlz"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <TopLine Value="2717"/>
         <CursorPos X="40" Y="2728"/>
         <UsageCount Value="64"/>
@@ -139,8 +136,8 @@
         <Filename Value="..\Xml\XMLPARSER.PAS"/>
         <UnitName Value="XmlParser"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <CursorPos X="6" Y="7"/>
+        <TopLine Value="67"/>
+        <CursorPos X="50" Y="83"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit21>
@@ -197,8 +194,7 @@
         <ComponentName Value="ShowXmlForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ShowXmlUnit"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="6"/>
         <CursorPos X="3" Y="17"/>
         <UsageCount Value="11"/>
@@ -224,90 +220,66 @@
         <UsageCount Value="20"/>
       </Unit33>
     </Units>
-    <JumpHistory Count="21" HistoryIndex="20">
+    <JumpHistory Count="14" HistoryIndex="13">
       <Position1>
-        <Filename Value="testappunit.pas"/>
-        <Caret Line="35" Column="30" TopLine="18"/>
-      </Position1>
-      <Position2>
-        <Filename Value="testappunit.pas"/>
-        <Caret Line="31" Column="21" TopLine="20"/>
-      </Position2>
-      <Position3>
-        <Filename Value="testappunit.pas"/>
-        <Caret Line="30" Column="21" TopLine="19"/>
-      </Position3>
-      <Position4>
-        <Filename Value="testappunit.pas"/>
-        <Caret Line="36" Column="3" TopLine="19"/>
-      </Position4>
-      <Position5>
         <Filename Value="..\Xml\ShowXmlUnit.pas"/>
         <Caret Line="17" Column="3" TopLine="6"/>
-      </Position5>
-      <Position6>
-        <Filename Value="testappunit.pas"/>
-        <Caret Line="31" Column="11" TopLine="18"/>
-      </Position6>
-      <Position7>
-        <Filename Value="testappunit.pas"/>
-        <Caret Line="32" Column="11" TopLine="19"/>
-      </Position7>
-      <Position8>
-        <Filename Value="testappunit.pas"/>
-        <Caret Line="31" Column="11" TopLine="18"/>
-      </Position8>
-      <Position9>
+      </Position1>
+      <Position2>
         <Filename Value="..\Xml\ShowXmlUnit.pas"/>
         <Caret Line="16" Column="32" TopLine="5"/>
-      </Position9>
-      <Position10>
+      </Position2>
+      <Position3>
         <Filename Value="..\Utils\igGlobals.pas"/>
         <Caret Line="140" Column="20" TopLine="135"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="349" TopLine="338"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="758" Column="45" TopLine="747"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\Utils\igGlobals.pas"/>
+        <Caret Line="992" TopLine="972"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="355" Column="10" TopLine="338"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <Caret Line="758" Column="45" TopLine="747"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\Xml\xmlio.pas"/>
+        <Caret Line="16" TopLine="4"/>
       </Position10>
       <Position11>
         <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="349" TopLine="338"/>
+        <Caret Line="356" Column="11" TopLine="335"/>
       </Position11>
       <Position12>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="758" Column="45" TopLine="747"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\Utils\igGlobals.pas"/>
-        <Caret Line="992" TopLine="972"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="355" Column="10" TopLine="338"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="758" Column="45" TopLine="747"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\Xml\xmlio.pas"/>
-        <Caret Line="16" TopLine="4"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\Xml\Xmlz.pas"/>
-        <Caret Line="356" Column="11" TopLine="335"/>
-      </Position18>
-      <Position19>
         <Filename Value="..\Utils\igGlobals.pas"/>
         <Caret Line="152" TopLine="132"/>
-      </Position19>
-      <Position20>
+      </Position12>
+      <Position13>
         <Filename Value="..\Xml\ShowXmlUnit.pas"/>
         <Caret Line="17" Column="3" TopLine="6"/>
-      </Position20>
-      <Position21>
+      </Position13>
+      <Position14>
         <Filename Value="..\Xml\XMLPARSER.PAS"/>
         <Caret Line="17" Column="3" TopLine="6"/>
-      </Position21>
+      </Position14>
     </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
   </ProjectSession>
 </CONFIG>

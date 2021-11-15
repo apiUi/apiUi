@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit xmlUtilz;
 
 {$IFDEF FPC}
@@ -14,8 +28,10 @@ uses Classes, Forms, Controls, ComCtrls, StdCtrls, Graphics, LazFileUtils
    , Ipmz
    , ParserClasses
    {$ifndef NoGUI}
-   , IpHtml
+   , HtmlView
    {$endif}
+   , MarkdownUtils
+   , MarkdownProcessor
    ;
 
 
@@ -119,7 +135,7 @@ public
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
                                  ); overload;
-  procedure ListXsdDocumentation ( aHtmlViewer: TIpHtmlPanel
+  procedure ListXsdDocumentation ( aHtmlViewer: THtmlViewer
                                  ; aBind: TCustomBindable
                                  ; aShowPath: Boolean
                                  ; aShowValue: Boolean
@@ -171,7 +187,6 @@ uses
    , ClipBrd
    , XmlGridUnit
 // , XsBuiltIns
-   , SwiftUnit
    , base64
    ;
 
@@ -1347,26 +1362,6 @@ begin
     AddProperty ('FractionalDigits', xDataType.FractionalDigits);
     AddProperty ('SourceFileDataType', xDataType.SourceFileName);
   end;
-  if (aBind is TXml) then with aBind as TXml do
-  begin
-    if Assigned (Xsd)
-    and (Xsd.Obj is TSwiftMtProps) then with Xsd.Obj as TSwiftMtProps do
-    begin
-      AddProperty('mtTag', mtTag);
-      AddProperty('mtFinFormat', mtFinFormat);
-      if mtMatchContent then
-        AddProperty('mtMatchContent', BooleanAsString(mtMatchContent));
-      AddProperty('mtSepPrefix', mtSepPrefix);
-      AddProperty('mtSepSuffix', mtSepSuffix);
-      AddProperty('mtSeparator', mtSeparator);
-      AddProperty('mtMatchUntilPattern', mtMatchUntilPattern);
-      AddProperty('mtLookAheadPattern', mtLookAheadPattern);
-      if mtIncludeNext then
-        AddProperty('mtIncludeNext', BooleanAsString(mtIncludeNext));
-      if mtIncludePrefix then
-        AddProperty('mtIncludePrefix', BooleanAsString(mtIncludePrefix));
-    end;
-  end;
   if aBind is TIpmItem then
   begin
     AddProperty('Name', (aBind as TIpmItem).Name);
@@ -1415,16 +1410,16 @@ begin
   aMemo.Lines.Text := s;
 end;
 
-procedure TXmlUtil.ListXsdDocumentation(aHtmlViewer: TIpHtmlPanel;
+procedure TXmlUtil.ListXsdDocumentation(aHtmlViewer: THtmlViewer;
   aBind: TCustomBindable; aShowPath: Boolean; aShowValue: Boolean);
 var
   s: String;
 begin
   s := '';
   if aShowPath then
-    s := s + 'Path: ' + aBind.GetFullCaption + #$A#$D;
+    s := s + 'Path: ' + aBind.GetFullCaption + '  ' + LineEnding;
   if aShowValue then
-    s := s + 'Value: ' + aBind.Value + #$A#$D;
+    s := s + 'Value: ' + aBind.Value + '  ' + LineEnding;
   if aBind is TXmlAttribute then
     s := s + (aBind as TXmlAttribute).XsdAttr.Documentation.Text;
   if aBind is TXml then
@@ -1433,10 +1428,26 @@ begin
     s := s + (aBind as TXmlAttribute).XsdAttr.Appinfo.Text;
   if aBind is TXml then
     s := s + (aBind as TXml).AppinfoText;
+  with TMarkdownProcessor.createDialect(mdCommonMark) do
   try
-    aHtmlViewer.SetHtmlFromStr(textToHtml(s));
+    UnSafe := false;
+    //    aHtmlViewer.LoadFromString(prepareMarkDownText(process(s)));
+    //    s := '# EEN ' + LineEnding + 'een txt' + LineEnding + '## twee' + LineEnding + 'tweede tekst';
+    aHtmlViewer.LoadFromString(process(prepareMarkDownText(s)));
+  finally
+    Free;
+  end;
+{
+  try
+    with TMarkdownProcessor.createDialect(mdCommonMark) do
+    try
+      aHtmlViewer.SetHtmlFromStr(process(s)));
+    finally
+      free;
+    end;
   except
   end;
+}
 end;
 
 {
@@ -1767,14 +1778,6 @@ begin
   result := aBind.Name;
   if aBind is TXmlAttribute then
     result := '@' + aBind.Name;
-  if aBind is TXml then with aBind as TXml do
-  begin
-    if Assigned (Xsd)
-    and Assigned (Xsd.Obj)
-    and (Xsd.Obj is TSwiftMtProps) then with Xsd.Obj as TSwiftMtProps do
-      if expansionName <> '' then
-        result := result + ' [' + expansionName + ']';
-  end;
 end;
 
 function TXmlUtil.BooleanAsString(aBoolean: Boolean): String;

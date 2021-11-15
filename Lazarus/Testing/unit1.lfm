@@ -104,18 +104,4 @@ object Form1: TForm1
     left = 56
     top = 128
   end
-  object OracleConnection1: TOracleConnection
-    Connected = False
-    LoginPrompt = False
-    DatabaseName = 'XE'
-    KeepConnection = False
-    Params.Strings = (
-      'DBQ=testcl20-scan.rabobank.nl:39000/SRV0TBPM301'
-      'UID=select_ped'
-      'PWD=readonly_01'
-    )
-    LogEvents = []
-    left = 144
-    top = 74
-  end
 end

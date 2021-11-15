@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit ShowXmlUnit;
 
 {$IFDEF FPC}
@@ -14,12 +28,12 @@ uses
 {$ENDIF}
   SysUtils , Classes , Graphics , Forms , Controls , Buttons ,
   ComCtrls , ExtCtrls , VirtualTrees, xmlio , Bind , Xmlz , Ipmz , Dialogs ,
-  FormIniFilez , ActnList , Menus, IpHtml
+  FormIniFilez , ActnList , Menus, HtmlView, IpHtml
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  ;
+  , HtmlGlobals;
 
 type
 
@@ -27,7 +41,7 @@ type
 
   TShowXmlForm = class(TForm)
     CancelButton : TBitBtn ;
-    DocumentationViewer: TIpHtmlPanel;
+    DocumentationViewer: THtmlViewer;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -106,7 +120,10 @@ type
     CleanAction: TAction;
     CleanActionMenuItem: TMenuItem;
     ZoomasAssignment1: TMenuItem;
-    procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
+    procedure DocumentationViewerKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -1969,11 +1986,6 @@ begin
   xmlUtil.presentString(SelectedBind.FullCaption, SelectedBind.Value);
 end;
 
-procedure TShowXmlForm.DocumentationViewerHotClick(Sender: TObject);
-begin
-  OpenUrl(DocumentationViewer.HotURL);
-end;
-
 procedure TShowXmlForm.MenuItem2Click(Sender: TObject);
 var
   n, w: Integer;
@@ -1990,6 +2002,19 @@ begin
   finally
     FreeAndNil(PromptForm);
   end;
+end;
+
+procedure TShowXmlForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
+end;
+
+procedure TShowXmlForm.DocumentationViewerKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = Word('C')) and (Shift = [ssCtrl]) then
+    (Sender as THtmlViewer).CopyToClipboard;
 end;
 
 procedure TShowXmlForm.MenuItem4Click(Sender: TObject);

@@ -1,4 +1,18 @@
-//  Search for ZoomElement, it is available
+{
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
+
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
+
 unit WsdlStubMainUnit;
 {$IFDEF FPC}
   {$MODE Delphi}
@@ -38,21 +52,19 @@ uses
    , ExtCtrls
    , FormIniFilez
    , Menus
-   , PairSplitter
+   , PairSplitter, HtmlView
    , VirtualTrees
    , LazFileUtils
    , FileUtil
    , IpHtml
    , Bind
-   , mqinterface
-   , mqapi
-   , SwiftUnit
    , ParserClasses
    , types
    , ClaimListz
-   , tacointerface
    , progressinterface
-   ;
+   , MarkdownUtils
+   , MarkdownProcessor
+   , HtmlGlobals;
 
 type
   THackControl = class(TWinControl)
@@ -73,29 +85,41 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    ChangeToolBarColorTest: TAction;
     FocusOnOperationMenuItem: TMenuItem;
+    DocumentationViewer: THtmlViewer;
+    OperationDocumentationViewer: THtmlViewer;
     MenuItem14: TMenuItem;
     MenuItem70: TMenuItem;
     MenuItem72: TMenuItem;
     NavigateOperationsPopupMenu: TPopupMenu;
     NvgtView: TVirtualStringTree;
+    Splitter2: TSplitter;
+    ToggleDebugLogModeAction: TAction;
     ToolButton49: TToolButton;
     ToolButton52: TToolButton;
+    ToolButton62: TToolButton;
     WsdlServiceNameEdit: TEdit;
     WsdlNameEdit: TEdit;
     NavigateHierarchyAction: TAction;
     WsdlOperationNameEdit: TEdit;
     procedure AboutApiServerActionExecute(Sender: TObject);
     procedure AboutApiServerActionUpdate(Sender: TObject);
+    procedure ChangeToolBarColorTestExecute(Sender: TObject);
     procedure EditCloudEnvironmentActionUpdate(Sender: TObject);
     procedure FocusOnOperationMenuItemClick(Sender: TObject);
     procedure MenuItem14Click(Sender: TObject);
-    procedure MenuItem65Click(Sender: TObject);
     procedure MessagesVTSColumnClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure MessagesVTSHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure NavigateHierarchyActionExecute(Sender: TObject);
     procedure NavigateHierarchyActionUpdate(Sender: TObject);
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
+    procedure HtmlViewerKeyDown(Sender: TObject;
+      var Key: Word; Shift: TShiftState);
+    procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
+      const Msg: String);
     procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
   private
@@ -125,8 +149,6 @@ type
     ShowOperationInfoAction: TAction;
     PasteProjectFromClipboardAction: TAction;
     LogsFromHttpGetAction: TAction;
-    MenuItem64: TMenuItem;
-    MenuItem65: TMenuItem;
     SetApiServerConnectionAction: TAction;
     SnapshotFromHttpGetAction: TAction;
     CheckReferencedFilesExistInCloudAction: TAction;
@@ -166,8 +188,6 @@ type
     ToolButton78: TToolButton;
     OperationBrowseDocumentationAction: TAction;
     ToggleTrackIOAction: TAction;
-    BmtpOperationsAction: TAction;
-    MailOperationsAction: TAction;
     ApiByExampleAction: TAction;
     ContextsAction: TAction;
     MenuItem21: TMenuItem;
@@ -179,13 +199,7 @@ type
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
-    MenuItem48: TMenuItem;
-    MenuItem49: TMenuItem;
-    MenuItem50: TMenuItem;
-    MenuItem51: TMenuItem;
     OpenProjectAction: TAction;
-    MenuItem39: TMenuItem;
-    MenuItem40: TMenuItem;
     SaveProjectAsFolderAction: TAction;
     IntrospectDesignAction: TAction;
     EditMessageDocumentationAction: TAction;
@@ -193,7 +207,6 @@ type
     AddChildElementMenuItem: TMenuItem;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     ToggleDoScrollMessagesIntoViewAction: TAction;
-    MenuItem36 : TMenuItem ;
     ToolButton36: TToolButton;
     ToolButton68: TToolButton;
     ToolButton69: TToolButton;
@@ -203,13 +216,8 @@ type
     ToolButton74: TToolButton;
     LastMessageToolButton: TToolButton;
     ToolButton76: TToolButton;
-    ToolButton77: TToolButton;
-    XmlSampleOperationsMenuItem : TMenuItem ;
-    XmlSampleOperations : TAction ;
     EditMessageAfterScriptAction : TAction ;
     EditMessageScriptAction : TAction ;
-    DocumentationViewer: TIpHtmlPanel;
-    OperationDocumentationViewer : TIpHtmlPanel ;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
@@ -218,7 +226,6 @@ type
     MenuItem38 : TMenuItem ;
     SnapshotsFromFolderAction : TAction ;
     ShowResolvedProperties : TAction ;
-    BrowseMqButton: TToolButton;
     ExceptionMemo: TMemo;
     ExceptionStatusBar: TStatusBar;
     ExceptionsVTS: TVirtualStringTree;
@@ -256,7 +263,6 @@ type
     PromoteToReferenceMenuItem : TMenuItem ;
     MenuItem25 : TMenuItem ;
     SnapshotsPopupMenu : TPopupMenu ;
-    PingPongTimer : TTimer ;
     ToolBar1: TToolBar;
     ToolBar3: TToolBar;
     ToolBar4: TToolBar;
@@ -264,28 +270,20 @@ type
     ToolButton22: TToolButton;
     ToolButton24: TToolButton;
     ToolButton30: TToolButton;
-    ToolButton31: TToolButton;
     ToolButton32: TToolButton;
-    ToolButton33: TToolButton;
-    ToolButton35: TToolButton;
     ToolButton37: TToolButton;
     ToolButton39: TToolButton;
     ToolButton40: TToolButton;
     ToolButton42: TToolButton;
     ToolButton50: TToolButton;
     ToolButton51: TToolButton;
-    ToolButton59: TToolButton;
     ToolButton64: TToolButton;
     ToolButton65 : TToolButton ;
     ToolButton66 : TToolButton ;
     ToolButton67: TToolButton;
     ReportOnSnapshotsAction : TAction ;
     ClearSnapshotsAction : TAction ;
-    ImportProjectScriptsAction : TAction ;
-    MenuItem20 : TMenuItem ;
     MenuItem4 : TMenuItem ;
-    ExportProjectScriptsAction : TAction ;
-    MenuItem1 : TMenuItem ;
     MessagesStatusBar1 : TStatusBar ;
     ThreadsPanel : TPanel ;
     ShowShortCutActionsAction : TAction ;
@@ -314,7 +312,6 @@ type
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
-    MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     OperationAliasAction : TAction ;
     logChartAction : TAction ;
@@ -347,7 +344,6 @@ type
     SQLTransaction : TSQLTransaction ;
     StatusPanel : TPanel ;
     ToolBar9 : TToolBar ;
-    ToolButton10 : TToolButton ;
     ToolButton11 : TToolButton ;
     ToolButton12 : TToolButton ;
     ToolButton13 : TToolButton ;
@@ -368,7 +364,6 @@ type
     ToolButton46 : TToolButton ;
     ToolButton47 : TToolButton ;
     ToolButton54 : TToolButton ;
-    ToolButton63 : TToolButton ;
     ToolButton7 : TToolButton ;
     ToolButton8 : TToolButton ;
     ToolButton9 : TToolButton ;
@@ -388,10 +383,8 @@ type
     File1: TMenuItem;
     Exit1: TMenuItem;
     OpenWSDLfile1: TMenuItem;
-    N1: TMenuItem;
     TreeviewImageList: TImageList;
     InWsdlPropertiesListView: TListView;
-    Splitter4: TSplitter;
     TreePopupMenu: TPopupMenu;
     WsdlItemAddMenuItem: TMenuItem;
     N2: TMenuItem;
@@ -430,15 +423,12 @@ type
     DeleteMessageAction: TAction;
     MoveUpMessageAction: TAction;
     MoveDownMessageAction: TAction;
-    ApplyToAction: TAction;
     SaveStubCaseAction: TAction;
     SaveStubCase1: TMenuItem;
     ActionToolBar: TToolBar;
     ActionComboBox: TComboBox;
-    Button1: TButton;
     ToolButton17: TToolButton;
     RedirectAddressButton: TToolButton;
-    ToolButton19: TToolButton;
     Splitter6: TSplitter;
     ToolButton21: TToolButton;
     ClearLogItemsAction: TAction;
@@ -457,11 +447,8 @@ type
     View1: TMenuItem;
     SchemapropertiesMenuItem: TMenuItem;
     ListofOperationsMenuItem: TMenuItem;
-    SaveMessagesAction: TAction;
     WsdlInformationMenuItem: TMenuItem;
     WsdlPopulateMenuItem: TMenuItem;
-    ReadMessagesAction: TAction;
-    MessagesRegressionAction: TAction;
     CheckGridFieldsAction: TAction;
     DesignPanelAtTopMenuItem: TMenuItem;
     CopyExceptionToClipboardAction: TAction;
@@ -477,8 +464,6 @@ type
     ExecuteRequestAction: TAction;
     ExecuteAllRequestsAction: TAction;
     LogMenuItem: TMenuItem;
-    ReadMessagesAction1: TMenuItem;
-    SaveMessagesAction1: TMenuItem;
     Comparewithfile1: TMenuItem;
     N7: TMenuItem;
     ClearExceptionsAction1: TMenuItem;
@@ -516,8 +501,6 @@ type
     ShowRequestAsXmlGridAction: TAction;
     ToggleBetaModeAction: TAction;
     Action1: TAction;
-    BrowseMqAction: TAction;
-    BrowseMqMenuItem: TMenuItem;
     ShowRequestHeaderAsXmlAction: TAction;
     GridPopupMenu: TPopupMenu;
     Log2DesignAction: TAction;
@@ -534,8 +517,6 @@ type
     Options3: TMenuItem;
     ConfigListenersAction: TAction;
     ToolButton58: TToolButton;
-    readLog4jEventsAction: TAction;
-    readLog4jEventsAction1: TMenuItem;
     Revalidatemessages1: TMenuItem;
     N15: TMenuItem;
     Reset1: TMenuItem;
@@ -549,10 +530,7 @@ type
     Removeallmessagesfromalloperations1: TMenuItem;
     ShowLogDetailsAction: TAction;
     ShowLogdetails1: TMenuItem;
-    ToolButton60: TToolButton;
-    ToolButton61: TToolButton;
     ConfigLogAction: TAction;
-    ToolButton62: TToolButton;
     DelayTimeButton: TToolButton;
     ToggleFileLogAction: TAction;
     RedirectAddressAction: TAction;
@@ -561,7 +539,6 @@ type
     OperationWsaAction: TAction;
     ThrowExceptionAction: TAction;
     Configurelisteners1: TMenuItem;
-    MessagesFromDiskAction: TAction;
     LogDisplayedColumnsAction: TAction;
     Displayedcolumns1: TMenuItem;
     startStopButton: TToolButton;
@@ -580,8 +557,6 @@ type
     EditBetweenScriptMenuItem: TMenuItem;
     EditBeforeScriptMenuItem: TMenuItem;
     EditAfterScriptMenuItem: TMenuItem;
-    CopySwiftdatatoclipboardMenuItem: TMenuItem;
-    PasteSwiftdatafromclipboardMenuItem: TMenuItem;
     ToggleNotifyAction: TAction;
     SaveLogRequestsToFileAction: TAction;
     N27: TMenuItem;
@@ -608,24 +583,16 @@ type
     ViewMssgAsTextAction1: TMenuItem;
     CobolOperationsAction: TAction;
     CobolOperationsAction1: TMenuItem;
-    SwiftMtOperationsAction: TAction;
-    MaintainlistofSwiftMToperations1: TMenuItem;
     WsdlsPopupMenu: TPopupMenu;
     Maintainlistoffreeformatoperations1: TMenuItem;
     Maintainlistofcoboloperations1: TMenuItem;
-    MaintainlistofSwiftMToperations2: TMenuItem;
     MaintainlistofWSDLfiles1: TMenuItem;
     N33: TMenuItem;
-    XsdOperationsAction: TAction;
-    XsdOperationsAction1: TMenuItem;
-    Xsdoperations1: TMenuItem;
     ShowReplyHeaderAsXmlAction: TAction;
-    CleanMenuItem: TMenuItem;
     N34: TMenuItem;
     ProjectCleanAction: TAction;
     Clean1: TMenuItem;
     HelpMainMenuAction: TAction;
-    HelpMainMenuAction1: TMenuItem;
     N35: TMenuItem;
     GenerateScriptAssignmentAction: TAction;
     ToolButton70: TToolButton;
@@ -643,10 +610,6 @@ type
     procedure CheckReferencedFilesExistInCloudActionExecute(Sender: TObject);
     procedure AddChildElementMenuItemClick(Sender: TObject);
     procedure ApiByExampleActionUpdate(Sender: TObject);
-    procedure BmtpOperationsActionExecute(Sender: TObject);
-    procedure BmtpOperationsActionHint(var HintStr: string; var CanShow: Boolean
-      );
-    procedure BmtpOperationsActionUpdate(Sender: TObject);
     procedure CobolOperationsActionUpdate(Sender: TObject);
     procedure ContextsActionExecute(Sender: TObject);
     procedure CopyRemoteApiUiProjectActionExecute(Sender: TObject);
@@ -669,10 +632,6 @@ type
       );
     procedure LogsFromHttpGetActionUpdate(Sender: TObject);
     procedure LogTabControlChange(Sender: TObject);
-    procedure MailOperationsActionExecute(Sender: TObject);
-    procedure MailOperationsActionHint(var HintStr: string; var CanShow: Boolean
-      );
-    procedure MailOperationsActionUpdate(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem43Click(Sender: TObject);
@@ -705,16 +664,11 @@ type
     procedure OperationDocumentationViewerClick(Sender: TObject);
     procedure PromptAndSetColumnWidth (aTreeView: TVirtualStringTree);
     procedure GridColumnWidthMenuItemClick(Sender: TObject);
-    procedure NeedTacoHostData (Sender: TTacoInterface);
-    procedure OnTacoAuthorize (Sender: TObject);
     procedure AbortActionUpdate (Sender : TObject );
-    procedure BrowseMqActionHint (var HintStr : string ; var CanShow : Boolean
-      );
     procedure ClearSnapshotsActionExecute (Sender : TObject );
     procedure CopyLogGridToClipBoardActionExecute (Sender : TObject );
     procedure DesignPanelSplitVerticalMenuItemClick (Sender : TObject );
     procedure GridPopupMenuPopup (Sender : TObject );
-    procedure ImportProjectScriptsActionExecute (Sender : TObject );
     procedure TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
@@ -730,7 +684,6 @@ type
     procedure NvgtViewGetImageIndex (Sender : TBaseVirtualTree ;
       Node : PVirtualNode ; Kind : TVTImageKind ; Column : TColumnIndex ;
       var Ghosted : Boolean ; var ImageIndex : Integer );
-    procedure PingPongTimerTimer (Sender : TObject );
     procedure IntrospectDesignActionExecute(Sender: TObject);
     procedure CheckFolderAndFileNames;
     procedure SaveProjectAsFolderActionExecute(Sender: TObject);
@@ -749,7 +702,6 @@ type
       TabIndex : Integer ; var ImageIndex : Integer );
     procedure MessagesVTSCompareNodes (Sender : TBaseVirtualTree ; Node1 ,
       Node2 : PVirtualNode ; Column : TColumnIndex ; var Result : Integer );
-    procedure SwiftMtOperationsActionUpdate(Sender: TObject);
     procedure ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);
     procedure ToggleTrackIOActionExecute(Sender: TObject);
     procedure OperationAliasActionExecute (Sender : TObject );
@@ -760,7 +712,6 @@ type
     procedure PresentLogMemoTextActionExecute (Sender : TObject );
     procedure PresentLogMemoTextActionUpdate (Sender : TObject );
     procedure ProjectDesignToClipboardActionExecute(Sender: TObject);
-    procedure ExportProjectScriptsActionExecute (Sender : TObject );
     procedure ReportOnSnapshots (aList: TClaimableObjectList);
     procedure ReportOnSnapshotsActionExecute (Sender : TObject );
     procedure SnapshotsPopupMenuPopup (Sender : TObject );
@@ -780,14 +731,9 @@ type
     procedure ShowLogDetailsActionExecute(Sender: TObject);
     procedure RemoveAllMessagesActionUpdate(Sender: TObject);
     procedure RemoveAllMessagesActionExecute(Sender: TObject);
-    procedure DisableMessageActionExecute(Sender: TObject);
     procedure EnableMessageActionExecute(Sender: TObject);
     procedure Reset1Click(Sender: TObject);
     procedure Revalidatemessages1Click(Sender: TObject);
-    procedure readLog4jEventsActionHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure readLog4jEventsActionUpdate(Sender: TObject);
-    procedure readLog4jEventsActionExecute(Sender: TObject);
     procedure ConfigListenersActionUpdate(Sender: TObject);
     procedure ConfigListenersActionExecute(Sender: TObject);
     procedure ServiceOptionsActionExecute(Sender: TObject);
@@ -804,11 +750,9 @@ type
     procedure ViewMssgAsTextActionUpdate(Sender: TObject);
     procedure Log2DesignActionExecute(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure BrowseMqActionExecute(Sender: TObject);
-    procedure BrowseMqActionUpdate(Sender: TObject);
     procedure Action1Execute(Sender: TObject);
     procedure ShowRemarksActionExecute(Sender: TObject);
-    procedure ToggleBetaModeActionExecute(Sender: TObject);
+    procedure ToggleDebugLogModeActionExecute(Sender: TObject);
     procedure ShowRequestAsXmlGridActionExecute(Sender: TObject);
     procedure ShowRequestAsXmlGridActionUpdate(Sender: TObject);
     procedure ShowReplyAsXmlGridActionExecute(Sender: TObject);
@@ -845,7 +789,6 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer);
     procedure doExecuteRequest;
-    procedure doDisableMessages;
     procedure doRevalidateMessages;
     procedure doSaveLogRequestsToDisk;
     procedure doSaveLogRepliesToDisk;
@@ -862,14 +805,7 @@ type
     procedure DesignPanelAtTopMenuItemClick(Sender: TObject);
     procedure CheckGridFieldsActionExecute(Sender: TObject);
     procedure CheckGridFieldsActionUpdate(Sender: TObject);
-    procedure MessagesRegressionActionUpdate(Sender: TObject);
-    procedure MessagesRegressionActionExecute(Sender: TObject);
-    procedure ReadMessagesActionHint(var HintStr: string; var CanShow: Boolean);
-    procedure ReadMessagesActionExecute(Sender: TObject);
-    procedure ReadMessagesActionUpdate(Sender: TObject);
     procedure WsdlInformationMenuItemClick(Sender: TObject);
-    procedure SaveMessagesActionExecute(Sender: TObject);
-    procedure SaveMessagesActionUpdate(Sender: TObject);
     procedure ListofOperationsMenuItemClick(Sender: TObject);
     procedure SchemapropertiesMenuItemClick(Sender: TObject);
     procedure MessagesVTSPaintText(Sender: TBaseVirtualTree;
@@ -918,8 +854,6 @@ type
     procedure SaveStubCaseActionExecute(Sender: TObject);
     procedure GridViewEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex);
-    procedure OperationApplySettingsActionExecute(Sender: TObject);
-    procedure ApplyToActionUpdate(Sender: TObject);
     procedure MoveDownMessageActionExecute(Sender: TObject);
     procedure MoveDownMessageActionUpdate(Sender: TObject);
     procedure MoveUpMessageActionUpdate(Sender: TObject);
@@ -951,10 +885,6 @@ type
     procedure ExportProjectActionExecute(Sender: TObject);
     procedure EditScriptButtonClick(Sender: TObject);
     procedure Expand2Click(Sender: TObject);
-    procedure XmlSampleOperationsExecute (Sender : TObject );
-    procedure XmlSampleOperationsHint (var HintStr : string ;
-      var CanShow : Boolean );
-    procedure XmlSampleOperationsUpdate(Sender: TObject);
     procedure XmlZoomValueAsXMLMenuItemClick(Sender: TObject);
     procedure XmlZoomValueAsTextMenuItemClick(Sender: TObject);
     procedure FullCollapse1Click(Sender: TObject);
@@ -1022,7 +952,6 @@ type
     procedure stopActionUpdate(Sender: TObject);
     procedure ScriptSplitterCanResize(Sender: TObject; var NewSize: Integer;
       var Accept: Boolean);
-    procedure XsdOperationsActionUpdate(Sender: TObject);
     procedure xsdSplitterCanResize(Sender: TObject; var NewSize: Integer;
       var Accept: Boolean);
     procedure EditScriptMenuItemClick(Sender: TObject);
@@ -1034,8 +963,6 @@ type
     procedure EditBetweenScriptMenuItemClick(Sender: TObject);
     procedure EditBeforeScriptMenuItemClick(Sender: TObject);
     procedure EditAfterScriptMenuItemClick(Sender: TObject);
-    procedure CopySwiftdatatoclipboardMenuItemClick(Sender: TObject);
-    procedure PasteSwiftdatafromclipboardMenuItemClick(Sender: TObject);
     procedure ToggleNotifyActionExecute(Sender: TObject);
     procedure SaveLogRequestsToFileActionUpdate(Sender: TObject);
     procedure SaveLogRepliesToFileActionUpdate(Sender: TObject);
@@ -1072,16 +999,8 @@ type
     procedure CobolOperationsActionExecute(Sender: TObject);
     procedure CobolOperationsActionHint(var HintStr: string;
       var CanShow: Boolean);
-    procedure SwiftMtOperationsActionHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure SwiftMtOperationsActionExecute(Sender: TObject);
-    procedure XsdOperationsActionHint(var HintStr: string;
-      var CanShow: Boolean);
-    procedure XsdOperationsActionExecute(Sender: TObject);
-    procedure CleanMenuItemClick(Sender: TObject);
     procedure ProjectCleanActionExecute(Sender: TObject);
     procedure GenerateMenuHelpActionExecute(Sender: TObject);
-    procedure HelpMainMenuActionExecute(Sender: TObject);
     procedure GenerateScriptAssignmentActionExecute(Sender: TObject);
     procedure ConfigLogActionExecute(Sender: TObject);
     procedure RefreshLog;
@@ -1099,12 +1018,9 @@ type
     property ShowKindOfLogData: TShowKindOfLogData read fShowKindOfLogData write setShowKindOfLogData;
   private
     fWsdlService: TWsdlService;
-    doCreateBackup: Boolean;
     doConfirmTemporaryInactivity: Boolean;
     doStartOnOpeningProject: Boolean;
     ProgressInterface: TProgressInterface;
-    enableTacoPingPong: Boolean;
-    intervalTacoPingPong: Integer;
     editingNode: PVirtualNode;
     notifyTabCaption, MessagesTabCaption: String;
     notifyTabImageIndex: Integer;
@@ -1122,8 +1038,6 @@ type
     fAbortPressed: Boolean;
     doNotify: Boolean;
     GetAuthError: String;
-    tacoHost: String;
-    tacoPort: Integer;
     procedure GridViewUnselect;
     procedure CheckReferencedFilenamesExistsInCloud;
     procedure SnapshotFromRemoteServer (aList: TClaimableObjectList);
@@ -1133,7 +1047,6 @@ type
     procedure GetSnapshotFromRemoteServer (aSnapshot: TSnapshot);
     procedure ShowHelpDocumentation (aName: String);
     procedure EditContexts;
-    procedure ShowChosenLogTab;
     function ShowProgressForm: Boolean;
     procedure PositionMessagesTabControl;
     procedure SetOperationZoomPath(aOperation: TWsdlOperation);
@@ -1196,8 +1109,6 @@ type
     procedure ShowReport (aReport: TSnapshot);
     function SaveStubCase: Boolean;
     procedure OpenStubCase;
-    procedure OpenLog4jEvents(aString: String; aIsFileName: Boolean;
-      aLogList: TLogList);
     procedure ToAllLogList(aLogList: TLogList);
     procedure UpdateReopenList(aList: TJBStringList; aFileName: String);
     procedure PrepareOperation;
@@ -1231,11 +1142,6 @@ type
       aBind: TCustomBindable): PVirtualNode;
     procedure FocusOnFullCaptionOrFirst(aFullCaption: String);
     procedure HandleException(Sender: TObject; E: Exception);
-    procedure LogMqMessage(Sender: TObject; aHeader, aBody: String;
-      aRfhHeader: AnsiString; MsgType: MQLONG; MsgDesc: MQMD;
-      MqReturnCode: String);
-    procedure NeedMqInterfaceCaption(aSender, aObject: TObject;
-      var aCaption: String);
     procedure DebugOperationViewAsXml;
     procedure DebugOperation;
     procedure SynchronizedOnMessageChanged;
@@ -1284,11 +1190,9 @@ type
     function decorateWithAsterix (aCaption: String; aBoolean: Boolean): String;
   published
   public
-    contextPropertyOverwrite: String;
     se: TWsdlProject;
     claimedLog: TLog;
     claimedReport: TSnapshot;
-    mqServerEnv: String;
     CollapseHeaders: Boolean;
     wsdlStubMessagesFileName, wsdlStubSnapshotsFileName: String;
     log4jEventsFileName: String;
@@ -1396,6 +1300,7 @@ uses
   wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
   ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
   ChooseStringUnit, AboutUnit, StrUtils,
+  apiuiconsts,
   DisclaimerUnit,
   PromptUnit, SelectXmlElement, ApplyToUnit, wsaConfigUnit,
   SelectElementsUnit, A2BXmlz,
@@ -1403,17 +1308,17 @@ uses
   LogFilterUnit,
   ShowA2BXmlUnit, FindRegExpDialog,
   XmlGridUnit, IpmGridUnit,
-  xmlUtilz, mqBrowseUnit {$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
+  xmlUtilz {$ifdef windows}, ActiveX{$endif}, EditStamperUnit,
   EditCheckerUnit, Math, vstUtils, DelayTimeUnit, StressTestUnit, xmlxsdparser,
   xmlzConsts, AbZipper
   , exceptionUtils, htmlreportz
-  , PromptTacoUnit
   , EditTextUnit
   , EditContextsUnit
   , QueryNewElementUnit
   , SelectProjectFolderUnit
   , progressunit
   , StringListListUnit
+  , optionsunit
   ;
 {$IFnDEF FPC}
   {$R *.dfm}
@@ -1635,6 +1540,8 @@ end;
 
 procedure TMainForm.FillInWsdlEdits;
 begin
+  if (FocusedOperation = nil) then
+    ActionComboBox.ItemIndex := -1;
   if (FocusedOperation <> nil) then
   begin
     if (FocusedOperation.StubAction = saStub) then
@@ -1643,7 +1550,12 @@ begin
       ActionComboBox.ItemIndex := 1;
     // SoapActionEdit.Text := FocusedOperation.SoapAction;
     try
-      OperationDocumentationViewer.SetHtmlFromStr(textToHtml(FocusedOperation.Documentation.Text));
+      with TMarkdownProcessor.CreateDialect(mdCommonMark) do
+      try
+        OperationDocumentationViewer.LoadFromString(process(prepareMarkDownText(FocusedOperation.Documentation.Text)));
+      finally
+        Free;
+      end;
     except
     end;
   end;
@@ -1760,7 +1672,6 @@ begin
         UpdateMessagesGrid;
         FillGridView(GridView, FocusedOperation.Messages);
         DoColorBindButtons;
-        ActionComboBox.Enabled := (Value.WsdlService.DescriptionType <> ipmDTEmail);
         EditBetweenScriptMenuItem.Visible := (Value.StubAction = saStub);
         EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
         EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
@@ -1936,7 +1847,6 @@ procedure TMainForm.TreeViewBeforeCellPaint(Sender: TBaseVirtualTree;
   var ContentRect: TRect);
 var
   xBind: TCustomBindable;
-  expXml: TXml;
   xMessage: TWsdlMessage;
 begin
   try
@@ -1992,22 +1902,21 @@ begin
     begin
       xBind := NodeToBind(Sender, Node);
       xMessage := NodeToMessage(GridView, GridView.FocusedNode);
-      if (xBind is TXml) or (xBind is TXmlAttribute) then
+      if (xBind is TXml)
+      or (xBind is TXmlAttribute) then
       begin
-        expXml := nil;
-        if Assigned(FocusedOperation) and Assigned(xMessage) then
-          if (FocusedOperation.StubAction = saRequest) then
-            expXml := xMessage.rpyBind as TXml
-          else
-            expXml := xMessage.reqBind as TXml;
-        if Assigned(xMessage) and (expXml.IsAncestorOf(xBind) or (expXml = xBind)
-          ) then
+        if Assigned(FocusedOperation)
+        and Assigned(xMessage)
+        and (   xMessage.reqBind.IsAncestorOf(xBind)
+             or (xMessage.reqBind = xBind)
+            )
+        then
         begin
           with TargetCanvas do
           begin
             Brush.Style := bsSolid;
             // Brush.Color := bgCorrelationItemColor;
-            Brush.Color := bgExpectedValueColor;
+            Brush.Color := bgRequestTagNameColumnColor;
             FillRect(CellRect);
           end;
         end;
@@ -2426,7 +2335,7 @@ begin
   begin
     if (not Assigned(Xsd)) then
     begin
-      TargetCanvas.Font.Color := clRed { clLtGray } ;
+      TargetCanvas.Font.Color := clRed;
       exit;
     end;
     try
@@ -2435,8 +2344,8 @@ begin
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
         if AllChecked(Sender, Node.Parent) then
           if (not Checked)
-          and (not isOneOfGroupOk) then
-            TargetCanvas.Font.Color := clRed { clLtGray } ;
+          and ((not isOneOfGroupOk) or (not isAnyOfGroupOk)) then
+            TargetCanvas.Font.Color := clRed;
       end;
     except
       ShowMessage(Xsd.minOccurs);
@@ -2578,9 +2487,6 @@ end;
 
 procedure TMainForm.BeginConsoleUpdate;
 begin
-  se.projectContext := contextPropertyOverwrite;
-  xmlio.ProjectContext := contextPropertyOverwrite;
-  se.doCreateBackup := doCreateBackup;
   se.LastFocusedOperation := FocusedOperation;
   FocusedOperation := nil;
   ClearConsole;
@@ -2783,43 +2689,6 @@ begin
     True);
 end;
 
-procedure TMainForm.XsdOperationsActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  OperationDefsXsd.XsdByCaption ['OperationDefs.XsdOperations.Operation.Annotation']
-    .EditProcedure := EditXmlValueAsText;
-  xXml := se.xsdOperationsXml('');
-  try
-    if EditXmlXsdBased ( 'Xsd Operations'
-                       , 'OperationDefs.XsdOperations'
-                       , 'XsdOperations.Operation.Name'
-                       , 'XsdOperations.Operation.Name'
-                       , se.IsActive
-                       , xXml.Items.Count > 1
-                       , esUsed
-                       , OperationDefsXsd
-                       , xXml
-                       , True
-                       ) then
-    begin
-      stubChanged := True;
-      BeginConsoleUpdate;
-      se.xsdOperationsUpdate(xXml, se.projectFileName);
-      IntrospectDesign;
-    end;
-  finally
-    xXml.Free;
-  end;
-end;
-
-procedure TMainForm.XsdOperationsActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  HintStr := 'Maintain list of XSD operations ' + HttpActiveHint;
-end;
-
 procedure TMainForm.XSDreportinClipBoardSpreadSheet1Click(Sender: TObject);
 var
   xXml: TXml;
@@ -2886,10 +2755,6 @@ end;
 procedure TMainForm.EditContexts;
 begin
   ContextsActionExecute(nil);
-end;
-
-procedure TMainForm.ShowChosenLogTab;
-begin
 end;
 
 function TMainForm.ShowProgressForm: Boolean;
@@ -3012,55 +2877,6 @@ begin
   end;
 end;
 
-procedure TMainForm.XmlSampleOperationsExecute (Sender: TObject);
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  OperationDefsXsd.XsdByCaption ['OperationDefs.XmlSampleOperations.Operation.Annotation']
-    .EditProcedure := EditXmlValueAsText;
-  if not BooleanPromptDialog ( Format ( 'XmlSample Operations is now depricated;%sSwitch to Api By Example which now also supports XML%sContinue'
-                                      , [LineEnding, LineEnding, LineEnding]
-                                      )
-                             )
-  then
-    Exit;
-  xXml := se.xmlSampleOperationsXml('');
-  try
-    if EditXmlXsdBased ( 'XmlSample Operations'
-                       , 'OperationDefs.XmlSampleOperations'
-                       , 'XmlSampleOperations.Operation.Name'
-                       , 'XmlSampleOperations.Operation.Name'
-                       , se.IsActive
-                       , xXml.Items.Count > 1
-                       , esUsed
-                       , OperationDefsXsd
-                       , xXml
-                       , True
-                       ) then
-    begin
-      stubChanged := True;
-      BeginConsoleUpdate;
-      se.xmlSampleOperationsUpdate(xXml, se.projectFileName);
-      IntrospectDesign;
-    end;
-  finally
-    xXml.Free;
-  end;
-end;
-
-procedure TMainForm .XmlSampleOperationsHint (var HintStr : string ;
-  var CanShow : Boolean );
-begin
-  HintStr := 'Maintain list of XmlSample operations ' + HttpActiveHint;
-end;
-
-procedure TMainForm.XmlSampleOperationsUpdate(Sender: TObject);
-begin
-  if Assigned (se) then
-    XmlSampleOperations.Caption := decorateWithAsterix (XmlSampleOperations.Caption, se.hasXmlSampleOperations);
-end;
-
 procedure TMainForm.AfterRequestScriptButtonClick(Sender: TObject);
 var
   xOperation: TWsdlOperation;
@@ -3177,7 +2993,6 @@ function TMainForm.SaveStubCase: Boolean;
 begin
   result := False;
   captionFileName := ExtractFileName(se.projectFileName);
-  se.doCreateBackup := doCreateBackup;
   if ExtractFileExt(se.projectFileName) = _ProjectOldFileExtention then
   begin
     TProcedureThread.Create(False, False, se, se.ExportToFile);
@@ -3297,7 +3112,7 @@ begin
       try
         se.Activate(False);
         // IsActive := False;
-        Sleep(1000); // allow mq threads some time
+        Sleep(1000); // allow threads some time
         se.Activate(True);
         // IsActive := xActive;
         if not se.IsActive then
@@ -3331,7 +3146,7 @@ begin
       try
         se.Activate(False);
         // IsActive := False;
-        Sleep(2000); // allow mq threads some time
+        Sleep(2000); // allow threads some time
         PostMessage(Application.MainForm.Handle, WM_CLOSE, 0, 0);
       finally
       end;
@@ -3370,7 +3185,7 @@ begin
       try
         se.Activate(False);
         // IsActive := False;
-        Sleep(1000); // allow mq threads some time
+        Sleep(1000); // allow threads some time
         _Exec('"' + ParamStr(0) + '" "' + se.projectFileName + '"');
         PostMessage(Application.MainForm.Handle, WM_CLOSE, 0, 0);
       finally
@@ -3436,8 +3251,6 @@ end;
 procedure TMainForm.ProjectDesignFromString(aString, aMainFileName: String);
 begin
   { }
-  se.projectContext := contextPropertyOverwrite;
-  xmlio.ProjectContext := contextPropertyOverwrite;
   TreeView.BeginUpdate;
   GridView.BeginUpdate;
   NvgtView.BeginUpdate;
@@ -3445,7 +3258,6 @@ begin
   try
     GridView.Clear;
     ClearConsole;
-    _WsdlDisableOnCorrelate := False;
     XmlUtil.PushCursor (crHourGlass);
     try
       se.ProjectDesignFromString(aString, aMainFileName);
@@ -3672,24 +3484,8 @@ begin
 end;
 
 procedure TMainForm.HelpActionExecute(Sender: TObject);
-var
-  xFileName: String;
 begin
-  xFileName := SetDirSeparators ( ExtractFilePath(ParamStr(0))
-                                + 'Documentation'
-                                + DirectorySeparator
-                                + _progName
-                                + '.htm'
-                                );
-  if not LazFileUtils.FileExistsUTF8(xFileName) { *Converted from FileExists* } then
-    raise Exception.Create('Could not find helpfile: ' + xFileName);
-  if not OpenDocument(xFileName) then
-    raise Exception.Create('Could not open ' + xFileName);
-end;
-
-procedure TMainForm.HelpMainMenuActionExecute(Sender: TObject);
-begin
-  ShowHelpDocumentation('Menu');
+  OpenURL(apiuiconsts.apiuiGui);
 end;
 
 procedure TMainForm.HideAllOperationsActionExecute(Sender: TObject);
@@ -3849,7 +3645,7 @@ begin
     GridView.Clear;
     NvgtView.Clear;
     InWsdlPropertiesListView.Clear;
-    OperationDocumentationViewer.Canvas.Clear;
+    OperationDocumentationViewer.LoadFromString('');
     TreeView.Clear;
     WsdlServiceNameEdit.Text := '';
     WsdlOperationNameEdit.Text := '';
@@ -3914,8 +3710,7 @@ begin
   except
   end;
   ToggleDoScrollMessagesIntoViewAction.Checked := doScrollMessagesIntoView;
-  ActionComboBox.Enabled := Assigned(FocusedOperation) and
-    (FocusedOperation.WsdlService.DescriptionType <> ipmDTEmail);
+  ActionComboBox.Enabled := Assigned(FocusedOperation);
   WsdlItemAddMenuItem.Enabled := True;
   WsdlPasteFromClipboardMenuItem.Enabled := True;
   WsdlPopulateMenuItem.Enabled := True;
@@ -3940,7 +3735,6 @@ begin
     startStopButton.Action := startAction;
   end;
   startStopMenuItem.Action := startStopButton.Action;
-  ShowChosenLogTab;
 end;
 
 procedure TMainForm.OptionsActionUpdate(Sender: TObject);
@@ -3954,11 +3748,8 @@ begin
   result := TXml.CreateAsString('Options', '');
   with result.AddXml(TXml.CreateAsString('General', '')) do
   begin
-    AddXml(TXml.CreateAsString('Context', contextPropertyOverwrite));
     AddXml(TXml.CreateAsBoolean('StartAfterOpeningProject', doStartOnOpeningProject));
-    AddXml(TXml.CreateAsBoolean('CreateBackup', doCreateBackup));
     AddXml(TXml.CreateAsBoolean('ConfirmRemovals', xmlUtil.doConfirmRemovals));
-    AddXml(TXml.CreateAsBoolean('ConfirmTemporaryInactivity', doConfirmTemporaryInactivity));
     AddXml(TXml.CreateAsBoolean('ScrollExceptionsIntoView',
         doScrollExceptionsIntoView));
     AddXml(TXml.CreateAsBoolean('CheckScriptAssignments',
@@ -3981,18 +3772,6 @@ begin
       AddXml(TXml.CreateAsString('Host', se.ViaProxyServer));
       AddXml(TXml.CreateAsInteger('Port', se.ViaProxyPort));
     end;
-    with result.AddXml(TXml.CreateAsString('Mq', '')) do
-    begin
-      case se.mqUse of
-        mquUndefined:
-          AddXml(TXml.CreateAsString('Use', 'Undefined'));
-        mquServer:
-          AddXml(TXml.CreateAsString('Use', 'LocalServer'));
-        mquClient:
-          AddXml(TXml.CreateAsString('Use', 'LocalClient'));
-      end;
-      AddXml(TXml.CreateAsInteger('MaxWorkingThreads', se.mqMaxWorkingThreads));
-    end;
     with result.AddXml(TXml.CreateAsString('Colors', '')) do
     begin
       with AddXml(TXml.CreateAsString('Xml', '')) do
@@ -4001,17 +3780,9 @@ begin
             ColorToHtml(bgNilValueColor)));
         AddXml(TXml.CreateAsString('CorrelationValues',
             ColorToHtml(bgCorrelationItemColor)));
-        AddXml(TXml.CreateAsString('ExpectedValues',
-            ColorToHtml(bgExpectedValueColor)));
+        AddXml(TXml.CreateAsString('RequestTagNameColumn',
+            ColorToHtml(bgRequestTagNameColumnColor)));
       end;
-    end;
-  end;
-  with result.AddXml(TXml.CreateAsString('TaCo', '')) do
-  begin
-    with AddXml(TXml.CreateAsString('pingpong', '')) do
-    begin
-      AddXml(TXml.CreateAsBoolean('Enabled', enableTacoPingPong));
-      AddXml(TXml.CreateAsInteger('interval', intervalTacoPingPong));
     end;
   end;
 end;
@@ -4385,68 +4156,6 @@ begin
         end;
       end;
     end;
-  end;
-end;
-
-procedure TMainForm.PasteSwiftdatafromclipboardMenuItemClick(Sender: TObject);
-var
-  dXml, fXml, sXml, bXml: TXml;
-  X: Integer;
-begin
-  try
-    dXml := NodeToBind(TreeView, TreeView.FocusedNode) as TXml;
-    fXml := dXml;
-    while fXml.Name <> 'FinMessage' do
-      fXml := fXml.Parent as TXml;
-  except
-    on E: Exception do
-      raise Exception.Create
-        ('PasteSwiftdatafromclipboardMenuItemClick: ' + E.Message);
-  end;
-  try
-    try
-      with TSwiftMt.Create(ClipBoard.AsText, fXml.Xsd) do
-        try
-          sXml := AsXml;
-          try
-            FocusedOperation.AcquireLock;
-            try
-              if sXml.Name = dXml.Name then
-              begin
-                for X := 0 to sXml.Items.Count - 1 do
-                begin
-                  if sXml.Items.XmlItems[X].Checked then
-                    with dXml.Items.XmlItemByTag[sXml.Items.XmlItems[X].Name] do
-                    begin
-                      Reset;
-                      Checked := True;
-                      LoadValues(sXml.Items.XmlItems[X], False, True);
-                    end;
-                end;
-              end
-              else
-              begin
-                bXml := sXml.Items.XmlItemByTag[dXml.Name];
-                dXml.Reset;
-                dXml.Checked := True;
-                dXml.LoadValues(bXml, False, True);
-              end;
-            finally
-              FocusedOperation.ReleaseLock;
-              stubChanged := True;
-            end;
-          finally
-            sXml.Free;
-          end;
-        finally
-          Free;
-        end;
-    except
-      on E: Exception do
-        ShowInfoForm('Error parsing ClipBoard as SwiftMt message', E.Message);
-    end;
-  finally
-    RevalidateXmlTreeView(TreeView);
   end;
 end;
 
@@ -4917,111 +4626,6 @@ begin
     SelectCorrelationElementAction.ImageIndex := 7;
 end;
 
-procedure TMainForm.ApplyToActionUpdate(Sender: TObject);
-begin
-  ApplyToAction.Enabled := Assigned(FocusedOperation);
-end;
-
-procedure TMainForm.OperationApplySettingsActionExecute(Sender: TObject);
-  procedure _Apply(d, s: TWsdlOperation);
-  begin
-    if (d = s) then
-      exit; // you would loose the mqheader or wsa data entered
-    d.StubAction := s.StubAction;
-//    d.OnRequestViolatingSchema := s.OnRequestViolatingSchema;
-    d.OnRequestViolatingAddressPath := s.OnRequestViolatingAddressPath;
-    d.DelayTimeMsMin := s.DelayTimeMsMin;
-    d.DelayTimeMsMax := s.DelayTimeMsMax;
-    d.StubTransport := s.StubTransport;
-    d.StubHttpAddress := s.StubHttpAddress;
-    if not d.isOpenApiService then
-    begin
-      d.httpVerb := s.httpVerb;
-    end;
-    d.ContentEncoding := s.ContentEncoding;
-    d.ContentType := s.ContentType;
-    d.OverruleContentType := s.OverruleContentType;
-    d.AcceptGzipEncoding := s.AcceptGzipEncoding;
-    d.AcceptDeflateEncoding := s.AcceptDeflateEncoding;
-    d.StubMqPutManager := s.StubMqPutManager;
-    d.StubMqPutQueue := s.StubMqPutQueue;
-    d.StubMqGetManager := s.StubMqGetManager;
-    d.StubMqGetQueue := s.StubMqGetQueue;
-    d.StubMqTimeOut := s.StubMqTimeOut;
-    d.StubMqHeaderXml.CheckDownLine(False);
-    d.StubMqHeaderXml.LoadValues(s.StubMqHeaderXml, False, True);
-    d.StubStompPutHost := s.StubStompPutHost;
-    d.StubStompPutPort := s.StubStompPutPort;
-    d.StubStompPutUseCredentials := s.StubStompPutUseCredentials;
-    d.StubStompPutUserName := s.StubStompPutUserName;
-    d.StubStompPutPassword := s.StubStompPutPassword;
-    d.StubStompPutClientId := s.StubStompPutClientId;
-    d.StubStompTimeOut := s.StubStompTimeOut;
-    d.StubStompHeaderXml.CheckDownLine(False);
-    d.StubStompHeaderXml.LoadValues(s.StubStompHeaderXml, False, True);
-    d.wsaEnabled := s.wsaEnabled;
-    d.wsaSpecificMustUnderstand := s.wsaSpecificMustUnderstand;
-    d.wsaMustUnderstand := s.wsaMustUnderstand;
-    d.wsaType := s.wsaType;
-    d.reqWsaXml.CheckDownLine(False);
-    d.reqWsaXml.LoadValues(s.reqWsaXml, False, True);
-    d.reqWsaXml.CheckDownLine(False);
-    d.reqWsaXml.LoadValues(s.reqWsaXml, False, True);
-  end;
-
-var
-  w, s, o: Integer;
-  xWsdl: TWsdl;
-begin
-  Application.CreateForm(TApplyToForm, ApplyToForm);
-  try
-    ApplyToForm.ShowModal;
-    if ApplyToForm.ModalResult = mrOk then
-    begin
-      AcquireLock;
-      try
-        case ApplyToForm.RadioGroup.ItemIndex of
-          0:
-            begin
-              for o := 0 to FocusedOperation.WsdlService.Operations.Count - 1 do
-                _Apply(FocusedOperation.WsdlService.Operations.Operations[o],
-                  FocusedOperation);
-            end;
-          1:
-            begin
-              for s := 0 to Wsdl.Services.Count - 1 do
-              begin
-                for o := 0 to Wsdl.Services.Services[s].Operations.Count - 1 do
-                  _Apply(Wsdl.Services.Services[s].Operations.Operations[o],
-                    FocusedOperation);
-              end;
-            end;
-          2:
-            begin
-              for w := 0 to se.Wsdls.Count - 1 do
-              begin
-                xWsdl := TWsdl(se.Wsdls.Objects[w]);
-                for s := 0 to xWsdl.Services.Count - 1 do
-                begin
-                  for o := 0 to xWsdl.Services.Services[s].Operations.Count - 1
-                    do
-                    _Apply(xWsdl.Services.Services[s].Operations.Operations[o],
-                      FocusedOperation);
-                end;
-              end;
-            end;
-        end;
-        NvgtView.Invalidate;
-        stubChanged := True;
-      finally
-        ReleaseLock;
-      end;
-    end;
-  finally
-    FreeAndNil(ApplyToForm);
-  end;
-end;
-
 procedure TMainForm.GridViewBeforeCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellPaintMode: TVTCellPaintMode; CellRect: TRect;
@@ -5094,7 +4698,7 @@ begin
         with TargetCanvas do
         begin
           Brush.Style := bsSolid;
-          Brush.Color := _decColor(bgExpectedValueColor);
+          Brush.Color := _decColor(bgRequestTagNameColumnColor);
           FillRect(CellRect);
         end;
         exit;
@@ -5453,26 +5057,12 @@ begin
             MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'HTTP Reply Headers';
             MessagesTabControl.Tabs[Ord(slReplyBody)] := 'HTTP Reply Body';
           end;
-        ttMQ:
-          begin
-            MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'MQ Request Descriptor';
-            MessagesTabControl.Tabs[Ord(slRequestBody)] := 'MQ Request Body';
-            MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'MQ Reply Descriptor';
-            MessagesTabControl.Tabs[Ord(slReplyBody)] := 'MQ Reply Body';
-          end;
         ttStomp:
           begin
             MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'Stomp Request Headers';
             MessagesTabControl.Tabs[Ord(slRequestBody)] := 'Stomp Request Body';
             MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'Stomp Reply Headers';
             MessagesTabControl.Tabs[Ord(slReplyBody)] := 'Stomp Reply Body';
-          end;
-        ttSmtp:
-          begin
-            MessagesTabControl.Tabs[Ord(slRequestHeaders)] := 'SMTP Request Headers';
-            MessagesTabControl.Tabs[Ord(slRequestBody)] := 'Request as XML';
-            MessagesTabControl.Tabs[Ord(slReplyHeaders)] := 'SMTP Reply Headers';
-            MessagesTabControl.Tabs[Ord(slReplyBody)] := 'SMTP Reply Body';
           end;
       else
         begin
@@ -5634,6 +5224,12 @@ begin
       LoginPrompt := False;
       ConnectorType := xXml.Items.XmlValueByTag['Type'];
       DatabaseName := xXml.Items.XmlValueByTag['DatabaseName'];
+      if (ConnectorType = 'SQLite3')
+      and (se.projectFileName <> '')
+      and (DatabaseName <> '')
+      and (DatabaseName[1] = '.')
+      then
+        DatabaseName := ExpandRelativeFileName(se.projectFileName, DatabaseName);
       HostName := xXml.Items.XmlValueByTag['HostName'];
       UserName := xXml.Items.XmlValueByTag['UserName'];
       Password := xmlz.DecryptString(xXml.Items.XmlValueByTag['Password']);
@@ -5645,7 +5241,7 @@ begin
                                    );
        try
          Connected := True;
-         ShowMessage ('Database connected');
+         ShowMessage ('Database ' + DatabaseName + ' connected OK');
          Connected := False;
          result := True;
        except
@@ -6269,10 +5865,14 @@ begin
       TreeView.FocusedNode := xNode;
       TreeView.FocusedColumn := treeValueColumn;
       TreeView.Selected [xNode] := True;
-      f := FocusedMessage.ColumnXmls.IndexOfObject(FocusedBind);
-      if f > -1 then
+      if Assigned (FocusedMessage)
+      and Assigned(FocusedMessage.ColumnXmls) then
       begin
-        GridView.FocusedColumn := f + 1 + nMessageButtonColumns + FocusedOperation.CorrelationBindables.Count;
+        f := FocusedMessage.ColumnXmls.IndexOfObject(FocusedBind);
+        if f > -1 then
+        begin
+          GridView.FocusedColumn := f + 1 + nMessageButtonColumns + FocusedOperation.CorrelationBindables.Count;
+        end;
       end;
       exit;
     end;
@@ -6364,7 +5964,7 @@ begin
   SaveNvgtViewOnFocusChanged := NvgtView.OnFocusChanged;
   SaveGridViewOnFocusChanged := GridView.OnFocusChanged;
   SaveTreeViewOnFocusChanged := TreeView.OnFocusChanged;
-  doConfirmTemporaryInactivity := True;
+  doConfirmTemporaryInactivity := False;
   MessagesTabControlWidth := MessagesTabControl.Width;
   MessagesTabControlMinLeft := LastMessageToolButton.Left + LastMessageToolButton.Width + 1;
   (MessagesTabControl as TWinControl).Color := Self.Color;
@@ -6391,8 +5991,6 @@ begin
   se.OnReactivateEvent := ReactivateCommand;
   se.OnRestartEvent := RestartCommand;
   se.OnReloadDesignEvent := ReloadDesignCommand;
-  se.OnNeedTacoHostData := NeedTacoHostData;
-  se.OnTacoAutorize := OnTacoAuthorize;
   DecryptString := doDecryptString;
   EncryptString := doEncryptString;
   xmlUtil.doExpandFull := True;
@@ -6424,7 +6022,6 @@ begin
   wsdlStubMessagesFileName := xIniFile.StringByName['WsdlStubMessagesFileName'];
   wsdlStubSnapshotsFileName := xIniFile.StringByName['wsdlStubSnapshotsFileName'];
   DisclaimerAccepted := xIniFile.BooleanByName['DisclaimerAccepted'];
-  BetaMode := xIniFile.BooleanByNameDef['BetaMode', False];
   ListofOperationsMenuItem.Checked := xIniFile.BooleanByNameDef
     ['ListofOperationsVisible', True];
   ScriptPanel.Visible := ListofOperationsMenuItem.Checked;
@@ -6487,8 +6084,6 @@ begin
   se.LogFilter.Reply := xIniFile.StringByNameDef['LogFilter.Reply', ''];
   se.LogFilter.RemarksEnabled := xIniFile.BooleanByNameDef
     ['LogFilter.RemarksEnabled', False];
-  tacoHost := xIniFile.StringByNameDef['tacoHost', 'localhost'];
-  tacoPort := xIniFile.IntegerByNameDef['tacoPort', 1025];
   CollapseHeaders := xIniFile.BooleanByNameDef['CollapseHeaders', True];
   TreeView.NodeDataSize := SizeOf(TXmlTreeRec);
   TreeView.RootNodeCount := 0;
@@ -6527,27 +6122,16 @@ begin
     ['HTTPServer.MaxConnections', se.HTTPServer.MaxConnections];
   se.ViaProxyServer := xIniFile.StringByNameDef['ViaProxyServer', 'localhost'];
   se.ViaProxyPort := StrToIntDef(xIniFile.StringByName['ViaProxyPort'], 8081);
-  if (se.mmqqMqInterface.MQServerOK and se.mmqqMqInterface.MQClientOK) then
-    se.mqUse := TMqUse(StrToIntDef(xIniFile.StringByName['mqUse'],
-        Ord(mquServer)));
-  if (se.mmqqMqInterface.MQServerOK and (not se.mmqqMqInterface.MQClientOK)) then
-    se.mqUse := mquServer;
-  if (not se.mmqqMqInterface.MQServerOK and (se.mmqqMqInterface.MQClientOK)) then
-    se.mqUse := mquClient;
-  if (not se.mmqqMqInterface.MQServerOK and (not se.mmqqMqInterface.MQClientOK)) then
-    se.mqUse := mquUndefined;
-  se.mqMaxWorkingThreads := xIniFile.IntegerByNameDef['MaxWorkingThreads', 15];
   se.CompareLogOrderBy := TCompareLogOrderBy
     (xIniFile.IntegerByNameDef['CompareLogOrderBy', Ord(clTimeStamp)]);
   se.ShowLogCobolStyle := TShowLogCobolStyle
     (xIniFile.IntegerByNameDef['ShowLogCobolStyle', Ord(slCobol)]);
-  mqServerEnv := GetEnvironmentVariable('MQSERVER');
   ColumnWidths.Text := xIniFile.StringByNameDef['ColumnWidths', ''];
   doShowDesignAtTop := xIniFile.BooleanByNameDef['doShowDesignAtTop', True];
   bgCorrelationItemColor := xIniFile.IntegerByNameDef['bgCorrelationItemColor',
     bgCorrelationItemColor];
-  bgExpectedValueColor := xIniFile.IntegerByNameDef['bgExpectedValueColor',
-    bgExpectedValueColor];
+  bgRequestTagNameColumnColor := xIniFile.IntegerByNameDef['RequestTagNameColumn',
+    bgRequestTagNameColumnColor];
   bgNilValueColor := xIniFile.IntegerByNameDef['bgNilValueColor',
     bgNilValueColor];
   DesignPanelAtTopMenuItem.Checked := doShowDesignAtTop;
@@ -6558,6 +6142,10 @@ begin
   finally
     xXml.Free;
   end;
+  if hasOption(contextOpt) then
+    setContextProperty(getOption(contextOpt))
+  else
+    setContextProperty(xIniFile.StringByNameDef['Context', '']);
   xIniFile.Free;
   wsdlStubInitialise;
   se.stubRead := False;
@@ -6566,14 +6154,11 @@ begin
   logChartToolButton.Visible := (WindowsUserName = 'Jan')
                              or (WindowsUserName = 'BouwmanJW')
                               ;
-  BrowseMqMenuItem.Visible :=
-    (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
-  BrowseMqButton.Visible :=
-    (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
   HelpAction.Caption := 'Help on ' + _progName;
   UpdateVisibiltyOfOperations;
   _OnParseErrorEvent := ParserError;
   _WsdlOnMessageChange := OnMessageChanged;
+  _WsdlSQLConnectorLog := SQLConnectorLog;
   try
     UpdateVisibiltyTreeView(False);
   except
@@ -6582,10 +6167,6 @@ begin
   xmlUtil.ReleaseLock := ReleaseLock;
   _OnBeginUpdate := BeginConsoleUpdate;
   Xmlz.OnNotify := LogServerNotification;
-  // due to a bug in TPageControl, not al tabs are visible....
-  // statements below make all tabs visible again...??
-//  DownPageControl.TabPosition := tpBottom;
-//  DownPageControl.TabPosition := tpTop;
   sMenuItem := TMenuItem.Create(self);
   for x := 0 to alGeneral.ActionCount - 1 do with alGeneral.Actions[x] as TCustomAction do
   begin
@@ -6599,18 +6180,20 @@ begin
   end;
   EasterEggPopupMenu.Items.Add (sMenuItem);
   IpmDescrType := ipmDTXml;
-  if ParamStr(1) <> '' then
+  if hasOption(openSslLocOpt) then
+    openSslCertsFolder := getOption(openSslLocOpt);
+  if hasOption(projectOpt) then
   begin
     Update;
     se.projectFileName := ExpandRelativeFileName ( LazFileUtils.GetCurrentDirUTF8 + DirectorySeparator
-                                                 , ParamStr(1)
+                                                 , getOption(projectOpt)
                                                  );
     OpenStubCase;
     se.Activate(True);
     CheckBoxClick(nil);
-    if ParamStr(2) <> '' then
+    if hasOption(scriptOpt) then
     begin
-      ExecuteScript(se, ParamStr(2));
+      ExecuteScript(se, getOption(scriptOpt));
     end;
   end;
   MainToolBarDesignedButtonCount := MainToolBar.ButtonCount;
@@ -6647,8 +6230,8 @@ begin
   DisableViewOnFocusChangeEvents;
   ClearConsole;
   xIniFile := TFormIniFile.Create(self, False);
+  xIniFile.StringByName['Context'] := getContextProperty;
   xIniFile.BooleanByName['DisclaimerAccepted'] := DisclaimerAccepted;
-  xIniFile.BooleanByName['BetaMode'] := BetaMode;
   xIniFile.BooleanByName['doShowDesignAtTop'] := doShowDesignAtTop;
   xIniFile.StringByName['RecentFiles'] := ReopenCaseList.Text;
   xIniFile.StringByName['ColumnWidths'] := ColumnWidths.Text;
@@ -6665,8 +6248,6 @@ begin
   xIniFile.StringByName['WsdlStubFileName'] := se.projectFileName;
   xIniFile.StringByName['WsdlStubMessagesFileName'] := wsdlStubMessagesFileName;
   xIniFile.StringByName['wsdlStubSnapshotsFileName'] := wsdlStubSnapshotsFileName;
-  xIniFile.StringByName['tacoHost'] := tacoHost;
-  xIniFile.IntegerByName['tacoPort'] := tacoPort;
   xIniFile.IntegerByName['LogFilter.FilterStyle'] := Ord
     (se.LogFilter.FilterStyle);
   xIniFile.BooleanByName['LogFilter.MatchAny'] := se.LogFilter.MatchAny;
@@ -6794,14 +6375,6 @@ begin
 //  or (not xmlio.isFileNameAllowed(xMessage.Name))
     then
       TargetCanvas.Font.Color := clRed;
-    if xMessage.Disabled then
-    begin
-      if (Node <> GridView.GetFirst) then
-        TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsStrikeOut] +
-          [fsBold]
-      else
-        TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
-    end;
     exit;
   end;
   if (Column - nMessageButtonColumns) <= xMessage.CorrelationBindables.Count then
@@ -7110,26 +6683,26 @@ var
   xXml: TXml;
   xString: String;
 begin
+  if Assigned (claimedLog.Operation)
+  and (claimedLog.Operation.isOpenApiService) then
+  begin
+    with claimedLog.replyAsXml do
+    try
+      ShowTextAsXml('Reply as XML', AsText(False, 0, False, False));
+    finally
+      Free;
+    end;
+    exit;
+  end;
   xString := IfThen(Assigned(claimedLog) and (claimedLog is TLog), claimedLog.ReplyBody, '');
   if (xString <> '') then
   begin
-    if Assigned (claimedLog.Operation)
-    and (claimedLog.Operation.isOpenApiService) then
-    begin
-      with claimedLog.rpyBodyAsXml do
-      try
-        ShowTextAsXml('Reply as XML', AsText(False, 0, False, False));
-      finally
-        Free;
-      end;
-      exit;
-    end;
     if Assigned(claimedLog.Mssg) then
     begin
       case claimedLog.Operation.WsdlService.DescriptionType of
         ipmDTFreeFormat:
           ShowInfoForm('Reply freeformat', xString);
-        ipmDTCobol, ipmDTBmtp:
+        ipmDTCobol:
           begin
             if se.ShowLogCobolStyle = slCobol then
             begin (claimedLog.Operation.rpyBind as TIpmItem)
@@ -7139,7 +6712,7 @@ begin
             end
             else
             begin
-              with claimedLog.rpyBodyAsXml do
+              with claimedLog.replyAsXml do
                 try
                   ShowTextAsXml('Reply as XML', AsText(False, 0, False, False));
                 finally
@@ -7153,26 +6726,6 @@ begin
           ShowTextAsXml('Reply as XML', xString);
         ipmDTWsdl:
           ShowTextAsXml('Reply as XML', xString);
-        ipmDTEmail:
-          ShowInfoForm('Reply freeformat', xString);
-        ipmDTSwiftMT:
-          begin
-            xXml := claimedLog.rpyBodyAsXml;
-            try
-              Application.CreateForm(TShowXmlForm, ShowXmlForm);
-              try
-                ShowXmlForm.Caption := 'Reply as XML';
-                ShowXmlForm.isCheckedOnly := True;
-                ShowXmlForm.isReadOnly := True;
-                ShowXmlForm.Bind := xXml;
-                ShowXmlForm.ShowModal;
-              finally
-                FreeAndNil(ShowXmlForm);
-              end;
-            finally
-              xXml.Free;
-            end;
-          end;
         ipmDTJson:
           ShowTextAsXml('Reply as XML', xString);
       end;
@@ -7239,9 +6792,8 @@ end;
 function TMainForm.setContextProperty(aName: String): String;
 begin
   result := se.projectContext;
-  contextPropertyOverwrite := aName;
-  se.projectContext := contextPropertyOverwrite;
-  xmlio.ProjectContext := contextPropertyOverwrite;
+  se.projectContext := aName;
+  xmlio.ProjectContext := aName;
 end;
 
 function TMainForm.getContextProperty: String;
@@ -7319,7 +6871,7 @@ begin
       ShowXmlForm.isCheckedOnly := True;
       ShowXmlForm.isReadOnly := True;
       se.FindOpenApiOnLog(claimedLog);
-      ShowXmlForm.Bind := claimedLog.reqBodyAsXml;
+      ShowXmlForm.Bind := claimedLog.requestAsXml;
       try
         ShowXmlForm.ShowModal;
       finally
@@ -7339,7 +6891,7 @@ begin
       case claimedLog.Operation.WsdlService.DescriptionType of
         ipmDTFreeFormat:
           ShowInfoForm('Request freeformat', xString);
-        ipmDTCobol, ipmDTBmtp:
+        ipmDTCobol:
           begin
             if se.ShowLogCobolStyle = slCobol then
             begin (claimedLog.Operation.reqBind as TIpmItem)
@@ -7349,7 +6901,7 @@ begin
             end
             else
             begin
-              with claimedLog.reqBodyAsXml do
+              with claimedLog.requestAsXml do
                 try
                   ShowTextAsXml('Request as XML',
                     AsText(False, 0, False, False));
@@ -7364,26 +6916,6 @@ begin
           ShowTextAsXml('Request as XML', xString);
         ipmDTWsdl:
           ShowTextAsXml('Request as XML', xString);
-        ipmDTEmail:
-          ShowInfoForm('Request freeformat', xString);
-        ipmDTSwiftMT:
-          begin
-            xXml := claimedLog.reqBodyAsXml;
-            try
-              Application.CreateForm(TShowXmlForm, ShowXmlForm);
-              try
-                ShowXmlForm.Caption := 'Request as XML';
-                ShowXmlForm.isCheckedOnly := True;
-                ShowXmlForm.isReadOnly := True;
-                ShowXmlForm.Bind := xXml;
-                ShowXmlForm.ShowModal;
-              finally
-                FreeAndNil(ShowXmlForm);
-              end;
-            finally
-              xXml.Free;
-            end;
-          end;
         ipmDTJson:
           ShowTextAsXml('Request as XML', xString);
       end;
@@ -7430,72 +6962,10 @@ begin
   ScriptPanel.Visible := ListofOperationsMenuItem.Checked;
 end;
 
-procedure TMainForm.SaveMessagesActionUpdate(Sender: TObject);
-begin
-  SaveMessagesAction.Enabled := (se.displayedLogs.Count > 0);
-end;
-
 procedure TMainForm.WsdlInformationMenuItemClick(Sender: TObject);
 begin
   WsdlInformationMenuItem.Checked := not WsdlInformationMenuItem.Checked;
   WsdlInfoPanel.Visible := WsdlInformationMenuItem.Checked;
-end;
-
-procedure TMainForm.ReadMessagesActionUpdate(Sender: TObject);
-begin
-  ReadMessagesAction.Enabled := (se.Wsdls.Count > 0);
-end;
-
-procedure TMainForm.ReadMessagesActionExecute(Sender: TObject);
-var
-  xLogList: TLogList;
-  X: Integer;
-  xOpenOptions: TOpenOptions;
-begin
-  if not LogMaxEntriesEqualsUnbounded (ReadMessagesAction.Caption) then Exit;
-  with OpenFileDialog do
-  begin
-    xOpenOptions := Options;
-    try
-      DefaultExt := 'xml';
-      FileName := wsdlStubMessagesFileName;
-      Filter := 'XML file (*.xml)|*.xml';
-      Title := 'Read ' + _progName + ' messages from files';
-      Options := Options + [ofAllowMultiSelect];
-      if Execute then
-      begin
-        wsdlStubMessagesFileName := FileName;
-        xLogList := TLogList.Create;
-        try
-          for X := 0 to Files.Count - 1 do
-            try
-              se.OpenMessagesLog(Files.Strings[X], True, True, xLogList);
-            except
-              on E: Exception do
-                raise Exception.CreateFmt('Error opening file %s%s%s',
-                  [Files.Strings[X], LineEnding, E.Message]);
-            end;
-          if xLogList.designSuspect then
-          begin
-            if not BooleanPromptDialog(
-              'Maybe due to differences in current design or Wsdls,' + LineEnding +
-                'some Operations or Messages could not be relocated;'
-                + LineEnding + LineEnding + 'Continue') then
-            begin
-              xLogList.Clear;
-              raise Exception.Create('Operation aborted');
-            end;
-          end;
-          ToAllLogList(xLogList);
-        finally
-          xLogList.Clear;
-          FreeAndNil(xLogList);
-        end;
-      end;
-    finally
-      Options := xOpenOptions;
-    end;
-  end;
 end;
 
 procedure TMainForm.SaveLogRepliesToFileActionUpdate(Sender: TObject);
@@ -7506,27 +6976,6 @@ end;
 procedure TMainForm.SaveLogRequestsToFileActionUpdate(Sender: TObject);
 begin
   SaveLogRequestsToFileAction.Enabled := (se.displayedLogs.Count > 0);
-end;
-
-procedure TMainForm.SaveMessagesActionExecute(Sender: TObject);
-begin
-  EndEdit;
-  SaveFileDialog.DefaultExt := 'xml';
-  SaveFileDialog.FileName := wsdlStubMessagesFileName;
-  SaveFileDialog.Filter := 'XML file (*.xml)|*.xml';
-  SaveFileDialog.Title := 'Save ' + _progName + ' messages';
-  if SaveFileDialog.Execute then
-  begin
-    wsdlStubMessagesFileName := SaveFileDialog.FileName;
-    se.SaveLogs(SaveFileDialog.FileName);
-  end;
-end;
-
-procedure TMainForm.ReadMessagesActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (se.Wsdls.Count = 0) then
-    HintStr := HintStr + ' (no WSDLS read)';
 end;
 
 procedure TMainForm.TestBeforeScriptActionExecute(Sender: TObject);
@@ -7582,59 +7031,6 @@ begin
     MessagesVTS.EndUpdate;
     XmlUtil.PopCursor;
     ShowKindOfInformation := spMessages;
-  end;
-end;
-
-procedure TMainForm.MessagesRegressionActionUpdate(Sender: TObject);
-begin
-  MessagesRegressionAction.Enabled := { }{ not se.IsActive
-    and { } (se.Wsdls.Count > 0);
-end;
-
-procedure TMainForm.MessagesRegressionActionExecute(Sender: TObject);
-var
-  xLogList: TLogList;
-begin
-  OnlyWhenLicensed;
-  if not LogMaxEntriesEqualsUnbounded (MessagesRegressionAction.Caption) then Exit;
-  OpenFileDialog.DefaultExt := 'xml';
-  OpenFileDialog.FileName := wsdlStubMessagesFileName;
-  OpenFileDialog.Filter := 'XML file (*.xml)|*.xml';
-  OpenFileDialog.Title := 'Compare ' + _progName + ' log items from file';
-  if OpenFileDialog.Execute then
-  begin
-    XmlUtil.PushCursor(crHourGlass);
-    wsdlStubMessagesFileName := OpenFileDialog.FileName;
-    xLogList := TLogList.Create;
-    try
-      try
-        se.OpenMessagesLog(OpenFileDialog.FileName, True, True, xLogList);
-      except
-        on E: Exception do
-        begin
-          raise Exception.Create(
-            'Can not compare with log file because next exception was raised' +
-              LineEnding + E.Message);
-        end;
-      end;
-{
-      if xLogList.designSuspect then
-      begin
-        if not BooleanPromptDialog(
-          'Maybe due to differences in design or Wsdls,' + LineEnding +
-            'some Operations or Messages could not be relocated;' + LineEnding +
-            LineEnding + 'Continue') then
-        begin
-          raise Exception.Create('Operation aborted');
-        end;
-      end;
-}
-      ShowLogDifferences(se.displayedLogs, xLogList, 'Current', wsdlStubMessagesFileName);
-    finally
-      xLogList.Clear;
-      FreeAndNil(xLogList);
-      XmlUtil.PopCursor;
-    end;
   end;
 end;
 
@@ -8087,15 +7483,12 @@ begin
     begin
       if abortPressed then
         Break;
-      if not xOperation.Messages.Messages[X].Disabled then
-      begin
-        se.AcquireLogLock;
-        se.ProgressPos := X + 1;
-        se.ReleaseLogLock;
-        try
-          se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
-        except
-        end;
+      se.AcquireLogLock;
+      se.ProgressPos := X + 1;
+      se.ReleaseLogLock;
+      try
+        se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
+      except
       end;
     end;
   finally
@@ -8122,22 +7515,19 @@ begin
       for X := 0 to xOperation.Messages.Count - 1 do
       begin
         if abortPressed then Exit;
-        if not xOperation.Messages.Messages[X].Disabled then
+        if doSleep then
         begin
-          if doSleep then
+          if (StressTestDelayMsMin > 0)
+          or (StressTestDelayMsMax > 0) then
           begin
-            if (StressTestDelayMsMin > 0)
-            or (StressTestDelayMsMax > 0) then
-            begin
-              Sleep (StressTestDelayMsMin + Random (StressTestDelayMsMax - StressTestDelayMsMin));
-              if abortPressed then Exit;
-            end;
+            Sleep (StressTestDelayMsMin + Random (StressTestDelayMsMax - StressTestDelayMsMin));
+            if abortPressed then Exit;
           end;
-          doSleep := True;
-          try
-            se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
-          except
-          end;
+        end;
+        doSleep := True;
+        try
+          se.SendMessage(xOperation, xOperation.Messages.Messages[X], '');
+        except
         end;
       end;
     end;
@@ -8383,19 +7773,9 @@ begin
         if (Items.Count = 0) and (TypeDef.ElementDefs.Count > 0) then
           xExtRecurVisible := True;
       end;
-      xAddChildVisible := xAddChildVisible { }{ and BetaMode{ } ;
+      xAddChildVisible := xAddChildVisible { }{ and DebugLogMode{ } ;
       xEnableCheck := Items.Count > 0;
       xEnableStamp := Items.Count = 0;
-      CopySwiftdatatoclipboardMenuItem.Visible :=
-        FocusedOperation.WsdlService.DescriptionType in [ipmDTSwiftMT];
-      CopySwiftdatatoclipboardMenuItem.Enabled := Assigned(Xsd) and
-        (Xsd.Obj is TSwiftMtProps or (Name = 'FinMessage') or
-          (Assigned(Parent) and (Parent.Name = 'FinMessage')));
-      PasteSwiftdatafromclipboardMenuItem.Visible :=
-        FocusedOperation.WsdlService.DescriptionType in [ipmDTSwiftMT];
-      PasteSwiftdatafromclipboardMenuItem.Enabled := Assigned(Xsd) and
-        ((Name = 'FinMessage') or (Assigned(Parent) and
-            (Parent.Name = 'FinMessage')));
     end;
   CopyCobolDataToClipboardMenuItem.Visible := (xBind is TIpmItem);
   PasteCobolDataFromClipboardMenuItem.Visible := (xBind is TIpmItem);
@@ -8464,12 +7844,6 @@ procedure TMainForm.ScriptSplitterCanResize(Sender: TObject;
 
 begin
   Accept := (NewSize > SizeOfOperationToolBar);
-end;
-
-procedure TMainForm.XsdOperationsActionUpdate(Sender: TObject);
-begin
-  if Assigned (se) then
-    XsdOperationsAction.Caption := decorateWithAsterix (XsdOperationsAction.Caption, se.hasXsdOperation);
 end;
 
 procedure TMainForm.FilterLogActionExecute(Sender: TObject);
@@ -9246,7 +8620,7 @@ begin
         end
         else
         begin
-          with claimedLog.rpyBodyAsXml do
+          with claimedLog.replyAsXml do
             try
               ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
             finally
@@ -9257,22 +8631,7 @@ begin
       end;
       if Assigned(claimedLog.Operation) then
       begin
-        if claimedLog.Operation.WsdlService.DescriptionType = ipmDTSwiftMT then
-        begin
-          with claimedLog.rpyBodyAsXml do
-            try
-              ShowTextAsGrid('Reply as Grid', AsText(False, 0, False, False));
-            finally
-              Free;
-            end;
-          exit;
-        end;
         if claimedLog.Operation.WsdlService.DescriptionType = ipmDTFreeFormat then
-        begin
-          xmlUtil.presentString('Reply freeformat', claimedLog.ReplyBody);
-          exit;
-        end;
-        if claimedLog.Operation.WsdlService.DescriptionType = ipmDTEmail then
         begin
           xmlUtil.presentString('Reply freeformat', claimedLog.ReplyBody);
           exit;
@@ -9289,10 +8648,8 @@ begin
         end;
         if claimedLog.Operation.Wsdl.isOpenApiService then
         begin
-          with claimedLog.rpyBodyAsXml do
+          with claimedLog.replyAsXml do
           try
-            xXsdDescr := TXsdDescr.Create;
-            CreateXsdFromXml(xXsdDescr, thisXml, True);
             ShowXmlInGrid (thisXml, True);
           finally
             Free;
@@ -9328,7 +8685,7 @@ begin
         xData := MessagesVTS.GetNodeData(xNode);
         if Assigned(xData.Log) and (xData.Log is TLog) then
         with xData.Log as TLog do
-          aXml.AddXml(reqBodyAsXml);
+          aXml.AddXml(requestAsXml);
         xNode := MessagesVTS.GetNextSelected(xNode);
       end;
       ShowTextAsGrid('Requests as Grid', aXml.AsText(False, 0, False, False));
@@ -9363,7 +8720,7 @@ begin
         xData := MessagesVTS.GetNodeData(xNode);
         if Assigned(xData.Log) and (xData.Log is TLog) then
         with xData.Log as TLog do
-          aXml.AddXml(rpyBodyAsXml);
+          aXml.AddXml(replyAsXml);
         xNode := MessagesVTS.GetNextSelected(xNode);
       end;
       ShowTextAsGrid('Responses as Grid', aXml.AsText(False, 0, False, False));
@@ -9409,9 +8766,9 @@ begin
     begin
       try
         if Copy(xLog.Operation.ZoomElementCaption, 1, 4) = 'Req.' then
-          xXml := xLog.reqBodyAsXml
+          xXml := xLog.requestAsXml
         else
-          xXml := xLog.rpyBodyAsXml;
+          xXml := xLog.replyAsXml;
         xCaption := Copy(xLog.Operation.ZoomElementCaption, 5, 300000);
         if xLog.Operation.WsdlService.DescriptionType = ipmDTWsdl then
         begin
@@ -9445,12 +8802,14 @@ procedure TMainForm.ShowRequestAsXmlGridActionExecute(Sender: TObject);
 var
   cForm: TIpmGridForm;
   xString: String;
+  xXsdDescr: TXsdDescr;
 begin
+  xXsdDescr := nil;
   xString := IfThen(Assigned(claimedLog) and (claimedLog is TLog), claimedLog.RequestBody, '');
   if (xString <> '') then
-  begin
-    if Assigned(claimedLog.Mssg) and Assigned(claimedLog.Operation) and
-      (claimedLog.Operation.reqBind is TIpmItem) then
+  try
+    if Assigned(claimedLog.Mssg) and Assigned(claimedLog.Operation)
+    and (claimedLog.Operation.reqBind is TIpmItem) then
     begin
       if se.ShowLogCobolStyle = slCobol then
       begin
@@ -9468,7 +8827,7 @@ begin
       end
       else
       begin
-        with claimedLog.reqBodyAsXml do
+        with claimedLog.requestAsXml do
           try
             ShowTextAsGrid('Request as Grid', AsText(False, 0, False, False));
           finally
@@ -9479,24 +8838,9 @@ begin
     end;
     if Assigned(claimedLog.Operation) then
     begin
-      if (claimedLog.Operation.WsdlService.DescriptionType = ipmDTSwiftMT) then
-      begin
-        with claimedLog.reqBodyAsXml do
-          try
-            ShowTextAsGrid('Request as Grid', AsText(False, 0, False, False));
-          finally
-            Free;
-          end;
-        exit;
-      end;
       if claimedLog.Operation.WsdlService.DescriptionType = ipmDTFreeFormat then
       begin
         xmlUtil.presentString('Request', claimedLog.RequestBody);
-        exit;
-      end;
-      if claimedLog.Operation.WsdlService.DescriptionType = ipmDTEmail then
-      begin
-        ShowInfoForm('Request freeformat', claimedLog.RequestBody);
         exit;
       end;
       if claimedLog.Operation.WsdlService.DescriptionType = ipmDTWsdl then
@@ -9509,14 +8853,27 @@ begin
         end;
         exit;
       end;
+      if Assigned(claimedLog.Operation)
+      and (claimedLog.Operation.isOpenApiService) then
+      begin
+        with claimedLog.requestAsXml do
+        try
+          ShowXmlInGrid (thisXml, True);
+        finally
+          Free;
+        end;
+        exit;
+      end;
     end;
     xmlUtil.presentString('Request', claimedLog.RequestBody);
+  finally
+    FreeAndNil(xXsdDescr);
   end;
 end;
 
-procedure TMainForm.ToggleBetaModeActionExecute(Sender: TObject);
+procedure TMainForm.ToggleDebugLogModeActionExecute(Sender: TObject);
 begin
-  BetaMode := not BetaMode;
+  DebugLogMode := not DebugLogMode;
 end;
 
 procedure TMainForm.SetAbortPressed(const Value: Boolean);
@@ -9667,115 +9024,6 @@ begin
   stopAction.Enabled := Assigned(se) and (se.IsActive);
 end;
 
-procedure TMainForm.BrowseMqActionUpdate(Sender: TObject);
-begin
-  BrowseMqAction.Enabled := (se.mmqqMqInterface.MQServerOK or se.mmqqMqInterface.MQClientOK);
-end;
-
-procedure TMainForm.BrowseMqActionExecute(Sender: TObject);
-var
-  xMqInterface: TMqInterface;
-begin
-  Application.CreateForm(TMqBrowseForm, MqBrowseForm);
-  try
-    MqBrowseForm.GetQueueEdit.Items.Text := QueueNameList.Text;
-    MqBrowseForm.ShowModal;
-    if MqBrowseForm.ModalResult = mrOk then
-    begin
-      QueueNameList.Add(MqBrowseForm.GetQueueEdit.Text);
-      ShowKindOfInformation := spMessages;
-      XmlUtil.PushCursor (crHourGlass);
-      try
-        xMqInterface := TMqInterface.Create;
-        try
-          xMqInterface.Use := se.mqUse;
-          xMqInterface.QManager := MqBrowseForm.GetManagerEdit.Text;
-          xMqInterface.GetQueue := MqBrowseForm.GetQueueEdit.Text;
-          xMqInterface.Browse(LogMqMessage, nil, False, False);
-          QueueNameList.Add(MqBrowseForm.GetQueueEdit.Text);
-        finally
-          FreeAndNil(xMqInterface);
-        end;
-      finally
-        XmlUtil.PopCursor;
-      end;
-    end;
-  finally
-    FreeAndNil(MqBrowseForm);
-  end;
-end;
-
-procedure TMainForm.LogMqMessage(Sender: TObject; aHeader, aBody: String;
-  aRfhHeader: AnsiString; MsgType: MQLONG; MsgDesc: MQMD; MqReturnCode: String);
-  function _MessageTimeStamp: TDateTime;
-  var
-    sPutDate: String;
-    sPutTime: String;
-    yy, mm, dd, hh, mn, ss, pp: Word;
-  begin
-    sPutDate := MsgDesc.PutDate;
-    yy := StrToIntDef(Copy(sPutDate, 1, 4), 0);
-    mm := StrToIntDef(Copy(sPutDate, 5, 2), 0);
-    dd := StrToIntDef(Copy(sPutDate, 7, 2), 0);
-    sPutTime := MsgDesc.PutTime;
-    hh := StrToIntDef(Copy(sPutTime, 1, 2), 0);
-    mn := StrToIntDef(Copy(sPutTime, 3, 2), 0);
-    ss := StrToIntDef(Copy(sPutTime, 5, 2), 0);
-    pp := StrToIntDef(Copy(sPutTime, 7, 2), 0);
-    result := EncodeDate(yy, mm, dd) + EncodeTime(hh, mn, ss, pp * 10);
-  end;
-
-var
-  xLogItem: TLog;
-  xIsRequest: Boolean;
-begin
-  xIsRequest := False; //avoid warning
-  AcquireLock;
-  Inc(se.mqCurWorkingThreads);
-  try
-    try
-      try
-        xLogItem := TLog.Create;
-        try
-          xLogItem.InboundTimeStamp := _MessageTimeStamp;
-        except
-        end;
-        xLogItem.TransportType := ttMQ;
-        xLogItem.RequestHeaders := aHeader;
-        xLogItem.RequestBody := aBody;
-        xLogItem.Exception := MqReturnCode;
-        if se.Wsdls.Count > 0 then
-        begin
-          try
-            se.FindRequestReply(xLogItem, '', aBody, xIsRequest);
-            if not xIsRequest then
-            begin
-              xLogItem.RequestBody := '';
-              xLogItem.ReplyBody := aBody;
-            end;
-          except
-          end;
-        end;
-      except
-        on E: Exception do
-        begin
-          xLogItem.Exception := E.Message;
-          LogServerException(E.Message, True, e);
-        end;
-      end;
-    finally
-      try
-        xLogItem.InitDisplayedColumns(xLogItem.Operation, se.DisplayedLogColumns);
-        se.DisplayLog('', xLogItem);
-      finally
-      end;
-    end;
-  finally
-    Dec(se.mqCurWorkingThreads);
-    ReleaseLock;
-  end;
-end;
-
 procedure TMainForm.GridViewFocusedNode(aNode: PVirtualNode);
 begin
   if (toMultiSelect in GridView.TreeOptions.SelectionOptions) then
@@ -9788,25 +9036,6 @@ begin
   GridView.Selected[aNode] := True;
   GridView.FocusedNode := aNode;
   ShowFocusedMessageInTreeView;
-end;
-
-procedure TMainForm.CopySwiftdatatoclipboardMenuItemClick(Sender: TObject);
-begin
-  with TStwiftMtStreamer.Create(NodeToBind(TreeView,
-      TreeView.FocusedNode) as TXml) do
-    try
-      ClipBoard.AsText := AsText;
-    finally
-      Free;
-    end;
-end;
-
-procedure TMainForm.NeedMqInterfaceCaption(aSender, aObject: TObject;
-  var aCaption: String);
-begin
-  if (aObject is TMqInterface) then
-    aCaption := (aObject as TMqInterface).QManager + '/' +
-      (aObject as TMqInterface).GetQueue;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -10032,7 +9261,7 @@ begin
                   .LoadValues(xMessage.rpyBind as TXml, True, True);
                   FocusedOperation.ExecuteBefore;
                   FocusedOperation.ExecuteRpyStampers;
-                  xMsgString := FocusedOperation.StreamReply(_progName, True);
+                  xMsgString := FocusedOperation.PrepareReply(_progName, True);
                 end;
               end;
               SaveStringToFile(xFileName, xMsgString);
@@ -10189,28 +9418,6 @@ begin
   end;
 end;
 
-procedure TMainForm.doDisableMessages;
-var
-  xNode: PVirtualNode;
-  xMessage: TWsdlMessage;
-begin
-  FocusedOperation.AcquireLock;
-  try
-    xNode := GridView.GetFirstSelected;
-    while Assigned(xNode) do
-    begin
-      xMessage := NodeToMessage(GridView, xNode);
-      if Assigned(xMessage) and (xNode <> GridView.GetFirst) then
-      // can not disable the default message
-        xMessage.Disabled := True;
-      xNode := GridView.GetNextSelected(xNode);
-    end;
-    GridView.InvalidateColumn(0);
-  finally
-    FocusedOperation.ReleaseLock;
-  end;
-end;
-
 procedure TMainForm.doRevalidateMessages;
 var
   xNode: PVirtualNode;
@@ -10222,8 +9429,6 @@ begin
     while Assigned(xNode) do
     begin
       xMessage := NodeToMessage(GridView, xNode);
-      if Assigned(xMessage) then
-        xMessage.Disabled := False;
       xNode := GridView.GetNextSelected(xNode);
     end;
     GridView.InvalidateColumn(0);
@@ -10618,7 +9823,7 @@ begin
         if FocusedMessage.fltBind.Checked then
           xMessage := FocusedOperation.StreamFault(_progName, True)
         else
-          xMessage := FocusedOperation.StreamReply(_progName, True);
+          xMessage := FocusedOperation.PrepareReply(_progName, True);
       end
       else
       begin
@@ -10660,9 +9865,9 @@ begin
         AddXml (TXml.CreateAsTimeStamp('inboundTimestamp', fLog.InboundTimeStamp));
         AddXml (TXml.CreateAsTimeStamp('outboundTimestamp', fLog.OutboundTimeStamp));
         with AddXml (TXml.CreateAsString('Req', '')) do
-          AddXml (fLog.reqBodyAsXml);
+          AddXml (fLog.requestAsXml);
         with AddXml (TXml.CreateAsString('Rpy', '')) do
-          AddXml (fLog.rpyBodyAsXml);
+          AddXml (fLog.replyAsXml);
         fXml.SeparateNsPrefixes;
         a2bExpandWhenValueIsJsonOrYaml(fXml);
       end;
@@ -10672,9 +9877,9 @@ begin
         AddXml (TXml.CreateAsTimeStamp('inboundTimestamp', nLog.InboundTimeStamp));
         AddXml (TXml.CreateAsTimeStamp('outboundTimestamp', nLog.OutboundTimeStamp));
         with AddXml (TXml.CreateAsString('Req', '')) do
-          AddXml (nLog.reqBodyAsXml);
+          AddXml (nLog.requestAsXml);
         with AddXml (TXml.CreateAsString('Rpy', '')) do
-          AddXml (nLog.rpyBodyAsXml);
+          AddXml (nLog.replyAsXml);
         nXml.SeparateNsPrefixes;
         a2bExpandWhenValueIsJsonOrYaml(nXml);
       end;
@@ -10743,27 +9948,6 @@ begin
   end;
 }
   EasterEggPopupMenu.PopUp(10, 10);
-end;
-
-procedure TMainForm.CleanMenuItemClick(Sender: TObject);
-var
-  xBind: TCustomBindable;
-begin
-  xBind := NodeToBind(TreeView, TreeView.FocusedNode);
-  if not(xBind is TXml) then
-    raise Exception.Create('FocusedNode not an XML element');
-  try
-    FocusedOperation.AcquireLock;
-    try
-      (xBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
-    finally
-      FocusedOperation.ReleaseLock;
-    end;
-    UpdateXmlTreeViewNode(TreeView, TreeView.FocusedNode);
-    stubChanged := True;
-  finally
-    RevalidateXmlTreeView(TreeView);
-  end;
 end;
 
 procedure TMainForm.PasteCobolDataFromClipboardMenuItemClick(Sender: TObject);
@@ -11028,191 +10212,10 @@ begin
   end;
 end;
 
-procedure TMainForm.readLog4jEventsActionExecute(Sender: TObject);
-var
-  xLogList: TLogList;
-begin
-  OpenFileDialog.DefaultExt := 'xml';
-  OpenFileDialog.FileName := log4jEventsFileName;
-  OpenFileDialog.Filter := 'XML file (*.xml)|*.xml';
-  OpenFileDialog.Title := 'Read Log4J_Events from file';
-  if OpenFileDialog.Execute then
-  begin
-    log4jEventsFileName := OpenFileDialog.FileName;
-    xLogList := TLogList.Create;
-    try
-      OpenLog4jEvents(log4jEventsFileName, True, xLogList);
-      try
-        ToAllLogList(xLogList);
-        ShowKindOfLogData := slRequestBody;
-      except
-        xLogList.Clear;
-        raise ;
-      end;
-    finally
-      xLogList.Clear;
-      FreeAndNil(xLogList);
-    end;
-  end;
-end;
-
-procedure TMainForm.readLog4jEventsActionUpdate(Sender: TObject);
-begin
-  readLog4jEventsAction.Enabled := (se.Wsdls.Count > 0);
-end;
-
-procedure TMainForm.readLog4jEventsActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  if (se.Wsdls.Count = 0) then
-    HintStr := HintStr + ' (no WSDLS read)';
-end;
-
-procedure TMainForm.OpenLog4jEvents(aString: String; aIsFileName: Boolean;
-  aLogList: TLogList);
-  procedure _DiscoverOperation(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml);
-    function _DiscoverOperationFromXml(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml): Boolean;
-    var
-      f: Integer;
-    begin
-      result := False;
-      if allOperations.Find(aXml.Name + ';' + aXml.NameSpace, f) then
-      begin
-        result := True;
-        aLog.Operation := allOperations.Operations[f];
-        aReqXml := aXml;
-      end;
-      if allOperationsRpy.Find(aXml.Name, f) then
-      begin
-        result := True;
-        aLog.Operation := allOperationsRpy.Operations[f];
-        aRpyXml := aXml;
-      end;
-    end;
-    procedure _DiscoverOperationFromXmlValue(aXml: TXml; aLog: TLog; var aReqXml, aRpyXml: TXml);
-    var
-      xOperation: TWsdlOperation;
-    begin
-      try
-        xOperation := se.FindOperationOnRequest(nil, '', aXml.Value, False);
-      Except
-        xOperation := nil;
-      End;
-      if Assigned(xOperation) then
-      begin
-        aLog.Operation := xOperation;
-        aReqXml := aXml;
-      end;
-      try
-        xOperation := se.FindOperationOnReply(aXml.Value);
-      Except
-        xOperation := nil;
-      End;
-      if Assigned(xOperation) then
-      begin
-        aLog.Operation := xOperation;
-        aRpyXml := aXml;
-      end;
-    end;
-
-  var
-    X: Integer;
-  begin
-    aLog.Operation := nil;
-    if aXml.Items.Count = 0 then
-      _DiscoverOperationFromXmlValue (aXml, aLog, aReqXml, aRpyXml)
-    else
-    begin
-      if not _DiscoverOperationFromXml (aXml, aLog, aReqXml, aRpyXml) then
-      begin
-        for X := 0 to aXml.Items.Count - 1 do
-        begin
-          _DiscoverOperation(aXml.Items.XmlItems[X], aLog, aReqXml, aRpyXml);
-        end;
-      end;
-    end;
-  end;
-  function _MessageAsText (aOperation: TWsdlOperation; aXml: TXml): string;
-  begin
-    if aXml.Items.Count = 0 then
-      result := aXml.Value
-    else
-    begin
-      if aOperation.isSoapService
-      and (not aXml.isSoapEnvelope) then
-        result := '<se:Envelope xmlns:se="http://schemas.xmlsoap.org/soap/envelope/"><se:Body>'
-                + LineEnding
-                + aXml.AsText(True, 2, False, False)
-                + LineEnding
-                + '</se:Body></se:Envelope>'
-      else
-      begin
-        result := aXml.AsText(True, 0, False, False);
-      end;
-    end;
-  end;
-
-var
-  xXml, xReqXml, xRpyXml: TXml;
-  X, Y: Integer;
-  xLog: TLog;
-begin
-  try
-    XmlUtil.PushCursor (crHourGlass);
-    xXml := TXml.Create;
-    aLogList.designSuspect := False;
-    xLog := TLog.Create;
-    try
-      if aIsFileName then
-        xXml.LoadFromFile(aString, nil, nil)
-      else
-        xXml.LoadFromString(aString, nil);
-      xXml.SeparateNsPrefixes;
-      xXml.ResolveNameSpaces;
-      for X := 0 to xXml.Items.Count - 1 do
-      begin
-        with xXml.Items.XmlItems[X] do
-        begin
-          xReqXml := nil;
-          xRpyXml := nil;
-          xLog.Operation := nil;
-          y := 0;
-          while (y < Items.Count) do
-          begin
-            _DiscoverOperation(Items.XmlItems[Y], xLog, xReqXml, xRpyXml);
-            Inc (y);
-          end;
-          if Assigned(xLog.Operation) then
-          begin
-            if Assigned (xReqXml) then
-            begin
-              xLog.RequestBody := _MessageAsText(xLog.Operation, xReqXml);
-              xLog.Operation.RequestStringToBindables(xLog.RequestBody);
-              xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
-            end;
-            if Assigned (xRpyXml) then
-              xLog.ReplyBody := _MessageAsText(xLog.Operation, xRpyXml);
-            aLogList.SaveLog('', xLog);
-            xLog := TLog.Create;
-          end;
-        end;
-      end; // for each xml
-    finally
-      FreeAndNil(xXml);
-      FreeAndNil(xLog);
-    end;
-  finally
-    XmlUtil.PopCursor;
-  end;
-end;
-
 procedure TMainForm.Revalidatemessages1Click(Sender: TObject);
 var
   o, m: Integer;
 begin
-  for o := 0 to allOperations.Count - 1 do
-    for m := 0 to allOperations.Operations[o].Messages.Count - 1 do
-      allOperations.Operations[o].Messages.Messages[m].Disabled := False;
   GridView.InvalidateColumn(0);
 end;
 
@@ -11229,44 +10232,6 @@ end;
 procedure TMainForm.EnableMessageActionExecute(Sender: TObject);
 begin
   doRevalidateMessages;
-end;
-
-procedure TMainForm.DisableMessageActionExecute(Sender: TObject);
-begin
-  doDisableMessages;
-end;
-
-procedure TMainForm.SwiftMtOperationsActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  xXml := se.swiftMtOperationsXml;
-  OperationDefsXsd.XsdByCaption ['OperationDefs.SwiftMtOperations.Operation.Annotation']
-    .EditProcedure := EditXmlValueAsText;
-  if EditXmlXsdBased ( 'SwiftMT Operations'
-                     , 'OperationDefs.SwiftMtOperations'
-                     , 'SwiftMtOperations.Operation.Name'
-                     , 'SwiftMtOperations.Operation.Name'
-                     , se.IsActive
-                     , xXml.Items.Count > 1
-                     , esUsed
-                     , OperationDefsXsd
-                     , xXml
-                     , True
-                     ) then
-  begin
-    stubChanged := True;
-    BeginConsoleUpdate;
-    se.swiftMtOperationsUpdate(xXml, se.projectFileName);
-    IntrospectDesign;
-  end;
-end;
-
-procedure TMainForm.SwiftMtOperationsActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  HintStr := 'Maintain list of SwiftMt operations ' + HttpActiveHint;
 end;
 
 procedure TMainForm.SynchronizedOnMessageChanged;
@@ -11461,26 +10426,6 @@ end;
 procedure TMainForm.ProjectDesignToClipboardActionExecute(Sender: TObject);
 begin
   Clipboard.AsText := se.ProjectDesignAsString;
-end;
-
-procedure TMainForm .ExportProjectScriptsActionExecute (Sender : TObject );
-begin
-  OnlyWhenLicensed;
-  try
-    SaveFileDialog.DefaultExt := 'xml';
-    SaveFileDialog.Filter := 'XML file (*.xml)|*.xml';
-    SaveFileDialog.Title := 'Export all scripts';
-    if SaveFileDialog.Execute then
-    begin
-      with se.ProjectScriptsAsXml do
-      try
-        SaveStringToFile (SaveFileDialog.FileName, Text);
-      finally
-        Free;
-      end;
-    end;
-  finally
-  end;
 end;
 
 procedure TMainForm.ReportOnSnapshots (aList: TClaimableObjectList);
@@ -11752,7 +10697,7 @@ var
   xA2B: TA2BXml;
   xForm: TShowA2BXmlForm;
 begin
-  if FocusedOperation.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
+  if FocusedOperation.DescriptionType in [ipmDTFreeFormat] then
   begin
     ShowMessage('not implemented for freeformat operations');
     Exit;
@@ -11916,13 +10861,9 @@ begin
     se.Activate(False);
     CheckBoxClick(nil)
   end;
-  contextPropertyOverwrite := '';
-  enableTacoPingPong := True;
-  intervalTacoPingPong := 5 * 60 * 1000;
   doStartOnOpeningProject := True;
-  doCreateBackup := True;
   xmlUtil.doConfirmRemovals := True;
-  doConfirmTemporaryInactivity := True;
+  doConfirmTemporaryInactivity := False;
   xmlUtil.doCollapseOnUncheck := True;
   xmlUtil.doExpandOnCheck := True;
   doScrollExceptionsIntoView := False;
@@ -11932,8 +10873,6 @@ begin
   se.doViaProxyServer := False;
   se.ViaProxyServer := '';
   se.ViaProxyPort := 8081;
-  se.mqUse := mquUndefined;
-  se.mqMaxWorkingThreads := 15;
   xsdValidateAssignmentsAgainstSchema := False;
   CollapseHeaders := False;
   xmlSetDefaultColors;
@@ -11945,14 +10884,9 @@ begin
     xXml := XmlCheckedItemByTag['General'];
     if Assigned(xXml) then
     begin
-      contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['overruleContextProperty', contextPropertyOverwrite]; // compatibility
-      contextPropertyOverwrite := xXml.Items.XmlCheckedValueByTagDef ['Context', contextPropertyOverwrite];
-      se.projectContext := contextPropertyOverwrite;
-      xmlio.ProjectContext := contextPropertyOverwrite;
       doStartOnOpeningProject := xXml.Items.XmlCheckedBooleanByTagDef ['StartAfterOpeningProject', doStartOnOpeningProject];
-      doCreateBackup := xXml.Items.XmlCheckedBooleanByTagDef ['CreateBackup', doCreateBackup];
       xmlUtil.doConfirmRemovals := xXml.Items.XmlCheckedBooleanByTagDef ['ConfirmRemovals', xmlUtil.doConfirmRemovals];
-      doConfirmTemporaryInactivity := xXml.Items.XmlCheckedBooleanByTagDef ['ConfirmTemporaryInactivity', doConfirmTemporaryInactivity];
+      doConfirmTemporaryInactivity := False;
       doScrollExceptionsIntoView := xXml.Items.XmlCheckedBooleanByTagDef ['ScrollExceptionsIntoView', doScrollExceptionsIntoView];
       xsdValidateAssignmentsAgainstSchema :=
         xXml.Items.XmlCheckedBooleanByTagDef['CheckScriptAssignments',
@@ -11983,32 +10917,6 @@ begin
           se.ViaProxyPort];
       end;
     end;
-    xXml := XmlCheckedItemByTag['TaCo'];
-    if Assigned(xXml) then with xXml.Items do
-    begin
-      yXml := XmlCheckedItemByTag['pingpong'];
-      if Assigned (yXml) then with yXml.Items do
-      begin
-        enableTacoPingPong := XmlCheckedBooleanByTagDef['Enabled', enableTacoPingPong];
-        intervalTacoPingPong := XmlCheckedIntegerByTagDef['interval', intervalTacoPingPong];
-      end;
-    end;
-    xXml := XmlCheckedItemByTag['Mq'];
-    if Assigned(xXml) then
-    begin
-      yXml := xXml.Items.XmlCheckedItemByTag['Use'];
-      if Assigned(yXml) then
-      begin
-        if yXml.Value = 'Undefined' then
-          se.mqUse := mquUndefined;
-        if yXml.Value = 'LocalServer' then
-          se.mqUse := mquServer;
-        if yXml.Value = 'LocalClient' then
-          se.mqUse := mquClient;
-      end;
-      se.mqMaxWorkingThreads := xXml.Items.XmlCheckedIntegerByTagDef
-        ['MaxWorkingThreads', se.mqMaxWorkingThreads];
-    end;
     xXml := XmlCheckedItemByTag['Colors'];
     if Assigned(xXml) then
     begin
@@ -12016,18 +10924,14 @@ begin
       if Assigned(yXml) then
         with yXml.Items do
         begin
-          bgCorrelationItemColor := HtmlToColor
-            (XmlCheckedValueByTagDef['CorrelationValues',
-            ColorToHtml(bgCorrelationItemColor)]);
-          bgExpectedValueColor := HtmlToColor
-            (XmlCheckedValueByTagDef['ExpectedValues',
-            ColorToHtml(bgExpectedValueColor)]);
-          bgNilValueColor := HtmlToColor
-            (XmlCheckedValueByTagDef['UnassignedValues',
-            ColorToHtml(bgNilValueColor)]);
-          bgElementValueColor := HtmlToColor
-            (XmlCheckedValueByTagDef['ElementValues',
-            ColorToHtml(bgElementValueColor)]);
+          bgCorrelationItemColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['CorrelationValues', ColorToHtml(bgCorrelationItemColor)]);
+          bgRequestTagNameColumnColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['RequestTagNameColumn', ColorToHtml(bgRequestTagNameColumnColor)]);
+          bgNilValueColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['UnassignedValues', ColorToHtml(bgNilValueColor)]);
+          bgElementValueColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['ElementValues', ColorToHtml(bgElementValueColor)]);
         end;
     end;
   end;
@@ -12049,37 +10953,6 @@ var
 begin
   n := GridView.SelectedCount;
   ShowGridDifferencesAction.Enabled := (n = 2);
-end;
-
-procedure TMainForm.ImportProjectScriptsActionExecute (Sender : TObject );
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  OpenFileDialog.DefaultExt := 'xml';
-  OpenFileDialog.Filter := 'XML file (*.xml)|*.xml';
-  OpenFileDialog.Title := 'Import scripts';
-  if OpenFileDialog.Execute then
-  begin
-    XmlUtil.PushCursor (crHourGlass);
-    try
-      xXml := TXml.Create;
-      try
-        xXml.LoadFromFile(OpenFileDialog.FileName, nil, nil);
-        if xXml.Name <> 'projectScripts' then
-          raise Exception.CreateFmt('%s does not contain a valid Script export', [OpenFileDialog.FileName]);
-        se.ProjectScriptsFromXml(xXml);
-        CreateScriptsSubMenuItems;
-        TProcedureThread.Create(False, False, se, se.PrepareAllOperationsShowingProgress);
-        FillInWsdlEdits;
-        stubChanged := True;
-      finally
-        xXml.Free;
-      end;
-    finally
-      XmlUtil.PopCursor;
-    end;
-  end;
 end;
 
 procedure TMainForm .TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
@@ -12133,7 +11006,6 @@ begin
   LoadTestAction.Enabled :=
         Assigned(FocusedOperation)
     and (FocusedOperation.StubAction = saRequest)
-    and (FocusedOperation.StubTransport <> ttTaco) // server (and client are) is single threaded
     and (NumberOfBlockingThreads < 1)
     ;
 end;
@@ -12290,11 +11162,6 @@ begin
     end;
   except
   end;
-end;
-
-procedure TMainForm.PingPongTimerTimer (Sender : TObject );
-begin
-  se.TacoPingPong;
 end;
 
 procedure TMainForm.IntrospectDesignActionExecute(Sender: TObject);
@@ -12803,15 +11670,6 @@ begin
   end;
 end;
 
-procedure TMainForm .BrowseMqActionHint (var HintStr : string ;
-  var CanShow : Boolean );
-begin
-  if not (   se.mmqqMqInterface.MQServerOK
-          or se.mmqqMqInterface.MQClientOK
-         ) then
-    HintStr := HintStr + ' (IBM WebSphere MQ not installed?)';
-end;
-
 procedure TMainForm .ClearSnapshotsActionExecute (Sender : TObject );
 begin
   if se.displayedSnapshots.Count > 0 then
@@ -12821,29 +11679,6 @@ begin
     begin
       se.doClearSnapshots := True;
     end;
-  end;
-end;
-
-procedure TMainForm.NeedTacoHostData (Sender : TTacoInterface );
-var
-  xForm: TPromptTacoForm;
-begin
-  Application.CreateForm(TPromptTacoForm, xForm);
-  try
-    xForm.Address := tacoHost;
-    xForm.Port := tacoPort;
-    xForm.ShowModal;
-    if xForm.ModalResult = mrOk then
-    begin
-      tacoHost := xForm.Address;
-      Sender.Host := tacoHost;
-      tacoPort := xForm.Port;
-      Sender.Port := tacoPort;
-      Sender.Authorisation := xForm.Authorisation;
-      Sender.UserName := xmlio.GetUserName;
-    end;
-  finally
-    FreeAndNil(xForm);
   end;
 end;
 
@@ -13465,6 +12300,38 @@ begin
   NavigateHierarchyAction.Enabled := (Assigned (se)) and (se.Wsdls.Count > 0);
 end;
 
+procedure TMainForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
+end;
+
+procedure TMainForm.HtmlViewerKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = Word('C')) and (Shift = [ssCtrl]) then
+    (Sender as THtmlViewer).CopyToClipboard;
+end;
+
+procedure TMainForm.SQLConnectorLog(Sender: TSQLConnection;
+  EventType: TDBEventType; const Msg: String);
+var
+  s: String;
+begin
+  if not DebugLogMode then Exit;
+  case EventType of
+    detCustom: s := 'detCustom';
+    detPrepare: s := 'detPrepare';
+    detExecute: s := 'detExecute';
+    detFetch: s := 'detFetch';
+    detCommit: s := 'detCommit';
+    detRollBack: s := 'detRollBack';
+    detParamValue: s := 'detParamValue';
+    detActualSQL: s := 'detActualSQL';
+  end;
+  try SjowMessage(s + ': ' + Msg); except end;
+end;
+
 procedure TMainForm.TreeViewColumnClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
@@ -13499,6 +12366,20 @@ begin
   AboutApiServerAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
 end;
 
+procedure TMainForm.ChangeToolBarColorTestExecute(Sender: TObject);
+var
+  xColor: TColor;
+  x: Integer;
+begin
+  if MainToolBar.Color = clBtnFace then
+    xColor := clInfoBk
+  else
+    xColor := clBtnFace;
+  for x := 0 to ComponentCount - 1 do
+    if Components[x] is TToolBar then
+      (Components[x] as TToolBar).Color := xColor;
+end;
+
 procedure TMainForm.AboutApiServerActionExecute(Sender: TObject);
 begin
   if not Assigned (se) then
@@ -13525,14 +12406,6 @@ begin
   finally
     Free;
   end;
-end;
-
-procedure TMainForm.MenuItem65Click(Sender: TObject);
-begin
-  ShowMessage ( 'This functionality is moved to the Project main-menu-item'
-              + LineEnding + LineEnding
-              + '(meaning that you can have different connection properties for each project)'
-              );
 end;
 
 procedure TMainForm.MessagesVTSColumnClick(Sender: TBaseVirtualTree;
@@ -13662,7 +12535,7 @@ begin
   if fFocusedBind = nil then
   begin
     InWsdlPropertiesListView.Clear;
-    DocumentationViewer.Canvas.Clear;
+    DocumentationViewer.LoadFromString('');
     StatusPanel.Caption := '';
     Exit;
   end;
@@ -13711,45 +12584,6 @@ begin
     ApiByExampleAction.Caption := decorateWithAsterix (ApiByExampleAction.Caption, se.hasApiByExplampleOperations);
 end;
 
-procedure TMainForm.BmtpOperationsActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  xXml := se.bmtpOperationsXml;
-  OperationDefsXsd.XsdByCaption ['OperationDefs.BmtpOperations.Service.Operation.Annotation']
-    .EditProcedure := EditXmlValueAsText;
-  if EditXmlXsdBased ( 'Bmtp Operations'
-                     , 'OperationDefs.BmtpOperations'
-                     , ''
-                     , ''
-                     , se.IsActive
-                     , xXml.Items.Count > 1
-                     , esUsed
-                     , OperationDefsXsd
-                     , xXml
-                     , True
-                     ) then
-  begin
-    stubChanged := True;
-    BeginConsoleUpdate;
-    se.bmtpOperationsUpdate(xXml, se.projectFileName);
-    IntrospectDesign;
-  end;
-end;
-
-procedure TMainForm.BmtpOperationsActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-  HintStr := 'Maintain list of bmtp operations ' + HttpActiveHint;
-end;
-
-procedure TMainForm.BmtpOperationsActionUpdate(Sender: TObject);
-begin
-  if Assigned (se) then
-    BmtpOperationsAction.Caption := decorateWithAsterix (BmtpOperationsAction.Caption, se.hasBmtpOperations);
-end;
-
 procedure TMainForm.CobolOperationsActionUpdate(Sender: TObject);
 begin
   if Assigned (se) then
@@ -13763,7 +12597,7 @@ begin
   Application.CreateForm(TEditContextsForm, EditContextsForm);
   with EditContextsForm do
   try
-    ContextComboBox.Text := contextPropertyOverwrite;
+    ContextComboBox.Text := se.projectContext;
     Contexts := TStringListList.Create(se.projectContexts);
     try
       ShowModal;
@@ -13779,12 +12613,10 @@ begin
             se.projectContexts.CellObject[c, r] := CellObject[c, r];
           end;
         stubChanged := stubChanged or isChanged;
-        if ContextComboBox.Text <> contextPropertyOverwrite then
+        if ContextComboBox.Text <> se.projectContext then
         begin
-          contextPropertyOverwrite := ContextComboBox.Text;
-          se.projectContext := contextPropertyOverwrite;
-          xmlio.ProjectContext := contextPropertyOverwrite;
-          isOptionsChanged := True;
+          se.projectContext := ContextComboBox.Text;
+          stubChanged := True;
         end;
       end;
     finally
@@ -13851,43 +12683,6 @@ begin
   ShowKindOfInformation := TShowKindOfInformation (LogTabControl.TabIndex);
 end;
 
-procedure TMainForm.MailOperationsActionExecute(Sender: TObject);
-var
-  xXml: TXml;
-begin
-  if not InactiveAfterPrompt then Exit;
-  xXml := se.mailOperationsXml;
-  if EditXmlXsdBased ( 'Mail Operations'
-                     , 'OperationDefs.MailOperations'
-                     , 'MailOperations.Operation.Name'
-                     , 'MailOperations.Operation.Name'
-                     , se.IsActive
-                     , xXml.Items.Count > 1
-                     , esUsed
-                     , OperationDefsXsd
-                     , xXml
-                     , True
-                     ) then
-  begin
-    stubChanged := True;
-    BeginConsoleUpdate;
-    se.mailOperationsUpdate(xXml);
-    IntrospectDesign;
-  end;
-end;
-
-procedure TMainForm.MailOperationsActionHint(var HintStr: string;
-  var CanShow: Boolean);
-begin
-   HintStr := 'Maintain mail operations (only needed for client mode)' + HttpActiveHint;
-end;
-
-procedure TMainForm.MailOperationsActionUpdate(Sender: TObject);
-begin
-  if Assigned (se) then
-    MailOperationsAction.Caption := decorateWithAsterix (MailOperationsAction.Caption, se.hasMailOperations);
-end;
-
 procedure TMainForm.MenuItem33Click(Sender: TObject);
 begin
    Clipboard.AsText := NodeToBind(TreeView, TreeView.FocusedNode).Name;
@@ -13915,7 +12710,7 @@ end;
 
 procedure TMainForm.MenuItem57Click(Sender: TObject);
 begin
-  ShowHelpDocumentation('Snapshots_Popup_Menu');
+  OpenURL(apiuiconsts.apiuiSnapshots);
 end;
 
 procedure TMainForm.MenuItem58Click(Sender: TObject);
@@ -13925,7 +12720,7 @@ end;
 
 procedure TMainForm.MenuItem60Click(Sender: TObject);
 begin
-  ShowHelpDocumentation('Tree_Popup_Menu');
+  OpenURL(apiuiconsts.apiuiMessageTreeview);
 end;
 
 procedure TMainForm.MenuItem61Click(Sender: TObject);
@@ -13935,7 +12730,7 @@ end;
 
 procedure TMainForm.OperationsPopupHelpItemClick(Sender: TObject);
 begin
-  ShowHelpDocumentation('Operations_Popup_Menu');
+  OpenURL (apiuiconsts.apiuiOperationContextMenu);
 end;
 
 procedure TMainForm.GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
@@ -14251,7 +13046,12 @@ begin
   begin
     XmlUtil.PushCursor (crHourGlass);
     try
-      XmlUtil.presentAsHTML(FocusedOperation.alias + ' annotation', textToHtml(FocusedOperation.Documentation.Text));
+      with TMarkdownProcessor.CreateDialect(mdCommonMark) do
+      try
+        XmlUtil.presentAsHTML(FocusedOperation.Alias, process(prepareMarkDownText(FocusedOperation.Documentation.Text)));
+      finally
+        Free;
+      end;
     finally
       XmlUtil.PopCursor;
     end;
@@ -14279,13 +13079,6 @@ end;
 procedure TMainForm.GridColumnWidthMenuItemClick(Sender: TObject);
 begin
   PromptAndSetColumnWidth(GridView);
-end;
-
-procedure TMainForm .OnTacoAuthorize (Sender : TObject );
-begin
-  PingPongTimer.Interval := intervalTacoPingPong;
-  with Sender as TTacoInterface do
-    PingPongTimer.Enabled := (Authorized and enableTacoPingPong);
 end;
 
 procedure TMainForm .AbortActionUpdate (Sender : TObject );
@@ -14372,12 +13165,6 @@ begin
     result := -1;
   if s1 > s2 then
     result := 1;
-end;
-
-procedure TMainForm.SwiftMtOperationsActionUpdate(Sender: TObject);
-begin
-  if Assigned (se) then
-    SwiftMtOperationsAction.Caption := decorateWithAsterix (SwiftMtOperationsAction.Caption, se.hasSwiftMtOperations);
 end;
 
 procedure TMainForm.ToggleDoScrollMessagesIntoViewActionExecute(Sender: TObject);

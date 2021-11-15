@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit EditContextsUnit;
 
 {$IFDEF FPC}
@@ -22,6 +36,7 @@ type
 
   TEditContextsForm = class(TForm)
     GridView: TVirtualStringTree;
+    Label1: TLabel;
     mainImageList1: TImageList;
     MenuItem6: TMenuItem;
     SetAsOnetimerAction: TAction;
@@ -29,7 +44,6 @@ type
     SetPasswordAction: TAction;
     CancelButton: TBitBtn;
     ContextComboBox: TComboBox;
-    Label1: TLabel;
     mainImageList: TImageList;
     OkButton: TBitBtn;
     Panel2: TPanel;

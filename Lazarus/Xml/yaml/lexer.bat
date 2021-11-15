@@ -1,3 +1,3 @@
-pushd C:\Data\Sources\Lazarus\Xml\yaml
-C:\Data\tply\plex.exe -v .\yamlScanner.l .\YAMLSCANNER.PAS
+pushd %~dp0
+C:\lazarus\fpc\3.2.0\bin\x86_64-win64\plex.exe -v .\yamlScanner.l .\YAMLSCANNER.PAS
 popd

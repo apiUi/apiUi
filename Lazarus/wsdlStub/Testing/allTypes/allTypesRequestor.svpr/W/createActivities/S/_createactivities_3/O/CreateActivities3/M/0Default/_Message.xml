@@ -1,0 +1,39 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <CreateActivities3 checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <ListOfActivities checked__="true">
+              <Activity checked__="true">
+                <_ checked__="true">
+                  <TaskReference checked__="true">TaskReference</TaskReference>
+                  <Document checked__="true">
+                    <StorageStatus checked__="true">docdata</StorageStatus>
+                  </Document>
+                </_>
+              </Activity>
+            </ListOfActivities>
+          </body>
+        </rspns200>
+      </CreateActivities3>
+    </Reply>
+    <Request>
+      <CreateActivities3 checked__="true">
+        <body checked__="true">
+          <Relation checked__="true">
+            <RelationId checked__="true">RelationId</RelationId>
+          </Relation>
+          <LocalBank checked__="true">
+            <BankCode checked__="true">122.745</BankCode>
+          </LocalBank>
+          <ListOfActivities checked__="true">
+            <Activity checked__="true"></Activity>
+          </ListOfActivities>
+        </body>
+      </CreateActivities3>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

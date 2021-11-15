@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
@@ -148,9 +162,88 @@ end;
 procedure TyamlAnalyser .PrepareParsing ;
 var
   lx, lx_1, lx_2: YYSType;
-  sep: String;
+  sep, s: String;
 begin
   try
+    // from multi-line to one token...
+    lx := LexicalList;
+    while (Assigned(lx)) do
+    begin
+      if (lx.Token = _REPLCRANDSTRIP)
+      or (lx.Token = _REPLCRANDKEEP)
+      or (lx.Token = _REPLCRANDCLIP)
+      or (lx.Token = _KEEPCRANDSTRIP)
+      or (lx.Token = _KEEPCRANDKEEP)
+      or (lx.Token = _KEEPCRANDCLIP)
+      then
+      begin
+        lx_1 := lx.NextToken;
+        sep := '';
+        lx.yyStringRead := '';
+        while Assigned (lx_1)
+        and (lx_1.yy.yyInteger > lx.yy.yyInteger) do
+        begin
+          lx.yyStringRead := lx.yyStringRead + sep + lx_1.yyStringRead;
+          if (lx.Token = _REPLCRANDSTRIP)
+          or (lx.Token = _REPLCRANDKEEP)
+          or (lx.Token = _REPLCRANDCLIP)
+          then
+            sep := ' '
+          else
+            sep := LineEnding;
+          lx_1 := lx_1.NextToken;
+        end;
+        if (lx.Token = _REPLCRANDCLIP)
+        or (lx.Token = _KEEPCRANDCLIP)
+        then
+        begin
+          if Copy ( lx.yyStringRead
+                  , Length(lx.yyStringRead) - Length(LineEnding)
+                  , Length(LineEnding)
+                  ) <> LineEnding
+          then
+            lx.yyStringRead := lx.yyStringRead + LineEnding;
+        end;
+        if (lx.Token = _REPLCRANDSTRIP)
+        or (lx.Token = _KEEPCRANDSTRIP)
+        then
+        begin
+          if Copy ( lx.yyStringRead
+                  , Length(lx.yyStringRead) - Length(LineEnding)
+                  , Length(LineEnding)
+                  ) = LineEnding
+          then
+            lx.yyStringRead := Copy ( lx.yyStringRead
+                                    , 1
+                                    , Length(lx.yyStringRead) - Length(LineEnding)
+                                    );
+        end;
+        lx.NextToken := lx_1;
+        lx.Token := _VALUE;
+      end;
+      lx := lx.NextToken;
+    end;
+    // skip comments....
+    lx := LexicalList;
+    lx_1 := lx;
+    while Assigned (lx) do
+    begin
+      while Assigned (lx)
+      and (lx.Token <> _COMMENT) do
+      begin
+        lx_1 := lx;
+        lx := lx.NextToken;
+      end;
+      if Assigned (lx) then
+      begin
+        while Assigned (lx)
+        and (lx.Token = _COMMENT) do
+          lx := lx.NextToken;
+        lx_1.NextToken := lx;
+        lx_1 := lx;
+      end;
+    end;
+    // from continued on next line to one token...
     lx := LexicalList;
     while (Assigned(lx)) do
     begin
@@ -170,21 +263,6 @@ begin
         end;
         lx.NextToken := lx_1;
       end;
-      if lx.Token = _PIPE then
-      begin
-        lx_1 := lx.NextToken;
-        sep := '';
-        lx.yyStringRead := '';
-        while Assigned (lx_1)
-        and (lx_1.yy.yyInteger > lx.yy.yyInteger) do
-        begin
-          lx.yyStringRead := lx.yyStringRead + sep + lx_1.yyStringRead;
-          sep := ' ';
-          lx_1 := lx_1.NextToken;
-        end;
-        lx.NextToken := lx_1;
-        lx.Token := _VALUE;
-      end;
       lx := lx.NextToken;
     end;
   finally
@@ -201,15 +279,14 @@ begin
     begin
       if lx.yyStringRead <> '' then
       begin
-        if (    (    (lx.yyStringRead[1] = '"')
-                 and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '"')
-                )
-            or  (    (lx.yyStringRead[1] = '''')
-                 and (lx.yyStringRead[system.Length(lx.yyStringRead)] = '''')
-                )
-           )
-        then
-          lx.yyStringRead := Copy(lx.yyStringRead, 2, system.Length(lx.yyStringRead) - 2);
+        if (lx.yyStringRead[1] = '"')
+        or (lx.yyStringRead[1] = '''') then
+        begin
+          s := TrimRight(lx.yyStringRead);
+          if (Length(s) > 1)
+          and (s [system.Length(s)] = s [1]) then
+            lx.yyStringRead := Copy(s, 2, system.Length(s) - 2);
+        end;
       end;
     end;
     if Assigned (lx) then
@@ -333,8 +410,6 @@ begin
   if Assigned (FOnNeedData) then
   begin
     FOnNeedData (Self, MoreData, Data);
-    if MoreData then
-      Data := TrimRight(Data);
   end
   else
     MoreData := False;
@@ -344,9 +419,6 @@ procedure TyamlAnalyser.OnToken (Sender: TObject);
 var
   xScanner: TyamlScanner;
   Lexical: YYSType;
-  CobolNumberString: String;
-  EscapeChar: String;
-  HexCode: Integer;  // hex character code (-1 on error)
 begin
   xScanner := Sender as TyamlScanner;
   if (xScanner.Token <> _INDENT) then
@@ -358,9 +430,7 @@ begin
   end;
   if (xScanner.Token = _INDENT) then
     lexIndent := HyphenIndent + Length(xScanner.TokenAsString);
-  if (xScanner.Token = _NEWLINE)
-  or (xScanner.Token = _COMMENT)
-  then
+  if (xScanner.Token = _NEWLINE) then
     lexIndent := 0;
 
   if True then
@@ -372,7 +442,6 @@ begin
       exit;
     end;
     if (xScanner.Token = _WHITESPACE)
-    or (xScanner.Token = _COMMENT)
     or (xScanner.Token = _INDENT)
     then
     begin
@@ -392,11 +461,11 @@ begin
   end;
   Lexical.Next := nil;
   Lexical.NextToken := nil;
-  Lexical.LineNumber := Scanner.LineNumber;
+  Lexical.LineNumber := xScanner.LineNumber;
   Lexical.Offset := Offset;
-  Lexical.ColumnNumber := Scanner.ColumnNumber;
-  Lexical.Token := Scanner.Token;
-  Lexical.TokenString := Scanner.TokenAsString;
+  Lexical.ColumnNumber := xScanner.ColumnNumber;
+  Lexical.Token := xScanner.Token;
+  Lexical.TokenString := xScanner.TokenAsString;
   Lexical.yyStringRead := Lexical.TokenString;
   Lexical.yyRead := Lexical.yy;
   PrevLexItem := Lexical;

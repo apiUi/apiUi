@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit ShowXmlCoverageUnit;
 
 {$IFDEF FPC}
@@ -19,14 +33,14 @@ uses
    , Xmlz
    , Ipmz
    , Dialogs
-   , FormIniFilez, ActnList, Menus, IpHtml;
+   , FormIniFilez, ActnList, Menus, HtmlView, IpHtml, HtmlGlobals;
 
 type
 
   { TShowXmlCoverageForm }
 
   TShowXmlCoverageForm = class(TForm)
-    DocumentationViewer: TIpHtmlPanel;
+    DocumentationViewer: THtmlViewer;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -68,7 +82,10 @@ type
     ToolButton13: TToolButton;
     ToolButton14: TToolButton;
     AsHtmlAction: TAction;
-    procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
+    procedure DocumentationViewerKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure FormClose (Sender : TObject ; var CloseAction : TCloseAction );
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure TreeViewClick(Sender: TObject);
@@ -525,7 +542,7 @@ begin
   if doShowIgnoreds then
     HintStr := 'Hide ignored elements'
   else
-    HintStr := 'Show ignored elemets';
+    HintStr := 'Show ignored elements';
 end;
 
 function TShowXmlCoverageForm.ToolButtonUsed(Sender: TObject): Boolean;
@@ -1071,15 +1088,23 @@ begin
   xmlUtil.presentString (SelectedBind.FullCaption, SelectedBind.Value);
 end;
 
-procedure TShowXmlCoverageForm.DocumentationViewerHotClick(Sender: TObject);
-begin
-  OpenUrl(DocumentationViewer.HotURL);
-end;
-
 procedure TShowXmlCoverageForm .FormClose (Sender : TObject ;
   var CloseAction : TCloseAction );
 begin
   XmlUtil.PopCursor;
+end;
+
+procedure TShowXmlCoverageForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
+end;
+
+procedure TShowXmlCoverageForm.DocumentationViewerKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = Word('C')) and (Shift = [ssCtrl]) then
+    (Sender as THtmlViewer).CopyToClipboard;
 end;
 
 { TPasswordEditLink }

@@ -1,8 +1,17 @@
-// BaseDataTypeName van root-type laten zijn
-// Annotattions in de juiste volgorde (meest sppecifiek boven aan)
-// TODO Attributes binnen TypeDefs
-// global Attributes and referencing globalAttributes (no type... refereneces...)
-// ..
+{
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
+
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 {$mode DELPHI}
 
 unit Xsdz;
@@ -188,7 +197,7 @@ type
     DoNotEncode: Boolean;
     isReadOnly: Boolean;
     isCheckboxDisabled: Boolean;
-    isOneOfGroupLevel: Integer;
+    isOneOfGroupLevel, isAnyOfGroupLevel: Integer;
     ParametersType: TOperationParametersType;
     MediaType: String;
     ResponseNo: Integer;
@@ -277,6 +286,7 @@ type
     procedure AddNameSpace(aNameSpace: String);
     procedure Finalise;
     procedure Clear;
+    function FindReferencedXml (aString: String): TObject;
     function FindTypeDef(aNameSpace, aName: String): TXsdDataType;
     function FindElement(aNameSpace, aName: String): TXsd;
     function xsdFindTypeDef(aNameSpace, aName: String): TXsdDataType;
@@ -309,8 +319,12 @@ type
 function NameWithoutPrefix(aName: String): String;
 function xsdGenerateXsiNameSpaceAttribute: String;
 function xsdGenerateXsdNameSpaceAttribute: String;
+function SeparatedStringList (aObject: TObject; aString, aSep: String): TParserStringList;
+function SeparatedStringN (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
+function SeparatedStringT (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
 
 var
+  counter: Integer;
   xsiGenerated: Boolean;
   xsdGenerated: Boolean;
   xsdFormDefault: TXsdFormDefault;
@@ -332,6 +346,76 @@ uses sysutils
    , xmlxsdparser
    , Xmlz
    ;
+function SeparatedStringList(aObject: TObject;aString, aSep: String
+  ): TParserStringList;
+  procedure _AddSeparated (aList: TParserStringList; aString, aSep: String);
+  var
+    p: Integer;
+  begin
+    p := PosSubString(aSep, aString, True,False);
+    if p < 1 then
+      aList.Add (aString)
+    else
+    begin
+      aList.Add (Copy (aString, 1, p - 1));
+      _AddSeparated (aList, Copy (aString, p + Length (aSep), MaxInt), aSep);
+    end;
+  end;
+begin
+  result := TParserStringList.Create;
+  if (aString <> '')
+  and (aSep <> '') then
+  begin
+    _AddSeparated (result, aString, aSep);
+  end;
+end;
+
+function SeparatedStringN(aObject: TObject;aString, aSep: String;
+  aIndex: Extended): String;
+var
+  xInteger: Integer;
+begin
+  result := '';
+  xInteger := Trunc (aIndex);
+  if xInteger < 1 then
+    raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringN"', [xInteger]);
+  with SeparatedStringList(nil, aString, aSep) do
+  try
+    if Count > 0 then
+    begin
+      if xInteger > Count then
+        result := ''
+      else
+        result := Strings[xInteger - 1];
+    end;
+  finally
+    Free;
+  end;
+end;
+
+function SeparatedStringT(aObject: TObject;aString, aSep: String;
+  aIndex: Extended): String;
+var
+  xInteger: Integer;
+begin
+  result := '';
+  xInteger := Trunc (aIndex);
+  if (xInteger < 1) then
+    raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringT"', [xInteger]);
+  with SeparatedStringList(nil, aString, aSep) do
+  try
+    if Count > 0 then
+    begin
+      if xInteger > Count - 1 then
+        result := Strings[Count - 1]
+      else
+        result := Strings[xInteger - 1];
+    end;
+  finally
+    Free;
+  end;
+end;
+
 
 { TXsdList }
 
@@ -1084,29 +1168,49 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
 
     procedure _scan (aXml: TXml);
     var
-      x, y, z, f: Integer;
+      x, y, z, zz, f: Integer;
       xXml, yXml, zXml: TXml;
       xEnum: TXsdEnumeration;
       xXsd, yXsd: TXsd;
       xMinExcl, xMaxExcl: Boolean;
+      dollarRef: String;
+      xAllOneAnyOf: String;
     begin
+      xAllOneAnyOf := '';
       xMaxExcl := False;
       xMinExcl := False;
       for x := 0 to aXml.Items.Count - 1 do
       begin
         xXml := aXml.Items.XmlItems[x];
         if (xXml.Name = '_') then
+        begin
           for y := 0 to xXml.Items.Count - 1 do
             _scan(xXml.Items.XmlItems[y]);
-        if (xXml.Name = 'allOf') then // TODO ...
-          for y := 0 to xXml.Items.Count - 1 do
-            _scan(xXml.Items.XmlItems[y]);
-        if (xXml.Name = 'anyOf') then // TODO ...
-          for y := 0 to xXml.Items.Count - 1 do
-            _scan(xXml.Items.XmlItems[y]);
-        if (xXml.Name = 'oneOf') then // TODO ...
-          for y := 0 to xXml.Items.Count - 1 do
-            _scan(xXml.Items.XmlItems[y]);
+        end;
+        if (xXml.Name = 'allOf')
+        or (xXml.Name = 'oneOf')
+        or (xXml.Name = 'anyOf') then
+        begin
+          xAllOneAnyOf := xXml.Name;
+          for y := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[y] do
+          begin
+            if (Items.Count > 0)
+            and (Items.XmlItems[0].Name = S_DOLLARREF) then
+            with Items.XmlItems[0] do
+            begin
+              dollarRef := Value;
+              if dollarRef[1] = '#' then
+                dollarRef := aFileName + Copy (dollarRef, 2, 10000)
+              else
+                dollarRef := ExpandRelativeFileName(aFileName, dollarRef);
+              _scan (FindReferencedXml(dollarRef) as TXml);
+            end
+            else
+            begin
+              _scan (thisXml);
+            end;
+          end;
+        end;
         if (xXml.Name = 'properties') then
         begin
           for y := 0 to xXml.Items.Count - 1 do
@@ -1140,15 +1244,6 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
           begin
             yXml := xXml.Items.XmlItems[y];
             if (yXml.Name = '_') then
-              for z := 0 to yXml.Items.Count - 1 do
-                _scan(yXml.Items.XmlItems[z]);
-            if (yXml.Name = 'allOf') then // TODO ...
-              for z := 0 to yXml.Items.Count - 1 do
-                _scan(yXml.Items.XmlItems[z]);
-            if (yXml.Name = 'anyOf') then // TODO ...
-              for z := 0 to yXml.Items.Count - 1 do
-                _scan(yXml.Items.XmlItems[z]);
-            if (yXml.Name = 'oneOf') then // TODO ...
               for z := 0 to yXml.Items.Count - 1 do
                 _scan(yXml.Items.XmlItems[z]);
             if yXml.Name = 'type' then
@@ -1244,6 +1339,25 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
       begin
         result.MinExclusive := result.MinInclusive;
         result.MinInclusive := '';
+      end;
+
+      if xAllOneAnyOf <> '' then
+      begin
+        if xAllOneAnyOf = 'allOf' then
+          for x := 0 to result.ElementDefs.Count - 1 do with result.ElementDefs.Xsds[x] do
+            minOccurs := '1';
+        if xAllOneAnyOf = 'oneOf' then
+          for x := 0 to result.ElementDefs.Count - 1 do with result.ElementDefs.Xsds[x] do
+          begin
+            minOccurs := '0';
+//          isOneOfGroupLevel := 1;  // as long as I can not make sennce of how json schema works here
+          end;
+        if xAllOneAnyOf = 'anyOf' then
+          for x := 0 to result.ElementDefs.Count - 1 do with result.ElementDefs.Xsds[x] do
+          begin
+            minOccurs := '0';
+//          isOneOfGroupLevel := 1;  // as long as I can not make sennce of how json schema works here
+          end;
       end;
 
       xXml := aXml.Items.XmlItemByTag['required'];
@@ -2528,10 +2642,10 @@ begin
   xXml.ValidationMesssage := '';
   if not xXml.Checked then
     Exit;
-
+  if not Assigned (xXml.Xsd) then
+    Exit;
   // check namespace
-  if Assigned (xXml.Xsd)
-  and (xXml.NameSpace <> '')
+  if (xXml.NameSpace <> '')
   and (xXml.NameSpace <> xXml.Xsd.ElementNameSpace)
   //and (NameSpace <> scXMLSchemaURI)
   then
@@ -4070,6 +4184,24 @@ begin
 }
 end;
 
+function TXsdDescr.FindReferencedXml (aString: String): TObject;
+var
+  x: Integer;
+  xFilename, xPath: String;
+begin
+  result := nil;
+  xFilename := SeparatedStringN(nil, aString, '#/', 1);
+  xPath := '#/' + SeparatedStringN(nil, aString, '#/', 2);
+  x := 0;
+  while (x < ReadFileNames.Count)
+    and (not Assigned (result)) do
+  begin
+    if ReadFileNames[x] = xFilename then
+      result := (ReadFileNames.Objects[x] as TXml).FindXml(xPath, '/');
+    Inc (x);
+  end;
+end;
+
 function TXsdDescr.FindTypeDef(aNameSpace, aName: String): TXsdDataType;
 var
   f: integer;
@@ -4133,6 +4265,7 @@ defaultXsdMaxDepthBillOfMaterials := 1;
 defaultXsdMaxDepthXmlGen := 9999;
 xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
 xsdValidateAssignmentsAgainstSchema := False;
+counter := 0;
 
 finalization
 

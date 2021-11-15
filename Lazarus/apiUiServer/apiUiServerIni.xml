@@ -1,0 +1,14 @@
+<Ini>
+  <indexHtml>Config\index.html</indexHtml>
+  <faviconIco>Config\apiUi.ico</faviconIco>
+  <cssStylesheet>Config\apiUi.css</cssStylesheet>
+  <swaggerYaml>Config\apiUiSwagger.yaml</swaggerYaml>
+  <Xsd>Config\apiUi.xsd</Xsd>
+  <wsaXsd>Config\wsa.xsd</wsaXsd>
+  <swiftMTXsd>Config\SwiftMT.xsd</swiftMTXsd>
+  <mqPutHeaderEditAllowed>Config\mqPutHeaderEditAllowed.xml</mqPutHeaderEditAllowed>
+  <stompPutHeaderEditAllowed>Config\stompPutHeaderEditAllowed.xml</stompPutHeaderEditAllowed>
+  <apiaryToken>Rlw9QEALVgFUAVlbA1kLW1JfAVNbE2VMCWxKR1kHAVI=</apiaryToken>
+  <openSslCertificatesDefaultLocationWindows>c:\openssl\certs</openSslCertificatesDefaultLocationWindows>
+  <openSslCertificatesDefaultLocationUnix>/etc/certs</openSslCertificatesDefaultLocationUnix>
+</Ini>

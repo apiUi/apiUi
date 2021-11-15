@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit OpenWsdlUnit;
 
 {$IFDEF FPC}
@@ -97,7 +111,7 @@ var
   s, n: String;
 begin
   s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                             , '/apiUi/api/project/describtors'
+                             , '/apiUi/api/project/descriptors'
                              , ''
                              , 'GET'
                              , 'application/json'
@@ -117,7 +131,7 @@ begin
         then
           SelectItemForm.ListBox.Items.Add (Items.XmlItems[x].Value)
         else
-          SelectItemForm.ListBox.Items.Add ( 'apiui://project/describtors/'
+          SelectItemForm.ListBox.Items.Add ( 'apiui://project/descriptors/'
                                            + Items.XmlItems[x].Value
                                            )
       end;

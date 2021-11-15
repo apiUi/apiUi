@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
@@ -8,8 +22,9 @@ unit yamlTestUnit ;
 interface
 
 uses
-  Classes , SysUtils , FileUtil , SynEdit , Forms , Controls , Graphics ,
-  Dialogs , StdCtrls , VirtualTrees, yamlAnalyser, YAMLSCANNER, YAMLPARSER, ParserClasses, CustScanner, Xmlz;
+  Classes, SysUtils, FileUtil, SynEdit, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, ExtCtrls, VirtualTrees, yamlAnalyser, YAMLSCANNER, YAMLPARSER,
+  ParserClasses, CustScanner, Xmlz;
 
 const InternalStackSize = 256;
 const InitState = 2; {taken from Scanner.pas}
@@ -20,8 +35,9 @@ type
   { TForm1 }
 
   TForm1 = class(TForm )
-    Button1 : TButton ;
-    Button2 : TButton ;
+    Button1: TButton;
+    Button2: TButton;
+    Panel1: TPanel;
     SynEdit : TSynEdit ;
     TreeView : TVirtualStringTree ;
     procedure Button1Click (Sender : TObject );

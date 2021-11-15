@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit EditOperationScriptUnit;
 
 {$IFDEF FPC}
@@ -14,6 +28,7 @@ uses
 {$ENDIF}
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, Dialogs
+  , apiuiconsts
   , ParserClasses
   , Express, Bind, ComCtrls
   , Wsdlz
@@ -256,7 +271,6 @@ begin
   try
     SelectXmlElementForm.doShowReq := True;
     SelectXmlElementForm.doShowRpy := True;
-    SelectXmlElementForm.doShowMq := True;
     SelectXmlElementForm.doShowWsa := True;
     SelectXmlElementForm.doShowRti := True;
     SelectXmlElementForm.doShowReqRpyInfo := True;
@@ -352,26 +366,17 @@ end;
 
 procedure TEditOperationScriptForm.Grammar1Click(Sender: TObject);
 begin
-   OpenDocument(PChar ( ExtractFilePath (ParamStr(0))
-                       + '\Documentation\Grammar.htm'
-                       )
-               ); { *Converted from ShellExecute* }
+  OpenURL (apiuiconsts.apiuiScriptGrammar);
 end;
 
 procedure TEditOperationScriptForm.Helponfunctions1Click(Sender: TObject);
 begin
-  OpenDocument(PChar ( ExtractFilePath (ParamStr(0))
-                      + '\Documentation\BuiltInapiUi.htm'
-                      )
-              ); { *Converted from ShellExecute* }
+  OpenURL(apiuiconsts.apiuiAllFunctions);
 end;
 
 procedure TEditOperationScriptForm.EmbeddedSQLMenuItemClick(Sender: TObject);
 begin
-   OpenDocument(PChar ( ExtractFilePath (ParamStr(0))
-                       + '\Documentation\EmbeddedSQL.htm'
-                       )
-               ); { *Converted from ShellExecute* }
+  OpenURL(apiuiconsts.apiuiEmbeddedSQL);
 end;
 
 function TEditOperationScriptForm.getScriptName: String;

@@ -1,0 +1,118 @@
+object MainForm: TMainForm
+  Left = 393
+  Height = 684
+  Top = 135
+  Width = 1518
+  Caption = 'MainForm'
+  ClientHeight = 684
+  ClientWidth = 1518
+  DesignTimePPI = 120
+  Position = poScreenCenter
+  LCLVersion = '2.0.12.0'
+  object Memo1: TMemo
+    Left = 0
+    Height = 288
+    Top = 0
+    Width = 1518
+    Align = alTop
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Lines.Strings = (
+      'FPC-markdown'
+      '============'
+      ''
+      'Markdown Processor for FPC. '
+      ''
+      'Basic Information'
+      '-----------------'
+      ''
+      'This is a Pascal (`FPC`) library that processes markdown to HTML.'
+      'At present the following dialects of markdown are supported:'
+      ''
+      '* The Daring Fireball dialect'
+      ' (see <https://daringfireball.net/projects/markdown/>)'
+      ''
+      '* Enhanced TxtMark dialect'
+      ' (translated from <https://github.com/rjeschke/txtmark>)'
+      ''
+      'Wishlist: PEGDown (Github dialect), CommonMark, etc.'
+      ''
+      'All you need to use the library is FPC version 3.0.4 or newer.'
+      ''
+      '## Using the Library'
+      ''
+      ''
+      'Declare a variable of the class TMarkdownProcessor:'
+      ''
+      '     var'
+      '       md : TMarkdownProcessor;'
+      ''
+      'Create a TMarkdownProcessor (MarkdownProcessor.pas) of the dialect you want:'
+      ''
+      '       md := TMarkdownProcessor.createDialect(mdDaringFireball)'
+      '  '
+      'Decide whether you want to allow active content'
+      ''
+      '       md.UnSafe := true;'
+      '  '
+      'Note: you should only set this to true if you *need* to - active content can be a signficant safety/security issue.  '
+      ' '
+      'Generate HTML fragments from Markdown content:'
+      ''
+      '       html := md.process(markdown); '
+      '  '
+      'Note that the HTML returned is an HTML fragment, not a full HTML page.  '
+      '  '
+      'Do not forget to dispose the object after the use:'
+      ''
+      '       md.free'
+      ''
+      '## License'
+      ''
+      'Copyright (C) Miguel A. Risco-Castillo'
+      ''
+      'FPC-markdown implementation is a fork of Grahame Grieve pascal port'
+      '[Delphi-markdown](https://github.com/grahamegrieve/delphi-markdown)'
+      ''
+      'Licensed under the Apache License, Version 2.0 (the "License");'
+      'you may not use this file except in compliance with the License.'
+      'You may obtain a copy of the License at'
+      ''
+      '<http://www.apache.org/licenses/LICENSE-2.0>'
+      ''
+      'Unless required by applicable law or agreed to in writing, software'
+      'distributed under the License is distributed on an "AS IS" BASIS,'
+      'WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.'
+      'See the License for the specific language governing permissions and'
+      'limitations under the License.'
+    )
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+  object B_Convert: TButton
+    Left = 0
+    Height = 25
+    Top = 659
+    Width = 1518
+    Align = alBottom
+    Caption = 'Convert to HTML'
+    OnClick = B_ConvertClick
+    TabOrder = 1
+  end
+  object HtmlViewer1: THtmlViewer
+    Left = 0
+    Height = 371
+    Top = 288
+    Width = 1518
+    BorderStyle = htFocused
+    HistoryMaxCount = 0
+    NoSelect = False
+    PrintMarginBottom = 2
+    PrintMarginLeft = 2
+    PrintMarginRight = 2
+    PrintMarginTop = 2
+    PrintScale = 1
+    OnHotSpotClick = HtmlViewer1HotSpotClick
+    Align = alClient
+    TabOrder = 2
+  end
+end

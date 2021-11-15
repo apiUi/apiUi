@@ -17,7 +17,7 @@ object XmlGridForm: TXmlGridForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
     Height = 645
@@ -122,17 +122,17 @@ object XmlGridForm: TXmlGridForm
         Style = tbsSeparator
       end
       object ToolButton13: TToolButton
-        Left = 98
+        Left = 96
         Top = 2
         Action = FindAction
       end
       object ToolButton14: TToolButton
-        Left = 127
+        Left = 125
         Top = 2
         Action = FindNextAction
       end
       object ToolButton10: TToolButton
-        Left = 156
+        Left = 154
         Height = 28
         Top = 2
         Caption = 'ToolButton10'
@@ -140,12 +140,12 @@ object XmlGridForm: TXmlGridForm
         Style = tbsSeparator
       end
       object ToolButton8: TToolButton
-        Left = 166
+        Left = 162
         Top = 2
         Action = ShowPropertiesAction
       end
       object ToolButton2: TToolButton
-        Left = 195
+        Left = 191
         Height = 28
         Top = 2
         Caption = 'ToolButton2'
@@ -153,7 +153,7 @@ object XmlGridForm: TXmlGridForm
         Style = tbsSeparator
       end
       object ToolButton6: TToolButton
-        Left = 205
+        Left = 199
         Top = 2
         Action = CopySpreadSheetFormatAction
       end
@@ -245,36 +245,32 @@ object XmlGridForm: TXmlGridForm
         BevelInner = bvLowered
         BevelOuter = bvNone
         BorderWidth = 2
+        BorderStyle = bsSingle
         Caption = 'Panel4'
-        ClientHeight = 159
-        ClientWidth = 269
+        ClientHeight = 155
+        ClientWidth = 265
         Font.Color = clWindowText
         Font.Height = -14
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 4
-        object DocumentationViewer: TIpHtmlPanel
+        object DocumentationViewer: THtmlViewer
           Left = 3
-          Height = 153
+          Height = 149
           Top = 3
-          Width = 263
+          Width = 259
+          BorderStyle = htSingle
+          HistoryMaxCount = 0
+          NoSelect = False
+          PrintMarginBottom = 2
+          PrintMarginLeft = 2
+          PrintMarginRight = 2
+          PrintMarginTop = 2
+          PrintScale = 1
+          OnHotSpotClick = DocumentationViewerHotSpotClick
           Align = alClient
-          BorderStyle = bsSingle
-          FixedTypeface = 'Courier New'
-          DefaultTypeFace = 'default'
-          DefaultFontSize = 11
-          FlagErrors = False
-          PrintSettings.MarginLeft = 0.5
-          PrintSettings.MarginTop = 0.5
-          PrintSettings.MarginRight = 0.5
-          PrintSettings.MarginBottom = 0.5
-          PrintSettings.Preview.Left = 480
-          PrintSettings.Preview.Top = 270
-          PrintSettings.Preview.Width = 1440
-          PrintSettings.Preview.Height = 810
-          ShowHints = False
           TabOrder = 0
-          OnHotClick = DocumentationViewerHotClick
+          OnKeyDown = DocumentationViewerKeyDown
         end
       end
     end

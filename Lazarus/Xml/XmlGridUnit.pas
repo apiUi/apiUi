@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit XmlGridUnit;
 
 {$IFDEF FPC}
@@ -14,19 +28,19 @@ uses
 {$ENDIF}
   Messages , SysUtils , Variants , Classes , Graphics , Controls , Forms ,
   Dialogs , FormIniFilez , StdCtrls , ExtCtrls , Xsdz , Xmlz , VirtualTrees ,
-  ComCtrls , ImgList , ToolWin , ActnList , Menus, IpHtml , Bind
+  ComCtrls , ImgList , ToolWin , ActnList , Menus, HtmlView, IpHtml , Bind
 {$IFnDEF FPC}
   , OleCtrls
   , SHDocVw
 {$ENDIF}
-  ;
+  , HtmlGlobals;
 
 type
 
   { TXmlGridForm }
 
   TXmlGridForm = class(TForm)
-    DocumentationViewer: TIpHtmlPanel;
+    DocumentationViewer: THtmlViewer;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     Panel2: TPanel;
@@ -99,7 +113,10 @@ type
     StatusPanel: TPanel;
     CleanAction: TAction;
     CleanMenuItem: TMenuItem;
-    procedure DocumentationViewerHotClick(Sender: TObject);
+    procedure DocumentationViewerHotSpotClick(Sender: TObject;
+      const SRC: ThtString; var Handled: Boolean);
+    procedure DocumentationViewerKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure GridAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
@@ -695,6 +712,7 @@ procedure TXmlGridForm.ShowGrid (aFocusBind: TCustomBindable);
   procedure _LinkXml (aLevel: Integer; aXml: TXml; aCol, aRow: Integer);
   var
     e, x, r, sCol: Integer;
+    sx, se: String;
   begin
     if aXml.TypeDef._DepthBillOfMaterial >= xmlGridMaxBom then
       exit;
@@ -722,13 +740,19 @@ procedure TXmlGridForm.ShowGrid (aFocusBind: TCustomBindable);
           r := aRow;
           for x := 0 to aXml.Items.Count - 1 do
           begin
-            if{ (   doShowNills
-                or aXml.Items.XmlItems[x].CheckedAllUp
-               )
-            and} (aXml.Items.XmlItems[x].Xsd = aXml.TypeDef.ElementDefs.Xsds[e]) then
+            if (aXml.Items.XmlItems[x].Xsd = aXml.TypeDef.ElementDefs.Xsds[e]) then
             begin
               aCol := sCol;
-              _LinkXml (aLevel + 1, aXml.Items.XmlItems[x], aCol, r);
+              try
+                _LinkXml (aLevel + 1, aXml.Items.XmlItems[x], aCol, r);
+              except
+                on eee: exception do
+                begin
+                  sx := aXml.Items.XmlItems[x].Xsd.ElementName;
+                  se := aXml.TypeDef.ElementDefs.Xsds[e].ElementName;
+                  SjowMessage(eee.Message + LineEnding + sx + LineEnding + se);
+                end;
+              end;
               r := r + _nRows(aXml.Items.XmlItems[x]);
             end
           end;
@@ -1832,11 +1856,6 @@ begin
   xmlUtil.presentString (FocusedBind.FullCaption, FocusedBind.Value);
 end;
 
-procedure TXmlGridForm.DocumentationViewerHotClick(Sender: TObject);
-begin
-  OpenUrl(DocumentationViewer.HotURL);
-end;
-
 procedure TXmlGridForm .GridAfterCellPaint (Sender : TBaseVirtualTree ;
   TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
   const CellRect : TRect );
@@ -1856,6 +1875,19 @@ begin
       ImageList.Draw(TargetCanvas, r.Right - 17, CellRect.Top, 52);
     end;
   end;
+end;
+
+procedure TXmlGridForm.DocumentationViewerHotSpotClick(Sender: TObject;
+  const SRC: ThtString; var Handled: Boolean);
+begin
+  Handled := OpenURL(SRC);
+end;
+
+procedure TXmlGridForm.DocumentationViewerKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = Word('C')) and (Shift = [ssCtrl]) then
+    (Sender as THtmlViewer).CopyToClipboard;
 end;
 
 procedure TXmlGridForm.GridHeaderClick(Sender: TVTHeader;

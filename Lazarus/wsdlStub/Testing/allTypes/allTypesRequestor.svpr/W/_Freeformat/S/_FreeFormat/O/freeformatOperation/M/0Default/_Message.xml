@@ -1,0 +1,8 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply></Reply>
+    <Request>ff&#x0D;&#x0A;</Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

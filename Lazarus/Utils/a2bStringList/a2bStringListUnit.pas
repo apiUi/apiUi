@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit a2bStringListUnit;
 
 {$IFDEF FPC}
@@ -12,7 +26,7 @@ interface
   LCLIntf, LCLType, LMessages,
 {$ENDIF}
   DiffUnit
-     , HashUnit
+     , crc32hashunit
      , Classes
      , SysUtils
      , StrUtils
@@ -68,9 +82,9 @@ begin
   GetMem (HashList2, sizeof(integer)*(bList.Count));
   try
     for i := 0 to aList.Count - 1 do
-      HashList1 [i + 1] := Integer(HashLine(aList[i],False, False));
+      HashList1 [i + 1] := Integer(crc32HashString(aList[i],False, False));
     for i := 0 to bList.Count - 1 do
-      HashList2 [i + 1] := Integer(HashLine(bList[i],False, False));
+      HashList2 [i + 1] := Integer(crc32HashString(bList[i],False, False));
     Diff.Execute ( HashList1
                  , HashList2
                  , aList.Count

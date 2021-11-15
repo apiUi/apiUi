@@ -1,3 +1,17 @@
+{
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
+
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit Wsdlz;
 
 //    SjowMessage({$INCLUDE %FILE%} + ' ' + {$INCLUDE %LINE%} + LineEnding + reqXml.Text);
@@ -32,7 +46,7 @@ resourcestring
   S_DOLLARREF = '$ref';
 
 type TStubAction = (saStub, saForward, saRedirect, saRequest, saException);
-type TTransportType = (ttHttp, ttHttps, ttMq, ttStomp, ttTaco, ttSmtp, ttBmtp, ttNone, ttKafka);
+type TTransportType = (ttHttp, ttHttps, ttMqDepricated, ttStomp, ttTacoDepricated, ttSmtpDepricated, ttBmtpDepricated, ttNone, ttKafka);
 type TRecognitionType = (rtSoap, rtDocument, rtHeader, rtXml, rtSubString);
 type TAuthenticationType = (atNone, atHTTPBasicAuthentication, atWsSecurity);
 type TPasswordType = (pwText, pwDigest);
@@ -209,11 +223,11 @@ type
     fReqBind: TCustomBindable;
     fOutputXsd: TXsd;
     fRpyBind: TCustomBindable;
-    fFreeFormatReq: String;
-    fFreeFormatRpy: String;
     fPreparedBefore: Boolean;
     fPreparedAfter: Boolean;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
+    function getFreeFormatReq: String;
+    function getFreeFormatRpy: String;
     function getRequestAsString : String ;
     function getRpyXml: TXml;
     function getReqXml: TXml;
@@ -242,7 +256,6 @@ type
     AfterScriptLines: TJBStringList;
     Duplicates, DuplicatesName: TWsdlBinder;
     _compareString: String;
-    procedure SwiftMtRequestToBindables (aString: String);
     function FindBind (aCaption: String): TCustomBindable;
     procedure RebindLists; virtual;
     procedure PopulateCorrelation (aPatternsList: TJBStringList);
@@ -251,8 +264,8 @@ type
     property reqBind: TCustomBindable read getReqBind write setReqBind;
     property rpyXsd: TXsd read getOutputXsd write setOutputXsd;
     property rpyBind: TCustomBindable read getRpyBind write setRpyBind;
-    property FreeFormatReq: String read fFreeFormatReq write setFreeFormatReq;
-    property FreeFormatRpy: String read fFreeFormatRpy write setFreeFormatRpy;
+    property FreeFormatReq: String read getFreeFormatReq write setFreeFormatReq;
+    property FreeFormatRpy: String read getFreeFormatRpy write setFreeFormatRpy;
     property RequestAsString: String read getRequestAsString write setRequestAsString;
     property ReqIpm: TIpmItem read getReqIpm;
     property RpyIpm: TIpmItem read getRpyIpm;
@@ -359,12 +372,6 @@ type
       useSsl: Boolean;
       sslVersion: TIdSSLVersion;
       sslCertificateFile, sslKeyFile, sslRootCertificateFile, sslPassword: String;
-      StubMqHeaderXml: TXml;
-      StubMqPutManager: String;
-      StubMqPutQueue: String;
-      StubMqGetManager: String;
-      StubMqGetQueue: String;
-      StubMqTimeOut: Integer;
       StubStompHeaderXml: TXml;
       StubCustomHeaderXml: TXml;
       StubStompPutHost: String;
@@ -374,8 +381,6 @@ type
       StubStompPutPassword: String;
       StubStompPutClientId: String;
       StubStompTimeOut: Integer;
-      TacoConfigXml: TXml;
-      KafkaConfigXml: TXml;
       CorrelatedMessage: TWsdlMessage;
       Messages: TWsdlMessages;
       doReadReplyFromFile: Boolean;
@@ -441,7 +446,6 @@ type
       procedure RpyBindablesFromString (aString: String);
       procedure RpyBindablesFromWsdlMessage (aMessage: TWsdlMessage);
       procedure RpyBindablesToWsdlMessage (aMessage: TWsdlMessage);
-      procedure FreeFormatToBindables (aRequestXml: TXml; aRequestString: String);
       procedure XmlRequestToBindables (aRequest: TXml; aAddUnknowns: Boolean);
       procedure XmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolean);
       procedure RequestStringToBindables (aRequest: String);
@@ -463,7 +467,6 @@ type
       procedure ExecuteReqStampers;
       procedure PrepareRpyStamper (aBind: TCustomBindable);
       procedure ExecuteRpyStampers;
-      procedure InitExecute;
       procedure CheckScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);
       procedure Execute (aStringList: TJBStringList; aOnError: TOnErrorEvent);
       procedure ExecuteBefore;
@@ -480,7 +483,7 @@ type
                              ; aGenerateHeaderNameSpaces: Boolean
                              ; aGenerateBodyNameSpaces: Boolean
                              ): String;
-      function StreamReply ( aGeneratedWith: String
+      function PrepareReply ( aGeneratedWith: String
                            ; aGenerateTypes: Boolean
                            ): String;
       function StreamFault (aGeneratedWith: String; aGenerateTypes: Boolean): String;
@@ -554,7 +557,6 @@ type
       ColumnXmls: TBindableList;
       Documentation: String;
       DocumentationEdited: Boolean;
-      Disabled: Boolean;
       function thisMessage: TWsdlMessage;
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
@@ -574,8 +576,6 @@ type TOnStringEvent = procedure (const Msg: String) of Object;
 
 procedure Notify(aString: AnsiString);
 function DateTimeToJulianStr (aDateTime: TDateTime): String;
-function SwiftStrToNumber (aString: String): Extended;
-function SwiftNumberToStr (aNumber: Extended): String;
 function DateTimeToTandemJulianStr (aDateTime: TDateTime): String;
 function RoundedX (aSource, aNumber: Extended): Extended;
 function RandomX (aLow, aHigh: Extended): Extended;
@@ -589,10 +589,8 @@ function xsdNowAsDateTime: String;
 function sblNowAsDateTime: String;
 procedure OperationFetchMessage (aObject : TObject; aIndex: Integer);
 function OperationMessageList (aObject : TObject ; aAlias: String): TParserStringList ;
+function RegExprSafeStr (aString: String): String;
 function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
-function SeparatedStringList (aObject: TObject; aString, aSep: String): TParserStringList;
-function SeparatedStringN (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
-function SeparatedStringT (aObject: TObject; aString, aSep: String; aIndex: Extended): String;
 function xNewLine: String;
 function xTab: String;
 function xStringOfChar (aString: String; aNumber: Extended): String;
@@ -617,6 +615,7 @@ function SubStringX ( s: String; i, c: Extended): String;
 function isAccordingSchema (aObject: TObject): Extended;
 function isAssigned (aObject: TObject): Extended;
 procedure ResetOperationCounters;
+function SqlSelectResultRow (aOperation: TWsdlOperation; aQuery: String): TParserStringList;
 function EnvVarMatchList (aOperation: TWsdlOperation; aExpr: String): TParserStringList;
 procedure ResetEnvVars (aOperation: TWsdlOperation; aRegExp: String);
 procedure ResetEnvVar (aOperation: TWsdlOperation; aName: String);
@@ -653,6 +652,7 @@ procedure PromptRequest(aOperation: TWsdlOperation);
 procedure RaiseExit(aOperation: TWsdlOperation);
 procedure ReturnString (aOperation: TWsdlOperation; aString: String);
 procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
+procedure RaiseHttpFault (aOperation: TWsdlOperation; aResponseCode, aResponseText, aResponseContentType: String);
 procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
 
 function wsdlConvertSdfFrom36 (aXml: TXml): Boolean;
@@ -667,6 +667,7 @@ var
   _wsdlStubStylesheet: String;
   _wsdlGetContext: SFunctionV;
   _wsdlSetContext: SFunctionS;
+  _WsdlExecSql: VFunctionOS;
   _WsdlNewDesignMessage: VFunctionOSS;
   _wsdlFetchDefaultDesignMessage: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
@@ -690,14 +691,9 @@ var
   _WsdlRtiXsd: TXsd;
   _WsdlRtiXml: TXml;
   _WsdlWsaXsd: TXsd;
-  _WsdlMqHeaderXsd: TXsd;
   _WsdlStompHeaderXsd: TXsd;
-  _WsdlEmailXsd: TXsd;
   _WsdlListOfFilesXsd: TXsd;
-  _WsdlTacoConfigXsd: TXsd;
-  _WsdlKafkaConfigXsd: TXsd;
   _WsdlUserNameTokenNumber: Integer;
-  _WsdlDisableOnCorrelate: Boolean;
   _WsdlOnMessageChange: TOnMessageChange;
   _WsdlOnOperationChange: TOnOperationChange;
   _OnChange: TOnChange;
@@ -705,12 +701,10 @@ var
   _ipmGun: Boolean;
   _WsdlDbsEnabled: Boolean;
   _WsdlDbsConnector: TSQLConnector;
+  _WsdlSQLConnectorLog: TDBLogNotifyEvent;
   _WsdlDbsTransaction: TSQLTransaction;
   _WsdlDbsConnectorType: String;
-  _WsdlDbsDatabaseName: String;
   _WsdlDbsParams: String;
-  _WsdlDbsPassword: String;
-
   UILock: TCriticalSection;
   EnvVarLock: TCriticalSection;
   doOperationLock, doUILock: Boolean;
@@ -742,9 +736,9 @@ uses
    , Clipbrd
    , HashUtilz
    , IdURI
-   , SwiftUnit
    , xmlxsdparser
    , Logz
+   , LazUTF8
    ;
 
 { TWsdl }
@@ -756,6 +750,21 @@ var
 begin
   s := aString;
   result := s;
+end;
+
+function UpperCaseStr (aString: String): String;
+begin
+  result := UTF8UpperCase(aString);
+end;
+
+function LowerCaseStr (aString: String): String;
+begin
+  result := UTF8LowerCase(aString);
+end;
+
+function StrToNameCase (aString: String): String;
+begin
+  result := UTF8ProperCase(aString, [' ', ',', '.', '/', ';', ':', '''', '-', '&']);
 end;
 
 function isValidId (aId: String): Boolean;
@@ -911,26 +920,14 @@ begin
   result := FloatToStrF(DateTimeToJulianDate(aDateTime)*24*60*60*1000000,ffGeneral,18,3);
 end;
 
-function SwiftStrToNumber (aString: String): Extended;
-var
-  x: Integer;
+function xDateTimeToUnix (aDateTime: TDateTime): Extended;
 begin
-  x := Pos(',', aString);
-  if x > 0 then
-    aString[x] := '.';
-  result := StrToFloat (aString);
+  result := DateTimeToUnix(aDateTime);
 end;
 
-function SwiftNumberToStr (aNumber: Extended): String;
-var
-  x: Integer;
+function xUnixToDateTime (aUnixDateTime: Extended): TDateTime;
 begin
-  result := FloatToStr (aNumber);
-  x := Pos('.', result);
-  if x > 0 then
-    result [x] := ','
-  else
-    result := result + ',';
+  result := UnixToDateTime(Trunc(aUnixDateTime));
 end;
 
 function RoundedX (aSource, aNumber: Extended): Extended;
@@ -1170,6 +1167,39 @@ begin
   end;
 end;
 
+function SqlSelectResultRow(aOperation: TWsdlOperation; aQuery: String
+  ): TParserStringList;
+var
+  xRow: String;
+  xSep: String;
+  x: Integer;
+begin
+  _WsdlDbsConnector.Connected := True;
+  result := TParserStringList.Create;
+  with TSQLQuery.Create(nil) do
+  try
+    Database := _WsdlDbsConnector;
+    Transaction := _WsdlDbsTransaction;
+    SQL.Text := aQuery;
+    Open;
+    while not EOF do
+    begin
+      xRow := '';
+      xSep := '';
+      for x := 0 to FieldCount - 1 do
+      begin
+        xRow := xRow + xSep + Fields.Fields[x].Text;
+        xSep := Chr (9);
+      end;
+      result.Add(xRow);
+      Next;
+    end;
+    Close;
+  finally
+    Free;
+  end;
+end;
+
 function EnvVarMatchList (aOperation: TWsdlOperation; aExpr: String): TParserStringList;
 var
   i: Integer;
@@ -1225,6 +1255,20 @@ begin
   end;
 end;
 
+function RegExprSafeStr(aString: String): String;
+const xRegExprChars = '\^$*+?.(){}[]|';
+var
+  x: Integer;
+begin
+  result := '';
+  for x := 1 to Length (aString) do
+  begin
+    if Pos (aString [x], xRegExprChars) > 0 then
+      result := result + '\';
+    result := result + aString [x];
+  end;
+end;
+
 function RegExprMatchList (aObject: TObject; aString, aExpr: String): TParserStringList;
 var
   f: Boolean;
@@ -1240,76 +1284,6 @@ begin
     begin
       result.Add (Match[0]);
       f := ExecNext;
-    end;
-  finally
-    Free;
-  end;
-end;
-
-function SeparatedStringList(aObject: TObject;aString, aSep: String
-  ): TParserStringList;
-  procedure _AddSeparated (aList: TParserStringList; aString, aSep: String);
-  var
-    p: Integer;
-  begin
-    p := PosSubString(aSep, aString, True,False);
-    if p < 1 then
-      aList.Add (aString)
-    else
-    begin
-      aList.Add (Copy (aString, 1, p - 1));
-      _AddSeparated (aList, Copy (aString, p + Length (aSep), MaxInt), aSep);
-    end;
-  end;
-begin
-  result := TParserStringList.Create;
-  if (aString <> '')
-  and (aSep <> '') then
-  begin
-    _AddSeparated (result, aString, aSep);
-  end;
-end;
-
-function SeparatedStringN(aObject: TObject;aString, aSep: String;
-  aIndex: Extended): String;
-var
-  xInteger: Integer;
-begin
-  result := '';
-  xInteger := Trunc (aIndex);
-  if xInteger < 1 then
-    raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringN"', [xInteger]);
-  with SeparatedStringList(nil, aString, aSep) do
-  try
-    if Count > 0 then
-    begin
-      if xInteger > Count then
-        raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringN"', [xInteger])
-      else
-        result := Strings[xInteger - 1];
-    end;
-  finally
-    Free;
-  end;
-end;
-
-function SeparatedStringT(aObject: TObject;aString, aSep: String;
-  aIndex: Extended): String;
-var
-  xInteger: Integer;
-begin
-  result := '';
-  xInteger := Trunc (aIndex);
-  if (xInteger < 1) then
-    raise Exception.CreateFmt('Index [%d] out of range in function "SeparatedStringT"', [xInteger]);
-  with SeparatedStringList(nil, aString, aSep) do
-  try
-    if Count > 0 then
-    begin
-      if xInteger > Count - 1 then
-        result := Strings[Count - 1]
-      else
-        result := Strings[xInteger - 1];
     end;
   finally
     Free;
@@ -1390,6 +1364,13 @@ begin
   _wsdlFetchDefaultDesignMessage (aObject, aOperation);
 end;
 
+procedure wsdlExecSql (aObject: TObject; aQuery: String);
+begin
+  if not Assigned (_WsdlExecSql) then
+    raise Exception.Create('WsdlExecSql: implementation missing');
+  _WsdlExecSql (aObject, aQuery);
+end;
+
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation, aName: String);
 begin
   if not Assigned (_WsdlNewDesignMessage) then
@@ -1448,44 +1429,14 @@ end;
 
 procedure EnableMessage (aOperation: TWsdlOperation);
 begin
-  if Assigned (aOperation)
-  and Assigned (aOperation.CorrelatedMessage)
-  and aOperation.CorrelatedMessage.Disabled then
-  begin
-    aOperation.CorrelatedMessage.Disabled := False;
-    if Assigned (_WsdlOnMessageChange) then
-      _WsdlOnMessageChange (aOperation.CorrelatedMessage);
-  end;
 end;
 
 procedure EnableAllMessages;
-var
-  o, m: Integer;
 begin
-  for o := 0 to allOperations.Count - 1 do
-  begin
-    with allOperations.Operations[o] do
-    begin
-      for m := 0 to Messages.Count - 1 do
-      begin
-        Messages.Messages[m].Disabled := False;
-      end;
-    end;
-  end;
-  if Assigned (_OnChange) then
-    _OnChange;
 end;
 
 procedure DisableMessage (aOperation: TWsdlOperation);
 begin
-  if Assigned (aOperation)
-  and Assigned (aOperation.CorrelatedMessage)
-  and not aOperation.CorrelatedMessage.Disabled then
-  begin
-    aOperation.CorrelatedMessage.Disabled := True;
-    if Assigned (_WsdlOnMessageChange) then
-      _WsdlOnMessageChange (aOperation.CorrelatedMessage);
-  end;
 end;
 
 function OccurrencesX (aObject: TObject): Extended;
@@ -1820,6 +1771,28 @@ begin
   aOperation.faultactor := faultactor;
   aOperation.LiteralResult := aOperation.StreamFault('', False);
   aOperation.ReturnSoapFault := True;
+  aOperation.ResponseNo := 500;
+  aOperation.DoExit := True;
+end;
+
+procedure RaiseHttpFault (aOperation: TWsdlOperation; aResponseCode, aResponseText, aResponseContentType: String);
+var
+  x: Integer;
+begin
+  aOperation.LiteralResult := aResponseText;
+  aOperation.ContentType := aResponseContentType;
+  try
+    aOperation.ResponseNo := StrToInt(aResponseCode);
+  except
+    aOperation.ResponseNo := 500;
+    aOperation.LiteralResult := 'exception, could not convert  '
+                              + aResponseCode
+                              + ' to integer.'
+                              + LineEnding
+                              + aOperation.LiteralResult
+                              ;
+  end;
+  aOperation.ReturnSoapFault := True;
   aOperation.DoExit := True;
 end;
 
@@ -1865,6 +1838,7 @@ begin
     aOperation.LiteralResult := AsText(False, 0, False, False);
     aOperation.ReturnSoapFault := True;
     aOperation.DoExit := True;
+    aOperation.ResponseNo := 500;
   finally
     Free;
   end;
@@ -2336,24 +2310,6 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     end;
   end;
 
-  function _FindReferencedXml (aString: String): TXml;
-  var
-    x: Integer;
-    xFilename, xPath: String;
-  begin
-    result := nil;
-    xFilename := SeparatedStringN(nil, aString, '#/', 1);
-    xPath := '#/' + SeparatedStringN(nil, aString, '#/', 2);
-    x := 0;
-    while (x < XsdDescr.ReadFileNames.Count)
-      and (not Assigned (result)) do
-    begin
-      if XsdDescr.ReadFileNames[x] = xFilename then
-        result := (XsdDescr.ReadFileNames.Objects[x] as TXml).FindXml(xPath, '/');
-      Inc (x);
-    end;
-  end;
-
   function _prepareRef (aValue: String): String;
   var
     x: Integer;
@@ -2443,7 +2399,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       if (Name = S_DOLLARREF) then
       begin
-        yXml := _FindReferencedXml(Value);
+        yXml := XsdDescr.FindReferencedXml(Value) as TXml;
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s in %s', [Value, aFileName]);
         _evaluateParameter (aRootXml, yXml, aParentXsd);
@@ -2565,7 +2521,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       if (Name = S_DOLLARREF) then
       begin
-        yXml := _FindReferencedXml(Value);
+        yXml := XsdDescr.FindReferencedXml(Value) as TXml;
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateRequestBody(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -2600,7 +2556,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
       begin
         if (Name = S_DOLLARREF) then
         begin
-          hXml := _FindReferencedXml(Value);
+          hXml := XsdDescr.FindReferencedXml(Value) as TXml;
           if not Assigned(hXml) then
             raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
           _evaluateResponse200(aXsd, aDoc, hXml);
@@ -2648,7 +2604,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       if (Name = S_DOLLARREF) then
       begin
-        yXml := _FindReferencedXml(Value);
+        yXml := XsdDescr.FindReferencedXml(Value) as TXml;
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateResponses200(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -2671,6 +2627,42 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
                                   ; Items: TXmlList
                                   ; aRootXml: TXml
                                   );
+    procedure _evalresponsecode (aXml: TXml; aXsd: TXsd);
+    var
+      w, h: Integer;
+      hXsd: TXsd;
+      yXml: TXml;
+    begin
+      for w := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[w] do
+      begin
+        if (Name = S_DOLLARREF) then
+        begin
+          yXml := XsdDescr.FindReferencedXml(Value) as TXml;
+          if not Assigned(yXml) then
+            raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
+          _evalresponsecode(yXml, aXsd);
+        end;
+        if Name = 'description' then aXsd.Documentation.Text := Value;
+        if Name = 'content' then _evaluateContent (aService, aOperation, aXsd, thisXml.Items, aRootXml);
+        if Name = 'headers' then
+        begin
+          for h := 0 to Items.Count - 1 do with Items.XmlItems[h] do
+          begin
+            hXsd := TXsd.Create(XsdDescr);
+            XsdDescr.Garbage.AddObject('', hXsd);
+            hXsd.ElementName := Name;
+            hXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, '', thisXml, aOnError);
+            hXsd.sType.Name := hXsd.ElementName;
+            hXsd.minOccurs := '0';
+            hXsd.ParametersType := oppHeader;
+            aXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
+          end;
+        end;
+        if Name = 'links' then ; // TODO, not yet known, by me, what to...
+      end;
+
+    end;
+
   var
     x, y, z, v, w, h: Integer;
     xXml, yXml, zXml, vXml, wXml, hXml: TXml;
@@ -2681,7 +2673,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       if (Name = S_DOLLARREF) then
       begin
-        yXml := _FindReferencedXml(Value);
+        yXml := XsdDescr.FindReferencedXml(Value) as TXml;
         if not Assigned(yXml) then
           raise Exception.CreateFmt('Coud not resolve %s at %s,%s', [Value, aService.Name, aOperation.Name]);
         _evaluateResponses300(aService, aOperation, aDoc, yXml.Items, aRootXml);
@@ -2693,28 +2685,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     begin
       vXml := Items.XmlItems[v];
       xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
-      for w := 0 to vXml.Items.Count - 1 do
-      begin
-        wXml := vXml.Items.XmlItems[w];
-        if wXml.Name = 'description' then xXsd.Documentation.Text := wXml.Value;
-        if wXml.Name = 'content' then _evaluateContent (aService, aOperation, xXsd, wXml.Items, aRootXml);
-        if wXml.Name = 'headers' then
-        begin
-          for h := 0 to wXml.Items.Count - 1 do
-          begin
-            hXml := wXml.Items.XmlItems[h];
-            hXsd := TXsd.Create(XsdDescr);
-            XsdDescr.Garbage.AddObject('', hXsd);
-            hXsd.ElementName := hXml.Name;
-            hXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, '', hXml, aOnError);
-            hXsd.sType.Name := hXsd.ElementName;
-            hXsd.minOccurs := '0';
-            hXsd.ParametersType := oppHeader;
-            xXsd.sType.ElementDefs.AddObject(hXsd.ElementName, hXsd);
-          end;
-        end;
-        if wXml.Name = 'links' then ; // TODO, not yet known, by me, what to...
-      end;
+      _evalresponsecode(vXml, xXsd);
     end;
     _addUndefXsd(aOperation.rpyXsd);
   end;
@@ -2837,7 +2808,8 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
         xExt := UpperCase (ExtractFileExt (aaFileName));
         xXml := TXml.Create;
         if (xExt = '.JSON')
-        or (xExt = '.JSN') then
+        or (xExt = '.JSN')
+        or (xExt = '') then
           xXml.LoadJsonFromFile(aaFileName, aOnError, aOnbeforeRead)
         else
           xXml.LoadYamlFromFile(aaFileName, aOnError, aOnbeforeRead);
@@ -2858,7 +2830,9 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
         xFileName := xmlio.ExpandRelativeFileName(aFileName, SeparatedStringN(nil, aXml.Value, '#/', 1));
         xPath := SeparatedStringN(nil, aXml.Value, '#/', 2);
         __ReadDollarReferencedFile(xFileName);
-        aXml.Value := xFileName + '#/' + xPath;
+        aXml.Value := xFileName;
+        if xPath <> '' then
+          aXml.Value := aXml.Value + '#/' + xPath;
       end
       else
         aXml.Value := aFileName + aXml.Value;
@@ -3066,7 +3040,10 @@ begin
         xService.openApiPath := xService.Name;
         for p := 0 to ServerPathNames.Count - 1 do
           xService.PathInfos.Add (ServerPathNames.Strings[p] + xService.Name);
-        xService.logPathFormat := ServerPathNames.Strings[0] + Name;
+        if ServerPathNames.Count > 0 then
+          xService.logPathFormat := ServerPathNames.Strings[0] + Name
+        else
+          xService.logPathFormat := Name;
         Services.AddObject(Name, xService);
         xService.DescriptionType := ipmDTJson;
         for z := 0 to Items.Count - 1 do with Items.XmlItems[z] do
@@ -3498,6 +3475,7 @@ begin
   fCloned := nil;
   fLock := SyncObjs.TCriticalSection.Create;
   doSuppressLog := 0;
+  StubAction := saStub;
   if Assigned (aWsdl) then
   begin
     Wsdl := aWsdl;
@@ -3549,15 +3527,11 @@ begin
   ContentType := 'text/xml;charset=utf-8';
   Accept := ContentType;
   StubAction := saStub;
+  sslVersion := sslvTLSv1_2;
   StubHttpAddress := '';
   httpVerb := 'POST';
   ConsumeType := ptJson;
   ProduceType := ptJson;
-  StubMqPutManager := '';
-  StubMqPutQueue := '';
-  StubMqGetManager := '';
-  StubMqGetQueue := '';
-  StubMqTimeOut := 30;
   StubStompPutHost := 'localhost';
   StubStompPutPort := '61613';
   StubStompPutUseCredentials := False;
@@ -3572,25 +3546,10 @@ begin
     rpyWsaXml := TXml.Create(-1000, _WsdlWsaXsd);
     rpyWsaXml.CheckDownline(False);
   end;
-  if Assigned (_WsdlMqHeaderXsd) then
-  begin
-    StubMqHeaderXml := TXml.Create(-10000, _WsdlMqHeaderXsd);
-    StubMqHeaderXml.CheckDownline(False);
-  end;
   if Assigned (_WsdlStompHeaderXsd) then
   begin
     StubStompHeaderXml := TXml.Create(-10000, _WsdlStompHeaderXsd);
     StubStompHeaderXml.CheckDownline(False);
-  end;
-  if Assigned (_WsdlTacoConfigXsd) then
-  begin
-    TacoConfigXml := TXml.Create(-10000, _WsdlTacoConfigXsd);
-    TacoConfigXml.CheckDownline(False);
-  end;
-  if Assigned (_WsdlKafkaConfigXsd) then
-  begin
-    KafkaConfigXml := TXml.Create(-10000, _WsdlKafkaConfigXsd);
-    KafkaConfigXml.CheckDownline(False);
   end;
   StubCustomHeaderXml := TXml.CreateAsString('customHeaders', '');
   doReadReplyFromFile := False;
@@ -3639,10 +3598,7 @@ begin
     _FreeRecog (reqRecognition);
     _FreeRecog (rpyRecognition);
     FreeAndNil (StubStompHeaderXml);
-    FreeAndNil (StubMqHeaderXml);
     FreeAndNil (StubCustomHeaderXml);
-    FreeAndNil (TacoConfigXml);
-    FreeAndNil (KafkaConfigXml);
     FreeAndNil (ReadReplyFromFileXml);
     FreeAndNil (fLock);
   end;
@@ -3742,8 +3698,7 @@ begin
           xDefault := Messages.Messages [x]
         else
         begin
-          if (not Messages.Messages[x].Disabled)
-          and _Match (Messages.Messages[x].CorrelationBindables, CorrelationBindables) then
+          if _Match (Messages.Messages[x].CorrelationBindables, CorrelationBindables) then
           begin
             result := Messages.Messages [x];
           end;
@@ -3752,16 +3707,6 @@ begin
       end;
       if not Assigned (Result) then
         Result := xDefault;
-      if Assigned (Result) then
-      begin
-        if not Result.Disabled then // optimized...
-        begin
-          result.Disabled := _WsdlDisableOnCorrelate;
-          if result.Disabled
-          and Assigned (_WsdlOnMessageChange) then
-            _WsdlOnMessageChange (result);
-        end;
-      end;
     except
       result := xDefault;
     end;
@@ -3815,11 +3760,8 @@ begin
     fExpress.OnGetDoExit := getDoExit;
     fExpress.OnError := fOnError;
     fExpress.Database := _WsdlDbsConnector;
-    if not isFreeFormat then
-    begin
-      Bind ('Req', reqBind, fExpress);
-      Bind ('Rpy', rpyBind, fExpress);
-    end;
+    Bind ('Req', reqBind, fExpress);
+    Bind ('Rpy', rpyBind, fExpress);
     Bind ('requestInfo', requestInfoBind, fExpress);
     Bind ('replyInfo', replyInfoBind, fExpress);
     if Assigned (invokeList) then
@@ -3828,11 +3770,8 @@ begin
       begin
         if Assigned (invokeList.Operations[x]) then
         begin
-          if (not invokeList.Operations[x].isFreeFormat) then
-          begin
-            Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
-            Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
-          end;
+          Bind ('Req', invokeList.Operations[x].reqBind, fExpress);
+          Bind ('Rpy', invokeList.Operations[x].rpyBind, fExpress);
           Bind ('requestInfo', invokeList.Operations[x].requestInfoBind, fExpress);
           Bind ('replyInfo', invokeList.Operations[x].replyInfoBind, fExpress);
         end;
@@ -3856,8 +3795,6 @@ begin
       try reqWsaXml.Bind ('reqWsa', fExpress, 1); except end;
     if Assigned (rpyWsaXml) then
       try rpyWsaXml.Bind ('rpyWsa', fExpress, 1); except end;
-    if Assigned (StubMqHeaderXml) then
-      try StubMqHeaderXml.Bind ('Mq', fExpress, 1); except end;
     try fExpress.BindInteger('rti.operation.delayms', DelayTimeMs); except end;
     try fExpress.BindInteger('rti.operation.suppresslog', doSuppressLog); except end;
     BindScriptFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
@@ -3873,10 +3810,12 @@ begin
     BindScriptFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindScriptFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindScriptFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
+    BindScriptFunction ('DateTimeToUnix', @xDateTimeToUnix, XFD, '(aDateTime)');
     BindScriptFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindScriptFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindScriptFunction ('ExecuteScriptLater', @ExecuteScriptLater, VFOSX, '(aScript, aLaterMs)');
+    BindScriptFunction ('ExecSql', @wsdlExecSql, VFOS, '(aQuery)');
     BindScriptFunction ('Exit', @RaiseExit, VFOV, '()');
     BindScriptFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
     BindScriptFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
@@ -3891,8 +3830,9 @@ begin
     BindScriptFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindScriptFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('Latin1Str', @Latin1, SFS, '(aString)');
+    BindScriptFunction ('NameCaseStr', @StrToNameCase, SFS, '(aString)');
     BindScriptFunction ('LengthStr', @LengthX, XFS, '(aString)');
-    BindScriptFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+    BindScriptFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
     BindScriptFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
     BindScriptFunction ('MD5', @MD5, SFS, '(aString)');
     BindScriptFunction ('MessageName', @wsdlMessageName, SFOV, '()');
@@ -3908,9 +3848,11 @@ begin
     BindScriptFunction ('PromptReply', @PromptReply, VFOV, '()');
     BindScriptFunction ('PromptRequest', @PromptRequest, VFOV, '()');
     BindScriptFunction ('RaiseError', @RaiseError, VFS, '(aString)');
+    BindScriptFunction ('RaiseHttpFault', @RaiseHttpFault, VFOSSS, '(aHttpCode, aResponseText, aResponseContentType)');
     BindScriptFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
     BindScriptFunction ('RaiseWsdlFault', @RaiseWsdlFault, VFOSSS, '(aFaultCode, aFaultString, aFaultActor)');
     BindScriptFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
+    BindScriptFunction ('RegExprSafeStr', @RegExprSafeStr, SFS, '(aString)');
     BindScriptFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
     BindScriptFunction ('ReplyAsText', @wsdlReplyAsText, SFOS, '(aOperation)');
     BindScriptFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
@@ -3920,6 +3862,7 @@ begin
     BindScriptFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindScriptFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindScriptFunction ('SetContext', @SetContext, SFS, '(aContextName)');
+    BindScriptFunction ('SqlSelectResultRow', @SqlSelectResultRow, SLFOS, '(aSqlSelectQuery)');
     BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
     BindScriptFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
     BindScriptFunction ('EnableMessage', @EnableMessage, VFOV, '()');
@@ -3927,6 +3870,7 @@ begin
     BindScriptFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindScriptFunction ('SeparatedString', @SeparatedStringList, SLFOSS, '(aString, aSeparator)');
     BindScriptFunction ('SeparatedStringN', @SeparatedStringN, SFOSSX, '(aString, aSeparator, aIndex)');
+    BindScriptFunction ('SeparatedStringT', @SeparatedStringT, SFOSSX, '(aString, aSeparator, aIndex)');
     BindScriptFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindScriptFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
     BindScriptFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
@@ -3947,10 +3891,9 @@ begin
     BindScriptFunction ('StrToDateTime', @XmlToDateTime, DFS, '(aString)');
     BindScriptFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindScriptFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-    BindScriptFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
-    BindScriptFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
     BindScriptFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
-    BindScriptFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
+    BindScriptFunction ('UnixToDateTime', @xUnixToDateTime, DFX, '(aUnixDateTime)');
+    BindScriptFunction ('UppercaseStr', @UpperCaseStr, SFS, '(aString)');
     BindScriptFunction ('UserName', @wsdlUserName, SFV, '()');
     BindScriptFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');
     BindScriptFunction ('OperationName', @wsdlOperationName, SFOV, '()');
@@ -4138,17 +4081,6 @@ begin
     Exit;
   end;
 
-  if WsdlService.DescriptionType in [ipmDTSwiftMT] then
-  begin
-    with TStwiftMtStreamer.Create(reqBind as TXml) do
-    try
-      result := AsText;
-    finally
-      Free;
-    end;
-    Exit;
-  end;
-
   if isFreeFormat then
   begin
     result := FreeformatReq;
@@ -4279,13 +4211,14 @@ begin
   Raise Exception.Create ('TWsdlOperation.StreamRequest: New stuf??? Statement should not be reached');
 end;
 
-function TWsdlOperation.StreamReply(aGeneratedWith: String; aGenerateTypes: Boolean): String;
+function TWsdlOperation.PrepareReply(aGeneratedWith: String; aGenerateTypes: Boolean): String;
 var
   x, y: Integer;
   xXml, yXml, zXml: TXml;
   xName: String;
 begin
-  ResponseNo := 200; // nice default
+  if ResponseNo = 0 then
+    ResponseNo := 200; // nice default
   result := LiteralResult;
   if Result <> '' then
     Exit;
@@ -4293,17 +4226,6 @@ begin
   if isFreeFormat then
   begin
     result := FreeformatRpy;
-    Exit;
-  end;
-
-  if WsdlService.DescriptionType in [ipmDTSwiftMT] then
-  begin
-    with TStwiftMtStreamer.Create(rpyBind as TXml) do
-    try
-      result := AsText;
-    finally
-      Free;
-    end;
     Exit;
   end;
 
@@ -4752,11 +4674,8 @@ begin
     rpyWsaXml := TXml.Create(-1000, _WsdlWsaXsd);
     rpyWsaXml.CheckDownline(False);
   end;
-  self.StubMqHeaderXml := xOperation.StubMqHeaderXml;
   self.StubStompHeaderXml := xOperation.StubStompHeaderXml;
   self.StubCustomHeaderXml := xOperation.StubCustomHeaderXml;
-  self.TacoConfigXml := xOperation.TacoConfigXml;
-  self.KafkaConfigXml := xOperation.KafkaConfigXml;
   self.doReadReplyFromFile := xOperation.doReadReplyFromFile;
   self.ReadReplyFromFileXml := xOperation.ReadReplyFromFileXml;
   self.StubAction := xOperation.StubAction;
@@ -4766,11 +4685,6 @@ begin
   self.AcceptDeflateEncoding := xOperation.AcceptDeflateEncoding;
   self.AcceptGzipEncoding := xOperation.AcceptGzipEncoding;
   self.httpVerb := xOperation.httpVerb;
-  self.StubMqPutManager := xOperation.StubMqPutManager;
-  self.StubMqPutQueue := xOperation.StubMqPutQueue;
-  self.StubMqGetManager := xOperation.StubMqGetManager;
-  self.StubMqGetQueue := xOperation.StubMqGetQueue;
-  self.StubMqTimeOut := xOperation.StubMqTimeOut;
   self.StubStompPutHost := xOperation.StubStompPutHost;
   self.StubStompPutPort := xOperation.StubStompPutPort;
   self.StubStompPutUseCredentials := xOperation.StubStompPutUseCredentials;
@@ -4800,10 +4714,18 @@ begin
     self.reqBind := TIpmItem.Create(xOperation.reqBind as TIpmItem)
   else
   begin
-    if Assigned (self.reqXsd) then
+    if xOperation.isFreeFormat then
     begin
-      self.reqBind := TXml.Create (-10000, self.reqXsd);
-      self.reqBind.Name := xOperation.reqBind.Name;
+      reqBind := TXml.CreateAsString(xOperation.reqBind.Name, '');
+      reqXml.AddXml(TXml.CreateAsString('Body', ''));
+    end
+    else
+    begin
+      if Assigned (self.reqXsd) then
+      begin
+        self.reqBind := TXml.Create (-10000, self.reqXsd);
+        self.reqBind.Name := xOperation.reqBind.Name;
+      end;
     end;
   end;
   self.rpyXsd := xOperation.rpyXsd;
@@ -4811,10 +4733,18 @@ begin
     self.rpyBind := TIpmItem.Create(xOperation.rpyBind as TIpmItem)
   else
   begin
-    if Assigned (self.rpyXsd) then
+    if xOperation.isFreeFormat then
     begin
-      self.rpyBind := TXml.Create (-10000, self.rpyXsd);
-      self.rpyBind.Name := xOperation.rpyBind.Name;
+      rpyBind := TXml.CreateAsString(xOperation.rpyBind.Name, '');
+      rpyXml.AddXml(TXml.CreateAsString('Body', ''));
+    end
+    else
+    begin
+      if Assigned (self.rpyXsd) then
+      begin
+        self.rpyBind := TXml.Create (-10000, self.rpyXsd);
+        self.rpyBind.Name := xOperation.rpyBind.Name;
+      end;
     end;
   end;
   if self.invokeRequestInfo
@@ -5004,12 +4934,6 @@ begin
   begin
     (reqBind as TXml).Items.XmlItems[0].LoadValues (aRequest, aAddUnknowns, False, True, False);
   end;
-end;
-
-procedure TWsdlOperation .FreeFormatToBindables (aRequestXml : TXml ;
-  aRequestString : String );
-begin
-  FreeFormatReq := aRequestString;
 end;
 
 function TWsdlOperation.getDebugTokenStringBefore: String;
@@ -5297,8 +5221,6 @@ begin
         else
           result := SoapAddress;
       end;
-    ttMq:
-      result := 'queue//getWsaTo_not_yet_implemented';
     ttStomp:
       result := 'queue//getWsaTo_not_yet_implemented';
   end;
@@ -5713,33 +5635,6 @@ begin
           end;
         end;
       end;
-    ttMq:
-      with result.AddXml(TXml.CreateAsString('Mq', '')) do
-      begin
-        with AddXml(TXml.CreateAsString('putRequest', '')) do
-        begin
-          AddXml (TXml.CreateAsString('Manager', StubMqPutManager));
-          AddXml (TXml.CreateAsString('Queue', StubMqPutQueue));
-        end;
-        if (StubMqGetManager <> '')
-        or (StubMqGetQueue <> '') then
-        begin
-          with AddXml(TXml.CreateAsString('getRequest', '')) do
-          begin
-            AddXml (TXml.CreateAsString('Manager', StubMqGetManager));
-            AddXml (TXml.CreateAsString('Queue', StubMqGetQueue));
-            AddXml (TXml.CreateAsInteger('Timeout', StubMqTimeOut));
-          end;
-        end;
-        if Assigned(StubMqHeaderXml)
-        and (StubMqHeaderXml.Checked) then
-        begin
-          with AddXml (TXml.CreateAsString ('mqHeader', '')) do
-          begin
-            CopyDownLine(StubMqHeaderXml, True);
-          end;
-        end;
-      end;
     ttStomp:
       with result.AddXml(TXml.CreateAsString('Stomp', '')) do
       begin
@@ -5767,18 +5662,6 @@ begin
         and (StubCustomHeaderXml.Checked) then
           with AddXml (TXml.CreateAsString ('customHeaders', '')) do
             CopyDownLine(StubCustomHeaderXml, True);
-      end;
-    ttTaco:
-      with result.AddXml(TXml.CreateAsString('Taco', '')) do
-        CopyDownLine(TacoConfigXml, True);
-    ttKafka:
-      with result.AddXml(TXml.CreateAsString('Kafka', '')) do
-        CopyDownLine(KafkaConfigXml, True);
-    ttSmtp:
-      with result.AddXml(TXml.CreateAsString('Smtp', '')) do
-      begin
-        AddXml (TXml.CreateAsString('Host', smtpHost));
-        AddXml (TXml.CreateAsInteger('Port', smtpPort));
       end;
     ttNone:
       result.AddXml(TXml.CreateAsString('None', ''));
@@ -5811,12 +5694,6 @@ begin
   sslKeyFile := '';
   sslRootCertificateFile := '';
   sslPassword := '';
-  StubMqPutManager := '';
-  StubMqPutQueue := '';
-  StubMqGetManager := '';
-  StubMqGetQueue := '';
-  StubMqTimeOut := 0;
-  StubMqHeaderXml.CheckDownline(False);
   StubStompPutHost := '';
   StubStompPutPort := '';
   StubStompPutUseCredentials := False;
@@ -5828,8 +5705,6 @@ begin
   StubCustomHeaderXml.Items.Clear;
   smtpHost := '';
   smtpPort := 0;
-  TacoConfigXml.CheckDownline(False);
-  KafkaConfigXml.CheckDownline(False);
   for x := 0 to aXml.Items.Count - 1 do
   begin
     with aXml.Items.XmlItems[x] do
@@ -5877,26 +5752,6 @@ begin
             end;
           end;
         end;
-        if Name = 'Mq' then
-        begin
-          StubTransport := ttMq;
-          xXml := Items.XmlCheckedItemByTag['putRequest'];
-          if Assigned (xXml) then
-          begin
-            StubMqPutManager := xXml.Items.XmlCheckedValueByTag['Manager'];
-            StubMqPutQueue := xXml.Items.XmlCheckedValueByTag['Queue'];
-          end;
-          xXml := Items.XmlCheckedItemByTag['getRequest'];
-          if Assigned (xXml) then
-          begin
-            StubMqGetManager := xXml.Items.XmlCheckedValueByTag['Manager'];
-            StubMqGetQueue := xXml.Items.XmlCheckedValueByTag['Queue'];
-            StubMqTimeOut := xXml.Items.XmlCheckedIntegerByTag['Timeout'];
-          end;
-          xXml := Items.XmlCheckedItemByTag['mqHeader'];
-          if Assigned (xXml) then
-            StubMqHeaderXml.LoadValues (xXml, False, True);
-        end;
         if Name = 'Stomp' then
         begin
           StubTransport := ttStomp;
@@ -5917,22 +5772,6 @@ begin
           xXml := Items.XmlCheckedItemByTag['customHeaders'];
           if Assigned (xXml) then
             StubCustomHeaderXml.LoadValues (xXml, True, True);
-        end;
-        if Name = 'Smtp' then
-        begin
-          StubTransport := ttSmtp;
-          smtpHost := Items.XmlCheckedValueByTagDef['Host', 'localhost'];
-          smtpPort := Items.XmlCheckedIntegerByTagDef['Port', 25];
-        end;
-        if Name = 'Taco' then
-        begin
-          StubTransport := ttTaco;
-          TacoConfigXml.LoadValues (aXml.Items.XmlItems[x], False, True);
-        end;
-        if Name = 'Kafka' then
-        begin
-          StubTransport := ttKafka;
-          KafkaConfigXml.LoadValues (aXml.Items.XmlItems[x], False, True);
         end;
         if Name = 'None' then
         begin
@@ -5975,13 +5814,15 @@ begin
       BindCheckerFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
       BindCheckerFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
       BindCheckerFunction ('Latin1Str', @Latin1, SFS, '(aString)');
+      BindCheckerFunction ('NameCaseStr', @StrToNameCase, SFS, '(aString)');
       BindCheckerFunction ('LengthStr', @LengthX, XFS, '(aString)');
-      BindCheckerFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+      BindCheckerFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
       BindCheckerFunction ('NewLine', @xNewLine, SFV, '()');
       BindCheckerFunction ('Tab', @xTab, SFV, '()');
       BindCheckerFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');
       BindCheckerFunction ('Occurrences', @OccurrencesX, XFG, '(aElement)');
       BindCheckerFunction ('Random', @RandomX, XFXX, '(aLow, aHigh)');
+      BindCheckerFunction ('RegExprSafeStr', @RegExprSafeStr, SFS, '(aString)');
       BindCheckerFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
       BindCheckerFunction ('SetEnvNumber', @setEnvNumber, XFOSX, '(aKey, aNumber)');
       BindCheckerFunction ('SetEnvVar', @setEnvVar, SFOSS, '(aKey, aValue)');
@@ -5994,7 +5835,7 @@ begin
       BindCheckerFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
       BindCheckerFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
       BindCheckerFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
-      BindCheckerFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
+      BindCheckerFunction ('UppercaseStr', @UpperCaseStr, SFS, '(aString)');
       BindCheckerFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
       BindCheckerFunction ('UserName', @wsdlUserName, SFV, '()');
       BindCheckerFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');
@@ -6033,6 +5874,7 @@ begin
     BindStamperFunction ('DateTimeToJulianStr', @DateTimeToJulianStr, SFD, '(aDateTime)');
     BindStamperFunction ('DateTimeToTandemJulianStr', @DateTimeToTandemJulianStr, SFD, '(aDateTime)');
     BindStamperFunction ('DateTimeToXml', @xsdDateTime, SFD, '(aDateTime)');
+    BindStamperFunction ('DateTimeToUnix', @xDateTimeToUnix, XFD, '(aDateTime)');
     BindStamperFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindStamperFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
@@ -6045,8 +5887,9 @@ begin
     BindStamperFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindStamperFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('Latin1Str', @Latin1, SFS, '(aString)');
+    BindStamperFunction ('NameCaseStr', @StrToNameCase, SFS, '(aString)');
     BindStamperFunction ('LengthStr', @LengthX, XFS, '(aString)');
-    BindStamperFunction ('LowercaseStr', @lowercase, SFS, '(aString)');
+    BindStamperFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
     BindStamperFunction ('MD5', @MD5, SFS, '(aString)');
     BindStamperFunction ('NewLine', @xNewLine, SFV, '()');
     BindStamperFunction ('Tab', @xTab, SFV, '()');
@@ -6070,10 +5913,9 @@ begin
     BindStamperFunction ('StrToDateTime', @XmlToDateTime, DFS, '(aString)');
     BindStamperFunction ('StrToNumber', @StrToFloatX, XFS, '(aString)');
     BindStamperFunction ('SubStr', @SubStringX, SFSXX, '(aString, aStart, aLength)');
-    BindStamperFunction ('SwiftNumberToStr', @SwiftNumberToStr, SFX, '(aNumber)');
-    BindStamperFunction ('SwiftStrToNumber', @SwiftStrToNumber, XFS, '(aString)');
     BindStamperFunction ('TodayAsStr', @xsdTodayAsDate, SFV, '()');
-    BindStamperFunction ('UppercaseStr', @uppercase, SFS, '(aString)');
+    BindStamperFunction ('UnixToDateTime', @xUnixToDateTime, DFX, '(aUnixDateTime)');
+    BindStamperFunction ('UppercaseStr', @UpperCaseStr, SFS, '(aString)');
     BindStamperFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
     BindStamperFunction ('UserName', @wsdlUserName, SFV, '()');
     BindStamperFunction ('StrToFile', @xmlio.SaveStringToFile, VFSS, '(aFileName, aString)');
@@ -6310,17 +6152,6 @@ begin
   end;
   xXml := aXml.Items.XmlCheckedItemByTag ['OnRequestViolatingAddressPath'];
   OnRequestViolatingAddressPath := rvsDefault;
-  if Assigned (xXml) then
-  begin
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['UseProjectDefault']) then
-      OnRequestViolatingAddressPath := rvsDefault;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['Continue']) then
-      OnRequestViolatingAddressPath := rvsContinue;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['RaiseErrorMessage']) then
-      OnRequestViolatingAddressPath := rvsRaiseErrorMessage;
-    if Assigned (xXml.Items.XmlCheckedItemByTag ['AddRemark']) then
-      OnRequestViolatingAddressPath := rvsAddRemark;
-  end;
   xXml := aXml.Items.XmlCheckedItemByTag['ResolveAliasses'];
   resolveRequestAliasses := True;
   resolveReplyAliasses := True;
@@ -6462,10 +6293,6 @@ begin
   _Stamp (rpyBind);
 end;
 
-procedure TWsdlOperation .InitExecute ;
-begin
-end;
-
 procedure TWsdlOperation.CheckScript (aStringList: TJBStringList; aOnError: TOnErrorEvent);
 begin
   fExpress.CheckScript(aStringList, aOnError);
@@ -6572,7 +6399,7 @@ procedure TWsdlOperation.ReplyStringToBindables(aReply: String);
 var
   xXml: TXml;
 begin
-  if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTSwiftMT] then
+  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
     FreeFormatRpy := aReply
   else
   begin
@@ -6595,7 +6422,7 @@ procedure TWsdlOperation.RequestStringToBindables(aRequest: String);
 var
   xXml: TXml;
 begin
-  if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTSwiftMT] then
+  if WsdlService.DescriptionType in [ipmDTFreeFormat] then
     FreeFormatReq := aRequest
   else
   begin
@@ -6623,7 +6450,7 @@ begin
     if WsdlService.DescriptionType = ipmDTCobol then
       result := ((rpyBind as TIpmItem).Bytes = 0)
     else
-      if WsdlService.DescriptionType in [ipmDTFreeFormat, ipmDTEmail] then
+      if WsdlService.DescriptionType in [ipmDTFreeFormat] then
         result := (FreeFormatRpy = '')
       else
         result := (rpyXsd.sType.ElementDefs.Count = 0)
@@ -6995,7 +6822,7 @@ begin
                           );
 
   aOperation.Messages.AddObject('', self);
-  if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
+  if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol] then
   begin
     if Assigned (aOperation.reqBind) then
       reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
@@ -7080,7 +6907,7 @@ begin
                             , aDocumentation
                             );
     aOperation.Messages.AddObject('', self);
-    if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol, ipmDTBmtp] then
+    if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol] then
     begin
       if Assigned (aOperation.reqBind) then
         reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
@@ -7310,17 +7137,6 @@ begin
     Messages[m].Duplicates := nil;
 end;
 
-procedure TWsdlBinder.SwiftMtRequestToBindables(aString: String);
-begin
-  (reqBind as TXml).ResetValues;
-  with TSwiftMT.Create(aString, reqXsd) do
-  try
-    (reqBind as TXml).LoadValues (AsXml, False, True);
-  finally
-    Free;
-  end;
-end;
-
 function TWsdlBinder.getDescriptionType: TIpmDescrType;
 begin
   result := WsdlOperation.WsdlService.DescriptionType;
@@ -7400,8 +7216,8 @@ function TWsdlBinder .getRequestAsString : String ;
 begin
   case DescriptionType of
     ipmDTFreeFormat: result := FreeFormatReq;
-    ipmDTCobol, ipmDTBmtp: ;
-    ipmDTXml, ipmDTXsd, ipmDTWsdl, ipmDTEmail, ipmDTSwiftMT, ipmDTJson: result := '';
+    ipmDTCobol: ;
+    ipmDTXml, ipmDTXsd, ipmDTWsdl, ipmDTJson: result := '';
   end;
 end;
 
@@ -7454,45 +7270,17 @@ begin
 end;
 
 procedure TWsdlBinder.setFreeFormatReq(const aValue: String);
-var
-  sl: TJBStringList;
-  x: Integer;
 begin
-//  if Value = fFreeFormatReq then Exit;
-  fFreeFormatReq := aValue;
-  sl := TJBStringList.Create;
-  try
-    for x := 0 to CorrelationBindables.Count - 1 do
-      if Assigned (CorrelationBindables.Bindables[x]) then
-        sl.Add (CorrelationBindables.Bindables[x].CorrelationValue)
-      else
-        sl.Add ('?');
-    if reqBind is TXml then with reqBind as TXml do
-    begin
-      try
-        LoadFromString(aValue, nil);
-        RebindLists;
-      except
-      end;
-    end;
-    PopulateCorrelation(sl);
-  finally
-    sl.Free;
-  end;
+  if reqXml.Items.Count = 0 then
+    reqXml.AddXml(TXml.CreateAsString('Body', ''));
+  reqXml.Items.XmlItems[0].Value := aValue;
 end;
 
 procedure TWsdlBinder.setFreeFormatRpy(const aValue: String);
 begin
-//  if aValue = fFreeFormatRpy then Exit;
-  fFreeFormatRpy := aValue;
-  if rpyBind is TXml then with rpyBind as TXml do
-  begin
-    try
-      LoadFromString(aValue, nil);
-      RebindLists;
-    except
-    end;
-  end;
+  if rpyXml.Items.Count = 0 then
+    rpyXml.AddXml(TXml.CreateAsString('Body', ''));
+  rpyXml.Items.XmlItems[0].Value := aValue;
 end;
 
 procedure TWsdlBinder.setInputXsd(const Value: TXsd);
@@ -7528,6 +7316,24 @@ end;
 procedure TWsdlBinder.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
 begin
   (aObject as TIpmItem).Value := '?' + _progName + ' Error found: ' + ErrorString;
+end;
+
+function TWsdlBinder.getFreeFormatReq: String;
+begin
+  try
+    result := reqXml.Items.XmlItems[0].Value;
+  except
+    result := '';
+  end;
+end;
+
+function TWsdlBinder.getFreeFormatRpy: String;
+begin
+  try
+    result := rpyXml.Items.XmlItems[0].Value;
+  except
+    result := '';
+  end;
 end;
 
 procedure TWsdlBinder.setRequestAsString (AValue : String );
@@ -7594,9 +7400,8 @@ begin
         FreeFormatReq := AValue;
         reqXml.LoadFromString(AValue, nil);
       end;
-    ipmDTCobol, ipmDTBmtp: (reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, AValue);
-    ipmDTSwiftMT: SwiftMtRequestToBindables(AValue);
-    ipmDTXml, ipmDTXsd, ipmDTWsdl, ipmDTEmail: _XmlRequestToBindables;
+    ipmDTCobol: (reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, AValue);
+    ipmDTXml, ipmDTXsd, ipmDTWsdl: _XmlRequestToBindables;
   end;
 end;
 
@@ -7683,6 +7488,8 @@ initialization
   allAliasses.Duplicates := dupAccept;
   _WsdlDbsConnector := TSQLConnector.Create(nil);
   _WsdlDbsTransaction := TSQLTransaction.Create(nil);
+  _WsdlDbsTransaction.Active := False;
+  _WsdlDbsTransaction.Action := caCommit;
   _WsdlDbsTransaction.DataBase := _WsdlDbsConnector;
   _WsdlDbsConnector.Transaction := _WsdlDbsTransaction; // linked to each other...
   UILock := SyncObjs.TCriticalSection.Create;

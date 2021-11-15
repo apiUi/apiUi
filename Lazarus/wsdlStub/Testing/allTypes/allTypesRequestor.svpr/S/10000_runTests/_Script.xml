@@ -1,0 +1,11 @@
+  <Script>
+    <Name>runTests</Name>
+    <Invoke>
+      <operations>
+        <name>cobol</name>
+        <name>CreateActivities3</name>
+        <name>CreateServiceRequest2</name>
+        <name>freeformatOperation</name>
+      </operations>
+    </Invoke>
+  </Script>

@@ -12,7 +12,7 @@ object EditContextsForm: TEditContextsForm
   OnCreate = FormCreate
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
     Height = 51
@@ -145,17 +145,17 @@ object EditContextsForm: TEditContextsForm
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 69
+      Left = 67
       Top = 2
       Action = RemoveContextAction
     end
     object ToolButton5: TToolButton
-      Left = 98
+      Left = 96
       Top = 2
       Action = RemovePropertyAction
     end
     object ToolButton6: TToolButton
-      Left = 127
+      Left = 125
       Height = 28
       Top = 2
       Caption = 'ToolButton6'
@@ -171,16 +171,6 @@ object EditContextsForm: TEditContextsForm
     ItemHeight = 20
     ParentFont = False
     TabOrder = 2
-  end
-  object Label1: TLabel
-    Left = 161
-    Height = 20
-    Top = 376
-    Width = 207
-    Anchors = [akLeft, akBottom]
-    Caption = 'Context to use (general option)'
-    ParentColor = False
-    ParentFont = False
   end
   object GridView: TVirtualStringTree
     Left = 30
@@ -226,6 +216,16 @@ object EditContextsForm: TEditContextsForm
     OnHeaderDrawQueryElements = GridViewHeaderDrawQueryElements
     OnKeyDown = GridViewKeyDown
     OnNewText = GridViewNewText
+  end
+  object Label1: TLabel
+    Left = 161
+    Height = 20
+    Top = 376
+    Width = 95
+    Anchors = [akLeft, akBottom]
+    Caption = 'Context to use'
+    ParentColor = False
+    ParentFont = False
   end
   object PopupMenu1: TPopupMenu
     Images = mainImageList

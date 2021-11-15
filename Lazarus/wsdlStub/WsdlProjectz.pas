@@ -1,3 +1,18 @@
+{
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
+
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
+
 // currently at most 1 project due to what's in wsdlz.initialize, should be held by project
 unit WsdlProjectz;
 
@@ -31,23 +46,15 @@ uses Classes
   , IdHTTP
   , IdMessage
   , IdHeaderList
-  , IdSMTP
   , IdURI
   , IdSSLOpenSSL
   , IdContext
   , IdCommandHandlers
   , IdMultipartFormData
   , Wsdlz
-  , SwiftUnit
   , SysUtils
-  , mqinterface
-  , mqapi
   , StompInterface
   , StompTypes
-  , tacointerface
-  , IdPOP3Server
-  , IdReplyPOP3
-  , IdSMTPServer
   , IdHTTPServer
   , Listenerz
   , LazFileUtils
@@ -66,6 +73,7 @@ uses Classes
   ;
 
 type TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
+type TCORSType = (corsException, corsRefuse, corsAcceptWithoutLogging, corsAcceptWithLogging);
 type TProcedure = procedure of Object;
 type TProcedureB = procedure (arg: Boolean) of Object;
 type TProcedureS = procedure (arg: String) of Object;
@@ -85,7 +93,6 @@ type TStringFunction = function: String of Object;
 type TStringFunctionBoolean = function (arg: Boolean): String of Object;
 type TBooleanFunctionString = function (arg: String): Boolean of Object;
 
-
 type
 
   { TWsdlProject }
@@ -98,33 +105,24 @@ type
     fLogLock: TCriticalSection;
     fClearedLogs: TLogList;
     fClearedSnapshots: TSnapshotList;
-    fTacoInterface: TTacoInterface;
+    fProjectContext: String;
     function GetAbortPressed: Boolean;
     function getDoClearSnapshots : Boolean ;
     function getDoClearLogs : Boolean ;
     function gethasApiByExplampleOperations: Boolean;
-    function gethasBmtpOperations: Boolean;
     function gethasCobolOperations: Boolean;
     function gethasFormalOperations: Boolean;
     function gethasFreeformatOperations: Boolean;
-    function gethasMailOperations: Boolean;
     function getHasOneTimeContextsColumn: Boolean;
-    function gethasSwiftMtOperations: Boolean;
-    function gethasXmlSampleOperations: Boolean;
-    function gethasXsdOperation: Boolean;
+    function getIfContextNeedsUpdate: Boolean;
     function getIsBusy: Boolean;
     function getRemoteServerUrl: String;
     function getVersionInfoAsString: String;
     function SendNoneMessage ( aOperation: TWsdlOperation
                              ; aMessage: String
+                             ; aLog: TLog
                              ): String;
     function SendHttpMessage ( aOperation: TWsdlOperation; aLog: TLog): String;
-    procedure POP3ServerCheckUser(aContext: TIdContext;
-      aServerContext: TIdPOP3ServerContext);
-    procedure POP3ServerRetrieve(aCmd: TIdCommand; AMsgNo: Integer);
-    procedure POP3ServerList(aCmd: TIdCommand; AMsgNo: Integer);
-    procedure POP3ServerStat(aCmd: TIdCommand; out oCount: Integer; out oSize: Int64);
-    procedure POP3ServerDelete(aCmd: TIdCommand; AMsgNo: Integer);
     procedure HTTPProxyServerAfterCommandHandler(ASender: TIdCmdTCPServer;
       AContext: TIdContext);
     procedure HTTPProxyServerHTTPBeforeCommand(
@@ -138,29 +136,16 @@ type
                                          );
     procedure HTTPServerCommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-    procedure HttpServerBmtpCommandGet(AContext: TIdContext;
-      ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCreatePostStream(AContext: TIdContext;
       AHeaders: TIdHeaderList; var VPostStream: TStream);
     procedure setIsBusy(AValue: Boolean);
+    procedure SetProjectContext(AValue: String);
     function tryToProcessAsOpenApi (aLog: TLog): Boolean;
+    procedure HttpQuerySSLPort(aPort: Word; var aUseSSL: boolean);
     procedure HTTPServerCommandTrace(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure setDoClearSnapshots (AValue : Boolean );
     procedure setDoClearLogs (AValue : Boolean );
-    procedure setOnNeedTacoHostData (AValue : TOnNeedTacoInterfaceData );
-    procedure setOnTacoAutorize (AValue : TNotifyEvent );
-    procedure SMTPServerMailFrom(ASender: TIdSMTPServerContext;
-      const AAddress: string; AParams: TStrings; var VAction: TIdMailFromReply);
-    procedure SMTPServerMsgReceive(ASender: TIdSMTPServerContext; AMsg: TStream;
-      var VAction: TIdDataReply);
-    procedure SMTPServerRcptTo(ASender: TIdSMTPServerContext;
-      const AAddress: string; AParams: TStrings; var VAction: TIdRCPToReply;
-      var VForward: string);
-    procedure SMTPServerReceived(ASender: TIdSMTPServerContext;
-      var AReceived: string);
-    procedure SMTPServerUserLogin(ASender: TIdSMTPServerContext;
-      const AUsername, APassword: string; var VAuthenticated: Boolean);
     procedure doCoverageReport (aReport: TSnapshot);
     procedure SetAbortPressed(const Value: Boolean);
     procedure InitSpecialWsdls;
@@ -176,9 +161,7 @@ type
     hasGui: Boolean;
     ProgressInterface: TProgressInterface;
     EditContexts: TThreadMethod;
-    doCreateBackup: Boolean;
     doStartOnOpeningProject: Boolean;
-    projectContext: String;
     projectContexts: TStringListList;
     ppLock: TCriticalSection;
     doDisplayLog: Boolean;
@@ -190,7 +173,7 @@ type
     schemaValidationVioloationHttpResponseCode: Integer;
     remoteServerConnectionXml, DatabaseConnectionSpecificationXml, UnknownOpsReqReplactementsXml, UnknownOpsRpyReplactementsXml: TXml;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
-    FreeFormatWsdl, XsdWsdl, XmlSampleWsdl, ApiByExampleWsdl, CobolWsdl, BmtpWsdl, SwiftMtWsdl, MailWsdl: TWsdl;
+    FreeFormatWsdl, ApiByExampleWsdl, CobolWsdl: TWsdl;
     FreeFormatService: TWsdlService;
     DebugOperation: TWsdlOperation;
     Wsdls, wsdlNames, referencedFilenames: TJBStringList;
@@ -210,14 +193,7 @@ type
     scriptErrorCount: Integer;
     EnvironmentList, EnvVars: TJBStringList;
     StubChanged, StubRead, Licensed: Boolean;
-    doUseMQ: Boolean;
-    NumberOfActiveMqs: Integer;
-    mqUse: TMQUse;
-    mqMaxWorkingThreads: Integer;
-    mqCurWorkingThreads: Integer;
-    mmqqMqInterface: TMqInterface;
     StompInterface: TStompInterface;
-    mqGetThreads: TJBStringList;
     Listeners: TListeners;
     doValidateRequests, doValidateReplies: Boolean;
     ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, regressionSortColumns: TJBStringList;
@@ -231,11 +207,8 @@ type
     doViaProxyServer: Boolean;
     ViaProxyServer: String;
     ViaProxyPort: Integer;
-    HTTPServer, HttpServerSSL, HttpServerBmtp: TIdHTTPServer;
+    HTTPServer, HttpServerSSL: TIdHTTPServer;
     HTTPProxyServer: TIdHTTPProxyServer;
-    SMTPServer, SMTPServerSSL: TIdSMTPServer;
-    POP3Server: TIdPOP3Server;
-    SMTPOpenSSL: TIdServerIOHandlerSSLOpenSSL;
     ServerOpenSSL: TIdServerIOHandlerSSLOpenSSL;
     OnRestartEvent: TStringFunction;
     OnReactivateEvent: TStringFunction;
@@ -246,6 +219,8 @@ type
     OnBooleanDialog: TBooleanFunctionString;
     OnQuitEvent: TStringFunctionBoolean;
     LastFocusedOperation: TWsdlOperation;
+    CORS: TCORSType;
+    corsExceptionHttpCode: Integer;
     procedure OnBeforeFileRead (aFileName: String);
     procedure doRegressionReport (aReport: TSnapshot);
     procedure DatabaseConnectionSpecificationFromXml;
@@ -264,24 +239,14 @@ type
     function doValidateOutboundReplies (aOperation: TWsdlOperation): Boolean;
     procedure UpdateWsdlsList (aNewWsdlsList: TJBStringList);
     function mergeUri (puri, suri: String): String;
-    function mailOperationsXml: TXml;
-    procedure mailOperationsUpdate (aXml: TXml);
     function freeFormatOperationsXml: TXml;
     procedure freeFormatOperationsUpdate (aXml: TXml);
     procedure operationRecognitionUpdate (aOperation: TWsdlOperation; aList: TJBStringList; aXml: TXml);
     function operationRecognitionXml(aLabel: String; aType: TRecognitionType; aSl: TJBStringList): TXml;
-    function bmtpOperationsXml: TXml;
-    procedure bmtpOperationsUpdate (aXml: TXml; aMainFileName: String);
     function cobolOperationsXml: TXml;
     procedure cobolOperationsUpdate (aXml: TXml; aMainFileName: String);
-    function xmlSampleOperationsXml(aMainFileName: String): TXml;
     function ApiByExampleOperationsXml(aMainFileName: String): TXml;
-    function xsdOperationsXml(aMainFileName: String): TXml;
-    procedure xsdOperationsUpdate (aXml: TXml; aMainFileName: String);
-    procedure xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: String);
     procedure ApiByExampleOperationsUpdate (aXml: TXml; aMainFileName: String);
-    function swiftMtOperationsXml: TXml;
-    procedure swiftMtOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
     function FindSnapshot (aName: String): TSnapshot;
@@ -299,14 +264,6 @@ type
     procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
     procedure OpenMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
     procedure EnvironmentListClear;
-    procedure mqOnNewThread ( Sender: TObject);
-    procedure mqStubMessage ( Sender: TObject
-                            ; aHeader, aBody: String
-                            ; aRfhHeader: AnsiString
-                            ; MsgType: MQLONG
-                            ; MsgDesc: MQMD
-                            ; MqReturnCode: String
-                            );
     function MessagesRegressionReportAsXml(aReferenceFileName: String; aPromptUser: Boolean): TXml;
     function InformationAsXml: TXml;
     function EnvVarsAsXml: TXml;
@@ -317,7 +274,6 @@ type
     procedure DelayMS (aDelayMS: Integer);
     procedure CreateLogReply (aLog: TLog; var aProcessed: Boolean; aIsActive: Boolean);
     procedure Clean;
-    procedure TacoPingPong;
     procedure SaveWithFolders;
     procedure ExportToFile;
     procedure ImportFromFile;
@@ -333,32 +289,11 @@ type
     function SendOperationMessage ( aOperation: TWsdlOperation
                          ; aMessage: String
                          ): String;
-    function SendOperationMqMessage ( aOperation: TWsdlOperation
-                           ; aMessage: String
-                           ; var aMqHeaderAsText: String
-                           ): String;
     function SendOperationStompMessage ( aOperation: TWsdlOperation
                                        ; aMessage: String
                                        ; var aRequestHeader: String
                                        ; var aReplyHeader: String
                                        ): String;
-    function SendOperationSmtpMessage ( aOperation: TWsdlOperation
-                                      ; aMessage: String
-                                      ; var aRequestHeader: String
-                                      ; var aReplyHeader: String
-                                      ): String;
-    function SendOperationTacoMessage ( aOperation: TWsdlOperation
-                                      ; aMessage: String
-                                      ; var aRequestHeader: String
-                                      ; var aReplyHeader: String
-                                      ): String;
-    {$ifdef windows}
-    function SendOperationKafkaMessage ( aOperation: TWsdlOperation
-                                       ; aMessage: String
-                                       ; var aRequestHeader: String
-                                       ; var aReplyHeader: String
-                                       ): String;
-    {$endif}
     procedure SendOperationInThread (aOperation: TWsdlOperation);
     procedure SendOperation (aOperation: TWsdlOperation);
     procedure SendMessage ( aOperation: TWsdlOperation
@@ -382,8 +317,6 @@ type
     function FindOperationOnLog (aLog: TLog): TWsdlOperation;
     procedure CreateReply ( aLog: TLog; aIsActive: Boolean);
     function ProjectLogOptionsAsXml: TXml;
-    function ProjectScriptsAsXml: TXml;
-    procedure ProjectScriptsFromXml (aXml: TXml);
     procedure RefreshCommand;
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
     function BooleanPromptDialog (aPrompt: String): Boolean;
@@ -409,23 +342,18 @@ type
       var ConnectOptions: TConnectOption; var EventStatus: TEventStatus);
     {$ENDIF}
     procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
+    property ProjectContext: String read fProjectContext write SetProjectContext;
     property versionInfoAsString: String read getVersionInfoAsString;
     property RemoteServerUrl: String read getRemoteServerUrl;
-    property OnNeedTacoHostData: TOnNeedTacoInterfaceData write setOnNeedTacoHostData;
-    property OnTacoAutorize: TNotifyEvent write setOnTacoAutorize;
     property doClearLogs: Boolean read getDoClearLogs write setDoClearLogs;
     property doClearSnapshots: Boolean read getDoClearSnapshots write setDoClearSnapshots;
     property IsActive: Boolean read fIsActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
+    property ifContextNeedsUpdate: Boolean read getIfContextNeedsUpdate;
     property hasOneTimeContextsColumn: Boolean read getHasOneTimeContextsColumn;
     property hasFormalOperations: Boolean read gethasFormalOperations;
     property hasApiByExplampleOperations: Boolean read gethasApiByExplampleOperations;
-    property hasXsdOperation: Boolean read gethasXsdOperation;
-    property hasXmlSampleOperations: Boolean read gethasXmlSampleOperations;
     property hasCobolOperations: Boolean read gethasCobolOperations;
-    property hasBmtpOperations: Boolean read gethasBmtpOperations;
-    property hasSwiftMtOperations: Boolean read gethasSwiftMtOperations;
-    property hasMailOperations: Boolean read gethasMailOperations;
     property hasFreeformatOperations: Boolean read gethasFreeformatOperations;
     property isBusy: Boolean read getIsBusy write setIsBusy;
     constructor Create;
@@ -520,31 +448,18 @@ type
                        );
   end;
 
-  TMqGetThread = class(TThread)
-  private
-    fMqInterface: TMqInterface;
-    fProject: TWsdlProject;
-  protected
-    procedure Execute; override;
-  public
-    procedure DoTerminate; override;
-    constructor Create (aProject: TWsdlProject; aMqInterface: TMqInterface);
-    destructor Destroy; override;
-  end;
 
 procedure IntrospectIniXml;
 
 var
-  BetaMode: Boolean;
+  DebugLogMode: Boolean;
   apiUiXsdFileName, swaggerYamlFileName, faviconIcoFileName: String;
     indexHtmlFileName: String;
     wsaXsdFileName: String;
-    mqPutHeaderEditAllowedFileName: String;
     authorizationServerEndpoint: String;
     stompPutHeaderEditAllowedFileName: String;
     RemoteControlPortNumber: Integer;
     wsaXsdDescr: TXsdDescr;
-    swiftMTXsdDescr: TXsdDescr;
     namevaluepairsXsd: TXsd;
     optionsXsd: TXsd;
     remoteServerConnectionXsd: TXsd;
@@ -571,12 +486,7 @@ implementation
 uses LazVersion
    , StrUtils
    , exceptionUtils
-   , smtpInterface
-   {$ifdef windows}
-   , kafkaclient
-   {$endif}
    , RegExpr
-   , jwbBase64
    , base64
    {$ifdef windows}
    , ActiveX
@@ -591,6 +501,7 @@ uses LazVersion
    , htmlreportz
    , junitunit
    , IdGlobalProtocols
+   , IdSSLOpenSSLHeaders
    , Clipbrd
    , httpmultipart
    ;
@@ -648,7 +559,7 @@ begin
   result := '';
   aOper := OperationFromContext(aContext, xOperationAlias);
   if Assigned (aOper) then
-    result := aOper.StreamReply(_progName, True)
+    result := aOper.PrepareReply(_progName, True)
   else
     raise Exception.Create(Format ('RequestAsText: Operation ''%s'' not found', [xOperationAlias]));
 end;
@@ -769,6 +680,39 @@ begin
       dOperation.reqXml.LoadValues (xMessage.reqXml, True, True);
     if dOperation.rpyBind is TXml then
       dOperation.rpyXml.LoadValues (xMessage.rpyXml, True, True);
+  end;
+end;
+
+procedure ExecSql(aContext: TObject; aSqlCommand: String);
+var
+  xProject: TWsdlProject;
+  xOperation: TWsdlOperation;
+  xMessage: TWsdlMessage;
+  x: Integer;
+  xDoCommit: Boolean;
+begin
+  xProject := nil; //candidate context
+  xOperation := nil; //candidate context
+  xMessage := nil;
+  xDoCommit := True;
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    xProject := Owner as TWsdlProject;
+  end
+  else
+  begin
+    if aContext is TWsdlProject then
+    begin
+      xProject := aContext as TWsdlProject;
+    end;
+  end;
+  if not Assigned (xProject) then
+   raise Exception.Create('ExecSql(aContext: TObject; aUseTransAction, aSqlCommand: String)');
+  if xDoCommit then _WsdlDbsConnector.Transaction.Active := True;
+  try
+    _WsdlDbsConnector.ExecuteDirect(aSqlCommand);
+  finally
+    if xDoCommit then _WsdlDbsConnector.Transaction.Commit;
   end;
 end;
 
@@ -1078,53 +1022,6 @@ begin
   end;
 end;
 
-{ TMqGetThread }
-
-constructor TMqGetThread.Create (aProject: TWsdlProject; aMqInterface: TMqInterface);
-begin
-  inherited Create (False);
-  FreeOnTerminate := True;
-  fMqInterface := aMqInterface;
-  fProject := aProject;
-  FreeOnTerminate := True;
-end;
-
-destructor TMqGetThread.Destroy;
-begin
-//  FreeAndNil (fMqInterface);
-end;
-
-procedure TMqGetThread.doTerminate;
-begin
-  fMqInterface.doTerminate := True;
-end;
-
-procedure TMqGetThread.Execute;
-begin
-  AcquireLock;
-  Inc (fProject.NumberOfActiveMqs);
-  ReleaseLock;
-  try
-    try
-      fMqInterface.Use := fProject.mqUse;
-      fMqInterface.Browse ( fProject.mqStubMessage
-                          , fProject.mqOnNewThread
-                          , True
-                          , fMqInterface.DeleteMessages = mqdelAll
-                          );
-    except
-      on e: Exception do
-      begin
-        fProject.LogServerMessage(e.Message, True, e);
-      end;
-    end;
-  finally
-    AcquireLock;
-    Dec (fProject.NumberOfActiveMqs);
-    ReleaseLock;
-  end;
-end;
-
 { TProcedureThread }
 
 constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aProject: TWsdlProject; aProcedure: TProcedure);
@@ -1337,13 +1234,17 @@ begin
     indexHtmlFileName := _abs (iniXml.Items.XmlValueByTag ['indexHtml']);
     apiUiXsdFileName := _abs (iniXml.Items.XmlValueByTag ['Xsd']);
     wsaXsdFileName := _abs (iniXml.Items.XmlValueByTag ['wsaXsd']);
-    _swiftMTXsdFileName := _abs (iniXml.Items.XmlValueByTag ['swiftMTXsd']);
-    mqPutHeaderEditAllowedFileName := _abs (iniXml.Items.XmlValueByTag ['mqPutHeaderEditAllowed']);
     stompPutHeaderEditAllowedFileName := _abs (iniXml.Items.XmlValueByTag ['stompPutHeaderEditAllowed']);
     apiaryToken := DecryptPassword(iniXml.Items.XmlValueByTag ['apiaryToken']);
     RemoteControlPortNumber := iniXml.Items.XmlIntegerByTagDef ['commandPort', 3738];
     xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
     xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
+    {$ifdef unix}
+    openSslCertsFolder := iniXml.Items.XmlValueByTag ['openSslCertificatesDefaultLocationUnix'];
+    {$endif}
+    {$ifdef windows}
+    openSslCertsFolder := iniXml.Items.XmlValueByTag ['openSslCertificatesDefaultLocationWindows'];
+    {$endif}
     if Assigned (iniXml.ItemByTag ['cssStylesheet']) then with iniXml.ItemByTag ['cssStylesheet'] do
     begin
       _wsdlStubStylesheet := _abs (Value);
@@ -1357,20 +1258,6 @@ begin
           _WsdlWsaXsd := wsaXsdDescr.TypeDef.ElementDefs.Xsds [wsaXsdDescr.TypeDef.ElementDefs.Count - 1];
       except
         raise Exception.Create ('Could not parse ' + wsaXsdFileName);
-      end;
-    end;
-    if _swiftMTXsdFileName <> '' then
-    begin
-      swiftMTXsdDescr := TXsdDescr.Create;
-      try
-        swiftMTXsdDescr.LoadXsdFromFile (_swiftMTXsdFileName, nil, nil);
-        if swiftMTXsdDescr.TypeDef.ElementDefs.Count > 0 then
-        begin
-          _swiftMTXsd := swiftMTXsdDescr.TypeDef.ElementDefs.Xsds [swiftMTXsdDescr.TypeDef.ElementDefs.Count - 1];
-          _swiftMTXsd.Obj := TSwiftMtProps.Create (_swiftMTXsd);
-        end;
-      except
-        raise Exception.Create ('Could not parse ' + _swiftMTXsdFileName);
       end;
     end;
 
@@ -1406,7 +1293,6 @@ begin
       replyInfoXsd := XsdByName['replyInfo'];
       remoteServerConnectionXsd := XsdByName['remoteServerConnection'];
       listenersConfigXsd := XsdByName['Listeners'];
-      _WsdlEmailXsd := XsdByName['Email'];
     end;
     if not Assigned (ScriptsXsd) then raise Exception.CreateFmt('XML Element definition for %s Scripts not found', [_progName]);
     if not Assigned (_WsdlRtiXsd) then raise Exception.Create('XML Element definition for RunTimeInterface not found');
@@ -1423,38 +1309,6 @@ begin
     if not Assigned (listenersConfigXsd) then raise Exception.Create('XML Element definition for listeners configuration not found');
     if Assigned (_WsdlRtiXsd) then
       _WsdlRtiXml := TXml.Create(-10000, _WsdlRtiXsd);
-    if Assigned (endpointConfigXsd)
-    and (endpointConfigXsd.sType.ElementDefs.Count > Ord (ttMq)) then
-    begin
-      with endpointConfigXsd.sType.ElementDefs.Xsds [Ord (ttMq)] do
-      begin
-        for x := 0 to sType.ElementDefs.Count - 1 do
-        begin
-          if sType.ElementDefs.Xsds[x].ElementName = 'mqHeader' then
-          begin
-            _WsdlmqHeaderXsd := sType.ElementDefs.Xsds[x];
-            if mqPutHeaderEditAllowedFileName <> '' then
-            begin
-              mqPutHeaderEditAllowedFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), mqPutHeaderEditAllowedFileName);
-              Xml := TXml.Create;
-              try
-                xXml := TXml.Create (-10000, _WsdlmqHeaderXsd);
-                try
-                  Xml.LoadFromFile (mqPutHeaderEditAllowedFileName, nil, nil);
-                  xXml.CopyValues (Xml, True, False);
-                  xXml.SetXsdReadOnly;
-                finally
-                  xXml.Free;
-                end;
-              finally
-                Xml.Free;
-              end;
-            end;
-          end;
-        end;
-      end;
-    end;
-
     if Assigned (endpointConfigXsd)
     and (endpointConfigXsd.sType.ElementDefs.Count > Ord (ttStomp)) then
     begin
@@ -1487,12 +1341,6 @@ begin
       end;
     end;
 
-    if Assigned (endpointConfigXsd) then
-    begin
-      _WsdlTacoConfigXsd := endpointConfigXsd.FindXsd('endpointConfig.Taco');
-      _WsdlKafkaConfigXsd := endpointConfigXsd.FindXsd('endpointConfig.Kafka');
-    end;
-
     if apiUiXsdFileName <> '' then
       apiUiXsdFileName := ExpandRelativeFileName (ExtractFilePath (ParamStr(0)), apiUiXsdFileName);
   finally
@@ -1517,10 +1365,10 @@ begin
   projectContexts.CellValue[0, 0] := ' ';
   remoteServerConnectionXml := TXml.CreateAsString ('remoteServerConnection', '');
   DatabaseConnectionSpecificationXml := TXml.CreateAsString ('DatabaseConnection', '');
+  DatabaseConnectionSpecificationXml.Checked := False;
   UnknownOpsReqReplactementsXml := TXml.CreateAsString ('reqReplacements', '');
   UnknownOpsRpyReplactementsXml := TXml.CreateAsString ('rpyReplacements', '');
   ppLock := TCriticalSection.Create;
-  fTacoInterface := TTacoInterface.Create(nil, nil);
   fLogLock := TCriticalSection.Create;
   LogFilter := TLogFilter.Create;
   Wsdls := TJBStringList.Create;
@@ -1562,15 +1410,9 @@ begin
   displayedSnapshots := TSnapshotList.Create;
   toDisplaySnapshots := TSnapshotList.Create;
   Listeners := TListeners.Create;
-  mqGetThreads := TJBStringList.Create;
   EnvironmentList := TJBStringList.Create;
   EnvironmentList.Sorted := True;
   EnvVars := TJBStringList.Create;
-  mmqqMqInterface := TMqInterface.Create;
-  mqUse := mquUndefined;
-  mqMaxWorkingThreads := 15;
-  if mmqqMqInterface.MQClientOK then mqUse := mquClient;
-  if mmqqMqInterface.MQServerOK then mqUse := mquServer;
   ServerOpenSSL := TIdServerIOHandlerSSLOpenSSL.Create(nil);
   HTTPProxyServer := TIdHTTPProxyServer.Create(nil);
   with HTTPProxyServer do
@@ -1593,68 +1435,23 @@ begin
     OnCommandGet := HttpServerCommandGet;
     OnCommandOther := HttpServerCommandGet;
     OnCreatePostStream := HttpServerCreatePostStream;
-  end;
-  HttpServerBmtp := TIdHTTPServer.Create(nil);
-  with HttpServerBmtp do
-  begin
-    OnCommandGet := HttpServerBmtpCommandGet;
-    OnCommandOther := HttpServerBmtpCommandGet;
-    OnCreatePostStream := HttpServerCreatePostStream;
-  end;
-  POP3Server := TIdPOP3Server.Create(nil);
-  with Pop3Server do
-  begin
-    OnCheckUser := Pop3ServerCheckUser;
-    OnDelete := POP3ServerDelete;
-    OnList := POP3ServerList;
-    OnRetrieve := POP3ServerRetrieve;
-    OnStat := POP3ServerStat;
-  end;
-  SmtpOpenSSL := TIdServerIOHandlerSSLOpenSSL.Create(nil);
-  SMTPServer := TIdSMTPServer.Create(nil);
-  with SmtpServer do
-  begin
-    OnMailFrom := SmtpServerMailFrom;
-    OnMsgReceive := SmtpServerMsgReceive;
-    OnRcptTo := SmtpServerRcptTo;
-    OnReceived := SmtpServerReceived;
-    OnUserLogIn := SmtpServerUserLogin;
-  end;
-  SMTPServerSSL := TIdSMTPServer.Create(nil);
-  with SMTPServerSSL do
-  begin
-    OnMailFrom := SmtpServerMailFrom;
-    OnMsgReceive := SmtpServerMsgReceive;
-    OnRcptTo := SmtpServerRcptTo;
-    OnReceived := SmtpServerReceived;
-    OnUserLogIn := SmtpServerUserLogin;
-    IOHandler := SmtpOpenSSL;
+    OnQuerySSLPort := HttpQuerySSLPort;
   end;
   Scripts := TXml.CreateAsString('Scripts', '');
   DisplayedLogColumns := TJBStringList.Create;
   OperationsWithEndpointOnly := True;
   SaveRelativeFileNames := True;
   InitSpecialWsdls;
-    {$IFnDEF FPC}
-  _WsdlDbsAdoConnection.OnWillConnect := ADOConnectionWillConnect;
-    {$endif}
   Clear;
 end;
 
 destructor TWsdlProject.Destroy;
 begin
   Clear;
-  FreeAndNil (fTacoInterface);
-  FreeAndNil (mmqqMqInterface);
   FreeAndNil (HTTPProxyServer);
   FreeAndNil (HttpServer);
   FreeAndNil (HttpServerSSL);
-  FreeAndNil (HttpServerBmtp);
-  FreeAndNil (POP3Server);
   FreeAndNil (ServerOpenSSL);
-  FreeAndNil (SmtpOpenSSL);
-  FreeAndNil (SMTPServer);
-  FreeAndNil (SMTPServerSSL);
   projectContexts.Free;
   remoteServerConnectionXml.Free;
   DatabaseConnectionSpecificationXml.Free;
@@ -1663,7 +1460,6 @@ begin
   ppLock.Free;
   fLogLock.Free;
   Listeners.Free;
-  mqGetThreads.Free;
   toDisplayLogs.Clear;
   toDisplayLogs.Free;
   toUpdateDisplayLogs.Clear;
@@ -1693,12 +1489,7 @@ begin
   PathFormats.Free;
   FreeAndNil (FreeFormatWsdl);
   FreeAndNil (CobolWsdl);
-  FreeAndNil (BmtpWsdl);
-  FreeAndNil (XsdWsdl);
-  FreeAndNil (XmlSampleWsdl);
   FreeAndNil (ApiByExampleWsdl);
-  FreeAndNil (SwiftMtWsdl);
-  FreeAndNil (MailWsdl);
   ignoreDifferencesOn.Free;
   checkValueAgainst.Free;
   ignoreAddingOn.Free;
@@ -1777,8 +1568,6 @@ procedure TWsdlProject.PrepareAllOperations;
       for o := 0 to xService.Operations.Count - 1 do
       begin
         xOperation := xService.Operations.Operations [o];
-        if xOperation.WsdlService.DescriptionType = ipmDTEmail then
-          xOperation.StubAction := saRequest;
         if Assigned (xOperation.reqBind) then
           xOperation.reqBind.Checked := True;
         if Assigned (xOperation.rpyBind) then
@@ -1853,12 +1642,7 @@ begin
   scriptErrorCount := 0;
   _updtWsdls(FreeFormatWsdl);
   _updtWsdls(CobolWsdl);
-  _updtWsdls(BmtpWsdl);
-  _updtWsdls(XsdWsdl);
-  _updtWsdls(XmlSampleWsdl);
   _updtWsdls(ApiByExampleWsdl);
-  _updtWsdls(SwiftMtWsdl);
-  _updtWsdls(MailWsdl);
   for w := 0 to Wsdls.Count - 1 do
     _prepWsdl (Wsdls.Objects [w] as TWsdl);
     // path may look like /api/something/{aId}/{anotherId}
@@ -1976,17 +1760,8 @@ var
 begin
   abortPressed := not aActive;
   try
-    if Assigned (fTacoInterface) then
-      fTacoInterface.Disconnect; // (re)connection at first call
     for x := 0 to Listeners.stompInterfaces.Count - 1 do
       (Listeners.stompInterfaces.Objects[x] as TStompInterface).Disconnect;
-    for x := mqGetThreads.Count - 1 downto 0 do
-    begin
-      if Assigned (mqGetThreads.Objects [x]) then
-        try (mqGetThreads.Objects [x] as TMqGetThread).DoTerminate; except end;
-      mqGetThreads.Objects [x] := nil;
-    end;
-    mqGetThreads.Clear;
     with HTTPProxyServer do
     begin
       Active := false;
@@ -2006,25 +1781,6 @@ begin
       Active := false;
       Bindings.Clear;
     end;
-    with HttpServerBmtp do
-    begin
-      if not Active then
-        SessionState := False;
-      Active := false;
-      Bindings.Clear;
-    end;
-    SMTPServer.Active := false;
-    SMTPServer.Bindings.Clear;
-    SMTPServerSSL.Active := false;
-    SMTPServerSSL.Bindings.Clear;
-    Pop3Server.Active := false;
-    Pop3Server.Bindings.Clear;
-    {$IFnDEF FPC}
-    try
-      _WsdlDbsAdoConnection.Connected := False;
-    except
-    end;
-    {$endif}
 
     fIsActive := aActive;
 
@@ -2037,16 +1793,6 @@ begin
             ReqBindablesFromWsdlMessage(Messages.Messages[0]);
             RpyBindablesFromWsdlMessage(Messages.Messages[0]);
           end;
-    {$IFnDEF FPC}
-        try
-          _WsdlDbsAdoConnection.Connected := _WsdlDbsEnabled;
-        except
-          on e: Exception do
-          begin
-            LogServerMessage(format('Exception %s in Activate Dbs. Exception is:"%s".', [e.ClassName, e.Message]), True);
-          end;
-        end;
-    {$endif}
         Listeners.FromXml(HaveStompFrame); // because of properties...
         DatabaseConnectionSpecificationFromXml; // because of properties...
         for x := 0 to Listeners.stompInterfaces.Count - 1 do
@@ -2060,18 +1806,6 @@ begin
             begin
               LogServerMessage(format('Exception %s in Activate STOMP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
-          end;
-        end;
-        if {doUseMq} True
-        and (   mmqqMqInterface.MQServerOK
-             or mmqqMqInterface.MQClientOK
-            ) then
-        begin
-          for x := 0 to Listeners.mqInterfaces.Count - 1 do
-          begin
-            with Listeners.mqInterfaces.Objects [x] as TMqInterface do
-              Notify(format('Listening for MQ trafic on %s:%s.',[Qmanager, GetQueue]));
-            mqGetThreads.AddObject ('', TMqGetThread.Create (Self, Listeners.mqInterfaces.Objects [x] as TMqInterface));
           end;
         end;
         if Listeners.httpPorts.Count > 0 then
@@ -2104,6 +1838,7 @@ begin
             CertFile := Listeners.sslCertificateFile;
             KeyFile := Listeners.sslKeyFile;
             RootCertFile := Listeners.sslRootCertificateFile;
+            Mode := sslmServer;
           end;
           if Listeners.sslPassword <> '' then
             ServerOpenSSL.OnGetPassword := Listeners.OnGetSslPassword; // TODO resolveAliasses...
@@ -2124,20 +1859,6 @@ begin
           HTTPServerSSL.SessionState := False;
           HTTPServerSSL.Active := true;
         end;
-        if Listeners.httpBmtpPort > 0 then
-          try
-            Binding := HttpServerBmtp.Bindings.Add;
-            Binding.Port := Listeners.httpBmtpPort;
-            Binding.IP := '0.0.0.0';
-            HttpServerBmtp.SessionState := False;
-            HttpServerBmtp.Active := true;
-            Notify(format('Listening for HTTP trafic on %s:%d.',[HttpServerBmtp.Bindings[0].IP, HttpServerBmtp.Bindings[0].Port]));
-          except
-            on e: exception do
-            begin
-              LogServerMessage(format('Exception %s in Activate HTTP(Bmtp). Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-            end;
-          end;
         if Listeners.httpProxyPort > 0 then
           try
             HTTPProxyServer.DefaultPort := Listeners.httpProxyPort;
@@ -2147,47 +1868,6 @@ begin
             on e: exception do
             begin
               LogServerMessage(format('Exception %s in Activate HTTP Proxy. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-            end;
-          end;
-        if Listeners.smtpPort > 0 then
-          try
-            SMTPServer.DefaultPort := Listeners.smtpPort;
-            SMTPServer.Active := true;
-            Notify(format('Listening for SMTP connections on %s:%d.',[SMTPServer.Bindings[0].IP, SMTPServer.Bindings[0].Port]));
-          except
-            on e: exception do
-            begin
-              LogServerMessage(format('Exception %s in Activate SMTP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-            end;
-          end;
-        if Listeners.smtpsPort > 0 then
-          try
-            with SMTPOpenSSL.SSLOptions do
-            begin
-              CertFile := Listeners.smtpTlsCertificateFile;
-              KeyFile := Listeners.smtpTlsKeyFile;
-              RootCertFile := Listeners.smtpTlsRootCertificateFile;
-            end;
-            Binding := SMTPServerSSL.Bindings.Add;
-            Binding.Port := Listeners.smtpsPort;
-            Binding.IP := '0.0.0.0';
-            SMTPServerSSL.Active := true;
-            Notify(format('Listening for SMTPS connections on %s:%d.',[SMTPServerSSL.Bindings[0].IP, SMTPServerSSL.Bindings[0].Port]));
-          except
-            on e: exception do
-            begin
-              LogServerMessage(format('Exception %s in Activate SMTPS. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-            end;
-          end;
-        if Listeners.pop3Port > 0 then
-          try
-            POP3Server.DefaultPort := Listeners.POP3Port;
-            POP3Server.Active := true;
-            Notify(format('Listening for POP3 connections on %s:%d.',[POP3Server.Bindings[0].IP, POP3Server.Bindings[0].Port]));
-          except
-            on e: exception do
-            begin
-              LogServerMessage(format('Exception %s in Activate POP3. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
             end;
           end;
       end;
@@ -2222,17 +1902,6 @@ begin
   with result do
   begin
     AddXml(TXml.CreateAsString('maxEntries', IfThen(displayedLogsMaxEntries > -1, IntToStr(displayedLogsMaxEntries), 'unbounded')));
-    case CompareLogOrderBy of
-      clTimeStamp: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'As is'));
-      clOperation: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'Service, Operation'));
-      clCorrelation: AddXml(TXml.CreateAsString('CompareLogsOrdered', 'Service, Operation, Correlation'));
-    end;
-    with AddXml (TXml.CreateAsString('DocumentComparison','')) do
-    begin
-      AddXml (TXml.CreateAsBoolean('DetectDocumentFormatChanges', wrdFunctionz.wrdDetectFormatChanges));
-      AddXml (TXml.CreateAsBoolean('NewDocumentAsReference', wrdFunctionz.wrdNewDocumentAsReference));
-      AddXml (TXml.CreateAsInteger('ExpectedDifferenceCount', wrdFunctionz.wrdExpectedDifferenceCount));
-    end;
     case ShowLogCobolStyle of
       slCobol: AddXml(TXml.CreateAsString('ShowCobolDataAs', 'Cobol'));
       slXml: AddXml(TXml.CreateAsString('ShowCobolDataAs', 'Xml'));
@@ -2244,15 +1913,15 @@ end;
 function TWsdlProject.ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
 begin
   result := TXml.CreateAsString('projectOptions', '');
-  with result.AddXml (TXml.CreateAsString('versionInfo', '')) do
-  begin
-    AddXml (TXml.CreateAsInteger('major', majorVersion));
-    AddXml (TXml.CreateAsInteger('minor', minorVersion));
-    AddXml (TXml.CreateAsInteger('revision', revision));
-    AddXml (TXml.CreateAsInteger('build', build));
-  end;
   with result.AddXml (TXml.CreateAsString('General', '')) do
   begin
+    with AddXml (TXml.CreateAsString('versionInfo', '')) do
+    begin
+      AddXml (TXml.CreateAsInteger('major', majorVersion));
+      AddXml (TXml.CreateAsInteger('minor', minorVersion));
+      AddXml (TXml.CreateAsInteger('revision', revision));
+      AddXml (TXml.CreateAsInteger('build', build));
+    end;
     AddXml (TXml.CreateAsBoolean('SaveRelativeFileNames', SaveRelativeFileNames));
     if (CurrentFolder <> '')
     or (ReferenceFolder <> '')
@@ -2276,15 +1945,28 @@ begin
     end;
   end;
   result.AddXml(ProjectLogOptionsAsXml);
-  with result.AddXml (TXml.CreateAsString('Wsdl', '')) do
+  with result.AddXml (TXml.CreateAsString('formGeneration', '')) do
   begin
     AddXml (TXml.CreateAsBoolean('OperationsWithEndpointOnly', OperationsWithEndpointOnly));
     AddXml (TXml.CreateAsInteger('MaxDepthWhenRecursive', xsdMaxDepthBillOfMaterials));
-    AddXml (TXml.CreateAsInteger('MaxDepthXmlGen', xsdMaxDepthXmlGen));
+    AddXml (TXml.CreateAsInteger('MaxDepthStructure', xsdMaxDepthXmlGen));
   end;
-  with result.AddXml (TXml.CreateAsString('OnCorrelate', '')) do
+  with result.AddXml (TXml.CreateAsString('CORS', '')) do
   begin
-    AddXml (TXml.CreateAsBoolean('DisableMessage', _WsdlDisableOnCorrelate));
+    if CORS = corsException then
+    with AddXml (TXml.CreateAsString('exceptionResponse', '')) do
+    begin
+      AddXml (TXml.CreateAsInteger('responseCode', corsExceptionHttpCode));
+    end;
+    if CORS = corsRefuse then
+      AddXml (TXml.CreateAsString('refuse', ''));
+    if CORS in [corsAcceptWithLogging, corsAcceptWithoutLogging] then
+    begin
+      with AddXml (TXml.CreateAsString('accept', '')) do
+      begin
+        AddXml (TXml.CreateAsBoolean('showInLog', CORS = corsAcceptWithLogging));
+      end;
+    end;;
   end;
   with result.AddXml (TXml.CreateAsString('UnknownOperations', '')) do
   begin
@@ -2347,56 +2029,6 @@ begin
     CopyDownLine(DatabaseConnectionSpecificationXml, True);
 end;
 
-function TWsdlProject.ProjectScriptsAsXml : TXml ;
-var
-  x: Integer;
-begin
-  result := TXml.CreateAsString('projectScripts', '');
-  with result.AddXml (TXml.CreateAsString('Scripts', '')) do
-    CopyDownLine(Scripts, True);
-  with result.AddXml (TXml.CreateAsString('Operations', '')) do
-  begin
-    for x := 0 to allAliasses.Count - 1 do
-    begin
-      with AddXml (TXml.CreateAsString('Operation', '')) do
-      begin
-        AddXml (TXml.CreateAsString('Alias', allAliasses.Operations[x].Alias));
-        AddXml (TXml.CreateAsString('BeforeScript', allAliasses.Operations[x].BeforeScriptLines.Text));
-        AddXml (TXml.CreateAsString('AfterScript', allAliasses.Operations[x].AfterScriptLines.Text));
-      end;
-    end;
-  end;
-end;
-
-procedure TWsdlProject.ProjectScriptsFromXml (aXml : TXml );
-var
-  xXml, oXml: TXml;
-  x, f: Integer;
-begin
-  if (not Assigned (aXml))
-  or (aXml.Name <> 'projectScripts') then
-    Exit;
-  xXml := aXml.Items.XmlItemByTag['Scripts'];
-  if Assigned (xXml) then
-    Scripts.CopyDownLine(xXml, True);
-  xXml := aXml.Items.XmlItemByTag['Operations'];
-  if Assigned (xXml) then
-  begin
-    for x := 0 to xXml.Items.Count -1 do
-    begin
-      oXml := xXml.Items.XmlItems[x];
-      if allAliasses.Find(oXml.Items.XmlValueByTag['Alias'], f) then
-      begin
-        with allAliasses.Operations[f] do
-        begin
-          BeforeScriptLines.Text := oXml.Items.XmlValueByTag['BeforeScript'];
-          AfterScriptLines.Text := oXml.Items.XmlValueByTag['AfterScript'];
-        end;
-      end;
-    end;
-  end;
-end;
-
 procedure TWsdlProject.RefreshCommand;
 var
   wasActive: Boolean;
@@ -2451,7 +2083,6 @@ begin
       with AddXml (TXml.Create) do
         CopyDownLine(Listeners.SpecificationXml, True);
       AddXml (remoteServerConnectionAsXml);
-      AddXml (TXml.CreateAsBoolean('DisableOnCorrelate', _WsdlDisableOnCorrelate));
       AddXml (ProjectOptionsAsXml(SaveRelativeFileNames, uncFilename(projectFileName)));
       AddXml (TXml.CreateAsString('PathPrefixes', xmlio.PathPrefixes.Text));
       with AddXml(TXml.CreateAsString('Environments', '')) do
@@ -2506,37 +2137,6 @@ begin
               end;
             xDone := True;
           end;
-          if xWsdl = BmtpWsdl then
-          begin
-            if (xWsdl.Services.Count > 0)
-            and (xWsdl.Services.Services[0].Operations.Count > 0) then
-              with AddXml (bmtpOperationsXml) do
-              begin
-                if SaveRelativeFileNames then
-                  SetFileNamesRelative(projectFileName);
-              end;
-            xDone := True;
-          end;
-          if xWsdl = XsdWsdl then
-          begin
-            if xWsdl.Services.Services[0].Operations.Count > 0 then
-              with AddXml (xsdOperationsXml(projectFileName)) do
-              begin
-                if SaveRelativeFileNames then
-                  SetFileNamesRelative(projectFileName);
-              end;
-            xDone := True;
-          end;
-          if xWsdl = XmlSampleWsdl then
-          begin
-            if xWsdl.Services.Services[0].Operations.Count > 0 then
-              with AddXml (xmlSampleOperationsXml(projectFileName)) do
-              begin
-                if SaveRelativeFileNames then
-                  SetFileNamesRelative(projectFileName);
-              end;
-            xDone := True;
-          end;
           if xWsdl = ApiByExampleWsdl then
           begin
             if (xWsdl.Services.Count > 0)
@@ -2546,22 +2146,6 @@ begin
                 if SaveRelativeFileNames then
                   SetFileNamesRelative(projectFileName);
               end;
-            xDone := True;
-          end;
-          if xWsdl = SwiftMtWsdl then
-          begin
-            if xWsdl.Services.Services[0].Operations.Count > 0 then
-              with AddXml (swiftMtOperationsXml) do
-              begin
-                if SaveRelativeFileNames then
-                  SetFileNamesRelative(projectFileName);
-              end;
-            xDone := True;
-          end;
-          if xWsdl = MailWsdl then
-          begin
-            if xWsdl.Services.Services[0].Operations.Count > 0 then
-              AddXml (mailOperationsXml);
             xDone := True;
           end;
           if not xDone then
@@ -2828,7 +2412,6 @@ begin
         sXml := aXml.Items.XmlItemByTag ['remoteServerConnection'];
         if Assigned (sXml) then
           remoteServerConnectionFromXml(sXml);
-        xmlio.ProjectContext := projectContext;
         xmlio.ProjectContexts := projectContexts;
         sXml := aXml.Items.XmlItemByTag ['Listeners'];
         Listeners.SpecificationXml.Items.Clear;
@@ -2837,7 +2420,6 @@ begin
           Listeners.SpecificationXml.CopyDownLine(sXml, True);
           Listeners.FromXml(HaveStompFrame);
         end;
-        _WsdlDisableOnCorrelate := aXml.Items.XmlBooleanByTagDef['DisableOnCorrelate', False];
         eXml := aXml.Items.XmlItemByTag ['projectOptions'];
         if Assigned (eXml) then
         begin
@@ -2914,46 +2496,11 @@ begin
               xWsdl := CobolWsdl;
               xDone := True;
             end;
-            oXml := wXml.Items.XmlItemByTag['BmtpOperations'];
-            if Assigned (oXml) then
-            begin
-              bmtpOperationsUpdate(oXml, aMainFileName);
-              xWsdl := BmtpWsdl;
-              xDone := True;
-            end;
-            oXml := wXml.Items.XmlItemByTag['XsdOperations'];
-            if Assigned (oXml) then
-            begin
-              xsdOperationsUpdate(oXml, aMainFileName);
-              xWsdl := XsdWsdl;
-              xDone := True;
-            end;
-            oXml := wXml.Items.XmlItemByTag['XmlSampleOperations'];
-            if Assigned (oXml) then
-            begin
-              xmlSampleOperationsUpdate(oXml, aMainFileName);
-              xWsdl := XmlSampleWsdl;
-              xDone := True;
-            end;
             oXml := wXml.Items.XmlItemByTag['ApiByExampleOperations'];
             if Assigned (oXml) then
             begin
               ApiByExampleOperationsUpdate(oXml, aMainFileName);
               xWsdl := ApiByExampleWsdl;
-              xDone := True;
-            end;
-            oXml := wXml.Items.XmlItemByTag['SwiftMtOperations'];
-            if Assigned (oXml) then
-            begin
-              swiftMtOperationsUpdate(oXml, aMainFileName);
-              xWsdl := SwiftMtWsdl;
-              xDone := True;
-            end;
-            oXml := wXml.Items.XmlItemByTag['MailOperations'];
-            if Assigned (oXml) then
-            begin
-              mailOperationsUpdate(oXml);
-              xWsdl := MailWsdl;
               xDone := True;
             end;
             if not xDone then
@@ -3439,10 +2986,14 @@ begin
     aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
     aLog.DelayTimeMs := xOperation.DelayTimeMs;
     aLog.OperationName:=xOperation.Alias;
-    aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+    aLog.ReplyBody := xOperation.PrepareReply (_progName, True);
     aLog.ReplyInfoFromBindables(xOperation);
     if xOperation.ReturnSoapFault then
+    begin
       aLog.Exception := aLog.ReplyBody;
+      aLog.httpResponseCode := xOperation.ResponseNo;
+      aLog.ReplyContentType := xOperation.ContentType;
+    end;
     if xOperation.StubAction = saRequest then
     begin
       aLog.ReplyBody := _progName + ' - Operation itself is a requestor ('+ xOperation.Alias +')';
@@ -3623,108 +3174,6 @@ begin
   end;
 end;
 
-function TWsdlProject.mailOperationsXml: TXml;
-var
-  o: Integer;
-begin
-  result := TXml.CreateAsString('MailOperations', '');
-  with result do
-  begin
-    with MailWsdl.Services.Services[0] do
-    begin
-      for o := 0 to Operations.Count - 1 do
-      begin
-        with AddXml (TXml.CreateAsString('Operation', '')) do
-        begin
-          AddXml (TXml.CreateAsString('Name', Operations.Operations[o].Name));
-        end;
-      end;
-    end;
-    CheckDownline(True);
-  end;
-end;
-
-procedure TWsdlProject.mailOperationsUpdate(aXml: TXml);
-var
-  sList: TJBStringList;
-  xXml, oXml: TXml;
-  xXsd: TXsd;
-  f, x, o: Integer;
-  xOperation: TWsdlOperation;
-const
-  _xsdName = 'OperationDefs.MailOperations';
-begin
-  if aXml.Name <> 'MailOperations' then
-    raise Exception.Create('??TWsdlProject.mailOperationsUpdate(aXml: TXml): ' + aXml.Name);
-  xXsd := OperationDefsXsd.FindXsd (_xsdName);
-  if not Assigned (xXsd) then
-    raise  Exception.Create('Xsd not found: ' + _xsdName);
-  xXml := TXml.Create(-1000, xXsd);
-  try
-    xXml.LoadValues(aXml, False);
-    aXml.CopyDownLine(xXml, True);
-  finally
-    xXml.Free;
-  end;
-
-  sList := TJBStringList.Create;
-  sList.Sorted := True;
-  try
-    for x := 0 to aXml.Items.Count - 1 do
-      if aXml.Items.XmlItems[x].Checked
-      and (aXml.Items.XmlItems[x].Name = 'Operation')
-      and (aXml.Items.XmlItems[x].Items.Count > 0) then
-        sList.AddObject(aXml.Items.XmlItems[x].Items.XmlCheckedValueByTagDef['Name','mailOperation'], aXml.Items.XmlItems[x]);
-    with MailWsdl.Services.Services[0] do
-    begin
-      for o := Operations.Count - 1 downto 0 do
-      begin
-        if not (sList.Find(Operations.Operations[o].Name, f)) then
-        begin // remove
-          Operations.Operations[o].Free;
-          Operations.Delete(o);
-        end;
-      end;
-      for x := 0 to sList.Count - 1 do
-      begin
-        oXml := sList.Objects[x] as TXml;
-        if Operations.Find(sList.Strings[x], f) then
-        begin // adjust
-          with Operations.Operations[f] do
-          begin
-          end;
-        end
-        else
-        begin
-          xOperation := TWsdlOperation.Create (MailWsdl);
-          xOperation.Name := sList.Strings[x];
-          MailWsdl.Services.Services[0].Operations.AddObject(xOperation.Name, xOperation);
-          xOperation.Wsdl := MailWsdl;
-          xOperation.WsdlService := MailWsdl.Services.Services[0];
-          xOperation.reqTagName := xOperation.Name;
-          xOperation.Alias := xOperation.reqTagName;
-          xOperation.rpyTagName := xOperation.Name;
-          xOperation.reqRecognition := TJBStringList.Create;
-          xOperation.rpyRecognition := TJBStringList.Create;
-          xOperation.RecognitionType := rtSubString;
-          xOperation.reqXsd.ElementName := xOperation.Name;
-          xOperation.reqXsd.sType.ElementDefs.AddObject('', _WsdlEmailXsd);
-          xOperation.reqBind.Name := xOperation.Name;
-        end;
-      end;
-      f := Wsdls.IndexOfObject(MailWsdl);
-      if (Operations.Count > 0)
-      and (f < 0) then
-        Wsdls.AddObject(MailWsdl.Name, MailWsdl);
-      if (Operations.Count = 0)
-      and (f > -1) then
-        Wsdls.Delete(f);
-    end;
-  finally
-    sList.Free;
-  end;
-end;
-
 procedure TWsdlProject.ProjectOptionsLogDisplayedColumnsFromXml(aXml: TXml);
 var
   x: Integer;
@@ -3749,7 +3198,6 @@ var
   yXml: TXml;
 begin
   displayedLogsMaxEntries := -1;
-  CompareLogOrderBy := clTimeStamp;
   ShowLogCobolStyle := slCobol;
   if Assigned (aXml) then
   begin
@@ -3757,20 +3205,6 @@ begin
       displayedLogsMaxEntries := aXml.Items.XmlIntegerByTagDef['maxEntries', -1];
     except
       displayedLogsMaxEntries := -1;
-    end;
-    yXml := aXml.Items.XmlCheckedItemByTag['CompareLogsOrdered'];
-    if Assigned (yXml) then
-    begin
-      if yXml.Value = 'As is' then CompareLogOrderBy := clTimeStamp;
-      if yXml.Value = 'Service, Operation' then CompareLogOrderBy := clOperation;
-      if yXml.Value = 'Service, Operation, Correlation' then CompareLogOrderBy := clCorrelation;
-    end;
-    yXml := aXml.Items.XmlCheckedItemByTag['DocumentComparison'];
-    if Assigned (yXml) then
-    begin
-      wrdFunctionz.wrdDetectFormatChanges := yXml.Items.XmlBooleanByTagDef['DetectDocumentFormatChanges', False];
-      wrdFunctionz.wrdNewDocumentAsReference := yXml.Items.XmlBooleanByTagDef['NewDocumentAsReference', False];
-      wrdFunctionz.wrdExpectedDifferenceCount := yXml.Items.XmlIntegerByTagDef['ExpectedDifferenceCount', 0];
     end;
     yXml := aXml.Items.XmlCheckedItemByTag['ShowCobolDataAs'];
     if Assigned (yXml) then
@@ -3802,25 +3236,28 @@ begin
   DatabaseConnectionSpecificationXml.Items.Clear;
   UnknownOpsReqReplactementsXml.Items.Clear;
   UnknownOpsRpyReplactementsXml.Items.Clear;
+    {
   wrdFunctionz.wrdDetectFormatChanges := False;
   wrdFunctionz.wrdNewDocumentAsReference := False;
   wrdFunctionz.wrdExpectedDifferenceCount := 0;
+    }
   RemoteControlPortNumber := 3738;
-  OnRequestViolatingAddressPath:=rvsContinue;
+  OnRequestViolatingAddressPath := rvsRaiseErrorMessage;
   xsdMaxDepthBillOfMaterials := defaultXsdMaxDepthBillOfMaterials;
   xsdMaxDepthXmlGen := defaultXsdMaxDepthXmlGen;
-  _WsdlDisableOnCorrelate := False;
   OperationsWithEndpointOnly := True;
   SaveRelativeFileNames := True;
   CurrentFolder := '';
   ReferenceFolder := '';
   ReportsFolder := '';
   notStubbedExceptionMessage := 'No operation recognised';
+  CORS := corsAcceptWithoutLogging;
+  corsExceptionHttpCode := 500;
 
   if not aXml.Checked then Exit;
   with aXml.Items do
   begin
-    xXml := XmlCheckedItemByTag ['versionInfo'];
+    xXml := XmlCheckedItemByTag ['versionInfo']; // Old style (up to 10.6.0.13121
     if Assigned (xXml) then
     begin
       majorVersion := xXml.Items.XmlCheckedIntegerByTagDef['major', majorVersion];
@@ -3831,6 +3268,14 @@ begin
     xXml := XmlCheckedItemByTag ['General'];
     if Assigned (xXml) then
     begin
+      yXml := xXml.Items.XmlCheckedItemByTag ['versionInfo'];
+      if Assigned (yXml) then
+      begin
+        majorVersion := yXml.Items.XmlCheckedIntegerByTagDef['major', majorVersion];
+        minorVersion := yXml.Items.XmlCheckedIntegerByTagDef['minor', minorVersion];
+        revision := yXml.Items.XmlCheckedIntegerByTagDef['revision', revision];
+        build := yXml.Items.XmlCheckedIntegerByTagDef['build', build];
+      end;
       SaveRelativeFileNames := xXml.Items.XmlCheckedBooleanByTagDef['SaveRelativeFileNames', True];
       yXml := xXml.Items.XmlCheckedItemByTag['projectFolders'];
       if Assigned (yXml) then with yXml.Items do
@@ -3841,17 +3286,40 @@ begin
       end;
     end;
     ProjectLogOptionsFromXml (XmlCheckedItemByTag ['Log']);
-    xXml := XmlCheckedItemByTag ['Wsdl'];
+    xXml := XmlCheckedItemByTag ['Wsdl'];  // Old style before 10.7
     if Assigned (xXml) then
     begin
       OperationsWithEndpointOnly := xXml.Items.XmlCheckedBooleanByTagDef['OperationsWithEndpointOnly', True];
       xsdMaxDepthBillOfMaterials := xXml.Items.XmlCheckedIntegerByTagDef['MaxDepthWhenRecursive', xsdMaxDepthBillOfMaterials];
       xsdMaxDepthXmlGen := xXml.Items.XmlCheckedIntegerByTagDef['MaxDepthXmlGen', xsdMaxDepthXmlGen];
     end;
-    xXml := XmlCheckedItemByTag ['OnCorrelate'];
+    xXml := XmlCheckedItemByTag ['formGeneration'];  // Style since 10.7
     if Assigned (xXml) then
     begin
-      _WsdlDisableOnCorrelate := xXml.Items.XmlCheckedBooleanByTagDef['DisableMessage', _WsdlDisableOnCorrelate];
+      OperationsWithEndpointOnly := xXml.Items.XmlCheckedBooleanByTagDef['OperationsWithEndpointOnly', True];
+      xsdMaxDepthBillOfMaterials := xXml.Items.XmlCheckedIntegerByTagDef['MaxDepthWhenRecursive', xsdMaxDepthBillOfMaterials];
+      xsdMaxDepthXmlGen := xXml.Items.XmlCheckedIntegerByTagDef['MaxDepthStructure', xsdMaxDepthXmlGen];
+    end;
+    xXml := XmlCheckedItemByTag ['CORS'];
+    if Assigned (xXml) then
+    begin
+      if Assigned (xXml.Items.XmlCheckedItemByTag ['exceptionResponse']) then
+      begin
+        CORS := corsException;
+        with xXml.Items.XmlItemByTag ['exceptionResponse'].Items do
+        begin
+          corsExceptionHttpCode := XmlIntegerByTagDef['responseCode', corsExceptionHttpCode];
+        end;
+      end;
+      if Assigned (xXml.Items.XmlCheckedItemByTag ['refuse']) then
+        CORS := corsRefuse;
+      if Assigned (xXml.Items.XmlCheckedItemByTag ['accept']) then
+      begin
+        if xXml.Items.XmlCheckedItemByTag ['accept'].Items.XmlCheckedBooleanByTagDef['showInLog', False] then
+          CORS := corsAcceptWithLogging
+        else
+          CORS := corsAcceptWithoutLogging;
+      end;
     end;
     xXml := XmlCheckedItemByTag ['UnknownOperations'];
     if Assigned (xXml) then
@@ -3968,8 +3436,10 @@ var
 begin
   xExt := UpperCase (ExtractFileExt (resolveAliasses(aName)));
   result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
-  if (xExt = '.JSON')
-  or (xExt = '.YAML')
+    if (xExt = '.JSON')
+    or (xExt = '.YAML')
+    or (xExt = '.JSN')
+    or (xExt = '.YML')
   or (AnsiStartsText('APIARY://', aName)) then
     result.LoadFromJsonYamlFile(aName, nil, OnBeforeFileRead)
   else
@@ -4030,60 +3500,8 @@ begin
   rpyheader := '';
   case aOperation.StubTransport of
     ttHttp: result := SendHttpMessage (aOperation, nil);
-    ttMq: result := SendOperationMqMessage (aOperation, aMessage, reqheader);
     ttStomp: result := SendOperationStompMessage (aOperation, aMessage, reqheader, rpyheader);
-    ttTaco: result := SendOperationTacoMessage(aOperation, aMessage, reqheader, rpyheader);
-    {$ifdef windows}
-    ttKafka: result := SendOperationKafkaMessage(aOperation, aMessage, reqheader, rpyheader);
-    {$else}
-    ttKafka: result := _progName +': Producing om Kafka only implemented on Windows';
-    {$endif}
-    ttNone: result := SendNoneMessage(aOperation, aMessage);
-  end;
-end;
-
-function TWsdlProject .SendOperationMqMessage (aOperation : TWsdlOperation ;
-  aMessage : String ; var aMqHeaderAsText : String ): String ;
-var
-  mq: TMqInterface;
-  xIsRequest: Boolean;
-  fXml: TXml;
-begin
-  Result := '';
-  fXml := nil;
-  if not Assigned (aOperation)
-    then raise Exception.Create('SendOperationMqMessage: null arguments');
-  mq := TMqInterface.Create;
-  try
-    mq.Use := mqUse;
-    mq.Qmanager := resolveAliasses(aOperation.StubMqPutManager);
-    mq.PutQueue := resolveAliasses(aOperation.StubMqPutQueue);
-    mq.GetQueue := resolveAliasses(aOperation.StubMqGetQueue);
-    mq.TimeOut := IntToStr (aOperation.StubMqTimeOut);
-    mq.Expiry := '-1';
-    xIsRequest := True;
-    if Assigned (aOperation.StubMqHeaderXml) then
-      fXml := aOperation.StubMqHeaderXml.FindXml ('mqHeader.mqmd.MsgType');
-    if (    Assigned (fXml)
-        and fXml.CheckedAllUp
-        and (fXml.Value <> '1')
-        )
-    or (mq.GetQueue = '')
-    then
-      xIsRequest := False;
-    try
-      if xIsRequest then
-        Result := mq.RequestReply (aMessage, aOperation.StubMqHeaderXml)
-      else
-        mq.Put (aMessage, aOperation.StubMqHeaderXml);
-    finally
-      try
-        aMqHeaderAsText := mq.MsgDescAsText;
-      except
-      end;
-    end;
-  finally
-    FreeAndNil (mq);
+    ttNone: result := SendNoneMessage(aOperation, aMessage, nil);
   end;
 end;
 
@@ -4122,20 +3540,6 @@ function TWsdlProject.SendHttpMessage (aOperation: TWsdlOperation; aLog: TLog): 
     s, d: AnsiString;
   begin
     result := aString;
-    if aOperation.WsdlService.DescriptionType = ipmDTBmtp then
-    begin
-      with TXml.CreateAsString('bmtpEnvelope', '') do
-      try
-        AddXml(TXml.CreateAsString('Service',aLog.ServiceName));
-        AddXml(TXml.CreateAsString('Operation',aLog.OperationName));
-        s := aString;
-        d := Base64EncodeStr(s);
-        AddXml(TXml.CreateAsString('Request', d));
-        result := AsText(False,0,False,False);
-      finally
-        Free;
-      end;    ;
-    end;
   end;
 
   function _bmtpUnpackEnvelope (aString: String): String;
@@ -4144,34 +3548,6 @@ function TWsdlProject.SendHttpMessage (aOperation: TWsdlOperation; aLog: TLog): 
     mXml: TXml;
   begin
     result := aString;
-    if aOperation.WsdlService.DescriptionType = ipmDTBmtp then
-    begin
-    with TXml.Create do
-    try
-      LoadFromString(result, nil);
-      if Name = '' then
-        raise Exception.Create('Bmtp: Could not parse message envelope as XML');
-      if Name <> 'bmtpEnvelope' then
-        raise Exception.Create('Bmtp: No Bmtp envelope found');
-      if Items.XmlValueByTag['Service'] <> aLog.ServiceName then
-        raise Exception.Create('Bmtp: Unexpected servicename');
-      if Items.XmlValueByTag['Operation'] <> aLog.OperationName then
-        raise Exception.Create('Bmtp: Unexpected operationname');
-      mXml := Items.XmlItemByTag['Reply'];
-      if not Assigned (mXml) then
-        raise Exception.Create('Bmtp: Element Reply not found');
-      try
-        s := mXml.Value;
-        d := Base64DecodeStr(s);
-        result := d; // when everything Ok loose the Bmtp envelope here
-      except
-        on e: Exception do
-          raise Exception.Create('Bmtp: Exception while b64decoding message: ' + e.Message);
-      end;
-    finally
-      Free;
-    end;
-    end;
   end;
 
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
@@ -4454,7 +3830,7 @@ begin
           if aOperation.sslPassword <> '' then
             OnGetPassword := aOperation.OnGetSslPassword; // TODO resolveAliasses...
           SSLOptions.Method := aOperation.sslVersion;
-          SSLOptions.Mode := sslmUnassigned;
+          SSLOptions.Mode := sslmClient;
           SSLOptions.VerifyMode := [];
         end;
       end;
@@ -4591,14 +3967,8 @@ begin
       try
         case aOperation.StubTransport of
           ttHttp: xLog.ReplyBody := SendHttpMessage (aOperation, xLog);
-          ttMq: xLog.ReplyBody := SendOperationMqMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders);
           ttStomp: xLog.ReplyBody := SendOperationStompMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
-          ttSmtp: xLog.ReplyBody := SendOperationSmtpMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
-          ttTaco: xLog.ReplyBody := SendOperationTacoMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
-    {$ifdef windows}
-          ttKafka: xLog.ReplyBody := SendOperationKafkaMessage (aOperation, xLog.RequestBody, xLog.RequestHeaders, xLog.ReplyHeaders);
-    {$endif}
-          ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody);
+          ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody, xLog);
         end;
       finally
         xLog.InboundTimeStamp := Now;
@@ -4667,7 +4037,11 @@ begin
         end;
         aOperation.ExecuteAfter;
         if aOperation.StubTransport = ttNone then
-          xLog.ReplyBody := aOperation.StreamReply (_progName, True);
+        begin
+          xLog.ReplyContentType := aOperation.Produces;
+          xLog.ReplyBody := aOperation.PrepareReply (_progName, True);
+          xLog.httpResponseCode := aOperation.ResponseNo;
+        end;
       end;
       with xLog do
       begin
@@ -4737,94 +4111,9 @@ begin
   SendOperation(aOperation);
 end;
 
-function TWsdlProject .SendOperationTacoMessage (aOperation : TWsdlOperation ;
-  aMessage : String ; var aRequestHeader : String ; var aReplyHeader : String
-  ): String ;
-begin
-  Result := '';
-  aRequestHeader := '';
-  aReplyHeader:= '';
-  if not Assigned (aOperation)
-    then raise Exception.Create('SendOperationTacoMessage: null arguments');
-  result := fTacoInterface.RequestReply(aMessage, 0, aOperation.TacoConfigXml);
-end;
-
-    {$ifdef windows}
-function TWsdlProject.SendOperationKafkaMessage(aOperation: TWsdlOperation;
-  aMessage: String;var aRequestHeader: String;var aReplyHeader: String): String;
-var
-  xBroker, xTopic,xClientConfig: String;
-  sl: TJBStringList;
-begin
-  result := '';
-  aRequestHeader := '';
-  aReplyHeader := '';
-  sl := TJBStringList.Create;
-  try
-    xBroker := aOperation.KafkaConfigXml.Items.XmlCheckedValueByTag['Broker'];
-    xTopic := aOperation.KafkaConfigXml.Items.XmlCheckedValueByTag['Topic'];
-    xClientConfig := aOperation.KafkaConfigXml.Items.XmlCheckedValueByTag['ClientConfig'];
-    aRequestHeader := Format( 'Broker=%s%sTopic=%s%s[ClientConfig]%s%s'
-                            , [ xBroker, LineEnding
-                              , xTopic, LineEnding, LineEnding
-                              , xClientConfig, LineEnding
-                              ]
-                            );
-    with TKafkaProducer.Create do
-    try
-      if (xClientConfig <> '') then
-      begin
-        sl.Text := xClientConfig;
-        ConfigureParamList(sl);
-      end;
-      StartBroker(xBroker);
-    //  SetDeliveryReportCallback(..);
-      CreateProducerTopic(xTopic);
-      ProduceMessage('aKey', aMessage);
-    finally
-      Free;
-    end;
-  finally
-    FreeAndNil (sl);
-  end;
-end;
-{$endif}
 procedure TWsdlProject.SetAbortPressed(const Value: Boolean);
 begin
   fAbortPressed := Value;
-end;
-
-function TWsdlProject .SendOperationSmtpMessage (aOperation : TWsdlOperation ;
-  aMessage : String ; var aRequestHeader : String ; var aReplyHeader : String
-  ): String ;
-var
-  Smtp: TIdSMTP;
-  mailMessage: TIdMessage;
-begin
-  Result := '';
-  if not Assigned (aOperation)
-    then raise Exception.Create('SendOperationSmtpMessage: null arguments');
-
-  mailMessage := smtpCreateMessageFromXml (aOperation.reqBind.Children.Bindables[0] as TXml);
-  try
-    Smtp := TIdSMTP.Create (nil);
-    try
-      Smtp.AuthType := satNone;
-      Smtp.Host := aOperation.smtpHost;
-      Smtp.Port := aOperation.smtpPort;
-      Smtp.Connect;
-      try
-        Smtp.Send(mailMessage);
-      finally
-        if Smtp.Connected then
-          Smtp.Disconnect;
-      end;
-    finally
-      FreeAndNil (Smtp);
-    end;
-  finally
-    mailMessage.Free;
-  end;
 end;
 
 function TWsdlProject .SendOperationStompMessage (aOperation : TWsdlOperation ;
@@ -5086,7 +4375,7 @@ begin
   for o := 0 to allOperations.Count - 1 do
   begin
     if allOperations.Operations [o].WsdlService.DescriptionType
-      in [ipmDTFreeFormat, ipmDTCobol, ipmDTSwiftMT] then
+      in [ipmDTFreeFormat, ipmDTCobol] then
     begin
       xOperation := allOperations.Operations [o];
       if xOperation.RecognitionType = rtSubString then
@@ -5119,18 +4408,6 @@ begin
                                + xOperation.Name
                                + '; Request RecognitionType not known or not supported'
                                );
-    end
-    else
-    begin
-      if allOperations.Operations [o].WsdlService.DescriptionType = ipmDTBmtp then
-      begin
-        if (allOperations.Operations [o].WsdlService.Name = aLog.ServiceName)
-        and (allOperations.Operations [o].Alias = aLog.OperationName) then
-        begin
-          result := allOperations.Operations [o];
-          exit;
-        end;
-      end;
     end;
   end;
 end;
@@ -5323,6 +4600,10 @@ begin
         else
         begin
           xOperation := TWsdlOperation.Create (FreeFormatWsdl);
+          if xOperation.reqXml.Items.Count = 0 then
+            xOperation.reqXml.AddXml(TXml.CreateAsString('Body', ''));
+          if xOperation.rpyXml.Items.Count = 0 then
+            xOperation.rpyXml.AddXml(TXml.CreateAsString('Body', ''));
           xOperation.Name := sList.Strings[x];
           FreeFormatService.Operations.AddObject(xOperation.Name, xOperation);
           xOperation.Wsdl := FreeFormatWsdl;
@@ -5336,6 +4617,8 @@ begin
           xOperation.Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
           operationRecognitionUpdate (xOperation, xOperation.reqRecognition, oXml.Items.XmlItemByTag['reqRecognition']);
           operationRecognitionUpdate (xOperation, xOperation.rpyRecognition, oXml.Items.XmlItemByTag['rpyRecognition']);
+          xOperation.reqXml.Name := xOperation.Alias;
+          xOperation.rpyXml.Name := xOperation.Alias;
         end;
       end;
       f := Wsdls.IndexOfObject(FreeFormatWsdl);
@@ -5348,333 +4631,6 @@ begin
     end;
   finally
     sList.Free;
-  end;
-end;
-
-procedure TWsdlProject.xsdOperationsUpdate(aXml: TXml; aMainFileName: String);
-  procedure _getDescriptionFiles (aXml: TXml; aFileNames: TJBStringList);
-  var
-    x, f: Integer;
-  begin
-    if not aXml.Checked then Exit;
-    if aXml.Name = 'DescriptionFile' then
-    begin
-      if not aFileNames.Find(aXml.Value, f) then
-        aFilenames.AddObject (aXml.Value, Pointer (ipmDTCobol));
-    end
-    else
-    begin
-      for x := 0 to aXml.Items.Count - 1 do
-        _getDescriptionFiles(aXml.Items.XmlItems[x], aFileNames);
-    end;
-  end;
-  function _refXsd (aXsdDescr: TXsdDescr; aXsdName: String): TXsd;
-  var
-    x: Integer;
-    xName: String;
-  begin
-    result := nil;
-    with aXsdDescr.TypeDef.ElementDefs do
-    begin
-      for x := 0 to Count - 1 do
-      begin
-         xName := Xsds[x].ElementName;
-         if (xName = aXsdName) then
-         begin
-           result := Xsds[x];
-           exit;
-         end;
-      end;
-    end;
-  end;
-  function _LoadXsdMsg (aLabel: String; sXml: TXml; aXsd: TXsd; var aDescrFileName: String): TXml;
-  var
-    xXsd: TXsd;
-    xXsdDescr: TXsdDescr;
-  begin
-    result := nil;
-    try
-      if not Assigned (sXml) then
-        exit;
-      aDescrFileName := ExpandRelativeFileName (aMainFileName, sXml.Items.XmlCheckedValueByTag ['DescriptionFile']);
-      xXsdDescr := TXsdDescr.Create;
-      XsdWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
-      try
-        xXsdDescr.LoadXsdFromFile(aDescrFileName, nil, OnBeforeFileRead);
-      except
-        on E: Exception do
-          raise Exception.Create('Error opening ' + aDescrFileName + ': ' + e.Message);
-      end;
-      xXsd := _refXsd ( xXsdDescr, sXml.Items.XmlValueByTag ['ElementName']);
-      if Assigned (xXsd) then
-      begin
-        aXsd.sType.ElementDefs.AddObject('', xXsd);
-        bindRefId := 0;
-        result := TXml.Create (0, aXsd);
-      end;
-    finally
-      if not Assigned (result) then
-        result := TXml.Create;
-      result.Checked := True;
-    end;
-  end;
-var
-  sList: TJBStringList;
-  oXml, xXml: TXml;
-  xXsd: TXsd;
-  f, x, o: Integer;
-  xOperation: TWsdlOperation;
-const
-  _xsdName = 'OperationDefs.XsdOperations';
-begin
-  if aXml.Name <> 'XsdOperations' then
-    raise Exception.Create('??TWsdlProject.XsdOperationsUpdate(aXml: TXml): ' + aXml.Name);
-  xXsd := OperationDefsXsd.FindXsd (_xsdName);
-  if not Assigned (xXsd) then
-    raise  Exception.Create('Xsd not found: ' + _xsdName);
-  xXml := TXml.Create(-1000, xXsd);
-  try
-    xXml.LoadValues(aXml, False);
-    aXml.CopyDownLine(xXml, True); // assigns Xsd to downline
-  finally
-    xXml.Free;
-  end;
-
-{$ifndef NoGUI}
-  if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
-    StubChanged := True;
-{$endif}
-  sList := TJBStringList.Create;
-  try
-    sList.Sorted := True;
-    for x := 0 to aXml.Items.Count - 1 do
-      if (aXml.Items.XmlItems[x].Checked)
-      and (aXml.Items.XmlItems[x].Name = 'Operation')
-      and (aXml.Items.XmlItems[x].Items.Count > 0) then
-        sList.AddObject(aXml.Items.XmlItems[x].Items.XmlCheckedValueByTag['Name'], aXml.Items.XmlItems[x]);
-    with XsdWsdl.Services.Services[0] do
-    begin
-      for o := Operations.Count - 1 downto 0 do
-      begin
-        if not (sList.Find(Operations.Operations[o].Name, f)) then
-        begin // remove
-          Operations.Operations[o].Free;
-          Operations.Delete(o);
-        end;
-      end;
-      for x := 0 to sList.Count - 1 do
-      begin
-        oXml := sList.Objects[x] as TXml;
-        if not Operations.Find(sList.Strings[x], f) then
-        begin
-          xOperation := TWsdlOperation.Create (XsdWsdl);
-          xOperation.Name := sList.Strings[x];
-          XsdWsdl.Services.Services[0].Operations.AddObject(xOperation.Name, xOperation);
-          xOperation.Wsdl := XsdWsdl;
-          xOperation.WsdlService := XsdWsdl.Services.Services[0];
-          xOperation.reqTagName := xOperation.Name + '_Req';
-          xOperation.Alias := xOperation.reqTagName;
-          xOperation.rpyTagName := xOperation.Name + '_Rpy';
-          xOperation.reqRecognition := TJBStringList.Create;
-          xOperation.rpyRecognition := TJBStringList.Create;
-          xOperation.RecognitionType := rtSubString;
-          xOperation.reqXsd.ElementName := xOperation.reqTagName;
-          xOperation.rpyXsd.ElementName := xOperation.rpyTagName;
-        end
-        else
-        begin
-          xOperation := Operations.Operations[f];
-        end;
-        with xOperation do
-        begin
-          if Assigned(reqBind) then
-            reqBind.Free;
-          if Assigned(rpyBind) then
-            rpyBind.Free;
-          FreeAndNil (fltBind);
-          Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
-          reqBind := _LoadXsdMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
-          rpyBind := _LoadXsdMsg('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename);
-          fltBind := _LoadXsdMsg('Flt', oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename);
-          if Alias <> reqTagName then
-          begin
-            if Assigned (reqBind) then reqBind.Name := Alias;
-            if Assigned (rpyBind) then rpyBind.Name := Alias;
-          end;
-          operationRecognitionUpdate (xOperation, reqRecognition, oXml.Items.XmlCheckedItemByTag['reqRecognition']);
-          operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
-        end;
-      end;
-      f := Wsdls.IndexOfObject(XsdWsdl);
-      if (Operations.Count > 0)
-      and (f < 0) then
-        Wsdls.AddObject(XsdWsdl.Name, XsdWsdl);
-      if (Operations.Count = 0)
-      and (f > -1) then
-        Wsdls.Delete(f);
-    end;
-  finally
-    FreeAndNil(sList);
-  end;
-end;
-
-procedure TWsdlProject.xmlSampleOperationsUpdate (aXml: TXml; aMainFileName: String);
-  procedure _getDescriptionFiles (aXml: TXml; aFileNames: TJBStringList);
-  var
-    x, f: Integer;
-  begin
-    if not aXml.Checked then Exit;
-    if aXml.Name = 'DescriptionFile' then
-    begin
-      if not aFileNames.Find(aXml.Value, f) then
-        aFilenames.AddObject (aXml.Value, Pointer (ipmDTCobol));
-    end
-    else
-    begin
-      for x := 0 to aXml.Items.Count - 1 do
-        _getDescriptionFiles(aXml.Items.XmlItems[x], aFileNames);
-    end;
-  end;
-  function _LoadXmlSampleMsg (aLabel: String; sXml: TXml; aXsd: TXsd; var aSampleFileName: String): TXml;
-  var
-    xXsdDescr: TXsdDescr;
-    xXsd: TXsd;
-  begin
-    result := nil;
-    xXsd := nil;
-    try
-      if not Assigned (sXml) then
-        exit;
-      aSampleFileName := ExpandRelativeFileName (aMainFileName, sXml.Items.XmlCheckedValueByTag ['SampleFile']);
-      xXsdDescr := TXsdDescr.Create;
-      XmlSampleWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
-      try
-        xXsd := xXsdDescr.LoadXsdFromXmlSampleFile(aSampleFileName, nil,OnBeforeFileRead);
-      except
-        on E: Exception do
-          raise Exception.Create('Error opening ' + aSampleFileName + ': ' + e.Message);
-      end;
-      if Assigned (xXsd) then
-      begin
-        aXsd.sType.ElementDefs.AddObject('', xXsd);
-        bindRefId := 0;
-        result := TXml.Create (0, aXsd);
-      end;
-    finally
-      if not Assigned (result) then
-        result := TXml.Create;
-      result.Checked := True;
-    end;
-  end;
-var
-  sList: TJBStringList;
-  oXml, ppXml, xXml: TXml;
-  xXsd: TXsd;
-  xWsdl: TWsdl;
-  f, x, o, p: Integer;
-  xOperation: TWsdlOperation;
-const
-  _xsdName = 'OperationDefs.XmlSampleOperations';
-begin
-  xWsdl := XmlSampleWsdl;
-  if aXml.Name <> 'XmlSampleOperations' then
-    raise Exception.Create('??TWsdlProject.XmlSampleOperationsUpdate(aXml: TXml): ' + aXml.Name);
-  xXsd := OperationDefsXsd.FindXsd (_xsdName);
-  if not Assigned (xXsd) then
-    raise  Exception.Create('Xsd not found: ' + _xsdName);
-  xXml := TXml.Create(-1000, xXsd);
-  try
-    xXml.LoadValues(aXml, False);
-    aXml.CopyDownLine(xXml, True); // assigns Xsd to downline
-  finally
-    xXml.Free;
-  end;
-
-{$ifndef NoGUI}
-  if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
-    StubChanged := True;
-{$endif}
-  sList := TJBStringList.Create;
-  try
-    sList.Sorted := True;
-    for x := 0 to aXml.Items.Count - 1 do
-      if (aXml.Items.XmlItems[x].Checked)
-      and (aXml.Items.XmlItems[x].Name = 'Operation')
-      and (aXml.Items.XmlItems[x].Items.Count > 0) then
-        sList.AddObject(aXml.Items.XmlItems[x].Items.XmlCheckedValueByTag['Name'], aXml.Items.XmlItems[x]);
-    with xWsdl.Services.Services[0] do
-    begin
-      for o := Operations.Count - 1 downto 0 do
-      begin
-        if not (sList.Find(Operations.Operations[o].Name, f)) then
-        begin // remove
-          Operations.Operations[o].Free;
-          Operations.Delete(o);
-        end;
-      end;
-      for x := 0 to sList.Count - 1 do
-      begin
-        oXml := sList.Objects[x] as TXml;
-        if not Operations.Find(sList.Strings[x], f) then
-        begin
-          xOperation := TWsdlOperation.Create (xWsdl);
-          xOperation.Name := sList.Strings[x];
-          xWsdl.Services.Services[0].Operations.AddObject(xOperation.Name, xOperation);
-          xOperation.Wsdl := xWsdl;
-          xOperation.WsdlService := xWsdl.Services.Services[0];
-          xOperation.reqTagName := xOperation.Name + '_Req';
-          xOperation.Alias := xOperation.reqTagName;
-          xOperation.rpyTagName := xOperation.Name + '_Rpy';
-          xOperation.reqRecognition := TJBStringList.Create;
-          xOperation.rpyRecognition := TJBStringList.Create;
-          xOperation.RecognitionType := rtSubString;
-          xOperation.reqXsd.ElementName := xOperation.reqTagName;
-          xOperation.rpyXsd.ElementName := xOperation.rpyTagName;
-        end
-        else
-        begin
-          xOperation := Operations.Operations[f];
-        end;
-        with xOperation do
-        begin
-          if Assigned(reqBind) then
-            reqBind.Free;
-          if Assigned(rpyBind) then
-            rpyBind.Free;
-          FreeAndNil (fltBind);
-          Name := oXml.Items.XmlCheckedValueByTagDef['Name', Name];
-          Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
-          httpVerb := oXml.Items.XmlCheckedValueByTagDef['httpVerb', httpVerb];
-          reqBind := _LoadXmlSampleMsg('Req', oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename);
-          ppXml := oXml.Items.XmlCheckedItemByTag['parameters'];
-          if Assigned (ppXml) then
-          begin
-            for p := 0 to ppXml.Items.Count - 1 do
-            begin
-
-            end;
-          end;
-          rpyBind := _LoadXmlSampleMsg('Rpy', oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename);
-          fltBind := _LoadXmlSampleMsg('Flt', oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename);
-          if Alias <> reqTagName then
-          begin
-            if Assigned (reqBind) then reqBind.Name := Alias;
-            if Assigned (rpyBind) then rpyBind.Name := Alias;
-          end;
-          operationRecognitionUpdate (xOperation, reqRecognition, oXml.Items.XmlCheckedItemByTag['reqRecognition']);
-          operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
-        end;
-      end;
-      f := Wsdls.IndexOfObject(xWsdl);
-      if (Operations.Count > 0)
-      and (f < 0) then
-        Wsdls.AddObject(xWsdl.Name, xWsdl);
-      if (Operations.Count = 0)
-      and (f > -1) then
-        Wsdls.Delete(f);
-    end;
-  finally
-    FreeAndNil(sList);
   end;
 end;
 
@@ -5880,7 +4836,6 @@ begin
       begin
         xService := xWsdl.Services.Services[f];
       end;
-//      xService.Host := sXml.Items.XmlValueByTag['Address'];
       xService.openApiPath := sXml.Items.XmlValueByTag['Path'];
       xService.PathInfos.Add(xService.openApiPath);
       oList := TJBStringList.Create;
@@ -6149,261 +5104,6 @@ begin
   end;
 end;
 
-procedure TWsdlProject.swiftMtOperationsUpdate(aXml: TXml; aMainFileName: String);
-  procedure _getDescriptionFiles (aXml: TXml; aFileNames: TJBStringList);
-  var
-    x, f: Integer;
-  begin
-    if not aXml.Checked then Exit;
-    if aXml.Name = 'DescriptionFile' then
-    begin
-      if not aFileNames.Find(aXml.Value, f) then
-        aFilenames.AddObject (aXml.Value, Pointer (ipmDTSwiftMt));
-    end
-    else
-    begin
-      for x := 0 to aXml.Items.Count - 1 do
-        _getDescriptionFiles(aXml.Items.XmlItems[x], aFileNames);
-    end;
-  end;
-{}
-  function _LoadSwiftMtMsg (sXml: TXml; aXsd: TXsd; var aDescrFileName, aDescrExpansionFileName: String): TXml;
-    function _refXsd (aXsdDescr: TXsdDescr; aXsdName: String): TXsd;
-    var
-      x: Integer;
-    begin
-      result := nil;
-      with aXsdDescr.TypeDef.ElementDefs do
-      begin
-        for x := 0 to Count - 1 do
-        begin
-           if (Xsds[x].ElementName = aXsdName) then
-           begin
-             result := Xsds[x];
-             exit;
-           end;
-        end;
-      end;
-    end;
-    procedure _loadSwiftMtExpansions (aXsd: TXsd; xpXmls: TXml);
-      procedure __loadExpansions (aXsd: TXsd; rootXml, dXml: TXml);
-        function ___findType (aTypeName: String): TXml;
-        var
-          x: Integer;
-        begin
-          result := nil;
-          for x := 0 to rootXml.Items.Count - 1 do
-          begin
-            if (rootXml.Items.XmlItems[x].Name = 'type')
-            and (rootXml.Items.XmlItems[x].Attributes.ValueByTag['shortName'] = aTypeName) then
-            begin
-              result := rootXml.Items.XmlItems[x];
-              exit;
-            end;
-          end;
-        end;
-      var
-        tpXml, eXml: TXml;
-        eXsd: TXsd;
-        x: Integer;
-      begin
-        (aXsd.Obj as TSwiftMtProps).longName := dXml.Attributes.ValueByTag['longName'];
-        (aXsd.Obj as TSwiftMtProps).expansionName := dXml.Items.XmlValueByTag['expansion'];
-        tpXml := ___findType (dXml.Attributes.ValueByTag['type']);
-        if Assigned (tpXml) then
-        begin
-          for x := 0 to tpXml.Items.Count - 1 do
-          begin
-            eXml := tpXml.Items.XmlItems[x];
-            if eXml.Name = 'element' then
-            begin
-              eXsd := aXsd.FindXsd(aXsd.ElementName + '.' + eXml.Attributes.ValueByTag['shortName']);
-              if Assigned (eXsd) then
-                __loadExpansions(eXsd, rootXml, eXml);
-            end;
-          end;
-        end;
-      end;
-    var
-      x, d: Integer;
-      xXml: TXml;
-    begin
-      for x := 0 to xpXmls.Items.Count - 1 do
-      begin
-        xXml := xpXmls.Items.XmlItems [x];
-        if xXml.Name = 'names' then
-        begin
-          for d := 0 to xXml.Items.Count - 1 do
-          begin
-            if (xXml.Items.XmlItems[d].Name = 'type')
-            and (xXml.Items.XmlItems[d].Attributes.ValueByTag ['shortName'] = 'Document')
-            and (xXml.Items.XmlItems[d].Items.Count > 0)
-            and (xXml.Items.XmlItems[d].Items.XmlItems[0].Name = 'element')
-            and (xXml.Items.XmlItems[d].Items.XmlItems[0].Attributes.ValueByTag ['shortName'] = aXsd.ElementName) then
-            begin
-              __loadExpansions (aXsd, xXml, xXml.Items.XmlItems[d].Items.XmlItems[0]);
-              exit;
-            end;
-          end;
-        end;
-      end;
-    end;
-  var
-    x: Integer;
-    fXsd, b4Xsd: TXsd;
-    xXsdDescr: TXsdDescr;
-    xpXmls: TXml;
-  begin
-    aDescrFileName := '';
-    aDescrExpansionFileName := '';
-    try
-      if not Assigned (sXml) then Exit;
-      xpXmls := TXml.CreateAsString('expansions', '');
-      try
-        xXsdDescr := TXsdDescr.Create;
-        SwiftMtWsdl.sdfXsdDescrs.AddObject('', xXsdDescr);
-        xXsdDescr.AddXsdFromFile('', _swiftMTXsdFileName, nil, OnBeforeFileRead);
-        aXsd.ElementName := 'FinMessage';
-        fXsd := _refXsd ( xXsdDescr, 'FinMessage');
-        if Assigned (fXsd) then
-        begin
-          for x := 0 to fXsd.sType.ElementDefs.Count - 1 do
-            if not Assigned (aXsd.FindXsd ('FinMessage.' + fXsd.sType.ElementDefs.Xsds[x].ElementName)) then
-              aXsd.sType.ElementDefs.AddObject('', fXsd.sType.ElementDefs.Xsds[x]);
-        end;
-        for x := 0 to sXml.Items.Count - 1 do
-        begin
-          if sXml.Items.XmlItems[x].Name = 'DescriptionFile' then
-          begin
-          aDescrFileName := uncFilename(ExpandRelativeFileName(aMainFileName, sXml.Items.XmlItems[x].Value));
-            xXsdDescr.AddXsdFromFile('', aDescrFileName, nil, OnBeforeFileRead);
-          end;
-          if sXml.Items.XmlItems[x].Name = 'DescriptionExpansionFile' then
-            with xpXmls.AddXml(TXml.Create) do
-            begin
-              aDescrExpansionFileName := uncFilename(ExpandRelativeFileName(aMainFileName, sXml.Items.XmlItems[x].Value));
-              LoadFromFile(aDescrExpansionFileName, nil, OnBeforeFileRead);
-            end;
-        end;
-        b4Xsd := aXsd.FindXsd('FinMessage.Block4');
-        if Assigned (b4Xsd) then
-        begin
-          for x := 0 to xXsdDescr.TypeDef.ElementDefs.Count - 1 do with xXsdDescr.TypeDef.ElementDefs.Xsds[x] do
-          begin
-            if (ElementName = 'Document')
-            and (sType.ElementDefs.Count > 0) then
-            begin
-              sType.ElementDefs.Xsds[0].Obj := TSwiftMtProps.Create(sType.ElementDefs.Xsds[0]);
-              b4Xsd.sType.ElementDefs.AddObject('', sType.ElementDefs.Xsds[0]);
-              b4Xsd.sType.IsComplex := True;
-              b4Xsd.sType.ContentModel := 'Choice';
-              _loadSwiftMtExpansions (sType.ElementDefs.Xsds[0], xpXmls);
-            end;
-          end;
-        end;
-      finally
-        xpXmls.Free;
-      end;
-    finally
-      bindRefId := 0;
-      result := TXml.Create (0, aXsd);
-      result.Checked := True;
-    end;
-  end;
-{}
-var
-  sList: TJBStringList;
-  oXml, xXml: TXml;
-  xXsd: TXsd;
-  f, x, o: Integer;
-  xOperation: TWsdlOperation;
-const
-  _xsdName = 'OperationDefs.SwiftMtOperations';
-begin
-  if aXml.Name <> 'SwiftMtOperations' then
-    raise Exception.Create('??TWsdlProject.SwiftMtOperationsUpdate(aXml: TXml): ' + aXml.Name);
-  xXsd := OperationDefsXsd.FindXsd (_xsdName);
-  if not Assigned (xXsd) then
-    raise  Exception.Create('Xsd not found: ' + _xsdName);
-  xXml := TXml.Create(-1000, xXsd);
-  try
-    xXml.LoadValues(aXml, False);
-    aXml.CopyDownLine(xXml, True); // assigns Xsd to downline
-  finally
-    xXml.Free;
-  end;
-
-  sList := TJBStringList.Create;
-  sList.Sorted := True;
-{$ifndef NoGUI}
-  if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
-    StubChanged := True;
-{$endif}
-  try
-    for x := 0 to aXml.Items.Count - 1 do
-      if (aXml.Items.XmlItems[x].Checked)
-      and (aXml.Items.XmlItems[x].Name = 'Operation')
-      and (aXml.Items.XmlItems[x].Items.Count > 0) then
-        sList.AddObject(aXml.Items.XmlItems[x].Items.XmlCheckedValueByTag['Name'], aXml.Items.XmlItems[x]);
-    with SwiftMtWsdl.Services.Services[0] do
-    begin
-      for o := Operations.Count - 1 downto 0 do
-      begin
-        if not (sList.Find(Operations.Operations[o].Name, f)) then
-        begin // remove
-          Operations.Operations[o].Free;
-          Operations.Delete(o);
-        end;
-      end;
-      for x := 0 to sList.Count - 1 do
-      begin
-        oXml := sList.Objects[x] as TXml;
-        if not Operations.Find(sList.Strings[x], f) then
-        begin
-          xOperation := TWsdlOperation.Create (SwiftMtWsdl);
-          xOperation.Name := sList.Strings[x];
-          SwiftMtWsdl.Services.Services[0].Operations.AddObject(xOperation.Name, xOperation);
-          xOperation.Wsdl := SwiftMtWsdl;
-          xOperation.WsdlService := SwiftMtWsdl.Services.Services[0];
-          xOperation.reqTagName := xOperation.Name;
-          xOperation.Alias := xOperation.reqTagName;
-          xOperation.rpyTagName := xOperation.Name;
-          xOperation.reqRecognition := TJBStringList.Create;
-          xOperation.rpyRecognition := TJBStringList.Create;
-          xOperation.RecognitionType := rtSubString;
-        end
-        else
-        begin
-          xOperation := Operations.Operations[f];
-        end;
-        with xOperation do
-        begin
-          FreeAndNil (fltBind);
-          if Assigned (reqBind) then
-            reqBind.Free;
-          if Assigned (rpyBind) then
-            rpyBind.Free;
-          Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
-          reqBind := _LoadSwiftMtMsg(oXml.Items.XmlCheckedItemByTag['Req'], reqXsd, reqDescrFilename, reqDescrExpansionFilename);
-          rpyBind := _LoadSwiftMtMsg(oXml.Items.XmlCheckedItemByTag['Rpy'], rpyXsd, rpyDescrFilename, rpyDescrExpansionFilename);
-          fltBind := _LoadSwiftMtMsg(oXml.Items.XmlCheckedItemByTag['Flt'], FaultXsd, fltDescrFilename, fltDescrExpansionFilename);
-          operationRecognitionUpdate (xOperation, reqRecognition, oXml.Items.XmlCheckedItemByTag['reqRecognition']);
-          operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
-        end;
-      end;
-      f := Wsdls.IndexOfObject(SwiftMtWsdl);
-      if (Operations.Count > 0)
-      and (f < 0) then
-        Wsdls.AddObject(SwiftMtWsdl.Name, SwiftMtWsdl);
-      if (Operations.Count = 0)
-      and (f > -1) then
-        Wsdls.Delete(f);
-    end;
-  finally
-    FreeAndNil(sList);
-  end;
-end;
-
 function TWsdlProject.operationRecognitionXml(aLabel: String;
   aType: TRecognitionType; aSl: TJBStringList): TXml;
 var
@@ -6443,308 +5143,6 @@ begin
         end;
       end;
     end;
-  end;
-end;
-
-function TWsdlProject.bmtpOperationsXml: TXml;
-var
-  s, o: Integer;
-  xService: TWsdlService;
-  xOperation: TWsdlOperation;
-  xXml: TXml;
-begin
-  xXml := TXml.CreateAsString('BmtpOperations', '');
-  try
-    for s := 0 to BmtpWsdl.Services.Count - 1 do
-    begin
-      xService := BmtpWsdl.Services.Services[s];
-      with xXml.AddXml(TXml.CreateAsString('Service', '')) do
-      begin
-        AddXml (TXml.CreateAsString('Name', xService.Name));
-        for o := 0 to xService.Operations.Count - 1 do
-        begin
-          xOperation := xService.Operations.Operations[o];
-          with AddXml(TXml.CreateAsString('Operation', '')) do
-          begin
-            AddXml (TXml.CreateAsString('Name', xOperation.Name));
-            if xOperation.Documentation.Count > 0 then
-              AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
-            if xOperation.CobolEnvironment = ceTandem then
-              AddXml (TXml.CreateAsString('CobolEnvironment', 'Tandem'));
-            if xOperation.CobolEnvironment = ceIbmZOs then
-              AddXml (TXml.CreateAsString('CobolEnvironment', 'IBM Zos'));
-            if Assigned (xOperation.reqBind)
-            and (xOperation.reqDescrFilename <> '') then
-              with AddXml (TXml.CreateAsString('Req', '')) do
-                AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.reqDescrFilename));
-            if Assigned (xOperation.rpyBind)
-            and (xOperation.rpyDescrFilename <> '') then
-              with AddXml (TXml.CreateAsString('Rpy', '')) do
-                AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.rpyDescrFilename));
-            if Assigned (xOperation.fltBind)
-            and (xOperation.fltDescrFilename <> '') then
-              with AddXml (TXml.CreateAsString('Flt', '')) do
-                AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.fltDescrFileName));
-          end;
-        end;
-      end;
-    end;
-    xXml.CheckDownline(True);
-    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.BmtpOperations'));
-    result.CheckDownline(False);
-    result.LoadValues(xXml, False, True, False, True);
-  finally
-    xXml.Free;
-  end;
-end;
-
-procedure TWsdlProject.bmtpOperationsUpdate(aXml: TXml; aMainFileName: String);
-  procedure _getDescriptionFiles (aXml: TXml; aFileNames: TJBStringList);
-  var
-    x, f: Integer;
-  begin
-    if not aXml.Checked then Exit;
-    if aXml.Name = 'DescriptionFile' then
-    begin
-      if not aFileNames.Find(aXml.Value, f) then
-        aFilenames.AddObject ( uncFilename ( ExpandRelativeFileName ( aMainFileName, aXml.Value)
-
-                                                     )
-                             , Pointer (ipmDTCobol)
-                             );
-    end
-    else
-    begin
-      for x := 0 to aXml.Items.Count - 1 do
-        _getDescriptionFiles(aXml.Items.XmlItems[x], aFileNames);
-    end;
-  end;
-{}
-  function _LoadCobolMsg (sXml: TXml; aFileNames: TJBStringList; var aDescrFilename: String): TIpmItem;
-  var
-    f: Integer;
-  begin
-    result := nil;
-    try
-      if not Assigned (sXml) then Exit;
-      if not aXml.Checked then Exit;
-      if aFileNames.Find ( uncFilename(ExpandRelativeFileName ( aMainFileName
-                                                                      , sXml.Items.XmlCheckedValueByTag ['DescriptionFile']
-                                                                      )
-                                             )
-                         , f
-                         ) then
-      begin
-        if BmtpWsdl.IpmDescrs.Strings [f] <> aFilenames.Strings [f] then
-          raise Exception.Create ('Internal error');
-        result := TIpmItem.Create (BmtpWsdl.IpmDescrs.IpmDescrs [f].IpmItem); // ipmdescr also destroys ipmitems
-        aDescrFilename := aFilenames.Strings [f];
-      end;
-    finally
-      if not Assigned (result) then
-        result := TIpmItem.Create;
-    end;
-  end;
-{}
-var
-  sList, oList: TJBStringList;
-  sXml, oXml, xXml: TXml;
-  xXsd: TXsd;
-  f, s, o: Integer;
-  xService: TWsdlService;
-  xOperation: TWsdlOperation;
-  xFileNames: TJBStringList;
-  xIpmDescr: TIpmDescr;
-const
-  _xsdName = 'OperationDefs.BmtpOperations';
-begin
-  if aXml.Name <> 'BmtpOperations' then
-    raise Exception.Create('??TWsdlProject.bmtpOperationsUpdate(aXml: TXml): ' + aXml.Name);
-  xXsd := OperationDefsXsd.FindXsd (_xsdName);
-  if not Assigned (xXsd) then
-    raise  Exception.Create('Xsd not found: ' + _xsdName);
-  xXml := TXml.Create(-1000, xXsd);
-  try
-    xXml.LoadValues(aXml, False);
-    aXml.CopyDownLine(xXml, True); // assigns Xsd to downline
-  finally
-    xXml.Free;
-  end;
-
-  sList := TJBStringList.Create;
-  sList.Sorted := True;
-  oList := TJBStringList.Create;
-  oList.Sorted := True;
-  xFileNames := TJBStringList.Create;
-  xFileNames.Sorted := True;
-  try
-  {$ifndef NoGUI}
-    if xmlUtil.CheckAndPromptFileNames(aMainFileName, aXml, True) then
-      StubChanged := True;
-  {$endif}
-    _getDescriptionFiles (aXml, xFileNames);
-    for f := 0 to xFileNames.Count - 1 do
-    begin
-      try
-        xIpmDescr := TIpmDescr.Create;
-        xIpmDescr.LoadFromFile(xFileNames.Strings[f], _OnParseErrorEvent);
-        BmtpWsdl.IpmDescrs.AddObject(xFileNames.Strings[f], xIpmDescr);
-      except
-        on e: Exception do
-          raise Exception.Create ( 'Error opening Cobol description from '
-                                 + xFileNames.Strings[f]
-                                 + CRLF
-                                 + e.Message
-                                 );
-      end;
-    end;
-
-    for s := 0 to aXml.Items.Count - 1 do
-      if (aXml.Items.XmlItems[s].Name = 'Service') then
-        sList.AddObject(aXml.Items.XmlItems[s].Items.XmlCheckedValueByTag['Name'], aXml.Items.XmlItems[s]);
-    for s := BmtpWsdl.Services.Count - 1 downto 0 do
-    begin
-      if not sList.Find(BmtpWsdl.Services.Services[s].Name, f) then
-      begin
-        BmtpWsdl.Services.Services[s].Free;
-        BmtpWsdl.Services.Delete(s);
-      end;
-    end;
-    for s := 0 to sList.Count - 1 do
-    begin
-      sXml := sList.Objects[s] as TXml;
-      if not BmtpWsdl.Services.Find(sList.Strings[s], f) then
-      begin
-        xService := TWsdlService.Create;
-        xService.Name := sList.Strings[s];
-        BmtpWsdl.Services.AddObject(xService.Name, xService);
-        xService.DescriptionType := ipmDTBmtp;
-      end
-      else
-      begin
-        xService := BmtpWsdl.Services.Services[f];
-      end;
-      oList.Clear;
-      for o := 0 to sXml.Items.Count - 1 do
-        if (sXml.Items.XmlItems[o].Checked)
-        and (sXml.Items.XmlItems[o].Name = 'Operation')
-        and (sXml.Items.XmlItems[o].Items.Count > 0) then
-          oList.AddObject(sXml.Items.XmlItems[o].Items.XmlCheckedValueByTag['Name'], sXml.Items.XmlItems[o]);
-      with xService do
-      begin
-        for o := Operations.Count - 1 downto 0 do
-        begin
-          if not (oList.Find(Operations.Operations[o].Name, f)) then
-          begin // remove
-            Operations.Operations[o].Free;
-            Operations.Delete(o);
-          end;
-        end;
-        for o := 0 to oList.Count - 1 do
-        begin
-          oXml := oList.Objects[o] as TXml;
-          if not Operations.Find(oList.Strings[o], f) then
-          begin
-            xOperation := TWsdlOperation.Create (BmtpWsdl);
-            xOperation.Name := oList.Strings[o];
-            Operations.AddObject(xOperation.Name, xOperation);
-            xOperation.Wsdl := BmtpWsdl;
-            xOperation.WsdlService := xService;
-            xOperation.reqTagName := xOperation.Name;
-            xOperation.Alias := xOperation.reqTagName;
-            xOperation.rpyTagName := xOperation.Name;
-            xOperation.reqRecognition := TJBStringList.Create;
-            xOperation.rpyRecognition := TJBStringList.Create;
-            xOperation.RecognitionType := rtSubString;
-          end
-          else
-          begin
-            xOperation := Operations.Operations[f];
-          end;
-          with xOperation do
-          begin
-            FreeAndNil (fltBind);
-            if Assigned (reqBind) then
-              reqBind.Free;
-            if Assigned (rpyBind) then
-              rpyBind.Free;
-            Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
-            CobolEnvironment := ceTandem;
-            if oXml.Items.XmlCheckedValueByTag ['CobolEnvironment'] = 'IBM Zos' then
-              CobolEnvironment := ceIbmZOs;
-            reqBind := _LoadCobolMsg(oXml.Items.XmlCheckedItemByTag['Req'], xFileNames, reqDescrFilename);
-            rpyBind := _LoadCobolMsg(oXml.Items.XmlCheckedItemByTag['Rpy'], xFileNames, rpyDescrFilename);
-            fltBind := _LoadCobolMsg(oXml.Items.XmlCheckedItemByTag['Flt'], xFileNames, fltDescrFileName);
-          end;
-        end;
-        f := Wsdls.IndexOfObject(BmtpWsdl);
-        if (Operations.Count > 0)
-        and (f < 0) then
-          Wsdls.AddObject(BmtpWsdl.Name, BmtpWsdl);
-        if (Operations.Count = 0)
-        and (f > -1) then
-          Wsdls.Delete(f);
-      end;
-    end;
-  finally
-    FreeAndNil(sList);
-    FreeAndNil(oList);
-    FreeAndNil(xFileNames);
-  end;
-end;
-
-function TWsdlProject.xmlSampleOperationsXml(aMainFileName: String): TXml;
-var
-  x: Integer;
-  xOperation: TWsdlOperation;
-  xXml: TXml;
-begin
-  xXml := TXml.CreateAsString('XmlSampleOperations', '');
-  try
-    for x := 0 to XmlSampleWsdl.Services.Services[0].Operations.Count - 1 do
-    begin
-      xOperation := XmlSampleWsdl.Services.Services[0].Operations.Operations[x];
-      with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
-      begin
-        AddXml (TXml.CreateAsString('Name', xOperation.Name));
-        if xOperation.Documentation.Count > 0 then
-          AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
-        if Assigned (xOperation.reqBind)
-        and (xOperation.reqDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Req', '')) do
-          begin
-            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.reqDescrFilename));
-            if xOperation.reqBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.reqBind as TXml).Items.XmlItems[0].Name));
-          end;
-        if Assigned (xOperation.rpyBind)
-        and (xOperation.rpyDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Rpy', '')) do
-          begin
-            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.rpyDescrFilename));
-            if xOperation.rpyBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.rpyBind as TXml).Items.XmlItems[0].Name));
-          end;
-        if Assigned (xOperation.fltBind)
-        and (xOperation.fltDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Flt', '')) do
-          begin
-            AddXml ( TXml.CreateAsString ( 'SampleFile', xOperation.fltDescrFilename));
-            if xOperation.fltBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.fltBind as TXml).Items.XmlItems[0].Name));
-          end;
-        if xOperation.reqRecognition.Count > 0 then
-          AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
-        if xOperation.rpyRecognition.Count > 0 then
-          AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
-      end;
-    end;
-    xXml.CheckDownline(True);
-    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.XmlSampleOperations'));
-    result.CheckDownline(False);
-    result.LoadValues(xXml, False, True, False, True);
-  finally
-    xXml.Free;
   end;
 end;
 
@@ -6832,61 +5230,6 @@ begin
   end;
 end;
 
-function TWsdlProject.xsdOperationsXml(aMainFileName: String): TXml;
-var
-  x: Integer;
-  xOperation: TWsdlOperation;
-  xXml: TXml;
-begin
-  xXml := TXml.CreateAsString('XsdOperations', '');
-  try
-    for x := 0 to XsdWsdl.Services.Services[0].Operations.Count - 1 do
-    begin
-      xOperation := XsdWsdl.Services.Services[0].Operations.Operations[x];
-      with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
-      begin
-        AddXml (TXml.CreateAsString('Name', xOperation.Name));
-        if xOperation.Documentation.Count > 0 then
-          AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
-        if Assigned (xOperation.reqBind)
-        and (xOperation.reqDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Req', '')) do
-          begin
-            AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.reqDescrFilename));
-            if xOperation.reqBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.reqBind as TXml).Items.XmlItems[0].Name));
-          end;
-        if Assigned (xOperation.rpyBind)
-        and (xOperation.rpyDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Rpy', '')) do
-          begin
-            AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.rpyDescrFilename));
-            if xOperation.rpyBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.rpyBind as TXml).Items.XmlItems[0].Name));
-          end;
-        if Assigned (xOperation.fltBind)
-        and (xOperation.fltDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Flt', '')) do
-          begin
-            AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.fltDescrFilename));
-            if xOperation.fltBind.Children.Count > 0 then
-              AddXml(TXml.CreateAsString('ElementName', (xOperation.fltBind as TXml).Items.XmlItems[0].Name));
-          end;
-        if xOperation.reqRecognition.Count > 0 then
-          AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
-        if xOperation.rpyRecognition.Count > 0 then
-          AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
-      end;
-    end;
-    xXml.CheckDownline(True);
-    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.XsdOperations'));
-    result.CheckDownline(False);
-    result.LoadValues(xXml, False, True, False, True);
-  finally
-    xXml.Free;
-  end;
-end;
-
 function TWsdlProject.cobolOperationsXml: TXml;
 var
   x: Integer;
@@ -6927,54 +5270,6 @@ begin
     end;
     xXml.CheckDownline(True);
     result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.CobolOperations'));
-    result.CheckDownline(False);
-    result.LoadValues(xXml, False, True, False, True);
-  finally
-    xXml.Free;
-  end;
-end;
-
-function TWsdlProject.swiftMtOperationsXml: TXml;
-var
-  x: Integer;
-  xOperation: TWsdlOperation;
-  xXml: TXml;
-begin
-  xXml := TXml.Create;
-  try
-    xXml := TXml.CreateAsString('SwiftMtOperations', '');
-    for x := 0 to SwiftMtWsdl.Services.Services[0].Operations.Count - 1 do
-    begin
-      xOperation := SwiftMtWsdl.Services.Services[0].Operations.Operations[x];
-      with xXml.AddXml(TXml.CreateAsString('Operation', '')) do
-      begin
-        AddXml (TXml.CreateAsString('Name', xOperation.Name));
-        if xOperation.Documentation.Count > 0 then
-          AddXml (TXml.CreateAsString('Annotation', xOperation.Documentation.Text));
-        if Assigned (xOperation.reqBind)
-        and (xOperation.reqDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Req', '')) do
-          begin
-            AddXml(TXml.CreateAsString('DescriptionFile', xOperation.reqDescrFilename));
-            if xOperation.reqDescrExpansionFilename <> '' then
-              AddXml(TXml.CreateAsString('DescriptionExpansionFile', xOperation.reqDescrExpansionFilename));
-          end;
-        if Assigned (xOperation.rpyBind)
-        and (xOperation.rpyDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Rpy', '')) do
-          begin
-            AddXml(TXml.CreateAsString('DescriptionFile', xOperation.rpyDescrFilename));
-            if xOperation.rpyDescrExpansionFilename <> '' then
-              AddXml(TXml.CreateAsString('DescriptionExpansionFile', xOperation.rpyDescrExpansionFilename));
-          end;
-        if xOperation.reqRecognition.Count > 0 then
-          AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
-        if xOperation.rpyRecognition.Count > 0 then
-          AddXml (operationRecognitionXml('rpyRecognition', xOperation.RecognitionType, xOperation.rpyRecognition));
-      end;
-    end;
-    xXml.CheckDownline(True);
-    result := TXml.Create(-1000, OperationDefsXsd.FindXsd ('OperationDefs.SwiftMtOperations'));
     result.CheckDownline(False);
     result.LoadValues(xXml, False, True, False, True);
   finally
@@ -7070,13 +5365,6 @@ begin
           ;
 end;
 
-function TWsdlProject.gethasBmtpOperations: Boolean;
-begin
-    result := (BmtpWsdl.Services.Count > 0)
-          and (BmtpWsdl.Services.Services[0].Operations.Count > 0)
-            ;
-end;
-
 function TWsdlProject.gethasCobolOperations: Boolean;
 begin
     result := (CobolWsdl.Services.Count > 0)
@@ -7095,13 +5383,8 @@ begin
   begin
     xWsdl := Wsdls.Objects[x] as TWsdl;
     result := (xWsdl <> FreeFormatWsdl)
-          and (xWsdl <> XsdWsdl)
-          and (xWsdl <> XmlSampleWsdl)
           and (xWsdl <> ApiByExampleWsdl)
           and (xWsdl <> CobolWsdl)
-          and (xWsdl <> BmtpWsdl)
-          and (xWsdl <> SwiftMtWsdl)
-          and (xWsdl <> MailWsdl)
             ;
     Inc (x);
   end;
@@ -7111,13 +5394,6 @@ function TWsdlProject.gethasFreeformatOperations: Boolean;
 begin
     result := (FreeFormatWsdl.Services.Count > 0)
           and (FreeFormatWsdl.Services.Services[0].Operations.Count > 0)
-            ;
-end;
-
-function TWsdlProject.gethasMailOperations: Boolean;
-begin
-    result := (MailWsdl.Services.Count > 0)
-          and (MailWsdl.Services.Services[0].Operations.Count > 0)
             ;
 end;
 
@@ -7132,25 +5408,16 @@ begin
         result := True;
 end;
 
-function TWsdlProject.gethasSwiftMtOperations: Boolean;
+function TWsdlProject.getIfContextNeedsUpdate: Boolean;
+var
+  r: Integer;
 begin
-    result := (SwiftMtWsdl.Services.Count > 0)
-          and (SwiftMtWsdl.Services.Services[0].Operations.Count > 0)
-            ;
-end;
-
-function TWsdlProject.gethasXmlSampleOperations: Boolean;
-begin
-    result := (XmlSampleWsdl.Services.Count > 0)
-          and (XmlSampleWsdl.Services.Services[0].Operations.Count > 0)
-            ;
-end;
-
-function TWsdlProject.gethasXsdOperation: Boolean;
-begin
-    result := (XsdWsdl.Services.Count > 0)
-          and (XsdWsdl.Services.Services[0].Operations.Count > 0)
-            ;
+  result := Assigned (projectContexts)
+        and (projectContexts.RowCount > 1);
+  if result then
+    for r := 1 to projectContexts.RowCount - 1 do
+      if projectContexts.CellValue [0, r] = ProjectContext then
+        result := False;
 end;
 
 function TWsdlProject.getIsBusy: Boolean;
@@ -7175,9 +5442,59 @@ begin
   result := Format('%d.%d.%d.%d', [majorVersion, minorVersion, revision, build]);
 end;
 
-function TWsdlProject.SendNoneMessage(aOperation: TWsdlOperation; aMessage: String): String;
+function TWsdlProject.SendNoneMessage(aOperation: TWsdlOperation; aMessage: String; aLog: TLog): String;
+var
+  URL, querySep, headerSep: String;
+  x: Integer;
 begin
-  result := '';
+  if aOperation.isOpenApiService then
+  begin
+    URL := 'http://none';
+    aLog.PathFormat := aOperation.WsdlService.logPathFormat;
+    URL := URL
+         + aOperation.WsdlService.openApiPath;
+    querySep := '?';
+    headerSep := '';
+    for x := 0 to aOperation.reqXml.Items.Count - 1 do with aOperation.reqXml.Items.XmlItems[x] do
+    begin
+      if Checked
+      and Assigned (Xsd) then
+      begin
+        if (Xsd.ParametersType = oppPath) then
+        begin
+          URL := ReplaceStr(URL, '{' + Name + '}', ValueFromJsonArray(true));
+          aLog.PathFormat := ReplaceStr(aLog.PathFormat, '{' + Name + '}', '%s');
+        end;
+        if (Xsd.ParametersType = oppQuery) then
+        begin
+          URL := URL + querySep + Name + '=' + ValueFromJsonArray(true);
+          querySep := '&';
+        end;
+        if (Xsd.ParametersType = oppHeader) then
+        begin
+          aLog.RequestHeaders := aLog.RequestHeaders
+                               + headerSep
+                               + Name
+                               + ': '
+                               + ValueFromJsonArray(false)
+                               ;
+          headerSep := LineEnding;
+        end;
+        if (Xsd.ParametersType = oppBody)
+        and (aOperation.OpenApiVersion [1] <> '2') then
+        begin
+          aOperation.ContentType := Xsd.MediaType;
+        end;
+      end;
+    end;
+    with TIdURI.Create(URL) do
+    try
+      aLog.httpDocument := Path + Document;
+      alog.httpParams := Params;
+    finally
+      Free;
+    end;
+  end;
 end;
 
 function TWsdlProject.FindOperationOnRequest(aLog: TLog; aDocument, aString: String; aDoClone: Boolean): TWsdlOperation;
@@ -7242,12 +5559,10 @@ begin
       aLog.RequestInfoToBindables (Result);
       case result.WsdlService.DescriptionType of
         ipmDTFreeFormat: result.FreeFormatReq := aString;
-        ipmDTCobol, ipmDTBmtp: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
+        ipmDTCobol: (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString);
         ipmDTXml: result.XmlRequestToBindables (xXml, False);
         ipmDTXsd: result.XmlRequestToBindables (xXml, True);
         ipmDTWsdl: result.XmlRequestToBindables (xXml, True);
-        ipmDTEmail: result.XmlRequestToBindables (xXml, False);
-        ipmDTSwiftMT: result.SwiftMtRequestToBindables(aString);
       end;
     finally
       result.ReleaseLock;
@@ -7338,88 +5653,6 @@ begin
   end;
 end;
 
-procedure TWsdlProject.mqOnNewThread(Sender: TObject);
-var
-  xCurThreads: Integer;
-begin
-  AcquireLock;
-  xCurThreads := mqCurWorkingThreads;
-  ReleaseLock;
-  while xCurThreads >= mqMaxWorkingThreads do
-  begin
-    Sleep (20);
-    AcquireLock;
-    xCurThreads := mqCurWorkingThreads;
-    ReleaseLock;
-  end;
-end;
-
-procedure TWsdlProject.mqStubMessage ( Sender: TObject
-                                      ; aHeader, aBody: String
-                                      ; aRfhHeader: AnsiString
-                                      ; MsgType: MQLONG
-                                      ; MsgDesc: MQMD
-                                      ; MqReturnCode: String
-                                      );
-var
-  aMqInterface: TMqInterface;
-  xLog: TLog;
-  xProcessed: Boolean;
-begin
-  xProcessed := False;
-  aMqInterface := Sender as TMqInterface;
-  if ((MsgType = MQMT_REQUEST) and (not aMqInterface.browseMqMtRequest))
-  or ((MsgType = MQMT_REPLY) and (not aMqInterface.browseMqMtReply))
-  or ((MsgType = MQMT_REPORT) and (not aMqInterface.browseMqMtReport))
-  or ((MsgType = MQMT_DATAGRAM) and (not aMqInterface.browseMqMtDatagram))
-  or ((MsgType = MQMT_SYSTEM_LAST) and True)
-  or ((MsgType = MQMT_APPL_FIRST) and True)
-  or ((MsgType = MQMT_APPL_LAST) and True)
-  then exit;
-  Inc (mqCurWorkingThreads);
-  {$ifdef windows}
-  CoInitialize(nil);
-  {$endif}
-  xLog := TLog.Create;
-  try
-    xLog.InboundTimeStamp := Now;
-    xLog.TransportType := ttMq;
-    xLog.RequestHeaders := aHeader;
-    xLog.RequestBody := aBody;
-    xLog.InboundBody := aBody;
-    try
-      CreateLogReply (xLog, xProcessed, True);
-      DelayMS (xLog.DelayTimeMs);
-      if (    (xLog.ReplyBody <> '')
-          and (   (MsgType = MQMT_REQUEST)
-               or (not aMqInterface.UseReplyToQueue)
-              )
-         ) then
-        xLog.ReplyHeaders := aMqInterface.PutReply(xLog.ReplyBody, aRfhHeader, MsgDesc)
-      else
-      begin
-        xLog.ReplyBody := '';
-        xLog.ReplyHeaders := '';
-      end;
-    except
-      on e: exception do
-      begin
-        LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-        xLog.Exception := e.Message;
-      end;
-    end;
-  finally
-    xLog.OutboundTimeStamp := Now;
-    DisplayLog ('', xLog);
-    AcquireLock;
-    Dec (mqCurWorkingThreads);
-    ReleaseLock;
-    {$ifdef windows}
-    CoUninitialize;
-    {$endif}
-  end;
-end;
-
 procedure TWsdlProject.FindRequestReply ( aLog: TLog
                                          ; aDocument, aString: String
                                          ; var isRequest: Boolean
@@ -7450,116 +5683,6 @@ begin
   for x := 0 to EnvironmentList.Count - 1 do
     (EnvironmentList.Objects [x] as TXml).Free;
   EnvironmentList.Clear;
-end;
-
-procedure TWsdlProject.POP3ServerCheckUser(aContext: TIdContext;
-  aServerContext: TIdPOP3ServerContext);
-begin
-  if (aServerContext.Username <> Listeners.pop3UserName)
-  or (aServerContext.Password <> Listeners.pop3Password) then
-    raise Exception.Create ('Invalid username or password');
-end;
-
-procedure TWsdlProject.POP3ServerDelete(aCmd: TIdCommand; AMsgNo: Integer);
-var
-  xLog: TLog;
-begin
-  aCmd.Reply.SetReply(ST_OK, 'marked as deleted');
-  try
-    xLog := displayedLogs.LogItems[AMsgNo];
-    if (xLog.TransportType <> ttSmtp)
-    or (xLog.StubAction <> saStub)
-    or (xLog.markDeleted) then
-      raise Exception.Create(_progName + ' - report: Illegal messagenumber');
-    xLog.markDeleted := True;
-  except
-    on e: Exception do
-      aCmd.Reply.SetReply(ST_ERR, e.Message);
-  end;
-end;
-
-procedure TWsdlProject.POP3ServerList(aCmd: TIdCommand; AMsgNo: Integer);
-var
-  c, x, n, tSize: Integer;
-begin
-  try
-    c := displayedLogs.Count;
-    n := 0;
-    tSize := 0;
-    for x := 0 to c - 1 do
-      with displayedLogs.LogItems[x] do
-        if (TransportType = ttSmtp)
-        and (StubAction = saStub)
-        and (not markDeleted) then
-        begin
-          Inc (n);
-          Inc (tSize, Stream.Size);
-        end;
-    aCmd.Reply.SetReply(ST_OK, IntToStr(n) + ' messages  '+'('+ IntToStr(tSize) + ' octets)');
-    aCmd.SendReply;
-    for x := 0 to c - 1 do
-      with displayedLogs.LogItems[x] do
-        if (TransportType = ttSmtp)
-        and (StubAction = saStub)
-        and (not markDeleted) then
-          aCmd.Context.Connection.IOHandler.WriteLn ( IntToStr (x)
-                                                    + ' '
-                                                    + IntToStr (Stream.Size)
-                                                    );
-    aCmd.Context.Connection.IOHandler.writeln('.');
-  except
-    on e: Exception do
-      aCmd.Reply.SetReply(ST_ERR, e.Message);
-  end;
-end;
-
-procedure TWsdlProject.POP3ServerRetrieve(aCmd: TIdCommand; AMsgNo: Integer);
-var
-  xLog: TLog;
-begin
-  try
-    xLog := displayedLogs.LogItems[AMsgNo];
-    if xLog.TransportType <> ttSmtp then
-      raise Exception.Create(_progName + ' - report: Illegal messagenumber');
-    if not Assigned (xLog.Stream) then
-      raise Exception.Create(_progName + ' - report: No message attached to log item');
-    if xLog.markDeleted then
-      raise Exception.Create(_progName + ' - report: Message marked as deleted');
-    aCmd.Reply.SetReply(ST_OK, 'message follows');
-    aCmd.SendReply; // <-- YOU MUST DO THIS BEFORE SENDING THE DATA
-    xLog.Stream.Position := 0;
-    aCmd.Context.Connection.IOHandler.Write(xLog.Stream, xLog.Stream.Size, False);
-    aCmd.Context.Connection.IOHandler.WriteLn('.');
-  except
-    on e: Exception do
-      aCmd.Reply.SetReply(ST_ERR, e.Message);
-  end;
-end;
-
-procedure TWsdlProject.POP3ServerStat(aCmd: TIdCommand; out oCount: Integer; out oSize: Int64);
-var
-  c, x, n, tSize: Integer;
-begin
-  try
-    c := displayedLogs.Count;
-    n := 0;
-    tSize := 0;
-    for x := 0 to c - 1 do
-      with displayedLogs.LogItems[x] do
-        if (TransportType = ttSmtp)
-        and (StubAction = saStub)
-        and (not markDeleted) then
-        begin
-          Inc (n);
-          Inc (tSize, Stream.Size);
-        end;
-    oCount := n;
-    oSize := tSize;
-    aCmd.Reply.SetReply(ST_OK, IntToStr(ocount)+' '+IntToStr(osize));
-  except
-    on e: Exception do
-      aCmd.Reply.SetReply(ST_ERR, e.Message);
-  end;
 end;
 
 procedure TWsdlProject.HTTPServerRemoteControlApi ( AContext: TIdContext
@@ -7625,7 +5748,7 @@ begin
         else
           xBodyXml.LoadFromString(xRequestBody, nil);
       end;
-    _sjow (ARequestInfo.Document);
+//    _sjow (ARequestInfo.Document);
       with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
                                                                    //0/1        /2  /3...
       try
@@ -7713,7 +5836,7 @@ begin
         end;
 
         if (Count = 4)
-        and (Strings[3] = 'testSummaryReport')
+        and (Strings[3] = 'testsummaryreport')
         and (ARequestInfo.Command = 'GET')
         then begin
           AResponseInfo.ContentText := _htmlreportTestSummary;
@@ -7845,7 +5968,7 @@ begin
 
         if (Count = 5)
         and (Strings[3] = 'project')
-        and (Strings[4] = 'describtors')
+        and (Strings[4] = 'descriptors')
         and (ARequestInfo.Command = 'POST')
         then begin
           nameXml := xBodyXml.FindXml('json.name');
@@ -7862,7 +5985,7 @@ begin
 
         if (Count = 5)
         and (Strings[3] = 'project')
-        and (Strings[4] = 'describtors')
+        and (Strings[4] = 'descriptors')
         and (ARequestInfo.Command = 'GET')
         then begin
           sl := TJBStringList.Create;
@@ -8034,6 +6157,7 @@ begin
           finally
             Free;
           end;
+          Exit;
         end;
 
         if (Count = 4)
@@ -8186,7 +6310,7 @@ begin
         end;
 
         if (Count = 4)
-        and (Strings[3] = 'executeScript')
+        and (Strings[3] = 'executescript')
         then begin
           nameXml := xBodyXml.FindXml('json.name');
           if not Assigned (nameXml) then
@@ -8318,6 +6442,25 @@ end;
 
 procedure TWsdlProject.HTTPServerCommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+  function _hasCorsHeaders (aList: TStringList): boolean;
+  var
+    x: Integer;
+  begin
+    result := false;
+    for x := 0 to aList.count - 1 do
+    begin
+      if AnsiStartsText('Access-Control-Request', aList.Strings[x]) then
+        result := true;
+    end;
+  end;
+  procedure _acceptCorsRequest (aRpyList: TStringList);
+  begin
+    aRpyList.Add ('Access-Control-Allow-Origin: *');
+    aRpyList.Add ('Access-Control-Allow-Methods: *');
+    aRpyList.Add ('Access-Control-Allow-Headers: *');
+    aRpyList.Add ('Access-Control-Expose-Headers: *');
+    aRpyList.Add ('Access-Control-Max-Age: 600');
+  end;
 var
   xLog: TLog;
   xProcessed: Boolean;
@@ -8328,6 +6471,22 @@ begin
   xProcessed := False;
   try // finally set for hhtp reply
   //xDocument := '/' + _ProgName + '/api';
+    if (ARequestInfo.Command = 'OPTIONS')
+    and _hasCorsHeaders (ARequestInfo.RawHeaders) then
+    begin
+      AResponseInfo.ResponseNo := 204;
+      AResponseInfo.ContentEncoding := 'identity';
+      if CORS = corsException then
+      begin
+        AResponseInfo.ResponseNo := corsExceptionHttpCode;
+        Exit;
+      end;
+      if CORS = corsRefuse then
+        Exit;
+      _acceptCorsRequest (AResponseInfo.CustomHeaders);
+      if CORS = corsAcceptWithoutLogging then
+        exit;
+    end;
     xDocument := '/apiUi/api';
     if (ARequestInfo.Document = xDocument)
     or AnsiStartsStr(xDocument + '/', ARequestInfo.Document)
@@ -8341,6 +6500,7 @@ begin
     {$endif}
     try
       xLog := TLog.Create;
+      xLog.ReplyHeaders := AResponseInfo.CustomHeaders.Text;
       xLog.InboundTimeStamp := Now;
       xLog.httpUri := ARequestInfo.URI;
       xLog.TransportType := ttHttp;
@@ -8351,7 +6511,10 @@ begin
       xLog.RequestContentType := ARequestInfo.RawHeaders.Values['Content-Type'];
       xLog.ReplyContentType := xLog.RequestContentType;
       xLog.httpParams := ARequestInfo.QueryParams;
-      xlog.httpResponseCode := 200;
+      if AResponseInfo.ResponseNo = 0 then
+        xlog.httpResponseCode := 200
+      else
+        xLog.httpResponseCode := AResponseInfo.ResponseNo;
       AResponseInfo.ContentEncoding := 'identity';
       try
         if (ARequestInfo.Command = 'PATCH')
@@ -8504,112 +6667,11 @@ begin
   end;
 end;
 
-procedure TWsdlProject.HttpServerBmtpCommandGet(AContext: TIdContext;
-  ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-var
-  xLog: TLog;
-  xProcessed: Boolean;
-  mXml: TXml;
-  xStream: TMemoryStream;
-  s, d: AnsiString;
+procedure TWsdlProject.SetProjectContext(AValue: String);
 begin
-  {$ifdef windows}
-  CoInitialize (nil);
-  {$endif}
-  try // to always CoFinalize
-    if ARequestInfo.Command <> 'POST' then
-    begin
-      AResponseInfo.ResponseText := 'Bmtp: Http ' + ARequestInfo.Command + ' not supported';
-      exit;
-    end;
-    try // to always reply
-      xLog := TLog.Create;
-      try // to always log
-        try // to catch exceptions
-          xLog.InboundTimeStamp := Now;
-          xLog.TransportType := ttBmtp;
-          xLog.httpCommand := ARequestInfo.Command;
-          xLog.httpDocument := ARequestInfo.Document;
-          xLog.RequestHeaders := ARequestInfo.RawHeaders.Text;
-          xLog.RequestContentType := ARequestInfo.ContentType;
-          xLog.RequestBody := httpRequestStreamToString(ARequestInfo, AResponseInfo);
-          xLog.httpParams := ARequestInfo.QueryParams;
-          xLog.httpResponseCode := 200;
-          with TXml.Create do
-          try
-            LoadFromString(xLog.RequestBody, nil);
-            if Name = '' then
-              raise Exception.Create('Bmtp: Could not parse message envelope as XML');
-            if Name <> 'bmtpEnvelope' then
-              raise Exception.Create('Bmtp: No Bmtp envelope found');
-            xLog.ServiceName := Items.XmlValueByTagDef['Service', 'not specified'];
-            xLog.OperationName := Items.XmlValueByTagDef['Operation', 'not specified'];
-            mXml := Items.XmlItemByTag['Request'];
-            if not Assigned (mXml) then
-              raise Exception.Create('Bmtp: Element Request not found');
-            try
-              s := mXml.Value;
-              d := Base64DecodeStr(s);
-              xLog.RequestBody := d; // when everything Ok loose the Bmtp envelope here
-            except
-              on e: Exception do
-                raise Exception.Create('Bmtp: Exception while b64decoding message: ' + e.Message);
-            end;
-          finally
-            Free;
-          end;
-          xLog.InboundBody := xLog.RequestBody;
-          AResponseInfo.ContentType := ARequestInfo.ContentType;
-          xLog.ReplyContentType := AResponseInfo.ContentType;
-          xProcessed := False;
-          CreateLogReply (xLog, xProcessed, True);
-          AResponseInfo.ResponseNo := xLog.httpResponseCode;
-          DelayMS (xLog.DelayTimeMs);
-          with TXml.CreateAsString('bmtpEnvelope', '') do
-          try
-            AddXml(TXml.CreateAsString('Service',xLog.ServiceName));
-            AddXml(TXml.CreateAsString('Operation',xLog.OperationName));
-            s := xLog.ReplyBody;
-            d := Base64EncodeStr(s);
-            AddXml(TXml.CreateAsString('Reply', d));
-            aResponseInfo.ContentText := AsText(False,0,False,False);
-          finally
-            Free;
-          end;
-        except
-          on e: exception do
-          begin
-            LogServerMessage(format('Exception %s. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-            xLog.Exception := e.Message;
-            AResponseInfo.ContentText := e.Message;
-          end;
-        end;  // except
-      finally
-        xLog.OutboundTimeStamp := Now;
-        DisplayLog ('', xLog);
-      end; // finally request
-    finally
-      if AResponseInfo.ContentEncoding <> 'identity' then
-      begin
-        aResponseInfo.ContentStream := TMemoryStream.Create;
-        xStream := TMemoryStream.Create;
-        try
-          WriteStringToStream(AResponseInfo.ContentText, xStream);
-          if AResponseInfo.ContentEncoding = 'deflate' then
-            GZIPUtils.deflate(xStream, aResponseInfo.ContentStream as TMemoryStream);
-          if AResponseInfo.ContentEncoding = 'gzip' then
-            GZIPUtils.GZip(xStream, aResponseInfo.ContentStream as TMemoryStream);
-        finally
-          xStream.Free;
-        end;
-        aResponseInfo.ContentText := '';
-      end;
-    end;
-  finally
-    {$ifdef windows}
-    CoUninitialize;
-    {$endif}
-  end;
+  if fProjectContext = AValue then Exit;
+  fProjectContext := AValue;
+  xmlio.ProjectContext := fProjectContext;
 end;
 
 function TWsdlProject.tryToProcessAsOpenApi (aLog: TLog): Boolean;
@@ -8695,7 +6757,7 @@ begin
         aLog.doSuppressLog := (xOperation.doSuppressLog <> 0);
         aLog.DelayTimeMs := xOperation.DelayTimeMs;
         xOperation.rpyXml.jsonType := jsonObject;
-        aLog.ReplyBody := xOperation.StreamReply (_progName, True);
+        aLog.ReplyBody := xOperation.PrepareReply (_progName, True);
         aLog.ReplyContentType := xOperation.apiReplyMediaType;
         aLog.ReplyInfoFromBindables(xOperation);
         if aLog.ReplyContentType = '' then
@@ -8721,6 +6783,11 @@ begin
       xOperation.Free;
     end;
   end;
+end;
+
+procedure TWsdlProject.HttpQuerySSLPort(aPort: Word; var aUseSSL: boolean);
+begin
+  aUseSSL := (aPort <> 80);
 end;
 
 procedure TWsdlProject.HTTPServerCommandTrace(AContext: TIdContext;
@@ -8778,73 +6845,6 @@ begin
   finally
     ReleaseLogLock;
   end;
-end;
-
-procedure TWsdlProject .setOnNeedTacoHostData (
-  AValue : TOnNeedTacoInterfaceData );
-begin
-  fTacoInterface.NeedHostData := AValue;
-end;
-
-procedure TWsdlProject .setOnTacoAutorize (AValue : TNotifyEvent );
-begin
-  fTacoInterface.OnAuthorize := AValue;
-end;
-
-procedure TWsdlProject.SMTPServerMailFrom(ASender: TIdSMTPServerContext;
-  const AAddress: string; AParams: TStrings; var VAction: TIdMailFromReply);
-begin
- VAction := mAccept;
-end;
-
-procedure TWsdlProject.SMTPServerMsgReceive(ASender: TIdSMTPServerContext;
-  AMsg: TStream; var VAction: TIdDataReply);
-var
-  xLog: TLog;
-begin
-  try
-    xLog := TLog.Create;
-    try
-      xLog.InboundTimeStamp := Now;
-      xLog.TransportType := ttSmtp;
-      with smtpParseMessageStreamAsXml( aMsg
-                                      , xLog.RequestHeaders
-                                      , xLog.CorrelationId
-                                      ) do
-      begin
-        xLog.RequestBody := Text;
-        Free;
-      end;
-    finally
-      xLog.Stream := TMemoryStream.Create;
-      aMsg.Position := 0;
-      xLog.Stream.CopyFrom(aMsg, aMsg.Size);
-      xLog.OutboundTimeStamp := Now;
-      DisplayLog ('', xLog);
-    end;
-  except
-    on e: Exception do
-      LogServerMessage(format('Exception %s in SMTPServerMsgReceive. Exception is:"%s".', [e.ClassName, e.Message]), True,e);
-  end;
-end;
-
-procedure TWsdlProject.SMTPServerRcptTo(ASender: TIdSMTPServerContext;
-  const AAddress: string; AParams: TStrings; var VAction: TIdRCPToReply;
-  var VForward: string);
-begin
- VAction := rAddressOk;
-end;
-
-procedure TWsdlProject.SMTPServerReceived(ASender: TIdSMTPServerContext;
-  var AReceived: string);
-begin
- AReceived := '';
-end;
-
-procedure TWsdlProject.SMTPServerUserLogin(ASender: TIdSMTPServerContext;
-  const AUsername, APassword: string; var VAuthenticated: Boolean);
-begin
-  VAuthenticated := True; // a friendly server
 end;
 
 procedure TWsdlProject.doCoverageReport (aReport: TSnapshot);
@@ -9116,6 +7116,7 @@ begin
   begin
     AddXml (TXml.CreateAsString('project', projectFileName));
     AddXml (TXml.CreateAsString('version', versionInfoAsString));
+    AddXml (TXml.CreateAsString('context', ProjectContext));
     with AddXml (TXml.CreateAsString('operations', '')) do
     begin
       jsonType := jsonArray;
@@ -9608,8 +7609,7 @@ var
   x: Integer;
 begin
   for x := 0 to aOperation.Messages.Count - 1 do
-    if not aOperation.Messages.Messages[x].Disabled then
-      SendMessage (aOperation, aOperation.Messages.Messages[x], '');
+    SendMessage (aOperation, aOperation.Messages.Messages[x], '');
 end;
 
 procedure TWsdlProject.Clean;
@@ -9619,15 +7619,6 @@ begin
     allOperations.Clean;
   finally
     ReleaseLock;
-  end;
-end;
-
-procedure TWsdlProject .TacoPingPong ;
-begin
-  try
-    fTacoInterface.PingPong;
-  except
-    fTacoInterface.Disconnect;
   end;
 end;
 
@@ -9692,26 +7683,13 @@ begin
   xProjectFolderName := Copy (projectFileName, 1, Length(projectFileName) - Length(_ProjectFileExtention))
                       + Copy (_ProjectFileExtention, 2, 100);
 }
-  ProgressStep('Creating Backup', 20);
+  ProgressStep('Initializing', 20);
   try
     try
       xProjectFolderName := projectFileName;
-      if doCreateBackup
-      and LazFileUtils.DirectoryExistsUTF8(xProjectFolderName)
-      and LazFileUtils.FileExistsUTF8(LazFileUtils.AppendPathDelim(xProjectFolderName) + _ProjectFileName) then
-      begin
-        if LazFileUtils.DirectoryExistsUTF8(xProjectFolderName + '~') then
-        begin
-          xmlio.EraseAllFolderContent(xProjectFolderName + '~');
-          LazFileUtils.RemoveDirUTF8(xProjectFolderName + '~');
-          if LazFileUtils.DirectoryExistsUTF8(xProjectFolderName + '~') then
-            raise Exception.Create('Could not remove backup ' + xProjectFolderName + '~');
-        end;
-        LazFileUtils.RenameFileUTF8(xProjectFolderName, xProjectFolderName + '~');
-      end;
       if not LazFileUtils.ForceDirectory(xProjectFolderName) then
         raise Exception.CreateFmt('Could not create folder "%s"', [xProjectFolderName]);
-      ProgressUpdate('Initialising Folder', 30);
+      ProgressUpdate('Initializing Folder', 30);
       xmlio.EraseAllFolderContent(xProjectFolderName);
       _createReadMe(xProjectFolderName);
       xWsdlsFolderName := LazFileUtils.AppendPathDelim(xProjectFolderName) + 'W';
@@ -10011,10 +7989,13 @@ begin
         ProgressInvalidateConsole;
         if doStartOnOpeningProject then
         try
-          if hasOneTimeContextsColumn
-          and Assigned (EditContexts) then
+          if Assigned (EditContexts) then
           begin
-            SynchronizeMethode(EditContexts);
+            if hasOneTimeContextsColumn
+            or ifContextNeedsUpdate then
+            begin
+              SynchronizeMethode(EditContexts);
+            end;
           end;
           Activate(True);
         except
@@ -10234,14 +8215,14 @@ begin
   projectContexts.RowCount := 1;
   projectContexts.ColCount := 1;
   DatabaseConnectionSpecificationXml.Items.Clear;
+  DatabaseConnectionSpecificationXml.Reset;
+  DbsType := '';
   Scripts.Items.Clear;
   displayedLogs.Clear;
   archiveLogs.Clear;
   displayedSnapshots.Clear;
   referencedFilenames.Clear;
-  doUseMq := False;
   Listeners.Clear;
-  mqGetThreads.Clear;
   doValidateRequests := True;
   doValidateReplies := True;
   inboundRequestSchemaValidationType := svReportOnly;
@@ -10249,7 +8230,6 @@ begin
   outboundRequestSchemaValidationType := svReportOnly;
   inboundReplySchemaValidationType := svReportOnly;
   schemaValidationVioloationHttpResponseCode := 417;
-  _WsdlDisableOnCorrelate := False;
   ignoreDifferencesOn.Clear;
   checkValueAgainst.Clear;
   ignoreAddingOn.Clear;
@@ -10265,17 +8245,15 @@ begin
   ignoreCoverageOn.Clear;
   DisplayedLogColumns.Clear;
   EnvironmentListClear;
+  CORS := corsAcceptWithoutLogging;
+  corsExceptionHttpCode := 500;
   LastFocusedOperation := nil;
   while Wsdls.Count > 0 do
   begin
     if (Wsdls.Objects[0] <> FreeFormatWsdl)
     and (Wsdls.Objects[0] <> CobolWsdl)
-    and (Wsdls.Objects[0] <> BmtpWsdl)
-    and (Wsdls.Objects[0] <> XsdWsdl)
-    and (Wsdls.Objects[0] <> XmlSampleWsdl)
     and (Wsdls.Objects[0] <> ApiByExampleWsdl)
-    and (Wsdls.Objects[0] <> MailWsdl)
-    and (Wsdls.Objects[0] <> SwiftMtWsdl) then
+    then
       try Wsdls.Objects[0].Free; except end; // there is a project that fails at this point, not a clue yet why
     Wsdls.Delete(0);
   end;
@@ -10345,46 +8323,6 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTCobol;
   end;
-  FreeAndNil(BmtpWsdl);
-  BmtpWsdl := TWsdl.Create(EnvVars, False);
-  with BmtpWsdl do
-  begin
-    Name := '_Bmtp';
-    isSoapService := False;
-  end;
-  FreeAndNil(MailWsdl);
-  MailWsdl := TWsdl.Create(EnvVars, False);
-  with MailWsdl do
-  begin
-    Name := '_Mail';
-    isSoapService := False;
-    Services.Add(Name);
-    Services.Objects[0] := TWsdlService.Create;
-    Services.Services[0].Name := Name;
-    Services.Services[0].DescriptionType := ipmDTEmail;
-  end;
-  FreeAndNil(XsdWsdl);
-  XsdWsdl := TWsdl.Create(EnvVars, False);
-  with XsdWsdl do
-  begin
-    Name := '_Xsd';
-    isSoapService := False;
-    Services.Add(Name);
-    Services.Objects[0] := TWsdlService.Create;
-    Services.Services[0].Name := Name;
-    Services.Services[0].DescriptionType := ipmDTXsd;
-  end;
-  FreeAndNil(XmlSampleWsdl);
-  XmlSampleWsdl := TWsdl.Create(EnvVars, False);
-  with XmlSampleWsdl do
-  begin
-    Name := '_XmlSample';
-    isSoapService := False;
-    Services.Add(Name);
-    Services.Objects[0] := TWsdlService.Create;
-    Services.Services[0].Name := Name;
-    Services.Services[0].DescriptionType := ipmDTXsd; // ?? maybe better to use a seperate type ??
-  end;
   FreeAndNil(ApiByExampleWsdl);
   ApiByExampleWsdl := TWsdl.Create(EnvVars, False);
   with ApiByExampleWsdl do
@@ -10392,17 +8330,6 @@ begin
     Name := '_ApiByExample';
     isSoapService := False;
     isOpenApiService := True;
-  end;
-  FreeAndNil(SwiftMtWsdl);
-  SwiftMtWsdl := TWsdl.Create(EnvVars, False);
-  with SwiftMtWsdl do
-  begin
-    Name := '_SwiftMT';
-    isSoapService := False;
-    Services.Add(Name);
-    Services.Objects[0] := TWsdlService.Create;
-    Services.Services[0].Name := Name;
-    Services.Services[0].DescriptionType := ipmDTSwiftMT;
   end;
 end;
 
@@ -10505,6 +8432,7 @@ begin
   _WsdlDbsConnector.Connected := False;
   _WsdlDbsConnector.LoginPrompt := False;
   _WsdlDbsEnabled := False;
+  _WsdlDbsConnector.OnLog := _WsdlSQLConnectorLog;
   DbsType := '';
   DbsDatabaseName := '';
   DbsHostName:='';
@@ -10512,6 +8440,8 @@ begin
   DbsUserName:='';
   DbsPassword := '';
   hXml := TXml.Create;
+  if DatabaseConnectionSpecificationXml.Checked = False then
+    Exit;
   try
     hXml.CopyDownLine(DatabaseConnectionSpecificationXml, True);
     hXml.ResolveAliasses;
@@ -10526,10 +8456,19 @@ begin
   finally
     hXml.Free;
   end;
+  if DbsType = '' then
+    Exit;
   with _WsdlDbsConnector do
   begin
     ConnectorType := DbsType;
-    DatabaseName := DbsDatabaseName;
+    if (ConnectorType = 'SQLite3')
+    and (projectFileName <> '')
+    and (DbsDatabaseName <> '')
+    and (DbsDatabaseName[1] = '.')
+    then
+      DatabaseName := ExpandRelativeFileName(projectFileName, DbsDatabaseName)
+    else
+      DatabaseName := DbsDatabaseName;
     HostName := DbsHostName;
     Params.Text := ReplaceStrings( DbsParams
                                  , '%pwd%'
@@ -10608,13 +8547,8 @@ end;
 function TWsdlProject.isSpecialWsdl(aWsdl: TWsdl): Boolean;
 begin
   result := (aWsdl = FreeFormatWsdl)
-         or (aWsdl = XsdWsdl)
-         or (aWsdl = XmlSampleWsdl)
          or (aWsdl = ApiByExampleWsdl)
          or (aWsdl = CobolWsdl)
-         or (aWsdl = BmtpWsdl)
-         or (aWsdl = SwiftMtWsdl)
-         or (aWsdl = MailWsdl)
          ;
 end;
 
@@ -10707,6 +8641,7 @@ initialization
   _WsdlRequestOperation := RequestOperation;
   _WsdlRequestOperationLater := RequestOperationLater;
   _WsdlNewDesignMessage := NewDesignMessage;
+  _WsdlExecSql := ExecSql;
   _wsdlFetchDefaultDesignMessage := FetchDefaultDesignMessage;
   _WsdlRequestAsText := RequestAsText;
   _WsdlReplyAsText := ReplyAsText;
@@ -10731,11 +8666,14 @@ initialization
       raise;
     end;
   end;
+  {$ifdef unix}
+    if LazFileUtils.FileExistsUTF8(ExtractFilePath (ParamStr(0)) + 'libssl.so') then
+      IdOpenSSLSetLibPath (ExtractFileDir(ParamStr(0)));
+  {$endif}
 
 finalization
   FreeAndNil (apiUiXsdDescr);
   FreeAndNil (wsaXsdDescr);
-  FreeAndNil (swiftMTXsdDescr);
   FreeAndNil (_WsdlRtiXml);
 end.
 

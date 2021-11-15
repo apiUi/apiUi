@@ -1,0 +1,17 @@
+  <Wsdl>
+    <Name>_Freeformat</Name>
+    <FreeFormatOperations>
+      <Operation>
+        <Name>freeformatOperation</Name>
+        <reqRecognition>
+          <SubStrings>
+            <SubString>
+              <Start>1</Start>
+              <Length>2</Length>
+              <Value>ff</Value>
+            </SubString>
+          </SubStrings>
+        </reqRecognition>
+      </Operation>
+    </FreeFormatOperations>
+  </Wsdl>

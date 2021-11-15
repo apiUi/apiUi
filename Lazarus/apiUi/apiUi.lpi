@@ -9,6 +9,10 @@
       <Title Value="apiUi"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
+      <XPManifest>
+        <TextName Value="apiUi.org"/>
+        <TextDesc Value="apiUi - api tester and virtualizer"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <i18n>
@@ -17,10 +21,9 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="10"/>
-      <MinorVersionNr Value="5"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="12960"/>
-      <StringTable ProductVersion="10.3.0.11959"/>
+      <MinorVersionNr Value="7"/>
+      <BuildNr Value="13155"/>
+      <StringTable CompanyName="apiUi.org" FileDescription="apiUi - api tester and mocker" ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -30,41 +33,54 @@
       <DestinationDirectory Value="C:\Data\publish"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <CommandLineParams Value="--certsFolder=abrkadabars"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default"/>
+        <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="--certsFolder=abrkadabars"/>
+          </local>
+        </Mode0>
       </Modes>
     </RunParams>
-    <RequiredPackages Count="9">
+    <RequiredPackages Count="11">
       <Item1>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="fpc_markdown"/>
       </Item1>
       <Item2>
-        <PackageName Value="FCL"/>
+        <PackageName Value="FrameViewer09"/>
       </Item2>
       <Item3>
-        <PackageName Value="Abbrevia"/>
+        <PackageName Value="indylaz"/>
       </Item3>
       <Item4>
-        <PackageName Value="TAChartLazarusPkg"/>
+        <PackageName Value="FCL"/>
       </Item4>
       <Item5>
-        <PackageName Value="TurboPowerIPro"/>
+        <PackageName Value="Abbrevia"/>
       </Item5>
       <Item6>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item6>
       <Item7>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item7>
       <Item8>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item8>
       <Item9>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item9>
+      <Item10>
+        <PackageName Value="virtualtreeview_package"/>
+      </Item10>
+      <Item11>
+        <PackageName Value="LCL"/>
+      </Item11>
     </RequiredPackages>
-    <Units Count="60">
+    <Units Count="50">
       <Unit0>
         <Filename Value="apiUi.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -145,263 +161,205 @@
         <ResourceBaseClass Value="Form"/>
       </Unit15>
       <Unit16>
-        <Filename Value="..\wsdlStub\wsdlcontrolz.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit16>
-      <Unit17>
         <Filename Value="..\wsdlStub\IpmGridUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="IpmGridForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit17>
-      <Unit18>
+      </Unit16>
+      <Unit17>
         <Filename Value="..\wsdlStub\Listenerz.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit18>
-      <Unit19>
+      </Unit17>
+      <Unit18>
         <Filename Value="..\wsdlStub\ChooseStringUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ChooseStringForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit19>
-      <Unit20>
+      </Unit18>
+      <Unit19>
         <Filename Value="..\wsdlStub\AboutUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit20>
-      <Unit21>
+      </Unit19>
+      <Unit20>
         <Filename Value="..\wsdlStub\AddFavouritesUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AddFavouritesForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit21>
-      <Unit22>
+      </Unit20>
+      <Unit21>
         <Filename Value="..\wsdlStub\ApplyToUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="..\wsdlStub\BitWiseUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="BitWiseForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit23>
-      <Unit24>
-        <Filename Value="..\wsdlStub\ccbGenerationParamsUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="ccbGenerationParamsForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="..\wsdlStub\Choose2StringsUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="Choose2StringsForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit25>
-      <Unit26>
+      </Unit21>
+      <Unit22>
         <Filename Value="..\wsdlStub\DelayTimeUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DelayTimeForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit26>
-      <Unit27>
+      </Unit22>
+      <Unit23>
         <Filename Value="..\wsdlStub\DisclaimerUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="DisclaimerForm"/>
         <HasResources Value="True"/>
-      </Unit27>
-      <Unit28>
+        <ResourceBaseClass Value="Form"/>
+      </Unit23>
+      <Unit24>
         <Filename Value="..\wsdlStub\EditCheckerUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit28>
-      <Unit29>
+      </Unit24>
+      <Unit25>
         <Filename Value="..\wsdlStub\EditListValuesUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditListValuesForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit29>
-      <Unit30>
+      </Unit25>
+      <Unit26>
         <Filename Value="..\wsdlStub\EditOperationScriptUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditOperationScriptForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit30>
-      <Unit31>
+      </Unit26>
+      <Unit27>
         <Filename Value="..\wsdlStub\EditPartExpUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit31>
-      <Unit32>
+      </Unit27>
+      <Unit28>
         <Filename Value="..\wsdlStub\EditRegExpUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditRegExpForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit32>
-      <Unit33>
+      </Unit28>
+      <Unit29>
         <Filename Value="..\wsdlStub\EditStamperUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit33>
-      <Unit34>
+      </Unit29>
+      <Unit30>
         <Filename Value="..\wsdlStub\EditTextUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditTexttForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit34>
-      <Unit35>
+      </Unit30>
+      <Unit31>
         <Filename Value="..\wsdlStub\EditValueUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditValueForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit35>
-      <Unit36>
+      </Unit31>
+      <Unit32>
         <Filename Value="..\wsdlStub\ExceptionLogz.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit36>
-      <Unit37>
-        <Filename Value="..\wsdlStub\IpmGunLicense.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit37>
-      <Unit38>
-        <Filename Value="..\wsdlStub\IpmGunLicenseUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="IpmGunLicenseForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit38>
-      <Unit39>
+      </Unit32>
+      <Unit33>
         <Filename Value="..\wsdlStub\LogFilterUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="LogFilterForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit39>
-      <Unit40>
-        <Filename Value="..\wsdlStub\messagesFromDiskUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="messagesFromDiskForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit40>
-      <Unit41>
-        <Filename Value="..\wsdlStub\messagesToDiskUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="messagesToDiskForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit41>
-      <Unit42>
+      </Unit33>
+      <Unit34>
         <Filename Value="..\wsdlStub\mqBrowseUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit42>
-      <Unit43>
+      </Unit34>
+      <Unit35>
         <Filename Value="..\wsdlStub\OpenWsdlUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="OpenWsdlForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit43>
-      <Unit44>
+      </Unit35>
+      <Unit36>
         <Filename Value="..\wsdlStub\QueryNewElementUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="QueryNewElementForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit44>
-      <Unit45>
+      </Unit36>
+      <Unit37>
         <Filename Value="..\wsdlStub\SaveProjectAsUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit45>
-      <Unit46>
-        <Filename Value="..\wsdlStub\SchemaLocationz.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit46>
-      <Unit47>
+      </Unit37>
+      <Unit38>
         <Filename Value="..\wsdlStub\SelectDbNameUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="SelectDbNameForm"/>
         <HasResources Value="True"/>
-      </Unit47>
-      <Unit48>
+        <ResourceBaseClass Value="Form"/>
+      </Unit38>
+      <Unit39>
         <Filename Value="..\wsdlStub\SelectElementsUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SelectElementsForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit48>
-      <Unit49>
+      </Unit39>
+      <Unit40>
         <Filename Value="..\wsdlStub\SelectItemUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SelectItemForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit49>
-      <Unit50>
+      </Unit40>
+      <Unit41>
         <Filename Value="..\wsdlStub\SelectProjectFolderUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit50>
-      <Unit51>
+      </Unit41>
+      <Unit42>
         <Filename Value="..\wsdlStub\SelectXmlElement.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SelectXmlElementForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit51>
-      <Unit52>
+      </Unit42>
+      <Unit43>
         <Filename Value="..\wsdlStub\smtpInterface.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit52>
-      <Unit53>
+      </Unit43>
+      <Unit44>
         <Filename Value="..\wsdlStub\StressTestUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit53>
-      <Unit54>
+      </Unit44>
+      <Unit45>
         <Filename Value="..\wsdlStub\testerunit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit54>
-      <Unit55>
+      </Unit45>
+      <Unit46>
         <Filename Value="..\wsdlStub\wsaConfigUnit.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit55>
-      <Unit56>
-        <Filename Value="..\wsdlStub\wsauthdaemonunit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <HasResources Value="True"/>
-        <UnitName Value="wsAuthDaemonUnit"/>
-      </Unit56>
-      <Unit57>
-        <Filename Value="..\wsdlStub\wsdaemonunit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <HasResources Value="True"/>
-        <UnitName Value="wsDaemonUnit"/>
-      </Unit57>
-      <Unit58>
-        <Filename Value="..\wsdlStub\wsdlStubHtmlUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit58>
-      <Unit59>
+      </Unit46>
+      <Unit47>
         <Filename Value="..\wsdlStub\httpmultipart.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit59>
+      </Unit47>
+      <Unit48>
+        <Filename Value="..\wsdlStub\apiuiconsts.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="..\wsdlStub\optionsunit.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit49>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -412,7 +370,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Mq;..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\TacoInterface;..\StompInterface\Stomp;..\Html;..\ProgressStatus;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\wsdlStub;..\KaffaClient"/>
+      <OtherUnitFiles Value="..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\StompInterface\Stomp;..\Html;..\ProgressStatus;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Protocols;..\wsdlStub"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -441,7 +399,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="21">
+    <Exceptions Count="22">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -512,12 +470,14 @@
       </Item19>
       <Item20>
         <Name Value="EIdURIException"/>
-        <Enabled Value="False"/>
       </Item20>
       <Item21>
         <Name Value="EListError"/>
         <Enabled Value="False"/>
       </Item21>
+      <Item22>
+        <Name Value="ESQLDatabaseError"/>
+      </Item22>
     </Exceptions>
   </Debugging>
 </CONFIG>

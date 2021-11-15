@@ -1,18 +1,30 @@
 swagger: '2.0'
 info:
   description: ''
-  version: ''
-  title: ''
+  version: '10.6.0'
+  title: 'apiUi interface'
 host: __hostname__
 schemes:
   - http
   - https
 basePath: /apiUi/api
 paths:
+  /about:
+    get:
+      summary: return about informaton
+      description: ''
+      operationId: zzAbout
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success response
   /context:
     get:
-      summary: Get apiUi project context
-      description: ''
+      summary: Get apiUi project context from cloud.  
+      description: |-
+        Returns the current value for the context.  
+        See [Context switching](www.apiui.org/contextswitching/) for more information.  
       operationId: zzGetContext
       consumes:
         - application/json
@@ -20,12 +32,14 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getContextRpy'
     post:
       summary: Set apiUi project context
-      description: ''
+      description: |-
+        Sets a new value for the context, returning the old value.  
+        See [Context switching](www.apiui.org/contextswitching/) for more information.  
       operationId: zzSetContext
       consumes:
         - application/json
@@ -34,13 +48,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setContextReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/setContextRpy'
   /envvars:
@@ -54,7 +68,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getEnvvarsRpy'
     post:
@@ -68,13 +82,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setEnvvarsReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs:
     delete:
       summary: removes list of logitems from Ui
@@ -84,10 +98,9 @@ paths:
         - application/json
       produces:
         - application/json
-      parameters:
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs/fetchfromremoteserver:
     post:
       summary: fetches list of logitems from apiUi in the cloud
@@ -101,12 +114,15 @@ paths:
         - name: initclientlog
           in: query
           type: boolean
+          description: |-
+            Default `false`  
+            When `true` then the fetched log lines will be cleared in the cloud instance
       responses:
         '200':
-          decsription: Success response
+          description: Success response
   /logs/snapshot:
     post:
-      summary: summary
+      summary: Save current logs to a snapshot  
       description: ''
       operationId: zzTakeSnapshot
       consumes:
@@ -116,16 +132,25 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/createSnapshotReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
+  /notifications:
+    get:
+      summary: retrieves list of notifications
+      operationId: zzNotifications
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success response
   /snapshot/checkregression:
     post:
-      summary: summary
+      summary: Create a json Regression report 
       description: ''
       operationId: zzCheckSnapshotRegression
       consumes:
@@ -135,21 +160,24 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/checkRegressionReq'
         - name: createsnapshot
           in: query
           type: boolean
+          description: |-
+            Default `false`  
+            When `true` then available log lines will first be saved to the named snapshot
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/checkRegresssionRpy'
   /snapshot/checkschemacompliancy:
     post:
-      summary: summary
+      summary: Create a json SchemaCompliancy report 
       description: ''
       operationId: zzCheckSnapshotSchemaCompliancy
       consumes:
@@ -159,22 +187,25 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/checkSchemaCompliancyReq'
         - name: createsnapshot
           in: query
           type: boolean
+          description: |-
+            Default `false`  
+            When `true` then available log lines will first be saved to the named snapshot
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/checkSchemaCompliancyRpy'
   /snapshots:
     delete:
       summary: removes entries from the list of snapshots
-      description:
+      description: |-
         removes entries from the list of snapshots.
         The snapshots are not removed from your filesystem.
       operationId: zzClearSnapshots
@@ -182,21 +213,19 @@ paths:
         - application/json
       produces:
         - application/json
-      parameters:
       responses:
         '200':
-          decsription: Success response
+          description: Success response
     get:
-      summary: retrieves list of snapshots (in project folder)
-      description:
-        retrieves list of snapshots.
+      summary: retrieves list of snapshots (in project folder)  
+      description: |-
+        retrieves list of snapshots.  
         Scans project folder for snapshots.
       operationId: zzListSnapshots
       consumes:
         - application/json
       produces:
         - application/json
-      parameters:
       responses:
         '200':
           description: Success response
@@ -210,14 +239,13 @@ paths:
         - application/json
       produces:
         - text/html
-      parameters:
       responses:
         '200':
           description: Success response
-  /executeScript:
+  /executescript:
     post:
-      summary: summary
-      description: ''
+      summary: execute the named script
+      description: 'The message is accepted and execution of the named script has started'
       operationId: zzExecuteScript
       consumes:
         - application/json
@@ -226,13 +254,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/executeScriptReq'
       responses:
-        '200':
-          decsription: Success response
+        '202':
+          description: Success response
           schema:
             $ref: '#/definitions/executeScriptRpy'
 
@@ -250,6 +278,8 @@ paths:
         - name: operationAlias
           in: path
           type: string
+          required: true
+          description: The aliasname for the operation
       responses:
         '200':
           description: Success response
@@ -257,8 +287,8 @@ paths:
             $ref: '#/definitions/operationDelaySetting'
     put:
       summary: set delay to random between min and max milliseconds
-      description:
-        Set the extra time that  apiUi should wait before sending response.
+      description: |-
+        Set the extra time that  apiUi should wait before sending response.  
         The snapshots are not removed from your filesystem.
       operationId: zzSetOperationDelay
       consumes:
@@ -269,6 +299,8 @@ paths:
         - name: operationAlias
           in: path
           type: string
+          required: true
+          description: The aliasname for the operation
         - name: body
           in: body
           schema:
@@ -287,7 +319,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/getProjectInformationRpy'
   /refresh:
@@ -302,39 +334,18 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/refreshReq'
       responses:
         '202':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/refreshRpy'
-  /regressionReport:
-    post:
-      summary: summary
-      description: ''
-      operationId: zzRegressionReport
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: body
-          in: body
-          decsription: ''
-          required: 'true'
-          schema:
-            $ref: '#/definitions/regressionReportReq'
-      responses:
-        '200':
-          decsription: Success response
-          schema:
-            $ref: '#/definitions/regressionReportRpy'
   /resetEnvVar:
     post:
-      summary: summary
+      summary: resets the named environment variable
       description: ''
       operationId: zzResetEnvVar
       consumes:
@@ -344,19 +355,18 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/resetEnvVarReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/resetEnvVarRpy'
   /resetEnvVars:
     post:
-      summary: summary
-      description: ''
+      summary: Will reset all the environment variables that match the regular expression
       operationId: zzResetEnvVars
       consumes:
         - application/json
@@ -365,19 +375,18 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/resetEnvVarsReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/resetEnvVarsRpy'
   /setEnvVar:
     post:
-      summary: summary
-      description: ''
+      summary: sets an envirnment variable
       operationId: zzSetEnvVar
       consumes:
         - application/json
@@ -386,13 +395,13 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/setEnvVarReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/setEnvVarRpy'
   /shutDown:
@@ -407,19 +416,46 @@ paths:
       parameters:
         - name: body
           in: body
-          decsription: ''
-          required: 'true'
+          description: ''
+          required: true
           schema:
             $ref: '#/definitions/shutDownReq'
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/shutDownRpy'
+  /swagger.yaml:
+    get:
+      summary: return this yaml
+      description: ''
+      operationId: zzSwaggerYaml
+      produces:
+        - application/yaml
+      responses:
+        '200':
+          description: Success response
+  /testconnection:
+    get:
+      summary: testconnection
+      operationId: zzTestConnection
+      produces:
+        - application/yaml
+      responses:
+        '200':
+          description: Success response
+  /testsummaryreport:
+    get:
+      summary: get the testsummary in html
+      operationId: zzSummaryInHtml
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: Success response
   /versionInfo:
     get:
       summary: get apiUi version information
-      description: ''
       operationId: zzVersionInfo
       consumes:
         - application/json
@@ -427,7 +463,7 @@ paths:
         - application/json
       responses:
         '200':
-          decsription: Success response
+          description: Success response
           schema:
             $ref: '#/definitions/versionInfo'
 definitions:
@@ -452,35 +488,28 @@ definitions:
       result:
         type: string
       summary:
-        schema:
-          $ref: '#/definitions/compliancyAllNumbers'
+        $ref: '#/definitions/compliancyAllNumbers'
       operations:
         type: array
         items:
-          schema:
             $ref: '#/definitions/compliancyAllNumbers'
   compliancyAllNumbers:
         type: object
         properties:
           name:
-            string;
+            type: string
           total:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
           inboundRequests:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
           outputReplies:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
           outboundRequests:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
           inboundReplies:
-            schema:
-              $ref: '#/definitions/compliancyNumbers'
+            $ref: '#/definitions/compliancyNumbers'
   compliancyNumbers:
-     type: Object
+     type: object
      properties:
        passed:
          type: string
@@ -562,7 +591,8 @@ definitions:
           referenceLogFileName:
             type: string
           Created:
-            type: dateTime
+            type: string
+            format: dateTime
       Body:
         type: object
         properties:
@@ -572,7 +602,8 @@ definitions:
               type: object
               properties:
                 messageTimestamp:
-                  type: dateTime
+                  type: string
+                  format: dateTime
                 Service:
                   type: string
                 Operation:
@@ -622,8 +653,7 @@ definitions:
     type: object
     properties:
       previousContext:
-       schema:
-         $ref: '#/definitions/getContextRpy'
+        $ref: '#/definitions/getContextRpy'
   getContextRpy:
     type: object
     properties:
@@ -671,7 +701,8 @@ definitions:
           unexpectedValuesFound:
             type: boolean
           Created:
-            type: dateTime
+            type: string
+            format: dateTime
       Body:
         type: object
         properties:
@@ -681,7 +712,8 @@ definitions:
               type: object
               properties:
                 messageTimestamp:
-                  type: dateTime
+                  type: string
+                  format: dateTime
                 Service:
                   type: string
                 Operation:
@@ -719,7 +751,8 @@ definitions:
             name:
               type: string
             createdOn:
-              type: dateTime
+              type: string
+              format: dateTime
   versionInfo:
     type: object
     properties:

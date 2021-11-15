@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit xmlio;
 
 {$mode objfpc}{$H+}
@@ -22,6 +36,14 @@ TStringProvider = class(TObject)
     procedure OnGetString (var aString: String);
     constructor Create(aString: String);
 end;
+
+{ TXmlioLogger }
+
+TXmlioLogger = class (TObject)
+  public
+    procedure doLog (msg: String);
+end;
+
 
 { TJBStringList }
 
@@ -78,13 +100,23 @@ procedure togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer);
 function isOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
 procedure toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer);
 function osDirectorySeparators (aName: String): String;
+procedure SjowMessage (aString: String);
 
 const base64DocxStartStr = 'UEsDBB';
 const base64PdfStartStr = 'JVBERi';
 const base64RtfStartStr = 'e1xyd';
 const PasswordContextsOptionValue = 1;
 const OneTimeContextsOptionValue = 2;
-const apiuidescribtorspath = '/project/describtors';
+const apiuidescriptorspath = '/project/descriptors';
+{$ifdef unix}
+const OperatingSystem = 'unix';
+{$else}
+  {$ifdef windows}
+  const OperatingSystem = 'windows';
+  {$else}
+    const OperatingSystem = 'unknown';
+  {$endif}
+{$endif}
 
 type TOnStringEvent = procedure (const Msg: String) of Object;
 var
@@ -95,6 +127,8 @@ var
   OnNotify: TOnStringEvent;
   apiaryToken: String;
   apiUiConnectionConfig: TObject;
+  xmlioLogger: TXmlioLogger;
+  openSslCertsFolder: String;
 
 
 implementation
@@ -1261,16 +1295,15 @@ function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): Str
     p: Integer;
   begin
     result := '';
-    p := Pos(apiuidescribtorspath + '/', aFileName);
-    SjowMessage(Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt));
+    p := Pos(apiuidescriptorspath + '/', aFileName);
     if p < 1 then
       raise Exception.Create ('reading from apiUi cloud connection, illegal filename: ' + aFileName);
     result := apiUiServerDialog ( apiUiConnectionConfig
-                                , '/apiUi/api' + apiuidescribtorspath
+                                , '/apiUi/api' + apiuidescriptorspath
                                 , ''
                                 , 'POST'
-                                , '*/*'
-                                , '{"name": "' + Copy (aFileName, p + Length(apiuidescribtorspath) + 1, MaxInt) + '"}'
+                                , 'application/json'
+                                , '{"name": "' + Copy (aFileName, p + Length(apiuidescriptorspath) + 1, MaxInt) + '"}'
                                 );
     // should be a get but to work around some security checks...
   end;
@@ -1354,6 +1387,7 @@ function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): Str
           SSLOptions.VerifyMode := [];
         end;
       end;
+      lHTTP.Request.UserAgent := 'Mozilla/4.0 (compatible; httpget)';
       lHTTP.Get(aURL, lStream);
       lStream.Position := 0;
       Result := lStream.ReadString(lStream.Size);
@@ -1668,6 +1702,13 @@ begin
   end;
 end;
 
+{ TXmlioLogger }
+
+procedure TXmlioLogger.doLog(msg: String);
+begin
+  SjowMessage(msg);
+end;
+
 { TJBStringList }
 
 function TJBStringList.Find(const S: string; out Index: Integer): Boolean;
@@ -1699,9 +1740,9 @@ end;
 initialization
   PathPrefixes := TStringList.Create;
   PathPrefixes.Sorted := True;
-
+  xmlioLogger := TXmlioLogger.Create;
 finalization
   PathPrefixes.Free;
-
+  xmlioLogger.Free;
 end.
 

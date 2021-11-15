@@ -1,3 +1,17 @@
+{
+This file is part of the apiUi project
+Copyright (c) 2009-2021 by Jan Bouwman
+
+See the file COPYING, included in this distribution,
+for details about the copyright.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+}
 unit SelectElementsUnit;
 
 {$IFDEF FPC}
@@ -67,7 +81,7 @@ type
     fLastCaption: String;
     procedure UpdateListView;
   public
-    doShowReq, doShowRpy, doShowMq, doShowWsa, doShowRti: Boolean;
+    doShowReq, doShowRpy, doShowWsa, doShowRti: Boolean;
     WsdlOperation: TWsdlOperation;
     SrceBind: TCustomBindable;
     ControlBinds: TBindableList;
@@ -170,7 +184,6 @@ begin
     SelectXmlElementForm.LastCaption := fLastCaption;
     SelectXmlElementForm.doShowReq := doShowReq;
     SelectXmlElementForm.doShowRpy := doShowRpy;
-    SelectXmlElementForm.doShowMq := doShowMq;
     SelectXmlElementForm.doShowWsa := doShowWsa;
     SelectXmlElementForm.doShowRti := doShowRti;
     SelectXmlElementForm.WsdlOperation := WsdlOperation;
@@ -204,7 +217,6 @@ begin
       SelectXmlElementForm.LastCaption := fLastCaption;
       SelectXmlElementForm.doShowReq := doShowReq;
       SelectXmlElementForm.doShowRpy := doShowRpy;
-      SelectXmlElementForm.doShowMq := doShowMq;
       SelectXmlElementForm.doShowWsa := doShowWsa;
       SelectXmlElementForm.doShowRti := doShowRti;
       SelectXmlElementForm.WsdlOperation := WsdlOperation;
