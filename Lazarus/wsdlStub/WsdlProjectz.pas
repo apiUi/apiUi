@@ -2893,11 +2893,6 @@ begin
   xOperation := FindOperationOnRequest(aLog, aLog.httpDocument, aLog.RequestBody, True);
   if not Assigned (xOperation) then
   begin
-    aLog.Exception := notStubbedExceptionMessage;
-    aLog.ReplyBody := aLog.Exception;
-    if (aLog.TransportType = ttHttp)
-    or (aLog.TransportType = ttHttps) then
-      aLog.httpResponseCode := 500;
     exit;
   end;
   try
@@ -6608,6 +6603,14 @@ begin
       finally
         if Assigned (xLog) then {still}
         begin
+          if not Assigned (xLog.Operation) then
+          begin
+            xLog.Exception := notStubbedExceptionMessage;
+            xLog.ReplyBody := xLog.Exception;
+            if (xLog.TransportType = ttHttp)
+            or (xLog.TransportType = ttHttps) then
+              xLog.httpResponseCode := 500;
+          end;
           DelayMS (xLog.DelayTimeMs);
           xLog.OutboundTimeStamp := Now;
           DisplayLog ('', xLog);

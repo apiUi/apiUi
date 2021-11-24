@@ -1,3 +1,9 @@
 lib
 /Lazarus/apiUi/*.exe
 /Lazarus/apiUiServer/*.exe
+/Lazarus/apiUi
+/Lazarus/apiUiServer
+/Lazarus/apiUi_Linux.zip
+/Lazarus/apiUi_Linux
+/Lazarus/apiUi_Windows
+/Lazarus/apiUi_Windows.zip

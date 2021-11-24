@@ -2949,10 +2949,10 @@ begin
             begin
               try
                 URI := Items.XmlValueByTag['url'];
-                if Path <> '/' then
+                if Document <> '' then
                   ServerPathNames.Add (Path + Document)
                 else
-                  ServerPathNames.Add (Document);
+                  ServerPathNames.Add ('');
                 Servers.Add (URI);
               except
               end;
