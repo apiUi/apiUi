@@ -12,6 +12,7 @@ Free software to virtualize and test SOAP and REST api services.
 * [Setup](#setup)
 * [Project Status](#project-status)
 * [Room for Improvement](#room-for-improvement)
+* [License](#License)
 
 ## General Information
 apiUi is free software to virtualize and test SOAP and REST api services. It works with HTTP(s) but also with STOMP which means it can also be used with JMS and KAFKA. It is the only free API virtualization tool that uses formal contracts like Swagger, OpenApi and Cobol Copy Books to present a GUI with a form to edit the entire message.
