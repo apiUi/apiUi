@@ -12,6 +12,7 @@ Free software to virtualize and test SOAP and REST api services.
 * [Setup](#setup)
 * [Project Status](#project-status)
 * [Room for Improvement](#room-for-improvement)
+* [License](#License)
 
 ## General Information
 apiUi is free software to virtualize and test SOAP and REST api services. It works with HTTP(s) but also with STOMP which means it can also be used with JMS and KAFKA. It is the only free API virtualization tool that uses formal contracts like Swagger, OpenApi and Cobol Copy Books to present a GUI with a form to edit the entire message.
@@ -68,29 +69,19 @@ discussion forums is expected to follow the [apiUi Code of Conduct].
 
 Either get binaries from [apiUi Downloads] (please also read the [apiUi Getting Started]) or use GIT or a browser to download sources from [apiUi GitHub].
 
-## Project Status
-Project is: _complete_.
-
-
 ## Room for Improvement
-Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
-Room for improvement:
-- Improvement to be done 1
-- Improvement to be done 2
-
-To do:
-- Feature to be added 1
-- Feature to be added 2
-
+- Automatic testen 
+- Describe how to build the executables
 
 ## License
 
-[TBD](https://gith....)
+[GPL v3][apiUi COPYING]
 
 <!-- Links -->
 [apiUi]: https://www.apiui.org
 [apiUi Code of Conduct]: ./code-of-conduct.md
+[apiUi COPYING]: ./COPYING
 [apiUi Downloads]: https://www.apiui.org/downloads/
 [apiUi Getting Started]: https://www.apiui.org/gettingstarted/
 [apiUi GitHub]: https://github.com/apiui/apiui/
