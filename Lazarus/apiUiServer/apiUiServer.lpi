@@ -20,7 +20,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="7"/>
-      <BuildNr Value="13155"/>
+      <BuildNr Value="13157"/>
       <StringTable ProductVersion="10.3.4.110"/>
     </VersionInfo>
     <MacroValues Count="1">
