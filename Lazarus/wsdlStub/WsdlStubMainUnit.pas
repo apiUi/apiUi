@@ -3025,7 +3025,7 @@ procedure TMainForm.ShowReport (aReport : TSnapshot);
       for x := 0 to se.displayedSnapshots.Count - 1 do
       begin
         if se.displayedSnapshots.SnapshotItems[x] is TRegressionSnapshot then
-          se.OpenMessagesLog(se.displayedSnapshots.SnapshotItems[x].FileName, True, False, xList);
+          se.OpenApiUiMessagesLog(se.displayedSnapshots.SnapshotItems[x].FileName, True, False, xList);
       end;
       CoverageReport(xList);
     finally
@@ -3039,10 +3039,10 @@ procedure TMainForm.ShowReport (aReport : TSnapshot);
   begin
     xLogList := TLogList.Create;
     try
-      se.OpenMessagesLog(aReport.FileName, True, False, xLogList);
+      se.OpenApiUiMessagesLog(aReport.FileName, True, False, xLogList);
       xRefLogList := TLogList.Create;
       try
-        se.OpenMessagesLog(aReport.RefFileName, True, False, xRefLogList);
+        se.OpenApiUiMessagesLog(aReport.RefFileName, True, False, xRefLogList);
         aReport.Status := ShowLogDifferences(xLogList, xRefLogList, 'Current', aReport.Name);
         xRefLogList.Clear;
         xLogList.Clear;
@@ -5259,15 +5259,34 @@ begin
 end;
 
 function TMainForm.TestRemoteServerConnection(aXml: TObject): Boolean;
+var
+  rscType: TRemoteServerConnectionType;
+  xXml: TXml;
 begin
   result := False;
   with TXml.Create do
   try
     try
       CopyDownLine((aXml as TXml).Parent as TXml, True);
+      rscType:=rscApiUi;
+      xXml := Items.XmlCheckedItemByTag['type'];
+      if Assigned (xXml) then
+        if Assigned (xXml.Items.XmlCheckedItemByTag['WireMock']) then
+          rscType := rscWireMock;
       ResolveAliasses;
-      xmlio.apiUiServerDialog(thisXml, '/apiUi/api/testconnection', '', 'GET', 'application/json');
-      ShowMessage(Format('Remote apiUi server (%s) connected OK', [Items.XmlValueByTag['Address']]));
+      case rscType of
+        rscApiUi:
+          begin
+            xmlio.apiUiServerDialog(thisXml, '/apiUi/api/testconnection', '', 'GET', 'application/json');
+            ShowMessage(Format('Remote apiUi server (%s) connected OK', [Items.XmlValueByTag['Address']]));
+          end;
+        rscWireMock:
+          begin
+            xmlio.apiUiServerDialog(thisXml, '/__admin/recordings/status', '', 'GET', 'application/json');
+            ShowMessage(Format('Remote WireMock server (%s) connected OK', [Items.XmlValueByTag['Address']]));
+          end;
+        rscSimul8ter: ;
+      end;
       result := True;
     except
       on e: exception do
@@ -5289,16 +5308,36 @@ begin
   xXml := TXml.Create;
   try
     try
-      xXml.LoadJsonFromString ( xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                                                        , '/apiUi/api/project/information'
-                                                        , ''
-                                                        , 'GET'
-                                                        , 'application/json'
-                                                        )
-                          , nil
-                          );
-      xXml.Name := 'projectInformation';
-      ShowXmlExtended('Information from remote project', xXml);
+      case se.remoteServerConnectionType of
+        rscApiUi:
+          begin
+            xXml.LoadJsonFromString ( xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                                              , '/apiUi/api/project/information'
+                                                              , ''
+                                                              , 'GET'
+                                                              , 'application/json'
+                                                              )
+                                , nil
+                                );
+            xXml.Name := 'projectInformation';
+            ShowXmlExtended('Information from remote project', xXml);
+          end;
+        rscWireMock:
+          begin
+            xXml.LoadJsonFromString ( xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                                              , '/__admin/mappings'
+                                                              , ''
+                                                              , 'GET'
+                                                              , 'application/json'
+                                                              )
+                                , nil
+                                );
+            xXml.Name := 'projectInformation';
+            ShowXmlExtended('Information from remote project', xXml);
+          end;
+        else
+          raise Exception.Create('not implemented for this remote server connection');
+      end;
     except
       on e: exception do
         ShowMessage(e.Message);
@@ -11392,8 +11431,8 @@ begin
         fLogList := TLogList.Create;
         nLogList := TLogList.Create;
         try
-          se.OpenMessagesLog(fSnapshot.FileName, True, False, fLogList);
-          se.OpenMessagesLog(nSnapshot.FileName, True, False, nLogList);
+          se.OpenApiUiMessagesLog(fSnapshot.FileName, True, False, fLogList);
+          se.OpenApiUiMessagesLog(nSnapshot.FileName, True, False, nLogList);
           ShowLogDifferences(fLogList, nLogList, fSnapshot.Name, nSnapshot.Name);
         finally
           fLogList.Clear;
@@ -11598,7 +11637,7 @@ begin
         begin
           xLogList := TLogList.Create;
           try
-            se.OpenMessagesLog(xReport.RefFileName, True, False, xLogList);
+            se.OpenApiUiMessagesLog(xReport.RefFileName, True, False, xLogList);
             ToAllLogList(xLogList);
           finally
             xLogList.Clear;
@@ -11643,7 +11682,7 @@ begin
         begin
           xLogList := TLogList.Create;
           try
-            se.OpenMessagesLog(xSnapshot.FileName, True, False, xLogList);
+            se.OpenApiUiMessagesLog(xSnapshot.FileName, True, False, xLogList);
             ToAllLogList(xLogList);
           finally
             xLogList.Clear;
@@ -12215,6 +12254,8 @@ begin
     raise Exception.Create('Edit RemoteServer Environment requires an assigned Project');
   if not Assigned (se.remoteServerConnectionXml) then
     raise Exception.Create('Edit RemoteServer Environment requires a Remote Server Connection');
+  if se.remoteServerConnectionType <> rscApiUi then
+    raise Exception.Create('Edit RemoteServer Environment not implemented for Remote Server Connection type');
   xXml := TXml.Create;
   try
     try
@@ -12386,6 +12427,8 @@ begin
     raise Exception.Create('ProjectInfoFromRemoteServer requires an assigned Project');
   if not Assigned (se.remoteServerConnectionXml) then
     raise Exception.Create('ProjectInfoFromRemoteServer requires a Remote Server Connection');
+  if se.remoteServerConnectionType <> rscApiUi then
+    raise Exception.Create('ProjectInfoFromRemoteServer not implemented for Remote Server Connection type');
   with TXml.Create do
   try
     try

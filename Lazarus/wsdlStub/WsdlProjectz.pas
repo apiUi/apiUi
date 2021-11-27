@@ -73,6 +73,7 @@ uses Classes
   ;
 
 type TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
+type TRemoteServerConnectionType = (rscApiUi, rscWireMock, rscSimul8ter);
 type TCORSType = (corsException, corsRefuse, corsAcceptWithoutLogging, corsAcceptWithLogging);
 type TProcedure = procedure of Object;
 type TProcedureB = procedure (arg: Boolean) of Object;
@@ -167,6 +168,7 @@ type
     doDisplayLog: Boolean;
     uiInvalid: Boolean;
     remoteServerConnectionEnabled: Boolean;
+    remoteServerConnectionType: TRemoteServerConnectionType;
     ProgressMax, ProgressPos: Integer;
     OnRequestViolatingAddressPath: TOnRequestViolating;
     inboundRequestSchemaValidationType, outboundReplySchemaValidationType, outboundRequestSchemaValidationType, inboundReplySchemaValidationType: TSchemaValidationType;
@@ -262,7 +264,8 @@ type
     function RestartCommand: String;
     function ReloadDesignCommand: String;
     procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
-    procedure OpenMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
+    procedure OpenApiUiMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
+    procedure OpenWireMockMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
     procedure EnvironmentListClear;
     function MessagesRegressionReportAsXml(aReferenceFileName: String; aPromptUser: Boolean): TXml;
     function InformationAsXml: TXml;
@@ -485,6 +488,8 @@ implementation
 
 uses LazVersion
    , StrUtils
+   , DateUtils
+   , xmlxsdparser
    , exceptionUtils
    , RegExpr
    , base64
@@ -6057,7 +6062,7 @@ begin
             raise Exception.Create(nameXml.Value + ' not found');
           xLogList := TLogList.Create;
           try
-            OpenMessagesLog(xSnapshot.FileName, True, False, xLogList);
+            OpenApiUiMessagesLog(xSnapshot.FileName, True, False, xLogList);
             with xLogList.SchemaCompliancyAsXml do
             try
               AResponseInfo.ContentText := StreamJSON(0, False);
@@ -6862,7 +6867,7 @@ begin
     try
       for x := 0 to displayedSnapshots.Count - 1 do
         if displayedSnapshots.SnapshotItems[x].FileName <> '' then
-          OpenMessagesLog (displayedSnapshots.SnapshotItems[x].FileName, True, False, xLogList);
+          OpenApiUiMessagesLog (displayedSnapshots.SnapshotItems[x].FileName, True, False, xLogList);
       xCvrg := xLogList.PrepareCoverageReportAsXml ( allAliasses
                                                    , ignoreCoverageOn
                                                    );
@@ -6905,11 +6910,11 @@ begin
   try
     xLogList := TLogList.Create;
     try
-      OpenMessagesLog (aReport.FileName, True, False, xLogList);
+      OpenApiUiMessagesLog (aReport.FileName, True, False, xLogList);
       xRefLofList := TLogList.Create;
       try
         if not abortPressed then
-          OpenMessagesLog (aReport.RefFileName, True, False, xRefLofList);
+          OpenApiUiMessagesLog (aReport.RefFileName, True, False, xRefLofList);
         if not abortPressed then
           xXml := logDifferencesAsXml ( xLogList
                                       , xRefLofList
@@ -7077,7 +7082,7 @@ var
 begin
   xLogList := TLogList.Create;
   try
-    OpenMessagesLog (aReferenceFileName, True, aPromptUser, xLogList);
+    OpenApiUiMessagesLog (aReferenceFileName, True, aPromptUser, xLogList);
     result := logDifferencesAsXml ( displayedLogs
                                   , xLogList
                                   , aReferenceFileName
@@ -7172,11 +7177,18 @@ begin
 end;
 
 procedure TWsdlProject.remoteServerConnectionFromXml(aXml: TXml);
+var
+  xXml: TXml;
 begin
+  remoteServerConnectionType := rscApiUi;
   with remoteServerConnectionXml do
   begin
     CopyDownLine(aXml, True);
     remoteServerConnectionEnabled := Items.XmlBooleanByTagDef['Enabled', False];
+    xXml := Items.XmlCheckedItemByTag['type'];
+    if Assigned (xXml) then
+      if Assigned (xXml.Items.XmlCheckedItemByTag['WireMock']) then
+        remoteServerConnectionType := rscWireMock;
   end;
   xmlio.apiUiConnectionConfig := remoteServerConnectionXml;
 end;
@@ -7199,7 +7211,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.OpenMessagesLog(aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
+procedure TWsdlProject.OpenApiUiMessagesLog(aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
 var
   xXml: TXml;
   x: Integer;
@@ -7329,6 +7341,140 @@ begin
         end;
       end;
     end; // for each xml
+  finally
+    FreeAndNil (xXml);
+  end;
+end;
+
+procedure TWsdlProject.OpenWireMockMessagesLog(aString: String; aIsFileName,
+  aPrompt: Boolean; aLogList: TLogList);
+var
+  xXml, yXml, zXml, dXml: TXml;
+  x, y, d: Integer;
+  xLog: TLog;
+  xBodiesAsBase64: Boolean;
+begin
+  xXml :=TXml.Create;
+  try
+    if aIsFileName then
+      xXml.LoadJsonFromFile(aString, nil, nil)
+    else
+      xXml.LoadJsonFromString(aString, nil);
+    yXml := xXml.Items.XmlItemByTag['serveEvents'];
+    if not Assigned (yXml) then
+      raise Exception.Create('Does not contain saved WireMock messages');
+    with yXml do
+    begin
+      for x := 0 to Items.Count - 1 do
+      begin
+        with Items.XmlItems [x] do
+        begin
+          if TagName <> '_' then
+            raise Exception.Create('serveEvents array entry expected');
+          xLog := TLog.Create;
+          xLog.MessageId := Items.XmlValueByTagDef ['id', xLog.MessageId];
+          zXml := Items.XmlItemByTag['request'];
+          if Assigned (zXml) then with zXml do
+          begin
+            xLog.httpUri := items.XmlValueByTag['absoluteUrl'];
+            xLog.httpCommand := items.XmlValueByTag['method'];
+            xLog.StubAction := saStub;
+            dXml := Items.XmlItemByTag['headers'];
+            if Assigned (dXml) then with dXml do
+            begin
+              for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
+              begin
+                xLog.RequestHeaders := xLog.RequestHeaders + Name + ': ' + Value + LineEnding;
+                if Name = 'Content-Type' then
+                  xLog.RequestContentType := Value;
+              end;
+            end;
+            try
+              xLog.InboundTimeStamp := UnixToDateTime (StrToInt64(Items.XmlValueByTag['loggedDate']));
+              // next because UnixToDateTime() gives me false result??;
+              xLog.InboundTimeStamp := xsdParseDateTime (Items.XmlValueByTag['loggedDateString']);
+            except
+              xLog.InboundTimeStamp := TDateTime (0);
+            end;
+            xLog.RequestBody := Items.XmlValueByTag['body'];
+            xLog.InboundBody := xLog.RequestBody;
+          end;
+          zXml := Items.XmlItemByTag['response'];
+          if Assigned (zXml) then with zXml do
+          begin
+            xLog.ReplyBody := Items.XmlValueByTag['body'];
+            xLog.httpResponseCode := StrToInt(Items.XmlValueByTag['status']);
+            dXml := Items.XmlItemByTag['headers'];
+            if Assigned (dXml) then with dXml do
+            begin
+              for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
+              begin
+                xLog.ReplyHeaders := xLog.ReplyHeaders + Name + ': ' + Value + LineEnding;
+                if Name = 'Content-Type' then
+                  xLog.ReplyContentType := Value;
+              end;
+            end;
+          end;
+          zXml := Items.XmlItemByTag['timing'];
+          if Assigned (zXml) then with zXml.Items do
+          begin
+            xLog.DelayTimeMs := XmlIntegerByTag['addedDelay'];
+          end;
+          if xLog.httpUri <> '' then with TIdUri.Create(xLog.httpUri) do
+          try
+            xLog.httpDocument:= Path + Document;
+            xLog.PathFormat := xLog.httpDocument;
+            xLog.httpParams := Params;
+            if Uppercase (Protocol) = 'HTTP' then xLog.TransportType := ttHttp;
+            if Uppercase (Protocol) = 'HTTPS' then xLog.TransportType := ttHttps;
+          finally
+            Free;
+          end;
+          try
+            xLog.Operation := FindOperationOnRequest ( xLog
+                                                     , ''
+                                                     , xLog.RequestBody
+                                                     , False
+                                                     );
+          except
+          end;
+          if Assigned (xLog.Operation) then
+          begin
+            xLog.ServiceName:= xlog.Operation.WsdlService.Name;
+            xLog.OperationName:= xlog.Operation.Name;
+            if (xLog.Operation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+            and (   doValidateInboundRequests(xLog.Operation)
+                 or doValidateOutboundReplies(xLog.Operation)
+                ) then
+            begin
+              with TWsdlOperation.Create(xLog.Operation) do
+              try
+                try
+                  xLog.toBindables(thisOperation);
+                  xLog.RequestValidateResult := '';
+                  xLog.ReplyValidateResult := '';
+                  if doValidateInboundRequests(thisOperation) then
+                  begin
+                    reqBind.IsValueValid (xLog.RequestValidateResult);
+                    xLog.RequestValidated := True;
+                  end;
+                  if doValidateOutboundReplies(thisOperation) then
+                  begin
+                    rpyBind.IsValueValid (xLog.ReplyValidateResult);
+                    xLog.ReplyValidated := True;
+                  end;
+                except
+                end;
+              finally
+                Free;
+              end;
+            end;
+          end;
+          LogFilter.Execute (xLog);
+          aLogList.SaveLog ('', xLog);
+        end;
+      end; // for each xml
+    end;
   finally
     FreeAndNil (xXml);
   end;
@@ -8503,16 +8649,34 @@ var
 begin
   try
     iTimeStamp := now;
-    s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                               , '/apiUi/api/logs/getandremove'
-                               , ''
-                               , 'GET'
-                               , 'application/xml'
-                               );
+    case remoteServerConnectionType of
+      rscApiUi:
+        begin
+          s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                     , '/apiUi/api/logs/getandremove'
+                                     , ''
+                                     , 'GET'
+                                     , 'application/xml'
+                                     );
+        end;
+      rscWireMock:
+        begin
+          s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                     , '/__admin/requests/remove'
+                                     , ''
+                                     , 'POST'
+                                     , 'application/json'
+                                     , '{}'
+                                     );
+        end;
+    end;
 
     xLogList := TLogList.Create;
     try
-      OpenMessagesLog(s, False, False, xLogList);
+      case remoteServerConnectionType of
+        rscApiUi: OpenApiUiMessagesLog(s, False, False, xLogList);
+        rscWireMock: OpenWireMockMessagesLog(s, False, False, xLogList);
+      end;
       for x := 0 to xLogList.Count - 1 do
       begin
         DisplayLog('', xLogList.LogItems[x]);

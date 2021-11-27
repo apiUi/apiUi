@@ -51,7 +51,7 @@ function htmlReportTestSummary (aProject: TWsdlProject; aList: TSnapshotList): S
       for x := 0 to aList.Count - 1 do
         if (aList.SnapshotItems[x].FileName <> '')
         and (not aProject.abortPressed) then
-          aProject.OpenMessagesLog (aList.SnapshotItems[x].FileName, True, False, xLogList);
+          aProject.OpenApiUiMessagesLog (aList.SnapshotItems[x].FileName, True, False, xLogList);
       if aProject.abortPressed then Exit;
       xCvrg := xLogList.PrepareCoverageReportAsXml ( allAliasses
                                                    , aProject.ignoreCoverageOn
