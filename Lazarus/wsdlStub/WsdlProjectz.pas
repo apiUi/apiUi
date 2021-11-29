@@ -2236,8 +2236,22 @@ begin
                     end;
                     AddXml (TXml.CreateAsString('DelayTimeMsMin', IntToStr(xOperation.DelayTimeMsMin)));
                     AddXml (TXml.CreateAsString('DelayTimeMsMax', IntToStr(xOperation.DelayTimeMsMax)));
-                    AddXml (xOperation.endpointConfigAsXml); // seave in 4.0++ style
-
+                    with AddXml (xOperation.endpointConfigAsXml) do
+                    begin
+                      if (projectFileName <> '')
+                      and (SaveRelativeFileNames) then
+                      begin
+                        if Assigned (FindXml('*.Http.SSL.CertificateFile')) then
+                          with FindXml('*.Http.SSL.CertificateFile') do
+                            Value := ExtractRelativeFileName (projectFileName, Value);
+                        if Assigned (FindXml('*.Http.SSL.KeyFile')) then
+                          with FindXml('*.Http.SSL.KeyFile') do
+                            Value := ExtractRelativeFileName (projectFileName, Value);
+                        if Assigned (FindXml('*.Http.SSL.RootCertificateFile')) then
+                          with FindXml('*.Http.SSL.RootCertificateFile') do
+                            Value := ExtractRelativeFileName (projectFileName, Value);
+                      end;
+                    end;
                     AddXml (TXml.CreateAsString('BeforeScript', xOperation.BeforeScriptLines.Text));
                     AddXml (TXml.CreateAsString('AfterScript', xOperation.AfterScriptLines.Text));
                     swapReqParent := (xOperation.reqBind as TCustomBindable).Parent;
@@ -2663,7 +2677,18 @@ begin
                             xOperation.DelayTimeMsMax := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMax', 0];
                           dXml := oXml.Items.XmlItemByTag ['endpointConfig'];
                           if Assigned (dXml) then
+                          begin
+                            if Assigned (dXml.FindXml('*.Http.SSL.CertificateFile')) then
+                              with dXml.FindXml('*.Http.SSL.CertificateFile') do
+                                Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
+                            if Assigned (dXml.FindXml('*.Http.SSL.KeyFile')) then
+                              with dXml.FindXml('*.Http.SSL.KeyFile') do
+                                Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
+                            if Assigned (dXml.FindXml('*.Http.SSL.RootCertificateFile')) then
+                              with dXml.FindXml('*.Http.SSL.RootCertificateFile') do
+                                Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
                             xOperation.endpointConfigFromXml(dXml);
+                          end;
                           xOperation.BeforeScriptLines.Text := oXml.Items.XmlValueByTag ['BeforeScript'];
                           if (xOperation.BeforeScriptLines.Count = 0) then
                             xOperation.BeforeScriptLines.Text := oXml.Items.XmlValueByTag ['Script'];
