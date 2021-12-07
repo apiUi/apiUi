@@ -1160,6 +1160,7 @@ type
     procedure ExpressError(Sender: TObject;
       LineNumber, ColumnNumber, Offset: Integer; TokenString, Data: String);
     function EditScript(aXml: TObject): Boolean;
+    function EditOperationOnEvent (aXml: TObject): Boolean;
     function TestDbsConnection(aXml: TObject): Boolean;
     function TestRemoteServerConnection(aXml: TObject): Boolean;
     procedure ProjectInfoFromRemoteServer;
@@ -5206,6 +5207,49 @@ begin
   finally
     xOperation.Wsdl.Free;
     xOperation.Free;
+  end;
+end;
+
+function TMainForm.EditOperationOnEvent(aXml: TObject): Boolean;
+var
+  x: Integer;
+begin
+  with TXml.CreateAsString('Script', '') do
+  try
+    AddXml (Txml.CreateAsString('Name', FocusedOperation.Alias + '_script'));
+    with AddXml (Txml.CreateAsString('Invoke', '')) do
+    begin
+      with AddXml (Txml.CreateAsString('operations', '')) do
+      begin
+        for x := 0 to FocusedOperation.invokeList.Count - 1 do
+          AddXml (TXml.CreateAsString('name', FocusedOperation.invokeList.Strings[x]));
+        AddXml (TXml.CreateAsString('name', FocusedOperation.Alias));
+      end;
+    end;
+    AddXml (Txml.CreateAsString('Code', (aXml as TXml).Value));
+    with se.CreateScriptOperation(thisXml) do
+    try
+      Application.CreateForm(TEditOperationScriptForm, EditOperationScriptForm);
+      try
+        EditOperationScriptForm.ScriptName := FocusedOperation.Alias + ':' + (aXml as TXml).Name;
+        EditOperationScriptForm.After := False;
+        EditOperationScriptForm.WsdlOperation := thisOperation;
+        EditOperationScriptForm.ScriptEdit.Lines.Text := (aXml as TXml).Value;
+        EditOperationScriptForm.ShowModal;
+        if EditOperationScriptForm.ModalResult = mrOk then
+        begin
+          (aXml as TXml).Value := EditOperationScriptForm.ScriptEdit.Lines.Text;
+          (aXml as TXml).Checked := True;
+          result := True;
+        end;
+      finally
+        FreeAndNil(EditOperationScriptForm);
+      end;
+    finally
+      Free;
+    end;
+  finally
+    Free;
   end;
 end;
 
@@ -10829,7 +10873,7 @@ var
   xXml: TXml;
   xXsd: TXsd;
   xEnum: TXsdEnumeration;
-  o: Integer;
+  x, o: Integer;
   xOperation: TWsdlOperation;
 begin
   if not Assigned(FocusedOperation) then
@@ -10849,6 +10893,10 @@ begin
       xXsd.sType.Enumerations.AddObject(xEnum.Value, xEnum);
     end;
   end;
+  xXsd := operationOptionsXsd.XsdByCaption ['operationOptions.events'];
+  if Assigned (xXsd) then with xXsd.sType.ElementDefs do
+    for x := 0 to Count - 1 do
+      Xsds[x].EditProcedure := EditOperationOnEvent;
   xOperation := FocusedOperation;
   with FocusedOperation do
   begin

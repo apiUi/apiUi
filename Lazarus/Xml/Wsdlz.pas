@@ -254,6 +254,8 @@ type
     CorrelationBindables: TBindableList;
     BeforeScriptLines: TJBStringList;
     AfterScriptLines: TJBStringList;
+    onFetchLogFromCloud: String;
+
     Duplicates, DuplicatesName: TWsdlBinder;
     _compareString: String;
     function FindBind (aCaption: String): TCustomBindable;
@@ -3553,6 +3555,7 @@ begin
   end;
   StubCustomHeaderXml := TXml.CreateAsString('customHeaders', '');
   doReadReplyFromFile := False;
+  onFetchLogFromCloud := '';
   resolveRequestAliasses := True;
   resolveReplyAliasses := True;
   ReadReplyFromFileXml := TXml.CreateAsString('ReadReplyFromFile', '');
@@ -4696,6 +4699,7 @@ begin
   self.smtpPort := xOperation.smtpPort;
   self.BeforeScriptLines := xOperation.BeforeScriptLines;
   self.AfterScriptLines := xOperation.AfterScriptLines;
+  self.onFetchLogFromCloud := xOperation.onFetchLogFromCloud;
   self.resolveRequestAliasses := xOperation.resolveRequestAliasses;
   self.resolveReplyAliasses := xOperation.resolveReplyAliasses;
   self.CorrelatedMessage := xOperation.CorrelatedMessage;
@@ -6089,19 +6093,23 @@ begin
     end;
     with AddXml(TXml.CreateAsString('ReadReplyFromFile', '')) do
       CopyDownLine(ReadReplyFromFileXml, False);
+    if onFetchLogFromCloud <> '' then
+      with AddXml (TXml.CreateAsString('events', '')) do
+        AddXml (TXml.CreateAsString('onFetchLogFromCloud', onFetchLogFromCloud));
   end;
 end;
 
 procedure TWsdlOperation.OptionsFromXml(aXml: TXml);
 var
   xXml, yXml, iXml: TXml;
-  x: Integer;
+  x, y: Integer;
 begin
   if not Assigned (aXml) then raise Exception.Create('operationOptionsFromXml: No XML assigned');
   if not (aXml.Name = 'operationOptions') then raise Exception.Create('operationOptionsFromXml: Illegal XML: ' + aXml.Text);
   oldInvokeSpec := 'none';
   doReadReplyFromFile := False;
   ReadReplyFromFileXml.Items.Clear;
+  onFetchLogFromCloud := '';
   inboundRequestSchemaValidationType := svAccordingProject;
   outboundReplySchemaValidationType := svAccordingProject;
   outboundRequestSchemaValidationType := svAccordingProject;
@@ -6170,15 +6178,20 @@ begin
     begin
       invokeRequestInfo := xXml.Items.XmlBooleanByTagDef['requestInfo', False];
       invokeReplyInfo := xXml.Items.XmlBooleanByTagDef['replyInfo', False];
-      xXml := xXml.Items.XmlCheckedItemByTag['operations'];
-      if Assigned (xXml) then
+      yXml := xXml.Items.XmlCheckedItemByTag['operations'];
+      if Assigned (yXml) then
       begin
-        for x := 0 to xXml.Items.Count - 1 do
-          if (xXml.Items.XmlItems[x].Name = 'name')
-          and (xXml.Items.XmlItems[x].Checked) then
-            invokeList.Add(xXml.Items.XmlItems[x].Value);
+        for y := 0 to yXml.Items.Count - 1 do
+          if (yXml.Items.XmlItems[y].Name = 'name')
+          and (yXml.Items.XmlItems[y].Checked) then
+            invokeList.Add(yXml.Items.XmlItems[y].Value);
       end;
     end;
+  end;
+  xXml := aXml.Items.XmlCheckedItemByTag['events'];
+  if Assigned (xXml) then
+  begin
+    onFetchLogFromCloud := xXml.Items.XmlValueByTagDef['onFetchLogFromCloud', onFetchLogFromCloud];
   end;
   xXml := aXml.Items.XmlCheckedItemByTag['ReadReplyFromFile'];
   if Assigned (xXml) then

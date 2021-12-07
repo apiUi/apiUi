@@ -6,6 +6,7 @@
         <name>CreateActivities3</name>
         <name>CreateServiceRequest2</name>
         <name>freeformatOperation</name>
+        <name>uploadDocument</name>
       </operations>
     </Invoke>
   </Script>

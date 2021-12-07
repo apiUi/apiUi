@@ -29,7 +29,9 @@
         <invoke>
           <requestInfo>false</requestInfo>
           <replyInfo>false</replyInfo>
-          <operations></operations>
+          <operations>
+            <name>CreateServiceRequest2</name>
+          </operations>
         </invoke>
       </scripts>
       <ReadReplyFromFile></ReadReplyFromFile>
@@ -38,7 +40,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
-        <Address>https://localhost:7777</Address>
+        <Address>http://localhost:7777</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>

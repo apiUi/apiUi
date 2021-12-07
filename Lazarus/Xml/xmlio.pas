@@ -49,6 +49,7 @@ end;
 
 TJBStringList = class (TStringList)
   public
+    function thisJBStringList: TJBStringList;
     function Find(const S: string; Out Index: Integer): Boolean; override;
 end;
 
@@ -1710,6 +1711,11 @@ begin
 end;
 
 { TJBStringList }
+
+function TJBStringList.thisJBStringList: TJBStringList;
+begin
+  result := self;
+end;
 
 function TJBStringList.Find(const S: string; out Index: Integer): Boolean;
 begin
