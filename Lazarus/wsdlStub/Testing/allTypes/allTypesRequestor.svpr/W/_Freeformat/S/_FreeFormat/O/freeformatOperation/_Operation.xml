@@ -38,18 +38,22 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
-        <Address>https://localhost:7777</Address>
+        <Address>http://localhost:7777</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>
           <deflate>false</deflate>
           <gzip>false</gzip>
         </AcceptEncoding>
-        <customHeaders></customHeaders>
+        <customHeaders>
+          <Header>
+            <Name>Content-Type</Name>
+            <Value>multipart/form-data; boundary=--------120621131223000; charset=utf-8</Value>
+          </Header>
+        </customHeaders>
       </Http>
     </endpointConfig>
     <CorrelationElements></CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
-    <focusedOperation>true</focusedOperation>
   </Operation>

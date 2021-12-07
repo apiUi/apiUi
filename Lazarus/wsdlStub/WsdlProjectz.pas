@@ -251,6 +251,8 @@ type
     procedure ApiByExampleOperationsUpdate (aXml: TXml; aMainFileName: String);
     function CreateScriptOperation (aScript: TXml): TWsdlOperation;
     procedure ScriptExecute(aScript: TObject);
+    procedure OperationScriptExecute (aOperation: TWsdlOperation; aScript: String);
+    procedure OperationScriptExecuteLater (aOperation: TWsdlOperation; aScript: String; aLater: Integer);
     function FindSnapshot (aName: String): TSnapshot;
     function UpsertSnapshot (aName, aFileName, aRefFileName: String; aDoClearLoggedOnes: Boolean): TSnapshot;
     function CreateSnapshot (aName, aFileName, aRefFileName: String; aDoSave, aDoRun: Boolean): TSnapshot;
@@ -264,8 +266,8 @@ type
     function RestartCommand: String;
     function ReloadDesignCommand: String;
     procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
-    procedure OpenApiUiMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
-    procedure OpenWireMockMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
+    procedure OpenApiUiMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
+    procedure OpenWireMockMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aExecuteOnReadLog: Boolean = False);
     procedure EnvironmentListClear;
     function MessagesRegressionReportAsXml(aReferenceFileName: String; aPromptUser: Boolean): TXml;
     function InformationAsXml: TXml;
@@ -309,9 +311,6 @@ type
                                   ; aLater: Integer
                                   ): String;
     procedure FindRequestReply (aLog: TLog; aDocument, aString: String; var isRequest: Boolean);
-    function FindXmlOperationOnReply (aXml: TXml): TWsdlOperation; Overload;
-    function FindCcbOperationOnReply (aCobolString: String): TWsdlOperation; Overload;
-    function FindOperationOnReply (aString: String): TWsdlOperation; Overload;
     function FindXmlOperationOnRequest (aDocument: String; aXml: TXml): TWsdlOperation;
     function FindCcbOperationOnRequest (aLog: TLog; aCobolString: String): TWsdlOperation;
     function FindOperationOnDocument (aDocument: String): TWsdlOperation;
@@ -373,6 +372,7 @@ type
     fProcedureSS: TProcedureSS;
     fProcedureXX: TProcedureXX;
     fProcedureOperation: TProcedureOperation;
+    fProcedureOperationS: TProcedureOperationS;
     fProcedureObject: TProcedureObject;
     fProcedureClaimableObjectList: TProcedureClaimableObjectList;
     fString, fString2: String;
@@ -418,6 +418,14 @@ type
                        ; aProcedure: TProcedureOperation
                        ; aOperation: TWsdlOperation
                        );
+    constructor Create ( aSuspended: Boolean
+                       ; aBlocking: Boolean
+                       ; aPostponementMs: Integer
+                       ; aProject: TWsdlProject
+                       ; aProcedure: TProcedureOperationS
+                       ; aOperation: TWsdlOperation
+                       ; aString: String
+                       ); overload;
     constructor Create ( aSuspended: Boolean
                        ; aBlocking: Boolean
                        ; aPostponementMs: Integer
@@ -1073,6 +1081,25 @@ begin
   fOperation := aOperation;
 end;
 
+constructor TProcedureThread.Create ( aSuspended: Boolean
+                                    ; aBlocking: Boolean
+                                    ; aPostponementMs: Integer
+                                    ; aProject: TWsdlProject
+                                    ; aProcedure: TProcedureOperationS
+                                    ; aOperation: TWsdlOperation
+                                    ; aString: String
+                                    );
+begin
+  inherited Create (aSuspended);
+  fBlocking := aBlocking;
+  fPostponementMs := aPostponementMs;
+  FreeOnTerminate := True;
+  fProject := aProject;
+  fProcedureOperationS := aProcedure;
+  fOperation := aOperation;
+  fString := aString;
+end;
+
 constructor TProcedureThread.Create(aSuspended, aBlocking: Boolean; aPostponementMs: Integer; aProject: TWsdlProject;
   aProcedure: TProcedureObject; aObject: TObject);
 begin
@@ -1142,6 +1169,13 @@ begin
         fProcedureOperation (fOperation);
         if fOperation.FreeOnTerminateRequest then
           FreeAndNil(fOperation);
+      end;
+      if Assigned (fProcedureOperationS) then
+      begin
+        if fPostponementMs > 0 then
+          Sleep (fPostponementMs);
+        fProcedureOperationS (fOperation, fString);
+        FreeAndNil(fOperation);
       end;
       if Assigned (fProcedureObject) then fProcedureObject (fObject);
       if Assigned (fProcedureClaimableObjectList) then
@@ -4208,116 +4242,6 @@ begin
   TSendSoapRequestThread.Create (Self, aOperation, aRequest, aCorrelationId, aLater);
 end;
 
-function TWsdlProject.FindXmlOperationOnReply (aXml: TXml): TWsdlOperation;
-var
-  x, o: Integer;
-  xXml, rpyXml: TXml;
-  eBind: TCustomBindable;
-  xOperation: TWsdlOperation;
-  xRecog: TRecognition;
-  xName: String;
-begin
-  result := nil;
-  if aXml.isSoapEnvelope then
-  begin
-    for x := 0 to aXml.Items.Count - 1 do
-    begin
-      xXml := aXml.Items.XmlItems [x];
-      if (xXml.isSoapBody)
-      and (xXml.Items.Count > 0) then
-      begin
-        xName := xXml.Items.XmlItems [0].Name;
-        for o := 0 to allOperations.Count - 1 do
-        begin
-          xOperation := allOperations.Operations [o];
-          rpyXml := xOperation.rpyBind as TXml;
-          if xOperation.isSoapService
-          and (rpyXml.Items.XmlItems [xOperation.OutputHeaders.Count].Name = xName) then
-          begin
-            result := xOperation;
-            exit;
-          end;
-        end;
-        raise Exception.Create (S_NO_OPERATION_FOUND);
-      end;
-    end;
-    raise Exception.Create('no SOAP:Body found');
-  end
-  else
-  begin // no soap envelope, try non-soap operations
-    for o := 0 to allOperations.Count - 1 do
-    begin
-      xOperation := allOperations.Operations [o];
-      if not xOperation.isSoapService then
-      begin
-        case xOperation.RecognitionType of
-          rtSoap, rtDocument, rtHeader: Raise Exception.Create ('FindOperationOnReply ' + xOperation.Name + ' RecognistionType not yet supported');
-          rtXml:
-          begin
-            if (not Assigned (xOperation.rpyRecognition))
-            or (xOperation.rpyRecognition.Count = 0)
-              then raise Exception.Create (xOperation.reqTagName + ': Missing recognition specification');
-            xRecog := xOperation.rpyRecognition.Objects[0] as TRecognition;
-            eBind := aXml.FindUQBind (xRecog.Name);
-            if Assigned (eBind)
-            and (   (eBind.Value = xRecog.Value)
-                 or (StringMatchesRegExpr (eBind.Value, xRecog.Value) <> '')
-                ) then
-            begin
-              result := xOperation;
-              Exit;
-            end;
-          end;
-        end;
-      end;
-    end;
-    raise Exception.Create (S_NO_OPERATION_FOUND);
-  end;
-end;
-
-function TWsdlProject.FindCcbOperationOnReply(aCobolString: String): TWsdlOperation;
-var
-  o, r: Integer;
-  xOperation: TWsdlOperation;
-  xRecog: TRecognition;
-  xMatch: Boolean;
-begin
-  result := nil;
-  for o := 0 to allOperations.Count - 1 do
-  begin
-    if allOperations.Operations [o].WsdlService.DescriptionType = ipmDTCobol then
-    begin
-      xOperation := allOperations.Operations [o];
-      if xOperation.RecognitionType = rtSubString then
-      begin
-        xMatch := True;
-        if Assigned (xOperation.rpyRecognition) then
-        begin
-          for r := 0 to xOperation.rpyRecognition.Count - 1 do
-          begin
-            xRecog := xOperation.rpyRecognition.Objects [r] as TRecognition;
-            xMatch := (    xMatch
-                       and (Trim (Copy ( aCobolString
-                                       , xRecog.Start
-                                       , xRecog.Length
-                                       )
-                                 ) = xRecog.Value
-                           )
-                      );
-          end;
-        end;
-        if xMatch then
-        begin
-          result := xOperation;
-          exit;
-        end;
-      end
-      else
-        Raise Exception.Create ('FindOperationOnReply ' + xOperation.Name + ' RecognistionType not yet supported');
-    end;
-  end;
-end;
-
 function TWsdlProject.FindOperationOnDocument(
   aDocument: String): TWsdlOperation;
 var
@@ -4342,38 +4266,6 @@ begin
         end;
       end;
     end;
-  end;
-end;
-
-function TWsdlProject.FindOperationOnReply(aString: String): TWsdlOperation;
-var
-  xXml: TXml;
-begin
-  result := nil;
-  xXml := TXml.Create;
-  try
-    try
-      xXml.LoadFromString(aString, nil);
-    except
-      xXml.Name := '';
-    end;
-    if xXml.Name <> '' then
-      result := FindXmlOperationOnReply (xXml);
-    if not Assigned (result) then
-      result := FindCcbOperationOnReply (aString);
-    if not Assigned (result) then
-      raise Exception.Create (S_NO_OPERATION_FOUND);
-    if result.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-      result.FreeFormatReq := aString
-    else
-    begin
-      if result.reqBind is TIpmItem then
-        (result.reqBind as TIpmItem).BufferToValues (FoundErrorInBuffer, aString)
-      else
-        result.XmlReplyToBindables (xXml, False);
-    end;
-  finally
-    FreeAndNil (xXml);
   end;
 end;
 
@@ -5692,12 +5584,6 @@ begin
     isRequest := True;
     aLog.Mssg := aLog.Operation.MessageBasedOnRequest;
     aLog.CorrelationId := aLog.Operation.CorrelationIdAsText ('; ');
-  end
-  else
-  begin
-    try aLog.Operation := FindOperationOnReply(aString); except end;
-    if Assigned (aLog.Operation) then
-      aLog.CorrelationId := aLog.Operation.CorrelationIdAsText ('; ');
   end;
 end;
 
@@ -7236,7 +7122,7 @@ begin
   end;
 end;
 
-procedure TWsdlProject.OpenApiUiMessagesLog(aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList);
+procedure TWsdlProject.OpenApiUiMessagesLog(aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
 var
   xXml: TXml;
   x: Integer;
@@ -7348,18 +7234,27 @@ begin
                                                      );
           except
           end;
-          if not Assigned (xLog.Operation) then
-          try
-            xLog.Operation := FindOperationOnReply(xLog.ReplyBody);
-            if Assigned (xLog.Operation) then
-              xLog.OperationName:=xLog.Operation.Alias;
-          except
-          end;
           if Assigned (xLog.Operation) then
           begin
             xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
             xLog.toBindables(xLog.Operation);
             xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
+            if aDoLogEventProcessing then
+            begin
+              if xLog.Operation.onFetchLogFromCloud <> '' then
+              begin
+                with TWsdlOperation.Create(xLog.Operation) do
+                try
+                  try
+                    xLog.toBindables(thisOperation);
+                    OperationScriptExecuteLater(thisOperation, onFetchLogFromCloud, 0);
+                  except
+                  end;
+                finally
+                  // Freed in Thread;
+                end;
+              end;
+            end;
           end;
           LogFilter.Execute (xLog);
           aLogList.SaveLog ('', xLog);
@@ -7372,7 +7267,7 @@ begin
 end;
 
 procedure TWsdlProject.OpenWireMockMessagesLog(aString: String; aIsFileName,
-  aPrompt: Boolean; aLogList: TLogList);
+  aPrompt: Boolean; aLogList: TLogList; aExecuteOnReadLog: Boolean = False);
 var
   xXml, yXml, zXml, dXml: TXml;
   x, y, d: Integer;
@@ -7595,6 +7490,72 @@ begin
     FreeAndNil(Data);
     Free;
   end;
+end;
+
+procedure TWsdlProject.OperationScriptExecute(aOperation: TWsdlOperation; aScript: String);
+var
+  x: Integer;
+begin
+  if aScript = '' then Exit;
+  if not Assigned (aOperation) then Exit;
+  with TXml.CreateAsString('Script', '') do
+  try
+    AddXml (Txml.CreateAsString('Name', aOperation.Alias + '_script'));
+    with AddXml (Txml.CreateAsString('Invoke', '')) do
+    begin
+      with AddXml (Txml.CreateAsString('operations', '')) do
+      begin
+        for x := 0 to aOperation.invokeList.Count - 1 do
+          AddXml (TXml.CreateAsString('name', aOperation.invokeList.Strings[x]));
+        AddXml (TXml.CreateAsString('name', aOperation.Alias));
+      end;
+    end;
+    AddXml (Txml.CreateAsString('Code', aScript));
+    with CreateScriptOperation(thisXml) do
+    try
+      with invokeList.FindOnAliasName(aOperation.Alias) do
+      begin
+        if isFreeFormat then
+        begin
+          FreeFormatReq := aOperation.FreeFormatReq;
+          FreeFormatRpy := aOperation.FreeFormatRpy;
+        end
+        else
+        begin
+          if reqBind is TIpmItem then
+            (reqBind as TIpmItem).LoadValues (aOperation.reqBind as TIpmItem);
+          if rpyBind is TIpmItem then
+            (rpyBind as TIpmItem).LoadValues (aOperation.rpyBind as TIpmItem);
+          if reqBind is TXml then
+            (reqBind as TXml).LoadValues (aOperation.reqBind as TXml, True, True);
+          if rpyBind is TXml then
+            (rpyBind as TXml).LoadValues (aOperation.rpyBind as TXml, True, True);
+        end;
+      end;
+      Wsdl := TWsdl.Create(EnvVars, True);
+      try
+        if PreparedBefore then
+        try
+          ExecuteBefore;
+        except
+          on e: Exception do
+            LogServerMessage(e.Message, True, e);
+        end;
+      finally
+        Wsdl.Free;
+      end;
+    finally
+      FreeAndNil(Data);
+      Free;
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TWsdlProject.OperationScriptExecuteLater(aOperation: TWsdlOperation; aScript: String; aLater: Integer);
+begin
+  TProcedureThread.Create(False, False, aLater, self, OperationScriptExecute, aOperation, aScript);
 end;
 
 function TWsdlProject.FindSnapshot(aName: String): TSnapshot;
@@ -8699,8 +8660,8 @@ begin
     xLogList := TLogList.Create;
     try
       case remoteServerConnectionType of
-        rscApiUi: OpenApiUiMessagesLog(s, False, False, xLogList);
-        rscWireMock: OpenWireMockMessagesLog(s, False, False, xLogList);
+        rscApiUi: OpenApiUiMessagesLog(s, False, False, xLogList, True);
+        rscWireMock: OpenWireMockMessagesLog(s, False, False, xLogList, True);
       end;
       for x := 0 to xLogList.Count - 1 do
       begin

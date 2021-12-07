@@ -19,7 +19,7 @@ unit httpmultipart;
 interface
 
 uses
-  Classes, StrUtils, SysUtils, IdGlobalProtocols, IdMessageCoderMIME, IdMessageCoder, IdCustomHTTPServer, GZIPUtils, Bind, Xmlz;
+  Classes, StrUtils, SysUtils, IdGlobal, IdGlobalProtocols, IdMessageCoderMIME, IdMessageCoder, IdCustomHTTPServer, GZIPUtils, Bind, Xmlz;
 
 function ParseMultiPartBody (ARequestInfo: TIdHTTPRequestInfo): TXml;
 
@@ -31,13 +31,17 @@ var
   unzipStream: TStream;
   stringStream: TStringStream;
   decoder: TIdMessageDecoderMIME;
+  bodyDecoder: TIdMessageDecoder;
   eomessage: Boolean;
+  xContentTransferEncoding: String;
+  LEncoding: IIdTextEncoding;
   xName, xValue: String;
   x: Integer;
 begin
   result := TXml.Create;
   stringStream := TStringStream.Create;
   unzipStream := nil;
+  eomessage := False;
   if not StartsText('multipart', ARequestInfo.ContentType) then Exit;
   if not Assigned(ARequestInfo.PostStream) then Exit;
   try
@@ -62,13 +66,16 @@ begin
       begin
         xName := '';
         xValue := '';
+        xContentTransferEncoding := '';
         for x := 0 to decoder.headers.count -1 do
         begin
           if StartsText('Content-Disposition=', decoder.headers.Strings [x]) then
             xName := ExtractHeaderSubItem(decoder.headers.Strings [x], 'name', QuoteHTTP);
+          if StartsText('Content-Transfer-Encoding=', decoder.headers.Strings [x]) then
+            xContentTransferEncoding := decoder.Headers.ValueFromIndex[x];
         end;
         stringStream.Clear;
-        decoder.ReadBody(stringStream, eomessage);
+        bodyDecoder := decoder.ReadBody(stringStream, eomessage);
         case decoder.PartType of
          mcptAttachment:
          begin
@@ -80,11 +87,13 @@ begin
          end;
          mcptText:
          begin
-           with stringStream do
-           begin
-             Position := 0;
-             if Size > 2 then
-               xValue := ReadString(Size - 2);
+           stringStream.Position := 0;
+           case PosInStrArray(xContentTransferEncoding, ['7bit', 'quoted-printable', 'base64', '8bit', 'binary'], False) of {do not localize}
+           0..2:
+             if stringStream.Size > 2 then
+               xValue := stringStream.ReadString(stringStream.Size - 2);
+           else
+             xValue := ReadStringFromStream(stringStream, -1, IndyTextEncoding_8Bit{$IFDEF STRING_IS_ANSI}, ADestEncoding{$ENDIF}); ;
            end;
          end;
         end;

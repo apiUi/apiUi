@@ -1,7 +1,13 @@
   <WsdlStubCase>
     <FileName>/home/developer/data/gitrepo/APIUI/Lazarus/wsdlStub/Testing/allTypes/allTypesRequestor.svpr</FileName>
     <Listeners></Listeners>
-    <remoteServerConnection></remoteServerConnection>
+    <remoteServerConnection>
+      <Enabled>true</Enabled>
+      <Address>http://localhost:7777</Address>
+      <type>
+        <apiUi></apiUi>
+      </type>
+    </remoteServerConnection>
     <projectOptions>
       <General>
         <versionInfo>
@@ -22,11 +28,11 @@
         <ShowCobolDataAs>Cobol</ShowCobolDataAs>
         <DisplayedColumns></DisplayedColumns>
       </Log>
-      <Wsdl>
+      <formGeneration>
         <OperationsWithEndpointOnly>true</OperationsWithEndpointOnly>
         <MaxDepthWhenRecursive>1</MaxDepthWhenRecursive>
-        <MaxDepthXmlGen>9999</MaxDepthXmlGen>
-      </Wsdl>
+        <MaxDepthStructure>9999</MaxDepthStructure>
+      </formGeneration>
       <CORS>
         <accept>
           <showInLog>false</showInLog>

@@ -1,16 +1,9 @@
   <WsdlStubCase>
-    <FileName>/home/developer/data/gitrepo/APIUI/Lazarus/wsdlStub/Testing/allTypes/allTypesResponder.svpr</FileName>
+    <FileName>D:\Data\gitrepo\apiUi\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr</FileName>
     <Listeners>
-      <Https>
+      <Http>
         <Port>7777</Port>
-        <SSL>
-          <Version>TLS Version 1.2</Version>
-          <CertificateFile>client.pem</CertificateFile>
-          <KeyFile>client.pem</KeyFile>
-          <RootCertificateFile>root.pem</RootCertificateFile>
-          <Password>FRg3BxwDRkQV</Password>
-        </SSL>
-      </Https>
+      </Http>
     </Listeners>
     <remoteServerConnection></remoteServerConnection>
     <projectOptions>
@@ -23,9 +16,9 @@
         </versionInfo>
         <SaveRelativeFileNames>true</SaveRelativeFileNames>
         <projectFolders>
-          <current>../../../../../../apiUi/</current>
-          <reference>../../../../../../apiUi/</reference>
-          <reports>../../../../../../apiUi/</reports>
+          <current>..\..\..\..\..\..\apiUi\</current>
+          <reference>..\..\..\..\..\..\apiUi\</reference>
+          <reports>..\..\..\..\..\..\apiUi\</reports>
         </projectFolders>
       </General>
       <Log>
@@ -33,11 +26,11 @@
         <ShowCobolDataAs>Cobol</ShowCobolDataAs>
         <DisplayedColumns></DisplayedColumns>
       </Log>
-      <Wsdl>
+      <formGeneration>
         <OperationsWithEndpointOnly>true</OperationsWithEndpointOnly>
         <MaxDepthWhenRecursive>1</MaxDepthWhenRecursive>
-        <MaxDepthXmlGen>9999</MaxDepthXmlGen>
-      </Wsdl>
+        <MaxDepthStructure>9999</MaxDepthStructure>
+      </formGeneration>
       <CORS>
         <accept>
           <showInLog>false</showInLog>

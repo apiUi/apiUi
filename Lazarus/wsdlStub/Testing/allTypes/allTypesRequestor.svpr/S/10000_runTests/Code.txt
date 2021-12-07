@@ -9,6 +9,8 @@ RequestOperation ('CreateServiceRequest2');
 RequestOperation ('CreateServiceRequest2');
 RequestOperation ('freeformatOperation');
 RequestOperation ('freeformatOperation');
+RequestOperation ('uploadDocument');
+RequestOperation ('uploadDocument');
 
 CreateSnapshot ('testRun');
 
