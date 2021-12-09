@@ -231,6 +231,17 @@ paths:
           description: Success response
           schema:
             $ref: '#/definitions/listOfSnapshots'
+  /snapshots/regression:
+    get:
+      summary: creates a test summary report over all currently available snapshots
+      operationId: zzSnapshotsRegression
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success response
   /snapshots/testsummaryreport:
     get:
       summary: creates a test summary report over all currently available snapshots

@@ -512,6 +512,7 @@ uses LazVersion
    , GZIPUtils
    , htmlxmlutilz
    , htmlreportz
+   , xmlreportz
    , junitunit
    , IdGlobalProtocols
    , IdSSLOpenSSLHeaders
@@ -813,6 +814,21 @@ begin
   if not Assigned (xProject) then
     raise Exception.Create('ClearLogs; unable to determine context');
   xProject.doClearLogs := True;
+end;
+
+procedure LogsFromRemoteServer (aContext: TObject);
+var
+  xProject: TWsdlProject;
+begin
+  xProject := nil; //candidate context
+  if aContext is TWsdlProject then
+    xProject := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      xProject := Owner as TWsdlProject;
+  if not Assigned (xProject) then
+    raise Exception.Create('ClearLogs; unable to determine context');
+  xProject.LogsFromRemoteServer;
 end;
 
 procedure ClearSnapshots (aContext: TObject);
@@ -6051,6 +6067,32 @@ begin
 
         if (Count = 5)
         and (Strings[3] = 'snapshots')
+        and ((Strings[4] = 'regression'))
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          with TSnapshotList.Create do
+          try
+            AcquireLogLock;
+            try
+              for x := 0 to displayedSnapshots.Count - 1 do
+                AddObject('', displayedSnapshots.SnapshotItems[x]);
+            finally
+              ReleaseLogLock;
+            end;
+            with xmlRegressionReport(self, thisSnapshotList) do
+            try
+              AResponseInfo.ContentText := StreamJSON(0, False);
+            finally
+              Free;
+            end;
+          finally
+            Free;
+          end;
+          Exit;
+        end;
+
+        if (Count = 5)
+        and (Strings[3] = 'snapshots')
         and ((Strings[4] = 'testsummaryreport'))
         and (ARequestInfo.Command = 'GET')
         then begin
@@ -8799,6 +8841,7 @@ initialization
   _WsdlRequestAsText := RequestAsText;
   _WsdlReplyAsText := ReplyAsText;
   _WsdlClearLogs := ClearLogs;
+  _WsdlLogsFromRemoteServer := LogsFromRemoteServer;
   _WsdlClearSnapshots := ClearSnapshots;
   _WsdlCreateSnapshot := CreateSnapshot;
   _WsdlCreateJUnitReport := CreateJUnitReport;

@@ -46,6 +46,7 @@ type
     Status: TSnapshotStatus;
     Name, FileName, RefFileName, Message: String;
     timeStamp: TDateTime;
+    function thisSnaphot: TSnapshot;
     procedure doReport; virtual abstract;
     function Verdict: String;
     function VerdictColorAsString: String;
@@ -140,6 +141,11 @@ begin
     rsNok: result := 'nok';
     rsException: result := 'exception';
   end;
+end;
+
+function TSnapshot.thisSnaphot: TSnapshot;
+begin
+  result := self;
 end;
 
 function TSnapshot .Verdict : String ;
