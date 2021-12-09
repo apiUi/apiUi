@@ -631,6 +631,7 @@ procedure CreateSnapshot (aObject: TObject; aName: String);
 procedure CreateJUnitReport (aObject: TObject; aName: String);
 procedure CreateSummaryReport (aObject: TObject; aName: String);
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
+procedure LogsFromRemoteServer (aObject: TObject);
 procedure ClearLogs (aObject: TObject);
 procedure ClearSnapshots (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
@@ -683,6 +684,7 @@ var
   _WsdlCreateSummaryReport: VFunctionOS;
   _WsdlCreateCoverageReport: VFunctionOB;
   _WsdlClearLogs: VFunctionOV;
+  _WsdlLogsFromRemoteServer: VFunctionOV;
   _WsdlClearSnapshots: VFunctionOV;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
@@ -812,6 +814,13 @@ begin
   if not Assigned (_WsdlAddRemark) then
     raise Exception.Create('No OnAddRemark event assigned: intention was to log remark: ' + aString);
   _WsdlAddRemark (aObject, aString);
+end;
+
+procedure LogsFromRemoteServer(aObject: TObject);
+begin
+  if not Assigned (_WsdlLogsFromRemoteServer) then
+    raise Exception.Create('No LogsFromRemoteServer event assigned');
+  _WsdlLogsFromRemoteServer (aObject);
 end;
 
 procedure ClearLogs (aObject: TObject);
@@ -3833,6 +3842,7 @@ begin
     BindScriptFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindScriptFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('Latin1Str', @Latin1, SFS, '(aString)');
+    BindScriptFunction ('LogsFromRemoteServer', @LogsFromRemoteServer, VFOV, '()');
     BindScriptFunction ('NameCaseStr', @StrToNameCase, SFS, '(aString)');
     BindScriptFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindScriptFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
