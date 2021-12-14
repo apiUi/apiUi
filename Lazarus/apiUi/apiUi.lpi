@@ -22,7 +22,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="7"/>
-      <BuildNr Value="13171"/>
+      <BuildNr Value="13173"/>
       <StringTable CompanyName="apiUi.org" FileDescription="apiUi - api tester and mocker" ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">

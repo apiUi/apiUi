@@ -1,0 +1,53 @@
+swagger: '2.0'
+info:
+  description: 'Allows consumers of the API to upload and download customer documents.'
+  version: 0.0.9
+  title: Customer Documents API
+basePath: 
+paths:
+  '/api/customer-documents/document':
+    post:
+      tags:
+        - document-controller
+      summary: Upload a document
+      description: Upload a document to EKD (with metadata)
+      operationId: uploadDocument
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json;charset=UTF-8
+      parameters:
+        - name: file
+          in: formData
+          description: 'A multipart file (in binary [not base64!] format) to upload'
+          required: true
+          type: file
+        - in: formData
+          name: document_source
+          type: string
+          description: 'A label identifying the source of the document (usually a system, but can be more contextual). Its value is often, but not necessarily, equal to that of the RequestingSystemKey. This label needs to be aligned with EKD, but will never be longer than 30 characters.'
+          required: true
+        - in: formData
+          name: archive_rule_label
+          type: string
+          description: 'A label for mapping the document to an archive rule. This label needs to be aligned with EKD, but it can''t be longer than 30 characters. Required, unless - in certain special cases - the archive_like_document field is used.'
+      responses:
+        '201':
+          description: Successfully created new document
+          headers:
+            Location:
+              type: string
+              description: 'Location where the file can be retrieved (example: /api/customer-documents/document/my-documentkey)'
+          schema:
+            $ref: '#/definitions/UploadDocumentResponse'
+definitions:
+  'UploadDocumentResponse':
+    type: object
+    title: UploadDocument Response
+    description: Response of the uploadDocument call
+    properties:
+      document_key:
+        type: string
+        description: The document key of the uploaded document
+    required:
+      - document_key
