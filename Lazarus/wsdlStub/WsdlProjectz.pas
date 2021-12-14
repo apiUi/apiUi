@@ -3752,7 +3752,7 @@ begin
             begin
               if Assigned (TypeDef)
               and (TypeDef.BaseDataTypeName = 'file') then
-                AddFile(Name, Value)
+                AddFile(Name, ExpandRelativeFileName (projectFileName, Value))
               else
                 AddFormField(Name, Value);
             end;
