@@ -233,7 +233,7 @@ paths:
             $ref: '#/definitions/listOfSnapshots'
   /snapshots/regression:
     get:
-      summary: creates a test summary report over all currently available snapshots
+      summary: creates a regression test report over all currently available snapshots
       operationId: zzSnapshotsRegression
       consumes:
         - application/json
@@ -242,6 +242,8 @@ paths:
       responses:
         '200':
           description: Success response
+          schema:
+            $ref: '#/definitions/snapshotsregression'
   /snapshots/testsummaryreport:
     get:
       summary: creates a test summary report over all currently available snapshots
@@ -478,6 +480,20 @@ paths:
           schema:
             $ref: '#/definitions/versionInfo'
 definitions:
+  snapshotsregression:
+    type: object
+    properties:
+      result:
+        type: string
+      verdicts:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            verdict:
+              type: string
   checkRegressionReq:
     type: object
     properties:

@@ -1,0 +1,17 @@
+  <Message>
+    <Name>Request1</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <uploadDocument checked__="false"></uploadDocument>
+    </Reply>
+    <Request>
+      <uploadDocument checked__="true">
+        <file checked__="true">./justapdf.pdf</file>
+        <document_source checked__="true">docsrc</document_source>
+        <archive_rule_label checked__="true">archrule</archive_rule_label>
+      </uploadDocument>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+    <focusedMessage>true</focusedMessage>
+  </Message>

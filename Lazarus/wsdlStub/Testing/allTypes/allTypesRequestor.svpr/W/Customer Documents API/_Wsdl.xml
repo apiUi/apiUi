@@ -1,0 +1,4 @@
+  <Wsdl>
+    <Name>Customer Documents API</Name>
+    <WsdlLocation>..\..\..\..\..\apiUi\Lazarus\wsdlStub\Testing\allTypes\multipart.yaml</WsdlLocation>
+  </Wsdl>
