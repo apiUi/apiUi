@@ -846,7 +846,7 @@ type
     procedure ClearLogItemsActionExecute(Sender: TObject);
     procedure ClearLogItemsActionUpdate(Sender: TObject);
     procedure WsdlInfoPanelResize(Sender: TObject);
-    function CheckHttpAddress (aBind: TObject; aNewValue: String): Boolean;
+    function EditHttpAddress (aXml: TObject): Boolean;
     procedure RedirectAddressActionExecute(Sender: TObject);
     procedure TreeViewResize(Sender: TObject);
     procedure GridViewExit(Sender: TObject);
@@ -1300,7 +1300,7 @@ uses
 {$ENDIF}
   wsdlListUnit, ErrorFound, ClipBrd, ShowXmlUnit,
   ShowXmlCoverageUnit,logChartzUnit, EditOperationScriptUnit, igGlobals,
-  ChooseStringUnit, AboutUnit, StrUtils,
+  ChooseStringUnit, ChooseEnumUnit, AboutUnit, StrUtils,
   apiuiconsts,
   DisclaimerUnit,
   PromptUnit, SelectXmlElement, ApplyToUnit, wsaConfigUnit,
@@ -4791,22 +4791,56 @@ begin
   }
 end;
 
-function TMainForm.CheckHttpAddress (aBind: TObject; aNewValue: String): Boolean;
+function TMainForm.EditHttpAddress (aXml: TObject): Boolean;
+var
+  x: Integer;
+  xChooseEnumForm: TChooseEnumForm;
+  xOperation: TWsdlOperation;
+  xEnumeration: TXsdEnumeration;
+  xOldValue: String;
 begin
-  result := True;    // avoids losing data entry, warning only
-  with TIdUri.Create(aNewValue) do
+  result := False;
+  xOperation := FocusedOperation;
+  Application.CreateForm(TChooseEnumForm, xChooseEnumForm);
+  xChooseEnumForm.Enums := TStringList.Create;
   try
-    if FocusedOperation.isOpenApiService then
+    with aXml as TXml do
     begin
-      if (Path + Document <> '/') then
+      xOldValue := thisXml.Value;
+      if Assigned (xOperation.Wsdl.Servers) then
       begin
-        ShowMessage (Format ('no path (%s) allowed on OpenApi service', [Path + Document]));
-        Exit;
+        for x := 0 to xOperation.Wsdl.Servers.Count - 1 do
+        with xOperation.Wsdl.Servers do
+        begin
+          xEnumeration := TXsdEnumeration.Create;
+          xEnumeration.Value := Strings[x];
+          xChooseEnumForm.Enums.AddObject(xEnumeration.Value, xEnumeration);
+        end;
+      end;
+      if xOperation.isSoapService then
+      begin
+        xEnumeration := TXsdEnumeration.Create;
+        xEnumeration.Value := xOperation.SoapAddress;
+        xChooseEnumForm.Enums.AddObject(xEnumeration.Value, xEnumeration);
+      end;
+      xChooseEnumForm.ChoosenString := thisXml.Value;
+      xChooseEnumForm.Caption := 'Choose value for ' + thisXml.Name;
+      xChooseEnumForm.ShowModal;
+      if (xChooseEnumForm.ModalResult = mrOk) then
+      begin
+        thisXml.Value := xChooseEnumForm.ChoosenString;
+        if thisXml.Value <> xOldValue then
+        begin
+          thisXml.Checked := True;
+          Result := True;
+        end;
       end;
     end;
-    Result := True;
   finally
-    free;
+    for x := 0 to xChooseEnumForm.Enums.Count - 1 do
+      xChooseEnumForm.Enums.Objects[x].Free;
+    FreeAndNil(xChooseEnumForm.Enums);
+    xChooseEnumForm.Free;
   end;
 end;
 
@@ -4823,19 +4857,8 @@ begin
     xXml := endpointConfigAsXml;
     try
       endpointConfigXsd.FindXsd('endpointConfig.Http.Verb').isReadOnly := (WsdlOperation.isOpenApiService);
-//    endpointConfigXsd.FindXsd('endpointConfig.Http.Address').CheckNewValue := CheckHttpAddress;
-      if Assigned (WsdlOperation.Wsdl.Servers) then
-      begin
-        for x := 0 to WsdlOperation.Wsdl.Servers.Count - 1 do
-        with WsdlOperation.Wsdl.Servers do
-        begin
-          xEnumeration := TXsdEnumeration.Create;
-          xEnumeration.Value := Strings[x];
-          endpointConfigXsd.FindXsd('endpointConfig.Http.Address').sType.Enumerations.AddObject(xEnumeration.Value, xEnumeration);
-        end;
-      end;
-      if EditXmlXsdBased('Configure Endpoint', '', '', '', False, False, esUsed,
-        endpointConfigXsd, xXml, True) then
+      endpointConfigXsd.FindXsd('endpointConfig.Http.Address').EditProcedure := EditHttpAddress;
+      if EditXmlXsdBased('Configure Endpoint', '', '', '', False, False, esUsed, endpointConfigXsd, xXml, True) then
       begin
         AcquireLock;
         try
@@ -4847,12 +4870,6 @@ begin
       end;
     finally
       xXml.Free;
-      with endpointConfigXsd.FindXsd('endpointConfig.Http.Address').sType.Enumerations do
-      begin
-        for x:= 0 to Count - 1 do
-          Objects[x].Free;
-        Clear;
-      end;
     end;
   end;
 end;
