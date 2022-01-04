@@ -6,7 +6,7 @@
     </Reply>
     <Request>
       <uploadDocument checked__="true">
-        <file checked__="true">D:\Data\gitrepo\apiUi\Lazarus\wsdlStub\Testing\allTypes\cobolcopybookrequest.cob</file>
+        <file checked__="true">files\cobolcopybookrequest.cob</file>
         <document_source checked__="true">docsrc</document_source>
         <archive_rule_label checked__="true">archrule</archive_rule_label>
       </uploadDocument>

@@ -1,9 +1,23 @@
   <WsdlStubCase>
-    <FileName>D:\Data\gitrepo\apiUi\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr</FileName>
+    <FileName>D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr</FileName>
     <Listeners>
       <Http>
         <Port>7777</Port>
       </Http>
+      <Stomp>
+        <Broker>
+          <Host>${stomphost}</Host>
+          <Port>61613</Port>
+          <Credentials>
+            <Name>admin</Name>
+            <Password>FQwzGxs=</Password>
+          </Credentials>
+          <DequeueOn>Process</DequeueOn>
+          <Queues>
+            <Queue>requestq</Queue>
+          </Queues>
+        </Broker>
+      </Stomp>
     </Listeners>
     <remoteServerConnection></remoteServerConnection>
     <projectOptions>
@@ -16,9 +30,9 @@
         </versionInfo>
         <SaveRelativeFileNames>true</SaveRelativeFileNames>
         <projectFolders>
-          <current>..\..\..\..\..\..\apiUi\</current>
-          <reference>..\..\..\..\..\..\apiUi\</reference>
-          <reports>..\..\..\..\..\..\apiUi\</reports>
+          <current>Current</current>
+          <reference>Reference</reference>
+          <reports>Current</reports>
         </projectFolders>
       </General>
       <Log>

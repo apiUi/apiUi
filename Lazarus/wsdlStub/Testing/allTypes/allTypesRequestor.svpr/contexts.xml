@@ -1,0 +1,17 @@
+  <contexts version="3">
+    <row>
+      <col> </col>
+      <col>Address</col>
+      <col>stomphost</col>
+    </row>
+    <row>
+      <col>localhost</col>
+      <col>http://localhost:7777</col>
+      <col>localhost</col>
+    </row>
+    <row>
+      <col>dockernet</col>
+      <col>http://apiuiresponder:7777</col>
+      <col>activemq</col>
+    </row>
+  </contexts>

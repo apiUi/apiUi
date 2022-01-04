@@ -38,18 +38,25 @@
     <DelayTimeMsMin>0</DelayTimeMsMin>
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
-      <Http>
-        <Address>http://localhost:7777</Address>
-        <Verb>POST</Verb>
-        <ContentEncoding>identity</ContentEncoding>
-        <AcceptEncoding>
-          <deflate>false</deflate>
-          <gzip>false</gzip>
-        </AcceptEncoding>
+      <Stomp>
+        <Host>${stomphost}</Host>
+        <Port>61613</Port>
+        <Credentials>
+          <Name>admin</Name>
+          <Password>FQwzGxs=</Password>
+        </Credentials>
+        <ClientId>apiui</ClientId>
+        <Timeout>30</Timeout>
+        <stompHeader>
+          <destination>requestq</destination>
+          <persistent>False</persistent>
+          <reply-to>replytoq</reply-to>
+        </stompHeader>
         <customHeaders></customHeaders>
-      </Http>
+      </Stomp>
     </endpointConfig>
     <CorrelationElements></CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
+    <focusedOperation>true</focusedOperation>
   </Operation>

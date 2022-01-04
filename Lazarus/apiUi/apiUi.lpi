@@ -22,7 +22,8 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="7"/>
-      <BuildNr Value="13175"/>
+      <RevisionNr Value="1"/>
+      <BuildNr Value="13179"/>
       <StringTable CompanyName="apiUi.org" FileDescription="apiUi - api tester and mocker" ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -437,7 +438,6 @@
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>
-        <Enabled Value="False"/>
       </Item10>
       <Item11>
         <Name Value="EOraDatabaseError"/>

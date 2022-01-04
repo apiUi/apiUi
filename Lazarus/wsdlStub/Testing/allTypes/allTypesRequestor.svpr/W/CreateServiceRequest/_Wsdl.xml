@@ -1,4 +1,4 @@
   <Wsdl>
     <Name>CreateServiceRequest</Name>
-    <WsdlLocation>CreateServiceRequest_2_contract.wsdl</WsdlLocation>
+    <WsdlLocation>files\CreateServiceRequest_2_contract.wsdl</WsdlLocation>
   </Wsdl>

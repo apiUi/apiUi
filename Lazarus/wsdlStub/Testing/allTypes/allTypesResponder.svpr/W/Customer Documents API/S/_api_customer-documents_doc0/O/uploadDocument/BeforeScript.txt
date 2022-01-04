@@ -1,0 +1,7 @@
+if OperationCount () Mod 2 = 0 then
+{
+  RaiseHttpFault ('401', '{"exceptionfrom": "' + OperationName () + '"}', 'application/json');
+  AddRemark ('this remark should not be here!!');
+}
+Rpy.uploadDocument.rspns201.body.document_key := Req.uploadDocument.document_source;
+

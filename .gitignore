@@ -8,3 +8,5 @@ lib
 /Lazarus/apiUi_Windows
 /Lazarus/apiUi_Windows.zip
 /Lazarus/wsdlStub/backup/*.bak
+/Lazarus/Xml/backup/*.bak
+/Lazarus/apiUi_Linux.tar.gz
