@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <uploadDocument checked__="false"></uploadDocument>
+    </Reply>
+    <Request>
+      <uploadDocument checked__="false"></uploadDocument>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

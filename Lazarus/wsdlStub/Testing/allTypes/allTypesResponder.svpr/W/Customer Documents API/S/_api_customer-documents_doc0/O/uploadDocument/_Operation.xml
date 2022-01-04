@@ -1,7 +1,7 @@
   <Operation>
-    <Name>cobol</Name>
-    <Action>3</Action>
-    <Alias>cobol</Alias>
+    <Name>/api/customer-documents/document:post</Name>
+    <Action>0</Action>
+    <Alias>uploadDocument</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -38,7 +38,6 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
-        <Address>${Address}</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>

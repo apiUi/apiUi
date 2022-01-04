@@ -5,10 +5,10 @@
         <Name>cobol</Name>
         <CobolEnvironment>Tandem</CobolEnvironment>
         <Req>
-          <DescriptionFile>cobolcopybookrequest.cob</DescriptionFile>
+          <DescriptionFile>files\cobolcopybookrequest.cob</DescriptionFile>
         </Req>
         <Rpy>
-          <DescriptionFile>cobolcopybookresponse.cob</DescriptionFile>
+          <DescriptionFile>files\cobolcopybookresponse.cob</DescriptionFile>
         </Rpy>
         <reqRecognition>
           <SubStrings>

@@ -1,6 +1,10 @@
   <WsdlStubCase>
-    <FileName>D:\Data\gitrepo\APIUI\Lazarus\wsdlStub\Testing\allTypes\allTypesRequestor.svpr</FileName>
-    <Listeners></Listeners>
+    <FileName>D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesRequestor.svpr</FileName>
+    <Listeners>
+      <Http>
+        <Port>7776</Port>
+      </Http>
+    </Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
       <Address>http://localhost:7777</Address>
@@ -18,9 +22,9 @@
         </versionInfo>
         <SaveRelativeFileNames>true</SaveRelativeFileNames>
         <projectFolders>
-          <current>Current</current>
-          <reference>Reference</reference>
-          <reports>Reports</reports>
+          <current>Logs\Current</current>
+          <reference>Logs\Reference</reference>
+          <reports>Logs\Reports</reports>
         </projectFolders>
       </General>
       <Log>

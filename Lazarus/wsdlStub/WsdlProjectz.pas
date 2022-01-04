@@ -1365,9 +1365,9 @@ begin
     if Assigned (_WsdlRtiXsd) then
       _WsdlRtiXml := TXml.Create(-10000, _WsdlRtiXsd);
     if Assigned (endpointConfigXsd)
-    and (endpointConfigXsd.sType.ElementDefs.Count > Ord (ttStomp)) then
+    and Assigned (endpointConfigXsd.sType.ElementDefs.XsdByName['Stomp']) then
     begin
-      with endpointConfigXsd.sType.ElementDefs.Xsds [Ord (ttStomp)] do
+      with endpointConfigXsd.sType.ElementDefs.XsdByName['Stomp'] do
       begin
         for x := 0 to sType.ElementDefs.Count - 1 do
         begin
@@ -3021,7 +3021,8 @@ begin
     else
       if (xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat]) then
         xOperation.FreeFormatRpy := aLog.Mssg.FreeFormatRpy;
-    if not xOperation.doReadReplyFromFile then
+    if (not xOperation.doReadReplyFromFile)
+    and (not (xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat])) then
     begin
       if xOperation.rpyBind is TIpmItem then
     //    xOperation.rpyIpm.BufferToValues (FoundErrorInBuffer, aReply.rpyIpm.ValuesToBuffer (nil))
