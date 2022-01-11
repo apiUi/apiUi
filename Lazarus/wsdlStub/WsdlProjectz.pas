@@ -2996,8 +2996,9 @@ begin
     begin
       aLog.RequestValidateResult := '';
       aLog.RequestValidated := True;
-      if not xOperation.reqBind.IsValueValid (aLog.RequestValidateResult) then
+      if not xOperation.reqBind.IsValueValid then
       begin
+        aLog.RequestValidateResult := xOperation.reqBind.AllValidationsMessage;
         if doReturnExceptionOnViolatingInboundRequest(xOperation) then
         begin
           if xOperation.inboundRequestSchemaValidationType = svAccordingProject then
@@ -3054,8 +3055,8 @@ begin
       and (not xOperation.ReturnSoapFault) then
       begin
         aLog.ReplyValidated := True;
-        aLog.ReplyValidateResult := '';
-        xOperation.rpyBind.IsValueValid (aLog.ReplyValidateResult);
+        xOperation.rpyBind.IsValueValid;
+        aLog.ReplyValidateResult := xOperation.rpyBind.AllValidationsMessage;
       end;
     end;
     aLog.InitDisplayedColumns(xOperation, DisplayedLogColumns);
@@ -3986,10 +3987,9 @@ var
   xXml: TXml;
   xNow: TDateTime;
   xLog: TLog;
-  xMessage, s: String;
+  s: String;
 begin
   xNow := Now;
-  xMessage := '';
   if not Assigned (aOperation)
     then raise Exception.Create('SendMessage: null arguments');
   if Assigned (aOperation.Data)
@@ -4033,8 +4033,8 @@ begin
       end;
       if doValidateOutboundRequests(aOperation) then
       begin
-        if not aOperation.reqBind.IsValueValid (xMessage) then
-          xLog.RequestValidateResult := xMessage;
+        aOperation.reqBind.IsValueValid;
+        xLog.RequestValidateResult := aOperation.reqBind.AllValidationsMessage;
         xLog.RequestValidated := True;
       end;
       xLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
@@ -4065,8 +4065,8 @@ begin
           xLog.OpenApiReplyToBindables(aOperation);
           if doValidateInboundReplies(aOperation) then
           begin
-            if not aOperation.rpyBind.IsValueValid (xMessage) then
-              xLog.ReplyValidateResult := xMessage;
+            aOperation.rpyBind.IsValueValid;
+            xLog.ReplyValidateResult := aOperation.rpyBind.AllValidationsMessage;
             xLog.ReplyValidated := True;
           end;
         end
@@ -4077,8 +4077,8 @@ begin
             aOperation.FreeFormatRpy := xLog.ReplyBody;
             if doValidateInboundReplies(aOperation) then
             begin
-              if not aOperation.rpyBind.IsValueValid (xMessage) then
-                xLog.ReplyValidateResult := xMessage;
+              aOperation.rpyBind.IsValueValid;
+              xLog.ReplyValidateResult := aOperation.rpyBind.AllValidationsMessage;
               xLog.ReplyValidated := True;
             end;
           end
@@ -4105,8 +4105,8 @@ begin
               (aOperation.rpyBind as TIpmItem).BufferToValues (FoundErrorInBuffer, xLog.ReplyBody);
             if doValidateInboundReplies(aOperation) then
             begin
-              if not aOperation.rpyBind.IsValueValid (xMessage) then
-                xLog.ReplyValidateResult := xMessage;
+              aOperation.rpyBind.IsValueValid;
+              xLog.ReplyValidateResult := aOperation.rpyBind.AllValidationsMessage;
               xLog.ReplyValidated := True;
             end;
           end;
@@ -6672,8 +6672,9 @@ begin
         begin
           aLog.RequestValidateResult := '';
           aLog.RequestValidated := True;
-          if not xOperation.reqBind.IsValueValid (aLog.RequestValidateResult) then
+          if not xOperation.reqBind.IsValueValid then
           begin
+            aLog.RequestValidateResult := xOperation.reqBind.AllValidationsMessage;
             if doReturnExceptionOnViolatingInboundRequest(xOperation) then
             begin
               if xOperation.inboundRequestSchemaValidationType = svAccordingProject then
@@ -6709,9 +6710,9 @@ begin
           end;
           if doValidateOutboundReplies(xOperation) then
           begin
+            xOperation.rpyBind.IsValueValid;
+            aLog.ReplyValidateResult := xOperation.rpyBind.AllValidationsMessage;
             aLog.ReplyValidated := True;
-            aLog.ReplyValidateResult := '';
-            xOperation.rpyBind.IsValueValid (aLog.ReplyValidateResult);
           end;
         end;
         aLog.CorrelationId := xOperation.CorrelationIdAsText('; ');
@@ -6914,10 +6915,8 @@ procedure TWsdlProject.HTTPProxyServerAfterCommandHandler(
   ASender: TIdCmdTCPServer; AContext: TIdContext);
 var
   xLog: TLog;
-  xMessage: String;
   xOperation: TWsdlOperation;
 begin
-  xMessage := '';
   xLog := AContext.Data as TLog;
   try
     xOperation := FindOperationOnRequest(xLog, xLog.httpDocument, xLog.RequestBody, true);
@@ -6930,14 +6929,14 @@ begin
         xLog.Mssg := xOperation.MessageBasedOnRequest;
         if doValidateInboundRequests(xOperation) then
         begin
-          if not xOperation.reqBind.IsValueValid (xMessage) then
-            xLog.RequestValidateResult := xMessage;
+          xOperation.reqBind.IsValueValid;
+          xLog.RequestValidateResult := xOperation.reqBind.AllValidationsMessage;
           xLog.RequestValidated := True;
         end;
         if doValidateOutboundReplies(xOperation) then
         begin
-          if not xOperation.rpyBind.IsValueValid (xMessage) then
-            xLog.ReplyValidateResult := xMessage;
+          xOperation.rpyBind.IsValueValid;
+          xLog.ReplyValidateResult := xOperation.rpyBind.AllValidationsMessage;
           xLog.ReplyValidated := True;
         end;
       finally
@@ -7418,12 +7417,14 @@ begin
                   xLog.ReplyValidateResult := '';
                   if doValidateInboundRequests(thisOperation) then
                   begin
-                    reqBind.IsValueValid (xLog.RequestValidateResult);
+                    reqBind.IsValueValid;
+                    xLog.RequestValidateResult := reqBind.AllValidationsMessage;
                     xLog.RequestValidated := True;
                   end;
                   if doValidateOutboundReplies(thisOperation) then
                   begin
-                    rpyBind.IsValueValid (xLog.ReplyValidateResult);
+                    rpyBind.IsValueValid;
+                    xLog.ReplyValidateResult := rpyBind.AllValidationsMessage;
                     xLog.ReplyValidated := True;
                   end;
                 except

@@ -1,16 +1,16 @@
 {
-This file is part of the apiUi project
-Copyright (c) 2009-2021 by Jan Bouwman
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
 
-See the file COPYING, included in this distribution,
-for details about the copyright.
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
 unit ShowXmlUnit;
 
@@ -40,6 +40,8 @@ type
   { TShowXmlForm }
 
   TShowXmlForm = class(TForm)
+    PrevValidationMessageAction: TAction;
+    NextValidationMessageAction: TAction;
     CancelButton : TBitBtn ;
     DocumentationViewer: THtmlViewer;
     MenuItem1: TMenuItem;
@@ -51,6 +53,9 @@ type
     OkButton : TBitBtn ;
     Panel1: TPanel;
     Panel4: TPanel;
+    ToolButton12: TToolButton;
+    ToolButton13: TToolButton;
+    ToolButton14: TToolButton;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
     WriteXmlAction: TAction;
@@ -128,10 +133,15 @@ type
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
+    procedure NextValidationMessageActionExecute(Sender: TObject);
+    procedure PrevValidationMessageActionExecute(Sender: TObject);
     procedure TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
       TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
       const CellRect : TRect );
     procedure TreeViewDblClick(Sender: TObject);
+    procedure TreeViewGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+      var HintText: String);
     procedure ZoomMenuItemClick(Sender: TObject);
     procedure ViewinTreeMenuItemClick(Sender: TObject);
     procedure EditInPopUpMenuItemClick(Sender: TObject);
@@ -211,6 +221,7 @@ type
     procedure CleanActionExecute(Sender: TObject);
     procedure ZoomasAssignment1Click(Sender: TObject);
   private
+    fdoShowValidationData: Boolean;
     fIsChanged: Boolean;
     fReadOnly: Boolean;
     fBind: TCustomBindable;
@@ -223,6 +234,7 @@ type
     procedure setDoHideNodes(const Value: Boolean);
     function getDoHideXmlNs: Boolean;
     procedure setDoHideXmlNs(const Value: Boolean);
+    procedure setdoShowValidationData(Value: Boolean);
     property doHideXmlNs: Boolean read getDoHideXmlNs write setDoHideXmlNs;
     property doHideNodes: Boolean read getDoHideNodes write setDoHideNodes;
     procedure HaveLink(Sender: TObject; aLink: String);
@@ -243,6 +255,7 @@ type
     procedure RevalidateXmlTreeView(aTreeView: TVirtualStringTree);
     procedure setIsChanged(const Value: Boolean);
     procedure setdoEnableCompare(const Value: Boolean);
+    procedure SearchValidationMessage (aDown: Boolean);
   public
     ignoreDifferencesOn, ignoreAddingon, ignoreRemovingOn: TJBStringList;
     doConfirmRemovals: Boolean;
@@ -257,6 +270,7 @@ type
     property isChanged: Boolean read fIsChanged write setIsChanged;
     property isReadOnly: Boolean read getReadOnly write setReadOnly;
     property isCheckedOnly: Boolean read fIsCheckedOnly write fIsCheckedOnly;
+    property doShowValidationData: Boolean read fdoShowValidationData write setdoShowValidationData;
     property Bind: TCustomBindable read fBind write SetBind;
     function NodeToBind(aNode: PVirtualNode): TCustomBindable;
   end;
@@ -281,14 +295,10 @@ uses
   FindRegExpDialog, igGlobals, Xsdz, xmlUtilz, XmlGridUnit,
   RegExpr, StrUtils, A2BXmlz, ShowA2BXmlUnit, PromptUnit;
 
-const
-  treeTagColumn = 0;
-
-const
-  treeValueColumn = 2;
-
-const
-  treeButtonColumn = 1;
+const treeTagColumn = 0;
+const treeValidationColumn = 1;
+const treeButtonColumn = 2;
+const treeValueColumn = 3;
 {$IFnDEF FPC}
   {$R *.dfm}
 {$ELSE}
@@ -320,6 +330,7 @@ begin
     Free;
   end;
   TreeView.Header.Columns[treeButtonColumn].Width := wBttn;
+  TreeView.Header.Columns[treeValidationColumn].Width := wBttn;
   TreeView.NodeDataSize := SizeOf(TBindTreeRec);
   TreeView.RootNodeCount := 0;
   FileContents := TJBStringList.Create;
@@ -363,8 +374,8 @@ begin
   begin
     for X := 0 to (Bind as TXml).Attributes.Count - 1 do
     begin
-      if (not isCheckedOnly) or ((Bind as TXml).Attributes.XmlAttributes[X])
-        .Checked then
+      if (not isCheckedOnly)
+      or ((Bind as TXml).Attributes.XmlAttributes[X]).Checked then
       begin
         AttributeNode := TreeView.AddChild(ChildNode);
         Data := TreeView.GetNodeData(AttributeNode);
@@ -1378,6 +1389,38 @@ begin
   CompareAction.Visible := Value;
 end;
 
+procedure TShowXmlForm.SearchValidationMessage(aDown: Boolean);
+var
+  xNode, sNode: PVirtualNode;
+  xBind: TCustomBindable;
+begin
+  if not Assigned (TreeView.FocusedNode) then
+    Raise Exception.Create ('Only possible when a node has focus');
+  sNode := Treeview.FocusedNode;
+  if aDown then
+    xNode := TreeView.GetNext(TreeView.FocusedNode)
+  else
+    xNode := TreeView.GetPrevious(TreeView.FocusedNode);
+  xBind := NodeToBind(xNode);
+  while Assigned (xNode)
+  and (xBind.ValidationMesssage = '') do
+  begin
+    if aDown then
+      xNode := TreeView.GetNext(xNode)
+    else
+      xNode := TreeView.GetPrevious(xNode);
+    if Assigned (xNode) then
+      xBind := NodeToBind(xNode);
+  end;
+  if not Assigned (xNode) then
+  begin
+    ShowMessage('not found');
+    xNode := sNode;
+  end;
+  TreeView.Selected [xNode] := True;
+  TreeView.FocusedNode := xNode;
+end;
+
 procedure TShowXmlForm.setDoHideNodes(const Value: Boolean);
 begin
   ToggleShowHiddenAction.Checked := not Value;
@@ -1391,6 +1434,23 @@ begin
     ToggleHideXmlNsAction.ImageIndex := 92
   else
     ToggleHideXmlNsAction.ImageIndex := 91;
+end;
+
+procedure TShowXmlForm.setdoShowValidationData(Value: Boolean);
+begin
+  if fdoShowValidationData = Value then Exit;
+  fdoShowValidationData := Value;
+  with TreeView.Header.Columns[treeValidationColumn] do
+  if (Value) then
+  begin
+    Options := Options + [coVisible]
+  end
+  else
+  begin
+    Options := Options - [coVisible];
+  end;
+  PrevValidationMessageAction.Visible := Value;
+  NextValidationMessageAction.Visible := Value;
 end;
 
 procedure TShowXmlForm.setIsChanged(const Value: Boolean);
@@ -1528,6 +1588,19 @@ begin
                   Exit;
                 end;
                 ImageIndex := -1;
+              end;
+            end;
+          treeValidationColumn:
+            begin
+              if Bind.isValidated then
+              begin
+                if Bind.ValidationMesssage <> ''  then
+                  ImageIndex := 118
+                else
+                begin
+                  if Bind.hasValidationMessage then
+                    ImageIndex := 117;
+                end;
               end;
             end;
         end; { case column }
@@ -1753,6 +1826,26 @@ procedure TShowXmlForm.TreeViewClick(Sender: TObject);
 var
   xChanged: Boolean;
 begin
+  if (TreeView.FocusedColumn = treeValidationColumn) then
+  begin
+    if Assigned (SelectedBind) then with SelectedBind do
+    begin
+      if not isValidated then
+        ShowMessage (FullIndexCaption + ': not validated')
+      else
+      begin
+        if hasValidationMessage then
+        begin
+          if ValidationMesssage <> '' then
+            XmlUtil.ShowInfoForm (Name, ValidationMesssage)
+          else
+            XmlUtil.ShowInfoForm (FullIndexCaption, AllValidationsMessage);
+        end
+      end;
+    end;
+    TreeView.FocusedColumn := treeValueColumn;
+    exit;
+  end;
   if (TreeView.FocusedColumn = treeButtonColumn) then
   begin
     if XmlUtil.isExtendAdviced (SelectedBind) then
@@ -2032,6 +2125,16 @@ begin
   XmlUtil.CopyToClipboard(tlsYaml, SelectedBind);
 end;
 
+procedure TShowXmlForm.NextValidationMessageActionExecute(Sender: TObject);
+begin
+  SearchValidationMessage(True);
+end;
+
+procedure TShowXmlForm.PrevValidationMessageActionExecute(Sender: TObject);
+begin
+  SearchValidationMessage(False);
+end;
+
 procedure TShowXmlForm .TreeViewAfterCellPaint (Sender : TBaseVirtualTree ;
   TargetCanvas : TCanvas ; Node : PVirtualNode ; Column : TColumnIndex ;
   const CellRect : TRect );
@@ -2060,6 +2163,15 @@ end;
 procedure TShowXmlForm.TreeViewDblClick(Sender: TObject);
 begin
   xmlUtil.presentString(SelectedBind.FullCaption, SelectedBind.Value);
+end;
+
+procedure TShowXmlForm.TreeViewGetHint(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex;
+  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
+begin
+  if (Column = treeValidationColumn)
+  and Assigned (Node) then
+    HintText := NodeToBind(Node).ValidationMesssage;
 end;
 
 { TPasswordEditLink }

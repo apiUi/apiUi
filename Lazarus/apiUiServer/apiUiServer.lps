@@ -8,6 +8,7 @@
       <Unit0>
         <Filename Value="apiUiServer.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="577"/>
         <CursorPos X="14" Y="603"/>
         <UsageCount Value="218"/>
@@ -448,9 +449,8 @@
       </Unit66>
       <Unit67>
         <Filename Value="..\StompInterface\Stomp\StompClient.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="195"/>
+        <TopLine Value="182"/>
         <CursorPos Y="236"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>

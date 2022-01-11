@@ -2213,9 +2213,7 @@ procedure TMainForm.TreeViewKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
   xBind: TCustomBindable;
-  xMessage: String;
 begin
-  xMessage := ''; // avoid warning
   try
   {
     if (Key = VK_F8) then
@@ -2231,8 +2229,8 @@ begin
     begin
       xBind := NodeToBind(Sender as TVirtualStringTree,
         (Sender as TVirtualStringTree).FocusedNode);
-      if not xBind.IsValueValid(xMessage) then
-        ShowMessage(xMessage);
+      if not xBind.IsValueValid then
+        ShowMessage(xBind.ValidationMesssage);
     end;
     if (Key = VK_RETURN) then
     begin (Sender as TVirtualStringTree)
@@ -6783,6 +6781,32 @@ var
   xXml: TXml;
   xString: String;
 begin
+  if Assigned (claimedLog)
+  and Assigned (claimedLog.Operation)
+  and claimedLog.ReplyValidated
+  and (claimedLog.ReplyValidateResult <> '') then
+  begin
+    with TWsdlOperation.Create(claimedLog.Operation) do
+    try
+      claimedLog.ReplyToBindables(thisOperation);
+      rpyBind.IsValueValid;
+      Application.CreateForm(TShowXmlForm, ShowXmlForm);
+      try
+        ShowXmlForm.Caption := 'Reply as XML';
+        ShowXmlForm.isCheckedOnly := True;
+        ShowXmlForm.isReadOnly := True;
+        ShowXmlForm.doShowValidationData := True;
+        rpyBind.Checked := True;
+        ShowXmlForm.Bind := rpyBind;
+        ShowXmlForm.ShowModal;
+      finally
+        FreeAndNil(ShowXmlForm);
+      end;
+    finally
+      Free;
+    end;
+    Exit;
+  end;
   if Assigned (claimedLog.Operation)
   and (claimedLog.Operation.isOpenApiService) then
   begin
@@ -6961,6 +6985,32 @@ var
   xXml: TXml;
   xString: String;
 begin
+  if Assigned (claimedLog)
+  and Assigned (claimedLog.Operation)
+  and claimedLog.RequestValidated
+  and (claimedLog.RequestValidateResult <> '') then
+  begin
+    with TWsdlOperation.Create(claimedLog.Operation) do
+    try
+      claimedLog.RequestToBindables(thisOperation);
+      reqBind.IsValueValid;
+      Application.CreateForm(TShowXmlForm, ShowXmlForm);
+      try
+        ShowXmlForm.Caption := 'Request as XML';
+        ShowXmlForm.isCheckedOnly := True;
+        ShowXmlForm.isReadOnly := True;
+        ShowXmlForm.doShowValidationData := True;
+        reqBind.Checked := True;
+        ShowXmlForm.Bind := reqBind;
+        ShowXmlForm.ShowModal;
+      finally
+        FreeAndNil(ShowXmlForm);
+      end;
+    finally
+      Free;
+    end;
+    Exit;
+  end;
   if Assigned (claimedLog)
   and Assigned (claimedLog.Operation)
   and claimedLog.Operation.isOpenApiService then
@@ -7245,14 +7295,11 @@ begin
         for Y := 0 to Messages[X].ColumnXmls.Count - 1 do
         begin
           if Assigned(Messages[X].ColumnXmls.Bindables[Y])
-            and Messages[X].ColumnXmls.Bindables[Y].Checked then
+            and Messages[X].ColumnXmls.Bindables[Y].Checked then with Messages[X].ColumnXmls.Bindables[Y] do
           begin
-            if (((Messages[X].ColumnXmls.Bindables[Y]) is TXml) and
-                (not((Messages[X].ColumnXmls.Bindables[Y]) as TXml)
-                  .IsValueValidAgainstXsd(xString))) or
-              (((Messages[X].ColumnXmls.Bindables[Y]) is TIpmItem) and
-                (not((Messages[X].ColumnXmls.Bindables[Y]) as TIpmItem)
-                  .IsValueValid(xString))) then
+            if ((thisBind is TXml) or (thisBind is TIpmItem))
+            and (not thisBind.IsValueValid)
+            and (thisBind.ValidationMesssage <> '') then
             begin
               xNode := GridView.GetFirst;
               IntrospectDesignAction := X;
@@ -7267,7 +7314,7 @@ begin
                 Y + FocusedOperation.CorrelationBindables.Count + 1;
               GridView.Update;
               GridView.SetFocus;
-              raise Exception.Create(xString);
+              raise Exception.Create(thisBind.ValidationMesssage);
             end;
           end;
         end;

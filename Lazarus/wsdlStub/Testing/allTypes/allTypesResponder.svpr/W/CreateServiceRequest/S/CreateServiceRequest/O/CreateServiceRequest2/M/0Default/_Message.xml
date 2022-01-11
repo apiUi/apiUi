@@ -16,7 +16,7 @@
         </RaboHeader>
         <CreateServiceRequest_Rpy checked__="true">
           <ServiceRequest checked__="true">
-            <Reference checked__="true">Reference</Reference>
+            <Reference checked__="true">1234567890123456789012345678901</Reference>
             <ListOfActivities checked__="true">
               <Activity checked__="true">
                 <TaskReference checked__="true">TaskReference</TaskReference>

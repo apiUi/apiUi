@@ -2631,11 +2631,20 @@ begin
 end;
 
 function TXsdDataType.IsValidXml(aXml: TObject; var aMessage: String): Boolean;
+  procedure _addMsg (aXml: TXml; aMessage: String);
+  begin
+    with aXml do
+      if ValidationMesssage <> '' then
+        ValidationMesssage := ValidationMesssage + LineEnding + aMessage
+      else
+        ValidationMesssage := aMessage;
+  end;
 var
   x, y, n: Integer;
   xXml: TXml;
   xXsd: TXsd;
   xResult: Boolean;
+  xValidationMessage: String;
 begin
   result := True;
   xXml := aXml as TXml;
@@ -2651,23 +2660,23 @@ begin
   then
   begin
     result := False;
-    xXml.ValidationMesssage := Format( 'Found NameSpace %s at %s, expected %s'
-                                     , [ xXml.NameSpace
-                                       , xXml.Name
-                                       , xXml.Xsd.ElementNameSpace
-                                       ]
-                                     );
-    aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+    _addMsg (xXml, Format ( 'Found NameSpace %s at %s, expected %s'
+                          , [ xXml.NameSpace
+                            , xXml.Name
+                            , xXml.Xsd.ElementNameSpace
+                            ]
+                          )
+            );
   end;
-
 
   // check value
   if ElementDefs.Count = 0 then
   begin
-    if not IsValidValue(xXml.Name, xXml.Value, xXml.ValidationMesssage) then
+    xValidationMessage := '';
+    if not IsValidValue(xXml.Name, xXml.Value, xValidationMessage) then
     begin
       result := False;
-      aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+      _addMsg (xXml, xValidationMessage);
     end;
   end;
 
@@ -2678,8 +2687,7 @@ begin
     and not Assigned (TypeDef) then
     begin
       result := False;
-      xXml.ValidationMesssage := 'Unexpected element ' + NameSpace + ':' + Name;
-      aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+      _addMsg (xXml, 'Has unexpected element ' + NameSpace + ':' + Name);
     end;
   end;
 
@@ -2696,10 +2704,10 @@ begin
       if n > StrToInt(ElementDefs.Xsds[x].maxOccurs) then
       begin
         result := False;
-        xXml.ValidationMesssage := Format( 'Number of elements (%d) exceeds maximum (%s) for element %s'
-                                         , [n, ElementDefs.Xsds[x].maxOccurs, ElementDefs.Xsds[x].ElementName]
-                                         );
-        aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+        _addMsg (xXml, Format( 'Number of elements (%d) exceeds maximum (%s) for element %s'
+                             , [n, ElementDefs.Xsds[x].maxOccurs, ElementDefs.Xsds[x].ElementName]
+                             )
+                );
       end;
     end;
   end;
@@ -2720,10 +2728,10 @@ begin
         or (ContentModel <> tagChoice) then
         begin
           result := False;
-          xXml.ValidationMesssage := Format( 'Number of elements (%d) less then minimum (%s) for element %s'
-                                           , [n, ElementDefs.Xsds[x].minOccurs, ElementDefs.Xsds[x].ElementName]
-                                           );
-          aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+          _addMsg (xXml, Format ( 'Number of elements (%d) less then minimum (%s) for element %s'
+                                , [n, ElementDefs.Xsds[x].minOccurs, ElementDefs.Xsds[x].ElementName]
+                                )
+                  );
         end;
       end;
     end;
@@ -2742,10 +2750,10 @@ begin
           if Xsd <> xXsd then
           begin
             result := False;
-            xXml.ValidationMesssage := Format( 'Element %s not allowed after %s in a choice'
-                                             , [Name, xXsd.ElementName]
-                                             );
-            aMessage := aMessage + xXml.ValidationMesssage + LineEnding;
+            _addMsg ( xXml, Format ( 'Element %s not allowed after %s in a choice'
+                                   , [Name, xXsd.ElementName]
+                                   )
+                    );
           end
         else
           xXsd := Xsd;
