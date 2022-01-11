@@ -19,7 +19,7 @@
         </RaboHeader>
         <CreateServiceRequest_Req checked__="true">
           <Relation checked__="true">
-            <RelationId checked__="true">RelationId</RelationId>
+            <RelationId checked__="true">RelationIdRelationId</RelationId>
           </Relation>
           <LocalBank checked__="true">
             <BankCode checked__="true">122.745</BankCode>

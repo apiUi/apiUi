@@ -1523,14 +1523,10 @@ begin
     if not (xBind as TXmlAttribute).IsValueValidAgainstXsd(xMessage) then
       result := 0;
   end;
-  if xBind is TXml then
+  if (xBind is TXml)
+  or (xBind is TIpmItem) then
   begin
-    if not (xBind as TXml).IsValueValidAgainstXsd(xMessage) then
-      result := 0;
-  end;
-  if xBind is TIpmItem then
-  begin
-    if not (xBind as TIpmItem).IsValueValid(xMessage) then
+    if not xBind.IsValueValid then
       result := 0;
   end;
 end;

@@ -141,7 +141,7 @@ public
   procedure Bind (aRoot: String; aExpress: TObject; aMaxOccurs: Integer); Override;
   function AsXml: TXml;
   function IsEditingAllowed: Boolean; Override;
-  function IsValueValid (var aMessage: String): Boolean; Override;
+  function IsValueValid: Boolean; Override;
   function ValueToBuffer (aValue: AnsiString): AnsiString; // ansi because of bnary data in Cobol records
   function ValuesToBuffer (OnFoundError: TOnFoundError): AnsiString;
   procedure BufferToValues (OnFoundError: TOnFoundError; aBuffer: AnsiString); // ansi because of bnary data in Cobol records
@@ -849,19 +849,18 @@ begin
   result := Copy (aRecord, Offset + 1, Bytes);
 end;
 
-function TIpmItem.IsValueValid (var aMessage: String): Boolean;
+function TIpmItem.IsValueValid: Boolean;
 var
   x: Integer;
 begin
   result := True;
-  aMessage := '';
   try
     if Group then
     begin
       x := 0;
       while result and (x < Items.Count) do
       begin
-        result := Items.IpmItems [x].IsValueValid (aMessage);
+        result := Items.IpmItems [x].IsValueValid;
         Inc (x);
       end;
     end
@@ -870,7 +869,7 @@ begin
   except
     on E: Exception do
     begin
-      aMessage := e.Message;
+      ValidationMesssage := e.Message;
       result := False;
     end;
   end;

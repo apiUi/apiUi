@@ -119,7 +119,7 @@ type
     function getItemByTag (Index : String ): TXml ;
     function getTypeDef: TXsdDataType;
 
-    function IsValueValid (var aMessage: String): Boolean; Override;
+    function IsValueValid: Boolean; Override;
     function getChecked: Boolean;
     function GetIndexCaption: String; Override;
     function GetFullIndexCaption: String; Override;
@@ -153,7 +153,6 @@ type
     Xsd: TXsd;
     Ipm: TObject;
     LineNo: Integer;
-    ValidationMesssage: String;
     property isSoapEnvelope: Boolean read getIsSoapEnvelope;
     property isSoapHeader: Boolean read getIsSoapHeader;
     property isSoapBody: Boolean read getIsSoapBody;
@@ -4222,9 +4221,12 @@ begin
   result := Items;
 end;
 
-function TXml.IsValueValid(var aMessage: String): Boolean;
+function TXml.IsValueValid: Boolean;
+var
+  xMessage: String;  // TODO Remove
 begin
-  result := TypeDef.IsValidXml(self, aMessage);
+  xMessage := ''; // avolid compiler warning
+  result := TypeDef.IsValidXml(self, xMessage);
 end;
 
 function TXml.FindUQ(aName: String): TCustomBindable;

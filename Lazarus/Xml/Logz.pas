@@ -104,6 +104,8 @@ type
     function requestAsXml: TXml;
     function replyAsXml: TXml;
     procedure FoundErrorInBuffer(ErrorString: String; aObject: TObject);
+    procedure RequestToBindables (aOperation: TWsdlOperation);
+    procedure ReplyToBindables (aOperation: TWsdlOperation);
     procedure OpenApiRequestToBindables (aOperation: TWsdlOperation);
     procedure OpenApiReplyToBindables (aOperation: TWsdlOperation);
     procedure HeadersInfoToBindables (aHeaders: String; aBind: TCustomBindable);
@@ -1457,6 +1459,72 @@ end;
 procedure TLog.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
 begin
   (aObject as TIpmItem).Value := '?' + _ProgName + 'wsdlStub Error found: ' + ErrorString;
+end;
+
+procedure TLog.RequestToBindables(aOperation: TWsdlOperation);
+begin
+  if not Assigned (aOperation) then
+    raise SysUtils.Exception.Create('procedure TLog.RequestToBindables (aOperation: TWsdlOperation); nil arg');
+  if aOperation.isOpenApiService then
+  begin
+    OpenApiRequestToBindables(aOperation);
+    exit;
+  end;
+  if aOperation.isFreeFormat then
+  begin
+    aOperation.FreeFormatReq := RequestBody;
+    exit;
+  end;
+  if aOperation.reqBind is TIpmItem then
+  begin
+    (aOperation.reqBind as TIpmItem).BufferToValues (nil, RequestBody);
+    exit;
+  end;
+  with TXml.Create do
+  try
+    LoadFromString(RequestBody, nil);
+    if Name = '' then
+      try
+        LoadJsonFromString(RequestBody, nil);
+      except
+      end;
+    aOperation.XmlRequestToBindables (thisXml, True);
+  finally
+    Free;
+  end;
+end;
+
+procedure TLog.ReplyToBindables(aOperation: TWsdlOperation);
+begin
+  if not Assigned (aOperation) then
+    raise SysUtils.Exception.Create('procedure TLog.ReplyToBindables (aOperation: TWsdlOperation); nil arg');
+  if aOperation.isOpenApiService then
+  begin
+    OpenApiReplyToBindables(aOperation);
+    exit;
+  end;
+  if aOperation.isFreeFormat then
+  begin
+    aOperation.FreeFormatRpy := ReplyBody;
+    exit;
+  end;
+  if aOperation.rpyBind is TIpmItem then
+  begin
+    (aOperation.rpyBind as TIpmItem).BufferToValues (nil, ReplyBody);
+    exit;
+  end;
+  with TXml.Create do
+  try
+    LoadFromString(ReplyBody, nil);
+    if Name = '' then
+      try
+        LoadJsonFromString(ReplyBody, nil);
+      except
+      end;
+    aOperation.XmlReplyToBindables (thisXml, True);
+  finally
+    Free;
+  end;
 end;
 
 procedure TLog.OpenApiRequestToBindables (aOperation: TWsdlOperation);

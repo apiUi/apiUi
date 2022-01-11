@@ -1123,16 +1123,13 @@ begin
 end;
 
 procedure TXmlUtil.Validate(aBind: TCustomBindable);
-var
-  xMessage: String;
 begin
-  xMessage := ''; // avoid warning
   if aBind is TXmlAttribute then
     raise Exception.Create ('Not implemented for XML atributes');
   if not Assigned (aBind) then
     raise Exception.Create('XML should be not nil');
-  if not aBind.IsValueValid(xMessage) then
-    ShowMessage (xMessage)
+  if not aBind.IsValueValid then
+    ShowMessage (aBind.ValidationMesssage)
   else
     ShowMessage (aBind.Name + ' validated OK');
 end;
@@ -1802,15 +1799,11 @@ begin
       if not (aBind as TXmlAttribute).IsValueValidAgainstXsd(xMessage) then
         ShowMessage (xMessage);
     end;
-    if aBind is TXml then
+    if (aBind is TXml)
+    or (aBind is TIpmItem) then
     begin
-      if not (aBind as TXml).IsValueValidAgainstXsd(xMessage) then
-        ShowMessage (xMessage);
-    end;
-    if aBind is TIpmItem then
-    begin
-      if not (aBind as TIpmItem).IsValueValid(xMessage) then
-        ShowMessage (xMessage);
+      if not aBind.IsValueValid then
+        ShowMessage (aBind.ValidationMesssage);
     end;
   end;
 end;

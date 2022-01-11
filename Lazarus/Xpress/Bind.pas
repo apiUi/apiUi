@@ -1,16 +1,16 @@
 {
-This file is part of the apiUi project
-Copyright (c) 2009-2021 by Jan Bouwman
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
 
-See the file COPYING, included in this distribution,
-for details about the copyright.
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
 unit Bind;
 
@@ -218,10 +218,15 @@ type TBindableList = class;
   TCustomBindable = class (TObject)
   private
     fhasRelevance: Boolean;
+    fisValidated: Boolean;
+    fhasValidationMessage: Boolean;
+    fValidationMesssage: String;
     function getIsExpression: Boolean;
     function getTotalNumberOfSubElements: Integer;
     function getValueAsInteger: Integer;
     function getYamlValue: String;
+    procedure sethasValidationMessage(Value: Boolean);
+    procedure setValidationMesssage(AValue: String);
     procedure setValueAsInteger(const aValue: Integer);
     function getChecked: Boolean;
     function getRoot: TCustomBindable;
@@ -261,7 +266,7 @@ public
   function Children: TBindableList; Virtual;
   procedure Bind(aRoot: String; aExpress: TObject; aMaxOccurrences: Integer); Virtual;
   function IsEditingAllowed: Boolean; Virtual;
-  function IsValueValid (var aMessage: String): Boolean; Virtual;
+  function IsValueValid: Boolean; Virtual;
   function GetFullIndexCaption: String; Virtual;
   function GetIndexCaption: String; Virtual;
   function GetCaption: String; Virtual;
@@ -282,6 +287,7 @@ public
   {$endif}
   function IsAncestorOf (aBindable: TCustomBindable): Boolean;
   function UpLineAsText: String; Virtual;
+  function AllValidationsMessage: String;
   constructor Create; Overload;
   property Occurrence: Integer read GetOccurrence;
   property yamlValue: String read getYamlValue;
@@ -289,6 +295,9 @@ public
   property isEvaluation: Boolean read getIsEvaluation;
   property isExpression: Boolean read getIsExpression;
   property hasRelevance: Boolean read fhasRelevance write sethasRelevance;
+  property ValidationMesssage: String read fValidationMesssage write setValidationMesssage;
+  property isValidated: Boolean read fisValidated;
+  property hasValidationMessage: Boolean read fhasValidationMessage write sethasValidationMessage;
   property Checked: Boolean read getChecked write setChecked;
   property IndexCaption: String read GetIndexCaption;
   property FullIndexCaption: String read GetFullIndexCaption;
@@ -731,6 +740,24 @@ begin
     result := Value;
 end;
 
+procedure TCustomBindable.sethasValidationMessage(Value: Boolean);
+begin
+  if fhasValidationMessage = Value then Exit;
+  fhasValidationMessage := Value;
+  if Value
+  and Assigned (Parent) then
+    Parent.hasValidationMessage := Value;
+end;
+
+procedure TCustomBindable.setValidationMesssage(AValue: String);
+begin
+  fIsValidated := True;
+  if fValidationMesssage = AValue then Exit;
+  fValidationMesssage := AValue;
+  if Value <> '' then
+    hasValidationMessage := True;
+end;
+
 function TCustomBindable.hasNoDuplicatesOn(aCaption: String;
   aOnlyWhenChecked: Boolean; var oBind, dBind: TCustomBindable): Boolean;
 var
@@ -845,7 +872,7 @@ begin
   raise Exception.Create (self.ClassName + ': Virtual GetIndexCaption called')
 end;
 
-function TCustomBindable.IsValueValid(var aMessage: String): Boolean;
+function TCustomBindable.IsValueValid: Boolean;
 begin
   result := false;
   raise Exception.Create (self.ClassName + ': Virtual IsValueValid called')
@@ -880,6 +907,22 @@ end;
 function TCustomBindable.UpLineAsText: String;
 begin
   result := 'function TCustomBindable.UpLineAsText: String;';
+end;
+
+function TCustomBindable.AllValidationsMessage: String;
+var
+  x: Integer;
+begin
+  result := ValidationMesssage;
+  for x := 0 to Children.Count - 1 do
+  begin
+    if Children.Bindables[x].hasValidationMessage then
+    begin
+      if Result <> '' then
+        Result := Result + LineEnding;
+      Result := Result + Children.Bindables[x].AllValidationsMessage;
+    end;
+  end;
 end;
 
 {$ifndef NoGUI}
