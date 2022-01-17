@@ -1,0 +1,17 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_requests_remove_post checked__="false"></admin_requests_remove_post>
+    </Reply>
+    <Request>
+      <admin_requests_remove_post checked__="true">
+        <json checked__="true">
+          <method checked__="true">met</method>
+          <url checked__="true">url</url>
+        </json>
+      </admin_requests_remove_post>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

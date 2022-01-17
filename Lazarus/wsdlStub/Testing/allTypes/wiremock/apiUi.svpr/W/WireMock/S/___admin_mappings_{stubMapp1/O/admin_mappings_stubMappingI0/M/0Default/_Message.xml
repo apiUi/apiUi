@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_mappings_stubMappingId_delete checked__="false"></admin_mappings_stubMappingId_delete>
+    </Reply>
+    <Request>
+      <admin_mappings_stubMappingId_delete checked__="false"></admin_mappings_stubMappingId_delete>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

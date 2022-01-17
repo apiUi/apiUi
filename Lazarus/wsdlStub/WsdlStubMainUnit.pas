@@ -9748,7 +9748,7 @@ begin
                         ( xLog.Operation
                         , 'Request' + IntToStr(xLog.Operation.Messages.Count)
                         , xLog.Operation.CorrelationBindables.ValueText
-                        , 'Logged at ' + DateTimeToStr(xLog.InboundTimeStamp)
+                        , 'Logged at ' + xsdFormatDateTime(xLog.InboundTimeStamp, @TIMEZONE_UTC)
                         );
           end
           else
@@ -9757,7 +9757,7 @@ begin
                        ( xLog.Operation
                        , 'Reply' + IntToStr(xLog.Operation.Messages.Count)
                        , xLog.Operation.CorrelationBindables.ValueText
-                       , 'Logged at ' + DateTimeToStr(xLog.InboundTimeStamp)
+                       , 'Logged at ' + xsdFormatDateTime(xLog.InboundTimeStamp, @TIMEZONE_UTC)
                        );
           end;
           xMessage.DocumentationEdited := True;
@@ -11996,14 +11996,6 @@ begin
             with AddXml (TXml.CreateAsString('parameters', '')) do
             begin
               jsonType := jsonArray;
-              with AddXml(TXml.CreateAsString('_', '')) do
-              begin
-                AddXml (TXml.CreateAsString('name', 'rabobank-apikey'));
-                AddXml (TXml.CreateAsString('in', 'header'));
-                AddXml (TXml.CreateAsString('decsription', 'rabobank-apikey'));
-                AddXml (TXml.CreateAsString('required', 'true'));
-                AddXml (TXml.CreateAsString('type', 'string'));
-              end;
               if xOper.reqXml.Items.Count > xOper.InputHeaders.Count then
               with AddXml(TXml.CreateAsString('_', '')) do
               begin

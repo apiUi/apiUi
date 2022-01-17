@@ -1,0 +1,4 @@
+  <Wsdl>
+    <Name>WireMock</Name>
+    <WsdlLocation>adminopenapi.json</WsdlLocation>
+  </Wsdl>

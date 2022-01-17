@@ -252,7 +252,7 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
   function _DetailXml (xLog: TLog): TXml;
   begin
     result := TXml.CreateAsString('Detail', '');
-    result.AddXml (TXml.CreateAsString('messageTimestamp', xsdDateTime(xLog.InboundTimeStamp)));
+    result.AddXml (TXml.CreateAsString('messageTimestamp', xsdFormatDateTime(xLog.InboundTimeStamp, @TIMEZONE_UTC)));
     if Assigned (xLog.Operation) then
     begin
       result.AddXml (TXml.CreateAsString('Service', xLog.Operation.WsdlService.Name));
@@ -1148,8 +1148,8 @@ begin
   result := TXml.CreateAsString('RequestReply', '');
   with result do
   begin
-    AddXml (TXml.CreateAsString('InboundTimeStamp', xsdDateTime (Self.InboundTimeStamp)));
-    AddXml (TXml.CreateAsString('OutboundTimeStamp', xsdDateTime (Self.OutboundTimeStamp)));
+    AddXml (TXml.CreateAsString('InboundTimeStamp', xsdFormatDateTime(self.InboundTimeStamp, @TIMEZONE_UTC)));
+    AddXml (TXml.CreateAsString('OutboundTimeStamp', xsdFormatDateTime(self.OutBoundTimeStamp, @TIMEZONE_UTC)));
     AddXml (Txml.CreateAsInteger('DelayTimeMs', Ord (Self.DelayTimeMs)));
     AddXml (Txml.CreateAsInteger('OperationCount', Ord (Self.OperationCount)));
     AddXml (Txml.CreateAsInteger('TransportType', Ord (Self.TransportType)));

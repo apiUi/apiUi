@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_recordings_status_get checked__="false"></admin_recordings_status_get>
+    </Reply>
+    <Request>
+      <admin_recordings_status_get checked__="false"></admin_recordings_status_get>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

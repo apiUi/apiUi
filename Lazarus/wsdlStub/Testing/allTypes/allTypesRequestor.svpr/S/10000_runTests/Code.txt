@@ -8,13 +8,17 @@ RequestOperation ('CreateActivities3');
 RequestOperation ('CreateServiceRequest2');
 if true then
 {
-  Sleep (3000);
+  Sleep (300);
   RequestOperation ('CreateServiceRequest2');
 }
 RequestOperation ('freeformatOperation');
 RequestOperation ('freeformatOperation');
 RequestOperation ('uploadDocument');
 RequestOperation ('uploadDocument');
+
+if True then RequestOperation ('getsomething'); // wiremock - logged as outbound
+
+if True then LogsFromRemoteServer ();  // wiremock - logged as inbound
 
 CreateSnapshot ('testRun');
 

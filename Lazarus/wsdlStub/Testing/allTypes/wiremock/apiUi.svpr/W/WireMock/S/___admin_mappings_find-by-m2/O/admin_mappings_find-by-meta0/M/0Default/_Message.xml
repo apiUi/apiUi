@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_mappings_find-by-metadata_post checked__="false"></admin_mappings_find-by-metadata_post>
+    </Reply>
+    <Request>
+      <admin_mappings_find-by-metadata_post checked__="false"></admin_mappings_find-by-metadata_post>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

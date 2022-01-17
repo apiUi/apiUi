@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_requests_remove-by-metadata_post checked__="false"></admin_requests_remove-by-metadata_post>
+    </Reply>
+    <Request>
+      <admin_requests_remove-by-metadata_post checked__="false"></admin_requests_remove-by-metadata_post>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>
