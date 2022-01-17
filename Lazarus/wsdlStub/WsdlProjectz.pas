@@ -3102,7 +3102,7 @@ begin
   begin
     xLog := TLog.Create;
     try
-      xLog.InboundTimestamp := Now;
+      xLog.InboundTimestamp := xsdNowUTC;
       xLog.TransportType := ttStomp;
       xLog.RequestHeaders := aFrame.GetHeaders.OutputAsXmlText;
       xLog.RequestBody := aFrame.GetBody;
@@ -3155,7 +3155,7 @@ begin
         end;
       end;
     finally
-      xLog.OutboundTimeStamp := Now;
+      xLog.OutboundTimeStamp := xsdNowUTC;
       DisplayLog ('', xLog);
     end;
   end;
@@ -4038,7 +4038,7 @@ begin
         xLog.RequestValidated := True;
       end;
       xLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
-      xLog.OutboundTimeStamp := Now;
+      xLog.OutboundTimeStamp := xsdNowUTC;
       xLog.httpCommand := aOperation.httpVerb;
       try
         case aOperation.StubTransport of
@@ -4047,7 +4047,7 @@ begin
           ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody, xLog);
         end;
       finally
-        xLog.InboundTimeStamp := Now;
+        xLog.InboundTimeStamp := xsdNowUTC;
       end;
       xLog.ReplyInfoToBindables(aOperation);
       if xLog.ReplyBody = S_MESSAGE_ACCEPTED then
@@ -4135,13 +4135,13 @@ begin
         with xLog do
         begin
           if InboundTimeStamp = 0 then
-            InboundTimeStamp := Now;
+            InboundTimeStamp := xsdNowUTC;
 //          RequestHeaders := HttpClient.Request.CustomHeaders.Text;
           Mssg := aOperation.CorrelatedMessage;
           StubAction := aOperation.StubAction;
           Exception := e.Message;
           if OutboundTimeStamp = 0 then
-            OutboundTimeStamp := xNow;
+            OutboundTimeStamp := xsdNowUTC;
           Nr := displayedLogs.Number;
         end;
         Raise;
@@ -6455,7 +6455,7 @@ begin
     try
       xLog := TLog.Create;
       xLog.ReplyHeaders := AResponseInfo.CustomHeaders.Text;
-      xLog.InboundTimeStamp := Now;
+      xLog.InboundTimeStamp := xsdNowUTC;
       xLog.httpUri := ARequestInfo.URI;
       xLog.TransportType := ttHttp;
       xLog.httpCommand := ARequestInfo.Command;
@@ -6571,7 +6571,7 @@ begin
               xLog.httpResponseCode := 500;
           end;
           DelayMS (xLog.DelayTimeMs);
-          xLog.OutboundTimeStamp := Now;
+          xLog.OutboundTimeStamp := xsdNowUTC;
           DisplayLog ('', xLog);
           AResponseInfo.ResponseNo := xLog.httpResponseCode;
           if xLog.ReplyHeaders <> '' then
@@ -6978,14 +6978,14 @@ begin
   begin
     if AContext.TransferSource = tsClient then
     begin
-      InboundTimestamp := Now;
+      InboundTimestamp := xsdNowUTC;
       RequestHeaders := AContext.Headers.Text;
       RequestBody := _streamToString;
       InboundBody := RequestBody;
     end;
     if AContext.TransferSource = tsServer then
     begin
-      OutBoundTimeStamp := Now;
+      OutBoundTimeStamp := xsdNowUTC;
       ReplyHeaders := AContext.Headers.Text;
       ReplyBody := _streamToString;
       OutboundBody := ReplyBody;
@@ -8678,7 +8678,7 @@ var
   iTimeStamp: TDateTime;
 begin
   try
-    iTimeStamp := now;
+    iTimeStamp := xsdNowUTC;
     case remoteServerConnectionType of
       rscApiUi:
         begin
@@ -8721,7 +8721,7 @@ begin
     begin
       eLog := TLog.Create;
       eLog.InboundTimeStamp := iTimeStamp;
-      eLog.OutBoundTimeStamp := Now;
+      eLog.OutBoundTimeStamp := xsdNowUTC;
       eLog.StubAction := saException;
       eLog.Exception := 'exception retrieving logs: ' + e.Message;
       DisplayLog('', eLog);

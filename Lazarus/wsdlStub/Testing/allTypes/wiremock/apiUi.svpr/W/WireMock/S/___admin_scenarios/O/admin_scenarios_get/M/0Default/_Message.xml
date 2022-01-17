@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_scenarios_get checked__="false"></admin_scenarios_get>
+    </Reply>
+    <Request>
+      <admin_scenarios_get checked__="false"></admin_scenarios_get>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

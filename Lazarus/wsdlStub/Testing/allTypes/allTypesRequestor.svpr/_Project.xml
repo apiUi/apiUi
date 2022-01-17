@@ -7,9 +7,9 @@
     </Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
-      <Address>http://localhost:7777</Address>
+      <Address>${wiremockhost}</Address>
       <type>
-        <apiUi></apiUi>
+        <WireMock></WireMock>
       </type>
     </remoteServerConnection>
     <projectOptions>

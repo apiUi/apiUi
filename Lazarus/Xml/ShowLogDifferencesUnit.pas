@@ -869,7 +869,7 @@ begin
     CellText := '';
     case ceColumnEnum(Column) of
     ceTimeColumn: if Assigned (xData.aLog) then
-         CellText := DateTimeToStr (xData.aLog.InboundTimeStamp);
+         CellText := xsdFormatDateTime(xData.aLog.InboundTimeStamp, @TIMEZONE_UTC);
     ceServiceColumn: if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
          CellText := xData.aLog.Operation.WsdlService.Name;
     ceOperationColumn: if Assigned (xData.aLog) and Assigned (xData.aLog.Operation) then
@@ -895,7 +895,7 @@ begin
        else
          CellText := 'X';
     ceRefTimeColumn: if Assigned (xData.bLog) then
-         CellText := DateTimeToStr (xData.bLog.InboundTimeStamp);
+         CellText := xsdFormatDateTime(xData.bLog.InboundTimeStamp, @TIMEZONE_UTC);
     ceRefServiceColumn: if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
          CellText := xData.bLog.Operation.WsdlService.Name;
     ceRefOperationColumn: if Assigned (xData.bLog) and Assigned (xData.bLog.Operation) then
@@ -977,7 +977,7 @@ var
           begin
             AddTd.RowSpan(xRowSpan).AddB(IntToStr(xRow));
             try
-              s := DateTimeToStr (xData.aLog.InboundTimeStamp);
+              s := xsdFormatDateTime(xData.aLog.InboundTimeStamp, @TIMEZONE_UTC);
             finally
               s := '';
             end;
@@ -1065,7 +1065,7 @@ begin
             begin
               AddTd.AddB(IntToStr(xRow));
               try
-                s := DateTimeToStr (xData.bLog.InboundTimeStamp);
+                s := xsdFormatDateTime(xData.bLog.InboundTimeStamp, @TIMEZONE_UTC);
               except
                 s := '_';
               end;
@@ -1098,7 +1098,7 @@ begin
               begin
                 AddTd.AddB(IntToStr(xRow));
                 try
-                  s := DateTimeToStr (xData.aLog.InboundTimeStamp);
+                  s := xsdFormatDateTime(xData.aLog.InboundTimeStamp, @TIMEZONE_UTC);
                 except
                   s := '_';
                 end;

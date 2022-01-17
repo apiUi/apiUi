@@ -28,5 +28,5 @@ Copy-Item -path .\apiUi\*.xml -Destination $folder
 Copy-Item -path .\apiUi\*.so -Destination $folder
 tar -czf $zip .\apiUi_Linux
 
-docker build --tag apiuiserver .
+docker build --tag apiui/apiuiserver .
 

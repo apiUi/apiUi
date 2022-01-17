@@ -1,0 +1,9 @@
+  <Service>
+    <Name>/__admin/recordings/snapshot</Name>
+    <serviceOptions>
+      <general>
+        <suppressXmlComment>false</suppressXmlComment>
+        <suppressHttp500onSoapFaults>false</suppressHttp500onSoapFaults>
+      </general>
+    </serviceOptions>
+  </Service>

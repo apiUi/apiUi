@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_reset_post checked__="false"></admin_reset_post>
+    </Reply>
+    <Request>
+      <admin_reset_post checked__="false"></admin_reset_post>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

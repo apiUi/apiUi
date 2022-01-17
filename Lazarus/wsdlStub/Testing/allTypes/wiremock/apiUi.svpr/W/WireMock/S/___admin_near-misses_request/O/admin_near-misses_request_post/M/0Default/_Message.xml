@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_near-misses_request_post checked__="false"></admin_near-misses_request_post>
+    </Reply>
+    <Request>
+      <admin_near-misses_request_post checked__="false"></admin_near-misses_request_post>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

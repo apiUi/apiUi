@@ -1,27 +1,15 @@
-docker network create --driver bridge dockernet
+powershell .\startServers.ps1
 
-docker run -dit --rm --name=activemq `
-	   --network dockernet `
-       -p 61613:61613 `
-       -p 8161:8161 `
-	   rmohr/activemq
-docker run -dit --rm --name=apiuiresponder `
-	   --network dockernet `
-	   -v ${PWD}:/proj `
-	   apiuiserver `
-	   --context=dockernet `
-	   --project=/proj/allTypesResponder.svpr
-
-Start-Sleep -s 5	   
 docker run -dit --rm --name=apiuirequestor `
-	   --network dockernet `
-	   -p 7776:7776 `
-	   -v ${PWD}:/proj `
-	   apiuiserver `
-	   --project=/proj/allTypesRequestor.svpr `
-	   --context=dockernet `
-       --script=runTests
-Start-Sleep -s 5	   
+	       --network dockernet `
+	       -p 7776:7776 `
+	       -v ${PWD}:/proj `
+	       apiui/apiuiserver `
+	       --project=/proj/allTypesRequestor.svpr `
+	       --context=dockernet `
+           --script=runTests
+
+<#
 $Params = @{
     Method = "Post"
     Uri = "http://localhost:7776/apiUi/api/snapshot/checkregression"
@@ -29,5 +17,8 @@ $Params = @{
     ContentType = "application/json"
 }
 Invoke-RestMethod @Params
-docker container stop apiuirequestor apiuiresponder activemq
-docker network rm dockernet
+#>
+docker container stop apiuirequestor
+
+powershell .\stopServers.ps1
+

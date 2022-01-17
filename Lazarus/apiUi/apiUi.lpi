@@ -23,7 +23,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="13183"/>
+      <BuildNr Value="13185"/>
       <StringTable CompanyName="apiUi.org" FileDescription="apiUi - api tester and mocker" ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -35,13 +35,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--certsFolder=abrkadabars"/>
+        <CommandLineParams Value="--project=D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesRequestors.svpr"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--certsFolder=abrkadabars"/>
+            <CommandLineParams Value="--project=D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesRequestors.svpr"/>
           </local>
         </Mode0>
       </Modes>

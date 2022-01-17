@@ -3,15 +3,18 @@
       <col> </col>
       <col>Address</col>
       <col>stomphost</col>
+      <col>wiremockhost</col>
     </row>
     <row>
       <col>localhost</col>
       <col>http://localhost:7777</col>
       <col>localhost</col>
+      <col>http://localhost:7775</col>
     </row>
     <row>
       <col>dockernet</col>
       <col>http://apiuiresponder:7777</col>
       <col>activemq</col>
+      <col>http://wiremock:7775</col>
     </row>
   </contexts>

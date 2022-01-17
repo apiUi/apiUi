@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_requests_requestId_get checked__="false"></admin_requests_requestId_get>
+    </Reply>
+    <Request>
+      <admin_requests_requestId_get checked__="false"></admin_requests_requestId_get>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

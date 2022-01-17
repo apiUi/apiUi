@@ -1,0 +1,12 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <getsomething checked__="false"></getsomething>
+    </Reply>
+    <Request>
+      <getsomething checked__="false"></getsomething>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

@@ -1,0 +1,14 @@
+  <Message>
+    <Name>Default</Name>
+    <Patterns></Patterns>
+    <Reply>
+      <admin_requests_count_post checked__="false"></admin_requests_count_post>
+    </Reply>
+    <Request>
+      <admin_requests_count_post checked__="true">
+        <json checked__="true"></json>
+      </admin_requests_count_post>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>
