@@ -25,7 +25,7 @@ uses
   IdExceptionCore, IdStack, IdHTTP, WsdlStubMainUnit, snapshotz, exceptionUtils,
   htmlXmlUtilz, htmlreportz, WsdlProjectz, junitunit, StringListListUnit,
   ChooseStringUnit, EditContextsUnit, IpmGridUnit, Listenerz, wsdlListUnit,
-  httpmultipart, apiuiconsts;
+  httpmultipart, apiuiconsts, wiremockmapping;
 
 {$R *.res}
 

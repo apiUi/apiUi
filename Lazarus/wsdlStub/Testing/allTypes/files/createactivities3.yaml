@@ -9,7 +9,7 @@ basePath: "/crmi/api/klant"
 schemes:
 - https
 paths:
-  "/createactivities/3":
+  "/createactivities/3/{type}":
     post:
       summary: summary
       description: ''
@@ -19,6 +19,21 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: type
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: apiheader
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: queryparam
+        in: query
+        description: ''
+        required: true
+        type: string
       - name: body
         in: body
         description: ''

@@ -477,6 +477,12 @@ type
       procedure rpyWsaOnRequest;
       procedure fltWsaOnRequest;
       procedure Clean;
+      function hasPathParam: Boolean;
+      function hasQueryParam: Boolean;
+      function hasHeaderParam: Boolean;
+      function hasPathCorrelation: Boolean;
+      function hasQueryCorrelation: Boolean;
+      function hasHeaderCorrelation: Boolean;
       function FunctionPrototypes (aAfter: Boolean): TJBStringList;
       function CheckerFunctionPrototypes: TJBStringList;
       function StamperFunctionPrototypes: TJBStringList;
@@ -4538,6 +4544,96 @@ var
 begin
   for m := 0 to Messages.Count - 1 do with Messages.Messages[m] do
     Clean;
+end;
+
+function TWsdlOperation.hasPathParam: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  for x := 0 to reqXsd.sType.ElementDefs.Count - 1 do
+    if reqXsd.sType.ElementDefs.Xsds[x].ParametersType = oppPath then
+      result := True;
+end;
+
+function TWsdlOperation.hasQueryParam: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  for x := 0 to reqXsd.sType.ElementDefs.Count - 1 do
+    if reqXsd.sType.ElementDefs.Xsds[x].ParametersType = oppQuery then
+      result := True;
+end;
+
+function TWsdlOperation.hasHeaderParam: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  for x := 0 to reqXsd.sType.ElementDefs.Count - 1 do
+    if reqXsd.sType.ElementDefs.Xsds[x].ParametersType = oppHeader then
+      result := True;
+end;
+
+function TWsdlOperation.hasPathCorrelation: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  if reqBind is TXml then
+  begin
+    for x := 0 to CorrelationBindables.Count - 1 do
+    with CorrelationBindables.Bindables[x] do
+    begin
+      with thisBind as TXml do
+      begin
+        if Assigned(Xsd)
+        and (Xsd.ParametersType = oppPath) then
+          result := True;
+      end;
+    end;
+  end;
+end;
+
+function TWsdlOperation.hasQueryCorrelation: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  if reqBind is TXml then
+  begin
+    for x := 0 to CorrelationBindables.Count - 1 do
+    with CorrelationBindables.Bindables[x] do
+    begin
+      with thisBind as TXml do
+      begin
+        if Assigned(Xsd)
+        and (Xsd.ParametersType = oppQuery) then
+          result := True;
+      end;
+    end;
+  end;
+end;
+
+function TWsdlOperation.hasHeaderCorrelation: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  if reqBind is TXml then
+  begin
+    for x := 0 to CorrelationBindables.Count - 1 do
+    with CorrelationBindables.Bindables[x] do
+    begin
+      with thisBind as TXml do
+      begin
+        if Assigned(Xsd)
+        and (Xsd.ParametersType = oppHeader) then
+          result := True;
+      end;
+    end;
+  end;
 end;
 
 function TWsdlOperation.CorrelationIdAsText(aSeparator: String): String;

@@ -1,0 +1,33 @@
+  <Message>
+    <Name>createact01</Name>
+    <Patterns>
+      <Pattern>typ</Pattern>
+      <Pattern>head</Pattern>
+      <Pattern>quer</Pattern>
+      <Pattern>.*</Pattern>
+    </Patterns>
+    <Reply>
+      <CreateActivities checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <ListOfActivities checked__="true">
+              <Activity checked__="true">
+                <_ checked__="true">
+                  <TaskReference checked__="true">TaskReference</TaskReference>
+                  <Document checked__="true">
+                    <StorageStatus checked__="true">{{request.scheme}}</StorageStatus>
+                  </Document>
+                </_>
+              </Activity>
+            </ListOfActivities>
+          </body>
+        </rspns200>
+      </CreateActivities>
+    </Reply>
+    <Request>
+      <CreateActivities checked__="false"></CreateActivities>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+    <focusedMessage>true</focusedMessage>
+  </Message>

@@ -1,7 +1,0 @@
-if OperationCount () Mod 2 = 0 then
-{
-  RaiseHttpFault ('401', 'RaiseHttpFault from ' + OperationName (), 'text/plain');
-  AddRemark ('this remark should not be here!!');
-}
-
-

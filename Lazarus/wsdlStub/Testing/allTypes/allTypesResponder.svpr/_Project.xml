@@ -19,7 +19,13 @@
         </Broker>
       </Stomp>
     </Listeners>
-    <remoteServerConnection></remoteServerConnection>
+    <remoteServerConnection>
+      <Enabled>true</Enabled>
+      <Address>http://localhost:7775</Address>
+      <type>
+        <WireMock></WireMock>
+      </type>
+    </remoteServerConnection>
     <projectOptions>
       <General>
         <versionInfo>

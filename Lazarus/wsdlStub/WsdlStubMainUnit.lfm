@@ -2587,6 +2587,15 @@ object MainForm: TMainForm
       OnExecute = ChangeToolBarColorTestExecute
       ShortCut = 57424
     end
+    object PushOperationCandidatesAction: TAction
+      Category = 'Operation'
+      Caption = 'Push message-candidates to remote server'
+      Enabled = False
+      ImageIndex = 106
+      OnExecute = PushOperationCandidatesActionExecute
+      OnUpdate = PushOperationCandidatesActionUpdate
+      ShortCut = 57421
+    end
   end
   object mainImageList: TImageList
     Left = 208
@@ -8012,6 +8021,7 @@ object MainForm: TMainForm
     Top = 304
   end
   object OperationsPopupMenu: TPopupMenu
+    Images = mainImageList
     Left = 50
     Top = 190
     object MenuItem53: TMenuItem
@@ -8069,6 +8079,12 @@ object MainForm: TMainForm
       Caption = 'Options...'
     end
     object MenuItem13: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem1: TMenuItem
+      Action = PushOperationCandidatesAction
+    end
+    object N1: TMenuItem
       Caption = '-'
     end
     object MenuItem16: TMenuItem

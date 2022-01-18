@@ -64,6 +64,7 @@ uses
    , progressinterface
    , MarkdownUtils
    , MarkdownProcessor
+   , wiremockmapping
    , HtmlGlobals;
 
 type
@@ -85,6 +86,9 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    MenuItem1: TMenuItem;
+    N1: TMenuItem;
+    PushOperationCandidatesAction: TAction;
     ChangeToolBarColorTest: TAction;
     FocusOnOperationMenuItem: TMenuItem;
     DocumentationViewer: THtmlViewer;
@@ -118,6 +122,8 @@ type
       const SRC: ThtString; var Handled: Boolean);
     procedure HtmlViewerKeyDown(Sender: TObject;
       var Key: Word; Shift: TShiftState);
+    procedure PushOperationCandidatesActionExecute(Sender: TObject);
+    procedure PushOperationCandidatesActionUpdate(Sender: TObject);
     procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
       const Msg: String);
     procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
@@ -778,6 +784,7 @@ type
     procedure AfterRequestScriptButtonClick(Sender: TObject);
     procedure ExecuteLoadTest;
     procedure ExecuteAllRequests;
+    procedure PushAllRequestsToRemoteServer;
     procedure ExecuteAllRequestsActionUpdate(Sender: TObject);
     procedure ExecuteRequestActionUpdate(Sender: TObject);
     procedure ExecuteAllRequestsActionExecute(Sender: TObject);
@@ -7643,6 +7650,56 @@ begin
   end;
 end;
 
+procedure TMainForm.PushAllRequestsToRemoteServer;
+var
+  X: Integer;
+  xOperation: TWsdlOperation;
+begin
+  se.AcquireLogLock;
+  se.ProgressMax := FocusedOperation.Messages.Count;
+  se.ReleaseLogLock;
+  FocusedOperation.AcquireLock;
+  try
+    xOperation := TWsdlOperation.Create(FocusedOperation);
+  finally
+    FocusedOperation.ReleaseLock;
+  end;
+  try
+  if se.remoteServerConnectionType = rscWireMock then
+  begin
+    xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                            , '/__admin/mappings/remove-by-metadata'
+                            , ''
+                            , 'POST'
+                            , 'application/xml'
+                            , generateWireMockMappingMetaQuery (xOperation)
+                            , 'application/xml'
+                            );
+    for X := 0 to xOperation.Messages.Count - 1 do
+    begin
+      if abortPressed then
+        Break;
+      se.AcquireLogLock;
+      se.ProgressPos := X + 1;
+      se.ReleaseLogLock;
+      try
+        xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                , '/__admin/mappings'
+                                , ''
+                                , 'POST'
+                                , 'application/json'
+                                , generateWireMockMapping (xOperation, xOperation.Messages.Messages[x], x)
+                                , 'application/json'
+                                );
+      except
+      end;
+    end;
+  end;
+  finally
+    xOperation.Free;
+  end;
+end;
+
 procedure TMainForm.ExecuteLoadTest;
 var
   X, y: Integer;
@@ -12456,6 +12513,22 @@ procedure TMainForm.HtmlViewerKeyDown(Sender: TObject;
 begin
   if (Key = Word('C')) and (Shift = [ssCtrl]) then
     (Sender as THtmlViewer).CopyToClipboard;
+end;
+
+procedure TMainForm.PushOperationCandidatesActionExecute(Sender: TObject);
+begin
+  TProcedureThread.Create(False, True, se, PushAllRequestsToRemoteServer);
+end;
+
+procedure TMainForm.PushOperationCandidatesActionUpdate(Sender: TObject);
+begin
+  with PushOperationCandidatesAction do
+  begin
+    Enabled := Assigned (se)
+           and se.remoteServerConnectionEnabled
+           and (se.remoteServerConnectionType = rscWireMock)
+             ;
+  end;
 end;
 
 procedure TMainForm.SQLConnectorLog(Sender: TSQLConnection;

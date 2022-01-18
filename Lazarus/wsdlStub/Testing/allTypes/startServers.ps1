@@ -10,7 +10,8 @@ docker run -dit --rm --name wiremock `
            -v ${PWD}/wiremock:/home/wiremock `
 		   -p 7775:7775 `
 		   wiremock/wiremock `
-		   --port 7775
+		   --port 7775 `
+		   --verbose
 docker run -dit --rm --name=apiuiresponder `
 	       --network dockernet `
 		   -p 7777:7777 `

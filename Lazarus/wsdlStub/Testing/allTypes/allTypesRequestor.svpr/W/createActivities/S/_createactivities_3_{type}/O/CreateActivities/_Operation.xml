@@ -1,7 +1,7 @@
   <Operation>
-    <Name>/createactivities/3:post</Name>
-    <Action>0</Action>
-    <Alias>CreateActivities3</Alias>
+    <Name>/createactivities/3/{type}:post</Name>
+    <Action>3</Action>
+    <Alias>CreateActivities</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -29,9 +29,7 @@
         <invoke>
           <requestInfo>false</requestInfo>
           <replyInfo>false</replyInfo>
-          <operations>
-            <name>CreateServiceRequest2</name>
-          </operations>
+          <operations></operations>
         </invoke>
       </scripts>
       <ReadReplyFromFile></ReadReplyFromFile>
@@ -40,6 +38,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
+        <Address>${wiremockhost}</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>

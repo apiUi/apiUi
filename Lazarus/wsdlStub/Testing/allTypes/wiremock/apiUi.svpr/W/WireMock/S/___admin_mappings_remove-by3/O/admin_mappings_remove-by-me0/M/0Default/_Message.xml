@@ -7,7 +7,9 @@
     <Request>
       <admin_mappings_remove-by-metadata_post checked__="true">
         <json checked__="true">
-          <equalTo checked__="true">false</equalTo>
+          <equalTo checked__="false">false</equalTo>
+          <matches checked__="true">.*_apiUi.*JanBo.*</matches>
+          <equalToJson checked__="false">{&quot;_apiUi&quot;: &quot;CreateServiceRequest2&quot;}</equalToJson>
         </json>
       </admin_mappings_remove-by-metadata_post>
     </Request>

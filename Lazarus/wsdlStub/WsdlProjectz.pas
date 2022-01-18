@@ -5725,7 +5725,7 @@ begin
         then with TXml.CreateAsString('json', '') do
         try
           AddXml (TXml.CreateAsString('program', _progName + ' ' + _xmlProgVersion));
-          AddXml (TXml.CreateAsString('copyright', '© 2009 - 2021 Jan Bouwman'));
+          AddXml (TXml.CreateAsString('copyright', '© 2009 - 2022 Jan Bouwman'));
           AddXml (TXml.CreateAsString('built', 'Date: ' + {$I %date%}));
           AddXml (TXml.CreateAsString('lazarusVersion', LazVersion.laz_version));
           AddXml (TXml.CreateAsString('fpcVersion', {$I %fpcversion%}));

@@ -41,7 +41,7 @@ object AboutBox: TAboutBox
     Height = 16
     Top = 58
     Width = 224
-    Caption = 'Copyright © 2009 - 2021 Jan Bouwman'
+    Caption = 'Copyright © 2009 - 2022 Jan Bouwman'
     Font.Color = clBlack
     Font.Height = -14
     Font.Name = 'MS Sans Serif'
