@@ -7,11 +7,11 @@
     <Request>
       <CreateActivities checked__="true">
         <type checked__="true">typ</type>
-        <apiheader checked__="true">head</apiheader>
+        <apiheader checked__="true">2</apiheader>
         <queryparam checked__="true">quer</queryparam>
         <body checked__="true">
           <Relation checked__="true">
-            <RelationId checked__="true">relid</RelationId>
+            <RelationId checked__="true">2</RelationId>
           </Relation>
         </body>
       </CreateActivities>

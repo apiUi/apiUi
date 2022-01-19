@@ -13,7 +13,7 @@
             <ListOfActivities checked__="true">
               <Activity checked__="true">
                 <_ checked__="true">
-                  <TaskReference checked__="true">defaultJanBoWasHere</TaskReference>
+                  <TaskReference checked__="true">T1</TaskReference>
                   <Document checked__="true">
                     <StorageStatus checked__="true">StorageStatus</StorageStatus>
                   </Document>

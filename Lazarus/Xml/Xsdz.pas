@@ -38,9 +38,10 @@ type
   TBooleanFunctionObject = function (arg: TObject): Boolean of Object;
 
 
-type TOperationParametersType = (oppBody, oppPath, oppQuery, oppHeader, oppFormData);
-const OperationParametersTypeNames: array [oppBody..oppFormData] of String =
-( 'Body'
+type TOperationParametersType = (oppDefault, oppBody, oppPath, oppQuery, oppHeader, oppFormData);
+const OperationParametersTypeNames: array [oppDefault..oppFormData] of String =
+( 'Default'
+, 'Body'
 , 'Path'
 , 'Query'
 , 'Header'
@@ -195,6 +196,7 @@ type
     ElementNameSpace: String;
     FormQualified: Boolean;
     DoNotEncode: Boolean;
+    isContainerElement: Boolean;
     isReadOnly: Boolean;
     isCheckboxDisabled: Boolean;
     isOneOfGroupLevel, isAnyOfGroupLevel: Integer;

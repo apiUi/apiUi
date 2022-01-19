@@ -29,7 +29,7 @@ uses Classes
    ;
 
 function generateWireMockMappingMetaQuery (aOperation: TWsdlOperation): string;
-function generateWireMockMapping (aOperation: TWsdlOperation; aMessage: TWsdlMessage; aPriority: Integer): string;
+function generateWireMockMapping (aOperation: TWsdlOperation; aMessage: TWsdlMessage): string;
 
 implementation
 
@@ -38,8 +38,7 @@ begin
   result := '{"matches": ".*_apiUi.*' + aOperation.Alias + '.*"}';
 end;
 
-function generateWireMockMapping(aOperation: TWsdlOperation;
-  aMessage: TWsdlMessage; aPriority: Integer): string;
+function generateWireMockMapping(aOperation: TWsdlOperation; aMessage: TWsdlMessage): string;
   function _hasResponseBody (aXml: TXml): TXml;
   var
     x: Integer;
@@ -96,9 +95,16 @@ function generateWireMockMapping(aOperation: TWsdlOperation;
 
 var
   xPath: String;
-  x, y: Integer;
+  xDefaultMessage: Boolean;
+  x, y, xIndex: Integer;
   corrXml, rXml, mXml: TXml;
 begin
+  if not Assigned (aOperation.Cloned) then
+    raise Exception.Create('generateWireMockMapping: only allowed on cloned operations');
+  xIndex := aOperation.Messages.IndexOfObject(aMessage);
+  if xIndex < 0 then
+    raise Exception.Create('generateWireMockMapping: Message does not belong to operation');
+  xDefaultMessage := (xIndex = 0);
   if aOperation.isOpenApiService then
   with TXml.CreateAsString('', '') do
   try
@@ -142,7 +148,8 @@ begin
       end
       else
         AddXml (TXml.CreateAsString('urlPath', aOperation.WsdlService.openApiPath));
-      if aOperation.hasHeaderCorrelation then
+      if (not xDefaultMessage)
+      and aOperation.hasHeaderCorrelation then
       begin
         with AddXml(TXml.CreateAsString('headers', '')) do
         begin
@@ -150,7 +157,9 @@ begin
           with aMessage.CorrelationBindables.Bindables[x] do
           begin
             corrXml := thisBind as TXml;
-            if (corrXml.Xsd.ParametersType = oppHeader) then
+            if (corrXml.Xsd.ParametersType = oppHeader)
+//          and (corrXml.CorrelationValue <> '.*')
+            then
             begin
               with AddXml (Txml.CreateAsString(corrXml.Name, '')) do
                 AddXml (TXml.CreateAsString('matches', corrXml.CorrelationValue));
@@ -158,7 +167,8 @@ begin
           end;
         end;
       end;
-      if aOperation.hasQueryCorrelation then
+      if (not xDefaultMessage)
+      and aOperation.hasQueryCorrelation then
       begin
         with AddXml(TXml.CreateAsString('queryParameters', '')) do
         begin
@@ -166,10 +176,44 @@ begin
           with aMessage.CorrelationBindables.Bindables[x] do
           begin
             corrXml := thisBind as TXml;
-            if (corrXml.Xsd.ParametersType = oppQuery) then
+            if (corrXml.Xsd.ParametersType = oppQuery)
+//          and (corrXml.CorrelationValue <> '.*')
+            then
             begin
               with AddXml (Txml.CreateAsString(corrXml.Name, '')) do
                 AddXml (TXml.CreateAsString('matches', corrXml.CorrelationValue));
+            end;
+          end;
+        end;
+      end;
+      if (not xDefaultMessage)
+      and aOperation.hasBodyCorrelation then
+      begin
+        with AddXml(TXml.CreateAsString('bodyPatterns', '')) do
+        begin
+          jsonType := jsonArray;
+          for x := 0 to aMessage.CorrelationBindables.Count - 1 do
+          with aMessage.CorrelationBindables.Bindables[x] do
+          begin
+            corrXml := thisBind as TXml;
+            if (corrXml.Xsd.ParametersType in [oppDefault, oppBody])
+//          and (corrXml.CorrelationValue <> '.*')
+            then
+            begin
+              with AddXml (Txml.CreateAsString('_', '')) do
+                with AddXml (Txml.CreateAsString ( 'matchesJsonPath', '')) do
+                begin
+                        AddXml (Txml.CreateAsString ( 'expression'
+                                                    , corrXml.fullJsonBodyPath
+                                                    ));
+                        AddXml (Txml.CreateAsString ( 'matches'
+                                                    , corrXml.CorrelationValue
+                                                    ));
+//                                                    + '=~'''
+//                                                    + corrXml.CorrelationValue
+  //                                                  + ''''
+    //                                                )
+                end;
             end;
           end;
         end;
@@ -202,10 +246,10 @@ begin
         end;
       end;
     end;
-    if aPriority = 0 then
+    if xDefaultMessage then
       AddXml (TXml.CreateAsString('priority', '999999')).jsonType := jsonNumber
     else
-      AddXml (TXml.CreateAsInteger('priority', aPriority)).jsonType := jsonNumber;
+      AddXml (TXml.CreateAsInteger('priority', xIndex)).jsonType := jsonNumber;
     with AddXml (TXml.CreateAsString('metadata', '')) do
       AddXml (TXml.CreateAsString('_apiUi', aOperation.Alias));
     result := StreamJSON(0, false);

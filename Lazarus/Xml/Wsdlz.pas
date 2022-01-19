@@ -481,6 +481,7 @@ type
       function hasQueryParam: Boolean;
       function hasHeaderParam: Boolean;
       function hasPathCorrelation: Boolean;
+      function hasBodyCorrelation: Boolean;
       function hasQueryCorrelation: Boolean;
       function hasHeaderCorrelation: Boolean;
       function FunctionPrototypes (aAfter: Boolean): TJBStringList;
@@ -2431,7 +2432,11 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
           if Value = 'path' then ParametersType := oppPath;
           if Value = 'query' then ParametersType := oppQuery;
           if Value = 'header' then ParametersType := oppHeader;
-          if Value = 'body' then ParametersType := oppBody; // swagger 2.0
+          if Value = 'body' then
+          begin
+            ParametersType := oppBody; // swagger 2.0
+            isContainerElement := True;
+          end;
           if Value = 'form' then ParametersType := oppFormData;
           if Value = 'formData' then ParametersType := oppFormData;
         end;
@@ -2498,6 +2503,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
         xName := Copy (xName, Length('application_') + 1, MaxInt);
       yXsd := TXsd.Create(XsdDescr);
       yXsd.ParametersType := oppBody;
+      yXsd.isContainerElement := True;
       XsdDescr.Garbage.AddObject('', yXsd);
       yXsd.ElementName := xName;
       yXsd.MediaType := aItems.XmlItems[x].Name;
@@ -2585,6 +2591,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
           yXsd := TXsd.Create(XsdDescr);
           XsdDescr.Garbage.AddObject('', yXsd);
           yXsd.ElementName := 'body';
+          yXsd.isContainerElement := True;
           yXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, aXml, aOnError);
           yXsd.sType.Name := aXsd.ElementName;
           aXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
@@ -2694,10 +2701,12 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
       end;
     end;
     aOperation.rpyXsd.sType.ContentModel := 'Choice';
+    aOperation.rpyXsd.isContainerElement := True;
     for v := 0 to Items.Count - 1 do
     begin
       vXml := Items.XmlItems[v];
       xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
+      xXsd.isContainerElement := True;
       _evalresponsecode(vXml, xXsd);
     end;
     _addUndefXsd(aOperation.rpyXsd);
@@ -4590,6 +4599,26 @@ begin
       begin
         if Assigned(Xsd)
         and (Xsd.ParametersType = oppPath) then
+          result := True;
+      end;
+    end;
+  end;
+end;
+
+function TWsdlOperation.hasBodyCorrelation: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  if reqBind is TXml then
+  begin
+    for x := 0 to CorrelationBindables.Count - 1 do
+    with CorrelationBindables.Bindables[x] do
+    begin
+      with thisBind as TXml do
+      begin
+        if Assigned(Xsd)
+        and (Xsd.ParametersType in [oppDefault, oppBody]) then
           result := True;
       end;
     end;

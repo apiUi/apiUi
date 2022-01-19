@@ -2,9 +2,9 @@
     <Name>createact01</Name>
     <Patterns>
       <Pattern>typ</Pattern>
-      <Pattern>head</Pattern>
+      <Pattern>2.*</Pattern>
       <Pattern>quer</Pattern>
-      <Pattern>.*</Pattern>
+      <Pattern>2.*</Pattern>
     </Patterns>
     <Reply>
       <CreateActivities checked__="true">
@@ -13,7 +13,7 @@
             <ListOfActivities checked__="true">
               <Activity checked__="true">
                 <_ checked__="true">
-                  <TaskReference checked__="true">TaskReference</TaskReference>
+                  <TaskReference checked__="true">T2</TaskReference>
                   <Document checked__="true">
                     <StorageStatus checked__="true">{{request.scheme}}</StorageStatus>
                   </Document>
