@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Req"
-            xmlns:req="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Req"
+<xsd:schema targetNamespace="http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Req"
+            xmlns:req="http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Req"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
-  <xsd:annotation>
-    <xsd:documentation>Generated 20-6-2012 10:25:36 using GenerateXsd version 0.86 7-12-2009
-                       Based on version 0.9.2 dd 20-6-2012 of document "CreateServiceRequest version 2, Public Service Description"
-    </xsd:documentation>
-  </xsd:annotation>
   <xsd:element name="CreateServiceRequest_Req">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element ref="req:Relation"/>
+        <xsd:element ref="req:Contact"/>
         <xsd:element ref="req:LocalBank"/>
         <xsd:element ref="req:Arrangement" minOccurs="0"/>
         <xsd:element ref="req:CommercialProductType" minOccurs="0"/>
@@ -20,10 +15,10 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="Relation">
+  <xsd:element name="Contact">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element ref="req:RelationId"/>
+        <xsd:element ref="req:ContactId"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -73,7 +68,7 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="RelationId">
+  <xsd:element name="ContactId">
     <xsd:simpleType>
       <xsd:restriction base="xsd:string">
         <xsd:maxLength value="15"/>

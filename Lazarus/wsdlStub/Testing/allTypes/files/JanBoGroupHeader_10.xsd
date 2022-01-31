@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.rabobank.nl/XMLHeader/10"
-            xmlns:rgh="http://www.rabobank.nl/XMLHeader/10">
-  <xsd:element name="RaboHeader">
+            targetNamespace="http://www.JanBo.nl/XMLHeader/10"
+            xmlns:rgh="http://www.JanBo.nl/XMLHeader/10">
+  <xsd:element name="JanBoHeader">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="rgh:HeaderVersion"/>
@@ -19,7 +19,7 @@
   </xsd:element>
   <xsd:element name="HeaderVersion">
     <xsd:annotation>
-      <xsd:documentation>Versienummer van de Rabobank header block. Dit veld geeft de versie van het specifieke Rabobank gedeelte in de header aan. Er wordt vanuit gegaan dat op enig tijdstip er meerdere versies van deze headerblock kunnen voorkomen. Dit veld staat dus los van het bericht zelf en wordt gebruikt voor sturing. Het versienummer wordt opgenomen als attribuut bij de Rabobank header block en in de namespace. Bij nieuwe versies wordt er doorgenummerd.
+      <xsd:documentation>Versienummer van de JanBo header block. Dit veld geeft de versie van het specifieke JanBo gedeelte in de header aan. Er wordt vanuit gegaan dat op enig tijdstip er meerdere versies van deze headerblock kunnen voorkomen. Dit veld staat dus los van het bericht zelf en wordt gebruikt voor sturing. Het versienummer wordt opgenomen als attribuut bij de JanBo header block en in de namespace. Bij nieuwe versies wordt er doorgenummerd.
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleType>

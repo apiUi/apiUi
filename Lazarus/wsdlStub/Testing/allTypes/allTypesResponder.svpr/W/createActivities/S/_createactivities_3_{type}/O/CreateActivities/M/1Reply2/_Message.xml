@@ -1,11 +1,11 @@
   <Message>
-    <Name>createact01</Name>
+    <Name>Reply2</Name>
     <Patterns>
       <Pattern>typ</Pattern>
       <Pattern>head</Pattern>
       <Pattern>quer</Pattern>
-      <Pattern>cid</Pattern>
       <Pattern>did</Pattern>
+      <Pattern>did1</Pattern>
     </Patterns>
     <Reply>
       <CreateActivities checked__="true">
@@ -14,7 +14,7 @@
             <ListOfActivities checked__="true">
               <Activity checked__="true">
                 <_ checked__="true">
-                  <TaskReference checked__="true">T2</TaskReference>
+                  <TaskReference checked__="true">T3</TaskReference>
                   <Document checked__="true">
                     <StorageStatus checked__="true">{{request.scheme}}</StorageStatus>
                   </Document>
@@ -30,4 +30,5 @@
     </Request>
     <DocumentationEdited>false</DocumentationEdited>
     <AfterScript></AfterScript>
+    <focusedMessage>true</focusedMessage>
   </Message>

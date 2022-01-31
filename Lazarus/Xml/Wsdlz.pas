@@ -440,6 +440,7 @@ type
       function DefaultReadReplyFromFileName: String;
       procedure ReadReplyFromFile;
       function BeforeActivatorDebugString: String;
+      function FullXPath (aBind: TCustomBindable): String;
       procedure InitDelayTime;
       procedure RefreshBindables;
       procedure ReqBindablesFromString (aString: String);
@@ -589,6 +590,7 @@ function DateTimeToTandemJulianStr (aDateTime: TDateTime): String;
 function RoundedX (aSource, aNumber: Extended): Extended;
 function RandomX (aLow, aHigh: Extended): Extended;
 function FormatDateX (aDate: TDateTime; Mask: String): String;
+function GenerateGUID: String;
 function GenerateRandomId: String;
 function dbLookUp (aTable, aValueColumn, aReferenceColumn, aReferenceValue: String): String;
 function NonceAsString (aString: String): String;
@@ -750,6 +752,7 @@ uses
    , xmlxsdparser
    , Logz
    , LazUTF8
+   , uuid
    ;
 
 { TWsdl }
@@ -1084,6 +1087,14 @@ begin
   end;
 
   Result := DateString;
+end;
+
+function GenerateGUID: String;
+var
+  uuid: TGUID;
+begin
+  CreateGUID (uuid);
+  Result := GUIDToString(uuid);
 end;
 
 function GenerateRandomId: String;
@@ -3491,6 +3502,48 @@ begin
   DoExit := False;
 end;
 
+function TWsdlOperation.FullXPath(aBind: TCustomBindable): String;
+var
+  xList: TBindableList;
+  x: Integer;
+begin
+  result := '/';
+  xList := aBind.UplineAsList;
+  try
+    if isSoapService then
+    begin
+      if xList.Count < 2 then
+        raise Exception.Create('cannot generate (SOAP) XPath for ' + aBind.Name);
+  SjowMessage('reqBind test: ' + reqBind.Name + ' : ' + xList.Bindables[0].Name + ' : ' + xList.Bindables[1].Name);
+  SjowMessage(Format ( 'index: %d headers %d'
+                     , [ xList.Bindables[0].Children.IndexOfObject(xList.Bindables[1])
+                       , InputHeaders.Count
+                       ]
+                     ));
+      if (    (xList.Bindables[0].Name = Cloned.reqBind.Name)
+          and (xList.Bindables[0].Children.IndexOfObject(xList.Bindables[1]) < InputHeaders.Count)
+         )
+      or (    (xList.Bindables[0].Name = Cloned.rpyBind.Name)
+          and (xList.Bindables[0].Children.IndexOfObject(xList.Bindables[1]) < OutputHeaders.Count)
+         )
+      then
+        result := '/*["Envelope"=local-name()]/*["Header"=local-name()]'
+      else
+        result := '/*["Envelope"=local-name()]/*["Body"=local-name()]';
+      for x := 1 to xList.Count - 1 do
+        result := result + '/*["' + xList.Bindables[x].Name + '"=local-name()]';
+      Exit;
+    end;
+    for x := 0 to xList.Count - 1 do
+      SjowMessage(xList.Bindables[x].UpLineAsText);
+  finally
+    xList.ClearListOnly;
+    xList.Free;
+  end;
+end;
+
+
+
 constructor TWsdlOperation.Create  (aWsdl: TWsdl);
 begin
   WsdlOperation := self;
@@ -3842,6 +3895,7 @@ begin
     BindScriptFunction ('Exit', @RaiseExit, VFOV, '()');
     BindScriptFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
     BindScriptFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
+    BindScriptFunction ('GenerateGUID', @GenerateGUID, SFV, '()');
     BindScriptFunction ('GetContext', @GetContext, SFV, '()');
     BindScriptFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
@@ -4594,13 +4648,14 @@ begin
   begin
     for x := 0 to CorrelationBindables.Count - 1 do
     with CorrelationBindables.Bindables[x] do
-    begin
+    try
       with thisBind as TXml do
       begin
         if Assigned(Xsd)
         and (Xsd.ParametersType = oppPath) then
           result := True;
       end;
+    except
     end;
   end;
 end;
@@ -4614,13 +4669,14 @@ begin
   begin
     for x := 0 to CorrelationBindables.Count - 1 do
     with CorrelationBindables.Bindables[x] do
-    begin
+    try
       with thisBind as TXml do
       begin
         if Assigned(Xsd)
         and (Xsd.ParametersType in [oppDefault, oppBody]) then
           result := True;
       end;
+    except
     end;
   end;
 end;
@@ -4634,13 +4690,14 @@ begin
   begin
     for x := 0 to CorrelationBindables.Count - 1 do
     with CorrelationBindables.Bindables[x] do
-    begin
+    try
       with thisBind as TXml do
       begin
         if Assigned(Xsd)
         and (Xsd.ParametersType = oppQuery) then
           result := True;
       end;
+    except
     end;
   end;
 end;
@@ -4654,13 +4711,14 @@ begin
   begin
     for x := 0 to CorrelationBindables.Count - 1 do
     with CorrelationBindables.Bindables[x] do
-    begin
+    try
       with thisBind as TXml do
       begin
         if Assigned(Xsd)
         and (Xsd.ParametersType = oppHeader) then
           result := True;
       end;
+    except
     end;
   end;
 end;
@@ -6013,6 +6071,7 @@ begin
     BindStamperFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindStamperFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
+    BindStamperFunction ('GenerateGUID', @GenerateGUID, SFV, '()');
     BindStamperFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
     BindStamperFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
@@ -6677,6 +6736,8 @@ begin
       Xsd := aXsds.Xsds[f];
     end;
   end;
+  if Assigned (Xsd) then
+    Xsd.isContainerElement := True;
 end;
 
 { TWsdlParts }

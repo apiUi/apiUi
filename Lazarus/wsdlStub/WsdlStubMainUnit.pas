@@ -5107,8 +5107,8 @@ begin
           logValidationTabImageIndex := 25;
       end;
       UpdateLogTabs (xLog);
-      MessagesStatusBar.Panels.Items[Ord(lpiFocus)].Text := '[' + IntToStr(xLog.Nr)
-        + ' : ' + IntToStr(se.displayedLogs.Number) + ']';
+      MessagesStatusBar.Panels.Items[Ord(lpiFocus)].Text := '[' + IntToStr(xLog.LogSequenceNr)
+        + ' : ' + IntToStr(se.displayedLogs.LogSequenceNr) + ']';
       if Assigned(xLog.Operation) and (xLog.Operation is TWsdlOperation) then
       begin
         FocusedMessage := nil;
@@ -7671,9 +7671,9 @@ begin
                             , '/__admin/mappings/remove-by-metadata'
                             , ''
                             , 'POST'
-                            , 'application/xml'
+                            , 'application/json'
                             , generateWireMockMappingMetaQuery (xOperation)
-                            , 'application/xml'
+                            , 'application/json'
                             );
     for X := 0 to xOperation.Messages.Count - 1 do
     begin
@@ -8186,7 +8186,6 @@ procedure TMainForm.RefreshLog;
     begin
       xLog := se.toDisplayLogs.LogItems[x];
       se.displayedLogs.SaveLog('', xLog);
-      xLog.Nr := se.displayedLogs.Number;
       result := True;
       se.LogFilter.Execute(xLog);
       xNode := MessagesVTS.AddChild(nil);

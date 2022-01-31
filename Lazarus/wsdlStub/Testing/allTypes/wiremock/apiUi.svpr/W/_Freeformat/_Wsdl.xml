@@ -1,0 +1,8 @@
+  <Wsdl>
+    <Name>_Freeformat</Name>
+    <FreeFormatOperations>
+      <Operation>
+        <Name>aaPostMapping</Name>
+      </Operation>
+    </FreeFormatOperations>
+  </Wsdl>

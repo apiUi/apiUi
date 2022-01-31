@@ -437,7 +437,6 @@
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
-        <Enabled Value="False"/>
       </Item9>
       <Item10>
         <Name Value="EIdReadTimeout"/>

@@ -48,7 +48,12 @@
         <customHeaders></customHeaders>
       </Http>
     </endpointConfig>
-    <CorrelationElements></CorrelationElements>
+    <CorrelationElements>
+      <CorrelationElement>Req.CreateServiceRequest2.JanBoHeader.HeaderVersion</CorrelationElement>
+      <CorrelationElement>Req.CreateServiceRequest2.CreateServiceRequest_Req.Contact.ContactId</CorrelationElement>
+      <CorrelationElement>Req.CreateServiceRequest2.CreateServiceRequest_Req.LocalBank.BankCode</CorrelationElement>
+    </CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
+    <focusedOperation>true</focusedOperation>
   </Operation>

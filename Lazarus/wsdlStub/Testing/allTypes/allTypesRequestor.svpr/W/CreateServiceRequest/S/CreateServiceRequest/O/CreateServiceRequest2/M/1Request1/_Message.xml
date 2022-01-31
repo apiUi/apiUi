@@ -1,5 +1,5 @@
   <Message>
-    <Name>Default</Name>
+    <Name>Request1</Name>
     <Patterns></Patterns>
     <Reply>
       <CreateServiceRequest2 checked__="false"></CreateServiceRequest2>
@@ -7,14 +7,14 @@
     <Request>
       <CreateServiceRequest2 checked__="true">
         <JanBoHeader checked__="true">
-          <HeaderVersion checked__="true">10</HeaderVersion>
+          <HeaderVersion checked__="true">09</HeaderVersion>
         </JanBoHeader>
         <CreateServiceRequest_Req checked__="true">
           <Contact checked__="true">
-            <ContactId checked__="true">CC</ContactId>
+            <ContactId checked__="true">1</ContactId>
           </Contact>
           <LocalBank checked__="true">
-            <BankCode checked__="true">122.745</BankCode>
+            <BankCode checked__="true">3642</BankCode>
           </LocalBank>
           <ServiceRequest checked__="true">
             <SourceSystemId checked__="true">SourceSystemId</SourceSystemId>
@@ -34,4 +34,5 @@
     </Request>
     <DocumentationEdited>false</DocumentationEdited>
     <AfterScript></AfterScript>
+    <focusedMessage>true</focusedMessage>
   </Message>

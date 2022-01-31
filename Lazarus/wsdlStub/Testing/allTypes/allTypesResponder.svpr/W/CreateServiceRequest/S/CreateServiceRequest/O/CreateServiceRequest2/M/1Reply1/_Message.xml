@@ -1,14 +1,14 @@
   <Message>
-    <Name>Default</Name>
+    <Name>Reply1</Name>
     <Patterns>
-      <Pattern>.*</Pattern>
-      <Pattern>.*</Pattern>
-      <Pattern>.*</Pattern>
+      <Pattern>09</Pattern>
+      <Pattern>1</Pattern>
+      <Pattern>3642</Pattern>
     </Patterns>
     <Reply>
       <CreateServiceRequest2 checked__="true">
         <JanBoHeader checked__="true">
-          <HeaderVersion checked__="true">10</HeaderVersion>
+          <HeaderVersion checked__="true">09</HeaderVersion>
           <MessageId checked__="true">MessageId</MessageId>
           <ServiceRequestorDomain checked__="true">ServiceRequestorDomain</ServiceRequestorDomain>
           <ServiceRequestorId checked__="true">ServiceRequestorId</ServiceRequestorId>
@@ -20,7 +20,7 @@
         </JanBoHeader>
         <CreateServiceRequest_Rpy checked__="true">
           <ServiceRequest checked__="true">
-            <Reference checked__="true">1</Reference>
+            <Reference checked__="true">C2</Reference>
             <ListOfActivities checked__="true">
               <Activity checked__="true">
                 <TaskReference checked__="true">TaskReference</TaskReference>
@@ -107,4 +107,5 @@
     </Request>
     <DocumentationEdited>false</DocumentationEdited>
     <AfterScript></AfterScript>
+    <focusedMessage>true</focusedMessage>
   </Message>

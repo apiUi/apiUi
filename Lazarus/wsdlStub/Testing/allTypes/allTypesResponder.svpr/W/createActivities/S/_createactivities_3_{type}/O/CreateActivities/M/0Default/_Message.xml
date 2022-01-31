@@ -5,6 +5,7 @@
       <Pattern>.*</Pattern>
       <Pattern>.*</Pattern>
       <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
     </Patterns>
     <Reply>
       <CreateActivities checked__="true">
@@ -13,7 +14,7 @@
             <ListOfActivities checked__="true">
               <Activity checked__="true">
                 <_ checked__="true">
-                  <TaskReference checked__="true">T1</TaskReference>
+                  <TaskReference checked__="true">DEF</TaskReference>
                   <Document checked__="true">
                     <StorageStatus checked__="true">StorageStatus</StorageStatus>
                   </Document>

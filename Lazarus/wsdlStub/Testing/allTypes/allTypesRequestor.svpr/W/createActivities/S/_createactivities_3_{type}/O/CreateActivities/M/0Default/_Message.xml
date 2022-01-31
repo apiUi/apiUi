@@ -7,13 +7,9 @@
     <Request>
       <CreateActivities checked__="true">
         <type checked__="true">typ</type>
-        <apiheader checked__="true">2</apiheader>
+        <apiheader checked__="true">head</apiheader>
         <queryparam checked__="true">quer</queryparam>
-        <body checked__="true">
-          <Relation checked__="true">
-            <RelationId checked__="true">2</RelationId>
-          </Relation>
-        </body>
+        <body checked__="true"></body>
       </CreateActivities>
     </Request>
     <DocumentationEdited>false</DocumentationEdited>

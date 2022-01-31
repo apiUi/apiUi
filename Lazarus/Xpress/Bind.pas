@@ -286,6 +286,7 @@ public
   function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Virtual;
   {$endif}
   function IsAncestorOf (aBindable: TCustomBindable): Boolean;
+  function UplineAsList: TBindableList;
   function UpLineAsText: String; Virtual;
   function AllValidationsMessage: String;
   constructor Create; Overload;
@@ -650,6 +651,18 @@ begin
   DecodeTime(AValue,hour,min,sec,msec);
   Value := Format('%.*d-%.*d-%.*dT%.*d:%.*d:%.*d.%.*d'
                 , [4, year, 2, month, 2, day, 2, hour, 2, min, 2, sec, 3, msec]);
+end;
+
+function TCustomBindable.UplineAsList: TBindableList;
+  procedure _fill (aList: TBindableList; aBind: TCustomBindable);
+  begin
+    if Assigned (aBind.Parent) then
+      _fill (aList, aBind.Parent);
+    aList.AddObject(aBind.Name, aBind);
+  end;
+begin
+  result := TBindableList.Create;
+  _fill (result, Self);
 end;
 
 procedure TCustomBindable.PopulateSourceFileName(aName: String);

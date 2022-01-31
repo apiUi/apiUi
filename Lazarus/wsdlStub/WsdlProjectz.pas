@@ -4142,7 +4142,6 @@ begin
           Exception := e.Message;
           if OutboundTimeStamp = 0 then
             OutboundTimeStamp := xsdNowUTC;
-          Nr := displayedLogs.Number;
         end;
         Raise;
       end;
@@ -7206,6 +7205,7 @@ begin
         if TagName = 'RequestReply' then
         begin
           xLog := TLog.Create;
+          xLog.LogSequenceNr := Items.XmlIntegerByTagDef ['Nr', aLogList.Count];
           xLog.MessageId := Items.XmlValueByTagDef ['MessageId', xLog.MessageId];
           try
             xLog.InboundTimeStamp := XmlToDateTime (Items.XmlValueByTag ['InboundTimeStamp']);
@@ -7474,6 +7474,7 @@ begin
   AcquireLogLock;
   try
     toDisplayLogs.SaveLog (aString, aLog);
+    aLog.LogSequenceNr := toDisplayLogs.LogSequenceNr;
     if Assigned (aLog.Operation) then
       while Assigned (aLog.Operation.Cloned) do
         aLog.Operation := aLog.Operation.Cloned;
