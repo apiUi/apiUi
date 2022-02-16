@@ -37,6 +37,7 @@ uses
   , xmlxsdparser
   , LazFileUtils
   , optionsunit
+  , wiremockmapping
   ;
 
 type
@@ -373,7 +374,7 @@ procedure TMyApplication .RefreshLogger ;
     begin
       xLog := se.toDisplayLogs.LogItems[x];
       se.displayedLogs.SaveLog('', xLog);
-      xLog.Nr := se.displayedLogs.Number;
+      xLog.LogSequenceNr := se.displayedLogs.LogSequenceNr;
       result := True;
       se.LogFilter.Execute(xLog);
       if xLog.PassesFilter then

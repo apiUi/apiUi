@@ -38,7 +38,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
-        <Address>${wiremockhost}</Address>
+        <Address>${Address}</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>
@@ -51,4 +51,5 @@
     <CorrelationElements></CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
+    <focusedOperation>true</focusedOperation>
   </Operation>

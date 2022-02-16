@@ -56,5 +56,4 @@
       <ColumnElement>Req.CreateServiceRequest2.CreateServiceRequest_Req.LocalBank.BankCode</ColumnElement>
     </ColumnElements>
     <LogColumns></LogColumns>
-    <focusedOperation>true</focusedOperation>
   </Operation>

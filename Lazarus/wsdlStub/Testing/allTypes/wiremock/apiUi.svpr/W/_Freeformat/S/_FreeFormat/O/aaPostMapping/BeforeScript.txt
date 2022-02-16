@@ -1,1 +1,2 @@
-RequestOperation ('admin_mappings_delete');
+if False
+then RequestOperation ('admin_mappings_delete');

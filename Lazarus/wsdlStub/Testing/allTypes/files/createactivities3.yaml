@@ -128,6 +128,9 @@ definitions:
                   properties: 
                     StorageStatus: 
                       type: string
+                      enum:
+                      - Archived
+                      - Compressed
                       maxLength: 20
                   required: 
                     - StorageStatus

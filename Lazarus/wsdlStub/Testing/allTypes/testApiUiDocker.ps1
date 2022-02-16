@@ -1,4 +1,4 @@
-powershell .\startServers.ps1
+powershell .\startAll.ps1
 
 docker run -dit --rm --name=apiuirequestor `
 	       --network dockernet `
@@ -20,5 +20,5 @@ Invoke-RestMethod @Params
 #>
 docker container stop apiuirequestor
 
-powershell .\stopServers.ps1
+powershell .\stopAll.ps1
 

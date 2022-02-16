@@ -1,1 +1,1 @@
-%~dp0apiUi.exe
+powershell %~dp0apiUi.exe

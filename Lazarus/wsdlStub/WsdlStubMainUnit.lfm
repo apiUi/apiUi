@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 444
+  Left = 405
   Height = 808
-  Top = 119
+  Top = 160
   Width = 1420
   ClientHeight = 783
   ClientWidth = 1420
@@ -611,7 +611,7 @@ object MainForm: TMainForm
               Action = MoveDownMessageAction
             end
             object ToolButton26: TToolButton
-              Left = 207
+              Left = 244
               Height = 28
               Top = 2
               Caption = 'ToolButton26'
@@ -619,12 +619,12 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ToolButton25: TToolButton
-              Left = 215
+              Left = 252
               Top = 2
               Action = SelectMessageColumnsAction
             end
             object ToolButton29: TToolButton
-              Left = 244
+              Left = 281
               Height = 28
               Top = 2
               Caption = 'ToolButton29'
@@ -632,17 +632,17 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ToolButton27: TToolButton
-              Left = 252
+              Left = 289
               Top = 2
               Action = CopyGridAction
             end
             object ToolButton28: TToolButton
-              Left = 281
+              Left = 318
               Top = 2
               Action = PasteGridAction
             end
             object ToolButton34: TToolButton
-              Left = 310
+              Left = 347
               Height = 28
               Top = 2
               Caption = 'ToolButton34'
@@ -650,12 +650,12 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ToolButton38: TToolButton
-              Left = 318
+              Left = 355
               Top = 2
               Action = CheckGridFieldsAction
             end
             object ToolButton41: TToolButton
-              Left = 347
+              Left = 384
               Height = 28
               Top = 2
               Caption = 'ToolButton41'
@@ -663,18 +663,18 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ExecuteRequestToolButton: TToolButton
-              Left = 355
+              Left = 392
               Top = 2
               HelpType = htKeyword
               Action = ExecuteRequestAction
             end
             object ExecuteAllRequestsToolButton: TToolButton
-              Left = 384
+              Left = 421
               Top = 2
               Action = ExecuteAllRequestsAction
             end
             object LastToolButton: TToolButton
-              Left = 442
+              Left = 479
               Height = 28
               Top = 2
               Caption = 'LastToolButton'
@@ -682,7 +682,7 @@ object MainForm: TMainForm
               Style = tbsSeparator
             end
             object ProgressBar: TProgressBar
-              Left = 450
+              Left = 487
               Height = 28
               Hint = 'Progress'
               Top = 2
@@ -697,12 +697,12 @@ object MainForm: TMainForm
               TabOrder = 0
             end
             object ExecuteLoadTextToolbutton: TToolButton
-              Left = 413
+              Left = 450
               Top = 2
               Action = LoadTestAction
             end
             object ToolButton75: TToolButton
-              Left = 178
+              Left = 215
               Top = 2
               Action = ToggleTrackDuplicateMessagesAction
             end
@@ -711,6 +711,19 @@ object MainForm: TMainForm
               Height = 28
               Top = 2
               Caption = 'ToolButton79'
+              Style = tbsSeparator
+            end
+            object ToolButton10: TToolButton
+              Left = 178
+              Top = 2
+              Action = ToggleStateMachineAction
+              Style = tbsCheck
+            end
+            object ToolButton19: TToolButton
+              Left = 207
+              Height = 28
+              Top = 2
+              Caption = 'ToolButton19'
               Style = tbsSeparator
             end
           end
@@ -752,6 +765,18 @@ object MainForm: TMainForm
               end            
               item
                 Position = 4
+                Text = 'Scenario'
+              end            
+              item
+                Position = 5
+                Text = 'RequiredState'
+              end            
+              item
+                Position = 6
+                Text = 'NextState'
+              end            
+              item
+                Position = 7
                 Text = 'Pattern'
                 Width = 200
               end>
@@ -2487,8 +2512,8 @@ object MainForm: TMainForm
       ShortCut = 24648
     end
     object SnapshotsFromHttpGetAgainAction: TAction
-      Caption = 'Download snapshots from apiUi in the cloud'
-      Hint = 'Download snapshots from apiUi in the cloud'
+      Caption = 'Download snapshots from remote apiUi server'
+      Hint = 'Download snapshots from apiUi on remote server'
       ImageIndex = 106
       OnExecute = SnapshotsFromHttpGetAgainActionExecute
       OnUpdate = SnapshotsFromHttpGetAgainActionUpdate
@@ -2501,41 +2526,44 @@ object MainForm: TMainForm
     end
     object CopyRemoteApiUiProjectAction: TAction
       Category = 'Project'
-      Caption = 'Copy ApiUi Project from cloud'
+      Caption = 'Copy ApiUi Project from remote server'
       ImageIndex = 106
       OnExecute = CopyRemoteApiUiProjectActionExecute
+      OnUpdate = CopyRemoteApiUiProjectActionUpdate
       ShortCut = 57423
     end
-    object SaveRemoteApiUiProjectAction: TAction
+    object PushProjectToRemoteServerAction: TAction
       Category = 'Project'
-      Caption = 'PasteRemoteApiUiProjectAction'
-      ImageIndex = 106
-      OnExecute = SaveRemoteApiUiProjectActionExecute
+      Caption = 'Push project to remote server'
+      ImageIndex = 115
+      OnExecute = PushProjectToRemoteServerActionExecute
+      OnUpdate = PushProjectToRemoteServerActionUpdate
       ShortCut = 57427
     end
     object CheckReferencedFilesExistInCloudAction: TAction
       Category = 'Project'
-      Caption = 'Check if referenced files do exist in the cloud'
+      Caption = 'Check if referenced files are availlable at remote server'
       ImageIndex = 106
       OnExecute = CheckReferencedFilesExistInCloudActionExecute
+      OnUpdate = CheckReferencedFilesExistInCloudActionUpdate
       ShortCut = 57426
     end
     object SnapshotFromHttpGetAction: TAction
       Category = 'Reports'
-      Caption = 'Download snapshot from cloud'
+      Caption = 'Download snapshot from remote server'
       ImageIndex = 106
       OnExecute = SnapshotFromHttpGetActionExecute
     end
     object SetApiServerConnectionAction: TAction
-      Caption = 'Set cloud connection'
-      Hint = 'Set connection properties to apiUi in the cloud'
+      Caption = 'Set remote server connection'
+      Hint = 'Set connection properties to apiUi on remote server'
       ImageIndex = 106
       OnExecute = SetApiServerConnectionActionExecute
       ShortCut = 57411
     end
     object LogsFromHttpGetAction: TAction
-      Caption = 'Append logs from remote apiServer'
-      Hint = 'Download and remove log from apiUi in the cloud'
+      Caption = 'Append logs from remote server'
+      Hint = 'Download and remove log from apiUi on remote server'
       ImageIndex = 106
       OnExecute = LogsFromHttpGetActionExecute
       OnHint = LogsFromHttpGetActionHint
@@ -2562,7 +2590,7 @@ object MainForm: TMainForm
     end
     object CloudProjectInformationAction: TAction
       Category = 'Project'
-      Caption = 'Information from cloud'
+      Caption = 'Information from remote server'
       Hint = 'Project Information from cloud'
       ImageIndex = 106
       OnExecute = CloudProjectInformationActionExecute
@@ -2576,7 +2604,7 @@ object MainForm: TMainForm
       OnUpdate = EditCloudEnvironmentActionUpdate
     end
     object AboutApiServerAction: TAction
-      Caption = 'About server in the cloud'
+      Caption = 'About remote server'
       ImageIndex = 106
       OnExecute = AboutApiServerActionExecute
       OnUpdate = AboutApiServerActionUpdate
@@ -2587,21 +2615,46 @@ object MainForm: TMainForm
       OnExecute = ChangeToolBarColorTestExecute
       ShortCut = 57424
     end
-    object PushOperationCandidatesAction: TAction
+    object PushOperationDesignAction: TAction
       Category = 'Operation'
-      Caption = 'Push message-candidates to remote server'
+      Caption = 'Push operation to remote server'
       Enabled = False
       ImageIndex = 115
-      OnExecute = PushOperationCandidatesActionExecute
-      OnUpdate = PushOperationCandidatesActionUpdate
+      OnExecute = PushOperationDesignActionExecute
+      OnUpdate = PushOperationDesignActionUpdate
       ShortCut = 57421
+    end
+    object ToggleStateMachineAction: TAction
+      Category = 'StateMachine'
+      Caption = 'ToggleStateMachineAction'
+      Hint = 'Use state machine'
+      ImageIndex = 116
+      OnExecute = ToggleStateMachineActionExecute
+    end
+    object ShowStateMachineInformationAction: TAction
+      Category = 'StateMachine'
+      Caption = 'Information'
+      OnExecute = ShowStateMachineInformationActionExecute
+      ShortCut = 57417
+    end
+    object ResetStateMachineAction: TAction
+      Category = 'StateMachine'
+      Caption = 'Reset'
+      OnExecute = ResetStateMachineActionExecute
+    end
+    object ResetCloudStateMachine: TAction
+      Category = 'StateMachine'
+      Caption = 'Reset'
+      ImageIndex = 115
+      OnExecute = ResetCloudStateMachineExecute
+      OnUpdate = ResetCloudStateMachineUpdate
     end
   end
   object mainImageList: TImageList
     Left = 208
     Top = 140
     Bitmap = {
-      4C69740000001000000010000000000000000000000000000000000000000000
+      4C69750000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -6313,6 +6366,38 @@ object MainForm: TMainForm
       FF00FFFFFF00FFFFFF000000FFFFFFFFFF000000FFFFFFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF000000FFFF0000FFFF0000FFFFFFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241C
+      EDFFFFFFFF00FFFFFF00000000FF000000FF000000FF000000FF000000FFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241C
+      EDFF241CEDFFFFFFFF00000000FF000000FF000000FF000000FF000000FFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241CEDFF241CEDFF241C
+      EDFF241CEDFF241CEDFF000000FFFFFFFF00FFFFFF00FFFFFF00000000FF241C
+      EDFF241CEDFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00241CEDFFFFFFFF00241C
+      EDFF241CEDFFFFFFFF00000000FFFFFFFF00FFFFFF00FFFFFF00000000FFFFFF
+      FF00241CEDFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00241CEDFFFFFFFF00241C
+      EDFFFFFFFF00FFFFFF00000000FF000000FF000000FF000000FF000000FFFFFF
+      FF00241CEDFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00241CEDFFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00241CEDFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00241CEDFFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241CEDFF241C
+      EDFF241CEDFF241CEDFF241CEDFFFFFFFF00FFFFFF00241CEDFFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00241C
+      EDFF241CEDFF241CEDFFFFFFFF00FFFFFF00FFFFFF00241CEDFFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00241CEDFFFFFFFF00FFFFFF00000000FF000000FF000000FF000000FF0000
+      00FFFFFFFF00FFFFFF00241CEDFFFFFFFF00FFFFFF00FFFFFF00000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FFFFFFFF00241CEDFF241CEDFFFFFFFF00FFFFFF00FFFFFF00000000FF0000
+      00FF000000FF000000FF000000FF000000FFFFFFFF00FFFFFF00FFFFFF000000
+      00FF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF241CEDFF000000FFFFFF
+      FF00FFFFFF00FFFFFF00000000FF000000FFFFFFFF00FFFFFF00FFFFFF000000
+      00FFFFFFFF00241CEDFF241CEDFFFFFFFF00FFFFFF00FFFFFF00000000FFFFFF
+      FF00FFFFFF00FFFFFF00000000FF000000FF000000FF000000FF000000FF0000
+      00FFFFFFFF00FFFFFF00241CEDFFFFFFFF00FFFFFF00FFFFFF00000000FF0000
+      00FF000000FF000000FF000000FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00
     }
   end
@@ -6393,6 +6478,12 @@ object MainForm: TMainForm
       end
       object MenuItem70: TMenuItem
         Action = SetApiServerConnectionAction
+      end
+      object MenuItem40: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem48: TMenuItem
+        Action = PushProjectToRemoteServerAction
       end
       object Options2: TMenuItem
         Action = ProjectOptionsAction
@@ -6532,15 +6623,20 @@ object MainForm: TMainForm
         OnClick = ScriptGoMenuItemClick
       end
     end
+    object MenuItem8: TMenuItem
+      Caption = 'State machine'
+      object MenuItem39: TMenuItem
+        Action = ShowStateMachineInformationAction
+      end
+      object MenuItem20: TMenuItem
+        Action = ResetStateMachineAction
+      end
+      object MenuItem36: TMenuItem
+        Action = ResetCloudStateMachine
+      end
+    end
     object EnvironmentMenuItem: TMenuItem
       Caption = '&Environment'
-      object Revalidatemessages1: TMenuItem
-        Caption = 'Re-enable all messages'
-        OnClick = Revalidatemessages1Click
-      end
-      object N15: TMenuItem
-        Caption = '-'
-      end
       object Reset1: TMenuItem
         Caption = 'Reset'
         OnClick = Reset1Click
@@ -8114,7 +8210,7 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object MenuItem1: TMenuItem
-      Action = PushOperationCandidatesAction
+      Action = PushOperationDesignAction
     end
     object N1: TMenuItem
       Caption = '-'

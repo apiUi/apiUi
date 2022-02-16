@@ -35,6 +35,7 @@ uses Classes
    , Ipmz
    , IpmTypes
    , StringListListUnit
+   , statemachineunit
 {$ifndef FPC}
   , jclDebug
 {$endif}
@@ -135,6 +136,7 @@ type
                                          ; ARequestInfo: TIdHTTPRequestInfo
                                          ; AResponseInfo: TIdHTTPResponseInfo
                                          );
+    function SpecFilesReadableReport (aXml: TXml): String;
     procedure HTTPServerCommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerCreatePostStream(AContext: TIdContext;
@@ -182,6 +184,7 @@ type
     PathInfos, PathRegexps, PathFormats: TJBStringList;
     Scripts: TXml;
     DisplayedLogColumns: TJBStringList;
+    StateMachine: TStateMachine;
     projectFileName, remoteProjectName, LicenseDbName: String;
     displayedExceptions, toDisplayExceptions: TExceptionLogList;
     displayedLogs, toDisplayLogs, toUpdateDisplayLogs, archiveLogs: TLogList;
@@ -223,6 +226,7 @@ type
     LastFocusedOperation: TWsdlOperation;
     CORS: TCORSType;
     corsExceptionHttpCode: Integer;
+    procedure ResetStateMachineRemoteServer;
     procedure OnBeforeFileRead (aFileName: String);
     procedure doRegressionReport (aReport: TSnapshot);
     procedure DatabaseConnectionSpecificationFromXml;
@@ -287,6 +291,9 @@ type
     procedure OpenProjectFromString (aString: String);
     procedure IntrospectProject;
     function XmlFromProjectFolders (aFolderName: String): TXml;
+    function ProjectFileSpecsAsJsonString: String;
+    function ProjectFileSpecsAsXml: TXml;
+    function ProjectOperationDesignAsXml (xOperation: TWsdlOperation): TXml;
     function ProjectDesignAsXml: TXml;
     function ProjectDesignAsString: String;
 {}
@@ -320,6 +327,9 @@ type
     procedure CreateReply ( aLog: TLog; aIsActive: Boolean);
     function ProjectLogOptionsAsXml: TXml;
     procedure RefreshCommand;
+    procedure ResetStateMachine;
+    procedure FillStateMachine (aStateMachine: TStateMachine);
+    function StateMachineInfoAsXml: TXml;
     function ProjectOptionsLogDisplayedColumnsAsXml: TXml;
     function BooleanPromptDialog (aPrompt: String): Boolean;
     function WsdlOpenFile (aName: String): TWsdl;
@@ -330,6 +340,7 @@ type
     function ProjectOptionsAsXml (aRelativeFilenames: Boolean; aFileName: String): TXml;
     procedure ProjectOptionsFromXml(aXml: TXml);
     procedure HaveStompFrame (aStompInterface: TStompInterface; aQueue: String; aFrame: IStompFrame);
+    procedure ProjectOperationDesignFromXml (aMainFileName: String; xService: TWsdlService; xOperation: TWsdlOperation; oXml: TXml);
     procedure ProjectDesignFromXml (aXml: TXml; aMainFileName: String);
     procedure ProjectDesignFromString (aString, aMainFileName: String);
     procedure ProjectDesignFromApiRequestString (aString, aMainFileName: String);
@@ -518,6 +529,7 @@ uses LazVersion
    , IdSSLOpenSSLHeaders
    , Clipbrd
    , httpmultipart
+   , wiremockmapping
    ;
 
 const ReadmeFilename = 'readme.txt'
@@ -1494,6 +1506,7 @@ begin
   end;
   Scripts := TXml.CreateAsString('Scripts', '');
   DisplayedLogColumns := TJBStringList.Create;
+  StateMachine := TStateMachine.Create;
   OperationsWithEndpointOnly := True;
   SaveRelativeFileNames := True;
   InitSpecialWsdls;
@@ -1554,6 +1567,7 @@ begin
   ignoreCoverageOn.Free;
   Scripts.Free;
   DisplayedLogColumns.Free;
+  StateMachine.Free;
   inherited;
 end;
 
@@ -1656,9 +1670,19 @@ procedure TWsdlProject.PrepareAllOperations;
         if xOperation.Messages.Count = 0 then
         begin
           if xOperation.StubAction = saRequest then
-            TWsdlMessage.CreateRequest(xOperation, 'Default', '.*', 'Default request')
+            with TWsdlMessage.CreateRequest(xOperation, 'Default', '.*', 'Default request') do
+            begin
+              stateMachineScenarioName := '.*';
+              stateMachineRequiredState := '.*';
+              stateMachineNextState := '.*';
+            end
           else
-            TWsdlMessage.CreateReply(xOperation, 'Default', '.*', 'Default reply');
+            with TWsdlMessage.CreateReply(xOperation, 'Default', '.*', 'Default reply') do
+            begin
+              stateMachineScenarioName := '.*';
+              stateMachineRequiredState := '.*';
+              stateMachineNextState := '.*';
+            end;
         end;
       end;
     end;
@@ -2104,22 +2128,152 @@ begin
   Activate(wasActive);
 end;
 
-function TWsdlProject.ProjectDesignAsXml: TXml;
-  procedure _addCheckers (aList, aXml: TXml);
+procedure TWsdlProject.ResetStateMachine;
+begin
+  with StateMachine do
+  begin
+    AcquireLock;
+    try
+      Reset;
+    finally
+      ReleaseLock;
+    end;
+  end;
+end;
+
+procedure TWsdlProject.FillStateMachine (aStateMachine: TStateMachine);
+var
+  x, o, m, f: Integer;
+  xScenario: TStateMachineScenario;
+begin
+  aStateMachine.AcquireLock;
+  try
+    aStateMachine.Clear;
+    for o := 0 to allAliasses.Count - 1 do with allAliasses.Operations[o] do
+    begin
+      for m := 0 to Messages.Count - 1 do with Messages.Messages[m] do
+      begin
+        if (stateMachineScenarioName <> '')
+        and (stateMachineScenarioName <> '.*') then
+        begin
+          xScenario := aStateMachine.ScenarioByName[stateMachineScenarioName];
+          if (stateMachineRequiredState <> '')
+          and (stateMachineRequiredState <> '.*') then
+            xScenario.NextStates.Add (stateMachineRequiredState);
+          if (stateMachineNextState <> '')
+          and (stateMachineNextState <> '.*') then
+            xScenario.NextStates.Add (stateMachineNextState);
+        end;
+      end;
+    end;
+  finally
+    aStateMachine.ReleaseLock;
+  end;
+end;
+
+function TWsdlProject.StateMachineInfoAsXml: TXml;
+  function _hasNoRef (aList: TJBStringList): Boolean;
   var
     x: Integer;
   begin
-    if (not Assigned (aXml))
-    or (not aXml.Checked) then Exit;
-    if aXml.isEvaluation then
-    with aList.AddXml(TXml.CreateAsString('Checker', '')) do
-    begin
-      AddXml (TXml.CreateAsString('Name', aXml.FullIndexCaption));
-      AddXml (TXml.CreateAsString('Value', aXml.Checker));
-    end;
-    for x := 0 to aXml.Items.Count - 1 do
-      _addCheckers(aList, aXml.Items.XmlItems[x]);
+    result := False;
+    for x := 0 to aList.Count - 1 do
+      if not Assigned (aList.Objects[x]) then
+        result := True;
   end;
+var
+  o, m, x, y, f: Integer;
+  xScenario: TStateMachineScenario;
+begin
+  result := TXml.CreateAsString('StateMachineInformation', '');
+  with TStateMachine.Create do
+  try
+    CopyFrom(self.StateMachine);
+    for o := 0 to allOperations.Count - 1 do
+    with allOperations.Operations[o] do
+    begin
+      if doUseStateMachine then
+      begin
+        for m := 0 to Messages.Count - 1 do
+        with Messages.Messages[m] do
+        begin
+          if (stateMachineScenarioName <> '')
+          and (stateMachineScenarioName <> '.*') then
+          begin
+            xScenario := ScenarioByName[stateMachineScenarioName];
+            if (stateMachineRequiredState <> '')
+            and (stateMachineRequiredState <> '.*') then
+              xScenario.RequiredStates.Add (stateMachineRequiredState);
+            if (stateMachineNextState <> '')
+            and (stateMachineNextState <> '.*') then
+              xScenario.NextStates.Add (stateMachineNextState);
+          end;
+        end;
+      end;
+    end;
+    for x := 0 to scenarios.Count - 1 do
+    with scenarios.Objects[x] as TStateMachineScenario do
+    begin
+      for y := 0 to RequiredStates.Count - 1 do
+      begin
+        if NextStates.Find(RequiredStates.Strings[y], f) then
+          NextStates.Objects[f] := Pointer (1);
+      end;
+      for y := 0 to NextStates.Count - 1 do
+      begin
+        if RequiredStates.Find(NextStates.Strings[y], f) then
+          RequiredStates.Objects[f] := Pointer (1);
+      end;
+      with result.AddXml (TXml.CreateAsString('scenario', '')) do
+      begin
+        AddXml (TXml.CreateAsString('name', thisScenario.Name));
+        AddXml (TXml.CreateAsString('currentState', State));
+        with AddXml (TXml.CreateAsString('possibleStates', '')) do
+        begin
+          for y := 0 to NextStates.Count - 1 do
+          begin
+            with AddXml (TXml.CreateAsString('state', '')) do
+            begin
+              AddXml (TXml.CreateAsString('Name', NextStates.Strings[y]));
+            end;
+          end;
+        end;
+        if _hasNoRef (NextStates) then
+        begin
+          with AddXml (TXml.CreateAsString('unrequiredStates', '')) do
+          begin
+            for y := 0 to NextStates.Count - 1 do
+            begin
+              if not Assigned (NextStates.Objects[y]) then
+              with AddXml (TXml.CreateAsString('state', '')) do
+              begin
+                AddXml (TXml.CreateAsString('Name', NextStates.Strings[y]));
+              end;
+            end;
+          end;
+        end;
+        if _hasNoRef (RequiredStates) then
+        begin
+          with AddXml (TXml.CreateAsString('unreachableStates', '')) do
+          begin
+            for y := 0 to RequiredStates.Count - 1 do
+            begin
+              if not Assigned (RequiredStates.Objects[y]) then
+              with AddXml (TXml.CreateAsString('state', '')) do
+              begin
+                AddXml (TXml.CreateAsString('Name', RequiredStates.Strings[y]));
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  finally
+    Free;
+  end;
+end;
+
+function TWsdlProject.ProjectDesignAsXml: TXml;
 var
   c, x, w, s, o, r, p: Integer;
   xOperation: TWsdlOperation;
@@ -2247,156 +2401,14 @@ begin
                 for o := 0 to xWsdl.Services.Services [s].Operations.Count - 1 do
                 begin
                   xOperation := xWsdl.Services.Services[s].Operations.Operations[o];
-                  with AddXml (TXml.CreateAsString('Operation', '')) do
-                  begin
-                    AddXml (TXml.CreateAsString('Name', xOperation.Name));
-                    AddXml (TXml.CreateAsString('Action', IntToStr(Ord(xOperation.StubAction))));
-                 {   if (xOperation.Alias <> xOperation.reqTagName)
-                    and (xOperation.Alias <> '') then  }
-                    AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
-                    AddXml (TXml.CreateAsString('FileAlias', xOperation.FileAlias));
-                    AddXml (TXml.CreateAsBoolean('HiddenFromUI', xOperation.HiddenFromUI));
-                    asXml := xOperation.AddedTypeDefElementsAsXml as TXml;
-                    if asXml.Items.Count > 0 then
-                      AddXml (asXml)
-                    else
-                      FreeAndNil (asXml);
-                    AddXml (TXml.CreateAsBoolean('wsaEnabled', xOperation.wsaEnabled));
-                    AddXml (TXml.CreateAsBoolean('wsaSpecificMustUnderstand', xOperation.wsaSpecificMustUnderstand));
-                    AddXml (TXml.CreateAsBoolean('wsaMustUnderstand', xOperation.wsaMustUnderstand));
-                    if xOperation.wsaType <> '2005/08' then
-                      AddXml (TXml.CreateAsString('wsaType', xOperation.wsaType));
-                    if (xOperation.StubAction = saRequest)
-                    and Assigned(xOperation.reqWsaXml)
-                    and xOperation.reqWsaXml.Checked
-                    and (xOperation.reqWsaXml.Name <> '') then
-                      with AddXml (TXml.Create) do
-                        CopyDownLine (xOperation.reqWsaXml, True);
-                    if (xOperation.StubAction <> saRequest)
-                    and Assigned(xOperation.rpyWsaXml)
-                    and xOperation.rpyWsaXml.Checked
-                    and (xOperation.rpyWsaXml.Name <> '') then
-                      with AddXml (TXml.Create) do
-                        CopyDownLine (xOperation.rpyWsaXml, True);
-                    with AddXml (xOperation.OptionsAsXml) do
-                    begin
-                      if xOperation.resolveRequestAliasses
-                      and xOperation.resolveReplyAliasses then
-                        Items.XmlItemByTag['ResolveAliasses'].Checked := False; // to avoid lots of changed files...
-                    end;
-                    AddXml (TXml.CreateAsString('DelayTimeMsMin', IntToStr(xOperation.DelayTimeMsMin)));
-                    AddXml (TXml.CreateAsString('DelayTimeMsMax', IntToStr(xOperation.DelayTimeMsMax)));
-                    with AddXml (xOperation.endpointConfigAsXml) do
-                    begin
-                      if (projectFileName <> '')
-                      and (SaveRelativeFileNames) then
-                      begin
-                        if Assigned (FindXml('*.Http.SSL.CertificateFile')) then
-                          with FindXml('*.Http.SSL.CertificateFile') do
-                            Value := ExtractRelativeFileName (projectFileName, Value);
-                        if Assigned (FindXml('*.Http.SSL.KeyFile')) then
-                          with FindXml('*.Http.SSL.KeyFile') do
-                            Value := ExtractRelativeFileName (projectFileName, Value);
-                        if Assigned (FindXml('*.Http.SSL.RootCertificateFile')) then
-                          with FindXml('*.Http.SSL.RootCertificateFile') do
-                            Value := ExtractRelativeFileName (projectFileName, Value);
-                      end;
-                    end;
-                    AddXml (TXml.CreateAsString('BeforeScript', xOperation.BeforeScriptLines.Text));
-                    AddXml (TXml.CreateAsString('AfterScript', xOperation.AfterScriptLines.Text));
-                    swapReqParent := (xOperation.reqBind as TCustomBindable).Parent;
-                    with AddXml (TXml.CreateAsString('CorrelationElements', '')) do
-                      for r := 0 to xOperation.CorrelationBindables.Count - 1 do
-                        AddXml (TXml.CreateAsString('CorrelationElement', xOperation.CorrelationBindables.Strings[r]));
-                    (xOperation.reqBind as TCustomBindable).Parent := swapReqParent;
-                    with AddXml (TXml.CreateAsString('ColumnElements', '')) do
-                    begin
-                      if xOperation.Messages.Count > 0 then
-                      begin
-                        for r := 0 to xOperation.Messages.Messages[0].ColumnXmls.Count - 1 do
-                        begin
-                          AddXml (TXml.CreateAsString('ColumnElement', xOperation.Messages.Messages[0].ColumnXmls.Strings[r]));
-                        end;
-                      end;
-                    end;
-                    AddXml (TXml.CreateAsString('LogColumns',xOperation.LogColumns.Text));
-                    if (xOperation = LastFocusedOperation) then
-                      AddXml (TXml.CreateAsBoolean('focusedOperation', True));
-                    with AddXml (TXml.CreateAsString('Messages', '')) do
-                    begin
-                      for r := 0 to xOperation.Messages.Count - 1 do
-                      begin
-                        xMessage := xOperation.Messages.Messages [r];
-                        with AddXml (TXml.CreateAsString('Message', '')) do
-                        begin
-                          AddXml (TXml.CreateAsString('Name', xMessage.Name));
-                          with AddXml (TXml.CreateAsString('Patterns' , '')) do
-                            for p := 0 to xMessage.CorrelationBindables.Count - 1 do
-                              if Assigned (xMessage.CorrelationBindables.Bindables[p]) then
-                                AddXml (TXml.CreateAsString('Pattern', xMessage.CorrelationBindables.Bindables[p].CorrelationValue))
-                              else
-                                AddXml (TXml.CreateAsString('Pattern', '?'));
-                          with AddXml (TXml.CreateAsString('Reply', '')) do
-                          begin
-                            if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-                              Value := xMessage.FreeFormatRpy
-                            else
-                            begin
-                              if xOperation.rpyBind.Name <> '' then
-                              begin
-                                if xOperation.rpyBind is TXml then
-                                  with AddXml (TXml.CreateAsString(xOperation.rpyBind.Name, '')) do
-                                    CopyRelevancy(xMessage.rpyBind as TXml);
-                                if (xOperation.rpyBind is TIpmItem) then
-                                  AddXml((xMessage.rpyBind as TIpmItem).AsXml);
-                              end;
-                            end;
-                          end;
-                          if xOperation.rpyBind is TXml then
-                          begin
-                            checkerXmls := AddXml (TXml.CreateAsString('replyCheckers', ''));
-                            _addCheckers (checkerXmls, xMessage.rpyBind as TXml);
-                          end;
-                          with AddXml (TXml.CreateAsString('Request', '')) do
-                          begin
-                            if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-                              Value := xMessage.FreeFormatReq
-                            else
-                            begin
-                              if xOperation.reqBind.Name <> '' then
-                              begin
-                                if xOperation.reqBind is TXml then
-                                  with AddXml (TXml.CreateAsString(xOperation.reqBind.Name, '')) do
-                                    CopyRelevancy(xMessage.reqBind as TXml);
-                                if xOperation.reqBind is TIpmItem then
-                                  AddXml((xMessage.reqBind as TIpmItem).AsXml);
-                              end;
-                            end;
-                          end;
-                          if xOperation.reqBind is TXml then
-                          begin
-                            checkerXmls := AddXml (TXml.CreateAsString('requestCheckers', ''));
-                            _addCheckers (checkerXmls, xMessage.reqBind as TXml);
-                          end;
-                          AddXml (TXml.CreateAsString('Documentation', xMessage.Documentation));
-                          AddXml (TXml.CreateAsBoolean ('DocumentationEdited', xMessage.DocumentationEdited));
-                          if Assigned (xMessage.BeforeScriptLines) then
-                            AddXml (TXml.CreateAsString('BeforeScript', xMessage.BeforeScriptLines.Text));
-                          if Assigned (xMessage.AfterScriptLines) then
-                            AddXml (TXml.CreateAsString('AfterScript', xMessage.AfterScriptLines.Text));
-                          if (xMessage = xOperation.LastFocusedMessage)
-                          and (xMessage <> xOperation.Messages.Messages[0]) then
-                            AddXml (TXml.CreateAsBoolean('focusedMessage', True));
-                        end; // message xml
-                      end; // for each message
-                    end; // messagess xml
-                  end; // operation xml
+                  AddXml (ProjectOperationDesignAsXml(xOperation));
                 end; // each operation
               end; // service xml
             end; // each service
           end; //
         end; // Assigned Wsdl
       end; // for each wsdl
+      AddXml(TXml.CreateAsInteger('CompareLogOrderBy', Ord (CompareLogOrderBy)));
       AddXml(TXml.CreateAsString('ignoreDifferencesOn', ignoreDifferencesOn.Text));
       AddXml(TXml.CreateAsString('checkValueAgainst', checkValueAgainst.Text));
       AddXml(TXml.CreateAsString('ignoreAddingOn', ignoreAddingOn.Text));
@@ -2514,6 +2526,7 @@ begin
               end;
             end;
           end;
+        CompareLogOrderBy := TCompareLogOrderBy (aXml.Items.XmlIntegerByTagDef['CompareLogOrderBy', Ord(CompareLogOrderBy)]);
         ignoreDifferencesOn.Text := aXml.Items.XmlValueByTag ['ignoreDifferencesOn'];
         checkValueAgainst.Text := aXml.Items.XmlValueByTag ['checkValueAgainst'];
         ignoreAddingOn.Text := aXml.Items.XmlValueByTag ['ignoreAddingOn'];
@@ -2688,199 +2701,8 @@ begin
                       begin
                         xOperation := xService.OperationByName [oXml.Items.XmlValueByTag['Name']];
                         if Assigned (xOperation) then
-                        begin
-                          if xOperation.Alias = '' then
-                            xOperation.Alias := xOperation.reqTagName;
-                          xOperation.Alias := oXml.Items.XmlValueByTagDef['Alias', xOperation.Alias];
-                          xOperation.FileAlias := oXml.Items.XmlValueByTagDef['FileAlias', xOperation.Alias];
-                          if xOperation.Alias <> xOperation.reqTagName then
-                          begin
-                            xOperation.reqBind.Name := xOperation.alias;
-                            xOperation.rpyBind.Name := xOperation.alias;
-                          end;
-                          dXml := oXml.Items.XmlItemByTag ['AddedTypeDefElements'];
-                          if Assigned (dXml) then
-                            xOperation.AddedTypeDefElementsFromXml (dXml);
-                          dXml := oXml.Items.XmlItemByTag ['Action'];
-                          if Assigned (dXml) then
-                            xOperation.StubAction := TStubAction (StrToIntDef(dXml.Value, 0));
-                          xOperation.HiddenFromUI := oXml.Items.XmlBooleanByTagDef ['HiddenFromUI', False];
-                          xOperation.wsaEnabled := oXml.Items.XmlBooleanByTagDef ['wsaEnabled', False];
-                          xOperation.wsaSpecificMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaSpecificMustUnderstand', False];
-                          xOperation.wsaMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaMustUnderstand', False];
-                          xOperation.wsaType := oXml.Items.XmlValueByTagDef ['wsaType', '2005/08'];
-                          if xOperation.StubAction = saRequest then
-                            xOperation.reqWsaXml.LoadValues (oXml.Items.XmlItemByTag ['wsa'], False)
-                          else
-                            xOperation.rpyWsaXml.LoadValues (oXml.Items.XmlItemByTag ['wsa'], False);
-                          dXml := oXml.Items.XmlCheckedItemByTag['operationOptions'];
-                          if Assigned (dXml) then
-                            xOperation.OptionsFromXml(dXml);
-                          xOperation.doSuppressLog := oXml.Items.XmlIntegerByTagDef ['doSuppressLog', 0];
-                          xOperation.DelayTimeMsMin := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMin', -1];
-                          if xOperation.DelayTimeMsMin = -1 then
-                          begin
-                            xOperation.DelayTimeMsMin := oXml.Items.XmlIntegerByTagDef ['DelayTimeMs', 0];
-                            xOperation.DelayTimeMsMax := xOperation.DelayTimeMsMin;
-                          end
-                          else
-                            xOperation.DelayTimeMsMax := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMax', 0];
-                          dXml := oXml.Items.XmlItemByTag ['endpointConfig'];
-                          if Assigned (dXml) then
-                          begin
-                            if Assigned (dXml.FindXml('*.Http.SSL.CertificateFile')) then
-                              with dXml.FindXml('*.Http.SSL.CertificateFile') do
-                                Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
-                            if Assigned (dXml.FindXml('*.Http.SSL.KeyFile')) then
-                              with dXml.FindXml('*.Http.SSL.KeyFile') do
-                                Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
-                            if Assigned (dXml.FindXml('*.Http.SSL.RootCertificateFile')) then
-                              with dXml.FindXml('*.Http.SSL.RootCertificateFile') do
-                                Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
-                            xOperation.endpointConfigFromXml(dXml);
-                          end;
-                          xOperation.BeforeScriptLines.Text := oXml.Items.XmlValueByTag ['BeforeScript'];
-                          if (xOperation.BeforeScriptLines.Count = 0) then
-                            xOperation.BeforeScriptLines.Text := oXml.Items.XmlValueByTag ['Script'];
-                          xOperation.AfterScriptLines.Text := oXml.Items.XmlValueByTag ['AfterScript'];
-                          cXml := oXml.Items.XmlItemByTag ['CorrelationElements'];
-                          if Assigned (cXml) then
-                            for c := 0 to cXml.Items.Count - 1 do
-                              if cXml.Items.XmlItems [c].TagName = 'CorrelationElement' then
-                                xOperation.CorrelationBindables.AddObject ( cXml.Items.XmlItems [c].Value
-                                                                          , xOperation.FindBind (cXml.Items.XmlItems [c].Value)
-                                                                          );
-                          xOperation.LogColumns.Text := oXml.Items.XmlValueByTag['LogColumns'];
-                          for c := 0 to xOperation.LogColumns.Count - 1 do
-                            xOperation.LogColumns.Bindables[c] := xOperation.FindBind(xOperation.LogColumns.Strings[c]);
-                          if oXml.Items.XmlBooleanByTagDef['focusedOperation', False] then
-                            LastFocusedOperation := xOperation;
-                          dXml := oXml.Items.XmlItemByTag ['Messages'];
-                          if not Assigned (dXml) then
-                            dXml := oXml.Items.XmlItemByTag ['Replies']; // Old versions
-                          if Assigned (dXml) then
-                          begin
-                            for r := 0 to dXml.Items.Count - 1 do
-                            begin
-                              with dXml.Items.XmlItems [r] do
-                              begin
-                                xPatterns.Text := Items.XmlValueByTag ['Partern'];
-                                if xPatterns.Count = 0 then
-                                try
-                                  with Items.XmlItemByTag ['Patterns'] do
-                                    for p := 0 to Items.Count - 1 do
-                                      xPatterns.Add(Items.XmlItems[p].Value);
-                                except
-                                end;
-                                if xOperation.StubAction = saRequest then
-                                  xMessage := TWsdlMessage.CreateRequest( xOperation
-                                                             , Items.XmlValueByTag ['Name']
-                                                             , xPatterns.Text
-                                                             , Items.XmlValueByTag ['Documentation']
-                                                             )
-                                else
-                                  xMessage := TWsdlMessage.CreateReply( xOperation
-                                                             , Items.XmlValueByTag ['Name']
-                                                             , xPatterns.Text
-                                                             , Items.XmlValueByTag ['Documentation']
-                                                             );
-                                xMessage.DocumentationEdited := Items.XmlBooleanByTagDef ['DocumentationEdited', True];
-                                if Assigned (xMessage.BeforeScriptLines) then
-                                  xMessage.BeforeScriptLines.Text := Items.XmlValueByTag ['BeforeScript'];
-                                if Assigned (xMessage.AfterScriptLines) then
-                                  xMessage.AfterScriptLines.Text := Items.XmlValueByTag ['AfterScript'];
-                                rXml := Items.XmlItemByTag ['Request'];
-                                if Assigned (rXml) then
-                                begin
-                                  if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-                                  begin
-                                    xMessage.FreeFormatReq := rXml.Value;
-                                    xMessage.corBindsInit(xOperation);
-                                    xMessage.PopulateCorrelation(xPatterns);
-                                  end
-                                  else
-                                  begin
-                                    if (rXml.Items.Count > 0) then
-                                    begin
-                                      if xOperation.reqBind is TXml then with xMessage.reqBind as TXml do
-                                      begin
-                                        LoadValues(rXml.Items.XmlItems [0], False);
-                                      end;
-                                      if xOperation.reqBind is TIpmItem then
-                                        try
-                                          (xMessage.reqBind as TIpmItem).LoadValues(rXml.Items.XmlItems [0]);
-                                        except
-                                        end;
-                                    end;
-                                  end;
-                                end;
-                                if xOperation.reqBind is TXml then
-                                begin
-                                  rXml := Items.XmlItemByTag ['requestCheckers'];
-                                  if Assigned (rXml) then
-                                  begin
-                                    _loadCheckers (rXml, xMessage.reqBind as TXml);
-                                  end;
-                                end;
-                                rXml := Items.XmlItemByTag ['Reply'];
-                                if not Assigned (rXml) then
-                                  rXml := Items.XmlItemByTag ['Data']; // Compatability; now Reply
-                                if Assigned (rXml) then
-                                begin
-                                  if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
-                                    xMessage.FreeFormatRpy := rXml.Value
-                                  else
-                                  begin
-                                    if (rXml.Items.Count > 0) then
-                                    begin
-                                      if xOperation.rpyBind is TXml then with xMessage.rpyBind as TXml do
-                                      begin
-                                        LoadValues(rXml.Items.XmlItems [0], False);
-                                      end;
-                                      if xOperation.rpyBind is TIpmItem then
-                                        try
-                                          (xMessage.rpyBind as TIpmItem).LoadValues(rXml.Items.XmlItems [0]);
-                                        except
-                                        end;
-                                    end;
-                                  end;
-                                end;
-                                if xOperation.rpyBind is TXml then
-                                begin
-                                  rXml := Items.XmlItemByTag ['replyCheckers'];
-                                  if Assigned (rXml) then
-                                  begin
-                                    _loadCheckers (rXml, xMessage.rpyBind as TXml);
-                                  end;
-                                end;
-                                rXml := Items.XmlItemByTag ['Faults'];
-                                if Assigned (rXml)
-                                and (rXml.Items.Count > 0) then with xMessage.FltBind as TXml do
-                                begin
-                                  LoadValues(rXml, False);
-                                end;
-                                if (r = 0)
-                                or (Items.XmlBooleanByTagDef['focusedMessage', False]) then
-                                  xOperation.LastFocusedMessage := xMessage;
-                              end;
-                            end;
-                          end;
-                          dXml := oXml.Items.XmlItemByTag ['ColumnElements'];
-                          if Assigned (dXml)
-                          and (xOperation.Messages.Count > 0) then
-                          begin
-                            xMessage := xOperation.Messages.Messages [0];
-                            for r := 0 to dXml.Items.Count - 1 do
-                            begin
-                              with dXml.Items do
-                              begin
-                                xOperation.Messages.Messages[0].ColumnXmls.Add (XmlItems [r].Value);
-                              end;
-                            end;
-                            UpdateReplyColumns(xOperation);
-                          end;
-                        end;
-                      end;
+                          ProjectOperationDesignFromXml(aMainFileName, xService, xOperation, oXml);
+                      end;  // if found operation
                     end;
                   end;
                 end;
@@ -2977,6 +2799,7 @@ begin
   end;
   try
     xOperation.Data := aLog;
+    xOperation.StateMachine := StateMachine;
     aLog.Operation := xOperation;
     aLog.OperationName := xOperation.Alias;
     aLog.StubAction := saStub;
@@ -3166,6 +2989,231 @@ begin
                        , False
                        , nil
                        );
+end;
+
+procedure TWsdlProject.ProjectOperationDesignFromXml(aMainFileName: String; xService: TWsdlService; xOperation: TWsdlOperation; oXml: TXml);
+  procedure _loadCheckers (aList, aXml: TXml);
+  var
+    x: Integer;
+    xXml: TCustomBindable;
+  begin
+    for x := 0 to aList.Items.Count - 1 do with aList.Items.XmlItems[x] do
+    begin
+      xXml := aXml.FindUQ(Items.XmlValueByTag['Name']);
+      if Assigned (xXml) then
+        xXml.Checker := Items.XmlValueByTag['Value'];
+    end;
+  end;
+var
+  c, p, r: Integer;
+  wXml, sXml, eXml, eeXml, dXml, rXml, cXml: TXml;
+  xBindName: String;
+  xMessage: TWsdlMessage;
+  xReadAnother: Boolean;
+  xPatterns: TJBStringList;
+begin
+  xPatterns := TJBStringList.Create;
+  try
+    if Assigned (xOperation) then
+    begin
+      if xOperation.Alias = '' then
+        xOperation.Alias := xOperation.reqTagName;
+      xOperation.Alias := oXml.Items.XmlValueByTagDef['Alias', xOperation.Alias];
+      xOperation.FileAlias := oXml.Items.XmlValueByTagDef['FileAlias', xOperation.Alias];
+      if xOperation.Alias <> xOperation.reqTagName then
+      begin
+        xOperation.reqBind.Name := xOperation.alias;
+        xOperation.rpyBind.Name := xOperation.alias;
+      end;
+      dXml := oXml.Items.XmlItemByTag ['AddedTypeDefElements'];
+      if Assigned (dXml) then
+        xOperation.AddedTypeDefElementsFromXml (dXml);
+      dXml := oXml.Items.XmlItemByTag ['Action'];
+      if Assigned (dXml) then
+        xOperation.StubAction := TStubAction (StrToIntDef(dXml.Value, 0));
+      xOperation.HiddenFromUI := oXml.Items.XmlBooleanByTagDef ['HiddenFromUI', False];
+      xOperation.doUseStateMachine := oXml.Items.XmlBooleanByTagDef ['doUseStateMachine', False];
+      xOperation.wsaEnabled := oXml.Items.XmlBooleanByTagDef ['wsaEnabled', False];
+      xOperation.wsaSpecificMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaSpecificMustUnderstand', False];
+      xOperation.wsaMustUnderstand := oXml.Items.XmlBooleanByTagDef ['wsaMustUnderstand', False];
+      xOperation.wsaType := oXml.Items.XmlValueByTagDef ['wsaType', '2005/08'];
+      if xOperation.StubAction = saRequest then
+        xOperation.reqWsaXml.LoadValues (oXml.Items.XmlItemByTag ['wsa'], False)
+      else
+        xOperation.rpyWsaXml.LoadValues (oXml.Items.XmlItemByTag ['wsa'], False);
+      dXml := oXml.Items.XmlCheckedItemByTag['operationOptions'];
+      if Assigned (dXml) then
+        xOperation.OptionsFromXml(dXml);
+      xOperation.doSuppressLog := oXml.Items.XmlIntegerByTagDef ['doSuppressLog', 0];
+      xOperation.DelayTimeMsMin := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMin', -1];
+      if xOperation.DelayTimeMsMin = -1 then
+      begin
+        xOperation.DelayTimeMsMin := oXml.Items.XmlIntegerByTagDef ['DelayTimeMs', 0];
+        xOperation.DelayTimeMsMax := xOperation.DelayTimeMsMin;
+      end
+      else
+        xOperation.DelayTimeMsMax := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMax', 0];
+      dXml := oXml.Items.XmlItemByTag ['endpointConfig'];
+      if Assigned (dXml) then
+      begin
+        if Assigned (dXml.FindXml('*.Http.SSL.CertificateFile')) then
+          with dXml.FindXml('*.Http.SSL.CertificateFile') do
+            Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
+        if Assigned (dXml.FindXml('*.Http.SSL.KeyFile')) then
+          with dXml.FindXml('*.Http.SSL.KeyFile') do
+            Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
+        if Assigned (dXml.FindXml('*.Http.SSL.RootCertificateFile')) then
+          with dXml.FindXml('*.Http.SSL.RootCertificateFile') do
+            Value := ExpandRelativeFileName(aMainFileName, GetForcedPathDelims (Value));
+        xOperation.endpointConfigFromXml(dXml);
+      end;
+      xOperation.BeforeScriptLines.Text := oXml.Items.XmlValueByTag ['BeforeScript'];
+      if (xOperation.BeforeScriptLines.Count = 0) then
+        xOperation.BeforeScriptLines.Text := oXml.Items.XmlValueByTag ['Script'];
+      xOperation.AfterScriptLines.Text := oXml.Items.XmlValueByTag ['AfterScript'];
+      cXml := oXml.Items.XmlItemByTag ['CorrelationElements'];
+      if Assigned (cXml) then
+        for c := 0 to cXml.Items.Count - 1 do
+          if cXml.Items.XmlItems [c].TagName = 'CorrelationElement' then
+            xOperation.CorrelationBindables.AddObject ( cXml.Items.XmlItems [c].Value
+                                                      , xOperation.FindBind (cXml.Items.XmlItems [c].Value)
+                                                      );
+      xOperation.LogColumns.Text := oXml.Items.XmlValueByTag['LogColumns'];
+      for c := 0 to xOperation.LogColumns.Count - 1 do
+        xOperation.LogColumns.Bindables[c] := xOperation.FindBind(xOperation.LogColumns.Strings[c]);
+      if oXml.Items.XmlBooleanByTagDef['focusedOperation', False] then
+        LastFocusedOperation := xOperation;
+      dXml := oXml.Items.XmlItemByTag ['Messages'];
+      if not Assigned (dXml) then
+        dXml := oXml.Items.XmlItemByTag ['Replies']; // Old versions
+      if Assigned (dXml) then
+      begin
+        for r := 0 to dXml.Items.Count - 1 do
+        begin
+          with dXml.Items.XmlItems [r] do
+          begin
+            xPatterns.Text := Items.XmlValueByTag ['Partern'];
+            if xPatterns.Count = 0 then
+            try
+              with Items.XmlItemByTag ['Patterns'] do
+                for p := 0 to Items.Count - 1 do
+                  xPatterns.Add(Items.XmlItems[p].Value);
+            except
+            end;
+            if xOperation.StubAction = saRequest then
+              xMessage := TWsdlMessage.CreateRequest( xOperation
+                                         , Items.XmlValueByTag ['Name']
+                                         , xPatterns.Text
+                                         , Items.XmlValueByTag ['Documentation']
+                                         )
+            else
+              xMessage := TWsdlMessage.CreateReply( xOperation
+                                         , Items.XmlValueByTag ['Name']
+                                         , xPatterns.Text
+                                         , Items.XmlValueByTag ['Documentation']
+                                         );
+            xMessage.stateMachineScenarioName := Items.XmlValueByTagDef['stateMachineScenarioName', xMessage.stateMachineScenarioName];
+            xMessage.stateMachineRequiredState := Items.XmlValueByTagDef['stateMachineRequiredState', xMessage.stateMachineRequiredState];
+            xMessage.stateMachineNextState := Items.XmlValueByTagDef['stateMachineNextState', xMessage.stateMachineNextState];
+            xMessage.DocumentationEdited := Items.XmlBooleanByTagDef ['DocumentationEdited', True];
+            if Assigned (xMessage.BeforeScriptLines) then
+              xMessage.BeforeScriptLines.Text := Items.XmlValueByTag ['BeforeScript'];
+            if Assigned (xMessage.AfterScriptLines) then
+              xMessage.AfterScriptLines.Text := Items.XmlValueByTag ['AfterScript'];
+            rXml := Items.XmlItemByTag ['Request'];
+            if Assigned (rXml) then
+            begin
+              if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+              begin
+                xMessage.FreeFormatReq := rXml.Value;
+                xMessage.corBindsInit(xOperation);
+                xMessage.PopulateCorrelation(xPatterns);
+              end
+              else
+              begin
+                if (rXml.Items.Count > 0) then
+                begin
+                  if xOperation.reqBind is TXml then with xMessage.reqBind as TXml do
+                  begin
+                    LoadValues(rXml.Items.XmlItems [0], False);
+                  end;
+                  if xOperation.reqBind is TIpmItem then
+                    try
+                      (xMessage.reqBind as TIpmItem).LoadValues(rXml.Items.XmlItems [0]);
+                    except
+                    end;
+                end;
+              end;
+            end;
+            if xOperation.reqBind is TXml then
+            begin
+              rXml := Items.XmlItemByTag ['requestCheckers'];
+              if Assigned (rXml) then
+              begin
+                _loadCheckers (rXml, xMessage.reqBind as TXml);
+              end;
+            end;
+            rXml := Items.XmlItemByTag ['Reply'];
+            if not Assigned (rXml) then
+              rXml := Items.XmlItemByTag ['Data']; // Compatability; now Reply
+            if Assigned (rXml) then
+            begin
+              if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+                xMessage.FreeFormatRpy := rXml.Value
+              else
+              begin
+                if (rXml.Items.Count > 0) then
+                begin
+                  if xOperation.rpyBind is TXml then with xMessage.rpyBind as TXml do
+                  begin
+                    LoadValues(rXml.Items.XmlItems [0], False);
+                  end;
+                  if xOperation.rpyBind is TIpmItem then
+                    try
+                      (xMessage.rpyBind as TIpmItem).LoadValues(rXml.Items.XmlItems [0]);
+                    except
+                    end;
+                end;
+              end;
+            end;
+            if xOperation.rpyBind is TXml then
+            begin
+              rXml := Items.XmlItemByTag ['replyCheckers'];
+              if Assigned (rXml) then
+              begin
+                _loadCheckers (rXml, xMessage.rpyBind as TXml);
+              end;
+            end;
+            rXml := Items.XmlItemByTag ['Faults'];
+            if Assigned (rXml)
+            and (rXml.Items.Count > 0) then with xMessage.FltBind as TXml do
+            begin
+              LoadValues(rXml, False);
+            end;
+            if (r = 0)
+            or (Items.XmlBooleanByTagDef['focusedMessage', False]) then
+              xOperation.LastFocusedMessage := xMessage;
+          end;
+        end;
+      end;
+      dXml := oXml.Items.XmlItemByTag ['ColumnElements'];
+      if Assigned (dXml)
+      and (xOperation.Messages.Count > 0) then
+      begin
+        xMessage := xOperation.Messages.Messages [0];
+        for r := 0 to dXml.Items.Count - 1 do
+        begin
+          with dXml.Items do
+          begin
+            xOperation.Messages.Messages[0].ColumnXmls.Add (XmlItems [r].Value);
+          end;
+        end;
+        UpdateReplyColumns(xOperation);
+      end;
+    end; // if assigned (operation)
+  finally
+    xPatterns.Free;
+  end;
 end;
 
 function TWsdlProject.httpRequestStreamToString(
@@ -5657,6 +5705,7 @@ var
   xLogList: TLogList;
   xOperation: TWsdlOperation;
   sl: TJBStringList;
+  xSuccess: Boolean;
 begin
   xBodyXml := nil;
   AResponseInfo.ContentEncoding := 'identity';
@@ -5675,7 +5724,7 @@ begin
         else
           xBodyXml.LoadFromString(xRequestBody, nil);
       end;
-//    _sjow (ARequestInfo.Document);
+    _sjow (ARequestInfo.Document);
       with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
                                                                    //0/1        /2  /3...
       try
@@ -5860,6 +5909,149 @@ begin
           finally
             xOperation.ReleaseLock;
           end;
+          Exit;
+        end;
+
+   //   /operations/{operationAlias}/design:
+        if (Count = 6)
+        and (Strings[3] = 'operations')
+        and ((Strings[5] = 'design'))
+        and (ARequestInfo.Command = 'POST')
+        then begin
+    {$ifndef NoGUI}
+          AResponseInfo.ResponseNo := 409;
+          AResponseInfo.ContentType := 'text/plain';
+          AResponseInfo.ContentText := 'POST Operation Design only supported with headless server';
+          Exit;
+    {$endif}
+          xOperation := allOperations.FindOnAliasName(Strings[4]);
+          if not Assigned (xOperation) then
+          begin
+            AResponseInfo.ResponseNo := 404;
+            Exit;
+          end;
+          if xBodyXml.Items.XmlCheckedValueByTag ['Service'] <> xOperation.WsdlService.Name then
+            raise Exception.CreateFmt ('Mismatch on servicename: %s', [xOperation.WsdlService.Name]);
+          if xBodyXml.Items.XmlCheckedValueByTag ['Name'] <> xOperation.Name then
+            raise Exception.CreateFmt ('Mismatch on operation: %s', [xOperation.Name]);
+          if xOperation.BindablesWithAddedElement.Count > 0 then
+            raise Exception.CreateFmt ('Not allowed because of added typedefs: %s', [xOperation.Name]);
+          xXml := TXml.Create;
+          try
+            xXml.LoadFromString(xBodyXml.Items.XmlValueByTag['Design'], nil);
+            if xXml.Name <> 'Operation' then
+              raise Exception.CreateFmt ('Could not read operation design: %s', [xOperation.Name]);
+            if Assigned (xXml.ItemByTag['AddedTypeDefElements']) then
+              raise Exception.CreateFmt ('Not allowed because of added typedefs: %s', [xOperation.Name]);
+            xOperation.AcquireLock;
+            try
+              ProgressBegin('Preparing operations', 1000);
+              try
+                xOperation.wsaEnabled := False;
+                xOperation.wsaType := '2005/08';
+                xOperation.sslVersion := sslvTLSv1_2;
+                xOperation.sslCertificateFile := '';
+                xOperation.sslKeyFile := '';
+                xOperation.sslRootCertificateFile := '';
+                xOperation.sslPassword := '';
+                xOperation.BeforeScriptLines.Text := '';
+                xOperation.AfterScriptLines.Text := '';
+                xOperation.CorrelationBindables.ClearListOnly;
+                xOperation.LogColumns.ClearListOnly;
+                xOperation.Messages.Clear;
+                ProjectOperationDesignFromXml(projectFileName, xOperation.WsdlService, xOperation, xXml);
+                ProgressUpdate('Preparing operations', 200);
+                PrepareAllOperations;
+                ProgressUpdate('Finishing', 900);
+                ProgressInvalidateConsole;
+              finally
+                uiInvalid := True;
+                ProgressEnd;
+              end;
+            finally
+              xOperation.ReleaseLock;
+            end;
+          finally
+            FreeAndNil(xXml);
+          end;
+          Exit;
+        end;
+
+//      /project/design GET
+        if (Count = 5)
+        and (LowerCase(Strings[3]) = 'project')
+        and (LowerCase(Strings[4]) = 'design')
+        and (ARequestInfo.Command = 'GET')
+        then begin
+          AResponseInfo.ContentText := ProjectDesignAsString;
+          AResponseInfo.ContentType := 'application/xml';
+          Exit;
+        end;
+
+//      /project/design POST
+        if (Count = 5)
+        and (LowerCase(Strings[3]) = 'project')
+        and (LowerCase(Strings[4]) = 'design')
+        and (ARequestInfo.Command = 'POST')
+        then begin
+    {$ifndef NoGUI}
+          AResponseInfo.ResponseNo := 409;
+          AResponseInfo.ContentType := 'text/plain';
+          AResponseInfo.ContentText := 'POST Project Design only supported with headless server';
+          Exit;
+    {$endif}
+          AResponseInfo.ResponseNo := 202;
+          nameXml := xBodyXml.FindXml('WsdlStubCase.FileName');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          SjowMessage('projectdesign received: ' + nameXml.Value);
+    //        if nameXml.Value <> projectFileName then
+    //          raise Exception.CreateFmt('Received project name (%s) differs from current projectname (%s)', [nameXml.Value, projectFileName]);
+          TProcedureThread.Create(False, True, 200, self, ProjectDesignFromApiRequestString, xRequestBody, projectFileName);
+          Exit;
+        end;
+
+        if (Count = 5)
+        and (LowerCase(Strings[3]) = 'projectdesign')
+        and (LowerCase(Strings[4]) = 'files')
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          if xBodyXml.Name <> 'name' then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          xFileName := ExpandRelativeFileName(projectFileName, xBodyXml.Value);
+          AResponseInfo.ServeFile(AContext, xFileName);
+{
+          AResponseInfo.SmartServeFile ( AContext
+                                       , ARequestInfo
+                                       , xFileName
+                                       );
+}
+          Exit;
+        end;
+
+    //   /project/filesexists POST
+         if (Count = 5)
+         and (Strings[3] = 'project')
+         and ((Strings[4] = 'filesexists'))
+         and (ARequestInfo.Command = 'POST')
+         then begin
+           AResponseInfo.ContentText := SpecFilesReadableReport (xBodyXml);
+           Exit;
+         end;
+
+   //   /statemachine/reset:
+        if (Count = 5)
+        and (Strings[3] = 'statemachine')
+        and ((Strings[4] = 'reset'))
+        and (ARequestInfo.Command = 'POST')
+        then begin
+          ResetStateMachine;
           Exit;
         end;
 
@@ -6143,36 +6335,6 @@ begin
           Exit;
         end;
 
-        if (Count = 4)
-        and (LowerCase(Strings[3]) = 'projectdesign')
-        and (ARequestInfo.Command = 'GET')
-        then begin
-          AResponseInfo.ContentText := ProjectDesignAsString;
-          AResponseInfo.ContentType := 'application/xml';
-          Exit;
-        end;
-
-        if (Count = 5)
-        and (LowerCase(Strings[3]) = 'projectdesign')
-        and (LowerCase(Strings[4]) = 'files')
-        and (ARequestInfo.Command = 'POST')
-        then begin
-          if xBodyXml.Name <> 'name' then
-          begin
-            AResponseInfo.ResponseNo := 400;
-            Exit;
-          end;
-          xFileName := ExpandRelativeFileName(projectFileName, xBodyXml.Value);
-          AResponseInfo.ServeFile(AContext, xFileName);
-{
-          AResponseInfo.SmartServeFile ( AContext
-                                       , ARequestInfo
-                                       , xFileName
-                                       );
-}
-          Exit;
-        end;
-
         if (Count = 5)
         and (LowerCase(Strings[3]) = 'projectdesign')
         and (LowerCase(Strings[4]) = 'files')
@@ -6209,24 +6371,6 @@ begin
                                        , ARequestInfo
                                        , xFileName
                                        );
-          Exit;
-        end;
-
-        if (Count = 4)
-        and (LowerCase(Strings[3]) = 'projectdesign')
-        and (ARequestInfo.Command = 'POST')
-        then begin
-          AResponseInfo.ResponseNo := 202;
-          nameXml := xBodyXml.FindXml('WsdlStubCase.FileName');
-          if not Assigned (nameXml) then
-          begin
-            AResponseInfo.ResponseNo := 400;
-            Exit;
-          end;
-          SjowMessage('projectdesign received: ' + nameXml.Value);
-//        if nameXml.Value <> projectFileName then
-//          raise Exception.CreateFmt('Received project name (%s) differs from current projectname (%s)', [nameXml.Value, projectFileName]);
-          TProcedureThread.Create(False, True, 200, self, ProjectDesignFromApiRequestString, xRequestBody, projectFileName);
           Exit;
         end;
 
@@ -6390,6 +6534,59 @@ begin
     end;
   finally
     FreeAndNil(xBodyXml);
+  end;
+end;
+
+function TWsdlProject.SpecFilesReadableReport(aXml: TXml): String;
+var
+  x: Integer;
+  xFileName, xRelativeFileName, xOrgFileName, xFileContent, xMessage: String;
+  xTotalResult, xResult: Boolean;
+  xTotalResultXml, rXml, xArrayXml: TXml;
+  xWsdl: TWsdl;
+begin
+  result := '';
+  if (not Assigned (aXml))
+  or (aXml.Name <> 'json') then
+    raise Exception.Create ('CheckSpecifications: illegal argument');
+  rXml := TXml.CreateAsString('files', '');
+  try
+    xTotalResultXml := rXml.AddXml (TXml.CreateAsString('allReadable', 'true'));
+    xArrayXml := rXml.AddXml (TXml.CreateAsString('files', ''));
+    xArrayXml.jsonType := jsonArray;
+    for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
+    begin
+      if Name = '_' then
+      begin
+        xResult := True;
+        xMessage := '';
+        xRelativeFileName := Items.XmlValueByTag['relativefilename'];
+        xOrgFileName := Items.XmlValueByTag['filename'];
+        xFileName := ExpandRelativeFileName(projectFileName, xRelativeFileName);
+        try
+          xFileContent := xmlio.ReadStringFromFile(xFileName, nil);
+        except
+          on e: Exception do
+          begin
+            xMessage := e.Message;
+            xResult := False;
+            xTotalResultXml.Value := 'false';
+          end;
+        end;
+        with xArrayXml.AddXml(TXml.CreateAsString('_', '')) do
+        begin
+          AddXml (TXml.CreateAsString('relativefilename', xRelativeFileName));
+          AddXml (TXml.CreateAsString('filename', xFileName));
+          AddXml (TXml.CreateAsString('orgfilename', xOrgFileName));
+          AddXml (TXml.CreateAsBoolean ('isreadable', xResult));
+          if xMessage <> '' then
+            AddXml (TXml.CreateAsString('message', xMessage));
+        end;
+      end;
+    end;
+    result := rXml.StreamJSON (0, false);
+  finally
+    rXml.Free;
   end;
 end;
 
@@ -6652,6 +6849,7 @@ begin
     end;
     try
       Result := True;
+      xOperation.StateMachine := StateMachine;
       aLog.OperationName := xOperation.Alias;
       alog.StubAction := saStub;
       try
@@ -7283,13 +7481,13 @@ begin
             xLog.CorrelationId := xLog.Operation.CorrelationIdAsText('; ');
             if aDoLogEventProcessing then
             begin
-              if xLog.Operation.onFetchLogFromCloud <> '' then
+              if xLog.Operation.onFetchLogFromRemoteServer <> '' then
               begin
                 with TWsdlOperation.Create(xLog.Operation) do
                 try
                   try
                     xLog.toBindables(thisOperation);
-                    OperationScriptExecuteLater(thisOperation, onFetchLogFromCloud, 0);
+                    OperationScriptExecuteLater(thisOperation, onFetchLogFromRemoteServer, 0);
                   except
                   end;
                 finally
@@ -7853,7 +8051,7 @@ var
     , xOperationsFolderName, xOperationFolderName
     , xMessagesFolderName, xMessageFolderName
     , xFileName, xProjectFolderName: String;
-  xMPrefix, xMName, xAlias: String;
+  xMName, xAlias: String;
   xXml: TXml;
   w, s, o, m: Integer;
 begin
@@ -7914,7 +8112,6 @@ begin
                     _createFolder (xMessagesFolderName);
                     with Items.XmlItems[o].ItemByTag['Messages'] do
                     begin
-                      xMPrefix := '0';
                       for m := 0 to Items.Count - 1 do
                       with Items.XmlItems[m] do
                       begin
@@ -7923,7 +8120,7 @@ begin
                           xMName := Format ('_%4d', [m]);
                         ProgressStep('Writing ' + xAlias, 1);
                         xMessageFolderName := LazFileUtils.AppendPathDelim(xMessagesFolderName)
-                                            + xMPrefix
+                                            + Copy (IntToStr (9000000 + 10 * m), 2, 6)
                                             + xMName
                                             ;
                         if LazFileUtils.DirectoryExistsUTF8(xMessageFolderName) then
@@ -7942,7 +8139,6 @@ begin
                         _saveChildElementToFile(Items, 'Documentation', xMessageFolderName);
                         xFileName := LazFileUtils.AppendPathDelim(xMessageFolderName) + _MessageFileName;
                         SaveStringToFile(xFileName, AsText(False,2,True,False));
-                        xMPrefix := '1';
                       end;
                       Checked := False;
                     end;
@@ -8085,7 +8281,7 @@ begin
     try
       xXml := TXml.Create;
       try
-        sProjectDesign := xmlio.apiUiServerDialog(remoteServerConnectionXml, '/apiUi/api/projectdesign', '', 'GET', 'application/xml');
+        sProjectDesign := xmlio.apiUiServerDialog(remoteServerConnectionXml, '/apiUi/api/project/design', '', 'GET', 'application/xml');
         SjowMessage(sProjectDesign);
         xXml.LoadFromString(sProjectDesign, nil);
         if xXml.Name = '' then
@@ -8383,6 +8579,231 @@ begin
   end;
 end;
 
+function TWsdlProject.ProjectFileSpecsAsJsonString: String;
+begin
+  with ProjectFileSpecsAsXml do
+  try
+    result := StreamJSON (0, False);
+  finally
+    Free;
+  end;
+end;
+
+function TWsdlProject.ProjectFileSpecsAsXml: TXml;
+var
+  w, x, s, o, y: Integer;
+  xDone: Boolean;
+begin
+  with TJBStringList.Create do
+  try
+    Sorted := True;
+    Duplicates := dupIgnore;
+    for w := 0 to Wsdls.Count - 1 do with wsdls.Objects[w] as TWsdl do
+    begin
+      if Assigned (XsdDescr) then with XsdDescr do
+        for x := 0 to DescrFileNames.Count - 1 do
+          Add (DescrFileNames.Strings[x]);
+      if Assigned (IpmDescrs) then
+        for x := 0 to IpmDescrs.Count - 1 do
+          Add (IpmDescrs.IpmDescrs[x].FileName);
+      if Assigned (sdfXsdDescrs) then
+        for x := 0 to sdfXsdDescrs.Count - 1 do with sdfXsdDescrs.XsdDescrs[x] do
+          for y := 0 to DescrFileNames.Count - 1 do
+            Add (DescrFileNames.Strings[y]);
+    end;
+    result := TXml.CreateAsString('files', '');
+    Result.jsonType := jsonArray;
+    for x := 0 to Count - 1 do
+    begin
+      with result.AddXml (TXml.CreateAsString ('_', '')) do
+      begin
+        AddXml (TXml.CreateAsString('relativefilename', ExtractRelativeFileName(projectFileName, Strings [X])));
+        AddXml (TXml.CreateAsString('filename', Strings [X]));
+      end;
+    end;
+  finally
+    Free;
+  end;
+end;
+
+function TWsdlProject.ProjectOperationDesignAsXml (xOperation: TWsdlOperation): TXml;
+  procedure _addCheckers (aList, aXml: TXml);
+  var
+    x: Integer;
+  begin
+    if (not Assigned (aXml))
+    or (not aXml.Checked) then Exit;
+    if aXml.isEvaluation then
+    with aList.AddXml(TXml.CreateAsString('Checker', '')) do
+    begin
+      AddXml (TXml.CreateAsString('Name', aXml.FullIndexCaption));
+      AddXml (TXml.CreateAsString('Value', aXml.Checker));
+    end;
+    for x := 0 to aXml.Items.Count - 1 do
+      _addCheckers(aList, aXml.Items.XmlItems[x]);
+  end;
+var
+  p, q, r: Integer;
+  asXml, checkerXmls: TXml;
+  swapReqParent: TCustomBindable;
+  xMessage: TWsdlMessage;
+begin
+    result := TXml.CreateAsString('Operation', '');
+    with result do
+    begin
+      AddXml (TXml.CreateAsString('Name', xOperation.Name));
+      AddXml (TXml.CreateAsString('Action', IntToStr(Ord(xOperation.StubAction))));
+   {   if (xOperation.Alias <> xOperation.reqTagName)
+      and (xOperation.Alias <> '') then  }
+      AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
+      AddXml (TXml.CreateAsString('FileAlias', xOperation.FileAlias));
+      AddXml (TXml.CreateAsBoolean('HiddenFromUI', xOperation.HiddenFromUI));
+      if xOperation.doUseStateMachine then
+        AddXml (TXml.CreateAsBoolean('doUseStateMachine', xOperation.doUseStateMachine));
+      asXml := xOperation.AddedTypeDefElementsAsXml as TXml;
+      if asXml.Items.Count > 0 then
+        AddXml (asXml)
+      else
+        FreeAndNil (asXml);
+      AddXml (TXml.CreateAsBoolean('wsaEnabled', xOperation.wsaEnabled));
+      AddXml (TXml.CreateAsBoolean('wsaSpecificMustUnderstand', xOperation.wsaSpecificMustUnderstand));
+      AddXml (TXml.CreateAsBoolean('wsaMustUnderstand', xOperation.wsaMustUnderstand));
+      if xOperation.wsaType <> '2005/08' then
+        AddXml (TXml.CreateAsString('wsaType', xOperation.wsaType));
+      if (xOperation.StubAction = saRequest)
+      and Assigned(xOperation.reqWsaXml)
+      and xOperation.reqWsaXml.Checked
+      and (xOperation.reqWsaXml.Name <> '') then
+        with AddXml (TXml.Create) do
+          CopyDownLine (xOperation.reqWsaXml, True);
+      if (xOperation.StubAction <> saRequest)
+      and Assigned(xOperation.rpyWsaXml)
+      and xOperation.rpyWsaXml.Checked
+      and (xOperation.rpyWsaXml.Name <> '') then
+        with AddXml (TXml.Create) do
+          CopyDownLine (xOperation.rpyWsaXml, True);
+      with AddXml (xOperation.OptionsAsXml) do
+      begin
+        if xOperation.resolveRequestAliasses
+        and xOperation.resolveReplyAliasses then
+          Items.XmlItemByTag['ResolveAliasses'].Checked := False; // to avoid lots of changed files...
+      end;
+      AddXml (TXml.CreateAsString('DelayTimeMsMin', IntToStr(xOperation.DelayTimeMsMin)));
+      AddXml (TXml.CreateAsString('DelayTimeMsMax', IntToStr(xOperation.DelayTimeMsMax)));
+      with AddXml (xOperation.endpointConfigAsXml) do
+      begin
+        if (projectFileName <> '')
+        and (SaveRelativeFileNames) then
+        begin
+          if Assigned (FindXml('*.Http.SSL.CertificateFile')) then
+            with FindXml('*.Http.SSL.CertificateFile') do
+              Value := ExtractRelativeFileName (projectFileName, Value);
+          if Assigned (FindXml('*.Http.SSL.KeyFile')) then
+            with FindXml('*.Http.SSL.KeyFile') do
+              Value := ExtractRelativeFileName (projectFileName, Value);
+          if Assigned (FindXml('*.Http.SSL.RootCertificateFile')) then
+            with FindXml('*.Http.SSL.RootCertificateFile') do
+              Value := ExtractRelativeFileName (projectFileName, Value);
+        end;
+      end;
+      AddXml (TXml.CreateAsString('BeforeScript', xOperation.BeforeScriptLines.Text));
+      AddXml (TXml.CreateAsString('AfterScript', xOperation.AfterScriptLines.Text));
+      swapReqParent := (xOperation.reqBind as TCustomBindable).Parent;
+      with AddXml (TXml.CreateAsString('CorrelationElements', '')) do
+        for r := 0 to xOperation.CorrelationBindables.Count - 1 do
+          AddXml (TXml.CreateAsString('CorrelationElement', xOperation.CorrelationBindables.Strings[r]));
+      (xOperation.reqBind as TCustomBindable).Parent := swapReqParent;
+      with AddXml (TXml.CreateAsString('ColumnElements', '')) do
+      begin
+        if xOperation.Messages.Count > 0 then
+        begin
+          for r := 0 to xOperation.Messages.Messages[0].ColumnXmls.Count - 1 do
+          begin
+            AddXml (TXml.CreateAsString('ColumnElement', xOperation.Messages.Messages[0].ColumnXmls.Strings[r]));
+          end;
+        end;
+      end;
+      AddXml (TXml.CreateAsString('LogColumns',xOperation.LogColumns.Text));
+      if (xOperation = LastFocusedOperation) then
+        AddXml (TXml.CreateAsBoolean('focusedOperation', True));
+      with AddXml (TXml.CreateAsString('Messages', '')) do
+      begin
+        for r := 0 to xOperation.Messages.Count - 1 do
+        begin
+          xMessage := xOperation.Messages.Messages [r];
+          with AddXml (TXml.CreateAsString('Message', '')) do
+          begin
+            AddXml (TXml.CreateAsString('Name', xMessage.Name));
+            AddXml (TXml.CreateAsInteger('SequenceNr', r * 10));
+            if (xMessage.stateMachineScenarioName <> '') then
+              AddXml (TXml.CreateAsString('stateMachineScenarioName', xMessage.stateMachineScenarioName));
+            if (xMessage.stateMachineRequiredState <> '') then
+              AddXml (TXml.CreateAsString('stateMachineRequiredState', xMessage.stateMachineRequiredState));
+            if (xMessage.stateMachineNextState <> '') then
+              AddXml (TXml.CreateAsString('stateMachineNextState', xMessage.stateMachineNextState));
+            with AddXml (TXml.CreateAsString('Patterns' , '')) do
+              for p := 0 to xMessage.CorrelationBindables.Count - 1 do
+                if Assigned (xMessage.CorrelationBindables.Bindables[p]) then
+                  AddXml (TXml.CreateAsString('Pattern', xMessage.CorrelationBindables.Bindables[p].CorrelationValue))
+                else
+                  AddXml (TXml.CreateAsString('Pattern', '?'));
+            with AddXml (TXml.CreateAsString('Reply', '')) do
+            begin
+              if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+                Value := xMessage.FreeFormatRpy
+              else
+              begin
+                if xOperation.rpyBind.Name <> '' then
+                begin
+                  if xOperation.rpyBind is TXml then
+                    with AddXml (TXml.CreateAsString(xOperation.rpyBind.Name, '')) do
+                      CopyRelevancy(xMessage.rpyBind as TXml);
+                  if (xOperation.rpyBind is TIpmItem) then
+                    AddXml((xMessage.rpyBind as TIpmItem).AsXml);
+                end;
+              end;
+            end;
+            if xOperation.rpyBind is TXml then
+            begin
+              checkerXmls := AddXml (TXml.CreateAsString('replyCheckers', ''));
+              _addCheckers (checkerXmls, xMessage.rpyBind as TXml);
+            end;
+            with AddXml (TXml.CreateAsString('Request', '')) do
+            begin
+              if xOperation.WsdlService.DescriptionType in [ipmDTFreeFormat] then
+                Value := xMessage.FreeFormatReq
+              else
+              begin
+                if xOperation.reqBind.Name <> '' then
+                begin
+                  if xOperation.reqBind is TXml then
+                    with AddXml (TXml.CreateAsString(xOperation.reqBind.Name, '')) do
+                      CopyRelevancy(xMessage.reqBind as TXml);
+                  if xOperation.reqBind is TIpmItem then
+                    AddXml((xMessage.reqBind as TIpmItem).AsXml);
+                end;
+              end;
+            end;
+            if xOperation.reqBind is TXml then
+            begin
+              checkerXmls := AddXml (TXml.CreateAsString('requestCheckers', ''));
+              _addCheckers (checkerXmls, xMessage.reqBind as TXml);
+            end;
+            AddXml (TXml.CreateAsString('Documentation', xMessage.Documentation));
+            AddXml (TXml.CreateAsBoolean ('DocumentationEdited', xMessage.DocumentationEdited));
+            if Assigned (xMessage.BeforeScriptLines) then
+              AddXml (TXml.CreateAsString('BeforeScript', xMessage.BeforeScriptLines.Text));
+            if Assigned (xMessage.AfterScriptLines) then
+              AddXml (TXml.CreateAsString('AfterScript', xMessage.AfterScriptLines.Text));
+            if (xMessage = xOperation.LastFocusedMessage)
+            and (xMessage <> xOperation.Messages.Messages[0]) then
+              AddXml (TXml.CreateAsBoolean('focusedMessage', True));
+          end; // message xml
+        end; // for each message
+      end; // messagess xml
+    end; // operation xml
+end;
+
 procedure TWsdlProject.Clear;
 var
   x: Integer;
@@ -8410,6 +8831,7 @@ begin
   outboundRequestSchemaValidationType := svReportOnly;
   inboundReplySchemaValidationType := svReportOnly;
   schemaValidationVioloationHttpResponseCode := 417;
+  CompareLogOrderBy := clTimeStamp;
   ignoreDifferencesOn.Clear;
   checkValueAgainst.Clear;
   ignoreAddingOn.Clear;
@@ -8450,6 +8872,7 @@ begin
   stubRead := False;
   projectFileName := '';
   xmlio.PathPrefixes.Clear;
+  StateMachine.Reset;
   InitSpecialWsdls;
 end;
 
@@ -8602,6 +9025,39 @@ begin
     finally
       ReleaseLogLock;
     end;
+  end;
+end;
+
+procedure TWsdlProject.ResetStateMachineRemoteServer;
+begin
+  if not Assigned (remoteServerConnectionXml) then
+    raise Exception.Create('ResetCloudStateMachine requires a Remote Server Connection');
+  try
+    case remoteServerConnectionType of
+      rscApiUi:
+        begin
+          xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                  , '/apiUi/api/statemachine/reset'
+                                  , ''
+                                  , 'POST'
+                                  , 'application/json'
+                                  );
+        end;
+      rscWireMock:
+        begin
+          xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                  , generateWireMockResetStateMachine
+                                  , ''
+                                  , 'POST'
+                                  , 'application/json'
+                                  );
+        end;
+      else
+        raise Exception.Create('not implemented for this remote server connection');
+    end;
+  except
+    on e: exception do
+      SjowMessage(e.Message);
   end;
 end;
 

@@ -1,0 +1,41 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply>
+      <CreateServiceRequest2 checked__="false"></CreateServiceRequest2>
+    </Reply>
+    <Request>
+      <CreateServiceRequest2 checked__="true">
+        <JanBoHeader checked__="true">
+          <HeaderVersion checked__="true">10</HeaderVersion>
+        </JanBoHeader>
+        <CreateServiceRequest_Req checked__="true">
+          <Contact checked__="true">
+            <ContactId checked__="true">CC</ContactId>
+          </Contact>
+          <LocalBank checked__="true">
+            <BankCode checked__="true">122.745</BankCode>
+          </LocalBank>
+          <ServiceRequest checked__="true">
+            <SourceSystemId checked__="true">SourceSystemId</SourceSystemId>
+            <OriginDescriptionCode checked__="true">OriginDescriptionCode</OriginDescriptionCode>
+            <TypeCode checked__="true">TypeCode</TypeCode>
+            <StatusCode checked__="true">StatusCode</StatusCode>
+            <EmployeeReadOnlyFlag checked__="true">E</EmployeeReadOnlyFlag>
+            <Description checked__="true">Description</Description>
+            <CategoryCode checked__="true">CategoryCode</CategoryCode>
+            <MeansOfCommunicationCode checked__="true">MeansOfCommunicationCode</MeansOfCommunicationCode>
+            <FulfillmentAreaCode checked__="true">FulfillmentAreaCode</FulfillmentAreaCode>
+            <StartDate checked__="true">2010-12-11T13:30:00.200</StartDate>
+            <PlannedEndDate checked__="true">2010-12-11T13:30:00.200</PlannedEndDate>
+          </ServiceRequest>
+        </CreateServiceRequest_Req>
+      </CreateServiceRequest2>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

@@ -3,8 +3,8 @@ ClearSnapshots ();
 
 RequestOperation ('cobol');
 RequestOperation ('cobol');
-RequestOperation ('CreateActivities3');
-RequestOperation ('CreateActivities3');
+RequestOperation ('CreateActivities');
+RequestOperation ('CreateActivities');
 RequestOperation ('CreateServiceRequest2');
 if true then
 {
@@ -16,9 +16,6 @@ RequestOperation ('freeformatOperation');
 RequestOperation ('uploadDocument');
 RequestOperation ('uploadDocument');
 
-if True then RequestOperation ('getsomething'); // wiremock - logged as outbound
-
-if True then LogsFromRemoteServer ();  // wiremock - logged as inbound
-
 CreateSnapshot ('testRun');
+
 

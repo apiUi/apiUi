@@ -38,13 +38,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="&quot;..\..\..\ServiceVirtualisation\Responders\RaboResponders.svpr&quot; &quot;--script=startUp&quot; &quot;--lstLog=a.log&quot;"/>
+        <CommandLineParams Value="--project=D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="&quot;..\..\..\ServiceVirtualisation\Responders\RaboResponders.svpr&quot; &quot;--script=startUp&quot; &quot;--lstLog=a.log&quot;"/>
+            <CommandLineParams Value="--project=D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr"/>
           </local>
         </Mode0>
       </Modes>
@@ -106,7 +106,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\wsdlStub;..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\StompInterface\Stomp;..\Html;..\ProgressStatus;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\Protocols"/>
+      <OtherUnitFiles Value="..\wsdlStub;..\Xml;..\Xml\json;..\Xml\yaml;..\Xml\IpmScanner;..\Utils;..\Utils\dcpCrypt2;..\Utils\dcpCrypt2\Ciphers;..\Utils\dcpCrypt2\Hashes;..\Utils\a2bStringList;..\Xpress;..\StompInterface;..\StompInterface\Stomp;..\Html;..\ProgressStatus;..\Components\Indy10\Lib\System;..\Components\Indy10\Lib\Core;..\Components\Indy10\Lib\Protocols;..\wiremock"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -127,7 +127,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="8">
+    <Exceptions Count="9">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -152,6 +152,9 @@
       <Item8>
         <Name Value="EConvertError"/>
       </Item8>
+      <Item9>
+        <Name Value="EStomp"/>
+      </Item9>
     </Exceptions>
   </Debugging>
 </CONFIG>

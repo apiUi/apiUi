@@ -3,6 +3,7 @@
     <Action>0</Action>
     <Alias>CreateActivities</Alias>
     <HiddenFromUI>false</HiddenFromUI>
+    <doUseStateMachine>true</doUseStateMachine>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
     <wsaMustUnderstand>false</wsaMustUnderstand>
@@ -54,6 +55,10 @@
       <CorrelationElement>Req.CreateActivities.body.Contact.ContactId</CorrelationElement>
       <CorrelationElement>Req.CreateActivities.body.Department.DepId</CorrelationElement>
     </CorrelationElements>
-    <ColumnElements></ColumnElements>
+    <ColumnElements>
+      <ColumnElement>Rpy.CreateActivities.rspns200.body.ListOfActivities.Activity._.TaskReference</ColumnElement>
+      <ColumnElement>Rpy.CreateActivities.rspns200.body.ListOfActivities.Activity._.Document.StorageStatus</ColumnElement>
+    </ColumnElements>
     <LogColumns></LogColumns>
+    <focusedOperation>true</focusedOperation>
   </Operation>

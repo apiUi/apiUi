@@ -31,6 +31,7 @@ uses Classes
 
 function generateWireMockMappingMetaQuery (aOperation: TWsdlOperation): string;
 function generateWireMockMapping (aOperation: TWsdlOperation; aMessage: TWsdlMessage): string;
+function generateWireMockResetStateMachine: String;
 
 implementation
 
@@ -121,6 +122,13 @@ begin
       LoadValues((aMessage.rpyBind as TXml), False, True);
     end;
     AddXml (TXml.CreateAsString('name', aMessage.Name));
+    if aOperation.doUseStateMachine
+    and (xIndex > 0) then
+    begin
+      AddXml (TXml.CreateAsString('scenarioName', aMessage.stateMachineScenarioName));
+      AddXml (TXml.CreateAsString('requiredScenarioState', aMessage.stateMachineRequiredState));
+      AddXml (TXml.CreateAsString('newScenarioState', aMessage.stateMachineNextState));
+    end;
     with AddXml (TXml.CreateAsString('request', '')) do
     begin
       AddXml (TXml.CreateAsString('method', aOperation.httpVerb));
@@ -299,6 +307,19 @@ begin
         AddXml (TXml.CreateAsString ('', 'response-template')).jsonType := jsonString;
       end;
     end;
+    if (aOperation.DelayTimeMsMin > 0)
+    or (aOperation.DelayTimeMsMax > 0) then
+    begin
+      if (aOperation.DelayTimeMsMin = aOperation.DelayTimeMsMax) then
+        rXml.AddXml(TXml.CreateAsInteger('fixedDelayMilliseconds', aOperation.DelayTimeMsMax))
+      else
+      with rXml.AddXml(TXml.CreateAsString('delayDistribution', '')) do
+      begin
+        AddXml (TXml.CreateAsString('type', 'uniform'));
+        AddXml (TXml.CreateAsInteger('lower', aOperation.DelayTimeMsMin));
+        AddXml (TXml.CreateAsInteger('upper', aOperation.DelayTimeMsMax));
+      end;
+    end;
     if xDefaultMessage then
       AddXml (TXml.CreateAsString('priority', '999999')).jsonType := jsonNumber
     else
@@ -306,12 +327,16 @@ begin
     with AddXml (TXml.CreateAsString('metadata', '')) do
       AddXml (TXml.CreateAsString('_apiUi', aOperation.Alias));
     result := StreamJSON(0, false);
-SjowMessage(Result);
   finally
     Free;
   end
   else
     raise Exception.Create ('only implemented for openapi');
+end;
+
+function generateWireMockResetStateMachine: String;
+begin
+  result := '/__admin/scenarios/reset';
 end;
 
 end.

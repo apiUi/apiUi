@@ -81,7 +81,7 @@
         <PackageName Value="LCL"/>
       </Item11>
     </RequiredPackages>
-    <Units Count="52">
+    <Units Count="53">
       <Unit0>
         <Filename Value="apiUi.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -369,6 +369,10 @@
         <Filename Value="..\wiremock\wiremockmapping.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit51>
+      <Unit52>
+        <Filename Value="..\wsdlStub\statemachineunit.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit52>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -384,6 +388,7 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
@@ -447,7 +452,6 @@
       </Item11>
       <Item12>
         <Name Value="EIdConnClosedGracefully"/>
-        <Enabled Value="False"/>
       </Item12>
       <Item13>
         <Name Value="ERegExpr"/>

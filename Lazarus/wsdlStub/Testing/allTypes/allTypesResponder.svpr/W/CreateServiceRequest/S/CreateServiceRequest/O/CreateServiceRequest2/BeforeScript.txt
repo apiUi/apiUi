@@ -1,6 +1,8 @@
 if OperationCount () Mod 2 = 0 then
 {
-  RaiseHttpFault ('401', 'RaiseHttpFault from ' + OperationName (), 'text/plain');
+  Faults.SOAPFault.applicationfaultcode := 'applicationfaultcode';
+  Faults.SOAPFault.applicationfaulttext := 'applicationfaulttext';
+  RaiseWsdlFault ('aFltCode', 'aFltString', 'aFltActor');
   AddRemark ('this remark should not be here!!');
 }
 

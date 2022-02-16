@@ -420,6 +420,7 @@ var
 {$ifndef NoGUI}
   bgCorrelationItemColor: TColor;
   bgRequestTagNameColumnColor: TColor;
+  bgStateMachineColor: TColor;
   bgNilValueColor: TColor;
   bgElementValueColor: TColor;
   fgMissingColor: TColor;
@@ -790,6 +791,7 @@ begin
       result := _CreateXsdFromJsonSchema(aXsdDescr, nil, nil, xJsonXml);
       aXsdDescr.TypeDef.AddXsd(result);
       aXsdDescr.ReadFileNames.AddObject(aFileName, result);
+      aXsdDescr.DescrFileNames.Add (aFileName);
     finally
       xJsonXml.Free;
     end;
@@ -897,6 +899,7 @@ begin
 {$ifndef NoGUI}
   bgCorrelationItemColor := clMoneyGreen;
   bgRequestTagNameColumnColor := $E7FFE7;
+  bgStateMachineColor := $FFE6BB;
   bgNilValueColor := $CFFFFF;
   bgElementValueColor := clWhite;
   fgMissingColor := clRed;

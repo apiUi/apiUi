@@ -1,9 +1,6 @@
   <WsdlStubCase>
     <FileName>D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr</FileName>
     <Listeners>
-      <Http>
-        <Port>7777</Port>
-      </Http>
       <Stomp>
         <Broker>
           <Host>${stomphost}</Host>
@@ -18,12 +15,15 @@
           </Queues>
         </Broker>
       </Stomp>
+      <Http>
+        <Port>7777</Port>
+      </Http>
     </Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
-      <Address>http://localhost:7775</Address>
+      <Address>http://localhost:7777</Address>
       <type>
-        <WireMock></WireMock>
+        <apiUi></apiUi>
       </type>
     </remoteServerConnection>
     <projectOptions>

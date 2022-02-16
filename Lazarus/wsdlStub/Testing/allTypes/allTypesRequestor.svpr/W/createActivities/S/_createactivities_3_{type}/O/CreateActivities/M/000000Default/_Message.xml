@@ -1,0 +1,28 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply>
+      <CreateActivities checked__="false"></CreateActivities>
+    </Reply>
+    <Request>
+      <CreateActivities checked__="true">
+        <type checked__="true">typ</type>
+        <apiheader checked__="true">head</apiheader>
+        <queryparam checked__="true">quer</queryparam>
+        <body checked__="true">
+          <Contact checked__="true">
+            <ContactId checked__="true">cid</ContactId>
+          </Contact>
+          <Department checked__="true">
+            <DepId checked__="true">2</DepId>
+          </Department>
+        </body>
+      </CreateActivities>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

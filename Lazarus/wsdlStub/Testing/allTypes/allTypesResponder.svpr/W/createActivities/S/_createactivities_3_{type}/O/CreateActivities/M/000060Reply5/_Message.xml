@@ -1,0 +1,37 @@
+  <Message>
+    <Name>Reply5</Name>
+    <SequenceNr>60</SequenceNr>
+    <stateMachineScenarioName>NewCustomer</stateMachineScenarioName>
+    <stateMachineRequiredState>Prospect</stateMachineRequiredState>
+    <stateMachineNextState>Customer</stateMachineNextState>
+    <Patterns>
+      <Pattern>Pattern5</Pattern>
+      <Pattern>h1</Pattern>
+      <Pattern>q1</Pattern>
+      <Pattern>c1</Pattern>
+      <Pattern>3</Pattern>
+    </Patterns>
+    <Reply>
+      <CreateActivities checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <ListOfActivities checked__="true">
+              <Activity checked__="true">
+                <_ checked__="true">
+                  <TaskReference checked__="true">state02</TaskReference>
+                  <Document checked__="true">
+                    <StorageStatus checked__="true">{{request.scheme}}</StorageStatus>
+                  </Document>
+                </_>
+              </Activity>
+            </ListOfActivities>
+          </body>
+        </rspns200>
+      </CreateActivities>
+    </Reply>
+    <Request>
+      <CreateActivities checked__="false"></CreateActivities>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>
