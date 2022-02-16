@@ -1,50 +1,63 @@
 object ShowLogDifferencesForm: TShowLogDifferencesForm
   Left = 538
-  Height = 409
+  Height = 511
   Top = 240
-  Width = 777
+  Width = 971
   Caption = '%s - Show Log differences'
-  ClientHeight = 409
-  ClientWidth = 777
+  ClientHeight = 511
+  ClientWidth = 971
   Color = clBtnFace
+  DesignTimePPI = 120
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -14
   Font.Name = 'Tahoma'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '2.0.12.0'
   object Panel1: TPanel
     Left = 0
-    Height = 380
-    Top = 29
-    Width = 777
+    Height = 475
+    Top = 36
+    Width = 971
     Align = alClient
     BorderWidth = 3
-    ClientHeight = 380
-    ClientWidth = 777
+    ClientHeight = 475
+    ClientWidth = 971
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    ParentFont = False
     TabOrder = 0
     object leftPanel: TPanel
       Left = 4
-      Height = 372
+      Height = 467
       Top = 4
-      Width = 769
+      Width = 963
       Align = alClient
       BorderWidth = 3
       Caption = 'leftPanel'
-      ClientHeight = 372
-      ClientWidth = 769
+      ClientHeight = 467
+      ClientWidth = 963
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 0
       object mainVST: TVirtualStringTree
         Left = 4
-        Height = 335
+        Height = 430
         Top = 4
-        Width = 761
+        Width = 955
         Align = alClient
         BottomSpace = 10
         Colors.DropTargetColor = clSilver
         Colors.GridLineColor = clWindow
         Colors.UnfocusedSelectionColor = clWindow
+        DefaultNodeHeight = 20
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'Tahoma'
         Header.AutoSizeIndex = -1
         Header.Columns = <        
           item
@@ -103,10 +116,12 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
         Header.Font.Color = clWindowText
         Header.Font.Height = -11
         Header.Font.Name = 'Tahoma'
+        Header.Height = 24
         Header.Images = ActionImageList
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowImages, hoVisible]
         Images = ActionImageList
         ParentColor = True
+        ParentFont = False
         ParentShowHint = False
         PopupMenu = PopupMenu
         TabOrder = 0
@@ -125,121 +140,127 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
       object OverviewStatusBar: TStatusBar
         Left = 4
         Height = 29
-        Top = 339
-        Width = 761
+        Top = 434
+        Width = 955
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'Tahoma'
         Panels = <        
           item
-            Width = 50
+            Width = 62
           end>
+        ParentFont = False
         SimplePanel = False
       end
     end
   end
   object ToolBar1: TToolBar
     Left = 0
-    Height = 29
+    Height = 36
     Top = 0
-    Width = 777
+    Width = 971
     Caption = 'ToolBar1'
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
     Images = ActionImageList
+    ParentFont = False
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
     object ToolButton2: TToolButton
-      Left = 272
-      Height = 22
+      Left = 335
+      Height = 28
       Top = 2
-      Width = 10
       Action = MaintainIgnoreDiffsAction
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 282
+      Left = 343
       Top = 2
       Action = MaintainIgnoreDiffsAction
     end
     object ToolButton12: TToolButton
-      Left = 305
+      Left = 372
       Top = 2
       Action = MaintainIgnoreAdditionsAction
     end
     object ToolButton13: TToolButton
-      Left = 328
+      Left = 401
       Top = 2
       Action = MaintainIgnoredRemovalsAction
     end
     object ToolButton3: TToolButton
-      Left = 374
-      Height = 22
+      Left = 459
+      Height = 28
       Top = 2
-      Width = 10
       Caption = 'ToolButton3'
       ImageIndex = 27
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 384
+      Left = 467
       Top = 2
       Action = NextDiffAction
     end
     object ToolButton6: TToolButton
-      Left = 407
+      Left = 496
       Top = 2
       Action = PrevDiffAction
     end
     object ToolButton7: TToolButton
-      Left = 430
-      Height = 22
+      Left = 525
+      Height = 28
       Top = 2
-      Width = 10
       Caption = 'ToolButton7'
       ImageIndex = 27
       Style = tbsSeparator
     end
     object ToolButton9: TToolButton
-      Left = 440
+      Left = 533
       Top = 2
       Action = CopyToClipboardAction
     end
     object ToolButton8: TToolButton
-      Left = 463
-      Height = 22
+      Left = 562
+      Height = 28
       Top = 2
-      Width = 10
       Caption = 'ToolButton8'
       ImageIndex = 27
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 473
+      Left = 570
       Top = 2
       Action = HtmlReportAction
     end
     object ToolButton11: TToolButton
-      Left = 496
-      Height = 22
+      Left = 599
+      Height = 28
       Top = 2
-      Width = 10
       Caption = 'ToolButton11'
       ImageIndex = 28
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 506
+      Left = 607
       Top = 2
       Action = CloseAction
     end
     object ToolButton14: TToolButton
-      Left = 351
+      Left = 430
       Top = 2
       Action = MaintainLogOrderColumnsAction
     end
     object CompareLogOrderByComboBox: TComboBox
-      Left = 51
-      Height = 21
+      Left = 59
+      Height = 25
       Top = 2
-      Width = 221
-      ItemHeight = 13
+      Width = 276
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ItemHeight = 17
       ItemIndex = 2
       Items.Strings = (
         'As is (timestamp)'
@@ -247,31 +268,35 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
         'Service, Operation, Correlation'
       )
       OnChange = CompareLogOrderByComboBoxChange
+      ParentFont = False
       TabOrder = 0
       Text = 'Service, Operation, Correlation'
     end
     object Panel2: TPanel
-      Left = 11
-      Height = 22
+      Left = 9
+      Height = 28
       Top = 2
-      Width = 40
+      Width = 50
       Alignment = taRightJustify
       BevelOuter = bvNone
       Caption = 'Order:'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Tahoma'
+      ParentFont = False
       TabOrder = 1
     end
     object ToolButton16: TToolButton
       Left = 1
-      Height = 22
+      Height = 28
       Top = 2
-      Width = 10
       Caption = 'ToolButton16'
       Style = tbsSeparator
     end
   end
   object ActionImageList: TImageList
-    left = 312
-    top = 112
+    Left = 390
+    Top = 140
     Bitmap = {
       4C69950000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5046,8 +5071,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
   end
   object ActionList1: TActionList
     Images = ActionImageList
-    left = 224
-    top = 112
+    Left = 280
+    Top = 140
     object CheckAllAction: TAction
       Caption = 'Check All'
       Hint = 'Check All'
@@ -5131,8 +5156,8 @@ object ShowLogDifferencesForm: TShowLogDifferencesForm
     end
   end
   object PopupMenu: TPopupMenu
-    left = 102
-    top = 157
+    Left = 128
+    Top = 196
     object ColumnWidthMenuItem: TMenuItem
       Caption = 'Column width...'
       OnClick = ColumnWidthMenuItemClick

@@ -38,7 +38,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
-        <Address>http://localhost:7776</Address>
+        <Address>http://localhost:7775</Address>
         <Verb>DELETE</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>

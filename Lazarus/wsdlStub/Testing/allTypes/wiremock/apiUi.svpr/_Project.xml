@@ -3,7 +3,7 @@
     <Listeners></Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
-      <Address>http://localhost:7776</Address>
+      <Address>http://localhost:7775</Address>
       <type>
         <WireMock></WireMock>
       </type>

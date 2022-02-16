@@ -1,20 +1,20 @@
-<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://www.rabobank.nl/XMLHeader/10" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:req="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Req" xmlns:rpy="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Rpy"  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:client="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest"  xmlns:rgf="http://www.rabobank.nl/XMLFault/10" xmlns:ns3="http://schemas.xmlsoap.org/soap/encoding/" name="CreateServiceRequest" targetNamespace="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest">
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://www.JanBo.nl/XMLHeader/10" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:req="http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Req" xmlns:rpy="http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Rpy"  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:client="http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest"  xmlns:rgf="http://www.JanBo.nl/XMLFault/10" xmlns:ns3="http://schemas.xmlsoap.org/soap/encoding/" name="CreateServiceRequest" targetNamespace="http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest">
 	<types>
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-			<xsd:import namespace="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Req" schemaLocation="CreateServiceRequest_2_REQ.xsd"/>
+			<xsd:import namespace="http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Req" schemaLocation="CreateServiceRequest_2_REQ.xsd"/>
 		</xsd:schema>
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-			<xsd:import namespace="http://www.rabobank.nl/CRM/CRMI/CreateServiceRequest/2/Rpy" schemaLocation="CreateServiceRequest_2_RPY.xsd"/>
+			<xsd:import namespace="http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Rpy" schemaLocation="CreateServiceRequest_2_RPY.xsd"/>
 		</xsd:schema>
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-			<xsd:import namespace="http://www.rabobank.nl/XMLHeader/10" schemaLocation="RaboGroupHeader_10.xsd"/>
+			<xsd:import namespace="http://www.JanBo.nl/XMLHeader/10" schemaLocation="JanBoGroupHeader_10.xsd"/>
 		</xsd:schema>
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-			<xsd:import namespace="http://www.rabobank.nl/XMLFault/10" schemaLocation="RaboXMLFault_10.xsd"/>
+			<xsd:import namespace="http://www.JanBo.nl/XMLFault/10" schemaLocation="JanBoXMLFault_10.xsd"/>
 		</xsd:schema>
 	</types>
-	<message name="RaboHeaderMessage">
-		<part name="payload" element="ns1:RaboHeader"/>
+	<message name="JanBoHeaderMessage">
+		<part name="payload" element="ns1:JanBoHeader"/>
 	</message>
 	<message name="CreateServiceRequestResponseMessage">
 		<part name="payload" element="rpy:CreateServiceRequest_Rpy"/>
@@ -38,11 +38,11 @@
 		<operation name="process">
 			<soap:operation soapAction="process" style="document"/>
 			<input>
-				<soap:header message="client:RaboHeaderMessage" part="payload" use="literal"/>
+				<soap:header message="client:JanBoHeaderMessage" part="payload" use="literal"/>
 				<soap:body use="literal"/>
 			</input>
 			<output>
-				<soap:header message="client:RaboHeaderMessage" part="payload" use="literal"/>
+				<soap:header message="client:JanBoHeaderMessage" part="payload" use="literal"/>
 				<soap:body use="literal"/>
 			</output>
 			<fault name="SOAPFault">

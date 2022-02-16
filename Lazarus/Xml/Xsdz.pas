@@ -38,9 +38,10 @@ type
   TBooleanFunctionObject = function (arg: TObject): Boolean of Object;
 
 
-type TOperationParametersType = (oppBody, oppPath, oppQuery, oppHeader, oppFormData);
-const OperationParametersTypeNames: array [oppBody..oppFormData] of String =
-( 'Body'
+type TOperationParametersType = (oppDefault, oppBody, oppPath, oppQuery, oppHeader, oppFormData);
+const OperationParametersTypeNames: array [oppDefault..oppFormData] of String =
+( 'Default'
+, 'Body'
 , 'Path'
 , 'Query'
 , 'Header'
@@ -195,6 +196,7 @@ type
     ElementNameSpace: String;
     FormQualified: Boolean;
     DoNotEncode: Boolean;
+    isContainerElement: Boolean;
     isReadOnly: Boolean;
     isCheckboxDisabled: Boolean;
     isOneOfGroupLevel, isAnyOfGroupLevel: Integer;
@@ -266,7 +268,7 @@ type
     procedure AddGroup(aTypeDef: TXsdDataType; aXml: TObject; aTargetNameSpace: String);
   public
     Garbage: TJBStringList;
-    xsdFileNames: TJBStringList;
+    DescrFileNames: TJBStringList;
     Prefix: String;
     SchemaName: String;
     Alias: String;
@@ -617,6 +619,9 @@ begin
   ReadFileNames := TXsdList.Create;
   ReadFileNames.Sorted := True;
   ReadFileNames.CaseSensitive := False;
+  DescrFileNames := TJBStringList.Create;
+  DescrFileNames.Sorted := True;
+  DescrFileNames.Duplicates := dupIgnore;
   NameSpaceList := TXsdList.Create;
   NameSpaceList.Sorted := True;
   NameSpaceList.CaseSensitive := True;
@@ -630,7 +635,7 @@ begin
   FreeAndNil(TypeDef);
   FreeAndNil(FileContents);
   FreeAndNil(Garbage);
-  FreeAndNil(xsdFileNames);
+  FreeAndNil(DescrFileNames);
   FreeAndNil(ReadFileNames);
   if Assigned(NameSpaceList) then
     NameSpaceList.Clear;
@@ -1407,6 +1412,7 @@ var
 begin
   if ReadFileNames.Find(aOverruleNamespace + ';' + aFileName, x) then Exit;
   ReadFileNames.Add(aOverruleNamespace + ';' + aFileName);
+  DescrFileNames.Add (aFileName);
   xXml := TXml.Create;
   try
     xXml.LoadFromString(ReadStringFromFile(aFileName, aOnbeforeRead), ErrorFound);
@@ -1444,6 +1450,7 @@ begin
     xXml.ResolveNameSpaces;
     result := CreateXsdFromXmlSample (xXml, False);
     result.FileName := aFileName;
+    DescrFileNames.Add(aFileName);
   finally
     xXml.Free;
   end;
@@ -1462,6 +1469,7 @@ begin
     end;
     result := CreateXsdFromJsonSample (xXml, False);
     result.FileName := aFileName;
+    DescrFileNames.Add(aFileName);
   finally
     xXml.Free;
   end;
@@ -3543,8 +3551,8 @@ begin
         Objects[x].Free;
     Clear;
   end;
-  if Assigned (xsdFileNames) then
-    xsdFileNames.Clear;
+  if Assigned (DescrFileNames) then
+    DescrFileNames.Clear;
   if Assigned (NameSpaceList) then
     NameSpaceList.Clear;
   if Assigned (TypeDef) then

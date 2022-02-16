@@ -9,7 +9,7 @@ basePath: "/crmi/api/klant"
 schemes:
 - https
 paths:
-  "/createactivities/3":
+  "/createactivities/3/{type}":
     post:
       summary: summary
       description: ''
@@ -19,6 +19,21 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: type
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: apiheader
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: queryparam
+        in: query
+        description: ''
+        required: true
+        type: string
       - name: body
         in: body
         description: ''
@@ -30,26 +45,22 @@ paths:
           description: Success response
           schema:
             "$ref": "#/definitions/CreateActivities_Rpy"
-        '500':
-          description: Fault response
-          schema:
-            "$ref": "#/definitions/SOAPFault"
 definitions:
   CreateActivities_Req: 
     type: object
     properties: 
-      Relation: 
+      Contact: 
         type: object
         properties: 
-          RelationId: 
+          ContactId: 
             type: string
             maxLength: 15
         required: 
-          - RelationId
-      LocalBank: 
+          - ContactId
+      Department: 
         type: object
         properties: 
-          BankCode: 
+          DepId: 
             type: number
             format: float
         required: 
@@ -62,171 +73,42 @@ definitions:
             maxLength: 30
         required: 
           - Reference
-      Order: 
-        type: object
-        properties: 
-          OrderId: 
-            type: string
-            maxLength: 15
-        required: 
-          - OrderId
-      OrderLine: 
-        type: object
-        properties: 
-          OrderLineId: 
-            type: string
-            maxLength: 30
-        required: 
-          - OrderLineId
-      Opportunity: 
-        type: object
-        properties: 
-          OpportunityId: 
-            type: string
-            maxLength: 15
-        required: 
-          - OpportunityId
-      Quote: 
-        type: object
-        properties: 
-          QuoteId: 
-            type: string
-            maxLength: 15
-        required: 
-          - QuoteId
-      QuoteLine: 
-        type: object
-        properties: 
-          QuoteLineId: 
-            type: string
-            maxLength: 30
-        required: 
-          - QuoteLineId
-      ListOfActivities: 
-        type: object
-        properties: 
-          Activity: 
-            type: array
-            items: 
-              type: object
-              properties: 
-                StatusCode: 
-                  type: string
-                  maxLength: 30
-                TaskReference: 
-                  type: string
-                  maxLength: 30
-                SourceSystemId: 
-                  type: string
-                  maxLength: 30
-                SourceFunctionId: 
-                  type: string
-                  maxLength: 30
-                OriginDescriptionCode: 
-                  type: string
-                  maxLength: 30
-                TypeCode: 
-                  type: string
-                  maxLength: 30
-                Description: 
-                  type: string
-                  maxLength: 150
-                Comment: 
-                  type: string
-                  maxLength: 1500
-                SubjectGroupCode: 
-                  type: string
-                  maxLength: 30
-                SubjectCode: 
-                  type: string
-                  maxLength: 30
-                StartDate: 
-                  type: string
-                  format: "date-time"
-                EndDate: 
-                  type: string
-                  format: "date-time"
-                PlannedEndDate: 
-                  type: string
-                  format: "date-time"
-                PriorityCode: 
-                  type: string
-                  maxLength: 3
-                RequiredForClosingInd: 
-                  type: string
-                  maxLength: 1
-                ExternalReference: 
-                  type: string
-                  maxLength: 30
-                GroupCode: 
-                  type: string
-                  maxLength: 30
-                ActivityEmployee: 
-                  type: object
-                  properties: 
-                    Employee: 
-                      type: object
-                      properties: 
-                        EmployeeId: 
-                          type: string
-                          maxLength: 10
-                      required: 
-                        - EmployeeId
-                  required: 
-                    - Employee
-                DocumentVersion: 
-                  type: object
-                  properties: 
-                    DocumentType: 
-                      type: string
-                      maxLength: 30
-                    ProductType: 
-                      type: string
-                      maxLength: 30
-                    Title: 
-                      type: string
-                      maxLength: 255
-                    DocumentFile: 
-                      type: object
-                      properties: 
-                        Content: 
-                          type: string
-                          format: byte
-                        FileName: 
-                          type: string
-                          maxLength: 200
-                        ExpirationDate: 
-                          type: string
-                          format: date
-                        DocumentFormat: 
-                          type: string
-                          maxLength: 10
-                      required: 
-                        - Content
-                        - FileName
-                    Employee: 
-                      type: object
-                      properties: 
-                        EmployeeId: 
-                          type: string
-                          maxLength: 10
-                      required: 
-                        - EmployeeId
-                  required: 
-                    - DocumentType
-                    - ProductType
-                    - Title
-                    - DocumentFile
-              required: 
-                - SourceSystemId
-                - TypeCode
-                - Description
+      Activity: 
+          type: object
+          properties: 
+            TypeCode: 
+              type: string
+              maxLength: 30
+            StatusCode: 
+              type: string
+              maxLength: 30
+            TaskReference: 
+              type: string
+              maxLength: 30
+            Description: 
+              type: string
+              maxLength: 150
+            Comment: 
+              type: string
+              maxLength: 1500
+            StartDate: 
+              type: string
+              format: "date-time"
+            EndDate: 
+              type: string
+              format: "date-time"
+            PlannedEndDate: 
+              type: string
+              format: "date-time"
+          required: 
+            - TypeCode
+            - Description
         required: 
           - Activity
     required: 
-      - Relation
-      - LocalBank
-      - ListOfActivities
+      - Contact
+      - Department
+      - Activity
   CreateActivities_Rpy: 
     type: object
     properties: 
@@ -246,6 +128,9 @@ definitions:
                   properties: 
                     StorageStatus: 
                       type: string
+                      enum:
+                      - Archived
+                      - Compressed
                       maxLength: 20
                   required: 
                     - StorageStatus

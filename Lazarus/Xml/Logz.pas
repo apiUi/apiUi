@@ -56,7 +56,7 @@ type
     displayRef: PDisplayRef;
     DisplayedColumnsValid: Boolean;
     DisplayedColumns: TJBStringList;
-    Nr: Integer;
+    LogSequenceNr: Integer;
     MessageId: String;
     InboundTimeStamp, OutBoundTimeStamp: TDateTime;
     TransportType: TTransportType;
@@ -129,7 +129,7 @@ type
   public
     designSuspect: Boolean;
     property LogItems [Index: integer]: TLog read GetLog write SetLog;
-    property Number: Integer read fNumber;
+    property LogSequenceNr: Integer read fNumber;
     function SaveLog (aString: String; aLog: TLog): TLog;
     function LogsAsString (aStubFileName: String): String;
     function PrepareCoverageReportAsXml (aOperations: TWsdlOperations; ignoreCoverageOn: TJBStringList): TXmlCvrg;
@@ -1205,7 +1205,7 @@ begin
     AddXml (Txml.CreateAsString('RequestValidateResult', Self.RequestValidateResult));
     AddXml (Txml.CreateAsBoolean('ReplyValidated', Self.ReplyValidated));
     AddXml (Txml.CreateAsString('ReplyValidateResult', Self.ReplyValidateResult));
-    AddXml (Txml.CreateAsString('Nr', IntToStr (Self.Nr)));
+    AddXml (Txml.CreateAsString('Nr', IntToStr (Self.LogSequenceNr)));
     AddXml (Txml.CreateAsString('MessageId', Self.MessageId));
     AddXml (Txml.CreateAsString('ServiceName', Self.ServiceName));
     AddXml (Txml.CreateAsString('OperationName', Self.OperationName));
@@ -1281,6 +1281,11 @@ var
   x: Integer;
 begin
   result := '';
+  if (aCompareBy = clTimeStamp) then // as-is
+  begin
+    result := IntToStr(9000000000 + LogSequenceNr);
+    Exit;
+  end;
   if (aCompareBy <> clTimeStamp) then
     result := CompareKey(aCompareBy);
   if (aSortColumns.Count > 0)

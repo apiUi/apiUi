@@ -38,25 +38,22 @@
     <DelayTimeMsMin>0</DelayTimeMsMin>
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
-      <Stomp>
-        <Host>${stomphost}</Host>
-        <Port>61613</Port>
-        <Credentials>
-          <Name>admin</Name>
-          <Password>FQwzGxs=</Password>
-        </Credentials>
-        <ClientId>apiui</ClientId>
-        <Timeout>30</Timeout>
-        <stompHeader>
-          <destination>requestq</destination>
-          <persistent>False</persistent>
-          <reply-to>replytoq</reply-to>
-        </stompHeader>
+      <Http>
+        <Address>http://localhost:7775</Address>
+        <Verb>POST</Verb>
+        <ContentEncoding>identity</ContentEncoding>
+        <AcceptEncoding>
+          <deflate>true</deflate>
+          <gzip>true</gzip>
+        </AcceptEncoding>
         <customHeaders></customHeaders>
-      </Stomp>
+      </Http>
     </endpointConfig>
     <CorrelationElements></CorrelationElements>
-    <ColumnElements></ColumnElements>
+    <ColumnElements>
+      <ColumnElement>Req.CreateServiceRequest2.JanBoHeader.HeaderVersion</ColumnElement>
+      <ColumnElement>Req.CreateServiceRequest2.CreateServiceRequest_Req.Contact.ContactId</ColumnElement>
+      <ColumnElement>Req.CreateServiceRequest2.CreateServiceRequest_Req.LocalBank.BankCode</ColumnElement>
+    </ColumnElements>
     <LogColumns></LogColumns>
-    <focusedOperation>true</focusedOperation>
   </Operation>

@@ -1298,7 +1298,7 @@ function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): Str
     result := '';
     p := Pos(apiuidescriptorspath + '/', aFileName);
     if p < 1 then
-      raise Exception.Create ('reading from apiUi cloud connection, illegal filename: ' + aFileName);
+      raise Exception.Create ('reading from apiUi remote server, illegal filename: ' + aFileName);
     result := apiUiServerDialog ( apiUiConnectionConfig
                                 , '/apiUi/api' + apiuidescriptorspath
                                 , ''

@@ -194,6 +194,7 @@ type
     function isOneOfGroupOk: Boolean;
     function isAnyOfGroupOk: Boolean;
     function IsRequired: Boolean; Override;
+    function fullJsonBodyPath: String;
     function AsText ( aUseNameSpaces: Boolean
                     ; aIndent: Integer
                     ; OnlyWhenChecked: Boolean
@@ -419,6 +420,7 @@ var
 {$ifndef NoGUI}
   bgCorrelationItemColor: TColor;
   bgRequestTagNameColumnColor: TColor;
+  bgStateMachineColor: TColor;
   bgNilValueColor: TColor;
   bgElementValueColor: TColor;
   fgMissingColor: TColor;
@@ -789,6 +791,7 @@ begin
       result := _CreateXsdFromJsonSchema(aXsdDescr, nil, nil, xJsonXml);
       aXsdDescr.TypeDef.AddXsd(result);
       aXsdDescr.ReadFileNames.AddObject(aFileName, result);
+      aXsdDescr.DescrFileNames.Add (aFileName);
     finally
       xJsonXml.Free;
     end;
@@ -896,6 +899,7 @@ begin
 {$ifndef NoGUI}
   bgCorrelationItemColor := clMoneyGreen;
   bgRequestTagNameColumnColor := $E7FFE7;
+  bgStateMachineColor := $FFE6BB;
   bgNilValueColor := $CFFFFF;
   bgElementValueColor := clWhite;
   fgMissingColor := clRed;
@@ -1452,6 +1456,26 @@ begin
                  and ((Parent as TXml).Xsd.sType.ContentModel = 'Choice')
                 )
           ;
+end;
+
+function TXml.fullJsonBodyPath: String;
+  function _fjbp (aXml: TXml): String;
+  begin
+    if (aXml = nil)
+    or (aXml.Xsd = nil)
+    or (aXml.Xsd.isContainerElement)
+    then
+      exit;
+    if aXml.Parent = nil then
+      result := aXml.GetIndexCaption
+    else
+      result := _fjbp (aXml.Parent as TXml)
+              + '.'
+              + aXml.GetIndexCaption;
+  end;
+
+begin
+  result := '$' + _fjbp (Self);
 end;
 
 function TXml.asHtmlString: String;

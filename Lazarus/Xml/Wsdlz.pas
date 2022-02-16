@@ -35,6 +35,7 @@ uses sqldb
    , IdSSLOpenSSL
    , SyncObjs
    , xmlio
+   , statemachineunit
    ;
 
 resourcestring
@@ -254,8 +255,8 @@ type
     CorrelationBindables: TBindableList;
     BeforeScriptLines: TJBStringList;
     AfterScriptLines: TJBStringList;
-    onFetchLogFromCloud: String;
-
+    onFetchLogFromRemoteServer: String;
+    stateMachineScenarioName, stateMachineRequiredState, stateMachineNextState: String;
     Duplicates, DuplicatesName: TWsdlBinder;
     _compareString: String;
     function FindBind (aCaption: String): TCustomBindable;
@@ -398,6 +399,7 @@ type
       invokeRequestInfo, invokeReplyInfo: Boolean;
       requestInfoBind, replyInfoBind: TCustomBindable;
       doDebug: Boolean;
+      doUseStateMachine: Boolean;
       doSuppressLog: Integer;
       DelayTimeMs: Integer;
       DelayTimeMsMin: Integer;
@@ -406,6 +408,7 @@ type
       FreeOnTerminateRequest: Boolean;
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
+      StateMachine: TStateMachine;
       property Host: String read getHost;
       property DoExit: Boolean read getDoExit write setDoExit;
       property PrepareErrors: String read fPrepareErrors;
@@ -440,6 +443,7 @@ type
       function DefaultReadReplyFromFileName: String;
       procedure ReadReplyFromFile;
       function BeforeActivatorDebugString: String;
+      function FullXPath (aBind: TCustomBindable): String;
       procedure InitDelayTime;
       procedure RefreshBindables;
       procedure ReqBindablesFromString (aString: String);
@@ -477,6 +481,14 @@ type
       procedure rpyWsaOnRequest;
       procedure fltWsaOnRequest;
       procedure Clean;
+      procedure Init;
+      function hasPathParam: Boolean;
+      function hasQueryParam: Boolean;
+      function hasHeaderParam: Boolean;
+      function hasPathCorrelation: Boolean;
+      function hasBodyCorrelation: Boolean;
+      function hasQueryCorrelation: Boolean;
+      function hasHeaderCorrelation: Boolean;
       function FunctionPrototypes (aAfter: Boolean): TJBStringList;
       function CheckerFunctionPrototypes: TJBStringList;
       function StamperFunctionPrototypes: TJBStringList;
@@ -582,6 +594,7 @@ function DateTimeToTandemJulianStr (aDateTime: TDateTime): String;
 function RoundedX (aSource, aNumber: Extended): Extended;
 function RandomX (aLow, aHigh: Extended): Extended;
 function FormatDateX (aDate: TDateTime; Mask: String): String;
+function GenerateGUID: String;
 function GenerateRandomId: String;
 function dbLookUp (aTable, aValueColumn, aReferenceColumn, aReferenceValue: String): String;
 function NonceAsString (aString: String): String;
@@ -605,9 +618,6 @@ procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperationLater (aObject: TObject; aOperation: String; aLaterMs: Extended);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation: String; aLater: Extended);
-procedure EnableMessage (aOperation: TWsdlOperation);
-procedure EnableAllMessages;
-procedure DisableMessage (aOperation: TWsdlOperation);
 function OccurrencesX (aObject: TObject): Extended;
 function LengthX (arg: String): Extended;
 function StrToFloatX (arg: String): Extended;
@@ -743,6 +753,7 @@ uses
    , xmlxsdparser
    , Logz
    , LazUTF8
+   , uuid
    ;
 
 { TWsdl }
@@ -1077,6 +1088,14 @@ begin
   end;
 
   Result := DateString;
+end;
+
+function GenerateGUID: String;
+var
+  uuid: TGUID;
+begin
+  CreateGUID (uuid);
+  Result := GUIDToString(uuid);
 end;
 
 function GenerateRandomId: String;
@@ -1436,18 +1455,6 @@ begin
   finally
     yXml.Free;
   end;
-end;
-
-procedure EnableMessage (aOperation: TWsdlOperation);
-begin
-end;
-
-procedure EnableAllMessages;
-begin
-end;
-
-procedure DisableMessage (aOperation: TWsdlOperation);
-begin
 end;
 
 function OccurrencesX (aObject: TObject): Extended;
@@ -2165,6 +2172,7 @@ begin
   Services.Clear;
   XsdDescr.AddBuiltIns;
   XsdDescr.ReadFileNames.Add(aFileName);
+  XsdDescr.DescrFileNames.Add (aFileName);
   FileName := aFileName;
   xXml := TXml.Create;
   try
@@ -2425,7 +2433,11 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
           if Value = 'path' then ParametersType := oppPath;
           if Value = 'query' then ParametersType := oppQuery;
           if Value = 'header' then ParametersType := oppHeader;
-          if Value = 'body' then ParametersType := oppBody; // swagger 2.0
+          if Value = 'body' then
+          begin
+            ParametersType := oppBody; // swagger 2.0
+            isContainerElement := True;
+          end;
           if Value = 'form' then ParametersType := oppFormData;
           if Value = 'formData' then ParametersType := oppFormData;
         end;
@@ -2492,6 +2504,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
         xName := Copy (xName, Length('application_') + 1, MaxInt);
       yXsd := TXsd.Create(XsdDescr);
       yXsd.ParametersType := oppBody;
+      yXsd.isContainerElement := True;
       XsdDescr.Garbage.AddObject('', yXsd);
       yXsd.ElementName := xName;
       yXsd.MediaType := aItems.XmlItems[x].Name;
@@ -2579,6 +2592,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
           yXsd := TXsd.Create(XsdDescr);
           XsdDescr.Garbage.AddObject('', yXsd);
           yXsd.ElementName := 'body';
+          yXsd.isContainerElement := True;
           yXsd.sType := XsdDescr.AddTypeDefFromJsonXml(aFileName, aFileName, aXml, aOnError);
           yXsd.sType.Name := aXsd.ElementName;
           aXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
@@ -2688,10 +2702,12 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
       end;
     end;
     aOperation.rpyXsd.sType.ContentModel := 'Choice';
+    aOperation.rpyXsd.isContainerElement := True;
     for v := 0 to Items.Count - 1 do
     begin
       vXml := Items.XmlItems[v];
       xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
+      xXsd.isContainerElement := True;
       _evalresponsecode(vXml, xXsd);
     end;
     _addUndefXsd(aOperation.rpyXsd);
@@ -2822,6 +2838,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
           xXml.LoadYamlFromFile(aaFileName, aOnError, aOnbeforeRead);
         xXml.Name := '#'; // to make it easier to resolve $refs
         XsdDescr.ReadFileNames.AddObject(aaFileName, xXml);
+        XsdDescr.DescrFileNames.Add (aFileName);
         _ReadDollarReferencedFiles(aaFileName, xXml);
       end;
     end;
@@ -2897,6 +2914,7 @@ begin
       LoadJsonFromFile(aFileName, aOnError, aOnbeforeRead);
     xRootXml.Name := '#';
     XsdDescr.ReadFileNames.AddObject(aFileName, xRootXml);
+    XsdDescr.DescrFileNames.Add (aFileName);
     _ReadDollarReferencedFiles (aFileName, xRootXml);
     _ReadDefinitions (sl);
     for x := 0 to Items.Count - 1 do
@@ -3476,6 +3494,42 @@ begin
   DoExit := False;
 end;
 
+function TWsdlOperation.FullXPath(aBind: TCustomBindable): String;
+var
+  xList: TBindableList;
+  x: Integer;
+begin
+  result := '';
+  xList := aBind.UplineAsList;
+  try
+    if isSoapService then
+    begin
+      if xList.Count < 2 then
+        raise Exception.Create('cannot generate (SOAP) XPath for ' + aBind.Name);
+      if (    ((xList.Bindables[0] as TXml).Xsd = (Cloned.reqBind as TXml).Xsd)
+          and (xList.Bindables[0].Children.IndexOfObject(xList.Bindables[1]) < InputHeaders.Count)
+         )
+      or (    ((xList.Bindables[0] as TXml).Xsd = (Cloned.rpyBind as TXml).Xsd)
+          and (xList.Bindables[0].Children.IndexOfObject(xList.Bindables[1]) < OutputHeaders.Count)
+         )
+      then
+        result := '/*["Envelope"=local-name()]/*["Header"=local-name()]'
+      else
+        result := '/*["Envelope"=local-name()]/*["Body"=local-name()]';
+      for x := 1 to xList.Count - 1 do
+        result := result + '/*["' + xList.Bindables[x].Name + '"=local-name()]';
+      Exit;
+    end;
+    for x := 0 to xList.Count - 1 do
+      result := result + '/*["' + xList.Bindables[x].Name + '"=local-name()]';
+  finally
+    xList.ClearListOnly;
+    xList.Free;
+  end;
+end;
+
+
+
 constructor TWsdlOperation.Create  (aWsdl: TWsdl);
 begin
   WsdlOperation := self;
@@ -3560,7 +3614,11 @@ begin
   end;
   StubCustomHeaderXml := TXml.CreateAsString('customHeaders', '');
   doReadReplyFromFile := False;
-  onFetchLogFromCloud := '';
+  onFetchLogFromRemoteServer := '';
+  doUseStateMachine := False;
+  stateMachineScenarioName := '';
+  stateMachineRequiredState := '';
+  stateMachineNextState := '';
   resolveRequestAliasses := True;
   resolveReplyAliasses := True;
   ReadReplyFromFileXml := TXml.CreateAsString('ReadReplyFromFile', '');
@@ -3660,6 +3718,29 @@ begin
 end;
 
 function TWsdlOperation.getReplyBasedOnRequest: TWsdlMessage;
+  function _StateMachineOk (aMessage: TWsdlMessage): Boolean;
+  begin
+    result := True;
+    if doUseStateMachine
+    and Assigned (StateMachine)
+    and (aMessage.stateMachineScenarioName <> '')
+    and (aMessage.stateMachineScenarioName <> '.*')
+    then begin
+      StateMachine.AcquireLock;
+      try
+        with stateMachine.ScenarioByName[aMessage.stateMachineScenarioName] do
+        begin
+          if State = aMessage.stateMachineRequiredState then
+            State := aMessage.stateMachineNextState
+          else
+            result := False;
+        end;
+      finally
+        StateMachine.ReleaseLock;
+      end;
+    end;
+  end;
+
   function _Match (aCorrelationBindables, aBindables: TBindableList): Boolean;
   var
     x: Integer;
@@ -3708,7 +3789,8 @@ begin
         begin
           if _Match (Messages.Messages[x].CorrelationBindables, CorrelationBindables) then
           begin
-            result := Messages.Messages [x];
+            if _StateMachineOk(Messages.Messages [x]) then
+              result := Messages.Messages [x];
           end;
         end;
         Inc (x);
@@ -3827,13 +3909,13 @@ begin
     BindScriptFunction ('Exit', @RaiseExit, VFOV, '()');
     BindScriptFunction ('FetchDefaultDesignMessage', @wsdlFetchDefaultDesignMessage, VFOS, '(aOperation)');
     BindScriptFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
+    BindScriptFunction ('GenerateGUID', @GenerateGUID, SFV, '()');
     BindScriptFunction ('GetContext', @GetContext, SFV, '()');
     BindScriptFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
     BindScriptFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
     BindScriptFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
     BindScriptFunction ('GetEnvVarDef', @getVarDef, SFOSS, '(aKey, aDefault)');
     BindScriptFunction ('GetEnvVarDefT', @getVarDefT, SFOSSSX, '(aKey, aDefault, aSeparator, aIndex)');
-    BindScriptFunction ('DisableMessage', @DisableMessage, VFOV, '()');
     BindScriptFunction ('HostName', @GetHostName, SFV, '()');
     BindScriptFunction ('ifthen', @ifThenString, SFBSS, '(aCondition, aTrueString, aFalseString)');
     BindScriptFunction ('IncEnvNumber', @incVarNumber, XFOS, '(aKey)');
@@ -3873,8 +3955,6 @@ begin
     BindScriptFunction ('SetContext', @SetContext, SFS, '(aContextName)');
     BindScriptFunction ('SqlSelectResultRow', @SqlSelectResultRow, SLFOS, '(aSqlSelectQuery)');
     BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
-    BindScriptFunction ('EnableAllMessages', @EnableAllMessages, VFV, '()');
-    BindScriptFunction ('EnableMessage', @EnableMessage, VFOV, '()');
     BindScriptFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
     BindScriptFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindScriptFunction ('SeparatedString', @SeparatedStringList, SLFOSS, '(aString, aSeparator)');
@@ -4540,6 +4620,125 @@ begin
     Clean;
 end;
 
+procedure TWsdlOperation.Init;
+begin
+
+end;
+
+function TWsdlOperation.hasPathParam: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  for x := 0 to reqXsd.sType.ElementDefs.Count - 1 do
+    if reqXsd.sType.ElementDefs.Xsds[x].ParametersType = oppPath then
+      result := True;
+end;
+
+function TWsdlOperation.hasQueryParam: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  for x := 0 to reqXsd.sType.ElementDefs.Count - 1 do
+    if reqXsd.sType.ElementDefs.Xsds[x].ParametersType = oppQuery then
+      result := True;
+end;
+
+function TWsdlOperation.hasHeaderParam: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  for x := 0 to reqXsd.sType.ElementDefs.Count - 1 do
+    if reqXsd.sType.ElementDefs.Xsds[x].ParametersType = oppHeader then
+      result := True;
+end;
+
+function TWsdlOperation.hasPathCorrelation: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  if reqBind is TXml then
+  begin
+    for x := 0 to CorrelationBindables.Count - 1 do
+    with CorrelationBindables.Bindables[x] do
+    try
+      with thisBind as TXml do
+      begin
+        if Assigned(Xsd)
+        and (Xsd.ParametersType = oppPath) then
+          result := True;
+      end;
+    except
+    end;
+  end;
+end;
+
+function TWsdlOperation.hasBodyCorrelation: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  if reqBind is TXml then
+  begin
+    for x := 0 to CorrelationBindables.Count - 1 do
+    with CorrelationBindables.Bindables[x] do
+    try
+      with thisBind as TXml do
+      begin
+        if Assigned(Xsd)
+        and (Xsd.ParametersType in [oppDefault, oppBody]) then
+          result := True;
+      end;
+    except
+    end;
+  end;
+end;
+
+function TWsdlOperation.hasQueryCorrelation: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  if reqBind is TXml then
+  begin
+    for x := 0 to CorrelationBindables.Count - 1 do
+    with CorrelationBindables.Bindables[x] do
+    try
+      with thisBind as TXml do
+      begin
+        if Assigned(Xsd)
+        and (Xsd.ParametersType = oppQuery) then
+          result := True;
+      end;
+    except
+    end;
+  end;
+end;
+
+function TWsdlOperation.hasHeaderCorrelation: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  if reqBind is TXml then
+  begin
+    for x := 0 to CorrelationBindables.Count - 1 do
+    with CorrelationBindables.Bindables[x] do
+    try
+      with thisBind as TXml do
+      begin
+        if Assigned(Xsd)
+        and (Xsd.ParametersType = oppHeader) then
+          result := True;
+      end;
+    except
+    end;
+  end;
+end;
+
 function TWsdlOperation.CorrelationIdAsText(aSeparator: String): String;
 var
   xSep: String;
@@ -4705,7 +4904,11 @@ begin
   self.smtpPort := xOperation.smtpPort;
   self.BeforeScriptLines := xOperation.BeforeScriptLines;
   self.AfterScriptLines := xOperation.AfterScriptLines;
-  self.onFetchLogFromCloud := xOperation.onFetchLogFromCloud;
+  self.onFetchLogFromRemoteServer := xOperation.onFetchLogFromRemoteServer;
+  self.doUseStateMachine := xOperation.doUseStateMachine;
+  self.stateMachineScenarioName := xOperation.stateMachineScenarioName;
+  self.stateMachineRequiredState := xOperation.stateMachineRequiredState;
+  self.stateMachineNextState := xOperation.stateMachineNextState;
   self.resolveRequestAliasses := xOperation.resolveRequestAliasses;
   self.resolveReplyAliasses := xOperation.resolveReplyAliasses;
   self.CorrelatedMessage := xOperation.CorrelatedMessage;
@@ -5888,6 +6091,7 @@ begin
     BindStamperFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindStamperFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');
+    BindStamperFunction ('GenerateGUID', @GenerateGUID, SFV, '()');
     BindStamperFunction ('GetEnvNumber', @getVarNumber, XFOS, '(aKey)');
     BindStamperFunction ('GetEnvNumberDef', @getVarNumberDef, XFOSX, '(aKey, aDefault)');
     BindStamperFunction ('GetEnvVar', @getVar, SFOS, '(aKey)');
@@ -6099,9 +6303,9 @@ begin
     end;
     with AddXml(TXml.CreateAsString('ReadReplyFromFile', '')) do
       CopyDownLine(ReadReplyFromFileXml, False);
-    if onFetchLogFromCloud <> '' then
+    if onFetchLogFromRemoteServer <> '' then
       with AddXml (TXml.CreateAsString('events', '')) do
-        AddXml (TXml.CreateAsString('onFetchLogFromCloud', onFetchLogFromCloud));
+        AddXml (TXml.CreateAsString('onFetchLogFromRemoteServer', onFetchLogFromRemoteServer));
   end;
 end;
 
@@ -6115,7 +6319,7 @@ begin
   oldInvokeSpec := 'none';
   doReadReplyFromFile := False;
   ReadReplyFromFileXml.Items.Clear;
-  onFetchLogFromCloud := '';
+  onFetchLogFromRemoteServer := '';
   inboundRequestSchemaValidationType := svAccordingProject;
   outboundReplySchemaValidationType := svAccordingProject;
   outboundRequestSchemaValidationType := svAccordingProject;
@@ -6197,7 +6401,9 @@ begin
   xXml := aXml.Items.XmlCheckedItemByTag['events'];
   if Assigned (xXml) then
   begin
-    onFetchLogFromCloud := xXml.Items.XmlValueByTagDef['onFetchLogFromCloud', onFetchLogFromCloud];
+    onFetchLogFromRemoteServer := xXml.Items.XmlValueByTagDef['onFetchLogFromRemoteServer', onFetchLogFromRemoteServer];
+    if onFetchLogFromRemoteServer = '' then  // try old style
+      onFetchLogFromRemoteServer := xXml.Items.XmlValueByTagDef['onFetchLogFromCloud', onFetchLogFromRemoteServer];
   end;
   xXml := aXml.Items.XmlCheckedItemByTag['ReadReplyFromFile'];
   if Assigned (xXml) then
@@ -6552,6 +6758,8 @@ begin
       Xsd := aXsds.Xsds[f];
     end;
   end;
+  if Assigned (Xsd) then
+    Xsd.isContainerElement := True;
 end;
 
 { TWsdlParts }
@@ -6841,6 +7049,12 @@ begin
                           );
 
   aOperation.Messages.AddObject('', self);
+  if aOperation.Messages.Count = 1 then
+  begin
+    stateMachineScenarioName := '.*';
+    stateMachineRequiredState := '.*';
+    stateMachineNextState := '.*';
+  end;
   if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol] then
   begin
     if Assigned (aOperation.reqBind) then
@@ -6926,6 +7140,12 @@ begin
                             , aDocumentation
                             );
     aOperation.Messages.AddObject('', self);
+    if aOperation.Messages.Count = 1 then
+    begin
+      stateMachineScenarioName := '.*';
+      stateMachineRequiredState := '.*';
+      stateMachineNextState := '.*';
+    end;
     if WsdlOperation.WsdlService.DescriptionType in [ipmDTCobol] then
     begin
       if Assigned (aOperation.reqBind) then

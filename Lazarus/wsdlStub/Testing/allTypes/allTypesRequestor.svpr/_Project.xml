@@ -7,9 +7,9 @@
     </Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
-      <Address>${wiremockhost}</Address>
+      <Address>${Address}</Address>
       <type>
-        <WireMock></WireMock>
+        <apiUi></apiUi>
       </type>
     </remoteServerConnection>
     <projectOptions>
@@ -65,4 +65,5 @@
         </schemaValidation>
       </OperationDefaults>
     </projectOptions>
+    <CompareLogOrderBy>1</CompareLogOrderBy>
   </WsdlStubCase>

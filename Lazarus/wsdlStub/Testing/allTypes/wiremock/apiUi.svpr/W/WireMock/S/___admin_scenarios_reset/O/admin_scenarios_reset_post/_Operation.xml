@@ -1,6 +1,6 @@
   <Operation>
     <Name>/__admin/scenarios/reset:post</Name>
-    <Action>0</Action>
+    <Action>3</Action>
     <Alias>admin_scenarios_reset_post</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
@@ -38,6 +38,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
+        <Address>http://localhost:7775</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>

@@ -3,7 +3,7 @@
       <col> </col>
       <col>Address</col>
       <col>stomphost</col>
-      <col>wiremockhost</col>
+      <col>wiremock</col>
     </row>
     <row>
       <col>localhost</col>

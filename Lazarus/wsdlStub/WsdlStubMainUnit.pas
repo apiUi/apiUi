@@ -64,7 +64,10 @@ uses
    , progressinterface
    , MarkdownUtils
    , MarkdownProcessor
-   , HtmlGlobals;
+   , wiremockmapping
+   , HtmlGlobals
+   , statemachineunit
+   ;
 
 type
   THackControl = class(TWinControl)
@@ -85,6 +88,19 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    MenuItem39: TMenuItem;
+    MenuItem40: TMenuItem;
+    MenuItem48: TMenuItem;
+    ResetCloudStateMachine: TAction;
+    MenuItem20: TMenuItem;
+    MenuItem36: TMenuItem;
+    MenuItem8: TMenuItem;
+    ResetStateMachineAction: TAction;
+    ShowStateMachineInformationAction: TAction;
+    ToggleStateMachineAction: TAction;
+    MenuItem1: TMenuItem;
+    N1: TMenuItem;
+    PushOperationDesignAction: TAction;
     ChangeToolBarColorTest: TAction;
     FocusOnOperationMenuItem: TMenuItem;
     DocumentationViewer: THtmlViewer;
@@ -96,6 +112,8 @@ type
     NvgtView: TVirtualStringTree;
     Splitter2: TSplitter;
     ToggleDebugLogModeAction: TAction;
+    ToolButton10: TToolButton;
+    ToolButton19: TToolButton;
     ToolButton49: TToolButton;
     ToolButton52: TToolButton;
     ToolButton62: TToolButton;
@@ -103,9 +121,12 @@ type
     WsdlNameEdit: TEdit;
     NavigateHierarchyAction: TAction;
     WsdlOperationNameEdit: TEdit;
+    procedure CheckReferencedFilesExistInCloudActionUpdate(Sender: TObject);
+    procedure ChooseStateMachineData;
     procedure AboutApiServerActionExecute(Sender: TObject);
     procedure AboutApiServerActionUpdate(Sender: TObject);
     procedure ChangeToolBarColorTestExecute(Sender: TObject);
+    procedure CopyRemoteApiUiProjectActionUpdate(Sender: TObject);
     procedure EditCloudEnvironmentActionUpdate(Sender: TObject);
     procedure FocusOnOperationMenuItemClick(Sender: TObject);
     procedure MenuItem14Click(Sender: TObject);
@@ -118,8 +139,16 @@ type
       const SRC: ThtString; var Handled: Boolean);
     procedure HtmlViewerKeyDown(Sender: TObject;
       var Key: Word; Shift: TShiftState);
+    procedure PushOperationDesignActionExecute(Sender: TObject);
+    procedure PushOperationDesignActionUpdate(Sender: TObject);
+    procedure PushProjectToRemoteServerActionUpdate(Sender: TObject);
+    procedure ResetCloudStateMachineExecute(Sender: TObject);
+    procedure ResetCloudStateMachineUpdate(Sender: TObject);
+    procedure ResetStateMachineActionExecute(Sender: TObject);
+    procedure ShowStateMachineInformationActionExecute(Sender: TObject);
     procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
       const Msg: String);
+    procedure ToggleStateMachineActionExecute(Sender: TObject);
     procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
   private
@@ -130,6 +159,7 @@ type
     fIpmDescrType: TIpmDescrType;
     fShowKindOfInformation: TShowKindOfInformation;
     fShowKindOfLogData: TShowKindOfLogData;
+    procedure InitColumnValues;
     procedure setFocusedBind(Value: TCustomBindable);
     procedure setIpmDescrType(Value: TIpmDescrType);
     procedure setShowKindOfInformation(Value: TShowKindOfInformation);
@@ -155,7 +185,7 @@ type
     EasterEggPopupMenu: TPopupMenu;
     MenuItem62: TMenuItem;
     MenuItem63: TMenuItem;
-    SaveRemoteApiUiProjectAction: TAction;
+    PushProjectToRemoteServerAction: TAction;
     CopyRemoteApiUiProjectAction: TAction;
     SnapshotsFromHttpGetAgainAction: TAction;
     GenerateFunctopnPrototypeListAction: TAction;
@@ -517,8 +547,6 @@ type
     Options3: TMenuItem;
     ConfigListenersAction: TAction;
     ToolButton58: TToolButton;
-    Revalidatemessages1: TMenuItem;
-    N15: TMenuItem;
     Reset1: TMenuItem;
     N16: TMenuItem;
     EnableMessageAction: TAction;
@@ -643,7 +671,9 @@ type
     procedure MenuItem61Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
     function EditRemoteServerConnectionParams (aCaption: String): Boolean;
-    procedure SaveRemoteApiUiProjectActionExecute(Sender: TObject);
+    procedure PushProjectToRemoteServer;
+    procedure PushProjectToRemoteWiremock;
+    procedure PushProjectToRemoteServerActionExecute(Sender: TObject);
     procedure SetApiServerConnectionActionExecute(Sender: TObject);
     procedure ShowOperationInfoActionExecute(Sender: TObject);
     procedure ShowOperationInfoActionUpdate(Sender: TObject);
@@ -733,7 +763,6 @@ type
     procedure RemoveAllMessagesActionExecute(Sender: TObject);
     procedure EnableMessageActionExecute(Sender: TObject);
     procedure Reset1Click(Sender: TObject);
-    procedure Revalidatemessages1Click(Sender: TObject);
     procedure ConfigListenersActionUpdate(Sender: TObject);
     procedure ConfigListenersActionExecute(Sender: TObject);
     procedure ServiceOptionsActionExecute(Sender: TObject);
@@ -778,6 +807,8 @@ type
     procedure AfterRequestScriptButtonClick(Sender: TObject);
     procedure ExecuteLoadTest;
     procedure ExecuteAllRequests;
+    procedure PushOperationToRemoteServer (aOperation: TWsdlOperation);
+    procedure PushFocusedOperationToRemoteServer;
     procedure ExecuteAllRequestsActionUpdate(Sender: TObject);
     procedure ExecuteRequestActionUpdate(Sender: TObject);
     procedure ExecuteAllRequestsActionExecute(Sender: TObject);
@@ -1129,7 +1160,6 @@ type
       Column: TColumnIndex; NewText: String);
     procedure ShowXmlInGrid(aXml: TXml; aReadOnly: Boolean);
     procedure ShowXmlExtended(aCaption: String; aXml: TXml);
-    procedure ShowXml(aCaption: String; aXml: TXml);
     procedure ShowIpm(aCaption: String; aIpm: TIpmItem);
     procedure ShowTextAsGrid(aCaption, aText: String);
     procedure ShowTextAsXml(aCaption, aText: String);
@@ -1180,11 +1210,15 @@ type
     fDoScrollMessagesIntoView: Boolean;
     fdoShowDesignSplitVertical : Boolean ;
     fDoTrackDuplicateMessages: Boolean;
+    fDoUseStateMachine: Boolean;
+    fStubAction: TStubAction;
     function getHintStrDisabledWhileActive: String;
     procedure SetCaptionFileName(AValue: String);
     procedure setDoScrollMessagesIntoView(AValue: Boolean);
     procedure setdoShowDesignSplitVertical (AValue : Boolean );
     procedure setDoTrackDuplicateMessages(AValue: Boolean);
+    procedure setDoUseStateMachine(AValue: Boolean);
+    procedure setStubAction(AValue: TStubAction);
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
     procedure IntrospectDesign;
     function createListOfListsForTypeDefs (aTypeDefs: TXsdDataTypeList): TJBStringList;
@@ -1192,6 +1226,7 @@ type
   published
   public
     se: TWsdlProject;
+    editStateMachine: TStateMachine;
     claimedLog: TLog;
     claimedReport: TSnapshot;
     CollapseHeaders: Boolean;
@@ -1208,12 +1243,16 @@ type
     saveToDiskExtention: String;
     FileNameList: TJBStringList;
     scriptPreparedWell: Boolean;
+    beforeScriptColumn, afterScriptColumn, annotationColumn, nameColumn: Integer;
+    scenarioColumn, reqStateColumn, nextStateColumn: Integer;
+    firstCorrleationColumn, firstDataColumn, nDataColumns: Integer;
     MainToolBarDesignedButtonCount: Integer;
     StressTestDelayMsMin, StressTestDelayMsMax, StressTestConcurrentThreads, StressTestLoopsPerThread: Integer;
     NumberOfBlockingThreads, NumberOfNonBlockingThreads: Integer;
     SaveNvgtViewOnFocusChanged: TVTFocusChangeEvent;
     SaveGridViewOnFocusChanged: TVTFocusChangeEvent;
     SaveTreeViewOnFocusChanged: TVTFocusChangeEvent;
+    SaveActionComboBoxChanged: TNotifyEvent;
     procedure DisableViewOnFocusChangeEvents;
     procedure EnableViewOnFocusChangeEvents;
     function setContextProperty (aName: String): String;
@@ -1227,7 +1266,9 @@ type
       : String read getHintStrDisabledWhileActive;
     property abortPressed: Boolean read fAbortPressed write SetAbortPressed;
     property doTrackDuplicateMessages: Boolean read fDoTrackDuplicateMessages write setDoTrackDuplicateMessages;
+    property StubAction: TStubAction read fStubAction write setStubAction;
     property doScrollMessagesIntoView: Boolean read fDoScrollMessagesIntoView write setDoScrollMessagesIntoView;
+    property doUseStateMachine: Boolean read fDoUseStateMachine write setDoUseStateMachine;
     property isRequestAction: Boolean read getIsRequestAction;
     property doShowDesignAtTop: Boolean read fDoShowDesignAtTop write
       setDoShowDesignAtTop;
@@ -1362,6 +1403,8 @@ type
     , messagesColumnDocumentation
     );
   const nMessageButtonColumns = 3;
+  const nMessageNameColumns = 1;
+  const nStateMachineColumns = 3;
 
 procedure _SaveLogs(aContext: TObject; aFileName: String);
 var
@@ -1661,7 +1704,8 @@ begin
     DisableViewOnFocusChangeEvents;
     try
       FocusNavigatorOnOperation;
-      if Assigned (fFocusedOperation) then
+      if Assigned (fFocusedOperation)
+      and (fFocusedOperation is TWsdlOperation) then
       begin
         se.LastFocusedOperation := Value;
         WsdlNameEdit.Text := Wsdl.FileName;
@@ -1672,6 +1716,8 @@ begin
         GridView.Clear;
         UpdateMessagesGrid;
         FillGridView(GridView, FocusedOperation.Messages);
+        StubAction := FocusedOperation.StubAction;
+        doUseStateMachine := FocusedOperation.doUseStateMachine;
         DoColorBindButtons;
         EditBetweenScriptMenuItem.Visible := (Value.StubAction = saStub);
         EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
@@ -2005,10 +2051,14 @@ begin
   if (Sender = GridView) then
   begin
     if not Assigned (GridView.FocusedNode) then Exit;
-    case GridView.FocusedColumn of
-      Ord (messagesColumnBeforeScript): EditMessageScriptActionExecute(nil);
-      Ord (messagesColumnAfterScript): EditMessageAfterScriptActionExecute(nil);
-      Ord (messagesColumnDocumentation): EditMessageDocumentationActionExecute(nil);
+    if GridView.FocusedColumn < nMessageButtonColumns then
+    begin
+      case GridView.FocusedColumn of
+        Ord (messagesColumnBeforeScript): EditMessageScriptActionExecute(nil);
+        Ord (messagesColumnAfterScript): EditMessageAfterScriptActionExecute(nil);
+        Ord (messagesColumnDocumentation): EditMessageDocumentationActionExecute(nil);
+      end;
+      Exit;
     end;
   end;
   if (    (Sender = GridView)
@@ -2019,6 +2069,12 @@ begin
      )
   then
   begin
+    if (Sender = GridView)
+    and (GridView.FocusedColumn in [scenarioColumn, reqStateColumn, nextStateColumn]) then
+    begin
+      ChooseStateMachineData;
+      Exit;
+    end;
     xBind := NodeToBind(TreeView, TreeView.FocusedNode);
     if xmlUtil.isExtendAdviced(xBind) then
       ExtendRecursivityMenuItemClick(nil)
@@ -2478,6 +2534,7 @@ begin
     CreateScriptsSubMenuItems;
     LogUpdateColumns;
     CheckBoxClick(nil);
+    se.FillStateMachine(editStateMachine);
     FocusedOperation := se.LastFocusedOperation;
   finally
     EnableViewOnFocusChangeEvents;
@@ -3709,6 +3766,7 @@ begin
   except
   end;
   ToggleDoScrollMessagesIntoViewAction.Checked := doScrollMessagesIntoView;
+  ToggleStateMachineAction.Checked := doUseStateMachine;
   ActionComboBox.Enabled := Assigned(FocusedOperation);
   WsdlItemAddMenuItem.Enabled := True;
   WsdlPasteFromClipboardMenuItem.Enabled := True;
@@ -3775,12 +3833,10 @@ begin
     begin
       with AddXml(TXml.CreateAsString('Xml', '')) do
       begin
-        AddXml(TXml.CreateAsString('UnassignedValues',
-            ColorToHtml(bgNilValueColor)));
-        AddXml(TXml.CreateAsString('CorrelationValues',
-            ColorToHtml(bgCorrelationItemColor)));
-        AddXml(TXml.CreateAsString('RequestTagNameColumn',
-            ColorToHtml(bgRequestTagNameColumnColor)));
+        AddXml(TXml.CreateAsString('UnassignedValues', ColorToHtml(bgNilValueColor)));
+        AddXml(TXml.CreateAsString('StateMachineValues', ColorToHtml(bgStateMachineColor)));
+        AddXml(TXml.CreateAsString('CorrelationValues', ColorToHtml(bgCorrelationItemColor)));
+        AddXml(TXml.CreateAsString('RequestTagNameColumn', ColorToHtml(bgRequestTagNameColumnColor)));
       end;
     end;
   end;
@@ -3810,37 +3866,8 @@ begin
   xStubAction := saStub;
   if ActionComboBox.ItemIndex <> 0 then
     xStubAction := saRequest;
-  if Assigned(FocusedOperation) then
-  begin
-    if (FocusedOperation.StubAction <> xStubAction) then
-    begin
-      FocusedOperation.StubAction := xStubAction;
-      NvgtView.OnFocusChanged ( NvgtView
-                                       , NvgtView.FocusedNode
-                                       , 0
-                                       );
-    end;
-    FocusedOperation.StubAction := xStubAction;
-    stubChanged := True;
-    NvgtView.Invalidate;
-    OperationDelayResponseTimeAction.Visible := (FocusedOperation.StubAction <> saRequest);
-    if (FocusedOperation.DelayTimeMsMin = 0)
-    and (FocusedOperation.DelayTimeMsMax = 0)
-    then
-      OperationDelayResponseTimeAction.ImageIndex := 60
-    else
-      OperationDelayResponseTimeAction.ImageIndex := 61;
-    RedirectAddressAction.Visible := (FocusedOperation.StubAction = saRequest);
-    if FocusedOperation.StubAction = saStub then
-      EditMessageScriptAction.Caption := 'Edit Message Script'
-    else
-      EditMessageScriptAction.Caption := 'Edit Message Before Script';
-    EditBetweenScriptMenuItem.Visible := (FocusedOperation.StubAction = saStub);
-    EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
-    EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
-    ShowFocusedMessageInTreeView;
-    TreeView.FocusedNode := TreeView.GetFirst;
-  end;
+  StubAction := xStubAction;
+  stubChanged := True;
 end;
 
 procedure TMainForm.GridViewGetImageIndex(Sender: TBaseVirtualTree;
@@ -3850,67 +3877,80 @@ var
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
 begin
-// requires an imagelist attached to treeview
-  if Column = nMessageButtonColumns then
-    Exit;
-  if not Assigned(FocusedOperation) then
-    exit;
+  if Column = nameColumn then Exit;
+  if not Assigned(FocusedOperation) then Exit;
   xMessage := NodeToMessage(Sender, Node);
-  if not Assigned(xMessage) then
-    exit;
+  if not Assigned(xMessage) then Exit;
   try
     case Kind of
       ikNormal, ikSelected:
         begin
-          if Column < nMessageButtonColumns then
+          if Column = Ord(messagesColumnBeforeScript) then
           begin
-            case Column of
-              Ord (messagesColumnBeforeScript):
-                begin
-                   if (xMessage.BeforeScriptLines.Count > 0) then
-                   begin
-                     if (not xMessage.PreparedBefore) then
-                       ImageIndex := 6
-                     else
-                       ImageIndex := 5;
-                   end
-                   else
-                     ImageIndex := 4;
-                end;
-                Ord (messagesColumnAfterScript):
-                  begin
-                    if FocusedOperation.StubAction <> saStub then
-                    begin
-                      if (xMessage.AfterScriptLines.Count > 0) then
-                      begin
-                        if (not xMessage.PreparedAfter) then
-                          ImageIndex := 6
-                        else
-                          ImageIndex := 5;
-                      end
-                      else
-                        ImageIndex := 4;
-                    end;
-                  end;
-                Ord (messagesColumnDocumentation):
-                  begin
-                    if (xMessage.Documentation <> '') then
-                    begin
-                      if xMessage.DocumentationEdited then
-                        ImageIndex := 33
-                      else
-                        ImageIndex := 34;
-                    end
-                    else
-                      ImageIndex := 32;
-                  end;
-              end;
-            exit;
-          end;
-          if Column < (nMessageButtonColumns + xMessage.CorrelationBindables.Count + 1) then
+            if (xMessage.BeforeScriptLines.Count > 0) then
+            begin
+              if (not xMessage.PreparedBefore) then
+                ImageIndex := 6
+              else
+                ImageIndex := 5;
+            end
+            else
+              ImageIndex := 4;
             Exit;
-          xBind := xMessage.ColumnXmls.Bindables
-            [Column - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1];
+          end;
+          if Column = Ord (messagesColumnAfterScript) then
+          begin
+            if FocusedOperation.StubAction = saStub then
+            begin
+              if (xMessage.AfterScriptLines.Count > 0) then
+              begin
+                if (not xMessage.PreparedBefore) then
+                  ImageIndex := 6
+                else
+                  ImageIndex := 5;
+              end
+              else
+                ImageIndex := 4;
+            end;
+            Exit;
+          end;
+          if Column = Ord (messagesColumnDocumentation) then
+          begin
+            if (xMessage.Documentation <> '') then
+            begin
+              if xMessage.DocumentationEdited then
+                ImageIndex := 33
+              else
+                ImageIndex := 34;
+            end
+            else
+              ImageIndex := 32;
+            Exit;
+          end;
+          if Column = scenarioColumn then
+          begin
+            if (Node <> GridView.GetFirst)
+            and (editStateMachine.scenarios.Count > 0) then
+              ImageIndex := 18;
+            Exit;
+          end;
+          if Column = reqStateColumn then
+          begin
+            if (Node <> GridView.GetFirst)
+            and (xMessage.stateMachineScenarioName <> '') then
+              ImageIndex := 18;
+            Exit;
+          end;
+          if Column = nextStateColumn then
+          begin
+            if (Node <> GridView.GetFirst)
+            and (xMessage.stateMachineScenarioName <> '') then
+              ImageIndex := 18;
+            Exit;
+          end;
+          if Column < (firstDataColumn) then
+            Exit;
+          xBind := xMessage.ColumnXmls.Bindables [Column - firstDataColumn];
           if Assigned(xBind) then
           begin
             if xBind is TXmlAttribute then
@@ -3987,38 +4027,52 @@ begin
   CellText := '';
   xMessage := NodeToMessage(Sender, Node);
   if not Assigned(xMessage) then Exit;
-  if Column < nMessageButtonColumns then Exit;
+  if Column < nameColumn then Exit;
   try
-    if Column = nMessageButtonColumns then
-      CellText := xMessage.Name
-    else
+    if Column = nameColumn then
     begin
-      if (Column - nMessageButtonColumns) <= xMessage.CorrelationBindables.Count then
-        try
-          if Assigned (xMessage.CorrelationBindables.Bindables[Column - nMessageButtonColumns - 1]) then
-            CellText := xMessage.CorrelationBindables.Bindables[Column - nMessageButtonColumns - 1].CorrelationValue
-          else
-            CellText := '?';
-        except
-        end
-      else
-      begin
-        xBind := xMessage.ColumnXmls.Bindables
-          [Column - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1];
-        if Assigned(xBind) then
-        begin
-          if (   (xBind is TIpmItem)
-              or (not Assigned(xBind.Parent))
-              or (xBind.Parent.CheckedAllUp)
-             ) then
-            CellText := xBind.GetStringData
-          else
-            CellText := '&nil';
-        end
+      CellText := xMessage.Name;
+      Exit;
+    end;
+    if Column = scenarioColumn then
+    begin
+      CellText := xMessage.stateMachineScenarioName;
+      Exit;
+    end;
+    if Column = reqStateColumn then
+    begin
+      CellText := xMessage.stateMachineRequiredState;
+      Exit;
+    end;
+    if Column = nextStateColumn then
+    begin
+      CellText := xMessage.stateMachineNextState;
+      Exit;
+    end;
+    if Column < firstDataColumn then
+    begin
+      try
+        if Assigned (xMessage.CorrelationBindables.Bindables[Column - firstCorrleationColumn]) then
+          CellText := xMessage.CorrelationBindables.Bindables[Column - firstCorrleationColumn].CorrelationValue
         else
           CellText := '?';
+      except
       end;
+      Exit;
     end;
+    xBind := xMessage.ColumnXmls.Bindables [Column - firstDataColumn];
+    if Assigned(xBind) then
+    begin
+      if (   (xBind is TIpmItem)
+          or (not Assigned(xBind.Parent))
+          or (xBind.Parent.CheckedAllUp)
+         ) then
+        CellText := xBind.GetStringData
+      else
+        CellText := '&nil';
+    end
+    else
+      CellText := '?';
   except
     on e: Exception do
       CellText := e.Message;
@@ -4172,10 +4226,14 @@ var
   xBind: TCustomBindable;
   xMessage: TWsdlMessage;
 begin
+  if Column < nMessageButtonColumns then Exit;
+  if (Sender.GetFirstSelected = Sender.GetFirst)
+  and (Column < firstDataColumn) then
+    _RaiseError('Not allowed to change this data in first row');
   FocusedOperation.AcquireLock;
   try
     xMessage := NodeToMessage(Sender, Node);
-    if Column = nMessageButtonColumns then
+    if Column = nameColumn then
     begin
       if not xmlio.isFileNameAllowed(NewText) then
         _RaiseError(Format ('"%s" not allowed as filename', [NewText]));
@@ -4191,79 +4249,79 @@ begin
           stubChanged := True;
         end;
       end;
-    end
-    else
+      Exit;
+    end;
+    xNode := GridView.GetFirstSelected;
+    while Assigned(xNode) do
     begin
-      if (Column - nMessageButtonColumns) <= xMessage.CorrelationBindables.Count then
+      xMessage := NodeToMessage(Sender, xNode);
+      if (Column = scenarioColumn)
+      and (xMessage.stateMachineScenarioName <> NewText) then
       begin
-        xNode := GridView.GetFirstSelected;
-        while Assigned(xNode) do
+        xMessage.stateMachineScenarioName := NewText;
+        editStateMachine.ScenarioByName[NewText];
+        stubChanged := True;
+      end;
+      if (Column = reqStateColumn)
+      and (xMessage.stateMachineRequiredState <> NewText) then
+      begin
+        xMessage.stateMachineRequiredState := NewText;
+        stubChanged := True;
+      end;
+      if (Column = nextStateColumn)
+      and (xMessage.stateMachineNextState <> NewText) then
+      begin
+        xMessage.stateMachineNextState := NewText;
+        if (xMessage.stateMachineScenarioName <> '')
+        and (xMessage.stateMachineScenarioName <> '.*') then
+          editStateMachine.ScenarioByName[xMessage.stateMachineScenarioName].State := xMessage.stateMachineNextState;
+        stubChanged := True;
+      end;
+      if (Column >= firstCorrleationColumn)
+      and (Column < firstDataColumn) then
+      begin
+        if NewText <> xMessage.CorrelationBindables.Bindables[Column - firstCorrleationColumn].CorrelationValue then
         begin
-          xMessage := NodeToMessage(Sender, xNode);
-          if NewText <> xMessage.CorrelationBindables.Bindables[Column - nMessageButtonColumns - 1]
-            .CorrelationValue then
-          begin
-            if xNode = Sender.GetFirst then
-            begin
-              Node := xNode;
-              _RaiseError('Not allowed to change this pattern into ' + NewText);
-            end;
-            xMessage.CorrelationBindables.Bindables[Column - nMessageButtonColumns - 1].CorrelationValue := NewText;
-            stubChanged := True;
-          end;
-          xNode := GridView.GetNextSelected(xNode);
+          xMessage.CorrelationBindables.Bindables[Column - firstCorrleationColumn].CorrelationValue := NewText;
+          stubChanged := True;
         end;
-      end
-      else
+      end;
+      if (Column >= firstDataColumn) then
       begin
-        { }{
-          if (Assigned (xMessage.ColumnXmls.Bindables[Column - xMessage.CorrelationBindables.Count - 1])) then
-          TreeView.OnNewText ( TreeView
-          , editingNode
-          , treeValueColumn
-          , NewText
-          );
-          { }
-        xNode := GridView.GetFirstSelected;
-        while Assigned(xNode) do
+        xBind := xMessage.ColumnXmls.Bindables [Column - firstDataColumn];
+        if (xBind is TXml) or (xBind is TXmlAttribute) then
         begin
-          xMessage := NodeToMessage(Sender, xNode);
-          xBind := xMessage.ColumnXmls.Bindables
-            [Column - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1];
-          if (xBind is TXml) or (xBind is TXmlAttribute) then
+          if NewText = '&nil' then
           begin
-            if NewText = '&nil' then
+            if xBind.Checked then
             begin
-              if xBind.Checked then
-              begin
-                xBind.Checked := False;
-                stubChanged := True;
-              end;
-            end
-            else
-            begin
-              if (NewText <> xBind.Value) or (not AllChecked(Sender, Node)) then
-              begin
-                xBind.Value := NewText;
-                xBind.Checked := True;
-                stubChanged := True;
-              end;
+              xBind.Checked := False;
+              stubChanged := True;
             end;
-          end;
-          if xBind is TIpmItem then
+          end
+          else
           begin
-            if NewText <> xBind.Value then
+            if (NewText <> xBind.Value) or (not AllChecked(Sender, Node)) then
             begin
               xBind.Value := NewText;
               xBind.Checked := True;
               stubChanged := True;
             end;
           end;
-          xNode := GridView.GetNextSelected(xNode);
         end;
-        RevalidateXmlTreeView(TreeView);
+        if xBind is TIpmItem then
+        begin
+          if NewText <> xBind.Value then
+          begin
+            xBind.Value := NewText;
+            xBind.Checked := True;
+            stubChanged := True;
+          end;
+        end;
       end;
+      xNode := GridView.GetNextSelected(xNode);
     end;
+    RevalidateXmlTreeView(TreeView);
   finally
     FocusedOperation.ReleaseLock;
   end;
@@ -4278,17 +4336,20 @@ begin
     Allowed := False;
     Exit;
   end;
-  if Column = nMessageButtonColumns then
+  if Column in [scenarioColumn, reqStateColumn, nextStateColumn] then
+  begin
+    Allowed := (Sender.GetFirstSelected <> Sender.GetFirst);
+    Exit;
+  end;
+  if Column = nameColumn then
   begin
     Allowed := (Node <> Sender.GetFirst) and (GridView.SelectedCount = 1);
     exit;
   end;
-  if (Column - nMessageButtonColumns) <= FocusedMessage.CorrelationBindables.Count then
+  if (Column < firstDataColumn) then
   begin
-    Allowed := (Node <> Sender.GetFirst)
-           and (Assigned (FocusedMessage.CorrelationBindables.Bindables[Column- nMessageButtonColumns - 1]))
-             ;
-    exit;
+    Allowed := (Sender.GetFirstSelected <> Sender.GetFirst);
+    Exit;
   end;
   Allowed := FocusedBind.IsEditingAllowed;
 end;
@@ -4451,11 +4512,9 @@ procedure TMainForm.GridViewFocusChanged(Sender: TBaseVirtualTree;
 begin
   Sender.Selected[Sender.FocusedNode] := True;
   FocusedMessage := NodeToMessage(GridView, GridView.FocusedNode);
-  if (Column - nMessageButtonColumns) > FocusedMessage.CorrelationBindables.Count then
+  if (Column >= firstDataColumn) then
     FocusedBind := FocusedMessage.ColumnXmls.Bindables[ Column
-                                                      - nMessageButtonColumns
-                                                      - FocusedMessage.CorrelationBindables.Count
-                                                      - 1
+                                                      - firstDataColumn
                                                       ]
   else
     FocusedBind := NodeToBind(TreeView, TreeView.GetFirst);
@@ -4654,13 +4713,23 @@ begin
       end;
       exit;
     end;
-    if Column <= nMessageButtonColumns + xMessage.CorrelationBindables.Count then
+    if Column in [scenarioColumn, reqStateColumn, nextStateColumn] then
+    begin
+      with TargetCanvas do
+      begin
+        Brush.Style := bsSolid;
+        Brush.Color := _decColor(bgStateMachineColor);
+        FillRect(CellRect);
+      end;
+      exit;
+    end;
+    if Column < firstDataColumn then
     begin
       with TargetCanvas do
       begin
         Brush.Style := bsSolid;
         Brush.Color := _decColor(bgCorrelationItemColor);
-        if Column = nMessageButtonColumns then
+        if Column = nameColumn then
         begin
           fMessage := NodeToMessage(Sender, Sender.FocusedNode);
           if Assigned (fMessage)
@@ -4680,8 +4749,7 @@ begin
       exit;
     end;
     try
-      xBind := xMessage.ColumnXmls.Bindables
-        [Column - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1];
+      xBind := xMessage.ColumnXmls.Bindables [Column - firstDataColumn];
     except
       exit;
     end;
@@ -4727,7 +4795,7 @@ end;
 procedure TMainForm.GridViewEdited(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
 begin
-  if (Column - nMessageButtonColumns) > FocusedOperation.CorrelationBindables.Count then
+  if Column >= firstDataColumn then
   begin
     TreeView.OnEdited(TreeView, editingNode, treeValueColumn);
   end;
@@ -5100,8 +5168,8 @@ begin
           logValidationTabImageIndex := 25;
       end;
       UpdateLogTabs (xLog);
-      MessagesStatusBar.Panels.Items[Ord(lpiFocus)].Text := '[' + IntToStr(xLog.Nr)
-        + ' : ' + IntToStr(se.displayedLogs.Number) + ']';
+      MessagesStatusBar.Panels.Items[Ord(lpiFocus)].Text := '[' + IntToStr(xLog.LogSequenceNr)
+        + ' : ' + IntToStr(se.displayedLogs.LogSequenceNr) + ']';
       if Assigned(xLog.Operation) and (xLog.Operation is TWsdlOperation) then
       begin
         FocusedMessage := nil;
@@ -5847,22 +5915,21 @@ procedure TMainForm.RemoveMessageColumns;
 var
   c: Integer;
 begin
-  GridView.FocusedColumn := nMessageButtonColumns;
-  for c := GridView.Header.Columns.Count - 1 downto nMessageButtonColumns do
-    ColumnWidths.Values[GridView.Header.Columns[c].Text] :=
-      IntToStr (GridView.Header.Columns[c].Width);
-  if Assigned(FocusedOperation) then
+  GridView.FocusedColumn := nameColumn;
+  with GridView.Header do
   begin
-    try
-      while GridView.Header.Columns.Count >
-        (nMessageButtonColumns + 1 + FocusedOperation.CorrelationBindables.Count +
-          FocusedOperation.Messages.Messages[0].ColumnXmls.Count) do
-        GridView.Header.Columns.Delete(GridView.Header.Columns.Count - 1);
-      while GridView.Header.Columns.Count <
-        (nMessageButtonColumns + 1 + FocusedOperation.CorrelationBindables.Count +
-          FocusedOperation.Messages.Messages[0].ColumnXmls.Count) do
-        GridView.Header.Columns.Add;
-    except
+    for c := Columns.Count - 1 downto nMessageButtonColumns do
+      ColumnWidths.Values[Columns[c].Text] := IntToStr (Columns[c].Width);
+    if Assigned(FocusedOperation) then
+    begin
+      InitColumnValues;
+      try
+        while Columns.Count > (firstDataColumn + nDataColumns) do
+          Columns.Delete(Columns.Count - 1);
+        while Columns.Count < (firstDataColumn + nDataColumns) do
+          Columns.Add;
+      except
+      end;
     end;
   end;
 end;
@@ -5884,15 +5951,17 @@ var
   X, c: Integer;
   vc: TVirtualTreeColumn;
 begin
+  InitColumnValues;
   RemoveMessageColumns;
-  c := nMessageButtonColumns;
+  doUseStateMachine := FocusedOperation.doUseStateMachine;
+  c := nameColumn;
   vc := GridView.Header.Columns.Items[c];
   if FocusedOperation.StubAction = saRequest then
     vc.Text := 'Request'
   else
     vc.Text := 'Reply';
   vc.Width := StrToIntDef(ColumnWidths.Values[vc.Text], 50);
-  Inc(c);
+  c := firstCorrleationColumn;
   if FocusedOperation.Messages.Count > 0 then
   begin
     with FocusedOperation.Messages.Messages[0] do
@@ -5969,7 +6038,7 @@ begin
         f := FocusedMessage.ColumnXmls.IndexOfObject(FocusedBind);
         if f > -1 then
         begin
-          GridView.FocusedColumn := f + 1 + nMessageButtonColumns + FocusedOperation.CorrelationBindables.Count;
+          GridView.FocusedColumn := f + firstDataColumn;
         end;
       end;
       exit;
@@ -6058,10 +6127,12 @@ var
   xShift : TShiftState;
   xMenuItem, sMenuItem: TMenuItem;
 begin
+  InitColumnValues;
   fShowKindOfInformation := TShowKindOfInformation (-1);
   SaveNvgtViewOnFocusChanged := NvgtView.OnFocusChanged;
   SaveGridViewOnFocusChanged := GridView.OnFocusChanged;
   SaveTreeViewOnFocusChanged := TreeView.OnFocusChanged;
+  SaveActionComboBoxChanged := ActionComboBox.OnChange;
   doConfirmTemporaryInactivity := False;
   MessagesTabControlWidth := MessagesTabControl.Width;
   MessagesTabControlMinLeft := LastMessageToolButton.Left + LastMessageToolButton.Width + 1;
@@ -6089,6 +6160,7 @@ begin
   se.OnReactivateEvent := ReactivateCommand;
   se.OnRestartEvent := RestartCommand;
   se.OnReloadDesignEvent := ReloadDesignCommand;
+  editStateMachine := TStateMachine.Create;
   DecryptString := doDecryptString;
   EncryptString := doEncryptString;
   xmlUtil.doExpandFull := True;
@@ -6204,6 +6276,7 @@ begin
   se.notStubbedExceptionMessage := xIniFile.StringByNameDef
     ['notStubbedExceptionMessage', 'No operation recognized'];
   se.doViaProxyServer := xIniFile.BooleanByName['doViaProxyServer'];
+  doUseStateMachine := False;
   doScrollMessagesIntoView := xIniFile.BooleanByNameDef
     ['doScrollMessagesIntoView', True];
   doScrollExceptionsIntoView := xIniFile.BooleanByNameDef
@@ -6220,18 +6293,10 @@ begin
     ['HTTPServer.MaxConnections', se.HTTPServer.MaxConnections];
   se.ViaProxyServer := xIniFile.StringByNameDef['ViaProxyServer', 'localhost'];
   se.ViaProxyPort := StrToIntDef(xIniFile.StringByName['ViaProxyPort'], 8081);
-  se.CompareLogOrderBy := TCompareLogOrderBy
-    (xIniFile.IntegerByNameDef['CompareLogOrderBy', Ord(clTimeStamp)]);
   se.ShowLogCobolStyle := TShowLogCobolStyle
     (xIniFile.IntegerByNameDef['ShowLogCobolStyle', Ord(slCobol)]);
   ColumnWidths.Text := xIniFile.StringByNameDef['ColumnWidths', ''];
   doShowDesignAtTop := xIniFile.BooleanByNameDef['doShowDesignAtTop', True];
-  bgCorrelationItemColor := xIniFile.IntegerByNameDef['bgCorrelationItemColor',
-    bgCorrelationItemColor];
-  bgRequestTagNameColumnColor := xIniFile.IntegerByNameDef['RequestTagNameColumn',
-    bgRequestTagNameColumnColor];
-  bgNilValueColor := xIniFile.IntegerByNameDef['bgNilValueColor',
-    bgNilValueColor];
   DesignPanelAtTopMenuItem.Checked := doShowDesignAtTop;
   xXml := TXml.Create;
   try
@@ -6403,6 +6468,7 @@ begin
   WsdlInformationMenuItem.Checked := xIniFile.BooleanByNameDef['', True];
   xIniFile.Save;
   xIniFile.Free;
+  FreeAndNil(editStateMachine);
   QueueNameList.Free;
   ReopenCaseList.Free;
   FileNameList.Free;
@@ -6467,7 +6533,7 @@ begin
   if Assigned (xMessage.Duplicates) then
     TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
 
-  if (Column = nMessageButtonColumns) then
+  if (Column = nameColumn) then
   begin
     if Assigned (xMessage.DuplicatesName)
 //  or (not xmlio.isFileNameAllowed(xMessage.Name))
@@ -6475,12 +6541,11 @@ begin
       TargetCanvas.Font.Color := clRed;
     exit;
   end;
-  if (Column - nMessageButtonColumns) <= xMessage.CorrelationBindables.Count then
+  if (Column < firstDataColumn) then
     exit;
   xBind := nil;
   try
-    xBind := xMessage.ColumnXmls.Bindables
-      [Column - nMessageButtonColumns - xMessage.CorrelationBindables.Count - 1];
+    xBind := xMessage.ColumnXmls.Bindables [Column - firstDataColumn];
   except
   end;
   if not Assigned(xBind) then
@@ -6492,14 +6557,6 @@ begin
   if xBind is TXml then
     Xml := xBind as TXml;
 
-  {
-    if (Node = (Sender as TVirtualStringTree).GetFirst) then
-    begin
-    TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
-    exit;
-    end;
-  }
-
   if xBind is TXmlAttribute then
   begin
     if ((Assigned(XmlAttr.XsdAttr)) and (XmlAttr.XsdAttr.Use = 'required')) then
@@ -6508,20 +6565,8 @@ begin
       if (Sender.FocusedNode <> Node) or (Sender.FocusedColumn <> Column) then
       begin
         if (not XmlAttr.Checked) and (XmlAttr.Parent as TXml).CheckedAllUp then
-          TargetCanvas.Font.Color := clRed {
-            else
-            if not (XmlAttr.Parent as TXml).CheckedAllUp then
-            TargetCanvas.Font.Color := clBlue } ;
+          TargetCanvas.Font.Color := clRed;
       end;
-      {
-        end
-        else
-        begin
-        if (Sender.FocusedNode <> Node)
-        or (Sender.FocusedColumn <> Column) then
-        if not (XmlAttr.Parent as TXml).CheckedAllUp then
-        TargetCanvas.Font.Color := clBlue;
-      }
     end;
     exit;
   end;
@@ -6529,29 +6574,20 @@ begin
   begin
     if (not Assigned(Xml.Xsd)) then
     begin
-      {
-        if (Sender.FocusedNode <> Node)
-        or (Sender.FocusedColumn <> Column) then
-        begin
-        if not (Xml.Parent as TXml).CheckedAllUp then
-        TargetCanvas.Font.Color := clBlue	;
-        end;
-        }
       exit;
     end;
     try
-      if Assigned(Xml.Xsd) and (StrToIntDef(Xml.Xsd.minOccurs, 0) > 0)
-        and Assigned(Xml.Parent) and Assigned(TXml(Xml.Parent).Xsd) and
-        (TXml(Xml.Parent).TypeDef.ContentModel <> 'Choice') then
+      if Assigned(Xml.Xsd)
+      and (StrToIntDef(Xml.Xsd.minOccurs, 0) > 0)
+      and Assigned(Xml.Parent)
+      and Assigned(TXml(Xml.Parent).Xsd)
+      and (TXml(Xml.Parent).TypeDef.ContentModel <> 'Choice') then
       begin
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
         if (Sender.FocusedNode <> Node) or (Sender.FocusedColumn <> Column) then
         begin
           if (not Xml.Checked) and (Xml.Parent as TXml).CheckedAllUp then
-            TargetCanvas.Font.Color := clRed {
-              else
-              if not (Xml.Parent as TXml).CheckedAllUp then
-              TargetCanvas.Font.Color := clBlue } ;
+            TargetCanvas.Font.Color := clRed;
         end;
       end
       else
@@ -6621,19 +6657,6 @@ begin
     TreeView.EndUpdate;
     GridView.SetFocus;
     XmlUtil.PopCursor;
-  end;
-end;
-
-procedure TMainForm.ShowXml(aCaption: String; aXml: TXml);
-begin
-  Application.CreateForm(TShowXmlForm, ShowXmlForm);
-  try
-    ShowXmlForm.Caption := aCaption;
-    ShowXmlForm.Bind := aXml;
-    ShowXmlForm.isReadOnly := True;
-    ShowXmlForm.ShowModal;
-  finally
-    FreeAndNil(ShowXmlForm);
   end;
 end;
 
@@ -6904,6 +6927,7 @@ begin
   NvgtView.OnFocusChanged := nil;
   GridView.OnFocusChanged := nil;
   TreeView.OnFocusChanged := nil;
+  ActionComboBox.OnChange := nil;
 end;
 
 procedure TMainForm.EnableViewOnFocusChangeEvents;
@@ -6911,6 +6935,7 @@ begin
   NvgtView.OnFocusChanged := SaveNvgtViewOnFocusChanged;
   GridView.OnFocusChanged := SaveGridViewOnFocusChanged;
   TreeView.OnFocusChanged := SaveTreeViewOnFocusChanged;
+  ActionComboBox.OnChange := SaveActionComboBoxChanged;
 end;
 
 function TMainForm.setContextProperty(aName: String): String;
@@ -7310,8 +7335,7 @@ begin
               end;
               GridView.Selected[xNode] := True;
               GridViewFocusedNode(xNode);
-              GridView.FocusedColumn :=
-                Y + FocusedOperation.CorrelationBindables.Count + 1;
+              GridView.FocusedColumn := Y + firstDataColumn;
               GridView.Update;
               GridView.SetFocus;
               raise Exception.Create(thisBind.ValidationMesssage);
@@ -7641,6 +7665,85 @@ begin
   finally
     FreeAndNil(xOperation);
   end;
+end;
+
+procedure TMainForm.PushOperationToRemoteServer(aOperation: TWsdlOperation);
+var
+  X: Integer;
+  xOperation: TWsdlOperation;
+  mXml, oXml: TXml;
+begin
+  try
+    aOperation.AcquireLock;
+    try
+      xOperation := TWsdlOperation.Create(aOperation);
+    finally
+      aOperation.ReleaseLock;
+    end;
+    try
+      if se.remoteServerConnectionType = rscApiUi then
+      begin
+        oXml := se.ProjectOperationDesignAsXml(xOperation);
+        mXml := TXml.Create;
+        try
+          mXml.jsonType := jsonObject;
+          mXml.AddXml (TXml.CreateAsString('Service', xOperation.WsdlService.Name)); // must match on remote server
+          mXml.AddXml (TXml.CreateAsString('Name', xOperation.Name)); // must match on remote server
+          mXml.AddXml (TXml.CreateAsString('Design', oXml.AsText(False,0,True,False))); // XML value in JSON message
+          xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                  , '/apiUi/api/operations/' + xOperation.Alias + '/design'
+                                  , ''
+                                  , 'POST'
+                                  , 'application/json'
+                                  , mXml.StreamJSON(0, False)
+                                  , 'application/json'
+                                  );
+        finally
+          FreeAndNil(oXml);
+          FreeAndNil(mXml);
+        end;
+      end;
+      if se.remoteServerConnectionType = rscWireMock then
+      begin
+        xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                , '/__admin/mappings/remove-by-metadata'
+                                , ''
+                                , 'POST'
+                                , 'application/json'
+                                , generateWireMockMappingMetaQuery (xOperation)
+                                , 'application/json'
+                                );
+        for X := 0 to xOperation.Messages.Count - 1 do
+        begin
+          if abortPressed then
+            Break;
+          se.AcquireLogLock;
+          se.ReleaseLogLock;
+          try
+            xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                    , '/__admin/mappings'
+                                    , ''
+                                    , 'POST'
+                                    , 'application/json'
+                                    , generateWireMockMapping (xOperation, xOperation.Messages.Messages[x])
+                                    , 'application/json'
+                                    );
+          except
+          end;
+        end;
+      end;
+    finally
+      xOperation.Free;
+    end;
+  except
+    on e: Exception do
+      SjowMessage('Push operation failed' + LineEnding + e.Message);
+  end;
+end;
+
+procedure TMainForm.PushFocusedOperationToRemoteServer;
+begin
+  PushOperationToRemoteServer(FocusedOperation);
 end;
 
 procedure TMainForm.ExecuteLoadTest;
@@ -8129,7 +8232,6 @@ procedure TMainForm.RefreshLog;
     begin
       xLog := se.toDisplayLogs.LogItems[x];
       se.displayedLogs.SaveLog('', xLog);
-      xLog.Nr := se.displayedLogs.Number;
       result := True;
       se.LogFilter.Execute(xLog);
       xNode := MessagesVTS.AddChild(nil);
@@ -8330,6 +8432,71 @@ begin
   fDoTrackDuplicateMessages:=AValue;
   ToggleTrackDuplicateMessagesAction.Checked := fDoTrackDuplicateMessages;
   UpdateMessagesView;
+end;
+
+procedure TMainForm.setDoUseStateMachine(AValue: Boolean);
+begin
+  fDoUseStateMachine := AValue;
+  with GridView.Header do
+  begin
+    if aValue
+    and (assigned (FocusedOperation))
+    and (FocusedOperation.StubAction <> saRequest)
+    then
+    begin
+      Columns[scenarioColumn].Options := Columns[scenarioColumn].Options + [coVisible];
+      Columns[reqStateColumn].Options := Columns[reqStateColumn].Options + [coVisible];
+      Columns[nextStateColumn].Options := Columns[nextStateColumn].Options + [coVisible];
+    end
+    else
+    begin
+      Columns[scenarioColumn].Options := Columns[scenarioColumn].Options - [coVisible];
+      Columns[reqStateColumn].Options := Columns[reqStateColumn].Options - [coVisible];
+      Columns[nextStateColumn].Options := Columns[nextStateColumn].Options - [coVisible];
+    end;
+  end;
+  if Assigned (FocusedOperation) then
+  begin
+    FocusedOperation.doUseStateMachine := AValue;
+  end;
+  ToggleStateMachineAction.Checked := AValue;
+end;
+
+procedure TMainForm.setStubAction(AValue: TStubAction);
+begin
+  fStubAction := AValue;
+  if Assigned(FocusedOperation) then
+  begin
+    if False then
+    begin
+      FocusedOperation.StubAction := AValue;
+      NvgtView.OnFocusChanged ( NvgtView
+                              , NvgtView.FocusedNode
+                              , 0
+                              );
+    end;
+    FocusedOperation.StubAction := AValue;
+    doUseStateMachine := FocusedOperation.doUseStateMachine;
+    NvgtView.Invalidate;
+    OperationDelayResponseTimeAction.Visible := (FocusedOperation.StubAction <> saRequest);
+    ToggleStateMachineAction.Enabled := (FocusedOperation.StubAction <> saRequest);
+    if (FocusedOperation.DelayTimeMsMin = 0)
+    and (FocusedOperation.DelayTimeMsMax = 0)
+    then
+      OperationDelayResponseTimeAction.ImageIndex := 60
+    else
+      OperationDelayResponseTimeAction.ImageIndex := 61;
+    RedirectAddressAction.Visible := (FocusedOperation.StubAction = saRequest);
+    if FocusedOperation.StubAction = saStub then
+      EditMessageScriptAction.Caption := 'Edit Message Script'
+    else
+      EditMessageScriptAction.Caption := 'Edit Message Before Script';
+    EditBetweenScriptMenuItem.Visible := (FocusedOperation.StubAction = saStub);
+    EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
+    EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
+    ShowFocusedMessageInTreeView;
+    TreeView.FocusedNode := TreeView.GetFirst;
+  end;
 end;
 
 procedure TMainForm.LogPopupMenuPopup(Sender: TObject);
@@ -8927,7 +9094,7 @@ begin
         if Assigned(zXml) then
         begin
           if zXml.Items.Count > 0 then
-            ShowXml(xLog.Operation.ZoomElementCaption, zXml)
+            ShowXmlExtended (xLog.Operation.ZoomElementCaption, zXml)
           else
             xmlUtil.presentString(xLog.Operation.ZoomElementCaption,
               zXml.Value);
@@ -9608,7 +9775,7 @@ procedure TMainForm.PasteGridFromPasteBoard;
 
 var
   copyLines, copyColumns: TJBStringList;
-  l, c: Integer;
+  l, c, column: Integer;
   xMessage: TWsdlMessage;
   xBind: TCustomBindable;
 begin
@@ -9618,11 +9785,13 @@ begin
     // first check if first line is columnheader line
     copyColumns := TabSepLineToStringGrid(copyLines.Strings[0]);
     c := 0;
-    while (c < copyColumns.Count) and (c + nMessageButtonColumns < GridView.Header.Columns.Count) do
+    column := c + nMessageButtonColumns;
+    while (c < copyColumns.Count) and (column < GridView.Header.Columns.Count) do
     begin
-      if (copyColumns.Strings[c] <> GridView.Header.Columns.Items[c + nMessageButtonColumns].Text) then
+      if (copyColumns.Strings[c] <> GridView.Header.Columns.Items[column].Text) then
         raise Exception.Create('Columnheaders do not match, Operation aborted');
       Inc(c);
+      Inc(column);
     end;
 
     l := 1; // line zero contains columnheaders
@@ -9635,7 +9804,8 @@ begin
       copyColumns := TabSepLineToStringGrid(copyLines.Strings[l]);
       try
         c := 0;
-        while (c < copyColumns.Count) and (c + nMessageButtonColumns < GridView.Header.Columns.Count) do
+        column := c + nMessageButtonColumns;
+        while (c < copyColumns.Count) and (column < GridView.Header.Columns.Count) do
         begin
           // OnNewText (aVst, xNode, c, copyColumns.Strings[c]);
           if c = 0 then
@@ -9644,7 +9814,7 @@ begin
             begin
               if l = 1 then
                 Raise Exception.Create(
-                  'Not allowed to change this reply name into ' +
+                  'Not allowed to change default name into ' +
                     copyColumns.Strings[c])
               else
               begin
@@ -9652,59 +9822,81 @@ begin
                 stubChanged := True;
               end;
             end;
-          end
-          else
+          end;
+          if column = scenarioColumn then
           begin
-            if c <= xMessage.CorrelationBindables.Count then
+            if copyColumns.Strings[c] <> xMessage.stateMachineScenarioName then
             begin
-              if c < copyColumns.Count then
-              begin
-                if copyColumns.Strings[c] <> xMessage.CorrelationBindables.Bindables[c - 1]
-                  .CorrelationValue then
-                begin
-                  if l = 1 then
-                    raise Exception.Create(
-                      'Not allowed to change this pattern into ' +
-                        copyColumns.Strings[c])
-                  else
-                  begin
-                    xMessage.CorrelationBindables.Bindables[c - 1].CorrelationValue :=
-                      copyColumns.Strings[c];
-                    stubChanged := True;
-                  end;
-                end;
-              end;
-            end
-            else
+              xMessage.stateMachineScenarioName := copyColumns.Strings[c];
+              stubChanged := True;
+            end;
+          end;
+          if column = reqStateColumn then
+          begin
+            if copyColumns.Strings[c] <> xMessage.stateMachineRequiredState then
             begin
-              if (copyColumns.Strings[c] <> '?')
-              and (Assigned(xMessage.ColumnXmls.Bindables
-                    [c - xMessage.CorrelationBindables.Count - 1])) then
+              xMessage.stateMachineRequiredState := copyColumns.Strings[c];
+              stubChanged := True;
+            end;
+          end;
+          if column = nextStateColumn then
+          begin
+            if copyColumns.Strings[c] <> xMessage.stateMachineNextState then
+            begin
+              xMessage.stateMachineNextState := copyColumns.Strings[c];
+              stubChanged := True;
+            end;
+          end;
+          if (column >= firstCorrleationColumn)
+          and (column < firstDataColumn) then
+          begin
+            if c < copyColumns.Count then
+            begin
+              if copyColumns.Strings[c]
+              <> xMessage.CorrelationBindables.Bindables[column - firstCorrleationColumn].CorrelationValue then
               begin
-                xBind := xMessage.ColumnXmls.Bindables [c - xMessage.CorrelationBindables.Count - 1];
-                if copyColumns.Strings[c] <> '&nil' then
-                begin
-                  if (copyColumns.Strings[c] <> xBind.Value) or
-                    (not xBind.CheckedAllUp) then
-                  begin
-                    xBind.Value := copyColumns.Strings[c];
-                    xBind.Checked := True;
-                    stubChanged := True;
-                  end;
-                end
+                if l = 1 then
+                  raise Exception.Create(
+                    'Not allowed to change this pattern into ' +
+                      copyColumns.Strings[c])
                 else
                 begin
-                  if xBind.Checked then
-                  begin
-                    xBind.Checked := False;
-                    stubChanged := True;
-                  end;
+                  xMessage.CorrelationBindables.Bindables[column - firstCorrleationColumn].CorrelationValue :=
+                    copyColumns.Strings[c];
+                  stubChanged := True;
                 end;
               end;
             end;
           end;
-          //
+          if Column >= firstDataColumn then
+          begin
+            if (copyColumns.Strings[c] <> '?')
+            and (Assigned(xMessage.ColumnXmls.Bindables
+                  [column - firstDataColumn])) then
+            begin
+              xBind := xMessage.ColumnXmls.Bindables [column - firstDataColumn];
+              if copyColumns.Strings[c] <> '&nil' then
+              begin
+                if (copyColumns.Strings[c] <> xBind.Value) or
+                  (not xBind.CheckedAllUp) then
+                begin
+                  xBind.Value := copyColumns.Strings[c];
+                  xBind.Checked := True;
+                  stubChanged := True;
+                end;
+              end
+              else
+              begin
+                if xBind.Checked then
+                begin
+                  xBind.Checked := False;
+                  stubChanged := True;
+                end;
+              end;
+            end;
+          end;
           Inc(c);
+          Inc(column);
         end;
       finally
         FreeAndNil(copyColumns);
@@ -10357,13 +10549,6 @@ begin
   finally
     xXml.Free;
   end;
-end;
-
-procedure TMainForm.Revalidatemessages1Click(Sender: TObject);
-var
-  o, m: Integer;
-begin
-  GridView.InvalidateColumn(0);
 end;
 
 procedure TMainForm.Reset1Click(Sender: TObject);
@@ -11075,6 +11260,8 @@ begin
       if Assigned(yXml) then
         with yXml.Items do
         begin
+          bgStateMachineColor :=
+            HtmlToColor (XmlCheckedValueByTagDef['StateMachineValues', ColorToHtml(bgStateMachineColor)]);
           bgCorrelationItemColor :=
             HtmlToColor (XmlCheckedValueByTagDef['CorrelationValues', ColorToHtml(bgCorrelationItemColor)]);
           bgRequestTagNameColumnColor :=
@@ -11515,7 +11702,7 @@ begin
           end;
         end;
       end;
-      ShowXml('project Properties', xXml);
+      ShowXmlExtended ('project Properties', xXml);
     finally
       xXml.Free;
     end;
@@ -11714,7 +11901,7 @@ begin
       end;
       xNode := SnapshotsVTS.GetNextSelected(xNode);
     end;
-    ShowXml('Report details', xXml);
+    ShowXmlExtended ('Report details', xXml);
   finally
     xXml.Free;
     XmlUtil.PopCursor;
@@ -12458,6 +12645,52 @@ begin
     (Sender as THtmlViewer).CopyToClipboard;
 end;
 
+procedure TMainForm.PushOperationDesignActionExecute(Sender: TObject);
+begin
+  TProcedureThread.Create(False, False, se, PushFocusedOperationToRemoteServer);
+end;
+
+procedure TMainForm.PushOperationDesignActionUpdate(Sender: TObject);
+begin
+  with PushOperationDesignAction do
+  begin
+    Enabled := Assigned (se)
+           and se.remoteServerConnectionEnabled
+//         and (se.remoteServerConnectionType = rscWireMock)
+             ;
+  end;
+end;
+
+procedure TMainForm.PushProjectToRemoteServerActionUpdate(Sender: TObject);
+begin
+  PushProjectToRemoteServerAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+end;
+
+procedure TMainForm.ResetCloudStateMachineExecute(Sender: TObject);
+begin
+  se.ResetStateMachineRemoteServer;
+end;
+
+procedure TMainForm.ResetCloudStateMachineUpdate(Sender: TObject);
+begin
+  ResetCloudStateMachine.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+end;
+
+procedure TMainForm.ResetStateMachineActionExecute(Sender: TObject);
+begin
+  se.ResetStateMachine;
+end;
+
+procedure TMainForm.ShowStateMachineInformationActionExecute(Sender: TObject);
+begin
+  with se.StateMachineInfoAsXml do
+  try
+    ShowXmlExtended('Statemachine information', thisXml);
+  finally
+    Free;
+  end;
+end;
+
 procedure TMainForm.SQLConnectorLog(Sender: TSQLConnection;
   EventType: TDBEventType; const Msg: String);
 var
@@ -12477,10 +12710,35 @@ begin
   try SjowMessage(s + ': ' + Msg); except end;
 end;
 
+procedure TMainForm.ToggleStateMachineActionExecute(Sender: TObject);
+begin
+  doUseStateMachine := not doUseStateMachine;
+  stubChanged := True;
+end;
+
 procedure TMainForm.TreeViewColumnClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
   Sender.FocusedColumn := Column;
+end;
+
+procedure TMainForm.InitColumnValues;
+begin
+  beforeScriptColumn := 0;
+  afterScriptColumn := 1;
+  annotationColumn := 2;
+  nameColumn := 3;
+  scenarioColumn := 4;
+  reqStateColumn := 5;
+  nextStateColumn := 6;
+  firstCorrleationColumn := 7;
+  firstDataColumn := 7;
+  nDataColumns := 0;
+  if Assigned (FocusedOperation) then
+  begin
+    firstDataColumn := firstCorrleationColumn + FocusedOperation.CorrelationBindables.Count;
+    nDataColumns := FocusedOperation.Messages.Messages[0].ColumnXmls.Count;
+  end;
 end;
 
 procedure TMainForm.FocusOnOperationMenuItemClick(Sender: TObject);
@@ -12525,6 +12783,72 @@ begin
       (Components[x] as TToolBar).Color := xColor;
 end;
 
+procedure TMainForm.CopyRemoteApiUiProjectActionUpdate(Sender: TObject);
+begin
+  CopyRemoteApiUiProjectAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+end;
+
+procedure TMainForm.ChooseStateMachineData;
+var
+  xChooseForm: TChooseStringForm;
+begin
+  Application.CreateForm(TChooseStringForm, xChooseForm);
+  try
+    if GridView.FocusedColumn = scenarioColumn then
+    begin
+      xChooseForm.ListBox.Items.Text := editStateMachine.scenarios.Text;
+      xChooseForm.ChoosenString := FocusedMessage.stateMachineScenarioName;
+      xChooseForm.Caption := 'Choose Scenario';
+      xChooseForm.ShowModal;
+      if (xChooseForm.ModalResult = mrOk)
+      and (FocusedMessage.stateMachineScenarioName <> xChooseForm.ChoosenString) then
+      begin
+        FocusedMessage.stateMachineScenarioName := xChooseForm.ChoosenString;
+        editStateMachine.ScenarioByName[FocusedMessage.stateMachineScenarioName];
+        GridView.Invalidate;
+        stubChanged := True;
+      end;
+    end;
+    if GridView.FocusedColumn = reqStateColumn then
+    begin
+      xChooseForm.ListBox.Items.Text := editStateMachine.ScenarioByName[FocusedMessage.stateMachineScenarioName].NextStates.Text;
+      xChooseForm.ChoosenString := FocusedMessage.stateMachineRequiredState;
+      xChooseForm.Caption := 'Choose required State';
+      xChooseForm.ShowModal;
+      if (xChooseForm.ModalResult = mrOk)
+      and (FocusedMessage.stateMachineRequiredState <> xChooseForm.ChoosenString) then
+      begin
+        FocusedMessage.stateMachineRequiredState := xChooseForm.ChoosenString;
+        editStateMachine.ScenarioByName[FocusedMessage.stateMachineScenarioName].State := xChooseForm.ChoosenString;
+        GridView.Invalidate;
+        stubChanged := True;
+      end;
+    end;
+    if GridView.FocusedColumn = nextStateColumn then
+    begin
+      xChooseForm.ListBox.Items.Text := editStateMachine.ScenarioByName[FocusedMessage.stateMachineScenarioName].NextStates.Text;
+      xChooseForm.ChoosenString := FocusedMessage.stateMachineNextState;
+      xChooseForm.Caption := 'Choose next State';
+      xChooseForm.ShowModal;
+      if (xChooseForm.ModalResult = mrOk)
+      and (FocusedMessage.stateMachineNextState <> xChooseForm.ChoosenString) then
+      begin
+        FocusedMessage.stateMachineNextState := xChooseForm.ChoosenString;
+        GridView.Invalidate;
+        stubChanged := True;
+      end;
+    end;
+
+  finally
+    xChooseForm.Free;
+  end;
+end;
+
+procedure TMainForm.CheckReferencedFilesExistInCloudActionUpdate(Sender: TObject);
+begin
+  CheckReferencedFilesExistInCloudAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+end;
+
 procedure TMainForm.AboutApiServerActionExecute(Sender: TObject);
 begin
   if not Assigned (se) then
@@ -12545,7 +12869,7 @@ begin
                           , nil
                           );
       Name := 'about';
-      ShowXmlExtended('about apiUi in the cloud', thisXml);
+      ShowXmlExtended('about apiUi remote', thisXml);
     except
       on e: exception do
         ShowMessage(e.Message);
@@ -13043,25 +13367,90 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveRemoteApiUiProjectActionExecute(Sender: TObject);
+procedure TMainForm.PushProjectToRemoteServer;
 var
   saveSaveRelativeFileNames: Boolean;
+  xReport: String;
 begin
-  saveSaveRelativeFileNames := se.SaveRelativeFileNames;
-  se.SaveRelativeFileNames := False;
   try
-    if EditRemoteServerConnectionParams('Upload apiUi projectdesign to cloud instance') then
-    begin
-      xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                              , '/apiUi/api/projectdesign'
-                              , ''
-                              , 'POST'
-                              , 'application/json'
-                              , se.ProjectDesignAsString
-                              );
+    saveSaveRelativeFileNames := se.SaveRelativeFileNames;
+    se.SaveRelativeFileNames := True;
+    try
+      try
+        xReport := xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                           , '/apiUi/api/project/filesexists'
+                                           , ''
+                                           , 'POST'
+                                           , 'application/json'
+                                           , se.ProjectFileSpecsAsJsonString
+                                           );
+        with TXml.Create do
+        try
+          LoadJsonFromString(xReport, nil);
+          if not Assigned (FindUQ('json.allReadable')) then
+            raise Exception.Create('unexpected response from remote: ' + LineEnding + xReport);
+          if not (FindUQValue('json.allReadable') = 'true') then
+            raise Exception.Create ('Not all necessary files are remote readable' + LineEnding + xReport);
+        finally
+          Free;
+        end;
+        xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                , '/apiUi/api/project/design'
+                                , ''
+                                , 'POST'
+                                , 'application/xml'
+                                , se.ProjectDesignAsString
+                                );
+      except
+        raise;
+      end;
+    finally
+      se.SaveRelativeFileNames := saveSaveRelativeFileNames;
     end;
-  finally
-    se.SaveRelativeFileNames := saveSaveRelativeFileNames;
+  except
+    on e: Exception do SjowMessage(e.Message);
+  end;
+end;
+
+procedure TMainForm.PushProjectToRemoteWiremock;
+var
+  o: Integer;
+begin
+  for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do
+    if StubAction <> saRequest then
+      PushOperationToRemoteServer(thisOperation);
+end;
+
+procedure TMainForm.PushProjectToRemoteServerActionExecute(Sender: TObject);
+var
+  xReport: String;
+begin
+  case se.remoteServerConnectionType of
+    rscApiUi:
+    begin
+      xReport := xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
+                                         , '/apiUi/api/project/filesexists'
+                                         , ''
+                                         , 'POST'
+                                         , 'application/json'
+                                         , se.ProjectFileSpecsAsJsonString
+                                         );
+      with TXml.Create do
+      try
+        LoadJsonFromString(xReport, nil);
+        if not Assigned (FindUQ('json.allReadable')) then
+          raise Exception.Create('unexpected response from remote: ' + LineEnding + xReport);
+        if not (FindUQValue('json.allReadable') = 'true') then
+        begin
+          ShowXmlExtended ('Not all reference files can be read remotely', thisXml);
+          Exit;
+        end;
+      finally
+        Free;
+      end;
+      TProcedureThread.Create(False, False, se, PushProjectToRemoteServer);
+    end;
+    rscWireMock: TProcedureThread.Create(False, False, se, PushProjectToRemoteWiremock);
   end;
 end;
 

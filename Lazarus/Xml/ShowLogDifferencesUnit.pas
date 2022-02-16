@@ -256,6 +256,7 @@ end;
 procedure TShowLogDifferencesForm.FormShow(Sender: TObject);
 begin
   PopulateMain (False);
+  fConfigChanged := False;
   Screen.Cursor := crDefault;
 end;
 
@@ -265,7 +266,7 @@ var
   xNode: PVirtualNode;
   xData: PVSTreeRec;
 begin
-  fConfigChanged := aChanged;
+  fConfigChanged := (fConfigChanged or aChanged);
   XmlUtil.PushCursor(crHourGlass);
   mainVST.Header.Columns[Ord(ceReqColumn)].ImageIndex := Ord(RightArrowType);
   mainVST.Header.Columns[Ord(ceRpyColumn)].ImageIndex := Ord(LeftArrowType);

@@ -7,9 +7,11 @@
     <Request>
       <admin_mappings_post checked__="true">
         <json checked__="true">
+          <name checked__="true">R1</name>
           <request checked__="true">
             <method checked__="true">POST</method>
-            <urlPath checked__="true">/crmi/api/klant/getrelation/7</urlPath>
+            <url checked__="true">/orabpel/default/CreateServiceRequest/2/</url>
+            <urlPath checked__="false">/crmi/api/klant/getrelation/7</urlPath>
           </request>
           <response checked__="true">
             <status checked__="true">200</status>

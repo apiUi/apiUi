@@ -1,0 +1,2 @@
+if False
+then RequestOperation ('admin_mappings_delete');
