@@ -671,8 +671,6 @@ type
     procedure MenuItem61Click(Sender: TObject);
     procedure OperationsPopupHelpItemClick(Sender: TObject);
     function EditRemoteServerConnectionParams (aCaption: String): Boolean;
-    procedure PushProjectToRemoteServer;
-    procedure PushProjectToRemoteWiremock;
     procedure PushProjectToRemoteServerActionExecute(Sender: TObject);
     procedure SetApiServerConnectionActionExecute(Sender: TObject);
     procedure ShowOperationInfoActionExecute(Sender: TObject);
@@ -807,7 +805,6 @@ type
     procedure AfterRequestScriptButtonClick(Sender: TObject);
     procedure ExecuteLoadTest;
     procedure ExecuteAllRequests;
-    procedure PushOperationToRemoteServer (aOperation: TWsdlOperation);
     procedure PushFocusedOperationToRemoteServer;
     procedure ExecuteAllRequestsActionUpdate(Sender: TObject);
     procedure ExecuteRequestActionUpdate(Sender: TObject);
@@ -4502,6 +4499,12 @@ begin
       (xNewMessage.fltBind as TXml).LoadValues(xOrgMessage.fltBind as TXml, True);
     end;
   end;
+  if FocusedOperation.doUseStateMachine then
+  begin
+    xNewMessage.stateMachineScenarioName := xOrgMessage.stateMachineScenarioName;
+    xNewMessage.stateMachineRequiredState := xOrgMessage.stateMachineNextState;
+    xNewMessage.stateMachineNextState := 'Started';
+  end;
   result := GridView.AddChild(nil);
   xData := GridView.GetNodeData(result);
   xData.Message := xNewMessage;
@@ -7667,83 +7670,9 @@ begin
   end;
 end;
 
-procedure TMainForm.PushOperationToRemoteServer(aOperation: TWsdlOperation);
-var
-  X: Integer;
-  xOperation: TWsdlOperation;
-  mXml, oXml: TXml;
-begin
-  try
-    aOperation.AcquireLock;
-    try
-      xOperation := TWsdlOperation.Create(aOperation);
-    finally
-      aOperation.ReleaseLock;
-    end;
-    try
-      if se.remoteServerConnectionType = rscApiUi then
-      begin
-        oXml := se.ProjectOperationDesignAsXml(xOperation);
-        mXml := TXml.Create;
-        try
-          mXml.jsonType := jsonObject;
-          mXml.AddXml (TXml.CreateAsString('Service', xOperation.WsdlService.Name)); // must match on remote server
-          mXml.AddXml (TXml.CreateAsString('Name', xOperation.Name)); // must match on remote server
-          mXml.AddXml (TXml.CreateAsString('Design', oXml.AsText(False,0,True,False))); // XML value in JSON message
-          xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                                  , '/apiUi/api/operations/' + xOperation.Alias + '/design'
-                                  , ''
-                                  , 'POST'
-                                  , 'application/json'
-                                  , mXml.StreamJSON(0, False)
-                                  , 'application/json'
-                                  );
-        finally
-          FreeAndNil(oXml);
-          FreeAndNil(mXml);
-        end;
-      end;
-      if se.remoteServerConnectionType = rscWireMock then
-      begin
-        xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                                , '/__admin/mappings/remove-by-metadata'
-                                , ''
-                                , 'POST'
-                                , 'application/json'
-                                , generateWireMockMappingMetaQuery (xOperation)
-                                , 'application/json'
-                                );
-        for X := 0 to xOperation.Messages.Count - 1 do
-        begin
-          if abortPressed then
-            Break;
-          se.AcquireLogLock;
-          se.ReleaseLogLock;
-          try
-            xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                                    , '/__admin/mappings'
-                                    , ''
-                                    , 'POST'
-                                    , 'application/json'
-                                    , generateWireMockMapping (xOperation, xOperation.Messages.Messages[x])
-                                    , 'application/json'
-                                    );
-          except
-          end;
-        end;
-      end;
-    finally
-      xOperation.Free;
-    end;
-  except
-    on e: Exception do
-      SjowMessage('Push operation failed' + LineEnding + e.Message);
-  end;
-end;
-
 procedure TMainForm.PushFocusedOperationToRemoteServer;
 begin
-  PushOperationToRemoteServer(FocusedOperation);
+  se.PushOperationToRemoteServer(FocusedOperation);
 end;
 
 procedure TMainForm.ExecuteLoadTest;
@@ -10334,6 +10263,9 @@ begin
         fLastCaption := SelectXmlElementForm.SelectedCaption;
         xBind.Value := ':=' + fLastCaption;
         FocusedOperation.PrepareRpyStamper(xBind);
+        xBind.Checked := True;
+        stubChanged := True;
+        RevalidateXmlTreeView(TreeView);
       end;
     finally
       FreeAndNil(SelectXmlElementForm);
@@ -12655,15 +12587,24 @@ begin
   with PushOperationDesignAction do
   begin
     Enabled := Assigned (se)
+           and Assigned (FocusedOperation)
            and se.remoteServerConnectionEnabled
-//         and (se.remoteServerConnectionType = rscWireMock)
+           and se.remoteServerConnectionPushDesignAllowed
+           and (   (se.remoteServerConnectionType = rscApiUi)
+                or (    (se.remoteServerConnectionType = rscWireMock)
+                    and (FocusedOperation.StubAction <> saRequest)
+                   )
+               )
              ;
   end;
 end;
 
 procedure TMainForm.PushProjectToRemoteServerActionUpdate(Sender: TObject);
 begin
-  PushProjectToRemoteServerAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
+  PushProjectToRemoteServerAction.Enabled := Assigned (se)
+                                         and se.remoteServerConnectionEnabled
+                                         and se.remoteServerConnectionPushDesignAllowed
+                                           ;
 end;
 
 procedure TMainForm.ResetCloudStateMachineExecute(Sender: TObject);
@@ -13367,91 +13308,9 @@ begin
   end;
 end;
 
-procedure TMainForm.PushProjectToRemoteServer;
-var
-  saveSaveRelativeFileNames: Boolean;
-  xReport: String;
-begin
-  try
-    saveSaveRelativeFileNames := se.SaveRelativeFileNames;
-    se.SaveRelativeFileNames := True;
-    try
-      try
-        xReport := xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                                           , '/apiUi/api/project/filesexists'
-                                           , ''
-                                           , 'POST'
-                                           , 'application/json'
-                                           , se.ProjectFileSpecsAsJsonString
-                                           );
-        with TXml.Create do
-        try
-          LoadJsonFromString(xReport, nil);
-          if not Assigned (FindUQ('json.allReadable')) then
-            raise Exception.Create('unexpected response from remote: ' + LineEnding + xReport);
-          if not (FindUQValue('json.allReadable') = 'true') then
-            raise Exception.Create ('Not all necessary files are remote readable' + LineEnding + xReport);
-        finally
-          Free;
-        end;
-        xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                                , '/apiUi/api/project/design'
-                                , ''
-                                , 'POST'
-                                , 'application/xml'
-                                , se.ProjectDesignAsString
-                                );
-      except
-        raise;
-      end;
-    finally
-      se.SaveRelativeFileNames := saveSaveRelativeFileNames;
-    end;
-  except
-    on e: Exception do SjowMessage(e.Message);
-  end;
-end;
-
-procedure TMainForm.PushProjectToRemoteWiremock;
-var
-  o: Integer;
-begin
-  for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do
-    if StubAction <> saRequest then
-      PushOperationToRemoteServer(thisOperation);
-end;
-
 procedure TMainForm.PushProjectToRemoteServerActionExecute(Sender: TObject);
-var
-  xReport: String;
 begin
-  case se.remoteServerConnectionType of
-    rscApiUi:
-    begin
-      xReport := xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                                         , '/apiUi/api/project/filesexists'
-                                         , ''
-                                         , 'POST'
-                                         , 'application/json'
-                                         , se.ProjectFileSpecsAsJsonString
-                                         );
-      with TXml.Create do
-      try
-        LoadJsonFromString(xReport, nil);
-        if not Assigned (FindUQ('json.allReadable')) then
-          raise Exception.Create('unexpected response from remote: ' + LineEnding + xReport);
-        if not (FindUQValue('json.allReadable') = 'true') then
-        begin
-          ShowXmlExtended ('Not all reference files can be read remotely', thisXml);
-          Exit;
-        end;
-      finally
-        Free;
-      end;
-      TProcedureThread.Create(False, False, se, PushProjectToRemoteServer);
-    end;
-    rscWireMock: TProcedureThread.Create(False, False, se, PushProjectToRemoteWiremock);
-  end;
+  se.PushProjectToRemoteServer;
 end;
 
 procedure TMainForm.SetApiServerConnectionActionExecute(Sender: TObject);

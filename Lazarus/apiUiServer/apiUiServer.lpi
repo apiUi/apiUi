@@ -21,7 +21,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="13189"/>
+      <BuildNr Value="13199"/>
       <StringTable ProductVersion="10.3.4.110"/>
     </VersionInfo>
     <MacroValues Count="1">
@@ -38,13 +38,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--project=D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr"/>
+        <CommandLineParams Value="--project=D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\remoteserver\remote.svpr"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--project=D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\allTypesResponder.svpr"/>
+            <CommandLineParams Value="--project=D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\allTypes\remoteserver\remote.svpr"/>
           </local>
         </Mode0>
       </Modes>

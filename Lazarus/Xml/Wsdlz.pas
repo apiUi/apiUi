@@ -437,6 +437,7 @@ type
       function BeforeBindsAsText: String;
       procedure RebindLists; override;
       procedure Bind (aRoot: String; aBind: TCustomBindable; aExpress: TExpress);
+      function FindBindOnScriptId (aId: String): TCustomBindable;
       procedure AcquireLock;
       procedure ReleaseLock;
       function ReadReplyFromFileName: String;
@@ -642,7 +643,9 @@ procedure CreateJUnitReport (aObject: TObject; aName: String);
 procedure CreateSummaryReport (aObject: TObject; aName: String);
 procedure CreateCoverageReport (aObject: TObject; aDoRun: Boolean);
 procedure LogsFromRemoteServer (aObject: TObject);
+procedure PushProjectToRemoteServer (aObject: TObject);
 procedure ClearLogs (aObject: TObject);
+procedure ResetStateMachine (aObject: TObject);
 procedure ClearSnapshots (aObject: TObject);
 procedure ExecuteScript (aObject: TObject; aString: String);
 procedure ExecuteScriptLater (aObject: TObject; aString: String; aLaterMs: Extended);
@@ -695,7 +698,9 @@ var
   _WsdlCreateCoverageReport: VFunctionOB;
   _WsdlClearLogs: VFunctionOV;
   _WsdlLogsFromRemoteServer: VFunctionOV;
+  _WsdlPushProjectToRemoteServer: VFunctionOV;
   _WsdlClearSnapshots: VFunctionOV;
+  _WsdlResetStateMachine: VFunctionOV;
   _WsdlAddRemark: VFunctionOS;
   _WsdlSendOperationRequest: VFunctionSS;
   _WsdlSendOperationRequestLater: VFunctionSSI;
@@ -834,11 +839,25 @@ begin
   _WsdlLogsFromRemoteServer (aObject);
 end;
 
+procedure PushProjectToRemoteServer(aObject: TObject);
+begin
+  if not Assigned (_WsdlPushProjectToRemoteServer) then
+    raise Exception.Create('No PushProjectToRemoteServer event assigned');
+  _WsdlPushProjectToRemoteServer (aObject);
+end;
+
 procedure ClearLogs (aObject: TObject);
 begin
   if not Assigned (_WsdlClearLogs) then
     raise Exception.Create('No OnClearLogs event assigned');
   _WsdlClearLogs (aObject);
+end;
+
+procedure ResetStateMachine(aObject: TObject);
+begin
+  if not Assigned (_WsdlResetStateMachine) then
+    raise Exception.Create('No ResetStateMachine event assigned');
+  _WsdlResetStateMachine (aObject);
 end;
 
 procedure ClearSnapshots (aObject: TObject);
@@ -3838,6 +3857,20 @@ begin
   aBind.Bind (aRoot, aExpress, 1)
 end;
 
+function TWsdlOperation.FindBindOnScriptId(aId: String): TCustomBindable;
+var
+  xBind: TBind;
+begin
+  result := nil;
+  if Assigned (fExpressStamper) then
+  begin
+    xBind := fExpressStamper.FindBind(aId);
+    if Assigned (xBind)
+    and xbind.BindsAnObject then
+      result := TCustomBindable (xBind.yy.yyPointer);
+  end;
+end;
+
 procedure TWsdlOperation.PrepareScripting;
 var
   x: Integer;
@@ -3938,6 +3971,7 @@ begin
     BindScriptFunction ('PopulateFromXmlString', @populateFromXmlString, VFOGS, '(aId, aString)');
     BindScriptFunction ('PromptReply', @PromptReply, VFOV, '()');
     BindScriptFunction ('PromptRequest', @PromptRequest, VFOV, '()');
+    BindScriptFunction ('PushProjectToRemoteServer', @PushProjectToRemoteServer, VFOV, '()');
     BindScriptFunction ('RaiseError', @RaiseError, VFS, '(aString)');
     BindScriptFunction ('RaiseHttpFault', @RaiseHttpFault, VFOSSS, '(aHttpCode, aResponseText, aResponseContentType)');
     BindScriptFunction ('RaiseSoapFault', @RaiseSoapFault, VFOSSSS, '(aFaultCode, aFaultString, aFaultActor, aDetail)');
@@ -3946,9 +3980,10 @@ begin
     BindScriptFunction ('RegExprSafeStr', @RegExprSafeStr, SFS, '(aString)');
     BindScriptFunction ('RequestAsText', @wsdlRequestAsText, SFOS, '(aOperation)');
     BindScriptFunction ('ReplyAsText', @wsdlReplyAsText, SFOS, '(aOperation)');
-    BindScriptFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
     BindScriptFunction ('ResetEnvVar', @ResetEnvVar, VFOS, '(aKey)');
     BindScriptFunction ('ResetEnvVars', @ResetEnvVars, VFOS, '(aRegularExpr)');
+    BindScriptFunction ('ResetOperationCounters', @ResetOperationCounters, VFV, '()');
+    BindScriptFunction ('ResetStateMachine', @ResetStateMachine, VFOV, '()');
     BindScriptFunction ('ResolveAliasses', @xmlio.resolveAliasses, SFS, '(aString)');
     BindScriptFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindScriptFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');

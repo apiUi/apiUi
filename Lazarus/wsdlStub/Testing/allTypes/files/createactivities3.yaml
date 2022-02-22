@@ -9,7 +9,7 @@ basePath: "/crmi/api/klant"
 schemes:
 - https
 paths:
-  "/createactivities/3/{type}":
+  "/createactivities/3/{pathParam}":
     post:
       summary: summary
       description: ''
@@ -19,17 +19,17 @@ paths:
       produces:
       - application/json
       parameters:
-      - name: type
+      - name: pathParam
         in: path
         description: ''
         required: true
         type: string
-      - name: apiheader
+      - name: headerParam
         in: header
         description: ''
         required: true
         type: string
-      - name: queryparam
+      - name: queryParam
         in: query
         description: ''
         required: true
@@ -52,11 +52,11 @@ definitions:
       Contact: 
         type: object
         properties: 
-          ContactId: 
+          bodyParam: 
             type: string
             maxLength: 15
         required: 
-          - ContactId
+          - bodyParam
       Department: 
         type: object
         properties: 
@@ -111,7 +111,15 @@ definitions:
       - Activity
   CreateActivities_Rpy: 
     type: object
-    properties: 
+    properties:
+      fromPathParam:    
+        type: string
+      fromHeaderParam:    
+        type: string
+      fromQueryParam:    
+        type: string
+      fromBodyParam:    
+        type: string
       ListOfActivities: 
         type: object
         properties: 

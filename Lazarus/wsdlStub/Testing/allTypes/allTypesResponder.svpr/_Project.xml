@@ -15,21 +15,21 @@
           </Queues>
         </Broker>
       </Stomp>
-      <Http>
-        <Port>7777</Port>
-      </Http>
     </Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
-      <Address>http://localhost:7777</Address>
+      <Address>${Address}</Address>
       <type>
         <apiUi></apiUi>
       </type>
+      <allowedActions>
+        <pushDesign>true</pushDesign>
+      </allowedActions>
     </remoteServerConnection>
     <projectOptions>
       <General>
         <versionInfo>
-          <major>0</major>
+          <major>1</major>
           <minor>1</minor>
           <revision>0</revision>
           <build>0</build>
@@ -79,4 +79,5 @@
         </schemaValidation>
       </OperationDefaults>
     </projectOptions>
+    <CompareLogOrderBy>0</CompareLogOrderBy>
   </WsdlStubCase>
