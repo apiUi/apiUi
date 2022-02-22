@@ -1,9 +1,8 @@
   <Operation>
-    <Name>/createactivities/3/{type}:post</Name>
-    <Action>0</Action>
+    <Name>/createactivities/3/{pathParam}:post</Name>
+    <Action>3</Action>
     <Alias>CreateActivities</Alias>
     <HiddenFromUI>false</HiddenFromUI>
-    <doUseStateMachine>true</doUseStateMachine>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
     <wsaMustUnderstand>false</wsaMustUnderstand>
@@ -39,6 +38,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
+        <Address>${Address}/crmi/api/klant</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>
@@ -48,17 +48,8 @@
         <customHeaders></customHeaders>
       </Http>
     </endpointConfig>
-    <CorrelationElements>
-      <CorrelationElement>Req.CreateActivities.type</CorrelationElement>
-      <CorrelationElement>Req.CreateActivities.apiheader</CorrelationElement>
-      <CorrelationElement>Req.CreateActivities.queryparam</CorrelationElement>
-      <CorrelationElement>Req.CreateActivities.body.Contact.ContactId</CorrelationElement>
-      <CorrelationElement>Req.CreateActivities.body.Department.DepId</CorrelationElement>
-    </CorrelationElements>
-    <ColumnElements>
-      <ColumnElement>Rpy.CreateActivities.rspns200.body.ListOfActivities.Activity._.TaskReference</ColumnElement>
-      <ColumnElement>Rpy.CreateActivities.rspns200.body.ListOfActivities.Activity._.Document.StorageStatus</ColumnElement>
-    </ColumnElements>
+    <CorrelationElements></CorrelationElements>
+    <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
     <focusedOperation>true</focusedOperation>
   </Operation>

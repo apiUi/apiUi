@@ -1,6 +1,6 @@
   <Operation>
-    <Name>/createactivities/3/{type}:post</Name>
-    <Action>3</Action>
+    <Name>/createactivities/3/{pathParam}:post</Name>
+    <Action>0</Action>
     <Alias>CreateActivities</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
@@ -38,7 +38,6 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
-        <Address>${Address}</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>
@@ -48,7 +47,12 @@
         <customHeaders></customHeaders>
       </Http>
     </endpointConfig>
-    <CorrelationElements></CorrelationElements>
+    <CorrelationElements>
+      <CorrelationElement>Req.CreateActivities.pathParam</CorrelationElement>
+      <CorrelationElement>Req.CreateActivities.headerParam</CorrelationElement>
+      <CorrelationElement>Req.CreateActivities.queryParam</CorrelationElement>
+      <CorrelationElement>Req.CreateActivities.body.Contact.bodyParam</CorrelationElement>
+    </CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
     <focusedOperation>true</focusedOperation>

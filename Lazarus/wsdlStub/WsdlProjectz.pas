@@ -101,7 +101,7 @@ type
 
   TWsdlProject = class
   private
-    fIsActive: Boolean;
+    fIsActive, fIsAvailable: Boolean;
     fIsBusy: Boolean;
     fAbortPressed: Boolean;
     fLogLock: TCriticalSection;
@@ -117,6 +117,7 @@ type
     function gethasFreeformatOperations: Boolean;
     function getHasOneTimeContextsColumn: Boolean;
     function getIfContextNeedsUpdate: Boolean;
+    function getIsAvailable: Boolean;
     function getIsBusy: Boolean;
     function getRemoteServerUrl: String;
     function getVersionInfoAsString: String;
@@ -136,6 +137,7 @@ type
                                          ; ARequestInfo: TIdHTTPRequestInfo
                                          ; AResponseInfo: TIdHTTPResponseInfo
                                          );
+    procedure setIsAvailable(AValue: Boolean);
     function SpecFilesReadableReport (aXml: TXml): String;
     procedure HTTPServerCommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
@@ -159,6 +161,7 @@ type
     procedure ProgressInvalidateConsole;
     procedure ProgressException (E: Exception);
     procedure ProgressEnd;
+    property IsAvailable: Boolean read getIsAvailable write setIsAvailable;
   public
     majorVersion, minorVersion, revision, build: Integer;
     hasGui: Boolean;
@@ -169,7 +172,7 @@ type
     ppLock: TCriticalSection;
     doDisplayLog: Boolean;
     uiInvalid: Boolean;
-    remoteServerConnectionEnabled: Boolean;
+    remoteServerConnectionEnabled, remoteServerConnectionPushDesignAllowed: Boolean;
     remoteServerConnectionType: TRemoteServerConnectionType;
     ProgressMax, ProgressPos: Integer;
     OnRequestViolatingAddressPath: TOnRequestViolating;
@@ -226,6 +229,11 @@ type
     LastFocusedOperation: TWsdlOperation;
     CORS: TCORSType;
     corsExceptionHttpCode: Integer;
+    function thisProject: TWsdlProject;
+    procedure SaveReferencedFile (aFileName, aFileContent: String);
+    procedure PushReferencedFileToRemoteServer (aFileName: String);
+    procedure PushProjectToRemoteServer;
+    procedure PushOperationToRemoteServer (aOperation: TWsdlOperation);
     procedure ResetStateMachineRemoteServer;
     procedure OnBeforeFileRead (aFileName: String);
     procedure doRegressionReport (aReport: TSnapshot);
@@ -292,6 +300,7 @@ type
     procedure IntrospectProject;
     function XmlFromProjectFolders (aFolderName: String): TXml;
     function ProjectFileSpecsAsJsonString: String;
+    function ProjectFileSpecsAsStringList: TJBStringList;
     function ProjectFileSpecsAsXml: TXml;
     function ProjectOperationDesignAsXml (xOperation: TWsdlOperation): TXml;
     function ProjectDesignAsXml: TXml;
@@ -343,6 +352,8 @@ type
     procedure ProjectOperationDesignFromXml (aMainFileName: String; xService: TWsdlService; xOperation: TWsdlOperation; oXml: TXml);
     procedure ProjectDesignFromXml (aXml: TXml; aMainFileName: String);
     procedure ProjectDesignFromString (aString, aMainFileName: String);
+    procedure OperationDesignFromString (aString, aAliasName: String);
+    procedure OperationDesignFromApiRequestString (aString, aOperationName: String);
     procedure ProjectDesignFromApiRequestString (aString, aMainFileName: String);
     procedure PrepareAllOperationsShowingProgress;
     procedure PrepareAllOperations;
@@ -535,6 +546,18 @@ uses LazVersion
 const ReadmeFilename = 'readme.txt'
     ;
 
+function contextProject (aString: String; aContext: TObject): TWsdlProject;
+begin
+  result := nil; //candidate context
+  if aContext is TWsdlProject then
+    result := aContext as TWsdlProject
+  else
+    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+      result := Owner as TWsdlProject;
+  if not Assigned (result) then
+    raise Exception.Create(aString + ': unable to determine context');
+end;
+
 procedure AddRemark(aOperation: TObject; aString: String);
 begin
   if not Assigned (aOperation)
@@ -711,29 +734,9 @@ end;
 
 procedure ExecSql(aContext: TObject; aSqlCommand: String);
 var
-  xProject: TWsdlProject;
-  xOperation: TWsdlOperation;
-  xMessage: TWsdlMessage;
-  x: Integer;
   xDoCommit: Boolean;
 begin
-  xProject := nil; //candidate context
-  xOperation := nil; //candidate context
-  xMessage := nil;
   xDoCommit := True;
-  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-  begin
-    xProject := Owner as TWsdlProject;
-  end
-  else
-  begin
-    if aContext is TWsdlProject then
-    begin
-      xProject := aContext as TWsdlProject;
-    end;
-  end;
-  if not Assigned (xProject) then
-   raise Exception.Create('ExecSql(aContext: TObject; aUseTransAction, aSqlCommand: String)');
   if xDoCommit then _WsdlDbsConnector.Transaction.Active := True;
   try
     _WsdlDbsConnector.ExecuteDirect(aSqlCommand);
@@ -787,160 +790,89 @@ begin
 end;
 
 procedure CreateSnapshot(aContext: TObject; aName: String; aDoRun: Boolean);
-var
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create(Format ('CreateSnapshot(''%s''); unable to determine context', [aName]));
-  if (xProject.CurrentFolder = '')
-  or (    aDorun
-      and (   (xProject.ReferenceFolder = '')
-           or (xProject.CurrentFolder = xProject.ReferenceFolder)
-          )
-     ) then
-    raise Exception.Create('CreateSnapshot: config (ProjectOptions.General.projectFolders) invalid');
-  xProject.CreateSnapshot ( aName
-                          , xProject.CurrentFolder + DirectorySeparator + aName + '.xml'
-                          , xProject.ReferenceFolder + DirectorySeparator + aName + '.xml'
-                          , true
-                          , aDoRun
-                          );
+  with contextProject('CreateSnapshot', aContext) do
+  begin
+    if (CurrentFolder = '')
+    or (    aDorun
+        and (   (ReferenceFolder = '')
+             or (CurrentFolder = ReferenceFolder)
+            )
+       ) then
+      raise Exception.Create('CreateSnapshot: config (ProjectOptions.General.projectFolders) invalid');
+    CreateSnapshot ( aName
+                   , CurrentFolder + DirectorySeparator + aName + '.xml'
+                   , ReferenceFolder + DirectorySeparator + aName + '.xml'
+                   , true
+                   , aDoRun
+                   );
+  end;
 end;
 
 procedure ClearLogs (aContext: TObject);
-var
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create('ClearLogs; unable to determine context');
-  xProject.doClearLogs := True;
+  contextProject('ClearLogs', aContext).doClearLogs := True;
 end;
 
 procedure LogsFromRemoteServer (aContext: TObject);
-var
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create('ClearLogs; unable to determine context');
-  xProject.LogsFromRemoteServer;
+  contextProject('LogsFromRemoteServer', aContext).LogsFromRemoteServer;
+end;
+
+procedure PushProjectToRemoteServer (aContext: TObject);
+begin
+  contextProject('PushProjectToRemoteServer', aContext).PushProjectToRemoteServer;
 end;
 
 procedure ClearSnapshots (aContext: TObject);
-var
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create('ClearLogs; unable to determine context');
-  xProject.doClearSnapshots := True;
+  contextProject('ClearSnapshots', aContext).doClearSnapshots := True;
+end;
+
+procedure ResetStateMachine (aContext: TObject);
+begin
+  contextProject('ResetStateMachine', aContext).ResetStateMachine;
 end;
 
 procedure CreateJUnitReport(aContext: TObject; aName: String);
-var
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create(Format ('CreateJUnitReport(''%s''); unable to determine context', [aName]));
-  xProject.CreateJUnitReport (aName);
+  contextProject('CreateJUnitReport', aContext).CreateJUnitReport (aName);
 end;
 
 procedure CreateSummaryReport(aContext: TObject; aName: String);
-var
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create(Format ('CreateSummaryReport(''%s''); unable to determine context', [aName]));
-  xProject.CreateSummaryReport (aName);
+  contextProject('CreateSummaryReport', aContext).CreateSummaryReport (aName);
 end;
 
 procedure CreateCoverageReport(aContext: TObject; aDoRun: Boolean);
-var
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create('CreateCoverageReport(''%s''); unable to determine context');
-  xProject.CreateCoverageReport(aDoRun);
+  contextProject('CreateCoverageReport', aContext).CreateCoverageReport (aDoRun);
 end;
 
 procedure ExecuteScript(aContext: TObject; xScriptName: String);
 var
   xScript: TXml;
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create(Format ('ExecuteScript(''%s''); unable to determine context', [xScriptName]));
-  xScript := xProject.FindScript(xScriptName);
-  if Assigned(xScript) then
-    xProject.ScriptExecute(xScript)
-  else
-    raise Exception.Create(Format ('ExecuteScript(''%s''); script not found', [xScriptName]));;
+  with contextProject('ExecuteScript', aContext) do
+  begin
+    xScript := FindScript(xScriptName);
+    if not Assigned(xScript) then
+      raise Exception.Create(Format ('ExecuteScript(''%s''); script not found', [xScriptName]));;
+    ScriptExecute(xScript);
+  end;
 end;
 
 procedure ExecuteScriptLater(aContext: TObject; xScriptName: String; aLater: Extended);
 var
   xScript: TXml;
-  xProject: TWsdlProject;
 begin
-  xProject := nil; //candidate context
-  if aContext is TWsdlProject then
-    xProject := aContext as TWsdlProject
-  else
-    if aContext is TWsdlOperation then with aContext as TWsdlOperation do
-      xProject := Owner as TWsdlProject;
-  if not Assigned (xProject) then
-    raise Exception.Create(Format ('ExecuteScript(''%s''); unable to determine context', [xScriptName]));
-  xScript := xProject.FindScript(xScriptName);
-  if Assigned(xScript) then
-    TProcedureThread.Create(False, False, Trunc (aLater), xProject, xProject.ScriptExecute, xScript)
-  else
-    raise Exception.Create(Format ('ExecuteScript(''%s''); script not found', [xScriptName]));;
+  with contextProject('ExecuteScriptLater', aContext) do
+  begin
+    xScript := FindScript(xScriptName);
+    if not Assigned(xScript) then
+      raise Exception.Create(Format ('ExecuteScriptLater(''%s''); script not found', [xScriptName]));;
+    TProcedureThread.Create(False, False, Trunc (aLater), thisProject, ScriptExecute, xScript)
+  end;
 end;
 
 procedure GetDefaultRequestData(aOperation: String);
@@ -1511,6 +1443,7 @@ begin
   SaveRelativeFileNames := True;
   InitSpecialWsdls;
   Clear;
+  IsAvailable := True;
 end;
 
 destructor TWsdlProject.Destroy;
@@ -2759,9 +2692,70 @@ begin
   end;
 end;
 
+procedure TWsdlProject.OperationDesignFromString(aString, aAliasName: String);
+var
+  xXml: TXml;
+  xOperation: TWsdlOperation;
+begin
+    xOperation := allOperations.FindOnAliasName(aAliasName);
+    xXml := TXml.Create;
+    try
+      xXml.LoadFromString(aString, nil);
+      if xXml.Name <> 'Operation' then
+        raise Exception.CreateFmt ('Could not read operation design: %s', [xOperation.Name]);
+      if Assigned (xXml.ItemByTag['AddedTypeDefElements']) then
+        raise Exception.CreateFmt ('Not allowed because of added typedefs: %s', [xOperation.Name]);
+      xOperation.AcquireLock;
+      try
+        ProgressBegin('Preparing operations', 1000);
+        try
+          xOperation.wsaEnabled := False;
+          xOperation.wsaType := '2005/08';
+          xOperation.sslVersion := sslvTLSv1_2;
+          xOperation.sslCertificateFile := '';
+          xOperation.sslKeyFile := '';
+          xOperation.sslRootCertificateFile := '';
+          xOperation.sslPassword := '';
+          xOperation.BeforeScriptLines.Text := '';
+          xOperation.AfterScriptLines.Text := '';
+          xOperation.CorrelationBindables.ClearListOnly;
+          xOperation.LogColumns.ClearListOnly;
+          xOperation.Messages.Clear;
+          ProjectOperationDesignFromXml(projectFileName, xOperation.WsdlService, xOperation, xXml);
+          ProgressUpdate('Preparing operations', 200);
+          PrepareAllOperations;
+          ProgressUpdate('Finishing', 900);
+          ProgressInvalidateConsole;
+        finally
+          uiInvalid := True;
+          ProgressEnd;
+        end;
+      finally
+        xOperation.ReleaseLock;
+      end;
+    finally
+      FreeAndNil(xXml);
+    end;
+end;
+
+procedure TWsdlProject.OperationDesignFromApiRequestString(aString, aOperationName: String);
+begin
+  IsAvailable:=False;
+  try
+    OperationDesignFromString (aString, aOperationName);
+  finally
+    IsAvailable:=True;
+  end;
+end;
+
 procedure TWsdlProject.ProjectDesignFromApiRequestString(aString, aMainFileName: String);
 begin
-  ProjectDesignFromString (aString, aMainFileName);
+  IsAvailable:=False;
+  try
+    ProjectDesignFromString (aString, aMainFileName);
+  finally
+    IsAvailable:=True;
+  end;
 end;
 
 procedure TWsdlProject .CreateLogReply (aLog : TLog ;
@@ -5401,6 +5395,11 @@ begin
         result := False;
 end;
 
+function TWsdlProject.getIsAvailable: Boolean;
+begin
+  result := fIsAvailable;
+end;
+
 function TWsdlProject.getIsBusy: Boolean;
 begin
   AcquireLogLock;
@@ -5724,7 +5723,7 @@ begin
         else
           xBodyXml.LoadFromString(xRequestBody, nil);
       end;
-    _sjow (ARequestInfo.Document);
+//    _sjow (ARequestInfo.Document);
       with SeparatedStringList(nil, ARequestInfo.Document, '/') do // /_progName/api/Rest
                                                                    //0/1        /2  /3...
       try
@@ -5936,44 +5935,13 @@ begin
             raise Exception.CreateFmt ('Mismatch on operation: %s', [xOperation.Name]);
           if xOperation.BindablesWithAddedElement.Count > 0 then
             raise Exception.CreateFmt ('Not allowed because of added typedefs: %s', [xOperation.Name]);
-          xXml := TXml.Create;
-          try
-            xXml.LoadFromString(xBodyXml.Items.XmlValueByTag['Design'], nil);
-            if xXml.Name <> 'Operation' then
-              raise Exception.CreateFmt ('Could not read operation design: %s', [xOperation.Name]);
-            if Assigned (xXml.ItemByTag['AddedTypeDefElements']) then
-              raise Exception.CreateFmt ('Not allowed because of added typedefs: %s', [xOperation.Name]);
-            xOperation.AcquireLock;
-            try
-              ProgressBegin('Preparing operations', 1000);
-              try
-                xOperation.wsaEnabled := False;
-                xOperation.wsaType := '2005/08';
-                xOperation.sslVersion := sslvTLSv1_2;
-                xOperation.sslCertificateFile := '';
-                xOperation.sslKeyFile := '';
-                xOperation.sslRootCertificateFile := '';
-                xOperation.sslPassword := '';
-                xOperation.BeforeScriptLines.Text := '';
-                xOperation.AfterScriptLines.Text := '';
-                xOperation.CorrelationBindables.ClearListOnly;
-                xOperation.LogColumns.ClearListOnly;
-                xOperation.Messages.Clear;
-                ProjectOperationDesignFromXml(projectFileName, xOperation.WsdlService, xOperation, xXml);
-                ProgressUpdate('Preparing operations', 200);
-                PrepareAllOperations;
-                ProgressUpdate('Finishing', 900);
-                ProgressInvalidateConsole;
-              finally
-                uiInvalid := True;
-                ProgressEnd;
-              end;
-            finally
-              xOperation.ReleaseLock;
-            end;
-          finally
-            FreeAndNil(xXml);
-          end;
+          if xBodyXml.Items.XmlCheckedValueByTag ['Design'] = '' then
+            raise Exception.CreateFmt ('No new design found: %s', [xOperation.Name]);
+          TProcedureThread.Create( False, True, 0, self
+                                 , OperationDesignFromApiRequestString
+                                 , xBodyXml.Items.XmlCheckedValueByTag ['Design']
+                                 , xOperation.Alias
+                                 );
           Exit;
         end;
 
@@ -6007,10 +5975,33 @@ begin
             AResponseInfo.ResponseNo := 400;
             Exit;
           end;
-          SjowMessage('projectdesign received: ' + nameXml.Value);
     //        if nameXml.Value <> projectFileName then
     //          raise Exception.CreateFmt('Received project name (%s) differs from current projectname (%s)', [nameXml.Value, projectFileName]);
-          TProcedureThread.Create(False, True, 200, self, ProjectDesignFromApiRequestString, xRequestBody, projectFileName);
+          TProcedureThread.Create(False, True, 0, self, ProjectDesignFromApiRequestString, xRequestBody, projectFileName);
+          Exit;
+        end;
+
+//      /project/files POST
+        if (Count = 5)
+        and (LowerCase(Strings[3]) = 'project')
+        and (LowerCase(Strings[4]) = 'files')
+        and (ARequestInfo.Command = 'POST')
+        then begin
+    {$ifndef NoGUI}
+          AResponseInfo.ResponseNo := 409;
+          AResponseInfo.ContentType := 'text/plain';
+          AResponseInfo.ContentText := 'POST Project/Files only supported with headless server';
+          Exit;
+    {$endif}
+          AResponseInfo.ResponseNo := 200;
+          nameXml := xBodyXml.FindXml('json.files.Name');
+          valueXml := xBodyXml.FindXml('json.files.Content');
+          if not Assigned (nameXml) then
+          begin
+            AResponseInfo.ResponseNo := 400;
+            Exit;
+          end;
+          SaveReferencedFile(nameXml.Value, valueXml.Value);
           Exit;
         end;
 
@@ -6537,6 +6528,11 @@ begin
   end;
 end;
 
+procedure TWsdlProject.setIsAvailable(AValue: Boolean);
+begin
+  fIsAvailable := AValue; // get / set synched
+end;
+
 function TWsdlProject.SpecFilesReadableReport(aXml: TXml): String;
 var
   x: Integer;
@@ -6618,6 +6614,12 @@ var
   xNotification, xDocument: String;
   xOnRequestViolatingAddressPath: TOnRequestViolating;
 begin
+  if not IsAvailable then with AResponseInfo do
+  begin
+    ResponseNo := 503;
+    ResponseText := 'Service temporarely unavailable, please try again later';
+    Exit;
+  end;
   xProcessed := False;
   try // finally set for hhtp reply
   //xDocument := '/' + _ProgName + '/api';
@@ -7331,10 +7333,14 @@ var
   xXml: TXml;
 begin
   remoteServerConnectionType := rscApiUi;
+  remoteServerConnectionPushDesignAllowed := False;
   with remoteServerConnectionXml do
   begin
     CopyDownLine(aXml, True);
     remoteServerConnectionEnabled := Items.XmlBooleanByTagDef['Enabled', False];
+    xXml := Items.XmlCheckedItemByTag['allowedActions'];
+    if Assigned (xXml) then
+      remoteServerConnectionPushDesignAllowed := xXml.Items.XmlCheckedBooleanByTagDef['pushDesign', remoteServerConnectionPushDesignAllowed];
     xXml := Items.XmlCheckedItemByTag['type'];
     if Assigned (xXml) then
       if Assigned (xXml.Items.XmlCheckedItemByTag['WireMock']) then
@@ -8282,7 +8288,6 @@ begin
       xXml := TXml.Create;
       try
         sProjectDesign := xmlio.apiUiServerDialog(remoteServerConnectionXml, '/apiUi/api/project/design', '', 'GET', 'application/xml');
-        SjowMessage(sProjectDesign);
         xXml.LoadFromString(sProjectDesign, nil);
         if xXml.Name = '' then
           raise Exception.Create('Could not read Xml read from ' + RemoteServerUrl);
@@ -8589,13 +8594,13 @@ begin
   end;
 end;
 
-function TWsdlProject.ProjectFileSpecsAsXml: TXml;
+function TWsdlProject.ProjectFileSpecsAsStringList: TJBStringList;
 var
-  w, x, s, o, y: Integer;
-  xDone: Boolean;
+  w, x, y: Integer;
 begin
-  with TJBStringList.Create do
-  try
+  result := TJBStringList.Create;
+  with result do
+  begin
     Sorted := True;
     Duplicates := dupIgnore;
     for w := 0 to Wsdls.Count - 1 do with wsdls.Objects[w] as TWsdl do
@@ -8611,6 +8616,16 @@ begin
           for y := 0 to DescrFileNames.Count - 1 do
             Add (DescrFileNames.Strings[y]);
     end;
+  end;
+end;
+
+function TWsdlProject.ProjectFileSpecsAsXml: TXml;
+var
+  w, x, y: Integer;
+  xDone: Boolean;
+begin
+  with ProjectFileSpecsAsStringList do
+  try
     result := TXml.CreateAsString('files', '');
     Result.jsonType := jsonArray;
     for x := 0 to Count - 1 do
@@ -9028,6 +9043,194 @@ begin
   end;
 end;
 
+function TWsdlProject.thisProject: TWsdlProject;
+begin
+  result := self;
+end;
+
+procedure TWsdlProject.SaveReferencedFile(aFileName, aFileContent: String);
+var
+  xFullName, xFolderName: String;
+begin
+  if (AnsiStartsText('HTTP://', aFileName))
+  or (AnsiStartsText('HTTPS://', aFileName))
+  or (AnsiStartsText('APIUI://', aFileName))
+  or (AnsiStartsText('APIARY://', aFileName)) then
+    Exit;
+  xFullName := ExpandRelativeFileName(projectFileName, aFileName);
+  xFolderName := Copy (xFullName, 1, Length (xFullName) - Length (ExtractFileName(aFileName)));
+  if LazFileUtils.ForceDirectoriesUTF8(xFolderName) then
+    xmlio.SaveStringToFile(xFullName, aFileContent);
+end;
+
+procedure TWsdlProject.PushReferencedFileToRemoteServer(aFileName: String);
+var
+  xFileName: String;
+begin
+  if remoteServerConnectionType <> rscApiUi then
+    raise Exception.Create('PushReferencedFileToRemoteServer: only implemented for apiUi remote server');
+  if (AnsiStartsText('HTTP://', aFileName))
+  or (AnsiStartsText('HTTPS://', aFileName))
+  or (AnsiStartsText('APIUI://', aFileName))
+  or (AnsiStartsText('APIARY://', aFileName)) then
+    Exit;
+  xFileName := ExtractRelativeFileName(projectFileName, aFileName);
+  with TXml.CreateAsString('json', '') do
+  try
+    with AddXml(TXml.CreateAsString('files', '')) do
+    begin
+      AddXml (TXml.CreateAsString('Name', xFileName));
+      AddXml (TXml.CreateAsString('Content', xmlio.ReadStringFromFile(aFileName, nil)));
+    end;
+    xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                            , '/apiUi/api/project/files'
+                            , ''
+                            , 'POST'
+                            , 'application/json'
+                            , thisXml.StreamJSON(0, False)
+                            );
+
+  finally
+    Free;
+  end;
+end;
+
+procedure TWsdlProject.PushProjectToRemoteServer;
+var
+  saveSaveRelativeFileNames: Boolean;
+  xReport: String;
+  x, o: Integer;
+begin
+  if remoteServerConnectionType = rscApiUi then
+  begin
+    try
+      saveSaveRelativeFileNames := SaveRelativeFileNames;
+      SaveRelativeFileNames := True;
+      try
+        with ProjectFileSpecsAsStringList do
+        try
+          for x := 0 to Count - 1 do
+            PushReferencedFileToRemoteServer(Strings[x]);
+        finally
+          Free;
+        end;
+        try
+          xReport := xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                             , '/apiUi/api/project/filesexists'
+                                             , ''
+                                             , 'POST'
+                                             , 'application/json'
+                                             , ProjectFileSpecsAsJsonString
+                                             );
+          with TXml.Create do
+          try
+            LoadJsonFromString(xReport, nil);
+            if not Assigned (FindUQ('json.allReadable')) then
+              raise Exception.Create('unexpected response from remote: ' + LineEnding + xReport);
+            if not (FindUQValue('json.allReadable') = 'true') then
+              raise Exception.Create ('Not all necessary files are remote readable' + LineEnding + xReport);
+          finally
+            Free;
+          end;
+          xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                  , '/apiUi/api/project/design'
+                                  , ''
+                                  , 'POST'
+                                  , 'application/xml'
+                                  , ProjectDesignAsString
+                                  );
+        except
+          raise;
+        end;
+      finally
+        SaveRelativeFileNames := saveSaveRelativeFileNames;
+      end;
+    except
+      on e: Exception do SjowMessage(e.Message);
+    end;
+  end;
+  if remoteServerConnectionType = rscWireMock then
+  begin
+    for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do
+      if StubAction <> saRequest then
+        PushOperationToRemoteServer(thisOperation);
+  end;
+end;
+
+procedure TWsdlProject.PushOperationToRemoteServer(aOperation: TWsdlOperation);
+var
+  X: Integer;
+  xOperation: TWsdlOperation;
+  mXml, oXml: TXml;
+begin
+  try
+    aOperation.AcquireLock;
+    try
+      xOperation := TWsdlOperation.Create(aOperation);
+    finally
+      aOperation.ReleaseLock;
+    end;
+    try
+      if remoteServerConnectionType = rscApiUi then
+      begin
+        oXml := ProjectOperationDesignAsXml(xOperation);
+        mXml := TXml.Create;
+        try
+          mXml.jsonType := jsonObject;
+          mXml.AddXml (TXml.CreateAsString('Service', xOperation.WsdlService.Name)); // must match on remote server
+          mXml.AddXml (TXml.CreateAsString('Name', xOperation.Name)); // must match on remote server
+          mXml.AddXml (TXml.CreateAsString('Design', oXml.AsText(False,0,True,False))); // XML value in JSON message
+          xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                  , '/apiUi/api/operations/' + xOperation.Alias + '/design'
+                                  , ''
+                                  , 'POST'
+                                  , 'application/json'
+                                  , mXml.StreamJSON(0, False)
+                                  , 'application/json'
+                                  );
+        finally
+          FreeAndNil(oXml);
+          FreeAndNil(mXml);
+        end;
+      end;
+      if remoteServerConnectionType = rscWireMock then
+      begin
+        xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                , '/__admin/mappings/remove-by-metadata'
+                                , ''
+                                , 'POST'
+                                , 'application/json'
+                                , generateWireMockMappingMetaQuery (xOperation)
+                                , 'application/json'
+                                );
+        for X := 0 to xOperation.Messages.Count - 1 do
+        begin
+          if abortPressed then
+            Break;
+          AcquireLogLock;
+          ReleaseLogLock;
+          try
+            xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                    , '/__admin/mappings'
+                                    , ''
+                                    , 'POST'
+                                    , 'application/json'
+                                    , generateWireMockMapping (xOperation, xOperation.Messages.Messages[x])
+                                    , 'application/json'
+                                    );
+          except
+          end;
+        end;
+      end;
+    finally
+      xOperation.Free;
+    end;
+  except
+    on e: Exception do
+      SjowMessage('Push operation failed' + LineEnding + e.Message);
+  end;
+end;
+
 procedure TWsdlProject.ResetStateMachineRemoteServer;
 begin
   if not Assigned (remoteServerConnectionXml) then
@@ -9301,6 +9504,8 @@ initialization
   _WsdlReplyAsText := ReplyAsText;
   _WsdlClearLogs := ClearLogs;
   _WsdlLogsFromRemoteServer := LogsFromRemoteServer;
+  _WsdlPushProjectToRemoteServer := PushProjectToRemoteServer;
+  _WsdlResetStateMachine := ResetStateMachine;
   _WsdlClearSnapshots := ClearSnapshots;
   _WsdlCreateSnapshot := CreateSnapshot;
   _WsdlCreateJUnitReport := CreateJUnitReport;

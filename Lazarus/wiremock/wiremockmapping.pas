@@ -27,6 +27,7 @@ uses Classes
    , Wsdlz
    , Xsdz
    , IdURI
+   , RegExpr
    ;
 
 function generateWireMockMappingMetaQuery (aOperation: TWsdlOperation): string;
@@ -95,6 +96,74 @@ function generateWireMockMapping(aOperation: TWsdlOperation; aMessage: TWsdlMess
     end;
   end;
 
+  procedure _TranslateStampersToHandlebars (aXml: TXml);
+  var
+    x, f: Integer;
+    xBind: TCustomBindable;
+    hName: String;
+  begin
+    if not aXml.Checked then Exit;
+    if StartsStr(':=Req.', aXml.Value) then
+    begin
+      with TRegExpr.Create('^\:\=Req\.[a-zA-Z](a-zA-Z0-9\-\.)*$') do
+      try
+//        if Exec(aXml.Value) then
+        begin
+          xBind := aOperation.FindBindOnScriptId(Copy (aXml.Value, 3, MaxInt));
+          if Assigned (xBind)
+          and (xBind is TXml) then with xBind as TXml do
+          begin
+            if Assigned (Xsd) then
+            begin
+              if Xsd.ParametersType = oppPath then
+              begin
+                hName := '{' + SeparatedStringN(nil, aXml.Value, '.', 3) + '}';
+                with SeparatedStringList(nil, aOperation.Wsdl.ServerPathNames[0] + aOperation.WsdlService.openApiPath, '/') do
+                try
+                  if Find(hName, f) then
+                    aXml.Value := '{{request.path.[' + IntToStr(f - 1) + ']}}';
+                finally
+                  Free;
+                end;
+              end
+              else
+              begin
+                if Xsd.ParametersType = oppQuery then
+                begin
+                  aXml.Value := '{{request.query.' + xBind.Name + '}}';
+                end
+                else
+                begin
+                  if Xsd.ParametersType = oppHeader then
+                  begin
+                    aXml.Value := '{{request.headers.[' + xBind.Name + ']}}';
+                  end
+                  else
+                  begin // body...
+                    if aOperation.isSoapService then
+                    begin
+                      aXml.Value := '{{xPath request.body ''' + aOperation.FullXPath(xBind) + '''}}'
+                    end
+                    else
+                    begin
+                      aXml.Value := '{{jsonPath request.body ''' + (xbind as TXml).fullJsonBodyPath + '''}}'
+          // xml
+                    end;
+
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end;
+      finally
+        Free;
+      end;
+    end;
+    for x := 0 to aXml.Items.Count - 1 do
+      _TranslateStampersToHandlebars(aXml.Items.XmlItems[x]);
+  end;
+
 var
   xPath, xPreparedReply, xReplyContentType: String;
   xDefaultMessage: Boolean;
@@ -120,6 +189,7 @@ begin
     begin
       ResetValues;
       LoadValues((aMessage.rpyBind as TXml), False, True);
+      _TranslateStampersToHandlebars (aOperation.rpyBind as TXml);
     end;
     AddXml (TXml.CreateAsString('name', aMessage.Name));
     if aOperation.doUseStateMachine
@@ -227,15 +297,32 @@ begin
                 then
                 begin
                   with AddXml (Txml.CreateAsString('_', '')) do
-                    with AddXml (Txml.CreateAsString ( 'matchesJsonPath', '')) do
+                  begin
+                    if aOperation.ConsumesXmlOnly then
                     begin
-                      AddXml (Txml.CreateAsString ( 'expression'
-                                                  , corrXml.fullJsonBodyPath
-                                                  ));
-                      AddXml (Txml.CreateAsString ( 'matches'
-                                                  , corrXml.CorrelationValue
-                                                  ));
+                      with AddXml (Txml.CreateAsString ( 'matchesXPath', '')) do
+                      begin
+                        AddXml (Txml.CreateAsString ( 'expression'
+                                                    , aOperation.FullXPath(corrXml) + '/text()'
+                                                    ));
+                        AddXml (Txml.CreateAsString ( 'matches'
+                                                    , corrXml.CorrelationValue
+                                                    ));
+                      end;
+                    end
+                    else
+                    begin
+                      with AddXml (Txml.CreateAsString ( 'matchesJsonPath', '')) do
+                      begin
+                        AddXml (Txml.CreateAsString ( 'expression'
+                                                    , corrXml.fullJsonBodyPath
+                                                    ));
+                        AddXml (Txml.CreateAsString ( 'matches'
+                                                    , corrXml.CorrelationValue
+                                                    ));
+                      end;
                     end;
+                  end;
                 end;
               end;
               if aOperation.isSoapService then
@@ -331,7 +418,7 @@ begin
     Free;
   end
   else
-    raise Exception.Create ('only implemented for openapi');
+    raise Exception.Create ('only implemented for openapi and soap/xml');
 end;
 
 function generateWireMockResetStateMachine: String;

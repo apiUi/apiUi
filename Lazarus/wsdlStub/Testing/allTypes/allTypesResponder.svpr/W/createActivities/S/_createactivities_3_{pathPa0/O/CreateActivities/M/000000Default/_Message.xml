@@ -9,22 +9,15 @@
       <Pattern>.*</Pattern>
       <Pattern>.*</Pattern>
       <Pattern>.*</Pattern>
-      <Pattern>.*</Pattern>
     </Patterns>
     <Reply>
       <CreateActivities checked__="true">
         <rspns200 checked__="true">
           <body checked__="true">
-            <ListOfActivities checked__="true">
-              <Activity checked__="true">
-                <_ checked__="true">
-                  <TaskReference checked__="true">DEF</TaskReference>
-                  <Document checked__="true">
-                    <StorageStatus checked__="true">StorageStatus</StorageStatus>
-                  </Document>
-                </_>
-              </Activity>
-            </ListOfActivities>
+            <fromPathParam checked__="true">:=Req.CreateActivities.pathParam</fromPathParam>
+            <fromHeaderParam checked__="true">:=Req.CreateActivities.headerParam</fromHeaderParam>
+            <fromQueryParam checked__="true">:=Req.CreateActivities.queryParam</fromQueryParam>
+            <fromBodyParam checked__="true">:=Req.CreateActivities.body.Contact.bodyParam</fromBodyParam>
           </body>
         </rspns200>
       </CreateActivities>

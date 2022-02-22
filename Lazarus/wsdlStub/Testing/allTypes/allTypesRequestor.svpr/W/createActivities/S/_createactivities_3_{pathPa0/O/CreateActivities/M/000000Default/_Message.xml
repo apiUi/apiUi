@@ -10,16 +10,13 @@
     </Reply>
     <Request>
       <CreateActivities checked__="true">
-        <type checked__="true">typ</type>
-        <apiheader checked__="true">head</apiheader>
-        <queryparam checked__="true">quer</queryparam>
+        <pathParam checked__="true">p01</pathParam>
+        <headerParam checked__="true">h01</headerParam>
+        <queryParam checked__="true">q01</queryParam>
         <body checked__="true">
           <Contact checked__="true">
-            <ContactId checked__="true">cid</ContactId>
+            <bodyParam checked__="true">b01</bodyParam>
           </Contact>
-          <Department checked__="true">
-            <DepId checked__="true">2</DepId>
-          </Department>
         </body>
       </CreateActivities>
     </Request>

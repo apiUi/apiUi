@@ -1,5 +1,5 @@
   <Service>
-    <Name>/createactivities/3/{type}</Name>
+    <Name>/createactivities/3/{pathParam}</Name>
     <serviceOptions>
       <general>
         <suppressXmlComment>false</suppressXmlComment>
