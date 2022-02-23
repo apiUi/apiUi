@@ -299,6 +299,7 @@ type
     procedure OpenProjectFromString (aString: String);
     procedure IntrospectProject;
     function XmlFromProjectFolders (aFolderName: String): TXml;
+    function OperationFileSpecsAsStringList (aOperation: TWsdlOperation): TJBStringList;
     function ProjectFileSpecsAsJsonString: String;
     function ProjectFileSpecsAsStringList: TJBStringList;
     function ProjectFileSpecsAsXml: TXml;
@@ -8584,6 +8585,32 @@ begin
   end;
 end;
 
+function TWsdlProject.OperationFileSpecsAsStringList(aOperation: TWsdlOperation
+  ): TJBStringList;
+var
+  x, y: Integer;
+begin
+  result := TJBStringList.Create;
+  with result do
+  begin
+    Sorted := True;
+    Duplicates := dupIgnore;
+    with aOperation.Wsdl do
+    begin
+      if Assigned (XsdDescr) then with XsdDescr do
+        for x := 0 to DescrFileNames.Count - 1 do
+          Add (DescrFileNames.Strings[x]);
+      if Assigned (IpmDescrs) then
+        for x := 0 to IpmDescrs.Count - 1 do
+          Add (IpmDescrs.IpmDescrs[x].FileName);
+      if Assigned (sdfXsdDescrs) then
+        for x := 0 to sdfXsdDescrs.Count - 1 do with sdfXsdDescrs.XsdDescrs[x] do
+          for y := 0 to DescrFileNames.Count - 1 do
+            Add (DescrFileNames.Strings[y]);
+    end;
+  end;
+end;
+
 function TWsdlProject.ProjectFileSpecsAsJsonString: String;
 begin
   with ProjectFileSpecsAsXml do
@@ -9173,6 +9200,13 @@ begin
     try
       if remoteServerConnectionType = rscApiUi then
       begin
+        with OperationFileSpecsAsStringList (xOperation) do
+        try
+          for x := 0 to Count - 1 do
+            PushReferencedFileToRemoteServer(Strings[x]);
+        finally
+          Free;
+        end;
         oXml := ProjectOperationDesignAsXml(xOperation);
         mXml := TXml.Create;
         try
@@ -9207,19 +9241,14 @@ begin
         begin
           if abortPressed then
             Break;
-          AcquireLogLock;
-          ReleaseLogLock;
-          try
-            xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                                    , '/__admin/mappings'
-                                    , ''
-                                    , 'POST'
-                                    , 'application/json'
-                                    , generateWireMockMapping (xOperation, xOperation.Messages.Messages[x])
-                                    , 'application/json'
-                                    );
-          except
-          end;
+          xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                  , '/__admin/mappings'
+                                  , ''
+                                  , 'POST'
+                                  , 'application/json'
+                                  , generateWireMockMapping (xOperation, xOperation.Messages.Messages[x])
+                                  , 'application/json'
+                                  );
         end;
       end;
     finally
