@@ -13310,7 +13310,7 @@ end;
 
 procedure TMainForm.PushProjectToRemoteServerActionExecute(Sender: TObject);
 begin
-  se.PushProjectToRemoteServer;
+  TProcedureThread.Create(False, False, se, se.PushProjectToRemoteServer);
 end;
 
 procedure TMainForm.SetApiServerConnectionActionExecute(Sender: TObject);
