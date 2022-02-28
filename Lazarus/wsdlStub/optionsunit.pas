@@ -22,10 +22,11 @@ uses
   Classes, SysUtils;
 
 type
-  longOptsArrayType = array [0..8] of String;
+  longOptsArrayType = array [0..9] of String;
 
 const
   helpOpt = 'help';
+  portOpt = 'port';
   projectOpt = 'project';
   lstLogOpt = 'lstLog';
   scriptOpt = 'script';
@@ -35,6 +36,7 @@ const
   debugOpt = 'debug';
   contextOpt = 'context';
   longOpts: longOptsArrayType = ( helpOpt
+                                , portOpt + ':'
                                 , projectOpt + ':'
                                 , contextOpt + ':'
                                 , lstLogOpt + ':'

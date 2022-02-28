@@ -1,16 +1,16 @@
 {
-This file is part of the apiUi project
-Copyright (c) 2009-2021 by Jan Bouwman
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
 
-See the file COPYING, included in this distribution,
-for details about the copyright.
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
 unit xmlio;
 
@@ -33,6 +33,8 @@ TStringProvider = class(TObject)
   private
     s: String;
   public
+    function getString: String;
+    procedure setString (aString: String);
     procedure OnGetString (var aString: String);
     constructor Create(aString: String);
 end;
@@ -52,6 +54,24 @@ TJBStringList = class (TStringList)
     function thisJBStringList: TJBStringList;
     function Find(const S: string; Out Index: Integer): Boolean; override;
 end;
+
+{ TInternalFileStore }
+
+TInternalFileStore = class (TJBStringList)
+private
+  function GetFile(Index: string): String;
+  function GetFileByIndex(Index: Integer): String;
+  procedure SetFile(Index: string; AValue: String);
+  procedure SetFileByIndex(Index: Integer; AValue: String);
+  public
+    property Files [Index: string]: String read GetFile write SetFile;
+    property FilesByIndex [Index: Integer]: String read GetFileByIndex write SetFileByIndex;
+    procedure Clear; override;
+    constructor Create;
+    destructor Destroy;
+end;
+
+
 
 type TProcedureS = procedure (arg: String) of Object;
 
@@ -130,6 +150,7 @@ var
   apiUiConnectionConfig: TObject;
   xmlioLogger: TXmlioLogger;
   openSslCertsFolder: String;
+  InternalFileStore: TInternalFileStore;
 
 
 implementation
@@ -843,7 +864,6 @@ begin
     end;
   finally
     Free;
-    //SjowMessage(result);
 
   end;
 end;
@@ -857,7 +877,6 @@ var
   dXml: TXml;
   xStringProvider: TStringProvider;
 begin
-//SjowMessage(aPath + ' : ' + aFileName);
   xStringProvider := nil;
   if not Assigned (aConfigXml) then
     raise Exception.Create ('function HttpDialog no Config assigned');
@@ -1236,7 +1255,6 @@ var
   xMainPath: String;
   xToRelatePath: String;
 begin
-//SjowMessage('ExtractRelativeFileName:' + aMainFileName + ' , ' + aToRelateFileName);
   result := aToRelateFileName;
   if (aMainFileName = '')
   or (aToRelateFileName = '')
@@ -1403,13 +1421,14 @@ function ReadStringFromFile (aFileName: String; aOnBeforeRead: TProcedureS): Str
       FreeAndNil(lStream);
     end;
   end;
+var
+  f: Integer;
 begin
   aFileName := resolveAliasses(aFileName);
   if Assigned (aOnBeforeRead) then
     aOnBeforeRead (aFileName);
   if doTrackXmlIO then
     SjowMessage('ReadStringFromFile: ' + aFileName);
-//SjowMessage('ReadStringFromFile: ' + aFileName);
   if (AnsiStartsText('HTTP://', aFileName)) then
   begin
     result := _GetURLAsString (aFileName, false);
@@ -1429,6 +1448,11 @@ begin
   begin
     result := _GetFromApiAryAsString (aFileName);
     exit;
+  end;
+  if InternalFileStore.Find(osDirectorySeparators(aFileName), f) then
+  begin
+    result := InternalFileStore.FilesByIndex[f];
+    Exit;
   end;
   with TFileStream.Create(osDirectorySeparators(aFileName),fmOpenRead or fmShareDenyWrite) do
   begin
@@ -1703,6 +1727,61 @@ begin
   end;
 end;
 
+{ TInternalFileStore }
+
+function TInternalFileStore.GetFile(Index: string): String;
+var
+  f: Integer;
+begin
+  Index := osDirectorySeparators(Index);
+  if Find (Index,f) then
+    result := (Objects[f] as TStringProvider).getString
+  else
+    raise Exception.Create ('File not found: ' + Index);
+end;
+
+function TInternalFileStore.GetFileByIndex(Index: Integer): String;
+begin
+  result := (Objects[Index] as TStringProvider).getString;
+end;
+
+procedure TInternalFileStore.SetFile(Index: string; AValue: String);
+var
+  f: Integer;
+  aSp: TStringProvider;
+begin
+  Index:=osDirectorySeparators(Index);
+  if Find (Index,f) then
+    (Objects[f] as TStringProvider).setString (AValue)
+  else
+    AddObject(Index, TStringProvider.Create(AValue));
+end;
+
+procedure TInternalFileStore.SetFileByIndex(Index: Integer; AValue: String);
+begin
+  (Objects[Index] as TStringProvider).setString(AValue);
+end;
+
+procedure TInternalFileStore.Clear;
+var
+  x: Integer;
+begin
+  for x := 0 to Count - 1 do
+    Objects[x].Free;
+  inherited Clear;
+end;
+
+constructor TInternalFileStore.Create;
+begin
+  Sorted := True;
+end;
+
+destructor TInternalFileStore.Destroy;
+begin
+  Clear;
+  inherited;
+end;
+
 { TXmlioLogger }
 
 procedure TXmlioLogger.doLog(msg: String);
@@ -1732,6 +1811,16 @@ end;
 
 { TStringProvider }
 
+function TStringProvider.getString: String;
+begin
+  result := s;
+end;
+
+procedure TStringProvider.setString(aString: String);
+begin
+  s := aString;
+end;
+
 procedure TStringProvider.OnGetString(var aString: String);
 begin
   aString := s;
@@ -1747,8 +1836,10 @@ initialization
   PathPrefixes := TStringList.Create;
   PathPrefixes.Sorted := True;
   xmlioLogger := TXmlioLogger.Create;
+  InternalFileStore := TInternalFileStore.Create;
 finalization
   PathPrefixes.Free;
   xmlioLogger.Free;
+  InternalFileStore.Free;
 end.
 

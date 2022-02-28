@@ -2,13 +2,13 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <BuildModes Active="Default"/>
     <Units Count="19">
       <Unit0>
         <Filename Value="portChecker.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="12"/>
         <CursorPos Y="20"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
@@ -20,6 +20,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainUnit"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="107"/>
         <CursorPos X="16" Y="122"/>
         <UsageCount Value="34"/>
@@ -50,12 +51,11 @@
       </Unit4>
       <Unit5>
         <Filename Value="..\Components\Indy10\Lib\Core\IdTCPClient.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="488"/>
         <CursorPos Y="500"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
@@ -70,7 +70,7 @@
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="20"/>
         <CursorPos X="48" Y="22"/>
         <UsageCount Value="16"/>
@@ -79,12 +79,11 @@
       </Unit7>
       <Unit8>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandler.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="2632"/>
         <CursorPos Y="2645"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdSSLOpenSSLHeaders.pas"/>
@@ -96,84 +95,74 @@
       </Unit9>
       <Unit10>
         <Filename Value="..\Components\Indy10\Lib\Core\IdRegisterCore.pas"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="10"/>
         <TopLine Value="128"/>
         <CursorPos X="3" Y="140"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\Components\Indy10\Lib\Core\IdTCPConnection.pas"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="9"/>
         <TopLine Value="487"/>
         <CursorPos Y="505"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\Components\Indy10\Lib\System\IdBaseComponent.pas"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="263"/>
         <CursorPos Y="274"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandlerSocket.pas"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="543"/>
         <CursorPos Y="556"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\Components\Indy10\Lib\System\IdComponent.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="215"/>
         <CursorPos Y="229"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\Components\Indy10\Lib\System\IdStack.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="923"/>
         <CursorPos Y="933"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\Components\Indy10\Lib\Core\IdIOHandlerStack.pas"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="320"/>
         <CursorPos Y="329"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\svrouter\svrouterini.xml"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="30" Y="7"/>
         <UsageCount Value="16"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="XML"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdHTTP.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <TopLine Value="673"/>
         <CursorPos X="50" Y="687"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
@@ -297,5 +286,9 @@
         <Caret Line="1905" Column="19" TopLine="1894"/>
       </Position30>
     </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
   </ProjectSession>
 </CONFIG>

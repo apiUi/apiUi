@@ -40,7 +40,7 @@ type
     httpProxyPort: Integer;
     sslVersion: TIdSSLVersion;
     sslCertificateFile, sslKeyFile, sslRootCertificateFile, sslPassword: String;
-    httpPorts, httpsPorts: TJBStringList;
+    httpsPorts: TJBStringList;
     stompInterfaces: TJBStringList;
     SpecificationXml: TXml;
     property Connected: Boolean read fConnected write setConnected;
@@ -137,18 +137,6 @@ begin
       begin
         if Checked then
         begin
-          if Name = 'Http' then
-          begin
-            for y := 0 to Items.Count - 1 do
-            begin
-              if (Items.XmlItems[y].Checked)
-              and (Items.XmlItems[y].Name = 'Port') then
-              begin
-                httpPorts.Add (Items.XmlItems[y].Value);
-                _WsdlPortNumber := Items.XmlItems[y].Value;
-              end;
-            end;
-          end;
           if Name = 'HttpProxy' then
           begin
             httpProxyPort := Items.XmlCheckedIntegerByTag['Port'];
@@ -212,7 +200,6 @@ procedure TListeners.Clear;
 var
   x: Integer;
 begin
-  httpPorts.Clear;
   httpsPorts.Clear;
   httpProxyPort := 0;
   sslCertificateFile := '';
@@ -227,7 +214,6 @@ end;
 constructor TListeners.Create;
 begin
   SpecificationXml := TXml.CreateAsString('Listeners', '');
-  httpPorts:= TJBStringList.Create;
   httpsPorts := TJBStringList.Create;
   stompInterfaces := TJBStringList.Create;
 end;
@@ -236,7 +222,6 @@ destructor TListeners.Destroy;
 begin
   inherited;
   Clear;
-  httpPorts.Free;
   httpsPorts.Free;
   stompInterfaces.Free;
   SpecificationXml.Free;
