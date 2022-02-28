@@ -9131,6 +9131,7 @@ begin
       try
         with ProjectFileSpecsAsStringList do
         try
+    SjowMessage(Text);
           for x := 0 to Count - 1 do
             PushReferencedFileToRemoteServer(Strings[x]);
         finally
