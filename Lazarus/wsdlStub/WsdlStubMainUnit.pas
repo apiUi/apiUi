@@ -3817,6 +3817,7 @@ begin
   with result.AddXml(TXml.CreateAsString('Http', '')) do
   begin
     // AddXml (TXml.CreateAsBoolean('KeepAlive', se.HTTPServer.KeepAlive));
+    AddXml(TXml.CreateAsInteger('Port', se.HttpPortNo));
     AddXml(TXml.CreateAsInteger('ListenQueue', se.HTTPServer.ListenQueue));
     AddXml(TXml.CreateAsInteger('MaxConnections', se.HTTPServer.MaxConnections)
       );
@@ -11136,6 +11137,7 @@ begin
   xmlUtil.doExpandOnCheck := True;
   doScrollExceptionsIntoView := False;
   // se.HTTPServer.KeepAlive := True;
+  se.HttpPortNo := 7777;
   se.HTTPServer.ListenQueue := 15;
   se.HTTPServer.MaxConnections := 15;
   se.doViaProxyServer := False;
@@ -11170,8 +11172,8 @@ begin
     if Assigned(xXml) then
     begin
       // se.HTTPServer.KeepAlive := xXml.Items.XmlCheckedBooleanByTagDef['KeepAlive', se.HTTPServer.KeepAlive];
-      se.HTTPServer.ListenQueue := xXml.Items.XmlCheckedIntegerByTagDef
-        ['ListenQueue', se.HTTPServer.ListenQueue];
+      se.HttpPortNo := xXml.Items.XmlCheckedIntegerByTagDef ['Port', se.HttpPortNo];
+      se.HTTPServer.ListenQueue := xXml.Items.XmlCheckedIntegerByTagDef ['ListenQueue', se.HTTPServer.ListenQueue];
       se.HTTPServer.MaxConnections := xXml.Items.XmlCheckedIntegerByTagDef
         ['MaxConnections', se.HTTPServer.MaxConnections];
       yXml := xXml.Items.XmlCheckedItemByTag['ProxyServer'];

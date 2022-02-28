@@ -604,23 +604,6 @@ For an overview configuration options on Listeners visit: doc://apiUi_Listeners_
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Http" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>Hypertext Transfer Protocol
-Functions as a request-response protocol in  client-server configurations.</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Port" type="xs:integer" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>Http port number
-More entries allowed
-									</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="Https" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Hypertext Transfer Protocol with SSL;
@@ -1572,6 +1555,7 @@ Functions as a request-response protocol in the client-server configurations.
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
+							<xs:element name="Port" type="xs:integer" minOccurs="0"/>
 							<xs:element name="ListenQueue" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Default '15'</xs:documentation>

@@ -101,6 +101,7 @@ type
 
   TWsdlProject = class
   private
+    fHttpPortNo: Integer;
     fIsActive, fIsAvailable: Boolean;
     fIsBusy: Boolean;
     fAbortPressed: Boolean;
@@ -137,6 +138,7 @@ type
                                          ; ARequestInfo: TIdHTTPRequestInfo
                                          ; AResponseInfo: TIdHTTPResponseInfo
                                          );
+    procedure setHttpPortNo(AValue: Integer);
     procedure setIsAvailable(AValue: Boolean);
     function SpecFilesReadableReport (aXml: TXml): String;
     procedure HTTPServerCommandGet(AContext: TIdContext;
@@ -230,7 +232,7 @@ type
     CORS: TCORSType;
     corsExceptionHttpCode: Integer;
     function thisProject: TWsdlProject;
-    procedure SaveReferencedFile (aFileName, aFileContent: String);
+    procedure SaveReferencedFileInternally (aFileName, aFileContent: String);
     procedure PushReferencedFileToRemoteServer (aFileName: String);
     procedure PushProjectToRemoteServer;
     procedure PushOperationToRemoteServer (aOperation: TWsdlOperation);
@@ -366,6 +368,7 @@ type
       var ConnectionString, UserID, Password: WideString;
       var ConnectOptions: TConnectOption; var EventStatus: TEventStatus);
     {$ENDIF}
+    property HttpPortNo: Integer read fHttpPortNo write setHttpPortNo;
     procedure LogServerException(const Msg: String; aException: Boolean; E: Exception);
     property ProjectContext: String read fProjectContext write SetProjectContext;
     property versionInfoAsString: String read getVersionInfoAsString;
@@ -1445,6 +1448,7 @@ begin
   InitSpecialWsdls;
   Clear;
   IsAvailable := True;
+  HttpPortNo := 7777;
 end;
 
 destructor TWsdlProject.Destroy;
@@ -1821,27 +1825,21 @@ begin
             end;
           end;
         end;
-        if Listeners.httpPorts.Count > 0 then
-        begin
-          for x := 0 to Listeners.httpPorts.Count - 1 do
-          begin
-            try
-              Binding := HTTPServer.Bindings.Add;
-              Binding.Port := StrToInt(resolveAliasses(Listeners.httpPorts.Strings[x]));
-              Binding.IP := '0.0.0.0';
-              Notify(format( 'Listening for HTTP trafic on %s:%d.'
-                           , [HTTPServer.Bindings[x].IP, HTTPServer.Bindings[x].Port]
-                           )
-                    );
-            except
-              on e: exception do
-              begin
-                LogServerMessage(format('Exception %s in Activate HTTP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
-              end;
-            end;
-          end;
+        try
+          Binding := HTTPServer.Bindings.Add;
+          Binding.Port := HttpPortNo;
+          Binding.IP := '0.0.0.0';
           HTTPServer.SessionState := False;
           HTTPServer.Active := true;
+          Notify(format( 'Listening for HTTP trafic on %s:%d.'
+                       , [Binding.IP, Binding.Port]
+                       )
+                );
+        except
+          on e: exception do
+          begin
+            LogServerMessage(format('Exception %s in Activate HTTP. Exception is:"%s".', [e.ClassName, e.Message]), True, e);
+          end;
         end;
         if Listeners.httpsPorts.Count > 0 then
         begin
@@ -2674,9 +2672,8 @@ begin
       xPatterns.Free;
     end;
     PrepareAllOperations;
-  finally
-{}
-{}
+  except
+    on e: exception do SjowMessage ('Exception in ProjectDesignFromXml' + LineEnding  + e.Message);
   end;
 end;
 
@@ -6002,7 +5999,7 @@ begin
             AResponseInfo.ResponseNo := 400;
             Exit;
           end;
-          SaveReferencedFile(nameXml.Value, valueXml.Value);
+          SaveReferencedFileInternally(nameXml.Value, valueXml.Value);
           Exit;
         end;
 
@@ -6527,6 +6524,12 @@ begin
   finally
     FreeAndNil(xBodyXml);
   end;
+end;
+
+procedure TWsdlProject.setHttpPortNo(AValue: Integer);
+begin
+  if fHttpPortNo=AValue then Exit;
+  fHttpPortNo:=AValue;
 end;
 
 procedure TWsdlProject.setIsAvailable(AValue: Boolean);
@@ -9075,24 +9078,17 @@ begin
   result := self;
 end;
 
-procedure TWsdlProject.SaveReferencedFile(aFileName, aFileContent: String);
-var
-  xFullName, xFolderName: String;
+procedure TWsdlProject.SaveReferencedFileInternally(aFileName, aFileContent: String);
 begin
   if (AnsiStartsText('HTTP://', aFileName))
   or (AnsiStartsText('HTTPS://', aFileName))
   or (AnsiStartsText('APIUI://', aFileName))
   or (AnsiStartsText('APIARY://', aFileName)) then
     Exit;
-  xFullName := ExpandRelativeFileName(projectFileName, aFileName);
-  xFolderName := Copy (xFullName, 1, Length (xFullName) - Length (ExtractFileName(aFileName)));
-  if LazFileUtils.ForceDirectoriesUTF8(xFolderName) then
-    xmlio.SaveStringToFile(xFullName, aFileContent);
+  InternalFileStore.Files[aFileName] := aFileContent;
 end;
 
 procedure TWsdlProject.PushReferencedFileToRemoteServer(aFileName: String);
-var
-  xFileName: String;
 begin
   if remoteServerConnectionType <> rscApiUi then
     raise Exception.Create('PushReferencedFileToRemoteServer: only implemented for apiUi remote server');
@@ -9101,12 +9097,11 @@ begin
   or (AnsiStartsText('APIUI://', aFileName))
   or (AnsiStartsText('APIARY://', aFileName)) then
     Exit;
-  xFileName := ExtractRelativeFileName(projectFileName, aFileName);
   with TXml.CreateAsString('json', '') do
   try
     with AddXml(TXml.CreateAsString('files', '')) do
     begin
-      AddXml (TXml.CreateAsString('Name', xFileName));
+      AddXml (TXml.CreateAsString('Name', aFileName));
       AddXml (TXml.CreateAsString('Content', xmlio.ReadStringFromFile(aFileName, nil)));
     end;
     xmlio.apiUiServerDialog ( remoteServerConnectionXml
@@ -9132,7 +9127,7 @@ begin
   begin
     try
       saveSaveRelativeFileNames := SaveRelativeFileNames;
-      SaveRelativeFileNames := True;
+      SaveRelativeFileNames := False;
       try
         with ProjectFileSpecsAsStringList do
         try
@@ -9141,34 +9136,13 @@ begin
         finally
           Free;
         end;
-        try
-          xReport := xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                                             , '/apiUi/api/project/filesexists'
-                                             , ''
-                                             , 'POST'
-                                             , 'application/json'
-                                             , ProjectFileSpecsAsJsonString
-                                             );
-          with TXml.Create do
-          try
-            LoadJsonFromString(xReport, nil);
-            if not Assigned (FindUQ('json.allReadable')) then
-              raise Exception.Create('unexpected response from remote: ' + LineEnding + xReport);
-            if not (FindUQValue('json.allReadable') = 'true') then
-              raise Exception.Create ('Not all necessary files are remote readable' + LineEnding + xReport);
-          finally
-            Free;
-          end;
-          xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                                  , '/apiUi/api/project/design'
-                                  , ''
-                                  , 'POST'
-                                  , 'application/xml'
-                                  , ProjectDesignAsString
-                                  );
-        except
-          raise;
-        end;
+        xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                , '/apiUi/api/project/design'
+                                , ''
+                                , 'POST'
+                                , 'application/xml'
+                                , ProjectDesignAsString
+                                );
       finally
         SaveRelativeFileNames := saveSaveRelativeFileNames;
       end;

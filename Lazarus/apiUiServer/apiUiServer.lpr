@@ -100,13 +100,6 @@ var
   sXml: TXml;
 begin
   WriteLn(_progName, ' ', _xmlProgVersion);
-  if ParamCount = 0 then
-  begin
-    WriteLn(ExeName, ' --', helpOpt, ' for more information');
-    Terminate;
-    Exit;
-  end;
-
   ErrorMsg := CheckOptions('',longOpts);
   if ErrorMsg<>'' then begin
     ShowException(Exception.Create(ErrorMsg));
@@ -150,24 +143,24 @@ begin
   doDebug := HasOption('?',debugOpt);
   if doDebug then
     WriteLn('option ', debugOpt);
-  if not HasOption('?',projectOpt) then
+  if HasOption('?', portOpt) then
   begin
-    WriteLn ('missing --project= option');
-    Terminate;
-    Exit;
-  end
-  else
-    WriteLn('option ', scriptOpt, ' ', GetOptionValue('?', scriptOpt));
-
-  se.projectFileName := ExpandRelativeFileName(GetCurrentDirUTF8 + DirectorySeparator, GetOptionValue('?', projectOpt));
-  try
-    OpenProjectCommand(se.projectFileName);
-  except
-    on e: Exception do
-    begin
-      WriteLn (e.Message);
-      Terminate;
-      Exit;
+    WriteLn('option ', portOpt, ' ', GetOptionValue('?', portOpt));
+    se.HttpPortNo := StrToIntDef(GetOptionValue('?', portOpt), se.HttpPortNo);
+  end;
+  if HasOption('?',projectOpt) then
+  begin
+    WriteLn('option ', projectOpt, ' ', GetOptionValue('?', projectOpt));
+    se.projectFileName := ExpandRelativeFileName(GetCurrentDirUTF8 + DirectorySeparator, GetOptionValue('?', projectOpt));
+    try
+      OpenProjectCommand(se.projectFileName);
+    except
+      on e: Exception do
+      begin
+        WriteLn (e.Message);
+        Terminate;
+        Exit;
+      end;
     end;
   end;
   lstLogFileName := GetOptionValue(lstLogOpt);
@@ -576,6 +569,8 @@ begin
   WriteLn;
   WriteLn;
   WriteLn ('Switches');
+  WriteLn ('  --', portOpt);
+  WriteLn ('     set http prt number (default 7777)');
   WriteLn ('  --', projectOpt);
   WriteLn ('     opens the named project');
   WriteLn ('  --', contextOpt);
