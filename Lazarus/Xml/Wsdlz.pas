@@ -2857,7 +2857,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
           xXml.LoadYamlFromFile(aaFileName, aOnError, aOnbeforeRead);
         xXml.Name := '#'; // to make it easier to resolve $refs
         XsdDescr.ReadFileNames.AddObject(aaFileName, xXml);
-        XsdDescr.DescrFileNames.Add (aFileName);
+        XsdDescr.DescrFileNames.Add (aaFileName);
         _ReadDollarReferencedFiles(aaFileName, xXml);
       end;
     end;
