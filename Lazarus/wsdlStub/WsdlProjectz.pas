@@ -2397,13 +2397,11 @@ var
   xBindName: String;
   xMessage: TWsdlMessage;
   xReadAnother: Boolean;
-  xPatterns: TJBStringList;
 begin
   ProgressStep('Analyzing...', 100);
   Clear;
   xReadAnother := False;
   try
-    xPatterns := TJBStringList.Create;
     try
       try
         aXml.CheckDownLine (True);
@@ -2669,9 +2667,8 @@ begin
         stubRead := True;
       end;
     finally
-      xPatterns.Free;
+      PrepareAllOperations;
     end;
-    PrepareAllOperations;
   except
     on e: exception do SjowMessage ('Exception in ProjectDesignFromXml' + LineEnding  + e.Message);
   end;
@@ -9131,7 +9128,6 @@ begin
       try
         with ProjectFileSpecsAsStringList do
         try
-    SjowMessage(Text);
           for x := 0 to Count - 1 do
             PushReferencedFileToRemoteServer(Strings[x]);
         finally
