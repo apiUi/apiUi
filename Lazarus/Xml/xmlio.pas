@@ -121,6 +121,7 @@ procedure togglePasswordContextsColumn (aContexts: TObject; aColumn: Integer);
 function isOneTimeContextsColumn (aContexts: TObject; aColumn: Integer): Boolean;
 procedure toggleOneTimeContextsColumn (aContexts: TObject; aColumn: Integer);
 function osDirectorySeparators (aName: String): String;
+function windowsDirectorySeparators (aName: String): String;
 procedure SjowMessage (aString: String);
 
 const base64DocxStartStr = 'UEsDBB';
@@ -221,6 +222,16 @@ begin
   result := ReplaceStrings ( aName
                            , {$ifdef windows} '/' {$else} '\' {$endif}
                            , DirectorySeparator
+                           , false
+                           , false
+                           );
+end;
+
+function windowsDirectorySeparators(aName: String): String;
+begin
+  result := ReplaceStrings ( aName
+                           , '/'
+                           , '\'
                            , false
                            , false
                            );
@@ -1200,7 +1211,7 @@ begin
   or (AnsiStartsText('\', aToRelateFileName))
   or (    (Length (aToRelateFileName) > 3)
       and (aToRelateFileName [2] = ':')
-      and (aToRelateFileName [3] = '\')
+      and (aToRelateFileName [3] in ['\', '/'])
      )
   then
   begin
@@ -1449,7 +1460,7 @@ begin
     result := _GetFromApiAryAsString (aFileName);
     exit;
   end;
-  if InternalFileStore.Find(osDirectorySeparators(aFileName), f) then
+  if InternalFileStore.Find(windowsDirectorySeparators(aFileName), f) then
   begin
     result := InternalFileStore.FilesByIndex[f];
     Exit;
@@ -1733,7 +1744,7 @@ function TInternalFileStore.GetFile(Index: string): String;
 var
   f: Integer;
 begin
-  Index := osDirectorySeparators(Index);
+  Index := windowsDirectorySeparators(Index);
   if Find (Index,f) then
     result := (Objects[f] as TStringProvider).getString
   else
@@ -1750,7 +1761,7 @@ var
   f: Integer;
   aSp: TStringProvider;
 begin
-  Index:=osDirectorySeparators(Index);
+  Index:=windowsDirectorySeparators(Index);
   if Find (Index,f) then
     (Objects[f] as TStringProvider).setString (AValue)
   else

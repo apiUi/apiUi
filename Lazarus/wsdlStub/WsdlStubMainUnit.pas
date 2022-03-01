@@ -9145,6 +9145,8 @@ begin
 end;
 
 procedure TMainForm.Action1Execute(Sender: TObject);
+var
+  x: Integer;
 begin
 //XmlUtil.presentAsText('AllOps', allOperations.Text);
   SjowMessage('se.PathFormats' + LineEnding + se.PathFormats.Text);
@@ -12405,7 +12407,6 @@ begin
       and Assigned (se.referencedFilenames) then
       begin
         s := s + xmlio.osDirectorySeparators(se.projectFileName) + LineEnding;
-        SjowMessage(se.projectFileName + LineEnding + se.referencedFilenames.Text);
         for x := 0 to se.referencedFilenames.Count - 1 do
         begin
           xFileName := se.referencedFilenames.Strings[x];

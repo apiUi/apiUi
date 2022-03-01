@@ -73,38 +73,8 @@ definitions:
             maxLength: 30
         required: 
           - Reference
-      Activity: 
-          type: object
-          properties: 
-            TypeCode: 
-              type: string
-              maxLength: 30
-            StatusCode: 
-              type: string
-              maxLength: 30
-            TaskReference: 
-              type: string
-              maxLength: 30
-            Description: 
-              type: string
-              maxLength: 150
-            Comment: 
-              type: string
-              maxLength: 1500
-            StartDate: 
-              type: string
-              format: "date-time"
-            EndDate: 
-              type: string
-              format: "date-time"
-            PlannedEndDate: 
-              type: string
-              format: "date-time"
-          required: 
-            - TypeCode
-            - Description
-        required: 
-          - Activity
+      Activity:
+         '$ref': 'activity.yml#/definitions/Activity'
     required: 
       - Contact
       - Department
