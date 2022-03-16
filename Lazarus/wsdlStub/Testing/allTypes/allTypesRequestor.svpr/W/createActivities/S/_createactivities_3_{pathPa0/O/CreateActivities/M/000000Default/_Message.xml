@@ -6,7 +6,13 @@
     <stateMachineNextState>.*</stateMachineNextState>
     <Patterns></Patterns>
     <Reply>
-      <CreateActivities checked__="false"></CreateActivities>
+      <CreateActivities checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <fromBodyParam checked__="true">j</fromBodyParam>
+          </body>
+        </rspns200>
+      </CreateActivities>
     </Reply>
     <Request>
       <CreateActivities checked__="true">

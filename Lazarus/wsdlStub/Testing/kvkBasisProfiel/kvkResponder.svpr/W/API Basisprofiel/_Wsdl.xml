@@ -1,0 +1,4 @@
+  <Wsdl>
+    <Name>API Basisprofiel</Name>
+    <WsdlLocation>api_basisprofiel_widget.yaml</WsdlLocation>
+  </Wsdl>

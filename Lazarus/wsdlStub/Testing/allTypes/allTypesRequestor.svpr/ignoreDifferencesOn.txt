@@ -1,0 +1,9 @@
+.requestHeaders.Host
+.responseHeaders.Content-Length
+.responseHeaders.Date
+cobolrequest.requestHeaders.Host
+cobolresponse.responseHeaders.Date
+CreateActivities.requestHeaders.Content-Length
+CreateActivities.requestHeaders.Host
+uploadDocument.requestHeaders.Content-Type
+uploadDocument.requestHeaders.Host

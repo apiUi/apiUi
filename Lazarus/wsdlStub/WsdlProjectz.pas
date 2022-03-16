@@ -5706,6 +5706,14 @@ begin
   AResponseInfo.ContentType := 'application/json';
   AResponseInfo.ResponseNo := 200; // nice defaults
   try   // finally
+    if not IsAvailable then with AResponseInfo do
+    begin
+      if ARequestInfo.Document = '/testconnection' then
+        Exit;
+      ResponseNo := 503;
+      ResponseText := 'Service temporarely unavailable, please try again later';
+      Exit;
+    end;
     try  // Except
       if (ARequestInfo.Command = 'PATCH')
       or (ARequestInfo.Command = 'POST')
@@ -6615,15 +6623,14 @@ var
   xNotification, xDocument: String;
   xOnRequestViolatingAddressPath: TOnRequestViolating;
 begin
-  if not IsAvailable then with AResponseInfo do
-  begin
-    ResponseNo := 503;
-    ResponseText := 'Service temporarely unavailable, please try again later';
-    Exit;
-  end;
   xProcessed := False;
   try // finally set for hhtp reply
   //xDocument := '/' + _ProgName + '/api';
+    if not IsAvailable then
+    begin
+      HTTPServerRemoteControlApi(AContext, ARequestInfo, AResponseInfo);
+      Exit;
+    end;
     if (ARequestInfo.Command = 'OPTIONS')
     and _hasCorsHeaders (ARequestInfo.RawHeaders) then
     begin

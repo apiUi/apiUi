@@ -1,0 +1,2 @@
+Rpy.getBasisprofielByKvkNummer.rspnsdefault.hal_json.kvkNummer := Req.getBasisprofielByKvkNummer.kvkNummer;
+

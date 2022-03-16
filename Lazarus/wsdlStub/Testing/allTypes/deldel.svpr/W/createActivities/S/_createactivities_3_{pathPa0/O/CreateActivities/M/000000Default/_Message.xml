@@ -1,0 +1,37 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+    </Patterns>
+    <Reply>
+      <CreateActivities checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <fromPathParam checked__="true">:=Req.CreateActivities.pathParam</fromPathParam>
+            <fromHeaderParam checked__="true">:=Req.CreateActivities.headerParam</fromHeaderParam>
+            <fromQueryParam checked__="true">:=Req.CreateActivities.queryParam</fromQueryParam>
+            <fromBodyParam checked__="true">:=Req.CreateActivities.body.Contact.bodyParam</fromBodyParam>
+            <ListOfActivities checked__="true">
+              <Activity checked__="false">
+                <_ checked__="true">
+                  <TaskReference checked__="true">:=Req.CreateActivities.body.Activity.TypeCode</TaskReference>
+                </_>
+              </Activity>
+            </ListOfActivities>
+          </body>
+        </rspns200>
+      </CreateActivities>
+    </Reply>
+    <Request>
+      <CreateActivities checked__="false"></CreateActivities>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>
