@@ -568,21 +568,6 @@ begin
 end;
 
 procedure TShowLogDifferencesForm.CompareAB(xData: PVSTreeRec);
-  function HeadersAsXml (aName, aHeaders: String): TXml;
-  var
-    x: Integer;
-  begin
-    result := TXml.CreateAsString(aName, '');
-    with TJBStringList.Create do
-    try
-      NameValueSeparator := ':';
-      Text := aHeaders;
-      for x := 0 to Count - 1 do
-        result.AddXml (TXml.CreateAsString (Names[x], ValueFromIndex[x]));
-    finally
-      Free;
-    end;
-  end;
 var
   aXml, bXml: TXml;
 begin

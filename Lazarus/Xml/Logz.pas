@@ -200,6 +200,7 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
                             ; ignoreDifferencesOn, checkValueAgainst, ignoreAddingOn, ignoreRemovingOn, ignoreOrderOn, sortColumns: TJBStringList
                             ): TXml;
 function doOrder (List: TStringList; Index1, Index2: Integer): Integer;
+function HeadersAsXml (aName, aHeaders: String): TXml;
 
 implementation
 
@@ -210,6 +211,22 @@ uses SysUtils
    , IpmTypes
    , xmlxsdparser
    ;
+
+function HeadersAsXml (aName, aHeaders: String): TXml;
+var
+  x: Integer;
+begin
+  result := TXml.CreateAsString(aName, '');
+  with TJBStringList.Create do
+  try
+    NameValueSeparator := ':';
+    Text := aHeaders;
+    for x := 0 to Count - 1 do
+      result.AddXml (TXml.CreateAsString (Names[x], ValueFromIndex[x]));
+  finally
+    Free;
+  end;
+end;
 
 function ifthen(val:boolean;const iftrue:String; const iffalse:String='') :String;
 begin
@@ -308,10 +325,14 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     aXml := aLog.requestAsXml;
     aXml.SeparateNsPrefixes;
     aXml.ResolveNameSpaces;
+    if aLog.RequestHeaders <> '' then
+      aXml.Items.InsertObject(0, '', HeadersAsXml('requestHeaders', aLog.RequestHeaders));
     a2bExpandWhenValueIsJsonOrYaml(aXml);
     bXml := bLog.requestAsXml;
     bXml.SeparateNsPrefixes;
     bxml.ResolveNameSpaces;
+    if bLog.RequestHeaders <> '' then
+      bXml.Items.InsertObject(0, '', HeadersAsXml('requestHeaders', bLog.RequestHeaders));
     a2bExpandWhenValueIsJsonOrYaml(bXml);
     a2bXml := TA2BXml.CreateA2B(aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
@@ -322,10 +343,16 @@ function logDifferencesAsXml( aLogs, bLogs: TLogList
     aXml := aLog.replyAsXml;
     aXml.SeparateNsPrefixes;
     aXml.ResolveNameSpaces;
+    if aLog.ReplyHeaders <> '' then
+      aXml.Items.InsertObject(0, '', HeadersAsXml('responseHeaders', aLog.ReplyHeaders));
+    aXml.Items.InsertObject(0, '', TXml.CreateAsInteger('Status', aLog.httpResponseCode));
     a2bExpandWhenValueIsJsonOrYaml(aXml);
     bXml := bLog.replyAsXml;
     bXml.SeparateNsPrefixes;
     bxml.ResolveNameSpaces;
+    if bLog.ReplyHeaders <> '' then
+      bXml.Items.InsertObject(0, '', HeadersAsXml('responseHeaders', bLog.ReplyHeaders));
+    bXml.Items.InsertObject(0, '', TXml.CreateAsInteger('Status', bLog.httpResponseCode));
     a2bExpandWhenValueIsJsonOrYaml(bXml);
     a2bXml := TA2BXml.CreateA2B(aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
     a2bXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
